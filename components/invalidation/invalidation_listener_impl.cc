@@ -131,8 +131,9 @@ bool InvalidationListenerImpl::HasObserver(const Observer* observer) const {
 
 void InvalidationListenerImpl::RemoveObserver(const Observer* observer) {
   const std::string& type = observer->GetType();
-  CHECK(type_to_handler_.contains(type));
-  type_to_handler_.erase(type);
+  auto it = type_to_handler_.find(type);
+  CHECK(it != type_to_handler_.end());
+  type_to_handler_.erase(it);
   observers_.RemoveObserver(observer);
 }
 
