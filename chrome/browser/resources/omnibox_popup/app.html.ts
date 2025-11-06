@@ -15,7 +15,8 @@ export function getHtml(this: OmniboxPopupAppElement) {
     ?can-show-secondary-side="${this.canShowSecondarySide}"
     ?has-secondary-side="${this.hasSecondarySide}"
     @has-secondary-side-changed="${this.onHasSecondarySideChanged_}"
-    @dom-change="${this.onResultRepaint_}">
+    @dom-change="${this.onResultRepaint_}"
+    ?hidden="${!this.hasVisibleMatches_}">
 </cr-searchbox-dropdown>
   `;
 
