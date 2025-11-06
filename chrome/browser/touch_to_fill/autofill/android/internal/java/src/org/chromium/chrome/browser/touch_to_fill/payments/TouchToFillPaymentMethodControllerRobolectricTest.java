@@ -110,6 +110,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import android.app.Activity;
 import android.text.TextUtils;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.StringRes;
 
 import org.junit.After;
@@ -521,18 +522,14 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
         mCoordinator.showPaymentMethods(
                 List.of(VISA_SUGGESTION), /* shouldShowScanCreditCard= */ false);
 
-        assertThat(
-                mTouchToFillPaymentMethodModel.get(SHEET_CONTENT_DESCRIPTION_ID),
-                is(R.string.autofill_payment_method_bottom_sheet_content_description));
-        assertThat(
-                mTouchToFillPaymentMethodModel.get(SHEET_HALF_HEIGHT_DESCRIPTION_ID),
-                is(R.string.autofill_payment_method_bottom_sheet_half_height));
-        assertThat(
-                mTouchToFillPaymentMethodModel.get(SHEET_FULL_HEIGHT_DESCRIPTION_ID),
-                is(R.string.autofill_payment_method_bottom_sheet_full_height));
-        assertThat(
-                mTouchToFillPaymentMethodModel.get(SHEET_CLOSED_DESCRIPTION_ID),
-                is(R.string.autofill_payment_method_bottom_sheet_closed));
+        assertModelHasCorrectAccessibilityStringIds(
+                mTouchToFillPaymentMethodModel,
+                R.string.autofill_payment_method_bottom_sheet_content_description,
+                R.string.autofill_payment_method_bottom_sheet_half_height,
+                R.string.autofill_payment_method_bottom_sheet_full_height,
+                R.string.autofill_payment_method_bottom_sheet_closed,
+                org.chromium.chrome.browser.touch_to_fill.payments.R.id
+                        .touch_to_fill_payment_method_home_screen);
         assertThat(mTouchToFillPaymentMethodModel.get(VISIBLE), is(true));
     }
 
@@ -800,18 +797,14 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
 
         assertThat(mTouchToFillPaymentMethodModel.get(CURRENT_SCREEN), is(PROGRESS_SCREEN));
         assertThat(mTouchToFillPaymentMethodModel.get(VISIBLE), is(true));
-        assertThat(
-                mTouchToFillPaymentMethodModel.get(SHEET_CONTENT_DESCRIPTION_ID),
-                is(R.string.autofill_bnpl_progress_sheet_content_description));
-        assertThat(
-                mTouchToFillPaymentMethodModel.get(SHEET_HALF_HEIGHT_DESCRIPTION_ID),
-                is(R.string.autofill_bnpl_progress_sheet_half_height));
-        assertThat(
-                mTouchToFillPaymentMethodModel.get(SHEET_FULL_HEIGHT_DESCRIPTION_ID),
-                is(R.string.autofill_bnpl_progress_sheet_full_height));
-        assertThat(
-                mTouchToFillPaymentMethodModel.get(SHEET_CLOSED_DESCRIPTION_ID),
-                is(R.string.autofill_bnpl_progress_sheet_closed));
+        assertModelHasCorrectAccessibilityStringIds(
+                mTouchToFillPaymentMethodModel,
+                R.string.autofill_bnpl_progress_sheet_content_description,
+                R.string.autofill_bnpl_progress_sheet_half_height,
+                R.string.autofill_bnpl_progress_sheet_full_height,
+                R.string.autofill_bnpl_progress_sheet_closed,
+                org.chromium.chrome.browser.touch_to_fill.payments.R.id
+                        .touch_to_fill_progress_screen);
 
         ModelList sheetItems = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
         assertThat(sheetItems.size(), is(3));
@@ -910,8 +903,14 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                 is(BNPL_ISSUER_SELECTION_SCREEN));
         assertThat(mTouchToFillPaymentMethodModel.get(VISIBLE), is(true));
 
-        assertBnplIssuerSelectionScreenHasCorrectAccessibilityStrings(
-                mTouchToFillPaymentMethodModel);
+        assertModelHasCorrectAccessibilityStringIds(
+                mTouchToFillPaymentMethodModel,
+                R.string.autofill_bnpl_issuer_bottom_sheet_content_description,
+                R.string.autofill_bnpl_issuer_bottom_sheet_half_height,
+                R.string.autofill_bnpl_issuer_bottom_sheet_full_height,
+                R.string.autofill_bnpl_issuer_bottom_sheet_closed,
+                org.chromium.chrome.browser.touch_to_fill.payments.R.id
+                        .touch_to_fill_bnpl_issuer_selection_screen);
 
         ModelList itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
         assertThat(getModelsOfType(itemList, BNPL_ISSUER).size(), is(3));
@@ -945,8 +944,14 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                 is(BNPL_ISSUER_SELECTION_SCREEN));
         assertThat(mTouchToFillPaymentMethodModel.get(VISIBLE), is(true));
 
-        assertBnplIssuerSelectionScreenHasCorrectAccessibilityStrings(
-                mTouchToFillPaymentMethodModel);
+        assertModelHasCorrectAccessibilityStringIds(
+                mTouchToFillPaymentMethodModel,
+                R.string.autofill_bnpl_issuer_bottom_sheet_content_description,
+                R.string.autofill_bnpl_issuer_bottom_sheet_half_height,
+                R.string.autofill_bnpl_issuer_bottom_sheet_full_height,
+                R.string.autofill_bnpl_issuer_bottom_sheet_closed,
+                org.chromium.chrome.browser.touch_to_fill.payments.R.id
+                        .touch_to_fill_bnpl_issuer_selection_screen);
 
         ModelList itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
         assertThat(getModelsOfType(itemList, BNPL_ISSUER).size(), is(3));
@@ -980,8 +985,14 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                 is(BNPL_ISSUER_SELECTION_SCREEN));
         assertThat(mTouchToFillPaymentMethodModel.get(VISIBLE), is(true));
 
-        assertBnplIssuerSelectionScreenHasCorrectAccessibilityStrings(
-                mTouchToFillPaymentMethodModel);
+        assertModelHasCorrectAccessibilityStringIds(
+                mTouchToFillPaymentMethodModel,
+                R.string.autofill_bnpl_issuer_bottom_sheet_content_description,
+                R.string.autofill_bnpl_issuer_bottom_sheet_half_height,
+                R.string.autofill_bnpl_issuer_bottom_sheet_full_height,
+                R.string.autofill_bnpl_issuer_bottom_sheet_closed,
+                org.chromium.chrome.browser.touch_to_fill.payments.R.id
+                        .touch_to_fill_bnpl_issuer_selection_screen);
 
         ModelList itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
         assertThat(getModelsOfType(itemList, BNPL_ISSUER).size(), is(3));
@@ -1131,6 +1142,14 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
         assertThat(mTouchToFillPaymentMethodModel.get(CURRENT_SCREEN), is(BNPL_ISSUER_TOS_SCREEN));
         ModelList itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
 
+        assertModelHasCorrectAccessibilityStringIds(
+                mTouchToFillPaymentMethodModel,
+                R.string.autofill_bnpl_issuer_tos_bottom_sheet_content_description,
+                R.string.autofill_bnpl_issuer_tos_bottom_sheet_half_height,
+                R.string.autofill_bnpl_issuer_tos_bottom_sheet_full_height,
+                R.string.autofill_bnpl_issuer_tos_bottom_sheet_closed,
+                org.chromium.chrome.browser.touch_to_fill.payments.R.id.touch_to_fill_bnpl_issuer_tos_screen);
+
         List<PropertyModel> headerModel = getModelsOfType(itemList, HEADER);
         assertThat(headerModel.size(), is(1));
         assertThat(
@@ -1199,18 +1218,13 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
         assertThat(mTouchToFillPaymentMethodModel.get(CURRENT_SCREEN), is(ERROR_SCREEN));
         assertThat(mTouchToFillPaymentMethodModel.get(VISIBLE), is(true));
 
-        assertThat(
-                mTouchToFillPaymentMethodModel.get(SHEET_CONTENT_DESCRIPTION_ID),
-                is(R.string.autofill_bnpl_error_sheet_content_description));
-        assertThat(
-                mTouchToFillPaymentMethodModel.get(SHEET_HALF_HEIGHT_DESCRIPTION_ID),
-                is(R.string.autofill_bnpl_error_sheet_half_height));
-        assertThat(
-                mTouchToFillPaymentMethodModel.get(SHEET_FULL_HEIGHT_DESCRIPTION_ID),
-                is(R.string.autofill_bnpl_error_sheet_full_height));
-        assertThat(
-                mTouchToFillPaymentMethodModel.get(SHEET_CLOSED_DESCRIPTION_ID),
-                is(R.string.autofill_bnpl_error_sheet_closed));
+        assertModelHasCorrectAccessibilityStringIds(
+                mTouchToFillPaymentMethodModel,
+                R.string.autofill_bnpl_error_sheet_content_description,
+                R.string.autofill_bnpl_error_sheet_half_height,
+                R.string.autofill_bnpl_error_sheet_full_height,
+                R.string.autofill_bnpl_error_sheet_closed,
+                org.chromium.chrome.browser.touch_to_fill.payments.R.id.touch_to_fill_error_screen);
 
         ModelList sheetItems = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
         assertThat(sheetItems.size(), is(3));
@@ -1480,18 +1494,13 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
 
         mCoordinator.showIbans(List.of(LOCAL_IBAN));
 
-        assertThat(
-                mTouchToFillPaymentMethodModel.get(SHEET_CONTENT_DESCRIPTION_ID),
-                is(R.string.autofill_payment_method_bottom_sheet_content_description));
-        assertThat(
-                mTouchToFillPaymentMethodModel.get(SHEET_HALF_HEIGHT_DESCRIPTION_ID),
-                is(R.string.autofill_payment_method_bottom_sheet_half_height));
-        assertThat(
-                mTouchToFillPaymentMethodModel.get(SHEET_FULL_HEIGHT_DESCRIPTION_ID),
-                is(R.string.autofill_payment_method_bottom_sheet_full_height));
-        assertThat(
-                mTouchToFillPaymentMethodModel.get(SHEET_CLOSED_DESCRIPTION_ID),
-                is(R.string.autofill_payment_method_bottom_sheet_closed));
+        assertModelHasCorrectAccessibilityStringIds(
+                mTouchToFillPaymentMethodModel,
+                R.string.autofill_payment_method_bottom_sheet_content_description,
+                R.string.autofill_payment_method_bottom_sheet_half_height,
+                R.string.autofill_payment_method_bottom_sheet_full_height,
+                R.string.autofill_payment_method_bottom_sheet_closed,
+                /* focusedViewIdForAccessibility= */ 0);
         assertThat(mTouchToFillPaymentMethodModel.get(VISIBLE), is(true));
     }
 
@@ -1635,18 +1644,13 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
         mCoordinator.showLoyaltyCards(
                 List.of(LOYALTY_CARD_1), List.of(LOYALTY_CARD_1), /* firstTimeUsage= */ true);
 
-        assertThat(
-                mTouchToFillPaymentMethodModel.get(SHEET_CONTENT_DESCRIPTION_ID),
-                is(R.string.autofill_loyalty_card_bottom_sheet_content_description));
-        assertThat(
-                mTouchToFillPaymentMethodModel.get(SHEET_HALF_HEIGHT_DESCRIPTION_ID),
-                is(R.string.autofill_loyalty_card_bottom_sheet_half_height));
-        assertThat(
-                mTouchToFillPaymentMethodModel.get(SHEET_FULL_HEIGHT_DESCRIPTION_ID),
-                is(R.string.autofill_loyalty_card_bottom_sheet_full_height));
-        assertThat(
-                mTouchToFillPaymentMethodModel.get(SHEET_CLOSED_DESCRIPTION_ID),
-                is(R.string.autofill_loyalty_card_bottom_sheet_closed));
+        assertModelHasCorrectAccessibilityStringIds(
+                mTouchToFillPaymentMethodModel,
+                R.string.autofill_loyalty_card_bottom_sheet_content_description,
+                R.string.autofill_loyalty_card_bottom_sheet_half_height,
+                R.string.autofill_loyalty_card_bottom_sheet_full_height,
+                R.string.autofill_loyalty_card_bottom_sheet_closed,
+                /* focusedViewIdForAccessibility= */ 0);
 
         assertThat(mTouchToFillPaymentMethodModel.get(CURRENT_SCREEN), is(HOME_SCREEN));
         ModelList itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
@@ -2041,20 +2045,20 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                 is(!expectedBnplIssuerContext.isEligible()));
     }
 
-    private void assertBnplIssuerSelectionScreenHasCorrectAccessibilityStrings(
-            PropertyModel model) {
+    private void assertModelHasCorrectAccessibilityStringIds(
+            PropertyModel model,
+            @StringRes int sheetContentDescriptionId,
+            @StringRes int sheetHalfHeightDescriptionId,
+            @StringRes int sheetFullHeightDescriptionId,
+            @StringRes int sheetClosedDescriptionId,
+            @IdRes int focusedViewIdForAccessibility) {
+        assertThat(model.get(SHEET_CONTENT_DESCRIPTION_ID), is(sheetContentDescriptionId));
+        assertThat(model.get(SHEET_HALF_HEIGHT_DESCRIPTION_ID), is(sheetHalfHeightDescriptionId));
+        assertThat(model.get(SHEET_FULL_HEIGHT_DESCRIPTION_ID), is(sheetFullHeightDescriptionId));
+        assertThat(model.get(SHEET_CLOSED_DESCRIPTION_ID), is(sheetClosedDescriptionId));
         assertThat(
-                model.get(SHEET_CONTENT_DESCRIPTION_ID),
-                is(R.string.autofill_bnpl_issuer_bottom_sheet_content_description));
-        assertThat(
-                model.get(SHEET_HALF_HEIGHT_DESCRIPTION_ID),
-                is(R.string.autofill_bnpl_issuer_bottom_sheet_half_height));
-        assertThat(
-                model.get(SHEET_FULL_HEIGHT_DESCRIPTION_ID),
-                is(R.string.autofill_bnpl_issuer_bottom_sheet_full_height));
-        assertThat(
-                model.get(SHEET_CLOSED_DESCRIPTION_ID),
-                is(R.string.autofill_bnpl_issuer_bottom_sheet_closed));
+                mTouchToFillPaymentMethodModel.get(FOCUSED_VIEW_ID_FOR_ACCESSIBILITY),
+                is(focusedViewIdForAccessibility));
     }
 
     private static Optional<PropertyModel> getBnplSelectionProgressFooterModel(ModelList items) {

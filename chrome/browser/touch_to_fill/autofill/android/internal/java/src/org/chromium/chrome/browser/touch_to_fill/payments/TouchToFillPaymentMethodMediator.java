@@ -377,6 +377,8 @@ class TouchToFillPaymentMethodMediator {
                 R.string.autofill_payment_method_bottom_sheet_full_height);
         mModel.set(
                 SHEET_CLOSED_DESCRIPTION_ID, R.string.autofill_payment_method_bottom_sheet_closed);
+        mModel.set(
+                FOCUSED_VIEW_ID_FOR_ACCESSIBILITY, R.id.touch_to_fill_payment_method_home_screen);
         mModel.set(VISIBLE, true);
     }
 
@@ -577,6 +579,7 @@ class TouchToFillPaymentMethodMediator {
                 SHEET_FULL_HEIGHT_DESCRIPTION_ID,
                 R.string.autofill_bnpl_progress_sheet_full_height);
         mModel.set(SHEET_CLOSED_DESCRIPTION_ID, R.string.autofill_bnpl_progress_sheet_closed);
+        mModel.set(FOCUSED_VIEW_ID_FOR_ACCESSIBILITY, R.id.touch_to_fill_progress_screen);
         mModel.set(VISIBLE, true);
     }
 
@@ -618,6 +621,8 @@ class TouchToFillPaymentMethodMediator {
                 SHEET_FULL_HEIGHT_DESCRIPTION_ID,
                 R.string.autofill_bnpl_issuer_bottom_sheet_full_height);
         mModel.set(SHEET_CLOSED_DESCRIPTION_ID, R.string.autofill_bnpl_issuer_bottom_sheet_closed);
+        mModel.set(
+                FOCUSED_VIEW_ID_FOR_ACCESSIBILITY, R.id.touch_to_fill_bnpl_issuer_selection_screen);
         mModel.set(SHEET_ITEMS, sheetItems);
         mModel.set(VISIBLE, true);
     }
@@ -645,6 +650,7 @@ class TouchToFillPaymentMethodMediator {
         mModel.set(
                 SHEET_FULL_HEIGHT_DESCRIPTION_ID, R.string.autofill_bnpl_error_sheet_full_height);
         mModel.set(SHEET_CLOSED_DESCRIPTION_ID, R.string.autofill_bnpl_error_sheet_closed);
+        mModel.set(FOCUSED_VIEW_ID_FOR_ACCESSIBILITY, R.id.touch_to_fill_error_screen);
         mModel.set(VISIBLE, true);
     }
 
@@ -712,6 +718,7 @@ class TouchToFillPaymentMethodMediator {
                 R.string.autofill_bnpl_issuer_tos_bottom_sheet_full_height);
         mModel.set(
                 SHEET_CLOSED_DESCRIPTION_ID, R.string.autofill_bnpl_issuer_tos_bottom_sheet_closed);
+        mModel.set(FOCUSED_VIEW_ID_FOR_ACCESSIBILITY, R.id.touch_to_fill_bnpl_issuer_tos_screen);
         mModel.set(CURRENT_SCREEN, BNPL_ISSUER_TOS_SCREEN);
         mModel.set(SHEET_ITEMS, sheetItems);
         mModel.set(VISIBLE, true);
