@@ -73,6 +73,12 @@ fn duration_to_string_auto_precision() {
         .as_temporal_string(ToStringRoundingOptions::default())
         .unwrap();
     assert_eq!(&result, "P1Y2M3W4DT5H6M7.98765S");
+
+    let duration = Duration::new(0, 0, 0, 2, 0, 0, 0, 0, 0, 1).unwrap();
+    let result = duration
+        .as_temporal_string(ToStringRoundingOptions::default())
+        .unwrap();
+    assert_eq!(&result, "P2DT0.000000001S");
 }
 
 #[test]
