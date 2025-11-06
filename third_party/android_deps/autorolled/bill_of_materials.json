@@ -142,42 +142,42 @@
     {
         "name": "animation",
         "group": "androidx.compose.animation",
-        "version": "1.10.0-SNAPSHOT"
+        "version": "1.11.0-SNAPSHOT"
     },
     {
         "name": "animation-android",
         "group": "androidx.compose.animation",
-        "version": "1.10.0-SNAPSHOT"
+        "version": "1.11.0-SNAPSHOT"
     },
     {
         "name": "animation-core",
         "group": "androidx.compose.animation",
-        "version": "1.10.0-SNAPSHOT"
+        "version": "1.11.0-SNAPSHOT"
     },
     {
         "name": "animation-core-android",
         "group": "androidx.compose.animation",
-        "version": "1.10.0-SNAPSHOT"
+        "version": "1.11.0-SNAPSHOT"
     },
     {
         "name": "foundation",
         "group": "androidx.compose.foundation",
-        "version": "1.10.0-SNAPSHOT"
+        "version": "1.11.0-SNAPSHOT"
     },
     {
         "name": "foundation-android",
         "group": "androidx.compose.foundation",
-        "version": "1.10.0-SNAPSHOT"
+        "version": "1.11.0-SNAPSHOT"
     },
     {
         "name": "foundation-layout",
         "group": "androidx.compose.foundation",
-        "version": "1.10.0-SNAPSHOT"
+        "version": "1.11.0-SNAPSHOT"
     },
     {
         "name": "foundation-layout-android",
         "group": "androidx.compose.foundation",
-        "version": "1.10.0-SNAPSHOT"
+        "version": "1.11.0-SNAPSHOT"
     },
     {
         "name": "material3",
@@ -192,142 +192,142 @@
     {
         "name": "material-ripple",
         "group": "androidx.compose.material",
-        "version": "1.10.0-SNAPSHOT"
+        "version": "1.11.0-SNAPSHOT"
     },
     {
         "name": "material-ripple-android",
         "group": "androidx.compose.material",
-        "version": "1.10.0-SNAPSHOT"
+        "version": "1.11.0-SNAPSHOT"
     },
     {
         "name": "runtime",
         "group": "androidx.compose.runtime",
-        "version": "1.10.0-SNAPSHOT"
+        "version": "1.11.0-SNAPSHOT"
     },
     {
         "name": "runtime-android",
         "group": "androidx.compose.runtime",
-        "version": "1.10.0-SNAPSHOT"
+        "version": "1.11.0-SNAPSHOT"
     },
     {
         "name": "runtime-annotation",
         "group": "androidx.compose.runtime",
-        "version": "1.10.0-beta01"
+        "version": "1.11.0-SNAPSHOT"
     },
     {
         "name": "runtime-annotation-android",
         "group": "androidx.compose.runtime",
-        "version": "1.10.0-beta01"
+        "version": "1.11.0-SNAPSHOT"
     },
     {
         "name": "runtime-retain",
         "group": "androidx.compose.runtime",
-        "version": "1.10.0-SNAPSHOT"
+        "version": "1.11.0-SNAPSHOT"
     },
     {
         "name": "runtime-retain-android",
         "group": "androidx.compose.runtime",
-        "version": "1.10.0-SNAPSHOT"
+        "version": "1.11.0-SNAPSHOT"
     },
     {
         "name": "runtime-saveable",
         "group": "androidx.compose.runtime",
-        "version": "1.10.0-SNAPSHOT"
+        "version": "1.11.0-SNAPSHOT"
     },
     {
         "name": "runtime-saveable-android",
         "group": "androidx.compose.runtime",
-        "version": "1.10.0-SNAPSHOT"
+        "version": "1.11.0-SNAPSHOT"
     },
     {
         "name": "ui",
         "group": "androidx.compose.ui",
-        "version": "1.10.0-SNAPSHOT"
+        "version": "1.11.0-SNAPSHOT"
     },
     {
         "name": "ui-android",
         "group": "androidx.compose.ui",
-        "version": "1.10.0-SNAPSHOT"
+        "version": "1.11.0-SNAPSHOT"
     },
     {
         "name": "ui-geometry",
         "group": "androidx.compose.ui",
-        "version": "1.10.0-SNAPSHOT"
+        "version": "1.11.0-SNAPSHOT"
     },
     {
         "name": "ui-geometry-android",
         "group": "androidx.compose.ui",
-        "version": "1.10.0-SNAPSHOT"
+        "version": "1.11.0-SNAPSHOT"
     },
     {
         "name": "ui-graphics",
         "group": "androidx.compose.ui",
-        "version": "1.10.0-SNAPSHOT"
+        "version": "1.11.0-SNAPSHOT"
     },
     {
         "name": "ui-graphics-android",
         "group": "androidx.compose.ui",
-        "version": "1.10.0-SNAPSHOT"
+        "version": "1.11.0-SNAPSHOT"
     },
     {
         "name": "ui-test",
         "group": "androidx.compose.ui",
-        "version": "1.10.0-SNAPSHOT"
+        "version": "1.11.0-SNAPSHOT"
     },
     {
         "name": "ui-test-android",
         "group": "androidx.compose.ui",
-        "version": "1.10.0-SNAPSHOT"
+        "version": "1.11.0-SNAPSHOT"
     },
     {
         "name": "ui-test-junit4",
         "group": "androidx.compose.ui",
-        "version": "1.10.0-SNAPSHOT"
+        "version": "1.11.0-SNAPSHOT"
     },
     {
         "name": "ui-test-junit4-android",
         "group": "androidx.compose.ui",
-        "version": "1.10.0-SNAPSHOT"
+        "version": "1.11.0-SNAPSHOT"
     },
     {
         "name": "ui-test-manifest",
         "group": "androidx.compose.ui",
-        "version": "1.10.0-SNAPSHOT"
+        "version": "1.11.0-SNAPSHOT"
     },
     {
         "name": "ui-text",
         "group": "androidx.compose.ui",
-        "version": "1.10.0-SNAPSHOT"
+        "version": "1.11.0-SNAPSHOT"
     },
     {
         "name": "ui-text-android",
         "group": "androidx.compose.ui",
-        "version": "1.10.0-SNAPSHOT"
+        "version": "1.11.0-SNAPSHOT"
     },
     {
         "name": "ui-text-google-fonts",
         "group": "androidx.compose.ui",
-        "version": "1.10.0-SNAPSHOT"
+        "version": "1.11.0-SNAPSHOT"
     },
     {
         "name": "ui-unit",
         "group": "androidx.compose.ui",
-        "version": "1.10.0-SNAPSHOT"
+        "version": "1.11.0-SNAPSHOT"
     },
     {
         "name": "ui-unit-android",
         "group": "androidx.compose.ui",
-        "version": "1.10.0-SNAPSHOT"
+        "version": "1.11.0-SNAPSHOT"
     },
     {
         "name": "ui-util",
         "group": "androidx.compose.ui",
-        "version": "1.10.0-SNAPSHOT"
+        "version": "1.11.0-SNAPSHOT"
     },
     {
         "name": "ui-util-android",
         "group": "androidx.compose.ui",
-        "version": "1.10.0-SNAPSHOT"
+        "version": "1.11.0-SNAPSHOT"
     },
     {
         "name": "concurrent-futures",
