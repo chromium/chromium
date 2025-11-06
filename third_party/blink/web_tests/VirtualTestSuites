@@ -28,6 +28,27 @@
   "content_shell.filter so that they can be run in blink_wpt_tests step.",
   "TODO(crbug.com/380755410): Find a way to do this systematically.",
 
+  {
+    "prefix": "ai_relax_user_activation",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [
+      "external/wpt/ai/language-model/language-model-create-sticky-user-activation.tentative.https.window.js"
+    ],
+    "args": ["--enable-features=AIRelaxUserActivationReqs"],
+    "exclusive_tests": "ALL",
+    "owners": ["msw@chromium.org", "iahouma@google.com", "chrome-chia@google.com"],
+    "expires": "never"
+  },
+  {
+    "prefix": "ai_require_transient_user_activation",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [
+      "external/wpt/ai/language-model/language-model-create-transient-user-activation.tentative.https.window.js"
+    ],
+    "args": ["--disable-features=AIRelaxUserActivationReqs"],
+    "owners": ["msw@chromium.org", "iahouma@google.com", "chrome-chia@google.com"],
+    "expires": "never"
+  },
   "This suite tests some android features on Linux and should never expire.",
   {
     "prefix": "android",
