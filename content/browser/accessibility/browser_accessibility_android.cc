@@ -1517,6 +1517,7 @@ std::u16string BrowserAccessibilityAndroid::GetRoleDescription() const {
     case ax::mojom::Role::kButton:
     case ax::mojom::Role::kCheckBox:
     case ax::mojom::Role::kCode:
+    case ax::mojom::Role::kColumnHeader:
     case ax::mojom::Role::kDescriptionList:
     case ax::mojom::Role::kDetails:
     case ax::mojom::Role::kEmphasis:
@@ -1526,6 +1527,7 @@ std::u16string BrowserAccessibilityAndroid::GetRoleDescription() const {
     case ax::mojom::Role::kListBox:
     case ax::mojom::Role::kProgressIndicator:
     case ax::mojom::Role::kRadioButton:
+    case ax::mojom::Role::kRowHeader:
     case ax::mojom::Role::kRowGroup:
     case ax::mojom::Role::kSectionFooter:
     case ax::mojom::Role::kSectionHeader:

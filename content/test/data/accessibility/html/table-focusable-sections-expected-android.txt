@@ -1,8 +1,8 @@
 android.webkit.WebView focusable focused interesting name='Table example - focusable thead, tbody, tfoot'
 ++android.widget.GridView collection row_count=4 column_count=2
 ++++android.view.View
-++++++android.view.View role_description='column header' collection_item interesting table_header name='Sum' row_span=1 column_span=1
-++++++android.view.View role_description='column header' collection_item interesting table_header name='Subtraction' row_span=1 column_index=1 column_span=1
+++++++android.view.View collection_item interesting table_header name='Sum' row_span=1 column_span=1
+++++++android.view.View collection_item interesting table_header name='Subtraction' row_span=1 column_index=1 column_span=1
 ++++android.view.View row_index=1
 ++++++android.view.View collection_item interesting name='10' row_index=1 row_span=1 column_span=1
 ++++++android.view.View collection_item interesting name='7' row_index=1 row_span=1 column_index=1 column_span=1

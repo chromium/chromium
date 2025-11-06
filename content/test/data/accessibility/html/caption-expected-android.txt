@@ -2,8 +2,8 @@ android.webkit.WebView focusable focused
 ++android.widget.GridView collection name='Browser and Engine' row_count=3 column_count=2
 ++++android.view.View interesting name='Browser and Engine'
 ++++android.view.View
-++++++android.view.View role_description='column header' collection_item interesting table_header name='Browser' row_span=1 column_span=1
-++++++android.view.View role_description='column header' collection_item interesting table_header name='Engine' row_span=1 column_index=1 column_span=1
+++++++android.view.View collection_item interesting table_header name='Browser' row_span=1 column_span=1
+++++++android.view.View collection_item interesting table_header name='Engine' row_span=1 column_index=1 column_span=1
 ++++android.view.View row_index=1
 ++++++android.view.View collection_item interesting name='Chrome' row_index=1 row_span=1 column_span=1
 ++++++android.view.View collection_item interesting name='Blink' row_index=1 row_span=1 column_index=1 column_span=1

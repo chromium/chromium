@@ -20,4 +20,4 @@ android.webkit.WebView focusable focused
 ++android.view.View role_description='tree' collection hierarchical multiselectable interesting state_description='multiselectable, 1 of 1 selected.' item_count=1 row_count=1 selection_mode=2
 ++++android.view.View role_description='tree item' clickable collection_item selected content_description='Selected illegal'
 ++android.widget.GridView collection
-++++android.view.View role_description='column header' collection_item interesting table_header content_description='Sort illegal' row_span=1 column_span=1
+++++android.view.View collection_item interesting table_header content_description='Sort illegal' row_span=1 column_span=1
