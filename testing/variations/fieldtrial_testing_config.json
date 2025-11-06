@@ -15613,6 +15613,28 @@
             ]
         }
     ],
+    "MediaIndicatorsAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "MediaIndicatorsAndroid"
+                    ]
+                },
+                {
+                    "name": "EnabledWithEnhancedAudioResponsiveness",
+                    "enable_features": [
+                        "EnableAudioMonitoringOnAndroid",
+                        "MediaIndicatorsAndroid"
+                    ]
+                }
+            ]
+        }
+    ],
     "MeetDevicesMojoServices": [
         {
             "platforms": [
