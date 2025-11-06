@@ -70,12 +70,8 @@ struct NestedDataInfo<'a> {
 /// Return the highest ordinal that appears in a packed struct.
 // FOR_RELEASE: It would be nicer to store this in the wire type so we
 // don't need to compute it each time.
-fn get_max_ordinal(fields: &Vec<(String, MojomWireType)>) -> Option<Ordinal> {
+fn get_max_ordinal(fields: &Vec<(String, MojomWireType)>) -> Ordinal {
     use std::cmp::max;
-    if fields.is_empty() {
-        return None;
-    }
-
     let mut max_so_far: Ordinal = 0;
     for (_, wire_type) in fields.into_iter() {
         match wire_type {
@@ -89,7 +85,7 @@ fn get_max_ordinal(fields: &Vec<(String, MojomWireType)>) -> Option<Ordinal> {
             }
         }
     }
-    return Some(max_so_far);
+    return max_so_far;
 }
 
 /// Parse a 32-bit size as part of a struct or array header
@@ -132,9 +128,8 @@ pub fn parse_struct(
     // by index. We have to provide dummy values since rust won't allow
     // uninitialized memory.
 
-    let num_fields = get_max_ordinal(fields).map_or(0, |o| o + 1);
-
-    let mut ret: Vec<(String, MojomValue)> = vec![(String::new(), MojomValue::Int8(0)); num_fields];
+    let mut ret: Vec<(String, MojomValue)> =
+        vec![(String::new(), MojomValue::Int8(0)); get_max_ordinal(fields) + 1];
     for (name, mojom_wire_type) in fields {
         // Make sure we're at the right alignment for this field
         skip_to_alignment(data, mojom_wire_type.alignment())?;

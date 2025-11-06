@@ -179,19 +179,12 @@ pub fn deparse_struct(
 
     let bytes_written = data.len() - initial_bytes;
     // Write the length of the struct to the first 4 bytes of the header
-    // The usize->u32 cast should always work, because hopefully our message
-    // is less than 2^32 bytes long!
-    write_to_slice(data, initial_bytes, 4, &u32::to_le_bytes(bytes_written.try_into().unwrap()));
+    write_to_slice(data, initial_bytes, 4, &usize::to_le_bytes(bytes_written));
 
     for nested_data_info in nested_data_infos {
         // Write to this nested data's pointer.
         let bytes_from_ptr = data.len() - nested_data_info.ptr_loc;
-        write_to_slice(
-            data,
-            nested_data_info.ptr_loc,
-            8,
-            &u64::to_le_bytes(bytes_from_ptr.try_into().unwrap()),
-        );
+        write_to_slice(data, nested_data_info.ptr_loc, 8, &usize::to_le_bytes(bytes_from_ptr));
 
         match nested_data_info.nested_data {
             NestedData::Struct { field_values, packed_fields } => {
