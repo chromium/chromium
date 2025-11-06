@@ -2595,6 +2595,7 @@ Full version information for the fingerprint enum values:
   <int value="79646227" label="CROS Ti50 0.24.60"/>
   <int value="91611772" label="CROS Cr50 0.4.21"/>
   <int value="91664959" label="CROS Cr50 0.0.16"/>
+  <int value="95559579" label="CROS Cr50 H1 0.5.311"/>
   <int value="100632617" label="CROS Ti50 0.23.81"/>
   <int value="113099773" label="CROS Cr50 0.0.23 Eve Flags 0x7f00(prod)"/>
   <int value="124483621" label="CROS Cr50 0.6.260"/>
@@ -2673,6 +2674,7 @@ Full version information for the fingerprint enum values:
   <int value="712392753" label="CROS Cr50 0.6.291"/>
   <int value="712981996" label="CROS Cr50 0.6.200"/>
   <int value="719751295" label="CROS Cr50 0.6.120"/>
+  <int value="721497683" label="CROS Ti50 DT 0.24.240"/>
   <int value="725794476" label="CROS Ti50 DT 0.24.220"/>
   <int value="726525758" label="CROS Ti50 0.24.71"/>
   <int value="752842103" label="CROS Cr50 0.0.25 Flags 0x10(pre-pvt)"/>
@@ -2697,6 +2699,7 @@ Full version information for the fingerprint enum values:
   <int value="888846912" label="CROS Cr50 0.6.50"/>
   <int value="893364096" label="CROS Cr50 0.3.3"/>
   <int value="894811053" label="CROS Cr50 0.5.100"/>
+  <int value="897565002" label="CROS Cr50 H1 0.6.310"/>
   <int value="906276281" label="CROS Ti50 0.0.11"/>
   <int value="907257449" label="CROS Cr50 0.6.9"/>
   <int value="921986551" label="CROS Cr50 0.6.70"/>
@@ -2742,6 +2745,7 @@ Full version information for the fingerprint enum values:
   <int value="1243686976" label="CROS Cr50 0.4.17"/>
   <int value="1249108665" label="CROS Ti50 0.22.7"/>
   <int value="1257043170" label="CROS Ti50 0.24.13"/>
+  <int value="1264527486" label="CROS Ti50 NT 0.33.241"/>
   <int value="1267274025" label="CROS Ti50 0.21.0"/>
   <int value="1277368282" label="CROS Ti50 0.24.62"/>
   <int value="1290177221" label="CROS Cr50 0.4.6 Flags 0x10(pre-pvt)"/>
@@ -2794,6 +2798,7 @@ Full version information for the fingerprint enum values:
   <int value="1590648297" label="CROS Cr50 0.5.230"/>
   <int value="1607230944" label="CROS Cr50 0.4.5 Flags 0x10(pre-pvt)"/>
   <int value="1632371059" label="CROS Cr50 0.0.22"/>
+  <int value="1643985490" label="CROS Ti50 DT 0.23.241"/>
   <int value="1660111968" label="CROS Cr50 0.6.180"/>
   <int value="1660423033" label="CROS Ti50 DT 0.24.200"/>
   <int value="1660841977" label="CROS Cr50 0.6.160"/>
