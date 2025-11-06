@@ -199,32 +199,3 @@ pub fn deparse_struct(
 
     Ok(())
 }
-
-/// Serialize a single mojom value of the given type, outside the context of a
-/// struct. This function is only useful for unit testing, since all mojom
-/// values in practice are members of a struct. The function only works for
-/// some mojom types, since e.g. booleans can't be parsed individually.
-pub fn deparse_single_value_for_testing(
-    value: &MojomValue,
-    wire_type: &MojomWireType,
-) -> Result<Vec<u8>> {
-    check_value_has_expected_type(value, wire_type)?;
-
-    let mut data: Vec<u8> = vec![];
-    match wire_type {
-        MojomWireType::Leaf { .. } => deparse_leaf_value(&mut data, value)?,
-        MojomWireType::Bitfield { .. } => {
-            unimplemented!("Bitfields cannot be deparsed individually")
-        }
-        MojomWireType::Pointer { nested_data_type, .. } => match (value, nested_data_type) {
-            (MojomValue::Struct(fields), PackedStructuredType::Struct { packed_field_types }) => {
-                deparse_struct(&mut data, &fields, &packed_field_types)?
-            }
-            (MojomValue::Array(_), PackedStructuredType::Array { .. }) => {
-                panic!("Arrays are not yet implemented");
-            }
-            _ => unreachable!("We checked earlier that the value has the expected type"),
-        },
-    };
-    Ok(data)
-}

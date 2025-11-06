@@ -202,27 +202,3 @@ pub fn parse_struct(
     }
     Ok(ret)
 }
-
-/// Parse a single mojom value of the given type, outside the context of a
-/// struct. This function is only useful for unit testing, since all mojom
-/// values in practice are members of a struct. The function only works for
-/// some mojom types, since e.g. booleans can't be parsed individually.
-pub fn parse_single_value_for_testing(
-    data: &[u8],
-    wire_type: &MojomWireType,
-) -> ParsingResult<MojomValue> {
-    let mut data = ParserData::new(data);
-    match wire_type {
-        MojomWireType::Leaf { leaf_type, .. } => parse_leaf_element(&mut data, leaf_type),
-        MojomWireType::Bitfield { .. } => unimplemented!("Bitfields cannot be parsed individually"),
-        MojomWireType::Pointer { nested_data_type, .. } => match nested_data_type {
-            PackedStructuredType::Struct { packed_field_types } => {
-                let parsed_fields = parse_struct(&mut data, &packed_field_types)?;
-                Ok(MojomValue::Struct(parsed_fields))
-            }
-            PackedStructuredType::Array { .. } => {
-                panic!("Arrays are not yet implemented");
-            }
-        },
-    }
-}

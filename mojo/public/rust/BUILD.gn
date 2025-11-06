@@ -47,21 +47,11 @@ rust_executable("exe_using_system_api") {
   ]
 }
 
-# Run by the //mojo:mojo_unittests target
-group("tests") {
+test("rust_mojo_tests") {
   testonly = true
   deps = [
     "mojom_parser:mojom_parser_unittests",
     "test_mojom:test_mojom_rust",
-  ]
-}
-
-# Standalone testing binary with just rustmojo tests.
-# Convenient for development so we only have to build/run our own code.
-test("rust_mojo_tests") {
-  testonly = true
-  deps = [
-    ":tests",
     "//base/test:run_all_unittests",
   ]
 }
