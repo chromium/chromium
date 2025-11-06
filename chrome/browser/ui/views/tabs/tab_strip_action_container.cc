@@ -1050,8 +1050,9 @@ void TabStripActionContainer::AnimationEnded(const gfx::Animation* animation) {
 void TabStripActionContainer::OnAnimationSessionEnded() {
   // If the button went from shown -> hidden, unblock the tab strip from
   // showing other modal UIs.
-  if (animation_session_->session_type() ==
-      TabStripNudgeAnimationSession::AnimationSessionType::HIDE) {
+  if (animation_session_ &&
+      animation_session_->session_type() ==
+          TabStripNudgeAnimationSession::AnimationSessionType::HIDE) {
     scoped_tab_strip_modal_ui_.reset();
 
     if (locked_expansion_button_) {
