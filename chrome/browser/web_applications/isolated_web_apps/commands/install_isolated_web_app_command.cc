@@ -166,12 +166,23 @@ void InstallIsolatedWebAppCommand::StartWithLock(
 
 void InstallIsolatedWebAppCommand::CheckNotInstalledAlready(
     base::OnceClosure next_step_callback) {
-  if (GetIsolatedWebAppById(lock_->registrar(), url_info_.app_id())
-          .has_value()) {
+  ASSIGN_OR_RETURN(
+      const WebApp& app,
+      GetIsolatedWebAppById(lock_->registrar(), url_info_.app_id()),
+      [&next_step_callback](const std::string&) {
+        std::move(next_step_callback).Run();
+      });
+
+  if (app.GetSources().Has(
+          ConvertInstallSurfaceToWebAppSource(install_surface_)) ||
+      app.IsIwaPolicyInstalledApp()) {
+    // The app is already installed from the same source or from policy.
     ReportFailure(InstallIwaError::kAppIsNotInstallable,
                   webapps::InstallResultCode::kNotInstallable,
                   "App is already installed");
   } else {
+    // App exists, but is installed from a different source. Proceed with
+    // installation of the new source.
     std::move(next_step_callback).Run();
   }
 }
