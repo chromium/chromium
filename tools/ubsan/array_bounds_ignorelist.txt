@@ -1,0 +1,22 @@
+#!special-case-list-v2
+
+#############################################################################
+# UBSan ignorelist.
+# Documentation: https://clang.llvm.org/docs/SanitizerSpecialCaseList.html
+
+# This exists to remove instrumentation from the (usually) defaulted
+# compiler config that enables `-fsanitize=array-bounds` in Chromium.
+# See also: https://crbug.com/386992829
+
+# This ignorelist is only known to support `src:` entries.
+# See also:
+# https://docs.google.com/document/d/1eCtY4AZF-SiFHxhIYWzEytdIx3C24de7ccD6Y5Gn2H8/preview?tab=t.iaos0oosclis
+
+# Wuffs is said to be memory-safe. Its array bounds safety checks are
+# proved entirely at-compile-time (when compiling either Wuffs itself
+# or `*.wuffs` source code to `*.c` generated code). There should be
+# no need to add the extra instrumentation of `-fsanitize=array-bounds`.
+#
+# TODO(crbug.com/455614314): consider building a fix directly into
+# Wuffs to pacify the compiler.
+src:*third_party/wuffs/src/*
