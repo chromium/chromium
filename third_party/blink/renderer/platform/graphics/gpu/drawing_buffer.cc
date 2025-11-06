@@ -908,9 +908,8 @@ bool DrawingBuffer::Initialize(const gfx::Size& size, bool use_multisampling) {
 
   auto webgl_preferences = ContextProvider()->GetWebglPreferences();
 
-  // We can't use anything other than explicit resolve for swap chain.
-  // TODO(crbug.com/40074896): Determine whether this restriction holds for the
-  // single-SI swapchain impl.
+  // We can't use anything other than explicit resolve for swap chain, as the
+  // D3D11 texture backing the back buffer is single-sampled.
   bool supports_implicit_resolve =
       !using_swap_chain_ && extensions_util_->SupportsExtension(
                                 "GL_EXT_multisampled_render_to_texture");
