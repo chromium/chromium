@@ -142,17 +142,21 @@ FrameSequenceTracker* FrameSequenceTrackerCollection::StartSequenceInternal(
   if (is_single_threaded_)
     return nullptr;
   auto key = std::make_pair(type, scrolling_thread);
-  if (frame_trackers_.contains(key))
-    return frame_trackers_[key].get();
+  auto [frame_tracker_it, inserted] = frame_trackers_.try_emplace(key, nullptr);
+  if (!inserted) {
+    // If the tracker already exists, we should return it.
+    return frame_tracker_it->second.get();
+  }
 
-  auto tracker = base::WrapUnique(new FrameSequenceTracker(type));
-  frame_trackers_[key] = std::move(tracker);
+  auto& tracker = frame_tracker_it->second;
+  tracker = base::WrapUnique(new FrameSequenceTracker(type));
 
   active_trackers_.set(static_cast<size_t>(type));
 
-  auto* metrics = frame_trackers_[key]->metrics();
-  if (accumulated_metrics_.contains(key)) {
-    metrics->AdoptTrace(accumulated_metrics_[key].get());
+  auto* metrics = tracker->metrics();
+  if (auto it = accumulated_metrics_.find(key);
+      it != accumulated_metrics_.end()) {
+    metrics->AdoptTrace(it->second.get());
   }
   if (IsScrollType(type)) {
     DCHECK_NE(scrolling_thread, ThreadType::kUnknown);
@@ -168,7 +172,7 @@ FrameSequenceTracker* FrameSequenceTrackerCollection::StartSequenceInternal(
     DCHECK_EQ(metrics->GetEffectiveThread(), ThreadType::kMain);
     UpdateSmoothThreadHistory(ThreadType::kMain, /*modifier=*/1);
   }
-  return frame_trackers_[key].get();
+  return tracker.get();
 }
 
 ActiveTrackers FrameSequenceTrackerCollection::GetActiveTrackers() const {
@@ -214,10 +218,12 @@ void FrameSequenceTrackerCollection::StopSequence(
     }
   }
 
-  if (!frame_trackers_.contains(key))
+  auto tracker_it = frame_trackers_.find(key);
+  if (tracker_it == frame_trackers_.end()) {
     return;
+  }
 
-  auto tracker = std::move(frame_trackers_[key]);
+  auto tracker = std::move(tracker_it->second);
   active_trackers_.reset(static_cast<size_t>(tracker->type()));
 
   if (tracker->metrics()->GetEffectiveThread() == ThreadType::kCompositor) {
@@ -231,7 +237,7 @@ void FrameSequenceTrackerCollection::StopSequence(
     UpdateSmoothThreadHistory(ThreadType::kMain, /*modifier=*/-1);
   }
 
-  frame_trackers_.erase(key);
+  frame_trackers_.erase(tracker_it);
   tracker->ScheduleTerminate();
   removal_trackers_.push_back(std::move(tracker));
   DestroyTrackers();
@@ -319,9 +325,10 @@ void FrameSequenceTrackerCollection::DestroyTrackers() {
       auto metrics = tracker->TakeMetrics();
 
       auto key = std::make_pair(metrics->type(), metrics->GetEffectiveThread());
-      if (accumulated_metrics_.contains(key)) {
-        metrics->Merge(std::move(accumulated_metrics_[key]));
-        accumulated_metrics_.erase(key);
+      auto accumulated_metrics_it = accumulated_metrics_.find(key);
+      if (accumulated_metrics_it != accumulated_metrics_.end()) {
+        metrics->Merge(std::move(accumulated_metrics_it->second));
+        accumulated_metrics_.erase(accumulated_metrics_it);
       }
 
       if (metrics->HasEnoughDataForReporting()) {
@@ -335,8 +342,9 @@ void FrameSequenceTrackerCollection::DestroyTrackers() {
           ukm_dropped_frames_data_->Write(dropped_frames_data);
         }
       }
-      if (metrics->HasDataLeftForReporting())
-        accumulated_metrics_[key] = std::move(metrics);
+      if (metrics->HasDataLeftForReporting()) {
+        accumulated_metrics_.emplace(key, std::move(metrics));
+      }
     }
   }
 
