@@ -12,6 +12,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/mirroring/mojom/cast_message_channel.mojom.h"
 #include "components/mirroring/mojom/resource_provider.mojom.h"
@@ -377,6 +378,9 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) OpenscreenSessionHost final
 
   // Callback invoked once this instance and all of its resources are released.
   base::OnceClosure deletion_cb_;
+
+  // Ensures that this class is accessed on a single sequence.
+  SEQUENCE_CHECKER(sequence_checker_);
 
   // Used in callbacks executed on task runners, such as by RtpStream.
   // TODO(crbug.com/40238714): determine if weak pointers can be removed.

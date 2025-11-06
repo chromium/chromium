@@ -272,6 +272,7 @@ OpenscreenSessionHost::OpenscreenSessionHost(
                     std::move(inbound_channel)),
       logger_(kLogPrefix, observer_),
       deletion_cb_(std::move(deletion_cb)) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(resource_provider_);
 
   openscreen_platform::EventTraceLoggingPlatform::EnsureInstance();
@@ -334,6 +335,7 @@ OpenscreenSessionHost::OpenscreenSessionHost(
 }
 
 OpenscreenSessionHost::~OpenscreenSessionHost() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   StopSession();
 
   // Tear down the cast environment now that the session has been stopped.
@@ -351,6 +353,7 @@ OpenscreenSessionHost::~OpenscreenSessionHost() {
 
 void OpenscreenSessionHost::AsyncInitialize(
     AsyncInitializedCallback initialized_cb) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   initialized_cb_ = std::move(initialized_cb);
   if (!gpu_) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -370,6 +373,7 @@ void OpenscreenSessionHost::OnNegotiated(
     const openscreen::cast::SenderSession* session,
     openscreen::cast::SenderSession::ConfiguredSenders senders,
     Recommendations capture_recommendations) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (state_ == State::kStopped) {
     return;
   }
@@ -470,8 +474,10 @@ void OpenscreenSessionHost::OnNegotiated(
         video_config->use_hardware_encoder) {
       gpu_factories_factory_ = std::make_unique<MirroringGpuFactoriesFactory>(
           cast_environment_, *gpu_,
-          base::BindOnce(&OpenscreenSessionHost::OnGpuFactoryContextLost,
-                         weak_factory_.GetWeakPtr(), *video_config));
+          base::BindPostTask(
+              base::SingleThreadTaskRunner::GetCurrentDefault(),
+              base::BindOnce(&OpenscreenSessionHost::OnGpuFactoryContextLost,
+                             weak_factory_.GetWeakPtr(), *video_config)));
       gpu_factories = &gpu_factories_factory_->GetInstance();
     }
 
@@ -568,6 +574,7 @@ void OpenscreenSessionHost::OnNegotiated(
 void OpenscreenSessionHost::OnCapabilitiesDetermined(
     const openscreen::cast::SenderSession* session,
     openscreen::cast::RemotingCapabilities capabilities) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_EQ(session_.get(), session);
 
   // This method should only be called once, in order to avoid issues with
@@ -585,6 +592,7 @@ void OpenscreenSessionHost::OnCapabilitiesDetermined(
 void OpenscreenSessionHost::OnError(
     const openscreen::cast::SenderSession* session,
     const openscreen::Error& error) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   switch (error.code()) {
     case openscreen::Error::Code::kAnswerTimeout:
       ReportAndLogError(SessionError::ANSWER_TIME_OUT, error.ToString());
@@ -617,10 +625,12 @@ void OpenscreenSessionHost::OnError(
 
 // RtpStreamClient overrides.
 void OpenscreenSessionHost::OnError(const std::string& message) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ReportAndLogError(SessionError::RTP_STREAM_ERROR, message);
 }
 
 void OpenscreenSessionHost::RequestRefreshFrame() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (video_capture_client_) {
     video_capture_client_->RequestRefreshFrame();
   }
@@ -628,6 +638,7 @@ void OpenscreenSessionHost::RequestRefreshFrame() {
 
 void OpenscreenSessionHost::CreateVideoEncodeAccelerator(
     media::cast::ReceiveVideoEncodeAcceleratorCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_NE(state_, State::kInitializing);
   if (callback.is_null()) {
     return;
@@ -660,11 +671,13 @@ void OpenscreenSessionHost::CreateVideoEncodeAccelerator(
 void OpenscreenSessionHost::ConnectToRemotingSource(
     mojo::PendingRemote<media::mojom::Remoter> remoter,
     mojo::PendingReceiver<media::mojom::RemotingSource> receiver) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   resource_provider_->ConnectToRemotingSource(std::move(remoter),
                                               std::move(receiver));
 }
 
 void OpenscreenSessionHost::RequestRemotingStreaming() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(media_remoter_);
   CHECK_EQ(State::kMirroring, state_);
   StopStreaming();
@@ -673,6 +686,7 @@ void OpenscreenSessionHost::RequestRemotingStreaming() {
 }
 
 void OpenscreenSessionHost::RestartMirroringStreaming() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (state_ != State::kRemoting) {
     return;
   }
@@ -690,6 +704,7 @@ void OpenscreenSessionHost::RestartMirroringStreaming() {
 }
 
 void OpenscreenSessionHost::SwitchSourceTab() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (observer_) {
     observer_->OnSourceChanged();
   }
@@ -724,6 +739,7 @@ void OpenscreenSessionHost::SwitchSourceTab() {
 
 void OpenscreenSessionHost::OnAsyncInitialized(
     const SupportedProfiles& profiles) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (profiles.empty()) {
     // HW encoding is not supported.
     gpu_.reset();
@@ -742,6 +758,7 @@ void OpenscreenSessionHost::OnAsyncInitialized(
 
 void OpenscreenSessionHost::ReportAndLogError(SessionError error,
                                               std::string message) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::UmaHistogramEnumeration("MediaRouter.MirroringService.SessionError",
                                 error);
   logger_.LogError(error, message);
@@ -761,6 +778,7 @@ void OpenscreenSessionHost::ReportAndLogError(SessionError error,
 }
 
 void OpenscreenSessionHost::StopStreaming() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   logger_.LogInfo(
       base::StrCat({"stopped streaming. state=",
                     base::NumberToString(static_cast<int>(state_))}));
@@ -784,6 +802,7 @@ void OpenscreenSessionHost::StopStreaming() {
 }
 
 void OpenscreenSessionHost::StopSession() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   logger_.LogInfo(
       base::StrCat({"stopped session. state=",
                     base::NumberToString(static_cast<int>(state_))}));
@@ -818,8 +837,9 @@ void OpenscreenSessionHost::StopSession() {
 
 void OpenscreenSessionHost::SetConstraints(
     const Recommendations& recommendations,
-    std::optional<FrameSenderConfig>& audio_config,
-    std::optional<FrameSenderConfig>& video_config) {
+    std::optional<media::cast::FrameSenderConfig>& audio_config,
+    std::optional<media::cast::FrameSenderConfig>& video_config) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const auto& audio = recommendations.audio;
   const auto& video = recommendations.video;
 
@@ -879,6 +899,7 @@ void OpenscreenSessionHost::CreateAudioStream(
     mojo::PendingRemote<mojom::AudioStreamCreatorClient> client,
     const media::AudioParameters& params,
     uint32_t shared_memory_count) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   resource_provider_->CreateAudioStream(std::move(client), params,
                                         shared_memory_count);
 }
@@ -886,6 +907,7 @@ void OpenscreenSessionHost::CreateAudioStream(
 void OpenscreenSessionHost::OnAudioEncoderStatus(
     const FrameSenderConfig& config,
     OperationalStatus status) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(config.is_audio());
   const char* error_message = AsErrorMessage(status);
   if (error_message) {
@@ -896,6 +918,7 @@ void OpenscreenSessionHost::OnAudioEncoderStatus(
 void OpenscreenSessionHost::OnVideoEncoderStatus(
     const FrameSenderConfig& config,
     OperationalStatus status) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(config.is_video());
   switch (status) {
     case OperationalStatus::STATUS_UNINITIALIZED:
@@ -929,6 +952,7 @@ void OpenscreenSessionHost::OnVideoEncoderStatus(
 
 void OpenscreenSessionHost::OnGpuFactoryContextLost(
     const media::cast::FrameSenderConfig& config) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // If we used a hardware encoder and it failed, denylist it for the rest
   // of the browsing session and try renegotiating.
   CHECK(config.use_hardware_encoder);
@@ -947,6 +971,7 @@ void OpenscreenSessionHost::OnGpuFactoryContextLost(
 
 void OpenscreenSessionHost::SetTargetPlayoutDelay(
     base::TimeDelta playout_delay) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   bool playout_delay_was_updated = false;
   if (audio_stream_ &&
       audio_stream_->GetTargetPlayoutDelay() != playout_delay) {
@@ -969,17 +994,20 @@ void OpenscreenSessionHost::SetTargetPlayoutDelay(
 
 void OpenscreenSessionHost::ProcessFeedback(
     const media::VideoCaptureFeedback& feedback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (video_capture_client_) {
     video_capture_client_->ProcessFeedback(feedback);
   }
 }
 
 int OpenscreenSessionHost::GetVideoNetworkBandwidth() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return audio_stream_ ? usable_bandwidth_ - audio_stream_->GetEncoderBitrate()
                        : usable_bandwidth_;
 }
 
 void OpenscreenSessionHost::UpdateBandwidthEstimate() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const int bandwidth_estimate = forced_bandwidth_estimate_for_testing_ > 0
                                      ? forced_bandwidth_estimate_for_testing_
                                      : session_->GetEstimatedNetworkBandwidth();
@@ -1011,6 +1039,7 @@ void OpenscreenSessionHost::UpdateBandwidthEstimate() {
 }
 
 void OpenscreenSessionHost::Negotiate() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   switch (state_) {
     case State::kMirroring:
       NegotiateMirroring();
@@ -1028,6 +1057,7 @@ void OpenscreenSessionHost::Negotiate() {
 }
 
 void OpenscreenSessionHost::NegotiateMirroring() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   last_offered_audio_config_ = std::nullopt;
   last_offered_video_configs_.clear();
   std::vector<openscreen::cast::AudioCaptureConfig> audio_configs;
@@ -1078,6 +1108,7 @@ void OpenscreenSessionHost::NegotiateMirroring() {
 }
 
 void OpenscreenSessionHost::NegotiateRemoting() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   FrameSenderConfig audio_config =
       MirrorSettings::GetDefaultAudioConfig(media::AudioCodec::kUnknown);
   UpdateAudioConfigMaxBitrate(audio_config);
@@ -1100,6 +1131,7 @@ void OpenscreenSessionHost::NegotiateRemoting() {
 
 void OpenscreenSessionHost::InitMediaRemoter(
     const openscreen::cast::RemotingCapabilities& capabilities) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   rpc_dispatcher_ =
       std::make_unique<RpcDispatcherImpl>(session_->session_messenger());
   media_remoter_ = std::make_unique<MediaRemoter>(
@@ -1110,6 +1142,7 @@ void OpenscreenSessionHost::InitMediaRemoter(
 }
 
 void OpenscreenSessionHost::OnRemotingStartTimeout() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (state_ == State::kRemoting) {
     return;
   }
@@ -1118,6 +1151,7 @@ void OpenscreenSessionHost::OnRemotingStartTimeout() {
 }
 
 void OpenscreenSessionHost::StartCapturingAudio() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!audio_capturing_callback_);
   CHECK(!audio_input_device_);
 
@@ -1146,6 +1180,7 @@ void OpenscreenSessionHost::StartCapturingAudio() {
 }
 
 void OpenscreenSessionHost::StopCapturingAudio() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (audio_input_device_) {
     audio_input_device_->Stop();
     audio_input_device_.reset();
@@ -1154,6 +1189,7 @@ void OpenscreenSessionHost::StopCapturingAudio() {
 }
 
 void OpenscreenSessionHost::StartCapturingVideo() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   mojo::PendingRemote<media::mojom::VideoCaptureHost> video_host;
   resource_provider_->GetVideoCaptureHost(
       video_host.InitWithNewPipeAndPassReceiver());
@@ -1174,12 +1210,14 @@ void OpenscreenSessionHost::StartCapturingVideo() {
 }
 
 void OpenscreenSessionHost::PauseCapturingVideo() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (video_capture_client_) {
     video_capture_client_->Pause();
   }
 }
 
 bool OpenscreenSessionHost::TryResumeCapturingVideo() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!video_capture_client_ || !video_stream_) {
     return false;
   }
@@ -1204,16 +1242,19 @@ network::mojom::NetworkContext* OpenscreenSessionHost::GetNetworkContext() {
 }
 
 base::Value::Dict OpenscreenSessionHost::GetMirroringStats() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return stats_client_ ? stats_client_->GetStats() : base::Value::Dict();
 }
 
 void OpenscreenSessionHost::SetSenderStatsForTest(
     const openscreen::cast::SenderStats& test_stats) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   stats_client_->OnStatisticsUpdated(test_stats);
 }
 
 void OpenscreenSessionHost::MaybeDenylistHardwareCodecAndRenegotiate(
     media::VideoCodec codec) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Only denylist and restart negotiation for this hardware codec once.
   if (!media::cast::encoding_support::IsHardwareDenyListed(codec)) {
     media::cast::encoding_support::DenyListHardwareCodec(codec);
