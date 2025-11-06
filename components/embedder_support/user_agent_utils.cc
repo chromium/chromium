@@ -632,6 +632,8 @@ std::string GetPlatformVersion() {
 
 #if BUILDFLAG(IS_WIN)
   return GetWindowsPlatformVersion();
+#elif BUILDFLAG(IS_FUCHSIA)
+  return std::string();
 #else
 
   int32_t major, minor, bugfix = 0;

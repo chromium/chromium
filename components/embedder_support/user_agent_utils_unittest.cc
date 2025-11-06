@@ -675,6 +675,8 @@ TEST_F(UserAgentUtilsTest, UserAgentMetadata) {
 
 #if BUILDFLAG(IS_WIN)
   VerifyWinPlatformVersion(metadata.platform_version);
+#elif BUILDFLAG(IS_FUCHSIA)
+  EXPECT_EQ(metadata.platform_version, "");
 #elif BUILDFLAG(IS_LINUX)
   // TODO(crbug.com/40245146): Remove this Blink feature
   base::test::ScopedFeatureList scoped_feature_list;
