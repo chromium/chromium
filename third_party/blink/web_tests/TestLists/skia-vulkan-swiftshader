@@ -122,7 +122,6 @@ media/video-layer-crash.html
 media/video-no-audio.html
 media/video-poster-scale.html
 media/video-transformed.html
-transforms/3d/point-mapping/3d-point-mapping-origins.html
 transforms/shadows.html
 transforms/svg-vs-css.xhtml
 
