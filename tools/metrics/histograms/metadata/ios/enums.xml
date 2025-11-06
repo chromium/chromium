@@ -1936,6 +1936,42 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/ios/chrome/browser/synced_set_up/coordinator/synced_set_up_mediator.mm:SyncedSetUpRemotePrefDifference) -->
 
+<!-- LINT.IfChange(SyncedSetUpSnackbarInteraction) -->
+
+<enum name="SyncedSetUpSnackbarInteraction">
+  <int value="0" label="ShownSuggestion">
+    The initial suggestion snackbar (offering to apply changes) was shown.
+  </int>
+  <int value="1" label="ClickedApply">
+    User clicked &quot;Apply&quot; on the suggestion snackbar.
+  </int>
+  <int value="2" label="DismissedSuggestion">
+    The suggestion snackbar timed out (user ignored).
+  </int>
+  <int value="3" label="ShownAppliedConfirmation">
+    The &quot;Applied&quot; confirmation (with &quot;Undo&quot; button) was
+    shown.
+  </int>
+  <int value="4" label="ClickedUndo">
+    User clicked &quot;Undo&quot; on the applied confirmation.
+  </int>
+  <int value="5" label="DismissedAppliedConfirmation">
+    The &quot;Applied&quot; confirmation timed out (user accepted the change).
+  </int>
+  <int value="6" label="ShownUndoneConfirmation">
+    The &quot;Undone&quot; confirmation (with &quot;Redo&quot; button) was
+    shown.
+  </int>
+  <int value="7" label="ClickedRedo">
+    User clicked &quot;Redo&quot; on the undone confirmation.
+  </int>
+  <int value="8" label="DismissedUndoneConfirmation">
+    The &quot;Undone&quot; confirmation timed out (user accepted the reversion).
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//ios/chrome/browser/synced_set_up/public/synced_set_up_metrics.h:SyncedSetUpSnackbarInteraction) -->
+
 <!-- LINT.IfChange(SyncedSetUpTriggerSource) -->
 
 <enum name="SyncedSetUpTriggerSource">

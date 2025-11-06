@@ -8,6 +8,7 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
+#import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/consent_level.h"
@@ -33,6 +34,7 @@
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/synced_set_up/coordinator/synced_set_up_mediator_delegate.h"
+#import "ios/chrome/browser/synced_set_up/public/synced_set_up_metrics.h"
 #import "ios/chrome/browser/synced_set_up/ui/synced_set_up_consumer.h"
 #import "ios/chrome/browser/synced_set_up/utils/utils.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -114,7 +116,71 @@ void LogRemotePrefDifference(bool has_profile_prefs,
       "IOS.SyncedSetUp.Interstitial.RemotePrefDifference", state);
 }
 
-}  // namespace
+// The type of snackbar interaction.
+enum class SnackbarInteractionType {
+  kShown,
+  kClicked,
+  kDismissed,
+};
+
+// Helper to log interactions for the "Suggestion" snackbar.
+void LogSuggestionInteraction(SnackbarInteractionType interaction_type) {
+  SyncedSetUpSnackbarInteraction event;
+
+  switch (interaction_type) {
+    case SnackbarInteractionType::kShown:
+      event = SyncedSetUpSnackbarInteraction::kShownSuggestion;
+      break;
+    case SnackbarInteractionType::kClicked:
+      event = SyncedSetUpSnackbarInteraction::kClickedApply;
+      break;
+    case SnackbarInteractionType::kDismissed:
+      event = SyncedSetUpSnackbarInteraction::kDismissedSuggestion;
+      break;
+  }
+
+  LogSyncedSetUpSnackbarInteraction(event);
+}
+
+// Helper to log interactions for the "Applied" confirmation snackbar.
+void LogAppliedConfirmationInteraction(
+    SnackbarInteractionType interaction_type) {
+  SyncedSetUpSnackbarInteraction event;
+
+  switch (interaction_type) {
+    case SnackbarInteractionType::kShown:
+      event = SyncedSetUpSnackbarInteraction::kShownAppliedConfirmation;
+      break;
+    case SnackbarInteractionType::kClicked:
+      event = SyncedSetUpSnackbarInteraction::kClickedUndo;
+      break;
+    case SnackbarInteractionType::kDismissed:
+      event = SyncedSetUpSnackbarInteraction::kDismissedAppliedConfirmation;
+      break;
+  }
+
+  LogSyncedSetUpSnackbarInteraction(event);
+}
+
+// Helper to log interactions for the "Undone" confirmation snackbar.
+void LogUndoneConfirmationInteraction(
+    SnackbarInteractionType interaction_type) {
+  SyncedSetUpSnackbarInteraction event;
+
+  switch (interaction_type) {
+    case SnackbarInteractionType::kShown:
+      event = SyncedSetUpSnackbarInteraction::kShownUndoneConfirmation;
+      break;
+    case SnackbarInteractionType::kClicked:
+      event = SyncedSetUpSnackbarInteraction::kClickedRedo;
+      break;
+    case SnackbarInteractionType::kDismissed:
+      event = SyncedSetUpSnackbarInteraction::kDismissedUndoneConfirmation;
+      break;
+  }
+
+  LogSyncedSetUpSnackbarInteraction(event);
+}
 
 // Internal states for the `SyncedSetUpMediator` representing pending pref
 // write actions.
@@ -135,6 +201,27 @@ enum class SyncedSetUpState {
   kPendingRedoAction = 4,
   kMaxValue = kPendingRedoAction
 };
+
+// Logs the appropriate snackbar interaction metric based on the given `state`.
+void LogSnackbarInteraction(SyncedSetUpState state,
+                            SnackbarInteractionType interaction_type) {
+  switch (state) {
+    case SyncedSetUpState::kPendingApplyAction:
+      LogSuggestionInteraction(interaction_type);
+      break;
+    case SyncedSetUpState::kPendingAutoApply:
+    case SyncedSetUpState::kPendingUndoAction:
+      LogAppliedConfirmationInteraction(interaction_type);
+      break;
+    case SyncedSetUpState::kPendingRedoAction:
+      LogUndoneConfirmationInteraction(interaction_type);
+      break;
+    case SyncedSetUpState::kIdle:
+      NOTREACHED();
+  }
+}
+
+}  // namespace
 
 @implementation SyncedSetUpMediator {
   // Tracker for retrieving cross device preferences.
@@ -307,6 +394,7 @@ enum class SyncedSetUpState {
 - (BOOL)maybeShowSnackbar {
   if ([self shouldShowSnackbar]) {
     _snackbarCount++;
+    LogSnackbarInteraction(_state, SnackbarInteractionType::kShown);
     [_snackbarCommandsHandler showSnackbarMessage:[self snackbarMessage]];
     return YES;
   }
@@ -492,11 +580,20 @@ enum class SyncedSetUpState {
 
   __weak __typeof(self) weakSelf = self;
 
+  // Capture the state at the time the snackbar is shown. This is important
+  // because `_state` may change by the time the button handler or completion
+  // handler runs.
+  SyncedSetUpState state = _state;
+
   button.handler = ^{
+    LogSnackbarInteraction(state, SnackbarInteractionType::kClicked);
     [weakSelf handleSnackbarButtonAction];
   };
   message.action = button;
-  message.completionHandler = ^(BOOL) {
+  message.completionHandler = ^(BOOL userInteracted) {
+    if (!userInteracted) {
+      LogSnackbarInteraction(state, SnackbarInteractionType::kDismissed);
+    }
     [weakSelf handleSnackbarDismissal];
   };
   return message;

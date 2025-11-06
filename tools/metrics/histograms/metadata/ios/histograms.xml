@@ -6419,6 +6419,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.SyncedSetUp.Snackbar.Interaction"
+    enum="SyncedSetUpSnackbarInteraction" expires_after="2026-05-06">
+  <owner>ericekey@google.com</owner>
+  <owner>bwwilliams@google.com</owner>
+  <owner>scottyoder@google.com</owner>
+  <summary>
+    Records user interactions with snackbars offering to apply or revert
+    appearance-related preferences synced from other devices. Logged when the
+    snackbar is shown, acted upon (e.g., Apply, Undo, Redo), or dismissed.
+  </summary>
+</histogram>
+
 <histogram name="IOS.SyncedSetUp.TriggerSource" enum="SyncedSetUpTriggerSource"
     expires_after="2026-11-05">
   <owner>ericekey@google.com</owner>
