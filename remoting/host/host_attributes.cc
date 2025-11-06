@@ -14,7 +14,6 @@
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_WIN)
-#include "media/base/win/mf_initializer.h"
 #include "remoting/host/win/evaluate_3d_display_mode.h"
 #include "remoting/host/win/evaluate_d3d.h"
 #endif
@@ -95,15 +94,6 @@ std::string GetHostAttributes() {
 #if BUILDFLAG(IS_WIN)
   GetD3DCapabilities(&result);
   result.push_back("Win10+");
-
-  // TODO(crbug.com/40752360): Remove this and/or the entire HostAttributes
-  // class so we can remove //remoting/host:common from //media/gpu's visibility
-  // list.
-  if (media::InitializeMediaFoundation()) {
-    result.push_back("HWEncoder");
-  }
-#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  result.push_back("HWEncoder");
 #endif
 
   return base::JoinString(result, kSeparator);
