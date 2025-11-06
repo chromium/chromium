@@ -10,13 +10,22 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/search_engine_choice/ui/search_engine_choice_constants.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/image_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
+
+// View to display the 'Current default' pill.
+// TODO(crbug.com/458277988): Need to move PillView in its own file.
+@interface PillView : UIView
+- (instancetype)initWithString:(NSString*)string;
+@end
 
 namespace {
 
@@ -24,16 +33,10 @@ namespace {
 constexpr CGFloat kFaviconContainerViewRadius = 7.;
 // Size for the favicon container.
 constexpr CGFloat kFaviconContainerViewSize = 32.;
-// Margin between the name and snippet labels.
-constexpr CGFloat kNameSnippetLabelMargin = 2.;
 // The size of the radio button size.
 constexpr CGFloat kRadioButtonSize = 24.;
 // The size of the radio button image.
 constexpr CGFloat kRadioButtonImageSize = 20.;
-// Upper vertical margin for name label in the button.
-constexpr CGFloat kUpperVerticalMargin = 10.;
-// Lower vertical margin for the snippet label in the button.
-constexpr CGFloat kLowerVerticalMargin = 12.;
 // Horizontal margin between elements in the button.
 constexpr CGFloat kInnerHorizontalMargin = 12.;
 // Horizontal margin between favicon/radio button image and the border.
@@ -49,12 +52,39 @@ constexpr CGFloat kSeparatorThickness = 1.;
 constexpr NSTimeInterval kSnippetAnimationDurationInSecond = .3;
 // Alpha value for the checked background color.
 constexpr NSTimeInterval kCheckedBackgroundColorAlpha = .1;
+// Extra horizontal margin for the current default pill.
+constexpr CGFloat kCurrentDefaultPillHorizontalMargin = 5.;
+// Border width for the current default pill.
+constexpr CGFloat kCurrentDefaultPillBorderWidth = 1.;
+
+// List of values according to the style.
+typedef struct {
+  // Margin between the name and snippet labels.
+  const CGFloat name_snippet_label_margin;
+  // Upper vertical margin for name label in the button.
+  const CGFloat upper_vertical_margin;
+  // Lower vertical margin for the snippet label in the button.
+  const CGFloat lower_vertical_margin;
+} ButtonLayout;
+
+// Style with no current default pill.
+const ButtonLayout kNoCurrentDefaultButtonLayout = {
+    2,   // name_snippet_label_margin
+    10,  // upper_vertical_margin
+    12,  // lower_vertical_margin
+};
+
+// Style with current default pill visible or hidden.
+const ButtonLayout kWithCurrentDefaultButtonLayout = {
+    0,  // name_snippet_label_margin
+    8,  // upper_vertical_margin
+    5,  // lower_vertical_margin
+};
 
 // Returns a snippet label.
 UILabel* SnippetLabel() {
   UILabel* snippetLabel = [[UILabel alloc] init];
   snippetLabel.translatesAutoresizingMaskIntoConstraints = NO;
-  snippetLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
   snippetLabel.font =
       [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
   snippetLabel.adjustsFontForContentSizeCategory = YES;
@@ -73,7 +103,62 @@ UIColor* GetCheckedTintColor() {
   return [UIColor colorNamed:kBlueColor];
 }
 
+// Returns just "Current default".
+// TODO(crbug.com/458252292): Need to add "Current default" string.
+NSString* GetCurrentDefaultString() {
+  NSString* string = l10n_util::GetNSStringF(
+      IDS_SEARCH_ENGINE_CHOICE_CURRENT_DEFAULT_SEARCH_ENGINE_PREPEND,
+      std::u16string());
+  StringWithTag parsed_string =
+      ParseStringWithTag(string, @"BEGIN_BOLD[ \t]*", @"[ \t]*END_BOLD");
+  if (parsed_string.range.location == NSNotFound) {
+    return string;
+  }
+  return [parsed_string.string substringWithRange:parsed_string.range];
+}
+
 }  // namespace
+
+@implementation PillView
+
+- (instancetype)initWithString:(NSString*)string {
+  self = [super initWithFrame:CGRectZero];
+  if (self) {
+    UILabel* label = [[UILabel alloc] init];
+    [self addSubview:label];
+    label.translatesAutoresizingMaskIntoConstraints = NO;
+    label.font = [UIFont preferredFontForTextStyle:UIFontTextStyleCaption2];
+    label.adjustsFontForContentSizeCategory = YES;
+    label.text = string;
+    label.textColor = [UIColor colorNamed:kTextSecondaryColor];
+    AddSameConstraintsWithInsets(
+        label, self,
+        NSDirectionalEdgeInsetsMake(0, kCurrentDefaultPillHorizontalMargin, 0,
+                                    kCurrentDefaultPillHorizontalMargin));
+    self.layer.borderWidth = kCurrentDefaultPillBorderWidth;
+    NSArray<UITrait>* traits =
+        TraitCollectionSetForTraits(@[ UITraitUserInterfaceStyle.class ]);
+    [self registerForTraitChanges:traits
+                       withAction:@selector(applyTraitUserInterfaceStyle)];
+    [self applyTraitUserInterfaceStyle];
+  }
+  return self;
+}
+
+- (void)layoutSubviews {
+  [super layoutSubviews];
+  // Ensure the view is fully rounded based on its current height
+  self.layer.cornerRadius = self.bounds.size.height / 2.0;
+  self.layer.masksToBounds = YES;
+}
+
+- (void)applyTraitUserInterfaceStyle {
+  // The border color needs to be updated manually each time the user interface
+  // style is updated.
+  self.layer.borderColor = [UIColor colorNamed:kTextSecondaryColor].CGColor;
+}
+
+@end
 
 @implementation SnippetSearchEngineButton {
   // Container View for the faviconView.
@@ -100,12 +185,15 @@ UIColor* GetCheckedTintColor() {
   // SnippetSearchEngineButton (with the right margin).
   // `_snippetLabelOneLineConstraint` needs to be disabled.
   NSLayoutConstraint* _snippetLabelExpandedConstraint;
+  CurrentDefaultState _currentDefaultState;
 }
 
-- (instancetype)initWithFrame:(CGRect)frame {
-  self = [super initWithFrame:frame];
+- (instancetype)initWithCurrentDefaultState:
+    (CurrentDefaultState)currentDefaultState {
+  self = [super initWithFrame:CGRectZero];
   if (self) {
     self.clipsToBounds = YES;
+    _currentDefaultState = currentDefaultState;
     // Add the favicon container view and the favicon image view.
     _faviconContainerView = [[UIView alloc] init];
     _faviconContainerView.userInteractionEnabled = NO;
@@ -124,6 +212,31 @@ UIColor* GetCheckedTintColor() {
         setContentCompressionResistancePriority:UILayoutPriorityRequired
                                         forAxis:
                                             UILayoutConstraintAxisHorizontal];
+    const ButtonLayout* buttonLayout = &kNoCurrentDefaultButtonLayout;
+    // Add current default ship.
+    UIView* currentDefaultPill = nil;
+    switch (_currentDefaultState) {
+      case CurrentDefaultState::kNoCurrentDefault:
+        break;
+      case CurrentDefaultState::kHasCurrentDefault:
+        // The current default needs to be added to make sure the button
+        // has the same height than `kIsCurrentDefault`.
+        // But the current default needs to be hidden using alpha.
+        buttonLayout = &kWithCurrentDefaultButtonLayout;
+        currentDefaultPill =
+            [[PillView alloc] initWithString:GetCurrentDefaultString()];
+        currentDefaultPill.translatesAutoresizingMaskIntoConstraints = NO;
+        currentDefaultPill.alpha = 0;
+        [self addSubview:currentDefaultPill];
+        break;
+      case CurrentDefaultState::kIsCurrentDefault:
+        buttonLayout = &kWithCurrentDefaultButtonLayout;
+        currentDefaultPill =
+            [[PillView alloc] initWithString:GetCurrentDefaultString()];
+        currentDefaultPill.translatesAutoresizingMaskIntoConstraints = NO;
+        [self addSubview:currentDefaultPill];
+        break;
+    }
     // Add name label.
     _nameLabel = [[UILabel alloc] init];
     _nameLabel.translatesAutoresizingMaskIntoConstraints = NO;
@@ -179,29 +292,117 @@ UIColor* GetCheckedTintColor() {
     _radioButtonImageView.userInteractionEnabled = NO;
     _radioButtonImageView.translatesAutoresizingMaskIntoConstraints = NO;
     [self addSubview:_radioButtonImageView];
-    // This layout guide is to generate the middle between _nameLabel and
-    // _snippetLabelOneLine. This vertical middle is used to vertically aligned
-    // the favicon, the chevron the vertical separator and the radio button.
-    UILayoutGuide* nameAndOneLineSnippetLayoutGuide =
-        [[UILayoutGuide alloc] init];
-    [self addLayoutGuide:nameAndOneLineSnippetLayoutGuide];
+
+    // This layout guide is used to be center the block of text (current default
+    // if exists, title and snippet). All the other elements (favicon, chevron…)
+    // are positioned based on this layout, to be verticaly aligned and
+    // horizontaly placed.
+    UILayoutGuide* textAlignmentLayoutGuide = [[UILayoutGuide alloc] init];
+    [self addLayoutGuide:textAlignmentLayoutGuide];
+    // This layout guide is used to compute the height of the title and snippet.
+    // Not used with `kNoCurrentDefault`.
+    UILayoutGuide* textHeightLayoutGuideWithCurrentDefault = nil;
+    // This layout guide is used to compute the height of the current default,
+    // title and snippet.
+    // Not used with `kIsCurrentDefault`.
+    UILayoutGuide* textHeightLayoutGuideWithoutCurrentDefault = nil;
+    switch (_currentDefaultState) {
+      case CurrentDefaultState::kNoCurrentDefault:
+        textHeightLayoutGuideWithoutCurrentDefault =
+            [[UILayoutGuide alloc] init];
+        [self addLayoutGuide:textHeightLayoutGuideWithoutCurrentDefault];
+        break;
+      case CurrentDefaultState::kHasCurrentDefault:
+        textHeightLayoutGuideWithCurrentDefault = [[UILayoutGuide alloc] init];
+        [self addLayoutGuide:textHeightLayoutGuideWithCurrentDefault];
+        textHeightLayoutGuideWithoutCurrentDefault =
+            [[UILayoutGuide alloc] init];
+        [self addLayoutGuide:textHeightLayoutGuideWithoutCurrentDefault];
+        break;
+      case CurrentDefaultState::kIsCurrentDefault:
+        textHeightLayoutGuideWithCurrentDefault = [[UILayoutGuide alloc] init];
+        [self addLayoutGuide:textHeightLayoutGuideWithCurrentDefault];
+        break;
+    }
+
     // Constraint when the snippet is expanded.
     _snippetLabelExpandedConstraint = [_snippetLabelExpanded.bottomAnchor
         constraintEqualToAnchor:self.bottomAnchor
-                       constant:-kLowerVerticalMargin];
+                       constant:-buttonLayout->lower_vertical_margin];
     // Constraint when the snippet is only one line.
-    _snippetLabelOneLineConstraint =
-        [nameAndOneLineSnippetLayoutGuide.bottomAnchor
-            constraintEqualToAnchor:self.bottomAnchor
-                           constant:-kLowerVerticalMargin];
+    _snippetLabelOneLineConstraint = [textAlignmentLayoutGuide.bottomAnchor
+        constraintEqualToAnchor:self.bottomAnchor
+                       constant:-buttonLayout->lower_vertical_margin];
+
+    if (textHeightLayoutGuideWithoutCurrentDefault) {
+      NSArray* constraints = @[
+        [_nameLabel.topAnchor
+            constraintEqualToAnchor:textHeightLayoutGuideWithoutCurrentDefault
+                                        .topAnchor],
+        [_snippetLabelOneLine.bottomAnchor
+            constraintEqualToAnchor:textHeightLayoutGuideWithoutCurrentDefault
+                                        .bottomAnchor],
+      ];
+      [NSLayoutConstraint activateConstraints:constraints];
+    }
+    if (textHeightLayoutGuideWithCurrentDefault) {
+      NSArray* constraints = @[
+        [currentDefaultPill.topAnchor
+            constraintEqualToAnchor:textHeightLayoutGuideWithCurrentDefault
+                                        .topAnchor],
+        [_nameLabel.topAnchor
+            constraintEqualToAnchor:currentDefaultPill.bottomAnchor
+                           constant:0],
+        [_snippetLabelOneLine.bottomAnchor
+            constraintEqualToAnchor:textHeightLayoutGuideWithCurrentDefault
+                                        .bottomAnchor],
+        [currentDefaultPill.leadingAnchor
+            constraintEqualToAnchor:textAlignmentLayoutGuide.leadingAnchor],
+        [currentDefaultPill.trailingAnchor
+            constraintLessThanOrEqualToAnchor:textAlignmentLayoutGuide
+                                                  .trailingAnchor],
+      ];
+      [NSLayoutConstraint activateConstraints:constraints];
+    }
+    switch (_currentDefaultState) {
+      case CurrentDefaultState::kNoCurrentDefault:
+        [textAlignmentLayoutGuide.heightAnchor
+            constraintEqualToAnchor:textHeightLayoutGuideWithoutCurrentDefault
+                                        .heightAnchor]
+            .active = YES;
+        [textAlignmentLayoutGuide.centerYAnchor
+            constraintEqualToAnchor:textHeightLayoutGuideWithoutCurrentDefault
+                                        .centerYAnchor]
+            .active = YES;
+        break;
+      case CurrentDefaultState::kHasCurrentDefault:
+        [textAlignmentLayoutGuide.heightAnchor
+            constraintEqualToAnchor:textHeightLayoutGuideWithCurrentDefault
+                                        .heightAnchor]
+            .active = YES;
+        [textAlignmentLayoutGuide.centerYAnchor
+            constraintEqualToAnchor:textHeightLayoutGuideWithoutCurrentDefault
+                                        .centerYAnchor]
+            .active = YES;
+        break;
+      case CurrentDefaultState::kIsCurrentDefault:
+        [textAlignmentLayoutGuide.heightAnchor
+            constraintEqualToAnchor:textHeightLayoutGuideWithCurrentDefault
+                                        .heightAnchor]
+            .active = YES;
+        [textAlignmentLayoutGuide.centerYAnchor
+            constraintEqualToAnchor:textHeightLayoutGuideWithCurrentDefault
+                                        .centerYAnchor]
+            .active = YES;
+        break;
+    }
     NSArray* constraints = @[
       // Constraints for avicon and favicon container.
       [_faviconContainerView.leadingAnchor
           constraintEqualToAnchor:self.leadingAnchor
                          constant:kBorderHorizontalMargin],
       [_faviconContainerView.centerYAnchor
-          constraintEqualToAnchor:nameAndOneLineSnippetLayoutGuide
-                                      .centerYAnchor],
+          constraintEqualToAnchor:textAlignmentLayoutGuide.centerYAnchor],
       [_faviconContainerView.widthAnchor
           constraintEqualToConstant:kFaviconContainerViewSize],
       [_faviconContainerView.heightAnchor
@@ -215,54 +416,45 @@ UIColor* GetCheckedTintColor() {
       [_faviconImageView.heightAnchor
           constraintEqualToConstant:kFaviconImageViewSize],
       // Constraints for layout guide for _nameLabel and _snippetLabelOneLine.
-      [nameAndOneLineSnippetLayoutGuide.topAnchor
+      [textAlignmentLayoutGuide.topAnchor
           constraintEqualToAnchor:self.topAnchor
-                         constant:kUpperVerticalMargin],
+                         constant:buttonLayout->upper_vertical_margin],
       _snippetLabelOneLineConstraint,
-      [nameAndOneLineSnippetLayoutGuide.leadingAnchor
+      [textAlignmentLayoutGuide.leadingAnchor
           constraintEqualToAnchor:_faviconContainerView.trailingAnchor
                          constant:kInnerHorizontalMargin],
-      [nameAndOneLineSnippetLayoutGuide.trailingAnchor
+      [textAlignmentLayoutGuide.trailingAnchor
           constraintEqualToAnchor:_chevronButton.leadingAnchor
                          constant:-kChevronButtonHorizontalMargin],
       // Constraints for name label.
-      [_nameLabel.topAnchor
-          constraintEqualToAnchor:nameAndOneLineSnippetLayoutGuide.topAnchor],
       [_nameLabel.leadingAnchor
-          constraintEqualToAnchor:nameAndOneLineSnippetLayoutGuide
-                                      .leadingAnchor],
+          constraintEqualToAnchor:textAlignmentLayoutGuide.leadingAnchor],
       [_nameLabel.trailingAnchor
-          constraintLessThanOrEqualToAnchor:nameAndOneLineSnippetLayoutGuide
+          constraintLessThanOrEqualToAnchor:textAlignmentLayoutGuide
                                                 .trailingAnchor],
       [_nameLabel.bottomAnchor
           constraintEqualToAnchor:_snippetLabelOneLine.topAnchor
-                         constant:-kNameSnippetLabelMargin],
+                         constant:-buttonLayout->name_snippet_label_margin],
       // Constraints for _snippetLabelOneLine.
-      [_snippetLabelOneLine.bottomAnchor
-          constraintEqualToAnchor:nameAndOneLineSnippetLayoutGuide
-                                      .bottomAnchor],
       [_snippetLabelOneLine.leadingAnchor
-          constraintEqualToAnchor:nameAndOneLineSnippetLayoutGuide
-                                      .leadingAnchor],
+          constraintEqualToAnchor:textAlignmentLayoutGuide.leadingAnchor],
       [_snippetLabelOneLine.trailingAnchor
-          constraintLessThanOrEqualToAnchor:nameAndOneLineSnippetLayoutGuide
+          constraintLessThanOrEqualToAnchor:textAlignmentLayoutGuide
                                                 .trailingAnchor],
       // Constraints for _snippetLabelExpanded.
       [_snippetLabelExpanded.topAnchor
           constraintEqualToAnchor:_snippetLabelOneLine.topAnchor],
       [_snippetLabelExpanded.leadingAnchor
-          constraintEqualToAnchor:nameAndOneLineSnippetLayoutGuide
-                                      .leadingAnchor],
+          constraintEqualToAnchor:textAlignmentLayoutGuide.leadingAnchor],
       [_snippetLabelExpanded.trailingAnchor
-          constraintLessThanOrEqualToAnchor:nameAndOneLineSnippetLayoutGuide
+          constraintLessThanOrEqualToAnchor:textAlignmentLayoutGuide
                                                 .trailingAnchor],
       // Constraints for chevron.
       [_chevronButton.heightAnchor
           constraintEqualToConstant:kChevronButtonSize],
       [_chevronButton.widthAnchor constraintEqualToConstant:kChevronButtonSize],
       [_chevronButton.centerYAnchor
-          constraintEqualToAnchor:nameAndOneLineSnippetLayoutGuide
-                                      .centerYAnchor],
+          constraintEqualToAnchor:textAlignmentLayoutGuide.centerYAnchor],
       [_chevronButton.trailingAnchor
           constraintEqualToAnchor:verticalSeparator.leadingAnchor
                          constant:-kChevronButtonHorizontalMargin],
@@ -270,8 +462,7 @@ UIColor* GetCheckedTintColor() {
       [verticalSeparator.heightAnchor
           constraintEqualToAnchor:_nameLabel.heightAnchor],
       [verticalSeparator.centerYAnchor
-          constraintEqualToAnchor:nameAndOneLineSnippetLayoutGuide
-                                      .centerYAnchor],
+          constraintEqualToAnchor:textAlignmentLayoutGuide.centerYAnchor],
       [verticalSeparator.widthAnchor
           constraintEqualToConstant:kSeparatorThickness],
       [verticalSeparator.trailingAnchor
@@ -279,8 +470,7 @@ UIColor* GetCheckedTintColor() {
                          constant:-kInnerHorizontalMargin],
       // Constraints for radio button.
       [_radioButtonImageView.centerYAnchor
-          constraintEqualToAnchor:nameAndOneLineSnippetLayoutGuide
-                                      .centerYAnchor],
+          constraintEqualToAnchor:textAlignmentLayoutGuide.centerYAnchor],
       [_radioButtonImageView.widthAnchor
           constraintEqualToConstant:kRadioButtonSize],
       [_radioButtonImageView.heightAnchor
@@ -290,8 +480,7 @@ UIColor* GetCheckedTintColor() {
                          constant:-kBorderHorizontalMargin],
       // Constraints for horizontal separator.
       [_horizontalSeparator.leadingAnchor
-          constraintEqualToAnchor:nameAndOneLineSnippetLayoutGuide
-                                      .leadingAnchor],
+          constraintEqualToAnchor:textAlignmentLayoutGuide.leadingAnchor],
       [_horizontalSeparator.trailingAnchor
           constraintEqualToAnchor:self.trailingAnchor],
       [_horizontalSeparator.bottomAnchor

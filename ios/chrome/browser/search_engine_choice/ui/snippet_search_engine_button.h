@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import "base/ios/block_types.h"
+#import "ios/chrome/browser/search_engine_choice/ui/snippet_search_engine_element.h"
 
 @class FaviconView;
 
@@ -51,7 +52,10 @@ enum class SnippetButtonState {
 // view.
 @property(nonatomic, assign) BOOL horizontalSeparatorHidden;
 
+- (instancetype)initWithCurrentDefaultState:
+    (CurrentDefaultState)currentDefaultState NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
+- (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
 
 // Reconfigure the accessibility traits according to the current state of the
 // cell.

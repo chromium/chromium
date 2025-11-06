@@ -12,7 +12,8 @@ using SnippetSearchEngineButtonTest = PlatformTest;
 // Tests that all string properties are configured as "copy".
 TEST_F(SnippetSearchEngineButtonTest, TestHistograms) {
   SnippetSearchEngineButton* search_engine_button =
-      [[SnippetSearchEngineButton alloc] init];
+      [[SnippetSearchEngineButton alloc]
+          initWithCurrentDefaultState:CurrentDefaultState::kNoCurrentDefault];
   NSString* expected_search_engine_name = @"name";
   NSString* expected_snippet_text = @"snippet";
   NSString* expected_search_engine_keyword = @"keyword";

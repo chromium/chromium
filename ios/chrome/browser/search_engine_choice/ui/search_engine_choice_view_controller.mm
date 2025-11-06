@@ -68,7 +68,8 @@ const char* const kLearnMoreURL = "internal://choice-screen-learn-more";
 SnippetSearchEngineButton* CreateSnippetSearchEngineButtonWithElement(
     SnippetSearchEngineElement* element) {
   CHECK(element.keyword);
-  SnippetSearchEngineButton* button = [[SnippetSearchEngineButton alloc] init];
+  SnippetSearchEngineButton* button = [[SnippetSearchEngineButton alloc]
+      initWithCurrentDefaultState:element.currentDefaultState];
   button.faviconImage = element.faviconImage;
   button.searchEngineName = element.name;
   button.snippetText = element.snippetDescription;
