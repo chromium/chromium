@@ -58,7 +58,7 @@ export {DisableModuleEvent, DismissModuleElementEvent, DismissModuleInstanceEven
 export {ModuleElement as MostRelevantTabResumptionModuleElement, mostRelevantTabResumptionDescriptor} from './modules/most_relevant_tab_resumption/module.js';
 export {MostRelevantTabResumptionProxyImpl} from './modules/most_relevant_tab_resumption/most_relevant_tab_resumption_proxy.js';
 export {IconContainerElement} from './modules/tab_groups/icon_container.js';
-export {colorIdToString, ModuleElement as TabGroupsModuleElement, tabGroupsDescriptor} from './modules/tab_groups/module.js';
+export {COLOR_NEW_TAB_PAGE_MODULE_TAB_GROUPS_DOT_PREFIX, COLOR_NEW_TAB_PAGE_MODULE_TAB_GROUPS_PREFIX, colorIdToString, ModuleElement as TabGroupsModuleElement, tabGroupsDescriptor} from './modules/tab_groups/module.js';
 export {TabGroupsProxyImpl} from './modules/tab_groups/tab_groups_proxy.js';
 export {IndividualPromosElement} from './ntp_promo/individual_promos.js';
 export {NtpPromoProxy, NtpPromoProxyImpl} from './ntp_promo/ntp_promo_proxy.js';

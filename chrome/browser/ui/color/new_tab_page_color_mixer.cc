@@ -535,5 +535,22 @@ void AddWebThemeNewTabPageColors(ui::ColorMixer& mixer, bool dark_mode) {
   mixer[kColorNewTabPageModuleTabGroupsCyan] = {kColorTabGroupBookmarkBarCyan};
   mixer[kColorNewTabPageModuleTabGroupsOrange] = {
       kColorTabGroupBookmarkBarOrange};
+
+  mixer[kColorNewTabPageModuleTabGroupsDotGrey] = {
+      kColorTabGroupTabStripFrameActiveGrey};
+  mixer[kColorNewTabPageModuleTabGroupsDotBlue] = {
+      kColorTabGroupTabStripFrameActiveBlue};
+  mixer[kColorNewTabPageModuleTabGroupsDotRed] = {
+      kColorTabGroupTabStripFrameActiveRed};
+  mixer[kColorNewTabPageModuleTabGroupsDotYellow] = {
+      kColorTabGroupTabStripFrameActiveYellow};
+  mixer[kColorNewTabPageModuleTabGroupsDotGreen] = {
+      kColorTabGroupTabStripFrameActiveGreen};
+  mixer[kColorNewTabPageModuleTabGroupsDotPink] = {
+      kColorTabGroupTabStripFrameActivePink};
+  mixer[kColorNewTabPageModuleTabGroupsDotPurple] = {
+      kColorTabGroupTabStripFrameActivePurple};
+  mixer[kColorNewTabPageModuleTabGroupsDotOrange] = {
+      kColorTabGroupTabStripFrameActiveOrange};
   // LINT.ThenChange(//chrome/browser/ui/color/material_new_tab_page_color_mixer.cc)
 }

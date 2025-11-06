@@ -28,11 +28,14 @@ import {getHtml} from './module.html.js';
 import {TabGroupsProxyImpl} from './tab_groups_proxy.js';
 
 export const MAX_TAB_GROUPS = 4;
+export const COLOR_NEW_TAB_PAGE_MODULE_TAB_GROUPS_PREFIX =
+    '--color-new-tab-page-module-tab-groups-';
+export const COLOR_NEW_TAB_PAGE_MODULE_TAB_GROUPS_DOT_PREFIX =
+    '--color-new-tab-page-module-tab-groups-dot-';
 
 const ModuleElementBase = I18nMixinLit(CrLitElement);
 
-export function colorIdToString(id: Color): string {
-  const colorPrefix = '--color-new-tab-page-module-tab-groups-';
+export function colorIdToString(colorPrefix: string, id: Color): string {
   const colorMap = new Map<Color, string>([
     [Color.kGrey, 'grey'],
     [Color.kBlue, 'blue'],
@@ -103,7 +106,12 @@ export class ModuleElement extends ModuleElementBase {
   }
 
   protected computeTabGroupColor_(color: Color): string {
-    return colorIdToString(color);
+    return colorIdToString(COLOR_NEW_TAB_PAGE_MODULE_TAB_GROUPS_PREFIX, color);
+  }
+
+  protected computeTabGroupDotColor_(color: Color): string {
+    return colorIdToString(
+        COLOR_NEW_TAB_PAGE_MODULE_TAB_GROUPS_DOT_PREFIX, color);
   }
 
   protected async computeTabGroupButtonAriaLabel_(group: TabGroup):
