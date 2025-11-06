@@ -1513,7 +1513,6 @@ std::u16string BrowserAccessibilityAndroid::GetRoleDescription() const {
     case ax::mojom::Role::kProgressIndicator:
     case ax::mojom::Role::kRadioButton:
     case ax::mojom::Role::kRowHeader:
-    case ax::mojom::Role::kRowGroup:
     case ax::mojom::Role::kSectionFooter:
     case ax::mojom::Role::kSectionHeader:
     case ax::mojom::Role::kSectionWithoutName:
@@ -1532,10 +1531,13 @@ std::u16string BrowserAccessibilityAndroid::GetRoleDescription() const {
       break;
 
     // Roles not used on Android.
+    case ax::mojom::Role::kColumn:
     case ax::mojom::Role::kListGrid:
     case ax::mojom::Role::kMenuItemSeparator:
     case ax::mojom::Role::kPdfActionableHighlight:
     case ax::mojom::Role::kPdfRoot:
+    case ax::mojom::Role::kRowGroup:
+    case ax::mojom::Role::kTableHeaderContainer:
     case ax::mojom::Role::kWebView:
       NOTREACHED();
 
