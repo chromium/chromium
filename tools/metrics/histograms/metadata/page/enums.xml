@@ -291,7 +291,7 @@ chromium-metrics-reviews@google.com.
   <int value="16" label="(Deprecated) Send Tab to Self"/>
   <int value="17" label="Sharing Hub"/>
   <int value="18" label="(Deprecated) Side Search"/>
-  <int value="19" label="SMS Remote Fetcher"/>
+  <int value="19" label="(Deprecated) SMS Remote Fetcher"/>
   <int value="20" label="Translate"/>
   <int value="21" label="Virtual Card Enroll"/>
   <int value="22" label="Filled card information"/>

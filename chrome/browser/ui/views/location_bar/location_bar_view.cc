@@ -470,7 +470,6 @@ void LocationBarView::Init() {
       params.types_enabled.push_back(PageActionIconType::kOptimizationGuide);
     }
     params.types_enabled.push_back(PageActionIconType::kClickToCall);
-    params.types_enabled.push_back(PageActionIconType::kSmsRemoteFetcher);
     params.types_enabled.push_back(PageActionIconType::kAutofillAddress);
     params.types_enabled.push_back(PageActionIconType::kManagePasswords);
     if (!apps::features::ShouldShowLinkCapturingUX()) {

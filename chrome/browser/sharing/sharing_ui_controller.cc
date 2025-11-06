@@ -113,7 +113,6 @@ void SharingUiController::OnDialogClosed(SharingDialog* dialog) {
     return;
 
   dialog_ = nullptr;
-  UpdateIcon();
 }
 
 void SharingUiController::OnDialogShown(bool has_devices, bool has_apps) {
@@ -187,7 +186,6 @@ base::OnceClosure SharingUiController::SendMessageToDevice(
   if (ShouldShowLoadingIcon()) {
     last_dialog_id_++;
     is_loading_ = true;
-    UpdateIcon();
   }
 
   SharingMessageSender::ResponseCallback response_callback = base::BindOnce(
@@ -196,14 +194,6 @@ base::OnceClosure SharingUiController::SendMessageToDevice(
   return sharing_service_->SendMessageToDevice(
       device, response_timeout.value_or(kSharingMessageTTL),
       std::move(sharing_message), std::move(response_callback));
-}
-
-void SharingUiController::UpdateIcon() {
-  BrowserWindow* window = GetWindowFromWebContents(web_contents_);
-  if (!window)
-    return;
-
-  window->UpdatePageActionIcon(GetIconType());
 }
 
 void SharingUiController::CloseDialog() {
@@ -229,7 +219,6 @@ void SharingUiController::ShowNewDialog(SharingDialogData dialog_data) {
   bool has_devices = !dialog_data.devices.empty();
   bool has_apps = !dialog_data.apps.empty();
   dialog_ = window->ShowSharingDialog(web_contents(), std::move(dialog_data));
-  UpdateIcon();
   OnDialogShown(has_devices, has_apps);
 }
 
@@ -250,7 +239,6 @@ void SharingUiController::OnResponse(
   send_result_ = result;
   if (ShouldShowLoadingIcon()) {
     is_loading_ = false;
-    UpdateIcon();
   }
 }
 

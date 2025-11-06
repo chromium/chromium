@@ -43,10 +43,6 @@ SmsRemoteFetcherUiController::SmsRemoteFetcherUiController(
 
 SmsRemoteFetcherUiController::~SmsRemoteFetcherUiController() = default;
 
-PageActionIconType SmsRemoteFetcherUiController::GetIconType() {
-  return PageActionIconType::kSmsRemoteFetcher;
-}
-
 sync_pb::SharingSpecificFields::EnabledFeatures
 SmsRemoteFetcherUiController::GetRequiredFeature() const {
   return sync_pb::SharingSpecificFields::SMS_FETCHER;

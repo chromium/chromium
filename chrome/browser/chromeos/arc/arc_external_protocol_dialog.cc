@@ -493,10 +493,7 @@ void OnIntentPickerClosed(
   auto* context = web_contents ? web_contents->GetBrowserContext() : nullptr;
 
   if (web_contents) {
-    if (intent_picker_type == apps::IntentPickerBubbleType::kClickToCall) {
-      ClickToCallUiController::GetOrCreateFromWebContents(web_contents.get())
-          ->OnIntentPickerClosed();
-    } else {
+    if (intent_picker_type != apps::IntentPickerBubbleType::kClickToCall) {
       IntentPickerTabHelper::ShowOrHideIcon(web_contents.get(),
                                             /*should_show_icon=*/false);
     }

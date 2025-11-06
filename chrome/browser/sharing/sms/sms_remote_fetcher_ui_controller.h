@@ -43,7 +43,6 @@ class SmsRemoteFetcherUiController
   ~SmsRemoteFetcherUiController() override;
 
   // Overridden from SharingUiController:
-  PageActionIconType GetIconType() override;
   sync_pb::SharingSpecificFields::EnabledFeatures GetRequiredFeature()
       const override;
   void OnDeviceChosen(const SharingTargetDeviceInfo& device) override;
