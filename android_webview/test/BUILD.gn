@@ -553,7 +553,9 @@ base_webview_instrumentation_test_apk("webview_instrumentation_test_apk") {
     "../javatests/src/org/chromium/android_webview/test/VariationsSeedLoaderTest.java",
     "../javatests/src/org/chromium/android_webview/test/VariationsTest.java",
     "../javatests/src/org/chromium/android_webview/test/VisualStateTest.java",
-    "../javatests/src/org/chromium/android_webview/test/WebExposedTest.java",
+
+    # Temporarily disabled, see https://g-issues.chromium.org/issues/401065166#comment113
+    # "../javatests/src/org/chromium/android_webview/test/WebExposedTest.java",
     "../javatests/src/org/chromium/android_webview/test/WebKitHitTestTest.java",
     "../javatests/src/org/chromium/android_webview/test/WebViewAsynchronousFindApisTest.java",
     "../javatests/src/org/chromium/android_webview/test/WebViewFindApisTestRule.java",
