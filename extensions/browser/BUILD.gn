@@ -362,6 +362,8 @@ source_set("browser_sources") {
     "extension_util.h",
     "extension_web_contents_observer.cc",
     "extension_web_contents_observer.h",
+    "extension_webkit_preferences.cc",
+    "extension_webkit_preferences.h",
     "extension_zoom_request_client.cc",
     "extension_zoom_request_client.h",
     "extensions_browser_api_provider.h",
@@ -633,9 +635,7 @@ source_set("browser_sources") {
   }
 
   if (enable_rlz) {
-    deps += [
-      "//rlz:rlz_lib"
-    ]
+    deps += [ "//rlz:rlz_lib" ]
   }
 
   public_deps = [

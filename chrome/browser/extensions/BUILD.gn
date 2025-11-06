@@ -347,8 +347,6 @@ source_set("extensions") {
     "extension_web_ui.h",
     "extension_web_ui_override_registrar.cc",
     "extension_web_ui_override_registrar.h",
-    "extension_webkit_preferences.cc",
-    "extension_webkit_preferences.h",
     "external_component_loader.cc",
     "external_component_loader.h",
     "external_install_error.h",

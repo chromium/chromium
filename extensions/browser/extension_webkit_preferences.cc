@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/extension_webkit_preferences.h"
+#include "extensions/browser/extension_webkit_preferences.h"
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
-#include "chrome/common/chrome_switches.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
@@ -29,8 +28,9 @@ BASE_FEATURE(kIgnorePermissionForDeviceChangedEventForChromeApps,
 
 void SetPreferences(const extensions::Extension* extension,
                     blink::web_pref::WebPreferences* webkit_prefs) {
-  if (!extension)
+  if (!extension) {
     return;
+  }
 
   if (!extension->is_hosted_app()) {
     // Extensions are trusted so we override any user preferences for disabling

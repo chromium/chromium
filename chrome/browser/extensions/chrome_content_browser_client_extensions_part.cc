@@ -76,7 +76,7 @@
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/extension_web_ui.h"
-#include "chrome/browser/extensions/extension_webkit_preferences.h"
+#include "extensions/browser/extension_webkit_preferences.h"
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
