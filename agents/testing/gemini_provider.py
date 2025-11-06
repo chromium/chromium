@@ -461,7 +461,7 @@ def call_api(prompt: str, options: dict[str, Any],
     reliable timeout.
     """
     provider_config = options.get('config', {})
-    provider_vars = context.get('vars', {})
+    provider_vars = context.get('vars', {}) if context else {}
     logging.basicConfig(
         level=logging.DEBUG
         if provider_vars.get('verbose', False) else logging.INFO,
@@ -497,13 +497,18 @@ def _run_gemini_cli_with_telemetry_output(
     if error:
         return {'error': error}
 
-    _configure_gemini_cli(gcli_arguments.home_dir, telemetry_outfile)
-    _install_extensions(provider_config.get('extensions', DEFAULT_EXTENSIONS),
-                        home_dir=gcli_arguments.home_dir)
-    _apply_changes(provider_config.get('changes', []))
-    # CWD should be the repo root.
-    with pathlib.Path('GEMINI.md').open('w', encoding='utf-8') as prompt_file:
-        prompt_file.write(gcli_arguments.system_prompt)
+    # The provider is also used for asserts which do not receive the
+    # full options/context
+    if gcli_arguments.home_dir:
+        _configure_gemini_cli(gcli_arguments.home_dir, telemetry_outfile)
+        _install_extensions(provider_config.get('extensions',
+                                                DEFAULT_EXTENSIONS),
+                            home_dir=gcli_arguments.home_dir)
+        _apply_changes(provider_config.get('changes', []))
+        # CWD should be the repo root.
+        with pathlib.Path('GEMINI.md').open('w',
+                                            encoding='utf-8') as prompt_file:
+            prompt_file.write(gcli_arguments.system_prompt)
 
     process = None
     combined_output: list[str] = []
