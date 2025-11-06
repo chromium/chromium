@@ -160,6 +160,8 @@ crbug.com/1378476 [ mac arch-arm64 ] GpuProcess_no_swiftshader_for_webgl_without
 # Samsung flake that seems to signal visibility too many times
 crbug.com/380269801 [ android android-brya ] GpuProcess_visibility [ Failure ]
 
+crbug.com/458113205 [ win qualcomm-0x36334330 ] GpuProcess_webgpu_iframe_removed [ Failure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################
