@@ -32,6 +32,9 @@
 #import "ios/web/public/web_state.h"
 
 @implementation AIPrototypingMediator {
+  // Browser agent responsible for persisting and retrieving tab context data.
+  raw_ptr<PersistTabContextBrowserAgent> _persistTabContextBrowserAgent;
+  // The list of web states in the current browser window.
   raw_ptr<WebStateList> _webStateList;
 
   // Mojo related service and service implementations. Kept alive to have an
@@ -64,9 +67,12 @@
   PageContextWrapper* _pageContextWrapper;
 }
 
-- (instancetype)initWithWebStateList:(WebStateList*)webStateList {
+- (instancetype)initWithWebStateList:(WebStateList*)webStateList
+       persistTabContextBrowserAgent:
+           (PersistTabContextBrowserAgent*)persistTabContextBrowserAgent {
   self = [super init];
   if (self) {
+    _persistTabContextBrowserAgent = persistTabContextBrowserAgent;
     _webStateList = webStateList;
 
     bool startOnDevice = false;

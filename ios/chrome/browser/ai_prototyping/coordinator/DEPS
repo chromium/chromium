@@ -4,4 +4,5 @@ include_rules = [
   "+ios/chrome/browser/optimization_guide/model",
   "+ios/chrome/browser/optimization_guide/mojom",
   "+ios/chrome/browser/intelligence/enhanced_calendar/model",
+  "+ios/chrome/browser/intelligence/persist_tab_context/model",
 ]
