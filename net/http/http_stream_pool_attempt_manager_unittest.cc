@@ -6458,6 +6458,46 @@ TEST_F(HttpStreamPoolAttemptManagerTest, AltSvcCertificateError) {
       alternative_service, NetworkAnonymizationKey()));
 }
 
+// Test that if QUIC is forced for the Alt-Svc destination but the Alt-Svc is
+// not QUIC, the Alt-Svc is not attempted.
+TEST_F(HttpStreamPoolAttemptManagerTest, AltSvcH2ForceQuic) {
+  const url::SchemeHostPort kOrigin(url::kHttpsScheme, "origin.example.org",
+                                    443);
+  const url::SchemeHostPort kAlternative(url::kHttpsScheme, "alt.example.org",
+                                         443);
+
+  origins_to_force_quic_on().insert(kAlternative);
+  InitializeSession();
+
+  resolver()
+      ->ConfigureDefaultResolution()
+      .add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CompleteStartSynchronously(OK);
+
+  CreateFakeSpdySession(
+      StreamKeyBuilder().set_destination(kAlternative).Build());
+
+  // For the origin. Negotiated HTTP/1.1 with the origin.
+  StaticSocketDataProvider origin_data;
+  socket_factory()->AddSocketDataProvider(&origin_data);
+  SSLSocketDataProvider origin_ssl(ASYNC, OK);
+  socket_factory()->AddSSLSocketDataProvider(&origin_ssl);
+
+  const AlternativeService alternative_service(
+      NextProto::kProtoHTTP2, HostPortPair::FromSchemeHostPort(kAlternative));
+  const base::Time expiration = base::Time::Now() + base::Days(1);
+
+  StreamRequester requester;
+  requester.set_destination(kOrigin).set_alternative_service_info(
+      AlternativeServiceInfo::CreateHttp2AlternativeServiceInfo(
+          alternative_service, expiration));
+
+  requester.RequestStream(pool());
+  requester.WaitForResult();
+  EXPECT_THAT(requester.result(), Optional(IsOk()));
+  EXPECT_NE(requester.negotiated_protocol(), NextProto::kProtoHTTP2);
+}
+
 TEST_F(HttpStreamPoolAttemptManagerTest, AltSvcSetPriority) {
   const url::SchemeHostPort kOrigin(url::kHttpsScheme, "origin.example.org",
                                     443);

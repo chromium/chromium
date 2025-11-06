@@ -36,6 +36,7 @@
 #include "net/log/net_log_with_source.h"
 #include "net/quic/quic_chromium_client_session.h"
 #include "net/quic/quic_http_stream.h"
+#include "net/quic/quic_session_alias_key.h"
 #include "net/socket/next_proto.h"
 #include "net/spdy/spdy_http_stream.h"
 #include "net/ssl/ssl_cert_request_info.h"
@@ -45,6 +46,24 @@
 #include "url/url_constants.h"
 
 namespace net {
+
+HttpStreamPool::JobController::Alternative::Alternative(
+    HttpStreamKey stream_key,
+    NextProto protocol,
+    quic::ParsedQuicVersion quic_version,
+    std::optional<QuicSessionAliasKey> quic_key)
+    : stream_key(std::move(stream_key)),
+      protocol(protocol),
+      quic_version(quic_version),
+      quic_key(std::move(quic_key)) {}
+
+HttpStreamPool::JobController::Alternative::~Alternative() = default;
+
+HttpStreamPool::JobController::Alternative::Alternative(Alternative&&) =
+    default;
+
+HttpStreamPool::JobController::Alternative&
+HttpStreamPool::JobController::Alternative::operator=(Alternative&&) = default;
 
 HttpStreamPool::JobController::PendingStream::PendingStream(
     std::unique_ptr<HttpStream> stream,
@@ -91,24 +110,30 @@ HttpStreamPool::JobController::CalculateAlternative(
     return std::nullopt;
   }
 
+  // If the alternative isn't QUIC but the destination is forced to use QUIC,
+  // we shouldn't try the alternative.
+  if (protocol != NextProto::kProtoQUIC &&
+      pool->http_network_session()->ShouldForceQuic(
+          destination, ProxyInfo::Direct(), /*is_websocket=*/false)) {
+    return std::nullopt;
+  }
+
   HttpStreamKey stream_key(
       destination, request_info.privacy_mode, request_info.socket_tag,
       request_info.network_anonymization_key, request_info.secure_dns_policy,
       request_info.disable_cert_network_fetches);
 
-  Alternative alternative = {
-      .stream_key = std::move(stream_key),
-      .protocol = request_info.alternative_service_info.protocol(),
-      .quic_version = quic::ParsedQuicVersion::Unsupported()};
-
+  quic::ParsedQuicVersion quic_version = quic::ParsedQuicVersion::Unsupported();
+  std::optional<QuicSessionAliasKey> quic_key;
   if (protocol == NextProto::kProtoQUIC) {
-    alternative.quic_version =
+    quic_version =
         pool->SelectQuicVersion(request_info.alternative_service_info);
-    alternative.quic_key =
+    quic_key =
         origin_stream_key.CalculateQuicSessionAliasKey(std::move(destination));
   }
 
-  return alternative;
+  return Alternative(std::move(stream_key), protocol, quic_version,
+                     std::move(quic_key));
 }
 
 HttpStreamPool::JobController::JobController(
@@ -551,9 +576,9 @@ HttpStreamPool::JobController::MaybeCreateStreamFromExistingQuicSession() {
     return stream;
   }
 
-  if (alternative_.has_value()) {
+  if (alternative_.has_value() && alternative_->quic_key.has_value()) {
     stream = MaybeCreateStreamFromExistingQuicSessionInternal(
-        alternative_->quic_key);
+        *alternative_->quic_key);
   }
 
   return stream;

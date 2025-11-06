@@ -98,11 +98,24 @@ class HttpStreamPool::JobController : public HttpStreamPool::Job::Delegate,
  private:
   // Represents an alternative endpoint for the request.
   struct Alternative {
+    Alternative(HttpStreamKey stream_key,
+                NextProto protocol,
+                quic::ParsedQuicVersion quic_version,
+                std::optional<QuicSessionAliasKey> quic_key);
+    Alternative(Alternative&&);
+    ~Alternative();
+
+    Alternative& operator=(Alternative&&);
+
+    Alternative(const Alternative&) = delete;
+    Alternative& operator=(const Alternative&) = delete;
+
     HttpStreamKey stream_key;
-    NextProto protocol = NextProto::kProtoUnknown;
-    quic::ParsedQuicVersion quic_version =
-        quic::ParsedQuicVersion::Unsupported();
-    QuicSessionAliasKey quic_key;
+    NextProto protocol;
+
+    // Only set when this alternative is QUIC.
+    quic::ParsedQuicVersion quic_version;
+    std::optional<QuicSessionAliasKey> quic_key;
   };
 
   // Stream that is ready to be used, along with some associated metadata.
