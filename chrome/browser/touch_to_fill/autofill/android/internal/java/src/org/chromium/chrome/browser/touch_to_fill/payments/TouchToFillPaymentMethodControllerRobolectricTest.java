@@ -1004,6 +1004,24 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
     }
 
     @Test
+    public void testProgressScreenShownAfterIssuerSelection() throws TimeoutException {
+        mCoordinator.showBnplIssuers(List.of(BNPL_ISSUER_CONTEXT_AFFIRM_LINKED));
+        assertThat(
+                mTouchToFillPaymentMethodModel.get(CURRENT_SCREEN),
+                is(BNPL_ISSUER_SELECTION_SCREEN));
+
+        mClock.advanceCurrentTimeMillis(InputProtector.POTENTIALLY_UNINTENDED_INPUT_THRESHOLD);
+        getModelsOfType(mTouchToFillPaymentMethodModel.get(SHEET_ITEMS), BNPL_ISSUER)
+                .get(0)
+                .get(ON_ISSUER_CLICK_ACTION)
+                .run();
+
+        verify(mDelegateMock)
+                .onBnplIssuerSuggestionSelected(BNPL_ISSUER_CONTEXT_AFFIRM_LINKED.getIssuerId());
+        assertThat(mTouchToFillPaymentMethodModel.get(CURRENT_SCREEN), is(PROGRESS_SCREEN));
+    }
+
+    @Test
     public void testShowBnplIssuerScreenFooterLinkOpensPaymentMethodSettings() {
         mCoordinator
                 .getMediatorForTesting()
@@ -1153,6 +1171,21 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
         List<LegalMessageLine> legalMessageLines = footerModel.get(0).get(LEGAL_MESSAGE_LINES);
         assertThat(legalMessageLines.size(), is(1));
         assertThat(legalMessageLines.get(0).text, is(LEGAL_MESSAGE_LINE));
+    }
+
+    @Test
+    public void testProgressScreenShownAfterBnplTosAcceptance() throws TimeoutException {
+        mCoordinator.showBnplIssuerTos(BNPL_ISSUER_TOS_DETAIL);
+        assertThat(mTouchToFillPaymentMethodModel.get(CURRENT_SCREEN), is(BNPL_ISSUER_TOS_SCREEN));
+
+        mClock.advanceCurrentTimeMillis(InputProtector.POTENTIALLY_UNINTENDED_INPUT_THRESHOLD);
+        getModelsOfType(mTouchToFillPaymentMethodModel.get(SHEET_ITEMS), FILL_BUTTON)
+                .get(0)
+                .get(ON_CLICK_ACTION)
+                .run();
+
+        verify(mDelegateMock).onBnplTosAccepted();
+        assertThat(mTouchToFillPaymentMethodModel.get(CURRENT_SCREEN), is(PROGRESS_SCREEN));
     }
 
     @Test

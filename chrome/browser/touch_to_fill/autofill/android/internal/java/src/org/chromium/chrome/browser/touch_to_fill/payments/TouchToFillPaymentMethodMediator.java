@@ -872,6 +872,7 @@ class TouchToFillPaymentMethodMediator {
         if (!mInputProtector.shouldInputBeProcessed()) {
             return;
         }
+        showProgressScreen();
         mDelegate.onBnplIssuerSuggestionSelected(issuerId);
     }
 
