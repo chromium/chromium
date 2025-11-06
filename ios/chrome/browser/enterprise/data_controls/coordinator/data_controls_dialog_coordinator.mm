@@ -6,6 +6,7 @@
 
 #import "base/functional/callback.h"
 #import "ios/chrome/browser/enterprise/data_controls/utils/data_controls_utils.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 
 @implementation DataControlsDialogCoordinator {
   // The underlying alert controller used to show the dialog.
@@ -83,6 +84,9 @@
                              }];
   [_alertController addAction:okAction];
 
+  // Hide the keyboard to prevent it from flickering when dismissing the alert.
+  [self dismissKeyboard];
+
   [self.baseViewController presentViewController:_alertController
                                         animated:YES
                                       completion:nil];
@@ -95,6 +99,15 @@
   if (_callback) {
     std::move(_callback).Run(result);
   }
+}
+
+// Dismisses the keyboard in the current window.
+- (void)dismissKeyboard {
+  UIWindow* window = self.baseViewController.view.window;
+
+  UIResponder* firstResponder =
+      GetFirstResponderInWindowScene(window.windowScene);
+  [firstResponder resignFirstResponder];
 }
 
 @end

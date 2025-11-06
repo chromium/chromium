@@ -11,6 +11,7 @@ source_set("coordinator") {
     "//base",
     "//ios/chrome/browser/enterprise/data_controls/utils",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/ui/util",
   ]
 }
 
