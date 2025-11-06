@@ -368,12 +368,11 @@ void UkmRecorderImpl::AddUkmRecorderObserver(
   DCHECK(observer);
   {
     base::AutoLock auto_lock(lock_);
-    if (!observers_.contains(event_hashes)) {
-      observers_.insert(
-          {event_hashes, base::MakeRefCounted<UkmRecorderObserverList>()});
+    auto [it, inserted] = observers_.try_emplace(event_hashes, nullptr);
+    if (inserted) {
+      it->second = base::MakeRefCounted<UkmRecorderObserverList>();
     }
-
-    observers_[event_hashes]->AddObserver(observer);
+    it->second->AddObserver(observer);
   }
   // Update the UkmRecorderParameters to capture a UKM event which is being
   // observed by any UkmRecorderObserver in |observers_|.
