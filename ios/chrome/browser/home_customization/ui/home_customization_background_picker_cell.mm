@@ -14,7 +14,7 @@
 namespace {
 
 // Size of the Add background icon.
-const CGFloat kSymbolAddBackgroundPointSize = 12;
+const CGFloat kSymbolAddBackgroundPointSize = 18;
 
 }  // namespace
 
@@ -43,6 +43,7 @@ const CGFloat kSymbolAddBackgroundPointSize = 12;
 
   UIImageView* plusIconView = [[UIImageView alloc] initWithImage:plusIcon];
   plusIconView.translatesAutoresizingMaskIntoConstraints = NO;
+  plusIconView.contentMode = UIViewContentModeScaleAspectFit;
   [contentView addSubview:plusIconView];
 
   [NSLayoutConstraint activateConstraints:@[
