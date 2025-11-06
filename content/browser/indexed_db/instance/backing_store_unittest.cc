@@ -12,13 +12,10 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_expected_support.h"
-#include "base/uuid.h"
 #include "content/browser/indexed_db/indexed_db_value.h"
 #include "content/browser/indexed_db/instance/backing_store_test_base.h"
 #include "content/browser/indexed_db/instance/backing_store_util.h"
 #include "content/browser/indexed_db/instance/bucket_context.h"
-#include "mojo/public/cpp/bindings/self_owned_receiver.h"
-#include "storage/browser/test/fake_blob.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_key.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_key_path.h"
@@ -102,12 +99,8 @@ TEST_P(BackingStoreTest, PutBrokenBlob) {
 
   // Make a `FakeBlob` with no body (not an empty body), which will return an
   // error when read.
-  mojo::PendingRemote<blink::mojom::Blob> remote;
-  mojo::MakeSelfOwnedReceiver(
-      std::make_unique<storage::FakeBlob>(
-          base::Uuid::GenerateRandomV4().AsLowercaseString()),
-      remote.InitWithNewPipeAndPassReceiver());
-  value.external_objects.emplace_back(std::move(remote), u"text/plain", 42);
+  value.external_objects.emplace_back(
+      CreateBlobInfo(u"text/plain", std::nullopt));
 
   auto db_creation_result = backing_store()->CreateOrOpenDatabase(u"name");
   ASSERT_TRUE(db_creation_result.has_value());

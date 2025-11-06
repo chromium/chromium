@@ -144,6 +144,69 @@ TEST_F(BackingStoreSqliteTest, BlobBasics) {
   EXPECT_EQ(ReadBlobContents(db, object_store_id, key), payload);
 }
 
+// Regression test for https://crbug.com/454824963. Tests that blob IDs are not
+// reused, which is important when building `blobs_staged_for_commit_`.
+TEST_F(BackingStoreSqliteTest, PutPutCommitBlob) {
+  auto db_creation_result = backing_store()->CreateOrOpenDatabase(u"name");
+  ASSERT_TRUE(db_creation_result.has_value());
+  BackingStore::Database& db = **db_creation_result;
+
+  auto transaction =
+      db.CreateTransaction(blink::mojom::IDBTransactionDurability::Relaxed,
+                           blink::mojom::IDBTransactionMode::ReadWrite);
+  transaction->Begin(CreateDummyLock());
+
+  const int64_t object_store_id = 1;
+  const std::string payload("payload");
+  IndexedDBKey key(u"key");
+  IndexedDBValue value("non_blob_payload", {CreateBlobInfo(u"type", payload)});
+  // Put a record with a blob.
+  EXPECT_TRUE(
+      transaction->PutRecord(object_store_id, key, value.Clone()).has_value());
+  IndexedDBValue value2("non_blob_payload_times_2",
+                        {CreateBlobInfo(u"type", payload + payload)});
+  // *In the same transaction*, put the record again (replace the blob).
+  EXPECT_TRUE(
+      transaction->PutRecord(object_store_id, key, value2.Clone()).has_value());
+  CommitTransactionAndVerify(*transaction);
+
+  EXPECT_EQ(ReadBlobContents(db, object_store_id, key), payload + payload);
+}
+
+// Regression test for https://crbug.com/454824963. Tests that blobs that are
+// staged for commit will be discarded if the associated record is deleted
+// before committing.
+TEST_F(BackingStoreSqliteTest, PutDeleteCommitBlob) {
+  auto db_creation_result = backing_store()->CreateOrOpenDatabase(u"name");
+  ASSERT_TRUE(db_creation_result.has_value());
+  BackingStore::Database& db = **db_creation_result;
+
+  auto transaction =
+      db.CreateTransaction(blink::mojom::IDBTransactionDurability::Relaxed,
+                           blink::mojom::IDBTransactionMode::ReadWrite);
+  transaction->Begin(CreateDummyLock());
+
+  const int64_t object_store_id = 1;
+  IndexedDBKey key(u"key");
+  // Create a blob with no payload; since there is no `FakeBlob::set_body()`, it
+  // will error if it's actually read (at Commit time). Thus, this test verifies
+  // that the blob is never actually read since the record containing it is
+  // deleted before commit.
+  IndexedDBValue value("non_blob_payload",
+                       {CreateBlobInfo(u"type", std::nullopt)});
+
+  EXPECT_TRUE(
+      transaction->PutRecord(object_store_id, key, value.Clone()).has_value());
+  // *In the same transaction*, delete the record.
+  EXPECT_TRUE(
+      transaction
+          ->DeleteRange(1, blink::IndexedDBKeyRange(key.Clone(), key.Clone(),
+                                                    /*lower_open=*/false,
+                                                    /*upper_open=*/false))
+          .ok());
+  CommitTransactionAndVerify(*transaction);
+}
+
 // Verifies that chunking of blobs too big to fit in a single row works. The
 // test tries blobs of various lengths (mostly prime) to attempt to flush out
 // errors in the code that slices blobs apart for writing and stitches them back

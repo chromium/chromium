@@ -309,7 +309,9 @@ Status CreateSchema(sql::Database* db, std::u16string_view name) {
       db,
       "CREATE TABLE blobs "
       // This row id will be used as the IndexedDBExternalObject::blob_number_.
-      "(row_id INTEGER PRIMARY KEY,"
+      // AUTOINCREMENT prevents reuse of an ID if a blob is deleted, to avoid
+      // confusion in `blobs_staged_for_commit_` which uses this ID.
+      "(row_id INTEGER PRIMARY KEY AUTOINCREMENT,"
       // Corresponds to `IndexedDBExternalObject::ObjectType`.
       " object_type INTEGER NOT NULL,"
       // Null for FSA handles.
@@ -1082,21 +1084,23 @@ Status DatabaseConnection::CommitTransactionPhaseOne(
     const BackingStoreTransactionImpl& transaction,
     BlobWriteCallback callback,
     SerializeFsaCallback serialize_fsa_handle) {
-  if (transaction.mode() == blink::mojom::IDBTransactionMode::ReadOnly ||
-      blobs_to_write_.empty()) {
-    return std::move(callback).Run(
-        BlobWriteResult::kRunPhaseTwoAndReturnResult,
-        storage::mojom::WriteBlobToFileResult::kSuccess);
-  }
-
   CHECK(blob_write_callback_.is_null());
   CHECK(blob_writers_.empty());
   CHECK_EQ(outstanding_external_object_writes_, 0U);
 
-  blob_write_callback_ = std::move(callback);
+  std::map<int64_t, IndexedDBExternalObject> blobs_to_commit =
+      std::move(blobs_staged_for_commit_);
+  for (auto& [blob_row_id, external_object] : blobs_to_commit) {
+    {
+      // The blob may have been added and deleted in the same txn.
+      sql::Statement statement(db_->GetCachedStatement(
+          SQL_FROM_HERE, "SELECT 1 FROM blobs WHERE row_id = ?"));
+      statement.BindInt64(0, blob_row_id);
+      if (!statement.Step()) {
+        continue;
+      }
+    }
 
-  auto blobs_to_write = std::move(blobs_to_write_);
-  for (auto& [blob_row_id, external_object] : blobs_to_write) {
     ++outstanding_external_object_writes_;
     if (external_object.object_type() ==
         IndexedDBExternalObject::ObjectType::kFileSystemAccessHandle) {
@@ -1120,6 +1124,14 @@ Status DatabaseConnection::CommitTransactionPhaseOne(
     blob_writers_[blob_row_id] = std::move(writer);
   }
 
+  if (outstanding_external_object_writes_ == 0) {
+    return std::move(callback).Run(
+        BlobWriteResult::kRunPhaseTwoAndReturnResult,
+        storage::mojom::WriteBlobToFileResult::kSuccess);
+  }
+
+  CHECK_NE(transaction.mode(), blink::mojom::IDBTransactionMode::ReadOnly);
+  blob_write_callback_ = std::move(callback);
   return Status::OK();
 }
 
@@ -1223,7 +1235,8 @@ void DatabaseConnection::RollBackTransaction(
     return;
   }
 
-  // Abort ongoing blob writes, if any.
+  // Abort ongoing or future blob writes, if any.
+  blobs_staged_for_commit_.clear();
   blob_write_callback_.Reset();
   CancelBlobWriting();
 
@@ -1574,10 +1587,11 @@ StatusOr<IndexedDBValue> DatabaseConnection::AddExternalObjectMetadataToValue(
                IndexedDBExternalObject::ObjectType::kFileSystemAccessHandle));
     while (statement.Step()) {
       const int64_t blob_row_id = statement.ColumnInt64(0);
-      if (auto it = blobs_to_write_.find(blob_row_id);
-          it != blobs_to_write_.end()) {
+      if (auto it = blobs_staged_for_commit_.find(blob_row_id);
+          it != blobs_staged_for_commit_.end()) {
         // If the blob is being written in this transaction, copy the external
-        // object (and later the Blob mojo endpoint) from `blobs_to_write_`.
+        // object (and later the Blob mojo endpoint) from
+        // `blobs_staged_for_commit_`.
         value.external_objects.emplace_back(it->second);
       } else {
         auto object_type = static_cast<IndexedDBExternalObject::ObjectType>(
@@ -1620,8 +1634,8 @@ StatusOr<IndexedDBValue> DatabaseConnection::AddExternalObjectMetadataToValue(
                IndexedDBExternalObject::ObjectType::kFileSystemAccessHandle));
     while (statement.Step()) {
       const int64_t blob_row_id = statement.ColumnInt64(0);
-      if (auto it = blobs_to_write_.find(blob_row_id);
-          it != blobs_to_write_.end()) {
+      if (auto it = blobs_staged_for_commit_.find(blob_row_id);
+          it != blobs_staged_for_commit_.end()) {
         mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken>
             token_clone;
         it->second.file_system_access_token_remote()->Clone(
@@ -1776,12 +1790,11 @@ StatusOr<BackingStore::RecordIdentifier> DatabaseConnection::PutRecord(
       RUN_STATEMENT_RETURN_ON_ERROR(statement);
     }
 
-    // TODO(crbug.com/419208485): Consider writing the blobs eagerly (but still
-    // asynchronously) so that transaction commit is expedited.
-    auto rv = blobs_to_write_.emplace(blob_row_id,
-                                      // TODO(crbug.com/419208485): this type is
-                                      // copy only at the moment.
-                                      std::move(external_object));
+    auto rv =
+        blobs_staged_for_commit_.emplace(blob_row_id,
+                                         // TODO(crbug.com/419208485): this type
+                                         // is copy only at the moment.
+                                         std::move(external_object));
     CHECK(rv.second);
   }
   OnRecordsModified(object_store_id);
@@ -1928,7 +1941,7 @@ DatabaseConnection::CreateAllExternalObjects(
           mojo_token;
       if (object.is_file_system_access_remote_valid()) {
         // The remote will be valid if this is a pending FSA handle i.e. came
-        // from `blobs_to_write_`.
+        // from `blobs_staged_for_commit_`.
         object.file_system_access_token_remote()->Clone(
             mojo_token.InitWithNewPipeAndPassReceiver());
       } else {
@@ -1943,7 +1956,7 @@ DatabaseConnection::CreateAllExternalObjects(
     mojo::PendingReceiver<blink::mojom::Blob> receiver =
         mojo_object->get_blob_or_file()->blob.InitWithNewPipeAndPassReceiver();
     // The remote will be valid if this is a pending blob i.e. came from
-    // `blobs_to_write_`.
+    // `blobs_staged_for_commit_`.
     if (object.is_remote_valid()) {
       object.Clone(std::move(receiver));
       continue;

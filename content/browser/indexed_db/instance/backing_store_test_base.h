@@ -62,8 +62,11 @@ class BackingStoreTestBase : public testing::Test {
                                                 const std::u16string& type,
                                                 base::Time last_modified,
                                                 std::string_view file_contents);
-  static IndexedDBExternalObject CreateBlobInfo(const std::u16string& type,
-                                                std::string_view blob_data);
+  // If `blob_data` is nullopt, the FakeBlob will have no body, which means it
+  // will return an error when being read.
+  static IndexedDBExternalObject CreateBlobInfo(
+      const std::u16string& type,
+      std::optional<std::string_view> blob_data);
 
   static IndexedDBExternalObject CreateFileSystemAccessHandle();
 

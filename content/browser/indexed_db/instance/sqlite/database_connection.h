@@ -411,8 +411,10 @@ class CONTENT_EXPORT DatabaseConnection {
   // database. The contents of the blobs are not written until commit time. The
   // objects in this map are also used to vend bytes (via their connected mojo
   // remote) if the client reads a value after writing but before committing.
-  // ("Pending" blobs.)
-  std::map<int64_t, IndexedDBExternalObject> blobs_to_write_;
+  // ("Pending" blobs.) Note that some of these blobs may be associated with
+  // records that were added and later deleted (or replaced) in the same commit.
+  // A check to verify the blobs are still needed is performed at commit time.
+  std::map<int64_t, IndexedDBExternalObject> blobs_staged_for_commit_;
 
   // This map will be empty until `CommitTransactionPhaseOne()` is called, at
   // which point it will be populated with helper objects that feed the blob
