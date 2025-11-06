@@ -123,7 +123,9 @@
 
   DCHECK(_viewController);
   if (_navigationController) {
-    [self.baseViewController dismissViewControllerAnimated:YES completion:nil];
+    [_navigationController.presentingViewController
+        dismissViewControllerAnimated:YES
+                           completion:nil];
     _navigationController.presentationController.delegate = nil;
     _navigationController = nil;
   } else if (_baseNavigationController &&

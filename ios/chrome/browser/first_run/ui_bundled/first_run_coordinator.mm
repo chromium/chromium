@@ -113,8 +113,9 @@ class FirstRunCoordinatorMetricsHelper final {
                                   first_run::kFirstRunInterrupted);
     [self stopChildCoordinator];
   }
-  [self.baseViewController dismissViewControllerAnimated:YES
-                                              completion:completionHandler];
+  [_navigationController.presentingViewController
+      dismissViewControllerAnimated:YES
+                         completion:completionHandler];
   _navigationController = nil;
   [super stop];
 }
