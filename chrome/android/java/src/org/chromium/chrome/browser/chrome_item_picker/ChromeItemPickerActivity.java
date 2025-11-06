@@ -17,9 +17,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.SnackbarActivity;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
-import org.chromium.chrome.browser.page_content_annotations.PageContentExtractionService;
-import org.chromium.chrome.browser.page_content_annotations.PageContentExtractionServiceFactory;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 
@@ -30,7 +27,6 @@ public class ChromeItemPickerActivity extends SnackbarActivity {
 
     private int mWindowId;
     private @Nullable TabItemPickerCoordinator mItemPickerCoordinator;
-    private @Nullable PageContentExtractionService mPageContentExtractionService;
 
     @Override
     protected void onCreateInternal(@Nullable Bundle savedInstanceState) {
@@ -63,16 +59,6 @@ public class ChromeItemPickerActivity extends SnackbarActivity {
                         containerView);
 
         mItemPickerCoordinator.showTabItemPicker(this::handleModelFailure);
-    }
-
-    @Override
-    protected void onProfileAvailable(Profile profile) {
-        super.onProfileAvailable(profile);
-        mPageContentExtractionService = PageContentExtractionServiceFactory.getForProfile(profile);
-        mPageContentExtractionService.getAllCachedTabIds(
-                (tabIds) -> {
-                    // TODO(haileywang): Display the list of tabs.
-                });
     }
 
     @Override

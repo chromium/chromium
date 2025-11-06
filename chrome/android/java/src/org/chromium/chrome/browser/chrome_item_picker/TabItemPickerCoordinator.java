@@ -20,6 +20,8 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.app.tabmodel.HeadlessBrowserControlsStateProvider;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.page_content_annotations.PageContentExtractionService;
+import org.chromium.chrome.browser.page_content_annotations.PageContentExtractionServiceFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
@@ -38,8 +40,11 @@ import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /** Provides access to, and management of, Tab data for the {@link ChromeItemPickerActivity}. */
 @NullMarked
@@ -123,21 +128,60 @@ public class TabItemPickerCoordinator {
                         (@Nullable TabModelSelector s) -> {
                             callback.onResult(s);
                             if (s != null) {
-                                onTabModelReadyForUi(s);
+                                mTabListEditorCoordinator = createTabListEditorCoordinator(s);
+                                refreshTabsToShow();
                             }
                         }));
     }
 
-    private void onTabModelReadyForUi(TabModelSelector selector) {
-        mTabListEditorCoordinator = createTabListEditorCoordinator(selector);
-        TabListEditorController controller = mTabListEditorCoordinator.getController();
-        List<Tab> allTabs = TabModelUtils.convertTabListToListOfTabs(selector.getModel(false));
+    /** Fetches the list of tabs to be displayed and shows the editor UI. */
+    private void refreshTabsToShow() {
+        // TODO(crbug.com/457858995): Use common tab filters.
+        Profile profile = mProfileSupplier.get();
+        if (profile == null) {
+            onCachedTabIdsRetrieved(new long[0]);
+            return;
+        }
 
-        int currentTabIndex = selector.getModel(/* incognito= */ false).index();
+        PageContentExtractionService pageContentExtractionService =
+                PageContentExtractionServiceFactory.getForProfile(profile);
+        pageContentExtractionService.getAllCachedTabIds(this::onCachedTabIdsRetrieved);
+    }
+
+    private void onCachedTabIdsRetrieved(long[] tabIds) {
+        if (mTabModelSelector == null) return;
+
+        List<Tab> allTabs =
+                TabModelUtils.convertTabListToListOfTabs(mTabModelSelector.getModel(false));
+        if (tabIds == null || tabIds.length == 0) {
+            showEditorUi(allTabs);
+            return;
+        }
+
+        List<Tab> tabsToShow = new ArrayList<>();
+        Set<Integer> tabIdsSet = new HashSet<>();
+        for (long id : tabIds) {
+            tabIdsSet.add((int) id);
+        }
+        for (Tab tab : allTabs) {
+            // TODO(crbug.com/458152854): Allow reloading of tabs.
+            if (tab.getWebContents() != null || tabIdsSet.contains(tab.getId())) {
+                tabsToShow.add(tab);
+            }
+        }
+        showEditorUi(tabsToShow);
+    }
+
+    private void showEditorUi(List<Tab> tabs) {
+        if (mTabListEditorCoordinator == null || mTabModelSelector == null) return;
+
+        TabListEditorController controller = mTabListEditorCoordinator.getController();
+
+        int currentTabIndex = mTabModelSelector.getModel(/* incognito= */ false).index();
         RecyclerViewPosition position = new RecyclerViewPosition(currentTabIndex, 0);
 
         controller.show(
-                allTabs,
+                tabs,
                 /* tabGroupSyncIds= */ Collections.emptyList(),
                 /* recyclerViewPosition= */ position);
     }

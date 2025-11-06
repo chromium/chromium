@@ -510,7 +510,11 @@ if (is_android) {
       "chrome_junit_tests_org.chromium.chrome.browser.chrome_item_picker") {
     sources = [ "src/org/chromium/chrome/browser/chrome_item_picker/TabItemPickerCoordinatorUnitTest.java" ]
 
-    deps = [ ":chrome_junit_tests_helper" ]
+    deps = [
+      ":chrome_junit_tests_helper",
+      "//chrome/browser/page_content_annotations:factory_java",
+      "//chrome/browser/page_content_annotations:java",
+    ]
   }
 
   robolectric_library(

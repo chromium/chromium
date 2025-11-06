@@ -4,8 +4,12 @@
 
 package org.chromium.chrome.browser.chrome_item_picker;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.never;
@@ -24,6 +28,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
@@ -35,15 +41,20 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
+import org.chromium.chrome.browser.page_content_annotations.PageContentExtractionService;
+import org.chromium.chrome.browser.page_content_annotations.PageContentExtractionServiceFactory;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.content_public.browser.WebContents;
 
-import java.util.Collections;
+import java.util.Arrays;
+import java.util.List;
 
 /** Unit tests for TabItemPickerCoordinator. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -66,6 +77,9 @@ public class TabItemPickerCoordinatorUnitTest {
     @Mock private android.content.res.Resources mResources;
     @Mock private WindowManager mWindowManager;
     @Mock private TabModel mRegularTabModel;
+    @Mock private PageContentExtractionService mPageContentExtractionService;
+
+    @Captor private ArgumentCaptor<List<Tab>> mTabListCaptor;
 
     private OneshotSupplierImpl<Profile> mProfileSupplierImpl;
     private TabItemPickerCoordinator mItemPickerCoordinator;
@@ -98,13 +112,13 @@ public class TabItemPickerCoordinatorUnitTest {
         when(mTabModelSelector.getModel(false)).thenReturn(mRegularTabModel);
         when(mRegularTabModel.index()).thenReturn(0);
 
-        doReturn(Collections.emptyList().iterator()).when(mRegularTabModel).iterator();
-
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
         when(mTabListEditorCoordinator.getController()).thenReturn(mTabListEditorController);
         doReturn(mTabListEditorCoordinator)
                 .when(mItemPickerCoordinator)
                 .createTabListEditorCoordinator(any(TabModelSelector.class));
+
+        PageContentExtractionServiceFactory.setForTesting(mPageContentExtractionService);
     }
 
     @After
@@ -170,5 +184,64 @@ public class TabItemPickerCoordinatorUnitTest {
 
         // Verification 2: The final callback is called with null.
         verify(mCallback).onResult(null);
+    }
+
+    @Test
+    public void testOnCachedTabIdsRetrieved_filtersAndShowsTabs() {
+        // Mock the window manager to return a valid selector upon request
+        when(TabWindowManagerSingleton.getInstance()
+                        .requestSelectorWithoutActivity(anyInt(), any(Profile.class)))
+                .thenReturn(mTabModelSelector);
+
+        // 1. Setup tabs
+        Tab tab1WithWebContents = Mockito.mock(Tab.class);
+        when(tab1WithWebContents.getId()).thenReturn(101);
+        when(tab1WithWebContents.getWebContents()).thenReturn(Mockito.mock(WebContents.class));
+
+        Tab tab2NoWebContentsCached = Mockito.mock(Tab.class);
+        when(tab2NoWebContentsCached.getId()).thenReturn(102);
+        when(tab2NoWebContentsCached.getWebContents()).thenReturn(null);
+
+        Tab tab3NoWebContentsNotCached = Mockito.mock(Tab.class);
+        when(tab3NoWebContentsNotCached.getId()).thenReturn(103);
+        when(tab3NoWebContentsNotCached.getWebContents()).thenReturn(null);
+
+        List<Tab> allTabs =
+                Arrays.asList(
+                        tab1WithWebContents, tab2NoWebContentsCached, tab3NoWebContentsNotCached);
+        // Mocking TabModel to return the list of tabs
+        when(mRegularTabModel.getCount()).thenReturn(allTabs.size());
+        when(mRegularTabModel.getTabAt(0)).thenReturn(tab1WithWebContents);
+        when(mRegularTabModel.getTabAt(1)).thenReturn(tab2NoWebContentsCached);
+        when(mRegularTabModel.getTabAt(2)).thenReturn(tab3NoWebContentsNotCached);
+        when(mRegularTabModel.iterator()).thenReturn(allTabs.iterator());
+
+        // When getAllCachedTabIds is called, immediately call the callback with our test data.
+        doAnswer(
+                        invocation -> {
+                            Callback<long[]> callback = invocation.getArgument(0);
+                            callback.onResult(new long[] {102L});
+                            return null;
+                        })
+                .when(mPageContentExtractionService)
+                .getAllCachedTabIds(any());
+
+        // 2. Trigger the whole flow
+        mItemPickerCoordinator.showTabItemPicker(mCallback);
+        mProfileSupplierImpl.set(mProfile);
+        shadowOf(Looper.getMainLooper()).idle();
+
+        // 3. Verify the correct tabs are passed to the editor
+        verify(mTabListEditorController).show(mTabListCaptor.capture(), any(), any());
+        List<Tab> shownTabs = mTabListCaptor.getValue();
+
+        assertEquals("Should show 2 tabs", 2, shownTabs.size());
+        assertTrue("Should contain tab with WebContents", shownTabs.contains(tab1WithWebContents));
+        assertTrue(
+                "Should contain cached tab without WebContents",
+                shownTabs.contains(tab2NoWebContentsCached));
+        assertFalse(
+                "Should not contain non-cached tab without WebContents",
+                shownTabs.contains(tab3NoWebContentsNotCached));
     }
 }
