@@ -1157,6 +1157,7 @@
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
+            "os": "Ubuntu-24.04.3",
             "pool": "chrome.tests.perf",
             "synthetic_product_name": "System Product Name [System Version] (Falcon Northwest)"
           },
@@ -2226,6 +2227,7 @@
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
+            "os": "Windows-11-26100.1742",
             "pool": "chrome.tests.perf",
             "synthetic_product_name": "System Product Name [System Version] (Falcon Northwest)"
           },

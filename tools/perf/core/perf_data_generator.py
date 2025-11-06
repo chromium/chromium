@@ -971,6 +971,7 @@ BUILDERS = {
         'platform':
         'linux',
         'dimension': {
+            'os': 'Ubuntu-24.04.3',
             'pool':
                 'chrome.tests.perf',
             'synthetic_product_name':
@@ -1352,6 +1353,7 @@ BUILDERS = {
         'target_bits':
         64,
         'dimension': {
+            'os': 'Windows-11-26100.1742',
             'pool':
                 'chrome.tests.perf',
             'synthetic_product_name':
