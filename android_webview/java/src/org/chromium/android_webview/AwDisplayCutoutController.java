@@ -190,10 +190,15 @@ public class AwDisplayCutoutController {
 
         // TODO(crbug.com/40699457): add a throttling logic.
         Insets safeArea = WindowInsetsCompat.toWindowInsetsCompat(insets).getInsets(insetTypes);
-        onApplyWindowInsetsInternal(safeArea);
-        calculateBottomImeInsetsInternal(
+        Insets imeInsets =
                 WindowInsetsCompat.toWindowInsetsCompat(insets)
-                        .getInsets(WindowInsetsCompat.Type.ime()));
+                        .getInsets(WindowInsetsCompat.Type.ime());
+        if (imeInsets.bottom != 0) {
+            // If IME is showing, it will consume the bottom safe area (see crbug.com/457682720).
+            safeArea = Insets.of(safeArea.left, safeArea.top, safeArea.right, 0);
+        }
+        onApplyWindowInsetsInternal(safeArea);
+        calculateBottomImeInsetsInternal(imeInsets);
 
         return insets;
     }
