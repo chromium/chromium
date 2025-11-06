@@ -145,8 +145,6 @@ class OmniboxViewViews
   void ApplyFocusRingToAimButton(bool focus_aim) override;
   bool AimButtonVisible() const override;
   bool IsImeShowingPopup() const override;
-  void ShowAiModeInPopup() override;
-  bool IsAiModeInPopup() const override;
 
   // views::Textfield:
   gfx::Size GetMinimumSize() const override;

@@ -751,25 +751,35 @@ void OmniboxEditModel::EnterKeywordModeForDefaultSearchProvider(
                    u"");
 }
 
+void OmniboxEditModel::SetInAiMode(bool ai_mode) {
+  if (in_ai_mode_ == ai_mode) {
+    return;
+  }
+  in_ai_mode_ = ai_mode;
+  observers_.Notify(&Observer::OnAiModeChanged, in_ai_mode_);
+}
+
 void OmniboxEditModel::OpenAiMode(bool via_keyboard) {
   std::u16string query_text =
       AutocompleteMatch::IsSearchType(current_match_.type) ?
       current_match_.contents : u"";
   RecordAiModeMetrics(query_text, /*activated=*/true, via_keyboard);
-  if (!query_text.empty() ||
-      !base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxAimPopup)) {
-    GURL ai_mode_url =
-        GetUrlForAim(controller_->client()->GetTemplateURLService(),
-                     omnibox::DESKTOP_CHROME_OMNIBOX_KEYWORD_ENTRY_POINT,
-                     /*query_start_time=*/base::Time::Now(), query_text);
-    controller_->client()->OpenUrl(ai_mode_url);
-  } else {
-    view_->ShowAiModeInPopup();
+
+  if (query_text.empty() &&
+      base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxAimPopup)) {
+    SetInAiMode(true);
+    return;
   }
+
+  GURL ai_mode_url =
+      GetUrlForAim(controller_->client()->GetTemplateURLService(),
+                   omnibox::DESKTOP_CHROME_OMNIBOX_KEYWORD_ENTRY_POINT,
+                   /*query_start_time=*/base::Time::Now(), query_text);
+  controller_->client()->OpenUrl(ai_mode_url);
 }
 
 bool OmniboxEditModel::PopupInAiMode() const {
-  return popup_view_ && popup_view_->IsAiModeOpen();
+  return in_ai_mode_;
 }
 
 void OmniboxEditModel::OpenSelection(OmniboxPopupSelection selection,

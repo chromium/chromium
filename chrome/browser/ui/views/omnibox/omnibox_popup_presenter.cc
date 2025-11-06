@@ -8,28 +8,30 @@
 
 #include "base/feature_list.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_content.h"
 #include "chrome/common/webui_url_constants.h"
+#include "ui/views/view_utils.h"
 
 OmniboxPopupPresenter::OmniboxPopupPresenter(LocationBarView* location_bar_view,
                                              OmniboxController* controller)
     : OmniboxPopupPresenterBase(location_bar_view) {
   bool full_popup =
       base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopup);
-  AddOmniboxPopupWebUIContent(controller, chrome::kChromeUIOmniboxPopupURL,
-                              /*include_location_bar_cutout=*/!full_popup,
-                              /*wants_focus=*/full_popup);
+  SetWebUIContent(
+      GetUIContainer()->AddChildView(std::make_unique<OmniboxPopupWebUIContent>(
+          this, this->location_bar_view(), controller,
+          /*include_location_bar_cutout=*/!full_popup,
+          /*wants_focus=*/full_popup)));
 }
 
 OmniboxPopupPresenter::~OmniboxPopupPresenter() = default;
 
-std::optional<size_t> OmniboxPopupPresenter::GetShowingWebUIContentIndex()
-    const {
-  if (IsShown()) {
-    return 0;
-  }
-  return std::nullopt;
+bool OmniboxPopupPresenter::ShouldShowLocationBarCutout() const {
+  return views::AsViewClass<OmniboxPopupWebUIContent>(GetWebUIContent())
+      ->include_location_bar_cutout();
 }
 
-void OmniboxPopupPresenter::ShowWebUIContent(size_t index) {
-  GetOmniboxPopupWebUIContainer()->children().front()->SetVisible(true);
+bool OmniboxPopupPresenter::ShouldReceiveFocus() const {
+  return views::AsViewClass<OmniboxPopupWebUIContent>(GetWebUIContent())
+      ->wants_focus();
 }

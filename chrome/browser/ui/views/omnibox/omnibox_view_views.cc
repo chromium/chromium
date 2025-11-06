@@ -1243,18 +1243,6 @@ bool OmniboxViewViews::IsImeShowingPopup() const {
 #endif
 }
 
-void OmniboxViewViews::ShowAiModeInPopup() {
-  if (location_bar_view_) {
-    location_bar_view_->GetOmniboxPopupView()->OpenAiMode();
-  }
-}
-
-bool OmniboxViewViews::IsAiModeInPopup() const {
-  return location_bar_view_
-             ? location_bar_view_->GetOmniboxPopupView()->IsAiModeOpen()
-             : false;
-}
-
 void OmniboxViewViews::ShowVirtualKeyboardIfEnabled() {
   if (auto* input_method = GetInputMethod()) {
     input_method->SetVirtualKeyboardVisibilityIfEnabled(true);
@@ -1693,7 +1681,7 @@ void OmniboxViewViews::OnBlur() {
         controller()->edit_model()->PopupIsOpen() &&
         GetText() != controller()->edit_model()->GetPermanentDisplayText()) {
       RevertAll();
-    } else if (!IsAiModeInPopup()) {
+    } else {
       CloseOmniboxPopup();
     }
 
