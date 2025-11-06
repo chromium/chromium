@@ -4,12 +4,30 @@
 
 #include "chrome/updater/event_history.h"
 
+#include <atomic>
 #include <optional>
 #include <string>
 
+#include "base/base64.h"
+#include "base/logging.h"
+#include "base/memory/ptr_util.h"
+#include "base/no_destructor.h"
+#include "base/rand_util.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 
 namespace updater {
+
+std::string GenerateEventId() {
+  static std::atomic_uint counter(0);
+  return base::NumberToString(counter++);
+}
+
+const std::string& GetProcessToken() {
+  static const base::NoDestructor<std::string> process_token(
+      base::Base64Encode(base::RandBytesAsString(16)));
+  return *process_token;
+}
 
 Event::~Event() = default;
 
@@ -47,9 +65,51 @@ InstallStartEvent::InstallStartEvent(const CommonFields& common_fields,
 
 InstallStartEvent::~InstallStartEvent() = default;
 
+InstallStartEvent::Builder::Builder() = default;
+InstallStartEvent::Builder::~Builder() = default;
+
+InstallStartEvent::Builder& InstallStartEvent::Builder::SetAppId(
+    const std::string& app_id) {
+  app_id_ = app_id;
+  return *this;
+}
+
+std::unique_ptr<InstallStartEvent> InstallStartEvent::Builder::Build() const {
+  std::optional<CommonFields> common_fields = BuildCommonFields();
+  if (!common_fields) {
+    VLOG(1) << "Failed to build event, invalid common fields";
+    return nullptr;
+  }
+  if (app_id_.empty()) {
+    VLOG(1) << "Failed to build InstallStartEvent, app_id is empty";
+    return nullptr;
+  }
+  return base::WrapUnique(
+      new InstallStartEvent(*std::move(common_fields), app_id_));
+}
+
 InstallEndEvent::InstallEndEvent(const CommonFields& common_fields,
                                  std::optional<std::string> version)
     : Event("INSTALL", Bound::kEnd, common_fields), version_(version) {}
 InstallEndEvent::~InstallEndEvent() = default;
+
+InstallEndEvent::Builder::Builder() = default;
+InstallEndEvent::Builder::~Builder() = default;
+
+InstallEndEvent::Builder& InstallEndEvent::Builder::SetVersion(
+    const std::string& version) {
+  version_ = version;
+  return *this;
+}
+
+std::unique_ptr<InstallEndEvent> InstallEndEvent::Builder::Build() const {
+  std::optional<CommonFields> common_fields = BuildCommonFields();
+  if (!common_fields) {
+    VLOG(1) << "Failed to build event, invalid common fields";
+    return nullptr;
+  }
+  return base::WrapUnique(
+      new InstallEndEvent(*std::move(common_fields), version_));
+}
 
 }  // namespace updater

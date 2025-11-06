@@ -5,19 +5,46 @@
 #ifndef CHROME_UPDATER_EVENT_HISTORY_H_
 #define CHROME_UPDATER_EVENT_HISTORY_H_
 
+#include <memory>
 #include <optional>
 #include <string>
 #include <vector>
 
+#include "base/logging.h"
+#include "base/process/process.h"
+#include "base/system/sys_info.h"
 #include "base/time/time.h"
 
 // This API provides mechanisms to work with updater events, which are recorded
 // in the history log. The API implements the schema defined in
 // //docs/updater/history_log.md.
 //
-// Event objects are immutable upon construction and are thread-safe.
+// Events are created in the updater using a fluent Builder pattern.
+//
+// Event objects are immutable upon construction and are thread-safe. Builders
+// are not thread-safe.
+//
+// Usage examples:
+//
+// Create an event using its builder:
+//
+//    std::unique_ptr<updater::InstallStartEvent> event =
+//        updater::InstallStartEvent::Builder()
+//            .SetEventId("custom-event-id-123")
+//            .SetAppId("my-app-id")
+//            .AddError({.category = 1, .code = 2, .extracode1 = 3})
+//            .Build();
 
 namespace updater {
+
+// Generates an event ID unique to this process. An ID is required for all
+// events. The same ID may be used in multiple events, e.g. to link START and
+// END records.
+std::string GenerateEventId();
+
+// Returns a process-specific token which can be used to discriminate between
+// processes with the same PID in cross-process logs due to OS-reuse.
+const std::string& GetProcessToken();
 
 class Event {
  public:
@@ -42,6 +69,11 @@ class Event {
 
  protected:
   struct CommonFields;
+
+  // A mixin template for event builders, providing common functionality like
+  // setting event ID and adding errors. See `BuilderMixin` for more details.
+  template <typename T>
+  class BuilderMixin;
 
   Event(const std::string& event_type,
         Bound bound,
@@ -84,8 +116,42 @@ struct Event::CommonFields {
   std::vector<Error> errors;
 };
 
+template <typename T>
+class Event::BuilderMixin {
+ public:
+  T& SetEventId(const std::string& event_id) {
+    event_id_ = event_id;
+    return static_cast<T&>(*this);
+  }
+
+  T& AddError(const Event::Error& error) {
+    errors_.push_back(error);
+    return static_cast<T&>(*this);
+  }
+
+ protected:
+  BuilderMixin() = default;
+  virtual ~BuilderMixin() = default;
+
+  // Builds the common fields for the event. Returns `std::nullopt` if a
+  // required common field is missing.
+  std::optional<CommonFields> BuildCommonFields() const {
+    if (event_id_.empty()) {
+      VLOG(1) << "Failed to build common fields: event_id is empty";
+      return std::nullopt;
+    }
+    return CommonFields(event_id_, base::SysInfo::Uptime(),
+                        base::Process::Current().Pid(), GetProcessToken(),
+                        errors_);
+  }
+
+  std::string event_id_;
+  std::vector<Event::Error> errors_;
+};
+
 class InstallStartEvent : public Event {
  public:
+  class Builder;
   InstallStartEvent(const InstallStartEvent&) = delete;
   InstallStartEvent& operator=(const InstallStartEvent&) = delete;
   ~InstallStartEvent() override;
@@ -100,8 +166,22 @@ class InstallStartEvent : public Event {
   const std::string app_id_;
 };
 
+class InstallStartEvent::Builder : public Event::BuilderMixin<Builder> {
+ public:
+  Builder();
+  ~Builder() override;
+
+  Builder& SetAppId(const std::string& app_id);
+
+  std::unique_ptr<InstallStartEvent> Build() const;
+
+ private:
+  std::string app_id_;
+};
+
 class InstallEndEvent : public Event {
  public:
+  class Builder;
   InstallEndEvent(const InstallEndEvent&) = delete;
   InstallEndEvent& operator=(const InstallEndEvent&) = delete;
   ~InstallEndEvent() override;
@@ -114,6 +194,19 @@ class InstallEndEvent : public Event {
                   std::optional<std::string> version);
 
   const std::optional<std::string> version_;
+};
+
+class InstallEndEvent::Builder : public Event::BuilderMixin<Builder> {
+ public:
+  Builder();
+  ~Builder() override;
+
+  Builder& SetVersion(const std::string& version);
+
+  std::unique_ptr<InstallEndEvent> Build() const;
+
+ private:
+  std::optional<std::string> version_;
 };
 
 }  // namespace updater

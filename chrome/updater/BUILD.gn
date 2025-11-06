@@ -864,6 +864,7 @@ if (is_win || is_mac || is_linux) {
       "certificate_tag_unittest.cc",
       "cleanup_task_unittest.cc",
       "enum_traits_unittest.cc",
+      "event_history_unittest.cc",
       "event_logger_unittest.cc",
       "external_constants_builder.cc",
       "external_constants_builder.h",
