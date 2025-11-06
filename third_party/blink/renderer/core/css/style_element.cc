@@ -36,12 +36,15 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/blocking_attribute.h"
 #include "third_party/blink/renderer/core/html/html_style_element.h"
+#include "third_party/blink/renderer/core/loader/modulescript/module_script_creation_params.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/script/import_map.h"
 #include "third_party/blink/renderer/core/script/import_map_error.h"
 #include "third_party/blink/renderer/core/script/modulator.h"
+#include "third_party/blink/renderer/core/script/value_wrapper_synthetic_module_script.h"
 #include "third_party/blink/renderer/core/svg/svg_style_element.h"
 #include "third_party/blink/renderer/core/url/dom_url.h"
+#include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -278,30 +281,33 @@ void StyleElement::AddImportMapEntry(Element& element, const String& text) {
   // TODO(crbug.com/364917757) - Use PendingImportMap here to reduce code (if
   // the dependency on the <script> element can be removed from
   // PendingImportMap).
-  String url;
+  String url_string;
   ExecutionContext* context = element.GetExecutionContext();
-  if (base::FeatureList::IsEnabled(
-          features::kDeclarativeCSSModulesUseDataURI)) {
+  const bool use_data_uri =
+      base::FeatureList::IsEnabled(features::kDeclarativeCSSModulesUseDataURI);
+  if (use_data_uri) {
     // TODO(crbug.com/448174611) - consider encoding in base64 to decrease
     // string size in memory (at the expense of decoding on the CPU).
-    url = "data:text/css," + EncodeWithURLEscapeSequences(text);
+    url_string = "data:text/css," + EncodeWithURLEscapeSequences(text);
   } else {
     auto* blob = Blob::Create(text.Span8(), "text/css");
     CHECK(blob);
-    url = DOMURL::CreatePublicURL(context, blob);
+    url_string = DOMURL::CreatePublicURL(context, blob);
   }
-  CHECK(KURL(url).IsValid());
+  KURL url(url_string);
+  CHECK(url.IsValid());
 
   // The inner JSON object needs to be on the heap because
   // JSONObject::SetObject only accepts a unique_ptr.
   auto import_map_inner_json = std::make_unique<JSONObject>();
   import_map_inner_json->SetString(
-      element.getAttribute(html_names::kSpecifierAttr), url);
+      element.getAttribute(html_names::kSpecifierAttr), url_string);
 
   JSONObject import_map_outer_json;
   import_map_outer_json.SetObject("imports", std::move(import_map_inner_json));
 
   std::optional<ImportMapError> error_to_rethrow;
+  ScriptForbiddenScope::AllowUserAgentScript allow_script;
 
   // Even though ImportMap is garbage collected (and thus managed by Oilpan), we
   // don't need to store it as a Member because MergeExistingAndNewImportMaps
@@ -315,6 +321,29 @@ void StyleElement::AddImportMapEntry(Element& element, const String& text) {
   Modulator* modulator = Modulator::From(
       ToScriptStateForMainWorld(To<LocalDOMWindow>(context)->GetFrame()));
   modulator->MergeExistingAndNewImportMaps(import_map);
+
+  // For Blob URL's, create a CSS module script and add it to the module map so
+  // it can be accessed immediately. We don't need to do this for DataURI's
+  // because they must be fetched later, so setting it now wouldn't accomplish
+  // anything.
+  // TODO(crbug.com/448174611) - add this part to the spec and add links to spec
+  // here.
+  // TODO(crbug.com/448174611) - should this be checking
+  // (!module_script->HasParseError() && !module_script->HasErrorToRethrow())
+  // before inserting into the module map? I don't see these being set for
+  // invalid CSS or @import statements, but it seems like they should.
+  if (!use_data_uri) {
+    ModuleScriptCreationParams params(
+        /*source_url=*/url, /*base_url=*/url, ScriptSourceLocationType::kInline,
+        ResolvedModuleType::kCSS, ParkableString(text.Impl()),
+        /*cache_handler=*/nullptr, network::mojom::ReferrerPolicy::kDefault,
+        /*source_map_url=*/String());
+    ValueWrapperSyntheticModuleScript* module_script =
+        ValueWrapperSyntheticModuleScript::
+            CreateCSSWrapperSyntheticModuleScript(params, modulator);
+    CHECK(module_script);
+    modulator->AddEntryToModuleMap(url, ModuleType::kCSS, module_script);
+  }
 }
 
 bool StyleElement::IsLoading() const {

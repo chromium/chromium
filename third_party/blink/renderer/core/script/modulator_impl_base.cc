@@ -204,6 +204,12 @@ void ModulatorImplBase::ResolveDynamically(
                                                resolver);
 }
 
+void ModulatorImplBase::AddEntryToModuleMap(const KURL& url,
+                                            ModuleType type,
+                                            ModuleScript* script) {
+  map_->AddEntry(url, type, script);
+}
+
 // <specdef href="https://html.spec.whatwg.org/C/#hostgetimportmetaproperties">
 ModuleImportMeta ModulatorImplBase::HostGetImportMetaProperties(
     v8::Local<v8::Module> record) const {

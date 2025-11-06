@@ -191,6 +191,10 @@ class CORE_EXPORT Modulator : public GarbageCollected<Modulator>,
                                   const ReferrerScriptInfo&,
                                   ScriptPromiseResolver<IDLAny>*) = 0;
 
+  virtual void AddEntryToModuleMap(const KURL& url,
+                                   ModuleType type,
+                                   ModuleScript* script) = 0;
+
   // Methods below relate to import maps.
   // https://html.spec.whatwg.org/C#import-maps
 

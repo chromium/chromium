@@ -336,22 +336,25 @@ ShadowRoot::GetFetchedStyleSheetsFromModuleMap(
     const KURL resolved_url = modulator->ResolveModuleSpecifier(
         specifier, window->BaseURL(), /*failure_reason=*/nullptr);
     if (resolved_url.IsValid()) {
+      // Synchronously fetch dataURI's. These will be processed immediately and
+      // available synchronously per https://fetch.spec.whatwg.org/#data-urls.
+      // We don't need to do this for Blob URL's generated from a <style
+      // type="module"> because they have already been added to the module map.
       // TODO(crbug.com/448174611) - should RequestContextType and
       // RequestDestination be script or style?
-      ModuleScriptFetchRequest module_request(
-          resolved_url, ModuleType::kCSS,
-          mojom::blink::RequestContextType::SCRIPT,
-          network::mojom::RequestDestination::kScript, ScriptFetchOptions(),
-          Referrer::ClientReferrerString(), TextPosition::MinimumPosition(),
-          ModuleImportPhase::kEvaluation);
-      modulator->FetchSingle(module_request, window->Fetcher(),
-                             ModuleGraphLevel::kTopLevelModuleFetch,
-                             ModuleScriptCustomFetchType::kNone, nullptr);
+      if (resolved_url.ProtocolIsData()) {
+        ScriptFetchOptions options;
+        ModuleScriptFetchRequest module_request(
+            resolved_url, ModuleType::kCSS,
+            mojom::blink::RequestContextType::SCRIPT,
+            network::mojom::RequestDestination::kScript, options,
+            Referrer::ClientReferrerString(), TextPosition::MinimumPosition(),
+            ModuleImportPhase::kEvaluation);
+        modulator->FetchSingle(module_request, window->Fetcher(),
+                               ModuleGraphLevel::kTopLevelModuleFetch,
+                               ModuleScriptCustomFetchType::kNone, nullptr);
+      }
 
-      // We can fetch and immediately (synchronously) get a result, since the
-      // current design doesn't support initiating a fetch. This means a dataURI
-      // will always be available (due to the fetch above), and so will external
-      // files that have already been added to the module map.
       const ModuleScript* module_script =
           modulator->GetFetchedModuleScript(resolved_url, ModuleType::kCSS);
       if (module_script) {

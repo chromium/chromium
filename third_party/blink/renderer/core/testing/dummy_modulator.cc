@@ -132,6 +132,12 @@ void DummyModulator::ResolveDynamically(const ModuleRequest& module_request,
   NOTREACHED();
 }
 
+void DummyModulator::AddEntryToModuleMap(const KURL& url,
+                                         ModuleType type,
+                                         ModuleScript* script) {
+  NOTREACHED();
+}
+
 ModuleImportMeta DummyModulator::HostGetImportMetaProperties(
     v8::Local<v8::Module>) const {
   NOTREACHED();
