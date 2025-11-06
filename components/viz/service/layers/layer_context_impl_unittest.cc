@@ -1948,7 +1948,6 @@ TEST_F(LayerContextImplUpdateDisplayTreeTilingTest, TilingAndTileLifecycle) {
   auto resource_contents = mojom::TileResource::New();
   resource_contents->resource = MakeFakeResource(kTileSize2);
   resource_contents->resource.id = kResourceId1;
-  resource_contents->is_checkered = false;
   tile2_resource->contents =
       mojom::TileContents::NewResource(std::move(resource_contents));
   tiling1_updated->tiles.push_back(std::move(tile2_resource));
@@ -2072,7 +2071,6 @@ TEST_F(LayerContextImplUpdateDisplayTreeTilingTest, TilingAndTileLifecycle) {
   auto resource_contents_updated = mojom::TileResource::New();
   resource_contents_updated->resource = MakeFakeResource(kTileSize1);
   resource_contents_updated->resource.id = kResourceId2;
-  resource_contents_updated->is_checkered = true;
   tile_updated_to_resource->contents =
       mojom::TileContents::NewResource(std::move(resource_contents_updated));
   tiling1_tile_update->tiles.push_back(std::move(tile_updated_to_resource));
@@ -2084,7 +2082,6 @@ TEST_F(LayerContextImplUpdateDisplayTreeTilingTest, TilingAndTileLifecycle) {
   ASSERT_NE(nullptr, tiling_impl1->TileAt(kTileIndex1));
   EXPECT_FALSE(tiling_impl1->TileAt(kTileIndex1)->solid_color().has_value());
   EXPECT_TRUE(tiling_impl1->TileAt(kTileIndex1)->resource().has_value());
-  EXPECT_TRUE(tiling_impl1->TileAt(kTileIndex1)->resource()->is_checkered);
 
   // Test Case 7: Attempt to add a tile with an invalid resource ID.
   auto update_invalid_resource_tile = CreateDefaultUpdate();

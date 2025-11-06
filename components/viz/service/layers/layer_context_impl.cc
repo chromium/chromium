@@ -992,8 +992,8 @@ DeserializeTileResource(cc::LayerTreeHostImpl* host_impl,
       /*main_thread_release_callback=*/base::NullCallback(),
       /*evicted_callback=*/base::NullCallback());
 
-  return cc::TileDisplayLayerImpl::TileResource(
-      resource_id, wire.resource.GetSize(), wire.is_checkered);
+  return cc::TileDisplayLayerImpl::TileResource(resource_id,
+                                                wire.resource.GetSize());
 }
 
 base::expected<cc::TileDisplayLayerImpl::TileContents, std::string>

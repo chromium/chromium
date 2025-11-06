@@ -37,20 +37,6 @@ class TilingOrder {
 
 }  // namespace
 
-TileDisplayLayerImpl::TileResource::TileResource(viz::ResourceId resource_id,
-                                                 gfx::Size resource_size,
-                                                 bool is_checkered)
-    : resource_id(resource_id),
-      resource_size(resource_size),
-      is_checkered(is_checkered) {}
-
-TileDisplayLayerImpl::TileResource::TileResource(const TileResource&) = default;
-
-TileDisplayLayerImpl::TileResource&
-TileDisplayLayerImpl::TileResource::operator=(const TileResource&) = default;
-
-TileDisplayLayerImpl::TileResource::~TileResource() = default;
-
 TileDisplayLayerImpl::Tile::Tile(TileDisplayLayerImpl& layer,
                                  const TileContents& contents)
     : layer_(layer), contents_(contents) {}

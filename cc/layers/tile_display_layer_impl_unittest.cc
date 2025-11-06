@@ -68,8 +68,7 @@ TEST_F(TileDisplayLayerImplTest,
           viz::TransferableResource::ResourceSource::kTest, gpu::SyncToken()),
       base::DoNothing());
   TileDisplayLayerImpl::TileContents contents =
-      TileDisplayLayerImpl::TileResource(resource_id, kLayerBounds,
-                                         /*is_checkered=*/false);
+      TileDisplayLayerImpl::TileResource(resource_id, kLayerBounds);
   tiling.SetTileContents(TileIndex{0, 0}, contents, /*update_damage=*/false);
 
   // Set up occlusion that covers the entire layer. Occlusion is specified in
@@ -119,8 +118,7 @@ TEST_F(TileDisplayLayerImplTest,
           viz::TransferableResource::ResourceSource::kTest, gpu::SyncToken()),
       base::DoNothing());
   TileDisplayLayerImpl::TileContents contents =
-      TileDisplayLayerImpl::TileResource(resource_id, tile_rect.size(),
-                                         /*is_checkered=*/false);
+      TileDisplayLayerImpl::TileResource(resource_id, tile_rect.size());
   tiling.SetTileContents(TileIndex{0, 0}, contents, /*update_damage=*/false);
 
   SetupRootProperties(host_impl()->active_tree()->root_layer());
@@ -171,8 +169,7 @@ TEST_F(TileDisplayLayerImplTest,
           viz::TransferableResource::ResourceSource::kTest, gpu::SyncToken()),
       base::DoNothing());
   TileDisplayLayerImpl::TileContents contents =
-      TileDisplayLayerImpl::TileResource(resource_id, kLayerBounds,
-                                         /*is_checkered=*/false);
+      TileDisplayLayerImpl::TileResource(resource_id, kLayerBounds);
   tiling.SetTileContents(TileIndex{0, 0}, contents, /*update_damage=*/true);
 
   SetupRootProperties(host_impl()->active_tree()->root_layer());
@@ -284,8 +281,7 @@ TEST_F(TileDisplayLayerImplTest,
           viz::TransferableResource::ResourceSource::kTest, gpu::SyncToken()),
       base::DoNothing());
   TileDisplayLayerImpl::TileContents contents =
-      TileDisplayLayerImpl::TileResource(resource_id, kLayerBounds,
-                                         /*is_checkered=*/false);
+      TileDisplayLayerImpl::TileResource(resource_id, kLayerBounds);
   tiling.SetTileContents(TileIndex{0, 0}, contents, /*update_damage=*/true);
 
   SetupRootProperties(host_impl()->active_tree()->root_layer());
@@ -331,8 +327,7 @@ TEST_F(TileDisplayLayerImplTest,
           viz::TransferableResource::ResourceSource::kTest, gpu::SyncToken()),
       base::DoNothing());
   TileDisplayLayerImpl::TileContents contents =
-      TileDisplayLayerImpl::TileResource(resource_id, kResourceSize,
-                                         /*is_checkered=*/false);
+      TileDisplayLayerImpl::TileResource(resource_id, kResourceSize);
   tiling.SetTileContents(TileIndex{0, 0}, contents, /*update_damage=*/true);
 
   SetupRootProperties(host_impl()->active_tree()->root_layer());
@@ -413,8 +408,7 @@ TEST_F(TileDisplayLayerImplWithEdgeAADisabledTest,
           viz::TransferableResource::ResourceSource::kTest, gpu::SyncToken()),
       base::DoNothing());
   TileDisplayLayerImpl::TileContents contents =
-      TileDisplayLayerImpl::TileResource(resource_id, kLayerBounds,
-                                         /*is_checkered=*/false);
+      TileDisplayLayerImpl::TileResource(resource_id, kLayerBounds);
   tiling.SetTileContents(TileIndex{0, 0}, contents, /*update_damage=*/true);
 
   SetupRootProperties(host_impl()->active_tree()->root_layer());
@@ -544,8 +538,7 @@ TEST_F(TileDisplayLayerImplTest, AppendsQuadsFromHighestResolutionTilingByDefaul
           viz::TransferableResource::ResourceSource::kTest, gpu::SyncToken()),
       base::DoNothing());
   TileDisplayLayerImpl::TileContents contents =
-      TileDisplayLayerImpl::TileResource(resource_id, kLayerBounds,
-                                         /*is_checkered=*/false);
+      TileDisplayLayerImpl::TileResource(resource_id, kLayerBounds);
   high_res_tiling.SetTileContents(TileIndex{0, 0}, contents,
                                   /*update_damage=*/true);
 
@@ -593,8 +586,7 @@ TEST_F(TileDisplayLayerImplTest, AppendsQuadsFromIdealResolutionTiling) {
           viz::TransferableResource::ResourceSource::kTest, gpu::SyncToken()),
       base::DoNothing());
   TileDisplayLayerImpl::TileContents low_res_contents =
-      TileDisplayLayerImpl::TileResource(low_res_resource_id, kLayerBounds,
-                                         /*is_checkered=*/false);
+      TileDisplayLayerImpl::TileResource(low_res_resource_id, kLayerBounds);
   low_res_tiling.SetTileContents(TileIndex{0, 0}, low_res_contents,
                                  /*update_damage=*/true);
 
@@ -835,8 +827,7 @@ TEST_F(TileDisplayLayerImplTest, LastAppendQuadsScalesUpdated) {
           viz::TransferableResource::ResourceSource::kTest, gpu::SyncToken()),
       base::DoNothing());
   TileDisplayLayerImpl::TileContents low_res_contents =
-      TileDisplayLayerImpl::TileResource(low_res_resource_id, kLayerBounds,
-                                         /*is_checkered=*/false);
+      TileDisplayLayerImpl::TileResource(low_res_resource_id, kLayerBounds);
   low_res_tiling.SetTileContents(TileIndex{0, 0}, low_res_contents,
                                  /*update_damage=*/true);
 
@@ -846,8 +837,7 @@ TEST_F(TileDisplayLayerImplTest, LastAppendQuadsScalesUpdated) {
           viz::TransferableResource::ResourceSource::kTest, gpu::SyncToken()),
       base::DoNothing());
   TileDisplayLayerImpl::TileContents high_res_contents =
-      TileDisplayLayerImpl::TileResource(high_res_resource_id, kLayerBounds,
-                                         /*is_checkered=*/false);
+      TileDisplayLayerImpl::TileResource(high_res_resource_id, kLayerBounds);
   high_res_tiling.SetTileContents(TileIndex{0, 0}, high_res_contents,
                                   /*update_damage=*/true);
 
@@ -1048,8 +1038,7 @@ TEST_F(TileDisplayLayerImplTest,
           viz::TransferableResource::ResourceSource::kTest, gpu::SyncToken()),
       base::DoNothing());
   TileDisplayLayerImpl::TileContents contents_resource =
-      TileDisplayLayerImpl::TileResource(resource_id, kLayerBounds,
-                                         /*is_checkered=*/false);
+      TileDisplayLayerImpl::TileResource(resource_id, kLayerBounds);
   tiling.SetTileContents(TileIndex{0, 0}, contents_resource,
                          /*update_damage=*/true);
 

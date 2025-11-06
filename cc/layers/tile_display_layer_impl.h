@@ -40,17 +40,9 @@ class CC_EXPORT TileDisplayLayerImpl : public TileBasedLayerImpl {
     explicit NoContents(mojom::MissingTileReason r) : reason(r) {}
   };
 
-  struct CC_EXPORT TileResource {
-    TileResource(viz::ResourceId resource_id,
-                 gfx::Size resource_size,
-                 bool is_checkered);
-    TileResource(const TileResource&);
-    TileResource& operator=(const TileResource&);
-    ~TileResource();
-
+  struct TileResource {
     viz::ResourceId resource_id;
     gfx::Size resource_size;
-    bool is_checkered;
   };
 
   using TileContents = std::variant<NoContents, SkColor4f, TileResource>;
