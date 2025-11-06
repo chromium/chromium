@@ -42,24 +42,31 @@ public class TabStoragePackager {
     private static class TabModelInfo {
         public final @WindowId int windowId;
         public final @TabModelType int tabModelType;
+        public final @Nullable Tab activeTab;
 
         /**
          * @param windowId The {@link WindowId} the {@link TabModel} is associated with.
          * @param tabModelType The type of tab model being saved.
+         * @param activeTab The active tab in the tab model.
          */
-        TabModelInfo(@WindowId int windowId, @TabModelType int tabModelType) {
+        TabModelInfo(
+                @WindowId int windowId, @TabModelType int tabModelType, @Nullable Tab activeTab) {
             this.windowId = windowId;
             this.tabModelType = tabModelType;
+            this.activeTab = activeTab;
         }
 
         /**
          * @param windowId The {@link WindowId} the {@link TabModel} is associated with.
          * @param isOffTheRecord Whether the tab model is off the record.
+         * @param activeTab The active tab in the tab model.
          */
         public static TabModelInfo createForWindowScopedModel(
-                @WindowId int windowId, boolean isOffTheRecord) {
+                @WindowId int windowId, boolean isOffTheRecord, @Nullable Tab activeTab) {
             return new TabModelInfo(
-                    windowId, isOffTheRecord ? TabModelType.INCOGNITO : TabModelType.REGULAR);
+                    windowId,
+                    isOffTheRecord ? TabModelType.INCOGNITO : TabModelType.REGULAR,
+                    activeTab);
         }
 
         /**
@@ -67,7 +74,10 @@ public class TabStoragePackager {
          *     ArchivedTabModelOrchestrator}.
          */
         public static TabModelInfo createForArchivedModel() {
-            return new TabModelInfo(TabWindowManager.INVALID_WINDOW_ID, TabModelType.ARCHIVED);
+            return new TabModelInfo(
+                    TabWindowManager.INVALID_WINDOW_ID,
+                    TabModelType.ARCHIVED,
+                    /* activeTab= */ null);
         }
     }
 
@@ -125,7 +135,8 @@ public class TabStoragePackager {
         int windowId = TabWindowManagerSingleton.getInstance().getWindowIdForSelector(selector);
         assert windowId != TabWindowManager.INVALID_WINDOW_ID;
 
-        return TabModelInfo.createForWindowScopedModel(windowId, tabModel.isOffTheRecord());
+        return TabModelInfo.createForWindowScopedModel(
+                windowId, tabModel.isOffTheRecord(), tabModel.getCurrentTabSupplier().get());
     }
 
     @Nullable
@@ -150,7 +161,10 @@ public class TabStoragePackager {
         TabModelInfo info = getTabModelInfo(profile, collection);
         return TabStoragePackagerJni.get()
                 .consolidateTabStripCollectionData(
-                        mNativeTabStoragePackager, info.windowId, info.tabModelType);
+                        mNativeTabStoragePackager,
+                        info.windowId,
+                        info.tabModelType,
+                        info.activeTab);
     }
 
     @NativeMethods
@@ -166,6 +180,9 @@ public class TabStoragePackager {
                 @JniType("TabAndroid*") Tab tab);
 
         long consolidateTabStripCollectionData(
-                long nativeTabStoragePackagerAndroid, int windowId, @TabModelType int tabModelType);
+                long nativeTabStoragePackagerAndroid,
+                int windowId,
+                @TabModelType int tabModelType,
+                @JniType("TabAndroid*") @Nullable Tab activeTab);
     }
 }

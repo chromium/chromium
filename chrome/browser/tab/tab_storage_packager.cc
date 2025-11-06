@@ -126,6 +126,9 @@ std::unique_ptr<StoragePackage> TabStoragePackager::Package(
   } else if (type == TabStorageType::kGroup) {
     metadata = PackageTabGroupTabCollectionData(
         static_cast<const TabGroupTabCollection*>(collection), mapping);
+  } else if (type == TabStorageType::kTabStrip) {
+    metadata = PackageTabStripCollectionData(
+        static_cast<const TabStripCollection*>(collection), mapping);
   } else {
     metadata = std::make_unique<EmptyPayload>();
   }

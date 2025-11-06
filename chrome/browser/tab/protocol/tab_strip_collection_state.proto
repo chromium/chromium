@@ -17,4 +17,7 @@ message TabStripCollectionState {
   // Tied to TabModelType in
   // chrome/browser/android/tab_storage_packager_android.h.
   optional int32 tab_model_type = 2;
+
+  // The storage id of the active tab in the tab strip.
+  optional int32 active_tab_storage_id = 3;
 }

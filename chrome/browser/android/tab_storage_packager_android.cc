@@ -22,6 +22,7 @@
 #include "chrome/browser/tab/payload.h"
 #include "chrome/browser/tab/protocol/tab_group_collection_state.pb.h"
 #include "chrome/browser/tab/protocol/tab_strip_collection_state.pb.h"
+#include "chrome/browser/tab/storage_id_mapping.h"
 #include "chrome/browser/tab/storage_package.h"
 #include "chrome/browser/tab/tab_storage_package.h"
 #include "chrome/browser/tab/tab_storage_packager.h"
@@ -53,6 +54,51 @@ class TabStripCollectionStorageData : public Payload {
   tabs_pb::TabStripCollectionState state_;
 };
 
+// A wrapper around TabStripCollectionState that has not had a StorageIdMapping
+// applied to it so the data is still unmapped (i.e. we have references to
+// objects that need to be converted to storage ids).
+class UnmappedTabStripCollectionStorageData {
+ public:
+  UnmappedTabStripCollectionStorageData(TabAndroid* active_tab,
+                                        tabs_pb::TabStripCollectionState state)
+      : active_tab_(active_tab), state_(std::move(state)) {}
+
+  ~UnmappedTabStripCollectionStorageData() = default;
+
+  TabAndroid* active_tab() const { return active_tab_.get(); }
+
+  // Moves the state out of this object. This should only be called once.
+  tabs_pb::TabStripCollectionState TakeState() {
+    CHECK(is_valid_) << "Attempting to take state multiple times.";
+    is_valid_ = false;
+    return std::move(state_);
+  }
+
+ private:
+  bool is_valid_{true};
+  // May be nullptr if there is no active tab in the collection (i.e. there are
+  // no tabs in the tab strip).
+  raw_ptr<TabAndroid> active_tab_;
+  tabs_pb::TabStripCollectionState state_;
+};
+
+// Consumes `unmapped_data` and applies the `mapping` to it. The `unmapped_data`
+// is deleted in this function and should not be used after this function
+// returns. The returned TabStripCollectionStorageData is a valid payload that
+// can be packaged into the database.
+std::unique_ptr<TabStripCollectionStorageData>
+MapAndConsumeUnmappedTabStripCollectionStorageData(
+    UnmappedTabStripCollectionStorageData* unmapped_data,
+    StorageIdMapping& mapping) {
+  tabs_pb::TabStripCollectionState state = unmapped_data->TakeState();
+  TabAndroid* active_tab = unmapped_data->active_tab();
+  if (active_tab) {
+    state.set_active_tab_storage_id(mapping.GetStorageId(active_tab));
+  }
+  delete unmapped_data;
+  return std::make_unique<TabStripCollectionStorageData>(std::move(state));
+}
+
 TabStoragePackagerAndroid::TabStoragePackagerAndroid(Profile* profile)
     : profile_(profile) {
   JNIEnv* env = base::android::AttachCurrentThread();
@@ -77,10 +123,9 @@ TabStoragePackagerAndroid::PackageTabStripCollectionData(
   JNIEnv* env = base::android::AttachCurrentThread();
   long ptr_value = Java_TabStoragePackager_packageTabStripCollection(
       env, java_obj_, profile_, collection);
-  TabStripCollectionStorageData* data =
-      reinterpret_cast<TabStripCollectionStorageData*>(ptr_value);
-
-  return base::WrapUnique(data);
+  return MapAndConsumeUnmappedTabStripCollectionStorageData(
+      reinterpret_cast<UnmappedTabStripCollectionStorageData*>(ptr_value),
+      mapping);
 }
 
 long TabStoragePackagerAndroid::ConsolidateTabData(
@@ -124,14 +169,15 @@ long TabStoragePackagerAndroid::ConsolidateTabData(
 long TabStoragePackagerAndroid::ConsolidateTabStripCollectionData(
     JNIEnv* env,
     jint window_id,
-    jint j_tab_model_type) {
+    jint j_tab_model_type,
+    TabAndroid* active_tab) {
   tabs_pb::TabStripCollectionState state;
 
   state.set_window_id(window_id);
   state.set_tab_model_type(j_tab_model_type);
 
-  TabStripCollectionStorageData* data =
-      new TabStripCollectionStorageData(state);
+  UnmappedTabStripCollectionStorageData* data =
+      new UnmappedTabStripCollectionStorageData(active_tab, std::move(state));
   return reinterpret_cast<long>(data);
 }
 
