@@ -2475,6 +2475,12 @@ void PermissionUmaUtil::RecordPrePromptSessionDuration(
         base::StrCat({"Permissions.PredictionService.", permission_string,
                       ".PrePromptSessionDuration5m"}),
         duration, base::Minutes(1), base::Minutes(5), 120);
+  } else if (duration <= base::Hours(1)) {
+    // 15 seconds granularity.
+    base::UmaHistogramCustomTimes(
+        base::StrCat({"Permissions.PredictionService.", permission_string,
+                      ".PrePromptSessionDuration1h"}),
+        duration, base::Minutes(5), base::Hours(1), 220);
   }
 }
 

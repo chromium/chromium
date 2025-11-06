@@ -1186,6 +1186,19 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Permissions.PredictionService.{PermissionType}.PrePromptSessionDuration1h"
+    units="ms" expires_after="2026-10-27">
+  <owner>elklm@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records the duration of the browsing session between 5 minutes and up to 1
+    hour on a given origin before a Notifications or Geolocation permission
+    prompt has been displayed.
+  </summary>
+  <token key="PermissionType" variants="CpssSupportedTypes"/>
+</histogram>
+
+<histogram
     name="Permissions.PredictionService.{PermissionType}.PrePromptSessionDuration1m"
     units="ms" expires_after="2026-10-27">
   <owner>elklm@chromium.org</owner>
