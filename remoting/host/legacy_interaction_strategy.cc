@@ -164,7 +164,9 @@ LegacyInteractionStrategy::CreateMouseCursorMonitor() {
       *options_.desktop_capture_options());
   return std::make_unique<WebrtcMouseCursorMonitorAdaptor>(
       std::make_unique<MouseCursorMonitorProxy>(video_capture_task_runner_,
-                                                std::move(creator)));
+                                                std::move(creator)),
+      std::make_unique<DelegatingDesktopDisplayInfoMonitor>(
+          display_info_monitor_.GetWeakPtr()));
 }
 
 std::unique_ptr<KeyboardLayoutMonitor>

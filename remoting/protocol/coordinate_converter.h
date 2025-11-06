@@ -16,6 +16,7 @@ namespace remoting::protocol {
 // coordinates. The converter is pixel-type-agnostic and whether the absolute
 // coordinates are in DIPs or physical pixels depends on the pixel type of the
 // provided VideoLayout.
+// TODO: yuweih - move logic in this class into coordinate_conversion.h.
 class CoordinateConverter {
  public:
   CoordinateConverter();

@@ -31,8 +31,11 @@ class MouseCursorMonitor {
     // top-left monitor always starts from (0, 0).
     // The coordinates of the position is controlled by OS, but it's always
     // consistent with DesktopFrame.rect().top_left().
+    // TODO: crbug.com/455622961 - Remove this method once the
+    // clientRenderedHostCursor capability is fully rolled out.
     virtual void OnMouseCursorPosition(const webrtc::DesktopVector& position) {}
 
+    // Called when the cursor position has changed.
     // See comment in remoting/proto/coordinates.proto.
     virtual void OnMouseCursorFractionalPosition(
         const FractionalCoordinate& fractional_position) {}
@@ -42,7 +45,9 @@ class MouseCursorMonitor {
 
   // Initializes the monitor with the `callback`, which must remain valid until
   // capturer is destroyed.
-  // `callback` will be called whenever the cursor shape or position is changed.
+  // An implementation may either call one of the
+  // OnMouseCursorPosition/OnMouseCursorFractionalPosition methods, or both,
+  // whenever the cursor position is changed, depending on what it supports.
   virtual void Init(Callback* callback) = 0;
 
   // Sets the preferred interval between two cursor captures. Note that not all

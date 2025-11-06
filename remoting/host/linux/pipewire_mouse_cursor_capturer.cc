@@ -20,6 +20,7 @@
 #include "remoting/base/constants.h"
 #include "remoting/host/linux/gnome_display_config.h"
 #include "remoting/host/linux/pipewire_capture_stream.h"
+#include "remoting/protocol/coordinate_conversion.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
@@ -28,19 +29,6 @@
 #include "third_party/webrtc/modules/desktop_capture/shared_desktop_frame.h"
 
 namespace remoting {
-
-namespace {
-
-float CalculateFractionalCoordinate(int val, int size) {
-  if (size <= 1) {
-    return 0.f;
-  }
-  // Clamp to prevent bogus values, in case the PipeWire coordinates are
-  // out-of-sync with the display config.
-  return std::clamp(static_cast<float>(val) / (size - 1), 0.f, 1.f);
-}
-
-}  // namespace
 
 PipewireMouseCursorCapturer::PipewireMouseCursorCapturer(
     base::WeakPtr<GnomeDisplayConfigMonitor> display_config_monitor,
@@ -171,12 +159,9 @@ void PipewireMouseCursorCapturer::OnCursorPositionChanged(
     return;
   }
   latest_global_cursor_position_ = new_global_cursor_position;
-  latest_fractional_cursor_position_.emplace();
-  latest_fractional_cursor_position_->set_screen_id(screen_id);
-  latest_fractional_cursor_position_->set_x(CalculateFractionalCoordinate(
-      cursor_position->x(), monitor_it->second.width));
-  latest_fractional_cursor_position_->set_y(CalculateFractionalCoordinate(
-      cursor_position->y(), monitor_it->second.height));
+  latest_fractional_cursor_position_ = protocol::ToFractionalCoordinate(
+      screen_id, {monitor_it->second.width, monitor_it->second.height},
+      *cursor_position);
   observers_.Notify(&Observer::OnCursorPositionChanged, this);
 }
 

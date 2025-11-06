@@ -4,7 +4,12 @@
 
 #include "remoting/host/webrtc_mouse_cursor_monitor_adaptor.h"
 
+#include "base/check.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/sequence_checker.h"
+#include "remoting/proto/coordinates.pb.h"
+#include "remoting/protocol/coordinate_conversion.h"
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor_monitor.h"
 
 namespace remoting {
@@ -23,39 +28,69 @@ base::TimeDelta WebrtcMouseCursorMonitorAdaptor::GetDefaultCaptureInterval() {
 }
 
 WebrtcMouseCursorMonitorAdaptor::WebrtcMouseCursorMonitorAdaptor(
-    std::unique_ptr<webrtc::MouseCursorMonitor> monitor)
-    : monitor_(std::move(monitor)) {}
+    std::unique_ptr<webrtc::MouseCursorMonitor> cursor_monitor,
+    std::unique_ptr<DesktopDisplayInfoMonitor> display_info_monitor)
+    : cursor_monitor_(std::move(cursor_monitor)),
+      display_info_monitor_(std::move(display_info_monitor)) {}
 
 WebrtcMouseCursorMonitorAdaptor::~WebrtcMouseCursorMonitorAdaptor() = default;
 
 void WebrtcMouseCursorMonitorAdaptor::Init(
-    protocol::MouseCursorMonitor::Callback* callback) {
+    MouseCursorMonitor::Callback* callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   callback_ = callback;
-  monitor_->Init(this, webrtc::MouseCursorMonitor::SHAPE_AND_POSITION);
+  cursor_monitor_->Init(this, webrtc::MouseCursorMonitor::SHAPE_AND_POSITION);
+  display_info_monitor_->Start();
   StartCaptureTimer(GetDefaultCaptureInterval());
 }
 
 void WebrtcMouseCursorMonitorAdaptor::SetPreferredCaptureInterval(
     base::TimeDelta interval) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   StartCaptureTimer(std::clamp(interval, kMinCursorCaptureInterval,
                                kMaxCursorCaptureInterval));
 }
 
 void WebrtcMouseCursorMonitorAdaptor::OnMouseCursor(
     webrtc::MouseCursor* cursor) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   callback_->OnMouseCursor(base::WrapUnique(cursor));
 }
 
 void WebrtcMouseCursorMonitorAdaptor::OnMouseCursorPosition(
     const webrtc::DesktopVector& position) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   callback_->OnMouseCursorPosition(position);
+
+  const auto* display_info = display_info_monitor_->GetLatestDisplayInfo();
+  if (!display_info) {
+    return;
+  }
+  for (const auto& display : display_info->displays()) {
+    if (position.x() >= display.x &&
+        position.x() < static_cast<int>(display.x + display.width) &&
+        position.y() >= display.y &&
+        position.y() < static_cast<int>(display.y + display.height)) {
+      auto fractional_position = protocol::ToFractionalCoordinate(
+          display.id,
+          {static_cast<int>(display.width), static_cast<int>(display.height)},
+          {position.x() - display.x, position.y() - display.y});
+      callback_->OnMouseCursorFractionalPosition(fractional_position);
+      return;
+    }
+  }
+  LOG(ERROR) << "Cursor position " << position.x() << ", " << position.y()
+             << " is not within any display.";
 }
 
 void WebrtcMouseCursorMonitorAdaptor::StartCaptureTimer(
     base::TimeDelta capture_interval) {
-  capture_timer_.Start(FROM_HERE, capture_interval,
-                       base::BindRepeating(&webrtc::MouseCursorMonitor::Capture,
-                                           base::Unretained(monitor_.get())));
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  capture_timer_.Start(
+      FROM_HERE, capture_interval,
+      base::BindRepeating(&webrtc::MouseCursorMonitor::Capture,
+                          base::Unretained(cursor_monitor_.get())));
 }
 
 }  // namespace remoting

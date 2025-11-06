@@ -113,9 +113,16 @@ void MouseShapePump::OnMouseCursorFractionalPosition(
   if (!send_cursor_position_to_client_) {
     return;
   }
-  protocol::HostCursorPosition position;
-  *position.mutable_fractional_coordinate() = fractional_position;
-  cursor_shape_stub_->SetHostCursorPosition(position);
+
+  if (cursor_shape_stub_) {
+    protocol::HostCursorPosition position;
+    *position.mutable_fractional_coordinate() = fractional_position;
+    cursor_shape_stub_->SetHostCursorPosition(position);
+  }
+
+  if (callback_) {
+    callback_->OnMouseCursorFractionalPosition(fractional_position);
+  }
 }
 
 }  // namespace remoting
