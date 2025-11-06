@@ -1052,6 +1052,12 @@ class ShelfWidgetViewsVisibilityTest : public NoSessionAshTestBase {
     kLoginShelf,  // LoginShelfView visible.
   };
 
+  void TearDown() override {
+    secondary_shelf_widget_ = nullptr;
+    primary_shelf_widget_ = nullptr;
+    NoSessionAshTestBase::TearDown();
+  }
+
   void InitShelfVariables() {
     // Create setup with 2 displays primary and secondary.
     UpdateDisplay("800x600,800x600");
@@ -1087,8 +1093,8 @@ class ShelfWidgetViewsVisibilityTest : public NoSessionAshTestBase {
   }
 
  private:
-  raw_ptr<ShelfWidget, DanglingUntriaged> primary_shelf_widget_ = nullptr;
-  raw_ptr<ShelfWidget, DanglingUntriaged> secondary_shelf_widget_ = nullptr;
+  raw_ptr<ShelfWidget> primary_shelf_widget_ = nullptr;
+  raw_ptr<ShelfWidget> secondary_shelf_widget_ = nullptr;
 };
 
 TEST_F(ShelfWidgetViewsVisibilityTest, LoginViewsLockViews) {
