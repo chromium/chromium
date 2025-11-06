@@ -38,6 +38,7 @@
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/status_bubble.h"
 #include "chrome/browser/ui/tab_helpers.h"
+#include "chrome/browser/ui/tabs/tab_limit_manager.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
@@ -874,6 +875,17 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
     }
 
     DCHECK(tab_to_insert);
+
+    // Check if adding this tab would exceed the tab limit.
+    Profile* profile = params->browser->profile();
+    bool is_incognito = profile->IsOffTheRecord();
+
+    if (!tab_limit_manager::CanAddNewTab(profile, is_incognito)) {
+      // Tab limit reached. Don't add the tab and return early.
+      // The tab_to_insert will be destroyed when it goes out of scope.
+      return;
+    }
+
     // The navigation should insert a new tab into the target Browser.
     params->browser->GetBrowserForMigrationOnly()->tab_strip_model()->AddTab(
         std::move(tab_to_insert), params->tabstrip_index, params->transition,

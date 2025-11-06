@@ -56,6 +56,7 @@
 #include "chrome/browser/ui/commerce/ui_utils.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble.h"
 #include "chrome/browser/ui/tabs/features.h"
+#include "chrome/browser/ui/tabs/tab_limit_manager.h"
 #include "chrome/browser/ui/tabs/organization/metrics.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
@@ -3408,6 +3409,15 @@ int TabStripModel::InsertTabAtImpl(
     std::unique_ptr<tabs::TabModel> tab,
     int add_types,
     std::optional<tab_groups::TabGroupId> group) {
+  // Secondary check: Enforce tab limit as a safety measure.
+  Profile* profile = profile_;
+  bool is_incognito = profile ? profile->IsOffTheRecord() : false;
+
+  if (!tab_limit_manager::CanAddNewTab(profile, is_incognito)) {
+    // Tab limit reached. Return -1 to indicate failure.
+    return -1;
+  }
+
   if (group_model_ && group.has_value()) {
     CHECK(group_model_->ContainsTabGroup(group.value()));
   }

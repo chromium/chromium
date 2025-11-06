@@ -65,6 +65,7 @@
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
+#include "chrome/browser/ui/tabs/tab_limit_manager.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
@@ -1466,9 +1467,16 @@ void BrowserCommandController::InitCommandState() {
 
   // Window management commands
   command_updater_.UpdateCommandEnabled(IDC_CLOSE_WINDOW, true);
+
+  // Check tab limit before enabling new tab command.
+  Profile* profile = browser_->profile();
+  bool is_incognito = profile ? profile->IsOffTheRecord() : false;
+  bool can_add_tab = tab_limit_manager::CanAddNewTab(profile, is_incognito);
+
   command_updater_.UpdateCommandEnabled(
-      IDC_NEW_TAB, !browser_->app_controller() ||
-                       !browser_->app_controller()->ShouldHideNewTabButton());
+      IDC_NEW_TAB, can_add_tab &&
+                       (!browser_->app_controller() ||
+                        !browser_->app_controller()->ShouldHideNewTabButton()));
   command_updater_.UpdateCommandEnabled(IDC_CLOSE_TAB, true);
   command_updater_.UpdateCommandEnabled(
       IDC_DUPLICATE_TAB, !browser_->is_type_picture_in_picture());
