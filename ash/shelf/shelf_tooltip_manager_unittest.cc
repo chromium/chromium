@@ -50,6 +50,13 @@ class ShelfTooltipManagerTest : public AshTestBase {
     tooltip_manager_->set_timer_delay_for_test(0);
   }
 
+  void TearDown() override {
+    tooltip_manager_ = nullptr;
+    test_api_.reset();
+    shelf_view_ = nullptr;
+    AshTestBase::TearDown();
+  }
+
   bool IsTimerRunning() { return tooltip_manager_->timer_.IsRunning(); }
   views::Widget* GetTooltip() { return tooltip_manager_->bubble_->GetWidget(); }
 
@@ -68,8 +75,8 @@ class ShelfTooltipManagerTest : public AshTestBase {
   }
 
  protected:
-  raw_ptr<ShelfView, DanglingUntriaged> shelf_view_;
-  raw_ptr<ShelfTooltipManager, DanglingUntriaged> tooltip_manager_;
+  raw_ptr<ShelfView> shelf_view_;
+  raw_ptr<ShelfTooltipManager> tooltip_manager_;
   std::unique_ptr<ShelfViewTestAPI> test_api_;
 };
 
