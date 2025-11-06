@@ -6,8 +6,7 @@
 * content. */
 :root {
   color-scheme: light dark;
-  --color--surface-container-light: light-dark(#F8FAFD, #3D3F42);
-  --color--surface-container-dark: light-dark(#DEE3E9, #262627);
+  --color--surface-container: light-dark(#F0F4F9, #282A2C);
 }
 
 html,
@@ -144,9 +143,9 @@ body {
 #fre-app-container .skeleton-loader-block {
   width: 100%;
   margin-bottom: 12px;
-  background-color: var(--color--surface-container-light);
+  background-color: var(--color--surface-container);
   border-radius: 12px;
-  animation: 1.5s infinite ease-in-out color-fade;
+  animation: 1.5s infinite ease-in-out opacity-fade;
 }
 
 #fre-app-container .container .bottom {
@@ -202,17 +201,15 @@ body {
   animation-delay: 0.6s;
 }
 
-@keyframes color-fade {
+@keyframes opacity-fade {
   0% {
-  background-color: var(--color--surface-container-light);
+    opacity: 100%;
   }
-
   33% {
-  background-color: var(--color--surface-container-dark);
+    opacity: 50%;
   }
-
   100% {
-  background-color: var(--color--surface-container-light);
+    opacity: 100%;
   }
 }
 
