@@ -192,9 +192,7 @@ struct ExtraInfoSpec {
     EXTRA_HEADERS = 1 << 5,
   };
 
-  static bool InitFromValue(content::BrowserContext* browser_context,
-                            const base::Value& value,
-                            int* extra_info_spec);
+  static bool InitFromValue(const base::Value& value, int* extra_info_spec);
 };
 
 // Data container for RequestCookies as defined in the declarative WebRequest

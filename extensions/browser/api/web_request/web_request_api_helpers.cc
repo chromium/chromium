@@ -578,8 +578,7 @@ IgnoredAction::IgnoredAction(extensions::ExtensionId extension_id,
 
 IgnoredAction::IgnoredAction(IgnoredAction&& rhs) = default;
 
-bool ExtraInfoSpec::InitFromValue(content::BrowserContext* browser_context,
-                                  const base::Value& value,
+bool ExtraInfoSpec::InitFromValue(const base::Value& value,
                                   int* extra_info_spec) {
   *extra_info_spec = 0;
   if (!value.is_list()) {
