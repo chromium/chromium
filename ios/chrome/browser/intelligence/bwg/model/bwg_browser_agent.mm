@@ -81,25 +81,22 @@ void BwgBrowserAgent::PresentBwgOverlay(
   if (expected_page_context.has_value()) {
     PresentBwgOverlayWithState(
         base_view_controller, std::move(expected_page_context.value()),
-        ios::provider::BWGPageContextComputationState::kSuccess,
-        ios::provider::BWGPageContextAttachmentState::kAttached);
+        ios::provider::BWGPageContextComputationState::kSuccess);
   } else {
     PresentBwgOverlayWithState(
         base_view_controller,
         /*page_context_proto=*/nullptr,
         BWGPageContextComputationStateFromPageContextWrapperError(
-            expected_page_context.error()),
-        ios::provider::BWGPageContextAttachmentState::kAttached);
+            expected_page_context.error()));
   }
 }
 
 void BwgBrowserAgent::PresentPendingBwgOverlay(
-    UIViewController* base_view_controller) {
+    UIViewController* base_view_controller,
+    std::unique_ptr<optimization_guide::proto::PageContext> page_context) {
   PresentBwgOverlayWithState(
-      base_view_controller,
-      /*page_context_proto=*/nullptr,
-      ios::provider::BWGPageContextComputationState::kPending,
-      ios::provider::BWGPageContextAttachmentState::kDetached);
+      base_view_controller, std::move(page_context),
+      ios::provider::BWGPageContextComputationState::kPending);
 }
 
 void BwgBrowserAgent::UpdateBwgOverlayPageContext(
@@ -108,8 +105,6 @@ void BwgBrowserAgent::UpdateBwgOverlayPageContext(
   GeminiPageContext* gemini_page_context = [[GeminiPageContext alloc] init];
   gemini_page_context.BWGPageContextComputationState =
       ios::provider::BWGPageContextComputationState::kSuccess;
-  gemini_page_context.BWGPageContextAttachmentState =
-      ios::provider::BWGPageContextAttachmentState::kAttached;
 
   std::unique_ptr<optimization_guide::proto::PageContext> page_context_proto =
       nullptr;
@@ -132,8 +127,7 @@ void BwgBrowserAgent::UpdateBwgOverlayPageContext(
 void BwgBrowserAgent::PresentBwgOverlayWithState(
     UIViewController* base_view_controller,
     std::unique_ptr<optimization_guide::proto::PageContext> page_context_proto,
-    ios::provider::BWGPageContextComputationState computation_state,
-    ios::provider::BWGPageContextAttachmentState attachment_state) {
+    ios::provider::BWGPageContextComputationState computation_state) {
   SetSessionCommandHandlers();
   [bwg_page_state_change_handler_ setBaseViewController:base_view_controller];
 
@@ -170,7 +164,6 @@ void BwgBrowserAgent::PresentBwgOverlayWithState(
   // for the current web state.
   config.pageContext = [[GeminiPageContext alloc] init];
   config.pageContext.BWGPageContextComputationState = computation_state;
-  config.pageContext.BWGPageContextAttachmentState = attachment_state;
   config.pageContext.uniquePageContext = std::move(page_context_proto);
   config.pageContext.favicon = FetchPageFavicon();
   ApplyUserPrefsToPageContext(config.pageContext);
@@ -203,6 +196,13 @@ void BwgBrowserAgent::ApplyUserPrefsToPageContext(
   if (!pref_service->GetBoolean(prefs::kIOSBWGPageContentSetting)) {
     gemini_page_context.BWGPageContextAttachmentState =
         ios::provider::BWGPageContextAttachmentState::kUserDisabled;
+  } else {
+    // If page context is not disabled by the user, page context is always
+    // available and should be attached. Note page context is only partially
+    // available (e.g. title, url, favicon) while
+    // `BWGPageContextComputationState` is pending.
+    gemini_page_context.BWGPageContextAttachmentState =
+        ios::provider::BWGPageContextAttachmentState::kAttached;
   }
 }
 

@@ -100,3 +100,19 @@ TEST_F(BwgBrowserAgentTest, TestBwgBrowserAgentPresentBwgOverlay) {
   // Assert the BWG tab helper was set as foregrounded.
   ASSERT_FALSE(bwg_tab_helper_->GetIsBwgSessionActiveInBackground());
 }
+
+TEST_F(BwgBrowserAgentTest, TestBwgBrowserAgentPresentPendingBwgOverlay) {
+  UIViewController* base_view_controller = [[UIViewController alloc] init];
+  std::unique_ptr<optimization_guide::proto::PageContext> page_context =
+      std::make_unique<optimization_guide::proto::PageContext>();
+
+  // Set the BWG tab helper as backgrounded and assert.
+  bwg_tab_helper_->PrepareBwgFreBackgrounding();
+  ASSERT_TRUE(bwg_tab_helper_->GetIsBwgSessionActiveInBackground());
+
+  bwg_browser_agent_->PresentPendingBwgOverlay(base_view_controller,
+                                               std::move(page_context));
+
+  // Assert the BWG tab helper was set as foregrounded.
+  ASSERT_FALSE(bwg_tab_helper_->GetIsBwgSessionActiveInBackground());
+}

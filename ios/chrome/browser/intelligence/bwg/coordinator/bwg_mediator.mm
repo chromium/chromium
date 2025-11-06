@@ -8,6 +8,7 @@
 
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/strings/utf_string_conversions.h"
 #import "base/time/time.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/bwg_mediator_delegate.h"
@@ -220,7 +221,7 @@
       base::TimeTicks::Now() - _BWGOverlayPreparationStartTime);
 }
 
-// Opens the BWG overlay in a pending state, since page context is not yet
+// Opens the BWG overlay in a pending state, since full page context is not yet
 // ready.
 - (void)openPendingBWGOverlay {
   _pageContextWrapper = nil;
@@ -229,7 +230,15 @@
   CHECK(activeWebState);
   CHECK(_BWGService->IsBwgAvailableForWebState(activeWebState));
 
-  _BWGBrowserAgent->PresentPendingBwgOverlay(self.baseViewController);
+  // Set parts of PageContext (i.e. url and title) that are available before the
+  // page is done loading.
+  std::unique_ptr<optimization_guide::proto::PageContext> partialPageContext =
+      std::make_unique<optimization_guide::proto::PageContext>();
+  partialPageContext->set_url(activeWebState->GetVisibleURL().spec());
+  partialPageContext->set_title(base::UTF16ToUTF8(activeWebState->GetTitle()));
+
+  _BWGBrowserAgent->PresentPendingBwgOverlay(self.baseViewController,
+                                             std::move(partialPageContext));
 
   base::UmaHistogramLongTimes100(
       _didPresentBWGFRE ? kStartupTimeWithFREHistogram
