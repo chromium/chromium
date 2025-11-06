@@ -21,7 +21,7 @@ All events share a common set of base properties:
 |-:---------------|-:-------|-:-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-:--------|
 | `eventType`     | string  | The type of event being recorded. See the _Event Types_ section below for possible values.                                                                                                      | Yes      |
 | `eventId`       | string  | A unique identifier for the event. For events with a duration, this ID links the `START` and `END` records.                                                                                     | Yes      |
-| `deviceUptime`  | string  | The uptime of the device in [ISO 8601 duration format](https://en.wikipedia.org/wiki/ISO_8601#Durations).                                                                                       | Yes      |
+| `deviceUptime`  | string  | The uptime of the device in integer microseconds.                                                                                                                                               | Yes      |
 | `pid`           | integer | The process ID of the updater instance that emitted the event.                                                                                                                                  | Yes      |
 | `processToken`  | string  | A per-process random value to discriminate between processes with the same PID due to OS-reuse.                                                                                                 | Yes      |
 | `bound`         | string  | Indicates if the record marks the beginning (`START`), end (`END`), or an instantaneous event (`INSTANT`). Defaults to `INSTANT`.                                                               | No       |
@@ -145,7 +145,7 @@ The schema defines the following event types:
     * `osVersion` (string): The operating system version.
     * `osArchitecture` (string): The architecture of the operating system.
     * `updaterArchitecture` (string): The architecture of the updater binary.
-    * `deviceUptime` (string): The uptime of the system (ISO 8601 duration).
+    * `deviceUptime` (string): The uptime of the system in integer microseconds.
     * `parentPid` (integer): The parent process id, which allows the process
       tree of the updater to be reconstructed.
   * `END`: No specific properties.

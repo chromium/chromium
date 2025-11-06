@@ -9,14 +9,30 @@
 #include <string>
 
 #include "base/base64.h"
+#include "base/json/values_util.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
+#include "base/values.h"
 
 namespace updater {
+namespace {
+
+std::string BoundToString(Event::Bound bound) {
+  switch (bound) {
+    case Event::Bound::kStart:
+      return "START";
+    case Event::Bound::kEnd:
+      return "END";
+    case Event::Bound::kInstant:
+      return "INSTANT";
+  }
+}
+
+}  // namespace
 
 std::string GenerateEventId() {
   static std::atomic_uint counter(0);
@@ -42,6 +58,34 @@ Event::Event(const std::string& event_type,
       process_token_(common_fields.process_token),
       errors_(common_fields.errors) {}
 
+base::Value::Dict Event::ToDict() const {
+  base::Value::Dict dict =
+      base::Value::Dict()
+          .Set("eventType", event_type_)
+          .Set("eventId", event_id_)
+          .Set("deviceUptime", base::TimeDeltaToValue(device_uptime_))
+          .Set("pid", pid_)
+          .Set("processToken", process_token_)
+          .Set("bound", BoundToString(bound_));
+  if (!errors_.empty()) {
+    base::Value::List errors;
+    for (const auto& error : errors_) {
+      errors.Append(error.ToDict());
+    }
+    dict.Set("errors", std::move(errors));
+  }
+  ToDictInternal(dict);
+  return dict;
+}
+
+base::Value::Dict Event::Error::ToDict() const {
+  base::Value::Dict dict = base::Value::Dict()
+                               .Set("category", category)
+                               .Set("code", code)
+                               .Set("extracode1", extracode1);
+  return dict;
+}
+
 Event::CommonFields::CommonFields(std::string event_id,
                                   base::TimeDelta device_uptime,
                                   int pid,
@@ -64,6 +108,10 @@ InstallStartEvent::InstallStartEvent(const CommonFields& common_fields,
     : Event("INSTALL", Bound::kStart, common_fields), app_id_(app_id) {}
 
 InstallStartEvent::~InstallStartEvent() = default;
+
+void InstallStartEvent::ToDictInternal(base::Value::Dict& dict) const {
+  dict.Set("appId", app_id_);
+}
 
 InstallStartEvent::Builder::Builder() = default;
 InstallStartEvent::Builder::~Builder() = default;
@@ -92,6 +140,12 @@ InstallEndEvent::InstallEndEvent(const CommonFields& common_fields,
                                  std::optional<std::string> version)
     : Event("INSTALL", Bound::kEnd, common_fields), version_(version) {}
 InstallEndEvent::~InstallEndEvent() = default;
+
+void InstallEndEvent::ToDictInternal(base::Value::Dict& dict) const {
+  if (version_) {
+    dict.Set("version", *version_);
+  }
+}
 
 InstallEndEvent::Builder::Builder() = default;
 InstallEndEvent::Builder::~Builder() = default;

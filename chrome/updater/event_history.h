@@ -14,12 +14,15 @@
 #include "base/process/process.h"
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
+#include "base/values.h"
 
 // This API provides mechanisms to work with updater events, which are recorded
 // in the history log. The API implements the schema defined in
 // //docs/updater/history_log.md.
 //
-// Events are created in the updater using a fluent Builder pattern.
+// Events are created in the updater using a fluent Builder pattern and can be
+// serialized to `base::Value::Dict` objects, which directly correspond to the
+// JSON objects described in the schema.
 //
 // Event objects are immutable upon construction and are thread-safe. Builders
 // are not thread-safe.
@@ -34,6 +37,10 @@
 //            .SetAppId("my-app-id")
 //            .AddError({.category = 1, .code = 2, .extracode1 = 3})
 //            .Build();
+//
+// Serialize an event to a dictionary:
+//
+//    base::Value::Dict event_dict = event->ToDict();
 
 namespace updater {
 
@@ -67,6 +74,9 @@ class Event {
   Bound bound() const { return bound_; }
   const std::vector<Error>& errors() const { return errors_; }
 
+  // Serializes the event to a `base::Value::Dict` according to the schema.
+  base::Value::Dict ToDict() const;
+
  protected:
   struct CommonFields;
 
@@ -78,6 +88,10 @@ class Event {
   Event(const std::string& event_type,
         Bound bound,
         const CommonFields& common_fields);
+
+  // Derived event types implement this method to add event-specific fields to
+  // the serialized dict.
+  virtual void ToDictInternal(base::Value::Dict& dict) const = 0;
 
  private:
   const std::string event_type_;
@@ -94,6 +108,9 @@ struct Event::Error {
   int category = 0;
   int code = 0;
   int extracode1 = 0;
+
+  // Serializes the error to a `base::Value::Dict`.
+  base::Value::Dict ToDict() const;
 };
 
 // Bundles properties common to all events for implementation brevity.
@@ -163,6 +180,8 @@ class InstallStartEvent : public Event {
   InstallStartEvent(const CommonFields& common_fields,
                     const std::string& app_id);
 
+  void ToDictInternal(base::Value::Dict& dict) const override;
+
   const std::string app_id_;
 };
 
@@ -192,6 +211,8 @@ class InstallEndEvent : public Event {
  private:
   InstallEndEvent(const CommonFields& common_fields,
                   std::optional<std::string> version);
+
+  void ToDictInternal(base::Value::Dict& dict) const override;
 
   const std::optional<std::string> version_;
 };
