@@ -94,7 +94,7 @@ int SandboxedFile::Close() {
 }
 
 void SandboxedFile::Abandon() {
-  GetLockState().fetch_or(kAbandonedBit);
+  GetSharedAtomicLock().fetch_or(kAbandonedBit);
 }
 
 int SandboxedFile::Read(void* buffer, int size, sqlite3_int64 offset) {
@@ -251,30 +251,30 @@ int SandboxedFile::Lock(int mode) {
     return SQLITE_OK;
   }
 
-  auto& lock_state = GetLockState();
+  auto& shared_atomic_lock = GetSharedAtomicLock();
   switch (mode) {
     case SQLITE_LOCK_SHARED: {
       // Try to increment the SHARED lock count as long as the PENDING lock
       // remains unheld and there is room remaining to count a new SHARED lock.
-      uint32_t shared_state = lock_state.load();
+      uint32_t lock_snapshot = shared_atomic_lock.load();
 
-      if ((shared_state & kAbandonedBit) != 0) {
+      if ((lock_snapshot & kAbandonedBit) != 0) {
         return SQLITE_IOERR_LOCK;
       }
 
       for (int i = 0; i < 5; ++i) {
-        if ((shared_state & kPendingBit) != 0 ||
-            (shared_state & kSharedMask) == kMaxSharedLocks) {
+        if ((lock_snapshot & kPendingBit) != 0 ||
+            (lock_snapshot & kSharedMask) == kMaxSharedLocks) {
           break;
         }
-        if (lock_state.compare_exchange_strong(shared_state,
-                                               shared_state + 1)) {
+        if (shared_atomic_lock.compare_exchange_strong(lock_snapshot,
+                                                       lock_snapshot + 1)) {
           // The SHARED lock was successfully acquired.
           sqlite_lock_mode_ = SQLITE_LOCK_SHARED;
           return SQLITE_OK;
         }
 
-        if ((shared_state & kAbandonedBit) != 0) {
+        if ((lock_snapshot & kAbandonedBit) != 0) {
           return SQLITE_IOERR_LOCK;
         }
 
@@ -292,12 +292,12 @@ int SandboxedFile::Lock(int mode) {
       // Acquire a RESERVED lock to prevent a different writer to declare its
       // intention to modify the database. At this point, readers are still
       // allowed to get a SHARED lock on the database.
-      const uint32_t acquired_shared_state = lock_state.fetch_or(kReservedBit);
-      if ((acquired_shared_state & kAbandonedBit) != 0) {
+      const uint32_t lock_snapshot = shared_atomic_lock.fetch_or(kReservedBit);
+      if ((lock_snapshot & kAbandonedBit) != 0) {
         return SQLITE_IOERR_LOCK;
       }
 
-      if ((acquired_shared_state & kReservedBit) != 0) {
+      if ((lock_snapshot & kReservedBit) != 0) {
         return SQLITE_BUSY;
       }
 
@@ -318,17 +318,17 @@ int SandboxedFile::Lock(int mode) {
       // Acquire the PENDING lock, if not already acquired. Hold it until the
       // EXCLUSIVE lock is obtained. No new SHARED locks will be granted in
       // the meantime, but current SHARED locks remain valid.
-      uint32_t shared_state = 0;
+      uint32_t lock_snapshot = 0;
       if (sqlite_lock_mode_ < SQLITE_LOCK_PENDING) {
-        shared_state = lock_state.fetch_or(kPendingBit);
-        if ((shared_state & kAbandonedBit) != 0) {
+        lock_snapshot = shared_atomic_lock.fetch_or(kPendingBit);
+        if ((lock_snapshot & kAbandonedBit) != 0) {
           // This instance may have just set `kPendingBit`. There is no need to
           // clear it since all other parties will detect that the instance is
           // abandoned on their next attempt to acquire any lock.
           return SQLITE_IOERR_LOCK;
         }
 
-        if ((shared_state & kPendingBit) != 0) {
+        if ((lock_snapshot & kPendingBit) != 0) {
           // This connection is not the owner of the PENDING lock.
           return SQLITE_BUSY;
         }
@@ -336,19 +336,19 @@ int SandboxedFile::Lock(int mode) {
         // SHARED locks are released.
         sqlite_lock_mode_ = SQLITE_LOCK_PENDING;
         // Update the copy of the current state of the lock for use below.
-        shared_state |= kPendingBit;
+        lock_snapshot |= kPendingBit;
       } else {
         // Fetch the current state of the lock for use below.
-        shared_state = lock_state.load();
+        lock_snapshot = shared_atomic_lock.load();
 
-        if ((shared_state & kAbandonedBit) != 0) {
+        if ((lock_snapshot & kAbandonedBit) != 0) {
           return SQLITE_IOERR_LOCK;
         }
       }
 
       // Do not grant the EXCLUSIVE lock until all other readers have released
       // their SHARED locks. This connection still owns and keeps a SHARED lock.
-      if ((shared_state & kSharedMask) != 1) {
+      if ((lock_snapshot & kSharedMask) != 1) {
         return SQLITE_BUSY;
       }
 
@@ -386,7 +386,7 @@ int SandboxedFile::Unlock(int mode) {
     return SQLITE_OK;
   }
 
-  auto& lock_state = GetLockState();
+  auto& shared_atomic_lock = GetSharedAtomicLock();
 
   // Release the RESERVED or RESERVED and PENDING bits, if held.
   if (uint32_t clear_mask =
@@ -394,13 +394,13 @@ int SandboxedFile::Unlock(int mode) {
                ? (kPendingBit | kReservedBit)
                : (sqlite_lock_mode_ == SQLITE_LOCK_RESERVED ? kReservedBit
                                                             : 0U))) {
-    lock_state.fetch_and(~clear_mask);
+    shared_atomic_lock.fetch_and(~clear_mask);
   }
 
   // Release the SHARED lock if no longer needed.
   if (mode == SQLITE_LOCK_NONE) {
-    const uint32_t readers_shared_state = lock_state.fetch_sub(1);
-    CHECK_GE(readers_shared_state & kSharedMask, 1u);
+    const uint32_t lock_snapshot = shared_atomic_lock.fetch_sub(1);
+    CHECK_GE(lock_snapshot & kSharedMask, 1u);
   }
 
   // Lock was successfully released.
@@ -409,8 +409,8 @@ int SandboxedFile::Unlock(int mode) {
 }
 
 int SandboxedFile::CheckReservedLock(int* has_reserved_lock) {
-  uint32_t shared_state = GetLockState().load();
-  *has_reserved_lock = (shared_state & kReservedBit) != 0;
+  uint32_t lock_snapshot = GetSharedAtomicLock().load();
+  *has_reserved_lock = (lock_snapshot & kReservedBit) != 0;
   return SQLITE_OK;
 }
 
@@ -459,9 +459,9 @@ int SandboxedFile::Unfetch(sqlite3_int64 offset, void* fetch_result) {
   return SQLITE_IOERR;
 }
 
-LockState& SandboxedFile::GetLockState() {
+SharedAtomicLock& SandboxedFile::GetSharedAtomicLock() {
   CHECK(mapped_shared_lock_.IsValid());
-  return *mapped_shared_lock_.GetMemoryAs<LockState>();
+  return *mapped_shared_lock_.GetMemoryAs<SharedAtomicLock>();
 }
 
 }  // namespace persistent_cache

@@ -19,7 +19,8 @@ class SandboxedFileTest : public testing::Test {
  public:
   void SetUp() override {
     ASSERT_TRUE(temporary_directory_.CreateUniqueTempDir());
-    shared_region_ = base::UnsafeSharedMemoryRegion::Create(sizeof(LockState));
+    shared_region_ =
+        base::UnsafeSharedMemoryRegion::Create(sizeof(SharedAtomicLock));
   }
 
   std::unique_ptr<SandboxedFile> CreateEmptyFile(const std::string& file_name) {

@@ -47,7 +47,8 @@ std::optional<SqliteVfsFileSet> SqliteVfsFileSet::Create(
     return std::nullopt;
   }
 
-  auto shared_lock = base::UnsafeSharedMemoryRegion::Create(sizeof(LockState));
+  auto shared_lock =
+      base::UnsafeSharedMemoryRegion::Create(sizeof(SharedAtomicLock));
   if (!shared_lock.IsValid()) {
     return std::nullopt;
   }

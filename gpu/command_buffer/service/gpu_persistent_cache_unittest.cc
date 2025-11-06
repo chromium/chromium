@@ -33,7 +33,7 @@ class GpuPersistentCacheTest : public testing::Test {
     cache_params_.journal_file = CreateFile(journal_path);
     cache_params_.journal_file_is_writable = true;
     cache_params_.shared_lock = base::UnsafeSharedMemoryRegion::Create(
-        sizeof(persistent_cache::LockState));
+        sizeof(persistent_cache::SharedAtomicLock));
     ASSERT_TRUE(cache_params_.db_file.IsValid());
     ASSERT_TRUE(cache_params_.journal_file.IsValid());
     ASSERT_TRUE(cache_params_.shared_lock.IsValid());

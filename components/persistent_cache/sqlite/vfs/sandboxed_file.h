@@ -33,7 +33,7 @@ namespace persistent_cache {
 //
 // A process holds the EXCLUSIVE lock when it holds the PENDING lock and the
 // SHARED COUNT is zero.
-using LockState = base::subtle::SharedAtomic<uint32_t>;
+using SharedAtomicLock = base::subtle::SharedAtomic<uint32_t>;
 
 // Represents a file to be exposed to sql::Database via
 // SqliteSandboxedVfsDelegate.
@@ -125,7 +125,7 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) SandboxedFile
  private:
   // Returns a pointer to the lock state, which is shared across other instances
   // of SandboxedFile via shared memory.
-  LockState& GetLockState();
+  SharedAtomicLock& GetSharedAtomicLock();
 
   // The path to the underlying file. Only set for the creator of the file; not
   // for other consumers to which it has been shared.
