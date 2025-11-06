@@ -2828,9 +2828,21 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
 
 #if BUILDFLAG(ENABLE_GLIC)
     case CommandGlicShareLimit:
+      base::UmaHistogramCounts1000(
+          "Tab.ContextMenu.GlicShareLimit.SelectedTabsCount",
+          selection_model().selected_indices().size());
       break;
     case CommandGlicStopShare:
     case CommandGlicStartShare: {
+      if (command_id == CommandGlicStartShare) {
+        base::UmaHistogramCounts1000(
+            "Tab.ContextMenu.GlicStartShare.SelectedTabsCount",
+            selection_model().selected_indices().size());
+      } else {
+        base::UmaHistogramCounts1000(
+            "Tab.ContextMenu.GlicStopShare.SelectedTabsCount",
+            selection_model().selected_indices().size());
+      }
       std::vector<int> indices = GetIndicesForCommand(context_index);
       std::vector<tabs::TabHandle> tab_handles;
       for (const auto& selection : indices) {
