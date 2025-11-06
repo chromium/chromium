@@ -32,7 +32,6 @@ using DownloadGifMediaToStringCallback =
     base::OnceCallback<void(const std::string& gif_media_data)>;
 
 bool IsValidGifMediaUrl(const GURL& url) {
-  // TODO: b/323784358 - Check requirements for validating GIF urls.
   return url.DomainIs("media.tenor.com") && url.SchemeIs(url::kHttpsScheme);
 }
 
