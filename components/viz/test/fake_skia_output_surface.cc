@@ -107,7 +107,6 @@ SkCanvas* FakeSkiaOutputSurface::BeginPaintCurrentFrame() {
 
 void FakeSkiaOutputSurface::MakePromiseSkImage(
     ImageContext* image_context,
-    const gfx::ColorSpace& yuv_color_space,
     bool force_rgbx) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
@@ -131,7 +130,7 @@ void FakeSkiaOutputSurface::MakePromiseSkImage(
       SkImages::BorrowTextureFrom(gr_context(), backend_texture,
                                   kTopLeft_GrSurfaceOrigin, sk_color_type,
                                   image_context->alpha_type(),
-                                  image_context->color_space()),
+                                  image_context->GetSkColorSpace()),
       {backend_texture.getBackendFormat()});
 }
 
@@ -155,7 +154,7 @@ SkCanvas* FakeSkiaOutputSurface::BeginPaintRenderPass(
     RenderPassAlphaType alpha_type,
     skgpu::Mipmapped,
     bool scanout_dcomp_surface,
-    sk_sp<SkColorSpace> color_space,
+    const gfx::ColorSpace& color_space,
     bool is_overlay,
     const gpu::Mailbox& mailbox) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -169,7 +168,7 @@ SkCanvas* FakeSkiaOutputSurface::BeginPaintRenderPass(
     SkColorType color_type = ToClosestSkColorType(format);
     SkImageInfo image_info = SkImageInfo::Make(
         surface_size.width(), surface_size.height(), color_type,
-        kPremul_SkAlphaType, std::move(color_space));
+        kPremul_SkAlphaType, color_space.ToSkColorSpace());
     sk_surface = SkSurfaces::RenderTarget(gr_context(), skgpu::Budgeted::kNo,
                                           image_info);
   }
@@ -201,7 +200,7 @@ sk_sp<SkImage> FakeSkiaOutputSurface::MakePromiseSkImageFromRenderPass(
     const gfx::Size& size,
     SharedImageFormat format,
     bool mipmap,
-    sk_sp<SkColorSpace> color_space,
+    const gfx::ColorSpace& color_space,
     const gpu::Mailbox& mailbox) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 

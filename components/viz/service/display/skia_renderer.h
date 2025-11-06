@@ -334,10 +334,10 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
   // A map from RenderPass id to the texture used to draw the RenderPass from.
   base::flat_map<AggregatedRenderPassId, RenderPassBacking>
       render_pass_backings_;
-  sk_sp<SkColorSpace> RenderPassBackingSkColorSpace(
+  gfx::ColorSpace RenderPassBackingColorSpace(
       const RenderPassBacking& backing) {
-    return backing.color_space.GetWithSdrWhiteLevel(CurrentFrameSDRWhiteLevel())
-        .ToSkColorSpace();
+    return backing.color_space.GetWithSdrWhiteLevel(
+        CurrentFrameSDRWhiteLevel());
   }
 
   // Contains every render pass ID that this renderer has allocated. Values are

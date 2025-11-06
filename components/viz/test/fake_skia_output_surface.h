@@ -70,7 +70,7 @@ class FakeSkiaOutputSurface : public SkiaOutputSurface {
                                  RenderPassAlphaType alpha_type,
                                  skgpu::Mipmapped mipmap,
                                  bool scanout_dcomp_surface,
-                                 sk_sp<SkColorSpace> color_space,
+                                 const gfx::ColorSpace& color_space,
                                  bool is_overlay,
                                  const gpu::Mailbox& mailbox) override;
   SkCanvas* RecordOverdrawForCurrentPaint() override;
@@ -80,14 +80,13 @@ class FakeSkiaOutputSurface : public SkiaOutputSurface {
       const gfx::Rect& update_rect,
       bool is_overlay) override;
   void MakePromiseSkImage(ImageContext* image_context,
-                          const gfx::ColorSpace& yuv_color_space,
                           bool force_rgbx) override;
   sk_sp<SkImage> MakePromiseSkImageFromRenderPass(
       const AggregatedRenderPassId& id,
       const gfx::Size& size,
       SharedImageFormat format,
       bool mipmap,
-      sk_sp<SkColorSpace> color_space,
+      const gfx::ColorSpace& color_space,
       const gpu::Mailbox& mailbox) override;
   void RemoveRenderPassResource(
       std::vector<AggregatedRenderPassId> ids) override;

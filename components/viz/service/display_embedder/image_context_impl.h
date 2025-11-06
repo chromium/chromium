@@ -27,8 +27,6 @@
 #include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
 #include "ui/gfx/geometry/size.h"
 
-class SkColorSpace;
-
 namespace gpu {
 class SharedContextState;
 class SharedImageRepresentationFactory;
@@ -55,7 +53,7 @@ class ImageContextImpl final : public ExternalUseClient::ImageContext {
   ImageContextImpl(const gpu::Mailbox& mailbox,
                    const gfx::Size& size,
                    SharedImageFormat format,
-                   sk_sp<SkColorSpace> color_space);
+                   const gfx::ColorSpace& color_space);
 
   ImageContextImpl(const ImageContextImpl&) = delete;
   ImageContextImpl& operator=(const ImageContextImpl&) = delete;

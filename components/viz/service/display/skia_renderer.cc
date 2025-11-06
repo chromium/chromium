@@ -683,8 +683,8 @@ SkiaRenderer::ScopedSkImageBuilder::ScopedSkImageBuilder(
 
   // We need the original TransferableResource.color_space for YUV => RGB
   // conversion.
-  skia_renderer->skia_output_surface_->MakePromiseSkImage(
-      image_context, resource_provider->GetColorSpace(resource_id), force_rgbx);
+  skia_renderer->skia_output_surface_->MakePromiseSkImage(image_context,
+                                                          force_rgbx);
   paint_op_buffer_ = image_context->paint_op_buffer();
   clear_color_ = image_context->clear_color();
   sk_image_ = image_context->image();
@@ -1391,7 +1391,7 @@ void SkiaRenderer::BeginDrawingRenderPass(
         render_pass->id, backing.size, backing.format, backing.alpha_type,
         backing.generate_mipmap ? skgpu::Mipmapped::kYes
                                 : skgpu::Mipmapped::kNo,
-        backing.scanout_dcomp_surface, RenderPassBackingSkColorSpace(backing),
+        backing.scanout_dcomp_surface, RenderPassBackingColorSpace(backing),
         /*is_overlay=*/backing.is_scanout, backing.mailbox);
   }
 
@@ -3355,7 +3355,7 @@ void SkiaRenderer::DrawRenderPassQuad(
   sk_sp<SkImage> content_image =
       skia_output_surface_->MakePromiseSkImageFromRenderPass(
           quad->render_pass_id, backing.size, backing.format,
-          backing.generate_mipmap, RenderPassBackingSkColorSpace(backing),
+          backing.generate_mipmap, RenderPassBackingColorSpace(backing),
           backing.mailbox);
   DLOG_IF(ERROR, !content_image)
       << "MakePromiseSkImageFromRenderPass() failed for render pass";
@@ -3997,7 +3997,7 @@ void SkiaRenderer::PrepareRenderPassOverlay(
         quad->render_pass_id, dst_overlay_backing.size,
         dst_overlay_backing.format, dst_overlay_backing.alpha_type,
         skgpu::Mipmapped::kNo, dst_overlay_backing.scanout_dcomp_surface,
-        RenderPassBackingSkColorSpace(dst_overlay_backing),
+        RenderPassBackingColorSpace(dst_overlay_backing),
         /*is_overlay=*/true, overlay->mailbox);
     if (!current_canvas_) {
       DLOG(ERROR)
@@ -4032,7 +4032,7 @@ void SkiaRenderer::PrepareRenderPassOverlay(
           skia_output_surface_->MakePromiseSkImageFromRenderPass(
               quad->render_pass_id, src_quad_backing->size,
               src_quad_backing->format, src_quad_backing->generate_mipmap,
-              RenderPassBackingSkColorSpace(*src_quad_backing),
+              RenderPassBackingColorSpace(*src_quad_backing),
               src_quad_backing->mailbox);
       if (!content_image) {
         DLOG(ERROR) << "MakePromiseSkImageFromRenderPass() in "

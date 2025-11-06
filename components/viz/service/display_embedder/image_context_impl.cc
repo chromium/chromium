@@ -131,14 +131,8 @@ ImageContextImpl::ImageContextImpl(const TransferableResource& resource,
 ImageContextImpl::ImageContextImpl(const gpu::Mailbox& mailbox,
                                    const gfx::Size& size,
                                    SharedImageFormat format,
-                                   sk_sp<SkColorSpace> color_space)
-    : ImageContext(mailbox,
-                   gpu::SyncToken(),
-                   /*texture_target=*/GL_TEXTURE_2D,
-                   size,
-                   format,
-                   color_space,
-                   /*origin=*/kTopLeft_GrSurfaceOrigin),
+                                   const gfx::ColorSpace& color_space)
+    : ImageContext(mailbox, size, format, color_space),
       is_for_render_pass_(true) {}
 
 ImageContextImpl::~ImageContextImpl() {
@@ -267,7 +261,8 @@ void ImageContextImpl::CreateFallbackImage(
       SkColorType color_type = ToClosestSkColorType(format(), plane_index);
       auto sk_surface = SkSurfaces::WrapBackendTexture(
           fallback_context_state_->gpu_main_graphite_recorder(),
-          graphite_fallback_textures_[plane_index], color_type, color_space(),
+          graphite_fallback_textures_[plane_index], color_type,
+          GetSkColorSpace(),
           /*props=*/nullptr);
       CHECK(sk_surface);
       sk_surface->getCanvas()->clear(
