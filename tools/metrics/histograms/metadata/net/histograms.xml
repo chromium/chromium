@@ -2060,6 +2060,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.DeviceBoundSessions.RefreshQuotaExceededLastResult"
+    enum="DeviceBoundSessionError" expires_after="2026-04-19">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    This records the last outcome of refreshing a Device Bound Session
+    (https://github.com/w3c/webappsec-dbsc/blob/main/README.md#refresh-procedure)
+    when we reject a refresh due to exceeding the refresh quota.
+  </summary>
+</histogram>
+
 <histogram name="Net.DeviceBoundSessions.RefreshResult{RefreshType}"
     enum="DeviceBoundSessionError" expires_after="2026-04-19">
   <owner>drubery@chromium.org</owner>

@@ -898,6 +898,11 @@ SessionError::ErrorType SessionServiceImpl::OnRefreshRequestCompletionInternal(
                                 : RefreshResult::kUnreachable);
   }
 
+  refresh_last_result_.insert_or_assign(
+      session_key.site, SessionError(registration_result.is_error()
+                                         ? registration_result.error().type
+                                         : SessionError::kSuccess));
+
   return registration_result.is_error() ? registration_result.error().type
                                         : SessionError::kSuccess;
 }
@@ -982,6 +987,14 @@ bool SessionServiceImpl::RefreshQuotaExceeded(const SchemefulSite& site) {
   size_t refresh_count = it->second.size();
   if (refresh_count == 0) {
     refresh_times_.erase(it);
+  }
+
+  if (auto result_it = refresh_last_result_.find(site);
+      refresh_count >= kRefreshQuota &&
+      result_it != refresh_last_result_.end()) {
+    base::UmaHistogramEnumeration(
+        "Net.DeviceBoundSessions.RefreshQuotaExceededLastResult",
+        result_it->second.type);
   }
 
   return refresh_count >= kRefreshQuota;
