@@ -24809,14 +24809,13 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_HangWatcher",
+                    "name": "Enabled",
                     "params": {
-                        "suppress_memory_listeners_mask": "0200000000000000000000000000000000000000000000000"
+                        "suppress_memory_listeners_mask": "0000200200220200020020000002020000000000000000020",
+                        "suppress_memory_monitor_mask": "00020000020000"
                     },
                     "enable_features": [
-                        "SuppressMemoryListeners"
-                    ],
-                    "disable_features": [
+                        "SuppressMemoryListeners",
                         "SuppressMemoryMonitor"
                     ]
                 }
