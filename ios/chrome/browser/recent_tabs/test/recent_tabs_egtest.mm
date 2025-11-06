@@ -870,19 +870,14 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
     NSString* tabName = [NSString stringWithFormat:@"Tab %ld", i];
     [[EarlGrey
         selectElementWithMatcher:grey_allOf(grey_accessibilityLabel(tabName),
-                                            grey_ancestor(grey_kindOfClassName(
-                                                @"TableViewURLCell")),
-                                            nil)]
-        assertWithMatcher:grey_sufficientlyVisible()];
+                                            grey_sufficientlyVisible(), nil)]
+        assertWithMatcher:grey_notNil()];
   }
 
   // Open a distant tab and check that the location bar shows the distant tab
   // URL in a short form.
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(grey_accessibilityLabel(@"Tab 0"),
-                                          grey_ancestor(grey_kindOfClassName(
-                                              @"TableViewURLCell")),
-                                          nil)] performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(@"Tab 0")]
+      performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::DefocusedLocationView()]
       assertWithMatcher:chrome_test_util::LocationViewContainingText(
                             self.testServer->base_url().GetHost())];

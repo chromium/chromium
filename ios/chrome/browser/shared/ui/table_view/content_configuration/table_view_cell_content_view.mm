@@ -28,45 +28,58 @@ constexpr CGFloat kTitleSubtitleToTrailingWidthRatio = 3;
 
 @implementation TableViewCellContentViewLabelContainer {
   UILabel* _topLabel;
+  UILabel* _middleLabel;
   UILabel* _bottomLabel;
 }
 
+// Inits the container with 3 labels, one at the top, one in the middle and one
+// at the bottom.
 - (instancetype)initWithTopLabel:(UILabel*)topLabel
+                     middleLabel:(UILabel*)middleLabel
                      bottomLabel:(UILabel*)bottomLabel {
   self = [super init];
   if (self) {
     _topLabel = topLabel;
+    _middleLabel = middleLabel;
     _bottomLabel = bottomLabel;
 
     self.axis = UILayoutConstraintAxisVertical;
     self.distribution = UIStackViewDistributionFill;
 
     [self addArrangedSubview:_topLabel];
+    [self addArrangedSubview:_middleLabel];
     [self addArrangedSubview:_bottomLabel];
   }
   return self;
 }
 
 - (CGSize)intrinsicContentSize {
-  // Make sure to have a number of line of 1 for the labels when getting their
-  // intrinsic size. Otherwise, they will choose to use several lines and have a
-  // narrower width.
-  CGFloat numberOfLines = _topLabel.numberOfLines;
-  _topLabel.numberOfLines = 1;
-  CGFloat topLeftWidth = [_topLabel intrinsicContentSize].width;
-  _topLabel.numberOfLines = numberOfLines;
+  CGFloat topWidth = [self maxWidthForLabel:_topLabel];
+  CGFloat middleWidth = [self maxWidthForLabel:_middleLabel];
+  CGFloat bottomWidth = [self maxWidthForLabel:_bottomLabel];
 
-  numberOfLines = _bottomLabel.numberOfLines;
-  _bottomLabel.numberOfLines = 1;
-  CGFloat bottomLeftWidth = [_bottomLabel intrinsicContentSize].width;
-  _bottomLabel.numberOfLines = numberOfLines;
-
-  CGFloat maxWidth = MAX(topLeftWidth, bottomLeftWidth);
+  CGFloat maxWidth = MAX(MAX(topWidth, middleWidth), bottomWidth);
 
   return CGSizeMake(maxWidth, UIViewNoIntrinsicMetric);
 }
 
+#pragma mark - Container Private
+
+// Returns the max width for a `label`.
+- (CGFloat)maxWidthForLabel:(UILabel*)label {
+  // Make sure to have a number of line of 1 for the label when getting its
+  // intrinsic size. Otherwise, it will choose to use several lines and have a
+  // narrower width.
+  CGFloat numberOfLines = label.numberOfLines;
+  label.numberOfLines = 1;
+  CGFloat maxWidth = [label intrinsicContentSize].width;
+  label.numberOfLines = numberOfLines;
+  return maxWidth;
+}
+
 @end
+
+#pragma mark - TableViewCellContentView
 
 @implementation TableViewCellContentView {
   TableViewCellContentConfiguration* _configuration;
@@ -83,6 +96,7 @@ constexpr CGFloat kTitleSubtitleToTrailingWidthRatio = 3;
   // The labels.
   UILabel* _title;
   UILabel* _subtitle;
+  UILabel* _secondSubtitle;
   UILabel* _trailingLabel;
 
   // The container for the text.
@@ -213,6 +227,10 @@ constexpr CGFloat kTitleSubtitleToTrailingWidthRatio = 3;
   _subtitle.enabled = !_configuration.textDisabled;
   _subtitle.lineBreakMode = _configuration.subtitleLineBreakMode;
 
+  _secondSubtitle.text = _configuration.secondSubtitle;
+  _secondSubtitle.hidden = !_secondSubtitle.text;
+  _secondSubtitle.textColor = [UIColor colorNamed:kTextSecondaryColor];
+
   _trailingLabel.text = _configuration.trailingText;
   _trailingLabel.textColor = _configuration.trailingTextColor
                                  ?: [UIColor colorNamed:kTextSecondaryColor];
@@ -237,6 +255,10 @@ constexpr CGFloat kTitleSubtitleToTrailingWidthRatio = 3;
   _subtitle.numberOfLines = accessibilityContentSizeCategory
                                 ? 0
                                 : _configuration.subtitleNumberOfLines;
+  _secondSubtitle.numberOfLines =
+      accessibilityContentSizeCategory
+          ? 0
+          : _configuration.secondSubtitleNumberOfLines;
   _trailingLabel.numberOfLines = accessibilityContentSizeCategory
                                      ? 0
                                      : _configuration.trailingTextNumberOfLines;
@@ -282,6 +304,7 @@ constexpr CGFloat kTitleSubtitleToTrailingWidthRatio = 3;
 
   _title = [self createTitleLabel];
   _subtitle = [self createSubtitleLabel];
+  _secondSubtitle = [self createSubtitleLabel];
   _trailingLabel = [self createTrailingLabel];
 
   _allTextStack = [self createAllTextStack];
@@ -290,7 +313,8 @@ constexpr CGFloat kTitleSubtitleToTrailingWidthRatio = 3;
 
   _titleSubtitleContainer = [[TableViewCellContentViewLabelContainer alloc]
       initWithTopLabel:_title
-           bottomLabel:_subtitle];
+           middleLabel:_subtitle
+           bottomLabel:_secondSubtitle];
   _titleSubtitleContainer.translatesAutoresizingMaskIntoConstraints = NO;
 
   // The stack view forces the view to have their leading/trailing anchor equal

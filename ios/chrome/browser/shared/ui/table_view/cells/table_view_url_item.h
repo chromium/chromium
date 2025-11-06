@@ -11,14 +11,16 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_item.h"
 
 @class CrURL;
+@class FaviconAttributes;
 @class FaviconView;
-@class TableViewURLCellFaviconBadgeView;
 
-// TableViewURLItem contains the model data for a TableViewURLCell.
+// TableViewURLItem contains the model data for a TableView URL cell.
 @interface TableViewURLItem : TableViewItem
 
 // The title of the page at `URL`.
 @property(nonatomic, readwrite, copy) NSString* title;
+// Line break mode for the title. Default is NSLineBreakByTruncatingTail.
+@property(nonatomic, assign) NSLineBreakMode titleLineBreakMode;
 // CrURL from which the cell will retrieve a favicon and display the host name.
 @property(nonatomic, readwrite, strong) CrURL* URL;
 // Custom third row text. This is not shown if it is empty or if the second row
@@ -28,57 +30,8 @@
 @property(nonatomic, copy) NSString* detailText;
 // Identifier to match a URLItem with its URLCell.
 @property(nonatomic, readonly) NSString* uniqueIdentifier;
-
-@end
-
-// TableViewURLCell is used in Bookmarks, Reading List, and Recent Tabs.  It
-// contains a favicon, a title, a URL, and optionally some metadata such as a
-// timestamp or a file size. After configuring the cell, make sure to call
-// configureUILayout:.
-@interface TableViewURLCell : LegacyTableViewCell
-
-// The imageview that is displayed on the leading edge of the cell.  This
-// contains a favicon composited on top of an off-white background.
-@property(nonatomic, readonly, strong) FaviconView* faviconView;
-
-// The image view used to display the favicon badge.
-@property(nonatomic, readonly, strong)
-    TableViewURLCellFaviconBadgeView* faviconBadgeView;
-
-// The cell title.
-@property(nonatomic, readonly, strong) UILabel* titleLabel;
-
-// The host URL associated with this cell.
-@property(nonatomic, readonly, strong) UILabel* URLLabel;
-
-// Optional metadata that is displayed at the trailing edge of the cell.
-@property(nonatomic, readonly, strong) UILabel* metadataLabel;
-
-// Optional metadata image that is displayed at the trailing edge of the cell.
-@property(nonatomic, readonly, strong) UIImageView* metadataImage;
-
-// Optional third row label. This is never used in place of the second row of
-// text.
-@property(nonatomic, readonly, strong) UILabel* thirdRowLabel;
-
-// Vertical spacing between the title, URL and third row labels. Used to
-// override the default spacing value. Setting this property will trigger a
-// relayout.
-@property(nonatomic, assign) CGFloat labelSpacing;
-
-// Unique identifier that matches with one URLItem.
-@property(nonatomic, copy) NSString* cellUniqueIdentifier;
-
-// Properly configure the subview layouts once all labels' properties have been
-// configured. This must be called at the end of configureCell: for all items
-// that use TableViewURLCell.
-- (void)configureUILayout;
-
-// Sets the background color for the favicon container view.
-- (void)setFaviconContainerBackgroundColor:(UIColor*)backgroundColor;
-
-// Replaces the favicon with a custom `symbol`.
-- (void)replaceFaviconWithSymbol:(UIImage*)symbol;
+// Attributes for the favicon.
+@property(nonatomic, strong) FaviconAttributes* faviconAttributes;
 
 @end
 

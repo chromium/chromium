@@ -13,16 +13,16 @@
 
 // Configuration object for a TableView cell.
 // It is using a TableViewCellContentView as content view.
-// +------------------------------------------------------------------+
-// |                     TableViewCellContentView                     |
-// |                                                                  |
-// | +-----------+                                   +-----------+    |
-// | | Leading   |  Title                            | Trailing  |    |
-// | | View      |                    Trailing Label | View      |    |
-// | |(Optional) |  Subtitle                         |(Optional) |    |
-// | +-----------+                                   +-----------+    |
-// |                                                                  |
-// +------------------------------------------------------------------+
+// +---------------------------------------------------------------+
+// |                     TableViewCellContentView                  |
+// |                                                               |
+// | +-----------+  Title                            +-----------+ |
+// | | Leading   |                                   | Trailing  | |
+// | | View      |  Subtitle          Trailing Label | View      | |
+// | |(Optional) |                                   |(Optional) | |
+// | +-----------+  Second Subtitle                  +-----------+ |
+// |                                                               |
+// +---------------------------------------------------------------+
 @interface TableViewCellContentConfiguration : NSObject <UIContentConfiguration>
 
 // The updates to properties must be reflected in the copy method.
@@ -56,6 +56,11 @@
 @property(nonatomic, assign) NSInteger subtitleNumberOfLines;
 // Defaults to NSLineBreakByWordWrapping.
 @property(nonatomic, assign) NSLineBreakMode subtitleLineBreakMode;
+
+// A row of text below the subtitle.
+@property(nonatomic, copy) NSString* secondSubtitle;
+// Defaults to 0 (unlimited).
+@property(nonatomic, assign) NSInteger secondSubtitleNumberOfLines;
 
 // The trailing details of the cell. `attributedTrailingText` takes precedence
 // over `trailingText`.

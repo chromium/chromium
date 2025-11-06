@@ -67,9 +67,6 @@ extern NSString* const kMaskedPassword;
 // TableView InfoButton.
 extern NSString* const kTableViewCellInfoButtonViewId;
 
-// Accessibility identifier for the badge icon.
-extern NSString* const kTableViewURLCellFaviconBadgeViewID;
-
 // Returns a padding according to the width of the current device.
 extern CGFloat HorizontalPadding();
 

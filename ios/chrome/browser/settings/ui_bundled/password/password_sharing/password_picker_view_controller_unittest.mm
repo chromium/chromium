@@ -11,6 +11,7 @@
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_url_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/table_view_cell_content_configuration.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -99,9 +100,13 @@ class PasswordPickerViewControllerTest
         [controller() tableView:controller().tableView
             cellForRowAtIndexPath:[NSIndexPath indexPathForRow:row
                                                      inSection:section]];
-    TableViewURLCell* URLCell =
-        base::apple::ObjCCastStrict<TableViewURLCell>(cell);
-    EXPECT_NSEQ(expected_text, URLCell.URLLabel.text);
+    ASSERT_TRUE([cell.contentConfiguration
+        isMemberOfClass:TableViewCellContentConfiguration.class]);
+    TableViewCellContentConfiguration* configuration =
+        base::apple::ObjCCastStrict<TableViewCellContentConfiguration>(
+            cell.contentConfiguration);
+
+    EXPECT_NSEQ(expected_text, configuration.subtitle);
   }
 
   void CheckCellTitleText(NSString* expected_text, int section, int row) {
@@ -109,9 +114,13 @@ class PasswordPickerViewControllerTest
         [controller() tableView:controller().tableView
             cellForRowAtIndexPath:[NSIndexPath indexPathForRow:row
                                                      inSection:section]];
-    TableViewURLCell* URLCell =
-        base::apple::ObjCCastStrict<TableViewURLCell>(cell);
-    EXPECT_NSEQ(expected_text, URLCell.titleLabel.text);
+    ASSERT_TRUE([cell.contentConfiguration
+        isMemberOfClass:TableViewCellContentConfiguration.class]);
+    TableViewCellContentConfiguration* configuration =
+        base::apple::ObjCCastStrict<TableViewCellContentConfiguration>(
+            cell.contentConfiguration);
+
+    EXPECT_NSEQ(expected_text, configuration.title);
   }
 };
 

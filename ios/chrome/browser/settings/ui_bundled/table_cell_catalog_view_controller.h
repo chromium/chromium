@@ -9,11 +9,14 @@
 
 #import "ios/chrome/browser/settings/ui_bundled/settings_root_table_view_controller.h"
 
+class Browser;
+
 // TableCellCatalogViewController is a Debug-only settings screen which serves
 // as a catalog of the various UITableViewCells that are used by the app.
 @interface TableCellCatalogViewController : SettingsRootTableViewController
 
-- (instancetype)init NS_DESIGNATED_INITIALIZER;
+// The browser is here for debugging purpose. Do not pass it in a real class.
+- (instancetype)initWithBrowser:(Browser*)browser NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
 
 @end
