@@ -450,36 +450,6 @@ TEST_F(ModelQualityLogsUploaderTest, LatencyRecordedForAllSteps) {
             expected_latency_ms);
 }
 
-TEST_F(ModelQualityLogsUploaderTest, OpenFormTargetElementNotFound) {
-  const base::Time fake_start_time = base::Time::Now();
-  ModelQualityLogsUploader logs_uploader(web_contents(),
-                                         GURL(kChangePasswordURL));
-  // Set initial open form data for ACTION_SUCCESS status.
-  optimization_guide::proto::PasswordChangeResponse open_form_response;
-
-  open_form_response.mutable_open_form_data()->set_page_type(
-      PageType::OpenFormResponseData_PageType_SETTINGS_PAGE);
-  open_form_response.mutable_open_form_data()->set_dom_node_id_to_click(123);
-  logs_uploader.SetOpenFormQuality(open_form_response,
-                                   CreateLoggingData(open_form_request_),
-                                   fake_start_time);
-  const optimization_guide::proto::LogAiDataRequest initial_log =
-      logs_uploader.GetFinalLog();
-  CheckOpenFormStatus(
-      initial_log, open_form_request_, open_form_response,
-      QualityStatus::
-          PasswordChangeQuality_StepQuality_SubmissionStatus_ACTION_SUCCESS);
-
-  // Call function that overwrites the status to ELEMENT_NOT_FOUND status.
-  logs_uploader.OpenFormTargetElementNotFound();
-  const optimization_guide::proto::LogAiDataRequest final_log =
-      logs_uploader.GetFinalLog();
-  CheckOpenFormStatus(
-      final_log, open_form_request_, open_form_response,
-      QualityStatus::
-          PasswordChangeQuality_StepQuality_SubmissionStatus_ELEMENT_NOT_FOUND);
-}
-
 TEST_F(ModelQualityLogsUploaderTest, LoginCheckSkipped) {
   ModelQualityLogsUploader logs_uploader(web_contents(), GURL());
   logs_uploader.LoginCheckSkipped();
@@ -698,31 +668,101 @@ TEST_F(ModelQualityLogsUploaderTest, SubmitFormSkipped) {
           PasswordChangeQuality_StepQuality_SubmissionStatus_STEP_SKIPPED);
 }
 
-TEST_F(ModelQualityLogsUploaderTest, SubmitFormTargetElementNotFound) {
-  const base::Time fake_start_time = base::Time::Now();
+TEST_F(ModelQualityLogsUploaderTest, RecordButtonClickFailureInvalidDomNodeId) {
   ModelQualityLogsUploader logs_uploader(web_contents(),
                                          GURL(kChangePasswordURL));
-  // Set initial submit form data for ACTION_SUCCESS status.
-  optimization_guide::proto::PasswordChangeResponse submit_form_response;
-  submit_form_response.mutable_submit_form_data()->set_dom_node_id_to_click(-5);
-  logs_uploader.SetSubmitFormQuality(submit_form_response,
-                                     CreateLoggingData(submit_form_request_),
-                                     fake_start_time);
-  const optimization_guide::proto::LogAiDataRequest initial_log =
-      logs_uploader.GetFinalLog();
-  CheckSubmitFormStatus(
-      initial_log, submit_form_request_, submit_form_response,
-      QualityStatus::
-          PasswordChangeQuality_StepQuality_SubmissionStatus_ACTION_SUCCESS);
-
-  // Call function that overwrites the status to ELEMENT_NOT_FOUND status.
-  logs_uploader.SubmitFormTargetElementNotFound();
-  const optimization_guide::proto::LogAiDataRequest final_log =
-      logs_uploader.GetFinalLog();
-  CheckSubmitFormStatus(
-      final_log, submit_form_request_, submit_form_response,
+  logs_uploader.RecordButtonClickFailure(
+      FlowStep::PasswordChangeRequest_FlowStep_OPEN_FORM_STEP,
+      actor::mojom::ActionResultCode::kInvalidDomNodeId);
+  CheckOpenFormStatus(
+      logs_uploader.GetFinalLog(),
+      /*expected_request=*/optimization_guide::proto::PasswordChangeRequest(),
+      /*expected_response=*/optimization_guide::proto::PasswordChangeResponse(),
       QualityStatus::
           PasswordChangeQuality_StepQuality_SubmissionStatus_ELEMENT_NOT_FOUND);
+
+  logs_uploader.RecordButtonClickFailure(
+      FlowStep::PasswordChangeRequest_FlowStep_SUBMIT_FORM_STEP,
+      actor::mojom::ActionResultCode::kInvalidDomNodeId);
+  CheckSubmitFormStatus(
+      logs_uploader.GetFinalLog(),
+      /*expected_request=*/optimization_guide::proto::PasswordChangeRequest(),
+      /*expected_response=*/optimization_guide::proto::PasswordChangeResponse(),
+      QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_ELEMENT_NOT_FOUND);
+}
+
+TEST_F(ModelQualityLogsUploaderTest, RecordButtonClickFailureElementDisabled) {
+  ModelQualityLogsUploader logs_uploader(web_contents(),
+                                         GURL(kChangePasswordURL));
+  logs_uploader.RecordButtonClickFailure(
+      FlowStep::PasswordChangeRequest_FlowStep_OPEN_FORM_STEP,
+      actor::mojom::ActionResultCode::kElementDisabled);
+  CheckOpenFormStatus(
+      logs_uploader.GetFinalLog(),
+      /*expected_request=*/optimization_guide::proto::PasswordChangeRequest(),
+      /*expected_response=*/optimization_guide::proto::PasswordChangeResponse(),
+      QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_ELEMENT_DISABLED);
+
+  logs_uploader.RecordButtonClickFailure(
+      FlowStep::PasswordChangeRequest_FlowStep_SUBMIT_FORM_STEP,
+      actor::mojom::ActionResultCode::kElementDisabled);
+  CheckSubmitFormStatus(
+      logs_uploader.GetFinalLog(),
+      /*expected_request=*/optimization_guide::proto::PasswordChangeRequest(),
+      /*expected_response=*/optimization_guide::proto::PasswordChangeResponse(),
+      QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_ELEMENT_DISABLED);
+}
+
+TEST_F(ModelQualityLogsUploaderTest, RecordButtonClickFailureElementOffscreen) {
+  ModelQualityLogsUploader logs_uploader(web_contents(),
+                                         GURL(kChangePasswordURL));
+  logs_uploader.RecordButtonClickFailure(
+      FlowStep::PasswordChangeRequest_FlowStep_OPEN_FORM_STEP,
+      actor::mojom::ActionResultCode::kElementOffscreen);
+  CheckOpenFormStatus(
+      logs_uploader.GetFinalLog(),
+      /*expected_request=*/optimization_guide::proto::PasswordChangeRequest(),
+      /*expected_response=*/optimization_guide::proto::PasswordChangeResponse(),
+      QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_ELEMENT_OFFSCREEN);
+
+  logs_uploader.RecordButtonClickFailure(
+      FlowStep::PasswordChangeRequest_FlowStep_SUBMIT_FORM_STEP,
+      actor::mojom::ActionResultCode::kElementOffscreen);
+  CheckSubmitFormStatus(
+      logs_uploader.GetFinalLog(),
+      /*expected_request=*/optimization_guide::proto::PasswordChangeRequest(),
+      /*expected_response=*/optimization_guide::proto::PasswordChangeResponse(),
+      QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_ELEMENT_OFFSCREEN);
+}
+
+TEST_F(ModelQualityLogsUploaderTest,
+       RecordButtonClickFailureTargetNodeInteractionPointObscured) {
+  ModelQualityLogsUploader logs_uploader(web_contents(),
+                                         GURL(kChangePasswordURL));
+  logs_uploader.RecordButtonClickFailure(
+      FlowStep::PasswordChangeRequest_FlowStep_OPEN_FORM_STEP,
+      actor::mojom::ActionResultCode::kTargetNodeInteractionPointObscured);
+  CheckOpenFormStatus(
+      logs_uploader.GetFinalLog(),
+      /*expected_request=*/optimization_guide::proto::PasswordChangeRequest(),
+      /*expected_response=*/optimization_guide::proto::PasswordChangeResponse(),
+      QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_ELEMENT_OBSCURED);
+
+  logs_uploader.RecordButtonClickFailure(
+      FlowStep::PasswordChangeRequest_FlowStep_SUBMIT_FORM_STEP,
+      actor::mojom::ActionResultCode::kTargetNodeInteractionPointObscured);
+  CheckSubmitFormStatus(
+      logs_uploader.GetFinalLog(),
+      /*expected_request=*/optimization_guide::proto::PasswordChangeRequest(),
+      /*expected_response=*/optimization_guide::proto::PasswordChangeResponse(),
+      QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_ELEMENT_OBSCURED);
 }
 
 TEST_F(ModelQualityLogsUploaderTest, FormNotDetectedAfterOpening) {
