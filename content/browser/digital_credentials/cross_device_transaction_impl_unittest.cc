@@ -111,8 +111,6 @@ TEST_P(DigitalIdentityCrossDeviceTransactionTest, NoAdapter) {
   std::unique_ptr<Transaction> transaction = Transaction::New(
       RequestInfo(request_type(), origin(), request()), qr_generator_key(),
       network_context_factory(), base::DoNothing(), callback_.GetCallback());
-  // Callback should not have been called synchronously.
-  EXPECT_FALSE(callback_.IsReady());
   EXPECT_THAT(callback_.Take(), ContainsError(SystemError::kNoBleSupport));
 }
 
