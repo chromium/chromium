@@ -118,6 +118,7 @@
 
 :host([ntp-realbox-next-enabled]) {
   --cr-composebox-font-size: 16px;
+  --contextual-entrypoint-and-carousel-context-menu-container-padding-inline-start: 0px;
   --input-bottom-spacing: 12px;
   --text-input-inline-start-spacing: 18px;
 }
