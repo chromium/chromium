@@ -1236,14 +1236,13 @@ void AutofillExternalDelegate::DidAcceptAddressSuggestion(
   switch (suggestion.type) {
     case SuggestionType::kAddressEntry: {
       const AutofillField* autofill_trigger_field = GetQueriedAutofillField();
+      const ValuablesDataManager* vdm =
+          manager_->client().GetValuablesDataManager();
 
       if (autofill_trigger_field &&
           autofill_trigger_field->Type().GetLoyaltyCardType() ==
               EMAIL_OR_LOYALTY_MEMBERSHIP_ID &&
-          !manager_->client()
-               .GetValuablesDataManager()
-               ->GetLoyaltyCards()
-               .empty()) {
+          vdm && !vdm->GetLoyaltyCards().empty()) {
         LogEmailOrLoyaltyCardSuggestionAccepted(
             autofill_metrics::AutofillEmailOrLoyaltyCardAcceptanceMetricValue::
                 kEmailSelected);

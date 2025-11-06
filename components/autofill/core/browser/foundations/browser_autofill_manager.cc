@@ -1843,6 +1843,7 @@ void BrowserAutofillManager::FillOrPreviewField(
           autofill_metrics::AutofillEmailOrLoyaltyCardAcceptanceMetricValue::
               kLoyaltyCardSelected);
     } else if (field_type_used == EMAIL_ADDRESS &&
+               client().GetValuablesDataManager() &&
                !client().GetValuablesDataManager()->GetLoyaltyCards().empty()) {
       LogEmailOrLoyaltyCardSuggestionAccepted(
           autofill_metrics::AutofillEmailOrLoyaltyCardAcceptanceMetricValue::
