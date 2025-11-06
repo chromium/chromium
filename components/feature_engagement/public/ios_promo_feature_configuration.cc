@@ -562,6 +562,8 @@ std::optional<FeatureConfig> GetCustomConfig(const base::Feature* feature) {
                     feature_engagement::kMaxStoragePeriod);
     config.event_configs.insert(EventConfig(
         "default_browser_promos_group_trigger", Comparator(EQUAL, 0), 14, 360));
+    config.event_configs.insert(
+        EventConfig("default_browser_fre_shown", Comparator(EQUAL, 0), 7, 365));
     return config;
   }
 
