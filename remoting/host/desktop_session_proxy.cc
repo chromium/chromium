@@ -10,11 +10,11 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
-#include "base/containers/map_util.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/process/process_handle.h"
 #include "base/task/sequenced_task_runner.h"
@@ -98,8 +98,15 @@ std::unique_ptr<DesktopCapturer> DesktopSessionProxy::CreateVideoCapturer(
   // return a non-composing frame capturer.
   auto video_capturer = std::make_unique<IpcVideoFrameCapturer>(this);
 
-  DCHECK(!base::FindPtrOrNull(video_capturers_, id))
+#if !defined(NDEBUG)
+  // See if we already have a video capturer created for the given screen ID.
+  // base::FindPtrOrNull() does not work as of 2025-11-05 since there is no
+  // pointer_traits<WeakPtr>, and it will try to deref an invalidated pointer.
+  auto it = video_capturers_.find(id);
+  DCHECK(it == video_capturers_.end() || !it->second)
       << "Multiple capturers created for screen-id " << id;
+#endif
+
   auto capturer_weakptr = video_capturer->GetWeakPtr();
   video_capturers_[id] = capturer_weakptr;
 
@@ -356,7 +363,11 @@ void DesktopSessionProxy::RebindSingleVideoCapturer(
   // SelectSource() is not used in multi-stream mode.
   DCHECK_LE(video_capturers_.size(), 1U);
 
-  if (base::FindPtrOrNull(video_capturers_, new_id) == capturer_weakptr.get()) {
+  // base::FindPtrOrNull() does not work as of 2025-11-05 since there is no
+  // pointer_traits<WeakPtr>, and it will try to deref an invalidated pointer.
+  auto it = video_capturers_.find(new_id);
+  if (it != video_capturers_.end() &&
+      it->second.get() == capturer_weakptr.get()) {
     // The capturer is already bound to `new_id`, so there's no value in
     // recreating it.
     LOG(WARNING) << "Ignoring SelectSource() for the same ID: " << new_id;
