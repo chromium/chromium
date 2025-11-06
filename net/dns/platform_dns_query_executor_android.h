@@ -5,13 +5,21 @@
 #ifndef NET_DNS_PLATFORM_DNS_QUERY_EXECUTOR_ANDROID_H_
 #define NET_DNS_PLATFORM_DNS_QUERY_EXECUTOR_ANDROID_H_
 
+#include <android/multinetwork.h>
+#include <android/versioning.h>
+#include <stdint.h>
+
 #include <memory>
 #include <set>
 #include <string>
+#include <vector>
 
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/message_loop/message_pump_for_io.h"
 #include "base/sequence_checker.h"
+#include "base/strings/cstring_view.h"
 #include "net/base/net_export.h"
 #include "net/base/network_handle.h"
 #include "net/dns/host_resolver_internal_result.h"
@@ -36,11 +44,43 @@ class NET_EXPORT PlatformDnsQueryExecutorAndroid final
   using ResultsCallback =
       base::OnceCallback<void(Results results, int os_error, int net_error)>;
 
+  class Delegate {
+   public:
+    virtual ~Delegate() = default;
+
+    // An abstraction over the `android_res_nquery` DNS resolution API to allow
+    // for mocking in tests.
+    virtual int Query(net_handle_t network,
+                      base::cstring_view dname,
+                      int ns_class,
+                      int ns_type,
+                      uint32_t flags) = 0;
+
+    // An abstraction over the `android_res_nresult` DNS resolution API to
+    // allow for mocking in tests.
+    virtual int Result(int fd, int* rcode, base::span<uint8_t> answer) = 0;
+  };
+
+  class DelegateImpl final : public PlatformDnsQueryExecutorAndroid::Delegate {
+   public:
+    DelegateImpl() __INTRODUCED_IN(29);
+    ~DelegateImpl() override;
+
+    int Query(net_handle_t network,
+              base::cstring_view dname,
+              int ns_class,
+              int ns_type,
+              uint32_t flags) __INTRODUCED_IN(29) override;
+
+    int Result(int fd, int* rcode, base::span<uint8_t> answer)
+        __INTRODUCED_IN(29) override;
+  };
+
   // `hostname` must be a valid domain name, and it's the caller's
   // responsibility to check it before calling this constructor.
   PlatformDnsQueryExecutorAndroid(std::string hostname,
-                                  handles::NetworkHandle target_network)
-      __INTRODUCED_IN(29);
+                                  handles::NetworkHandle target_network,
+                                  Delegate* delegate) __INTRODUCED_IN(29);
 
   PlatformDnsQueryExecutorAndroid(const PlatformDnsQueryExecutorAndroid&) =
       delete;
@@ -76,6 +116,8 @@ class NET_EXPORT PlatformDnsQueryExecutorAndroid final
   const std::string hostname_;
 
   const handles::NetworkHandle target_network_;
+
+  const raw_ptr<Delegate> delegate_;
 
   base::MessagePumpForIO::FdWatchController read_fd_watcher_;
 

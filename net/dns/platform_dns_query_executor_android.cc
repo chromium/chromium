@@ -5,9 +5,12 @@
 #include "net/dns/platform_dns_query_executor_android.h"
 
 #include <android/multinetwork.h>
+#include <android/versioning.h>
 #include <arpa/inet.h>
 #include <arpa/nameser.h>
 #include <netinet/in6.h>
+#include <stddef.h>
+#include <stdint.h>
 #include <sys/socket.h>
 
 #include <array>
@@ -25,6 +28,7 @@
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/sequence_checker.h"
+#include "base/strings/cstring_view.h"
 #include "base/task/current_thread.h"
 #include "base/time/time.h"
 #include "net/base/ip_address.h"
@@ -77,16 +81,40 @@ std::vector<std::string> ExtractIpAddressAnswers(base::span<const uint8_t> buf,
 
 }  // namespace
 
+PlatformDnsQueryExecutorAndroid::DelegateImpl::DelegateImpl() = default;
+PlatformDnsQueryExecutorAndroid::DelegateImpl::~DelegateImpl() = default;
+
+int PlatformDnsQueryExecutorAndroid::DelegateImpl::Query(
+    net_handle_t network,
+    base::cstring_view dname,
+    int ns_class,
+    int ns_type,
+    uint32_t flags) {
+  return android_res_nquery(network, dname.c_str(), ns_class, ns_type, flags);
+}
+
+int PlatformDnsQueryExecutorAndroid::DelegateImpl::Result(
+    int fd,
+    int* rcode,
+    base::span<uint8_t> answer) {
+  // TODO(https://crbug.com/458035179): Investigate what size of `answer` is
+  // necessary and optimal here.
+  return android_res_nresult(fd, rcode, answer.data(), answer.size());
+}
+
 PlatformDnsQueryExecutorAndroid::PlatformDnsQueryExecutorAndroid(
     std::string hostname,
-    handles::NetworkHandle target_network)
+    handles::NetworkHandle target_network,
+    Delegate* delegate)
     : hostname_(std::move(hostname)),
       target_network_(target_network),
+      delegate_(delegate),
       read_fd_watcher_(FROM_HERE) {
   // `hostname` must be a valid domain name, and it's the caller's
   // responsibility to check it before calling this constructor.
   DCHECK(dns_names_util::IsValidDnsName(hostname_))
       << "Invalid hostname: " << hostname_;
+  CHECK(delegate_);
 }
 
 PlatformDnsQueryExecutorAndroid::~PlatformDnsQueryExecutorAndroid() {
@@ -99,8 +127,8 @@ void PlatformDnsQueryExecutorAndroid::Start(ResultsCallback results_callback) {
   CHECK(!results_callback_);
   results_callback_ = std::move(results_callback);
 
-  int fd = android_res_nquery(MapNetworkHandle(target_network_),
-                              hostname_.c_str(), ns_c_in, ns_t_a, 0);
+  int fd = delegate_->Query(MapNetworkHandle(target_network_), hostname_,
+                            ns_c_in, ns_t_a, 0);
   if (fd < 0) {
     OnLookupComplete(Results(), /*os_error=*/-fd,
                      /*net_error=*/MapSystemError(-fd));
@@ -127,8 +155,7 @@ void PlatformDnsQueryExecutorAndroid::OnFileCanReadWithoutBlocking(int fd) {
 void PlatformDnsQueryExecutorAndroid::ReadResponse(int fd) {
   int rcode = -1;
   std::vector<uint8_t> answer_buf(MAXPACKET);
-  int rv =
-      android_res_nresult(fd, &rcode, answer_buf.data(), answer_buf.size());
+  int rv = delegate_->Result(fd, &rcode, answer_buf);
 
   if (rv < 0) {
     OnLookupComplete(Results(), /*os_error=*/-rv,
