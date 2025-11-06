@@ -10,23 +10,10 @@
 #include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/text_painter.h"
-#include "third_party/blink/renderer/core/paint/text_shadow_painter.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context_state_saver.h"
 
 namespace blink {
-
-namespace {
-
-Color LineColorForPhase(TextDecorationInfo& decoration_info,
-                        TextShadowPaintPhase phase) {
-  if (phase == TextShadowPaintPhase::kShadow) {
-    return Color::kBlack;
-  }
-  return decoration_info.LineColor();
-}
-
-}  // namespace
 
 TextDecorationPainter::TextDecorationPainter(
     TextPainter& text_painter,
@@ -140,6 +127,17 @@ void TextDecorationPainter::Begin(const FragmentItem& text_item, Phase phase) {
   }
 
   step_ = kExcept;
+}
+
+Color TextDecorationPainter::LineColorForPhase(
+    TextDecorationInfo& decoration_info,
+    TextShadowPaintPhase text_shadow_paint_phase) const {
+  if (text_shadow_paint_phase == TextShadowPaintPhase::kShadow ||
+      (RuntimeEnabledFeatures::BackgroundClipTextDecorationEnabled() &&
+       paint_info_.phase == PaintPhase::kTextClip)) {
+    return Color::kBlack;
+  }
+  return decoration_info.LineColor();
 }
 
 void TextDecorationPainter::PaintUnderOrOverLineDecorations(

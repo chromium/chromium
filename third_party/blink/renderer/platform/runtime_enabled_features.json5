@@ -704,6 +704,10 @@
       status: "stable",
     },
     {
+      name: "BackgroundClipTextDecoration",
+      status: "stable",
+    },
+    {
       name: "BackgroundFetch",
       public: true,
       status: "stable",
