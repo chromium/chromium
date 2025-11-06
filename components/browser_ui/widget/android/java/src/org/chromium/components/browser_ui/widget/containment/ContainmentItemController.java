@@ -9,6 +9,7 @@ import static org.chromium.components.browser_ui.widget.containment.ContainmentI
 import static org.chromium.components.browser_ui.widget.containment.ContainmentItem.DEFAULT_MARGIN;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -45,10 +46,11 @@ import java.util.List;
 public class ContainmentItemController {
     private final float mDefaultRadius;
     private final float mInnerRadius;
-    private final int mDefaultVerticalMargin;
-    private final int mDefaultHorizontalMargin;
+    private final int mDefaultContainerVerticalMargin;
+    private final int mDefaultMargin;
     private final int mSectionBottomAdditionalMargin;
     private final int mDefaultBackgroundColor;
+    static final int TRANSPARENT_BACKGROUND_COLOR = Color.TRANSPARENT;
 
     /**
      * Constructor for the styling controller.
@@ -62,11 +64,10 @@ public class ContainmentItemController {
         mInnerRadius =
                 context.getResources()
                         .getDimensionPixelSize(R.dimen.settings_item_rounded_corner_radius_inner);
-        mDefaultVerticalMargin =
-                context.getResources().getDimensionPixelSize(R.dimen.settings_item_vertical_margin);
-        mDefaultHorizontalMargin =
+        mDefaultContainerVerticalMargin =
                 context.getResources()
-                        .getDimensionPixelSize(R.dimen.settings_item_horizontal_margin);
+                        .getDimensionPixelSize(R.dimen.settings_item_container_vertical_margin);
+        mDefaultMargin = context.getResources().getDimensionPixelSize(R.dimen.settings_item_margin);
         mSectionBottomAdditionalMargin =
                 context.getResources()
                         .getDimensionPixelSize(R.dimen.settings_section_bottom_margin);
@@ -116,7 +117,11 @@ public class ContainmentItemController {
 
         if (isCustomStyledPreference(currentPref)) {
             if (currentPref instanceof PreferenceCategory) {
-                return ContainerStyle.EMPTY;
+                return new ContainerStyle.Builder()
+                        .setBottomMargin(mDefaultMargin)
+                        .setHorizontalMargin(mDefaultMargin)
+                        .setBackgroundColor(TRANSPARENT_BACKGROUND_COLOR)
+                        .build();
             }
             return getStyleForCustomContainer((ContainmentItem) currentPref);
         }
@@ -196,16 +201,16 @@ public class ContainmentItemController {
     private ContainerStyle getStyleForCustomContainer(ContainmentItem container) {
         if (container.getCustomBackgroundStyle() == BackgroundStyle.CARD) {
             int topMargin = container.getCustomTopMargin();
-            if (topMargin == DEFAULT_MARGIN) topMargin = mDefaultVerticalMargin;
+            if (topMargin == DEFAULT_MARGIN) topMargin = mDefaultContainerVerticalMargin;
 
             int bottomMargin = container.getCustomBottomMargin();
             if (bottomMargin == DEFAULT_MARGIN) {
-                bottomMargin = mDefaultVerticalMargin + mSectionBottomAdditionalMargin;
+                bottomMargin = mDefaultContainerVerticalMargin + mSectionBottomAdditionalMargin;
             }
 
             int horizontalMargin = container.getCustomHorizontalMargin();
             if (horizontalMargin == DEFAULT_MARGIN) {
-                horizontalMargin = mDefaultHorizontalMargin;
+                horizontalMargin = mDefaultMargin;
             }
 
             int backgroundColor = container.getCustomBackgroundColor();
@@ -235,7 +240,7 @@ public class ContainmentItemController {
     private ContainerStyle createBuilderWithDefaultStyle(boolean isTop, boolean isBottom) {
         float topRadius = mDefaultRadius;
         float bottomRadius = mDefaultRadius;
-        int bottomMargin = mDefaultVerticalMargin;
+        int bottomMargin = mDefaultContainerVerticalMargin;
 
         if (isTop && isBottom) { // Standalone
             // Standalone items have an additional bottom margin
@@ -254,9 +259,9 @@ public class ContainmentItemController {
         return new ContainerStyle.Builder()
                 .setTopRadius(topRadius)
                 .setBottomRadius(bottomRadius)
-                .setTopMargin(mDefaultVerticalMargin)
+                .setTopMargin(mDefaultContainerVerticalMargin)
                 .setBottomMargin(bottomMargin)
-                .setHorizontalMargin(mDefaultHorizontalMargin)
+                .setHorizontalMargin(mDefaultMargin)
                 .setBackgroundColor(mDefaultBackgroundColor)
                 .build();
     }

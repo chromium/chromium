@@ -11,6 +11,7 @@ import static org.junit.Assert.assertSame;
 import static org.chromium.components.browser_ui.styles.ChromeColors.getSettingsContainerBackgroundColor;
 import static org.chromium.components.browser_ui.widget.containment.ContainmentItem.DEFAULT_COLOR;
 import static org.chromium.components.browser_ui.widget.containment.ContainmentItem.DEFAULT_MARGIN;
+import static org.chromium.components.browser_ui.widget.containment.ContainmentItemController.TRANSPARENT_BACKGROUND_COLOR;
 
 import android.content.Context;
 import android.view.View;
@@ -47,8 +48,8 @@ public class ContainmentItemControllerTest {
     private int mDefaultRadius;
     private int mInnerRadius;
     private int mSectionBottomMargin;
-    private int mVerticalMargin;
-    private int mHorizontalMargin;
+    private int mDefaultContainerVerticalMargin;
+    private int mDefaultMargin;
     private int mBackgroundColor;
 
     private static final int CUSTOM_TOP_MARGIN = 100;
@@ -76,12 +77,11 @@ public class ContainmentItemControllerTest {
         mSectionBottomMargin =
                 mContext.getResources()
                         .getDimensionPixelSize(R.dimen.settings_section_bottom_margin);
-        mVerticalMargin =
+        mDefaultContainerVerticalMargin =
                 mContext.getResources()
-                        .getDimensionPixelSize(R.dimen.settings_item_vertical_margin);
-        mHorizontalMargin =
-                mContext.getResources()
-                        .getDimensionPixelSize(R.dimen.settings_item_horizontal_margin);
+                        .getDimensionPixelSize(R.dimen.settings_item_container_vertical_margin);
+        mDefaultMargin =
+                mContext.getResources().getDimensionPixelSize(R.dimen.settings_item_margin);
         mBackgroundColor = getSettingsContainerBackgroundColor(mContext);
 
         mSettingsRule
@@ -108,7 +108,9 @@ public class ContainmentItemControllerTest {
     @SmallTest
     public void testPreferenceCategoryStyle() {
         ContainerStyle preferenceCategoryStyle = getPreferenceStyle("preference_category");
-        assertSame(ContainerStyle.EMPTY, preferenceCategoryStyle);
+        assertEquals(mDefaultMargin, preferenceCategoryStyle.getBottomMargin());
+        assertEquals(mDefaultMargin, preferenceCategoryStyle.getHorizontalMargin());
+        assertEquals(TRANSPARENT_BACKGROUND_COLOR, preferenceCategoryStyle.getBackgroundColor());
     }
 
     @Test
@@ -124,8 +126,8 @@ public class ContainmentItemControllerTest {
         ContainerStyle preferenceTopStyle = getPreferenceStyle("preference_top");
         assertEquals(mDefaultRadius, preferenceTopStyle.getTopRadius(), 0);
         assertEquals(mInnerRadius, preferenceTopStyle.getBottomRadius(), 0);
-        assertEquals(mVerticalMargin, preferenceTopStyle.getTopMargin());
-        assertEquals(mVerticalMargin, preferenceTopStyle.getBottomMargin());
+        assertEquals(mDefaultContainerVerticalMargin, preferenceTopStyle.getTopMargin());
+        assertEquals(mDefaultContainerVerticalMargin, preferenceTopStyle.getBottomMargin());
     }
 
     @Test
@@ -134,8 +136,8 @@ public class ContainmentItemControllerTest {
         ContainerStyle preferenceMiddleStyle = getPreferenceStyle("preference_middle");
         assertEquals(mInnerRadius, preferenceMiddleStyle.getTopRadius(), 0);
         assertEquals(mInnerRadius, preferenceMiddleStyle.getBottomRadius(), 0);
-        assertEquals(mVerticalMargin, preferenceMiddleStyle.getTopMargin());
-        assertEquals(mVerticalMargin, preferenceMiddleStyle.getBottomMargin());
+        assertEquals(mDefaultContainerVerticalMargin, preferenceMiddleStyle.getTopMargin());
+        assertEquals(mDefaultContainerVerticalMargin, preferenceMiddleStyle.getBottomMargin());
     }
 
     @Test
@@ -144,9 +146,10 @@ public class ContainmentItemControllerTest {
         ContainerStyle preferenceBottomStyle = getPreferenceStyle("preference_bottom");
         assertEquals(mInnerRadius, preferenceBottomStyle.getTopRadius(), 0);
         assertEquals(mDefaultRadius, preferenceBottomStyle.getBottomRadius(), 0);
-        assertEquals(mVerticalMargin, preferenceBottomStyle.getTopMargin());
+        assertEquals(mDefaultContainerVerticalMargin, preferenceBottomStyle.getTopMargin());
         assertEquals(
-                mVerticalMargin + mSectionBottomMargin, preferenceBottomStyle.getBottomMargin());
+                mDefaultContainerVerticalMargin + mSectionBottomMargin,
+                preferenceBottomStyle.getBottomMargin());
     }
 
     @Test
@@ -155,8 +158,10 @@ public class ContainmentItemControllerTest {
         ContainerStyle styleCard = getPreferenceStyle("preference_card");
         assertEquals(mDefaultRadius, styleCard.getTopRadius(), 0);
         assertEquals(mDefaultRadius, styleCard.getBottomRadius(), 0);
-        assertEquals(mVerticalMargin, styleCard.getTopMargin());
-        assertEquals(mVerticalMargin + mSectionBottomMargin, styleCard.getBottomMargin());
+        assertEquals(mDefaultContainerVerticalMargin, styleCard.getTopMargin());
+        assertEquals(
+                mDefaultContainerVerticalMargin + mSectionBottomMargin,
+                styleCard.getBottomMargin());
         assertEquals(mBackgroundColor, styleCard.getBackgroundColor());
     }
 
@@ -166,8 +171,10 @@ public class ContainmentItemControllerTest {
         ContainerStyle styleCustomColor = getPreferenceStyle("preference_color");
         assertEquals(mDefaultRadius, styleCustomColor.getTopRadius(), 0);
         assertEquals(mDefaultRadius, styleCustomColor.getBottomRadius(), 0);
-        assertEquals(mVerticalMargin, styleCustomColor.getTopMargin());
-        assertEquals(mVerticalMargin + mSectionBottomMargin, styleCustomColor.getBottomMargin());
+        assertEquals(mDefaultContainerVerticalMargin, styleCustomColor.getTopMargin());
+        assertEquals(
+                mDefaultContainerVerticalMargin + mSectionBottomMargin,
+                styleCustomColor.getBottomMargin());
         assertEquals(
                 mContext.getColor(android.R.color.holo_blue_light),
                 styleCustomColor.getBackgroundColor());
@@ -179,8 +186,10 @@ public class ContainmentItemControllerTest {
         ContainerStyle styleStandard = getPreferenceStyle("preference_standard");
         assertEquals(mDefaultRadius, styleStandard.getTopRadius(), 0);
         assertEquals(mDefaultRadius, styleStandard.getBottomRadius(), 0);
-        assertEquals(mVerticalMargin, styleStandard.getTopMargin());
-        assertEquals(mVerticalMargin + mSectionBottomMargin, styleStandard.getBottomMargin());
+        assertEquals(mDefaultContainerVerticalMargin, styleStandard.getTopMargin());
+        assertEquals(
+                mDefaultContainerVerticalMargin + mSectionBottomMargin,
+                styleStandard.getBottomMargin());
         assertEquals(mBackgroundColor, styleStandard.getBackgroundColor());
     }
 
@@ -198,7 +207,7 @@ public class ContainmentItemControllerTest {
                 getPreferenceStyle("preference_with_custom_margins");
         assertEquals(CUSTOM_TOP_MARGIN, customMarginPreferenceStyle.getTopMargin());
         assertEquals(CUSTOM_BOTTOM_MARGIN, customMarginPreferenceStyle.getBottomMargin());
-        assertEquals(mHorizontalMargin, customMarginPreferenceStyle.getHorizontalMargin());
+        assertEquals(mDefaultMargin, customMarginPreferenceStyle.getHorizontalMargin());
     }
 
     @Test
@@ -208,9 +217,9 @@ public class ContainmentItemControllerTest {
                 getPreferenceStyle("preference_with_top_margin_only");
         assertEquals(CUSTOM_TOP_MARGIN, topMarginOnlyPreferenceStyle.getTopMargin());
         assertEquals(
-                mVerticalMargin + mSectionBottomMargin,
+                mDefaultContainerVerticalMargin + mSectionBottomMargin,
                 topMarginOnlyPreferenceStyle.getBottomMargin());
-        assertEquals(mHorizontalMargin, topMarginOnlyPreferenceStyle.getHorizontalMargin());
+        assertEquals(mDefaultMargin, topMarginOnlyPreferenceStyle.getHorizontalMargin());
     }
 
     @Test
@@ -218,9 +227,10 @@ public class ContainmentItemControllerTest {
     public void testCustomStyledPreference_WithBottomMarginOnly() {
         ContainerStyle bottomMarginOnlyPreferenceStyle =
                 getPreferenceStyle("preference_with_bottom_margin_only");
-        assertEquals(mVerticalMargin, bottomMarginOnlyPreferenceStyle.getTopMargin());
+        assertEquals(
+                mDefaultContainerVerticalMargin, bottomMarginOnlyPreferenceStyle.getTopMargin());
         assertEquals(CUSTOM_BOTTOM_MARGIN, bottomMarginOnlyPreferenceStyle.getBottomMargin());
-        assertEquals(mHorizontalMargin, bottomMarginOnlyPreferenceStyle.getHorizontalMargin());
+        assertEquals(mDefaultMargin, bottomMarginOnlyPreferenceStyle.getHorizontalMargin());
     }
 
     @Test
@@ -228,7 +238,9 @@ public class ContainmentItemControllerTest {
     public void testCustomStyledPreference_WithBottomAndHorizontalMargin() {
         ContainerStyle bottomAndHorizontalMarginsPreferenceStyle =
                 getPreferenceStyle("preference_with_bottom_and_horizontal_margins");
-        assertEquals(mVerticalMargin, bottomAndHorizontalMarginsPreferenceStyle.getTopMargin());
+        assertEquals(
+                mDefaultContainerVerticalMargin,
+                bottomAndHorizontalMarginsPreferenceStyle.getTopMargin());
         assertEquals(
                 CUSTOM_BOTTOM_MARGIN, bottomAndHorizontalMarginsPreferenceStyle.getBottomMargin());
         assertEquals(
@@ -271,7 +283,9 @@ public class ContainmentItemControllerTest {
         ContainerStyle standaloneStyle = viewStyles.get(1);
         assertEquals(mDefaultRadius, standaloneStyle.getTopRadius(), 0);
         assertEquals(mDefaultRadius, standaloneStyle.getBottomRadius(), 0);
-        assertEquals(mVerticalMargin + mSectionBottomMargin, standaloneStyle.getBottomMargin());
+        assertEquals(
+                mDefaultContainerVerticalMargin + mSectionBottomMargin,
+                standaloneStyle.getBottomMargin());
     }
 
     @Test
@@ -292,8 +306,10 @@ public class ContainmentItemControllerTest {
         ContainerStyle cardStyle = viewStyles.get(0);
         assertEquals(mDefaultRadius, cardStyle.getTopRadius(), 0);
         assertEquals(mDefaultRadius, cardStyle.getBottomRadius(), 0);
-        assertEquals(mVerticalMargin, cardStyle.getTopMargin());
-        assertEquals(mVerticalMargin + mSectionBottomMargin, cardStyle.getBottomMargin());
+        assertEquals(mDefaultContainerVerticalMargin, cardStyle.getTopMargin());
+        assertEquals(
+                mDefaultContainerVerticalMargin + mSectionBottomMargin,
+                cardStyle.getBottomMargin());
     }
 
     private ChromeBasePreference createCustomPreference(
