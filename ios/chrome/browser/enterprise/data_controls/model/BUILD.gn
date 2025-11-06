@@ -30,6 +30,7 @@ source_set("model") {
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/util",
     "//ios/components/enterprise/data_controls:features",
     "//ios/web/public",
     "//ui/base/clipboard",

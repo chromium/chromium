@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/enterprise/data_controls/utils/data_controls_utils.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/components/enterprise/data_controls/features.h"
 #import "ios/web/public/web_state.h"
 #import "ui/base/clipboard/clipboard_metadata.h"
@@ -306,6 +307,14 @@ void DataControlsTabHelper::ShowWarningDialog(
 }
 
 void DataControlsTabHelper::ShowRestrictSnackbar(std::string_view org_domain) {
+  // Hide the keyboard to prevent it from covering the snack bar.
+  // TODO(crbug.com/457472925): Replace temporary fix with snack bar command
+  // that removes the keyboard before presenting it.
+  UIWindow* window = web_state_->GetView().window;
+  UIResponder* firstResponder =
+      GetFirstResponderInWindowScene(window.windowScene);
+  [firstResponder resignFirstResponder];
+
   NSString* message =
       org_domain.empty()
           ? l10n_util::GetNSString(IDS_POLICY_ACTION_BLOCKED_BY_ORGANIZATION)
