@@ -63,6 +63,15 @@ config("skia_config") {
     "SK_UNTIL_CRBUG_1187654_IS_FIXED",
     "SK_USER_CONFIG_HEADER=\"../../skia/config/SkUserConfig.h\"",
     "SK_WIN_FONTMGR_NO_SIMULATIONS",
+
+    # Let Skia and Skia clients know whether to use `libpng`-based or
+    # Rust-based PNG decoder and encoder.  This mimics what is done in
+    # `third_party/skia/BUILD.gn`'s `png_decode_rust` and `png_encode_rust`
+    # targets.
+    "SK_CODEC_DECODES_PNG",
+    "SK_CODEC_DECODES_PNG_WITH_RUST",
+    "SK_CODEC_ENCODES_PNG",
+    "SK_CODEC_ENCODES_PNG_WITH_RUST",
   ]
 
   include_dirs = [
@@ -161,17 +170,7 @@ config("skia_library_config") {
     defines += [ "SKCMS_DISABLE_SKX=1" ]
   }
 
-  # Let Skia know whether to use `libpng`-based or Rust-based PNG decoder and
-  # encoder in internal Skia code (e.g. for PNG based emoji decoding).
-  #
-  # This currently mimics what is done in `third_party/skia/BUILD.gn`'s
-  # `png_decode_rust` and `png_encode_rust` targets.
   defines += [
-    "SK_CODEC_DECODES_PNG",
-    "SK_CODEC_DECODES_PNG_WITH_RUST",
-    "SK_CODEC_ENCODES_PNG",
-    "SK_CODEC_ENCODES_PNG_WITH_RUST",
-
     # https://crbug.com/443057959
     #"SK_DISABLE_LEGACY_INIT_DECODERS",
 
