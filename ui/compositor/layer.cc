@@ -1122,7 +1122,7 @@ void Layer::SetTransferableResource(const viz::TransferableResource& resource,
   DCHECK(type_ == LAYER_TEXTURED || type_ == LAYER_SOLID_COLOR);
   DCHECK(!resource.is_empty());
   DCHECK(release_callback);
-  DCHECK(!resource.is_software);
+  DCHECK(!resource.GetIsSoftware());
   if (!texture_layer_.get()) {
     // If `FinishAnimationsBeforeSwitchToLayer` returns false, `this` Layer was
     // destroyed.

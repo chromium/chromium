@@ -121,7 +121,7 @@ TEST_P(FastInkHostTest, CorrectFrameSubmittedToLayerTreeFrameSink) {
   EXPECT_EQ(shared_quad_state->visible_quad_layer_rect,
             expected_quad_layer_rect_);
 
-  EXPECT_EQ(frame.resource_list.back().is_overlay_candidate, auto_update_);
+  EXPECT_EQ(frame.resource_list.back().GetIsOverlayCandidate(), auto_update_);
 }
 
 TEST_P(FastInkHostTest, RecreateGpuBufferOnLosingFrameSink) {

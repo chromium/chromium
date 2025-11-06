@@ -406,7 +406,7 @@ void SurfaceTreeHost::SubmitCompositorFrame() {
     }
     frame.metadata.content_color_usage =
         std::max(frame.metadata.content_color_usage,
-                 resource.color_space.GetContentColorUsage());
+                 resource.GetColorSpace().GetContentColorUsage());
   }
 
   frame.metadata.may_contain_video = root_surface_->ContainsVideo();
