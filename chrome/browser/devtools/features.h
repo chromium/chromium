@@ -117,6 +117,8 @@ BASE_DECLARE_FEATURE(kDevToolsStartingStyleDebugging);
 
 BASE_DECLARE_FEATURE(kDevToolsEnableDurableMessages);
 
+BASE_DECLARE_FEATURE(kDevToolsShowPolicyDialog);
+
 }  // namespace features
 
 #endif  // CHROME_BROWSER_DEVTOOLS_FEATURES_H_

@@ -845,6 +845,12 @@ Additional details:
   <message name="IDS_POLICY_BANNER_PROMOTION_BTN" desc="Button for Chrome Enterprise Core (CEC) promotion banner">
     Try Chrome Enterprise Core
   </message>
+  <message name="IDS_DEVTOOLS_BLOCKED_BY_POLICY" desc="Message shown when DevTools is blocked by policy.">
+    Your organization has blocked the use of DevTools on this page
+  </message>
+  <message name="IDS_DEVTOOLS_NOT_ALLOWED" desc="Message shown when DevTools is not allowed.">
+    DevTools not allowed on this page
+  </message>
 
   <!-- Strings for chrome://policy/logs -->
   <message name="IDS_POLICY_LOGS_TITLE" desc="Title for the page.">

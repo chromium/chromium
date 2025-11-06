@@ -41,8 +41,10 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/task_manager/web_contents_tags.h"
+#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/prefs/prefs_tab_helper.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
+#include "chrome/browser/ui/tabs/tab_group_deletion_dialog_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/webui/devtools/devtools_ui.h"
 #include "chrome/common/chrome_switches.h"
@@ -57,7 +59,9 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/search_engines/util.h"
 #include "components/sessions/content/session_tab_helper.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/sync_preferences/pref_service_syncable.h"
+#include "components/vector_icons/vector_icons.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "components/zoom/page_zoom.h"
 #include "components/zoom/zoom_controller.h"
@@ -89,6 +93,8 @@
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/public_buildflags.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/dialog_model.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/keycodes/keyboard_code_conversion.h"
@@ -878,6 +884,25 @@ void DevToolsWindow::ToggleDevToolsWindow(
                     std::string(), true, settings, panel, agent->IsAttached(),
                     /* browser_connection */ false, toggled_by);
     if (!window) {
+      if (base::FeatureList::IsEnabled(features::kDevToolsShowPolicyDialog)) {
+#if !BUILDFLAG(IS_ANDROID)
+
+        auto dialog_model =
+            ui::DialogModel::Builder(
+                std::make_unique<ui::DialogModelDelegate>())
+                .SetTitle(l10n_util::GetStringUTF16(IDS_DEVTOOLS_NOT_ALLOWED))
+                .AddParagraph(ui::DialogModelLabel(
+                    l10n_util::GetStringUTF16(IDS_DEVTOOLS_BLOCKED_BY_POLICY)))
+                .SetIcon(ui::ImageModel::FromVectorIcon(
+                    vector_icons::kBusinessIcon, ui::kColorIcon,
+                    extension_misc::EXTENSION_ICON_SMALL))
+                .AddOkButton(base::DoNothing(),
+                             ui::DialogModel::Button::Params().SetLabel(
+                                 l10n_util::GetStringUTF16(IDS_OK)))
+                .Build();
+        chrome::ShowTabModal(std::move(dialog_model), inspected_web_contents);
+#endif
+      }
       return;
     }
     window->bindings_->AttachTo(agent.get());

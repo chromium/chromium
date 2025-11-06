@@ -134,6 +134,7 @@ static_library("devtools") {
     "//components/enterprise/buildflags",
     "//components/paint_preview/buildflags",
     "//components/variations/service",
+    "//components/vector_icons",
     "//components/webapps/common",
     "//content/public/browser",
     "//net",

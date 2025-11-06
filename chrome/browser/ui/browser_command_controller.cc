@@ -25,6 +25,7 @@
 #include "chrome/browser/commerce/browser_utils.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/devtools/devtools_window.h"
+#include "chrome/browser/devtools/features.h"
 #include "chrome/browser/feedback/public/feedback_source.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
@@ -235,18 +236,23 @@ BrowserCommandController::BrowserCommandController(BrowserWindowInterface* bwi)
   }
 
   profile_pref_registrar_.Init(profile()->GetPrefs());
-  profile_pref_registrar_.Add(
-      prefs::kDevToolsAvailability,
-      base::BindRepeating(&BrowserCommandController::UpdateCommandsForDevTools,
-                          base::Unretained(this)));
-  profile_pref_registrar_.Add(
-      prefs::kDeveloperToolsAvailabilityAllowlist,
-      base::BindRepeating(&BrowserCommandController::UpdateCommandsForDevTools,
-                          base::Unretained(this)));
-  profile_pref_registrar_.Add(
-      prefs::kDeveloperToolsAvailabilityBlocklist,
-      base::BindRepeating(&BrowserCommandController::UpdateCommandsForDevTools,
-                          base::Unretained(this)));
+  if (!base::FeatureList::IsEnabled(features::kDevToolsShowPolicyDialog)) {
+    profile_pref_registrar_.Add(
+        prefs::kDevToolsAvailability,
+        base::BindRepeating(
+            &BrowserCommandController::UpdateCommandsForDevTools,
+            base::Unretained(this)));
+    profile_pref_registrar_.Add(
+        prefs::kDeveloperToolsAvailabilityAllowlist,
+        base::BindRepeating(
+            &BrowserCommandController::UpdateCommandsForDevTools,
+            base::Unretained(this)));
+    profile_pref_registrar_.Add(
+        prefs::kDeveloperToolsAvailabilityBlocklist,
+        base::BindRepeating(
+            &BrowserCommandController::UpdateCommandsForDevTools,
+            base::Unretained(this)));
+  }
   profile_pref_registrar_.Add(
       bookmarks::prefs::kEditBookmarksEnabled,
       base::BindRepeating(
@@ -1526,8 +1532,28 @@ void BrowserCommandController::InitCommandState() {
       << "Ought to never have browser for the system profile.";
   const bool normal_window = browser_->is_type_normal();
   const bool guest_session = profile()->IsGuestSession();
+
   command_updater_.UpdateCommandEnabled(IDC_OPEN_FILE, CanOpenFile(browser_));
-  UpdateCommandsForDevTools();
+
+  if (base::FeatureList::IsEnabled(features::kDevToolsShowPolicyDialog)) {
+    const bool dev_tools_enabled = true;
+    command_updater_.UpdateCommandEnabled(IDC_DEV_TOOLS, dev_tools_enabled);
+    command_updater_.UpdateCommandEnabled(IDC_DEV_TOOLS_CONSOLE,
+                                          dev_tools_enabled);
+    command_updater_.UpdateCommandEnabled(IDC_DEV_TOOLS_DEVICES,
+                                          dev_tools_enabled);
+    command_updater_.UpdateCommandEnabled(IDC_DEV_TOOLS_INSPECT,
+                                          dev_tools_enabled);
+    command_updater_.UpdateCommandEnabled(IDC_DEV_TOOLS_TOGGLE,
+                                          dev_tools_enabled);
+    command_updater_.UpdateCommandEnabled(IDC_VIEW_SOURCE, dev_tools_enabled);
+#if BUILDFLAG(IS_MAC)
+    command_updater_.UpdateCommandEnabled(IDC_TOGGLE_JAVASCRIPT_APPLE_EVENTS,
+                                          dev_tools_enabled);
+#endif
+  } else {
+    UpdateCommandsForDevTools();
+  }
   command_updater_.UpdateCommandEnabled(IDC_TASK_MANAGER, CanOpenTaskManager());
   command_updater_.UpdateCommandEnabled(IDC_TASK_MANAGER_APP_MENU,
                                         CanOpenTaskManager());
@@ -1906,7 +1932,9 @@ void BrowserCommandController::UpdateCommandsForTabState() {
   // Update the zoom commands when an active tab is selected.
   UpdateCommandsForZoomState();
   UpdateCommandsForTabKeyboardFocus(GetKeyboardFocusedTabIndex(browser_));
-  UpdateCommandsForDevTools();
+  if (!base::FeatureList::IsEnabled(features::kDevToolsShowPolicyDialog)) {
+    UpdateCommandsForDevTools();
+  }
 
   // Disable the add to comparison table menu when the page is not a standard
   // webpage.
@@ -1941,6 +1969,7 @@ void BrowserCommandController::UpdateCommandsForContentRestrictionState() {
   UpdatePrintingState();
 }
 
+// TODO(crbug.com/442892562): Remove this function once the feature is launched.
 void BrowserCommandController::UpdateCommandsForDevTools() {
   if (is_locked_fullscreen_) {
     return;
