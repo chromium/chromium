@@ -592,81 +592,26 @@ void PushMessagingServiceImpl::DeliverMessageCallback(
         service_worker_registration_id, std::move(message_handled_callback));
   }
 
-  // A reason to automatically unsubscribe. UNKNOWN means do not unsubscribe.
-  blink::mojom::PushUnregistrationReason unsubscribe_reason =
-      blink::mojom::PushUnregistrationReason::UNKNOWN;
+  // A reason to automatically unsubscribe. std::nullopt means do not
+  // unsubscribe.
+  std::optional<blink::mojom::PushUnregistrationReason> unsubscribe_reason;
 
   // TODO(mvanouwerkerk): Show a warning in the developer console of the
   // Service Worker corresponding to app_id (and/or on an internals page).
   // See https://crbug.com/508516 for options.
-  switch (status) {
-    // Call EnforceUserVisibleOnlyRequirements if the message was delivered to
-    // the Service Worker JavaScript, even if the website's event handler failed
-    // (to prevent sites deliberately failing in order to avoid having to show
-    // notifications).
-    case blink::mojom::PushEventStatus::SUCCESS:
-    case blink::mojom::PushEventStatus::EVENT_WAITUNTIL_REJECTED:
-    case blink::mojom::PushEventStatus::TIMEOUT:
-      // Only enforce the user visible requirements if silent push has not been
-      // enabled through a command line flag.
-      if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-              switches::kAllowSilentPush)) {
-        // Defaults to true since that is the more restrictive option.
-        bool user_visible_only =
-            base::Contains(origins_requesting_user_visible_requirement_bypass,
-                           requesting_origin);
-        notification_manager_.EnforceUserVisibleOnlyRequirements(
-            requesting_origin, service_worker_registration_id,
-            std::move(message_handled_callback), user_visible_only);
-        message_handled_callback = base::OnceCallback<void(bool)>();
-      }
-      break;
-    case blink::mojom::PushEventStatus::SERVICE_WORKER_ERROR:
-      // Do nothing, and hope the error is transient.
-      break;
-    case blink::mojom::PushEventStatus::NO_APP_LEVEL_PERMISSION_IGNORE:
-      // Do nothing, ignore push messages during the grace period.
-      break;
-    case blink::mojom::PushEventStatus::NO_APP_LEVEL_PERMISSION_UNSUBSCRIBE:
-      unsubscribe_reason =
-          blink::mojom::PushUnregistrationReason::NO_APP_LEVEL_PERMISSION;
-      break;
-    case blink::mojom::PushEventStatus::UNKNOWN_APP_ID:
-      unsubscribe_reason =
-          blink::mojom::PushUnregistrationReason::DELIVERY_UNKNOWN_APP_ID;
-      break;
-    case blink::mojom::PushEventStatus::PERMISSION_DENIED:
-      unsubscribe_reason =
-          blink::mojom::PushUnregistrationReason::DELIVERY_PERMISSION_DENIED;
-      break;
-    case blink::mojom::PushEventStatus::NO_SERVICE_WORKER:
-      unsubscribe_reason =
-          blink::mojom::PushUnregistrationReason::DELIVERY_NO_SERVICE_WORKER;
-      break;
-    case blink::mojom::PushEventStatus::PERMISSION_REVOKED_ABUSIVE:
-      unsubscribe_reason =
-          blink::mojom::PushUnregistrationReason::PERMISSION_REVOKED_ABUSIVE;
-      break;
-    case blink::mojom::PushEventStatus::PERMISSION_REVOKED_DISRUPTIVE:
-      unsubscribe_reason =
-          blink::mojom::PushUnregistrationReason::PERMISSION_REVOKED_DISRUPTIVE;
-      break;
-  }
-
-  // If |message_handled_callback| was not yet used, make a
-  // |completion_closure_runner| which should run by default at the end of this
-  // function, unless it is explicitly passed to another function or disabled.
-  base::ScopedClosureRunner completion_closure_runner(
-      message_handled_callback
-          ? base::BindOnce(std::move(message_handled_callback),
-                           false /* did_show_generic_notification */)
-          : base::DoNothing());
-
-  if (unsubscribe_reason != blink::mojom::PushUnregistrationReason::UNKNOWN) {
+  if (!push_messaging::WasPushSuccessful(status, unsubscribe_reason)) {
+    base::ScopedClosureRunner completion_closure_runner(
+        base::BindOnce(std::move(message_handled_callback),
+                       false /* did_show_generic_notification */));
+    if (!unsubscribe_reason.has_value()) {
+      // But it's a transient error or permission request was ignored.
+      return;
+    }
+    // The push failed and should be unsubscribed.
     push_messaging::AppIdentifier app_identifier =
         PushMessagingAppIdentifier::FindByAppId(profile_, app_id);
     UnsubscribeInternal(
-        unsubscribe_reason,
+        *unsubscribe_reason,
         app_identifier.is_null() ? GURL() : app_identifier.origin(),
         app_identifier.is_null()
             ? -1 /* kInvalidServiceWorkerRegistrationId */
@@ -675,13 +620,14 @@ void PushMessagingServiceImpl::DeliverMessageCallback(
         base::BindOnce(&UnregisterCallbackToClosure,
                        completion_closure_runner.Release()));
 
-    if (app_identifier.is_null())
+    if (app_identifier.is_null()) {
       return;
+    }
 
     url::Origin origin = url::Origin::Create(app_identifier.origin());
     if (auto* devtools_context = GetDevToolsContext(app_identifier.origin())) {
       std::stringstream ss;
-      ss << unsubscribe_reason;
+      ss << *unsubscribe_reason;
       devtools_context->LogBackgroundServiceEvent(
           app_identifier.service_worker_registration_id(),
           blink::StorageKey::CreateFirstParty(origin),
@@ -689,6 +635,27 @@ void PushMessagingServiceImpl::DeliverMessageCallback(
           "Unsubscribed due to error" /* event_name */, message.message_id,
           {{"Reason", ss.str()}});
     }
+    return;
+  }
+
+  // Push succeeded.
+  // Call EnforceUserVisibleOnlyRequirements if the message was delivered to
+  // the Service Worker JavaScript, even if the website's event handler failed
+  // (to prevent sites deliberately failing in order to avoid having to show
+  // notifications).
+  // Only enforce the user visible requirements if silent push has not been
+  // enabled through a command line flag.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kAllowSilentPush)) {
+    std::move(message_handled_callback)
+        .Run(false /* did_show_generic_notification */);
+  } else {
+    // Defaults to true since that is the more restrictive option.
+    bool user_visible_only = base::Contains(
+        origins_requesting_user_visible_requirement_bypass, requesting_origin);
+    notification_manager_.EnforceUserVisibleOnlyRequirements(
+        requesting_origin, service_worker_registration_id,
+        std::move(message_handled_callback), user_visible_only);
   }
 }
 

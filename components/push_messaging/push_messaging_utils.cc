@@ -62,4 +62,49 @@ std::string NormalizeSenderInfo(const std::string& application_server_key) {
   return encoded_application_server_key;
 }
 
+bool WasPushSuccessful(
+    blink::mojom::PushEventStatus status,
+    std::optional<blink::mojom::PushUnregistrationReason>& unsubscribe_reason) {
+  switch (status) {
+    case blink::mojom::PushEventStatus::SUCCESS:
+    case blink::mojom::PushEventStatus::EVENT_WAITUNTIL_REJECTED:
+    case blink::mojom::PushEventStatus::TIMEOUT:
+      unsubscribe_reason = std::nullopt;
+      return true;
+    case blink::mojom::PushEventStatus::SERVICE_WORKER_ERROR:
+      // Do nothing, and hope the error is transient.
+      unsubscribe_reason = std::nullopt;
+      break;
+    case blink::mojom::PushEventStatus::NO_APP_LEVEL_PERMISSION_IGNORE:
+      // Do nothing, ignore push messages during the grace period.
+      unsubscribe_reason = std::nullopt;
+      break;
+    case blink::mojom::PushEventStatus::NO_APP_LEVEL_PERMISSION_UNSUBSCRIBE:
+      unsubscribe_reason =
+          blink::mojom::PushUnregistrationReason::NO_APP_LEVEL_PERMISSION;
+      break;
+    case blink::mojom::PushEventStatus::UNKNOWN_APP_ID:
+      unsubscribe_reason =
+          blink::mojom::PushUnregistrationReason::DELIVERY_UNKNOWN_APP_ID;
+      break;
+    case blink::mojom::PushEventStatus::PERMISSION_DENIED:
+      unsubscribe_reason =
+          blink::mojom::PushUnregistrationReason::DELIVERY_PERMISSION_DENIED;
+      break;
+    case blink::mojom::PushEventStatus::NO_SERVICE_WORKER:
+      unsubscribe_reason =
+          blink::mojom::PushUnregistrationReason::DELIVERY_NO_SERVICE_WORKER;
+      break;
+    case blink::mojom::PushEventStatus::PERMISSION_REVOKED_ABUSIVE:
+      unsubscribe_reason =
+          blink::mojom::PushUnregistrationReason::PERMISSION_REVOKED_ABUSIVE;
+      break;
+    case blink::mojom::PushEventStatus::PERMISSION_REVOKED_DISRUPTIVE:
+      unsubscribe_reason =
+          blink::mojom::PushUnregistrationReason::PERMISSION_REVOKED_DISRUPTIVE;
+      break;
+  }
+  return false;
+}
+
 }  // namespace push_messaging

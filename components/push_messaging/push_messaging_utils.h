@@ -5,8 +5,10 @@
 #ifndef COMPONENTS_PUSH_MESSAGING_PUSH_MESSAGING_UTILS_H_
 #define COMPONENTS_PUSH_MESSAGING_PUSH_MESSAGING_UTILS_H_
 
+#include <optional>
 #include <string>
 
+#include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 #include "third_party/blink/public/mojom/push_messaging/push_messaging.mojom.h"
 
 class GURL;
@@ -37,6 +39,13 @@ std::string NormalizeSenderInfo(const std::string& sender_info);
 // enabled, get this information from SW database.
 blink::mojom::PushSubscriptionOptionsPtr MakeOptions(
     const std::string& sender_id);
+
+// Inspects the |PushEventStatus| and returns if push was successful; when
+// returning false, if the std::optional<PushUnregistrationReason> is not
+// std::nullopt, it's expected to unregister the subscription.
+bool WasPushSuccessful(
+    blink::mojom::PushEventStatus status,
+    std::optional<blink::mojom::PushUnregistrationReason>& unsubscribe_reason);
 
 }  // namespace push_messaging
 
