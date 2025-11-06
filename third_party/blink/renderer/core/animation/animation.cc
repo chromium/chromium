@@ -2606,7 +2606,15 @@ Animation::NativePaintWorkletReasons Animation::GetNativePaintWorkletReasons()
   NativePaintWorkletReasons reasons = kNoPaintWorklet;
   if (const KeyframeEffect* keyframe_effect =
           DynamicTo<KeyframeEffect>(effect())) {
+    // Suppress composited background color animations when in forced colors
+    // mode to avoid clobbering a transparent fill. Normally, a composited
+    // background color needs to paint even if transparent as the fill might not
+    // remain transparent.
+    // TODO(kevers): There is room to optimize here as if in forced color mode
+    // and forced colors are active for the element, we can optimize out the
+    // animation as having no visual effect.
     if (RuntimeEnabledFeatures::CompositeBGColorAnimationEnabled() &&
+        GetDocument() && !GetDocument()->InForcedColorsMode() &&
         keyframe_effect->Affects(
             PropertyHandle(GetCSSPropertyBackgroundColor()))) {
       reasons |= kBackgroundColorPaintWorklet;

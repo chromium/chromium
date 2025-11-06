@@ -76,6 +76,7 @@
 #include "third_party/blink/renderer/core/style/style_generated_image.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/core/svg/svg_length.h"
+#include "third_party/blink/renderer/core/testing/color_scheme_helper.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
@@ -2932,6 +2933,59 @@ TEST_P(AnimationCompositorAnimationsTest, NativePaintWorkletProperties) {
             target->GetElementAnimations()->CompositedBackgroundColorStatus());
   EXPECT_EQ(ElementAnimations::CompositedPaintStatus::kComposited,
             target->GetElementAnimations()->CompositedClipPathStatus());
+}
+
+TEST_P(AnimationCompositorAnimationsTest, NativePaintWorkletForcedColorsMode) {
+  // Setting forced color mode suppresses background-color as a valid native
+  // paint worklet property.
+  ColorSchemeHelper color_scheme_helper(GetDocument());
+  color_scheme_helper.SetInForcedColors(GetDocument(),
+                                        /*in_forced_colors=*/true);
+
+  std::unique_ptr<ScopedCompositeBGColorAnimationForTest>
+      scoped_composite_bgcolor_animation =
+          std::make_unique<ScopedCompositeBGColorAnimationForTest>(true);
+
+  // Normally, we don't get image generators set up in a testing environment.
+  // Construct fake ones to allow us to test that we are making the correct
+  // compositing decision.
+  ScopedBackgroundColorPaintImageGenerator background_image_generator(
+      GetDocument().GetFrame());
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @keyframes anim {
+        0% {
+          background-color: red;
+        }
+        100% {
+          background-color: green;
+        }
+      }
+
+      #target {
+        width: 20vw;
+        height: 20vw;
+        display: inline-block;
+        animation: anim 1s linear;
+      }
+    }
+    </style>
+    <div id="target"></div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Animation* animation =
+      target->GetElementAnimations()->Animations().begin()->key;
+  EXPECT_EQ(Animation::NativePaintWorkletProperties::kNoPaintWorklet,
+            animation->GetNativePaintWorkletReasons());
+  EXPECT_EQ(CompositorAnimations::kUnsupportedCSSProperty,
+            animation->CheckCanStartAnimationOnCompositor(
+                GetDocument().View()->GetPaintArtifactCompositor()));
+  EXPECT_EQ(ElementAnimations::CompositedPaintStatus::kNoAnimation,
+            target->GetElementAnimations()->CompositedBackgroundColorStatus());
 }
 
 TEST_P(AnimationCompositorAnimationsTest, BackgroundShorthand) {
