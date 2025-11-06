@@ -1248,19 +1248,18 @@ TaskQueue::QueuePriority SequenceManagerImpl::GetPriorityCount() const {
   return settings().priority_settings.priority_count();
 }
 
-std::vector<std::unique_ptr<TaskQueue::QueueEnabledVoter>>
-SequenceManagerImpl::CreateBestEffortTaskQueueEnabledVoters() {
-  std::vector<std::unique_ptr<TaskQueue::QueueEnabledVoter>> voters;
+std::vector<TaskQueue*> SequenceManagerImpl::GetBestEffortTaskQueues() {
+  std::vector<TaskQueue*> queues;
   if (std::optional<TaskQueue::QueuePriority> best_effort_priority =
           GetBestEffortPriority()) {
     for (internal::TaskQueueImpl* task_queue :
          main_thread_only().active_queues) {
       if (task_queue->GetQueuePriority() == *best_effort_priority) {
-        voters.push_back(task_queue->CreateQueueEnabledVoter());
+        queues.push_back(task_queue);
       }
     }
   }
-  return voters;
+  return queues;
 }
 
 std::optional<TaskQueue::QueuePriority>

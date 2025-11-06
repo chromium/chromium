@@ -192,9 +192,12 @@ BrowserTaskQueues::BrowserTaskQueues(
   control_queue_->SetQueuePriority(BrowserTaskPriority::kControlPriority);
 
   // Run all pending queue
-  run_all_pending_tasks_queue_ =
-      sequence_manager->CreateTaskQueue(base::sequence_manager::TaskQueue::Spec(
-          GetRunAllPendingTaskQueueName(thread_id)));
+  // Since this is used for control messages, it shouldn't be throttled by
+  // ScopedBestEffortExecutionFence.
+  run_all_pending_tasks_queue_ = sequence_manager->CreateTaskQueue(
+      base::sequence_manager::TaskQueue::Spec(
+          GetRunAllPendingTaskQueueName(thread_id))
+          .SetScopedExecutionFencesAllowed(false));
   run_all_pending_tasks_queue_->SetQueuePriority(
       BrowserTaskPriority::kBestEffortPriority);
 
@@ -266,6 +269,7 @@ void BrowserTaskQueues::StartRunAllPendingTasksForTesting(
   for (const auto& queue : queue_data_) {
     queue.task_queue->InsertFence(InsertFencePosition::kNow);
   }
+  CHECK(run_all_pending_tasks_queue_->IsQueueEnabled());
   run_all_pending_tasks_queue_->task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(&BrowserTaskQueues::EndRunAllPendingTasksForTesting,

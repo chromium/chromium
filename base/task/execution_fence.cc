@@ -57,10 +57,12 @@ class SequenceManagerRegistry {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     std::vector<std::unique_ptr<TaskQueue::QueueEnabledVoter>> voters;
     for (auto* sequence_manager : sequence_managers_) {
-      for (auto& voter :
-           sequence_manager->CreateBestEffortTaskQueueEnabledVoters()) {
-        voter->SetVoteToEnable(false);
-        voters.push_back(std::move(voter));
+      for (TaskQueue* task_queue :
+           sequence_manager->GetBestEffortTaskQueues()) {
+        if (task_queue->IsBlockedByScopedExecutionFences()) {
+          voters.push_back(task_queue->CreateQueueEnabledVoter());
+          voters.back()->SetVoteToEnable(false);
+        }
       }
     }
     return voters;

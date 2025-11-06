@@ -134,8 +134,7 @@ class BASE_EXPORT SequenceManagerImpl
   void RemoveTaskObserver(TaskObserver* task_observer) override;
   std::optional<WakeUp> GetNextDelayedWakeUp() const override;
   TaskQueue::QueuePriority GetPriorityCount() const override;
-  std::vector<std::unique_ptr<TaskQueue::QueueEnabledVoter>>
-  CreateBestEffortTaskQueueEnabledVoters() override;
+  std::vector<TaskQueue*> GetBestEffortTaskQueues() override;
 
   // SequencedTaskSource implementation:
   void SetRunTaskSynchronouslyAllowed(

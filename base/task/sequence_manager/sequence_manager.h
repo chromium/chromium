@@ -271,13 +271,11 @@ class BASE_EXPORT SequenceManager {
 
   virtual TaskQueue::QueuePriority GetPriorityCount() const = 0;
 
-  // Returns a list of voters that can enable/disable each TaskQueue with the
-  // priority used for "best-effort" tasks. This is the largest value (lowest
-  // priority) defined by the PrioritySettings, unless that's the default
-  // priority, in which case there's no "best-effort" priority and the returned
-  // list is empty.
-  virtual std::vector<std::unique_ptr<TaskQueue::QueueEnabledVoter>>
-  CreateBestEffortTaskQueueEnabledVoters() = 0;
+  // Returns all TaskQueues with the priority used for "best-effort" tasks. This
+  // is the largest value (lowest priority) defined by the PrioritySettings,
+  // unless that's the default priority, in which case there's no "best-effort"
+  // priority and the returned list is empty.
+  virtual std::vector<TaskQueue*> GetBestEffortTaskQueues() = 0;
 
   // Creates a `TaskQueue` and returns a `TaskQueue::Handle`for it. The queue is
   // owned by the handle and shut down when the handle is destroyed. Must be
