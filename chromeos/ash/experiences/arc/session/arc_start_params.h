@@ -61,9 +61,6 @@ struct StartParams {
 
   HostUreadaheadMode host_ureadahead_mode = HostUreadaheadMode::MODE_READAHEAD;
 
-  // Experiment flag for ARC Custom Tabs.
-  bool arc_custom_tabs_experiment = false;
-
   // Flag to disable scheduling of media store periodic maintenance tasks.
   bool disable_media_store_maintenance = false;
 

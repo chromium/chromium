@@ -87,7 +87,6 @@ ArcClientAdapter::ConvertStartParamsToStartArcMiniInstanceRequest(
           params.play_store_auto_update));
   request.set_dalvik_memory_profile(ToArcMiniInstanceRequestDalvikMemoryProfile(
       params.dalvik_memory_profile));
-  request.set_arc_custom_tabs_experiment(params.arc_custom_tabs_experiment);
   request.set_disable_media_store_maintenance(
       params.disable_media_store_maintenance);
   request.set_disable_download_provider(params.disable_download_provider);
