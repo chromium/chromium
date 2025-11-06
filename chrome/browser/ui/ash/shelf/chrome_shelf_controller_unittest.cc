@@ -4697,13 +4697,8 @@ class ChromeShelfControllerPlayStoreAvailabilityTest
 
 }  // namespace
 
-// TODO(crbug.com/40890072) Test is flaky on ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_DefaultApps DISABLED_DefaultApps
-#else
-#define MAYBE_DefaultApps DefaultApps
-#endif
-TEST_F(ChromeShelfControllerArcDefaultAppsTest, MAYBE_DefaultApps) {
+// TODO(crbug.com/40890072) Test is flaky.
+TEST_F(ChromeShelfControllerArcDefaultAppsTest, DISABLED_DefaultApps) {
   // TODO(crbug.com/454468678): This should be called before profile is created.
   arc_app_test_.PreProfileSetUp();
   arc_app_test_.SetUp(profile());
