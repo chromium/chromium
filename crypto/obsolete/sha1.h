@@ -36,6 +36,11 @@ namespace net {
 std::string ComputeSecWebSocketAccept(std::string_view key);
 }  // namespace net
 
+namespace wallpaper {
+std::string GetHexForWallpaperFilesId(
+    const base::span<const uint8_t> files_id_unhashed);
+}  // namespace wallpaper
+
 namespace crypto::obsolete {
 
 // This class is used for computing SHA-1 hashes, either one-shot via
@@ -71,15 +76,17 @@ class CRYPTO_EXPORT Sha1 {
   friend std::string ash::ambient::GetCachedImageHash(std::string_view image);
   friend std::string ash::ambient::Sha1UrlAsHexEncodeForFilename(
       std::string_view url);
-
   friend std::string ash::login::GetHashedTosContent(
       std::string_view tos_content);
   friend std::string ash::login::Sha1AsHexForRefreshToken(
       std::string_view data);
-
   friend std::string ash::quick_start::GetHashedAuthToken(
       std::string_view authentication_token);
   friend std::string net::ComputeSecWebSocketAccept(std::string_view key);
+
+  // TODO(crbug.com/458084930): get rid of this.
+  friend std::string wallpaper::GetHexForWallpaperFilesId(
+      const base::span<const uint8_t> files_id_unhashed);
 
   Sha1();
   static std::array<uint8_t, kSize> Hash(std::string_view data);
