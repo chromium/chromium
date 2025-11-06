@@ -1901,6 +1901,26 @@
     "expiry_milestone": 144
   },
   {
+    "name": "composebox-aim-nudge",
+    "owners": [ "christianxu@google.com", "bling-search@google.com" ],
+    "expiry_milestone": 149
+  },
+  {
+    "name": "composebox-compact-mode",
+    "owners": [ "christianxu@google.com", "bling-search@google.com" ],
+    "expiry_milestone": 149
+  },
+  {
+    "name": "composebox-force-top",
+    "owners": [ "christianxu@google.com", "bling-search@google.com" ],
+    "expiry_milestone": 149
+  },
+  {
+    "name": "composebox-ios",
+    "owners": [ "christianxu@google.com", "bling-search@google.com" ],
+    "expiry_milestone": 149
+  },
+  {
     "name": "composebox-uses-chrome-compose-client",
     "owners": ["niharm@google.com", "chrome-desktop-ntp@google.com"],
     "expiry_milestone": 145

@@ -323,6 +323,24 @@ const char kCollaborationMessagingDescription[] =
     "including features such as recent activity, dirty dots, and description "
     "action chips.";
 
+const char kComposeboxAIMNudgeName[] = "ComposeboxAIMNudge";
+const char kComposeboxAIMNudgeDescription[] =
+    "Enables the AIM nudge button in the composebox, tapping on the button "
+    "enables AIM. This is conditionned by AIM availability.";
+
+const char kComposeboxCompactModeName[] = "ComposeboxCompactMode";
+const char kComposeboxCompactModeDescription[] =
+    "Enables the compact composebox, adding attachment or enabling AIM will "
+    "expand it to the regular size.";
+
+const char kComposeboxForceTopName[] = "ComposeboxForceTop";
+const char kComposeboxForceTopDescription[] =
+    "Forces the composebox to be at the top.";
+
+const char kComposeboxIOSName[] = "ComposeboxIOS";
+const char kComposeboxIOSDescription[] =
+    "Enables the composebox that replaces the regular omnibox in edit state.";
+
 const char kConfirmationButtonSwapOrderName[] =
     "Swap Button Order in confirmation alerts";
 const char kConfirmationButtonSwapOrderDescription[] =

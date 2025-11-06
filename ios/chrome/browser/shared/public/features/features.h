@@ -1163,4 +1163,10 @@ BASE_DECLARE_FEATURE(kIOSFusebox);
 // Returns true if the IOSFusebox feature is enabled.
 bool IsIOSFuseboxEnabled();
 
+// Enables the Composebox feature.
+BASE_DECLARE_FEATURE(kComposeboxIOS);
+
+// Returns true if the Composebox feature is enabled.
+bool IsComposeboxIOSEnabled();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

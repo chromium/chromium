@@ -191,6 +191,18 @@ extern const char kChromeStartupParametersAsyncDescription[];
 extern const char kCollaborationMessagingName[];
 extern const char kCollaborationMessagingDescription[];
 
+extern const char kComposeboxAIMNudgeName[];
+extern const char kComposeboxAIMNudgeDescription[];
+
+extern const char kComposeboxCompactModeName[];
+extern const char kComposeboxCompactModeDescription[];
+
+extern const char kComposeboxForceTopName[];
+extern const char kComposeboxForceTopDescription[];
+
+extern const char kComposeboxIOSName[];
+extern const char kComposeboxIOSDescription[];
+
 extern const char kConfirmationButtonSwapOrderName[];
 extern const char kConfirmationButtonSwapOrderDescription[];
 

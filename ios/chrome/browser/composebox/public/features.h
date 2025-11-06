@@ -27,4 +27,13 @@ base::TimeDelta GetUploadDelay();
 // Returns whether to force the upload to fail.
 bool ShouldForceUploadFailure();
 
+// Used to enable the compact "one line" mode in the composebox.
+BASE_DECLARE_FEATURE(kComposeboxCompactMode);
+
+// Used to force top input plate in the composebox.
+BASE_DECLARE_FEATURE(kComposeboxForceTop);
+
+// Used to enable the AIM nudge button in the composebox.
+BASE_DECLARE_FEATURE(kComposeboxAIMNudge);
+
 #endif  // IOS_CHROME_BROWSER_COMPOSEBOX_PUBLIC_FEATURES_H_

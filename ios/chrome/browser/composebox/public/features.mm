@@ -39,3 +39,22 @@ bool ShouldForceUploadFailure() {
       &kAIMPrototypeDevTools, kForceUploadFailureParam, false};
   return kForceUploadFailure.Get();
 }
+
+BASE_FEATURE(kComposeboxCompactMode, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsComposeboxCompactModeEnabled() {
+  return base::FeatureList::IsEnabled(kComposeboxCompactMode);
+}
+
+BASE_FEATURE(kComposeboxForceTop, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsComposeboxForceTopEnabled() {
+  return base::FeatureList::IsEnabled(kComposeboxForceTop);
+}
+
+BASE_FEATURE(kComposeboxAIMNudge, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsComposeboxAIMNudgeEnabled() {
+  // Reminder to also check AIM availability.
+  return base::FeatureList::IsEnabled(kComposeboxAIMNudge);
+}
