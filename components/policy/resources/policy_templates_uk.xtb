@@ -10472,7 +10472,7 @@ API вебсервісу <ph name="REQUEST_FULLSCREEN_API_NAME" />
 
 Поле <ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> містить список умов, які мають виконуватися, щоб правило перевизначення застосовувалося для вибору проксі-сервера. Якщо не вказати значення в цьому полі, запис використовуватиметься, якщо збігатиметься принаймні один хост у правилі <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" />.
 
-Умова <ph name="PROXY_OVERRIDE_RULES_DNS_PROBE" /> перевіряє, чи може наданий DNS <ph name="PROXY_OVERRIDE_RULES_HOST" /> перетворитися на IP-адресу. Якщо поле <ph name="PROXY_OVERRIDE_RULES_RESULT" /> має значення <ph name="PROXY_OVERRIDE_RULES_RESOLVES" />, умова вважається виконаною. Якщо натомість вибрано значення <ph name="PROXY_OVERRIDE_RULES_NOT_FOUND" />, умова вважатиметься виконаною, якщо перетворення не вдасться.</translation>
+Умова <ph name="PROXY_OVERRIDE_RULES_DNS_PROBE" /> перевіряє, чи може наданий DNS <ph name="PROXY_OVERRIDE_RULES_HOST" /> визначити IP-адресу. Якщо поле <ph name="PROXY_OVERRIDE_RULES_RESULT" /> має значення <ph name="PROXY_OVERRIDE_RULES_RESOLVES" />, умова вважається виконаною. Якщо натомість вибрано значення <ph name="PROXY_OVERRIDE_RULES_NOT_FOUND" />, умова вважатиметься виконаною, якщо визначення не вдасться.</translation>
 <translation id="8086746212954621799">Якщо вибрати значення "правда", автоматичні оновлення буде вимкнено.
 
 Якщо це правило не налаштувати або вибрати для нього значення "неправда", пристрої з <ph name="PRODUCT_OS_NAME" /> автоматично перевірятимуть наявність оновлень.

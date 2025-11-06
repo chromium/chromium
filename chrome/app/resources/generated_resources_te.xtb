@@ -6781,7 +6781,7 @@
 <translation id="567587836466137939">ఈ పరికరం <ph name="MONTH_AND_YEAR" /> వరకు ఆటోమేటిక్ సాఫ్ట్‌వేర్, భద్రతాపరమైన అప్‌డేట్‌లను పొందుతుంది. <ph name="LINK_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK_END" /></translation>
 <translation id="567740581294087470">మీరు ఏ రకమైన ఫీడ్‌బ్యాక్‌ను అందిస్తున్నారు?</translation>
 <translation id="5677503058916217575">పేజీ భాష:</translation>
-<translation id="5677928146339483299">బ్లాక్ చేయబడింది</translation>
+<translation id="5677928146339483299">బ్లాక్ అయింది</translation>
 <translation id="5678550637669481956"><ph name="VOLUME_NAME" />కి చదవడానికి మరియు రాయడానికి యాక్సెస్ మంజూరు చేయబడింది.</translation>
 <translation id="5678821117681811450"><ph name="WEB_DRIVE" />‌కు పంపుతోంది</translation>
 <translation id="5678955352098267522"><ph name="WEBSITE_1" />లోని మీ డేటాను చదవండి</translation>
@@ -10750,6 +10750,7 @@
 <translation id="8427213022735114808">మీరు రాయాలనుకునేది Googleకు చెబితే చాలు వెంటనే వచన రూపంలోకి మారుస్తుంది.</translation>
 <translation id="8427292751741042100">ఏదైనా హోస్ట్‌లో పొందుపరచబడింది</translation>
 <translation id="8428213095426709021">సెట్టింగ్‌లు</translation>
+<translation id="8428257636009471988">వెబ్ స్టోర్‌కు వెళ్లండి</translation>
 <translation id="8428271547607112339">పాఠశాల ఖాతాను జోడించండి</translation>
 <translation id="8428634594422941299">అర్థమైంది</translation>
 <translation id="84297032718407999">మీరు <ph name="LOGOUT_TIME_LEFT" />లో సైన్ అవుట్ అవుతారు</translation>
