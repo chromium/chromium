@@ -55,6 +55,12 @@ constexpr char kFullSessionResponse[] = R"(
                   "connectionCode": "0123456789"
                 },
                 "viewScreenRequester": {
+                  "user": {
+                    "email": "requester@email.com",
+                    "fullName": "requester",
+                    "gaiaId": "456",
+                    "photoUrl": "data:image/456"
+                  },
                   "serviceAccount" : {
                     "email": "robot@email.com"
                   }
@@ -415,6 +421,14 @@ TEST_F(SessionParserTest, TestParseStudentStatusProtoFromJson) {
                                    .view_screen_requester()
                                    .service_account()
                                    .email());
+  EXPECT_EQ("requester@email.com", session_full->student_statuses()
+                                       .at("3")
+                                       .devices()
+                                       .at("kDummyDeviceId")
+                                       .view_screen_config()
+                                       .view_screen_requester()
+                                       .user()
+                                       .email());
   EXPECT_EQ(::boca::StudentStatus::ADDED,
             session_full->student_statuses().at("22").state());
   ParseStudentStatusProtoFromJson(session_dict_partial->GetIfDict(),

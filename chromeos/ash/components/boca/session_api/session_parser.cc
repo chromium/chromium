@@ -356,6 +356,12 @@ void ParseIndividualStudentStatusFromJson(
             }
             if (auto* view_screen_requester_dict =
                     view_screen_config_dict->FindDict(kViewScreenRequester)) {
+              if (auto* user_dict =
+                      view_screen_requester_dict->FindDict(kUser)) {
+                *view_screen_config.mutable_view_screen_requester()
+                     ->mutable_user() =
+                    ConvertUserIdentityJsonToProto(user_dict);
+              }
               if (auto* service_account_dict =
                       view_screen_requester_dict->FindDict(kServiceAccount)) {
                 if (auto* ptr = service_account_dict->FindString(kEmail)) {
