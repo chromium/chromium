@@ -15,9 +15,6 @@ extern const base::FilePath::CharType kLegacySessionsDirname[];
 // Name of the directory containing the legacy web sessions.
 extern const base::FilePath::CharType kLegacyWebSessionsDirname[];
 
-// Name of the legacy session file.
-extern const base::FilePath::CharType kLegacySessionFilename[];
-
 // Name of the directory containing the sessions' storage.
 extern const base::FilePath::CharType kSessionRestorationDirname[];
 

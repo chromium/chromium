@@ -10,9 +10,6 @@ const base::FilePath::CharType kLegacySessionsDirname[] =
 const base::FilePath::CharType kLegacyWebSessionsDirname[] =
     FILE_PATH_LITERAL("Web_Sessions");
 
-const base::FilePath::CharType kLegacySessionFilename[] =
-    FILE_PATH_LITERAL("session.plist");
-
 const base::FilePath::CharType kSessionRestorationDirname[] =
     FILE_PATH_LITERAL("SessionStorage");
 

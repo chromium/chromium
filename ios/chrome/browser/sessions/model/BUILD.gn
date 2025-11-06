@@ -224,25 +224,6 @@ source_set("session_constants") {
   deps = [ "//base" ]
 }
 
-source_set("session_migration") {
-  visibility = [ ":*" ]
-  sources = [
-    "session_migration.h",
-    "session_migration.mm",
-  ]
-  deps = [
-    ":features",
-    ":serialisation",
-    ":session_constants",
-    ":session_internal_util",
-    "//base",
-    "//ios/chrome/browser/sessions/model/proto",
-    "//ios/web/public",
-    "//ios/web/public/session",
-    "//ios/web/public/session/proto",
-  ]
-}
-
 source_set("session_internal_util") {
   visibility = [ ":*" ]
   sources = [
@@ -333,7 +314,6 @@ source_set("unit_tests") {
     "session_internal_util_unittest.mm",
     "session_io_request_unittest.mm",
     "session_loading_unittest.mm",
-    "session_migration_unittest.mm",
     "session_restoration_scroll_observer_unittest.mm",
     "session_restoration_service_factory_unittest.mm",
     "session_restoration_service_impl_unittest.mm",
@@ -354,7 +334,6 @@ source_set("unit_tests") {
     ":session_constants",
     ":session_internal_util",
     ":session_io",
-    ":session_migration",
     ":session_restoration_service",
     ":session_restoration_service_factory",
     ":session_restoration_service_impl",
