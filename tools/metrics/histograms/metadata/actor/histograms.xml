@@ -25,15 +25,15 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(ActorTaskState) -->
 
 <variants name="ActorTaskState">
-  <variant name="Acting" summary="ActorTask in Acting state."/>
-  <variant name="Cancelled" summary="ActorTask in Cancelled state."/>
-  <variant name="Created" summary="ActorTask in Created state."/>
-  <variant name="Failed" summary="ActorTask in Failed state."/>
-  <variant name="Finished" summary="ActorTask in Finished state."/>
-  <variant name="PausedByActor" summary="ActorTask in PausedByActor state."/>
-  <variant name="PausedByUser" summary="ActorTask in PausedByUser state."/>
-  <variant name="Reflecting" summary="ActorTask in Reflecting state."/>
-  <variant name="WaitingOnUser" summary="ActorTask in WaitingOnUser state."/>
+  <variant name="Acting" summary="Acting"/>
+  <variant name="Cancelled" summary="Cancelled"/>
+  <variant name="Created" summary="Created"/>
+  <variant name="Failed" summary="Failed"/>
+  <variant name="Finished" summary="Finished"/>
+  <variant name="PausedByActor" summary="PausedByActor"/>
+  <variant name="PausedByUser" summary="PausedByUser"/>
+  <variant name="Reflecting" summary="Reflecting"/>
+  <variant name="WaitingOnUser" summary="WaitingOnUser"/>
 </variants>
 
 <!-- LINT.ThenChange(//chrome/browser/actor/actor_task.h:State) -->
@@ -411,9 +411,9 @@ chromium-metrics-reviews@google.com.
   <owner>chrstne@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
-    Recorded when a task makes a state transition from the first {OldState} to
-    the second {NewState}. This captures the number of actions the task took in
-    the first {OldState}.
+    Recorded when a task makes a state transition from the old state
+    ({OldState}) to the new state ({NewState}). This captures the number of
+    actions the task took in the first {OldState}.
   </summary>
   <token key="OldState" variants="ActorTaskState"/>
   <token key="NewState" variants="ActorTaskState"/>
