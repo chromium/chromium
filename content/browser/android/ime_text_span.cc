@@ -34,7 +34,8 @@ base::android::ScopedJavaLocalRef<jobjectArray> ToImeTextSpanJniArray(
         base::android::ToJavaArrayOfStrings(env, span_ptr.suggestions);
 
     base::android::ScopedJavaLocalRef<jobject> j_info = Java_ImeTextSpan_create(
-        env, span_ptr.start_offset, span_ptr.end_offset, j_suggestions);
+        env, span_ptr.start_offset, span_ptr.end_offset, j_suggestions,
+        static_cast<jint>(span_ptr.type));
 
     env->SetObjectArrayElement(ime_text_span_array, i++, j_info.obj());
   }

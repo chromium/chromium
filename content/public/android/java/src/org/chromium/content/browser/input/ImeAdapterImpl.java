@@ -88,6 +88,7 @@ import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.base.ime.TextInputAction;
 import org.chromium.ui.base.ime.TextInputType;
+import org.chromium.ui.mojom.ImeTextSpanType;
 import org.chromium.ui.mojom.VirtualKeyboardPolicy;
 import org.chromium.ui.mojom.VirtualKeyboardVisibilityRequest;
 
@@ -749,11 +750,18 @@ public class ImeAdapterImpl
                 } else {
                     SpannableStringBuilder spannable = new SpannableStringBuilder(text);
                     for (ImeTextSpan info : imeTextSpans) {
+                        int flags = 0;
+                        if (info.getType() == ImeTextSpanType.MISSPELLING_SUGGESTION) {
+                            flags = SuggestionSpan.FLAG_MISSPELLED;
+                        } else if (info.getType() == ImeTextSpanType.GRAMMAR_SUGGESTION) {
+                            flags = SuggestionSpan.FLAG_GRAMMAR_ERROR;
+                        }
+
                         SuggestionSpan suggestionSpan =
                                 new SuggestionSpan(
                                         ContextUtils.getApplicationContext(),
                                         info.getSuggestions(),
-                                        SuggestionSpan.FLAG_MISSPELLED);
+                                        flags);
 
                         spannable.setSpan(
                                 suggestionSpan,
