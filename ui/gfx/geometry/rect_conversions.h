@@ -6,10 +6,11 @@
 #define UI_GFX_GEOMETRY_RECT_CONVERSIONS_H_
 
 #include "base/component_export.h"
-#include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/geometry/rect_f.h"
 
 namespace gfx {
+
+class Rect;
+class RectF;
 
 // Returns the smallest Rect that encloses the given RectF if possible.
 // The returned Rect is larger than or equal to the input RectF, unless the

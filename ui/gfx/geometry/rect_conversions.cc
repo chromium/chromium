@@ -9,6 +9,8 @@
 
 #include "base/check.h"
 #include "base/numerics/safe_conversions.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace gfx {
 
