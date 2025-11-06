@@ -211,6 +211,12 @@ public class ChildProcessRanking implements Iterable<ChildProcessConnection> {
 
     private boolean mEnableServiceGroupImportance;
     private boolean mRebindRunnablePending;
+    // This represents whether the application has window focus.
+    //
+    // While the application does not have focused window, we assume the application is not in the
+    // top-app and has capped oom_score_adj. We use window focus instead of
+    // onTopResumedActivityChanged. See the comment on onWindowFocusChanged() for details.
+    private boolean mApplicationHasWindowFocus;
     private boolean mApplicationInBackground;
 
     private static boolean isSpareRendererOfLowestRanking() {
@@ -237,6 +243,30 @@ public class ChildProcessRanking implements Iterable<ChildProcessConnection> {
             postRebindHighRankConnectionsIfNeeded();
         }
         if (ENABLE_CHECKS) checkGroupImportance();
+    }
+
+    /**
+     * Called when the window focus changes.
+     *
+     * <p>This is called on the process launcher thread.
+     *
+     * <p>This is used to detect whether the application is in the top-app. While the application
+     * does not have focused window, we assume the application is not in the top-app and has capped
+     * oom_score_adj. We use window focus instead of onTopResumedActivityChanged because of the
+     * implementation complexity. window focus and onTopResumedActivityChanged have some mismatch
+     * (e.g. the window focus can be dropped by "non-activity windows like dialogs and popups"). we
+     * can accept the mismatch because causing extra rebinding Binder IPC while showing
+     * "non-activity windows like dialogs and popups" is not that costy.
+     *
+     * <p>TODO(crbug.com/456638294): Use onTopResumedActivityChanged instead.
+     */
+    public void onWindowFocusChanged(boolean hasFocus) {
+        mApplicationHasWindowFocus = hasFocus;
+        if (!hasFocus && isStrictHighRankProcessLRUEnabled()) {
+            // Window focus is briefly lost when switching between two Chrome windows. Schedule the
+            // deferred rebinding task to avoid unnecessary rebinding if focus is back soon.
+            postRebindHighRankConnectionsForConflict();
+        }
     }
 
     public void onSentToBackground() {
@@ -385,6 +415,13 @@ public class ChildProcessRanking implements Iterable<ChildProcessConnection> {
                 // Rebind a service binding to apply the group importance change.
                 connection.connection.rebind();
             }
+            if (isStrictHighRankProcessLRUEnabled() && !mApplicationHasWindowFocus) {
+                // Need to rebind high rank processes when a high rank process moves within the
+                // ranking list while the application is not the top-app. For example, when MODERATE
+                // process is updated, we need to rebind high rank processes to keep the IMPORTANT
+                // processes at newer position in the LRU list.
+                postRebindHighRankConnectionsForConflict();
+            }
             return;
         }
 
@@ -479,8 +516,8 @@ public class ChildProcessRanking implements Iterable<ChildProcessConnection> {
     }
 
     /**
-     * Rebinds high rank connections if they are in conflict with low rank connections in terms of
-     * oom_score_adj.
+     * Rebinds high rank connections if they are in conflict with low rank connections or between
+     * high rank connections in terms of oom_score_adj.
      *
      * <p>LMK (Low-Memory-Kill) order is sorted by oom_score_adj which is calculated from the
      * service binding flags. The LRU order tracked by AMS(ActivityManagerService) is valued for
@@ -497,6 +534,9 @@ public class ChildProcessRanking implements Iterable<ChildProcessConnection> {
      *
      * <p>Note that this method should be called when a low rank process is bound, unbound or
      * rebound.
+     *
+     * <p>This method is also used to keep the LRU order of high rank processes in sync while the
+     * application is not in top-app visibility.
      */
     private void rebindHighRankConnectionsForConflict() {
         if (!isStrictHighRankProcessLRUEnabled()) {
@@ -510,7 +550,15 @@ public class ChildProcessRanking implements Iterable<ChildProcessConnection> {
         // oom_score_adj is capped by the browser process. All high rank connections are targets for
         // rebinding. So we can skip find the target binding state if the application is in
         // background.
-        if (!mApplicationInBackground) {
+        //
+        // While the application is visible but not in top-app visibility, the oom_score_adj of the
+        // application process and child processes are capped by visible priority and oom_score_adj
+        // difference between IMPORTANT and MODERATE bindings are gone. The LMKD kill order between
+        // the processes are determined by the LRU list order in AMS. We need rebind all high rank
+        // processes to keep the LRU order in sync.
+        boolean isApplicationInForegroundPriority =
+                !mApplicationInBackground && mApplicationHasWindowFocus;
+        if (isApplicationInForegroundPriority) {
             // Ranking is independent of the effective binding state. Even low rank processes can
             // have high priority service bindings. For example:
             //
@@ -540,7 +588,7 @@ public class ChildProcessRanking implements Iterable<ChildProcessConnection> {
         for (int i = mRankings.size() - 1; i >= 0; --i) {
             ConnectionWithRank connection = mRankings.get(i);
             if (!connection.shouldBeInLowRankGroup()
-                    && (mApplicationInBackground
+                    && (!isApplicationInForegroundPriority
                             || (connection.connection.bindingStateCurrent()
                                     <= targetBindingState))) {
                 connection.connection.rebind();

@@ -52,6 +52,7 @@ public class ApplicationStatus {
 
     private static class ActivityInfo {
         private int mStatus = ActivityState.DESTROYED;
+        private boolean mHasWindowFocus;
         private final ObserverList<ActivityStateListener> mListeners = new ObserverList<>();
 
         /**
@@ -67,6 +68,20 @@ public class ApplicationStatus {
          */
         public void setStatus(@ActivityState int status) {
             mStatus = status;
+        }
+
+        /**
+         * @return Whether the activity has window focus.
+         */
+        public boolean hasWindowFocus() {
+            return mHasWindowFocus;
+        }
+
+        /**
+         * @param hasWindowFocus Whether the activity has window focus.
+         */
+        public void setHasWindowFocus(boolean hasWindowFocus) {
+            mHasWindowFocus = hasWindowFocus;
         }
 
         /**
@@ -279,6 +294,12 @@ public class ApplicationStatus {
 
         public void onWindowFocusChanged(boolean hasFocus) {
             mCallback.onWindowFocusChanged(hasFocus);
+            synchronized (sActivityInfo) {
+                ActivityInfo info = sActivityInfo.get(mActivity);
+                if (info != null) {
+                    info.setHasWindowFocus(hasFocus);
+                }
+            }
 
             if (sWindowFocusListeners != null) {
                 for (WindowFocusChangedListener listener : sWindowFocusListeners) {
@@ -615,6 +636,24 @@ public class ApplicationStatus {
             onStateChange(activity, ActivityState.DESTROYED);
         }
         return !inaccessibleActivities.isEmpty();
+    }
+
+    /**
+     * Returns true if there is any activity with window focus.
+     *
+     * @return Whether any Activity under this Application has window focus.
+     */
+    public static boolean hasWindowFocusedActivity() {
+        assert isInitialized();
+        synchronized (sActivityInfo) {
+            for (Map.Entry<Activity, ActivityInfo> entry : sActivityInfo.entrySet()) {
+                // Check cached value in ActivityInfo.
+                if (entry.getValue().hasWindowFocus()) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**

@@ -121,6 +121,9 @@ public final class ChildProcessLauncherHelperImpl {
     // Set on UI thread only, but null-checked on launcher thread as well.
     private static ApplicationStatus.@Nullable ApplicationStateListener sAppStateListener;
 
+    // Set on UI thread only, but null-checked on launcher thread as well.
+    private static ApplicationStatus.@Nullable WindowFocusChangedListener sWindowFocusListener;
+
     // TODO(boliu): These are only set for sandboxed renderer processes. Generalize them for
     // all types of processes.
     private final @Nullable ChildProcessRanking mRanking;
@@ -569,6 +572,16 @@ public final class ChildProcessLauncherHelperImpl {
         mDroppedStrongBingingDueToBackgrounding = false;
     }
 
+    private static void onWindowFocusChanged(boolean hasFocus) {
+        assert ThreadUtils.runningOnUiThread();
+        LauncherThread.post(
+                () -> {
+                    if (sSandboxedChildConnectionRanking != null) {
+                        sSandboxedChildConnectionRanking.onWindowFocusChanged(hasFocus);
+                    }
+                });
+    }
+
     private static void onBroughtToForeground() {
         assert ThreadUtils.runningOnUiThread();
         sApplicationInForegroundOnUiThread = true;
@@ -764,6 +777,30 @@ public final class ChildProcessLauncherHelperImpl {
         }
 
         if (!ApplicationStatus.isInitialized()) return;
+        if (sWindowFocusListener == null
+                && ContentFeatureList.sStrictHighRankProcessLRU.isEnabled()) {
+            PostTask.postTask(
+                    TaskTraits.UI_BEST_EFFORT,
+                    () -> {
+                        if (sWindowFocusListener != null) {
+                            return;
+                        }
+                        sWindowFocusListener =
+                                (activity, hasFocus) -> {
+                                    // If we have 2 activities and window focus states are changed
+                                    // in A(true) -> B(true) -> A(false) order, we should ignore the
+                                    // last A(false) event to make the application window focus
+                                    // state true.
+                                    if (activity
+                                            == ApplicationStatus.getLastTrackedFocusedActivity()) {
+                                        onWindowFocusChanged(hasFocus);
+                                    }
+                                };
+                        ApplicationStatus.registerWindowFocusChangedListener(sWindowFocusListener);
+                        // Set the initial window focus state.
+                        onWindowFocusChanged(ApplicationStatus.hasWindowFocusedActivity());
+                    });
+        }
         if (sAppStateListener != null) return;
         PostTask.postTask(
                 TaskTraits.UI_BEST_EFFORT,
