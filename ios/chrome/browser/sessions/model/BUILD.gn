@@ -47,30 +47,6 @@ source_set("restoration_observer") {
   public_deps = [ "//base" ]
 }
 
-source_set("restoration_agent") {
-  visibility = [ ":*" ]
-  sources = [
-    "session_restoration_browser_agent.h",
-    "session_restoration_browser_agent.mm",
-  ]
-  deps = [
-    ":restoration_observer",
-    ":serialisation",
-    ":session_constants",
-    ":session_service",
-    ":session_state",
-    "//components/previous_session_info",
-    "//ios/chrome/browser/shared/model/browser",
-    "//ios/chrome/browser/shared/model/profile",
-    "//ios/chrome/browser/shared/model/web_state_list",
-    "//ios/web/public",
-    "//ios/web/public:web_state_observer",
-    "//ios/web/public/navigation",
-    "//ios/web/public/session",
-  ]
-  public_deps = [ "//base" ]
-}
-
 source_set("session_service") {
   visibility = [ ":*" ]
   sources = [
@@ -362,7 +338,6 @@ source_set("unit_tests") {
     "session_io_request_unittest.mm",
     "session_loading_unittest.mm",
     "session_migration_unittest.mm",
-    "session_restoration_browser_agent_unittest.mm",
     "session_restoration_scroll_observer_unittest.mm",
     "session_restoration_service_factory_unittest.mm",
     "session_restoration_service_impl_unittest.mm",
@@ -380,7 +355,6 @@ source_set("unit_tests") {
     ":features",
     ":model",
     ":resources_unit_tests",
-    ":restoration_agent",
     ":restoration_observer",
     ":serialisation",
     ":session_constants",
