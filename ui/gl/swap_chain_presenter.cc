@@ -1397,7 +1397,7 @@ bool SwapChainPresenter::PresentToDecodeSwapChain(
     HANDLE handle = INVALID_HANDLE_VALUE;
     if (!CreateSurfaceHandleHelper(&handle))
       return false;
-    swap_chain_handle_.Set(handle);
+    base::win::ScopedHandle swap_chain_handle(handle);
 
     Microsoft::WRL::ComPtr<IDXGIDevice> dxgi_device;
     d3d11_device_.As(&dxgi_device);
@@ -1416,7 +1416,7 @@ bool SwapChainPresenter::PresentToDecodeSwapChain(
     // no effects.
     desc.Flags = DXGI_SWAP_CHAIN_FLAG_FULLSCREEN_VIDEO;
     hr = media_factory->CreateDecodeSwapChainForCompositionSurfaceHandle(
-        d3d11_device_.Get(), swap_chain_handle_.Get(), &desc,
+        d3d11_device_.Get(), swap_chain_handle.Get(), &desc,
         decode_resource_.Get(), nullptr, &decode_swap_chain_);
     if (FAILED(hr)) {
       DLOG(ERROR) << "CreateDecodeSwapChainForCompositionSurfaceHandle failed "
@@ -1432,7 +1432,7 @@ bool SwapChainPresenter::PresentToDecodeSwapChain(
     dcomp_device_.As(&desktop_device);
     DCHECK(desktop_device);
 
-    hr = desktop_device->CreateSurfaceFromHandle(swap_chain_handle_.Get(),
+    hr = desktop_device->CreateSurfaceFromHandle(swap_chain_handle.Get(),
                                                  &decode_surface_);
     if (FAILED(hr)) {
       DLOG(ERROR) << "CreateSurfaceFromHandle failed with error 0x" << std::hex
@@ -2377,7 +2377,6 @@ void SwapChainPresenter::ReleaseSwapChainResources() {
     DVLOG(2) << __func__ << "(" << this << ")";
     output_view_.Reset();
     swap_chain_.Reset();
-    swap_chain_handle_.Close();
     staging_texture_.Reset();
     swap_chain_size_ = gfx::Size();
 
@@ -2424,7 +2423,7 @@ bool SwapChainPresenter::ReallocateSwapChain(
   HANDLE handle = INVALID_HANDLE_VALUE;
   if (!CreateSurfaceHandleHelper(&handle))
     return false;
-  swap_chain_handle_.Set(handle);
+  base::win::ScopedHandle swap_chain_handle(handle);
 
   first_present_ = true;
 
@@ -2463,7 +2462,7 @@ bool SwapChainPresenter::ReallocateSwapChain(
     TRACE_EVENT1("gpu", "SwapChainPresenter::ReallocateSwapChain::YUV",
                  "format", DxgiFormatToString(swap_chain_format));
     HRESULT hr = media_factory->CreateSwapChainForCompositionSurfaceHandle(
-        d3d11_device_.Get(), swap_chain_handle_.Get(), &desc, nullptr,
+        d3d11_device_.Get(), swap_chain_handle.Get(), &desc, nullptr,
         &swap_chain_);
     failed_to_create_yuv_swapchain_ = FAILED(hr);
 
@@ -2504,7 +2503,7 @@ bool SwapChainPresenter::ReallocateSwapChain(
     }
 
     HRESULT hr = media_factory->CreateSwapChainForCompositionSurfaceHandle(
-        d3d11_device_.Get(), swap_chain_handle_.Get(), &desc, nullptr,
+        d3d11_device_.Get(), swap_chain_handle.Get(), &desc, nullptr,
         &swap_chain_);
 
     base::UmaHistogramSparse(kSwapChainCreationResultByVideoTypeUmaPrefix +

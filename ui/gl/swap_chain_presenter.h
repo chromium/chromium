@@ -380,10 +380,6 @@ class SwapChainPresenter : public base::PowerStateObserver {
   Microsoft::WRL::ComPtr<IDCompositionDesktopDevice> dcomp_device_;
   Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain_;
 
-  // Handle returned by DCompositionCreateSurfaceHandle() used to create YUV
-  // swap chain that can be used for direct composition.
-  base::win::ScopedHandle swap_chain_handle_;
-
   // Video processor output view created from swap chain back buffer.  Must be
   // cached for performance reasons.
   Microsoft::WRL::ComPtr<ID3D11VideoProcessorOutputView> output_view_;
