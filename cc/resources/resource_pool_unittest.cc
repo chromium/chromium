@@ -729,11 +729,12 @@ TEST_F(ResourcePoolTest, MetadataSentToDisplayCompositor) {
   EXPECT_EQ(transfer[0].texture_target(),
             resource.backing()->shared_image()->GetTextureTarget());
   EXPECT_EQ(transfer[0].GetSize(), resource.backing()->shared_image()->size());
-  EXPECT_EQ(transfer[0].format, resource.backing()->shared_image()->format());
+  EXPECT_EQ(transfer[0].GetFormat(),
+            resource.backing()->shared_image()->format());
   EXPECT_EQ(
       transfer[0].synchronization_type,
       viz::TransferableResource::SynchronizationType::kGpuCommandsCompleted);
-  EXPECT_TRUE(transfer[0].is_overlay_candidate);
+  EXPECT_TRUE(transfer[0].GetIsOverlayCandidate());
 
   resource_pool_->ReleaseResource(std::move(resource));
 }

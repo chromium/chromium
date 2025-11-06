@@ -71,11 +71,13 @@ bool TextureLayerImpl::WillDraw(
   // compositing but the client thinks it is in software, or vice versa. These
   // should only happen transiently, and should resolve when the client hears
   // about the mode switch.
-  if (draw_mode == DRAW_MODE_HARDWARE && transferable_resource_.is_software) {
+  if (draw_mode == DRAW_MODE_HARDWARE &&
+      transferable_resource_.GetIsSoftware()) {
     DLOG(ERROR) << "Gpu compositor has software resource in TextureLayer";
     return false;
   }
-  if (draw_mode == DRAW_MODE_SOFTWARE && !transferable_resource_.is_software) {
+  if (draw_mode == DRAW_MODE_SOFTWARE &&
+      !transferable_resource_.GetIsSoftware()) {
     DLOG(ERROR) << "Software compositor has gpu resource in TextureLayer";
     return false;
   }
@@ -186,15 +188,16 @@ void TextureLayerImpl::OnPurgeMemory() {
 void TextureLayerImpl::ReleaseResources() {
   // Gpu resources are lost when the LayerTreeFrameSink is lost. But software
   // resources are still valid, and we can keep them here in that case.
-  if (!transferable_resource_.is_software)
+  if (!transferable_resource_.GetIsSoftware()) {
     FreeTransferableResource();
+  }
 }
 
 gfx::ContentColorUsage TextureLayerImpl::GetContentColorUsage() const {
   if (transferable_resource_.hdr_metadata.extended_range.has_value()) {
     return gfx::ContentColorUsage::kHDR;
   }
-  return transferable_resource_.color_space.GetContentColorUsage();
+  return transferable_resource_.GetColorSpace().GetContentColorUsage();
 }
 
 void TextureLayerImpl::SetBlendBackgroundColor(bool blend) {
@@ -272,7 +275,7 @@ void TextureLayerImpl::SetInInvisibleLayerTree() {
       own_resource_) {
     DCHECK(
         MayEvictResourceInBackground(transferable_resource_.resource_source));
-    if (!transferable_resource_.is_software) {
+    if (!transferable_resource_.GetIsSoftware()) {
       FreeTransferableResource();
     }
   }

@@ -142,7 +142,7 @@ bool TextureLayer::RequiresSetNeedsDisplayOnHdrHeadroomChange() const {
   // If the HDR headroom is changed, then tonemapped resources will need to
   // re-draw.
   const auto& resource = resource_holder_.Read(*this)->resource();
-  if (resource.color_space.IsToneMappedByDefault()) {
+  if (resource.GetColorSpace().IsToneMappedByDefault()) {
     return true;
   }
 
