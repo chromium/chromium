@@ -31,6 +31,8 @@ std::string MediaControlName(const MediaControl& media_control);
 // A tool request for performing a media control action on a specific tab.
 class MediaControlToolRequest : public TabToolRequest {
  public:
+  static constexpr char kName[] = "MediaControl";
+
   explicit MediaControlToolRequest(tabs::TabHandle tab_handle,
                                    MediaControl media_control);
   ~MediaControlToolRequest() override;
@@ -39,7 +41,7 @@ class MediaControlToolRequest : public TabToolRequest {
   CreateToolResult CreateTool(TaskId task_id,
                               ToolDelegate& tool_delegate) const override;
   void Apply(ToolRequestVisitorFunctor& f) const override;
-  std::string Name() const override;
+  std::string_view Name() const override;
   std::string JournalEvent() const override;
 
  private:

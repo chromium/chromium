@@ -17,6 +17,8 @@ class ToolRequestVisitorFunctor;
 // Invokes a history back or forward traversal in a specified tab.
 class HistoryToolRequest : public TabToolRequest {
  public:
+  static constexpr char kName[] = "History";
+
   enum class Direction {
     kBack,
     kForward,
@@ -30,7 +32,7 @@ class HistoryToolRequest : public TabToolRequest {
   // ToolRequest
   CreateToolResult CreateTool(TaskId task_id,
                               ToolDelegate& tool_delegate) const override;
-  std::string Name() const override;
+  std::string_view Name() const override;
   bool RequiresUrlCheckInCurrentTab() const override;
 
   // Whether the navigation is backwards or forwards in session history.

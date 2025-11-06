@@ -50,8 +50,8 @@ void MediaControlToolRequest::Apply(ToolRequestVisitorFunctor& f) const {
   f.Apply(*this);
 }
 
-std::string MediaControlToolRequest::Name() const {
-  return "MediaControl";
+std::string_view MediaControlToolRequest::Name() const {
+  return kName;
 }
 
 std::string MediaControlToolRequest::JournalEvent() const {

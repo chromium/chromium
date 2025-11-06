@@ -17,6 +17,8 @@ class ToolRequestVisitorFunctor;
 
 class WaitToolRequest : public ToolRequest {
  public:
+  static constexpr char kName[] = "Wait";
+
   explicit WaitToolRequest(
       base::TimeDelta wait_duration,
       tabs::TabHandle observe_tab_handle = tabs::TabHandle::Null());
@@ -27,7 +29,7 @@ class WaitToolRequest : public ToolRequest {
   // ToolRequest
   CreateToolResult CreateTool(TaskId task_id,
                               ToolDelegate& tool_delegate) const override;
-  std::string Name() const override;
+  std::string_view Name() const override;
 
  private:
   base::TimeDelta wait_duration_;

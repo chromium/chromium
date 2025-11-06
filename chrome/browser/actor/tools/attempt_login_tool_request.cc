@@ -37,8 +37,8 @@ void AttemptLoginToolRequest::Apply(ToolRequestVisitorFunctor& f) const {
   f.Apply(*this);
 }
 
-std::string AttemptLoginToolRequest::Name() const {
-  return "AttemptLogin";
+std::string_view AttemptLoginToolRequest::Name() const {
+  return kName;
 }
 
 }  // namespace actor

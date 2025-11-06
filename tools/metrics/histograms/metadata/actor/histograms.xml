@@ -41,6 +41,8 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(ToolRequest) -->
 
 <variants name="ToolRequest">
+  <variant name="ActivateTab" summary="Activate Tab"/>
+  <variant name="ActivateWindow" summary="Activate Window"/>
   <variant name="AttemptFormFilling" summary="Attempt Form Filling"/>
   <variant name="AttemptLogin" summary="Attempt Login"/>
   <variant name="Click" summary="Click"/>

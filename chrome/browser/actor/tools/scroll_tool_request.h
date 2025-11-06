@@ -17,6 +17,8 @@ class ToolRequestVisitorFunctor;
 // Scrolls an element or viewport in the page a given distance.
 class ScrollToolRequest : public PageToolRequest {
  public:
+  static constexpr char kName[] = "Scroll";
+
   enum class Direction { kLeft, kRight, kUp, kDown };
 
   // Programmatically scrolls the scroller specified by target a given distance.
@@ -31,7 +33,7 @@ class ScrollToolRequest : public PageToolRequest {
   void Apply(ToolRequestVisitorFunctor& f) const override;
 
   // ToolRequest
-  std::string Name() const override;
+  std::string_view Name() const override;
 
   // PageToolRequest
   mojom::ToolActionPtr ToMojoToolAction(

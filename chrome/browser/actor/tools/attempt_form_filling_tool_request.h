@@ -19,6 +19,7 @@ class ToolRequestVisitorFunctor;
 
 class AttemptFormFillingToolRequest : public TabToolRequest {
  public:
+  static constexpr char kName[] = "AttemptFormFilling";
   // Note: While autofill detects the type of data to be filled into a field
   // (address or credit card), autofill is unable to identify the purpose (e.g.
   // shipping v.s. billing address). Therefore the purpose needs to be provided
@@ -72,9 +73,8 @@ class AttemptFormFillingToolRequest : public TabToolRequest {
   // ToolRequest:
   CreateToolResult CreateTool(TaskId task_id,
                               ToolDelegate& tool_delegate) const override;
-  std::string Name() const override;
+  std::string_view Name() const override;
   void Apply(ToolRequestVisitorFunctor& f) const override;
-  std::string JournalEvent() const override;
 
  private:
   std::vector<FormFillingRequest> requests_;

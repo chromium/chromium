@@ -80,16 +80,12 @@ ToolRequest::CreateToolResult AttemptFormFillingToolRequest::CreateTool(
   return {nullptr, MakeErrorResult()};
 }
 
-std::string AttemptFormFillingToolRequest::Name() const {
-  return "AttemptFormFilling";
+std::string_view AttemptFormFillingToolRequest::Name() const {
+  return kName;
 }
 
 void AttemptFormFillingToolRequest::Apply(ToolRequestVisitorFunctor& f) const {
   f.Apply(*this);
-}
-
-std::string AttemptFormFillingToolRequest::JournalEvent() const {
-  return "Attempt form filling";
 }
 
 }  // namespace actor

@@ -27,8 +27,8 @@ void ClickToolRequest::Apply(ToolRequestVisitorFunctor& f) const {
   f.Apply(*this);
 }
 
-std::string ClickToolRequest::Name() const {
-  return "Click";
+std::string_view ClickToolRequest::Name() const {
+  return kName;
 }
 
 mojom::ToolActionPtr ClickToolRequest::ToMojoToolAction(

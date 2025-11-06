@@ -26,8 +26,8 @@ ScriptToolRequest::ScriptToolRequest(tabs::TabHandle tab_handle,
 
 ScriptToolRequest::~ScriptToolRequest() = default;
 
-std::string ScriptToolRequest::Name() const {
-  return "ScriptTool";
+std::string_view ScriptToolRequest::Name() const {
+  return kName;
 }
 
 void ScriptToolRequest::Apply(ToolRequestVisitorFunctor& f) const {

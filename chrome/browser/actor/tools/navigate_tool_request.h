@@ -17,6 +17,8 @@ class ToolRequestVisitorFunctor;
 // Navigates a specified tab to a specified URL.
 class NavigateToolRequest : public TabToolRequest {
  public:
+  static constexpr char kName[] = "Navigate";
+
   NavigateToolRequest(tabs::TabHandle tab_handle, GURL url);
   ~NavigateToolRequest() override;
 
@@ -26,7 +28,7 @@ class NavigateToolRequest : public TabToolRequest {
   // ToolRequest
   CreateToolResult CreateTool(TaskId task_id,
                               ToolDelegate& tool_delegate) const override;
-  std::string Name() const override;
+  std::string_view Name() const override;
 
   std::optional<url::Origin> AssociatedOriginGrant() const override;
 

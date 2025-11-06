@@ -263,6 +263,7 @@ source_set("unit_tests") {
     "actor_keyed_service_unittest.cc",
     "actor_task_metadata_unittest.cc",
     "aggregated_journal_unittest.cc",
+    "histograms_unittest.cc",
     "safety_list_manager_unittest.cc",
     "safety_list_unittest.cc",
     "shared_types_unittest.cc",
@@ -273,6 +274,7 @@ source_set("unit_tests") {
     ":actor",
     ":impl",
     ":test_support",
+    ":variants",
     "ui:event_dispatcher",
     "ui:test_support",
     "//base/test:test_support",
@@ -281,12 +283,10 @@ source_set("unit_tests") {
     "//components/tabs:test_support",
     "//testing/gtest",
   ]
+  data = [ "//tools/metrics/histograms/metadata/actor/histograms.xml" ]
   if (enable_glic) {
     sources += [ "execution_engine_unittest.cc" ]
-    deps += [
-      ":impl_test_support",
-      ":variants",
-    ]
+    deps += [ ":impl_test_support" ]
   }
 }
 

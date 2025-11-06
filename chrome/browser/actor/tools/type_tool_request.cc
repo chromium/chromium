@@ -40,8 +40,8 @@ void TypeToolRequest::Apply(ToolRequestVisitorFunctor& f) const {
   f.Apply(*this);
 }
 
-std::string TypeToolRequest::Name() const {
-  return "Type";
+std::string_view TypeToolRequest::Name() const {
+  return kName;
 }
 
 mojom::ToolActionPtr TypeToolRequest::ToMojoToolAction(

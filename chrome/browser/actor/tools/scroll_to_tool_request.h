@@ -17,13 +17,15 @@ class ToolRequestVisitorFunctor;
 // Scrolls to the given target.
 class ScrollToToolRequest : public PageToolRequest {
  public:
+  static constexpr char kName[] = "ScrollTo";
+
   ScrollToToolRequest(tabs::TabHandle tab_handle, const PageTarget& target);
   ~ScrollToToolRequest() override;
 
   void Apply(ToolRequestVisitorFunctor& f) const override;
 
   // ToolRequest
-  std::string Name() const override;
+  std::string_view Name() const override;
 
   // PageToolRequest
   mojom::ToolActionPtr ToMojoToolAction(

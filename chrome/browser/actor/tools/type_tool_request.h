@@ -16,6 +16,8 @@ class ToolRequestVisitorFunctor;
 
 class TypeToolRequest : public PageToolRequest {
  public:
+  static constexpr char kName[] = "Type";
+
   enum class Mode {
     // Replace all existing text in the editing context.
     kReplace,
@@ -37,7 +39,7 @@ class TypeToolRequest : public PageToolRequest {
   void Apply(ToolRequestVisitorFunctor& f) const override;
 
   // ToolRequest
-  std::string Name() const override;
+  std::string_view Name() const override;
 
   // PageToolRequest
   mojom::ToolActionPtr ToMojoToolAction(

@@ -21,8 +21,8 @@ void MoveMouseToolRequest::Apply(ToolRequestVisitorFunctor& f) const {
   f.Apply(*this);
 }
 
-std::string MoveMouseToolRequest::Name() const {
-  return "MoveMouse";
+std::string_view MoveMouseToolRequest::Name() const {
+  return kName;
 }
 
 mojom::ToolActionPtr MoveMouseToolRequest::ToMojoToolAction(

@@ -27,8 +27,8 @@ void CreateWindowToolRequest::Apply(ToolRequestVisitorFunctor& f) const {
   f.Apply(*this);
 }
 
-std::string CreateWindowToolRequest::Name() const {
-  return "CreateWindow";
+std::string_view CreateWindowToolRequest::Name() const {
+  return kName;
 }
 
 // ActivateWindowToolRequest
@@ -49,8 +49,8 @@ void ActivateWindowToolRequest::Apply(ToolRequestVisitorFunctor& f) const {
   f.Apply(*this);
 }
 
-std::string ActivateWindowToolRequest::Name() const {
-  return "ActivateWindow";
+std::string_view ActivateWindowToolRequest::Name() const {
+  return kName;
 }
 
 // CloseWindowToolRequest
@@ -71,8 +71,8 @@ void CloseWindowToolRequest::Apply(ToolRequestVisitorFunctor& f) const {
   f.Apply(*this);
 }
 
-std::string CloseWindowToolRequest::Name() const {
-  return "CloseWindow";
+std::string_view CloseWindowToolRequest::Name() const {
+  return kName;
 }
 
 }  // namespace actor

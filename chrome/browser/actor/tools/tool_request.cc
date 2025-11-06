@@ -43,7 +43,7 @@ tabs::TabHandle ToolRequest::GetTabHandle() const {
 }
 
 std::string ToolRequest::JournalEvent() const {
-  return Name();
+  return std::string(Name());
 }
 
 bool ToolRequest::RequiresUrlCheckInCurrentTab() const {

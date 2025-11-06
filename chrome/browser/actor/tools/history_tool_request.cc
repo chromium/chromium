@@ -41,8 +41,8 @@ void HistoryToolRequest::Apply(ToolRequestVisitorFunctor& f) const {
   f.Apply(*this);
 }
 
-std::string HistoryToolRequest::Name() const {
-  return "History";
+std::string_view HistoryToolRequest::Name() const {
+  return kName;
 }
 
 bool HistoryToolRequest::RequiresUrlCheckInCurrentTab() const {

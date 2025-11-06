@@ -22,8 +22,8 @@ void SelectToolRequest::Apply(ToolRequestVisitorFunctor& f) const {
   f.Apply(*this);
 }
 
-std::string SelectToolRequest::Name() const {
-  return "Select";
+std::string_view SelectToolRequest::Name() const {
+  return kName;
 }
 
 mojom::ToolActionPtr SelectToolRequest::ToMojoToolAction(

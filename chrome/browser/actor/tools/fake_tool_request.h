@@ -24,7 +24,7 @@ class FakeToolRequest : public ToolRequest {
                               ToolDelegate& tool_delegate) const override;
 
   void Apply(ToolRequestVisitorFunctor& f) const override;
-  std::string Name() const override;
+  std::string_view Name() const override;
 
  private:
   mutable base::OnceCallback<void(

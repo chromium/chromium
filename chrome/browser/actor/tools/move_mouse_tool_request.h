@@ -17,13 +17,15 @@ class ToolRequestVisitorFunctor;
 // Injects a mouse move event at the given target.
 class MoveMouseToolRequest : public PageToolRequest {
  public:
+  static constexpr char kName[] = "MoveMouse";
+
   MoveMouseToolRequest(tabs::TabHandle tab_handle, const PageTarget& target);
   ~MoveMouseToolRequest() override;
 
   void Apply(ToolRequestVisitorFunctor& f) const override;
 
   // ToolRequest
-  std::string Name() const override;
+  std::string_view Name() const override;
 
   // PageToolRequest
   mojom::ToolActionPtr ToMojoToolAction(

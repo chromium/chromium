@@ -37,7 +37,7 @@ TEST_F(AttemptFormFillingToolRequestTest, JournalEventString) {
   AttemptFormFillingToolRequest tool_request(GetDummyTabHandle(),
                                              /*requests=*/{});
 
-  EXPECT_EQ("Attempt form filling", tool_request.JournalEvent());
+  EXPECT_EQ("AttemptFormFilling", tool_request.JournalEvent());
 }
 
 }  // namespace

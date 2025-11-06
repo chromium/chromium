@@ -29,8 +29,8 @@ void WaitToolRequest::Apply(ToolRequestVisitorFunctor& f) const {
   f.Apply(*this);
 }
 
-std::string WaitToolRequest::Name() const {
-  return "Wait";
+std::string_view WaitToolRequest::Name() const {
+  return kName;
 }
 
 }  // namespace actor

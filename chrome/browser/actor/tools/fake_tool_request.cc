@@ -29,7 +29,7 @@ ToolRequest::CreateToolResult FakeToolRequest::CreateTool(
 
 void FakeToolRequest::Apply(ToolRequestVisitorFunctor& f) const {}
 
-std::string FakeToolRequest::Name() const {
+std::string_view FakeToolRequest::Name() const {
   return "FakeTool";
 }
 }  // namespace actor

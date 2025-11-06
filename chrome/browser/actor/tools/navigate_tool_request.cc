@@ -44,8 +44,8 @@ void NavigateToolRequest::Apply(ToolRequestVisitorFunctor& f) const {
   f.Apply(*this);
 }
 
-std::string NavigateToolRequest::Name() const {
-  return "Navigate";
+std::string_view NavigateToolRequest::Name() const {
+  return kName;
 }
 
 std::optional<url::Origin> NavigateToolRequest::AssociatedOriginGrant() const {

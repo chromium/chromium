@@ -15,6 +15,8 @@ class ToolRequestVisitorFunctor;
 // Creates a new blank window.
 class CreateWindowToolRequest : public ToolRequest {
  public:
+  static constexpr char kName[] = "CreateWindow";
+
   CreateWindowToolRequest();
   ~CreateWindowToolRequest() override;
 
@@ -23,12 +25,14 @@ class CreateWindowToolRequest : public ToolRequest {
 
   void Apply(ToolRequestVisitorFunctor& f) const override;
 
-  std::string Name() const override;
+  std::string_view Name() const override;
 };
 
 // Brings the specified window to the foreground.
 class ActivateWindowToolRequest : public ToolRequest {
  public:
+  static constexpr char kName[] = "ActivateWindow";
+
   explicit ActivateWindowToolRequest(int32_t window_id);
   ~ActivateWindowToolRequest() override;
 
@@ -37,7 +41,7 @@ class ActivateWindowToolRequest : public ToolRequest {
   CreateToolResult CreateTool(TaskId task_id,
                               ToolDelegate& tool_delegate) const override;
   void Apply(ToolRequestVisitorFunctor& f) const override;
-  std::string Name() const override;
+  std::string_view Name() const override;
 
  private:
   int32_t window_id_;
@@ -46,6 +50,8 @@ class ActivateWindowToolRequest : public ToolRequest {
 // Closes the specified window.
 class CloseWindowToolRequest : public ToolRequest {
  public:
+  static constexpr char kName[] = "CloseWindow";
+
   explicit CloseWindowToolRequest(int32_t window_id);
   ~CloseWindowToolRequest() override;
 
@@ -54,7 +60,7 @@ class CloseWindowToolRequest : public ToolRequest {
   CreateToolResult CreateTool(TaskId task_id,
                               ToolDelegate& tool_delegate) const override;
   void Apply(ToolRequestVisitorFunctor& f) const override;
-  std::string Name() const override;
+  std::string_view Name() const override;
 
  private:
   int32_t window_id_;

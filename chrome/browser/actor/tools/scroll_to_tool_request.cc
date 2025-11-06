@@ -21,8 +21,8 @@ void ScrollToToolRequest::Apply(ToolRequestVisitorFunctor& f) const {
   f.Apply(*this);
 }
 
-std::string ScrollToToolRequest::Name() const {
-  return "ScrollTo";
+std::string_view ScrollToToolRequest::Name() const {
+  return kName;
 }
 
 mojom::ToolActionPtr ScrollToToolRequest::ToMojoToolAction(

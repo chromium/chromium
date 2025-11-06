@@ -16,6 +16,8 @@ class ToolRequestVisitorFunctor;
 
 class AttemptLoginToolRequest : public TabToolRequest {
  public:
+  static constexpr char kName[] = "AttemptLogin";
+
   explicit AttemptLoginToolRequest(tabs::TabHandle tab_handle);
   ~AttemptLoginToolRequest() override;
 
@@ -23,7 +25,7 @@ class AttemptLoginToolRequest : public TabToolRequest {
   CreateToolResult CreateTool(TaskId task_id,
                               ToolDelegate& tool_delegate) const override;
   void Apply(ToolRequestVisitorFunctor& f) const override;
-  std::string Name() const override;
+  std::string_view Name() const override;
 };
 
 }  // namespace actor
