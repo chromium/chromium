@@ -2462,13 +2462,19 @@ void PermissionUmaUtil::RecordPrePromptSessionDuration(
   std::string permission_string =
       PermissionUtil::GetPermissionString(permission);
 
-  // Record finer-grained histograms for the first minute. 1 second
-  // granularity.
+  // Record finer-grained histograms for the first minute.
   if (duration <= base::Minutes(1)) {
+    //  1 second granularity.
     base::UmaHistogramCustomTimes(
         base::StrCat({"Permissions.PredictionService.", permission_string,
                       ".PrePromptSessionDuration1m"}),
         duration, base::Milliseconds(0), base::Minutes(1), 60);
+  } else if (duration <= base::Minutes(5)) {
+    // 2 seconds granularity.
+    base::UmaHistogramCustomTimes(
+        base::StrCat({"Permissions.PredictionService.", permission_string,
+                      ".PrePromptSessionDuration5m"}),
+        duration, base::Minutes(1), base::Minutes(5), 120);
   }
 }
 

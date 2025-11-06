@@ -1665,6 +1665,74 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest,
+                       PrePromptSessionDuration_Notification_5m) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  base::HistogramTester histogram_tester;
+  const GURL kInitialURL =
+      embedded_test_server()->GetURL("/permissions/killswitch_tester.html");
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kInitialURL));
+  bubble_factory()->set_response_type(
+      permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ALL);
+
+  // Set the page loaded time to 200 seconds ago.
+  GetPermissionRequestManager()->set_on_page_loaded_time_for_testing(
+      base::TimeTicks::Now() - base::Seconds(200));
+
+  // Request notification permission.
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  auto request_supported = std::make_unique<permissions::MockPermissionRequest>(
+      kInitialURL, permissions::RequestType::kNotifications,
+      permissions::PermissionRequestGestureType::GESTURE,
+      /*request_state=*/nullptr);
+  GetPermissionRequestManager()->AddRequest(web_contents->GetPrimaryMainFrame(),
+                                            std::move(request_supported));
+
+  bubble_factory()->WaitForPermissionBubble();
+  EXPECT_EQ(1, bubble_factory()->show_count());
+
+  // Histogram should be recorded.
+  histogram_tester.ExpectUniqueSample(
+      "Permissions.PredictionService.Notifications."
+      "PrePromptSessionDuration5m",
+      base::Seconds(200).InMilliseconds(), 1);
+}
+
+IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest,
+                       PrePromptSessionDuration_Geolocation_5m) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  base::HistogramTester histogram_tester;
+  const GURL kInitialURL =
+      embedded_test_server()->GetURL("/permissions/killswitch_tester.html");
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kInitialURL));
+  bubble_factory()->set_response_type(
+      permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ALL);
+
+  // Set the page loaded time to 200 seconds ago.
+  GetPermissionRequestManager()->set_on_page_loaded_time_for_testing(
+      base::TimeTicks::Now() - base::Seconds(200));
+
+  // Request geolocation permission.
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  auto request_supported = std::make_unique<permissions::MockPermissionRequest>(
+      kInitialURL, permissions::RequestType::kGeolocation,
+      permissions::PermissionRequestGestureType::GESTURE,
+      /*request_state=*/nullptr);
+  GetPermissionRequestManager()->AddRequest(web_contents->GetPrimaryMainFrame(),
+                                            std::move(request_supported));
+
+  bubble_factory()->WaitForPermissionBubble();
+  EXPECT_EQ(1, bubble_factory()->show_count());
+
+  // Histogram should be recorded.
+  histogram_tester.ExpectUniqueSample(
+      "Permissions.PredictionService.Geolocation."
+      "PrePromptSessionDuration5m",
+      base::Seconds(200).InMilliseconds(), 1);
+}
+
+IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest,
                        PostPromptSessionDuration_TabClose) {
   ASSERT_TRUE(embedded_test_server()->Start());
   base::HistogramTester histogram_tester;
