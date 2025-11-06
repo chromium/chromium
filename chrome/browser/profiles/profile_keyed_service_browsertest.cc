@@ -193,7 +193,6 @@ class ProfileKeyedServiceBrowserTest : public InProcessBrowserTest {
           switches::kEnableBoundSessionCredentials,
 #endif  // BUILDFLAG(IS_WIN)
           network::features::kBrowsingTopics,
-          blink::features::kBuiltInAIAPI,
           extensions_features::kForceWebRequestProxyForTest,
           network::features::kReduceAcceptLanguage,
           features::kMainNodeAnnotations,

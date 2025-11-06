@@ -1054,27 +1054,20 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
       base::BindRepeating(&RenderFrameHostImpl::BindNonAssociatedLocalFrameHost,
                           base::Unretained(host)));
 
+  map->Add<blink::mojom::AIManager>(base::BindRepeating(
+      [](ContentBrowserClient* browser_client, RenderFrameHostImpl* host,
+         mojo::PendingReceiver<blink::mojom::AIManager> receiver) {
+        browser_client->BindAIManager(host->GetBrowserContext(),
+                                      &host->document_associated_data(), host,
+                                      std::move(receiver));
+      },
+      base::Unretained(GetContentClient()->browser()), base::Unretained(host)));
+
 #if BUILDFLAG(IS_FUCHSIA)
   map->Add<media::mojom::FuchsiaMediaCodecProvider>(
       base::BindRepeating(&RenderProcessHost::BindMediaCodecProvider,
                           base::Unretained(host->GetProcess())));
 #endif
-
-  if (base::FeatureList::IsEnabled(blink::features::kBuiltInAIAPI)) {
-    // We take the `document_associated_data` when the callback runs because
-    // RenderFrameHosts live across multiple documents. Even though the current
-    // implementation of `document_associated_data` persists across documents,
-    // that is an implementation detail, without a guarantee.
-    map->Add<blink::mojom::AIManager>(base::BindRepeating(
-        [](ContentBrowserClient* browser_client, RenderFrameHostImpl* host,
-           mojo::PendingReceiver<blink::mojom::AIManager> receiver) {
-          browser_client->BindAIManager(host->GetBrowserContext(),
-                                        &host->document_associated_data(), host,
-                                        std::move(receiver));
-        },
-        base::Unretained(GetContentClient()->browser()),
-        base::Unretained(host)));
-  }
 
   if (base::FeatureList::IsEnabled(blink::features::kTranslationAPI)) {
     map->Add<blink::mojom::TranslationManager>(base::BindRepeating(
@@ -1247,10 +1240,8 @@ void PopulateBinderMapWithContext(
 
   map->Add<optimization_guide::mojom::ModelBroker>(
       &EmptyBinderForFrame<optimization_guide::mojom::ModelBroker>);
-  if (base::FeatureList::IsEnabled(blink::features::kBuiltInAIAPI)) {
-    map->Add<blink::mojom::AIManager>(
-        &EmptyBinderForFrame<blink::mojom::AIManager>);
-  }
+  map->Add<blink::mojom::AIManager>(
+      &EmptyBinderForFrame<blink::mojom::AIManager>);
 
   // This should be last to allow overrides of any interface.
   GetContentClient()->browser()->RegisterBrowserInterfaceBindersForFrame(host,
@@ -1379,14 +1370,12 @@ void PopulateDedicatedWorkerBinders(DedicatedWorkerHost* host,
       host->GetAncestorRenderFrameHostId(),
       RenderProcessHost::NotificationServiceCreatorType::kDedicatedWorker,
       host));
+  map->Add<blink::mojom::AIManager>(
+      base::BindRepeating(&ContentBrowserClient::BindAIManager,
+                          base::Unretained(GetContentClient()->browser()),
+                          host->GetProcessHost()->GetBrowserContext(),
+                          base::Unretained(host), /*rfh=*/nullptr));
 
-  if (base::FeatureList::IsEnabled(blink::features::kBuiltInAIAPI)) {
-    map->Add<blink::mojom::AIManager>(
-        base::BindRepeating(&ContentBrowserClient::BindAIManager,
-                            base::Unretained(GetContentClient()->browser()),
-                            host->GetProcessHost()->GetBrowserContext(),
-                            base::Unretained(host), /*rfh=*/nullptr));
-  }
   if (base::FeatureList::IsEnabled(blink::features::kTranslationAPI)) {
     map->Add<blink::mojom::TranslationManager>(base::BindRepeating(
         [](DedicatedWorkerHost* host,
@@ -1491,6 +1480,12 @@ void PopulateSharedWorkerBinders(SharedWorkerHost* host, mojo::BinderMap* map) {
       &CreateReportingServiceProxyForSharedWorker, base::Unretained(host)));
   map->Add<blink::mojom::BucketManagerHost>(base::BindRepeating(
       &SharedWorkerHost::CreateBucketManagerHost, base::Unretained(host)));
+  map->Add<blink::mojom::AIManager>(
+      base::BindRepeating(&ContentBrowserClient::BindAIManager,
+                          base::Unretained(GetContentClient()->browser()),
+                          host->GetProcessHost()->GetBrowserContext(),
+                          base::Unretained(host), /*rfh=*/nullptr));
+
 #if BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
   if (base::FeatureList::IsEnabled(blink::features::kComputePressure)) {
     map->Add<blink::mojom::WebPressureManager>(base::BindRepeating(
@@ -1502,13 +1497,6 @@ void PopulateSharedWorkerBinders(SharedWorkerHost* host, mojo::BinderMap* map) {
     map->Add<webnn::mojom::WebNNContextProvider>(base::BindRepeating(
         &BindWebNNContextProviderForWorker<SharedWorkerHost>,
         base::Unretained(host)));
-  }
-  if (base::FeatureList::IsEnabled(blink::features::kBuiltInAIAPI)) {
-    map->Add<blink::mojom::AIManager>(
-        base::BindRepeating(&ContentBrowserClient::BindAIManager,
-                            base::Unretained(GetContentClient()->browser()),
-                            host->GetProcessHost()->GetBrowserContext(),
-                            base::Unretained(host), /*rfh=*/nullptr));
   }
   if (base::FeatureList::IsEnabled(blink::features::kTranslationAPI)) {
     map->Add<blink::mojom::TranslationManager>(base::BindRepeating(
@@ -1674,15 +1662,14 @@ void PopulateServiceWorkerBinders(ServiceWorkerHost* host,
       &ServiceWorkerHost::CreateBucketManagerHost, base::Unretained(host)));
   map->Add<blink::mojom::WebUsbService>(base::BindRepeating(
       &ServiceWorkerHost::BindUsbService, base::Unretained(host)));
+  map->Add<blink::mojom::AIManager>(base::BindRepeating(
+      &ServiceWorkerHost::BindAIManager, base::Unretained(host)));
+
   if (base::FeatureList::IsEnabled(
           webnn::mojom::features::kWebMachineLearningNeuralNetwork)) {
     map->Add<webnn::mojom::WebNNContextProvider>(base::BindRepeating(
         &BindWebNNContextProviderForWorker<ServiceWorkerHost>,
         base::Unretained(host)));
-  }
-  if (base::FeatureList::IsEnabled(blink::features::kBuiltInAIAPI)) {
-    map->Add<blink::mojom::AIManager>(base::BindRepeating(
-        &ServiceWorkerHost::BindAIManager, base::Unretained(host)));
   }
   if (base::FeatureList::IsEnabled(blink::features::kTranslationAPI)) {
     map->Add<blink::mojom::TranslationManager>(base::BindRepeating(

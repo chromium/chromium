@@ -799,26 +799,6 @@
       status: "stable",
     },
     {
-      name: "BuiltInAIAPI",
-      status: "experimental",
-      base_feature_status: "enabled",
-      // An OT feature name is required to satisfy `implied_by` build checks.
-      // The feature reuses AIPromptAPIMultimodalInput, but any origin trial
-      // features in the `implied_by` list will enable this feature as well.
-      origin_trial_feature_name: "AIPromptAPIMultimodalInput",
-      copied_from_base_feature_if: "overridden",
-      implied_by: [
-        "AIPromptAPI",
-        "AIPromptAPIMultimodalInput",
-        "AIRewriterAPI",
-        "AISummarizationAPI",
-        "AIWriterAPI",
-        "LanguageDetectionAPI",
-        "TranslationAPI",
-        "AIProofreadingAPI",
-      ]
-    },
-    {
       // Bypasses the enforcement of the Page Embedded Permission Control
       // security checks. This flag is disabled by default and should only be
       // enabled in automated tests in order to allow them to avoid needing to
