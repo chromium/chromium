@@ -165,7 +165,7 @@ class BrowsingDataRemoverImplBrowserTest
         network::SimpleURLLoader::Create(std::move(request),
                                          TRAFFIC_ANNOTATION_FOR_TESTS);
     loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-        url_loader_factory(), loader_helper.GetCallbackDeprecated());
+        url_loader_factory(), loader_helper.GetCallback());
     loader_helper.WaitForCallback();
     ASSERT_TRUE(loader_helper.response_body());
     EXPECT_EQ(kHstsResponseBody, *loader_helper.response_body());
@@ -202,7 +202,7 @@ class BrowsingDataRemoverImplBrowserTest
                                          TRAFFIC_ANNOTATION_FOR_TESTS);
     SimpleURLLoaderTestHelper loader_helper;
     loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-        url_loader_factory(), loader_helper.GetCallbackDeprecated());
+        url_loader_factory(), loader_helper.GetCallback());
     loader_helper.WaitForCallback();
 
     // On success, HSTS was enabled for the domain.

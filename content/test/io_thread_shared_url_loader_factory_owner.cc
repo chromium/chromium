@@ -4,6 +4,10 @@
 
 #include "content/test/io_thread_shared_url_loader_factory_owner.h"
 
+#include <optional>
+#include <string>
+#include <utility>
+
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "content/public/browser/browser_thread.h"
@@ -39,11 +43,11 @@ void InitializeSharedFactoryOnIOThread(
   run_loop.Run();
 }
 
-network::SimpleURLLoader::BodyAsStringCallbackDeprecated RunOnUIThread(
-    network::SimpleURLLoader::BodyAsStringCallbackDeprecated ui_callback) {
+network::SimpleURLLoader::BodyAsStringCallback RunOnUIThread(
+    network::SimpleURLLoader::BodyAsStringCallback ui_callback) {
   return base::BindOnce(
-      [](network::SimpleURLLoader::BodyAsStringCallbackDeprecated callback,
-         std::unique_ptr<std::string> response_body) {
+      [](network::SimpleURLLoader::BodyAsStringCallback callback,
+         std::optional<std::string> response_body) {
         DCHECK_CURRENTLY_ON(BrowserThread::IO);
         GetUIThreadTaskRunner({})->PostTask(
             FROM_HERE,
@@ -89,18 +93,17 @@ int IOThreadSharedURLLoaderFactoryOwner::LoadBasicRequestOnIOThread(
                                        TRAFFIC_ANNOTATION_FOR_TESTS);
 
   GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          [](network::SimpleURLLoader* loader,
-             network::mojom::URLLoaderFactory* factory,
-             network::SimpleURLLoader::BodyAsStringCallbackDeprecated
-                 body_as_string_callback) {
-            loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-                factory, std::move(body_as_string_callback));
-          },
-          base::Unretained(simple_loader.get()),
-          base::Unretained(shared_url_loader_factory_.get()),
-          RunOnUIThread(simple_loader_helper.GetCallbackDeprecated())));
+      FROM_HERE, base::BindOnce(
+                     [](network::SimpleURLLoader* loader,
+                        network::mojom::URLLoaderFactory* factory,
+                        network::SimpleURLLoader::BodyAsStringCallback
+                            body_as_string_callback) {
+                       loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
+                           factory, std::move(body_as_string_callback));
+                     },
+                     base::Unretained(simple_loader.get()),
+                     base::Unretained(shared_url_loader_factory_.get()),
+                     RunOnUIThread(simple_loader_helper.GetCallback())));
 
   simple_loader_helper.WaitForCallback();
   return simple_loader->NetError();

@@ -2271,7 +2271,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextTypeMV3,
     auto loader = network::SimpleURLLoader::Create(
         std::move(request), TRAFFIC_ANNOTATION_FOR_TESTS);
     loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-        url_loader_factory, loader_helper.GetCallbackDeprecated());
+        url_loader_factory, loader_helper.GetCallback());
 
     // Wait for the response to complete.
     loader_helper.WaitForCallback();
@@ -2657,7 +2657,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
         auto simple_loader = network::SimpleURLLoader::Create(
             std::move(request), TRAFFIC_ANNOTATION_FOR_TESTS);
         simple_loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-            url_loader_factory, simple_loader_helper.GetCallbackDeprecated());
+            url_loader_factory, simple_loader_helper.GetCallback());
 
         simple_loader_helper.WaitForCallback();
 

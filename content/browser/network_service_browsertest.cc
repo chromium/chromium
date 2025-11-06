@@ -233,7 +233,7 @@ class NetworkServiceBrowserTest : public ContentBrowserTest {
                                          TRAFFIC_ANNOTATION_FOR_TESTS);
 
     simple_loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-        loader_factory, simple_loader_helper.GetCallbackDeprecated());
+        loader_factory, simple_loader_helper.GetCallback());
     simple_loader_helper.WaitForCallback();
     ASSERT_TRUE(simple_loader_helper.response_body());
   }

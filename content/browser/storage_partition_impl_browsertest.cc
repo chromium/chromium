@@ -138,7 +138,7 @@ std::unique_ptr<network::SimpleURLLoader> DownloadUrl(
   SimpleURLLoaderTestHelper url_loader_helper;
   url_loader->DownloadToString(
       partition->GetURLLoaderFactoryForBrowserProcess().get(),
-      url_loader_helper.GetCallbackDeprecated(),
+      url_loader_helper.GetCallback(),
       /*max_body_size=*/1024 * 1024);
   url_loader_helper.WaitForCallback();
   return url_loader;
