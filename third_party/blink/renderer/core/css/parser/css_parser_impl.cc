@@ -1572,15 +1572,9 @@ StyleRuleKeyframes* CSSParserImpl::ConsumeKeyframesRule(
   return keyframe_rule;
 }
 
-StyleRuleFontFeature* CSSParserImpl::ConsumeFontFeatureRule(
-    CSSAtRuleID rule_id,
+StyleRuleFontFeature* CSSParserImpl::ConsumeFontFeatureRuleBlock(
+    StyleRuleFontFeature::FeatureType feature_type,
     CSSParserTokenStream& stream) {
-  std::optional<StyleRuleFontFeature::FeatureType> feature_type =
-      ToStyleRuleFontFeatureType(rule_id);
-  if (!feature_type) {
-    return nullptr;
-  }
-
   wtf_size_t max_allowed_values = 1;
   if (feature_type == StyleRuleFontFeature::FeatureType::kCharacterVariant) {
     max_allowed_values = 2;
@@ -1588,22 +1582,13 @@ StyleRuleFontFeature* CSSParserImpl::ConsumeFontFeatureRule(
   if (feature_type == StyleRuleFontFeature::FeatureType::kStyleset) {
     max_allowed_values = std::numeric_limits<wtf_size_t>::max();
   }
-
-  stream.ConsumeWhitespace();
-
-  if (stream.Peek().GetType() != kLeftBraceToken) {
-    return nullptr;
-  }
-
-  CSSParserTokenStream::BlockGuard guard(stream);
-  stream.ConsumeWhitespace();
-
   auto* font_feature_rule =
-      MakeGarbageCollected<StyleRuleFontFeature>(*feature_type);
+      MakeGarbageCollected<StyleRuleFontFeature>(feature_type);
 
   while (!stream.AtEnd()) {
     const CSSParserToken& alias_token = stream.Peek();
 
+    wtf_size_t decl_offset_start = stream.Offset();
     if (alias_token.GetType() != kIdentToken) {
       return nullptr;
     }
@@ -1659,6 +1644,10 @@ StyleRuleFontFeature* CSSParserImpl::ConsumeFontFeatureRule(
       parsed_numbers.push_back(ClampTo<int>(number.value()));
     }
 
+    if (observer_) {
+      observer_->ObserveProperty(decl_offset_start, stream.LookAheadOffset(),
+                                 /*is_important=*/false, /*is_parsed=*/true);
+    }
     const CSSParserToken& expected_semicolon = stream.Peek();
     if (expected_semicolon.GetType() == kSemicolonToken) {
       stream.UncheckedConsume();
@@ -1666,6 +1655,46 @@ StyleRuleFontFeature* CSSParserImpl::ConsumeFontFeatureRule(
     stream.ConsumeWhitespace();
 
     font_feature_rule->UpdateAlias(alias, std::move(parsed_numbers));
+  }
+
+  return font_feature_rule;
+}
+
+StyleRuleFontFeature* CSSParserImpl::ConsumeFontFeatureRule(
+    CSSAtRuleID rule_id,
+    CSSParserTokenStream& stream) {
+  wtf_size_t prelude_offset_start = stream.LookAheadOffset();
+
+  std::optional<StyleRuleFontFeature::FeatureType> feature_type =
+      ToStyleRuleFontFeatureType(rule_id);
+  if (!feature_type) {
+    return nullptr;
+  }
+
+  stream.ConsumeWhitespace();
+  wtf_size_t prelude_offset_end = stream.LookAheadOffset();
+
+  if (stream.Peek().GetType() != kLeftBraceToken) {
+    return nullptr;
+  }
+
+  CSSParserTokenStream::BlockGuard guard(stream);
+
+  if (observer_) {
+    observer_->StartRuleHeader(StyleRule::kFontFeature, prelude_offset_start);
+    observer_->ObserveFontFeatureType(*feature_type);
+    observer_->EndRuleHeader(prelude_offset_end);
+    observer_->StartRuleBody(stream.Offset());
+  }
+
+  stream.ConsumeWhitespace();
+  auto* font_feature_rule = ConsumeFontFeatureRuleBlock(*feature_type, stream);
+
+  if (observer_) {
+    observer_->EndRuleBody(stream.Offset());
+    if (!font_feature_rule) {
+      observer_->ObserveErroneousAtRule(prelude_offset_start, rule_id, {});
+    }
   }
 
   return font_feature_rule;

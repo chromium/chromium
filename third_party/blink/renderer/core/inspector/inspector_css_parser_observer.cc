@@ -71,6 +71,13 @@ void InspectorCSSParserObserver::ObserveSelector(unsigned start_offset,
       SourceRange(start_offset, end_offset));
 }
 
+void InspectorCSSParserObserver::ObserveFontFeatureType(
+    StyleRuleFontFeature::FeatureType type) {
+  DCHECK(current_rule_data_stack_.size());
+  DCHECK_EQ(current_rule_data_stack_.back()->type, StyleRule::kFontFeature);
+  current_rule_data_stack_.back()->font_feature_type = type;
+}
+
 void InspectorCSSParserObserver::StartRuleBody(unsigned offset) {
   current_rule_data_ = nullptr;
   DCHECK(!current_rule_data_stack_.empty());

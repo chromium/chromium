@@ -73,6 +73,8 @@ class CORE_EXPORT ScopedStyleResolver final
 
   const FontFeatureValuesStorage* FontFeatureValuesForFamily(
       AtomicString font_family);
+  const HeapVector<Member<StyleRuleFontFeatureValues>>*
+  FontFeatureValuesRulesForFamily(AtomicString font_family);
 
   void RebuildCascadeLayerMap(const ActiveStyleSheetVector&);
   bool HasCascadeLayerMap() const { return cascade_layer_map_.Get(); }
@@ -167,8 +169,11 @@ class CORE_EXPORT ScopedStyleResolver final
   // StyleRuleFontFeatureValues for each mentioned family name in the
   // comma-separated list of font families in the @font-feature-values at-rule
   // prelude.
-  using FontFeatureValuesRuleMap = HashMap<String, FontFeatureValuesStorage>;
-  FontFeatureValuesRuleMap font_feature_values_storage_map_;
+  using FontFeatureValuesStorageMap = HashMap<String, FontFeatureValuesStorage>;
+  FontFeatureValuesStorageMap font_feature_values_storage_map_;
+  using FontFeatureValuesRuleMap =
+      HeapHashMap<String, HeapVector<Member<StyleRuleFontFeatureValues>>>;
+  FontFeatureValuesRuleMap font_feature_values_rule_map_;
 
   Member<CounterStyleMap> counter_style_map_;
   Member<CascadeLayerMap> cascade_layer_map_;

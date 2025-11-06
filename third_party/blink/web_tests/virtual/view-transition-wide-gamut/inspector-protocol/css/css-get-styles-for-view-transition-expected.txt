@@ -2,6 +2,8 @@ The test verifies functionality of querying style information for view-transitio
 {
     id : <number>
     result : {
+        cssAtRules : [
+        ]
         cssKeyframesRules : [
         ]
         cssPropertyRegistrations : [

@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/core/css/parser/allowed_rules.h"
 #include "third_party/blink/renderer/core/css/parser/css_nesting_type.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
+#include "third_party/blink/renderer/core/css/style_rule_font_feature_values.h"
 #include "third_party/blink/renderer/core/css/style_rule_keyframe.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
@@ -313,6 +314,9 @@ class CORE_EXPORT CSSParserImpl {
       CSSParserTokenStream&);
   StyleRuleFontFeature* ConsumeFontFeatureRule(CSSAtRuleID,
                                                CSSParserTokenStream&);
+  StyleRuleFontFeature* ConsumeFontFeatureRuleBlock(
+      StyleRuleFontFeature::FeatureType feature_type,
+      CSSParserTokenStream& stream);
   StyleRuleKeyframes* ConsumeKeyframesRule(bool webkit_prefixed,
                                            CSSParserTokenStream&);
   StyleRulePage* ConsumePageRule(CSSParserTokenStream&);

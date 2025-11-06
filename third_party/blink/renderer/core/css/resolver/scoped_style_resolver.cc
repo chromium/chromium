@@ -174,6 +174,7 @@ void ScopedStyleResolver::ResetStyle() {
   keyframes_rule_map_.clear();
   position_try_rule_map_.clear();
   font_feature_values_storage_map_.clear();
+  font_feature_values_rule_map_.clear();
   function_rule_map_.clear();
   if (counter_style_map_) {
     counter_style_map_->Dispose();
@@ -365,13 +366,17 @@ void ScopedStyleResolver::AddFontFeatureValuesRules(const RuleSet& rule_set) {
         layer_order =
             cascade_layer_map_->GetLayerOrder(*rule->GetCascadeLayer());
       }
-      auto add_result = font_feature_values_storage_map_.insert(
-          String(font_family).FoldCase(), rule->Storage());
+      auto key = String(font_family).FoldCase();
+      auto add_result =
+          font_feature_values_storage_map_.insert(key, rule->Storage());
       if (add_result.is_new_entry) {
         add_result.stored_value->value.SetLayerOrder(layer_order);
+        font_feature_values_rule_map_.insert(
+            key, HeapVector<Member<StyleRuleFontFeatureValues>>());
       } else {
         add_result.stored_value->value.FuseUpdate(rule->Storage(), layer_order);
       }
+      font_feature_values_rule_map_.find(key)->value.push_back(rule);
     }
   }
 }
@@ -403,6 +408,20 @@ const FontFeatureValuesStorage* ScopedStyleResolver::FontFeatureValuesForFamily(
   auto it =
       font_feature_values_storage_map_.find(String(font_family).FoldCase());
   if (it == font_feature_values_storage_map_.end()) {
+    return nullptr;
+  }
+
+  return &(it->value);
+}
+
+const HeapVector<Member<StyleRuleFontFeatureValues>>*
+ScopedStyleResolver::FontFeatureValuesRulesForFamily(AtomicString font_family) {
+  if (font_feature_values_rule_map_.empty() || font_family.empty()) {
+    return nullptr;
+  }
+
+  auto it = font_feature_values_rule_map_.find(String(font_family).FoldCase());
+  if (it == font_feature_values_rule_map_.end()) {
     return nullptr;
   }
 
@@ -522,6 +541,7 @@ void ScopedStyleResolver::Trace(Visitor* visitor) const {
   visitor->Trace(function_rule_map_);
   visitor->Trace(counter_style_map_);
   visitor->Trace(cascade_layer_map_);
+  visitor->Trace(font_feature_values_rule_map_);
 }
 
 }  // namespace blink

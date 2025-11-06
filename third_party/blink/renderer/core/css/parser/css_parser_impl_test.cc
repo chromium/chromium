@@ -74,6 +74,8 @@ class TestCSSParserObserver : public CSSParserObserver {
       CSSAtRuleID id,
       const Vector<CSSPropertyID, 2>& invalid_properties) override {}
   void ObserveNestedDeclarations(wtf_size_t insert_rule_index) override {}
+  void ObserveFontFeatureType(StyleRuleFontFeature::FeatureType type) override {
+  }
 
   bool IsAtTargetLevel() const {
     return target_nesting_level_ == kEverything ||
@@ -1163,6 +1165,8 @@ TEST(CSSParserImplTest, FontFeatureValuesOffsets) {
       kHTMLStandardMode, SecureContextMode::kInsecureContext);
   auto* style_sheet = MakeGarbageCollected<StyleSheetContents>(context);
   TestCSSParserObserver test_css_parser_observer;
+  // Ignore @styleset block.
+  test_css_parser_observer.target_nesting_level_ = 0;
   CSSParserImpl::ParseStyleSheetForInspector(sheet_text, context, style_sheet,
                                              test_css_parser_observer);
   EXPECT_EQ(style_sheet->ChildRules().size(), 1u);
@@ -1172,6 +1176,42 @@ TEST(CSSParserImplTest, FontFeatureValuesOffsets) {
   EXPECT_EQ(test_css_parser_observer.rule_header_end_, 27u);
   EXPECT_EQ(test_css_parser_observer.rule_body_start_, 28u);
   EXPECT_EQ(test_css_parser_observer.rule_body_end_, 53u);
+}
+
+TEST(CSSParserImplTest, FontFeatureOffsets) {
+  test::TaskEnvironment task_environment;
+  String sheet_text = "@font-feature-values myFam { @styleset { curly: 1; } }";
+  auto* context = MakeGarbageCollected<CSSParserContext>(
+      kHTMLStandardMode, SecureContextMode::kInsecureContext);
+  auto* style_sheet = MakeGarbageCollected<StyleSheetContents>(context);
+  TestCSSParserObserver test_css_parser_observer;
+  // Target the @styleset block.
+  test_css_parser_observer.target_nesting_level_ = 1;
+  CSSParserImpl::ParseStyleSheetForInspector(sheet_text, context, style_sheet,
+                                             test_css_parser_observer);
+  EXPECT_EQ(style_sheet->ChildRules().size(), 1u);
+  EXPECT_EQ(test_css_parser_observer.rule_type_,
+            StyleRule::RuleType::kFontFeature);
+  EXPECT_EQ(test_css_parser_observer.rule_header_start_, 39u);
+  EXPECT_EQ(test_css_parser_observer.rule_header_end_, 39u);
+  EXPECT_EQ(test_css_parser_observer.rule_body_start_, 40u);
+  EXPECT_EQ(test_css_parser_observer.rule_body_end_, 51u);
+}
+
+TEST(CSSParserImplTest, FontFeatureAliasOffsets) {
+  test::TaskEnvironment task_environment;
+  String sheet_text = "@font-feature-values myFam { @styleset { curly: 1; } }";
+  auto* context = MakeGarbageCollected<CSSParserContext>(
+      kHTMLStandardMode, SecureContextMode::kInsecureContext);
+  auto* style_sheet = MakeGarbageCollected<StyleSheetContents>(context);
+  TestCSSParserObserver test_css_parser_observer;
+  // Target the inside of the @styleset block.
+  test_css_parser_observer.target_nesting_level_ = 2;
+  CSSParserImpl::ParseStyleSheetForInspector(sheet_text, context, style_sheet,
+                                             test_css_parser_observer);
+  EXPECT_EQ(style_sheet->ChildRules().size(), 1u);
+  EXPECT_EQ(test_css_parser_observer.property_start_, 41u);
+  EXPECT_EQ(test_css_parser_observer.property_end_, 51u);
 }
 
 TEST(CSSParserImplTest, CSSFunction) {

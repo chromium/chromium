@@ -33,6 +33,8 @@ class CSSFontFeatureValuesRule final : public CSSRule {
   CSSFontFeatureValuesMap* characterVariant();
   CSSFontFeatureValuesMap* styleset();
 
+  const StyleRuleFontFeatureValues* FontFeatureValues();
+
   String cssText() const override;
   void Reattach(StyleRuleBase*) override;
 

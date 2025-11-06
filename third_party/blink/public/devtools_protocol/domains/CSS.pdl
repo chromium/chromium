@@ -514,6 +514,34 @@ experimental domain CSS
       # Associated style declaration.
       CSSStyle style
 
+  # CSS generic @rule representation.
+  type CSSAtRule extends object
+    properties
+      # Type of at-rule.
+      enum type
+        font-face
+        font-feature-values
+        font-palette-values
+      # Subsection of font-feature-values, if this is a subsection.
+      optional enum subsection
+        # LINT.IfChange(FontVariantAlternatesFeatureType)
+        swash
+        annotation
+        ornaments
+        stylistic
+        styleset
+        character-variant
+        # LINT.ThenChange(//third_party/blink/renderer/core/inspector/inspector_style_sheet.cc:FontVariantAlternatesFeatureType,//third_party/blink/renderer/core/inspector/inspector_css_agent.cc:FontVariantAlternatesFeatureType)
+      # Associated name, if applicable.
+      optional Value name
+      # The css style sheet identifier (absent for user agent stylesheet and user-specified
+      # stylesheet rules) this rule came from.
+      optional StyleSheetId styleSheetId
+      # Parent stylesheet's origin.
+      StyleSheetOrigin origin
+      # Associated style declaration.
+      CSSStyle style
+
   # CSS property at-rule representation.
   type CSSPropertyRule extends object
     properties
@@ -774,6 +802,8 @@ experimental domain CSS
       optional array of CSSPropertyRegistration cssPropertyRegistrations
       # A font-palette-values rule matching this node.
       optional CSSFontPaletteValuesRule cssFontPaletteValuesRule
+      # A list of simple @rules matching this node or its pseudo-elements.
+      optional array of CSSAtRule cssAtRules
       # Id of the first parent element that does not have display: contents.
       experimental optional DOM.NodeId parentLayoutNodeId
       # A list of CSS at-function rules referenced by styles of this node.

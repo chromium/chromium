@@ -29,6 +29,8 @@
 #include <memory>
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/css/css_font_face_rule.h"
+#include "third_party/blink/renderer/core/css/css_font_feature_values_rule.h"
 #include "third_party/blink/renderer/core/css/css_font_palette_values_rule.h"
 #include "third_party/blink/renderer/core/css/css_property_source_data.h"
 #include "third_party/blink/renderer/core/css/css_scope_rule.h"
@@ -230,6 +232,13 @@ class InspectorStyleSheet : public InspectorStyleSheetBase {
   BuildObjectForPositionTryRule(CSSPositionTryRule*, bool active);
   std::unique_ptr<protocol::CSS::CSSFontPaletteValuesRule>
   BuildObjectForFontPaletteValuesRule(CSSFontPaletteValuesRule*);
+  std::unique_ptr<protocol::CSS::CSSAtRule>
+  BuildAtRuleObjectForFontPaletteValuesRule(CSSFontPaletteValuesRule*);
+  std::unique_ptr<protocol::CSS::CSSAtRule> BuildAtRuleObjectForFontFaceRule(
+      CSSFontFaceRule*);
+  std::unique_ptr<protocol::CSS::CSSAtRule>
+  BuildAtRuleObjectForFontFeatureValuesRule(CSSFontFeatureValuesRule*,
+                                            StyleRuleFontFeature::FeatureType);
   std::unique_ptr<protocol::CSS::CSSPropertyRule> BuildObjectForPropertyRule(
       CSSPropertyRule*);
   std::unique_ptr<protocol::CSS::CSSKeyframeRule> BuildObjectForKeyframeRule(
