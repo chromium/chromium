@@ -1177,6 +1177,17 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram name="SBClientPhishing.RequestTypeAtReportLimit"
+    enum="ClientSideDetectionType" expires_after="2026-11-05">
+  <owner>andysjlim@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the request type that would have passed preclassification if not
+    blocked by the report limit. This is logged whenever too many reports
+    preclassification check value is logged.
+  </summary>
+</histogram>
+
 <histogram name="SBClientPhishing.RTLookupForceRequest"
     enum="BooleanForceRequest" expires_after="2026-05-03">
   <owner>andysjlim@chromium.org</owner>

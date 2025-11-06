@@ -642,6 +642,9 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest {
     // for debugging, allow us to exceed the report limit.
     if (!HasDebugFeatureDirectory() && csd_service_ &&
         csd_service_->AtPhishingReportLimit()) {
+      base::UmaHistogramExactLinear("SBClientPhishing.RequestTypeAtReportLimit",
+                                    phishing_detection_request_type_,
+                                    ClientSideDetectionType_MAX + 1);
       DontClassifyForPhishing(
           PreClassificationCheckResult::NO_CLASSIFY_TOO_MANY_REPORTS);
     }
