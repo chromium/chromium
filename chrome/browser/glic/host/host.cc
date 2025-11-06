@@ -144,7 +144,8 @@ void Host::PanelWillOpen(mojom::InvocationSource invocation_source,
             ? mojom::PanelOpeningData::New(
                   glic_instance_->GetPanelState().Clone(), invocation_source,
                   std::move(options.conversation_id),
-                  std::move(options.prompt_suggestion))
+                  std::move(options.prompt_suggestion),
+                  std::move(options.recently_active_conversations))
             : mojom::PanelOpeningData::New(),
         base::BindOnce(
             &Host::PanelWillOpenComplete,
@@ -306,10 +307,14 @@ void Host::SetWebClient(GlicWebClientAccess* web_client) {
   handler_info_->web_client = web_client;
   if (invocation_source_ && web_client) {
     std::optional<std::string> conversation_id, prompt_suggestion;
+    std::optional<std::vector<mojom::ConversationInfoPtr>>
+        recently_active_conversations;
     if (pending_panel_open_options_) {
       conversation_id = std::move(pending_panel_open_options_->conversation_id);
       prompt_suggestion =
           std::move(pending_panel_open_options_->prompt_suggestion);
+      recently_active_conversations =
+          std::move(pending_panel_open_options_->recently_active_conversations);
       pending_panel_open_options_.reset();
     }
     web_client->PanelWillOpen(
@@ -317,7 +322,8 @@ void Host::SetWebClient(GlicWebClientAccess* web_client) {
             glic_instance_ ? glic_instance_->GetPanelState().Clone()
                            : mojom::PanelState::New(),
             *invocation_source_, std::move(conversation_id),
-            std::move(prompt_suggestion)),
+            std::move(prompt_suggestion),
+            std::move(recently_active_conversations)),
         base::BindOnce(
             &Host::PanelWillOpenComplete,
             // Unretained is safe because web client is owned by `contents_`.

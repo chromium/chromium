@@ -1199,6 +1199,11 @@ export declare interface PanelOpeningData {
    * before the panel opens.
    */
   promptSuggestion?: string;
+  /**
+   * Up to 3 most recently active conversations, ordered by most recently active
+   * first.
+   */
+  recentlyActiveConversations?: ConversationInfo[];
 }
 
 /** The default value of TabContextOptions.pdfSizeLimit. */

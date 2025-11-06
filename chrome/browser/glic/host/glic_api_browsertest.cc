@@ -1712,6 +1712,53 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
       ActiveTabSharingState::kTabContextPermissionNotGranted, 1);
 }
 
+IN_PROC_BROWSER_TEST_P(GlicApiTest,
+                       testPanelWillOpenHasRecentlyActiveConversations) {
+  if (!GetParam().multi_instance) {
+    GTEST_SKIP() << "Only supported with multi-instance.";
+  }
+
+  // Open 3 tabs and register a conversation in each.
+  RunTestSequence(InstrumentTab(kFirstTab),
+                  NavigateWebContents(kFirstTab, page_url()),
+                  OpenGlicWindow(GlicWindowMode::kDetached,
+                                 GlicInstrumentMode::kHostAndContents));
+  ExecuteJsTest({.params = base::Value("instance1")});
+
+  ASSERT_TRUE(AddTabAtIndex(1, page_url(), ui::PAGE_TRANSITION_TYPED));
+  TrackGlicInstanceWithTabIndex(1);
+  RunTestSequence(InstrumentTab(kSecondTab),
+                  OpenGlicWindow(GlicWindowMode::kDetached,
+                                 GlicInstrumentMode::kHostAndContents));
+  ExecuteJsTest({.params = base::Value("instance2")});
+
+  ASSERT_TRUE(AddTabAtIndex(2, page_url(), ui::PAGE_TRANSITION_TYPED));
+  TrackGlicInstanceWithTabIndex(2);
+  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
+                                 GlicInstrumentMode::kHostAndContents));
+  ExecuteJsTest({.params = base::Value("instance3")});
+
+  // Activate tabs in a specific order to set recency: 1, 3, 2.
+  // Instance 2 will be most recent, then 3, then 1.
+  browser()->tab_strip_model()->ActivateTabAt(0);
+  browser()->tab_strip_model()->ActivateTabAt(2);
+  browser()->tab_strip_model()->ActivateTabAt(1);
+
+  // Open a 4th tab to verify.
+  ASSERT_TRUE(AddTabAtIndex(3, page_url(), ui::PAGE_TRANSITION_TYPED));
+  TrackGlicInstanceWithTabIndex(3);
+  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
+                                 GlicInstrumentMode::kHostAndContents));
+  ExecuteJsTest({.params = base::Value("instance4")});
+
+  // Open a 5th tab to verify.
+  ASSERT_TRUE(AddTabAtIndex(4, page_url(), ui::PAGE_TRANSITION_TYPED));
+  TrackGlicInstanceWithTabIndex(4);
+  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
+                                 GlicInstrumentMode::kHostAndContents));
+  ExecuteJsTest({.params = base::Value("verify")});
+}
+
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testGetOsHotkeyState) {
   ExecuteJsTest();
   g_browser_process->local_state()->SetString(prefs::kGlicLauncherHotkey,

@@ -566,6 +566,15 @@ std::optional<std::string> GlicInstanceImpl::conversation_id() const {
   return std::nullopt;
 }
 
+glic::mojom::ConversationInfoPtr GlicInstanceImpl::GetConversationInfo() const {
+  if (conversation_info_) {
+    return glic::mojom::ConversationInfo::New(
+        conversation_info_->conversation_id,
+        conversation_info_->conversation_title);
+  }
+  return nullptr;
+}
+
 // Automatic activation should be suppressed if a floating embedder is active.
 // The floating UI is a more deliberate user choice, and we don't want a
 // tab switch to unexpectedly close the floating UI.
@@ -917,6 +926,10 @@ void GlicInstanceImpl::NotifyPanelWillOpen(
     mojom::InvocationSource invocation_source) {
   Host::PanelWillOpenOptions options;
   options.conversation_id = conversation_id();
+  if (coordinator_delegate_) {
+    options.recently_active_conversations =
+        coordinator_delegate_->GetRecentlyActiveConversations();
+  }
   host_.PanelWillOpen(invocation_source, std::move(options));
 }
 

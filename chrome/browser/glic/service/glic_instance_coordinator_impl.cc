@@ -459,6 +459,32 @@ void GlicInstanceCoordinatorImpl::SwitchConversation(
   std::move(callback).Run(std::nullopt);
 }
 
+std::vector<glic::mojom::ConversationInfoPtr>
+GlicInstanceCoordinatorImpl::GetRecentlyActiveConversations() {
+  // This will only cover recently active conversations that still have living
+  // instances. If an instance is torn down because the user closed all bound
+  // tabs, it will not be included in the list.
+  std::vector<GlicInstanceImpl*> sorted_instances;
+  for (auto& [id, instance] : instances_) {
+    if (instance->conversation_id().has_value()) {
+      sorted_instances.push_back(instance.get());
+    }
+  }
+
+  std::sort(sorted_instances.begin(), sorted_instances.end(),
+            [](GlicInstanceImpl* a, GlicInstanceImpl* b) {
+              return a->GetLastActiveTime() > b->GetLastActiveTime();
+            });
+
+  std::vector<glic::mojom::ConversationInfoPtr> result;
+  for (size_t i = 0; i < std::min(sorted_instances.size(), size_t{3}); ++i) {
+    auto info = sorted_instances[i]->GetConversationInfo();
+    CHECK(info);
+    result.push_back(std::move(info));
+  }
+  return result;
+}
+
 void GlicInstanceCoordinatorImpl::UnbindTabFromAnyInstance(
     tabs::TabInterface* tab) {
   if (auto* instance = GetInstanceImplForTab(tab)) {

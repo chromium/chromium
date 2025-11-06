@@ -2191,6 +2191,45 @@ class ApiTests extends ApiTestFixtureBase {
     assertEquals('test_conversation_id', openData.conversationId);
   }
 
+  async testPanelWillOpenHasRecentlyActiveConversations() {
+    assertDefined(this.host.registerConversation);
+
+    if (this.testParams === 'instance1') {
+      await this.host.registerConversation(
+          {conversationTitle: 'Title 1', conversationId: 'convo1'});
+    } else if (this.testParams === 'instance2') {
+      await this.host.registerConversation(
+          {conversationTitle: 'Title 2', conversationId: 'convo2'});
+    } else if (this.testParams === 'instance3') {
+      await this.host.registerConversation(
+          {conversationTitle: 'Title 3', conversationId: 'convo3'});
+    } else if (this.testParams === 'instance4') {
+      await this.host.registerConversation(
+          {conversationTitle: 'Title 4', conversationId: 'convo4'});
+    } else if (this.testParams === 'verify') {
+      const openData = await observeSequence(this.client.panelOpenData).next();
+      assertDefined(openData.recentlyActiveConversations);
+      // Expecting convo4, convo2, convo3 (based on activation order in C++
+      // test)
+      assertEquals(3, openData.recentlyActiveConversations.length);
+      assertEquals(
+          'convo4', openData.recentlyActiveConversations[0]?.conversationId);
+      assertEquals(
+          'Title 4',
+          openData.recentlyActiveConversations[0]?.conversationTitle);
+      assertEquals(
+          'convo2', openData.recentlyActiveConversations[1]?.conversationId);
+      assertEquals(
+          'Title 2',
+          openData.recentlyActiveConversations[1]?.conversationTitle);
+      assertEquals(
+          'convo3', openData.recentlyActiveConversations[2]?.conversationId);
+      assertEquals(
+          'Title 3',
+          openData.recentlyActiveConversations[2]?.conversationTitle);
+    }
+  }
+
   private async closePanelAndWaitUntilInactive() {
     assertDefined(this.host.closePanel);
     await this.host.closePanel();

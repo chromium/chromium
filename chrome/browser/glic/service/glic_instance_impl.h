@@ -76,6 +76,9 @@ class GlicInstanceImpl : public GlicInstance,
 
     // Called by an instance when user requests to undock to Floaty.
     virtual void OnWillCreateFloaty() = 0;
+
+    virtual std::vector<glic::mojom::ConversationInfoPtr>
+    GetRecentlyActiveConversations() = 0;
   };
 
   GlicInstanceImpl(
@@ -112,6 +115,8 @@ class GlicInstanceImpl : public GlicInstance,
 
   bool IsDetached();
   bool IsActuating() const;
+
+  glic::mojom::ConversationInfoPtr GetConversationInfo() const;
 
   // These methods should only be called by the GlicInstanceCoordinator.
   // This method will either show an embedder or create an inactive embedder and
