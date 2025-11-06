@@ -7,7 +7,9 @@
 
 #include <optional>
 #include <string>
+#include <vector>
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/device_identity/device_oauth2_token_store.h"
@@ -49,6 +51,18 @@ class DeviceOAuth2TokenStoreDesktop : public DeviceOAuth2TokenStore {
   void SetAccountEmail(const std::string& account_email) override;
 
  private:
+  // Pending requests to set the refresh token that are queued until the
+  // encryptor is ready.
+  struct PendingSetTokenRequest {
+    PendingSetTokenRequest(const std::string& token, StatusCallback callback);
+    PendingSetTokenRequest(PendingSetTokenRequest&& other) noexcept;
+    PendingSetTokenRequest& operator=(PendingSetTokenRequest&& other) noexcept;
+    ~PendingSetTokenRequest();
+
+    std::string refresh_token;
+    StatusCallback callback;
+  };
+
   void OnOsCryptReady(InitCallback callback,
                       os_crypt_async::Encryptor encryptor);
 
@@ -73,6 +87,8 @@ class DeviceOAuth2TokenStoreDesktop : public DeviceOAuth2TokenStore {
   // This field is false and |refresh_token_| is encrypted until the first token
   // read.
   mutable bool token_decrypted_ = false;
+
+  std::vector<PendingSetTokenRequest> pending_set_token_requests_;
 
   base::WeakPtrFactory<DeviceOAuth2TokenStoreDesktop> weak_ptr_factory_{this};
 };
