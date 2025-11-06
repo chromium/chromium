@@ -199,6 +199,7 @@ DomStorageDatabaseLevelDB::CreateBatchOperation() {
 }
 
 DbStatus DomStorageDatabaseLevelDB::RewriteDB() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!db_) {
     return DbStatus::IOError(kInvalidDatabaseMessage);
   }

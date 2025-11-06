@@ -4,6 +4,13 @@
 
 #include "components/services/storage/dom_storage/test_support/dom_storage_database_testing.h"
 
+#include "base/memory/scoped_refptr.h"
+#include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool.h"
+#include "base/test/bind.h"
+#include "components/services/storage/dom_storage/async_dom_storage_database.h"
+#include "storage/common/database/db_status.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace storage {
@@ -85,6 +92,53 @@ std::vector<DomStorageDatabase::MapMetadata> CloneMapMetadata(
     }
   }
   return results;
+}
+
+void OpenAsyncDomStorageDatabaseInMemorySync(
+    StorageType storage_type,
+    std::unique_ptr<AsyncDomStorageDatabase>* result) {
+  DbStatus status;
+  base::RunLoop run_loop;
+
+  scoped_refptr<base::SequencedTaskRunner> database_task_runner =
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::WithBaseSyncPrimitives(),
+           base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
+
+  std::unique_ptr<AsyncDomStorageDatabase> database =
+      AsyncDomStorageDatabase::Open(
+          storage_type, /*directory=*/base::FilePath(),
+          "TestInMemoryDomStorageDatabase", /*memory_dump_id=*/std::nullopt,
+          std::move(database_task_runner),
+          base::BindLambdaForTesting([&](DbStatus open_db_status) {
+            status = std::move(open_db_status);
+            run_loop.Quit();
+          }));
+
+  run_loop.Run();
+
+  ASSERT_TRUE(status.ok()) << status.ToString();
+  *result = std::move(database);
+}
+
+void ReadAllMetadataSync(AsyncDomStorageDatabase& database,
+                         DomStorageDatabase::Metadata* metadata_results) {
+  DbStatus status;
+  base::RunLoop run_loop;
+
+  database.ReadAllMetadata(base::BindLambdaForTesting(
+      [&](StatusOr<DomStorageDatabase::Metadata> status_or_metadata) {
+        if (status_or_metadata.has_value()) {
+          *metadata_results = *std::move(status_or_metadata);
+        } else {
+          status = std::move(status_or_metadata.error());
+        }
+        run_loop.Quit();
+      }));
+
+  run_loop.Run();
+
+  EXPECT_TRUE(status.ok()) << status.ToString();
 }
 
 }  // namespace storage

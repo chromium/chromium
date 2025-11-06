@@ -39,16 +39,18 @@ AsyncDomStorageDatabase::~AsyncDomStorageDatabase() {
   DCHECK(committers_.empty());
 }
 
+void AsyncDomStorageDatabase::ReadAllMetadata(
+    ReadAllMetadataCallback callback) {
+  RunDatabaseTask(base::BindOnce([](DomStorageDatabase& db) {
+                    return db.ReadAllMetadata();
+                  }),
+                  std::move(callback));
+}
+
 void AsyncDomStorageDatabase::RewriteDB(StatusCallback callback) {
-  DCHECK(database_);
-  database_.PostTaskWithThisObject(base::BindOnce(
-      [](StatusCallback callback,
-         scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
-         DomStorageDatabase* db) {
-        callback_task_runner->PostTask(
-            FROM_HERE, base::BindOnce(std::move(callback), db->RewriteDB()));
-      },
-      std::move(callback), base::SequencedTaskRunner::GetCurrentDefault()));
+  RunDatabaseTask(
+      base::BindOnce([](DomStorageDatabase& db) { return db.RewriteDB(); }),
+      std::move(callback));
 }
 
 void AsyncDomStorageDatabase::RunBatchDatabaseTasks(

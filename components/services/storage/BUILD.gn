@@ -183,6 +183,7 @@ source_set("tests") {
   testonly = true
 
   sources = [
+    "dom_storage/async_dom_storage_database_unittest.cc",
     "dom_storage/leveldb/dom_storage_database_leveldb_unittest.cc",
     "dom_storage/leveldb/local_storage_leveldb_unittest.cc",
     "dom_storage/local_storage_impl_unittest.cc",
@@ -269,6 +270,7 @@ source_set("test_support") {
     "//base/test:test_support",
     "//content/test:test_support",
     "//sql:test_support",
+    "//storage/common:database_status",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/leveldatabase",
