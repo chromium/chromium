@@ -121,6 +121,17 @@ TEST_F(DevToolsUIBindingsTest, SanitizeFrontendURL) {
        "?enabledExperiments=explosionsWhileTyping;newA11yTool"},
       {"devtools://devtools/?enabledExperiments=invalidExperiment$",
        "devtools://devtools/"},
+      {"devtools://devtools/?panel=elements",
+       "devtools://devtools/?panel=elements"},
+      {"devtools://devtools/?panel=network",
+       "devtools://devtools/?panel=network"},
+      {"devtools://devtools/?panel=console",
+       "devtools://devtools/?panel=console"},
+      {"devtools://devtools/?panel=sources",
+       "devtools://devtools/?panel=sources"},
+      {"devtools://devtools/?panel=resources",
+       "devtools://devtools/?panel=resources"},
+      {"devtools://devtools/?panel=unsupported", "devtools://devtools/"},
   };
 
   for (const auto& pair : tests) {

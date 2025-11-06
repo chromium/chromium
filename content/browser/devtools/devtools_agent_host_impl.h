@@ -19,6 +19,7 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/certificate_request_result_type.h"
 #include "content/public/browser/devtools_agent_host.h"
+#include "content/public/browser/devtools_manager_delegate.h"
 #include "net/cookies/site_for_cookies.h"
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
 #include "services/network/public/cpp/cross_origin_opener_policy.h"
@@ -88,7 +89,9 @@ class CONTENT_EXPORT DevToolsAgentHostImpl : public DevToolsAgentHost {
 
   bool Inspect();
 
-  scoped_refptr<DevToolsAgentHost> OpenDevTools();
+  scoped_refptr<DevToolsAgentHost> OpenDevTools(
+      const content::DevToolsManagerDelegate::DevToolsOptions&
+          devtools_options);
 
   template <typename Handler>
   std::vector<Handler*> HandlersByName(const std::string& name) {

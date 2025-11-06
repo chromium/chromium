@@ -217,12 +217,14 @@ void ChromeDevToolsManagerDelegate::Inspect(
 
 scoped_refptr<content::DevToolsAgentHost>
 ChromeDevToolsManagerDelegate::OpenDevTools(
-    content::DevToolsAgentHost* agent_host) {
+    content::DevToolsAgentHost* agent_host,
+    const content::DevToolsManagerDelegate::DevToolsOptions& devtools_options) {
   scoped_refptr<content::DevToolsAgentHost> tab_agent_host(
       content::DevToolsAgentHost::GetOrCreateForTab(
           agent_host->GetWebContents()));
   DevToolsWindow::OpenDevToolsWindow(tab_agent_host, nullptr,
-                                     DevToolsOpenedByAction::kUnknown);
+                                     DevToolsOpenedByAction::kUnknown,
+                                     devtools_options);
   DevToolsWindow* window =
       DevToolsWindow::FindDevToolsWindow(tab_agent_host.get());
   if (!window) {

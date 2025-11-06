@@ -37,6 +37,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/devtools_external_agent_proxy_delegate.h"
+#include "content/public/browser/devtools_manager_delegate.h"
 #include "content/public/browser/devtools_socket_factory.h"
 #include "content/public/browser/mojom_devtools_agent_host_delegate.h"
 #include "content/public/common/content_switches.h"
@@ -437,9 +438,10 @@ bool DevToolsAgentHostImpl::Inspect() {
   return false;
 }
 
-scoped_refptr<DevToolsAgentHost> DevToolsAgentHostImpl::OpenDevTools() {
+scoped_refptr<DevToolsAgentHost> DevToolsAgentHostImpl::OpenDevTools(
+    const content::DevToolsManagerDelegate::DevToolsOptions& devtools_options) {
   if (auto* delegate = DevToolsManager::GetInstance()->delegate()) {
-    return delegate->OpenDevTools(this);
+    return delegate->OpenDevTools(this, devtools_options);
   }
   return nullptr;
 }

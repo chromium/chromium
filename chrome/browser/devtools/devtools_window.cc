@@ -65,6 +65,7 @@
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/color_chooser.h"
 #include "content/public/browser/devtools_agent_host.h"
+#include "content/public/browser/devtools_manager_delegate.h"
 #include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
 #include "content/public/browser/navigation_controller.h"
@@ -659,18 +660,21 @@ void DevToolsWindow::OpenDevToolsWindow(
 void DevToolsWindow::OpenDevToolsWindow(
     content::WebContents* inspected_web_contents,
     Profile* profile,
-    DevToolsOpenedByAction opened_by) {
+    DevToolsOpenedByAction opened_by,
+    const content::DevToolsManagerDelegate::DevToolsOptions& devtools_options) {
   ToggleDevToolsWindow(inspected_web_contents, profile, true,
-                       DevToolsToggleAction::Show(), "");
+                       DevToolsToggleAction::Show(), "", opened_by,
+                       devtools_options);
 }
 
 // static
 void DevToolsWindow::OpenDevToolsWindow(
     scoped_refptr<content::DevToolsAgentHost> agent_host,
     Profile* profile,
-    DevToolsOpenedByAction opened_by) {
+    DevToolsOpenedByAction opened_by,
+    const content::DevToolsManagerDelegate::DevToolsOptions& devtools_options) {
   OpenDevToolsWindow(agent_host, profile, false /* use_bundled_frontend */,
-                     opened_by);
+                     opened_by, devtools_options);
 }
 
 // static
@@ -687,7 +691,8 @@ void DevToolsWindow::OpenDevToolsWindow(
     scoped_refptr<content::DevToolsAgentHost> agent_host,
     Profile* profile,
     bool use_bundled_frontend,
-    DevToolsOpenedByAction opened_by) {
+    DevToolsOpenedByAction opened_by,
+    const content::DevToolsManagerDelegate::DevToolsOptions& devtools_options) {
   if (!profile) {
     profile = Profile::FromBrowserContext(agent_host->GetBrowserContext());
   }
@@ -721,7 +726,8 @@ void DevToolsWindow::OpenDevToolsWindow(
 
   content::WebContents* web_contents = agent_host->GetWebContents();
   if (web_contents) {
-    DevToolsWindow::OpenDevToolsWindow(web_contents, profile, opened_by);
+    DevToolsWindow::OpenDevToolsWindow(web_contents, profile, opened_by,
+                                       devtools_options);
   }
 }
 
@@ -835,7 +841,8 @@ void DevToolsWindow::ToggleDevToolsWindow(
     bool force_open,
     const DevToolsToggleAction& action,
     const std::string& settings,
-    DevToolsOpenedByAction toggled_by) {
+    DevToolsOpenedByAction toggled_by,
+    const content::DevToolsManagerDelegate::DevToolsOptions& devtools_options) {
   scoped_refptr<DevToolsAgentHost> agent(
       DevToolsAgentHost::GetOrCreateForTab(inspected_web_contents));
   DevToolsWindow* window = FindDevToolsWindow(agent.get());
@@ -858,6 +865,10 @@ void DevToolsWindow::ToggleDevToolsWindow(
         panel = "sources";
         break;
       case DevToolsToggleAction::kShow:
+        if (devtools_options.panel_id.has_value()) {
+          panel = devtools_options.panel_id.value();
+        }
+        break;
       case DevToolsToggleAction::kToggle:
       case DevToolsToggleAction::kReveal:
       case DevToolsToggleAction::kNoOp:

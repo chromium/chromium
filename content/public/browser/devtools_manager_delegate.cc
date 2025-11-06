@@ -8,11 +8,23 @@
 
 namespace content {
 
+DevToolsManagerDelegate::DevToolsOptions::DevToolsOptions() = default;
+
+DevToolsManagerDelegate::DevToolsOptions::DevToolsOptions(
+    const DevToolsManagerDelegate::DevToolsOptions& other) = default;
+
+DevToolsManagerDelegate::DevToolsOptions::DevToolsOptions(
+    std::optional<std::string> panel_id)
+    : panel_id(panel_id) {}
+
+DevToolsManagerDelegate::DevToolsOptions::~DevToolsOptions() = default;
+
 void DevToolsManagerDelegate::Inspect(DevToolsAgentHost* agent_host) {
 }
 
 scoped_refptr<DevToolsAgentHost> DevToolsManagerDelegate::OpenDevTools(
-    DevToolsAgentHost* agent_host) {
+    DevToolsAgentHost* agent_host,
+    const DevToolsManagerDelegate::DevToolsOptions& devtools_options) {
   return nullptr;
 }
 

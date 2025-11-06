@@ -35,6 +35,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/cors_origin_pattern_setter.h"
 #include "content/public/browser/devtools_agent_host_client.h"
+#include "content/public/browser/devtools_manager_delegate.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "url/url_constants.h"
 
@@ -1621,6 +1622,7 @@ void TargetHandler::AddWorkerThrottle(
 }
 
 Response TargetHandler::OpenDevTools(const std::string& target_id,
+                                     std::optional<std::string> panel_id,
                                      std::string* out_target_id) {
   if (access_mode_ != AccessMode::kBrowser) {
     return protocol::Response::ServerError(kNotAllowedError);
@@ -1633,7 +1635,8 @@ Response TargetHandler::OpenDevTools(const std::string& target_id,
   }
 
   scoped_refptr<DevToolsAgentHost> devtools_agent_host =
-      agent_host->OpenDevTools();
+      agent_host->OpenDevTools(
+          content::DevToolsManagerDelegate::DevToolsOptions(panel_id));
   if (!devtools_agent_host) {
     return protocol::Response::ServerError("Failed to create DevTools window");
   }

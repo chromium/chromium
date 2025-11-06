@@ -23,12 +23,25 @@ class WebContents;
 
 class CONTENT_EXPORT DevToolsManagerDelegate {
  public:
+  // Options for opening the DevTools window.
+  struct CONTENT_EXPORT DevToolsOptions {
+    // The panel to open when the DevTools window is opened.
+    const std::optional<std::string> panel_id;
+
+   public:
+    DevToolsOptions();
+    DevToolsOptions(const DevToolsOptions& other);
+    explicit DevToolsOptions(std::optional<std::string> panel_id);
+    ~DevToolsOptions();
+  };
   // Opens the inspector for |agent_host|.
   virtual void Inspect(DevToolsAgentHost* agent_host);
 
   // Opens the DevTools window for |agent_host|.
   virtual scoped_refptr<DevToolsAgentHost> OpenDevTools(
-      content::DevToolsAgentHost* agent_host);
+      content::DevToolsAgentHost* agent_host,
+      const content::DevToolsManagerDelegate::DevToolsOptions&
+          devtools_options);
 
   // Activates the associated inspector for `agent_host` if there
   // is one.

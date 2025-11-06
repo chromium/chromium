@@ -18,6 +18,7 @@
 #include "chrome/browser/devtools/devtools_ui_bindings.h"
 #include "components/policy/core/common/policy_service.h"
 #include "content/public/browser/child_process_host.h"
+#include "content/public/browser/devtools_manager_delegate.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 
@@ -147,15 +148,22 @@ class DevToolsWindow : public DevToolsUIBindings::Delegate,
   // ToggleDevToolsWindow().
   static void OpenDevToolsWindow(content::WebContents* inspected_web_contents,
                                  DevToolsOpenedByAction opened_by);
-  static void OpenDevToolsWindow(content::WebContents* inspected_web_contents,
-                                 Profile* profile,
-                                 DevToolsOpenedByAction opened_by);
+  static void OpenDevToolsWindow(
+      content::WebContents* inspected_web_contents,
+      Profile* profile,
+      DevToolsOpenedByAction opened_by,
+      const content::DevToolsManagerDelegate::DevToolsOptions&
+          devtools_options);
 
   // Open or reveal DevTools window, with no special action. Use |profile| to
   // open client window in, default to |host|'s profile if none given.
-  static void OpenDevToolsWindow(scoped_refptr<content::DevToolsAgentHost> host,
-                                 Profile* profile,
-                                 DevToolsOpenedByAction opened_by);
+  static void OpenDevToolsWindow(
+      scoped_refptr<content::DevToolsAgentHost> host,
+      Profile* profile,
+      DevToolsOpenedByAction opened_by,
+      const content::DevToolsManagerDelegate::DevToolsOptions&
+          devtools_options =
+              content::DevToolsManagerDelegate::DevToolsOptions());
   // Similar to previous one, but forces the bundled frontend to be used.
   static void OpenDevToolsWindowWithBundledFrontend(
       scoped_refptr<content::DevToolsAgentHost> host,
@@ -372,10 +380,14 @@ class DevToolsWindow : public DevToolsUIBindings::Delegate,
       bool use_bundled_frontend,
       DevToolsOpenedByAction opened_by);
 
-  static void OpenDevToolsWindow(scoped_refptr<content::DevToolsAgentHost> host,
-                                 Profile* profile,
-                                 bool use_bundled_frontend,
-                                 DevToolsOpenedByAction opened_by);
+  static void OpenDevToolsWindow(
+      scoped_refptr<content::DevToolsAgentHost> host,
+      Profile* profile,
+      bool use_bundled_frontend,
+      DevToolsOpenedByAction opened_by,
+      const content::DevToolsManagerDelegate::DevToolsOptions&
+          devtools_options =
+              content::DevToolsManagerDelegate::DevToolsOptions());
 
   static DevToolsWindow* Create(Profile* profile,
                                 content::WebContents* inspected_web_contents,
@@ -401,7 +413,10 @@ class DevToolsWindow : public DevToolsUIBindings::Delegate,
       bool force_open,
       const DevToolsToggleAction& action,
       const std::string& settings,
-      DevToolsOpenedByAction opened_by = DevToolsOpenedByAction::kUnknown);
+      DevToolsOpenedByAction opened_by = DevToolsOpenedByAction::kUnknown,
+      const content::DevToolsManagerDelegate::DevToolsOptions&
+          devtools_options =
+              content::DevToolsManagerDelegate::DevToolsOptions());
   static Profile* GetProfileForDevToolsWindow(
       content::WebContents* web_contents);
 

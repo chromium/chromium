@@ -2461,18 +2461,46 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest_IPProtectionDisabled,
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
+class DevToolsProtocolTest_OpensDevTools : public DevToolsProtocolTest {
+ public:
+  const base::Value::Dict* OpenDevToolsForCurrentPageTarget(
+      std::optional<std::string> panel_id = std::nullopt) {
+    const base::Value::Dict* result = SendCommandSync("Target.getTargets");
+    const base::Value::List* list = result->FindList("targetInfos");
+    EXPECT_EQ(list->size(), 1u);
+    const std::string targetId =
+        *list->front().GetDict().FindString("targetId");
+
+    base::Value::Dict params;
+    params.Set("targetId", targetId);
+    if (panel_id.has_value()) {
+      params.Set("panelId", *panel_id);
+    }
+    return SendCommandSync("Target.openDevTools", std::move(params));
+  }
+
+  base::Value::Dict FindDevToolsTarget() {
+    // CDP `Target.getTargets` result should contain the new DevTools target.
+    const base::Value::Dict* result = SendCommandSync("Target.getTargets");
+
+    base::Value::Dict devtools_target;
+    for (const auto& target : *result->FindList("targetInfos")) {
+      if (*target.GetDict().FindString("type") == "other") {
+        devtools_target = target.Clone().TakeDict();
+        break;
+      }
+    }
+    EXPECT_EQ(2u, result->FindList("targetInfos")->size());
+
+    return devtools_target;
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest_OpensDevTools,
                        OpensDevTools_FailsForNonBrowserTargetSession) {
   AttachToTabTarget(web_contents());
 
-  const base::Value::Dict* result = SendCommandSync("Target.getTargets");
-  const base::Value::List* list = result->FindList("targetInfos");
-  ASSERT_TRUE(list->size() == 1);
-  const std::string targetId = *list->front().GetDict().FindString("targetId");
-
-  base::Value::Dict params;
-  params.Set("targetId", targetId);
-  SendCommandSync("Target.openDevTools", std::move(params));
+  OpenDevToolsForCurrentPageTarget();
 
   EXPECT_EQ(*error()->FindString("message"), "Not allowed");
 }
@@ -2488,33 +2516,19 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
   EXPECT_EQ(*error()->FindString("message"), "No target with given id found");
 }
 
-IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, OpensDevTools_OpensForPageTarget) {
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest_OpensDevTools,
+                       OpensDevTools_OpensForPageTarget) {
   AttachToBrowserTarget();
 
-  const base::Value::Dict* result = SendCommandSync("Target.getTargets");
-  const base::Value::List* list = result->FindList("targetInfos");
-  ASSERT_TRUE(list->size() == 1);
-  const std::string targetId = *list->front().GetDict().FindString("targetId");
-
-  base::Value::Dict params;
-  params.Set("targetId", targetId);
-  result = SendCommandSync("Target.openDevTools", std::move(params));
+  const base::Value::Dict* result = OpenDevToolsForCurrentPageTarget();
 
   const std::string devtools_target_id(*result->FindString("targetId"));
 
-  // CDP `Target.getTargets` result should contain the new DevTools target.
-  result = SendCommandSync("Target.getTargets");
-
-  base::Value::Dict devtools_target;
-  for (const auto& target : *result->FindList("targetInfos")) {
-    if (*target.GetDict().FindString("type") == "other") {
-      devtools_target = target.Clone().TakeDict();
-      break;
-    }
-  }
-
-  EXPECT_EQ(2u, result->FindList("targetInfos")->size());
+  const base::Value::Dict devtools_target = FindDevToolsTarget();
   EXPECT_EQ(devtools_target_id, *devtools_target.FindString("targetId"));
+
+  const std::string url = *devtools_target.FindString("url");
+  EXPECT_TRUE(url.find("panel") == std::string::npos);
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, OpensDevTools_OpensForTabTarget) {
@@ -2606,6 +2620,36 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, OpensDevTools_OpensUndocked) {
 
   EXPECT_EQ(2u, result->FindList("targetInfos")->size());
   EXPECT_EQ(devtools_target_id, *devtools_target.FindString("targetId"));
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest_OpensDevTools,
+                       OpensDevTools_OpensInResourcesPanel) {
+  AttachToBrowserTarget();
+
+  const base::Value::Dict* result =
+      OpenDevToolsForCurrentPageTarget("resources");
+  const std::string devtools_target_id(*result->FindString("targetId"));
+
+  const base::Value::Dict devtools_target = FindDevToolsTarget();
+  EXPECT_EQ(devtools_target_id, *devtools_target.FindString("targetId"));
+
+  const std::string url = *devtools_target.FindString("url");
+  EXPECT_TRUE(url.find("panel=resources") != std::string::npos);
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest_OpensDevTools,
+                       OpensDevTools_OpensInUnsuportedPanel) {
+  AttachToBrowserTarget();
+
+  const base::Value::Dict* result =
+      OpenDevToolsForCurrentPageTarget("unsupported");
+  const std::string devtools_target_id(*result->FindString("targetId"));
+
+  const base::Value::Dict devtools_target = FindDevToolsTarget();
+  EXPECT_EQ(devtools_target_id, *devtools_target.FindString("targetId"));
+
+  const std::string url = *devtools_target.FindString("url");
+  EXPECT_TRUE(url.find("panel") == std::string::npos);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
