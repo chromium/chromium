@@ -401,6 +401,12 @@ bool IsDraggingTabs(const aura::Window* window) {
   return window->GetProperty(ash::kIsDraggingTabsKey);
 }
 
+const WindowState* GetTabDraggingSourceWindowState(
+    const aura::Window* drag_window) {
+  return WindowState::Get(
+      drag_window->GetProperty(ash::kTabDraggingSourceWindowKey));
+}
+
 bool ShouldExcludeForCycleList(const aura::Window* window) {
   // Exclude windows:
   // - non user positionable windows, such as extension popups.

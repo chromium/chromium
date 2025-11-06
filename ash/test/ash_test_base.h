@@ -164,7 +164,8 @@ class AshTestBase : public testing::Test {
       const gfx::Rect& bounds_in_screen = gfx::Rect(),
       chromeos::AppType app_type = chromeos::AppType::SYSTEM_APP,
       int shell_window_id = kShellWindowId_Invalid,
-      views::WidgetDelegate* delegate = nullptr);
+      views::WidgetDelegate* delegate = nullptr,
+      bool show = true);
 
   // Creates a visible window in the appropriate container. If
   // |bounds_in_screen| is empty the window is added to the primary root

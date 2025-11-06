@@ -155,11 +155,20 @@ TabletModeWindowState::TabletModeWindowState(
   DCHECK(!snap || SplitViewController::Get(Shell::GetPrimaryRootWindow())
                       ->CanKeepCurrentSnapRatio(window));
 
-  // Snapped and floated windows maintain their state; other windows become
-  // maximized if possible, centered with a backdrop if not possible.
-  state_type_on_attach_ = snap || state->IsFloated()
-                              ? current_state_type_
-                              : state->GetWindowTypeOnMaximizable();
+  // Snapped and floated windows maintain their state; tabs dragged out of a
+  // snapped window inherit the snapped state at least for the duration of the
+  // drag; other windows become maximized if possible, centered with a backdrop
+  // if not possible.
+  if (snap || state->IsFloated()) {
+    state_type_on_attach_ = current_state_type_;
+  } else if (const WindowState* source_state =
+                 window_util::GetTabDraggingSourceWindowState(window);
+             source_state && source_state->IsSnapped()) {
+    state_type_on_attach_ = source_state->GetStateType();
+  } else {
+    state_type_on_attach_ = state->GetWindowTypeOnMaximizable();
+  }
+
   WindowState::ScopedBoundsChangeAnimation bounds_animation(
       window, entering_tablet_mode && !ShouldAnimateWindowForTransition(window)
                   ? WindowState::BoundsChangeAnimationType::kAnimateZero

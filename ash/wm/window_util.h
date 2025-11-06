@@ -21,6 +21,10 @@
 
 class PrefRegistrySimple;
 
+namespace ash {
+class WindowState;
+}
+
 namespace gfx {
 class Point;
 class Rect;
@@ -119,6 +123,11 @@ ASH_EXPORT void InstallResizeHandleWindowTargeterForWindow(
 
 // Returns true if `window` is currently in tab-dragging process.
 ASH_EXPORT bool IsDraggingTabs(const aura::Window* window);
+
+// For a tab drag window (see `IsDraggingTabs`) returns the state of the source
+// window if any. Otherwise returns nullptr.
+ASH_EXPORT const WindowState* GetTabDraggingSourceWindowState(
+    const aura::Window* drag_window);
 
 // Returns true if `window` should be excluded from the cycle list and/or
 // overview.

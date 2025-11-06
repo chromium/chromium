@@ -344,7 +344,8 @@ std::unique_ptr<aura::Window> AshTestBase::CreateAppWindow(
     const gfx::Rect& bounds_in_screen,
     chromeos::AppType app_type,
     int shell_window_id,
-    views::WidgetDelegate* delegate) {
+    views::WidgetDelegate* delegate,
+    bool show) {
   views::test::TestWidgetBuilder builder;
   if (delegate) {
     builder.SetDelegate(delegate);
@@ -362,6 +363,7 @@ std::unique_ptr<aura::Window> AshTestBase::CreateAppWindow(
           .SetBounds(bounds_in_screen.IsEmpty() ? gfx::Rect(0, 0, 300, 300)
                                                 : bounds_in_screen)
           .SetContext(Shell::GetPrimaryRootWindow())
+          .SetShow(show)
           .SetWindowId(shell_window_id)
           .BuildOwnedByNativeWidget();
   return base::WrapUnique(widget->GetNativeWindow());

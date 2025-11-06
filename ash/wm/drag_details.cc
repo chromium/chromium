@@ -6,6 +6,7 @@
 
 #include "ash/public/cpp/window_properties.h"
 #include "ash/wm/window_resizer.h"
+#include "ash/wm/window_util.h"
 #include "ui/aura/window.h"
 #include "ui/base/hit_test.h"
 #include "ui/display/screen.h"
@@ -51,11 +52,10 @@ gfx::Rect GetWindowInitialBoundsInParent(aura::Window* window) {
       return window->bounds();
     }
 
-    aura::Window* tab_drag_source_window =
-        window->GetProperty(kTabDraggingSourceWindowKey);
-    if (tab_drag_source_window &&
-        WindowState::Get(tab_drag_source_window)->IsFloated()) {
-      return tab_drag_source_window->bounds();
+    const WindowState* tab_drag_source_state =
+        window_util::GetTabDraggingSourceWindowState(window);
+    if (tab_drag_source_state && tab_drag_source_state->IsFloated()) {
+      return tab_drag_source_state->window()->bounds();
     }
 
     gfx::Rect* override_bounds = window->GetProperty(kRestoreBoundsOverrideKey);

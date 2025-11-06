@@ -2029,4 +2029,54 @@ TEST_F(TabletModeWindowManagerTest, NonMaximizableWindowRestore) {
   EXPECT_EQ(window_state->GetStateType(), WindowStateType::kNormal);
 }
 
+TEST_F(TabletModeWindowManagerTest, StateTypeOnAttachNewDragWindow) {
+  CreateTabletModeWindowManager();
+
+  // Simulate tab drag out of maximized window.
+  {
+    std::unique_ptr<aura::Window> source_window =
+        CreateAppWindow(gfx::Rect(), chromeos::AppType::BROWSER);
+    WindowState* source_window_state = WindowState::Get(source_window.get());
+
+    std::unique_ptr<aura::Window> drag_window = CreateAppWindow(
+        gfx::Rect(), chromeos::AppType::BROWSER, kShellWindowId_Invalid,
+        /*delegate=*/nullptr, /*show=*/false);
+    WindowState* drag_window_state = WindowState::Get(drag_window.get());
+    drag_window->SetProperty(ash::kIsDraggingTabsKey, true);
+    drag_window->SetProperty(ash::kTabDraggingSourceWindowKey,
+                             source_window.get());
+
+    EXPECT_EQ(source_window_state->GetStateType(), WindowStateType::kMaximized);
+    EXPECT_EQ(drag_window_state->GetStateType(), WindowStateType::kDefault);
+    drag_window->Show();
+    EXPECT_EQ(drag_window_state->GetStateType(), WindowStateType::kMaximized);
+  }
+
+  // Simulate tab drag out of snapped window.
+  {
+    std::unique_ptr<aura::Window> source_window =
+        CreateAppWindow(gfx::Rect(), chromeos::AppType::BROWSER);
+    WindowState* source_window_state = WindowState::Get(source_window.get());
+    const WindowSnapWMEvent primary_snap_event(WM_EVENT_SNAP_PRIMARY);
+    source_window_state->OnWMEvent(&primary_snap_event);
+
+    std::unique_ptr<aura::Window> drag_window = CreateAppWindow(
+        gfx::Rect(), chromeos::AppType::BROWSER, kShellWindowId_Invalid,
+        /*delegate=*/nullptr, /*show=*/false);
+    WindowState* drag_window_state = WindowState::Get(drag_window.get());
+    drag_window->SetProperty(ash::kIsDraggingTabsKey, true);
+    drag_window->SetProperty(ash::kTabDraggingSourceWindowKey,
+                             source_window.get());
+
+    EXPECT_EQ(source_window_state->GetStateType(),
+              WindowStateType::kPrimarySnapped);
+    EXPECT_EQ(drag_window_state->GetStateType(), WindowStateType::kDefault);
+    drag_window->Show();
+    EXPECT_EQ(drag_window_state->GetStateType(),
+              WindowStateType::kPrimarySnapped);
+  }
+
+  DestroyTabletModeWindowManager();
+}
+
 }  // namespace ash
