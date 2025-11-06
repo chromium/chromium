@@ -1979,10 +1979,6 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
   if (using_swap_chain_) {
     usage = usage | gpu::SHARED_IMAGE_USAGE_SCANOUT;
     usage = usage | gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
-    back_buffer_shared_image = sii->CreateSharedImage(
-        {color_buffer_format_, size, color_space_, origin,
-         back_buffer_alpha_type, usage, "WebGLDrawingBuffer"},
-        gpu::kNullSurfaceHandle);
   } else {
     // First see if creating a SharedImage that can be used as an overlay is
     // feasible.
@@ -2029,18 +2025,17 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
         !usage.Has(gpu::SHARED_IMAGE_USAGE_SCANOUT)) {
       back_buffer_alpha_type = kUnpremul_SkAlphaType;
     }
+  }
 
-    back_buffer_shared_image = sii->CreateSharedImage(
-        {color_buffer_format_, size, color_space_, origin,
-         back_buffer_alpha_type, usage, "WebGLDrawingBuffer"},
-        gpu::kNullSurfaceHandle);
-
-    if (usage.Has(gpu::SHARED_IMAGE_USAGE_SCANOUT)) {
-      // On Mac the texture target for SharedImages with SCANOUT usage (which
-      // get backed by IOSurfaces) is the "native" texture target for
-      // IOSurfaces, which is not necessarily GL_TEXTURE_2D.
-      texture_target = back_buffer_shared_image->GetTextureTarget();
-    }
+  back_buffer_shared_image = sii->CreateSharedImage(
+      {color_buffer_format_, size, color_space_, origin, back_buffer_alpha_type,
+       usage, "WebGLDrawingBuffer"},
+      gpu::kNullSurfaceHandle);
+  if (usage.Has(gpu::SHARED_IMAGE_USAGE_SCANOUT)) {
+    // On Mac the texture target for SharedImages with SCANOUT usage (which
+    // get backed by IOSurfaces) is the "native" texture target for
+    // IOSurfaces, which is not necessarily GL_TEXTURE_2D.
+    texture_target = back_buffer_shared_image->GetTextureTarget();
   }
 
   staging_texture_needed_ = false;
