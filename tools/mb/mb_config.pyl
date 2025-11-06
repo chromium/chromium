@@ -102,10 +102,6 @@
       'win64-builder-perf-pgo': 'official_remoteexec_perf_pgo',
     },
 
-    'chromium.perf.calibration': {
-      'linux-perf-calibration': 'official_linux_perf',
-    },
-
     'chromium.perf.fyi': {
       'android-cfi-builder-perf-fyi': 'official_remoteexec_minimal_symbols_android_thin_lto_opt',
       'android_arm64-cfi-builder-perf-fyi': 'official_remoteexec_minimal_symbols_android_thin_lto_opt_arm64',
