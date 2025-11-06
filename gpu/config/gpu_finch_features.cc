@@ -224,7 +224,7 @@ const base::FeatureParam<std::string> kWGSLUnsafeFeatures{
 BASE_FEATURE(kWebGPUUseVulkanMemoryModel, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kWebGPUEnableRangeAnalysisForRobustness,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kWebGPUUseSpirv14, base::FEATURE_DISABLED_BY_DEFAULT);
 
