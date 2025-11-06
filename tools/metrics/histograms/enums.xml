@@ -5514,6 +5514,8 @@ shown properly on the user-facing crash UI.
   <int value="-2147174366" label="MSPR_E_NEEDS_INDIVIDUALIZATION"/>
   <int value="-2147174354" label="MSPR_E_UNABLE_TO_OPEN_DATA_STORE"/>
   <int value="-2147174250" label="MSPR_E_NO_DECRYPTOR_AVAILABLE"/>
+  <int value="-2147174249"
+      label="MSPR_E_MAX_CE_ATTEMPTS_EXCEEDED (0x8004B897)"/>
   <int value="-2147174218" label="MSPR_E_H264_FORMAT_ERROR (0x8004B8B6)"/>
   <int value="-2147174206" label="MSPR_E_INVALID_H264_CONTENT (0x8004B8C2)"/>
   <int value="-2147174205"
@@ -5534,6 +5536,7 @@ shown properly on the user-facing crash UI.
       label="DRM_E_TEE_PROVISIONING_REQUIRED (0x8004CD11)"/>
   <int value="-2147169006" label="DRM_E_TEE_INVALID_HWDRM_STATE"/>
   <int value="-2147169004" label="DRM_E_TEE_CLOCK_NOT_SET"/>
+  <int value="-2147169000" label="DRM_E_TEE_ROOT_KEY_CHANGED (0x8004CD18)"/>
   <int value="-2147168998"
       label="DRM_E_TEE_PROXY_INVALID_SERIALIZATION_MESSAGE (0x8004CD1A)"/>
   <int value="-2147168990"
@@ -5549,10 +5552,13 @@ shown properly on the user-facing crash UI.
   <int value="-2147167231" label="DRM_E_XB_INVALID_OBJECT"/>
   <int value="-2147167228" label="DRM_E_XB_UNKNOWN_ELEMENT_TYPE"/>
   <int value="-2147165581" label="DRM_E_H264_SH_PPS_NOT_FOUND"/>
+  <int value="-2147165570"
+      label="DRM_E_H264_SH_LUMA_WEIGHT_DENOM (0x8004DA7E)"/>
   <int value="-2147165569"
       label="DRM_E_H264_SH_CHROMA_WEIGHT_DENOM (0x8004DA7F)"/>
   <int value="-2147165553" label="DRM_E_H264_SH_MODEL_NUMBER (0x8004DA8F)"/>
   <int value="-2147164913" label="DRM_E_* - OEM Specific (0x8004DD0F)"/>
+  <int value="-2147164905" label="DRM_E_* - OEM Specific (0x8004DD17)"/>
   <int value="-2147164882" label="DRM_E_* - OEM Specific (0x8004DD2E)"/>
   <int value="-2147164862" label="DRM_E_* - OEM Specific (0x8004DD42)"/>
   <int value="-2147164714" label="DRM_E_* - OEM Specific (0x8004DDD6)"/>
@@ -5581,6 +5587,7 @@ shown properly on the user-facing crash UI.
   <int value="-2147024703" label="ERROR_BAD_EXE_FORMAT"/>
   <int value="-2147024671" label="ERROR_VIRUS_INFECTED"/>
   <int value="-2147024637" label="DRM_E_NOMORE_DATA"/>
+  <int value="-2147024362" label="DRM_E_ARITHMETIC_OVERFLOW (0x80070216)"/>
   <int value="-2147024319" label="ERROR_INVALID_IMAGE_HASH (0x80070241)"/>
   <int value="-2147024110" label="ERROR_ACCESS_DISABLED_NO_SAFER_UI_BY_POLICY"/>
   <int value="-2147023843" label="ERROR_SERVICE_REQUEST_TIMEOUT"/>
@@ -5603,6 +5610,7 @@ shown properly on the user-facing crash UI.
   <int value="-2147023174" label="RPC_S_SERVER_UNAVAILABLE"/>
   <int value="-2147023170" label="RPC_S_CALL_FAILED"/>
   <int value="-2147023156" label="RPC_S_DUPLICATE_ENDPOINT"/>
+  <int value="-2147019873" label="E_NOT_VALID_STATE (0x8007139F)"/>
   <int value="-2147012894" label="WININET_E_TIMEOUT"/>
   <int value="-2147012889" label="WININET_E_NAME_NOT_RESOLVED"/>
   <int value="-2147012867" label="WININET_E_CANNOT_CONNECT"/>
