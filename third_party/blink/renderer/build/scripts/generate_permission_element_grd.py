@@ -135,6 +135,8 @@ def generate_grd_file(id_map, file_list, output_file_path):
                                           1)[0].rsplit('_',
                                                        1)[1].replace('-', '_')
         for translated_message in translated_messages:
+            if translated_message.getAttribute("id") not in id_map:
+                continue
             message_name_prefix = id_map[translated_message.getAttribute("id")]
             generated_message_name = message_name_prefix + "_" + message_name_suffix
             message = translated_message.firstChild.data.strip()
