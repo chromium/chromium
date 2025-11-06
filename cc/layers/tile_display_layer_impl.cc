@@ -239,6 +239,9 @@ void TileDisplayLayerImpl::AppendQuadsSpecialization(
             width =
                 DebugColors::BelowHighResTileBorderWidth(device_scale_factor);
           }
+        } else if (iter->is_oom()) {
+          color = DebugColors::OOMTileBorderColor();
+          width = DebugColors::OOMTileBorderWidth(device_scale_factor);
         } else {
           NOTREACHED();
         }
@@ -309,6 +312,8 @@ void TileDisplayLayerImpl::AppendQuadsSpecialization(
               offset_visible_geometry_rect, *color,
               !layer_tree_impl()->settings().enable_edge_anti_aliasing);
         }
+      } else if (iter->is_oom()) {
+        // Keep `has_draw_quad` false to end up checkerboarding below.
       }
     }
     if (!has_draw_quad) {

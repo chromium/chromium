@@ -506,6 +506,53 @@ TEST_F(TileDisplayLayerImplTest, MissingTileResultsInCheckerBoardQuad) {
       raw_layer->safe_opaque_background_color());
 }
 
+TEST_F(TileDisplayLayerImplTest, OomTileResultsInSolidColorQuad) {
+  constexpr gfx::Size kLayerBounds(1300, 1900);
+  constexpr gfx::Rect kLayerRect(kLayerBounds);
+  constexpr float kOpacity = 1.0;
+
+  auto layer = std::make_unique<TileDisplayLayerImpl>(
+      CHECK_DEREF(host_impl()->active_tree()), /*id=*/42);
+  auto* raw_layer = layer.get();
+  host_impl()->active_tree()->AddLayer(std::move(layer));
+
+  // For the production code to actually append a quad, the layer must have
+  // non-zero size and not be completely transparent.
+  raw_layer->SetBounds(kLayerBounds);
+  raw_layer->SetRecordedBounds(kLayerRect);
+  raw_layer->draw_properties().visible_layer_rect = kLayerRect;
+  raw_layer->draw_properties().opacity = kOpacity;
+
+  // Add a tiling with an OOM tile.
+  auto& tiling = raw_layer->GetOrCreateTilingFromScaleKey(1.0);
+  tiling.SetTileSize(kLayerBounds);
+  tiling.SetTilingRect(kLayerRect);
+  tiling.SetTileContents(
+      TileIndex{0, 0},
+      TileDisplayLayerImpl::NoContents{mojom::MissingTileReason::kOutOfMemory},
+      /*update_damage=*/true);
+
+  SetupRootProperties(host_impl()->active_tree()->root_layer());
+
+  auto render_pass = viz::CompositorRenderPass::Create();
+  AppendQuadsData data;
+  raw_layer->AppendQuads(AppendQuadsContext{DRAW_MODE_SOFTWARE, {}, false},
+                         render_pass.get(), &data);
+
+  // Verify that the layer appended a solid color quad for the OOM tile.
+  EXPECT_EQ(render_pass->quad_list.size(), 1u);
+  EXPECT_EQ(render_pass->quad_list.front()->rect, kLayerRect);
+  EXPECT_EQ(render_pass->quad_list.front()->visible_rect, kLayerRect);
+  EXPECT_EQ(render_pass->quad_list.front()->shared_quad_state->opacity,
+            kOpacity);
+  EXPECT_EQ(render_pass->quad_list.front()->material,
+            viz::DrawQuad::Material::kSolidColor);
+  EXPECT_EQ(
+      viz::SolidColorDrawQuad::MaterialCast(render_pass->quad_list.front())
+          ->color,
+      raw_layer->safe_opaque_background_color());
+}
+
 // Verifies that the layer appends quads from the highest-resolution tiling
 // when multiple tilings are available.
 TEST_F(TileDisplayLayerImplTest, AppendsQuadsFromHighestResolutionTilingByDefault) {
@@ -1065,6 +1112,106 @@ TEST_F(TileDisplayLayerImplTest,
   ++it;
   EXPECT_EQ((*it)->material, viz::DrawQuad::Material::kTiledContent);
   EXPECT_EQ(viz::TileDrawQuad::MaterialCast(*it)->resource_id, resource_id);
+}
+
+// Verifies that AppendQuads() appends debug borders for an OOM tile when debug
+// borders are enabled.
+TEST_F(TileDisplayLayerImplTest, AppendQuadsAppendsDebugBordersForOomTile) {
+  // Enable debug borders.
+  LayerTreeDebugState debug_state;
+  debug_state.show_debug_borders.set(DebugBorderType::LAYER);
+  host_impl()->SetDebugState(debug_state);
+
+  // Set up the layer.
+  constexpr gfx::Size kLayerBounds(100, 100);
+  constexpr gfx::Rect kLayerRect(kLayerBounds);
+  auto layer = std::make_unique<TileDisplayLayerImpl>(
+      CHECK_DEREF(host_impl()->active_tree()), /*id=*/42);
+  auto* raw_layer = layer.get();
+  host_impl()->active_tree()->AddLayer(std::move(layer));
+  raw_layer->SetBounds(kLayerBounds);
+  raw_layer->SetRecordedBounds(kLayerRect);
+  raw_layer->draw_properties().visible_layer_rect = kLayerRect;
+  raw_layer->draw_properties().opacity = 1.0f;
+
+  // Add a tiling with an OOM tile.
+  auto& tiling = raw_layer->GetOrCreateTilingFromScaleKey(1.0);
+  tiling.SetTileSize(kLayerBounds);
+  tiling.SetTilingRect(kLayerRect);
+  tiling.SetTileContents(
+      TileIndex{0, 0},
+      TileDisplayLayerImpl::NoContents{mojom::MissingTileReason::kOutOfMemory},
+      /*update_damage=*/true);
+
+  SetupRootProperties(host_impl()->active_tree()->root_layer());
+
+  // Append quads.
+  auto render_pass = viz::CompositorRenderPass::Create();
+  AppendQuadsData data;
+  raw_layer->AppendQuads(AppendQuadsContext{DRAW_MODE_SOFTWARE, {}, false},
+                         render_pass.get(), &data);
+
+  // Verify that a layer debug border, an OOM tile debug border, and a solid
+  // color quad were appended.
+  ASSERT_EQ(render_pass->quad_list.size(), 3u);
+  auto it = render_pass->quad_list.begin();
+
+  EXPECT_EQ((*it)->material, viz::DrawQuad::Material::kDebugBorder);
+  EXPECT_EQ(viz::DebugBorderDrawQuad::MaterialCast(*it)->color,
+            DebugColors::ContainerLayerBorderColor());
+  ++it;
+  EXPECT_EQ((*it)->material, viz::DrawQuad::Material::kDebugBorder);
+  EXPECT_EQ(viz::DebugBorderDrawQuad::MaterialCast(*it)->color,
+            DebugColors::OOMTileBorderColor());
+  ++it;
+  EXPECT_EQ((*it)->material, viz::DrawQuad::Material::kSolidColor);
+  EXPECT_EQ(viz::SolidColorDrawQuad::MaterialCast(*it)->color,
+            raw_layer->safe_opaque_background_color());
+}
+
+TEST_F(TileDisplayLayerImplTest, TileResourceIsOOM) {
+  auto layer = std::make_unique<TileDisplayLayerImpl>(
+      CHECK_DEREF(host_impl()->active_tree()), /*id=*/42);
+  auto* raw_layer = layer.get();
+  host_impl()->active_tree()->AddLayer(std::move(layer));
+
+  // Missing tile due to OOM.
+  TileDisplayLayerImpl::TileContents oom_contents{
+      TileDisplayLayerImpl::NoContents(mojom::MissingTileReason::kOutOfMemory)};
+  TileDisplayLayerImpl::Tile oom_tile(*raw_layer, oom_contents);
+  EXPECT_TRUE(oom_tile.is_oom());
+
+  // OOM tiles should be regarded as ready to draw.
+  EXPECT_TRUE(oom_tile.IsReadyToDraw());
+
+  // Missing tile due to resource not being ready.
+  TileDisplayLayerImpl::TileContents resource_not_ready_contents{
+      TileDisplayLayerImpl::NoContents(
+          mojom::MissingTileReason::kResourceNotReady)};
+  TileDisplayLayerImpl::Tile not_oom_tile(*raw_layer,
+                                          resource_not_ready_contents);
+  EXPECT_FALSE(not_oom_tile.is_oom());
+
+  // Non-OOM missing tiles should not be regarded as ready to draw.
+  EXPECT_FALSE(not_oom_tile.IsReadyToDraw());
+
+  // Solid color tile.
+  TileDisplayLayerImpl::TileContents color_contents(SkColors::kRed);
+  TileDisplayLayerImpl::Tile color_tile(*raw_layer, color_contents);
+  EXPECT_FALSE(color_tile.is_oom());
+  EXPECT_TRUE(color_tile.IsReadyToDraw());
+
+  // Resource tile.
+  auto resource_id = host_impl()->resource_provider()->ImportResource(
+      viz::TransferableResource::Make(
+          gpu::ClientSharedImage::CreateForTesting(),
+          viz::TransferableResource::ResourceSource::kTest, gpu::SyncToken()),
+      base::DoNothing());
+  TileDisplayLayerImpl::TileContents resource_contents =
+      TileDisplayLayerImpl::TileResource(resource_id, gfx::Size(1, 1));
+  TileDisplayLayerImpl::Tile resource_tile(*raw_layer, resource_contents);
+  EXPECT_FALSE(resource_tile.is_oom());
+  EXPECT_TRUE(resource_tile.IsReadyToDraw());
 }
 
 }  // namespace cc

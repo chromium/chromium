@@ -69,8 +69,16 @@ class CC_EXPORT TileDisplayLayerImpl : public TileBasedLayerImpl {
       return std::nullopt;
     }
 
+    bool is_oom() const {
+      if (std::holds_alternative<NoContents>(contents_)) {
+        return std::get<NoContents>(contents_).reason ==
+               mojom::MissingTileReason::kOutOfMemory;
+      }
+      return false;
+    }
+
     bool IsReadyToDraw() const {
-      return !std::holds_alternative<NoContents>(contents_);
+      return !std::holds_alternative<NoContents>(contents_) || is_oom();
     }
 
    private:
