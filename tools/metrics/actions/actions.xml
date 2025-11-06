@@ -42635,6 +42635,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Signin_Impression_FromEnterpriseDialogAfterSigninInterception"
+    not_user_triggered="true">
+  <owner>chrome-signin-desktop-team@google.com</owner>
+  <owner>ydago@chromium.org</owner>
+  <description>
+    Recorded when showing the enterprise dialog after signin interception.
+  </description>
+</action>
+
 <action name="Signin_Impression_FromExtensionInstallBubble"
     not_user_triggered="true">
   <owner>gogerald@chromium.org</owner>
@@ -43447,6 +43456,15 @@ should be able to be added at any place in this file.
   <description>
     Recorded on sign in start from access point
     signin_metrics::AccessPoint::kDevicesPage.
+  </description>
+</action>
+
+<action name="Signin_Signin_FromEnterpriseDialogAfterSigninInterception">
+  <owner>chrome-signin-desktop-team@google.com</owner>
+  <owner>ydago@chromium.org</owner>
+  <description>
+    Recorded on sign in start from access point
+    signin_metrics::AccessPoint::kEnterpriseDialogAfterSigninInterception.
   </description>
 </action>
 

@@ -305,10 +305,13 @@ enum class AccessPoint : int {
   kEnterpriseManagementDisclaimerAfterSignin = 88,
   // New Tab Page sign-in feature promotion.
   kNtpFeaturePromo = 89,
+  // Access point for the enterprise interception that result in profile
+  // separation.
+  kEnterpriseDialogAfterSigninInterception = 90,
   // Add values above this line with a corresponding label to the
   // "SigninAccessPoint" enum in
   // tools/metrics/histograms/metadata/signin/enums.xml.
-  kMaxValue = kNtpFeaturePromo,  // This must be last.
+  kMaxValue = kEnterpriseDialogAfterSigninInterception,  // This must be last.
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/signin/enums.xml)
 

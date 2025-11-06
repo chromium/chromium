@@ -1435,7 +1435,7 @@ void DiceWebSigninInterceptor::OnEnterpriseProfileCreationResult(
     if (GetPrimaryAccountInfo(identity_manager_).IsEmpty()) {
       identity_manager_->GetPrimaryAccountMutator()->SetPrimaryAccount(
           account_info.account_id, signin::ConsentLevel::kSignin,
-          signin_metrics::AccessPoint::kChromeSigninInterceptBubble);
+          signin_metrics::AccessPoint::kEnterpriseDialogAfterSigninInterception);
     } else {
       DCHECK_EQ(GetPrimaryAccountInfo(identity_manager_).account_id,
                 account_info.account_id);

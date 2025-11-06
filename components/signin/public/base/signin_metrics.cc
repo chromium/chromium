@@ -661,6 +661,10 @@ void RecordSigninUserActionForAccessPoint(AccessPoint access_point) {
       base::RecordAction(
           base::UserMetricsAction("Signin_Signin_FromNtpFeaturePromo"));
       break;
+    case AccessPoint::kEnterpriseDialogAfterSigninInterception:
+      base::RecordAction(base::UserMetricsAction(
+          "Signin_Signin_FromEnterpriseDialogAfterSigninInterception"));
+      break;
   }
 }
 
@@ -795,6 +799,10 @@ void RecordSigninImpressionUserActionForAccessPoint(AccessPoint access_point) {
     case AccessPoint::kUserManagerWithPrefilledEmail:
       base::RecordAction(base::UserMetricsAction(
           "Signin_Impression_FromUserManagerWithPrefilledEmail"));
+      break;
+    case AccessPoint::kEnterpriseDialogAfterSigninInterception:
+      base::RecordAction(base::UserMetricsAction(
+          "Signin_Impression_FromEnterpriseDialogAfterSigninInterception"));
       break;
     case AccessPoint::kEnterpriseSignoutCoordinator:
     case AccessPoint::kExtensions:
