@@ -83,6 +83,18 @@ class COMPONENT_EXPORT(OZONE_BASE) GLOzone {
       const gfx::ColorSpace& color_space,
       GLenum target,
       GLuint texture_id) = 0;
+  std::unique_ptr<NativePixmapGLBinding> ImportNativePixmap(
+      scoped_refptr<gfx::NativePixmap> pixmap,
+      viz::SharedImageFormat plane_format,
+      gfx::BufferPlane plane,
+      gfx::Size plane_size,
+      const gfx::ColorSpace& color_space,
+      GLenum target,
+      GLuint texture_id) {
+    return ImportNativePixmap(
+        pixmap, viz::SharedImageFormatToBufferFormat(plane_format), plane,
+        plane_size, color_space, target, texture_id);
+  }
 
   // Returns information about the GL window system binding implementation (eg.
   // EGL, GLX, WGL). Returns true if the information was retrieved successfully.
