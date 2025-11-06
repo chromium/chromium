@@ -190,7 +190,7 @@ public class PinnedTabStripItemContextMenuCoordinator
         return new ListItemBuilder()
                 .withTitleRes(titleRes)
                 .withMenuId(menuId)
-                .withStartIconRes(R.drawable.ic_keep_24dp)
+                .withStartIconRes(R.drawable.ic_keep_off_24dp)
                 .withIsIncognito(tab.isIncognitoBranded())
                 .build();
     }

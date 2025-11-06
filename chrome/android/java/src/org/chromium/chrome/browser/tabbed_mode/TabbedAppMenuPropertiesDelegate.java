@@ -584,11 +584,12 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         boolean isPinned = currentTab.getIsPinned();
         int menuId = isPinned ? R.id.unpin_tab_menu_id : R.id.pin_tab_menu_id;
         int titleId = isPinned ? R.string.menu_unpin_tab : R.string.menu_pin_tab;
+        int iconId = isPinned ? R.drawable.ic_keep_off_24dp : R.drawable.ic_keep_24dp;
 
         return new MVCListAdapter.ListItem(
                 AppMenuHandler.AppMenuItemType.STANDARD,
                 buildModelForStandardMenuItem(
-                        menuId, titleId, shouldShowIconBeforeItem() ? R.drawable.ic_keep_24dp : 0));
+                        menuId, titleId, shouldShowIconBeforeItem() ? iconId : 0));
     }
 
     private MVCListAdapter.ListItem buildNewWindowItem() {
