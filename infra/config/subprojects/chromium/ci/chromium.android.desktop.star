@@ -322,9 +322,7 @@ ci.thin_tester(
                 ],
             ),
             "media_unittests": targets.mixin(
-                # TODO(crbug.com/440128352): Promote out of experiment.
                 ci_only = True,
-                experiment_percentage = 100,
             ),
         },
     ),
