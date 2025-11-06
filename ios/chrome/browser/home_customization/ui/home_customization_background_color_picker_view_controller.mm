@@ -100,6 +100,9 @@ UIColor* DynamicNamedColor(NSString* lightName, NSString* darkName) {
 
   // The number of times a color option is selected.
   int _colorClickCount;
+
+  //  Slider used in the footer to adjust the custom background color.
+  RainbowSlider* _customColorSlider;
 }
 
 @end
@@ -137,6 +140,13 @@ UIColor* DynamicNamedColor(NSString* lightName, NSString* darkName) {
 
   if (IsNTPBackgroundColorSliderEnabled()) {
     layout.footerReferenceSize = CGSizeMake(self.view.frame.size.width, 50.0);
+
+    _customColorSlider = [[RainbowSlider alloc] init];
+    _customColorSlider.translatesAutoresizingMaskIntoConstraints = NO;
+    _customColorSlider.color = _customColorConfiguration.backgroundColor;
+    [_customColorSlider addTarget:self
+                           action:@selector(customColorChanged:)
+                 forControlEvents:UIControlEventValueChanged];
 
     _customColorCellRegistration = [UICollectionViewCellRegistration
         registrationWithCellClass:[HomeCustomizationCustomColorCell class]
@@ -404,12 +414,6 @@ UIColor* DynamicNamedColor(NSString* lightName, NSString* darkName) {
 
 // Configures the `UICollectionReusableView`.
 - (void)configureFooterView:(UICollectionReusableView*)footerView {
-  RainbowSlider* customColorSlider = [[RainbowSlider alloc] init];
-  customColorSlider.translatesAutoresizingMaskIntoConstraints = NO;
-  customColorSlider.color = _customColorConfiguration.backgroundColor;
-  [customColorSlider addTarget:self
-                        action:@selector(customColorChanged:)
-              forControlEvents:UIControlEventValueChanged];
   NSIndexPath* selectedIndexPath =
       [_collectionView indexPathsForSelectedItems].firstObject;
   BOOL isCustomColorSelected =
@@ -417,13 +421,13 @@ UIColor* DynamicNamedColor(NSString* lightName, NSString* darkName) {
        [self collectionView:_collectionView numberOfItemsInSection:0] - 1);
   footerView.hidden = !isCustomColorSelected;
 
-  [footerView addSubview:customColorSlider];
+  [footerView addSubview:_customColorSlider];
 
   [NSLayoutConstraint activateConstraints:@[
-    [customColorSlider.leadingAnchor
+    [_customColorSlider.leadingAnchor
         constraintEqualToAnchor:footerView.leadingAnchor
                        constant:kFooterInsetSides],
-    [customColorSlider.trailingAnchor
+    [_customColorSlider.trailingAnchor
         constraintEqualToAnchor:footerView.trailingAnchor
                        constant:-kFooterInsetSides],
   ]];
