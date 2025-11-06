@@ -3170,6 +3170,124 @@ suite('NewTabPageRealboxTest', () => {
           'parentFocus should be true when input is focused after having been' +
               ' blurred.');
     });
+
+    test('pasting files adds them to contextual entrypoint', async () => {
+      loadTimeData.overrideValues({composeboxFileMaxCount: 2});
+      realbox = await createAndAppendRealbox({ntpRealboxNextEnabled: true});
+      let passedFileList: FileList|null = null;
+      realbox.$.context.addFiles = (files: FileList|null) => {
+        passedFileList = files;
+      };
+
+      const pngFile = new File([''], 'pasted.png', {type: 'image/png'});
+      const pdfFile = new File([''], 'pasted.pdf', {type: 'application/pdf'});
+
+      const dataTransfer = new DataTransfer();
+      dataTransfer.items.add(pngFile);
+      dataTransfer.items.add(pdfFile);
+      const pasteEvent = new ClipboardEvent('paste', {
+        clipboardData: dataTransfer,
+        bubbles: true,
+        cancelable: true,
+        composed: true,
+      });
+
+      realbox.$.input.dispatchEvent(pasteEvent);
+      await microtasksFinished();
+
+      assertNotEquals(null, passedFileList);
+      assertEquals(2, passedFileList!.length);
+      const file1 = passedFileList!.item(0);
+      assertNotEquals(null, file1);
+      assertEquals('pasted.png', file1!.name);
+      assertEquals('image/png', file1!.type);
+      const file2 = passedFileList!.item(1);
+      assertNotEquals(null, file2);
+      assertEquals('pasted.pdf', file2!.name);
+      assertEquals('application/pdf', file2!.type);
+      assertFalse((realbox as any).pastedInInput_);
+    });
+
+    test('pasting too many files does not add them', async () => {
+      loadTimeData.overrideValues({
+        composeboxFileMaxCount: 1,
+      });
+      // Re-create realbox to pick up new loadTimeData.
+      realbox = await createAndAppendRealbox({ntpRealboxNextEnabled: true});
+
+      let errorMessage: string|null = null;
+      realbox.$.errorScrim.setErrorMessage = (message: string) => {
+        errorMessage = message;
+      };
+
+      const pngFile1 = new File([''], 'pasted1.png', {type: 'image/png'});
+      const pngFile2 = new File([''], 'pasted2.png', {type: 'image/png'});
+
+      const dataTransfer = new DataTransfer();
+      dataTransfer.items.add(pngFile1);
+      dataTransfer.items.add(pngFile2);
+      const pasteEvent = new ClipboardEvent('paste', {
+        clipboardData: dataTransfer,
+        bubbles: true,
+        cancelable: true,
+        composed: true,
+      });
+
+      realbox.$.input.dispatchEvent(pasteEvent);
+      await microtasksFinished();
+
+      assertTrue(pasteEvent.defaultPrevented);
+      assertNull(errorMessage);
+      assertFalse((realbox.$.context as any).showFileCarousel_);
+      assertFalse((realbox as any).pastedInInput_);
+    });
+
+    test('pasting unsupported files shows error', async () => {
+      let errorMessage: string|null = null;
+      realbox.$.errorScrim.setErrorMessage = (message: string) => {
+        errorMessage = message;
+      };
+
+      const txtFile = new File([''], 'pasted.txt', {type: 'text/plain'});
+      const dataTransfer = new DataTransfer();
+      dataTransfer.items.add(txtFile);
+      const pasteEvent = new ClipboardEvent('paste', {
+        clipboardData: dataTransfer,
+        bubbles: true,
+        cancelable: true,
+        composed: true,
+      });
+
+      realbox.$.input.dispatchEvent(pasteEvent);
+      await microtasksFinished();
+
+      assertTrue(pasteEvent.defaultPrevented);
+      assertNotEquals(null, errorMessage);
+      assertFalse((realbox as any).pastedInInput_);
+    });
+
+    test('pasting text sets pastedInInput flag', async () => {
+      let addFilesCalled = false;
+      realbox.$.context.addFiles = (_files: FileList|null) => {
+        addFilesCalled = true;
+      };
+
+      const dataTransfer = new DataTransfer();
+      dataTransfer.setData('text/plain', 'hello');
+      const pasteEvent = new ClipboardEvent('paste', {
+        clipboardData: dataTransfer,
+        bubbles: true,
+        cancelable: true,
+        composed: true,
+      });
+
+      realbox.$.input.dispatchEvent(pasteEvent);
+      await microtasksFinished();
+
+      assertFalse(pasteEvent.defaultPrevented);
+      assertFalse(addFilesCalled);
+      assertTrue((realbox as any).pastedInInput_);
+    });
   });
 });
 
