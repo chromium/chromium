@@ -39,6 +39,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabActionListener;
@@ -247,6 +248,7 @@ public class PinnedTabStripItemViewTest {
     @Test
     @SmallTest
     @Feature({"RenderTest"})
+    @DisabledTest(message = "https://crbug.com/456490811")
     public void testRenderView() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -261,6 +263,7 @@ public class PinnedTabStripItemViewTest {
     @Test
     @SmallTest
     @Feature({"RenderTest"})
+    @DisabledTest(message = "https://crbug.com/456503160")
     public void testRenderView_NotSelected() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -275,6 +278,7 @@ public class PinnedTabStripItemViewTest {
     @Test
     @SmallTest
     @Feature({"RenderTest"})
+    @DisabledTest(message = "https://crbug.com/456499455")
     public void testRenderView_Incognito() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
