@@ -395,11 +395,17 @@ extern const char kGeminiCrossTabDescription[];
 extern const char kGeminiFullChatHistoryName[];
 extern const char kGeminiFullChatHistoryDescription[];
 
+extern const char kGeminiImmediateOverlayName[];
+extern const char kGeminiImmediateOverlayDescription[];
+
 extern const char kGeminiLatencyImprovementName[];
 extern const char kGeminiLatencyImprovementDescription[];
 
 extern const char kGeminiLoadingStateRedesignName[];
 extern const char kGeminiLoadingStateRedesignDescription[];
+
+extern const char kGeminiNavigationPromoName[];
+extern const char kGeminiNavigationPromoDescription[];
 
 extern const char kGeminiOnboardingCardsName[];
 extern const char kGeminiOnboardingCardsDescription[];

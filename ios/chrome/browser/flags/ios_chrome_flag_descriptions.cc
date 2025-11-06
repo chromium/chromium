@@ -665,6 +665,10 @@ const char kGeminiFullChatHistoryName[] = "GeminiFullChatHistory";
 const char kGeminiFullChatHistoryDescription[] =
     "Enables the full chat history being shown in the floaty.";
 
+const char kGeminiImmediateOverlayName[] = "GeminiImmediateOverlay";
+const char kGeminiImmediateOverlayDescription[] =
+    "Enables immediate access to Gemini in the page tools menu.";
+
 const char kGeminiLatencyImprovementName[] = "GeminiLatencyImprovement";
 const char kGeminiLatencyImprovementDescription[] =
     "Enables the latency improvements for Gemini.";
@@ -672,6 +676,10 @@ const char kGeminiLatencyImprovementDescription[] =
 const char kGeminiLoadingStateRedesignName[] = "GeminiLoadingStateRedesign";
 const char kGeminiLoadingStateRedesignDescription[] =
     "Enables the redesigned UI for the floaty's loading state.";
+
+const char kGeminiNavigationPromoName[] = "GeminiNavigationPromo";
+const char kGeminiNavigationPromoDescription[] =
+    "Enables the automatic promo for Gemini on navigation.";
 
 const char kGeminiOnboardingCardsName[] = "GeminiOnboardingCards";
 const char kGeminiOnboardingCardsDescription[] =

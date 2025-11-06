@@ -2895,6 +2895,12 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
     {"composebox-ios", flag_descriptions::kComposeboxIOSName,
      flag_descriptions::kComposeboxIOSDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kComposeboxIOS)},
+    {"gemini-immediate-overlay", flag_descriptions::kGeminiImmediateOverlayName,
+     flag_descriptions::kGeminiImmediateOverlayDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kGeminiImmediateOverlay)},
+    {"gemini-navigation-promo", flag_descriptions::kGeminiNavigationPromoName,
+     flag_descriptions::kGeminiNavigationPromoDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kGeminiNavigationPromo)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

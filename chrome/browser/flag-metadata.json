@@ -5424,12 +5424,22 @@
     "expiry_milestone": 148
   },
   {
+    "name": "gemini-immediate-overlay",
+    "owners": [ "adamta@google.com", "bling-alchemy-eng@google.com" ],
+    "expiry_milestone": 148
+  },
+  {
     "name": "gemini-latency-improvement",
     "owners": [ "adamta@google.com", "bling-alchemy-eng@google.com" ],
     "expiry_milestone": 148
   },
   {
     "name": "gemini-loading-state-redesign",
+    "owners": [ "adamta@google.com", "bling-alchemy-eng@google.com" ],
+    "expiry_milestone": 148
+  },
+  {
+    "name": "gemini-navigation-promo",
     "owners": [ "adamta@google.com", "bling-alchemy-eng@google.com" ],
     "expiry_milestone": 148
   },
