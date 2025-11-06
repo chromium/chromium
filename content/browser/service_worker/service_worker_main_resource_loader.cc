@@ -36,6 +36,7 @@
 #include "content/common/fetch/fetch_request_type_converters.h"
 #include "content/common/service_worker/race_network_request_url_loader_client.h"
 #include "content/common/service_worker/service_worker_resource_loader.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
@@ -1049,7 +1050,15 @@ bool ServiceWorkerMainResourceLoader::MaybeStartSyntheticNetworkRequest(
       // With dry-run mode, update `is_synthetic_response_used_` here. This will
       // update the actual response head through `ResponseHeadUpdateParams` and
       // pass the information to the renderer.
-      is_synthetic_response_used_ = true;
+      //
+      // TODO(crbug.com/456965135): This is experiment only restriction. Remove
+      // this after the experiment. In the OTR mode, don't set this flag since
+      // it let the renderer expects CSPs are inserted via <meta> tag, not from
+      // the header. The OTR profile doesn't send the signal of synthetic
+      // response feature to the server.
+      if (!context_wrapper->browser_context()->IsOffTheRecord()) {
+        is_synthetic_response_used_ = true;
+      }
       RecordSyntheticResponseEligibility(
           SyntheticResponseEligibility::kEligible);
     } else {
