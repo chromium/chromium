@@ -167,6 +167,10 @@ public class SettingsSearchCoordinator {
         }
     }
 
+    /**
+     * Initializes the in-memory search index for all settings. It uses the providers found in
+     * {@link SearchIndexProviderRegistry.ALL_PROVIDERS}.
+     */
     @Initializer
     @EnsuresNonNull("mIndexData")
     private void initIndex() {
@@ -175,7 +179,18 @@ public class SettingsSearchCoordinator {
         } else {
             if (!mIndexData.needsIndexing()) return;
         }
-        mIndexData.initIndex(mActivity);
+
+        // This is done to avoid duplicate entries when parsing XML.
+        mIndexData.clear();
+
+        for (SearchIndexProvider provider : SearchIndexProviderRegistry.ALL_PROVIDERS) {
+            // This handles both the default "dumb" parsers and our custom "smart" override in
+            // MainSettings.
+            provider.initPreferenceXml(mActivity, mIndexData);
+            // This handles dynamic text updates (e.g., TabArchiveSettingsFragment) and code-only
+            // entries (e.g., AboutChromeSettings).
+            provider.updateDynamicPreferences(mActivity, mIndexData);
+        }
     }
 
     private void enterSearchState() {

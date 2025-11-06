@@ -1316,9 +1316,6 @@ if (is_android) {
       "src/org/chromium/chrome/browser/settings/SettingsActivityUnitTest.java",
       "src/org/chromium/chrome/browser/settings/SettingsEnumsTest.java",
       "src/org/chromium/chrome/browser/settings/SettingsNavigationImplTest.java",
-      "src/org/chromium/chrome/browser/settings/search/BaseSearchIndexProviderTest.java",
-      "src/org/chromium/chrome/browser/settings/search/PreferenceParserTest.java",
-      "src/org/chromium/chrome/browser/settings/search/SettingsIndexDataTest.java",
     ]
 
     deps = [
