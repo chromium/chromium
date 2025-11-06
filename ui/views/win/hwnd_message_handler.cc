@@ -820,7 +820,11 @@ void HWNDMessageHandler::Minimize() {
 }
 
 void HWNDMessageHandler::Restore() {
-  ExecuteSystemMenuCommand(SC_RESTORE);
+  if (IsFullscreen()) {
+    SetFullscreen(false, display::kInvalidDisplayId);
+  } else {
+    ExecuteSystemMenuCommand(SC_RESTORE);
+  }
 }
 
 void HWNDMessageHandler::Activate() {
