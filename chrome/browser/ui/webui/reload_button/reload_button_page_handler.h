@@ -41,9 +41,6 @@ class ReloadButtonPageHandler : public reload_button::mojom::PageHandler {
   void StopReload() override;
   void ShowContextMenu(int32_t offset_x, int32_t offset_y) override;
 
-  // TODO(crbug.com/448794588): Refactor MetricsReporterService instead.
-  void SetMetricsReporterForTesting(MetricsReporter* metrics_reporter);
-
  private:
   // Returns the MetricsReporter associated with `web_contents_` or nullptr.
   //
@@ -78,9 +75,6 @@ class ReloadButtonPageHandler : public reload_button::mojom::PageHandler {
   const raw_ptr<content::WebContents> web_contents_;
   // Not owned.
   const raw_ptr<CommandUpdater> command_updater_;
-
-  // TODO(crbug.com/448794588): Refactor MetricsReporterService instead.
-  raw_ptr<MetricsReporter> metrics_reporter_for_testing_ = nullptr;
 
   // Must be the last member.
   base::WeakPtrFactory<ReloadButtonPageHandler> weak_ptr_factory_{this};

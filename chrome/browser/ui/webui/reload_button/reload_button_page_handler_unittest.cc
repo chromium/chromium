@@ -82,11 +82,16 @@ class ReloadButtonPageHandlerTest : public testing::Test {
   void SetUp() override {
     web_contents_ =
         content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
-    MetricsReporterService::GetFromWebContents(web_contents_.get());
+    auto* service =
+        MetricsReporterService::GetFromWebContents(web_contents_.get());
+    auto mock_metrics_reporter =
+        std::make_unique<testing::NiceMock<MockMetricsReporter>>();
+    mock_metrics_reporter_ = mock_metrics_reporter.get();
+    service->SetMetricsReporterForTesting(std::move(mock_metrics_reporter));
+
     handler_ = std::make_unique<ReloadButtonPageHandler>(
         mojo::PendingReceiver<reload_button::mojom::PageHandler>(),
         page_.BindAndGetRemote(), web_contents_.get(), &mock_command_updater_);
-    handler_->SetMetricsReporterForTesting(&mock_metrics_reporter_);
   }
 
   void TearDown() override { handler_.reset(); }
@@ -98,14 +103,14 @@ class ReloadButtonPageHandlerTest : public testing::Test {
   testing::StrictMock<MockPage> page_;
   std::unique_ptr<content::WebContents> web_contents_;
   testing::NiceMock<MockCommandUpdater> mock_command_updater_;
-  testing::NiceMock<MockMetricsReporter> mock_metrics_reporter_;
+  raw_ptr<testing::NiceMock<MockMetricsReporter>> mock_metrics_reporter_;
   std::unique_ptr<ReloadButtonPageHandler> handler_;
 };
 
 // Tests that calling Reload(false) executes the IDC_RELOAD command.
 TEST_F(ReloadButtonPageHandlerTest, TestReload) {
   EXPECT_CALL(mock_command_updater_, ExecuteCommand(IDC_RELOAD, testing::_));
-  EXPECT_CALL(mock_metrics_reporter_, Mark(testing::_)).Times(1);
+  EXPECT_CALL(*mock_metrics_reporter_, Mark(testing::_)).Times(1);
   handler_->Reload(false);
 }
 

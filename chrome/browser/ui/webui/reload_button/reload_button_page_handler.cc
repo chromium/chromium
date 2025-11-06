@@ -59,17 +59,9 @@ ReloadButtonPageHandler::ReloadButtonPageHandler(
 
 ReloadButtonPageHandler::~ReloadButtonPageHandler() = default;
 
-void ReloadButtonPageHandler::SetMetricsReporterForTesting(
-    MetricsReporter* metrics_reporter) {
-  metrics_reporter_for_testing_ = metrics_reporter;
-}
-
 MetricsReporter* ReloadButtonPageHandler::GetMetricsReporter() {
-  if (metrics_reporter_for_testing_) {  // IN-TEST
-    return metrics_reporter_for_testing_;
-  }
-
-  auto* service = MetricsReporterService::GetFromWebContents(web_contents_);
+  MetricsReporterService* service =
+      MetricsReporterService::GetFromWebContents(web_contents_);
   return service ? service->metrics_reporter() : nullptr;
 }
 
