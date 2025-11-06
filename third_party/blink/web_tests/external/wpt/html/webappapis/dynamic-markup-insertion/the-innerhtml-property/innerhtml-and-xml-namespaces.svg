@@ -46,17 +46,17 @@
 
       test(() => {
         unprefixedContainer.innerHTML = "<e></e>";
-        assert_equals(prefixedContainer.firstChild.namespaceURI, SVG_NS);
+        assert_equals(unprefixedContainer.firstChild.namespaceURI, SVG_NS);
       }, "default namespace applies to children of default-namespaced element");
 
       test(() => {
         noDefaultNsContainer.innerHTML = "<e></e>";
-        assert_equals(prefixedContainer.firstChild.namespaceURI, null);
+        assert_equals(noDefaultNsContainer.firstChild.namespaceURI, null);
       }, "default namespace applies to children of non-namespaced element");
 
       test(() => {
         newDefaultNsContainer.innerHTML = "<e></e>";
-        assert_equals(prefixedContainer.firstChild.namespaceURI, "https://example.org/ns");
+        assert_equals(newDefaultNsContainer.firstChild.namespaceURI, "https://example.org/ns");
       }, "default namespace applies to children of namespaced element with new default namespace");
 
       test(() => {

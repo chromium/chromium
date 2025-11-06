@@ -1,8 +1,4 @@
 This is a testharness.js-based test.
-[FAIL] default namespace applies to children of non-namespaced element
-  assert_equals: expected (object) null but got (string) "http://www.w3.org/2000/svg"
-[FAIL] default namespace applies to children of namespaced element with new default namespace
-  assert_equals: expected "https://example.org/ns" but got "http://www.w3.org/2000/svg"
 [FAIL] unsetting default namespace works inside parse of fragment (on element)
   assert_equals: expected (object) null but got (string) "http://www.w3.org/2000/svg"
 [FAIL] unsetting default namespace works inside parse of fragment (on child of element)
