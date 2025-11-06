@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<body>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script>
+function createContainerNode(test, expectedLength) {
+  var div = document.createElement('div');
+  var oldChild = document.createElement('span');
+  div.appendChild(oldChild);
+  document.body.appendChild(div);
+  div.dispatchCount = 0;
+  div.addEventListener('DOMNodeInserted', () => {
+    assert_equals(div.childNodes.length, expectedLength);
+    if (++div.dispatchCount == 2)
+      test.done();
+  }, false);
+  return div;
+}
+
+function createFragment() {
+  var fragment = document.createDocumentFragment();
+  fragment.appendChild(document.createElement('span'));
+  fragment.appendChild(document.createElement('span'));
+  return fragment;
+}
+
+var test1 = async_test('appendChild: DOMNodeInserted event should be dispatched after all nodes in a DocumentFragment were inserted.');
+test1.step(() => {
+  createContainerNode(test1, 3).appendChild(createFragment());
+});
+
+var test2 = async_test('insertBefore: DOMNodeInserted event should be dispatched after all nodes in a DocumentFragment were inserted.');
+test2.step(() => {
+  createContainerNode(test2, 3).insertBefore(createFragment(), null);
+});
+
+var test3 = async_test('replaceChild: DOMNodeInserted event should be dispatched after all nodes in a DocumentFragment were inserted.');
+test3.step(() => {
+  var div = createContainerNode(test3, 2);
+  div.replaceChild(createFragment(), div.firstChild);
+});
+
+test(() => {
+  var container = document.createElement('div');
+  var fragment = createFragment();
+  var fragmentLast = fragment.lastChild;
+  fragment.addEventListener('DOMNodeRemoved', () => {
+    fragmentLast.appendChild(container);
+  }, false);
+  assert_throws_dom('HierarchyRequestError', () => { container.appendChild(fragment); });
+}, 'appendChild: Reparenting in DOMNodeRemoved handler for a DocumentFragment should throw.');
+
+test(() => {
+  var container = document.createElement('div');
+  container.innerHTML = '<span></span>';
+  var fragment = createFragment();
+  var fragmentLast = fragment.lastChild;
+  fragment.addEventListener('DOMNodeRemoved', () => {
+    fragmentLast.appendChild(container);
+  }, false);
+  assert_throws_dom('HierarchyRequestError', () => { container.insertBefore(fragment, container.lastChild); });
+}, 'insertBefore: Reparenting in DOMNodeRemoved handler for a DocumentFragment should throw.');
+
+test(() => {
+  var container = document.createElement('div');
+  container.innerHTML = '<span></span>';
+  var fragment = createFragment();
+  var fragmentLast = fragment.lastChild;
+  fragment.addEventListener('DOMNodeRemoved', () => {
+    fragmentLast.appendChild(container);
+  }, false);
+  assert_throws_dom('HierarchyRequestError', () => { container.replaceChild(fragment, container.lastChild); });
+}, 'replaceChild: Reparenting in DOMNodeRemoved handler for a DocumentFragment should throw.');
+</script>
+</body>

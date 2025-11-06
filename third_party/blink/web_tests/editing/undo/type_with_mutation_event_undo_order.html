@@ -1,0 +1,121 @@
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
+<script>
+// Regression test for crbug.com/685975
+
+test(() => {
+  assert_not_equals(window.eventSender, undefined,
+                    'This test requires eventSender');
+
+  assert_selection(
+    [
+      '<div contenteditable id="div1">foo|</div>',
+      '<div contenteditable id="div2">bar</div>'
+    ].join(''),
+    (selection, testRunner) => {
+      const document = selection.document;
+      const div1 = document.getElementById('div1');
+      const div2 = document.getElementById('div2');
+      eventSender.keyDown('a');
+      div1.addEventListener('DOMSubtreeModified', () => {
+        div2.focus();
+        document.execCommand('selectAll');
+        document.execCommand('delete');
+      });
+      eventSender.keyDown('b');
+      document.execCommand('undo');
+    },
+    [
+      '<div contenteditable id="div1">fooab</div>',
+      '<div contenteditable id="div2">^bar|</div>'
+    ].join(''));
+}, 'Undo ordering maintained when inserting text to open typing triggers another command in event handler.');
+
+test(() => {
+  assert_not_equals(window.eventSender, undefined,
+                    'This test requires eventSender');
+
+  assert_selection(
+    [
+      '<div contenteditable id="div1">foo|</div>',
+      '<div contenteditable id="div2">bar</div>'
+    ].join(''),
+    (selection, testRunner) => {
+      const document = selection.document;
+      const div1 = document.getElementById('div1');
+      const div2 = document.getElementById('div2');
+      eventSender.keyDown('a');
+      div1.addEventListener('DOMSubtreeModified', () => {
+        div2.focus();
+        document.execCommand('selectAll');
+        document.execCommand('delete');
+      });
+      eventSender.keyDown('Enter');
+      document.execCommand('undo');
+    },
+    [
+      '<div contenteditable id="div1">fooa',
+        '<div><br></div>',
+      '</div>',
+      '<div contenteditable id="div2">^bar|</div>'
+    ].join(''));
+}, 'Undo ordering maintained when inserting paragraph separator to open typing triggers another command in event handler.');
+
+test(() => {
+  assert_not_equals(window.eventSender, undefined,
+                    'This test requires eventSender');
+
+  assert_selection(
+    [
+      '<div contenteditable id="div1"><blockquote type="cite">foo|</blockquote></div>',
+      '<div contenteditable id="div2">bar</div>'
+    ].join(''),
+    (selection, testRunner) => {
+      const document = selection.document;
+      const div1 = document.getElementById('div1');
+      const div2 = document.getElementById('div2');
+      eventSender.keyDown('a');
+      div1.addEventListener('DOMSubtreeModified', () => {
+        div2.focus();
+        document.execCommand('selectAll');
+        document.execCommand('delete');
+      });
+      testRunner.execCommand('insertNewLineInQuotedContent');
+      document.execCommand('undo');
+    },
+    [
+      '<div contenteditable id="div1"><blockquote type="cite">fooa</blockquote><br></div>',
+      '<div contenteditable id="div2">^bar|</div>'
+    ].join(''));
+}, 'Undo ordering maintained when inserting paragraph separator in quoted content to open typing triggers another command in event handler.');
+
+test(() => {
+  assert_not_equals(window.eventSender, undefined,
+                    'This test requires eventSender');
+
+  assert_selection(
+    [
+      '<div contenteditable id="div1">foo|</div>',
+      '<div contenteditable id="div2">bar</div>'
+    ].join(''),
+    (selection, testRunner) => {
+      const document = selection.document;
+      const div1 = document.getElementById('div1');
+      const div2 = document.getElementById('div2');
+      eventSender.keyDown('a');
+      div1.addEventListener('DOMSubtreeModified', () => {
+        div2.focus();
+        document.execCommand('selectAll');
+        document.execCommand('delete');
+      });
+      eventSender.keyDown('Enter', ['shiftKey']);
+      document.execCommand('undo');
+    },
+    [
+      '<div contenteditable id="div1">fooa<br><br></div>',
+      '<div contenteditable id="div2">^bar|</div>'
+    ].join(''));
+}, 'Undo ordering maintained when inserting linebreak to open typing triggers another command in event handler.');
+</script>

@@ -1,0 +1,37 @@
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
+<script>
+// Regression test for crbug.com/685975
+
+test(() => {
+  assert_not_equals(window.testRunner, undefined,
+                    'This test requires testRunner');
+
+  assert_selection(
+    [
+      '<div contenteditable id="div1">|</div>',
+      '<div contenteditable id="div2">bar</div>'
+    ].join(''),
+    (selection, testRunner) => {
+      const document = selection.document;
+      const source = document.getElementById('source');
+      const div1 = document.getElementById('div1');
+      const div2 = document.getElementById('div2');
+      div1.addEventListener('DOMNodeInserted', () => {
+        div2.focus();
+        document.execCommand('selectAll');
+        document.execCommand('delete');
+      });
+
+      selection.setClipboardData('foo');
+      testRunner.execCommand('paste'); // Must be user-initiated paste.
+      document.execCommand('undo');
+    },
+    [
+      '<div contenteditable id="div1">foo</div>',
+      '<div contenteditable id="div2">^bar|</div>'
+    ].join(''));
+}, 'Undo ordering maintained when pasting triggers another command with mutation event.');
+</script>

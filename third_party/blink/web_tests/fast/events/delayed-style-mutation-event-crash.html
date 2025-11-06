@@ -1,0 +1,11 @@
+<html>
+<div id="foo"><p id="bar">FAILURE</p></div>
+<script>
+if (window.testRunner)
+    testRunner.dumpAsText();
+var bar = document.getElementById("bar");
+var foo = document.getElementById("foo");
+bar.style.color = "green";
+foo.innerHTML = "SUCCESS (You didn't crash)";
+</script>
+</html>
