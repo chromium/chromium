@@ -1385,6 +1385,8 @@ source_set("browser") {
     "media/capture/desktop_streams_registry_impl.cc",
     "media/capture/desktop_streams_registry_impl.h",
     "permissions/permission_descriptor_util.cc",
+    "web_contents_based_canceller.cc",
+    "web_contents_based_canceller.h",
 
     # TODO(crbug.com/202736352): This is built even if enable_screen_capture is
     # false. Consider better separation of the screen capture and the other

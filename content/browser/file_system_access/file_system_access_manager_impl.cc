@@ -150,7 +150,7 @@ void ShowFilePickerOnUIThread(
   WebContents* web_contents = WebContents::FromRenderFrameHost(rfh);
   RenderFrameHost* outermost_rfh = rfh ? rfh->GetOutermostMainFrame() : nullptr;
 
-  if (!web_contents || !outermost_rfh) {
+  if (!web_contents || !outermost_rfh || !outermost_rfh->IsActive()) {
     std::move(callback).Run(file_system_access_error::FromStatus(
                                 FileSystemAccessStatus::kOperationAborted),
                             {});
@@ -248,7 +248,7 @@ void ShowFilePickerOnUIThread(
           ->browser()
           ->MaybeGetScopedPictureInPictureTucker(web_contents));
 
-  FileSystemChooser::CreateAndShow(web_contents, options, std::move(callback),
+  FileSystemChooser::CreateAndShow(rfh, options, std::move(callback),
                                    std::move(scoped_objects));
 }
 

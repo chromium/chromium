@@ -14,23 +14,23 @@
 #include "base/task/task_runner.h"
 #include "base/thread_annotations.h"
 #include "build/build_config.h"
+#include "content/browser/web_contents_based_canceller.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/file_system_access_permission_context.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 
 namespace content {
 
-class WebContents;
+class WebContentsBasedCanceller;
+class RenderFrameHost;
 
 // This is a ui::SelectFileDialog::Listener implementation that grants access to
 // the selected files to a specific renderer process on success, and then calls
 // a callback on a specific task runner. Furthermore the listener will delete
 // itself when any of its listener methods are called.
 // All of this class has to be called on the UI thread.
-class CONTENT_EXPORT FileSystemChooser : public ui::SelectFileDialog::Listener,
-                                         WebContentsObserver {
+class CONTENT_EXPORT FileSystemChooser : public ui::SelectFileDialog::Listener {
  public:
   using ResultCallback =
       base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr,
@@ -92,7 +92,7 @@ class CONTENT_EXPORT FileSystemChooser : public ui::SelectFileDialog::Listener,
     base::ScopedClosureRunner pip_tucker;
   };
 
-  static void CreateAndShow(WebContents* web_contents,
+  static void CreateAndShow(RenderFrameHost* render_frame_host,
                             const Options& options,
                             ResultCallback callback,
                             ScopedObjects scoped_objects);
@@ -106,7 +106,7 @@ class CONTENT_EXPORT FileSystemChooser : public ui::SelectFileDialog::Listener,
   FileSystemChooser(ui::SelectFileDialog::Type type,
                     ResultCallback callback,
                     ScopedObjects scoped_objects,
-                    WebContents* web_contents);
+                    std::unique_ptr<WebContentsBasedCanceller> canceller);
 
  private:
   ~FileSystemChooser() override;
@@ -117,8 +117,6 @@ class CONTENT_EXPORT FileSystemChooser : public ui::SelectFileDialog::Listener,
       const std::vector<ui::SelectedFileInfo>& files) override;
   void FileSelectionCanceled() override;
 
-  // WebContentsObserver
-  void OnVisibilityChanged(Visibility visibility) override;
   SEQUENCE_CHECKER(sequence_checker_);
 
   const ui::SelectFileDialog::Type type_;
@@ -126,6 +124,7 @@ class CONTENT_EXPORT FileSystemChooser : public ui::SelectFileDialog::Listener,
   ScopedObjects scoped_objects_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   scoped_refptr<ui::SelectFileDialog> dialog_;
+  std::unique_ptr<WebContentsBasedCanceller> canceller_;
 };
 
 }  // namespace content
