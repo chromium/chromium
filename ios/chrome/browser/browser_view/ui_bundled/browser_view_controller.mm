@@ -947,6 +947,14 @@ const CGFloat kMultilineOmniboxAnimationDuration = 0.3f;
     [weakSelf updateUIOnTraitChange:previousCollection];
   };
   [self registerForTraitChanges:traits withHandler:handler];
+
+  if (IsMultilineBrowserOmniboxEnabled()) {
+    [[NSNotificationCenter defaultCenter]
+        addObserver:self
+           selector:@selector(keyboardDidHide:)
+               name:UIKeyboardDidHideNotification
+             object:nil];
+  }
 }
 
 - (void)viewSafeAreaInsetsDidChange {
@@ -1222,6 +1230,13 @@ const CGFloat kMultilineOmniboxAnimationDuration = 0.3f;
 - (UIStatusBarStyle)preferredStatusBarStyle {
   return _isOffTheRecord ? UIStatusBarStyleLightContent
                          : UIStatusBarStyleDefault;
+}
+
+- (void)keyboardDidHide:(NSNotification*)notification {
+  if (!IsMultilineBrowserOmniboxEnabled()) {
+    return;
+  }
+  self.secondaryToolbarKeyboardHeight = 0;
 }
 
 #pragma mark - ** Private BVC Methods **
