@@ -27323,6 +27323,21 @@
             ]
         }
     ],
+    "WebRTC-Agc2SpeechLevelEstimatorExperimental": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled"
+                }
+            ]
+        }
+    ],
     "WebRTC-Audio-GainController2": [
         {
             "platforms": [
