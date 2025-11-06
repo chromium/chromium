@@ -28,8 +28,8 @@ found in the LICENSE file.
 
     <!-- Page zoom item dimensions -->
     <dimen name="symbol_padding">2dp</dimen>
-    <dimen name="zoom_percentage_menu_item_margin">6dp</dimen>
+    <dimen name="zoom_percentage_menu_item_margin">10dp</dimen>
     <dimen name="zoom_percentage_menu_item_width">42dp</dimen>
     <dimen name="zoom_menu_item_divider_width">1dp</dimen>
-    <dimen name="zoom_menu_item_divider_margin">7dp</dimen>
+    <dimen name="zoom_menu_item_divider_margin">10dp</dimen>
 </resources>
