@@ -2403,4 +2403,21 @@ void PermissionUmaUtil::RecordPermissionAutoRejectForActor(
       is_actor_operating);
 }
 
+// static
+void PermissionUmaUtil::RecordPostPromptSessionDuration(
+    ContentSettingsType permission,
+    base::TimeTicks request_first_display_time) {
+  if (request_first_display_time.is_null()) {
+    return;
+  }
+
+  base::TimeDelta duration =
+      base::TimeTicks::Now() - request_first_display_time;
+  base::UmaHistogramLongTimes100(
+      base::StrCat({"Permissions.PredictionService.",
+                    PermissionUtil::GetPermissionString(permission),
+                    ".PostPromptSessionDuration"}),
+      duration);
+}
+
 }  // namespace permissions

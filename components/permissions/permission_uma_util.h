@@ -946,6 +946,12 @@ class PermissionUmaUtil {
   static void RecordPermissionAutoRejectForActor(ContentSettingsType permission,
                                                  bool is_actor_operating);
 
+  // Records the duration of the browsing session after a permission prompt has
+  // been displayed.
+  static void RecordPostPromptSessionDuration(
+      ContentSettingsType permission,
+      base::TimeTicks request_first_display_time);
+
   // A scoped class that will check the current resolved content setting on
   // construction and report a revocation metric accordingly if the revocation
   // condition is met (from ALLOW to something else).

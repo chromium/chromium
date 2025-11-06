@@ -491,6 +491,8 @@ class PermissionRequestManager
   void OnTabAttached(tabs::TabInterface* tab_interface);
   void OnTabActiveChanged();
 
+  void RecordPostPromptSessionDuration();
+
   // Factory to be used to create views when needed.
   PermissionPrompt::Factory view_factory_;
 
@@ -567,6 +569,14 @@ class PermissionRequestManager
   // When the view for the current |requests_| has been first shown to the user,
   // or zero if not at all.
   base::Time current_request_first_display_time_;
+
+  // When the view for the current |requests_| has been first shown to the user,
+  // or zero if not at all, specifically for a NOTIFICATIONS request.
+  base::TimeTicks notification_request_first_display_time_;
+
+  // When the view for the current |requests_| has been first shown to the user,
+  // or zero if not at all, specifically for a GEOLOCATION request.
+  base::TimeTicks geolocation_request_first_display_time_;
 
   // Whether to use the normal or quiet UI to display the current permission
   // |requests_|, and whether to show warnings. This will be nullopt if we are

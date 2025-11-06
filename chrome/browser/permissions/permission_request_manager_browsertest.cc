@@ -1596,6 +1596,161 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(request_state.cancelled);
 }
 
+IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest,
+                       PostPromptSessionDuration_TabClose) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  base::HistogramTester histogram_tester;
+  const GURL kInitialURL =
+      embedded_test_server()->GetURL("/permissions/killswitch_tester.html");
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kInitialURL));
+  bubble_factory()->set_response_type(
+      permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ALL);
+
+  // Request notification permission.
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  permissions::PermissionRequestObserver observer(web_contents);
+  ASSERT_TRUE(content::ExecJs(web_contents, R"(
+              new Promise(resolve => {
+                Notification.requestPermission().then(function (permission) {
+                  resolve(permission);
+                });
+              })
+            )",
+                              content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  observer.Wait();
+  EXPECT_EQ(1, bubble_factory()->show_count());
+
+  // Close the tab.
+  browser()->tab_strip_model()->CloseWebContentsAt(
+      browser()->tab_strip_model()->active_index(),
+      TabCloseTypes::CLOSE_USER_GESTURE);
+
+  // Histogram should be recorded.
+  histogram_tester.ExpectTotalCount(
+      "Permissions.PredictionService.Notifications.PostPromptSessionDuration",
+      1);
+}
+
+IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest,
+                       PostPromptSessionDuration_TwoNavigations) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  base::HistogramTester histogram_tester;
+  const GURL kInitialURL =
+      embedded_test_server()->GetURL("/permissions/killswitch_tester.html");
+  const GURL kSecondURL = embedded_test_server()->GetURL("/title1.html");
+  const GURL kThirdURL = embedded_test_server()->GetURL("/title2.html");
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kInitialURL));
+  bubble_factory()->set_response_type(
+      permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ALL);
+
+  // Request notification permission.
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  permissions::PermissionRequestObserver observer(web_contents);
+  ASSERT_TRUE(content::ExecJs(web_contents, R"(
+              new Promise(resolve => {
+                Notification.requestPermission().then(function (permission) {
+                  resolve(permission);
+                });
+              })
+            )",
+                              content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  observer.Wait();
+  EXPECT_EQ(1, bubble_factory()->show_count());
+
+  // Navigate away.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kSecondURL));
+
+  // Histogram should be recorded.
+  histogram_tester.ExpectTotalCount(
+      "Permissions.PredictionService.Notifications.PostPromptSessionDuration",
+      1);
+
+  // Navigate again.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kThirdURL));
+
+  // Histogram should not be recorded again.
+  histogram_tester.ExpectTotalCount(
+      "Permissions.PredictionService.Notifications.PostPromptSessionDuration",
+      1);
+}
+
+IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest,
+                       PostPromptSessionDuration_TabClose_Geolocation) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  base::HistogramTester histogram_tester;
+  const GURL kInitialURL =
+      embedded_test_server()->GetURL("/permissions/killswitch_tester.html");
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kInitialURL));
+  bubble_factory()->set_response_type(
+      permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ALL);
+
+  // Request 'geolocation' permission.
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  auto request_supported = std::make_unique<permissions::MockPermissionRequest>(
+      kInitialURL, permissions::RequestType::kGeolocation,
+      permissions::PermissionRequestGestureType::GESTURE,
+      /*request_state=*/nullptr);
+  GetPermissionRequestManager()->AddRequest(web_contents->GetPrimaryMainFrame(),
+                                            std::move(request_supported));
+
+  bubble_factory()->WaitForPermissionBubble();
+
+  EXPECT_EQ(1, bubble_factory()->show_count());
+
+  // Close the tab.
+  browser()->tab_strip_model()->CloseWebContentsAt(
+      browser()->tab_strip_model()->active_index(),
+      TabCloseTypes::CLOSE_USER_GESTURE);
+
+  // Histogram should be recorded.
+  histogram_tester.ExpectTotalCount(
+      "Permissions.PredictionService.Geolocation.PostPromptSessionDuration", 1);
+}
+
+IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest,
+                       PostPromptSessionDuration_TwoNavigations_Geolocation) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  base::HistogramTester histogram_tester;
+  const GURL kInitialURL =
+      embedded_test_server()->GetURL("/permissions/killswitch_tester.html");
+  const GURL kSecondURL = embedded_test_server()->GetURL("/title1.html");
+  const GURL kThirdURL = embedded_test_server()->GetURL("/title2.html");
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kInitialURL));
+  bubble_factory()->set_response_type(
+      permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ALL);
+
+  // Request 'geolocation' permission.
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  auto request_supported = std::make_unique<permissions::MockPermissionRequest>(
+      kInitialURL, permissions::RequestType::kGeolocation,
+      permissions::PermissionRequestGestureType::GESTURE,
+      /*request_state=*/nullptr);
+  GetPermissionRequestManager()->AddRequest(web_contents->GetPrimaryMainFrame(),
+                                            std::move(request_supported));
+
+  bubble_factory()->WaitForPermissionBubble();
+
+  // Navigate away.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kSecondURL));
+
+  // Histogram should be recorded.
+  histogram_tester.ExpectTotalCount(
+      "Permissions.PredictionService.Geolocation.PostPromptSessionDuration", 1);
+
+  // Navigate again.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kThirdURL));
+
+  // Histogram should not be recorded again.
+  histogram_tester.ExpectTotalCount(
+      "Permissions.PredictionService.Geolocation.PostPromptSessionDuration", 1);
+}
+
 class PermissionRequestManagerApproximateLocationBrowserTest
     : public PermissionRequestManagerBrowserTestBase {
   base::test::ScopedFeatureList scoped_feature_list_ =

@@ -188,6 +188,8 @@ PermissionRequestManager::~PermissionRequestManager() {
   DCHECK(duplicate_requests_.empty());
   DCHECK(pending_permission_requests_.IsEmpty());
 
+  RecordPostPromptSessionDuration();
+
   for (Observer& observer : observer_list_) {
     observer.OnPermissionRequestManagerDestructed();
   }
@@ -474,6 +476,8 @@ void PermissionRequestManager::DidStartNavigation(
       navigation_handle->IsSameDocument()) {
     return;
   }
+
+  RecordPostPromptSessionDuration();
 
   // Cooldown lasts until the next user-initiated navigation, which is defined
   // as either a renderer-initiated navigation with a user gesture, or a
@@ -1024,6 +1028,16 @@ void PermissionRequestManager::ShowPrompt() {
 
   if (!current_request_already_displayed_) {
     PermissionUmaUtil::PermissionPromptShown(requests_);
+
+    if (!requests_.empty()) {
+      if (requests_[0]->GetContentSettingsType() ==
+          ContentSettingsType::NOTIFICATIONS) {
+        notification_request_first_display_time_ = base::TimeTicks::Now();
+      } else if (requests_[0]->GetContentSettingsType() ==
+                 ContentSettingsType::GEOLOCATION) {
+        geolocation_request_first_display_time_ = base::TimeTicks::Now();
+      }
+    }
 
     auto quiet_ui_reason = ReasonForUsingQuietUi();
     if (quiet_ui_reason) {
@@ -1792,6 +1806,19 @@ void PermissionRequestManager::OnTabActiveChanged() {
   } else if (current_request_ui_to_use_.has_value()) {
     ShowPrompt();
   }
+}
+
+void PermissionRequestManager::RecordPostPromptSessionDuration() {
+  PermissionUmaUtil::RecordPostPromptSessionDuration(
+      ContentSettingsType::NOTIFICATIONS,
+      notification_request_first_display_time_);
+
+  PermissionUmaUtil::RecordPostPromptSessionDuration(
+      ContentSettingsType::GEOLOCATION,
+      geolocation_request_first_display_time_);
+
+  notification_request_first_display_time_ = base::TimeTicks();
+  geolocation_request_first_display_time_ = base::TimeTicks();
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(PermissionRequestManager);
