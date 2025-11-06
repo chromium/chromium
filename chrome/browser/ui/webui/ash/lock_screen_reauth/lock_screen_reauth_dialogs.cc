@@ -142,15 +142,7 @@ void LockScreenStartReauthDialog::OnProfileInitialized(Profile* profile) {
   // initialized, because in `UpdateState` we assume that `profile_` can be used
   // as a browser context for the network dialog.
   network_state_scoped_observation_.Observe(network_state_informer_.get());
-  const NetworkStateInformer::State state = network_state_informer_->state();
-  // Show network or captive portal screen if needed.
-  // TODO(crbug.com/1237407): Handle other states in NetworkStateInformer
-  // properly.
-  if (state == NetworkStateInformer::OFFLINE) {
-    ShowLockScreenNetworkDialog();
-  } else if (state == NetworkStateInformer::CAPTIVE_PORTAL) {
-    ShowLockScreenCaptivePortalDialog();
-  }
+  UpdateState(NetworkError::ERROR_REASON_UPDATE);
 }
 
 // static
