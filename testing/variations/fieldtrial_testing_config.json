@@ -2480,6 +2480,24 @@
             ]
         }
     ],
+    "AutofillEnableCvcStorageIOS": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SyncAutofillWalletCredentialData",
+                        "kAutofillEnableCvcStorageAndFilling",
+                        "kAutofillEnableCvcStorageAndFillingEnhancement",
+                        "kAutofillEnableCvcStorageAndFillingStandaloneFormEnhancement"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillEnableExpirationDateImprovements": [
         {
             "platforms": [
