@@ -756,6 +756,7 @@ void OmniboxEditModel::SetInAiMode(bool ai_mode) {
     return;
   }
   in_ai_mode_ = ai_mode;
+  observers_.Notify(&Observer::OnContentsChanged);
   observers_.Notify(&Observer::OnAiModeChanged, in_ai_mode_);
 }
 

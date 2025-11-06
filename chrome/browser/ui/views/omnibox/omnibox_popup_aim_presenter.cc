@@ -12,9 +12,8 @@ OmniboxPopupAimPresenter::OmniboxPopupAimPresenter(
     LocationBarView* location_bar_view,
     OmniboxController* controller)
     : OmniboxPopupPresenterBase(location_bar_view) {
-  SetWebUIContent(GetUIContainer()->AddChildView(
-      std::make_unique<OmniboxAimPopupWebUIContent>(
-          this, this->location_bar_view(), controller)));
+  SetWebUIContent(std::make_unique<OmniboxAimPopupWebUIContent>(
+      this, this->location_bar_view(), controller));
 }
 
 OmniboxPopupAimPresenter::~OmniboxPopupAimPresenter() = default;

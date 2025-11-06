@@ -17,11 +17,10 @@ OmniboxPopupPresenter::OmniboxPopupPresenter(LocationBarView* location_bar_view,
     : OmniboxPopupPresenterBase(location_bar_view) {
   bool full_popup =
       base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopup);
-  SetWebUIContent(
-      GetUIContainer()->AddChildView(std::make_unique<OmniboxPopupWebUIContent>(
-          this, this->location_bar_view(), controller,
-          /*include_location_bar_cutout=*/!full_popup,
-          /*wants_focus=*/full_popup)));
+  SetWebUIContent(std::make_unique<OmniboxPopupWebUIContent>(
+      this, this->location_bar_view(), controller,
+      /*include_location_bar_cutout=*/!full_popup,
+      /*wants_focus=*/full_popup));
 }
 
 OmniboxPopupPresenter::~OmniboxPopupPresenter() = default;

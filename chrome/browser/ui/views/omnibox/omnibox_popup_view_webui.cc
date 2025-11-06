@@ -66,7 +66,8 @@ bool OmniboxPopupViewWebUI::IsOpen() const {
 void OmniboxPopupViewWebUI::InvalidateLine(size_t line) {}
 
 void OmniboxPopupViewWebUI::UpdatePopupAppearance() {
-  if (controller()->autocomplete_controller()->result().empty() ||
+  if (controller()->edit_model()->PopupInAiMode() ||
+      controller()->autocomplete_controller()->result().empty() ||
       omnibox_view_->IsImeShowingPopup()) {
     presenter_->Hide();
   } else {
