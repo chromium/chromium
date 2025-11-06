@@ -262,6 +262,25 @@ TEST_F(FrameViewAshTest, AvatarIcon) {
   EXPECT_FALSE(frame_view->GetAvatarIconViewForTest());
 }
 
+TEST_F(FrameViewAshTest, NonStandardFrame) {
+  FrameViewAshTestWidgetDelegate* delegate = new FrameViewAshTestWidgetDelegate;
+
+  views::Widget::InitParams params(
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW);
+  params.delegate = delegate;
+  params.parent = Shell::GetPrimaryRootWindow()->GetChildById(
+      desks_util::GetActiveDeskContainerId());
+  params.remove_standard_frame = true;
+
+  views::Widget widget;
+  widget.Init(std::move(params));
+  widget.Show();
+
+  EXPECT_FALSE(delegate->frame_view()->GetFrameEnabled());
+  EXPECT_FALSE(delegate->header_view()->should_paint());
+}
+
 // Tests that a window is minimized, toggling tablet mode doesn't trigger
 // caption button update (https://crbug.com/822890).
 TEST_F(FrameViewAshTest, ToggleTabletModeOnMinimizedWindow) {
