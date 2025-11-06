@@ -257,6 +257,10 @@ class PermissionRequestManager
     geolocation_request_first_display_time_ = time;
   }
 
+  void set_on_page_loaded_time_for_testing(base::TimeTicks time) {
+    on_page_loaded_time_ = time;
+  }
+
   std::optional<PermissionUiSelector::PredictionGrantLikelihood>
   prediction_grant_likelihood_for_testing() const {
     return prediction_grant_likelihood_;
@@ -587,6 +591,11 @@ class PermissionRequestManager
   // When the view for the current |requests_| has been first shown to the user,
   // or zero if not at all, specifically for a GEOLOCATION request.
   base::TimeTicks geolocation_request_first_display_time_;
+
+  // When the page was loaded, or zero if not at all.
+  // This is used to record the duration of the browsing session before a
+  // permission prompt was displayed.
+  base::TimeTicks on_page_loaded_time_;
 
   // Whether to use the normal or quiet UI to display the current permission
   // |requests_|, and whether to show warnings. This will be nullopt if we are

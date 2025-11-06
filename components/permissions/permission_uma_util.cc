@@ -2450,6 +2450,29 @@ void PermissionUmaUtil::RecordPermissionAutoRejectForActor(
 }
 
 // static
+void PermissionUmaUtil::RecordPrePromptSessionDuration(
+    ContentSettingsType permission,
+    base::TimeTicks request_first_display_time) {
+  if (request_first_display_time.is_null()) {
+    return;
+  }
+
+  base::TimeDelta duration =
+      base::TimeTicks::Now() - request_first_display_time;
+  std::string permission_string =
+      PermissionUtil::GetPermissionString(permission);
+
+  // Record finer-grained histograms for the first minute. 1 second
+  // granularity.
+  if (duration <= base::Minutes(1)) {
+    base::UmaHistogramCustomTimes(
+        base::StrCat({"Permissions.PredictionService.", permission_string,
+                      ".PrePromptSessionDuration1m"}),
+        duration, base::Milliseconds(0), base::Minutes(1), 60);
+  }
+}
+
+// static
 void PermissionUmaUtil::RecordPostPromptSessionDuration(
     ContentSettingsType permission,
     base::TimeTicks request_first_display_time) {

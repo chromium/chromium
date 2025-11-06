@@ -946,6 +946,12 @@ class PermissionUmaUtil {
   static void RecordPermissionAutoRejectForActor(ContentSettingsType permission,
                                                  bool is_actor_operating);
 
+  // Records the duration of the browsing session before a permission prompt
+  // was displayed.
+  static void RecordPrePromptSessionDuration(
+      ContentSettingsType permission,
+      base::TimeTicks request_first_display_time);
+
   // Records the duration of the browsing session after a permission prompt has
   // been displayed.
   static void RecordPostPromptSessionDuration(

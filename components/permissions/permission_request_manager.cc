@@ -536,6 +536,8 @@ void PermissionRequestManager::DidFinishNavigation(
 }
 
 void PermissionRequestManager::DocumentOnLoadCompletedInPrimaryMainFrame() {
+  on_page_loaded_time_ = base::TimeTicks::Now();
+
   // This is scheduled because while all calls to the browser have been
   // issued at DOMContentLoaded, they may be bouncing around in scheduled
   // callbacks finding the UI thread still. This makes sure we allow those
@@ -1030,6 +1032,22 @@ void PermissionRequestManager::ShowPrompt() {
     PermissionUmaUtil::PermissionPromptShown(requests_);
 
     if (!requests_.empty()) {
+      // The session duration before a permission prompt is displayed is only
+      // recorded for geolocation and notifications requests because these two
+      // permission types are supported by the PermissionsAI and potentially can
+      // be impacted by prompt muting.
+      //
+      // `on_page_loaded_time_` is not reset because it is ok to record the
+      // session duration multiple times per permission type for the same page
+      // load.
+      if (requests_[0]->GetContentSettingsType() ==
+              ContentSettingsType::GEOLOCATION ||
+          requests_[0]->GetContentSettingsType() ==
+              ContentSettingsType::NOTIFICATIONS) {
+        PermissionUmaUtil::RecordPrePromptSessionDuration(
+            requests_[0]->GetContentSettingsType(), on_page_loaded_time_);
+      }
+
       if (requests_[0]->GetContentSettingsType() ==
           ContentSettingsType::NOTIFICATIONS) {
         notification_request_first_display_time_ = base::TimeTicks::Now();
