@@ -29,6 +29,7 @@
 
 ### Linux
 
+ * [linux-falcon-rak-5070-perf](https://ci.chromium.org/p/chrome/builders/ci/linux-falcon-rak-5070-perf): Linux Falcon RAK 5070.
  * [linux-perf-calibration](https://ci.chromium.org/p/chrome/builders/ci/linux-perf-calibration): Ubuntu-18.04, 8 core, NVIDIA Quadro P400.
  * [linux-perf-rel](https://ci.chromium.org/p/chrome/builders/ci/linux-perf-rel): Ubuntu-18.04, 8 core, NVIDIA Quadro P400.
  * [linux-r350-perf](https://ci.chromium.org/p/chrome/builders/ci/linux-r350-perf): Ubuntu-22.04, 16 core.
@@ -51,6 +52,7 @@
  * [win-10_laptop_low_end-perf](https://ci.chromium.org/p/chrome/builders/ci/win-10_laptop_low_end-perf): Low end windows 10 HP laptops. HD Graphics 5500, x86-64-i3-5005U, SSD, 4GB RAM..
  * [win-11-perf](https://ci.chromium.org/p/chrome/builders/ci/win-11-perf): Windows Dell PowerEdge R350.
  * [win-arm64-snapdragon-elite-perf](https://ci.chromium.org/p/chrome/builders/ci/win-arm64-snapdragon-elite-perf): Windows Dell Snapdragon Elite.
+ * [win-falcon-rak-5070-perf](https://ci.chromium.org/p/chrome/builders/ci/win-falcon-rak-5070-perf): Windows Falcon RAK 5070.
 
 ## Pinpoint-Only Platforms
 

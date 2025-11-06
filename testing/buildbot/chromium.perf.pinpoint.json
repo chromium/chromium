@@ -983,6 +983,52 @@
   "android_arm64-builder-perf-pgo": {},
   "linux-builder-perf": {},
   "linux-builder-perf-pgo": {},
+  "linux-falcon-rak-5070-perf": {
+    "isolated_scripts": [
+      {
+        "args": [
+          "-v",
+          "-v",
+          "--browser=builder",
+          "--upload-results",
+          "--test-shard-map-filename=linux-falcon-rak-5070-perf_map.json",
+          "--ignore-benchmark-exit-code",
+          "--assert-gpu-compositing"
+        ],
+        "merge": {
+          "args": [
+            "--upload-skia-json"
+          ],
+          "script": "//tools/perf/process_perf_results.py"
+        },
+        "name": "performance_test_suite",
+        "resultdb": {
+          "enable": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimensions": {
+            "pool": "chrome.tests.perf",
+            "synthetic_product_name": "System Product Name [System Version] (Falcon Northwest)"
+          },
+          "expiration": 7200,
+          "hard_timeout": 14400,
+          "io_timeout": 21600,
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 1
+        },
+        "test": "performance_test_suite",
+        "trigger_script": {
+          "args": [
+            "--multiple-dimension-script-verbose",
+            "True"
+          ],
+          "requires_simultaneous_shard_dispatch": true,
+          "script": "//testing/trigger_scripts/perf_device_trigger.py"
+        }
+      }
+    ]
+  },
   "linux-perf-pgo": {
     "isolated_scripts": [
       {
@@ -1923,6 +1969,52 @@
             "os": "Windows-11",
             "pool": "chrome.tests.perf",
             "synthetic_product_name": "Latitude 7455 (Dell Inc.)"
+          },
+          "expiration": 7200,
+          "hard_timeout": 14400,
+          "io_timeout": 21600,
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 1
+        },
+        "test": "performance_test_suite",
+        "trigger_script": {
+          "args": [
+            "--multiple-dimension-script-verbose",
+            "True"
+          ],
+          "requires_simultaneous_shard_dispatch": true,
+          "script": "//testing/trigger_scripts/perf_device_trigger.py"
+        }
+      }
+    ]
+  },
+  "win-falcon-rak-5070-perf": {
+    "isolated_scripts": [
+      {
+        "args": [
+          "-v",
+          "-v",
+          "--browser=builder",
+          "--upload-results",
+          "--test-shard-map-filename=win-falcon-rak-5070-perf_map.json",
+          "--ignore-benchmark-exit-code",
+          "--assert-gpu-compositing"
+        ],
+        "merge": {
+          "args": [
+            "--upload-skia-json"
+          ],
+          "script": "//tools/perf/process_perf_results.py"
+        },
+        "name": "performance_test_suite",
+        "resultdb": {
+          "enable": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimensions": {
+            "pool": "chrome.tests.perf",
+            "synthetic_product_name": "System Product Name [System Version] (Falcon Northwest)"
           },
           "expiration": 7200,
           "hard_timeout": 14400,

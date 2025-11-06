@@ -790,6 +790,24 @@ _WIN_ARM64_EXECUTABLE_CONFIGS = frozenset([
     _components_perftests(125),
     _views_perftests(),
 ])
+_FALCON_BENCHMARK_CONFIGS = PerfSuite([
+    _GetBenchmarkConfig('blink_perf.dom'),
+    _GetBenchmarkConfig('jetstream2'),
+    _GetBenchmarkConfig('media.desktop'),
+    _GetBenchmarkConfig('rendering.desktop', abridged=True),
+    _GetBenchmarkConfig('rendering.desktop.notracing'),
+    _GetBenchmarkConfig('speedometer2'),
+    _GetBenchmarkConfig('speedometer3'),
+    _GetBenchmarkConfig('system_health.common_desktop'),
+    _GetBenchmarkConfig('v8.browsing_desktop'),
+])
+_FALCON_EXECUTABLE_CONFIGS = frozenset([
+    _base_perftests(200),
+    _components_perftests(125),
+    _dawn_perf_tests(600),
+    _tint_benchmark(),
+    _views_perftests(),
+])
 _ANDROID_GO_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('system_health.memory_mobile'),
     _GetBenchmarkConfig('system_health.common_mobile'),
@@ -893,6 +911,13 @@ LINUX_R350 = PerfPlatform('linux-r350-perf',
                           30,
                           'linux',
                           executables=_LINUX_EXECUTABLE_CONFIGS,
+                          crossbench=_CROSSBENCH_BENCHMARKS_ALL)
+LINUX_FALCON_RAK_5070 = PerfPlatform('linux-falcon-rak-5070-perf',
+                          'Linux Falcon RAK 5070',
+                          _FALCON_BENCHMARK_CONFIGS,
+                          1,
+                          'linux',
+                          executables=_FALCON_EXECUTABLE_CONFIGS,
                           crossbench=_CROSSBENCH_BENCHMARKS_ALL)
 
 # Mac
@@ -1003,6 +1028,13 @@ WIN_11_PGO = PerfPlatform('win-11-perf-pgo',
                           'win',
                           executables=_WIN_11_EXECUTABLE_CONFIGS,
                           pinpoint_only=True)
+WIN_FALCON_RAK_5070 = PerfPlatform('win-falcon-rak-5070-perf',
+                      'Windows Falcon RAK 5070',
+                      _FALCON_BENCHMARK_CONFIGS,
+                      1,
+                      'win',
+                      executables=_FALCON_EXECUTABLE_CONFIGS,
+                      crossbench=_CROSSBENCH_BENCHMARKS_ALL)
 WIN_ARM64_SNAPDRAGON_ELITE = PerfPlatform(
     'win-arm64-snapdragon-elite-perf',
     'Windows Dell Snapdragon Elite',

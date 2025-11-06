@@ -130,6 +130,7 @@ UPLOAD_SKIA_JSON_BUILDERS = frozenset([
     'android-corsola-steelix-8gb-perf',
     'android-nissa-uldren-8gb-perf',
     'linux-builder-perf',
+    'linux-falcon-rak-5070-perf',
     'linux-perf-fyi',
     'linux-perf-rel',
     'linux-processor-perf',
@@ -149,6 +150,7 @@ UPLOAD_SKIA_JSON_BUILDERS = frozenset([
     'win-10_laptop_low_end-processor-perf',
     'win-10_laptop_low_end-perf_HP-Candidate',
     'win-11-processor-perf',  # One of the lightweight processors.
+    'win-falcon-rak-5070-perf',
     'win64-builder-perf',
     'win-arm64-snapdragon-elite-perf',
 ])
@@ -957,6 +959,24 @@ BUILDERS = {
             'synthetic_product_name': 'PowerEdge R350 (Dell Inc.)'
         },
     },
+    'linux-falcon-rak-5070-perf': {
+        'tests': [
+            {
+                'isolate': 'performance_test_suite',
+                'extra_args': [
+                    '--assert-gpu-compositing',
+                ],
+            },
+        ],
+        'platform':
+        'linux',
+        'dimension': {
+            'pool':
+                'chrome.tests.perf',
+            'synthetic_product_name':
+                'System Product Name [System Version] (Falcon Northwest)',
+        },
+    },
     'linux-processor-perf': {
         'platform': 'linux',
         'perf_processor': True,
@@ -1316,6 +1336,26 @@ BUILDERS = {
             'os': 'Windows-11-22631.2428',
             'gpu': '102b:0536-4.5.0.5',
             'synthetic_product_name': 'PowerEdge R350 (Dell Inc.)'
+        },
+    },
+    'win-falcon-rak-5070-perf': {
+        'tests': [
+            {
+                'isolate': 'performance_test_suite',
+                'extra_args': [
+                    '--assert-gpu-compositing',
+                ],
+            },
+        ],
+        'platform':
+        'win',
+        'target_bits':
+        64,
+        'dimension': {
+            'pool':
+                'chrome.tests.perf',
+            'synthetic_product_name':
+                'System Product Name [System Version] (Falcon Northwest)'
         },
     },
     'win-11-processor-perf': {
