@@ -4,7 +4,6 @@
 
 # Defines the configuration of Remote Build Execution (RBE).
 
-import("//build/toolchain/remoteexec_defaults.gni")
 import("//build/toolchain/siso.gni")
 
 declare_args() {
@@ -27,19 +26,9 @@ declare_args() {
   use_remoteexec = false
 }
 
-use_reclient_default = false
-if (use_remoteexec) {
-  if (use_siso) {
-    use_reclient_default = use_reclient_on_siso
-  } else {
-    use_reclient_default = use_reclient_on_ninja
-  }
-}
-
 declare_args() {
-  # Set to true to use re-client.
-  # Set to false to use Siso's builtin RBE client.
-  use_reclient = use_reclient_default
+  # Set to true to use re-client with ninja.
+  use_reclient = use_remoteexec && !use_siso
 
   # The directory where the re-client tooling binaries are.
   if (rbe_bin_dir != "") {
@@ -73,6 +62,10 @@ if (use_remoteexec) {
   assert(use_reclient || use_siso,
          "Can't enable remoteexec when use_reclient and use_siso are false")
 }
+
+assert(
+    !(use_reclient && use_siso),
+    "Can't enable reclient with siso. please remove use_reclient=true from args.gn.")
 
 if (use_remoteexec) {
   rbe_logs = [ "use_remoteexec=true" ]
