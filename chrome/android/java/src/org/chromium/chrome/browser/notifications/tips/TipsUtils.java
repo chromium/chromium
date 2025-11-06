@@ -12,6 +12,8 @@ import androidx.annotation.StringRes;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -33,6 +35,7 @@ import org.chromium.ui.base.WindowAndroid;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /** Static utilities for Tips Notifications. */
 @NullMarked
@@ -168,8 +171,23 @@ public class TipsUtils {
         TipsAgent.removePendingNotifications(profile);
         TipsUtils.areTipsNotificationsEnabled(
                 (enabled) -> {
-                    if (enabled) {
-                        TipsAgent.maybeScheduleNotification(profile, isBottomOmnibox);
+                    // If the notification channel is enabled, check if a notification was actually
+                    // scheduled before scheduling a task to run the reschedule logic.
+                    if (enabled && TipsAgent.maybeScheduleNotification(profile, isBottomOmnibox)) {
+                        // Run this current function again in 1 hour since the scheduler will
+                        // schedule a notification 4 hours out, so if the user is still active on
+                        // Chrome then reschedule it. The remove call earlier in this function will
+                        // remove all pending notifications and the new scheduling call acts as a
+                        // reschedule. If the app is closed (user offline) with a post delayed task
+                        // it will be torn down. Note that it is possible that when the notification
+                        // is rescheduled, the usage criteria may have changed such that the user is
+                        // no longer eligible to receive a notification.
+                        PostTask.postDelayedTask(
+                                TaskTraits.UI_DEFAULT,
+                                () -> {
+                                    maybeScheduleTipsNotification(profile, windowAndroid);
+                                },
+                                TimeUnit.HOURS.toMillis(1));
                     }
                 });
     }

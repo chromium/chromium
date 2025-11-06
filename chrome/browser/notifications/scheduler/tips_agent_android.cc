@@ -47,6 +47,7 @@ notifications::TipsNotificationsFeatureType GetFeatureType(
 
 void RunGetClassificationResultCallback(
     Profile* profile,
+    bool& notification_scheduled,
     const segmentation_platform::ClassificationResult& result) {
   // If there are no suggestions then no notification will be scheduled.
   if (result.ordered_labels.empty()) {
@@ -62,14 +63,15 @@ void RunGetClassificationResultCallback(
 
   notifications::ScheduleParams schedule_params;
   schedule_params.priority = notifications::ScheduleParams::Priority::kLow;
-  schedule_params.deliver_time_start = base::Time::Now() + base::Hours(3);
+  schedule_params.deliver_time_start = base::Time::Now() + base::Hours(4);
   schedule_params.deliver_time_end =
-      base::Time::Now() + base::Hours(3) + base::Minutes(1);
+      base::Time::Now() + base::Hours(4) + base::Minutes(1);
   notifications::NotificationData data =
       notifications::GetTipsNotificationData(feature_type);
   service->Schedule(std::make_unique<notifications::NotificationParams>(
       notifications::SchedulerClientType::kTips, std::move(data),
       std::move(schedule_params)));
+  notification_scheduled = true;
 }
 
 }  // namespace
@@ -80,12 +82,12 @@ void TipsAgentAndroid::ShowTipsPromo(
   Java_TipsAgent_showTipsPromo(env, static_cast<jint>(feature_type));
 }
 
-static void JNI_TipsAgent_MaybeScheduleNotification(
+static jboolean JNI_TipsAgent_MaybeScheduleNotification(
     JNIEnv* env,
     Profile* profile,
     jboolean j_is_bottom_omnibox) {
   if (!profile) {
-    return;
+    return false;
   }
 
   bool is_bottom_omnibox = static_cast<bool>(j_is_bottom_omnibox);
@@ -94,7 +96,7 @@ static void JNI_TipsAgent_MaybeScheduleNotification(
       segmentation_platform_service = segmentation_platform::
           SegmentationPlatformServiceFactory::GetForProfile(profile);
   if (!segmentation_platform_service) {
-    return;
+    return false;
   }
 
   segmentation_platform::PredictionOptions prediction_options;
@@ -130,10 +132,13 @@ static void JNI_TipsAgent_MaybeScheduleNotification(
       segmentation_platform::processing::ProcessedValue(
           bottom_omnibox_ever_used));
 
+  bool notification_scheduled = false;
   segmentation_platform_service->GetClassificationResult(
       segmentation_platform::kTipsNotificationsRankerKey, prediction_options,
       input_context,
-      base::BindOnce(&RunGetClassificationResultCallback, profile));
+      base::BindOnce(&RunGetClassificationResultCallback, profile,
+                     std::ref(notification_scheduled)));
+  return notification_scheduled;
 }
 
 static void JNI_TipsAgent_RemovePendingNotifications(JNIEnv* env,

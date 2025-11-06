@@ -33,9 +33,10 @@ public class TipsAgent {
      *
      * @param profile The current profile.
      * @param isBottomOmnibox Whether the omnibox is in the bottom position or not.
+     * @return Whether a notification was successfully scheduled or not.
      */
-    public static void maybeScheduleNotification(Profile profile, boolean isBottomOmnibox) {
-        TipsAgentJni.get().maybeScheduleNotification(profile, isBottomOmnibox);
+    public static boolean maybeScheduleNotification(Profile profile, boolean isBottomOmnibox) {
+        return TipsAgentJni.get().maybeScheduleNotification(profile, isBottomOmnibox);
     }
 
     /**
@@ -51,7 +52,7 @@ public class TipsAgent {
 
     @NativeMethods
     interface Natives {
-        void maybeScheduleNotification(
+        boolean maybeScheduleNotification(
                 @JniType("Profile*") Profile profile, boolean isBottomOmnibox);
 
         void removePendingNotifications(@JniType("Profile*") Profile profile);
