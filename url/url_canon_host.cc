@@ -510,7 +510,7 @@ void DoHost(std::basic_string_view<CHAR> spec,
   // URL Standard: https://url.spec.whatwg.org/#host-parsing
 
   // Keep track of output's initial length, so we can rewind later.
-  const int output_begin = output.length();
+  const size_t output_begin = output.length();
 
   if (host.is_empty()) {
     // Empty hosts don't need anything.

@@ -89,6 +89,10 @@ std::ostream& operator<<(std::ostream& os, const Component& component);
 inline Component MakeRange(int begin, int end) {
   return Component(begin, end - begin);
 }
+// Helper that returns a component created with the given begin and ending
+// points. The ending point is non-inclusive.
+// This function crashes if an argument is greater than INT_MAX.
+COMPONENT_EXPORT(URL) Component MakeRange(size_t begin, size_t end);
 
 // Parsed ---------------------------------------------------------------------
 

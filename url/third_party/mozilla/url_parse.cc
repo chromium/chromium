@@ -57,6 +57,12 @@ std::ostream& operator<<(std::ostream& os, const Parsed& parsed) {
             << ", has_opaque_path: " << parsed.has_opaque_path << " }";
 }
 
+Component MakeRange(size_t begin, size_t end) {
+  CHECK_LE(begin, end);
+  return Component(base::checked_cast<int>(begin),
+                   base::checked_cast<int>(end - begin));
+}
+
 namespace {
 
 // Returns true if the given character is a valid digit to use in a port.
@@ -307,7 +313,7 @@ bool DoExtractScheme(std::basic_string_view<CharT> url, Component* scheme) {
   // Find the first colon character.
   for (size_t i = begin; i < url.size(); i++) {
     if (url[i] == ':') {
-      *scheme = MakeRange(begin, base::checked_cast<int>(i));
+      *scheme = MakeRange(begin, i);
       return true;
     }
   }

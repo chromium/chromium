@@ -63,7 +63,7 @@ void ProcessQueryToConditions(
     const std::string& query,
     bool allow,
     std::set<URLQueryElementMatcherCondition>* query_conditions) {
-  url::Component query_left = url::MakeRange(0, query.length());
+  url::Component query_left{std::string_view(query)};
   url::Component key;
   url::Component value;
   // Depending on the filter type being block-list or allow-list, the matcher

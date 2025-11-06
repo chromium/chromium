@@ -64,17 +64,17 @@ template <typename CharT>
 void DoParseUNC(std::basic_string_view<CharT> url,
                 size_t after_slashes,
                 Parsed* parsed) {
-  int url_len = base::checked_cast<int>(url.size());
+  size_t url_len = url.size();
   // The cast is safe because `FindNextSlash` will never return anything longer
   // than `url_len`.
-  int next_slash = static_cast<int>(FindNextSlash(url, after_slashes));
+  size_t next_slash = FindNextSlash(url, after_slashes);
 
   // Everything up until that first slash we found (or end of string) is the
   // host name, which will end up being the UNC host. For example,
   // "file://foo/bar.txt" will get a server name of "foo" and a path of "/bar".
   // Later, on Windows, this should be treated as the filename "\\foo\bar.txt"
   // in proper UNC notation.
-  if (after_slashes < static_cast<size_t>(next_slash)) {
+  if (after_slashes < next_slash) {
     parsed->host = MakeRange(after_slashes, next_slash);
   } else {
     parsed->host.reset();
