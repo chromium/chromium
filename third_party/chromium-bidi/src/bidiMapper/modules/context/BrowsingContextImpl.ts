@@ -1129,11 +1129,16 @@ export class BrowsingContextImpl {
   }
 
   async setViewport(
-    viewport?: BrowsingContext.Viewport | null,
-    devicePixelRatio?: number | null,
+    viewport: BrowsingContext.Viewport | null,
+    devicePixelRatio: number | null,
+    screenOrientation: Emulation.ScreenOrientation | null,
   ) {
     // Set the target's viewport.
-    await this.cdpTarget.setViewport(viewport, devicePixelRatio);
+    await this.cdpTarget.setDeviceMetricsOverride(
+      viewport,
+      devicePixelRatio,
+      screenOrientation,
+    );
   }
 
   async handleUserPrompt(accept?: boolean, userText?: string): Promise<void> {
@@ -1927,11 +1932,6 @@ export class BrowsingContextImpl {
           await cdpTarget.setGeolocationOverride(geolocation),
       ),
     );
-  }
-  async setScreenOrientationOverride(
-    screenOrientation: Emulation.ScreenOrientation | null,
-  ): Promise<void> {
-    await this.#cdpTarget.setScreenOrientationOverride(screenOrientation);
   }
 
   async setScriptingEnabled(scriptingEnabled: false | null) {

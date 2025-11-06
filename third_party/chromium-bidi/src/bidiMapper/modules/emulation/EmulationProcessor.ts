@@ -237,7 +237,9 @@ export class EmulationProcessor {
           context.userContext,
         );
 
-        await context.setScreenOrientationOverride(
+        await context.setViewport(
+          config.viewport ?? null,
+          config.devicePixelRatio ?? null,
           config.screenOrientation ?? null,
         );
       }),

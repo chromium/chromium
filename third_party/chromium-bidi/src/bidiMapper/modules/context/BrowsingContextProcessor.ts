@@ -24,6 +24,7 @@ import {
   type EmptyResult,
   NoSuchUserContextException,
   NoSuchAlertException,
+  UnsupportedOperationException,
 } from '../../../protocol/protocol.js';
 import {CdpErrorConstants} from '../../../utils/cdpErrorConstants.js';
 import type {ContextConfig} from '../browser/ContextConfig.js';
@@ -205,6 +206,19 @@ export class BrowsingContextProcessor {
   async setViewport(
     params: BrowsingContext.SetViewportParameters,
   ): Promise<EmptyResult> {
+    // Check the The viewport size limits is not checked by protocol parser, so we need to validate
+    // it manually:
+    // https://crsrc.org/c/content/browser/devtools/protocol/emulation_handler.cc;drc=f49e23d8e2bd190b42ec62284b8be10dcccd0446;l=660
+    const maxDimensionSize = 10_000_000;
+    if (
+      (params.viewport?.height ?? 0) > maxDimensionSize ||
+      (params.viewport?.width ?? 0) > maxDimensionSize
+    ) {
+      throw new UnsupportedOperationException(
+        `Viewport dimension over ${maxDimensionSize} are not supported`,
+      );
+    }
+
     const config: ContextConfig = {};
     // `undefined` means no changes should be done to the config.
     if (params.devicePixelRatio !== undefined) {
@@ -232,9 +246,17 @@ export class BrowsingContextProcessor {
     }
 
     await Promise.all(
-      impactedTopLevelContexts.map((context) =>
-        context.setViewport(params.viewport, params.devicePixelRatio),
-      ),
+      impactedTopLevelContexts.map(async (context) => {
+        const config = this.#contextConfigStorage.getActiveConfig(
+          context.id,
+          context.userContext,
+        );
+        await context.setViewport(
+          config.viewport ?? null,
+          config.devicePixelRatio ?? null,
+          config.screenOrientation ?? null,
+        );
+      }),
     );
 
     return {};

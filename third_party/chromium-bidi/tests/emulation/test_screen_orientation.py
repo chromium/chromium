@@ -15,7 +15,7 @@
 
 import pytest
 import pytest_asyncio
-from test_helpers import execute_command, goto_url
+from test_helpers import execute_command, goto_url, send_JSON_command
 
 SOME_BIDI_SCREEN_ORIENTATION = {
     "natural": "landscape",
@@ -218,3 +218,65 @@ async def test_screen_orientation_iframe(websocket, context_id, iframe_id,
 
     assert await get_screen_orientation(
         websocket, iframe_id) == initial_screen_orientation
+
+
+@pytest.mark.asyncio
+async def test_screen_orientation_with_set_viewport(websocket, context_id,
+                                                    initial_screen_orientation,
+                                                    read_messages):
+    command_id_1 = await send_JSON_command(
+        websocket, {
+            'method': 'emulation.setScreenOrientationOverride',
+            'params': {
+                'contexts': [context_id],
+                'screenOrientation': SOME_BIDI_SCREEN_ORIENTATION
+            }
+        })
+    command_id_2 = await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.setViewport",
+            "params": {
+                "context": context_id,
+                "viewport": {
+                    "width": 345,
+                    "height": 456,
+                },
+                "devicePixelRatio": 4
+            }
+        })
+
+    # Wait for both commands to finish.
+    await read_messages(2,
+                        filter_lambda=lambda x: 'id' in x and x['id'] in
+                        [command_id_1, command_id_2])
+
+    # Assert screen orientation was not overridden by setViewport.
+    assert await get_screen_orientation(
+        websocket, context_id) == SOME_WEB_SCREEN_ORIENTATION
+
+    command_id_1 = await send_JSON_command(
+        websocket, {
+            'method': 'emulation.setScreenOrientationOverride',
+            'params': {
+                'contexts': [context_id],
+                'screenOrientation': None
+            }
+        })
+    command_id_2 = await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.setViewport",
+            "params": {
+                "context": context_id,
+                "viewport": None,
+                "devicePixelRatio": None
+            }
+        })
+
+    # Wait for both commands to finish.
+    await read_messages(2,
+                        filter_lambda=lambda x: 'id' in x and x['id'] in
+                        [command_id_1, command_id_2])
+
+    # Assert screen orientation was not overridden by setViewport.
+    assert await get_screen_orientation(
+        websocket, context_id) == initial_screen_orientation

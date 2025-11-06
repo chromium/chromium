@@ -68,16 +68,6 @@ export class CdpTarget {
   readonly #unblocked = new Deferred<Result<void>>();
   readonly #logger: LoggerFn | undefined;
 
-  // Keeps track of the previously set viewport.
-  #previousDeviceMetricsOverride: Protocol.Emulation.SetDeviceMetricsOverrideRequest =
-    {
-      width: 0,
-      height: 0,
-      deviceScaleFactor: 0,
-      mobile: false,
-      dontSetVisibleSize: true,
-    };
-
   /**
    * Target's window id. Is filled when the CDP target is created and do not reflect
    * moving targets from one window to another. The actual values
@@ -594,52 +584,34 @@ export class CdpTarget {
     );
   }
 
-  async setViewport(
-    viewport?: BrowsingContext.Viewport | null,
-    devicePixelRatio?: number | null,
+  async setDeviceMetricsOverride(
+    viewport: BrowsingContext.Viewport | null,
+    devicePixelRatio: number | null,
+    screenOrientation: Emulation.ScreenOrientation | null,
   ) {
-    if (viewport === null && devicePixelRatio === null) {
+    if (
+      viewport === null &&
+      devicePixelRatio === null &&
+      screenOrientation === null
+    ) {
       await this.cdpClient.sendCommand('Emulation.clearDeviceMetricsOverride');
       return;
     }
 
-    const newViewport = {...this.#previousDeviceMetricsOverride};
+    const metricsOverride: Protocol.Emulation.SetDeviceMetricsOverrideRequest =
+      {
+        width: viewport?.width ?? 0,
+        height: viewport?.height ?? 0,
+        deviceScaleFactor: devicePixelRatio ?? 0,
+        screenOrientation:
+          this.#toCdpScreenOrientationAngle(screenOrientation) ?? undefined,
+        mobile: false,
+      };
 
-    if (viewport === null) {
-      // Disable override.
-      newViewport.width = 0;
-      newViewport.height = 0;
-    } else if (viewport !== undefined) {
-      newViewport.width = viewport.width;
-      newViewport.height = viewport.height;
-    }
-
-    if (devicePixelRatio === null) {
-      // Disable override.
-      newViewport.deviceScaleFactor = 0;
-    } else if (devicePixelRatio !== undefined) {
-      newViewport.deviceScaleFactor = devicePixelRatio;
-    }
-
-    try {
-      await this.cdpClient.sendCommand(
-        'Emulation.setDeviceMetricsOverride',
-        newViewport,
-      );
-      this.#previousDeviceMetricsOverride = newViewport;
-    } catch (err) {
-      if (
-        (err as Error).message.startsWith(
-          // https://crsrc.org/c/content/browser/devtools/protocol/emulation_handler.cc;l=257;drc=2f6eee84cf98d4227e7c41718dd71b82f26d90ff
-          'Width and height values must be positive',
-        )
-      ) {
-        throw new UnsupportedOperationException(
-          'Provided viewport dimensions are not supported',
-        );
-      }
-      throw err;
-    }
+    await this.cdpClient.sendCommand(
+      'Emulation.setDeviceMetricsOverride',
+      metricsOverride,
+    );
   }
 
   /**
@@ -664,29 +636,19 @@ export class CdpTarget {
 
     if (
       config.viewport !== undefined ||
-      config.devicePixelRatio !== undefined
+      config.devicePixelRatio !== undefined ||
+      config.screenOrientation !== undefined
     ) {
       promises.push(
-        this.setViewport(config.viewport, config.devicePixelRatio).catch(() => {
+        this.setDeviceMetricsOverride(
+          config.viewport ?? null,
+          config.devicePixelRatio ?? null,
+          config.screenOrientation ?? null,
+        ).catch(() => {
           // Ignore CDP errors, as the command is not supported by iframe targets. Generic
           // catch, as the error can vary between CdpClient implementations: Tab vs
           // Puppeteer.
         }),
-      );
-    }
-
-    if (
-      config.screenOrientation !== undefined &&
-      config.screenOrientation !== null
-    ) {
-      promises.push(
-        this.setScreenOrientationOverride(config.screenOrientation).catch(
-          () => {
-            // Ignore CDP errors, as the command is not supported by iframe targets.
-            // Generic catch, as the error can vary between CdpClient implementations:
-            // Tab vs Puppeteer.
-          },
-        ),
       );
     }
 
@@ -796,27 +758,12 @@ export class CdpTarget {
     }
   }
 
-  async setScreenOrientationOverride(
-    screenOrientation: Emulation.ScreenOrientation | null,
-  ): Promise<void> {
-    const newViewport = {...this.#previousDeviceMetricsOverride};
-    if (screenOrientation === null) {
-      delete newViewport.screenOrientation;
-    } else {
-      newViewport.screenOrientation =
-        this.#toCdpScreenOrientationAngle(screenOrientation);
-    }
-
-    await this.cdpClient.sendCommand(
-      'Emulation.setDeviceMetricsOverride',
-      newViewport,
-    );
-    this.#previousDeviceMetricsOverride = newViewport;
-  }
-
   #toCdpScreenOrientationAngle(
-    orientation: Emulation.ScreenOrientation,
-  ): Protocol.Emulation.ScreenOrientation {
+    orientation: Emulation.ScreenOrientation | null,
+  ): Protocol.Emulation.ScreenOrientation | null {
+    if (orientation === null) {
+      return null;
+    }
     // https://w3c.github.io/screen-orientation/#the-current-screen-orientation-type-and-angle
     if (orientation.natural === Emulation.ScreenOrientationNatural.Portrait) {
       switch (orientation.type) {
