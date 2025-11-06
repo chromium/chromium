@@ -16,6 +16,7 @@
 #include <set>
 #include <string>
 #include <string_view>
+#include <variant>
 #include <vector>
 
 #include "base/containers/circular_deque.h"
@@ -591,31 +592,23 @@ class NET_EXPORT CookieMonster : public CookieStore {
       CookieInclusionStatus& status,
       std::optional<PartitionedCookieMap::iterator> cookie_partition_it);
 
-  // Inserts `cc` into cookies_. Returns an iterator that points to the inserted
-  // cookie in `cookies_`. Guarantee: all iterators to `cookies_` remain valid.
-  // Dispatches the change to `change_dispatcher_` iff `dispatch_change` is
-  // true.
-  CookieMap::iterator InternalInsertCookie(
-      const std::string& key,
-      std::unique_ptr<CanonicalCookie> cc,
-      bool sync_to_store,
-      const CookieAccessResult& access_result,
-      bool dispatch_change = true,
-      bool is_no_change_overwrite = false);
+  // Inserts `cc` into `cookies_` or `partition_cookies_` depending on whether
+  // the cookie is partitioned. Returns iterator(s) that point to the inserted
+  // cookie in `cookies_`/`partition_cookies_`. Guarantee: all iterators to
+  // `cookies_`/`partition_cookies_` remain valid. Dispatches the change to
+  // `change_dispatcher_` iff `dispatch_change` is true.
+  std::variant<CookieMap::iterator,
+               CookieMonster::PartitionedCookieMapIterators>
+  InternalInsertCookie(const std::string& key,
+                       std::unique_ptr<CanonicalCookie> cc,
+                       bool sync_to_store,
+                       const CookieAccessResult& access_result,
+                       bool dispatch_change = true,
+                       bool is_no_change_overwrite = false);
 
   // Returns true if the cookie should be (or is already) synced to the store.
   // Used for cookies during insertion and deletion into the in-memory store.
   bool ShouldUpdatePersistentStore(CanonicalCookie& cc);
-
-  // Inserts `cc` into partitioned_cookies_. Should only be used when
-  // cc->IsPartitioned() is true.
-  PartitionedCookieMapIterators InternalInsertPartitionedCookie(
-      std::string key,
-      std::unique_ptr<CanonicalCookie> cc,
-      bool sync_to_store,
-      const CookieAccessResult& access_result,
-      bool dispatch_change = true,
-      bool is_no_change_overwrite = false);
 
   // Sets all cookies from |list| after deleting any equivalent cookie.
   // For data gathering purposes, this routine is treated as if it is
