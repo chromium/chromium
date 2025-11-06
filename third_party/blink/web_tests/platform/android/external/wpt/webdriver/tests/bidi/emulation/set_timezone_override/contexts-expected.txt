@@ -1,0 +1,15 @@
+This is a wdspec test.
+[ERROR] test_contexts
+  setup error: KeyError: 'value'
+[ERROR] test_multiple_contexts
+  setup error: KeyError: 'value'
+[ERROR] test_iframe[same_origin]
+  setup error: KeyError: 'value'
+[ERROR] test_iframe[cross_origin]
+  setup error: KeyError: 'value'
+[ERROR] test_timezone_override_applies_to_new_sandbox
+  setup error: KeyError: 'value'
+[ERROR] test_timezone_override_applies_to_existing_sandbox
+  setup error: KeyError: 'value'
+Harness: the test ran to completion.
+

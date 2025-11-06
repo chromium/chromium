@@ -1,0 +1,5 @@
+This is a wdspec test.
+[FAIL] test_format_quality
+  assert 10658 > 72871
+Harness: the test ran to completion.
+

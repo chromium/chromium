@@ -1,0 +1,5 @@
+This is a wdspec test.
+[FAIL] test_restores_to_global_when_removed[Custom user context]
+  assert False
+Harness: the test ran to completion.
+

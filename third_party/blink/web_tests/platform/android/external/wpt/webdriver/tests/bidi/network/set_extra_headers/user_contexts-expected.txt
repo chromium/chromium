@@ -1,0 +1,13 @@
+This is a wdspec test.
+[ERROR] test_isolation[Default user context]
+  setup error: webdriver.bidi.error.UnknownErrorException: unknown error (Failed to create browser context.)
+[ERROR] test_isolation[Custom user context]
+  setup error: webdriver.bidi.error.UnknownErrorException: unknown error (Failed to create browser context.)
+[ERROR] test_frame[Custom user context-same_origin]
+  setup error: webdriver.bidi.error.UnknownErrorException: unknown error (Failed to create browser context.)
+[ERROR] test_frame[Custom user context-cross_origin]
+  setup error: webdriver.bidi.error.UnknownErrorException: unknown error (Failed to create browser context.)
+[ERROR] test_overrides_global[Custom user context]
+  setup error: webdriver.bidi.error.UnknownErrorException: unknown error (Failed to create browser context.)
+Harness: the test ran to completion.
+

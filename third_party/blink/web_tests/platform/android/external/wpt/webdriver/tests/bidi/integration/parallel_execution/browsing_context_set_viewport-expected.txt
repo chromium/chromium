@@ -1,0 +1,5 @@
+This is a wdspec test.
+[FAIL] test_when_navigation_started
+  AssertionError: assert {'height': 1176, 'width': 980} == {'width': 499, 'height': 599}
+Harness: the test ran to completion.
+
