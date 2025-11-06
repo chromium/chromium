@@ -23,11 +23,13 @@ import {getHtml} from './contextual_entrypoint_and_carousel.html.js';
 import type {ComposeboxFileCarouselElement} from './file_carousel.js';
 import type {RecentTabChipElement} from './recent_tab_chip.js';
 
+// LINT.IfChange(ComposeboxMode)
 export enum ComposeboxMode {
   DEFAULT = '',
   DEEP_SEARCH = 'deep-search',
   CREATE_IMAGE = 'create-image',
 }
+// LINT.ThenChange(chromium/components/omnibox/browser/searchbox.mojom:ComposeboxMode)
 
 export interface ContextualEntrypointAndCarouselElement {
   $: {

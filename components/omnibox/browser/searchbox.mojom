@@ -106,6 +106,16 @@ struct TabInfo {
   mojo_base.mojom.TimeTicks last_active;
 };
 
+// LINT.IfChange(ToolMode)
+// See also:
+// https://crsrc.org/c/third_party/omnibox_proto/aim_tools_and_models.proto
+enum ToolMode {
+  kDefault = 0,
+  kDeepSearch = 1,
+  kCreateImage = 4,
+};
+// LINT.ThenChange(//ui/webui/resources/cr_components/composebox/contextual_entrypoint_and_carousel.ts:ComposeboxMode)
+
 // Information about a contextual input.
 struct SelectedFileInfo {
   // Name of the file.
