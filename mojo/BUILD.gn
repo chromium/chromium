@@ -57,6 +57,7 @@ test("mojo_unittests") {
     "//mojo/public/cpp/platform/tests",
     "//mojo/public/cpp/system/tests",
     "//mojo/public/js/ts/bindings/tests",
+    "//mojo/public/rust:tests",
   ]
 
   if (is_linux && mojo_support_legacy_core) {

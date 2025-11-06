@@ -66,10 +66,12 @@ rust_static_library("mojom_parser_unittests") {
   ]
 
   deps = [
+    ":mojom_parser",
     ":mojom_parser_core",
     ":parser_unittests_rust",
     ":validation_parser",
     "//testing/rust_gtest_interop",
+    "//third_party/rust/anyhow/v1:lib",
   ]
 }
 
