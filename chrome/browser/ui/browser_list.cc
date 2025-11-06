@@ -107,7 +107,6 @@ void BrowserList::RemoveBrowser(Browser* browser) {
   // Remove |browser| from the appropriate list instance.
   BrowserList* browser_list = GetInstance();
   RemoveBrowserFrom(browser, &browser_list->browsers_ordered_by_activation_);
-  browser_list->currently_closing_browsers_.erase(browser);
 
   RemoveBrowserFrom(browser, &browser_list->browsers_);
 
@@ -335,11 +334,6 @@ void BrowserList::NotifyBrowserNoLongerActive(Browser* browser) {
   for (BrowserListObserver& observer : observers_.Get()) {
     observer.OnBrowserNoLongerActive(browser);
   }
-}
-
-// static
-void BrowserList::NotifyBrowserCloseStarted(Browser* browser) {
-  GetInstance()->currently_closing_browsers_.insert(browser);
 }
 
 // static

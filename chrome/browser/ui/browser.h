@@ -576,15 +576,13 @@ class Browser : public TabStripModelObserver,
   // 2. The Browser window is hidden, and a task is posted that results in
   //    deleting the Browser (Views is responsible for posting the task). This
   //    phase can not be stopped. During this phase is_delete_scheduled()
-  //    returns true. IsBrowserClosing() is nearly identical to
-  //    is_delete_scheduled(), it's set just before removing the tabs.
+  //    returns true.
   //
   // Note that there are other cases that may delay closing, such as downloads,
   // but that is done before any of these steps.
-  // TODO(crbug.com/40064092): See about unifying IsBrowserClosing() and
-  // is_delete_scheduled().
+  // TODO(crbug.com/40064092): See about unifying IsAttemptingToCloseBrowser()
+  // and is_delete_scheduled().
   bool IsAttemptingToCloseBrowser() const override;
-  bool IsBrowserClosing() const;
   bool is_delete_scheduled() const { return is_delete_scheduled_; }
 
   // Invoked when the window containing us is closing. Performs the necessary

@@ -9,7 +9,6 @@
 
 #include <vector>
 
-#include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/function_ref.h"
 #include "base/lazy_instance.h"
@@ -37,7 +36,6 @@ class BrowserListObserver;
 // Maintains a list of Browser objects.
 class BrowserList {
  public:
-  using BrowserSet = base::flat_set<raw_ptr<Browser, CtnExperimental>>;
   using BrowserVector = std::vector<raw_ptr<Browser, VectorExperimental>>;
   using BrowserWeakVector = std::vector<base::WeakPtr<Browser>>;
   using CloseCallback = base::RepeatingCallback<void(const base::FilePath&)>;
@@ -52,11 +50,6 @@ class BrowserList {
 
   bool empty() const { return browsers_.empty(); }
   size_t size() const { return browsers_.size(); }
-
-  // Returns the set of browsers that are currently in the closing state.
-  const BrowserSet& currently_closing_browsers() const {
-    return currently_closing_browsers_;
-  }
 
   static BrowserList* GetInstance();
 
@@ -86,11 +79,6 @@ class BrowserList {
 
   // Notifies the observers when the current active browser becomes not active.
   static void NotifyBrowserNoLongerActive(Browser* browser);
-
-  // Notifies the observers when browser close was started. This may be called
-  // more than once for a particular browser.
-  // DEPRECATED: Use BrowserWindowInterface::RegisterBrowserDidClose instead.
-  static void NotifyBrowserCloseStarted(Browser* browser);
 
   // Closes all browsers for |profile| across all desktops.
   // TODO(mlerman): Move the Profile Deletion flow to use the overloaded
@@ -199,8 +187,6 @@ class BrowserList {
   // windows, (e.g., created by session restore) are inserted at the front of
   // the list.
   BrowserVector browsers_ordered_by_activation_;
-  // A vector of the browsers that are currently in the closing state.
-  BrowserSet currently_closing_browsers_;
 
   // If an observer is added while iterating over them and notifying, it should
   // not be notified as it probably already saw the Browser* being added/removed

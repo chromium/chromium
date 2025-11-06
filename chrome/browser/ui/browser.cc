@@ -1340,8 +1340,6 @@ void Browser::OnWindowClosing() {
     tab_restore_service->BrowserClosing(GetFeatures().live_tab_context());
   }
 
-  BrowserList::NotifyBrowserCloseStarted(this);
-
   if (!tab_strip_model_->empty()) {
     // Closing all the tabs results in eventually calling back to
     // OnWindowClosing() again.
@@ -3756,20 +3754,6 @@ bool Browser::SupportsWindowFeatureImpl(WindowFeature feature,
       return PictureInPictureBrowserSupportsWindowFeature(feature,
                                                           check_can_support);
   }
-}
-
-bool Browser::IsBrowserClosing() const {
-  BrowserList* browser_list = BrowserList::GetInstance();
-  const bool removed_from_browserlist =
-      is_initialized_ &&
-      std::ranges::find_if(*browser_list, [this](Browser* browser) {
-        return browser == this;
-      }) == browser_list->end();
-
-  const BrowserList::BrowserSet& closing_browsers =
-      browser_list->currently_closing_browsers();
-
-  return base::Contains(closing_browsers, this) || removed_from_browserlist;
 }
 
 bool Browser::ShouldCreateBackgroundContents(
