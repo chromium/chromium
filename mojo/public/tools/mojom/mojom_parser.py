@@ -12,7 +12,6 @@ generate usable language bindings.
 
 import argparse
 import builtins
-import codecs
 import errno
 import json
 import logging
@@ -180,7 +179,7 @@ def _CollectAllowedImportsFromBuildMetadata(build_metadata_filename):
 
 # multiprocessing helper.
 def _ParseAstHelper(mojom_abspath, enabled_features):
-  with codecs.open(mojom_abspath, encoding='utf-8') as f:
+  with open(mojom_abspath, encoding='utf-8') as f:
     ast = parser.Parse(f.read(), mojom_abspath)
     conditional_features.RemoveDisabledDefinitions(ast, enabled_features)
     return mojom_abspath, ast
