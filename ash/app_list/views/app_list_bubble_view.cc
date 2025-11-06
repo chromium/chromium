@@ -102,8 +102,8 @@ class SeparatorWithLayer : public views::View {
 
  public:
   SeparatorWithLayer() {
-    SetPaintToLayer(ui::LAYER_SOLID_COLOR);
-    // Color is set in OnThemeChanged().
+    SetBackground(
+        views::CreateLayerBasedSolidBackground(cros_tokens::kSeparatorColor));
   }
   SeparatorWithLayer(const SeparatorWithLayer&) = delete;
   SeparatorWithLayer& operator=(const SeparatorWithLayer&) = delete;
@@ -114,12 +114,6 @@ class SeparatorWithLayer : public views::View {
       const views::SizeBounds& available_size) const override {
     // The parent's layout manager will stretch it horizontally.
     return gfx::Size(1, 1);
-  }
-
-  void OnThemeChanged() override {
-    views::View::OnThemeChanged();
-    layer()->SetColor(
-        GetColorProvider()->GetColor(cros_tokens::kSeparatorColor));
   }
 };
 
