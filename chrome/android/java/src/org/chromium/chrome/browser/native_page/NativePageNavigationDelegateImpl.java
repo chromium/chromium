@@ -13,6 +13,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.offlinepages.DownloadUiActionFlags;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
@@ -85,7 +86,9 @@ public class NativePageNavigationDelegateImpl implements NativePageNavigationDel
             case WindowOpenDisposition.NEW_WINDOW:
                 // If there is only one window, launch in a new window.
                 if (IncognitoUtils.shouldOpenIncognitoAsWindow()
-                        && MultiWindowUtils.getActiveInstanceCount() > 1) {
+                        && MultiWindowUtils.getInstanceCountWithFallback(
+                                        PersistedInstanceType.ACTIVE)
+                                > 1) {
                     mMultiInstanceManager.openUrlInSelectedWindow(
                             loadUrlParams, mHost.getParentId());
                 } else {

@@ -87,6 +87,7 @@ import java.util.Map.Entry;
 /** Unit tests for {@link MultiWindowUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, shadows = ShadowMultiInstanceManagerApi31.class)
+@EnableFeatures(ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT)
 public class MultiWindowUtilsUnitTest {
     /** Shadows {@link MultiInstanceManagerApi31} class for testing. */
     @Implements(MultiInstanceManagerApi31.class)
@@ -516,7 +517,7 @@ public class MultiWindowUtilsUnitTest {
     }
 
     @Test
-    public void testGetActiveInstanceCount() {
+    public void testGetInstanceCountWithFallback() {
         when(mTabModelSelector.getModel(false)).thenReturn(mNormalTabModel);
         when(mTabModelSelector.getModel(true)).thenReturn(mIncognitoTabModel);
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
@@ -541,14 +542,16 @@ public class MultiWindowUtilsUnitTest {
                 new HashSet<>(Arrays.asList(TASK_ID_5, TASK_ID_6)));
 
         assertEquals(
-                "getActiveInstanceCount should only count active instances.",
+                "getInstanceCountWithFallback should only count active instances.",
                 2,
-                MultiWindowUtils.getActiveInstanceCount());
+                MultiWindowUtils.getInstanceCountWithFallback(
+                        MultiInstanceManagerApi31.PersistedInstanceType.ACTIVE));
 
         assertEquals(
-                "getInstanceCount should count all instances.",
+                "getInstanceCountWithFallback should count all instances.",
                 3,
-                MultiWindowUtils.getInstanceCount());
+                MultiWindowUtils.getInstanceCountWithFallback(
+                        MultiInstanceManagerApi31.PersistedInstanceType.ANY));
     }
 
     @Test
@@ -589,15 +592,7 @@ public class MultiWindowUtilsUnitTest {
             writeInstanceInfo(i, URL_1, /* tabCount= */ 3, /* incognitoTabCount= */ 0, i);
         }
 
-        // New instance preferred.
-        int instanceId = MultiWindowUtils.getInstanceIdForViewIntent(true);
-        assertEquals(
-                "The default instance ID should be returned when a new instance is preferred.",
-                TabWindowManager.INVALID_WINDOW_ID,
-                instanceId);
-
-        // Existing instance preferred.
-        instanceId = MultiWindowUtils.getInstanceIdForViewIntent(false);
+        int instanceId = MultiWindowUtils.getInstanceIdForViewIntent();
         assertEquals(
                 "The last accessed instance ID should be returned when an existing instance is"
                         + " preferred.",
@@ -624,7 +619,7 @@ public class MultiWindowUtilsUnitTest {
         // Simulate last access of instance ID 0.
         writeInstanceInfo(0, URL_1, /* tabCount= */ 3, /* incognitoTabCount= */ 0, 0);
 
-        int instanceId = MultiWindowUtils.getInstanceIdForViewIntent(true);
+        int instanceId = MultiWindowUtils.getInstanceIdForViewIntent();
         assertEquals("The last accessed instance ID should be returned.", 0, instanceId);
     }
 
@@ -648,7 +643,7 @@ public class MultiWindowUtilsUnitTest {
         // Simulate destruction of the activity represented by instance ID 0.
         ShadowMultiInstanceManagerApi31.updateWindowIdsOfRunningTabbedActivities(0, true);
 
-        int instanceId = MultiWindowUtils.getInstanceIdForViewIntent(true);
+        int instanceId = MultiWindowUtils.getInstanceIdForViewIntent();
         assertEquals(
                 "The instance ID of a running activity that was last accessed should be returned.",
                 maxInstances - 1,
@@ -657,8 +652,7 @@ public class MultiWindowUtilsUnitTest {
 
     @Test
     @Config(sdk = 31)
-    @DisabledTest(message = "https://crbug.com/423920653")
-    public void testGetInstanceIdForLinkIntent_LessThanMaxInstancesOpen() {
+    public void testGetInstanceIdForLinkIntent_OnlyConsidersActiveInstances() {
         MultiWindowTestUtils.enableMultiInstance();
         when(mTabModelSelector.getModel(false)).thenReturn(mNormalTabModel);
         when(mTabModelSelector.getModel(true)).thenReturn(mIncognitoTabModel);
@@ -667,14 +661,29 @@ public class MultiWindowUtilsUnitTest {
         // Simulate opening of 1 less than the max number of instances. #writeInstanceInfo will
         // update the access time for IDs 0 -> |maxInstances - 2| in increasing order of recency.
         for (int i = 0; i < maxInstances - 1; i++) {
+            writeInstanceInfo(i, URL_1, /* tabCount= */ 1, /* incognitoTabCount= */ 0, i);
             ShadowMultiInstanceManagerApi31.updateWindowIdsOfRunningTabbedActivities(i, false);
-            writeInstanceInfo(i, URL_1, /* tabCount= */ 3, /* incognitoTabCount= */ 0, i);
         }
 
+        // Create inactive instances to exceed max instances.
+        writeInstanceInfo(
+                maxInstances - 1,
+                URL_2,
+                /* tabCount= */ 1,
+                /* incognitoTabCount= */ 0,
+                MultiWindowUtils.INVALID_TASK_ID);
+        writeInstanceInfo(
+                maxInstances,
+                URL_3,
+                /* tabCount= */ 1,
+                /* incognitoTabCount= */ 0,
+                MultiWindowUtils.INVALID_TASK_ID);
+
+        // Total instances is maxInstances + 1. Active instances is maxInstances - 1. Returns
+        // INVALID_WINDOW_ID to allow for new window creation.
         int instanceId = MultiWindowUtils.getInstanceIdForLinkIntent(mock(Activity.class));
         assertEquals(
-                "Instance ID for link intent should be INVALID_WINDOW_ID when fewer than the max"
-                        + " number of instances are open.",
+                "Should return INVALID_WINDOW_ID to allow for new window creation.",
                 TabWindowManager.INVALID_WINDOW_ID,
                 instanceId);
     }
@@ -816,6 +825,7 @@ public class MultiWindowUtilsUnitTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT)
     public void testInstanceRestorationMessage() {
         MultiWindowUtils.setInstanceCountForTesting(5);
         MultiWindowUtils.setMaxInstancesForTesting(3);
@@ -869,6 +879,7 @@ public class MultiWindowUtilsUnitTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT)
     public void testInstanceRestorationMessage_InstanceCountWithinLimit() {
         MultiWindowUtils.setInstanceCountForTesting(2);
         MultiWindowUtils.setMaxInstancesForTesting(3);
@@ -890,6 +901,7 @@ public class MultiWindowUtilsUnitTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT)
     public void testInstanceRestorationMessage_ShownExactlyOnce() {
         MultiWindowUtils.setInstanceCountForTesting(5);
         MultiWindowUtils.setMaxInstancesForTesting(3);

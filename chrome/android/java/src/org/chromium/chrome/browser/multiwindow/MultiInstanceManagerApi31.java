@@ -1480,7 +1480,10 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
             // Reset the count to 0 to be ready to obtain the max count for the next 24-hour period.
             maxCount = 0;
         }
-        int instanceCount = MultiWindowUtils.getInstanceCount();
+        // TODO(crbug.com/454366549): Add metric to record the max active instance count.
+        int instanceCount =
+                MultiWindowUtils.getInstanceCountWithFallback(
+                        MultiInstanceManager.PersistedInstanceType.ANY);
         if (instanceCount > maxCount) {
             prefs.writeInt(ChromePreferenceKeys.MULTI_INSTANCE_MAX_INSTANCE_COUNT, instanceCount);
         }
@@ -1549,7 +1552,10 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
     private void moveToNewWindowIfPossible(
             Runnable moveToNewWindow, @NewWindowAppSource int source) {
         // Check if the new Chrome instance can be opened.
-        if (MultiWindowUtils.getInstanceCount() < mMaxInstances) {
+        int instanceCount =
+                MultiWindowUtils.getInstanceCountWithFallback(
+                        MultiInstanceManager.PersistedInstanceType.ACTIVE);
+        if (instanceCount < mMaxInstances) {
             moveToNewWindow.run();
         } else {
             // Just try to launch a Chrome window to inform user that maximum number of instances

@@ -3706,7 +3706,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
         }
 
         // Find an instance to launch the intent in.
-        int instanceId = MultiWindowUtils.getInstanceIdForViewIntent(false);
+        int instanceId = MultiWindowUtils.getInstanceIdForViewIntent();
 
         // If there is no running ChromeTabbedActivity, continue to launch in the current activity.
         if (instanceId == INVALID_WINDOW_ID) {

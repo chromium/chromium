@@ -141,6 +141,7 @@ import java.util.stream.Collectors;
 /** Unit tests for {@link MultiInstanceManagerApi31}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@EnableFeatures(ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT)
 @DisableFeatures(ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL)
 public class MultiInstanceManagerApi31UnitTest {
     private static final int INSTANCE_ID_1 = 1;
@@ -2007,6 +2008,7 @@ public class MultiInstanceManagerApi31UnitTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT)
     public void showInstanceRestorationMessage() {
         MultiWindowUtils.setInstanceCountForTesting(3);
         MultiWindowUtils.setMaxInstancesForTesting(2);

@@ -52,6 +52,7 @@ import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.SupportedProfileType;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -480,8 +481,9 @@ public class MultiWindowUtils implements ActivityStateListener {
     }
 
     /**
-     * @return The number of Chrome instances that can switch to or launch.
+     * @deprecated The number of Chrome instances that can switch to or launch.
      */
+    @Deprecated
     public static int getInstanceCount() {
         if (sInstanceCountForTesting != null) return sInstanceCountForTesting;
         int count = 0;
@@ -495,12 +497,29 @@ public class MultiWindowUtils implements ActivityStateListener {
     }
 
     /**
-     * @return The number of active Chrome instances, that are associated with a live task.
+     * Returns the number of restorable Chrome instances of a given type.
+     *
+     * @param type The {@link PersistedInstanceType} of instances to count.
+     * @return The number of restorable Chrome instances; qn instance is considered restorable if it
+     *     has tabs or is associated with a live task. If Robust Window Management is not enabled,
+     *     the type is ignored and all instances, both active and inactive, are counted.
      */
-    public static int getActiveInstanceCount() {
-        return MultiInstanceManagerApi31.getPersistedInstanceIds(
-                        MultiInstanceManagerApi31.PersistedInstanceType.ACTIVE)
-                .size();
+    // TODO (crbug.com/456833895): Remove resotrable instance check post-launch.
+    public static int getInstanceCountWithFallback(@PersistedInstanceType int type) {
+        if (sInstanceCountForTesting != null) {
+            return sInstanceCountForTesting;
+        }
+        if (!UiUtils.isRobustWindowManagementEnabled()) {
+            type = PersistedInstanceType.ANY;
+        }
+        Set<Integer> ids = MultiInstanceManagerApi31.getPersistedInstanceIds(type);
+        int count = 0;
+        for (Integer id : ids) {
+            if (isRestorableInstance(id)) {
+                count++;
+            }
+        }
+        return count;
     }
 
     /**
@@ -929,19 +948,9 @@ public class MultiWindowUtils implements ActivityStateListener {
     }
 
     /**
-     * @param preferNew Whether a new instance is preferred to launch a VIEW intent. {@code true} if
-     *     a new instance is preferred, {@code false} if an existing instance is preferred.
-     * @return The instance ID of the Chrome window with a running activity that was accessed last,
-     *     if an existing instance is preferred to launch the intent, or if the maximum number of
-     *     instances is open. If fewer than the maximum number is open, the default ID will be
-     *     returned if |preferNew| is true, indicative of an unused window ID that can be allocated
-     *     to the new instance launched by the intent.
+     * @return The instance ID of the Chrome window with a running activity that was accessed last.
      */
-    public static int getInstanceIdForViewIntent(boolean preferNew) {
-        int windowId = INVALID_WINDOW_ID;
-        int maxInstances = MultiWindowUtils.getMaxInstances();
-        if (preferNew && MultiWindowUtils.getInstanceCount() < maxInstances) return windowId;
-
+    public static int getInstanceIdForViewIntent() {
         return getLastAccessedWindowIdInternal(/* includeRunningActivitiesOnly= */ true);
     }
 
@@ -1020,13 +1029,16 @@ public class MultiWindowUtils implements ActivityStateListener {
     /**
      * @param activity The {@link Activity} associated with the current context.
      * @return The instance ID of the Chrome window where the link intent will be launched.
-     *     INVALID_WINDOW_ID will be returned if fewer than the maximum number of instances are
-     *     open. The instance ID associated with the specified, valid activity will be returned if
-     *     the maximum number of instances is open.
+     *     INVALID_WINDOW_ID will be returned if fewer than the maximum number of active instances
+     *     are open. The instance ID associated with the specified, valid activity will be returned
+     *     if the maximum number of active instances is open.
      */
     public static int getInstanceIdForLinkIntent(Activity activity) {
         // INVALID_WINDOW_ID indicates that a new instance will be used to launch the link intent.
-        if (getInstanceCount() < getMaxInstances()) return INVALID_WINDOW_ID;
+        int instanceCount =
+                getInstanceCountWithFallback(
+                        MultiInstanceManagerApi31.PersistedInstanceType.ACTIVE);
+        if (instanceCount < getMaxInstances()) return INVALID_WINDOW_ID;
         int windowId = TabWindowManagerSingleton.getInstance().getIdForWindow(activity);
         assert windowId != INVALID_WINDOW_ID
                 : "A valid instance ID was not found for the specified activity.";
@@ -1119,7 +1131,8 @@ public class MultiWindowUtils implements ActivityStateListener {
 
     /**
      * Creates and shows a message to notify a user about instance restoration when the number of
-     * persisted instances exceeds the max instance count after an instance limit downgrade.
+     * persisted instances exceeds the max instance count after an instance limit downgrade. This is
+     * relevant only when both active and inactive instances contribute to the instance limit.
      *
      * @param messageDispatcher The {@link MessageDispatcher} to enqueue the message.
      * @param context The current context.
@@ -1133,8 +1146,11 @@ public class MultiWindowUtils implements ActivityStateListener {
             Runnable primaryActionRunnable) {
         if (messageDispatcher == null) return false;
 
-        // Show the message only when the number of persisted instances exceeds the instance limit.
-        if (getInstanceCount() <= getMaxInstances()) {
+        // Show the message only when robust window management is disabled and the number of
+        // persisted instances exceeds the instance limit.
+        if (UiUtils.isRobustWindowManagementEnabled()
+                || getInstanceCountWithFallback(MultiInstanceManagerApi31.PersistedInstanceType.ANY)
+                        <= getMaxInstances()) {
             return false;
         }
 

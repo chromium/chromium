@@ -92,7 +92,7 @@ public class UiUtils {
      *     otherwise.
      */
     public static boolean isRobustWindowManagementEnabled() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT);
+        return ChromeFeatureList.sRobustWindowManagement.isEnabled();
     }
 
     /**
