@@ -1,5 +1,0 @@
-This is a wdspec test.
-[FAIL] test_cookie_secure[default]
-  AssertionError
-Harness: the test ran to completion.
-

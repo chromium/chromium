@@ -1,5 +1,5 @@
 This is a wdspec test.
 [FAIL] test_destination_initiator
-  AssertionError
+  AssertionError: assert 5 == 6
 Harness: the test ran to completion.
 

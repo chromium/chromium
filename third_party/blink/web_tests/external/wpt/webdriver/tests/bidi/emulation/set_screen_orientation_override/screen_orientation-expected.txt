@@ -1,5 +1,0 @@
-This is a wdspec test.
-[FAIL] test_screen_orientation_change_event
-  asyncio.exceptions.CancelledError
-Harness: the test ran to completion.
-
