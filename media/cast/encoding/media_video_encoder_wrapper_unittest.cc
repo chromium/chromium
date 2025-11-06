@@ -334,4 +334,63 @@ TEST_F(MediaVideoEncoderWrapperTest, StillOutputsIfFrameDroppedByEncoder) {
   EXPECT_EQ(EncodeVideoFrame(frame_info), nullptr);
 }
 
+// Ensure that the encoder wrapper can handle multiple, sequential calls to
+// the SetBitRate method without crashing. For motivation, see
+// crbug.com/457353867.
+TEST_F(MediaVideoEncoderWrapperTest, CanHandleMultiplePendingUpdates) {
+  constexpr int kNewBitRate1 = 1234567;
+  constexpr int kNewBitRate2 = 2345678;
+  constexpr int kNewBitRate3 = 3456789;
+  media::VideoEncoder::OutputCB output_cb;
+  ExpectEncoderInitialized(&output_cb);
+
+  const FrameInfo frame_info = CreateFrameInfo(FrameType::kKey);
+  ExpectVideoFrameEncoded(frame_info);
+  AdvanceClock(base::Milliseconds(30));
+  const FrameInfo second_frame_info = CreateFrameInfo(FrameType::kIntermediate);
+  ExpectVideoFrameEncoded(second_frame_info);
+
+  EXPECT_CALL(*mock_encoder_, Flush(_))
+      .Times(3)
+      .WillRepeatedly([](media::VideoEncoder::EncoderStatusCB done) {
+        std::move(done).Run(EncoderStatus::Codes::kOk);
+      });
+
+  base::RunLoop run_loop;
+  auto quit_closure = run_loop.QuitClosure();
+  EXPECT_CALL(*mock_encoder_, ChangeOptions(_, _, _))
+      .Times(3)
+      .WillRepeatedly([&](const media::VideoEncoder::Options& options,
+                          media::VideoEncoder::OutputCB output,
+                          media::VideoEncoder::EncoderStatusCB done_cb) {
+        if (options.bitrate ==
+            Bitrate::ConstantBitrate(
+                base::checked_cast<uint32_t>(kNewBitRate3))) {
+          std::move(quit_closure).Run();
+        }
+        std::move(done_cb).Run(EncoderStatus::Codes::kOk);
+      });
+
+  EXPECT_NE(EncodeVideoFrame(frame_info), nullptr);
+
+  encoder_->SetBitRate(kNewBitRate1);
+  encoder_->SetBitRate(kNewBitRate2);
+  encoder_->SetBitRate(kNewBitRate3);
+  run_loop.Run();
+
+  // At this point, we should have posted the tasks to run
+  // MediaVideoEncoderWrapper::OnOptionsUpdated, but they are waiting in the
+  // task queue. Make sure we run the tasks before encoding a video frame.
+  GetMainThreadTaskRunner()->PostTask(FROM_HERE, QuitClosure());
+  RunUntilQuit();
+  GetMainThreadTaskRunner()->PostTask(FROM_HERE, QuitClosure());
+  RunUntilQuit();
+  GetMainThreadTaskRunner()->PostTask(FROM_HERE, QuitClosure());
+  RunUntilQuit();
+
+  // Don't encode the second frame until we have completely updated
+  // options.
+  EXPECT_NE(EncodeVideoFrame(second_frame_info, output_cb), nullptr);
+}
+
 }  // namespace media::cast

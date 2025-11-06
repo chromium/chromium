@@ -162,9 +162,9 @@ class MediaVideoEncoderWrapper final : public media::cast::VideoEncoder {
   // These options are for the entire encoder.
   media::VideoEncoder::Options options_;
 
-  // If true, we are currently updating options, and any enqueued frames will
-  // be rejected.
-  bool is_updating_options_ = false;
+  // If we have any pending updates, any enqueued frames will be rejected. In
+  // some cases we may have multiple pending updates in flight.
+  int num_pending_updates_ = 0;
 
   // These options are intended to be per frame.
   media::VideoEncoder::EncodeOptions encode_options_;
