@@ -10,7 +10,6 @@ namespace blink {
 enum class DarkModeInversionAlgorithm {
   // For testing only, does a simple 8-bit invert of every RGB pixel component.
   kSimpleInvertForTesting,
-  kInvertBrightness,
   kInvertLightness,
   kInvertLightnessLAB,
 

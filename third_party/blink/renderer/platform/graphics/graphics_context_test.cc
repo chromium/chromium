@@ -205,20 +205,6 @@ TEST_F(GraphicsContextDarkModeTest, SimpleInvertForTesting) {
   EXPECT_EQ(0xff777777, bitmap_.getColor(3, 0));
 }
 
-// Invert brightness (with gamma correction).
-TEST_F(GraphicsContextDarkModeTest, InvertBrightness) {
-  DarkModeSettings settings;
-  settings.mode = DarkModeInversionAlgorithm::kInvertBrightness;
-  settings.contrast = 0;
-
-  DrawColorsToContext(true, settings);
-
-  EXPECT_EQ(SK_ColorWHITE, bitmap_.getColor(0, 0));
-  EXPECT_EQ(SK_ColorBLACK, bitmap_.getColor(1, 0));
-  EXPECT_EQ(SK_ColorCYAN, bitmap_.getColor(2, 0));
-  EXPECT_EQ(0xffe1e1e1, bitmap_.getColor(3, 0));
-}
-
 // Invert lightness (in HSL space).
 TEST_F(GraphicsContextDarkModeTest, InvertLightness) {
   DarkModeSettings settings;

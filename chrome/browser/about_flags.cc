@@ -785,11 +785,6 @@ const FeatureEntry::FeatureParam kForceDark_SimpleCielab[] = {
     {"foreground_lightness_threshold", "150"},
     {"background_lightness_threshold", "205"}};
 
-const FeatureEntry::FeatureParam kForceDark_SimpleRgb[] = {
-    {"inversion_method", "rgb_based"},
-    {"foreground_lightness_threshold", "150"},
-    {"background_lightness_threshold", "205"}};
-
 // Keep in sync with the kForceDark_SelectiveImageInversion
 // in aw_feature_entries.cc if you tweak these parameters.
 const FeatureEntry::FeatureParam kForceDark_SelectiveElementInversion[] = {
@@ -802,8 +797,6 @@ const FeatureEntry::FeatureVariation kForceDarkVariations[] = {
      std::size(kForceDark_SimpleHsl), nullptr},
     {"with simple CIELAB-based inversion", kForceDark_SimpleCielab,
      std::size(kForceDark_SimpleCielab), nullptr},
-    {"with simple RGB-based inversion", kForceDark_SimpleRgb,
-     std::size(kForceDark_SimpleRgb), nullptr},
     {"with selective inversion of non-image elements",
      kForceDark_SelectiveElementInversion,
      std::size(kForceDark_SelectiveElementInversion), nullptr}};

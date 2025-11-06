@@ -26,28 +26,21 @@ BASE_FEATURE(kTestFeature2,
              "AwFeatureEntriesTest2",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-const flags_ui::FeatureEntry::FeatureParam kForceDark_SimpleHsl[] = {
-    {"inversion_method", "hsl_based"},
-    {"foreground_lightness_threshold", "255"},
-    {"background_lightness_threshold", "0"}};
-
 const flags_ui::FeatureEntry::FeatureParam kForceDark_SimpleCielab[] = {
     {"inversion_method", "cielab_based"},
     {"foreground_lightness_threshold", "255"},
     {"background_lightness_threshold", "0"}};
 
-const flags_ui::FeatureEntry::FeatureParam kForceDark_SimpleRgb[] = {
-    {"inversion_method", "rgb_based"},
+const flags_ui::FeatureEntry::FeatureParam kForceDark_SimpleHsl[] = {
+    {"inversion_method", "hsl_based"},
     {"foreground_lightness_threshold", "255"},
     {"background_lightness_threshold", "0"}};
 
 const flags_ui::FeatureEntry::FeatureVariation kForceDarkVariations[] = {
-    {"with simple HSL-based inversion", kForceDark_SimpleHsl,
-     std::size(kForceDark_SimpleHsl), nullptr},
     {"with simple CIELAB-based inversion", kForceDark_SimpleCielab,
      std::size(kForceDark_SimpleCielab), nullptr},
-    {"with simple RGB-based inversion", kForceDark_SimpleRgb,
-     std::size(kForceDark_SimpleRgb), nullptr}};
+    {"with simple HSL-based inversion", kForceDark_SimpleHsl,
+     std::size(kForceDark_SimpleHsl), nullptr}};
 
 // Not for display, set the descriptions to empty.
 flags_ui::FeatureEntry kForceDark = {
@@ -81,14 +74,12 @@ void VerifyFeatureParameters(
 TEST(AwFeatureEntriesTest, ToEnabledEntry) {
   EXPECT_EQ("enable-force-dark@2",
             aw_feature_entries::internal::ToEnabledEntry(kForceDark, 0));
-  EXPECT_EQ("enable-force-dark@4",
-            aw_feature_entries::internal::ToEnabledEntry(kForceDark, 2));
 }
 
 TEST(AwFeatureEntriesTest, RegisterEnabledFeatureEntries) {
   std::set<std::string> enabled_entries;
   enabled_entries.insert(
-      aw_feature_entries::internal::ToEnabledEntry(kForceDark, 2));
+      aw_feature_entries::internal::ToEnabledEntry(kForceDark, 0));
   auto feature_list = std::make_unique<base::FeatureList>();
   flags_ui::FlagsState::RegisterEnabledFeatureVariationParameters(
       kWebViewTestFeatureEntries, enabled_entries, "webview_dev_ui",
@@ -106,9 +97,9 @@ TEST(AwFeatureEntriesTest, RegisterEnabledFeatureEntries) {
   EXPECT_TRUE(field_trial);
   EXPECT_EQ("webview_dev_ui", field_trial->group_name());
   EXPECT_EQ("ForceDarkVariations", field_trial->trial_name());
-  // Verify the enabled variation kForceDark_SimpleRgb (index = 2) setup
+  // Verify the enabled variation kForceDark_SimpleCielab (index = 0) setup
   // correctly.
-  VerifyFeatureParameters(kForceDark.feature.feature_variations[2]);
+  VerifyFeatureParameters(kForceDark.feature.feature_variations[0]);
 }
 
 }  // namespace android_webview

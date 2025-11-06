@@ -171,10 +171,6 @@ std::unique_ptr<DarkModeColorFilter> DarkModeColorFilter::FromSettings(
       return ColorFilterWrapper::Create(cc::ColorFilter::MakeTableARGB(
           identity.data(), invert.data(), invert.data(), invert.data()));
 
-    case DarkModeInversionAlgorithm::kInvertBrightness:
-      return ColorFilterWrapper::Create(
-          SkHighContrastConfig::InvertStyle::kInvertBrightness, settings);
-
     case DarkModeInversionAlgorithm::kInvertLightness:
       return ColorFilterWrapper::Create(
           SkHighContrastConfig::InvertStyle::kInvertLightness, settings);
