@@ -112,9 +112,6 @@ void TabletModeWindowDragDelegate::StartWindowDrag(
   // when the window is dragged in split view.
   WindowState::Get(dragged_window_)->set_can_update_snap_ratio(false);
 
-  // We don't really need to call SplitViewController::OnWindowDragStarted as
-  // long as we don't allow dragging entire windows (and even then I'm not
-  // sure). Do it anyways in order to match the later OnWindowDragEnded call.
   split_view_controller_->OnWindowDragStarted(dragged_window_);
   split_view_drag_indicators_->SetDraggedWindow(dragged_window_);
 }
@@ -144,20 +141,21 @@ void TabletModeWindowDragDelegate::ContinueWindowDrag(
 void TabletModeWindowDragDelegate::EndWindowDrag(
     ToplevelWindowEventHandler::DragResult result,
     const gfx::PointF& location_in_screen) {
-  WindowState::Get(dragged_window_)->set_can_update_snap_ratio(true);
-  WindowBackdrop::Get(dragged_window_)->RestoreBackdrop();
-
   SnapPosition snap_position =
       (result == ToplevelWindowEventHandler::DragResult::SUCCESS)
           ? GetSnapPosition(location_in_screen)
           : SnapPosition::kNone;
 
+  split_view_drag_indicators_->SetWindowDraggingState(
+      SplitViewDragIndicators::WindowDraggingState::kNoDrag);
+
   // Notify SplitViewController so it can do its work (e.g. snap the window).
   split_view_controller_->OnWindowDragEnded(
       dragged_window_, snap_position, gfx::ToRoundedPoint(location_in_screen),
       WindowSnapActionSource::kDragDownFromTopToSnap);
-  split_view_drag_indicators_->SetWindowDraggingState(
-      SplitViewDragIndicators::WindowDraggingState::kNoDrag);
+
+  WindowState::Get(dragged_window_)->set_can_update_snap_ratio(true);
+  WindowBackdrop::Get(dragged_window_)->RestoreBackdrop();
 
   dragged_window_ = nullptr;
 }
