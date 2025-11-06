@@ -1056,6 +1056,10 @@ TEST_F(SearchEngineChoiceServiceChoiceScreenDataTest, DseHighlight) {
     }
   }
   ASSERT_TRUE(found_current_dse);
+  EXPECT_TRUE(
+      choice_screen_data->display_state().is_current_default_search_presented);
+  EXPECT_FALSE(
+      choice_screen_data->display_state().includes_non_regional_set_engine);
 }
 
 TEST_F(SearchEngineChoiceServiceChoiceScreenDataTest,
@@ -1075,6 +1079,10 @@ TEST_F(SearchEngineChoiceServiceChoiceScreenDataTest,
 
   // No engine should be provided for highlighting.
   EXPECT_EQ(choice_screen_data->current_default_to_highlight(), nullptr);
+  EXPECT_FALSE(
+      choice_screen_data->display_state().is_current_default_search_presented);
+  EXPECT_FALSE(
+      choice_screen_data->display_state().includes_non_regional_set_engine);
 }
 
 TEST_F(SearchEngineChoiceServiceChoiceScreenDataTest,
@@ -1093,6 +1101,10 @@ TEST_F(SearchEngineChoiceServiceChoiceScreenDataTest,
 
   // No engine should be provided for highlighting.
   EXPECT_EQ(choice_screen_data->current_default_to_highlight(), nullptr);
+  EXPECT_FALSE(
+      choice_screen_data->display_state().is_current_default_search_presented);
+  EXPECT_FALSE(
+      choice_screen_data->display_state().includes_non_regional_set_engine);
 }
 
 TEST_F(SearchEngineChoiceServiceChoiceScreenDataTest,
@@ -1111,6 +1123,10 @@ TEST_F(SearchEngineChoiceServiceChoiceScreenDataTest,
 
   // No engine should be provided for highlighting.
   EXPECT_EQ(choice_screen_data->current_default_to_highlight(), nullptr);
+  EXPECT_FALSE(
+      choice_screen_data->display_state().is_current_default_search_presented);
+  EXPECT_FALSE(
+      choice_screen_data->display_state().includes_non_regional_set_engine);
 }
 
 class SearchEngineChoiceServiceWipeOnMissingDSETest

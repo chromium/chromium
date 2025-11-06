@@ -753,11 +753,6 @@ void SearchEngineChoiceService::MaybeRecordChoiceScreenDisplayState(
     return;
   }
 
-  if (display_state.includes_non_regional_set_engine) {
-    // TODO(crbug.com/454023518): Figure out metrics impact of this status.
-    return;
-  }
-
   // This block monitors the prevalence of some hard to reproduce case where
   // this method is called more than once per profile session with
   // `is_from_cached_state == true`, which seems to indicate a choice being made

@@ -171,9 +171,10 @@ ChoiceScreenData::ChoiceScreenData(
           /*is_current_default_search_presented=*/
           current_default_to_highlight != nullptr,
           /*includes_non_regional_set_engine=*/
-          base::Contains(search_engines_,
-                         current_default_to_highlight,
-                         &std::unique_ptr<TemplateURL>::get))),
+          current_default_to_highlight != nullptr &&
+              !base::Contains(search_engines_,
+                              current_default_to_highlight,
+                              &std::unique_ptr<TemplateURL>::get))),
       current_default_to_highlight_(current_default_to_highlight) {}
 
 ChoiceScreenData::~ChoiceScreenData() = default;
