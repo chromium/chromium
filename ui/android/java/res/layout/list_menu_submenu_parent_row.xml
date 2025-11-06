@@ -29,7 +29,7 @@ found in the LICENSE file.
         android:id="@+id/submenu_arrow"
         android:src="@drawable/outline_chevron_right_24dp"
         android:importantForAccessibility="no"
-        android:layout_width="@dimen/list_menu_item_icon_size"
+        android:layout_width="?attr/listItemIconSize"
         android:layout_height="match_parent"
         android:scaleType="fitCenter"
         android:background="@android:color/transparent" />
