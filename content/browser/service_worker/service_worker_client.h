@@ -346,6 +346,10 @@ class CONTENT_EXPORT ServiceWorkerClient final
   // OnRestoreFromBackForwardCache will not be called.
   void OnRestoreFromBackForwardCache();
 
+  bool was_controlled_when_entered_back_forward_cache() const {
+    return was_controlled_when_entered_back_forward_cache_;
+  }
+
   bool navigation_commit_ended() const { return navigation_commit_ended_; }
 
   void EnterBackForwardCacheForTesting() { is_in_back_forward_cache_ = true; }
@@ -605,6 +609,11 @@ class CONTENT_EXPORT ServiceWorkerClient final
   // TODO(yuzus): This bit will be unnecessary once ServiceWorkerContainerHost
   // and RenderFrameHost have the same lifetime.
   bool is_in_back_forward_cache_ = false;
+
+  // True if this client was controlled when it entered the back-forward cache.
+  // This is reset when the client is restored from the back-forward cache or
+  // its controller changes.
+  bool was_controlled_when_entered_back_forward_cache_ = false;
 
   // Indicates if OnEndNavigationCommit() was called on this container host.
   bool navigation_commit_ended_ = false;
