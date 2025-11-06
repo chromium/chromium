@@ -605,9 +605,17 @@ message AnchorData {
   repeated AnchorRel rel = 2;
 }
 
+// FormInfo is a mirror of AIPageContentFormData from
+// third_party/blink/public/mojom/content_extraction/ai_page_content.mojom,
+// in contrast with FormData, which is a mirror of autofill::FormData from
+// components/autofill/core/common/mojom/autofill_types.mojom.
 message FormInfo {
-  // The of the form.
+  // The name of the form.
   string form_name = 1 [features = { field_presence: EXPLICIT }];
+
+  // The action URL of the form, if present. This is the resolved value
+  // including the final origin.
+  string action_url = 2 [features = { field_presence: EXPLICIT }];
 }
 
 // Next ID: 11
