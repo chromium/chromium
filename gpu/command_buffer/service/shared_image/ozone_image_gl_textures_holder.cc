@@ -25,21 +25,21 @@ namespace gpu {
 
 namespace {
 
-// Returns BufferFormat for given `format` and `plane_index`.
-gfx::BufferFormat GetBufferFormatForPlane(viz::SharedImageFormat format,
-                                          int plane_index) {
+// Returns SharedImageFormat for given `format` and `plane_index`.
+viz::SharedImageFormat GetFormatForPlane(viz::SharedImageFormat format,
+                                         int plane_index) {
   DCHECK(format.IsValidPlaneIndex(plane_index));
   int num_channels = format.NumChannelsInPlane(plane_index);
   DCHECK_LE(num_channels, 2);
   switch (format.channel_format()) {
     case viz::SharedImageFormat::ChannelFormat::k8:
-      return num_channels == 2 ? gfx::BufferFormat::RG_88
-                               : gfx::BufferFormat::R_8;
+      return num_channels == 2 ? viz::SinglePlaneFormat::kRG_88
+                               : viz::SinglePlaneFormat::kR_8;
     case viz::SharedImageFormat::ChannelFormat::k10:
     case viz::SharedImageFormat::ChannelFormat::k16:
     case viz::SharedImageFormat::ChannelFormat::k16F:
-      return num_channels == 2 ? gfx::BufferFormat::RG_1616
-                               : gfx::BufferFormat::R_16;
+      return num_channels == 2 ? viz::SinglePlaneFormat::kRG_1616
+                               : viz::SinglePlaneFormat::kR_16;
   }
   NOTREACHED();
 }
@@ -116,17 +116,16 @@ std::unique_ptr<ui::NativePixmapGLBinding> GetBinding(
 
   // Get the plane format and plane size using utility methods for multiplanar
   // formats.
-  gfx::BufferFormat plane_format;
+  viz::SharedImageFormat plane_format = format;
   gfx::Size plane_size;
   // The plane is DEFAULT for single planar formats and multi planar with
   // external sampler.
   gfx::BufferPlane buffer_plane;
   if (format.is_single_plane() || format.PrefersExternalSampler()) {
-    plane_format = viz::SharedImageFormatToBufferFormat(format);
     plane_size = size;
     buffer_plane = gfx::BufferPlane::DEFAULT;
   } else {
-    plane_format = GetBufferFormatForPlane(format, plane_index);
+    plane_format = GetFormatForPlane(format, plane_index);
     plane_size = format.GetPlaneSize(plane_index, size);
     buffer_plane = GetBufferPlane(format, plane_index);
   }
