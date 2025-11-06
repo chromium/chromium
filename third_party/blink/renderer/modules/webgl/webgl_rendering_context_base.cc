@@ -8967,11 +8967,9 @@ CanvasResourceProvider* WebGLRenderingContextBase::
     temp = CreateResourceProviderForVideoFrame(
         size, format, alpha_type, color_space, raster_context_provider);
   } else {
-    // TODO(fserb): why is this a BITMAP?
     temp = CanvasResourceProvider::CreateBitmapProvider(
         size, format, alpha_type, color_space,
-        CanvasResourceProvider::ShouldInitialize::kNo);  // TODO: should this
-                                                         // use the canvas's
+        CanvasResourceProvider::ShouldInitialize::kNo);
   }
 
   if (!temp)
