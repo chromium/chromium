@@ -80,6 +80,10 @@ void TileBasedLayerImpl::AppendQuads(const AppendQuadsContext& context,
   // crbug.com/765297. In order to avoid this, we shift the quads up from where
   // they logically reside and adjust the shared_quad_state's transform instead.
   // We only do this in scale/translate matrices to ensure the math is correct.
+  // NOTE: Implementations of AppendQuadsSpecialization() need to use the
+  // original state in `shared_quad_state` to correctly locate the tiles to
+  // draw. For this reason, we delay adjusting `shared_quad_state` itself until
+  // the bottom of the method below.
   gfx::Vector2d quad_offset;
   if (shared_quad_state->quad_to_target_transform.IsScaleOrTranslation()) {
     const auto& visible_rect = shared_quad_state->visible_quad_layer_rect;

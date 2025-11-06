@@ -541,5 +541,93 @@ TEST_F(TileBasedLayerImplTest, AppendQuadsComputesQuadOffset) {
             expected_visible_quad_layer_rect);
 }
 
+class QuadOffsetOrderTestTileBasedLayerImpl : public TestTileBasedLayerImpl {
+ public:
+  QuadOffsetOrderTestTileBasedLayerImpl(LayerTreeImpl* tree_impl, int id)
+      : TestTileBasedLayerImpl(tree_impl, id) {}
+
+  const viz::SharedQuadState* shared_quad_state_at_specialization() const {
+    return shared_quad_state_at_specialization_.get();
+  }
+
+ private:
+  void AppendQuadsSpecialization(const AppendQuadsContext& context,
+                                 viz::CompositorRenderPass* render_pass,
+                                 AppendQuadsData* append_quads_data,
+                                 viz::SharedQuadState* shared_quad_state,
+                                 const Occlusion& scaled_occlusion,
+                                 const gfx::Vector2d& quad_offset) override {
+    shared_quad_state_at_specialization_ =
+        std::make_unique<viz::SharedQuadState>(*shared_quad_state);
+    // Create a dummy quad to avoid tripping debug checks.
+    auto* quad =
+        render_pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();
+    quad->SetNew(shared_quad_state, gfx::Rect(1, 1), gfx::Rect(1, 1),
+                 SkColors::kTransparent, false);
+  }
+
+  std::unique_ptr<viz::SharedQuadState> shared_quad_state_at_specialization_;
+};
+
+// Verifies that AppendQuads() updates the shared quad state for the computed
+// quad offset only *after* invoking AppendQuadsSpecialization(). This is part
+// of the method's contract and is necessary AppendQuadsSpecialization()
+// implementations need to operate on the original values of the shared quad
+// state (e.g., to find which tiles to draw).
+TEST_F(
+    TileBasedLayerImplTest,
+    AppendQuadsUpdatesSharedQuadStateWithOffsetOnlyAfterCallingSpecialization) {
+  const gfx::Size layer_bounds(100, 100);
+  const gfx::Rect visible_layer_rect(10, 20, 50, 60);
+
+  auto layer = std::make_unique<QuadOffsetOrderTestTileBasedLayerImpl>(
+      host_impl()->active_tree(), /*id=*/1);
+  auto* raw_layer = layer.get();
+  host_impl()->active_tree()->AddLayer(std::move(layer));
+
+  raw_layer->SetBounds(layer_bounds);
+  raw_layer->draw_properties().visible_layer_rect = visible_layer_rect;
+
+  SetupRootProperties(host_impl()->active_tree()->root_layer());
+
+  auto render_pass = viz::CompositorRenderPass::Create();
+  AppendQuadsData data;
+  raw_layer->AppendQuads(AppendQuadsContext{DRAW_MODE_SOFTWARE, {}, false},
+                         render_pass.get(), &data);
+
+  const viz::SharedQuadState* sqs_at_specialization =
+      raw_layer->shared_quad_state_at_specialization();
+  ASSERT_TRUE(sqs_at_specialization);
+
+  // The SharedQuadState should not have been adjusted by the quad offset at the
+  // time of being passed into AppendQuadsSpecialization().
+  EXPECT_EQ(sqs_at_specialization->quad_to_target_transform,
+            raw_layer->draw_properties().target_space_transform);
+  EXPECT_EQ(sqs_at_specialization->quad_layer_rect, gfx::Rect(layer_bounds));
+  EXPECT_EQ(sqs_at_specialization->visible_quad_layer_rect, visible_layer_rect);
+
+  // Now check the final SQS to ensure the offset was applied later.
+  ASSERT_EQ(render_pass->shared_quad_state_list.size(), 1u);
+  const viz::SharedQuadState* final_sqs =
+      render_pass->shared_quad_state_list.front();
+
+  const gfx::Vector2d expected_quad_offset(-visible_layer_rect.x(),
+                                           -visible_layer_rect.y());
+
+  gfx::Transform expected_transform =
+      raw_layer->draw_properties().target_space_transform;
+  expected_transform.Translate(-expected_quad_offset);
+  EXPECT_EQ(final_sqs->quad_to_target_transform, expected_transform);
+
+  gfx::Rect expected_quad_layer_rect = gfx::Rect(layer_bounds);
+  expected_quad_layer_rect.Offset(expected_quad_offset);
+  EXPECT_EQ(final_sqs->quad_layer_rect, expected_quad_layer_rect);
+
+  gfx::Rect expected_visible_quad_layer_rect = visible_layer_rect;
+  expected_visible_quad_layer_rect.Offset(expected_quad_offset);
+  EXPECT_EQ(final_sqs->visible_quad_layer_rect,
+            expected_visible_quad_layer_rect);
+}
+
 }  // namespace
 }  // namespace cc
