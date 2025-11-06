@@ -509,7 +509,7 @@ MediaFoundationAudioDecoder::PumpOutput(PumpState pump_state) {
 
   if (hr == MF_E_TRANSFORM_STREAM_CHANGE &&
       pump_state != PumpState::kStreamChange) {
-    if (!ConfigureOutput()) {
+    if (FAILED(ConfigureOutput())) {
       return OutputStatus::kFailed;
     }
 
