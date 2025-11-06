@@ -12,6 +12,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/callback.h"
+#include "base/synchronization/lock.h"
 #include "base/time/time.h"
 #include "media/base/android/media_codec_bridge.h"
 #include "media/base/android/media_codec_direction.h"
@@ -179,6 +180,8 @@ class MEDIA_EXPORT MediaCodecBridgeImpl : public MediaCodecBridge {
 
   void OnBuffersAvailable(JNIEnv* /* env */) override;
 
+  void OnError(JNIEnv* /* env */) override;
+
   void ReportAnyErrorToUMA(MediaCodecStatus status);
 
   const bool use_block_model_;
@@ -189,6 +192,11 @@ class MEDIA_EXPORT MediaCodecBridgeImpl : public MediaCodecBridge {
   const std::optional<VideoCodec> video_decoder_codec_;
 
   base::RepeatingClosure on_buffers_available_cb_;
+
+  // Used to synchronously lock out FillInputBuffer() after an errors occurs.
+  // See https://crbug.com/373986013.
+  base::Lock fill_lock_;
+  bool had_error_ GUARDED_BY(fill_lock_) = false;
 
   // The Java MediaCodecBridge instance.
   base::android::ScopedJavaGlobalRef<jobject> j_bridge_;

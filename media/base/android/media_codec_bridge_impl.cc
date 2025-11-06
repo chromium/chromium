@@ -899,6 +899,15 @@ void MediaCodecBridgeImpl::OnBuffersAvailable(JNIEnv* /* env */) {
   on_buffers_available_cb_.Run();
 }
 
+void MediaCodecBridgeImpl::OnError(JNIEnv* /* env */) {
+  {
+    base::AutoLock al(fill_lock_);
+    had_error_ = true;
+  }
+
+  on_buffers_available_cb_.Run();
+}
+
 std::string MediaCodecBridgeImpl::GetName() {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jstring> j_name =
@@ -931,6 +940,14 @@ bool MediaCodecBridgeImpl::FillInputBuffer(int index,
   auto dst = GetInputBuffer(index);
   if (dst.empty()) {
     LOG(ERROR) << "GetInputBuffer failed";
+    return false;
+  }
+
+  // Note: We intentionally don't hold the lock across GetInputBuffer() to avoid
+  // the potential for deadlock.
+  base::AutoLock al(fill_lock_);
+  if (had_error_) {
+    LOG(ERROR) << "Refusing to fill input buffer after MediaCodec error.";
     return false;
   }
   if (data.size() > dst.size()) {

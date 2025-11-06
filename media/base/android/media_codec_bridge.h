@@ -222,6 +222,10 @@ class MEDIA_EXPORT MediaCodecBridge {
   // input or output buffers are available.
   virtual void OnBuffersAvailable(JNIEnv* env) = 0;
 
+  // When the MediaCodec has been configured in async mode, this is called when
+  // MediaCodec signals an error has occurred.
+  virtual void OnError(JNIEnv* env) = 0;
+
   // Returns the CodecType this codec was created with.
   virtual CodecType GetCodecType() const = 0;
 
