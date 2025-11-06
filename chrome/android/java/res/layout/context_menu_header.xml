@@ -14,7 +14,6 @@ found in the LICENSE file.
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:paddingTop="@dimen/context_menu_padding"
     android:paddingHorizontal="@dimen/context_menu_padding">
 
     <FrameLayout
