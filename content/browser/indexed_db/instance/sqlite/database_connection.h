@@ -256,6 +256,7 @@ class CONTENT_EXPORT DatabaseConnection {
   static void OverrideMaxBlobSizeForTesting(base::ByteCount size);
 
  private:
+  friend class BackingStoreSqliteTest;
   FRIEND_TEST_ALL_PREFIXES(DatabaseConnectionTest, TooNew);
 
   DatabaseConnection(base::FilePath path, BackingStoreImpl& backing_store);

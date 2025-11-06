@@ -100,6 +100,9 @@ class ActiveBlobStreamer : public blink::mojom::Blob,
   // them all. See `overflow_blob_chunks` in DatabaseConnection for an
   // explanation of chunking.
   bool ReadBlobBytes(uint64_t offset, base::span<uint8_t> into);
+  // Called after finishing servicing a single ActiveBlobStreamer::Read(), which
+  // happens after 0-many calls to ReadBlobBytes().
+  void BlobReadComplete();
 
   // This UUID is used for both the blob that's served via `blink::mojom::Blob`
   // and the blob in the registry. This is crucial because operations such as
@@ -115,16 +118,21 @@ class ActiveBlobStreamer : public blink::mojom::Blob,
 
   // The handle currently opened for reading. This is a result of
   // `fetch_blob_chunk_`, cached here to avoid extra work when reading from the
-  // same chunk multiple times in a row.
+  // same chunk multiple times in a row. Technically, `this` could be
+  // simultaneously serving multiple `Read()` requests, in which case this
+  // caching may have little to no value (it will thrash nearly every time
+  // ReadBlobBytes is invoked). However it's expected to be rare that a single
+  // blob would be read multiple times simultaneously.
   std::optional<sql::StreamingBlobHandle> readable_blob_handle_;
+  // The index of the chunk currently held in `readable_blob_handle_`. Starts as
+  // -1 to indicate that no handle has been fetched.
+  int chunk_idx_ = -1;
+
   // Gets a blob chunk by the index of the chunk. It's expected that the chunk
   // will out-last `this`, since `this` is owned by the DatabaseConnection that
   // owns the SQLite DB.
   base::RepeatingCallback<std::optional<sql::StreamingBlobHandle>(size_t)>
       fetch_blob_chunk_;
-  // The index of the chunk currently held in `readable_blob_handle_`. Starts as
-  // -1 to indicate that no handle has been fetched.
-  int chunk_idx_ = -1;
   // The maximum size of a blob chunk, in bytes.
   const int max_chunk_size_;
 

@@ -28,43 +28,26 @@ namespace {
 // into the pipe. The object is self owned.
 class SqliteBlobToDataPipe {
  public:
-  // This version feeds the bytes into `dest` and notifies `client` of important
-  // events. It's used when the BlobStorageContext is reading the blob.
   // `do_read_bytes` writes blob bytes into the provided buffer. See member of
   // the same name for explanation of inputs and outputs.
   SqliteBlobToDataPipe(
       base::RepeatingCallback<bool(uint64_t, base::span<uint8_t>)>
           do_read_bytes,
-      uint64_t blob_size,
       uint64_t offset,
       uint64_t read_length,
       mojo::ScopedDataPipeProducerHandle dest,
-      mojo::PendingRemote<blink::mojom::BlobReaderClient> client)
-      : do_read_bytes_(std::move(do_read_bytes)),
-        dest_(std::move(dest)),
-        client_(std::move(client)),
-        offset_(offset),
-        read_length_(read_length) {
-    client_->OnCalculatedSize(blob_size, read_length_);
-  }
-
-  // This version feeds the bytes into `dest` and invokes `completion_callback`
-  // when done. It's used when a renderer is reading the blob. `do_read_bytes`
-  // writes blob bytes into the provided buffer. See member of the same name
-  // for explanation of inputs and outputs.
-  SqliteBlobToDataPipe(base::RepeatingCallback<
-                           bool(uint64_t, base::span<uint8_t>)> do_read_bytes,
-                       uint64_t offset,
-                       uint64_t read_length,
-                       mojo::ScopedDataPipeProducerHandle dest,
-                       base::OnceCallback<void(int)> completion_callback)
+      base::OnceCallback<void(int /*result*/, uint64_t /*transferred_bytes*/)>
+          completion_callback)
       : do_read_bytes_(std::move(do_read_bytes)),
         dest_(std::move(dest)),
         completion_callback_(std::move(completion_callback)),
         offset_(offset),
         read_length_(read_length) {}
 
-  ~SqliteBlobToDataPipe() = default;
+  ~SqliteBlobToDataPipe() {
+    std::move(completion_callback_)
+        .Run(result_.value_or(net::ERR_ABORTED), transferred_bytes_);
+  }
 
   void Start() {
     if (read_length_ == 0) {
@@ -146,12 +129,8 @@ class SqliteBlobToDataPipe {
       writable_handle_watcher_->Cancel();
     }
     dest_.reset();
+    result_ = result;
 
-    if (client_) {
-      client_->OnComplete(result, transferred_bytes_);
-    } else {
-      std::move(completion_callback_).Run(result);
-    }
     delete this;
   }
 
@@ -162,9 +141,11 @@ class SqliteBlobToDataPipe {
   // `this` is the producer, and `dest_` is its handle to the pipe.
   mojo::ScopedDataPipeProducerHandle dest_;
 
-  // Exactly one of these two members will be non-null.
-  mojo::Remote<blink::mojom::BlobReaderClient> client_;
-  base::OnceCallback<void(int)> completion_callback_;
+  base::OnceCallback<void(int /*result*/, uint64_t /*transferred_bytes*/)>
+      completion_callback_;
+
+  // Null until `OnComplete` is called.
+  std::optional<int> result_;
 
   // The number of bytes successfully transferred so far.
   uint64_t transferred_bytes_ = 0;
@@ -193,7 +174,11 @@ void ActiveBlobStreamer::ReadRange(
     uint64_t offset,
     uint64_t length,
     mojo::ScopedDataPipeProducerHandle handle,
-    mojo::PendingRemote<blink::mojom::BlobReaderClient> client) {
+    mojo::PendingRemote<blink::mojom::BlobReaderClient> pending_client) {
+  uint64_t read_length = ClampReadLength(offset, length);
+  mojo::Remote<blink::mojom::BlobReaderClient> client(
+      std::move(pending_client));
+  client->OnCalculatedSize(blob_length_, read_length);
   (new SqliteBlobToDataPipe(
        base::BindRepeating(
            [](base::WeakPtr<ActiveBlobStreamer> streamer, uint64_t offset,
@@ -201,8 +186,17 @@ void ActiveBlobStreamer::ReadRange(
              return streamer && streamer->ReadBlobBytes(offset, into);
            },
            weak_factory_.GetWeakPtr()),
-       blob_length_, offset, ClampReadLength(offset, length), std::move(handle),
-       std::move(client)))
+       offset, read_length, std::move(handle),
+       base::BindOnce(
+           [](base::WeakPtr<ActiveBlobStreamer> streamer,
+              mojo::Remote<blink::mojom::BlobReaderClient> client, int result,
+              uint64_t transferred_bytes) {
+             if (streamer) {
+               streamer->BlobReadComplete();
+             }
+             client->OnComplete(result, transferred_bytes);
+           },
+           weak_factory_.GetWeakPtr(), std::move(client))))
       ->Start();
 }
 
@@ -262,6 +256,7 @@ void ActiveBlobStreamer::Read(
     mojo::ScopedDataPipeProducerHandle pipe,
     storage::mojom::BlobDataItemReader::ReadCallback callback) {
   (new SqliteBlobToDataPipe(
+       /*do_read_bytes=*/
        base::BindRepeating(
            [](base::WeakPtr<ActiveBlobStreamer> streamer, uint64_t offset,
               base::span<uint8_t> into) -> bool {
@@ -269,7 +264,17 @@ void ActiveBlobStreamer::Read(
            },
            weak_factory_.GetWeakPtr()),
        offset, ClampReadLength(offset, length), std::move(pipe),
-       std::move(callback)))
+       /*completion_callback=*/
+       base::BindOnce(
+           [](base::WeakPtr<ActiveBlobStreamer> streamer,
+              storage::mojom::BlobDataItemReader::ReadCallback callback,
+              int result, uint64_t transferred_bytes) {
+             if (streamer) {
+               streamer->BlobReadComplete();
+             }
+             std::move(callback).Run(result);
+           },
+           weak_factory_.GetWeakPtr(), std::move(callback))))
       ->Start();
 }
 
@@ -353,10 +358,6 @@ uint64_t ActiveBlobStreamer::ClampReadLength(uint64_t offset,
 
 bool ActiveBlobStreamer::ReadBlobBytes(uint64_t offset,
                                        base::span<uint8_t> into) {
-  // Failing this check indicates an error occurred. ReadBlobBytes() should not
-  // be called again.
-  CHECK(readable_blob_handle_ || chunk_idx_ == -1);
-
   // Loop because the read may span multiple chunks.
   for (base::span<uint8_t> remaining_buffer = into;
        !remaining_buffer.empty();) {
@@ -388,6 +389,16 @@ bool ActiveBlobStreamer::ReadBlobBytes(uint64_t offset,
     offset += piece.size();
   }
   return true;
+}
+
+void ActiveBlobStreamer::BlobReadComplete() {
+  // It's important to release this when not in use. Otherwise, SQLite won't be
+  // able to perform operations such as checkpointing. Concretely, if the page
+  // reads from its Blob, which causes `this->readable_blob_handle_` to be
+  // initialized, and then the page retains a reference to the Blob, this step
+  // is what releases the SQLite resources.
+  readable_blob_handle_.reset();
+  chunk_idx_ = -1;
 }
 
 }  // namespace content::indexed_db::sqlite

@@ -34,6 +34,8 @@ class BackingStoreDatabaseImpl : public BackingStore::Database {
                         base::OnceClosure on_complete) override;
 
  private:
+  friend class BackingStoreSqliteTest;
+
   // Note that this will be null after calling `DeleteDatabase()`, so `this`
   // should generally not be used after calling `DeleteDatabase()`.
   base::WeakPtr<DatabaseConnection> db_;

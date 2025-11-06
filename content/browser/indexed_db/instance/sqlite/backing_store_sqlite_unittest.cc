@@ -8,9 +8,11 @@
 #include "base/test/bind.h"
 #include "content/browser/indexed_db/instance/backing_store.h"
 #include "content/browser/indexed_db/instance/backing_store_test_base.h"
+#include "content/browser/indexed_db/instance/sqlite/backing_store_database_impl.h"
 #include "content/browser/indexed_db/instance/sqlite/database_connection.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
+#include "sql/database.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"
 
 namespace content::indexed_db::sqlite {
@@ -109,6 +111,7 @@ class BackingStoreSqliteTest : public BackingStoreTestBase {
         transaction->BuildMojoValue(std::move(result_value), base::DoNothing());
     mojo::Remote<blink::mojom::Blob> blob(
         std::move(mojo_value->external_objects[0]->get_blob_or_file()->blob));
+    CommitTransactionAndVerify(*transaction);
 
     std::string output_blob_contents;
     base::RunLoop run_loop;
@@ -117,6 +120,13 @@ class BackingStoreSqliteTest : public BackingStoreTestBase {
                     run_loop.Quit();
                   }));
     run_loop.Run();
+
+    // Verify that it's possible to checkpoint the database. This makes sure
+    // that the `ActiveBlobStreamer` represented by `blob` is not holding onto
+    // database resources that prevent this operation.
+    EXPECT_TRUE(reinterpret_cast<BackingStoreDatabaseImpl&>(db)
+                    .db_->db_->CheckpointDatabase());
+
     return output_blob_contents;
   }
 };
