@@ -53,12 +53,19 @@ class DragAndReleaseTool : public ToolBase {
   using ValidatedResult = base::expected<DragParams, mojom::ActionResultPtr>;
   ValidatedResult Validate() const;
 
+  void ProcessDrag(ResolvedTarget from,
+                   ResolvedTarget to,
+                   ToolFinishedCallback callback);
+  void ProcessRelease(ResolvedTarget to, ToolFinishedCallback callback);
+
   bool InjectMouseEvent(blink::WebWidget& widget,
                         gfx::PointF& position_in_widget,
                         blink::WebInputEvent::Type type,
                         blink::WebMouseEvent::Button button);
 
   mojom::DragAndReleaseActionPtr action_;
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  base::WeakPtrFactory<DragAndReleaseTool> weak_ptr_factory_{this};
 };
 
 }  // namespace actor

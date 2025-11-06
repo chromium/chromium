@@ -91,10 +91,12 @@ IN_PROC_BROWSER_TEST_P(GlicActorDragDSFTest, Events) {
       CheckJsResult(kNewActorTabId, "() => event_log.join(',')", ""),
       ExecuteAction(std::move(drag_provider)),
       CheckJsResult(kNewActorTabId, "() => event_log.join(',')",
-                    absl::StrFormat(
-                        "mousemove[%s],mousedown[%s],mousemove[%s],mouseup[%s]",
-                        start.ToString(), start.ToString(), end.ToString(),
-                        end.ToString())));
+                    testing::AllOf(testing::StartsWith(absl::StrFormat(
+                                       "mousemove[%s],mousedown[%s],",
+                                       start.ToString(), start.ToString())),
+                                   testing::EndsWith(absl::StrFormat(
+                                       "mousemove[%s],mouseup[%s]",
+                                       end.ToString(), end.ToString())))));
 }
 
 INSTANTIATE_TEST_SUITE_P(,
@@ -168,9 +170,11 @@ IN_PROC_BROWSER_TEST_F(GlicActorUiTest, DragAndReleaseTool_DOMNodeId) {
       GetPageContextFromFocusedTab(),
       CheckJsResult(kNewActorTabId, "() => event_log.join(',')", ""),
       ExecuteAction(std::move(drag_provider)),
-      CheckJsResult(kNewActorTabId, "() => event_log.join(',')",
-                    "mousemove#fromTarget,mousedown#fromTarget,"
-                    "mousemove#toTarget,mouseup#toTarget"));
+      CheckJsResult(
+          kNewActorTabId, "() => event_log.join(',')",
+          testing::AllOf(
+              testing::StartsWith("mousemove#fromTarget,mousedown#fromTarget,"),
+              testing::EndsWith("mousemove#toTarget,mouseup#toTarget"))));
 }
 
 }  // namespace

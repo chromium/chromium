@@ -25,6 +25,19 @@
 
 namespace actor {
 
+namespace {
+
+// These values were determined to work experimentally, but may need to be
+// adjusted as we test on more sites.
+constexpr base::TimeDelta kInitialMoveDelay = base::Milliseconds(2);
+constexpr base::TimeDelta kMoveDelay = base::Milliseconds(1);
+// A smaller drag interval gives a more realistic behavior, but generates more
+// events and takes longer to run. This value seems to provide an acceptable
+// trade-off.
+constexpr float kDragIntervalPixels = 20;
+
+}  // namespace
+
 using ::blink::WebCoalescedInputEvent;
 using ::blink::WebInputEvent;
 using ::blink::WebInputEventResult;
@@ -96,23 +109,113 @@ void DragAndReleaseTool::Execute(ToolFinishedCallback callback) {
     return;
   }
 
-  widget = from_target.GetWidget(*this);
+  if (!base::FeatureList::IsEnabled(features::kGlicActorSplitDragAndRelease)) {
+    // Use the old code.
+    widget = from_target.GetWidget(*this);
+    if (!widget) {
+      std::move(callback).Run(
+          MakeResult(mojom::ActionResultCode::kFrameWentAway));
+      return;
+    }
+
+    // Move and release the mouse on the to_point.
+    if (!InjectMouseEvent(*widget, to_target.widget_point,
+                          EventType::kMouseMove,
+                          WebMouseEvent::Button::kLeft)) {
+      std::move(callback).Run(
+          MakeResult(mojom::ActionResultCode::kDragAndReleaseToMoveSuppressed,
+                     /*requires_page_stabilization=*/true));
+      return;
+    }
+
+    widget = from_target.GetWidget(*this);
+    if (!widget) {
+      std::move(callback).Run(
+          MakeResult(mojom::ActionResultCode::kFrameWentAway));
+      return;
+    }
+
+    if (!InjectMouseEvent(*widget, to_target.widget_point, EventType::kMouseUp,
+                          WebMouseEvent::Button::kLeft)) {
+      std::move(callback).Run(
+          MakeResult(mojom::ActionResultCode::kDragAndReleaseUpSuppressed,
+                     /*requires_page_stabilization=*/true));
+      return;
+    }
+
+    std::move(callback).Run(MakeOkResult());
+    return;
+  }
+  // We need a time delay between the click and first move for some pages.
+  task_runner_ = base::SequencedTaskRunner::GetCurrentDefault();
+  task_runner_->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&DragAndReleaseTool::ProcessDrag,
+                     weak_ptr_factory_.GetWeakPtr(), validated_result->from,
+                     validated_result->to, std::move(callback)),
+      kInitialMoveDelay);
+}
+
+void DragAndReleaseTool::ProcessDrag(ResolvedTarget from,
+                                     ResolvedTarget to,
+                                     ToolFinishedCallback callback) {
+  WebWidget* widget = from.GetWidget(*this);
   if (!widget) {
     std::move(callback).Run(
         MakeResult(mojom::ActionResultCode::kFrameWentAway));
     return;
   }
 
-  // Move and release the mouse on the to_point.
-  if (!InjectMouseEvent(*widget, to_target.widget_point, EventType::kMouseMove,
+  bool done = false;
+  // Start the drag. Some sites require an initial move that is not too big and
+  // not too small to register as a drag. Note that blink requires < 3 pixels to
+  // create an actual drag event, so we're not doing that here.
+  gfx::Vector2dF drag_vector = to.widget_point - from.widget_point;
+  gfx::Vector2dF drag_direction = drag_vector;
+  drag_direction.Normalize();
+  drag_direction.Scale(kDragIntervalPixels);
+
+  gfx::PointF drag_point = from.widget_point;
+  drag_point.Offset(drag_direction.x(), drag_direction.y());
+
+  // Don't overshoot the target point.
+  if (drag_direction.Length() >= drag_vector.Length()) {
+    done = true;
+    drag_point = to.widget_point;
+  }
+
+  if (!InjectMouseEvent(*widget, drag_point, EventType::kMouseMove,
                         WebMouseEvent::Button::kLeft)) {
     std::move(callback).Run(
         MakeResult(mojom::ActionResultCode::kDragAndReleaseToMoveSuppressed,
                    /*requires_page_stabilization=*/true));
     return;
   }
+  if (!done) {
+    task_runner_->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&DragAndReleaseTool::ProcessDrag,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       /*from=*/
+                       ResolvedTarget{
+                           .node = from.node,
+                           .widget_point = drag_point,
+                           .popup_handle = from.popup_handle,
+                       },
+                       to, std::move(callback)),
+        kMoveDelay);
+  } else {
+    task_runner_->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&DragAndReleaseTool::ProcessRelease,
+                       weak_ptr_factory_.GetWeakPtr(), to, std::move(callback)),
+        kMoveDelay);
+  }
+}
 
-  widget = from_target.GetWidget(*this);
+void DragAndReleaseTool::ProcessRelease(ResolvedTarget to_target,
+                                        ToolFinishedCallback callback) {
+  WebWidget* widget = to_target.GetWidget(*this);
   if (!widget) {
     std::move(callback).Run(
         MakeResult(mojom::ActionResultCode::kFrameWentAway));
