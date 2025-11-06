@@ -89,6 +89,10 @@ template("rust_bindgen") {
                                  "output_name",
                                ] + TESTONLY_AND_VISIBILITY)
 
+    if (defined(invoker.testonly)) {
+      testonly = invoker.testonly
+    }
+
     # This will allow the rust_static_library to depend on the
     # `rust_bindgen_generator` through visibility.
     library_name = target_name

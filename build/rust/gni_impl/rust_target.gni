@@ -195,6 +195,10 @@ template("rust_target") {
       copy(_copy_target_name) {
         _bindgen_output_files = get_target_outputs(bindgen_dep)
 
+        if (defined(invoker.testonly)) {
+          testonly = invoker.testonly
+        }
+
         # `rust_bindgen_generator` promises that the first output file is always .rs.
         sources = [ _bindgen_output_files[0] ]
         outputs = [ "$_env_out_dir/{{source_name_part}}.rs" ]
