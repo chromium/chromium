@@ -16,7 +16,7 @@ import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertNull
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {assertStyle, createAutocompleteResult, waitForAttributeChange} from './searchbox_test_utils.js';
+import {assertStyle, createAutocompleteResult, createSearchMatch, waitForAttributeChange} from './searchbox_test_utils.js';
 import {TestSearchboxBrowserProxy} from './test_searchbox_browser_proxy.js';
 
 enum Attributes {
@@ -45,22 +45,6 @@ function createUrlMatch(modifiers: Partial<AutocompleteMatch> = {}):
         destinationUrl: {url: 'https://helloworld.com/'},
         fillIntoEdit: 'https://helloworld.com',
         type: 'url-what-you-typed',
-      },
-      modifiers);
-}
-
-function createSearchMatch(modifiers: Partial<AutocompleteMatch> = {}):
-    AutocompleteMatch {
-  return Object.assign(
-      createAutocompleteMatch(), {
-        isSearchType: true,
-        contents: 'hello world',
-        contentsClass: [{offset: 0, style: 0}],
-        description: 'Google search',
-        descriptionClass: [{offset: 0, style: 4}],
-        destinationUrl: {url: 'https://www.google.com/search?q=hello+world'},
-        fillIntoEdit: 'hello world',
-        type: 'search-what-you-typed',
       },
       modifiers);
 }
