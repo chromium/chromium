@@ -2075,7 +2075,7 @@ std::optional<FormData> ExtractFormDataWithFieldsAndFrames(
     const FieldDataManager& field_data_manager,
     ButtonTitlesCache* button_titles_cache) {
   CHECK(!form_element || form_element.GetDocument() == document,
-        base::NotFatalUntil::M142);
+        base::NotFatalUntil::M147);
 
   if (form_element && !IsAccessible(form_element)) {
     return std::nullopt;
@@ -2541,8 +2541,8 @@ FindFormAndFieldForFormControlElement(
   CHECK(base::Contains(GetOwnedFormControls(element.GetDocument(),
                                             element.GetOwningFormForAutofill()),
                        element),
-        base::NotFatalUntil::M142);
-  NOTREACHED(base::NotFatalUntil::M142);
+        base::NotFatalUntil::M147);
+  NOTREACHED(base::NotFatalUntil::M147);
   return std::nullopt;
 }
 
