@@ -17,6 +17,7 @@
 #include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 class Profile;
 class ToolbarButtonProvider;
