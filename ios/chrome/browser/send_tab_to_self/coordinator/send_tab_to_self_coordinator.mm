@@ -29,6 +29,8 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin_presenter.h"
 #import "ios/chrome/browser/infobars/ui_bundled/presentation/infobar_modal_positioner.h"
 #import "ios/chrome/browser/send_tab_to_self/coordinator/send_tab_to_self_coordinator_delegate.h"
+#import "ios/chrome/browser/send_tab_to_self/coordinator/send_tab_to_self_mediator.h"
+#import "ios/chrome/browser/send_tab_to_self/coordinator/send_tab_to_self_mediator_delegate.h"
 #import "ios/chrome/browser/send_tab_to_self/model/send_tab_to_self_browser_agent.h"
 #import "ios/chrome/browser/send_tab_to_self/ui/send_tab_to_self_modal_delegate.h"
 #import "ios/chrome/browser/send_tab_to_self/ui/send_tab_to_self_modal_presentation_controller.h"
@@ -51,6 +53,7 @@
 #import "ios/chrome/browser/signin/model/avatar_provider.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/sync/model/send_tab_to_self_sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
@@ -127,6 +130,7 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
 }  // namespace
 
 @interface SendTabToSelfCoordinator () <InfobarModalPositioner,
+                                        SendTabToSelfMediatorDelegate,
                                         SendTabToSelfModalDelegate,
                                         UIViewControllerTransitioningDelegate> {
   std::unique_ptr<TargetDeviceListWaiter> _targetDeviceListWaiter;
@@ -153,6 +157,8 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
   SigninCoordinator* _signinCoordinator;
   // The navigation controller displaying the send tab to self.
   UINavigationController* _navigationController;
+  // The mediator of this coordinator.
+  SendTabToSelfMediator* _mediator;
 }
 
 #pragma mark - Public
@@ -186,6 +192,12 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
     [self.delegate sendTabToSelfCoordinatorWantsToBeStopped:self];
     return;
   }
+  _mediator = [[SendTabToSelfMediator alloc]
+      initWithAuthenticationService:AuthenticationServiceFactory::GetForProfile(
+                                        self.profile)
+                    identityManager:IdentityManagerFactory::GetForProfile(
+                                        self.profile)];
+  _mediator.delegate = self;
   [self show];
 }
 
@@ -197,6 +209,9 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
   // Abort the waiting if it's still ongoing.
   _targetDeviceListWaiter.reset();
   [self stopSigninCoordinator];
+  [_mediator disconnect];
+  _mediator.delegate = nil;
+  _mediator = nil;
   [_navigationController.presentingViewController
       dismissViewControllerAnimated:YES
                          completion:self.dismissedCompletion];
@@ -221,6 +236,23 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
                  presentingViewController:presenting];
   presentationController.modalPositioner = self;
   return presentationController;
+}
+
+#pragma mark - SendTabToSelfMediatorDelegate
+
+- (void)mediatorWantsToBeStopped:(SendTabToSelfMediator*)mediator {
+  CHECK_EQ(mediator, _mediator, base::NotFatalUntil::M150);
+  [self.delegate sendTabToSelfCoordinatorWantsToBeStopped:self];
+}
+
+- (void)mediatorWantsToRefreshView:(SendTabToSelfMediator*)mediator {
+  CHECK_EQ(mediator, _mediator, base::NotFatalUntil::M150);
+  if (_signinCoordinator) {
+    // Nothing to refresh in case of sign-in. The signin coordinator will deal
+    // with the update itself.
+    return;
+  }
+  [self show];
 }
 
 #pragma mark - InfobarModalPositioner
