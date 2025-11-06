@@ -94,7 +94,13 @@ class ModelQualityLogsUploader {
 
   // Called when the leak check is shown to the user. Sets information about the
   // password form which triggered the leak check.
-  void SetPasswordFormInfo(const password_manager::PasswordForm& password_form);
+  void SetLoginPasswordFormInfo(
+      const password_manager::PasswordForm& password_form);
+
+  // Called when APC flow discovers the change password form. Logs password form
+  // information, e. g. form signature, fields & buttons texts.
+  void SetChangePasswordFormData(
+      const password_manager::PasswordForm& password_form);
 
   // Records the outcome of the first login attempt
   // using a previously saved APC-password and immediately

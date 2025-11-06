@@ -4,9 +4,11 @@
 
 #include "chrome/browser/password_manager/password_change/model_quality_logs_uploader.h"
 
+#include <algorithm>
 #include <memory>
 #include <vector>
 
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/protobuf_matchers.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
@@ -39,6 +41,9 @@ using FlowStep = optimization_guide::proto::PasswordChangeRequest::FlowStep;
 using LoginPasswordType =
     optimization_guide::proto::LoginAttemptOutcome_PasswordType;
 using ::optimization_guide::TestModelQualityLogsUploaderService;
+using FormData = optimization_guide::proto::PasswordChangeQuality_FormData;
+using FieldData =
+    optimization_guide::proto::PasswordChangeQuality_FormData_FieldData;
 
 namespace {
 
@@ -150,6 +155,70 @@ CreateLoggingDataForLoginCheck(bool is_logged_in) {
       ->set_is_logged_in(is_logged_in);
   return logging_data;
 }
+
+void VerifyFieldType(
+    FormData proto,
+    optimization_guide::proto::
+        PasswordChangeQuality_FormData_FieldData_FieldType actual) {
+  auto field_proto =
+      std::ranges::find(proto.field_data(), actual, &FieldData::field_type);
+  EXPECT_TRUE(field_proto != proto.field_data().end());
+}
+
+void VerifyPasswordFormLoggedCorrectlyInProto(
+    const password_manager::PasswordForm& password_form,
+    const FormData& form_data_proto) {
+  EXPECT_NE(form_data_proto.form_signature(), 0ul);
+  EXPECT_EQ(form_data_proto.form_id(),
+            base::UTF16ToUTF8(password_form.form_data.id_attribute()));
+  EXPECT_EQ(form_data_proto.form_name(),
+            base::UTF16ToUTF8(password_form.form_data.name_attribute()));
+  EXPECT_EQ(form_data_proto.url(), password_form.url);
+  EXPECT_EQ(form_data_proto.button_text().size(),
+            (int)password_form.form_data.button_titles().size());
+  for (auto& button_title : password_form.form_data.button_titles()) {
+    auto form_data_proto_button_title = std::ranges::find(
+        form_data_proto.button_text(), base::UTF16ToUTF8(button_title.first));
+    EXPECT_TRUE(form_data_proto_button_title !=
+                form_data_proto.button_text().end());
+  }
+
+  ASSERT_EQ(form_data_proto.field_data().size(), 2);
+  for (auto& field_data : password_form.form_data.fields()) {
+    auto field_proto = std::ranges::find(
+        form_data_proto.field_data(),
+        base::UTF16ToUTF8(field_data.id_attribute()), &FieldData::id);
+    EXPECT_TRUE(field_proto != form_data_proto.field_data().end());
+    EXPECT_NE(field_proto->signature(), 0l);
+    EXPECT_EQ(field_proto->name(),
+              base::UTF16ToUTF8(field_data.name_attribute()));
+    EXPECT_EQ(field_proto->id(), base::UTF16ToUTF8(field_data.id_attribute()));
+    EXPECT_EQ(field_proto->label(), base::UTF16ToUTF8(field_data.label()));
+    EXPECT_EQ(field_proto->placeholder(),
+              base::UTF16ToUTF8(field_data.placeholder()));
+    EXPECT_EQ(field_proto->html_type(), autofill::FormControlTypeToString(
+                                            field_data.form_control_type()));
+  }
+  if (password_form.username_element_renderer_id.value() != 0) {
+    VerifyFieldType(
+        form_data_proto,
+        optimization_guide::proto::
+            PasswordChangeQuality_FormData_FieldData_FieldType_USERNAME);
+  }
+  if (password_form.password_element_renderer_id.value() != 0) {
+    VerifyFieldType(
+        form_data_proto,
+        optimization_guide::proto::
+            PasswordChangeQuality_FormData_FieldData_FieldType_PASSWORD);
+  }
+  if (password_form.new_password_element_renderer_id.value() != 0) {
+    VerifyFieldType(
+        form_data_proto,
+        optimization_guide::proto::
+            PasswordChangeQuality_FormData_FieldData_FieldType_NEW_PASSWORD);
+  }
+}
+
 }  // namespace
 
 class ModelQualityLogsUploaderTest : public ChromeRenderViewHostTestHarness {
@@ -920,4 +989,88 @@ TEST_F(ModelQualityLogsUploaderTest, TotalFlowTimeIsRecorded) {
   EXPECT_EQ(
       logs[0]->password_change_submission().quality().total_flow_time_ms(),
       expected_latency_ms);
+}
+
+TEST_F(ModelQualityLogsUploaderTest, SetLoginPasswordFormInfo) {
+  ModelQualityLogsUploader logs_uploader(web_contents(),
+                                         GURL(kChangePasswordURL));
+  password_manager::PasswordForm password_form;
+  password_form.url = GURL(kChangePasswordURL);
+  password_form.form_data.set_id_attribute(u"login_form_id");
+  password_form.form_data.set_name_attribute(u"login_form_name");
+  password_form.in_store = password_manager::PasswordForm::Store::kProfileStore;
+
+  autofill::FormFieldData username_field;
+  username_field.set_id_attribute(u"username_id");
+  username_field.set_name_attribute(u"username_name");
+  username_field.set_label(u"Username");
+  username_field.set_form_control_type(autofill::FormControlType::kInputText);
+  username_field.set_renderer_id(autofill::FieldRendererId(1));
+  password_form.username_element_renderer_id = username_field.renderer_id();
+
+  autofill::FormFieldData password_field;
+  password_field.set_id_attribute(u"password_id");
+  password_field.set_name_attribute(u"password_name");
+  password_field.set_label(u"Password");
+  password_field.set_form_control_type(
+      autofill::FormControlType::kInputPassword);
+  password_field.set_renderer_id(autofill::FieldRendererId(2));
+  password_form.password_element_renderer_id = password_field.renderer_id();
+
+  password_form.form_data.set_fields({username_field, password_field});
+
+  logs_uploader.SetLoginPasswordFormInfo(password_form);
+
+  const optimization_guide::proto::PasswordChangeQuality_FormData& form_data =
+      logs_uploader.GetFinalLog()
+          .password_change_submission()
+          .quality()
+          .login_form_data();
+
+  EXPECT_TRUE(logs_uploader.GetFinalLog()
+                  .password_change_submission()
+                  .quality()
+                  .was_password_stored());
+  VerifyPasswordFormLoggedCorrectlyInProto(password_form, form_data);
+}
+
+TEST_F(ModelQualityLogsUploaderTest, SetChangePasswordFormData) {
+  ModelQualityLogsUploader logs_uploader(web_contents(),
+                                         GURL(kChangePasswordURL));
+  password_manager::PasswordForm password_form;
+  password_form.url = GURL(kChangePasswordURL);
+  password_form.form_data.set_id_attribute(u"change_form_id");
+  password_form.form_data.set_name_attribute(u"change_form_name");
+  password_form.in_store = password_manager::PasswordForm::Store::kProfileStore;
+
+  autofill::FormFieldData password_field;
+  password_field.set_id_attribute(u"password_id");
+  password_field.set_name_attribute(u"password_name");
+  password_field.set_label(u"Password");
+  password_field.set_form_control_type(
+      autofill::FormControlType::kInputPassword);
+  password_field.set_renderer_id(autofill::FieldRendererId(1));
+  password_form.password_element_renderer_id = password_field.renderer_id();
+
+  autofill::FormFieldData new_password_field;
+  new_password_field.set_id_attribute(u"new_password_id");
+  new_password_field.set_name_attribute(u"new_password_name");
+  new_password_field.set_label(u"Password");
+  new_password_field.set_form_control_type(
+      autofill::FormControlType::kInputPassword);
+  new_password_field.set_renderer_id(autofill::FieldRendererId(2));
+  password_form.new_password_element_renderer_id =
+      new_password_field.renderer_id();
+
+  password_form.form_data.set_fields({password_field, new_password_field});
+
+  logs_uploader.SetChangePasswordFormData(password_form);
+
+  const optimization_guide::proto::PasswordChangeQuality_FormData& form_data =
+      logs_uploader.GetFinalLog()
+          .password_change_submission()
+          .quality()
+          .change_password_form_data();
+
+  VerifyPasswordFormLoggedCorrectlyInProto(password_form, form_data);
 }
