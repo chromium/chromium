@@ -169,9 +169,11 @@ Așteaptă câteva minute înainte să te deconectezi. Dacă te deconectezi acum
 <translation id="5162467219239570114">Chrome nu este actualizat. Dacă nu este disponibilă nicio actualizare în <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, e posibil ca dispozitivul tău să nu mai accepte versiuni noi de Chrome.</translation>
 <translation id="5184329579814168207">Deschide în Chrome</translation>
 <translation id="5190139289262548459">Organizația ta, <ph name="DOMAIN" />, gestionează contul la care te-ai conectat și modul în care folosești Chrome.</translation>
+<translation id="5209238444239954363">Chrome nu a putut căuta actualizări. Încearcă din nou mai târziu.</translation>
 <translation id="5305440589062022504">Deschide Managerul de parole în Chrome</translation>
 <translation id="5310957470610282541">Unele date Chrome nu au fost salvate încă în Contul Google.
 Așteaptă câteva minute înainte să te deconectezi. Dacă te deconectezi acum, aceste date vor fi șterse.</translation>
+<translation id="5342685492141499976">Datele se vor salva în Managerul de parole Google pentru <ph name="USER_EMAIL" /></translation>
 <translation id="5389212809648216794">Google Chrome nu poate folosi camera foto, deoarece este folosită de o altă aplicație</translation>
 <translation id="5395376160638294582">Asigură-te că poți folosi oricând datele Chrome din Contul Google</translation>
 <translation id="5404252374083197467">Setezi Chrome ca browser prestabilit?</translation>
@@ -199,6 +201,7 @@ Așteaptă câteva minute înainte să te deconectezi. Dacă te deconectezi acum
 <translation id="5808435672482059465">Vezi istoricul Chrome</translation>
 <translation id="5833027901704861726">Unele date Chrome nu s-au salvat încă în <ph name="EMAIL" />.
 Așteaptă câteva minute înainte să schimbi contul. Dacă schimbi conturile acum, aceste date se vor șterge.</translation>
+<translation id="5853754888722423892">Importă în Managerul de parole Google</translation>
 <translation id="5998675059699164418">Organizația îți solicită să te conectezi pentru a folosi Chrome.</translation>
 <translation id="6021312115739110405">Un feed personalizat creat de Google pentru tine. Include știri, sport și meteo.</translation>
 <translation id="6022659036123304283">Personalizează Chrome</translation>

@@ -23,6 +23,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="1184145431117212167">Instalace se nezdařila, protože vaše verze systému Windows není podporována.</translation>
 <translation id="1185134272377778587">O prohlížeči Chromium</translation>
 <translation id="1203500561924088507">Děkujeme za instalaci aplikace <ph name="BUNDLE_NAME" />. Před jejím použitím je potřeba restartovat prohlížeč.</translation>
+<translation id="123265588161106468">Když jste přihlášeni, můžete v prohlížeči Chromium používat hesla a další položky ze svého účtu Google. Pokud to chcete změnit, přejděte do sekce Váš účet v prohlížeči Chromium.</translation>
 <translation id="1262876892872089030">Když tato karta nebyla aktivní, byla uvolněna paměť, aby byl prohlížeč Chromium rychlý. Můžete zvolit, že tento web nikdy nemá být považován za neaktivní.</translation>
 <translation id="1265577313130862557">Prohlížeč Chromium toto stahování zablokoval, protože soubor je nebezpečný</translation>
 <translation id="126567311906253476">Když se pomocí účtu <ph name="USER_EMAIL" /> přihlásíte do služeb Google, jako je Gmail nebo YouTube, můžete se pomocí něj automaticky přihlásit i do prohlížeče Chromium</translation>
@@ -146,6 +147,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="2620436844016719705">Systém</translation>
 <translation id="2629740064077610681">Vaše organizace může zobrazit a spravovat údaje o prohlížení (například vaše záložky, historii a hesla). Údaje o prohlížení v ostatních profilech prohlížeče Chromium nevidí.</translation>
 <translation id="2635452620547538388">Pokud chcete používat a ukládat data prohlížeče Chromium ve svém účtu <ph name="ACCOUNT_EMAIL" />, ověřte svou totožnost</translation>
+<translation id="2637732208198500597">{COUNT,plural, =0{Pokročilá ochrana vyžaduje restart prohlížeče Chromium, aby bylo možné nainstalovat aktualizaci.}=1{Pokročilá ochrana vyžaduje restart prohlížeče Chromium, aby bylo možné nainstalovat aktualizaci. Anonymní okno se neotevře znovu.}few{Pokročilá ochrana vyžaduje restart prohlížeče Chromium, aby bylo možné nainstalovat aktualizaci. # anonymní okna se neotevřou znovu.}many{Pokročilá ochrana vyžaduje restart prohlížeče Chromium, aby bylo možné nainstalovat aktualizaci. # anonymního okna se neotevře znovu.}other{Pokročilá ochrana vyžaduje restart prohlížeče Chromium, aby bylo možné nainstalovat aktualizaci. # anonymních oken se neotevře znovu.}}</translation>
 <translation id="2648074677641340862">Během instalace došlo k chybě operačního systému. Stáhněte prosím Chromium znovu.</translation>
 <translation id="2661879430930417727">Pokud zařízení sdílíte s přáteli a členy rodiny, každý může procházet internet samostatně a nastavit si Chromium tak, jak potřebuje</translation>
 <translation id="2711502716910134313">Karta prohlížeče Chromium</translation>
@@ -156,7 +158,6 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="2738871930057338499">Nelze se připojit k internetu. HTTP 403 (Zakázáno). Zkontrolujte konfiguraci proxy.</translation>
 <translation id="2753623023919742414">Kliknutím spustíte hledání</translation>
 <translation id="2768103863314748511">Nastavte Chromium jako výchozí prohlížeč PDF</translation>
-<translation id="2770231113462710648">Změnit výchozí prohlížeč na:</translation>
 <translation id="2785438272836277133">Toto rozšíření obsahuje malware a není bezpečné. Odstraňte ho z prohlížeče Chromium, aby již nemohlo číst a měnit data (včetně osobních údajů) na webech, které navštěvujete.</translation>
 <translation id="2799223571221894425">Restartovat</translation>
 <translation id="2803971713792056305">Váš prohlížeč Chromium</translation>
@@ -382,6 +383,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="5605834417512968703">Vyberte cokoli, co chcete vyhledat pomocí Vyhledávání obrázků, nebo stisknutím klávesy Escape vyhledávání obrázků ukončete</translation>
 <translation id="5618818588972826921">Vyberte libovolný text nebo obrázek, který chcete vyhledat pomocí Vyhledávání obrázků, nebo stisknutím klávesy Escape vyhledávání obrázků ukončete</translation>
 <translation id="5623402015214259806">{0,plural, =0{Je k dispozici aktualizace prohlížeče Chromium}=1{Je k dispozici aktualizace prohlížeče Chromium}few{Již # dny je k dispozici aktualizace prohlížeče Chromium}many{Již # dne je k dispozici aktualizace prohlížeče Chromium}other{Již # dní je k dispozici aktualizace prohlížeče Chromium}}</translation>
+<translation id="5633450273457573375">Veškerá data prohlížeče Chromium ve vašem účtu Google šifrovat pomocí vaší <ph name="BEGIN_LINK" />vlastní heslové fráze<ph name="END_LINK" />. Vaší heslovou frází se nebudou šifrovat adresy a data uložená v Peněžence Google. Historie prohlížení v prohlížeči Chromium se nebude synchronizovat.</translation>
 <translation id="5643865575100044307">Při zavření prohlížeče Chromium ze zařízení vždy vymazat data webů</translation>
 <translation id="5653831366781983928">Restartujte Chromium</translation>
 <translation id="5690427481109656848">Google LLC</translation>

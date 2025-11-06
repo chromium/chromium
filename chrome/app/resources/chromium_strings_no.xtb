@@ -21,6 +21,7 @@
 <translation id="1184145431117212167">Installasjonen mislyktes fordi du bruker en Windows-versjon som ikke støttes.</translation>
 <translation id="1185134272377778587">Om Chromium</translation>
 <translation id="1203500561924088507">Installasjonen er fullført. Start nettleseren på nytt før du tar i bruk <ph name="BUNDLE_NAME" />.</translation>
+<translation id="123265588161106468">Når du er logget på, kan du bruke passord med mer fra Google-kontoen din i Chromium. Gå til «Kontoen din i Chromium» for å endre dette.</translation>
 <translation id="1262876892872089030">Mens denne fanen var inaktiv, ble minnet frigjort for å holde Chromium rask. Du kan velge å alltid ekskludere dette nettstedet fra å gjøres inaktivt.</translation>
 <translation id="1265577313130862557">Chromium har blokkert denne nedlastingen fordi filen er farlig</translation>
 <translation id="126567311906253476">Når du logger på Google-tjenester som Gmail eller YouTube med <ph name="USER_EMAIL" />, kan du automatisk logge på Chromium med den samme kontoen</translation>
@@ -145,6 +146,7 @@
 <translation id="2620436844016719705">System</translation>
 <translation id="2629740064077610681">Organisasjonen din kan se og administrere nettlesingsdata, for eksempel bokmerker, logg og passord. Den kan ikke se nettlesingsdata i andre Chromium-profiler</translation>
 <translation id="2635452620547538388">Bekreft at det er deg, for å bruke og lagre Chromium-data i kontoen din, <ph name="ACCOUNT_EMAIL" /></translation>
+<translation id="2637732208198500597">{COUNT,plural, =0{Avansert beskyttelse krever at du starter Chromium på nytt for å ta i bruk en oppdatering}=1{Avansert beskyttelse krever at du starter Chromium på nytt for å ta i bruk en oppdatering. Inkognitovinduet ditt blir ikke gjenåpnet.}other{Avansert beskyttelse krever at du starter Chromium på nytt for å ta i bruk en oppdatering. Dine # inkognitovinduer gjenåpnes ikke.}}</translation>
 <translation id="2648074677641340862">Det oppsto en systemfeil under installering. Last ned Chromium på nytt.</translation>
 <translation id="2661879430930417727">Hvis du deler en enhet med andre, kan venner og familie surfe hver for seg og konfigurere Chromium akkurat slik de vil</translation>
 <translation id="2711502716910134313">Chromium-fane</translation>
@@ -155,7 +157,6 @@
 <translation id="2738871930057338499">Kan ikke koble til internett. HTTP 403 – forbudt. Kontroller proxy-tjenerkonfigurasjonen.</translation>
 <translation id="2753623023919742414">Klikk for å søke</translation>
 <translation id="2768103863314748511">Angi Chromium som standard PDF-leser</translation>
-<translation id="2770231113462710648">Endre standardnettleser til:</translation>
 <translation id="2785438272836277133">Denne utvidelsen inneholder skadelig programvare og er utrygg. Fjern den fra Chromium, slik at den ikke lenger kan se og endre dataene dine på nettsteder du besøker, inkludert personopplysningene dine.</translation>
 <translation id="2799223571221894425">Start på nytt</translation>
 <translation id="2803971713792056305">Din Chromium</translation>
@@ -381,6 +382,7 @@
 <translation id="5605834417512968703">Velg hva som helst for å søke med bildesøk, eller trykk på Esc for å avslutte bildesøk</translation>
 <translation id="5618818588972826921">Velg tekst eller bilder for å søke med bildesøk, eller trykk på Esc for å avslutte bildesøk</translation>
 <translation id="5623402015214259806">{0,plural, =0{En Chromium-oppdatering er tilgjengelig}=1{En Chromium-oppdatering er tilgjengelig}other{En Chromium-oppdatering har vært tilgjengelig i # dager}}</translation>
+<translation id="5633450273457573375">Bruk din <ph name="BEGIN_LINK" />egen passordfrase<ph name="END_LINK" /> for å kryptere alle Chromium-dataene i Google-kontoen din. Adresser og data som er lagret i Google Wallet, krypteres ikke med passordfrasen din. Nettleserloggen fra Chromium synkroniseres ikke.</translation>
 <translation id="5643865575100044307">Slett alltid nettstedsdata fra enheten når du lukker Chromium</translation>
 <translation id="5653831366781983928">Start Chromium på nytt nå</translation>
 <translation id="5690427481109656848">Google LLC</translation>
@@ -530,6 +532,7 @@ Det er mulig at enkelte funksjoner ikke er tilgjengelige. Angi en annen profilka
 <translation id="7274695763216404502">Festet. Bruk bildesøk igjen fra verktøylinjen</translation>
 <translation id="7288567540154601580">Faner og utvidelser</translation>
 <translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{Chromium anbefaler at du fjerner den}other{Chromium anbefaler at du fjerner dem}}</translation>
+<translation id="7296334833518879294">For å dele systemlyd, åpne Systeminnstillinger og tillat «Bare opptak av systemlyd» for Chromium. Deretter må du starte Chromium på nytt.</translation>
 <translation id="7309928523159922338">Med annonsemålinger kan nettsteder du besøker, spørre Chromium om informasjon som hjelper nettstedet å måle annonseresultatene sine. Annonsemålinger begrenser sporing på tvers av nettsteder ved å overføre så lite informasjon som mulig mellom nettsteder.</translation>
 <translation id="731795002583552498">Oppdaterer Chromium</translation>
 <translation id="7318036098707714271">Innstillingerfilen din er ødelagt eller ugyldig.

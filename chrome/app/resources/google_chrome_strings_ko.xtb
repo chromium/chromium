@@ -156,8 +156,8 @@
 <translation id="2738871930057338499">인터넷에 연결할 수 없습니다(HTTP 403 Forbidden). 프록시 설정을 확인하시기 바랍니다.</translation>
 <translation id="2742320827292110288">경고: Chrome에서는 확장 프로그램에 방문 기록이 저장될 수 있습니다. 시크릿 모드에서 이 확장 프로그램을 사용 중지하려면 옵션을 선택 해제하세요.</translation>
 <translation id="2753623023919742414">클릭하여 검색</translation>
+<translation id="2757826245013442432">{COUNT,plural, =0{고급 보호를 사용 설정한 경우 Chrome을 다시 실행하여 업데이트를 적용해야 합니다}=1{고급 보호를 사용 설정한 경우 Chrome을 다시 실행하여 업데이트를 적용해야 합니다. 시크릿 창이 다시 열리지 않습니다.}other{고급 보호를 사용 설정한 경우 Chrome을 다시 실행하여 업데이트를 적용해야 합니다. 시크릿 창 #개가 다시 열리지 않습니다.}}</translation>
 <translation id="2765403129283291972">이 사이트에서 마이크에 액세스하려면 Chrome에 권한이 필요합니다</translation>
-<translation id="2770231113462710648">다음으로 기본 브라우저 변경:</translation>
 <translation id="2775140325783767197">Chrome에서 비밀번호를 확인할 수 없습니다. 인터넷 연결 상태를 확인하세요.</translation>
 <translation id="2797864378188255696"><ph name="USER_EMAIL" /> 계정으로 Gmail 또는 YouTube와 같은 Google 서비스에 로그인하면 동일한 계정으로 Chrome에 자동으로 로그인할 수 있습니다.</translation>
 <translation id="2799162042226656283">내 Chrome</translation>
@@ -269,6 +269,7 @@
 <translation id="3968962723676998462"><ph name="ACCOUNT_EMAIL" /> 계정에서 Chrome 데이터를 사용하고 저장하려면 비밀번호를 입력하세요</translation>
 <translation id="3973161977468201858">Google Chrome에서 Google 비밀번호 관리자 데이터를 삭제하려고 합니다. 허용하려면 Windows 비밀번호를 입력하세요.</translation>
 <translation id="400161754580828648">화면을 공유하려면 시스템 설정에서 Chrome의 화면 녹화를 허용하세요.</translation>
+<translation id="4012899077942246412">로그인한 상태로 Chrome에서 Google 계정의 비밀번호 등을 사용할 수 있습니다. 이 설정을 변경하려면 'Chrome의 내 계정'으로 이동하세요.</translation>
 <translation id="4022972681110646219">화면 번역</translation>
 <translation id="4023601594785368013">원본 언어, <ph name="LANGUAGE" /></translation>
 <translation id="4035053306113201399">업데이트를 적용하려면 ChromeOS를 다시 시작해야 합니다.</translation>
@@ -448,6 +449,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="6025087594896450715"><ph name="REMAINING_TIME" /> 후 Chrome 다시 시작</translation>
 <translation id="6040143037577758943">닫기</translation>
 <translation id="604424701295382420">고정되었습니다. 툴바의 새 버튼에서 Google 렌즈를 다시 이용할 수 있습니다</translation>
+<translation id="6046028983725193307">시스템 오디오를 공유하려면 시스템 설정을 열고 Chrome에 대해 '시스템 오디오 녹음만'을 허용하세요. 그런 다음 Chrome을 다시 시작해야 합니다.</translation>
 <translation id="6069027071882229820">이미지로 복사</translation>
 <translation id="6070348360322141662">보안 강화를 위해 Chrome에서 사용자 데이터 암호화</translation>
 <translation id="6075300983329039771">조직(<ph name="MANAGER" />)의 요청에 따라 Chrome에 로그인해야 합니다</translation>
@@ -652,6 +654,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8255190535488645436">Chrome에서 카메라와 마이크를 사용 중입니다.</translation>
 <translation id="8267953129876836456">Chrome에서 발견한 보안 권장사항을 검토해 주세요</translation>
 <translation id="8286862437124483331">Chrome에서 비밀번호를 표시하려고 합니다. 허용하려면 Windows 비밀번호를 입력하세요.</translation>
+<translation id="8289399803055125418"><ph name="BEGIN_LINK" />나만의 암호<ph name="END_LINK" />를 사용하여 Google 계정에 있는 모든 Chrome 데이터를 암호화하세요. 주소와 Google 월렛에 저장된 모든 데이터가 암호로 암호화되지 않으며, Chrome 방문 기록은 동기화되지 않습니다.</translation>
 <translation id="829923460755755423">Google 비밀번호 관리자 바로가기를 추가합니다.</translation>
 <translation id="8313851650939857356">시작 오류: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8321888067342493336">이미지로 저장</translation>

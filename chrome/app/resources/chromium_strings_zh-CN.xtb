@@ -21,6 +21,7 @@
 <translation id="1184145431117212167">安装失败，因为您的 Windows 版本不受支持。</translation>
 <translation id="1185134272377778587">关于 Chromium</translation>
 <translation id="1203500561924088507">感谢您完成安装。您必须重启浏览器才能使用 <ph name="BUNDLE_NAME" />。</translation>
+<translation id="123265588161106468">登录后，您可以在 Chromium 中使用 Google 账号中的密码等信息。如需更改此设置，请前往“设置 Chromium 账号”。</translation>
 <translation id="1262876892872089030">当此标签页处于闲置状态时，系统会释放一些内存，以让 Chromium 保持快速运行。您可以选择始终不让此网站处于闲置状态。</translation>
 <translation id="1265577313130862557">由于该文件具有危险性，Chromium 阻止了这次下载</translation>
 <translation id="126567311906253476">使用 <ph name="USER_EMAIL" /> 登录 Gmail 或 YouTube 等 Google 服务时，您可以使用同一账号自动登录 Chromium</translation>
@@ -155,7 +156,6 @@
 <translation id="2738871930057338499">无法连接到互联网。发生 HTTP 403 Forbidden 错误，请检查您的代理配置。</translation>
 <translation id="2753623023919742414">点击即可搜索</translation>
 <translation id="2768103863314748511">将 Chromium 设为默认 PDF 查看器</translation>
-<translation id="2770231113462710648">将默认浏览器更改为：</translation>
 <translation id="2785438272836277133">此扩展程序包含恶意软件，所以不安全。请将其从 Chromium 中移除，这样它便无法再查看和更改您在所访问的网站上的数据，包括您的个人信息。</translation>
 <translation id="2799223571221894425">重新启动</translation>
 <translation id="2803971713792056305">您的 Chromium</translation>
@@ -381,6 +381,7 @@
 <translation id="5605834417512968703">选择任意内容即可使用图片搜索功能进行搜索，按 Esc 键可退出图片搜索功能</translation>
 <translation id="5618818588972826921">选择任何文字或图片即可使用图片搜索功能进行搜索，按 Esc 键可退出图片搜索功能</translation>
 <translation id="5623402015214259806">{0,plural, =0{有一项可用的 Chromium 更新}=1{有一项可用的 Chromium 更新}other{有一项可用的 Chromium 更新（已发布 # 天）}}</translation>
+<translation id="5633450273457573375">使用您<ph name="BEGIN_LINK" />自己的口令<ph name="END_LINK" />加密 Google 账号中的所有 Chromium 数据。地址和 Google 钱包中保存的任何数据都不会使用口令加密，Chromium 中的浏览记录也不会同步。</translation>
 <translation id="5643865575100044307">始终在关闭 Chromium 时删除设备上的网站数据</translation>
 <translation id="5653831366781983928">请立即重启 Chromium</translation>
 <translation id="5690427481109656848">Google LLC</translation>

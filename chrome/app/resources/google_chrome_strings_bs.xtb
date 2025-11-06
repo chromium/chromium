@@ -158,7 +158,6 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="2753623023919742414">Kliknite da pretražite</translation>
 <translation id="2757826245013442432">{COUNT,plural, =0{Napredna zaštita zahtijeva da ponovo pokrenete Chrome radi primjene ažuriranja}=1{Napredna zaštita zahtijeva da ponovo pokrenete Chrome radi primjene ažuriranja. Anonimni prozor se neće ponovo otvoriti.}one{Napredna zaštita zahtijeva da ponovo pokrenete Chrome radi primjene ažuriranja. # anonimni prozor se neće ponovo otvoriti.}few{Napredna zaštita zahtijeva da ponovo pokrenete Chrome radi primjene ažuriranja. # anonimna prozora se neće ponovo otvoriti.}other{Napredna zaštita zahtijeva da ponovo pokrenete Chrome radi primjene ažuriranja. # anonimnih prozora se neće ponovo otvoriti.}}</translation>
 <translation id="2765403129283291972">Chromeu treba odobrenje za pristup vašem mikrofonu za ovu web lokaciju</translation>
-<translation id="2770231113462710648">Promijenite zadani preglednik u:</translation>
 <translation id="2775140325783767197">Chrome ne može provjeravati vaše lozinke. Predlažemo da provjerite internetsku vezu.</translation>
 <translation id="2797864378188255696">Prilikom prijavljivanja na Googleove usluge kao što su Gmail ili YouTube koristeći <ph name="USER_EMAIL" /> možete se automatski prijaviti u Chrome putem istog računa</translation>
 <translation id="2799162042226656283">Vaš Chrome</translation>
@@ -271,6 +270,7 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="3968962723676998462">Unesite pristupni izraz da koristite i sačuvate podatke Chromea na računu <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="3973161977468201858">Google Chrome želi izbrisati vaše podatke iz Google upravitelja lozinki. Unesite svoju lozinku za Windows da to dozvolite.</translation>
 <translation id="400161754580828648">Da podijelite ekran, dozvolite snimanje ekrana za Chrome u Postavkama sistema.</translation>
+<translation id="4012899077942246412">Dok ste prijavljeni, lozinke i drugo s Google računa možete koristiti u Chromeu. Da promijenite ovo, idite na "Vaš račun u Chromeu".</translation>
 <translation id="4022972681110646219">Prevedi ekran</translation>
 <translation id="4023601594785368013">Izvorni jezik: <ph name="LANGUAGE" /></translation>
 <translation id="4035053306113201399">ChromeOS se mora ponovo pokrenuti da se ažuriranje primijeni.</translation>
@@ -654,6 +654,7 @@ Google Chrome ne može vratiti vaše postavke.</translation>
 <translation id="8255190535488645436">Google Chrome koristi vašu kameru i mikrofon.</translation>
 <translation id="8267953129876836456">Chrome je pronašao neke sigurnosne preporuke koje trebate pregledati</translation>
 <translation id="8286862437124483331">Google Chrome pokušava prikazati lozinke. Unesite svoju lozinku za Windows da ovo omogućite.</translation>
+<translation id="8289399803055125418">Koristi moj <ph name="BEGIN_LINK" />vlastiti pristupni izraz<ph name="END_LINK" /> za šifriranje svih podataka Chromea na Google računu. Adrese i podaci sačuvani u Google Novčaniku se neće šifrirati pristupnim izrazom. Historija pregledanja iz Chromea se neće sinhronizirati.</translation>
 <translation id="829923460755755423">Dodajte prečicu za Google upravitelja lozinki</translation>
 <translation id="8313851650939857356">Došlo je do greške prilikom pokretanja: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8321888067342493336">Sačuvaj kao sliku</translation>

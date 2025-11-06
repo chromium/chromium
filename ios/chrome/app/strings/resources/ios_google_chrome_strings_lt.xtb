@@ -169,9 +169,11 @@ Pabandykite palaukti kelias minutes prieš atsijungdami. Jei atsijungsite dabar,
 <translation id="5162467219239570114">„Chrome“ versija yra pasenusi. Jei <ph name="BEGIN_LINK" />programų parduotuvėje<ph name="END_LINK" /> nėra jokio naujinio, gali būti, kad įrenginys nebepalaiko naujų versijų „Chrome“.</translation>
 <translation id="5184329579814168207">Atidaryti naudojant „Chrome“</translation>
 <translation id="5190139289262548459">Jūsų organizacija (<ph name="DOMAIN" />) tvarko paskyrą, prie kurios esate prisijungę, ir tai, kaip naudojama „Chrome“.</translation>
+<translation id="5209238444239954363">„Chrome“ nepavyko patikrinti, ar yra naujinių. Vėliau bandykite dar kartą.</translation>
 <translation id="5305440589062022504">Atidaroma Slaptažodžių tvarkyklė naršyklėje „Chrome“</translation>
 <translation id="5310957470610282541">Kai kurie „Chrome“ duomenys dar neišsaugoti „Google“ paskyroje.
 Pabandykite palaukti kelias minutes prieš atsijungdami. Jei atsijungsite dabar, šie duomenys bus ištrinti.</translation>
+<translation id="5342685492141499976">Duomenys bus išsaugoti „Google“ slaptažodžių tvarkyklėje paskyroje <ph name="USER_EMAIL" /></translation>
 <translation id="5389212809648216794">„Google Chrome“ negali naudoti fotoaparato, nes jį naudoja kita programa</translation>
 <translation id="5395376160638294582">Užtikrinkite, kad visada galėtumėte naudoti „Chrome“ duomenis „Google“ paskyroje</translation>
 <translation id="5404252374083197467">Nustatyti „Chrome“ kaip numatytąją?</translation>
@@ -199,6 +201,7 @@ Pabandykite palaukti kelias minutes prieš atsijungdami. Jei atsijungsite dabar,
 <translation id="5808435672482059465">„Chrome“ istorijos peržiūra</translation>
 <translation id="5833027901704861726">Kai kurie „Chrome“ duomenys dar neišsaugoti paskyroje <ph name="EMAIL" />.
 Pabandykite palaukti kelias minutes prieš perjungdami paskyras. Jei dabar perjungsite paskyras, šie duomenys bus ištrinti.</translation>
+<translation id="5853754888722423892">Importavimas į „Google“ slaptažodžių tvarkyklę</translation>
 <translation id="5998675059699164418">Organizacija reikalauja prisijungti, kad galėtumėte naudoti „Chrome“.</translation>
 <translation id="6021312115739110405">„Google“ sukurtas tinkintas jums skirtas sklaidos kanalas. Įskaitant naujienas, sportą ir orų prognozę.</translation>
 <translation id="6022659036123304283">Suasmeninkite „Chrome“</translation>

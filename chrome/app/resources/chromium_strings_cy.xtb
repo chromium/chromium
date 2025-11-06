@@ -23,6 +23,7 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="1184145431117212167">Methodd y gosodiad oherwydd ni chefnogir eich fersiwn chi o Windows.</translation>
 <translation id="1185134272377778587">Ynghylch Chromium</translation>
 <translation id="1203500561924088507">Diolch am osod. Rhaid i chi ailgychwyn eich porwr cyn defnyddio <ph name="BUNDLE_NAME" />.</translation>
+<translation id="123265588161106468">Tra byddwch wedi mewngofnodi, gallwch ddefnyddio'ch cyfrineiriau a mwy o'ch Cyfrif Google yn Chromium. I newid hyn, ewch i 'Eich cyfrif yn Chromium'.</translation>
 <translation id="1262876892872089030">Tra bod y tab hwn yn anweithredol, rhyddhawyd cof i gadw Chromium yn gyflym. Gallwch ddewis gwahardd y wefan hon rhag bod yn anactif bob amser.</translation>
 <translation id="1265577313130862557">Gwnaeth Chromium rwystro'r lawrlwythiad hwn oherwydd bod y ffeil yn beryglus</translation>
 <translation id="126567311906253476">Wrth fewngofnodi i wasanaethau Google megis Gmail neu YouTube gyda <ph name="USER_EMAIL" />, gallwch fewngofnodi yn awtomatig i Chromium gyda'r un cyfrif</translation>
@@ -147,6 +148,7 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="2620436844016719705">System</translation>
 <translation id="2629740064077610681">Gall eich sefydliad weld a rheoli data pori, megis eich nodau tudalen, hanes a chyfrineiriau. Ni all weld data pori mewn proffiliau Chromium eraill</translation>
 <translation id="2635452620547538388">Cadarnhewch mai chi sydd yno i ddefnyddio a chadw data Chromium yn eich cyfrif,<ph name="ACCOUNT_EMAIL" /></translation>
+<translation id="2637732208198500597">{COUNT,plural, =0{Mae Diogelwch Uwch yn gofyn i chi ail-lansio Chromium i gymhwyso diweddariad}=1{Mae Diogelwch Uwch yn gofyn i chi ail-lansio Chromium i gymhwyso diweddariad. Ni fydd eich ffenestr Anhysbys yn ailagor.}two{Mae Diogelwch Uwch yn gofyn i chi ail-lansio Chromium i gymhwyso diweddariad. Ni fydd eich # ffenestr Anhysbys yn ailagor.}few{Mae Diogelwch Uwch yn gofyn i chi ail-lansio Chromium i gymhwyso diweddariad. Ni fydd eich # ffenestr Anhysbys yn ailagor.}many{Mae Diogelwch Uwch yn gofyn i chi ail-lansio Chromium i gymhwyso diweddariad. Ni fydd eich # ffenestr Anhysbys yn ailagor.}other{Mae Diogelwch Uwch yn gofyn i chi ail-lansio Chromium i gymhwyso diweddariad. Ni fydd eich # ffenestr Anhysbys yn ailagor.}}</translation>
 <translation id="2648074677641340862">Bu gwall system weithredu wrth osod. Lawrlwythwch Chromium eto.</translation>
 <translation id="2661879430930417727">Os ydych yn rhannu dyfais, gall ffrindiau a theulu bori ar wahân a gosod Chromium yn yr union ffordd y maent eisiau</translation>
 <translation id="2711502716910134313">Tab Chromium</translation>
@@ -157,7 +159,6 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="2738871930057338499">Methu â chysylltu â'r Rhyngrwyd. HTTP 403 Gwaharddedig. Gwiriwch ffurfweddiad eich dirprwy weinydd.</translation>
 <translation id="2753623023919742414">Cliciwch i chwilio</translation>
 <translation id="2768103863314748511">Gosod Chromium fel eich dangosydd PDF diofyn</translation>
-<translation id="2770231113462710648">Newid y porwr diofyn i:</translation>
 <translation id="2785438272836277133">Mae'r estyniad hwn yn cynnwys drwgwedd ac mae'n anniogel. Tynnwch ef o Chromium fel na all weld na newid eich data ar wefannau rydych yn ymweld â nhw mwyach, gan gynnwys eich gwybodaeth bersonol.</translation>
 <translation id="2799223571221894425">Ail-lansio</translation>
 <translation id="2803971713792056305">Eich Chromium</translation>
@@ -383,6 +384,7 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="5605834417512968703">Dewiswch unrhyw beth i'w chwilio gyda Chwilio Lluniau neu pwyswch Escape i adael Chwilio Lluniau</translation>
 <translation id="5618818588972826921">Dewiswch unrhyw destun neu ddelwedd i'w chwilio gyda Chwilio Lluniau neu pwyswch Escape i adael Chwilio Lluniau</translation>
 <translation id="5623402015214259806">{0,plural, =0{Mae diweddariad Cromiwm ar gael}=1{Mae diweddariad Cromiwm ar gael}two{Mae diweddariad Chromium wedi bod ar gael ers # ddiwrnod}few{Mae diweddariad Chromium wedi bod ar gael ers # diwrnod}many{Mae diweddariad Chromium wedi bod ar gael ers # diwrnod}other{Mae diweddariad Chromium wedi bod ar gael ers # diwrnod}}</translation>
+<translation id="5633450273457573375">Defnyddiwch eich <ph name="BEGIN_LINK" />cyfrinymadrodd eich hun<ph name="END_LINK" /> i amgryptio'r holl ddata Chrome yn eich Cyfrif Google. Ni fydd cyfeiriadau nac unrhyw ddata a gadwyd yn Google Wallet yn cael eu hamgryptio gan eich cyfrinymadrodd. Ni fydd hanes pori o Chromium yn cysoni.</translation>
 <translation id="5643865575100044307">Dileu data gwefan o'ch dyfais bob amser pan fyddwch yn cau Chromium</translation>
 <translation id="5653831366781983928">Ailgychwynnwch Chromium nawr</translation>
 <translation id="5690427481109656848">Google LLC</translation>
@@ -532,6 +534,7 @@ Mae'n bosib na fydd rhai nodweddion ar gael. Rhowch gyfeiriadur proffil gwahanol
 <translation id="7274695763216404502">Piniwyd! Defnyddiwch Chwilio Lluniau eto o'r bar offer</translation>
 <translation id="7288567540154601580">Tabiau ac estyniadau</translation>
 <translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{Mae Chromium yn argymell eich bod yn ei dynnu}zero{Mae Chromium yn argymell eich bod yn eu tynnu}two{Mae Chromium yn argymell eich bod yn eu tynnu}few{Mae Chromium yn argymell eich bod yn eu tynnu}many{Mae Chromium yn argymell eich bod yn eu tynnu}other{Mae Chromium yn argymell eich bod yn eu tynnu}}</translation>
+<translation id="7296334833518879294">I rannu sain system, agorwch y Gosodiadau System a chaniatewch 'Recordio Sain System yn Unig' ar gyfer Chromium. Yna bydd angen i chi ailgychwyn Chromium.</translation>
 <translation id="7309928523159922338">Mae Mesur hysbysebion yn caniatáu i wefannau rydych yn ymweld â nhw ofyn am wybodaeth o Chromium sy'n helpu'r wefan i fesur perfformiad eu hysbysebion. Mae Mesur hysbysebion yn cyfyngu ar olrhain traws-wefan drwy drosglwyddo cyn lleied o wybodaeth â phosib rhwng gwefannau.</translation>
 <translation id="731795002583552498">Wrthi'n diweddaru Chromium</translation>
 <translation id="7318036098707714271">Mae eich ffeil dewisiadau yn llygredig neu'n annilys.

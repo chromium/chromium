@@ -177,6 +177,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="1282358575813748144">Čamci i plovila</translation>
 <translation id="1283977499362032052">Radne biografije i portfoliji</translation>
 <translation id="1285320974508926690">Nikad ne prevodi ovaj sajt</translation>
+<translation id="1289129165308566697">Pogledajte istoriju na drugim uređajima</translation>
 <translation id="1292571435393770077">16. fioka</translation>
 <translation id="1292701964462482250">„Softver na vašem računaru onemogućava Chrome-u da se bezbedno poveže na veb“ (samo na Windows računarima)</translation>
 <translation id="1293556467332435079">Fajlovi</translation>
@@ -1008,6 +1009,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2627847595568876492">Tekst se izdvaja iz PDF-a…</translation>
 <translation id="2628025184666666186">Ovaj server ne može da dokaže da je <ph name="DOMAIN" /> jer koristi bezbednosni sertifikat koji Chrome ili konfiguracija sistema za šifrovanje veb-saobraćaja ne smatraju pouzdanim. Uzrok tome je možda pogrešna konfiguracija ili napadač koji je prekinuo vezu.</translation>
 <translation id="2628224721443278970">Prijavi me na Microsoft OneDrive</translation>
+<translation id="2631387782019878060">Verifikacioni kôd: <ph name="OTP" /></translation>
 <translation id="2634124572758952069">Nismo uspeli da pronađemo IP adresu servera hosta <ph name="HOST_NAME" />.</translation>
 <translation id="2638567100095052009">Unesite @ da biste pretražili <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="2639739919103226564">Status:</translation>
@@ -2341,6 +2343,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="4822493756793346865">Uobičajene cene se zasnivaju na informacijama iz prodavnica širom veba tokom poslednjih 90 dana.</translation>
 <translation id="4822922322149719535">Prikaži evidenciju grešaka</translation>
 <translation id="4823699521959851389"><ph name="SHORT_PRODUCT_NAME" /> traži pristup dozvoli <ph name="PERMISSION" /> na uređaju</translation>
+<translation id="4825311006392962663">Prikaži opcije za kasnije plaćanje prilikom plaćanja</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, pa Enter da biste brzo napravili novu Google tabelu</translation>
 <translation id="4826588772550366629">kamera i mikrofon</translation>
 <translation id="4827283332383516812">Izbrišite karticu</translation>
@@ -2800,6 +2803,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="5558083606899411167">Klimatizacija</translation>
 <translation id="5558125320634132440">Ovaj sajt je blokiran jer verovatno ima sadržaj za stariju publiku</translation>
 <translation id="5559311991468302423">Izbrišite adresu</translation>
+<translation id="5561747310506483298">Lične karte</translation>
 <translation id="55635442646131152">Struktura dokumenta</translation>
 <translation id="5563589142503817291">Da biste koristili mikrofon, odobrite Chrome-u pristup u: <ph name="LINK" />.</translation>
 <translation id="5565613213060953222">Otvori karticu bez arhiviranja</translation>
@@ -3451,6 +3455,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="6652101503459149953">Koristi Windows Hello</translation>
 <translation id="6654224358955673568">Formalno</translation>
 <translation id="6654244995031366386">Staklo (sa teksturom)</translation>
+<translation id="6655085656059574817">Ako nalog ostane povezan, brže ćete plaćati koristeći <ph name="BNPL_ISSUER_NAME" />, ali možete da opozovete vezu ako odete na <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /></translation>
 <translation id="6657585470893396449">Lozinka</translation>
 <translation id="6659246032834639189">Ova cena je niska</translation>
 <translation id="6660413144148052430">lokacija</translation>

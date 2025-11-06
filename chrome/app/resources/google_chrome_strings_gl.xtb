@@ -156,8 +156,8 @@
 <translation id="2738871930057338499">Non se puido establecer conexión con Internet. Erro: HTTP 403 Forbidden (acceso non permitido). Revisa a configuración do proxy.</translation>
 <translation id="2742320827292110288">Advertencia: Google Chrome non pode evitar que as extensións rexistren o teu historial de navegación. Para desactivar esta extensión no modo de incógnito, anula a selección da caixa correspondente a esta opción.</translation>
 <translation id="2753623023919742414">Fai clic nun obxecto para buscalo</translation>
+<translation id="2757826245013442432">{COUNT,plural, =0{A opción Protección avanzada require que reinicies Chrome para aplicar unha actualización}=1{A opción Protección avanzada require que reinicies Chrome para aplicar unha actualización. A ventá do modo de incógnito non se volverá abrir.}other{A opción Protección avanzada require que reinicies Chrome para aplicar unha actualización. As # ventás do modo de incógnito non se volverán abrir.}}</translation>
 <translation id="2765403129283291972">Chrome necesita permiso para acceder ao micrófono neste sitio</translation>
-<translation id="2770231113462710648">Cambiar o navegador predeterminado a:</translation>
 <translation id="2775140325783767197">Chrome non puido comprobar os teus contrasinais. Verifica a conexión a Internet.</translation>
 <translation id="2797864378188255696">Cando accedas aos servizos de Google, como Gmail ou YouTube, con <ph name="USER_EMAIL" />, poderás iniciar sesión automaticamente en Chrome coa mesma conta</translation>
 <translation id="2799162042226656283">O teu Chrome</translation>
@@ -270,6 +270,7 @@
 <translation id="3968962723676998462">Escribe a túa frase de acceso para usar e gardar os datos de Chrome na túa conta (<ph name="ACCOUNT_EMAIL" />)</translation>
 <translation id="3973161977468201858">Google Chrome quere eliminar os teus datos do xestor de contrasinais de Google Escribe o teu contrasinal de Windows para permitir esta acción.</translation>
 <translation id="400161754580828648">Para compartir a pantalla, vai á configuración do sistema e activa a función de gravación de pantalla para Chrome.</translation>
+<translation id="4012899077942246412">Mentres teñas a sesión iniciada, poderás usar os teus contrasinais, ademais doutros datos da túa Conta de Google, en Chrome. Para cambiar esta opción, vai a A túa conta en Chrome.</translation>
 <translation id="4022972681110646219">Traducir pantalla</translation>
 <translation id="4023601594785368013">Idioma orixinal: <ph name="LANGUAGE" /></translation>
 <translation id="4035053306113201399">É necesario reiniciar Chrome OS para aplicar a actualización.</translation>
@@ -449,6 +450,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="6025087594896450715">Google Chrome reiniciarase dentro de <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">Pechar</translation>
 <translation id="604424701295382420">Elemento fixado! Podes volver acceder a Google Lens desde o novo botón da barra de ferramentas</translation>
+<translation id="6046028983725193307">Para compartir o audio do sistema, abre a configuración do sistema e activa o permiso System Audio Recording Only (Só gravación de audio do sistema) para Chrome. Terás que reiniciar Chrome.</translation>
 <translation id="6069027071882229820">Copiar como imaxe</translation>
 <translation id="6070348360322141662">Para obter unha maior seguranza, Google Chrome encriptará os teus datos</translation>
 <translation id="6075300983329039771">A túa organización, <ph name="MANAGER" />, esixe que inicies sesión en Chrome</translation>
@@ -653,6 +655,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="8255190535488645436">Google Chrome está utilizando a túa cámara e micrófono.</translation>
 <translation id="8267953129876836456">Chrome atopou algunhas recomendacións de seguranza para que as revises</translation>
 <translation id="8286862437124483331">Google Chrome está tentando mostrar contrasinais. Escribe o teu contrasinal de Windows para permitir esta acción.</translation>
+<translation id="8289399803055125418">Usa a túa propia <ph name="BEGIN_LINK" />frase de acceso<ph name="END_LINK" /> para encriptar todos os datos de Chrome na túa Conta de Google. Os enderezos e os datos gardados en Google Wallet non se encriptarán con esa frase. Tampouco se sincronizará o historial de navegación de Chrome.</translation>
 <translation id="829923460755755423">Engade un atallo ao xestor de contrasinais de Google</translation>
 <translation id="8313851650939857356">Produciuse un erro de inicio do sistema: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8321888067342493336">Gardar como imaxe</translation>

@@ -169,9 +169,11 @@ Subukang maghintay nang ilang minuto bago mag-sign out. Kung magsa-sign out ka n
 <translation id="5162467219239570114">Luma na ang Chrome. Kung walang available na update sa <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, posibleng hindi na sinusuportahan ng iyong device ang mga bagong bersyon ng Chrome.</translation>
 <translation id="5184329579814168207">Buksan sa Chrome</translation>
 <translation id="5190139289262548459">Pinapamahalaan ng iyong organisasyon at <ph name="DOMAIN" /> ang account kung saan ka naka-sign in at kung paano ginagamit ang Chrome.</translation>
+<translation id="5209238444239954363">Hindi matingnan ng Chrome kung may mga update. Subukan ulit sa ibang pagkakataon.</translation>
 <translation id="5305440589062022504">Bubuksan ang Password Manager sa Chrome</translation>
 <translation id="5310957470610282541">Hindi pa nase-save sa Google Account mo ang ilan sa iyong data sa Chrome.
 Subukang maghintay nang ilang minuto bago mag-sign out. Kung magsa-sign out ka ngayon, made-delete ang data na ito.</translation>
+<translation id="5342685492141499976">Ise-save ang iyong data sa Google Password Manager para sa <ph name="USER_EMAIL" /></translation>
 <translation id="5389212809648216794">Hindi magamit ng Google Chrome ang iyong camera ngayon dahil ginagamit ito sa isa pang application</translation>
 <translation id="5395376160638294582">Tiyaking magagamit mo sa anumang oras ang data ng Chrome sa iyong Google Account</translation>
 <translation id="5404252374083197467">Itakda ang Chrome bilang default?</translation>
@@ -199,6 +201,7 @@ Subukang maghintay nang ilang minuto bago mag-sign out. Kung magsa-sign out ka n
 <translation id="5808435672482059465">Tingnan ang Iyong History sa Chrome</translation>
 <translation id="5833027901704861726">Hindi pa nase-save sa <ph name="EMAIL" /> ang ilan sa iyong data sa Chrome.
 Subukang maghintay nang ilang minuto bago lumipat ng account. Kung lilipat ka ng account ngayon, made-delete ang data na ito.</translation>
+<translation id="5853754888722423892">Mag-import sa Google Password Manager</translation>
 <translation id="5998675059699164418">Hinihiling sa iyo ng organisasyon mo na mag-sign in para magamit ang Chrome.</translation>
 <translation id="6021312115739110405">Custom na feed na ginawa ng Google para sa iyo. May balita, sports, at lagay ng panahon.</translation>
 <translation id="6022659036123304283">Gawing iyo ang Chrome</translation>

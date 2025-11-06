@@ -677,6 +677,7 @@
 <translation id="3642060527569456384">Tabgruppen werden automatisch auf allen deinen Geräten gespeichert und aktualisiert.</translation>
 <translation id="3643338347976071250">{count,plural, =1{{count} Passwort ist nur auf diesem Gerät gespeichert. Wenn du es auf deinen anderen Geräten verwenden möchtest, speichere es in deinem Google-Konto {email}.}other{{count} Passwörter sind nur auf diesem Gerät gespeichert. Wenn du sie auf deinen anderen Geräten verwenden möchtest, speichere sie in deinem Google-Konto {email}.}}</translation>
 <translation id="3659297405161482746">Keine Zahlungsmethoden gefunden</translation>
+<translation id="3662966164093827811">{count,plural, =1{1 ausgewählt}other{# ausgewählt}}</translation>
 <translation id="3668816008081204991">Leseliste ist ausgeblendet</translation>
 <translation id="3670030362669914947">Nummer</translation>
 <translation id="3679163990085797665">Gelesene löschen</translation>
@@ -741,6 +742,7 @@
 <translation id="3926703470020109118">Download abgebrochen</translation>
 <translation id="3929457972718048006">Adressen</translation>
 <translation id="3931215329146376310">{count,plural, =1{Neues Passwort für diese Website}other{Neue Passwörter für diese Website}}</translation>
+<translation id="3933372629914873850">Du meldest dich bei <ph name="URL" /> an</translation>
 <translation id="3934905113567851655">Auseinander- und zusammenziehen, um die Größe anzupassen</translation>
 <translation id="3940195383040445971">Preise auf Tabs beobachten</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{{COUNT} Tab schließen}other{{COUNT} Tabs schließen}}</translation>
@@ -1330,6 +1332,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="6103540626693881831">Verschlüsselung auf dem Gerät</translation>
 <translation id="611361228753138223">Websites, die du auf diesem Gerät zuletzt besucht hast</translation>
 <translation id="611705554202268369">Lange drücken, um einer Tabgruppe Tabs hinzuzufügen</translation>
+<translation id="6117260878488959646">Ein Fehler ist aufgetreten. Versuche es später noch einmal.</translation>
 <translation id="6122191549521593678">Online</translation>
 <translation id="6122831415929794347">Safe Browsing deaktivieren?</translation>
 <translation id="6123514585040403489">Deine Tabs werden geschlossen</translation>
@@ -1352,6 +1355,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="6172428250974276014">Ja, Daten getrennt halten (empfohlen)</translation>
 <translation id="6173499589275053515">Passwort in deinem Google-Konto <ph name="EMAIL" /> gespeichert</translation>
 <translation id="6181969657494915430">Bildschirmsuche</translation>
+<translation id="6182851675249594487">Benutzerdefiniertes Farbschema</translation>
 <translation id="6187302354554850004">Letzte Synchr.: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">Erstellt am <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Ungelesen</translation>

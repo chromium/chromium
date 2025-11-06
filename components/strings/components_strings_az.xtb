@@ -177,6 +177,7 @@
 <translation id="1282358575813748144">Qayıq və su nəqliyyat vasitələri</translation>
 <translation id="1283977499362032052">Rezüme və portfolio</translation>
 <translation id="1285320974508926690">Bu saytı heç vaxt tərcümə etməyin</translation>
+<translation id="1289129165308566697">Tarixçənizə digər cihazlarda baxın</translation>
 <translation id="1292571435393770077">Qab 16</translation>
 <translation id="1292701964462482250">"Kompüterdəki proqram təminatı Chrome'un vebə təhlükəsiz şəkildə qoşulmağına mane olur" (yalnız Windows kompüterləri)</translation>
 <translation id="1293556467332435079">Fayllar</translation>
@@ -1840,6 +1841,7 @@
 <translation id="4014895360827978999">Ticarət xidməti və ödəniş sistemləri</translation>
 <translation id="4018819349042761761">İctimai açar</translation>
 <translation id="4023431997072828269">Bu forma təhlükəsiz olmayan bağlantıdan istifadə etməklə təqdim edildiyinə görə məlumatlarınız digərləri tərəfindən görüləcək.</translation>
+<translation id="4024673763872230929">Məlumatlarınızı yadda saxlayın və formaları daha tez doldurun. Cihazınızda yadda saxlayır.</translation>
 <translation id="4025325634010721551">Siyasətlər yenidən yükləndi</translation>
 <translation id="4025338605225449265">Valyuta və Xarici Mübadilə</translation>
 <translation id="4025777154208238692">Tərs sıra</translation>
@@ -2273,6 +2275,7 @@
 <translation id="4732860731866514038"><ph name="LANGUAGE" /> dil paketi endirilir... <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> cihazın məkanını istifadə etmək istəyir</translation>
 <translation id="473414950835101501">Kameralardan istifadə edin</translation>
+<translation id="4734343956394152985"><ph name="BEGIN_BOLD" />Cari defolt<ph name="END_BOLD" /> · <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="4736825316280949806">Chromium'u yenidən başladın</translation>
 <translation id="4736934858538408121">Virtual kart</translation>
 <translation id="473775607612524610">Güncəlləşdirin</translation>
@@ -2335,6 +2338,7 @@
 <translation id="4822493756793346865">Tipik qiymətlər son 90 günü əhatə edir və veb-mağazalara əsaslanır.</translation>
 <translation id="4822922322149719535">Xəta jurnalına baxın</translation>
 <translation id="4823699521959851389"><ph name="SHORT_PRODUCT_NAME" /> cihazın <ph name="PERMISSION" /> tətbiqinə daxil olmalıdır</translation>
+<translation id="4825311006392962663">Ödəmə zamanı sonradan ödəniş seçimlərini göstərin</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab düyməsi, sonra Enter düyməsinə basaraq cəld yeni Google Cədvəli yaradın</translation>
 <translation id="4826588772550366629">kamera və mikrofon</translation>
 <translation id="4827283332383516812">Kartı silin</translation>
@@ -2426,6 +2430,7 @@
 <translation id="4961708452830821006">Mikrofon istifadəsi üçün <ph name="LINK" /> bölməsində Chrome-a giriş imkanı verin.</translation>
 <translation id="4963413887558778009">Landşaft Dizaynı</translation>
 <translation id="4967366744630699583">Ünvan redaktəsi</translation>
+<translation id="4968046291688599384"><ph name="BNPL_ISSUER_NAME" /> üzrə birdəfəlik virtual kart nömrəsi dolduruldu.</translation>
 <translation id="4968522289500246572">Bu tətbiq mobil cihaz üçün nəzərdə tutulmuşdur və ölçüsü hər cihaz üçün uyğun olmaya bilər. Tətbiq problemlərlə qarşılaşa bilər və ya yenidən başladıla bilər.</translation>
 <translation id="4968665849807487749">Bütün displeylərinizdə pəncərələri idarə etməyi tələb edə bilər</translation>
 <translation id="4969341057194253438">Qeydəalmanı silin</translation>
@@ -3382,6 +3387,7 @@
 <translation id="6521745193039995384">Aktiv deyil</translation>
 <translation id="6522682797352430154">Klassik Musiqi</translation>
 <translation id="6524830701589638230">"Əlçatımlıq ayarlarını idarə edin" düyməsi, aktivləşdirərək Chrome ayarlarında əlçatımlılıq alətlərini fərdiləşdirin</translation>
+<translation id="6525222262307262764">Cari defoltu saxlayın</translation>
 <translation id="6527049834925947126">Qida İstehsalı</translation>
 <translation id="6529173248185917884">Yeddinci Rulon</translation>
 <translation id="6529602333819889595">Silinməni yenidən edin</translation>
@@ -3402,6 +3408,7 @@
 <translation id="6567832540451970450">Administratorunuz bu sayt üçün <ph name="PERMISSION" /> icazəsi verir</translation>
 <translation id="6568793038316600992">"Ödəniş metodlarını idarə edin" düyməsi, aktivləşdirərək Chrome ayarlarında ödəniş və kredit kartı məlumatlarını idarə edin</translation>
 <translation id="6569060085658103619">Artırma səhifəsinə baxırsınız</translation>
+<translation id="6571992525120410251"><ph name="ENGINE_NAME" /> axtarış mühərrikindən istədiyinizi soruşun</translation>
 <translation id="6572867903637058088">Faydalıdır?</translation>
 <translation id="6573200754375280815">Sağdan qoşa deşik açın</translation>
 <translation id="6575408526598156416">Hesabda yadda saxlayın</translation>
@@ -3443,6 +3450,7 @@
 <translation id="6652101503459149953">Windows Hello işlədin</translation>
 <translation id="6654224358955673568">Rəsmiləşdirin</translation>
 <translation id="6654244995031366386">Şüşə (teksturalı)</translation>
+<translation id="6655085656059574817">Hesabınızı əlaqələndirilmiş formada saxlamaq <ph name="BNPL_ISSUER_NAME" /> ilə daha sürətli ödəniş etməyinizə kömək edir, lakin <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /> bölməsinə keçərək əlaqəni sonlandıra bilərsiniz</translation>
 <translation id="6657585470893396449">Parol</translation>
 <translation id="6659246032834639189">Bu qiymət aşağıdır</translation>
 <translation id="6660413144148052430">məkan</translation>
@@ -3450,6 +3458,7 @@
 <translation id="666259744093848177">(x86_64 tərcümə edilib)</translation>
 <translation id="6665553082534466207">Sağdan üçlü deşik açın</translation>
 <translation id="6668389483194953109">"Fərdi" kağız ölçüsü adı tapıldı, lakin "fərdi_ölçü" xüsusiyyəti boş və ya etibarsızdır.</translation>
+<translation id="6670729408462528018">Qalereya</translation>
 <translation id="6671169470640320959">Avtomobil maliyyəsi</translation>
 <translation id="6671697161687535275">Təkliflər Chromium'dan silinsin?</translation>
 <translation id="6675846980676550611">AR icazəsi verilmədi</translation>

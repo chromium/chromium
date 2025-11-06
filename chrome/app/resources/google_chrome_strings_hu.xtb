@@ -152,8 +152,8 @@
 <translation id="2738871930057338499">Nem lehet csatlakozni az internethez. HTTP 403 tiltás. Ellenőrizze a proxybeállításokat.</translation>
 <translation id="2742320827292110288">Figyelmeztetés: A Google Chrome nem tudja megakadályozni, hogy a bővítmények rögzítsék a böngészési előzményeket. A bővítmény inkognitó módban való használatának letiltásához törölje e lehetőség bejelölését.</translation>
 <translation id="2753623023919742414">Kattintson a kereséshez</translation>
+<translation id="2757826245013442432">{COUNT,plural, =0{A Speciális védelemhez újra kell indítania a Chrome-ot a frissítés alkalmazásához}=1{A Speciális védelemhez újra kell indítania a Chrome-ot a frissítés alkalmazásához. Az inkognitó ablak nem fog újra megnyílni.}other{A Speciális védelemhez újra kell indítania a Chrome-ot a frissítés alkalmazásához. A(z) # inkognitóablak nem fog újra megnyílni.}}</translation>
 <translation id="2765403129283291972">A Chrome-nak engedélyre van szüksége ahhoz, hogy hozzáférjen a mikrofonhoz ennél a webhelynél</translation>
-<translation id="2770231113462710648">Alapértelmezett böngésző beállítása:</translation>
 <translation id="2775140325783767197">A Chrome nem tudja ellenőrizni a jelszavakat. Ellenőrizze az internetkapcsolatot.</translation>
 <translation id="2797864378188255696">Amikor <ph name="USER_EMAIL" /> fiókjával bejelentkezik a Google-szolgáltatásokba (például a Gmailbe vagy a YouTube-ba), ugyanazzal a fiókkal automatikusan bejelentkezhet a Chrome-ba is.</translation>
 <translation id="2799162042226656283">Az Ön Chrome böngészője</translation>
@@ -266,6 +266,7 @@
 <translation id="3968962723676998462">Adja meg összetett jelszavát, ha a Chrome-adatokat szeretné használni és tárolni a fiókjában (<ph name="ACCOUNT_EMAIL" />)</translation>
 <translation id="3973161977468201858">A Google Chrome törölni szeretné a Jelszókezelőhöz tartozó adatait. Az engedélyezéshez adja meg Windows-jelszavát.</translation>
 <translation id="400161754580828648">A képernyő megosztásához engedélyezze a Chrome számára a képernyőrögzítést a Rendszerbeállításokban.</translation>
+<translation id="4012899077942246412">Amíg be van jelentkezve, használhatja a Google-fiókjában tárolt jelszavait és egyéb tartalmait a Chrome-ban. A módosításhoz lépjen „Az Ön fiókja a Chrome-ban” részhez.</translation>
 <translation id="4022972681110646219">Képernyőtartalom lefordítása</translation>
 <translation id="4023601594785368013">Eredeti nyelv: <ph name="LANGUAGE" /></translation>
 <translation id="4035053306113201399">A frissítés alkalmazásához újra kell indítani a ChromeOS-t.</translation>
@@ -645,6 +646,7 @@
 <translation id="8255190535488645436">A Google Chrome használja a kamerát és a mikrofont.</translation>
 <translation id="8267953129876836456">A Chrome talált néhány áttekintésre érdemes biztonsági javaslatot</translation>
 <translation id="8286862437124483331">A Google Chrome megkísérli megjeleníteni a jelszavakat. Ennek engedélyezéséhez írja be Windows-jelszavát.</translation>
+<translation id="8289399803055125418"><ph name="BEGIN_LINK" />Saját összetett jelszó<ph name="END_LINK" /> használata a Google-fiókjában tárolt Chrome-adatok mindegyikének titkosításához. A címeket és a Google Walletben mentett adatokat nem titkosítja az összetett jelszava. A Chrome böngészési előzményei nem lesznek szinkronizálva.</translation>
 <translation id="829923460755755423">Parancsikon hozzáadása Google Jelszókezelőhöz</translation>
 <translation id="8313851650939857356">Indítási hiba: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8321888067342493336">Mentés képként</translation>

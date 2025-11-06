@@ -169,9 +169,11 @@ Sačekajte nekoliko minuta pre nego što se odjavite. Ako se odjavite odmah, ovi
 <translation id="5162467219239570114">Chrome je zastareo. Ako ažuriranje nije dostupno u <ph name="BEGIN_LINK" />App Store-u<ph name="END_LINK" />, uređaj možda ne podržava nove verzije Chrome-a.</translation>
 <translation id="5184329579814168207">Otvori u Chrome-u</translation>
 <translation id="5190139289262548459">Vaša organizacija, <ph name="DOMAIN" />, upravlja nalogom na koji ste prijavljeni i načinom na koji se Chrome koristi.</translation>
+<translation id="5209238444239954363">Chrome ne može da traži ažuriranja. Probajte ponovo kasnije.</translation>
 <translation id="5305440589062022504">Otvara Menadžer lozinki u Chrome-u</translation>
 <translation id="5310957470610282541">Neki Chrome podaci još nisu sačuvani na Google nalogu.
 Sačekajte nekoliko minuta pre nego što se odjavite. Ako se odjavite odmah, ovi podaci će biti izbrisani.</translation>
+<translation id="5342685492141499976">Podaci se čuvaju u Google menadžeru lozinki za <ph name="USER_EMAIL" /></translation>
 <translation id="5389212809648216794">Google Chrome ne može da koristi kameru zato što je već koristi druga aplikacija</translation>
 <translation id="5395376160638294582">Uverite se da uvek možete da koristite Chrome podatke na Google nalogu</translation>
 <translation id="5404252374083197467">Želite da podesite Chrome kao podrazumevani pregledač?</translation>
@@ -199,6 +201,7 @@ Sačekajte nekoliko minuta pre nego što se odjavite. Ako se odjavite odmah, ovi
 <translation id="5808435672482059465">Pregledajte istoriju Chrome-a</translation>
 <translation id="5833027901704861726">Neki Chrome podaci još nisu sačuvani na nalogu <ph name="EMAIL" />.
 Sačekajte nekoliko minuta pre nego što promenite nalog. Ako sada promenite nalog, ovi podaci će se izbrisati.</translation>
+<translation id="5853754888722423892">Uvezite u Google menadžer lozinki</translation>
 <translation id="5998675059699164418">Organizacija zahteva da se prijavite da biste koristili Chrome.</translation>
 <translation id="6021312115739110405">Prilagođeni fid koji je Google napravio za vas. Uključujući vesti, sport i vreme.</translation>
 <translation id="6022659036123304283">Prilagodite Chrome sebi</translation>

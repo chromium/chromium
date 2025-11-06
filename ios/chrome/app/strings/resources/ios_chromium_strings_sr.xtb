@@ -25,6 +25,7 @@
 <translation id="1502360822835740515">Подесите Chromium за подразумевани прегледач</translation>
 <translation id="1503199973012840174">Chromium је застарео. Ажурирајте га да бисте били безбедни.</translation>
 <translation id="1515748263297244785">Подразумевано користите Chromium за iPad</translation>
+<translation id="1530961174488670696">Chromium не може да тражи ажурирања. Пробајте поново касније.</translation>
 <translation id="1531155317299575425">Приказује упите за пријављивање у Chromium.</translation>
 <translation id="1553657876656159572">Прилагођени фид направљен за вас. Укључујући вести, спорт и време.</translation>
 <translation id="1561849081734670621">Да бисте онемогућили режим закључавања у Chromium-у, искључите га на iPhone-у.</translation>
@@ -145,6 +146,7 @@
 <translation id="420541179527342563">Да бисте онемогућили режим закључавања у Chromium-у, искључите га на iPad-у.</translation>
 <translation id="4272892696084633551">Помозите нам да побољшамо Chromium-ове функције и учинак</translation>
 <translation id="4302397443352897529">Подешавања Chromium-а</translation>
+<translation id="4304713468139749426">Менаџер лозинки</translation>
 <translation id="4408912345039114853">Покрени Chromium проверу безбедности</translation>
 <translation id="4432744876818348753">Пријавите се да бисте искористили Chromium на најбољи начин.</translation>
 <translation id="4445228361214254027">Организација је искључила могућност коришћења и чувања Chromium података на Google налогу. Нови обележивачи, лозинке и други садржај ће се чувати само на овом уређају.</translation>
@@ -236,7 +238,7 @@
 <translation id="6154098560469640583">Користите Chromium сваки пут када додирујете линкове у порукама, документима и другим апликацијама.</translation>
 <translation id="6157162508956739031">Брзо се пријављујте у апликације и на сајтове аутоматским попуњавањем лозинки и приступних кључева из Chromium-а</translation>
 <translation id="6170619162539716595">Дозволите Chromium-у да користи Google мапе да би вам пружао упутства и локалне информације о откривеним адресама.</translation>
-<translation id="6247557882553405851">Google менаџеру лозинки</translation>
+<translation id="6244277266078678766">Подаци се чувају у Менаџеру лозинки за <ph name="USER_EMAIL" /></translation>
 <translation id="6268381023930128611">Желите ли да се одјавите из Chromium-а?</translation>
 <translation id="6301717043141881464">Да бисте лако приступали сачуваним лозинкама у другим апликацијама, користите Chromium за аутоматско попуњавање</translation>
 <translation id="6324041800010509197">Посетите мрежу картица у Chromium-у</translation>
@@ -314,6 +316,7 @@
 <translation id="8119542592987737574">Брже приступајте Chromium-у са траке с апликацијама на почетном екрану iPhone-а.</translation>
 <translation id="8164086860209325020">Иди у Chromium подешавања</translation>
 <translation id="8197822717502700527">Сада ћете искористити све предности Chromium-а на уређају.</translation>
+<translation id="8236210361418193126">Увезите у Менаџер лозинки</translation>
 <translation id="8254729934443216898">Истражите нове функције које вам помажу да максимално искористите Chromium.</translation>
 <translation id="8293572045658095405">Користите Chromium режим без архивирања</translation>
 <translation id="830951810931292870">Отвара унете URL-ове у Chromium-у у режиму без архивирања.</translation>

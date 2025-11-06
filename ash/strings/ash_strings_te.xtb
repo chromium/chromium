@@ -1408,7 +1408,7 @@
 <translation id="5673434351075758678">మీ సెట్టింగులను సింక్ చేసిన తర్వాత "<ph name="FROM_LOCALE" />" నుండి "<ph name="TO_LOCALE" />"కి.</translation>
 <translation id="5675363643668471212">అరలోని అంశం</translation>
 <translation id="5677022547882470786">సెర్చ్ చేయడానికి ఏదైనా ప్రాంతాన్ని ఎంచుకోవడానికి స్పేస్‌ను లాగండి లేదా నొక్కండి</translation>
-<translation id="5677928146339483299">బ్లాక్ చేయబడింది</translation>
+<translation id="5677928146339483299">బ్లాక్ అయింది</translation>
 <translation id="5678564054339031017">వచ్చే వారాన్ని చూపించు</translation>
 <translation id="5679050765726761783">తక్కువ స్థాయి పవర్ అడాప్టర్ కనెక్ట్ చేయబడింది</translation>
 <translation id="5682642926269496722">ప్రస్తుత వినియోగదారు ఖాతాలో Google Assistant పని చేయదు.</translation>
@@ -2412,6 +2412,7 @@
 <translation id="9050999376345823055">విడుదల చేయడానికి "." నొక్కండి</translation>
 <translation id="906458777597946297">విండోను విస్తరించు</translation>
 <translation id="9065203028668620118">ఎడిట్</translation>
+<translation id="9068849894565669697">రంగుని ఎంచుకోండి</translation>
 <translation id="9071966355747967534"><ph name="FEATURE_NAME" /> అందుబాటులో లేదు</translation>
 <translation id="9072519059834302790">బ్యాటరీ ఛార్జ్ <ph name="TIME_LEFT" />లో ఖాళీ అవుతుంది.</translation>
 <translation id="9074432941673450836">మీ <ph name="PRODUCT_NAME" />లో మీ అవసరానికి తగిన విధంగా ప్రతి పనిని చేయడానికి యాప్‌లను ఉపయోగించండి. మీరు లాంచర్‌లో మీ యాప్‌లను కనుగొనవచ్చు. మీరు కీబోర్డ్‌లోని లాంచర్ కీని (ఎడమ షిఫ్ట్ కీ పైన) కూడా నొక్కవచ్చు.</translation>

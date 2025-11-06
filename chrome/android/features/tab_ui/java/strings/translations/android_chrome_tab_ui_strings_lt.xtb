@@ -128,6 +128,7 @@
 <translation id="5556417849629758491">Peržiūrėkite parduotuvės informaciją; parinktis pasiekiama ekrano viršuje</translation>
 <translation id="5627941783489838464">Nėra skirtukų atnaujinimų</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> nuoroda iš „Chrome“}one{<ph name="TABS_COUNT_MANY" /> nuoroda iš „Chrome“}few{<ph name="TABS_COUNT_MANY" /> nuorodos iš „Chrome“}many{<ph name="TABS_COUNT_MANY" /> nuorodos iš „Chrome“}other{<ph name="TABS_COUNT_MANY" /> nuorodų iš „Chrome“}}</translation>
+<translation id="5740354908255726955">{TAB_COUNT,plural, =1{Perkelti skirtuką kairėn}one{Perkelti skirtukus kairėn}few{Perkelti skirtukus kairėn}many{Perkelti skirtukus kairėn}other{Perkelti skirtukus kairėn}}</translation>
 <translation id="5746204836956568669">Grupuoti skirtukus (iš viso: <ph name="NUMBER_OF_TABS" />), kad galėtumėte dirbti sparčiau?</translation>
 <translation id="5773295109010386583">Automatiškai uždaryti neaktyvius elementus</translation>
 <translation id="58326064309361797">Vilkite skirtukus, kad juos sugrupuotumėte</translation>
@@ -138,6 +139,7 @@
 <translation id="6109251075362363230">Visos tikslios skirtukų kopijos dabar taip pat bus suarchyvuotos, išskyrus neseniai naudotą kopiją.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Uždaryti <ph name="TABS_COUNT_ONE" /> pasirinktą elementą}one{Uždaryti <ph name="TABS_COUNT_MANY" /> pasirinktą elementą}few{Uždaryti <ph name="TABS_COUNT_MANY" /> pasirinktus elementus}many{Uždaryti <ph name="TABS_COUNT_MANY" /> pasirinkto elemento}other{Uždaryti <ph name="TABS_COUNT_MANY" /> pasirinktų elementų}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Perkelti grupę į naują langą}one{Perkelti grupę į kitą langą}few{Perkelti grupę į kitą langą}many{Perkelti grupę į kitą langą}other{Perkelti grupę į kitą langą}}</translation>
+<translation id="6212374449852603982">{TAB_COUNT,plural, =1{Perkelti skirtuką dešinėn}one{Perkelti skirtukus dešinėn}few{Perkelti skirtukus dešinėn}many{Perkelti skirtukus dešinėn}other{Perkelti skirtukus dešinėn}}</translation>
 <translation id="6228793724645064692">(parduotuvės įvertinimas)</translation>
 <translation id="625996437999624951">{TAB_COUNT,plural, =1{Pašalinti skirtuką iš grupės}one{Pašalinti skirtukus iš grupės}few{Pašalinti skirtukus iš grupės}many{Pašalinti skirtukus iš grupės}other{Pašalinti skirtukus iš grupės}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Pridėti skirtuką prie naujos grupės}one{Pridėti skirtukų prie naujos grupės}few{Pridėti skirtukų prie naujos grupės}many{Pridėti skirtukų prie naujos grupės}other{Pridėti skirtukų prie naujos grupės}}</translation>

@@ -169,9 +169,11 @@ Prova d'esperar uns quants minuts abans de tancar la sessió. Si tanques la sess
 <translation id="5162467219239570114">Chrome no està actualitzat. Si no hi ha cap actualització disponible a l'<ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, pot ser que el teu dispositiu ja no admeti les versions noves de Chrome.</translation>
 <translation id="5184329579814168207">Obre a Chrome</translation>
 <translation id="5190139289262548459">La teva organització, <ph name="DOMAIN" />, gestiona el compte en què tens la sessió iniciada i com s'utilitza Chrome.</translation>
+<translation id="5209238444239954363">Chrome no ha pogut cercar actualitzacions. Torna-ho a provar més tard.</translation>
 <translation id="5305440589062022504">Obre el gestor de contrasenyes a Chrome</translation>
 <translation id="5310957470610282541">Algunes dades de Chrome encara no s'han desat al teu Compte de Google.
 Prova d'esperar uns quants minuts abans de tancar la sessió. Si tanques la sessió ara, aquestes dades se suprimiran.</translation>
+<translation id="5342685492141499976">Les dades es desaran al gestor de contrasenyes de Google per a <ph name="USER_EMAIL" /></translation>
 <translation id="5389212809648216794">Google Chrome no pot utilitzar la càmera perquè l'està utilitzant una altra aplicació</translation>
 <translation id="5395376160638294582">Assegura't de poder utilitzar sempre les dades de Chrome al teu Compte de Google</translation>
 <translation id="5404252374083197467">Vols establir Chrome com a navegador predeterminat?</translation>
@@ -199,6 +201,7 @@ Prova d'esperar uns quants minuts abans de tancar la sessió. Si tanques la sess
 <translation id="5808435672482059465">Mostra l'historial de Chrome</translation>
 <translation id="5833027901704861726">Algunes dades de Chrome encara no s'han desat a <ph name="EMAIL" />.
 Espera uns quants minuts abans de canviar de compte. Si canvies de compte ara, aquestes dades se suprimiran.</translation>
+<translation id="5853754888722423892">Importa al gestor de contrasenyes de Google</translation>
 <translation id="5998675059699164418">La teva organització requereix que iniciïs la sessió per utilitzar Chrome.</translation>
 <translation id="6021312115739110405">Un feed personalitzat que Google ha fet per a tu. Inclou notícies, esports i el temps.</translation>
 <translation id="6022659036123304283">Personalitza Chrome</translation>

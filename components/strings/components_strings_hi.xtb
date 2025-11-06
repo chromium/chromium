@@ -20,7 +20,7 @@
 <translation id="1035509598913574970">सायन 3</translation>
 <translation id="1035709686865413354">वॉटर फ़िल्टर और प्यूरीफ़ायर</translation>
 <translation id="1036348656032585052">बंद करें</translation>
-<translation id="1036436692654972538">यह आपके डिवाइस में सेव हो जाता है</translation>
+<translation id="1036436692654972538">यह जानकारी आपके डिवाइस में सेव हो जाती है</translation>
 <translation id="1036881361735705143">C4 साइज़ का लिफ़ाफ़ा</translation>
 <translation id="1038842779957582377">अज्ञात नाम</translation>
 <translation id="1041998700806130099">जॉब शीट मैसेज</translation>
@@ -177,6 +177,7 @@
 <translation id="1282358575813748144">नाव और वॉटरक्राफ़्ट</translation>
 <translation id="1283977499362032052">रेज़्यूमे और पोर्टफ़ोलियो</translation>
 <translation id="1285320974508926690">कभी भी इस साइट का अनुवाद न करें</translation>
+<translation id="1289129165308566697">दूसरे डिवाइसों पर अपना ब्राउज़िंग इतिहास देखें</translation>
 <translation id="1292571435393770077">ट्रे 16</translation>
 <translation id="1292701964462482250">"आपके कंप्यूटर पर मौजूद सॉफ़्टवेयर Chrome को सुरक्षित रूप से वेब से कनेक्ट होने से रोक रहा है" (केवल Windows कंप्यूटर)</translation>
 <translation id="1293556467332435079">फ़ाइल</translation>
@@ -2341,6 +2342,7 @@
 <translation id="4822493756793346865">आम कीमतों की जानकारी, वेब पर मौजूद सभी स्टोर से ली गई है. यह पिछले 90 दिनों की कीमतों के हिसाब से है.</translation>
 <translation id="4822922322149719535">गड़बड़ियों की जानकारी देखें</translation>
 <translation id="4823699521959851389"><ph name="SHORT_PRODUCT_NAME" /> को आपके डिवाइस के <ph name="PERMISSION" /> का ऐक्सेस चाहिए</translation>
+<translation id="4825311006392962663">चेकआउट के समय, बाद में पेमेंट करने के विकल्प दिखाएं</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, जल्दी से नई Google शीट बनाने के लिए, पहले Tab दबाएं और फिर Enter दबाएं</translation>
 <translation id="4826588772550366629">कैमरा और माइक्रोफ़ोन</translation>
 <translation id="4827283332383516812">कार्ड मिटाएं</translation>
@@ -2432,6 +2434,7 @@
 <translation id="4961708452830821006">माइक्रोफ़ोन इस्तेमाल करने के लिए, <ph name="LINK" /> में जाकर Chrome को इसे ऐक्सेस करने की अनुमति दें.</translation>
 <translation id="4963413887558778009">लैंडस्केप डिज़ाइन</translation>
 <translation id="4967366744630699583">पते में बदलाव करें</translation>
+<translation id="4968046291688599384"><ph name="BNPL_ISSUER_NAME" /> का एक बार इस्तेमाल किया जा सकने वाला वर्चुअल कार्ड नंबर भरा गया.</translation>
 <translation id="4968522289500246572">यह ऐप्लिकेशन, मोबाइल के लिए डिज़ाइन किया गया है और हो सकता है कि इसका डिसप्ले, डिवाइस के विंडो साइज़ के हिसाब से न बदले. इस ऐप्लिकेशन को इस्तेमाल करते समय आपको समस्याओं का सामना करना पड़ सकता है या इसे रीस्टार्ट करना पड़ सकता है.</translation>
 <translation id="4968665849807487749">साइट, आपके सभी डिसप्ले पर विंडो मैनेज करने की अनुमति मांग सकती है</translation>
 <translation id="4969341057194253438">रिकॉर्डिंग मिटाएं</translation>
@@ -2834,7 +2837,7 @@
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> ने आपको कई बार रीडायरेक्ट किया है.</translation>
 <translation id="5619721953841297650">प्रीसेट</translation>
 <translation id="5624120631404540903">पासवर्ड मैनेज करें</translation>
-<translation id="5628060911499153873">अपनी जानकारी सेव करें, ताकि आप Google के सभी प्रॉडक्ट पर तेज़ी से काम कर सकें. आपकी जानकारी, <ph name="ACCOUNT" /> के लिए <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> में सेव की गई है.</translation>
+<translation id="5628060911499153873">अपनी जानकारी सेव करें, ताकि Google के सभी प्रॉडक्ट पर आपका काम तेज़ी से हो सके. आपकी जानकारी, <ph name="ACCOUNT" /> के लिए <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> में सेव की गई है.</translation>
 <translation id="5629630648637658800">नीति सेटिंग लोड करने में विफल</translation>
 <translation id="5630981295558454585">'Google से इस पेज के बारे में पूछें' बटन, Google से इस पेज के बारे में पूछने के लिए इसे चालू करें</translation>
 <translation id="5631439013527180824">अमान्य डिवाइस प्रबंधन टोकन</translation>
@@ -3451,6 +3454,7 @@
 <translation id="6652101503459149953">Windows Hello का इस्तेमाल करें</translation>
 <translation id="6654224358955673568">औपचारिक बनाओ</translation>
 <translation id="6654244995031366386">ग्लास (टेक्सचर्ड)</translation>
+<translation id="6655085656059574817">खाता लिंक करके, <ph name="BNPL_ISSUER_NAME" /> की मदद से फटाफट पेमेंट किया जा सकता है. हालांकि, आपके पास <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /> पर जाकर अपने खाते को अनलिंक करने का विकल्प होता है</translation>
 <translation id="6657585470893396449">पासवर्ड</translation>
 <translation id="6659246032834639189">यह कीमत कम है</translation>
 <translation id="6660413144148052430">जगह की जानकारी</translation>

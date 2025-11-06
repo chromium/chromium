@@ -169,9 +169,11 @@
 <translation id="5162467219239570114">Chrome เป็นเวอร์ชันเก่า หากไม่มีอัปเดตพร้อมใช้งานใน <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> แสดงว่าอุปกรณ์ของคุณอาจไม่รองรับ Chrome เวอร์ชันใหม่อีกต่อไป</translation>
 <translation id="5184329579814168207">เปิดใน Chrome</translation>
 <translation id="5190139289262548459">องค์กร <ph name="DOMAIN" /> ของคุณจะเป็นผู้จัดการบัญชีที่คุณลงชื่อเข้าใช้และวิธีใช้ Chrome</translation>
+<translation id="5209238444239954363">Chrome ตรวจหาอัปเดตไม่ได้ โปรดลองอีกครั้งในภายหลัง</translation>
 <translation id="5305440589062022504">เปิดเครื่องมือจัดการรหัสผ่านใน Chrome</translation>
 <translation id="5310957470610282541">ยังไม่ได้บันทึกข้อมูล Chrome ของคุณบางอย่างในบัญชี Google
 โปรดรอสักครู่ก่อนออกจากระบบ หากคุณออกจากระบบตอนนี้ ระบบจะลบข้อมูลนี้</translation>
+<translation id="5342685492141499976">ระบบจะบันทึกข้อมูลไว้ในเครื่องมือจัดการรหัสผ่านของ Google สำหรับ <ph name="USER_EMAIL" /></translation>
 <translation id="5389212809648216794">Google Chrome ไม่สามารถใช้กล้องถ่ายรูปเนื่องจากแอปพลิเคชันอื่นใช้งานอยู่</translation>
 <translation id="5395376160638294582">ตรวจสอบว่าคุณใช้ข้อมูล Chrome ในบัญชี Google ได้เสมอ</translation>
 <translation id="5404252374083197467">ตั้งค่า Chrome เป็นค่าเริ่มต้นไหม</translation>
@@ -199,6 +201,7 @@
 <translation id="5808435672482059465">ดูประวัติการเข้าชมใน Chrome</translation>
 <translation id="5833027901704861726">ยังไม่ได้บันทึกข้อมูล Chrome บางอย่างของคุณใน <ph name="EMAIL" />
 โปรดรอสักครู่ก่อนเปลี่ยนบัญชี หากคุณเปลี่ยนบัญชีตอนนี้ ระบบจะลบข้อมูลนี้</translation>
+<translation id="5853754888722423892">นำเข้าไปยังเครื่องมือจัดการรหัสผ่านบน Google</translation>
 <translation id="5998675059699164418">องค์กรกำหนดให้คุณต้องลงชื่อเพื่อเข้าใช้ Chrome</translation>
 <translation id="6021312115739110405">ฟีดที่กำหนดมาเพื่อคุณโดยเฉพาะจาก Google ประกอบด้วยข่าว กีฬา และสภาพอากาศ</translation>
 <translation id="6022659036123304283">ปรับเปลี่ยน Chrome ในแบบของคุณ</translation>

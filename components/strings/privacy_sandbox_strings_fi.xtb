@@ -4,11 +4,9 @@
 <translation id="1055273091707420432">Chromium poistaa yli neljä viikkoa vanhat mainosaiheet automaattisesti.</translation>
 <translation id="1145223915439299117">Chrome estää kolmannen osapuolen evästeet incognito-tilassa, mutta laajennus on sallinut kolmannen osapuolen evästeet tällä sivustolla.</translation>
 <translation id="1184166532603925201">Kun olet incognito-tilassa, Chrome estää sivustoja käyttämästä kolmannen osapuolen evästeitä</translation>
-<translation id="1205053266843535401">Rajoita pääsyä laite- ja selaindataan</translation>
 <translation id="1281098210028343866">Auta meitä parantamaan Chromiumia kertomalla, miksi keskeytit seurannan estot</translation>
 <translation id="1297285729613779935">Sivustojen ehdottamat mainokset auttavat suojaamaan selaushistoriaa ja henkilöllisyyttä. Niiden avulla sivustot voivat näyttää sinulle osuvia mainoksia. Muut sivustot voivat ehdottaa sinulle aiheeseen liittyviä mainoksia selaamisen aikana esimerkiksi sen perusteella, miten käytät aikaa vierailemillasi sivustoilla. Asetuksista voit tarkistaa kyseiset sivustot ja estää haluamiasi sivustoja.</translation>
 <translation id="132963621759063786">Chromium poistaa 30 päivän kuluttua kaiken toimintadatan, jonka olet jakanut sivustoille. Jos käyt sivustolla uudelleen, se voi näkyä listalla uudelleen. Lue lisää <ph name="BEGIN_LINK1" />mainosyksityisyyden ylläpidosta Chromiumissa<ph name="LINK_END1" />.</translation>
-<translation id="1472807065399636739">Avaamasi sivustot voivat upottaa muiden sivustojen sisältöä ja palveluita (esim. kuvia, mainoksia ja tekstiä), joiden avulla sinusta voidaan saada tietoa. Lue lisää <ph name="BEGIN_LINK" />incognito-tilan seurannan estojen<ph name="END_LINK" /> muuttamisesta.</translation>
 <translation id="1472928714075596993"><ph name="BEGIN_BOLD" />Mitä dataa käytetään?<ph name="END_BOLD" /> Mainosaiheet perustuvat viimeaikaiseen selaushistoriaasi, listaan sivustoista, joilla olet käynyt Chromella tällä laitteella.</translation>
 <translation id="1559726735555610004">Google edellyttää, että yritykset ilmoittavat julkisesti, etteivät ne käytä tätä dataa seuratakseen sinua eri sivustoilla. Jotkin sivustot voivat käyttää toimintaasi personoidakseen käyttökokemustasi mainosten lisäksi. Ne voivat myös yhdistää niitä muihin tietoihin, jotka ne jo tietävät sinusta. Yritykset ovat vastuussa siitä, että ne kertovat sinulle, miten ne käyttävät dataasi. Lue <ph name="BEGIN_LINK" />tietosuojakäytännöstä<ph name="END_LINK" />, miten Google suojaa dataasi.</translation>
 <translation id="1569440020357229235">Kun olet incognito-tilassa, sivustot eivät voi käyttää kolmannen osapuolen evästeitä. Jos näihin evästeisiin luottava sivusto ei toimi, voit <ph name="BEGIN_LINK" />kokeilla antaa sille väliaikaisen pääsyn kolmannen osapuolen evästeisiin<ph name="END_LINK" />.</translation>
@@ -24,14 +22,12 @@
 <translation id="2004697686368036666">Joidenkin sivustojen ominaisuudet eivät välttämättä toimi</translation>
 <translation id="2089807121381188462"><ph name="BEGIN_BOLD" />Miten voit ylläpitää tätä dataa?<ph name="END_BOLD" /> Chrome poistaa automaattisesti yli 30 päivää vanhat sivustot. Jos käyt taas sivustolla, se voi näkyä listalla uudelleen. Voit myös estää sivustoa ehdottamasta mainoksia puolestasi ja laittaa sivustojen ehdottamat mainokset milloin tahansa pois päältä Chromen asetuksista.</translation>
 <translation id="2090761099683423637">Estot on keskeytetty, kunnes kaikki incognito-ikkunat on suljettu.</translation>
-<translation id="2194856509914051091">Huomioitavaa</translation>
 <translation id="2213012319160025454">Hallinnoi incognito-tilan seurannan estoja</translation>
 <translation id="2235344399760031203">Kolmannen osapuolen evästeet on estetty</translation>
 <translation id="235789365079050412">Googlen tietosuojakäytäntö</translation>
 <translation id="235832722106476745">Chrome poistaa yli neljä viikkoa vanhat mainosaiheet automaattisesti.</translation>
 <translation id="2496115946829713659">Sivustot voivat käyttää kolmannen osapuolen evästeitä personoidakseen sisältöä ja mainoksia sekä saadakseen tietoa toiminnoistasi muilla sivustoilla</translation>
 <translation id="2506926923133667307">Lue lisää mainosyksityisyyden ylläpidosta.</translation>
-<translation id="2578376035831129583">Koskee upotettuja sivustoja, ei sivustoa, jolla käyt suoraan</translation>
 <translation id="259163387153470272">Sivustot ja niiden mainontakumppanit voivat käyttää toimintaasi, esimerkiksi sitä, miten käytät aikaa sivustoilla, personoidakseen mainoksia.</translation>
 <translation id="2648072482252767506">Chromium estää kolmannen osapuolen evästeet incognito-tilassa, mutta olet tehnyt poikkeuksen tällä sivustolla. Incognito-tila voi myös tarjota lisäsuojaa seurantaa vastaan.</translation>
 <translation id="2669351694216016687">Google edellyttää, että yritykset ilmoittavat julkisesti, etteivät ne käytä tätä dataa seuratakseen sinua eri sivustoilla. Jotkin sivustot voivat käyttää toimintaasi personoidakseen käyttökokemustasi mainosten lisäksi. Ne voivat myös yhdistää niitä muihin tietoihin, jotka ne jo tietävät sinusta. Yritykset ovat vastuussa siitä, että ne kertovat sinulle, miten ne käyttävät dataasi. <ph name="BEGIN_LINK1" />Lue lisää tietosuojakäytännöstä<ph name="LINK_END1" /></translation>
@@ -47,27 +43,21 @@
 <translation id="3442071090395342573">Chromium poistaa 30 päivän kuluttua kaiken toimintadatan, jonka olet jakanut sivustoille. Jos käyt sivustolla uudelleen, se voi näkyä listalla uudelleen. Lue lisää <ph name="BEGIN_LINK" />mainosyksityisyyden ylläpidosta Chromiumissa<ph name="END_LINK" />.</translation>
 <translation id="3467081767799433066">Mainosten mittaamisen yhteydessä sivustojen välillä jaetaan rajoitetusti tietyntyyppistä dataa (esim. teitkö ostoksen käytyäsi sivustolla) mainostulosten mittaamiseksi.</translation>
 <translation id="3624583033347146597">Valitse kolmannen osapuolen evästeasetukset</translation>
-<translation id="364348650177270461">Chromium yrittää rajoittaa laite- ja selaindataa (esim. asennettuja fontteja tai aikavyöhykettä) upotetuilta sivustoilta, jotka voivat yrittää saada tietoa sinusta</translation>
 <translation id="3645682729607284687">Chrome havaitsee viimeaikaiseen selaushistoriaasi perustuvia kiinnostavia aiheita. Aiheita ovat esimerkiksi urheilu ja vaatteet.</translation>
-<translation id="3665701035629774409">Chrome estää kolmannen osapuolen evästeet incognito-tilassa, mutta järjestelmänvalvoja on sallinut kolmannen osapuolen evästeet tällä sivustolla. Incognito-tila voi myös tarjota lisäsuojaa seurantaa vastaan. Hallinnoi incognito-tilan seurannan estoja <ph name="BEGIN_LINK" />asetuksista<ph name="END_LINK" />.</translation>
 <translation id="3696118321107706175">Miten sivustot käyttävät dataasi</translation>
 <translation id="3749724428455457489">Lue lisää sivustojen ehdottamista mainoksista</translation>
 <translation id="3763433740586298940">Voit estää sivustot, joita et halua. Chrome myös poistaa listalta automaattisesti yli 30 päivää vanhat sivustot.</translation>
 <translation id="385051799172605136">Takaisin</translation>
-<translation id="388873797593534859">Rajoita pääsyä laite- ja selaindataan. Tämä asetus on päällä.</translation>
 <translation id="390681677935721732">Chrome poistaa 30 päivän kuluttua kaiken toimintadatan, jonka olet jakanut sivustoille. Jos käyt sivustolla uudelleen, se voi näkyä listalla uudelleen. Lue lisää <ph name="BEGIN_LINK" />mainosyksityisyyden ylläpidosta Chromessa<ph name="END_LINK" />.</translation>
 <translation id="3918378745482005425">Kaikki ominaisuudet eivät välttämättä toimi. Aiheeseen liittyvät sivustot voivat edelleen käyttää kolmannen osapuolen evästeitä.</translation>
 <translation id="3918927280411834522">sivustojen ehdottamista mainoksista.</translation>
 <translation id="4009365983562022788">Google edellyttää, että yritykset ilmoittavat julkisesti, etteivät ne käytä tätä dataa seuratakseen sinua eri sivustoilla. Jotkin sivustot voivat käyttää toimintaasi personoidakseen käyttökokemustasi mainosten lisäksi. Ne voivat myös yhdistää niitä muihin tietoihin, jotka ne jo tietävät sinusta. Yritykset ovat vastuussa siitä, että ne kertovat sinulle, miten ne käyttävät dataasi. Lue lisää <ph name="BEGIN_LINK1" />tietosuojakäytännöstä<ph name="LINK_END1" />.</translation>
 <translation id="4115793614265434327">Chromium estää kolmannen osapuolen evästeet incognito-tilassa, mutta järjestelmänvalvoja on sallinut kolmannen osapuolen evästeet tällä sivustolla.</translation>
 <translation id="4177501066905053472">Mainosaiheet</translation>
-<translation id="4200539465901914137">Chrome yrittää rajoittaa laite- ja selaindataa (esim. asennettuja fontteja tai aikavyöhykettä) upotetuilta sivustoilta, jotka voivat yrittää saada tietoa sinusta</translation>
 <translation id="4278390842282768270">Sallittu</translation>
 <translation id="4301151630239508244">Mainosaiheet ovat vain yksi monista asioista, joita sivusto voi käyttää mainosten personointiin. Sivustot voivat näyttää sinulle mainoksia myös ilman mainosaiheita, mutta ne voivat olla vähemmän personoituja. Lue lisää <ph name="BEGIN_LINK_1" />mainosyksityisyysasetusten muuttamisesta<ph name="END_LINK_1" />.</translation>
-<translation id="435360899831421654">Rajoita pääsyä laite- ja selaindataan. Tämä asetus on poissa päältä.</translation>
 <translation id="4370439921477851706">Google edellyttää, että yritykset ilmoittavat julkisesti, etteivät ne käytä tätä dataa seuratakseen sinua eri sivustoilla. Jotkin sivustot voivat käyttää toimintaasi personoidakseen käyttökokemustasi mainosten lisäksi. Ne voivat myös tallentaa mainosaiheita yli neljäksi viikoksi ja yhdistää niitä muihin tietoihin, joita niillä on jo sinusta. Yritykset ovat vastuussa siitä, että ne kertovat sinulle, miten ne käyttävät dataasi. Lue lisää <ph name="BEGIN_LINK1" />tietosuojakäytännöstä<ph name="LINK_END1" />.</translation>
 <translation id="4412992751769744546">Salli kolmannen osapuolen evästeet</translation>
-<translation id="4448728649751001728">Saatavilla vain, kun incognito-tila avataan sisäänkirjautuneelta Chrome-ikkunalta</translation>
 <translation id="4456330419644848501">Näkemiesi mainosten personointi voi riippua esimerkiksi tästä asetuksesta, <ph name="BEGIN_LINK_1" />sivuston ehdottamista mainoksista<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />evästeasetuksista<ph name="END_LINK_2" /> ja siitä, personoiko katsomasi sivusto mainoksia.</translation>
 <translation id="4501357987281382712">Lue <ph name="BEGIN_LINK" />tietosuojakäytännöstä<ph name="END_LINK" />, miten Google suojaa dataasi.</translation>
 <translation id="4502954140581098658">Näkemiesi mainosten personointi voi riippua tästä asetuksesta, <ph name="BEGIN_LINK_1" />mainosaiheista<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />evästeasetuksista<ph name="END_LINK_2" /> ja siitä, personoiko katsomasi sivusto mainoksia.</translation>
@@ -76,17 +66,13 @@
 <translation id="4687718960473379118">Sivustojen ehdottamat mainokset</translation>
 <translation id="4692439979815346597">Voit tarkistaa mainosaiheet Chromen asetuksista ja estää sellaiset, joita et halua jakaa sivustoille.</translation>
 <translation id="4711259472133554310">Voit luoda asetuksissa poikkeuksia, joilla sallit tiettyjen sivustojen käyttää aina kolmannen osapuolen evästeitä</translation>
-<translation id="4773759246613295463">Kun selaat incognito-tilassa, Chromium ei tallenna selaushistoriaa, evästeitä, sivustodataa tai lomakkeisiin lisäämiäsi tietoja. Incognito-tilassa on myös ominaisuuksia, joilla voi rajoittaa upotettujen sivustojen saatavilla olevia tietoja.</translation>
 <translation id="4835013575597383365">Seurannan estot</translation>
-<translation id="4864452159627050077">Valitse, mitä tietoa sivustot voivat saada sinusta incognito-tilassa</translation>
 <translation id="4894490899128180322">Jos sivusto ei toimi odotetulla tavalla, voit kokeilla sallia kolmannen osapuolen evästeet tilapäisesti tietyllä sivustolla</translation>
 <translation id="4995684599009077956">Google edellyttää, että yritykset ilmoittavat julkisesti, etteivät ne käytä tätä dataa seuratakseen sinua eri sivustoilla. Jotkin sivustot voivat käyttää toimintaasi personoidakseen käyttökokemustasi mainosten lisäksi. Ne voivat myös tallentaa mainosaiheita yli neljäksi viikoksi ja yhdistää niitä muihin tietoihin, joita niillä on jo sinusta. Yritykset ovat vastuussa siitä, että ne kertovat sinulle, miten ne käyttävät dataasi. <ph name="BEGIN_LINK" />Lue lisää tietosuojakäytännöstä<ph name="END_LINK" />.</translation>
 <translation id="5023078137728844766">Chromium estää kolmannen osapuolen evästeet incognito-tilassa, mutta järjestelmänvalvoja on sallinut kolmannen osapuolen evästeet tällä sivustolla. Incognito-tila voi myös tarjota lisäsuojaa seurantaa vastaan.</translation>
 <translation id="5055880590417889642">Toimintasi on yksi monista asioista, joita sivusto voi käyttää mainosten ehdottamiseen. Kun sivuston ehdottamat mainokset on laitettu pois päältä, sivustot voivat näyttää sinulle mainoksia, mutta ne eivät ehkä ole niin personoituja. Lue lisää</translation>
-<translation id="5110547311636263835">Chrome estää kolmannen osapuolen evästeet incognito-tilassa, mutta olet tehnyt poikkeuksen tällä sivustolla. Incognito-tila voi myös tarjota lisäsuojaa seurantaa vastaan. Hallinnoi incognito-tilan seurannan estoja <ph name="BEGIN_LINK" />asetuksista<ph name="END_LINK" />.</translation>
 <translation id="5117284457376555514">Sivustot eivät voi käyttää kolmannen osapuolen evästeitä personoidakseen sisältöä ja mainoksia tai saadakseen tietoa muilla sivustoilla tekemistäsi toimista, ellet salli toisiinsa liittyville sivustoille pääsyä niihin. Jotkin sivuston ominaisuudet eivät välttämättä toimi odotetulla tavalla.</translation>
 <translation id="5165490319523240316">Sivustot ja niiden mainontakumppanit voivat käyttää toimintaasi, esimerkiksi sitä, miten käytät aikaa sivustoilla, personoidakseen mainoksia muilla sivustoilla. Jos esimerkiksi käyt sivustolla etsimässä illallisreseptejä, sivusto voi päätellä, että olet kiinnostunut ruoanlaitosta. Myöhemmin toinen sivusto voi näyttää sinulle ensimmäisen sivuston ehdottaman aiheeseen liittyvän mainoksen ruokakaupan toimituspalvelusta.</translation>
-<translation id="5188610687455399162">Chromium estää kolmannen osapuolen evästeet incognito-tilassa, mutta olet tehnyt poikkeuksen tällä sivustolla. Incognito-tila voi myös tarjota lisäsuojaa seurantaa vastaan. Hallinnoi incognito-tilan seurannan estoja <ph name="BEGIN_LINK" />asetuksista<ph name="END_LINK" />.</translation>
 <translation id="5362892126200493757">Kerro, miksi keskeytit seurantasuojauksen tällä sivustolla</translation>
 <translation id="544199055391706031">Toimintasi on yksi monista asioista, joita sivusto voi käyttää mainosten ehdottamiseen. Kun sivuston ehdottamat mainokset on laitettu pois päältä, sivustot voivat näyttää sinulle mainoksia, mutta ne eivät ehkä ole niin personoituja. Lue lisää <ph name="BEGIN_LINK" />sivustojen ehdottamista mainoksista<ph name="END_LINK" />.</translation>
 <translation id="5574580428711706114">Google edellyttää, että yritykset ilmoittavat julkisesti, etteivät ne käytä tätä dataa seuratakseen sinua eri sivustoilla. Yritykset ovat vastuussa siitä, että ne kertovat sinulle, miten ne käyttävät dataasi. <ph name="BEGIN_LINK1" />Lue lisää tietosuojakäytännöstä<ph name="LINK_END1" />.</translation>
@@ -100,24 +86,17 @@
 <translation id="6053735090575989697">Lue tietosuojakäytännöstä, miten Google suojaa dataasi.</translation>
 <translation id="6195163219142236913">Kolmannen osapuolen evästeitä rajoitettu</translation>
 <translation id="6196640612572343990">Estä kolmannen osapuolen evästeet</translation>
-<translation id="6205593033237791753">Rajoita pääsyä IP-osoitteeseesi. Tämä asetus on päällä.</translation>
 <translation id="6282129116202535093">Sivustojen ehdottamat mainokset auttavat suojaamaan selaushistoriaa ja henkilöllisyyttä. Niiden avulla sivustot voivat näyttää sinulle osuvia mainoksia. Muut sivustot voivat ehdottaa sinulle toimintaasi liittyviä mainoksia selaamisen aikana. Asetuksista voit tarkistaa kyseiset sivustot ja estää haluamiasi sivustoja.</translation>
 <translation id="6291177244430967858">Seurannan estoja jatkettu</translation>
 <translation id="6308169245546905162">Sivustot voivat käyttää kolmannen osapuolen evästeitä saadakseen tietoa toiminnoistasi muilla sivustoilla</translation>
-<translation id="6388287739339671750">Estä seurantaskriptit</translation>
 <translation id="6398358690696005758">Lue <ph name="BEGIN_LINK1" />tietosuojakäytännöstä<ph name="LINK_END1" />, miten Google suojaa dataasi.</translation>
 <translation id="6494210367693221285">Nykyiset Chromium-asetuksesi on päivitetty sallimaan sivustoille pääsy kolmannen osapuolen evästeisiin. Voit muuttaa asetusta milloin tahansa.</translation>
 <translation id="6702015235374976491">Mainosaiheiden avulla sivustot voivat näyttää sinulle osuvia mainoksia ja samalla suojata selaushistoriaasi ja henkilöllisyyttäsi. Chrome voi merkitä viimeaikaiseen selaushistoriaasi perustuvia kiinnostuksen kohteita. Avaamasi sivustot voivat myöhemmin pyytää Chromelta oleellisia aiheita personoidakseen näkemiäsi mainoksia.</translation>
 <translation id="6710025070089118043">Sivustot eivät voi käyttää kolmannen osapuolen evästeitä personoidakseen sisältöä ja mainoksia tai saadakseen tietoa muilla sivustoilla tekemistäsi toimista, ellet anna aiheeseen liittyvien sivustojen käyttää niitä</translation>
-<translation id="6737378617247709185">Chromium estää kolmannen osapuolen evästeet incognito-tilassa, mutta järjestelmänvalvoja on sallinut kolmannen osapuolen evästeet tällä sivustolla. Incognito-tila voi myös tarjota lisäsuojaa seurantaa vastaan. Hallinnoi incognito-tilan seurannan estoja <ph name="BEGIN_LINK" />asetuksista<ph name="END_LINK" />.</translation>
 <translation id="6774168155917940386">Google edellyttää, että yritykset ilmoittavat julkisesti, etteivät ne käytä tätä dataa seuratakseen sinua eri sivustoilla. Jotkin sivustot voivat käyttää toimintaasi personoidakseen käyttökokemustasi mainosten lisäksi. Ne voivat myös yhdistää niitä muihin tietoihin, jotka ne jo tietävät sinusta. Yritykset ovat vastuussa siitä, että ne kertovat sinulle, miten ne käyttävät dataasi. Lue lisää <ph name="BEGIN_LINK" />tietosuojakäytännöstä<ph name="END_LINK" />.</translation>
 <translation id="6789193059040353742">Näkemiesi mainosten personointi voi riippua tästä asetuksesta, <ph name="BEGIN_LINK1" />mainosaiheista<ph name="LINK_END1" />, <ph name="BEGIN_LINK2" />evästeasetuksista<ph name="LINK_END2" /> ja siitä, personoiko katsomasi sivusto mainoksia.</translation>
 <translation id="6904948821498934430">Chromium estää kolmannen osapuolen evästeet incognito-tilassa, mutta olet tehnyt poikkeuksen tällä sivustolla.</translation>
-<translation id="6968337645683500044">Saatavilla vain, kun incognito-tila avataan sisäänkirjatulta Chromium-välilehdeltä</translation>
-<translation id="6984151429741932257">Rajoita pääsyä IP-osoitteeseesi</translation>
 <translation id="7084100010522077571">Lisätietoa mainosmittauksesta</translation>
-<translation id="721207178659484186">Googlen yksityisyyspalvelimet voivat nähdä IP-osoitteesi mutta eivät selauskohdettasi, kun ne suojaavat IP-osoitettasi</translation>
-<translation id="731039612501012263">Kolmannen osapuolen evästeet on estetty. Incognito-tila voi myös tarjota lisäsuojaa seurantaa vastaan. Hallinnoi incognito-tilan seurannan estoja <ph name="BEGIN_LINK" />asetuksista<ph name="END_LINK" />.</translation>
 <translation id="7315780377187123731">Lisätietoja "Estä kolmannen osapuolen evästeet" ‑vaihtoehdosta</translation>
 <translation id="737025278945207416">Jotkin sivustot voivat käyttää toimintaasi personoidakseen käyttökokemustasi mainosten lisäksi. Ne voivat myös tallentaa mainosaiheita yli neljäksi viikoksi ja yhdistää niitä muihin tietoihin, joita niillä on jo sinusta.</translation>
 <translation id="7374493521304367420">Sivustot voivat edelleen seurata evästeiden avulla selaustoimintaasi omalla sivustollaan</translation>
@@ -129,34 +108,22 @@
 <translation id="7475768947023614021">Tarkista mainosaiheasetus</translation>
 <translation id="7538480403395139206">Lisätietoa "Salli kolmannen osapuolen evästeet" ‑vaihtoehdosta</translation>
 <translation id="7552005635894902732">Chrome estää kolmannen osapuolen evästeet incognito-tilassa, mutta olet tehnyt poikkeuksen tällä sivustolla. Incognito-tila voi myös tarjota lisäsuojaa seurantaa vastaan.</translation>
-<translation id="7564124309155378881">Saatavilla vain, kun incognito-tila avataan sisäänkirjautuneelta Chromium-ikkunalta</translation>
 <translation id="7590906321816761911">Seurannan estot keskeytetty</translation>
 <translation id="7686086654630106285">Lisätietoa sivuston ehdottamista mainoksista</translation>
-<translation id="7747003797915893222">Kun selaat incognito-tilassa, Chrome ei tallenna selaushistoriaa, evästeitä, sivustodataa tai lomakkeisiin lisäämiäsi tietoja. Incognito-tilassa on myös ominaisuuksia, joilla voi rajoittaa upotettujen sivustojen saatavilla olevia tietoja.</translation>
 <translation id="7766094116932490292">Seurantasuojaus käytössä</translation>
-<translation id="7789658094395162849">Rajoita pääsyä IP-osoitteeseesi. Tämä asetus on poissa päältä.</translation>
-<translation id="7947135702324060924">Chromium voi suojata IP-osoitteesi upotetuilta sivustoilta, jotka voivat yrittää saada tietoa sinusta</translation>
-<translation id="795219618398555200">Chromium estää sivustoja käyttämästä kolmannen osapuolen evästeitä incognito-tilassa</translation>
-<translation id="8080808348468200193">Chrome estää sivustoja käyttämästä kolmannen osapuolen evästeitä incognito-tilassa</translation>
 <translation id="8086115837395871435">Ladataan sivustoa uudelleen</translation>
-<translation id="8096996737013848963">Suojaa IP-osoitteesi</translation>
-<translation id="816233773179678758">Chrome voi suojata IP-osoitteesi upotetuilta sivustoilta, jotka voivat yrittää saada tietoa sinusta</translation>
 <translation id="8180936577740217261">Chrome estää kolmannen osapuolen evästeet incognito-tilassa, mutta olet tehnyt poikkeuksen tällä sivustolla.</translation>
 <translation id="8200078544056087897">Kolmannen osapuolen evästeisiin perustuvien sivuston ominaisuuksien pitäisi toimia odotetusti</translation>
 <translation id="8257935463851606210">Chromium estää kolmannen osapuolen evästeet incognito-tilassa, mutta laajennus on sallinut kolmannen osapuolen evästeet tällä sivustolla.</translation>
 <translation id="8365690958942020052">Avaamasi sivusto voi pyytää näitä tietoja – joko mainosaiheitasi tai avaamiesi sivustojen ehdottamia mainoksia.</translation>
 <translation id="839994149685752920">Sivustot voivat käyttää kolmannen osapuolen evästeitä personoidakseen sisältöä ja mainoksia</translation>
 <translation id="8428213095426709021">Asetukset</translation>
-<translation id="8430082659493731737">Saatavilla vain, kun incognito-tila avataan sisäänkirjatulta Chrome-välilehdeltä</translation>
-<translation id="8578320000709741352">Avaamasi sivustot voivat upottaa muiden sivustojen sisältöä ja palveluita (esim. kuvia, mainoksia ja tekstiä), joiden avulla sinusta voidaan saada tietoa. Lue lisää <ph name="START_LINK" />incognito-tilan seurannan estojen<ph name="END_LINK" /> muuttamisesta.</translation>
 <translation id="859369389161884405">Avaa tietosuojakäytännön uudelle välilehdelle</translation>
 <translation id="8712637175834984815">Selvä</translation>
 <translation id="877699835489047794"><ph name="BEGIN_BOLD" />Miten voit ylläpitää tätä dataa?<ph name="END_BOLD" /> Chrome poistaa automaattisesti yli neljä viikkoa vanhat aiheet. Kun jatkat selaamista, aihe voi näkyä listalla uudelleen. Voit myös estää aiheet, joita et halua Chromen jakavan sivustoille, ja laittaa mainosten aiheet milloin tahansa pois päältä Chromen asetuksista.</translation>
-<translation id="8803526663383843427">Asetuksen ollessa päällä</translation>
 <translation id="8825639607990802302">Yksityisyys ja sivustodata: vaihtoehdot</translation>
 <translation id="8908886019881851657"><ph name="BEGIN_BOLD" />Miten sivustot käyttävät tätä dataa?<ph name="END_BOLD" /> Sivustot ja niiden mainontakumppanit voivat käyttää toimintaasi personoidakseen mainoksia muilla sivustoilla. Jos esimerkiksi käyt sivustolla etsimässä illallisreseptejä, sivusto voi päätellä, että olet kiinnostunut ruoanlaitosta. Myöhemmin toinen sivusto voi näyttää sinulle ensimmäisen sivuston ehdottaman aiheeseen liittyvän mainoksen ruokakaupan toimituspalvelusta.</translation>
 <translation id="8944485226638699751">Rajoitettu</translation>
-<translation id="8948536553485650118">Seurannan estot incognito-tilassa</translation>
 <translation id="8984005569201994395">Google edellyttää, että yritykset ilmoittavat julkisesti, etteivät ne käytä tätä dataa seuratakseen sinua eri sivustoilla. Jotkin sivustot voivat käyttää toimintaasi personoidakseen käyttökokemustasi mainosten lisäksi. Ne voivat myös yhdistää niitä muihin tietoihin, jotka ne jo tietävät sinusta. Yritykset ovat vastuussa siitä, että ne kertovat sinulle, miten ne käyttävät dataasi. <ph name="BEGIN_LINK" />Lue lisää tietosuojakäytännöstä<ph name="END_LINK" /></translation>
 <translation id="9039924186462989565">Kun olet incognito-tilassa, Chromium estää sivustoja käyttämästä kolmannen osapuolen evästeitä</translation>
 <translation id="9162335340010958530">Sivustot eivät voi käyttää kolmannen osapuolen evästeitä personoidakseen sisältöä ja mainoksia tai saadakseen tietoa muilla sivustoilla tekemistäsi toimista, ellet salli toisiinsa liittyville sivustoille pääsyä niihin</translation>

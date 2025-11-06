@@ -169,9 +169,11 @@ Testa att vänta några minuter innan du loggar ut. Om du loggar ut nu raderas d
 <translation id="5162467219239570114">Den här versionen av Chrome är inaktuell. Om det inte finns någon uppdatering i <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> kan det hända att enheten inte längre har stöd för nya versioner av Chrome.</translation>
 <translation id="5184329579814168207">Öppna i Chrome</translation>
 <translation id="5190139289262548459">Din organisation, <ph name="DOMAIN" />, hanterar kontot du är inloggad på och hur Chrome används.</translation>
+<translation id="5209238444239954363">Chrome kunde inte söka efter uppdateringar. Försök igen senare.</translation>
 <translation id="5305440589062022504">Öppnar Lösenordshantering i Chrome.</translation>
 <translation id="5310957470610282541">Viss Chrome-data har inte sparats i ditt Google-konto ännu.
 Testa att vänta några minuter innan du loggar ut. Om du loggar ut nu raderas denna data.</translation>
+<translation id="5342685492141499976">Datan sparas i Google Lösenordshantering för <ph name="USER_EMAIL" /></translation>
 <translation id="5389212809648216794">Google Chrome kan inte använda kameran eftersom den används av en annan app</translation>
 <translation id="5395376160638294582">Se till att du alltid kan använda Chrome-data i Google-kontot</translation>
 <translation id="5404252374083197467">Vill du ställa in Chrome som standardwebbläsare?</translation>
@@ -199,6 +201,7 @@ Testa att vänta några minuter innan du loggar ut. Om du loggar ut nu raderas d
 <translation id="5808435672482059465">Visa Chrome-historiken</translation>
 <translation id="5833027901704861726">Viss Chrome-data har inte sparats i <ph name="EMAIL" /> ännu.
 Testa att vänta några minuter innan du byter konto. Om du byter konto nu raderas denna data.</translation>
+<translation id="5853754888722423892">Importera till Google Lösenordshantering</translation>
 <translation id="5998675059699164418">Organisationen kräver att du loggar in för att använda Chrome.</translation>
 <translation id="6021312115739110405">Ett flöde som anpassats för dig av Google. Inklusive nyheter, sport och väder.</translation>
 <translation id="6022659036123304283">Anpassa Chrome</translation>

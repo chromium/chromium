@@ -169,9 +169,11 @@ Arhoswch ychydig funudau cyn allgofnodi. Os byddwch yn allgofnodi nawr, bydd y d
 <translation id="5162467219239570114">Mae Chrome yn hen. Os nad oes diweddariad ar gael yn <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, mae'n bosib nad yw'ch dyfais yn cefnogi fersiynau newydd o Chrome mwyach.</translation>
 <translation id="5184329579814168207">Agor yn Chrome</translation>
 <translation id="5190139289262548459">Mae eich sefydliad, <ph name="DOMAIN" />, yn rheoli'r cyfrif rydych wedi mewngofnodi iddo a sut mae Chrome yn cael ei ddefnyddio.</translation>
+<translation id="5209238444239954363">Ni allai Chrome wirio am ddiweddariadau. Rhowch gynnig arall arni'n nes ymlaen.</translation>
 <translation id="5305440589062022504">Yn agor y Rheolwr Cyfrineiriau yn Chrome.</translation>
 <translation id="5310957470610282541">Nid yw peth o'ch data Chrome wedi'u cadw yn eich Cyfrif Google eto.
 Arhoswch ychydig funudau cyn allgofnodi. Os byddwch yn allgofnodi nawr, bydd y data hyn yn cael eu dileu.</translation>
+<translation id="5342685492141499976">Bydd eich data yn cael ei gadw i Reolwr Cyfrineiriau Google ar gyfer <ph name="USER_EMAIL" />.</translation>
 <translation id="5389212809648216794">Ni all Google Chrome ddefnyddio'ch camera oherwydd ei fod yn cael ei ddefnyddio gan ap arall</translation>
 <translation id="5395376160638294582">Gwnewch yn siŵr y gallwch bob amser ddefnyddio'r data Chrome yn eich Cyfrif Google</translation>
 <translation id="5404252374083197467">Gosod Chrome fel y porwr diofyn?</translation>
@@ -199,6 +201,7 @@ Arhoswch ychydig funudau cyn allgofnodi. Os byddwch yn allgofnodi nawr, bydd y d
 <translation id="5808435672482059465">Gweld Eich Hanes Chrome</translation>
 <translation id="5833027901704861726">Nid yw peth o'ch data Chrome wedi'u cadw yn eich <ph name="EMAIL" /> eto.
 Arhoswch ychydig funudau cyn newid cyfrif. Os byddwch yn newid cyfrif nawr, bydd y data hyn yn cael eu dileu.</translation>
+<translation id="5853754888722423892">Mewnforio i Reolwr Cyfrineiriau Google</translation>
 <translation id="5998675059699164418">Mae eich sefydliad yn gofyn i chi fewngofnodi i ddefnyddio Chrome.</translation>
 <translation id="6021312115739110405">Ffrwd bersonol wedi'i chreu ar eich cyfer gan Google. Gan gynnwys newyddion, chwaraeon a thywydd.</translation>
 <translation id="6022659036123304283">Personoleiddio Chrome</translation>

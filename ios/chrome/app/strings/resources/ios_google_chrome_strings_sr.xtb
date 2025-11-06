@@ -169,9 +169,11 @@
 <translation id="5162467219239570114">Chrome је застарео. Ако ажурирање није доступно у <ph name="BEGIN_LINK" />App Store-у<ph name="END_LINK" />, уређај можда не подржава нове верзије Chrome-а.</translation>
 <translation id="5184329579814168207">Отвори у Chrome-у</translation>
 <translation id="5190139289262548459">Ваша организација, <ph name="DOMAIN" />, управља налогом на који сте пријављени и начином на који се Chrome користи.</translation>
+<translation id="5209238444239954363">Chrome не може да тражи ажурирања. Пробајте поново касније.</translation>
 <translation id="5305440589062022504">Отвара Менаџер лозинки у Chrome-у</translation>
 <translation id="5310957470610282541">Неки Chrome подаци још нису сачувани на Google налогу.
 Сачекајте неколико минута пре него што се одјавите. Ако се одјавите одмах, ови подаци ће бити избрисани.</translation>
+<translation id="5342685492141499976">Подаци се чувају у Google менаџеру лозинки за <ph name="USER_EMAIL" /></translation>
 <translation id="5389212809648216794">Google Chrome не може да користи камеру зато што је већ користи друга апликација</translation>
 <translation id="5395376160638294582">Уверите се да увек можете да користите Chrome податке на Google налогу</translation>
 <translation id="5404252374083197467">Желите да подесите Chrome као подразумевани прегледач?</translation>
@@ -199,6 +201,7 @@
 <translation id="5808435672482059465">Прегледајте историју Chrome-а</translation>
 <translation id="5833027901704861726">Неки Chrome подаци још нису сачувани на налогу <ph name="EMAIL" />.
 Сачекајте неколико минута пре него што промените налог. Ако сада промените налог, ови подаци ће се избрисати.</translation>
+<translation id="5853754888722423892">Увезите у Google менаџер лозинки</translation>
 <translation id="5998675059699164418">Организација захтева да се пријавите да бисте користили Chrome.</translation>
 <translation id="6021312115739110405">Прилагођени фид који је Google направио за вас. Укључујући вести, спорт и време.</translation>
 <translation id="6022659036123304283">Прилагодите Chrome себи</translation>

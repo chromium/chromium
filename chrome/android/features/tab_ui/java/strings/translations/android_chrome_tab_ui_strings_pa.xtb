@@ -128,6 +128,7 @@
 <translation id="5556417849629758491">ਸਟੋਰ ਦੀ ਜਾਣਕਾਰੀ ਦੇਖੋ, ਇਹ ਵਿਕਲਪ ਸਕ੍ਰੀਨ ਦੇ ਸਿਖਰ ਦੇ ਨੇੜੇ ਉਪਲਬਧ ਹੈ</translation>
 <translation id="5627941783489838464">ਕੋਈ ਟੈਬ ਅੱਪਡੇਟ ਨਹੀਂ</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{Chrome ਤੋਂ <ph name="TABS_COUNT_ONE" /> ਲਿੰਕ}one{Chrome ਤੋਂ <ph name="TABS_COUNT_MANY" /> ਲਿੰਕ}other{Chrome ਤੋਂ <ph name="TABS_COUNT_MANY" /> ਲਿੰਕ}}</translation>
+<translation id="5740354908255726955">{TAB_COUNT,plural, =1{ਟੈਬ ਨੂੰ ਖੱਬੇ ਪਾਸੇ ਲਿਜਾਓ}one{ਟੈਬ ਨੂੰ ਖੱਬੇ ਪਾਸੇ ਲਿਜਾਓ}other{ਟੈਬਾਂ ਨੂੰ ਖੱਬੇ ਪਾਸੇ ਲਿਜਾਓ}}</translation>
 <translation id="5746204836956568669">ਕੀ ਤੇਜ਼ੀ ਨਾਲ ਕੰਮ ਕਰਨ ਲਈ <ph name="NUMBER_OF_TABS" /> ਟੈਬਾਂ ਨੂੰ ਗਰੁੱਪਬੱਧ ਕਰਨਾ ਹੈ?</translation>
 <translation id="5773295109010386583">ਅਕਿਰਿਆਸ਼ੀਲ ਆਈਟਮਾਂ ਨੂੰ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਬੰਦ ਕਰੋ</translation>
 <translation id="58326064309361797">ਟੈਬਾਂ ਨੂੰ ਇਕੱਠਾ ਕਰਨ ਲਈ ਉਹਨਾਂ ਨੂੰ ਘਸੀਟੋ</translation>
@@ -138,6 +139,7 @@
 <translation id="6109251075362363230">ਹੁਣ ਸਾਰੀਆਂ ਡੁਪਲੀਕੇਟ ਟੈਬਾਂ ਨੂੰ ਵੀ ਪੁਰਾਲੇਖਬੱਧ ਕੀਤਾ ਜਾਵੇਗਾ, ਪਰ ਇਸ ਵਿੱਚ ਸਭ ਤੋਂ ਹਾਲੀਆ ਵਰਤੀ ਗਈ ਕਾਪੀ ਨੂੰ ਸ਼ਾਮਲ ਨਹੀਂ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{ਚੁਣੀ ਗਈ <ph name="TABS_COUNT_ONE" /> ਆਈਟਮ ਬੰਦ ਕਰੋ}one{ਚੁਣੀ ਗਈ <ph name="TABS_COUNT_MANY" /> ਆਈਟਮ ਬੰਦ ਕਰੋ}other{ਚੁਣੀ ਗਈ <ph name="TABS_COUNT_MANY" /> ਆਈਟਮਾਂ ਬੰਦ ਕਰੋ}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{ਗਰੁੱਪ ਨੂੰ ਨਵੀਂ ਵਿੰਡੋ ਵਿੱਚ ਲਿਜਾਓ}one{ਗਰੁੱਪ ਨੂੰ ਕਿਸੇ ਹੋਰ ਵਿੰਡੋ ਵਿੱਚ ਲਿਜਾਓ}other{ਗਰੁੱਪ ਨੂੰ ਕਿਸੇ ਹੋਰ ਵਿੰਡੋ ਵਿੱਚ ਲਿਜਾਓ}}</translation>
+<translation id="6212374449852603982">{TAB_COUNT,plural, =1{ਟੈਬ ਨੂੰ ਸੱਜੇ ਪਾਸੇ ਲਿਜਾਓ}one{ਟੈਬ ਨੂੰ ਸੱਜੇ ਪਾਸੇ ਲਿਜਾਓ}other{ਟੈਬਾਂ ਨੂੰ ਸੱਜੇ ਪਾਸੇ ਲਿਜਾਓ}}</translation>
 <translation id="6228793724645064692">(ਸਟੋਰ ਰੇਟਿੰਗ)</translation>
 <translation id="625996437999624951">{TAB_COUNT,plural, =1{ਟੈਬ ਨੂੰ ਗਰੁੱਪ ਤੋਂ ਹਟਾਓ}one{ਟੈਬ ਨੂੰ ਗਰੁੱਪ ਤੋਂ ਹਟਾਓ}other{ਟੈਬਾਂ ਨੂੰ ਗਰੁੱਪ ਵਿੱਚੋਂ ਹਟਾਓ}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{ਟੈਬ ਨੂੰ ਨਵੇਂ ਗਰੁੱਪ ਵਿੱਚ ਸ਼ਾਮਲ ਕਰੋ}one{ਟੈਬ ਨੂੰ ਨਵੇਂ ਗਰੁੱਪ ਵਿੱਚ ਸ਼ਾਮਲ ਕਰੋ}other{ਟੈਬਾਂ ਨੂੰ ਨਵੇਂ ਗਰੁੱਪ ਵਿੱਚ ਸ਼ਾਮਲ ਕਰੋ}}</translation>

@@ -152,8 +152,8 @@
 <translation id="2738871930057338499">無法連線至網際網路。發生 HTTP 403 禁止錯誤，請檢查 Proxy 設定。</translation>
 <translation id="2742320827292110288">警告：Google Chrome 無法禁止擴充功能記錄你的瀏覽記錄。如要在無痕模式中停用這個擴充功能，請取消選取這個選項。</translation>
 <translation id="2753623023919742414">按一下即可搜尋</translation>
+<translation id="2757826245013442432">{COUNT,plural, =0{「進階保護」要求你重新啟動 Chrome，以套用更新}=1{「進階保護」要求你重新啟動 Chrome，以套用更新。無痕視窗不會重新開啟。}other{「進階保護」要求你重新啟動 Chrome，以套用更新。# 個無痕視窗不會重新開啟。}}</translation>
 <translation id="2765403129283291972">Chrome 需要相關權限，才能讓這個網站使用你的麥克風</translation>
-<translation id="2770231113462710648">將預設瀏覽器變更為：</translation>
 <translation id="2775140325783767197">Chrome 無法檢查你的密碼，請查看你的網際網路連線狀態。</translation>
 <translation id="2797864378188255696">使用 <ph name="USER_EMAIL" /> 登入 Gmail 或 YouTube 等 Google 服務時，可以用同一個帳戶自動登入 Chrome</translation>
 <translation id="2799162042226656283">你的 Chrome</translation>
@@ -265,6 +265,7 @@
 <translation id="3968962723676998462">請輸入通關密語，才能將 Chrome 資料儲存到帳戶 (<ph name="ACCOUNT_EMAIL" />)，或使用帳戶中的 Chrome 資料</translation>
 <translation id="3973161977468201858">Google Chrome 要刪除 Google 密碼管理工具資料。如果允許，請輸入 Windows 密碼。</translation>
 <translation id="400161754580828648">如要分享螢幕內容，請前往「系統設定」允許 Chrome 螢幕錄影。</translation>
+<translation id="4012899077942246412">登入帳戶就能在 Chrome 使用 Google 帳戶儲存的密碼和其他資訊。如要變更，請前往「你在 Chrome 中的帳戶」。</translation>
 <translation id="4022972681110646219">翻譯這個畫面</translation>
 <translation id="4023601594785368013">原文語言：<ph name="LANGUAGE" /></translation>
 <translation id="4035053306113201399">Chrome OS 必須重新啟動，才能套用更新。</translation>
@@ -442,6 +443,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="6025087594896450715">Google Chrome 將於 <ph name="REMAINING_TIME" /> 後重新啟動</translation>
 <translation id="6040143037577758943">關閉</translation>
 <translation id="604424701295382420">已固定！如果要再使用 Google 智慧鏡頭，只要點選工具列上的新按鈕即可</translation>
+<translation id="6046028983725193307">如要分享系統音訊，請開啟「系統設定」，允許 Chrome 使用「僅限系統錄音」權限，接著重新啟動 Chrome。</translation>
 <translation id="6069027071882229820">複製為圖片</translation>
 <translation id="6070348360322141662">為了提升安全性，Google Chrome 會將你的資料加密保護</translation>
 <translation id="6075300983329039771">貴機構 (<ph name="MANAGER" />) 要求你登入 Chrome</translation>
@@ -646,6 +648,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="8255190535488645436">Google Chrome 正在使用你的攝影機和麥克風。</translation>
 <translation id="8267953129876836456">請查看 Chrome 提供的安全防護建議</translation>
 <translation id="8286862437124483331">Google Chrome 現在會嘗試顯示密碼。如果你同意的話，請輸入你的 Windows 密碼。</translation>
+<translation id="8289399803055125418">使用<ph name="BEGIN_LINK" />通關密語<ph name="END_LINK" />加密 Google 帳戶的所有 Chrome 資料。地址和儲存在 Google 錢包中的資料都不會使用通關密語加密，Chrome 中的瀏覽記錄也不會同步。</translation>
 <translation id="829923460755755423">新增 Google 密碼管理工具的捷徑</translation>
 <translation id="8313851650939857356">啟動錯誤：<ph name="STARTUP_ERROR" />。</translation>
 <translation id="8321888067342493336">另存成圖片</translation>

@@ -25,6 +25,7 @@
 <translation id="1502360822835740515">Ustawianie Chromium jako przeglądarki domyślnej</translation>
 <translation id="1503199973012840174">Twoja przeglądarka Chromium jest nieaktualna. Zaktualizuj ją dla bezpieczeństwa.</translation>
 <translation id="1515748263297244785">Domyślnie używaj Chromium na iPada</translation>
+<translation id="1530961174488670696">Chromium nie udało się sprawdzić dostępności aktualizacji. Spróbuj ponownie później.</translation>
 <translation id="1531155317299575425">Pokazuje prośby o zalogowanie się w Chromium.</translation>
 <translation id="1553657876656159572">Spersonalizowane karty dla Ciebie. Obejmują wiadomości, sport i pogodę.</translation>
 <translation id="1561849081734670621">Aby wyłączyć tryb blokady w Chromium, wyłącz go na iPhonie.</translation>
@@ -145,6 +146,7 @@ Dane zostały zaszyfrowane za pomocą Twojego hasła wielowyrazowego. Podaj to h
 <translation id="420541179527342563">Aby wyłączyć tryb blokady w Chromium, wyłącz go na iPadzie.</translation>
 <translation id="4272892696084633551">Pomóż w ulepszaniu funkcji i działania Chromium</translation>
 <translation id="4302397443352897529">Ustawienia Chromium</translation>
+<translation id="4304713468139749426">Menedżer haseł</translation>
 <translation id="4408912345039114853">Uruchom kontrolę zabezpieczeń w Chromium</translation>
 <translation id="4432744876818348753">Zaloguj się, aby w pełni wykorzystać możliwości Chromium.</translation>
 <translation id="4445228361214254027">Twoja organizacja wyłączyła możliwość używania i zapisywania danych Chromium na Twoim koncie Google. Nowe zakładki, hasła i inne ustawienia będą zapisywane tylko na tym urządzeniu.</translation>
@@ -236,7 +238,7 @@ Pamiętaj, że:
 <translation id="6154098560469640583">Używaj Chromium za każdym razem, gdy klikasz linki w wiadomościach, dokumentach i w innych aplikacjach.</translation>
 <translation id="6157162508956739031">Szybko loguj się w aplikacjach i na stronach dzięki autouzupełnianiu haseł i kluczy dostępu z Chromium</translation>
 <translation id="6170619162539716595">Zezwalaj Chromium na używanie Map Google do podawania wskazówek i informacji lokalnych o wykrytych adresach.</translation>
-<translation id="6247557882553405851">Menedżer haseł Google</translation>
+<translation id="6244277266078678766">Dane zostaną zapisane w menedżerze haseł na koncie <ph name="USER_EMAIL" /></translation>
 <translation id="6268381023930128611">Wylogować z Chromium?</translation>
 <translation id="6301717043141881464">Aby mieć łatwy dostęp do zapisanych haseł w innych aplikacjach, użyj autouzupełniania w Chromium</translation>
 <translation id="6324041800010509197">Wyświetl siatkę kart w Chromium</translation>
@@ -314,6 +316,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Nie jest on
 <translation id="8119542592987737574">Uruchamiaj Chromium szybciej z Docka na ekranie głównym iPhone'a.</translation>
 <translation id="8164086860209325020">Otwórz ustawienia Chromium</translation>
 <translation id="8197822717502700527">Teraz możesz w pełni korzystać z możliwości Chromium na swoim urządzeniu.</translation>
+<translation id="8236210361418193126">Importuj do Menedżera haseł</translation>
 <translation id="8254729934443216898">Poznaj nowe funkcje, które pomogą Ci w pełni wykorzystać możliwości Chromium.</translation>
 <translation id="8293572045658095405">Jesteś w trybie incognito w Chromium</translation>
 <translation id="830951810931292870">Otwiera wpisane adresy URL w Chromium w trybie incognito.</translation>

@@ -177,6 +177,7 @@
 <translation id="1282358575813748144">船舶與水運工具</translation>
 <translation id="1283977499362032052">履歷與作品集</translation>
 <translation id="1285320974508926690">一律不翻譯此網站</translation>
+<translation id="1289129165308566697">查看其他裝置上的歷史記錄</translation>
 <translation id="1292571435393770077">紙匣 16</translation>
 <translation id="1292701964462482250">「你的電腦上有軟體阻止 Chrome 建立安全的網路連線」(僅限 Windows 電腦)</translation>
 <translation id="1293556467332435079">檔案</translation>
@@ -1007,6 +1008,7 @@
 <translation id="2627847595568876492">正在擷取 PDF 檔的文字...</translation>
 <translation id="2628025184666666186">這個伺服器的安全性憑證未取得 Chrome 或系統網路流量加密設定的信任，因此無法證明其屬於「<ph name="DOMAIN" />」網域。這可能是因為設定錯誤，或是有攻擊者攔截連線。</translation>
 <translation id="2628224721443278970">登入 Microsoft OneDrive</translation>
+<translation id="2631387782019878060">驗證碼：<ph name="OTP" /></translation>
 <translation id="2634124572758952069">找不到 <ph name="HOST_NAME" /> 的伺服器 IP 位址。</translation>
 <translation id="2638567100095052009">輸入 @ 即可在 <ph name="FEATURED_SEARCH_LIST" /> 上搜尋</translation>
 <translation id="2639739919103226564">狀態：</translation>
@@ -1842,6 +1844,7 @@
 <translation id="4014895360827978999">商業服務與付款系統</translation>
 <translation id="4018819349042761761">公開金鑰</translation>
 <translation id="4023431997072828269">這個表單是透過不安全的連線提交，其他人將可看到你的資訊。</translation>
+<translation id="4024673763872230929">儲存資訊後，填寫表單更快速。資訊會儲存在裝置上。</translation>
 <translation id="4025325634010721551">已重新載入政策</translation>
 <translation id="4025338605225449265">貨幣和外匯交易</translation>
 <translation id="4025777154208238692">反轉順序</translation>
@@ -2275,6 +2278,7 @@
 <translation id="4732860731866514038">正在下載<ph name="LANGUAGE" />語言套件... <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> 要求使用裝置的位置資訊</translation>
 <translation id="473414950835101501">使用攝影機</translation>
+<translation id="4734343956394152985"><ph name="BEGIN_BOLD" />目前的預設搜尋引擎<ph name="END_BOLD" /> · <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="4736825316280949806">重新啟動 Chromium</translation>
 <translation id="4736934858538408121">虛擬卡片</translation>
 <translation id="473775607612524610">更新</translation>
@@ -2337,6 +2341,7 @@
 <translation id="4822493756793346865">一般價格的依據是過去 90 天各網路商店的資料。</translation>
 <translation id="4822922322149719535">查看錯誤記錄</translation>
 <translation id="4823699521959851389"><ph name="SHORT_PRODUCT_NAME" /> 需要使用裝置的<ph name="PERMISSION" /></translation>
+<translation id="4825311006392962663">結帳時顯示先買後付選項</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />；按下 Tab 鍵再按下 Enter 鍵即可快速建立新的 Google 試算表</translation>
 <translation id="4826588772550366629">攝影機和麥克風</translation>
 <translation id="4827283332383516812">刪除卡片</translation>
@@ -2428,6 +2433,7 @@
 <translation id="4961708452830821006">如要使用麥克風，請前往<ph name="LINK" />授予 Chrome 存取權。</translation>
 <translation id="4963413887558778009">景觀設計</translation>
 <translation id="4967366744630699583">編輯地址</translation>
+<translation id="4968046291688599384">已填入「<ph name="BNPL_ISSUER_NAME" />」動態虛擬卡號。</translation>
 <translation id="4968522289500246572">這是專為行動裝置設計的應用程式，大小可能未妥善調整。此應用程式可能會發生問題，或是重新啟動。</translation>
 <translation id="4968665849807487749">可以要求管理所有螢幕上的視窗</translation>
 <translation id="4969341057194253438">刪除錄製內容</translation>
@@ -2795,6 +2801,7 @@
 <translation id="5558083606899411167">空調</translation>
 <translation id="5558125320634132440">這個網站可能包含兒童不宜的內容，因此遭到封鎖</translation>
 <translation id="5559311991468302423">刪除地址</translation>
+<translation id="5561747310506483298">身分證件</translation>
 <translation id="55635442646131152">文件大綱</translation>
 <translation id="5563589142503817291">如要使用位置資訊，請前往<ph name="LINK" />授予 Chrome 存取權。</translation>
 <translation id="5565613213060953222">開啟無痕分頁</translation>
@@ -3384,6 +3391,7 @@
 <translation id="6521745193039995384">未啟用</translation>
 <translation id="6522682797352430154">古典音樂</translation>
 <translation id="6524830701589638230">「管理無障礙設定」按鈕，啟動後即可在 Chrome 設定中依個人需求調整無障礙工具</translation>
+<translation id="6525222262307262764">繼續使用目前的預設搜尋引擎</translation>
 <translation id="6527049834925947126">食品生產</translation>
 <translation id="6529173248185917884">第七卷</translation>
 <translation id="6529602333819889595">重做刪除(&amp;R)</translation>
@@ -3404,6 +3412,7 @@
 <translation id="6567832540451970450">系統管理員允許這個網站使用<ph name="PERMISSION" /></translation>
 <translation id="6568793038316600992">「管理付款方式」按鈕，啟動後即可在 Chrome 設定中管理付款和信用卡資訊</translation>
 <translation id="6569060085658103619">目前顯示的是擴充功能頁面</translation>
+<translation id="6571992525120410251">問問 <ph name="ENGINE_NAME" /></translation>
 <translation id="6572867903637058088">這則評論對你有幫助嗎？</translation>
 <translation id="6573200754375280815">雙孔 (右側)</translation>
 <translation id="6575408526598156416">儲存到帳戶</translation>
@@ -3445,6 +3454,7 @@
 <translation id="6652101503459149953">使用 Windows Hello</translation>
 <translation id="6654224358955673568">使用正式語氣</translation>
 <translation id="6654244995031366386">玻璃 (紋理)</translation>
+<translation id="6655085656059574817">保持帳戶連結有助於透過「<ph name="BNPL_ISSUER_NAME" />」快速付款。如要取消連結，可以前往 <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /></translation>
 <translation id="6657585470893396449">密碼</translation>
 <translation id="6659246032834639189">這個價格屬於低價位</translation>
 <translation id="6660413144148052430">位置</translation>
@@ -3452,6 +3462,7 @@
 <translation id="666259744093848177">(經過翻譯的 x86_64)</translation>
 <translation id="6665553082534466207">三孔 (右側)</translation>
 <translation id="6668389483194953109">系統偵測到紙張大小名稱為「自訂」，但「custom_size」屬性空白或無效。</translation>
+<translation id="6670729408462528018">相片庫</translation>
 <translation id="6671169470640320959">汽車融資</translation>
 <translation id="6671697161687535275">要從 Chromium 中移除表單填寫建議嗎？</translation>
 <translation id="6675846980676550611">不允許使用 AR</translation>

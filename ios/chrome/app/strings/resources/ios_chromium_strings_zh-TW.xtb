@@ -25,6 +25,7 @@
 <translation id="1502360822835740515">將 Chromium 設為預設瀏覽器</translation>
 <translation id="1503199973012840174">Chromium 版本過舊，請更新以確保安全。</translation>
 <translation id="1515748263297244785">在 iPad 上預設使用 Chromium</translation>
+<translation id="1530961174488670696">Chromium 無法檢查更新，請稍後再試。</translation>
 <translation id="1531155317299575425">顯示登入 Chromium 的提示。</translation>
 <translation id="1553657876656159572">專為你打造的自訂動態消息，像是新聞、體育和天氣資訊。</translation>
 <translation id="1561849081734670621">如要停用 Chromium 的鎖定模式，請在 iPhone 上將該模式關閉。</translation>
@@ -145,6 +146,7 @@
 <translation id="420541179527342563">如要停用 Chromium 的鎖定模式，請在 iPad 上將該模式關閉。</translation>
 <translation id="4272892696084633551">協助改善 Chromium 的功能與效能</translation>
 <translation id="4302397443352897529">Chromium 設定</translation>
+<translation id="4304713468139749426">密碼管理工具</translation>
 <translation id="4408912345039114853">執行 Chromium 安全檢查</translation>
 <translation id="4432744876818348753">登入以充分運用 Chromium 的各項功能。</translation>
 <translation id="4445228361214254027">貴機構已關閉在 Google 帳戶中使用及儲存 Chromium 資料的功能。新的書籤、密碼等資訊只會儲存在這部裝置上。</translation>
@@ -236,7 +238,7 @@
 <translation id="6154098560469640583">隨時可以使用 Chromium 開啟訊息、文件和其他應用程式中的連結。</translation>
 <translation id="6157162508956739031">自動填入 Chromium 中的密碼和密碼金鑰，快速登入應用程式和網站</translation>
 <translation id="6170619162539716595">允許 Chromium 偵測到地址時，使用 Google 地圖提供路線和當地資訊。</translation>
-<translation id="6247557882553405851">Google 密碼管理工具</translation>
+<translation id="6244277266078678766">你的密碼將儲存到 <ph name="USER_EMAIL" /> 的密碼管理工具</translation>
 <translation id="6268381023930128611">要登出 Chromium 嗎？</translation>
 <translation id="6301717043141881464">如要在其他應用程式中輕鬆取得已儲存的密碼，請選擇 Chromium 做為自動填寫來源</translation>
 <translation id="6324041800010509197">開啟 Chromium 的分頁方格</translation>
@@ -314,6 +316,7 @@
 <translation id="8119542592987737574">從 iPhone 主畫面 Dock 更快存取 Chromium。</translation>
 <translation id="8164086860209325020">前往 Chromium 設定</translation>
 <translation id="8197822717502700527">你現在可以在裝置上充分運用 Chromium 的各項功能。</translation>
+<translation id="8236210361418193126">匯入密碼管理工具</translation>
 <translation id="8254729934443216898">瞭解新功能，充分發揮 Chromium 的效用。</translation>
 <translation id="8293572045658095405">目前使用 Chromium 無痕模式</translation>
 <translation id="830951810931292870">在 Chromium 中以無痕模式開啟輸入的網址。</translation>

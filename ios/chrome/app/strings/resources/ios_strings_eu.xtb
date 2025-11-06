@@ -742,6 +742,7 @@
 <translation id="3926703470020109118">Deskarga bertan behera utzi da</translation>
 <translation id="3929457972718048006">Helbideak</translation>
 <translation id="3931215329146376310">{count,plural, =1{Webgunerako pasahitz berria}other{Webgunerako pasahitz berriak}}</translation>
+<translation id="3933372629914873850"><ph name="URL" /> webgunean hasiko duzu saioa</translation>
 <translation id="3934905113567851655">Atximurkatu tamaina aldatzeko</translation>
 <translation id="3940195383040445971">Egin prezioen jarraipena fitxetan</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{Itxi {COUNT} fitxa}other{Itxi {COUNT} fitxa}}</translation>
@@ -1331,6 +1332,7 @@
 <translation id="6103540626693881831">Gailuan bertan enkriptatzeko aukera</translation>
 <translation id="611361228753138223">Gailu honetan azkenaldian bisitatu dituzun webguneak</translation>
 <translation id="611705554202268369">Fitxa talde batean gehitzeko, sakatu luze</translation>
+<translation id="6117260878488959646">Errore bat gertatu da. Saiatu berriro geroago.</translation>
 <translation id="6122191549521593678">Konektatu</translation>
 <translation id="6122831415929794347">Arakatze segurua desaktibatu nahi duzu?</translation>
 <translation id="6123514585040403489">Fitxak itxiko dira</translation>
@@ -1353,6 +1355,7 @@
 <translation id="6172428250974276014">Bai, mantendu datuak bereizita (gomendatua)</translation>
 <translation id="6173499589275053515">Gorde da pasahitza zure Google-ko kontuan (<ph name="EMAIL" />)</translation>
 <translation id="6181969657494915430">Bilaketa egiteko pantaila</translation>
+<translation id="6182851675249594487">Kolore-gai pertsonalizatua</translation>
 <translation id="6187302354554850004">Azken sinkronizazioa: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">Sortze-data: <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Irakurri gabe</translation>

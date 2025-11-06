@@ -25,6 +25,7 @@
 <translation id="1502360822835740515">Chromiumক আপোনাৰ ডি’ফল্ট ব্ৰাউজাৰ কৰক</translation>
 <translation id="1503199973012840174">আপোনাৰ Chromiumৰ ম্যাদ উকলিছে। সুৰক্ষিত হৈ থাকিবলৈ ইয়াক আপডে'ট কৰক।</translation>
 <translation id="1515748263297244785">ডিফ’ল্ট হিচাপে iPadৰ বাবে Chromium ব্যৱহাৰ কৰক</translation>
+<translation id="1530961174488670696">Chromiumএ আপডে’ট আছেনে নাই পৰীক্ষা কৰিব নোৱাৰিলে। পাছত পুনৰ চেষ্টা কৰক।</translation>
 <translation id="1531155317299575425">Chromiumত ছাইন ইন কৰিবলৈ প্ৰম্প্‌ট প্ৰদৰ্শন কৰে।</translation>
 <translation id="1553657876656159572">আপোনাৰ বাবে প্ৰস্তুত কৰা এটা কাষ্টম ফীড। য’ত বাতৰি, ক্ৰীড়া আৰু বতৰৰ তথ্য অন্তৰ্ভুক্ত।</translation>
 <translation id="1561849081734670621">Chromiumত লকডাউন ম’ড অক্ষম কৰিবলৈ আপোনাৰ iPhoneত এইটো অফ কৰক।</translation>
@@ -145,6 +146,7 @@
 <translation id="420541179527342563">Chromiumত লকডাউন ম’ড অক্ষম কৰিবলৈ আপোনাৰ iPadত এইটো অফ কৰক।</translation>
 <translation id="4272892696084633551">Chromiumৰ সুবিধা আৰু কার্যক্ৰমসমূহ উন্নত কৰাত সহায় কৰক</translation>
 <translation id="4302397443352897529">Chromiumৰ ছেটিং</translation>
+<translation id="4304713468139749426">পাছৱৰ্ড পৰিচালক</translation>
 <translation id="4408912345039114853">Chromiumৰ সুৰক্ষা পৰীক্ষা চলাওক</translation>
 <translation id="4432744876818348753">Chromiumৰ পৰা পাৰ্যমানে উপকৃত হ’বলৈ ছাইন ইন কৰক।</translation>
 <translation id="4445228361214254027">আপোনাৰ প্ৰতিষ্ঠানে আপোনাৰ Google একাউণ্টত Chromium ডেটা ব্যৱহাৰ আৰু ছেভ কৰাৰ ক্ষমতা অফ কৰিছে। নতুন বুকমাৰ্ক, পাছৱৰ্ড আৰু অধিক কেৱল এই ডিভাইচত ছেভ কৰা হ’ব।</translation>
@@ -236,7 +238,7 @@
 <translation id="6154098560469640583">আপুনি যিকোনো সময়তে বাৰ্তা, নথি আৰু অন্য এপত থকা কোনো লিংকত টিপিলে সেইবোৰ খুলিবলৈ Chromium ব্যৱহাৰ কৰক।</translation>
 <translation id="6157162508956739031">Chromiumৰ পৰা আপোনাৰ পাছৱৰ্ড আৰু পাছকীসমূহ স্বয়ংক্রিয়ভাৱে পূৰ কৰি এপ্‌ আৰু ছাইটসমূহত দ্ৰুততাৰে ছাইন ইন কৰক</translation>
 <translation id="6170619162539716595">চিনাক্ত কৰা ঠিকনাসমূহৰ বাবে আপোনাক দিক্-নিৰ্দেশনা আৰু স্থানীয় তথ্য দিবলৈ Chromiumক Google Maps ব্যৱহাৰ কৰিবলৈ অনুমতি দিয়ক।</translation>
-<translation id="6247557882553405851">Google পাছৱৰ্ড পৰিচালক</translation>
+<translation id="6244277266078678766">আপোনাৰ পাছৱৰ্ডটো <ph name="USER_EMAIL" />ৰ Password Managerত ছেভ কৰা হ’ব</translation>
 <translation id="6268381023930128611">Chromiumৰ পৰা ছাইন আউট কৰিবনে?</translation>
 <translation id="6301717043141881464">আপোনাৰ অন্য এপ্‌সমূহত আপোনাৰ ছেভ কৰা পাছৱৰ্ডসমূহ সহজে পাবলৈ, স্বয়ংক্ৰিয়ভাৱে পূৰ হোৱাৰ সুবিধাৰ বাবে Chromium বাছনি কৰক</translation>
 <translation id="6324041800010509197">Chromiumত টেব গ্ৰিডলৈ যাওক</translation>
@@ -314,6 +316,7 @@
 <translation id="8119542592987737574">আপোনাৰ iPhoneৰ গৃহ স্ক্ৰীনৰ ড’কৰ পৰা অধিক দ্ৰুতভাৱে Chromium এক্সেছ কৰক।</translation>
 <translation id="8164086860209325020">Chromiumৰ ছেটিঙলৈ যাওক</translation>
 <translation id="8197822717502700527">আপুনি এতিয়া আপোনাৰ ডিভাইচত Chromiumৰ পৰা পাৰ্যমানে উপকৃত হ’ব।</translation>
+<translation id="8236210361418193126">Password Managerলৈ আমদানি কৰক</translation>
 <translation id="8254729934443216898">নতুন সুবিধাসমূহ অন্বেষণ কৰক যিবোৰে আপোনাক Chromiumৰ পৰা পাৰ্যমানে উপকৃত হোৱাত সহায় কৰে।</translation>
 <translation id="8293572045658095405">আপুনি Chromiumৰ ইনক’গনিট’ত আছে</translation>
 <translation id="830951810931292870">অন্তৰ্ভুক্ত কৰা URLসমূহ Chromiumৰ ইনক’গনিট’ত খোলে।</translation>

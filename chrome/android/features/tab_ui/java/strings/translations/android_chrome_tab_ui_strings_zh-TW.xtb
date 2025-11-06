@@ -64,6 +64,7 @@
 <translation id="2918484639460781603">前往設定</translation>
 <translation id="2928243913527329289">Google | 關於這間商店</translation>
 <translation id="2978860912612699943">{ITEMS_COUNT,plural, =1{已選取 <ph name="ITEMS_COUNT_ONE" /> 個}other{已選取 <ph name="ITEMS_COUNT_MANY" /> 個}}</translation>
+<translation id="2991702137079525605">{TABS_COUNT,plural, =1{固定分頁}other{固定分頁}}</translation>
 <translation id="3008554597174452548">停止追蹤產品</translation>
 <translation id="3026391124054406831">建立群組，方便整理分頁。</translation>
 <translation id="3051031624272448591">你隨時可以從歷史記錄重新開啟這些分頁</translation>
@@ -85,6 +86,7 @@
 <translation id="3940195383040445971">在分頁上追蹤價格</translation>
 <translation id="3940717704786481856">{NUMBER_OF_TABS_ADDED,plural, =1{新增 <ph name="ONE_ADDED" /> 個分頁，關閉 <ph name="ANY_CLOSED" /> 個分頁}other{新增 <ph name="MANY_ADDED" /> 個分頁，關閉 <ph name="ANY_CLOSED" /> 個分頁}}</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{建立分頁群組}other{建立分頁群組}}</translation>
+<translation id="3962134438902735041">{TABS_COUNT,plural, =1{取消固定 <ph name="TABS_COUNT_ONE" /> 個所選分頁}other{取消固定 <ph name="TABS_COUNT_MANY" /> 個所選分頁}}</translation>
 <translation id="4009732926939031387">{NUM_DAYS,plural, =1{<ph name="NUM_DAYS_ONE" /> 天前建立}other{<ph name="NUM_DAYS_MANY" /> 天前建立}}</translation>
 <translation id="4076226664360336092">分頁群組清單已開啟，顯示於整個畫面</translation>
 <translation id="4133493477912226187">似乎有 <ph name="NUMBER_OF_TABS" /> 個相關的分頁。要將這些分頁加入群組嗎？</translation>
@@ -126,6 +128,7 @@
 <translation id="5556417849629758491">商店資訊和可用選項位於靠近畫面頂端的地方</translation>
 <translation id="5627941783489838464">沒有更新的分頁</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> 個來自 Chrome 的連結}other{<ph name="TABS_COUNT_MANY" /> 個來自 Chrome 的連結}}</translation>
+<translation id="5740354908255726955">{TAB_COUNT,plural, =1{將分頁向左移}other{將分頁向左移}}</translation>
 <translation id="5746204836956568669">要將 <ph name="NUMBER_OF_TABS" /> 個分頁分組，提高工作效率嗎？</translation>
 <translation id="5773295109010386583">自動關閉閒置項目</translation>
 <translation id="58326064309361797">拖曳分頁即可進行分組</translation>
@@ -136,10 +139,12 @@
 <translation id="6109251075362363230">現在也會封存所有重複的分頁 (最近使用的重複分頁除外)。</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{關閉 <ph name="TABS_COUNT_ONE" /> 個所選項目}other{關閉 <ph name="TABS_COUNT_MANY" /> 個所選項目}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{將群組移到新視窗}other{將群組移到其他視窗}}</translation>
+<translation id="6212374449852603982">{TAB_COUNT,plural, =1{將分頁向右移}other{將分頁向右移}}</translation>
 <translation id="6228793724645064692">(商店評分)</translation>
 <translation id="625996437999624951">{TAB_COUNT,plural, =1{從群組中移除分頁}other{從群組中移除分頁}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{將分頁加入新群組}other{將分頁加入新群組}}</translation>
 <translation id="6333260925957816943">這間店的資訊</translation>
+<translation id="6344715021569694246">{TABS_COUNT,plural, =1{固定 <ph name="TABS_COUNT_ONE" /> 個所選分頁}other{固定 <ph name="TABS_COUNT_MANY" /> 個所選分頁}}</translation>
 <translation id="6381032505162537930">你可以在這裡找到分頁群組</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{將 <ph name="TABS_COUNT_ONE" /> 個所選分頁移出群組}other{將 <ph name="TABS_COUNT_MANY" /> 個所選分頁移出群組}}</translation>
 <translation id="6499296376514955580">共用分頁群組異動通知已關閉</translation>
@@ -198,6 +203,7 @@
 <translation id="805809603610022708">{TABS_COUNT,plural, =1{將分頁加入群組}other{將分頁加入群組}}</translation>
 <translation id="8138067144082174140">閒置 14 天後</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{展開含有 <ph name="TABS_COUNT_ONE" /> 個分頁「<ph name="TITLE_OF_GROUP" />」分頁群組，顏色為<ph name="COLOR_NAME" />。}other{展開含有 <ph name="TABS_COUNT_MANY" /> 個分頁「<ph name="TITLE_OF_GROUP" />」分頁群組，顏色為<ph name="COLOR_NAME" />。}}</translation>
+<translation id="8195186926670288294">{TABS_COUNT,plural, =1{取消固定分頁}other{取消固定分頁}}</translation>
 <translation id="8205266828577616993">將分頁上移</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> 分鐘前更新}other{<ph name="NUM_MINS_MANY" /> 分鐘前更新}}</translation>
 <translation id="8236097722223016103">加入書籤</translation>

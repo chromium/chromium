@@ -136,6 +136,7 @@ A partir de la versión <ph name="PRODUCT_NAME" /> 140, si no estableces la pol�
 
       Si no estableces esta configuración, se utilizará el directorio de perfil predeterminado.</translation>
 <translation id="1053981429146436598">Un grupo de políticas relacionadas con la configuración de solicitudes de red privada.  Consulta https://wicg.github.io/private-network-access/.</translation>
+<translation id="1055159224864957792">Contraseña local</translation>
 <translation id="1059069692400941670">Inhabilitar la importación del motor de búsqueda predeterminado en la primera ejecución</translation>
 <translation id="1060020040574767394">Configurar los parámetros de la marca de agua personalizada</translation>
 <translation id="1062011392452772310">Habilita la atestación remota para el dispositivo.</translation>
@@ -1296,6 +1297,17 @@ Esta política no tiene efecto si la opción para conservar los datos de navegac
 <translation id="1834796168555733063">Inhabilitar el guardado de llaves de acceso en el administrador de contraseñas</translation>
 <translation id="1836380138559328229">Guardar las credenciales de Wi-Fi activo a nivel del dispositivo</translation>
 <translation id="1837165432382702436">Altura de la página en micrómetros.</translation>
+<translation id="1838075279369174832">Si estableces la política, controlarás qué factores de autenticación local se pueden usar para el acceso y la reautenticación en <ph name="PRODUCT_OS_NAME" />.
+
+      Para permitir lo siguiente:
+
+      * Para cada factor de autenticación local, usa ["ALL"] (incluye los factores que se agreguen en el futuro).
+
+      * Para usar solo el PIN, usa ["PIN"].
+
+      * Para usar solo contraseñas locales, usa ["LOCAL_PASSWORD"].
+
+      Si no estableces la política o la estableces como una lista vacía, no habrá factores de autenticación local disponibles para los usuarios administrados.</translation>
 <translation id="1838910874018595451">Configuración ya completada para tickets de Kerberos</translation>
 <translation id="1839042185432919430">Permitir que la app web de kiosco muestre el mensaje de red cuando se inicie la app si el dispositivo está sin conexión</translation>
 <translation id="1839711547980672664">Lista de patrones de URLs para los que se permite abrir <ph name="CHROME_DEVTOOLS_NAME" /></translation>
@@ -9129,6 +9141,7 @@ política mientras se esté ejecutando el navegador.</translation>
 Si habilitas la política, se cerrará la sesión anterior del usuario cuando acceda correctamente en un nuevo dispositivo <ph name="PRODUCT_OS_NAME" />.
 
 Si inhabilitas la política o no la estableces, se cerrará la sesión anterior del usuario solo si habilitas las políticas <ph name="FLOATING_SSO_ENABLED_POLICY_NAME" /> o <ph name="FLOATING_WORKSPACE_V2_ENABLED_POLICY_NAME" />.</translation>
+<translation id="6854694645176150141">Configurar los factores de autenticación local permitidos</translation>
 <translation id="6854767649023671426">Si habilitas la política o no la estableces, a excepción de las URL que se indican en la lista VideoCaptureAllowedUrls, se les solicitará a los usuarios acceso para capturar videos.
 
       Si inhabilitas la política, se desactivarán los mensajes, y la captura de video solo estará disponible para las URL que se establezcan en la lista VideoCaptureAllowedUrls.
@@ -10081,6 +10094,7 @@ la lectura en voz alta estará habilitada.</translation>
 <translation id="7491720878670299691">Es la tasa a la que se registran los datos de red y se buscan eventos. El mínimo permitido es 1 minuto.
 
       Si no estableces la política, se aplicará la tasa predeterminada de 1 minuto.</translation>
+<translation id="7496284563199466390">Controlar qué usuarios administrados pueden establecer la política <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" />.</translation>
 <translation id="7498595166686106721">
       La política de permisos para la captura de pantalla permite el acceso a getDisplayMedia(), según esta especificación: https://www.w3.org/TR/screen-capture/#feature-policy-integration. Sin embargo, si se inhabilita esta política, no se aplicará este requisito de manera forzosa y se permitirá getDisplayMedia() en contextos que, de otra forma, estarían prohibidos. Esta política empresarial es temporal; se planea quitarla después de la versión 100 de <ph name="PRODUCT_NAME" />. Su objetivo es desbloquear a los usuarios empresariales cuyas aplicaciones no cumplen con las especificaciones y necesitan tiempo para solucionarlo.
 
@@ -11064,6 +11078,9 @@ Esta política se aplica al modo Incógnito. Esto significa que debes habilitar 
 <translation id="8225579382697740712">Controlar el uso de la API de WebHID</translation>
 <translation id="8229912067600517877">Habilitar las Herramientas para desarrolladores</translation>
 <translation id="8238421250255592181">Función experimental booleana que indica si el teclado en pantalla puede proporcionar la función de autocompletar.</translation>
+<translation id="8238558579601006178">Si estableces esta política en 0 o no la estableces, la política de <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> solo se aplicará en el permiso del usuario para los usuarios afiliados.
+Cuando esta política se establezca en 1, se aplicará la política <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> en el permiso del usuario, incluso si no está afiliado.
+Si estableces esta política con el valor 2, la política <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> nunca se aplicará cuando su fuente sea un usuario.</translation>
 <translation id="8239109177194627162">Inhabilitar Autocompletar para las tarjetas de crédito</translation>
 <translation id="8239143983379015783">Forzar la habilitación de la cuota persistente</translation>
 <translation id="8240976615241583524">Esta política permite restringir las direcciones IP y las interfaces que utiliza WebRTC al momento de intentar encontrar la mejor conexión disponible.

@@ -156,7 +156,6 @@
 <translation id="2753623023919742414">Nhấp để tìm</translation>
 <translation id="2757826245013442432">{COUNT,plural, =0{Chế độ Bảo vệ nâng cao yêu cầu bạn chạy lại Chrome để áp dụng bản cập nhật}=1{Chế độ Bảo vệ nâng cao yêu cầu bạn chạy lại Chrome để áp dụng bản cập nhật. Cửa sổ ẩn danh của bạn sẽ không mở lại.}other{Chế độ Bảo vệ nâng cao yêu cầu bạn chạy lại Chrome để áp dụng bản cập nhật. # cửa sổ ẩn danh của bạn sẽ không mở lại.}}</translation>
 <translation id="2765403129283291972">Chrome cần có quyền truy cập vào micrô của bạn cho trang web này</translation>
-<translation id="2770231113462710648">Thay đổi trình duyệt mặc định thành:</translation>
 <translation id="2775140325783767197">Chrome không thể kiểm tra mật khẩu của bạn. Hãy thử kiểm tra kết nối Internet.</translation>
 <translation id="2797864378188255696">Khi đăng nhập vào các dịch vụ của Google như Gmail hoặc YouTube bằng <ph name="USER_EMAIL" />, bạn có thể tự động được đăng nhập vào Chrome bằng cùng một tài khoản</translation>
 <translation id="2799162042226656283">Chrome của bạn</translation>
@@ -269,6 +268,7 @@
 <translation id="3968962723676998462">Nhập cụm mật khẩu để sử dụng và lưu dữ liệu trên Chrome vào tài khoản <ph name="ACCOUNT_EMAIL" /> của bạn</translation>
 <translation id="3973161977468201858">Google Chrome muốn xoá dữ liệu của bạn trong Trình quản lý mật khẩu của Google. Nhập mật khẩu Windows của bạn để cho phép việc này.</translation>
 <translation id="400161754580828648">Để chia sẻ màn hình, hãy cho phép Chrome ghi màn hình trong phần Cài đặt hệ thống.</translation>
+<translation id="4012899077942246412">Khi đăng nhập, bạn có thể sử dụng mật khẩu và nhiều nội dung khác từ Tài khoản Google của mình trong Chrome. Để thay đổi chế độ cài đặt này, hãy chuyển đến phần "Tài khoản của bạn trong Chrome".</translation>
 <translation id="4022972681110646219">Dịch màn hình</translation>
 <translation id="4023601594785368013">Ngôn ngữ gốc: <ph name="LANGUAGE" /></translation>
 <translation id="4035053306113201399">ChromeOS cần được khởi động lại để áp dụng bản cập nhật.</translation>
@@ -446,6 +446,7 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="6025087594896450715">Google Chrome sẽ khởi động lại sau <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">Đóng</translation>
 <translation id="604424701295382420">Đã ghim! Bạn có thể truy cập lại vào Google Ống kính qua nút mới trên thanh công cụ</translation>
+<translation id="6046028983725193307">Để chia sẻ âm thanh hệ thống, hãy mở phần Cài đặt hệ thống rồi bật chế độ "Chỉ ghi âm thanh hệ thống" cho Chrome. Sau đó, bạn cần khởi động lại Chrome.</translation>
 <translation id="6069027071882229820">Sao chép dưới dạng hình ảnh</translation>
 <translation id="6070348360322141662">Để tăng cường bảo mật, Google Chrome sẽ mã hoá dữ liệu của bạn</translation>
 <translation id="6075300983329039771">Tổ chức <ph name="MANAGER" /> của bạn yêu cầu bạn đăng nhập vào Chrome</translation>
@@ -650,6 +651,7 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="8255190535488645436">Google Chrome đang sử dụng máy ảnh và micrô của bạn.</translation>
 <translation id="8267953129876836456">Chrome có một số ý kiến đề xuất về sự an toàn cần bạn xem xét</translation>
 <translation id="8286862437124483331">Google Chrome đang cố gắng hiển thị mật khẩu. Hãy nhập mật khẩu Windows của bạn để cho phép việc này.</translation>
+<translation id="8289399803055125418">Sử dụng <ph name="BEGIN_LINK" />cụm mật khẩu của riêng bạn<ph name="END_LINK" /> để mã hoá tất cả dữ liệu Chrome trong Tài khoản Google. Địa chỉ và mọi dữ liệu được lưu trong Google Wallet sẽ không được mã hoá bằng cụm mật khẩu này. Nhật ký duyệt web trên Chrome sẽ không đồng bộ hoá.</translation>
 <translation id="829923460755755423">Thêm lối tắt vào Trình quản lý mật khẩu của Google</translation>
 <translation id="8313851650939857356">Lỗi khi khởi động: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8321888067342493336">Lưu dưới dạng hình ảnh</translation>

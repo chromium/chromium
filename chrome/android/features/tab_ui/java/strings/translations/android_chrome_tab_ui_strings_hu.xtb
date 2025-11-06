@@ -64,6 +64,7 @@
 <translation id="2918484639460781603">Ugrás a beállításokhoz</translation>
 <translation id="2928243913527329289">Google | Az üzletről</translation>
 <translation id="2978860912612699943">{ITEMS_COUNT,plural, =1{<ph name="ITEMS_COUNT_ONE" /> kiválasztva}other{<ph name="ITEMS_COUNT_MANY" /> kiválasztva}}</translation>
+<translation id="2991702137079525605">{TABS_COUNT,plural, =1{Lap rögzítése}other{Lapok rögzítése}}</translation>
 <translation id="3008554597174452548">Termék nyomon követésének leállítása</translation>
 <translation id="3026391124054406831">Csoportokat hozhat létre a lapok rendszerezéséhez.</translation>
 <translation id="3051031624272448591">Az előzmények között bármikor újra megnyithatja őket.</translation>
@@ -85,6 +86,7 @@
 <translation id="3940195383040445971">Árkövetés a megnyitott lapokon</translation>
 <translation id="3940717704786481856">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> új lap, <ph name="ANY_CLOSED" /> bezárva}other{<ph name="MANY_ADDED" /> új lap, <ph name="ANY_CLOSED" /> bezárva}}</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Lap csoportba helyezése}other{Lapok csoportba helyezése}}</translation>
+<translation id="3962134438902735041">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> kijelölt lap rögzítésének feloldása}other{<ph name="TABS_COUNT_MANY" /> kijelölt lap rögzítésének feloldása}}</translation>
 <translation id="4009732926939031387">{NUM_DAYS,plural, =1{<ph name="NUM_DAYS_ONE" /> napja létrehozva}other{<ph name="NUM_DAYS_MANY" /> napja létrehozva}}</translation>
 <translation id="4076226664360336092">Lapcsoportlista, teljes magasságban megnyitva</translation>
 <translation id="4133493477912226187">Úgy tűnik, <ph name="NUMBER_OF_TABS" /> lap kapcsolódik egymáshoz. Csoportosítja őket?</translation>
@@ -140,6 +142,7 @@
 <translation id="625996437999624951">{TAB_COUNT,plural, =1{Lap eltávolítása a csoportból}other{Lapok eltávolítása a csoportból}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Lap hozzáadása új csoporthoz}other{Lapok hozzáadása új csoporthoz}}</translation>
 <translation id="6333260925957816943">Információ erről az üzletről</translation>
+<translation id="6344715021569694246">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> kijelölt lap rögzítése}other{<ph name="TABS_COUNT_MANY" /> kijelölt lap rögzítése}}</translation>
 <translation id="6381032505162537930">Itt láthatja majd a lapcsoportjait</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> kijelölt lap csoportosításának megszüntetése}other{<ph name="TABS_COUNT_MANY" /> kijelölt lap csoportosításának megszüntetése}}</translation>
 <translation id="6499296376514955580">A megosztott lapcsoportok módosításairól szóló értesítés bezárva</translation>
@@ -198,6 +201,7 @@
 <translation id="805809603610022708">{TABS_COUNT,plural, =1{Lap hozzáadása csoporthoz}other{Lapok hozzáadása csoporthoz}}</translation>
 <translation id="8138067144082174140">14 nap inaktivitás után</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{A következő, <ph name="TABS_COUNT_ONE" /> lapot tartalmazó, <ph name="COLOR_NAME" /> színű lapcsoport kibontása: <ph name="TITLE_OF_GROUP" />.}other{A következő, <ph name="TABS_COUNT_MANY" /> lapot tartalmazó, <ph name="COLOR_NAME" /> színű lapcsoport kibontása: <ph name="TITLE_OF_GROUP" />.}}</translation>
+<translation id="8195186926670288294">{TABS_COUNT,plural, =1{Lap rögzítésének feloldása}other{Lapok rögzítésének feloldása}}</translation>
 <translation id="8205266828577616993">Lap mozgatása felfelé</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{Frissítve: <ph name="NUM_MINS_ONE" /> perccel ezelőtt}other{Frissítve: <ph name="NUM_MINS_MANY" /> perccel ezelőtt}}</translation>
 <translation id="8236097722223016103">Hozzáadás a könyvjelzőkhöz</translation>

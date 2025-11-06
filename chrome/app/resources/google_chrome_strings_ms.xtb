@@ -154,7 +154,6 @@
 <translation id="2753623023919742414">Klik untuk mencari</translation>
 <translation id="2757826245013442432">{COUNT,plural, =0{Perlindungan Lanjutan memerlukan anda melancarkan semula Chrome untuk menggunakan kemaskinian}=1{Perlindungan Lanjutan memerlukan anda melancarkan semula Chrome untuk menggunakan kemaskinian. Tetingkap Inkognito anda tidak dapat dibuka semula.}other{Perlindungan Lanjutan memerlukan anda melancarkan semula Chrome untuk menggunakan kemaskinian. # tetingkap Inkognito anda tidak dapat dibuka semula.}}</translation>
 <translation id="2765403129283291972">Chrome memerlukan kebenaran untuk mengakses mikrofon anda bagi tapak ini</translation>
-<translation id="2770231113462710648">Tukar penyemak imbas lalai kepada:</translation>
 <translation id="2775140325783767197">Chrome tidak dapat menyemak kata laluan anda. Cuba periksa sambungan Internet anda.</translation>
 <translation id="2797864378188255696">Apabila anda log masuk ke perkhidmatan Google seperti Gmail atau YouTube dengan <ph name="USER_EMAIL" />, anda boleh log masuk ke Chrome secara automatik dengan akaun yang sama</translation>
 <translation id="2799162042226656283">Chrome Anda</translation>
@@ -267,6 +266,7 @@
 <translation id="3968962723676998462">Masukkan ungkapan laluan anda untuk menggunakan dan menyimpan data Chrome dalam akaun anda, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="3973161977468201858">Google Chrome mahu memadamkan data Google Password Manager. Taip kata laluan Windows anda untuk membenarkan tindakan ini.</translation>
 <translation id="400161754580828648">Untuk berkongsi skrin anda, benarkan rakaman skrin untuk Chrome dalam Tetapan Sistem.</translation>
+<translation id="4012899077942246412">Semasa anda log masuk, anda boleh menggunakan kata laluan anda dan pelbagai lagi daripada Google Account anda dalam Chrome. Untuk menukar tetapan ini, akses “Akaun anda dalam Chrome”.</translation>
 <translation id="4022972681110646219">Terjemahkan skrin</translation>
 <translation id="4023601594785368013">Bahasa asal: <ph name="LANGUAGE" /></translation>
 <translation id="4035053306113201399">Chrome OS perlu dimulakan semula untuk melaksanakan kemaskinian.</translation>
@@ -442,6 +442,7 @@
 <translation id="6025087594896450715">Google Chrome akan dimulakan semula dalam masa <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">Tutup</translation>
 <translation id="604424701295382420">Disemat! Anda boleh mengakses Google Lens sekali lagi daripada butang baharu pada bar alat</translation>
+<translation id="6046028983725193307">Untuk berkongsi audio sistem, buka Tetapan Sistem dan benarkan 'Rakaman Audio Sistem Sahaja' untuk Chrome. Kemudian, anda perlu memulakan semula Chrome.</translation>
 <translation id="6069027071882229820">Salin sebagai imej</translation>
 <translation id="6070348360322141662">Untuk keselamatan tambahan, Google Chrome akan menyulitkan data anda</translation>
 <translation id="6075300983329039771">Organisasi anda, <ph name="MANAGER" />, menghendaki anda untuk log masuk ke Chrome</translation>

@@ -25,6 +25,7 @@
 <translation id="1502360822835740515">Bëje Chromium shfletuesin tënd të parazgjedhur</translation>
 <translation id="1503199973012840174">Chromium është i papërditësuar. Përditësoje për të qëndruar i sigurt.</translation>
 <translation id="1515748263297244785">Përdor Chromium për iPad si parazgjedhje</translation>
+<translation id="1530961174488670696">Chromium nuk mund të kontrollonte për përditësime. Provo përsëri më vonë.</translation>
 <translation id="1531155317299575425">Shfaq kërkesa për t'u identifikuar në Chromium.</translation>
 <translation id="1553657876656159572">Një furnizim i personalizuar i krijuar për ty. Duke përfshirë lajmet, sportet dhe motin.</translation>
 <translation id="1561849081734670621">Për të çaktivizuar Lockdown Mode në Chromium, çaktivizoje atë në iPhone.</translation>
@@ -145,6 +146,7 @@ Të dhënat e tua janë të enkriptuara me frazën tënde të kalimit. Fute atë
 <translation id="420541179527342563">Për të çaktivizuar Lockdown Mode në Chromium, çaktivizoje atë në iPad.</translation>
 <translation id="4272892696084633551">Ndihmo në përmirësimin e funksioneve dhe të cilësisë së funksionimit të Chrome</translation>
 <translation id="4302397443352897529">Cilësimet e Chromium</translation>
+<translation id="4304713468139749426">Menaxheri i fjalëkalimeve</translation>
 <translation id="4408912345039114853">Ekzekuto kontrollin e sigurisë në Chromium</translation>
 <translation id="4432744876818348753">Identifikohu për të përfituar sa më shumë nga Chromium.</translation>
 <translation id="4445228361214254027">Organizata jote e ka çaktivizuar aftësinë për të përdorur dhe ruajtur të dhënat e Chromium në "Llogarinë tënde të Google". Faqeshënuesit e rinj, fjalëkalimet etj. do të ruhen vetëm në këtë pajisje.</translation>
@@ -235,7 +237,6 @@ Gjëra për të pasur parasysh:
 <translation id="6154098560469640583">Përdor Chromium sa herë që troket te lidhjet në mesazhe, dokumente dhe aplikacione të tjera</translation>
 <translation id="6157162508956739031">Identifikohu me shpejtësi në aplikacione dhe sajte duke plotësuar automatikisht fjalëkalimet dhe çelësat e kalimit nga Chromium</translation>
 <translation id="6170619162539716595">Lejo që Chromium të përdorë Google Maps për të të dhënë udhëzime dhe informacione lokale për adresat e zbuluara.</translation>
-<translation id="6247557882553405851">Menaxheri i fjalëkalimeve i Google</translation>
 <translation id="6268381023930128611">Dëshiron të dalësh nga Chromium?</translation>
 <translation id="6301717043141881464">Për t'i marrë me lehtësi fjalëkalimet e tua të ruajtura në aplikacionet e tjera, zgjidh Chromium për "Plotësimin automatik"</translation>
 <translation id="6324041800010509197">Vizito rrjetën e skedave në Chromium</translation>

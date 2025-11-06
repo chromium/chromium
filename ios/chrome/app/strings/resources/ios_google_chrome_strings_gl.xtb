@@ -169,9 +169,11 @@ Espera uns minutiños antes de pechar a sesión. Se a pechas agora, estes datos 
 <translation id="5162467219239570114">A versión de Chrome está desactualizada. Se non hai dispoñible ningunha actualización na <ph name="BEGIN_LINK" />tenda de aplicacións<ph name="END_LINK" />, é posible que o teu dispositivo xa non sexa compatible coas novas versións de Chrome.</translation>
 <translation id="5184329579814168207">Abrir en Chrome</translation>
 <translation id="5190139289262548459">A túa organización, <ph name="DOMAIN" />, xestiona a conta na que tes a sesión iniciada e o xeito no que se usa Chrome.</translation>
+<translation id="5209238444239954363">Chrome non puido comprobar se hai actualizacións. Téntao de novo máis tarde.</translation>
 <translation id="5305440589062022504">Abre o xestor de contrasinais en Chrome</translation>
 <translation id="5310957470610282541">Algúns dos teus datos de Chrome aínda non se gardaron na túa Conta de Google.
 Espera uns minutiños antes de pechar a sesión. Se a pechas agora, estes datos eliminaranse.</translation>
+<translation id="5342685492141499976">Os teus datos gardaranse no xestor de contrasinais de Google para <ph name="USER_EMAIL" /></translation>
 <translation id="5389212809648216794">Google Chrome non pode usar a cámara porque a está usando outra aplicación</translation>
 <translation id="5395376160638294582">Asegúrate de poder usar sempre os datos de Chrome na túa Conta de Google</translation>
 <translation id="5404252374083197467">Queres definir Chrome como navegador predeterminado?</translation>
@@ -199,6 +201,7 @@ Espera uns minutiños antes de pechar a sesión. Se a pechas agora, estes datos 
 <translation id="5808435672482059465">Ver historial de Chrome</translation>
 <translation id="5833027901704861726">Algúns dos teus datos de Chrome aínda non se gardaron en <ph name="EMAIL" />.
 Espera uns minutiños antes de cambiar de conta. Se a cambias agora, eliminaranse eses datos.</translation>
+<translation id="5853754888722423892">Importar ao xestor de contrasinais de Google</translation>
 <translation id="5998675059699164418">A túa organización esixe que inicies para usar Chrome.</translation>
 <translation id="6021312115739110405">Un feed personalizado creado para ti por Google. Incluirá noticias, deportes e o tempo.</translation>
 <translation id="6022659036123304283">Personaliza Chrome</translation>

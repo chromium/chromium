@@ -677,6 +677,7 @@
 <translation id="3642060527569456384">Varaqlar guruhi barcha qurilmalarda avtomatik saqlanadi va yangilanib turadi.</translation>
 <translation id="3643338347976071250">{count,plural, =1{{count} ta parol faqat mazkur qurilmada saqlangan. Boshqa qurilmalarda foydalanish uchun uni Google hisobingizda ({email}) saqlang.}other{{count} ta parol faqat bu qurilmaga saqlanadi. Boshqa qurilmalarda foydalanish uchun ularni Google hisobingizda ({email}) saqlang.}}</translation>
 <translation id="3659297405161482746">Hech qanday toʻlov usuli topilmadi</translation>
+<translation id="3662966164093827811">{count,plural, =1{1 band tanlandi}other{# band belgilandi}}</translation>
 <translation id="3668816008081204991">Saqlangan sahifalar berkitilgan</translation>
 <translation id="3670030362669914947">Raqam</translation>
 <translation id="3679163990085797665">Ochilganlarni oʻchirish</translation>
@@ -1354,6 +1355,7 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="6172428250974276014">Ha, maʼlumotlar alohida saqlansin (tavsiya etiladi)</translation>
 <translation id="6173499589275053515">Parol Google hisobingizga (<ph name="EMAIL" />) saqlandi</translation>
 <translation id="6181969657494915430">Qidiruv ekrani</translation>
+<translation id="6182851675249594487">Moslangan rang mavzusi</translation>
 <translation id="6187302354554850004">Oxirgi sinxronizatsiya: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">Yaratilgan: <ph name="DATE" /></translation>
 <translation id="6189413832092199491">O‘qilmagan</translation>

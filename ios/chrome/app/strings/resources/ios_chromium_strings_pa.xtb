@@ -25,6 +25,7 @@
 <translation id="1502360822835740515">Chromium ਨੂੰ ਆਪਣਾ ਪੂਰਵ-ਨਿਰਧਾਰਤ ਬ੍ਰਾਊਜ਼ਰ ਬਣਾਓ</translation>
 <translation id="1503199973012840174">ਤੁਹਾਡੇ Chromium ਦਾ ਵਰਜਨ ਪੁਰਾਣਾ ਹੈ। ਸੁਰੱਖਿਅਤ ਰਹਿਣ ਲਈ ਇਸਨੂੰ ਅੱਪਡੇਟ ਕਰੋ।</translation>
 <translation id="1515748263297244785">iPad ਲਈ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਤੌਰ 'ਤੇ Chromium ਦੀ ਵਰਤੋਂ ਕਰੋ</translation>
+<translation id="1530961174488670696">Chromium ਅੱਪਡੇਟਾਂ ਲਈ ਜਾਂਚ ਨਹੀਂ ਕਰ ਸਕਿਆ। ਬਾਅਦ ਵਿੱਚ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="1531155317299575425">Chromium ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰਨ ਲਈ ਪ੍ਰੋਂਪਟਾਂ ਨੂੰ ਦਿਖਾਉਂਦਾ ਹੈ।</translation>
 <translation id="1553657876656159572">ਤੁਹਾਡੇ ਲਈ ਬਣਾਈ ਗਈ ਇੱਕ ਵਿਉਂਤੀ ਫ਼ੀਡ। ਜਿਸ ਵਿੱਚ ਖਬਰਾਂ, ਖੇਡਾਂ ਅਤੇ ਮੌਸਮ ਸੰਬੰਧੀ ਜਾਣਕਾਰੀ ਸ਼ਾਮਲ ਹੈ।</translation>
 <translation id="1561849081734670621">Chromium ਵਿੱਚ ਲਾਕਡਾਊਨ ਮੋਡ ਨੂੰ ਬੰਦ ਕਰਨ ਲਈ, ਆਪਣੇ iPhone 'ਤੇ ਇਸਨੂੰ ਬੰਦ ਕਰੋ।</translation>
@@ -145,6 +146,7 @@
 <translation id="420541179527342563">Chromium ਵਿੱਚ ਲਾਕਡਾਊਨ ਮੋਡ ਨੂੰ ਬੰਦ ਕਰਨ ਲਈ, ਆਪਣੇ iPad 'ਤੇ ਇਸਨੂੰ ਬੰਦ ਕਰੋ।</translation>
 <translation id="4272892696084633551">Chromium ਦੀਆਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਅਤੇ ਕਾਰਗੁਜ਼ਾਰੀ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਵਿੱਚ ਮਦਦ ਕਰੋ</translation>
 <translation id="4302397443352897529">Chromium ਸੈਟਿੰਗਾਂ</translation>
+<translation id="4304713468139749426">ਪਾਸਵਰਡ ਪ੍ਰਬੰਧਕ</translation>
 <translation id="4408912345039114853">Chromium ਸੁਰੱਖਿਆ ਜਾਂਚ ਚਲਾਓ</translation>
 <translation id="4432744876818348753">Chromium ਦਾ ਵੱਧ ਤੋਂ ਵੱਧ ਲਾਹਾ ਲੈਣ ਲਈ ਸਾਈਨ-ਇਨ ਕਰੋ।</translation>
 <translation id="4445228361214254027">ਤੁਹਾਡੀ ਸੰਸਥਾ ਨੇ ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿੱਚ Chromium ਡਾਟੇ ਨੂੰ ਵਰਤਣ ਅਤੇ ਰੱਖਿਅਤ ਕਰਨ ਦੀ ਯੋਗਤਾ ਨੂੰ ਬੰਦ ਕਰ ਦਿੱਤਾ। ਨਵੇਂ ਬੁੱਕਮਾਰਕਾਂ, ਪਾਸਵਰਡਾਂ ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ ਨੂੰ ਸਿਰਫ਼ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਰੱਖਿਅਤ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
@@ -236,7 +238,7 @@
 <translation id="6154098560469640583">ਸੁਨੇਹਿਆਂ, ਦਸਤਾਵੇਜ਼ਾਂ ਅਤੇ ਹੋਰ ਐਪਾਂ ਵਿੱਚ ਦਿੱਤੇ ਲਿੰਕਾਂ 'ਤੇ ਟੈਪ ਕਰ ਕੇ ਕਿਸੇ ਵੀ ਵੇਲੇ Chromium ਦੀ ਵਰਤੋਂ ਕਰੋ।</translation>
 <translation id="6157162508956739031">Chromium ਤੋਂ ਆਪਣੇ ਪਾਸਵਰਡਾਂ ਅਤੇ ਪਾਸਕੀਆਂ ਨੂੰ ਆਟੋਫਿਲ ਕਰਨ ਦੀ ਸੁਵਿਧਾ ਨੂੰ ਚਾਲੂ ਕਰ ਕੇ ਐਪਾਂ ਅਤੇ ਸਾਈਟਾਂ ਵਿੱਚ ਤੇਜ਼ੀ ਨਾਲ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="6170619162539716595">ਪਛਾਣੇ ਗਏ ਪਤਿਆਂ 'ਤੇ ਤੁਹਾਨੂੰ ਦਿਸ਼ਾਵਾਂ ਅਤੇ ਸਥਾਨਕ ਜਾਣਕਾਰੀ ਦੇਣ ਲਈ, Chromium ਨੂੰ Google Maps ਵਰਤਣ ਦੀ ਆਗਿਆ ਦਿਓ।</translation>
-<translation id="6247557882553405851">Google Password Manager</translation>
+<translation id="6244277266078678766">ਤੁਹਾਡੇ ਡਾਟੇ ਨੂੰ <ph name="USER_EMAIL" /> ਲਈ Password Manager ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਜਾਵੇਗਾ</translation>
 <translation id="6268381023930128611">ਕੀ Chromium ਤੋਂ ਸਾਈਨ-ਆਊਟ ਹੋਣਾ ਹੈ?</translation>
 <translation id="6301717043141881464">ਆਪਣੇ ਰੱਖਿਅਤ ਕੀਤੇ ਪਾਸਵਰਡ ਆਪਣੀਆਂ ਹੋਰ ਐਪਾਂ ਵਿੱਚ ਆਸਾਨੀ ਨਾਲ ਪ੍ਰਾਪਤ ਕਰਨ ਵਾਸਤੇ, ਆਟੋਫਿਲ ਲਈ Chromium ਦੀ ਚੋਣ ਕਰੋ</translation>
 <translation id="6324041800010509197">Chromium ਵਿੱਚ ਟੈਬ ਗਰਿੱਡ 'ਤੇ ਜਾਓ</translation>
@@ -314,6 +316,7 @@
 <translation id="8119542592987737574">ਆਪਣੇ iPhone ਦੀ ਹੋਮ ਸਕ੍ਰੀਨ ਡੌਕ ਤੋਂ Chromium ਤੱਕ ਵਧੇਰੇ ਤੇਜ਼ੀ ਨਾਲ ਪਹੁੰਚ ਕਰੋ।</translation>
 <translation id="8164086860209325020">Chromium ਸੈਟਿੰਗਾਂ 'ਤੇ ਜਾਓ</translation>
 <translation id="8197822717502700527">ਤੁਸੀਂ ਹੁਣ ਆਪਣੇ ਡੀਵਾਈਸ 'ਤੇ Chromium ਦਾ ਵੱਧ ਤੋਂ ਵੱਧ ਲਾਹਾ ਲਓਗੇ।</translation>
+<translation id="8236210361418193126">Password Manager ਵਿੱਚ ਆਯਾਤ ਕਰੋ</translation>
 <translation id="8254729934443216898">ਨਵੀਆਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਦੀ ਪੜਚੋਲ ਕਰੋ ਜੋ Chromium ਦਾ ਵੱਧ ਤੋਂ ਵੱਧ ਲਾਹਾ ਲੈਣ ਵਿੱਚ ਤੁਹਾਡੀ ਮਦਦ ਕਰਦੀਆਂ ਹਨ।</translation>
 <translation id="8293572045658095405">ਤੁਸੀਂ Chromium ਦੇ ਇਨਕੋਗਨਿਟੋ ਮੋਡ ਵਿੱਚ ਹੋ</translation>
 <translation id="830951810931292870">Chromium ਵਿੱਚ ਦਾਖਲ ਕੀਤੇ URL ਨੂੰ ਇਨਕੋਗਨਿਟੋ ਵਿੱਚ ਖੋਲ੍ਹਦਾ ਹੈ।</translation>
