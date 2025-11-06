@@ -39,10 +39,6 @@
                 "shards": 2,
                 "try_builder": "android-x86-rel"
             },
-            "webkit_unit_tests": {
-                "shards": 5,
-                "try_builder": "android-x86-rel"
-            },
             "webview_instrumentation_test_apk": {
                 "shards": 12,
                 "try_builder": "android-x86-rel"
@@ -192,10 +188,6 @@
             "unit_tests": {
                 "shards": 9,
                 "try_builder": "linux_chromium_asan_rel_ng"
-            },
-            "webkit_unit_tests_v2": {
-                "shards": 2,
-                "try_builder": "linux_chromium_asan_rel_ng"
             }
         },
         "Linux TSan Tests": {
@@ -225,14 +217,6 @@
             },
             "unit_tests": {
                 "shards": 8,
-                "try_builder": "linux_chromium_tsan_rel_ng"
-            },
-            "webkit_unit_tests": {
-                "shards": 6,
-                "try_builder": "linux_chromium_tsan_rel_ng"
-            },
-            "webkit_unit_tests_v2": {
-                "shards": 4,
                 "try_builder": "linux_chromium_tsan_rel_ng"
             }
         }
