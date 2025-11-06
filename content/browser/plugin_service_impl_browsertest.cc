@@ -56,15 +56,17 @@ class PluginServiceImplBrowserTest : public ContentBrowserTest {
   base::FilePath profile_dir_;
 };
 
-IN_PROC_BROWSER_TEST_F(PluginServiceImplBrowserTest, GetPluginInfoByPath) {
+IN_PROC_BROWSER_TEST_F(PluginServiceImplBrowserTest,
+                       GetPluginInfoByPathForTesting) {
   RegisterFakePlugin();
 
   PluginServiceImpl* service = PluginServiceImpl::GetInstance();
 
-  WebPluginInfo plugin_info;
-  ASSERT_TRUE(service->GetPluginInfoByPath(plugin_path_, &plugin_info));
+  std::optional<WebPluginInfo> plugin_info =
+      service->GetPluginInfoByPathForTesting(plugin_path_);
+  ASSERT_TRUE(plugin_info.has_value());
 
-  EXPECT_EQ(plugin_path_, plugin_info.path);
+  EXPECT_EQ(plugin_path_, plugin_info.value().path);
 }
 
 }  // namespace content

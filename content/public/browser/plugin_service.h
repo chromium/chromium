@@ -5,6 +5,7 @@
 #ifndef CONTENT_PUBLIC_BROWSER_PLUGIN_SERVICE_H_
 #define CONTENT_PUBLIC_BROWSER_PLUGIN_SERVICE_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -71,11 +72,10 @@ class CONTENT_EXPORT PluginService {
                              WebPluginInfo* info,
                              std::string* actual_mime_type) = 0;
 
-  // Get plugin info by plugin path (including disabled plugins). Returns true
-  // if the plugin is found and WebPluginInfo has been filled in |info|. This
-  // will use cached data in the plugin list.
-  virtual bool GetPluginInfoByPath(const base::FilePath& plugin_path,
-                                   WebPluginInfo* info) = 0;
+  // Gets plugin info by plugin path (including disabled plugins). This will use
+  // cached data in the plugin list.
+  virtual std::optional<WebPluginInfo> GetPluginInfoByPathForTesting(
+      const base::FilePath& plugin_path) = 0;
 
   // Asynchronously loads plugins if necessary and then calls back to the
   // provided function on the calling sequence on completion.

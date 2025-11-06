@@ -117,8 +117,8 @@ bool PluginServiceImpl::GetPluginInfo(content::BrowserContext* browser_context,
   return false;
 }
 
-bool PluginServiceImpl::GetPluginInfoByPath(const base::FilePath& plugin_path,
-                                            WebPluginInfo* info) {
+std::optional<WebPluginInfo> PluginServiceImpl::GetPluginInfoByPathForTesting(
+    const base::FilePath& plugin_path) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   std::vector<WebPluginInfo> plugins;
@@ -126,12 +126,11 @@ bool PluginServiceImpl::GetPluginInfoByPath(const base::FilePath& plugin_path,
 
   for (const WebPluginInfo& plugin : plugins) {
     if (plugin.path == plugin_path) {
-      *info = plugin;
-      return true;
+      return plugin;
     }
   }
 
-  return false;
+  return std::nullopt;
 }
 
 void PluginServiceImpl::GetPlugins(GetPluginsCallback callback) {
