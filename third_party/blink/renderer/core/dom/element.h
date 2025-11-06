@@ -1902,6 +1902,9 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
       const QualifiedName& qname,
       AttributesToExcludeHashesFor attributes_to_exclude);
 
+  // IsAppearanceBase returns true if the appearance value from GetComputedStyle
+  // returns true when given to SupportsBaseAppearance.
+  bool IsAppearanceBase() const;
   enum class BaseAppearanceValue { kBaseSelect, kBase };
   // Returns true if this element supports base appearance given a value for the
   // appearance property, such as `base` or `base-select`.

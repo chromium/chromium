@@ -12968,6 +12968,13 @@ void Element::VerifyBloomFilterTreeConsistencyIncludingChildren() const {
 }
 #endif
 
+bool Element::IsAppearanceBase() const {
+  if (const ComputedStyle* style = GetComputedStyle()) {
+    return SupportsBaseAppearance(style->EffectiveAppearance());
+  }
+  return false;
+}
+
 namespace {
 std::optional<Element::BaseAppearanceValue> ToBaseAppearanceValue(
     AppearanceValue appearance_value) {

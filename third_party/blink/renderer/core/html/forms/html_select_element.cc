@@ -1779,10 +1779,6 @@ bool HTMLSelectElement::IsPopoverPickerElement(const Element* element) {
   return false;
 }
 
-bool HTMLSelectElement::IsAppearanceBase() const {
-  return select_type_->IsAppearanceBase();
-}
-
 bool HTMLSelectElement::IsAppearanceBasePicker() const {
   return select_type_->IsAppearanceBasePicker();
 }

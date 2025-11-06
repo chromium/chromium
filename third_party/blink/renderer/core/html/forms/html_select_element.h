@@ -290,24 +290,23 @@ class CORE_EXPORT HTMLSelectElement final
   bool SupportsBaseAppearanceInternal(BaseAppearanceValue) const override;
 
   // <select> supports appearance:base-select on both the main element and
-  // ::picker(select). IsAppearanceBase returns true if the main element has
-  // base appearance, and IsAppearanceBasePicker returns true if
+  // ::picker(select). Element::IsAppearanceBase returns true if the main
+  // element has base appearance, and IsAppearanceBasePicker returns true if
   // ::picker(select) has base appearance.
   //
   // If this select is rendered as an in-page list of options, where
   // ListBoxSelectType is used and UsesMenuList() returns false,
   // IsAppearanceBasePicker will always return false because there is no picker.
-  // IsAppearanceBase is used to control all base appearance behavior in this
-  // case.
+  // Element::IsAppearanceBase is used to control all base appearance behavior
+  // in this case.
   //
   // If this select is rendered as a button with a popup, where
   // MenuListSelectType is used and UsesMenuList() returns true,
   // IsAppearanceBasePicker will only return true if both the select element and
-  // its ::picker(select) have appearance:base-select. IsAppearanceBase should
-  // be used for code which is concerned with the in-page button part, and
-  // IsAppearanceBasePicker should be used for code which is concerned with the
-  // popup that shows options.
-  bool IsAppearanceBase() const;
+  // its ::picker(select) have appearance:base-select. Element::IsAppearanceBase
+  // should be used for code which is concerned with the in-page button part,
+  // and IsAppearanceBasePicker should be used for code which is concerned with
+  // the popup that shows options.
   bool IsAppearanceBasePicker() const;
 
   // Depending on the HTML and CSS set on this element, as well as the

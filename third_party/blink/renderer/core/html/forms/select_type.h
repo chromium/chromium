@@ -68,7 +68,6 @@ class SelectType : public GarbageCollected<SelectType> {
   virtual void ManuallyAssignSlots() = 0;
   virtual HTMLButtonElement* SlottedButton() const = 0;
   virtual HTMLElement* PopoverPickerElement() const = 0;
-  virtual bool IsAppearanceBase() const = 0;
   virtual bool IsAppearanceBasePicker() const = 0;
   virtual bool PickerIsPopover() const = 0;
   virtual void SetIsAppearanceBasePickerForDisplayNone(bool) = 0;
