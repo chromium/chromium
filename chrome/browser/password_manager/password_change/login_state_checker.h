@@ -100,6 +100,7 @@ class LoginStateChecker : public content::WebContentsObserver {
   std::unique_ptr<AnnotatedPageContentCapturer> capturer_;
 
   // Whether a server request is ongoing.
+  const base::Time creation_time_;
   bool is_request_in_flight_ = false;
   std::optional<optimization_guide::AIPageContentResult> cached_page_content_;
   const raw_ref<ModelQualityLogsUploader> logs_uploader_;

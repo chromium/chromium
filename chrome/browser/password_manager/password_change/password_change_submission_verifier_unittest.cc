@@ -152,3 +152,18 @@ TEST_F(PasswordChangeSubmissionVerifierTest,
           kVerifySubmissionStep,
       1);
 }
+
+TEST_F(PasswordChangeSubmissionVerifierTest, DurationRecordedOnDestruction) {
+  auto verifier = std::make_unique<PasswordChangeSubmissionVerifier>(
+      web_contents(), logs_uploader());
+
+  task_environment()->FastForwardBy(base::Milliseconds(4543));
+
+  verifier.reset();
+  EXPECT_EQ(4543, logs_uploader()
+                      ->GetFinalLog()
+                      .password_change_submission()
+                      .quality()
+                      .verify_submission()
+                      .request_latency_ms());
+}

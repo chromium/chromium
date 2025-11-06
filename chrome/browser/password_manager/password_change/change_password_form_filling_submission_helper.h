@@ -109,7 +109,6 @@ class ChangePasswordFormFillingSubmissionHelper {
   OptimizationGuideKeyedService* GetOptimizationService();
 
   void OnExecutionResponseCallback(
-      base::Time request_time,
       optimization_guide::OptimizationGuideModelExecutionResult
           execution_result,
       std::unique_ptr<
@@ -124,6 +123,8 @@ class ChangePasswordFormFillingSubmissionHelper {
 
   void OnChangePasswordFormFound(
       password_manager::PasswordFormManager* form_manager);
+
+  std::optional<base::Time> creation_time_;
 
   const raw_ptr<content::WebContents> web_contents_ = nullptr;
   const raw_ptr<password_manager::PasswordManagerClient> client_ = nullptr;

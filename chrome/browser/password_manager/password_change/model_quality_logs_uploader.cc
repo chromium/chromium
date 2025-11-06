@@ -295,8 +295,7 @@ void ModelQualityLogsUploader::SetLoggedInCheckQuality(
 void ModelQualityLogsUploader::SetOpenFormQuality(
     const std::optional<optimization_guide::proto::PasswordChangeResponse>&
         response,
-    std::unique_ptr<LoggingData> logging_data,
-    base::Time server_request_start_time) {
+    std::unique_ptr<LoggingData> logging_data) {
   if (!logging_data) {
     return;
   }
@@ -334,15 +333,12 @@ void ModelQualityLogsUploader::SetOpenFormQuality(
 
   open_form_quality->mutable_request()->CopyFrom(logging_data->request());
   open_form_quality->set_status(quality_status);
-  open_form_quality->set_request_latency_ms(
-      ComputeRequestLatencyMs(server_request_start_time));
 }
 
 void ModelQualityLogsUploader::SetSubmitFormQuality(
     const std::optional<optimization_guide::proto::PasswordChangeResponse>&
         response,
-    std::unique_ptr<LoggingData> logging_data,
-    base::Time server_request_start_time) {
+    std::unique_ptr<LoggingData> logging_data) {
   if (!logging_data) {
     return;
   }
@@ -370,15 +366,12 @@ void ModelQualityLogsUploader::SetSubmitFormQuality(
 
   submit_form_quality->mutable_request()->CopyFrom(logging_data->request());
   submit_form_quality->set_status(quality_status);
-  submit_form_quality->set_request_latency_ms(
-      ComputeRequestLatencyMs(server_request_start_time));
 }
 
 void ModelQualityLogsUploader::SetVerifySubmissionQuality(
     const std::optional<optimization_guide::proto::PasswordChangeResponse>&
         response,
-    std::unique_ptr<LoggingData> logging_data,
-    base::Time server_request_start_time) {
+    std::unique_ptr<LoggingData> logging_data) {
   if (!logging_data) {
     return;
   }
@@ -402,8 +395,6 @@ void ModelQualityLogsUploader::SetVerifySubmissionQuality(
   verify_submission_quality->mutable_request()->CopyFrom(
       logging_data->request());
   verify_submission_quality->set_status(quality_status);
-  verify_submission_quality->set_request_latency_ms(
-      ComputeRequestLatencyMs(server_request_start_time));
 }
 
 void ModelQualityLogsUploader::FormNotDetectedAfterOpening() {
@@ -413,15 +404,6 @@ void ModelQualityLogsUploader::FormNotDetectedAfterOpening() {
       ->set_status(
           QualityStatus::
               PasswordChangeQuality_StepQuality_SubmissionStatus_FORM_NOT_FOUND);
-}
-
-void ModelQualityLogsUploader::SetOpenFormUnexpectedFailure() {
-  final_log_data_.mutable_password_change_submission()
-      ->mutable_quality()
-      ->mutable_open_form()
-      ->set_status(
-          QualityStatus::
-              PasswordChangeQuality_StepQuality_SubmissionStatus_UNEXPECTED_STATE);
 }
 
 void ModelQualityLogsUploader::SetFlowInterrupted(
@@ -468,6 +450,12 @@ void ModelQualityLogsUploader::SetChangePasswordFormData(
   optimization_guide::proto::PasswordChangeQuality* quality =
       final_log_data_.mutable_password_change_submission()->mutable_quality();
   SetFormData(*quality->mutable_change_password_form_data(), password_form);
+}
+
+void ModelQualityLogsUploader::SetStepDuration(FlowStep step,
+                                               base::TimeDelta duration) {
+  GetStepQuality(step, final_log_data_)
+      ->set_request_latency_ms(duration.InMilliseconds());
 }
 
 // static

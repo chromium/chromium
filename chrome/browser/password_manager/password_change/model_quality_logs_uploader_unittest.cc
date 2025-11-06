@@ -330,7 +330,6 @@ class ModelQualityLogsUploaderTest : public ChromeRenderViewHostTestHarness {
 };
 
 TEST_F(ModelQualityLogsUploaderTest, VerifySubmissionSucessLog) {
-  const base::Time fake_start_time = base::Time::Now();
   ModelQualityLogsUploader logs_uploader(web_contents(),
                                          GURL(kChangePasswordURL));
   optimization_guide::proto::PasswordChangeResponse response;
@@ -338,8 +337,7 @@ TEST_F(ModelQualityLogsUploaderTest, VerifySubmissionSucessLog) {
       PasswordChangeOutcome::
           PasswordChangeSubmissionData_PasswordChangeOutcome_SUCCESSFUL_OUTCOME);
   logs_uploader.SetVerifySubmissionQuality(
-      std::optional(response), CreateLoggingData(verify_submission_request_),
-      fake_start_time);
+      std::optional(response), CreateLoggingData(verify_submission_request_));
   CheckVerifySubmissionStatus(
       logs_uploader.GetFinalLog(), verify_submission_request_, response,
       QualityStatus::
@@ -348,7 +346,6 @@ TEST_F(ModelQualityLogsUploaderTest, VerifySubmissionSucessLog) {
 }
 
 TEST_F(ModelQualityLogsUploaderTest, OpenFormSuccessLog) {
-  const base::Time fake_start_time = base::Time::Now();
   ModelQualityLogsUploader logs_uploader(web_contents(),
                                          GURL(kChangePasswordURL));
   optimization_guide::proto::PasswordChangeResponse response;
@@ -356,8 +353,7 @@ TEST_F(ModelQualityLogsUploaderTest, OpenFormSuccessLog) {
       PageType::OpenFormResponseData_PageType_SETTINGS_PAGE);
   response.mutable_open_form_data()->set_dom_node_id_to_click(123);
   logs_uploader.SetOpenFormQuality(std::optional(response),
-                                   CreateLoggingData(open_form_request_),
-                                   fake_start_time);
+                                   CreateLoggingData(open_form_request_));
 
   CheckOpenFormStatus(
       logs_uploader.GetFinalLog(), open_form_request_, response,
@@ -366,15 +362,13 @@ TEST_F(ModelQualityLogsUploaderTest, OpenFormSuccessLog) {
 }
 
 TEST_F(ModelQualityLogsUploaderTest, OpenFormElementNotFoundLog) {
-  const base::Time fake_start_time = base::Time::Now();
   ModelQualityLogsUploader logs_uploader(web_contents(),
                                          GURL(kChangePasswordURL));
   optimization_guide::proto::PasswordChangeResponse response;
   response.mutable_open_form_data()->set_page_type(
       PageType::OpenFormResponseData_PageType_SETTINGS_PAGE);
   logs_uploader.SetOpenFormQuality(std::optional(response),
-                                   CreateLoggingData(open_form_request_),
-                                   fake_start_time);
+                                   CreateLoggingData(open_form_request_));
   CheckOpenFormStatus(
       logs_uploader.GetFinalLog(), open_form_request_, response,
       QualityStatus::
@@ -382,15 +376,13 @@ TEST_F(ModelQualityLogsUploaderTest, OpenFormElementNotFoundLog) {
 }
 
 TEST_F(ModelQualityLogsUploaderTest, OpenFormUnexpectedStateLog) {
-  const base::Time fake_start_time = base::Time::Now();
   ModelQualityLogsUploader logs_uploader(web_contents(),
                                          GURL(kChangePasswordURL));
   optimization_guide::proto::PasswordChangeResponse response;
   response.mutable_open_form_data()->set_page_type(
       PageType::OpenFormResponseData_PageType_LOG_IN_PAGE);
   logs_uploader.SetOpenFormQuality(std::optional(response),
-                                   CreateLoggingData(open_form_request_),
-                                   fake_start_time);
+                                   CreateLoggingData(open_form_request_));
   CheckOpenFormStatus(
       logs_uploader.GetFinalLog(), open_form_request_, response,
       QualityStatus::
@@ -398,14 +390,12 @@ TEST_F(ModelQualityLogsUploaderTest, OpenFormUnexpectedStateLog) {
 }
 
 TEST_F(ModelQualityLogsUploaderTest, SubmitFormSuccessLog) {
-  const base::Time fake_start_time = base::Time::Now();
   ModelQualityLogsUploader logs_uploader(web_contents(),
                                          GURL(kChangePasswordURL));
   optimization_guide::proto::PasswordChangeResponse response;
   response.mutable_submit_form_data()->set_dom_node_id_to_click(123);
   logs_uploader.SetSubmitFormQuality(std::optional(response),
-                                     CreateLoggingData(submit_form_request_),
-                                     fake_start_time);
+                                     CreateLoggingData(submit_form_request_));
   CheckSubmitFormStatus(
       logs_uploader.GetFinalLog(), submit_form_request_, response,
       QualityStatus::
@@ -413,13 +403,11 @@ TEST_F(ModelQualityLogsUploaderTest, SubmitFormSuccessLog) {
 }
 
 TEST_F(ModelQualityLogsUploaderTest, SubmitFormElementNotFoundLog) {
-  const base::Time fake_start_time = base::Time::Now();
   ModelQualityLogsUploader logs_uploader(web_contents(),
                                          GURL(kChangePasswordURL));
   optimization_guide::proto::PasswordChangeResponse response;
   logs_uploader.SetSubmitFormQuality(std::optional(response),
-                                     CreateLoggingData(submit_form_request_),
-                                     fake_start_time);
+                                     CreateLoggingData(submit_form_request_));
   CheckSubmitFormStatus(
       logs_uploader.GetFinalLog(), submit_form_request_, response,
       QualityStatus::
@@ -427,7 +415,6 @@ TEST_F(ModelQualityLogsUploaderTest, SubmitFormElementNotFoundLog) {
 }
 
 TEST_F(ModelQualityLogsUploaderTest, MergeLogsDoesNotOverwrite) {
-  const base::Time fake_start_time = base::Time::Now();
   ModelQualityLogsUploader logs_uploader(web_contents(),
                                          GURL(kChangePasswordURL));
   // Set open form data.
@@ -436,22 +423,20 @@ TEST_F(ModelQualityLogsUploaderTest, MergeLogsDoesNotOverwrite) {
       PageType::OpenFormResponseData_PageType_SETTINGS_PAGE);
   open_form_response.mutable_open_form_data()->set_dom_node_id_to_click(123);
   logs_uploader.SetOpenFormQuality(open_form_response,
-                                   CreateLoggingData(open_form_request_),
-                                   fake_start_time);
+                                   CreateLoggingData(open_form_request_));
 
   // Set submit form data.
   optimization_guide::proto::PasswordChangeResponse submit_form_response;
   submit_form_response.mutable_submit_form_data()->set_dom_node_id_to_click(
       123);
   logs_uploader.SetSubmitFormQuality(submit_form_response,
-                                     CreateLoggingData(submit_form_request_),
-                                     fake_start_time);
+                                     CreateLoggingData(submit_form_request_));
 
   // Set verify submission data.
   optimization_guide::proto::PasswordChangeResponse verify_submission_response;
   logs_uploader.SetVerifySubmissionQuality(
-      verify_submission_response, CreateLoggingData(verify_submission_request_),
-      fake_start_time);
+      verify_submission_response,
+      CreateLoggingData(verify_submission_request_));
 
   // Verify all steps have quality data and it is not overwritten.
   const optimization_guide::proto::LogAiDataRequest final_log =
@@ -470,53 +455,6 @@ TEST_F(ModelQualityLogsUploaderTest, MergeLogsDoesNotOverwrite) {
       QualityStatus::
           PasswordChangeQuality_StepQuality_SubmissionStatus_ACTION_SUCCESS,
       FinalModelStatus::FINAL_MODEL_STATUS_SUCCESS);
-}
-
-TEST_F(ModelQualityLogsUploaderTest, LatencyRecordedForAllSteps) {
-  const base::Time fake_start_time = base::Time::Now();
-  ModelQualityLogsUploader logs_uploader(web_contents(),
-                                         GURL(kChangePasswordURL));
-  constexpr int64_t expected_latency_ms = 2;
-  constexpr base::TimeDelta latency = base::Milliseconds(expected_latency_ms);
-
-  task_environment()->FastForwardBy(latency);
-  // Set open form data.
-  optimization_guide::proto::PasswordChangeResponse open_form_response;
-
-  logs_uploader.SetOpenFormQuality(open_form_response,
-                                   CreateLoggingData(open_form_request_),
-                                   fake_start_time);
-
-  // Set submit form data.
-  optimization_guide::proto::PasswordChangeResponse submit_form_response;
-  logs_uploader.SetSubmitFormQuality(submit_form_response,
-                                     CreateLoggingData(submit_form_request_),
-                                     fake_start_time);
-
-  // Set verify submission data.
-  optimization_guide::proto::PasswordChangeResponse verify_submission_response;
-  logs_uploader.SetVerifySubmissionQuality(
-      verify_submission_response, CreateLoggingData(verify_submission_request_),
-      fake_start_time);
-
-  // Verify that all steps have latency set.
-  const optimization_guide::proto::LogAiDataRequest final_log =
-      logs_uploader.GetFinalLog();
-  EXPECT_EQ(final_log.password_change_submission()
-                .quality()
-                .open_form()
-                .request_latency_ms(),
-            expected_latency_ms);
-  EXPECT_EQ(final_log.password_change_submission()
-                .quality()
-                .open_form()
-                .request_latency_ms(),
-            expected_latency_ms);
-  EXPECT_EQ(final_log.password_change_submission()
-                .quality()
-                .open_form()
-                .request_latency_ms(),
-            expected_latency_ms);
 }
 
 TEST_F(ModelQualityLogsUploaderTest, LoginCheckSkipped) {
@@ -680,7 +618,6 @@ TEST_F(ModelQualityLogsUploaderTest, VerifySubmissionFlowInterrupted) {
 }
 
 TEST_F(ModelQualityLogsUploaderTest, OpenFormSkipped) {
-  const base::Time fake_start_time = base::Time::Now();
   ModelQualityLogsUploader logs_uploader(web_contents(),
                                          GURL(kChangePasswordURL));
   // Set initial open form data for ACTION_SUCCESS status.
@@ -690,8 +627,7 @@ TEST_F(ModelQualityLogsUploaderTest, OpenFormSkipped) {
       PageType::OpenFormResponseData_PageType_SETTINGS_PAGE);
   open_form_response.mutable_open_form_data()->set_dom_node_id_to_click(123);
   logs_uploader.SetOpenFormQuality(open_form_response,
-                                   CreateLoggingData(open_form_request_),
-                                   fake_start_time);
+                                   CreateLoggingData(open_form_request_));
   const optimization_guide::proto::LogAiDataRequest initial_log =
       logs_uploader.GetFinalLog();
   CheckOpenFormStatus(
@@ -710,7 +646,6 @@ TEST_F(ModelQualityLogsUploaderTest, OpenFormSkipped) {
 }
 
 TEST_F(ModelQualityLogsUploaderTest, SubmitFormSkipped) {
-  const base::Time fake_start_time = base::Time::Now();
   ModelQualityLogsUploader logs_uploader(web_contents(),
                                          GURL(kChangePasswordURL));
   // Set initial submit form data for ACTION_SUCCESS status.
@@ -718,8 +653,7 @@ TEST_F(ModelQualityLogsUploaderTest, SubmitFormSkipped) {
   submit_form_response.mutable_submit_form_data()->set_dom_node_id_to_click(
       123);
   logs_uploader.SetSubmitFormQuality(submit_form_response,
-                                     CreateLoggingData(submit_form_request_),
-                                     fake_start_time);
+                                     CreateLoggingData(submit_form_request_));
   const optimization_guide::proto::LogAiDataRequest initial_log =
       logs_uploader.GetFinalLog();
   CheckSubmitFormStatus(
@@ -835,7 +769,6 @@ TEST_F(ModelQualityLogsUploaderTest,
 }
 
 TEST_F(ModelQualityLogsUploaderTest, FormNotDetectedAfterOpening) {
-  const base::Time fake_start_time = base::Time::Now();
   ModelQualityLogsUploader logs_uploader(web_contents(),
                                          GURL(kChangePasswordURL));
   // Set initial open form data for ACTION_SUCCESS status.
@@ -845,8 +778,7 @@ TEST_F(ModelQualityLogsUploaderTest, FormNotDetectedAfterOpening) {
       PageType::OpenFormResponseData_PageType_SETTINGS_PAGE);
   open_form_response.mutable_open_form_data()->set_dom_node_id_to_click(123);
   logs_uploader.SetOpenFormQuality(open_form_response,
-                                   CreateLoggingData(open_form_request_),
-                                   fake_start_time);
+                                   CreateLoggingData(open_form_request_));
   const optimization_guide::proto::LogAiDataRequest initial_log =
       logs_uploader.GetFinalLog();
   CheckOpenFormStatus(
@@ -862,36 +794,6 @@ TEST_F(ModelQualityLogsUploaderTest, FormNotDetectedAfterOpening) {
       final_log, open_form_request_, open_form_response,
       QualityStatus::
           PasswordChangeQuality_StepQuality_SubmissionStatus_FORM_NOT_FOUND);
-}
-
-TEST_F(ModelQualityLogsUploaderTest, OpenFormUnexpectedFailure) {
-  const base::Time fake_start_time = base::Time::Now();
-  ModelQualityLogsUploader logs_uploader(web_contents(),
-                                         GURL(kChangePasswordURL));
-  // Set initial open form data for ACTION_SUCCESS status.
-  optimization_guide::proto::PasswordChangeResponse open_form_response;
-
-  open_form_response.mutable_open_form_data()->set_page_type(
-      PageType::OpenFormResponseData_PageType_SETTINGS_PAGE);
-  open_form_response.mutable_open_form_data()->set_dom_node_id_to_click(123);
-  logs_uploader.SetOpenFormQuality(open_form_response,
-                                   CreateLoggingData(open_form_request_),
-                                   fake_start_time);
-  const optimization_guide::proto::LogAiDataRequest initial_log =
-      logs_uploader.GetFinalLog();
-  CheckOpenFormStatus(
-      initial_log, open_form_request_, open_form_response,
-      QualityStatus::
-          PasswordChangeQuality_StepQuality_SubmissionStatus_ACTION_SUCCESS);
-
-  // Call function that overwrites the status to UNEXPECTED_STATE status.
-  logs_uploader.SetOpenFormUnexpectedFailure();
-  const optimization_guide::proto::LogAiDataRequest final_log =
-      logs_uploader.GetFinalLog();
-  CheckOpenFormStatus(
-      final_log, open_form_request_, open_form_response,
-      QualityStatus::
-          PasswordChangeQuality_StepQuality_SubmissionStatus_UNEXPECTED_STATE);
 }
 
 TEST_F(ModelQualityLogsUploaderTest, LogGeneralInformationSetOnCreation) {
@@ -910,7 +812,6 @@ TEST_F(ModelQualityLogsUploaderTest, LogGeneralInformationSetOnCreation) {
 }
 
 TEST_F(ModelQualityLogsUploaderTest, CompleteLogWithGeneralInformation) {
-  const base::Time fake_start_time = base::Time::Now();
   ChromeTranslateClient::CreateForWebContents(web_contents());
   const std::string expected_language = "bd";
   const std::string expected_country = "PE";
@@ -925,8 +826,7 @@ TEST_F(ModelQualityLogsUploaderTest, CompleteLogWithGeneralInformation) {
       PageType::OpenFormResponseData_PageType_SETTINGS_PAGE);
   open_form_response.mutable_open_form_data()->set_dom_node_id_to_click(123);
   logs_uploader.SetOpenFormQuality(open_form_response,
-                                   CreateLoggingData(open_form_request_),
-                                   fake_start_time);
+                                   CreateLoggingData(open_form_request_));
 
   const optimization_guide::proto::LogAiDataRequest final_log =
       logs_uploader.GetFinalLog();
@@ -1073,4 +973,68 @@ TEST_F(ModelQualityLogsUploaderTest, SetChangePasswordFormData) {
           .change_password_form_data();
 
   VerifyPasswordFormLoggedCorrectlyInProto(password_form, form_data);
+}
+
+TEST_F(ModelQualityLogsUploaderTest, DurationRecordedForLoginCheck) {
+  ModelQualityLogsUploader logs_uploader(web_contents(),
+                                         GURL(kChangePasswordURL));
+
+  logs_uploader.SetStepDuration(
+      FlowStep::PasswordChangeRequest_FlowStep_IS_LOGGED_IN_STEP,
+      base::Milliseconds(3453));
+
+  EXPECT_EQ(logs_uploader.GetFinalLog()
+                .password_change_submission()
+                .quality()
+                .logged_in_check()
+                .request_latency_ms(),
+            3453);
+}
+
+TEST_F(ModelQualityLogsUploaderTest, DurationRecordedForOpenForm) {
+  ModelQualityLogsUploader logs_uploader(web_contents(),
+                                         GURL(kChangePasswordURL));
+
+  logs_uploader.SetStepDuration(
+      FlowStep::PasswordChangeRequest_FlowStep_OPEN_FORM_STEP,
+      base::Milliseconds(3432));
+
+  EXPECT_EQ(logs_uploader.GetFinalLog()
+                .password_change_submission()
+                .quality()
+                .open_form()
+                .request_latency_ms(),
+            3432);
+}
+
+TEST_F(ModelQualityLogsUploaderTest, DurationRecordedForSubmitForm) {
+  ModelQualityLogsUploader logs_uploader(web_contents(),
+                                         GURL(kChangePasswordURL));
+
+  logs_uploader.SetStepDuration(
+      FlowStep::PasswordChangeRequest_FlowStep_SUBMIT_FORM_STEP,
+      base::Milliseconds(6345));
+
+  EXPECT_EQ(logs_uploader.GetFinalLog()
+                .password_change_submission()
+                .quality()
+                .submit_form()
+                .request_latency_ms(),
+            6345);
+}
+
+TEST_F(ModelQualityLogsUploaderTest, DurationRecordedForVerifySubmission) {
+  ModelQualityLogsUploader logs_uploader(web_contents(),
+                                         GURL(kChangePasswordURL));
+
+  logs_uploader.SetStepDuration(
+      FlowStep::PasswordChangeRequest_FlowStep_VERIFY_SUBMISSION_STEP,
+      base::Milliseconds(5332));
+
+  EXPECT_EQ(logs_uploader.GetFinalLog()
+                .password_change_submission()
+                .quality()
+                .verify_submission()
+                .request_latency_ms(),
+            5332);
 }

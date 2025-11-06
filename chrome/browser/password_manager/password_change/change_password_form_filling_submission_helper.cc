@@ -66,7 +66,8 @@ ChangePasswordFormFillingSubmissionHelper::
         password_manager::PasswordManagerClient* client,
         ModelQualityLogsUploader* logs_uploader,
         base::OnceCallback<void(bool)> callback)
-    : web_contents_(web_contents),
+    : creation_time_(base::Time::Now()),
+      web_contents_(web_contents),
       client_(client),
       logs_uploader_(logs_uploader),
       callback_(std::move(callback)) {
@@ -93,7 +94,14 @@ ChangePasswordFormFillingSubmissionHelper::
 }
 
 ChangePasswordFormFillingSubmissionHelper::
-    ~ChangePasswordFormFillingSubmissionHelper() = default;
+    ~ChangePasswordFormFillingSubmissionHelper() {
+  // Record duration in case the something went wrong before the helper reached
+  // Submit click.
+  if (creation_time_) {
+    logs_uploader_->SetStepDuration(kSubmitFormFlowStep,
+                                    base::Time::Now() - creation_time_.value());
+  }
+}
 
 void ChangePasswordFormFillingSubmissionHelper::FillChangePasswordForm(
     password_manager::PasswordFormManager* form_manager,
@@ -280,7 +288,6 @@ void ChangePasswordFormFillingSubmissionHelper::OnPageContentReceived(
   if (!content) {
     LogPageContentCaptureFailure(password_manager::metrics_util::
                                      PasswordChangeFlowStep::kSubmitFormStep);
-    logs_uploader_->SetOpenFormUnexpectedFailure();
     std::move(callback_).Run(false);
     return;
   }
@@ -294,7 +301,7 @@ void ChangePasswordFormFillingSubmissionHelper::OnPageContentReceived(
       request, /*execution_timeout=*/std::nullopt,
       base::BindOnce(&ChangePasswordFormFillingSubmissionHelper::
                          OnExecutionResponseCallback,
-                     weak_ptr_factory_.GetWeakPtr(), base::Time::Now()));
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 OptimizationGuideKeyedService*
@@ -304,7 +311,6 @@ ChangePasswordFormFillingSubmissionHelper::GetOptimizationService() {
 }
 
 void ChangePasswordFormFillingSubmissionHelper::OnExecutionResponseCallback(
-    base::Time request_time,
     optimization_guide::OptimizationGuideModelExecutionResult execution_result,
     std::unique_ptr<
         optimization_guide::proto::PasswordChangeSubmissionLoggingData>
@@ -317,8 +323,7 @@ void ChangePasswordFormFillingSubmissionHelper::OnExecutionResponseCallback(
         optimization_guide::proto::PasswordChangeResponse>(
         execution_result.response.value());
   }
-  logs_uploader_->SetSubmitFormQuality(response, std::move(logging_data),
-                                       request_time);
+  logs_uploader_->SetSubmitFormQuality(response, std::move(logging_data));
 
   if (!response) {
     std::move(callback_).Run(false);
@@ -332,6 +337,13 @@ void ChangePasswordFormFillingSubmissionHelper::OnExecutionResponseCallback(
     std::move(callback_).Run(false);
     return;
   }
+
+  CHECK(creation_time_);
+  logs_uploader_->SetStepDuration(kSubmitFormFlowStep,
+                                  base::Time::Now() - creation_time_.value());
+  // Reset creation_time_ to avoid recording duration the second time in
+  // destructor.
+  creation_time_ = std::nullopt;
 
   submission_verifier_ = std::make_unique<PasswordChangeSubmissionVerifier>(
       web_contents_, logs_uploader_);

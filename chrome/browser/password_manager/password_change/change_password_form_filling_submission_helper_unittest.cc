@@ -323,6 +323,8 @@ TEST_F(ChangePasswordFormFillingSubmissionHelperTest,
   base::test::TestFuture<bool> completion_future;
   auto verifier =
       CreateVerifier(form_manager.get(), completion_future.GetCallback());
+  task_environment()->FastForwardBy(base::Milliseconds(1534));
+
   FillChangePasswordForm(form_manager.get(), verifier.get());
 
   // Presave generated password as backup
@@ -332,6 +334,9 @@ TEST_F(ChangePasswordFormFillingSubmissionHelperTest,
       .WillOnce(testing::SaveArg<0>(&presaved_generated_password_form));
 
   WaitForSuccessfulSubmission();
+  // Fast forward by extra time to verify it doesn't impact submission step
+  // duration anymore.
+  task_environment()->FastForwardBy(base::Milliseconds(3424));
   // Simulate submission detected.
   verifier->OnPasswordFormSubmission(web_contents());
 
@@ -360,6 +365,14 @@ TEST_F(ChangePasswordFormFillingSubmissionHelperTest,
   EXPECT_EQ(presaved_generated_password_form.signon_realm,
             existing_credential()->signon_realm);
   EXPECT_EQ(presaved_generated_password_form.GetPasswordBackup(), kNewPassword);
+
+  verifier.reset();
+  EXPECT_EQ(1534, logs_uploader()
+                      ->GetFinalLog()
+                      .password_change_submission()
+                      .quality()
+                      .submit_form()
+                      .request_latency_ms());
 }
 
 // If the password being changed was not stored, we will add a new credential.
@@ -641,8 +654,11 @@ TEST_F(ChangePasswordFormFillingSubmissionHelperTest, FailedFilling) {
       CreateFormManager(/*credentials_to_seed=*/{*existing_credential()});
 
   base::test::TestFuture<bool> completion_future;
+  auto time = base::Time::Now();
   auto verifier =
       CreateVerifier(form_manager.get(), completion_future.GetCallback());
+  task_environment()->FastForwardBy(base::Milliseconds(1534));
+
   // Expect a call to FillChangePasswordForm, although don't invoke completion
   // callback.
   EXPECT_CALL(driver(), FillChangePasswordForm).Times(1);
@@ -664,6 +680,15 @@ TEST_F(ChangePasswordFormFillingSubmissionHelperTest, FailedFilling) {
   EXPECT_EQ(presaved_generated_password_form.signon_realm,
             existing_credential()->signon_realm);
   EXPECT_EQ(presaved_generated_password_form.GetPasswordBackup(), kNewPassword);
+
+  verifier.reset();
+  EXPECT_EQ((base::Time::Now() - time).InMilliseconds(),
+            logs_uploader()
+                ->GetFinalLog()
+                .password_change_submission()
+                .quality()
+                .submit_form()
+                .request_latency_ms());
 }
 
 TEST_F(ChangePasswordFormFillingSubmissionHelperTest,
