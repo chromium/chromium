@@ -8,10 +8,10 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
 import android.view.LayoutInflater;
-import android.view.ViewGroup;
 
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -61,7 +61,7 @@ public class NavigationAttachmentsCoordinator
     public NavigationAttachmentsCoordinator(
             Context context,
             WindowAndroid windowAndroid,
-            ViewGroup parent,
+            ConstraintLayout parent,
             ObservableSupplier<Profile> profileObservableSupplier,
             LocationBarDataProvider locationBarDataProvider,
             ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,

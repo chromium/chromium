@@ -4,8 +4,7 @@
 
 package org.chromium.chrome.browser.omnibox.fusebox;
 
-import android.view.ViewGroup;
-
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.Group;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -18,7 +17,7 @@ import org.chromium.ui.widget.ChromeImageView;
 /** A ViewHolder for the NavigationAttachments component. */
 @NullMarked
 class NavigationAttachmentsViewHolder {
-    public final ViewGroup parentView;
+    public final ConstraintLayout parentView;
     public final RecyclerView attachmentsView;
     public final Group attachmentsToolbar;
     public final ChromeImageView addButton;
@@ -27,7 +26,7 @@ class NavigationAttachmentsViewHolder {
     public final ButtonCompat requestType;
     public final ChromeImageView navigateButton;
 
-    NavigationAttachmentsViewHolder(ViewGroup parent, NavigationAttachmentsPopup popup) {
+    NavigationAttachmentsViewHolder(ConstraintLayout parent, NavigationAttachmentsPopup popup) {
         parentView = parent;
         attachmentsView = parent.findViewById(R.id.location_bar_attachments);
         attachmentsToolbar = parent.findViewById(R.id.location_bar_attachments_toolbar);
@@ -35,6 +34,7 @@ class NavigationAttachmentsViewHolder {
         settingsButton = parent.findViewById(R.id.location_bar_attachments_settings);
         requestType = parent.findViewById(R.id.fusebox_request_type);
         navigateButton = parent.findViewById(R.id.navigate_button);
+
         this.popup = popup;
 
         var outline =

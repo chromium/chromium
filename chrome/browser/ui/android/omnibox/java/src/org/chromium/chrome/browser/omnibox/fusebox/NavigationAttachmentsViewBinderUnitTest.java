@@ -5,9 +5,7 @@
 package org.chromium.chrome.browser.omnibox.fusebox;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -16,7 +14,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.constraintlayout.widget.Group;
+import androidx.annotation.IntDef;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintSet;
 
 import org.junit.After;
 import org.junit.Before;
@@ -32,33 +32,44 @@ import org.robolectric.Robolectric;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.components.omnibox.AutocompleteRequestType;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 import org.chromium.ui.widget.AnchoredPopupWindow;
-import org.chromium.ui.widget.ButtonCompat;
-import org.chromium.ui.widget.ChromeImageView;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /** Unit tests for {@link NavigationAttachmentsViewBinder}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class NavigationAttachmentsViewBinderUnitTest {
+    @IntDef({
+        Variant.DEFAULT,
+        Variant.DEDICATED_BUTTON,
+        Variant.DEDICATED_BUTTON_WITH_HINT,
+        Variant.COMPACT,
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    private @interface Variant {
+        int DEFAULT = 0;
+        int DEDICATED_BUTTON = 1;
+        int DEDICATED_BUTTON_WITH_HINT = 2;
+        int COMPACT = 3;
+    }
+
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    private @Mock ViewGroup mParent;
     private @Mock AnchoredPopupWindow mPopupWindow;
-    private @Mock Group mAttachmentsToolbar;
-    private @Mock ChromeImageView mAddButton;
-    private @Mock ChromeImageView mSettingsButton;
-    private @Mock NavigationAttachmentsRecyclerView mRecyclerView;
-    private @Mock ButtonCompat mRequestType;
 
     private final ModelList mPopupTabsModel = new ModelList();
     private final PropertyModel mModel =
             new PropertyModel(NavigationAttachmentsProperties.ALL_KEYS);
 
     private Activity mActivity;
+    private ConstraintLayout mParent;
     private NavigationAttachmentsViewHolder mViewHolder;
     private NavigationAttachmentsPopup mPopup;
     private ViewGroup mPopupView;
@@ -68,24 +79,9 @@ public class NavigationAttachmentsViewBinderUnitTest {
         // Replace .create().resume() with .setup() once we have a content view.
         mActivity = Robolectric.buildActivity(TestActivity.class).create().resume().get();
 
-        lenient().doReturn(mActivity).when(mParent).getContext();
-        // Please use parentView.getResources() in ViewBinder.
-        lenient().doReturn(mActivity.getResources()).when(mParent).getResources();
-
-        lenient()
-                .doReturn(mAttachmentsToolbar)
-                .when(mParent)
-                .findViewById(R.id.location_bar_attachments_toolbar);
-        lenient()
-                .doReturn(mAddButton)
-                .when(mParent)
-                .findViewById(R.id.location_bar_attachments_add);
-        lenient()
-                .doReturn(mSettingsButton)
-                .when(mParent)
-                .findViewById(R.id.location_bar_attachments_settings);
-        lenient().doReturn(mRecyclerView).when(mParent).findViewById(R.id.location_bar_attachments);
-        lenient().doReturn(mRequestType).when(mParent).findViewById(R.id.fusebox_request_type);
+        // Initialize location bar layout
+        mParent = new ConstraintLayout(mActivity);
+        LayoutInflater.from(mActivity).inflate(R.layout.location_bar, mParent);
 
         mPopupView =
                 (ViewGroup)
@@ -97,8 +93,31 @@ public class NavigationAttachmentsViewBinderUnitTest {
                 new NavigationAttachmentsPopup(
                         mActivity, mPopupWindow, mPopupView, mPopupTabsModel);
         mViewHolder = new NavigationAttachmentsViewHolder(mParent, mPopup);
+
+        // Initialize workable defaults.
+        mModel.set(NavigationAttachmentsProperties.ATTACHMENTS_TOOLBAR_VISIBLE, true);
+        mModel.set(
+                NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE,
+                AutocompleteRequestType.SEARCH);
+        mModel.set(NavigationAttachmentsProperties.SHOW_DEDICATED_MODE_BUTTON, false);
+
         PropertyModelChangeProcessor.create(
                 mModel, mViewHolder, NavigationAttachmentsViewBinder::bind);
+    }
+
+    private void configureFusebox(@Variant int testCase, @AutocompleteRequestType int requestType) {
+        OmniboxFeatures.sShowDedicatedModeButton.setForTesting(
+                testCase == Variant.DEDICATED_BUTTON
+                        || testCase == Variant.DEDICATED_BUTTON_WITH_HINT);
+        OmniboxFeatures.sShowTryAiModeHintInDedicatedModeButton.setForTesting(
+                testCase == Variant.DEDICATED_BUTTON_WITH_HINT);
+        OmniboxFeatures.sCompactFusebox.setForTesting(testCase == Variant.COMPACT);
+
+        // Reflect the active state of the fusebox toolbar.
+        mModel.set(NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE, requestType);
+        mModel.set(
+                NavigationAttachmentsProperties.SHOW_DEDICATED_MODE_BUTTON,
+                OmniboxFeatures.sShowDedicatedModeButton.getValue());
     }
 
     @After
@@ -112,26 +131,26 @@ public class NavigationAttachmentsViewBinderUnitTest {
                 NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE,
                 AutocompleteRequestType.AI_MODE);
         mModel.set(NavigationAttachmentsProperties.ATTACHMENTS_TOOLBAR_VISIBLE, true);
-        verify(mAttachmentsToolbar).setVisibility(View.VISIBLE);
+        assertEquals(View.VISIBLE, mViewHolder.attachmentsToolbar.getVisibility());
 
         mModel.set(NavigationAttachmentsProperties.ATTACHMENTS_TOOLBAR_VISIBLE, false);
-        verify(mAttachmentsToolbar).setVisibility(View.GONE);
+        assertEquals(View.GONE, mViewHolder.attachmentsToolbar.getVisibility());
     }
 
     @Test
     public void attachmentsVisible_setsVisibilityAndTogglesSwitch() {
         mModel.set(NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE, true);
-        verify(mRecyclerView).setVisibility(View.VISIBLE);
+        assertEquals(View.VISIBLE, mViewHolder.attachmentsView.getVisibility());
 
         mModel.set(NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE, false);
-        verify(mRecyclerView).setVisibility(View.GONE);
+        assertEquals(View.GONE, mViewHolder.attachmentsView.getVisibility());
     }
 
     @Test
     public void adapter_isSet() {
         SimpleRecyclerViewAdapter adapter = mock(SimpleRecyclerViewAdapter.class);
         mModel.set(NavigationAttachmentsProperties.ADAPTER, adapter);
-        verify(mRecyclerView).setAdapter(adapter);
+        assertEquals(adapter, mViewHolder.attachmentsView.getAdapter());
     }
 
     @Test
@@ -141,8 +160,7 @@ public class NavigationAttachmentsViewBinderUnitTest {
 
         ArgumentCaptor<View.OnClickListener> listenerCaptor =
                 ArgumentCaptor.forClass(View.OnClickListener.class);
-        verify(mAddButton).setOnClickListener(listenerCaptor.capture());
-        listenerCaptor.getValue().onClick(mAddButton);
+        mViewHolder.addButton.performClick();
 
         verify(runnable).run();
     }
@@ -203,6 +221,76 @@ public class NavigationAttachmentsViewBinderUnitTest {
     public void autocompleteRequestTypeClicked_setsListener() {
         Runnable runnable = mock(Runnable.class);
         mModel.set(NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE_CLICKED, runnable);
-        verify(mRequestType).setOnClickListener(any());
+        mViewHolder.requestType.performClick();
+        verify(runnable).run();
+    }
+
+    @Test
+    public void updateModeSelectorVisibility_noParams() {
+        configureFusebox(Variant.DEFAULT, AutocompleteRequestType.SEARCH);
+        NavigationAttachmentsViewBinder.updateModeSelectorVisibility(mModel, mViewHolder);
+
+        // No button.
+        assertEquals(View.GONE, mViewHolder.requestType.getVisibility());
+    }
+
+    @Test
+    public void updateModeSelectorVisibility_dedicatedButton() {
+        configureFusebox(Variant.DEDICATED_BUTTON, AutocompleteRequestType.SEARCH);
+        NavigationAttachmentsViewBinder.updateModeSelectorVisibility(mModel, mViewHolder);
+
+        assertEquals(View.VISIBLE, mViewHolder.requestType.getVisibility());
+        assertEquals("AI Mode", mViewHolder.requestType.getText());
+    }
+
+    @Test
+    public void updateModeSelectorVisibility_dedicatedButtonWithHint_searchMode() {
+        configureFusebox(Variant.DEDICATED_BUTTON_WITH_HINT, AutocompleteRequestType.SEARCH);
+        NavigationAttachmentsViewBinder.updateModeSelectorVisibility(mModel, mViewHolder);
+
+        assertEquals(View.VISIBLE, mViewHolder.requestType.getVisibility());
+        assertEquals("Try AI Mode", mViewHolder.requestType.getText());
+    }
+
+    @Test
+    public void updateModeSelectorVisibility_dedicatedButtonWithHint_aiMode() {
+        configureFusebox(Variant.DEDICATED_BUTTON_WITH_HINT, AutocompleteRequestType.AI_MODE);
+        NavigationAttachmentsViewBinder.updateModeSelectorVisibility(mModel, mViewHolder);
+
+        assertEquals(View.VISIBLE, mViewHolder.requestType.getVisibility());
+        assertEquals("AI Mode", mViewHolder.requestType.getText());
+    }
+
+    @Test
+    public void reanchorViewsForCompactFusebox_compactModeSearch() {
+        configureFusebox(Variant.COMPACT, AutocompleteRequestType.SEARCH);
+        NavigationAttachmentsViewBinder.reanchorViewsForCompactFusebox(mModel, mViewHolder);
+
+        var lp = (ConstraintLayout.LayoutParams) mViewHolder.addButton.getLayoutParams();
+        assertEquals(R.id.url_bar, lp.topToTop);
+        assertEquals(ConstraintSet.UNSET, lp.topToBottom);
+        assertEquals(R.id.url_bar, lp.bottomToBottom);
+    }
+
+    @Test
+    public void reanchorViewsForCompactFusebox_compactModeNotSearch() {
+        configureFusebox(Variant.COMPACT, AutocompleteRequestType.AI_MODE);
+        NavigationAttachmentsViewBinder.reanchorViewsForCompactFusebox(mModel, mViewHolder);
+
+        var lp = (ConstraintLayout.LayoutParams) mViewHolder.addButton.getLayoutParams();
+        assertEquals(ConstraintSet.UNSET, lp.topToTop);
+        assertEquals(R.id.location_bar_attachments, lp.topToBottom);
+        assertEquals(ConstraintSet.PARENT_ID, lp.bottomToBottom);
+    }
+
+    @Test
+    public void reanchorViewsForCompactFusebox_notCompactMode() {
+        configureFusebox(Variant.DEFAULT, AutocompleteRequestType.SEARCH);
+        NavigationAttachmentsViewBinder.reanchorViewsForCompactFusebox(mModel, mViewHolder);
+
+        var lp = (ConstraintLayout.LayoutParams) mViewHolder.addButton.getLayoutParams();
+        assertEquals(ConstraintSet.UNSET, lp.topToTop);
+        assertEquals(R.id.location_bar_attachments, lp.topToBottom);
+        assertEquals(ConstraintSet.PARENT_ID, lp.bottomToBottom);
     }
 }

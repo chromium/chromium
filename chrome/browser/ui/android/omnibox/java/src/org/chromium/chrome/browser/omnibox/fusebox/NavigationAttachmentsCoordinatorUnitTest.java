@@ -17,7 +17,6 @@ import static org.mockito.Mockito.verify;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.view.LayoutInflater;
-import android.view.ViewGroup;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
 
@@ -74,7 +73,7 @@ public class NavigationAttachmentsCoordinatorUnitTest {
     private Activity mActivity;
     private WindowAndroid mWindowAndroid;
     private NavigationAttachmentsCoordinator mCoordinator;
-    private ViewGroup mParent;
+    private ConstraintLayout mParent;
     private final ObservableSupplierImpl<Profile> mProfileSupplier = new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<TabModelSelector> mTabModelSelectorSupplier =
             new ObservableSupplierImpl<>(mTabModelSelector);

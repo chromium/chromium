@@ -18,7 +18,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.view.LayoutInflater;
-import android.view.ViewGroup;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
 
@@ -74,7 +73,7 @@ public class NavigationAttachmentsMediatorUnitTest {
 
     private Activity mActivity;
     private Context mContext;
-    private ViewGroup mViewGroup;
+    private ConstraintLayout mViewGroup;
     private PropertyModel mModel;
     private NavigationAttachmentsMediator mMediator;
     private ObservableSupplierImpl<TabModelSelector> mTabModelSelectorSupplier;

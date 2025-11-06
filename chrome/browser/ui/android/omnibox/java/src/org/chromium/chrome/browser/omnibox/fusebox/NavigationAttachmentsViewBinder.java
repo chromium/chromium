@@ -7,7 +7,7 @@ package org.chromium.chrome.browser.omnibox.fusebox;
 import android.content.res.Resources;
 import android.view.View;
 
-import androidx.annotation.StringRes;
+import androidx.constraintlayout.widget.ConstraintSet;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.R;
@@ -28,22 +28,7 @@ class NavigationAttachmentsViewBinder {
         if (propertyKey == NavigationAttachmentsProperties.ADAPTER) {
             view.attachmentsView.setAdapter(model.get(NavigationAttachmentsProperties.ADAPTER));
         } else if (propertyKey == NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE) {
-            @StringRes
-            int res =
-                    switch (model.get(NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE)) {
-                        case AutocompleteRequestType.AI_MODE -> R.string.ai_mode_entrypoint_label;
-                        default -> 0;
-                    };
-
-            if (res != 0) {
-                view.requestType.setText(res);
-                view.requestType.setContentDescription(
-                        view.parentView
-                                .getResources()
-                                .getString(
-                                        R.string.accessibility_omnibox_reset_mode,
-                                        view.parentView.getResources().getString(res)));
-            }
+            reanchorViewsForCompactFusebox(model, view);
             updateModeSelectorVisibility(model, view);
         } else if (propertyKey
                 == NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE_CLICKED) {
@@ -159,5 +144,38 @@ class NavigationAttachmentsViewBinder {
 
         views.popup.mAutocompleteRequestTypeGroup.setVisibility(
                 showDedicatedModeButton ? View.GONE : View.VISIBLE);
+    }
+
+    static void reanchorViewsForCompactFusebox(
+            PropertyModel model, NavigationAttachmentsViewHolder views) {
+        if (!OmniboxFeatures.sCompactFusebox.getValue()) return;
+
+        boolean isSearchMode =
+                model.get(NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE)
+                        == AutocompleteRequestType.SEARCH;
+
+        int topToTop = isSearchMode ? R.id.url_bar : ConstraintSet.UNSET;
+        int topToBottom = isSearchMode ? ConstraintSet.UNSET : R.id.location_bar_attachments;
+        int bottomToBottom = isSearchMode ? R.id.url_bar : ConstraintSet.PARENT_ID;
+
+        var cs = new ConstraintSet();
+        cs.clone(views.parentView);
+
+        int id = views.addButton.getId();
+        cs.clear(id, ConstraintSet.TOP);
+        cs.clear(id, ConstraintSet.BOTTOM);
+        cs.clear(id, ConstraintSet.BASELINE);
+
+        if (topToTop != ConstraintSet.UNSET) {
+            cs.connect(id, ConstraintSet.TOP, topToTop, ConstraintSet.TOP);
+        }
+        if (topToBottom != ConstraintSet.UNSET) {
+            cs.connect(id, ConstraintSet.TOP, topToBottom, ConstraintSet.BOTTOM);
+        }
+        if (bottomToBottom != ConstraintSet.UNSET) {
+            cs.connect(id, ConstraintSet.BOTTOM, bottomToBottom, ConstraintSet.BOTTOM);
+        }
+
+        cs.applyTo(views.parentView);
     }
 }

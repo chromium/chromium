@@ -2006,12 +2006,16 @@ const FeatureEntry::FeatureParam kOmniboxAimDedicatedModeButton[] = {
 const FeatureEntry::FeatureParam kOmniboxAimDedicatedModeButtonWithHint[] = {
     {"show_dedicated_mode_button", "true"},
     {"show_try_aimode_hint_in_mode_button", "true"}};
+const FeatureEntry::FeatureParam kOmniboxAimCompactFusebox[] = {
+    {"compact_fusebox", "true"}};
 
 const FeatureEntry::FeatureVariation kOmniboxMultimodalInputVariants[] = {
     {"Dedicated Button", kOmniboxAimDedicatedModeButton,
      std::size(kOmniboxAimDedicatedModeButton), nullptr},
     {"Button with Hint", kOmniboxAimDedicatedModeButtonWithHint,
      std::size(kOmniboxAimDedicatedModeButtonWithHint), nullptr},
+    {"Compact", kOmniboxAimCompactFusebox, std::size(kOmniboxAimCompactFusebox),
+     nullptr},
 };
 
 const FeatureEntry::FeatureParam kOmniboxImprovementForLFFVariationsAll[] = {
