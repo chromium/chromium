@@ -83,6 +83,11 @@ class ExtensionsMenuViewModel : public extensions::PermissionsManager::Observer,
   // Dismisses the extension's host access request to the current site.
   void DismissHostAccessRequest(const extensions::ExtensionId& extension_id);
 
+  // Sets whether the extension can show host access requests in the toolbar.
+  void ShowHostAccessRequestsInToolbar(
+      const extensions::ExtensionId& extension_id,
+      bool show);
+
   // Grants the extension site access to the current site.
   void GrantSiteAccess(const extensions::ExtensionId& extension_id);
 

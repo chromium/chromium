@@ -191,6 +191,16 @@ GetSiteAccessToggleState(const extensions::Extension& extension,
                    kOff;
 }
 
+void LogShowHostAccessRequestInToolbar(bool show) {
+  if (show) {
+    base::RecordAction(base::UserMetricsAction(
+        "Extensions.Menu.ShowRequestsInToolbarPressed"));
+  } else {
+    base::RecordAction(base::UserMetricsAction(
+        "Extensions.Menu.HideRequestsInToolbarPressed"));
+  }
+}
+
 void LogSiteAccessUpdate(PermissionsManager::UserSiteAccess site_access) {
   switch (site_access) {
     case PermissionsManager::UserSiteAccess::kOnClick:
@@ -357,6 +367,15 @@ void ExtensionsMenuViewModel::DismissHostAccessRequest(
 
   base::RecordAction(base::UserMetricsAction(
       "Extensions.Toolbar.ExtensionRequestDismissedFromMenu"));
+}
+
+void ExtensionsMenuViewModel::ShowHostAccessRequestsInToolbar(
+    const extensions::ExtensionId& extension_id,
+    bool show) {
+  extensions::SitePermissionsHelper(browser_->GetProfile())
+      .SetShowAccessRequestsInToolbar(extension_id, show);
+
+  LogShowHostAccessRequestInToolbar(show);
 }
 
 void ExtensionsMenuViewModel::GrantSiteAccess(

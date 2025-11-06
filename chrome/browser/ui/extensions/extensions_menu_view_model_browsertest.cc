@@ -407,3 +407,26 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest,
                 *extension, web_contents->GetLastCommittedURL()),
             PermissionsManager::UserSiteAccess::kOnSite);
 }
+
+// Tests that the extensions menu view model correctly updates whether to show
+// host access requests in the toolbar for an extension.
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest,
+                       ShowHostAccessRequestsInToolbar) {
+  // Add extension that requests host permissions.
+  scoped_refptr<const extensions::Extension> extension =
+      AddExtensionWithHostPermission("Extension", "*://example.com/*");
+
+  // By default, extensions can show host access requests in the toolbar.
+  EXPECT_TRUE(
+      permissions_helper()->ShowAccessRequestsInToolbar(extension->id()));
+
+  // Set to not show host access requests in the toolbar.
+  menu_model()->ShowHostAccessRequestsInToolbar(extension->id(), false);
+  EXPECT_FALSE(
+      permissions_helper()->ShowAccessRequestsInToolbar(extension->id()));
+
+  // Set to show host access requests in the toolbar.
+  menu_model()->ShowHostAccessRequestsInToolbar(extension->id(), true);
+  EXPECT_TRUE(
+      permissions_helper()->ShowAccessRequestsInToolbar(extension->id()));
+}

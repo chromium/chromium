@@ -451,16 +451,7 @@ void ExtensionsMenuViewPlatformDelegateViews::OnDismissExtensionClicked(
 void ExtensionsMenuViewPlatformDelegateViews::OnShowRequestsTogglePressed(
     const extensions::ExtensionId& extension_id,
     bool is_on) {
-  extensions::SitePermissionsHelper(browser_->profile())
-      .SetShowAccessRequestsInToolbar(extension_id, is_on);
-
-  if (is_on) {
-    base::RecordAction(base::UserMetricsAction(
-        "Extensions.Menu.ShowRequestsInToolbarPressed"));
-  } else {
-    base::RecordAction(base::UserMetricsAction(
-        "Extensions.Menu.HideRequestsInToolbarPressed"));
-  }
+  menu_model_->ShowHostAccessRequestsInToolbar(extension_id, is_on);
 }
 
 void ExtensionsMenuViewPlatformDelegateViews::TabChangedAt(
