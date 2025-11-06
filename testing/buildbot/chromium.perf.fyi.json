@@ -334,8 +334,7 @@
           "--test-shard-map-filename=win-10_laptop_low_end-perf_hp-candidate_map.json",
           "--ignore-benchmark-exit-code",
           "--output-format=histograms",
-          "--experimental-tbmv3-metrics",
-          "--disable-features=SessionRestoreInfobar"
+          "--experimental-tbmv3-metrics"
         ],
         "merge": {
           "args": [

@@ -1574,8 +1574,7 @@
           "--upload-results",
           "--test-shard-map-filename=win-10-perf_map.json",
           "--ignore-benchmark-exit-code",
-          "--assert-gpu-compositing",
-          "--disable-features=SessionRestoreInfobar"
+          "--assert-gpu-compositing"
         ],
         "merge": {
           "args": [
@@ -1623,8 +1622,7 @@
           "--upload-results",
           "--test-shard-map-filename=win-10-perf-pgo_map.json",
           "--ignore-benchmark-exit-code",
-          "--assert-gpu-compositing",
-          "--disable-features=SessionRestoreInfobar"
+          "--assert-gpu-compositing"
         ],
         "merge": {
           "script": "//tools/perf/process_perf_results.py"
@@ -1762,8 +1760,7 @@
           "--upload-results",
           "--test-shard-map-filename=win-10_laptop_low_end-perf_map.json",
           "--ignore-benchmark-exit-code",
-          "--assert-gpu-compositing",
-          "--disable-features=SessionRestoreInfobar"
+          "--assert-gpu-compositing"
         ],
         "merge": {
           "args": [
@@ -1812,8 +1809,7 @@
           "--upload-results",
           "--test-shard-map-filename=win-10_laptop_low_end-perf-pgo_map.json",
           "--ignore-benchmark-exit-code",
-          "--assert-gpu-compositing",
-          "--disable-features=SessionRestoreInfobar"
+          "--assert-gpu-compositing"
         ],
         "merge": {
           "script": "//tools/perf/process_perf_results.py"
