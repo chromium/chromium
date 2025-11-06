@@ -2,7 +2,6 @@ include_rules = [
   # keep-sorted start
   "+components/collaboration/public",
   "+components/trusted_vault/trusted_vault_server_constants.h",
-  "+ios/chrome/browser/aim/prototype/coordinator",
   "+ios/chrome/browser/app_launcher/model",
   "+ios/chrome/browser/app_store_rating/ui_bundled/features.h",
   "+ios/chrome/browser/authentication",
@@ -16,6 +15,7 @@ include_rules = [
   "+ios/chrome/browser/bubble/ui_bundled",
   "+ios/chrome/browser/collaboration/model",
   "+ios/chrome/browser/commerce/model",
+  "+ios/chrome/browser/composebox/coordinator",
   "+ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h",
   "+ios/chrome/browser/content_suggestions/ui_bundled/ntp_home_constant.h",
   "+ios/chrome/browser/context_menu/ui_bundled/context_menu_configuration_provider.h",

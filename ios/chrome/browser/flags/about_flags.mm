@@ -89,10 +89,10 @@
 #import "components/webui/flags/flags_ui_switches.h"
 #import "crypto/features.h"
 #import "ios/chrome/app/background_mode_buildflags.h"
-#import "ios/chrome/browser/aim/prototype/public/features.h"
 #import "ios/chrome/browser/autofill/model/features.h"
 #import "ios/chrome/browser/badges/model/features.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_features.h"
+#import "ios/chrome/browser/composebox/public/features.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/default_browser/public/features.h"
 #import "ios/chrome/browser/crash_report/model/features.h"
 #import "ios/chrome/browser/credential_provider/model/features.h"
@@ -1360,20 +1360,20 @@ const FeatureEntry::FeatureVariation kOmniboxAimShortcutTypedStateVariations[] =
       std::size(kOmniboxAimShortcutTypedStateEnabledForTypedLength15),
       nullptr}};
 
-const FeatureEntry::FeatureParam kAimPrototypeDevToolsForceFailure[] = {
+const FeatureEntry::FeatureParam kAIMPrototypeDevToolsForceFailure[] = {
     {kForceUploadFailureParam, "true"}};
-const FeatureEntry::FeatureParam kAimPrototypeDevToolsSlowLoad[] = {
+const FeatureEntry::FeatureParam kAIMPrototypeDevToolsSlowLoad[] = {
     {kImageLoadDelayMsParam, "1000"}};
-const FeatureEntry::FeatureParam kAimPrototypeDevToolsSlowUpload[] = {
+const FeatureEntry::FeatureParam kAIMPrototypeDevToolsSlowUpload[] = {
     {kUploadDelayMsParam, "3000"}};
 
-const FeatureEntry::FeatureVariation kAimPrototypeDevToolsVariations[] = {
-    {"Force Failure", kAimPrototypeDevToolsForceFailure,
-     std::size(kAimPrototypeDevToolsForceFailure), nullptr},
-    {"Slow Load (1s)", kAimPrototypeDevToolsSlowLoad,
-     std::size(kAimPrototypeDevToolsSlowLoad), nullptr},
-    {"Slow Upload (3s)", kAimPrototypeDevToolsSlowUpload,
-     std::size(kAimPrototypeDevToolsSlowUpload), nullptr}};
+const FeatureEntry::FeatureVariation kAIMPrototypeDevToolsVariations[] = {
+    {"Force Failure", kAIMPrototypeDevToolsForceFailure,
+     std::size(kAIMPrototypeDevToolsForceFailure), nullptr},
+    {"Slow Load (1s)", kAIMPrototypeDevToolsSlowLoad,
+     std::size(kAIMPrototypeDevToolsSlowLoad), nullptr},
+    {"Slow Upload (3s)", kAIMPrototypeDevToolsSlowUpload,
+     std::size(kAIMPrototypeDevToolsSlowUpload), nullptr}};
 
 const FeatureEntry::FeatureParam kMobilePromoOnDesktopLens[] = {
     {kMobilePromoOnDesktopPromoTypeParam, "1"},
@@ -2706,8 +2706,8 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      FEATURE_VALUE_TYPE(kLensStrokesAPIEnabled)},
     {"aim-prototype-devtools", flag_descriptions::kAIMPrototypeDevToolsName,
      flag_descriptions::kAIMPrototypeDevToolsDescription, flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(kAimPrototypeDevTools,
-                                    kAimPrototypeDevToolsVariations,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kAIMPrototypeDevTools,
+                                    kAIMPrototypeDevToolsVariations,
                                     "AimPrototypeDevTools")},
     {"autofill-manual-testing-data",
      flag_descriptions::kAutofillManualTestingDataName,

@@ -188,7 +188,7 @@ using base::UserMetricsAction;
 
 - (void)viewDidAppear:(BOOL)animated {
   [super viewDidAppear:animated];
-  if (_presentationContext == OmniboxPresentationContext::kAIMPrototype) {
+  if (_presentationContext == OmniboxPresentationContext::kComposebox) {
     [self.view updateTextViewHeight];
   }
 }

@@ -394,7 +394,7 @@ const CGFloat kFadeAnimationVerticalOffset = 12;
 
 - (BOOL)useBottomOmniboxInPopup {
   if (_presentationContext == OmniboxPresentationContext::kLensOverlay ||
-      _presentationContext == OmniboxPresentationContext::kAIMPrototype) {
+      _presentationContext == OmniboxPresentationContext::kComposebox) {
     return NO;
   }
 

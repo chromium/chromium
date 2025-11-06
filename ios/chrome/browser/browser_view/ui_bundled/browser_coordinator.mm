@@ -41,7 +41,6 @@
 #import "components/supervised_user/core/common/supervised_user_constants.h"
 #import "components/translate/core/browser/translate_manager.h"
 #import "components/trusted_vault/trusted_vault_server_constants.h"
-#import "ios/chrome/browser/aim/prototype/coordinator/aim_prototype_container_coordinator.h"
 #import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper_browser_presentation_provider.h"
 #import "ios/chrome/browser/app_store_rating/ui_bundled/features.h"
 #import "ios/chrome/browser/authentication/trusted_vault_reauthentication/coordinator/trusted_vault_reauthentication_coordinator.h"
@@ -85,6 +84,7 @@
 #import "ios/chrome/browser/collaboration/model/ios_collaboration_controller_delegate.h"
 #import "ios/chrome/browser/commerce/model/push_notification/push_notification_feature.h"
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
+#import "ios/chrome/browser/composebox/coordinator/composebox_coordinator.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/context_menu/ui_bundled/context_menu_configuration_provider.h"
 #import "ios/chrome/browser/contextual_panel/coordinator/contextual_sheet_coordinator.h"
@@ -655,9 +655,8 @@ const char kChromeAppStoreUrl[] =
 @property(nonatomic, strong)
     NonModalSignInPromoCoordinator* nonModalSignInPromoCoordinator;
 
-// Coordinator for the AIM prototype.
-@property(nonatomic, strong)
-    AIMPrototypeContainerCoordinator* aimPrototypeCoordinator;
+// Coordinator for the composebox.
+@property(nonatomic, strong) ComposeboxCoordinator* composeboxCoordinator;
 
 @end
 
@@ -1024,9 +1023,9 @@ const char kChromeAppStoreUrl[] =
   [self cancelCollaborationFlows];
   [self.NTPCoordinator clearPresentedState];
 
-  // The aim prototype replaces the omnibox.
+  // The composebox replaces the omnibox.
   if (dismissOmnibox) {
-    [self hideAIMPrototypeImmediately:NO];
+    [self hideComposeboxImmediately:NO];
   }
 
   [self.viewController clearPresentedStateWithCompletion:completion
@@ -1849,7 +1848,7 @@ const char kChromeAppStoreUrl[] =
   [self dismissSearchWhatYouSeePromo];
   [self dismissNotificationsOptIn];
   [self hideWelcomeBackPromo];
-  [self hideAIMPrototypeImmediately:YES];
+  [self hideComposeboxImmediately:YES];
 }
 
 // Starts independent mediators owned by this coordinator.
@@ -2656,28 +2655,28 @@ const char kChromeAppStoreUrl[] =
   [self showTrustedVaultReauthForFetchKeysWithTrigger:trigger];
 }
 
-- (void)showAIMPrototypeFromEntrypoint:(AIMPrototypeEntrypoint)entrypoint
-                             withQuery:(NSString*)query {
+- (void)showComposeboxFromEntrypoint:(ComposeboxEntrypoint)entrypoint
+                           withQuery:(NSString*)query {
   CHECK(base::FeatureList::IsEnabled(kAIMPrototype));
-  if (_aimPrototypeCoordinator) {
+  if (_composeboxCoordinator) {
     return;
   }
-  _aimPrototypeCoordinator = [[AIMPrototypeContainerCoordinator alloc]
+  _composeboxCoordinator = [[ComposeboxCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser
                       entrypoint:entrypoint
                            query:query];
-  [_aimPrototypeCoordinator start];
+  [_composeboxCoordinator start];
 }
 
-- (void)hideAIMPrototypeImmediately:(BOOL)immediately {
-  if (!_aimPrototypeCoordinator) {
+- (void)hideComposeboxImmediately:(BOOL)immediately {
+  if (!_composeboxCoordinator) {
     return;
   }
   __weak __typeof__(self) weakSelf = self;
   base::OnceClosure completion = base::BindOnce(^{
-    [weakSelf.aimPrototypeCoordinator stop];
-    weakSelf.aimPrototypeCoordinator = nil;
+    [weakSelf.composeboxCoordinator stop];
+    weakSelf.composeboxCoordinator = nil;
   });
   if (immediately) {
     std::move(completion).Run();

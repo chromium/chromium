@@ -46,9 +46,9 @@ const CGFloat kThumbnailImageLeadingMargin = 9;
 const CGFloat kLeadingImageLeadingMarginLensOverlay = 12;
 const CGFloat kLeadingImageTrailingMarginLensOverlay = 9;
 
-/// Size of the leading image when presented in AIM Prototype.
+/// Size of the leading image when presented in composebox.
 const CGFloat kLeadingImageSizeAIM = 22;
-// The leading image margins when presented in AIM Prototype.
+// The leading image margins when presented in composebox.
 const CGFloat kLeadingImageLeadingMarginAIM = 7;
 const CGFloat kLeadingImageTrailingMarginAIM = 11;
 
@@ -67,8 +67,7 @@ const CGFloat kClearButtonSize = 28.0f;
 bool UseTextView(OmniboxPresentationContext presentation_context) {
   if (presentation_context == OmniboxPresentationContext::kLocationBar) {
     return IsMultilineBrowserOmniboxEnabled();
-  } else if (presentation_context ==
-             OmniboxPresentationContext::kAIMPrototype) {
+  } else if (presentation_context == OmniboxPresentationContext::kComposebox) {
     return base::FeatureList::IsEnabled(kIOSOmniboxUseTextView);
   }
   return NO;
@@ -81,7 +80,7 @@ UIImageView* CreateLeadingImageView(
   UIImageView* leading_image_view = [[UIImageView alloc] init];
   leading_image_view.translatesAutoresizingMaskIntoConstraints = NO;
   leading_image_view.tintColor = icon_tint;
-  if (presentation_context == OmniboxPresentationContext::kAIMPrototype) {
+  if (presentation_context == OmniboxPresentationContext::kComposebox) {
     leading_image_view.contentMode = UIViewContentModeScaleAspectFit;
     [NSLayoutConstraint activateConstraints:@[
       [leading_image_view.widthAnchor
@@ -213,7 +212,7 @@ UIButton* CreateClearButton() {
     if (_presentationContext == OmniboxPresentationContext::kLensOverlay) {
       leadingImageLeadingOffset = kLeadingImageLeadingMarginLensOverlay;
     } else if (_presentationContext ==
-               OmniboxPresentationContext::kAIMPrototype) {
+               OmniboxPresentationContext::kComposebox) {
       leadingImageLeadingOffset = kLeadingImageLeadingMarginAIM;
     }
 
@@ -257,7 +256,7 @@ UIButton* CreateClearButton() {
     if (_presentationContext == OmniboxPresentationContext::kLensOverlay) {
       textInputViewLeadingOffset = kLeadingImageTrailingMarginLensOverlay;
     } else if (_presentationContext ==
-               OmniboxPresentationContext::kAIMPrototype) {
+               OmniboxPresentationContext::kComposebox) {
       textInputViewLeadingOffset = kLeadingImageTrailingMarginAIM;
     }
 

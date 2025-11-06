@@ -534,7 +534,7 @@ using base::UserMetricsAction;
 // Returns the size of the favicon.
 - (CGFloat)faviconSize {
   if (_presentationContext == OmniboxPresentationContext::kLensOverlay ||
-      _presentationContext == OmniboxPresentationContext::kAIMPrototype) {
+      _presentationContext == OmniboxPresentationContext::kComposebox) {
     return kDesiredSmallFaviconSizePt;
   } else {
     return kMinFaviconSizePt;

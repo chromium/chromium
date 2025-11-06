@@ -13,8 +13,8 @@ enum class OmniboxPresentationContext {
   kNTPHeader,
   // The omnibox is presented in the Lens overlay.
   kLensOverlay,
-  // The omnibox is presented in the AIM prototype.
-  kAIMPrototype,
+  // The omnibox is presented in the composebox.
+  kComposebox,
 };
 
 #endif  // IOS_CHROME_BROWSER_OMNIBOX_PUBLIC_OMNIBOX_PRESENTATION_CONTEXT_H_

@@ -1,6 +1,6 @@
 include_rules = [
   "+components/lens",
-  "+ios/chrome/browser/aim/prototype/coordinator",
+  "+ios/chrome/browser/composebox/coordinator",
   "+ios/chrome/browser/autocomplete/model/autocomplete_scheme_classifier_impl.h",
   "+ios/chrome/browser/badges/ui_bundled",
   "+ios/chrome/browser/contextual_panel/entrypoint/coordinator",

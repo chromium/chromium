@@ -83,7 +83,7 @@ const CGFloat kTrailingButtonIconPointSizeMedium = 15.0f;
       case TrailingIconType::kRefineQuery: {
         // The arrow should point in the direction of the omnibox.
         BOOL pointDown =
-            _presentationContext == OmniboxPresentationContext::kAIMPrototype ||
+            _presentationContext == OmniboxPresentationContext::kComposebox ||
             self.useBottomOmniboxInPopup;
         NSString* iconName =
             pointDown ? kRefineQueryDownSymbol : kRefineQuerySymbol;

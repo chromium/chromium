@@ -383,7 +383,7 @@
   BOOL showKeyboardAccessory =
       experimental_flags::IsOmniboxDebuggingEnabled() ||
       (!self.searchOnlyUI &&
-       _presentationContext != OmniboxPresentationContext::kAIMPrototype);
+       _presentationContext != OmniboxPresentationContext::kComposebox);
 
   if (!self.keyboardAccessoryView && showKeyboardAccessory) {
     TemplateURLService* templateURLService =

@@ -33,7 +33,6 @@
 #import "ios/chrome/app/profile/profile_init_stage.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/profile/profile_state_observer.h"
-#import "ios/chrome/browser/aim/prototype/coordinator/aim_prototype_availability.h"
 #import "ios/chrome/browser/authentication/account_menu/coordinator/account_menu_coordinator.h"
 #import "ios/chrome/browser/authentication/account_menu/coordinator/account_menu_coordinator_delegate.h"
 #import "ios/chrome/browser/authentication/account_menu/public/account_menu_constants.h"
@@ -42,6 +41,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_view_controller_presenter.h"
+#import "ios/chrome/browser/composebox/coordinator/composebox_availability.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_coordinator.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_delegate.h"
@@ -501,8 +501,7 @@
 
 - (void)focusFakebox {
   [self dismissCustomizationMenu];
-  if (MaybeShowAIMPrototype(self.browser,
-                            AIMPrototypeEntrypoint::kNTPFakebox)) {
+  if (MaybeShowComposebox(self.browser, ComposeboxEntrypoint::kNTPFakebox)) {
     return;
   }
   _fakeboxTapped = NO;
@@ -859,8 +858,7 @@
 - (void)fakeboxTapped {
   [self dismissCustomizationMenu];
   _fakeboxTapped = YES;
-  if (MaybeShowAIMPrototype(self.browser,
-                            AIMPrototypeEntrypoint::kNTPFakebox)) {
+  if (MaybeShowComposebox(self.browser, ComposeboxEntrypoint::kNTPFakebox)) {
     return;
   }
   [self.NTPViewController focusOmnibox];
@@ -1807,8 +1805,7 @@
 }
 
 - (void)openMIA {
-  if (MaybeShowAIMPrototype(self.browser,
-                            AIMPrototypeEntrypoint::kNTPAIMButton)) {
+  if (MaybeShowComposebox(self.browser, ComposeboxEntrypoint::kNTPAIMButton)) {
     return;
   }
   [self.NTPMetricsRecorder recordMIATapped];
