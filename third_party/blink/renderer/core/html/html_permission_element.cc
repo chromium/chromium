@@ -1308,7 +1308,7 @@ bool HTMLPermissionElement::IsClickingEnabled() {
     return true;
   }
 
-  if (!is_registered_in_browser_process()) {
+  if (!is_registered_in_browser_process_) {
     AddConsoleError(StrCat({"The permission element '", GetType(),
                             "' cannot be activated because of security checks "
                             "or because the page's quota has been exceeded."}));
@@ -1410,7 +1410,7 @@ HTMLPermissionElement::GetClickingEnabledState() const {
     }
   }
 
-  if (!is_registered_in_browser_process()) {
+  if (!is_registered_in_browser_process_) {
     return {false, AtomicString("unsuccessful_registration")};
   }
 

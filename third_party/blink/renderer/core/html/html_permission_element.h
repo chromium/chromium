@@ -105,6 +105,11 @@ class CORE_EXPORT HTMLPermissionElement
     return permission_text_span_;
   }
 
+  // Verify whether the element has been registered in browser process.
+  bool is_registered_in_browser_process_for_testing() const {
+    return is_registered_in_browser_process_;
+  }
+
   // HTMLElement overrides.
   bool IsHTMLPermissionElement() const final { return true; }
 
@@ -164,11 +169,11 @@ class CORE_EXPORT HTMLPermissionElement
   // TODO(crbug.com/1315595): remove this friend class once migration
   // to blink_unittests_v2 completes.
   friend class DeferredChecker;
-  friend class RegistrationWaiter;
   friend class HTMLPermissionElementIntersectionTest;
   friend class HTMLPermissionElementLayoutChangeTest;
   friend class HTMLGeolocationElementIntersectionTest;
   friend class HTMLInstallElementTestBase;
+  friend class HTMLPermissionElementTestBase;
 
   FRIEND_TEST_ALL_PREFIXES(HTMLGeolocationElementTestBase, GetTypeAttribute);
   FRIEND_TEST_ALL_PREFIXES(HTMLGeolocationElementTest,
@@ -457,11 +462,6 @@ class CORE_EXPORT HTMLPermissionElement
   // Wrapper to make this a void function for PostTask().
   void NotifyClickingDisablePseudoStateChangedTask() {
     NotifyClickingDisablePseudoStateChanged();
-  }
-
-  // Verify whether the element has been registered in browser process.
-  bool is_registered_in_browser_process() const {
-    return is_registered_in_browser_process_;
   }
 
   // Checks whether clicking is enabled at the moment. Clicking is disabled if

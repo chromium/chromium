@@ -4,7 +4,11 @@
 
 #include "third_party/blink/renderer/core/html/html_permission_element_test_helper.h"
 
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
+#include "base/test/run_until.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/html/html_permission_element.h"
 
 namespace blink {
 
@@ -41,6 +45,29 @@ void PermissionElementTestPermissionService::
         mojom::blink::EmbeddedPermissionRequestDescriptorPtr descriptor,
         mojo::PendingRemote<mojom::blink::EmbeddedPermissionControlClient>
             pending_client) {
+  if (pepc_registered_callback_) {
+    std::move(pepc_registered_callback_).Run();
+    return;
+  }
+
+  if (should_defer_registered_callback_) {
+    pepc_registered_callback_ =
+        blink::BindOnce(&PermissionElementTestPermissionService::
+                            RegisterPageEmbeddedPermissionControlInternal,
+                        blink::Unretained(this), std::move(permissions),
+                        std::move(pending_client));
+    return;
+  }
+
+  RegisterPageEmbeddedPermissionControlInternal(std::move(permissions),
+                                                std::move(pending_client));
+}
+
+void PermissionElementTestPermissionService::
+    RegisterPageEmbeddedPermissionControlInternal(
+        Vector<PermissionDescriptorPtr> permissions,
+        mojo::PendingRemote<mojom::blink::EmbeddedPermissionControlClient>
+            pending_client) {
   Vector<MojoPermissionStatus> statuses =
       initial_statuses_.empty()
           ? Vector<MojoPermissionStatus>(permissions.size(),
@@ -48,8 +75,17 @@ void PermissionElementTestPermissionService::
           : initial_statuses_;
   client_ = mojo::Remote<mojom::blink::EmbeddedPermissionControlClient>(
       std::move(pending_client));
+  client_.set_disconnect_handler(
+      blink::BindOnce(&PermissionElementTestPermissionService::OnMojoDisconnect,
+                      blink::Unretained(this)));
   client_->OnEmbeddedPermissionControlRegistered(/*allow=*/true,
                                                  std::move(statuses));
+}
+
+void PermissionElementTestPermissionService::OnMojoDisconnect() {
+  if (client_disconnect_run_loop_) {
+    client_disconnect_run_loop_->Quit();
+  }
 }
 
 void PermissionElementTestPermissionService::RequestPageEmbeddedPermission(
@@ -116,6 +152,31 @@ void PermissionElementTestPermissionService::WaitForPermissionStatusChange(
 void PermissionElementTestPermissionService::set_initial_statuses(
     const Vector<MojoPermissionStatus>& statuses) {
   initial_statuses_ = statuses;
+}
+
+void PermissionElementTestPermissionService::WaitForClientDisconnected() {
+  client_disconnect_run_loop_ = std::make_unique<base::RunLoop>();
+  client_disconnect_run_loop_->Run();
+}
+
+void PermissionElementTestPermissionService::set_pepc_registered_callback(
+    base::OnceClosure callback) {
+  pepc_registered_callback_ = std::move(callback);
+}
+
+base::OnceClosure
+PermissionElementTestPermissionService::TakePEPCRegisteredCallback() {
+  return std::move(pepc_registered_callback_);
+}
+
+void PermissionElementTestPermissionService::
+    set_should_defer_registered_callback(bool should_defer) {
+  should_defer_registered_callback_ = should_defer;
+}
+
+void WaitForPermissionElementRegistration(HTMLPermissionElement* el) {
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return el->is_registered_in_browser_process_for_testing(); }));
 }
 
 }  // namespace blink

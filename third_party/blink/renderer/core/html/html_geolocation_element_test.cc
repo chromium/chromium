@@ -208,9 +208,7 @@ TEST_F(HTMLGeolocationElementTest, GeolocationTranslateInnerText) {
       {"ta", kGeolocationStringTa}};
 
   auto* geolocation_element = CreateGeolocationElement();
-  EXPECT_TRUE(base::test::RunUntil([&]() {
-    return geolocation_element->is_registered_in_browser_process();
-  }));
+  WaitForPermissionElementRegistration(geolocation_element);
   for (const auto& data : kTestData) {
     geolocation_element->setAttribute(html_names::kLangAttr,
                                       AtomicString(data.lang_attr_value));
@@ -248,9 +246,7 @@ TEST_F(HTMLGeolocationElementTest, GeolocationSetInnerTextAfterRegistration) {
     auto* geolocation_element =
         CreateGeolocationElement(data.precise_accuracy_mode);
     permission_service()->set_initial_statuses({data.status});
-    EXPECT_TRUE(base::test::RunUntil([&]() {
-      return geolocation_element->is_registered_in_browser_process();
-    }));
+    WaitForPermissionElementRegistration(geolocation_element);
     CheckInnerText(geolocation_element, data.expected_text);
   }
 }
@@ -258,9 +254,7 @@ TEST_F(HTMLGeolocationElementTest, GeolocationSetInnerTextAfterRegistration) {
 TEST_F(HTMLGeolocationElementTest,
        GeolocationPreciseLocationAttributeDoesNotChangeText) {
   auto* geolocation_element = CreateGeolocationElement();
-  EXPECT_TRUE(base::test::RunUntil([&]() {
-    return geolocation_element->is_registered_in_browser_process();
-  }));
+  WaitForPermissionElementRegistration(geolocation_element);
   String initial_text =
       geolocation_element->permission_text_span_for_testing()->innerText();
   CheckInnerText(geolocation_element, initial_text);
@@ -272,9 +266,7 @@ TEST_F(HTMLGeolocationElementTest,
 TEST_F(HTMLGeolocationElementTest,
        GeolocationPreciseLocationAttributeCamelCaseDoesNotChangeText) {
   auto* geolocation_element = CreateGeolocationElement();
-  EXPECT_TRUE(base::test::RunUntil([&]() {
-    return geolocation_element->is_registered_in_browser_process();
-  }));
+  WaitForPermissionElementRegistration(geolocation_element);
   String initial_text =
       geolocation_element->permission_text_span_for_testing()->innerText();
   CheckInnerText(geolocation_element, initial_text);
@@ -285,9 +277,7 @@ TEST_F(HTMLGeolocationElementTest,
 
 TEST_F(HTMLGeolocationElementTest, GeolocationAccuracyMode) {
   auto* geolocation_element = CreateGeolocationElement();
-  EXPECT_TRUE(base::test::RunUntil([&]() {
-    return geolocation_element->is_registered_in_browser_process();
-  }));
+  WaitForPermissionElementRegistration(geolocation_element);
   geolocation_element->setAttribute(html_names::kAccuracymodeAttr,
                                     AtomicString("precise"));
   CheckInnerText(geolocation_element, kPreciseGeolocationString);
@@ -295,9 +285,7 @@ TEST_F(HTMLGeolocationElementTest, GeolocationAccuracyMode) {
 
 TEST_F(HTMLGeolocationElementTest, GeolocationAccuracyModeCaseInsensitive) {
   auto* geolocation_element = CreateGeolocationElement();
-  EXPECT_TRUE(base::test::RunUntil([&]() {
-    return geolocation_element->is_registered_in_browser_process();
-  }));
+  WaitForPermissionElementRegistration(geolocation_element);
   geolocation_element->setAttribute(html_names::kAccuracymodeAttr,
                                     AtomicString("PrEcIsE"));
   CheckInnerText(geolocation_element, kPreciseGeolocationString);
@@ -318,9 +306,7 @@ TEST_F(HTMLGeolocationElementTest, GeolocationStatusChange) {
   for (const auto& data : kTestData) {
     auto* geolocation_element =
         CreateGeolocationElement(data.precise_accuracy_mode);
-    EXPECT_TRUE(base::test::RunUntil([&]() {
-      return geolocation_element->is_registered_in_browser_process();
-    }));
+    WaitForPermissionElementRegistration(geolocation_element);
     permission_service()->NotifyPermissionStatusChange(
         PermissionName::GEOLOCATION, data.status);
     CheckInnerText(geolocation_element, data.expected_text);
@@ -330,9 +316,7 @@ TEST_F(HTMLGeolocationElementTest, GeolocationStatusChange) {
 
 TEST_F(HTMLGeolocationElementTest, GeolocationUsingLocationAppearance) {
   auto* geolocation_element = CreateGeolocationElement();
-  EXPECT_TRUE(base::test::RunUntil([&]() {
-    return geolocation_element->is_registered_in_browser_process();
-  }));
+  WaitForPermissionElementRegistration(geolocation_element);
 
   // 1. Test GetCurrentPosition
   geolocation_element->GetCurrentPosition();
@@ -415,9 +399,7 @@ TEST_F(HTMLGeolocationElementTest, GeolocationUsingLocationAppearance) {
 TEST_F(HTMLGeolocationElementTest, GeolocationWatchPositionAppearance) {
   auto* geolocation_element = CreateGeolocationElement();
   geolocation_element->setAttribute(html_names::kWatchAttr, AtomicString(""));
-  EXPECT_TRUE(base::test::RunUntil([&]() {
-    return geolocation_element->is_registered_in_browser_process();
-  }));
+  WaitForPermissionElementRegistration(geolocation_element);
 
   // 1. Call WatchPosition and check initial spinning.
   geolocation_element->WatchPosition();
@@ -594,9 +576,7 @@ TEST_F(HTMLGeolocationElementTest,
 
 TEST_F(HTMLGeolocationElementTest, PermissionStatusChangeAfterDecided) {
   auto* geolocation_element = CreateGeolocationElement();
-  EXPECT_TRUE(base::test::RunUntil([&]() {
-    return geolocation_element->is_registered_in_browser_process();
-  }));
+  WaitForPermissionElementRegistration(geolocation_element);
   geolocation_element->OnEmbeddedPermissionsDecided(
       mojom::EmbeddedPermissionControlResult::kGranted);
   CheckAppearance(geolocation_element, kGeolocationString,

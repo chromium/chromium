@@ -228,175 +228,6 @@ TEST_F(HTMLPermissionElementTestBase, ParsePermissionDescriptorsFromType) {
   }
 }
 
-// TODO(mkwst): Merge this with `PermissionElementTestPermissionService`.
-class TestPermissionService : public PermissionService {
- public:
-  explicit TestPermissionService() = default;
-  ~TestPermissionService() override = default;
-
-  void BindHandle(mojo::ScopedMessagePipeHandle handle) {
-    receivers_.Add(this,
-                   mojo::PendingReceiver<PermissionService>(std::move(handle)));
-  }
-
-  // mojom::blink::PermissionService implementation
-  void HasPermission(PermissionDescriptorPtr permission,
-                     HasPermissionCallback) override {}
-  void RegisterPageEmbeddedPermissionControl(
-      Vector<PermissionDescriptorPtr> permissions,
-      mojom::blink::EmbeddedPermissionRequestDescriptorPtr descriptor,
-      mojo::PendingRemote<mojom::blink::EmbeddedPermissionControlClient>
-          pending_client) override {
-    if (pepc_registered_callback_) {
-      std::move(pepc_registered_callback_).Run();
-      return;
-    }
-
-    if (should_defer_registered_callback_) {
-      pepc_registered_callback_ = BindOnce(
-          &TestPermissionService::RegisterPageEmbeddedPermissionControlInternal,
-          Unretained(this), std::move(permissions), std::move(pending_client));
-      return;
-    }
-
-    RegisterPageEmbeddedPermissionControlInternal(std::move(permissions),
-                                                  std::move(pending_client));
-  }
-
-  void RegisterPageEmbeddedPermissionControlInternal(
-      Vector<PermissionDescriptorPtr> permissions,
-      mojo::PendingRemote<mojom::blink::EmbeddedPermissionControlClient>
-          pending_client) {
-    Vector<MojoPermissionStatus> statuses =
-        initial_statuses_.empty()
-            ? Vector<MojoPermissionStatus>(permissions.size(),
-                                           MojoPermissionStatus::ASK)
-            : initial_statuses_;
-    client_ = mojo::Remote<mojom::blink::EmbeddedPermissionControlClient>(
-        std::move(pending_client));
-    client_.set_disconnect_handler(
-        BindOnce(&TestPermissionService::OnMojoDisconnect, Unretained(this)));
-    client_->OnEmbeddedPermissionControlRegistered(/*allowed=*/true,
-                                                   std::move(statuses));
-  }
-
-  void OnMojoDisconnect() {
-    if (client_disconnect_run_loop_) {
-      client_disconnect_run_loop_->Quit();
-    }
-  }
-
-  void RequestPageEmbeddedPermission(
-      Vector<PermissionDescriptorPtr> permissions,
-      EmbeddedPermissionRequestDescriptorPtr descriptor,
-      RequestPageEmbeddedPermissionCallback) override {}
-  void RequestPermission(PermissionDescriptorPtr permission,
-                         bool user_gesture,
-                         RequestPermissionCallback) override {}
-  void RequestPermissions(Vector<PermissionDescriptorPtr> permissions,
-                          bool user_gesture,
-                          RequestPermissionsCallback) override {}
-  void RevokePermission(PermissionDescriptorPtr permission,
-                        RevokePermissionCallback) override {}
-  void AddPermissionObserver(
-      PermissionDescriptorPtr permission,
-      MojoPermissionStatus last_known_status,
-      mojo::PendingRemote<PermissionObserver> observer) override {}
-  void AddPageEmbeddedPermissionObserver(
-      PermissionDescriptorPtr permission,
-      MojoPermissionStatus last_known_status,
-      mojo::PendingRemote<PermissionObserver> observer) override {
-    observers_.emplace_back(permission->name, mojo::Remote<PermissionObserver>(
-                                                  std::move(observer)));
-  }
-
-  void NotifyEventListener(PermissionDescriptorPtr permission,
-                           const String& event_type,
-                           bool is_added) override {}
-
-  void NotifyPermissionStatusChange(PermissionName name,
-                                    MojoPermissionStatus status) {
-    for (const auto& observer : observers_) {
-      if (observer.first == name) {
-        observer.second->OnPermissionStatusChange(status);
-      }
-    }
-    WaitForPermissionStatusChange(status);
-  }
-
-  void WaitForPermissionStatusChange(MojoPermissionStatus status) {
-    mojo::Remote<PermissionObserver> observer;
-    base::RunLoop run_loop;
-    auto waiter = std::make_unique<PermissionStatusChangeWaiter>(
-        observer.BindNewPipeAndPassReceiver(), run_loop.QuitClosure());
-    observer->OnPermissionStatusChange(status);
-    run_loop.Run();
-  }
-
-  void WaitForClientDisconnected() {
-    client_disconnect_run_loop_ = std::make_unique<base::RunLoop>();
-    client_disconnect_run_loop_->Run();
-  }
-
-  void set_initial_statuses(const Vector<MojoPermissionStatus>& statuses) {
-    initial_statuses_ = statuses;
-  }
-
-  void set_pepc_registered_callback(base::OnceClosure callback) {
-    pepc_registered_callback_ = std::move(callback);
-  }
-
-  base::OnceClosure TakePEPCRegisteredCallback() {
-    return std::move(pepc_registered_callback_);
-  }
-
-  void set_should_defer_registered_callback(bool should_defer) {
-    should_defer_registered_callback_ = should_defer;
-  }
-
- private:
-  mojo::ReceiverSet<PermissionService> receivers_;
-  Vector<std::pair<PermissionName, mojo::Remote<PermissionObserver>>>
-      observers_;
-  Vector<MojoPermissionStatus> initial_statuses_;
-  bool should_defer_registered_callback_ = false;
-  base::OnceClosure pepc_registered_callback_;
-  mojo::Remote<mojom::blink::EmbeddedPermissionControlClient> client_;
-  std::unique_ptr<base::RunLoop> client_disconnect_run_loop_;
-};
-
-class RegistrationWaiter {
- public:
-  explicit RegistrationWaiter(HTMLPermissionElement* element)
-      : element_(element) {}
-
-  RegistrationWaiter(const RegistrationWaiter&) = delete;
-  RegistrationWaiter& operator=(const RegistrationWaiter&) = delete;
-
-  void Wait() {
-    PostDelayedTask();
-    run_loop_.Run();
-  }
-
-  void PostDelayedTask() {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE,
-        BindOnce(&RegistrationWaiter::VerifyRegistration, Unretained(this)),
-        base::Milliseconds(100));
-  }
-  void VerifyRegistration() {
-    if (element_ && !element_->is_registered_in_browser_process()) {
-      PostDelayedTask();
-    } else {
-      run_loop_.Quit();
-    }
-  }
-
- private:
-  WeakPersistent<HTMLPermissionElement> element_;
-  base::RunLoop run_loop_;
-};
-
 class HTMLPermissionElementTest : public HTMLPermissionElementTestBase {
  protected:
   HTMLPermissionElementTest() = default;
@@ -408,8 +239,9 @@ class HTMLPermissionElementTest : public HTMLPermissionElementTestBase {
     HTMLPermissionElementTestBase::SetUp();
     GetFrame().GetBrowserInterfaceBroker().SetBinderForTesting(
         PermissionService::Name_,
-        base::BindRepeating(&TestPermissionService::BindHandle,
-                            base::Unretained(&permission_service_)));
+        blink::BindRepeating(
+            &PermissionElementTestPermissionService::BindHandle,
+            base::Unretained(&permission_service_)));
   }
 
   void TearDown() override {
@@ -418,7 +250,9 @@ class HTMLPermissionElementTest : public HTMLPermissionElementTestBase {
     HTMLPermissionElementTestBase::TearDown();
   }
 
-  TestPermissionService* permission_service() { return &permission_service_; }
+  PermissionElementTestPermissionService* permission_service() {
+    return &permission_service_;
+  }
 
   HTMLPermissionElement* CreatePermissionElement(
       const char* permission,
@@ -438,7 +272,7 @@ class HTMLPermissionElementTest : public HTMLPermissionElementTestBase {
   }
 
  private:
-  TestPermissionService permission_service_;
+  PermissionElementTestPermissionService permission_service_;
   ScopedTestingPlatformSupport<LocalePlatformSupport> support_;
 };
 
@@ -577,7 +411,7 @@ TEST_F(HTMLPermissionElementTest, TranslateInnerText) {
       {"ta", kGeolocationStringTa, kGeolocationAllowedStringTa}};
 
   auto* permission_element = CreatePermissionElement("geolocation");
-  RegistrationWaiter(permission_element).Wait();
+  WaitForPermissionElementRegistration(permission_element);
   for (const auto& data : kTestData) {
     permission_element->setAttribute(html_names::kLangAttr,
                                      AtomicString(data.lang_attr_value));
@@ -603,10 +437,10 @@ TEST_F(HTMLPermissionElementTest, TranslateInnerText) {
 // permission element doesn't crash the renderer process.
 TEST_F(HTMLPermissionElementTest, AfterDetachLayoutTreeCrashTest) {
   auto* permission_element = CreatePermissionElement("camera");
-  RegistrationWaiter(permission_element).Wait();
+  WaitForPermissionElementRegistration(permission_element);
   permission_element->SetForceReattachLayoutTree();
   UpdateAllLifecyclePhasesForTest();
-  RegistrationWaiter(permission_element).Wait();
+  WaitForPermissionElementRegistration(permission_element);
   // We end up here if the renderer process did not crash.
 }
 
@@ -650,7 +484,7 @@ TEST_F(HTMLPermissionElementTest, SetTypeAfterInsertedInto) {
                                        AtomicString(""));
     }
     UpdateAllLifecyclePhasesForTest();
-    RegistrationWaiter(permission_element).Wait();
+    WaitForPermissionElementRegistration(permission_element);
     EXPECT_EQ(
         data.expected_text,
         permission_element->permission_text_span_for_testing()->innerText());
@@ -688,7 +522,7 @@ TEST_F(HTMLPermissionElementTest, SetInnerTextAfterRegistrationSingleElement) {
     auto* permission_element =
         CreatePermissionElement(data.type, data.precise_location);
     permission_service()->set_initial_statuses({data.status});
-    RegistrationWaiter(permission_element).Wait();
+    WaitForPermissionElementRegistration(permission_element);
     EXPECT_EQ(
         data.expected_text,
         permission_element->permission_text_span_for_testing()->innerText());
@@ -725,7 +559,7 @@ TEST_F(HTMLPermissionElementTest,
     auto* permission_element = CreatePermissionElement("camera microphone");
     permission_service()->set_initial_statuses(
         {data.camera_status, data.microphone_status});
-    RegistrationWaiter(permission_element).Wait();
+    WaitForPermissionElementRegistration(permission_element);
     EXPECT_EQ(
         data.expected_text,
         permission_element->permission_text_span_for_testing()->innerText());
@@ -767,7 +601,7 @@ TEST_F(HTMLPermissionElementTest, StatusChangeSinglePermissionElement) {
   for (const auto& data : kTestData) {
     auto* permission_element =
         CreatePermissionElement(data.type, data.precise_location);
-    RegistrationWaiter(permission_element).Wait();
+    WaitForPermissionElementRegistration(permission_element);
     permission_service()->NotifyPermissionStatusChange(data.name, data.status);
     EXPECT_EQ(
         data.expected_text,
@@ -804,7 +638,7 @@ TEST_F(HTMLPermissionElementTest,
   };
   for (const auto& data : kTestData) {
     auto* permission_element = CreatePermissionElement("camera microphone");
-    RegistrationWaiter(permission_element).Wait();
+    WaitForPermissionElementRegistration(permission_element);
     permission_service()->NotifyPermissionStatusChange(
         PermissionName::VIDEO_CAPTURE, data.camera_status);
     permission_service()->NotifyPermissionStatusChange(
@@ -826,7 +660,7 @@ TEST_F(HTMLPermissionElementTest, InitialAndUpdatedPermissionStatus) {
         PermissionStatusV8Enum(initial_status);
     auto* permission_element = CreatePermissionElement("geolocation");
     permission_service()->set_initial_statuses({initial_status});
-    RegistrationWaiter(permission_element).Wait();
+    WaitForPermissionElementRegistration(permission_element);
     EXPECT_EQ(expected_initial_status,
               permission_element->initialPermissionStatus());
     EXPECT_EQ(expected_initial_status, permission_element->permissionStatus());
@@ -866,7 +700,7 @@ TEST_F(HTMLPermissionElementTest, InitialAndUpdatedPermissionStatusGrouped) {
   EXPECT_EQ(PermissionStatusV8Enum(MojoPermissionStatus::ASK),
             permission_element->permissionStatus());
 
-  RegistrationWaiter(permission_element).Wait();
+  WaitForPermissionElementRegistration(permission_element);
 
   // The status is the most restrictive of the two permissions. The initial
   // status never changes. camera: ASK, mic: DENIED
@@ -952,8 +786,9 @@ class HTMLPermissionElementSimTest : public SimTest {
     SimTest::SetUp();
     MainFrame().GetFrame()->GetBrowserInterfaceBroker().SetBinderForTesting(
         PermissionService::Name_,
-        base::BindRepeating(&TestPermissionService::BindHandle,
-                            base::Unretained(&permission_service_)));
+        blink::BindRepeating(
+            &PermissionElementTestPermissionService::BindHandle,
+            base::Unretained(&permission_service_)));
   }
 
   void TearDown() override {
@@ -962,7 +797,9 @@ class HTMLPermissionElementSimTest : public SimTest {
     SimTest::TearDown();
   }
 
-  TestPermissionService* permission_service() { return &permission_service_; }
+  PermissionElementTestPermissionService* permission_service() {
+    return &permission_service_;
+  }
 
   HTMLPermissionElement* CreatePermissionElement(
       Document& document,
@@ -983,7 +820,7 @@ class HTMLPermissionElementSimTest : public SimTest {
   }
 
  private:
-  TestPermissionService permission_service_;
+  PermissionElementTestPermissionService permission_service_;
   ScopedTestingPlatformSupport<LocalePlatformSupport> support;
   ScopedPermissionElementForTest scoped_feature_{true};
 };
@@ -1054,7 +891,7 @@ TEST_F(HTMLPermissionElementSimTest, BlockedByPermissionsPolicy) {
   for (const char* permission : {"camera", "microphone", "geolocation"}) {
     auto* permission_element = CreatePermissionElement(
         *last_child_frame->GetFrame()->GetDocument(), permission);
-    RegistrationWaiter(permission_element).Wait();
+    WaitForPermissionElementRegistration(permission_element);
     // PermissionsPolicy passed with no console log.
     auto& last_console_messages =
         static_cast<frame_test_helpers::TestWebFrameClient*>(
@@ -1245,19 +1082,22 @@ TEST_F(HTMLPermissionElementSimTest, RegisterAfterBeingVisible) {
   auto* permission_element = To<HTMLPermissionElement>(
       GetDocument().QuerySelector(AtomicString("permission")));
   GetDocument().View()->UpdateAllLifecyclePhasesForTest();
-  EXPECT_FALSE(permission_element->is_registered_in_browser_process());
+  EXPECT_FALSE(
+      permission_element->is_registered_in_browser_process_for_testing());
   permission_element->setAttribute(html_names::kTypeAttr,
                                    AtomicString("camera"));
   GetDocument().View()->UpdateAllLifecyclePhasesForTest();
-  EXPECT_FALSE(permission_element->is_registered_in_browser_process());
+  EXPECT_FALSE(
+      permission_element->is_registered_in_browser_process_for_testing());
   permission_element->setAttribute(html_names::kStyleAttr,
                                    AtomicString("visibility:visible;"));
   GetDocument().View()->UpdateAllLifecyclePhasesForTest();
-  RegistrationWaiter(permission_element).Wait();
+  WaitForPermissionElementRegistration(permission_element);
   permission_element->setAttribute(html_names::kStyleAttr,
                                    AtomicString("display: none"));
   GetDocument().View()->UpdateAllLifecyclePhasesForTest();
-  EXPECT_FALSE(permission_element->is_registered_in_browser_process());
+  EXPECT_FALSE(
+      permission_element->is_registered_in_browser_process_for_testing());
 }
 
 class HTMLPermissionElementDispatchValidationEventTest
@@ -1267,7 +1107,8 @@ class HTMLPermissionElementDispatchValidationEventTest
 
   ~HTMLPermissionElementDispatchValidationEventTest() override = default;
 
-  HTMLPermissionElement* CreateElementAndWaitForRegistration() {
+  HTMLPermissionElement*
+  CreateElementAndWaitForPermissionElementRegistration() {
     auto& document = GetDocument();
     HTMLPermissionElement* permission_element =
         MakeGarbageCollected<HTMLPermissionElement>(document);
@@ -1289,7 +1130,7 @@ class HTMLPermissionElementDispatchValidationEventTest
     EXPECT_FALSE(permission_element->isValid());
     EXPECT_EQ(permission_element->invalidReason(), "unsuccessful_registration");
     std::move(permission_service()->TakePEPCRegisteredCallback()).Run();
-    RegistrationWaiter(permission_element).Wait();
+    WaitForPermissionElementRegistration(permission_element);
     permission_service()->set_should_defer_registered_callback(
         /*should_defer*/ false);
     checker.CheckConsoleMessageAtIndex(1u, kValidationStatusChangeEvent);
@@ -1303,7 +1144,8 @@ class HTMLPermissionElementDispatchValidationEventTest
 
 // Test receiving event after registration
 TEST_F(HTMLPermissionElementDispatchValidationEventTest, Registration) {
-  auto* permission_element = CreateElementAndWaitForRegistration();
+  auto* permission_element =
+      CreateElementAndWaitForPermissionElementRegistration();
   EXPECT_TRUE(
       base::test::RunUntil([&]() { return permission_element->isValid(); }));
 }
@@ -1330,7 +1172,8 @@ TEST_F(HTMLPermissionElementDispatchValidationEventTest,
       {HTMLPermissionElement::DisableReason::kInvalidStyle,
        String("style_invalid")}};
   for (const auto& data : kTestData) {
-    auto* permission_element = CreateElementAndWaitForRegistration();
+    auto* permission_element =
+        CreateElementAndWaitForPermissionElementRegistration();
     DeferredChecker checker(permission_element, &MainFrame());
     EXPECT_TRUE(permission_element->isValid());
     permission_element->DisableClickingIndefinitely(data.reason);
@@ -1377,7 +1220,8 @@ TEST_F(HTMLPermissionElementDispatchValidationEventTest,
 // result in an event.
 TEST_F(HTMLPermissionElementDispatchValidationEventTest,
        ChangeReasonRestartTimer) {
-  auto* permission_element = CreateElementAndWaitForRegistration();
+  auto* permission_element =
+      CreateElementAndWaitForPermissionElementRegistration();
   DeferredChecker checker(permission_element, &MainFrame());
   EXPECT_TRUE(permission_element->isValid());
   permission_element->DisableClickingTemporarily(
@@ -1411,7 +1255,8 @@ TEST_F(HTMLPermissionElementDispatchValidationEventTest,
 // multiple reasons and verify the `isValid` and `invalidReason` attrs.
 TEST_F(HTMLPermissionElementDispatchValidationEventTest,
        DisableEnableClickingDifferentReasons) {
-  auto* permission_element = CreateElementAndWaitForRegistration();
+  auto* permission_element =
+      CreateElementAndWaitForPermissionElementRegistration();
   DeferredChecker checker(permission_element, &MainFrame());
   EXPECT_TRUE(permission_element->isValid());
   permission_element->DisableClickingTemporarily(
@@ -1518,7 +1363,7 @@ TEST_F(HTMLPermissionElementSimTest, BlockedByMissingFrameAncestorsCSP) {
   for (const char* permission : {"camera", "microphone", "geolocation"}) {
     auto* permission_element = CreatePermissionElement(
         *last_child_frame->GetFrame()->GetDocument(), permission);
-    RegistrationWaiter(permission_element).Wait();
+    WaitForPermissionElementRegistration(permission_element);
     auto& last_console_messages =
         static_cast<frame_test_helpers::TestWebFrameClient*>(
             last_child_frame->Client())
@@ -1557,7 +1402,7 @@ TEST_F(HTMLPermissionElementSimTest, GrantedSelectorDisplayNone) {
 
   auto* permission_element =
       CreatePermissionElement(GetDocument(), "geolocation");
-  RegistrationWaiter(permission_element).Wait();
+  WaitForPermissionElementRegistration(permission_element);
   EXPECT_TRUE(permission_element->GetComputedStyle());
   EXPECT_EQ(
       EDisplay::kInlineBlock,

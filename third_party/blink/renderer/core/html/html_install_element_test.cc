@@ -129,8 +129,7 @@ class HTMLInstallElementTestBase : public PageTestBase {
     GetDocument().body()->AppendChild(element);
     GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
     GetDocument().View()->UpdateAllLifecyclePhasesForTest();
-    EXPECT_TRUE(base::test::RunUntil(
-        [&]() { return element->is_registered_in_browser_process(); }));
+    WaitForPermissionElementRegistration(element);
   }
 
   void CheckInnerText(HTMLInstallElement* element,
@@ -144,7 +143,7 @@ class HTMLInstallElementTestBase : public PageTestBase {
         .GetTaskRunner(TaskType::kInternalDefault)
         ->PostTask(
             FROM_HERE,
-            base::BindOnce(
+            blink::BindOnce(
                 [](HTMLInstallElement* element, const String& expected_text,
                    base::RepeatingClosure quit_closure) {
                   EXPECT_EQ(
@@ -162,12 +161,13 @@ class HTMLInstallElementTestBase : public PageTestBase {
     scoped_feature_list_.InitAndEnableFeature(blink::features::kInstallElement);
     GetFrame().GetBrowserInterfaceBroker().SetBinderForTesting(
         PermissionService::Name_,
-        base::BindRepeating(&PermissionElementTestPermissionService::BindHandle,
-                            base::Unretained(&permission_service_)));
+        blink::BindRepeating(
+            &PermissionElementTestPermissionService::BindHandle,
+            base::Unretained(&permission_service_)));
     GetFrame().GetBrowserInterfaceBroker().SetBinderForTesting(
         mojom::blink::WebInstallService::Name_,
-        base::BindRepeating(&MockWebInstallService::BindHandle,
-                            base::Unretained(&web_install_service_)));
+        blink::BindRepeating(&MockWebInstallService::BindHandle,
+                             base::Unretained(&web_install_service_)));
   }
 
   void TearDown() override {

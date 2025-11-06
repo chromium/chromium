@@ -5,13 +5,21 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_PERMISSION_ELEMENT_TEST_HELPER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_PERMISSION_ELEMENT_TEST_HELPER_H_
 
+#include <memory>
+
 #include "base/functional/callback_forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
 
+namespace base {
+class RunLoop;
+}  // namespace base
+
 namespace blink {
+
+class HTMLPermissionElement;
 
 using mojom::blink::PermissionDescriptor;
 using mojom::blink::PermissionDescriptorPtr;
@@ -83,13 +91,29 @@ class PermissionElementTestPermissionService : public PermissionService {
 
   void set_initial_statuses(const Vector<MojoPermissionStatus>& statuses);
 
+  void WaitForClientDisconnected();
+  void set_pepc_registered_callback(base::OnceClosure callback);
+  base::OnceClosure TakePEPCRegisteredCallback();
+  void set_should_defer_registered_callback(bool should_defer);
+
  private:
+  void OnMojoDisconnect();
+  void RegisterPageEmbeddedPermissionControlInternal(
+      Vector<PermissionDescriptorPtr> permissions,
+      mojo::PendingRemote<mojom::blink::EmbeddedPermissionControlClient>
+          pending_client);
+
   mojo::ReceiverSet<PermissionService> receivers_;
   Vector<std::pair<PermissionName, mojo::Remote<PermissionObserver>>>
       observers_;
   Vector<MojoPermissionStatus> initial_statuses_;
   mojo::Remote<mojom::blink::EmbeddedPermissionControlClient> client_;
+  bool should_defer_registered_callback_ = false;
+  base::OnceClosure pepc_registered_callback_;
+  std::unique_ptr<base::RunLoop> client_disconnect_run_loop_;
 };
+
+void WaitForPermissionElementRegistration(HTMLPermissionElement*);
 
 }  // namespace blink
 
