@@ -992,6 +992,11 @@ void PasswordAutofillAgent::FillField(
     return;
   }
   DoFillField(input_element, value, field_properties);
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kActorLoginTreatFillingAsUserInput)) {
+    InformBrowserAboutUserInput(input_element.GetOwningFormForAutofill(),
+                                input_element, /*form_cache=*/{});
+  }
   std::move(success_callback).Run(true);
 }
 

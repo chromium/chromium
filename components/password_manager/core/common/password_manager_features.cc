@@ -19,6 +19,11 @@ namespace password_manager::features {
 // NOTE: It is strongly recommended to use UpperCamelCase style for feature
 //       names, e.g. "MyGreatFeature".
 
+// When enabled, will inform browser about filling through `FillField` as user
+// input.
+BASE_FEATURE(kActorLoginTreatFillingAsUserInput,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Only relevant when `kShowSuggestionsOnAutofocus` is on. This prevents
 // suggestions from being shown while waiting for passkeys to become available,
 // if the popup was triggered by autofocus without user interaction. It is
