@@ -365,10 +365,7 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 CcFeatures.DEFER_IMPL_INVALIDATION,
                 "Allow main thread additional time to respond before creating a pending tree"),
-        Flag.baseFeature(
-                AwFeatures.WEBVIEW_USE_METRICS_UPLOAD_SERVICE,
-                "Upload UMA metrics logs through MetricsUploadService not via GMS-core"
-                        + " directly."),
+
         Flag.baseFeature(
                 AwFeatures.WEBVIEW_USE_METRICS_UPLOAD_SERVICE_ONLY_SDK_RUNTIME,
                 "Upload UMA metrics logs through MetricsUploadService not via GMS-core"

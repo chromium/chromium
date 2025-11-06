@@ -80,11 +80,6 @@ BASE_FEATURE(kWebViewMuteAudio, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kWebViewTestFeature, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Use WebView's nonembedded MetricsUploadService to upload UMA metrics instead
-// of sending it directly to GMS-core.
-BASE_FEATURE(kWebViewUseMetricsUploadService,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Use WebView's nonembedded MetricsUploadService to upload UMA metrics instead
 // of sending it directly to GMS-core when running within the SDK Runtime.
 BASE_FEATURE(kWebViewUseMetricsUploadServiceOnlySdkRuntime,
              base::FEATURE_DISABLED_BY_DEFAULT);

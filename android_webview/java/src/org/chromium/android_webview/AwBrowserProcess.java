@@ -763,8 +763,7 @@ public final class AwBrowserProcess {
                             && AwFeatureMap.isEnabled(
                                     AwFeatures.WEBVIEW_USE_METRICS_UPLOAD_SERVICE_ONLY_SDK_RUNTIME);
 
-            if (metricServiceEnabledOnlySdkRuntime
-                    || AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_USE_METRICS_UPLOAD_SERVICE)) {
+            if (metricServiceEnabledOnlySdkRuntime) {
                 boolean isAsync =
                         AwFeatureMap.isEnabled(AwFeatures.ANDROID_METRICS_ASYNC_METRIC_LOGGING);
                 AwMetricsLogUploader uploader = new AwMetricsLogUploader(isAsync);

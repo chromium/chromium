@@ -32,7 +32,6 @@ BASE_DECLARE_FEATURE(kWebViewMuteAudio);
 BASE_DECLARE_FEATURE(kWebViewRenderDocument);
 BASE_DECLARE_FEATURE(kWebViewReportImeInsets);
 BASE_DECLARE_FEATURE(kWebViewTestFeature);
-BASE_DECLARE_FEATURE(kWebViewUseMetricsUploadService);
 BASE_DECLARE_FEATURE(kWebViewUseMetricsUploadServiceOnlySdkRuntime);
 BASE_DECLARE_FEATURE(kWebViewPropagateNetworkChangeSignals);
 BASE_DECLARE_FEATURE(kWebViewStartupTasksYieldToNative);
