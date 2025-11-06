@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
-import android.content.Context;
 import android.view.View;
 
 import androidx.annotation.VisibleForTesting;
@@ -40,7 +39,7 @@ public class TabGridDialogMenuCoordinator extends TabGroupOverflowMenuCoordinato
      * @param tabGroupIdSupplier The tab group ID supplier for the tab group being acted on.
      * @param tabGroupSyncService Used to checking if a group is shared or synced.
      * @param collaborationService Used for checking the user is the owner of a group.
-     * @param context The {@link Context} that the coordinator resides in.
+     * @param activity The {@link Activity} that the coordinator resides in.
      */
     public TabGridDialogMenuCoordinator(
             OnItemClickedCallback<Token> onItemClicked,
@@ -48,7 +47,7 @@ public class TabGridDialogMenuCoordinator extends TabGroupOverflowMenuCoordinato
             Supplier<@Nullable Token> tabGroupIdSupplier,
             @Nullable TabGroupSyncService tabGroupSyncService,
             CollaborationService collaborationService,
-            Context context) {
+            Activity activity) {
         super(
                 R.layout.tab_switcher_action_menu_layout,
                 onItemClicked,
@@ -56,7 +55,7 @@ public class TabGridDialogMenuCoordinator extends TabGroupOverflowMenuCoordinato
                 /* multiInstanceManager= */ null,
                 tabGroupSyncService,
                 collaborationService,
-                context);
+                activity);
         mTabGroupIdSupplier = tabGroupIdSupplier;
     }
 

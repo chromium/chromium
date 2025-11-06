@@ -9,7 +9,7 @@ import static org.chromium.ui.listmenu.ListMenuItemProperties.CLICK_LISTENER;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.ENABLED;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
 
-import android.content.Context;
+import android.app.Activity;
 
 import androidx.annotation.LayoutRes;
 
@@ -45,7 +45,7 @@ public abstract class TabStripReorderingHelper<T> extends TabOverflowMenuCoordin
      * @param multiInstanceManager The {@link MultiInstanceManager}.
      * @param tabGroupSyncService Used to checking if a group is shared or synced.
      * @param collaborationService Used for checking the user is the owner of a group.
-     * @param context The {@link Context} that the coordinator resides in.
+     * @param activity The {@link Activity} that the coordinator resides in.
      * @param reorderFunction The function to call to reorder. Its argument is a boolean of whether
      *     the item should be moved towards the start.
      */
@@ -56,7 +56,7 @@ public abstract class TabStripReorderingHelper<T> extends TabOverflowMenuCoordin
             @Nullable MultiInstanceManager multiInstanceManager,
             @Nullable TabGroupSyncService tabGroupSyncService,
             CollaborationService collaborationService,
-            Context context,
+            Activity activity,
             BiConsumer<T, Boolean> reorderFunction) {
         super(
                 menuLayout,
@@ -65,7 +65,7 @@ public abstract class TabStripReorderingHelper<T> extends TabOverflowMenuCoordin
                 multiInstanceManager,
                 tabGroupSyncService,
                 collaborationService,
-                context);
+                activity);
         mReorderFunction = reorderFunction;
     }
 

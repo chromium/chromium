@@ -96,7 +96,7 @@ public abstract class TabOverflowMenuCoordinator<T> {
     protected @Nullable TabGroupSyncService mTabGroupSyncService;
 
     private final @LayoutRes int mMenuLayout;
-    private final Context mContext;
+    private final Activity mActivity;
     private final OnItemClickedCallback<T> mOnItemClickedCallback;
     private @Nullable TabOverflowMenuHolder<T> mMenuHolder;
     private final HierarchicalMenuController mHierarchicalMenuController;
@@ -108,7 +108,7 @@ public abstract class TabOverflowMenuCoordinator<T> {
      * @param multiInstanceManager The {@link MultiInstanceManager}.
      * @param tabGroupSyncService Used to checking if a group is shared or synced.
      * @param collaborationService Used for checking the user is the owner of a group.
-     * @param context The {@link Context} that the coordinator resides in.
+     * @param activity The {@link Activity} that the coordinator resides in.
      */
     protected TabOverflowMenuCoordinator(
             @LayoutRes int menuLayout,
@@ -117,7 +117,7 @@ public abstract class TabOverflowMenuCoordinator<T> {
             @Nullable MultiInstanceManager multiInstanceManager,
             @Nullable TabGroupSyncService tabGroupSyncService,
             CollaborationService collaborationService,
-            Context context) {
+            Activity activity) {
         mMenuLayout = menuLayout;
         mOnItemClickedCallback = onItemClickedCallback;
         mTabModelSupplier = tabModelSupplier;
@@ -125,10 +125,10 @@ public abstract class TabOverflowMenuCoordinator<T> {
         mTabGroupSyncService = tabGroupSyncService;
         assert collaborationService != null;
         mCollaborationService = collaborationService;
-        mContext = context;
+        mActivity = activity;
 
         // TODO(crbug.com/433410990): Implement flyoutHandler.
-        mHierarchicalMenuController = ListMenuUtils.createHierarchicalMenuController(context);
+        mHierarchicalMenuController = ListMenuUtils.createHierarchicalMenuController(activity);
     }
 
     /**
@@ -203,8 +203,6 @@ public abstract class TabOverflowMenuCoordinator<T> {
         rect.right += resources.getDimensionPixelSize(R.dimen.popup_menu_shadow_length) * 4;
     }
 
-    // TODO(crbug.com/357878838): Pass the activity through constructor and setup test to test this
-    // method
     /**
      * See {@link #createAndShowMenu(RectProvider, Object, boolean, boolean, int, int, Activity)}}
      */
@@ -279,8 +277,8 @@ public abstract class TabOverflowMenuCoordinator<T> {
         ModelList modelList = new ModelList();
         configureMenuItems(modelList, id);
         // Apply offset from the background.
-        if (mContext != null) {
-            offsetPopupRect(mContext, isIncognito, anchorViewRectProvider.getRect());
+        if (mActivity != null) {
+            offsetPopupRect(mActivity, isIncognito, anchorViewRectProvider.getRect());
         }
         mMenuHolder =
                 new TabOverflowMenuHolder<>(
@@ -349,8 +347,8 @@ public abstract class TabOverflowMenuCoordinator<T> {
      * @return The DP measure {@param dimenRes}, converted to px.
      */
     protected int getDimensionPixelSize(@DimenRes int dimenRes) {
-        assert mContext != null : "context needs to be non-null to get pixel size";
-        return mContext.getResources().getDimensionPixelSize(dimenRes);
+        assert mActivity != null : "Activity needs to be non-null to get pixel size";
+        return mActivity.getResources().getDimensionPixelSize(dimenRes);
     }
 
     private void onDismiss(TabOverflowMenuHolder<T> menuHolder) {
@@ -429,7 +427,8 @@ public abstract class TabOverflowMenuCoordinator<T> {
                 ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)) {
             return new ListItemBuilder()
                     .withTitle(
-                            mContext.getResources()
+                            mActivity
+                                    .getResources()
                                     .getQuantityString(
                                             pluralsRes, MultiWindowUtils.getInstanceCount()))
                     .withMenuId(menuId)
@@ -475,7 +474,8 @@ public abstract class TabOverflowMenuCoordinator<T> {
                 new PropertyModel.Builder(ListMenuSubmenuItemProperties.ALL_KEYS)
                         .with(
                                 TITLE,
-                                mContext.getResources()
+                                mActivity
+                                        .getResources()
                                         .getQuantityString(pluralsRes, 2)) // Any # > 1
                         .with(SUBMENU_ITEMS, submenuItems)
                         .with(ENABLED, true)

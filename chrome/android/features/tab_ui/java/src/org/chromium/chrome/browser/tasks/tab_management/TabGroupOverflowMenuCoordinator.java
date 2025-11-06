@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import android.content.Context;
+import android.app.Activity;
 
 import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
@@ -31,7 +31,7 @@ public abstract class TabGroupOverflowMenuCoordinator extends TabOverflowMenuCoo
      * @param multiInstanceManager The {@link MultiInstanceManager}.
      * @param tabGroupSyncService Used to checking if a group is shared or synced.
      * @param collaborationService Used for checking the user is the owner of a group.
-     * @param context The {@link Context} that the coordinator resides in.
+     * @param activity The {@link Activity} that the coordinator resides in.
      */
     protected TabGroupOverflowMenuCoordinator(
             int menuLayout,
@@ -40,7 +40,7 @@ public abstract class TabGroupOverflowMenuCoordinator extends TabOverflowMenuCoo
             @Nullable MultiInstanceManager multiInstanceManager,
             @Nullable TabGroupSyncService tabGroupSyncService,
             CollaborationService collaborationService,
-            Context context) {
+            Activity activity) {
         super(
                 menuLayout,
                 onItemClickedCallback,
@@ -48,7 +48,7 @@ public abstract class TabGroupOverflowMenuCoordinator extends TabOverflowMenuCoo
                 multiInstanceManager,
                 tabGroupSyncService,
                 collaborationService,
-                context);
+                activity);
     }
 
     @Override

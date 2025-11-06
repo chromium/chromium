@@ -2430,7 +2430,7 @@ public class StripLayoutHelper
                             mMultiInstanceManager,
                             mShareDelegateSupplier,
                             mWindowAndroid,
-                            mContext,
+                            assertNonNull(mWindowAndroid.getActivity().get()),
                             (ids, toLeft) -> {
                                 // Don't use anchorTab here, since that will be the anchor of the
                                 // first-opened tab context menu (it won't change when a new context
