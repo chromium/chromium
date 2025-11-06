@@ -13651,6 +13651,21 @@
             ]
         }
     ],
+    "IOSPersistTabContext": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PersistTabContext"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSProactivePasswordGenerationBottomSheet": [
         {
             "platforms": [
