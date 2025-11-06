@@ -184,6 +184,7 @@ cr-icon {
   align-items: stretch;
   flex: 1 1 0;
   min-width: 0;
+  gap: 4px;
 }
 
 .tab-group-title,
