@@ -750,7 +750,7 @@ public class SearchActivity extends AsyncInitializationActivity
                 getEdgeToEdgeManager() != null
                         ? getEdgeToEdgeManager().getEdgeToEdgeSystemBarColorHelper()
                         : null;
-        StatusBarColorController.setStatusBarColor(helper, getWindow(), anchorViewColor);
+        StatusBarColorController.setStatusBarColor(helper, this, anchorViewColor);
         if (helper != null) {
             helper.setNavigationBarColor(anchorViewColor);
         }

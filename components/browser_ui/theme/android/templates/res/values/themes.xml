@@ -19,7 +19,6 @@ Note: This is a jinja2 template, processed at build time into the final resource
         {% macro color_palette_light_attributes() %}
         <!-- Color palettes -->
         <item name="colorPrimary">@color/baseline_primary_40</item>
-        <item name="colorPrimaryDark">@android:color/black</item>
         <item name="colorPrimaryInverse">@color/baseline_primary_80</item>
         <item name="colorOnPrimary">@color/baseline_primary_100</item>
         <item name="colorPrimaryContainer">@color/baseline_primary_90</item>
@@ -93,10 +92,6 @@ Note: This is a jinja2 template, processed at build time into the final resource
         <item name="checkboxStyle">@style/Widget.BrowserUI.CheckBox</item>
         <item name="radioButtonStyle">@style/Widget.BrowserUI.RadioButton</item>
         <item name="materialSwitchStyle">@style/Widget.BrowserUI.Switch</item>
-
-        <!-- Status bar color -->
-        <item name="android:statusBarColor">@android:color/black</item>
-        <item name="android:windowLightStatusBar">false</item>
 
         <!-- Spinner styles -->
         <item name="spinnerStyle">@style/SpinnerStyle</item>
@@ -196,6 +191,10 @@ Note: This is a jinja2 template, processed at build time into the final resource
         <!-- Window Properties -->
         <item name="android:windowBackground">@macro/default_bg_color</item>
         <item name="android:windowSplashScreenBackground" tools:targetApi="31">@color/splash_screen_bg</item>
+
+        <!-- Status bar color -->
+        <item name="android:statusBarColor">@macro/default_bg_color</item>
+        <item name="android:windowLightStatusBar">@bool/window_light_status_bar</item>
         {% endmacro %}
         {{ full_window_attributes() }}
     </style>

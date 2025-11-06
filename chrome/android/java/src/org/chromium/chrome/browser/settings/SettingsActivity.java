@@ -7,12 +7,14 @@ package org.chromium.chrome.browser.settings;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.annotation.SuppressLint;
+import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Configuration;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -863,6 +865,13 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         UiUtils.setStatusBarIconColor(
                 getWindow().getDecorView().getRootView(),
                 getResources().getBoolean(R.bool.window_light_status_bar));
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            int color = SemanticColorUtils.getDefaultBgColor(this);
+            var taskDescription =
+                    new ActivityManager.TaskDescription.Builder().setStatusBarColor(color).build();
+            setTaskDescription(taskDescription);
+        }
     }
 
     @Override

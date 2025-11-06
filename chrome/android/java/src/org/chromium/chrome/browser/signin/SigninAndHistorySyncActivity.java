@@ -251,7 +251,7 @@ public class SigninAndHistorySyncActivity extends FullscreenSigninAndHistorySync
                 (getEdgeToEdgeManager() != null)
                         ? getEdgeToEdgeManager().getEdgeToEdgeSystemBarColorHelper()
                         : null,
-                getWindow(),
+                this,
                 statusBarColor);
     }
 

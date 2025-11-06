@@ -10,13 +10,10 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import android.content.Context;
+import android.app.Activity;
 import android.graphics.Color;
-import android.view.ContextThemeWrapper;
-import android.view.Window;
 
 import androidx.annotation.ColorInt;
-import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import org.junit.Before;
@@ -72,39 +69,34 @@ public class StatusBarColorControllerUnitTest {
     private final ObservableSupplierImpl<Integer> mOverviewColorSupplier =
             new ObservableSupplierImpl<>(Color.TRANSPARENT);
     private StatusBarColorController mStatusBarColorController;
-    private Window mWindow;
-    private Context mContext;
+    private Activity mActivity;
 
     @Before
     public void setup() {
         mActivityScenarioRule.getScenario().onActivity(this::onActivity);
-        mContext =
-                new ContextThemeWrapper(
-                        ApplicationProvider.getApplicationContext(),
-                        R.style.Theme_BrowserUI_DayNight);
     }
 
     private void onActivity(TestActivity activity) {
-        mWindow = activity.getWindow();
+        mActivity = activity;
     }
 
     @Test
     @Features.EnableFeatures({ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE})
     @Config(sdk = 30) // Min version needed for e2e everywhere
     public void testSetStatusBarColor_EdgeToEdgeEnabled() {
-        StatusBarColorController.setStatusBarColor(mSystemBarColorHelper, mWindow, Color.BLUE);
+        StatusBarColorController.setStatusBarColor(mSystemBarColorHelper, mActivity, Color.BLUE);
         verify(mSystemBarColorHelper).setStatusBarColor(Color.BLUE);
 
-        StatusBarColorController.setStatusBarColor(mSystemBarColorHelper, mWindow, Color.RED);
+        StatusBarColorController.setStatusBarColor(mSystemBarColorHelper, mActivity, Color.RED);
         verify(mSystemBarColorHelper).setStatusBarColor(Color.RED);
     }
 
     @Test
     public void testSetStatusBarColor_EdgeToEdgeDisabled() {
-        StatusBarColorController.setStatusBarColor(mSystemBarColorHelper, mWindow, Color.BLUE);
+        StatusBarColorController.setStatusBarColor(mSystemBarColorHelper, mActivity, Color.BLUE);
         verify(mSystemBarColorHelper, times(0)).setStatusBarColor(anyInt());
 
-        StatusBarColorController.setStatusBarColor(null, mWindow, Color.BLUE);
+        StatusBarColorController.setStatusBarColor(null, mActivity, Color.BLUE);
         verify(mSystemBarColorHelper, times(0)).setStatusBarColor(anyInt());
     }
 
@@ -114,7 +106,7 @@ public class StatusBarColorControllerUnitTest {
         mStatusBarColorController.updateStatusBarColor();
         assertEquals(
                 "Status bar color is incorrect.",
-                TabUiThemeUtil.getTabStripBackgroundColor(mContext, /* isIncognito= */ false),
+                TabUiThemeUtil.getTabStripBackgroundColor(mActivity, /* isIncognito= */ false),
                 mStatusBarColorController.getStatusBarColorWithoutStatusIndicator());
     }
 
@@ -125,7 +117,7 @@ public class StatusBarColorControllerUnitTest {
         mStatusBarColorController.updateStatusBarColor();
         assertEquals(
                 "Status bar color is incorrect.",
-                TabUiThemeUtil.getTabStripBackgroundColor(mContext, /* isIncognito= */ false),
+                TabUiThemeUtil.getTabStripBackgroundColor(mActivity, /* isIncognito= */ false),
                 mStatusBarColorController.getStatusBarColorWithoutStatusIndicator());
     }
 
@@ -137,7 +129,7 @@ public class StatusBarColorControllerUnitTest {
         assertEquals(
                 "Status bar color is incorrect.",
                 TabUiThemeUtil.getTabStripBackgroundColor(
-                        mContext,
+                        mActivity,
                         /* isIncognito= */ false,
                         /* isInDesktopWindow= */ true,
                         /* isActivityFocused= */ false),
@@ -176,10 +168,10 @@ public class StatusBarColorControllerUnitTest {
     public void testOnTopResumedActivityChanged() {
         initialize(/* isTablet= */ true, /* isInDesktopWindow= */ true);
         int focusedStripColor =
-                TabUiThemeUtil.getTabStripBackgroundColor(mContext, /* isIncognito= */ false);
+                TabUiThemeUtil.getTabStripBackgroundColor(mActivity, /* isIncognito= */ false);
         int unfocusedStripColor =
                 TabUiThemeUtil.getTabStripBackgroundColor(
-                        mContext,
+                        mActivity,
                         /* isIncognito= */ false,
                         /* isInDesktopWindow= */ true,
                         /* isActivityFocused= */ false);
@@ -218,10 +210,10 @@ public class StatusBarColorControllerUnitTest {
     @Test
     public void testBackgroundColorForNtp() {
         @ColorInt
-        int defaultNtpBackground = mContext.getColor(R.color.home_surface_background_color);
+        int defaultNtpBackground = mActivity.getColor(R.color.home_surface_background_color);
         NtpThemeColorInfo colorInfo =
-                NtpThemeColorUtils.createNtpThemeColorInfo(mContext, NtpThemeColorId.LIGHT_BLUE);
-        @ColorInt int currentNtpBackground = mContext.getColor(colorInfo.backgroundColorResId);
+                NtpThemeColorUtils.createNtpThemeColorInfo(mActivity, NtpThemeColorId.LIGHT_BLUE);
+        @ColorInt int currentNtpBackground = mActivity.getColor(colorInfo.backgroundColorResId);
 
         NtpCustomizationConfigManager ntpCustomizationConfigManager =
                 NtpCustomizationConfigManager.getInstance();
@@ -260,9 +252,8 @@ public class StatusBarColorControllerUnitTest {
         AppHeaderUtils.setAppInDesktopWindowForTesting(isInDesktopWindow);
         mStatusBarColorController =
                 new StatusBarColorController(
-                        mWindow,
+                        mActivity,
                         isTablet,
-                        mContext,
                         mStatusBarColorProvider,
                         mLayoutManagerSupplier,
                         mActivityLifecycleDispatcher,
@@ -271,7 +262,7 @@ public class StatusBarColorControllerUnitTest {
                         mSystemBarColorHelper,
                         mDesktopWindowStateManager,
                         mOverviewColorSupplier);
-        mStatusBarColorController.maybeInitializeForCustomizedNtp(mContext, supportEdgeToEdge);
+        mStatusBarColorController.maybeInitializeForCustomizedNtp(mActivity, supportEdgeToEdge);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
     }
 }

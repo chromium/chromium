@@ -317,7 +317,7 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
                     (getEdgeToEdgeManager() != null)
                             ? getEdgeToEdgeManager().getEdgeToEdgeSystemBarColorHelper()
                             : null,
-                    getWindow(),
+                    this,
                     Color.BLACK);
         }
         super.onPreCreate();
@@ -331,7 +331,7 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
             int backgroundColor = DialogWhenLargeContentLayout.getDialogBackgroundColor(this);
 
             StatusBarColorController.setStatusBarColor(
-                    edgeToEdgeSystemBarColorHelper, getWindow(), backgroundColor);
+                    edgeToEdgeSystemBarColorHelper, this, backgroundColor);
             edgeToEdgeSystemBarColorHelper.setNavigationBarColor(backgroundColor);
         } else {
             super.initializeSystemBarColors(edgeToEdgeSystemBarColorHelper);

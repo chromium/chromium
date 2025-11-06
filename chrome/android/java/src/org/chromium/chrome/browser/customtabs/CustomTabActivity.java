@@ -201,10 +201,19 @@ public class CustomTabActivity extends BaseCustomTabActivity {
                     .setParentView(bottomContainer);
         }
 
-        // Setting task title and icon to be null will preserve the client app's title and icon.
-        setTaskDescription(
-                new ActivityManager.TaskDescription(
-                        null, null, getIntentDataProvider().getColorProvider().getToolbarColor()));
+        int toolbarColor = getIntentDataProvider().getColorProvider().getToolbarColor();
+        // Not setting the task title and icon or setting them to null (pre-Android T) will preserve
+        // the client app's title and icon.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            var taskDescription =
+                    new ActivityManager.TaskDescription.Builder()
+                            .setPrimaryColor(toolbarColor)
+                            .setStatusBarColor(toolbarColor)
+                            .build();
+            setTaskDescription(taskDescription);
+        } else {
+            setTaskDescription(new ActivityManager.TaskDescription(null, null, toolbarColor));
+        }
 
         GoogleBottomBarCoordinator googleBottomBarCoordinator =
                 getBaseCustomTabRootUiCoordinator().getGoogleBottomBarCoordinator();

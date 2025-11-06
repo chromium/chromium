@@ -587,9 +587,8 @@ public class RootUiCoordinator
         mDesktopWindowStateManager = desktopWindowStateManager;
         mStatusBarColorController =
                 new StatusBarColorController(
-                        mActivity.getWindow(),
-                        DeviceFormFactor.isNonMultiDisplayContextOnTablet(/* Context */ mActivity),
                         mActivity,
+                        DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity),
                         statusBarColorProvider,
                         mLayoutManagerSupplier,
                         mActivityLifecycleDispatcher,

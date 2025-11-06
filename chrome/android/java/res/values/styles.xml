@@ -63,6 +63,12 @@ found in the LICENSE file.
         <item name="android:windowAnimationStyle">@null</item>
     </style>
 
+    <style name="Base.Theme.Chromium.TabbedMode" parent="Theme.Chromium.WithWindowAnimation">
+        <item name="android:statusBarColor">@macro/default_bg_color</item>
+        <item name="android:windowLightStatusBar">@bool/window_light_status_bar</item>
+    </style>
+    <style name="Theme.Chromium.TabbedMode" parent="Base.Theme.Chromium.TabbedMode"/>
+
     <style name="Theme.Chromium.SearchActivity" parent="Theme.Chromium.WithWindowAnimation" />
 
     <!-- Web app themes -->

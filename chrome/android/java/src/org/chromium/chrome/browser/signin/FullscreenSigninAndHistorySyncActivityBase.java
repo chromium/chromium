@@ -103,7 +103,7 @@ public abstract class FullscreenSigninAndHistorySyncActivityBase extends AsyncIn
                     (getEdgeToEdgeManager() != null)
                             ? getEdgeToEdgeManager().getEdgeToEdgeSystemBarColorHelper()
                             : null,
-                    getWindow(),
+                    this,
                     Color.BLACK);
         }
     }
