@@ -67,7 +67,7 @@ export class WebviewElement extends CrLitElement {
 
   setActive(active: boolean) {
     this.active = active;
-    if (this.attached) {
+    if (this.attached && active) {
       this.$.embed.focus();
     }
   }
