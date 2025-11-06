@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 import logging
-import sys
 from core import perf_benchmark
 from core import platforms as core_platforms
 
@@ -128,9 +127,8 @@ class RenderingDesktop(_RenderingBenchmark):
   def Name(cls):
     return 'rendering.desktop'
 
-  def SetExtraBrowserOptions(self, options):
-    super(RenderingDesktop, self).SetExtraBrowserOptions(options)
-    if sys.platform == 'darwin':
+  def SetExtraBrowserOptionsWithBrowser(self, options, possible_browser):
+    if possible_browser.platform.GetOSName() == 'mac':
       # Mac bots without a physical display fallbacks to SRGB. This flag forces
       # them to use a color profile (P3), which matches the usual color profile
       # on Mac monitors and changes the cost of some overlay operations to match
