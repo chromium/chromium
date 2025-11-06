@@ -71,6 +71,9 @@ constexpr base::FeatureParam<int> kCsdClipboardCopyApiMaxLength{
 constexpr base::FeatureParam<int> kCsdClipboardCopyApiMinLength{
     &kClientSideDetectionClipboardCopyApi, "MinLength",
     /*default_value=*/0};
+const base::FeatureParam<bool> kCSDClipboardCopyApiProcessPayload{
+    &kClientSideDetectionClipboardCopyApi, "ProcessPayload",
+    /*default_value=*/false};
 
 BASE_FEATURE(kClientSideDetectionCreditCardForm,
              base::FEATURE_DISABLED_BY_DEFAULT);

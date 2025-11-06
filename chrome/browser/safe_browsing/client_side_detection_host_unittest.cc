@@ -4117,4 +4117,92 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
       IntelligentScanVerdict::SCAM_EXPERIMENT_CATCH_ALL_ENFORCEMENT);
 }
 
+// Unit tests for ExtractClipboardData
+class ClientSideDetectionHostClipboardDataTest
+    : public ClientSideDetectionHostTest {
+ public:
+  ClipboardExtractedData ExtractFromPayload(const std::u16string& payload) {
+    return csd_host_->ExtractClipboardData(payload);
+  }
+
+  std::vector<std::string_view> GetAllSuspiciousTokens() {
+    return csd_host_->GetSuspiciousTokensListForTesting();
+  }
+};
+
+TEST_F(ClientSideDetectionHostClipboardDataTest, EmptyPayload) {
+  ClipboardExtractedData data = ExtractFromPayload(u"");
+  EXPECT_EQ(0, data.suspicious_tokens_size());
+  EXPECT_FALSE(data.is_first_token_suspicious());
+  EXPECT_FALSE(data.is_last_token_suspicious());
+}
+
+TEST_F(ClientSideDetectionHostClipboardDataTest, NoSusCommands) {
+  ClipboardExtractedData data = ExtractFromPayload(u"this is a normal string");
+  EXPECT_EQ(0, data.suspicious_tokens_size());
+  EXPECT_FALSE(data.is_first_token_suspicious());
+  EXPECT_FALSE(data.is_last_token_suspicious());
+}
+
+TEST_F(ClientSideDetectionHostClipboardDataTest, SingleSusCommandAtBeginning) {
+  ClipboardExtractedData data = ExtractFromPayload(u"curl example.com");
+  EXPECT_THAT(data.suspicious_tokens(), ::testing::ElementsAre("curl"));
+  EXPECT_TRUE(data.is_first_token_suspicious());
+  EXPECT_FALSE(data.is_last_token_suspicious());
+}
+
+TEST_F(ClientSideDetectionHostClipboardDataTest, EchoAndPipe) {
+  ClipboardExtractedData data = ExtractFromPayload(u"echo hello | bash");
+  EXPECT_THAT(data.suspicious_tokens(), ::testing::ElementsAre("bash"));
+  EXPECT_FALSE(data.is_first_token_suspicious());
+  EXPECT_TRUE(data.is_last_token_suspicious());
+}
+
+TEST_F(ClientSideDetectionHostClipboardDataTest, SingleSusCommandAtEnd) {
+  ClipboardExtractedData data = ExtractFromPayload(u"some text with wget");
+  EXPECT_THAT(data.suspicious_tokens(), ::testing::ElementsAre("wget"));
+  EXPECT_FALSE(data.is_first_token_suspicious());
+  EXPECT_TRUE(data.is_last_token_suspicious());
+}
+
+TEST_F(ClientSideDetectionHostClipboardDataTest, MultipleSusCommands) {
+  ClipboardExtractedData data =
+      ExtractFromPayload(u"curl example.com | bash -c 'ls'");
+  EXPECT_THAT(data.suspicious_tokens(), ::testing::ElementsAre("curl", "bash"));
+  EXPECT_TRUE(data.is_first_token_suspicious());
+  EXPECT_FALSE(data.is_last_token_suspicious());
+}
+
+TEST_F(ClientSideDetectionHostClipboardDataTest, MixedCaseAndPaths) {
+  ClipboardExtractedData data = ExtractFromPayload(u"cUrL /usr/bin/BaSh.exe");
+  EXPECT_THAT(data.suspicious_tokens(), ::testing::ElementsAre("curl", "bash"));
+  EXPECT_TRUE(data.is_first_token_suspicious());
+  EXPECT_TRUE(data.is_last_token_suspicious());
+}
+
+TEST_F(ClientSideDetectionHostClipboardDataTest, WithSemicolons) {
+  ClipboardExtractedData data =
+      ExtractFromPayload(u"cmd /c echo hello; powershell -command 'dir'");
+  EXPECT_THAT(data.suspicious_tokens(), ::testing::ElementsAre("cmd", "powershell"));
+  EXPECT_TRUE(data.is_first_token_suspicious());
+  EXPECT_FALSE(data.is_last_token_suspicious());
+}
+
+TEST_F(ClientSideDetectionHostClipboardDataTest, MixedDelimiters) {
+  ClipboardExtractedData data =
+      ExtractFromPayload(u"curl\tbash\rwget\npowershell;cmd");
+  EXPECT_THAT(data.suspicious_tokens(), ::testing::ElementsAre("curl", "bash", "wget", "powershell", "cmd"));
+  EXPECT_TRUE(data.is_first_token_suspicious());
+  EXPECT_TRUE(data.is_last_token_suspicious());
+}
+
+TEST_F(ClientSideDetectionHostClipboardDataTest, AllSusTokens) {
+  std::vector<std::string_view> all_tokens = GetAllSuspiciousTokens();
+  ClipboardExtractedData data =
+      ExtractFromPayload(base::UTF8ToUTF16(base::JoinString(all_tokens, " ")));
+  EXPECT_EQ(all_tokens.size(), size_t(data.suspicious_tokens_size()));
+  EXPECT_TRUE(data.is_first_token_suspicious());
+  EXPECT_TRUE(data.is_last_token_suspicious());
+}
+
 }  // namespace safe_browsing

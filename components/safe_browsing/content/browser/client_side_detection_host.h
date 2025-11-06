@@ -232,6 +232,7 @@ class ClientSideDetectionHost
   friend class ClientSideDetectionHostNotificationTest;
   friend class ClientSideDetectionHostScamDetectionTest;
   friend class ClientSideDetectionHostCreditCardFormTest;
+  friend class ClientSideDetectionHostClipboardDataTest;
   class ShouldClassifyUrlRequest;
   friend class ShouldClassifyUrlRequest;
   FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionHostPrerenderBrowserTest,
@@ -307,6 +308,16 @@ class ClientSideDetectionHost
                            CreditCardFormTriggersPreclassificationCheck);
   FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionHostCreditCardFormTest,
                            CreditCardFormClassificationTriggersCSDPing);
+
+  // Extracts suspicious tokens from a copied clipboard payload into a
+  // structured object.
+  //
+  // See https://crbug.com/454952204 for the security review around clipboard
+  // data extraction. UTF16 to UTF8 conversion is already done in the renderer,
+  // and the payload parsing does not involve complex grammar.
+  ClipboardExtractedData ExtractClipboardData(const std::u16string& payload);
+
+  std::vector<std::string_view> GetSuspiciousTokensListForTesting();
 
   // Helper function to create preclassification check once requirements are
   // met.
@@ -591,6 +602,9 @@ class ClientSideDetectionHost
 
   // The session ID for the current intelligent scan request.
   std::optional<base::UnguessableToken> intelligent_scan_session_id_;
+
+  // The last text that was copied to the clipboard.
+  std::u16string last_copied_text_;
 
   base::CancelableTaskTracker task_tracker_;
 

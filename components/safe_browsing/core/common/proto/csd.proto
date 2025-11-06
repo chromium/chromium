@@ -332,7 +332,18 @@ message ClientPhishingRequest {
   // Represents the on-device model LLM response.
   optional IntelligentScanInfo intelligent_scan_info = 32;
 
-  // next available tag number: 33.
+  // Data extracted around relevant tokens found within from the clipboard
+  // payload. This will only be populated if the client-side detection type is
+  // CLIPBOARD_COPY_API.
+  optional ClipboardExtractedData clipboard_extracted_data = 33;
+
+  // next available tag number: 34.
+}
+
+message ClipboardExtractedData {
+  repeated string suspicious_tokens = 1;
+  optional bool is_first_token_suspicious = 2;
+  optional bool is_last_token_suspicious = 3;
 }
 
 // Verdict based on IntelligentScanInfo included in ClientPhishingRequest

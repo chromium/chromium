@@ -10,7 +10,9 @@
 
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/containers/span.h"
+#include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -18,6 +20,8 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
+#include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner_helpers.h"
 #include "base/task/thread_pool.h"
 #include "base/time/default_tick_clock.h"
@@ -93,6 +97,44 @@ const float kProbabilityForSendingSampleRequest = 0.000001;
 const float kProbabilityForAcceptingHCAllowlistTrigger = 0.9999;
 // Threshold value used to skip the on-device model inquiry.
 const int kInnerTextMinThresholdBytes = 5;
+
+// Set of suspicious tokens that could be used to construct a malicious command.
+// The explanation and rationale behind this list can be found internally at
+// go/sus-commands.
+constexpr auto kSusCommands = base::MakeFixedFlatSet<std::string_view>({
+    // go/keep-sorted start
+    "bash",
+    "bitsadmin",
+    "certutil",
+    "cmd",
+    "conhost",
+    "curl",
+    "iex",
+    "invoke-expression",
+    "invoke-restmethod",
+    "invoke-webrequest",
+    "irm",
+    "iwr",
+    "mshta",
+    "perl",
+    "php",
+    "powershell",
+    "python",
+    "python3",
+    "sftp",
+    "ssh",
+    "wget",
+    "wt",
+    // go/keep-sorted end
+});
+
+// Normalizes a potential command to account for capitalization, pathing, and
+// file extensions.
+std::string NormalizeToken(std::u16string_view token) {
+  base::FilePath path(base::FilePath::FromUTF16Unsafe(token));
+  std::string filename = path.BaseName().RemoveExtension().AsUTF8Unsafe();
+  return base::ToLowerASCII(filename);
+}
 
 void WriteFeaturesToDisk(const ClientPhishingRequest& features,
                          const base::FilePath& base_path) {
@@ -1063,6 +1105,7 @@ void ClientSideDetectionHost::OnTextCopiedToClipboard(
     return;
   }
 
+  last_copied_text_ = copied_text;
   MaybeStartPreClassification(ClientSideDetectionType::CLIPBOARD_COPY_API);
 }
 
@@ -1269,6 +1312,15 @@ void ClientSideDetectionHost::MaybeSendClientPhishingRequest(
     base::UmaHistogramBoolean("SBClientPhishing.HasVisualFeaturesImage",
                               verdict->has_visual_features() &&
                                   verdict->visual_features().has_image());
+  }
+
+  if (verdict->client_side_detection_type() ==
+      ClientSideDetectionType::CLIPBOARD_COPY_API) {
+    if (base::FeatureList::IsEnabled(kClientSideDetectionClipboardCopyApi) &&
+        kCSDClipboardCopyApiProcessPayload.Get()) {
+      *verdict->mutable_clipboard_extracted_data() =
+          ExtractClipboardData(last_copied_text_);
+    }
   }
 
   if (IsEnhancedProtectionEnabled(*delegate_->GetPrefs())) {
@@ -1759,6 +1811,52 @@ void ClientSideDetectionHost::set_ui_manager(BaseUIManager* ui_manager) {
 void ClientSideDetectionHost::set_database_manager(
     SafeBrowsingDatabaseManager* database_manager) {
   database_manager_ = database_manager;
+}
+
+ClipboardExtractedData ClientSideDetectionHost::ExtractClipboardData(
+    const std::u16string& payload) {
+  ClipboardExtractedData clipboard_data;
+  base::TimeTicks start_time = base::TimeTicks::Now();
+  std::vector<std::u16string> tokens =
+      base::SplitString(payload, u" \t\n\r;",
+                        base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+
+  base::UmaHistogramMediumTimes(
+      "SBClientPhishing.ClipboardCopyApi.PayloadExtraction.SplitStringDuration",
+      base::TimeTicks::Now() - start_time);
+  base::UmaHistogramCounts100(
+      "SBClientPhishing.ClipboardCopyApi.PayloadExtraction.TokenCount",
+      tokens.size());
+
+  if (tokens.empty()) {
+    return clipboard_data;
+  }
+
+  for (size_t i = 0; i < tokens.size(); ++i) {
+    const std::string& normalized_token = NormalizeToken(tokens[i]);
+    if (kSusCommands.contains(normalized_token)) {
+      clipboard_data.add_suspicious_tokens(normalized_token);
+      if (i == 0) {
+        clipboard_data.set_is_first_token_suspicious(true);
+      }
+      if (i == tokens.size() - 1) {
+        clipboard_data.set_is_last_token_suspicious(true);
+      }
+    }
+  }
+
+  base::UmaHistogramCounts100(
+      "SBClientPhishing.ClipboardCopyApi.PayloadExtraction."
+      "SuspiciousTokenCount",
+      clipboard_data.suspicious_tokens_size());
+
+  return clipboard_data;
+}
+
+std::vector<std::string_view>
+ClientSideDetectionHost::GetSuspiciousTokensListForTesting() {
+  return std::vector<std::string_view>(kSusCommands.begin(),
+                                       kSusCommands.end());
 }
 
 void ClientSideDetectionHost::OnGotAccessToken(
