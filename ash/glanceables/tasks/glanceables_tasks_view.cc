@@ -373,7 +373,6 @@ void GlanceablesTasksView::AnimateResize(ResizeAnimation::Type resize_type) {
 }
 
 void GlanceablesTasksView::AddNewTaskButtonPressed() {
-  // TODO(b/301253574): make sure there is only one view is in `kEdit` state.
   items_container_view()->SetVisible(true);
   auto* const pending_new_task = items_container_view()->AddChildViewAt(
       CreateTaskView(GetActiveTaskList()->id, /*task=*/nullptr),
