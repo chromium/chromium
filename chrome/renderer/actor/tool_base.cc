@@ -318,10 +318,14 @@ mojom::ActionResultPtr ToolBase::ValidateTimeOfUse(
       UmaHistogramEnumeration(
           kTimeOfUseValidationHistogram,
           TimeOfUseResult::kTargetNodeInteractionPointObscured);
-      return MakeResult(
-          mojom::ActionResultCode::kTargetNodeInteractionPointObscured,
-          /*requires_page_stabilization=*/false,
-          "The element's interaction point is obscured by other elements.");
+      if (base::FeatureList::IsEnabled(features::kGlicActorToctouValidation)) {
+        return MakeResult(
+            mojom::ActionResultCode::kTargetNodeInteractionPointObscured,
+            /*requires_page_stabilization=*/false,
+            "The element's interaction point is obscured by other elements.");
+      } else {
+        return MakeOkResult();
+      }
     }
 
     if (!observed_target_ || !observed_target_->node_attribute->dom_node_id) {

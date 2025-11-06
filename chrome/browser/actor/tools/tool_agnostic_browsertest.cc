@@ -393,10 +393,16 @@ IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTest,
       MakeClickRequest(*main_frame(), button_id.value());
   ActResultFuture result;
   actor_task().Act(ToRequestList(action), result.GetCallback());
-  ExpectErrorResult(
-      result, mojom::ActionResultCode::kTargetNodeInteractionPointObscured);
-  EXPECT_EQ(EvalJs(web_contents(), "target_button_clicked"), false);
-  EXPECT_EQ(EvalJs(web_contents(), "obstruction_button_clicked"), false);
+  if (base::FeatureList::IsEnabled(features::kGlicActorToctouValidation)) {
+    ExpectErrorResult(
+        result, mojom::ActionResultCode::kTargetNodeInteractionPointObscured);
+    EXPECT_EQ(EvalJs(web_contents(), "target_button_clicked"), false);
+    EXPECT_EQ(EvalJs(web_contents(), "obstruction_button_clicked"), false);
+  } else {
+    ExpectOkResult(result);
+    EXPECT_EQ(EvalJs(web_contents(), "target_button_clicked"), false);
+    EXPECT_EQ(EvalJs(web_contents(), "obstruction_button_clicked"), true);
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTest,
