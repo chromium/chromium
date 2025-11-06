@@ -22,7 +22,7 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
-import {SecurityIcon} from './browser.mojom-webui.js';
+import {PageHandlerFactory, SecurityIcon} from './browser.mojom-webui.js';
 import {BrowserProxy} from './browser_proxy.js';
 import type {ContentRegion} from './content_region.js';
 import type {SidePanel} from './side_panel.js';
@@ -64,6 +64,7 @@ export class WebuiBrowserAppElement extends CrLitElement implements
       reloadOrStopIcon_: {state: true, type: String},
       showLocationIconButton_: {type: Boolean, reflect: true},
       locationIcon_: {state: true, type: String},
+      tabStripInset_: {state: true, type: Number},
     };
   }
 
@@ -75,6 +76,7 @@ export class WebuiBrowserAppElement extends CrLitElement implements
   protected accessor showingSidePanel_: boolean = false;
   protected accessor showLocationIconButton_: boolean = false;
   protected accessor locationIcon_: string = 'NoEncryption';
+  protected accessor tabStripInset_: number = 0;
 
   constructor() {
     super();
@@ -89,7 +91,7 @@ export class WebuiBrowserAppElement extends CrLitElement implements
     callbackRouter.closeSidePanel.addListener(this.closeSidePanel_.bind(this));
   }
 
-  override connectedCallback() {
+  override async connectedCallback() {
     // Important. Properties are not reactive without calling
     // super.connectedCallback().
     super.connectedCallback();
@@ -103,6 +105,8 @@ export class WebuiBrowserAppElement extends CrLitElement implements
         this.$.locationIconButton, 'kLocationIconElementId');
     this.trackedElementManager_.startTracking(
         this.$.contentRegion, 'kContentsContainerViewElementId');
+    const {width} = await PageHandlerFactory.getRemote().getTabStripInset();
+    this.tabStripInset_ = width;
   }
 
   // TabStripControllerDelegate:

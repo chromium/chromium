@@ -148,6 +148,21 @@ class WebUIBrowserNativeWidgetMac : public views::NativeWidgetMac {
     return this;
   }
 
+  void PopulateCreateWindowParams(
+      const views::Widget::InitParams& widget_params,
+      remote_cocoa::mojom::CreateWindowParams* params) override {
+    // Loosely based on BrowserNativeWidgetMac::PopulateCreateWindowParams().
+    params->style_mask = NSWindowStyleMaskTitled | NSWindowStyleMaskClosable |
+                         NSWindowStyleMaskMiniaturizable |
+                         NSWindowStyleMaskResizable |
+                         NSWindowStyleMaskFullSizeContentView;
+    params->window_class = remote_cocoa::mojom::WindowClass::kBrowser;
+    // Ensure tabstrip/profile button are visible.
+    params->titlebar_appears_transparent = true;
+    params->window_title_hidden = true;
+    params->animation_enabled = true;
+  }
+
   raw_ptr<Browser> browser_;
 };
 

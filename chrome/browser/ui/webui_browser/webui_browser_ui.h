@@ -103,6 +103,7 @@ class WebUIBrowserUI : public ui::MojoWebUIController,
       mojo::PendingRemote<webui_browser::mojom::Page> page,
       mojo::PendingReceiver<webui_browser::mojom::PageHandler> receiver)
       override;
+  void GetTabStripInset(GetTabStripInsetCallback callback) override;
 
   // bookmark_bar::mojom::PageHandlerFactory:
   void CreatePageHandler(mojo::PendingRemote<bookmark_bar::mojom::Page> page,
