@@ -8,6 +8,7 @@
 #include "base/task/bind_post_task.h"
 #include "components/services/storage/dom_storage/leveldb/dom_storage_database_leveldb.h"
 #include "components/services/storage/dom_storage/leveldb/local_storage_leveldb.h"
+#include "components/services/storage/dom_storage/leveldb/session_storage_leveldb.h"
 
 namespace storage {
 namespace {
@@ -94,21 +95,27 @@ DomStorageDatabase::Metadata& DomStorageDatabase::Metadata::operator=(
 
 // static
 void DomStorageDatabaseFactory::Open(
+    StorageType storage_type,
     const base::FilePath& directory,
     const std::string& name,
     const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&
         memory_dump_id,
     scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
     OpenCallback callback) {
-  // TODO(crbug.com/377242771): Construct more specific databases for
-  // `SessionStorageLevelDB` and SQLite. Currently, both session and local
-  // storage implementations use `DomStorageDatabase::GetLevelDB()` to write
-  // directly to the database. Because of this, `DomStorageDatabaseFactory` can
-  // temporarily use `LocalStorageLevelDB` for both local and session storage.
-  CreateSequenceBoundDomStorageDatabase<LocalStorageLevelDB>(
-      std::move(blocking_task_runner), directory, name, memory_dump_id,
-      base::BindOnce(&OnDatabaseOpened<LocalStorageLevelDB>,
-                     std::move(callback)));
+  switch (storage_type) {
+    case StorageType::kLocalStorage:
+      return CreateSequenceBoundDomStorageDatabase<LocalStorageLevelDB>(
+          std::move(blocking_task_runner), directory, name, memory_dump_id,
+          base::BindOnce(&OnDatabaseOpened<LocalStorageLevelDB>,
+                         std::move(callback)));
+
+    case StorageType::kSessionStorage:
+      return CreateSequenceBoundDomStorageDatabase<SessionStorageLevelDB>(
+          std::move(blocking_task_runner), directory, name, memory_dump_id,
+          base::BindOnce(&OnDatabaseOpened<SessionStorageLevelDB>,
+                         std::move(callback)));
+  }
+  NOTREACHED();
 }
 
 // static

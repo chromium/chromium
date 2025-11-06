@@ -17,6 +17,7 @@ namespace storage {
 
 // static
 std::unique_ptr<AsyncDomStorageDatabase> AsyncDomStorageDatabase::Open(
+    StorageType storage_type,
     const base::FilePath& directory,
     const std::string& dbname,
     const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&
@@ -25,7 +26,8 @@ std::unique_ptr<AsyncDomStorageDatabase> AsyncDomStorageDatabase::Open(
     StatusCallback callback) {
   std::unique_ptr<AsyncDomStorageDatabase> db(new AsyncDomStorageDatabase);
   DomStorageDatabaseFactory::Open(
-      directory, dbname, memory_dump_id, std::move(blocking_task_runner),
+      storage_type, directory, dbname, memory_dump_id,
+      std::move(blocking_task_runner),
       base::BindOnce(&AsyncDomStorageDatabase::OnDatabaseOpened,
                      db->weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   return db;

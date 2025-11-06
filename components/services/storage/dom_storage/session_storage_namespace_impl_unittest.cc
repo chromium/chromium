@@ -75,6 +75,7 @@ class SessionStorageNamespaceImplTest
     // Create an in-memory database that already has a namespace saved.
     base::RunLoop loop;
     database_ = AsyncDomStorageDatabase::Open(
+        StorageType::kSessionStorage,
         /*directory=*/base::FilePath(), "SessionStorageNamespaceImplTest",
         /*memory_dump_id=*/std::nullopt,
         base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}),

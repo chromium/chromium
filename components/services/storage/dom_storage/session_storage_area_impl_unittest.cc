@@ -63,6 +63,7 @@ class SessionStorageAreaImplTest : public testing::Test {
             base::Uuid::GenerateRandomV4().AsLowercaseString()) {
     // Create an in-memory LevelDB.
     leveldb_database_ = AsyncDomStorageDatabase::Open(
+        StorageType::kSessionStorage,
         /*directory=*/base::FilePath(), "SessionStorageAreaImplTestDatabase",
         /*memory_dump_id=*/std::nullopt,
         base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}),

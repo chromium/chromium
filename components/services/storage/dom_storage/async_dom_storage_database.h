@@ -61,6 +61,7 @@ class AsyncDomStorageDatabase {
   //
   // To create an in-memory database, provide an empty `directory`.
   static std::unique_ptr<AsyncDomStorageDatabase> Open(
+      StorageType storage_type,
       const base::FilePath& directory,
       const std::string& dbname,
       const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&

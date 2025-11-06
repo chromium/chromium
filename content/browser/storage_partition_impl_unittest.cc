@@ -360,6 +360,7 @@ class RemoveLocalStorageTester {
 
     base::RunLoop open_loop;
     auto database = storage::AsyncDomStorageDatabase::Open(
+        storage::StorageType::kLocalStorage,
         storage_partition_->GetPath().Append(storage::kLocalStoragePath),
         storage::kLocalStorageLeveldbName, /*memory_dump_id=*/std::nullopt,
         base::SingleThreadTaskRunner::GetCurrentDefault(),

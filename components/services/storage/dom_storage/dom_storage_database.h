@@ -150,6 +150,13 @@ class DomStorageDatabase {
   virtual void SetDestructionCallbackForTesting(base::OnceClosure callback) = 0;
 };
 
+// Required for the LevelDB implementation, which has separate schemas for
+// local storage and session storage.
+enum class StorageType {
+  kLocalStorage,
+  kSessionStorage,
+};
+
 class DomStorageDatabaseFactory {
  public:
   using PassKey = base::PassKey<DomStorageDatabaseFactory>;
@@ -163,6 +170,7 @@ class DomStorageDatabaseFactory {
   //
   // To create an in-memory database, provide an empty `directory`.
   static void Open(
+      StorageType storage_type,
       const base::FilePath& directory,
       const std::string& name,
       const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&

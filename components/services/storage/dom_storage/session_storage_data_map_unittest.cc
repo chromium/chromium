@@ -77,6 +77,7 @@ class SessionStorageDataMapTest : public testing::Test {
     // Create an in-memory LevelDB.
     base::RunLoop loop;
     database_ = AsyncDomStorageDatabase::Open(
+        StorageType::kSessionStorage,
         /*directory=*/base::FilePath(), "SessionStorageDataMapTest",
         /*memory_dump_id=*/std::nullopt,
         base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}),

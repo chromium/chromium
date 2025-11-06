@@ -745,8 +745,8 @@ void SessionStorageImpl::InitiateConnection(bool in_memory_only) {
 
     in_memory_ = false;
     database_ = AsyncDomStorageDatabase::Open(
-        partition_directory_, database_name_, memory_dump_id_,
-        database_task_runner_,
+        StorageType::kSessionStorage, partition_directory_, database_name_,
+        memory_dump_id_, database_task_runner_,
         base::BindOnce(&SessionStorageImpl::OnDatabaseOpened,
                        weak_ptr_factory_.GetWeakPtr()));
     return;
@@ -755,6 +755,7 @@ void SessionStorageImpl::InitiateConnection(bool in_memory_only) {
   // We were not given a subdirectory. Use a memory backed database.
   in_memory_ = true;
   database_ = AsyncDomStorageDatabase::Open(
+      StorageType::kSessionStorage,
       /*directory=*/base::FilePath(), "SessionStorageDatabase", memory_dump_id_,
       database_task_runner_,
       base::BindOnce(&SessionStorageImpl::OnDatabaseOpened,

@@ -619,8 +619,8 @@ void LocalStorageImpl::InitiateConnection(bool in_memory_only) {
     // We were given a subdirectory to write to, so use a disk-backed database.
     in_memory_ = false;
     database_ = AsyncDomStorageDatabase::Open(
-        directory_, kLocalStorageLeveldbName, memory_dump_id_,
-        database_task_runner_,
+        StorageType::kLocalStorage, directory_, kLocalStorageLeveldbName,
+        memory_dump_id_, database_task_runner_,
         base::BindOnce(&LocalStorageImpl::OnDatabaseOpened,
                        weak_ptr_factory_.GetWeakPtr()));
     return;
@@ -629,6 +629,7 @@ void LocalStorageImpl::InitiateConnection(bool in_memory_only) {
   // We were not given a subdirectory. Use a memory backed database.
   in_memory_ = true;
   database_ = AsyncDomStorageDatabase::Open(
+      StorageType::kLocalStorage,
       /*directory=*/base::FilePath(), "local-storage", memory_dump_id_,
       database_task_runner_,
       base::BindOnce(&LocalStorageImpl::OnDatabaseOpened,

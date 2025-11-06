@@ -155,6 +155,7 @@ class StorageAreaImplTest : public testing::Test,
     // Create an in-memory LevelDB.
     base::RunLoop loop;
     db_ = AsyncDomStorageDatabase::Open(
+        StorageType::kSessionStorage,
         /*directory=*/base::FilePath(), "StorageAreaImplTest",
         /*memory_dump_id=*/std::nullopt,
         base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}),
