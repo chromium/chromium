@@ -1405,6 +1405,9 @@ policies:
   1404: ProxyOverrideRules
   1405: LocalAuthFactors
   1406: EnableProxyOverrideRulesForAllUsers
+  1407: DefaultIdleDetectionSetting
+  1408: IdleDetectionAllowedForUrls
+  1409: IdleDetectionBlockedForUrls
 
 atomic_groups:
   1: Homepage

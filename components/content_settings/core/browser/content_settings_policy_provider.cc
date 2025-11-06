@@ -169,6 +169,10 @@ constexpr PrefsForManagedContentSettingsMapEntry
          ContentSettingsType::LOCAL_NETWORK_ACCESS, CONTENT_SETTING_ALLOW},
         {prefs::kManagedLocalNetworkAccessBlockedForUrls,
          ContentSettingsType::LOCAL_NETWORK_ACCESS, CONTENT_SETTING_BLOCK},
+        {prefs::kManagedIdleDetectionAllowedForUrls,
+         ContentSettingsType::IDLE_DETECTION, CONTENT_SETTING_ALLOW},
+        {prefs::kManagedIdleDetectionBlockedForUrls,
+         ContentSettingsType::IDLE_DETECTION, CONTENT_SETTING_BLOCK},
 };
 
 constexpr const char* kManagedPrefs[] = {
@@ -189,6 +193,8 @@ constexpr const char* kManagedPrefs[] = {
     prefs::kManagedImagesBlockedForUrls,
     prefs::kManagedInsecureContentAllowedForUrls,
     prefs::kManagedInsecureContentBlockedForUrls,
+    prefs::kManagedIdleDetectionAllowedForUrls,
+    prefs::kManagedIdleDetectionBlockedForUrls,
     prefs::kManagedJavaScriptAllowedForUrls,
     prefs::kManagedJavaScriptBlockedForUrls,
     prefs::kManagedJavaScriptJitAllowedForSites,
@@ -246,6 +252,7 @@ constexpr const char* kManagedDefaultPrefs[] = {
     prefs::kManagedDefaultFileSystemReadGuardSetting,
     prefs::kManagedDefaultFileSystemWriteGuardSetting,
     prefs::kManagedDefaultGeolocationSetting,
+    prefs::kManagedDefaultIdleDetectionSetting,
     prefs::kManagedDefaultImagesSetting,
     prefs::kManagedDefaultInsecureContentSetting,
     prefs::kManagedDefaultJavaScriptSetting,
@@ -342,6 +349,8 @@ const PolicyProvider::PrefsForManagedDefaultMapEntry
         {ContentSettingsType::IMAGES, prefs::kManagedDefaultImagesSetting},
         {ContentSettingsType::GEOLOCATION,
          prefs::kManagedDefaultGeolocationSetting},
+        {ContentSettingsType::IDLE_DETECTION,
+         prefs::kManagedDefaultIdleDetectionSetting},
         {ContentSettingsType::LEGACY_COOKIE_SCOPE,
          prefs::kManagedDefaultLegacyCookieScope},
         {ContentSettingsType::JAVASCRIPT,

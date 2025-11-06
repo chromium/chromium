@@ -2327,6 +2327,9 @@ chromium-metrics-reviews@google.com.
   <int value="1404" label="ProxyOverrideRules"/>
   <int value="1405" label="LocalAuthFactors"/>
   <int value="1406" label="EnableProxyOverrideRulesForAllUsers"/>
+  <int value="1407" label="DefaultIdleDetectionSetting"/>
+  <int value="1408" label="IdleDetectionAllowedForUrls"/>
+  <int value="1409" label="IdleDetectionBlockedForUrls"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

@@ -1178,4 +1178,110 @@ IN_PROC_BROWSER_TEST_F(DeviceAttributesPolicyTest,
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if !BUILDFLAG(IS_ANDROID)
+class IdleDetectionPolicyTest : public PolicyTest {
+ public:
+  void VerifyPermission(const char* url, ContentSetting status) {
+    content_settings::SettingInfo settings_info;
+    auto content_setting =
+        HostContentSettingsMapFactory::GetForProfile(browser()->profile())
+            ->GetContentSetting(
+                /*primary_url=*/GURL(url), /*secondary_url=*/GURL(url),
+                ContentSettingsType::IDLE_DETECTION, &settings_info);
+    EXPECT_EQ(content_setting, status);
+  }
+
+  void AllowUrl(const char* url) {
+    base::Value::List policy_value;
+    policy_value.Append(url);
+    SetPolicy(&policies_, key::kIdleDetectionAllowedForUrls,
+              base::Value(std::move(policy_value)));
+    UpdateProviderPolicy(policies_);
+  }
+
+  void BlockUrl(const char* url) {
+    base::Value::List policy_value;
+    policy_value.Append(url);
+    SetPolicy(&policies_, key::kIdleDetectionBlockedForUrls,
+              base::Value(std::move(policy_value)));
+    UpdateProviderPolicy(policies_);
+  }
+
+  void ClearLists() {
+    base::Value::List policy_value_allow;
+    base::Value::List policy_value_block;
+    SetPolicy(&policies_, key::kIdleDetectionAllowedForUrls,
+              base::Value(std::move(policy_value_allow)));
+    SetPolicy(&policies_, key::kIdleDetectionBlockedForUrls,
+              base::Value(std::move(policy_value_block)));
+    UpdateProviderPolicy(policies_);
+  }
+
+  void SetDefault(int default_value) {
+    SetPolicy(&policies_, key::kDefaultIdleDetectionSetting,
+              base::Value(default_value));
+    UpdateProviderPolicy(policies_);
+  }
+
+ private:
+  PolicyMap policies_;
+};
+
+IN_PROC_BROWSER_TEST_F(IdleDetectionPolicyTest, BlockIdleDetectionApi) {
+  // Navigate to a secure context.
+  embedded_test_server()->ServeFilesFromSourceDirectory("content/test/data");
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL("localhost", "/simple_page.html")));
+  content::WebContents* const web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_THAT(
+      web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin().Serialize(),
+      testing::StartsWith("http://localhost:"));
+
+  // Set the policy to block IdleDetection.
+  SetDefault(kBlockAll);
+
+  std::string rejection =
+      content::EvalJs(web_contents,
+                      "new Promise(async resolve => {"
+                      "  const state = await navigator.permissions.query("
+                      "      {name: 'idle-detection'});"
+                      "  resolve(state.state);"
+                      "});")
+          .ExtractString();
+  EXPECT_EQ(rejection, "denied");
+}
+
+IN_PROC_BROWSER_TEST_F(IdleDetectionPolicyTest, DynamicRefresh) {
+  constexpr char kFooUrl[] = "https://foo.idle";
+  constexpr char kBarUrl[] = "https://bar.idle";
+  constexpr int kAllowAll = 1;
+
+  BlockUrl(kFooUrl);
+  VerifyPermission(kFooUrl, CONTENT_SETTING_BLOCK);
+  VerifyPermission(kBarUrl, CONTENT_SETTING_ASK);
+
+  BlockUrl(kBarUrl);
+  VerifyPermission(kFooUrl, CONTENT_SETTING_ASK);
+  VerifyPermission(kBarUrl, CONTENT_SETTING_BLOCK);
+
+  SetDefault(kBlockAll);
+  ClearLists();
+  AllowUrl(kFooUrl);
+  VerifyPermission(kFooUrl, CONTENT_SETTING_ALLOW);
+  VerifyPermission(kBarUrl, CONTENT_SETTING_BLOCK);
+
+  AllowUrl(kBarUrl);
+  VerifyPermission(kFooUrl, CONTENT_SETTING_BLOCK);
+  VerifyPermission(kBarUrl, CONTENT_SETTING_ALLOW);
+
+  SetDefault(kAllowAll);
+  ClearLists();
+  VerifyPermission(kFooUrl, CONTENT_SETTING_ALLOW);
+  VerifyPermission(kBarUrl, CONTENT_SETTING_ALLOW);
+}
+#endif
+
 }  // namespace policy

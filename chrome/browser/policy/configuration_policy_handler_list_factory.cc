@@ -594,6 +594,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     prefs::kOriginKeyedProcessesEnabled,
     base::Value::Type::BOOLEAN },
 #endif // !BUILDFLAG(IS_ANDROID)
+  { key::kDefaultIdleDetectionSetting,
+    prefs::kManagedDefaultIdleDetectionSetting,
+    base::Value::Type::INTEGER },
   { key::kDefaultImagesSetting,
     prefs::kManagedDefaultImagesSetting,
     base::Value::Type::INTEGER },
@@ -1100,6 +1103,12 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kSafeSitesFilterBehavior,
     policy_prefs::kSafeSitesFilterBehavior,
     base::Value::Type::INTEGER },
+  { key::kIdleDetectionAllowedForUrls,
+    prefs::kManagedIdleDetectionAllowedForUrls,
+    base::Value::Type::LIST },
+  { key::kIdleDetectionBlockedForUrls,
+    prefs::kManagedIdleDetectionBlockedForUrls,
+    base::Value::Type::LIST },
 
 #if !BUILDFLAG(IS_CHROMEOS)
   { key::kChromeVariations,
