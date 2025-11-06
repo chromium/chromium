@@ -227,8 +227,7 @@ FYI_BUILDERS = {
         'tests': [{
             'isolate':
             'performance_web_engine_test_suite',
-            'extra_args':
-            ['--output-format=histograms'] +
+            'extra_args': ['--output-format=histograms'] +
             bot_platforms.FUCHSIA_EXEC_ARGS['nelson'],
             'type':
             TEST_TYPES.TELEMETRY,
@@ -246,8 +245,7 @@ FYI_BUILDERS = {
         'tests': [{
             'isolate':
             'performance_web_engine_test_suite',
-            'extra_args':
-            ['--output-format=histograms'] +
+            'extra_args': ['--output-format=histograms'] +
             bot_platforms.FUCHSIA_EXEC_ARGS['nelson'],
             'type':
             TEST_TYPES.TELEMETRY,
@@ -265,8 +263,7 @@ FYI_BUILDERS = {
         'tests': [{
             'isolate':
             'performance_web_engine_test_suite',
-            'extra_args':
-            ['--output-format=histograms'] +
+            'extra_args': ['--output-format=histograms'] +
             bot_platforms.FUCHSIA_EXEC_ARGS['sherlock'],
             'type':
             TEST_TYPES.TELEMETRY,
@@ -284,8 +281,7 @@ FYI_BUILDERS = {
         'tests': [{
             'isolate':
             'performance_web_engine_test_suite',
-            'extra_args':
-            ['--output-format=histograms'] +
+            'extra_args': ['--output-format=histograms'] +
             bot_platforms.FUCHSIA_EXEC_ARGS['sherlock'],
             'type':
             TEST_TYPES.TELEMETRY,
@@ -307,6 +303,8 @@ FYI_BUILDERS = {
                 'extra_args': [
                     '--output-format=histograms',
                     '--experimental-tbmv3-metrics',
+                    # b/457520120#comment3 Disabling the feature on waterfall.
+                    '--disable-features=SessionRestoreInfobar',
                 ],
             },
         ],
@@ -1137,12 +1135,16 @@ BUILDERS = {
         'platform':
         'mac',
         'dimension': {
-            'cpu': 'arm',
-            'mac_model': 'Mac16,10',
-            'os': 'Mac',
-            'pool': 'chrome.tests.perf',
+            'cpu':
+            'arm',
+            'mac_model':
+            'Mac16,10',
+            'os':
+            'Mac',
+            'pool':
+            'chrome.tests.perf',
             'synthetic_product_name':
-                'Mac16,10_arm64-64-Apple_M4_apple m4_32768_APPLE SSD AP2048Z',
+            'Mac16,10_arm64-64-Apple_M4_apple m4_32768_APPLE SSD AP2048Z',
         },
     },
     'mac-m4-mini-processor-perf': {
@@ -1200,9 +1202,12 @@ BUILDERS = {
     'win-10_laptop_low_end-perf': {
         'tests': [
             {
-                'isolate': 'performance_test_suite',
+                'isolate':
+                'performance_test_suite',
                 'extra_args': [
                     '--assert-gpu-compositing',
+                    # b/457520120#comment3 Disabling the feature on waterfall.
+                    '--disable-features=SessionRestoreInfobar',
                 ],
             },
         ],
@@ -1228,9 +1233,12 @@ BUILDERS = {
     'win-10_laptop_low_end-perf-pgo': {
         'tests': [
             {
-                'isolate': 'performance_test_suite',
+                'isolate':
+                'performance_test_suite',
                 'extra_args': [
                     '--assert-gpu-compositing',
+                    # b/457520120#comment3 Disabling the feature on waterfall.
+                    '--disable-features=SessionRestoreInfobar',
                 ],
             },
         ],
@@ -1251,9 +1259,12 @@ BUILDERS = {
     'win-10-perf': {
         'tests': [
             {
-                'isolate': 'performance_test_suite',
+                'isolate':
+                'performance_test_suite',
                 'extra_args': [
                     '--assert-gpu-compositing',
+                    # b/457520120#comment3 Disabling the feature on waterfall.
+                    '--disable-features=SessionRestoreInfobar',
                 ],
             },
         ],
@@ -1270,9 +1281,12 @@ BUILDERS = {
     'win-10-perf-pgo': {
         'tests': [
             {
-                'isolate': 'performance_test_suite',
+                'isolate':
+                'performance_test_suite',
                 'extra_args': [
                     '--assert-gpu-compositing',
+                    # b/457520120#comment3 Disabling the feature on waterfall.
+                    '--disable-features=SessionRestoreInfobar',
                 ],
             },
         ],
