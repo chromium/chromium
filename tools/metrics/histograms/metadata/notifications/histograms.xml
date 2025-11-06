@@ -930,13 +930,16 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Notifications.Scheduler.NotificationLifeCycleEvent{NotificationSchedulerClientType}"
     enum="NotificationSchedulerNotificationLifeCycleEvent"
-    expires_after="2023-03-05">
+    expires_after="2026-03-05">
   <owner>shaktisahu@chromium.org</owner>
   <owner>nyquist@chromium.org</owner>
   <summary>
     Records life cycle events for a scheduled notification, when notification is
     scheduled, shown or encountering any error.
     {NotificationSchedulerClientType}
+
+    This metric was expired between March 2023 and November 2025, so data may be
+    missing.
   </summary>
   <token key="NotificationSchedulerClientType">
     <variant name=""/>
@@ -945,6 +948,7 @@ chromium-metrics-reviews@google.com.
     <variant name=".FeatureGuide" summary="Deprecated"/>
     <variant name=".Prefetch" summary=""/>
     <variant name=".ReadingList" summary=""/>
+    <variant name=".Tips" summary=""/>
     <variant name=".Unknown" summary=""/>
     <variant name=".WebUI" summary=""/>
   </token>
