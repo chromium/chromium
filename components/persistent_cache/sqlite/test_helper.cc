@@ -25,9 +25,6 @@ std::optional<SqliteVfsFileSet> TestHelper::CreateFilesAndBuildVfsFileSet() {
 
 std::unique_ptr<Backend> TestHelper::CreateBackendWithFiles(BackendType type) {
   switch (type) {
-    case BackendType::kMock:
-      return nullptr;
-
     case BackendType::kSqlite:
       if (auto file_set = CreateFilesAndBuildVfsFileSet(); file_set) {
         return std::make_unique<SqliteBackendImpl>(*std::move(file_set));

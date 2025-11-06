@@ -12,11 +12,7 @@
 
 namespace persistent_cache {
 
-enum class BackendType {
-  kMock = 0,
-  kSqlite = 1,
-  kMaxValue = kSqlite,
-};
+enum class BackendType { kSqlite };
 
 // This struct contains fields necessary to configure a persistent
 // cache backend.

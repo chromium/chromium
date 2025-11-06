@@ -26,8 +26,6 @@ const char* GetBackendTypeName(BackendType backend_type) {
   switch (backend_type) {
     case BackendType::kSqlite:
       return "SQLite";
-    case BackendType::kMock:
-      return "Mock";
   }
 }
 
@@ -39,9 +37,6 @@ std::unique_ptr<PersistentCache> PersistentCache::Open(
     case BackendType::kSqlite:
       backend = std::make_unique<SqliteBackendImpl>(std::move(backend_params));
       break;
-    case BackendType::kMock:
-      // Reserved for testing;
-      NOTREACHED();
   }
 
   return std::make_unique<PersistentCache>(std::move(backend));
