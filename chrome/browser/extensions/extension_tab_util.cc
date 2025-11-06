@@ -648,7 +648,6 @@ base::Value::Dict ExtensionTabUtil::CreateWindowValueForExtension(
       extension, populate_tab_behavior, context);
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 // static
 api::tabs::MutedInfo ExtensionTabUtil::CreateMutedInfo(
     content::WebContents* contents) {
@@ -672,7 +671,6 @@ api::tabs::MutedInfo ExtensionTabUtil::CreateMutedInfo(
   }
   return info;
 }
-#endif
 
 // static
 ExtensionTabUtil::ScrubTabBehavior ExtensionTabUtil::GetScrubTabBehavior(

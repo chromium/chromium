@@ -187,11 +187,9 @@ class ExtensionTabUtil {
       WindowController::PopulateTabBehavior populate_tab_behavior,
       mojom::ContextType context);
 
-#if !BUILDFLAG(IS_ANDROID)
   // Creates a tab MutedInfo object (see chrome/common/extensions/api/tabs.json)
   // with information about the mute state of a browser tab.
   static api::tabs::MutedInfo CreateMutedInfo(content::WebContents* contents);
-#endif
 
   // Gets the level of scrubbing of tab data that needs to happen for a given
   // extension and web contents. This is the preferred way to get
