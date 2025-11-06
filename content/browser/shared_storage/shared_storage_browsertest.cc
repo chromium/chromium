@@ -4443,8 +4443,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, WebLocksUsageHistograms) {
                          &out_script_url);
 
   // Navigate again to record histograms.
-  EXPECT_TRUE(
-      NavigateToUrlMaybeWaitForRfhDeleted(shell(), GURL(url::kAboutBlankURL)));
+  EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
 
   histogram_tester_.ExpectBucketCount(
       "Storage.SharedStorage.UpdateMethod.HasLockOption", true, 1);
