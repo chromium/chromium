@@ -7,13 +7,31 @@
 #include <memory>
 
 #include "base/android/scoped_java_ref.h"
+#include "chrome/browser/android/tab_android.h"
+#include "chrome/browser/android/tab_android_conversions.h"
 #include "chrome/browser/android/tab_storage_packager_android.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab/jni_headers/TabStateStorageServiceFactory_jni.h"
 #include "chrome/browser/tab/tab_storage_packager.h"
+#include "components/tabs/public/tab_interface.h"
 
 namespace tabs {
+
+namespace {
+
+TabCanonicalizer GetTabCanonicalizer() {
+#if BUILDFLAG(IS_ANDROID)
+  return base::BindRepeating(
+      [](const TabInterface* tab) -> const TabInterface* {
+        return ToTabAndroidChecked(tab);
+      });
+#else
+  return base::BindRepeating([](const TabInterface* tab) { return tab; });
+#endif  // !BUILDFLAG(IS_ANDROID)
+}
+
+}  // namespace
 
 static base::android::ScopedJavaLocalRef<jobject>
 JNI_TabStateStorageServiceFactory_GetForProfile(JNIEnv* env, Profile* profile) {
@@ -59,8 +77,8 @@ TabStateStorageServiceFactory::BuildServiceInstanceForBrowserContext(
 #if BUILDFLAG(IS_ANDROID)
   packager = std::make_unique<TabStoragePackagerAndroid>(profile);
 #endif
-  return std::make_unique<TabStateStorageService>(std::move(tab_backend),
-                                                  std::move(packager));
+  return std::make_unique<TabStateStorageService>(
+      std::move(tab_backend), std::move(packager), GetTabCanonicalizer());
 }
 
 }  // namespace tabs

@@ -74,8 +74,11 @@ void MoveNodeSequence(const TabCollection* prev_parent,
 
 TabStateStorageService::TabStateStorageService(
     std::unique_ptr<TabStateStorageBackend> tab_backend,
-    std::unique_ptr<TabStoragePackager> packager)
-    : tab_backend_(std::move(tab_backend)), packager_(std::move(packager)) {
+    std::unique_ptr<TabStoragePackager> packager,
+    TabCanonicalizer tab_canonicalizer)
+    : tab_backend_(std::move(tab_backend)),
+      packager_(std::move(packager)),
+      tab_canonicalizer_(tab_canonicalizer) {
   tab_backend_->Initialize();
 }
 
@@ -178,14 +181,16 @@ void TabStateStorageService::OnAllNodesLoaded(LoadDataCallback callback,
 
 void TabStateStorageService::OnTabCreated(int storage_id,
                                           const TabInterface* tab) {
-  if (tab == nullptr) {
+  const TabInterface* canonicalized_tab = tab_canonicalizer_.Run(tab);
+  if (canonicalized_tab == nullptr) {
     // TODO(https://crbug.com/448151790): Consider removing from the database.
     // Though if a complete post-initialization raze is coming, maybe it
     // doesn't matter.
     return;
   }
 
-  tab_handle_to_storage_id_[tab->GetHandle().raw_value()] = storage_id;
+  tab_handle_to_storage_id_[canonicalized_tab->GetHandle().raw_value()] =
+      storage_id;
 }
 
 }  // namespace tabs

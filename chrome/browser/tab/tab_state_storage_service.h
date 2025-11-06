@@ -27,6 +27,11 @@
 
 namespace tabs {
 
+// Standardizes the underlying types backing the TabInterface to ensure
+// consistent handles.
+using TabCanonicalizer =
+    base::RepeatingCallback<const TabInterface*(const TabInterface*)>;
+
 class TabStateStorageService : public KeyedService,
                                public base::SupportsUserData,
                                public StorageIdMapping {
@@ -36,7 +41,8 @@ class TabStateStorageService : public KeyedService,
 
   explicit TabStateStorageService(
       std::unique_ptr<TabStateStorageBackend> tab_backend,
-      std::unique_ptr<TabStoragePackager>);
+      std::unique_ptr<TabStoragePackager> packager,
+      TabCanonicalizer tab_canonicalizer);
   ~TabStateStorageService() override;
 
   // StorageIdMapping:
@@ -69,6 +75,8 @@ class TabStateStorageService : public KeyedService,
 
   std::unique_ptr<TabStateStorageBackend> tab_backend_;
   std::unique_ptr<TabStoragePackager> packager_;
+
+  TabCanonicalizer tab_canonicalizer_;
 
   // Storage ids need to be unique across tabs and collections, but the handles
   // do not have this guarantee. Track them separately.

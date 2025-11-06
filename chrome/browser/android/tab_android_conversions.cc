@@ -33,6 +33,13 @@ TabAndroid* ToTabAndroidChecked(TabInterface* tab_interface) {
   return static_cast<TabAndroid*>(weak_tab_android.get());
 }
 
+const TabAndroid* ToTabAndroidChecked(const TabInterface* tab_interface) {
+  CHECK(tab_interface);
+  auto weak_tab_android = tab_interface->GetHandle().Get()->GetWeakPtr();
+  CHECK(weak_tab_android);
+  return static_cast<const TabAndroid*>(weak_tab_android.get());
+}
+
 }  // namespace tabs
 
 #endif  // CHROME_BROWSER_ANDROID_TAB_ANDROID_CONVERSIONS_H_

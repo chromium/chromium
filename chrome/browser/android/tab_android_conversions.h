@@ -17,10 +17,11 @@ namespace tabs {
 // There is an overhead incurred with this conversion.
 TabAndroid* ToTabAndroidOrNull(TabInterface* tab_interface);
 
-// Safely converts a TabInterface* to a TabAndroid*. This method is valid
+// The methods convert a TabInterface* to a TabAndroid*. These methods are valid
 // for inputs with a concrete type of TabInterfaceAndroid* or TabAndroid*.
 // This will crash if the `tab_interface` has outlived the TabAndroid*.
 TabAndroid* ToTabAndroidChecked(TabInterface* tab_interface);
+const TabAndroid* ToTabAndroidChecked(const TabInterface* tab_interface);
 
 }  // namespace tabs
 

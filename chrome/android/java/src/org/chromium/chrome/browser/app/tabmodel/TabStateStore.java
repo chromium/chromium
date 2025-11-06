@@ -381,11 +381,11 @@ public class TabStateStore implements TabPersistentStore {
             LoadedTabState loadedTabState = loadedTabStates[i];
             @TabId int tabId = loadedTabState.tabId;
             Tab tab = resolveTab(loadedTabState.tabState, tabId, i);
-            loadedTabState.onTabCreationCallback.onResult(tab);
 
             if (tab == null) {
                 continue;
             }
+            loadedTabState.onTabCreationCallback.onResult(tab);
 
             // TODO(https://crbug.com/448151052): Correctly mark the selected tab as active.
             // TODO(https://crbug.com/451624258): This is the opposite order of creation and details
