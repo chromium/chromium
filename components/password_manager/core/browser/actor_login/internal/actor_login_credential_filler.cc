@@ -4,6 +4,7 @@
 
 #include "components/password_manager/core/browser/actor_login/internal/actor_login_credential_filler.h"
 
+#include <algorithm>
 #include <ranges>
 #include <utility>
 
@@ -170,8 +171,7 @@ void ActorLoginCredentialFiller::AttemptLogin(
           password_manager::features::kActorLoginFillingHeuristics)) {
     fill_cb = base::BindOnce(
         &ActorLoginCredentialFiller::FillAllEligibleFields,
-        weak_ptr_factory_.GetWeakPtr(), stored_credential->username_value,
-        stored_credential->password_value,
+        weak_ptr_factory_.GetWeakPtr(), *stored_credential,
         // If there is a login form in the primary main frame, don't fill
         // iframes as we prefer forms from the primary main frame.
         signin_form_manager->GetDriver()->IsInPrimaryMainFrame());
@@ -283,8 +283,7 @@ void ActorLoginCredentialFiller::FillForm(
 }
 
 void ActorLoginCredentialFiller::FillAllEligibleFields(
-    std::u16string username,
-    std::u16string password,
+    const PasswordForm& stored_credential,
     bool should_skip_iframes) {
   base::ConcurrentClosures concurrent_filling;
   std::vector<PasswordFormManager*> eligible_forms =
@@ -296,6 +295,17 @@ void ActorLoginCredentialFiller::FillAllEligibleFields(
   }
 
   for (PasswordFormManager* manager : eligible_forms) {
+    bool stored_credential_belongs_to_manager = std::ranges::any_of(
+        manager->GetBestMatches().begin(), manager->GetBestMatches().end(),
+        [&stored_credential](const PasswordForm& best_match) {
+          return password_manager::ArePasswordFormUniqueKeysEqual(
+              stored_credential, best_match);
+        });
+    if (base::FeatureList::IsEnabled(
+            password_manager::features::kActorLoginSameSiteIframeSupport) &&
+        !stored_credential_belongs_to_manager) {
+      continue;
+    }
     if (should_store_permission_) {
       manager->SetShouldStoreActorLoginPermission();
     }
@@ -303,11 +313,13 @@ void ActorLoginCredentialFiller::FillAllEligibleFields(
     const password_manager::PasswordForm* parsed_form =
         manager->GetParsedObservedForm();
     FillField(manager->GetDriver().get(),
-              parsed_form->username_element_renderer_id, username,
-              FieldType::kUsername, concurrent_filling.CreateClosure());
+              parsed_form->username_element_renderer_id,
+              stored_credential.username_value, FieldType::kUsername,
+              concurrent_filling.CreateClosure());
     FillField(manager->GetDriver().get(),
-              parsed_form->password_element_renderer_id, password,
-              FieldType::kPassword, concurrent_filling.CreateClosure());
+              parsed_form->password_element_renderer_id,
+              stored_credential.password_value, FieldType::kPassword,
+              concurrent_filling.CreateClosure());
   }
 
   std::move(concurrent_filling)
