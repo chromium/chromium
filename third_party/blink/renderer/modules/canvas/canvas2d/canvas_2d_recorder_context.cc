@@ -2756,8 +2756,7 @@ void Canvas2DRecorderContext::drawMesh(
 
   SourceImageStatus source_image_status = kInvalidSourceImageStatus;
   scoped_refptr<Image> image = image_source->GetSourceImageForCanvas(
-      FlushReason::kDrawMesh, &source_image_status,
-      gfx::SizeF(Width(), Height()));
+      FlushReason::kOther, &source_image_status, gfx::SizeF(Width(), Height()));
   switch (source_image_status) {
     case kUndecodableSourceImageStatus:
       exception_state.ThrowDOMException(
