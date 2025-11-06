@@ -14,6 +14,7 @@
 #include "media/base/audio_buffer.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/decrypt_config.h"
+#include "media/base/limits.h"
 #include "media/base/sample_format.h"
 #include "media/base/subsample_entry.h"
 #include "mojo/public/cpp/system/buffer.h"
@@ -223,8 +224,10 @@ TypeConverter<scoped_refptr<media::AudioBuffer>, media::mojom::AudioBufferPtr>::
       static_cast<size_t>(input->sample_format) >
           media::SampleFormat::kMaxValue ||
       static_cast<size_t>(input->channel_layout) > media::CHANNEL_LAYOUT_MAX ||
-      ChannelLayoutToChannelCount(input->channel_layout) !=
-          input->channel_count) {
+      input->channel_count > media::limits::kMaxChannels ||
+      (input->channel_layout != media::CHANNEL_LAYOUT_DISCRETE &&
+       ChannelLayoutToChannelCount(input->channel_layout) !=
+           input->channel_count)) {
     DLOG(ERROR) << "Receive an invalid audio buffer, replace it with EOS.";
     return media::AudioBuffer::CreateEOSBuffer();
   }

@@ -228,8 +228,9 @@ TEST_F(LegacyAudioFileReaderTest, MidStreamConfigChangesFail) {
 }
 #endif
 
-TEST_F(LegacyAudioFileReaderTest, VorbisInvalidChannelLayout) {
-  RunTestFailingDemux("9ch.ogg");
+TEST_F(LegacyAudioFileReaderTest, VorbisValidChannelLayout) {
+  RunTest("9ch.ogg", "111.68,13.19,59.65,58.66,66.99,20.36,", 9, 48000,
+          base::Microseconds(100001), 4801, 4864);
 }
 
 TEST_F(LegacyAudioFileReaderTest, WaveValidFourChannelLayout) {

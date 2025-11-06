@@ -556,7 +556,9 @@ scoped_refptr<AudioBuffer> MakeAudioBuffer(SampleFormat format,
                                            T increment,
                                            size_t frames,
                                            base::TimeDelta timestamp) {
-  const size_t channels = ChannelLayoutToChannelCount(channel_layout);
+  const size_t channels = (channel_layout == CHANNEL_LAYOUT_DISCRETE)
+                              ? channel_count
+                              : ChannelLayoutToChannelCount(channel_layout);
   scoped_refptr<AudioBuffer> output =
       AudioBuffer::CreateBuffer(format,
                                 channel_layout,
@@ -596,7 +598,9 @@ scoped_refptr<AudioBuffer> MakeAudioBuffer<float>(SampleFormat format,
                                                   float increment,
                                                   size_t frames,
                                                   base::TimeDelta timestamp) {
-  const size_t channels = ChannelLayoutToChannelCount(channel_layout);
+  const size_t channels = (channel_layout == CHANNEL_LAYOUT_DISCRETE)
+                              ? channel_count
+                              : ChannelLayoutToChannelCount(channel_layout);
   scoped_refptr<AudioBuffer> output = AudioBuffer::CreateBuffer(
       format, channel_layout, static_cast<int>(channel_count), sample_rate,
       static_cast<int>(frames));

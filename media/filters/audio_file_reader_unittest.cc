@@ -245,8 +245,9 @@ TEST_P(AudioFileReaderTest, MidStreamConfigChangesFail) {
 }
 #endif
 
-TEST_P(AudioFileReaderTest, VorbisInvalidChannelLayout) {
-  RunTestFailingDemux("9ch.ogg");
+TEST_P(AudioFileReaderTest, VorbisValidChannelLayout) {
+  RunTest("9ch.ogg", "111.68,13.19,59.65,58.66,66.99,20.36,", 9, 48000,
+          base::Microseconds(100001), 4801, 4864);
 }
 
 TEST_P(AudioFileReaderTest, WaveValidFourChannelLayout) {
