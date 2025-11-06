@@ -361,6 +361,11 @@ public class Features {
     // WebViewNavigationListener.onFirstContentfulPaint()
     public static final String WEB_VIEW_NAVIGATION_LISTENER_V1 = "WEB_VIEW_NAVIGATION_LISTENER_V1";
 
+    // WebViewNavigationListener.onNavigationCompleted() firing on non-committed
+    // navigations
+    public static final String ON_NAVIGATION_COMPLETED_NON_COMMITTED =
+            "ON_NAVIGATION_COMPLETED_NON_COMMITTED";
+
     // SupportLibWebViewChromium weakly reference WebView
     public static final String PROVIDER_WEAKLY_REF_WEBVIEW = "PROVIDER_WEAKLY_REF_WEBVIEW";
 
