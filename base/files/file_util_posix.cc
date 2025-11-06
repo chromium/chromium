@@ -127,9 +127,9 @@ bool VerifySpecificPathControlledByUser(const FilePath& path,
 }
 #endif
 
-base::FilePath GetTempTemplate(FilePath::StringViewType prefix = "") {
+base::FilePath GetTempTemplate(FilePath::StringViewType prefix, bool hidden) {
   return FormatTemporaryFileName(
-      StrCat({prefix, prefix.empty() ? "" : ".", "XXXXXX"}));
+      StrCat({prefix, prefix.empty() ? "" : ".", "XXXXXX"}), hidden);
 }
 
 bool AdvanceEnumeratorWithStat(FileEnumerator* traversal,
@@ -683,7 +683,7 @@ ScopedFD CreateAndOpenFdForTemporaryFileInDir(const FilePath& directory,
   ScopedBlockingCall scoped_blocking_call(
       FROM_HERE,
       BlockingType::MAY_BLOCK);  // For call to mkstemp().
-  *path = directory.Append(GetTempTemplate());
+  *path = directory.Append(GetTempTemplate("", true));
   const std::string& tmpdir_string = path->value();
   // this should be OK since mkstemp just replaces characters in place
   char* buffer = const_cast<char*>(tmpdir_string.c_str());
@@ -872,7 +872,8 @@ bool CreateTemporaryFileInDir(const FilePath& dir, FilePath* temp_file) {
   return fd.is_valid();
 }
 
-FilePath FormatTemporaryFileName(FilePath::StringViewType identifier) {
+FilePath FormatTemporaryFileName(FilePath::StringViewType identifier,
+                                 bool hidden) {
 #if BUILDFLAG(IS_APPLE)
   std::string_view prefix = base::apple::BaseBundleID();
 #elif BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -880,7 +881,7 @@ FilePath FormatTemporaryFileName(FilePath::StringViewType identifier) {
 #else
   std::string_view prefix = "org.chromium.Chromium";
 #endif
-  return FilePath(StrCat({".", prefix, ".", identifier}));
+  return FilePath(StrCat({hidden ? "." : "", prefix, ".", identifier}));
 }
 
 ScopedFILE CreateAndOpenTemporaryStreamInDir(const FilePath& dir,
@@ -936,7 +937,7 @@ bool CreateNewTempDirectory(FilePath::StringViewType prefix,
     return false;
   }
 
-  return CreateTemporaryDirInDirImpl(tmpdir, GetTempTemplate(prefix),
+  return CreateTemporaryDirInDirImpl(tmpdir, GetTempTemplate(prefix, false),
                                      new_temp_path);
 }
 
