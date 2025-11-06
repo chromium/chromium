@@ -24,3 +24,19 @@ source_set("cross_device_pref_tracker_factory") {
     "//ios/chrome/browser/sync/model:device_info_sync_service_factory",
   ]
 }
+
+source_set("observer_bridge") {
+  sources = [
+    "cross_device_pref_tracker_observer_bridge.h",
+    "cross_device_pref_tracker_observer_bridge.mm",
+  ]
+  public_deps = [
+    "//base",
+    "//components/sync_preferences/cross_device_pref_tracker",
+  ]
+  deps = [
+    "//components/sync_device_info",
+    "//components/sync_preferences/cross_device_pref_tracker:timestamped_pref_value",
+  ]
+  frameworks = [ "Foundation.framework" ]
+}
