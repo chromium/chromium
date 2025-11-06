@@ -104,6 +104,7 @@ class TrayItemViewTest : public AshTestBase {
   }
 
   void TearDown() override {
+    tray_item_ = nullptr;
     widget_.reset();
     AshTestBase::TearDown();
   }
@@ -144,7 +145,7 @@ class TrayItemViewTest : public AshTestBase {
   std::unique_ptr<views::Widget> widget_;
 
   // Owned by `widget`:
-  raw_ptr<TrayItemView, DanglingUntriaged> tray_item_ = nullptr;
+  raw_ptr<TrayItemView> tray_item_ = nullptr;
 };
 
 // Tests that scheduling a `TrayItemView`'s show animation while its hide
