@@ -514,7 +514,10 @@ public class EditorDialogView extends AlwaysDismissedDialog
                                     dropdownView,
                                     EditorDialogViewBinder::bindDropdownFieldView));
                     mFieldViews.add(dropdownView);
-                    mDropdownFields.add(dropdownView.getDropdown());
+                    View dropdown = dropdownView.getDropdown();
+                    if (dropdown instanceof Spinner) {
+                        mDropdownFields.add((Spinner) dropdown);
+                    }
                     childView = dropdownView.getLayout();
                     break;
                 }
@@ -708,11 +711,6 @@ public class EditorDialogView extends AlwaysDismissedDialog
     /** @return All editable text fields in the editor. Used only for tests. */
     public List<EditText> getEditableTextFieldsForTest() {
         return mEditableTextFields;
-    }
-
-    /** @return All dropdown fields in the editor. Used only for tests. */
-    public List<Spinner> getDropdownFieldsForTest() {
-        return mDropdownFields;
     }
 
     public @Nullable AlertDialog getConfirmationDialogForTest() {

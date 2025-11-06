@@ -7,6 +7,14 @@ found in the LICENSE file.
 
 <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+    <!-- TODO(crbug.com/439911511): This is a legacy dropdown and should be removed after settings containment feature is launched.-->
+    <LinearLayout
+        android:id="@+id/legacy_dropdown_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/editor_dialog_section_small_spacing"
@@ -15,24 +23,42 @@ found in the LICENSE file.
         android:layout_marginEnd="@dimen/pref_autofill_field_horizontal_padding"
         android:orientation="vertical">
 
-    <TextView
-            android:id="@+id/spinner_label"
+        <TextView
+                android:id="@+id/spinner_label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
+                android:importantForAccessibility="no" />
+
+        <androidx.appcompat.widget.AppCompatSpinner
+                android:id="@+id/spinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:dropDownWidth="match_parent"
+                android:paddingBottom="@dimen/pref_autofill_dropdown_vertical_padding"
+                android:paddingLeft="0dp"
+                android:paddingRight="0dp"
+                android:paddingTop="@dimen/pref_autofill_dropdown_vertical_padding" />
+
+        <View android:id="@+id/spinner_underline" style="@style/PreferenceSpinnerUnderlineView" />
+    </LinearLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/dropdown_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+        android:visibility="gone">
+
+        <AutoCompleteTextView
+            android:id="@+id/dropdown_outlined"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
-            android:importantForAccessibility="no" />
+            android:inputType="none"
+            android:hint=""
+            tools:ignore="LabelFor"/>
 
-    <androidx.appcompat.widget.AppCompatSpinner
-            android:id="@+id/spinner"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:dropDownWidth="match_parent"
-            android:paddingBottom="@dimen/pref_autofill_dropdown_vertical_padding"
-            android:paddingLeft="0dp"
-            android:paddingRight="0dp"
-            android:paddingTop="@dimen/pref_autofill_dropdown_vertical_padding" />
-
-    <View android:id="@+id/spinner_underline" style="@style/PreferenceSpinnerUnderlineView" />
+    </com.google.android.material.textfield.TextInputLayout>
 
     <TextView
             android:id="@+id/spinner_error"

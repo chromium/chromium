@@ -18,15 +18,23 @@ import static org.chromium.chrome.browser.autofill.editors.EditorProperties.Fiel
 import android.app.Activity;
 import android.text.TextUtils;
 import android.view.ViewGroup;
+import android.widget.AutoCompleteTextView;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
+
+import com.google.android.material.textfield.TextInputLayout;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
+import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.Features;
+import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.autofill.DropdownKeyValue;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -37,6 +45,7 @@ import java.util.List;
 
 /** Unit test for {@link DropdownFieldView}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@Config(manifest = Config.NONE)
 public final class DropdownFieldViewUnitTest {
     private Activity mActivity;
     private ViewGroup mContentView;
@@ -44,6 +53,7 @@ public final class DropdownFieldViewUnitTest {
     @Before
     public void setUp() {
         mActivity = Robolectric.setupActivity(Activity.class);
+        mActivity.setTheme(R.style.Theme_MaterialComponents);
         mContentView = new LinearLayout(mActivity);
     }
 
@@ -88,6 +98,7 @@ public final class DropdownFieldViewUnitTest {
 
     /** Test that the initial error message is cleared when the user changes the dropdown value. */
     @Test
+    @Features.DisableFeatures(ChromeFeatureList.ANDROID_SETTINGS_CONTAINMENT)
     public void testInitialErrorMessage() {
         PropertyModel model = buildDefaultPropertyModel();
         model.set(
@@ -99,12 +110,13 @@ public final class DropdownFieldViewUnitTest {
         model.set(VALUE, "value2");
 
         // Check initial state
-        assertEquals(1, field.getDropdown().getSelectedItemPosition());
+        assertTrue(field.getDropdown() instanceof Spinner);
+        assertEquals(1, ((Spinner) field.getDropdown()).getSelectedItemPosition());
         assertFalse(field.validate());
         assertFalse(TextUtils.isEmpty(field.getErrorLabelForTests().getText()));
 
         // Change value.
-        field.getDropdown().setSelection(0);
+        ((Spinner) field.getDropdown()).setSelection(0);
         assertTrue(field.validate());
         assertTrue(TextUtils.isEmpty(field.getErrorLabelForTests().getText()));
     }
@@ -114,29 +126,59 @@ public final class DropdownFieldViewUnitTest {
      * error message is due to a predicate failing.
      */
     @Test
+    @Features.DisableFeatures(ChromeFeatureList.ANDROID_SETTINGS_CONTAINMENT)
     public void testEditKeepInvalid() {
         PropertyModel model = buildDefaultPropertyModel();
         model.set(
                 VALIDATOR,
                 EditorFieldValidator.builder()
-                        .withValidationPredicate(
-                                (value) -> {
-                                    return false;
-                                },
-                                "Error Message")
+                        .withValidationPredicate((value) -> false, "Error Message")
                         .build());
         DropdownFieldView field = attachDropdownFieldView(model);
         model.set(VALUE, "value2");
 
         // Check initial state
-        assertEquals(1, field.getDropdown().getSelectedItemPosition());
+        assertEquals(1, ((Spinner) field.getDropdown()).getSelectedItemPosition());
         assertFalse(field.validate());
         assertFalse(TextUtils.isEmpty(field.getErrorLabelForTests().getText()));
 
         // Change value.
-        field.getDropdown().setSelection(0);
+        ((Spinner) field.getDropdown()).setSelection(0);
         assertFalse(field.validate());
         assertFalse(TextUtils.isEmpty(field.getErrorLabelForTests().getText()));
+    }
+
+    /**
+     * Test that the error message is not cleared when the user changes the dropdown value if the
+     * error message is due to a predicate failing.
+     */
+    @Test
+    @Features.EnableFeatures(ChromeFeatureList.ANDROID_SETTINGS_CONTAINMENT)
+    public void testEditKeepInvalidWithContainmentOn() {
+        PropertyModel model = buildDefaultPropertyModel();
+        model.set(
+                VALIDATOR,
+                EditorFieldValidator.builder()
+                        .withValidationPredicate(value -> false, "Error Message")
+                        .build());
+        DropdownFieldView field = attachDropdownFieldView(model);
+        model.set(VALUE, "value2");
+
+        // Check initial state
+        assertFalse(field.validate());
+        assertEquals(
+                "Error Message",
+                ((TextInputLayout) field.getLayout().findViewById(R.id.dropdown_container))
+                        .getError());
+
+        // Change value.
+        assertTrue(field.getDropdown() instanceof AutoCompleteTextView);
+        ((AutoCompleteTextView) field.getDropdown()).setText("value1", false);
+        assertFalse(field.validate());
+        assertEquals(
+                "Error Message",
+                ((TextInputLayout) field.getLayout().findViewById(R.id.dropdown_container))
+                        .getError());
     }
 
     /** Test that the content description for dropdown elements is correctly set. */
@@ -166,6 +208,33 @@ public final class DropdownFieldViewUnitTest {
 
         assertTrue(field.getDropdown().isImportantForAccessibility());
         assertFalse(field.getLabel().isImportantForAccessibility());
+    }
+
+    /** Test that the content description for dropdown elements is correctly set. */
+    @Test
+    @Features.EnableFeatures(ChromeFeatureList.ANDROID_SETTINGS_CONTAINMENT)
+    public void testContentDescriptionIsCorrectWithContainmentOn() {
+        PropertyModel model = buildDefaultPropertyModel();
+        DropdownFieldView field = attachDropdownFieldView(model);
+
+        assertTrue(field.getDropdown().isImportantForAccessibility());
+
+        assertEquals("label/value1", field.getDropdown().getContentDescription());
+        model.set(VALUE, "value2");
+        assertEquals("label/value2", field.getDropdown().getContentDescription());
+    }
+
+    /**
+     * Test that the content description for dropdown elements is correctly set even if option list
+     * is empty.
+     */
+    @Test
+    @Features.EnableFeatures(ChromeFeatureList.ANDROID_SETTINGS_CONTAINMENT)
+    public void testContentDescriptionIsCorrectDropdownListEmptyWithContainmentOn() {
+        PropertyModel model = buildPropertyModelNoValues();
+        DropdownFieldView field = attachDropdownFieldView(model);
+
+        assertTrue(field.getDropdown().isImportantForAccessibility());
 
         assertEquals("label", field.getDropdown().getContentDescription());
     }
