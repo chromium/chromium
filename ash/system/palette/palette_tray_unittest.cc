@@ -88,6 +88,12 @@ class PaletteTrayTest : public AshTestBase {
         .SetFirstDisplayAsInternalDisplay();
   }
 
+  void TearDown() override {
+    test_api_.reset();
+    palette_tray_ = nullptr;
+    AshTestBase::TearDown();
+  }
+
   // Sends a stylus event, which makes the `PaletteTray` show up.
   void ShowPaletteTray() {
     ui::test::EventGenerator* generator = GetEventGenerator();
@@ -107,7 +113,7 @@ class PaletteTrayTest : public AshTestBase {
     return Shell::Get()->session_controller()->GetActivePrefService();
   }
 
-  raw_ptr<PaletteTray, DanglingUntriaged> palette_tray_ = nullptr;  // not owned
+  raw_ptr<PaletteTray> palette_tray_ = nullptr;  // not owned
 
   std::unique_ptr<PaletteTrayTestApi> test_api_;
 };
@@ -661,8 +667,14 @@ class PaletteTrayTestMultiDisplay : public PaletteTrayTest {
         std::make_unique<PaletteTrayTestApi>(palette_tray_external_);
   }
 
+  void TearDown() override {
+    test_api_external_.reset();
+    palette_tray_external_ = nullptr;
+    PaletteTrayTest::TearDown();
+  }
+
  protected:
-  raw_ptr<PaletteTray, DanglingUntriaged> palette_tray_external_ = nullptr;
+  raw_ptr<PaletteTray> palette_tray_external_ = nullptr;
 
   std::unique_ptr<PaletteTrayTestApi> test_api_external_;
 };
@@ -774,6 +786,8 @@ TEST_F(PaletteTrayTestMultiDisplay, MirrorModeEnable) {
   EXPECT_TRUE(palette_tray_external_->GetVisible());
 
   // Enable mirror mode
+  // Reset because external display will be gone
+  palette_tray_external_ = nullptr;
   Shell::Get()->display_manager()->SetMultiDisplayMode(
       display::DisplayManager::MIRRORING);
   Shell::Get()->display_manager()->UpdateDisplays();
@@ -803,8 +817,13 @@ class PaletteTrayTestWithProjector : public PaletteTrayTest {
     projector_session_ = ProjectorControllerImpl::Get()->projector_session();
   }
 
+  void TearDown() override {
+    projector_session_ = nullptr;
+    PaletteTrayTest::TearDown();
+  }
+
  protected:
-  raw_ptr<ProjectorSessionImpl, DanglingUntriaged> projector_session_;
+  raw_ptr<ProjectorSessionImpl> projector_session_;
 };
 
 // Verify that the palette tray is hidden during a Projector session.
