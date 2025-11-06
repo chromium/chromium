@@ -39,7 +39,6 @@ import org.chromium.base.SysUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
-import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
@@ -53,7 +52,15 @@ import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
+import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.hierarchicalmenu.FlyoutController;
+import org.chromium.ui.hierarchicalmenu.FlyoutController.FlyoutHandler;
+import org.chromium.ui.hierarchicalmenu.HierarchicalMenuController;
+import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
+import org.chromium.ui.widget.AnchoredPopupWindow;
+import org.chromium.ui.widget.FlyoutPopupSpecCalculator;
+import org.chromium.ui.widget.RectProvider;
 
 /**
  * Shows a popup of menu items anchored to a host view.
@@ -136,6 +143,106 @@ class AppMenu implements OnKeyListener {
         }
     }
 
+    /**
+     * A wrapper class that holds either a main {@link PopupWindow} or a flyout {@link
+     * AnchoredPopupWindow}, to accommodate {@link FlyoutHandler}. TODO(crbug.com/454148603): Use
+     * {@link AnchoredPopupWindow} for the main popup so that we can remove this wrapper.
+     */
+    static class AppMenuPopup {
+        private final @Nullable PopupWindow mMainPopup;
+        private final @Nullable AnchoredPopupWindow mFlyoutPopup;
+
+        /**
+         * Constructs an AppMenuPopup for a main popup window.
+         *
+         * @param popup The {@link PopupWindow} to wrap.
+         */
+        public AppMenuPopup(PopupWindow popup) {
+            mMainPopup = popup;
+            mFlyoutPopup = null;
+        }
+
+        /**
+         * Constructs an AppMenuPopup for a flyout popup window.
+         *
+         * @param popup The {@link AnchoredPopupWindow} to wrap.
+         */
+        public AppMenuPopup(AnchoredPopupWindow popup) {
+            mMainPopup = null;
+            mFlyoutPopup = popup;
+        }
+
+        /** Dismisses the currently held popup window (either main or flyout). */
+        public void dismiss() {
+            assert mMainPopup != null || mFlyoutPopup != null;
+            if (mMainPopup != null) {
+                mMainPopup.dismiss();
+            } else if (mFlyoutPopup != null) {
+                mFlyoutPopup.dismiss();
+            }
+        }
+
+        /**
+         * Returns whether this wrapper holds the main popup or the flyout popup.
+         *
+         * @return {@code true} if main popup, {@code false} if flyout popup.
+         */
+        public boolean isMainPopup() {
+            assert mMainPopup != null || mFlyoutPopup != null;
+            return mMainPopup != null;
+        }
+
+        /**
+         * Gets the main popup window.
+         *
+         * @return The main {@link Popupwindow}.
+         */
+        public PopupWindow getMainPopup() {
+            assert isMainPopup();
+
+            assert mMainPopup != null;
+            return mMainPopup;
+        }
+
+        /**
+         * Gets the {@link Rect} of the popup, relative to the application window.
+         *
+         * @return {@link Rect} of this popup.
+         */
+        public Rect getPopupRect() {
+            View contentView = getContentView();
+            assert contentView != null;
+
+            Rect rootViewRect = new Rect();
+            contentView.getRootView().getWindowVisibleDisplayFrame(rootViewRect);
+            int[] viewCoordinates = new int[2];
+            contentView.getLocationOnScreen(viewCoordinates);
+
+            int left = viewCoordinates[0] - rootViewRect.left;
+            int top = viewCoordinates[1] - rootViewRect.top;
+
+            return new Rect(
+                    left, top, left + contentView.getWidth(), top + contentView.getHeight());
+        }
+
+        /**
+         * Gets the content view of the popup.
+         *
+         * @return The content view.
+         */
+        public @Nullable View getContentView() {
+            assert mMainPopup != null || mFlyoutPopup != null;
+
+            if (mMainPopup != null) {
+                return mMainPopup.getContentView();
+            } else if (mFlyoutPopup != null) {
+                return mFlyoutPopup.getContentView();
+            }
+
+            return null;
+        }
+    }
+
     private static final float LAST_ITEM_SHOW_FRACTION = 0.5f;
 
     /** A means of reporting an exception/stack without crashing. */
@@ -147,7 +254,7 @@ class AppMenu implements OnKeyListener {
     private final int[] mTempLocation;
     private final AppMenuVisibilityDelegate mVisibilityDelegate;
 
-    private @Nullable PopupWindow mPopup;
+    private @Nullable Context mContext;
     private @Nullable ListView mListView;
     private @Nullable ListAdapter mAdapter;
     private @Nullable View mFooterView;
@@ -158,6 +265,7 @@ class AppMenu implements OnKeyListener {
     private boolean mSelectedItemBeforeDismiss;
     private InitialSizingHelper mInitialSizingHelper;
     private @Nullable MenuSpec mMenuSpec;
+    private final HierarchicalMenuController mHierarchicalMenuController;
 
     /**
      * Creates and sets up the App Menu.
@@ -165,7 +273,10 @@ class AppMenu implements OnKeyListener {
      * @param visibilityDelegate The visibility delegate for the Menu.
      * @param res Resources object used to get dimensions and style attributes.
      */
-    AppMenu(AppMenuVisibilityDelegate visibilityDelegate, Resources res) {
+    AppMenu(
+            AppMenuVisibilityDelegate visibilityDelegate,
+            Resources res,
+            HierarchicalMenuController hierarchicalMenuController) {
         mVisibilityDelegate = visibilityDelegate;
 
         mNegativeSoftwareVerticalOffset =
@@ -175,6 +286,7 @@ class AppMenu implements OnKeyListener {
                 res.getDimensionPixelOffset(R.dimen.menu_chip_highlight_extension);
 
         mTempLocation = new int[2];
+        mHierarchicalMenuController = hierarchicalMenuController;
     }
 
     /**
@@ -209,15 +321,17 @@ class AppMenu implements OnKeyListener {
             @Nullable Integer highlightedItemId,
             boolean isMenuIconAtStart,
             @ControlsPosition int controlsPosition,
-            boolean addTopPaddingBeforeFirstRow) {
-        mPopup = new PopupWindow(context);
-        mPopup.setFocusable(true);
-        mPopup.setInputMethodMode(PopupWindow.INPUT_METHOD_NOT_NEEDED);
+            boolean addTopPaddingBeforeFirstRow,
+            FlyoutHandler flyoutHandler) {
+        mContext = context;
+        PopupWindow popup = new PopupWindow(context);
+        popup.setFocusable(true);
+        popup.setInputMethodMode(PopupWindow.INPUT_METHOD_NOT_NEEDED);
 
         // The window layout type affects the z-index of the popup window.
-        mPopup.setWindowLayoutType(WindowManager.LayoutParams.TYPE_APPLICATION_SUB_PANEL);
+        popup.setWindowLayoutType(WindowManager.LayoutParams.TYPE_APPLICATION_SUB_PANEL);
 
-        mPopup.setOnDismissListener(
+        popup.setOnDismissListener(
                 () -> {
                     recordTimeToTakeActionHistogram();
                     if (anchorView instanceof ImageButton) {
@@ -229,7 +343,11 @@ class AppMenu implements OnKeyListener {
                     mVisibilityDelegate.appMenuDismissed();
                     mVisibilityDelegate.onMenuVisibilityChanged(false);
 
-                    mPopup = null;
+                    if (mHierarchicalMenuController.getFlyoutController() == null) {
+                        return;
+                    }
+                    mHierarchicalMenuController.destroyFlyoutController();
+
                     mAdapter = null;
                     mListView = null;
                     mFooterView = null;
@@ -240,17 +358,17 @@ class AppMenu implements OnKeyListener {
         // Some OEMs don't actually let us change the background... but they still return the
         // padding of the new background, which breaks the menu height.  If we still have a
         // drawable here even though our style says @null we should use this padding instead...
-        Drawable originalBgDrawable = mPopup.getBackground();
+        Drawable originalBgDrawable = popup.getBackground();
 
         // Setting this to a transparent ColorDrawable instead of null because setting it to null
         // prevents the menu from being dismissed by tapping outside or pressing the back button on
         // Android L.
-        mPopup.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        popup.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         // Make sure that the popup window will be closed when touch outside of it.
-        mPopup.setOutsideTouchable(true);
+        popup.setOutsideTouchable(true);
 
         if (!isByPermanentButton) {
-            mPopup.setAnimationStyle(
+            popup.setAnimationStyle(
                     isMenuIconAtStart
                             ? R.style.StartIconMenuAnim
                             : (controlsPosition == ControlsPosition.TOP
@@ -259,7 +377,7 @@ class AppMenu implements OnKeyListener {
         }
 
         // Turn off window animations for low end devices.
-        if (SysUtils.isLowEndDevice()) mPopup.setAnimationStyle(0);
+        if (SysUtils.isLowEndDevice()) popup.setAnimationStyle(0);
 
         mCurrentScreenRotation = screenRotation;
         mIsByPermanentButton = isByPermanentButton;
@@ -287,7 +405,7 @@ class AppMenu implements OnKeyListener {
         }
         int popupWidth = menuWidth + bgPadding.left + bgPadding.right;
 
-        mPopup.setWidth(popupWidth);
+        popup.setWidth(popupWidth);
 
         Rect padding = new Rect(bgPadding);
         if (isByPermanentButton && originalBgDrawable != null) {
@@ -346,7 +464,7 @@ class AppMenu implements OnKeyListener {
                         anchorView,
                         anchorViewOffset);
 
-        mPopup.setHeight(calculateMenuHeight());
+        popup.setHeight(calculateMenuHeight());
 
         int[] popupPosition =
                 getPopupPosition(
@@ -359,7 +477,12 @@ class AppMenu implements OnKeyListener {
                         anchorView,
                         popupWidth,
                         anchorView.getRootView().getLayoutDirection());
-        mPopup.setContentView(contentView);
+        popup.setContentView(contentView);
+
+        mHierarchicalMenuController.setupFlyoutController(
+                /* flyoutHandler= */ flyoutHandler,
+                new AppMenuPopup(popup),
+                /* drillDownOverrideValue= */ null);
 
         // Post the show call to handle keyboard click events.
         if (ChromeFeatureList.sAndroidWebAppMenuButton.isEnabled()) {
@@ -407,11 +530,67 @@ class AppMenu implements OnKeyListener {
         }
     }
 
-    @EnsuresNonNullIf("mPopup")
-    void setContentDescription(@Nullable String desc) {
-        if (mPopup == null) return;
+    /**
+     * Creates, displays, and tracks a new flyout sub-menu. This is called by {@link
+     * AppMenuHandlerImpl} to fulfill the {@link FlyoutHandler} interface.
+     *
+     * @param adapter The {@link ListAdapter} containing the items to display in the new flyout.
+     * @param view The menu item {@link View} that is triggering this flyout (used as the anchor).
+     * @param item The {@link ListItem} model associated with the anchor {@code view}, used for
+     *     tracking.
+     * @param dismissRunnable The runnable to run after the window is dismissed.
+     */
+    public AppMenuPopup createAndShowFlyoutPopup(
+            ListAdapter adapter, View view, ListItem item, Runnable dismissRunnable) {
+        assert mContext != null;
+        View contentView =
+                createAppMenuContentView(mContext, /* addTopPaddingBeforeFirstRow= */ true);
 
-        View contentView = mPopup.getContentView();
+        ListView listView = contentView.findViewById(R.id.app_menu_list);
+        listView.setAdapter(adapter);
+        listView.setItemsCanFocus(true);
+
+        final int lateralPadding = contentView.getPaddingLeft() + contentView.getPaddingRight();
+        int maxWidth =
+                mContext.getResources().getDimensionPixelSize(R.dimen.menu_width) + lateralPadding;
+        int menuWidth =
+                UiUtils.computeListAdapterContentDimensions(adapter, listView)[0] + lateralPadding;
+
+        assert mMenuSpec != null;
+        AnchoredPopupWindow popup =
+                new AnchoredPopupWindow.Builder(
+                                view.getContext(),
+                                mMenuSpec.anchorView.getRootView(),
+                                new ColorDrawable(Color.TRANSPARENT),
+                                () -> contentView,
+                                new RectProvider(
+                                        FlyoutController.calculateFlyoutAnchorRect(
+                                                view, mMenuSpec.anchorView.getRootView())))
+                        .setVerticalOverlapAnchor(true)
+                        .setHorizontalOverlapAnchor(false)
+                        .setFocusable(true)
+                        .setDesiredContentWidth(menuWidth)
+                        .setMaxWidth(maxWidth)
+                        .setTouchModal(false)
+                        .setAnimateFromAnchor(false)
+                        .setAnimationStyle(R.style.PopupWindowAnimFade)
+                        .setSpecCalculator(new FlyoutPopupSpecCalculator())
+                        .setWindowLayoutType(WindowManager.LayoutParams.TYPE_APPLICATION_SUB_PANEL)
+                        .addOnDismissListener(
+                                () -> {
+                                    dismissRunnable.run();
+                                })
+                        .build();
+
+        popup.show();
+        return new AppMenuPopup(popup);
+    }
+
+    void setContentDescription(@Nullable String desc) {
+        PopupWindow mainPopup = getPopup();
+        if (mainPopup == null) return;
+
+        View contentView = mainPopup.getContentView();
         if (contentView == null) return;
 
         contentView.setAccessibilityLiveRegion(
@@ -510,27 +689,30 @@ class AppMenu implements OnKeyListener {
 
     /** Dismisses the app menu and cancels the drag-to-scroll if it is taking place. */
     void dismiss() {
-        if (isShowing()) {
-            mPopup.dismiss();
+        if (mHierarchicalMenuController.getFlyoutController() != null) {
+            mHierarchicalMenuController.destroyFlyoutController();
         }
     }
 
     /**
      * @return Whether the app menu is currently showing.
      */
-    @EnsuresNonNullIf("mPopup")
     boolean isShowing() {
-        if (mPopup == null) {
-            return false;
-        }
-        return mPopup.isShowing();
+        PopupWindow mainPopup = getPopup();
+        return mainPopup != null ? mainPopup.isShowing() : false;
     }
 
     /**
      * @return {@link PopupWindow} that displays all the menu options and optional footer.
      */
     @Nullable PopupWindow getPopup() {
-        return mPopup;
+        FlyoutController<AppMenuPopup> controller =
+                mHierarchicalMenuController.getFlyoutController();
+        if (controller == null) {
+            return null;
+        }
+
+        return controller.getMainPopup().getMainPopup();
     }
 
     /**
@@ -542,10 +724,9 @@ class AppMenu implements OnKeyListener {
 
     /** Recalculates and updates the height of the popup window while it is showing. */
     public void updateMenuHeight() {
-        assert mPopup != null;
-        assert mPopup.isShowing();
-
-        mPopup.update(mPopup.getWidth(), calculateMenuHeight());
+        PopupWindow mainPopup = getPopup();
+        assert mainPopup != null && mainPopup.isShowing();
+        mainPopup.update(mainPopup.getWidth(), calculateMenuHeight());
     }
 
     private int calculateMenuHeight() {
@@ -739,9 +920,11 @@ class AppMenu implements OnKeyListener {
     }
 
     private void showPopup(View anchorView, int[] popupPosition) {
-        if (mPopup == null) return;
+        PopupWindow mainPopup = getPopup();
+
+        if (mainPopup == null) return;
         try {
-            mPopup.showAtLocation(
+            mainPopup.showAtLocation(
                     anchorView.getRootView(),
                     Gravity.NO_GRAVITY,
                     popupPosition[0],
