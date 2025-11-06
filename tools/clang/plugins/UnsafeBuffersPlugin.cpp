@@ -119,6 +119,9 @@ class UnsafeBuffersConfig {
         if (operand.contains("unique_ptr")) {
           check_unique_ptr = true;
         }
+        if (operand.contains("container")) {
+          check_container = true;
+        }
         continue;
       }
       if (symbol == '$') {
@@ -193,6 +196,7 @@ class UnsafeBuffersConfig {
   bool check_buffers = true;
   bool check_libc_calls = false;
   bool check_unique_ptr = false;
+  bool check_container = false;
 
  private:
   // `buffer` owns the memory for the strings in `prefix_map_`.
@@ -262,15 +266,6 @@ class UnsafeBuffersDiagnosticConsumer : public clang::DiagnosticConsumer {
       return PassthroughDiagnostic(level, diag);
     }
 
-    // The `-Runsafe-buffer-usage-in-container` warning gets enabled along with
-    // `-Runsafe-buffer-usage`, but it's a hardcoded warning about std::span
-    // constructor. We don't want to emit these, we instead want the span ctor
-    // (and our own base::span ctor) to be marked [[clang::unsafe_buffer_usage]]
-    // and have that work: https://github.com/llvm/llvm-project/issues/80482
-    if (diag_id == clang::diag::warn_unsafe_buffer_usage_in_container) {
-      return;
-    }
-
     // Drop the note saying "pass -fsafe-buffer-usage-suggestions to receive
     // code hardening suggestions" since that's not simple for Chrome devs to
     // do anyway. We can provide a GN variable in the future and point to that
@@ -279,13 +274,15 @@ class UnsafeBuffersDiagnosticConsumer : public clang::DiagnosticConsumer {
       return;
     }
 
-    const bool is_buffers_diagnostic =
-        diag_id == clang::diag::warn_unsafe_buffer_variable ||
-        diag_id == clang::diag::warn_unsafe_buffer_operation ||
+    const bool is_buffers_note =
         diag_id == clang::diag::note_unsafe_buffer_operation ||
         diag_id == clang::diag::note_unsafe_buffer_variable_fixit_group ||
         diag_id == clang::diag::note_unsafe_buffer_variable_fixit_together ||
         diag_id == clang::diag::note_safe_buffer_debug_mode;
+
+    const bool is_buffers_diagnostic =
+        diag_id == clang::diag::warn_unsafe_buffer_variable ||
+        diag_id == clang::diag::warn_unsafe_buffer_operation;
 
     const bool is_libc_diagnostic =
         diag_id == clang::diag::warn_unsafe_buffer_libc_call ||
@@ -295,34 +292,31 @@ class UnsafeBuffersDiagnosticConsumer : public clang::DiagnosticConsumer {
         diag_id ==
         clang::diag::warn_unsafe_buffer_usage_unique_ptr_array_access;
 
+    const bool is_container_diagnostic =
+        diag_id == clang::diag::warn_unsafe_buffer_usage_in_container;
+
     const bool ignore_diagnostic =
+        (is_buffers_note && !unsafe_buffers_config_.check_buffers) ||
         (is_buffers_diagnostic && !unsafe_buffers_config_.check_buffers) ||
         (is_libc_diagnostic && !unsafe_buffers_config_.check_libc_calls) ||
-        (is_unique_ptr_diagnostic && !unsafe_buffers_config_.check_unique_ptr);
+        (is_unique_ptr_diagnostic &&
+         !unsafe_buffers_config_.check_unique_ptr) ||
+        (is_container_diagnostic && !unsafe_buffers_config_.check_container);
 
     if (ignore_diagnostic) {
       return;
     }
 
     const bool handle_diagnostic =
+        (is_buffers_note && unsafe_buffers_config_.check_buffers) ||
         (is_buffers_diagnostic && unsafe_buffers_config_.check_buffers) ||
         (is_libc_diagnostic && unsafe_buffers_config_.check_libc_calls) ||
-        (is_unique_ptr_diagnostic && unsafe_buffers_config_.check_unique_ptr);
+        (is_unique_ptr_diagnostic && unsafe_buffers_config_.check_unique_ptr) ||
+        (is_container_diagnostic && unsafe_buffers_config_.check_container);
 
     if (!handle_diagnostic) {
       return PassthroughDiagnostic(level, diag);
     }
-
-    // Note that we promote from Remark directly to Error, rather than to
-    // Warning, as -Werror will not get applied to whatever we choose here.
-    const auto elevated_level =
-        (is_libc_diagnostic || is_unique_ptr_diagnostic ||
-         diag_id == clang::diag::warn_unsafe_buffer_variable ||
-         diag_id == clang::diag::warn_unsafe_buffer_operation)
-            ? (engine_->getWarningsAsErrors()
-                   ? clang::DiagnosticsEngine::Level::Error
-                   : clang::DiagnosticsEngine::Level::Warning)
-            : clang::DiagnosticsEngine::Level::Note;
 
     const clang::SourceManager& sm = instance_->getSourceManager();
     const clang::SourceLocation loc = diag.getLocation();
@@ -330,15 +324,24 @@ class UnsafeBuffersDiagnosticConsumer : public clang::DiagnosticConsumer {
     // -Wunsage-buffer-usage errors are omitted conditionally based on what file
     // they are coming from.
     auto disposition = FileHasSafeBuffersWarnings(sm, loc);
-    if (disposition == kSkip ||
-        (is_libc_diagnostic && disposition == kSkipLibc)) {
+    if (disposition == kSkip) {
       return;
+    }
+    if (is_libc_diagnostic) {
+      if (disposition == kSkipLibc || IsIgnoredLibcFunction(diag)) {
+        return;
+      }
     }
 
-    // More selectively filter the libc calls we enforce.
-    if (is_libc_diagnostic && IsIgnoredLibcFunction(diag)) {
-      return;
-    }
+    // Note that we promote from Remark directly to Error, rather than to
+    // Warning, as -Werror will not get applied to whatever we choose here.
+    const auto elevated_level =
+        (is_buffers_diagnostic || is_libc_diagnostic ||
+         is_unique_ptr_diagnostic || is_container_diagnostic)
+            ? (engine_->getWarningsAsErrors()
+                   ? clang::DiagnosticsEngine::Level::Error
+                   : clang::DiagnosticsEngine::Level::Warning)
+            : clang::DiagnosticsEngine::Level::Note;
 
     // Elevate the Remark to a Warning, and pass along its Notes without
     // changing them. Otherwise, do nothing, and the Remark (and its notes)
@@ -478,20 +481,21 @@ class UnsafeBuffersASTConsumer : public clang::ASTConsumer {
                                             std::move(path_file_config)),
         /*owned=*/true);
 
-    // Enable the -Wunsafe-buffer-usage warning as a remark. This prevents it
+    // Enable all the unsafe buffer diagnostics as Remarks. This prevents them
     // from stopping compilation, even with -Werror. If we see the remark go by,
     // we can re-emit it as a warning for the files we want to include in the
     // check.
     engine.setSeverityForGroup(clang::diag::Flavor::WarningOrError,
                                "unsafe-buffer-usage",
                                clang::diag::Severity::Remark);
-
-    // Enable the -Wunsafe-buffer-usage-in-libc-call warning as a remark. This
-    // prevents it from stopping compilation, even with -Werror. If we see the
-    // remark go by, we can re-emit it as a warning for the files we want to
-    // include in the check.
     engine.setSeverityForGroup(clang::diag::Flavor::WarningOrError,
                                "unsafe-buffer-usage-in-libc-call",
+                               clang::diag::Severity::Remark);
+    engine.setSeverityForGroup(clang::diag::Flavor::WarningOrError,
+                               "unsafe-buffer-usage-in-container",
+                               clang::diag::Severity::Remark);
+    engine.setSeverityForGroup(clang::diag::Flavor::WarningOrError,
+                               "unsafe-buffer-usage-in-unique-ptr-array-access",
                                clang::diag::Severity::Remark);
   }
 
