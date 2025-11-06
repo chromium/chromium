@@ -33,7 +33,6 @@ class ASH_EXPORT MouseKeysBubbleView : public views::BubbleDialogDelegateView {
 
   // Updates the visibility of all child views. Also updates the text content
   // of `label_` and updates the size of this view.
-  // TODO(crbug.com/380053616) Add icons to the bubble view.
   void Update(MouseKeysBubbleIconType icon,
               const std::optional<std::u16string>& text);
 
