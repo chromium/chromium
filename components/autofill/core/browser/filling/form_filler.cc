@@ -1022,11 +1022,16 @@ void FormFiller::MaybeTriggerRefill(
 
   switch (refill_trigger_reason) {
     case RefillTriggerReason::kFormChanged:
-      // Confirm that the form actually changed between filling time and
-      // parsing after filling time, and otherwise do not refill.
+      // Only refill if the form actually changed since it was filled.
+      // Since we won't schedule another refill, we should be cautious not to
+      // prematurely schedule refills.
       if (refill_context->filled_form &&
-          FormData::DeepEqual(form_structure.ToFormData(),
-                              *refill_context->filled_form)) {
+          std::ranges::equal(refill_context->filled_form->fields(),
+                             form_structure.fields(),
+                             [](const FormFieldData& f,
+                                const std::unique_ptr<AutofillField>& g) {
+                               return FormFieldData::DeepEqual(f, *g);
+                             })) {
         return;
       }
       break;
