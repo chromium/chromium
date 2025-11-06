@@ -112,6 +112,9 @@
 # point. This is for things like tests that fail in a way that negatively and
 # significantly impacts other tests, e.g. killing the test device.
 
+# Win11/RTX 4070 Super failures after upgrading to driver 580.88
+crbug.com/438512194 [ win nvidia-0x2783 ] InfoCollection_direct_composition [ Failure ]
+
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
