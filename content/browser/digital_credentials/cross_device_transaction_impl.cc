@@ -156,7 +156,10 @@ void TransactionImpl::OnHaveAdapter(
 
   if (!adapter_->IsPresent()) {
     FIDO_LOG(EVENT) << "No BLE adapter.";
-    std::move(callback_).Run(base::unexpected(SystemError::kNoBleSupport));
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback_),
+                       base::unexpected(SystemError::kNoBleSupport)));
     return;
   }
 
@@ -171,8 +174,10 @@ void TransactionImpl::OnHaveAdapter(
       return;
     case device::BluetoothAdapter::PermissionStatus::kDenied:
       FIDO_LOG(EVENT) << "BLE permission denied.";
-      std::move(callback_).Run(
-          base::unexpected(SystemError::kPermissionDenied));
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(std::move(callback_),
+                         base::unexpected(SystemError::kPermissionDenied)));
       return;
     case device::BluetoothAdapter::PermissionStatus::kAllowed:
       break;
@@ -197,8 +202,10 @@ void TransactionImpl::OnHaveBluetoothPermission(
   if (status == device::BluetoothAdapter::PermissionStatus::kDenied) {
     FIDO_LOG(EVENT) << "BLE permission denied.";
     if (callback_) {
-      std::move(callback_).Run(
-          base::unexpected(SystemError::kPermissionDenied));
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(std::move(callback_),
+                         base::unexpected(SystemError::kPermissionDenied)));
     }
     return;
   }
