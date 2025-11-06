@@ -575,7 +575,6 @@ void FastPairPairerImpl::AttemptSendAccountKey() {
     // fail. Instead of proceeding, call the callback and return.
     if (ash::features::IsFastPairBleRotationEnabled() &&
         fast_pair_handshake_->DidBleAddressRotate()) {
-      // TODO (b/268055837): add metric for when we get in this scenario.
       CD_LOG(VERBOSE, Feature::FP)
           << __func__ << ": BLE Address rotated, running callback";
       fast_pair_handshake_->RunBleAddressRotationCallback();
