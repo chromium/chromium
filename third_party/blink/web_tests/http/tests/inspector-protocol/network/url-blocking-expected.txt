@@ -17,6 +17,11 @@ Request for resources/a.html was blocked as expected.
 Request for resources/b.html was not blocked as expected.
 Request for resources/c.html was blocked as expected.
 
+Testing whether blocking state survives reloads
+Request for resources/a.html was blocked as expected.
+Request for resources/b.html was not blocked as expected.
+Request for resources/c.html was blocked as expected.
+
 Testing clearing blocked URLs:
 Request for resources/a.html was not blocked as expected.
 Request for resources/b.html was not blocked as expected.

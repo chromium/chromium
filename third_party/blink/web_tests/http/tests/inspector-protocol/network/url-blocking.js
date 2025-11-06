@@ -65,6 +65,13 @@
   await testRequest('resources/b.html', false);
   await testRequest('resources/c.html', true);
 
+  testRunner.log('\nTesting whether blocking state survives reloads');
+  await dp.Page.reload();
+  await testRequest('resources/a.html', true);
+  await testRequest('resources/b.html', false);
+  await testRequest('resources/c.html', true);
+
+
   testRunner.log('\nTesting clearing blocked URLs:');
   await dp.Network.setBlockedURLs({urls: [], urlPatterns: []});
   await testRequest('resources/a.html', false);
