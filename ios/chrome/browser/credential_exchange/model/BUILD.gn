@@ -16,6 +16,7 @@ source_set("model") {
     ":credential_export_manager_swift",
     ":credential_import_manager_swift",
     "//base",
+    "//components/password_manager/core/browser/import:importer",
     "//components/password_manager/core/browser/ui",
     "//components/password_manager/core/browser/ui:credential_ui_entry",
     "//components/webauthn/core/browser",

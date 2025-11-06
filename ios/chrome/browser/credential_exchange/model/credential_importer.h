@@ -7,6 +7,10 @@
 
 #import <Foundation/Foundation.h>
 
+namespace password_manager {
+class SavedPasswordsPresenter;
+}  // namespace password_manager
+
 // Delegate for CredentialImporter.
 @protocol CredentialImporterDelegate <NSObject>
 
@@ -21,6 +25,8 @@
 @interface CredentialImporter : NSObject
 
 - (instancetype)initWithDelegate:(id<CredentialImporterDelegate>)delegate
+         savedPasswordsPresenter:
+             (password_manager::SavedPasswordsPresenter*)savedPasswordsPresenter
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 

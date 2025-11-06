@@ -7,7 +7,12 @@
 
 #import <Foundation/Foundation.h>
 
+#import <memory>
 #import <string>
+
+namespace password_manager {
+class SavedPasswordsPresenter;
+}  // namespace password_manager
 
 @protocol CredentialImportConsumer;
 
@@ -26,7 +31,10 @@
 // passed back to the OS to receive the credential data.
 - (instancetype)initWithUUID:(NSUUID*)UUID
                     delegate:(id<CredentialImportMediatorDelegate>)delegate
-                   userEmail:(std::string)userEmail NS_DESIGNATED_INITIALIZER;
+                   userEmail:(std::string)userEmail
+     savedPasswordsPresenter:
+         (std::unique_ptr<password_manager::SavedPasswordsPresenter>)
+             savedPasswordsPresenter NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
 // Consumer of this mediator.

@@ -450,7 +450,7 @@ void PasswordImporter::ParseCSVPasswordsInSandbox(
   if (result.has_value()) {
     GetParser()->ParseCSV(
         std::move(result.value()),
-        base::BindOnce(&PasswordImporter::ConsumePasswords,
+        base::BindOnce(&PasswordImporter::OnCSVPasswordsParsed,
                        weak_ptr_factory_.GetWeakPtr(), to_store,
                        std::move(results_callback)));
   } else {
@@ -495,6 +495,18 @@ void PasswordImporter::Import(const base::FilePath& path,
                      std::move(results_callback)));
 }
 
+void PasswordImporter::Import(const std::vector<CSVPassword>& csv_passwords,
+                              PasswordForm::Store to_store,
+                              ImportResultsCallback results_callback) {
+  // Block concurrent import requests.
+  state_ = kInProgress;
+
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&PasswordImporter::ConsumePasswords,
+                                weak_ptr_factory_.GetWeakPtr(), to_store,
+                                csv_passwords, std::move(results_callback)));
+}
+
 void PasswordImporter::ContinueImport(const std::vector<int>& selected_ids,
                                       ImportResultsCallback results_callback) {
   CHECK(IsState(kUserInteractionRequired));
@@ -522,7 +534,7 @@ void PasswordImporter::ContinueImport(const std::vector<int>& selected_ids,
                              selected_ids.size());
 }
 
-void PasswordImporter::ConsumePasswords(
+void PasswordImporter::OnCSVPasswordsParsed(
     PasswordForm::Store to_store,
     ImportResultsCallback results_callback,
     password_manager::mojom::CSVPasswordSequencePtr seq) {
@@ -548,6 +560,17 @@ void PasswordImporter::ConsumePasswords(
     std::move(results_callback).Run(results);
     return;
   }
+
+  ConsumePasswords(to_store, seq->csv_passwords, std::move(results_callback));
+}
+
+void PasswordImporter::ConsumePasswords(
+    PasswordForm::Store to_store,
+    const std::vector<CSVPassword>& csv_passwords,
+    ImportResultsCallback results_callback) {
+  // Used to aggregate final results of the current import.
+  ImportResults results;
+  results.file_name = file_path_.BaseName().AsUTF8Unsafe();
 
   // TODO(crbug.com/40225420): Either move to earlier point or update histogram.
   base::Time start_time = base::Time::Now();
@@ -575,7 +598,7 @@ void PasswordImporter::ConsumePasswords(
   // Go over all canonically parsed passwords:
   // 1) aggregate all valid ones in `incoming_passwords` to be passed over to
   // the presenter. 2) aggregate all parsing errors in the `results`.
-  for (const password_manager::CSVPassword& csv_password : seq->csv_passwords) {
+  for (const password_manager::CSVPassword& csv_password : csv_passwords) {
     base::expected<password_manager::CredentialUIEntry, ImportEntry>
         credential = CSVPasswordToCredentialUIEntry(csv_password, to_store);
 

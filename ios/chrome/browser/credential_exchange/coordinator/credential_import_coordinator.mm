@@ -4,12 +4,17 @@
 
 #import "ios/chrome/browser/credential_exchange/coordinator/credential_import_coordinator.h"
 
+#import "components/keyed_service/core/service_access_type.h"
 #import "components/metrics/metrics_pref_names.h"
+#import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
+#import "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
 #import "ios/chrome/browser/credential_exchange/coordinator/credential_import_mediator.h"
 #import "ios/chrome/browser/credential_exchange/ui/credential_import_view_controller.h"
+#import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
+#import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/create_password_manager_title_view.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
@@ -62,12 +67,24 @@
 - (void)start {
   _viewController = [[CredentialImportViewController alloc] init];
   _viewController.delegate = self;
-  _userEmail = IdentityManagerFactory::GetForProfile(self.profile)
+  ProfileIOS* profile = self.profile;
+  _userEmail = IdentityManagerFactory::GetForProfile(profile)
                    ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
                    .email;
-  _mediator = [[CredentialImportMediator alloc] initWithUUID:_UUID
-                                                    delegate:self
-                                                   userEmail:_userEmail];
+  std::unique_ptr<password_manager::SavedPasswordsPresenter>
+      savedPasswordsPresenter =
+          std::make_unique<password_manager::SavedPasswordsPresenter>(
+              IOSChromeAffiliationServiceFactory::GetForProfile(profile),
+              IOSChromeProfilePasswordStoreFactory::GetForProfile(
+                  profile, ServiceAccessType::EXPLICIT_ACCESS),
+              IOSChromeAccountPasswordStoreFactory::GetForProfile(
+                  profile, ServiceAccessType::EXPLICIT_ACCESS),
+              /*passkey_model=*/nullptr);
+  _mediator = [[CredentialImportMediator alloc]
+                 initWithUUID:_UUID
+                     delegate:self
+                    userEmail:_userEmail
+      savedPasswordsPresenter:std::move(savedPasswordsPresenter)];
   _mediator.consumer = _viewController;
   _navigationController = [[UINavigationController alloc]
       initWithRootViewController:_viewController];
