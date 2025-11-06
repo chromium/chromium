@@ -53,7 +53,8 @@ void DataControlsTabHelper::ShouldAllowCopy(
           GetManagementDomain(profile),
           base::BindOnce(&DataControlsTabHelper::FinishCopy,
                          weak_factory_.GetWeakPtr(), source_url,
-                         std::move(verdicts), std::move(callback)));
+                         profile->AsWeakPtr(), metadata, std::move(verdicts),
+                         std::move(callback)));
       break;
     case Rule::Level::kBlock:
       ShowRestrictSnackbar(GetManagementDomain(profile));
@@ -61,7 +62,8 @@ void DataControlsTabHelper::ShouldAllowCopy(
     case Rule::Level::kReport:
     case Rule::Level::kAllow:
     case Rule::Level::kNotSet:
-      FinishCopy(source_url, std::move(verdicts), std::move(callback),
+      FinishCopy(source_url, profile->AsWeakPtr(), metadata,
+                 std::move(verdicts), std::move(callback),
                  /*bypassed=*/false);
       break;
   }
@@ -92,15 +94,19 @@ void DataControlsTabHelper::ShouldAllowPaste(
   std::string domain = policy_verdict.dialog_triggered_by_source
                            ? GetManagementDomain(source.source_profile)
                            : GetManagementDomain(profile);
+  base::WeakPtr<ProfileIOS> weakSourceProfile =
+      source.source_profile ? source.source_profile->AsWeakPtr()
+                            : base::WeakPtr<ProfileIOS>{};
 
   switch (policy_verdict.verdict.level()) {
     case Rule::Level::kWarn:
       ShowWarningDialog(
           DataControlsDialog::Type::kClipboardPasteWarn, domain,
-          base::BindOnce(&DataControlsTabHelper::FinishPaste,
-                         weak_factory_.GetWeakPtr(), destination_url,
-                         std::move(policy_verdict.verdict),
-                         std::move(callback)));
+          base::BindOnce(
+              &DataControlsTabHelper::FinishPaste, weak_factory_.GetWeakPtr(),
+              destination_url, source.source_url, profile->AsWeakPtr(),
+              weakSourceProfile, metadata, std::move(policy_verdict.verdict),
+              std::move(callback)));
       break;
     case Rule::Level::kBlock:
       ShowRestrictSnackbar(domain);
@@ -108,8 +114,9 @@ void DataControlsTabHelper::ShouldAllowPaste(
     case Rule::Level::kReport:
     case Rule::Level::kAllow:
     case Rule::Level::kNotSet:
-      FinishPaste(destination_url, std::move(policy_verdict.verdict),
-                  std::move(callback),
+      FinishPaste(destination_url, source.source_url, profile->AsWeakPtr(),
+                  weakSourceProfile, metadata,
+                  std::move(policy_verdict.verdict), std::move(callback),
                   /*bypassed=*/false);
       break;
   }
@@ -188,9 +195,17 @@ bool DataControlsTabHelper::IsClipboardDataControlsEnabled() const {
 }
 
 void DataControlsTabHelper::FinishCopy(const GURL& source_url,
+                                       base::WeakPtr<ProfileIOS> source_profile,
+                                       const ui::ClipboardMetadata& metadata,
                                        CopyPolicyVerdicts verdicts,
                                        base::OnceCallback<void(bool)> callback,
                                        bool bypassed) {
+  if (verdicts.copy_action_verdict.level() > Rule::Level::kNotSet &&
+      source_profile.get()) {
+    MaybeReportDataControlsCopy(source_url, source_profile.get(), metadata,
+                                verdicts.copy_action_verdict, bypassed);
+  }
+
   // The user may have navigated away from the page from which the copy
   // operation was initiated. If the URL has changed, we should block the copy
   // operation as the original content is no longer available.
@@ -237,10 +252,21 @@ void DataControlsTabHelper::FinishShare(const GURL& source_url,
   std::move(callback).Run(allowed);
 }
 
-void DataControlsTabHelper::FinishPaste(const GURL& destination_url,
-                                        Verdict verdict,
-                                        base::OnceCallback<void(bool)> callback,
-                                        bool bypassed) {
+void DataControlsTabHelper::FinishPaste(
+    const GURL& destination_url,
+    const GURL& source_url,
+    base::WeakPtr<ProfileIOS> destination_profile,
+    base::WeakPtr<ProfileIOS> source_profile,
+    const ui::ClipboardMetadata& metadata,
+    Verdict verdict,
+    base::OnceCallback<void(bool)> callback,
+    bool bypassed) {
+  if (verdict.level() > Rule::Level::kNotSet && destination_profile.get()) {
+    MaybeReportDataControlsPaste(
+        source_url, destination_url, source_profile.get(),
+        destination_profile.get(), metadata, verdict, bypassed);
+  }
+
   // The user may have navigated away from the page into which the paste
   // operation was initiated. If the URL has changed, we should block the paste
   // operation as the original destination is no longer available.

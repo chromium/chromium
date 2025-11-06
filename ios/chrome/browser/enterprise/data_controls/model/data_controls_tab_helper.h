@@ -67,12 +67,18 @@ class DataControlsTabHelper
 
   // Finalizes the copy action invoking the callback.
   void FinishCopy(const GURL& source_url,
+                  base::WeakPtr<ProfileIOS> source_profile,
+                  const ui::ClipboardMetadata& metadata,
                   CopyPolicyVerdicts verdicts,
                   base::OnceCallback<void(bool)> callback,
                   bool bypassed);
 
   // Finalizes the paste action invoking the callback.
   void FinishPaste(const GURL& destination_url,
+                   const GURL& source_url,
+                   base::WeakPtr<ProfileIOS> destination_profile,
+                   base::WeakPtr<ProfileIOS> source_profile,
+                   const ui::ClipboardMetadata& metadata,
                    Verdict verdict,
                    base::OnceCallback<void(bool)> callback,
                    bool bypassed);
