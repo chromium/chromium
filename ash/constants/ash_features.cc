@@ -648,9 +648,6 @@ BASE_FEATURE(kEphemeralNetworkPolicies,
 BASE_FEATURE(kESimEmptyActivationCodeSupported,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enable or disable support for touchpad with haptic feedback.
-BASE_FEATURE(kExoHapticFeedbackSupport, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables version 4 of the zwp_linux_dmabuf_v1 Wayland protocol.
 // This version adds support for dynamic feedback, allowing the compositor to
 // give clients hints about more optimal DRM formats and modifiers depending on
