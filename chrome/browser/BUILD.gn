@@ -2913,6 +2913,8 @@ static_library("browser") {
       "android/storage_restore_orchestrator_android.h",
       "android/tab_android.cc",
       "android/tab_android.h",
+      "android/tab_android_conversions.cc",
+      "android/tab_android_conversions.h",
       "android/tab_android_data_provider.h",
       "android/tab_android_user_data.h",
       "android/tab_browser_controls_constraints_helper.cc",
