@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/fullscreen/ui_bundled/test/test_fullscreen_controller.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/bwg_coordinator.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -126,6 +127,7 @@ TEST_F(GeminiCoordinatorTest, FullscreenNotExitedOnAIHubEntryPoint) {
 
 // Tests fullscreen mode exiting when promo shows from the promo entry point.
 TEST_F(GeminiCoordinatorTest, FullscreenExitedOnPromoEntryPoint) {
+  feature_list_.InitWithFeatures({kGeminiNavigationPromo, kAskGeminiChip}, {});
   auto* tracker = static_cast<feature_engagement::test::MockTracker*>(
       feature_engagement::TrackerFactory::GetForProfile(
           profile_manager_.GetProfileWithName(kFirstProfileName)));
@@ -141,6 +143,8 @@ TEST_F(GeminiCoordinatorTest, FullscreenExitedOnPromoEntryPoint) {
   EXPECT_CALL(
       *tracker,
       NotifyEvent(feature_engagement::events::kIOSGeminiPromoFirstCompletion));
+
+  EXPECT_CALL(*tracker, NotifyEvent("fullscreen_promos_group_trigger"));
 
   StartCoordinatorWithEntryPoint(bwg::EntryPoint::Promo);
 

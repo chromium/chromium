@@ -265,10 +265,10 @@ TEST_F(BwgTabHelperTest, TestWasHidden_BackgroundsSession) {
   EXPECT_OCMOCK_VERIFY(mock_bwg_handler_);
 }
 
-TEST_F(BwgTabHelperTest, TestPageLoaded_ShowsPromo) {
+TEST_F(BwgTabHelperTest, TestDidStartNavigation_ShowsPromo) {
   feature_list_.InitWithFeatures(
       /*enabled_features=*/{kPageActionMenu, kGeminiCrossTab,
-                            kGeminiNavigationPromo},
+                            kGeminiNavigationPromo, kAskGeminiChip},
       /*disabled_features=*/{});
 
   OCMExpect([mock_bwg_handler_ showBWGPromoIfPageIsEligible]);
@@ -279,20 +279,62 @@ TEST_F(BwgTabHelperTest, TestPageLoaded_ShowsPromo) {
   // Make first run not recent.
   ForceFirstRunRecency(2);
 
-  tab_helper_->PageLoaded(web_state_.get(),
-                          web::PageLoadCompletionStatus::SUCCESS);
+  GURL url("https://www.chromium.org");
+
+  // Prepare optimization guide metadata.
+  OptimizationGuideService* optimization_guide_service =
+      OptimizationGuideServiceFactory::GetForProfile(profile_.get());
+  optimization_guide::proto::GlicContextualCueingMetadata cueing_metadata;
+  cueing_metadata.add_cueing_configurations();
+  optimization_guide::proto::Any any_metadata;
+  any_metadata.set_type_url(
+      "type.googleapis.com/"
+      "optimization_guide.proto.GlicContextualCueingMetadata");
+  cueing_metadata.SerializeToString(any_metadata.mutable_value());
+  optimization_guide::OptimizationMetadata metadata;
+  metadata.set_any_metadata(any_metadata);
+  optimization_guide_service->AddHintForTesting(
+      GURL(url), optimization_guide::proto::GLIC_CONTEXTUAL_CUEING, metadata);
+
+  auto navigation_context = std::make_unique<web::FakeNavigationContext>();
+  navigation_context->SetUrl(url);
+  navigation_context->SetHasCommitted(true);
+  tab_helper_->DidFinishNavigation(web_state_.get(), navigation_context.get());
   EXPECT_OCMOCK_VERIFY(mock_bwg_handler_);
 }
 
-TEST_F(BwgTabHelperTest, TestPageLoaded_DoesNotShowPromo) {
+TEST_F(BwgTabHelperTest, TestDidStartNavigation_DoesNotShowPromo) {
+  feature_list_.InitWithFeatures(
+      /*enabled_features=*/{kPageActionMenu, kGeminiCrossTab,
+                            kGeminiNavigationPromo, kAskGeminiChip},
+      /*disabled_features=*/{});
+
   OCMReject([mock_bwg_handler_ showBWGPromoIfPageIsEligible]);
 
   // Set prefs to a state where the promo should not be shown.
   profile_->GetPrefs()->SetBoolean(prefs::kIOSBwgConsent, true);
 
-  tab_helper_->PageLoaded(web_state_.get(),
-                          web::PageLoadCompletionStatus::SUCCESS);
+  GURL url("https://www.chromium.org");
 
+  // Prepare optimization guide metadata.
+  OptimizationGuideService* optimization_guide_service =
+      OptimizationGuideServiceFactory::GetForProfile(profile_.get());
+  optimization_guide::proto::GlicContextualCueingMetadata cueing_metadata;
+  cueing_metadata.add_cueing_configurations();
+  optimization_guide::proto::Any any_metadata;
+  any_metadata.set_type_url(
+      "type.googleapis.com/"
+      "optimization_guide.proto.GlicContextualCueingMetadata");
+  cueing_metadata.SerializeToString(any_metadata.mutable_value());
+  optimization_guide::OptimizationMetadata metadata;
+  metadata.set_any_metadata(any_metadata);
+  optimization_guide_service->AddHintForTesting(
+      GURL(url), optimization_guide::proto::GLIC_CONTEXTUAL_CUEING, metadata);
+
+  auto navigation_context = std::make_unique<web::FakeNavigationContext>();
+  navigation_context->SetUrl(url);
+  navigation_context->SetHasCommitted(true);
+  tab_helper_->DidFinishNavigation(web_state_.get(), navigation_context.get());
   EXPECT_OCMOCK_VERIFY(mock_bwg_handler_);
 }
 

@@ -364,22 +364,6 @@ void BwgTabHelper::DidFinishNavigation(
 void BwgTabHelper::PageLoaded(
     web::WebState* web_state,
     web::PageLoadCompletionStatus load_completion_status) {
-  if (page_loaded_callback_) {
-    std::move(page_loaded_callback_).Run();
-  }
-
-  ProfileIOS* profile =
-      ProfileIOS::FromBrowserState(web_state->GetBrowserState());
-  bool floaty_shown = profile->GetPrefs()->GetBoolean(prefs::kIOSBwgConsent);
-  bool bwg_promo_shown =
-      profile->GetPrefs()->GetInteger(prefs::kIOSBWGPromoImpressionCount) > 0;
-  bool should_wait_for_new_user =
-      !ShouldSkipBWGPromoNewUserDelay() && IsFirstRunRecent(base::Days(1));
-  if (IsGeminiNavigationPromoEnabled() && !should_wait_for_new_user &&
-      !floaty_shown && !bwg_promo_shown) {
-    [bwg_commands_handler_ showBWGPromoIfPageIsEligible];
-  }
-
   if (IsWebPageReportedImagesSheetEnabled()) {
     PrepareWebPageReportedImagesSnackbar();
   }
@@ -507,7 +491,6 @@ void BwgTabHelper::OnOptimizationGuideDecision(
       SnackbarMessage* message =
           [[SnackbarMessage alloc] initWithTitle:@"Ask about page?"];
       message.action = action;
-
       [snackbar_commands_handler_ showSnackbarMessage:message];
     } else {
       UIImage* badge_image =
@@ -525,6 +508,52 @@ void BwgTabHelper::OnOptimizationGuideDecision(
       badge_config.shouldHideBadgeAfterChipCollapse = true;
       [location_bar_badge_commands_handler_ updateBadgeConfig:badge_config];
     }
+  }
+
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
+  // TODO(crbug.com/453978851): Leverage engagement tracker events to track
+  // these conditions instead of checking prefs manually.
+  bool floaty_shown = profile->GetPrefs()->GetBoolean(prefs::kIOSBwgConsent);
+  bool bwg_promo_shown =
+      profile->GetPrefs()->GetInteger(prefs::kIOSBWGPromoImpressionCount) > 0;
+  bool should_wait_for_new_user =
+      !ShouldSkipBWGPromoNewUserDelay() && IsFirstRunRecent(base::Days(1));
+
+  // Show promo if eligible.
+  if (IsGeminiNavigationPromoEnabled() && !should_wait_for_new_user &&
+      !floaty_shown && !bwg_promo_shown) {
+    [bwg_commands_handler_ showBWGPromoIfPageIsEligible];
+    return;
+  }
+
+  // Otherwise, show snackbar if eligible.
+  if (IsAskGeminiSnackbarEnabled()) {
+    SnackbarMessageAction* action = [[SnackbarMessageAction alloc] init];
+    action.handler = ^{
+      [bwg_commands_handler_ startBWGFlowWithEntryPoint:bwg::EntryPoint::Promo];
+    };
+    action.title = [NSString stringWithFormat:@"✦ %@", @"Ask Gemini"];
+    SnackbarMessage* message =
+        [[SnackbarMessage alloc] initWithTitle:@"Ask about page?"];
+    message.action = action;
+
+    [snackbar_commands_handler_ showSnackbarMessage:message];
+  } else {
+    UIImage* badge_image =
+        [BWGUIUtils brandedGeminiSymbolWithPointSize:kBadgeSymbolPointSize];
+    NSString* cue_label = base::SysUTF8ToNSString(
+        latest_load_contextual_cueing_metadata_->cueing_configurations(0)
+            .cue_label());
+    LocationBarBadgeConfiguration* badge_config =
+        [[LocationBarBadgeConfiguration alloc]
+             initWithBadgeType:LocationBarBadgeType::kGeminiContextualCueChip
+            accessibilityLabel:cue_label
+                    badgeImage:badge_image];
+
+    badge_config.badgeText = cue_label;
+    badge_config.shouldHideBadgeAfterChipCollapse = true;
+    [location_bar_badge_commands_handler_ updateBadgeConfig:badge_config];
   }
 }
 

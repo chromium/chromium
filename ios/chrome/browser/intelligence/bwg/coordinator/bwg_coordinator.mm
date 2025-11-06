@@ -125,6 +125,10 @@ const CGFloat kPromoMaxImpressionCount = 3;
   BwgTabHelper* BWGTabHelper = [self activeWebStateBWGTabHelper];
 
   if (showPromo) {
+    if (_entryPoint == bwg::EntryPoint::Promo) {
+      feature_engagement::TrackerFactory::GetForProfile(self.profile)
+          ->NotifyEvent("fullscreen_promos_group_trigger");
+    }
     int impressionCount =
         _prefService->GetInteger(prefs::kIOSBWGPromoImpressionCount) + 1;
     _prefService->SetInteger(prefs::kIOSBWGPromoImpressionCount,
