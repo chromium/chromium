@@ -1323,8 +1323,23 @@ bool Database::CommitTransaction(InternalApiToken) {
 
   bool succeeded = commit.Run();
 
+  // The commit can fail with error code like SQLITE_BUSY or SQLITE_ERROR. In
+  // these cases, the transaction is not rollback and is kept alive. The call
+  // to sqlite3_get_autocommit(...) can be used to know if there is still a
+  // pending transaction or if the connection is back to normal with the
+  // autocommit mode (no pending transaction).
+  if (!succeeded && sqlite3_get_autocommit(db_) == 0) {
+    // In modern SQLite (post 3.7.11), rollback is design to be robust and
+    // reliable and it will bring back the connection in a clean state.
+    DoRollback();
+    return false;
+  }
+
   // Release dirty cache pages after the transaction closes.
   ReleaseCacheMemoryIfNeeded(false);
+
+  // There should be no pending transactions.
+  CHECK_NE(sqlite3_get_autocommit(db_), 0);
 
   return succeeded;
 }
