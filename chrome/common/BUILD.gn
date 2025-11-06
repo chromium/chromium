@@ -672,7 +672,6 @@ mojom("mojo_bindings") {
     "network_diagnostics.mojom",
     "network_easter_egg.mojom",
     "open_search_description_document_handler.mojom",
-    "plugin.mojom",
     "privacy_budget/identifiability_study_configurator.mojom",
     "renderer_configuration.mojom",
     "trusted_vault_encryption_keys_extension.mojom",

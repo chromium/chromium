@@ -13,7 +13,7 @@ declare_args() {
   # looking up plugins.
   #
   # In particular, the PDF viewer (enable_pdf) requires plugin support.
-  enable_plugins = !is_android && !is_ios && !is_castos
+  enable_plugins = false
 }
 
 # Screen capture is enabled on most platforms. Currently, screen capture

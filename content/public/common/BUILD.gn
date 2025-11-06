@@ -224,9 +224,6 @@ source_set("common_sources") {
     "url_utils.cc",
     "url_utils.h",
     "web_identity.h",
-    "webplugininfo.cc",
-    "webplugininfo.h",
-    "webplugininfo_param_traits.h",
     "widget_type.h",
   ]
 
@@ -378,7 +375,6 @@ mojom("interfaces") {
     "drop_data.mojom",
     "extra_mojo_js_features.mojom",
     "resource_usage_reporter.mojom",
-    "webplugininfo.mojom",
     "window_container_type.mojom",
   ]
 
@@ -405,23 +401,6 @@ mojom("interfaces") {
   overridden_deps = [ "//third_party/blink/public/mojom:mojom_platform" ]
   component_deps = [ "//third_party/blink/public/common" ]
 
-  cpp_typemaps = [
-    {
-      types = [
-        {
-          mojom = "content.mojom.WebPluginInfo"
-          cpp = "::content::WebPluginInfo"
-        },
-      ]
-      traits_headers = [ "webplugininfo.h" ]
-      traits_private_headers = [ "webplugininfo_param_traits.h" ]
-      traits_public_deps = [
-        "//base",
-        "//skia",
-      ]
-      traits_deps = [ "//ipc" ]
-    },
-  ]
 
   if (is_mac) {
     _common_param_traits_headers = [ "common_param_traits_macros.h" ]

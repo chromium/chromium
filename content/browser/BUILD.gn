@@ -3153,17 +3153,6 @@ source_set("browser") {
     ]
   }
 
-  if (enable_plugins) {
-    sources += [
-      "../public/browser/plugin_service.h",
-      "plugin_list.cc",
-      "plugin_list.h",
-      "plugin_service_impl.cc",
-      "plugin_service_impl.h",
-      "renderer_host/plugin_registry_impl.cc",
-      "renderer_host/plugin_registry_impl.h",
-    ]
-  }
 
   if (enable_library_cdms) {
     sources += [

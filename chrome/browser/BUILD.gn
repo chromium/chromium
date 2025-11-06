@@ -996,8 +996,6 @@ static_library("browser") {
     "performance_monitor/system_monitor.h",
     "platform_util_internal.cc",
     "platform_util_internal.h",
-    "plugins/pdf_iframe_navigation_throttle.cc",
-    "plugins/pdf_iframe_navigation_throttle.h",
     "policy/browsing_history_policy_handler.cc",
     "policy/browsing_history_policy_handler.h",
     "policy/chrome_browser_policy_connector.cc",
@@ -3205,8 +3203,6 @@ static_library("browser") {
       "performance_manager/policies/process_rank_policy_android.cc",
       "performance_manager/policies/process_rank_policy_android.h",
       "platform_util_android.cc",
-      "plugins/plugin_observer_android.cc",
-      "plugins/plugin_observer_android.h",
       "policy/android/cloud_management_shared_preferences.cc",
       "policy/android/cloud_management_shared_preferences.h",
       "policy/browser_dm_token_storage_android.cc",
@@ -8074,41 +8070,6 @@ static_library("browser") {
     ]
   }
 
-  if (enable_plugins) {
-    sources += [
-      "plugins/chrome_content_browser_client_plugins_part.cc",
-      "plugins/chrome_content_browser_client_plugins_part.h",
-      "plugins/chrome_plugin_service_filter.cc",
-      "plugins/chrome_plugin_service_filter.h",
-      "plugins/plugin_info_host_impl.cc",
-      "plugins/plugin_info_host_impl.h",
-      "plugins/plugin_metadata.cc",
-      "plugins/plugin_metadata.h",
-      "plugins/plugin_observer.cc",
-      "plugins/plugin_observer.h",
-      "plugins/plugin_prefs.cc",
-      "plugins/plugin_prefs.h",
-      "plugins/plugin_prefs_factory.cc",
-      "plugins/plugin_prefs_factory.h",
-      "plugins/plugin_response_interceptor_url_loader_throttle.cc",
-      "plugins/plugin_response_interceptor_url_loader_throttle.h",
-      "plugins/plugin_utils.cc",
-      "plugins/plugin_utils.h",
-      "plugins/reload_plugin_infobar_delegate.cc",
-      "plugins/reload_plugin_infobar_delegate.h",
-    ]
-    deps += [
-      "//media:media_buildflags",
-      "//services/network/public/mojom",
-    ]
-  }
-
-  if (enable_plugins || is_android) {
-    sources += [
-      "plugins/plugin_observer_common.cc",
-      "plugins/plugin_observer_common.h",
-    ]
-  }
 
   if (enable_request_header_integrity) {
     deps += [ "//chrome/common/request_header_integrity" ]
@@ -8984,8 +8945,6 @@ static_library("test_support") {
     "notifications/metrics/mock_notification_metrics_logger.h",
     "notifications/stub_notification_display_service.cc",
     "notifications/stub_notification_display_service.h",
-    "plugins/plugin_test_utils.cc",
-    "plugins/plugin_test_utils.h",
     "policy/messaging_layer/upload/fake_upload_client.cc",
     "policy/messaging_layer/upload/fake_upload_client.h",
     "predictors/lcp_critical_path_predictor/lcp_critical_path_predictor_test_util.cc",
