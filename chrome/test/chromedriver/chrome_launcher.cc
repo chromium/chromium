@@ -92,6 +92,10 @@ const char* const kCommonSwitches[] = {
     "disable-features=IgnoreDuplicateNavs",
     // https://crbug.com/431928370.
     "disable-features=Prewarm",
+    // https://github.com/GoogleChromeLabs/chromium-bidi/issues/3894.
+    "disable-background-networking",
+    "disable-background-timer-throttling",
+    "disable-backgrounding-occluded-windows",
 };
 
 const char* const kDesktopSwitches[] = {
@@ -108,14 +112,6 @@ const char* const kDesktopSwitches[] = {
     "test-type=webdriver",
     "no-service-autorun",
 };
-
-#if BUILDFLAG(IS_WIN)
-
-const char* const kWindowsDesktopSwitches[] = {
-    "disable-backgrounding-occluded-windows",
-};
-
-#endif
 
 const char* const kAndroidSwitches[] = {
     "disable-fre", "enable-remote-debugging",
@@ -994,11 +990,6 @@ Switches GetDesktopSwitches() {
   for (auto* desktop_switch : kDesktopSwitches) {
     switches.SetUnparsedSwitch(desktop_switch);
   }
-#if BUILDFLAG(IS_WIN)
-  for (auto* win_desktop_switch : kWindowsDesktopSwitches) {
-    switches.SetUnparsedSwitch(win_desktop_switch);
-  }
-#endif
   return switches;
 }
 
