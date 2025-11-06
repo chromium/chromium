@@ -12,5 +12,7 @@
                               unsigned long start,
                               unsigned long end);
 
+    DOMRectList getClientRects();
+    DOMRect getBoundingClientRect();
     stringifier;
 };

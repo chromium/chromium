@@ -4,7 +4,13 @@
 
 #include "third_party/blink/renderer/core/dom/form_control_range.h"
 
+#include "third_party/blink/public/common/metrics/document_update_reason.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/range.h"
+#include "third_party/blink/renderer/core/dom/text.h"
+#include "third_party/blink/renderer/core/editing/position.h"
+#include "third_party/blink/renderer/core/geometry/dom_rect.h"
+#include "third_party/blink/renderer/core/geometry/dom_rect_list.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -189,6 +195,64 @@ void FormControlRange::UpdateOffsetsForTextChange(unsigned change_offset,
 
   start_offset_in_value_ = new_start;
   end_offset_in_value_ = new_end;
+}
+
+DOMRectList* FormControlRange::getClientRects() const {
+  Range* range = BuildValueGeometryContext();
+  if (!range || range->collapsed()) {
+    return MakeGarbageCollected<DOMRectList>();
+  }
+  return range->getClientRects();
+}
+
+DOMRect* FormControlRange::getBoundingClientRect() const {
+  Range* range = BuildValueGeometryContext();
+  if (!range) {
+    return DOMRect::Create();
+  }
+  return range->getBoundingClientRect();
+}
+
+Range* FormControlRange::BuildValueGeometryContext() const {
+  if (!form_control_ || !form_control_->isConnected()) {
+    return nullptr;
+  }
+
+  Document& doc = form_control_->GetDocument();
+  doc.UpdateStyleAndLayout(DocumentUpdateReason::kJavaScript);
+
+  if (!form_control_->GetLayoutObject()) {
+    return nullptr;
+  }
+
+  Element* inner = form_control_->InnerEditorElement();
+  if (!inner) {
+    return nullptr;
+  }
+
+  Text* text_node = nullptr;
+  // `.value` is copied into shadow-DOM text nodes under the inner editor, but
+  // there is no accessor yet. Iterate the children to locate that copy. The
+  // first text node is returned for now.
+  // TODO: Aggregate copied text when it spans multiple nodes.
+  for (Node* n = inner->firstChild(); n; n = n->nextSibling()) {
+    if (auto* t = DynamicTo<Text>(n)) {
+      text_node = t;
+      break;
+    }
+  }
+  if (!text_node) {
+    return nullptr;
+  }
+
+  const unsigned len = text_node->data().length();
+  const unsigned start = std::min(start_offset_in_value_, len);
+  const unsigned end = std::min(end_offset_in_value_, len);
+
+  Range* range = Range::Create(doc);
+  range->setStart(Position(text_node, start));
+  range->setEnd(Position(text_node, end));
+  return range;
 }
 
 }  // namespace blink
