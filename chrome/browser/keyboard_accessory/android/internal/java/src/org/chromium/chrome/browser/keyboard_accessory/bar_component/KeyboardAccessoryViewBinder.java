@@ -281,7 +281,7 @@ class KeyboardAccessoryViewBinder {
             if (iconDrawable != null) {
                 iconDrawable.setAlpha((int) (255 * iconAlpha));
             }
-            chipView.setIcon(iconDrawable, /* tintWithTextColor= */ false);
+            chipView.setIconWithTint(iconDrawable, /* tintWithTextColor= */ false);
 
             @Nullable String voiceOver = item.getSuggestion().getVoiceOver();
             if (!TextUtils.isEmpty(voiceOver)) {

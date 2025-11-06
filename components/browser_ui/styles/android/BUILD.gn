@@ -226,7 +226,6 @@ android_resources("java_resources") {
     "java/res/drawable/ic_outline_sms_24dp.xml",
     "java/res/drawable/ic_password_manager_key.xml",
     "java/res/drawable/ic_pause_white_24dp.xml",
-    "java/res/drawable/ic_photo_camera_20dp.xml",
     "java/res/drawable/ic_photo_camera_black.xml",
     "java/res/drawable/ic_play_arrow_white_24dp.xml",
     "java/res/drawable/ic_play_circle_filled_24dp_on_dark_bg.xml",
