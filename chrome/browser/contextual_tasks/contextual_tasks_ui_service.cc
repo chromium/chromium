@@ -190,6 +190,7 @@ void ContextualTasksUiService::OnThreadLinkClicked(
 
 bool ContextualTasksUiService::HandleNavigation(
     const GURL& navigation_url,
+    bool initiated_in_page,
     content::WebContents* source_contents,
     bool is_to_new_tab) {
   // Allow any navigation to the contextual tasks host.
@@ -208,9 +209,9 @@ bool ContextualTasksUiService::HandleNavigation(
   }
 
   // Intercept any navigation where the wrapping WebContents is the WebUI host
-  // unless it is the AI page.
+  // unless it is the embedded page.
   if (IsContextualTasksHost(source_contents->GetLastCommittedURL())) {
-    if (is_nav_to_ai) {
+    if (is_nav_to_ai || !initiated_in_page) {
       return false;
     }
     // Allow users to sign in within the <webview>.

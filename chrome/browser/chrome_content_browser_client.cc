@@ -4328,8 +4328,9 @@ bool ChromeContentBrowserClient::CanCreateWindow(
           profile);
   if (base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks) &&
       contextual_tasks_ui_service &&
-      contextual_tasks_ui_service->HandleNavigation(target_url, web_contents,
-                                                    /*is_to_new_tab=*/true)) {
+      contextual_tasks_ui_service->HandleNavigation(
+          target_url, /* initiated_in_page= */ true, web_contents,
+          /*is_to_new_tab=*/true)) {
     return false;
   }
 #endif  // !BUILDFLAG(IS_ANDROID)

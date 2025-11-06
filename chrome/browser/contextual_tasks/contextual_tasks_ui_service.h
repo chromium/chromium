@@ -63,8 +63,11 @@ class ContextualTasksUiService : public KeyedService {
   // the service (e.g. the navigation is blocked), and false otherwise. The
   // WebContents the navigation originated from is provided along with
   // `is_to_new_tab` which indicates whether the navigation would open in a
-  // new tab or window.
+  // new tab or window. The `initiated_in_page` param is to help determine if
+  // the navigation was from something like a link or redirect versus an action
+  // in Chrome's UI like back/forward.
   virtual bool HandleNavigation(const GURL& navigation_url,
+                                bool initiated_in_page,
                                 content::WebContents* source_contents,
                                 bool is_to_new_tab);
 

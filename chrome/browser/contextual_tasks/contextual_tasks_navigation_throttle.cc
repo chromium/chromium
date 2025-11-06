@@ -42,10 +42,11 @@ void ContextualTasksNavigationThrottle::MaybeCreateAndAdd(
   ContextualTasksUiService* ui_service =
       ContextualTasksUiServiceFactory::GetForBrowserContext(
           web_contents->GetBrowserContext());
-  if (ui_service &&
-      ui_service->HandleNavigation(registry.GetNavigationHandle().GetURL(),
-                                   web_contents->GetResponsibleWebContents(),
-                                   /*is_to_new_tab=*/false)) {
+  if (ui_service && ui_service->HandleNavigation(
+                        registry.GetNavigationHandle().GetURL(),
+                        registry.GetNavigationHandle().IsRendererInitiated(),
+                        web_contents->GetResponsibleWebContents(),
+                        /*is_to_new_tab=*/false)) {
     registry.AddThrottle(
         std::make_unique<ContextualTasksNavigationThrottle>(registry));
   }

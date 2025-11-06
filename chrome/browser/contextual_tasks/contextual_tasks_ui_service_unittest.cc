@@ -108,8 +108,29 @@ TEST_F(ContextualTasksUiServiceTest, LinkFromWebUiIntercepted) {
       .Times(1);
   EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
       .Times(0);
-  EXPECT_TRUE(service_for_nav_->HandleNavigation(navigated_url,
-                                                 web_contents.get(), false));
+  EXPECT_TRUE(service_for_nav_->HandleNavigation(
+      navigated_url, /* initiated_in_page= */ true, web_contents.get(), false));
+  task_environment()->RunUntilIdle();
+}
+
+TEST_F(ContextualTasksUiServiceTest, BrowserUiNavigationFromWebUiIgnored) {
+  GURL navigated_url(kTestUrl);
+  GURL host_web_content_url(chrome::kChromeUIContextualTasksURL);
+
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+  content::WebContentsTester::For(web_contents.get())
+      ->SetLastCommittedURL(host_web_content_url);
+
+  EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _, _)).Times(0);
+  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
+      .Times(0);
+
+  // Specifically flag the navigation as not from in-page. This mimics actions
+  // like back, forward, and omnibox navigation.
+  EXPECT_FALSE(service_for_nav_->HandleNavigation(
+      navigated_url,
+      /* initiated_in_page= */ false, web_contents.get(), false));
   task_environment()->RunUntilIdle();
 }
 
@@ -125,6 +146,7 @@ TEST_F(ContextualTasksUiServiceTest, NormalLinkNotIntercepted) {
   EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
       .Times(0);
   EXPECT_FALSE(service_for_nav_->HandleNavigation(GURL(kTestUrl),
+                                                  /* initiated_in_page= */ true,
                                                   web_contents.get(), false));
   task_environment()->RunUntilIdle();
 }
@@ -138,8 +160,9 @@ TEST_F(ContextualTasksUiServiceTest, AiHostNotIntercepted_BadPath) {
   EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _, _)).Times(0);
   EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
       .Times(0);
-  EXPECT_FALSE(service_for_nav_->HandleNavigation(GURL(kTestUrl),
-                                                  web_contents.get(), false));
+  EXPECT_FALSE(service_for_nav_->HandleNavigation(
+      GURL(kTestUrl), /* initiated_in_page= */ false, web_contents.get(),
+      false));
   task_environment()->RunUntilIdle();
 }
 
@@ -154,8 +177,8 @@ TEST_F(ContextualTasksUiServiceTest, AiPageIntercepted_FromTab) {
   EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _, _)).Times(0);
   EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(ai_url, _, _))
       .Times(1);
-  EXPECT_TRUE(
-      service_for_nav_->HandleNavigation(ai_url, web_contents.get(), false));
+  EXPECT_TRUE(service_for_nav_->HandleNavigation(
+      ai_url, /* initiated_in_page= */ false, web_contents.get(), false));
   task_environment()->RunUntilIdle();
 }
 
@@ -169,8 +192,8 @@ TEST_F(ContextualTasksUiServiceTest, AiPageIntercepted_FromOmnibox) {
   EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _, _)).Times(0);
   EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(ai_url, _, _))
       .Times(1);
-  EXPECT_TRUE(
-      service_for_nav_->HandleNavigation(ai_url, web_contents.get(), false));
+  EXPECT_TRUE(service_for_nav_->HandleNavigation(
+      ai_url, /* initiated_in_page= */ false, web_contents.get(), false));
   task_environment()->RunUntilIdle();
 }
 
@@ -185,8 +208,9 @@ TEST_F(ContextualTasksUiServiceTest, AiPageNotIntercepted) {
   EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _, _)).Times(0);
   EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
       .Times(0);
-  EXPECT_FALSE(service_for_nav_->HandleNavigation(GURL(kAiPageUrl),
-                                                  web_contents.get(), false));
+  EXPECT_FALSE(service_for_nav_->HandleNavigation(
+      GURL(kAiPageUrl), /* initiated_in_page= */ false, web_contents.get(),
+      false));
   task_environment()->RunUntilIdle();
 }
 
