@@ -34,8 +34,7 @@ bool IsAccessibilityExposeSummaryAsHeadingEnabled() {
       ::features::kAccessibilityExposeSummaryAsHeading);
 }
 
-BASE_FEATURE(kAccessibilityBlockFlowIterator,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAccessibilityBlockFlowIterator, base::FEATURE_ENABLED_BY_DEFAULT);
 bool IsAccessibilityBlockFlowIteratorEnabled() {
   return base::FeatureList::IsEnabled(
       ::features::kAccessibilityBlockFlowIterator);
