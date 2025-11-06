@@ -44,7 +44,7 @@ class GlicActorPopupUiTest : public GlicActorUiTest,
   const ContentNode* SearchAnnotatedPageContentForTextParentInPopup(
       std::string_view text) {
     CHECK(annotated_page_content_)
-        << "An observation must be made with GetPageContextFromFocusedTab "
+        << "An observation must be made with GetPageContextForActorTab "
            "before searching annotated page content.";
     CHECK(annotated_page_content_->has_popup_window());
 
@@ -74,7 +74,7 @@ class GlicActorPopupUiTest : public GlicActorUiTest,
   // helper finds the APC node for that inner <select> within the popup.
   const ContentNode* SearchAnnotatedPageContentForSelectInPopup() {
     CHECK(annotated_page_content_)
-        << "An observation must be made with GetPageContextFromFocusedTab "
+        << "An observation must be made with GetPageContextForActorTab "
            "before searching annotated page content.";
     CHECK(annotated_page_content_->has_popup_window());
 
@@ -139,14 +139,14 @@ IN_PROC_BROWSER_TEST_P(GlicActorPopupUiTest, ActOnPopupWidgetWithId) {
   RunTestSequence(
       InitializeWithOpenGlicWindow(),
       StartActorTaskInNewTab(task_url, kNewActorTabId),
-      GetPageContextFromFocusedTab(),
+      GetPageContextForActorTab(),
 
       // The select box starts with the "alpha" option selected
       CheckJsResult(kNewActorTabId, kGetValueScript, "alpha"),
 
       // Open a popup <select> control by clicking on it
       ClickAction(kSelectLabel, ClickAction::LEFT, ClickAction::SINGLE),
-      GetPageContextFromFocusedTab(),
+      GetPageContextForActorTab(),
 
       // Click on a new option.
       ExecuteAction(std::move(click_provider)),
@@ -190,14 +190,14 @@ IN_PROC_BROWSER_TEST_P(GlicActorPopupUiTest, ActOnPopupWidgetWithCoords) {
   RunTestSequence(
       InitializeWithOpenGlicWindow(),
       StartActorTaskInNewTab(task_url, kNewActorTabId),
-      GetPageContextFromFocusedTab(),
+      GetPageContextForActorTab(),
 
       // The select box starts with the "alpha" option selected
       CheckJsResult(kNewActorTabId, kGetValueScript, "alpha"),
 
       // Open a popup <select> control by clicking on it
       ClickAction(kSelectLabel, ClickAction::LEFT, ClickAction::SINGLE),
-      GetPageContextFromFocusedTab(),
+      GetPageContextForActorTab(),
 
       // Click on a new option.
       ExecuteAction(std::move(click_provider)),
@@ -237,14 +237,14 @@ IN_PROC_BROWSER_TEST_P(GlicActorPopupUiTest, ActOnPopupWidgetWithSelectTool) {
   RunTestSequence(
       InitializeWithOpenGlicWindow(),
       StartActorTaskInNewTab(task_url, kNewActorTabId),
-      GetPageContextFromFocusedTab(),
+      GetPageContextForActorTab(),
 
       // The select box starts with the "alpha" option selected
       CheckJsResult(kNewActorTabId, kGetValueScript, "alpha"),
 
       // Open a popup <select> control by clicking on it
       ClickAction(kSelectLabel, ClickAction::LEFT, ClickAction::SINGLE),
-      GetPageContextFromFocusedTab(),
+      GetPageContextForActorTab(),
 
       // Click on a new option.
       ExecuteAction(std::move(select_provider)),

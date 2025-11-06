@@ -57,7 +57,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorToctouUiTest,
 
     // Click in the top frame. This will extract page context after the click
     // action.
-    GetPageContextFromFocusedTab(),
+    GetPageContextForActorTab(),
     ClickAction(gfx::Point(10, 10), ClickAction::LEFT, ClickAction::SINGLE),
 
     // Remove the top frame which puts the bottom frame at its former location.
@@ -94,7 +94,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorToctouUiTest,
 
     // Click in the top frame. This will extract page context after the click
     // action.
-    GetPageContextFromFocusedTab(),
+    GetPageContextForActorTab(),
     ClickAction(gfx::Point(10, 10), ClickAction::LEFT, ClickAction::SINGLE),
 
     // Remove the top frame which puts the bottom frame at its former location.
@@ -118,7 +118,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorToctouUiTest, ToctouCheckFailWhenNodeRemoved) {
       // clang-format off
     InitializeWithOpenGlicWindow(),
     StartActorTaskInNewTab(task_url, kNewActorTabId),
-    GetPageContextFromFocusedTab(),
+    GetPageContextForActorTab(),
     ClickAction(kClickableButtonLabel, ClickAction::LEFT, ClickAction::SINGLE),
     ExecuteJs(kNewActorTabId,
               "()=>{document.getElementById('clickable').remove();}"),
@@ -138,7 +138,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorToctouUiTest,
       // clang-format off
     InitializeWithOpenGlicWindow(),
     StartActorTaskInNewTab(task_url, kNewActorTabId),
-    GetPageContextFromFocusedTab(),
+    GetPageContextForActorTab(),
     ClickAction({15, 15}, ClickAction::LEFT, ClickAction::SINGLE),
     ExecuteJs(kNewActorTabId,
               "()=>{document.getElementById('clickable').style.cssText = "
@@ -164,7 +164,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorToctouUiTest,
       // clang-format off
     InitializeWithOpenGlicWindow(),
     StartActorTaskInNewTab(task_url, kNewActorTabId),
-    GetPageContextFromFocusedTab(),
+    GetPageContextForActorTab(),
     ClickAction(
         kClickableButtonLabel,
         ClickAction::LEFT, ClickAction::SINGLE,
@@ -205,7 +205,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorToctouUiTest, TimeOfUseCheckOnTextNode) {
       SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
                               kActivateSurfaceIncompatibilityNotice),
 
-      GetPageContextFromFocusedTab(),
+      GetPageContextForActorTab(),
       GetClientRect(kNewActorTabId, "checkbox-label", checkbox_label_bounds),
       ExecuteAction(std::move(click_provider)),
 
@@ -231,7 +231,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorToctouUiTest, TimeOfUseCheckOnShadowDom) {
       StartActorTaskInNewTab(task_url, kNewActorTabId),
       SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
                               kActivateSurfaceIncompatibilityNotice),
-      GetPageContextFromFocusedTab(),
+      GetPageContextForActorTab(),
       ClickAction(kClickableButtonLabel,
                   ClickAction::LEFT, ClickAction::SINGLE),
       WaitForJsResult(kNewActorTabId, "() => button_clicked === true")
@@ -253,7 +253,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorToctouUiTest, TimeOfUseCheckOnMultilineAnchor) {
       // clang-format off
       InitializeWithOpenGlicWindow(),
       StartActorTaskInNewTab(task_url, kNewActorTabId),
-      GetPageContextFromFocusedTab(),
+      GetPageContextForActorTab(),
       ClickAction(kAnchorLabel,
                   ClickAction::LEFT, ClickAction::SINGLE),
       WaitForJsResult(kNewActorTabId, "() => clicked_fired === true")
@@ -288,7 +288,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorToctouInteractionPointDiscoveryUiTest,
       // clang-format off
       InitializeWithOpenGlicWindow(),
       StartActorTaskInNewTab(task_url, kNewActorTabId),
-      GetPageContextFromFocusedTab(),
+      GetPageContextForActorTab(),
       CheckJsResult(kNewActorTabId,
                     "() => !document.getElementById('behind').checked"),
       ClickAction(kBottomElement,

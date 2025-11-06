@@ -93,9 +93,10 @@ IN_PROC_BROWSER_TEST_F(GlicActorSelectToolUiTest, SelectActionSucceeds) {
       embedded_test_server()->GetURL("/actor/select_tool.html");
 
   RunTestSequence(
+      // clang-format off
       InitializeWithOpenGlicWindow(),
       StartActorTaskInNewTab(task_url, kTestTabId),
-      GetPageContextFromFocusedTab(),
+      GetPageContextForActorTab(),
 
       // Verify initial state.
       CheckElementValueAttribute(kTestTabId, "plainSelect", "alpha"),
@@ -120,6 +121,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorSelectToolUiTest, SelectActionSucceeds) {
 
       // Verify the selection has not changed from the previous successful step.
       CheckElementValueAttribute(kTestTabId, "plainSelect", "last"));
+  // clang-format on
 }
 
 // Test that options within <optgroup> elements can be selected.
@@ -130,9 +132,10 @@ IN_PROC_BROWSER_TEST_F(GlicActorSelectToolUiTest,
       embedded_test_server()->GetURL("/actor/select_tool.html");
 
   RunTestSequence(
+      // clang-format off
       InitializeWithOpenGlicWindow(),
       StartActorTaskInNewTab(task_url, kTestTabId),
-      GetPageContextFromFocusedTab(),
+      GetPageContextForActorTab(),
       // Verify initial state.
       CheckElementValueAttribute(kTestTabId, "groupedSelect", "alpha"),
 
@@ -141,6 +144,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorSelectToolUiTest,
 
       // Verify new state.
       CheckElementValueAttribute(kTestTabId, "groupedSelect", "b"));
+  // clang-format on
 }
 
 // Test that an option can be selected in a <select> element rendered as a
@@ -152,9 +156,10 @@ IN_PROC_BROWSER_TEST_F(GlicActorSelectToolUiTest,
       embedded_test_server()->GetURL("/actor/select_tool.html");
 
   RunTestSequence(
+      // clang-format off
       InitializeWithOpenGlicWindow(),
       StartActorTaskInNewTab(task_url, kTestTabId),
-      GetPageContextFromFocusedTab(),
+      GetPageContextForActorTab(),
       // Listbox starts with no value.
       CheckElementValueAttribute(kTestTabId, "listboxSelect", ""),
 
@@ -163,6 +168,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorSelectToolUiTest,
 
       // Verify new state.
       CheckElementValueAttribute(kTestTabId, "listboxSelect", "beta"));
+  // clang-format on
 }
 
 // Test that selecting an option in an off-screen <select> element succeeds.
@@ -174,9 +180,10 @@ IN_PROC_BROWSER_TEST_F(GlicActorSelectToolUiTest,
       embedded_test_server()->GetURL("/actor/select_tool.html");
 
   RunTestSequence(
+      // clang-format off
       InitializeWithOpenGlicWindow(),
       StartActorTaskInNewTab(task_url, kTestTabId),
-      GetPageContextFromFocusedTab(),
+      GetPageContextForActorTab(),
       // Verify initial state.
       CheckElementValueAttribute(kTestTabId, "offscreenSelect", "alpha"),
 
@@ -194,6 +201,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorSelectToolUiTest,
 
       // Verify new state.
       CheckElementValueAttribute(kTestTabId, "offscreenSelect", "beta"));
+  // clang-format on
 }
 
 // Test that the SelectTool correctly fires 'input' and 'change' events.
@@ -203,9 +211,9 @@ IN_PROC_BROWSER_TEST_F(GlicActorSelectToolUiTest, SelectActionFiresEvents) {
       embedded_test_server()->GetURL("/actor/select_tool.html");
 
   RunTestSequence(
+      // clang-format off
       InitializeWithOpenGlicWindow(),
-      StartActorTaskInNewTab(task_url, kTestTabId),
-      GetPageContextFromFocusedTab(),
+      StartActorTaskInNewTab(task_url, kTestTabId), GetPageContextForActorTab(),
       // Event log should be empty initially.
       WaitForJsResult(kTestTabId, "() => select_event_log.join(',')", ""),
 
@@ -215,6 +223,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorSelectToolUiTest, SelectActionFiresEvents) {
       // Check that the JS listeners for 'input' and 'change' both fired.
       WaitForJsResult(kTestTabId, "() => select_event_log.join(',')",
                       "input,change"));
+  // clang-format on
 }
 
 // Test that matching option values is case-sensitive and fails on mismatch.
@@ -225,12 +234,14 @@ IN_PROC_BROWSER_TEST_F(GlicActorSelectToolUiTest,
       embedded_test_server()->GetURL("/actor/select_tool.html");
 
   RunTestSequence(
+      // clang-format off
       InitializeWithOpenGlicWindow(),
       StartActorTaskInNewTab(task_url, kTestTabId),
-      GetPageContextFromFocusedTab(),
+      GetPageContextForActorTab(),
       // Attempt to select "BETA" which does not match the option "beta".
       SelectAction("plain-select", "BETA",
                    actor::mojom::ActionResultCode::kSelectNoSuchOption));
+  // clang-format on
 }
 
 // Test that attempting to select a value that does not exist fails.
@@ -241,9 +252,10 @@ IN_PROC_BROWSER_TEST_F(GlicActorSelectToolUiTest,
       embedded_test_server()->GetURL("/actor/select_tool.html");
 
   RunTestSequence(
+      // clang-format off
       InitializeWithOpenGlicWindow(),
       StartActorTaskInNewTab(task_url, kTestTabId),
-      GetPageContextFromFocusedTab(),
+      GetPageContextForActorTab(),
 
       // Verify initial state.
       CheckElementValueAttribute(kTestTabId, "plainSelect", "alpha"),
@@ -251,6 +263,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorSelectToolUiTest,
       // Attempt to select a value that doesn't exist in any option.
       SelectAction("plain-select", "nonexistentValue",
                    actor::mojom::ActionResultCode::kSelectNoSuchOption));
+  // clang-format on
 }
 
 // Test that attempting to select a disabled <option> fails.
@@ -261,15 +274,17 @@ IN_PROC_BROWSER_TEST_F(GlicActorSelectToolUiTest,
       embedded_test_server()->GetURL("/actor/select_tool.html");
 
   RunTestSequence(
+      // clang-format off
       InitializeWithOpenGlicWindow(),
       StartActorTaskInNewTab(task_url, kTestTabId),
-      GetPageContextFromFocusedTab(),
+      GetPageContextForActorTab(),
       // Verify initial state.
       CheckElementValueAttribute(kTestTabId, "plainSelect", "alpha"),
 
       // Attempt to select the option that has the 'disabled' attribute.
       SelectAction("plain-select", "disabledOption",
                    actor::mojom::ActionResultCode::kSelectOptionDisabled));
+  // clang-format on
 }
 
 // Test that attempting to select any option in a disabled <select> element
@@ -281,12 +296,14 @@ IN_PROC_BROWSER_TEST_F(GlicActorSelectToolUiTest,
       embedded_test_server()->GetURL("/actor/select_tool.html");
 
   RunTestSequence(
+      // clang-format off
       InitializeWithOpenGlicWindow(),
       StartActorTaskInNewTab(task_url, kTestTabId),
-      GetPageContextFromFocusedTab(),
+      GetPageContextForActorTab(),
       // Attempt to select a valid option within a select that is disabled.
       SelectAction("disabled-select", "beta",
                    actor::mojom::ActionResultCode::kElementDisabled));
+  // clang-format on
 }
 
 // Test that attempting to select an <option> in a disabled <optgroup> fails.
@@ -297,12 +314,14 @@ IN_PROC_BROWSER_TEST_F(GlicActorSelectToolUiTest,
       embedded_test_server()->GetURL("/actor/select_tool.html");
 
   RunTestSequence(
+      // clang-format off
       InitializeWithOpenGlicWindow(),
       StartActorTaskInNewTab(task_url, kTestTabId),
-      GetPageContextFromFocusedTab(),
+      GetPageContextForActorTab(),
       // Attempt to select "foobar", which is in a disabled optgroup.
       SelectAction("grouped-select", "foobar",
                    actor::mojom::ActionResultCode::kSelectOptionDisabled));
+  // clang-format on
 }
 
 // Test that attempting to select a value that matches a non-<option> child
@@ -314,9 +333,10 @@ IN_PROC_BROWSER_TEST_F(GlicActorSelectToolUiTest,
       embedded_test_server()->GetURL("/actor/select_tool.html");
 
   RunTestSequence(
+      // clang-format off
       InitializeWithOpenGlicWindow(),
       StartActorTaskInNewTab(task_url, kTestTabId),
-      GetPageContextFromFocusedTab(),
+      GetPageContextForActorTab(),
       // Verify initial state.
       CheckElementValueAttribute(kTestTabId, "nonOptionsSelect", "alpha"),
 
@@ -339,6 +359,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorSelectToolUiTest,
 
       // Verify the value changed correctly.
       CheckElementValueAttribute(kTestTabId, "nonOptionsSelect", "epsilon"));
+  // clang-format on
 }
 
 }  // namespace

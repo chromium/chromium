@@ -29,7 +29,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorUiTest, ClickActionSucceeds) {
 
   RunTestSequence(InitializeWithOpenGlicWindow(),
                   StartActorTaskInNewTab(task_url, kNewActorTabId),
-                  GetPageContextFromFocusedTab(),
+                  GetPageContextForActorTab(),
                   ClickAction(kClickableButtonLabel, ClickAction::LEFT,
                               ClickAction::SINGLE),
                   WaitForJsResult(kNewActorTabId, "expect_single_left_click"));
@@ -55,7 +55,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorUiTest, ClickActionWithCoordinatesSucceeds) {
 
   RunTestSequence(InitializeWithOpenGlicWindow(),
                   StartActorTaskInNewTab(task_url, kNewActorTabId),
-                  GetPageContextFromFocusedTab(),
+                  GetPageContextForActorTab(),
                   GetClientRect(kNewActorTabId, kClickableButtonSelector,
                                 clickable_button_bounds),
                   ExecuteAction(std::move(click_provider)),
@@ -72,7 +72,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorUiTest, ClickActionInWebComponent) {
   RunTestSequence(
       InitializeWithOpenGlicWindow(),
       StartActorTaskInNewTab(task_url, kNewActorTabId),
-      GetPageContextFromFocusedTab(),
+      GetPageContextForActorTab(),
       ClickAction(kClickableButtonLabel, ClickAction::LEFT,
                   ClickAction::SINGLE),
       WaitForJsResult(kNewActorTabId, "() => document.title", "Clicked"));
@@ -86,7 +86,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorUiTest, DblClickActionSucceeds) {
 
   RunTestSequence(InitializeWithOpenGlicWindow(),
                   StartActorTaskInNewTab(task_url, kNewActorTabId),
-                  GetPageContextFromFocusedTab(),
+                  GetPageContextForActorTab(),
                   ClickAction(kClickableButtonLabel, ClickAction::LEFT,
                               ClickAction::DOUBLE),
                   WaitForJsResult(kNewActorTabId, "expect_double_left_click"));
@@ -100,7 +100,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorUiTest, RightClickActionSucceeds) {
 
   RunTestSequence(InitializeWithOpenGlicWindow(),
                   StartActorTaskInNewTab(task_url, kNewActorTabId),
-                  GetPageContextFromFocusedTab(),
+                  GetPageContextForActorTab(),
                   ClickAction(kClickableButtonLabel, ClickAction::RIGHT,
                               ClickAction::SINGLE),
                   WaitForJsResult(kNewActorTabId, "expect_single_right_click"));
@@ -114,7 +114,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorUiTest, DblRightClickActionSucceeds) {
 
   RunTestSequence(InitializeWithOpenGlicWindow(),
                   StartActorTaskInNewTab(task_url, kNewActorTabId),
-                  GetPageContextFromFocusedTab(),
+                  GetPageContextForActorTab(),
                   ClickAction(kClickableButtonLabel, ClickAction::RIGHT,
                               ClickAction::DOUBLE),
                   WaitForJsResult(kNewActorTabId, "expect_double_right_click"));

@@ -184,9 +184,9 @@ class GlicActorUiTest : public test::InteractiveGlicTest {
 
   MultiStep InitializeWithOpenGlicWindow();
 
-  // Retrieves AnnotatedPageContent for the currently focused tab (and caches
-  // it in `annotated_page_content_`).
-  MultiStep GetPageContextFromFocusedTab();
+  // Triggers a page context fetch for the actor task tab and stores the
+  // result in `annotated_page_content_`.
+  MultiStep GetPageContextForActorTab();
 
   // Ensure whether a task is actively (non-paused) acting on the given tab.
   MultiStep CheckIsActingOnTab(ui::ElementIdentifier tab, bool expected);

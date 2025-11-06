@@ -39,7 +39,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorUiTest, DragAndReleaseTool_Range) {
   RunTestSequence(
       InitializeWithOpenGlicWindow(),
       StartActorTaskInNewTab(task_url, kNewActorTabId),
-      GetPageContextFromFocusedTab(),
+      GetPageContextForActorTab(),
       GetClientRect(kNewActorTabId, "range", range_rect),
       CheckJsResult(kNewActorTabId,
                     "() => document.querySelector('#range').value", "0"),
@@ -167,7 +167,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorUiTest, DragAndReleaseTool_DOMNodeId) {
   RunTestSequence(
       InitializeWithOpenGlicWindow(),
       StartActorTaskInNewTab(task_url, kNewActorTabId),
-      GetPageContextFromFocusedTab(),
+      GetPageContextForActorTab(),
       CheckJsResult(kNewActorTabId, "() => event_log.join(',')", ""),
       ExecuteAction(std::move(drag_provider)),
       CheckJsResult(
