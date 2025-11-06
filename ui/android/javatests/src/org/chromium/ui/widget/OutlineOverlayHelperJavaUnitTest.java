@@ -25,6 +25,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.ui.R;
 import org.chromium.ui.test.util.BlankUiTestActivity;
@@ -84,6 +85,7 @@ public class OutlineOverlayHelperJavaUnitTest {
     @Test
     @SmallTest
     @Feature({"RenderTest"})
+    @DisabledTest(message = "https://crbug.com/456125702")
     public void testOutlineVisibilityOnFocusChange() throws IOException {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
