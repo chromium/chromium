@@ -124,6 +124,7 @@ using ::testing::ElementsAre;
 using ::testing::Mock;
 using ::testing::Pointee;
 using ::testing::Pointer;
+using ::testing::Pointwise;
 using ::testing::Property;
 using ::testing::Range;
 using ::testing::Return;
@@ -154,6 +155,10 @@ struct TestFrameData : public FrameData {
 void ClearMainThreadDeltasForTesting(LayerTreeHostImpl* host) {
   host->active_tree()->ApplySentScrollAndScaleDeltasFromAbortedCommit(
       /* next_bmf */ false, /* main_frame_applied_deltas */ false);
+}
+
+MATCHER(UniquePtrMatches, negation ? "do not match" : "match") {
+  return std::get<0>(arg).get() == std::get<1>(arg);
 }
 
 }  // namespace
@@ -19541,12 +19546,71 @@ TEST_P(LayerTreeHostImplTest, VisbilityUpdateToLayers) {
   EXPECT_TRUE(layer->has_been_in_invisible_layer_tree());
 }
 
-TEST_P(LayerTreeHostImplTest,
-       DidNotProduceFramePreservesMetricsForScrollUpdatesAndEnds) {
+struct PreservationTestCase {
+  enum class Preserve {
+    kAllMetrics,
+    kScrollUpdatesAndEndsOnly,
+  };
+  std::string test_name;
+  bool enable_feature;
+  FrameSkippedReason reason;
+  Preserve should_preserve;
+  bool should_metrics_cause_frame_update;
+};
+
+class LayerTreeHostImplEventMetricPreservationTest
+    : public LayerTreeHostImplTestBase,
+      public testing::WithParamInterface<PreservationTestCase> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    LayerTreeHostImplEventMetricPreservationTest,
+    LayerTreeHostImplEventMetricPreservationTest,
+    testing::ValuesIn<PreservationTestCase>({
+        // If `features::kDropMetricsFromNonProducedFramesOnlyIfTheyHadNoDamage`
+        // is disabled, `LayerTreeHostImpl::DidNotProduceFrame()` should NEVER
+        // preserve all metrics (regardless of the reason why the frame wasn't
+        // produced). It should always preserve only GSUs/GSEs.
+        {.test_name = "FeatureDisabledWaitingOnMain",
+         .enable_feature = false,
+         .reason = FrameSkippedReason::kWaitingOnMain,
+         .should_preserve =
+             PreservationTestCase::Preserve::kScrollUpdatesAndEndsOnly,
+         .should_metrics_cause_frame_update = false},
+        {.test_name = "FeatureDisabledNoDamage",
+         .enable_feature = false,
+         .reason = FrameSkippedReason::kNoDamage,
+         .should_preserve =
+             PreservationTestCase::Preserve::kScrollUpdatesAndEndsOnly,
+         .should_metrics_cause_frame_update = false},
+        // If `features::kDropMetricsFromNonProducedFramesOnlyIfTheyHadNoDamage`
+        // is enabled, `LayerTreeHostImpl::DidNotProduceFrame()` should
+        // preserve all metrics UNLESS the frame wasn't produced because there
+        // was no damage, in which case it should preserve only GSUs/GSEs.
+        {.test_name = "FeatureEnabledWaitingOnMain",
+         .enable_feature = true,
+         .reason = FrameSkippedReason::kWaitingOnMain,
+         .should_preserve = PreservationTestCase::Preserve::kAllMetrics,
+         .should_metrics_cause_frame_update = true},
+        {.test_name = "FeatureEnabledNoDamage",
+         .enable_feature = true,
+         .reason = FrameSkippedReason::kNoDamage,
+         .should_preserve =
+             PreservationTestCase::Preserve::kScrollUpdatesAndEndsOnly,
+         .should_metrics_cause_frame_update = false},
+    }),
+    [](const testing::TestParamInfo<
+        LayerTreeHostImplEventMetricPreservationTest::ParamType>& info) {
+      return info.param.test_name;
+    });
+
+TEST_P(LayerTreeHostImplEventMetricPreservationTest, PreserveMetrics) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatureState(
+      features::kDropMetricsFromNonProducedFramesOnlyIfTheyHadNoDamage,
+      GetParam().enable_feature);
   SetupViewportLayersInnerScrolls(gfx::Size(50, 50), gfx::Size(100, 100));
 
-  EventMetrics* scroll_update_ptr;
-  EventMetrics* scroll_end_ptr;
+  std::vector<EventMetrics*> expected_preserved_metrics_ptrs;
 
   // Frame 1 which emits multiple metrics but doesn't end up being produced.
   {
@@ -19590,8 +19654,16 @@ TEST_P(LayerTreeHostImplTest,
              /* arrived_in_browser_main_timestamp= */ base::TimeTicks() +
                  base::Milliseconds(18),
              &tick_clock)});
-    scroll_update_ptr = metrics_array[1].get();
-    scroll_end_ptr = metrics_array[3].get();
+    switch (GetParam().should_preserve) {
+      case PreservationTestCase::Preserve::kAllMetrics:
+        std::transform(metrics_array.cbegin(), metrics_array.cend(),
+                       std::back_inserter(expected_preserved_metrics_ptrs),
+                       [](const auto& metrics) { return metrics.get(); });
+        break;
+      case PreservationTestCase::Preserve::kScrollUpdatesAndEndsOnly:
+        expected_preserved_metrics_ptrs.push_back(metrics_array[1].get());
+        expected_preserved_metrics_ptrs.push_back(metrics_array[3].get());
+    }
     for (auto& metrics : metrics_array) {
       EXPECT_NE(metrics, nullptr);
       auto scoped_monitor =
@@ -19610,12 +19682,10 @@ TEST_P(LayerTreeHostImplTest,
     }
 
     host_impl_->DidFinishImplFrame(args);
-    host_impl_->DidNotProduceFrame(viz::BeginFrameAck(),
-                                   FrameSkippedReason::kNoDamage);
+    host_impl_->DidNotProduceFrame(viz::BeginFrameAck(), GetParam().reason);
   }
 
-  // Frame 2 should submit the GSU and GSE metrics from frame 1 mark as not
-  // having caused a frame update.
+  // Frame 2 should submit metrics from frame 1.
   {
     TestFrameData frame;
     auto args = viz::CreateBeginFrameArgsForTesting(
@@ -19626,9 +19696,10 @@ TEST_P(LayerTreeHostImplTest,
     std::optional<SubmitInfo> submit_info = host_impl_->DrawLayers(&frame);
     EXPECT_THAT(
         submit_info->events_metrics.impl_event_metrics,
-        AllOf(ElementsAre(Pointer(scroll_update_ptr), Pointer(scroll_end_ptr)),
+        AllOf(Pointwise(UniquePtrMatches(), expected_preserved_metrics_ptrs),
               Each(Pointee(
-                  Property(&EventMetrics::caused_frame_update, false)))));
+                  Property(&EventMetrics::caused_frame_update,
+                           GetParam().should_metrics_cause_frame_update)))));
   }
 }
 

@@ -253,4 +253,7 @@ BASE_FEATURE_PARAM(bool,
 
 BASE_FEATURE(kManualBeginFrame, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kDropMetricsFromNonProducedFramesOnlyIfTheyHadNoDamage,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features

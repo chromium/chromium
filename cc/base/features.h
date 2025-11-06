@@ -279,6 +279,18 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(
 // when auto_needs_begin_frame_ is enabled.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kManualBeginFrame);
 
+// Controls when `LayerTreeHostImpl::DidNotProduceFrame()` drops saved event
+// metrics.
+//
+// When disabled, `LayerTreeHostImpl::DidNotProduceFrame()` ALWAYS drops saved
+// event metrics (regardless of the reason why the frame wasn't produced).
+//
+// When enabled, `LayerTreeHostImpl::DidNotProduceFrame()` only drops saved
+// event metrics if the frame wasn't produced due to NO DAMAGE. In all other
+// cases, it preserves the saved event metrics.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(
+    kDropMetricsFromNonProducedFramesOnlyIfTheyHadNoDamage);
+
 }  // namespace features
 
 #endif  // CC_BASE_FEATURES_H_

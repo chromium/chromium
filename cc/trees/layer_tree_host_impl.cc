@@ -3728,7 +3728,7 @@ void LayerTreeHostImpl::DidNotProduceFrame(const viz::BeginFrameAck& ack,
   TRACE_EVENT2(
       "cc,benchmark", "LayerTreeHostImpl::DidNotProduceFrame",
       "FrameSkippedReason",
-      [](FrameSkippedReason reason) {
+      [&reason] {
         switch (reason) {
           case FrameSkippedReason::kRecoverLatency:
             return "kRecoverLatency";
@@ -3740,17 +3740,21 @@ void LayerTreeHostImpl::DidNotProduceFrame(const viz::BeginFrameAck& ack,
             return "kDrawThrottled";
         }
         return "";
-      }(reason),
+      }(),
       "Frame Sequence Number", ack.frame_id.sequence_number);
   if (layer_tree_frame_sink_) {
     layer_tree_frame_sink_->DidNotProduceFrame(ack, reason);
   }
-  // While scrolling, we save all event metrics. It is possible that this
-  // results in a 0 delta scroll, which has no damage. We drop the metrics here
-  // so that they are terminated now. This prevents them from being incorrectly
-  // associated with a future produced frame. So that jank measurements have
-  // accurate deltas.
-  events_metrics_manager_.DropSavedEventMetricsForNoFrameUpdate();
+  if (reason == FrameSkippedReason::kNoDamage ||
+      !base::FeatureList::IsEnabled(
+          features::kDropMetricsFromNonProducedFramesOnlyIfTheyHadNoDamage)) {
+    // While scrolling, we save all event metrics. It is possible that this
+    // results in a 0 delta scroll, which has no damage. We drop the metrics
+    // here so that they are terminated now. This prevents them from being
+    // incorrectly associated with a future produced frame. So that jank
+    // measurements have accurate deltas.
+    events_metrics_manager_.DropSavedEventMetricsForNoFrameUpdate();
+  }
 }
 
 void LayerTreeHostImpl::OnBeginImplFrameDeadline() {
