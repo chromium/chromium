@@ -50,8 +50,6 @@ source_set("restoration_observer") {
 source_set("session_service") {
   visibility = [ ":*" ]
   sources = [
-    "session_service_ios.h",
-    "session_service_ios.mm",
     "session_window_ios_factory.h",
     "session_window_ios_factory.mm",
   ]
@@ -267,8 +265,6 @@ source_set("test_support") {
     "test_session_restoration_observer.mm",
     "test_session_restoration_service.h",
     "test_session_restoration_service.mm",
-    "test_session_service.h",
-    "test_session_service.mm",
   ]
   deps = [
     ":restoration_observer",
@@ -343,7 +339,6 @@ source_set("unit_tests") {
     "session_restoration_service_impl_unittest.mm",
     "session_restoration_web_state_list_observer_unittest.mm",
     "session_restoration_web_state_observer_unittest.mm",
-    "session_service_ios_unittest.mm",
     "session_window_ios_unittest.mm",
     "tab_group_util_unittest.mm",
     "web_session_state_cache_unittest.mm",
@@ -354,7 +349,6 @@ source_set("unit_tests") {
     ":fake",
     ":features",
     ":model",
-    ":resources_unit_tests",
     ":restoration_observer",
     ":serialisation",
     ":session_constants",
@@ -408,15 +402,4 @@ source_set("unit_tests") {
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
   # enable the diagnostic by removing this line.
   configs += [ "//build/config/compiler:no_exit_time_destructors" ]
-}
-
-bundle_data("resources_unit_tests") {
-  visibility = [ ":unit_tests" ]
-  testonly = true
-  sources = [
-    "//ios/chrome/test/data/sessions/corrupted.plist",
-    "//ios/chrome/test/data/sessions/session_m57.plist",
-    "//ios/chrome/test/data/sessions/session_m58.plist",
-  ]
-  outputs = [ "{{bundle_resources_dir}}/ios/chrome/test/data/sessions/{{source_file_part}}" ]
 }
