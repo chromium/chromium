@@ -140,6 +140,8 @@ component("network_service") {
     "proxy_resolving_socket_mojo.h",
     "proxy_service_mojo.cc",
     "proxy_service_mojo.h",
+    "request_header_to_enum.cc",
+    "request_header_to_enum.h",
     "resolve_host_request.cc",
     "resolve_host_request.h",
     "resource_scheduler/resource_scheduler.cc",

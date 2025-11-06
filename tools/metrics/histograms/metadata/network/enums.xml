@@ -2173,6 +2173,77 @@ chromium-metrics-reviews@google.com.
   <int value="681" label="97"/>
 </enum>
 
+<!-- LINT.IfChange(RequestHeader) -->
+
+<enum name="RequestHeader">
+  <int value="0" label="Other request header"/>
+  <int value="1" label="accept"/>
+  <int value="2" label="accept-encoding"/>
+  <int value="3" label="accept-language"/>
+  <int value="4" label="authorization"/>
+  <int value="5" label="cache-control"/>
+  <int value="6" label="client-version"/>
+  <int value="7" label="content-encoding"/>
+  <int value="8" label="content-type"/>
+  <int value="9" label="device-memory"/>
+  <int value="10" label="downlink"/>
+  <int value="11" label="dpr"/>
+  <int value="12" label="ect"/>
+  <int value="13" label="google-translate-element-mode"/>
+  <int value="14" label="if-modified-since"/>
+  <int value="15" label="if-none-match"/>
+  <int value="16" label="origin"/>
+  <int value="17" label="ping-from"/>
+  <int value="18" label="ping-to"/>
+  <int value="19" label="pragma"/>
+  <int value="20" label="range"/>
+  <int value="21" label="request-id"/>
+  <int value="22" label="rtt"/>
+  <int value="23" label="sec-browsing-topics"/>
+  <int value="24" label="sec-ch-device-memory"/>
+  <int value="25" label="sec-ch-dpr"/>
+  <int value="26" label="sec-ch-prefers-color-scheme"/>
+  <int value="27" label="sec-ch-ua"/>
+  <int value="28" label="sec-ch-ua-arch"/>
+  <int value="29" label="sec-ch-ua-bitness"/>
+  <int value="30" label="sec-ch-ua-form-factors"/>
+  <int value="31" label="sec-ch-ua-full-version"/>
+  <int value="32" label="sec-ch-ua-full-version-list"/>
+  <int value="33" label="sec-ch-ua-mobile"/>
+  <int value="34" label="sec-ch-ua-model"/>
+  <int value="35" label="sec-ch-ua-platform"/>
+  <int value="36" label="sec-ch-ua-platform-version"/>
+  <int value="37" label="sec-ch-ua-wow64"/>
+  <int value="38" label="sec-ch-viewport-height"/>
+  <int value="39" label="sec-ch-viewport-width"/>
+  <int value="40" label="sec-purpose"/>
+  <int value="41" label="service-worker"/>
+  <int value="42" label="service-worker-navigation-preload"/>
+  <int value="43" label="sid"/>
+  <int value="44" label="traceparent"/>
+  <int value="45" label="upgrade-insecure-requests"/>
+  <int value="46" label="user-agent"/>
+  <int value="47" label="viewport-width"/>
+  <int value="48" label="x-chrome-connected"/>
+  <int value="49" label="x-chrome-id-consistency-request"/>
+  <int value="50" label="x-client-data"/>
+  <int value="51" label="x-developer-key"/>
+  <int value="52" label="x-goog-api-key"/>
+  <int value="53" label="x-goog-encode-response-if-executable"/>
+  <int value="54" label="x-goog-ext-174067345-bin"/>
+  <int value="55" label="x-goog-update-appid"/>
+  <int value="56" label="x-goog-update-interactivity"/>
+  <int value="57" label="x-goog-update-updater"/>
+  <int value="58" label="x-http-method-override"/>
+  <int value="59" label="x-oauth-client-id"/>
+  <int value="60" label="x-requested-with"/>
+  <int value="61" label="x-server-timeout"/>
+  <int value="62" label="x-use-alt-service"/>
+  <int value="63" label="x-webchannel-content-type"/>
+</enum>
+
+<!-- LINT.ThenChange(//services/network/request_header_to_enum.h:RequestHeader) -->
+
 <enum name="SharedDictionaryDocumentRequestCacheResult">
   <int value="0" label="Cache Miss"/>
   <int value="1" label="Hit from LRU Cache"/>

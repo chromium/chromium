@@ -2377,6 +2377,33 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Network.PrefetchMatches.FirstHeaderMissingFromPrefetch"
+    enum="RequestHeader" expires_after="2026-05-18">
+  <owner>ricea@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    For every failed match in network::PrefetchMatches() caused by a header in
+    the `headers` field sent by the render process that was not in the prefetch,
+    logs the name of the first header that was missing. Logged once per request
+    that matched NIK and URL but failed to match due to an unexpected header.
+    Not logged if a header value mismatch was seen first.
+  </summary>
+</histogram>
+
+<histogram name="Network.PrefetchMatches.FirstHeaderValueMismatch"
+    enum="RequestHeader" expires_after="2026-05-18">
+  <owner>ricea@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    For every failed match in network::PrefetchMatches() caused by a header in
+    the `headers` field sent by the render process that had a different value
+    from the same header in the prefetch, logs the name of the first header that
+    failed to match. Logged once per request that matched NIK and URL but failed
+    to match due to a header value mismatch. Not logged in a header missing from
+    the prefetch was seen first.
+  </summary>
+</histogram>
+
 <histogram name="Network.PrefetchMatches.FirstMismatch"
     enum="PrefetchMatchesResourceRequestField" expires_after="2026-05-18">
   <owner>ricea@chromium.org</owner>
@@ -2385,6 +2412,21 @@ chromium-metrics-reviews@google.com.
     For every failed match in network::PrefetchMatches(), logs the first field
     that failed to match. Logged once per request that matched NIK and URL but
     failed to match on other fields.
+  </summary>
+</histogram>
+
+<histogram name="Network.PrefetchMatches.HeaderOnlyInPrefetch"
+    enum="RequestHeader" expires_after="2026-05-18">
+  <owner>ricea@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    For every failed match in network::PrefetchMatches() caused by a header in
+    the `headers` field of the prefetch that wasn't in the `headers` field sent
+    by the render process, logs the name of a header that was missing. Logged
+    for every missing header for every request that matched NIK and URL but
+    failed to match due to a header value mismatch. Not logged if there were
+    headers from the render process that were unexpected or had differing
+    values.
   </summary>
 </histogram>
 
