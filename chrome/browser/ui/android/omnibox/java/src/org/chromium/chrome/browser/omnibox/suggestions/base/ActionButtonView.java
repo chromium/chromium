@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.omnibox.suggestions.base;
 
 import android.content.Context;
+import android.view.MotionEvent;
 import android.view.View;
 
 import androidx.appcompat.widget.AppCompatImageView;
@@ -19,8 +20,9 @@ import org.chromium.build.annotations.NullMarked;
 @NullMarked
 public class ActionButtonView extends AppCompatImageView {
     private boolean mShowOnlyOnFocus;
+    private boolean mParentHovered;
+    private boolean mParentSelected;
     private boolean mHovered;
-    private boolean mSelected;
 
     public ActionButtonView(Context context) {
         super(context);
@@ -42,8 +44,9 @@ public class ActionButtonView extends AppCompatImageView {
      * @param hovered The current hover state.
      */
     public void onParentViewHoverChanged(boolean hovered) {
-        mHovered = hovered;
+        mParentHovered = hovered;
         updateVisibility();
+        setHovered(hovered);
     }
 
     /**
@@ -52,7 +55,7 @@ public class ActionButtonView extends AppCompatImageView {
      * @param selected The current selection state.
      */
     public void onParentViewSelected(boolean selected) {
-        mSelected = selected;
+        mParentSelected = selected;
         updateVisibility();
     }
 
@@ -60,6 +63,27 @@ public class ActionButtonView extends AppCompatImageView {
         if (!mShowOnlyOnFocus) {
             return;
         }
-        setVisibility(mHovered || mSelected ? View.VISIBLE : View.GONE);
+        setVisibility(mParentHovered || mHovered || mParentSelected ? View.VISIBLE : View.GONE);
+    }
+
+    @Override
+    public boolean onHoverEvent(MotionEvent event) {
+        boolean result = super.onHoverEvent(event);
+
+        int action = event.getActionMasked();
+        if (action == MotionEvent.ACTION_HOVER_ENTER || action == MotionEvent.ACTION_HOVER_EXIT) {
+            mHovered = action == MotionEvent.ACTION_HOVER_ENTER;
+            updateVisibility();
+        }
+
+        return result;
+    }
+
+    public boolean isActionButtonHovered() {
+        return mHovered;
+    }
+
+    void dispatchHoverEventForTesting(MotionEvent event) {
+        dispatchHoverEvent(event);
     }
 }

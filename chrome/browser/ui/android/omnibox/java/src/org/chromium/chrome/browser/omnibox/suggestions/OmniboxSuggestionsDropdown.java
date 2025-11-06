@@ -296,6 +296,10 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
                 resources.getDimensionPixelOffset(R.dimen.omnibox_suggestion_list_padding_top);
         this.setPaddingRelative(0, paddingTop, 0, mBaseBottomPadding);
 
+        // Disable the scrollbar since it causes the hover events happening near the
+        // scrollbar not dispatched to the underlying views.
+        setVerticalScrollBarEnabled(false);
+
         if (OmniboxFeatures.sAsyncViewInflation.isEnabled()) {
             setRecycledViewPool(new PreWarmingRecycledViewPool(mAdapter, context));
         }

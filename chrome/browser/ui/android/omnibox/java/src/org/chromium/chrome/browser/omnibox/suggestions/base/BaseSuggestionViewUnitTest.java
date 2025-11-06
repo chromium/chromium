@@ -17,12 +17,14 @@ import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import android.content.Context;
 import android.view.ContextThemeWrapper;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 
 import org.junit.Before;
@@ -187,13 +189,51 @@ public class BaseSuggestionViewUnitTest {
         assertEquals(View.VISIBLE, actionButtonWithoutShowOnFocus.getVisibility());
 
         // Hover over the view. The showOnlyOnFocus button should become invisible.
-        mView.onHoverChanged(true);
+        mView.onHoverEvent(MotionEvent.obtain(0, 0, MotionEvent.ACTION_HOVER_ENTER, 1.f, 1.f, 0));
         assertEquals(View.VISIBLE, actionButtonWithShowOnFocus.getVisibility());
         assertEquals(View.VISIBLE, actionButtonWithoutShowOnFocus.getVisibility());
 
         // Hover away from the view. The showOnlyOnFocus button should become invisible.
-        mView.onHoverChanged(false);
+        mView.onHoverEvent(MotionEvent.obtain(0, 0, MotionEvent.ACTION_HOVER_EXIT, 1.f, 1.f, 0));
         assertEquals(View.GONE, actionButtonWithShowOnFocus.getVisibility());
         assertEquals(View.VISIBLE, actionButtonWithoutShowOnFocus.getVisibility());
+    }
+
+    @Test
+    public void actionButton_hoverUpdate() {
+        mView.setActionButtonsCount(1);
+        ActionButtonView actionButton = mView.getActionButtons().get(0);
+
+        verify(mView, never()).setHovered(true);
+        verify(mView, never()).setHovered(false);
+
+        // setHovered(true) is triggered twice, one is triggered by Android system and the other is
+        // from us to update the hover state to account for the hover change from action buttons.
+        mView.onHoverEvent(MotionEvent.obtain(0, 0, MotionEvent.ACTION_HOVER_ENTER, 1.f, 1.f, 0));
+        verify(mView, times(2)).setHovered(true);
+        verify(mView, never()).setHovered(false);
+
+        // setHovered(false) is triggered twice, one is triggered by Android system and the other is
+        // from us to update the hover state to account for the hover change from action buttons.
+        mView.onHoverEvent(MotionEvent.obtain(0, 0, MotionEvent.ACTION_HOVER_EXIT, 1.f, 1.f, 0));
+        verify(mView, times(2)).setHovered(true);
+        verify(mView, times(2)).setHovered(false);
+
+        // The hover change in action button should affect BaseSuggestionView.
+        actionButton.dispatchHoverEventForTesting(
+                MotionEvent.obtain(0, 0, MotionEvent.ACTION_HOVER_ENTER, 1.f, 1.f, 0));
+        verify(mView, times(3)).setHovered(true);
+        verify(mView, times(2)).setHovered(false);
+
+        actionButton.dispatchHoverEventForTesting(
+                MotionEvent.obtain(0, 0, MotionEvent.ACTION_HOVER_EXIT, 1.f, 1.f, 0));
+        verify(mView, times(3)).setHovered(true);
+        verify(mView, times(3)).setHovered(false);
+
+        // Other hover events should not invoke setHovered.
+        actionButton.dispatchHoverEventForTesting(
+                MotionEvent.obtain(0, 0, MotionEvent.ACTION_HOVER_MOVE, 1.f, 1.f, 0));
+        verify(mView, times(3)).setHovered(true);
+        verify(mView, times(3)).setHovered(false);
     }
 }
