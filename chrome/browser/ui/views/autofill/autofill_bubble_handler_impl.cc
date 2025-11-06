@@ -325,9 +325,16 @@ AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowSaveCardConfirmationBubble(
       toolbar_button_provider_->GetAnchorView(kActionShowPaymentsBubbleOrPage);
   base::OnceCallback<void(PaymentsUiClosedReason)> callback =
       controller->GetOnBubbleClosedCallback();
-  PageActionIconView* icon_view =
-      toolbar_button_provider_->GetPageActionIconView(
-          PageActionIconType::kSaveCard);
+
+  IconLabelBubbleView* icon_view;
+  if (IsPageActionMigrated(PageActionIconType::kSaveCard)) {
+    icon_view = toolbar_button_provider_->GetPageActionView(
+        kActionShowPaymentsBubbleOrPage);
+  } else {
+    icon_view = toolbar_button_provider_->GetPageActionIconView(
+        PageActionIconType::kSaveCard);
+  }
+
   const SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams& ui_params =
       controller->GetConfirmationUiParams();
 
@@ -342,9 +349,15 @@ AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowSaveIbanConfirmationBubble(
       toolbar_button_provider_->GetAnchorView(kActionShowPaymentsBubbleOrPage);
   base::OnceCallback<void(PaymentsUiClosedReason)> callback =
       controller->GetOnBubbleClosedCallback();
-  PageActionIconView* icon_view =
-      toolbar_button_provider_->GetPageActionIconView(
-          PageActionIconType::kSaveIban);
+
+  IconLabelBubbleView* icon_view;
+  if (IsPageActionMigrated(PageActionIconType::kSaveIban)) {
+    icon_view = toolbar_button_provider_->GetPageActionView(
+        kActionShowPaymentsBubbleOrPage);
+  } else {
+    icon_view = toolbar_button_provider_->GetPageActionIconView(
+        PageActionIconType::kSaveIban);
+  }
 
   return ShowSaveCardAndVirtualCardEnrollConfirmationBubble(
       anchor_view, web_contents, std::move(callback), icon_view,

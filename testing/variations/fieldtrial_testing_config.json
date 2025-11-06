@@ -17725,6 +17725,7 @@
                         "price_insights": "true",
                         "price_tracking": "true",
                         "pwa_install": "true",
+                        "save_payments": "true",
                         "sharing_hub": "true",
                         "translate": "true",
                         "virtual_card": "true",

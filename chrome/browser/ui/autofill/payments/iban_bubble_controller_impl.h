@@ -19,6 +19,7 @@
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/ui/payments/payments_ui_closed_reasons.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "ui/actions/action_id.h"
 
 namespace autofill {
 
@@ -117,9 +118,13 @@ class IbanBubbleControllerImpl
   explicit IbanBubbleControllerImpl(content::WebContents* web_contents);
 
   // AutofillBubbleControllerBase:
-  std::optional<PageActionIconType> GetPageActionIconType() override;
   void DoShowBubble() override;
   using AutofillBubbleControllerBase::HideBubble;
+  std::optional<PageActionIconType> GetPageActionIconType() override;
+#if !BUILDFLAG(IS_ANDROID)
+  std::optional<actions::ActionId> GetActionIdForPageAction() override;
+  std::optional<std::u16string> GetPageActionTooltipText() override;
+#endif  // !BUILDFLAG(IS_ANDROID)
 
  private:
   friend class content::WebContentsUserData<IbanBubbleControllerImpl>;

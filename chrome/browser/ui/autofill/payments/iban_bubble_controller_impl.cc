@@ -10,6 +10,7 @@
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
 #include "chrome/browser/ui/autofill/payments/save_iban_ui.h"
@@ -155,6 +156,8 @@ void IbanBubbleControllerImpl::ShowConfirmationBubbleView(
           ->GetAutofillBubbleHandler();
   SetBubbleView(*autofill_bubble_handler->ShowSaveIbanConfirmationBubble(
       web_contents(), this));
+  UpdatePageActionIcon();
+
   // Auto close confirmation bubble when IBAN saved is successful.
   if (iban_saved) {
     auto_close_confirmation_timer_.Start(
@@ -466,6 +469,18 @@ std::optional<PageActionIconType>
 IbanBubbleControllerImpl::GetPageActionIconType() {
   return PageActionIconType::kSaveIban;
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+std::optional<actions::ActionId>
+IbanBubbleControllerImpl::GetActionIdForPageAction() {
+  return kActionShowPaymentsBubbleOrPage;
+}
+
+std::optional<std::u16string>
+IbanBubbleControllerImpl::GetPageActionTooltipText() {
+  return GetSavePaymentIconTooltipText();
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 void IbanBubbleControllerImpl::DoShowBubble() {
   Browser* browser = chrome::FindBrowserWithTab(web_contents());

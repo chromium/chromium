@@ -11,9 +11,11 @@
 #include "chrome/browser/sync/test/integration/secondary_account_helper.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/autofill/payments/iban_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/save_iban_ui.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/autofill/payments/dialog_view_ids.h"
 #include "chrome/browser/ui/views/autofill/payments/manage_saved_iban_bubble_view.h"
 #include "chrome/browser/ui/views/autofill/payments/save_iban_bubble_view.h"
@@ -77,10 +79,31 @@ constexpr char kResponsePaymentsFailure[] =
 
 class IbanBubbleViewFullFormBrowserTest
     : public SyncTest,
+      public testing::WithParamInterface<bool>,
       public IbanSaveManager::ObserverForTest,
       public IbanBubbleControllerImpl::ObserverForTest {
  protected:
-  IbanBubbleViewFullFormBrowserTest() : SyncTest(SINGLE_CLIENT) {}
+  IbanBubbleViewFullFormBrowserTest() : SyncTest(SINGLE_CLIENT) {
+    std::vector<base::test::FeatureRefAndParams> enabled_features = {};
+    std::vector<base::test::FeatureRef> disabled_features = {};
+
+    const bool is_page_action_migration_enabled = GetParam();
+    if (is_page_action_migration_enabled) {
+      enabled_features.push_back({
+          ::features::kPageActionsMigration,
+          {{
+              ::features::kPageActionsMigrationSavePayments.name,
+              "true",
+          }},
+      });
+    } else {
+      disabled_features.emplace_back(::features::kPageActionsMigration);
+    }
+    feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                disabled_features);
+
+    CHECK_EQ(IsPageActionMigrationEnabled(), is_page_action_migration_enabled);
+  }
 
  public:
   IbanBubbleViewFullFormBrowserTest(const IbanBubbleViewFullFormBrowserTest&) =
@@ -350,14 +373,19 @@ class IbanBubbleViewFullFormBrowserTest
     return iban_bubble_controller->GetIbanBubbleType();
   }
 
-  SavePaymentIconView* GetSaveIbanIconView() {
+  IconLabelBubbleView* GetSaveIbanIconView() {
     BrowserView* browser_view =
         BrowserView::GetBrowserViewForBrowser(GetBrowser(0));
-    PageActionIconView* icon =
-        browser_view->toolbar_button_provider()->GetPageActionIconView(
-            PageActionIconType::kSaveIban);
+    IconLabelBubbleView* icon;
+    if (IsPageActionMigrationEnabled()) {
+      icon = browser_view->toolbar_button_provider()->GetPageActionView(
+          kActionShowPaymentsBubbleOrPage);
+    } else {
+      icon = browser_view->toolbar_button_provider()->GetPageActionIconView(
+          PageActionIconType::kSaveIban);
+    }
     CHECK(browser_view->GetLocationBarView()->Contains(icon));
-    return static_cast<SavePaymentIconView*>(icon);
+    return icon;
   }
 
   content::WebContents* GetActiveWebContents() {
@@ -415,6 +443,10 @@ class IbanBubbleViewFullFormBrowserTest
         FindViewInBubbleById(DialogViewId::NICKNAME_TEXTFIELD));
   }
 
+  bool IsPageActionMigrationEnabled() {
+    return IsPageActionMigrated(PageActionIconType::kSaveIban);
+  }
+
   [[nodiscard]] testing::AssertionResult WaitForObservedEvent() {
     return event_waiter_->Wait();
   }
@@ -457,11 +489,12 @@ class IbanBubbleViewFullFormBrowserTest
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
   test::AutofillBrowserTestEnvironment autofill_test_environment_;
   TestAutofillManagerInjector<TestAutofillManager> autofill_manager_injector_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Tests the local save bubble. Ensures that clicking the 'No thanks' button
 // successfully causes the bubble to go away, and causes a strike to be added.
-IN_PROC_BROWSER_TEST_F(IbanBubbleViewFullFormBrowserTest,
+IN_PROC_BROWSER_TEST_P(IbanBubbleViewFullFormBrowserTest,
                        Local_ClickingNoThanksClosesBubble) {
   base::HistogramTester histogram_tester;
   FillForm(kIbanValue);
@@ -487,7 +520,7 @@ IN_PROC_BROWSER_TEST_F(IbanBubbleViewFullFormBrowserTest,
 
 // Tests the local save bubble. Ensures that clicking the [X] button
 // successfully causes the bubble to go away, and causes a strike to be added.
-IN_PROC_BROWSER_TEST_F(IbanBubbleViewFullFormBrowserTest,
+IN_PROC_BROWSER_TEST_P(IbanBubbleViewFullFormBrowserTest,
                        Local_ClickingXIconClosesBubble) {
   base::HistogramTester histogram_tester;
   FillForm(kIbanValue);
@@ -515,7 +548,7 @@ IN_PROC_BROWSER_TEST_F(IbanBubbleViewFullFormBrowserTest,
 // example of declining the prompt max times and ensuring that the
 // offer-to-save bubble does not appear on the next try. Then, ensures that no
 // strikes are added if the IBAN already has max strikes.
-IN_PROC_BROWSER_TEST_F(IbanBubbleViewFullFormBrowserTest,
+IN_PROC_BROWSER_TEST_P(IbanBubbleViewFullFormBrowserTest,
                        StrikeDatabase_Local_FullFlowTest) {
   base::HistogramTester histogram_tester;
   // Show and ignore the bubble enough times in order to accrue maximum strikes.
@@ -548,21 +581,39 @@ IN_PROC_BROWSER_TEST_F(IbanBubbleViewFullFormBrowserTest,
           ->ShouldBlockFeature(IbanSaveManager::GetPartialIbanHashString(
               kIbanValueWithoutWhitespaces)));
 
-  EXPECT_TRUE(GetSaveIbanIconView()->GetVisible());
+  // Post migration, the icon will not show after max strikes.
+  if (IsPageActionMigrationEnabled()) {
+    EXPECT_FALSE(GetSaveIbanIconView()->GetVisible());
+  } else {
+    EXPECT_TRUE(GetSaveIbanIconView()->GetVisible());
+  }
   EXPECT_FALSE(GetSaveIbanBubbleView());
 
-  // Click the icon to show the bubble.
-  ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
-  ClickOnView(GetSaveIbanIconView());
-  ASSERT_TRUE(WaitForObservedEvent());
-  EXPECT_TRUE(FindViewInBubbleById(DialogViewId::MAIN_CONTENT_VIEW_LOCAL)
-                  ->GetVisible());
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.SaveIbanPromptOffer.Local.Reshows",
-      autofill_metrics::SaveIbanPromptOffer::kShown, 1);
+  // Post migration, since the icon will not show, there is no entrypoint to the
+  // Save IBAN bubble.
+  // if (IsPageActionMigrationEnabled()) {
+  //   return;
+  // }
+  //
+  if (!IsPageActionMigrationEnabled()) {
+    // Click the icon to show the bubble.
+    ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
+    ClickOnView(GetSaveIbanIconView());
+    ASSERT_TRUE(WaitForObservedEvent());
+    EXPECT_TRUE(FindViewInBubbleById(DialogViewId::MAIN_CONTENT_VIEW_LOCAL)
+                    ->GetVisible());
+    ClickOnCancelButton();
+    ASSERT_TRUE(WaitForObservedEvent());
 
-  ClickOnCancelButton();
-  ASSERT_TRUE(WaitForObservedEvent());
+    histogram_tester.ExpectUniqueSample(
+        "Autofill.SaveIbanPromptOffer.Local.Reshows",
+        autofill_metrics::SaveIbanPromptOffer::kShown, 1);
+  } else {
+    histogram_tester.ExpectUniqueSample(
+        "Autofill.SaveIbanPromptOffer.Local.Reshows",
+        autofill_metrics::SaveIbanPromptOffer::kShown, 0);
+  }
+
   histogram_tester.ExpectBucketCount(
       "Autofill.SaveIbanPromptOffer.Local.FirstShow",
       autofill_metrics::SaveIbanPromptOffer::kNotShownMaxStrikesReached, 1);
@@ -573,7 +624,7 @@ IN_PROC_BROWSER_TEST_F(IbanBubbleViewFullFormBrowserTest,
 
 // Tests the local save bubble. Ensures that clicking the 'Save' button
 // successfully causes the bubble to go away.
-IN_PROC_BROWSER_TEST_F(IbanBubbleViewFullFormBrowserTest,
+IN_PROC_BROWSER_TEST_P(IbanBubbleViewFullFormBrowserTest,
                        Local_ClickingSaveClosesBubble) {
   base::HistogramTester histogram_tester;
   FillForm();
@@ -596,7 +647,7 @@ IN_PROC_BROWSER_TEST_F(IbanBubbleViewFullFormBrowserTest,
 
 // Tests the local save bubble. Ensures that clicking the 'Save' button
 // successfully causes the bubble to go away.
-IN_PROC_BROWSER_TEST_F(IbanBubbleViewFullFormBrowserTest,
+IN_PROC_BROWSER_TEST_P(IbanBubbleViewFullFormBrowserTest,
                        Local_ClickingSaveClosesBubble_WithNickname) {
   base::HistogramTester histogram_tester;
   FillForm();
@@ -620,7 +671,7 @@ IN_PROC_BROWSER_TEST_F(IbanBubbleViewFullFormBrowserTest,
 
 // Tests the local save bubble. Ensures that clicking the [X] button will remove
 // the omnibox icon.
-IN_PROC_BROWSER_TEST_F(IbanBubbleViewFullFormBrowserTest,
+IN_PROC_BROWSER_TEST_P(IbanBubbleViewFullFormBrowserTest,
                        Local_ClickingClosesBubbleClearsOmnibox) {
   base::HistogramTester histogram_tester;
   FillForm();
@@ -640,7 +691,7 @@ IN_PROC_BROWSER_TEST_F(IbanBubbleViewFullFormBrowserTest,
 // Tests the local save bubble. Ensures that clicking the omnibox icon opens
 // manage saved IBAN bubble with IBAN nickname.
 // crbug.com/330725101: disabled because it's flaky
-IN_PROC_BROWSER_TEST_F(IbanBubbleViewFullFormBrowserTest,
+IN_PROC_BROWSER_TEST_P(IbanBubbleViewFullFormBrowserTest,
                        DISABLED_Local_SavedIbanHasNickname) {
   const std::u16string kNickname = u"My doctor's IBAN";
   FillForm();
@@ -667,7 +718,7 @@ IN_PROC_BROWSER_TEST_F(IbanBubbleViewFullFormBrowserTest,
 // Tests the local save bubble. Ensures that clicking the omnibox icon opens
 // manage saved IBAN bubble without IBAN nickname.
 // crbug.com/330725101: disabled because it's flaky
-IN_PROC_BROWSER_TEST_F(IbanBubbleViewFullFormBrowserTest,
+IN_PROC_BROWSER_TEST_P(IbanBubbleViewFullFormBrowserTest,
                        DISABLED_Local_SavedIbanNoNickname) {
   FillForm();
   SubmitFormAndWaitForIbanLocalSaveBubble();
@@ -760,7 +811,7 @@ class IbanBubbleViewSyncTransportFullFormBrowserTest
 
 // Tests the upload save bubble. Ensures that the bubble does not go away right
 // after clicking the 'Save' button.
-IN_PROC_BROWSER_TEST_F(IbanBubbleViewSyncTransportFullFormBrowserTest,
+IN_PROC_BROWSER_TEST_P(IbanBubbleViewSyncTransportFullFormBrowserTest,
                        Upload_ClickingSaveClosesBubble_Success) {
   SetUploadIbanRpcPaymentsSucceeds();
   SetUpForSyncTransportModeTest();
@@ -781,7 +832,7 @@ IN_PROC_BROWSER_TEST_F(IbanBubbleViewSyncTransportFullFormBrowserTest,
 // Tests the upload save bubble. Ensures that the bubble does not go away right
 // after clicking the 'Save' button. Also, verify that a failed IBAN
 // upload adds a strike to the strike database.
-IN_PROC_BROWSER_TEST_F(IbanBubbleViewSyncTransportFullFormBrowserTest,
+IN_PROC_BROWSER_TEST_P(IbanBubbleViewSyncTransportFullFormBrowserTest,
                        Upload_ClickingSaveClosesBubble_Fail) {
   SetUploadIbanRpcPaymentsFails();
   SetUpForSyncTransportModeTest();
@@ -806,7 +857,7 @@ IN_PROC_BROWSER_TEST_F(IbanBubbleViewSyncTransportFullFormBrowserTest,
 // Tests the upload save bubble. Ensures that clicking the 'No thanks' button
 // successfully causes the bubble to go away. Also, verify that a failed IBAN
 // upload adds a strike to the strike database.
-IN_PROC_BROWSER_TEST_F(IbanBubbleViewSyncTransportFullFormBrowserTest,
+IN_PROC_BROWSER_TEST_P(IbanBubbleViewSyncTransportFullFormBrowserTest,
                        Upload_ClickingDeclineClosesBubble) {
   SetUpForSyncTransportModeTest();
 
@@ -826,7 +877,7 @@ IN_PROC_BROWSER_TEST_F(IbanBubbleViewSyncTransportFullFormBrowserTest,
 
 // Test that upload save should not be offered when the preflight call failed.
 // In this case, local save should be offered.
-IN_PROC_BROWSER_TEST_F(IbanBubbleViewSyncTransportFullFormBrowserTest,
+IN_PROC_BROWSER_TEST_P(IbanBubbleViewSyncTransportFullFormBrowserTest,
                        Upload_FailedPreflightCallThenLocalSave) {
   SetUpForSyncTransportModeTest();
 
@@ -843,7 +894,7 @@ IN_PROC_BROWSER_TEST_F(IbanBubbleViewSyncTransportFullFormBrowserTest,
 // Tests the upload save bubble. Ensures that clicking the [Save] button
 // does not close the bubble, causes a loading throbber to appear and hides the
 // other dialog buttons.
-IN_PROC_BROWSER_TEST_F(IbanBubbleViewSyncTransportFullFormBrowserTest,
+IN_PROC_BROWSER_TEST_P(IbanBubbleViewSyncTransportFullFormBrowserTest,
                        Upload_ClickingSave_ShowsLoadingView) {
   SetUploadIbanRpcPaymentsSucceeds();
   SetUpForSyncTransportModeTest();
@@ -866,6 +917,28 @@ IN_PROC_BROWSER_TEST_F(IbanBubbleViewSyncTransportFullFormBrowserTest,
 
   ASSERT_TRUE(WaitForObservedEvent());
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    IbanBubbleViewFullFormBrowserTest,
+    ::testing::Bool(),
+    [](const ::testing::TestParamInfo<
+        IbanBubbleViewFullFormBrowserTest::ParamType>& info) {
+      return base::StrCat({
+          info.param ? "NewPageAction" : "OriginalPageAction",
+      });
+    });
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    IbanBubbleViewSyncTransportFullFormBrowserTest,
+    ::testing::Bool(),
+    [](const ::testing::TestParamInfo<
+        IbanBubbleViewSyncTransportFullFormBrowserTest::ParamType>& info) {
+      return base::StrCat({
+          info.param ? "NewPageAction" : "OriginalPageAction",
+      });
+    });
 
 }  // namespace
 }  // namespace autofill

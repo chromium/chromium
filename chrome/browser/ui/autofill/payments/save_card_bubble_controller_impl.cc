@@ -18,6 +18,7 @@
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_controller_base.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
@@ -784,6 +785,18 @@ std::optional<PageActionIconType>
 SaveCardBubbleControllerImpl::GetPageActionIconType() {
   return PageActionIconType::kSaveCard;
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+std::optional<actions::ActionId>
+SaveCardBubbleControllerImpl::GetActionIdForPageAction() {
+  return kActionShowPaymentsBubbleOrPage;
+}
+
+std::optional<std::u16string>
+SaveCardBubbleControllerImpl::GetPageActionTooltipText() {
+  return GetSavePaymentIconTooltipText();
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 void SaveCardBubbleControllerImpl::DoShowBubble() {
   if (!IsWebContentsActive()) {

@@ -73,12 +73,20 @@ void ShowIOSDesktopPromoBubble(IOSPromoType promo_type,
       break;
     }
     case IOSPromoType::kPayment:
-      IOSPromoBubble::ShowPromoBubble(
-          {toolbar_button_provider->GetAnchorView(
-              kActionShowPaymentsBubbleOrPage)},
-          toolbar_button_provider->GetPageActionIconView(
-              PageActionIconType::kSaveCard),
-          profile, IOSPromoType::kPayment, bubble_type);
+      IconLabelBubbleView* icon_view;
+      if (IsPageActionMigrated(PageActionIconType::kSaveCard)) {
+        icon_view = toolbar_button_provider->GetPageActionView(
+            kActionShowPaymentsBubbleOrPage);
+      } else {
+        icon_view = toolbar_button_provider->GetPageActionIconView(
+            PageActionIconType::kSaveCard);
+      }
+      CHECK(icon_view);
+
+      IOSPromoBubble::ShowPromoBubble({toolbar_button_provider->GetAnchorView(
+                                          kActionShowPaymentsBubbleOrPage)},
+                                      icon_view, profile,
+                                      IOSPromoType::kPayment, bubble_type);
       break;
     case IOSPromoType::kEnhancedBrowsing:
       IOSPromoBubble::ShowPromoBubble(

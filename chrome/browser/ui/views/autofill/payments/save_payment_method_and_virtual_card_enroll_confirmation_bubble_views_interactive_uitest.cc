@@ -29,9 +29,29 @@
 namespace autofill {
 
 class SaveCardConfirmationBubbleViewsInteractiveUiTest
-    : public InProcessBrowserTest {
+    : public InProcessBrowserTest,
+      public ::testing::WithParamInterface<bool> {
  public:
-  SaveCardConfirmationBubbleViewsInteractiveUiTest() = default;
+  SaveCardConfirmationBubbleViewsInteractiveUiTest() {
+    const bool is_page_action_migration_enabled = GetParam();
+    std::vector<base::test::FeatureRefAndParams> enabled_features = {};
+    std::vector<base::test::FeatureRef> disabled_features = {};
+
+    if (is_page_action_migration_enabled) {
+      enabled_features.push_back(
+          {::features::kPageActionsMigration,
+           {
+               {::features::kPageActionsMigrationSavePayments.name, "true"},
+           }});
+    } else {
+      disabled_features.emplace_back(::features::kPageActionsMigration);
+    }
+
+    feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                disabled_features);
+
+    CHECK_EQ(IsPageActionMigrationEnabled(), is_page_action_migration_enabled);
+  }
   ~SaveCardConfirmationBubbleViewsInteractiveUiTest() override = default;
   SaveCardConfirmationBubbleViewsInteractiveUiTest(
       const SaveCardConfirmationBubbleViewsInteractiveUiTest&) = delete;
@@ -63,14 +83,19 @@ class SaveCardConfirmationBubbleViewsInteractiveUiTest
         GetController()->GetPaymentBubbleView());
   }
 
-  SavePaymentIconView* IconView() {
+  IconLabelBubbleView* IconView() {
     BrowserView* browser_view =
         BrowserView::GetBrowserViewForBrowser(browser());
-    PageActionIconView* icon =
-        browser_view->toolbar_button_provider()->GetPageActionIconView(
-            PageActionIconType::kSaveCard);
+    IconLabelBubbleView* icon;
+    if (IsPageActionMigrationEnabled()) {
+      icon = browser_view->toolbar_button_provider()->GetPageActionView(
+          kActionShowPaymentsBubbleOrPage);
+    } else {
+      icon = browser_view->toolbar_button_provider()->GetPageActionIconView(
+          PageActionIconType::kSaveCard);
+    }
     CHECK(icon);
-    return static_cast<SavePaymentIconView*>(icon);
+    return icon;
   }
 
   void ShowBubble(bool card_saved) {
@@ -86,11 +111,16 @@ class SaveCardConfirmationBubbleViewsInteractiveUiTest
     destroyed_waiter.Wait();
   }
 
+  bool IsPageActionMigrationEnabled() {
+    return IsPageActionMigrated(PageActionIconType::kSaveCard);
+  }
+
  private:
   test::AutofillBrowserTestEnvironment autofill_test_environment_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(SaveCardConfirmationBubbleViewsInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(SaveCardConfirmationBubbleViewsInteractiveUiTest,
                        ShowSuccessBubbleViewThenHideBubbleView) {
   views::test::AXEventCounter counter(views::AXUpdateNotifier::Get());
   EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kAlert));
@@ -133,7 +163,7 @@ IN_PROC_BROWSER_TEST_F(SaveCardConfirmationBubbleViewsInteractiveUiTest,
   EXPECT_FALSE(IconView()->GetVisible());
 }
 
-IN_PROC_BROWSER_TEST_F(SaveCardConfirmationBubbleViewsInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(SaveCardConfirmationBubbleViewsInteractiveUiTest,
                        ShowFailureBubbleViewThenHideBubbleView) {
   views::test::AXEventCounter counter(views::AXUpdateNotifier::Get());
   EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kAlert));
@@ -180,6 +210,17 @@ IN_PROC_BROWSER_TEST_F(SaveCardConfirmationBubbleViewsInteractiveUiTest,
   EXPECT_EQ(BubbleView(), nullptr);
   EXPECT_FALSE(IconView()->GetVisible());
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    SaveCardConfirmationBubbleViewsInteractiveUiTest,
+    ::testing::Bool(),
+    [](const ::testing::TestParamInfo<
+        SaveCardConfirmationBubbleViewsInteractiveUiTest::ParamType>& info) {
+      return base::StrCat({
+          info.param ? "NewPageAction" : "OldPageAction",
+      });
+    });
 
 class VirtualCardEnrollConfirmationBubbleViewsInteractiveUiTest
     : public InProcessBrowserTest,

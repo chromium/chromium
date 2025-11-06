@@ -616,6 +616,12 @@ BASE_FEATURE_PARAM(bool,
                    "reading_mode",
                    true);
 
+BASE_FEATURE_PARAM(bool,
+                   kPageActionsMigrationSavePayments,
+                   &kPageActionsMigration,
+                   "save_payments",
+                   false);
+
 BASE_FEATURE(kSavePasswordsContextualUi, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCompositorLoadingAnimations, base::FEATURE_DISABLED_BY_DEFAULT);

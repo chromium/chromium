@@ -806,6 +806,18 @@ void BrowserActions::InitializeBrowserActions() {
               [](BrowserWindowInterface* bwi, TabStripModel* tab_strip_model,
                  actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
+                auto page_action_trigger =
+                    context.GetProperty(page_actions::kPageActionTriggerKey);
+                // When page action is migrated, clicking on the omnibox page
+                // should not close the bubble or navigate to `Payment Methods`
+                // settings page.
+                // Page action trigger is a valid value only when this action
+                // is triggered from the migrated page action icon.
+                if (page_action_trigger !=
+                    page_actions::kInvalidPageActionTrigger) {
+                  return;
+                }
+
                 auto hide_bubble = [tab_strip_model](int command_id) -> bool {
                   auto* controller = autofill::SavePaymentIconController::Get(
                       tab_strip_model->GetActiveWebContents(), command_id);
