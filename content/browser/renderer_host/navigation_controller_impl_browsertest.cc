@@ -16724,10 +16724,18 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   // do not retain history entries for the 5 frames removed by the test).
   EXPECT_EQ(0U, entry->root_node()->children.size());
 
-  // Sanity check - there are no children in the frame tree.
+  // Sanity check - Any remaining children is eventually deleted.
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
                             ->GetPrimaryFrameTree()
                             .root();
+  std::vector<std::unique_ptr<RenderFrameDeletedObserver>> observers;
+  for (size_t i = 0; i < root->child_count(); i++) {
+    observers.push_back(std::make_unique<RenderFrameDeletedObserver>(
+        root->child_at(i)->current_frame_host()));
+  }
+  for (auto& observer : observers) {
+    observer->WaitUntilDeleted();
+  }
   ASSERT_EQ(0U, root->child_count());
 }
 

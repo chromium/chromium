@@ -94,21 +94,21 @@ IN_PROC_BROWSER_TEST_F(RenderDocumentHostBrowserTest, BasicSubframe) {
   // 2) Navigate the subframe same-process. (non local root case).
   NavigateIframeToURL(web_contents(), "test_iframe", url_subframe_2);
   RenderFrameHostImpl* child_rfh_2 = subframe->current_frame_host();
-  EXPECT_TRUE(delete_child_rfh_1.deleted());
+  EXPECT_TRUE(delete_child_rfh_1.WaitUntilDeleted());
   EXPECT_NE(child_rfh_1, child_rfh_2);
   RenderFrameDeletedObserver delete_child_rfh_2(child_rfh_2);
 
   // 3) Navigate the subframe cross-process.
   NavigateIframeToURL(web_contents(), "test_iframe", url_subframe_3);
   RenderFrameHostImpl* child_rfh_3 = subframe->current_frame_host();
-  EXPECT_TRUE(delete_child_rfh_1.deleted());
+  EXPECT_TRUE(delete_child_rfh_2.WaitUntilDeleted());
   EXPECT_NE(child_rfh_2, child_rfh_3);
   RenderFrameDeletedObserver delete_child_rfh_3(child_rfh_3);
 
   // 4) Navigate the subframe same-process. (local root case).
   NavigateIframeToURL(web_contents(), "test_iframe", url_subframe_4);
   RenderFrameHostImpl* child_rfh_4 = subframe->current_frame_host();
-  EXPECT_TRUE(delete_child_rfh_3.deleted());
+  EXPECT_TRUE(delete_child_rfh_3.WaitUntilDeleted());
   EXPECT_NE(child_rfh_3, child_rfh_4);
 }
 
