@@ -43,7 +43,7 @@ void OnGenerateContentRequestCompleted(
 
 void OnRequestSent(
     Client::OnGenerateContentRequestCompletedCallback cb,
-    base::expected<Response, ErrorCode> result) {
+    base::expected<Client::BinaryEncodedProtoResponse, ErrorCode> result) {
   if (!result.has_value()) {
     std::move(cb).Run(base::unexpected(result.error()));
     return;
@@ -108,8 +108,9 @@ Client::Client(Client&&) = default;
 Client& Client::operator=(Client&&) = default;
 
 void Client::SendRequest(
-    Request request,
-    base::OnceCallback<void(base::expected<Response, ErrorCode>)> callback) {
+    BinaryEncodedProtoRequest request,
+    base::OnceCallback<void(base::expected<BinaryEncodedProtoResponse, ErrorCode>)>
+        callback) {
   DVLOG(1) << "SendRequest started.";
 
   DVLOG(1) << "Calling SecureChannelClient to execute the request.";
@@ -141,8 +142,8 @@ void Client::SendGenerateContentRequest(
 
   std::string serialized_request;
   request_proto.SerializeToString(&serialized_request);
-  Request binary_encoded_proto_request(serialized_request.begin(),
-                                         serialized_request.end());
+  BinaryEncodedProtoRequest binary_encoded_proto_request(
+      serialized_request.begin(), serialized_request.end());
 
   auto response_parsing_callback =
       base::BindOnce(&OnRequestSent, std::move(callback));

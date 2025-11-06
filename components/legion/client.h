@@ -24,11 +24,14 @@ namespace legion {
 // Client for starting the session and sending requests.
 class Client {
  public:
+  using BinaryEncodedProtoRequest = Request;
+  using BinaryEncodedProtoResponse = Response;
+
   // Callback for when a `SendRequest` operation completes.
   // If the operation is successful, the result will contain the server's
   // response. Otherwise, it will contain an `ErrorCode` error.
   using OnRequestCompletedCallback =
-      base::OnceCallback<void(base::expected<Response, ErrorCode> result)>;
+      base::OnceCallback<void(base::expected<BinaryEncodedProtoResponse, ErrorCode> result)>;
 
   // Callback for when a `SendTextRequest` operation completes.
   using OnTextRequestCompletedCallback =
@@ -69,8 +72,8 @@ class Client {
 
   // Sends a request over the secure channel.
   void SendRequest(
-      Request request,
-      base::OnceCallback<void(base::expected<Response, ErrorCode>)> callback);
+      BinaryEncodedProtoRequest request,
+      base::OnceCallback<void(base::expected<BinaryEncodedProtoResponse, ErrorCode>)> callback);
 
   std::unique_ptr<SecureChannel> secure_channel_;
   proto::FeatureName feature_name_;

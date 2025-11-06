@@ -37,8 +37,10 @@ class MockSecureChannelClient : public SecureChannel {
   MOCK_METHOD(
       void,
       Write,
-      (Request request,
-       base::OnceCallback<void(base::expected<Response, ErrorCode>)> callback),
+      (Client::BinaryEncodedProtoRequest request,
+       base::OnceCallback<void(
+           base::expected<Client::BinaryEncodedProtoResponse, ErrorCode>)>
+           callback),
       (override));
 };
 
@@ -78,8 +80,8 @@ TEST_F(ClientTest, SendTextRequestSuccess) {
 
   std::string serialized_response;
   legion_response.SerializeToString(&serialized_response);
-  Response response_data(serialized_response.begin(),
-                         serialized_response.end());
+  Client::BinaryEncodedProtoResponse response_data(serialized_response.begin(),
+                                                   serialized_response.end());
 
   EXPECT_CALL(*mock_secure_channel_, Write(_, _))
       .WillOnce(RunOnceCallback<1>(base::ok(response_data)));
@@ -127,8 +129,8 @@ TEST_P(ClientSendTextRequestErrorTest, SendTextRequestMalformedResponse) {
 
   std::string serialized_response;
   legion_response.SerializeToString(&serialized_response);
-  Response response_data(serialized_response.begin(),
-                         serialized_response.end());
+  Client::BinaryEncodedProtoResponse response_data(serialized_response.begin(),
+                                                   serialized_response.end());
 
   EXPECT_CALL(*mock_secure_channel_, Write(_, _))
       .WillOnce(RunOnceCallback<1>(base::ok(response_data)));
@@ -163,12 +165,13 @@ INSTANTIATE_TEST_SUITE_P(All,
 // server response is malformed.
 class ClientSendGenerateContentRequestErrorTest
     : public ClientTest,
-      public ::testing::WithParamInterface<std::pair<Response, ErrorCode>> {};
+      public ::testing::WithParamInterface<
+          std::pair<Client::BinaryEncodedProtoResponse, ErrorCode>> {};
 
 TEST_P(ClientSendGenerateContentRequestErrorTest,
        SendGenerateContentRequestMalformedResponse) {
   const auto& param = GetParam();
-  Response response_data = param.first;
+  Client::BinaryEncodedProtoResponse response_data = param.first;
 
   EXPECT_CALL(*mock_secure_channel_, Write(_, _))
       .WillOnce(RunOnceCallback<1>(base::ok(response_data)));
@@ -189,7 +192,7 @@ INSTANTIATE_TEST_SUITE_P(
     ClientSendGenerateContentRequestErrorTest,
     ::testing::Values(
         // Invalid response that cannot be parsed.
-        std::make_pair(Response{0x01, 0x02, 0x03},
+        std::make_pair(Client::BinaryEncodedProtoResponse{0x01, 0x02, 0x03},
                        ErrorCode::kResponseParseError),
         // Response missing GenerateContentResponse.
         std::make_pair(
@@ -197,8 +200,8 @@ INSTANTIATE_TEST_SUITE_P(
               proto::LegionResponse legion_response;
               std::string serialized_response;
               legion_response.SerializeToString(&serialized_response);
-              return Response(serialized_response.begin(),
-                              serialized_response.end());
+              return Client::BinaryEncodedProtoResponse(
+                  serialized_response.begin(), serialized_response.end());
             }(),
             ErrorCode::kNoResponse)));
 
