@@ -645,7 +645,6 @@ void CrostiniManager::CrostiniRestarter::StartLxdContainerFinished(
   // are finished. Because the session tracker update and this method are racing
   // on the same thread we do the update async once the session tracker is
   // ready.
-  // TODO(crbug.com/377377749): might still need to do this for baguette?
   if (container_id_ == DefaultContainerId()) {
     crostini_manager_->primary_counter_mount_subscription_ =
         guest_os::GuestOsSessionTrackerFactory::GetForProfile(profile_)
@@ -981,6 +980,10 @@ void CrostiniManager::CrostiniRestarter::SetUpBaguetteUserFinished(
 
   // If arc sideloading is enabled, configure the guest for that.
   crostini_manager_->ConfigureForArcSideload();
+
+  // Mount sshfs
+  crostini_manager_->MountCrostiniFiles(DefaultBaguetteContainerId(),
+                                        base::DoNothing(), /*background=*/true);
 
   // Wait for Baguette's 'services are ready' signals
   WaitUntilBaguetteReady(result, kBaguetteVmReadyWaitTimeout);
