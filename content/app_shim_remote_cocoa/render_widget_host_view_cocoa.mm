@@ -1770,6 +1770,11 @@ void ExtractUnderlines(NSAttributedString* string,
   }
 
   _host->OnWindowIsKeyChanged(false);
+  if (base::FeatureList::IsEnabled(
+          features::kCancelCompositionWhenWindowLosesFocus)) {
+    // Cancel any ongoing composition when the window loses focus.
+    [self cancelComposition];
+  }
 }
 
 - (BOOL)becomeFirstResponder {
