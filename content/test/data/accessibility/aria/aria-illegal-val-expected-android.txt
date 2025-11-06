@@ -9,7 +9,7 @@ android.webkit.WebView focusable focused
 ++android.widget.Button clickable interesting content_description='Haspopup illegal'
 ++android.view.View content_invalid interesting name='Invalid illegal'
 ++android.view.View role_description='log' interesting name='Live illegal'
-++android.app.AlertDialog role_description='dialog' interesting name='Modal illegal'
+++android.app.AlertDialog interesting name='Modal illegal'
 ++android.widget.EditText clickable editable_text multiline interesting hint='Multiline illegal'
 ++android.widget.GridView collection multiselectable interesting name='Multiselectable illegal' state_description='multiselectable, none selected.' selection_mode=2
 ++android.widget.SeekBar clickable range interesting name='Orientation illegal' item_index=50 item_count=100 range_max=100 range_current_value=50

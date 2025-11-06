@@ -9,7 +9,7 @@ WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="ro
 ++Button contentDescription:"Haspopup illegal" clickable actions:[CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="button"]
 ++View text:"Invalid illegal" error:"Invalid entry" contentInvalid actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="group"]
 ++View text:"Live illegal" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="log", roleDescription="log"]
-++AlertDialog text:"Modal illegal" paneTitle:"Modal illegal" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="dialog", roleDescription="dialog"]
+++AlertDialog text:"Modal illegal" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="dialog"]
 ++EditText hint:"Multiline illegal" clickable editable multiLine textSelectionStart:0 textSelectionEnd:0 actions:[CLICK, AX_FOCUS, PASTE, SET_TEXT, IME_ENTER] bundle:[chromeRole="textField", hint="Multiline illegal"]
 ++GridView text:"Multiselectable illegal" stateDescription:"multiselectable, none selected." CollectionInfo:[selection_mode_multiple, rows=0, cols=0] actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="grid"]
 ++SeekBar text:"Orientation illegal" clickable RangeInfo:[current=50.0, min=0.0, max=100.0] actions:[CLICK, AX_FOCUS, NEXT, PREVIOUS, SET_PROGRESS] bundle:[chromeRole="slider"]
