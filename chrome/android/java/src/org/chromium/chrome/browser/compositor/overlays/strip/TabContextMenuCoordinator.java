@@ -45,6 +45,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.InstanceInfo;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
@@ -552,7 +553,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
         } else if (menuId == R.id.remove_from_tab_group) {
             recordUserAction("RemoveTabFromTabGroup", isMultipleTabs);
         } else if (menuId == R.id.move_to_other_window_menu_id) {
-            if (MultiWindowUtils.getInstanceCount() == 1) {
+            if (MultiWindowUtils.getInstanceCountWithFallback(PersistedInstanceType.ACTIVE) == 1) {
                 recordUserAction("MoveTabToNewWindow", isMultipleTabs);
             } else {
                 recordUserAction("MoveTabsToOtherWindow", isMultipleTabs);

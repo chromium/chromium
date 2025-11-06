@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.multiwindow.InstanceInfo;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -244,7 +245,8 @@ public class TabGroupContextMenuCoordinator extends TabStripReorderingHelper<Tok
                         TabLaunchType.FROM_TAB_GROUP_UI);
                 RecordUserAction.record("MobileToolbarTabGroupMenu.NewTabInGroup");
             } else if (menuId == R.id.move_to_other_window_menu_id) {
-                if (MultiWindowUtils.getInstanceCount() == 1) {
+                if (MultiWindowUtils.getInstanceCountWithFallback(PersistedInstanceType.ACTIVE)
+                        == 1) {
                     RecordUserAction.record("MobileToolbarTabGroupMenu.MoveGroupToNewWindow");
                 } else {
                     RecordUserAction.record("MobileToolbarTabGroupMenu.MoveGroupToAnotherWindow");

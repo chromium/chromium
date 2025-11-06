@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.dragdrop.ChromeMultiTabDropDataAndroid;
 import org.chromium.chrome.browser.dragdrop.ChromeTabDropDataAndroid;
 import org.chromium.chrome.browser.dragdrop.ChromeTabGroupDropDataAndroid;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
@@ -257,7 +258,8 @@ public abstract class TabDragHandlerBase implements View.OnDragListener, Destroy
         boolean allowDragToCreateInstance =
                 shouldAllowTabDragToCreateInstance()
                         && (TabUiFeatureUtilities.doesOemSupportDragToCreateInstance()
-                                || MultiWindowUtils.getInstanceCount()
+                                || MultiWindowUtils.getInstanceCountWithFallback(
+                                                PersistedInstanceType.ACTIVE)
                                         < MultiWindowUtils.getMaxInstances());
 
         return new ChromeTabDropDataAndroid.Builder()
@@ -273,7 +275,8 @@ public abstract class TabDragHandlerBase implements View.OnDragListener, Destroy
         boolean allowDragToCreateInstance =
                 shouldAllowMultiTabDragToCreateInstance()
                         && (TabUiFeatureUtilities.doesOemSupportDragToCreateInstance()
-                                || MultiWindowUtils.getInstanceCount()
+                                || MultiWindowUtils.getInstanceCountWithFallback(
+                                                PersistedInstanceType.ACTIVE)
                                         < MultiWindowUtils.getMaxInstances());
 
         ChromeMultiTabDropDataAndroid.Builder builder = new ChromeMultiTabDropDataAndroid.Builder();
@@ -298,7 +301,8 @@ public abstract class TabDragHandlerBase implements View.OnDragListener, Destroy
                         isGroupShared);
         boolean allowDragToCreateInstance =
                 shouldAllowGroupDragToCreateInstance(tabGroupId)
-                        && (MultiWindowUtils.getInstanceCount()
+                        && (MultiWindowUtils.getInstanceCountWithFallback(
+                                        PersistedInstanceType.ACTIVE)
                                 < MultiWindowUtils.getMaxInstances());
 
         ChromeTabGroupDropDataAndroid.Builder builder = new ChromeTabGroupDropDataAndroid.Builder();
@@ -360,7 +364,8 @@ public abstract class TabDragHandlerBase implements View.OnDragListener, Destroy
                     isMultiTabDrop);
             DragDropMetricUtils.recordDragDropClosedWindow(
                     didCloseWindow, isTabGroupDrop, isMultiTabDrop);
-        } else if (MultiWindowUtils.getInstanceCount() >= MultiWindowUtils.getMaxInstances()) {
+        } else if (MultiWindowUtils.getInstanceCountWithFallback(PersistedInstanceType.ACTIVE)
+                >= MultiWindowUtils.getMaxInstances()) {
             assumeNonNull(mTabModelSelector);
             assumeNonNull(mTabModelSelector.getCurrentTab());
             var windowAndroid = mTabModelSelector.getCurrentTab().getWindowAndroid();
