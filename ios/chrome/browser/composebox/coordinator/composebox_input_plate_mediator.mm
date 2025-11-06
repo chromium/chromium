@@ -292,6 +292,8 @@ CreateInputDataFromAnnotatedPageContent(
   _persistTabContextAgent = nullptr;
   _composeboxObserverBridge.reset();
   _composeboxQueryController.reset();
+  _webStateList = nil;
+  _items = nil;
   _URLLoader = nil;
   _consumer = nil;
 }

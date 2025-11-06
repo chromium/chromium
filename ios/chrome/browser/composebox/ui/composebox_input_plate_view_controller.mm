@@ -199,6 +199,7 @@ const CGFloat kAIMButtonAnimationDuration = 0.25f;
   _carouselContainer = [[UIView alloc] init];
   _carouselContainer.translatesAutoresizingMaskIntoConstraints = NO;
   [_carouselContainer addSubview:_carouselView];
+  _carouselContainer.hidden = YES;
   AddSameConstraints(_carouselContainer, _carouselView);
 
   _trailingCarouselFadeView = [[UIView alloc] init];
@@ -263,8 +264,7 @@ const CGFloat kAIMButtonAnimationDuration = 0.25f;
                                 forAxis:UILayoutConstraintAxisHorizontal];
   UIStackView* buttonsStackView =
       [[UIStackView alloc] initWithArrangedSubviews:@[
-        plusButton, _aimButton, _carouselContainer, spacerView, _sendButton,
-        _micButton, _lensButton
+        plusButton, _aimButton, spacerView, _sendButton, _micButton, _lensButton
       ]];
   buttonsStackView.translatesAutoresizingMaskIntoConstraints = NO;
   buttonsStackView.axis = UILayoutConstraintAxisHorizontal;
@@ -272,8 +272,9 @@ const CGFloat kAIMButtonAnimationDuration = 0.25f;
   buttonsStackView.alignment = UIStackViewAlignmentBottom;
 
   // Main vertical stack view
-  _inputPlateStackView = [[UIStackView alloc]
-      initWithArrangedSubviews:@[ _omniboxContainer, buttonsStackView ]];
+  _inputPlateStackView = [[UIStackView alloc] initWithArrangedSubviews:@[
+    _carouselContainer, _omniboxContainer, buttonsStackView
+  ]];
   _inputPlateStackView.translatesAutoresizingMaskIntoConstraints = NO;
   _inputPlateStackView.axis = UILayoutConstraintAxisVertical;
   _inputPlateStackView.spacing = kInputPlateStackViewSpacing;
@@ -337,6 +338,7 @@ const CGFloat kAIMButtonAnimationDuration = 0.25f;
 #pragma mark - ComposeboxInputPlateConsumer
 
 - (void)setItems:(NSArray<ComposeboxInputItem*>*)items {
+  _carouselContainer.hidden = !items.count;
   NSDiffableDataSourceSnapshot<NSString*, ComposeboxInputItem*>* snapshot =
       [[NSDiffableDataSourceSnapshot alloc] init];
   [snapshot appendSectionsWithIdentifiers:@[ kMainSectionIdentifier ]];
