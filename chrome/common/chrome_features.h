@@ -250,8 +250,6 @@ extern const char kGlicActorUiTabIndicatorName[];
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const char kGlicActorUiBorderGlowName[];
 COMPONENT_EXPORT(CHROME_FEATURES)
-extern const char kGlicActorUiCompletedTaskExpiryDelaySecondsName[];
-COMPONENT_EXPORT(CHROME_FEATURES)
 extern const char kGlicActorUiDebounceTimerName[];
 
 COMPONENT_EXPORT(CHROME_FEATURES)
@@ -270,9 +268,6 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<bool>(kGlicActorUiBorderGlow);
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<bool>(kGlicActorUiStandaloneBorderGlow);
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::FeatureParam<int>(
-    kGlicActorUiCompletedTaskExpiryDelaySeconds);
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<base::TimeDelta>(kGlicActorUiDebounceTimer);
 

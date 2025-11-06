@@ -28,8 +28,8 @@ class ActorUiStateManager : public ActorUiStateManagerInterface {
 
   base::CallbackListSubscription RegisterActorTaskStateChange(
       ActorTaskStateChangeCallback callback) override;
-  base::CallbackListSubscription RegisterActorTaskCompleted(
-      ActorTaskCompletedCallback callback) override;
+  base::CallbackListSubscription RegisterActorTaskStopped(
+      ActorTaskStoppedCallback callback) override;
 
   // Returns the tabs associated with a given task id.
   std::vector<tabs::TabInterface*> GetTabs(TaskId id);
@@ -42,13 +42,12 @@ class ActorUiStateManager : public ActorUiStateManagerInterface {
                               ActorTask::State new_task_state,
                               const std::string& title);
 
-  // Notify profile scoped ui components about actor task completion.
-  void NotifyActorTaskCompleted(TaskId task_id,
-                                ActorTask::State final_state,
-                                const std::string& title);
+  // Notify profile scoped ui components about actor task stop.
+  void NotifyActorTaskStopped(TaskId task_id,
+                              ActorTask::State final_state,
+                              const std::string& title);
 
   base::OneShotTimer notify_actor_task_state_change_debounce_timer_;
-  base::OneShotTimer completed_tasks_expiry_timer_;
 
   const raw_ref<ActorKeyedService> actor_service_;
 
@@ -56,7 +55,7 @@ class ActorUiStateManager : public ActorUiStateManagerInterface {
       actor_task_state_change_callback_list_;
 
   base::RepeatingCallbackList<void(TaskId, ActorTask::State, std::string)>
-      actor_task_completed_callback_list_;
+      actor_task_stopped_callback_list_;
 
   base::WeakPtrFactory<ActorUiStateManager> weak_factory_{this};
 };

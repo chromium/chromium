@@ -376,6 +376,8 @@ if (!is_android) {
         "//chrome/browser/glic",
         "//chrome/browser/glic:mojo_bindings",
       ]
+
+      deps = [ "//chrome/browser/actor" ]
     }
   }
 

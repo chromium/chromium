@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/common/actor/task_id.h"
@@ -71,7 +72,9 @@ class GlicActorTaskIconManager : public KeyedService {
   void OnActorTaskStateUpdate(actor::TaskId task_id);
 
   // Called whenever an actor task is completed.
-  void OnActorTaskCompleted(actor::TaskId task_id, bool success);
+  void OnActorTaskStopped(actor::TaskId task_id,
+                          actor::ActorTask::State final_state,
+                          std::string task_title);
 
   // TODO(crbug.com/431015299): Clean up after redesign is launched.
   // Determines the state the task icon should be in.
@@ -100,7 +103,7 @@ class GlicActorTaskIconManager : public KeyedService {
 
   raw_ptr<tabs::TabInterface> GetLastUpdatedTab();
 
-  void ClearCompletedTasks();
+  void ClearStoppedTasks();
 
   // KeyedService:
   void Shutdown() override;
@@ -132,8 +135,12 @@ class GlicActorTaskIconManager : public KeyedService {
   // TODO(mjenn): Update implementation for multi-tab actuation.
   actor::TaskId current_task_id_;
 
-  // Whether there is an unprocessed completed task.
+  // TODO(b/440770955): Replace complete task lists (complete + fail) with a
+  // snapshot (task title, state and tab handle) of the completed or failed
+  // tasks for the pop-over.
   bool has_unprocessed_completed_tasks_ = false;
+  // Whether there is an unprocessed failed task.
+  bool has_unprocessed_failed_tasks_ = false;
 };
 
 }  // namespace tabs

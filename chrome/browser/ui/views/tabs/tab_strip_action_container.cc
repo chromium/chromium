@@ -637,7 +637,7 @@ void TabStripActionContainer::OnGlicActorTaskIconClicked() {
   if (glic_actor_task_icon_->GetIsShowingNudge()) {
     auto* icon_manager =
         tabs::GlicActorTaskIconManagerFactory::GetForProfile(profile);
-    icon_manager->ClearCompletedTasks();
+    icon_manager->ClearStoppedTasks();
     // If a nudge is showing, activate the last actuated tab on click of the
     // Task Icon.
     if (tabs::TabInterface* last_updated_tab =

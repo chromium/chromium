@@ -141,20 +141,11 @@ void ActorUiStateManager::OnActorTaskStateChange(
     case ActorTask::State::kPausedByActor:
       ui_tab_state = GetPausedUiTabState();
       break;
-    // TODO(crbug.com/453997100): Propagate failure state to nudge impl,
-    // failure states should trigger the nudge for 'Check your Tasks'.
     case ActorTask::State::kFailed:
     case ActorTask::State::kCancelled:
-      ui_tab_state = GetCompletedUiTabState();
-      break;
     case ActorTask::State::kFinished:
       ui_tab_state = GetCompletedUiTabState();
-      completed_tasks_expiry_timer_.Start(
-          FROM_HERE,
-          base::Seconds(
-              features::kGlicActorUiCompletedTaskExpiryDelaySeconds.Get()),
-          base::BindOnce(&ActorUiStateManager::NotifyActorTaskStateChange,
-                         weak_factory_.GetWeakPtr(), task_id));
+      NotifyActorTaskStopped(task_id, new_task_state, title);
       break;
   }
   for (const auto& tab : GetTabs(task_id)) {
@@ -168,11 +159,6 @@ void ActorUiStateManager::OnActorTaskStateChange(
       FROM_HERE, kProfileScopedUiUpdateDebounceDelay,
       base::BindOnce(&ActorUiStateManager::NotifyActorTaskStateChange,
                      weak_factory_.GetWeakPtr(), task_id));
-
-  if (new_task_state == ActorTask::State::kFinished ||
-      new_task_state == ActorTask::State::kCancelled) {
-    NotifyActorTaskCompleted(task_id, new_task_state, title);
-  }
 }
 
 std::vector<tabs::TabInterface*> ActorUiStateManager::GetTabs(TaskId id) {
@@ -280,10 +266,10 @@ void ActorUiStateManager::NotifyActorTaskStateChange(TaskId task_id) {
   actor_task_state_change_callback_list_.Notify(task_id);
 }
 
-void ActorUiStateManager::NotifyActorTaskCompleted(TaskId task_id,
-                                                   ActorTask::State final_state,
-                                                   const std::string& title) {
-  actor_task_completed_callback_list_.Notify(task_id, final_state, title);
+void ActorUiStateManager::NotifyActorTaskStopped(TaskId task_id,
+                                                 ActorTask::State final_state,
+                                                 const std::string& title) {
+  actor_task_stopped_callback_list_.Notify(task_id, final_state, title);
 }
 
 base::CallbackListSubscription
@@ -292,9 +278,9 @@ ActorUiStateManager::RegisterActorTaskStateChange(
   return actor_task_state_change_callback_list_.Add(std::move(callback));
 }
 
-base::CallbackListSubscription ActorUiStateManager::RegisterActorTaskCompleted(
-    ActorTaskCompletedCallback callback) {
-  return actor_task_completed_callback_list_.Add(std::move(callback));
+base::CallbackListSubscription ActorUiStateManager::RegisterActorTaskStopped(
+    ActorTaskStoppedCallback callback) {
+  return actor_task_stopped_callback_list_.Add(std::move(callback));
 }
 
 }  // namespace actor::ui
