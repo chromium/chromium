@@ -4,6 +4,7 @@
 
 #include <string>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "ash/shelf/shelf.h"
@@ -21,6 +22,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
+#include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/login_wizard.h"
 #include "chrome/browser/ash/login/test/cryptohome_mixin.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
@@ -504,7 +506,28 @@ IN_PROC_BROWSER_TEST_F(UserAddingScreenTrayTest, TrayVisible) {
 
 IN_PROC_BROWSER_TEST_F(LoginManagerTest, SafeBrowsingDisabledForSigninProfile) {
   ASSERT_FALSE(ProfileHelper::GetSigninProfile()->GetPrefs()->GetBoolean(
-      prefs::kSafeBrowsingEnabled));
+      ::prefs::kSafeBrowsingEnabled));
+}
+
+class LoginOfflineWithAutoEnrollmentCheckForcedTest : public LoginOfflineTest {
+ public:
+  LoginOfflineWithAutoEnrollmentCheckForcedTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kOobeAutoEnrollmentCheckForced);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(LoginOfflineWithAutoEnrollmentCheckForcedTest,
+                       FatalScreenShownWhenOobeNotCompleted) {
+  g_browser_process->local_state()->ClearPref(prefs::kOobeComplete);
+  EXPECT_FALSE(LoginScreenTestApi::IsOobeDialogVisible());
+  LoginScreenTestApi::SubmitPassword(test_account_id_, "password",
+                                     /*check_if_submittable=*/false);
+  OobeScreenWaiter(SignInFatalErrorView::kScreenId).Wait();
+  EXPECT_TRUE(LoginScreenTestApi::IsOobeDialogVisible());
 }
 
 }  // namespace ash

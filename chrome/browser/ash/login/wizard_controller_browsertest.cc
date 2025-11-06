@@ -28,6 +28,7 @@
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/base/locale_util.h"
@@ -103,6 +104,7 @@
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
 #include "chrome/browser/ui/webui/ash/login/remote_activity_notification_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/reset_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/signin_fatal_error_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/theme_selection_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/touchpad_scroll_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/update_required_screen_handler.h"
@@ -2136,6 +2138,8 @@ class WizardControllerOobeResumeTest : public WizardControllerTest {
             base::BindRepeating(
                 &WizardController::OnAutoEnrollmentCheckScreenExit,
                 base::Unretained(wizard_controller))));
+    LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build =
+        true;
   }
 
   void TearDownOnMainThread() override {
@@ -2565,14 +2569,6 @@ IN_PROC_BROWSER_TEST_F(WizardControllerTest, TransitionToGaiaInfo) {
   OobeScreenWaiter(GaiaInfoScreenView::kScreenId).Wait();
 }
 
-IN_PROC_BROWSER_TEST_F(WizardControllerTest, TransitionFromGaiaInfo) {
-  WaitForOobeUI();
-  WizardController::default_controller()->AdvanceToScreen(
-      GaiaInfoScreenView::kScreenId);
-  test::OobeJS().ClickOnPath({"gaia-info", "nextButton"});
-  OobeScreenWaiter(GaiaView::kScreenId).Wait();
-}
-
 IN_PROC_BROWSER_TEST_F(WizardControllerTest, SkipGaiaInfoForChildAccount) {
   WaitForOobeUI();
   WizardController::default_controller()->AdvanceToScreen(
@@ -2602,6 +2598,8 @@ IN_PROC_BROWSER_TEST_F(WizardControllerTest, SystemTrayShouldBeDisabledOnKioskSp
 class WizardControllerGaiaTest : public WizardControllerTest {
  protected:
   FakeGaiaMixin fake_gaia_{&mixin_host_};
+  DeviceStateMixin device_state_{
+      &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_UNOWNED};
 };
 
 IN_PROC_BROWSER_TEST_F(WizardControllerGaiaTest, GoBackToGaiaInfo) {
@@ -2642,10 +2640,20 @@ IN_PROC_BROWSER_TEST_F(WizardControllerGaiaTest,
   OobeScreenWaiter(UserCreationView::kScreenId).Wait();
 }
 
+IN_PROC_BROWSER_TEST_F(WizardControllerGaiaTest, TransitionFromGaiaInfo) {
+  WaitForOobeUI();
+  WizardController::default_controller()->AdvanceToScreen(
+      GaiaInfoScreenView::kScreenId);
+  test::OobeJS().ClickOnPath({"gaia-info", "nextButton"});
+  OobeScreenWaiter(GaiaView::kScreenId).Wait();
+}
+
 class GoingBackFromGaiaScreenInChildFlowTest
     : public WizardControllerTest,
       public testing::WithParamInterface<std::tuple<bool, std::string>> {
   FakeGaiaMixin fake_gaia_{&mixin_host_};
+  DeviceStateMixin device_state_{
+      &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_UNOWNED};
 };
 
 IN_PROC_BROWSER_TEST_P(GoingBackFromGaiaScreenInChildFlowTest,
@@ -2688,6 +2696,93 @@ INSTANTIATE_TEST_SUITE_P(
                     std::make_tuple(true, "childSignInButton"),
                     std::make_tuple(false, "childCreateButton"),
                     std::make_tuple(false, "childSignInButton")));
+
+class WizardControllerFlowWithAutoEnrollmentCheckForcedTest
+    : public WizardControllerFlowTest {
+ public:
+  WizardControllerFlowWithAutoEnrollmentCheckForcedTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kOobeAutoEnrollmentCheckForced);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(WizardControllerFlowWithAutoEnrollmentCheckForcedTest,
+                       OobeMarkedCompleted) {
+  WaitForOobeUI();
+  CheckCurrentScreen(WelcomeView::kScreenId);
+  EXPECT_CALL(*mock_update_screen_, ShowImpl()).Times(0);
+  EXPECT_CALL(*mock_network_screen_, ShowImpl()).Times(1);
+  EXPECT_CALL(*mock_welcome_screen_, HideImpl()).Times(1);
+  mock_welcome_screen_->ExitScreen(WelcomeScreen::Result::kNext);
+
+  CheckCurrentScreen(NetworkScreenView::kScreenId);
+  EXPECT_CALL(*mock_network_screen_, HideImpl()).Times(1);
+  EXPECT_CALL(*mock_update_screen_, ShowImpl()).Times(1);
+  mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
+
+  // Let update screen smooth time process (time = 0ms).
+  content::RunAllPendingInMessageLoop();
+  CheckCurrentScreen(UpdateView::kScreenId);
+
+  EXPECT_CALL(*mock_update_screen_, HideImpl()).Times(1);
+  mock_update_screen_->RunExit(UpdateScreen::Result::UPDATE_NOT_REQUIRED);
+  base::RunLoop().RunUntilIdle();
+
+  OobeScreenWaiter(UserCreationView::kScreenId).Wait();
+  EXPECT_TRUE(StartupUtils::IsOobeCompleted());
+}
+
+IN_PROC_BROWSER_TEST_F(WizardControllerFlowWithAutoEnrollmentCheckForcedTest,
+                       OobeNotMarkedCompleted) {
+  WaitForOobeUI();
+  LoginDisplayHost::default_host()
+      ->GetWizardContext()
+      ->skip_auto_enrollment_check_for_tests = true;
+  CheckCurrentScreen(WelcomeView::kScreenId);
+  EXPECT_CALL(*mock_update_screen_, ShowImpl()).Times(0);
+  EXPECT_CALL(*mock_network_screen_, ShowImpl()).Times(1);
+  EXPECT_CALL(*mock_welcome_screen_, HideImpl()).Times(1);
+  mock_welcome_screen_->ExitScreen(WelcomeScreen::Result::kNext);
+
+  CheckCurrentScreen(NetworkScreenView::kScreenId);
+  EXPECT_CALL(*mock_network_screen_, HideImpl()).Times(1);
+  EXPECT_CALL(*mock_update_screen_, ShowImpl()).Times(1);
+  mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
+
+  // Let update screen smooth time process (time = 0ms).
+  content::RunAllPendingInMessageLoop();
+  CheckCurrentScreen(UpdateView::kScreenId);
+
+  EXPECT_CALL(*mock_update_screen_, HideImpl()).Times(1);
+  mock_update_screen_->RunExit(UpdateScreen::Result::UPDATE_NOT_REQUIRED);
+  base::RunLoop().RunUntilIdle();
+
+  OobeScreenWaiter(SignInFatalErrorView::kScreenId).Wait();
+  EXPECT_FALSE(StartupUtils::IsOobeCompleted());
+}
+
+IN_PROC_BROWSER_TEST_F(WizardControllerFlowWithAutoEnrollmentCheckForcedTest,
+                       ShowFatalErrorOnGaiaAdvanceWhenOobeIncomplete) {
+  WaitForOobeUI();
+
+  WizardController::default_controller()->AdvanceToScreen(GaiaView::kScreenId);
+
+  OobeScreenWaiter(SignInFatalErrorView::kScreenId).Wait();
+}
+
+IN_PROC_BROWSER_TEST_F(WizardControllerFlowWithAutoEnrollmentCheckForcedTest,
+                       NoFatalErrorOnGaiaAdvanceWhenOobeComplete) {
+  StartupUtils::MarkOobeCompleted();
+  WaitForOobeUI();
+
+  WizardController::default_controller()->AdvanceToScreen(GaiaView::kScreenId);
+
+  OobeScreenWaiter(GaiaView::kScreenId).Wait();
+}
+
 // TODO(nkostylev): Add test for WebUI accelerators http://crosbug.com/22571
 
 // TODO(merkulova): Add tests for bluetooth HID detection screen variations when

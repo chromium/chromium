@@ -1261,6 +1261,13 @@ void WizardController::ShowWrongHWIDScreen() {
 }
 
 void WizardController::ShowAutoEnrollmentCheckScreen() {
+  if (features::IsOobeAutoEnrollmentCheckForcedEnabled() &&
+      wizard_context_->skip_auto_enrollment_check_for_tests) {
+    OnAutoEnrollmentCheckScreenExit(
+        AutoEnrollmentCheckScreen::Result::NOT_APPLICABLE);
+    return;
+  }
+
   AutoEnrollmentCheckScreen* screen = GetScreen<AutoEnrollmentCheckScreen>();
   screen->set_auto_enrollment_controller(GetAutoEnrollmentController());
   SetCurrentScreen(screen);
@@ -2031,6 +2038,9 @@ void WizardController::SkipToLoginForTesting() {
   StartNetworkTimezoneResolve();
   DelayNetworkCall(ServicesCustomizationDocument::GetInstance()
                        ->EnsureCustomizationAppliedClosure());
+  if (features::IsOobeAutoEnrollmentCheckForcedEnabled()) {
+    StartupUtils::MarkOobeCompleted();
+  }
   OnDeviceDisabledChecked(/*device_disabled=*/false);
 }
 
@@ -2990,7 +3000,14 @@ void WizardController::OnDeviceDisabledChecked(bool device_disabled) {
   } else {
     PerformOOBECompletedActions(
         OobeMetricsHelper::CompletedPreLoginOobeFlowType::kRegular);
-    ShowPackagedLicenseScreen();
+
+    // Show the `PackagedLicenseScreen` if Auto-Enrollment check isn't forced
+    // or if OOBE is already completed. Otherwise, `SignInFatalErrorScreen` is
+    // expected to be shown if the forced check hasn't led to OOBE completion.
+    if (!features::IsOobeAutoEnrollmentCheckForcedEnabled() ||
+        StartupUtils::IsOobeCompleted()) {
+      ShowPackagedLicenseScreen();
+    }
   }
 }
 

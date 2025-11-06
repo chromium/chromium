@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 
+#include "ash/constants/ash_features.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_writer.h"
@@ -138,6 +139,11 @@ class ConsumerUpdateScreenTest : public OobeBaseTest {
     // advance directly to the consumerUpdate Screen.
     StartupUtils::SaveScreenAfterConsumerUpdate(
         GaiaInfoScreenView::kScreenId.name);
+
+    if (ash::features::IsOobeAutoEnrollmentCheckForcedEnabled()) {
+      // Showing the GAIA screen requires OOBE to be marked complete.
+      StartupUtils::MarkOobeCompleted();
+    }
 
     LoginDisplayHost::default_host()
         ->GetWizardContextForTesting()
