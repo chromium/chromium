@@ -46,11 +46,13 @@ struct OnceNested {
     uint16 c;
 };
 
-// Packing: o a [pad 48] f
+// Packing: o a b [pad 16] f c [pad 32]
 struct TwiceNested {
   OnceNested o;
   int16 a;
   FourInts f;
+  int32 b;
+  int32 c;
 };
 
 // Test that bools get packed into bytes as expected
@@ -82,5 +84,4 @@ struct TenBoolsAndTwoBytes {
   bool b7;
   bool b8;
   bool b9;
-  bool b10;
 };
