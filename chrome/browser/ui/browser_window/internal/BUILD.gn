@@ -54,6 +54,7 @@ source_set("internal") {
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/bookmarks",
       "//chrome/browser/ui/commerce",
+      "//chrome/browser/ui/contextual_search",
       "//chrome/browser/ui/exclusive_access",
       "//chrome/browser/ui/extensions",
       "//chrome/browser/ui/find_bar",

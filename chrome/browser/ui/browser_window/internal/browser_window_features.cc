@@ -43,6 +43,7 @@
 #include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
 #include "chrome/browser/ui/browser_window/public/embedder_browser_window_features.h"
 #include "chrome/browser/ui/commerce/product_specifications_entry_point_controller.h"
+#include "chrome/browser/ui/contextual_search/searchbox_context_data.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/extensions/mv2_disabled_dialog_controller.h"
 #include "chrome/browser/ui/find_bar/find_bar.h"
@@ -201,6 +202,8 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
   // This is used only for the controllers which will be created on demand
   // later.
   browser_ = browser;
+
+  searchbox_context_data_ = std::make_unique<SearchboxContextData>();
 
   app_browser_controller_ =
       GetUserDataFactory().CreateInstanceWithFactoryMethod(

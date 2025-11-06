@@ -71,6 +71,7 @@ class ReadingListSidePanelCoordinator;
 class RecentActivityBubbleCoordinator;
 class BrowserSelectFileDialogController;
 class ScrimViewController;
+class SearchboxContextData;
 class SidePanelCoordinator;
 class SidePanelUI;
 class SigninViewController;
@@ -484,6 +485,10 @@ class BrowserWindowFeatures {
 
   FindBarOwner* find_bar_owner() { return find_bar_owner_.get(); }
 
+  SearchboxContextData* searchbox_context_data() {
+    return searchbox_context_data_.get();
+  }
+
   static ui::UserDataFactoryWithOwner<BrowserWindowInterface>&
   GetUserDataFactoryForTesting();
 
@@ -749,6 +754,8 @@ class BrowserWindowFeatures {
 
   std::unique_ptr<omnibox::AiModePageActionController>
       ai_mode_page_action_controller_;
+
+  std::unique_ptr<SearchboxContextData> searchbox_context_data_;
 
   // Keep this member last to ensure embedder features are torn down first, in
   // reverse order of initialization.
