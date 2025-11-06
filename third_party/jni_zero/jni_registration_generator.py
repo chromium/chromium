@@ -66,13 +66,9 @@ def _LoadJniObjs(paths, namespace, package_prefix, package_prefix_filter, *,
   return ret
 
 
-def _FilterJniObjs(jni_objs_by_path, include_test_only, module_name):
+def _FilterJniObjs(jni_objs_by_path, module_name):
   for jni_objs in jni_objs_by_path.values():
-    # Remove test-only methods.
-    if not include_test_only:
-      for jni_obj in jni_objs:
-        jni_obj.RemoveTestOnlyNatives()
-    # Ignoring non-active modules and empty natives lists.
+    # Ignore non-active modules and empty natives lists.
     jni_objs[:] = [
         o for o in jni_objs if o.natives and o.module_name == module_name
     ]
@@ -131,10 +127,13 @@ def _Generate(args,
       args.package_prefix,
       args.package_prefix_filter,
       enable_legacy_natives=args.enable_legacy_natives)
-  _FilterJniObjs(jni_objs_by_path, args.include_test_only, args.module_name)
+  _FilterJniObjs(jni_objs_by_path, args.module_name)
 
   present_jni_objs = list(
       _Flatten(jni_objs_by_path, native_sources_set & java_sources_set))
+
+  def RemoveTestOnlyNatives(self):
+    self.natives = [n for n in self.natives if not n.is_test_only]
 
   # Can contain path not in present_jni_objs.
   priority_set = set(priority_java_sources or [])
@@ -151,7 +150,9 @@ def _Generate(args,
         priority_set,
         never_omit_switch_num=never_omit_switch_num)
     muxed_aliases_by_sig = proxy.populate_muxed_switch_num(
-        present_jni_objs, never_omit_switch_num=never_omit_switch_num)
+        present_jni_objs,
+        never_omit_switch_num=never_omit_switch_num,
+        include_test_only=args.include_test_only)
 
   java_only_jni_objs = _CheckForJavaNativeMismatch(args, jni_objs_by_path,
                                                    native_sources_set,
@@ -159,6 +160,14 @@ def _Generate(args,
 
   present_proxy_natives = _CollectNatives(present_jni_objs, jni_mode)
   absent_proxy_natives = _CollectNatives(java_only_jni_objs, jni_mode)
+
+  if not args.include_test_only:
+    absent_proxy_natives.extend(n for n in present_proxy_natives
+                                if n.is_test_only)
+    present_proxy_natives = [
+        n for n in present_proxy_natives if not n.is_test_only
+    ]
+
   boundary_proxy_natives = present_proxy_natives
   if jni_mode.is_muxing:
     boundary_proxy_natives = [
@@ -177,6 +186,10 @@ def _Generate(args,
       package_prefix_filter=args.package_prefix_filter)
 
   if args.header_path:
+    if not args.include_test_only:
+      for jni_obj in present_jni_objs:
+        jni_obj.RemoveTestOnlyNatives()
+
     if jni_mode.is_hashing or jni_mode.is_muxing:
       gen_jni_class = short_gen_jni_class
     else:

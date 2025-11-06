@@ -101,10 +101,13 @@ def add_implicit_array_element_class_param(signature):
   return java_types.JavaSignature.from_params(signature.return_type, param_list)
 
 
-def populate_muxed_switch_num(jni_objs, never_omit_switch_num=False):
+def populate_muxed_switch_num(jni_objs, *, never_omit_switch_num,
+                              include_test_only):
   muxed_aliases_by_sig = collections.defaultdict(list)
   for jni_obj in jni_objs:
     for native in jni_obj.proxy_natives:
+      if not include_test_only and native.is_test_only:
+        continue
       aliases = muxed_aliases_by_sig[native.muxed_signature]
       native.muxed_switch_num = len(aliases)
       aliases.append(native)

@@ -5,16 +5,16 @@
 package org.jni_zero;
 
 public class GEN_JNI {
-  public static void org_jni_1zero_SampleProxyEdgeCases_fooForTest() {
+  public static void org_jni_1zero_SampleProxyEdgeCases_foo__weirdly__escaped_name1() {
     J.N.V(0);
   }
-  public static void org_jni_1zero_SampleProxyEdgeCases_fooForTesting() {
+  public static void org_jni_1zero_SampleProxyEdgeCases_fooForTest() {
     J.N.V(1);
   }
-  public static void org_jni_1zero_SampleProxyEdgeCases_fooForTests() {
+  public static void org_jni_1zero_SampleProxyEdgeCases_fooForTesting() {
     J.N.V(2);
   }
-  public static void org_jni_1zero_SampleProxyEdgeCases_foo__weirdly__escaped_name1() {
+  public static void org_jni_1zero_SampleProxyEdgeCases_fooForTests() {
     J.N.V(3);
   }
   public static int org_jni_1zero_SampleProxyEdgeCases_setStringBuilder(int sb) {

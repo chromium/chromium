@@ -243,17 +243,17 @@ class JniObject:
     else:
       self.jni_namespace = parsed_file.jni_namespace or default_namespace
 
-    natives = []
-    for parsed_method in parsed_file.proxy_methods:
-      natives.append(
-          NativeMethod(parsed_method, java_class=self.java_class,
-                       is_proxy=True))
+    natives = [
+        NativeMethod(m, java_class=self.java_class, is_proxy=True)
+        for m in parsed_file.proxy_methods
+    ]
+    # Natives are already sorted by name, but we want ForTesting methods to
+    # come at the end so that they do not contribute to switch number ordering.
+    natives.sort(key=lambda n: n.is_test_only)
 
-    for parsed_method in parsed_file.non_proxy_methods:
-      natives.append(
-          NativeMethod(parsed_method,
-                       java_class=self.java_class,
-                       is_proxy=False))
+    natives.extend(
+        NativeMethod(m, java_class=self.java_class, is_proxy=False)
+        for m in parsed_file.non_proxy_methods)
 
     self.natives = natives
 

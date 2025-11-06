@@ -67,27 +67,6 @@ JNI_ZERO_MUXED_ENTRYPOINT jobject Muxed_org_jni_1zero_SampleProxyEdgeCases_array
 }
 
 // Forward declaration. To be implemented by the including .cc file.
-static void JNI_SampleProxyEdgeCases_FooForTest(JNIEnv* env);
-
-JNI_ZERO_MUXED_ENTRYPOINT void Muxed_org_jni_1zero_SampleProxyEdgeCases_fooForTest(JNIEnv* env) {
-  JNI_SampleProxyEdgeCases_FooForTest(env);
-}
-
-// Forward declaration. To be implemented by the including .cc file.
-static void JNI_SampleProxyEdgeCases_FooForTesting(JNIEnv* env);
-
-JNI_ZERO_MUXED_ENTRYPOINT void Muxed_org_jni_1zero_SampleProxyEdgeCases_fooForTesting(JNIEnv* env) {
-  JNI_SampleProxyEdgeCases_FooForTesting(env);
-}
-
-// Forward declaration. To be implemented by the including .cc file.
-static void JNI_SampleProxyEdgeCases_FooForTests(JNIEnv* env);
-
-JNI_ZERO_MUXED_ENTRYPOINT void Muxed_org_jni_1zero_SampleProxyEdgeCases_fooForTests(JNIEnv* env) {
-  JNI_SampleProxyEdgeCases_FooForTests(env);
-}
-
-// Forward declaration. To be implemented by the including .cc file.
 static void JNI_SampleProxyEdgeCases_Foo__weirdly__escaped_name1(JNIEnv* env);
 
 JNI_ZERO_MUXED_ENTRYPOINT void Muxed_org_jni_1zero_SampleProxyEdgeCases_foo__weirdly__escaped_name1(
@@ -147,6 +126,27 @@ JNI_ZERO_MUXED_ENTRYPOINT jint Muxed_org_jni_1zero_SampleProxyEdgeCases_setStrin
     jint sb) {
   auto _ret = JNI_SampleProxyEdgeCases_SetStringBuilder(env, sb);
   return _ret;
+}
+
+// Forward declaration. To be implemented by the including .cc file.
+static void JNI_SampleProxyEdgeCases_FooForTest(JNIEnv* env);
+
+JNI_ZERO_MUXED_ENTRYPOINT void Muxed_org_jni_1zero_SampleProxyEdgeCases_fooForTest(JNIEnv* env) {
+  JNI_SampleProxyEdgeCases_FooForTest(env);
+}
+
+// Forward declaration. To be implemented by the including .cc file.
+static void JNI_SampleProxyEdgeCases_FooForTesting(JNIEnv* env);
+
+JNI_ZERO_MUXED_ENTRYPOINT void Muxed_org_jni_1zero_SampleProxyEdgeCases_fooForTesting(JNIEnv* env) {
+  JNI_SampleProxyEdgeCases_FooForTesting(env);
+}
+
+// Forward declaration. To be implemented by the including .cc file.
+static void JNI_SampleProxyEdgeCases_FooForTests(JNIEnv* env);
+
+JNI_ZERO_MUXED_ENTRYPOINT void Muxed_org_jni_1zero_SampleProxyEdgeCases_fooForTests(JNIEnv* env) {
+  JNI_SampleProxyEdgeCases_FooForTests(env);
 }
 
 JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleProxyEdgeCases_nativeInstanceMethod(

@@ -70,33 +70,6 @@ JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1Sa
 }
 
 // Forward declaration. To be implemented by the including .cc file.
-static void JNI_SampleProxyEdgeCases_FooForTest(JNIEnv* env);
-
-JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleProxyEdgeCases_1fooForTest(
-    JNIEnv* env,
-    jclass jcaller) {
-  JNI_SampleProxyEdgeCases_FooForTest(env);
-}
-
-// Forward declaration. To be implemented by the including .cc file.
-static void JNI_SampleProxyEdgeCases_FooForTesting(JNIEnv* env);
-
-JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleProxyEdgeCases_1fooForTesting(
-    JNIEnv* env,
-    jclass jcaller) {
-  JNI_SampleProxyEdgeCases_FooForTesting(env);
-}
-
-// Forward declaration. To be implemented by the including .cc file.
-static void JNI_SampleProxyEdgeCases_FooForTests(JNIEnv* env);
-
-JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleProxyEdgeCases_1fooForTests(
-    JNIEnv* env,
-    jclass jcaller) {
-  JNI_SampleProxyEdgeCases_FooForTests(env);
-}
-
-// Forward declaration. To be implemented by the including .cc file.
 static void JNI_SampleProxyEdgeCases_Foo__weirdly__escaped_name1(JNIEnv* env);
 
 JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleProxyEdgeCases_1foo_1_1weirdly_1_1escaped_1name1(
@@ -161,6 +134,33 @@ JNI_ZERO_BOUNDARY_EXPORT jint Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1Sampl
     jint sb) {
   auto _ret = JNI_SampleProxyEdgeCases_SetStringBuilder(env, sb);
   return _ret;
+}
+
+// Forward declaration. To be implemented by the including .cc file.
+static void JNI_SampleProxyEdgeCases_FooForTest(JNIEnv* env);
+
+JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleProxyEdgeCases_1fooForTest(
+    JNIEnv* env,
+    jclass jcaller) {
+  JNI_SampleProxyEdgeCases_FooForTest(env);
+}
+
+// Forward declaration. To be implemented by the including .cc file.
+static void JNI_SampleProxyEdgeCases_FooForTesting(JNIEnv* env);
+
+JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleProxyEdgeCases_1fooForTesting(
+    JNIEnv* env,
+    jclass jcaller) {
+  JNI_SampleProxyEdgeCases_FooForTesting(env);
+}
+
+// Forward declaration. To be implemented by the including .cc file.
+static void JNI_SampleProxyEdgeCases_FooForTests(JNIEnv* env);
+
+JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleProxyEdgeCases_1fooForTests(
+    JNIEnv* env,
+    jclass jcaller) {
+  JNI_SampleProxyEdgeCases_FooForTests(env);
 }
 
 JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleProxyEdgeCases_nativeInstanceMethod(
