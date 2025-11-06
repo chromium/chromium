@@ -32,6 +32,8 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
@@ -151,6 +153,9 @@ CGFloat const kSheetCornerRadius = 30;
 
   [self dismissBackgroundPickerActionSheet];
 
+  [HandlerForProtocol(self.browser->GetCommandDispatcher(), SnackbarCommands)
+      dismissAllSnackbars];
+
   _mediator = nil;
   _mainViewController = nil;
   _magicStackViewController = nil;
@@ -209,6 +214,12 @@ CGFloat const kSheetCornerRadius = 30;
 
 #pragma mark - UISheetPresentationControllerDelegate
 
+- (void)presentationControllerWillDismiss:
+    (UIPresentationController*)presentationController {
+  [HandlerForProtocol(self.browser->GetCommandDispatcher(), SnackbarCommands)
+      dismissAllSnackbars];
+}
+
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
   [self dismissCurrentPageBySwipe:YES
@@ -239,6 +250,8 @@ CGFloat const kSheetCornerRadius = 30;
     case CustomizationMenuPage::kMain: {
       self.mainViewController =
           [[HomeCustomizationMainViewController alloc] init];
+      self.mainViewController.snackbarCommandHandler = HandlerForProtocol(
+          self.browser->GetCommandDispatcher(), SnackbarCommands);
       self.mainViewController.backgroundPickerPresentationDelegate = self;
       self.mainViewController.mutator = _mediator;
       self.mainViewController.customizationMutator =

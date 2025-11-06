@@ -10,11 +10,18 @@
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_configuration_consumer.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_main_consumer.h"
 
+@class HomeCustomizationBackgroundCell;
+@protocol BackgroundCustomizationConfiguration;
 @protocol HomeCustomizationBackgroundConfigurationMutator;
 @protocol HomeCustomizationBackgroundPickerPresentationDelegate;
 @protocol HomeCustomizationDelegate;
 @protocol HomeCustomizationMutator;
 @protocol HomeCustomizationSearchEngineLogoMediatorProvider;
+@protocol SnackbarCommands;
+
+// Procedural block that will be used to handle the retry action in the
+// snackbar.
+typedef void (^ProceduralBlock)(void);
 
 // The view controller representing the first page of the Home customization
 // menu.
@@ -41,6 +48,9 @@
 @property(nonatomic, weak) id<HomeCustomizationSearchEngineLogoMediatorProvider>
     searchEngineLogoMediatorProvider;
 
+// The dispatcher for this view controller.
+@property(nonatomic, weak) id<SnackbarCommands> snackbarCommandHandler;
+
 // Whether the NTP custom background is disabled by enterprise policy.
 @property(nonatomic, assign) BOOL customizationDisabledByPolicy;
 
@@ -50,6 +60,16 @@
 
 // Height of the content inside this view.
 @property(nonatomic, readonly) CGFloat viewContentHeight;
+
+// Fetches and sets the background image for a preset background cell, handling
+// failures with a snackbar and retry mechanism.
+- (void)fetchPresetImageForCell:(HomeCustomizationBackgroundCell*)cell
+                  configuration:
+                      (id<BackgroundCustomizationConfiguration>)configuration
+                 itemIdentifier:(NSString*)itemIdentifier;
+
+// Presents a snackbar indicating an image loading failure, with a retry action.
+- (void)presentImageLoadFailSnackbarWithRetryBlock:(ProceduralBlock)retryBlock;
 
 @end
 

@@ -27,7 +27,11 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_trait.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/public/snackbar/snackbar_constants.h"
+#import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
+#import "ios/chrome/browser/shared/public/snackbar/snackbar_message_action.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/custom_ui_trait_accessor.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -55,6 +59,9 @@
 @property(nonatomic, strong)
     NSCache<NSString*, HomeCustomizationUserUploadedThumbnailData*>*
         userThumbnailCache;
+
+// Contains the identifiers for background image loads that have failed.
+@property(nonatomic, strong) NSMutableSet<NSString*>* failedPresetImageLoads;
 
 @end
 
@@ -89,6 +96,9 @@
   // temporarily because the initial data load can happen in multiple different
   // places.
   NSString* _initialSelectedBackgroundID;
+
+  // Cache for loaded preset images.
+  NSMutableDictionary<NSString*, UIImage*>* _presetImageCache;
 }
 
 // Synthesized from HomeCustomizationViewControllerProtocol.
@@ -103,6 +113,8 @@
   if (self) {
     self.backgroundCustomizationUserInteractionEnabled = YES;
     _userThumbnailCache = [[NSCache alloc] init];
+    _failedPresetImageLoads = [[NSMutableSet alloc] init];
+    _presetImageCache = [[NSMutableDictionary alloc] init];
   }
   return self;
 }
@@ -478,17 +490,9 @@
 
   if (backgroundConfiguration.backgroundStyle ==
       HomeCustomizationBackgroundStyle::kPreset) {
-    void (^imageHandler)(UIImage*, NSError*) =
-        ^(UIImage* image, NSError* error) {
-          if (!error) {
-            // TODO(crbug.com/444505682): Handle error loading thumbnail image.
-          }
-          [backgroundCell updateBackgroundImage:image framingCoordinates:nil];
-        };
-    [self.customizationMutator
-        fetchBackgroundCustomizationThumbnailURLImage:backgroundConfiguration
-                                                          .thumbnailURL
-                                           completion:imageHandler];
+    [self fetchPresetImageForCell:backgroundCell
+                    configuration:backgroundConfiguration
+                   itemIdentifier:itemIdentifier];
   } else if (backgroundConfiguration.backgroundStyle ==
              HomeCustomizationBackgroundStyle::kUserUploaded) {
     NSString* imagePath = backgroundConfiguration.userUploadedImagePath;
@@ -682,6 +686,11 @@
   [cell configureWithBackgroundOption:backgroundConfiguration
              searchEngineLogoMediator:searchEngineLogoMediator];
   cell.mutator = self.mutator;
+
+  UIImage* cachedImage = _presetImageCache[itemIdentifier];
+  if (cachedImage) {
+    [cell updateBackgroundImage:cachedImage framingCoordinates:nil];
+  }
 }
 
 // Handles the "Delete Background" context menu action for the given index path.
@@ -804,6 +813,99 @@
       selectItemAtIndexPath:indexPath
                    animated:NO
              scrollPosition:UICollectionViewScrollPositionNone];
+}
+
+- (void)presentImageLoadFailSnackbarWithRetryBlock:(ProceduralBlock)retryBlock {
+  SnackbarMessage* message = [[SnackbarMessage alloc]
+      initWithTitle:l10n_util::GetNSString(
+                        IDS_IOS_HOME_CUSTOMIZATION_BACKGROUND_LOAD_FAIL)];
+  message.duration = DBL_MAX;
+
+  SnackbarMessageAction* action = [[SnackbarMessageAction alloc] init];
+  action.title = l10n_util::GetNSString(
+      IDS_IOS_HOME_CUSTOMIZATION_BACKGROUND_LOAD_TRY_AGAIN);
+  action.handler = ^{
+    if (retryBlock) {
+      // Dispatching to the main queue with a delay to allow for the snackbar to
+      // be dismissed before retrying the image load.
+      dispatch_after(
+          dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)),
+          dispatch_get_main_queue(), ^{
+            retryBlock();
+          });
+    }
+  };
+  message.action = action;
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [self.snackbarCommandHandler showSnackbarMessage:message];
+  });
+}
+
+#pragma mark - Private
+
+// Retries fetching preset images for all backgrounds that previously failed to
+// load.
+- (void)retryFailedImageLoads {
+  NSSet<NSString*>* identifiersToRetry = [self.failedPresetImageLoads copy];
+  NSDiffableDataSourceSnapshot* snapshot = [self.diffableDataSource snapshot];
+  for (NSString* identifier in identifiersToRetry) {
+    [snapshot reloadItemsWithIdentifiers:@[ identifier ]];
+  }
+  [self.diffableDataSource applySnapshot:snapshot animatingDifferences:NO];
+}
+
+// Handles the completion of a preset image fetch request. If the fetch was
+// successful, it updates the cell's background. If it failed, it presents a
+// snackbar with a retry option.
+- (void)onFetchPresetImageCompleteWithImage:(UIImage*)image
+                                      error:(NSError*)error
+                             itemIdentifier:(NSString*)itemIdentifier {
+  if (error) {
+    [self.failedPresetImageLoads addObject:itemIdentifier];
+    __weak __typeof(self) weakSelf = self;
+    [self presentImageLoadFailSnackbarWithRetryBlock:^{
+      [weakSelf retryFailedImageLoads];
+    }];
+    return;
+  }
+
+  _presetImageCache[itemIdentifier] = image;
+
+  if ([self.failedPresetImageLoads containsObject:itemIdentifier]) {
+    [self.failedPresetImageLoads removeObject:itemIdentifier];
+    if (self.failedPresetImageLoads.count == 0) {
+      [self.snackbarCommandHandler dismissAllSnackbars];
+    }
+  }
+
+  // Reconfigure the item to apply the new image and ensure the rest of the cell
+  // is loaded.
+  NSDiffableDataSourceSnapshot* snapshot = [self.diffableDataSource snapshot];
+  if ([[snapshot itemIdentifiers] containsObject:itemIdentifier]) {
+    [snapshot reconfigureItemsWithIdentifiers:@[ itemIdentifier ]];
+    [self.diffableDataSource applySnapshot:snapshot animatingDifferences:YES];
+  }
+}
+
+// Fetches the preset image for a given cell and configuration.
+- (void)fetchPresetImageForCell:(HomeCustomizationBackgroundCell*)cell
+                  configuration:
+                      (id<BackgroundCustomizationConfiguration>)configuration
+                 itemIdentifier:(NSString*)itemIdentifier {
+  if (_presetImageCache[itemIdentifier]) {
+    return;
+  }
+  __weak __typeof(self) weakSelf = self;
+
+  void (^imageHandler)(UIImage*, NSError*) = ^(UIImage* image, NSError* error) {
+    [weakSelf onFetchPresetImageCompleteWithImage:image
+                                            error:error
+                                   itemIdentifier:itemIdentifier];
+  };
+
+  [self.customizationMutator
+      fetchBackgroundCustomizationThumbnailURLImage:configuration.thumbnailURL
+                                         completion:imageHandler];
 }
 
 @end
