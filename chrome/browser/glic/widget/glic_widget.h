@@ -57,13 +57,6 @@ class GlicWidget : public views::Widget, public ThemeServiceObserver {
       base::WeakPtr<ui::AcceleratorTarget> accelerator_delegate,
       bool user_resizable);
 
-  // Returns the last requested size, given by glic_size, clamped between the
-  // widget's minimum size and a maximum size (or the initial size if none is
-  // set).
-  static gfx::Size GetLastRequestedSizeClamped(
-      const GlicWidget* glic_widget,
-      std::optional<gfx::Size> glic_size);
-
   // Get the most-overlapping display.
   display::Display GetDisplay();
 
