@@ -4,6 +4,8 @@
 
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
+import type {BrowserProxy} from './contextual_tasks_browser_proxy.js';
+import {BrowserProxyImpl} from './contextual_tasks_browser_proxy.js';
 import {getCss} from './top_toolbar.css.js';
 import {getHtml} from './top_toolbar.html.js';
 
@@ -16,12 +18,18 @@ export class TopToolbarElement extends CrLitElement {
     return getCss();
   }
 
+  private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
+
   override render() {
     return getHtml.bind(this)();
   }
 
   protected onSigninClick_() {
     this.fire('signin-click');
+  }
+
+  protected onCloseButtonClick_() {
+    this.browserProxy_.closeSidePanel();
   }
 }
 

@@ -47,6 +47,6 @@ void ContextualTasksPageHandler::SetThreadTitle(const std::string& title) {
   web_ui_controller_->SetThreadTitle(title);
 }
 
-void ContextualTasksPageHandler::ShowUi() {
-  web_ui_controller_->MaybeShowUi();
+void ContextualTasksPageHandler::CloseSidePanel() {
+  web_ui_controller_->CloseSidePanel();
 }

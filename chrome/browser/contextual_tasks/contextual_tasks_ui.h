@@ -95,7 +95,7 @@ class ContextualTasksUI : public TaskInfoDelegate,
   const std::optional<std::string>& GetThreadTitle() override;
   void SetThreadTitle(std::optional<std::string> title) override;
 
-  void MaybeShowUi();
+  void CloseSidePanel();
 
   void BindInterface(
       mojo::PendingReceiver<contextual_tasks::mojom::PageHandlerFactory>

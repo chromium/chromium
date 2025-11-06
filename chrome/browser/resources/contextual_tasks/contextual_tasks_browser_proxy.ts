@@ -15,7 +15,7 @@ export interface BrowserProxy {
   getUrlForTask(uuid: Uuid): Promise<{url: Url}>;
   setTaskId(uuid: Uuid): void;
   setThreadTitle(title: string): void;
-  showUi(): void;
+  closeSidePanel(): void;
 }
 
 export class BrowserProxyImpl implements BrowserProxy {
@@ -52,8 +52,8 @@ export class BrowserProxyImpl implements BrowserProxy {
     this.handler.setThreadTitle(title);
   }
 
-  showUi() {
-    this.handler.showUi();
+  closeSidePanel() {
+    this.handler.closeSidePanel();
   }
 
   static getInstance(): BrowserProxy {

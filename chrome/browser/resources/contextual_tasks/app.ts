@@ -57,10 +57,6 @@ export class ContextualTasksAppElement extends CrLitElement {
       const {url} = await this.browserProxy_.getThreadUrl();
       this.threadUrl_ = url.url;
     }
-
-    // Tell the browser the WebUI is loaded and ready to show in side panel. If
-    // the WebUI is loadded in a tab it's an no-op.
-    this.browserProxy_.showUi();
   }
 
   override render() {

@@ -48,7 +48,7 @@ class ContextualTasksPageHandler : public contextual_tasks::mojom::PageHandler {
   void SetTaskId(const base::Uuid& uuid) override;
   void SetThreadTitle(const std::string& title) override;
 
-  void ShowUi() override;
+  void CloseSidePanel() override;
 
  private:
   mojo::Remote<contextual_tasks::mojom::Page> page_;

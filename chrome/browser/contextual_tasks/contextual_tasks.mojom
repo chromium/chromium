@@ -26,8 +26,8 @@ interface PageHandler {
   // Set the title of the active thread.
   SetThreadTitle(string title);
 
-  // Notify the browser when the UI is ready to show.
-  ShowUi();
+  // Closes the side panel if it's open.
+  CloseSidePanel();
 };
 
 // The interface that defines the browser process to webui (typescript/renderer)

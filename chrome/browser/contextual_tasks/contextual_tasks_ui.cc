@@ -12,9 +12,11 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_controller_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_page_handler.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/webui/searchbox/searchbox_handler.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
@@ -25,6 +27,8 @@
 #include "components/contextual_tasks/public/features.h"
 #include "components/lens/lens_features.h"
 #include "components/omnibox/browser/searchbox.mojom-forward.h"
+#include "components/sessions/content/session_tab_helper.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -146,10 +150,20 @@ void ContextualTasksUI::SetThreadTitle(std::optional<std::string> title) {
   thread_title_ = title;
 }
 
-void ContextualTasksUI::MaybeShowUi() {
-  if (embedder()) {
-    embedder()->ShowUI();
-  }
+void ContextualTasksUI::CloseSidePanel() {
+  // The WebUI should have a SessionTabHelper from
+  // ContextualTasksUiService. Use this to lookup the
+  // BrowserWindowInterface. This is necessary because this
+  // WebUIController does not have an Embedder like other WebUIs.
+  SessionID session_id = sessions::SessionTabHelper::IdForWindowContainingTab(
+      web_ui()->GetWebContents());
+  BrowserWindowInterface* browser =
+      BrowserWindowInterface::FromSessionID(session_id);
+  auto* coordinator =
+      contextual_tasks::ContextualTasksSidePanelCoordinator::From(browser);
+  CHECK(coordinator);
+
+  coordinator->Close();
 }
 
 void ContextualTasksUI::BindInterface(
