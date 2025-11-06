@@ -1239,6 +1239,27 @@ void PermissionUmaUtil::PermissionPromptResolved(
               predicted_grant_likelihood.value()));
     }
   }
+
+  if (requests[0]->request_type() == RequestType::kGeolocation ||
+      requests[0]->request_type() == RequestType::kNotifications) {
+    PermissionRequestGestureType gesture_type =
+        requests.size() == 1 ? requests[0]->GetGestureType()
+                             : PermissionRequestGestureType::UNKNOWN;
+    if (gesture_type != PermissionRequestGestureType::UNKNOWN) {
+      std::string gesture_suffix;
+      if (gesture_type == PermissionRequestGestureType::GESTURE) {
+        gesture_suffix = ".Gesture";
+      } else {
+        gesture_suffix = ".NoGesture";
+      }
+      const char* prominence_string = GetProminenceString(ui_disposition);
+      std::string histogram_name = base::StrCat(
+          {"Permissions.PredictionService.Action.", permission_type,
+           gesture_suffix, ".", prominence_string});
+      base::UmaHistogramEnumeration(histogram_name, permission_action,
+                                    PermissionAction::NUM);
+    }
+  }
 }  // namespace permissions
 
 void PermissionUmaUtil::RecordPermissionPromptPriorCount(
