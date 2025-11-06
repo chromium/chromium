@@ -102,6 +102,7 @@ void ReloadFromOmnibox() {
           (testLensOverlayEntrypointTipDismissedWhenOmniboxPositionChanged)]) {
     config.features_enabled.push_back(kEnableLensOverlay);
     config.features_disabled.push_back(kPageActionMenu);
+    config.iph_feature_enabled = "IPH_iOSLensOverlayEntrypointTip";
   }
 
   return config;
@@ -627,9 +628,6 @@ void ReloadFromOmnibox() {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Skipped for iPad (IPH is iPhone only)");
   }
-  RelaunchConfigurationWithIPHFeature([self appConfigurationForTestCase],
-                                      @"IPH_iOSLensOverlayEntrypointTip",
-                                      /*safari_switcher=*/NO);
 
   // Load a random page.
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
@@ -637,12 +635,9 @@ void ReloadFromOmnibox() {
   [ChromeEarlGrey loadURL:destinationUrl1];
 
   // Verify Lens overlay entrypoint tip is shown.
-  GREYAssertTrue(
-      [ChromeEarlGrey
-          testUIElementAppearanceWithMatcher:grey_accessibilityID(
-                                                 kBubbleViewArrowViewIdentifier)
-                                     timeout:base::Seconds(1)],
-      @"Lens overlay entrypoint tip is not shown");
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:grey_accessibilityID(
+                                              kBubbleViewArrowViewIdentifier)];
 
   // Move Omnibox to the bottom.
   [ChromeEarlGrey setBoolValue:YES
@@ -651,10 +646,8 @@ void ReloadFromOmnibox() {
 
   // Verify Lens overlay entrypoint tip is hidden after Omnibox position
   // changed.
-  GREYAssertFalse(
-      [ChromeEarlGrey testUIElementAppearanceWithMatcher:
-                          grey_accessibilityID(kBubbleViewArrowViewIdentifier)],
-      @"Lens overlay entrypoint tip is still shown");
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
+                      grey_accessibilityID(kBubbleViewArrowViewIdentifier)];
 }
 
 @end
