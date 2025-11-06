@@ -16,12 +16,13 @@ found in the LICENSE file.
         android:orientation="horizontal"
         android:requiresFadingEdge="horizontal"
         android:fadingEdgeLength="8dp"
-        android:paddingStart="@dimen/omnibox_suggestion_content_padding"
-        android:paddingEnd="@dimen/omnibox_suggestion_content_padding"
+        android:paddingTop="18dp"
+        android:paddingBottom="12dp"
+        android:paddingHorizontal="12dp"
         android:focusable="false"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/url_bar"/>
+        app:layout_constraintTop_toTopOf="parent"/>
 
     <!-- Helper group allowing us to toggle all attachment views. -->
     <androidx.constraintlayout.widget.Group
@@ -45,7 +46,7 @@ found in the LICENSE file.
         android:clipToOutline="true"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/location_bar_attachments"
+        app:layout_constraintTop_toBottomOf="@id/url_bar"
         app:tint="@color/default_icon_color_tint_list"/>
 
     <org.chromium.ui.widget.ChromeImageView
@@ -62,7 +63,7 @@ found in the LICENSE file.
         android:clipToOutline="true"
         app:layout_constraintStart_toEndOf="@id/location_bar_attachments_add"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/location_bar_attachments"
+        app:layout_constraintTop_toBottomOf="@id/url_bar"
         app:tint="@color/default_icon_color_tint_list"/>
 
     <org.chromium.ui.widget.ButtonCompat
@@ -81,7 +82,7 @@ found in the LICENSE file.
         android:textAppearance="@style/TextAppearance.TextSmall"
         app:layout_constraintStart_toEndOf="@id/location_bar_attachments_settings"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/location_bar_attachments"
+        app:layout_constraintTop_toBottomOf="@id/url_bar"
         app:buttonColor="@color/gm3_baseline_surface_container"
         app:buttonBorderStyle="dashed"
         app:drawableTint="?attr/colorPrimary"

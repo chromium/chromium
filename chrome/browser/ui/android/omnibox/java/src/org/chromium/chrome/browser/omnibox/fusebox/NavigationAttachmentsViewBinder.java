@@ -169,7 +169,7 @@ class NavigationAttachmentsViewBinder {
                         == AutocompleteRequestType.SEARCH;
 
         int topToTop = isSearchMode ? R.id.url_bar : ConstraintSet.UNSET;
-        int topToBottom = isSearchMode ? ConstraintSet.UNSET : R.id.location_bar_attachments;
+        int topToBottom = isSearchMode ? ConstraintSet.UNSET : R.id.url_bar;
         int bottomToBottom = isSearchMode ? R.id.url_bar : ConstraintSet.PARENT_ID;
 
         var cs = new ConstraintSet();

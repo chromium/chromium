@@ -256,7 +256,7 @@ public class NavigationAttachmentsMediatorUnitTest {
         assertEquals(1, modelList.size());
 
         mMediator.activateAiMode();
-        assertTrue(mModel.get(NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE));
+        mModel.set(NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE, true);
         assertEquals(
                 AutocompleteRequestType.AI_MODE,
                 (int) mModel.get(NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE));

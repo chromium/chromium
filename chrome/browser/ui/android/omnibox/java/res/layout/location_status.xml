@@ -16,20 +16,20 @@ found in the LICENSE file.
         android:layout_width="wrap_content"
         android:layout_height="@dimen/location_bar_height"
         android:focusable="true"
+        android:screenReaderFocusable="true"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@id/url_bar"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/location_bar_attachments"
         app:layout_constraintHorizontal_chainStyle="spread_inside"
-        app:layout_constraintHorizontal_weight="0"
-        android:screenReaderFocusable="true">
+        app:layout_constraintHorizontal_weight="0">
         <!-- End padding is adjusted programmatically. -->
         <ViewStub
             android:id="@+id/location_bar_incognito_badge_stub"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:inflatedId="@+id/location_bar_incognito_badge"
             android:layout="@layout/location_status_incognito_badge"
+            android:inflatedId="@+id/location_bar_incognito_badge"
             android:focusable="false"/>
 
         <include layout="@layout/location_status_icon"/>
@@ -37,6 +37,7 @@ found in the LICENSE file.
             android:id="@+id/location_bar_verbose_status"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
+            android:visibility="gone"
             android:paddingStart="@dimen/location_bar_verbose_start_padding_verbose_text"
             android:paddingEnd="8dp"
             android:gravity="center_vertical"
@@ -44,7 +45,6 @@ found in the LICENSE file.
             android:textAppearance="@style/TextAppearance.OmniboxVerboseStatus"
             android:ellipsize="end"
             android:maxLines="1"
-            android:visibility="gone"
             android:focusable="false"/>
 
         <!--
@@ -56,8 +56,8 @@ found in the LICENSE file.
             android:layout_width="@dimen/location_bar_status_separator_width"
             android:layout_height="24dp"
             android:layout_gravity="center_vertical"
-            android:background="@color/black_alpha_12"
             android:visibility="gone"
+            android:background="@color/black_alpha_12"
             android:focusable="false"/>
 
         <!--

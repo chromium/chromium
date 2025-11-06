@@ -270,7 +270,7 @@ public class NavigationAttachmentsViewBinderUnitTest {
 
         var lp = (ConstraintLayout.LayoutParams) mViewHolder.addButton.getLayoutParams();
         assertEquals(ConstraintSet.UNSET, lp.topToTop);
-        assertEquals(R.id.location_bar_attachments, lp.topToBottom);
+        assertEquals(R.id.url_bar, lp.topToBottom);
         assertEquals(ConstraintSet.PARENT_ID, lp.bottomToBottom);
     }
 
@@ -281,7 +281,7 @@ public class NavigationAttachmentsViewBinderUnitTest {
 
         var lp = (ConstraintLayout.LayoutParams) mViewHolder.addButton.getLayoutParams();
         assertEquals(ConstraintSet.UNSET, lp.topToTop);
-        assertEquals(R.id.location_bar_attachments, lp.topToBottom);
+        assertEquals(R.id.url_bar, lp.topToBottom);
         assertEquals(ConstraintSet.PARENT_ID, lp.bottomToBottom);
     }
 

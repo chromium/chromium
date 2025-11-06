@@ -44,7 +44,7 @@ class NavigationAttachmentsRecyclerViewAdapter extends SimpleRecyclerViewAdapter
                 (parent) -> {
                     return parent.getContext()
                             .getSystemService(android.view.LayoutInflater.class)
-                            .inflate(R.layout.fusebox_attachment_layout, parent, false);
+                            .inflate(R.layout.fusebox_image_attachment_layout, parent, false);
                 },
                 NavigationAttachmentItemViewBinder::bind);
         registerType(

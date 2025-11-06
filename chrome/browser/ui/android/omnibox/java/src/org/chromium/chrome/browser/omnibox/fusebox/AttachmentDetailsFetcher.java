@@ -61,16 +61,19 @@ class AttachmentDetailsFetcher
     private final Context mContext;
     private final ContentResolver mContentResolver;
     private final Uri mUri;
+    private final @NavigationAttachmentItemType int mType;
     private final Callback<AttachmentDetails> mCallback;
 
     AttachmentDetailsFetcher(
             Context context,
             ContentResolver contentResolver,
             Uri uri,
+            @NavigationAttachmentItemType int type,
             Callback<AttachmentDetails> callback) {
         mContext = context;
         mContentResolver = contentResolver;
         mUri = uri;
+        mType = type;
         mCallback = callback;
     }
 
@@ -127,8 +130,7 @@ class AttachmentDetailsFetcher
             return null;
         }
 
-        return new AttachmentDetails(
-                NavigationAttachmentItemType.ATTACHMENT_ITEM, thumbnail, title, mimeType, data);
+        return new AttachmentDetails(mType, thumbnail, title, mimeType, data);
     }
 
     @Override

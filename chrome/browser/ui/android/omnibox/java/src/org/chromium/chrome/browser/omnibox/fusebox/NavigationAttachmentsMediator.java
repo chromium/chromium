@@ -147,7 +147,6 @@ class NavigationAttachmentsMediator {
         if (mAutocompleteRequestTypeSupplier.get() == AutocompleteRequestType.AI_MODE) return;
         mAutocompleteRequestTypeSupplier.set(AutocompleteRequestType.AI_MODE);
 
-        mModel.set(NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE, true);
         mComposeBoxQueryControllerBridge.notifySessionStarted();
     }
 
@@ -368,7 +367,10 @@ class NavigationAttachmentsMediator {
 
                     var uris = extractUrisFromResult(data);
                     for (var uri : uris) {
-                        fetchAttachmentDetails(uri, this::uploadAndAddAttachment);
+                        fetchAttachmentDetails(
+                                uri,
+                                NavigationAttachmentItemType.ATTACHMENT_IMAGE,
+                                this::uploadAndAddAttachment);
                     }
                 },
                 R.string.low_memory_error);
@@ -393,7 +395,10 @@ class NavigationAttachmentsMediator {
 
                     var uris = extractUrisFromResult(data);
                     for (var uri : uris) {
-                        fetchAttachmentDetails(uri, this::uploadAndAddAttachment);
+                        fetchAttachmentDetails(
+                                uri,
+                                NavigationAttachmentItemType.ATTACHMENT_ITEM,
+                                this::uploadAndAddAttachment);
                     }
                 },
                 /* errorId= */ android.R.string.cancel);
@@ -430,8 +435,10 @@ class NavigationAttachmentsMediator {
 
     @VisibleForTesting
     void fetchAttachmentDetails(
-            Uri uri, Callback<AttachmentDetailsFetcher.AttachmentDetails> callback) {
-        new AttachmentDetailsFetcher(mContext, mContext.getContentResolver(), uri, callback)
+            Uri uri,
+            @NavigationAttachmentItemType int type,
+            Callback<AttachmentDetailsFetcher.AttachmentDetails> callback) {
+        new AttachmentDetailsFetcher(mContext, mContext.getContentResolver(), uri, type, callback)
                 .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
@@ -451,6 +458,8 @@ class NavigationAttachmentsMediator {
             AttachmentDetailsFetcher.AttachmentDetails attachmentDetails, String token) {
         activateAiMode();
 
+        mModel.set(NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE, true);
+
         PropertyModel model =
                 new PropertyModel.Builder(NavigationAttachmentItemProperties.ALL_KEYS)
                         .with(
@@ -459,9 +468,6 @@ class NavigationAttachmentsMediator {
                                         ? attachmentDetails.thumbnail
                                         : mFallbackDrawable)
                         .with(NavigationAttachmentItemProperties.TITLE, attachmentDetails.title)
-                        .with(
-                                NavigationAttachmentItemProperties.DESCRIPTION,
-                                attachmentDetails.mimeType)
                         .build();
 
         var listItem = new MVCListAdapter.ListItem(attachmentDetails.itemType, model);

@@ -30,14 +30,6 @@ found in the LICENSE file.
     </style>
 
     <!-- Navigation Attachments bar styles -->
-    <style
-        name="TextAppearance.TextMedium.Primary.Bold"
-        parent="@style/TextAppearance.TextMedium.Primary">
-
-        <item name="android:textStyle">bold</item>
-
-    </style>
-
     <style name="NavigationAttachments"/>
     <style name="NavigationAttachments.PopupMenu"/>
     <style

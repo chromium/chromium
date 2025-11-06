@@ -11,30 +11,30 @@ found in the LICENSE file.
     <org.chromium.ui.widget.ChromeImageButton
         style="@style/LocationBarActionButton.AdaptiveDensity"
         android:id="@+id/composeplate_button"
-        android:src="@drawable/search_spark_black_24dp"
         android:visibility="gone"
+        android:src="@drawable/search_spark_black_24dp"
         android:contentDescription="@string/accessibility_toolbar_btn_composeplate"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/location_bar_attachments"
         app:layout_constraintEnd_toStartOf="@id/margin_spacer"/>
 
     <!-- Fusebox/Omnibox top-stacked elements on Inactive Omnibox on Tablets -->
     <org.chromium.ui.widget.ChromeImageButton
         style="@style/LocationBarActionButton.AdaptiveDensity"
         android:id="@+id/install_button"
-        android:src="@drawable/ic_add_to_home_screen"
         android:visibility="gone"
+        android:src="@drawable/ic_add_to_home_screen"
         android:contentDescription="@string/app_banner_install"
         android:tooltipText="@string/app_banner_install"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/location_bar_attachments"
         app:layout_constraintEnd_toStartOf="@id/zoom_button"/>
 
     <org.chromium.ui.widget.ChromeImageButton
         style="@style/LocationBarActionButton.AdaptiveDensity"
         android:id="@+id/zoom_button"
-        android:src="@drawable/ic_zoom"
         android:visibility="gone"
+        android:src="@drawable/ic_zoom"
         android:tooltipText="@string/page_zoom_menu_title"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/location_bar_attachments"
         app:layout_constraintEnd_toStartOf="@id/bookmark_button"/>
 
     <org.chromium.ui.widget.ChromeImageButton
@@ -43,7 +43,7 @@ found in the LICENSE file.
         android:visibility="gone"
         android:contentDescription="@string/accessibility_menu_bookmark"
         android:tooltipText="@string/accessibility_menu_bookmark"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/location_bar_attachments"
         app:layout_constraintEnd_toStartOf="@id/margin_spacer"/>
 
     <!--
@@ -52,8 +52,8 @@ found in the LICENSE file.
     <org.chromium.ui.widget.ChromeImageButton
         style="@style/LocationBarActionButton.AdaptiveDensity"
         android:id="@+id/mic_button"
-        android:src="@drawable/ic_mic_white_24dp"
         android:visibility="invisible"
+        android:src="@drawable/ic_mic_white_24dp"
         android:contentDescription="@string/accessibility_toolbar_btn_mic"
         android:tooltipText="@string/accessibility_toolbar_btn_mic"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -62,8 +62,8 @@ found in the LICENSE file.
     <org.chromium.ui.widget.ChromeImageButton
         style="@style/LocationBarActionButton.AdaptiveDensity"
         android:id="@+id/lens_camera_button"
-        android:src="@drawable/lens_camera_icon"
         android:visibility="gone"
+        android:src="@drawable/lens_camera_icon"
         android:contentDescription="@string/accessibility_btn_lens_camera"
         android:tooltipText="@string/accessibility_btn_lens_camera"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -75,11 +75,11 @@ found in the LICENSE file.
     <org.chromium.ui.widget.ChromeImageButton
         style="@style/LocationBarActionButton.AdaptiveDensity"
         android:id="@+id/delete_button"
-        android:src="@drawable/btn_delete_24dp"
         android:visibility="gone"
+        android:src="@drawable/btn_delete_24dp"
         android:contentDescription="@string/accessibility_toolbar_btn_delete_url"
         android:tooltipText="@string/accessibility_toolbar_btn_delete_url"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/location_bar_attachments"
         app:layout_constraintEnd_toStartOf="@id/margin_spacer"/>
 
     <Space

@@ -86,21 +86,10 @@ public class NavigationAttachmentItemViewBinderUnitTest {
     }
 
     @Test
-    public void testSetDescription_emptyTitle() {
-        mModel.set(NavigationAttachmentItemProperties.TITLE, "");
-        mModel.set(NavigationAttachmentItemProperties.DESCRIPTION, "My Description");
-        TextView textView = mView.findViewById(R.id.attachment_description);
-        assertEquals(View.GONE, textView.getVisibility());
-    }
-
-    @Test
     public void testSetDescription_withTitle() {
         mModel.set(NavigationAttachmentItemProperties.TITLE, "My Title");
-        mModel.set(NavigationAttachmentItemProperties.DESCRIPTION, "My Description");
 
         TextView title = mView.findViewById(R.id.attachment_title);
         assertEquals("My Title", title.getText());
-        TextView description = mView.findViewById(R.id.attachment_description);
-        assertEquals("My Description", description.getText());
     }
 }

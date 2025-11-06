@@ -22,7 +22,7 @@ found in the LICENSE file.
     app:layout_constraintStart_toEndOf="@id/location_bar_status"
     app:layout_constraintEnd_toStartOf="@id/action_buttons_segment"
     app:layout_goneMarginEnd="@dimen/location_bar_end_padding"
-    app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintTop_toBottomOf="@id/location_bar_attachments"
     app:layout_constraintHorizontal_weight="1"
     app:layout_constraintWidth_min="@dimen/location_bar_min_url_width"
     app:leading="@dimen/text_size_large_leading"/>
