@@ -137,14 +137,15 @@ class CONTENT_EXPORT NavigationEntryScreenshot
  private:
   class SharedImageHolder;
 
-  void ReadBack();
-  void OnReadBack(SkBitmap bitmap, bool success);
   void DestroyOnFailure();
   void OnCompressionFinished(sk_sp<SkPixelRef> compressed_bitmap);
 
   void SetupCompressionTask(const SkBitmap& bitmap,
                             bool supports_etc_non_power_of_two);
   void StartCompression();
+  void StartReadBack();
+  void DoReadBack(SkBitmap bitmap);
+  void OnReadBack(SkBitmap bitmap, bool success);
 
   void ResetContextProvider();
 

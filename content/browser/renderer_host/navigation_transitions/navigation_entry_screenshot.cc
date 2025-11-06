@@ -26,6 +26,7 @@
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkImageInfo.h"
 #include "ui/gfx/skia_span_util.h"
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
@@ -46,8 +47,6 @@
 namespace content {
 
 namespace {
-
-#if BUILDFLAG(IS_ANDROID)
 
 BASE_FEATURE(kNavigationEntryScreenshotCompression,
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -70,8 +69,6 @@ void CompressNavigationScreenshotOnWorkerThread(
   }
 }
 
-#endif  // BUILDFLAG(IS_ANDROID)
-
 void AdviseBitmap(SkBitmap& bitmap) {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
   size_t size = bitmap.info().computeByteSize(bitmap.info().minRowBytes());
@@ -92,6 +89,16 @@ void AdviseBitmap(SkBitmap& bitmap) {
   }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID) ||
         // BUILDFLAG(IS_CHROMEOS)
+}
+
+SkBitmap PrepareReadBackBitmap(SkImageInfo info) {
+  TRACE_EVENT("content", "PrepareReadBackBitmap");
+  SkBitmap read_back_bitmap;
+  if (!read_back_bitmap.tryAllocPixels(info)) {
+    return SkBitmap();
+  }
+  AdviseBitmap(read_back_bitmap);
+  return read_back_bitmap;
 }
 
 }  // namespace
@@ -203,7 +210,7 @@ NavigationEntryScreenshot::NavigationEntryScreenshot(
     read_back_needed_ = true;
     return;
   }
-  ReadBack();
+  StartReadBack();
 }
 
 NavigationEntryScreenshot::~NavigationEntryScreenshot() {
@@ -259,7 +266,7 @@ void NavigationEntryScreenshot::OnScenarioMatchChanged(
   }
 
   if (read_back_needed_) {
-    ReadBack();
+    StartReadBack();
     read_back_needed_ = false;
     performance_scenarios::PerformanceScenarioObserverList::GetForScope(
         performance_scenarios::ScenarioScope::kGlobal)
@@ -371,50 +378,59 @@ void NavigationEntryScreenshot::ResetContextProvider() {
   }
 }
 
-void NavigationEntryScreenshot::ReadBack() {
-  TRACE_EVENT("content", "NavigationEntryScreenshot::ReadBack");
+void NavigationEntryScreenshot::StartReadBack() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  gpu::ClientSharedImage* shared_image =
-      shared_image_holder_->shared_image().get();
+  CHECK(shared_image_holder_);
+  auto shared_image = shared_image_holder_->shared_image();
+  if (!shared_image) {
+    OnReadBack(SkBitmap(), false);
+  }
 
   SkImageInfo info = SkImageInfo::MakeN32(shared_image->size().width(),
                                           shared_image->size().height(),
                                           shared_image->alpha_type());
-  SkBitmap read_back_bitmap;
-  if (!read_back_bitmap.tryAllocPixels(info)) {
-    OnReadBack(SkBitmap(), false);
-    return;
-  }
-  AdviseBitmap(read_back_bitmap);
-  if (!context_provider_) {
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::TaskPriority::BEST_EFFORT,
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(&PrepareReadBackBitmap, info),
+      base::BindOnce(&NavigationEntryScreenshot::DoReadBack,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void NavigationEntryScreenshot::DoReadBack(SkBitmap bitmap) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK(shared_image_holder_);
+  auto shared_image = shared_image_holder_->shared_image();
+
+  if (bitmap.empty() || !context_provider_ || !shared_image) {
     OnReadBack(SkBitmap(), false);
     return;
   }
 
   gfx::Point src_point;
+  SkImageInfo info = bitmap.info();
   auto* raster_interface = context_provider_->RasterInterface();
   DCHECK(raster_interface);
   auto scoped_access = shared_image->BeginRasterAccess(
       raster_interface, shared_image->creation_sync_token(),
       /*readonly=*/true);
-  auto span = gfx::SkPixmapToWritableSpan(read_back_bitmap.pixmap());
+  auto span = gfx::SkPixmapToWritableSpan(bitmap.pixmap());
   raster_interface->ReadbackARGBPixelsAsync(
       shared_image->mailbox(), shared_image->GetTextureTarget(),
       shared_image->surface_origin(), shared_image->size(), src_point, info,
       info.minRowBytes(), span,
       base::BindOnce(&NavigationEntryScreenshot::OnReadBack,
-                     weak_factory_.GetWeakPtr(), std::move(read_back_bitmap)));
+                     weak_factory_.GetWeakPtr(), std::move(bitmap)));
 }
 
 void NavigationEntryScreenshot::OnReadBack(SkBitmap bitmap, bool success) {
-  TRACE_EVENT("content", "NavigationEntryScreenshot::OnReadBack");
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // The context provider will no longer be used.
   // This has to run after the readback is completed, otherwise, the destruction
   // of the context provider will crash trying to clean up this request that is
   // currently being processed.
-  GetUIThreadTaskRunner({})->PostTask(
+  GetUIThreadTaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(&NavigationEntryScreenshot::ResetContextProvider,
                      weak_factory_.GetWeakPtr()));
@@ -428,7 +444,7 @@ void NavigationEntryScreenshot::OnReadBack(SkBitmap bitmap, bool success) {
       // This has to run after the readback is completed, otherwise, if this
       // operation destroys the context provider, it will crash trying to clean
       // up this ReadBack callback that is currently being processed.
-      GetUIThreadTaskRunner({})->PostTask(
+      GetUIThreadTaskRunner()->PostTask(
           FROM_HERE,
           base::BindOnce(&NavigationEntryScreenshot::DestroyOnFailure,
                          weak_factory_.GetWeakPtr()));
