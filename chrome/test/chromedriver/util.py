@@ -338,6 +338,9 @@ def TryUploadingResultToResultSink(results):
           'expected': True,
           'status': 'PASS',
           'testIdStructured': _create_test_id_struct_dict(test_case.id()),
+          'testMetadata': {
+              'name': test_case.id(),
+          },
       })
 
     for (test_case, stack_trace) in result.failures + result.errors:
@@ -349,6 +352,9 @@ def TryUploadingResultToResultSink(results):
           # in summaryHtml.
           'summaryHtml': '<p><text-artifact artifact-id="stack_trace"></p>',
           'testIdStructured': _create_test_id_struct_dict(test_case.id()),
+          'testMetadata': {
+              'name': test_case.id(),
+          },
           # A map of artifacts. The keys are artifact ids which uniquely
           # identify an artifact within the test result.
           'artifacts': {
