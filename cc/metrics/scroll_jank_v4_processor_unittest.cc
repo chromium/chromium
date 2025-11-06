@@ -9,15 +9,14 @@
 #include <string>
 #include <utility>
 #include <variant>
-#include <vector>
 
 #include "base/strings/to_string.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
 #include "cc/base/features.h"
 #include "cc/metrics/event_metrics.h"
+#include "cc/test/event_metrics_test_creator.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -155,104 +154,6 @@ class ScrollJankV4ProcessorTest
   }
 
  protected:
-  std::unique_ptr<ScrollEventMetrics> CreateScrollEventMetrics(
-      base::TimeTicks timestamp,
-      ui::EventType type,
-      bool is_inertial,
-      bool caused_frame_update,
-      bool did_scroll,
-      const viz::BeginFrameArgs& args) {
-    auto event = ScrollEventMetrics::CreateForTesting(
-        type, ui::ScrollInputType::kTouchscreen, is_inertial, timestamp,
-        /* arrived_in_browser_main_timestamp= */ timestamp +
-            base::Nanoseconds(1),
-        &test_tick_clock_);
-    event->set_caused_frame_update(caused_frame_update);
-    event->set_did_scroll(did_scroll);
-    event->set_begin_frame_args(args);
-    return event;
-  }
-
-  std::unique_ptr<ScrollUpdateEventMetrics> CreateScrollUpdateEventMetrics(
-      base::TimeTicks timestamp,
-      ui::EventType type,
-      bool is_inertial,
-      ScrollUpdateEventMetrics::ScrollUpdateType scroll_update_type,
-      float delta,
-      bool caused_frame_update,
-      bool did_scroll,
-      const viz::BeginFrameArgs& args) {
-    auto event = ScrollUpdateEventMetrics::CreateForTesting(
-        type, ui::ScrollInputType::kTouchscreen, is_inertial,
-        scroll_update_type, delta, timestamp,
-        /* arrived_in_browser_main_timestamp= */ timestamp +
-            base::Nanoseconds(1),
-        &test_tick_clock_,
-        /* trace_id= */ std::nullopt);
-    event->set_caused_frame_update(caused_frame_update);
-    event->set_did_scroll(did_scroll);
-    event->set_begin_frame_args(args);
-    return event;
-  }
-
-  std::unique_ptr<ScrollUpdateEventMetrics> CreateFirstGestureScrollUpdate(
-      base::TimeTicks timestamp,
-      float delta,
-      bool caused_frame_update,
-      bool did_scroll,
-      const viz::BeginFrameArgs& args) {
-    auto event = CreateScrollUpdateEventMetrics(
-        timestamp, ui::EventType::kGestureScrollUpdate,
-        /* is_inertial= */ false,
-        ScrollUpdateEventMetrics::ScrollUpdateType::kStarted, delta,
-        caused_frame_update, did_scroll, args);
-    EXPECT_EQ(event->type(),
-              EventMetrics::EventType::kFirstGestureScrollUpdate);
-    return event;
-  }
-
-  std::unique_ptr<ScrollUpdateEventMetrics> CreateGestureScrollUpdate(
-      base::TimeTicks timestamp,
-      float delta,
-      bool caused_frame_update,
-      bool did_scroll,
-      const viz::BeginFrameArgs& args) {
-    auto event = CreateScrollUpdateEventMetrics(
-        timestamp, ui::EventType::kGestureScrollUpdate,
-        /* is_inertial= */ false,
-        ScrollUpdateEventMetrics::ScrollUpdateType::kContinued, delta,
-        caused_frame_update, did_scroll, args);
-    EXPECT_EQ(event->type(), EventMetrics::EventType::kGestureScrollUpdate);
-    return event;
-  }
-
-  std::unique_ptr<ScrollUpdateEventMetrics> CreateInertialGestureScrollUpdate(
-      base::TimeTicks timestamp,
-      float delta,
-      bool caused_frame_update,
-      bool did_scroll,
-      const viz::BeginFrameArgs& args) {
-    auto event = CreateScrollUpdateEventMetrics(
-        timestamp, ui::EventType::kGestureScrollUpdate, /* is_inertial= */ true,
-        ScrollUpdateEventMetrics::ScrollUpdateType::kContinued, delta,
-        caused_frame_update, did_scroll, args);
-    EXPECT_EQ(event->type(),
-              EventMetrics::EventType::kInertialGestureScrollUpdate);
-    return event;
-  }
-
-  std::unique_ptr<ScrollEventMetrics> CreateInertialGestureScrollEnd(
-      base::TimeTicks timestamp,
-      const viz::BeginFrameArgs& args) {
-    auto event = CreateScrollEventMetrics(
-        timestamp, ui::EventType::kGestureScrollEnd,
-        /* is_inertial= */ true, /* caused_frame_update= */ false,
-        /* did_scroll= */ false, args);
-    EXPECT_EQ(event->type(),
-              EventMetrics::EventType::kInertialGestureScrollEnd);
-    return event;
-  }
-
   void AdvanceByVsyncs(int vsyncs) {
     base::TimeDelta offset = vsyncs * kVsyncInterval;
     next_input_generation_ts_ += offset;
@@ -274,8 +175,8 @@ class ScrollJankV4ProcessorTest
   base::TimeTicks next_begin_frame_ts_ = MillisSinceEpoch(16);
   base::TimeTicks next_presentation_ts_ = MillisSinceEpoch(32);
   int next_begin_frame_sequence_id_ = 1;
+  EventMetricsTestCreator metrics_creator_;
   ScrollJankV4Processor processor_;
-  base::SimpleTestTickClock test_tick_clock_;
 };
 
 /*
@@ -292,12 +193,18 @@ TEST_P(ScrollJankV4ProcessorTest, ConsistentDamagingFrameProduction) {
     {
       viz::BeginFrameArgs args = CreateNextBeginFrameArgs();
       EventMetrics::List first_metrics;
-      first_metrics.push_back(CreateFirstGestureScrollUpdate(
-          next_input_generation_ts_, /* delta= */ 5.0f,
-          /* caused_frame_update= */ true, /* did_scroll= */ true, args));
-      first_metrics.push_back(CreateFirstGestureScrollUpdate(
-          next_input_generation_ts_ + kVsyncInterval / 2, /* delta= */ 5.0f,
-          /* caused_frame_update= */ true, /* did_scroll= */ true, args));
+      first_metrics.push_back(metrics_creator_.CreateFirstGestureScrollUpdate(
+          {.timestamp = next_input_generation_ts_,
+           .delta = 5.0f,
+           .caused_frame_update = true,
+           .did_scroll = true,
+           .begin_frame_args = args}));
+      first_metrics.push_back(metrics_creator_.CreateFirstGestureScrollUpdate(
+          {.timestamp = next_input_generation_ts_ + kVsyncInterval / 2,
+           .delta = 5.0f,
+           .caused_frame_update = true,
+           .did_scroll = true,
+           .begin_frame_args = args}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           first_metrics, next_presentation_ts_, args);
       EXPECT_THAT(first_metrics, ElementsAre(kIsNotJankyV4, kNullJankV4Data));
@@ -307,14 +214,18 @@ TEST_P(ScrollJankV4ProcessorTest, ConsistentDamagingFrameProduction) {
       AdvanceByVsyncs(1);
       viz::BeginFrameArgs args = CreateNextBeginFrameArgs();
       EventMetrics::List metrics;
-      metrics.push_back(CreateGestureScrollUpdate(
-          next_input_generation_ts_,
-          /* delta= */ 5.0f,
-          /* caused_frame_update= */ true, /* did_scroll= */ true, args));
-      metrics.push_back(CreateGestureScrollUpdate(
-          next_input_generation_ts_ + kVsyncInterval / 2,
-          /* delta= */ 5.0f, /* caused_frame_update= */ true,
-          /* did_scroll= */ true, args));
+      metrics.push_back(metrics_creator_.CreateGestureScrollUpdate(
+          {.timestamp = next_input_generation_ts_,
+           .delta = 5.0f,
+           .caused_frame_update = true,
+           .did_scroll = true,
+           .begin_frame_args = args}));
+      metrics.push_back(metrics_creator_.CreateGestureScrollUpdate(
+          {.timestamp = next_input_generation_ts_ + kVsyncInterval / 2,
+           .delta = 5.0f,
+           .caused_frame_update = true,
+           .did_scroll = true,
+           .begin_frame_args = args}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           metrics, next_presentation_ts_, args);
       EXPECT_THAT(metrics, ElementsAre(kIsNotJankyV4, kNullJankV4Data));
@@ -325,10 +236,12 @@ TEST_P(ScrollJankV4ProcessorTest, ConsistentDamagingFrameProduction) {
       AdvanceByVsyncs(1);
       viz::BeginFrameArgs args = CreateNextBeginFrameArgs();
       EventMetrics::List metrics;
-      metrics.push_back(CreateInertialGestureScrollUpdate(
-          next_input_generation_ts_,
-          /* delta= */ 2.0f,
-          /* caused_frame_update= */ true, /* did_scroll= */ true, args));
+      metrics.push_back(metrics_creator_.CreateInertialGestureScrollUpdate(
+          {.timestamp = next_input_generation_ts_,
+           .delta = 2.0f,
+           .caused_frame_update = true,
+           .did_scroll = true,
+           .begin_frame_args = args}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           metrics, next_presentation_ts_, args);
       EXPECT_THAT(metrics, ElementsAre(kIsNotJankyV4));
@@ -347,10 +260,13 @@ TEST_P(ScrollJankV4ProcessorTest, ConsistentDamagingFrameProduction) {
     AdvanceByVsyncs(1);
     viz::BeginFrameArgs args = CreateNextBeginFrameArgs();
     EventMetrics::List last_metrics_in_fixed_window;
-    last_metrics_in_fixed_window.push_back(CreateInertialGestureScrollUpdate(
-        next_input_generation_ts_,
-        /* delta= */ 2.0f, /* caused_frame_update= */ true,
-        /* did_scroll= */ true, args));
+    last_metrics_in_fixed_window.push_back(
+        metrics_creator_.CreateInertialGestureScrollUpdate(
+            {.timestamp = next_input_generation_ts_,
+             .delta = 2.0f,
+             .caused_frame_update = true,
+             .did_scroll = true,
+             .begin_frame_args = args}));
     processor_.ProcessEventsMetricsForPresentedFrame(
         last_metrics_in_fixed_window, next_presentation_ts_, args);
     EXPECT_THAT(last_metrics_in_fixed_window, ElementsAre(kIsNotJankyV4));
@@ -369,10 +285,12 @@ TEST_P(ScrollJankV4ProcessorTest, ConsistentDamagingFrameProduction) {
       AdvanceByVsyncs(1);
       viz::BeginFrameArgs args = CreateNextBeginFrameArgs();
       EventMetrics::List metrics;
-      metrics.push_back(CreateInertialGestureScrollUpdate(
-          next_input_generation_ts_,
-          /* delta= */ 2.0f,
-          /* caused_frame_update= */ true, /* did_scroll= */ true, args));
+      metrics.push_back(metrics_creator_.CreateInertialGestureScrollUpdate(
+          {.timestamp = next_input_generation_ts_,
+           .delta = 2.0f,
+           .caused_frame_update = true,
+           .did_scroll = true,
+           .begin_frame_args = args}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           metrics, next_presentation_ts_, args);
       EXPECT_THAT(metrics, ElementsAre(kIsNotJankyV4));
@@ -391,8 +309,10 @@ TEST_P(ScrollJankV4ProcessorTest, ConsistentDamagingFrameProduction) {
     AdvanceByVsyncs(1);
     viz::BeginFrameArgs args = CreateNextBeginFrameArgs();
     EventMetrics::List end_metrics;
-    end_metrics.push_back(
-        CreateInertialGestureScrollEnd(next_input_generation_ts_, args));
+    end_metrics.push_back(metrics_creator_.CreateInertialGestureScrollEnd(
+        {.timestamp = next_input_generation_ts_,
+         .caused_frame_update = false,
+         .begin_frame_args = args}));
     processor_.ProcessEventsMetricsForPresentedFrame(
         end_metrics, next_presentation_ts_, args);
 
@@ -417,12 +337,18 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentDamagingFrameProduction) {
     {
       viz::BeginFrameArgs args = CreateNextBeginFrameArgs();
       EventMetrics::List first_metrics;
-      first_metrics.push_back(CreateFirstGestureScrollUpdate(
-          next_input_generation_ts_, /* delta= */ 5.0f,
-          /* caused_frame_update= */ true, /* did_scroll= */ true, args));
-      first_metrics.push_back(CreateFirstGestureScrollUpdate(
-          next_input_generation_ts_ + kVsyncInterval / 2, /* delta= */ 5.0f,
-          /* caused_frame_update= */ true, /* did_scroll= */ true, args));
+      first_metrics.push_back(metrics_creator_.CreateFirstGestureScrollUpdate(
+          {.timestamp = next_input_generation_ts_,
+           .delta = 5.0f,
+           .caused_frame_update = true,
+           .did_scroll = true,
+           .begin_frame_args = args}));
+      first_metrics.push_back(metrics_creator_.CreateFirstGestureScrollUpdate(
+          {.timestamp = next_input_generation_ts_ + kVsyncInterval / 2,
+           .delta = 5.0f,
+           .caused_frame_update = true,
+           .did_scroll = true,
+           .begin_frame_args = args}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           first_metrics, next_presentation_ts_, args);
       EXPECT_THAT(first_metrics, ElementsAre(kIsNotJankyV4, kNullJankV4Data));
@@ -432,14 +358,18 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentDamagingFrameProduction) {
       AdvanceByVsyncs(1);
       viz::BeginFrameArgs args = CreateNextBeginFrameArgs();
       EventMetrics::List metrics;
-      metrics.push_back(CreateGestureScrollUpdate(
-          next_input_generation_ts_,
-          /* delta= */ 5.0f,
-          /* caused_frame_update= */ true, /* did_scroll= */ true, args));
-      metrics.push_back(CreateGestureScrollUpdate(
-          next_input_generation_ts_ + kVsyncInterval / 2,
-          /* delta= */ 5.0f, /* caused_frame_update= */ true,
-          /* did_scroll= */ true, args));
+      metrics.push_back(metrics_creator_.CreateGestureScrollUpdate(
+          {.timestamp = next_input_generation_ts_,
+           .delta = 5.0f,
+           .caused_frame_update = true,
+           .did_scroll = true,
+           .begin_frame_args = args}));
+      metrics.push_back(metrics_creator_.CreateGestureScrollUpdate(
+          {.timestamp = next_input_generation_ts_ + kVsyncInterval / 2,
+           .delta = 5.0f,
+           .caused_frame_update = true,
+           .did_scroll = true,
+           .begin_frame_args = args}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           metrics, next_presentation_ts_, args);
       EXPECT_THAT(metrics, ElementsAre(kIsNotJankyV4, kNullJankV4Data));
@@ -456,18 +386,24 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentDamagingFrameProduction) {
       AdvanceByVsyncs(3);
       viz::BeginFrameArgs args = CreateNextBeginFrameArgs();
       EventMetrics::List metrics;
-      metrics.push_back(CreateGestureScrollUpdate(
-          next_input_generation_ts_ - kVsyncInterval / 2,
-          /* delta= */ 5.0f, /* caused_frame_update= */ true,
-          /* did_scroll= */ true, args));
-      metrics.push_back(CreateGestureScrollUpdate(
-          next_input_generation_ts_,
-          /* delta= */ 5.0f,
-          /* caused_frame_update= */ true, /* did_scroll= */ true, args));
-      metrics.push_back(CreateGestureScrollUpdate(
-          next_input_generation_ts_ + kVsyncInterval / 2,
-          /* delta= */ 5.0f, /* caused_frame_update= */ true,
-          /* did_scroll= */ true, args));
+      metrics.push_back(metrics_creator_.CreateGestureScrollUpdate(
+          {.timestamp = next_input_generation_ts_ - kVsyncInterval / 2,
+           .delta = 5.0f,
+           .caused_frame_update = true,
+           .did_scroll = true,
+           .begin_frame_args = args}));
+      metrics.push_back(metrics_creator_.CreateGestureScrollUpdate(
+          {.timestamp = next_input_generation_ts_,
+           .delta = 5.0f,
+           .caused_frame_update = true,
+           .did_scroll = true,
+           .begin_frame_args = args}));
+      metrics.push_back(metrics_creator_.CreateGestureScrollUpdate(
+          {.timestamp = next_input_generation_ts_ + kVsyncInterval / 2,
+           .delta = 5.0f,
+           .caused_frame_update = true,
+           .did_scroll = true,
+           .begin_frame_args = args}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           metrics, next_presentation_ts_, args);
       EXPECT_THAT(
@@ -484,14 +420,18 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentDamagingFrameProduction) {
       AdvanceByVsyncs(1);
       viz::BeginFrameArgs args = CreateNextBeginFrameArgs();
       EventMetrics::List metrics;
-      metrics.push_back(CreateGestureScrollUpdate(
-          next_input_generation_ts_,
-          /* delta= */ 5.0f,
-          /* caused_frame_update= */ true, /* did_scroll= */ true, args));
-      metrics.push_back(CreateGestureScrollUpdate(
-          next_input_generation_ts_ + kVsyncInterval / 2,
-          /* delta= */ 5.0f, /* caused_frame_update= */ true,
-          /* did_scroll= */ true, args));
+      metrics.push_back(metrics_creator_.CreateGestureScrollUpdate(
+          {.timestamp = next_input_generation_ts_,
+           .delta = 5.0f,
+           .caused_frame_update = true,
+           .did_scroll = true,
+           .begin_frame_args = args}));
+      metrics.push_back(metrics_creator_.CreateGestureScrollUpdate(
+          {.timestamp = next_input_generation_ts_ + kVsyncInterval / 2,
+           .delta = 5.0f,
+           .caused_frame_update = true,
+           .did_scroll = true,
+           .begin_frame_args = args}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           metrics, next_presentation_ts_, args);
       EXPECT_THAT(metrics, ElementsAre(kIsNotJankyV4, kNullJankV4Data));
@@ -505,10 +445,12 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentDamagingFrameProduction) {
       AdvanceByVsyncs(6);
       viz::BeginFrameArgs args = CreateNextBeginFrameArgs();
       EventMetrics::List metrics;
-      metrics.push_back(CreateInertialGestureScrollUpdate(
-          next_input_generation_ts_,
-          /* delta= */ 2.0f,
-          /* caused_frame_update= */ true, /* did_scroll= */ true, args));
+      metrics.push_back(metrics_creator_.CreateInertialGestureScrollUpdate(
+          {.timestamp = next_input_generation_ts_,
+           .delta = 2.0f,
+           .caused_frame_update = true,
+           .did_scroll = true,
+           .begin_frame_args = args}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           metrics, next_presentation_ts_, args);
       EXPECT_THAT(metrics, ElementsAre(IsJankyV4WithMissedVsyncCounts(
@@ -519,10 +461,12 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentDamagingFrameProduction) {
       AdvanceByVsyncs(1);
       viz::BeginFrameArgs args = CreateNextBeginFrameArgs();
       EventMetrics::List metrics;
-      metrics.push_back(CreateInertialGestureScrollUpdate(
-          next_input_generation_ts_,
-          /* delta= */ 2.0f,
-          /* caused_frame_update= */ true, /* did_scroll= */ true, args));
+      metrics.push_back(metrics_creator_.CreateInertialGestureScrollUpdate(
+          {.timestamp = next_input_generation_ts_,
+           .delta = 2.0f,
+           .caused_frame_update = true,
+           .did_scroll = true,
+           .begin_frame_args = args}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           metrics, next_presentation_ts_, args);
       EXPECT_THAT(metrics, ElementsAre(kIsNotJankyV4));
@@ -541,10 +485,13 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentDamagingFrameProduction) {
     AdvanceByVsyncs(1);
     viz::BeginFrameArgs args = CreateNextBeginFrameArgs();
     EventMetrics::List last_metrics_in_fixed_window;
-    last_metrics_in_fixed_window.push_back(CreateInertialGestureScrollUpdate(
-        next_input_generation_ts_,
-        /* delta= */ 2.0f, /* caused_frame_update= */ true,
-        /* did_scroll= */ true, args));
+    last_metrics_in_fixed_window.push_back(
+        metrics_creator_.CreateInertialGestureScrollUpdate(
+            {.timestamp = next_input_generation_ts_,
+             .delta = 2.0f,
+             .caused_frame_update = true,
+             .did_scroll = true,
+             .begin_frame_args = args}));
     processor_.ProcessEventsMetricsForPresentedFrame(
         last_metrics_in_fixed_window, next_presentation_ts_, args);
     EXPECT_THAT(last_metrics_in_fixed_window, ElementsAre(kIsNotJankyV4));
@@ -564,10 +511,12 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentDamagingFrameProduction) {
       AdvanceByVsyncs(1);
       viz::BeginFrameArgs args = CreateNextBeginFrameArgs();
       EventMetrics::List metrics;
-      metrics.push_back(CreateInertialGestureScrollUpdate(
-          next_input_generation_ts_,
-          /* delta= */ 2.0f,
-          /* caused_frame_update= */ true, /* did_scroll= */ true, args));
+      metrics.push_back(metrics_creator_.CreateInertialGestureScrollUpdate(
+          {.timestamp = next_input_generation_ts_,
+           .delta = 2.0f,
+           .caused_frame_update = true,
+           .did_scroll = true,
+           .begin_frame_args = args}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           metrics, next_presentation_ts_, args);
       EXPECT_THAT(metrics, ElementsAre(kIsNotJankyV4));
@@ -580,10 +529,12 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentDamagingFrameProduction) {
       AdvanceByVsyncs(10);
       viz::BeginFrameArgs args = CreateNextBeginFrameArgs();
       EventMetrics::List metrics;
-      metrics.push_back(CreateInertialGestureScrollUpdate(
-          next_input_generation_ts_,
-          /* delta= */ 2.0f,
-          /* caused_frame_update= */ true, /* did_scroll= */ true, args));
+      metrics.push_back(metrics_creator_.CreateInertialGestureScrollUpdate(
+          {.timestamp = next_input_generation_ts_,
+           .delta = 2.0f,
+           .caused_frame_update = true,
+           .did_scroll = true,
+           .begin_frame_args = args}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           metrics, next_presentation_ts_, args);
       EXPECT_THAT(metrics, ElementsAre(IsJankyV4WithMissedVsyncCounts(
@@ -594,10 +545,12 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentDamagingFrameProduction) {
       AdvanceByVsyncs(1);
       viz::BeginFrameArgs args = CreateNextBeginFrameArgs();
       EventMetrics::List metrics;
-      metrics.push_back(CreateInertialGestureScrollUpdate(
-          next_input_generation_ts_,
-          /* delta= */ 2.0f,
-          /* caused_frame_update= */ true, /* did_scroll= */ true, args));
+      metrics.push_back(metrics_creator_.CreateInertialGestureScrollUpdate(
+          {.timestamp = next_input_generation_ts_,
+           .delta = 2.0f,
+           .caused_frame_update = true,
+           .did_scroll = true,
+           .begin_frame_args = args}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           metrics, next_presentation_ts_, args);
       EXPECT_THAT(metrics, ElementsAre(kIsNotJankyV4));
@@ -616,8 +569,10 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentDamagingFrameProduction) {
     AdvanceByVsyncs(1);
     viz::BeginFrameArgs args = CreateNextBeginFrameArgs();
     EventMetrics::List end_metrics;
-    end_metrics.push_back(
-        CreateInertialGestureScrollEnd(next_input_generation_ts_, args));
+    end_metrics.push_back(metrics_creator_.CreateInertialGestureScrollEnd(
+        {.timestamp = next_input_generation_ts_,
+         .caused_frame_update = false,
+         .begin_frame_args = args}));
     processor_.ProcessEventsMetricsForPresentedFrame(
         end_metrics, next_presentation_ts_, args);
 
@@ -648,12 +603,18 @@ TEST_P(ScrollJankV4ProcessorTest, ConsistentMixedFrameProduction) {
     {
       viz::BeginFrameArgs args = CreateNextBeginFrameArgs();
       EventMetrics::List first_metrics;
-      first_metrics.push_back(CreateFirstGestureScrollUpdate(
-          next_input_generation_ts_, /* delta= */ 5.0f,
-          /* caused_frame_update= */ true, /* did_scroll= */ true, args));
-      first_metrics.push_back(CreateFirstGestureScrollUpdate(
-          next_input_generation_ts_ + kVsyncInterval / 2, /* delta= */ 5.0f,
-          /* caused_frame_update= */ true, /* did_scroll= */ true, args));
+      first_metrics.push_back(metrics_creator_.CreateFirstGestureScrollUpdate(
+          {.timestamp = next_input_generation_ts_,
+           .delta = 5.0f,
+           .caused_frame_update = true,
+           .did_scroll = true,
+           .begin_frame_args = args}));
+      first_metrics.push_back(metrics_creator_.CreateFirstGestureScrollUpdate(
+          {.timestamp = next_input_generation_ts_ + kVsyncInterval / 2,
+           .delta = 5.0f,
+           .caused_frame_update = true,
+           .did_scroll = true,
+           .begin_frame_args = args}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           first_metrics, next_presentation_ts_, args);
       EXPECT_THAT(first_metrics, ElementsAre(kIsNotJankyV4, kNullJankV4Data));
@@ -668,25 +629,31 @@ TEST_P(ScrollJankV4ProcessorTest, ConsistentMixedFrameProduction) {
       viz::BeginFrameArgs damaging_args = CreateNextBeginFrameArgs();
       EventMetrics::List metrics;
       // Two inputs for a non-damaging frame.
-      metrics.push_back(CreateGestureScrollUpdate(
-          next_input_generation_ts_ - kVsyncInterval,
-          /* delta= */ 5.0f,
-          /* caused_frame_update= */ false, /* did_scroll= */ false,
-          non_damaging_args));
-      metrics.push_back(CreateGestureScrollUpdate(
-          next_input_generation_ts_ - kVsyncInterval / 2,
-          /* delta= */ 5.0f, /* caused_frame_update= */ false,
-          /* did_scroll= */ false, non_damaging_args));
+      metrics.push_back(metrics_creator_.CreateGestureScrollUpdate(
+          {.timestamp = next_input_generation_ts_ - kVsyncInterval,
+           .delta = 5.0f,
+           .caused_frame_update = false,
+           .did_scroll = false,
+           .begin_frame_args = non_damaging_args}));
+      metrics.push_back(metrics_creator_.CreateGestureScrollUpdate(
+          {.timestamp = next_input_generation_ts_ - kVsyncInterval / 2,
+           .delta = 5.0f,
+           .caused_frame_update = false,
+           .did_scroll = false,
+           .begin_frame_args = non_damaging_args}));
       // Two inputs for a presented damaging frame.
-      metrics.push_back(
-          CreateGestureScrollUpdate(next_input_generation_ts_,
-                                    /* delta= */ 5.0f,
-                                    /* caused_frame_update= */ true,
-                                    /* did_scroll= */ true, damaging_args));
-      metrics.push_back(CreateGestureScrollUpdate(
-          next_input_generation_ts_ + kVsyncInterval / 2,
-          /* delta= */ 5.0f, /* caused_frame_update= */ true,
-          /* did_scroll= */ true, damaging_args));
+      metrics.push_back(metrics_creator_.CreateGestureScrollUpdate(
+          {.timestamp = next_input_generation_ts_,
+           .delta = 5.0f,
+           .caused_frame_update = true,
+           .did_scroll = true,
+           .begin_frame_args = damaging_args}));
+      metrics.push_back(metrics_creator_.CreateGestureScrollUpdate(
+          {.timestamp = next_input_generation_ts_ + kVsyncInterval / 2,
+           .delta = 5.0f,
+           .caused_frame_update = true,
+           .did_scroll = true,
+           .begin_frame_args = damaging_args}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           metrics, next_presentation_ts_, damaging_args);
       switch (GetParam().variant) {
@@ -718,14 +685,18 @@ TEST_P(ScrollJankV4ProcessorTest, ConsistentMixedFrameProduction) {
       AdvanceByVsyncs(1);
       viz::BeginFrameArgs args = CreateNextBeginFrameArgs();
       EventMetrics::List metrics;
-      metrics.push_back(CreateGestureScrollUpdate(
-          next_input_generation_ts_,
-          /* delta= */ 5.0f,
-          /* caused_frame_update= */ true, /* did_scroll= */ true, args));
-      metrics.push_back(CreateGestureScrollUpdate(
-          next_input_generation_ts_ + kVsyncInterval / 2,
-          /* delta= */ 5.0f, /* caused_frame_update= */ true,
-          /* did_scroll= */ true, args));
+      metrics.push_back(metrics_creator_.CreateGestureScrollUpdate(
+          {.timestamp = next_input_generation_ts_,
+           .delta = 5.0f,
+           .caused_frame_update = true,
+           .did_scroll = true,
+           .begin_frame_args = args}));
+      metrics.push_back(metrics_creator_.CreateGestureScrollUpdate(
+          {.timestamp = next_input_generation_ts_ + kVsyncInterval / 2,
+           .delta = 5.0f,
+           .caused_frame_update = true,
+           .did_scroll = true,
+           .begin_frame_args = args}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           metrics, next_presentation_ts_, args);
 
@@ -746,14 +717,18 @@ TEST_P(ScrollJankV4ProcessorTest, ConsistentMixedFrameProduction) {
       AdvanceByVsyncs(1);
       viz::BeginFrameArgs args = CreateNextBeginFrameArgs();
       EventMetrics::List metrics;
-      metrics.push_back(CreateGestureScrollUpdate(
-          next_input_generation_ts_,
-          /* delta= */ 5.0f,
-          /* caused_frame_update= */ true, /* did_scroll= */ true, args));
-      metrics.push_back(CreateGestureScrollUpdate(
-          next_input_generation_ts_ + kVsyncInterval / 2,
-          /* delta= */ 5.0f, /* caused_frame_update= */ true,
-          /* did_scroll= */ true, args));
+      metrics.push_back(metrics_creator_.CreateGestureScrollUpdate(
+          {.timestamp = next_input_generation_ts_,
+           .delta = 5.0f,
+           .caused_frame_update = true,
+           .did_scroll = true,
+           .begin_frame_args = args}));
+      metrics.push_back(metrics_creator_.CreateGestureScrollUpdate(
+          {.timestamp = next_input_generation_ts_ + kVsyncInterval / 2,
+           .delta = 5.0f,
+           .caused_frame_update = true,
+           .did_scroll = true,
+           .begin_frame_args = args}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           metrics, next_presentation_ts_, args);
       EXPECT_THAT(metrics, ElementsAre(kIsNotJankyV4, kNullJankV4Data));
@@ -792,11 +767,13 @@ TEST_P(ScrollJankV4ProcessorTest, ConsistentMixedFrameProduction) {
       AdvanceByVsyncs(1);
       viz::BeginFrameArgs non_damaging_args = CreateNextBeginFrameArgs();
       EventMetrics::List non_damaging_metrics;
-      non_damaging_metrics.push_back(CreateInertialGestureScrollUpdate(
-          next_input_generation_ts_,
-          /* delta= */ 2.0f,
-          /* caused_frame_update= */ false, /* did_scroll= */ false,
-          non_damaging_args));
+      non_damaging_metrics.push_back(
+          metrics_creator_.CreateInertialGestureScrollUpdate(
+              {.timestamp = next_input_generation_ts_,
+               .delta = 2.0f,
+               .caused_frame_update = false,
+               .did_scroll = false,
+               .begin_frame_args = non_damaging_args}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           non_damaging_metrics, next_presentation_ts_, non_damaging_args);
       switch (GetParam().variant) {
@@ -811,11 +788,13 @@ TEST_P(ScrollJankV4ProcessorTest, ConsistentMixedFrameProduction) {
       AdvanceByVsyncs(1);
       viz::BeginFrameArgs damaging_args = CreateNextBeginFrameArgs();
       EventMetrics::List damaging_metrics;
-      damaging_metrics.push_back(CreateInertialGestureScrollUpdate(
-          next_input_generation_ts_,
-          /* delta= */ 2.0f,
-          /* caused_frame_update= */ true, /* did_scroll= */ true,
-          damaging_args));
+      damaging_metrics.push_back(
+          metrics_creator_.CreateInertialGestureScrollUpdate(
+              {.timestamp = next_input_generation_ts_,
+               .delta = 2.0f,
+               .caused_frame_update = true,
+               .did_scroll = true,
+               .begin_frame_args = damaging_args}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           damaging_metrics, next_presentation_ts_, damaging_args);
       switch (GetParam().variant) {
@@ -846,10 +825,12 @@ TEST_P(ScrollJankV4ProcessorTest, ConsistentMixedFrameProduction) {
     AdvanceByVsyncs(1);
     viz::BeginFrameArgs args = CreateNextBeginFrameArgs();
     EventMetrics::List metrics;
-    metrics.push_back(CreateInertialGestureScrollUpdate(
-        next_input_generation_ts_,
-        /* delta= */ 2.0f, /* caused_frame_update= */ true,
-        /* did_scroll= */ true, args));
+    metrics.push_back(metrics_creator_.CreateInertialGestureScrollUpdate(
+        {.timestamp = next_input_generation_ts_,
+         .delta = 2.0f,
+         .caused_frame_update = true,
+         .did_scroll = true,
+         .begin_frame_args = args}));
     processor_.ProcessEventsMetricsForPresentedFrame(
         metrics, next_presentation_ts_, args);
     EXPECT_THAT(metrics, ElementsAre(kIsNotJankyV4));
@@ -891,10 +872,12 @@ TEST_P(ScrollJankV4ProcessorTest, ConsistentMixedFrameProduction) {
       AdvanceByVsyncs(1);
       viz::BeginFrameArgs args = CreateNextBeginFrameArgs();
       EventMetrics::List metrics;
-      metrics.push_back(CreateInertialGestureScrollUpdate(
-          next_input_generation_ts_,
-          /* delta= */ 2.0f,
-          /* caused_frame_update= */ true, /* did_scroll= */ true, args));
+      metrics.push_back(metrics_creator_.CreateInertialGestureScrollUpdate(
+          {.timestamp = next_input_generation_ts_,
+           .delta = 2.0f,
+           .caused_frame_update = true,
+           .did_scroll = true,
+           .begin_frame_args = args}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           metrics, next_presentation_ts_, args);
       EXPECT_THAT(metrics, ElementsAre(kIsNotJankyV4));
@@ -914,8 +897,10 @@ TEST_P(ScrollJankV4ProcessorTest, ConsistentMixedFrameProduction) {
     AdvanceByVsyncs(1);
     viz::BeginFrameArgs end_args = CreateNextBeginFrameArgs();
     EventMetrics::List end_metrics;
-    end_metrics.push_back(
-        CreateInertialGestureScrollEnd(next_input_generation_ts_, end_args));
+    end_metrics.push_back(metrics_creator_.CreateInertialGestureScrollEnd(
+        {.timestamp = next_input_generation_ts_,
+         .caused_frame_update = false,
+         .begin_frame_args = end_args}));
     processor_.ProcessEventsMetricsForPresentedFrame(
         end_metrics, next_presentation_ts_, end_args);
 
@@ -956,12 +941,18 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentMixedFrameProduction) {
     {
       viz::BeginFrameArgs args = CreateNextBeginFrameArgs();
       EventMetrics::List first_metrics;
-      first_metrics.push_back(CreateFirstGestureScrollUpdate(
-          next_input_generation_ts_, /* delta= */ 5.0f,
-          /* caused_frame_update= */ true, /* did_scroll= */ true, args));
-      first_metrics.push_back(CreateFirstGestureScrollUpdate(
-          next_input_generation_ts_ + kVsyncInterval / 2, /* delta= */ 5.0f,
-          /* caused_frame_update= */ true, /* did_scroll= */ true, args));
+      first_metrics.push_back(metrics_creator_.CreateFirstGestureScrollUpdate(
+          {.timestamp = next_input_generation_ts_,
+           .delta = 5.0f,
+           .caused_frame_update = true,
+           .did_scroll = true,
+           .begin_frame_args = args}));
+      first_metrics.push_back(metrics_creator_.CreateFirstGestureScrollUpdate(
+          {.timestamp = next_input_generation_ts_ + kVsyncInterval / 2,
+           .delta = 5.0f,
+           .caused_frame_update = true,
+           .did_scroll = true,
+           .begin_frame_args = args}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           first_metrics, next_presentation_ts_, args);
       EXPECT_THAT(first_metrics, ElementsAre(kIsNotJankyV4, kNullJankV4Data));
@@ -976,25 +967,31 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentMixedFrameProduction) {
       viz::BeginFrameArgs damaging_args = CreateNextBeginFrameArgs();
       EventMetrics::List metrics;
       // Two inputs for a non-damaging frame.
-      metrics.push_back(CreateGestureScrollUpdate(
-          next_input_generation_ts_ - kVsyncInterval,
-          /* delta= */ 5.0f,
-          /* caused_frame_update= */ false, /* did_scroll= */ false,
-          non_damaging_args));
-      metrics.push_back(CreateGestureScrollUpdate(
-          next_input_generation_ts_ - kVsyncInterval / 2,
-          /* delta= */ 5.0f, /* caused_frame_update= */ false,
-          /* did_scroll= */ false, non_damaging_args));
+      metrics.push_back(metrics_creator_.CreateGestureScrollUpdate(
+          {.timestamp = next_input_generation_ts_ - kVsyncInterval,
+           .delta = 5.0f,
+           .caused_frame_update = false,
+           .did_scroll = false,
+           .begin_frame_args = non_damaging_args}));
+      metrics.push_back(metrics_creator_.CreateGestureScrollUpdate(
+          {.timestamp = next_input_generation_ts_ - kVsyncInterval / 2,
+           .delta = 5.0f,
+           .caused_frame_update = false,
+           .did_scroll = false,
+           .begin_frame_args = non_damaging_args}));
       // Two inputs for a presented damaging frame.
-      metrics.push_back(
-          CreateGestureScrollUpdate(next_input_generation_ts_,
-                                    /* delta= */ 5.0f,
-                                    /* caused_frame_update= */ true,
-                                    /* did_scroll= */ true, damaging_args));
-      metrics.push_back(CreateGestureScrollUpdate(
-          next_input_generation_ts_ + kVsyncInterval / 2,
-          /* delta= */ 5.0f, /* caused_frame_update= */ true,
-          /* did_scroll= */ true, damaging_args));
+      metrics.push_back(metrics_creator_.CreateGestureScrollUpdate(
+          {.timestamp = next_input_generation_ts_,
+           .delta = 5.0f,
+           .caused_frame_update = true,
+           .did_scroll = true,
+           .begin_frame_args = damaging_args}));
+      metrics.push_back(metrics_creator_.CreateGestureScrollUpdate(
+          {.timestamp = next_input_generation_ts_ + kVsyncInterval / 2,
+           .delta = 5.0f,
+           .caused_frame_update = true,
+           .did_scroll = true,
+           .begin_frame_args = damaging_args}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           metrics, next_presentation_ts_, damaging_args);
       switch (GetParam().variant) {
@@ -1036,30 +1033,37 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentMixedFrameProduction) {
       viz::BeginFrameArgs damaging_args = CreateNextBeginFrameArgs();
       EventMetrics::List metrics;
       // Three inputs for a non-damaging frame.
-      metrics.push_back(CreateGestureScrollUpdate(
-          next_input_generation_ts_ - 1.5 * kVsyncInterval,
-          /* delta= */ 5.0f,
-          /* caused_frame_update= */ false, /* did_scroll= */ false,
-          non_damaging_args));
-      metrics.push_back(CreateGestureScrollUpdate(
-          next_input_generation_ts_ - kVsyncInterval,
-          /* delta= */ 5.0f,
-          /* caused_frame_update= */ false, /* did_scroll= */ false,
-          non_damaging_args));
-      metrics.push_back(CreateGestureScrollUpdate(
-          next_input_generation_ts_ - kVsyncInterval / 2,
-          /* delta= */ 5.0f, /* caused_frame_update= */ false,
-          /* did_scroll= */ false, non_damaging_args));
+      metrics.push_back(metrics_creator_.CreateGestureScrollUpdate(
+          {.timestamp = next_input_generation_ts_ - 1.5 * kVsyncInterval,
+           .delta = 5.0f,
+           .caused_frame_update = false,
+           .did_scroll = false,
+           .begin_frame_args = non_damaging_args}));
+      metrics.push_back(metrics_creator_.CreateGestureScrollUpdate(
+          {.timestamp = next_input_generation_ts_ - kVsyncInterval,
+           .delta = 5.0f,
+           .caused_frame_update = false,
+           .did_scroll = false,
+           .begin_frame_args = non_damaging_args}));
+      metrics.push_back(metrics_creator_.CreateGestureScrollUpdate(
+          {.timestamp = next_input_generation_ts_ - kVsyncInterval / 2,
+           .delta = 5.0f,
+           .caused_frame_update = false,
+           .did_scroll = false,
+           .begin_frame_args = non_damaging_args}));
       // Two inputs for a presented damaging frame.
-      metrics.push_back(
-          CreateGestureScrollUpdate(next_input_generation_ts_,
-                                    /* delta= */ 5.0f,
-                                    /* caused_frame_update= */ true,
-                                    /* did_scroll= */ true, damaging_args));
-      metrics.push_back(CreateGestureScrollUpdate(
-          next_input_generation_ts_ + kVsyncInterval / 2,
-          /* delta= */ 5.0f, /* caused_frame_update= */ true,
-          /* did_scroll= */ true, damaging_args));
+      metrics.push_back(metrics_creator_.CreateGestureScrollUpdate(
+          {.timestamp = next_input_generation_ts_,
+           .delta = 5.0f,
+           .caused_frame_update = true,
+           .did_scroll = true,
+           .begin_frame_args = damaging_args}));
+      metrics.push_back(metrics_creator_.CreateGestureScrollUpdate(
+          {.timestamp = next_input_generation_ts_ + kVsyncInterval / 2,
+           .delta = 5.0f,
+           .caused_frame_update = true,
+           .did_scroll = true,
+           .begin_frame_args = damaging_args}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           metrics, next_presentation_ts_, damaging_args);
       switch (GetParam().variant) {
@@ -1107,25 +1111,31 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentMixedFrameProduction) {
       viz::BeginFrameArgs damaging_args = CreateNextBeginFrameArgs();
       EventMetrics::List metrics;
       // Two inputs for a non-damaging frame.
-      metrics.push_back(CreateGestureScrollUpdate(
-          next_input_generation_ts_ - kVsyncInterval,
-          /* delta= */ 5.0f,
-          /* caused_frame_update= */ false, /* did_scroll= */ false,
-          non_damaging_args));
-      metrics.push_back(CreateGestureScrollUpdate(
-          next_input_generation_ts_ - kVsyncInterval / 2,
-          /* delta= */ 5.0f, /* caused_frame_update= */ false,
-          /* did_scroll= */ false, non_damaging_args));
+      metrics.push_back(metrics_creator_.CreateGestureScrollUpdate(
+          {.timestamp = next_input_generation_ts_ - kVsyncInterval,
+           .delta = 5.0f,
+           .caused_frame_update = false,
+           .did_scroll = false,
+           .begin_frame_args = non_damaging_args}));
+      metrics.push_back(metrics_creator_.CreateGestureScrollUpdate(
+          {.timestamp = next_input_generation_ts_ - kVsyncInterval / 2,
+           .delta = 5.0f,
+           .caused_frame_update = false,
+           .did_scroll = false,
+           .begin_frame_args = non_damaging_args}));
       // Two inputs for a presented damaging frame.
-      metrics.push_back(
-          CreateGestureScrollUpdate(next_input_generation_ts_,
-                                    /* delta= */ 5.0f,
-                                    /* caused_frame_update= */ true,
-                                    /* did_scroll= */ true, damaging_args));
-      metrics.push_back(CreateGestureScrollUpdate(
-          next_input_generation_ts_ + kVsyncInterval / 2,
-          /* delta= */ 5.0f, /* caused_frame_update= */ true,
-          /* did_scroll= */ true, damaging_args));
+      metrics.push_back(metrics_creator_.CreateGestureScrollUpdate(
+          {.timestamp = next_input_generation_ts_,
+           .delta = 5.0f,
+           .caused_frame_update = true,
+           .did_scroll = true,
+           .begin_frame_args = damaging_args}));
+      metrics.push_back(metrics_creator_.CreateGestureScrollUpdate(
+          {.timestamp = next_input_generation_ts_ + kVsyncInterval / 2,
+           .delta = 5.0f,
+           .caused_frame_update = true,
+           .did_scroll = true,
+           .begin_frame_args = damaging_args}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           metrics, next_presentation_ts_, damaging_args);
       switch (GetParam().variant) {
@@ -1157,14 +1167,18 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentMixedFrameProduction) {
       AdvanceByVsyncs(1);
       viz::BeginFrameArgs args = CreateNextBeginFrameArgs();
       EventMetrics::List metrics;
-      metrics.push_back(CreateGestureScrollUpdate(
-          next_input_generation_ts_,
-          /* delta= */ 5.0f,
-          /* caused_frame_update= */ true, /* did_scroll= */ true, args));
-      metrics.push_back(CreateGestureScrollUpdate(
-          next_input_generation_ts_ + kVsyncInterval / 2,
-          /* delta= */ 5.0f, /* caused_frame_update= */ true,
-          /* did_scroll= */ true, args));
+      metrics.push_back(metrics_creator_.CreateGestureScrollUpdate(
+          {.timestamp = next_input_generation_ts_,
+           .delta = 5.0f,
+           .caused_frame_update = true,
+           .did_scroll = true,
+           .begin_frame_args = args}));
+      metrics.push_back(metrics_creator_.CreateGestureScrollUpdate(
+          {.timestamp = next_input_generation_ts_ + kVsyncInterval / 2,
+           .delta = 5.0f,
+           .caused_frame_update = true,
+           .did_scroll = true,
+           .begin_frame_args = args}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           metrics, next_presentation_ts_, args);
       EXPECT_THAT(metrics, ElementsAre(kIsNotJankyV4, kNullJankV4Data));
@@ -1184,14 +1198,18 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentMixedFrameProduction) {
       AdvanceByVsyncs(1);
       viz::BeginFrameArgs args = CreateNextBeginFrameArgs();
       EventMetrics::List metrics;
-      metrics.push_back(CreateGestureScrollUpdate(
-          next_input_generation_ts_,
-          /* delta= */ 5.0f,
-          /* caused_frame_update= */ true, /* did_scroll= */ true, args));
-      metrics.push_back(CreateGestureScrollUpdate(
-          next_input_generation_ts_ + kVsyncInterval / 2,
-          /* delta= */ 5.0f, /* caused_frame_update= */ true,
-          /* did_scroll= */ true, args));
+      metrics.push_back(metrics_creator_.CreateGestureScrollUpdate(
+          {.timestamp = next_input_generation_ts_,
+           .delta = 5.0f,
+           .caused_frame_update = true,
+           .did_scroll = true,
+           .begin_frame_args = args}));
+      metrics.push_back(metrics_creator_.CreateGestureScrollUpdate(
+          {.timestamp = next_input_generation_ts_ + kVsyncInterval / 2,
+           .delta = 5.0f,
+           .caused_frame_update = true,
+           .did_scroll = true,
+           .begin_frame_args = args}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           metrics, next_presentation_ts_, args);
       EXPECT_THAT(metrics, ElementsAre(kIsNotJankyV4, kNullJankV4Data));
@@ -1234,11 +1252,13 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentMixedFrameProduction) {
       AdvanceByVsyncs(6);
       viz::BeginFrameArgs non_damaging_args = CreateNextBeginFrameArgs();
       EventMetrics::List non_damaging_metrics;
-      non_damaging_metrics.push_back(CreateInertialGestureScrollUpdate(
-          next_input_generation_ts_,
-          /* delta= */ 2.0f,
-          /* caused_frame_update= */ false, /* did_scroll= */ false,
-          non_damaging_args));
+      non_damaging_metrics.push_back(
+          metrics_creator_.CreateInertialGestureScrollUpdate(
+              {.timestamp = next_input_generation_ts_,
+               .delta = 2.0f,
+               .caused_frame_update = false,
+               .did_scroll = false,
+               .begin_frame_args = non_damaging_args}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           non_damaging_metrics, next_presentation_ts_, non_damaging_args);
       switch (GetParam().variant) {
@@ -1256,11 +1276,13 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentMixedFrameProduction) {
       AdvanceByVsyncs(1);
       viz::BeginFrameArgs damaging_args = CreateNextBeginFrameArgs();
       EventMetrics::List damaging_metrics;
-      damaging_metrics.push_back(CreateInertialGestureScrollUpdate(
-          next_input_generation_ts_,
-          /* delta= */ 2.0f,
-          /* caused_frame_update= */ true, /* did_scroll= */ true,
-          damaging_args));
+      damaging_metrics.push_back(
+          metrics_creator_.CreateInertialGestureScrollUpdate(
+              {.timestamp = next_input_generation_ts_,
+               .delta = 2.0f,
+               .caused_frame_update = true,
+               .did_scroll = true,
+               .begin_frame_args = damaging_args}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           damaging_metrics, next_presentation_ts_, damaging_args);
       switch (GetParam().variant) {
@@ -1283,11 +1305,13 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentMixedFrameProduction) {
       AdvanceByVsyncs(1);
       viz::BeginFrameArgs non_damaging_args = CreateNextBeginFrameArgs();
       EventMetrics::List non_damaging_metrics;
-      non_damaging_metrics.push_back(CreateInertialGestureScrollUpdate(
-          next_input_generation_ts_,
-          /* delta= */ 2.0f,
-          /* caused_frame_update= */ false, /* did_scroll= */ false,
-          non_damaging_args));
+      non_damaging_metrics.push_back(
+          metrics_creator_.CreateInertialGestureScrollUpdate(
+              {.timestamp = next_input_generation_ts_,
+               .delta = 2.0f,
+               .caused_frame_update = false,
+               .did_scroll = false,
+               .begin_frame_args = non_damaging_args}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           non_damaging_metrics, next_presentation_ts_, non_damaging_args);
       switch (GetParam().variant) {
@@ -1302,11 +1326,13 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentMixedFrameProduction) {
       AdvanceByVsyncs(1);
       viz::BeginFrameArgs damaging_args = CreateNextBeginFrameArgs();
       EventMetrics::List damaging_metrics;
-      damaging_metrics.push_back(CreateInertialGestureScrollUpdate(
-          next_input_generation_ts_,
-          /* delta= */ 2.0f,
-          /* caused_frame_update= */ true, /* did_scroll= */ true,
-          damaging_args));
+      damaging_metrics.push_back(
+          metrics_creator_.CreateInertialGestureScrollUpdate(
+              {.timestamp = next_input_generation_ts_,
+               .delta = 2.0f,
+               .caused_frame_update = true,
+               .did_scroll = true,
+               .begin_frame_args = damaging_args}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           damaging_metrics, next_presentation_ts_, damaging_args);
       switch (GetParam().variant) {
@@ -1334,10 +1360,13 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentMixedFrameProduction) {
     AdvanceByVsyncs(1);
     viz::BeginFrameArgs args = CreateNextBeginFrameArgs();
     EventMetrics::List last_metrics_in_fixed_window;
-    last_metrics_in_fixed_window.push_back(CreateInertialGestureScrollUpdate(
-        next_input_generation_ts_,
-        /* delta= */ 2.0f, /* caused_frame_update= */ true,
-        /* did_scroll= */ true, args));
+    last_metrics_in_fixed_window.push_back(
+        metrics_creator_.CreateInertialGestureScrollUpdate(
+            {.timestamp = next_input_generation_ts_,
+             .delta = 2.0f,
+             .caused_frame_update = true,
+             .did_scroll = true,
+             .begin_frame_args = args}));
     processor_.ProcessEventsMetricsForPresentedFrame(
         last_metrics_in_fixed_window, next_presentation_ts_, args);
     EXPECT_THAT(last_metrics_in_fixed_window, ElementsAre(kIsNotJankyV4));
@@ -1382,11 +1411,13 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentMixedFrameProduction) {
       AdvanceByVsyncs(10);
       viz::BeginFrameArgs non_damaging_args = CreateNextBeginFrameArgs();
       EventMetrics::List non_damaging_metrics;
-      non_damaging_metrics.push_back(CreateInertialGestureScrollUpdate(
-          next_input_generation_ts_,
-          /* delta= */ 2.0f,
-          /* caused_frame_update= */ false, /* did_scroll= */ false,
-          non_damaging_args));
+      non_damaging_metrics.push_back(
+          metrics_creator_.CreateInertialGestureScrollUpdate(
+              {.timestamp = next_input_generation_ts_,
+               .delta = 2.0f,
+               .caused_frame_update = false,
+               .did_scroll = false,
+               .begin_frame_args = non_damaging_args}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           non_damaging_metrics, next_presentation_ts_, non_damaging_args);
       switch (GetParam().variant) {
@@ -1404,11 +1435,13 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentMixedFrameProduction) {
       AdvanceByVsyncs(1);
       viz::BeginFrameArgs damaging_args = CreateNextBeginFrameArgs();
       EventMetrics::List damaging_metrics;
-      damaging_metrics.push_back(CreateInertialGestureScrollUpdate(
-          next_input_generation_ts_,
-          /* delta= */ 2.0f,
-          /* caused_frame_update= */ true, /* did_scroll= */ true,
-          damaging_args));
+      damaging_metrics.push_back(
+          metrics_creator_.CreateInertialGestureScrollUpdate(
+              {.timestamp = next_input_generation_ts_,
+               .delta = 2.0f,
+               .caused_frame_update = true,
+               .did_scroll = true,
+               .begin_frame_args = damaging_args}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           damaging_metrics, next_presentation_ts_, damaging_args);
       switch (GetParam().variant) {
@@ -1431,10 +1464,12 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentMixedFrameProduction) {
       AdvanceByVsyncs(1);
       viz::BeginFrameArgs args = CreateNextBeginFrameArgs();
       EventMetrics::List metrics;
-      metrics.push_back(CreateInertialGestureScrollUpdate(
-          next_input_generation_ts_,
-          /* delta= */ 2.0f,
-          /* caused_frame_update= */ true, /* did_scroll= */ true, args));
+      metrics.push_back(metrics_creator_.CreateInertialGestureScrollUpdate(
+          {.timestamp = next_input_generation_ts_,
+           .delta = 2.0f,
+           .caused_frame_update = true,
+           .did_scroll = true,
+           .begin_frame_args = args}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           metrics, next_presentation_ts_, args);
       EXPECT_THAT(metrics, ElementsAre(kIsNotJankyV4));
@@ -1454,8 +1489,10 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentMixedFrameProduction) {
     AdvanceByVsyncs(1);
     viz::BeginFrameArgs end_args = CreateNextBeginFrameArgs();
     EventMetrics::List end_metrics;
-    end_metrics.push_back(
-        CreateInertialGestureScrollEnd(next_input_generation_ts_, end_args));
+    end_metrics.push_back(metrics_creator_.CreateInertialGestureScrollEnd(
+        {.timestamp = next_input_generation_ts_,
+         .caused_frame_update = false,
+         .begin_frame_args = end_args}));
     processor_.ProcessEventsMetricsForPresentedFrame(
         end_metrics, next_presentation_ts_, end_args);
 
