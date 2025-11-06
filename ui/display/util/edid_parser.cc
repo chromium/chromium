@@ -30,7 +30,7 @@
 namespace display {
 
 std::string Md5AsHexForEdid(std::string_view data) {
-  return base::ToLowerASCII(base::HexEncode(crypto::obsolete::Md5::Hash(data)));
+  return base::HexEncodeLower(crypto::obsolete::Md5::Hash(data));
 }
 
 namespace {

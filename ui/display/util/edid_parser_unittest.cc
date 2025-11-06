@@ -29,8 +29,8 @@ namespace display {
 namespace {
 
 std::string Md5AsHex(std::string_view data) {
-  return base::ToLowerASCII(base::HexEncode(
-      crypto::obsolete::Md5::HashForTesting(base::as_byte_span(data))));
+  return base::HexEncodeLower(
+      crypto::obsolete::Md5::HashForTesting(base::as_byte_span(data)));
 }
 
 // EDID with non-ascii char in display name.

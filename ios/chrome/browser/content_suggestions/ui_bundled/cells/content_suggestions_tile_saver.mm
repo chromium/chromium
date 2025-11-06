@@ -105,7 +105,7 @@ void UpdateTileList(const ntp_tiles::NTPTilesVector& most_visited_data,
 }
 
 std::string Md5AsHexForFaviconUrl(std::string_view url) {
-  return base::ToLowerASCII(base::HexEncode(crypto::obsolete::Md5::Hash(url)));
+  return base::HexEncodeLower(crypto::obsolete::Md5::Hash(url));
 }
 
 NSString* GetFaviconFileName(const GURL& url) {

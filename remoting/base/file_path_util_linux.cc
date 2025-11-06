@@ -20,8 +20,8 @@ base::FilePath GetConfigDirectoryPath() {
 }
 
 std::string GetHostHash() {
-  return "host#" + base::ToLowerASCII(base::HexEncode(
-                       crypto::obsolete::Md5::Hash(net::GetHostName())));
+  return "host#" +
+         base::HexEncodeLower(crypto::obsolete::Md5::Hash(net::GetHostName()));
 }
 
 }  // namespace remoting

@@ -180,7 +180,7 @@ TEST(HashTest, HashFileSuccess) {
 
     file.Seek(base::File::FROM_BEGIN, 0);
     EXPECT_TRUE(crypto::hash::HashFile(c.kind, &file, hash));
-    EXPECT_EQ(base::ToLowerASCII(base::HexEncode(hash)), c.hash_hex);
+    EXPECT_EQ(base::HexEncodeLower(hash), c.hash_hex);
   }
 }
 

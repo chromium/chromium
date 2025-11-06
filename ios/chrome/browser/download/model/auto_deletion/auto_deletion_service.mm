@@ -32,7 +32,7 @@ namespace {
 // verify that the file that is scheduled to be deleted is the same file that
 // was originally scheduled for deletion.
 std::string HashDownloadData(base::span<const uint8_t> data) {
-  return base::ToLowerASCII(base::HexEncode(crypto::hash::Sha256(data)));
+  return base::HexEncodeLower(crypto::hash::Sha256(data));
 }
 
 // Removes the ScheduledFiles from the device. It is intended to be invoked on a

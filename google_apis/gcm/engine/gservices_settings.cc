@@ -192,8 +192,7 @@ std::string GServicesSettings::CalculateDigest(const SettingsMap& settings) {
     data += '\0';
   }
   std::string digest = kDigestVersionPrefix;
-  digest += base::ToLowerASCII(
-      base::HexEncode(base::SHA1Hash(base::as_byte_span(data))));
+  digest += base::HexEncodeLower(base::SHA1Hash(base::as_byte_span(data)));
   return digest;
 }
 
