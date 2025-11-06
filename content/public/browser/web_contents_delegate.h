@@ -31,7 +31,6 @@
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/common/window_container_type.mojom-forward.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
-#include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/common/page/drag_operation.h"
 #include "third_party/blink/public/mojom/choosers/color_chooser.mojom-forward.h"
 #include "third_party/blink/public/mojom/frame/blocked_navigation_types.mojom.h"
@@ -108,6 +107,7 @@ class SiteInstance;
 class WebContents;
 struct ContextMenuParams;
 struct DropData;
+struct MediaStreamRequest;
 struct OpenURLParams;
 struct Referrer;
 
