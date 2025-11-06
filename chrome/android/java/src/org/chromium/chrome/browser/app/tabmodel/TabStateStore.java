@@ -311,8 +311,10 @@ public class TabStateStore implements TabPersistentStore {
     }
 
     private void onTabUnregistered(Tab tab) {
-        assumeNonNull(TabStateAttributes.from(tab)).removeObserver(mAttributesObserver);
-        // TODO(https://crbug.com/430996004): Delete the tab record.
+        if (!tab.isDestroyed()) {
+            assumeNonNull(TabStateAttributes.from(tab)).removeObserver(mAttributesObserver);
+        }
+        // TODO(https://crbug.com/430996004): If closing, delete the tab record.
     }
 
     private void onMoveTab(TabModel tabModel, int newIndex, int curIndex) {
