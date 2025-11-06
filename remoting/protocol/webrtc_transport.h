@@ -249,7 +249,7 @@ class WebrtcTransport : public Transport,
   raw_ptr<EventHandler> event_handler_ = nullptr;
   SendTransportInfoCallback send_transport_info_callback_;
 
-  crypto::HMAC handshake_hmac_;
+  std::vector<uint8_t> hmac_key_;
 
   std::unique_ptr<PeerConnectionWrapper> peer_connection_wrapper_;
 
