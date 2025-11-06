@@ -41,9 +41,9 @@ constexpr bool IsAlignedForChannelMessage(size_t n) {
   return n % kChannelMessageAlignment == 0;
 }
 
-// Interface to read and write arbitrary delimited messages over an underlying
-// I/O channel, optionally transferring one or more platform handles in the
-// process.
+// Channel provides a thread-safe interface to read and write arbitrary
+// delimited messages over an underlying I/O channel, optionally transferring
+// one or more platform handles in the process.
 //
 // This class (and its subclasses) is generally not thread-safe. However, it
 // allows concurrent calls to Write().
