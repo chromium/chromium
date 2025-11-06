@@ -273,11 +273,9 @@ class AudioSourceProviderClientLockScope {
 };
 
 bool CanLoadURL(const KURL& url, const String& content_type_str) {
-  DEFINE_STATIC_LOCAL(const String, codecs, ("codecs"));
-
   ContentType content_type(content_type_str);
   String content_mime_type = content_type.GetType().DeprecatedLower();
-  String content_type_codecs = content_type.Parameter(codecs);
+  String content_type_codecs = content_type.Parameter("codecs");
 
   // If the MIME type is missing or is not meaningful, try to figure it out from
   // the URL.

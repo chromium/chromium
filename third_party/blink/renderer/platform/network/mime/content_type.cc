@@ -36,7 +36,7 @@ static bool IsASCIIQuote(UChar c) {
   return c == '"';
 }
 
-String ContentType::Parameter(const String& parameter_name) const {
+String ContentType::Parameter(StringView parameter_name) const {
   Vector<String> parameters;
   ParseParameters(parameters);
 

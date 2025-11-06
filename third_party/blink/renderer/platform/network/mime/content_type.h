@@ -39,7 +39,7 @@ class PLATFORM_EXPORT ContentType {
  public:
   explicit ContentType(const String& type);
 
-  String Parameter(const String& parameter_name) const;
+  String Parameter(StringView parameter_name) const;
   String GetType() const;
   const String& Raw() const { return type_; }
 
