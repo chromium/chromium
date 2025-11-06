@@ -110,11 +110,20 @@ bool IsHostInAllowList(const std::vector<std::string_view>& allowlist,
   return false;
 }
 
+// Whether to continue with the action or navigation based on the optimization
+// guide decision. Since we want to not block navigation in case the service has
+// an issue, we only stop the actor when the decision is kFalse, explicitly
+// indicating optimization guide suggests we block the URL.
+bool ShouldContinueFromOptimizationGuideDecision(
+    optimization_guide::OptimizationGuideDecision decision) {
+  return decision != optimization_guide::OptimizationGuideDecision::kFalse;
+}
+
 void OnOptimizationGuideDecision(
     std::unique_ptr<DecisionWrapper> decision_wrapper,
     optimization_guide::OptimizationGuideDecision decision,
     const optimization_guide::OptimizationMetadata& metadata) {
-  if (decision == optimization_guide::OptimizationGuideDecision::kTrue) {
+  if (ShouldContinueFromOptimizationGuideDecision(decision)) {
     decision_wrapper->Accept();
   } else {
     std::string result("OptimizationGuideDecision ");
@@ -128,8 +137,8 @@ void OnOptimizationGuideDecisionForOriginGating(
     DecisionCallback callback,
     optimization_guide::OptimizationGuideDecision decision,
     const optimization_guide::OptimizationMetadata& metadata) {
-  std::move(callback).Run(decision ==
-                          optimization_guide::OptimizationGuideDecision::kTrue);
+  std::move(callback).Run(
+      ShouldContinueFromOptimizationGuideDecision(decision));
 }
 
 void MayActOnUrl(
