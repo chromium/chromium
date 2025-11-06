@@ -1858,20 +1858,3 @@ virtual/soft-navs-pre-paint-attribution-disabled/external/wpt/soft-navigation-he
 crbug.com/40550039 svg/css/use-replicates-changes-class.html [ Skip ]
 crbug.com/40550039 svg/css/use-replicates-changes-pseudo.html [ Skip ]
 crbug.com/40550039 svg/W3C-SVG-1.1-SE/struct-use-11-f.svg [ Skip ]
-
-# Temporary while we rebaseline for Temporal
-# https://g-issues.chromium.org/issues/401065166#comment113
-http/tests/serviceworker/webexposed/global-interface-listing-platform-specific-service-worker.html [ Skip ]
-http/tests/serviceworker/webexposed/global-interface-listing-service-worker.html [ Skip ]
-http/tests/shadowrealm/webexposed/global-interface-listing-shadow-realm.html [ Skip ]
-http/tests/worklet/webexposed/global-interface-listing-animation-worklet.html [ Skip ]
-http/tests/worklet/webexposed/global-interface-listing-audio-worklet.html [ Skip ]
-http/tests/worklet/webexposed/global-interface-listing-layout-worklet.html [ Skip ]
-http/tests/worklet/webexposed/global-interface-listing-paint-worklet.html [ Skip ]
-http/tests/worklet/webexposed/global-interface-listing-worklets.html [ Skip ]
-webexposed/global-interface-listing-dedicated-worker.html [ Skip ]
-webexposed/global-interface-listing-platform-specific-dedicated-worker.html [ Skip ]
-webexposed/global-interface-listing-platform-specific-shared-worker.html [ Skip ]
-webexposed/global-interface-listing-platform-specific.html [ Skip ]
-webexposed/global-interface-listing-shared-worker.html [ Skip ]
-webexposed/global-interface-listing.html [ Skip ]
