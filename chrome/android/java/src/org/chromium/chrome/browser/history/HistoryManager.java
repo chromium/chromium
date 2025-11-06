@@ -209,7 +209,10 @@ public class HistoryManager
                 mContentManager.getAdapter(),
                 mContentManager.getRecyclerView(),
                 edgeToEdgePadAdjusterGenerator);
-        if (mContentManager.showAppFilter()) {
+        boolean isLargeScreenWithKeyboard =
+                DeviceInput.supportsKeyboard()
+                        && DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity);
+        if (mContentManager.showAppFilter() || isLargeScreenWithKeyboard) {
             // Now the search mode can have a header. Let the layout ignore it to
             // return the right item count.
             mSelectableListLayout.ignoreItemTypeForEmptyState(ItemViewType.STANDARD_HEADER);
@@ -247,7 +250,17 @@ public class HistoryManager
                         return IncognitoUtils.isIncognitoModeEnabled(profile);
                     }
                 });
-        mToolbar.initializeSearchView(this, R.string.history_manager_search, R.id.search_menu_id);
+
+        mToolbar.setIsLargeScreenWithKeyboard(isLargeScreenWithKeyboard);
+
+        /* If the current device is LFF device w/ physical keyboard attached,
+         * then initialize the search box only; Otherwise initialize the whole toolbar
+         */
+        if (!isLargeScreenWithKeyboard) {
+            mToolbar.initializeSearchView(
+                    this, R.string.history_manager_search, R.id.search_menu_id);
+        } else mToolbar.initializeInlineSearchView(this, R.id.search_menu_id);
+
         mToolbar.setInfoMenuItem(R.id.info_menu_id);
         mToolbar.updateInfoMenuItem(shouldShowInfoButton(), shouldShowInfoHeaderIfAvailable());
 
@@ -274,14 +287,8 @@ public class HistoryManager
         onBackPressStateChanged(); // Initialize back press State.
         mContentManager.maybeQueryApps();
 
-        boolean isLargeScreenWithKeyboard =
-                DeviceInput.supportsKeyboard()
-                        && DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity);
-        mToolbar.setIsLargeScreenWithKeyboard(isLargeScreenWithKeyboard);
         mContentManager.getAdapter().setIsLargeScreenWithKeyboard(isLargeScreenWithKeyboard);
-        if (isLargeScreenWithKeyboard) {
-            enterSearchMode();
-        }
+        mContentManager.getAdapter().setToolbar(mToolbar);
     }
 
     private void initializeEmptyView() {

@@ -755,8 +755,6 @@ public class HistoryUiTest {
         mRecyclerView = mContentManager.getRecyclerView();
 
         final HistoryManagerToolbar toolbar = mHistoryManager.getToolbarForTests();
-        final MenuItem searchMenuItem =
-                toolbar.getItemById(R.id.search_menu_id); // The magnifier button
 
         // Sign in and set has other forms of browsing data to true.
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
@@ -764,9 +762,9 @@ public class HistoryUiTest {
 
         ShadowLooper.idleMainLooper();
         DateDividedAdapter.ItemGroup firstGroup = mAdapter.getFirstGroupForTests();
-        assertFalse(searchMenuItem.isVisible());
+        Assert.assertNull(toolbar.getItemById(R.id.search_menu_id));
         Assert.assertTrue(mAdapter.hasListHeader());
-        Assert.assertEquals(2, firstGroup.size());
+        Assert.assertEquals(3, firstGroup.size());
     }
 
     @Test
@@ -1040,10 +1038,14 @@ public class HistoryUiTest {
         BackPressHelper.create(mLifecycleOwner, mOnBackPressedDispatcher, testHandler);
 
         HistoryManagerToolbar toolbar = historyManager.getToolbarForTests();
-        EditText searchText = toolbar.findViewById(R.id.search_text);
+        EditText searchText = toolbar.getSearchTextForTest();
+        assertNotNull(searchText);
 
         // Act 1 & Assert 1: Search mode is automatic. Type text and verify handler is enabled.
-        assertTrue("Should be in search mode on tablet startup.", toolbar.isSearching());
+        assertEquals(
+                "Search box should be visible on tablet startup.",
+                View.VISIBLE,
+                searchText.getVisibility());
         ThreadUtils.runOnUiThreadBlocking(() -> searchText.setText("query"));
         assertTrue(
                 "Handler should be enabled when search bar has text.",
@@ -1057,9 +1059,9 @@ public class HistoryUiTest {
                 "Search text should be empty after back press.",
                 searchText.getText().toString().isEmpty());
         assertEquals(
-                "Search view should still be visible.",
+                "Search box should be visible after back press.",
                 View.VISIBLE,
-                toolbar.getSearchViewForTests().getVisibility());
+                searchText.getVisibility());
         assertFalse(
                 "Handler should be disabled when search bar is empty.",
                 historyManager.getHandleBackPressChangedSupplier().get());

@@ -59,6 +59,7 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
     private @Nullable HeaderItem mHistoryOpenInChromeHeaderItem;
     private @Nullable HeaderItem mHistorySyncPromoHeaderItem;
     private @Nullable HeaderItem mAppFilterHeaderItem;
+    private @Nullable HeaderItem mSearchBoxHeaderItem;
     private ChipView mAppFilterChip;
 
     // Footers
@@ -75,8 +76,10 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
     private boolean mPrivacyDisclaimersVisible;
     private boolean mClearBrowsingDataButtonVisible;
     private boolean mHistorySyncPromoVisible;
+    private boolean mSearchBoxVisible;
     private String mQueryText = EMPTY_QUERY;
     private @Nullable String mHostName;
+    private HistoryManagerToolbar mToolbar;
 
     // ID of the App currently chosen for app filtering. If null, ignored when querying history.
     private @Nullable String mAppId;
@@ -288,7 +291,8 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
 
         boolean isEmpty = items.size() > 0 || mHistorySyncPromoVisible;
         if ((!mAreHeadersInitialized && isEmpty && !mIsSearching)
-                || (mIsSearching && mShowAppFilter)) {
+                || (mIsSearching && mShowAppFilter)
+                || mIsLargeScreenWithKeyboard) {
             setHeaders();
             mAreHeadersInitialized = true;
         }
@@ -324,7 +328,9 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
 
         // Querying apps was completed after the search mode is entered (or within search mode).
         // Set the headers again to show/hide the header item for the app filter button.
-        if (mIsSearching) setHeaders();
+        if (mIsSearching) {
+            setHeaders();
+        }
     }
 
     @Override
@@ -377,8 +383,16 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
     void generateHeaderItems() {
         ViewGroup historyAppFilterContainer = getAppFilterContainer(null);
         ViewGroup privacyDisclaimerContainer = getPrivacyDisclaimerContainer(null);
-
         ViewGroup clearBrowsingDataButtonContainer = getClearBrowsingDataButtonContainer(null);
+
+        // Add a search box in the recycler view iff lff device w/ phy keyboard
+        if (mIsLargeScreenWithKeyboard) {
+            @Nullable ViewGroup searchBoxContainer = getSearchBoxContainer(null);
+            mIsSearching = true;
+            if (searchBoxContainer != null) {
+                mSearchBoxHeaderItem = new StandardHeaderItem(-1, searchBoxContainer);
+            }
+        }
 
         mAppFilterHeaderItem = new StandardHeaderItem(0, historyAppFilterContainer);
         mPrivacyDisclaimerHeaderItem = new StandardHeaderItem(0, privacyDisclaimerContainer);
@@ -405,6 +419,7 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
         setPrivacyDisclaimer();
         updatePrivacyDisclaimerBottomSpace();
         updateHistorySyncPromoVisibility();
+        updateSearchBoxVisibility();
     }
 
     private ViewGroup getClearBrowsingDataButtonContainer(@Nullable ViewGroup parent) {
@@ -440,6 +455,13 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
         mAppFilterChip.getPrimaryTextView().setText(R.string.history_filter_by_app);
         mAppFilterChip.addDropdownIcon();
         return historyAppFilterContainer;
+    }
+
+    private @Nullable ViewGroup getSearchBoxContainer(@Nullable ViewGroup parent) {
+        if (mToolbar == null) return null;
+        ViewGroup searchBarContainer =
+                mToolbar.initializeSearchBoxContainer(parent, R.string.history_manager_search);
+        return searchBarContainer;
     }
 
     private View getHistorySyncPromoView() {
@@ -556,6 +578,9 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
     /** For LFF devices w/ physical keyboard attached, there's only search mode. */
     private void setLFFHeaders() {
         ArrayList<HeaderItem> args = new ArrayList<>();
+        if (mSearchBoxVisible) {
+            args.add(mSearchBoxHeaderItem);
+        }
         if (mShowAppFilter && mManager.hasFilterList()) args.add(mAppFilterHeaderItem);
         if (isNormalContentAvailable()) {
             if (mPrivacyDisclaimersVisible) {
@@ -620,7 +645,26 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
         if (mAreHeadersInitialized) setHeaders();
     }
 
-    /** @param hostName The hostName to retrieve history entries for. */
+    /* Set visible if current device is LFF device w/ physical keyboard attached */
+    private void updateSearchBoxVisibility() {
+        if (mToolbar == null) {
+            mSearchBoxVisible = false;
+            return;
+        }
+        mSearchBoxVisible = mIsLargeScreenWithKeyboard;
+    }
+
+    /* Regenerate searchbox header after toolbar becomes non-null*/
+    @Initializer
+    public void setToolbar(HistoryManagerToolbar toolbar) {
+        mToolbar = toolbar;
+        generateHeaderItems();
+        setHeaders();
+    }
+
+    /**
+     * @param hostName The hostName to retrieve history entries for.
+     */
     public void setHostName(@Nullable String hostName) {
         mHostName = hostName;
     }

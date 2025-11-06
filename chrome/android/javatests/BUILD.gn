@@ -1600,6 +1600,7 @@ android_library("chrome_test_java_various") {
     "//base:holder_java",
     "//chrome/browser/ntp_customization:java",
     "//components/browser_ui/http_auth/android:java",
+    "//third_party/androidx:androidx_test_ext_junit_java",
   ]
 }
 
