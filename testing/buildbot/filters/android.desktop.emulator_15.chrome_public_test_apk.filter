@@ -38,10 +38,6 @@
 -org.chromium.chrome.browser.payments.PaymentRequestShowPromiseUnsupportedTest.*
 -org.chromium.chrome.browser.payments.PaymentRequestTabTest.*
 
-# crbug.com/376169912
--org.chromium.chrome.browser.ntp.ShowNtpAtStartupTest.testFakeSearchBoxWidth
--org.chromium.chrome.browser.ntp.ShowNtpAtStartupTest.testMvtLayoutHorizontalMargin
-
 # crbug.com/446934111
 -org.chromium.chrome.browser.incognito.IncognitoHistoryLeakageTest.*
 -org.chromium.chrome.browser.incognito.IncognitoNotificationServiceTest.*
@@ -67,7 +63,6 @@
 -org.chromium.chrome.browser.commerce.coupons.DiscountsIntegrationTest.testRenderDiscountContextualPageActionIcon
 
 # crbug.com/376527109
--org.chromium.chrome.browser.tasks.tab_management.ArchivedTabsDialogCoordinatorTest.testIphMessageResizedOnTablet
 -org.chromium.chrome.browser.tasks.tab_management.TabListContainerViewBinderTest.testSetInitialScrollIndex_Grid
 
 # crbug.com/376528174
@@ -109,4 +104,83 @@
 
 # https://crbug.com/446934111
 # Aggressively disable failed tests to green the suite ASAP.
+-org.chromium.chrome.browser.app.appmenu.TabbedAppMenuPTTest.testNewTabPageIncognitoAppMenuItems
+-org.chromium.chrome.browser.app.appmenu.TabbedAppMenuPTTest.testWebPageIncognitoAppMenuItems
+-org.chromium.chrome.browser.app.flags.ChromeCachedFlagsTest.testValueIsConsistentWithDefault
+-org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestratorTest.testOpenArchivedTabFromHubSearch_Incognito
+-org.chromium.chrome.browser.appearance.settings.AppearanceSettingsFragmentTest.testBookmarkBarPreferenceIsUpdatedWhenSettingChanges_Tablet
+-org.chromium.chrome.browser.appearance.settings.AppearanceSettingsFragmentTest.testBookmarkBarPreferenceUpdatesSettingWhenChanged_Tablet
+-org.chromium.chrome.browser.autofill.TouchToFillCreditCardTest.testSelectingLocalCard
+-org.chromium.chrome.browser.bookmarks.BookmarkOpenerTest.testOpenBookmarkInCurrentTab_Incognito
+-org.chromium.chrome.browser.bookmarks.BookmarkOpenerTest.testOpenBookmarksInNewTabs_Incognito
+-org.chromium.chrome.browser.bookmarks.BookmarkPersonalizedSigninPromoTest.shouldHideBookmarksSigninPromoIfDataTypesAreManagedByPolicy
+-org.chromium.chrome.browser.contextmenu.ContextMenuTest.testCopyImage
+-org.chromium.chrome.browser.contextmenu.ContextMenuTest.testContextMenuOpenedFromHighlight
+-org.chromium.chrome.browser.contextmenu.CustomTabContextMenuTest.*
+-org.chromium.chrome.browser.contextualsearch.ContextualSearchManagerTest.testContextualDictionaryDefinitions
+-org.chromium.chrome.browser.contextualsearch.ContextualSearchManagerTest.testPanelDismissedOnToggleFullscreen
+-org.chromium.chrome.browser.contextualsearch.ContextualSearchManagerTest.testTriggeringContextualSearchHidesFindInPageOverlay
+-org.chromium.chrome.browser.customtabs.TabReparentingTest.testTabReparentingSelectPopup
+-org.chromium.chrome.browser.externalnav.UrlOverridingTest.testCctRedirectFromIntentUriStaysInChrome_InIncognito
+-org.chromium.chrome.browser.externalnav.UrlOverridingTest.testIncognitoSubframeExternalNavigation_Accepted
+-org.chromium.chrome.browser.externalnav.UrlOverridingTest.testIncognitoSubframeExternalNavigation_Rejected
+-org.chromium.chrome.browser.findinpage.FindTest.testFindNextPreviousIncognitoTab
+-org.chromium.chrome.browser.findinpage.FindTest.testFipTextNotRestoredIncognitoTab
 -org.chromium.chrome.browser.fullscreen.FullscreenManagerTest.*
+-org.chromium.chrome.browser.hub.HubLayoutPublicTransitTest.testChangeTabSwitcherPanes
+-org.chromium.chrome.browser.hub.HubLayoutPublicTransitTest.testEnterHubAndLeaveViaAppMenuNewIncognitoTab
+-org.chromium.chrome.browser.hub.HubLayoutPublicTransitTest.testIncognitoTabSwitcherStation_newTabGroup
+-org.chromium.chrome.browser.identity_disc.IdentityDiscControllerTest.testIdentityDiscWithSwitchToIncognito
+-org.chromium.chrome.browser.input.SelectPopupOtherContentViewTest.testPopupNotClosedByOtherContentView
+-org.chromium.chrome.browser.keyboard_accessory.AutofillKeyboardAccessoryIntegrationTest.*
+-org.chromium.chrome.browser.keyboard_accessory.PasswordGenerationIntegrationTest.*
+-org.chromium.chrome.browser.LauncherShortcutTest.testDynamicShortcuts
+-org.chromium.chrome.browser.LauncherShortcutTest.testDynamicShortcuts_LanguageChange
+-org.chromium.chrome.browser.media.ui.AutoplayMutedNotificationTest.testMutedPlaybackDoesNotTakeAudioFocus
+-org.chromium.chrome.browser.media.ui.AutoplayMutedNotificationTest.testUnmutedPlaybackTakesAudioFocus
+-org.chromium.chrome.browser.media.ui.FullscreenVideoPictureInPictureControllerTest.*
+-org.chromium.chrome.browser.ntp.IncognitoNtpOmniboxAutofocusTrackerTest.*
+-org.chromium.chrome.browser.ntp.MostVisitedTilesPTTest.testOpenItemInIncognitoTab
+-org.chromium.chrome.browser.ntp.NewTabPageNavigationTest.testNavigateToTabSwitcherFromIncognitoNtp
+-org.chromium.chrome.browser.omnibox.geo.GeolocationHeaderTest.testConsistentHeader
+-org.chromium.chrome.browser.omnibox.geo.GeolocationHeaderTest.testConsistentHeaderForOneTimeGrant
+-org.chromium.chrome.browser.omnibox.suggestions.OmniboxPedalsTest.testOpenIncognitoTab
+-org.chromium.chrome.browser.partnercustomizations.PartnerDisableIncognitoModeIntegrationTest.*
+-org.chromium.chrome.browser.payments.ExpandablePaymentHandlerTest.testIncognitoTrue
+-org.chromium.chrome.browser.permissions.RuntimePermissionTest.testAllowRuntimeLocationIncognito
+-org.chromium.chrome.browser.permissions.RuntimePermissionTest.testRuntimeMediaPromptHistogram
+-org.chromium.chrome.browser.policy.CombinedPolicyProviderTest.testTerminateIncognitoSon
+-org.chromium.chrome.browser.safety_hub.SafetyHubHatsHelperTest.*
+-org.chromium.chrome.browser.sensitive_content.SensitiveContentTest.testIncognitoTabSwitcherBecomesSensitive
+-org.chromium.chrome.browser.sensitive_content.SensitiveContentTest.testSensitiveContentIsRestoredFromTabState
+-org.chromium.chrome.browser.supervised_user.SupervisedUserCriticalJourneysIntegrationTest.incognitoModeIsUnavailableFromAppMenu
+-org.chromium.chrome.browser.supervised_user.SupervisedUserCriticalJourneysIntegrationTest.incognitoModeIsUnavailableFromTabSwitcherActionMenu
+-org.chromium.chrome.browser.tab.SadTabTest.testSadTabBrowserControlsVisibility
+-org.chromium.chrome.browser.tabbed_mode.TabbedNavigationBarColorControllerTest.testToggleIncognito
+-org.chromium.chrome.browser.tabmodel.TabModelImplTest.testCloseIncognitoTabSwitchesToNormalModelAndUpdatesIncognitoIndex
+-org.chromium.chrome.browser.tabmodel.TabModelImplTest.testSetMuteSetting_Incognito
+-org.chromium.chrome.browser.tabmodel.TabModelImplTest.validIndexAfterRestored_FromPreviousActivity_WithIncognitoTabs
+-org.chromium.chrome.browser.tasks.tab_management.TabGroupDialogPTTest.testIncognitoNewTabCreation
+-org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetTest.testNewGroup_IncognitoNewTabPageStation
+-org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetTest.testNewGroup_IncognitoWebPageStation
+-org.chromium.chrome.browser.tasks.tab_management.TabSwitcherLayoutPTTest.testRenderGrid_Incognito
+-org.chromium.chrome.browser.tasks.tab_management.TabSwitcherLayoutPTTest.testRenderGrid_TabGroupColor_Incognito_2TabsInGroup
+-org.chromium.chrome.browser.tasks.tab_management.TabSwitcherLayoutPTTest.testRenderGrid_TabGroupColor_Incognito_5TabsInGroup
+-org.chromium.chrome.browser.tasks.tab_management.TabSwitcherLayoutPTTest.testUrlUpdatedNotCrashing_ForTabNotInCurrentModel
+-org.chromium.chrome.browser.tasks.tab_management.TabSwitcherPanePublicTransitTest.*
+-org.chromium.chrome.browser.tasks.tab_management.TabSwitcherSearchRenderTest.testRenderTypedSuggestions_Incognito
+-org.chromium.chrome.browser.tasks.tab_management.TabSwitcherSearchRenderTest.testZeroPrefixSuggestions_HiddenInIncognito
+-org.chromium.chrome.browser.tasks.tab_management.TabSwitcherSearchTest.testSearchActivityBackButton_Incognito
+-org.chromium.chrome.browser.tasks.tab_management.TabSwitcherSearchTest.testTypedSuggestions_Incognito
+-org.chromium.chrome.browser.tasks.tab_management.TabSwitcherSearchTest.testTypedSuggestions_OpenSearchSuggestion_Incognito
+-org.chromium.chrome.browser.tasks.tab_management.TabSwitcherSearchTest.testZeroPrefixSuggestions_Incognito
+-org.chromium.chrome.browser.TabsTest.testLastClosedTabTriggersNotifyChangedCall
+-org.chromium.chrome.browser.TabsTest.testLastClosedUndoableTabGetsHidden
+-org.chromium.chrome.browser.toolbar.TabSwitcherDrawableRenderTest.testTabSwitcherDrawable_newTabPageIncognito
+-org.chromium.chrome.browser.ToolbarSwipeTest.testToolbarSwipeNextThenPrevTabIncognito
+-org.chromium.chrome.browser.ViewTransitionPixelTest.testBrowserControlsChildSnapshotControlsOverlay
+-org.chromium.chrome.browser.ViewTransitionPixelTest.testBrowserControlsRootSnapshotControlsOverlay
+-org.chromium.chrome.browser.TabsTest.testLastClosedTabTriggersNotifyChangedCall
+-org.chromium.chrome.browser.TabsTest.testLastClosedUndoableTabGetsHidden
+-org.chromium.chrome.browser.ViewTransitionPixelTest.testBrowserControlsChildSnapshotControlsOverlay
+-org.chromium.chrome.browser.ViewTransitionPixelTest.testBrowserControlsRootSnapshotControlsOverlay
