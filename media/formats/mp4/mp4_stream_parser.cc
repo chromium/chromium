@@ -604,10 +604,22 @@ bool MP4StreamParser::ParseMoov(BoxReader* reader) {
         } else if (audio_type == kAC3) {
           codec = AudioCodec::kAC3;
           channel_layout = entry.ac3.dac3.GetChannelLayout();
+          // Add an exception to allow using AudioSampleEntry's ChannelCount
+          // temporarily when AC3SpecificBox('dac3') information is
+          // not available.
+          if (channel_layout == CHANNEL_LAYOUT_UNSUPPORTED) {
+            channel_layout = GuessChannelLayout(entry.channelcount);
+          }
           sample_per_second = entry.samplerate;
         } else if (audio_type == kEAC3) {
           codec = AudioCodec::kEAC3;
           channel_layout = entry.eac3.dec3.GetChannelLayout();
+          // Add an exception to allow using AudioSampleEntry's ChannelCount
+          // temporarily when EC3SpecificBox('dec3') information is
+          // not available.
+          if (channel_layout == CHANNEL_LAYOUT_UNSUPPORTED) {
+            channel_layout = GuessChannelLayout(entry.channelcount);
+          }
           sample_per_second = entry.samplerate;
 #endif
 #if BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)

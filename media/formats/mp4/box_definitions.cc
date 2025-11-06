@@ -1857,13 +1857,29 @@ bool AudioSampleEntry::Parse(BoxReader* reader) {
 #if BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
   if (format == FOURCC_AC3 ||
       (format == FOURCC_ENCA && sinf.format.format == FOURCC_AC3)) {
-    RCHECK_MEDIA_LOGGED(reader->ReadChild(&ac3), reader->media_log(),
-                        "Failure parsing AC3SpecificBox (dac3)");
+    if (!(reader->ReadChild(&ac3))) {
+      MEDIA_LOG(ERROR, reader->media_log())
+          << "Failure parsing AC3SpecificBox (dac3)";
+      RCHECK_MEDIA_LOGGED(
+          channelcount != CHANNEL_LAYOUT_NONE, reader->media_log(),
+          "Channel configuration is undetermined. The primary "
+          "AC3SpecificBox(dac3) failed to parse, and the fallback "
+          "AudioSampleEntry channel count was zero (0), indicating no "
+          "valid channel information.");
+    }
   }
   if (format == FOURCC_EAC3 ||
       (format == FOURCC_ENCA && sinf.format.format == FOURCC_EAC3)) {
-    RCHECK_MEDIA_LOGGED(reader->ReadChild(&eac3), reader->media_log(),
-                        "Failure parsing EC3SpecificBox (dec3)");
+    if (!(reader->ReadChild(&eac3))) {
+      MEDIA_LOG(ERROR, reader->media_log())
+          << "Failure parsing EC3SpecificBox (dec3)";
+      RCHECK_MEDIA_LOGGED(
+          channelcount != CHANNEL_LAYOUT_NONE, reader->media_log(),
+          "Channel configuration is undetermined. The primary "
+          "EC3SpecificBox (dec3) failed to parse, and the fallback "
+          "AudioSampleEntry channel count was zero (0), indicating no "
+          "valid channel information.");
+    }
   }
 #endif  // BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
 
