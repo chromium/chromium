@@ -6407,6 +6407,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.SyncedSetUp.TriggerSource" enum="SyncedSetUpTriggerSource"
+    expires_after="2026-11-05">
+  <owner>ericekey@google.com</owner>
+  <owner>bwwilliams@google.com</owner>
+  <owner>scottyoder@google.com</owner>
+  <summary>
+    Records the event that caused the Synced Set Up flow to start (e.g., First
+    Run, remote pref change, or scene activation). This provides a key metric
+    for understanding how users are entering the flow.
+  </summary>
+</histogram>
+
 <histogram name="IOS.System.PreferredSystemFontSize"
     enum="IOSContentSizeCategory" expires_after="2026-06-01">
   <owner>jlebel@chromium.org</owner>

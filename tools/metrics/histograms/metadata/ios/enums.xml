@@ -1915,6 +1915,22 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/ios/chrome/browser/safari_data_import/public/safari_data_import_stage.h:SafariDataImportStage) -->
 
+<!-- LINT.IfChange(SyncedSetUpTriggerSource) -->
+
+<enum name="SyncedSetUpTriggerSource">
+  <int value="0" label="PostFirstRun">
+    Triggered as part of the Post-First Run Experience.
+  </int>
+  <int value="1" label="RemotePrefChange">
+    Triggered by a remote pref change notification from Sync.
+  </int>
+  <int value="2" label="SceneActivation">
+    Triggered by a scene becoming foreground active.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/synced_set_up/public/synced_set_up_metrics.h:SyncedSetUpTriggerSource) -->
+
 <enum name="TextSelectionDetectedEntityType">
   <int value="0" label="Unknown"/>
   <int value="1" label="None"/>
