@@ -540,13 +540,18 @@ public class BookmarkBarCoordinator
     @Override
     public void updateOffsetTag(@Nullable BrowserControlsOffsetTagsInfo offsetTagsInfo) {
         // The Bookmarks Bar will only be present when the control container is at the top.
-        if (mBrowserControlsStateProvider.getControlsPosition() == ControlsPosition.TOP
-                && offsetTagsInfo != null) {
+        if (mBrowserControlsStateProvider.getControlsPosition() != ControlsPosition.TOP) return;
+
+        if (offsetTagsInfo != null) {
             mBookmarkBarSceneLayerModel.set(
                     BookmarkBarSceneLayerProperties.OFFSET_TAG,
                     offsetTagsInfo.getTopControlsOffsetTag());
         } else {
             mBookmarkBarSceneLayerModel.set(BookmarkBarSceneLayerProperties.OFFSET_TAG, null);
+            mBookmarkBarSceneLayerModel.set(
+                    BookmarkBarSceneLayerProperties.SCENE_LAYER_OFFSET_HEIGHT,
+                    sceneLayerHeightOffset()
+                            + mBrowserControlsStateProvider.getTopControlsHeight());
         }
     }
 
