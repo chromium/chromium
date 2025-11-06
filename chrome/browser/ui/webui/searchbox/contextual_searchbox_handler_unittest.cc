@@ -109,6 +109,9 @@ class FakeContextualSearchboxHandler : public ContextualSearchboxHandler {
 };
 }  // namespace
 
+// TODO(crbug.com/458086158): Make dedicated unit tests for the
+// ContextualSessionHandle for testing query controller and metrics recorder
+// interactions.
 class ContextualSearchboxHandlerTest
     : public ContextualSearchboxHandlerTestHarness {
  public:

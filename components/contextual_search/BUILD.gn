@@ -21,6 +21,7 @@ source_set("public") {
     "//components/signin/public/identity_manager",
     "//components/variations",
     "//components/version_info:channel",
+    "//mojo/public/mojom/base",
     "//services/network/public/cpp",
     "//url",
   ]
@@ -31,8 +32,8 @@ source_set("impl") {
   sources = [
     "contextual_search_metrics_recorder.cc",
     "contextual_search_service.cc",
-    "contextual_search_session_entry.h",
     "contextual_search_session_entry.cc",
+    "contextual_search_session_entry.h",
     "contextual_search_session_handle.cc",
   ]
 

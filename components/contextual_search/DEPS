@@ -9,6 +9,7 @@ include_rules = [
   "+components/variations",
   "+components/version_info",
   "+google_apis",
+  "+mojo/public/cpp/base",
   "+net",
   "+services/data_decoder/public/cpp",
   "+services/network/public/cpp",
