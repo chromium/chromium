@@ -201,7 +201,6 @@ class OzonePlatformX11 : public OzonePlatform,
       properties->skia_can_fall_back_to_x11 = true;
       properties->platform_shows_drag_image = false;
       properties->app_modal_dialogs_use_event_blocker = true;
-      properties->fetch_buffer_formats_for_gmb_on_gpu = true;
 
       // Defaults to false unless explicitly enabled for testing.
       properties->set_parent_for_non_top_level_windows =
@@ -235,8 +234,6 @@ class OzonePlatformX11 : public OzonePlatform,
 
   bool IsNativePixmapConfigSupported(gfx::BufferFormat format,
                                      gfx::BufferUsage usage) const override {
-    // Native pixmap support is determined on gpu process via gpu extra info
-    // that gets this information from GpuMemoryBufferSupportX11.
     return false;
   }
 

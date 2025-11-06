@@ -156,10 +156,6 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
     // to allow the only browser window receiving UI events.
     bool app_modal_dialogs_use_event_blocker = false;
 
-    // Determines whether buffer formats should be fetched on GPU and passed
-    // back via gpu extra info.
-    bool fetch_buffer_formats_for_gmb_on_gpu = false;
-
     // Indicates that the platform allows client applications to manipulate
     // global screen coordinates. Wayland, for example, disallow it by design.
     bool supports_global_screen_coordinates = true;
