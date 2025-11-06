@@ -50,6 +50,7 @@ public class ProfileKey implements SimpleFactoryKeyHandle {
 
     @Override
     public long getNativeSimpleFactoryKeyPointer() {
+        if (mNativeProfileKeyAndroid == 0) return 0;
         return ProfileKeyJni.get().getSimpleFactoryKeyPointer(mNativeProfileKeyAndroid);
     }
 

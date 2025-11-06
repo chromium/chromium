@@ -35,8 +35,9 @@ public class CachedImageFetcher extends ImageFetcher {
          * @param filePath The path to the image on disk (including the filename).
          * @return The Bitmap that's on disk or null if the there's no file or the decoding failed.
          */
-        @Nullable
-        Bitmap tryToLoadImageFromDisk(String filePath) {
+        @Nullable Bitmap tryToLoadImageFromDisk(@Nullable String filePath) {
+            if (filePath == null) return null;
+
             if (new File(filePath).exists()) {
                 return BitmapFactory.decodeFile(filePath, null);
             } else {
@@ -49,10 +50,11 @@ public class CachedImageFetcher extends ImageFetcher {
          *
          * @param filePath The path to the BaseGifImage on disk (including the filename).
          * @return The BaseGifImage that's on disk or null if the there's no file or the decoding
-         *         failed.
+         *     failed.
          */
-        @Nullable
-        BaseGifImage tryToLoadGifFromDisk(String filePath) {
+        @Nullable BaseGifImage tryToLoadGifFromDisk(@Nullable String filePath) {
+            if (filePath == null) return null;
+
             FileInputStream fileInputStream = null;
             try {
                 File file = new File(filePath);

@@ -78,6 +78,10 @@ ScopedJavaLocalRef<jstring> ImageFetcherBridge::GetFilePath(
   std::string url = base::android::ConvertJavaStringToUTF8(j_url);
   SimpleFactoryKey* key =
       simple_factory_key::SimpleFactoryKeyFromJavaHandle(j_simple_factory_key);
+  if (!key) {
+    return nullptr;
+  }
+
   std::string file_path = image_fetcher::GetImageFetcherCachePath(
       key, base::FilePath(kPathPostfix)
                .Append(ImageCache::HashUrlToKey(url))
@@ -113,6 +117,11 @@ void ImageFetcherBridge::FetchImageData(
   params.set_skip_transcoding(true);
   SimpleFactoryKey* key =
       simple_factory_key::SimpleFactoryKeyFromJavaHandle(j_simple_factory_key);
+  if (!key) {
+    OnImageDataFetched(callback, std::string(), RequestMetadata());
+    return;
+  }
+
   image_fetcher::GetImageFetcherService(key)
       ->GetImageFetcher(config)
       ->FetchImageData(
@@ -149,6 +158,11 @@ void ImageFetcherBridge::FetchImage(
 
   SimpleFactoryKey* key =
       simple_factory_key::SimpleFactoryKeyFromJavaHandle(j_simple_factory_key);
+  if (!key) {
+    OnImageFetched(callback, gfx::Image(), RequestMetadata());
+    return;
+  }
+
   image_fetcher::GetImageFetcherService(key)
       ->GetImageFetcher(config)
       ->FetchImage(

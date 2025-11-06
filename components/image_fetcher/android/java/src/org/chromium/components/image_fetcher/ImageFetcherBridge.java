@@ -55,7 +55,7 @@ public class ImageFetcherBridge {
      * @param url The url to hash.
      * @return The full path to the resource on disk.
      */
-    public String getFilePath(String url) {
+    public @Nullable String getFilePath(String url) {
         return ImageFetcherBridgeJni.get().getFilePath(mSimpleFactoryKeyHandle, url);
     }
 
@@ -206,7 +206,7 @@ public class ImageFetcherBridge {
     @NativeMethods
     interface Natives {
         // Native methods
-        String getFilePath(SimpleFactoryKeyHandle simpleFactoryKeyHandle, String url);
+        @Nullable String getFilePath(SimpleFactoryKeyHandle simpleFactoryKeyHandle, String url);
 
         void fetchImageData(
                 SimpleFactoryKeyHandle simpleFactoryKeyHandle,
