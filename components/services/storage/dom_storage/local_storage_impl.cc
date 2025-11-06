@@ -52,29 +52,10 @@
 
 namespace storage {
 
-// LevelDB database schema
-// =======================
-//
-// Version 1 (in sorted order):
-//   key: "VERSION"
-//   value: "1"
-//
-//   key: "METAACCESS:" + <StorageKey 'storage_key'>
-//   value: <LocalStorageAreaAccessMetaData serialized as a string>
-//
-//   key: "META:" + <StorageKey 'storage_key'>
-//   value: <LocalStorageAreaWriteMetaData serialized as a string>
-//
-//   key: "_" + <StorageKey 'storage_key'> + '\x00' + <script controlled key>
-//   value: <script controlled value>
-//
-// Note: The StorageKeys are serialized as origins, not URLs, i.e. with no
-// trailing slashes.
+// For a description of the local storage LevelDB schema, see comments in
+// `leveldb/local_storage_leveldb.h`.
 
 namespace {
-
-// Temporary alias as this code moves incrementally into the storage namespace.
-using StorageAreaImpl = StorageAreaImpl;
 
 static const int kStaleBucketCutoffInDays = 400;
 
@@ -95,24 +76,6 @@ const size_t kMaxLocalStorageCacheSize = 2 * 1024 * 1024;
 const unsigned kMaxLocalStorageAreaCount = 50;
 const size_t kMaxLocalStorageCacheSize = 20 * 1024 * 1024;
 #endif
-
-std::optional<blink::StorageKey> ExtractStorageKeyFromWriteMetaDataKey(
-    const DomStorageDatabase::Key& key) {
-  if (key.size() < std::size(kWriteMetaPrefix)) {
-    return std::nullopt;
-  }
-  return blink::StorageKey::DeserializeForLocalStorage(
-      base::as_string_view(key).substr(std::size(kWriteMetaPrefix)));
-}
-
-std::optional<blink::StorageKey> ExtractStorageKeyFromAccessMetaDataKey(
-    const DomStorageDatabase::Key& key) {
-  if (key.size() < std::size(kAccessMetaPrefix)) {
-    return std::nullopt;
-  }
-  return blink::StorageKey::DeserializeForLocalStorage(
-      base::as_string_view(key).substr(std::size(kAccessMetaPrefix)));
-}
 
 void SuccessResponse(base::OnceClosure callback, bool success) {
   std::move(callback).Run();
@@ -793,12 +756,7 @@ void LocalStorageImpl::RetrieveStorageUsage(GetUsageCallback callback) {
     }
     std::move(callback).Run(std::move(result));
   } else {
-    database_->RunDatabaseTask(
-        base::BindOnce([](DomStorageDatabaseLevelDB& db) {
-          std::vector<DomStorageDatabase::KeyValuePair> data;
-          db.GetPrefixed(base::span(kWriteMetaPrefix), &data);
-          return data;
-        }),
+    database_->ReadAllMetadata(
         base::BindOnce(&LocalStorageImpl::OnGotWriteMetaData,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
@@ -806,28 +764,26 @@ void LocalStorageImpl::RetrieveStorageUsage(GetUsageCallback callback) {
 
 void LocalStorageImpl::OnGotWriteMetaData(
     GetUsageCallback callback,
-    std::vector<DomStorageDatabase::KeyValuePair> data) {
+    StatusOr<DomStorageDatabase::Metadata> all_metadata) {
   std::vector<mojom::StorageUsageInfoPtr> result;
   std::set<blink::StorageKey> storage_keys;
-  for (const auto& row : data) {
-    std::optional<blink::StorageKey> storage_key =
-        ExtractStorageKeyFromWriteMetaDataKey(row.key);
-    if (!storage_key) {
-      // TODO(mek): Deal with database corruption.
-      continue;
-    }
-    storage_keys.insert(*storage_key);
 
-    storage::LocalStorageAreaWriteMetaData row_data;
-    if (!row_data.ParseFromArray(row.value.data(), row.value.size())) {
-      // TODO(mek): Deal with database corruption.
-      continue;
-    }
+  // Update `result` to include maps that have committed data to disk.
+  if (all_metadata.has_value()) {
+    for (const DomStorageDatabase::MapMetadata& usage_metadata :
+         all_metadata->map_metadata) {
+      if (usage_metadata.last_modified && usage_metadata.total_size) {
+        const blink::StorageKey& storage_key =
+            usage_metadata.map_locator.storage_key();
+        storage_keys.insert(storage_key);
 
-    result.emplace_back(mojom::StorageUsageInfo::New(
-        storage_key.value(), row_data.size_bytes(),
-        base::Time::FromInternalValue(row_data.last_modified())));
+        result.emplace_back(mojom::StorageUsageInfo::New(
+            storage_key, usage_metadata.total_size->InBytes(),
+            *usage_metadata.last_modified));
+      }
+    }
   }
+
   // Add any storage keys for which StorageAreas exist, but which haven't
   // committed any data to disk yet.
   base::Time now = base::Time::Now();
@@ -943,81 +899,46 @@ void LocalStorageImpl::DeleteStaleStorageAreas() {
     // it's possible `database_` existed before, but no longer.
     return;
   }
-  database_->RunDatabaseTask(
-      base::BindOnce([](DomStorageDatabaseLevelDB& db) {
-        std::vector<DomStorageDatabase::KeyValuePair> data;
-        db.GetPrefixed(base::span(kMetaPrefix), &data);
-        return data;
-      }),
+  database_->ReadAllMetadata(
       base::BindOnce(&LocalStorageImpl::OnGotMetaDataToDeleteStaleStorageAreas,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
 void LocalStorageImpl::OnGotMetaDataToDeleteStaleStorageAreas(
-    std::vector<DomStorageDatabase::KeyValuePair> data) {
+    StatusOr<DomStorageDatabase::Metadata> all_metadata) {
   if (!database_) {
     // This method is provided as a callback to an off thread task. Between the
     // time that the task is posted and now when this callback is invoked, the
     // `database_` member may have been reset.
     return;
   }
-
-  // Collect last accessed or modified time for all storage areas.
-  std::map<blink::StorageKey, base::Time> storage_key_to_latest_use_time;
-  for (const DomStorageDatabase::KeyValuePair& row : data) {
-    blink::StorageKey storage_key;
-    base::Time accessed_or_modified_time;
-    std::optional<blink::StorageKey> write_storage_key =
-        ExtractStorageKeyFromWriteMetaDataKey(row.key);
-    std::optional<blink::StorageKey> access_storage_key =
-        ExtractStorageKeyFromAccessMetaDataKey(row.key);
-    // The key is an access meta data key or write meta data key, not both.
-    DCHECK(!write_storage_key || !access_storage_key);
-
-    if (write_storage_key) {
-      storage_key = *write_storage_key;
-      storage::LocalStorageAreaWriteMetaData row_data;
-      if (!row_data.ParseFromArray(row.value.data(), row.value.size())) {
-        // Due to corruption we cannot take further action.
-        continue;
-      }
-      accessed_or_modified_time =
-          base::Time::FromInternalValue(row_data.last_modified());
-    } else if (access_storage_key) {
-      storage_key = *access_storage_key;
-      storage::LocalStorageAreaAccessMetaData row_data;
-      if (!row_data.ParseFromArray(row.value.data(), row.value.size())) {
-        // Due to corruption we cannot take further action.
-        continue;
-      }
-      accessed_or_modified_time =
-          base::Time::FromInternalValue(row_data.last_accessed());
-    } else {
-      // The key is invalid and no action can be taken.
-      continue;
-    }
-
-    // Update in map if time is later or no time was found.
-    const auto& it = storage_key_to_latest_use_time.find(storage_key);
-    if (it == storage_key_to_latest_use_time.end() ||
-        it->second < accessed_or_modified_time) {
-      storage_key_to_latest_use_time[storage_key] = accessed_or_modified_time;
-    }
+  if (!all_metadata.has_value()) {
+    // ERROR: Failed to read from the database!
+    return;
   }
-
   // Filter and collect stale storage areas for deletion.
   std::vector<blink::StorageKey> stale_storage_keys;
   uint64_t orphans_found = 0;
-  for (const auto& [storage_key, accessed_or_modified_time] :
-       storage_key_to_latest_use_time) {
-    if (accessed_or_modified_time.is_null()) {
-      // If the time is invalid we have nothing to do.
-      continue;
-    }
+  for (const DomStorageDatabase::MapMetadata& usage_metadata :
+       all_metadata->map_metadata) {
+    const blink::StorageKey& storage_key =
+        usage_metadata.map_locator.storage_key();
     if (areas_.find(storage_key) != areas_.end()) {
       // If the storage area is currently loaded it must not be cleared.
       continue;
     }
+
+    // Use the most recent last accessed time or last modified time.
+    base::Time accessed_or_modified_time;
+    if (usage_metadata.last_accessed && usage_metadata.last_modified) {
+      accessed_or_modified_time = std::max(*usage_metadata.last_accessed,
+                                           *usage_metadata.last_modified);
+    } else if (usage_metadata.last_modified) {
+      accessed_or_modified_time = *usage_metadata.last_modified;
+    } else {
+      accessed_or_modified_time = usage_metadata.last_accessed.value();
+    }
+
     if ((base::Time::Now() - accessed_or_modified_time) >=
         base::Days(kStaleBucketCutoffInDays)) {
       // If the storage area has not been accessed or modified within 400 days

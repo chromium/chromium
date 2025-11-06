@@ -142,7 +142,7 @@ class LocalStorageImpl : public base::trace_event::MemoryDumpProvider,
   // from that function, or through |on_database_open_callbacks_|.
   void RetrieveStorageUsage(GetUsageCallback callback);
   void OnGotWriteMetaData(GetUsageCallback callback,
-                          std::vector<DomStorageDatabase::KeyValuePair> data);
+                          StatusOr<DomStorageDatabase::Metadata> all_metadata);
 
   void OnGotStorageUsageForShutdown(
       std::vector<mojom::StorageUsageInfoPtr> usage);
@@ -156,7 +156,7 @@ class LocalStorageImpl : public base::trace_event::MemoryDumpProvider,
   // the database. See crbug.com/40281870 for more info.
   void DeleteStaleStorageAreas();
   void OnGotMetaDataToDeleteStaleStorageAreas(
-      std::vector<DomStorageDatabase::KeyValuePair> data);
+      StatusOr<DomStorageDatabase::Metadata> all_metadata);
   void OnReceiverDisconnected();
 
   // Passed in by the StorageServiceImpl that owns this object. Used to signal
