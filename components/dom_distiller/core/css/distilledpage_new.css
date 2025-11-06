@@ -66,17 +66,25 @@ article :is(ul, ol, figure) * {
 }
 
 /* Text rules. */
-
-html, body, h2[itemprop="description"], h3, h4, h5, h6 {
+html {
     font-size: 16px;
+}
+
+body {
     font-weight: normal;
-    line-height: 1.5rem; /* 18px */
+    line-height: 1.5rem; /* 24px */
 }
 
 #title-holder, h1 {
     font-size: 2rem; /* 32px */
     line-height: 3rem; /* 48px */
     font-weight: bold;
+}
+
+h2[itemprop="description"], h3, h4, h5, h6 {
+    font-size: 1rem;
+    font-weight: normal;
+    line-height: 1.5rem; /* 24px */
 }
 
 h2 {
