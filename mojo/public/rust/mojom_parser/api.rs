@@ -18,6 +18,7 @@ pub fn deserialize<T: MojomParse>(data_slice: &[u8]) -> ParsingResult<T> {
 }
 
 /// Serialize a Rust struct into a Mojom message
+/// FOR_RELEASE: See if we can take a reference instead (or maybe in addition)
 pub fn serialize<T: MojomParse>(value: T) -> ParsingResult<Vec<u8>> {
     let data: Vec<u8> = vec![];
     let packed_format = T::wire_type();

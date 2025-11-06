@@ -3,15 +3,6 @@
 // found in the LICENSE file.
 
 //! FOR_RELEASE: Docs
-//!
-//! FOR_RELEASE: Currently, the macro requires that you chomium::import! the
-//! mojom_parser crate, so ensure that all the type names (MojomParse,
-//! MojomValue, etc.) are in scope. To remove this restriction, we could instead
-//! qualify each of them with the absolute path (something like
-//! `mojom_parser::MojomValue`). Unfortunately, chromium mangles the names of
-//! the crates (hence the need for the chromium_import! macro), so the absolute
-//! path isn't easy to write, and we'd need to make sure we stay up to date if
-//! the mangling changes.
 
 use quote::quote;
 use syn::{parse_macro_input, DeriveInput};
@@ -71,53 +62,63 @@ pub fn derive(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
         })
         .collect();
 
+    // We wrap the `impl` blocks in an anonymous scope so that we can
+    // import mojom_parser_core without polluting the caller's namespace.
     let quoted = quote! {
-        impl MojomParse for #name {
-            fn mojom_type() -> MojomType {
-                let fields : Vec<(String, MojomType)> = vec![
-                    #(#mojom_type_fields),*
-                ];
-                MojomType::Struct { fields }
+        const _: () = {
+            chromium::import! {
+                "//mojo/public/rust/mojom_parser:mojom_parser_core";
             }
-        }
 
-        impl From<#name> for MojomValue {
-            fn from(value: #name) -> MojomValue {
-                let fields : Vec<(String, MojomValue)> = vec![
-                    #(#to_mojom_value_fields),*
-                ];
-                MojomValue::Struct ( fields )
-            }
-        }
+            use mojom_parser_core::*;
 
-        impl TryFrom<MojomValue> for #name {
-            type Error = ::anyhow::Error;
-
-            fn try_from(value : MojomValue) -> ::anyhow::Result<Self> {
-                use ::anyhow::Context;
-                // FOR_RELEASE: Don't clone here
-                if let MojomValue::Struct(fields) = value.clone() {
-                    // Drop the strings, we don't care about them here
-                    let fields : Vec<MojomValue> = fields.into_iter().map(|field| field.1).collect();
-                    // Try to extract all the field values at once
-                    let fields : [MojomValue; #num_fields] = fields.try_into()
-                      .or(Err(::anyhow::anyhow!(
-                            "Wrong number of fields to construct a value of type {} from MojomValue {:?}",
-                                std::any::type_name::<#name>(),
-                                value)))?;
-                    let [#(#field_idents),*] = fields;
-                    return Ok(Self {
-                        #(#from_mojom_value_fields),*
-                    })
-                } else {
-                    ::anyhow::bail!(
-                        "Cannot construct a value of type {} from non-struct MojomValue {:?}",
-                        std::any::type_name::<#name>(),
-                        value
-                    );
+            impl MojomParse for #name {
+                fn mojom_type() -> MojomType {
+                    let fields : Vec<(String, MojomType)> = vec![
+                        #(#mojom_type_fields),*
+                    ];
+                    MojomType::Struct { fields }
                 }
             }
-        }
+
+            impl From<#name> for MojomValue {
+                fn from(value: #name) -> MojomValue {
+                    let fields : Vec<(String, MojomValue)> = vec![
+                        #(#to_mojom_value_fields),*
+                    ];
+                    MojomValue::Struct ( fields )
+                }
+            }
+
+            impl TryFrom<MojomValue> for #name {
+                type Error = ::anyhow::Error;
+
+                fn try_from(value : MojomValue) -> ::anyhow::Result<Self> {
+                    use ::anyhow::Context;
+                    // FOR_RELEASE: Don't clone here
+                    if let MojomValue::Struct(fields) = value.clone() {
+                        // Drop the strings, we don't care about them here
+                        let fields : Vec<MojomValue> = fields.into_iter().map(|field| field.1).collect();
+                        // Try to extract all the field values at once
+                        let fields : [MojomValue; #num_fields] = fields.try_into()
+                        .or(Err(::anyhow::anyhow!(
+                                "Wrong number of fields to construct a value of type {} from MojomValue {:?}",
+                                    std::any::type_name::<#name>(),
+                                    value)))?;
+                        let [#(#field_idents),*] = fields;
+                        return Ok(Self {
+                            #(#from_mojom_value_fields),*
+                        })
+                    } else {
+                        ::anyhow::bail!(
+                            "Cannot construct a value of type {} from non-struct MojomValue {:?}",
+                            std::any::type_name::<#name>(),
+                            value
+                        );
+                    }
+                }
+            }
+        };
     };
 
     // Excellent for debugging, prints out the entire generated code
