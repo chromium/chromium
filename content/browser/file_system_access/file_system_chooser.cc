@@ -4,13 +4,11 @@
 
 #include "content/browser/file_system_access/file_system_chooser.h"
 
-#include <memory>
 #include <utility>
 #include <vector>
 
 #include "base/check.h"
 #include "base/files/file_path.h"
-#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/file_util_icu.h"
 #include "base/i18n/rtl.h"
@@ -299,7 +297,6 @@ FileSystemChooser::ScopedObjects::ScopedObjects(
 namespace {
 // Called when no file is selected due to being aborted.
 void AbortedCallback(FileSystemChooser::ResultCallback callback) {
-  VLOG(1) << "AbortedCallback";
   std::move(callback).Run(
       file_system_access_error::FromStatus(
           blink::mojom::FileSystemAccessStatus::kOperationAborted),
@@ -309,21 +306,15 @@ void AbortedCallback(FileSystemChooser::ResultCallback callback) {
 
 // static
 void FileSystemChooser::CreateAndShow(
-    RenderFrameHost* render_frame_host,
+    WebContents* web_contents,
     const Options& options,
     ResultCallback callback,
     FileSystemChooser::ScopedObjects scoped_objects) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   TRACE_EVENT0("FileSystem", "FileSystemChooser::CreateAndShow");
-  WebContents* web_contents =
-      WebContents::FromRenderFrameHost(render_frame_host);
   VLOG(1) << "Requested chooser with visibility: "
           << static_cast<int>(web_contents->GetVisibility());
-  std::unique_ptr<WebContentsBasedCanceller> canceller =
-      WebContentsBasedCanceller::Create(
-          render_frame_host,
-          WebContentsBasedCanceller::CancelCondition::kVisibility);
-  if (!canceller) {
+  if (web_contents->GetVisibility() == Visibility::HIDDEN) {
     VLOG(1) << "Not showing chooser";
     AbortedCallback(std::move(callback));
     return;
@@ -331,7 +322,7 @@ void FileSystemChooser::CreateAndShow(
   // `listener` deletes itself.
   auto* listener =
       new FileSystemChooser(options.type(), std::move(callback),
-                            std::move(scoped_objects), std::move(canceller));
+                            std::move(scoped_objects), web_contents);
   listener->dialog_ = ui::SelectFileDialog::Create(
       listener,
       GetContentClient()->browser()->CreateSelectFilePolicy(web_contents));
@@ -399,22 +390,35 @@ FileSystemChooser::FileSystemChooser(
     ui::SelectFileDialog::Type type,
     ResultCallback callback,
     FileSystemChooser::ScopedObjects scoped_objects,
-    std::unique_ptr<WebContentsBasedCanceller> canceller)
-    : type_(type),
+    WebContents* web_contents)
+    : WebContentsObserver(web_contents),
+      type_(type),
       callback_(std::move(callback)),
-      scoped_objects_(std::move(scoped_objects)),
-      canceller_(std::move(canceller)) {
+      scoped_objects_(std::move(scoped_objects)) {
   CHECK(IsValidFileDialogType(type_));
-  // `this` owns `canceller_` which owns the callback, so `Unretained` is OK
-  // here.
-  canceller_->SetCancelCallback(base::BindOnce(
-      &FileSystemChooser::FileSelectionCanceled, base::Unretained(this)));
 }
 
 FileSystemChooser::~FileSystemChooser() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (dialog_) {
     dialog_->ListenerDestroyed();
+  }
+}
+
+void FileSystemChooser::OnVisibilityChanged(Visibility visibility) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  VLOG(1) << "Visibility changed: " << static_cast<int>(visibility);
+  if (visibility == Visibility::HIDDEN) {
+#if BUILDFLAG(IS_ANDROID)
+    // TODO(crbug.com/457495639): We need a different way to detect when a
+    // WebContents is no longer displayed to the user for android since the
+    // intent to select a file always causes a HIDDEN event as the whole app
+    // receives onStop().
+    VLOG(1) << "Ignoring for android";
+#else
+    VLOG(1) << "Cancelling chooser";
+    FileSelectionCanceled();
+#endif
   }
 }
 
@@ -440,7 +444,6 @@ void FileSystemChooser::MultiFilesSelected(
 
 void FileSystemChooser::FileSelectionCanceled() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  VLOG(1) << "Cancelling chooser";
   AbortedCallback(std::move(callback_));
   delete this;
 }

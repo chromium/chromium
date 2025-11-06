@@ -52,7 +52,7 @@ class FileSystemChooserTest : public RenderViewHostImplTestHarness {
                            std::vector<PathInfo>>
         future;
     FileSystemChooser::CreateAndShow(
-        web_contents()->GetPrimaryMainFrame(),
+        web_contents(),
         FileSystemChooser::Options(ui::SelectFileDialog::SELECT_OPEN_FILE,
                                    blink::mojom::AcceptsTypesInfo::New(
                                        std::move(accepts), include_accepts_all),

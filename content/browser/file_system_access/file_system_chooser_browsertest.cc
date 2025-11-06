@@ -13,7 +13,6 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/scoped_logging_settings.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
@@ -35,7 +34,6 @@
 #include "content/public/test/file_system_chooser_test_helpers.h"
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
-#include "content/test/content_browser_test_utils_internal.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom-shared.h"
@@ -61,8 +59,6 @@ class FileSystemChooserBrowserTest : public ContentBrowserTest {
   FileSystemChooserBrowserTest() {
     scoped_features_.InitAndEnableFeature(
         blink::features::kFileSystemAccessLocal);
-    vmodule_switches_.InitWithSwitches(
-        "file_system_chooser=1,web_contents_based_canceller=1");
   }
 
   void SetUp() override {
@@ -134,7 +130,6 @@ class FileSystemChooserBrowserTest : public ContentBrowserTest {
 
  private:
   base::test::ScopedFeatureList scoped_features_;
-  logging::ScopedVmoduleSwitches vmodule_switches_;
 };
 
 IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, CancelDialog) {
@@ -2237,115 +2232,6 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, MAYBE_ShowThenHide) {
 
   // JS should see the dialog as aborted.
   EXPECT_EQ("AbortError", content::EvalJs(wc, "p"));
-}
-
-// Ensure that the dialog is dismissed on entering back/forward-cache.
-IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
-                       DismissOnEnteringBackForwardCache) {
-  FakeFileSystemAccessPermissionContext permission_context;
-  static_cast<FileSystemAccessManagerImpl*>(
-      shell()
-          ->web_contents()
-          ->GetBrowserContext()
-          ->GetStoragePartition(shell()->web_contents()->GetSiteInstance())
-          ->GetFileSystemAccessEntryFactory())
-      ->SetPermissionContextForTesting(&permission_context);
-
-  GURL url_a = embedded_test_server()->GetURL("/title1.html");
-  GURL url_b = embedded_test_server()->GetURL("/title2.html");
-  ASSERT_TRUE(NavigateToURL(shell(), url_a));
-
-  // Record the state of the dialog.
-  SelectFileDialogRecorder recorder;
-  ui::SelectFileDialog::SetFactory(
-      std::make_unique<ObservableSelectFileDialogFactory>(
-          recorder.GetWeakPtr()));
-
-  WebContents* wc = shell()->web_contents();
-
-  // Open the dialog and wait until it's created.
-  ASSERT_EQ(
-      42,
-      content::EvalJs(
-          wc, "window.p = self.showOpenFilePicker().catch(e => e.name); 42"));
-  ASSERT_TRUE(base::test::RunUntil([&recorder]() {
-    return recorder.state != SelectFileDialogRecorder::kNotCreated;
-  }));
-
-  RenderFrameHostImplWrapper rfh(
-      shell()->web_contents()->GetPrimaryMainFrame());
-
-  // Navigate away and enter BFCache.
-  ASSERT_TRUE(NavigateToURL(shell(), url_b));
-  ASSERT_TRUE(rfh->IsInBackForwardCache());
-
-  // Go back.
-  ASSERT_TRUE(HistoryGoBack(shell()->web_contents()));
-
-  // JS should see the dialog was aborted.
-  EXPECT_EQ("AbortError", content::EvalJs(wc, "p"));
-  // The dialog should have been created and destroyed.
-  ASSERT_TRUE(base::test::RunUntil([&recorder]() {
-    return recorder.state == SelectFileDialogRecorder::kDestroyed;
-  }));
-}
-
-// Ensure that the dialog is not dismissed on irrelevant navigations.
-IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
-                       DoNotDismissOnSubframeNavigation) {
-  FakeFileSystemAccessPermissionContext permission_context;
-  static_cast<FileSystemAccessManagerImpl*>(
-      shell()
-          ->web_contents()
-          ->GetBrowserContext()
-          ->GetStoragePartition(shell()->web_contents()->GetSiteInstance())
-          ->GetFileSystemAccessEntryFactory())
-      ->SetPermissionContextForTesting(&permission_context);
-
-  GURL url_a = embedded_test_server()->GetURL("/title1.html");
-  GURL url_b = embedded_test_server()->GetURL("/title2.html");
-  ASSERT_TRUE(NavigateToURL(shell(), url_a));
-  RenderFrameHostImplWrapper rfh(
-      shell()->web_contents()->GetPrimaryMainFrame());
-  RenderFrameHostImplWrapper subframe1(
-      CreateSubframe(rfh.get(), "", url_a, /*wait_for_navigation=*/true));
-  ASSERT_TRUE(subframe1.get());
-  RenderFrameHostImplWrapper subframe2(
-      CreateSubframe(rfh.get(), "", url_a, /*wait_for_navigation=*/true));
-  ASSERT_TRUE(subframe2.get());
-
-  // Record the state of the dialog.
-  SelectFileDialogRecorder recorder;
-  ui::SelectFileDialog::SetFactory(
-      std::make_unique<ObservableSelectFileDialogFactory>(
-          recorder.GetWeakPtr()));
-
-  WebContents* wc = shell()->web_contents();
-
-  // Open the dialog and wait until it's created.
-  ASSERT_EQ(42, content::EvalJs(wc,
-                                R"(window.p = "no error";
-                                          self.showOpenFilePicker().catch(
-                                              e => window.p = e.name);
-                                          42;)"));
-  ASSERT_TRUE(base::test::RunUntil([&recorder]() {
-    return recorder.state != SelectFileDialogRecorder::kNotCreated;
-  }));
-
-  // Navigate a subframe. Do it twice to ensure that there is time for the
-  // browser's reaction to the first one to propate.
-  ASSERT_TRUE(NavigateFrameToURL(subframe1->frame_tree_node(), url_b));
-  ASSERT_TRUE(NavigateFrameToURL(subframe2->frame_tree_node(), url_a));
-  // The promise should not have been resolved.
-  EXPECT_EQ("no error", content::EvalJs(wc, "p"));
-  // The dialog should stay in the created state.
-  ASSERT_EQ(recorder.state, SelectFileDialogRecorder::kCreated);
-
-  // Navigate away to ensure the dialog is dismissed. If it's not dismissed,
-  // this test will fail complaiming about leaked memory due to the callback
-  // owned by the dialog. TODO(http://crbug.com/443283015): Remove this by
-  // dismissing the dialog based on RenderProcessHost destruction.
-  ASSERT_TRUE(NavigateToURL(shell(), url_b));
 }
 
 class FileSystemChooserBackForwardCacheBrowserTest

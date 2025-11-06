@@ -2980,7 +2980,6 @@ test("content_unittests") {
     "../browser/web_contents/web_contents_impl_unittest.cc",
     "../browser/web_contents/web_contents_user_data_unittest.cc",
     "../browser/web_contents/web_contents_view_aura_unittest.cc",
-    "../browser/web_contents_based_canceller_unittest.cc",
     "../browser/web_exposed_isolation_info_unittest.cc",
     "../browser/web_package/signed_exchange_cert_fetcher_unittest.cc",
     "../browser/web_package/signed_exchange_certificate_chain_unittest.cc",
