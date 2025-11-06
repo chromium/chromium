@@ -23,6 +23,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -242,6 +243,8 @@ public class LocationBarCoordinator
         final boolean isIncognito =
                 incognitoStateProvider != null && incognitoStateProvider.isIncognitoSelected();
         OmniboxResourceProvider.setTabFaviconFactory(tabFaviconFunction);
+        ObservableSupplierImpl<@AutocompleteRequestType Integer> autocompleteRequestTypeSupplier =
+                new ObservableSupplierImpl<>(AutocompleteRequestType.SEARCH);
         mNavigationAttachmentsCoordinator =
                 new NavigationAttachmentsCoordinator(
                         context,
@@ -250,7 +253,8 @@ public class LocationBarCoordinator
                         profileObservableSupplier,
                         locationBarDataProvider,
                         tabModelSelectorSupplier,
-                        templateUrlServiceSupplier);
+                        templateUrlServiceSupplier,
+                        autocompleteRequestTypeSupplier);
 
         mPageZoomIndicatorCoordinator =
                 pageZoomManager != null
@@ -282,7 +286,7 @@ public class LocationBarCoordinator
                         tabModelSelectorSupplier,
                         browserControlsStateProvider,
                         modalDialogManagerSupplier,
-                        mNavigationAttachmentsCoordinator.getAutocompleteRequestTypeSupplier(),
+                        autocompleteRequestTypeSupplier,
                         mPageZoomIndicatorCoordinator);
         if (backPressManager != null) {
             backPressManager.addHandler(mLocationBarMediator, BackPressHandler.Type.LOCATION_BAR);

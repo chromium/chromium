@@ -32,6 +32,7 @@ import java.lang.annotation.RetentionPolicy;
     OmniboxFocusReason.TAP_AFTER_FOCUS_FROM_KEYBOARD,
     OmniboxFocusReason.ACTIVITY_RECREATION_RESTORATION,
     OmniboxFocusReason.LOCATION_BAR_STATE_RESTORATION,
+    OmniboxFocusReason.NTP_AI_MODE,
 })
 @Retention(RetentionPolicy.SOURCE)
 @NullMarked
@@ -59,5 +60,6 @@ public @interface OmniboxFocusReason {
     int TAP_AFTER_FOCUS_FROM_KEYBOARD = 16;
     int ACTIVITY_RECREATION_RESTORATION = 17;
     int LOCATION_BAR_STATE_RESTORATION = 18;
-    int NUM_ENTRIES = 19;
+    int NTP_AI_MODE = 19;
+    int NUM_ENTRIES = 20;
 }

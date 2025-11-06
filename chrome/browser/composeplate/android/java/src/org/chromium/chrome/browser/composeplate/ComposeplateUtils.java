@@ -15,6 +15,7 @@ import androidx.annotation.VisibleForTesting;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -22,6 +23,9 @@ import org.chromium.chrome.browser.profiles.Profile;
 /** Utility class for the composeplate view. */
 @NullMarked
 public class ComposeplateUtils {
+
+    private static boolean sIsEnabledForTesting;
+
     /**
      * Returns whether the composeplate can be enabled.
      *
@@ -29,6 +33,7 @@ public class ComposeplateUtils {
      * @param profile The current profile.
      */
     public static boolean isComposeplateEnabled(boolean isTablet, Profile profile) {
+        if (sIsEnabledForTesting) return true;
         if (!ComposeplateUtilsJni.get().isAimEntrypointEligible(profile)) return false;
 
         if (!isTablet) return true;
@@ -64,6 +69,12 @@ public class ComposeplateUtils {
         view.setBackground(background);
         view.setElevation(0f);
         view.setClipToOutline(false);
+    }
+
+    public static void setIsEnabledForTesting(boolean isEnabledForTesting) {
+        boolean oldValue = sIsEnabledForTesting;
+        sIsEnabledForTesting = isEnabledForTesting;
+        ResettersForTesting.register(() -> sIsEnabledForTesting = oldValue);
     }
 
     @NativeMethods

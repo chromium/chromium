@@ -350,7 +350,8 @@ public class NewTabPageLayout extends LinearLayout
     private void initializeSearchBoxTextView() {
         TraceEvent.begin(TAG + ".initializeSearchBoxTextView()");
 
-        mSearchBoxCoordinator.setSearchBoxClickListener(v -> mManager.focusSearchBox(false, null));
+        mSearchBoxCoordinator.setSearchBoxClickListener(
+                v -> mManager.focusSearchBox(false, AutocompleteRequestType.SEARCH, null));
 
         // @TODO(crbug.com/41492572): Add test case for search box OnDragListener.
         mSearchBoxCoordinator.setSearchBoxDragListener(
@@ -378,7 +379,8 @@ public class NewTabPageLayout extends LinearLayout
                     @Override
                     public void afterTextChanged(Editable s) {
                         if (s.length() == 0) return;
-                        mManager.focusSearchBox(false, s.toString());
+                        mManager.focusSearchBox(
+                                false, AutocompleteRequestType.SEARCH, s.toString());
                         mSearchBoxCoordinator.setSearchText("");
                     }
                 });
@@ -460,7 +462,8 @@ public class NewTabPageLayout extends LinearLayout
 
     private void initializeVoiceSearchButton() {
         TraceEvent.begin(TAG + ".initializeVoiceSearchButton()");
-        mVoiceSearchButtonClickListener = v -> mManager.focusSearchBox(true, null);
+        mVoiceSearchButtonClickListener =
+                v -> mManager.focusSearchBox(true, AutocompleteRequestType.SEARCH, null);
         mSearchBoxCoordinator.addVoiceSearchButtonClickListener(mVoiceSearchButtonClickListener);
         TraceEvent.end(TAG + ".initializeVoiceSearchButton()");
     }
@@ -532,6 +535,11 @@ public class NewTabPageLayout extends LinearLayout
     }
 
     private void onComposeplateButtonClicked(View view) {
+        if (OmniboxFeatures.sOmniboxMultimodalInput.isEnabled()) {
+            mManager.focusSearchBox(false, AutocompleteRequestType.AI_MODE, null);
+            return;
+        }
+
         if (mComposeplateUrlSupplier == null) return;
 
         GURL composeplateUrl = mComposeplateUrlSupplier.get();

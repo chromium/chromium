@@ -1000,15 +1000,28 @@ public class LocationBarMediatorTest {
 
     @Test
     public void testSetUrlBarFocus_focusedFromFakebox() {
-        mMediator.setUrlBarFocus(true, null, OmniboxFocusReason.FAKE_BOX_TAP);
+        mMediator.setUrlBarFocus(
+                true, null, OmniboxFocusReason.FAKE_BOX_TAP, AutocompleteRequestType.SEARCH);
         assertTrue(mMediator.didFocusUrlFromFakebox());
         verify(mUrlCoordinator).requestFocus();
     }
 
     @Test
     public void testSetUrlBarFocus_notFocused() {
-        mMediator.setUrlBarFocus(false, null, OmniboxFocusReason.FAKE_BOX_TAP);
+        mMediator.setUrlBarFocus(
+                false, null, OmniboxFocusReason.FAKE_BOX_TAP, AutocompleteRequestType.SEARCH);
         verify(mUrlCoordinator).clearFocus();
+    }
+
+    @Test
+    public void testSetUrlBarFocus_NtpAIMode() {
+        mMediator.onFinishNativeInitialization();
+        Profile profile = mock(Profile.class);
+        mMediator.setProfile(profile);
+        mMediator.setUrlBarFocus(
+                true, null, OmniboxFocusReason.FAKE_BOX_TAP, AutocompleteRequestType.AI_MODE);
+        verify(mUrlCoordinator).requestFocus();
+        assertEquals(AutocompleteRequestType.AI_MODE, (int) mAutocompleteRequestTypeSupplier.get());
     }
 
     @Test
@@ -1016,7 +1029,8 @@ public class LocationBarMediatorTest {
     public void testSetUrlBarFocus_pastedText() {
         doReturn("text").when(mUrlCoordinator).getTextWithoutAutocomplete();
         doReturn("textWith").when(mUrlCoordinator).getTextWithAutocomplete();
-        mMediator.setUrlBarFocus(true, "pastedText", OmniboxFocusReason.OMNIBOX_TAP);
+        mMediator.setUrlBarFocus(
+                true, "pastedText", OmniboxFocusReason.OMNIBOX_TAP, AutocompleteRequestType.SEARCH);
         verify(mUrlCoordinator)
                 .setUrlBarData(
                         argThat(matchesUrlBarDataForQuery("pastedText")),
@@ -1214,7 +1228,8 @@ public class LocationBarMediatorTest {
         mMediator.setUrlFocusChangeInProgress(true);
 
         ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(true);
-        mMediator.setUrlBarFocus(true, null, OmniboxFocusReason.FAKE_BOX_TAP);
+        mMediator.setUrlBarFocus(
+                true, null, OmniboxFocusReason.FAKE_BOX_TAP, AutocompleteRequestType.SEARCH);
         mMediator.onUrlFocusChange(true);
         doReturn("text").when(mUrlCoordinator).getTextWithoutAutocomplete();
 

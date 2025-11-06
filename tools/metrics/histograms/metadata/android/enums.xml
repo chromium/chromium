@@ -1442,6 +1442,8 @@ chromium-metrics-reviews@google.com.
   <int value="15" label="Drag and drop on the omnibox."/>
   <int value="16" label="Tapped after default focus with hardware keyboard."/>
   <int value="17" label="Focus restored on activity recreation."/>
+  <int value="18" label="Location bar state restoration on tab change"/>
+  <int value="19" label="NTP AI Mode button."/>
 </enum>
 
 <!-- LINT.IfChange(OmniboxJumpStartState) -->

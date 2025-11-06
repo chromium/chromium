@@ -66,6 +66,7 @@ import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.widget.ClipDrawableProgressBar.DrawingInfo;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.ui.resources.ResourceManager;
 import org.chromium.ui.util.TokenHolder;
 
@@ -233,7 +234,10 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
                                 var omniboxStub = getLocationBar().getOmniboxStub();
                                 if (omniboxStub != null) {
                                     omniboxStub.setUrlBarFocus(
-                                            false, null, OmniboxFocusReason.UNFOCUS);
+                                            false,
+                                            null,
+                                            OmniboxFocusReason.UNFOCUS,
+                                            AutocompleteRequestType.SEARCH);
                                 }
                                 tabController.stopOrReloadCurrentTab(ignoreCache);
                             },

@@ -900,6 +900,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.ntp") {
   deps = [
     ":chrome_test_java_helper",
     "//chrome/android/feed:chrome_feed_java_resources",
+    "//chrome/browser/composeplate/android:java",
   ]
 }
 

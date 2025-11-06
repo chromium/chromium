@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.omnibox.fusebox;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -45,6 +46,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
+import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.ui.base.TestActivity;
@@ -81,6 +83,9 @@ public class NavigationAttachmentsCoordinatorUnitTest {
             new OneshotSupplierImpl<>();
     private final Function<Tab, Bitmap> mTabFaviconFunction = (tab) -> mBitmap;
     private final List<Tab> mTabs = new ArrayList<>();
+    private final ObservableSupplierImpl<@AutocompleteRequestType Integer>
+            mAutocompleteRequestTypeSupplier =
+                    new ObservableSupplierImpl<>(AutocompleteRequestType.SEARCH);
 
     @Before
     public void setUp() {
@@ -109,7 +114,8 @@ public class NavigationAttachmentsCoordinatorUnitTest {
                         mProfileSupplier,
                         mLocationBarDataProvider,
                         mTabModelSelectorSupplier,
-                        mTemplateUrlServiceSupplier);
+                        mTemplateUrlServiceSupplier,
+                        mAutocompleteRequestTypeSupplier);
 
         // By default, make the Mediator available.
         mCoordinator.setMediatorForTesting(mMediator);
@@ -226,5 +232,19 @@ public class NavigationAttachmentsCoordinatorUnitTest {
         ShadowLooper.idleMainLooper();
 
         verify(mMediator).setToolbarVisible(false);
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
+    public void testNtpAiModeButtonPress() {
+        doReturn(/* nativeInstance= */ 1L).when(mControllerMock).init(any(Profile.class));
+        mProfileSupplier.set(mProfile);
+        ShadowLooper.idleMainLooper();
+        mAutocompleteRequestTypeSupplier.set(AutocompleteRequestType.AI_MODE);
+
+        mCoordinator.onUrlFocusChange(true);
+        assertEquals(
+                AutocompleteRequestType.AI_MODE,
+                (long) mCoordinator.getAutocompleteRequestTypeSupplier().get());
     }
 }

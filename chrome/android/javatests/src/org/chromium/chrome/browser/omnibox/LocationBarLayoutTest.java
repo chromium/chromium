@@ -54,6 +54,7 @@ import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.page.WebPageStation;
+import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.content_public.browser.test.util.ClickUtils;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.permissions.AndroidPermissionDelegate;
@@ -177,7 +178,10 @@ public class LocationBarLayoutTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     locationBarMediator.setUrlBarFocus(
-                            true, SEARCH_TERMS_URL, OmniboxFocusReason.FAKE_BOX_LONG_PRESS);
+                            true,
+                            SEARCH_TERMS_URL,
+                            OmniboxFocusReason.FAKE_BOX_LONG_PRESS,
+                            AutocompleteRequestType.SEARCH);
                 });
         Assert.assertTrue(getLocationBarMediator().isUrlBarFocused());
         Assert.assertTrue(getLocationBarMediator().didFocusUrlFromFakebox());
@@ -188,7 +192,10 @@ public class LocationBarLayoutTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     locationBarMediator.setUrlBarFocus(
-                            true, SEARCH_TERMS, OmniboxFocusReason.SEARCH_QUERY);
+                            true,
+                            SEARCH_TERMS,
+                            OmniboxFocusReason.SEARCH_QUERY,
+                            AutocompleteRequestType.SEARCH);
                 });
         Assert.assertTrue(getLocationBarMediator().isUrlBarFocused());
         Assert.assertTrue(getLocationBarMediator().didFocusUrlFromFakebox());
@@ -198,7 +205,11 @@ public class LocationBarLayoutTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    locationBarMediator.setUrlBarFocus(false, null, OmniboxFocusReason.UNFOCUS);
+                    locationBarMediator.setUrlBarFocus(
+                            false,
+                            null,
+                            OmniboxFocusReason.UNFOCUS,
+                            AutocompleteRequestType.SEARCH);
                 });
         Assert.assertFalse(getLocationBarMediator().isUrlBarFocused());
         Assert.assertFalse(getLocationBarMediator().didFocusUrlFromFakebox());
@@ -207,7 +218,11 @@ public class LocationBarLayoutTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    locationBarMediator.setUrlBarFocus(true, null, OmniboxFocusReason.OMNIBOX_TAP);
+                    locationBarMediator.setUrlBarFocus(
+                            true,
+                            null,
+                            OmniboxFocusReason.OMNIBOX_TAP,
+                            AutocompleteRequestType.SEARCH);
                 });
         Assert.assertTrue(getLocationBarMediator().isUrlBarFocused());
         Assert.assertFalse(getLocationBarMediator().didFocusUrlFromFakebox());

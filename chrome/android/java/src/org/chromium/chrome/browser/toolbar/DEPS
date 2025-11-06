@@ -32,6 +32,7 @@ specific_include_rules = {
     "-chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java",
     "+components/browser_ui/accessibility/android/java/src/org/chromium/components/browser_ui/accessibility/PageZoomManager.java",
     "+components/omnibox/browser/android/java/src/org/chromium/components/omnibox/action/OmniboxActionDelegate.java",
+    "+components/omnibox/browser/android/java/src/org/chromium/components/omnibox/AutocompleteRequestType.java",
   ],
   'ToolbarButtonInProductHelpController.java': [
     "+chrome/android/java/src/org/chromium/chrome/browser",

@@ -61,10 +61,12 @@ import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.composeplate.ComposeplateUtils;
 import org.chromium.chrome.browser.feed.FeedActionDelegate;
 import org.chromium.chrome.browser.feed.FeedReliabilityLogger;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -97,6 +99,8 @@ import org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVis
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.browser_ui.widget.tile.TileView;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.omnibox.AutocompleteRequestType;
+import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.signin.test.util.TestAccounts;
@@ -181,6 +185,7 @@ public class NewTabPageTest {
 
     @Before
     public void setUp() throws Exception {
+        ComposeplateUtils.setIsEnabledForTesting(true);
         mActivityTestRule.startOnBlankPage();
         TemplateUrlService originalService =
                 ThreadUtils.runOnUiThreadBlocking(
@@ -587,8 +592,10 @@ public class NewTabPageTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mNtp.getNewTabPageManagerForTesting()
-                            .focusSearchBox(/* beginVoiceSearch= */ false, /* pastedText= */ "");
-                    verify(mFeedReliabilityLogger).onOmniboxFocused();
+                            .focusSearchBox(
+                                    /* beginVoiceSearch= */ false,
+                                    AutocompleteRequestType.SEARCH,
+                                    /* pastedText= */ "");
                 });
     }
 
@@ -601,8 +608,10 @@ public class NewTabPageTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mNtp.getNewTabPageManagerForTesting()
-                            .focusSearchBox(/* beginVoiceSearch= */ true, /* pastedText= */ "");
-                    verify(mFeedReliabilityLogger).onVoiceSearch();
+                            .focusSearchBox(
+                                    /* beginVoiceSearch= */ true,
+                                    AutocompleteRequestType.SEARCH,
+                                    /* pastedText= */ "");
                 });
     }
 
@@ -882,6 +891,32 @@ public class NewTabPageTest {
 
         TouchCommon.longPressView(mvTile, 0, 0);
         Assert.assertNotEquals(defaultPoint, ntpPoint);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"NewTabPage"})
+    public void testAiModeButton() {
+        NewTabPageLayout ntpLayout = mNtp.getNewTabPageLayout();
+        TouchCommon.singleClickView(
+                ntpLayout
+                        .findViewById(
+                                org.chromium.chrome.browser.composeplate.R.id.composeplate_view)
+                        .findViewById(R.id.composeplate_button));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"NewTabPage"})
+    @EnableFeatures({OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT})
+    public void testAiModeButton_fusebox() {
+        NewTabPageLayout ntpLayout = mNtp.getNewTabPageLayout();
+        TouchCommon.singleClickView(
+                ntpLayout
+                        .findViewById(
+                                org.chromium.chrome.browser.composeplate.R.id.composeplate_view)
+                        .findViewById(R.id.composeplate_button));
+        mOmnibox.checkFocus(true);
     }
 
     private void verifyMostVisitedTileMargin() {

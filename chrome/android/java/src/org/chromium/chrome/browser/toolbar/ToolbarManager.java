@@ -204,6 +204,7 @@ import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.action.OmniboxActionDelegate;
 import org.chromium.components.page_info.PageInfoController.OpenedFromSource;
 import org.chromium.components.search_engines.TemplateUrl;
@@ -3020,7 +3021,9 @@ public class ToolbarManager
         if (!mInitializedWithNative) return;
         if (mLocationBar.getOmniboxStub() == null) return;
         boolean wasFocused = mLocationBar.getOmniboxStub().isUrlBarFocused();
-        mLocationBar.getOmniboxStub().setUrlBarFocus(focused, text, reason);
+        mLocationBar
+                .getOmniboxStub()
+                .setUrlBarFocus(focused, text, reason, AutocompleteRequestType.SEARCH);
         if (wasFocused && focused) {
             mLocationBar.selectAll();
         }

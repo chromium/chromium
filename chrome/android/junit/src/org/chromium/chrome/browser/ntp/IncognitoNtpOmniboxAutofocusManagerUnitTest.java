@@ -46,6 +46,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
+import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -212,7 +213,9 @@ public class IncognitoNtpOmniboxAutofocusManagerUnitTest {
 
         mTabObserver.onPageLoadFinished(mTab, mNtpGurl);
 
-        verify(mOmniboxStub, never()).setUrlBarFocus(true, null, OmniboxFocusReason.OMNIBOX_TAP);
+        verify(mOmniboxStub, never())
+                .setUrlBarFocus(
+                        true, null, OmniboxFocusReason.OMNIBOX_TAP, AutocompleteRequestType.SEARCH);
     }
 
     @Test
@@ -223,7 +226,9 @@ public class IncognitoNtpOmniboxAutofocusManagerUnitTest {
 
         mTabObserver.onPageLoadFinished(mTab, mOtherGurl);
 
-        verify(mOmniboxStub, never()).setUrlBarFocus(true, null, OmniboxFocusReason.OMNIBOX_TAP);
+        verify(mOmniboxStub, never())
+                .setUrlBarFocus(
+                        true, null, OmniboxFocusReason.OMNIBOX_TAP, AutocompleteRequestType.SEARCH);
     }
 
     @Test
@@ -239,7 +244,9 @@ public class IncognitoNtpOmniboxAutofocusManagerUnitTest {
 
         verify(mTabView).post(runnableCaptor.capture());
         runnableCaptor.getValue().run();
-        verify(mOmniboxStub).setUrlBarFocus(true, null, OmniboxFocusReason.OMNIBOX_TAP);
+        verify(mOmniboxStub)
+                .setUrlBarFocus(
+                        true, null, OmniboxFocusReason.OMNIBOX_TAP, AutocompleteRequestType.SEARCH);
     }
 
     @Test
@@ -297,7 +304,9 @@ public class IncognitoNtpOmniboxAutofocusManagerUnitTest {
         ArgumentCaptor<Runnable> runnableCaptor = ArgumentCaptor.forClass(Runnable.class);
         verify(mTabView).post(runnableCaptor.capture());
         runnableCaptor.getValue().run();
-        verify(mOmniboxStub).setUrlBarFocus(true, null, OmniboxFocusReason.OMNIBOX_TAP);
+        verify(mOmniboxStub)
+                .setUrlBarFocus(
+                        true, null, OmniboxFocusReason.OMNIBOX_TAP, AutocompleteRequestType.SEARCH);
 
         // After the first autofocus, the tab is marked as processed.
         // Reset mocks to verify that autofocus does not happen again.
@@ -308,7 +317,7 @@ public class IncognitoNtpOmniboxAutofocusManagerUnitTest {
         mTabObserver.onPageLoadFinished(mTab, mNtpGurl);
 
         verify(mTabView, never()).post(any(Runnable.class));
-        verify(mOmniboxStub, never()).setUrlBarFocus(anyBoolean(), any(), anyInt());
+        verify(mOmniboxStub, never()).setUrlBarFocus(anyBoolean(), any(), anyInt(), anyInt());
     }
 
     @Test
@@ -321,7 +330,9 @@ public class IncognitoNtpOmniboxAutofocusManagerUnitTest {
         verify(mTabView).post(runnableCaptor.capture());
         runnableCaptor.getValue().run();
 
-        verify(mOmniboxStub).setUrlBarFocus(true, null, OmniboxFocusReason.OMNIBOX_TAP);
+        verify(mOmniboxStub)
+                .setUrlBarFocus(
+                        true, null, OmniboxFocusReason.OMNIBOX_TAP, AutocompleteRequestType.SEARCH);
     }
 
     @Test
@@ -335,7 +346,7 @@ public class IncognitoNtpOmniboxAutofocusManagerUnitTest {
         verify(mTabView).post(runnableCaptor.capture());
         runnableCaptor.getValue().run();
 
-        verify(mOmniboxStub, never()).setUrlBarFocus(anyBoolean(), any(), anyInt());
+        verify(mOmniboxStub, never()).setUrlBarFocus(anyBoolean(), any(), anyInt(), anyInt());
     }
 
     @Test
@@ -351,7 +362,9 @@ public class IncognitoNtpOmniboxAutofocusManagerUnitTest {
         verify(mTabView).post(runnableCaptor.capture());
         runnableCaptor.getValue().run();
 
-        verify(mOmniboxStub).setUrlBarFocus(true, null, OmniboxFocusReason.OMNIBOX_TAP);
+        verify(mOmniboxStub)
+                .setUrlBarFocus(
+                        true, null, OmniboxFocusReason.OMNIBOX_TAP, AutocompleteRequestType.SEARCH);
     }
 
     @Test
@@ -365,7 +378,7 @@ public class IncognitoNtpOmniboxAutofocusManagerUnitTest {
         verify(mTabView).post(runnableCaptor.capture());
         runnableCaptor.getValue().run();
 
-        verify(mOmniboxStub, never()).setUrlBarFocus(anyBoolean(), any(), anyInt());
+        verify(mOmniboxStub, never()).setUrlBarFocus(anyBoolean(), any(), anyInt(), anyInt());
         IncognitoNtpOmniboxAutofocusManager.sAutofocusAllowedWithPredictionForTesting = null;
     }
 
@@ -380,7 +393,9 @@ public class IncognitoNtpOmniboxAutofocusManagerUnitTest {
         verify(mTabView).post(runnableCaptor.capture());
         runnableCaptor.getValue().run();
 
-        verify(mOmniboxStub).setUrlBarFocus(true, null, OmniboxFocusReason.OMNIBOX_TAP);
+        verify(mOmniboxStub)
+                .setUrlBarFocus(
+                        true, null, OmniboxFocusReason.OMNIBOX_TAP, AutocompleteRequestType.SEARCH);
         IncognitoNtpOmniboxAutofocusManager.sAutofocusAllowedWithPredictionForTesting = null;
     }
 
@@ -396,7 +411,7 @@ public class IncognitoNtpOmniboxAutofocusManagerUnitTest {
         verify(mTabView).post(runnableCaptor.capture());
         runnableCaptor.getValue().run();
 
-        verify(mOmniboxStub, never()).setUrlBarFocus(anyBoolean(), any(), anyInt());
+        verify(mOmniboxStub, never()).setUrlBarFocus(anyBoolean(), any(), anyInt(), anyInt());
         IncognitoNtpOmniboxAutofocusManager.sIsHardwareKeyboardAttachedForTesting = null;
     }
 
@@ -412,7 +427,9 @@ public class IncognitoNtpOmniboxAutofocusManagerUnitTest {
         verify(mTabView).post(runnableCaptor.capture());
         runnableCaptor.getValue().run();
 
-        verify(mOmniboxStub).setUrlBarFocus(true, null, OmniboxFocusReason.OMNIBOX_TAP);
+        verify(mOmniboxStub)
+                .setUrlBarFocus(
+                        true, null, OmniboxFocusReason.OMNIBOX_TAP, AutocompleteRequestType.SEARCH);
         IncognitoNtpOmniboxAutofocusManager.sIsHardwareKeyboardAttachedForTesting = null;
     }
 
@@ -432,7 +449,9 @@ public class IncognitoNtpOmniboxAutofocusManagerUnitTest {
         runnableCaptor.getValue().run();
 
         // Should autofocus because one of the conditions is met.
-        verify(mOmniboxStub).setUrlBarFocus(true, null, OmniboxFocusReason.OMNIBOX_TAP);
+        verify(mOmniboxStub)
+                .setUrlBarFocus(
+                        true, null, OmniboxFocusReason.OMNIBOX_TAP, AutocompleteRequestType.SEARCH);
         IncognitoNtpOmniboxAutofocusManager.sAutofocusAllowedWithPredictionForTesting = null;
     }
 
@@ -456,7 +475,7 @@ public class IncognitoNtpOmniboxAutofocusManagerUnitTest {
         runnableCaptor.getValue().run();
 
         // Should not autofocus because all conditions fail.
-        verify(mOmniboxStub, never()).setUrlBarFocus(anyBoolean(), any(), anyInt());
+        verify(mOmniboxStub, never()).setUrlBarFocus(anyBoolean(), any(), anyInt(), anyInt());
 
         IncognitoNtpOmniboxAutofocusManager.sAutofocusAllowedWithPredictionForTesting = null;
         IncognitoNtpOmniboxAutofocusManager.sIsHardwareKeyboardAttachedForTesting = null;

@@ -230,7 +230,7 @@ class LocationBarMediator
     private @Nullable SearchEngineUtils mSearchEngineUtils;
     private @Nullable AddToHomescreenCoordinator mAddToHomescreenCoordinatorForTesting;
     private final Supplier<@Nullable ModalDialogManager> mModalDialogManagerSupplier;
-    private final ObservableSupplier<@AutocompleteRequestType Integer>
+    private final ObservableSupplierImpl<@AutocompleteRequestType Integer>
             mAutocompleteRequestTypeSupplier;
     private final boolean mPersistEditingState;
 
@@ -259,7 +259,8 @@ class LocationBarMediator
             ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             @Nullable BrowserControlsStateProvider browserControlsStateProvider,
             Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
-            ObservableSupplier<@AutocompleteRequestType Integer> autocompleteRequestTypeSupplier,
+            ObservableSupplierImpl<@AutocompleteRequestType Integer>
+                    autocompleteRequestTypeSupplier,
             @Nullable PageZoomIndicatorCoordinator pageZoomIndicatorCoordinator) {
         mContext = context;
         mLocationBarLayout = locationBarLayout;
@@ -577,7 +578,8 @@ class LocationBarMediator
         setUrlBarFocus(
                 /* shouldBeFocused= */ true,
                 /* pastedText= */ null,
-                OmniboxFocusReason.DEFAULT_WITH_HARDWARE_KEYBOARD);
+                OmniboxFocusReason.DEFAULT_WITH_HARDWARE_KEYBOARD,
+                AutocompleteRequestType.SEARCH);
     }
 
     /**
@@ -589,7 +591,7 @@ class LocationBarMediator
             // If we did not run the focus animations, then the user has not typed any text.
             // So, clear the focus and accept whatever URL the page is currently attempting to
             // display, given that the current tab is not displaying the NTP.
-            setUrlBarFocus(false, null, OmniboxFocusReason.UNFOCUS);
+            setUrlBarFocus(false, null, OmniboxFocusReason.UNFOCUS, AutocompleteRequestType.SEARCH);
         }
     }
 
@@ -1698,7 +1700,10 @@ class LocationBarMediator
             assert currentState != null;
             clearOmniboxFocus();
             setUrlBarFocus(
-                    true, currentState.userText, OmniboxFocusReason.LOCATION_BAR_STATE_RESTORATION);
+                    true,
+                    currentState.userText,
+                    OmniboxFocusReason.LOCATION_BAR_STATE_RESTORATION,
+                    AutocompleteRequestType.SEARCH);
             if (mPersistEditingState) {
                 mUrlCoordinator.setSelection(
                         currentState.selectionStart, currentState.selectionEnd);
@@ -1746,9 +1751,12 @@ class LocationBarMediator
     // OmniboxStub implementation.
 
     @Override
-    public void setUrlBarFocus(boolean shouldBeFocused, @Nullable String pastedText, int reason) {
+    public void setUrlBarFocus(
+            boolean shouldBeFocused, @Nullable String pastedText, int reason, int requestType) {
+
         boolean urlHasFocus = mUrlHasFocus;
         if (shouldBeFocused) {
+            mAutocompleteRequestTypeSupplier.set(requestType);
             if (!urlHasFocus) {
                 recordOmniboxFocusReason(reason);
                 // Record Lens button shown when Omnibox is focused.
@@ -1838,7 +1846,10 @@ class LocationBarMediator
     @Override
     public void clearOmniboxFocus() {
         setUrlBarFocus(
-                /* shouldBeFocused= */ false, /* pastedText= */ null, OmniboxFocusReason.UNFOCUS);
+                /* shouldBeFocused= */ false,
+                /* pastedText= */ null,
+                OmniboxFocusReason.UNFOCUS,
+                AutocompleteRequestType.SEARCH);
     }
 
     @Override
@@ -1873,7 +1884,8 @@ class LocationBarMediator
         setUrlBarFocus(
                 /* shouldBeFocused= */ true,
                 /* pastedText= */ null,
-                OmniboxFocusReason.SEARCH_QUERY);
+                OmniboxFocusReason.SEARCH_QUERY,
+                AutocompleteRequestType.SEARCH);
         setUrlBarText(
                 UrlBarData.forNonUrlText(query),
                 UrlBar.ScrollType.NO_SCROLL,
@@ -1918,7 +1930,7 @@ class LocationBarMediator
             return;
         }
 
-        setUrlBarFocus(false, null, OmniboxFocusReason.UNFOCUS);
+        setUrlBarFocus(false, null, OmniboxFocusReason.UNFOCUS, AutocompleteRequestType.SEARCH);
         // Revert the URL to match the current page.
         setUrl(mLocationBarDataProvider.getCurrentGurl(), mLocationBarDataProvider.getUrlBarData());
         focusCurrentTab();
@@ -1995,7 +2007,8 @@ class LocationBarMediator
             setUrlBarFocus(
                     /* shouldBeFocused= */ false,
                     /* pastedText= */ null,
-                    OmniboxFocusReason.UNFOCUS);
+                    OmniboxFocusReason.UNFOCUS,
+                    AutocompleteRequestType.SEARCH);
         }
     }
 

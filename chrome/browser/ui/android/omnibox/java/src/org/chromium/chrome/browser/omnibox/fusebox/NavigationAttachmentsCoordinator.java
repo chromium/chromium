@@ -45,8 +45,7 @@ public class NavigationAttachmentsCoordinator
     private final @Nullable NavigationAttachmentsViewHolder mViewHolder;
     private final @Nullable LocationBarDataProvider mLocationBarDataProvider;
     private final ObservableSupplierImpl<@AutocompleteRequestType Integer>
-            mAutocompleteRequestTypeSupplier =
-                    new ObservableSupplierImpl<>(AutocompleteRequestType.SEARCH);
+            mAutocompleteRequestTypeSupplier;
     private final PropertyModel mModel;
     private final Context mContext;
     private final WindowAndroid mWindowAndroid;
@@ -65,10 +64,13 @@ public class NavigationAttachmentsCoordinator
             ObservableSupplier<Profile> profileObservableSupplier,
             LocationBarDataProvider locationBarDataProvider,
             ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
-            OneshotSupplier<TemplateUrlService> templateUrlServiceSupplier) {
+            OneshotSupplier<TemplateUrlService> templateUrlServiceSupplier,
+            ObservableSupplierImpl<@AutocompleteRequestType Integer>
+                    autocompleteRequestTypeSupplier) {
         mContext = context;
         mWindowAndroid = windowAndroid;
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
+        mAutocompleteRequestTypeSupplier = autocompleteRequestTypeSupplier;
 
         if (!OmniboxFeatures.sOmniboxMultimodalInput.isEnabled()
                 || parent.findViewById(R.id.location_bar_attachments_toolbar) == null) {
