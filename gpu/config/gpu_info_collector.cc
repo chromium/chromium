@@ -823,13 +823,6 @@ bool CollectGpuExtraInfo(gfx::GpuExtraInfo* gpu_extra_info,
     }
   }
 
-#if BUILDFLAG(IS_OZONE)
-  if (const auto* const egl_utility =
-          ui::OzonePlatform::GetInstance()->GetPlatformGLEGLUtility()) {
-    egl_utility->CollectGpuExtraInfo(prefs.enable_native_gpu_memory_buffers,
-                                     *gpu_extra_info);
-  }
-#endif
   return true;
 }
 

@@ -23,11 +23,6 @@ void GLEGLUtilityX11::ChooseEGLAlphaAndBufferSize(EGLint* alpha_size,
   ChoosePlatformCustomAlphaAndBufferSize(alpha_size, buffer_size);
 }
 
-void GLEGLUtilityX11::CollectGpuExtraInfo(
-    bool enable_native_gpu_memory_buffers,
-    gfx::GpuExtraInfo& gpu_extra_info) const {
-}
-
 bool GLEGLUtilityX11::HasVisualManager() {
   return true;
 }

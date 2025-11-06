@@ -78,10 +78,6 @@ void WaylandGLEGLUtility::GetAdditionalEGLAttributes(
 void WaylandGLEGLUtility::ChooseEGLAlphaAndBufferSize(EGLint* alpha_size,
                                                       EGLint* buffer_size) {}
 
-void WaylandGLEGLUtility::CollectGpuExtraInfo(
-    bool enable_native_gpu_memory_buffers,
-    gfx::GpuExtraInfo& gpu_extra_info) const {}
-
 bool WaylandGLEGLUtility::HasVisualManager() {
   return false;
 }
