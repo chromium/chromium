@@ -635,6 +635,8 @@ void PasswordManager::RegisterProfilePrefs(
       prefs::kAccountStoreBackupPasswordCleaningLastTimestamp, base::Time());
   registry->RegisterTimePref(
       prefs::kProfileStoreBackupPasswordCleaningLastTimestamp, base::Time());
+  registry->RegisterTimePref(prefs::kLastNegativePasswordChangeTimestamp,
+                             base::Time());
 }
 
 // static

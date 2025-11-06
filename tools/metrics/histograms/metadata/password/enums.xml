@@ -803,6 +803,7 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="Unsupported country"/>
   <int value="8" label="Unsupported site"/>
   <int value="9" label="User has no saved passwords"/>
+  <int value="10" label="Throttled"/>
 </enum>
 
 <!-- LINT.ThenChange(/chrome/browser/password_manager/chrome_password_change_service.h) -->

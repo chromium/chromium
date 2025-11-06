@@ -284,6 +284,15 @@ PasswordChangeAvailability ChromePasswordChangeService::GetGeneralAvailability()
     return PasswordChangeAvailability::kNoSavedPasswords;
   }
 
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kThrottlePasswordChangeDialog) &&
+      base::Time::Now() -
+              pref_service_->GetTime(password_manager::prefs::
+                                         kLastNegativePasswordChangeTimestamp) <
+          password_manager::features::kPasswordChangeThrottleTime.Get()) {
+    return PasswordChangeAvailability::kThrottled;
+  }
+
   const bool result = base::FeatureList::IsEnabled(
       password_manager::features::kImprovedPasswordChangeService);
   if (logger) {
