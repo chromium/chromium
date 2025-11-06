@@ -30,6 +30,7 @@
 #include "net/base/proxy_server.h"
 #include "net/base/proxy_string_util.h"
 #include "net/base/url_util.h"
+#include "net/dns/host_resolver.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_event_type.h"
 #include "net/log/net_log_util.h"
@@ -816,11 +817,13 @@ const ConfiguredProxyResolutionService::PacPollPolicy*
 ConfiguredProxyResolutionService::ConfiguredProxyResolutionService(
     std::unique_ptr<ProxyConfigService> config_service,
     std::unique_ptr<ProxyResolverFactory> resolver_factory,
+    HostResolver* host_resolver_for_override_rules,
     NetLog* net_log,
     bool quick_check_enabled,
     bool enable_pac_runtime_backoff)
     : config_service_(std::move(config_service)),
       resolver_factory_(std::move(resolver_factory)),
+      host_resolver_for_override_rules_(host_resolver_for_override_rules),
       net_log_(net_log),
       stall_proxy_auto_config_delay_(
           base::Milliseconds(kDelayAfterNetworkChangesMs)),
@@ -835,19 +838,22 @@ ConfiguredProxyResolutionService::ConfiguredProxyResolutionService(
 std::unique_ptr<ConfiguredProxyResolutionService>
 ConfiguredProxyResolutionService::CreateUsingSystemProxyResolver(
     std::unique_ptr<ProxyConfigService> proxy_config_service,
+    HostResolver* host_resolver_for_override_rules,
     NetLog* net_log,
     bool quick_check_enabled) {
   DCHECK(proxy_config_service);
 
   if (!ProxyResolverFactoryForSystem::IsSupported()) {
     VLOG(1) << "PAC support disabled because there is no system implementation";
-    return CreateWithoutProxyResolver(std::move(proxy_config_service), net_log);
+    return CreateWithoutProxyResolver(std::move(proxy_config_service),
+                                      host_resolver_for_override_rules,
+                                      net_log);
   }
 
   return std::make_unique<ConfiguredProxyResolutionService>(
       std::move(proxy_config_service),
       std::make_unique<ProxyResolverFactoryForSystem>(kDefaultNumPacThreads),
-      net_log, quick_check_enabled,
+      host_resolver_for_override_rules, net_log, quick_check_enabled,
       /*enable_pac_runtime_backoff=*/true);
 }
 
@@ -855,10 +861,12 @@ ConfiguredProxyResolutionService::CreateUsingSystemProxyResolver(
 std::unique_ptr<ConfiguredProxyResolutionService>
 ConfiguredProxyResolutionService::CreateWithoutProxyResolver(
     std::unique_ptr<ProxyConfigService> proxy_config_service,
+    HostResolver* host_resolver_for_override_rules,
     NetLog* net_log) {
   return std::make_unique<ConfiguredProxyResolutionService>(
       std::move(proxy_config_service),
-      std::make_unique<ProxyResolverFactoryForNullResolver>(), net_log,
+      std::make_unique<ProxyResolverFactoryForNullResolver>(),
+      host_resolver_for_override_rules, net_log,
       /*quick_check_enabled=*/false);
 }
 
@@ -869,8 +877,9 @@ ConfiguredProxyResolutionService::CreateFixedForTest(
   // TODO(eroman): This isn't quite right, won't work if |pc| specifies
   //               a PAC script.
   return CreateUsingSystemProxyResolver(
-      std::make_unique<ProxyConfigServiceFixed>(pc), nullptr,
-      /*quick_check_enabled=*/true);
+      std::make_unique<ProxyConfigServiceFixed>(pc),
+      /*host_resolver_for_override_rules=*/nullptr,
+      /*net_log=*/nullptr, /*quick_check_enabled=*/true);
 }
 
 // static
@@ -890,7 +899,8 @@ ConfiguredProxyResolutionService::CreateDirect() {
   // Use direct connections.
   return std::make_unique<ConfiguredProxyResolutionService>(
       std::make_unique<ProxyConfigServiceDirect>(),
-      std::make_unique<ProxyResolverFactoryForNullResolver>(), nullptr,
+      std::make_unique<ProxyResolverFactoryForNullResolver>(),
+      /*host_resolver_for_override_rules=*/nullptr, /*net_log=*/nullptr,
       /*quick_check_enabled=*/true);
 }
 
@@ -908,7 +918,8 @@ ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
 
   return std::make_unique<ConfiguredProxyResolutionService>(
       std::move(proxy_config_service),
-      std::make_unique<ProxyResolverFactoryForPacResult>(pac_string), nullptr,
+      std::make_unique<ProxyResolverFactoryForPacResult>(pac_string),
+      /*host_resolver_for_override_rules=*/nullptr, /*net_log=*/nullptr,
       /*quick_check_enabled=*/true);
 }
 
@@ -923,7 +934,8 @@ ConfiguredProxyResolutionService::CreateFixedFromAutoDetectedPacResultForTest(
 
   return std::make_unique<ConfiguredProxyResolutionService>(
       std::move(proxy_config_service),
-      std::make_unique<ProxyResolverFactoryForPacResult>(pac_string), nullptr,
+      std::make_unique<ProxyResolverFactoryForPacResult>(pac_string),
+      /*host_resolver_for_override_rules=*/nullptr, /*net_log=*/nullptr,
       /*quick_check_enabled=*/true);
 }
 
@@ -942,7 +954,7 @@ ConfiguredProxyResolutionService::CreateFixedFromProxyChainsForTest(
   return std::make_unique<ConfiguredProxyResolutionService>(
       std::move(proxy_config_service),
       std::make_unique<ProxyResolverFactoryForProxyChains>(proxy_chains),
-      nullptr,
+      /*host_resolver_for_override_rules=*/nullptr, /*net_log=*/nullptr,
       /*quick_check_enabled=*/true);
 }
 
@@ -953,7 +965,8 @@ int ConfiguredProxyResolutionService::ResolveProxy(
     ProxyInfo* result,
     CompletionOnceCallback callback,
     std::unique_ptr<ProxyResolutionRequest>* out_request,
-    const NetLogWithSource& net_log) {
+    const NetLogWithSource& net_log,
+    RequestPriority priority) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!callback.is_null());
   DCHECK(out_request);

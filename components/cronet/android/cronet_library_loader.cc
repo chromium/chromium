@@ -318,7 +318,8 @@ std::unique_ptr<net::ProxyResolutionService> CreateProxyResolutionService(
   // URL is present. Create a proxy service without a resolver and rely on this
   // local HTTP proxy. See: crbug.com/432539.
   return net::ConfiguredProxyResolutionService::CreateWithoutProxyResolver(
-      std::move(proxy_config_service), net_log);
+      std::move(proxy_config_service),
+      /*host_resolver_for_override_rules=*/nullptr, net_log);
 }
 
 // Creates default User-Agent request value, combining optional

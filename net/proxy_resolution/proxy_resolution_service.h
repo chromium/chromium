@@ -14,6 +14,7 @@
 #include "net/base/net_export.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/proxy_server.h"
+#include "net/base/request_priority.h"
 #include "net/log/net_log_with_source.h"
 #include "net/proxy_resolution/proxy_info.h"
 #include "net/proxy_resolution/proxy_retry_info.h"
@@ -48,6 +49,8 @@ class NET_EXPORT ProxyResolutionService {
   // otherwise).  |request| must not be nullptr.
   //
   // Profiling information for the request is saved to |net_log| if non-nullptr.
+  //
+  // |priority| can be used by the service for scheduling optimizations.
   virtual int ResolveProxy(
       const GURL& url,
       const std::string& method,
@@ -55,7 +58,8 @@ class NET_EXPORT ProxyResolutionService {
       ProxyInfo* results,
       CompletionOnceCallback callback,
       std::unique_ptr<ProxyResolutionRequest>* request,
-      const NetLogWithSource& net_log) = 0;
+      const NetLogWithSource& net_log,
+      RequestPriority priority) = 0;
 
   // Called to report that the last proxy connection succeeded.  If |proxy_info|
   // has a non empty proxy_retry_info map, the proxies that have been tried (and

@@ -638,8 +638,10 @@ URLRequestContextBuilder::CreateProxyResolutionService(
     NetworkDelegate* network_delegate,
     NetLog* net_log,
     bool pac_quick_check_enabled) {
+  DCHECK(host_resolver);
   return ConfiguredProxyResolutionService::CreateUsingSystemProxyResolver(
-      std::move(proxy_config_service), net_log, pac_quick_check_enabled);
+      std::move(proxy_config_service), host_resolver, net_log,
+      pac_quick_check_enabled);
 }
 
 }  // namespace net

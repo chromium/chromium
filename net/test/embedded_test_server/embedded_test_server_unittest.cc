@@ -198,6 +198,7 @@ class EmbeddedTestServerTest
           ConfiguredProxyResolutionService::CreateWithoutProxyResolver(
               std::make_unique<ProxyConfigServiceFixed>(
                   std::move(annotated_config)),
+              /*host_resolver_for_override_rules=*/nullptr,
               /*net_log=*/nullptr));
     }
 

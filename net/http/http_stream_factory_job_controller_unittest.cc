@@ -1064,10 +1064,10 @@ TEST_F(HttpStreamFactoryJobControllerTest, ProxyResolutionFailsSync) {
   proxy_config.set_pac_mandatory(true);
   session_deps_.proxy_resolution_service =
       std::make_unique<ConfiguredProxyResolutionService>(
-
           std::make_unique<ProxyConfigServiceFixed>(ProxyConfigWithAnnotation(
               proxy_config, TRAFFIC_ANNOTATION_FOR_TESTS)),
-          std::make_unique<FailingProxyResolverFactory>(), nullptr,
+          std::make_unique<FailingProxyResolverFactory>(),
+          /*host_resolver_for_override_rules=*/nullptr, /*net_log=*/nullptr,
           /*quick_check_enabled=*/true);
   HttpRequestInfo request_info;
   request_info.method = "GET";
@@ -1101,10 +1101,10 @@ TEST_F(HttpStreamFactoryJobControllerTest, ProxyResolutionFailsAsync) {
   MockAsyncProxyResolver resolver;
   session_deps_.proxy_resolution_service =
       std::make_unique<ConfiguredProxyResolutionService>(
-
           std::make_unique<ProxyConfigServiceFixed>(ProxyConfigWithAnnotation(
               proxy_config, TRAFFIC_ANNOTATION_FOR_TESTS)),
-          std::move(proxy_resolver_factory), nullptr,
+          std::move(proxy_resolver_factory),
+          /*host_resolver_for_override_rules=*/nullptr, /*net_log=*/nullptr,
           /*quick_check_enabled=*/true);
   HttpRequestInfo request_info;
   request_info.method = "GET";

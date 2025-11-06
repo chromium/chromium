@@ -73,7 +73,8 @@ int WindowsSystemProxyResolutionService::ResolveProxy(
     ProxyInfo* results,
     CompletionOnceCallback callback,
     std::unique_ptr<ProxyResolutionRequest>* request,
-    const NetLogWithSource& net_log) {
+    const NetLogWithSource& net_log,
+    RequestPriority priority) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!callback.is_null());
   DCHECK(request);

@@ -697,7 +697,8 @@ TEST_F(WebSocketEndToEndTest, ProxyPacUsed) {
       ProxyConfigWithAnnotation(proxy_config, TRAFFIC_ANNOTATION_FOR_TESTS));
   std::unique_ptr<ProxyResolutionService> proxy_resolution_service(
       ConfiguredProxyResolutionService::CreateUsingSystemProxyResolver(
-          std::move(proxy_config_service), NetLog::Get(),
+          std::move(proxy_config_service),
+          /*host_resolver_for_override_rules=*/nullptr, NetLog::Get(),
           /*quick_check_enabled=*/true));
   ASSERT_EQ(ws_server.host_port_pair().host(), "127.0.0.1");
   context_builder_->set_proxy_resolution_service(

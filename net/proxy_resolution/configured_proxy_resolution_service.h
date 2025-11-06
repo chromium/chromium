@@ -46,6 +46,7 @@ namespace net {
 
 class ConfiguredProxyResolutionRequest;
 class DhcpPacFileFetcher;
+class HostResolver;
 class NetLog;
 class PacFileFetcher;
 class ProxyDelegate;
@@ -109,9 +110,13 @@ class NET_EXPORT ConfiguredProxyResolutionService
   // remain alive for the lifetime of this ConfiguredProxyResolutionService.
   // |enable_pac_runtime_backoff| optionally enables runtime PAC error backoff
   // (defaults to false; enabled by CreateUsingSystemProxyResolver()).
+  // `host_resolver_for_override_rules` needs to be non-null when proxy
+  // configurations can contain override rules (e.g. set via an enterprise
+  // policy). When defined, it must outlive this service.
   ConfiguredProxyResolutionService(
       std::unique_ptr<ProxyConfigService> config_service,
       std::unique_ptr<ProxyResolverFactory> resolver_factory,
+      HostResolver* host_resolver_for_override_rules,
       NetLog* net_log,
       bool quick_check_enabled,
       bool enable_pac_runtime_backoff = false);
@@ -125,19 +130,23 @@ class NET_EXPORT ConfiguredProxyResolutionService
 
   // ProxyResolutionService
   //
-  // We use the three possible proxy access types in the following order,
+  // We use the four possible proxy access types in the following order,
   // doing fallback if one doesn't work.  See "pac_script_decider.h"
   // for the specifics.
-  //   1.  WPAD auto-detection
-  //   2.  PAC URL
-  //   3.  named proxy
+  //   1.  override rules
+  //   2.  WPAD auto-detection
+  //   3.  PAC URL
+  //   4.  named proxy
+  // `priority` is used for DNS resolution requests issued when evaluating
+  // override rules.
   int ResolveProxy(const GURL& url,
                    const std::string& method,
                    const NetworkAnonymizationKey& network_anonymization_key,
                    ProxyInfo* results,
                    CompletionOnceCallback callback,
                    std::unique_ptr<ProxyResolutionRequest>* request,
-                   const NetLogWithSource& net_log) override;
+                   const NetLogWithSource& net_log,
+                   RequestPriority priority) override;
 
   // ProxyResolutionService
   void ReportSuccess(const ProxyInfo& proxy_info) override;
@@ -187,17 +196,23 @@ class NET_EXPORT ConfiguredProxyResolutionService
   // Same as CreateProxyResolutionServiceUsingV8ProxyResolver, except it uses
   // system libraries for evaluating the PAC script if available, otherwise
   // skips proxy autoconfig.
+  // If `host_resolver_for_override_rules` is non-null, must outlive the
+  // returned object. See constructor for more details.
   static std::unique_ptr<ConfiguredProxyResolutionService>
   CreateUsingSystemProxyResolver(
       std::unique_ptr<ProxyConfigService> proxy_config_service,
+      HostResolver* host_resolver_for_override_rules,
       NetLog* net_log,
       bool quick_check_enabled);
 
   // Creates a ConfiguredProxyResolutionService without support for proxy
   // autoconfig.
+  // If `host_resolver_for_override_rules` is non-null, must outlive the
+  // returned object. See constructor for more details.
   static std::unique_ptr<ConfiguredProxyResolutionService>
   CreateWithoutProxyResolver(
       std::unique_ptr<ProxyConfigService> proxy_config_service,
+      HostResolver* host_resolver_for_override_rules,
       NetLog* net_log);
 
   // Convenience methods that creates a proxy service using the
@@ -368,6 +383,9 @@ class NET_EXPORT ConfiguredProxyResolutionService
 
   // If non-null, the initialized ProxyResolver to use for requests.
   std::unique_ptr<ProxyResolver> resolver_;
+
+  // Not owned, must outlive the service when override rules can be configured.
+  const raw_ptr<HostResolver> host_resolver_for_override_rules_;
 
   // We store the proxy configuration that was last fetched from the
   // ProxyConfigService, as well as the resulting "effective" configuration.

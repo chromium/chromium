@@ -19,6 +19,7 @@
 #include "net/base/proxy_delegate.h"
 #include "net/base/proxy_server.h"
 #include "net/base/proxy_string_util.h"
+#include "net/base/request_priority.h"
 #include "net/base/test_completion_callback.h"
 #include "net/base/test_proxy_delegate.h"
 #include "net/http/http_request_headers.h"
@@ -230,9 +231,9 @@ class WindowsSystemProxyResolutionServiceTest : public TestWithTaskEnvironment {
     TestCompletionCallback callback;
     NetLogWithSource log;
     std::unique_ptr<ProxyResolutionRequest> request;
-    int result = service()->ResolveProxy(kResourceUrl, std::string(),
-                                         NetworkAnonymizationKey(), &info,
-                                         callback.callback(), &request, log);
+    int result = service()->ResolveProxy(
+        kResourceUrl, std::string(), NetworkAnonymizationKey(), &info,
+        callback.callback(), &request, log, DEFAULT_PRIORITY);
 
     ASSERT_THAT(result, IsError(ERR_IO_PENDING));
     ASSERT_NE(request, nullptr);
@@ -273,9 +274,9 @@ TEST_F(WindowsSystemProxyResolutionServiceTest, ResolveProxyFailed) {
   TestCompletionCallback callback;
   NetLogWithSource log;
   std::unique_ptr<ProxyResolutionRequest> request;
-  int result = service()->ResolveProxy(kResourceUrl, std::string(),
-                                       NetworkAnonymizationKey(), &info,
-                                       callback.callback(), &request, log);
+  int result = service()->ResolveProxy(
+      kResourceUrl, std::string(), NetworkAnonymizationKey(), &info,
+      callback.callback(), &request, log, DEFAULT_PRIORITY);
 
   ASSERT_THAT(result, IsError(ERR_IO_PENDING));
   ASSERT_NE(request, nullptr);
@@ -299,9 +300,9 @@ TEST_F(WindowsSystemProxyResolutionServiceTest, ResolveProxyCancelled) {
   TestCompletionCallback callback;
   NetLogWithSource log;
   std::unique_ptr<ProxyResolutionRequest> request;
-  int result = service()->ResolveProxy(kResourceUrl, std::string(),
-                                       NetworkAnonymizationKey(), &info,
-                                       callback.callback(), &request, log);
+  int result = service()->ResolveProxy(
+      kResourceUrl, std::string(), NetworkAnonymizationKey(), &info,
+      callback.callback(), &request, log, DEFAULT_PRIORITY);
 
   ASSERT_THAT(result, IsError(ERR_IO_PENDING));
   ASSERT_NE(request, nullptr);
@@ -346,7 +347,7 @@ TEST_F(WindowsSystemProxyResolutionServiceTest,
   std::unique_ptr<ProxyResolutionRequest> first_request;
   int result = service()->ResolveProxy(
       kResourceUrl, std::string(), NetworkAnonymizationKey(), &first_proxy_info,
-      first_callback.callback(), &first_request, log);
+      first_callback.callback(), &first_request, log, DEFAULT_PRIORITY);
   ASSERT_THAT(result, IsError(ERR_IO_PENDING));
   ASSERT_NE(first_request, nullptr);
 
@@ -354,8 +355,9 @@ TEST_F(WindowsSystemProxyResolutionServiceTest,
   TestCompletionCallback second_callback;
   std::unique_ptr<ProxyResolutionRequest> second_request;
   result = service()->ResolveProxy(
-      kResourceUrl, std::string(), NetworkAnonymizationKey(), &second_proxy_info,
-      second_callback.callback(), &second_request, log);
+      kResourceUrl, std::string(), NetworkAnonymizationKey(),
+      &second_proxy_info, second_callback.callback(), &second_request, log,
+      DEFAULT_PRIORITY);
   ASSERT_THAT(result, IsError(ERR_IO_PENDING));
   ASSERT_NE(second_request, nullptr);
 
@@ -383,7 +385,7 @@ TEST_F(WindowsSystemProxyResolutionServiceTest,
   std::unique_ptr<ProxyResolutionRequest> first_request;
   int result = service()->ResolveProxy(
       kResourceUrl, std::string(), NetworkAnonymizationKey(), &first_proxy_info,
-      first_callback.callback(), &first_request, log);
+      first_callback.callback(), &first_request, log, DEFAULT_PRIORITY);
   ASSERT_THAT(result, IsError(ERR_IO_PENDING));
   ASSERT_NE(first_request, nullptr);
 
@@ -391,8 +393,9 @@ TEST_F(WindowsSystemProxyResolutionServiceTest,
   TestCompletionCallback second_callback;
   std::unique_ptr<ProxyResolutionRequest> second_request;
   result = service()->ResolveProxy(
-      kResourceUrl, std::string(), NetworkAnonymizationKey(), &second_proxy_info,
-      second_callback.callback(), &second_request, log);
+      kResourceUrl, std::string(), NetworkAnonymizationKey(),
+      &second_proxy_info, second_callback.callback(), &second_request, log,
+      DEFAULT_PRIORITY);
   ASSERT_THAT(result, IsError(ERR_IO_PENDING));
   ASSERT_NE(second_request, nullptr);
 
@@ -554,9 +557,9 @@ TEST_F(WindowsSystemProxyResolutionServiceTest,
   TestCompletionCallback callback;
   NetLogWithSource log;
   std::unique_ptr<ProxyResolutionRequest> request;
-  int result =
-      service()->ResolveProxy(kResourceUrl, "GET", NetworkAnonymizationKey(),
-                              &info, callback.callback(), &request, log);
+  int result = service()->ResolveProxy(
+      kResourceUrl, "GET", NetworkAnonymizationKey(), &info,
+      callback.callback(), &request, log, DEFAULT_PRIORITY);
 
   ASSERT_THAT(result, IsError(ERR_IO_PENDING));
   ASSERT_NE(request, nullptr);
@@ -697,9 +700,9 @@ TEST_F(WindowsSystemProxyResolutionServiceTest,
   TestCompletionCallback callback;
   NetLogWithSource log;
   std::unique_ptr<ProxyResolutionRequest> request;
-  int result =
-      service()->ResolveProxy(kResourceUrl, "GET", NetworkAnonymizationKey(),
-                              &info, callback.callback(), &request, log);
+  int result = service()->ResolveProxy(
+      kResourceUrl, "GET", NetworkAnonymizationKey(), &info,
+      callback.callback(), &request, log, DEFAULT_PRIORITY);
 
   ASSERT_THAT(result, IsError(ERR_IO_PENDING));
   ASSERT_NE(request, nullptr);
@@ -737,9 +740,9 @@ TEST_F(WindowsSystemProxyResolutionServiceTest,
   TestCompletionCallback callback;
   NetLogWithSource log;
   std::unique_ptr<ProxyResolutionRequest> request;
-  int result =
-      service()->ResolveProxy(kResourceUrl, "GET", NetworkAnonymizationKey(),
-                              &info, callback.callback(), &request, log);
+  int result = service()->ResolveProxy(
+      kResourceUrl, "GET", NetworkAnonymizationKey(), &info,
+      callback.callback(), &request, log, DEFAULT_PRIORITY);
 
   ASSERT_THAT(result, IsError(ERR_IO_PENDING));
   ASSERT_NE(request, nullptr);

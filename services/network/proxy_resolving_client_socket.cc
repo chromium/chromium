@@ -244,7 +244,7 @@ int ProxyResolvingClientSocket::DoProxyResolve() {
       &proxy_info_,
       base::BindOnce(&ProxyResolvingClientSocket::OnIOComplete,
                      base::Unretained(this)),
-      &proxy_resolve_request_, net_log_);
+      &proxy_resolve_request_, net_log_, net::DEFAULT_PRIORITY);
 }
 
 int ProxyResolvingClientSocket::DoProxyResolveComplete(int result) {

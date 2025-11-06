@@ -43,7 +43,7 @@ CreateConfiguredProxyResolutionServiceUsingMojoFactory(
                   &net::NetworkDelegateErrorObserver::Create, network_delegate,
                   base::SingleThreadTaskRunner::GetCurrentDefault()),
               net_log),
-          net_log, pac_quick_check_enabled));
+          host_resolver, net_log, pac_quick_check_enabled));
 
   // Configure fetchers to use for PAC script downloads and auto-detect.
   proxy_resolution_service->SetPacFileFetchers(

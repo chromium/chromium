@@ -51,7 +51,8 @@ class NET_EXPORT WindowsSystemProxyResolutionService
                    ProxyInfo* results,
                    CompletionOnceCallback callback,
                    std::unique_ptr<ProxyResolutionRequest>* request,
-                   const NetLogWithSource& net_log) override;
+                   const NetLogWithSource& net_log,
+                   RequestPriority priority) override;
   void ReportSuccess(const ProxyInfo& proxy_info) override;
   void SetProxyDelegate(ProxyDelegate* delegate) override;
   void OnShutdown() override;

@@ -15,6 +15,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "net/base/address_list.h"
 #include "net/base/port_util.h"
+#include "net/base/request_priority.h"
 #include "net/base/url_util.h"
 #include "net/http/http_network_session.h"
 #include "net/log/net_log_values.h"
@@ -552,7 +553,7 @@ int DedicatedWebTransportHttp3Client::DoCheckProxy() {
       url_, /* method */ "CONNECT", anonymization_key_, &proxy_info_,
       base::BindOnce(&DedicatedWebTransportHttp3Client::DoLoop,
                      base::Unretained(this)),
-      &proxy_resolution_request_, net_log_);
+      &proxy_resolution_request_, net_log_, DEFAULT_PRIORITY);
 }
 
 int DedicatedWebTransportHttp3Client::DoCheckProxyComplete(int rv) {

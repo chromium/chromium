@@ -6293,7 +6293,8 @@ TEST_P(HttpNetworkTransactionTest, SameDestinationForDifferentProxyTypes) {
           std::make_unique<ProxyConfigServiceFixed>(ProxyConfigWithAnnotation(
               ProxyConfig::CreateAutoDetect(), TRAFFIC_ANNOTATION_FOR_TESTS)),
           std::make_unique<SameProxyWithDifferentSchemesProxyResolverFactory>(),
-          nullptr, /*quick_check_enabled=*/true);
+          /*host_resolver_for_override_rules=*/nullptr, nullptr,
+          /*quick_check_enabled=*/true);
 
   std::unique_ptr<HttpNetworkSession> session = CreateSession(&session_deps_);
 
@@ -6703,7 +6704,8 @@ TEST_P(HttpNetworkTransactionTest, ProxyResolvedWithNetworkAnonymizationKey) {
               proxy_config, TRAFFIC_ANNOTATION_FOR_TESTS)),
           std::make_unique<CapturingProxyResolverFactory>(
               &capturing_proxy_resolver),
-          nullptr, /*quick_check_enabled=*/true);
+          /*host_resolver_for_override_rules=*/nullptr, nullptr,
+          /*quick_check_enabled=*/true);
 
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
 
@@ -9137,6 +9139,7 @@ TEST_P(HttpNetworkTransactionTest,
           std::make_unique<ProxyConfigServiceFixed>(ProxyConfigWithAnnotation(
               proxy_config, TRAFFIC_ANNOTATION_FOR_TESTS)),
           /*resolver_factory=*/nullptr,
+          /*host_resolver_for_override_rules=*/nullptr,
           /*net_log=*/nullptr, /*quick_check_enabled=*/true);
   session_deps_.net_log = NetLog::Get();
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
@@ -10127,7 +10130,8 @@ TEST_P(HttpNetworkTransactionTest, ProxiedH2SessionAppearsDuringAuth) {
               proxy_config, TRAFFIC_ANNOTATION_FOR_TESTS)),
           std::make_unique<CapturingProxyResolverFactory>(
               &capturing_proxy_resolver),
-          nullptr, /*quick_check_enabled=*/true);
+          /*host_resolver_for_override_rules=*/nullptr, nullptr,
+          /*quick_check_enabled=*/true);
 
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
 
@@ -10674,7 +10678,8 @@ TEST_P(HttpNetworkTransactionTest, SpdyProxyIsolation1) {
               proxy_config, TRAFFIC_ANNOTATION_FOR_TESTS)),
           std::make_unique<CapturingProxyResolverFactory>(
               &capturing_proxy_resolver),
-          nullptr, /*quick_check_enabled=*/true);
+          /*host_resolver_for_override_rules=*/nullptr, nullptr,
+          /*quick_check_enabled=*/true);
 
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
 
@@ -10810,7 +10815,8 @@ TEST_P(HttpNetworkTransactionTest, SpdyProxyIsolation2) {
               proxy_config, TRAFFIC_ANNOTATION_FOR_TESTS)),
           std::make_unique<CapturingProxyResolverFactory>(
               &capturing_proxy_resolver),
-          nullptr, /*quick_check_enabled=*/true);
+          /*host_resolver_for_override_rules=*/nullptr, nullptr,
+          /*quick_check_enabled=*/true);
 
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
   // Fetch https://proxy:70/ via HTTP/2.
@@ -18298,7 +18304,8 @@ TEST_P(HttpNetworkTransactionTest, UseOriginNotAlternativeForProxy) {
   session_deps_.proxy_resolution_service =
       std::make_unique<ConfiguredProxyResolutionService>(
           std::move(proxy_config_service), std::move(proxy_resolver_factory),
-          NetLog::Get(), /*quick_check_enabled=*/true);
+          /*host_resolver_for_override_rules=*/nullptr, NetLog::Get(),
+          /*quick_check_enabled=*/true);
 
   session_deps_.net_log = NetLog::Get();
 
@@ -18381,7 +18388,8 @@ TEST_P(HttpNetworkTransactionTest, UseAlternativeServiceForTunneledNpnSpdy) {
               proxy_config, TRAFFIC_ANNOTATION_FOR_TESTS)),
           std::make_unique<CapturingProxyResolverFactory>(
               &capturing_proxy_resolver),
-          nullptr, /*quick_check_enabled=*/true);
+          /*host_resolver_for_override_rules=*/nullptr, nullptr,
+          /*quick_check_enabled=*/true);
   session_deps_.net_log = NetLog::Get();
 
   HttpRequestInfo request;
@@ -24272,10 +24280,10 @@ TEST_P(HttpNetworkTransactionTest, ProxyResolutionFailsSync) {
   MockAsyncProxyResolver resolver;
   session_deps_.proxy_resolution_service =
       std::make_unique<ConfiguredProxyResolutionService>(
-
           std::make_unique<ProxyConfigServiceFixed>(ProxyConfigWithAnnotation(
               proxy_config, TRAFFIC_ANNOTATION_FOR_TESTS)),
-          std::make_unique<FailingProxyResolverFactory>(), nullptr,
+          std::make_unique<FailingProxyResolverFactory>(),
+          /*host_resolver_for_override_rules=*/nullptr, nullptr,
           /*quick_check_enabled=*/true);
 
   HttpRequestInfo request;
@@ -24305,10 +24313,10 @@ TEST_P(HttpNetworkTransactionTest, ProxyResolutionFailsAsync) {
   MockAsyncProxyResolver resolver;
   session_deps_.proxy_resolution_service =
       std::make_unique<ConfiguredProxyResolutionService>(
-
           std::make_unique<ProxyConfigServiceFixed>(ProxyConfigWithAnnotation(
               proxy_config, TRAFFIC_ANNOTATION_FOR_TESTS)),
-          std::move(proxy_resolver_factory), nullptr,
+          std::move(proxy_resolver_factory),
+          /*host_resolver_for_override_rules=*/nullptr, nullptr,
           /*quick_check_enabled=*/true);
   HttpRequestInfo request;
   request.method = "GET";
