@@ -2958,6 +2958,11 @@ class ShelfLayoutManagerDragDropTest
     generator_ = GetEventGenerator();
   }
 
+  void TearDown() override {
+    generator_ = nullptr;
+    ShelfLayoutManagerTestBase::TearDown();
+  }
+
   // Moves to `view` and mouse/gesture presses it. Does not actually start
   // dragging `view` to a different location.
   void StartDrag(DragTestView* view) {
@@ -2995,7 +3000,7 @@ class ShelfLayoutManagerDragDropTest
   }
 
  private:
-  raw_ptr<ui::test::EventGenerator, DanglingUntriaged> generator_;
+  raw_ptr<ui::test::EventGenerator> generator_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
