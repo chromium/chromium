@@ -269,8 +269,8 @@ public class BookmarkBarCoordinatorTest {
     @Test
     @SmallTest
     public void testOnBookmarkBarHeightChanged() {
-        // Verify initial state.
-        assertEquals("Verify initial state.", 0, mCoordinator.getTopControlHeight());
+        // Verify initial state. Height is read from minHeight and hairline's height.
+        assertEquals("Verify initial state.", 41, mCoordinator.getTopControlHeight());
 
         // NOTE: the `mHeightChangeCallback` is expected to have been registered for observation
         // during `mCoordinator` construction and notified of initial height via posted task.
@@ -286,7 +286,7 @@ public class BookmarkBarCoordinatorTest {
         mContentContainer.layout(rect.left, rect.top, rect.right, rect.bottom);
         assertEquals(
                 "Verify state after height-changing layout.",
-                rect.height(),
+                rect.height() + 1,
                 mCoordinator.getTopControlHeight());
         verify(mHeightChangeCallback).onResult(null);
 
@@ -296,7 +296,7 @@ public class BookmarkBarCoordinatorTest {
         mContentContainer.layout(rect.left, rect.top, rect.right, rect.bottom);
         assertEquals(
                 "Verify state after height-consistent layout.",
-                rect.height(),
+                rect.height() + 1,
                 mCoordinator.getTopControlHeight());
         verifyNoMoreInteractions(mHeightChangeCallback);
     }
@@ -463,8 +463,8 @@ public class BookmarkBarCoordinatorTest {
     @SmallTest
     @SuppressWarnings("DirectInvocationOnMock")
     public void testOnTopControlsHeightChanged() {
-        // Initialize browser controls manager.
-        final int topControlsHeight = 1;
+        // Initialize browser controls manager. Bookmark bar start height is 40.
+        int topControlsHeight = 41;
         when(mBrowserControlsManager.getTopControlsHeight()).thenReturn(topControlsHeight);
 
         // Simulate top controls height changed.
@@ -477,7 +477,18 @@ public class BookmarkBarCoordinatorTest {
 
         assertEquals(
                 "Verify view top margin.",
-                topControlsHeight - mView.getHeight(),
+                0,
+                ((MarginLayoutParams) mView.getLayoutParams()).topMargin);
+
+        topControlsHeight = 51;
+        when(mBrowserControlsManager.getTopControlsHeight()).thenReturn(topControlsHeight);
+        obs.getValue()
+                .onTopControlsHeightChanged(
+                        mBrowserControlsManager.getTopControlsHeight(),
+                        mBrowserControlsManager.getTopControlsMinHeight());
+        assertEquals(
+                "Verify view top margin.",
+                10,
                 ((MarginLayoutParams) mView.getLayoutParams()).topMargin);
     }
 

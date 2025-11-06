@@ -6,7 +6,6 @@ found in the LICENSE file.
 -->
 <org.chromium.chrome.browser.bookmarks.bar.BookmarkBar
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/bookmark_bar_view"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -17,6 +16,7 @@ found in the LICENSE file.
       android:id="@+id/bookmark_bar_content_container"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
+      android:minHeight="@dimen/bookmark_bar_min_height"
       android:paddingStart="@dimen/bookmark_bar_padding"
       android:paddingEnd="@dimen/bookmark_bar_padding"
       android:paddingBottom="@dimen/bookmark_bar_padding">

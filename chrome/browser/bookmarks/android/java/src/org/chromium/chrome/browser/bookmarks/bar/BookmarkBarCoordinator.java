@@ -98,13 +98,19 @@ public class BookmarkBarCoordinator
     private boolean mIsResourceRegistered;
     private final CurrentTabObserver mCurrentTabObserver;
     private final TopUiThemeColorProvider mTopUiThemeColorProvider;
+    private final int mHairlineHeight;
+
     /** The PropertyModel for the main BookmarkBar view. */
     private final PropertyModel mModel;
+
     // Tracks whether or not the bookmark bar should be shown at all. We keep this state in addition
     // to setting visibility directly on |mView| because we need to differentiate the Android
     // widgets from the bookmark bar in general.
     private boolean mShouldBookmarkBarBeShown;
     private boolean mIsInFullscreenMode;
+
+    // Represents the latest non-zero height for the Android view.
+    private int mContentHeight;
 
     /**
      * Constructs the bookmark bar coordinator.
@@ -150,6 +156,11 @@ public class BookmarkBarCoordinator
         mFullscreenManager.addObserver(this);
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
         mActivityLifecycleDispatcher.register(this);
+
+        mContentHeight =
+                mContext.getResources().getDimensionPixelSize(R.dimen.bookmark_bar_min_height);
+        mHairlineHeight =
+                mContext.getResources().getDimensionPixelSize(R.dimen.toolbar_hairline_height);
 
         // The Bookmark Bar may first be turned on in fullscreen mode, in which case we want its
         // initial state to be hidden, which is tracked by this member variable.
@@ -259,10 +270,7 @@ public class BookmarkBarCoordinator
                                 BookmarkBarSceneLayerProperties.RESOURCE_ID,
                                 mViewResourceFrameLayout.getId())
                         .with(BookmarkBarSceneLayerProperties.VISIBILITY, true)
-                        .with(
-                                BookmarkBarSceneLayerProperties.HAIRLINE_HEIGHT,
-                                mContext.getResources()
-                                        .getDimensionPixelSize(R.dimen.toolbar_hairline_height))
+                        .with(BookmarkBarSceneLayerProperties.HAIRLINE_HEIGHT, mHairlineHeight)
                         .build();
 
         // Create a CurrentTabObserver to update the background color as it changes.
@@ -416,7 +424,7 @@ public class BookmarkBarCoordinator
 
     @Override
     public int getTopControlHeight() {
-        return mShouldBookmarkBarBeShown ? mView.getHeight() : 0;
+        return mShouldBookmarkBarBeShown ? mContentHeight + mHairlineHeight : 0;
     }
 
     @Override
@@ -471,6 +479,11 @@ public class BookmarkBarCoordinator
         // |mViewResourceFrameLayout|.
         final int oldHeight = oldBottom - oldTop;
         final int newHeight = bottom - top;
+
+        if (newHeight > 0 && mContentHeight != newHeight) {
+            mContentHeight = newHeight;
+        }
+
         if (newHeight != oldHeight) {
             mBookmarkBarSceneLayerModel.set(
                     BookmarkBarSceneLayerProperties.SCENE_LAYER_HEIGHT, newHeight);

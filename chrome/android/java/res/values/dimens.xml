@@ -217,6 +217,8 @@ found in the LICENSE file.
     <dimen name="bookmark_bar_padding">8dp</dimen>
     <dimen name="bookmark_bar_overflow_button_margin_start">4dp</dimen>
     <dimen name="bookmark_bar_overflow_button_height_total">32dp</dimen>
+    <!-- bookmark_bar_overflow_button_height_total(32) + bookmark_bar_padding(8) -->
+    <dimen name="bookmark_bar_min_height">40dp</dimen>
 
     <!-- Custom Tabs dimensions -->
     <dimen name="custom_tabs_drag_handle_padding_top">12dp</dimen>

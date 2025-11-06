@@ -251,10 +251,10 @@ public class TopToolbarOverlayMediator {
                             // item of the top controls, so we need to subtract the height of the
                             // bookmark bar to shift the toolbar up.
                             // TODO(crbug.com/417238089): Get offset from TopControlsStacker.
-                            int height =
-                                    ChromeFeatureList.sAndroidBookmarkBar.isEnabled()
-                                            ? getBookmarkBarAdjustedContentOffset()
-                                            : mBrowserControlsStateProvider.getTopControlsHeight();
+                            int height = mBrowserControlsStateProvider.getTopControlsHeight();
+                            if (ChromeFeatureList.sAndroidBookmarkBar.isEnabled()) {
+                                height = getBookmarkBarAdjustedContentOffset(height);
+                            }
                             if (getControlsPosition() == ControlsPosition.TOP) {
                                 mModel.set(TopToolbarOverlayProperties.CONTENT_OFFSET, height);
                             } else if (getControlsPosition() == ControlsPosition.BOTTOM) {
@@ -317,16 +317,32 @@ public class TopToolbarOverlayMediator {
         return offset != 0;
     }
 
-    private int getBookmarkBarAdjustedContentOffset() {
-        // To resolve conflict with LockTopControls features, when either is enabled, we do not
-        // adjust the offset by the bookmarks bar or the toolbar will appear over the tab strip.
-        if (BrowserControlsUtils.doSyncMinHeightWithTotalHeight(mContext)
-                || BrowserControlsUtils.doSyncMinHeightWithTotalHeightV2()) {
-            return mBrowserControlsStateProvider.getTopControlsHeight();
+    private int getBookmarkBarAdjustedContentOffset(int originalContentOffset) {
+        if (getControlsPosition() == ControlsPosition.BOTTOM) {
+            return originalContentOffset;
+        }
+        int offset = mBookmarkBarHeightSupplier != null ? mBookmarkBarHeightSupplier.get() : 0;
+        if (offset == 0) {
+            return originalContentOffset;
         }
 
-        int offset = mBookmarkBarHeightSupplier != null ? mBookmarkBarHeightSupplier.get() : 0;
-        return mBrowserControlsStateProvider.getTopControlsHeight() - offset;
+        // During startup, when bookmark bar is created and added to the stack, the render might not
+        // be able to respond to the new height yet, and browser controls state provider might be
+        // holding a "stale" contentOffset (that's equal to the browser controls height
+        // before bookmark bar). In such case, just reducing the originalContentOffset is wrong and
+        // it will push the toolbar overlay too high.
+        //
+        // As a workaround, we are checking the diff between content offset and top controls offset,
+        // then compare that with the current browser controls height to determine if we'll perform
+        // the adjustment. This is guaranteed to almost always work, because onControlsOffsetChanged
+        // will be called when render can respond to the new height.
+        int renderTopControlsHeight =
+                mBrowserControlsStateProvider.getContentOffset()
+                        - mBrowserControlsStateProvider.getTopControlOffset();
+        if (renderTopControlsHeight != mBrowserControlsStateProvider.getTopControlsHeight()) {
+            return originalContentOffset;
+        }
+        return originalContentOffset - offset;
     }
 
     private void updateOffsetTag() {
@@ -603,7 +619,7 @@ public class TopToolbarOverlayMediator {
         }
 
         if (ChromeFeatureList.sAndroidBookmarkBar.isEnabled()) {
-            contentOffset = Math.min(getBookmarkBarAdjustedContentOffset(), contentOffset);
+            contentOffset = getBookmarkBarAdjustedContentOffset(contentOffset);
         }
 
         mModel.set(TopToolbarOverlayProperties.CONTENT_OFFSET, contentOffset);
