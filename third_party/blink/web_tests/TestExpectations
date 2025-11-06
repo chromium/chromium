@@ -9889,3 +9889,7 @@ crbug.com/444170116 [ Linux ] external/wpt/uievents/mouse/mouseenter-mouseleave-
 # Gardener 2025-10-28
 crbug.com/455664816 virtual/threaded/external/wpt/css/css-view-transitions/scoped/display-change-during-transition.html [ Failure Pass ]
 crbug.com/455664816 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/scoped/display-change-during-transition.html [ Failure Pass ]
+crbug.com/455803699 [ Mac ] accessibility/scroll-window-sends-notification.html [ Pass Failure ]
+crbug.com/455803699 [ Mac ] http/tests/accessibility/slow-document-load.html [ Pass Failure ]
+crbug.com/455696391 [ Mac ] virtual/view-transition-wide-gamut/inspector-protocol/css/css-get-styles-for-view-transition.js [ Pass Failure ]
+crbug.com/455808926 [ Linux ] images/color-profile-image-object-fit.html [ Pass Failure ]
