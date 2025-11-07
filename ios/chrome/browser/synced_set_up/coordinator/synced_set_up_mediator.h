@@ -24,9 +24,10 @@ class DeviceInfoSyncService;
 
 @class AppStartupParameters;
 class PrefService;
+@protocol SnackbarCommands;
 @protocol SyncedSetUpMediatorDelegate;
-
 @protocol SyncedSetUpConsumer;
+class WebStateList;
 
 // Mediator responsible for querying and applying tracked prefs on a synced
 // device.
@@ -40,18 +41,29 @@ class PrefService;
 @property(nonatomic, weak) id<SyncedSetUpMediatorDelegate> delegate;
 
 - (instancetype)
-      initWithPrefTracker:(sync_preferences::CrossDevicePrefTracker*)tracker
-    authenticationService:(AuthenticationService*)authenticationService
-    accountManagerService:(ChromeAccountManagerService*)accountManagerService
-    deviceInfoSyncService:(syncer::DeviceInfoSyncService*)deviceInfoSyncService
-       profilePrefService:(PrefService*)profilePrefService
-        startupParameters:(AppStartupParameters*)startupParameters
-          identityManager:(signin::IdentityManager*)identityManager;
+        initWithPrefTracker:(sync_preferences::CrossDevicePrefTracker*)tracker
+      authenticationService:(AuthenticationService*)authenticationService
+      accountManagerService:(ChromeAccountManagerService*)accountManagerService
+      deviceInfoSyncService:
+          (syncer::DeviceInfoSyncService*)deviceInfoSyncService
+         profilePrefService:(PrefService*)profilePrefService
+            identityManager:(signin::IdentityManager*)identityManager
+               webStateList:(WebStateList*)webStateList
+          startupParameters:(AppStartupParameters*)startupParameters
+    snackbarCommandsHandler:(id<SnackbarCommands>)handler
+    NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 
 // Disconnects the mediator.
 - (void)disconnect;
+
+// Main controller for this mediator. Tries to apply available prefs and
+// presents the appropriate Synced Set Up Snackbar.
+- (void)applyPrefs;
+
+// Presents the Synced Set Up Snackbar. Returns YES if the Snackbar was shown.
+- (BOOL)maybeShowSnackbar;
 
 @end
 
