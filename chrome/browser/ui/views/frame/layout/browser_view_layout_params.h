@@ -7,6 +7,7 @@
 
 #include <ostream>
 
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size_f.h"
 
@@ -98,8 +99,22 @@ struct BrowserLayoutParams {
   // Is the visual area empty?
   bool IsEmpty() const;
 
+  // Applies `insets` to the contents area, in-place.
+  void Inset(const gfx::Insets& insets);
+
+  // Returns a new set of params after applying `insets` to the
+  // `visual_client_area`; the coordinate system is not changed.
+  [[nodiscard]] BrowserLayoutParams WithInsets(const gfx::Insets& insets) const;
+
+  // Returns a new set of params after moving the `visual_client_area` to
+  // `new_client_area`, which should be smaller. The coordinate system is not
+  // changed.
+  [[nodiscard]] BrowserLayoutParams WithClientArea(
+      const gfx::Rect& new_client_area) const;
+
   // Converts this params object to local coordinates in `rect`.
-  BrowserLayoutParams InLocalCoordinates(const gfx::Rect& rect) const;
+  [[nodiscard]] BrowserLayoutParams InLocalCoordinates(
+      const gfx::Rect& rect) const;
 };
 
 std::ostream& operator<<(std::ostream& os,

@@ -44,45 +44,55 @@ constexpr gfx::Rect kAlignedAreaRect = Inset(kContentArea, kAlignedInsets);
 
 // Eats into the margins of both exclusion areas.
 constexpr gfx::Insets kMarginAdjustments = gfx::Insets::TLBR(3, 4, 0, 5);
-constexpr gfx::Insets kMarginInsets = Add(kAlignedInsets, kMarginAdjustments);
-constexpr gfx::Rect kIntoMarginsRect = Inset(kContentArea, kMarginInsets);
+constexpr gfx::Insets kIntoMarginsInsets =
+    Add(kAlignedInsets, kMarginAdjustments);
+constexpr gfx::Rect kIntoMarginsRect = Inset(kContentArea, kIntoMarginsInsets);
 
 }  // namespace
 
-TEST(BrowserViewLayoutParamsTest,
-     BrowserLayoutParams_InLocalCoordinates_Same_NoClientInsets) {
+TEST(BrowserViewLayoutParamsTest, BrowserLayoutParams_Same_NoClientInsets) {
   static constexpr BrowserLayoutParams kParams{
       .visual_client_area = gfx::Rect{{}, kContentArea.size()},
       .leading_exclusion = kLeadingExclusion,
       .trailing_exclusion = kTrailingExclusion};
-  const BrowserLayoutParams result =
-      kParams.InLocalCoordinates(gfx::Rect({}, kContentArea.size()));
-  EXPECT_EQ(kParams, result);
+  static constexpr gfx::Rect kRect{{}, kContentArea.size()};
+  const BrowserLayoutParams in_local_result = kParams.InLocalCoordinates(kRect);
+  EXPECT_EQ(kParams, in_local_result);
+  const BrowserLayoutParams with_client_area_result =
+      kParams.WithClientArea(kRect);
+  EXPECT_EQ(kParams, with_client_area_result);
+  const BrowserLayoutParams with_insets_result =
+      kParams.WithInsets(gfx::Insets());
+  EXPECT_EQ(kParams, with_insets_result);
 }
 
-TEST(BrowserViewLayoutParamsTest,
-     BrowserLayoutParams_InLocalCoordinates_Same_WithClientInsets) {
+TEST(BrowserViewLayoutParamsTest, BrowserLayoutParams_Same_WithClientInsets) {
   static constexpr BrowserLayoutParams kParams{
       .visual_client_area = kContentArea,
       .leading_exclusion = kLeadingExclusion,
       .trailing_exclusion = kTrailingExclusion};
-  const BrowserLayoutParams result = kParams.InLocalCoordinates(kContentArea);
-  static constexpr BrowserLayoutParams kExpected{
-      .visual_client_area{{}, kContentArea.size()},
-      .leading_exclusion = kLeadingExclusion,
-      .trailing_exclusion = kTrailingExclusion};
-  EXPECT_EQ(kExpected, result);
+  BrowserLayoutParams expected{.visual_client_area{{}, kContentArea.size()},
+                               .leading_exclusion = kLeadingExclusion,
+                               .trailing_exclusion = kTrailingExclusion};
+  const BrowserLayoutParams in_local_result =
+      kParams.InLocalCoordinates(kContentArea);
+  EXPECT_EQ(expected, in_local_result);
+  expected.visual_client_area.set_origin(kContentArea.origin());
+  const BrowserLayoutParams with_client_area_result =
+      kParams.WithClientArea(kContentArea);
+  EXPECT_EQ(expected, with_client_area_result);
+  const BrowserLayoutParams with_insets_result =
+      kParams.WithInsets(gfx::Insets());
+  EXPECT_EQ(expected, with_insets_result);
 }
 
 TEST(BrowserViewLayoutParamsTest,
-     BrowserLayoutParams_InLocalCoordinates_Different_OverlapsContent) {
+     BrowserLayoutParams_Different_OverlapsContent) {
   static constexpr BrowserLayoutParams kParams{
       .visual_client_area = kContentArea,
       .leading_exclusion = kLeadingExclusion,
       .trailing_exclusion = kTrailingExclusion};
-  const BrowserLayoutParams result =
-      kParams.InLocalCoordinates(kSmallerAreaRect);
-  static constexpr BrowserLayoutParams kExpected{
+  BrowserLayoutParams expected{
       .visual_client_area{{}, kSmallerAreaRect.size()},
       .leading_exclusion{
           .content{kLeadingExclusion.content.width() - kSmallInsets.left(),
@@ -94,7 +104,16 @@ TEST(BrowserViewLayoutParamsTest,
                    kTrailingExclusion.content.height() - kSmallInsets.top()},
           .horizontal_padding = kTrailingExclusion.horizontal_padding,
           .vertical_padding = kTrailingExclusion.vertical_padding}};
-  EXPECT_EQ(kExpected, result);
+  const BrowserLayoutParams in_local_result =
+      kParams.InLocalCoordinates(kSmallerAreaRect);
+  EXPECT_EQ(expected, in_local_result);
+  expected.visual_client_area.set_origin(kSmallerAreaRect.origin());
+  const BrowserLayoutParams with_client_area_result =
+      kParams.WithClientArea(kSmallerAreaRect);
+  EXPECT_EQ(expected, with_client_area_result);
+  const BrowserLayoutParams with_insets_result =
+      kParams.WithInsets(kSmallInsets);
+  EXPECT_EQ(expected, with_insets_result);
 }
 
 TEST(BrowserViewLayoutParamsTest,
@@ -103,9 +122,7 @@ TEST(BrowserViewLayoutParamsTest,
       .visual_client_area = kContentArea,
       .leading_exclusion = kLeadingExclusion,
       .trailing_exclusion = kTrailingExclusion};
-  const BrowserLayoutParams result =
-      kParams.InLocalCoordinates(kAlignedAreaRect);
-  static constexpr BrowserLayoutParams kExpected{
+  BrowserLayoutParams expected{
       .visual_client_area{{}, kAlignedAreaRect.size()},
       .leading_exclusion{
           .horizontal_padding = kLeadingExclusion.horizontal_padding,
@@ -116,7 +133,16 @@ TEST(BrowserViewLayoutParamsTest,
           .content{0.f, 1.f},
           .horizontal_padding = kTrailingExclusion.horizontal_padding,
           .vertical_padding = kTrailingExclusion.vertical_padding}};
-  EXPECT_EQ(kExpected, result);
+  const BrowserLayoutParams in_local_result =
+      kParams.InLocalCoordinates(kAlignedAreaRect);
+  EXPECT_EQ(expected, in_local_result);
+  expected.visual_client_area.set_origin(kAlignedAreaRect.origin());
+  const BrowserLayoutParams with_client_area_result =
+      kParams.WithClientArea(kAlignedAreaRect);
+  EXPECT_EQ(expected, with_client_area_result);
+  const BrowserLayoutParams with_insets_result =
+      kParams.WithInsets(kAlignedInsets);
+  EXPECT_EQ(expected, with_insets_result);
 }
 
 TEST(BrowserViewLayoutParamsTest,
@@ -125,9 +151,7 @@ TEST(BrowserViewLayoutParamsTest,
       .visual_client_area = kContentArea,
       .leading_exclusion = kLeadingExclusion,
       .trailing_exclusion = kTrailingExclusion};
-  const BrowserLayoutParams result =
-      kParams.InLocalCoordinates(kIntoMarginsRect);
-  static constexpr BrowserLayoutParams kExpected{
+  BrowserLayoutParams expected{
       .visual_client_area{{}, kIntoMarginsRect.size()},
       .leading_exclusion{
           .horizontal_padding =
@@ -141,5 +165,14 @@ TEST(BrowserViewLayoutParamsTest,
           // larger by one pixel.
           .vertical_padding = kTrailingExclusion.vertical_padding -
                               (kMarginAdjustments.top() - 1)}};
-  EXPECT_EQ(kExpected, result);
+  const BrowserLayoutParams in_local_result =
+      kParams.InLocalCoordinates(kIntoMarginsRect);
+  EXPECT_EQ(expected, in_local_result);
+  expected.visual_client_area.set_origin(kIntoMarginsRect.origin());
+  const BrowserLayoutParams with_client_area_result =
+      kParams.WithClientArea(kIntoMarginsRect);
+  EXPECT_EQ(expected, with_client_area_result);
+  const BrowserLayoutParams with_insets_result =
+      kParams.WithInsets(kIntoMarginsInsets);
+  EXPECT_EQ(expected, with_insets_result);
 }

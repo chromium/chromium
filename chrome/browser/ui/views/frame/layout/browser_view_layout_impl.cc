@@ -37,6 +37,10 @@
 
 namespace {
 
+// The minimum width of the contents area itself. Applies even when side panels
+// are open and prevents zero or negative contents sizes.
+static constexpr int kContentsContainerMinimumWidth = 200;
+
 // Shorthand for validating both `child` and `parent` and checking that one is
 // parented to the other. Ignores child visibility.
 bool IsParentedTo(const views::View* child, const views::View* parent) {
@@ -294,11 +298,12 @@ gfx::Size BrowserViewLayoutImpl::GetMinimumSize(const views::View* host) const {
   // TODO(https://crbug.com/454583671): This probably needs to be more
   // sophisticated to handle separators, etc. but it's unwieldy to do it without
   // better decomposition of the layout.
-  const int min_width = std::max(
-      {tabstrip_size.width(), toolbar_size.width(), bookmark_bar_size.width(),
-       infobar_container_size.width(),
-       (contents_size.width() + contents_height_side_panel_size.width()),
-       kMainBrowserContentsMinimumWidth});
+  const int min_width =
+      std::max({tabstrip_size.width(), toolbar_size.width(),
+                bookmark_bar_size.width(), infobar_container_size.width(),
+                (kContentsContainerMinimumWidth +
+                 contents_height_side_panel_size.width()),
+                kMainBrowserContentsMinimumWidth});
 
   return gfx::Size(min_width, min_height);
 }
@@ -324,6 +329,7 @@ BrowserViewLayoutImpl::CalculateProposedLayout(
 
   // TODO(https://crbug.com/453717426): Handle vertical tabstrip here.
 
+  int x = params.visual_client_area.x();
   int y = params.visual_client_area.y();
   bool used_exclusion = false;
 
@@ -363,8 +369,7 @@ BrowserViewLayoutImpl::CalculateProposedLayout(
   // Lay out the main area background.
   if (IsParentedTo(views().main_background_region, views().browser_view)) {
     layout.AddChild(views().main_background_region,
-                    gfx::Rect(params.visual_client_area.x(), y,
-                              params.visual_client_area.width(),
+                    gfx::Rect(x, y, params.visual_client_area.width() - x,
                               params.visual_client_area.bottom() - y),
                     has_toolbar_height_side_panel);
   }
@@ -374,8 +379,6 @@ BrowserViewLayoutImpl::CalculateProposedLayout(
   const int container_inset_padding =
       GetLayoutConstant(LayoutConstant::TOOLBAR_HEIGHT_SIDE_PANEL_INSET) +
       views::Separator::kThickness;
-
-  int x = params.visual_client_area.x();
 
   // Lay out toolbar-height side panel.
   if (IsParentedToAndVisible(views().toolbar_height_side_panel,
@@ -407,11 +410,12 @@ BrowserViewLayoutImpl::CalculateProposedLayout(
   // moves over to accommodate the panel.
   const int scaled_main_area_padding =
       base::ClampRound(toolbar_height_reveal_amount * container_inset_padding);
-  main_bounds.Inset(scaled_main_area_padding);
+  main_bounds.Inset(gfx::Insets::TLBR(scaled_main_area_padding, 0,
+                                      scaled_main_area_padding,
+                                      scaled_main_area_padding));
 
   // Lay out the remainder of the main container.
-  BrowserLayoutParams main_params = params.InLocalCoordinates(main_bounds);
-  main_params.visual_client_area.set_origin(main_bounds.origin());
+  BrowserLayoutParams main_params = params.WithClientArea(main_bounds);
   layout.AddChild(views().main_shadow_overlay, main_bounds,
                   has_toolbar_height_side_panel);
   CalculateMainContainerLayout(layout, main_params, !used_exclusion);
@@ -442,8 +446,6 @@ void BrowserViewLayoutImpl::CalculateMainContainerLayout(
     y = top_container_layout.bounds.bottom();
   }
 
-  // TODO(https://crbug.com/7089871): handle "toolbar always visible" mode.
-
   // Lay out infobar container.
   if (IsParentedTo(views().infobar_container, views().browser_view)) {
     gfx::Rect infobar_bounds;
@@ -468,7 +470,7 @@ void BrowserViewLayoutImpl::CalculateMainContainerLayout(
   bool show_left_separator = false;
   bool show_right_separator = false;
   bool side_panel_leading = false;
-  int min_contents_width = kMainBrowserContentsMinimumWidth;
+  int min_contents_width = kContentsContainerMinimumWidth;
 
   // The contents-height side panel is adjusted for the presence of a top
   // container separator in the browser view.
