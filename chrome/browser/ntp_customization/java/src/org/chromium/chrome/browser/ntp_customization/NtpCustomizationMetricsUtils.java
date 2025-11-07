@@ -9,7 +9,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
-import org.chromium.chrome.browser.ntp_customization.theme.UploadImagePreviewCoordinator;
+import org.chromium.chrome.browser.ntp_customization.theme.upload_image.UploadImagePreviewCoordinator;
 
 /** The utility class for logging the NTP customization bottom sheet's metrics. */
 @NullMarked

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.ntp_customization.theme;
+package org.chromium.chrome.browser.ntp_customization.theme.upload_image;
 
 import android.graphics.Bitmap;
 import android.graphics.Matrix;

@@ -9,8 +9,8 @@ import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoor
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.NTP_CARDS;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.EntryPointType.MAIN_MENU;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.EntryPointType.TOOL_BAR;
-import static org.chromium.chrome.browser.ntp_customization.theme.UploadImagePreviewCoordinator.PreviewInteractionType.CANCEL;
-import static org.chromium.chrome.browser.ntp_customization.theme.UploadImagePreviewCoordinator.PreviewInteractionType.SAVE;
+import static org.chromium.chrome.browser.ntp_customization.theme.upload_image.UploadImagePreviewCoordinator.PreviewInteractionType.CANCEL;
+import static org.chromium.chrome.browser.ntp_customization.theme.upload_image.UploadImagePreviewCoordinator.PreviewInteractionType.SAVE;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -22,7 +22,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType;
-import org.chromium.chrome.browser.ntp_customization.theme.UploadImagePreviewCoordinator.PreviewInteractionType;
+import org.chromium.chrome.browser.ntp_customization.theme.upload_image.UploadImagePreviewCoordinator.PreviewInteractionType;
 
 /** Unit tests for {@link NtpCustomizationMetricsUtils} */
 @RunWith(BaseRobolectricTestRunner.class)
