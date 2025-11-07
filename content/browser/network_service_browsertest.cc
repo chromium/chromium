@@ -625,7 +625,14 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserTest, FactoryOverride) {
 #if !BUILDFLAG(IS_FUCHSIA)
 class NetworkServiceBrowserCacheResetTest : public NetworkServiceBrowserTest {
  public:
-  NetworkServiceBrowserCacheResetTest() = default;
+  NetworkServiceBrowserCacheResetTest() {
+    // TODO(crbug.com/456764271): Disabling NetworkServicePerPriorityTaskQueues
+    // feature as it made the test flaky. This feature changes the task
+    // execution order, potentially causing disk_cache::Backend to be destructed
+    // before disk_cache::Entry. See the crbug for more details.
+    scoped_feature_list_.InitAndDisableFeature(
+        network::features::kNetworkServicePerPriorityTaskQueues);
+  }
 
  protected:
   void StoreUrl(const GURL& url) {
@@ -741,6 +748,9 @@ class NetworkServiceBrowserCacheResetTest : public NetworkServiceBrowserTest {
     }
     return loader->NetError();
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Create a network context and make an HTTP request which causes cache entry to
