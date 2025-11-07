@@ -11330,7 +11330,13 @@ class LayerTreeHostTestTextureLayerOffscreenScroll : public LayerTreeTest {
   viz::TransferableResource MakeResource() {
     // Prepare a transferable resource for the TextureLayer. This uses the
     // "push" model, where the main thread provides the resource directly.
-    auto mailbox = gpu::Mailbox::Generate();
+    scoped_refptr<gpu::ClientSharedImage> shared_image =
+        gpu::ClientSharedImage::CreateForTesting(
+            {viz::SinglePlaneFormat::kRGBA_8888, texture_layer_->bounds(),
+             gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+             gpu::SHARED_IMAGE_USAGE_DISPLAY_READ},
+            GL_TEXTURE_2D);
+
     // Use a verified SyncToken as is conventional in tests.
     gpu::SyncToken sync_token(gpu::CommandBufferNamespace::GPU_IO,
                               gpu::CommandBufferId::FromUnsafeValue(0x123),
@@ -11339,12 +11345,9 @@ class LayerTreeHostTestTextureLayerOffscreenScroll : public LayerTreeTest {
 
     // Correctly create a TransferableResource. The MakeGpu factory is private,
     // so we use the public constructor and populate the fields.
-    auto resource = viz::TransferableResource();
-    resource.format = viz::SinglePlaneFormat::kRGBA_8888;
-    resource.size = texture_layer_->bounds();
-    resource.set_mailbox(mailbox);
-    resource.set_texture_target(GL_TEXTURE_2D);
-    resource.set_sync_token(sync_token);
+    auto resource = viz::TransferableResource::Make(
+        shared_image, viz::TransferableResource::ResourceSource::kTest,
+        sync_token);
 
     return resource;
   }
