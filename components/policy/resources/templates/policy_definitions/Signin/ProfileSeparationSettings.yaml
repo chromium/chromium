@@ -26,6 +26,7 @@ features:
   cloud_only: true
   dynamic_refresh: true
   per_profile: true
+  user_only: true
 
 type: int-enum
 
