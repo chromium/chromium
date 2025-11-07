@@ -11,6 +11,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 #include "chrome/browser/ui/views/web_apps/protocol_handler_picker_dialog.h"
 #include "components/tabs/public/tab_interface.h"
@@ -25,6 +26,9 @@ namespace web_app {
 // request. Its lifetime is tied to the TabInterface it's attached to.
 class ProtocolHandlerPickerCoordinator {
  public:
+  using ConfirmationDialogAction =
+      apps::AppLaunchParams::ConfirmationDialogAction;
+
   ProtocolHandlerPickerCoordinator(tabs::TabInterface& tab,
                                    apps::AppServiceProxy* proxy);
   ~ProtocolHandlerPickerCoordinator();
@@ -40,7 +44,9 @@ class ProtocolHandlerPickerCoordinator {
       const GURL& protocol_url,
       const std::vector<std::string>& app_ids);
 
-  void LaunchApp(const GURL& protocol_url, const std::string& app_id);
+  void LaunchApp(const GURL& protocol_url,
+                 const std::string& app_id,
+                 std::optional<ConfirmationDialogAction> = std::nullopt);
 
  private:
   void GatherAppData(const GURL& protocol_url,

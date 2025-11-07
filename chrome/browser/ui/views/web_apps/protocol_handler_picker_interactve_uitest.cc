@@ -15,7 +15,6 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
-#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -46,13 +45,6 @@ class ProtocolHandlerPickerUITest
                       .BuildBundle()
                       ->InstallChecked(profile())
                       .app_id();
-    base::test::TestFuture<void> future;
-    web_app::WebAppProvider::GetForWebApps(profile())
-        ->scheduler()
-        .UpdateProtocolHandlerUserApproval(app_id, "meow",
-                                           web_app::ApiApprovalState::kAllowed,
-                                           future.GetCallback());
-    EXPECT_TRUE(future.Wait());
     return app_id;
   }
 

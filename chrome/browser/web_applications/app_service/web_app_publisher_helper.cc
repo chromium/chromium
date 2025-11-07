@@ -661,12 +661,17 @@ apps::IntentFilters WebAppPublisherHelper::CreateIntentFiltersForWebApp(
                  CreateShareIntentFiltersFromShareTarget(*app.share_target()));
   }
 
-  // Includes all protocol handlers except for the ones that the user has
-  // explicitly disallowed.
-  const std::vector<custom_handlers::ProtocolHandler> protocol_handlers =
-      provider.os_integration_manager().GetAppProtocolHandlers(app.app_id());
-  base::Extend(filters,
-               CreateIntentFiltersFromProtocolHandlers(protocol_handlers));
+  // TODO(crbug.com/458291386): Launch protocol handlers for all PWAs (and not
+  // just IWAs) on ChromeOS -- this requires some additional UX work.
+  if (provider.registrar_unsafe().AppMatches(app.app_id(),
+                                             WebAppFilter::IsIsolatedApp())) {
+    // Includes all protocol handlers except for the ones that the user has
+    // explicitly disallowed.
+    const std::vector<custom_handlers::ProtocolHandler> protocol_handlers =
+        provider.os_integration_manager().GetAppProtocolHandlers(app.app_id());
+    base::Extend(filters,
+                 CreateIntentFiltersFromProtocolHandlers(protocol_handlers));
+  }
 
   const apps::FileHandlers* enabled_file_handlers =
       provider.os_integration_manager().GetEnabledFileHandlers(app.app_id());
@@ -1873,25 +1878,44 @@ void WebAppPublisherHelper::LaunchAppFromProtocolCheckingUserPermission(
   GURL protocol_url = *params.protocol_handler_launch_url;
 
   WebAppRegistrar& registrar = provider_->registrar_unsafe();
-  if (!registrar.IsRegisteredLaunchProtocol(app_id, protocol_url.GetScheme()) ||
-      registrar.IsDisallowedLaunchProtocol(app_id, protocol_url.GetScheme())) {
+  const std::string scheme = protocol_url.GetScheme();
+  if (!registrar.IsRegisteredLaunchProtocol(app_id, scheme) ||
+      registrar.IsDisallowedLaunchProtocol(app_id, scheme)) {
     std::move(callback).Run(nullptr);
     return;
   }
 
-  if (!registrar.IsAllowedLaunchProtocol(params.app_id,
-                                         protocol_url.GetScheme())) {
-    provider_->ui_manager().ShowWebAppProtocolLaunchDialog(
-        protocol_url, app_id,
-        base::BindOnce(&WebAppPublisherHelper::OnProtocolHandlerDialogCompleted,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(params),
-                       std::move(callback)));
+  if (registrar.IsAllowedLaunchProtocol(params.app_id, scheme)) {
+    OnProtocolHandlerDialogCompleted(std::move(params), std::move(callback),
+                                     /*allowed=*/true,
+                                     /*remember_user_choice=*/false);
     return;
   }
 
-  OnProtocolHandlerDialogCompleted(std::move(params), std::move(callback),
-                                   /*allowed=*/true,
-                                   /*remember_user_choice=*/false);
+#if BUILDFLAG(IS_CHROMEOS)
+  // TODO(crbug.com/458271211): Find a more generic solution.
+  if (const auto& action = params.confirmation_dialog_action) {
+    const bool should_persist = [&] {
+      switch (*action) {
+        case apps::AppLaunchParams::ConfirmationDialogAction::
+            kPersistentlyForceSkip:
+          return true;
+        case apps::AppLaunchParams::ConfirmationDialogAction::kForceSkip:
+          return false;
+      }
+    }();
+    OnProtocolHandlerDialogCompleted(std::move(params), std::move(callback),
+                                     /*allowed=*/true,
+                                     /*remember_user_choice=*/should_persist);
+    return;
+  }
+#endif
+
+  provider_->ui_manager().ShowWebAppProtocolLaunchDialog(
+      protocol_url, app_id,
+      base::BindOnce(&WebAppPublisherHelper::OnProtocolHandlerDialogCompleted,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(params),
+                     std::move(callback)));
 }
 
 void WebAppPublisherHelper::OnFileHandlerDialogCompleted(

@@ -134,13 +134,16 @@ std::optional<std::string> ProtocolHandlerPickerCoordinator::FindPreferredApp(
   return std::nullopt;
 }
 
-void ProtocolHandlerPickerCoordinator::LaunchApp(const GURL& protocol_url,
-                                                 const std::string& app_id) {
+void ProtocolHandlerPickerCoordinator::LaunchApp(
+    const GURL& protocol_url,
+    const std::string& app_id,
+    std::optional<ConfirmationDialogAction> action) {
   apps::AppLaunchParams params(app_id,
                                apps::LaunchContainer::kLaunchContainerWindow,
                                WindowOpenDisposition::NEW_FOREGROUND_TAB,
                                apps::LaunchSource::kFromProtocolHandler);
   params.protocol_handler_launch_url = protocol_url;
+  params.confirmation_dialog_action = action;
   proxy_->LaunchAppWithParams(std::move(params));
 }
 
@@ -249,10 +252,13 @@ void ProtocolHandlerPickerCoordinator::OnPreferredHandlerSelected(
     bool remember_choice) {
   base::UmaHistogramBoolean("WebApp.ProtocolHandlerPicker.RememberSelection",
                             remember_choice);
+  auto action = ConfirmationDialogAction::kForceSkip;
   if (remember_choice) {
     proxy_->SetProtocolLinkPreference(app_id, protocol_url.scheme());
+    action = ConfirmationDialogAction::kPersistentlyForceSkip;
   }
-  LaunchApp(protocol_url, app_id);
+
+  LaunchApp(protocol_url, app_id, action);
 }
 
 void ProtocolHandlerPickerCoordinator::CloseDialogWidget(
