@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+[FAIL] WebAssembly modules should export shared mutable globals with correct initial values
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch dynamically imported module: http://web-platform.test:8001/wasm/jsapi/esm-integration/resources/mutable-global-export.wasm"
+[FAIL] Wasm-to-Wasm mutable global sharing is live
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch dynamically imported module: http://web-platform.test:8001/wasm/jsapi/esm-integration/resources/mutable-global-export.wasm"
+[FAIL] Multiple JavaScript imports return the same WebAssembly module instance
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch dynamically imported module: http://web-platform.test:8001/wasm/jsapi/esm-integration/resources/mutable-global-export.wasm"
+[FAIL] v128 globals should work correctly in WebAssembly-to-WebAssembly imports
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch dynamically imported module: http://web-platform.test:8001/wasm/jsapi/esm-integration/resources/mutable-global-export.wasm"
+[FAIL] v128 global mutations should work correctly between WebAssembly modules
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch dynamically imported module: http://web-platform.test:8001/wasm/jsapi/esm-integration/resources/mutable-global-export.wasm"
+Harness: the test ran to completion.
+

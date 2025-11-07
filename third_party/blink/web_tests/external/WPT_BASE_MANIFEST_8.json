@@ -645,6 +645,13 @@
        {}
       ]
      ],
+     "anchor-function-in-calc-number-crash.html": [
+      "7ac1b15fa3cab8758f10afe2cebefcd6c3d668bd",
+      [
+       null,
+       {}
+      ]
+     ],
      "anchor-in-multicol-crash.html": [
       "8a4206630a17a3ddd5c7607367c685454a598852",
       [
@@ -77755,6 +77762,19 @@
        {}
       ]
      ],
+     "position-try-order-logical.html": [
+      "b9d8a6dfde38fcca6db54aad32046979db93e095",
+      [
+       null,
+       [
+        [
+         "/css/css-anchor-position/position-try-order-logical-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "position-try-switch-from-fixed-anchor.html": [
       "c65297b2b67f605940bba3c571e75f056609af87",
       [
@@ -89341,7 +89361,7 @@
       ]
      ],
      "border-shape-absolute-coords-shape.tentative.html": [
-      "e1becf2957e6dee7b16852cc1bec818627490920",
+      "a071466148c6e5b0193afec01429b2a329304833",
       [
        null,
        [
@@ -89350,23 +89370,7 @@
          "=="
         ]
        ],
-       {
-        "fuzzy": [
-         [
-          null,
-          [
-           [
-            0,
-            70
-           ],
-           [
-            0,
-            1200
-           ]
-          ]
-         ]
-        ]
-       }
+       {}
       ]
      ],
      "borders-on-sub-unit-sized-elements.html": [
@@ -90958,7 +90962,7 @@
       },
       "border-shape": {
        "border-shape-clips-background.html": [
-        "4f42b04f50a1c1d0c027dfdb22fcc3736a2bd3bc",
+        "78d8902ca7e19ea1206dbb1156c9b0d01f8ea11b",
         [
          null,
          [
@@ -90967,23 +90971,7 @@
            "=="
           ]
          ],
-         {
-          "fuzzy": [
-           [
-            null,
-            [
-             [
-              0,
-              110
-             ],
-             [
-              0,
-              200
-             ]
-            ]
-           ]
-          ]
-         }
+         {}
         ]
        ],
        "border-shape-double-shape-default.html": [
@@ -91113,7 +91101,7 @@
         ]
        ],
        "border-shape-shadow.html": [
-        "a2f74c555b5cca01f15f7551d236f3d999a2463a",
+        "ed30678b0dfed36337dcb4c43e340794962781d2",
         [
          null,
          [
@@ -91129,11 +91117,11 @@
             [
              [
               0,
-              110
+              80
              ],
              [
               0,
-              2500
+              450
              ]
             ]
            ]
@@ -138211,6 +138199,19 @@
        ],
        {}
       ]
+     ],
+     "input-text-base-appearance-rendering.html": [
+      "db92f906897556e915e5411978af9a55de327797",
+      [
+       null,
+       [
+        [
+         "/css/css-forms/input-text-base-appearance-rendering-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
      ]
     },
     "css-gaps": {
@@ -138595,7 +138596,7 @@
        ]
       ],
       "flex-gap-decorations-029.html": [
-       "547eab98c63e6dd2f3d0e9ceb672a76cf2cdf366",
+       "44efa16cd259761c26e6d8bf9b5b74dc6472b1c5",
        [
         null,
         [
@@ -138608,7 +138609,7 @@
        ]
       ],
       "flex-gap-decorations-030.html": [
-       "6a1676a7d3276818d4eb01e1a1ae54fa48e6eebd",
+       "788f10e6777e95a3f029c6389e925aeb53292a41",
        [
         null,
         [
@@ -138622,7 +138623,7 @@
       ],
       "fragmentation": {
        "flex-gap-decorations-fragmentation-001.html": [
-        "2fd34b1f587f6a2b0c4fec220fca9e94a3fdec57",
+        "e49573d0fc5b94524b327fadda6e5a1775405039",
         [
          null,
          [
@@ -138899,7 +138900,7 @@
         ]
        ],
        "grid-gap-decorations-fragmentation-008.html": [
-        "a75e941f3b36e61195726983bd51f51f6a734487",
+        "80e61d935be33789ab28e0ac9633588e9fb2cda5",
         [
          null,
          [
@@ -139628,7 +139629,7 @@
        ]
       ],
       "grid-gap-decorations-052.html": [
-       "2b11d72699040d8525a8a583a1331e207bc00352",
+       "93de11af9e1efba33d0cc489627c13b39bb4c1f4",
        [
         null,
         [
@@ -139641,7 +139642,7 @@
        ]
       ],
       "grid-gap-decorations-053.html": [
-       "04c6e1a54676757b8b0a05d8dd9e435e8df9ae30",
+       "83cf615ed2371b9037fb2ab45692bbc502441f17",
        [
         null,
         [
@@ -140336,7 +140337,7 @@
        ]
       ],
       "multicol-gap-decorations-022.html": [
-       "ea61a1d7ff7f13d60c024766ddf7e2324efa3bfe",
+       "773d2d4103edfc220e602de8b1b16f8451029a43",
        [
         null,
         [
@@ -140349,7 +140350,7 @@
        ]
       ],
       "multicol-gap-decorations-023.html": [
-       "9de693528742f37021e3f1cc337124491f6cefd1",
+       "69c81a9aeb59545e68ce25844f3beb1f6cbae7b8",
        [
         null,
         [
@@ -148777,7 +148778,7 @@
          ]
         ],
         "masonry-grid-placement-named-lines-002.html": [
-         "91ea049cb4d8842af9dfc473ae49f6347298ab78",
+         "334293345015e6a7e64012103e612a3840767dfb",
          [
           null,
           [
@@ -167351,13 +167352,65 @@
        {}
       ]
      ],
-     "li-list-item-counter.html": [
-      "b9a1196cabce1924b74bbd66d84917f02a4186a9",
+     "li-list-item-counter-001.html": [
+      "7c8289f0f8b5dcebcda6d296c6e36d52fe6a4d04",
       [
        null,
        [
         [
-         "/css/css-lists/li-list-item-counter-ref.html",
+         "/css/css-lists/li-list-item-counter-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "li-list-item-counter-002.html": [
+      "fe7b2e59a9d0ddbefe9bbecc47b7a70416ec1226",
+      [
+       null,
+       [
+        [
+         "/css/css-lists/li-list-item-counter-002-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "li-list-item-counter-003.html": [
+      "54637bb3f2c50c56eb1d73081d923f326255c5da",
+      [
+       null,
+       [
+        [
+         "/css/css-lists/li-list-item-counter-003-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "li-list-item-counter-004.html": [
+      "abc0e6c76c6fcc5f7b268abeaa2fc401c09a7013",
+      [
+       null,
+       [
+        [
+         "/css/css-lists/li-list-item-counter-004-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "li-list-item-counter-005.html": [
+      "d2fd912c9566c88f3130c71a048cb98f693ef2a9",
+      [
+       null,
+       [
+        [
+         "/css/css-lists/li-list-item-counter-005-ref.html",
          "=="
         ]
        ],
@@ -167592,6 +167645,149 @@
        [
         [
          "/css/css-lists/li-value-reversed-009-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "li-value-reversed-010.html": [
+      "285782d23b34f7ff9e04dc3e6665b9ef88649248",
+      [
+       null,
+       [
+        [
+         "/css/css-lists/li-value-reversed-010-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "li-value-reversed-011.html": [
+      "782340db3da26e1550eedb7c964761fc8ee75285",
+      [
+       null,
+       [
+        [
+         "/css/css-lists/li-value-reversed-011-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "li-value-reversed-012.html": [
+      "4ae4b4d476b6f95858dfd254ca109236e6909779",
+      [
+       null,
+       [
+        [
+         "/css/css-lists/li-value-reversed-012-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "li-value-reversed-013.html": [
+      "f1a2ef8c558088c76adec124dbcd50c881428a66",
+      [
+       null,
+       [
+        [
+         "/css/css-lists/li-value-reversed-013-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "li-value-reversed-014.html": [
+      "0908362dd668ab2a2f0928011658a30f64c8f283",
+      [
+       null,
+       [
+        [
+         "/css/css-lists/li-value-reversed-014-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "li-value-reversed-015.html": [
+      "fca90e078ce5940edcc017f9abdb618c4f36865f",
+      [
+       null,
+       [
+        [
+         "/css/css-lists/li-value-reversed-015-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "li-value-reversed-016.html": [
+      "0e49ff7580a90c5f2105c8162e852eb6f08baeb5",
+      [
+       null,
+       [
+        [
+         "/css/css-lists/li-value-reversed-016-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "li-value-reversed-017.html": [
+      "8b3a3ad1ecedfab31a8aaf661863ef6a3a255b3b",
+      [
+       null,
+       [
+        [
+         "/css/css-lists/li-value-reversed-017-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "li-value-reversed-018.html": [
+      "6478c0ebc6d30ddb9b10a680246870ce2085bba3",
+      [
+       null,
+       [
+        [
+         "/css/css-lists/li-value-reversed-018-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "li-value-reversed-019.html": [
+      "e26591042c5d7c2de520b11ae83e13a849aa978b",
+      [
+       null,
+       [
+        [
+         "/css/css-lists/li-value-reversed-019-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "li-value-reversed-020.html": [
+      "2e82e54c4146ee1316ffe440ab836cf3da1a0657",
+      [
+       null,
+       [
+        [
+         "/css/css-lists/li-value-reversed-020-ref.html",
          "=="
         ]
        ],
@@ -327025,6 +327221,23 @@
       ]
      }
     },
+    "interact": {
+     "use-instance-hover.html": [
+      "8957588ba44e57bf4a96ab65cd39a57b8db6d700",
+      [
+       null,
+       [
+        [
+         "/svg/linking/reftests/use-descendant-combinator-ref.html",
+         "=="
+        ]
+       ],
+       {
+        "testdriver": true
+       }
+      ]
+     ]
+    },
     "layout": {
      "svg-embed-intrinsic-size-min-size.html": [
       "79dfb07b42bb4f60c56033ac1fcb5e7f0eb33ec8",
@@ -328125,6 +328338,19 @@
          [
           "/svg/painting/reftests/non-scaling-stroke-007-ref.html",
           "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "non-scaling-stroke-precision-loss.html": [
+       "efbd5322f57a8e7421acdb4d66ca92a8f8e66b48",
+       [
+        null,
+        [
+         [
+          "about:blank",
+          "!="
          ]
         ],
         {}
@@ -330964,6 +331190,32 @@
      ],
      "use-element-id-selector.html": [
       "ce71e3610c7d2c807ad0c547b01215177e23ba97",
+      [
+       null,
+       [
+        [
+         "/svg/styling/use-element-selector-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "use-element-non-rendered-has-selector.html": [
+      "779b6e220ec0fc05d35cda0dd4553141676c7f34",
+      [
+       null,
+       [
+        [
+         "/svg/styling/use-element-selector-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "use-element-non-rendered-sibling-selector.html": [
+      "ba8f36e2400002c296270536ee0ea09c56cff5ce",
       [
        null,
        [
@@ -339131,7 +339383,7 @@
      []
     ],
     "OWNERS": [
-     "3a06654b44ba32c6d6f777aa52e2c5e15d75a440",
+     "ac98db8e88c3d30991224592d572f5606a4c205c",
      []
     ],
     "WEB_FEATURES.yml": [
@@ -349165,10 +349417,6 @@
       "bc9872a9093680d8584df0e923c658ce589ef271",
       []
      ],
-     "anchor-name-inline-001-expected.txt": [
-      "b3c23be08d8038880d7d5b15e3d5864abdb0d5a7",
-      []
-     ],
      "anchor-name-multicol-003-ref.html": [
       "707af50766b8dd2d4a99d7824c7e8ff80ea239e3",
       []
@@ -349299,6 +349547,10 @@
      ],
      "position-area-scroll-adjust-ref.html": [
       "5cd863500a7729a8acf0eaab5883ca58cfcfb935",
+      []
+     ],
+     "position-try-order-logical-ref.html": [
+      "506570552efc4809636ae04e150efbbc8966a3e5",
       []
      ],
      "position-try-rule-caching-002-expected.txt": [
@@ -349650,26 +349902,6 @@
      "parsing": {
       "WEB_FEATURES.yml": [
        "7e3ccd1b3b7f488544a7ca4073935a645ae5e1fd",
-       []
-      ],
-      "animation-computed-expected.txt": [
-       "501753e83a234d56654c857a2b9c43864a28acf2",
-       []
-      ],
-      "animation-name-computed-expected.txt": [
-       "4e42b7bfd97a349af795d74dc338322d88daf632",
-       []
-      ],
-      "animation-name-valid-expected.txt": [
-       "2e6be8a9c06f28a90a1a3391eee8bbf2f193cdb1",
-       []
-      ],
-      "keyframes-name-invalid-expected.txt": [
-       "c4d9ac7d6698e54315d1fe95dd811ae998620d7e",
-       []
-      ],
-      "keyframes-name-valid-expected.txt": [
-       "65c7b24ca85a8756e141d66b01d93c631dd295bd",
        []
       ]
      },
@@ -351908,7 +352140,7 @@
       []
      ],
      "border-shape-absolute-coords-shape-ref.tentative.html": [
-      "bf7d6a1e0d45702bddfb188388a75ae44da259a8",
+      "a0d1ecb12c62d77dabccdbb2c4c7e3836a879e92",
       []
      ],
      "corner-shape": {
@@ -352012,7 +352244,7 @@
      "tentative": {
       "border-shape": {
        "border-shape-clips-background-ref.html": [
-        "ee0d5c5ad29d5240697c71edf6bb5eb5f94fc7b7",
+        "7a19ae7ac3c62d4b0ae8aa098a1f1a32a5edb446",
         []
        ],
        "border-shape-double-shape-default-ref.html": [
@@ -352040,11 +352272,11 @@
         []
        ],
        "border-shape-shadow-ref.html": [
-        "6d524ef1f563b2da68a0888541c6578846b5295d",
+        "689adbb291196c032e199758168d5208cf6e11cf",
         []
        ],
        "border-shape-stroke-from-border-ref.html": [
-        "908ff6c99fc5546bcbb884975658046117929bba",
+        "c88b30e8ba472bfdb1e1dc2c0b928ec223cf81c9",
         []
        ],
        "border-shape-stroke-invalidation-ref.html": [
@@ -366821,6 +367053,10 @@
       "95bee383d2117d1c054e4706abfd130149d31fc8",
       []
      ],
+     "input-text-base-appearance-rendering-ref.html": [
+      "a26cba52dd97f26cb1e1699cb13f731c5f003d27",
+      []
+     ],
      "select-combobox-print-notref.html": [
       "c5d336141fcd4085f45b449ccf58009e40e5e37e",
       []
@@ -366939,16 +367175,16 @@
        []
       ],
       "flex-gap-decorations-029-ref.html": [
-       "7840e84ae2bf4ad10d899dddd046865c53fcc27c",
+       "547eebb0381c3d7040c5426dccc7f758882dd5b3",
        []
       ],
       "flex-gap-decorations-030-ref.html": [
-       "e6221a48130793ef59c9918dcbf1585ef0270f04",
+       "e6328fef15d17c0b3449f6ca114a82d5714b7bee",
        []
       ],
       "fragmentation": {
        "flex-gap-decorations-fragmentation-001-ref.html": [
-        "420a28cf15a23813f973cd6f90d1e892d10c4923",
+        "d96f5b3b4b891485152abf1f43e5e21845229b01",
         []
        ],
        "flex-gap-decorations-fragmentation-002-ref.html": [
@@ -367008,7 +367244,7 @@
      "grid": {
       "fragmentation": {
        "grid-gap-decorations-fragmentation-008-ref.html": [
-        "ac8c239c4f116e53f8f879d6bdfc1695ce4a0ff8",
+        "7ebc88e8ef1af0a7903fd0b2d12dcef2d5cabfd9",
         []
        ],
        "grid-gap-decorations-fragmentation-009-ref.html": [
@@ -367209,11 +367445,11 @@
        []
       ],
       "grid-gap-decorations-052-ref.html": [
-       "4e1c9d79a8fe1a2a6e6fbbc244dc5b51a06a8b15",
+       "9ce31d73b723d23eb71c58ee001fb06731547f08",
        []
       ],
       "grid-gap-decorations-053-ref.html": [
-       "717fe10c002c16d62661da448145bdfeed44aca8",
+       "60c2dd7eeb4f7f84e87d0f0f70cd40bc3d15b1df",
        []
       ],
       "subgrid": {
@@ -367351,11 +367587,11 @@
        []
       ],
       "multicol-gap-decorations-022-ref.html": [
-       "4e363e4ce46557fafa94b0efcbce9aa260bba9f5",
+       "8bf6a8a08bf5d896694692eee676eb457be69bc5",
        []
       ],
       "multicol-gap-decorations-023-ref.html": [
-       "c4fc15855ca892a9534aed90002b6d00365b5d5a",
+       "dc806d478dc0dee65178aa53ea72604d3c7a0127",
        []
       ]
      }
@@ -368633,7 +368869,7 @@
          []
         ],
         "masonry-grid-placement-named-lines-002-ref.html": [
-         "cfe1369e87d20046b6f0d403290e56dd446dba51",
+         "f24dd1c97bdfef56b7bd51f61c5fa8547679623b",
          []
         ],
         "row-explicit-placement-001-ref.html": [
@@ -372563,8 +372799,24 @@
       "bbf2e66a0dfddd3f399eea4889fd867444b7eca4",
       []
      ],
-     "li-list-item-counter-ref.html": [
+     "li-list-item-counter-001-ref.html": [
       "96ca6c1122188015d6e40e01102bdb4fecfb0567",
+      []
+     ],
+     "li-list-item-counter-002-ref.html": [
+      "ad156947d665cc799bfaeb7ba7dde8aeddeeeb64",
+      []
+     ],
+     "li-list-item-counter-003-ref.html": [
+      "f9ea732c363f1d9bf2ab28e2401e48589ee0187b",
+      []
+     ],
+     "li-list-item-counter-004-ref.html": [
+      "143953856dc067dbb57cdf1e610fc1e59583f667",
+      []
+     ],
+     "li-list-item-counter-005-ref.html": [
+      "cc0d053aae7f1c971a50f4478a58998057a1cae0",
       []
      ],
      "li-value-counter-reset-001-ref.html": [
@@ -372605,6 +372857,50 @@
      ],
      "li-value-reversed-009-ref.html": [
       "d0a54486f61ec1f22c7d10d4dff83209c8d5dffa",
+      []
+     ],
+     "li-value-reversed-010-ref.html": [
+      "0b34ce40bbbfe09620ef2d840978dcf4759408d5",
+      []
+     ],
+     "li-value-reversed-011-ref.html": [
+      "2d8ba7ac998cb8c46174e8c304cfd9e360288b0e",
+      []
+     ],
+     "li-value-reversed-012-ref.html": [
+      "2d8ba7ac998cb8c46174e8c304cfd9e360288b0e",
+      []
+     ],
+     "li-value-reversed-013-ref.html": [
+      "d18b574d5f01c9b4d20374e386d442dcf6700b69",
+      []
+     ],
+     "li-value-reversed-014-ref.html": [
+      "c1deed9d32e5a9b4f0d107cf25c507d6f2cf218a",
+      []
+     ],
+     "li-value-reversed-015-ref.html": [
+      "8f9561e1be4590b1c69ff423d067910a64bec766",
+      []
+     ],
+     "li-value-reversed-016-ref.html": [
+      "018f7d53b74b9a1b800bd82a46e09f89090ba638",
+      []
+     ],
+     "li-value-reversed-017-ref.html": [
+      "65a4af4a6bf2e70f2fc4f78c023e3ee370569af9",
+      []
+     ],
+     "li-value-reversed-018-ref.html": [
+      "5e90134342bfe146e3ebd9cb538c57280b4204be",
+      []
+     ],
+     "li-value-reversed-019-ref.html": [
+      "39e148fa719198e1ab0a4a5c5df780935dd3d166",
+      []
+     ],
+     "li-value-reversed-020-ref.html": [
+      "7bde363d8df6838dba0ebb61d0de2db7acbf182c",
       []
      ],
      "li-with-height-001-ref.html": [
@@ -401250,7 +401546,7 @@
       []
      ],
      "inserthtml.js": [
-      "fcfc32f1e9291d3533d53aa65150d2d43b8a4527",
+      "777371b2358cdedd7ce2fdc464ef4634dd4780e6",
       []
      ],
      "insertimage.js": [
@@ -410571,11 +410867,7 @@
           "5df065b456666be53840ed968b2535172e2eac79",
           []
          ]
-        },
-        "same-document-refresh-expected.txt": [
-         "c4207ec06b8018a7e47195308c84f663a55b6a29",
-         []
-        ]
+        }
        },
        "replace-before-load": {
         "a-user-click-expected.txt": [
@@ -411197,16 +411489,8 @@
         "17e520a810ac3a158a711dcee6354b5fd71a8150",
         []
        ],
-       "history_pushstate_too_many_calls.optional-expected.txt": [
-        "3096e9d821ef0dc724c77e00ee0bb5330b482dfc",
-        []
-       ],
        "history_pushstate_url_rewriting-expected.txt": [
         "282f94e01c96b83357a94a7f7382bf0bf0360456",
-        []
-       ],
-       "history_replacestate_too_many_calls.optional-expected.txt": [
-        "235961e2f9048faf28bf0219926e461130a9dcb4",
         []
        ],
        "joint_session_history": {
@@ -415420,7 +415704,7 @@
         []
        ],
        "text.yaml": [
-        "23e1ebc6e8ebdb05f8eca1f233fbd9b68320d840",
+        "d4e4d5c47eba07c08e558a95340661666086fac7",
         []
        ],
        "the-canvas-state.yaml": [
@@ -428499,6 +428783,12 @@
         "3e715502b971d4f8282d1e05a8ccfad6f7037910",
         []
        ]
+      },
+      "the-innerhtml-property": {
+       "innerhtml-and-xml-namespaces-expected.txt": [
+        "bae1c555f7d88ccbebfc9dcfb5e1ae4857292708",
+        []
+       ]
       }
      },
      "scripting": {
@@ -437383,7 +437673,7 @@
      ]
     },
     "pointerevent_after_target_removed_from_slot_mouse-expected.txt": [
-     "629baaba8c5990e4d847014619a9d1d6f5e98d1c",
+     "e7800d2b5caa0112315dbadfe335cb2bd2a7b1a2",
      []
     ],
     "pointerevent_boundary_events_before_pointerrawupdate.https-expected.txt": [
@@ -440883,6 +441173,10 @@
      }
     },
     "css": {
+     "animation-duration-auto.tentative-expected.txt": [
+      "c4a42dcde465dd88d1acd5cfcd4eff840a5dd104",
+      []
+     ],
      "animation-fill-outside-range-ref.html": [
       "998576b3a4f2257006232506ee32306bc716895c",
       []
@@ -440893,10 +441187,6 @@
      ],
      "animation-range-visual-test-ref.html": [
       "7e584400f72ea57fa298df7889a3a41b532e06b1",
-      []
-     ],
-     "animation-shorthand-expected.txt": [
-      "4f26171f440a34ec7716ab0b046eae8313e26753",
       []
      ],
      "animation-timeline-deferred-expected.txt": [
@@ -446336,10 +446626,6 @@
      "3efdb8f865284878c7452851b88079d4ce886b28",
      []
     ],
-    "storage-access-permission.sub.https.window-expected.txt": [
-     "1d8e4477b506f95b775db6fbd613785371c598cd",
-     []
-    ],
     "storageAccess.testdriver.sub-expected.txt": [
      "f2751aa9537c0eae2ee03c17422dde060cd2ab46",
      []
@@ -449896,7 +450182,7 @@
       []
      ],
      "urlpatterntestdata.json": [
-      "363ec15f2b2787dd1000f48e65dba81fcc3f7ae3",
+      "4b1b9ee5f69bf27859bbab5fc614e04518860978",
       []
      ],
      "urlpatterntests.js": [
@@ -451265,6 +451551,90 @@
       "572db0c01b620dd317f2079df6d0ea7cff6333fe",
       []
      ],
+     "esm-integration": {
+      "resources": {
+       "dep.wasm": [
+        "ad9abfaa66af53b33aca06422ad2850020731a9c",
+        []
+       ],
+       "exports.wasm": [
+        "7382eff0356128f58ee446e15be51f662e406590",
+        []
+       ],
+       "globals.js": [
+        "fabf23faf38ae324f8bd43a92dab39c3fda86e03",
+        []
+       ],
+       "globals.wasm": [
+        "c5e6dd9f1ded20ddec7f1a5fa84b27bd063d0827",
+        []
+       ],
+       "invalid-export-name-wasm-js.wasm": [
+        "a6b9a7f7c5ad57d8347003d77940f6ec99dadf26",
+        []
+       ],
+       "invalid-export-name.wasm": [
+        "e66fcebf15ba4d682ecdda31b7ba16f649534cad",
+        []
+       ],
+       "invalid-import-module.wasm": [
+        "ead151ac0c84ad5a2504c1f7752a08e14b989a0e",
+        []
+       ],
+       "invalid-import-name-wasm-js.wasm": [
+        "15131a28a89e11371fa1530f9e8e5ae5afa14ce2",
+        []
+       ],
+       "invalid-import-name.wasm": [
+        "3c631418294584fecbe13fc122c28dbab5670525",
+        []
+       ],
+       "js-string-builtins.wasm": [
+        "4c4ff4df7f62b145aaf258e6cfb4775a19a9b437",
+        []
+       ],
+       "js-wasm-cycle.js": [
+        "9f14dc04bde41fa908d61917258c8203a699dd43",
+        []
+       ],
+       "js-wasm-cycle.wasm": [
+        "77a3b86ab67528e404eef4aae4a7c76511b1f863",
+        []
+       ],
+       "log.js": [
+        "0c4f5ed519b0fd220a26cce71779039198bec18b",
+        []
+       ],
+       "mutable-global-export.wasm": [
+        "89c478b19151d0abdc0c6fdb24935df8a2d7d1e7",
+        []
+       ],
+       "mutable-global-reexport.wasm": [
+        "b06f94a75d3c48e753a3f5860643af3e8820a660",
+        []
+       ],
+       "resolve-export.js": [
+        "81145e037f474b587a0aeb7005203641b3f8e419",
+        []
+       ],
+       "resolve-export.wasm": [
+        "d8fc92d022fbf4d1072da17bc8e0840054b51ddc",
+        []
+       ],
+       "source-phase-identity.js": [
+        "643d15b2f8912eb14504a6cbfa02518b516aebb2",
+        []
+       ],
+       "wasm-export-to-wasm.wasm": [
+        "0ee948f96fdfbb44bfaf41ebe8271c717ef3904d",
+        []
+       ],
+       "wasm-import-from-wasm.wasm": [
+        "652ff143100f832bf3e4e16c4427e17e2a651148",
+        []
+       ]
+      }
+     },
      "exception": {
       "getArg.tentative.any-expected.txt": [
        "0dc9ff26c2164d7bc4bc1f81f635e5e2fa5671b8",
@@ -452802,7 +453172,7 @@
       []
      ],
      "audioparam-testing.js": [
-      "bc90ddbef828510213d95cf40683e23237e56633",
+      "2bfc68004b2ec6c51f2d8408ab084c05c09c3c53",
       []
      ],
      "audit-util.js": [
@@ -453293,7 +453663,7 @@
      []
     ],
     "README.md": [
-     "ab584a8b1b5189868fd7affdd0d8766e51e6f781",
+     "4ce861ebefe76bd81069472df9e2e6b116d05523",
      []
     ],
     "WEB_FEATURES.yml": [
@@ -453532,6 +453902,10 @@
      "e0d6a6bedcf12dad5ec45a768f638bf1cb1ec1e7",
      []
     ],
+    "h264_interlaced.mp4": [
+     "e6223318f010f916d18a7c3d4366de4e3846911a",
+     []
+    ],
     "h264_sei.annexb": [
      "d19f57f3806385244acf520b6f12aefec89354fd",
      []
@@ -453661,7 +454035,7 @@
      []
     ],
     "videoDecoder-codec-specific-setup.js": [
-     "73d35e305f3d107928bd5c46c412d722806feb26",
+     "cb8d09d443809873bb6edc0d112e27994f5488ae",
      []
     ],
     "videoFrame-construction.any.worker-expected.txt": [
@@ -455065,11 +455439,11 @@
        []
       ],
       "fixtures.py": [
-       "a80fd475e86e2cb30db0245c13c9e5165fb60db1",
+       "d2a376af12c197de8b2d64524493f56b8dd8ab5c",
        []
       ],
       "fixtures_bidi.py": [
-       "11f8df2b7fd3e2bc5e73258142edce8a032cf0b6",
+       "db6daa753c0a9afa97741b5687933c039e12e1fd",
        []
       ],
       "fixtures_http.py": [
@@ -488868,6 +489242,68 @@
        }
       ]
      ],
+     "language-model-create-sticky-user-activation.tentative.https.window.js": [
+      "c5f531442ddcbbbc6a257d511a61ac02116cba17",
+      [
+       "ai/language-model/language-model-create-sticky-user-activation.tentative.https.window.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "LanguageModel.create() User Activation Tests"
+         ],
+         [
+          "script",
+          "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
+          "../resources/util.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "language-model-create-transient-user-activation.tentative.https.window.js": [
+      "0e30299ea15887c5ff20448da87d3554d656638a",
+      [
+       "ai/language-model/language-model-create-transient-user-activation.tentative.https.window.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "LanguageModel.create() User Activation Tests"
+         ],
+         [
+          "script",
+          "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
+          "../resources/util.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
      "language-model-create-user-activation.tentative.https.window.js": [
       "d316255a2aaf77d9ee4e1ee830f4884194b0f4fe",
       [
@@ -516345,7 +516781,7 @@
       ]
      ],
      "anchor-parse-invalid.html": [
-      "795722972a2ab79f133842c1d146550ed885038b",
+      "38e1976b439d085ae4759806a3197524e052e1f2",
       [
        null,
        {}
@@ -516751,7 +517187,7 @@
       ]
      ],
      "anchor-size-parse-invalid.html": [
-      "d0912634a527dc8a10c14612e363c359d86255a0",
+      "f0eb01585c4c91abb40219ceab340d49baf8640e",
       [
        null,
        {}
@@ -516969,7 +517405,7 @@
        ]
       ],
       "anchored-fallback-try-tactic.html": [
-       "49ed004370eff8f4e75564822844472b2493155f",
+       "af95185c5770c66446abf69e86f1098f48a7d7af",
        [
         null,
         {}
@@ -516983,7 +517419,7 @@
        ]
       ],
       "at-container-anchored-parsing.html": [
-       "0e4f8c6f2ee744aa621a1cde7dfea07776a47aa9",
+       "91a281b1f5aad1a5a637d3d08267222517807d73",
        [
         null,
         {}
@@ -517653,7 +518089,7 @@
       ]
      ],
      "try-tactic-wm.html": [
-      "7494c50764acdd0479aa0a56235981bf3bef3345",
+      "513cc92a9ad45dc759a57dc7686eeb08288a8e98",
       [
        null,
        {}
@@ -518245,7 +518681,7 @@
        ]
       ],
       "animation-name-invalid.html": [
-       "739641a51d8bf43590fa9eb73ddc711add880d53",
+       "fcde072d363c09d947f985cd00961164b5f043fc",
        [
         null,
         {}
@@ -528049,6 +528485,15 @@
       ]
      }
     },
+    "css-forms": {
+     "input-text-base-appearance-computed-style.html": [
+      "e5f065ebdf78cc25507667468013fdf850797b5f",
+      [
+       null,
+       {}
+      ]
+     ]
+    },
     "css-gaps": {
      "animation": {
       "column-rule-outset-interpolation.html": [
@@ -528080,21 +528525,21 @@
        ]
       ],
       "gap-decorations-color-neutral-keyframe-004.html": [
-       "f897878fb7adf6fb74681494ea51669ac2ea3833",
+       "be0a7a95d92ddb6272f583c3942f8f7677f15506",
        [
         null,
         {}
        ]
       ],
       "gap-decorations-color-neutral-keyframe-005.html": [
-       "182b7e866d8fdec428b8f5515be8ee57b45b5ae7",
+       "3da6668e3098a1a85e34f332c4e2670c6e7fbd57",
        [
         null,
         {}
        ]
       ],
       "gap-decorations-outset-neutral-keyframe-001.html": [
-       "3793b2351798ac5a5e84f0f7ca9394aefc99107f",
+       "5e666ddab8116eb25ee8a782a0c26630bd84aac8",
        [
         null,
         {}
@@ -528143,14 +528588,14 @@
        ]
       ],
       "row-rule-color-interpolation.html": [
-       "9b52b4fb64ce289dbc6184ad26b9c5a8446ef444",
+       "b3db6e143d7654d99441caa5b5347dc4f55db9f3",
        [
         null,
         {}
        ]
       ],
       "row-rule-outset-interpolation.html": [
-       "ad6d90793556dad70b0493567cb837c92c11c6d4",
+       "961c0a21c63f2e5e52d6d97063c00cac5073bd9b",
        [
         null,
         {}
@@ -528164,14 +528609,14 @@
        ]
       ],
       "rule-color-interpolation-conversion-001.html": [
-       "657acf811fabd3a517789acf739f7a887ab7c8a2",
+       "91998eaae1ce49fb0e4ba4f2c2c6ac8d948f75db",
        [
         null,
         {}
        ]
       ],
       "rule-color-interpolation-conversion-002.html": [
-       "1578a26e2db5e133e7a35220a9e80af8d34e0f8d",
+       "79ac71ec72e99aa258499f5c9d3e3f1ad446a88b",
        [
         null,
         {}
@@ -528185,7 +528630,7 @@
        ]
       ],
       "rule-color-interpolation-repeaters-001.html": [
-       "b1b1eaee0209e1e990b14889e63dac6f715ccc5f",
+       "0c810227342c6e7d4062c20aeab84339e5946efb",
        [
         null,
         {}
@@ -528238,7 +528683,7 @@
      },
      "parsing": {
       "gap-decorations-bidirectional-shorthands.html": [
-       "27ea9dc51ae6899ad5d79f64b193d3403b4b24f0",
+       "93155481e3d68f90a646cdb586e205e5c151dc0e",
        [
         null,
         {}
@@ -528419,29 +528864,36 @@
         {}
        ]
       ],
+      "rule-outset-bidirectional-shorthand.html": [
+       "9b28a01677599cd6ce75962897dbe9bb3543965b",
+       [
+        null,
+        {}
+       ]
+      ],
       "rule-outset-computed.html": [
-       "cc60dbbce9d8ce321aabf03e47e11bfcb206b6ff",
+       "b9466185e7acc19a851be93d3186c8647f614de6",
        [
         null,
         {}
        ]
       ],
       "rule-outset-invalid.html": [
-       "afd81bead53971228365c9b3fda20b9a49173296",
+       "8bf7e85cef3578b5810fb40c6311e8f0c81041af",
        [
         null,
         {}
        ]
       ],
       "rule-outset-shorthand.html": [
-       "4cfb6e704dcc7342f1e2b444f9b70f745e297a27",
+       "9b80255c65db54c302578088ebcf49ab71138470",
        [
         null,
         {}
        ]
       ],
       "rule-outset-valid.html": [
-       "4a087bdd6313a783d3535e44919c428810736686",
+       "e24ca49821e3fc1d81114a3ddbcddf6b7fece1d7",
        [
         null,
         {}
@@ -543552,7 +544004,14 @@
          {}
         ]
        ],
-       "from-element.tentative.html": [
+       "from-element-computed.tentative.html": [
+        "bcaa0b6ac01dc05b81d4a54a0af5ee83f3012eea",
+        [
+         null,
+         {}
+        ]
+       ],
+       "from-element-valid.tentative.html": [
         "fe99ccb23d9c279011e15f66cbbe20cd87e31568",
         [
          null,
@@ -543860,6 +544319,13 @@
       ],
       "responsive-iframe-icb.tentative.html": [
        "510852653b626cf0e79d7cb58d6b28a335711152",
+       [
+        null,
+        {}
+       ]
+      ],
+      "responsive-iframe-logical.tentative.html": [
+       "575f72b9e4cd948198a3afc51366b7176cc89023",
        [
         null,
         {}
@@ -548264,6 +548730,13 @@
      ],
      "3d-point-mapping-coplanar.html": [
       "7d0288015ba8ecf30565ad83aaf915409260f115",
+      [
+       null,
+       {}
+      ]
+     ],
+     "3d-point-mapping-origins.html": [
+      "28d8d18fc9f4de177581336ef95ceb953342e070",
       [
        null,
        {}
@@ -569074,6 +569547,27 @@
         {}
        ]
       ],
+      "FormControlRange-geometry-basic.html": [
+       "2fa7c680a1579a4bc5bbd8cd55fd38719da48679",
+       [
+        null,
+        {}
+       ]
+      ],
+      "FormControlRange-geometry-complexity-and-visibility.html": [
+       "74ac2cb0b1f92570b6011ea6c5da6697b1478724",
+       [
+        null,
+        {}
+       ]
+      ],
+      "FormControlRange-geometry-multiline-and-mutations.html": [
+       "48de9157c35b8d5e2cf825c1e7fe2cf339430f34",
+       [
+        null,
+        {}
+       ]
+      ],
       "FormControlRange-interactive-basic.html": [
        "8e97e069fec296c2068bb1819989edada978a285",
        [
@@ -569651,6 +570145,13 @@
     ],
     "lexical-structure.html": [
      "05961ab226bbfd292946e0a1cb34dfd701a38c51",
+     [
+      null,
+      {}
+     ]
+    ],
+    "node-set-tree-order.html": [
+     "e5e1d9feb13c3a1a7cd46d6e49864d0c17c2bd3a",
      [
       null,
       {}
@@ -624489,14 +624990,15 @@
      ]
     ],
     "Gyroscope-iframe-access.https.html": [
-     "cdabff82f1094d788b3aaaee69301c7d7227f184",
+     "9856006dc0e28193a27fc11891cd71f076257569",
      [
       null,
       {
        "testdriver": true,
        "testdriver_features": [
         "bidi"
-       ]
+       ],
+       "timeout": "long"
       }
      ]
     ],
@@ -641659,7 +642161,7 @@
         ]
        ],
        "2d.text.drawing.style.letterSpacing.measure.html": [
-        "0c9a420847027e06cd199ddcc5a1fa84c393c4bf",
+        "61bbceb2e7b017e0344242f7dd5426a4935b11ec",
         [
          null,
          {}
@@ -655514,14 +656016,14 @@
         ]
        ],
        "2d.text.drawing.style.letterSpacing.measure.html": [
-        "65d496e802024b3952e6e771b845df7bf363d0c4",
+        "5f702d181c04aaa2fc34b1f1e52cdc8e1af379c8",
         [
          null,
          {}
         ]
        ],
        "2d.text.drawing.style.letterSpacing.measure.worker.js": [
-        "630bf1d486ecad509e81459d70dbee1eaa3c4403",
+        "eaa04106e9a0a945394805e2ec0a316033f2818b",
         [
          "html/canvas/offscreen/text/2d.text.drawing.style.letterSpacing.measure.worker.html",
          {}
@@ -678527,14 +679029,14 @@
         ]
        ],
        "menubar-invoke-menulist.html": [
-        "ca9995498b1c15b905a6903cf70782f8e16cae4d",
+        "4797be551e972e798c9c1290c669fa12d2538437",
         [
          null,
          {}
         ]
        ],
        "menuitem-activate.html": [
-        "868403fcb76ef04630fdd35ee82fac3a70afea17",
+        "3f5083850a8c6bf8e2a4c545660efa039c2aeccf",
         [
          null,
          {
@@ -683908,7 +684410,7 @@
         ]
        ],
        "invalid-element-types.html": [
-        "a4097e45381e922f78df42f381b6a21de31ef8d7",
+        "4e574bde05bb1d8cbead2db847c6d21e81ce23c7",
         [
          "html/semantics/the-button-element/command-and-commandfor/invalid-element-types.html?command=--custom-event&half=first",
          {
@@ -688370,6 +688872,15 @@
         "4e7c649f4533958112e6bd1dd59537619d7cc62d",
         [
          "html/webappapis/dynamic-markup-insertion/opening-the-input-stream/url.window.html",
+         {}
+        ]
+       ]
+      },
+      "the-innerhtml-property": {
+       "innerhtml-and-xml-namespaces.svg": [
+        "fb1a0864d243530016f3f3f3a4807724c92f4321",
+        [
+         null,
          {}
         ]
        ]
@@ -693877,10 +694388,12 @@
      ]
     ],
     "image-upscaling.html": [
-     "e61ecea66e45c628993582aac8643c694c2d4801",
+     "e017594163c6bf1cdc83ba618922fdb6366dd74f",
      [
       null,
-      {}
+      {
+       "testdriver": true
+      }
      ]
     ],
     "initially-invisible-images.html": [
@@ -704487,7 +705000,7 @@
     },
     "ordering-and-transition": {
      "anchor-download-intercept-reject.html": [
-      "bd7d968fb1ff4ebfc157ec64b8a23997d4bcb13c",
+      "5af651eb890ff69c3974a4008e50580891209da4",
       [
        "navigation-api/ordering-and-transition/anchor-download-intercept-reject.html?currententrychange",
        {}
@@ -704523,7 +705036,7 @@
       ]
      ],
      "back-same-document-intercept-reject.html": [
-      "d1f15428f10adca6bef5996f7fc59e2df43bab8c",
+      "f848c61eccd78c67a691c5a9d4cea6592df1d007",
       [
        "navigation-api/ordering-and-transition/back-same-document-intercept-reject.html?currententrychange",
        {}
@@ -704610,7 +705123,7 @@
       ]
      ],
      "location-href-intercept-reject.html": [
-      "59b3d4884fb6f0f400cc40612c504169cd0b2987",
+      "81e8f2e00804fcc333065b3b9376d79969ce1f5a",
       [
        "navigation-api/ordering-and-transition/location-href-intercept-reject.html?currententrychange",
        {}
@@ -704748,7 +705261,7 @@
       ]
      ],
      "navigate-same-document-intercept-reject.html": [
-      "05f295177a062bc9f471952cf8d821b7bfad3bce",
+      "1e851cf75b108ddfcd2bab2a0d885f52bb98561c",
       [
        "navigation-api/ordering-and-transition/navigate-same-document-intercept-reject.html?currententrychange",
        {}
@@ -704777,7 +705290,7 @@
       ]
      ],
      "reload-intercept-reject.html": [
-      "96833f314f464724ec32c71837c7439cb687a46a",
+      "9c8894bff488ae67aa73be4510d0a6f5555a59c6",
       [
        "navigation-api/ordering-and-transition/reload-intercept-reject.html?currententrychange",
        {}
@@ -712541,7 +713054,7 @@
      ]
     ],
     "pointerevent_after_target_removed_from_slot.html": [
-     "35955f86893826a9f6cac159f64c69914afb1b84",
+     "9cbc99f5e8b7da845928126ed64d8090ad09020e",
      [
       "pointerevents/pointerevent_after_target_removed_from_slot.html?mouse",
       {
@@ -729441,7 +729954,7 @@
      ]
     ],
     "render-blocking-status-link.html": [
-     "8c6544db48664e0b58dde49d73a8449715f6d20d",
+     "f42fb9c2e026f2f6155df629fd3470168ac22aaa",
      [
       null,
       {}
@@ -729506,7 +730019,7 @@
      ]
     ],
     "resource_dedicated_worker.html": [
-     "6d27245ab9cc9a5a6a6ab1721a036b7d4c6ba4f9",
+     "f7c8e55786f832b7e9553dcc2555d8871464242e",
      [
       null,
       {}
@@ -738672,6 +739185,13 @@
        ],
        "shadowrootadoptedstylesheets-multiple.html": [
         "896bc1be29d9ae86ea00e45443673b606f1d9de4",
+        [
+         null,
+         {}
+        ]
+       ],
+       "shadowrootadoptedstylesheets-with-declarative-module.html": [
+        "737937e4b5c064775fff6616d8ca9fc30d3c1b38",
         [
          null,
          {}
@@ -763348,6 +763868,13 @@
         {}
        ]
       ],
+      "SVGGraphicsElement.getCTM-empty-viewBox.html": [
+       "ec1021145660b3d7714eaad74ae170c17e9cd257",
+       [
+        null,
+        {}
+       ]
+      ],
       "SVGGraphicsElement.getScreenCTM.html": [
        "7e5dfc649f89112cb8b4d31352a5b1e8788739fa",
        [
@@ -773141,6 +773668,1255 @@
           [
            "script",
            "/wasm/jsapi/wasm-module-builder.js"
+          ]
+         ]
+        }
+       ]
+      ]
+     },
+     "esm-integration": {
+      "exports.tentative.any.js": [
+       "9feaa283aaed26f1b4720a8636ebf7f4978693fd",
+       [
+        null,
+        {
+         "jsshell": true,
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/exports.tentative.any.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/exports.tentative.any.shadowrealm-in-dedicatedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/exports.tentative.any.shadowrealm-in-shadowrealm.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/exports.tentative.any.shadowrealm-in-sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/exports.tentative.any.shadowrealm-in-window.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/exports.tentative.any.worker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/exports.tentative.https.any.shadowrealm-in-audioworklet.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/exports.tentative.https.any.shadowrealm-in-serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ]
+      ],
+      "global-exports-live-bindings.tentative.any.js": [
+       "d80c30943c04c75b758e3e0bddd60e56b2b14598",
+       [
+        null,
+        {
+         "jsshell": true,
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/global-exports-live-bindings.tentative.any.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/global-exports-live-bindings.tentative.any.shadowrealm-in-dedicatedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/global-exports-live-bindings.tentative.any.shadowrealm-in-shadowrealm.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/global-exports-live-bindings.tentative.any.shadowrealm-in-sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/global-exports-live-bindings.tentative.any.shadowrealm-in-window.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/global-exports-live-bindings.tentative.any.worker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/global-exports-live-bindings.tentative.https.any.shadowrealm-in-audioworklet.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/global-exports-live-bindings.tentative.https.any.shadowrealm-in-serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ]
+      ],
+      "global-exports.tentative.any.js": [
+       "51ebcaf95a2ad9175d2703182e8c5164e44c6ba8",
+       [
+        null,
+        {
+         "jsshell": true,
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/global-exports.tentative.any.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/global-exports.tentative.any.shadowrealm-in-dedicatedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/global-exports.tentative.any.shadowrealm-in-shadowrealm.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/global-exports.tentative.any.shadowrealm-in-sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/global-exports.tentative.any.shadowrealm-in-window.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/global-exports.tentative.any.worker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/global-exports.tentative.https.any.shadowrealm-in-audioworklet.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/global-exports.tentative.https.any.shadowrealm-in-serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ]
+      ],
+      "js-wasm-cycle.tentative.any.js": [
+       "ce71a33a24b043f644b6e618cbb7c77232515b35",
+       [
+        null,
+        {
+         "jsshell": true,
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/js-wasm-cycle.tentative.any.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/js-wasm-cycle.tentative.any.shadowrealm-in-dedicatedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/js-wasm-cycle.tentative.any.shadowrealm-in-shadowrealm.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/js-wasm-cycle.tentative.any.shadowrealm-in-sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/js-wasm-cycle.tentative.any.shadowrealm-in-window.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/js-wasm-cycle.tentative.any.worker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/js-wasm-cycle.tentative.https.any.shadowrealm-in-audioworklet.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/js-wasm-cycle.tentative.https.any.shadowrealm-in-serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ]
+      ],
+      "mutable-global-sharing.tentative.any.js": [
+       "d76c69ad5d233321fd1b466714eb920ce55f3553",
+       [
+        null,
+        {
+         "jsshell": true,
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/mutable-global-sharing.tentative.any.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/mutable-global-sharing.tentative.any.shadowrealm-in-dedicatedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/mutable-global-sharing.tentative.any.shadowrealm-in-shadowrealm.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/mutable-global-sharing.tentative.any.shadowrealm-in-sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/mutable-global-sharing.tentative.any.shadowrealm-in-window.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/mutable-global-sharing.tentative.any.worker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/mutable-global-sharing.tentative.https.any.shadowrealm-in-audioworklet.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/mutable-global-sharing.tentative.https.any.shadowrealm-in-serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ]
+      ],
+      "namespace-instance.tentative.any.js": [
+       "d50b5c6cb80edf546478ba83eed122012cbe7c44",
+       [
+        null,
+        {
+         "jsshell": true,
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/namespace-instance.tentative.any.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/namespace-instance.tentative.any.shadowrealm-in-dedicatedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/namespace-instance.tentative.any.shadowrealm-in-shadowrealm.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/namespace-instance.tentative.any.shadowrealm-in-sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/namespace-instance.tentative.any.shadowrealm-in-window.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/namespace-instance.tentative.any.worker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/namespace-instance.tentative.https.any.shadowrealm-in-audioworklet.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/namespace-instance.tentative.https.any.shadowrealm-in-serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ]
+      ],
+      "reserved-import-names.tentative.any.js": [
+       "aa17735b0206ff433cc51ab2c9448badc007b592",
+       [
+        "wasm/jsapi/esm-integration/reserved-import-names.tentative.any.html",
+        {}
+       ],
+       [
+        "wasm/jsapi/esm-integration/reserved-import-names.tentative.any.worker.html",
+        {}
+       ]
+      ],
+      "resolve-export.tentative.any.js": [
+       "86325d11b0bad50c6f906b521a481b354fe3a63a",
+       [
+        null,
+        {
+         "jsshell": true,
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/resolve-export.tentative.any.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/resolve-export.tentative.any.shadowrealm-in-dedicatedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/resolve-export.tentative.any.shadowrealm-in-shadowrealm.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/resolve-export.tentative.any.shadowrealm-in-sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/resolve-export.tentative.any.shadowrealm-in-window.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/resolve-export.tentative.any.worker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/resolve-export.tentative.https.any.shadowrealm-in-audioworklet.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/resolve-export.tentative.https.any.shadowrealm-in-serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ]
+      ],
+      "source-phase-string-builtins.tentative.any.js": [
+       "e79b457dd464fc6f7bcb7df0d486fa79219f0963",
+       [
+        null,
+        {
+         "jsshell": true,
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/source-phase-string-builtins.tentative.any.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/source-phase-string-builtins.tentative.any.shadowrealm-in-dedicatedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/source-phase-string-builtins.tentative.any.shadowrealm-in-shadowrealm.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/source-phase-string-builtins.tentative.any.shadowrealm-in-sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/source-phase-string-builtins.tentative.any.shadowrealm-in-window.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/source-phase-string-builtins.tentative.any.worker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/source-phase-string-builtins.tentative.https.any.shadowrealm-in-audioworklet.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/source-phase-string-builtins.tentative.https.any.shadowrealm-in-serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ]
+      ],
+      "source-phase.tentative.any.js": [
+       "ad45391f7f9c9ffdfa81bb40fecfcc5a50f8d60e",
+       [
+        null,
+        {
+         "jsshell": true,
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/source-phase.tentative.any.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/source-phase.tentative.any.shadowrealm-in-dedicatedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/source-phase.tentative.any.shadowrealm-in-shadowrealm.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/source-phase.tentative.any.shadowrealm-in-sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/source-phase.tentative.any.shadowrealm-in-window.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/source-phase.tentative.any.worker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/source-phase.tentative.https.any.shadowrealm-in-audioworklet.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/source-phase.tentative.https.any.shadowrealm-in-serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ]
+      ],
+      "string-builtins.tentative.any.js": [
+       "bac8fd92727437e43927d1d5111c17274bc95d64",
+       [
+        null,
+        {
+         "jsshell": true,
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/string-builtins.tentative.any.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/string-builtins.tentative.any.shadowrealm-in-dedicatedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/string-builtins.tentative.any.shadowrealm-in-shadowrealm.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/string-builtins.tentative.any.shadowrealm-in-sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/string-builtins.tentative.any.shadowrealm-in-window.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/string-builtins.tentative.any.worker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/string-builtins.tentative.https.any.shadowrealm-in-audioworklet.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/string-builtins.tentative.https.any.shadowrealm-in-serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ]
+      ],
+      "v128-tdz.tentative.any.js": [
+       "5d11e590148851756027b2afcd9d9a67389d8f3f",
+       [
+        null,
+        {
+         "jsshell": true,
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/v128-tdz.tentative.any.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/v128-tdz.tentative.any.shadowrealm-in-dedicatedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/v128-tdz.tentative.any.shadowrealm-in-shadowrealm.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/v128-tdz.tentative.any.shadowrealm-in-sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/v128-tdz.tentative.any.shadowrealm-in-window.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/v128-tdz.tentative.any.worker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/v128-tdz.tentative.https.any.shadowrealm-in-audioworklet.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/v128-tdz.tentative.https.any.shadowrealm-in-serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ]
+      ],
+      "wasm-import-wasm-export.tentative.any.js": [
+       "2c1a1446ee4987372c4dfc3171f746602d12bbe7",
+       [
+        null,
+        {
+         "jsshell": true,
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/wasm-import-wasm-export.tentative.any.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/wasm-import-wasm-export.tentative.any.shadowrealm-in-dedicatedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/wasm-import-wasm-export.tentative.any.shadowrealm-in-shadowrealm.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/wasm-import-wasm-export.tentative.any.shadowrealm-in-sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/wasm-import-wasm-export.tentative.any.shadowrealm-in-window.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/wasm-import-wasm-export.tentative.any.worker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/wasm-import-wasm-export.tentative.https.any.shadowrealm-in-audioworklet.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/esm-integration/wasm-import-wasm-export.tentative.https.any.shadowrealm-in-serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell,shadowrealm"
           ]
          ]
         }
@@ -794397,6 +796173,47 @@
       }
      ]
     ],
+    "videoDecoder-interlaced-h264.https.any.js": [
+     "c76a6b62cdb88877d3ccd177e732cb1715ddf290",
+     [
+      "webcodecs/videoDecoder-interlaced-h264.https.any.html?h264_interlaced_avc",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "videoDecoder-codec-specific-setup.js"
+        ],
+        [
+         "variant",
+         "?h264_interlaced_avc"
+        ]
+       ]
+      }
+     ],
+     [
+      "webcodecs/videoDecoder-interlaced-h264.https.any.worker.html?h264_interlaced_avc",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "videoDecoder-codec-specific-setup.js"
+        ],
+        [
+         "variant",
+         "?h264_interlaced_avc"
+        ]
+       ]
+      }
+     ]
+    ],
     "videoFrame-alpha.any.js": [
      "f4c4dfa737bdeb4eacacf47bff5fd4cae4883eb0",
      [
@@ -799571,7 +801388,7 @@
       ]
      ],
      "dequantizeLinear.https.any.js": [
-      "9f568e6740b8dfa1ffaf5783f106fb9a0a1c9080",
+      "d9cec91e2492e0f79b01cf650ea3e8266b2895fb",
       [
        "webnn/conformance_tests/dequantizeLinear.https.any.html?cpu",
        {
@@ -806639,7 +808456,7 @@
       ]
      ],
      "quantizeLinear.https.any.js": [
-      "25a34322c19651cea90e9869b30bcc2562de08d6",
+      "3f883ef3e8b11da6c34815e570f2556010687886",
       [
        "webnn/conformance_tests/quantizeLinear.https.any.html?cpu",
        {
@@ -806861,7 +808678,7 @@
       ]
      ],
      "reduce_l1.https.any.js": [
-      "985d562429e0aeef5de9943a89983365c56a59d1",
+      "f976e12648ec19cf8c8ac3b3bd702bd58748dab3",
       [
        "webnn/conformance_tests/reduce_l1.https.any.html?cpu",
        {
@@ -806972,7 +808789,7 @@
       ]
      ],
      "reduce_l2.https.any.js": [
-      "3111861da43cc32d8610e47f207ea811c82cb125",
+      "624952e148bfe7b942be76c8ce040c38c57b06fd",
       [
        "webnn/conformance_tests/reduce_l2.https.any.html?cpu",
        {
@@ -807083,7 +808900,7 @@
       ]
      ],
      "reduce_log_sum.https.any.js": [
-      "cf128250617ec1d8b28b9f2f0794ef12139bad8c",
+      "52619e8cc267608ff3908521422c43d6490de356",
       [
        "webnn/conformance_tests/reduce_log_sum.https.any.html?cpu",
        {
@@ -807194,7 +809011,7 @@
       ]
      ],
      "reduce_log_sum_exp.https.any.js": [
-      "60467a0135900a824cab8068cb3f22c4961c35ad",
+      "c00817bc208adb77e3da04e42cc6247881f400f4",
       [
        "webnn/conformance_tests/reduce_log_sum_exp.https.any.html?cpu",
        {
@@ -807305,7 +809122,7 @@
       ]
      ],
      "reduce_max.https.any.js": [
-      "d89defa7042bcc126de382fbac0c51b151b82eed",
+      "d4a65800b1878d2bbae59701ee3e10d99024b790",
       [
        "webnn/conformance_tests/reduce_max.https.any.html?cpu",
        {
@@ -807416,7 +809233,7 @@
       ]
      ],
      "reduce_mean.https.any.js": [
-      "8275bee16ac82e27fd5141affd10996ee9ea8d0c",
+      "cc0e372ee4a0f724568a1cc96f779d6fdcf614c1",
       [
        "webnn/conformance_tests/reduce_mean.https.any.html?cpu",
        {
@@ -807527,7 +809344,7 @@
       ]
      ],
      "reduce_min.https.any.js": [
-      "22f9f9f09358e56da09b554484339131375d1529",
+      "0c3a52ea5e2406105ff86f0f0680cffaa6c60384",
       [
        "webnn/conformance_tests/reduce_min.https.any.html?cpu",
        {
@@ -807638,7 +809455,7 @@
       ]
      ],
      "reduce_product.https.any.js": [
-      "f6205e4e65e42acc00eebb0d2f7fd9a927ccaf72",
+      "7c6d0065367119201f0249f7690a39d6aa3ee76e",
       [
        "webnn/conformance_tests/reduce_product.https.any.html?cpu",
        {
@@ -807749,7 +809566,7 @@
       ]
      ],
      "reduce_sum.https.any.js": [
-      "6197112771c7ed796b657acc4730e2042a7cfe99",
+      "5d5fb4e3f7c5096c362ee49ba57bc6f6e197e810",
       [
        "webnn/conformance_tests/reduce_sum.https.any.html?cpu",
        {
@@ -807860,7 +809677,7 @@
       ]
      ],
      "reduce_sum_square.https.any.js": [
-      "b56b6d788d2b24572e0f6341573de3faa9b8c166",
+      "9c468b8e088ddc6538dc94166d2325d4abdc93ae",
       [
        "webnn/conformance_tests/reduce_sum_square.https.any.html?cpu",
        {
@@ -811796,7 +813613,7 @@
       ]
      ],
      "tile.https.any.js": [
-      "83f6cf2657e788b948a56c975cddf00d69a074bb",
+      "df86c68fa6985b02eb904c35c9497e1e490cf554",
       [
        "webnn/conformance_tests/tile.https.any.html?cpu",
        {
@@ -849339,7 +851156,7 @@
      ]
     ],
     "xrWebGLLayer_opaque_framebuffer_stencil.https.html": [
-     "17f991f1807e5356b3d789013bfbbfbc2e71040b",
+     "b8cad414231cf5dd5b7ad913f172c02ee9f44ce0",
      [
       null,
       {}
@@ -856509,6 +858326,15 @@
     ],
     "xmlhttprequest-unsent.htm": [
      "82282b0163e6ab493de404920c66a626d954c2fe",
+     [
+      null,
+      {}
+     ]
+    ]
+   },
+   "xml": {
+    "xml-prolog-accepted-versions.html": [
+     "df0aaf6580d49ac7cdca8458ea0a674177b63b3b",
      [
       null,
       {}
@@ -870510,7 +872336,7 @@
          ]
         ],
         "user_contexts.py": [
-         "b3038bb59587b661e75945c5b8eeb4e943c72d9e",
+         "ce9fda794e64beb9f4b990b97dc58b272e1a5920",
          [
           null,
           {}
@@ -871260,6 +873086,13 @@
           {}
          ]
         ],
+        "data_types.py": [
+         "af35b81638499ac872b71d4a4e819d2d416917b8",
+         [
+          null,
+          {}
+         ]
+        ],
         "invalid.py": [
          "87bc39988ac93f0429bc4223450140269db60a6a",
          [
@@ -871268,7 +873101,7 @@
          ]
         ],
         "max_encoded_data_size.py": [
-         "7c493ed31c8034ad57db7577b16d379cea917023",
+         "7e3887b7e8aca6e2eeda0b8a8cb31d8020f24377",
          [
           null,
           {}
@@ -871498,21 +873331,21 @@
        },
        "disown_data": {
         "collector.py": [
-         "8e77058077c94f3864560477edac387699a0678c",
+         "a478692ad3686177fab69ac3203987bbfd84874f",
+         [
+          null,
+          {}
+         ]
+        ],
+        "data_type.py": [
+         "6056b1cba509860c36c2a0843682f2f4efc31384",
          [
           null,
           {}
          ]
         ],
         "invalid.py": [
-         "d3cfb3ec85c2d0a65e5b24771b85469ddd3edcdf",
-         [
-          null,
-          {}
-         ]
-        ],
-        "request.py": [
-         "7a3fde4870563878d432a596d2d03c307316f8e3",
+         "ed7a9f50409f39cfd3eb9d31032574b932db3520",
          [
           null,
           {}
@@ -871553,28 +873386,35 @@
          ]
         ],
         "charset.py": [
-         "d166a6ad3b64eadbf643f4d1c3a08bca65cc8c43",
+         "78452790a9b60a309203b1bd58fee136e319fc6a",
          [
           null,
           {}
          ]
         ],
         "collector.py": [
-         "0e0217a9414c046163dad4c7f3086efde1733ff4",
+         "c4356203f6bd49d53ab5b66128c25dda32ecb1f8",
+         [
+          null,
+          {}
+         ]
+        ],
+        "data_type.py": [
+         "bb57f7b63c27ce0a6c4e46dbaa975393f94b29fd",
          [
           null,
           {}
          ]
         ],
         "disown.py": [
-         "0e9917017032ed698c649ac7370c9811388a8250",
+         "fd9606d82de6743deac3e8eea3656a83bc2bb0ea",
          [
           null,
           {}
          ]
         ],
         "invalid.py": [
-         "963488865f95997449b856877cc10e0f36222c31",
+         "3f6725e45e5fac499e52a554486ff626785413c8",
          [
           null,
           {}
@@ -871582,13 +873422,6 @@
         ],
         "persistence.py": [
          "fcb19ab1cd7b6b1c20144edc683555d78c8db897",
-         [
-          null,
-          {}
-         ]
-        ],
-        "request.py": [
-         "464c2b4b68bb63489cb334e0515e24ffee5f83f4",
          [
           null,
           {}
@@ -871650,7 +873483,7 @@
        },
        "remove_data_collector": {
         "collector.py": [
-         "ef42efaa93033797124123a498d780f04cde3f73",
+         "9a265ca4dd44f07e5f107508a46c8a2776b025fc",
          [
           null,
           {}

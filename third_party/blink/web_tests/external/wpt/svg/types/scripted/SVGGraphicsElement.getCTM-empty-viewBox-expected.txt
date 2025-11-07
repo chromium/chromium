@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] SVGGraphicsElement.getCTM and co with empty viewbox
+  assert_equals: getScreenCTM: e expected 0 but got 8
+Harness: the test ran to completion.
+

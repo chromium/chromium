@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Local mutable global exports should be live bindings
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch dynamically imported module: http://web-platform.test:8001/wasm/jsapi/esm-integration/resources/globals.wasm"
+[FAIL] Dep module mutable global exports should be live bindings
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch dynamically imported module: http://web-platform.test:8001/wasm/jsapi/esm-integration/resources/globals.wasm"
+Harness: the test ran to completion.
+
