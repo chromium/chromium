@@ -16,5 +16,6 @@ found in the LICENSE file.
     <dimen name="safety_hub_magic_stack_icon_size">60dp</dimen>
     <dimen name="safety_hub_magic_stack_icon_padding">16dp</dimen>
     <dimen name="safety_hub_magic_stack_icon_corner_radius">16dp</dimen>
+    <dimen name="safety_hub_expandable_preference_vertical_padding">12dp</dimen>
 
 </resources>
