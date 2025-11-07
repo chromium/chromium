@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.tab.TabAssociatedApp;
 import org.chromium.chrome.browser.tab.TabStateExtractor;
 import org.chromium.chrome.browser.tab.WebContentsState;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.tabwindow.WindowId;
@@ -136,6 +137,8 @@ public class TabStoragePackager {
         }
         assert tabModel != null && selector != null;
 
+        configureRemoveFromCacheOnDestroy(tabModel, collection);
+
         @WindowId
         int windowId = TabWindowManagerSingleton.getInstance().getWindowIdForSelector(selector);
         assert windowId != TabWindowManager.INVALID_WINDOW_ID;
@@ -156,6 +159,8 @@ public class TabStoragePackager {
         TabStripCollection archivedCollection = tabModel.getTabStripCollection();
         if (!Objects.equals(archivedCollection, collection)) return null;
 
+        configureRemoveFromCacheOnDestroy(tabModel, collection);
+
         return TabModelInfo.createForArchivedModel();
     }
 
@@ -170,6 +175,18 @@ public class TabStoragePackager {
                         info.windowId,
                         info.tabModelType,
                         info.activeTabSupplier.get());
+    }
+
+    private void configureRemoveFromCacheOnDestroy(
+            TabModel tabModel, TabStripCollection collection) {
+        tabModel.addObserver(
+                new TabModelObserver() {
+                    @Override
+                    public void onDestroy() {
+                        mTabModelInfoMap.remove(collection);
+                        tabModel.removeObserver(this);
+                    }
+                });
     }
 
     @NativeMethods
