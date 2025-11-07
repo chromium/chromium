@@ -101,8 +101,11 @@ void NamedMojoServerEndpointConnectorWin::Connect() {
   mojo::NamedPlatformChannel::Options options;
   options.server_name = options_.server_name;
   options.security_descriptor = options_.security_descriptor;
-  // Must be set to false to allow multiple clients to connect.
+
+  // Allow multiple clients to connect.
   options.enforce_uniqueness = false;
+  options.max_clients = PIPE_UNLIMITED_INSTANCES;
+
   mojo::PlatformChannelServerEndpoint server_endpoint =
       mojo::NamedPlatformChannel(options).TakeServerEndpoint();
   if (!server_endpoint.is_valid()) {
