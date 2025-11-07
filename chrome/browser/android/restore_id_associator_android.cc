@@ -41,6 +41,11 @@ bool RestoreIdAssociatorAndroid::AssociateTabAndAncestors(
   return true;
 }
 
+bool RestoreIdAssociatorAndroid::HasCollectionBeenAssociated(
+    TabCollection::Handle handle) {
+  return state_->associated_collections.contains(handle);
+}
+
 void RestoreIdAssociatorAndroid::AssociateAncestorsInternal(
     int storage_id,
     const TabCollection* collection) {
@@ -50,7 +55,7 @@ void RestoreIdAssociatorAndroid::AssociateAncestorsInternal(
   while (ShouldProcessCollection(curr_id, curr_collection)) {
     const TabCollection* curr_collection_ptr = curr_collection.Get();
     state_->on_collection_association.Run(curr_id, curr_collection_ptr);
-    state_->linked_collections.insert(curr_collection);
+    state_->associated_collections.insert(curr_collection);
 
     // Handle root node.
     if (!curr_collection_ptr->GetParentCollection()) {
@@ -70,7 +75,7 @@ bool RestoreIdAssociatorAndroid::ShouldProcessCollection(
   bool is_root = !collection.Get()->GetParentCollection();
   bool is_child = state_->id_to_parent_id.contains(storage_id);
 
-  return !state_->linked_collections.contains(collection) &&
+  return !state_->associated_collections.contains(collection) &&
          (is_root || is_child);
 }
 

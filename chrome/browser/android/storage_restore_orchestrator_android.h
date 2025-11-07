@@ -24,7 +24,6 @@ class StorageRestoreOrchestratorAndroid {
                                     StorageLoadedData* loaded_data);
   ~StorageRestoreOrchestratorAndroid();
 
-  void Save(JNIEnv* env);
   void Destroy(JNIEnv* env);
 
  private:

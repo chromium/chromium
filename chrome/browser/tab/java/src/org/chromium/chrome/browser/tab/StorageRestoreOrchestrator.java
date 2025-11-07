@@ -26,12 +26,6 @@ public class StorageRestoreOrchestrator {
         mNativePtr = StorageRestoreOrchestratorJni.get().init(profile, collection, loadedData);
     }
 
-    /** Saves all queued changes to storage. */
-    public void save() {
-        assert mNativePtr != 0;
-        StorageRestoreOrchestratorJni.get().save(mNativePtr);
-    }
-
     /** Destroys the native counterpart of this object. */
     public void destroy() {
         assert mNativePtr != 0;
@@ -45,8 +39,6 @@ public class StorageRestoreOrchestrator {
                 @JniType("Profile*") Profile profile,
                 @JniType("tabs::TabStripCollection*") TabStripCollection collection,
                 @JniType("StorageLoadedDataAndroid*") StorageLoadedData loadedData);
-
-        void save(long nativeStorageRestoreOrchestratorAndroid);
 
         void destroy(long nativeStorageRestoreOrchestratorAndroid);
     }

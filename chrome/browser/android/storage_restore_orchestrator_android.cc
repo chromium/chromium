@@ -30,10 +30,6 @@ StorageRestoreOrchestratorAndroid::StorageRestoreOrchestratorAndroid(
 StorageRestoreOrchestratorAndroid::~StorageRestoreOrchestratorAndroid() =
     default;
 
-void StorageRestoreOrchestratorAndroid::Save(JNIEnv* env) {
-  orchestrator_.Save();
-}
-
 static jlong JNI_StorageRestoreOrchestrator_Init(
     JNIEnv* env,
     Profile* profile,

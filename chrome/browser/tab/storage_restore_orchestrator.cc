@@ -6,6 +6,51 @@
 
 namespace tabs {
 
+namespace {
+
+void OnAddChildTab(
+    absl::flat_hash_set<TabCollectionNodeHandle>& restored_nodes_,
+    const TabCollection::NodeHandle& handle,
+    TabStateStorageService* service,
+    StorageLoadedData* loaded_data) {
+  if (!std::holds_alternative<TabHandle>(handle)) {
+    return;
+  }
+
+  TabHandle tab_handle = std::get<TabHandle>(handle);
+  bool was_tab_on_disk =
+      loaded_data->GetNodeAssociator()->AssociateTabAndAncestors(
+          tab_handle.Get());
+  if (!was_tab_on_disk || restored_nodes_.contains(handle)) {
+    service->Save(tab_handle.Get());
+  } else if (was_tab_on_disk) {
+    restored_nodes_.insert(handle);
+  }
+}
+
+void OnAddChildCollection(
+    absl::flat_hash_set<TabCollectionNodeHandle>& restored_nodes_,
+    const TabCollection::NodeHandle& handle,
+    TabStateStorageService* service,
+    StorageLoadedData* loaded_data) {
+  if (!std::holds_alternative<TabCollection::Handle>(handle)) {
+    return;
+  }
+
+  TabCollection::Handle collection_handle =
+      std::get<TabCollection::Handle>(handle);
+  bool was_collection_on_disk =
+      loaded_data->GetNodeAssociator()->HasCollectionBeenAssociated(
+          collection_handle);
+  if (!was_collection_on_disk || restored_nodes_.contains(handle)) {
+    service->Save(collection_handle.Get());
+  } else if (was_collection_on_disk) {
+    restored_nodes_.insert(handle);
+  }
+}
+
+}  // namespace
+
 StorageRestoreOrchestrator::StorageRestoreOrchestrator(
     TabStripCollection* collection,
     TabStateStorageService* service,
@@ -16,7 +61,18 @@ StorageRestoreOrchestrator::~StorageRestoreOrchestrator() = default;
 
 void StorageRestoreOrchestrator::OnChildrenAdded(
     const TabCollection::Position& position,
-    const TabCollectionNodes& handles) {}
+    const TabCollectionNodes& handles) {
+  // Associating a tab also associates its ancestors.
+  for (const auto& handle : handles) {
+    OnAddChildTab(restored_nodes_, handle, service_, loaded_data_);
+  }
+
+  // Any collection not already associated by the tab-filtered pass is new and
+  // must be saved.
+  for (const auto& handle : handles) {
+    OnAddChildCollection(restored_nodes_, handle, service_, loaded_data_);
+  }
+}
 
 void StorageRestoreOrchestrator::OnChildrenRemoved(
     const TabCollectionNodes& handles) {}
@@ -24,7 +80,5 @@ void StorageRestoreOrchestrator::OnChildrenRemoved(
 void StorageRestoreOrchestrator::OnChildMoved(
     const TabCollection::Position& to_position,
     const NodeData& node_data) {}
-
-void StorageRestoreOrchestrator::Save() {}
 
 }  // namespace tabs

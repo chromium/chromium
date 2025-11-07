@@ -31,6 +31,9 @@ class RestoreIdAssociator {
   // Associates a tab and its ancestor TabCollections with their respective
   // storage IDs. Returns true if the tab was successfully associated.
   virtual bool AssociateTabAndAncestors(const TabInterface*) = 0;
+
+  // Returns true if the collection has been associated.
+  virtual bool HasCollectionBeenAssociated(TabCollection::Handle) = 0;
 };
 
 }  // namespace tabs

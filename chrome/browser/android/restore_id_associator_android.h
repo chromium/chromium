@@ -23,7 +23,7 @@ class RestoreIdAssociatorAndroid : public RestoreIdAssociator {
 
     absl::flat_hash_map<int, int> id_to_parent_id;
     absl::flat_hash_map<int, int> tab_android_id_to_storage_id;
-    absl::flat_hash_set<TabCollection::Handle> linked_collections;
+    absl::flat_hash_set<TabCollection::Handle> associated_collections;
 
     OnTabAssociation on_tab_association;
     OnCollectionAssociation on_collection_association;
@@ -34,6 +34,8 @@ class RestoreIdAssociatorAndroid : public RestoreIdAssociator {
   ~RestoreIdAssociatorAndroid() override;
 
   bool AssociateTabAndAncestors(const TabInterface*) override;
+
+  bool HasCollectionBeenAssociated(TabCollection::Handle) override;
 
  private:
   // Associates a loaded TabCollection and its ancestors with their respective
