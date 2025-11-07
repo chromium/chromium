@@ -214,6 +214,22 @@ class TouchToFillPaymentMethodMediator {
         int MAX_VALUE = DISMISS;
     }
 
+    /**
+     * The Buy Now, Pay Later (BNPL) issuers.
+     *
+     * <p>Entries should not be renumbered and numeric values should never be reused. Needs to stay
+     * in sync with BnplIssuerId in enums.xml.
+     */
+    @IntDef({BnplIssuer.AFFIRM, BnplIssuer.ZIP, BnplIssuer.AFTERPAY, BnplIssuer.KLARNA})
+    @Retention(RetentionPolicy.SOURCE)
+    @interface BnplIssuer {
+        int AFFIRM = 0;
+        int ZIP = 1;
+        int AFTERPAY = 2;
+        int KLARNA = 3;
+        int MAX_VALUE = KLARNA;
+    }
+
     @VisibleForTesting
     static final String TOUCH_TO_FILL_CREDIT_CARD_OUTCOME_HISTOGRAM =
             "Autofill.TouchToFill.CreditCard.Outcome2";
@@ -256,6 +272,10 @@ class TouchToFillPaymentMethodMediator {
     @VisibleForTesting
     static final String TOUCH_TO_FILL_NUMBER_OF_AFFILIATED_LOYALTY_CARDS_SHOWN =
             "Autofill.TouchToFill.LoyaltyCard.NumberOfAffiliatedLoyaltyCardsShown";
+
+    @VisibleForTesting
+    static final String TOUCH_TO_FILL_BNPL_SELECT_ISSUER_SCREEN_ISSUER_SELECTED =
+            "Autofill.TouchToFill.Bnpl.SelectIssuerScreen.IssuerSelected";
 
     // LINT.IfChange
     private static final String WALLET_LINK_TEXT = "wallet.google.com";
@@ -881,6 +901,14 @@ class TouchToFillPaymentMethodMediator {
         }
         showProgressScreen();
         mDelegate.onBnplIssuerSuggestionSelected(issuerId);
+
+        @BnplIssuer Integer issuer = getEnumFromBnplIssuerId(issuerId);
+        if (issuer != null) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    TOUCH_TO_FILL_BNPL_SELECT_ISSUER_SCREEN_ISSUER_SELECTED,
+                    issuer,
+                    BnplIssuer.MAX_VALUE);
+        }
     }
 
     private void onErrorOkPressed() {
@@ -1211,6 +1239,21 @@ class TouchToFillPaymentMethodMediator {
                 TOUCH_TO_FILL_LOYALTY_CARD_OUTCOME_HISTOGRAM,
                 outcome,
                 TouchToFillIbanOutcome.MAX_VALUE);
+    }
+
+    private static @Nullable @BnplIssuer Integer getEnumFromBnplIssuerId(String issuerId) {
+        switch (issuerId) {
+            case "affirm":
+                return BnplIssuer.AFFIRM;
+            case "zip":
+                return BnplIssuer.ZIP;
+            case "afterpay":
+                return BnplIssuer.AFTERPAY;
+            case "klarna":
+                return BnplIssuer.KLARNA;
+        }
+        assert false : "Unknown BNPL issuer ID: " + issuerId;
+        return null;
     }
 
     void setInputProtectorForTesting(InputProtector inputProtector) {

@@ -11,6 +11,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -23,6 +24,7 @@ import static org.chromium.chrome.browser.autofill.AutofillTestHelper.createCred
 import static org.chromium.chrome.browser.autofill.AutofillTestHelper.createVirtualCreditCard;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.TOUCH_TO_FILL_AFFILIATED_LOYALTY_CARDS_SCREEN_INDEX_SELECTED;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.TOUCH_TO_FILL_ALL_LOYALTY_CARDS_SCREEN_INDEX_SELECTED;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.TOUCH_TO_FILL_BNPL_SELECT_ISSUER_SCREEN_ISSUER_SELECTED;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.TOUCH_TO_FILL_CREDIT_CARD_INDEX_SELECTED;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.TOUCH_TO_FILL_CREDIT_CARD_OUTCOME_HISTOGRAM;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.TOUCH_TO_FILL_IBAN_INDEX_SELECTED;
@@ -137,6 +139,7 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.Iban;
 import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
 import org.chromium.chrome.browser.touch_to_fill.common.TouchToFillResourceProvider;
+import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.BnplIssuer;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.TouchToFillCreditCardOutcome;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.TouchToFillIbanOutcome;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.TouchToFillLoyaltyCardOutcome;
@@ -461,6 +464,14 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                     /* issuerName= */ "Affirm",
                     /* legalMessageLines= */ Arrays.asList(
                             new LegalMessageLine(LEGAL_MESSAGE_LINE)));
+    private static final BnplIssuerContext UNKNOWN_BNPL_ISSUER_CONTEXT =
+            new BnplIssuerContext(
+                    /* iconId= */ R.drawable.bnpl_icon_generic,
+                    /* issuerId= */ "unknownId",
+                    /* displayName= */ "Test",
+                    /* selectionText= */ "Daily or 1000 installments",
+                    /* isLinked= */ true,
+                    /* isEligible= */ true);
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -1048,6 +1059,54 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
         footerModel.get().get(ON_LINK_CLICK_CALLBACK).onResult(null);
 
         verify(mDelegateMock).showPaymentMethodSettings();
+    }
+
+    @Test
+    public void testSelectBnplIssuerRecordsHistogram() {
+        mCoordinator
+                .getMediatorForTesting()
+                .showBnplIssuers(
+                        List.of(
+                                BNPL_ISSUER_CONTEXT_AFFIRM_LINKED,
+                                BNPL_ISSUER_CONTEXT_KLARNA_LINKED,
+                                BNPL_ISSUER_CONTEXT_ZIP_LINKED));
+        HistogramWatcher issuerSelectedHistogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        TOUCH_TO_FILL_BNPL_SELECT_ISSUER_SCREEN_ISSUER_SELECTED, BnplIssuer.KLARNA);
+        Optional<PropertyModel> klarnaIssuer =
+                getBnplIssuerContextModel(
+                        mTouchToFillPaymentMethodModel.get(SHEET_ITEMS),
+                        BNPL_ISSUER_CONTEXT_KLARNA_LINKED);
+        assertTrue(klarnaIssuer.isPresent());
+        mClock.advanceCurrentTimeMillis(InputProtector.POTENTIALLY_UNINTENDED_INPUT_THRESHOLD);
+        klarnaIssuer.get().get(ON_ISSUER_CLICK_ACTION).run();
+
+        verify(mDelegateMock)
+                .onBnplIssuerSuggestionSelected(BNPL_ISSUER_CONTEXT_KLARNA_LINKED.getIssuerId());
+        issuerSelectedHistogram.assertExpected();
+    }
+
+    @Test
+    public void testSelectUnknownBnplIssuerDoesNotRecordHistogram() {
+        mCoordinator.getMediatorForTesting().showBnplIssuers(List.of(UNKNOWN_BNPL_ISSUER_CONTEXT));
+        Optional<PropertyModel> unknownIssuer =
+                getBnplIssuerContextModel(
+                        mTouchToFillPaymentMethodModel.get(SHEET_ITEMS),
+                        UNKNOWN_BNPL_ISSUER_CONTEXT);
+        assertTrue(unknownIssuer.isPresent());
+        mClock.advanceCurrentTimeMillis(InputProtector.POTENTIALLY_UNINTENDED_INPUT_THRESHOLD);
+
+        assertThrows(
+                AssertionError.class,
+                () -> {
+                    unknownIssuer.get().get(ON_ISSUER_CLICK_ACTION).run();
+                });
+        verify(mDelegateMock)
+                .onBnplIssuerSuggestionSelected(UNKNOWN_BNPL_ISSUER_CONTEXT.getIssuerId());
+        assertTrue(
+                RecordHistogram.getHistogramSamplesForTesting(
+                                TOUCH_TO_FILL_BNPL_SELECT_ISSUER_SCREEN_ISSUER_SELECTED)
+                        .isEmpty());
     }
 
     @Test

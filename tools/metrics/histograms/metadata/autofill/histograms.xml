@@ -7883,6 +7883,18 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <token key="Caller" variants="Autofill.TimingPrecise.Caller"/>
 </histogram>
 
+<histogram name="Autofill.TouchToFill.Bnpl.SelectIssuerScreen.IssuerSelected"
+    enum="BnplIssuerId" expires_after="2026-06-01">
+  <owner>vinnypersky@google.com</owner>
+  <owner>viplavkadam@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records the number of times an issuer is selected in the BNPL issuer
+    selection bottom sheet. Logs the issuer that was selected when the user
+    selects the issuer in the issuer selection bottom sheet.
+  </summary>
+</histogram>
+
 <histogram
     name="Autofill.TouchToFill.CreditCard.AutofillUsedAfterTouchToFillDismissal"
     enum="Boolean" expires_after="2026-05-19">
