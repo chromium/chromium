@@ -49,7 +49,7 @@ found in the LICENSE file.
         android:id="@+id/wco_toggle_button"
         style="@style/HeaderButton"
         android:src="@drawable/window_controls_overlay_toggle"
-        android:contentDescription="@string/accessibility_toolbar_btn_menu"
+        android:contentDescription="@string/web_app_enable_window_controls_overlay_tooltip"
         android:visibility="gone"
         android:layout_gravity="end|center_vertical"
         app:tint="@color/default_icon_color_tint_list" />

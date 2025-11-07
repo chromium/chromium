@@ -258,6 +258,13 @@ public class WebAppHeaderLayoutCoordinator
                         : resources.getInteger(
                                 R.integer.window_controls_overlay_toggle_level_enable);
         mToggleButtonView.getDrawable().setLevel(level);
+        mToggleButtonView.setContentDescription(
+                mMediator.getUserToggleHeaderAsOverlay()
+                        ? mView.getContext()
+                                .getString(R.string.web_app_disable_window_controls_overlay_tooltip)
+                        : mView.getContext()
+                                .getString(
+                                        R.string.web_app_enable_window_controls_overlay_tooltip));
     }
 
     private void initMinUiControls() {

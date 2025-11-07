@@ -6826,10 +6826,10 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_WEB_APP_MENU_BUTTON_UPDATE" desc="Short label next to three-dot menu in a web app window when an update for the web app is available">
         App update available
       </message>
-      <message name="IDS_WEB_APP_ENABLE_WINDOW_CONTROLS_OVERLAY_TOOLTIP">
+      <message name="IDS_WEB_APP_ENABLE_WINDOW_CONTROLS_OVERLAY_TOOLTIP" formatter_data="android_java">
         Hide title bar
       </message>
-      <message name="IDS_WEB_APP_DISABLE_WINDOW_CONTROLS_OVERLAY_TOOLTIP">
+      <message name="IDS_WEB_APP_DISABLE_WINDOW_CONTROLS_OVERLAY_TOOLTIP" formatter_data="android_java">
         Show title bar
       </message>
       <message name="IDS_WEB_APP_WINDOW_CONTROLS_OVERLAY_ENABLED_ALERT" desc="Status change notification that the title bar is hidden after window controls overlay is enabled">
