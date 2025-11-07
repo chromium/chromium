@@ -23,6 +23,10 @@ XRShapedLayer::XRShapedLayer(const XRLayerInit* init,
   SetMipLevels(init->mipLevels());
 }
 
+bool XRShapedLayer::isStatic() const {
+  return is_static_;
+}
+
 void XRShapedLayer::setSpace(XRSpace* space) {
   xr_space_ = space;
   SetModified(true);

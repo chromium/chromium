@@ -8,13 +8,14 @@
 
 #include <algorithm>
 #include <cmath>
+#include <ranges>
 
+#include "base/containers/contains.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_xr_render_state_init.h"
 #include "third_party/blink/renderer/modules/xr/xr_composition_layer.h"
 #include "third_party/blink/renderer/modules/xr/xr_frame_provider.h"
 #include "third_party/blink/renderer/modules/xr/xr_session.h"
 #include "third_party/blink/renderer/modules/xr/xr_webgl_layer.h"
-
 namespace blink {
 
 namespace {
@@ -41,7 +42,7 @@ void XRRenderState::Update(const XRRenderStateInit* init) {
   if (init->hasBaseLayer()) {
     needs_layers_update_ |= base_layer_ != init->baseLayer();
     base_layer_ = init->baseLayer();
-    layers_ = MakeGarbageCollected<FrozenArray<XRLayer>>();
+    UpdateLayersState(MakeGarbageCollected<FrozenArray<XRLayer>>());
   }
   if (init->hasLayers()) {
     if (!init->layers() || init->layers()->size() != layers_->size() ||
@@ -51,9 +52,10 @@ void XRRenderState::Update(const XRRenderStateInit* init) {
     }
 
     base_layer_ = nullptr;
-    layers_ = init->layers() ? MakeGarbageCollected<FrozenArray<XRLayer>>(
-                                   HeapVector<Member<XRLayer>>(*init->layers()))
-                             : MakeGarbageCollected<FrozenArray<XRLayer>>();
+    UpdateLayersState(init->layers()
+                          ? MakeGarbageCollected<FrozenArray<XRLayer>>(
+                                HeapVector<Member<XRLayer>>(*init->layers()))
+                          : MakeGarbageCollected<FrozenArray<XRLayer>>());
   }
   if (init->hasInlineVerticalFieldOfView()) {
     double fov = init->inlineVerticalFieldOfView();
@@ -63,6 +65,25 @@ void XRRenderState::Update(const XRRenderStateInit* init) {
     fov = std::min(kMaxFieldOfView, fov);
     inline_vertical_fov_ = fov;
   }
+}
+
+void XRRenderState::UpdateLayersState(FrozenArray<XRLayer>* layers) {
+  auto update_layers_redraw_state = [](FrozenArray<XRLayer>& source_layers,
+                                       const FrozenArray<XRLayer>& other_layers,
+                                       bool needs_redraw) {
+    std::ranges::for_each(source_layers, [&](auto& source_layer) {
+      if (!base::Contains(other_layers, source_layer)) {
+        source_layer->SetNeedsRedraw(needs_redraw);
+      }
+    });
+  };
+
+  // Disable needs redraw state for removed layers.
+  update_layers_redraw_state(*layers_, *layers, /*needs_redraw=*/false);
+  // Enable needs redraw state for newly added layers.
+  update_layers_redraw_state(*layers, *layers_, /*needs_redraw=*/true);
+
+  layers_ = layers;
 }
 
 XRLayer* XRRenderState::GetFirstLayer() const {

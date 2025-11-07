@@ -68,16 +68,8 @@ uint16_t XRCompositionLayer::mipLevels() const {
   return mip_levels_;
 }
 
-bool XRCompositionLayer::needsRedraw() const {
-  return needs_redraw_;
-}
-
 void XRCompositionLayer::destroy() const {
   NOTIMPLEMENTED();
-}
-
-void XRCompositionLayer::SetNeedsRedraw(bool needsRedraw) {
-  needs_redraw_ = needsRedraw;
 }
 
 void XRCompositionLayer::SetLayout(V8XRLayerLayout layout) {
@@ -115,6 +107,11 @@ void XRCompositionLayer::OnFrameEnd() {
   XRFrameProvider* frame_provider = session()->xr()->frameProvider();
   frame_provider->SubmitLayer(layer_id(), drawing_context_,
                               drawing_context_->TextureWasQueried());
+
+  // Reset needs redraw state because texture was requested and submitted.
+  if (drawing_context_->TextureWasQueried()) {
+    SetNeedsRedraw(false);
+  }
 }
 
 XrLayerClient* XRCompositionLayer::LayerClient() {
@@ -129,6 +126,7 @@ XRCompositionLayer::CreateLayerData() const {
   layer_data->read_only_data->layer_id = layer_id();
   layer_data->read_only_data->texture_width = textureWidth();
   layer_data->read_only_data->texture_height = textureHeight();
+  layer_data->read_only_data->is_static = isStatic();
   // Mutable data.
   layer_data->mutable_data = device::mojom::blink::XRLayerMutableData::New();
   layer_data->mutable_data->blend_texture_source_alpha =
@@ -140,6 +138,10 @@ XRCompositionLayer::CreateLayerData() const {
   layer_data->mutable_data->layer_data = CreateLayerSpecificData();
 
   return layer_data;
+}
+
+bool XRCompositionLayer::isStatic() const {
+  return false;
 }
 
 void XRCompositionLayer::Trace(Visitor* visitor) const {

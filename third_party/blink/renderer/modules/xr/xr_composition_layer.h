@@ -36,7 +36,6 @@ class XRCompositionLayer : public XRLayer {
   float opacity() const;
   void setOpacity(float value);
   uint16_t mipLevels() const;
-  bool needsRedraw() const;
   void destroy() const;
 
   uint16_t textureWidth() const;
@@ -54,9 +53,9 @@ class XRCompositionLayer : public XRLayer {
   void Trace(Visitor*) const override;
 
  protected:
-  void SetNeedsRedraw(bool needsRedraw);
   void SetLayout(V8XRLayerLayout layout);
   void SetMipLevels(uint16_t mipLevels);
+  virtual bool isStatic() const;
 
   device::mojom::blink::XRCompositionLayerDataPtr CreateLayerData()
       const override;
@@ -77,7 +76,6 @@ class XRCompositionLayer : public XRLayer {
   bool force_mono_presentation_{false};
   float opacity_{1.0};
   uint16_t mip_levels_{1};
-  bool needs_redraw_{false};
 
   Member<XRLayerDrawingContext> drawing_context_;
 };

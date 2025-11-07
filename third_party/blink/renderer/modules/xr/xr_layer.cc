@@ -61,6 +61,14 @@ void XRLayer::DestroyBackend() {
   }
 }
 
+bool XRLayer::needsRedraw() const {
+  return needs_redraw_ && HasSharedImage();
+}
+
+void XRLayer::SetNeedsRedraw(bool needsRedraw) {
+  needs_redraw_ = needsRedraw;
+}
+
 void XRLayer::Trace(Visitor* visitor) const {
   visitor->Trace(session_);
   EventTarget::Trace(visitor);

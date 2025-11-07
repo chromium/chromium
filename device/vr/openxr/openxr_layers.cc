@@ -227,8 +227,8 @@ void OpenXrLayers::AddCompositionLayer(
     const OpenXrCompositionLayer& layer,
     std::vector<XrCompositionLayerProjectionView> projection_views,
     const void* xr_next_struct) {
-  // Layer requested in the middle of the request animation frame request
-  if (!layer.is_rendered()) {
+  // The layer has no content to show.
+  if (layer.needs_redraw()) {
     return;
   }
 

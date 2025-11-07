@@ -77,6 +77,11 @@ class XRRenderState : public ScriptWrappable {
   void Trace(Visitor*) const override;
 
  private:
+  // Helper method to update the list of layers according to a new render state.
+  // It also adds the needs redraw state for newly added layers and resets the
+  // needs redraw state for removed layers.
+  void UpdateLayersState(FrozenArray<XRLayer>* layers);
+
   bool immersive_;
   double depth_near_ = 0.1;
   double depth_far_ = 1000.0;
