@@ -156,6 +156,20 @@ base::span<uint8_t> ClientSharedImage::ScopedMapping::GetMemoryForPlane(
   // include any bytes beyond the actual end of the final row.
   size_t span_length =
       Stride(plane_index) * (height_in_pixels - 1) + row_size_in_bytes;
+#if BUILDFLAG(IS_OZONE)
+  // We are currently prevented from doing this tightening for
+  // NativePixmap-backed MappableBuffers by the fact that
+  // VideoFrame requires that the buffer returned from this method be of size
+  // that is equal to the size in its internal layout, which for NativePixmap is
+  // overridden to be the size of the plane stored in the GMB handle
+  // (https://source.chromium.org/chromium/chromium/src/+/main:media/base/video_frame.cc;drc=21e6d1583d1b5683f21556f6125b340d25a6b937;l=527).
+  // TODO(crbug.com/404905709): Eliminate that VideoFrame override and do
+  // tightening here for NativePixmap.
+  if (buffer_->GetType() == gfx::GpuMemoryBufferType::NATIVE_PIXMAP) {
+    span_length =
+        buffer_->CloneHandle().native_pixmap_handle().planes[plane_index].size;
+  }
+#endif
 
   // SAFETY: The underlying platform-specific buffer generation mechanisms
   // guarantee that the buffer contains at least `span_length` bytes following
