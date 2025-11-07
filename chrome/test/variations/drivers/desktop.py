@@ -54,6 +54,7 @@ class DesktopDriverFactory(DriverFactory):
       logging.info('Launching Chrome w/ caps: %s',
                    options.to_capabilities())
       driver = self._get_driver(options)
+      self.wait_for_window(driver)
       yield driver
     except WebDriverException as e:
       # Report this to be part of test result.
