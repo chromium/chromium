@@ -27,21 +27,6 @@ NSString* CreateLocalBlockingJsonRuleList() {
       @"type" : @"block",
     },
   } mutableCopy];
-
-  NSMutableDictionary* allow_crbug_block = [@{
-    @"trigger" : [@{
-      @"url-filter" : @"https://bugs.chromium.org/.*",
-      @"if-top-url" : @[ @"file://.*" ],
-      @"resource-type" : @[
-        // Allow opening crbug from chrome:// urls
-        @"popup"
-      ],
-    } mutableCopy],
-    @"action" : @{
-      @"type" : @"ignore-previous-rules",
-    },
-  } mutableCopy];
-
   WebClient::Schemes schemes;
   GetWebClient()->AddAdditionalSchemes(&schemes);
   GetWebClient()->GetAdditionalWebUISchemes(&(schemes.standard_schemes));
@@ -50,10 +35,24 @@ NSString* CreateLocalBlockingJsonRuleList() {
         addObject:base::SysUTF8ToNSString(scheme + "://.*")];
   }
 
-  NSData* json_data = [NSJSONSerialization
-      dataWithJSONObject:@[ local_block, allow_crbug_block ]
-                 options:NSJSONWritingPrettyPrinted
-                   error:nil];
+  NSDictionary* allow_crbug = @{
+    @"trigger" : @{
+      @"url-filter" : @"https://bugs\\.chromium\\.org/.*",
+      @"if-top-url" : @[ @"file://.*" ],
+      @"resource-type" : @[
+        // Allow opening crbug from chrome:// urls
+        @"popup"
+      ],
+    },
+    @"action" : @{
+      @"type" : @"ignore-previous-rules",
+    },
+  };
+
+  NSData* json_data =
+      [NSJSONSerialization dataWithJSONObject:@[ local_block, allow_crbug ]
+                                      options:NSJSONWritingPrettyPrinted
+                                        error:nil];
   NSString* json_string = [[NSString alloc] initWithData:json_data
                                                 encoding:NSUTF8StringEncoding];
   return json_string;
