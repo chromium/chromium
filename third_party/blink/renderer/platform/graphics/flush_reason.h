@@ -102,11 +102,7 @@ enum class FlushReason {
   // This inhibits vector printing.
   kCreatePattern = 20,
 
-  // The canvas was uploade to a WebGPU texture.
-  // This inhibits vector printing.
-  kWebGPUTexture = 21,
-
-  kOther = 22,
+  kOther = 21,
 
   kMaxValue = kOther,
 };

@@ -555,6 +555,10 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   // copying is effectively skipped due to a dummy WebGPU texture.
   void PrepareForWebGPUDummyMailbox();
 
+  scoped_refptr<CanvasResource> ProduceCanvasResource() {
+    return ProduceCanvasResource(FlushReason::kOther);
+  }
+
  private:
   scoped_refptr<CanvasResourceSharedImage> CreateResource();
 

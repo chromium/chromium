@@ -1448,7 +1448,7 @@ GPUTexture* BaseRenderingContext2D::transferToGPUTexture(
   }
 
   // Prepare to flush the canvas to a WebGPU texture.
-  FinalizeFrame(FlushReason::kWebGPUTexture);
+  FinalizeFrame();
 
   // We will need to access the canvas' resource provider.
   CanvasRenderingContextHost* host = GetCanvasRenderingContextHost();
