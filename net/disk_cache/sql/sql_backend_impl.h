@@ -486,6 +486,13 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
   // The persistent store that manages the SQLite database.
   std::unique_ptr<SqlPersistentStore> store_;
 
+  // Coordinates exclusive and normal operations to ensure that exclusive
+  // operations have exclusive access. This must be declared before
+  // `active_entries_` and `doomed_entries_` to ensure it is destroyed after
+  // them. This is critical because `exclusive_operation_coordinator_` may hold
+  // the last `scoped_refptr` to a `SqlEntryImpl`.
+  ExclusiveOperationCoordinator exclusive_operation_coordinator_;
+
   // Map of cache keys to currently active (opened) entries.
   // `raw_ref` is used because the SqlEntryImpl objects are ref-counted and
   // their lifetime is managed by their ref_count. This map only holds
@@ -495,10 +502,6 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
   // Set of entries that have been marked as doomed but are still active
   // (i.e., have outstanding references).
   std::set<raw_ref<const SqlEntryImpl>> doomed_entries_;
-
-  // Coordinates exclusive and normal operations to ensure that exclusive
-  // operations have exclusive access.
-  ExclusiveOperationCoordinator exclusive_operation_coordinator_;
 
   // Queue of in-flight entry modifications that need to be applied.
   // These are typically updates to `last_used` or header data that occur
