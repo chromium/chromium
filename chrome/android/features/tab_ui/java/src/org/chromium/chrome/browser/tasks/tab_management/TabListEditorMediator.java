@@ -39,6 +39,7 @@ import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager.AppHeaderObserver;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
+import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate.SelectionObserver;
 import org.chromium.ui.modelutil.ListModelChangeProcessor;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyListModel;
@@ -75,6 +76,7 @@ class TabListEditorMediator
     private final TabListEditorLayout mTabListEditorLayout;
     private final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
     private final @CreationMode int mCreationMode;
+    private final SelectionObserver<TabListEditorItemSelectionId> mSelectionObserver;
 
     private TabListCoordinator mTabListCoordinator;
     private TabListEditorCoordinator.ResetHandler mResetHandler;
@@ -164,6 +166,16 @@ class TabListEditorMediator
                     }
                 };
 
+        mSelectionObserver =
+                new SelectionDelegate.SelectionObserver<>() {
+                    @Override
+                    public void onSelectionStateChange(
+                            List<TabListEditorItemSelectionId> selectedItems) {
+                        updateDoneButtonVisibility();
+                    }
+                };
+        mSelectionDelegate.addObserver(mSelectionObserver);
+
         mCurrentTabGroupModelFilterSupplier.addSyncObserverAndCallIfNonNull(
                 mOnTabGroupModelFilterChanged);
 
@@ -185,6 +197,16 @@ class TabListEditorMediator
     private boolean isEditorVisible() {
         if (mTabListCoordinator == null) return false;
         return mModel.get(TabListEditorProperties.IS_VISIBLE);
+    }
+
+    private void updateDoneButtonVisibility() {
+        if (mCreationMode != CreationMode.ITEM_PICKER) {
+            mModel.set(TabListEditorProperties.DONE_BUTTON_VISIBILITY, false);
+            return;
+        }
+
+        boolean hasSelection = !mSelectionDelegate.getSelectedItems().isEmpty();
+        mModel.set(TabListEditorProperties.DONE_BUTTON_VISIBILITY, hasSelection);
     }
 
     private void updateColors(boolean isIncognito) {
@@ -257,6 +279,9 @@ class TabListEditorMediator
         mModel.set(
                 TabListEditorProperties.TOOLBAR_TITLE,
                 mContext.getString(R.string.tab_selection_editor_toolbar_select_items));
+
+        updateDoneButtonVisibility();
+
         updateColors(
                 assumeNonNull(mCurrentTabGroupModelFilterSupplier.get())
                         .getTabModel()
@@ -451,6 +476,8 @@ class TabListEditorMediator
 
         removeTabGroupModelFilterObserver(assumeNonNull(mCurrentTabGroupModelFilterSupplier.get()));
         mCurrentTabGroupModelFilterSupplier.removeObserver(mOnTabGroupModelFilterChanged);
+
+        mSelectionDelegate.removeObserver(mSelectionObserver);
 
         if (mDesktopWindowStateManager != null) {
             mDesktopWindowStateManager.removeObserver(this);
