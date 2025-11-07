@@ -137,12 +137,12 @@
 #include "chrome/browser/ui/views/frame/layout/browser_view_layout.h"
 #include "chrome/browser/ui/views/frame/layout/browser_view_layout_delegate_impl.h"
 #include "chrome/browser/ui/views/frame/main_background_region_view.h"
-#include "chrome/browser/ui/views/frame/main_container_view.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view_delegate.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view_drop_target_controller.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view_mini_toolbar.h"
 #include "chrome/browser/ui/views/frame/scrim_view.h"
+#include "chrome/browser/ui/views/frame/shadow_overlay_view.h"
 #include "chrome/browser/ui/views/frame/tab_modal_dialog_host.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/frame/top_container_loading_bar.h"
@@ -878,32 +878,8 @@ BrowserView::BrowserView(Browser* browser)
   main_background_region_ =
       AddChildView(std::make_unique<MainBackgroundRegionView>(*this));
 
-  main_container_ = AddChildView(std::make_unique<MainContainerView>(*this));
-
-  // TODO(crbug.com/454362874): Support dynamic horizontal alignment.
-  toolbar_height_side_panel_ = AddChildView(std::make_unique<SidePanel>(
-      this, SidePanelEntry::PanelType::kToolbar, /*has_border=*/false,
-      SidePanel::HorizontalAlignment::kLeft));
-
-  top_container_ =
-      main_container_->AddChildView(std::make_unique<TopContainerView>(this));
-
-  tab_strip_region_view_ =
-      AddChildView(std::make_unique<TabStripRegionView>(this));
-  tab_strip_region_insertion_index_ = GetIndexOf(tab_strip_region_view_.get());
-
-  if (tabs::IsVerticalTabsFeatureEnabled()) {
-    auto vertical_tab_strip_container =
-        std::make_unique<VerticalTabStripRegionView>(
-            browser_->GetFeatures()
-                .tab_strip_service_feature()
-                ->GetTabStripService(),
-            browser_->GetFeatures().vertical_tab_strip_state_controller(),
-            browser_->GetActions()->root_action_item(), browser_);
-
-    vertical_tab_strip_container_ =
-        AddChildView(std::move(vertical_tab_strip_container));
-  }
+  top_container_ = AddChildView(std::make_unique<TopContainerView>(this));
+  top_container_insertion_index_ = GetIndexOf(top_container_.get());
 
   auto contents_container = std::make_unique<views::View>();
 
@@ -947,33 +923,31 @@ BrowserView::BrowserView(Browser* browser)
   top_container_separator_->SetProperty(views::kElementIdentifierKey,
                                         kContentsSeparatorTopEdgeElementId);
 
-  contents_container_ =
-      main_container_->AddChildView(std::move(contents_container));
+  contents_container_ = AddChildView(std::move(contents_container));
   set_contents_view(contents_container_);
 
   const bool is_right_aligned = GetProfile()->GetPrefs()->GetBoolean(
       prefs::kSidePanelHorizontalAlignment);
-  contents_height_side_panel_ =
-      main_container_->AddChildView(std::make_unique<SidePanel>(
-          this, SidePanelEntry::PanelType::kContent, /*has_border=*/true,
-          is_right_aligned ? SidePanel::HorizontalAlignment::kRight
-                           : SidePanel::HorizontalAlignment::kLeft));
+  contents_height_side_panel_ = AddChildView(std::make_unique<SidePanel>(
+      this, SidePanelEntry::PanelType::kContent, /*has_border=*/true,
+      is_right_aligned ? SidePanel::HorizontalAlignment::kRight
+                       : SidePanel::HorizontalAlignment::kLeft));
 
   // `MultiContentsView` owns separators when `SideBySide` is enabled.
   if (!multi_contents_view_) {
-    right_aligned_side_panel_separator_ = main_container_->AddChildView(
-        ContentsSeparator::CreateContentsSeparator());
+    right_aligned_side_panel_separator_ =
+        AddChildView(ContentsSeparator::CreateContentsSeparator());
     right_aligned_side_panel_separator_->SetProperty(
         views::kElementIdentifierKey,
         kRightAlignedSidePanelSeparatorViewElementId);
 
-    left_aligned_side_panel_separator_ = main_container_->AddChildView(
-        ContentsSeparator::CreateContentsSeparator());
+    left_aligned_side_panel_separator_ =
+        AddChildView(ContentsSeparator::CreateContentsSeparator());
     left_aligned_side_panel_separator_->SetProperty(
         views::kElementIdentifierKey,
         kLeftAlignedSidePanelSeparatorViewElementId);
     side_panel_rounded_corner_ =
-        main_container_->AddChildView(std::make_unique<ContentsRoundedCorner>(
+        AddChildView(std::make_unique<ContentsRoundedCorner>(
             this, views::ShapeContextTokens::kContentSeparatorRadius,
             base::BindRepeating(
                 &SidePanel::IsRightAligned,
@@ -984,8 +958,37 @@ BrowserView::BrowserView(Browser* browser)
 
   // InfoBarContainer needs to be added as a child here for drop-shadow, but
   // needs to come after toolbar in focus order (see EnsureFocusOrder()).
-  infobar_container_ = main_container_->AddChildView(
-      std::make_unique<InfoBarContainerView>(this));
+  infobar_container_ =
+      AddChildView(std::make_unique<InfoBarContainerView>(this));
+
+  // This frames some/all of the top container plus infobars, contents, and
+  // contents-height side panel when the toolbar-height side panel is visible.
+  // It must render after those elements.
+  main_shadow_overlay_ = AddChildView(std::make_unique<ShadowOverlayView>());
+
+  // TODO(crbug.com/454362874): Support dynamic horizontal alignment.
+  toolbar_height_side_panel_ = AddChildView(std::make_unique<SidePanel>(
+      this, SidePanelEntry::PanelType::kToolbar, /*has_border=*/false,
+      SidePanel::HorizontalAlignment::kLeft));
+
+  // Tabstrip comes basically last because it should be before toolbar in the
+  // focus order but also needs to paint on top of everything.
+  tab_strip_region_view_ =
+      AddChildView(std::make_unique<TabStripRegionView>(this));
+  tab_strip_region_insertion_index_ = GetIndexOf(tab_strip_region_view_.get());
+
+  if (tabs::IsVerticalTabsFeatureEnabled()) {
+    auto vertical_tab_strip_container =
+        std::make_unique<VerticalTabStripRegionView>(
+            browser_->GetFeatures()
+                .tab_strip_service_feature()
+                ->GetTabStripService(),
+            browser_->GetFeatures().vertical_tab_strip_state_controller(),
+            browser_->GetActions()->root_action_item(), browser_);
+
+    vertical_tab_strip_container_ =
+        AddChildView(std::move(vertical_tab_strip_container));
+  }
 
   // Create do-nothing view for the sake of controlling the z-order of the find
   // bar widget.
@@ -1074,7 +1077,7 @@ BrowserView::~BrowserView() {
   find_bar_host_view_ = nullptr;
   infobar_container_ = nullptr;
   multi_contents_view_ = nullptr;
-  main_container_ = nullptr;
+  main_shadow_overlay_ = nullptr;
   contents_container_view_ = nullptr;
   lens_overlay_view_ = nullptr;
   window_scrim_view_ = nullptr;
@@ -4053,13 +4056,18 @@ void BrowserView::ReparentTopContainerForStartOfImmersive() {
 }
 
 void BrowserView::ReparentTopContainerForEndOfImmersive() {
-  if (top_container()->parent() == main_container_ &&
-      tab_strip_view()->parent() == this) {
+  if (top_container()->parent() == this && tab_strip_view()->parent() == this) {
     return;
   }
 
   overlay_view_tracker_.view()->SetVisible(false);
   top_container()->DestroyLayer();
+
+  // The top container must be placed in the same position before the
+  // reparenting to maintain the correct Z-order to ensure it can receive mouse
+  // events. See crbug.com/454852658.
+  DCHECK(top_container_insertion_index_);
+  AddChildViewAt(top_container_.get(), top_container_insertion_index_.value());
 
   // The TabStrip must be placed in the same position before the reparenting to
   // maintain the correct Z-order to ensure it can receive mouse events. See
@@ -4076,8 +4084,6 @@ void BrowserView::ReparentTopContainerForEndOfImmersive() {
     AddChildView(web_app_window_title_.get());
   }
 
-  // Reparent TopContainer to its original parent.
-  main_container_->AddChildViewAt(top_container(), 0);
   EnsureFocusOrder();
 }
 
@@ -4086,7 +4092,7 @@ void BrowserView::EnsureFocusOrder() {
   // bar (if present) or top container (i.e. toolbar, again if present).
   if (bookmark_bar_view_ && bookmark_bar_view_->parent() == this) {
     infobar_container_->InsertAfterInFocusList(bookmark_bar_view_.get());
-  } else if (top_container_->parent() == main_container_) {
+  } else if (top_container_->parent() == this) {
     infobar_container_->InsertAfterInFocusList(top_container_);
   }
 
@@ -5034,9 +5040,6 @@ void BrowserView::Layout(PassKey) {
 
   LayoutSuperclass<views::View>(this);
 
-  main_container_->SetShadowVisiblityAndRoundedCorners(
-      toolbar_height_side_panel_->GetVisible());
-
   // TODO(jamescook): Why was this in the middle of layout code?
   toolbar_->location_bar()->omnibox_view()->SetFocusBehavior(
       IsToolbarVisible() ? FocusBehavior::ALWAYS : FocusBehavior::NEVER);
@@ -5164,7 +5167,7 @@ void BrowserView::AddedToWidget() {
   // LINT.IfChange(BrowserViewLayoutViews)
   layout_views.browser_view = this;
   layout_views.window_scrim = window_scrim_view_;
-  layout_views.main_container = main_container_;
+  layout_views.main_shadow_overlay = main_shadow_overlay_;
   layout_views.main_background_region = main_background_region_;
   layout_views.top_container = top_container_;
   layout_views.web_app_frame_toolbar = web_app_frame_toolbar_;

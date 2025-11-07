@@ -49,7 +49,7 @@ struct BrowserViewLayoutViews {
   // testing much easier.
   raw_ptr<views::View> window_scrim = nullptr;
   raw_ptr<views::View> main_background_region = nullptr;
-  raw_ptr<views::View> main_container = nullptr;
+  raw_ptr<views::View> main_shadow_overlay = nullptr;
   raw_ptr<views::View> top_container = nullptr;
   raw_ptr<WebAppFrameToolbarView> web_app_frame_toolbar = nullptr;
   raw_ptr<views::Label> web_app_window_title = nullptr;

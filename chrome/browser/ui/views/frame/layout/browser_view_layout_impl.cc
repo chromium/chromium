@@ -208,7 +208,7 @@ void BrowserViewLayoutImpl::MaybeLayoutTopContainerOverlay(
   // If the top container is parented to the main container, it is not in the
   // overlay.
   if (!views().top_container ||
-      views().top_container->parent() == views().main_container) {
+      views().top_container->parent() == views().browser_view) {
     return;
   }
 
@@ -410,11 +410,11 @@ BrowserViewLayoutImpl::CalculateProposedLayout(
   main_bounds.Inset(scaled_main_area_padding);
 
   // Lay out the remainder of the main container.
-  const BrowserLayoutParams main_params =
-      params.InLocalCoordinates(main_bounds);
-  ProposedLayout& main_layout =
-      layout.AddChild(views().main_container, main_bounds);
-  CalculateMainContainerLayout(main_layout, main_params, !used_exclusion);
+  BrowserLayoutParams main_params = params.InLocalCoordinates(main_bounds);
+  main_params.visual_client_area.set_origin(main_bounds.origin());
+  layout.AddChild(views().main_shadow_overlay, main_bounds,
+                  has_toolbar_height_side_panel);
+  CalculateMainContainerLayout(layout, main_params, !used_exclusion);
 
   return layout;
 }
@@ -426,20 +426,26 @@ void BrowserViewLayoutImpl::CalculateMainContainerLayout(
   int y = params.visual_client_area.y();
 
   // Lay out top container.
-  if (IsParentedToAndVisible(views().top_container, views().main_container)) {
+  if (IsParentedToAndVisible(views().top_container, views().browser_view)) {
     // Take advantage of the fact that the top container takes up the entire top
     // area of the main container.
     ProposedLayout& top_container_layout =
         layout.AddChild(views().top_container, gfx::Rect());
+    // Switch to local coordinates for top container elements.
+    const BrowserLayoutParams top_container_params =
+        params.InLocalCoordinates(params.visual_client_area);
     top_container_layout.bounds = CalculateTopContainerLayout(
-        top_container_layout, params, needs_exclusion);
+        top_container_layout, top_container_params, needs_exclusion);
+    // Convert back to browser view coordinates.
+    top_container_layout.bounds.Offset(
+        params.visual_client_area.OffsetFromOrigin());
     y = top_container_layout.bounds.bottom();
   }
 
   // TODO(https://crbug.com/7089871): handle "toolbar always visible" mode.
 
   // Lay out infobar container.
-  if (IsParentedTo(views().infobar_container, views().main_container)) {
+  if (IsParentedTo(views().infobar_container, views().browser_view)) {
     gfx::Rect infobar_bounds;
     const bool infobar_visible = delegate().IsInfobarVisible();
     if (infobar_visible) {
@@ -473,8 +479,7 @@ void BrowserViewLayoutImpl::CalculateMainContainerLayout(
           ? y - views::Separator::kThickness
           : y;
 
-  if (IsParentedTo(views().contents_height_side_panel,
-                   views().main_container)) {
+  if (IsParentedTo(views().contents_height_side_panel, views().browser_view)) {
     SidePanel* const side_panel = views().contents_height_side_panel;
     int side_panel_width = 0;
     int side_panel_visible_width = 0;
@@ -539,7 +544,7 @@ void BrowserViewLayoutImpl::CalculateMainContainerLayout(
 
   // Lay out the left side panel separator.
   if (IsParentedTo(views().left_aligned_side_panel_separator,
-                   views().main_container)) {
+                   views().browser_view)) {
     gfx::Rect separator_bounds;
     if (show_left_separator) {
       const int separator_width =
@@ -556,7 +561,7 @@ void BrowserViewLayoutImpl::CalculateMainContainerLayout(
 
   // Lay out the right side panel separator.
   if (IsParentedTo(views().right_aligned_side_panel_separator,
-                   views().main_container)) {
+                   views().browser_view)) {
     gfx::Rect separator_bounds;
     if (show_right_separator) {
       const int separator_width =
@@ -574,7 +579,7 @@ void BrowserViewLayoutImpl::CalculateMainContainerLayout(
   }
 
   // Lay out the corner separator.
-  if (IsParentedTo(views().side_panel_rounded_corner, views().main_container)) {
+  if (IsParentedTo(views().side_panel_rounded_corner, views().browser_view)) {
     const bool visible = show_left_separator || show_right_separator;
     gfx::Rect corner_bounds;
     if (visible) {
@@ -592,8 +597,8 @@ void BrowserViewLayoutImpl::CalculateMainContainerLayout(
   // Lay out contents container. The contents container contains the multi-
   // contents view when multi-contents are enabled. The checks here are to
   // force the logic to be updated when multi-contents is fully rolled-out.
-  CHECK(IsParentedToAndVisible(views().contents_container,
-                               views().main_container));
+  CHECK(
+      IsParentedToAndVisible(views().contents_container, views().browser_view));
   CHECK(views().multi_contents_view == nullptr ||
         views().contents_container->Contains(views().multi_contents_view));
 
@@ -605,6 +610,11 @@ void BrowserViewLayoutImpl::CalculateMainContainerLayout(
       deficit > 0) {
     // Expand the contents by the deficit on the side with the side panel.
     Inset(horizontal_space, -deficit, side_panel_leading);
+    // However, do not let this go past the edge of the allowed area.
+    horizontal_space.set_start(
+        std::max(horizontal_space.start(), params.visual_client_area.x()));
+    horizontal_space.set_end(
+        std::min(horizontal_space.end(), params.visual_client_area.right()));
   }
   layout.AddChild(
       views().contents_container,

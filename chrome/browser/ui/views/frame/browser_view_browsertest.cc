@@ -977,7 +977,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, SplitViewFullscreenLayout) {
   views::View* overlay_view = browser_view()->overlay_view();
 
   // Verify top_container is parented to browser_view before fullscreen
-  EXPECT_EQ(browser_view()->main_container(), top_container->parent());
+  EXPECT_EQ(browser_view(), top_container->parent());
   ui_test_utils::ToggleFullscreenModeAndWait(browser());
 
   // Verify top_container is parented to overlay after entering fullscreen
@@ -986,7 +986,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, SplitViewFullscreenLayout) {
   browser_view()->GetExclusiveAccessContext()->ExitFullscreen();
 
   // Verify top_container is re-parented to browser_view after fullscreen exit
-  EXPECT_EQ(browser_view()->main_container(), top_container->parent());
+  EXPECT_EQ(browser_view(), top_container->parent());
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserViewTest, SplitViewTabRevealFullscreen) {
