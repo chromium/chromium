@@ -547,7 +547,7 @@ bool WebrtcTransport::ProcessTransportInfo(XmlElement* transport_info) {
         session_description->Attr(QName(std::string(), "signature")));
     crypto::hmac::HmacVerifier verifier(crypto::hash::kSha256, hmac_key_);
     verifier.Update(base::as_byte_span(type_string));
-    verifier.Update(base::as_byte_span(" "));
+    verifier.Update(base::byte_span_from_cstring(" "));
     verifier.Update(base::as_byte_span(sdp_message.NormalizedForSignature()));
     if (!signature || !verifier.Finish(*signature)) {
       static constexpr char kErrorDetails[] =
@@ -831,7 +831,7 @@ void WebrtcTransport::OnLocalSessionDescriptionCreated(
 
   crypto::hmac::HmacSigner signer(crypto::hash::kSha256, hmac_key_);
   signer.Update(base::as_byte_span(description->type()));
-  signer.Update(base::as_byte_span(" "));
+  signer.Update(base::byte_span_from_cstring(" "));
   signer.Update(base::as_byte_span(sdp_message.NormalizedForSignature()));
   std::array<uint8_t, crypto::hash::kSha256Size> digest;
   signer.Finish(digest);
