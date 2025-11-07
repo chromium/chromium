@@ -20,7 +20,8 @@
 
 namespace updater {
 
-std::optional<int> RemoveUninstalledAppsTask::GetUnregisterReason(
+std::optional<UninstallPingReason>
+RemoveUninstalledAppsTask::GetUnregisterReason(
     const std::string& app_id,
     const base::FilePath& /*ecp*/) const {
   const HKEY root = UpdaterScopeToHKeyRoot(scope_);
@@ -34,7 +35,7 @@ std::optional<int> RemoveUninstalledAppsTask::GetUnregisterReason(
     }
   }
 
-  return kUninstallPingReasonUninstalled;
+  return UninstallPingReason::kUninstalled;
 }
 
 }  // namespace updater

@@ -621,10 +621,12 @@ inline constexpr char kSourcePlatformPolicyManager[] = "not-defined";
 inline constexpr bool kCloudPolicyOverridesPlatformPolicyDefaultValue = true;
 #endif
 
-inline constexpr int kUninstallPingReasonUninstalled = 0;
-inline constexpr int kUninstallPingReasonUserNotAnOwner = 1;
-inline constexpr int kUninstallPingReasonNoAppsRemain = 2;
-inline constexpr int kUninstallPingReasonNeverHadApps = 3;
+enum class UninstallPingReason {
+  kUninstalled = 0,
+  kUserNotAnOwner = 1,
+  kNoAppsRemain = 2,
+  kNeverHadApps = 3,
+};
 
 // The file downloaded to a temporary location could not be moved.
 inline constexpr int kErrorFailedToMoveDownloadedFile = 5;

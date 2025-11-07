@@ -206,7 +206,7 @@ class AppUninstall : public App {
   [[nodiscard]] int Initialize() override;
   void FirstTaskRun() override;
 
-  void UninstallAll(int reason);
+  void UninstallAll(UninstallPingReason reason);
 
   // Inter-process lock taken by AppInstall, AppUninstall, and AppUpdate. May
   // be null if the setup lock wasn't acquired.
@@ -228,7 +228,7 @@ int AppUninstall::Initialize() {
   return kErrorOk;
 }
 
-void AppUninstall::UninstallAll(int reason) {
+void AppUninstall::UninstallAll(UninstallPingReason reason) {
   update_client::CrxComponent uninstall_data;
   uninstall_data.ap = config_->GetUpdaterPersistedData()->GetAP(kUpdaterAppId);
   uninstall_data.app_id = kUpdaterAppId;
@@ -256,7 +256,7 @@ void AppUninstall::UninstallAll(int reason) {
       {.event_type = update_client::protocol_request::kEventUninstall,
        .result = update_client::protocol_request::kEventResultSuccess,
        .error_code = 0,
-       .extra_code1 = reason},
+       .extra_code1 = static_cast<int>(reason)},
       base::BindOnce(
           [](base::OnceCallback<void(int)> shutdown, UpdaterScope scope,
              update_client::Error uninstall_ping_error) {
@@ -290,7 +290,7 @@ void AppUninstall::FirstTaskRun() {
       base::CommandLine::ForCurrentProcess();
 
   if (command_line->HasSwitch(kUninstallSwitch)) {
-    UninstallAll(kUninstallPingReasonUninstalled);
+    UninstallAll(UninstallPingReason::kUninstalled);
     return;
   }
 
@@ -301,8 +301,8 @@ void AppUninstall::FirstTaskRun() {
                         global_prefs_->CountServerStarts(), had_apps);
     VLOG(1) << "ShouldUninstall returned: " << should_uninstall;
     if (should_uninstall) {
-      UninstallAll(had_apps ? kUninstallPingReasonNoAppsRemain
-                            : kUninstallPingReasonNeverHadApps);
+      UninstallAll(had_apps ? UninstallPingReason::kNoAppsRemain
+                            : UninstallPingReason::kNeverHadApps);
     } else {
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(&AppUninstall::Shutdown, this, 0));

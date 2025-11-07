@@ -20,6 +20,7 @@
 #include "base/version.h"
 #include "chrome/updater/branded_constants.h"
 #include "chrome/updater/configurator.h"
+#include "chrome/updater/constants.h"
 #include "chrome/updater/persisted_data.h"
 #include "chrome/updater/prefs.h"
 #include "chrome/updater/update_service_impl.h"
@@ -45,11 +46,11 @@ struct AppInfo {
 struct PingInfo {
   PingInfo(const std::string& app_id,
            const base::Version& app_version,
-           int ping_reason)
+           UninstallPingReason ping_reason)
       : app_id_(app_id), app_version_(app_version), ping_reason_(ping_reason) {}
   std::string app_id_;
   base::Version app_version_;
-  int ping_reason_;
+  UninstallPingReason ping_reason_;
 };
 
 std::vector<AppInfo> GetRegisteredApps(
@@ -66,12 +67,13 @@ std::vector<AppInfo> GetRegisteredApps(
 
 std::vector<PingInfo> GetAppIDsToRemove(
     const std::vector<AppInfo>& apps,
-    base::RepeatingCallback<std::optional<int>(const std::string&,
-                                               const base::FilePath&)>
-        predicate) {
+    base::RepeatingCallback<
+        std::optional<UninstallPingReason>(const std::string&,
+                                           const base::FilePath&)> predicate) {
   std::vector<PingInfo> app_ids_to_remove;
   for (const auto& app : apps) {
-    std::optional<int> remove_reason = predicate.Run(app.app_id_, app.ecp_);
+    std::optional<UninstallPingReason> remove_reason =
+        predicate.Run(app.app_id_, app.ecp_);
     if (remove_reason) {
       app_ids_to_remove.emplace_back(app.app_id_, app.app_version_,
                                      *remove_reason);
@@ -115,7 +117,7 @@ void RemoveAppIDsAndSendUninstallPings(
 
   for (const PingInfo& app_id_to_remove : app_ids_to_remove) {
     const std::string& app_id = app_id_to_remove.app_id_;
-    const int ping_reason = app_id_to_remove.ping_reason_;
+    const int ping_reason = static_cast<int>(app_id_to_remove.ping_reason_);
     const base::Version& app_version = app_id_to_remove.app_version_;
     const std::string& brand = persisted_data->GetBrandCode(app_id);
     const std::string& ap = persisted_data->GetAP(app_id);
