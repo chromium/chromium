@@ -113,6 +113,7 @@ public class LocationBarCoordinator
     private StatusCoordinator mStatusCoordinator;
     private NavigationAttachmentsCoordinator mNavigationAttachmentsCoordinator;
     private final WindowAndroid mWindowAndroid;
+    private final Callback<Boolean> mTextWrappingListener;
     private LocationBarMediator mLocationBarMediator;
     private View mUrlBar;
     private View mZoomButton;
@@ -302,6 +303,11 @@ public class LocationBarCoordinator
                         windowAndroid.getKeyboardDelegate(),
                         isIncognito,
                         onLongClickListener);
+
+        // Set up text wrapping listener for NavigationAttachmentsCoordinator
+        mTextWrappingListener = this::onTextWrappingChanged;
+        mUrlCoordinator.addTextWrappingChangeListener(mTextWrappingListener);
+
         mAutocompleteCoordinator =
                 new AutocompleteCoordinator(
                         mLocationBarLayout,
@@ -459,6 +465,7 @@ public class LocationBarCoordinator
         }
 
         mLocationBarMediator.removeUrlFocusChangeListener(mUrlCoordinator);
+        mUrlCoordinator.removeTextWrappingChangeListener(mTextWrappingListener);
         mUrlCoordinator.destroy();
         mUrlCoordinator = null;
 
@@ -793,6 +800,12 @@ public class LocationBarCoordinator
      */
     public void setUrlBarFocusable(boolean focusable) {
         mUrlCoordinator.setAllowFocus(focusable);
+    }
+
+    private void onTextWrappingChanged(boolean isWrapping) {
+        if (mNavigationAttachmentsCoordinator != null) {
+            mNavigationAttachmentsCoordinator.onFuseboxTextWrappingChanged(isWrapping);
+        }
     }
 
     /**

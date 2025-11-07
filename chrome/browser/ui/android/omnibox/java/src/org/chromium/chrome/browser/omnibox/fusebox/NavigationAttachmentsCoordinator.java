@@ -229,6 +229,15 @@ public class NavigationAttachmentsCoordinator
     }
 
     /**
+     * Called when fusebox text wrapping changes.
+     *
+     * @param isWrapping true if text is wrapping (should show expanded UI), false for compact UI
+     */
+    public void onFuseboxTextWrappingChanged(boolean isWrapping) {
+        mModel.set(NavigationAttachmentsProperties.COMPACT_UI, !isWrapping);
+    }
+
+    /**
      * Whether the given mode allows "conventioanl" fulfillment of a valid typed url, i.e.
      * navigating to that url directly. As an example of where this might return false: if if the
      * user types www.foo.com and presses enter with this mode active, they will be taken to some
