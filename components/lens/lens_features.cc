@@ -573,6 +573,16 @@ std::string_view LensAimSuggestionModeToString(
   }
 }
 
+const base::FeatureParam<int> kAimSuggestionsCount{
+    &kLensAimSuggestions, "number-of-aim-suggestions", 8};
+
+int GetLensAimSuggestionsCount() {
+  if (!GetAimSuggestionsEnabled()) {
+    return 0;
+  }
+  return kAimSuggestionsCount.Get();
+}
+
 std::string GetHomepageURLForLens() {
   return kHomepageURLForLens.Get();
 }

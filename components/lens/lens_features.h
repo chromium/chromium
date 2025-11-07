@@ -1031,5 +1031,9 @@ inline constexpr char kLensAimSuggestionsTypeMultimodal[] = "Multimodal";
 std::string_view LensAimSuggestionModeToString(
     LensAimSuggestionsType type);
 
+// Returns the number of AIM suggestions to show.
+COMPONENT_EXPORT(LENS_FEATURES)
+int GetLensAimSuggestionsCount();
+
 }  // namespace lens::features
 #endif  // COMPONENTS_LENS_LENS_FEATURES_H_
