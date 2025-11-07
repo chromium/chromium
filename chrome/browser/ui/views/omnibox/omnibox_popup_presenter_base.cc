@@ -8,17 +8,12 @@
 
 #include "base/feature_list.h"
 #include "base/notreached.h"
-#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_content.h"
 #include "chrome/browser/ui/views/omnibox/rounded_omnibox_results_frame.h"
 #include "chrome/browser/ui/views/theme_copying_widget.h"
-#include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
-
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(OmniboxPopupPresenterBase,
-                                      kRoundedResultsFrame);
 
 OmniboxPopupPresenterBase::OmniboxPopupPresenterBase(
     LocationBarView* location_bar_view)
@@ -108,11 +103,9 @@ void OmniboxPopupPresenterBase::SetWebUIContent(
       &OmniboxPopupPresenterBase::OnWidgetClosed, base::Unretained(this)));
 
   widget_->Init(std::move(params));
-  auto rounded_frame = std::make_unique<RoundedOmniboxResultsFrame>(
-      owned_omnibox_popup_webui_container_.release(), location_bar_view_);
-  rounded_frame->SetProperty(views::kElementIdentifierKey,
-                             kRoundedResultsFrame);
-  widget_->SetContentsView(std::move(rounded_frame));
+  widget_->SetContentsView(std::make_unique<RoundedOmniboxResultsFrame>(
+      owned_omnibox_popup_webui_container_.release(), location_bar_view_));
+
   widget_->SetVisibilityChangedAnimationsEnabled(false);
 
   GetResultsFrame()->SetCutoutVisibility(ShouldShowLocationBarCutout());

@@ -53,7 +53,6 @@ class OmniboxPopupViewWebUI : public OmniboxPopupView,
 
  protected:
   friend class OmniboxPopupViewWebUITest;
-  friend class OmniboxWebUiInteractiveTest;
   FRIEND_TEST_ALL_PREFIXES(OmniboxPopupViewWebUITest,
                            PopupLoadsAndAcceptsCalls);
 
