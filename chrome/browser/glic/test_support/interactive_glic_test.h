@@ -831,39 +831,20 @@ class InteractiveGlicTestMixin : public T {
         Api::InstrumentNextTab(id),
         Api::WithElement(
             ui::test::internal::kInteractiveTestPivotElementId,
-            base::BindLambdaForTesting([this, url,
-                                        at_index](ui::TrackedElement* el) {
+            base::BindLambdaForTesting([this, url](ui::TrackedElement* el) {
               Browser* const browser_ptr = browser();
               CHECK(browser_ptr) << "No browser";
               CHECK(GetHost());
-              NavigateParams navigate_params(
-                  browser_ptr, url, ui::PageTransition::PAGE_TRANSITION_TYPED);
-              navigate_params.tabstrip_index = at_index.value_or(-1);
-              navigate_params.disposition =
-                  WindowOpenDisposition::NEW_FOREGROUND_TAB;
-              navigate_params.opener =
-                  GetHost()->webui_contents()->GetPrimaryMainFrame();
-              CHECK(Navigate(&navigate_params));
+              GetHost()->instance_delegate().CreateTab(
+                  url, /*open_in_background=*/false,
+                  /*window_id=*/std::nullopt, base::DoNothing());
             })),
-        Api::WaitForWebContentsReady(id),
-        Api::WithElement(
-            id, base::BindLambdaForTesting([this](ui::TrackedElement* el) {
-              auto* const web_el = el->AsA<TrackedElementWebContents>();
-              CHECK(web_el);
-              content::WebContents* contents = web_el->owner()->web_contents();
-              tabs::TabInterface* tab =
-                  tabs::TabModel::MaybeGetFromContents(contents);
-              CHECK(tab) << "Could not find a tab for the new WebContents.";
-
-              if (GlicEnabling::IsMultiInstanceEnabledByFlags()) {
-                // Show the Glic side panel in the newly created tab.
-                GetGlicInstanceImpl()->Show(ShowOptions::ForSidePanel(*tab));
-              }
-            })));
+        Api::WaitForWebContentsReady(id));
     Api::AddDescriptionPrefix(
-        steps, base::StringPrintf("AddInstrumentedTabWithOpener( %s, %s, %d, )",
-                                  id.GetName().c_str(), url.spec().c_str(),
-                                  at_index.value_or(-1)));
+        steps,
+        base::StringPrintf("AddInstrumentedTabAndOpenSidePanel( %s, %s, %d, )",
+                           id.GetName().c_str(), url.spec().c_str(),
+                           at_index.value_or(-1)));
     return steps;
   }
 
