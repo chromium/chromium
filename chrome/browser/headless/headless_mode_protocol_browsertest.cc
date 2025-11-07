@@ -352,8 +352,7 @@ HEADLESS_MODE_PROTOCOL_TEST(ScreenDetailsWorkAreaScaled,
 
 HEADLESS_MODE_PROTOCOL_TEST(RequestFullscreen, "shared/request-fullscreen.js")
 
-// Fails on all platforms, see https://crbug.com/429035133
-HEADLESS_MODE_PROTOCOL_TEST(DISABLED_RequestFullscreenOnSecondaryScreen,
+HEADLESS_MODE_PROTOCOL_TEST(RequestFullscreenOnSecondaryScreen,
                             "shared/request-fullscreen-on-secondary-screen.js")
 
 HEADLESS_MODE_PROTOCOL_TEST(CreateTargetPosition,
