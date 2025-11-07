@@ -26,11 +26,26 @@ class WebView;
 
 namespace contextual_tasks {
 
+class ContextualTask;
 class ContextualTasksContextController;
+class ContextualTasksUiService;
 class ContextualTasksWebView;
 
 class ContextualTasksSidePanelCoordinator {
  public:
+  // A data structure to hold the cache and state of the side panel per thread.
+  struct WebContentsCacheItem {
+    WebContentsCacheItem(std::unique_ptr<content::WebContents> wc, bool open);
+    ~WebContentsCacheItem();
+    WebContentsCacheItem(const WebContentsCacheItem&) = delete;
+    WebContentsCacheItem& operator=(const WebContentsCacheItem&) = delete;
+
+    // Own the WebContents from the side panel
+    std::unique_ptr<content::WebContents> web_contents;
+
+    // Whether the side panel is open.
+    bool is_open;
+  };
   DECLARE_USER_DATA(ContextualTasksSidePanelCoordinator);
 
   ContextualTasksSidePanelCoordinator(
@@ -69,6 +84,16 @@ class ContextualTasksSidePanelCoordinator {
   content::WebContents* GetActiveWebContentsForTesting();
 
  private:
+  // Get the task associated with the active tab.
+  std::optional<ContextualTask> GetCurrentTask();
+
+  // Hide or show side panel base on open state of the current task.
+  void UpdateSidePanelVisibility();
+
+  // Update the open state of the current task.
+  // Do nothing if no task is found.
+  void UpdateOpenStateForCurrentTask(bool is_open);
+
   int GetPreferredDefaultSidePanelWidth();
 
   // Update the associated WebContents for active tab.
@@ -96,6 +121,8 @@ class ContextualTasksSidePanelCoordinator {
   // Context controller to query task information.
   const raw_ptr<ContextualTasksContextController> context_controller_;
 
+  const raw_ptr<ContextualTasksUiService> ui_service_;
+
   // WebView of the current side panel. It's owned by side panel framework so
   // weak pointer is needed in case it's destroyed. The WebContents in the
   // WebView is owned by the cache and can change based on active task change.
@@ -104,7 +131,7 @@ class ContextualTasksSidePanelCoordinator {
   // WebContents cache for each task.
   // It's okay to assume there is only 1 WebContents per task per window.
   // Different windows do not share the WebContents with the same task.
-  std::map<base::Uuid, std::unique_ptr<content::WebContents>>
+  std::map<base::Uuid, std::unique_ptr<WebContentsCacheItem>>
       task_id_to_web_contents_cache_;
 
   ui::ScopedUnownedUserData<ContextualTasksSidePanelCoordinator>

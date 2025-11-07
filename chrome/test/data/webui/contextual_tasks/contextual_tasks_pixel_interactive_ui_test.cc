@@ -34,13 +34,12 @@ class ContextualTasksComposeBoxPixelTest
     WebUIComposeBoxPixelTest::SetUp();
   }
 
-  void SetUpOnMainThread() override {
-    WebUIComposeBoxPixelTest::SetUpOnMainThread();
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
     contextual_tasks::ContextualTasksUiServiceFactory::GetInstance()
         ->SetTestingFactory(
-            browser()->profile(),
-            base::BindRepeating(
-                &FakeContextualTasksUiService::BuildFakeService));
+            context, base::BindRepeating(
+                         &FakeContextualTasksUiService::BuildFakeService));
   }
 
  private:
