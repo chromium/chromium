@@ -2,17 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert to safer constructs.
-// This test code was moved from WebRTC which predates unsafe buffer checks.
-// The unsafe buffer usage is in existing test utilities that directly
-// manipulate network packets for testing the TCP protocol implementation.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "remoting/protocol/pseudo_tcp.h"
 
 #include <algorithm>
+#include <array>
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
@@ -20,11 +13,14 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/auto_spanification_helper.h"
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
@@ -357,12 +353,13 @@ class PseudoTcpTest : public PseudoTcpTestBase {
   }
 
   void ReadData() {
-    char block[kBlockSize];
+    std::array<char, kBlockSize> block;
     int received;
     do {
-      received = remote_.Recv(block, sizeof(block));
-      if (received != -1) {
-        recv_buffer_.insert(recv_buffer_.end(), block, block + received);
+      received = remote_.Recv(block.data(), block.size());
+      if (received > 0) {
+        recv_buffer_.insert(recv_buffer_.end(), block.begin(),
+                            block.begin() + received);
         if (recv_buffer_.size() % 50000 == 0) {
           VLOG(1) << "Received: " << recv_buffer_.size();
         }
@@ -371,13 +368,15 @@ class PseudoTcpTest : public PseudoTcpTestBase {
   }
   void WriteData(bool* done) {
     int sent;
-    char block[kBlockSize];
+    std::array<char, kBlockSize> block;
     do {
       size_t tosend = std::min(static_cast<size_t>(kBlockSize),
                                send_buffer_.size() - send_stream_pos_);
       if (tosend > 0) {
-        memcpy(block, send_buffer_.data() + send_stream_pos_, tosend);
-        sent = local_.Send(block, tosend);
+        base::as_writable_bytes(base::span(block).first(tosend))
+            .copy_from(base::as_bytes(
+                base::span(send_buffer_).subspan(send_stream_pos_, tosend)));
+        sent = local_.Send(block.data(), tosend);
         UpdateLocalClock();
         if (sent != -1) {
           send_stream_pos_ += sent;
@@ -518,12 +517,13 @@ class PseudoTcpTestPingPong : public PseudoTcpTestBase {
   }
 
   void ReadData() {
-    char block[kBlockSize];
+    std::array<char, kBlockSize> block;
     int received;
     do {
-      received = receiver_->Recv(block, sizeof(block));
-      if (received != -1) {
-        recv_buffer_.insert(recv_buffer_.end(), block, block + received);
+      received = receiver_->Recv(block.data(), block.size());
+      if (received > 0) {
+        recv_buffer_.insert(recv_buffer_.end(), block.begin(),
+                            block.begin() + received);
         if (recv_buffer_.size() % 50000 == 0) {
           VLOG(1) << "Received: " << recv_buffer_.size();
         }
@@ -532,7 +532,7 @@ class PseudoTcpTestPingPong : public PseudoTcpTestBase {
   }
   void WriteData() {
     int sent;
-    char block[kBlockSize];
+    std::array<char, kBlockSize> block;
     do {
       size_t tosend = bytes_per_send_
                           ? std::min(static_cast<size_t>(bytes_per_send_),
@@ -540,8 +540,10 @@ class PseudoTcpTestPingPong : public PseudoTcpTestBase {
                           : std::min(static_cast<size_t>(kBlockSize),
                                      send_buffer_.size() - send_stream_pos_);
       if (tosend > 0) {
-        memcpy(block, send_buffer_.data() + send_stream_pos_, tosend);
-        sent = sender_->Send(block, tosend);
+        base::as_writable_bytes(base::span(block).first(tosend))
+            .copy_from(base::as_bytes(
+                base::span(send_buffer_).subspan(send_stream_pos_, tosend)));
+        sent = sender_->Send(block.data(), tosend);
         UpdateLocalClock();
         if (sent != -1) {
           send_stream_pos_ += sent;
@@ -629,13 +631,14 @@ class PseudoTcpTestReceiveWindow : public PseudoTcpTestBase {
   void OnTcpWriteable(PseudoTcp* /* tcp */) override {}
 
   void ReadUntilIOPending() {
-    char block[kBlockSize];
+    std::array<char, kBlockSize> block;
     int received;
 
     do {
-      received = remote_.Recv(block, sizeof(block));
-      if (received != -1) {
-        recv_buffer_.insert(recv_buffer_.end(), block, block + received);
+      received = remote_.Recv(block.data(), block.size());
+      if (received > 0) {
+        recv_buffer_.insert(recv_buffer_.end(), block.begin(),
+                            block.begin() + received);
         if (recv_buffer_.size() % 50000 == 0) {
           VLOG(1) << "Received: " << recv_buffer_.size();
         }
@@ -656,13 +659,15 @@ class PseudoTcpTestReceiveWindow : public PseudoTcpTestBase {
 
   void WriteData() {
     int sent;
-    char block[kBlockSize];
+    std::array<char, kBlockSize> block;
     do {
       size_t tosend = std::min(static_cast<size_t>(kBlockSize),
                                send_buffer_.size() - send_stream_pos_);
       if (tosend > 0) {
-        memcpy(block, send_buffer_.data() + send_stream_pos_, tosend);
-        sent = local_.Send(block, tosend);
+        base::as_writable_bytes(base::span(block).first(tosend))
+            .copy_from(base::as_bytes(
+                base::span(send_buffer_).subspan(send_stream_pos_, tosend)));
+        sent = local_.Send(block.data(), tosend);
         UpdateLocalClock();
         if (sent != -1) {
           send_stream_pos_ += sent;

@@ -12,6 +12,7 @@
 
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
@@ -43,8 +44,7 @@
 #include "third_party/crashpad/crashpad/snapshot/sanitized/sanitization_information.h"
 #endif
 
-namespace gwp_asan {
-namespace internal {
+namespace gwp_asan::internal {
 
 namespace {
 
@@ -144,6 +144,9 @@ MULTIPROCESS_TEST_MAIN(CrashingProcess) {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   static crashpad::SanitizationInformation sanitization_info = {};
   static crashpad::SanitizationAllowedMemoryRanges allowed_memory_ranges;
+  static base::NoDestructor<
+      std::vector<crashpad::SanitizationAllowedMemoryRanges::Range>>
+      ranges;
   if (cmd_line->HasSwitch("sanitize")) {
     auto memory_ranges = gpa->GetInternalMemoryRegions();
     if (cmd_line->HasSwitch("enable-lightweight-detector")) {
@@ -152,17 +155,15 @@ MULTIPROCESS_TEST_MAIN(CrashingProcess) {
       memory_ranges.insert(memory_ranges.end(), detector_memory_ranges.begin(),
                            detector_memory_ranges.end());
     }
-    auto* range_array =
-        new crashpad::SanitizationAllowedMemoryRanges::Range[memory_ranges
-                                                                 .size()];
-    for (size_t i = 0; i < memory_ranges.size(); i++) {
-      UNSAFE_TODO(range_array[i]).base =
-          reinterpret_cast<crashpad::VMAddress>(memory_ranges[i].first);
-      UNSAFE_TODO(range_array[i]).length = memory_ranges[i].second;
+    for (auto& memory_range : memory_ranges) {
+      ranges->push_back(crashpad::SanitizationAllowedMemoryRanges::Range{
+          .base = reinterpret_cast<crashpad::VMAddress>(memory_range.first),
+          .length = memory_range.second,
+      });
     }
     allowed_memory_ranges.size = memory_ranges.size();
     allowed_memory_ranges.entries =
-        reinterpret_cast<crashpad::VMAddress>(range_array);
+        reinterpret_cast<crashpad::VMAddress>(ranges->data());
     sanitization_info.allowed_memory_ranges_address =
         reinterpret_cast<crashpad::VMAddress>(&allowed_memory_ranges);
     arguments.push_back(base::StringPrintf("--sanitization-information=%p",
@@ -324,18 +325,18 @@ class BaseCrashHandlerTest : public base::MultiProcessTest,
     ASSERT_NE(separator, std::string::npos);
     test_name.erase(separator);
 
-    ASSERT_TRUE(runTestProcess(database_dir.GetPath(), test_name.c_str()));
+    ASSERT_TRUE(RunTestProcess(database_dir.GetPath(), test_name.c_str()));
 
     bool minidump_found;
-    readGwpAsanStreamFromCrash(database_dir.GetPath(), &minidump_found,
-                               &gwp_asan_found_, &proto_);
+    ReadGwpAsanStreamFromCrash(database_dir.GetPath(), minidump_found,
+                               gwp_asan_found_, proto_);
     ASSERT_TRUE(minidump_found);
   }
 
   // Launch a second process that installs a crashpad handler and causes an
   // exception of type test_name, then validate that it exited successfully.
   // crashpad is initialized to write to the given database directory.
-  bool runTestProcess(const base::FilePath& database_dir,
+  bool RunTestProcess(const base::FilePath& database_dir,
                       const char* test_name) {
     base::CommandLine cmd_line =
         base::GetMultiProcessTestChildBaseCommandLine();
@@ -380,14 +381,14 @@ class BaseCrashHandlerTest : public base::MultiProcessTest,
 
   // Given a directory with a single crashpad exception, read and parse the
   // minidump and identify whether it has a GWP-ASan stream. If it successfully
-  // found a minidump, it writes true to minidump_found. If it sucessfully found
-  // a GWP-ASan stream in the minidump, it writes true to gwp_asan_found and
-  // parses the protobuf into into proto_out.
-  void readGwpAsanStreamFromCrash(const base::FilePath& database_dir,
-                                  bool* minidump_found,
-                                  bool* gwp_asan_found,
-                                  gwp_asan::Crash* proto_out) {
-    *minidump_found = *gwp_asan_found = false;
+  // found a minidump, it writes true to minidump_found. If it successfully
+  // found a GWP-ASan stream in the minidump, it writes true to gwp_asan_found
+  // and parses the protobuf into into proto_out.
+  void ReadGwpAsanStreamFromCrash(const base::FilePath& database_dir,
+                                  bool& minidump_found,
+                                  bool& gwp_asan_found,
+                                  gwp_asan::Crash& proto_out) {
+    minidump_found = gwp_asan_found = false;
     auto database =
         crashpad::CrashReportDatabase::InitializeWithoutCreating(database_dir);
 
@@ -401,21 +402,22 @@ class BaseCrashHandlerTest : public base::MultiProcessTest,
 
     crashpad::ProcessSnapshotMinidump minidump_process_snapshot;
     ASSERT_TRUE(minidump_process_snapshot.Initialize(&minidump_file_reader));
-    *minidump_found = true;
+    minidump_found = true;
 
-    auto custom_streams = minidump_process_snapshot.CustomMinidumpStreams();
-    for (auto* stream : custom_streams) {
+    std::vector<const crashpad::MinidumpStream*> custom_streams =
+        minidump_process_snapshot.CustomMinidumpStreams();
+    for (const crashpad::MinidumpStream* stream : custom_streams) {
       if (stream->stream_type() == static_cast<crashpad::MinidumpStreamType>(
                                        kGwpAsanMinidumpStreamType)) {
-        ASSERT_TRUE(proto_out->ParseFromArray(stream->data().data(),
-                                              stream->data().size()));
-        *gwp_asan_found = true;
+        ASSERT_TRUE(proto_out.ParseFromArray(stream->data().data(),
+                                             stream->data().size()));
+        gwp_asan_found = true;
         return;
       }
     }
   }
 
-  void checkProto(Crash_Mode mode,
+  void CheckProto(Crash_Mode mode,
                   Crash_ErrorType error_type,
                   HasAllocation has_allocation,
                   HasDeallocation has_deallocation) {
@@ -471,12 +473,13 @@ class BaseCrashHandlerTest : public base::MultiProcessTest,
     EXPECT_FALSE(proto_.missing_metadata());
 
     EXPECT_TRUE(proto_.has_allocator());
-    if (!UNSAFE_TODO(strcmp(params_.allocator, "malloc"))) {
+    if (absl::string_view(params_.allocator) == "malloc") {
       EXPECT_EQ(proto_.allocator(), Crash_Allocator_MALLOC);
-    } else if (!UNSAFE_TODO(strcmp(params_.allocator, "partitionalloc"))) {
+    } else if (absl::string_view(params_.allocator) == "partitionalloc") {
       EXPECT_EQ(proto_.allocator(), Crash_Allocator_PARTITIONALLOC);
-    } else
+    } else {
       ASSERT_TRUE(false) << "Unknown allocator name";
+    }
   }
 
   gwp_asan::Crash proto_;
@@ -495,31 +498,31 @@ class CrashHandlerTest : public BaseCrashHandlerTest {};
 
 TEST_P(CrashHandlerTest, MAYBE_DISABLED(UseAfterFree)) {
   ASSERT_TRUE(gwp_asan_found_);
-  checkProto(Crash_Mode_CLASSIC, Crash_ErrorType_USE_AFTER_FREE,
+  CheckProto(Crash_Mode_CLASSIC, Crash_ErrorType_USE_AFTER_FREE,
              HasAllocation::kYes, HasDeallocation::kYes);
 }
 
 TEST_P(CrashHandlerTest, MAYBE_DISABLED(DoubleFree)) {
   ASSERT_TRUE(gwp_asan_found_);
-  checkProto(Crash_Mode_CLASSIC, Crash_ErrorType_DOUBLE_FREE,
+  CheckProto(Crash_Mode_CLASSIC, Crash_ErrorType_DOUBLE_FREE,
              HasAllocation::kYes, HasDeallocation::kYes);
 }
 
 TEST_P(CrashHandlerTest, MAYBE_DISABLED(Underflow)) {
   ASSERT_TRUE(gwp_asan_found_);
-  checkProto(Crash_Mode_CLASSIC, Crash_ErrorType_BUFFER_UNDERFLOW,
+  CheckProto(Crash_Mode_CLASSIC, Crash_ErrorType_BUFFER_UNDERFLOW,
              HasAllocation::kYes, HasDeallocation::kNo);
 }
 
 TEST_P(CrashHandlerTest, MAYBE_DISABLED(Overflow)) {
   ASSERT_TRUE(gwp_asan_found_);
-  checkProto(Crash_Mode_CLASSIC, Crash_ErrorType_BUFFER_OVERFLOW,
+  CheckProto(Crash_Mode_CLASSIC, Crash_ErrorType_BUFFER_OVERFLOW,
              HasAllocation::kYes, HasDeallocation::kNo);
 }
 
 TEST_P(CrashHandlerTest, MAYBE_DISABLED(FreeInvalidAddress)) {
   ASSERT_TRUE(gwp_asan_found_);
-  checkProto(Crash_Mode_CLASSIC, Crash_ErrorType_FREE_INVALID_ADDRESS,
+  CheckProto(Crash_Mode_CLASSIC, Crash_ErrorType_FREE_INVALID_ADDRESS,
              HasAllocation::kYes, HasDeallocation::kNo);
   EXPECT_TRUE(proto_.has_free_invalid_address());
 }
@@ -568,7 +571,7 @@ class LightweightDetectorCrashHandlerTest : public BaseCrashHandlerTest {};
 TEST_P(LightweightDetectorCrashHandlerTest, LightweightDetectorUseAfterFree) {
   ASSERT_TRUE(gwp_asan_found_);
 
-  checkProto(Crash_Mode_LIGHTWEIGHT_DETECTOR_BRP,
+  CheckProto(Crash_Mode_LIGHTWEIGHT_DETECTOR_BRP,
              Crash_ErrorType_USE_AFTER_FREE, HasAllocation::kNo,
              HasDeallocation::kYes);
 }
@@ -588,5 +591,4 @@ INSTANTIATE_TEST_SUITE_P(VarySanitization,
 
 }  // namespace
 
-}  // namespace internal
-}  // namespace gwp_asan
+}  // namespace gwp_asan::internal
