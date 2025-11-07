@@ -46,11 +46,6 @@ const CGFloat kFaviconSideLength = 30;
 // Length of each side of the favicon badge.
 const CGFloat kFaviconBadgeSideLength = 24;
 
-// Small buffer added to the preferred height. This is a workaround to prevent
-// the scroll indicator from being visible when the view controller is not
-// totally expanded.
-const CGFloat kPreferredHeightBuffer = 10;
-
 }  // namespace
 
 @interface ConfirmationAlertViewController () <ButtonStackActionDelegate>
@@ -282,10 +277,10 @@ const CGFloat kPreferredHeightBuffer = 10;
   CGSize fittingSize =
       CGSizeMake(availableWidth, UILayoutFittingCompressedSize.height);
 
-  // Calculate the height of the main content stack view constrained by the
-  // available width.
+  // Calculate the height of the content view constrained by the available
+  // width.
   CGFloat height =
-      [self.stackView
+      [self.contentView
             systemLayoutSizeFittingSize:fittingSize
           withHorizontalFittingPriority:UILayoutPriorityRequired
                 verticalFittingPriority:UILayoutPriorityFittingSizeLevel]
@@ -301,10 +296,6 @@ const CGFloat kPreferredHeightBuffer = 10;
     height += [self.navigationBar
                   systemLayoutSizeFittingSize:UILayoutFittingCompressedSize]
                   .height;
-    // Small buffer added to the preferred height. This is a workaround to
-    // prevent the scroll indicator from being visible when the view controller
-    // is not totally expanded.
-    height += kPreferredHeightBuffer;
   } else {
     // If no navigation bar, account for the top safe area and custom spacing.
     height += CGRectGetMaxY(self.navigationController.navigationBar.frame);
