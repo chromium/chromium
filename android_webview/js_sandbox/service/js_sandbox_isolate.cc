@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "android_webview/js_sandbox/service/js_sandbox_isolate.h"
 
 #include <errno.h>
@@ -26,6 +21,7 @@
 #include "base/android/jni_string.h"
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -529,9 +525,9 @@ void JsSandboxIsolate::ConvertPromiseToArrayBufferInThreadPool(
     std::unique_ptr<v8::Global<v8::ArrayBuffer>> array_buffer,
     std::unique_ptr<v8::Global<v8::Promise::Resolver>> resolver,
     void* inner_buffer) {
-  if (base::ReadFromFD(fd.get(),
-                       base::span(static_cast<char*>(inner_buffer),
-                                  base::checked_cast<size_t>(length)))) {
+  if (base::ReadFromFD(fd.get(), UNSAFE_TODO(base::span(
+                                     static_cast<char*>(inner_buffer),
+                                     base::checked_cast<size_t>(length))))) {
     control_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(
