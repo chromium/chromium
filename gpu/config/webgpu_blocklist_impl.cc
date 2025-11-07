@@ -75,13 +75,13 @@ WebGPUBlocklistReason GetWebGPUAdapterBlocklistReason(
 #endif
 
 #if BUILDFLAG(IS_WIN)
-  if (info.backendType == wgpu::BackendType::D3D12) {
-    constexpr uint32_t kAMDVendorID = 0x1002;
-    constexpr uint32_t kIntelVendorID = 0x8086;
-    constexpr uint32_t kMicrosoftVendorID = 0x1414;
-    constexpr uint32_t kNVIDIAVendorID = 0x10DE;
-    constexpr uint32_t kQualcommVendorID = 0x4D4F4351;
+  constexpr uint32_t kAMDVendorID = 0x1002;
+  constexpr uint32_t kIntelVendorID = 0x8086;
+  constexpr uint32_t kMicrosoftVendorID = 0x1414;
+  constexpr uint32_t kNVIDIAVendorID = 0x10DE;
+  constexpr uint32_t kQualcommVendorID = 0x4D4F4351;
 
+  if (info.backendType == wgpu::BackendType::D3D12) {
     switch (info.vendorID) {
       case kNVIDIAVendorID:
 #if defined(ARCH_CPU_X86)
@@ -232,8 +232,19 @@ WebGPUBlocklistReason GetWebGPUAdapterBlocklistReason(
     }
 
     // Adapter is blocked.
-    reason = reason | WebGPUBlocklistReason::StringPattern;
+#if BUILDFLAG(IS_WIN)
+    if (info.vendorID == kQualcommVendorID) {
+      reason = reason | WebGPUBlocklistReason::StringPatternQualcommWindows;
+    } else {
+      reason = reason | WebGPUBlocklistReason::StringPatternOther;
+    }
+#else
+    reason = reason | WebGPUBlocklistReason::StringPatternOther;
+#endif
+
+    break;
   }
+
   return reason;
 }
 
@@ -241,7 +252,7 @@ std::string BlocklistReasonToString(WebGPUBlocklistReason reason) {
   std::string result;
   bool first = true;
   static constexpr std::array<
-      std::pair<WebGPUBlocklistReason, std::string_view>, 10>
+      std::pair<WebGPUBlocklistReason, std::string_view>, 11>
       kKnownReasons = {{
           {WebGPUBlocklistReason::Consteval22ndBit,
            "crbug.com/42250788: Invalid consteval interpretation of 22nd bit "
@@ -265,11 +276,14 @@ std::string BlocklistReasonToString(WebGPUBlocklistReason reason) {
           {WebGPUBlocklistReason::DynamicArrayIndexInStruct,
            "crbug.com/40643701: Metal compiler errors for dynamic indexing "
            "of arrays in structures."},
-          {WebGPUBlocklistReason::StringPattern,
+          {WebGPUBlocklistReason::StringPatternOther,
            "Blocklisted by vendor/device/driver string pattern."},
           {WebGPUBlocklistReason::QualcommWindows,
            "crbug.com/42242119: Limited support / testing currently "
            "available on Qualcomm Windows."},
+          {WebGPUBlocklistReason::StringPatternQualcommWindows,
+           "Blocklisted by vendor/device/driver string pattern on Qualcomm "
+           "Windows."},
       }};
   for (const auto& [flag, description] : kKnownReasons) {
     if ((reason & flag) != flag) {

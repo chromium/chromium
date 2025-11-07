@@ -46,7 +46,8 @@ DeviceInfo QueryDeviceInfoInternal(const ChromeMLAPI& api) {
   constexpr WebGPUBlocklistReason kIgnoreReasons =
       WebGPUBlocklistReason::IndirectComputeRootConstants |
       WebGPUBlocklistReason::Consteval22ndBit |
-      WebGPUBlocklistReason::QualcommWindows;
+      WebGPUBlocklistReason::QualcommWindows |
+      WebGPUBlocklistReason::StringPatternQualcommWindows;
 
   // Take a first pass at checking the blocklist. Creating a wgpu::Adapter can
   // crash in some situations, so use gpu::GPUInfo to avoid this. Using

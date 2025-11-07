@@ -18,7 +18,7 @@ struct AdapterInfo;
 // Bitmask of blocklist reasons.
 enum class WebGPUBlocklistReason : uint64_t {
   None = 0,
-  StringPattern = 1,
+  StringPatternOther = 1,
   DynamicArrayIndexInStruct = 1 << 1,
   IndirectComputeRootConstants = 1 << 2,
   WindowsLimitedSupport = 1 << 3,
@@ -29,6 +29,7 @@ enum class WebGPUBlocklistReason : uint64_t {
   D3D11 = 1 << 8,
   Consteval22ndBit = 1 << 9,
   QualcommWindows = 1 << 10,
+  StringPatternQualcommWindows = 1 << 11,
   // When adding an enum, update kKnownReasons with a description.
 };
 
