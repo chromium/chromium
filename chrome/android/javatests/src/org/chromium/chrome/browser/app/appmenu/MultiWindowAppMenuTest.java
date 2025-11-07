@@ -36,13 +36,16 @@ import org.chromium.ui.test.util.DeviceRestriction;
 @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
 @EnableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
 public class MultiWindowAppMenuTest {
+    private static final String OPEN_WINDOW_ON_TOP =
+            ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL + ":open_adjacently/false";
+
     @Rule
     public FreshCtaTransitTestRule mCtaTestRule =
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @Test
     @LargeTest
-    @EnableFeatures(ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL)
+    @EnableFeatures(OPEN_WINDOW_ON_TOP)
     public void testOpenNewWindow_fromWebPage_robustWindowManagementExperimentalEnabled() {
         doTestOpenNewWindow();
     }
@@ -66,7 +69,7 @@ public class MultiWindowAppMenuTest {
     @Test
     @LargeTest
     // TODO(crbug.com/439491767): Fix broken tests caused by desktop-like incognito window.
-    @EnableFeatures(ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL)
+    @EnableFeatures(OPEN_WINDOW_ON_TOP)
     @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testOpenNewWindow_fromIncognitoNtp_robustWindowManagementExperimentalEnabled() {
         doTestOpenNewWindow_fromIncognitoNtp();
@@ -95,7 +98,7 @@ public class MultiWindowAppMenuTest {
 
     @Test
     @LargeTest
-    @EnableFeatures(ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL)
+    @EnableFeatures(OPEN_WINDOW_ON_TOP)
     public void testOpenAndCloseNewWindow_robustWindowManagementExperimentalEnabled() {
         doTestOpenAndCloseNewWindow();
     }
@@ -121,7 +124,7 @@ public class MultiWindowAppMenuTest {
 
     @Test
     @LargeTest
-    @EnableFeatures(ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL)
+    @EnableFeatures(OPEN_WINDOW_ON_TOP)
     public void testOpenNewWindowAndCloseOriginal_robustWindowManagementExperimentalEnabled() {
         doTestOpenNewWindowAndCloseOriginal();
     }
