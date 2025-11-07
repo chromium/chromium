@@ -33,7 +33,8 @@ void DesktopBnplUiDelegate::ShowSelectBnplIssuerUi(
   select_bnpl_issuer_dialog_controller_->ShowDialog(
       base::BindOnce(&CreateAndShowBnplIssuerSelectionDialog,
                      select_bnpl_issuer_dialog_controller_->GetWeakPtr(),
-                     base::Unretained(&client_->GetWebContents())),
+                     base::Unretained(&client_->GetWebContents()),
+                     /*has_seen_ai_terms=*/false),
       std::move(bnpl_issuer_context), std::move(app_locale),
       std::move(selected_issuer_callback), std::move(cancel_callback));
 }

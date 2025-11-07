@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "components/autofill/core/browser/payments/bnpl_util.h"
 #include "components/autofill/core/browser/ui/payments/select_bnpl_issuer_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -16,14 +17,15 @@ class WebContents;
 }  // namespace content
 
 namespace views {
+class Throbber;
 class View;
 }  // namespace views
 
 namespace autofill::payments {
 
-class SelectBnplIssuerDialogController;
-class BnplIssuerView;
 class BnplDialogFootnote;
+class BnplIssuerView;
+class SelectBnplIssuerDialogController;
 
 // The desktop dialog view implementation for the BNPL Issuer dialog.
 class SelectBnplIssuerDialog : public views::DialogDelegateView {
@@ -33,7 +35,8 @@ class SelectBnplIssuerDialog : public views::DialogDelegateView {
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kBnplIssuerView);
   explicit SelectBnplIssuerDialog(
       base::WeakPtr<SelectBnplIssuerDialogController> controller,
-      content::WebContents* web_contents);
+      content::WebContents* web_contents,
+      bool has_seen_ai_terms);
   SelectBnplIssuerDialog(const SelectBnplIssuerDialog&) = delete;
   SelectBnplIssuerDialog& operator=(const SelectBnplIssuerDialog&) = delete;
   ~SelectBnplIssuerDialog() override;
@@ -43,6 +46,7 @@ class SelectBnplIssuerDialog : public views::DialogDelegateView {
   }
 
   void DisplayThrobber();
+  void DismissThrobberAndShowIssuerView();
   bool OnCancelled();
 
   // View:
@@ -51,12 +55,20 @@ class SelectBnplIssuerDialog : public views::DialogDelegateView {
  private:
   raw_ptr<views::View> container_view_ = nullptr;
   raw_ptr<BnplIssuerView> bnpl_issuer_view_ = nullptr;
+  raw_ptr<views::View> throbber_container_view_ = nullptr;
+  raw_ptr<views::Throbber> throbber_ = nullptr;
   raw_ptr<BnplDialogFootnote> bnpl_footnote_view_ = nullptr;
 
   base::WeakPtr<SelectBnplIssuerDialogController> controller_;
 
   // The web contents used to open the settings footer link.
   base::WeakPtr<content::WebContents> web_contents_;
+
+  // Creates the throbber view.
+  void CreateThrobberView();
+
+  // Creates the BNPL issuer view.
+  void CreateBnplIssuerView();
 
   // Called when the user clicks the "payment settings" link in the dialog.
   // Opens the Chrome Payment settings page, to allow the user to manage their

@@ -44,17 +44,19 @@ class SelectBnplIssuerDialogInteractiveUiTest : public InteractiveBrowserTest {
   }
 
   InteractiveBrowserTestApi::MultiStep InvokeUiAndWaitForShow(
-      std::vector<BnplIssuerContext> issuer_contexts) {
+      std::vector<BnplIssuerContext> issuer_contexts,
+      bool has_seen_ai_terms = false) {
     controller_ = std::make_unique<SelectBnplIssuerDialogControllerImpl>();
     return Steps(
         ObserveState(
             views::test::kCurrentFocusedViewId,
             BrowserView::GetBrowserViewForBrowser(browser())->GetWidget()),
-        Do([this, issuer_contexts]() {
+        Do([this, issuer_contexts, has_seen_ai_terms]() {
           controller_->ShowDialog(
               base::BindOnce(&CreateAndShowBnplIssuerSelectionDialog,
                              controller_->GetWeakPtr(),
-                             base::Unretained(web_contents())),
+                             base::Unretained(web_contents()),
+                             has_seen_ai_terms),
               std::move(issuer_contexts),
               /*app_locale=*/"en-US", accept_callback_.Get(),
               cancel_callback_.Get());
@@ -73,8 +75,9 @@ class SelectBnplIssuerDialogInteractiveUiTest : public InteractiveBrowserTest {
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
+  base::test::ScopedFeatureList feature_list_{
+      features::kAutofillEnableAiBasedAmountExtraction};
   std::unique_ptr<SelectBnplIssuerDialogControllerImpl> controller_;
-
   base::MockOnceCallback<void(BnplIssuer)> accept_callback_;
   base::MockOnceClosure cancel_callback_;
 };
@@ -113,6 +116,63 @@ IN_PROC_BROWSER_TEST_F(SelectBnplIssuerDialogInteractiveUiTest,
                    "Autofill.Bnpl.SelectionDialogShown",
                    /*sample=*/true) == 1;
       }))));
+}
+
+// Ensures the throbber is shown when `has_seen_ai_terms` is true.
+IN_PROC_BROWSER_TEST_F(SelectBnplIssuerDialogInteractiveUiTest,
+                       InvokeUi_WithThrobber) {
+  RunTestSequence(
+      // Invoke the dialog with `has_seen_ai_terms` set to true.
+      InvokeUiAndWaitForShow(
+          {GetTestBnplIssuerContext(IssuerId::kBnplAffirm,
+                                    BnplIssuerEligibilityForPage::kIsEligible),
+           GetTestBnplIssuerContext(
+               IssuerId::kBnplZip,
+               BnplIssuerEligibilityForPage::
+                   kNotEligibleIssuerDoesNotSupportMerchant)},
+          /*has_seen_ai_terms=*/true),
+      InAnyContext(
+          // Verify the throbber is visible.
+          WaitForShow(SelectBnplIssuerDialog::kThrobberId),
+          // Verify the BNPL issuer view is NOT visible.
+          EnsureNotPresent(SelectBnplIssuerDialog::kBnplIssuerView)));
+}
+
+// Ensures the throbber is dismissed and the issuer view is shown after
+// UpdateWithIssuers is called.
+IN_PROC_BROWSER_TEST_F(SelectBnplIssuerDialogInteractiveUiTest,
+                       ThrobberDismissed_ShowIssuers) {
+  RunTestSequence(
+      // Start with the throbber showing.
+      InvokeUiAndWaitForShow(
+          {GetTestBnplIssuerContext(IssuerId::kBnplAffirm,
+                                    BnplIssuerEligibilityForPage::kIsEligible),
+           GetTestBnplIssuerContext(
+               IssuerId::kBnplZip,
+               BnplIssuerEligibilityForPage::
+                   kNotEligibleIssuerDoesNotSupportMerchant)},
+          /*has_seen_ai_terms=*/true),
+      InAnyContext(
+          // Confirm throbber is showing and issuer view is hidden.
+          WaitForShow(SelectBnplIssuerDialog::kThrobberId),
+          EnsureNotPresent(SelectBnplIssuerDialog::kBnplIssuerView),
+          // Simulate the completion of fetching issuer data.
+          Do([this]() {
+            controller_->UpdateDialogWithIssuers(
+                {GetTestBnplIssuerContext(
+                     IssuerId::kBnplAffirm,
+                     BnplIssuerEligibilityForPage::kIsEligible),
+                 GetTestBnplIssuerContext(
+                     IssuerId::kBnplZip,
+                     BnplIssuerEligibilityForPage::
+                         kNotEligibleIssuerDoesNotSupportMerchant)});
+          }),
+          // Verify the throbber is now hidden.
+          WaitForHide(SelectBnplIssuerDialog::kThrobberId),
+          // Verify the BNPL issuer view is now visible.
+          WaitForShow(SelectBnplIssuerDialog::kBnplIssuerView),
+          // Ensure the dialog remains visible after the update.
+          WaitForShow(views::DialogClientView::kTopViewId)));
 }
 
 // Ensures the throbber is shown after selecting an eligible BNPL issuer.

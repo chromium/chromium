@@ -13,11 +13,14 @@
 #include "components/autofill/core/browser/payments/bnpl_util.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/ui/payments/select_bnpl_issuer_dialog_controller_impl.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "content/public/test/browser_test.h"
 
 namespace autofill::payments {
 
-class SelectBnplIssuerDialogBrowserTest : public DialogBrowserTest {
+class SelectBnplIssuerDialogBrowserTest
+    : public DialogBrowserTest,
+      public ::testing::WithParamInterface<bool> {
  public:
   SelectBnplIssuerDialogBrowserTest() = default;
   SelectBnplIssuerDialogBrowserTest(const SelectBnplIssuerDialogBrowserTest&) =
@@ -31,10 +34,11 @@ class SelectBnplIssuerDialogBrowserTest : public DialogBrowserTest {
         browser()->tab_strip_model()->GetActiveWebContents();
     select_bnpl_issuer_dialog_controller_ =
         std::make_unique<SelectBnplIssuerDialogControllerImpl>();
+    const bool has_seen_ai_terms = GetParam();
     select_bnpl_issuer_dialog_controller_->ShowDialog(
         base::BindOnce(&CreateAndShowBnplIssuerSelectionDialog,
                        select_bnpl_issuer_dialog_controller_->GetWeakPtr(),
-                       base::Unretained(web_contents)),
+                       base::Unretained(web_contents), has_seen_ai_terms),
         std::move(issuer_contexts_),
         /*app_locale=*/"en-US", base::DoNothing(), base::DoNothing());
   }
@@ -56,12 +60,14 @@ class SelectBnplIssuerDialogBrowserTest : public DialogBrowserTest {
   }
 
  protected:
+  base::test::ScopedFeatureList feature_list_{
+      features::kAutofillEnableAiBasedAmountExtraction};
   std::vector<BnplIssuerContext> issuer_contexts_;
   std::unique_ptr<SelectBnplIssuerDialogControllerImpl>
       select_bnpl_issuer_dialog_controller_;
 };
 
-IN_PROC_BROWSER_TEST_F(SelectBnplIssuerDialogBrowserTest,
+IN_PROC_BROWSER_TEST_P(SelectBnplIssuerDialogBrowserTest,
                        UiShown_IssuersEligibile) {
   SetIssuerContexts(
       {BnplIssuerContext(test::GetTestLinkedBnplIssuer(),
@@ -74,7 +80,7 @@ IN_PROC_BROWSER_TEST_F(SelectBnplIssuerDialogBrowserTest,
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(SelectBnplIssuerDialogBrowserTest,
+IN_PROC_BROWSER_TEST_P(SelectBnplIssuerDialogBrowserTest,
                        UiShown_IssuersNotEligibile) {
   SetIssuerContexts(
       {BnplIssuerContext(test::GetTestLinkedBnplIssuer(),
@@ -88,4 +94,9 @@ IN_PROC_BROWSER_TEST_F(SelectBnplIssuerDialogBrowserTest,
            BnplIssuerEligibilityForPage::kNotEligibleCheckoutAmountTooHigh)});
   ShowAndVerifyUi();
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SelectBnplIssuerDialogBrowserTest,
+                         ::testing::Bool());
+
 }  // namespace autofill::payments

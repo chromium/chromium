@@ -40,7 +40,8 @@ class SelectBnplIssuerDialogControllerImpl
     return weak_ptr_factory_.GetWeakPtr();
   }
 
-  // SelectBnplIssuerDialogController:
+  void UpdateDialogWithIssuers(
+      std::vector<BnplIssuerContext> issuer_contexts) override;
   void OnIssuerSelected(BnplIssuer issuer) override;
   void OnUserCancelled() override;
   void Dismiss() override;
@@ -62,6 +63,9 @@ class SelectBnplIssuerDialogControllerImpl
   std::string app_locale_;
 
   // Callback invoked when the user confirmed an issuer to use.
+  // TODO(crbug.com/444684247): Make this a base::RepeatingCallback for the case
+  // where the user selects an issuer that is not available after amount
+  // extraction runs, so the user must select a different issuer.
   base::OnceCallback<void(BnplIssuer)> selected_issuer_callback_;
 
   // Callback invoked when the user cancelled the dialog.

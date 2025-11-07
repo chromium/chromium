@@ -43,6 +43,12 @@ void SelectBnplIssuerDialogControllerImpl::ShowDialog(
   autofill_metrics::LogBnplSelectionDialogShown();
 }
 
+void SelectBnplIssuerDialogControllerImpl::UpdateDialogWithIssuers(
+    std::vector<BnplIssuerContext> issuer_contexts) {
+  issuer_contexts_ = std::move(issuer_contexts);
+  dialog_view_->UpdateDialogWithIssuers();
+}
+
 void SelectBnplIssuerDialogControllerImpl::OnIssuerSelected(BnplIssuer issuer) {
   LogSelectBnplIssuerDialogResult(
       SelectBnplIssuerDialogResult::kIssuerSelected);

@@ -68,6 +68,17 @@ void BnplIssuerView::AddedToWidget() {
   auto* layout_provider = ChromeLayoutProvider::Get();
   SetBetweenChildSpacing(layout_provider->GetDistanceMetric(
       views::DISTANCE_RELATED_CONTROL_VERTICAL));
+
+  PopulateIssuers();
+}
+
+void BnplIssuerView::UpdateIssuers() {
+  RemoveAllChildViews();
+  PopulateIssuers();
+}
+
+void BnplIssuerView::PopulateIssuers() {
+  auto* layout_provider = ChromeLayoutProvider::Get();
   int corner_radius =
       layout_provider->GetCornerRadiusMetric(views::Emphasis::kHigh);
   auto issuer_contexts = controller_->GetIssuerContexts();
