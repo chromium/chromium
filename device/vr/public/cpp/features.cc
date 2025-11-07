@@ -39,14 +39,6 @@ BASE_FEATURE(kWebXROrientationSensorDevice,
 // Allows blink to process the `visible-blurred` state.
 BASE_FEATURE(kWebXrVisibleBlurred, base::FEATURE_ENABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_ANDROID)
-// Controls whether or not SharedBuffer support is enabled. This is enabled by
-// default; but some platforms (e.g. below O) cannot support the feature; while
-// on other GPUs there may be quirks that prevent using the shared buffers.
-BASE_FEATURE(kWebXrSharedBuffers, base::FEATURE_ENABLED_BY_DEFAULT);
-
-#endif
-
 #if BUILDFLAG(ENABLE_OPENXR)
 // Controls WebXR support for the OpenXR Runtime.
 BASE_FEATURE(kOpenXR,
@@ -59,9 +51,6 @@ BASE_FEATURE(kOpenXR,
 // used for features we intend to ship simultaneously on both OpenXR and ArCore.
 // For those features, a feature-specific flag should be created if needed.
 BASE_FEATURE(kOpenXrExtendedFeatureSupport, base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Controls whether shared images are used for OpenXR Runtime
-BASE_FEATURE(kOpenXRSharedImages, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls whether the XrFeatureStatus.isXrDevice check is allowed to
 // be used to determine if OpenXR should be enabled or not. Functionally, this

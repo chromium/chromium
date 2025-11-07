@@ -130,10 +130,9 @@ XrResult OpenXrGraphicsBindingD3D11::EnumerateSwapchainImages(
 }
 
 bool OpenXrGraphicsBindingD3D11::CanUseSharedImages() const {
-  // Put shared image feature behind a flag until remaining issues with overlays
-  // are resolved. WebGPU sessions always use SharedImages.
-  return base::FeatureList::IsEnabled(device::features::kOpenXRSharedImages) ||
-         IsWebGPUSession();
+  // TODO(https://crbug.com/458430816): Investigate using shared images outside
+  // of WebGPU sessions.
+  return IsWebGPUSession();
 }
 
 void OpenXrGraphicsBindingD3D11::CreateSharedImages(

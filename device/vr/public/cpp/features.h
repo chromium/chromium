@@ -18,10 +18,6 @@ COMPONENT_EXPORT(VR_FEATURES)
 BASE_DECLARE_FEATURE(kWebXROrientationSensorDevice);
 COMPONENT_EXPORT(VR_FEATURES) BASE_DECLARE_FEATURE(kWebXrVisibleBlurred);
 
-#if BUILDFLAG(IS_ANDROID)
-COMPONENT_EXPORT(VR_FEATURES) BASE_DECLARE_FEATURE(kWebXrSharedBuffers);
-#endif
-
 #if BUILDFLAG(ENABLE_OPENXR)
 // Note that this feature can be overridden by logic contained within
 // `IsOpenXrEnabled` and therefore should generally not be queried directly.
@@ -30,7 +26,6 @@ COMPONENT_EXPORT(VR_FEATURES) BASE_DECLARE_FEATURE(kOpenXR);
 // `IsOpenXrArEnabled` and therefore should generally not be queried directly.
 COMPONENT_EXPORT(VR_FEATURES)
 BASE_DECLARE_FEATURE(kOpenXrExtendedFeatureSupport);
-COMPONENT_EXPORT(VR_FEATURES) BASE_DECLARE_FEATURE(kOpenXRSharedImages);
 COMPONENT_EXPORT(VR_FEATURES)
 BASE_DECLARE_FEATURE(kAllowOpenXrOnXrDevices);
 COMPONENT_EXPORT(VR_FEATURES) BASE_DECLARE_FEATURE(kOpenXrSpatialEntities);

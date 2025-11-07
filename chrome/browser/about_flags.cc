@@ -6085,11 +6085,7 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kWebXrHandAnonymizationStrategyName,
      flag_descriptions::kWebXrHandAnonymizationStrategyDescription,
      kOsDesktop | kOsAndroid, MULTI_VALUE_TYPE(KWebXrHandAnonymizationChoices)},
-#if BUILDFLAG(IS_ANDROID)
-    {"webxr-shared-buffers", flag_descriptions::kWebXrSharedBuffersName,
-     flag_descriptions::kWebXrSharedBuffersDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(device::features::kWebXrSharedBuffers)},
-#if BUILDFLAG(ENABLE_OPENXR)
+#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_OPENXR)
     {"enable-openxr-android", flag_descriptions::kOpenXRName,
      flag_descriptions::kOpenXRDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(device::features::kOpenXR)},
@@ -6100,8 +6096,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-openxr-extended", flag_descriptions::kOpenXRExtendedFeaturesName,
      flag_descriptions::kOpenXRExtendedFeaturesDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(device::features::kOpenXrExtendedFeatureSupport)},
-#endif  // BUILDFLAG(ENABLE_OPENXR)
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_OPENXR)
 #endif  // ENABLE_VR
 #if BUILDFLAG(IS_CHROMEOS)
     {"disable-accelerated-mjpeg-decode",

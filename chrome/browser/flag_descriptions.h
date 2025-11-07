@@ -5854,13 +5854,6 @@ inline constexpr char kWebSerialWiredDevicesAndroidName[] =
 inline constexpr char kWebSerialWiredDevicesAndroidDescription[] =
     "Provides a way for websites to interact with wired serial devices";
 
-inline constexpr char kWebXrSharedBuffersName[] = "WebXR Shared Buffers";
-inline constexpr char kWebXrSharedBuffersDescription[] =
-    "Toggles whether or not WebXR attempts to use SharedBuffers for moving "
-    "textures from the device to the renderer. When this flag is set to either "
-    "enabled or default SharedBuffer support will be dependent on what the "
-    "device can actually support.";
-
 inline constexpr char kXsurfaceMetricsReportingName[] =
     "Xsurface Metrics Reporting";
 inline constexpr char kXsurfaceMetricsReportingDescription[] =

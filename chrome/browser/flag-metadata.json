@@ -10807,15 +10807,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "webxr-shared-buffers",
-    "owners": [ "//components/webxr/OWNERS", "xr-dev@chromium.org" ],
-    // This flag allows QA and Developers to forcibly disable shared buffer
-    // support, which is otherwise dependent entirely on either the OS version
-    // (less than O), or on errors thrown by the GPU, that are not feasible to
-    // trigger or recreate any other way.
-    "expiry_milestone": -1
-  },
-  {
     "name": "webxr-webgpu-binding",
     "owners": [ "//components/webxr/OWNERS", "xr-dev@chromium.org" ],
     "expiry_milestone": 154
