@@ -54,6 +54,9 @@ class HubToolbarProperties {
     public static final WritableBooleanPropertyKey APPLY_DELAY_FOR_SEARCH_BOX_ANIMATION =
             new WritableBooleanPropertyKey();
 
+    public static final WritableBooleanPropertyKey HAIRLINE_VISIBILITY =
+            new WritableBooleanPropertyKey();
+
     @FunctionalInterface
     public interface PaneButtonLookup {
         @Nullable View get(int index);
@@ -77,5 +80,6 @@ class HubToolbarProperties {
         IS_INCOGNITO,
         APPLY_DELAY_FOR_SEARCH_BOX_ANIMATION,
         HUB_SEARCH_ENABLED_STATE,
+        HAIRLINE_VISIBILITY,
     };
 }

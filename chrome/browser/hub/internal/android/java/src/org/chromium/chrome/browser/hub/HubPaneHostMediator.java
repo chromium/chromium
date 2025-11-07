@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.hub;
 
-import static org.chromium.chrome.browser.hub.HubPaneHostProperties.HAIRLINE_VISIBILITY;
 import static org.chromium.chrome.browser.hub.HubPaneHostProperties.PANE_ROOT_VIEW;
 import static org.chromium.chrome.browser.hub.HubPaneHostProperties.SLIDE_ANIMATE_LEFT_TO_RIGHT;
 import static org.chromium.chrome.browser.hub.HubPaneHostProperties.SNACKBAR_CONTAINER_CALLBACK;
@@ -14,7 +13,6 @@ import android.view.ViewGroup;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.TransitiveObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -25,12 +23,10 @@ import java.util.List;
 @NullMarked
 public class HubPaneHostMediator {
     private final Callback<Pane> mOnPaneChangeCallback = this::onPaneChange;
-    private final Callback<Boolean> mOnHairlineVisibilityChange = this::onHairlineVisibilityChange;
     private final PropertyModel mPropertyModel;
     private final PaneOrderController mPaneOrderController;
     private @PaneId int mCurrentPaneId;
     private final ObservableSupplier<Pane> mPaneSupplier;
-    private final TransitiveObservableSupplier<Pane, Boolean> mHairlineVisibilitySupplier;
 
     /**
      * Should be non-null after constructor finishes, cannot be final as the Java compiler can't
@@ -57,11 +53,6 @@ public class HubPaneHostMediator {
         mPaneSupplier = paneSupplier;
         mPaneSupplier.addObserver(mOnPaneChangeCallback);
 
-        mHairlineVisibilitySupplier =
-                new TransitiveObservableSupplier<>(
-                        paneSupplier, p -> p.getHairlineVisibilitySupplier());
-        mHairlineVisibilitySupplier.addObserver(mOnHairlineVisibilityChange);
-
         // This sets mSnackbarContainer to non-null.
         propertyModel.set(SNACKBAR_CONTAINER_CALLBACK, this::consumeSnackbarContainer);
         assert mSnackbarContainer != null;
@@ -71,7 +62,6 @@ public class HubPaneHostMediator {
     public void destroy() {
         mPropertyModel.set(PANE_ROOT_VIEW, null);
         mPaneSupplier.removeObserver(mOnPaneChangeCallback);
-        mHairlineVisibilitySupplier.removeObserver(mOnHairlineVisibilityChange);
     }
 
     /** Returns the view group to contain the snackbar. */
@@ -99,10 +89,6 @@ public class HubPaneHostMediator {
 
         mPropertyModel.set(SLIDE_ANIMATE_LEFT_TO_RIGHT, slideLeftToRight);
         mPropertyModel.set(PANE_ROOT_VIEW, view);
-    }
-
-    private void onHairlineVisibilityChange(@Nullable Boolean visible) {
-        mPropertyModel.set(HAIRLINE_VISIBILITY, Boolean.TRUE.equals(visible));
     }
 
     private void consumeSnackbarContainer(ViewGroup snackbarContainer) {

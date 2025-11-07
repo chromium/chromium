@@ -11,7 +11,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import static org.chromium.chrome.browser.hub.HubColorMixer.COLOR_MIXER;
-import static org.chromium.chrome.browser.hub.HubPaneHostProperties.HAIRLINE_VISIBILITY;
 import static org.chromium.chrome.browser.hub.HubPaneHostProperties.PANE_ROOT_VIEW;
 import static org.chromium.chrome.browser.hub.HubPaneHostProperties.SNACKBAR_CONTAINER_CALLBACK;
 
@@ -20,7 +19,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
@@ -57,7 +55,6 @@ public class HubPaneHostViewUnitTest {
 
     private Activity mActivity;
     private HubPaneHostView mPaneHost;
-    private ImageView mHairline;
     private ViewGroup mSnackbarContainer;
     private PropertyModel mPropertyModel;
 
@@ -72,7 +69,6 @@ public class HubPaneHostViewUnitTest {
 
         LayoutInflater inflater = LayoutInflater.from(mActivity);
         mPaneHost = (HubPaneHostView) inflater.inflate(R.layout.hub_pane_host_layout, null, false);
-        mHairline = mPaneHost.findViewById(R.id.pane_top_hairline);
         mSnackbarContainer = mPaneHost.findViewById(R.id.pane_host_view_snackbar_container);
         mActivity.setContentView(mPaneHost);
 
@@ -149,17 +145,6 @@ public class HubPaneHostViewUnitTest {
     }
 
     @Test
-    public void testHairlineVisibility() {
-        assertEquals(View.GONE, mHairline.getVisibility());
-
-        mPropertyModel.set(HAIRLINE_VISIBILITY, true);
-        assertEquals(View.VISIBLE, mHairline.getVisibility());
-
-        mPropertyModel.set(HAIRLINE_VISIBILITY, false);
-        assertEquals(View.GONE, mHairline.getVisibility());
-    }
-
-    @Test
     public void testSnackbarContainerSupplier() {
         mPropertyModel.set(SNACKBAR_CONTAINER_CALLBACK, mSnackbarContainerCallback);
         verify(mSnackbarContainerCallback).onResult(mSnackbarContainer);
@@ -167,7 +152,7 @@ public class HubPaneHostViewUnitTest {
 
     @Test
     public void testHubColorScheme() {
-        verify(mColorMixer, times(2)).registerBlend(any());
+        verify(mColorMixer, times(1)).registerBlend(any());
     }
 
     /** Order of children does not matter. */
