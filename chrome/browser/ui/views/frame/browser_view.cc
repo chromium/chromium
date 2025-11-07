@@ -4511,6 +4511,7 @@ void BrowserView::UpdateTabSearchBubbleHost() {
 
 void BrowserView::ShowSplitView(bool focus_active_view) {
   CHECK(multi_contents_view_);
+
   const int active_index = browser_->tab_strip_model()->active_index();
 
   std::optional<split_tabs::SplitTabId> split_tab_id =
@@ -4533,8 +4534,21 @@ void BrowserView::ShowSplitView(bool focus_active_view) {
   multi_contents_view_->UpdateSplitRatio(
       split_data->visual_data()->split_ratio());
 
+  // Set focus to the active contents avoid reentrency when setting the web
+  // contents within MultiContentsView. See crbug.com/458189541 and
+  // crbug.com/447369458
   if (focus_active_view) {
-    multi_contents_view_->GetActiveContentsView()->RequestFocus();
+    if (base::FeatureList::IsEnabled(features::kSideBySideFocusClearing)) {
+      if (!GetWidget()->IsActive()) {
+        GetFocusManager()->SetStoredFocusView(
+            multi_contents_view_->GetActiveContentsView());
+        restore_focus_on_activation_ = true;
+      } else {
+        multi_contents_view_->GetActiveContentsView()->RequestFocus();
+      }
+    } else {
+      multi_contents_view_->GetActiveContentsView()->RequestFocus();
+    }
   }
 }
 
@@ -4590,11 +4604,14 @@ void BrowserView::UpdateContentsInSplitView(
   multi_contents_view_->GetInactiveContentsView()->SetWebContents(nullptr);
   multi_contents_view_->GetActiveContentsView()->SetWebContents(nullptr);
 
-  // The browser widget must be active when updating the contents to avoid
-  // re-entrency when focusing the currently active WebContents. See
-  // crbug.com/447369458
+  // Clear focus to avoid reentrency when setting the web contents within
+  // MultiContentsView. See crbug.com/458189541 and crbug.com/447369458
   if (!GetWidget()->IsActive()) {
-    multi_contents_view_->RequestFocus();
+    if (base::FeatureList::IsEnabled(features::kSideBySideFocusClearing)) {
+      GetFocusManager()->ClearFocus();
+    } else {
+      multi_contents_view_->RequestFocus();
+    }
   }
 
   // Set web contents in multi_contents_view_ to match new_tabs and update the
