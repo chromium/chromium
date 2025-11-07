@@ -1115,13 +1115,10 @@ std::pair<LayoutUnit, LayoutUnit> FragmentItem::LineLeftAndRightForOffsets(
         start_offset, text, AdjustMidCluster::kToStart);
     float unrounded_end_position = shape_result->CaretPositionForOffset(
         end_offset, text, AdjustMidCluster::kToEnd);
-    if (unrounded_start_position > unrounded_end_position) [[unlikely]] {
-      start_position = LayoutUnit::FromFloatCeil(unrounded_start_position);
-      end_position = LayoutUnit::FromFloatFloor(unrounded_end_position);
-    } else {
-      start_position = LayoutUnit::FromFloatFloor(unrounded_start_position);
-      end_position = LayoutUnit::FromFloatCeil(unrounded_end_position);
-    }
+    const auto rounded_positions = LayoutUnit::FromFloatEncompassRound(
+        unrounded_start_position, unrounded_end_position);
+    start_position = rounded_positions.first;
+    end_position = rounded_positions.second;
   } else {
     // This fragment is a flow control because otherwise ShapeResult exists.
     DCHECK(IsFlowControl());

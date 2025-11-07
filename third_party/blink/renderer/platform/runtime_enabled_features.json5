@@ -2101,6 +2101,11 @@
       status: "experimental",
     },
     {
+      // See crbug.com/453919401 for more details.
+      name: "EquivalentEncompassRounding",
+      status: "stable",
+    },
+    {
       // `event.pseudoTarget` property to represent pseudo-elements in events. Returns `CSSPseudoElement` or null.
       name: "EventPseudoTargetProperty",
       status: "experimental",
