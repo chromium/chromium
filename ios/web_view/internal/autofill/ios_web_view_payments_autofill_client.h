@@ -10,6 +10,7 @@
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "components/autofill/core/browser/payments/card_unmask_delegate.h"
+#include "components/autofill/core/browser/payments/multiple_request_payments_network_interface.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
 #include "ios/web_view/internal/autofill/cwv_autofill_client_ios_bridge.h"
@@ -198,6 +199,9 @@ class IOSWebViewPaymentsAutofillClient : public PaymentsAutofillClient {
   __weak id<CWVAutofillClientIOSBridge> bridge_;
 
   std::unique_ptr<PaymentsNetworkInterface> payments_network_interface_;
+
+  std::unique_ptr<MultipleRequestPaymentsNetworkInterface>
+      multiple_request_payments_network_interface_;
 
   std::unique_ptr<CreditCardCvcAuthenticator> cvc_authenticator_;
 
