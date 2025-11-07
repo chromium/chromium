@@ -53,6 +53,18 @@ void ImageBitmapRenderingContext::Reset() {
   Host()->DiscardResources();
 }
 
+base::ByteCount ImageBitmapRenderingContext::AllocatedBufferSize() const {
+  if (!IsPaintable()) {
+    return base::ByteCount();
+  }
+  base::ByteCount result =
+      image_layer_bridge_->GetImage()->EstimatedSizeInBytes();
+  if (resource_provider_for_offscreen_canvas_) {
+    result += resource_provider_for_offscreen_canvas_->EstimatedSizeInBytes();
+  }
+  return result;
+}
+
 void ImageBitmapRenderingContext::Stop() {
   image_layer_bridge_->Dispose();
 }
@@ -100,6 +112,7 @@ void ImageBitmapRenderingContext::SetImage(ImageBitmap* image_bitmap) {
   if (image_bitmap) {
     image_bitmap->close();
   }
+  Host()->UpdateMemoryUsage();
 }
 
 scoped_refptr<StaticBitmapImage> ImageBitmapRenderingContext::GetImage(

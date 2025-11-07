@@ -9201,9 +9201,7 @@ base::ByteCount WebGLRenderingContextBase::AllocatedBufferSize() const {
     result += provider->EstimatedSizeInBytes();
   }
   if (cached_snapshot_) {
-    result += base::ByteCount(
-        cached_snapshot_->GetSharedImageFormat().EstimatedSizeInBytes(
-            cached_snapshot_->GetSize()));
+    result += cached_snapshot_->EstimatedSizeInBytes();
   }
 
   return result;

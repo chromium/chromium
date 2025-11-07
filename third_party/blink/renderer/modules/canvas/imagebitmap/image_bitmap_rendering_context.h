@@ -83,6 +83,8 @@ class MODULES_EXPORT ImageBitmapRenderingContext final
 
   void Reset() override;
 
+  base::ByteCount AllocatedBufferSize() const override;
+
   void Stop() override;
 
   scoped_refptr<StaticBitmapImage> PaintRenderingResultsToSnapshot(
