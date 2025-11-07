@@ -144,6 +144,7 @@ IN_PROC_BROWSER_TEST_F(PasskeyUnlockManagerBrowserTest,
   SimulateSuccessfulGpmPinCreation("123456");
 
   EXPECT_TRUE(event_future.Wait());
+  passkey_unlock_manager()->RemoveObserver(&observer);
 }
 
 }  // namespace

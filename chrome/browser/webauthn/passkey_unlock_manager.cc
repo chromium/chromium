@@ -163,6 +163,9 @@ void PasskeyUnlockManager::AsynchronouslyLoadEnclaveManager() {
 }
 
 void PasskeyUnlockManager::Shutdown() {
+  for (Observer& observer : observer_list_) {
+    observer.OnPasskeyUnlockManagerShuttingDown();
+  }
   passkey_model_observation_.Reset();
   sync_service_observation_.Reset();
 }
