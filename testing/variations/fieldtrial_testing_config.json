@@ -366,6 +366,21 @@
             ]
         }
     ],
+    "AccessibilitySetSelectableOnAllNodesWithText": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AccessibilitySetSelectableOnAllNodesWithText"
+                    ]
+                }
+            ]
+        }
+    ],
     "AccessibilityTextFormatting": [
         {
             "platforms": [

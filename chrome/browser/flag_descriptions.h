@@ -4799,6 +4799,15 @@ inline constexpr char kAccessibilityDeprecateTypeAnnounceDescription[] =
     "When enabled, TYPE_ANNOUNCE events will no longer be sent for live "
     "regions in the web contents.";
 
+inline constexpr char kAccessibilitySetSelectableOnAllNodesWithTextName[] =
+    "AccessibilitySetSelectableOnAllNodesWithTextName";
+inline constexpr char
+    kAccessibilitySetSelectableOnAllNodesWithTextDescription[] =
+        "When enabled, the accessibility tree for the web contents will "
+        "include "
+        "isTextSelectable and the ACTION_SET_SELECTION action on all relevant "
+        "nodes.";
+
 inline constexpr char kAccessibilityManageBroadcastReceiverOnBackgroundName[] =
     "Manage accessibility Broadcast Receiver on a background thread";
 inline constexpr char

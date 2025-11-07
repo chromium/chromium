@@ -10192,6 +10192,8 @@ from previous Chrome versions.
   <int value="-1462719639" label="WebAuthenticationImmediateGet:disabled"/>
   <int value="-1461448775" label="FastPairHID:disabled"/>
   <int value="-1461261930" label="OutOfBlinkCORS:disabled"/>
+  <int value="-1460964135"
+      label="AccessibilitySetSelectableOnAllNodesWithText:enabled"/>
   <int value="-1460598402"
       label="EnterpriseReportingApiKeychainRecreation:disabled"/>
   <int value="-1460561942" label="SystemEmojiPicker:disabled"/>
@@ -20319,6 +20321,8 @@ from previous Chrome versions.
       label="EnableBluetoothSerialPortProfileInSerialApi:disabled"/>
   <int value="2095569369" label="EnablePixAccountLinking:disabled"/>
   <int value="2095740699" label="OmniboxPedalsBatch3:disabled"/>
+  <int value="2095789358"
+      label="AccessibilitySetSelectableOnAllNodesWithText:disabled"/>
   <int value="2096688830" label="RequestDesktopSitePerSiteIph:disabled"/>
   <int value="2096736155" label="BrowsingDataLifetimeManager:enabled"/>
   <int value="2097048479" label="disable-auto-hiding-toolbar-threshold"/>

@@ -6377,6 +6377,13 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid,
      FEATURE_VALUE_TYPE(
          features::kAccessibilityPopulateSupplementalDescriptionApi)},
+    {"enable-accessibility-set-selectable-on-all-nodes-with-text",
+     flag_descriptions::kAccessibilitySetSelectableOnAllNodesWithTextName,
+     flag_descriptions::
+         kAccessibilitySetSelectableOnAllNodesWithTextDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         features::kAccessibilitySetSelectableOnAllNodesWithText)},
     {"enable-accessibility-text-formatting",
      flag_descriptions::kAccessibilityTextFormattingName,
      flag_descriptions::kAccessibilityTextFormattingDescription, kOsAndroid,

@@ -1290,6 +1290,11 @@ BASE_FEATURE(kAccessibilityPageZoomV2, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAccessibilityPopulateSupplementalDescriptionApi,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, set selectable on all nodes with text, and support
+// ACTION_SET_SELECTION.
+BASE_FEATURE(kAccessibilitySetSelectableOnAllNodesWithText,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables the use of a unified code path for AXTree snapshots.
 BASE_FEATURE(kAccessibilityUnifiedSnapshots, base::FEATURE_DISABLED_BY_DEFAULT);
 

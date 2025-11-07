@@ -486,6 +486,18 @@ public class AccessibilityNodeInfoBuilder {
             node.setContentDescription(computedText);
         } else {
             node.setText(computedText);
+
+            // Though actions are generally set elsewhere, we make an exception here in order to
+            // stay consistent with when we supply `text` on a node. In these cases, we can
+            // confidently state there is text selection available via
+            // WebContentsAccessibilityAndroid::SetSelection.
+            if (computedText.length() > 0
+                    && ContentFeatureMap.isEnabled(
+                            ContentFeatureList
+                                    .ACCESSIBILITY_SET_SELECTABLE_ON_ALL_NODES_WITH_TEXT)) {
+                node.addAction(ACTION_SET_SELECTION);
+                node.setTextSelectable(true);
+            }
         }
 
         recordTimeToCreateSpannables(now);
