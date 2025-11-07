@@ -250,9 +250,10 @@ std::unique_ptr<net::test_server::HttpResponse> TestPageResponse(
   chrome_test_util::GREYAssertErrorNil(error);
 }
 
+// TODO(crbug.com/458669054): Test is flaky.
 // Tests that the camera is presented directly when the capture attribute is
 // set.
-- (void)testDirectCameraPresentation {
+- (void)FLAKY_testDirectCameraPresentation {
   // The file upload panel is only available on iOS 18.4+.
   if (!base::ios::IsRunningOnOrLater(18, 4, 0)) {
     EARL_GREY_TEST_SKIPPED(@"Test is only available for iOS 18.4+, skipping.");
