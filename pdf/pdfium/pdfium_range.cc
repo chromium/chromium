@@ -9,6 +9,8 @@
 
 #include "base/check_op.h"
 #include "base/containers/span.h"
+#include "base/debug/alias.h"
+#include "base/numerics/checked_math.h"
 #include "base/strings/string_util.h"
 #include "pdf/accessibility_structs.h"
 #include "pdf/pdfium/pdfium_api_string_buffer_adapter.h"
@@ -222,13 +224,19 @@ std::vector<PdfRect> PDFiumRange::GetRectsWithTightness(
     return {};
   }
 
+  // TODO(crbug.com/458015240): Remove debugging data after fixing the bug.
+  const int char_index_debug = char_index_;
+  const int char_count_debug = char_count_;
+  base::debug::Alias(&char_index_debug);
+  base::debug::Alias(&char_count_debug);
+
   int char_index = char_index_;
   int char_count = char_count_;
 
   AdjustForBackwardsRange(char_index, char_count);
-  DCHECK_GE(char_index, 0) << " start: " << char_index_
-                           << " count: " << char_count_;
-  DCHECK_LT(char_index, FPDFText_CountChars(text_page))
+  CHECK_GE(char_index, 0) << " start: " << char_index_
+                          << " count: " << char_count_;
+  CHECK_LT(char_index, FPDFText_CountChars(text_page))
       << " start: " << char_index_ << " count: " << char_count_;
 
   std::vector<PdfRectTextRunInfo> text_runs;
@@ -243,8 +251,11 @@ std::vector<PdfRect> PDFiumRange::GetRectsWithTightness(
 
     // Figure out how many characters to process in the for-loop below, and
     // determine if this while-loop iteration reached the end of the range.
-    int next_char_index =
-        text_run_info.value().start_index + text_run_info.value().len;
+    base::CheckedNumeric<uint32_t> safe_next_char_index =
+        text_run_info.value().start_index;
+    safe_next_char_index += text_run_info.value().len;
+    int next_char_index;
+    CHECK(safe_next_char_index.AssignIfValid(&next_char_index));
     reached_end = next_char_index >= end_char_index;
     if (reached_end) {
       next_char_index = end_char_index;
