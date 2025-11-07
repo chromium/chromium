@@ -1277,6 +1277,10 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
         TabModelSelector selector =
                 TabWindowManagerSingleton.getInstance().getTabModelSelectorById(instanceId);
         if (selector != null) {
+            // Commit all already pending tab closures to ensure that any in-flight closures
+            // complete and we don't get back-from-the-dead tabs.
+            selector.commitAllTabClosures();
+
             // Close all tabs as the window is closing. This ensures the tabs are added to the
             // recent tabs page.
             //

@@ -834,7 +834,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     @Override
     public boolean closeTabs(TabClosureParams params) {
         assertOnUiThread();
-        boolean allowUndo = params.allowUndo && supportsPendingClosures();
+        boolean allowUndo = !params.uponExit && params.allowUndo && supportsPendingClosures();
 
         if (!allowUndo) {
             // The undo stacks assumes that previous actions in the stack are undoable. If an entry
