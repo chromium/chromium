@@ -28,6 +28,12 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
+using ::action_chips::mojom::ActionChipPtr;
+using ::action_chips::mojom::ChipType;
+using ::testing::ElementsAre;
+using ::testing::FieldsAre;
+using ::testing::Pointee;
+
 class FakeActionChipsHandler : public ActionChipsHandler {
  public:
   FakeActionChipsHandler(
@@ -201,4 +207,57 @@ TEST_F(ActionChipsHandlerTest, GetMostRecentTab_ReturnsNullIfAllChromeUrls) {
   auto tab = future.Take();
 
   ASSERT_TRUE(tab.is_null());
+}
+
+TEST_F(ActionChipsHandlerTest, GetActionChipsReturnsTwoChipsWhenNoTabIsOpen) {
+  base::test::TestFuture<std::vector<ActionChipPtr>> future;
+  handler().GetActionChips(future.GetCallback());
+  auto action_chips = future.Take();
+
+  EXPECT_THAT(
+      action_chips,
+      ElementsAre(
+          Pointee(FieldsAre("Research a topic", "Dive deep into something new",
+                            ChipType::kDeepSearch)),
+          Pointee(FieldsAre("Create image", "Add an image and reimagine it",
+                            ChipType::kImage))));
+}
+
+TEST_F(ActionChipsHandlerTest,
+       GetActionChipsReturnsThreeChipsWhenAnOpenTabExists) {
+  AddTab(GURL("https://www.example.com"), u"Example Tab");
+
+  base::test::TestFuture<std::vector<ActionChipPtr>> future;
+  handler().GetActionChips(future.GetCallback());
+  auto action_chips = future.Take();
+
+  EXPECT_THAT(
+      action_chips,
+      ElementsAre(
+          Pointee(FieldsAre("Example Tab", "Ask about this tab",
+                            ChipType::kRecentTab)),
+          Pointee(FieldsAre("Research a topic", "Dive deep into something new",
+                            ChipType::kDeepSearch)),
+          Pointee(FieldsAre("Create image", "Add an image and reimagine it",
+                            ChipType::kImage))));
+}
+
+TEST_F(ActionChipsHandlerTest,
+       GetActionChipsReturnsThreeChipsBasedOnMostRecentTab) {
+  AddTab(GURL("https://www.example.com"), u"Example Tab");
+  AddTab(GURL("https://www.foo.com"), u"Foo Tab");
+
+  base::test::TestFuture<std::vector<ActionChipPtr>> future;
+  handler().GetActionChips(future.GetCallback());
+  auto action_chips = future.Take();
+
+  EXPECT_THAT(
+      action_chips,
+      ElementsAre(
+          Pointee(
+              FieldsAre("Foo Tab", "Ask about this tab", ChipType::kRecentTab)),
+          Pointee(FieldsAre("Research a topic", "Dive deep into something new",
+                            ChipType::kDeepSearch)),
+          Pointee(FieldsAre("Create image", "Add an image and reimagine it",
+                            ChipType::kImage))));
 }

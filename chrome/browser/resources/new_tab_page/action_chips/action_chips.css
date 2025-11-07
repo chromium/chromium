@@ -103,3 +103,7 @@
     --ntp-chips-container-width: 746px;
   }
 }
+
+cr-button>span {
+  display: block;
+}

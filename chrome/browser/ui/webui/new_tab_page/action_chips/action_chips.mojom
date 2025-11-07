@@ -15,11 +15,29 @@ struct TabInfo {
   mojo_base.mojom.Time last_active_time;
 };
 
+// The types of action chips in NTP.
+enum ChipType {
+  kRecentTab,
+  kDeepSearch,
+  kImage,
+  kDeepDive
+};
+
+// The information representing a single action chip.
+struct ActionChip {
+  string title;
+  string suggestion;
+  ChipType type;
+};
+
 // Interface for the browser-side handler.
 interface ActionChipsHandler {
   // Gets the most recently accessed tab across all browser windows
   // for the current profile.
   GetMostRecentTab() => (TabInfo? tab);
+
+  // Retrieves the information needed for action chips.
+  GetActionChips() => (array<ActionChip> action_chips);
 };
 
 // Factory to create the ActionChipsHandler.
