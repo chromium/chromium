@@ -432,28 +432,72 @@ void PrefetchMatchResolver::OnDeterminedHead(
     return;
   }
 
-  switch (prefetch_container.GetServableState(PrefetchCacheableDuration())) {
+  PrefetchServableState servable_state =
+      prefetch_container.GetServableState(PrefetchCacheableDuration());
+  PrefetchMatchResolverAction match_resolver_action =
+      prefetch_container.GetMatchResolverAction(PrefetchCacheableDuration());
+  switch (servable_state) {
     case PrefetchServableState::kShouldBlockUntilEligibilityGot:
       // All callsites of `PrefetchContainer::OnDeterminedHead()` are
       // `PrefetchStreamingURLLoader`, which implies the prefetch passed
       // eligibility check.
       NOTREACHED();
-    // `kShouldBlockUntilHeadReceived` case occurs if a prefetch is redirected
-    // and the redirect is not eligible.
-    //
-    //    PrefetchService::OnGotEligibilityForRedirect()
-    // -> PrefetchStreamingURLLoader::HandleRedirect(kFail)
-    // -> PrefetchContainer::OnDeterminedHead()
-    // -> here
+    case PrefetchServableState::kServable:
+      // proceed
+      break;
+    // Otherwise, `MaybeUnblockForUnmatch()`.
     case PrefetchServableState::kShouldBlockUntilHeadReceived:
     case PrefetchServableState::kNotServable:
+      auto potential_candidate_serving_result = [&]() {
+        switch (servable_state) {
+          case PrefetchServableState::kShouldBlockUntilEligibilityGot:
+          case PrefetchServableState::kServable:
+            NOTREACHED();
+            // `kShouldBlockUntilHeadReceived` case occurs if a prefetch is
+            // redirected and the redirect is not eligible.
+            //
+            //    PrefetchService::OnGotEligibilityForRedirect()
+            // -> PrefetchStreamingURLLoader::HandleRedirect(kFail)
+            // -> PrefetchContainer::OnDeterminedHead()
+            // -> here
+          case PrefetchServableState::kShouldBlockUntilHeadReceived:
+            return PrefetchPotentialCandidateServingResult::
+                kNotServedOnDeterminedHeadWithShouldBlockUntilHeadReceived;
+          case PrefetchServableState::kNotServable:
+            if (match_resolver_action.kind() ==
+                    PrefetchMatchResolverAction::ActionKind::kMaybeServe &&
+                match_resolver_action.is_expired() == true) {
+              return PrefetchPotentialCandidateServingResult::
+                  kNotServedOnDeterminedHeadWithServableExpired;
+            } else {
+              CHECK_EQ(match_resolver_action.kind(),
+                       PrefetchMatchResolverAction::ActionKind::kDrop);
+
+              switch (match_resolver_action.prefetch_container_load_state()) {
+                case PrefetchContainer::LoadState::kFailedIneligible:
+                  return PrefetchPotentialCandidateServingResult::
+                      kNotServedIneligibleRedirect;
+                case PrefetchContainer::LoadState::kFailedDeterminedHead:
+                case PrefetchContainer::LoadState::kFailed:
+                  return PrefetchPotentialCandidateServingResult::
+                      kNotServedLoadFailed;
+                case PrefetchContainer::LoadState::kNotStarted:
+                case PrefetchContainer::LoadState::kEligible:
+                case PrefetchContainer::LoadState::kStarted:
+                case PrefetchContainer::LoadState::kDeterminedHead:
+                case PrefetchContainer::LoadState::kCompleted:
+                case PrefetchContainer::LoadState::kFailedHeldback:
+                  // We don't expect to enter this path.
+                  return PrefetchPotentialCandidateServingResult::
+                      kNotServedOnDeterminedHeadWithNotServableUnknown;
+              }
+            }
+        }
+      }();
+
       MaybeUnblockForUnmatch(prefetch_container,
-                             PrefetchPotentialCandidateServingResult::
-                                 kNotServedUnsatisfiedPrefetchServeableState);
+                             potential_candidate_serving_result);
       return;
-    case PrefetchServableState::kServable:
-      // Proceed.
-      break;
   }
 
   if (prefetch_container.CreateServingHandle()

@@ -4453,9 +4453,7 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
       base::StrCat({"Prefetch.PrefetchPotentialCandidateServingResult."
                     "PerMatchingCandidate.",
                     histogram_suffix}),
-      PrefetchPotentialCandidateServingResult::
-          kNotServedUnsatisfiedPrefetchServeableState,
-      1);
+      PrefetchPotentialCandidateServingResult::kNotServedLoadFailed, 1);
 }
 
 // TODO(crbug.com/40064525): For NVSBlockUntilHeadReceivedOneMatchOneTimeout,
