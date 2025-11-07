@@ -370,6 +370,7 @@ void SearchboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
       {"composeFileTypesAllowedError",
        IDS_NTP_COMPOSE_FILE_TYPE_NOT_ALLOWED_ERROR},
       {"composeboxDragAndDropHint", IDS_NTP_COMPOSE_DRAG_AND_DROP_HINT},
+      {"listening", IDS_NEW_TAB_VOICE_LISTENING},
   };
   source->AddLocalizedStrings(kStrings);
   source->AddString("searchboxComposePlaceholder",

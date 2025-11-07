@@ -1,0 +1,184 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import 'chrome://new-tab-page/strings.m.js';
+import 'chrome://resources/cr_components/composebox/composebox.js';
+
+import type {ComposeboxElement} from 'chrome://resources/cr_components/composebox/composebox.js';
+import {PageCallbackRouter, PageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
+import {ComposeboxProxyImpl} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import type {TestMock} from 'chrome://webui-test/test_mock.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
+
+import {assertStyle, installMock} from './composebox_test_utils.js';
+
+class MockSpeechRecognition {
+  voiceSearchInProgress: boolean = false;
+  onresult:
+      ((this: MockSpeechRecognition,
+        ev: SpeechRecognitionEvent) => void)|null = null;
+  onend: (() => void)|null = null;
+  interimResults = true;
+  continuous = false;
+  constructor() {
+    mockSpeechRecognition = this;
+  }
+  start() {
+    this.voiceSearchInProgress = true;
+  }
+  stop() {
+    this.voiceSearchInProgress = false;
+  }
+  abort() {
+    this.voiceSearchInProgress = false;
+  }
+}
+
+let mockSpeechRecognition: MockSpeechRecognition;
+
+function createResults(n: number): SpeechRecognitionEvent {
+  return {
+    results: Array.from(Array(n)).map(() => {
+      return {
+        isFinal: false,
+        0: {
+          transcript: 'foo',
+          confidence: 1,
+        },
+      } as unknown as SpeechRecognitionResult;
+    }),
+    resultIndex: 0,
+  } as unknown as SpeechRecognitionEvent;
+}
+
+suite('Composebox voice search', () => {
+  let composeboxElement: ComposeboxElement;
+  let handler: TestMock<PageHandlerRemote>;
+  let searchboxHandler: TestMock<SearchboxPageHandlerRemote>;
+  // let searchboxCallbackRouterRemote: SearchboxPageRemote;
+
+  suiteSetup(() => {
+    loadTimeData.overrideValues({
+      expandedComposeboxShowVoiceSearch: true,
+      steadyComposeboxShowVoiceSearch: true,
+      composeboxShowZps: true,
+      composeboxShowTypedSuggest: true,
+    });
+  });
+
+  setup(() => {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    handler = installMock(
+        PageHandlerRemote,
+        mock => ComposeboxProxyImpl.setInstance(new ComposeboxProxyImpl(
+            mock, new PageCallbackRouter(), new SearchboxPageHandlerRemote(),
+            new SearchboxPageCallbackRouter())));
+    assertTrue(!!handler);
+    searchboxHandler = installMock(
+        SearchboxPageHandlerRemote,
+        mock => ComposeboxProxyImpl.getInstance().searchboxHandler = mock);
+    searchboxHandler.setResultFor('getRecentTabs', Promise.resolve({tabs: []}));
+
+    composeboxElement = document.createElement('cr-composebox');
+    document.body.appendChild(composeboxElement);
+    window.webkitSpeechRecognition =
+        MockSpeechRecognition as unknown as typeof SpeechRecognition;
+  });
+
+  function getVoiceSearchButton(composeboxElement: ComposeboxElement):
+      HTMLElement|null {
+    const contextElement = composeboxElement.$.context;
+    return contextElement.shadowRoot.querySelector<HTMLElement>(
+        '#voiceSearchButton');
+  }
+
+  test('voice search button does not show when disabled', async () => {
+    loadTimeData.overrideValues({
+      steadyComposeboxShowVoiceSearch: false,
+      expandedComposeboxShowVoiceSearch: false,
+    });
+    // Create element again with new loadTimeData values.
+    composeboxElement = document.createElement('cr-composebox');
+    document.body.appendChild(composeboxElement);
+    await microtasksFinished();
+
+    const voiceSearchButton = await getVoiceSearchButton(composeboxElement);
+    assertFalse(!!voiceSearchButton);
+
+    // Restore.
+    loadTimeData.overrideValues({
+      steadyComposeboxShowVoiceSearch: true,
+      expandedComposeboxShowVoiceSearch: true,
+    });
+  });
+
+  test('voice search button shows when enabled', () => {
+    const voiceSearchButton = getVoiceSearchButton(composeboxElement);
+    assertTrue(!!voiceSearchButton);
+  });
+
+  test(
+      'clicking voice search starts speech recognition and hides the composebox',
+      async () => {
+        const voiceSearchButton = getVoiceSearchButton(composeboxElement);
+        voiceSearchButton!.click();
+        await microtasksFinished();
+        // Clicking the voice search button should start speech recognition.
+        assertTrue(mockSpeechRecognition.voiceSearchInProgress);
+        assertStyle(composeboxElement.$.composebox, 'display', 'none');
+        assertStyle(composeboxElement.$.voiceSearch, 'display', 'flex');
+      });
+
+  test('on result updates the searchbox input', async () => {
+    const result = createResults(2);
+    Object.assign(result.results[0]![0]!, {transcript: 'hello'});
+    Object.assign(result.results[1]![0]!, {transcript: 'world'});
+
+    // Act.
+    mockSpeechRecognition.onresult!(result);
+    await microtasksFinished();
+
+    const voiceSearchInput = composeboxElement.$.voiceSearch.$.input;
+
+    assertEquals('helloworld', voiceSearchInput.value);
+
+    // Reset the composebox input.
+    voiceSearchInput.value = 'test';
+    voiceSearchInput.dispatchEvent(new Event('input'));
+    assertEquals('test', voiceSearchInput.value);
+    await microtasksFinished();
+
+    const result2 = createResults(2);
+    Object.assign(result2.results[0]![0]!, {transcript: 'hello'});
+    Object.assign(result2.results[1]![0]!, {transcript: 'goodbye'});
+
+    // Act.
+    mockSpeechRecognition.onresult!(result2);
+    await microtasksFinished();
+
+    // Speech recognition overrides existing composebox input.
+    assertEquals('hellogoodbye', voiceSearchInput.value);
+  });
+
+  test('on end submits a query', async () => {
+    const result = createResults(2);
+    Object.assign(result.results[0]![0]!, {transcript: 'hello'});
+    Object.assign(result.results[1]![0]!, {transcript: 'world'});
+
+    // Act.
+    mockSpeechRecognition.onresult!(result);
+    mockSpeechRecognition.onend!();
+    await microtasksFinished();
+
+    const voiceSearchInput = composeboxElement.$.voiceSearch.$.input;
+
+    // The composebox should navigate with the text after `onEnd` is called.
+    assertEquals('helloworld', voiceSearchInput.value);
+    assertEquals(searchboxHandler.getCallCount('openAutocompleteMatch'), 0);
+    assertEquals(searchboxHandler.getCallCount('submitQuery'), 1);
+  });
+});

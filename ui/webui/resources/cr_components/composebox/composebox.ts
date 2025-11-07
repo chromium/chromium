@@ -5,6 +5,7 @@ import './composebox_tool_chip.js';
 import './context_menu_entrypoint.js';
 import './contextual_entrypoint_and_carousel.js';
 import './composebox_dropdown.js';
+import './composebox_voice_search.js';
 import './error_scrim.js';
 import './file_carousel.js';
 import './icons.html.js';
@@ -33,6 +34,7 @@ import type {ComposeboxDropdownElement} from './composebox_dropdown.js';
 import {ComposeboxProxyImpl} from './composebox_proxy.js';
 import type {FileUploadErrorType} from './composebox_query.mojom-webui.js';
 import {FileUploadStatus} from './composebox_query.mojom-webui.js';
+import type {ComposeboxVoiceSearchElement} from './composebox_voice_search.js';
 import type {ContextualEntrypointAndCarouselElement} from './contextual_entrypoint_and_carousel.js';
 import {ComposeboxMode} from './contextual_entrypoint_and_carousel.js';
 import type {ErrorScrimElement} from './error_scrim.js';
@@ -46,6 +48,7 @@ export interface ComposeboxElement {
     matches: ComposeboxDropdownElement,
     context: ContextualEntrypointAndCarouselElement,
     errorScrim: ErrorScrimElement,
+    voiceSearch: ComposeboxVoiceSearchElement,
   };
 }
 
@@ -149,6 +152,10 @@ export class ComposeboxElement extends I18nMixinLit
         type: Boolean,
         reflect: true,
       },
+      inVoiceSearchMode_: {
+        type: Boolean,
+        reflect: true,
+      },
     };
   }
 
@@ -207,7 +214,8 @@ export class ComposeboxElement extends I18nMixinLit
       loadTimeData.getBoolean('composeboxCloseByEscape');
   private dragAndDropEnabled_: boolean =
       loadTimeData.getBoolean('dragAndDropEnabled');
-
+  // TODO(crbug.com/455878144): Rely on voice controller state enum.
+  protected accessor inVoiceSearchMode_: boolean = false;
   private selectedMatch_: AutocompleteMatch|null = null;
 
   constructor() {
@@ -577,6 +585,21 @@ export class ComposeboxElement extends I18nMixinLit
     const {previewDataUrl} =
         await this.searchboxHandler_.getTabPreview(e.detail.tabId);
     e.detail.onPreviewFetched(previewDataUrl || '');
+  }
+
+  protected onVoiceSearchSubmit_(e: CustomEvent<string>) {
+    this.searchboxHandler_.submitQuery(
+        e.detail, /*mouse_button=*/ 0, /*alt_key=*/ false,
+        /*ctrl_key=*/ false, /*meta_key=*/ false, /*shift_key=*/ false);
+  }
+
+  protected openAimVoiceSearch_() {
+    this.inVoiceSearchMode_ = true;
+    this.$.voiceSearch.start();
+  }
+
+  protected onVoiceSearchClose_() {
+    this.inVoiceSearchMode_ = false;
   }
 
   protected onCancelClick_() {

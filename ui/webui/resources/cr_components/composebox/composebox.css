@@ -145,6 +145,10 @@
   overflow: hidden;
 }
 
+:host([in-voice-search-mode_]) #composebox {
+  display: none;
+}
+
 :host([is-dragging-file_])::before {
   /*  TODO(crbug.com/454730356): change color and add border */
   background: linear-gradient(
@@ -789,4 +793,8 @@ contextual-entrypoint-and-carousel::part(voice-icon) {
 
 :host([searchbox-layout-mode='Compact']) contextual-entrypoint-and-carousel::part(cr-composebox-file-carousel) {
   margin-top: 14px;
+}
+
+:host(:not([in-voice-search-mode_])) cr-composebox-voice-search {
+  display: none;
 }
