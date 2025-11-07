@@ -181,9 +181,7 @@ void AutofillAiModelExecutorImpl::OnModelExecuted(
 void AutofillAiModelExecutorImpl::LogModelPredictions(
     std::unique_ptr<optimization_guide::proto::FormsClassificationsLoggingData>
         logging_data) {
-  if (!base::FeatureList::IsEnabled(
-          autofill::features::kAutofillAiUploadModelRequestAndResponse) ||
-      !mqls_uploader_) {
+  if (!mqls_uploader_) {
     return;
   }
   // Note that the logging happens when `log_entry` goes out of scope.

@@ -354,12 +354,8 @@ TEST_F(AutofillAiModelExecutorImplTest, WrongTypeReturned) {
 }
 
 TEST_F(AutofillAiModelExecutorImplTest, MqlsUpload) {
-  base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      /*enabled_features=*/
-      {optimization_guide::features::kFormsClassificationsMqlsLogging,
-       autofill::features::kAutofillAiUploadModelRequestAndResponse},
-      /*disabled_features=*/{});
+  base::test::ScopedFeatureList features{
+      optimization_guide::features::kFormsClassificationsMqlsLogging};
 
   const FormData form =
       test::GetFormData({.fields = {{.name = u"Passport number"}}});
@@ -397,12 +393,8 @@ TEST_F(AutofillAiModelExecutorImplTest, MqlsUpload) {
 
 // Tests that no MQLS log is sent if the server returned with an error.
 TEST_F(AutofillAiModelExecutorImplTest, NoMqlsUploadOnError) {
-  base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      /*enabled_features=*/
-      {optimization_guide::features::kFormsClassificationsMqlsLogging,
-       autofill::features::kAutofillAiUploadModelRequestAndResponse},
-      /*disabled_features=*/{});
+  base::test::ScopedFeatureList features{
+      optimization_guide::features::kFormsClassificationsMqlsLogging};
 
   const FormData form;
   MockOnModelExecutedCallback on_model_executed;
