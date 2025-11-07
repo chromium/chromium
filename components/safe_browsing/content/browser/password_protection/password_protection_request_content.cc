@@ -83,13 +83,14 @@ PasswordProtectionRequestContent::CreateForTesting(
     LoginReputationClientRequest::TriggerType type,
     bool password_field_exists,
     PasswordProtectionServiceBase* pps,
-    int request_timeout_in_ms) {
+    int request_timeout_in_ms,
+    std::optional<OtpPhishingVerdictCallback> otp_phishing_verdict_callback) {
   scoped_refptr<PasswordProtectionRequest> request(
       new PasswordProtectionRequestContent(
           web_contents, main_frame_url, password_form_action,
           password_form_frame_url, mime_type, username, password_type,
           matching_reused_credentials, type, password_field_exists, pps,
-          request_timeout_in_ms));
+          request_timeout_in_ms, std::move(otp_phishing_verdict_callback)));
   static_cast<PasswordProtectionRequestContent*>(request.get())
       ->prevent_initiating_url_loader_for_testing_ = true;
   return request;
@@ -108,7 +109,8 @@ PasswordProtectionRequestContent::PasswordProtectionRequestContent(
     LoginReputationClientRequest::TriggerType type,
     bool password_field_exists,
     PasswordProtectionServiceBase* pps,
-    int request_timeout_in_ms)
+    int request_timeout_in_ms,
+    std::optional<OtpPhishingVerdictCallback> otp_phishing_verdict_callback)
     : PasswordProtectionRequest(content::GetUIThreadTaskRunner({}),
                                 content::GetIOThreadTaskRunner({}),
                                 main_frame_url,
@@ -121,7 +123,8 @@ PasswordProtectionRequestContent::PasswordProtectionRequestContent(
                                 type,
                                 password_field_exists,
                                 pps,
-                                request_timeout_in_ms),
+                                request_timeout_in_ms,
+                                std::move(otp_phishing_verdict_callback)),
       web_contents_(web_contents) {
   request_canceler_ = RequestCanceler::CreateRequestCanceler(
       weak_factory_.GetWeakPtr(), web_contents);

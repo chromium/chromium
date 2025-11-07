@@ -438,19 +438,36 @@ class ChromePasswordProtectionServiceTest
                              u"user");
     if (trigger_type == LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE) {
       request_ = new PasswordProtectionRequestContent(
-          web_contents(), GURL(kPhishingURL), GURL(), GURL(),
-          web_contents()->GetContentsMimeType(), kUserName,
-          PasswordType::PASSWORD_TYPE_UNKNOWN, credentials, trigger_type, true,
-          service_.get(), 0);
+          /*web_contents=*/web_contents(),
+          /*main_frame_url=*/GURL(kPhishingURL),
+          /*password_form_action=*/GURL(),
+          /*password_form_frame_url=*/GURL(),
+          /*main_frame_mime_type=*/web_contents()->GetContentsMimeType(),
+          /*username=*/kUserName,
+          /*password_type=*/PasswordType::PASSWORD_TYPE_UNKNOWN,
+          /*matching_reused_credentials=*/credentials,
+          /*trigger_type=*/trigger_type,
+          /*password_field_exists=*/true,
+          /*service=*/service_.get(),
+          /*request_timeout_in_ms=*/0,
+          /*otp_phishing_verdict_callback=*/std::nullopt);
     } else {
       ASSERT_EQ(LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
                 trigger_type);
       request_ = new PasswordProtectionRequestContent(
-          web_contents(), GURL(kPhishingURL), GURL(), GURL(),
-          web_contents()->GetContentsMimeType(), kUserName,
-          reused_password_type, credentials, trigger_type,
-          /* password_field_exists*/ true, service_.get(),
-          /*request_timeout_in_ms=*/0);
+          /*web_contents=*/web_contents(),
+          /*main_frame_url=*/GURL(kPhishingURL),
+          /*password_form_action=*/GURL(),
+          /*password_form_frame_url=*/GURL(),
+          /*main_frame_mime_type=*/web_contents()->GetContentsMimeType(),
+          /*username=*/kUserName,
+          /*password_type=*/reused_password_type,
+          /*matching_reused_credentials=*/credentials,
+          /*trigger_type=*/trigger_type,
+          /*password_field_exists=*/true,
+          /*service=*/service_.get(),
+          /*request_timeout_in_ms=*/0,
+          /*otp_phishing_verdict_callback=*/std::nullopt);
     }
   }
 

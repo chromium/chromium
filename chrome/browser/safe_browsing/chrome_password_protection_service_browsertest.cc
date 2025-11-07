@@ -913,6 +913,78 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
                     .size());
 }
 
+IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
+                       OtpPhishingVerdictCallbackInvoked) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/simple.html")));
+  ChromePasswordProtectionService* service = GetService(/*is_incognito=*/false);
+  content::WebContents* web_contents = GetWebContents();
+
+  // --- Test PHISHING verdict ---
+  {
+    base::RunLoop run_loop;
+    bool is_phishing_verdict = false;
+    PasswordProtectionRequest::OtpPhishingVerdictCallback callback =
+        base::BindLambdaForTesting([&](bool verdict) {
+          EXPECT_TRUE(verdict);
+          is_phishing_verdict = verdict;
+          run_loop.Quit();
+        });
+
+    // Start a request with the OTP trigger and our callback.
+    service->StartRequestForTesting(
+        web_contents, web_contents->GetLastCommittedURL(), GURL(), GURL(), "",
+        PasswordType::PASSWORD_TYPE_UNKNOWN, {},
+        LoginReputationClientRequest::ONE_TIME_PASSWORD_FIELD_DETECTED,
+        /*password_field_exists=*/false, std::move(callback));
+
+    ASSERT_EQ(1u, service->get_pending_requests_for_testing().size());
+    scoped_refptr<PasswordProtectionRequest> request =
+        *service->get_pending_requests_for_testing().begin();
+
+    // Finish the request with a PHISHING verdict.
+    auto phishing_response = std::make_unique<LoginReputationClientResponse>();
+    phishing_response->set_verdict_type(
+        LoginReputationClientResponse::PHISHING);
+    request->finish_for_testing(RequestOutcome::SUCCEEDED,
+                                std::move(phishing_response));
+
+    run_loop.Run();
+    EXPECT_TRUE(is_phishing_verdict);
+  }
+
+  // --- Test SAFE verdict ---
+  {
+    base::RunLoop run_loop;
+    bool is_phishing_verdict = true;  // Start with opposite value
+    PasswordProtectionRequest::OtpPhishingVerdictCallback callback =
+        base::BindLambdaForTesting([&](bool verdict) {
+          EXPECT_FALSE(verdict);
+          is_phishing_verdict = verdict;
+          run_loop.Quit();
+        });
+
+    service->StartRequestForTesting(
+        web_contents, web_contents->GetLastCommittedURL(), GURL(), GURL(), "",
+        PasswordType::PASSWORD_TYPE_UNKNOWN, {},
+        LoginReputationClientRequest::ONE_TIME_PASSWORD_FIELD_DETECTED,
+        /*password_field_exists=*/false, std::move(callback));
+
+    ASSERT_EQ(1u, service->get_pending_requests_for_testing().size());
+    scoped_refptr<PasswordProtectionRequest> request =
+        *service->get_pending_requests_for_testing().begin();
+
+    // Finish the request with a SAFE verdict.
+    auto safe_response = std::make_unique<LoginReputationClientResponse>();
+    safe_response->set_verdict_type(LoginReputationClientResponse::SAFE);
+    request->finish_for_testing(RequestOutcome::SUCCEEDED,
+                                std::move(safe_response));
+
+    run_loop.Run();
+    EXPECT_FALSE(is_phishing_verdict);
+  }
+}
+
 // Test fixture for testing the navigation deferral mechanism while a modal
 // warning dialog is being shown or potentially about to be shown.
 class ChromePasswordProtectionServiceNavigationDeferralBrowserTest
@@ -933,9 +1005,16 @@ class ChromePasswordProtectionServiceNavigationDeferralBrowserTest
         {kSignonRealm, GURL(kSignonRealm), kUsername}};
 
     service->StartRequestForTesting(
-        GetWebContents(), GURL(), GURL(), GURL(), "",
-        PasswordType::SAVED_PASSWORD, credentials,
-        LoginReputationClientRequest::PASSWORD_REUSE_EVENT, true);
+        /*web_contents=*/GetWebContents(),
+        /*main_frame_url=*/GURL(),
+        /*password_form_action=*/GURL(),
+        /*password_form_frame_url=*/GURL(),
+        /*username=*/"",
+        /*password_type=*/PasswordType::SAVED_PASSWORD,
+        /*matching_reused_credentials=*/credentials,
+        /*trigger_type=*/LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
+        /*password_field_exists=*/true,
+        /*otp_phishing_verdict_callback=*/std::nullopt);
     if (service->get_pending_requests_for_testing().size() != 1ul)
       return nullptr;
 

@@ -59,6 +59,8 @@ class PasswordProtectionRequest
     : public CancelableRequest,
       public base::RefCountedDeleteOnSequence<PasswordProtectionRequest> {
  public:
+  using OtpPhishingVerdictCallback = base::OnceCallback<void(bool)>;
+
   // Not copyable or movable
   PasswordProtectionRequest(const PasswordProtectionRequest&) = delete;
   PasswordProtectionRequest& operator=(const PasswordProtectionRequest&) =
@@ -117,6 +119,21 @@ class PasswordProtectionRequest
 
   virtual base::WeakPtr<PasswordProtectionRequest> AsWeakPtr() = 0;
 
+  // Returns true if this request has an OTP phishing verdict callback.
+  bool HasOtpPhishingVerdictCallback() const {
+    return otp_phishing_verdict_callback_.has_value();
+  }
+
+  // Moves and returns the OTP phishing verdict callback.
+  // HasOtpPhishingVerdictCallback should be called before this to ensure
+  // callback is valid.
+  OtpPhishingVerdictCallback TakeOtpPhishingVerdictCallback() {
+    CHECK(otp_phishing_verdict_callback_.has_value());
+    auto callback = std::move(otp_phishing_verdict_callback_.value());
+    otp_phishing_verdict_callback_.reset();
+    return callback;
+  }
+
  protected:
   friend class base::RefCountedThreadSafe<PasswordProtectionRequest>;
 
@@ -134,7 +151,8 @@ class PasswordProtectionRequest
       LoginReputationClientRequest::TriggerType type,
       bool password_field_exists,
       PasswordProtectionServiceBase* pps,
-      int request_timeout_in_ms);
+      int request_timeout_in_ms,
+      std::optional<OtpPhishingVerdictCallback> otp_phishing_verdict_callback);
 
   ~PasswordProtectionRequest() override;
 
@@ -284,6 +302,10 @@ class PasswordProtectionRequest
 
   // Whether there is a modal warning triggered by this request.
   bool is_modal_warning_showing_;
+
+  // Callback for otp phishing verdict. Only set if trigger_type_ is
+  // ONE_TIME_PASSWORD_FIELD_DETECTED.
+  std::optional<OtpPhishingVerdictCallback> otp_phishing_verdict_callback_;
 };
 
 }  // namespace safe_browsing

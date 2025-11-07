@@ -50,12 +50,20 @@ class PasswordProtectionCommitDeferringConditionTest
                              GURL("http://example.test"), u"username2");
 
     request_ = new PasswordProtectionRequestContent(
-        RenderViewHostTestHarness::web_contents(), GURL(), GURL(), GURL(),
+        /*web_contents=*/RenderViewHostTestHarness::web_contents(),
+        /*main_frame_url=*/GURL(),
+        /*password_form_action=*/GURL(),
+        /*password_form_frame_url=*/GURL(),
+        /*main_frame_mime_type=*/
         RenderViewHostTestHarness::web_contents()->GetContentsMimeType(),
-        "username", PasswordType::PASSWORD_TYPE_UNKNOWN, credentials,
-        LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
-        /* password_field_exists*/ true, &service_,
-        /*request_timeout_in_ms=*/0);
+        /*username=*/"username",
+        /*password_type=*/PasswordType::PASSWORD_TYPE_UNKNOWN,
+        /*matching_reused_credentials=*/credentials,
+        /*trigger_type=*/LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
+        /*password_field_exists=*/true,
+        /*service=*/&service_,
+        /*request_timeout_in_ms=*/0,
+        /*otp_phishing_verdict_callback=*/std::nullopt);
 
     condition_ = std::make_unique<PasswordProtectionCommitDeferringCondition>(
         mock_navigation_, *request_.get());

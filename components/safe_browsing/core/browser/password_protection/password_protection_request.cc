@@ -78,7 +78,8 @@ PasswordProtectionRequest::PasswordProtectionRequest(
     LoginReputationClientRequest::TriggerType type,
     bool password_field_exists,
     PasswordProtectionServiceBase* pps,
-    int request_timeout_in_ms)
+    int request_timeout_in_ms,
+    std::optional<OtpPhishingVerdictCallback> otp_phishing_verdict_callback)
     : base::RefCountedDeleteOnSequence<PasswordProtectionRequest>(
           std::move(ui_task_runner)),
       request_proto_(std::make_unique<LoginReputationClientRequest>()),
@@ -95,7 +96,8 @@ PasswordProtectionRequest::PasswordProtectionRequest(
       password_field_exists_(password_field_exists),
       password_protection_service_(pps),
       request_timeout_in_ms_(request_timeout_in_ms),
-      is_modal_warning_showing_(false) {
+      is_modal_warning_showing_(false),
+      otp_phishing_verdict_callback_(std::move(otp_phishing_verdict_callback)) {
   DCHECK(this->ui_task_runner()->RunsTasksInCurrentSequence());
 
   DCHECK(trigger_type_ == LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE ||

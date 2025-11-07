@@ -115,7 +115,7 @@ class MockPasswordProtectionService : public PasswordProtectionService {
   MOCK_METHOD3(MaybeStartOtpPhishingRequest,
                void(content::WebContents*,
                     const GURL&,
-                    OtpPhishingVerdictCallback));
+                    PasswordProtectionRequest::OtpPhishingVerdictCallback));
 };
 
 }  // namespace safe_browsing

@@ -67,7 +67,8 @@ class PasswordProtectionRequestContent final
       LoginReputationClientRequest::TriggerType type,
       bool password_field_exists,
       PasswordProtectionServiceBase* pps,
-      int request_timeout_in_ms);
+      int request_timeout_in_ms,
+      std::optional<OtpPhishingVerdictCallback> otp_phishing_verdict_callback);
 
   PasswordProtectionRequestContent(
       content::WebContents* web_contents,
@@ -82,7 +83,8 @@ class PasswordProtectionRequestContent final
       LoginReputationClientRequest::TriggerType type,
       bool password_field_exists,
       PasswordProtectionServiceBase* pps,
-      int request_timeout_in_ms);
+      int request_timeout_in_ms,
+      std::optional<OtpPhishingVerdictCallback> otp_phishing_verdict_callback);
 
   // CancelableRequest implementation
   void Cancel(bool timed_out) override;
