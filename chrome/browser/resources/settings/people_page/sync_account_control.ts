@@ -381,6 +381,11 @@ export class SettingsSyncAccountControlElement extends
       return webOnlySignedInAccountRowTitle;
     }
 
+    if (this.promoType_ === PromoType.SIGNIN &&
+        this.syncStatus.signedInState === SignedInState.SIGNED_IN) {
+      return accountName;
+    }
+
     if (this.syncStatus && this.syncStatus.hasError &&
         this.syncStatus.statusText) {
       return accountName;
