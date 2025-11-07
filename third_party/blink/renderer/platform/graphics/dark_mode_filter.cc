@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/platform/graphics/dark_mode_color_filter.h"
 #include "third_party/blink/renderer/platform/graphics/dark_mode_image_cache.h"
 #include "third_party/blink/renderer/platform/graphics/dark_mode_image_classifier.h"
+#include "third_party/blink/renderer/platform/graphics/dark_mode_settings.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/wtf/hash_functions.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -117,8 +118,7 @@ DarkModeFilter::DarkModeFilter(const DarkModeSettings& settings)
 DarkModeFilter::~DarkModeFilter() {}
 
 DarkModeFilter::ImmutableData::ImmutableData(const DarkModeSettings& settings)
-    : settings(settings),
-      foreground_classifier(nullptr),
+    : foreground_classifier(nullptr),
       background_classifier(nullptr),
       image_classifier(nullptr),
       color_filter(nullptr),
