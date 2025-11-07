@@ -1342,8 +1342,10 @@ base::CallbackListSubscription GlicWindowControllerImpl::RegisterStateChange(
 base::CallbackListSubscription
 GlicWindowControllerImpl::AddActiveInstanceChangedCallbackAndNotifyImmediately(
     ActiveInstanceChangedCallback callback) {
-  NOTIMPLEMENTED();
-  return base::CallbackListSubscription();
+  NOTREACHED();
+}
+GlicInstance* GlicWindowControllerImpl::GetActiveInstance() {
+  NOTREACHED();
 }
 
 void GlicWindowControllerImpl::SetWindowState(State new_state) {

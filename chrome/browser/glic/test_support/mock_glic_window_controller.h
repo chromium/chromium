@@ -90,6 +90,7 @@ class MockGlicWindowController
               AddActiveInstanceChangedCallbackAndNotifyImmediately,
               (ActiveInstanceChangedCallback callback),
               (override));
+  MOCK_METHOD(GlicInstance*, GetActiveInstance, (), (override));
   MOCK_METHOD(void, SidePanelShown, (BrowserWindowInterface*), (override));
   MOCK_METHOD(Host&, host, (), (override));
   MOCK_METHOD(const InstanceId&, id, (), (const, override));

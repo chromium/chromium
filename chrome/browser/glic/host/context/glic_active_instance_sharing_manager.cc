@@ -17,7 +17,7 @@ GlicActiveInstanceSharingManager::GlicActiveInstanceSharingManager(
     Profile* profile,
     GlicEnabling* enabling,
     GlicInstanceCoordinator* instance_coordinator)
-    : profile_(profile) {
+    : profile_(profile), instance_coordinator_(instance_coordinator) {
   active_instance_subscription_ =
       instance_coordinator
           ->AddActiveInstanceChangedCallbackAndNotifyImmediately(
@@ -36,16 +36,7 @@ GlicActiveInstanceSharingManager::~GlicActiveInstanceSharingManager() = default;
 
 void GlicActiveInstanceSharingManager::OnActiveInstanceChanged(
     GlicInstance* instance) {
-  if (GlicEnabling::IsUnifiedFreEnabled(profile_)) {
-    pending_active_instance_ = instance;
-    UpdateDelegate();
-  } else {
-    if (instance) {
-      SetDelegate(&instance->host().sharing_manager());
-    } else {
-      SetDelegate(nullptr);
-    }
-  }
+  UpdateDelegate();
 }
 
 void GlicActiveInstanceSharingManager::OnProfileReadyStateChanged() {
@@ -55,9 +46,10 @@ void GlicActiveInstanceSharingManager::OnProfileReadyStateChanged() {
 }
 
 void GlicActiveInstanceSharingManager::UpdateDelegate() {
-  if (pending_active_instance_ &&
+  GlicInstance* active_instance = instance_coordinator_->GetActiveInstance();
+  if (active_instance &&
       GlicEnabling::IsEnabledAndConsentForProfile(profile_)) {
-    SetDelegate(&pending_active_instance_->host().sharing_manager());
+    SetDelegate(&active_instance->host().sharing_manager());
   } else {
     SetDelegate(nullptr);
   }

@@ -46,8 +46,7 @@ class GlicActiveInstanceSharingManager : public GlicDelegatingSharingManager {
   // The profile this manager belongs to.
   const raw_ptr<Profile> profile_;
 
-  // Holds the potentially active instance while waiting for consent.
-  raw_ptr<GlicInstance> pending_active_instance_ = nullptr;
+  raw_ptr<GlicInstanceCoordinator> instance_coordinator_;
 
   // Subscription for last active instance changes.
   base::CallbackListSubscription active_instance_subscription_;

@@ -183,6 +183,7 @@ class GlicWindowControllerImpl
   base::CallbackListSubscription
   AddActiveInstanceChangedCallbackAndNotifyImmediately(
       ActiveInstanceChangedCallback callback) override;
+  GlicInstance* GetActiveInstance() override;
 
   // Testing functionality.
   GlicWindowAnimator* GetWindowAnimatorForTesting();
