@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/file_upload_panel/coordinator/file_upload_panel_coordinator.h"
 
+#import <UIKit/UIKit.h>
+
 #import "base/metrics/histogram_functions.h"
 #import "ios/chrome/browser/file_upload_panel/coordinator/file_upload_panel_mediator.h"
 #import "ios/chrome/browser/file_upload_panel/ui/constants.h"
@@ -15,16 +17,22 @@
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/web/model/choose_file/choose_file_controller.h"
 #import "ios/chrome/browser/web/model/choose_file/choose_file_tab_helper.h"
+#import "ios/chrome/browser/web/model/choose_file/choose_file_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
-@interface FileUploadPanelCoordinator () <UIContextMenuInteractionDelegate>
+@interface FileUploadPanelCoordinator () <
+    UIContextMenuInteractionDelegate,
+    UINavigationControllerDelegate,
+    UIImagePickerControllerDelegate,
+    UIAdaptivePresentationControllerDelegate>
 
 @end
 
 @implementation FileUploadPanelCoordinator {
   FileUploadPanelMediator* _mediator;
   ContextMenuPresenter* _contextMenuPresenter;
+  UIImagePickerController* _cameraPicker;
 }
 
 #pragma mark - ChromeCoordinator
@@ -45,18 +53,31 @@
   _mediator.fileUploadPanelHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), FileUploadPanelCommands);
 
-  // TODO(crbug.com/441659098): Create a mediator to observe the file selection
-  // in the model layer. Skip the context menu if it is unnecessary e.g.
-  // directly show the camera.
+  if (_mediator.shouldShowCamera) {
+    base::UmaHistogramEnumeration("IOS.FileUploadPanel.EntryPointVariant",
+                                  FileUploadPanelEntryPointVariant::kCamera);
+    [_mediator adjustCaptureTypeToAvailableDevices];
+    [self showCamera];
+    return;
+  }
+
+  if (_mediator.allowsDirectorySelection || !_mediator.allowsMediaSelection) {
+    base::UmaHistogramEnumeration(
+        "IOS.FileUploadPanel.EntryPointVariant",
+        FileUploadPanelEntryPointVariant::kFilePicker);
+    [self showFilePicker];
+    return;
+  }
+
+  base::UmaHistogramEnumeration("IOS.FileUploadPanel.EntryPointVariant",
+                                FileUploadPanelEntryPointVariant::kContextMenu);
   [self showContextMenu];
 }
 
 - (void)stop {
   [_mediator disconnect];
   _mediator = nil;
-
-  // TODO(crbug.com/441659098): Disconnect the mediator from file selection in
-  // the model layer. Hide any other views presented beside the context menu.
+  [self hideCamera];
   [self hideContextMenu];
 }
 
@@ -96,7 +117,8 @@
   _contextMenuPresenter = [[ContextMenuPresenter alloc]
       initWithRootView:self.baseViewController.view];
   _contextMenuPresenter.contextMenuInteractionDelegate = self;
-  [_contextMenuPresenter presentAtLocationInRootView:_mediator.screenLocation];
+  [_contextMenuPresenter
+      presentAtLocationInRootView:_mediator.eventScreenLocation];
 }
 
 // Returns the context menu to be presented by `-showContextMenu`.
@@ -109,17 +131,21 @@
                 image:DefaultSymbolWithConfiguration(kFolderSymbol, nil)
            identifier:@"chromium.uploadfile.choosefile"
               handler:^(UIAction* action) {
-                [weakSelf showFilePicker];
+                [weakSelf
+                    showPickerForContextMenuActionVariant:
+                        FileUploadPanelContextMenuActionVariant::kFilePicker];
               }];
 
-  UIAction* photoPickerAction =
-      [UIAction actionWithTitle:[self photoPickerActionLabel]
-                          image:DefaultSymbolWithConfiguration(
-                                    kPhotoOnRectangleSymbol, nil)
-                     identifier:@"chromium.uploadfile.choosephoto"
-                        handler:^(UIAction* action) {
-                          [weakSelf showPhotoPicker];
-                        }];
+  UIAction* photoPickerAction = [UIAction
+      actionWithTitle:[self photoPickerActionLabel]
+                image:DefaultSymbolWithConfiguration(kPhotoOnRectangleSymbol,
+                                                     nil)
+           identifier:@"chromium.uploadfile.choosephoto"
+              handler:^(UIAction* action) {
+                [weakSelf
+                    showPickerForContextMenuActionVariant:
+                        FileUploadPanelContextMenuActionVariant::kPhotoPicker];
+              }];
 
   if ([UIImagePickerController
           isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
@@ -128,7 +154,9 @@
                   image:DefaultSymbolWithConfiguration(kSystemCameraSymbol, nil)
              identifier:@"chromium.uploadfile.usecamera"
                 handler:^(UIAction* action) {
-                  [self showCamera];
+                  [weakSelf
+                      showPickerForContextMenuActionVariant:
+                          FileUploadPanelContextMenuActionVariant::kCamera];
                 }];
     actions = @[ photoPickerAction, cameraAction, filePickerAction ];
 
@@ -153,9 +181,9 @@
 
 - (void)doContextMenuInteractionEndAnimationCompletion {
   [self hideContextMenu];
-  // TODO(crbug.com/441659098): Only hide the file upload panel if the context
-  // menu was dismissed without any action being selected.
-  [self hideFileUploadPanel];
+  if (!_cameraPicker) {
+    [_mediator cancelFileSelection];
+  }
 }
 
 #pragma mark - Private (File Picker)
@@ -171,6 +199,7 @@
 // Shows a file picker to select one or several files on the device.
 - (void)showFilePicker {
   // TODO(crbug.com/441659098): Show a file picker.
+  [_mediator cancelFileSelection];
 }
 
 #pragma mark - Private (Photo Picker)
@@ -183,29 +212,94 @@
 // Shows a photo picker to select one or several photos/videos on the device.
 - (void)showPhotoPicker {
   // TODO(crbug.com/441659098): Show a photo picker.
+  [_mediator cancelFileSelection];
 }
 
 #pragma mark - Private (Camera)
 
 - (NSString*)cameraActionLabel {
-  // TODO(crbug.com/441659098): Use only "Take Photo"/"Take Video" if
-  // videos/photos are not accepted by the web page.
+  CHECK(_mediator.allowsMediaSelection);
+  if (_mediator.allowsImageSelection && _mediator.allowsVideoSelection) {
+    base::UmaHistogramEnumeration(
+        "IOS.FileUploadPanel.CameraActionVariant",
+        FileUploadPanelCameraActionVariant::kPhotoAndVideo);
+    return l10n_util::GetNSString(
+        IDS_IOS_FILE_UPLOAD_PANEL_TAKE_PHOTO_OR_VIDEO_ACTION_LABEL);
+  }
+  if (_mediator.allowsVideoSelection) {
+    base::UmaHistogramEnumeration("IOS.FileUploadPanel.CameraActionVariant",
+                                  FileUploadPanelCameraActionVariant::kVideo);
+    return l10n_util::GetNSString(
+        IDS_IOS_FILE_UPLOAD_PANEL_TAKE_VIDEO_ACTION_LABEL);
+  }
+  base::UmaHistogramEnumeration("IOS.FileUploadPanel.CameraActionVariant",
+                                FileUploadPanelCameraActionVariant::kPhoto);
   return l10n_util::GetNSString(
-      IDS_IOS_FILE_UPLOAD_PANEL_TAKE_PHOTO_OR_VIDEO_ACTION_LABEL);
+      IDS_IOS_FILE_UPLOAD_PANEL_TAKE_PHOTO_ACTION_LABEL);
 }
 
 // Shows a camera view to take a photo/video to submit to the web page.
 - (void)showCamera {
-  // TODO(crbug.com/441659098): Show a camera view.
+  CHECK([UIImagePickerController
+      isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]);
+  _cameraPicker = [[UIImagePickerController alloc] init];
+  _cameraPicker.sourceType = UIImagePickerControllerSourceTypeCamera;
+  _cameraPicker.mediaTypes = _mediator.acceptedMediaTypesAvailableForCamera;
+  _cameraPicker.delegate = self;
+  _cameraPicker.modalPresentationStyle = UIModalPresentationOverFullScreen;
+  _cameraPicker.presentationController.delegate = self;
+  if (_mediator.eventCaptureType != ChooseFileCaptureType::kNone) {
+    _cameraPicker.cameraDevice = _mediator.preferredCameraDevice;
+  }
+  [self.baseViewController presentViewController:_cameraPicker
+                                        animated:YES
+                                      completion:nil];
+}
+
+- (void)hideCamera {
+  [_cameraPicker.presentingViewController dismissViewControllerAnimated:YES
+                                                             completion:nil];
+  _cameraPicker = nil;
+}
+
+#pragma mark - UIImagePickerControllerDelegate
+
+- (void)imagePickerController:(UIImagePickerController*)picker
+    didFinishPickingMediaWithInfo:
+        (NSDictionary<UIImagePickerControllerInfoKey, id>*)info {
+  base::UmaHistogramBoolean("IOS.FileUploadPanel.CameraResult", true);
+  [_mediator submitFileSelectionWithMediaInfo:info];
+}
+
+- (void)imagePickerControllerDidCancel:(UIImagePickerController*)picker {
+  base::UmaHistogramBoolean("IOS.FileUploadPanel.CameraResult", false);
+  [_mediator cancelFileSelection];
+}
+
+#pragma mark - UIAdaptivePresentationControllerDelegate
+
+- (void)presentationControllerDidDismiss:
+    (UIPresentationController*)presentationController {
+  [_mediator cancelFileSelection];
 }
 
 #pragma mark - Private
 
-// Hides the file upload panel using the command dispatcher.
-- (void)hideFileUploadPanel {
-  id<FileUploadPanelCommands> fileUploadPanelHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), FileUploadPanelCommands);
-  [fileUploadPanelHandler hideFileUploadPanel];
+- (void)showPickerForContextMenuActionVariant:
+    (FileUploadPanelContextMenuActionVariant)actionVariant {
+  base::UmaHistogramEnumeration("IOS.FileUploadPanel.ContextMenuActionVariant",
+                                actionVariant);
+  switch (actionVariant) {
+    case FileUploadPanelContextMenuActionVariant::kFilePicker:
+      [self showFilePicker];
+      break;
+    case FileUploadPanelContextMenuActionVariant::kPhotoPicker:
+      [self showPhotoPicker];
+      break;
+    case FileUploadPanelContextMenuActionVariant::kCamera:
+      [self showCamera];
+      break;
+  }
 }
 
 @end

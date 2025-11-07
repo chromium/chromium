@@ -1932,6 +1932,40 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.FileUploadPanel.CameraActionVariant"
+    enum="IOSFileUploadPanelCameraActionVariant" expires_after="2026-09-04">
+  <owner>qpubert@google.com</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    Report the variant of the camera action that was shown when the file upload
+    panel is presented.
+  </summary>
+</histogram>
+
+<histogram name="IOS.FileUploadPanel.CameraResult" enum="BooleanSuccess"
+    expires_after="2026-09-04">
+  <owner>qpubert@google.com</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    Report whether the user finished picking from the camera or instead did
+    cancel.
+  </summary>
+</histogram>
+
+<histogram name="IOS.FileUploadPanel.ContextMenuActionVariant"
+    enum="IOSFileUploadPanelContextMenuActionVariant"
+    expires_after="2026-09-04">
+  <owner>qpubert@google.com</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    Report the variant of the context menu action that was selected when the
+    file upload panel is presented.
+  </summary>
+</histogram>
+
 <histogram name="IOS.FileUploadPanel.ContextMenuVariant"
     enum="IOSFileUploadPanelContextMenuVariant" expires_after="2026-09-04">
   <owner>qpubert@google.com</owner>
@@ -1941,6 +1975,24 @@ chromium-metrics-reviews@google.com.
     Report the variant of the context menu that was shown when the file upload
     panel is presented.
   </summary>
+</histogram>
+
+<histogram name="IOS.FileUploadPanel.EntryPointVariant"
+    enum="IOSFileUploadPanelEntryPointVariant" expires_after="2026-09-04">
+  <owner>qpubert@google.com</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    Report the view that was shown when the file upload panel is presented.
+  </summary>
+</histogram>
+
+<histogram name="IOS.FileUploadPanel.SubmittedFileCount" units="count"
+    expires_after="2026-09-04">
+  <owner>qpubert@google.com</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>The number of files submitted with the file upload panel.</summary>
 </histogram>
 
 <histogram name="IOS.FinishedNavigationHasContext" enum="Boolean"

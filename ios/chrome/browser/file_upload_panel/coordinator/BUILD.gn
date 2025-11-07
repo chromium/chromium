@@ -19,6 +19,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/web/model/choose_file",
+    "//ios/chrome/browser/web/model/choose_file:choose_file_file_utils",
     "//ios/web/public",
     "//ui/base",
   ]
@@ -31,6 +32,7 @@ source_set("unit_tests") {
     ":coordinator",
     "//base/test:test_support",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/web/model/choose_file",
     "//ios/chrome/browser/web/model/choose_file:test_support",
     "//ios/web/public/test",

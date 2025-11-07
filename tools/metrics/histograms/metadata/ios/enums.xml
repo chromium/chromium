@@ -576,6 +576,26 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Drive"/>
 </enum>
 
+<!-- LINT.IfChange(IOSFileUploadPanelCameraActionVariant) -->
+
+<enum name="IOSFileUploadPanelCameraActionVariant">
+  <int value="0" label="PhotoAndVideo"/>
+  <int value="1" label="Video"/>
+  <int value="2" label="Photo"/>
+</enum>
+
+<!-- LINT.ThenChange(//ios/chrome/browser/file_upload_panel/ui/constants.h:FileUploadPanelCameraActionVariant) -->
+
+<!-- LINT.IfChange(IOSFileUploadPanelContextMenuActionVariant) -->
+
+<enum name="IOSFileUploadPanelContextMenuActionVariant">
+  <int value="0" label="FilePicker"/>
+  <int value="1" label="PhotoPicker"/>
+  <int value="2" label="Camera"/>
+</enum>
+
+<!-- LINT.ThenChange(//ios/chrome/browser/file_upload_panel/ui/constants.h:FileUploadPanelContextMenuActionVariant) -->
+
 <!-- LINT.IfChange(IOSFileUploadPanelContextMenuVariant) -->
 
 <enum name="IOSFileUploadPanelContextMenuVariant">
@@ -584,6 +604,16 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(//ios/chrome/browser/file_upload_panel/ui/constants.h:FileUploadPanelContextMenuVariant) -->
+
+<!-- LINT.IfChange(IOSFileUploadPanelEntryPointVariant) -->
+
+<enum name="IOSFileUploadPanelEntryPointVariant">
+  <int value="0" label="ContextMenu"/>
+  <int value="1" label="Camera"/>
+  <int value="2" label="FilePicker"/>
+</enum>
+
+<!-- LINT.ThenChange(//ios/chrome/browser/file_upload_panel/ui/constants.h:FileUploadPanelEntryPointVariant) -->
 
 <!-- LINT.IfChange(IOSGeminiEntryPoint) -->
 

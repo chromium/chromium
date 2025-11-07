@@ -2707,8 +2707,14 @@
       <message name="IDS_IOS_FILE_UPLOAD_PANEL_PHOTO_LIBRARY_ACTION_LABEL" desc="Title for a button for choosing an existing media item from the Photo Library, used in HTML forms. [iOS only]">
         Photo Library
       </message>
+      <message name="IDS_IOS_FILE_UPLOAD_PANEL_TAKE_PHOTO_ACTION_LABEL" desc="Title for a button for taking a photo, used in HTML forms. [iOS only]">
+        Take Photo
+      </message>
       <message name="IDS_IOS_FILE_UPLOAD_PANEL_TAKE_PHOTO_OR_VIDEO_ACTION_LABEL" desc="Title for a button for taking a photo or video, used in HTML forms. [iOS only]">
         Take Photo or Video
+      </message>
+      <message name="IDS_IOS_FILE_UPLOAD_PANEL_TAKE_VIDEO_ACTION_LABEL" desc="Title for a button for taking a video, used in HTML forms. [iOS only]">
+        Take Video
       </message>
       <message name="IDS_IOS_FIRSTRUN_TERMS_TITLE" desc="Title for the Terms of Service page shown to user on First Run. [Length: 20em] [iOS only]">
         Terms of service
