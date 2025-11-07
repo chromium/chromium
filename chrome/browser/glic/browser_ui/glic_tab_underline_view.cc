@@ -615,8 +615,11 @@ void GlicTabUnderlineView::DrawEffect(gfx::Canvas* canvas,
   gfx::Rect effect_bounds(origin, size);
 
   cc::PaintFlags new_flags(flags);
+  const int kNumDefaultColors = 3;
   // At small sizes, paint the underline as a solid color instead of a gradient.
-  if (underline_width < gfx::kFaviconSize) {
+  // We also draw a solid color if we've got no shader and fewer than 3 colors.
+  if (underline_width < gfx::kFaviconSize * 2 ||
+      (!new_flags.getShader() && colors_.size() < kNumDefaultColors)) {
     new_flags.setShader(nullptr);
     // `colors_` is not populated if the kGlicParameterizedShader feature is not
     // enabled.
@@ -627,6 +630,8 @@ void GlicTabUnderlineView::DrawEffect(gfx::Canvas* canvas,
       const SkColor fallback_color = SkColorSetARGB(255, 49, 134, 255);
       new_flags.setColor(fallback_color);
     }
+  } else if (!new_flags.getShader()) {
+    SetDefaultColors(new_flags, gfx::RectF(effect_bounds));
   }
 
   canvas->DrawRoundRect(gfx::RectF(effect_bounds), kCornerRadius, new_flags);

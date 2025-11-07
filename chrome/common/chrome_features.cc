@@ -519,6 +519,10 @@ const base::FeatureParam<bool> kGlicStatusIconOpenMenuWithSecondaryClick{
 // Controls whether the simplified version of the border should be used.
 BASE_FEATURE(kGlicForceSimplifiedBorder, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls whether to use a simplified version of the border that does not use
+// cc::PaintShader::MakeSkSLCommand.
+BASE_FEATURE(kGlicForceNonSkSLBorder, base::FEATURE_DISABLED_BY_DEFAULT);
+
 const base::FeatureParam<int> kGlicPreLoadingTimeMs{
     &kGlic, "glic-pre-loading-time-ms", 200};
 

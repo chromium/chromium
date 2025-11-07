@@ -69,6 +69,8 @@ class GlicBorderView : public GlicAnimatedEffectView {
       std::vector<cc::PaintShader::IntUniform>& int_uniforms) const override;
   void DrawEffect(gfx::Canvas* canvas, const cc::PaintFlags& flags) override;
 
+  void DrawSimplifiedEffect(gfx::Canvas* canvas) const;
+
   // A value from 0 to 1 indicating how much the border is to be emphasized.
   float GetEmphasis(base::TimeDelta delta) const;
 
