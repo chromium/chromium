@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/cells/autofill_edit_profile_button_footer_item.h"
 
 #import "ios/chrome/common/ui/util/button_util.h"
+#import "ios/chrome/common/ui/util/chrome_button.h"
 
 @implementation AutofillEditProfileButtonFooterItem
 
@@ -41,7 +42,7 @@
   self = [super initWithReuseIdentifier:reuseIdentifier];
   if (self) {
     // Create button.
-    self.button = PrimaryActionButton();
+    self.button = [[ChromeButton alloc] initWithStyle:ChromeButtonStylePrimary];
     [self.button addTarget:self
                     action:@selector(didTapButton)
           forControlEvents:UIControlEventTouchUpInside];

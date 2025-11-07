@@ -16,6 +16,7 @@
 #import "ios/chrome/common/crash_report/crash_helper.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/button_util.h"
+#import "ios/chrome/common/ui/util/chrome_button.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ui/base/device_form_factor.h"
 #import "ui/gfx/ios/NSString+CrStringDrawing.h"
@@ -49,7 +50,7 @@ constexpr std::string_view kThirdPartyModsDirectory =
 @implementation SafeModeViewController {
   __weak id<SafeModeViewControllerDelegate> _delegate;
   UIView* _innerView;
-  UIButton* _startButton;
+  ChromeButton* _startButton;
   UILabel* _uploadDescription;
   UIProgressView* _uploadProgress;
   NSDate* _uploadStartTime;
@@ -211,10 +212,10 @@ constexpr std::string_view kThirdPartyModsDirectory =
   [self centerView:description afterView:awSnap];
   [_innerView addSubview:description];
 
-  _startButton = PrimaryActionButton();
+  _startButton = [[ChromeButton alloc] initWithStyle:ChromeButtonStylePrimary];
   NSString* startText =
       NSLocalizedString(@"IDS_IOS_SAFE_MODE_RELOAD_CHROME", @"");
-  SetConfigurationTitle(_startButton, startText);
+  _startButton.title = startText;
 
   UIButtonConfiguration* buttonConfiguration = _startButton.configuration;
   buttonConfiguration.titleAlignment =

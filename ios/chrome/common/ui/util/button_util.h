@@ -18,15 +18,4 @@ void SetConfigurationTitle(UIButton* button, NSString* newString);
 // Sets the font of `button` through `button.configuration`.
 void SetConfigurationFont(UIButton* button, UIFont* font);
 
-// DEPRECATED: Most of the functionality in this file has been moved to
-// the ChromeButton class itself. Please use its properties instead.
-void UpdateButtonToMatchPrimaryAction(ChromeButton* button);
-void UpdateButtonToMatchPrimaryDestructiveAction(ChromeButton* button);
-void UpdateButtonToMatchSecondaryAction(ChromeButton* button);
-void UpdateButtonToMatchTertiaryAction(ChromeButton* button);
-ChromeButton* PrimaryActionButton();
-ChromeButton* PrimaryDestructiveActionButton();
-ChromeButton* SecondaryActionButton();
-ChromeButton* TertiaryActionButton();
-
 #endif  // IOS_CHROME_COMMON_UI_UTIL_BUTTON_UTIL_H_

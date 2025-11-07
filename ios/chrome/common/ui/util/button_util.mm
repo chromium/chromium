@@ -4,49 +4,12 @@
 
 #import "ios/chrome/common/ui/util/button_util.h"
 
-#import "base/apple/foundation_util.h"
-#import "ios/chrome/common/ui/colors/semantic_color_names.h"
-#import "ios/chrome/common/ui/util/pointer_interaction_util.h"
-
 namespace {
 
 }  // namespace
 
 const CGFloat kButtonVerticalInsets = 14.5;
 const CGFloat kPrimaryButtonCornerRadius = 15;
-
-void UpdateButtonToMatchPrimaryAction(ChromeButton* button) {
-  button.style = ChromeButtonStylePrimary;
-}
-
-void UpdateButtonToMatchPrimaryDestructiveAction(ChromeButton* button) {
-  button.style = ChromeButtonStylePrimaryDestructive;
-}
-
-void UpdateButtonToMatchSecondaryAction(ChromeButton* button) {
-  button.style = ChromeButtonStyleSecondary;
-}
-
-void UpdateButtonToMatchTertiaryAction(ChromeButton* button) {
-  button.style = ChromeButtonStyleTertiary;
-}
-
-ChromeButton* PrimaryActionButton() {
-  return [[ChromeButton alloc] initWithStyle:ChromeButtonStylePrimary];
-}
-
-ChromeButton* PrimaryDestructiveActionButton() {
-  return
-      [[ChromeButton alloc] initWithStyle:ChromeButtonStylePrimaryDestructive];
-}
-
-ChromeButton* SecondaryActionButton() {
-  return [[ChromeButton alloc] initWithStyle:ChromeButtonStyleSecondary];
-}
-
-ChromeButton* TertiaryActionButton() {
-  return [[ChromeButton alloc] initWithStyle:ChromeButtonStyleTertiary];
-}
 
 void SetConfigurationTitle(UIButton* button, NSString* newString) {
   UIButtonConfiguration* button_configuration = button.configuration;

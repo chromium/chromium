@@ -21,6 +21,7 @@
 #import "ios/chrome/common/ui/promo_style/constants.h"
 #import "ios/chrome/common/ui/promo_style/utils.h"
 #import "ios/chrome/common/ui/util/button_util.h"
+#import "ios/chrome/common/ui/util/chrome_button.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/device_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -80,9 +81,9 @@ SnippetSearchEngineButton* CreateSnippetSearchEngineButtonWithElement(
 
 // Creates a "Set as Default" button. The button is returned as disabled.
 ChromeButton* CreateSetAsDefaultButton() {
-  ChromeButton* button = PrimaryActionButton();
-  SetConfigurationTitle(
-      button, l10n_util::GetNSString(IDS_SEARCH_ENGINE_CHOICE_BUTTON_TITLE));
+  ChromeButton* button =
+      [[ChromeButton alloc] initWithStyle:ChromeButtonStylePrimary];
+  button.title = l10n_util::GetNSString(IDS_SEARCH_ENGINE_CHOICE_BUTTON_TITLE);
   button.translatesAutoresizingMaskIntoConstraints = NO;
   // Add semantic group, so the user can skip all the search engine stack view,
   // and jump to the SetAsDefault button, using VoiceOver.
@@ -93,7 +94,8 @@ ChromeButton* CreateSetAsDefaultButton() {
 
 // Create a more pill button.
 ChromeButton* CreateMorePillButton() {
-  ChromeButton* more_pill_button = PrimaryActionButton();
+  ChromeButton* more_pill_button =
+      [[ChromeButton alloc] initWithStyle:ChromeButtonStylePrimary];
   more_pill_button.layer.cornerRadius = kMorePillButtonCornerRadius;
   more_pill_button.layer.masksToBounds = YES;
   more_pill_button.accessibilityContainerType =
@@ -1005,8 +1007,8 @@ CGFloat GetSubtitleMarginDistance() {
   // properly scaled.
   UIFontTextStyle textStyle = GetTitleLabelFontTextStyle(self);
   _titleLabel.font = GetFRETitleFont(textStyle);
-  UpdateButtonToMatchPrimaryAction(_inlineSetAsDefaultButton);
-  UpdateButtonToMatchPrimaryAction(_floatingSetAsDefaultButton);
+  _inlineSetAsDefaultButton.style = ChromeButtonStylePrimary;
+  _floatingSetAsDefaultButton.style = ChromeButtonStylePrimary;
   [self updateMoreOrContinueButtonIfNeeded];
   _subtitleMarginLayoutConstraint.constant = GetSubtitleMarginDistance();
   // Update the SetAsDefault button once the layout changes take effect to have
@@ -1029,7 +1031,7 @@ CGFloat GetSubtitleMarginDistance() {
     return;
   }
   CHECK(_moreOrContinueButtonTitleStringID);
-  UpdateButtonToMatchPrimaryAction(_moreOrContinueButton);
+  _moreOrContinueButton.style = ChromeButtonStylePrimary;
   UIFont* font = [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
   NSDictionary* textAttributes = @{NSFontAttributeName : font};
   NSMutableAttributedString* attributedString =

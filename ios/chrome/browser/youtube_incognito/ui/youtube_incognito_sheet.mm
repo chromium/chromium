@@ -376,14 +376,13 @@ NSAttributedString* FormatHTMLListForUILabel(NSString* listString) {
 }
 
 - (ChromeButton*)createPrimaryActionButton {
-  ChromeButton* primaryActionButton = PrimaryActionButton();
+  ChromeButton* primaryActionButton =
+      [[ChromeButton alloc] initWithStyle:ChromeButtonStylePrimary];
   [primaryActionButton addTarget:self
                           action:@selector(primaryButtonTapped)
                 forControlEvents:UIControlEventTouchUpInside];
-  SetConfigurationTitle(
-      primaryActionButton,
-      l10n_util::GetNSString(
-          IDS_IOS_YOUTUBE_INCOGNITO_SHEET_PRIMARY_BUTTON_TITLE));
+  primaryActionButton.title = l10n_util::GetNSString(
+      IDS_IOS_YOUTUBE_INCOGNITO_SHEET_PRIMARY_BUTTON_TITLE);
   primaryActionButton.accessibilityIdentifier =
       kPrimaryActionAccessibilityIdentifier;
 

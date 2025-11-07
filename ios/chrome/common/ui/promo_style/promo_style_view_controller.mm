@@ -19,6 +19,7 @@
 #import "ios/chrome/common/ui/promo_style/promo_style_background_view.h"
 #import "ios/chrome/common/ui/promo_style/utils.h"
 #import "ios/chrome/common/ui/util/button_util.h"
+#import "ios/chrome/common/ui/util/chrome_button.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/device_util.h"
 #import "ios/chrome/common/ui/util/dynamic_type_util.h"
@@ -662,9 +663,9 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
         (self.actionButtonsVisibility ==
          ActionButtonsVisibility::kEquallyWeightedButtonShown);
     if (equallyWeightedButton) {
-      UpdateButtonToMatchTertiaryAction(self.primaryActionButton);
+      self.primaryActionButton.style = ChromeButtonStyleTertiary;
     } else {
-      UpdateButtonToMatchPrimaryAction(self.primaryActionButton);
+      self.primaryActionButton.style = ChromeButtonStylePrimary;
     }
   }
   // The secondary action button has button type based on
@@ -716,7 +717,7 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
     // Disable the button.
     self.primaryActionButton.enabled = NO;
     // Set blank button text and set accessibility label.
-    SetConfigurationTitle(self.primaryActionButton, @" ");
+    self.primaryActionButton.title = @" ";
     [self.primaryActionButton setAccessibilityLabel:self.primaryActionString];
     // Create the spinner overlay.
     self.primaryButtonActivityIndicatorView =
@@ -738,7 +739,7 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
     self.primaryButtonActivityIndicatorView = nil;
     self.primaryActionButton.enabled = YES;
     // Reset the button text and accessibility label.
-    SetConfigurationTitle(self.primaryActionButton, self.primaryActionString);
+    self.primaryActionButton.title = self.primaryActionString;
     self.primaryActionButton.accessibilityLabel = nil;
   }
 }
@@ -848,7 +849,7 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   return _specificContentView;
 }
 
-- (UIButton*)primaryActionButton {
+- (ChromeButton*)primaryActionButton {
   if (!_primaryActionButton) {
     // Use `primaryActionString` even if scrolling to the end is mandatory
     // because at the viewDidLoad stage, the scroll view hasn't computed its
@@ -1241,7 +1242,7 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
     return;
   }
   _buttonUpdated = YES;
-  UIButton* primaryActionButton = self.primaryActionButton;
+  ChromeButton* primaryActionButton = self.primaryActionButton;
   UIButtonConfiguration* buttonConfiguration =
       primaryActionButton.configuration;
   buttonConfiguration.attributedTitle = nil;
@@ -1564,9 +1565,12 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
        ActionButtonsVisibility::kEquallyWeightedButtonShown);
   ChromeButton* button;
   if (equallyWeightedButton) {
-    button = TertiaryActionButton();
+    button = [[ChromeButton alloc] initWithStyle:ChromeButtonStyleTertiary];
   } else {
-    button = primary ? PrimaryActionButton() : SecondaryActionButton();
+    button =
+        primary
+            ? [[ChromeButton alloc] initWithStyle:ChromeButtonStylePrimary]
+            : [[ChromeButton alloc] initWithStyle:ChromeButtonStyleSecondary];
   }
   UIButtonConfiguration* buttonConfiguration = button.configuration;
   buttonConfiguration.titlePadding = kMoreArrowMargin;

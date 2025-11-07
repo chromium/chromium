@@ -15,17 +15,12 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/button_util.h"
+#import "ios/chrome/common/ui/util/chrome_button.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
-
-// Vertical insets of the "Autofill Form" button.
-constexpr CGFloat kAutofillFormButtonVerticalInsets = 11;
-
-// Minimum height of the "Autofill Form" button.
-constexpr CGFloat kAutofillFormButtonMinHeight = 44;
 
 // Line spacing for the cell's header title.
 constexpr CGFloat kHeaderAttributedStringLineSpacing = 2;
@@ -473,27 +468,12 @@ UIView* CreateGraySeparatorForContainer(UIView* container) {
 }
 
 UIButton* CreateAutofillFormButton() {
-  UIButton* button = PrimaryActionButton();
+  ChromeButton* button =
+      [[ChromeButton alloc] initWithStyle:ChromeButtonStylePrimary];
   button.accessibilityIdentifier =
       manual_fill::kExpandedManualFillAutofillFormButtonID;
-  UIButtonConfiguration* buttonConfiguration = button.configuration;
-  buttonConfiguration.contentInsets =
-      NSDirectionalEdgeInsetsMake(kAutofillFormButtonVerticalInsets, 0,
-                                  kAutofillFormButtonVerticalInsets, 0);
-  if (@available(iOS 26, *)) {
-    buttonConfiguration.cornerStyle = UIButtonConfigurationCornerStyleCapsule;
-  }
-  button.configuration = buttonConfiguration;
-
-  [button.heightAnchor
-      constraintGreaterThanOrEqualToConstant:kAutofillFormButtonMinHeight]
-      .active = YES;
-
-  SetConfigurationTitle(
-      button, l10n_util::GetNSString(
-                  IDS_IOS_MANUAL_FALLBACK_AUTOFILL_FORM_BUTTON_TITLE));
-  button.titleLabel.textAlignment = NSTextAlignmentCenter;
-
+  button.title = l10n_util::GetNSString(
+      IDS_IOS_MANUAL_FALLBACK_AUTOFILL_FORM_BUTTON_TITLE);
   return button;
 }
 

@@ -7,14 +7,12 @@
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/util/button_util.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
 
 namespace {
 
 const UIControlState UIControlStateTunedDown = 1 << 16;
-
-const CGFloat kButtonVerticalInsets = 14.5;
-const CGFloat kPrimaryButtonCornerRadius = 15;
 
 // Alpha value for the disabled action button.
 const CGFloat kDisabledButtonAlpha = 0.5;

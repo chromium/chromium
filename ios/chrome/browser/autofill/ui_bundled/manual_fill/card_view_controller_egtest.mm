@@ -226,6 +226,15 @@ void CheckChipButtonsOfLocalCard() {
   autofill::CreditCard card = autofill::test::GetCreditCard();
   std::string locale = l10n_util::GetLocaleOverride();
 
+  if (base::ios::IsRunningOnIOS18OrLater()) {
+  } else {
+    // On iOS 17.5, a rendering issue in tests prevents some cells from
+    // displaying correctly. This scroll action ensures their proper visibility.
+    [[EarlGrey
+        selectElementWithMatcher:manual_fill::CreditCardTableViewMatcher()]
+        performAction:grey_scrollInDirection(kGREYDirectionDown, 10)];
+  }
+
   [[EarlGrey selectElementWithMatcher:LocalCardNumberChipButton()]
       assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey
@@ -1052,7 +1061,7 @@ void DismissPaymentBottomSheet() {
 
   // Scroll down to show the server card.
   [[EarlGrey selectElementWithMatcher:manual_fill::CreditCardTableViewMatcher()]
-      performAction:grey_scrollInDirection(kGREYDirectionDown, 10)];
+      performAction:grey_scrollInDirection(kGREYDirectionDown, 40)];
 
   // Check that the GPay icon is visible in the masked card cell.
   [[EarlGrey selectElementWithMatcher:GPayIcon(masked_card_last_digits)]

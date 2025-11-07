@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/shared/public/commands/reader_mode_options_commands.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/button_util.h"
+#import "ios/chrome/common/ui/util/chrome_button.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -185,10 +186,10 @@ constexpr CGFloat kBlurEffectBackgroundControlsOpacity = 0.95;
     return _hideReaderModeButton;
   }
 
-  UIButton* button = PrimaryActionButton();
-  SetConfigurationTitle(
-      button,
-      l10n_util::GetNSString(IDS_IOS_READER_MODE_OPTIONS_HIDE_BUTTON_LABEL));
+  ChromeButton* button =
+      [[ChromeButton alloc] initWithStyle:ChromeButtonStylePrimary];
+  button.title =
+      l10n_util::GetNSString(IDS_IOS_READER_MODE_OPTIONS_HIDE_BUTTON_LABEL);
 
   button.maximumContentSizeCategory = UIContentSizeCategoryExtraExtraLarge;
   button.accessibilityIdentifier =

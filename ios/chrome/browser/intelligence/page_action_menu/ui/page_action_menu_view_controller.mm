@@ -22,7 +22,6 @@
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
-#import "ios/chrome/common/ui/util/button_util.h"
 #import "ios/chrome/common/ui/util/chrome_button.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -454,7 +453,8 @@ const CGFloat kDividerWidth = 1.0;
 
 // Creates a large button for the BWG entry point.
 - (UIButton*)createBWGButton {
-  ChromeButton* button = PrimaryActionButton();
+  ChromeButton* button =
+      [[ChromeButton alloc] initWithStyle:ChromeButtonStylePrimary];
 
   // Create the background config.
   UIBackgroundConfiguration* backgroundConfig = button.configuration.background;

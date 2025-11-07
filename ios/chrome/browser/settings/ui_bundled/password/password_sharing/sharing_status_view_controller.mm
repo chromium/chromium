@@ -18,7 +18,7 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/favicon/favicon_container_view.h"
 #import "ios/chrome/common/ui/favicon/favicon_view.h"
-#import "ios/chrome/common/ui/util/button_util.h"
+#import "ios/chrome/common/ui/util/chrome_button.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -682,11 +682,12 @@ NSString* const kSharingStatusFooterId = @"SharingStatusViewFooter";
 
 // Helper for creating the done button.
 - (UIButton*)createDoneButton {
-  UIButton* doneButton = PrimaryActionButton();
+  ChromeButton* doneButton =
+      [[ChromeButton alloc] initWithStyle:ChromeButtonStylePrimary];
   [doneButton addTarget:self
                  action:@selector(doneButtonTapped)
        forControlEvents:UIControlEventTouchUpInside];
-  SetConfigurationTitle(doneButton, l10n_util::GetNSString(IDS_DONE));
+  doneButton.title = l10n_util::GetNSString(IDS_DONE);
   doneButton.accessibilityIdentifier = kSharingStatusDoneButtonID;
   return doneButton;
 }

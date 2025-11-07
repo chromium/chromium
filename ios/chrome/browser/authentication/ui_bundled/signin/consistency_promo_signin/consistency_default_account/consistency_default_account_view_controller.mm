@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/button_util.h"
+#import "ios/chrome/common/ui/util/chrome_button.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
@@ -60,7 +61,7 @@ UIFont* GetNavigationBarTitleFont() {
 // Button to
 // 1. confirm the default identity and sign-in when an account is available, or
 // 2. add an account when no account is available on the device.
-@property(nonatomic, strong) UIButton* primaryButton;
+@property(nonatomic, strong) ChromeButton* primaryButton;
 // Title for `self.primaryButton` when it needs to show the text "Continue as…".
 // This property is needed to hide the title the activity indicator is shown.
 @property(nonatomic, copy) NSString* continueAsTitle;
@@ -89,7 +90,7 @@ UIFont* GetNavigationBarTitleFont() {
   self.primaryButton.enabled = NO;
   // Text should not be empty, otherwise the top and bottom can’t apply to the
   // text buttom and top line anymore.
-  SetConfigurationTitle(self.primaryButton, @" ");
+  self.primaryButton.title = @" ";
   // Set accessibility label so that VoiceOver won't use the empty string.
   self.primaryButton.accessibilityLabel = l10n_util::GetNSString(
       IDS_IOS_SIGNIN_PROMO_CONTINUE_AS_TAPPED_ACCESSIBILITY_TITLE);
@@ -106,7 +107,7 @@ UIFont* GetNavigationBarTitleFont() {
   self.identityButtonControl.enabled = YES;
   self.primaryButton.enabled = YES;
   DCHECK(self.continueAsTitle);
-  SetConfigurationTitle(self.primaryButton, self.continueAsTitle);
+  self.primaryButton.title = self.continueAsTitle;
   self.primaryButton.accessibilityLabel = nil;
 }
 
@@ -231,7 +232,8 @@ UIFont* GetNavigationBarTitleFont() {
         constraintEqualToAnchor:self.contentView.widthAnchor]
   ]];
   // Add the primary button (the "Continue as"/"Sign in" button).
-  self.primaryButton = PrimaryActionButton();
+  self.primaryButton =
+      [[ChromeButton alloc] initWithStyle:ChromeButtonStylePrimary];
 
   self.primaryButton.accessibilityIdentifier =
       kConsistencySigninPrimaryButtonAccessibilityIdentifier;
@@ -342,7 +344,7 @@ UIFont* GetNavigationBarTitleFont() {
 
   // If spinner is active, delay UI updates until stopSpinner() is called.
   if (!self.activityIndicatorView) {
-    SetConfigurationTitle(self.primaryButton, self.continueAsTitle);
+    self.primaryButton.title = self.continueAsTitle;
     self.identityButtonControl.hidden = NO;
   }
 }
@@ -355,9 +357,8 @@ UIFont* GetNavigationBarTitleFont() {
   // Hide the IdentityButtonControl, and update the primary button to serve as
   // a "Sign in…" button.
   self.identityButtonControl.hidden = YES;
-  SetConfigurationTitle(
-      self.primaryButton,
-      l10n_util::GetNSString(IDS_IOS_CONSISTENCY_PROMO_SIGN_IN));
+  self.primaryButton.title =
+      l10n_util::GetNSString(IDS_IOS_CONSISTENCY_PROMO_SIGN_IN);
 }
 
 #pragma mark - UIAccessibilityAction

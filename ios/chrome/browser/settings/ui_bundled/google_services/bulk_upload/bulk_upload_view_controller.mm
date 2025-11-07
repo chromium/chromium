@@ -14,7 +14,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/elements/highlight_button.h"
-#import "ios/chrome/common/ui/util/button_util.h"
+#import "ios/chrome/common/ui/util/chrome_button.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -36,7 +36,7 @@ const char kBulkUploadCloseUserAction[] = "Signin_BulkUpload_Close";
 @implementation BulkUploadViewController {
   BulkUploadTableViewController* _tableViewController;
   // The button to trigger the bulk upload.
-  UIButton* _saveInAccountButton;
+  ChromeButton* _saveInAccountButton;
   // Stored as a separate field because it can be set before
   // _saveInAccountButton is instantiated.
   BOOL _saveInAccountButtonEnabled;
@@ -63,19 +63,19 @@ const char kBulkUploadCloseUserAction[] = "Signin_BulkUpload_Close";
   [self.view addSubview:tableView];
   [_tableViewController didMoveToParentViewController:self];
   // Create the save in account button.
-  _saveInAccountButton = PrimaryActionButton();
+  _saveInAccountButton =
+      [[ChromeButton alloc] initWithStyle:ChromeButtonStylePrimary];
   _saveInAccountButton.accessibilityIdentifier =
       kBulkUploadSaveButtonAccessibilityIdentifer;
-  SetConfigurationTitle(
-      _saveInAccountButton,
-      l10n_util::GetNSString(IDS_IOS_BULK_UPLOAD_BUTTON_TITLE));
+  _saveInAccountButton.title =
+      l10n_util::GetNSString(IDS_IOS_BULK_UPLOAD_BUTTON_TITLE);
   _saveInAccountButton.translatesAutoresizingMaskIntoConstraints = NO;
   [_saveInAccountButton addTarget:self
                            action:@selector(saveInAccountTapped:)
                  forControlEvents:UIControlEventTouchUpInside];
   // setValidationButtonEnabled might have been called before the button was
   // created.
-  [self updateSaveInAccountButton];
+  _saveInAccountButton.enabled = _saveInAccountButtonEnabled;
   [self.view addSubview:_saveInAccountButton];
   // Create the Cancel button.
   self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]
@@ -146,16 +146,10 @@ const char kBulkUploadCloseUserAction[] = "Signin_BulkUpload_Close";
 
 - (void)setValidationButtonEnabled:(BOOL)enabled {
   _saveInAccountButtonEnabled = enabled;
-  [self updateSaveInAccountButton];
+  _saveInAccountButton.enabled = _saveInAccountButtonEnabled;
 }
 
 #pragma mark - Private
-
-// Updates the state of `_saveInAccountButton` according to
-// `_saveInAccountButtonEnabled`.
-- (void)updateSaveInAccountButton {
-  _saveInAccountButton.enabled = _saveInAccountButtonEnabled;
-}
 
 - (void)saveInAccountTapped:(UIButton*)button {
   [self.mutator requestSave];

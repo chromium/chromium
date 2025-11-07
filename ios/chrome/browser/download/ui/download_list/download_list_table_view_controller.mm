@@ -28,7 +28,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
-#import "ios/chrome/common/ui/util/button_util.h"
+#import "ios/chrome/common/ui/util/chrome_button.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -196,7 +196,8 @@ typedef NSDiffableDataSourceSnapshot<DownloadListGroupItem*, DownloadListItem*>
         base::apple::ObjCCast<UIButton>(cell.accessoryView);
     if (!cancelButton) {
       // Create and configure cancel button if it does not exist.
-      cancelButton = SecondaryActionButton();
+      cancelButton =
+          [[ChromeButton alloc] initWithStyle:ChromeButtonStyleSecondary];
       cancelButton.translatesAutoresizingMaskIntoConstraints = YES;
       UIImage* cancelButtonImage =
           SymbolWithPalette(DefaultSymbolWithPointSize(kXMarkCircleFillSymbol,

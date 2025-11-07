@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/util/chrome_button.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -486,9 +487,10 @@ const CGFloat kSpacingPrimarySecondaryButtonsIOS18 = 0;
 
 // Creates the primary button.
 - (UIButton*)createPrimaryButton {
-  UIButton* primaryButton = [BWGUIUtils
-      createPrimaryButtonWithTitle:l10n_util::GetNSString(
-                                       IDS_IOS_BWG_CONSENT_PRIMARY_BUTTON)];
+  ChromeButton* primaryButton =
+      [[ChromeButton alloc] initWithStyle:ChromeButtonStylePrimary];
+  primaryButton.title =
+      l10n_util::GetNSString(IDS_IOS_BWG_CONSENT_PRIMARY_BUTTON);
   [primaryButton addTarget:self
                     action:@selector(didTapPrimaryButton:)
           forControlEvents:UIControlEventTouchUpInside];
@@ -501,9 +503,10 @@ const CGFloat kSpacingPrimarySecondaryButtonsIOS18 = 0;
 
 // Creates the secondary button.
 - (UIButton*)createSecondaryButton {
-  UIButton* secondaryButton = [BWGUIUtils
-      createSecondaryButtonWithTitle:l10n_util::GetNSString(
-                                         IDS_IOS_BWG_CONSENT_SECONDARY_BUTTON)];
+  ChromeButton* secondaryButton =
+      [[ChromeButton alloc] initWithStyle:ChromeButtonStyleSecondary];
+  secondaryButton.title =
+      l10n_util::GetNSString(IDS_IOS_BWG_CONSENT_SECONDARY_BUTTON);
   [secondaryButton addTarget:self
                       action:@selector(didTapSecondaryButton:)
             forControlEvents:UIControlEventTouchUpInside];

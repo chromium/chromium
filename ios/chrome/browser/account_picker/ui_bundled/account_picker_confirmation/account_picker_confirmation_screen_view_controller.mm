@@ -19,6 +19,7 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/elements/branded_navigation_item_title_view.h"
 #import "ios/chrome/common/ui/util/button_util.h"
+#import "ios/chrome/common/ui/util/chrome_button.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
@@ -104,7 +105,7 @@ UILabel* CreateGooglePhotosTitleLabel(NSString* title) {
   // 1. confirm the default identity and sign-in when an account is available,
   // or
   // 2. add an account when no account is available on the device.
-  __strong UIButton* _primaryButton;
+  __strong ChromeButton* _primaryButton;
   // Title for `_primaryButton` when it needs to show the text "Continue
   // as…". This property is needed to hide the title the activity indicator is
   // shown.
@@ -142,7 +143,7 @@ UILabel* CreateGooglePhotosTitleLabel(NSString* title) {
   _primaryButton.enabled = NO;
   // Text should not be empty, otherwise the top and bottom can’t apply to the
   // text buttom and top line anymore.
-  SetConfigurationTitle(_primaryButton, @" ");
+  _primaryButton.title = @" ";
   // Set accessibility label so that VoiceOver won't use the empty string.
   _primaryButton.accessibilityLabel =
       _configuration.submitButtonTappedAccessibilityLabel
@@ -165,7 +166,7 @@ UILabel* CreateGooglePhotosTitleLabel(NSString* title) {
   _askEveryTimeSwitch.enabled = YES;
   _primaryButton.enabled = YES;
   DCHECK(_submitString);
-  SetConfigurationTitle(_primaryButton, _submitString);
+  _primaryButton.title = _submitString;
   _primaryButton.accessibilityLabel = nil;
 }
 
@@ -392,7 +393,8 @@ UILabel* CreateGooglePhotosTitleLabel(NSString* title) {
   ]];
 
   // Add the primary button (the "Continue as"/"Sign in" button).
-  _primaryButton = PrimaryActionButton();
+  _primaryButton =
+      [[ChromeButton alloc] initWithStyle:ChromeButtonStylePrimary];
   UIButtonConfiguration* buttonConfiguration = _primaryButton.configuration;
   buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
       kPrimaryButtonVerticalInsets, 0, kPrimaryButtonVerticalInsets, 0);
@@ -500,7 +502,7 @@ UILabel* CreateGooglePhotosTitleLabel(NSString* title) {
 
   // If spinner is active, delay UI updates until stopSpinner() is called.
   if (!_activityIndicatorView) {
-    SetConfigurationTitle(_primaryButton, _submitString);
+    _primaryButton.title = _submitString;
     if (!_identityButtonControlShouldBeHidden) {
       _identityButtonControl.hidden = NO;
     }
@@ -515,7 +517,7 @@ UILabel* CreateGooglePhotosTitleLabel(NSString* title) {
   // Hide the IdentityButtonControl, and update the primary button to serve as
   // a "Sign in…" button.
   _groupedIdentityButtonSection.hidden = YES;
-  SetConfigurationTitle(_primaryButton, _configuration.submitButtonTitle);
+  _primaryButton.title = _configuration.submitButtonTitle;
 }
 
 @end
