@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/ash/components/policy/local_auth_factors/local_auth_factors_complexity_checker.h"
+#include "chromeos/ash/components/policy/local_auth_factors/local_auth_factors_complexity.h"
 
 #include <algorithm>
 #include <string_view>
@@ -11,11 +11,9 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "third_party/abseil-cpp/absl/strings/ascii.h"
 
-namespace policy {
+namespace policy::local_auth_factors {
 
 namespace {
-
-using Complexity = LocalAuthFactorsComplexity;
 
 // Returns true for inputs like "6789", or "6543", or "0000" (but not for inputs
 // like "8901" - wrap around isn't considered).
@@ -38,10 +36,7 @@ bool ContainsOrderedOrRepeatingSequence(std::string_view pin) {
 
 }  // namespace
 
-// static
-bool LocalAuthFactorsComplexityChecker::CheckPasswordComplexity(
-    std::string_view password,
-    Complexity complexity) {
+bool CheckPasswordComplexity(std::string_view password, Complexity complexity) {
   bool has_digit = std::ranges::any_of(password, absl::ascii_isdigit);
   bool has_lower = std::ranges::any_of(password, absl::ascii_islower);
   bool has_upper = std::ranges::any_of(password, absl::ascii_isupper);
@@ -67,10 +62,7 @@ bool LocalAuthFactorsComplexityChecker::CheckPasswordComplexity(
   }
 }
 
-// static
-bool LocalAuthFactorsComplexityChecker::CheckPinComplexity(
-    std::string_view pin,
-    Complexity complexity) {
+bool CheckPinComplexity(std::string_view pin, Complexity complexity) {
   // Check that the pin contains only digits.
   if (!std::ranges::all_of(pin, absl::ascii_isdigit)) {
     return false;
@@ -91,11 +83,4 @@ bool LocalAuthFactorsComplexityChecker::CheckPinComplexity(
   }
 }
 
-// static
-void LocalAuthFactorsComplexityChecker::RegisterProfilePrefs(
-    PrefRegistrySimple* registry) {
-  registry->RegisterIntegerPref(ash::prefs::kLocalAuthFactorsComplexity,
-                                static_cast<int>(Complexity::kNone));
-}
-
-}  // namespace policy
+}  // namespace policy::local_auth_factors

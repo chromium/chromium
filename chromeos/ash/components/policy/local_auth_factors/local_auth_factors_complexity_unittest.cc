@@ -2,16 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/ash/components/policy/local_auth_factors/local_auth_factors_complexity_checker.h"
+#include "chromeos/ash/components/policy/local_auth_factors/local_auth_factors_complexity.h"
 
 #include <string>
 #include <string_view>
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace policy {
-
-using Complexity = LocalAuthFactorsComplexity;
+namespace policy::local_auth_factors {
 
 TEST(LocalAuthFactorsComplexityCheckerTest, PasswordComplexity) {
   const struct TestData {
@@ -69,8 +67,7 @@ TEST(LocalAuthFactorsComplexityCheckerTest, PasswordComplexity) {
 
   for (const auto& t : kTestData) {
     EXPECT_EQ(t.expected_result,
-              LocalAuthFactorsComplexityChecker::CheckPasswordComplexity(
-                  t.password, t.complexity))
+              CheckPasswordComplexity(t.password, t.complexity))
         << "Test case: " << t.test_name;
   }
 }
@@ -130,11 +127,9 @@ TEST(LocalAuthFactorsComplexityCheckerTest, PinComplexity) {
   };
 
   for (const auto& t : kTestData) {
-    EXPECT_EQ(t.expected_result,
-              LocalAuthFactorsComplexityChecker::CheckPinComplexity(
-                  t.pin, t.complexity))
+    EXPECT_EQ(t.expected_result, CheckPinComplexity(t.pin, t.complexity))
         << "Test case: " << t.test_name;
   }
 }
 
-}  // namespace policy
+}  // namespace policy::local_auth_factors
