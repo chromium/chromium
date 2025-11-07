@@ -15,7 +15,7 @@
 #include "chrome/updater/update_service.h"
 
 #if BUILDFLAG(IS_POSIX)
-#include "chrome/updater/ipc/update_service_proxy_posix.h"
+#include "chrome/updater/ipc/update_service_proxy_mojo.h"
 #elif BUILDFLAG(IS_WIN)
 #include "chrome/updater/ipc/update_service_proxy_win.h"
 #endif

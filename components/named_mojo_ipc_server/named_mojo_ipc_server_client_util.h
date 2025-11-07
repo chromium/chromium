@@ -14,6 +14,11 @@ namespace named_mojo_ipc_server {
 // This calls into |mojo::NamedPlatformChannel::ConnectToServer| with
 // additional brokerage steps on platforms that require them.
 [[nodiscard]] mojo::PlatformChannelEndpoint ConnectToServer(
+    const mojo::NamedPlatformChannel::Options& options);
+
+// Same as above, but taking just a `server_name` instead of a full set of
+// `options`.
+[[nodiscard]] mojo::PlatformChannelEndpoint ConnectToServer(
     const mojo::NamedPlatformChannel::ServerName& server_name);
 
 }  // namespace named_mojo_ipc_server

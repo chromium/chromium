@@ -22,12 +22,12 @@ namespace named_mojo_ipc_server {
 
 // static
 mojo::PlatformChannelEndpoint ConnectToServer(
-    const mojo::NamedPlatformChannel::ServerName& server_name) {
+    const mojo::NamedPlatformChannel::Options& options) {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-  return mojo::NamedPlatformChannel::ConnectToServer(server_name);
+  return mojo::NamedPlatformChannel::ConnectToServer(options);
 #elif BUILDFLAG(IS_MAC)
   mojo::PlatformChannelEndpoint endpoint =
-      mojo::NamedPlatformChannel::ConnectToServer(server_name);
+      mojo::NamedPlatformChannel::ConnectToServer(options);
 
   mojo::PlatformChannel channel;
   mach_msg_base_t message{};
@@ -52,6 +52,12 @@ mojo::PlatformChannelEndpoint ConnectToServer(
 #else
   NOTREACHED() << "Unsupported platform.";
 #endif
+}
+
+// static
+mojo::PlatformChannelEndpoint ConnectToServer(
+    const mojo::NamedPlatformChannel::ServerName& server_name) {
+  return ConnectToServer({.server_name = server_name});
 }
 
 }  // namespace named_mojo_ipc_server

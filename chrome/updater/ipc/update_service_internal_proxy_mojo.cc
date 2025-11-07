@@ -1,8 +1,8 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/updater/ipc/update_service_internal_proxy_posix.h"
+#include "chrome/updater/ipc/update_service_internal_proxy_mojo.h"
 
 #include <memory>
 #include <optional>
@@ -18,6 +18,7 @@
 #include "base/task/thread_pool.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/ipc/ipc_names.h"
 #include "chrome/updater/ipc/update_service_dialer.h"
@@ -50,8 +51,12 @@ std::optional<mojo::PlatformChannelEndpoint> ConnectMojo(UpdaterScope scope,
   if (retries == 1 && !DialUpdateInternalService(scope)) {
     return std::nullopt;
   }
-  return named_mojo_ipc_server::ConnectToServer(
-      GetUpdateServiceInternalServerName(scope));
+  return named_mojo_ipc_server::ConnectToServer({
+      .server_name = GetUpdateServiceInternalServerName(scope),
+#if BUILDFLAG(IS_WIN)
+      .allow_impersonation = true,
+#endif  // BUILDFLAG(IS_WIN)
+  });
 }
 
 void Connect(

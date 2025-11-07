@@ -11,7 +11,7 @@
 #include "base/functional/callback.h"
 
 #if BUILDFLAG(IS_POSIX)
-#include "chrome/updater/ipc/update_service_internal_proxy_posix.h"
+#include "chrome/updater/ipc/update_service_internal_proxy_mojo.h"
 #elif BUILDFLAG(IS_WIN)
 #include "chrome/updater/ipc/update_service_internal_proxy_win.h"
 #endif

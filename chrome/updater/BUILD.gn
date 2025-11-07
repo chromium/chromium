@@ -407,8 +407,8 @@ if (is_win || is_mac || is_linux) {
         "app/app_server_posix.h",
         "change_owners_task_posix.cc",
         "ipc/ipc_security.h",
-        "ipc/update_service_internal_proxy_posix.cc",
-        "ipc/update_service_internal_proxy_posix.h",
+        "ipc/update_service_internal_proxy_mojo.cc",
+        "ipc/update_service_internal_proxy_mojo.h",
         "remove_uninstalled_apps_task_posix.cc",
       ]
     }
@@ -670,8 +670,8 @@ if (is_win || is_mac || is_linux) {
     if (is_posix) {
       sources += [
         "ipc/update_service_dialer.h",
-        "ipc/update_service_proxy_posix.cc",
-        "ipc/update_service_proxy_posix.h",
+        "ipc/update_service_proxy_mojo.cc",
+        "ipc/update_service_proxy_mojo.h",
         "posix/setup.h",
         "util/posix_util.cc",
         "util/posix_util.h",
