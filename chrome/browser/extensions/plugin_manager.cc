@@ -13,7 +13,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_paths.h"
 #include "content/public/browser/plugin_service.h"
-#include "content/public/common/content_plugin_info.h"
+#include "content/public/common/webplugininfo.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handlers/mime_types_handler.h"
 #include "net/base/mime_util.h"

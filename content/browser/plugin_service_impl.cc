@@ -38,7 +38,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_constants.h"
-#include "content/public/common/content_plugin_info.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/process_type.h"
 #include "content/public/common/webplugininfo.h"
@@ -152,8 +151,9 @@ void PluginServiceImpl::RegisterPlugins() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   GetContentClient()->AddPlugins(&plugins_);
-  for (const auto& plugin : plugins_)
-    RegisterInternalPlugin(plugin.ToWebPluginInfo(), /*add_at_beginning=*/true);
+  for (const auto& plugin : plugins_) {
+    RegisterInternalPlugin(plugin, /*add_at_beginning=*/true);
+  }
 }
 
 void PluginServiceImpl::SetFilter(PluginServiceFilter* filter) {

@@ -81,7 +81,7 @@
 #endif
 
 #if BUILDFLAG(ENABLE_PLUGINS)
-#include "content/public/common/content_plugin_info.h"
+#include "content/public/common/webplugininfo.h"
 #endif
 
 #if BUILDFLAG(ENABLE_PDF)
@@ -122,24 +122,27 @@ void ChromeContentClient::SetGpuInfo(const gpu::GPUInfo& gpu_info) {
 }
 
 void ChromeContentClient::AddPlugins(
-    std::vector<content::ContentPluginInfo>* plugins) {
+    std::vector<content::WebPluginInfo>* plugins) {
 #if BUILDFLAG(ENABLE_PDF)
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  static constexpr char kPDFPluginName[] = "Chrome PDF Plugin";
+  static constexpr char16_t kPDFPluginName[] = u"Chrome PDF Plugin";
 #else
-  static constexpr char kPDFPluginName[] = "Chromium PDF Plugin";
+  static constexpr char16_t kPDFPluginName[] = u"Chromium PDF Plugin";
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  static constexpr char16_t kPDFPluginDescription[] = u"Built-in PDF viewer";
   static constexpr char kPDFPluginExtension[] = "pdf";
-  static constexpr char kPDFPluginDescription[] = "Portable Document Format";
+  static constexpr char kPDFPluginExtensionDescription[] =
+      "Portable Document Format";
 
-  content::ContentPluginInfo pdf_info;
-  pdf_info.is_internal = true;
+  content::WebPluginInfo pdf_info;
   pdf_info.name = kPDFPluginName;
-  pdf_info.description = kPDFPluginDescription;
   pdf_info.path = base::FilePath(ChromeContentClient::kPDFInternalPluginPath);
-  content::WebPluginMimeType pdf_mime_type(
-      pdf::kInternalPluginMimeType, kPDFPluginExtension, kPDFPluginDescription);
+  pdf_info.desc = kPDFPluginDescription;
+  content::WebPluginMimeType pdf_mime_type(pdf::kInternalPluginMimeType,
+                                           kPDFPluginExtension,
+                                           kPDFPluginExtensionDescription);
   pdf_info.mime_types.push_back(pdf_mime_type);
+  pdf_info.type = content::WebPluginInfo::PLUGIN_TYPE_BROWSER_INTERNAL_PLUGIN;
   plugins->push_back(pdf_info);
 #endif  // BUILDFLAG(ENABLE_PDF)
 }

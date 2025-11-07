@@ -22,7 +22,7 @@
 
 namespace content {
 class PluginServiceFilter;
-struct ContentPluginInfo;
+struct WebPluginInfo;
 
 // This class responds to requests from renderers for the list of plugins, and
 // also a proxy object for plugin instances. It lives on the UI thread.
@@ -70,7 +70,7 @@ class CONTENT_EXPORT PluginServiceImpl : public PluginService {
 
   void RegisterPlugins();
 
-  std::vector<ContentPluginInfo> plugins_;
+  std::vector<WebPluginInfo> plugins_;
 
   // Weak pointer; set during the startup and must outlive us.
   raw_ptr<PluginServiceFilter, DanglingUntriaged> filter_ = nullptr;

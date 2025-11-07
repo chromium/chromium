@@ -344,14 +344,6 @@ source_set("common_sources") {
     "//content/common:mojo_bindings",
   ]
 
-  if (enable_plugins) {
-    sources += [
-      "content_plugin_info.cc",
-      "content_plugin_info.h",
-    ]
-    public_deps += [ "//content/public/common:buildflags" ]
-  }
-
   if (use_clang_profiling_inside_sandbox) {
     sources += [ "profiling_utils.h" ]
   }
