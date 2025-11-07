@@ -56,6 +56,10 @@
 #pragma comment(lib, "Shlwapi.lib")
 #include <PowrProf.h>
 #pragma comment(lib, "PowrProf.lib")
+#include <psapi.h>
+#if !defined(CHROMIUM_UNRAR)
+#pragma comment(lib, "Psapi.lib") // For GetProcessMemoryInfo().
+#endif  // !defined(CHROMIUM_UNRAR)
 #include <shellapi.h>
 #include <shlobj.h>
 #include <winioctl.h>

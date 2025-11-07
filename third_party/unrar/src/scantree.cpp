@@ -141,7 +141,7 @@ bool ScanTree::GetFilteredMask()
   uint SlashPos=0;
   uint StartPos=0;
 #ifdef _WIN_ALL // Not treat the special NTFS \\?\d: path prefix as a wildcard.
-  if (CurMask.rfind(L"\\\\?\\",0)==0)
+  if (starts_with(CurMask,L"\\\\?\\"))
     StartPos=4;
 #endif
   for (uint I=StartPos;I<CurMask.size();I++)

@@ -258,7 +258,8 @@ void ErrorHandler::SetErrorCode(RAR_EXIT Code)
         ExitCode=Code;
       break;
     case RARX_CRC:
-      if (ExitCode!=RARX_BADPWD)
+      // 2025.10.25: RARX_OPEN is set if next volume is missing.
+      if (ExitCode!=RARX_BADPWD && ExitCode!=RARX_OPEN)
         ExitCode=Code;
       break;
     case RARX_FATAL:

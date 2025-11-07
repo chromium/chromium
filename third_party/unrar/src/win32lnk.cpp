@@ -51,10 +51,10 @@ bool CreateReparsePoint(CommandData *Cmd,const wchar *Name,FileHeader *hd)
   REPARSE_DATA_BUFFER *rdb=(REPARSE_DATA_BUFFER *)Buf.data();
 
   // Remove \??\ NTFS junction prefix of present.
-  bool WinPrefix=SubstName.rfind(L"\\??\\",0)!=std::wstring::npos;
+  bool WinPrefix=starts_with(SubstName,L"\\??\\");
   std::wstring PrintName=WinPrefix ? SubstName.substr(4):SubstName;
 
-  if (WinPrefix && PrintName.rfind(L"UNC\\",0)!=std::wstring::npos)
+  if (WinPrefix && starts_with(PrintName,L"UNC\\"))
     PrintName=L"\\"+PrintName.substr(3); // Convert UNC\server\share to \\server\share.
 
   size_t PrintLength=PrintName.size();

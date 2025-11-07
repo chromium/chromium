@@ -79,38 +79,25 @@ void RarTime::SetLocal(RarLocalTime *lt)
   st.wSecond=(WORD)lt->Second;
   st.wMilliseconds=0;
   st.wDayOfWeek=0;
-  FILETIME lft;
-  if (SystemTimeToFileTime(&st,&lft))
+
+  FILETIME ft;
+  if (WinNT() < WNT_VISTA)
   {
-    FILETIME ft;
-
-    if (WinNT() < WNT_VISTA)
-    {
-      // TzSpecificLocalTimeToSystemTime based code produces 1 hour error on XP.
-      LocalFileTimeToFileTime(&lft,&ft);
-    }
-    else
-    {
-      // Reverse procedure which we do in GetLocal.
-      SYSTEMTIME st1,st2;
-      FileTimeToSystemTime(&lft,&st2); // st2 might be unequal to st, because we added lt->Reminder to lft.
-      TzSpecificLocalTimeToSystemTime(NULL,&st2,&st1);
-      SystemTimeToFileTime(&st1,&ft);
-
-      // Correct precision loss (low 4 decimal digits) in FileTimeToSystemTime.
-      FILETIME rft;
-      SystemTimeToFileTime(&st2,&rft);
-      uint64 Corrected=INT32TO64(lft.dwHighDateTime,lft.dwLowDateTime)-
-                       INT32TO64(rft.dwHighDateTime,rft.dwLowDateTime)+
-                       INT32TO64(ft.dwHighDateTime,ft.dwLowDateTime);
-      ft.dwLowDateTime=(DWORD)Corrected;
-      ft.dwHighDateTime=(DWORD)(Corrected>>32);
-    }
-
-    SetWinFT(&ft);
+    // TzSpecificLocalTimeToSystemTime based code produces 1 hour error on XP.
+    FILETIME lft;
+    SystemTimeToFileTime(&st,&lft);
+    LocalFileTimeToFileTime(&lft,&ft);
   }
   else
-    Reset();
+  {
+    // Reverse procedure which we do in GetLocal.
+    SYSTEMTIME st1;
+    TzSpecificLocalTimeToSystemTime(NULL,&st,&st1);
+    SystemTimeToFileTime(&st1,&ft);
+  }
+
+  SetWinFT(&ft);
+
 #else
   struct tm t;
 

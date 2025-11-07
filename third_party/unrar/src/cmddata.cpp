@@ -463,6 +463,8 @@ void CommandData::ProcessSwitch(const wchar *Switch)
           EncryptHeaders=true;
           if (Switch[2]!=0)
           {
+            // We use this code for other archive formats too, so MAXPASSWORD
+            // instead of MAXPASSWORD_RAR.
             if (wcslen(Switch+2)>=MAXPASSWORD)
               uiMsg(UIERROR_TRUNCPSW,MAXPASSWORD-1);
             Password.Set(Switch+2);
@@ -867,7 +869,52 @@ void CommandData::ProcessSwitch(const wchar *Switch)
         switch(toupperw(Switch[1]))
         {
           case 0:
+          case '=':
             Solid|=SOLID_NORMAL;
+            if (Switch[1]=='=')
+            {
+              uint Par=0;
+              for (const wchar *S=Switch+2;*S!=0;S++)
+              {
+                if (IsDigit(*S))
+                  Par=Par*10+*S-'0';
+                switch(toupperw(*S))
+                {
+                  case '-':
+                    Solid=SOLID_NONE;
+                    break;
+                  case 'D':
+                    Solid|=SOLID_VOLUME_DEPENDENT;
+                    break;
+                  case 'E':
+                    Solid|=SOLID_FILEEXT;
+                    break;
+                  case 'F':
+                    Solid|=SOLID_COUNT;
+                    SolidCount=Par;
+                    break;
+                  case 'K':
+                    Solid|=SOLID_BLOCK_SIZE;
+                    SolidBlockSize=Par*1024LL;
+                    break;
+                  case 'M':
+                    Solid|=SOLID_BLOCK_SIZE;
+                    SolidBlockSize=Par*1024LL*1024LL;
+                    break;
+                  case 'G':
+                    Solid|=SOLID_BLOCK_SIZE;
+                    SolidBlockSize=Par*1024LL*1024LL*1024LL;
+                    break;
+                  case 'R':
+                    Solid=SOLID_RESET;
+                    break;
+                  case 'V':
+                    Solid|=SOLID_VOLUME_INDEPENDENT;
+                    break;
+                }
+
+              }
+            }
             break;
           case '-':
             Solid=SOLID_NONE;
@@ -883,15 +930,20 @@ void CommandData::ProcessSwitch(const wchar *Switch)
             break;
           case 'I':
             ProhibitConsoleInput();
+            // We do not assign the archive name automatically for -si
+            // if archive name is omitted and require the archive name to
+            // present always. Otherwise for"type arc.rar|rar x -si arc2.rar"
+            // if arc2.rar is a dummy archive name or file inside of arc.rar,
+            // which needs to be extracted.
             UseStdin=Switch[2] ? Switch+2:L"stdin";
             break;
           case 'L':
             if (IsDigit(Switch[2]))
-              FileSizeLess=GetVolSize(Switch+2,1);
+              FileSizeLess=GetModSize(Switch+2,1);
             break;
           case 'M':
             if (IsDigit(Switch[2]))
-              FileSizeMore=GetVolSize(Switch+2,1);
+              FileSizeMore=GetModSize(Switch+2,1);
             break;
           case 'C':
             {
@@ -949,12 +1001,6 @@ void CommandData::ProcessSwitch(const wchar *Switch)
     case 'T':
       switch(toupperw(Switch[1]))
       {
-        case 'K':
-          ArcTime=ARCTIME_KEEP;
-          break;
-        case 'L':
-          ArcTime=ARCTIME_LATEST;
-          break;
         case 'O':
           SetTimeFilters(Switch+2,true,true);
           break;
@@ -1230,7 +1276,8 @@ void CommandData::ReportWrongSwitches(RARFORMAT Format)
 #endif
 
 
-int64 CommandData::GetVolSize(const wchar *S,uint DefMultiplier)
+// Get size for string with optional trailing modifiers like "100m".
+int64 CommandData::GetModSize(const wchar *S,uint DefMultiplier)
 {
   int64 Size=0,FloatingDivider=0;
   for (uint I=0;S[I]!=0;I++)
@@ -1247,7 +1294,7 @@ int64 CommandData::GetVolSize(const wchar *S,uint DefMultiplier)
   {
     const wchar *ModList=L"bBkKmMgGtT";
     const wchar *Mod=wcschr(ModList,S[wcslen(S)-1]);
-    if (Mod==NULL)
+    if (Mod==nullptr)
       Size*=DefMultiplier;
     else
       for (ptrdiff_t I=2;I<=Mod-ModList;I+=2)

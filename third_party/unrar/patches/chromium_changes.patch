@@ -85,7 +85,7 @@ index 61c616289ae47..f9a9d74f021c8 100644
  
  
 diff --git a/third_party/unrar/src/errhnd.cpp b/third_party/unrar/src/errhnd.cpp
-index b07e2f6646de9..a202e90944cf1 100644
+index b347678fe1903..0a363a79c74b8 100644
 --- a/third_party/unrar/src/errhnd.cpp
 +++ b/third_party/unrar/src/errhnd.cpp
 @@ -1,10 +1,12 @@
@@ -106,7 +106,7 @@ index b07e2f6646de9..a202e90944cf1 100644
  
  void ErrorHandler::Clean()
  {
-@@ -342,7 +344,11 @@ void ErrorHandler::Throw(RAR_EXIT Code)
+@@ -343,7 +345,11 @@ void ErrorHandler::Throw(RAR_EXIT Code)
        mprintf(L"\n%s\n",St(MProgAborted));
  #endif
    SetErrorCode(Code);
@@ -155,7 +155,7 @@ index 065350f94af55..5c539faf0d82a 100644
  
  
 diff --git a/third_party/unrar/src/extract.cpp b/third_party/unrar/src/extract.cpp
-index 8e5ba74940de4..31eab75264ef8 100644
+index e74c9d2e0a2e2..ba856cb5bed89 100644
 --- a/third_party/unrar/src/extract.cpp
 +++ b/third_party/unrar/src/extract.cpp
 @@ -671,6 +671,11 @@ bool CmdExtract::ExtractCurrentFile(Archive &Arc,size_t HeaderSize,bool &Repeat)
@@ -170,7 +170,7 @@ index 8e5ba74940de4..31eab75264ef8 100644
  
      bool LinkEntry=Arc.FileHead.RedirType!=FSREDIR_NONE;
      if (LinkEntry && (Arc.FileHead.RedirType!=FSREDIR_FILECOPY))
-@@ -899,6 +904,9 @@ bool CmdExtract::ExtractCurrentFile(Archive &Arc,size_t HeaderSize,bool &Repeat)
+@@ -901,6 +906,9 @@ bool CmdExtract::ExtractCurrentFile(Archive &Arc,size_t HeaderSize,bool &Repeat)
              UnstoreFile(DataIO,Arc.FileHead.UnpSize);
            else
            {
@@ -180,7 +180,7 @@ index 8e5ba74940de4..31eab75264ef8 100644
              try
              {
                Unp->Init(Arc.FileHead.WinSize,Arc.FileHead.Solid);
-@@ -909,6 +917,7 @@ bool CmdExtract::ExtractCurrentFile(Archive &Arc,size_t HeaderSize,bool &Repeat)
+@@ -911,6 +919,7 @@ bool CmdExtract::ExtractCurrentFile(Archive &Arc,size_t HeaderSize,bool &Repeat)
                  uiMsg(UIERROR_EXTRDICTOUTMEM,Arc.FileName,uint(Arc.FileHead.WinSize/0x40000000+(Arc.FileHead.WinSize%0x40000000!=0 ? 1 : 0)));
                throw;
              }
@@ -216,7 +216,7 @@ index 18d8f8c9cb776..570475ec6560c 100644
  
  #endif
 diff --git a/third_party/unrar/src/file.cpp b/third_party/unrar/src/file.cpp
-index 601c7eafb676a..413bb0354b2cd 100644
+index c6fab17328262..cbaf48a4826b3 100644
 --- a/third_party/unrar/src/file.cpp
 +++ b/third_party/unrar/src/file.cpp
 @@ -19,6 +19,10 @@ File::File()
@@ -256,8 +256,8 @@ index 601c7eafb676a..413bb0354b2cd 100644
 +  int handle = hOpenFile;
  #else
    int flags=UpdateMode ? O_RDWR:(WriteMode ? O_WRONLY:O_RDONLY);
- #ifdef O_BINARY
-@@ -115,6 +131,8 @@ bool File::Open(const std::wstring &Name,uint Mode)
+ 
+@@ -121,6 +137,8 @@ bool File::Open(const std::wstring &Name,uint Mode)
    WideToChar(Name,NameA);
  
    int handle=open(NameA.c_str(),flags);
@@ -266,7 +266,7 @@ index 601c7eafb676a..413bb0354b2cd 100644
  #ifdef LOCK_EX
  
  #ifdef _OSF_SOURCE
-@@ -174,6 +192,11 @@ bool File::WOpen(const std::wstring &Name)
+@@ -180,6 +198,11 @@ bool File::WOpen(const std::wstring &Name)
  
  bool File::Create(const std::wstring &Name,uint Mode)
  {
@@ -275,10 +275,10 @@ index 601c7eafb676a..413bb0354b2cd 100644
 +  // provided file.
 +  hFile = hOpenFile;
 +#else
+   // 2025.09.03: Likely outdated info, see https://www.illumos.org/issues/2000
    // OpenIndiana based NAS and CIFS shares fail to set the file time if file
    // was created in read+write mode and some data was written and not flushed
-   // before SetFileTime call. So we should use the write only mode if we plan
-@@ -211,6 +234,7 @@ bool File::Create(const std::wstring &Name,uint Mode)
+@@ -218,6 +241,7 @@ bool File::Create(const std::wstring &Name,uint Mode)
    hFile=fopen(NameA.c_str(),WriteMode ? WRITEBINARY:CREATEBINARY);
  #endif
  #endif
@@ -286,7 +286,7 @@ index 601c7eafb676a..413bb0354b2cd 100644
    NewFile=true;
    HandleType=FILE_HANDLENORMAL;
    SkipClose=false;
-@@ -245,6 +269,8 @@ bool File::Close()
+@@ -252,6 +276,8 @@ bool File::Close()
    {
      if (!SkipClose)
      {
@@ -295,7 +295,7 @@ index 601c7eafb676a..413bb0354b2cd 100644
  #ifdef _WIN_ALL
        // We use the standard system handle for stdout in Windows
        // and it must not be closed here.
-@@ -257,6 +283,7 @@ bool File::Close()
+@@ -264,6 +290,7 @@ bool File::Close()
        Success=fclose(hFile)!=EOF;
  #endif
  #endif
@@ -303,7 +303,7 @@ index 601c7eafb676a..413bb0354b2cd 100644
      }
      hFile=FILE_BAD_HANDLE;
    }
-@@ -844,3 +871,9 @@ int64 File::Copy(File &Dest,int64 Length)
+@@ -853,3 +880,9 @@ int64 File::Copy(File &Dest,int64 Length)
    return CopySize;
  }
  #endif
@@ -314,10 +314,10 @@ index 601c7eafb676a..413bb0354b2cd 100644
 +}
 +#endif  // defined(CHROMIUM_UNRAR)
 diff --git a/third_party/unrar/src/file.hpp b/third_party/unrar/src/file.hpp
-index a95cc398fab32..e7868bbafe4c9 100644
+index 67c1754987f63..11600f6e3818e 100644
 --- a/third_party/unrar/src/file.hpp
 +++ b/third_party/unrar/src/file.hpp
-@@ -86,6 +86,11 @@ class File
+@@ -85,6 +85,11 @@ class File
      std::wstring FileName;
  
      FILE_ERRORTYPE ErrorType;
@@ -329,7 +329,7 @@ index a95cc398fab32..e7868bbafe4c9 100644
    public:
      File();
      virtual ~File();
-@@ -136,6 +141,14 @@ class File
+@@ -135,6 +140,14 @@ class File
      void SetExceptions(bool Allow) {AllowExceptions=Allow;}
      void SetPreserveAtime(bool Preserve) {PreserveAtime=Preserve;}
      bool IsTruncatedAfterReadError() {return TruncatedAfterReadError;}
@@ -345,7 +345,7 @@ index a95cc398fab32..e7868bbafe4c9 100644
      int GetFD()
      {
 diff --git a/third_party/unrar/src/filefn.cpp b/third_party/unrar/src/filefn.cpp
-index d600c06b05a4d..d994640d4321f 100644
+index 1f34d266fabc5..06560edd9959d 100644
 --- a/third_party/unrar/src/filefn.cpp
 +++ b/third_party/unrar/src/filefn.cpp
 @@ -303,6 +303,9 @@ uint GetFileAttr(const std::wstring &Name)
@@ -367,7 +367,7 @@ index d600c06b05a4d..d994640d4321f 100644
  
  
 diff --git a/third_party/unrar/src/isnt.cpp b/third_party/unrar/src/isnt.cpp
-index b89b2ce54d825..9322a1d1b3d54 100644
+index d62e861b51af3..520d773daf392 100644
 --- a/third_party/unrar/src/isnt.cpp
 +++ b/third_party/unrar/src/isnt.cpp
 @@ -1,5 +1,11 @@
@@ -382,8 +382,8 @@ index b89b2ce54d825..9322a1d1b3d54 100644
  DWORD WinNT()
  {
    static int dwPlatformId=-1;
-@@ -25,7 +31,7 @@ DWORD WinNT()
- 
+@@ -27,7 +33,7 @@ DWORD WinNT()
+ #if 0
  // Replace it with documented Windows 11 check when available.
  #include <comdef.h>
 -#include <Wbemidl.h>
@@ -391,7 +391,7 @@ index b89b2ce54d825..9322a1d1b3d54 100644
  #pragma comment(lib, "wbemuuid.lib")
  
  static bool WMI_IsWindows10()
-@@ -106,3 +112,5 @@ bool IsWindows11OrGreater()
+@@ -109,3 +115,5 @@ bool IsWindows11OrGreater()
    }
    return IsWin11;
  }
@@ -430,7 +430,7 @@ index 69d9267f7c428..e3ef5b7a8c90d 100644
    {
      MinContext->U.Stats[i].Symbol=i;      
 diff --git a/third_party/unrar/src/os.hpp b/third_party/unrar/src/os.hpp
-index bb9eb0b0d0f11..aa7c52f4b5520 100644
+index 32218db4ef46a..92ba212b074cf 100644
 --- a/third_party/unrar/src/os.hpp
 +++ b/third_party/unrar/src/os.hpp
 @@ -30,6 +30,7 @@
@@ -458,7 +458,17 @@ index bb9eb0b0d0f11..aa7c52f4b5520 100644
  
  #include <windows.h>
  #include <prsht.h>
-@@ -64,7 +68,7 @@
+@@ -53,7 +57,9 @@
+ #include <PowrProf.h>
+ #pragma comment(lib, "PowrProf.lib")
+ #include <psapi.h>
++#if !defined(CHROMIUM_UNRAR)
+ #pragma comment(lib, "Psapi.lib") // For GetProcessMemoryInfo().
++#endif  // !defined(CHROMIUM_UNRAR)
+ #include <shellapi.h>
+ #include <shlobj.h>
+ #include <winioctl.h>
+@@ -66,7 +72,7 @@
  
  // For WMI requests.
  #include <comdef.h>
@@ -467,7 +477,7 @@ index bb9eb0b0d0f11..aa7c52f4b5520 100644
  #pragma comment(lib, "wbemuuid.lib")
  
  
-@@ -74,11 +78,13 @@
+@@ -76,11 +82,13 @@
  #include <direct.h>
  #include <intrin.h>
  
@@ -481,7 +491,7 @@ index bb9eb0b0d0f11..aa7c52f4b5520 100644
  
  #include <stdio.h>
  #include <stdlib.h>
-@@ -148,6 +154,7 @@
+@@ -150,6 +158,7 @@
  #include <utime.h>
  #include <locale.h>
  
@@ -489,7 +499,7 @@ index bb9eb0b0d0f11..aa7c52f4b5520 100644
  #ifdef __GNUC__
    #if defined(__i386__) || defined(__x86_64__)
      #include <x86intrin.h>
-@@ -156,6 +163,7 @@
+@@ -158,6 +167,7 @@
      #define SSE_ALIGNMENT 16
    #endif
  #endif
@@ -497,7 +507,7 @@ index bb9eb0b0d0f11..aa7c52f4b5520 100644
  
  #if defined(__aarch64__) && (defined(__ARM_FEATURE_CRYPTO) || defined(__ARM_FEATURE_CRC32))
  #include <arm_neon.h>
-@@ -264,9 +272,16 @@
+@@ -266,9 +276,16 @@
    #endif
  #endif
  
@@ -553,10 +563,10 @@ index 8d8f298609a76..a32ea40e3ac25 100644
    if (GlobalCryptLoader.pCryptProtectMemory==NULL)
      GlobalCryptLoader.Load();
 diff --git a/third_party/unrar/src/strfn.cpp b/third_party/unrar/src/strfn.cpp
-index 6ad51c8fec1d6..4c69c906c6467 100644
+index 3a254aa878ce4..acee3e2459a73 100644
 --- a/third_party/unrar/src/strfn.cpp
 +++ b/third_party/unrar/src/strfn.cpp
-@@ -42,6 +42,27 @@ void ArcCharToWide(const char *Src,std::wstring &Dest,ACTW_ENCODING Encoding)
+@@ -61,6 +61,27 @@ void ArcCharToWide(const char *Src,std::wstring &Dest,ACTW_ENCODING Encoding)
      UtfToWide(Src,Dest);
    else
    {
@@ -584,7 +594,7 @@ index 6ad51c8fec1d6..4c69c906c6467 100644
      std::string NameA;
      if (Encoding==ACTW_OEM)
      {
-@@ -49,6 +70,7 @@ void ArcCharToWide(const char *Src,std::wstring &Dest,ACTW_ENCODING Encoding)
+@@ -68,6 +89,7 @@ void ArcCharToWide(const char *Src,std::wstring &Dest,ACTW_ENCODING Encoding)
        Src=NameA.data();
      }
      CharToWide(Src,Dest);
@@ -592,7 +602,7 @@ index 6ad51c8fec1d6..4c69c906c6467 100644
    }
  #else // RAR for Unix.
    if (Encoding==ACTW_UTF8)
-@@ -388,7 +410,7 @@ void fmtitoa(int64 n,wchar *Str,size_t MaxSize)
+@@ -407,7 +429,7 @@ void fmtitoa(int64 n,wchar *Str,size_t MaxSize)
    static wchar ThSep=0; // Thousands separator.
  #ifdef _WIN_ALL
    wchar Info[10];
@@ -602,12 +612,12 @@ index 6ad51c8fec1d6..4c69c906c6467 100644
  #elif defined(_UNIX)
    ThSep=*localeconv()->thousands_sep;
 diff --git a/third_party/unrar/src/unicode.cpp b/third_party/unrar/src/unicode.cpp
-index 62f546108f3b5..edf7a16e7e0c4 100644
+index a9d103dbf3cd8..28eea4ddcd36d 100644
 --- a/third_party/unrar/src/unicode.cpp
 +++ b/third_party/unrar/src/unicode.cpp
-@@ -771,9 +771,18 @@ std::wstring::size_type wcscasestr(const std::wstring &str, const std::wstring &
- wchar* wcslower(wchar *s)
- {
+@@ -786,9 +786,18 @@ wchar* wcslower(wchar *s)
+     return s;
+ 
  #ifdef _WIN_ALL
 +#if defined(CHROMIUM_UNRAR)
 +  // kernel32!LCMapStringEx instead of user32.dll!CharUpper due to win32k
@@ -624,7 +634,7 @@ index 62f546108f3b5..edf7a16e7e0c4 100644
  #else
    for (wchar *c=s;*c!=0;c++)
      *c=towlower(*c);
-@@ -791,9 +800,18 @@ void wcslower(std::wstring &s)
+@@ -806,9 +815,18 @@ void wcslower(std::wstring &s)
  wchar* wcsupper(wchar *s)
  {
  #ifdef _WIN_ALL
@@ -643,7 +653,7 @@ index 62f546108f3b5..edf7a16e7e0c4 100644
  #else
    for (wchar *c=s;*c!=0;c++)
      *c=towupper(*c);
-@@ -814,11 +832,20 @@ void wcsupper(std::wstring &s)
+@@ -829,11 +847,20 @@ void wcsupper(std::wstring &s)
  int toupperw(int ch)
  {
  #if defined(_WIN_ALL)
@@ -664,7 +674,7 @@ index 62f546108f3b5..edf7a16e7e0c4 100644
  #else
    return towupper(ch);
  #endif
-@@ -828,10 +855,19 @@ int toupperw(int ch)
+@@ -843,10 +870,19 @@ int toupperw(int ch)
  int tolowerw(int ch)
  {
  #if defined(_WIN_ALL)
@@ -684,7 +694,7 @@ index 62f546108f3b5..edf7a16e7e0c4 100644
  #else
    return towlower(ch);
  #endif
-@@ -868,7 +904,6 @@ int64 atoilw(const std::wstring &s)
+@@ -883,7 +919,6 @@ int64 atoilw(const std::wstring &s)
  
  
  #ifdef DBCS_SUPPORTED
@@ -692,7 +702,7 @@ index 62f546108f3b5..edf7a16e7e0c4 100644
  
  SupportDBCS::SupportDBCS()
  {
-@@ -885,6 +920,11 @@ void SupportDBCS::Init()
+@@ -900,6 +935,11 @@ void SupportDBCS::Init()
      IsLeadByte[I]=IsDBCSLeadByte(I)!=0;
  }
  

@@ -14,7 +14,7 @@ File::File()
   AllowExceptions=true;
   PreserveAtime=false;
 #ifdef _WIN_ALL
-  CreateMode=FMF_UNDEFINED;
+  // CreateMode=FMF_UNDEFINED;
 #endif
   ReadErrorMode=FREM_ASK;
   TruncatedAfterReadError=false;
@@ -116,6 +116,12 @@ bool File::Open(const std::wstring &Name,uint Mode)
   int handle = hOpenFile;
 #else
   int flags=UpdateMode ? O_RDWR:(WriteMode ? O_WRONLY:O_RDONLY);
+
+  // 2025.06.09: We can't just set O_DIRECT for Unix like we set
+  // FILE_FLAG_SEQUENTIAL_SCAN for Windows to minimize disk caching.
+  // O_DIRECT might impose alignment requirements for data size, data address
+  // and file offset. Also it might not be supported by some file systems
+  // and fail with an error.
 #ifdef O_BINARY
   flags|=O_BINARY;
 #if defined(_AIX) && defined(_LARGE_FILE_API)
@@ -197,6 +203,7 @@ bool File::Create(const std::wstring &Name,uint Mode)
   // provided file.
   hFile = hOpenFile;
 #else
+  // 2025.09.03: Likely outdated info, see https://www.illumos.org/issues/2000
   // OpenIndiana based NAS and CIFS shares fail to set the file time if file
   // was created in read+write mode and some data was written and not flushed
   // before SetFileTime call. So we should use the write only mode if we plan
@@ -204,7 +211,7 @@ bool File::Create(const std::wstring &Name,uint Mode)
   bool WriteMode=(Mode & FMF_WRITE)!=0;
   bool ShareRead=(Mode & FMF_SHAREREAD)!=0 || File::OpenShared;
 #ifdef _WIN_ALL
-  CreateMode=Mode;
+  // CreateMode=Mode;
   uint Access=WriteMode ? GENERIC_WRITE:GENERIC_READ|GENERIC_WRITE;
   DWORD ShareMode=ShareRead ? FILE_SHARE_READ:0;
 
@@ -698,8 +705,10 @@ void File::SetOpenFileTime(RarTime *ftm,RarTime *ftc,RarTime *fta)
   // Workaround for OpenIndiana NAS time bug. If we cannot create a file
   // in write only mode, we need to flush the write buffer before calling
   // SetFileTime or file time will not be changed.
-  if (CreateMode!=FMF_UNDEFINED && (CreateMode & FMF_WRITE)==0)
-    FlushFileBuffers(hFile);
+  // 2025.09.03: Removed this code as likely redundant now,
+  // see https://www.illumos.org/issues/2000
+  // if (CreateMode!=FMF_UNDEFINED && (CreateMode & FMF_WRITE)==0)
+  //  FlushFileBuffers(hFile);
 
   bool sm=ftm!=NULL && ftm->IsSet();
   bool sc=ftc!=NULL && ftc->IsSet();

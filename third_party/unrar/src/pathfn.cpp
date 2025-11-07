@@ -169,7 +169,7 @@ bool IsWildcard(const std::wstring &Str)
   size_t StartPos=0;
 #ifdef _WIN_ALL
   // Not treat the special NTFS \\?\d: path prefix as a wildcard.
-  if (Str.rfind(L"\\\\?\\",0)==0)
+  if (starts_with(Str,L"\\\\?\\"))
     StartPos=4;
 #endif
   return Str.find_first_of(L"*?",StartPos)!=std::wstring::npos;
@@ -329,14 +329,35 @@ bool EnumConfigPaths(uint Number,std::wstring &Path,bool Create)
   };
   if (Number==0)
   {
-    char *EnvStr=getenv("HOME");
-    if (EnvStr!=NULL)
+    const char *EnvStr=getenv("HOME");
+    if (EnvStr!=nullptr)
       CharToWide(EnvStr,Path);
     else
       Path=ConfPath[0];
     return true;
   }
-  Number--;
+  if (Number==1) // According to XDG Base Directory Specification.
+  {
+    const char *EnvStr=getenv("XDG_CONFIG_HOME");
+    if (EnvStr!=nullptr && *EnvStr!=0)
+    {
+      CharToWide(EnvStr,Path);
+      MakeName(Path,L"rar",Path);
+    }
+    else
+    {
+      const char *EnvStr=getenv("HOME");
+      if (EnvStr!=nullptr)
+      {
+        CharToWide(EnvStr,Path);
+        MakeName(Path,L".config/rar",Path);
+      }
+      else
+        Path=ConfPath[0];
+    }
+    return true;
+  }
+  Number-=2;
   if (Number>=ASIZE(ConfPath))
     return false;
   Path=ConfPath[Number];
@@ -513,7 +534,15 @@ bool IsNameUsable(const std::wstring &Name)
 
 void MakeNameUsable(std::wstring &Name,bool Extended)
 {
-  for (size_t I=0;I<Name.size();I++)
+  size_t StartPos=0;
+#ifdef _WIN_ALL
+  // 2025.07.03: Do not replace '?' and ':' in \\?\d: in the beginning of path
+  // in Windows.
+  if (Name.size()>5 && starts_with(Name,L"\\\\?\\") && IsDriveLetter(&Name[4]))
+    StartPos=6;
+#endif
+
+  for (size_t I=StartPos;I<Name.size();I++)
   {
     if (wcschr(Extended ? L"?*<>|\"":L"?*",Name[I])!=NULL || 
         Extended && (uint)Name[I]<32)
@@ -825,13 +854,21 @@ static void GenArcName(std::wstring &ArcName,const std::wstring &GenerateMask,ui
     if (CurChar=='D' || CurChar=='Y')
       MAsMinutes=0; // Treat 'M' in HHDDMMYY and HHYYMMDD as month.
 
-    if (MAsMinutes>0 && CurChar=='M')
-    {
-      // Replace minutes with 'I'. We use 'M' both for months and minutes,
-      // so we treat as minutes only those 'M', which are found after hours.
-      Mask[I]='I';
-      MAsMinutes--;
-    }
+    if (CurChar=='M')
+      if (MAsMinutes>0)
+      {
+        // Replace minutes with 'I'. We use 'M' both for months and minutes,
+        // so we treat as minutes only those 'M', which are found after hours.
+        Mask[I]='I';
+        MAsMinutes--;
+      }
+      else
+      {
+        // Treat 3 or more 'M' as a month name and replace with 'O'.
+        if (I+2<Mask.size() && toupperw(Mask[I+1])=='M' && toupperw(Mask[I+2])=='M')
+          for (uint J=I;J<Mask.size() && toupperw(Mask[J])=='M';J++)
+            Mask[J]='O';
+      }
     if (CurChar=='N')
     {
       uint Digits=GetDigits(ArcNumber);
@@ -876,21 +913,34 @@ static void GenArcName(std::wstring &ArcName,const std::wstring &GenerateMask,ui
   if (StartWeekDay%7>=4)
     CurWeek++;
 
-  const size_t FieldSize=11;
-  char Field[10][FieldSize];
+  const size_t FieldSize=20;
+  wchar Field[12][FieldSize];
 
-  snprintf(Field[0],FieldSize,"%04u",rlt.Year);
-  snprintf(Field[1],FieldSize,"%02u",rlt.Month);
-  snprintf(Field[2],FieldSize,"%02u",rlt.Day);
-  snprintf(Field[3],FieldSize,"%02u",rlt.Hour);
-  snprintf(Field[4],FieldSize,"%02u",rlt.Minute);
-  snprintf(Field[5],FieldSize,"%02u",rlt.Second);
-  snprintf(Field[6],FieldSize,"%02u",(uint)CurWeek);
-  snprintf(Field[7],FieldSize,"%u",(uint)WeekDay+1);
-  snprintf(Field[8],FieldSize,"%03u",rlt.yDay+1);
-  snprintf(Field[9],FieldSize,"%05u",ArcNumber);
+  swprintf(Field[0],FieldSize,L"%04u",rlt.Year);
+  swprintf(Field[1],FieldSize,L"%02u",rlt.Month);
+  swprintf(Field[2],FieldSize,L"%02u",rlt.Day);
+  swprintf(Field[3],FieldSize,L"%02u",rlt.Hour);
+  swprintf(Field[4],FieldSize,L"%02u",rlt.Minute);
+  swprintf(Field[5],FieldSize,L"%02u",rlt.Second);
+  swprintf(Field[6],FieldSize,L"%02u",(uint)CurWeek);
+  swprintf(Field[7],FieldSize,L"%u",(uint)WeekDay+1);
+  swprintf(Field[8],FieldSize,L"%03u",rlt.yDay+1);
+  swprintf(Field[9],FieldSize,L"%05u",ArcNumber);
 
-  const wchar *MaskChars=L"YMDHISWAEN";
+  const wchar *WeekDayName[]={L"Sunday",L"Monday",L"Tuesday",L"Wednesday",
+                              L"Thursday",L"Friday",L"Saturday"};
+
+  wcsncpyz(Field[10],WeekDayName[rlt.wDay],FieldSize);
+  wcsncpyz(Field[11],GetMonthName(rlt.Month-1),FieldSize);
+
+  int LField[sizeof(Field)/sizeof(Field[0])]; // Field lengths.
+  for (size_t I=0;I<ASIZE(LField);I++)
+    LField[I]=(int)wcslen(Field[I]);
+
+  // Mask characters and alignment. 'R' to prefer characters from right if mask
+  // is shorter than field, 'L' - from left.
+  const wchar *MaskChars=L"YMDHISWAENKO";
+  const wchar *MaskAlign=L"RRRRRRRRRRLL";
 
   // How many times every modifier character was encountered in the mask.
   int CField[sizeof(Field)/sizeof(Field[0])]{};
@@ -906,8 +956,15 @@ static void GenArcName(std::wstring &ArcName,const std::wstring &GenerateMask,ui
     if (QuoteMode)
       continue;
     const wchar *ChPtr=wcschr(MaskChars,toupperw(Mask[I]));
-    if (ChPtr!=NULL)
-      CField[ChPtr-MaskChars]++;
+    if (ChPtr!=nullptr)
+    {
+      size_t FieldPos=ChPtr-MaskChars;
+      // Need it only for right aligned masks. It is important to not
+      // exceed the actual field length here, so we do not read beyond
+      // the field buffer here.
+      if (MaskAlign[FieldPos]=='R' && CField[FieldPos]<LField[FieldPos])
+        CField[FieldPos]++;
+    }
    }
 
   wchar DateText[MAX_GENERATE_MASK];
@@ -930,33 +987,25 @@ static void GenArcName(std::wstring &ArcName,const std::wstring &GenerateMask,ui
       if (DateText[J]==':')
         DateText[J]='_';
 #endif
+      DateText[++J]=0;
     }
     else
     {
       size_t FieldPos=ChPtr-MaskChars;
-      int CharPos=(int)strlen(Field[FieldPos])-CField[FieldPos]--;
 
-      // CField[FieldPos] shall have exactly 3 "MMM" symbols, so we do not
-      // repeat the month name in case "MMMMMMMM" mask. But since we
-      // decremented CField[FieldPos] above, we compared it with 2.
-      if (FieldPos==1 && CField[FieldPos]==2 &&
-          toupperw(Mask[I+1])=='M' && toupperw(Mask[I+2])=='M')
+      if (MaskAlign[FieldPos]=='L')
       {
-        wcsncpyz(DateText+J,GetMonthName(rlt.Month-1),ASIZE(DateText)-J);
-        J=wcslen(DateText);
-        I+=2;
-        continue;
+        // Process left aligned masks, such as month names or days of week
+        // names, from left to right. Important if mask is shorter than name,
+        // like -agKK.
+        if (CField[FieldPos]<LField[FieldPos])
+          DateText[J++]=Field[FieldPos][CField[FieldPos]++];
       }
-      // If CharPos is negative, we have more modifier characters than
-      // matching time data. We prefer to issue a modifier character
-      // instead of repeating time data from beginning, so user can notice
-      // excessive modifiers added by mistake.
-      if (CharPos<0)
-        DateText[J]=Mask[I];
       else
-        DateText[J]=Field[FieldPos][CharPos];
+        if (CField[FieldPos]>=0)
+          DateText[J++]=Field[FieldPos][LField[FieldPos]-CField[FieldPos]--];
+      DateText[J]=0;
     }
-    DateText[++J]=0;
   }
 
   if (Prefix)

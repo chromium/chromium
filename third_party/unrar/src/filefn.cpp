@@ -591,7 +591,7 @@ bool LinksToDirs(const std::wstring &SrcName,const std::wstring &SkipPart,std::w
 
   size_t SkipLength=SkipPart.size();
 
-  if (SkipLength>0 && Path.rfind(SkipPart,0)!=0)
+  if (SkipLength>0 && !starts_with(Path,SkipPart))
     SkipLength=0; // Parameter validation, not really needed now.
 
   // Do not check parts already checked in previous path to improve performance.
