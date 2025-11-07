@@ -388,12 +388,13 @@ Status X25519Implementation::ImportKeyJwk(
 
   // Check the public key matches the private key.
   size_t len = 32;
-  uint8_t raw_key[32];
-  if (!EVP_PKEY_get_raw_public_key(GetEVP_PKEY(private_key), raw_key, &len)) {
+  std::array<uint8_t, 32> raw_key;
+  if (!EVP_PKEY_get_raw_public_key(GetEVP_PKEY(private_key), raw_key.data(),
+                                   &len)) {
     return Status::OperationError();
   }
   DCHECK_EQ(len, 32u);
-  if (UNSAFE_TODO(memcmp(raw_public_key.data(), raw_key, 32)) != 0) {
+  if (fixed_public_key != raw_key) {
     return Status::DataError();
   }
 
