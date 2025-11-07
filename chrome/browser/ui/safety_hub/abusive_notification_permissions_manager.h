@@ -164,8 +164,9 @@ class AbusiveNotificationPermissionsManager {
   // of a default clock.
   const base::Clock* GetClock();
 
-  // Returns true if settings are being changed due to auto revocation of
-  // abusive notifications.
+  // Returns true if settings are being changed by
+  // `AbusiveNotificationPermissionManager` activities and should be ignored by
+  // `RevokedPermissionsService::OnContentSettingChanged`.
   bool IsRevocationRunning();
 
   // Helper method for logging the
@@ -294,6 +295,16 @@ class AbusiveNotificationPermissionsManager {
   // Called each time Safe Browsing checks are performed on a set of URLs.
   void ResetSafeBrowsingCheckHelpers();
 
+  // Update Notification permission setting in response to Safety Hub actions
+  // (e.g. re-grant and undo re-grant). This will set
+  // `is_abusive_site_revocation_running_` to signal
+  // `RevokedPermissionsService::OnContentSettingChanged` to ignore the setting
+  // change.
+  void UpdateNotificationPermissionForSafetyHubAction(
+      HostContentSettingsMap* hcsm,
+      GURL url,
+      ContentSetting setting_value);
+
   // Convert `NotificationRevocationSource` to its string representation for
   // storing in `REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS`.
   static std::optional<std::string> GetRevocationSourceString(
@@ -323,9 +334,10 @@ class AbusiveNotificationPermissionsManager {
   // Pass this into each instance of the SafeBrowsingCheckClient class.
   raw_ptr<base::Clock> clock_for_testing_;
 
-  // Returns true if automatic check and revocation of abusive notification
-  // permissions is occurring. This value is used to help decide whether to
-  // clean up revoked permission data.
+  // True if automatic check is occurring or
+  // `AbusiveNotificationPermissionManager` is changing notification setting.
+  // This value is used to help decide whether to handle setting change inside
+  // `OnContentSettingChanged`.
   bool is_abusive_site_revocation_running_ = false;
 };
 

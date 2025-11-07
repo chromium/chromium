@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/time/default_clock.h"
@@ -376,16 +377,11 @@ void AbusiveNotificationPermissionsManager::
   }
   safe_browsing::NotificationRevocationSource revocation_source =
       GetRevokedAbusiveNotificationRevocationSource(hcsm_.get(), url);
-  // Set this to true to prevent removal of revoked setting values.
-  is_abusive_site_revocation_running_ = true;
-  UpdateNotificationPermission(hcsm_.get(), url,
-                               ContentSetting::CONTENT_SETTING_ALLOW);
+  UpdateNotificationPermissionForSafetyHubAction(
+      hcsm_.get(), url, ContentSetting::CONTENT_SETTING_ALLOW);
   SetRevokedAbusiveNotificationPermission(hcsm_.get(), url,
                                           /*is_ignored=*/true,
                                           revocation_source);
-  // Set this back to false, so that revoked settings can be cleaned up if
-  // necessary.
-  is_abusive_site_revocation_running_ = false;
 
   LogAbusiveNotificationPermissionRevocationUKM(
       url, AbusiveNotificationPermissionsInteractions::kAllowAgain,
@@ -411,16 +407,11 @@ void AbusiveNotificationPermissionsManager::
   }
   safe_browsing::NotificationRevocationSource revocation_source =
       GetRevokedAbusiveNotificationRevocationSource(hcsm_.get(), url);
-  // Set this to true to prevent removal of revoked setting values.
-  is_abusive_site_revocation_running_ = true;
-  UpdateNotificationPermission(hcsm_.get(), url,
-                               ContentSetting::CONTENT_SETTING_DEFAULT);
+  UpdateNotificationPermissionForSafetyHubAction(
+      hcsm_.get(), url, ContentSetting::CONTENT_SETTING_DEFAULT);
   SetRevokedAbusiveNotificationPermission(hcsm_.get(), url,
                                           /*is_ignored=*/false,
                                           revocation_source, constraints);
-  // Set this back to false, so that revoked settings can be cleaned up if
-  // necessary.
-  is_abusive_site_revocation_running_ = false;
 
   LogAbusiveNotificationPermissionRevocationUKM(
       url, AbusiveNotificationPermissionsInteractions::kUndoAllowAgain,
@@ -701,6 +692,16 @@ void AbusiveNotificationPermissionsManager::ResetSafeBrowsingCheckHelpers() {
   if (!safe_browsing_request_clients_.empty()) {
     safe_browsing_request_clients_.clear();
   }
+}
+
+void AbusiveNotificationPermissionsManager::
+    UpdateNotificationPermissionForSafetyHubAction(
+        HostContentSettingsMap* hcsm,
+        GURL url,
+        ContentSetting setting_value) {
+  base::AutoReset<bool> is_abusive_site_revocation_running(
+      &is_abusive_site_revocation_running_, true);
+  UpdateNotificationPermission(hcsm, url, setting_value);
 }
 
 // static

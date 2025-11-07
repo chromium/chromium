@@ -927,9 +927,13 @@ TEST_P(RevokedPermissionsServiceTest, RegrantPermissionsForOrigin) {
   if (ShouldSetupSafeBrowsing()) {
     SetupAbusiveNotificationSite(url2, ContentSetting::CONTENT_SETTING_ASK);
     SetupAbusiveNotificationSite(url3, ContentSetting::CONTENT_SETTING_ASK);
+    SetupAbusiveNotificationSite(url6, ContentSetting::CONTENT_SETTING_ASK);
     SetupRevokedAbusiveNotificationSite(url2);
     SetupRevokedAbusiveNotificationSite(url3);
-    ExpectRevokedAbusiveNotificationPermissionSize(2U);
+    SetupRevokedAbusiveNotificationSite(
+        url6, safe_browsing::NotificationRevocationSource::
+                  kSuspiciousContentAutoRevocation);
+    ExpectRevokedAbusiveNotificationPermissionSize(3U);
   }
   if (ShouldSetupUnusedSites()) {
     SetupRevokedUnusedPermissionSite(url1);
@@ -954,9 +958,10 @@ TEST_P(RevokedPermissionsServiceTest, RegrantPermissionsForOrigin) {
               hcsm()->GetWebsiteSetting(GURL(url1), GURL(url1), chooser_type));
   }
   if (ShouldSetupSafeBrowsing()) {
-    ExpectRevokedAbusiveNotificationPermissionSize(2U);
+    ExpectRevokedAbusiveNotificationPermissionSize(3U);
     ExpectRevokedAbusiveNotificationSettingValues(url2);
     ExpectRevokedAbusiveNotificationSettingValues(url3);
+    ExpectRevokedAbusiveNotificationSettingValues(url6);
   }
 
   // Allow the permission for `url2`, which is both abusive and unused.
@@ -971,10 +976,11 @@ TEST_P(RevokedPermissionsServiceTest, RegrantPermissionsForOrigin) {
               hcsm()->GetWebsiteSetting(GURL(url2), GURL(url2), chooser_type));
   }
   if (ShouldSetupSafeBrowsing()) {
-    ExpectRevokedAbusiveNotificationPermissionSize(1U);
+    ExpectRevokedAbusiveNotificationPermissionSize(2U);
     ExpectCleanedUpAbusiveNotificationSettingValues(url2,
                                                     /*is_regranted=*/true);
     ExpectRevokedAbusiveNotificationSettingValues(url3);
+    ExpectRevokedAbusiveNotificationSettingValues(url6);
   }
 
   // Allow the permission for `url3`, which is abusive.
@@ -983,21 +989,30 @@ TEST_P(RevokedPermissionsServiceTest, RegrantPermissionsForOrigin) {
     EXPECT_EQ(1U, GetRevokedUnusedPermissions(hcsm()).size());
   }
   if (ShouldSetupSafeBrowsing()) {
-    ExpectRevokedAbusiveNotificationPermissionSize(0U);
+    ExpectRevokedAbusiveNotificationPermissionSize(1U);
     ExpectCleanedUpAbusiveNotificationSettingValues(url2,
                                                     /*is_regranted=*/true);
     ExpectCleanedUpAbusiveNotificationSettingValues(url3,
                                                     /*is_regranted=*/true);
+    ExpectRevokedAbusiveNotificationSettingValues(url6);
   }
 
-  // Allow the permission for `url4`, which is disruptive.
-  service()->RegrantPermissionsForOrigin(url::Origin::Create(GURL(url4)));
+  // Allow the permission for `url4`, which is disruptive. This triggers
+  // OS notification update.
   if (ShouldSetupDisruptiveSites()) {
+    EXPECT_CALL(*test_revoked_notification_manager(), UpdateNotification);
+    service()->RegrantPermissionsForOrigin(url::Origin::Create(GURL(url4)));
     ExpectCleanedUpDisruptiveNotificationSettingValues(url4,
                                                        /*is_regranted=*/true);
+    testing::Mock::VerifyAndClearExpectations(
+        test_revoked_notification_manager());
   }
 
-  // Allow the permission for `url5`, which is unused and disruptive.
+  // Allow the permission for `url5`, which is unused and disruptive. This
+  // triggers OS notification update.
+  if (ShouldSetupDisruptiveSites()) {
+    EXPECT_CALL(*test_revoked_notification_manager(), UpdateNotification);
+  }
   service()->RegrantPermissionsForOrigin(url::Origin::Create(GURL(url5)));
   if (ShouldSetupUnusedSites()) {
     EXPECT_EQ(0U, GetRevokedUnusedPermissions(hcsm()).size());
@@ -1011,6 +1026,24 @@ TEST_P(RevokedPermissionsServiceTest, RegrantPermissionsForOrigin) {
   if (ShouldSetupDisruptiveSites()) {
     ExpectCleanedUpDisruptiveNotificationSettingValues(url5,
                                                        /*is_regranted=*/true);
+    testing::Mock::VerifyAndClearExpectations(
+        test_revoked_notification_manager());
+  }
+
+  // Allow the permission for `url6`, which is abusive for suspicious
+  // notification content. This triggers OS notification update.
+  if (ShouldSetupSafeBrowsing()) {
+    EXPECT_CALL(*test_revoked_notification_manager(), UpdateNotification);
+    service()->RegrantPermissionsForOrigin(url::Origin::Create(GURL(url6)));
+    ExpectRevokedAbusiveNotificationPermissionSize(0U);
+    ExpectCleanedUpAbusiveNotificationSettingValues(url2,
+                                                    /*is_regranted=*/true);
+    ExpectCleanedUpAbusiveNotificationSettingValues(url3,
+                                                    /*is_regranted=*/true);
+    ExpectCleanedUpAbusiveNotificationSettingValues(url6,
+                                                    /*is_regranted=*/true);
+    testing::Mock::VerifyAndClearExpectations(
+        test_revoked_notification_manager());
   }
 
   // Undoing the changes should add `url1` back to the list of revoked
@@ -1068,12 +1101,18 @@ TEST_P(RevokedPermissionsServiceTest, RegrantPermissionsForOrigin) {
 
   // Undoing `url4` adds it back to the revoked disruptive notification
   // permissions list.
-  UndoRegrantPermissionsForUrl(url4, {notifications_type});
   if (ShouldSetupDisruptiveSites()) {
+    EXPECT_CALL(*test_revoked_notification_manager(), UpdateNotification);
+    UndoRegrantPermissionsForUrl(url4, {notifications_type});
     ExpectRevokedDisruptiveNotificationSettingValues(url4);
+    testing::Mock::VerifyAndClearExpectations(
+        test_revoked_notification_manager());
   }
 
   // Undoing `url5` adds it back to the revoked permissions lists.
+  if (ShouldSetupDisruptiveSites()) {
+    EXPECT_CALL(*test_revoked_notification_manager(), UpdateNotification);
+  }
   UndoRegrantPermissionsForUrl(
       url5, {notifications_type, geolocation_type, chooser_type});
   if (ShouldSetupUnusedSites()) {
@@ -1086,6 +1125,20 @@ TEST_P(RevokedPermissionsServiceTest, RegrantPermissionsForOrigin) {
   }
   if (ShouldSetupDisruptiveSites()) {
     ExpectRevokedDisruptiveNotificationSettingValues(url5);
+    testing::Mock::VerifyAndClearExpectations(
+        test_revoked_notification_manager());
+  }
+
+  // Undoing `url6` adds it back to the revoked permissions lists.
+  if (ShouldSetupSafeBrowsing()) {
+    EXPECT_CALL(*test_revoked_notification_manager(), UpdateNotification);
+    UndoRegrantPermissionsForUrl(url6, abusive_permission_types);
+    ExpectRevokedAbusiveNotificationPermissionSize(3U);
+    ExpectRevokedAbusiveNotificationSettingValues(url2);
+    ExpectRevokedAbusiveNotificationSettingValues(url3);
+    ExpectRevokedAbusiveNotificationSettingValues(url6);
+    testing::Mock::VerifyAndClearExpectations(
+        test_revoked_notification_manager());
   }
 }
 
