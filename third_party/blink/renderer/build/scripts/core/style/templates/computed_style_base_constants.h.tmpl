@@ -54,7 +54,7 @@ inline {{enum.type_name}} operator~({{enum.type_name}} x) {
 {% endif %}
 {% endfor %}
 
-#if DCHECK_IS_ON()
+#if DCHECK_IS_ON() || defined(FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION)
 {% for enum in enums %}
 {% if not enum.set_type or enum.set_type == 'multi' %}
 CORE_EXPORT std::ostream& operator<<(std::ostream&, const {{enum.type_name}});

@@ -50,9 +50,7 @@ constexpr unsigned kTagsCount = {{tags|count}};
 {% endif %}
 
 constexpr unsigned kAttrsCount = {{attrs|count}};
-{% if namespace != 'HTML' %}
-base::HeapArray<const QualifiedName*> GetAttrs();
-{% endif %}
+{{symbol_export}}base::HeapArray<const QualifiedName*> GetAttrs();
 
 {% if generate_tag_enum %}
 {{symbol_export}} extern const blink::{{namespace}}QualifiedName& TagToQualifiedName({{namespace}}Tag tag);

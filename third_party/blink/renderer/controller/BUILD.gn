@@ -190,7 +190,10 @@ test("blink_unittests") {
     ]
   }
 
-  fuzztests = [ "BlinkAttributeFuzzTestFixture.NoElementAttributeCrashes" ]
+  fuzztests = [
+    "BlinkAttributeFuzzTestFixture.NoElementAttributeCrashes",
+    "HTMLDomScenarioRunner.HTML",
+  ]
 }
 
 test("blink_perf_tests") {

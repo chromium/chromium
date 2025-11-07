@@ -41,7 +41,6 @@ void* attr_storage[kAttrsCount * ((sizeof(QualifiedName) + sizeof(void *) - 1) /
 const QualifiedName& {{attr|symbol}}Attr = reinterpret_cast<QualifiedName*>(&attr_storage)[{{loop.index0}}];
 {% endfor %}
 
-{% if namespace != 'HTML' %}
 base::HeapArray<const QualifiedName*> GetAttrs() {
   auto attrs = base::HeapArray<const QualifiedName*>::Uninit(kAttrsCount);
   for (size_t i = 0; i < kAttrsCount; ++i) {
@@ -49,7 +48,6 @@ base::HeapArray<const QualifiedName*> GetAttrs() {
   }
   return attrs;
 }
-{% endif %}
 
 
 void Init() {

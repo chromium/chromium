@@ -1,4 +1,6 @@
 include_rules = [
+    "+base/command_line.h",
+    "+base/no_destructor.h",
     "+base/run_loop.h",
     "+base/process/process_handle.h",
     "+cc",

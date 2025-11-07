@@ -1534,6 +1534,7 @@ source_set("unit_tests") {
   deps = [
     ":core",
     ":element_locator_proto",
+    ":fuzztest_utils",
     ":unit_test_support",
     "//cc",
     "//components/autofill/core/common:features",
@@ -1735,6 +1736,37 @@ source_set("unit_test_support") {
     "//third_party/blink/renderer/platform/testing/data/third_party/Noto/NotoNaskhArabic-regular.woff2",
     "//third_party/blink/web_tests/external/wpt/fonts/mplus-1p-regular.woff",
   ]
+}
+
+source_set("fuzztest_utils") {
+  testonly = true
+
+  sources = [
+    "testing/fuzztest_utils/common_domains.cc",
+    "testing/fuzztest_utils/common_domains.h",
+    "testing/fuzztest_utils/css_domains.cc",
+    "testing/fuzztest_utils/css_domains.h",
+    "testing/fuzztest_utils/dom_scenario.cc",
+    "testing/fuzztest_utils/dom_scenario.h",
+    "testing/fuzztest_utils/dom_scenario_runner.cc",
+    "testing/fuzztest_utils/dom_scenario_runner.h",
+    "testing/fuzztest_utils/html_domains.cc",
+    "testing/fuzztest_utils/html_domains.h",
+  ]
+
+  configs += [
+    ":blink_core_pch",
+    "//third_party/blink/renderer:config",
+    "//third_party/blink/renderer:inside_blink",
+  ]
+
+  deps = [
+    ":core",
+    ":unit_test_support",
+    "//testing/gtest",
+  ]
+
+  public_deps = [ "//third_party/fuzztest" ]
 }
 
 # Fuzzer for blink::StyleSheetContents

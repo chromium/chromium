@@ -732,6 +732,7 @@ source_set("unit_tests") {
     "//third_party/blink/renderer/platform",
     "//third_party/blink/renderer/platform:test_support",
     "//third_party/blink/renderer/platform/wtf",
+    "//third_party/fuzztest",
     "//third_party/googletest:gmock",
     "//third_party/opus",
     "//third_party/webrtc_overrides:logging_test",
