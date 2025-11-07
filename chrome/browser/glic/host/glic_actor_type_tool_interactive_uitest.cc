@@ -178,9 +178,20 @@ IN_PROC_BROWSER_TEST_F(GlicActorTypeToolUiTest,
                     actor::mojom::ActionResultCode::kInvalidDomNodeId));
 }
 
+class GlicActorTypeToolUiTestWithoutMultiInstance
+    : public GlicActorTypeToolUiTest {
+ public:
+  GlicActorTypeToolUiTestWithoutMultiInstance() {
+    feature_list_.InitAndDisableFeature(features::kGlicMultiInstance);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 // Tests that if focusing the target element causes focus to move to a
 // different element, the type action correctly types into that new element.
-IN_PROC_BROWSER_TEST_F(GlicActorTypeToolUiTest,
+IN_PROC_BROWSER_TEST_F(GlicActorTypeToolUiTestWithoutMultiInstance,
                        TypeActionOnFocusRedirectSucceeds) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTypingTestTabId);
   const GURL task_url = embedded_test_server()->GetURL("/actor/input.html");
