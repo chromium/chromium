@@ -1943,7 +1943,6 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
   gpu::SharedImageInterface* sii = ContextProvider()->SharedImageInterface();
 
   scoped_refptr<gpu::ClientSharedImage> back_buffer_shared_image;
-  GLenum texture_target = GL_TEXTURE_2D;
 
   // The SharedImages created here are read to and written from by WebGL. They
   // may also be read via the raster interface for WebGL->video and/or
@@ -2031,12 +2030,7 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
       {color_buffer_format_, size, color_space_, origin, back_buffer_alpha_type,
        usage, "WebGLDrawingBuffer"},
       gpu::kNullSurfaceHandle);
-  if (usage.Has(gpu::SHARED_IMAGE_USAGE_SCANOUT)) {
-    // On Mac the texture target for SharedImages with SCANOUT usage (which
-    // get backed by IOSurfaces) is the "native" texture target for
-    // IOSurfaces, which is not necessarily GL_TEXTURE_2D.
-    texture_target = back_buffer_shared_image->GetTextureTarget();
-  }
+  GLenum texture_target = back_buffer_shared_image->GetTextureTarget();
 
   staging_texture_needed_ = false;
   if (requested_alpha_type_ == kUnpremul_SkAlphaType &&
