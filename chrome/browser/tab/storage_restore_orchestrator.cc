@@ -4,6 +4,9 @@
 
 #include "chrome/browser/tab/storage_restore_orchestrator.h"
 
+#include "chrome/browser/tab/tab_storage_util.h"
+#include "components/tabs/public/pinned_tab_collection.h"
+
 namespace tabs {
 
 namespace {
@@ -39,6 +42,13 @@ void OnAddChildCollection(
 
   TabCollection::Handle collection_handle =
       std::get<TabCollection::Handle>(handle);
+  const TabCollection* collection = collection_handle.Get();
+  TabStorageType type = TabCollectionTypeToTabStorageType(collection->type());
+  if (type == TabStorageType::kPinned) {
+    loaded_data->GetNodeAssociator()->AssociatePinnedCollection(
+        static_cast<const PinnedTabCollection*>(collection));
+  }
+
   bool was_collection_on_disk =
       loaded_data->GetNodeAssociator()->HasCollectionBeenAssociated(
           collection_handle);

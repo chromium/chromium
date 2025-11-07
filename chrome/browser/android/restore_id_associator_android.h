@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ANDROID_RESTORE_ID_ASSOCIATOR_ANDROID_H_
 
 #include "chrome/browser/tab/restore_id_associator.h"
+#include "components/tabs/public/pinned_tab_collection.h"
 #include "components/tabs/public/tab_collection.h"
 #include "components/tabs/public/tab_interface.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
@@ -25,6 +26,8 @@ class RestoreIdAssociatorAndroid : public RestoreIdAssociator {
     absl::flat_hash_map<int, int> tab_android_id_to_storage_id;
     absl::flat_hash_set<TabCollection::Handle> associated_collections;
 
+    std::optional<int> pinned_collection_id;
+
     OnTabAssociation on_tab_association;
     OnCollectionAssociation on_collection_association;
   };
@@ -34,6 +37,7 @@ class RestoreIdAssociatorAndroid : public RestoreIdAssociator {
   ~RestoreIdAssociatorAndroid() override;
 
   bool AssociateTabAndAncestors(const TabInterface*) override;
+  void AssociatePinnedCollection(const PinnedTabCollection*) override;
 
   bool HasCollectionBeenAssociated(TabCollection::Handle) override;
 

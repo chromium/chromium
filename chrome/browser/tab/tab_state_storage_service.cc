@@ -201,7 +201,7 @@ void TabStateStorageService::OnAllNodesLoaded(LoadDataCallback callback,
     } else {
       tabs_pb::Children children;
       if (children.ParseFromString(entry.children)) {
-        builder->RegisterCollection(entry.id, children);
+        builder->RegisterCollection(entry.id, entry.type, children);
       }
 
       if (entry.type == TabStorageType::kGroup) {

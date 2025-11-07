@@ -8,6 +8,7 @@
 #include "chrome/browser/tab/protocol/children.pb.h"
 #include "chrome/browser/tab/protocol/tab_state.pb.h"
 #include "chrome/browser/tab/restore_id_associator.h"
+#include "chrome/browser/tab/tab_storage_type.h"
 #include "components/tabs/public/tab_collection.h"
 #include "components/tabs/public/tab_interface.h"
 
@@ -23,6 +24,7 @@ class RestoreIdAssociatorBuilder {
   // Registers the persisted state of a collection, including its children's
   // storage IDs. Builds the parent-child relationships between nodes.
   virtual void RegisterCollection(int storage_id,
+                                  TabStorageType type,
                                   const tabs_pb::Children& children) = 0;
 
   // Registers the persisted state of a single tab, associating its storage ID

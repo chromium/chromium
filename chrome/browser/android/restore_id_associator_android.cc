@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "chrome/browser/android/tab_android.h"
+#include "components/tabs/public/tab_strip_collection.h"
 
 namespace tabs {
 
@@ -39,6 +40,15 @@ bool RestoreIdAssociatorAndroid::AssociateTabAndAncestors(
   AssociateAncestorsInternal(state_->id_to_parent_id.at(storage_id),
                              tab->GetParentCollection());
   return true;
+}
+
+void RestoreIdAssociatorAndroid::AssociatePinnedCollection(
+    const PinnedTabCollection* collection) {
+  if (state_->pinned_collection_id) {
+    state_->on_collection_association.Run(state_->pinned_collection_id.value(),
+                                          collection);
+    state_->associated_collections.insert(collection->GetHandle());
+  }
 }
 
 bool RestoreIdAssociatorAndroid::HasCollectionBeenAssociated(

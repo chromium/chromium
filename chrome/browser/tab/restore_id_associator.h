@@ -10,6 +10,7 @@
 #include "chrome/browser/tab/protocol/tab_state.pb.h"
 #include "components/tabs/public/tab_collection.h"
 #include "components/tabs/public/tab_interface.h"
+#include "components/tabs/public/tab_strip_collection.h"
 
 namespace tabs {
 
@@ -31,6 +32,11 @@ class RestoreIdAssociator {
   // Associates a tab and its ancestor TabCollections with their respective
   // storage IDs. Returns true if the tab was successfully associated.
   virtual bool AssociateTabAndAncestors(const TabInterface*) = 0;
+
+  // Associates a PinnedTabCollection with its storage ID. This must be
+  // associated separately since it may be empty and not contain any tabs.
+  // Returns true if successfully associated.
+  virtual void AssociatePinnedCollection(const PinnedTabCollection*) = 0;
 
   // Returns true if the collection has been associated.
   virtual bool HasCollectionBeenAssociated(TabCollection::Handle) = 0;
