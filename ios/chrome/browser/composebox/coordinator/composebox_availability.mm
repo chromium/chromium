@@ -13,20 +13,11 @@
 bool MaybeShowComposebox(Browser* browser,
                          ComposeboxEntrypoint entrypoint,
                          NSString* query) {
-  if (!base::FeatureList::IsEnabled(kAIMPrototype)) {
+  if (!IsComposeboxIOSEnabled()) {
     return false;
   }
-
-  std::string param =
-      base::GetFieldTrialParamValueByFeature(kAIMPrototype, kAIMPrototypeParam);
-  BOOL showPrototype = entrypoint == ComposeboxEntrypoint::kNTPAIMButton ||
-                       param == kAIMPrototypeParamAllOmniboxEntrypoints;
-
-  if (showPrototype) {
-    id<BrowserCoordinatorCommands> commands = HandlerForProtocol(
-        browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
-    [commands showComposeboxFromEntrypoint:entrypoint withQuery:query];
-  }
-
-  return showPrototype;
+  id<BrowserCoordinatorCommands> commands = HandlerForProtocol(
+      browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
+  [commands showComposeboxFromEntrypoint:entrypoint withQuery:query];
+  return true;
 }

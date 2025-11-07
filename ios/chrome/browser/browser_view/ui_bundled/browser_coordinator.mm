@@ -2657,7 +2657,7 @@ const char kChromeAppStoreUrl[] =
 
 - (void)showComposeboxFromEntrypoint:(ComposeboxEntrypoint)entrypoint
                            withQuery:(NSString*)query {
-  CHECK(base::FeatureList::IsEnabled(kAIMPrototype));
+  CHECK(base::FeatureList::IsEnabled(kComposeboxIOS));
   if (_composeboxCoordinator) {
     return;
   }

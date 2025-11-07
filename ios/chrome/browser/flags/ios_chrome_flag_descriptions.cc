@@ -15,33 +15,6 @@ const char kAIHubNewBadgeName[] = "AI Hub New Badge";
 const char kAIHubNewBadgeDescription[] =
     "Enables showing a new badge on the AI Hub button in the toolbar.";
 
-const char kAIMPrototypeAutoattachTabName[] =
-    "Automatically attach current tab within the AIM prototype";
-const char kAIMPrototypeAutoattachTabDescription[] =
-    "When enabled, the AIM prototype will automatically attach curent tab as "
-    "context.";
-
-const char kAIMPrototypeDevToolsName[] = "Enable AIM Prototype Dev Tools";
-const char kAIMPrototypeDevToolsDescription[] =
-    "Enables development tools for the AIM prototype, allowing simulation of "
-    "delays and failures.";
-
-const char kAIMPrototypeImmersiveSRPName[] =
-    "Enable the immersive SRP within the AIM prototype";
-const char kAIMPrototypeImmersiveSRPDescription[] =
-    "When enabled, the AIM prototype will open SRPs in an embedded web view.";
-
-const char kAIMPrototypeName[] = "Enable the AIM prototype";
-const char kAIMPrototypeDescription[] =
-    "When enabled the AIM ZPS entrypoint will open the AIM prototype which "
-    "contains temporary UI exploration for AIM.";
-
-const char kAIMPrototypeTabPickerName[] =
-    "Enable the tab picker within the AIM prototype";
-const char kAIMPrototypeTabPickerDescription[] =
-    "When enabled, users are offered the ability to attach multiple tabs in "
-    "the AIM prototype.";
-
 const char kAnimatedDefaultBrowserPromoInFREName[] =
     "Enable the animated Default Browser Promo in the FRE";
 const char kAnimatedDefaultBrowserPromoInFREDescription[] =
@@ -328,10 +301,21 @@ const char kComposeboxAIMNudgeDescription[] =
     "Enables the AIM nudge button in the composebox, tapping on the button "
     "enables AIM. This is conditionned by AIM availability.";
 
+const char kComposeboxAutoattachTabName[] =
+    "Automatically attach current tab within the composebox";
+const char kComposeboxAutoattachTabDescription[] =
+    "When enabled, the composebox will automatically attach curent tab as "
+    "context.";
+
 const char kComposeboxCompactModeName[] = "ComposeboxCompactMode";
 const char kComposeboxCompactModeDescription[] =
     "Enables the compact composebox, adding attachment or enabling AIM will "
     "expand it to the regular size.";
+
+const char kComposeboxDevToolsName[] = "Enable Composebox Dev Tools";
+const char kComposeboxDevToolsDescription[] =
+    "Enables development tools for the composebox, allowing simulation of "
+    "delays and failures.";
 
 const char kComposeboxForceTopName[] = "ComposeboxForceTop";
 const char kComposeboxForceTopDescription[] =
@@ -340,6 +324,16 @@ const char kComposeboxForceTopDescription[] =
 const char kComposeboxIOSName[] = "ComposeboxIOS";
 const char kComposeboxIOSDescription[] =
     "Enables the composebox that replaces the regular omnibox in edit state.";
+
+const char kComposeboxImmersiveSRPName[] =
+    "Enable the immersive SRP within the composebox";
+const char kComposeboxImmersiveSRPDescription[] =
+    "When enabled, the composebox will open SRPs in an embedded web view.";
+
+const char kComposeboxTabPickerVariationName[] =
+    "Enable tab picker variation in the composebox";
+const char kComposeboxTabPickerVariationDescription[] =
+    "When enabled, the method of attaching tabs differs.";
 
 const char kConfirmationButtonSwapOrderName[] =
     "Swap Button Order in confirmation alerts";
@@ -796,11 +790,6 @@ const char kIOSOmniboxAimShortcutName[] = "Enable the omnibox aim shortcut";
 const char kIOSOmniboxAimShortcutDescription[] =
     "When enabled, an aim shortcut entrypoint will be displayed when the "
     "omnibox is on edit mode.";
-
-const char kIOSOmniboxUseTextViewName[] = "AIM Omnibox use text view";
-const char kIOSOmniboxUseTextViewDescription[] =
-    "When enabled, the omnibox presented by AIM uses a multiline text view "
-    "instead of a text field.";
 
 const char kIOSOneTapMiniMapRemoveSectionBreaksName[] =
     "Remove section break for address detection.";

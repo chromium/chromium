@@ -200,25 +200,20 @@ const FeatureEntry::FeatureVariation kBottomOmniboxEvolutionVariations[] = {
      std::size(kBottomOmniboxEvolutionForceBottomOmniboxEditState), nullptr},
 };
 
-const FeatureEntry::FeatureParam kAIMPrototypeAllOmniboxEntrypoints[] = {
-    {kAIMPrototypeParam, kAIMPrototypeParamAllOmniboxEntrypoints}};
+const FeatureEntry::FeatureParam kComposeboxTabPickerVariationCachedAPC[] = {
+    {kComposeboxTabPickerVariationParam,
+     kComposeboxTabPickerVariationParamCachedAPC}};
 
-const FeatureEntry::FeatureVariation kAIMPrototypeVariations[] = {
-    {"for all Omnibox entrypoints", kAIMPrototypeAllOmniboxEntrypoints,
-     std::size(kAIMPrototypeAllOmniboxEntrypoints), nullptr},
-};
+const FeatureEntry::FeatureParam kComposeboxTabPickerVariationOnFlightAPC[] = {
+    {kComposeboxTabPickerVariationParam,
+     kComposeboxTabPickerVariationParamOnFlightAPC}};
 
-const FeatureEntry::FeatureParam kAIMPrototypeTabPickerCachedAPC[] = {
-    {kAIMPrototypeTabPickerParam, kAIMPrototypeTabPickerParamCachedAPC}};
-
-const FeatureEntry::FeatureParam kAIMPrototypeTabPickerOnFlightAPC[] = {
-    {kAIMPrototypeTabPickerParam, kAIMPrototypeTabPickerParamOnFlightAPC}};
-
-const FeatureEntry::FeatureVariation kAIMPrototypeTabPickerVariations[] = {
-    {"A) Use Cached APC", kAIMPrototypeTabPickerCachedAPC,
-     std::size(kAIMPrototypeTabPickerCachedAPC), nullptr},
-    {"B) Use On flight APC", kAIMPrototypeTabPickerOnFlightAPC,
-     std::size(kAIMPrototypeTabPickerOnFlightAPC), nullptr},
+const FeatureEntry::FeatureVariation kComposeboxTabPickerVariationVariations[] =
+    {
+        {"A) Use Cached APC", kComposeboxTabPickerVariationCachedAPC,
+         std::size(kComposeboxTabPickerVariationCachedAPC), nullptr},
+        {"B) Use On flight APC", kComposeboxTabPickerVariationOnFlightAPC,
+         std::size(kComposeboxTabPickerVariationOnFlightAPC), nullptr},
 };
 
 const FeatureEntry::FeatureParam kDisableKeyboardAccessoryOnlySymbolsParam[] = {
@@ -1360,20 +1355,20 @@ const FeatureEntry::FeatureVariation kOmniboxAimShortcutTypedStateVariations[] =
       std::size(kOmniboxAimShortcutTypedStateEnabledForTypedLength15),
       nullptr}};
 
-const FeatureEntry::FeatureParam kAIMPrototypeDevToolsForceFailure[] = {
+const FeatureEntry::FeatureParam kComposeboxDevToolsForceFailure[] = {
     {kForceUploadFailureParam, "true"}};
-const FeatureEntry::FeatureParam kAIMPrototypeDevToolsSlowLoad[] = {
+const FeatureEntry::FeatureParam kComposeboxDevToolsSlowLoad[] = {
     {kImageLoadDelayMsParam, "1000"}};
-const FeatureEntry::FeatureParam kAIMPrototypeDevToolsSlowUpload[] = {
+const FeatureEntry::FeatureParam kComposeboxDevToolsSlowUpload[] = {
     {kUploadDelayMsParam, "3000"}};
 
-const FeatureEntry::FeatureVariation kAIMPrototypeDevToolsVariations[] = {
-    {"Force Failure", kAIMPrototypeDevToolsForceFailure,
-     std::size(kAIMPrototypeDevToolsForceFailure), nullptr},
-    {"Slow Load (1s)", kAIMPrototypeDevToolsSlowLoad,
-     std::size(kAIMPrototypeDevToolsSlowLoad), nullptr},
-    {"Slow Upload (3s)", kAIMPrototypeDevToolsSlowUpload,
-     std::size(kAIMPrototypeDevToolsSlowUpload), nullptr}};
+const FeatureEntry::FeatureVariation kComposeboxDevToolsVariations[] = {
+    {"Force Failure", kComposeboxDevToolsForceFailure,
+     std::size(kComposeboxDevToolsForceFailure), nullptr},
+    {"Slow Load (1s)", kComposeboxDevToolsSlowLoad,
+     std::size(kComposeboxDevToolsSlowLoad), nullptr},
+    {"Slow Upload (3s)", kComposeboxDevToolsSlowUpload,
+     std::size(kComposeboxDevToolsSlowUpload), nullptr}};
 
 const FeatureEntry::FeatureParam kMobilePromoOnDesktopLens[] = {
     {kMobilePromoOnDesktopPromoTypeParam, "1"},
@@ -2618,11 +2613,6 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
     {"diamond-prototype", flag_descriptions::kDiamondPrototypeName,
      flag_descriptions::kDiamondPrototypeDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kDiamondPrototype)},
-    {"aim-prototype-ios", flag_descriptions::kAIMPrototypeName,
-     flag_descriptions::kAIMPrototypeDescription, flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(kAIMPrototype,
-                                    kAIMPrototypeVariations,
-                                    "AIMPrototypeVariations")},
     {"omnibox-drs-prototype", flag_descriptions::kOmniboxDRSPrototypeName,
      flag_descriptions::kOmniboxDRSPrototypeDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kOmniboxDRSPrototype)},
@@ -2704,11 +2694,11 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
     {"lens-strokes-api-enabled", flag_descriptions::kStrokesAPIEnabledName,
      flag_descriptions::kStrokesAPIEnabledDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kLensStrokesAPIEnabled)},
-    {"aim-prototype-devtools", flag_descriptions::kAIMPrototypeDevToolsName,
-     flag_descriptions::kAIMPrototypeDevToolsDescription, flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(kAIMPrototypeDevTools,
-                                    kAIMPrototypeDevToolsVariations,
-                                    "AimPrototypeDevTools")},
+    {"composebox-devtools", flag_descriptions::kComposeboxDevToolsName,
+     flag_descriptions::kComposeboxDevToolsDescription, flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kComposeboxDevTools,
+                                    kComposeboxDevToolsVariations,
+                                    "ComposeboxDevTools")},
     {"autofill-manual-testing-data",
      flag_descriptions::kAutofillManualTestingDataName,
      flag_descriptions::kAutofillManualTestingDataDescription, flags_ui::kOsIos,
@@ -2762,28 +2752,26 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kHideToolbarsInOverflowMenuName,
      flag_descriptions::kHideToolbarsInOverflowMenuDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kHideToolbarsInOverflowMenu)},
-    {"aim-multiline-omnibox", flag_descriptions::kIOSOmniboxUseTextViewName,
-     flag_descriptions::kIOSOmniboxUseTextViewDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kIOSOmniboxUseTextView)},
     {"smart-tab-grouping", flag_descriptions::kSmartTabGroupingName,
      flag_descriptions::kSmartTabGroupingDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kSmartTabGrouping)},
     {"persist-tab-context", flag_descriptions::kPersistTabContextName,
      flag_descriptions::kPersistTabContextDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kPersistTabContext)},
-    {"aim-prototype-autoattach-tab",
-     flag_descriptions::kAIMPrototypeAutoattachTabName,
-     flag_descriptions::kAIMPrototypeAutoattachTabDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kAIMPrototypeAutoattachTab)},
-    {"aim-prototype-immersive-srp",
-     flag_descriptions::kAIMPrototypeImmersiveSRPName,
-     flag_descriptions::kAIMPrototypeImmersiveSRPDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kAIMPrototypeImmersiveSRP)},
-    {"aim-prototype-tab-picker", flag_descriptions::kAIMPrototypeTabPickerName,
-     flag_descriptions::kAIMPrototypeTabPickerDescription, flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(kAIMPrototypeTabPicker,
-                                    kAIMPrototypeTabPickerVariations,
-                                    "AimPrototypeTabPicker")},
+    {"composebox-autoattach-tab",
+     flag_descriptions::kComposeboxAutoattachTabName,
+     flag_descriptions::kComposeboxAutoattachTabDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kComposeboxAutoattachTab)},
+    {"composebox-immersive-srp", flag_descriptions::kComposeboxImmersiveSRPName,
+     flag_descriptions::kComposeboxImmersiveSRPDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kComposeboxImmersiveSRP)},
+    {"composebox-tab-picker-variation",
+     flag_descriptions::kComposeboxTabPickerVariationName,
+     flag_descriptions::kComposeboxTabPickerVariationDescription,
+     flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kComposeboxTabPickerVariation,
+                                    kComposeboxTabPickerVariationVariations,
+                                    "ComposeboxTabPickerVariation")},
     {"ios-custom-file-upload-menu",
      flag_descriptions::kIOSCustomFileUploadMenuName,
      flag_descriptions::kIOSCustomFileUploadMenuDescription, flags_ui::kOsIos,

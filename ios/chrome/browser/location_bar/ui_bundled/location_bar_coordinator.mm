@@ -603,7 +603,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 }
 
 - (void)cancelOmniboxEdit {
-  if (base::FeatureList::IsEnabled(kAIMPrototype)) {
+  if (IsComposeboxIOSEnabled()) {
     id<BrowserCoordinatorCommands> commands = HandlerForProtocol(
         self.browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
     [commands hideComposeboxImmediately:NO];

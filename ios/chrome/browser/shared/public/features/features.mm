@@ -193,32 +193,25 @@ BASE_FEATURE(kNTPMIAEntrypointAllLocales,
              "kNTPMIAEntrypointAllLocales",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled the AIM ZPS entrypoint will open the AIM prototype which
-// contains temporary UI exploration for AIM.
-BASE_FEATURE(kAIMPrototype, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kComposeboxAutoattachTab, base::FEATURE_DISABLED_BY_DEFAULT);
 
-const char kAIMPrototypeParam[] = "AIMPrototypeParam";
-const char kAIMPrototypeParamAllOmniboxEntrypoints[] =
-    "AIMPrototypeAllOmniboxEntrypoints";
+// Used to gate the immersive SRP in the Composebox.
+BASE_FEATURE(kComposeboxImmersiveSRP, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kAIMPrototypeAutoattachTab, base::FEATURE_DISABLED_BY_DEFAULT);
+const char kComposeboxTabPickerVariationParam[] =
+    "kComposeboxTabPickerVariationParam";
+const char kComposeboxTabPickerVariationParamCachedAPC[] =
+    "kComposeboxTabPickerVariationParamCachedAPC";
+const char kComposeboxTabPickerVariationParamOnFlightAPC[] =
+    "kComposeboxTabPickerVariationParamOnFlightAPC";
 
-// Used to gate the immersive SRP in the AIM prototype.
-BASE_FEATURE(kAIMPrototypeImmersiveSRP, base::FEATURE_DISABLED_BY_DEFAULT);
+// Feature flag for the tab picker in the Composebox.
+BASE_FEATURE(kComposeboxTabPickerVariation, base::FEATURE_DISABLED_BY_DEFAULT);
 
-const char kAIMPrototypeTabPickerParam[] = "kAIMPrototypeTabPickerParam";
-const char kAIMPrototypeTabPickerParamCachedAPC[] =
-    "kAIMPrototypeTabPickerParamCachedAPC";
-const char kAIMPrototypeTabPickerParamOnFlightAPC[] =
-    "kAIMPrototypeTabPickerParamOnFlightAPC";
-
-// Feature flag for the tab picker in the aim prototype.
-BASE_FEATURE(kAIMPrototypeTabPicker, base::FEATURE_DISABLED_BY_DEFAULT);
-
-bool IsAimPrototypeTabPickerCachedAPCEnabled() {
+bool IsComposeboxTabPickerCachedAPCEnabled() {
   std::string param = base::GetFieldTrialParamValueByFeature(
-      kAIMPrototypeTabPicker, kAIMPrototypeTabPickerParam);
-  return param == kAIMPrototypeTabPickerParamCachedAPC;
+      kComposeboxTabPickerVariation, kComposeboxTabPickerVariationParam);
+  return param == kComposeboxTabPickerVariationParamCachedAPC;
 }
 
 BASE_FEATURE(kOmniboxDRSPrototype, base::FEATURE_DISABLED_BY_DEFAULT);

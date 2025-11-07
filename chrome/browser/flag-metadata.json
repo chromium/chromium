@@ -115,36 +115,6 @@
     "expiry_milestone": 139
   },
   {
-    "name": "aim-multiline-omnibox",
-    "owners": ["christianxu@chromium.com", "stkhapugin@chromium.org"],
-    "expiry_milestone": 145
-  },
-    {
-    "name":"aim-prototype-autoattach-tab",
-    "owners": ["stkhapugin@google.com","christianxu@google.com"],
-    "expiry_milestone": 145
-  },
-  {
-    "name": "aim-prototype-devtools",
-    "owners": ["christianxu@chromium.com", "stkhapugin@chromium.org"],
-    "expiry_milestone": 145
-  },
-  {
-    "name": "aim-prototype-immersive-srp",
-    "owners": ["lpromero@chromium.com", "christianxu@chromium.org"],
-    "expiry_milestone": 150
-  },
-  {
-    "name": "aim-prototype-ios",
-    "owners": ["christianxu@chromium.com", "stkhapugin@chromium.org"],
-    "expiry_milestone": 145
-  },
-  {
-    "name":"aim-prototype-tab-picker",
-    "owners": ["ameurhosni@google.com","alionadangla@google.com","radunitescu@google.com"],
-    "expiry_milestone": 145
-  },
-  {
     "name": "aim-server-eligibility",
     "owners": ["ameurhosni@google.com", "mahmadi@chromium.org"],
     "expiry_milestone": 145
@@ -1906,9 +1876,19 @@
     "expiry_milestone": 149
   },
   {
+    "name":"composebox-autoattach-tab",
+    "owners": ["stkhapugin@google.com","christianxu@google.com"],
+    "expiry_milestone": 145
+  },
+  {
     "name": "composebox-compact-mode",
     "owners": [ "christianxu@google.com", "bling-search@google.com" ],
     "expiry_milestone": 149
+  },
+  {
+    "name": "composebox-devtools",
+    "owners": ["christianxu@chromium.com", "stkhapugin@chromium.org"],
+    "expiry_milestone": 145
   },
   {
     "name": "composebox-force-top",
@@ -1916,9 +1896,19 @@
     "expiry_milestone": 149
   },
   {
+    "name": "composebox-immersive-srp",
+    "owners": ["lpromero@chromium.com", "christianxu@chromium.org"],
+    "expiry_milestone": 150
+  },
+  {
     "name": "composebox-ios",
     "owners": [ "christianxu@google.com", "bling-search@google.com" ],
     "expiry_milestone": 149
+  },
+  {
+    "name":"composebox-tab-picker-variation",
+    "owners": ["ameurhosni@google.com","alionadangla@google.com","radunitescu@google.com"],
+    "expiry_milestone": 145
   },
   {
     "name": "composebox-uses-chrome-compose-client",

@@ -68,7 +68,7 @@ bool UseTextView(OmniboxPresentationContext presentation_context) {
   if (presentation_context == OmniboxPresentationContext::kLocationBar) {
     return IsMultilineBrowserOmniboxEnabled();
   } else if (presentation_context == OmniboxPresentationContext::kComposebox) {
-    return base::FeatureList::IsEnabled(kIOSOmniboxUseTextView);
+    return YES;
   }
   return NO;
 }

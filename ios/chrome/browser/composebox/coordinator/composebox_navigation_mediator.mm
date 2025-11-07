@@ -48,7 +48,7 @@
   self = [super init];
   if (self) {
     _urlLoadingBrowserAgent = urlLoadingBrowserAgent;
-    if (base::FeatureList::IsEnabled(kAIMPrototypeImmersiveSRP)) {
+    if (base::FeatureList::IsEnabled(kComposeboxImmersiveSRP)) {
       _webStateDelegateBridge =
           std::make_unique<web::WebStateDelegateBridge>(self);
       _webStateObserverBridge =

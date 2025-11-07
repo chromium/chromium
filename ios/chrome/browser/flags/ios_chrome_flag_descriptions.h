@@ -23,21 +23,6 @@ namespace flag_descriptions {
 extern const char kAIHubNewBadgeName[];
 extern const char kAIHubNewBadgeDescription[];
 
-extern const char kAIMPrototypeAutoattachTabName[];
-extern const char kAIMPrototypeAutoattachTabDescription[];
-
-extern const char kAIMPrototypeDevToolsName[];
-extern const char kAIMPrototypeDevToolsDescription[];
-
-extern const char kAIMPrototypeImmersiveSRPName[];
-extern const char kAIMPrototypeImmersiveSRPDescription[];
-
-extern const char kAIMPrototypeName[];
-extern const char kAIMPrototypeDescription[];
-
-extern const char kAIMPrototypeTabPickerName[];
-extern const char kAIMPrototypeTabPickerDescription[];
-
 extern const char kAnimatedDefaultBrowserPromoInFREName[];
 extern const char kAnimatedDefaultBrowserPromoInFREDescription[];
 
@@ -194,14 +179,26 @@ extern const char kCollaborationMessagingDescription[];
 extern const char kComposeboxAIMNudgeName[];
 extern const char kComposeboxAIMNudgeDescription[];
 
+extern const char kComposeboxAutoattachTabName[];
+extern const char kComposeboxAutoattachTabDescription[];
+
 extern const char kComposeboxCompactModeName[];
 extern const char kComposeboxCompactModeDescription[];
+
+extern const char kComposeboxDevToolsName[];
+extern const char kComposeboxDevToolsDescription[];
 
 extern const char kComposeboxForceTopName[];
 extern const char kComposeboxForceTopDescription[];
 
 extern const char kComposeboxIOSName[];
 extern const char kComposeboxIOSDescription[];
+
+extern const char kComposeboxImmersiveSRPName[];
+extern const char kComposeboxImmersiveSRPDescription[];
+
+extern const char kComposeboxTabPickerVariationName[];
+extern const char kComposeboxTabPickerVariationDescription[];
 
 extern const char kConfirmationButtonSwapOrderName[];
 extern const char kConfirmationButtonSwapOrderDescription[];
@@ -475,9 +472,6 @@ extern const char kIOSOmniboxAimServerEligibilityDescription[];
 
 extern const char kIOSOmniboxAimShortcutName[];
 extern const char kIOSOmniboxAimShortcutDescription[];
-
-extern const char kIOSOmniboxUseTextViewName[];
-extern const char kIOSOmniboxUseTextViewDescription[];
 
 extern const char kIOSOneTapMiniMapRemoveSectionBreaksName[];
 extern const char kIOSOneTapMiniMapRemoveSectionBreaksDescription[];

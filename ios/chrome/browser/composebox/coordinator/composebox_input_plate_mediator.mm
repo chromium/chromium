@@ -344,8 +344,7 @@ CreateInputDataFromAnnotatedPageContent(
   web::WebState* webState = _webStateList->GetActiveWebState();
   BOOL canAttachTab = webState && !IsUrlNtp(webState->GetVisibleURL());
   [_consumer setCanAttachTabAction:canAttachTab];
-  if (base::FeatureList::IsEnabled(kAIMPrototypeAutoattachTab) &&
-      canAttachTab) {
+  if (base::FeatureList::IsEnabled(kComposeboxAutoattachTab) && canAttachTab) {
     [self attachCurrentTabContent];
   }
 }
@@ -382,7 +381,7 @@ CreateInputDataFromAnnotatedPageContent(
     _composeboxQueryController->DeleteFile(item.token);
   }
 
-  if (base::FeatureList::IsEnabled(kAIMPrototypeAutoattachTab) &&
+  if (base::FeatureList::IsEnabled(kComposeboxAutoattachTab) &&
       _items.count == 0) {
     [self.consumer setAIModeEnabled:NO];
   }
@@ -462,7 +461,7 @@ CreateInputDataFromAnnotatedPageContent(
         [self createInputItemForWebState:webState];
     _latestTabSelectionMapping[token] = webState->GetUniqueIdentifier();
 
-    if (IsAimPrototypeTabPickerCachedAPCEnabled()) {
+    if (IsComposeboxTabPickerCachedAPCEnabled()) {
       [self attachWebStateContent:webState includeSnapshot:NO token:token];
       continue;
     }
@@ -526,7 +525,7 @@ CreateInputDataFromAnnotatedPageContent(
   __weak __typeof(self) weakSelf = self;
   base::WeakPtr<web::WebState> weakWebState = webState->GetWeakPtr();
 
-  if (IsAimPrototypeTabPickerCachedAPCEnabled() && _persistTabContextAgent) {
+  if (IsComposeboxTabPickerCachedAPCEnabled() && _persistTabContextAgent) {
     _persistTabContextAgent->GetSingleContextAsync(
         base::NumberToString(weakWebState->GetUniqueIdentifier().identifier()),
         base::BindOnce(^(std::optional<std::unique_ptr<

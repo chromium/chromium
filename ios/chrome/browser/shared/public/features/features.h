@@ -283,30 +283,26 @@ BASE_DECLARE_FEATURE(kNTPMIAEntrypoint);
 // Like above, but applies regardless of client's locale.
 BASE_DECLARE_FEATURE(kNTPMIAEntrypointAllLocales);
 
-// When enabled the AIM ZPS entrypoint will open the AIM prototype which
-// contains temporary UI exploration for AIM.
-BASE_DECLARE_FEATURE(kAIMPrototype);
+// Autoattach current tab in Composebox.
+BASE_DECLARE_FEATURE(kComposeboxAutoattachTab);
 
-// Autoattach current tab in AIM prototype.
-BASE_DECLARE_FEATURE(kAIMPrototypeAutoattachTab);
+// Used to gate the immersive SRP in the Composebox.
+BASE_DECLARE_FEATURE(kComposeboxImmersiveSRP);
 
-// Used to gate the immersive SRP in the AIM prototype.
-BASE_DECLARE_FEATURE(kAIMPrototypeImmersiveSRP);
+// Variations of Composebox tab picker.
+extern const char kComposeboxTabPickerVariationParam[];
+extern const char kComposeboxTabPickerVariationParamCachedAPC[];
+extern const char kComposeboxTabPickerVariationParamOnFlightAPC[];
 
-// Variations of AIM prototype tab picker.
-extern const char kAIMPrototypeTabPickerParam[];
-extern const char kAIMPrototypeTabPickerParamCachedAPC[];
-extern const char kAIMPrototypeTabPickerParamOnFlightAPC[];
+// Feature flag for the tab picker in the Composebox.
+BASE_DECLARE_FEATURE(kComposeboxTabPickerVariation);
 
-// Feature flag for the tab picker in the aim prototype.
-BASE_DECLARE_FEATURE(kAIMPrototypeTabPicker);
+// Returns true is we should use cached APCs in the Composebox.
+bool IsComposeboxTabPickerCachedAPCEnabled();
 
-// Returns true is we should use cached APCs in the aim prototype.
-bool IsAimPrototypeTabPickerCachedAPCEnabled();
-
-// Variations of AIM prototype.
-extern const char kAIMPrototypeParam[];
-extern const char kAIMPrototypeParamAllOmniboxEntrypoints[];
+// Variations of Composebox.
+extern const char kComposeboxParam[];
+extern const char kComposeboxParamAllOmniboxEntrypoints[];
 
 // Feature for the DRS prototype.
 BASE_DECLARE_FEATURE(kOmniboxDRSPrototype);
