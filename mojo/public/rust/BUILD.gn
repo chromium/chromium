@@ -47,7 +47,7 @@ rust_executable("exe_using_system_api") {
   ]
 }
 
-# Run by the //mojo:mojo_unittests target
+# FOR_RELEASE: This should be run by the //mojo:mojo_unittests target
 group("tests") {
   testonly = true
   deps = [
