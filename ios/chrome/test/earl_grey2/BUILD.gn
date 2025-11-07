@@ -170,10 +170,10 @@ chrome_ios_eg2_test("ios_chrome_signin_eg2tests_module") {
 
   deps = [
     "//ios/chrome/browser/authentication/account_menu/test:eg2_tests",
+    "//ios/chrome/browser/authentication/consistency_promo_signin/test:eg2_tests",
     "//ios/chrome/browser/authentication/ui_bundled:eg2_tests",
     "//ios/chrome/browser/authentication/ui_bundled/fullscreen_signin/test:eg2_tests",
     "//ios/chrome/browser/authentication/ui_bundled/signin:eg2_tests",
-    "//ios/chrome/browser/authentication/ui_bundled/signin/consistency_promo_signin:eg2_tests",
     "//ios/chrome/browser/authentication/ui_bundled/signin/two_screens_signin:eg2_tests",
     "//ios/chrome/browser/authentication/ui_bundled/signout_action_sheet:eg2_tests",
     "//ios/chrome/browser/post_restore_signin/ui_bundled:eg2_tests",

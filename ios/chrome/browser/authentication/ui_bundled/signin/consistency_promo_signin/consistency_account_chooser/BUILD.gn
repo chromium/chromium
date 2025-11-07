@@ -23,10 +23,10 @@ source_set("consistency_account_chooser") {
   deps = [
     "//components/signin/public/identity_manager/objc",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/authentication/consistency_promo_signin/ui",
     "//ios/chrome/browser/authentication/ui_bundled",
     "//ios/chrome/browser/authentication/ui_bundled/cells",
     "//ios/chrome/browser/authentication/ui_bundled/enterprise:enterprise_utils",
-    "//ios/chrome/browser/authentication/ui_bundled/signin/consistency_promo_signin:layout",
     "//ios/chrome/browser/authentication/ui_bundled/signin/consistency_promo_signin/consistency_sheet",
     "//ios/chrome/browser/keyboard/ui_bundled",
     "//ios/chrome/browser/net/model:crurl",

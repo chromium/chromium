@@ -4,7 +4,7 @@
 
 import("//build/config/chrome_build.gni")
 
-source_set("consistency_promo_signin") {
+source_set("coordinator") {
   sources = [
     "consistency_promo_signin_coordinator.h",
     "consistency_promo_signin_coordinator.mm",
@@ -12,7 +12,6 @@ source_set("consistency_promo_signin") {
     "consistency_promo_signin_mediator.mm",
   ]
   deps = [
-    ":layout",
     "//components/prefs",
     "//components/signin/core/browser",
     "//components/signin/ios/browser:features",
@@ -20,6 +19,7 @@ source_set("consistency_promo_signin") {
     "//components/signin/public/identity_manager/objc",
     "//ios/chrome/app:change_profile_continuation",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/authentication/consistency_promo_signin/ui",
     "//ios/chrome/browser/authentication/ui_bundled",
     "//ios/chrome/browser/authentication/ui_bundled:continuation",
     "//ios/chrome/browser/authentication/ui_bundled/authentication_flow",
@@ -50,11 +50,6 @@ source_set("consistency_promo_signin") {
       [ "//ios/chrome/browser/authentication/ui_bundled/signin:signin_headers" ]
 }
 
-source_set("layout") {
-  sources = [ "consistency_layout_delegate.h" ]
-  deps = [ "//ui/base" ]
-}
-
 source_set("unit_tests") {
   testonly = true
   sources = [
@@ -62,7 +57,7 @@ source_set("unit_tests") {
     "consistency_promo_signin_mediator_unittest.mm",
   ]
   deps = [
-    ":consistency_promo_signin",
+    ":coordinator",
     "//base",
     "//base/test:test_support",
     "//components/signin/core/browser",
@@ -95,31 +90,4 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//third_party/ocmock",
   ]
-}
-
-source_set("eg2_tests") {
-  configs += [ "//build/config/ios:xctest_config" ]
-  testonly = true
-  sources = [ "consistency_promo_signin_coordinator_egtest.mm" ]
-  deps = [
-    "//base",
-    "//base/test:test_support",
-    "//components/signin/public/base:signin_switches",
-    "//components/sync/base:features",
-    "//google_apis",
-    "//ios/chrome/app/strings",
-    "//ios/chrome/browser/authentication/test:eg_test_support+eg2",
-    "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
-    "//ios/chrome/browser/authentication/ui_bundled/views:views_constants",
-    "//ios/chrome/browser/shared/model/prefs:pref_names",
-    "//ios/chrome/browser/shared/public/features",
-    "//ios/chrome/browser/signin/model:fake_system_identity",
-    "//ios/chrome/browser/signin/model:test_constants",
-    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
-    "//ios/testing/earl_grey:eg_test_support+eg2",
-    "//net",
-    "//net:test_support",
-    "//ui/base",
-  ]
-  frameworks = [ "UIKit.framework" ]
 }
