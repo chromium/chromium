@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/tabs/glic_actor_task_icon_manager.h"
 
+#include "base/functional/bind.h"
 #include "chrome/browser/actor/actor_keyed_service_fake.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/glic/host/host.h"
@@ -33,6 +34,13 @@ class MockTaskIconStateChangeSubscriber {
               (bool is_showing,
                glic::mojom::CurrentView current_view,
                const ActorTaskIconState& actor_task_icon_state));
+};
+
+class MockTaskNudgeStateChangeSubscriber {
+ public:
+  MOCK_METHOD(void,
+              OnStateChanged,
+              (const ActorTaskNudgeState& actor_task_nudge_state));
 };
 
 class GlicActorTaskIconManagerTest : public testing::Test {
@@ -103,6 +111,60 @@ TEST_F(GlicActorTaskIconManagerTest,
   EXPECT_FALSE(manager()->GetCurrentActorTaskIconState().is_visible);
   EXPECT_EQ(manager()->GetCurrentActorTaskIconState().text,
             ActorTaskIconState::Text::kDefault);
+}
+
+TEST_F(GlicActorTaskIconManagerTest, NoDuplicatedTaskIconStateUpdates) {
+  MockTaskIconStateChangeSubscriber subscriber;
+  base::CallbackListSubscription subscription =
+      manager_->RegisterTaskIconStateChange(base::BindRepeating(
+          &MockTaskIconStateChangeSubscriber::OnStateChanged,
+          base::Unretained(&subscriber)));
+
+  EXPECT_CALL(
+      subscriber,
+      OnStateChanged(/*is_showing=*/true, CurrentView::kConversation,
+                     AllOf(Field(&ActorTaskIconState::is_visible, true),
+                           Field(&ActorTaskIconState::text,
+                                 ActorTaskIconState::Text::kCompleteTasks))));
+
+  TaskId task_id_1 = actor_service()->CreateTaskForTesting();
+  actor_service()->StopTask(task_id_1, /*success=*/true);
+  manager()->UpdateTaskIcon(/*is_showing=*/true, CurrentView::kConversation);
+  EXPECT_TRUE(manager()->GetCurrentActorTaskIconState().is_visible);
+  EXPECT_EQ(manager()->GetCurrentActorTaskIconState().text,
+            ActorTaskIconState::Text::kCompleteTasks);
+
+  TaskId task_id_2 = actor_service()->CreateTaskForTesting();
+  actor_service()->StopTask(task_id_2, /*success=*/true);
+  manager()->UpdateTaskIcon(/*is_showing=*/true, CurrentView::kConversation);
+  EXPECT_TRUE(manager()->GetCurrentActorTaskIconState().is_visible);
+  EXPECT_EQ(manager()->GetCurrentActorTaskIconState().text,
+            ActorTaskIconState::Text::kCompleteTasks);
+}
+
+TEST_F(GlicActorTaskIconManagerTest, NoDuplicatedTaskNudgeStateUpdates) {
+  MockTaskNudgeStateChangeSubscriber mock_subscriber;
+  base::CallbackListSubscription subscription =
+      manager()->RegisterTaskNudgeStateChange(base::BindRepeating(
+          &MockTaskNudgeStateChangeSubscriber::OnStateChanged,
+          base::Unretained(&mock_subscriber)));
+
+  EXPECT_CALL(
+      mock_subscriber,
+      OnStateChanged(AllOf(Field(&ActorTaskNudgeState::text,
+                                 ActorTaskNudgeState::Text::kCompleteTasks))));
+
+  TaskId task_id_1 = actor_service()->CreateTaskForTesting();
+  actor_service()->StopTask(task_id_1, /*success=*/true);
+  manager()->UpdateTaskNudge();
+  EXPECT_EQ(manager()->GetCurrentActorTaskNudgeState().text,
+            ActorTaskNudgeState::Text::kCompleteTasks);
+
+  TaskId task_id_2 = actor_service()->CreateTaskForTesting();
+  actor_service()->StopTask(task_id_2, /*success=*/true);
+  manager()->UpdateTaskNudge();
+  EXPECT_EQ(manager()->GetCurrentActorTaskNudgeState().text,
+            ActorTaskNudgeState::Text::kCompleteTasks);
 }
 
 class GlicActorTaskIconManagerPausedTasksTest
