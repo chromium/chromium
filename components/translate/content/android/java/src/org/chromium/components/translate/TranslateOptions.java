@@ -20,30 +20,23 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 
 /** A class that keeps the state of the different translation options and languages. */
 @NullMarked
 public class TranslateOptions {
     /**
-     * A container for Language Code and it's translated representation and it's native UMA specific
-     * hashcode. For example for Spanish when viewed from a French locale, this will contain es,
-     * Espagnol, Español, 114573335
+     * A container for Language Code and it's translated representation. For example for Spanish
+     * when viewed from a French locale, this will contain es, Espagnol, Español.
      */
     public static class TranslateLanguageData {
         public final String mLanguageCode;
         public final String mLanguageRepresentation;
-        // TODO(crbug.com/40266152): Remove |mLanguageUMAHashCode| as these hashes
-        // are no longer used.
-        public final @Nullable Integer mLanguageUMAHashCode;
 
-        public TranslateLanguageData(
-                String languageCode, String languageRepresentation, @Nullable Integer uMAhashCode) {
+        public TranslateLanguageData(String languageCode, String languageRepresentation) {
             assert languageCode != null;
             assert languageRepresentation != null;
             mLanguageCode = languageCode;
             mLanguageRepresentation = languageRepresentation;
-            mLanguageUMAHashCode = uMAhashCode;
         }
 
         @Override
@@ -51,8 +44,7 @@ public class TranslateOptions {
             if (!(obj instanceof TranslateLanguageData)) return false;
             TranslateLanguageData other = (TranslateLanguageData) obj;
             return this.mLanguageCode.equals(other.mLanguageCode)
-                    && this.mLanguageRepresentation.equals(other.mLanguageRepresentation)
-                    && Objects.equals(this.mLanguageUMAHashCode, other.mLanguageUMAHashCode);
+                    && this.mLanguageRepresentation.equals(other.mLanguageRepresentation);
         }
 
         @Override
@@ -65,9 +57,7 @@ public class TranslateOptions {
             return "mLanguageCode:"
                     + mLanguageCode
                     + " - mLanguageRepresentation "
-                    + mLanguageRepresentation
-                    + " - mLanguageUMAHashCode "
-                    + mLanguageUMAHashCode;
+                    + mLanguageRepresentation;
         }
     }
 
@@ -143,14 +133,12 @@ public class TranslateOptions {
             boolean neverDomain,
             boolean alwaysTranslate,
             boolean triggeredFromMenu,
-            int[] hashCodes,
             String[] contentLanguagesCodes) {
         assert languages.length == codes.length;
 
         ArrayList<TranslateLanguageData> languageList = new ArrayList<TranslateLanguageData>();
         for (int i = 0; i < languages.length; ++i) {
-            Integer hashCode = hashCodes != null ? Integer.valueOf(hashCodes[i]) : null;
-            languageList.add(new TranslateLanguageData(codes[i], languages[i], hashCode));
+            languageList.add(new TranslateLanguageData(codes[i], languages[i]));
         }
 
         return new TranslateOptions(
