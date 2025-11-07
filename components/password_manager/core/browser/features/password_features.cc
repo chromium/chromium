@@ -155,6 +155,8 @@ BASE_FEATURE(kShowRecoveryPassword, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kShowTabWithPasswordChangeOnSuccess,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kThrottlePasswordChangeDialog, base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kSkipUndecryptablePasswords,
 #if BUILDFLAG(IS_WIN)
              base::FEATURE_ENABLED_BY_DEFAULT

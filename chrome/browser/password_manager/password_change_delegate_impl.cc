@@ -333,7 +333,7 @@ PasswordChangeDelegateImpl::~PasswordChangeDelegateImpl() {
   }
   base::UmaHistogramEnumeration(kFinalPasswordChangeStatusHistogram,
                                 current_state_);
-  if (current_state_ != PasswordChangeDelegate::State::kNoState) {
+  if (current_state_ != State::kNoState) {
     base::UmaHistogramEnumeration(kCoarseFinalPasswordChangeStatusHistogram,
                                   GetCoarseState(current_state_));
     ukm::builders::PasswordManager_ChangeFlowOutcome(ukm_source_id_)
@@ -345,6 +345,26 @@ PasswordChangeDelegateImpl::~PasswordChangeDelegateImpl() {
     logger->LogBoolean(
         BrowserSavePasswordProgressLogger::STRING_PASSWORD_CHANGE_FINISHED,
         current_state_ == State::kPasswordSuccessfullyChanged);
+  }
+  switch (current_state_) {
+    case State::kNoState:
+    case State::kOfferingPasswordChange:
+    case State::kWaitingForAgreement:
+    case State::kPasswordSuccessfullyChanged:
+      break;
+    case State::kWaitingForChangePasswordForm:
+    case State::kChangePasswordFormNotFound:
+    case State::kChangingPassword:
+    case State::kPasswordChangeFailed:
+    case State::kOtpDetected:
+    case State::kCanceled:
+    case State::kLoginFormDetected:
+    case State::kLoginFormDetectedUserCanContinue:
+      // Set time to throttle APC offering, as we don't want to overprompt in
+      // case of a negative experience.
+      profile_->GetPrefs()->SetTime(
+          password_manager::prefs::kLastNegativePasswordChangeTimestamp,
+          base::Time::Now());
   }
 }
 

@@ -195,6 +195,9 @@ BASE_DECLARE_FEATURE(kSkipUndecryptablePasswords);
 // failed due to incorrect password.
 BASE_DECLARE_FEATURE(kStopLoginCheckOnFailedLogin);
 
+// Adds throttling logic to password change dialog.
+BASE_DECLARE_FEATURE(kThrottlePasswordChangeDialog);
+
 // Starts passwords resync after undecryptable passwords were removed. This flag
 // is enabled by default and should be treaded as a killswitch.
 BASE_DECLARE_FEATURE(kTriggerPasswordResyncAfterDeletingUndecryptablePasswords);
@@ -251,6 +254,10 @@ inline constexpr base::FeatureParam<std::string>
     kPasswordChangeDelayedSurveyTriggerId{
         &kImprovedPasswordChangeService, "PasswordChangeDelayedSurveyTriggerId",
         /*default_value=*/""};
+
+inline constexpr base::FeatureParam<base::TimeDelta>
+    kPasswordChangeThrottleTime{&kThrottlePasswordChangeDialog,
+                                "PasswordChangeThrottleTime", base::Days(14)};
 
 // All features parameters in alphabetical order.
 
