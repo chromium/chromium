@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <compare>
 #include <string>
 #include <vector>
 
@@ -39,6 +40,9 @@ struct BrowserBoundKeyMetadata {
     RelyingPartyAndCredentialId& operator=(RelyingPartyAndCredentialId&&);
 
     ~RelyingPartyAndCredentialId();
+
+    std::strong_ordering operator<=>(
+        const RelyingPartyAndCredentialId& other) const;
   };
 
   RelyingPartyAndCredentialId passkey;

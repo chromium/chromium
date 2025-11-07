@@ -5,14 +5,9 @@
 #ifndef CHROME_BROWSER_PAYMENTS_BROWSER_BINDING_BROWSER_BOUND_KEY_DELETER_SERVICE_H_
 #define CHROME_BROWSER_PAYMENTS_BROWSER_BINDING_BROWSER_BOUND_KEY_DELETER_SERVICE_H_
 
-#include <memory>
-
-#include "base/memory/scoped_refptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace payments {
-
-class WebPaymentsWebDataService;
 
 class BrowserBoundKeyDeleterService : public KeyedService {
  public:
@@ -33,12 +28,6 @@ class BrowserBoundKeyDeleterService : public KeyedService {
   // Starts the asynchronous process to find browser bound keys and delete them.
   virtual void RemoveInvalidBBKs() = 0;
 };
-
-// Get a platform specific instance of the BrowserBoundKeyDeleterService. This
-// function has per-platform implementations.
-std::unique_ptr<BrowserBoundKeyDeleterService>
-GetBrowserBoundKeyDeleterServiceInstance(
-    scoped_refptr<WebPaymentsWebDataService> web_data_service);
 
 }  // namespace payments
 

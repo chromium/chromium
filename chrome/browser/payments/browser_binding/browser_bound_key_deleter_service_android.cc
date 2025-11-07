@@ -61,13 +61,6 @@ std::vector<BrowserBoundKeyMetadata> RemoveMatchingCredentialIds(
 
 }  // namespace
 
-std::unique_ptr<BrowserBoundKeyDeleterService>
-GetBrowserBoundKeyDeleterServiceInstance(
-    scoped_refptr<WebPaymentsWebDataService> web_data_service) {
-  return std::make_unique<BrowserBoundKeyDeleterServiceAndroid>(
-      web_data_service, GetBrowserBoundKeyStoreInstance());
-}
-
 BrowserBoundKeyDeleterServiceAndroid::BrowserBoundKeyDeleterServiceAndroid(
     scoped_refptr<WebPaymentsWebDataService> web_data_service,
     scoped_refptr<BrowserBoundKeyStore> browser_bound_key_store)
@@ -112,21 +105,11 @@ void BrowserBoundKeyDeleterServiceAndroid::RemoveInvalidBBKs() {
       std::move(passkey_browser_binder)));
 }
 
-void BrowserBoundKeyDeleterServiceAndroid::SetInternalAuthenticatorForTesting(
-    std::unique_ptr<InternalAuthenticator> authenticator) {
-  authenticator_for_testing_ = std::move(authenticator);
-}
-
-void BrowserBoundKeyDeleterServiceAndroid::SetPasskeyBrowserBinderForTesting(
-    std::unique_ptr<PasskeyBrowserBinder> passkey_browser_binder) {
-  passkey_browser_binder_for_testing_ = std::move(passkey_browser_binder);
-}
-
 void BrowserBoundKeyDeleterServiceAndroid::FilterAndDeleteInvalidBBKs(
     std::unique_ptr<InternalAuthenticator> authenticator,
     std::unique_ptr<PasskeyBrowserBinder> passkey_browser_binder,
-    std::vector<BrowserBoundKeyMetadata> bbk_metas) {
-  if (bbk_metas.empty()) {
+    std::vector<BrowserBoundKeyMetadata> browser_bound_keys) {
+  if (browser_bound_keys.empty()) {
     // No BBKs to be deleted. Destroy the `InternalAuthenticator` and
     // `PasskeyBrowserBinder` instances.
     authenticator.reset();
@@ -135,7 +118,7 @@ void BrowserBoundKeyDeleterServiceAndroid::FilterAndDeleteInvalidBBKs(
   }
 
   RelyingPartyToBrowserBoundKeyMetadata relying_party_to_bbk_metas =
-      GroupByRelyingPartyId(std::move(bbk_metas));
+      GroupByRelyingPartyId(std::move(browser_bound_keys));
   auto barrier_callback =
       base::BarrierCallback<std::vector<BrowserBoundKeyMetadata>>(
           relying_party_to_bbk_metas.size(),

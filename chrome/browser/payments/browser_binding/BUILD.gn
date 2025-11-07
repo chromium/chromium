@@ -39,6 +39,11 @@ source_set("browser_bound_key_deleter") {
       "browser_bound_key_deleter_service_desktop.cc",
       "browser_bound_key_deleter_service_desktop.h",
     ]
+    deps += [ "//chrome/browser/webauthn:local_credential_management" ]
+
+    if (is_mac) {
+      deps += [ "//chrome/common:version_header" ]
+    }
   }
 }
 
@@ -57,6 +62,11 @@ source_set("unittests") {
 
   if (is_android) {
     sources += [ "browser_bound_key_deleter_service_android_unittest.cc" ]
+  }
+
+  if (is_desktop) {
+    sources += [ "browser_bound_key_deleter_service_desktop_unittest.cc" ]
+    deps += [ "//chrome/browser/webauthn:test_support" ]
   }
 }
 

@@ -12,7 +12,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/payments/content/browser_binding/mock_browser_bound_key_store.h"
 #include "components/payments/content/browser_binding/mock_passkey_browser_binder.h"
-#include "components/payments/content/browser_binding/passkey_browser_binder.h"
 #include "components/payments/content/mock_web_payments_web_data_service.h"
 #include "components/webauthn/core/browser/mock_internal_authenticator.h"
 #include "content/public/test/browser_task_environment.h"

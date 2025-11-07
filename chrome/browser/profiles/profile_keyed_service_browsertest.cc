@@ -608,7 +608,9 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
     "BookmarkUndoService",
     "BookmarksAPI",
     "BrailleDisplayPrivateAPI",
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
     "BrowserBoundKeyDeleterService",
+#endif
     "BrowsingTopicsService",
     "ChildAccountService",
     "ChromeSigninClient",

@@ -14,8 +14,8 @@ class InternalAuthenticator;
 }
 namespace payments {
 
-class BrowserBoundKeyStore;
 struct BrowserBoundKeyMetadata;
+class BrowserBoundKeyStore;
 class PasskeyBrowserBinder;
 class WebPaymentsWebDataService;
 
@@ -36,14 +36,17 @@ class BrowserBoundKeyDeleterServiceAndroid
   // Note that when calling `RemoveInvalidBBKs()`, this test authenticator will
   // be moved.
   void SetInternalAuthenticatorForTesting(
-      std::unique_ptr<webauthn::InternalAuthenticator> authenticator);
-
+      std::unique_ptr<webauthn::InternalAuthenticator> authenticator) {
+    authenticator_for_testing_ = std::move(authenticator);
+  }
   // Sets a PasskeyBrowserBinder to be used for testing. If this is not set, a
   // new PasskeyBrowserBinder will be created in `RemoveInvalidBBKs()`.
   // Note that when calling `RemoveInvalidBBKs()`, this test binder will be
   // moved.
   void SetPasskeyBrowserBinderForTesting(
-      std::unique_ptr<PasskeyBrowserBinder> passkey_browser_binder);
+      std::unique_ptr<PasskeyBrowserBinder> passkey_browser_binder) {
+    passkey_browser_binder_for_testing_ = std::move(passkey_browser_binder);
+  }
 
  private:
   void FilterAndDeleteInvalidBBKs(
