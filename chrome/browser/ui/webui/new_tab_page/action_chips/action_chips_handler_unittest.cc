@@ -18,6 +18,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/sessions/content/session_tab_helper.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
@@ -157,6 +158,8 @@ TEST_F(ActionChipsHandlerTest, GetMostRecentTab_SingleTab) {
   auto tab = future.Take();
 
   ASSERT_FALSE(tab.is_null());
+  EXPECT_EQ(tab->tab_id,
+            sessions::SessionTabHelper::IdForTab(expected_tab).id());
   EXPECT_EQ(tab->url, expected_tab->GetURL());
 }
 
@@ -169,6 +172,8 @@ TEST_F(ActionChipsHandlerTest, GetMostRecentTab_ReturnsMostRecent) {
   auto tab = future.Take();
 
   ASSERT_FALSE(tab.is_null());
+  EXPECT_EQ(tab->tab_id,
+            sessions::SessionTabHelper::IdForTab(expected_tab).id());
   EXPECT_EQ(tab->url, expected_tab->GetURL());
 }
 
@@ -182,6 +187,8 @@ TEST_F(ActionChipsHandlerTest, GetMostRecentTab_IgnoresChromeUrls) {
   auto tab = future.Take();
 
   ASSERT_FALSE(tab.is_null());
+  EXPECT_EQ(tab->tab_id,
+            sessions::SessionTabHelper::IdForTab(expected_tab).id());
   EXPECT_EQ(tab->url, expected_tab->GetURL());
 }
 
