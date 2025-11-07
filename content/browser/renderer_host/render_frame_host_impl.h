@@ -1805,11 +1805,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   }
   void SetKeepAliveTimeoutForTesting(base::TimeDelta timeout);
 
-  network::mojom::WebSandboxFlags active_sandbox_flags() {
-    CHECK(policy_container_host_)
-        << LifecycleStateImplToString(lifecycle_state_);
-    return policy_container_host_->sandbox_flags();
-  }
+  network::mojom::WebSandboxFlags active_sandbox_flags();
   bool is_mhtml_document() const { return is_mhtml_document_; }
 
   // Returns whether this document is a subframe of a MHTML document.

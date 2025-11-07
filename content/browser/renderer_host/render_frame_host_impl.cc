@@ -9612,6 +9612,15 @@ void RenderFrameHostImpl::SetKeepAliveTimeoutForTesting(
   keep_alive_handle_factory_.set_timeout(timeout);
 }
 
+network::mojom::WebSandboxFlags RenderFrameHostImpl::active_sandbox_flags() {
+  if (!policy_container_host_) {
+    SCOPED_CRASH_KEY_STRING256("Bug455908853", "lifecycle",
+                               LifecycleStateImplToString(lifecycle_state()));
+    NOTREACHED();
+  }
+  return policy_container_host_->sandbox_flags();
+}
+
 void RenderFrameHostImpl::UpdateState(const blink::PageState& state) {
   OPTIONAL_TRACE_EVENT1("content", "RenderFrameHostImpl::UpdateState",
                         "render_frame_host", this);
