@@ -15,7 +15,8 @@ base::TimeTicks FakeLayerContext::UpdateDisplayTreeFrom(
     viz::ClientResourceProvider& resource_provider,
     gpu::SharedImageInterface* shared_image_interface,
     const gfx::Rect& viewport_damage_rect,
-    const viz::LocalSurfaceId& target_local_surface_id) {
+    const viz::LocalSurfaceId& target_local_surface_id,
+    bool frame_has_damage) {
   return base::TimeTicks::Now();
 }
 

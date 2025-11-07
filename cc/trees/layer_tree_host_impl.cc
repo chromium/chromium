@@ -2918,6 +2918,12 @@ std::optional<SubmitInfo> LayerTreeHostImpl::DrawLayers(FrameData* frame) {
     DCHECK(!resourceless_software_draw_);
     TRACE_EVENT_INSTANT0("cc", "EarlyOut_NoDamage", TRACE_EVENT_SCOPE_THREAD);
     active_tree()->BreakSwapPromises(SwapPromise::SWAP_FAILS);
+
+    // Send updates to Viz even for no damage case when TreesInViz is enabled.
+    if (settings_.TreesInVizInClientProcess()) {
+      UpdateDisplayTree(*frame);
+    }
+
     active_tree()->ResetAllChangeTracking();
 
     // Drop pending event metrics for UI when the frame has no damage because
@@ -3494,7 +3500,7 @@ base::TimeTicks LayerTreeHostImpl::UpdateDisplayTree(FrameData& frame) {
   return layer_context_->UpdateDisplayTreeFrom(
       *active_tree(), *resource_provider(),
       layer_tree_frame_sink_->shared_image_interface().get(),
-      viewport_damage_rect_, target_local_surface_id_);
+      viewport_damage_rect_, target_local_surface_id_, !frame.has_no_damage);
 }
 
 int LayerTreeHostImpl::RequestedMSAASampleCount() const {

@@ -64,7 +64,8 @@ class VIZ_SERVICE_EXPORT LayerContextImpl : public cc::LayerTreeHostImplClient,
       mojom::TilingPtr tiling,
       bool update_damage);
   void DoDraw(const BeginFrameArgs& begin_frame_args,
-              base::TimeTicks start_update_display_tree);
+              base::TimeTicks start_update_display_tree,
+              bool frame_has_damage);
 
   // Receive exported resources returned from the frame sink.
   void ReceiveReturnsFromParent(std::vector<ReturnedResource> resources);
@@ -163,7 +164,7 @@ class VIZ_SERVICE_EXPORT LayerContextImpl : public cc::LayerTreeHostImplClient,
   // other conditions would make us abort drawing.
   void DoDrawInternal(const BeginFrameArgs& begin_frame_args,
                       base::TimeTicks start_update_display_tree,
-                      bool expects_to_draw);
+                      std::optional<bool> frame_has_damage = std::nullopt);
 
   void SendTilingsCleanupNotificationToClient();
 

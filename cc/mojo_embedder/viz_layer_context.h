@@ -47,7 +47,8 @@ class CC_MOJO_EMBEDDER_EXPORT VizLayerContext
       viz::ClientResourceProvider& resource_provider,
       gpu::SharedImageInterface* shared_image_interface,
       const gfx::Rect& viewport_damage_rect,
-      const viz::LocalSurfaceId& target_local_surface_id) override;
+      const viz::LocalSurfaceId& target_local_surface_id,
+      bool frame_has_damage) override;
   void UpdateDisplayTile(PictureLayerImpl& layer,
                          const Tile& tile,
                          viz::ClientResourceProvider& resource_provider,

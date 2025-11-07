@@ -73,3 +73,30 @@
 # tiling removal optimizations
 -LayerTreeHostTestCrispUpAfterPinchEnds.RunMultiThread_DelegatingRenderer
 -LegacySWPictureLayerImplTest.SnappedTilingDuringZoom
+
+# TODO(crbug.com/438242521) These tests are failing in TreesInViz due to
+# mismatch in shared image count expectations. This is because when Renderer's
+# visibility is set to False, it evicts all the UI resources. It triggers UI
+# resource deletion request which is sent to Viz. Renderer does not delete the
+# UI resource until it gets ack back from the Viz on the deletion request it
+# has sent. This typically causes a frame delay in general on when the Renderer
+# delete the UI resource compared to non-TreesInViz mode.
+# Note that this test specifically started failing with TreesInViz mode after
+# we made changes to sent no-damage frames to Viz. Since the test had UI
+# resource changes for no-damage frame, Renderer started sending those
+# resources to Viz hence incrementing its export/ref count for those resource.
+# It can not delete those resource now until it gets an ack back from Viz as
+# explained above.
+-UIResourceLostEviction.RunMultiThread_DelegatingRenderer
+-UIResourceLostEviction.RunSingleThread_DelegatingRenderer
+
+# TODO(crbug.com/438242521): This test is failing for similar reasons as above
+# where a no damage frame is present with UI resource changes and hence is sent
+# to Viz resulting in incrementing the export count on resouce in Renderer.
+# When Renderer deletes its UI resource via DeleteUIResource(), it sends an IPC
+# to Viz also for the resource deletion. Renderer can not immediately delete
+# its UI resource until the export count of resource is 0 which only happens
+# when Viz sends an ack back for the resource deletion request which Renderer
+# sends. Due to this, test expectations on shared image count can not be met at
+# the intended frame and might happen at later frames.
+-LayerTreeHostTestUIResource.RunMultiThread_DelegatingRenderer

@@ -44,7 +44,8 @@ class CC_EXPORT LayerContext {
       viz::ClientResourceProvider& resource_provider,
       gpu::SharedImageInterface* shared_image_interface,
       const gfx::Rect& viewport_damage_rect,
-      const viz::LocalSurfaceId& target_local_surface_id) = 0;
+      const viz::LocalSurfaceId& target_local_surface_id,
+      bool frame_has_damage) = 0;
 
   // Pushes an update to a single tile in the context's display tree.
   virtual void UpdateDisplayTile(

@@ -1308,7 +1308,8 @@ base::TimeTicks VizLayerContext::UpdateDisplayTreeFrom(
     viz::ClientResourceProvider& resource_provider,
     gpu::SharedImageInterface* shared_image_interface,
     const gfx::Rect& viewport_damage_rect,
-    const viz::LocalSurfaceId& target_local_surface_id) {
+    const viz::LocalSurfaceId& target_local_surface_id,
+    bool frame_has_damage) {
   auto& property_trees = *tree.property_trees();
   auto update = viz::mojom::LayerTreeUpdate::New();
   update->begin_frame_args = tree.CurrentBeginFrameArgs();
@@ -1321,6 +1322,7 @@ base::TimeTicks VizLayerContext::UpdateDisplayTreeFrom(
   update->min_page_scale_factor = tree.min_page_scale_factor();
   update->max_page_scale_factor = tree.max_page_scale_factor();
   update->external_page_scale_factor = tree.external_page_scale_factor();
+  update->frame_has_damage = frame_has_damage;
   update->device_viewport = tree.GetDeviceViewport();
   update->device_scale_factor = tree.device_scale_factor();
   update->painted_device_scale_factor = tree.painted_device_scale_factor();

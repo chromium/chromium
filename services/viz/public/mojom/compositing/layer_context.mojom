@@ -211,6 +211,13 @@ struct LayerTreeUpdate {
   // Animation timelines removed since last update. These IDs correspond to the
   // IDs given in each AnimationTimeline when added or updated above.
   array<int32>? removed_animation_timelines;
+
+  // This is sent from Renderer to the Viz and indicates whether the frame has
+  // damage or not. Viz can use this to skip drawing a frame if frame does not
+  // have any damage. If frame has damage, then Viz should make sure its damage
+  // calculations matches it. This is used to enforce checks in Viz to make
+  // sure it is in sync with Renderer's behavior.
+  bool frame_has_damage;
 };
 
 // Drives updates to a GPU-side LayerTreeHostImpl from its corresponding
