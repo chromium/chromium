@@ -179,6 +179,17 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="AutoPreload is handling fallback"/>
 </enum>
 
+<!-- LINT.IfChange(ServiceWorkerIPAddressSpace) -->
+
+<enum name="ServiceWorkerIPAddressSpace">
+  <int value="0" label="Loopback"/>
+  <int value="1" label="Local"/>
+  <int value="2" label="Public"/>
+  <int value="3" label="Unknown"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/services/storage/service_worker/service_worker_database.cc:ServiceWorkerIPAddressSpace) -->
+
 <enum name="ServiceWorkerMetrics.EventType">
   <int value="0" label="ACTIVATE"/>
   <int value="1" label="INSTALL"/>

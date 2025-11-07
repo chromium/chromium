@@ -3979,4 +3979,78 @@ TEST(ServiceWorkerDatabaseTest, RouterRulesLegacyPathname) {
   }
 }
 
+// Ensure that all chrome-extension service workers have an address space of
+// kLoopback regardless of the IP address space in the database.
+//
+// Regression test for crbug.com/456078996
+TEST(ServiceWorkerDatabaseTest, ExtensionStoreRestore) {
+  base::HistogramTester histogram_tester;
+  auto store_and_restore = [](blink::mojom::PolicyContainerPoliciesPtr
+                                  policies) {
+    // Build the minimal RegistrationData with the given |policy|.
+    GURL origin("chrome-extension://fdafdafdadfa");
+    RegistrationData data;
+    data.registration_id = 123;
+    data.scope = URL(origin, "");
+    data.key =
+        blink::StorageKey::CreateFirstParty(url::Origin::Create(data.scope));
+    data.script = URL(origin, "/script.js");
+    data.version_id = 456;
+    data.resources_total_size_bytes = 100;
+    data.policy_container_policies = std::move(policies);
+    std::vector<ResourceRecordPtr> resources;
+    resources.push_back(CreateResource(1, data.script, 100));
+
+    // Store.
+    std::unique_ptr<ServiceWorkerDatabase> database(CreateDatabaseInMemory());
+    ServiceWorkerDatabase::DeletedVersion deleted_version;
+    ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
+              database->WriteRegistration(data, resources, &deleted_version));
+
+    // Restore.
+    std::vector<mojom::ServiceWorkerRegistrationDataPtr> registrations;
+    std::vector<std::vector<ResourceRecordPtr>> resources_list;
+    EXPECT_EQ(
+        ServiceWorkerDatabase::Status::kOk,
+        database->GetRegistrationsForStorageKey(
+            blink::StorageKey::CreateFirstParty(url::Origin::Create(origin)),
+            &registrations, &resources_list));
+
+    // The data must not have been altered, except for the address space,
+    // which should always be kLoopback.
+    data.policy_container_policies->ip_address_space =
+        network::mojom::IPAddressSpace::kLoopback;
+    VerifyRegistrationData(data, *registrations[0]);
+  };
+
+  {
+    auto policies = blink::mojom::PolicyContainerPolicies::New();
+
+    for (auto ip_address_space : {
+             network::mojom::IPAddressSpace::kLoopback,
+             network::mojom::IPAddressSpace::kLocal,
+             network::mojom::IPAddressSpace::kPublic,
+             network::mojom::IPAddressSpace::kUnknown,
+         }) {
+      policies->ip_address_space = ip_address_space;
+      store_and_restore(policies->Clone());
+    }
+  }
+
+  histogram_tester.ExpectTotalCount(
+      "ServiceWorker.ChromeExtensionUpdateIPAddressSpace", 3);
+  // network::mojom::IPAddressSpace::kLoopback
+  histogram_tester.ExpectBucketCount(
+      "ServiceWorker.ChromeExtensionUpdateIPAddressSpace", 0, 0);
+  // network::mojom::IPAddressSpace::kLocal
+  histogram_tester.ExpectBucketCount(
+      "ServiceWorker.ChromeExtensionUpdateIPAddressSpace", 1, 1);
+  // network::mojom::IPAddressSpace::kPublic
+  histogram_tester.ExpectBucketCount(
+      "ServiceWorker.ChromeExtensionUpdateIPAddressSpace", 2, 1);
+  // network::mojom::IPAddressSpace::kUnknown
+  histogram_tester.ExpectBucketCount(
+      "ServiceWorker.ChromeExtensionUpdateIPAddressSpace", 3, 1);
+}
+
 }  // namespace storage
