@@ -277,6 +277,8 @@ chromium-metrics-reviews@google.com.
   <variant name="TabListInterface"
       summary="tabs opened from tab list interface"/>
   <variant name="TabSwitcherUI" summary="tabs opened from Tab Switcher UI"/>
+  <variant name="TipsNotifications"
+      summary="tabs opened from Tips Notifications"/>
   <variant name="TypeUnknown"
       summary="tabs opened from a different case than one's listed"/>
   <variant name="Unset" summary="pre-warmed tabs without creation reason"/>

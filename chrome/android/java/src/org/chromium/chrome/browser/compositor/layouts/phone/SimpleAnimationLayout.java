@@ -192,8 +192,8 @@ public class SimpleAnimationLayout extends Layout {
         if (mTabModelSelector != null) {
             Tab tab = mTabModelSelector.getModel(newIsIncognito).getTabById(id);
             if (tab != null
-                    && tab.getLaunchType()
-                            == TabLaunchType.FROM_COLLABORATION_BACKGROUND_IN_GROUP) {
+                    && (tab.getLaunchType() == TabLaunchType.FROM_COLLABORATION_BACKGROUND_IN_GROUP
+                            || tab.getLaunchType() == TabLaunchType.FROM_TIPS_NOTIFICATIONS)) {
                 // Tab selection will no-op for Tab.INVALID_TAB_ID. This operation should not change
                 // the current tab. If for some reason this is the last tab it will be automatically
                 // selected.

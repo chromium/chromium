@@ -237,6 +237,8 @@ public class FlatBufferTabStateSerializer implements TabStateSerializer {
                 return TabLaunchType.FROM_TAB_LIST_INTERFACE;
             case TabLaunchTypeAtCreation.FROM_LINK_CREATING_NEW_WINDOW:
                 return TabLaunchType.FROM_LINK_CREATING_NEW_WINDOW;
+            case TabLaunchTypeAtCreation.FROM_TIPS_NOTIFICATIONS:
+                return TabLaunchType.FROM_TIPS_NOTIFICATIONS;
             case TabLaunchTypeAtCreation.SIZE:
                 return TabLaunchType.SIZE;
             case TabLaunchTypeAtCreation.UNKNOWN:
@@ -319,6 +321,8 @@ public class FlatBufferTabStateSerializer implements TabStateSerializer {
                 return TabLaunchTypeAtCreation.FROM_TAB_LIST_INTERFACE;
             case TabLaunchType.FROM_LINK_CREATING_NEW_WINDOW:
                 return TabLaunchTypeAtCreation.FROM_LINK_CREATING_NEW_WINDOW;
+            case TabLaunchType.FROM_TIPS_NOTIFICATIONS:
+                return TabLaunchTypeAtCreation.FROM_TIPS_NOTIFICATIONS;
             case TabLaunchType.SIZE:
                 return TabLaunchTypeAtCreation.SIZE;
             default:

@@ -59,6 +59,7 @@ TabMetadata::TabOrigin GetTabOriginFromLaunchType(int type) {
     case TabModel::TabLaunchType::FROM_HISTORY_NAVIGATION_FOREGROUND:
     case TabModel::TabLaunchType::FROM_LONGPRESS_FOREGROUND_IN_GROUP:
     case TabModel::TabLaunchType::FROM_LINK_CREATING_NEW_WINDOW:
+    case TabModel::TabLaunchType::FROM_TIPS_NOTIFICATIONS:
       return TabMetadata::TabOrigin::kOpenedByUserAction;
 
     case TabModel::TabLaunchType::FROM_RESTORE:

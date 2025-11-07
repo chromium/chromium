@@ -153,6 +153,8 @@ class TabModel : public TabListInterface {
     FROM_TAB_LIST_INTERFACE,
     // Open a link, creating a new window.
     FROM_LINK_CREATING_NEW_WINDOW,
+    // Like FROM_CHROME_UI, and opens a tip notification, creating a new tab.
+    FROM_TIPS_NOTIFICATIONS,
     // Must be last.
     SIZE
   };
