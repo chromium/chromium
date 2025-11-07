@@ -97,12 +97,7 @@ enum class FlushReason {
   // This inhibits vector printing.
   kWebGLTexImage = 19,
 
-  // The canvas was used as a source in a call to
-  // `CanvasRenderingContext2D.createPattern`.
-  // This inhibits vector printing.
-  kCreatePattern = 20,
-
-  kOther = 21,
+  kOther = 20,
 
   kMaxValue = kOther,
 };

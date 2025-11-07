@@ -2618,8 +2618,8 @@ CanvasPattern* Canvas2DRecorderContext::createPattern(
 
   gfx::SizeF default_object_size(Width(), Height());
   scoped_refptr<Image> image_for_rendering =
-      image_source->GetSourceImageForCanvas(FlushReason::kCreatePattern,
-                                            &status, default_object_size);
+      image_source->GetSourceImageForCanvas(FlushReason::kOther, &status,
+                                            default_object_size);
 
   switch (status) {
     case kNormalSourceImageStatus:
