@@ -526,6 +526,7 @@ component("net") {
     "disk_cache/cache_util.h",
     "disk_cache/disk_cache.cc",
     "disk_cache/disk_cache.h",
+    "disk_cache/cache_encryption_delegate.h",
     "disk_cache/memory/mem_backend_impl.cc",
     "disk_cache/memory/mem_backend_impl.h",
     "disk_cache/memory/mem_entry_impl.cc",
