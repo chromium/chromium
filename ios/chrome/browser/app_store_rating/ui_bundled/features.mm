@@ -17,7 +17,7 @@ const std::vector<std::string>
 GetCountriesExcludedFromDefaultBrowserCondition() {
   return {
       "at", "be", "bg", "cy", "cz", "de", "dk", "ee", "es", "fi",
-      "fr", "gr", "hr", "hu", "ie", "is", "it", "lt", "lu", "lv",
-      "mt", "nl", "no", "pl", "pt", "ro", "se", "si", "sk",
+      "fr", "gr", "hr", "hu", "ie", "is", "it", "jp", "lt", "lu",
+      "lv", "mt", "nl", "no", "pl", "pt", "ro", "se", "si", "sk",
   };
 }
