@@ -6870,24 +6870,6 @@
             ]
         }
     ],
-    "CompositorLoadingAnimations": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CompositorLoadingAnimations"
-                    ]
-                }
-            ]
-        }
-    ],
     "CompressionDictionaryPreload": [
         {
             "platforms": [

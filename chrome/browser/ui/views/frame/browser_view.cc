@@ -1681,25 +1681,11 @@ void BrowserView::UpdateLoadingAnimations(bool is_visible) {
         base::Milliseconds(30);
     // Loads are happening, and the animation isn't running, so start it.
     loading_animation_start_ = base::TimeTicks::Now();
-    if (base::FeatureList::IsEnabled(features::kCompositorLoadingAnimations)) {
-      loading_animation_ =
-          std::make_unique<views::CompositorAnimationRunner>(GetWidget());
-      loading_animation_->Start(
-          kAnimationUpdateInterval, base::TimeDelta(),
-          base::BindRepeating(&BrowserView::LoadingAnimationCallback,
-                              base::Unretained(this)));
-    } else {
       loading_animation_timer_.Start(
           FROM_HERE, kAnimationUpdateInterval, this,
           &BrowserView::LoadingAnimationTimerCallback);
-    }
   } else {
-    if (base::FeatureList::IsEnabled(features::kCompositorLoadingAnimations)) {
-      loading_animation_->Stop();
-      loading_animation_.reset();
-    } else {
-      loading_animation_timer_.Stop();
-    }
+    loading_animation_timer_.Stop();
 #if BUILDFLAG(IS_CHROMEOS)
     loading_animation_tracker_->Stop();
 #endif
@@ -1726,11 +1712,7 @@ gfx::Point BrowserView::GetThemeOffsetFromBrowserView() const {
 }
 
 bool BrowserView::IsLoadingAnimationRunning() const {
-  if (base::FeatureList::IsEnabled(features::kCompositorLoadingAnimations)) {
-    return loading_animation_ != nullptr;
-  } else {
-    return loading_animation_timer_.IsRunning();
-  }
+  return loading_animation_timer_.IsRunning();
 }
 
 void BrowserView::SetStarredState(bool is_starred) {

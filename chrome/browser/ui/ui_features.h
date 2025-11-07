@@ -418,10 +418,6 @@ BASE_DECLARE_FEATURE(kSavePasswordsContextualUi);
 BASE_DECLARE_FEATURE(kShowTabGroupsMacSystemMenu);
 #endif  // BUILDFLAG(IS_MAC)
 
-// Controls whether browser tab loading animations are driven by the compositor
-// vs. a repeating timer.
-BASE_DECLARE_FEATURE(kCompositorLoadingAnimations);
-
 // If enabled, the by date history will show in the side panel.
 BASE_DECLARE_FEATURE(kByDateHistoryInSidePanel);
 
