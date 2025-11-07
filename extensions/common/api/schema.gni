@@ -62,7 +62,7 @@ if (enable_extensions) {
     "automation.idl",
     "bluetooth_low_energy.webidl",
     "bluetooth_private.idl",
-    "bluetooth_socket.idl",
+    "bluetooth_socket.webidl",
     "bluetooth.webidl",
     "cec_private.webidl",
     "clipboard.idl",
