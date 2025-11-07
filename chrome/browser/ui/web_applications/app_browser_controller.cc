@@ -123,6 +123,12 @@ bool AppBrowserController::IsWebApp(const BrowserWindowInterface* browser) {
 }
 
 // static
+bool AppBrowserController::IsIsolatedWebApp(
+    const BrowserWindowInterface* browser) {
+  return IsWebApp(browser) && From(browser)->IsIsolatedWebApp();
+}
+
+// static
 bool AppBrowserController::IsForWebApp(const BrowserWindowInterface* browser,
                                        const webapps::AppId& app_id) {
   return IsWebApp(browser) && From(browser)->app_id() == app_id;

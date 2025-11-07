@@ -25,6 +25,7 @@
 #include "components/page_load_metrics/browser/navigation_handle_user_data.h"
 #include "components/page_load_metrics/google/browser/prerender_prewarm_navigation_data.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -497,9 +498,9 @@ PrerenderManager::PrewarmDecision PrerenderManager::ShouldPrewarm(
   }
 
 #if !BUILDFLAG(IS_ANDROID)
-  if (auto* browser = chrome::FindBrowserWithTab(web_contents())) {
-    if (browser->app_controller() &&
-        browser->app_controller()->IsIsolatedWebApp()) {
+  if (auto* tab = tabs::TabInterface::MaybeGetFromContents(web_contents())) {
+    if (web_app::AppBrowserController::IsIsolatedWebApp(
+            tab->GetBrowserWindowInterface())) {
       // Disable the feature in the Isolated Web App window as it disallows
       // cross-origin navigation.
       return PrewarmDecision::kInIsolatedWebApp;

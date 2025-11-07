@@ -79,6 +79,8 @@ class AppBrowserController : public ui::ColorProviderKey::InitializerSupplier,
 
   // Returns whether |browser| is a web app window/pop-up.
   static bool IsWebApp(const BrowserWindowInterface* browser);
+  // Returns whether |browser| is an isolated web app window/pop-up.
+  static bool IsIsolatedWebApp(const BrowserWindowInterface* browser);
   // Returns whether |browser| is a web app window/pop-up for |app_id|.
   static bool IsForWebApp(const BrowserWindowInterface* browser,
                           const webapps::AppId& app_id);

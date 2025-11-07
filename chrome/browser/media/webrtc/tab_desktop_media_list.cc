@@ -152,14 +152,9 @@ void TabDesktopMediaList::Refresh(bool update_thumnails) {
       [&browsers, profile](BrowserWindowInterface* browser) {
         // Omit all the IWAs for TabDesktopMediaList as they are already
         // present in NativeDesktopMediaList.
-        auto* const app_controller =
-            web_app::AppBrowserController::From(browser);
-        bool is_isolated_web_app =
-            app_controller && app_controller->IsIsolatedWebApp();
-
         if ((!base::FeatureList::IsEnabled(
                  features::kRemovalOfIWAsFromTabCapture) ||
-             !is_isolated_web_app) &&
+             !web_app::AppBrowserController::IsIsolatedWebApp(browser)) &&
             browser->GetProfile()->GetOriginalProfile() ==
                 profile->GetOriginalProfile()) {
           browsers.push_back(browser);

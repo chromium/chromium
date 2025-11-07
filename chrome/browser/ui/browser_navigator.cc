@@ -705,7 +705,7 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
   }
   if (content::SiteIsolationPolicy::ShouldUrlUseApplicationIsolationLevel(
           params->initiating_profile, params->url)) {
-    CHECK(web_app::AppBrowserController::IsWebApp(params->browser));
+    CHECK(web_app::AppBrowserController::IsIsolatedWebApp(params->browser));
   }
 #if BUILDFLAG(IS_CHROMEOS)
   if (source_browser && source_browser != params->browser) {

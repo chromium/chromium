@@ -188,7 +188,6 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorIwaTest, NavigateCurrentTab) {
   // 4. When navigating a tab from an isolated-app: to an http: origin, then,
   //    the navigation should be intercepted and instead be opened in the
   //    default browser.
-
   NavigateParams params4 = MakeNavigateParams(iwa_browser);
   params4.url = GetGoogleURL();
   params4.transition = ui::PAGE_TRANSITION_AUTO_TOPLEVEL;

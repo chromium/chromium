@@ -82,6 +82,11 @@ bool KioskWebAppBrowserController::IsInstalled() const {
                  web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION});
 }
 
+bool KioskWebAppBrowserController::IsIsolatedWebApp() const {
+  return registrar().AppMatches(app_id(),
+                                web_app::WebAppFilter::IsIsolatedApp());
+}
+
 void KioskWebAppBrowserController::OnTabInserted(
     content::WebContents* contents) {
   AppBrowserController::OnTabInserted(contents);

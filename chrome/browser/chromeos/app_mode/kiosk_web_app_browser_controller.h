@@ -49,6 +49,7 @@ class KioskWebAppBrowserController : public web_app::AppBrowserController {
   bool IsInstalled() const override;
   bool HasReloadButton() const override;
   bool ShouldShowCustomTabBar() const override;
+  bool IsIsolatedWebApp() const override;
 
  protected:
   // AppBrowserController:
