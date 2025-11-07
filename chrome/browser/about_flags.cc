@@ -8981,10 +8981,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableMediaFoundationVideoCaptureDescription, kOsWin,
      FEATURE_VALUE_TYPE(media::kMediaFoundationVideoCapture)},
 #endif  // BUILDFLAG(IS_WIN)
-    {"shared-highlighting-manager",
-     flag_descriptions::kSharedHighlightingManagerName,
-     flag_descriptions::kSharedHighlightingManagerDescription, kOsAll,
-     FEATURE_VALUE_TYPE(shared_highlighting::kSharedHighlightingManager)},
 
 #if BUILDFLAG(IS_CHROMEOS)
     {"reset-shortcut-customizations",

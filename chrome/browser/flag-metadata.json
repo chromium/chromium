@@ -9271,11 +9271,6 @@
     "expiry_milestone": 101
   },
   {
-    "name": "shared-highlighting-manager",
-    "owners": ["jeffreycohen@chromium.org", "kristipark@chromium.org", "cheickcisse@google.com"],
-    "expiry_milestone": 111
-  },
-  {
     "name": "sharing-desktop-screenshots",
     "owners": [
       "bryantchandler@chromium.org",

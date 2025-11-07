@@ -4677,11 +4677,6 @@ inline constexpr char kVulkanFromAngleName[] = "Vulkan from ANGLE";
 inline constexpr char kVulkanFromAngleDescription[] =
     "Initialize Vulkan from inside ANGLE and share the instance with Chrome.";
 
-inline constexpr char kSharedHighlightingManagerName[] =
-    "Refactoring Shared Highlighting";
-inline constexpr char kSharedHighlightingManagerDescription[] =
-    "Refactors Shared Highlighting by centralizing the IPC calls in a Manager.";
-
 inline constexpr char kShowTabGroupsMacSystemMenuName[] =
     "Show tab group colours of tabs in Mac top bar menu";
 inline constexpr char kShowTabGroupsMacSystemMenuDescription[] =

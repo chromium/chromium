@@ -2428,7 +2428,6 @@ static_library("browser") {
     "//components/services/unzip/public/cpp",
     "//components/services/unzip/public/mojom",
     "//components/sessions",
-    "//components/shared_highlighting/browser",
     "//components/shared_highlighting/core/common",
     "//components/sharing_message:buildflags",
     "//components/sharing_message/ios_push",

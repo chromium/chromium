@@ -9,8 +9,6 @@
 
 namespace shared_highlighting {
 
-BASE_FEATURE(kSharedHighlightingManager, base::FEATURE_DISABLED_BY_DEFAULT);
-
 int GetPreemptiveLinkGenTimeoutLengthMs() {
 #if BUILDFLAG(IS_ANDROID)
   return 100;

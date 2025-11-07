@@ -16,9 +16,6 @@ BASE_DECLARE_FEATURE(kPreemptiveLinkToTextGeneration);
 // Sets the timeout length for pre-emptive link generation.
 extern const base::FeatureParam<int> kPreemptiveLinkGenTimeoutLengthMs;
 
-// Enables the new SharedHighlightingManager refactoring.
-BASE_DECLARE_FEATURE(kSharedHighlightingManager);
-
 // Returns the pre-emptive link generation timeout length.
 int GetPreemptiveLinkGenTimeoutLengthMs();
 
