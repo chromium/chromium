@@ -20,7 +20,7 @@ void ShowReadAnythingSidePanel(Browser* browser,
   side_panel_ui->Show(SidePanelEntryId::kReadAnything, open_trigger);
 }
 
-bool IsReadAnythingEntryShowing(Browser* browser) {
+bool IsReadAnythingEntryShowing(BrowserWindowInterface* browser) {
   // The side panel is not immediately hidden, and IsSidePanelEntryShowing
   // may return true for a few seconds after the panel is visually closed. This
   // can lead to a race condition where is ReadAnythingEntryShowing incorrectly

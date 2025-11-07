@@ -6,6 +6,7 @@
 
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/read_anything/read_anything_controller.h"
+#include "chrome/browser/ui/read_anything/read_anything_side_panel_controller_utils.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
@@ -61,7 +62,9 @@ void ReadAnythingEntryPointController::UpdatePageActionVisibility(
 
   page_actions::PageActionController* page_action_controller =
       bwi->GetActiveTabInterface()->GetTabFeatures()->page_action_controller();
-  if (should_show_page_action) {
+  // No need to show the chip if reading mode is already open.
+  // TODO(crbug.com/447418049): Check for immersive reading mode here too.
+  if (should_show_page_action && !IsReadAnythingEntryShowing(bwi)) {
     page_action_controller->Show(kActionSidePanelShowReadAnything);
     page_action_controller->ShowSuggestionChip(
         kActionSidePanelShowReadAnything);
