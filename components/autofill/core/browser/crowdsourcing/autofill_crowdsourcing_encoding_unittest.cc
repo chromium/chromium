@@ -2617,7 +2617,11 @@ TEST_F(AutofillCrowdsourcingEncoding, ParseQueryResponse_JoinedTypes) {
   ASSERT_EQ(form.field_count(), 2U);
 
   // Validate the heuristic and server predictions.
+#if BUILDFLAG(IS_IOS)
+  EXPECT_EQ(form.field(0)->heuristic_type(), EMAIL_ADDRESS);
+#else
   EXPECT_EQ(form.field(0)->heuristic_type(), EMAIL_OR_LOYALTY_MEMBERSHIP_ID);
+#endif
   EXPECT_EQ(form.field(0)->server_type(), EMAIL_OR_LOYALTY_MEMBERSHIP_ID);
 
   // Validate that the server prediction wins for email or loyalty cards.
@@ -2660,12 +2664,16 @@ TEST_F(AutofillCrowdsourcingEncoding, ParseQueryResponse_NoJoinedTypes) {
   ASSERT_EQ(form.field_count(), 2U);
 
   // Validate the heuristic and server predictions.
-  EXPECT_EQ(form.field(0)->heuristic_type(), EMAIL_OR_LOYALTY_MEMBERSHIP_ID);
+#if BUILDFLAG(IS_IOS)
+  FieldType heuristic_type = EMAIL_ADDRESS;
+#else
+  FieldType heuristic_type = EMAIL_OR_LOYALTY_MEMBERSHIP_ID;
+#endif
+  EXPECT_EQ(form.field(0)->heuristic_type(), heuristic_type);
   EXPECT_EQ(form.field(0)->server_type(), EMAIL_ADDRESS);
 
   // Validate that the server prediction wins for email or loyalty cards.
-  EXPECT_THAT(form.field(0)->Type().GetTypes(),
-              ElementsAre(EMAIL_OR_LOYALTY_MEMBERSHIP_ID));
+  EXPECT_THAT(form.field(0)->Type().GetTypes(), ElementsAre(heuristic_type));
   EXPECT_THAT(form.field(1)->Type().GetTypes(), ElementsAre(PASSWORD));
 }
 

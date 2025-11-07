@@ -12,6 +12,7 @@ namespace {
 constexpr bool IS_AUTOFILL_AI_PLATFORM = BUILDFLAG(IS_CHROMEOS) ||
                                          BUILDFLAG(IS_LINUX) ||
                                          BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN);
+constexpr bool IS_WALLET_PASSES_SUPPORTED_PLATFORM = !BUILDFLAG(IS_IOS);
 }
 
 // LINT.IfChange(autofill_across_iframes_ios)
@@ -359,13 +360,17 @@ BASE_FEATURE(kAutofillEnableLabelPrecedenceForTurkishAddresses,
 // When enabled, Autofill will help users fill in loyalty card details.
 // TODO(crbug.com/395831853): Remove once launched.
 BASE_FEATURE(kAutofillEnableLoyaltyCardsFilling,
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             IS_WALLET_PASSES_SUPPORTED_PLATFORM
+                 ? base::FEATURE_ENABLED_BY_DEFAULT
+                 : base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When enabled, Autofill will display joined email and loyalty card Autofill
 // suggestions.
 // TODO(crbug.com/416664590): Remove once launched.
 BASE_FEATURE(kAutofillEnableEmailOrLoyaltyCardsFilling,
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             IS_WALLET_PASSES_SUPPORTED_PLATFORM
+                 ? base::FEATURE_ENABLED_BY_DEFAULT
+                 : base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, only non-ad frames are extracted.
 // Otherwise, non-ad frames as well as *visible* ad frames are extracted.
