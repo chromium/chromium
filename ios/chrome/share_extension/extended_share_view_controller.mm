@@ -98,7 +98,9 @@ const NSUInteger kSearchCharacterLimit = 1000;
 
 @end
 
-@implementation ExtendedShareViewController
+@implementation ExtendedShareViewController {
+  UINavigationController* _navigationController;
+}
 
 + (void)initialize {
   if (self == [ExtendedShareViewController self]) {
@@ -113,16 +115,18 @@ const NSUInteger kSearchCharacterLimit = 1000;
   self.view.backgroundColor = [UIColor clearColor];
   self.shareSheet = [[ShareExtensionSheet alloc] init];
   self.shareSheet.delegate = self;
-  self.shareSheet.modalPresentationStyle = UIModalPresentationFormSheet;
+  _navigationController = [[UINavigationController alloc]
+      initWithRootViewController:self.shareSheet];
+  _navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
   UISheetPresentationController* presentationController =
-      self.shareSheet.sheetPresentationController;
+      _navigationController.sheetPresentationController;
   presentationController.prefersEdgeAttachedInCompactHeight = YES;
   presentationController.detents = @[
     [UISheetPresentationControllerDetent largeDetent]
   ];
   presentationController.preferredCornerRadius = kShareSheetCornerRadius;
   if (@available(iOS 26, *)) {
-    [self addChildViewController:self.shareSheet];
+    [self addChildViewController:_navigationController];
   }
   [self loadAvailableAccounts];
   [self loadElementsFromContext];
@@ -427,19 +431,21 @@ const NSUInteger kSearchCharacterLimit = 1000;
     return;
   }
 
+  UINavigationController* navigationController = _navigationController;
+
   dispatch_async(dispatch_get_main_queue(), ^{
-    [weakSelf presentViewController:weakSelf.shareSheet
+    [weakSelf presentViewController:navigationController
                            animated:YES
                          completion:nil];
   });
 }
 
 - (void)moveShareSheet {
-  [self addChildViewController:self.shareSheet];
-  self.shareSheet.view.translatesAutoresizingMaskIntoConstraints = NO;
-  [self.view addSubview:self.shareSheet.view];
-  AddSameConstraints(self.view, self.shareSheet.view);
-  [self.shareSheet didMoveToParentViewController:self];
+  [self addChildViewController:_navigationController];
+  _navigationController.view.translatesAutoresizingMaskIntoConstraints = NO;
+  [self.view addSubview:_navigationController.view];
+  AddSameConstraints(self.view, _navigationController.view);
+  [_navigationController didMoveToParentViewController:self];
 }
 
 - (void)displayErrorView {

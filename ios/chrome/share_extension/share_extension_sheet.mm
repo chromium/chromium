@@ -100,10 +100,13 @@ CGFloat const kUpdatedMainViewCornerRadius = 32.0;
 
   self.customContentBottomInset = 0;
   self.customGradientViewHeight = 0;
+  self.showDismissBarButton = NO;
 
-  self.titleView = [self configureSheetTitleView];
-
-  self.dismissBarButtonSystemItem = UIBarButtonSystemItemClose;
+  self.navigationItem.titleView = [self configureSheetTitleView];
+  self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]
+      initWithBarButtonSystemItem:UIBarButtonSystemItemClose
+                           target:self
+                           action:@selector(dismissSheet)];
 
   if (app_group::MultiProfileShareExtensionEnabled()) {
     self.mainBackgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
@@ -250,10 +253,6 @@ CGFloat const kUpdatedMainViewCornerRadius = 32.0;
 }
 
 #pragma mark - ConfirmationAlertActionHandler
-
-- (void)confirmationAlertDismissAction {
-  [self.delegate didTapCloseShareExtensionSheet:self];
-}
 
 - (void)confirmationAlertPrimaryAction {
   NSString* gaiaID = self.selectedAccountInfo.gaiaIDString;
@@ -659,6 +658,11 @@ CGFloat const kUpdatedMainViewCornerRadius = 32.0;
         constraintEqualToConstant:kDefaultSnapshotViewSize],
   ]];
   return snapshotView;
+}
+
+// Called when the sheet wants to be dismissed.
+- (void)dismissSheet {
+  [self.delegate didTapCloseShareExtensionSheet:self];
 }
 
 @end
