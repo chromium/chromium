@@ -1008,9 +1008,12 @@ ShellUtil::DefaultState ProbeCurrentDefaultHandlers(
     return ShellUtil::UNKNOWN_DEFAULT;
 
   // Get the ProgID for the current install mode.
-  std::wstring prog_id =
-      base::StrCat({install_static::GetBrowserProgIdPrefix(),
-                    ShellUtil::GetCurrentInstallationSuffix(chrome_exe)});
+  const std::wstring suffix =
+      ShellUtil::GetCurrentInstallationSuffix(chrome_exe);
+  const std::wstring browser_prog_id =
+      base::StrCat({install_static::GetBrowserProgIdPrefix(), suffix});
+  const std::wstring pdf_prog_id =
+      base::StrCat({install_static::GetPDFProgIdPrefix(), suffix});
 
   const int current_install_mode_index =
       install_static::InstallDetails::Get().install_mode_index();
@@ -1027,28 +1030,40 @@ ShellUtil::DefaultState ProbeCurrentDefaultHandlers(
                                            AL_EFFECTIVE, &current_app);
     if (FAILED(hr))
       return ShellUtil::NOT_DEFAULT;
-    if (prog_id.compare(current_app) == 0)
+    const bool is_pdf = type == AT_FILEEXTENSION && identifier == L".pdf";
+    if (browser_prog_id.compare(current_app) == 0 ||
+        (is_pdf && pdf_prog_id.compare(current_app) == 0)) {
       continue;
+    }
 
     // See if another mode is the default handler for this identifier.
     size_t current_app_len = std::char_traits<wchar_t>::length(current_app);
     const auto it = std::ranges::find_if(
         install_static::kInstallModes,
-        [current_install_mode_index, &current_app,
-         current_app_len](const install_static::InstallConstants& mode) {
+        [current_install_mode_index, &current_app, current_app_len,
+         is_pdf](const install_static::InstallConstants& mode) {
           if (mode.index == current_install_mode_index) {
             return false;
           }
-          const std::wstring mode_prog_id_prefix(mode.browser_prog_id_prefix);
+          const std::wstring mode_browser_prog_id_prefix(
+              mode.browser_prog_id_prefix);
           // Does the current app either match this mode's ProgID or contain
           // this mode's ProgID as a prefix followed by the '.' separator for a
           // per-user install's suffix?
-          if (!base::StartsWith(current_app.get(), mode_prog_id_prefix,
-                                base::CompareCase::SENSITIVE)) {
-            return false;
+          if (base::StartsWith(current_app.get(), mode_browser_prog_id_prefix,
+                               base::CompareCase::SENSITIVE)) {
+            return current_app_len == mode_browser_prog_id_prefix.length() ||
+                   current_app[mode_browser_prog_id_prefix.length()] == L'.';
           }
-          return current_app_len == mode_prog_id_prefix.length() ||
-                 current_app[mode_prog_id_prefix.length()] == L'.';
+          if (is_pdf) {
+            const std::wstring mode_pdf_prog_id_prefix(mode.pdf_prog_id_prefix);
+            if (base::StartsWith(current_app.get(), mode_pdf_prog_id_prefix,
+                                 base::CompareCase::SENSITIVE)) {
+              return current_app_len == mode_pdf_prog_id_prefix.length() ||
+                     current_app[mode_pdf_prog_id_prefix.length()] == L'.';
+            }
+          }
+          return false;
         });
     if (it == install_static::kInstallModes.end()) {
       return ShellUtil::NOT_DEFAULT;
