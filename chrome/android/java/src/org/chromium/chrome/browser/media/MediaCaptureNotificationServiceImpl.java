@@ -317,7 +317,9 @@ public class MediaCaptureNotificationServiceImpl extends SplitCompatService.Impl
                         foregroundServiceType);
 
         mStartedForegroundService = true;
-        ScreenCapture.onForegroundServiceRunning(MediaCaptureNotificationUtil.isCapture(mediaType));
+        boolean isRunningMediaProjection =
+                (foregroundServiceType & ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION) != 0;
+        ScreenCapture.onForegroundServiceRunning(isRunningMediaProjection);
     }
 
     /**
