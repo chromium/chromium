@@ -1,0 +1,13 @@
+import("//build/rust/rust_static_library.gni")
+
+rust_static_library("test_util") {
+  testonly = true
+  allow_unsafe = true
+  crate_root = "test_util.rs"
+  sources = [ "test_util.rs" ]
+  cxx_bindings = [ "test_util.rs" ]
+  deps = [
+    "//base",
+    "//mojo/core/embedder",
+  ]
+}

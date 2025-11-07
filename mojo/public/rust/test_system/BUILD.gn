@@ -1,0 +1,20 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+import("//build/rust/rust_static_library.gni")
+
+rust_static_library("system_api_unittests") {
+  testonly = true
+  is_gtest_unittests = true
+  crate_root = "lib.rs"
+  sources = [
+    "core_api_unittests.rs",
+    "pure_c_api_unittests.rs",
+    crate_root,
+  ]
+  deps = [
+    "//mojo/public/rust:mojo_rust_system_api",
+    "//mojo/public/rust/test_support:test_util",
+    "//testing/rust_gtest_interop",
+  ]
+}

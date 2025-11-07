@@ -33,17 +33,10 @@ rust_static_library("mojo_rust_system_api") {
     "system/lib.rs",
     "system/mojo_types.rs",
   ]
-  deps = [ ":mojo_ffi" ]
-}
-
-# TODO: Delete this once we've hooked up proper tests.
-# This is just a convenience executable for quicker iteration in the meantime.
-rust_executable("exe_using_system_api") {
-  crate_root = "test_exe/main.rs"
-  sources = [ "test_exe/main.rs" ]
+  allow_unsafe = true
   deps = [
-    ":mojo_rust_system_api",
-    "//base",
+    ":mojo_ffi",
+    "//third_party/rust/bitflags/v2:lib",
   ]
 }
 
@@ -53,6 +46,7 @@ group("tests") {
   deps = [
     "mojom_parser:mojom_parser_unittests",
     "test_mojom:test_mojom_rust",
+    "test_system:system_api_unittests",
   ]
 }
 

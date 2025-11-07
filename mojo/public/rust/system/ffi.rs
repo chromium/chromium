@@ -43,4 +43,73 @@ pub mod types {
     pub type MojoResultCode = raw_ffi::MojoResult;
 }
 
+pub use raw_ffi::MojoAppendMessageData;
+pub use raw_ffi::MojoClose;
+pub use raw_ffi::MojoCreateMessage;
+pub use raw_ffi::MojoCreateMessagePipe;
+pub use raw_ffi::MojoDestroyMessage;
+pub use raw_ffi::MojoGetMessageData;
+pub use raw_ffi::MojoGetTimeTicksNow;
+pub use raw_ffi::MojoHandleSignalsState as SignalsState;
+pub use raw_ffi::MojoQueryHandleSignalsState;
+pub use raw_ffi::MojoReadMessage;
+pub use raw_ffi::MojoWriteMessage;
 pub use types::MojoResultCode;
+
+// Most FFI functions take an options struct as input which we get from bindgen.
+// Each one contains a `struct_size` member for versioning. We want to make a
+// 'newtype' wrapper for each that manages the struct_size as well as adds a
+// `new()` function for construction.
+//
+// To reduce boilerplate we use a macro.
+//
+// The generated structs contain methods to get raw pointers for passing to FFI
+// functions. Note the FFI functions don't require the structs to live beyond
+// each call.
+macro_rules! declare_mojo_options {
+    ($struct_name:ident, $( $field_name:ident : $field_type:ty ),*) => {
+        #[repr(transparent)]
+        pub struct $struct_name(raw_ffi::$struct_name);
+
+        impl $struct_name {
+            pub fn new($($field_name : $field_type),*) -> $struct_name {
+                $struct_name(raw_ffi::$struct_name {
+                    struct_size: ::std::mem::size_of::<$struct_name>() as u32,
+                    $($field_name),*
+                })
+            }
+
+            // Get an immutable pointer to the wrapped FFI struct to pass to
+            // C functions.
+            pub fn as_ptr(&self) -> *const raw_ffi::$struct_name {
+              // $struct_name is a repr(transparent) wrapper around raw_ffi::$struct_name
+              self as *const _ as *const _
+            }
+
+            // Get a mutable pointer to the wrapped FFI struct to pass to
+            // C functions.
+            pub fn as_mut_ptr(&mut self) -> *mut raw_ffi::$struct_name {
+              // $struct_name is a repr(transparent) wrapper around raw_ffi::$struct_name
+              self as *mut _  as *mut _
+            }
+        }
+
+        impl std::ops::Deref for $struct_name {
+          type Target = raw_ffi::$struct_name;
+
+          fn deref(&self) -> &Self::Target {
+            &self.0
+          }
+        }
+
+        impl std::ops::DerefMut for $struct_name {
+          fn deref_mut(&mut self) -> &mut Self::Target {
+            &mut self.0
+          }
+        }
+    }
+}
+
+declare_mojo_options!(MojoAppendMessageDataOptions, flags: types::MojoAppendMessageDataFlags);
+declare_mojo_options!(MojoCreateMessagePipeOptions, flags: types::MojoCreateMessagePipeFlags);
+declare_mojo_options!(MojoWriteMessageOptions, flags: types::MojoWriteMessageFlags);
