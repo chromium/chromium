@@ -54,7 +54,6 @@
         "excludes": [
           {
             "match": "com.android.cts.webkit.WebViewDeviceSideStartupTest#testCookieManagerBlockingUiThread",
-            "mode": "instant",
             "_bug_id": "crbug.com/1326440"
           }
         ]
@@ -128,7 +127,6 @@
         "excludes": [
           {
             "match": "com.android.cts.webkit.WebViewDeviceSideStartupTest#testCookieManagerBlockingUiThread",
-            "mode": "instant",
             "_bug_id": "crbug.com/1326440"
           }
         ]
@@ -251,7 +249,6 @@
         "excludes": [
           {
             "match": "com.android.cts.webkit.WebViewDeviceSideStartupTest#testCookieManagerBlockingUiThread",
-            "mode": "instant",
             "_bug_id": "crbug.com/1326440"
           }
         ]
@@ -401,7 +398,6 @@
         "excludes": [
           {
             "match": "com.android.cts.webkit.WebViewDeviceSideStartupTest#testCookieManagerBlockingUiThread",
-            "mode": "instant",
             "_bug_id": "crbug.com/1326440"
           }
         ]
@@ -537,7 +533,6 @@
         "excludes": [
           {
             "match": "com.android.cts.webkit.WebViewDeviceSideStartupTest#testCookieManagerBlockingUiThread",
-            "mode": "instant",
             "_bug_id": "crbug.com/1326440"
           }
         ]
@@ -673,7 +668,6 @@
         "excludes": [
           {
             "match": "com.android.cts.webkit.WebViewDeviceSideStartupTest#testCookieManagerBlockingUiThread",
-            "mode": "instant",
             "_bug_id": "crbug.com/1326440"
           },
           {
