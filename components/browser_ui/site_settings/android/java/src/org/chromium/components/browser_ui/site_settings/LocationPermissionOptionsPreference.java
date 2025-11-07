@@ -37,6 +37,7 @@ public class LocationPermissionOptionsPreference extends Preference
     private @MonotonicNonNull RadioButtonWithDescription mApproximate;
     private @MonotonicNonNull LocationPermissionSubpageSettings mSubpage;
     private boolean mIsPreciseSelected;
+    private @NonNull CharSequence mPreciseSummary = "";
 
     public LocationPermissionOptionsPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -57,6 +58,7 @@ public class LocationPermissionOptionsPreference extends Preference
 
         mPrecise = (RadioButtonWithDescription) holder.findViewById(R.id.precise);
         assumeNonNull(mPrecise);
+        mPrecise.setDescriptionText(mPreciseSummary);
         mApproximate = (RadioButtonWithDescription) holder.findViewById(R.id.approximate);
         assumeNonNull(mApproximate);
 
@@ -108,5 +110,10 @@ public class LocationPermissionOptionsPreference extends Preference
 
     public @Nullable RadioButtonWithDescription getPreciseButtonForTesting() {
         return mPrecise;
+    }
+
+    public void setPreciseSummary(@NonNull CharSequence summary) {
+        mPreciseSummary = summary;
+        notifyChanged();
     }
 }

@@ -21,13 +21,15 @@ found in the LICENSE file.
         <org.chromium.components.browser_ui.widget.RadioButtonWithDescription
             android:id="@+id/precise"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/radio_button_with_description_height"
+            android:layout_height="wrap_content"
+            android:minHeight="@dimen/radio_button_with_description_height"
             app:primaryText="@string/website_settings_permissions_geolocation_precise" />
 
         <org.chromium.components.browser_ui.widget.RadioButtonWithDescription
             android:id="@+id/approximate"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/radio_button_with_description_height"
+            android:layout_height="wrap_content"
+            android:minHeight="@dimen/radio_button_with_description_height"
             app:primaryText="@string/website_settings_permissions_geolocation_approximate" />
     </org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout>
 </LinearLayout>

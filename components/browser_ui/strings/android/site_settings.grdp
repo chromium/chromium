@@ -70,6 +70,9 @@
   <message name="IDS_WEBSITE_SETTINGS_DEVICE_LOCATION" desc="Title for Location settings, which control which websites can access your location." meaning="Geolocation">
     Location
   </message>
+  <message name="IDS_WEBSITE_SETTINGS_USING_APPROXIMATE_LOCATION_SUMMARY" desc="Summary text under the precise location radio button, explaining that the site is using approximate location, altough the user has granted precise location access to the site.">
+    Using approximate location
+  </message>
   <message name="IDS_WEBSITE_SETTINGS_FEDERATED_IDENTITY" desc="Title for Third-Party Sign In settings, which control whether websites can access browser third-party sign in API.">
     Third-party sign-in
   </message>

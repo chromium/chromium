@@ -365,6 +365,35 @@ public class SingleWebsiteSettingsTest {
                 "You can turn on precise location in Android Settings.",
                 warning.getTitle().toString());
 
+        // Open the location settings subpage.
+        onView(withText(containsString("Location"))).perform(click());
+
+        // The subpage should show the summary on the 'Precise' option.
+        onView(withText("Precise"))
+                .check(
+                        matches(
+                                hasSibling(
+                                        withText(
+                                                R.string
+                                                        .website_settings_using_approximate_location_summary))));
+
+        // When 'Approximate' is selected, the summary should disappear.
+        onView(withText(R.string.website_settings_permissions_geolocation_approximate))
+                .perform(click());
+        onView(withText(R.string.website_settings_using_approximate_location_summary))
+                .check(doesNotExist());
+
+        // When 'Precise' is selected again, the summary should reappear.
+        onView(withText(R.string.website_settings_permissions_geolocation_precise))
+                .perform(click());
+        onView(withText("Precise"))
+                .check(
+                        matches(
+                                hasSibling(
+                                        withText(
+                                                R.string
+                                                        .website_settings_using_approximate_location_summary))));
+
         settingsActivity.finish();
     }
 

@@ -80,13 +80,14 @@ public class LocationPermissionSubpageSettings extends BaseSiteSettingsFragment
         assert permissionInfo.getSessionModel() == SessionModel.DURABLE;
 
         SettingsUtils.addPreferencesFromResource(this, R.xml.location_permission_settings);
-        setUpOsWarningPreferences();
 
         LocationPermissionOptionsPreference radioPreference =
                 findPreference(RADIO_BUTTON_GROUP_KEY);
         assert radioPreference != null;
         radioPreference.initialize(
                 getSiteSettingsDelegate().getBrowserContextHandle(), mSite, this);
+
+        setUpOsWarningPreferences();
     }
 
     public void setUpOsWarningPreferences() {
@@ -95,19 +96,29 @@ public class LocationPermissionSubpageSettings extends BaseSiteSettingsFragment
                 mSite.getPermissionInfo(
                         SiteSettingsCategory.contentSettingsType(
                                 SiteSettingsCategory.Type.DEVICE_LOCATION));
-        boolean forPreciseLocation = true;
-        if (info != null) {
-            GeolocationSetting permission =
-                    info.getGeolocationSetting(getSiteSettingsDelegate().getBrowserContextHandle());
-            if (permission.mPrecise != ContentSetting.ALLOW
-                    && permission.mApproximate == ContentSetting.ALLOW) {
-                forPreciseLocation = false;
-            }
-        }
+        assumeNonNull(info);
+        GeolocationSetting permission =
+                info.getGeolocationSetting(getSiteSettingsDelegate().getBrowserContextHandle());
+        boolean isPreciseSelected = permission.mPrecise == ContentSetting.ALLOW;
 
         LocationCategory locationCategory =
                 new LocationCategory(
-                        getSiteSettingsDelegate().getBrowserContextHandle(), forPreciseLocation);
+                        getSiteSettingsDelegate().getBrowserContextHandle(), isPreciseSelected);
+
+        LocationPermissionOptionsPreference radioPreference =
+                findPreference(RADIO_BUTTON_GROUP_KEY);
+        if (radioPreference != null) {
+            if (isPreciseSelected && locationCategory.hasPreciseOnlyBlockedWarning(getContext())) {
+                radioPreference.setPreciseSummary(
+                        getContext()
+                                .getString(
+                                        R.string
+                                                .website_settings_using_approximate_location_summary));
+            } else {
+                radioPreference.setPreciseSummary("");
+            }
+        }
+
         if (!locationCategory.showPermissionBlockedMessage(getContext())) {
             Preference preference = findPreference(PREF_OS_PERMISSIONS_WARNING);
             if (preference != null) getPreferenceScreen().removePreference(preference);
