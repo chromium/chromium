@@ -95,7 +95,6 @@ void GlicRegionCaptureController::OnRegionSelected(const gfx::Rect& rect) {
   }
   auto result = mojom::CaptureRegionResult::New();
   result->tab_id = GetTabId(web_contents_);
-  result->region = mojom::CapturedRegion::NewRect(rect);
   content::RenderWidgetHostView* view =
       web_contents_->GetPrimaryMainFrame()->GetView();
   result->region = mojom::CapturedRegion::NewRect(
