@@ -329,21 +329,6 @@ crbug.com/40946176 [ Mac ] virtual/threaded/external/wpt/css/css-view-transition
 crbug.com/40946176 [ Mac ] virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/snapshot-containing-block-includes-scrollbar-gutter.html [ Failure Pass ]
 crbug.com/40946176 [ Mac ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/snapshot-containing-block-includes-scrollbar-gutter.html [ Failure Pass ]
 
-# Secure Payment Confirmation Browser Bound Keys are not implemented on Desktop yet.
-crbug.com/377278827 [ Linux ] external/wpt/secure-payment-confirmation/authentication-accepted-bbk-created.https.html [ Failure ]
-crbug.com/377278827 [ Mac ] external/wpt/secure-payment-confirmation/authentication-accepted-bbk-created.https.html [ Failure ]
-crbug.com/377278827 [ Win10.20h2 ] external/wpt/secure-payment-confirmation/authentication-accepted-bbk-created.https.html [ Failure ]
-crbug.com/377278827 [ Win11 ] external/wpt/secure-payment-confirmation/authentication-accepted-bbk-created.https.html [ Failure ]
-crbug.com/377278827 [ Linux ] external/wpt/secure-payment-confirmation/authentication-accepted-bbk-per-passkey.https.html [ Failure ]
-crbug.com/377278827 [ Mac ] external/wpt/secure-payment-confirmation/authentication-accepted-bbk-per-passkey.https.html [ Failure ]
-crbug.com/377278827 [ Win10.20h2 ] external/wpt/secure-payment-confirmation/authentication-accepted-bbk-per-passkey.https.html [ Failure ]
-crbug.com/377278827 [ Win11 ] external/wpt/secure-payment-confirmation/authentication-accepted-bbk-per-passkey.https.html [ Failure ]
-crbug.com/377278827 external/wpt/secure-payment-confirmation/authentication-accepted-bbk-reused.https.html [ Failure ]
-crbug.com/377278827 [ Linux ] external/wpt/secure-payment-confirmation/enrollment-bbk-per-passkey.https.html [ Failure ]
-crbug.com/377278827 [ Mac ] external/wpt/secure-payment-confirmation/enrollment-bbk-per-passkey.https.html [ Failure ]
-crbug.com/377278827 [ Win10.20h2 ] external/wpt/secure-payment-confirmation/enrollment-bbk-per-passkey.https.html [ Failure ]
-crbug.com/377278827 [ Win11 ] external/wpt/secure-payment-confirmation/enrollment-bbk-per-passkey.https.html [ Failure ]
-crbug.com/377278827 external/wpt/secure-payment-confirmation/enrollment-bbk.https.html [ Failure ]
 
 ########## Ref tests can't be rebaselined ##########
 crbug.com/619103 paint/invalidation/background/background-resize-width.html [ Failure Pass ]
@@ -763,7 +748,103 @@ crbug.com/438515315 virtual/css-anchor-update-disabled/external/wpt/css/css-anch
 # This test is invalid, due to alignment safety anchor1 *always* overflows.
 crbug.com/438515315 external/wpt/css/css-anchor-position/position-visibility-no-overflow-scroll-002.html [ Failure ]
 
-# ====== Paint team owned tests to here ======
+### ====== Paint team owned tests to here ======
+
+### ====== Payments related tests begin =======
+
+# Secure Payment Confirmation Browser Bound Keys are not implemented on Desktop yet.
+crbug.com/377278827 [ Linux ] external/wpt/secure-payment-confirmation/authentication-accepted-bbk-created.https.html [ Failure ]
+crbug.com/377278827 [ Mac ] external/wpt/secure-payment-confirmation/authentication-accepted-bbk-created.https.html [ Failure ]
+crbug.com/377278827 [ Win10.20h2 ] external/wpt/secure-payment-confirmation/authentication-accepted-bbk-created.https.html [ Failure ]
+crbug.com/377278827 [ Win11 ] external/wpt/secure-payment-confirmation/authentication-accepted-bbk-created.https.html [ Failure ]
+crbug.com/438909307 [ Win11-arm64 ] external/wpt/secure-payment-confirmation/authentication-accepted-bbk-created.https.html [ Skip Timeout ]
+crbug.com/377278827 [ Linux ] external/wpt/secure-payment-confirmation/authentication-accepted-bbk-per-passkey.https.html [ Failure ]
+crbug.com/377278827 [ Mac ] external/wpt/secure-payment-confirmation/authentication-accepted-bbk-per-passkey.https.html [ Failure ]
+crbug.com/377278827 [ Win10.20h2 ] external/wpt/secure-payment-confirmation/authentication-accepted-bbk-per-passkey.https.html [ Failure ]
+crbug.com/377278827 [ Win11 ] external/wpt/secure-payment-confirmation/authentication-accepted-bbk-per-passkey.https.html [ Failure ]
+crbug.com/438909307 [ Win11-arm64 ] external/wpt/secure-payment-confirmation/authentication-accepted-bbk-per-passkey.https.html [ Crash ]
+crbug.com/377278827 external/wpt/secure-payment-confirmation/authentication-accepted-bbk-reused.https.html [ Failure ]
+crbug.com/377278827 [ Linux ] external/wpt/secure-payment-confirmation/enrollment-bbk-per-passkey.https.html [ Failure ]
+crbug.com/377278827 [ Mac ] external/wpt/secure-payment-confirmation/enrollment-bbk-per-passkey.https.html [ Failure ]
+crbug.com/377278827 [ Win10.20h2 ] external/wpt/secure-payment-confirmation/enrollment-bbk-per-passkey.https.html [ Failure ]
+crbug.com/377278827 [ Win11 ] external/wpt/secure-payment-confirmation/enrollment-bbk-per-passkey.https.html [ Failure ]
+crbug.com/438873383 [ Win11-arm64 ] external/wpt/secure-payment-confirmation/enrollment-bbk-per-passkey.https.html [ Crash Failure Timeout ]
+crbug.com/377278827 external/wpt/secure-payment-confirmation/enrollment-bbk.https.html [ Failure ]
+crbug.com/825270 external/wpt/payment-request/delegate-request.https.sub.html [ Failure ]
+
+crbug.com/438873383 [ Win11-arm64 ] external/wpt/secure-payment-confirmation/authentication-cross-origin.sub.https.html [ Crash ]
+crbug.com/379008013 [ Win11 ] external/wpt/secure-payment-confirmation/authentication-cross-origin.sub.https.html [ Failure Timeout ]
+crbug.com/377942353 [ Win10.20h2 ] external/wpt/secure-payment-confirmation/authentication-cross-origin.sub.https.html [ Crash Timeout ]
+crbug.com/359319433 [ Mac ] external/wpt/secure-payment-confirmation/authentication-cross-origin.sub.https.html [ Failure Pass Skip ]
+
+crbug.com/438294026 [ Mac14 ] external/wpt/secure-payment-confirmation/authentication-cannot-bypass-spc.https.html [ Crash ]
+crbug.com/438294026 [ Win11-arm64 ] external/wpt/secure-payment-confirmation/authentication-cannot-bypass-spc.https.html [ Crash ]
+crbug.com/359319433 [ Mac12 ] external/wpt/secure-payment-confirmation/authentication-cannot-bypass-spc.https.html [ Failure Pass Skip ]
+crbug.com/359319433 [ Mac12-arm64 ] external/wpt/secure-payment-confirmation/authentication-cannot-bypass-spc.https.html [ Failure Pass Skip ]
+crbug.com/359319433 [ Mac13 ] external/wpt/secure-payment-confirmation/authentication-cannot-bypass-spc.https.html [ Failure Pass Skip ]
+crbug.com/359319433 [ Mac13-arm64 ] external/wpt/secure-payment-confirmation/authentication-cannot-bypass-spc.https.html [ Failure Pass Skip ]
+crbug.com/359319433 [ Mac14-arm64 ] external/wpt/secure-payment-confirmation/authentication-cannot-bypass-spc.https.html [ Failure Pass Skip ]
+crbug.com/359319433 [ Mac15 ] external/wpt/secure-payment-confirmation/authentication-cannot-bypass-spc.https.html [ Failure Pass Skip ]
+crbug.com/359319433 [ Mac15-arm64 ] external/wpt/secure-payment-confirmation/authentication-cannot-bypass-spc.https.html [ Failure Pass Skip ]
+
+crbug.com/431827600 [ Mac14 ] external/wpt/secure-payment-confirmation/authentication-auth-another-way.https.html [ Crash Timeout ]
+crbug.com/431827600 [ Win11 ] external/wpt/secure-payment-confirmation/authentication-auth-another-way.https.html [ Timeout ]
+crbug.com/431827600 [ Win11-arm64 ] external/wpt/secure-payment-confirmation/authentication-auth-another-way.https.html [ Crash Timeout ]
+crbug.com/431827600 [ Win10.20h2 ] external/wpt/secure-payment-confirmation/authentication-auth-another-way.https.html [ Timeout ]
+crbug.com/431827600 [ Mac15-arm64 ] external/wpt/secure-payment-confirmation/authentication-auth-another-way.https.html [ Timeout ]
+crbug.com/431827600 [ Mac15 ] external/wpt/secure-payment-confirmation/authentication-auth-another-way.https.html [ Timeout ]
+crbug.com/431827600 [ Mac14-arm64 ] external/wpt/secure-payment-confirmation/authentication-auth-another-way.https.html [ Timeout ]
+crbug.com/431827600 [ Mac13-arm64 ] external/wpt/secure-payment-confirmation/authentication-auth-another-way.https.html [ Timeout ]
+crbug.com/431827600 [ Mac13 ] external/wpt/secure-payment-confirmation/authentication-auth-another-way.https.html [ Timeout ]
+crbug.com/431827600 [ Mac12-arm64 ] external/wpt/secure-payment-confirmation/authentication-auth-another-way.https.html [ Timeout ]
+crbug.com/431827600 [ Mac12 ] external/wpt/secure-payment-confirmation/authentication-auth-another-way.https.html [ Timeout ]
+crbug.com/431827600 [ Linux ] external/wpt/secure-payment-confirmation/authentication-auth-another-way.https.html [ Timeout ]
+crbug.com/431827600 [ Mac14 ] external/wpt/secure-payment-confirmation/authentication-rejected.https.html [ Timeout ]
+crbug.com/431827600 [ Linux ] external/wpt/secure-payment-confirmation/authentication-rejected.https.html [ Timeout ]
+crbug.com/431827600 [ Win ] external/wpt/secure-payment-confirmation/authentication-rejected.https.html [ Timeout ]
+crbug.com/359319433 [ Mac12 ] external/wpt/secure-payment-confirmation/authentication-rejected.https.html [ Failure Pass Skip ]
+crbug.com/359319433 [ Mac12-arm64 ] external/wpt/secure-payment-confirmation/authentication-rejected.https.html [ Failure Pass Skip ]
+crbug.com/359319433 [ Mac13 ] external/wpt/secure-payment-confirmation/authentication-rejected.https.html [ Failure Pass Skip ]
+crbug.com/359319433 [ Mac13-arm64 ] external/wpt/secure-payment-confirmation/authentication-rejected.https.html [ Failure Pass Skip ]
+crbug.com/359319433 [ Mac14-arm64 ] external/wpt/secure-payment-confirmation/authentication-rejected.https.html [ Failure Pass Skip ]
+crbug.com/359319433 [ Mac15 ] external/wpt/secure-payment-confirmation/authentication-rejected.https.html [ Failure Pass Skip ]
+crbug.com/359319433 [ Mac15-arm64 ] external/wpt/secure-payment-confirmation/authentication-rejected.https.html [ Failure Pass Skip ]
+
+crbug.com/431708418 [ Win11-arm64 ] external/wpt/secure-payment-confirmation/authentication-optout.https.html [ Crash ]
+crbug.com/359319433 [ Mac ] external/wpt/secure-payment-confirmation/authentication-optout.https.html [ Failure Pass Skip ]
+crbug.com/426164366 [ Win11-arm64 ] external/wpt/secure-payment-confirmation/authentication-accepted.https.html [ Crash ]
+crbug.com/379768238 [ Win10.20h2 ] external/wpt/secure-payment-confirmation/authentication-accepted.https.html [ Timeout ]
+crbug.com/426164366 [ Win11-arm64 ] external/wpt/secure-payment-confirmation/authentication-icon-data-url.https.html [ Crash ]
+crbug.com/359319433 [ Mac ] external/wpt/secure-payment-confirmation/authentication-icon-data-url.https.html [ Failure Pass Skip ]
+crbug.com/426164366 [ Win11-arm64 ] external/wpt/secure-payment-confirmation/authentication-in-iframe.sub.https.html [ Crash Failure ]
+crbug.com/378891970 [ Win10.20h2 ] external/wpt/secure-payment-confirmation/authentication-in-iframe.sub.https.html [ Crash Timeout ]
+crbug.com/359319433 [ Mac ] external/wpt/secure-payment-confirmation/authentication-in-iframe.sub.https.html [ Failure Pass Skip ]
+crbug.com/378891970 [ Win10.20h2 ] external/wpt/secure-payment-confirmation/authentication-invalid-icon.https.html [ Timeout ]
+crbug.com/359319433 [ Mac ] external/wpt/secure-payment-confirmation/authentication-invalid-icon.https.html [ Failure Pass Skip ]
+
+crbug.com/626703 external/wpt/payment-method-basic-card/steps_for_selecting_the_payment_handler.html [ Timeout ]
+crbug.com/626703 external/wpt/payment-method-basic-card/apply_the_modifiers.html [ Timeout ]
+
+# Feature Policy changes same-origin allowpaymentrequest behaviour, tests need updating
+crbug.com/718155 payments/payment-request-in-iframe.html [ Failure ]
+crbug.com/718155 payments/payment-request-in-iframe-nested-not-allowed.html [ Failure ]
+
+crbug.com/338124116 external/wpt/payment-request/payment-request-hasenrolledinstrument-method.tentative.https.html [ Failure Pass ]
+# Expect to fail. The test is applicable only when DigitalGoods flag is disabled.
+crbug.com/1080870 http/tests/payments/payment-request-app-store-billing-mandatory-total.html [ Failure ]
+
+# TODO(crbug.com/359319433) Those tests are flaky on Mac
+crbug.com/359319433 [ Mac ] external/wpt/secure-payment-confirmation/enrollment-in-iframe.sub.https.html [ Failure Pass Skip ]
+crbug.com/436163716 [ Win ] external/wpt/secure-payment-confirmation/enrollment-in-iframe.sub.https.html [ Crash Failure Timeout ]
+
+crbug.com/359319433 external/wpt/secure-payment-confirmation/enrollment.https.html [ Failure Pass Skip ]
+# Gardener 2025-08-13 this test produces output that changes with each Chrome version
+crbug.com/359319433 external/wpt/secure-payment-confirmation/authentication-requires-user-activation.https.html [ Failure Pass ]
+# Gardener 2025-07-15
+crbug.com/431938385 [ Win11-arm64 ] external/wpt/secure-payment-confirmation/authentication-invalid-icon.https.html [ Failure ]
+
+
+### ====== Payments related tests end =======
 
 # WPT speculative-parsing tests failing
 crbug.com/1144176 external/wpt/html/syntax/speculative-parsing/generated/document-write/link-rel-alternate-stylesheet.tentative.sub.html [ Crash Failure ]
@@ -2486,8 +2567,6 @@ crbug.com/1467692 virtual/forced-high-contrast-colors/fast/css/forced-colors-mod
 # contrast-color()
 crbug.com/40142548 external/wpt/css/css-color/contrast-color-001.html [ Failure ]
 
-crbug.com/825270 external/wpt/payment-request/delegate-request.https.sub.html [ Failure ]
-
 # external/wpt/css/css-borders/
 crbug.com/451531616 external/wpt/css/css-borders/outline-offset-rounding.tentative.html [ Failure ]
 crbug.com/330758166 external/wpt/css/css-borders/tentative/border-radius-side-shorthands/border-radius-side-shorthands-001.html [ Failure ]
@@ -3207,8 +3286,6 @@ crbug.com/438793866 [ Win11-arm64 ] external/wpt/html/document-isolation-policy/
 crbug.com/438793866 [ Win11-arm64 ] external/wpt/html/document-isolation-policy/service-worker-coep-none-proxy.https.tentative.window.html [ Crash ]
 crbug.com/438957813 [ Win11-arm64 ] external/wpt/html/webappapis/system-state-and-capabilities/the-navigator-object/navigator-window-controls-overlay.tentative.html [ Crash ]
 crbug.com/438957813 [ Win11-arm64 ] external/wpt/html/webappapis/system-state-and-capabilities/the-navigator-object/protocol-handler-fragment.https.html [ Crash ]
-crbug.com/438909307 [ Win11-arm64 ] external/wpt/secure-payment-confirmation/authentication-accepted-bbk-created.https.html [ Skip Timeout ]
-crbug.com/438909307 [ Win11-arm64 ] external/wpt/secure-payment-confirmation/authentication-accepted-bbk-per-passkey.https.html [ Crash ]
 crbug.com/438903183 [ Win11-arm64 ] external/wpt/service-workers/service-worker/controller-on-reload.https.html [ Crash ]
 crbug.com/438909307 [ Win11-arm64 ] external/wpt/signed-exchange/reporting/sxg-reporting-navigation-cert_fetch_error-downgraded.tentative.html [ Crash ]
 crbug.com/438909307 [ Win11-arm64 ] external/wpt/signed-exchange/reporting/sxg-reporting-navigation-cert_parse_error-downgraded.tentative.html [ Timeout ]
@@ -3218,6 +3295,7 @@ crbug.com/438909308 [ Linux ] external/wpt/storage-access-api/requestStorageAcce
 crbug.com/438909308 [ Win11-arm64 ] external/wpt/storage-access-api/requestStorageAccess-nested-cross-origin-iframe.sub.https.window.html [ Crash Timeout ]
 crbug.com/438771348 [ Win11-arm64 ] virtual/dbsc-enabled/external/wpt/device-bound-session-credentials/refresh-does-not-send-challenge.https.html [ Timeout ]
 crbug.com/438771348 [ Win11-arm64 ] virtual/dbsc-enabled/external/wpt/device-bound-session-credentials/set-authorization.https.html [ Crash ]
+crbug.com/431938385 [ Win11-arm64 ] virtual/dbsc-enabled/external/wpt/device-bound-session-credentials/include-site.https.html [ Crash Failure ]
 crbug.com/438909307 [ Win11-arm64 ] virtual/split-http-cache/external/wpt/signed-exchange/reporting/sxg-reporting-prefetch-signature_verification_error.tentative.html [ Crash ]
 crbug.com/438780143 [ Win11-arm64 ] external/wpt/FileAPI/BlobURL/cross-partition.https.html [ Skip Timeout ]
 crbug.com/438780122 external/wpt/digital-credentials/non-fully-active.https.html [ Timeout ]
@@ -3225,8 +3303,6 @@ crbug.com/438789183 [ Win11-arm64 ] external/wpt/fetch/fetch-later/new-window.ht
 crbug.com/438789183 [ Mac ] external/wpt/fetch/fetch-later/new-window.https.window.html [ Crash ]
 crbug.com/438873385 [ Win11-arm64 ] external/wpt/html/cross-origin-opener-policy/reporting/access-reporting/access-to-coop-page-from-other_coop-ro_cross-origin.https.html [ Crash ]
 crbug.com/438780144 [ Win11-arm64 ] external/wpt/html/document-isolation-policy/credentialless-shared-worker.https.tentative.window.html?request_origin=same_origin&worker_dip=none&window_dip=credentialless [ Skip Timeout ]
-crbug.com/438873383 [ Win11-arm64 ] external/wpt/secure-payment-confirmation/authentication-cross-origin.sub.https.html [ Crash ]
-crbug.com/438873383 [ Win11-arm64 ] external/wpt/secure-payment-confirmation/enrollment-bbk-per-passkey.https.html [ Crash Failure Timeout ]
 crbug.com/438873383 [ Win11-arm64 ] external/wpt/signed-exchange/reporting/sxg-reporting-navigation-failed-zero-success-fraction.tentative.html [ Crash ]
 crbug.com/438873383 [ Win11-arm64 ] external/wpt/signed-exchange/reporting/sxg-reporting-navigation-ok-no-referrer.tentative.html [ Timeout ]
 crbug.com/438873383 [ Win11-arm64 ] external/wpt/signed-exchange/reporting/sxg-reporting-prefetch-cert_fetch_error.tentative.html [ Crash ]
@@ -3240,8 +3316,6 @@ crbug.com/438309772 [ Mac14 ] external/wpt/bluetooth/bidi/requestDevice/canonica
 crbug.com/438309772 [ Win11-arm64 ] external/wpt/bluetooth/bidi/requestDevice/canonicalizeFilter/exclusion-filters-require-filters.https.window.html [ Pass Timeout ]
 crbug.com/438247058 [ Mac14 ] external/wpt/resource-timing/buffer-full-eventually.html [ Skip Timeout ]
 crbug.com/438247058 [ Win10.20h2 ] external/wpt/resource-timing/buffer-full-eventually.html [ Skip Timeout ]
-crbug.com/438294026 [ Mac14 ] external/wpt/secure-payment-confirmation/authentication-cannot-bypass-spc.https.html [ Crash ]
-crbug.com/438294026 [ Win11-arm64 ] external/wpt/secure-payment-confirmation/authentication-cannot-bypass-spc.https.html [ Crash ]
 crbug.com/438309773 [ Mac14 ] external/wpt/service-workers/service-worker/fetch-request-xhr.https.html [ Crash ]
 crbug.com/438309773 [ Win11-arm64 ] external/wpt/service-workers/service-worker/fetch-request-xhr.https.html [ Crash Failure ]
 crbug.com/438294026 [ Mac14 ] external/wpt/signed-exchange/reporting/sxg-reporting-navigation-cert_fetch_error-downgraded.tentative.html [ Timeout ]
@@ -3298,21 +3372,6 @@ crbug.com/433297073 virtual/scalefactor200/external/wpt/css/filter-effects/fecol
 crbug.com/432130785 external/wpt/css/css-contain/contain-layout-select-001.tentative.html [ Failure ]
 crbug.com/431828030 [ Mac14 ] external/wpt/bluetooth/bidi/server/getPrimaryService/gen-disconnect-called-during-error.https.window.html [ Pass Timeout ]
 crbug.com/431828030 [ Win10.20h2 ] external/wpt/bluetooth/bidi/server/getPrimaryService/gen-disconnect-called-during-error.https.window.html [ Pass Timeout ]
-crbug.com/431827600 [ Mac14 ] external/wpt/secure-payment-confirmation/authentication-auth-another-way.https.html [ Crash Timeout ]
-crbug.com/431827600 [ Win11 ] external/wpt/secure-payment-confirmation/authentication-auth-another-way.https.html [ Timeout ]
-crbug.com/431827600 [ Win11-arm64 ] external/wpt/secure-payment-confirmation/authentication-auth-another-way.https.html [ Crash Timeout ]
-crbug.com/431827600 [ Win10.20h2 ] external/wpt/secure-payment-confirmation/authentication-auth-another-way.https.html [ Timeout ]
-crbug.com/431827600 [ Mac15-arm64 ] external/wpt/secure-payment-confirmation/authentication-auth-another-way.https.html [ Timeout ]
-crbug.com/431827600 [ Mac15 ] external/wpt/secure-payment-confirmation/authentication-auth-another-way.https.html [ Timeout ]
-crbug.com/431827600 [ Mac14-arm64 ] external/wpt/secure-payment-confirmation/authentication-auth-another-way.https.html [ Timeout ]
-crbug.com/431827600 [ Mac13-arm64 ] external/wpt/secure-payment-confirmation/authentication-auth-another-way.https.html [ Timeout ]
-crbug.com/431827600 [ Mac13 ] external/wpt/secure-payment-confirmation/authentication-auth-another-way.https.html [ Timeout ]
-crbug.com/431827600 [ Mac12-arm64 ] external/wpt/secure-payment-confirmation/authentication-auth-another-way.https.html [ Timeout ]
-crbug.com/431827600 [ Mac12 ] external/wpt/secure-payment-confirmation/authentication-auth-another-way.https.html [ Timeout ]
-crbug.com/431827600 [ Linux ] external/wpt/secure-payment-confirmation/authentication-auth-another-way.https.html [ Timeout ]
-crbug.com/431827600 [ Mac14 ] external/wpt/secure-payment-confirmation/authentication-rejected.https.html [ Timeout ]
-crbug.com/431827600 [ Linux ] external/wpt/secure-payment-confirmation/authentication-rejected.https.html [ Timeout ]
-crbug.com/431827600 [ Win ] external/wpt/secure-payment-confirmation/authentication-rejected.https.html [ Timeout ]
 crbug.com/431611657 [ Mac12 ] external/wpt/css/filter-effects/crashtests/filter-primitive-crash.html [ Crash ]
 crbug.com/431611657 [ Linux ] external/wpt/css/filter-effects/crashtests/filter-primitive-crash.html [ Crash ]
 crbug.com/431611657 [ Win ] external/wpt/css/filter-effects/crashtests/filter-primitive-crash.html [ Crash ]
@@ -3322,7 +3381,6 @@ crbug.com/431445601 [ Mac14 ] external/wpt/html/semantics/interestfor/interestfo
 crbug.com/431445601 [ Win11-arm64 ] external/wpt/html/webappapis/system-state-and-capabilities/the-navigator-object/navigator_user_agent.tentative.html [ Timeout ]
 crbug.com/431445601 [ Win11-arm64 ] external/wpt/html/webappapis/system-state-and-capabilities/the-navigator-object/protocol-handler-query.https.html [ Crash ]
 [ Win11-arm64 ] external/wpt/notifications/shownotification.https.window.html [ Crash ]
-crbug.com/431708418 [ Win11-arm64 ] external/wpt/secure-payment-confirmation/authentication-optout.https.html [ Crash ]
 crbug.com/431708418 [ Win11-arm64 ] external/wpt/speech-api/SpeechRecognition-onstart-onend.https.html [ Crash ]
 crbug.com/431708419 [ Win11-arm64 ] virtual/dbsc-enabled/external/wpt/device-bound-session-credentials/fetch-no-credentials.https.html [ Timeout ]
 crbug.com/431708419 [ Win11-arm64 ] virtual/dbsc-enabled/external/wpt/device-bound-session-credentials/refresh-with-continue-false.https.html [ Crash ]
@@ -3500,9 +3558,6 @@ crbug.com/426648863 [ Win11-arm64 ] external/wpt/html/webappapis/system-state-an
 crbug.com/426648863 [ Win11-arm64 ] external/wpt/html/webappapis/system-state-and-capabilities/the-navigator-object/secure_context.html [ Crash ]
 # crbug.com/426164367 [ Win11-arm64 ] external/wpt/nav-tracking-mitigations/stateful-client-bounce.sub.https.html [ Skip Timeout ]
 # crbug.com/426164367 [ Win11-arm64 ] external/wpt/nav-tracking-mitigations/stateless-client-bounce.sub.https.html [ Crash ]
-crbug.com/426164366 [ Win11-arm64 ] external/wpt/secure-payment-confirmation/authentication-accepted.https.html [ Crash ]
-crbug.com/426164366 [ Win11-arm64 ] external/wpt/secure-payment-confirmation/authentication-icon-data-url.https.html [ Crash ]
-crbug.com/426164366 [ Win11-arm64 ] external/wpt/secure-payment-confirmation/authentication-in-iframe.sub.https.html [ Crash Failure ]
 crbug.com/426164366 [ Win11-arm64 ] external/wpt/signed-exchange/reporting/sxg-reporting-navigation-cert_fetch_error.tentative.html [ Crash ]
 crbug.com/426164366 [ Win11-arm64 ] external/wpt/signed-exchange/reporting/sxg-reporting-navigation-cert_verification_error.tentative.html [ Crash ]
 crbug.com/426164366 [ Win11-arm64 ] external/wpt/signed-exchange/reporting/sxg-reporting-prefetch-invalid_integrity_header.tentative.html [ Crash ]
@@ -3523,6 +3578,7 @@ crbug.com/426164366 [ Win11-arm64 ] virtual/split-http-cache/external/wpt/signed
 crbug.com/426164366 [ Win11-arm64 ] virtual/split-http-cache/external/wpt/signed-exchange/reporting/sxg-reporting-prefetch-cert_verification_error-downgraded.tentative.html [ Crash ]
 crbug.com/426648864 [ Win11-arm64 ] virtual/web-bluetooth-new-permissions-backend/external/wpt/bluetooth/bidi/adapter/cross-origin-iframe-getAvailability.sub.https.window.html [ Crash ]
 crbug.com/426429658 [ Win10.20h2 ] external/wpt/bluetooth/bidi/adapter/adapter-absent-getAvailability.https.window.html [ Pass Timeout ]
+crbug.com/426429658 [ Win11-arm64 ] external/wpt/bluetooth/bidi/adapter/adapter-absent-getAvailability.https.window.html [ Failure Pass Timeout ]
 crbug.com/425716853 virtual/threaded/external/wpt/css/css-view-transitions/new-content-transform-change-001.html [ Failure ]
 crbug.com/425716853 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/new-content-transform-change-001.html [ Failure ]
 crbug.com/425716853 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/new-content-transform-change-001.html [ Failure ]
@@ -3964,7 +4020,6 @@ crbug.com/379779783 [ Mac15 ] external/wpt/fetch/api/response/response-clone.any
 crbug.com/379779806 [ Mac14 ] external/wpt/webcodecs/videoFrame-createImageBitmap.https.any.worker.html [ Timeout ]
 crbug.com/379779806 [ Mac15 ] external/wpt/webcodecs/videoFrame-createImageBitmap.https.any.worker.html [ Timeout ]
 crbug.com/379779778 [ Win10.20h2 ] external/wpt/html/webappapis/system-state-and-capabilities/the-navigator-object/plugins-and-mimetypes.html [ Crash Timeout ]
-crbug.com/379768238 [ Win10.20h2 ] external/wpt/secure-payment-confirmation/authentication-accepted.https.html [ Timeout ]
 crbug.com/379768238 [ Win10.20h2 ] external/wpt/signed-exchange/reporting/sxg-reporting-navigation-invalid_integrity_header.tentative.html [ Crash Timeout ]
 crbug.com/379768238 [ Win10.20h2 ] external/wpt/signed-exchange/reporting/sxg-reporting-prefetch-parse_error.tentative.html [ Crash Timeout ]
 crbug.com/379418921 [ Mac15 ] external/wpt/webrtc/RTCPeerConnection-setRemoteDescription-answer.html [ Timeout ]
@@ -3981,14 +4036,12 @@ crbug.com/379207981 [ Mac14 ] external/wpt/css/css-grid/alignment/grid-baseline-
 crbug.com/379072454 [ Mac15 ] external/wpt/webrtc/RTCPeerConnection-setLocalDescription.html [ Timeout ]
 crbug.com/379072454 [ Mac15 ] external/wpt/webrtc/RTCPeerConnection-setRemoteDescription-simulcast.https.html [ Timeout ]
 crbug.com/379008012 [ Mac ] external/wpt/pointerevents/compat/pointerevent_mouse-pointer-preventdefault.html [ Timeout ]
-crbug.com/379008013 [ Win11 ] external/wpt/secure-payment-confirmation/authentication-cross-origin.sub.https.html [ Failure Timeout ]
 crbug.com/379008013 [ Win11 ] external/wpt/signed-exchange/reporting/sxg-reporting-navigation-signature_verification_error-downgraded.tentative.html [ Timeout ]
 crbug.com/379008013 [ Win11 ] external/wpt/signed-exchange/reporting/sxg-reporting-prefetch-cert_verification_error-downgraded.tentative.html [ Crash Timeout ]
 crbug.com/379008013 [ Win11 ] external/wpt/signed-exchange/reporting/sxg-reporting-prefetch-mi_error.tentative.html [ Crash Timeout ]
 crbug.com/379008013 [ Mac15-arm64 ] external/wpt/webrtc-extensions/RTCRtpCorruptionDetection-headerExtensionControl.html [ Timeout ]
 crbug.com/379008013 [ Mac15 ] external/wpt/webrtc-extensions/RTCRtpCorruptionDetection-headerExtensionControl.html [ Timeout ]
 crbug.com/378634716 [ Win10.20h2 ] external/wpt/html/webappapis/system-state-and-capabilities/the-navigator-object/navigatorcookies-cookieenabled-true.html [ Crash Timeout ]
-crbug.com/377942353 [ Win10.20h2 ] external/wpt/secure-payment-confirmation/authentication-cross-origin.sub.https.html [ Crash Timeout ]
 crbug.com/377942353 [ Win10.20h2 ] external/wpt/signed-exchange/reporting/sxg-reporting-navigation-failed-zero-success-fraction.tentative.html [ Crash Failure Timeout ]
 crbug.com/377942353 [ Mac15 ] external/wpt/webrtc-encoded-transform/tentative/RTCPeerConnection-insertable-streams-video-frames.https.html [ Timeout ]
 crbug.com/379008005 [ Mac14 ] external/wpt/webrtc/protocol/unknown-mediatypes.html [ Timeout ]
@@ -3996,8 +4049,6 @@ crbug.com/379008005 [ Mac15 ] external/wpt/webrtc/protocol/unknown-mediatypes.ht
 crbug.com/377942353 [ Win10.20h2 ] virtual/split-http-cache/external/wpt/signed-exchange/reporting/sxg-reporting-navigation-signature_verification_error-downgraded.tentative.html [ Crash Timeout ]
 crbug.com/378750944 [ Win10.20h2 ] external/wpt/html/webappapis/system-state-and-capabilities/the-navigator-object/navigator_user_agent.tentative.html [ Crash Timeout ]
 crbug.com/378750944 [ Win10.20h2 ] external/wpt/html/webappapis/system-state-and-capabilities/the-navigator-object/secure_context.html [ Crash Timeout ]
-crbug.com/378891970 [ Win10.20h2 ] external/wpt/secure-payment-confirmation/authentication-in-iframe.sub.https.html [ Crash Timeout ]
-crbug.com/378891970 [ Win10.20h2 ] external/wpt/secure-payment-confirmation/authentication-invalid-icon.https.html [ Timeout ]
 crbug.com/378891970 [ Win10.20h2 ] external/wpt/signed-exchange/reporting/sxg-reporting-navigation-cert_parse_error.tentative.html [ Crash Timeout ]
 crbug.com/378891970 [ Win10.20h2 ] virtual/split-http-cache/external/wpt/signed-exchange/reporting/sxg-reporting-navigation-ok-origin-referrer.tentative.html [ Crash ]
 crbug.com/378891966 external/wpt/html/semantics/embedded-content/the-iframe-element/iframe_sandbox_iframe_pdf_viewer.html [ Failure ]
@@ -4675,8 +4726,6 @@ crbug.com/626703 external/wpt/xhr/event-readystatechange-loaded.any.worker.html 
 crbug.com/626703 external/wpt/xhr/event-readystatechange-loaded.any.html [ Failure Timeout ]
 crbug.com/626703 external/wpt/media-source/mediasource-correct-frames-after-reappend.html [ Failure Pass Timeout ]
 crbug.com/626703 external/wpt/media-source/mediasource-correct-frames.html [ Failure Pass Timeout ]
-crbug.com/626703 external/wpt/payment-method-basic-card/steps_for_selecting_the_payment_handler.html [ Timeout ]
-crbug.com/626703 external/wpt/payment-method-basic-card/apply_the_modifiers.html [ Timeout ]
 crbug.com/626703 external/wpt/webrtc/RTCPeerConnection-setRemoteDescription-tracks.https.html [ Skip Timeout ]
 crbug.com/626703 external/wpt/fetch/content-type/response.window.html [ Timeout ]
 crbug.com/356498699 external/wpt/webdriver/tests/bidi/browsing_context/navigation_failed/navigation_failed.py [ Failure Timeout ]
@@ -5450,14 +5499,6 @@ crbug.com/718155 fullscreen/full-screen-restrictions.html [ Failure Timeout ]
 crbug.com/852645 gamepad/full-screen-gamepad.html [ Timeout ]
 
 crbug.com/1191123 gamepad/gamepad-polling-access.html [ Failure Pass ]
-
-# Feature Policy changes same-origin allowpaymentrequest behaviour, tests need updating
-crbug.com/718155 payments/payment-request-in-iframe.html [ Failure ]
-crbug.com/718155 payments/payment-request-in-iframe-nested-not-allowed.html [ Failure ]
-
-# Expect to fail. The test is applicable only when DigitalGoods flag is disabled.
-crbug.com/1080870 http/tests/payments/payment-request-app-store-billing-mandatory-total.html [ Failure ]
-
 
 # Image decode failures due to document destruction.
 crbug.com/721435 external/wpt/html/semantics/embedded-content/the-img-element/decode/image-decode-iframe.html [ Crash Failure Pass Timeout ]
@@ -8984,7 +9025,6 @@ crbug.com/336691003 [ Linux ] external/wpt/long-animation-frame/tentative/loaf-s
 
 # Gardener 2024-05-01
 crbug.com/333501264 virtual/fenced-frame-mparch/external/wpt/fenced-frame/setting-null-config-navigates-to-about-blank.https.html [ Failure Pass ]
-crbug.com/338124116 external/wpt/payment-request/payment-request-hasenrolledinstrument-method.tentative.https.html [ Failure Pass ]
 crbug.com/40181907 external/wpt/pointerevents/pointerevent_touch-action-pan-up-css_touch.html [ Failure Pass Timeout ]
 crbug.com/333739617 fast/peerconnection/RTCEncodedVideoFrameMetadata-timestamp.html [ Failure Pass Timeout ]
 crbug.com/329784394 external/wpt/html/browsers/browsing-the-web/history-traversal/persisted-user-state-restoration/scroll-restoration-fragment-scrolling-samedoc.html [ Failure Pass ]
@@ -9080,32 +9120,6 @@ crbug.com/342886014 external/wpt/css/css-fonts/generic-family-keywords-003.html 
 
 # Gardener 2024-08-08
 crbug.com/358343067 [ Linux ] external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-cues-cuechange.html [ Failure Pass ]
-
-# TODO(crbug.com/359319433) Those tests are flaky on Mac
-crbug.com/359319433 [ Mac12 ] external/wpt/secure-payment-confirmation/authentication-cannot-bypass-spc.https.html [ Failure Pass Skip ]
-crbug.com/359319433 [ Mac12-arm64 ] external/wpt/secure-payment-confirmation/authentication-cannot-bypass-spc.https.html [ Failure Pass Skip ]
-crbug.com/359319433 [ Mac13 ] external/wpt/secure-payment-confirmation/authentication-cannot-bypass-spc.https.html [ Failure Pass Skip ]
-crbug.com/359319433 [ Mac13-arm64 ] external/wpt/secure-payment-confirmation/authentication-cannot-bypass-spc.https.html [ Failure Pass Skip ]
-crbug.com/359319433 [ Mac14-arm64 ] external/wpt/secure-payment-confirmation/authentication-cannot-bypass-spc.https.html [ Failure Pass Skip ]
-crbug.com/359319433 [ Mac15 ] external/wpt/secure-payment-confirmation/authentication-cannot-bypass-spc.https.html [ Failure Pass Skip ]
-crbug.com/359319433 [ Mac15-arm64 ] external/wpt/secure-payment-confirmation/authentication-cannot-bypass-spc.https.html [ Failure Pass Skip ]
-crbug.com/359319433 [ Mac ] external/wpt/secure-payment-confirmation/authentication-cross-origin.sub.https.html [ Failure Pass Skip ]
-crbug.com/359319433 [ Mac ] external/wpt/secure-payment-confirmation/authentication-icon-data-url.https.html [ Failure Pass Skip ]
-crbug.com/359319433 [ Mac ] external/wpt/secure-payment-confirmation/authentication-in-iframe.sub.https.html [ Failure Pass Skip ]
-crbug.com/359319433 [ Mac ] external/wpt/secure-payment-confirmation/authentication-invalid-icon.https.html [ Failure Pass Skip ]
-crbug.com/359319433 [ Mac ] external/wpt/secure-payment-confirmation/authentication-optout.https.html [ Failure Pass Skip ]
-crbug.com/359319433 [ Mac12 ] external/wpt/secure-payment-confirmation/authentication-rejected.https.html [ Failure Pass Skip ]
-crbug.com/359319433 [ Mac12-arm64 ] external/wpt/secure-payment-confirmation/authentication-rejected.https.html [ Failure Pass Skip ]
-crbug.com/359319433 [ Mac13 ] external/wpt/secure-payment-confirmation/authentication-rejected.https.html [ Failure Pass Skip ]
-crbug.com/359319433 [ Mac13-arm64 ] external/wpt/secure-payment-confirmation/authentication-rejected.https.html [ Failure Pass Skip ]
-crbug.com/359319433 [ Mac14-arm64 ] external/wpt/secure-payment-confirmation/authentication-rejected.https.html [ Failure Pass Skip ]
-crbug.com/359319433 [ Mac15 ] external/wpt/secure-payment-confirmation/authentication-rejected.https.html [ Failure Pass Skip ]
-crbug.com/359319433 [ Mac15-arm64 ] external/wpt/secure-payment-confirmation/authentication-rejected.https.html [ Failure Pass Skip ]
-crbug.com/359319433 [ Mac ] external/wpt/secure-payment-confirmation/enrollment-in-iframe.sub.https.html [ Failure Pass Skip ]
-# Gardener 2025-08-06 this test is also flaky on the other bots
-crbug.com/359319433 external/wpt/secure-payment-confirmation/enrollment.https.html [ Failure Pass Skip ]
-# Gardener 2025-08-13 this test produces output that changes with each Chrome version
-crbug.com/359319433 external/wpt/secure-payment-confirmation/authentication-requires-user-activation.https.html [ Failure Pass ]
 
 # Gardener 2024-08-13
 crbug.com/358437652 [ Linux ] external/wpt/dom/events/scrolling/wheel-event-transactions-multiple-action-chains.html [ Failure ]
@@ -9640,11 +9654,6 @@ crbug.com/431036874 [ Mac12 ] virtual/threaded/external/wpt/css/css-view-transit
 
 crbug.com/414631999 http/tests/devtools/webaudio/audio-context-selector-test.js [ Failure Pass ]
 
-# Gardener 2025-07-15
-crbug.com/426429658 [ Win11-arm64 ] external/wpt/bluetooth/bidi/adapter/adapter-absent-getAvailability.https.window.html [ Failure Pass Timeout ]
-crbug.com/431938385 [ Win11-arm64 ] virtual/dbsc-enabled/external/wpt/device-bound-session-credentials/include-site.https.html [ Crash Failure ]
-crbug.com/431938385 [ Win11-arm64 ] external/wpt/secure-payment-confirmation/authentication-invalid-icon.https.html [ Failure ]
-
 # Gardener 2025-07-16
 crbug.com/431938385 [ Win11-arm64 ] external/wpt/bluetooth/bidi/characteristic/readValue/characteristic-is-removed.https.window.html [ Failure Pass ]
 
@@ -9656,9 +9665,6 @@ crbug.com/40253082 [ Mac14 ] virtual/controls-refresh-hc/fast/forms/color-scheme
 
 # Gardener 2025-07-30
 crbug.com/434955776 external/wpt/html/infrastructure/urls/resolving-urls/query-encoding/windows-1252.html?include=loading [ Pass Timeout ]
-
-# Gardener 2025-08-04
-crbug.com/436163716 [ Win ] external/wpt/secure-payment-confirmation/enrollment-in-iframe.sub.https.html [ Crash Failure Timeout ]
 
 # Gardener 2025-08-05
 crbug.com/436615917 inspector-protocol/timeline/long-animation-frame-trace-visual-update.js [ Failure Pass ]
