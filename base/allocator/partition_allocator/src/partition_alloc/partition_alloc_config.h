@@ -265,11 +265,8 @@ constexpr bool kUseFewerMemoryRegions =
 #define PA_CONFIG_IS_NONCLANG_MSVC() 0
 #endif
 
-// Set GN build override 'assert_cpp_20' to false to disable assertion.
-#if PA_BUILDFLAG(ASSERT_CPP_20)
 static_assert(__cplusplus >= 202002L,
               "PartitionAlloc targets C++20 or higher.");
-#endif  // PA_BUILDFLAG(ASSERT_CPP_20)
 
 // Named pass-through that determines whether or not PA should generally
 // enforce that `SlotStart` instances are in fact slot starts.

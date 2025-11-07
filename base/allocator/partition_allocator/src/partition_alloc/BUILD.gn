@@ -135,7 +135,6 @@ declare_args() {
 pa_buildflag_header("buildflags") {
   header = "buildflags.h"
   flags = [
-    "ASSERT_CPP_20=$assert_cpp20",
     "BACKUP_REF_PTR_EXTRA_OOB_CHECKS=$backup_ref_ptr_extra_oob_checks",
     "BACKUP_REF_PTR_POISON_OOB_PTR=$backup_ref_ptr_poison_oob_ptr",
     "CAN_UNWIND_WITH_FRAME_POINTERS=$can_unwind_with_frame_pointers",

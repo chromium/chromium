@@ -1278,7 +1278,6 @@ struct pointer_traits<::raw_ptr<T, Traits>> {
   }
 };
 
-#if PA_BUILDFLAG(ASSERT_CPP_20)
 // Mark `raw_ptr<T>` and `T*` as having a common reference type (the type to
 // which both can be converted or bound) of `T*`. This makes them satisfy
 // `std::equality_comparable`, which allows usage like:
@@ -1304,7 +1303,6 @@ template <typename T,
 struct basic_common_reference<T*, raw_ptr<T, Traits>, TQ, UQ> {
   using type = T*;
 };
-#endif  // PA_BUILDFLAG(ASSERT_CPP_20)
 
 }  // namespace std
 

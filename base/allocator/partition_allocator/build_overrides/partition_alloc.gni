@@ -21,7 +21,3 @@ enable_dangling_raw_ptr_checks_default = false
 raw_ptr_zero_on_construct_default = true
 raw_ptr_zero_on_move_default = true
 raw_ptr_zero_on_destruct_default = false
-
-# PartitionAlloc needs to support cpp17 for standalone builds, as long as Skia
-# supports it.
-assert_cpp20_default = false

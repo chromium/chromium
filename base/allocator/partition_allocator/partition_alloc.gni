@@ -525,12 +525,6 @@ declare_args() {
 }
 
 declare_args() {
-  # Assert that PartitionAlloc and MiraclePtr run on C++20 when set to true.
-  # Embedders may opt-out of using C++ 20 build.
-  assert_cpp20 = assert_cpp20_default
-}
-
-declare_args() {
   # Set to true to enable futex priority inheritance.
   #
   # Enabled only on 64-bit Android. On 32 bit Android, PI futexes require an
