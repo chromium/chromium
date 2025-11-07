@@ -67,10 +67,8 @@ class SecurePaymentConfirmationService
       blink::mojom::PublicKeyCredentialCreationOptionsPtr options,
       MakePaymentCredentialCallback callback) override;
 
-#if BUILDFLAG(IS_ANDROID)
   void SetPasskeyBrowserBinderForTesting(
       std::unique_ptr<PasskeyBrowserBinder> passkey_browser_binder);
-#endif  // BUILDFLAG(IS_ANDROID)
 
  private:
   // States of the enrollment flow, necessary to ensure correctness with
@@ -119,11 +117,8 @@ class SecurePaymentConfirmationService
   std::optional<WebDataServiceBase::Handle>
       set_browser_bound_key_request_handle_;
   bool is_system_prompt_result_recorded_ = false;
-  std::string browser_bound_key_store_keychain_access_group_;
-
-#if BUILDFLAG(IS_ANDROID)
   std::unique_ptr<PasskeyBrowserBinder> passkey_browser_binder_;
-#endif  // BUILDFLAG(IS_ANDROID)
+  std::string browser_bound_key_store_keychain_access_group_;
 
   base::WeakPtrFactory<SecurePaymentConfirmationService> weak_ptr_factory_{
       this};

@@ -106,6 +106,11 @@ class PasskeyBrowserBinder {
     // associated.
     BrowserBoundKey& Get();
 
+    // Returns the browser bound key identifier for tests.
+    const std::vector<uint8_t>& GetBrowserBoundKeyIdForTesting() const {
+      return browser_bound_key_id_;
+    }
+
    private:
     friend PasskeyBrowserBinder;
 

@@ -131,9 +131,13 @@ PasskeyBrowserBinder::CreateUnboundKey(
   if (!browser_bound_key) {
     return std::nullopt;
   }
-  return PasskeyBrowserBinder::UnboundKey(std::move(browser_bound_key_id),
-                                          std::move(browser_bound_key),
-                                          key_store_);
+
+  // The BBK ID might be different from the requested one so update to the
+  // ID from the returned BBK as it will be the source of truth.
+  browser_bound_key_id = browser_bound_key->GetIdentifier();
+
+  return PasskeyBrowserBinder::UnboundKey(
+      browser_bound_key_id, std::move(browser_bound_key), key_store_);
 }
 
 void PasskeyBrowserBinder::BindKey(UnboundKey key,

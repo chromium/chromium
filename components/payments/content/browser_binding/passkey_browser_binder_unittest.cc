@@ -182,6 +182,36 @@ TEST_F(PasskeyBrowserBinderTest,
       /*expected_bucket_count=*/1);
 }
 
+TEST_F(PasskeyBrowserBinderTest,
+       CreatesUnboundKeyWhenKeyIdReturnedIsDifferentFromPassed) {
+  std::unique_ptr<PasskeyBrowserBinder> binder = CreatePasskeyBrowserBinder();
+
+  // Change the random bytes callback to return a different BBK ID.
+  const std::vector<uint8_t> requested_fake_bbk_id = {111, 112, 113, 114};
+  binder->SetRandomBytesAsVectorCallbackForTesting(
+      base::BindLambdaForTesting([&requested_fake_bbk_id](size_t length) {
+        return requested_fake_bbk_id;
+      }));
+
+  // Returns a BBK with `fake_bbk_id_` when
+  // BrowserBoundKeyStore::GetOrCreateBrowserBoundKeyForCredentialId is called
+  // with`requested_fake_bbk_id`.
+  fake_browser_bound_key_store_->PutFakeKey(
+      FakeBrowserBoundKey(fake_bbk_id_, fake_public_key_,
+                          /*signature=*/{}, kCoseEs256,
+                          /*expected_client_data=*/{}, /*is_new=*/true),
+      requested_fake_bbk_id);
+
+  std::optional<PasskeyBrowserBinder::UnboundKey> key =
+      binder->CreateUnboundKey(/*allowed_algorithms=*/{
+          device::PublicKeyCredentialParams::CredentialInfo{.algorithm =
+                                                                kCoseEs256}});
+
+  // Expect that the returned UnboundKey contains the BBK with `fake_bbk_id_`.
+  ASSERT_TRUE(key.has_value());
+  EXPECT_EQ(key->GetBrowserBoundKeyIdForTesting(), fake_bbk_id_);
+}
+
 TEST_F(PasskeyBrowserBinderTest, DeletesUnboundKey) {
   std::unique_ptr<PasskeyBrowserBinder> binder = CreatePasskeyBrowserBinder();
   std::optional<PasskeyBrowserBinder::UnboundKey> key =

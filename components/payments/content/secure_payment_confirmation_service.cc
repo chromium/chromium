@@ -8,6 +8,7 @@
 #include "base/feature_list.h"
 #include "base/memory/ref_counted_memory.h"
 #include "components/payments/content/browser_binding/browser_bound_key.h"
+#include "components/payments/content/browser_binding/browser_bound_key_store.h"
 #include "components/payments/content/web_payments_web_data_service.h"
 #include "components/payments/core/features.h"
 #include "components/payments/core/secure_payment_confirmation_credential.h"
@@ -19,11 +20,7 @@
 #include "content/public/common/content_features.h"
 #include "crypto/random.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
-
-#if BUILDFLAG(IS_ANDROID)
-#include "components/payments/content/browser_binding/browser_bound_key_store.h"
 #include "third_party/blink/public/common/features.h"
-#endif
 
 namespace payments {
 
@@ -145,17 +142,16 @@ void SecurePaymentConfirmationService::MakePaymentCredential(
     MakePaymentCredentialCallback callback) {
   std::string relying_party_id;
   std::optional<PasskeyBrowserBinder::UnboundKey> browser_bound_key;
-#if BUILDFLAG(IS_ANDROID)
   if (options &&
       base::FeatureList::IsEnabled(
           blink::features::kSecurePaymentConfirmationBrowserBoundKeys)) {
     relying_party_id = options->relying_party.id;
     if (!passkey_browser_binder_) {
       if (scoped_refptr<BrowserBoundKeyStore> key_store =
-              GetBrowserBoundKeyStoreInstance(BrowserBoundKeyStore::Config {
+              GetBrowserBoundKeyStoreInstance(BrowserBoundKeyStore::Config{
 #if BUILDFLAG(IS_MAC)
-                .keychain_access_group =
-                    browser_bound_key_store_keychain_access_group_;
+                  .keychain_access_group =
+                      browser_bound_key_store_keychain_access_group_
 #endif  // BUILDFLAG(IS_MAC)
               })) {
         passkey_browser_binder_ = std::make_unique<PasskeyBrowserBinder>(
@@ -182,7 +178,7 @@ void SecurePaymentConfirmationService::MakePaymentCredential(
     }
     authenticator_->SetPaymentOptions(std::move(payment_options));
   }
-#endif  // BUILDFLAG(IS_ANDROID)
+
   authenticator_->MakeCredential(
       std::move(options),
       base::BindOnce(
@@ -191,12 +187,10 @@ void SecurePaymentConfirmationService::MakePaymentCredential(
           std::move(relying_party_id), std::move(browser_bound_key)));
 }
 
-#if BUILDFLAG(IS_ANDROID)
 void SecurePaymentConfirmationService::SetPasskeyBrowserBinderForTesting(
     std::unique_ptr<PasskeyBrowserBinder> passkey_browser_binder) {
   passkey_browser_binder_ = std::move(passkey_browser_binder);
 }
-#endif  // BUILDFLAG(IS_ANDROID)
 
 void SecurePaymentConfirmationService::OnStorePaymentCredential(
     WebDataServiceBase::Handle h,
@@ -225,7 +219,6 @@ void SecurePaymentConfirmationService::OnAuthenticatorMakeCredential(
     ::blink::mojom::AuthenticatorStatus authenticator_status,
     ::blink::mojom::MakeCredentialAuthenticatorResponsePtr response,
     ::blink::mojom::WebAuthnDOMExceptionDetailsPtr maybe_exception_details) {
-#if BUILDFLAG(IS_ANDROID)
   if (response &&
       base::FeatureList::IsEnabled(
           blink::features::kSecurePaymentConfirmationBrowserBoundKeys)) {
@@ -235,12 +228,20 @@ void SecurePaymentConfirmationService::OnAuthenticatorMakeCredential(
       response->payment =
           blink::mojom::AuthenticationExtensionsPaymentResponse::New();
       response->payment->browser_bound_signature = std::move(signature_output);
+
+      // Last used time is needed on platforms where the credentials cannot be
+      // listed by platform APIs.
+      std::optional<base::Time> last_used;
+#if BUILDFLAG(IS_WIN)
+      last_used = base::Time::NowFromSystemTime();
+#endif
+
       passkey_browser_binder_->BindKey(
           std::move(*browser_bound_key), response->info->raw_id,
-          std::move(relying_party), /*last_used=*/std::nullopt);
+          std::move(relying_party), std::move(last_used));
     }
   }
-#endif
+
   std::move(callback).Run(authenticator_status, std::move(response),
                           std::move(maybe_exception_details));
 }
