@@ -24,6 +24,7 @@
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
+#include "components/collaboration/public/collaboration_flow_type.h"
 #include "components/collaboration/public/collaboration_service.h"
 #include "components/collaboration/public/service_status.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
@@ -135,10 +136,22 @@ DialogText GetPromptDialogTextFromStatus(
   }
 }
 
-void ShowSignInAndSyncUi(Profile* profile) {
+void ShowSignInAndSyncUi(Profile* profile,
+                         signin_metrics::AccessPoint access_point) {
   signin_ui_util::EnableSyncFromSingleAccountPromo(
-      profile, GetAccountInfoFromProfile(profile),
-      signin_metrics::AccessPoint::kCollaborationShareTabGroup);
+      profile, GetAccountInfoFromProfile(profile), access_point);
+}
+
+signin_metrics::AccessPoint GetAccessPointForFlowType(
+    collaboration::FlowType flow_type) {
+  switch (flow_type) {
+    case collaboration::FlowType::kJoin:
+      return signin_metrics::AccessPoint::kCollaborationJoinTabGroup;
+    case collaboration::FlowType::kShareOrManage:
+      return signin_metrics::AccessPoint::kCollaborationShareTabGroup;
+    case collaboration::FlowType::kLeaveOrDelete:
+      return signin_metrics::AccessPoint::kCollaborationLeaveOrDeleteTabGroup;
+  }
 }
 
 }  // namespace
@@ -195,6 +208,8 @@ void CollaborationControllerDelegateDesktop::Cancel(ResultCallback result) {
 void CollaborationControllerDelegateDesktop::ShowAuthenticationUi(
     collaboration::FlowType flow_type,
     ResultCallback result) {
+  access_point_ = GetAccessPointForFlowType(flow_type);
+
   MaybeShowSignInOrSyncPromptDialog();
   authentication_ui_callback_ = std::move(result);
 }
@@ -446,8 +461,7 @@ void CollaborationControllerDelegateDesktop::
   // it may not update in time after `SignInFromSingleAccountPromo` sets the
   // primary account.
   signin_ui_util::TriggerSignInForHistorySyncOptIn(
-      browser_, browser_->profile(),
-      signin_metrics::AccessPoint::kCollaborationShareTabGroup);
+      browser_, browser_->profile(), access_point_);
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
@@ -464,20 +478,19 @@ void CollaborationControllerDelegateDesktop::MaybeShowSignInAndSyncUi() {
   Profile* profile = browser_->profile();
   switch (status.signin_status) {
     case collaboration::SigninStatus::kNotSignedIn:
-      ShowSignInAndSyncUi(profile);
+      ShowSignInAndSyncUi(profile, access_point_);
       break;
     case collaboration::SigninStatus::kSigninDisabled:
       chrome::ShowSettingsSubPage(browser_, chrome::kSyncSetupSubPage);
       break;
     case collaboration::SigninStatus::kSignedInPaused:
       signin_ui_util::ShowReauthForAccount(
-          profile, GetAccountInfoFromProfile(profile).email,
-          signin_metrics::AccessPoint::kCollaborationShareTabGroup);
+          profile, GetAccountInfoFromProfile(profile).email, access_point_);
       break;
     case collaboration::SigninStatus::kSignedIn:
       switch (status.sync_status) {
         case collaboration::SyncStatus::kNotSyncing:
-          ShowSignInAndSyncUi(profile);
+          ShowSignInAndSyncUi(profile, access_point_);
           break;
         case collaboration::SyncStatus::kSyncWithoutTabGroup:
           chrome::ShowSettingsSubPage(browser_,
@@ -554,19 +567,17 @@ void CollaborationControllerDelegateDesktop::
         break;
       case collaboration::SigninStatus::kNotSignedIn:
         signin_metrics::LogSignInOffered(
-            signin_metrics::AccessPoint::kCollaborationShareTabGroup,
+            access_point_,
             account_for_promo.IsEmpty()
                 ? signin_metrics::PromoAction::
                       PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT
                 : signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT);
-        signin_metrics::LogHistorySyncOptInOffered(
-            signin_metrics::AccessPoint::kCollaborationShareTabGroup);
+        signin_metrics::LogHistorySyncOptInOffered(access_point_);
         break;
       case collaboration::SigninStatus::kSignedInPaused:
       case collaboration::SigninStatus::kSignedIn:
         if (status.sync_status != collaboration::SyncStatus::kSyncEnabled) {
-          signin_metrics::LogHistorySyncOptInOffered(
-              signin_metrics::AccessPoint::kCollaborationShareTabGroup);
+          signin_metrics::LogHistorySyncOptInOffered(access_point_);
         }
         break;
     }

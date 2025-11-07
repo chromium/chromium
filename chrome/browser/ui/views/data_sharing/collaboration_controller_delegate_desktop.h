@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/views/data_sharing/data_sharing_utils.h"
 #include "components/collaboration/public/collaboration_controller_delegate.h"
 #include "components/collaboration/public/collaboration_flow_type.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "components/tab_groups/tab_group_id.h"
 
 class Browser;
@@ -119,6 +120,9 @@ class CollaborationControllerDelegateDesktop
 
   // Callback passed from `ShowError()`.
   ResultCallback error_ui_callback_;
+
+  signin_metrics::AccessPoint access_point_ =
+      signin_metrics::AccessPoint::kCollaborationShareTabGroup;
 
   base::ScopedObservation<BrowserList, BrowserListObserver>
       browser_list_observer_{this};

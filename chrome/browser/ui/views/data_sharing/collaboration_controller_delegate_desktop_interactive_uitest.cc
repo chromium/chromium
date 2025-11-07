@@ -16,9 +16,11 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/data_sharing/collaboration_controller_delegate_desktop.h"
 #include "chrome/browser/ui/views/data_sharing/data_sharing_bubble_controller.h"
+#include "chrome/browser/ui/views/data_sharing/data_sharing_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/collaboration/public/collaboration_controller_delegate.h"
+#include "components/collaboration/public/collaboration_flow_type.h"
 #include "components/collaboration/public/service_status.h"
 #include "components/data_sharing/public/features.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -480,7 +482,7 @@ class
         signin::AccountAvailabilityOptionsBuilder(test_url_loader_factory())
             .WithCookie()
             .WithAccessPoint(
-                signin_metrics::AccessPoint::kCollaborationShareTabGroup)
+                signin_metrics::AccessPoint::kCollaborationJoinTabGroup)
             .AsPrimary(signin::ConsentLevel::kSignin)
             .Build("test@email.com"));
   }
@@ -499,9 +501,11 @@ class
         syncer::UserSelectableType::kSavedTabGroups, enabled);
   }
 
-  void ShowAndAcceptDialog(collaboration::SigninStatus signin_status,
-                           collaboration::SyncStatus sync_status =
-                               collaboration::SyncStatus::kNotSyncing) {
+  void ShowAndAcceptDialog(
+      collaboration::SigninStatus signin_status,
+      collaboration::SyncStatus sync_status =
+          collaboration::SyncStatus::kNotSyncing,
+      collaboration::FlowType flow_type = collaboration::FlowType::kJoin) {
     // Set up an account picture in case it is shown in the dialog.
     signin::SimulateAccountImageFetch(
         identity_manager(),
@@ -520,8 +524,7 @@ class
         collaboration::CollaborationControllerDelegate::ResultCallback>
         callback;
 
-    delegate.ShowAuthenticationUi(collaboration::FlowType::kJoin,
-                                  callback.Get());
+    delegate.ShowAuthenticationUi(flow_type, callback.Get());
     views::Widget* dialog_widget = delegate.prompt_dialog_widget_for_testing();
     EXPECT_NE(nullptr, dialog_widget);
 
@@ -574,22 +577,22 @@ IN_PROC_BROWSER_TEST_F(
   // WebSignin (WithDefault).
   histogram_tester.ExpectBucketCount(
       "Signin.SignIn.Offered",
-      signin_metrics::AccessPoint::kCollaborationShareTabGroup, 1);
+      signin_metrics::AccessPoint::kCollaborationJoinTabGroup, 1);
   histogram_tester.ExpectBucketCount(
       "Signin.SignIn.Offered.NewAccountNoExistingAccount",
-      signin_metrics::AccessPoint::kCollaborationShareTabGroup, 1);
+      signin_metrics::AccessPoint::kCollaborationJoinTabGroup, 1);
   histogram_tester.ExpectTotalCount("Signin.SignIn.Offered.WithDefault", 0);
   histogram_tester.ExpectBucketCount(
       "Signin.SignIn.Started",
-      signin_metrics::AccessPoint::kCollaborationShareTabGroup, 1);
+      signin_metrics::AccessPoint::kCollaborationJoinTabGroup, 1);
   histogram_tester.ExpectBucketCount(
       "Signin.SignIn.Completed",
-      signin_metrics::AccessPoint::kCollaborationShareTabGroup, 1);
+      signin_metrics::AccessPoint::kCollaborationJoinTabGroup, 1);
   histogram_tester.ExpectTotalCount("Signin.WebSignin.SourceToChromeSignin", 0);
 
   histogram_tester.ExpectUniqueSample(
       "Signin.HistorySyncOptIn.Offered",
-      signin_metrics::AccessPoint::kCollaborationShareTabGroup,
+      signin_metrics::AccessPoint::kCollaborationJoinTabGroup,
       /*expected_bucket_count=*/1);
 }
 
@@ -623,26 +626,26 @@ IN_PROC_BROWSER_TEST_F(
   // Signin metrics - WebSignin (WithDefault) metrics are also recorded.
   histogram_tester.ExpectBucketCount(
       "Signin.SignIn.Offered",
-      signin_metrics::AccessPoint::kCollaborationShareTabGroup, 1);
+      signin_metrics::AccessPoint::kCollaborationJoinTabGroup, 1);
   histogram_tester.ExpectTotalCount("Signin.SignIn.Started", 0);
   histogram_tester.ExpectBucketCount(
       "Signin.SignIn.Completed",
-      signin_metrics::AccessPoint::kCollaborationShareTabGroup, 1);
+      signin_metrics::AccessPoint::kCollaborationJoinTabGroup, 1);
   histogram_tester.ExpectBucketCount(
       "Signin.SignIn.Offered",
-      signin_metrics::AccessPoint::kCollaborationShareTabGroup, 1);
+      signin_metrics::AccessPoint::kCollaborationJoinTabGroup, 1);
   histogram_tester.ExpectBucketCount(
       "Signin.SignIn.Offered.WithDefault",
-      signin_metrics::AccessPoint::kCollaborationShareTabGroup, 1);
+      signin_metrics::AccessPoint::kCollaborationJoinTabGroup, 1);
   histogram_tester.ExpectTotalCount(
       "Signin.SignIn.Offered.NewAccountNoExistingAccount", 0);
   histogram_tester.ExpectBucketCount(
       "Signin.WebSignin.SourceToChromeSignin",
-      signin_metrics::AccessPoint::kCollaborationShareTabGroup, 1);
+      signin_metrics::AccessPoint::kCollaborationJoinTabGroup, 1);
 
   histogram_tester.ExpectUniqueSample(
       "Signin.HistorySyncOptIn.Offered",
-      signin_metrics::AccessPoint::kCollaborationShareTabGroup,
+      signin_metrics::AccessPoint::kCollaborationJoinTabGroup,
       /*expected_bucket_count=*/1);
 }
 
@@ -673,7 +676,7 @@ IN_PROC_BROWSER_TEST_F(
   identity_manager()->GetAccountsMutator()->AddOrUpdateAccount(
       info.gaia, info.email, "dummy_refresh_token",
       /*is_under_advanced_protection=*/false,
-      signin_metrics::AccessPoint::kCollaborationShareTabGroup,
+      signin_metrics::AccessPoint::kCollaborationJoinTabGroup,
       signin_metrics::SourceForRefreshTokenOperation::
           kDiceResponseHandler_Signin);
 
@@ -695,7 +698,7 @@ IN_PROC_BROWSER_TEST_F(
 
   histogram_tester.ExpectUniqueSample(
       "Signin.HistorySyncOptIn.Offered",
-      signin_metrics::AccessPoint::kCollaborationShareTabGroup,
+      signin_metrics::AccessPoint::kCollaborationJoinTabGroup,
       /*expected_bucket_count=*/1);
 }
 
@@ -752,7 +755,7 @@ IN_PROC_BROWSER_TEST_F(
 
   histogram_tester.ExpectUniqueSample(
       "Signin.HistorySyncOptIn.Offered",
-      signin_metrics::AccessPoint::kCollaborationShareTabGroup,
+      signin_metrics::AccessPoint::kCollaborationJoinTabGroup,
       /*expected_bucket_count=*/1);
 }
 
@@ -793,7 +796,23 @@ IN_PROC_BROWSER_TEST_F(
 
   histogram_tester.ExpectUniqueSample(
       "Signin.HistorySyncOptIn.Offered",
-      signin_metrics::AccessPoint::kCollaborationShareTabGroup,
+      signin_metrics::AccessPoint::kCollaborationJoinTabGroup,
       /*expected_bucket_count=*/0);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    CollaborationControllerDelegateDesktopInteractiveUITestWithHistorySyncOptIn,
+    PromptDialogAccept_CorrectAccessPointRecorded) {
+  base::HistogramTester histogram_tester;
+
+  // This should set the access point to the share tabs dialog.
+  ShowAndAcceptDialog(collaboration::SigninStatus::kSignedIn,
+                      collaboration::SyncStatus::kNotSyncing,
+                      collaboration::FlowType::kShareOrManage);
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.HistorySyncOptIn.Offered",
+      signin_metrics::AccessPoint::kCollaborationShareTabGroup,
+      /*expected_bucket_count=*/1);
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
