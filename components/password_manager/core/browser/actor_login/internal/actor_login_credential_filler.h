@@ -74,10 +74,11 @@ class ActorLoginCredentialFiller {
                 std::u16string username,
                 std::u16string password);
 
-  // Fills all eligible fields with `username` and `password`.
-  void FillAllEligibleFields(std::u16string username,
-                             std::u16string password,
-                             bool should_fill_iframes);
+  // Fills all eligible fields with `stored_credential.password_value` and
+  // `stored_credential.username_value`.
+  void FillAllEligibleFields(
+      const password_manager::PasswordForm& stored_credential,
+      bool should_fill_iframes);
 
   // Fills the field of `type` identified by `field_renderer_id` within the
   // `driver`'s frame with `value`. `closure` will be called to signal

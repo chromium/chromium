@@ -168,13 +168,23 @@ class ActorLoginCredentialFillerTest : public ::testing::TestWithParam<bool> {
   std::unique_ptr<PasswordFormManager> CreateFormManagerWithParsedForm(
       const url::Origin& origin,
       const autofill::FormData& form_data) {
-    return CreateFormManagerWithParsedForm(origin, form_data, mock_driver_);
+    return CreateFormManagerWithParsedForm(origin, form_data, mock_driver_,
+                                           form_fetcher_);
   }
 
   std::unique_ptr<PasswordFormManager> CreateFormManagerWithParsedForm(
       const url::Origin& origin,
       const autofill::FormData& form_data,
       MockStubPasswordManagerDriver& mock_driver) {
+    return CreateFormManagerWithParsedForm(origin, form_data, mock_driver,
+                                           form_fetcher_);
+  }
+
+  std::unique_ptr<PasswordFormManager> CreateFormManagerWithParsedForm(
+      const url::Origin& origin,
+      const autofill::FormData& form_data,
+      MockStubPasswordManagerDriver& mock_driver,
+      FakeFormFetcher& form_fetcher) {
     ON_CALL(mock_driver, GetLastCommittedOrigin())
         .WillByDefault(ReturnRef(origin));
     ON_CALL(mock_driver, IsInPrimaryMainFrame)
@@ -182,12 +192,12 @@ class ActorLoginCredentialFillerTest : public ::testing::TestWithParam<bool> {
     ON_CALL(mock_driver, GetPasswordManager)
         .WillByDefault(Return(&mock_password_manager_));
     auto form_manager = std::make_unique<PasswordFormManager>(
-        &mock_client_, mock_driver.AsWeakPtr(), form_data, &form_fetcher_,
+        &mock_client_, mock_driver.AsWeakPtr(), form_data, &form_fetcher,
         std::make_unique<PasswordSaveManagerImpl>(&mock_client_),
         /*metrics_recorder=*/nullptr);
     // Force form parsing, otherwise there will be no parsed observed form.
     form_manager->DisableFillingServerPredictionsForTesting();
-    form_fetcher_.NotifyFetchCompleted();
+    form_fetcher.NotifyFetchCompleted();
     return form_manager;
   }
 
@@ -1230,10 +1240,6 @@ TEST_P(ActorLoginCredentialFillerTest,
       CreateSigninFormData(same_site_origin_1.GetURL());
   const FormData same_site_form_data_2 =
       CreateSigninFormData(same_site_origin_2.GetURL());
-  const FormData username_only_form_data =
-      CreateSigninFormData(same_site_origin_1.GetURL());
-  const FormData password_only_form_data =
-      CreateSigninFormData(same_site_origin_2.GetURL());
 
   // Make sure a saved credential with a matching username exists.
   SetSavedCredential(&form_fetcher_, origin.GetURL(), kTestUsername,
@@ -1279,6 +1285,81 @@ TEST_P(ActorLoginCredentialFillerTest,
       FillField(parsed_form_2->password_element_renderer_id, Eq(kTestPassword),
                 autofill::FieldPropertiesFlags::kAutofilledActorLogin, _))
       .WillOnce(RunOnceCallback<3>(true));
+
+  filler.AttemptLogin(&mock_password_manager_, tab_);
+  const LoginStatusResultOrError& result = future.Get();
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result.value(),
+            LoginStatusResult::kSuccessUsernameAndPasswordFilled);
+}
+
+TEST_P(ActorLoginCredentialFillerTest,
+       DoesntFillUsernameAndPasswordThatdoNotBelongToIframes) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {password_manager::features::kActorLoginFillingHeuristics,
+       password_manager::features::kActorLoginSameSiteIframeSupport},
+      {});
+  const url::Origin origin = url::Origin::Create(GURL("https://example.com"));
+  const url::Origin same_site_origin_1 =
+      url::Origin::Create(GURL("https://login.example.com"));
+  const url::Origin same_site_origin_2 =
+      url::Origin::Create(GURL("https://login2.example.com"));
+  const Credential credential =
+      CreateTestCredential(kTestUsername, origin.GetURL(), origin);
+  const FormData same_site_form_data_1 =
+      CreateSigninFormData(same_site_origin_1.GetURL());
+  const FormData same_site_form_data_2 =
+      CreateSigninFormData(same_site_origin_2.GetURL());
+  FakeFormFetcher empty_form_fetcher;
+
+  // Make sure a saved credential with a matching username exists.
+  SetSavedCredential(&form_fetcher_, origin.GetURL(), kTestUsername,
+                     kTestPassword);
+
+  // Simulate signin forms existing on the page.
+  std::vector<std::unique_ptr<PasswordFormManager>> form_managers;
+  form_managers.push_back(CreateFormManagerWithParsedForm(
+      same_site_origin_1, same_site_form_data_1, mock_driver_, form_fetcher_));
+  form_managers.push_back(
+      CreateFormManagerWithParsedForm(same_site_origin_2, same_site_form_data_2,
+                                      mock_driver_, empty_form_fetcher));
+
+  const PasswordForm* parsed_form_1 = form_managers[0]->GetParsedObservedForm();
+  const PasswordForm* parsed_form_2 = form_managers[1]->GetParsedObservedForm();
+
+  base::test::TestFuture<LoginStatusResultOrError> future;
+  ActorLoginCredentialFiller filler(origin, credential,
+                                    should_store_permission(), &mock_client_,
+                                    future.GetCallback());
+
+  ON_CALL(mock_form_cache_, GetFormManagers)
+      .WillByDefault(Return(base::span(form_managers)));
+
+  // The first form manager has a matching best_match, fill the corresponding
+  // form.
+  EXPECT_CALL(
+      mock_driver_,
+      FillField(parsed_form_1->username_element_renderer_id, Eq(kTestUsername),
+                autofill::FieldPropertiesFlags::kAutofilledActorLogin, _))
+      .WillOnce(RunOnceCallback<3>(true));
+  EXPECT_CALL(
+      mock_driver_,
+      FillField(parsed_form_1->password_element_renderer_id, Eq(kTestPassword),
+                autofill::FieldPropertiesFlags::kAutofilledActorLogin, _))
+      .WillOnce(RunOnceCallback<3>(true));
+  // The second form manager doesn't have best matches, don't fill the
+  // corresponding form.
+  EXPECT_CALL(
+      mock_driver_,
+      FillField(parsed_form_2->username_element_renderer_id, _,
+                autofill::FieldPropertiesFlags::kAutofilledActorLogin, _))
+      .Times(0);
+  EXPECT_CALL(
+      mock_driver_,
+      FillField(parsed_form_2->password_element_renderer_id, _,
+                autofill::FieldPropertiesFlags::kAutofilledActorLogin, _))
+      .Times(0);
 
   filler.AttemptLogin(&mock_password_manager_, tab_);
   const LoginStatusResultOrError& result = future.Get();
