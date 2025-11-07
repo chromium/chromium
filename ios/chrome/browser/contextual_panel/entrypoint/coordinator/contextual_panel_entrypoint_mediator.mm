@@ -127,6 +127,14 @@
   return self;
 }
 
+- (void)cancelContextualPanelEntrypointLoudMoment {
+  [self resetTimersAndUIStateAnimated:YES];
+  ContextualPanelTabHelper* contextualPanelTabHelper =
+      ContextualPanelTabHelper::FromWebState(
+          _webStateList->GetActiveWebState());
+  contextualPanelTabHelper->SetLoudMomentEntrypointCanceled(true);
+}
+
 - (void)disconnect {
   _infobarBadgeObservation->Reset();
   _infobarBadgeObservation.reset();
@@ -542,6 +550,7 @@
   return !_infobarBadgesCurrentlyShown &&
          !contextualPanelTabHelper->IsContextualPanelCurrentlyOpened() &&
          !contextualPanelTabHelper->WasLoudMomentEntrypointShown() &&
+         !contextualPanelTabHelper->WasLoudMomentEntrypointCanceled() &&
          [self.delegate canShowLargeContextualPanelEntrypoint:self];
 }
 

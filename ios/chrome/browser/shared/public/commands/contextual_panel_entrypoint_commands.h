@@ -12,6 +12,10 @@
 // dismissed.
 - (void)notifyContextualPanelEntrypointIPHDismissed;
 
+// Cancels any ongoing or future Contextual Panel Entrypoint loud moments for
+// the current navigation.
+- (void)cancelContextualPanelEntrypointLoudMoment;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_CONTEXTUAL_PANEL_ENTRYPOINT_COMMANDS_H_

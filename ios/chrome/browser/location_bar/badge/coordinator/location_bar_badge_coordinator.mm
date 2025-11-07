@@ -134,6 +134,11 @@
   [_contextualPanelEntryPointMediator.consumer setEntrypointColored:NO];
 }
 
+- (void)cancelContextualPanelEntrypointLoudMoment {
+  [_contextualPanelEntryPointMediator
+      cancelContextualPanelEntrypointLoudMoment];
+}
+
 #pragma mark - Private
 
 // TODO(crbug.com/454351425): Remove when Contextual Panel Entry Point is

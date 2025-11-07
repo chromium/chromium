@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/contextual_panel_entrypoint_commands.h"
 #import "ios/chrome/browser/shared/public/commands/page_side_swipe_commands.h"
 #import "ios/chrome/browser/shared/public/commands/reader_mode_chip_commands.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -46,6 +47,12 @@ class ReaderModeBrowserAgentTest : public ReaderModeTest {
     [test_browser_->GetCommandDispatcher()
         startDispatchingToTarget:fake_reader_mode_chip_handler_
                      forProtocol:@protocol(ReaderModeChipCommands)];
+
+    contextual_panel_entrypoint_handler_ =
+        OCMProtocolMock(@protocol(ContextualPanelEntrypointCommands));
+    [test_browser_->GetCommandDispatcher()
+        startDispatchingToTarget:contextual_panel_entrypoint_handler_
+                     forProtocol:@protocol(ContextualPanelEntrypointCommands)];
 
     // Initialize the WebStateList.
     InsertWebState();
@@ -103,6 +110,7 @@ class ReaderModeBrowserAgentTest : public ReaderModeTest {
   std::unique_ptr<TestBrowser> test_browser_;
   id fake_reader_mode_chip_handler_;
   id side_swipe_handler_;
+  id contextual_panel_entrypoint_handler_;
   id delegate_;
 };
 
@@ -112,9 +120,12 @@ TEST_F(ReaderModeBrowserAgentTest, ChangingActiveWebState) {
   OCMExpect([delegate_ readerModeBrowserAgent:GetReaderModeBrowserAgent()
                           showContentAnimated:NO]);
   OCMExpect([fake_reader_mode_chip_handler_ showReaderModeChip]);
+  OCMExpect([contextual_panel_entrypoint_handler_
+      cancelContextualPanelEntrypointLoudMoment]);
   ActivateWebStateWithReaderModeAt(1);
   EXPECT_OCMOCK_VERIFY(delegate_);
   EXPECT_OCMOCK_VERIFY(fake_reader_mode_chip_handler_);
+  EXPECT_OCMOCK_VERIFY(contextual_panel_entrypoint_handler_);
 
   OCMExpect([delegate_ readerModeBrowserAgent:GetReaderModeBrowserAgent()
                           hideContentAnimated:NO]);
@@ -126,9 +137,12 @@ TEST_F(ReaderModeBrowserAgentTest, ChangingActiveWebState) {
   OCMExpect([delegate_ readerModeBrowserAgent:GetReaderModeBrowserAgent()
                           showContentAnimated:NO]);
   OCMExpect([fake_reader_mode_chip_handler_ showReaderModeChip]);
+  OCMExpect([contextual_panel_entrypoint_handler_
+      cancelContextualPanelEntrypointLoudMoment]);
   ActivateWebStateWithReaderModeAt(3);
   EXPECT_OCMOCK_VERIFY(delegate_);
   EXPECT_OCMOCK_VERIFY(fake_reader_mode_chip_handler_);
+  EXPECT_OCMOCK_VERIFY(contextual_panel_entrypoint_handler_);
 
   OCMExpect([delegate_ readerModeBrowserAgent:GetReaderModeBrowserAgent()
                           hideContentAnimated:NO]);
@@ -144,14 +158,18 @@ TEST_F(ReaderModeBrowserAgentTest, MovingActiveWebState) {
   OCMExpect([delegate_ readerModeBrowserAgent:GetReaderModeBrowserAgent()
                           showContentAnimated:NO]);
   OCMExpect([fake_reader_mode_chip_handler_ showReaderModeChip]);
+  OCMExpect([contextual_panel_entrypoint_handler_
+      cancelContextualPanelEntrypointLoudMoment]);
   ActivateWebStateWithReaderModeAt(1);
   EXPECT_OCMOCK_VERIFY(delegate_);
   EXPECT_OCMOCK_VERIFY(fake_reader_mode_chip_handler_);
+  EXPECT_OCMOCK_VERIFY(contextual_panel_entrypoint_handler_);
 
   // No call to `hideReaderMode` is expected.
   GetWebStateList()->MoveWebStateAt(1, 0);
   EXPECT_OCMOCK_VERIFY(delegate_);
   EXPECT_OCMOCK_VERIFY(fake_reader_mode_chip_handler_);
+  EXPECT_OCMOCK_VERIFY(contextual_panel_entrypoint_handler_);
 }
 
 // Tests that the Reader mode UI is shown/dismissed when Reader mode is
@@ -159,14 +177,21 @@ TEST_F(ReaderModeBrowserAgentTest, MovingActiveWebState) {
 TEST_F(ReaderModeBrowserAgentTest, ChangingReaderModeStatus) {
   OCMExpect([delegate_ readerModeBrowserAgent:GetReaderModeBrowserAgent()
                           showContentAnimated:YES]);
+  OCMExpect([fake_reader_mode_chip_handler_ showReaderModeChip]);
+  OCMExpect([contextual_panel_entrypoint_handler_
+      cancelContextualPanelEntrypointLoudMoment]);
   EnableReaderMode(GetActiveWebState(), ReaderModeAccessPoint::kContextualChip);
   WaitForAvailableReaderModeContentInWebState(GetActiveWebState());
   EXPECT_OCMOCK_VERIFY(delegate_);
+  EXPECT_OCMOCK_VERIFY(fake_reader_mode_chip_handler_);
+  EXPECT_OCMOCK_VERIFY(contextual_panel_entrypoint_handler_);
 
   OCMExpect([delegate_ readerModeBrowserAgent:GetReaderModeBrowserAgent()
                           hideContentAnimated:YES]);
+  OCMExpect([fake_reader_mode_chip_handler_ hideReaderModeChip]);
   DisableReaderMode(GetActiveWebState());
   EXPECT_OCMOCK_VERIFY(delegate_);
+  EXPECT_OCMOCK_VERIFY(fake_reader_mode_chip_handler_);
 }
 
 // Tests that the Reader mode UI is hidden when a navigation occurs in the
@@ -176,9 +201,12 @@ TEST_F(ReaderModeBrowserAgentTest, NavigationInActiveWebState) {
   OCMExpect([delegate_ readerModeBrowserAgent:GetReaderModeBrowserAgent()
                           showContentAnimated:NO]);
   OCMExpect([fake_reader_mode_chip_handler_ showReaderModeChip]);
+  OCMExpect([contextual_panel_entrypoint_handler_
+      cancelContextualPanelEntrypointLoudMoment]);
   GetWebStateList()->ActivateWebStateAt(1);
   EXPECT_OCMOCK_VERIFY(delegate_);
   EXPECT_OCMOCK_VERIFY(fake_reader_mode_chip_handler_);
+  EXPECT_OCMOCK_VERIFY(contextual_panel_entrypoint_handler_);
 
   // Expect reader mode to be hidden without animation.
   OCMExpect([delegate_ readerModeBrowserAgent:GetReaderModeBrowserAgent()

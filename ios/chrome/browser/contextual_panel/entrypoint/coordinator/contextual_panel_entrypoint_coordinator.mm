@@ -141,4 +141,8 @@
   [_mediator.consumer setEntrypointColored:NO];
 }
 
+- (void)cancelContextualPanelEntrypointLoudMoment {
+  [_mediator cancelContextualPanelEntrypointLoudMoment];
+}
+
 @end

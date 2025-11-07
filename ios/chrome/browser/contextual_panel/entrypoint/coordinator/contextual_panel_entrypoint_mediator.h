@@ -45,6 +45,9 @@ class WebStateList;
 @property(nonatomic, weak) id<ContextualPanelEntrypointMediatorDelegate>
     delegate;
 
+// Cancels any ongoing or future loud moment for the current navigation.
+- (void)cancelContextualPanelEntrypointLoudMoment;
+
 // Cleanup and disconnect the mediator.
 - (void)disconnect;
 

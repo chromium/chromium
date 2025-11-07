@@ -74,6 +74,10 @@ class ContextualPanelTabHelper
   // loud_moment_entrypoint_shown_for_curent_page_navigation_.
   bool WasLoudMomentEntrypointShown();
   void SetLoudMomentEntrypointShown(bool shown);
+  // Getter and setter for
+  // loud_moment_entrypoint_canceled_for_curent_page_navigation_.
+  bool WasLoudMomentEntrypointCanceled();
+  void SetLoudMomentEntrypointCanceled(bool canceled);
 
   // Getter and setter for metrics_data_;
   std::optional<EntrypointMetricsData>& GetMetricsData();
@@ -151,6 +155,9 @@ class ContextualPanelTabHelper
   // Whether a loud moment (large entrypoint or IPH) for the Contextual Panel
   // entrypoint has been shown for the current navigation.
   bool loud_moment_entrypoint_shown_for_curent_page_navigation_ = false;
+  // Whether showing a loud moment (large entrypoint or IPH) for the Contextual
+  // Panel entrypoint has been canceled for the current navigation.
+  bool loud_moment_entrypoint_canceled_for_curent_page_navigation_ = false;
 
   // Stores the previous URL to help decide whether this navigation is to
   // a new page.

@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/contextual_panel_entrypoint_commands.h"
 #import "ios/chrome/browser/shared/public/commands/page_side_swipe_commands.h"
 #import "ios/chrome/browser/shared/public/commands/reader_mode_chip_commands.h"
 #import "ios/chrome/browser/shared/public/commands/reader_mode_commands.h"
@@ -19,18 +20,6 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/web_state.h"
 #import "ui/base/l10n/l10n_util_mac.h"
-
-namespace {
-
-// Delay for the Reader mode chip presentation. This makes the transition
-// between the "contextual" Reader mode chip (presented while Reader mode is
-// inactive) and this Reader mode chip (presented while Reader mode is active)
-// smoother. This is the amount of time it takes for the Reader mode contextual
-// chip to contract when it is tapped.
-constexpr base::TimeDelta kShowReaderModeChipAnimatedDelay =
-    base::Milliseconds(300);
-
-}  // namespace
 
 #pragma mark - Public
 
@@ -104,20 +93,15 @@ void ReaderModeBrowserAgent::ShowReaderModeUI(BOOL animated) {
   crash_keys::SetCurrentlyInReaderMode(true);
   [delegate_ readerModeBrowserAgent:this showContentAnimated:animated];
 
-  __weak id<ReaderModeChipCommands> weak_reader_mode_chip_handler =
+  id<ReaderModeChipCommands> reader_mode_chip_handler = HandlerForProtocol(
+      browser_->GetCommandDispatcher(), ReaderModeChipCommands);
+  [reader_mode_chip_handler showReaderModeChip];
+  id<ContextualPanelEntrypointCommands> contextual_panel_entrypoint_handler =
       HandlerForProtocol(browser_->GetCommandDispatcher(),
-                         ReaderModeChipCommands);
-  auto show_reader_mode_chip = base::BindOnce(^{
-    [weak_reader_mode_chip_handler showReaderModeChip];
-  });
+                         ContextualPanelEntrypointCommands);
+  [contextual_panel_entrypoint_handler
+      cancelContextualPanelEntrypointLoudMoment];
 
-  if (animated) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE, std::move(show_reader_mode_chip),
-        kShowReaderModeChipAnimatedDelay);
-  } else {
-    std::move(show_reader_mode_chip).Run();
-  }
   UpdateHandlersOnActiveWebState();
 }
 

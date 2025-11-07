@@ -262,11 +262,16 @@ const CGFloat kBackgroundHorizontalInset = 5.0;
   BOOL readerModeChipShouldBeVisibleFinal = NO;
   BOOL placeholderViewShouldBeVisibleFinal = NO;
 
-  // The Incognito badge, and Reader mode chip (shown when Reader mode is active
-  // in the current tab) should decide their visibility independently of the
+  // The Incognito badge should decide its visibility independently of the
   // visibility of other badges.
   incognitoBadgeViewShouldBeVisibleFinal = _incognitoBadgeViewShouldBeVisible;
-  readerModeChipShouldBeVisibleFinal = _readerModeChipShouldBeVisible;
+  // The Reader mode chip (which wants to be visible when Reader mode is active)
+  // should not be visible if the contextual panel is currently visible and
+  // animating.
+  readerModeChipShouldBeVisibleFinal =
+      _readerModeChipShouldBeVisible &&
+      !(_contextualPanelEntrypointShouldBeVisible &&
+        _contextualPanelCurrentlyAnimating);
 
   // Other badges can be visible only outside of Reader mode.
   if (!readerModeChipShouldBeVisibleFinal) {
