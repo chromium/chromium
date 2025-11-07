@@ -4445,6 +4445,8 @@ static_library("browser") {
       "//chrome/browser/ui/webui/customize_buttons:impl",
       "//chrome/browser/ui/webui/infobar_internals",
       "//chrome/browser/ui/webui/infobar_internals:impl",
+      "//chrome/browser/ui/webui/metrics_reporter",
+      "//chrome/browser/ui/webui/metrics_reporter:impl",
       "//chrome/browser/ui/webui/new_tab_footer",
       "//chrome/browser/ui/webui/new_tab_footer:impl",
       "//chrome/browser/ui/webui/privacy_sandbox",

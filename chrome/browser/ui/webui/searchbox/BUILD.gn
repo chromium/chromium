@@ -59,6 +59,7 @@ source_set("searchbox") {
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/views/location_bar",
     "//chrome/browser/ui/webui:webui_util",
+    "//chrome/browser/ui/webui/metrics_reporter",
     "//components/bookmarks/browser",
     "//components/contextual_search:public",
     "//components/lens",

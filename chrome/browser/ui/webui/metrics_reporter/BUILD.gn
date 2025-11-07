@@ -1,0 +1,53 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("metrics_reporter") {
+  sources = [
+    "metrics_reporter.h",
+    "metrics_reporter_service.h",
+  ]
+  public_deps = [
+    "//base",
+    "//content/public/browser",
+    "//ui/webui/resources/js/metrics_reporter:mojo_bindings",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "metrics_reporter.cc",
+    "metrics_reporter_service.cc",
+  ]
+  deps = [
+    ":metrics_reporter",
+    "//chrome/browser/profiles:profile",
+    "//content/public/browser",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "mock_metrics_reporter.cc",
+    "mock_metrics_reporter.h",
+  ]
+  public_deps = [
+    ":metrics_reporter",
+    "//base/test:test_support",
+    "//testing/gmock",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "metrics_reporter_unittest.cc" ]
+  deps = [
+    ":impl",
+    ":metrics_reporter",
+    ":test_support",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}

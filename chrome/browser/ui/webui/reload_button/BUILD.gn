@@ -21,6 +21,7 @@ source_set("reload_button") {
   ]
   public_deps = [
     ":mojo_bindings",
+    "//chrome/browser/ui/webui/metrics_reporter",
     "//chrome/browser/ui/webui/top_chrome",
     "//chrome/common:constants",
     "//content/public/browser",
