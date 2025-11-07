@@ -405,12 +405,6 @@ typedef NS_ENUM(NSInteger, ButtonStackButtonPosition) {
     [_contentView.widthAnchor constraintEqualToAnchor:_scrollView.widthAnchor],
   ]];
 
-  // Ensures the content view either fills the scroll view (for short content)
-  // or expands to enable scrolling (for long content).
-  NSLayoutConstraint* contentViewHeightConstraint = [_contentView.heightAnchor
-      constraintEqualToAnchor:_scrollView.heightAnchor];
-  contentViewHeightConstraint.priority = UILayoutPriorityDefaultLow;
-
   _actionStackSafeAreaBottomConstraint = [_actionStackView.bottomAnchor
       constraintEqualToAnchor:safeAreaLayoutGuide.bottomAnchor
                      constant:-self.actionStackBottomMargin];

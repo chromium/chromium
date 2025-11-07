@@ -46,6 +46,11 @@ const CGFloat kFaviconSideLength = 30;
 // Length of each side of the favicon badge.
 const CGFloat kFaviconBadgeSideLength = 24;
 
+// Small buffer added to the preferred height. This is a workaround to prevent
+// the scroll indicator from being visible when the view controller is not
+// totally expanded.
+const CGFloat kPreferredHeightBuffer = 10;
+
 }  // namespace
 
 @interface ConfirmationAlertViewController () <ButtonStackActionDelegate>
@@ -274,34 +279,41 @@ const CGFloat kFaviconBadgeSideLength = 24;
   // This is more reliable than self.stackView.bounds.size.width before a layout
   // pass.
   CGFloat availableWidth = self.widthLayoutGuide.layoutFrame.size.width;
+  CGSize fittingSize =
+      CGSizeMake(availableWidth, UILayoutFittingCompressedSize.height);
 
   // Calculate the height of the main content stack view constrained by the
   // available width.
   CGFloat height =
       [self.stackView
-            systemLayoutSizeFittingSize:CGSizeMake(availableWidth,
-                                                   UILayoutFittingCompressedSize
-                                                       .height)
+            systemLayoutSizeFittingSize:fittingSize
           withHorizontalFittingPriority:UILayoutPriorityRequired
                 verticalFittingPriority:UILayoutPriorityFittingSizeLevel]
           .height;
 
+  // Add the height of the button stack.
   height += [super buttonStackHeight];
 
+  // Add the height of the navigation bar if present.
   if (self.navigationBar) {
     // Ask the navigation bar for its intrinsic height instead of relying on its
     // frame.
     height += [self.navigationBar
                   systemLayoutSizeFittingSize:UILayoutFittingCompressedSize]
                   .height;
+    // Small buffer added to the preferred height. This is a workaround to
+    // prevent the scroll indicator from being visible when the view controller
+    // is not totally expanded.
+    height += kPreferredHeightBuffer;
   } else {
+    // If no navigation bar, account for the top safe area and custom spacing.
+    height += CGRectGetMaxY(self.navigationController.navigationBar.frame);
     height += self.customSpacingBeforeImageIfNoNavigationBar;
   }
 
+  // Add the custom bottom inset between the contentView and the button stack.
   height += self.customContentBottomInset;
-  // The view's safe area might not be available when this method is called.
-  // Using the presenting view controller's safe area is a reliable fallback.
-  height += self.presentingViewController.view.safeAreaInsets.bottom;
+
   return height;
 }
 
