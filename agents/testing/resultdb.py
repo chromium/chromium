@@ -6,6 +6,7 @@
 import sys
 
 import constants
+import metrics
 import results
 
 sys.path.insert(0, str(constants.CHROMIUM_SRC / 'build' / 'util'))
@@ -34,6 +35,10 @@ class ResultDBReporter:
             constants.CHROMIUM_SRC)
         posix_path = relative_path.as_posix()
         for iteration_result in test_result.iteration_results:
+            tags = [(name.replace('.', '_').lower(), str(value))
+                    for name, value in metrics.iterate_over_nested_metrics(
+                        iteration_result.metrics)]
+
             self._result_sink_client.Post(
                 test_id=str(posix_path),
                 status=(result_types.PASS
@@ -45,4 +50,5 @@ class ResultDBReporter:
                     'fineName': '',  # Leave blank for scheme 'flat'.
                     'caseNameComponents': [str(posix_path)],
                 },
-                test_file=f'//{str(posix_path)}')
+                test_file=f'//{str(posix_path)}',
+                tags=tags)

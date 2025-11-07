@@ -33,16 +33,19 @@ class ResultDBReporterTest(unittest.TestCase):
         reporter = resultdb.ResultDBReporter()
         config = eval_config.TestConfig(test_file=CHROMIUM_SRC /
                                         'some_test.yaml')
-        test_result = results.TestResult(config=config,
-                                         success=True,
-                                         iteration_results=[
-                                             results.IterationResult(
-                                                 success=True,
-                                                 duration=1.23,
-                                                 test_log='log',
-                                                 metrics={},
-                                             )
-                                         ])
+        test_result = results.TestResult(
+            config=config,
+            success=True,
+            iteration_results=[
+                results.IterationResult(
+                    success=True,
+                    duration=1.23,
+                    test_log='log',
+                    metrics={'Foo': {
+                        'bar': 3.21
+                    }},
+                )
+            ])
         reporter.report_result(test_result)
         self.mock_client.Post.assert_called_once_with(
             test_id='some_test.yaml',
@@ -55,6 +58,7 @@ class ResultDBReporterTest(unittest.TestCase):
                 'fineName': '',
                 'caseNameComponents': ['some_test.yaml']
             },
+            tags=[('foo_bar', '3.21')],
         )
 
     def test_report_result_failure(self):
@@ -83,6 +87,7 @@ class ResultDBReporterTest(unittest.TestCase):
                 'fineName': '',
                 'caseNameComponents': ['some_test.yaml']
             },
+            tags=[],
         )
 
     def test_client_none(self):
