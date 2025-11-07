@@ -2080,11 +2080,11 @@ TEST_F(RegistrationTestWithOriginTrialFeedback, RefreshCachesSignedChallenge) {
   EXPECT_CALL(session_service(), GetLatestSignedRefreshChallenge(_))
       .WillOnce(Return(nullptr));
   // Expect a signing occurrence and the new signed challenge to be cached.
-  EXPECT_CALL(session_service(), AddRefreshSigningOccurrence(_)).Times(1);
+  EXPECT_CALL(session_service(), AddSigningOccurrence(_)).Times(1);
   EXPECT_CALL(session_service(), SetLatestSignedRefreshChallenge(_, _))
       .Times(1);
   // Quota check should return false to allow signing.
-  EXPECT_CALL(session_service(), RefreshSigningQuotaExceeded(_))
+  EXPECT_CALL(session_service(), SigningQuotaExceeded(_))
       .WillOnce(Return(false));
 
   TestRegistrationCallback callback;
@@ -2130,10 +2130,10 @@ TEST_F(RegistrationTestWithoutOriginTrialFeedback,
 
   // No calls to caching or quota methods when features are off.
   EXPECT_CALL(session_service(), GetLatestSignedRefreshChallenge(_)).Times(0);
-  EXPECT_CALL(session_service(), AddRefreshSigningOccurrence(_)).Times(0);
+  EXPECT_CALL(session_service(), AddSigningOccurrence(_)).Times(0);
   EXPECT_CALL(session_service(), SetLatestSignedRefreshChallenge(_, _))
       .Times(0);
-  EXPECT_CALL(session_service(), RefreshSigningQuotaExceeded(_)).Times(0);
+  EXPECT_CALL(session_service(), SigningQuotaExceeded(_)).Times(0);
 
   TestRegistrationCallback callback;
   auto isolation_info = IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
@@ -2179,8 +2179,8 @@ TEST_F(RegistrationTestWithOriginTrialFeedback,
   EXPECT_CALL(session_service(), GetLatestSignedRefreshChallenge(_))
       .WillOnce(Return(&cached_challenge));
   // There should be no signing or quota checking since that's skipped.
-  EXPECT_CALL(session_service(), AddRefreshSigningOccurrence(_)).Times(0);
-  EXPECT_CALL(session_service(), RefreshSigningQuotaExceeded(_)).Times(0);
+  EXPECT_CALL(session_service(), AddSigningOccurrence(_)).Times(0);
+  EXPECT_CALL(session_service(), SigningQuotaExceeded(_)).Times(0);
 
   TestRegistrationCallback callback;
   auto isolation_info = IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
@@ -2225,10 +2225,10 @@ TEST_F(RegistrationTestWithoutOriginTrialFeedback,
 
   // None of the caching / quota methods should be used.
   EXPECT_CALL(session_service(), GetLatestSignedRefreshChallenge(_)).Times(0);
-  EXPECT_CALL(session_service(), AddRefreshSigningOccurrence(_)).Times(0);
+  EXPECT_CALL(session_service(), AddSigningOccurrence(_)).Times(0);
   EXPECT_CALL(session_service(), SetLatestSignedRefreshChallenge(_, _))
       .Times(0);
-  EXPECT_CALL(session_service(), RefreshSigningQuotaExceeded(_)).Times(0);
+  EXPECT_CALL(session_service(), SigningQuotaExceeded(_)).Times(0);
 
   TestRegistrationCallback callback;
   auto isolation_info = IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
@@ -2279,10 +2279,10 @@ TEST_F(RegistrationTestWithOriginTrialFeedback,
   cached_challenge.signed_challenge = "mock_signed_challenge";
   EXPECT_CALL(session_service(), GetLatestSignedRefreshChallenge(_))
       .WillOnce(Return(&cached_challenge));
-  EXPECT_CALL(session_service(), AddRefreshSigningOccurrence(_)).Times(1);
+  EXPECT_CALL(session_service(), AddSigningOccurrence(_)).Times(1);
   EXPECT_CALL(session_service(), SetLatestSignedRefreshChallenge(_, _))
       .Times(1);
-  EXPECT_CALL(session_service(), RefreshSigningQuotaExceeded(_))
+  EXPECT_CALL(session_service(), SigningQuotaExceeded(_))
       .WillOnce(Return(false));
 
   TestRegistrationCallback callback;
@@ -2302,6 +2302,45 @@ TEST_F(RegistrationTestWithOriginTrialFeedback,
   callback.WaitForCall();
 
   ASSERT_TRUE(callback.outcome().is_session());
+}
+
+TEST_P(RegistrationTest, RegistrationTriggersSigningOccurrence) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kDeviceBoundSessionSigningQuotaAndCaching);
+
+  // Expect the signing checks are done only when the feature is enabled.
+  if (GetParam()) {
+    EXPECT_CALL(session_service(), AddSigningOccurrence(_)).Times(1);
+    EXPECT_CALL(session_service(), SigningQuotaExceeded(_))
+        .WillOnce(Return(false));
+  } else {
+    EXPECT_CALL(session_service(), AddSigningOccurrence(_)).Times(0);
+    EXPECT_CALL(session_service(), SigningQuotaExceeded(_)).Times(0);
+  }
+
+  crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
+  server_.RegisterRequestHandler(
+      base::BindRepeating([](const test_server::HttpRequest& request) {
+        auto resp_iter = request.headers.find(GetSessionResponseHeaderName());
+        EXPECT_TRUE(resp_iter != request.headers.end());
+        if (resp_iter != request.headers.end()) {
+          EXPECT_TRUE(VerifyEs256Jwt(resp_iter->second));
+        }
+        return ReturnResponse(HTTP_OK, kBasicValidJson, request);
+      }));
+  ASSERT_TRUE(server_.Start());
+  TestRegistrationCallback callback;
+  auto param = GetBasicParam();
+  std::unique_ptr<RegistrationFetcher> fetcher =
+      RegistrationFetcher::CreateFetcher(
+          param, session_service(), unexportable_key_service(), context_.get(),
+          IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+          /*net_log_source=*/std::nullopt,
+          /*original_request_initiator=*/std::nullopt);
+  fetcher->StartCreateTokenAndFetch(param, CreateAlgArray(),
+                                    callback.callback());
+  callback.WaitForCall();
 }
 
 TEST_P(RegistrationTest, RefreshWithNewSessionIdFails) {

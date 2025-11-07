@@ -22,12 +22,18 @@ namespace net::device_bound_sessions {
 
 namespace {
 
-// Parameters for the refresh quota. We currently allow 2 refreshes in 3
-// minutes. This allows sites to refresh every 5 minutes, accounting for
-// proactive refreshes 2 minutes before expiry, and with some error tolerance
-// (e.g. a failed refresh or user cookie clearing).
-constexpr size_t kRefreshQuota = 2;
-constexpr base::TimeDelta kRefreshQuotaInterval = base::Minutes(3);
+// Parameters for the signing quota. We currently allow 6 signings in 9
+// minutes per site. Reasoning:
+// 1. This allows sites to refresh on average every 5 minutes, accounting for
+//    proactive refreshes 2 minutes before expiry, and with some error tolerance
+//    (e.g. a failed refresh or user cookie clearing) and tolerance for new
+//    registration signings.
+// 2. It's 6:9 instead of 2:3 to allow small bursts of login activity + new
+//    registrations.
+// 3. The spec notes that user agents should include quotas on registration
+//    attempts to prevent identity linking for federated sessions.
+constexpr size_t kSigningQuota = 6;
+constexpr base::TimeDelta kSigningQuotaInterval = base::Minutes(9);
 
 bool SessionMatchesFilter(
     const SchemefulSite& site,
@@ -71,7 +77,7 @@ class DebugHeaderBuilder {
                                         structured_headers::Item::kTokenType);
         break;
       case SessionService::RefreshResult::kRefreshQuotaExceeded:
-      case SessionService::RefreshResult::kRefreshSigningQuotaExceeded:
+      case SessionService::RefreshResult::kSigningQuotaExceeded:
         item = structured_headers::Item("quota_exceeded",
                                         structured_headers::Item::kTokenType);
         break;
@@ -914,8 +920,8 @@ SessionError::ErrorType SessionServiceImpl::OnRefreshRequestCompletionInternal(
     if (registration_result.error().IsServerError()) {
       refresh_result = RefreshResult::kServerError;
     } else if (registration_result.error().type ==
-               SessionError::kRefreshSigningQuotaExceeded) {
-      refresh_result = RefreshResult::kRefreshSigningQuotaExceeded;
+               SessionError::kSigningQuotaExceeded) {
+      refresh_result = RefreshResult::kSigningQuotaExceeded;
     } else {
       refresh_result = RefreshResult::kUnreachable;
     }
@@ -1015,7 +1021,7 @@ bool SessionServiceImpl::RefreshQuotaExceeded(const SchemefulSite& site) {
   it->second.erase(std::remove_if(it->second.begin(), it->second.end(),
                                   [](base::TimeTicks time) {
                                     return base::TimeTicks::Now() - time >=
-                                           kRefreshQuotaInterval;
+                                           kSigningQuotaInterval;
                                   }),
                    it->second.end());
 
@@ -1025,56 +1031,55 @@ bool SessionServiceImpl::RefreshQuotaExceeded(const SchemefulSite& site) {
   }
 
   if (auto result_it = refresh_last_result_.find(site);
-      refresh_count >= kRefreshQuota &&
+      refresh_count >= kSigningQuota &&
       result_it != refresh_last_result_.end()) {
     base::UmaHistogramEnumeration(
         "Net.DeviceBoundSessions.RefreshQuotaExceededLastResult",
         result_it->second.type);
   }
 
-  return refresh_count >= kRefreshQuota;
+  return refresh_count >= kSigningQuota;
 }
 
-bool SessionServiceImpl::RefreshSigningQuotaExceeded(
-    const SchemefulSite& site) {
+bool SessionServiceImpl::SigningQuotaExceeded(const SchemefulSite& site) {
   if (!features::kDeviceBoundSessionsOriginTrialFeedback.Get() ||
       !base::FeatureList::IsEnabled(
           features::kDeviceBoundSessionSigningQuotaAndCaching)) {
     return false;
   }
 
+  // TODO(crbug.com/457803903): Rename refresh quota feature to signing quota.
   if (ignore_refresh_quota_) {
     return false;
   }
 
-  auto it = refresh_signing_times_.find(site);
-  if (it == refresh_signing_times_.end()) {
+  auto it = signing_times_.find(site);
+  if (it == signing_times_.end()) {
     return false;
   }
 
   std::erase_if(it->second, [](base::TimeTicks time) {
-    return base::TimeTicks::Now() - time >= kRefreshQuotaInterval;
+    return base::TimeTicks::Now() - time >= kSigningQuotaInterval;
   });
 
-  size_t refresh_sign_count = it->second.size();
-  if (refresh_sign_count == 0) {
-    refresh_signing_times_.erase(it);
+  size_t sign_count = it->second.size();
+  if (sign_count == 0) {
+    signing_times_.erase(it);
   }
 
-  bool is_exceeded = refresh_sign_count >= kRefreshQuota;
+  bool is_exceeded = sign_count >= kSigningQuota;
   if (auto result_it = refresh_last_result_.find(site);
       is_exceeded && result_it != refresh_last_result_.end()) {
     base::UmaHistogramEnumeration(
-        "Net.DeviceBoundSessions.RefreshSigningQuotaExceededLastResult",
+        "Net.DeviceBoundSessions.SigningQuotaExceededLastResult",
         result_it->second.type);
   }
 
   return is_exceeded;
 }
 
-void SessionServiceImpl::AddRefreshSigningOccurrence(
-    const SchemefulSite& site) {
-  refresh_signing_times_[site].push_back(base::TimeTicks::Now());
+void SessionServiceImpl::AddSigningOccurrence(const SchemefulSite& site) {
+  signing_times_[site].push_back(base::TimeTicks::Now());
 }
 
 void SessionServiceImpl::RemoveFetcher(RegistrationFetcher* fetcher) {
@@ -1114,7 +1119,7 @@ void SessionServiceImpl::MaybeStartProactiveRefresh(
   CHECK(session);
 
   if (RefreshQuotaExceeded(session_key.site)) {
-    LogProactiveRefreshAttempt(ProactiveRefreshAttempt::kRefreshQuota);
+    LogProactiveRefreshAttempt(ProactiveRefreshAttempt::kSigningQuota);
     return;
   }
 

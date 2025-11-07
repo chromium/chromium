@@ -45,11 +45,11 @@ class NET_EXPORT SessionService {
     kUnreachable = 2,           // Refresh endpoint was unreachable.
     kServerError = 3,           // Refresh endpoint served a transient error.
     kRefreshQuotaExceeded = 4,  // Refresh quota exceeded. This is being
-                                // replaced with `kRefreshSigningQuotaExceeded`.
+                                // replaced with `kSigningQuotaExceeded`.
     kFatalError = 5,            // Refresh failed and session was terminated. No
                                 // further refresh needed.
-    kRefreshSigningQuotaExceeded = 6,  // Refresh signing quota exceeded.
-    kMaxValue = kRefreshSigningQuotaExceeded
+    kSigningQuotaExceeded = 6,  // Signing quota exceeded.
+    kMaxValue = kSigningQuotaExceeded
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:DeviceBoundSessionRefreshResult)
   using RefreshCompleteCallback = base::OnceCallback<void(RefreshResult)>;
@@ -205,9 +205,9 @@ class NET_EXPORT SessionService {
       SignedRefreshChallenge signed_refresh_challenge) = 0;
 
   // Whether the `site` has exceeded its signing quota.
-  virtual bool RefreshSigningQuotaExceeded(const SchemefulSite& site) = 0;
+  virtual bool SigningQuotaExceeded(const SchemefulSite& site) = 0;
   // Increments signing usage for this `site`.
-  virtual void AddRefreshSigningOccurrence(const SchemefulSite& site) = 0;
+  virtual void AddSigningOccurrence(const SchemefulSite& site) = 0;
 
  protected:
   SessionService() = default;

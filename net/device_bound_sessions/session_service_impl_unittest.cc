@@ -969,8 +969,8 @@ TEST_F(SessionServiceImplTest, SessionRefreshQuota) {
       context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
 
-  // The first refresh succeeds
-  {
+  // The first 6 refreshes succeed.
+  for (size_t i = 0; i < 6; i++) {
     base::test::TestFuture<SessionService::RefreshResult> future;
     service().DeferRequestForRefresh(
         request.get(), SessionService::DeferralParams(Session::Id(kSessionId)),
@@ -978,16 +978,7 @@ TEST_F(SessionServiceImplTest, SessionRefreshQuota) {
     EXPECT_EQ(future.Take(), SessionService::RefreshResult::kRefreshed);
   }
 
-  // The second refresh succeeds
-  {
-    base::test::TestFuture<SessionService::RefreshResult> future;
-    service().DeferRequestForRefresh(
-        request.get(), SessionService::DeferralParams(Session::Id(kSessionId)),
-        future.GetCallback());
-    EXPECT_EQ(future.Take(), SessionService::RefreshResult::kRefreshed);
-  }
-
-  // The third refresh is throttled
+  // The next refresh is throttled.
   {
     base::test::TestFuture<SessionService::RefreshResult> future;
     service().DeferRequestForRefresh(
@@ -997,9 +988,8 @@ TEST_F(SessionServiceImplTest, SessionRefreshQuota) {
               SessionService::RefreshResult::kRefreshQuotaExceeded);
   }
 
-  // After five minutes, the quota is restored and the fourth refresh
-  // succeeds.
-  FastForwardBy(base::Minutes(5));
+  // After 9 minutes, the quota is restored and the next refresh succeeds.
+  FastForwardBy(base::Minutes(9));
   {
     base::test::TestFuture<SessionService::RefreshResult> future;
     service().DeferRequestForRefresh(
@@ -1009,7 +999,7 @@ TEST_F(SessionServiceImplTest, SessionRefreshQuota) {
   }
 }
 
-TEST_F(SessionServiceImplTest, SessionRefreshSigningQuota) {
+TEST_F(SessionServiceImplTest, SessionSigningQuota) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       features::kDeviceBoundSessionSigningQuotaAndCaching);
@@ -1023,9 +1013,9 @@ TEST_F(SessionServiceImplTest, SessionRefreshSigningQuota) {
       context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
 
-  // Repeated refreshes don't exceed the refresh signing quota if they don't
-  // trigger signing.
-  for (size_t i = 0; i < 5; i++) {
+  // Repeated refreshes don't exceed the signing quota if they don't trigger
+  // signing.
+  for (size_t i = 0; i < 10; i++) {
     base::test::TestFuture<SessionService::RefreshResult> future;
     service().DeferRequestForRefresh(
         request.get(), SessionService::DeferralParams(Session::Id(kSessionId)),
@@ -1033,14 +1023,13 @@ TEST_F(SessionServiceImplTest, SessionRefreshSigningQuota) {
     EXPECT_EQ(future.Take(), SessionService::RefreshResult::kRefreshed);
   }
 
-  // At first, the refresh signing quota is not exceeded.
-  EXPECT_FALSE(service().RefreshSigningQuotaExceeded(session_key.site));
-  service().AddRefreshSigningOccurrence(session_key.site);
-  // After one refresh signing, refresh signing quota is not yet exceeded.
-  EXPECT_FALSE(service().RefreshSigningQuotaExceeded(session_key.site));
-  service().AddRefreshSigningOccurrence(session_key.site);
-  // After a second refresh signing, the refresh signing quota is exceeded.
-  EXPECT_TRUE(service().RefreshSigningQuotaExceeded(session_key.site));
+  // The first 6 signings don't exceed the signing quota.
+  for (size_t i = 0; i < 6; i++) {
+    EXPECT_FALSE(service().SigningQuotaExceeded(session_key.site));
+    service().AddSigningOccurrence(session_key.site);
+  }
+  // The next signing exceeds the signing quota.
+  EXPECT_TRUE(service().SigningQuotaExceeded(session_key.site));
 
   // This affects other sessions on the same site, but not other sessions on a
   // different site.
@@ -1048,12 +1037,12 @@ TEST_F(SessionServiceImplTest, SessionRefreshSigningQuota) {
                           Session::Id(kSessionId2)};
   SessionKey session_key3{SchemefulSite(GURL(kRefreshUrlString2)),
                           Session::Id(kSessionId3)};
-  EXPECT_TRUE(service().RefreshSigningQuotaExceeded(session_key2.site));
-  EXPECT_FALSE(service().RefreshSigningQuotaExceeded(session_key3.site));
+  EXPECT_TRUE(service().SigningQuotaExceeded(session_key2.site));
+  EXPECT_FALSE(service().SigningQuotaExceeded(session_key3.site));
 
-  // After five minutes, the quota is restored.
-  FastForwardBy(base::Minutes(5));
-  EXPECT_FALSE(service().RefreshSigningQuotaExceeded(session_key.site));
+  // After 9 minutes, the quota is restored.
+  FastForwardBy(base::Minutes(9));
+  EXPECT_FALSE(service().SigningQuotaExceeded(session_key.site));
 }
 
 TEST_F(SessionServiceImplTest, LatestSignedRefreshChallenges) {
@@ -1180,7 +1169,7 @@ TEST_F(SessionServiceImplTest, AddsDebugHeader) {
       SessionService::RefreshResult::kRefreshQuotaExceeded);
   request->AddDeviceBoundSessionDeferral(
       SessionKey{SchemefulSite(kTestUrl), Session::Id(kSessionId3)},
-      SessionService::RefreshResult::kRefreshSigningQuotaExceeded);
+      SessionService::RefreshResult::kSigningQuotaExceeded);
 
   HttpRequestHeaders extra_headers;
   std::optional<SessionService::DeferralParams> maybe_deferral =

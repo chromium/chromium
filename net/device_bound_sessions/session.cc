@@ -532,7 +532,7 @@ void Session::InformOfRefreshResult(bool was_proactive,
       break;
     // There is no need to increment backoff because the signing quota
     // prevents a network request.
-    case kRefreshSigningQuotaExceeded:
+    case kSigningQuotaExceeded:
       break;
     case kTransientHttpError:
     case kBoundCookieSetForbidden:

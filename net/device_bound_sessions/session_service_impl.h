@@ -64,7 +64,7 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
     kMissingKey = 2,
     kAttempted = 3,
     kPreviousFailedProactiveRefresh = 4,
-    kRefreshQuota = 5,
+    kSigningQuota = 5,
     kBackoff = 6,
     kMaxValue = kBackoff,
   };
@@ -129,8 +129,8 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
   void SetLatestSignedRefreshChallenge(
       SessionKey session_key,
       SignedRefreshChallenge signed_refresh_challenge) override;
-  bool RefreshSigningQuotaExceeded(const SchemefulSite& site) override;
-  void AddRefreshSigningOccurrence(const SchemefulSite& site) override;
+  bool SigningQuotaExceeded(const SchemefulSite& site) override;
+  void AddSigningOccurrence(const SchemefulSite& site) override;
 
   // The `SessionService` implementation has a const-qualified accessor
   // for sessions. This overload allows for non-const access as well.
@@ -304,7 +304,7 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
 
   // Per-site session refresh quota. In order to be robust across
   // session parameter changes, we enforce refresh quota for a site.
-  // This functionality is being replaced with `refresh_signing_times_`.
+  // This functionality is being replaced with `signing_times_`.
   std::map<net::SchemefulSite, std::vector<base::TimeTicks>> refresh_times_;
 
   // Per-site record of the most recent refresh result. This is used
@@ -313,9 +313,8 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
 
   // Per-site session signing quota. In order to be robust across
   // session parameter changes, we enforce signing quota for a site.
-  // This is updated whenever a site triggers refresh signing.
-  std::map<net::SchemefulSite, std::vector<base::TimeTicks>>
-      refresh_signing_times_;
+  // This is updated whenever a site triggers signing.
+  std::map<net::SchemefulSite, std::vector<base::TimeTicks>> signing_times_;
 
   // The latest signed challenges per session.
   LatestSignedRefreshChallengesMap latest_signed_refresh_challenges_;
