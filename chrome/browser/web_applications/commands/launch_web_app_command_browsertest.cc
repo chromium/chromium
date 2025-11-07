@@ -163,13 +163,11 @@ class LaunchWebAppCommandTest : public WebAppBrowserTestBase {
       WindowOpenDisposition disposition,
       apps::LaunchSource source,
       const std::vector<base::FilePath>& launch_files,
-      const std::optional<GURL>& url_handler_launch_url,
       const std::optional<GURL>& protocol_handler_launch_url) {
     apps::AppLaunchParams params(app_id, container, disposition, source);
     params.current_directory = base::FilePath(kCurrentDirectory);
     params.command_line = CreateCommandLine();
     params.launch_files = launch_files;
-    params.url_handler_launch_url = url_handler_launch_url;
     params.protocol_handler_launch_url = protocol_handler_launch_url;
 
     return params;
@@ -182,7 +180,7 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAppCommandTest, TabbedLaunchCurrentBrowser) {
   apps::AppLaunchParams launch_params = CreateLaunchParams(
       app_id_, apps::LaunchContainer::kLaunchContainerTab,
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      apps::LaunchSource::kFromCommandLine, {}, std::nullopt, std::nullopt);
+      apps::LaunchSource::kFromCommandLine, {}, std::nullopt);
 
   base::WeakPtr<Browser> launch_browser;
   base::WeakPtr<content::WebContents> web_contents;
@@ -200,7 +198,7 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAppCommandTest, StandaloneLaunch) {
   apps::AppLaunchParams launch_params = CreateLaunchParams(
       app_id_, apps::LaunchContainer::kLaunchContainerWindow,
       WindowOpenDisposition::CURRENT_TAB, apps::LaunchSource::kFromCommandLine,
-      {}, std::nullopt, std::nullopt);
+      {}, std::nullopt);
 
   base::WeakPtr<Browser> launch_browser;
   base::WeakPtr<content::WebContents> web_contents;

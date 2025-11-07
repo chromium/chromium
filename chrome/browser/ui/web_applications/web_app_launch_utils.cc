@@ -230,8 +230,6 @@ base::Value::Dict ToDebugDict(const apps::AppLaunchParams& params) {
   }
   value.Set("launch_files", std::move(files_list));
   value.Set("intent", params.intent ? "<set>" : "<not set>");
-  value.Set("url_handler_launch_url",
-            params.url_handler_launch_url.value_or(GURL()).spec());
   value.Set("protocol_handler_launch_url",
             params.protocol_handler_launch_url.value_or(GURL()).spec());
   value.Set("omit_from_session_restore", params.omit_from_session_restore);

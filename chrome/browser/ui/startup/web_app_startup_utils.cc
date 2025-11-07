@@ -179,8 +179,7 @@ class StartupWebAppCreator
         protocol = protocol_url_;
       }
       provider_->scheduler().LaunchApp(
-          app_id_, command_line_, cur_dir_,
-          /*url_handler_launch_url=*/std::nullopt, protocol,
+          app_id_, command_line_, cur_dir_, protocol,
           /*file_launch_url=*/std::nullopt, /*launch_files=*/{},
           base::BindOnce(&StartupWebAppCreator::OnAppLaunched,
                          base::WrapRefCounted(this)));
@@ -190,7 +189,6 @@ class StartupWebAppCreator
     for (const auto& [url, paths] : file_launch_infos_) {
       provider_->scheduler().LaunchApp(
           app_id_, command_line_, cur_dir_,
-          /*url_handler_launch_url=*/std::nullopt,
           /*protocol_handler_launch_url=*/std::nullopt,
           /*file_launch_url=*/url, /*launch_files=*/paths,
           base::BindOnce(&StartupWebAppCreator::OnAppLaunched,
