@@ -362,7 +362,7 @@ chromium-metrics-reviews@google.com.
   <summary>
     Recorded when a task makes a state transition from the old state
     ({OldState}) to the new state ({NewState}). This captures the number of
-    actions the task took in the first {OldState}.
+    actions the task made in the first state ({OldState}) before the transition.
   </summary>
   <token key="OldState" variants="ActorTaskState"/>
   <token key="NewState" variants="ActorTaskState"/>
