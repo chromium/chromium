@@ -227,6 +227,10 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
   // WebContents.
   const content::WebContents* tab_contents() { return tab_->GetContents(); }
 
+  // Returns whether visual searches should be fulfilled by AIM rather than
+  // load immediately in the results panel.
+  bool use_aim_for_visual_search() { return use_aim_for_visual_search_; }
+
   // Returns invocation time since epoch. Used to set up html source for metric
   // logging.
   uint64_t GetInvocationTimeSinceEpoch();

@@ -726,7 +726,8 @@ void LensSearchController::OnThumbnailProcessed(
     bool is_region_selection,
     const std::string& thumbnail_uri) {
   lens_searchbox_controller_->SetSearchboxThumbnail(thumbnail_uri);
-  if (is_region_selection) {
+  if (is_region_selection &&
+      lens_overlay_controller_->use_aim_for_visual_search()) {
     lens_composebox_controller_->AddVisualSelectionContext(thumbnail_uri);
   }
 }
@@ -774,6 +775,10 @@ void LensSearchController::OnOverlayHidden(
   // Since the side panel is open and the overlay has smoothly faded out, hide
   // the overlay to restore state to the live page.
   lens_overlay_controller_->HideOverlayAndMaybeSetHiddenState();
+  lens_overlay_controller_->ClearAllSelections();
+  // Any pending visual selection that had not yet been submitted should be
+  // cleared whenever the overlay is hidden.
+  lens_composebox_controller_->ClearVisualSelectionContext();
 }
 
 void LensSearchController::OnSidePanelWillHide(
