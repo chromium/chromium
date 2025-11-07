@@ -4324,15 +4324,6 @@
       name: "RunSnapshotPostLayoutStateSteps",
     },
     {
-      // This flag is for fixing validation error
-      // for valid email address using IDN.
-      // This may ship in M142, and this flag can be
-      // removed in M144 pending no issues.
-      // See https://issues.chromium.org/issues/429490608
-      name: "SanitizeIDNEmailFormInput",
-      status: "stable",
-    },
-    {
       // Spec: https://wicg.github.io/sanitizer-api/
       // Tracking bug: crbug.com/356601280
       name: "SanitizerAPI",

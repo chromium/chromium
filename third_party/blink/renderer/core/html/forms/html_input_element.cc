@@ -858,41 +858,13 @@ void HTMLInputElement::ParseAttribute(
     // We only need to setChanged if the form is looking at the default value
     // right now.
     if (!HasDirtyValue()) {
-      if (RuntimeEnabledFeatures::SanitizeIDNEmailFormInputEnabled()) {
-        bool needs_to_update = true;
-        if (input_type_->GetValueMode() == ValueMode::kValue) {
-          // Update the view with the non-converted value first, before
-          // setting the value to the converted version.
-          String non_converted = SanitizeValue(value);
-          non_attribute_value_ = non_converted;
-          needs_to_update_view_value_ = true;
-          if (parsing_in_progress_) {
-            pending_non_converted_value_ = non_converted;
-            input_type_view_->set_needs_update_view_in_create_shadow_subtree(
-                true);
-          } else {
-            input_type_view_->UpdateView();
-          }
-          non_attribute_value_ =
-              input_type_->ConvertFromVisibleValue(non_converted);
-          // Don't update the view again, to preserve pasted values.
-          needs_to_update = false;
-        }
-        UpdatePlaceholderVisibility();
-        SetNeedsStyleRecalc(
-            kSubtreeStyleChange,
-            StyleChangeReasonForTracing::FromAttribute(html_names::kValueAttr));
-        needs_to_update_view_value_ = needs_to_update;
-      } else {
-        if (input_type_->GetValueMode() == ValueMode::kValue) {
-          non_attribute_value_ = SanitizeValue(value);
-        }
-        UpdatePlaceholderVisibility();
-        SetNeedsStyleRecalc(
-            kSubtreeStyleChange,
-            StyleChangeReasonForTracing::FromAttribute(html_names::kValueAttr));
-        needs_to_update_view_value_ = true;
-      }
+      if (input_type_->GetValueMode() == ValueMode::kValue)
+        non_attribute_value_ = SanitizeValue(value);
+      UpdatePlaceholderVisibility();
+      SetNeedsStyleRecalc(
+          kSubtreeStyleChange,
+          StyleChangeReasonForTracing::FromAttribute(html_names::kValueAttr));
+      needs_to_update_view_value_ = true;
     }
     SetNeedsValidityCheck();
     input_type_->WarnIfValueIsInvalidAndElementIsVisible(value);
@@ -992,21 +964,6 @@ void HTMLInputElement::ParserDidSetAttributes() {
   DCHECK(parsing_in_progress_);
   InitializeTypeInParsing();
   TextControlElement::ParserDidSetAttributes();
-}
-
-void HTMLInputElement::UpdateViewWithPendingNonConvertedValue() {
-  if (pending_non_converted_value_.empty()) {
-    UpdateView();
-  } else {
-    String saved_value = non_attribute_value_;
-    bool did_need_update = needs_to_update_view_value_;
-    non_attribute_value_ = pending_non_converted_value_;
-    needs_to_update_view_value_ = true;
-    input_type_view_->UpdateView();
-    non_attribute_value_ = saved_value;
-    needs_to_update_view_value_ = did_need_update;
-    pending_non_converted_value_ = String();
-  }
 }
 
 void HTMLInputElement::FinishParsingChildren() {

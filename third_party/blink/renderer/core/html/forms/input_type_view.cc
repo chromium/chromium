@@ -152,11 +152,7 @@ void InputTypeView::CreateShadowSubtreeIfNeeded(bool is_type_changing) {
   // because HTMLInputElement effectively has similar logic.
   if (!is_type_changing) {
     if (needs_update_view_in_create_shadow_subtree_) {
-      if (RuntimeEnabledFeatures::SanitizeIDNEmailFormInputEnabled()) {
-        GetElement().UpdateViewWithPendingNonConvertedValue();
-      } else {
-        UpdateView();
-      }
+      UpdateView();
     }
     // Placeholder updates are ignored. Update now if needed.
     if (!GetElement().SuggestedValue().empty() ||
