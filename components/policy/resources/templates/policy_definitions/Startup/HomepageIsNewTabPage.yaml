@@ -14,7 +14,6 @@ features:
   dynamic_refresh: true
   per_profile: true
 future_on:
-- android
 - fuchsia
 items:
 - caption: Use New Tab Page as homepage
@@ -31,5 +30,6 @@ sensitive: true
 supported_on:
 - chrome.*:8-
 - chrome_os:11-
+- android:144-
 tags: []
 type: main
