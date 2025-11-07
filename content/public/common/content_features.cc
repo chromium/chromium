@@ -366,7 +366,13 @@ BASE_FEATURE(kWebRtcHWEncoding,
 
 // Enables a discard operation on WebContents to free associated resources.
 // Eliminates the need to destroy the WebContents object to free its resources.
-BASE_FEATURE(kWebContentsDiscard, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kWebContentsDiscard,
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 
 // When this feature is enabled, partial storage cleanup will be
 // disabled for the GPU disk cache. (Performance improvement)
