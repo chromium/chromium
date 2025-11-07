@@ -95,14 +95,18 @@ NSMutableArray<NSString*>* ZeroStateSuggestionsAsNSArray(
 
 }  // namespace
 
-struct BwgTabHelper::ZeroStateSuggestionsService {
-  // The remote for the zero state suggestions service.
-  mojo::Remote<ai::mojom::ZeroStateSuggestionsService>
-      zero_state_suggestions_service;
+struct BwgTabHelper::ZeroStateSuggestions {
+  ZeroStateSuggestions() = default;
+  ~ZeroStateSuggestions() = default;
 
-  // The implementation of the zero state suggestions service.
-  std::unique_ptr<ai::ZeroStateSuggestionsServiceImpl>
-      zero_state_suggestions_service_impl;
+  // The zero-state suggestions service.
+  mojo::Remote<ai::mojom::ZeroStateSuggestionsService> service;
+  std::unique_ptr<ai::ZeroStateSuggestionsServiceImpl> service_impl;
+
+  // The zero-state suggestions data for the current page.
+  GURL url;
+  std::optional<std::vector<std::string>> suggestions;
+  bool can_apply = false;
 };
 
 BwgTabHelper::BwgTabHelper(web::WebState* web_state) : web_state_(web_state) {
@@ -113,13 +117,11 @@ BwgTabHelper::BwgTabHelper(web::WebState* web_state) : web_state_(web_state) {
   web_state_observation_.Observe(web_state);
 
   if (IsZeroStateSuggestionsEnabled()) {
-    zero_state_suggestions_service_ =
-        std::make_unique<ZeroStateSuggestionsService>();
+    zero_state_suggestions_ = std::make_unique<ZeroStateSuggestions>();
     mojo::PendingReceiver<ai::mojom::ZeroStateSuggestionsService>
         zero_state_suggestions_receiver =
-            zero_state_suggestions_service_->zero_state_suggestions_service
-                .BindNewPipeAndPassReceiver();
-    zero_state_suggestions_service_->zero_state_suggestions_service_impl =
+            zero_state_suggestions_->service.BindNewPipeAndPassReceiver();
+    zero_state_suggestions_->service_impl =
         std::make_unique<ai::ZeroStateSuggestionsServiceImpl>(
             std::move(zero_state_suggestions_receiver), web_state);
   }
@@ -134,21 +136,21 @@ BwgTabHelper::~BwgTabHelper() {
 }
 
 void BwgTabHelper::ExecuteZeroStateSuggestions(
-    base::OnceCallback<void(NSArray<NSString*>* suggestions)> callback) {
+    base::OnceCallback<void(NSArray<NSString*>*)> callback) {
   CHECK(IsZeroStateSuggestionsEnabled());
 
-  if (!can_apply_zero_state_suggestions_) {
+  if (!zero_state_suggestions_->can_apply) {
     std::move(callback).Run(nil);
     return;
   }
 
-  if (zero_state_suggestions_.has_value()) {
-    std::move(callback).Run(
-        ZeroStateSuggestionsAsNSArray(zero_state_suggestions_.value()));
+  if (zero_state_suggestions_->suggestions.has_value()) {
+    std::move(callback).Run(ZeroStateSuggestionsAsNSArray(
+        zero_state_suggestions_->suggestions.value()));
     return;
   }
 
-  if (!zero_state_suggestions_service_->zero_state_suggestions_service) {
+  if (!zero_state_suggestions_->service) {
     std::move(callback).Run(nil);
     return;
   }
@@ -158,8 +160,8 @@ void BwgTabHelper::ExecuteZeroStateSuggestions(
           base::BindOnce(&BwgTabHelper::ParseSuggestionsResponse,
                          weak_ptr_factory_.GetWeakPtr(), std::move(callback));
 
-  zero_state_suggestions_service_->zero_state_suggestions_service
-      ->FetchZeroStateSuggestions(std::move(service_callback));
+  zero_state_suggestions_->service->FetchZeroStateSuggestions(
+      std::move(service_callback));
 }
 
 void BwgTabHelper::SetBwgUiShowing(bool showing) {
@@ -322,8 +324,7 @@ void BwgTabHelper::DidStartNavigation(
   // Cancel the callback that runs on page load, since we're now going to a new
   // page.
   page_loaded_callback_.Reset();
-  zero_state_suggestions_ = std::nullopt;
-  can_apply_zero_state_suggestions_ = false;
+  weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
 void BwgTabHelper::DidFinishNavigation(
@@ -353,7 +354,10 @@ void BwgTabHelper::DidFinishNavigation(
                        weak_ptr_factory_.GetWeakPtr(), current_url));
   }
 
-  if (IsZeroStateSuggestionsEnabled()) {
+  if (IsZeroStateSuggestionsEnabled() &&
+      current_url != zero_state_suggestions_->url) {
+    ClearZeroStateSuggestions();
+    zero_state_suggestions_->url = current_url;
     optimization_guide_decider_->CanApplyOptimization(
         current_url, optimization_guide::proto::GLIC_ZERO_STATE_SUGGESTIONS,
         base::BindOnce(&BwgTabHelper::OnCanApplyZeroStateSuggestionsDecision,
@@ -382,6 +386,16 @@ void BwgTabHelper::WebStateDestroyed(web::WebState* web_state) {
 }
 
 #pragma mark - Private
+
+void BwgTabHelper::ClearZeroStateSuggestions() {
+  if (!IsZeroStateSuggestionsEnabled()) {
+    return;
+  }
+
+  zero_state_suggestions_->url = GURL();
+  zero_state_suggestions_->suggestions.reset();
+  zero_state_suggestions_->can_apply = false;
+}
 
 void BwgTabHelper::CreateOrUpdateSessionInPrefs(std::string client_id,
                                                 std::string server_id) {
@@ -560,7 +574,7 @@ void BwgTabHelper::OnOptimizationGuideDecision(
 void BwgTabHelper::OnCanApplyZeroStateSuggestionsDecision(
     optimization_guide::OptimizationGuideDecision decision,
     const optimization_guide::OptimizationMetadata& metadata) {
-  can_apply_zero_state_suggestions_ =
+  zero_state_suggestions_->can_apply =
       decision == optimization_guide::OptimizationGuideDecision::kTrue;
 }
 
@@ -583,13 +597,13 @@ void BwgTabHelper::ParseSuggestionsResponse(
   optimization_guide::proto::ZeroStateSuggestionsResponse response_proto =
       response_proto_optional.value();
 
-  zero_state_suggestions_.emplace();
+  zero_state_suggestions_->suggestions.emplace();
   for (const auto& suggestion : response_proto.suggestions()) {
-    zero_state_suggestions_->push_back(suggestion.label());
+    zero_state_suggestions_->suggestions->push_back(suggestion.label());
   }
 
-  std::move(callback).Run(
-      ZeroStateSuggestionsAsNSArray(zero_state_suggestions_.value()));
+  std::move(callback).Run(ZeroStateSuggestionsAsNSArray(
+      zero_state_suggestions_->suggestions.value()));
 }
 
 // TODO(crbug.com/456782848): Cleanup when no longer needed/wanted.
