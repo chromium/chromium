@@ -118,6 +118,7 @@ export class NewTabFooterAppElement extends NewTabFooterAppElementBase {
   protected accessor showBackgroundAttribution_: boolean = false;
 
   private selectedCustomizeDialogPage_: string|null;
+  private canCustomizeChrome_: boolean = false;
   private callbackRouter_: NewTabFooterDocumentCallbackRouter;
   private handler_: NewTabFooterHandlerInterface;
   private customizeCallbackRouter_: CustomizeButtonsDocumentCallbackRouter;
@@ -167,8 +168,9 @@ export class NewTabFooterAppElement extends NewTabFooterAppElementBase {
             });
     this.setAttachedTabStateUpdatedListener_ =
         this.callbackRouter_.attachedTabStateUpdated.addListener(
-            (ntpType: NewTabPageType) => {
+            (ntpType: NewTabPageType, canCustomizeChrome: boolean) => {
               this.ntpType_ = ntpType;
+              this.canCustomizeChrome_ = canCustomizeChrome;
             });
     this.handler_.updateAttachedTabState();
     this.setBackgroundAttributionListener_ =
@@ -250,8 +252,9 @@ export class NewTabFooterAppElement extends NewTabFooterAppElementBase {
   }
 
   private computeShowCustomizeButtons_(): boolean {
-    return this.ntpType_ === NewTabPageType.kFirstPartyWebUI ||
-        this.ntpType_ === NewTabPageType.kExtension;
+    return this.canCustomizeChrome_ &&
+        (this.ntpType_ === NewTabPageType.kFirstPartyWebUI ||
+         this.ntpType_ === NewTabPageType.kExtension);
   }
 
   private computeShowExtension_(): boolean {
