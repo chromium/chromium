@@ -6,7 +6,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/functional/callback_helpers.h"
 #include "base/notimplemented.h"
 #include "chromeos/ash/services/ime/constants.h"

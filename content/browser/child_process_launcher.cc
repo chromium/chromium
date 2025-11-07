@@ -11,7 +11,6 @@
 #include "base/clang_profiling_buildflags.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/i18n/icu_util.h"
 #include "base/memory/unsafe_shared_memory_region.h"

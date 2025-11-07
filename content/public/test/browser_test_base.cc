@@ -141,7 +141,6 @@
 #if BUILDFLAG(IS_WIN)
 #include <shlobj.h>
 
-#include "base/files/file_util.h"
 #include "base/test/test_reg_util_win.h"
 #endif  // BUILDFLAG(IS_WIN)
 

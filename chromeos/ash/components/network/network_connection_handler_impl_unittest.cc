@@ -8,7 +8,6 @@
 #include <memory>
 #include <set>
 
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/strings/string_util.h"

@@ -7,7 +7,6 @@
 #include <unistd.h>
 
 #include "base/byte_count.h"
-#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/memory/mock_memory_pressure_listener.h"

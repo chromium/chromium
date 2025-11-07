@@ -5,8 +5,8 @@
 #include "chromeos/ash/components/report/device_metrics/churn/observation_impl.h"
 
 #include <memory>
+
 #include "ash/constants/ash_features.h"
-#include "base/files/file_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/report/device_metrics/use_case/stub_psm_client_manager.h"

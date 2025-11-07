@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/files/file_util.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"

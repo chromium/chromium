@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/json/json_reader.h"

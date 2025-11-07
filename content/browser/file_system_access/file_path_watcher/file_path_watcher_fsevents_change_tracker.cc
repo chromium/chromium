@@ -4,8 +4,9 @@
 
 #include "content/browser/file_system_access/file_path_watcher/file_path_watcher_fsevents_change_tracker.h"
 
+#include <sys/stat.h>
+
 #include "base/containers/contains.h"
-#include "base/files/file_util.h"
 #include "content/browser/file_system_access/file_path_watcher/file_path_watcher.h"
 
 namespace content {

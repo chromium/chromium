@@ -16,7 +16,6 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"

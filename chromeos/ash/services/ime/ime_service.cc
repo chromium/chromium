@@ -11,7 +11,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/compiler_specific.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/notimplemented.h"

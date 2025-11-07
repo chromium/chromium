@@ -5,7 +5,6 @@
 #include "content/browser/web_package/signed_exchange_signature_verifier.h"
 
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "content/browser/web_package/signed_exchange_certificate_chain.h"

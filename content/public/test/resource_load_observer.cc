@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "content/public/browser/render_frame_host.h"

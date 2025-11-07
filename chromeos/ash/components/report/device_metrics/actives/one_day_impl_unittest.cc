@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/files/file_util.h"
 #include "base/memory/ptr_util.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/report/device_metrics/use_case/stub_psm_client_manager.h"

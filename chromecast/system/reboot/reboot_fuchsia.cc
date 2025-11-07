@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chromecast/system/reboot/reboot_fuchsia.h"
+
 #include <fuchsia/feedback/cpp/fidl.h>
 #include <fuchsia/hardware/power/statecontrol/cpp/fidl.h>
 #include <fuchsia/recovery/cpp/fidl.h>
@@ -12,13 +14,11 @@
 
 #include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
 #include "base/no_destructor.h"
 #include "chromecast/public/reboot_shlib.h"
 #include "chromecast/system/reboot/fuchsia_component_restart_reason.h"
-#include "chromecast/system/reboot/reboot_fuchsia.h"
 #include "chromecast/system/reboot/reboot_util.h"
 
 using fuchsia::feedback::LastReboot;

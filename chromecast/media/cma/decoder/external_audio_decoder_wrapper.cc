@@ -14,7 +14,6 @@
 
 #include "base/containers/heap_array.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"

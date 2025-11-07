@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/files/file_util.h"
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
 #include "content/public/browser/web_contents_observer.h"
