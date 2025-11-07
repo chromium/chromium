@@ -26,8 +26,6 @@ class WebRequestNatives : public ObjectBackedNativeHandler {
  private:
   void AllowAsyncResponsesForAllEvents(
       const v8::FunctionCallbackInfo<v8::Value>& args);
-  void IsCollapsedListenersEnabled(
-      const v8::FunctionCallbackInfo<v8::Value>& args);
 };
 
 }  // namespace extensions

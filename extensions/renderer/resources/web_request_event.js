@@ -6,13 +6,8 @@ var CHECK = requireNative('logging').CHECK;
 var idGeneratorNatives = requireNative('id_generator');
 var utils = require('utils');
 var webRequestInternal = getInternalApi('webRequestInternal');
-var webRequestNatives = requireNative('web_request_natives');
 const allowAsyncResponsesForAllEvents =
-    webRequestNatives.AllowAsyncResponsesForAllEvents();
-const isCollapsedListenersEnabled =
-    webRequestNatives.IsCollapsedListenersEnabled();
-const {getInternalEventName, LazyWebRequestEventImpl} =
-    require('lazyWebRequestEvent');
+    requireNative('web_request_natives').AllowAsyncResponsesForAllEvents();
 const isServiceWorkerContext =
     requireNative('service_worker_natives').IsServiceWorkerContext();
 
@@ -212,53 +207,16 @@ function createWebRequestEvent(eventName, opt_argSchemas, opt_extraArgSchemas,
                              opt_eventOptions, opt_webViewInstanceId);
 }
 
-// Proxy class that acts as factory and delegator. This allows us to dynamically
-// choose between the legacy `WebRequestEventImpl` and new
-// `LazyWebRequestEventImpl` strategies based on the constructor arguments.
-function WebRequestEventProxy(
-    eventName, opt_argSchemas, opt_extraArgSchemas, opt_eventOptions,
-    opt_webViewInstanceId) {
-  const webViewInstanceId = opt_webViewInstanceId || 0;
-  const internalEventName = getInternalEventName(eventName);
-
-  const useLazyListeners = isCollapsedListenersEnabled &&
-      isServiceWorkerContext && webViewInstanceId === 0 &&
-      internalEventName !== null;
-
-  if (useLazyListeners) {
-    // `LazyWebRequestEventImpl` (based on "collapsed" listeners) is used if:
-    //   - In a service worker context.
-    //   - Not for a <webview>.
-    //   - Event is a `webRequest.*` event.
-    this.realImpl_ = $Object.create(LazyWebRequestEventImpl.prototype);
-    $Function.apply(LazyWebRequestEventImpl, this.realImpl_, arguments);
-  } else {
-    // `WebRequestEventImpl` (based on sub-events) is used otherwise.
-    this.realImpl_ = $Object.create(WebRequestEventImpl.prototype);
-    $Function.apply(WebRequestEventImpl, this.realImpl_, arguments);
-  }
-}
-
-// Delegate all public methods to `realImpl_`.
-const webRequestEvent_delegatedMethods = [
-  'hasListener',
-  'hasListeners',
-  'addListener',
-  'removeListener',
-  'addRules',
-  'removeRules',
-  'getRules',
-];
-
-// Forward the calls and their arguments to the actual implementation instance.
-$Array.forEach(webRequestEvent_delegatedMethods, function(funcName) {
-  WebRequestEventProxy.prototype[funcName] = function() {
-    return $Function.apply(this.realImpl_[funcName], this.realImpl_, arguments);
-  };
-});
-
-utils.expose(WebRequestEvent, WebRequestEventProxy, {
-  functions: webRequestEvent_delegatedMethods,
+utils.expose(WebRequestEvent, WebRequestEventImpl, {
+  functions: [
+    'hasListener',
+    'hasListeners',
+    'addListener',
+    'removeListener',
+    'addRules',
+    'removeRules',
+    'getRules',
+  ],
 });
 
 exports.$set('WebRequestEvent', WebRequestEvent);

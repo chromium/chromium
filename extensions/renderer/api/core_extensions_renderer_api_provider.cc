@@ -198,7 +198,6 @@ void CoreExtensionsRendererAPIProvider::PopulateSourceMap(
       {"utils", IDR_UTILS_JS},
       {"webRequest", IDR_WEB_REQUEST_CUSTOM_BINDINGS_JS},
       {"webRequestEvent", IDR_WEB_REQUEST_EVENT_JS},
-      {"lazyWebRequestEvent", IDR_LAZY_WEB_REQUEST_EVENT_JS},
 
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
       // Note: webView not webview so that this doesn't interfere with the

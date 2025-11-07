@@ -49,19 +49,18 @@
       <include name="IDR_WEB_VIEW_ELEMENT_JS" file="guest_view/web_view/web_view_element.js" type="BINDATA" />
 
       <!-- Custom bindings for APIs. -->
-      <include name="IDR_APP_RUNTIME_CUSTOM_BINDINGS_JS" file="app_runtime_custom_bindings.js" type="BINDATA" />
-      <include name="IDR_APP_WINDOW_CUSTOM_BINDINGS_JS" file="app_window_custom_bindings.js" type="BINDATA" />
       <include name="IDR_AUTOMATION_CUSTOM_BINDINGS_JS" file="automation\automation_custom_bindings.js" type="BINDATA" />
       <include name="IDR_AUTOMATION_EVENT_JS" file="automation\automation_event.js" type="BINDATA" />
       <include name="IDR_AUTOMATION_NODE_JS" file="automation\automation_node.js" type="BINDATA" />
       <include name="IDR_AUTOMATION_TREE_CACHE_JS" file="automation\automation_tree_cache.js" type="BINDATA" />
+      <include name="IDR_APP_RUNTIME_CUSTOM_BINDINGS_JS" file="app_runtime_custom_bindings.js" type="BINDATA" />
+      <include name="IDR_APP_WINDOW_CUSTOM_BINDINGS_JS" file="app_window_custom_bindings.js" type="BINDATA" />
       <include name="IDR_CONTEXT_MENUS_CUSTOM_BINDINGS_JS" file="context_menus_custom_bindings.js" type="BINDATA" />
       <include name="IDR_CONTEXT_MENUS_HANDLERS_JS" file="context_menus_handlers.js" type="BINDATA" />
       <include name="IDR_DECLARATIVE_WEBREQUEST_CUSTOM_BINDINGS_JS" file="declarative_webrequest_custom_bindings.js" type="BINDATA" />
       <include name="IDR_FILE_ENTRY_BINDING_UTIL_JS" file="file_entry_binding_util.js" type="BINDATA" />
       <include name="IDR_FILE_SYSTEM_CUSTOM_BINDINGS_JS" file="file_system_custom_bindings.js" type="BINDATA" />
       <include name="IDR_GREASEMONKEY_API_JS" file="greasemonkey_api.js" type="BINDATA" />
-      <include name="IDR_LAZY_WEB_REQUEST_EVENT_JS" file="lazy_web_request_event.js" type="BINDATA" />
       <include name="IDR_MOJO_PRIVATE_CUSTOM_BINDINGS_JS" file="mojo_private_custom_bindings.js" type="BINDATA" />
       <include name="IDR_PERMISSIONS_CUSTOM_BINDINGS_JS" file="permissions_custom_bindings.js" type="BINDATA" />
       <include name="IDR_PRINTER_PROVIDER_CUSTOM_BINDINGS_JS" file="printer_provider_custom_bindings.js" type="BINDATA" />
