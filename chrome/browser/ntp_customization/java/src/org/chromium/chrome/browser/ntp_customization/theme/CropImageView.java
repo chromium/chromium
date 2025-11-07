@@ -17,6 +17,7 @@ import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.widget.AppCompatImageView;
 
 import org.chromium.build.annotations.NullMarked;
@@ -58,6 +59,8 @@ public class CropImageView extends AppCompatImageView {
     private final float[] mMatrixValues;
     private boolean mIsPortraitInitialized;
     private boolean mIsLandscapeInitialized;
+    private boolean mIsScaled;
+    private boolean mIsScrolled;
     private @Nullable Bitmap mBitmap;
 
     private static class Dimensions {
@@ -80,6 +83,8 @@ public class CropImageView extends AppCompatImageView {
         mMatrixValues = new float[9];
         mIsPortraitInitialized = false;
         mIsLandscapeInitialized = false;
+        mIsScaled = false;
+        mIsScrolled = false;
         mScaleDetector = new ScaleGestureDetector(context, new ScaleListener());
         mGestureDetector = new GestureDetector(context, new GestureListener());
 
@@ -296,18 +301,21 @@ public class CropImageView extends AppCompatImageView {
         setImageMatrix(mCurrentMatrix);
     }
 
-    private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
+    @VisibleForTesting
+    public class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
         @Override
         public boolean onScale(ScaleGestureDetector detector) {
             float scaleFactor = detector.getScaleFactor();
             mCurrentMatrix.postScale(
                     scaleFactor, scaleFactor, detector.getFocusX(), detector.getFocusY());
             checkBoundsAndApply();
+            mIsScaled = true;
             return true;
         }
     }
 
-    private class GestureListener extends GestureDetector.SimpleOnGestureListener {
+    @VisibleForTesting
+    public class GestureListener extends GestureDetector.SimpleOnGestureListener {
         /**
          * Handles the initial ACTION_DOWN event of a gesture.
          *
@@ -327,6 +335,7 @@ public class CropImageView extends AppCompatImageView {
                 @Nullable MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
             mCurrentMatrix.postTranslate(-distanceX, -distanceY);
             checkBoundsAndApply();
+            mIsScrolled = true;
             return true;
         }
     }
@@ -387,5 +396,13 @@ public class CropImageView extends AppCompatImageView {
 
     void setIsInitializedLandscapeForTesting(boolean isInitialized) {
         mIsLandscapeInitialized = isInitialized;
+    }
+
+    boolean getIsScaled() {
+        return mIsScaled;
+    }
+
+    boolean getIsScrolled() {
+        return mIsScrolled;
     }
 }

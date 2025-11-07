@@ -361,6 +361,7 @@ chromium-metrics-reviews@google.com.
   <summary/>
   <int value="0" label="Cancel"/>
   <int value="1" label="Save"/>
+  <int value="2" label="Pinch to resize"/>
 </enum>
 
 <enum name="NTPCustomizeChromeBackgroundAction">

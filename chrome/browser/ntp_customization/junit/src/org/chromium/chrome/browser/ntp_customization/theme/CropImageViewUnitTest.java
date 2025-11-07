@@ -6,19 +6,27 @@ package org.chromium.chrome.browser.ntp_customization.theme;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
+import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 import android.view.View;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -26,6 +34,8 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 /** Unit tests for {@link CropImageView}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class CropImageViewUnitTest {
+
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     // Define standard dimensions and a delta for float comparisons.
     private static final int PORTRAIT_VIEW_WIDTH = 500;
@@ -38,6 +48,10 @@ public class CropImageViewUnitTest {
     private CropImageView mView;
     private ConstraintLayout mParent;
 
+    @Mock private ScaleGestureDetector mScaleDetector;
+    @Mock private MotionEvent mMotionEvent1;
+    @Mock private MotionEvent mMotionEvent2;
+
     @Before
     public void setUp() {
         mContext = ApplicationProvider.getApplicationContext();
@@ -48,6 +62,8 @@ public class CropImageViewUnitTest {
                         ConstraintLayout.LayoutParams.MATCH_PARENT,
                         ConstraintLayout.LayoutParams.MATCH_PARENT);
         mParent.addView(mView, params);
+        Bitmap bitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
+        mView.setImageBitmap(bitmap);
     }
 
     @Test
@@ -505,5 +521,21 @@ public class CropImageViewUnitTest {
         if (areEqual) {
             throw new AssertionError("Matrices were expected to be different, but were the same.");
         }
+    }
+
+    @Test
+    public void testOnScale() {
+        assertFalse(mView.getIsScaled());
+        CropImageView.ScaleListener scaleListener = mView.new ScaleListener();
+        scaleListener.onScale(mScaleDetector);
+        assertTrue(mView.getIsScaled());
+    }
+
+    @Test
+    public void testOnScroll() {
+        assertFalse(mView.getIsScrolled());
+        CropImageView.GestureListener gestureListener = mView.new GestureListener();
+        gestureListener.onScroll(mMotionEvent1, mMotionEvent2, 0, 0);
+        assertTrue(mView.getIsScrolled());
     }
 }

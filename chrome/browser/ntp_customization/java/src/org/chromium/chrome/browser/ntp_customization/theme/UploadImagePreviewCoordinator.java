@@ -41,7 +41,7 @@ import java.lang.annotation.RetentionPolicy;
 public class UploadImagePreviewCoordinator {
 
     private final PropertyModel mPreviewPropertyModel;
-    private final CropImageView mCropImageView;
+    private CropImageView mCropImageView;
 
     /**
      * The type of user interactions with the Upload Image Preview dialog.
@@ -49,12 +49,17 @@ public class UploadImagePreviewCoordinator {
      * <p>These values are persisted to logs. Entries should not be renumbered and numeric values
      * should never be reused. See tools/metrics/histograms/enums.xml.
      */
-    @IntDef({PreviewInteractionType.CANCEL, PreviewInteractionType.SAVE})
+    @IntDef({
+        PreviewInteractionType.CANCEL,
+        PreviewInteractionType.SAVE,
+        PreviewInteractionType.PINCH_TO_RESIZE
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface PreviewInteractionType {
         int CANCEL = 0;
         int SAVE = 1;
-        int NUM_ENTRIES = 2;
+        int PINCH_TO_RESIZE = 2; // Scale and scroll
+        int NUM_ENTRIES = 3;
     }
 
     /**
@@ -87,6 +92,7 @@ public class UploadImagePreviewCoordinator {
                     onSaveButtonClicked(bitmap, onBottomSheetClickedCallback, dialog);
                     NtpCustomizationMetricsUtils.recordThemeUploadImagePreviewInteractions(
                             PreviewInteractionType.SAVE);
+                    recordPinchToResizeMetric();
                 });
 
         mPreviewPropertyModel.set(
@@ -96,6 +102,7 @@ public class UploadImagePreviewCoordinator {
                     dialog.dismiss();
                     NtpCustomizationMetricsUtils.recordThemeUploadImagePreviewInteractions(
                             PreviewInteractionType.CANCEL);
+                    recordPinchToResizeMetric();
                 });
 
         int saveButtonMarginBottom =
@@ -115,6 +122,13 @@ public class UploadImagePreviewCoordinator {
 
         dialog.show();
         NtpCustomizationMetricsUtils.recordThemeUploadImagePreviewShow();
+    }
+
+    private void recordPinchToResizeMetric() {
+        if (mCropImageView.getIsScaled() || mCropImageView.getIsScrolled()) {
+            NtpCustomizationMetricsUtils.recordThemeUploadImagePreviewInteractions(
+                    PreviewInteractionType.PINCH_TO_RESIZE);
+        }
     }
 
     PropertyModel getPropertyModelForTesting() {
@@ -166,5 +180,9 @@ public class UploadImagePreviewCoordinator {
 
         onBottomSheetClickedCallback.onResult(true);
         dialog.dismiss();
+    }
+
+    void setCropImageViewForTesting(CropImageView view) {
+        mCropImageView = view;
     }
 }

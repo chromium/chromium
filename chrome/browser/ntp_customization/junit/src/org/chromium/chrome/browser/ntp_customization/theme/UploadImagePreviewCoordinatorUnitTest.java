@@ -11,10 +11,12 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.app.Dialog;
 import android.graphics.Bitmap;
+import android.graphics.Matrix;
 import android.view.View;
 
 import org.junit.After;
@@ -45,6 +47,7 @@ public class UploadImagePreviewCoordinatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private Callback<Boolean> mOnClickedCallback;
+    @Mock private CropImageView mCropImageView;
 
     private Dialog mDialog;
     private UploadImagePreviewCoordinator mUploadImagePreviewCoordinator;
@@ -111,6 +114,54 @@ public class UploadImagePreviewCoordinatorUnitTest {
                         histogramName, UploadImagePreviewCoordinator.PreviewInteractionType.SAVE);
         mSaveButton.performClick();
         histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void testMetricThemeUploadImagePreviewInteractions_pinchToResize_cancel() {
+        setupCropImageView();
+        String histogramName = "NewTabPage.Customization.Theme.UploadImage.PreviewInteractions";
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                histogramName,
+                                UploadImagePreviewCoordinator.PreviewInteractionType.CANCEL)
+                        .expectIntRecord(
+                                histogramName,
+                                UploadImagePreviewCoordinator.PreviewInteractionType
+                                        .PINCH_TO_RESIZE)
+                        .build();
+        mCancelButton.performClick();
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void testMetricThemeUploadImagePreviewInteractions_pinchToResize_save() {
+        setupCropImageView();
+        String histogramName = "NewTabPage.Customization.Theme.UploadImage.PreviewInteractions";
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                histogramName,
+                                UploadImagePreviewCoordinator.PreviewInteractionType.SAVE)
+                        .expectIntRecord(
+                                histogramName,
+                                UploadImagePreviewCoordinator.PreviewInteractionType
+                                        .PINCH_TO_RESIZE)
+                        .build();
+        mSaveButton.performClick();
+        histogramWatcher.assertExpected();
+    }
+
+    /**
+     * Sets up the mock {@link CropImageView} to simulate a state where the user has already
+     * interacted with the image by scaling and scrolling it.
+     */
+    private void setupCropImageView() {
+        mUploadImagePreviewCoordinator.setCropImageViewForTesting(mCropImageView);
+        when(mCropImageView.getPortraitMatrix()).thenReturn(new Matrix());
+        when(mCropImageView.getLandscapeMatrix()).thenReturn(new Matrix());
+        when(mCropImageView.getIsScaled()).thenReturn(true);
+        when(mCropImageView.getIsScrolled()).thenReturn(true);
     }
 
     @Test
