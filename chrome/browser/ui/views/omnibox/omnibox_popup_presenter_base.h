@@ -43,13 +43,13 @@ class OmniboxPopupPresenterBase {
 
   void SetWidgetContentHeight(int content_height);
 
- protected:
-  // The container for the WebUI WebView.
-  views::View* GetUIContainer() const;
-
   // Returns the currently "active" Popup content, whichever one is visible or
   // going to be visible within the popup.
   OmniboxPopupWebUIBaseContent* GetWebUIContent() const;
+
+ protected:
+  // The container for the WebUI WebView.
+  views::View* GetUIContainer() const;
 
   // Sets the webview content reference.
   void SetWebUIContent(

@@ -54,8 +54,10 @@ class CommandUpdater;
 class ContentSettingBubbleModelDelegate;
 class IntentChipButton;
 class OmniboxController;
+class OmniboxContextMenu;
 enum class OmniboxPart;
 class OmniboxPopupAimPresenter;
+class OmniboxPopupFileSelector;
 class OmniboxPopupView;
 class OmniboxViewViews;
 class OmniboxChipButton;
@@ -64,7 +66,6 @@ class PageActionIconContainerView;
 class PermissionDashboardView;
 class Profile;
 class SelectedKeywordView;
-class OmniboxContextMenu;
 
 namespace page_actions {
 class PageActionContainerView;
@@ -301,6 +302,10 @@ class LocationBarView
 
   OmniboxPopupView* GetOmniboxPopupView();
   const OmniboxPopupView* GetOmniboxPopupView() const;
+
+  OmniboxPopupFileSelector* GetOmniboxPopupFileSelector() const {
+    return omnibox_popup_file_selector_.get();
+  }
 
  private:
   FRIEND_TEST_ALL_PREFIXES(SecurityIndicatorTest, CheckIndicatorText);
@@ -570,6 +575,7 @@ class LocationBarView
   raw_ptr<views::FocusManager> focus_manager_ = nullptr;
 
   std::unique_ptr<OmniboxContextMenu> omnibox_context_menu_;
+  std::unique_ptr<OmniboxPopupFileSelector> omnibox_popup_file_selector_;
 
   base::RepeatingCallback<void(OmniboxContextMenu*, gfx::Point)>
       run_omnibox_context_menu_callback_;

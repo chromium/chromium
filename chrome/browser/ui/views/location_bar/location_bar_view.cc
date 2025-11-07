@@ -71,12 +71,14 @@
 #include "chrome/browser/ui/views/location_bar/location_icon_view.h"
 #include "chrome/browser/ui/views/location_bar/merchant_trust_chip_button_controller.h"
 #include "chrome/browser/ui/views/location_bar/omnibox_chip_button.h"
+#include "chrome/browser/ui/views/location_bar/omnibox_popup_file_selector.h"
 #include "chrome/browser/ui/views/location_bar/selected_keyword_view.h"
 #include "chrome/browser/ui/views/location_bar/star_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_context_menu.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_aim_presenter.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_views.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_webui.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_base_content.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/page_action/action_ids.h"
 #include "chrome/browser/ui/views/page_action/page_action_container_view.h"
@@ -355,6 +357,10 @@ void LocationBarView::Init() {
         /*omnibox_view=*/omnibox_view_, omnibox_controller_.get(),
         /*location_bar_view=*/this);
   }
+  if (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxAimPopup)) {
+    omnibox_popup_file_selector_ = std::make_unique<OmniboxPopupFileSelector>();
+  }
+
   popup_view_opened_subscription_ =
       omnibox_popup_view_->AddOpenListener(base::BindRepeating(
           &LocationBarView::OnPopupOpened, base::Unretained(this)));
@@ -1911,8 +1917,14 @@ bool LocationBarView::IsEditingOrEmpty() const {
 void LocationBarView::OnLocationIconPressed(const ui::MouseEvent& event) {
   if (browser_ &&
       GetOmniboxController()->edit_model()->ShouldShowAddContextButton()) {
-    omnibox_context_menu_ =
-        std::make_unique<OmniboxContextMenu>(GetWidget(), browser_);
+    omnibox_context_menu_ = std::make_unique<OmniboxContextMenu>(
+        GetWidget(),
+        GetOmniboxPopupView()
+            ->GetOmniboxPopupViewWebUI()
+            ->presenter()
+            ->GetWebUIContent()
+            ->GetWebContents(),
+        omnibox_popup_file_selector_.get());
     gfx::Point point(0, location_icon_view_->height());
     views::View::ConvertPointToScreen(location_icon_view_, &point);
     run_omnibox_context_menu_callback_.Run(omnibox_context_menu_.get(), point);

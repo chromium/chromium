@@ -21,6 +21,7 @@
 #include "components/omnibox/browser/omnibox_popup_selection.h"
 
 class OmniboxController;
+class OmniboxPopupViewWebUI;
 class OmniboxResultView;
 class OmniboxSuggestionButtonRowView;
 namespace ui {
@@ -62,6 +63,8 @@ class OmniboxPopupView {
   // Adds a callback that will be called when the popup window becomes visible.
   base::CallbackListSubscription AddOpenListener(
       base::RepeatingClosure callback);
+
+  virtual raw_ptr<OmniboxPopupViewWebUI> GetOmniboxPopupViewWebUI() = 0;
 
  protected:
   friend class OmniboxResultView;

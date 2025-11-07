@@ -18,11 +18,18 @@ class MenuRunner;
 class Widget;
 }  // namespace views
 
+namespace content {
+class WebContents;
+}  // namespace content
+
+class OmniboxPopupFileSelector;
+
 class OmniboxContextMenu : public views::MenuDelegate,
                            public ui::MenuModelDelegate {
  public:
   explicit OmniboxContextMenu(views::Widget* parent_widget,
-                              BrowserWindowInterface* browser_window_interface);
+                              content::WebContents* web_contents,
+                              OmniboxPopupFileSelector* file_selector);
 
   ~OmniboxContextMenu() override;
 
