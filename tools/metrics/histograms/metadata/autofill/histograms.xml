@@ -1141,6 +1141,18 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram
+    name="Autofill.AddressSuggestionOnTypingFieldTypeAddedToStrikeDatabase"
+    enum="AutofillFieldType" expires_after="2026-10-29">
+  <owner>brunobraga@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Logged when an address on typing suggestion is not accepted for a field type
+    repetitive times, leading this type to the added to the strike database.
+    Emitted during frame destruction.
+  </summary>
+</histogram>
+
+<histogram
     name="Autofill.AddressSuggestionOnTypingShown.DaysSinceLastUse.Profile"
     units="days" expires_after="2026-10-26">
   <owner>brunobraga@google.com</owner>

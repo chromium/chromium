@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/strings/string_number_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/strike_databases/addresses/address_on_typing_suggestion_strike_database.h"
 #include "components/strike_database/test_inmemory_strike_database.h"
@@ -67,6 +68,26 @@ TEST_F(AddressOnTypingManagerTest, AcceptingSuggestion_ClearRespectiveTypes) {
   manager().OnDidAcceptAddressOnTyping(EMAIL_ADDRESS);
   EXPECT_EQ(strike_database().GetStrikes(base::NumberToString(EMAIL_ADDRESS)),
             0);
+}
+
+TEST_F(AddressOnTypingManagerTest, StrikeLimitReached_MetricEmitted) {
+  base::HistogramTester histogram_tester;
+
+  // Show and decline suggestions enough times.
+  for (int i = 0; i < strike_database().GetMaxStrikesLimit() - 1; i++) {
+    // Show a suggestion for EMAIL_ADDRESS, but don't accept it.
+    manager().OnDidShowAddressOnTyping({EMAIL_ADDRESS});
+    KillAndRecreateManager();
+    histogram_tester.ExpectBucketCount(
+        "Autofill.AddressSuggestionOnTypingFieldTypeAddedToStrikeDatabase",
+        EMAIL_ADDRESS, 0);
+  }
+
+  manager().OnDidShowAddressOnTyping({EMAIL_ADDRESS});
+  KillAndRecreateManager();
+  histogram_tester.ExpectBucketCount(
+      "Autofill.AddressSuggestionOnTypingFieldTypeAddedToStrikeDatabase",
+      EMAIL_ADDRESS, 1);
 }
 
 }  // namespace autofill

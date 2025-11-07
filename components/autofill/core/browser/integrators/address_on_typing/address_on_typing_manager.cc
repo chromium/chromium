@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/integrators/address_on_typing/address_on_typing_manager.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/autofill/core/browser/strike_databases/addresses/address_on_typing_suggestion_strike_database.h"
 
@@ -14,12 +15,20 @@ AddressOnTypingManager::AddressOnTypingManager(
     : strike_database_(strike_database) {}
 
 AddressOnTypingManager::~AddressOnTypingManager() {
+  if (!strike_database_) {
+    return;
+  }
   // If suggestions were shown but not accepted for a field, add a strike for
   // all the field types where a suggestion was shown.
   for (FieldType field_type_ignored : unaccepted_field_types_) {
-    if (strike_database_) {
       strike_database_->AddStrike(base::NumberToString(field_type_ignored));
-    }
+      if (strike_database_->GetMaxStrikesLimit() ==
+          strike_database_->GetStrikes(
+              base::NumberToString(field_type_ignored))) {
+        base::UmaHistogramSparse(
+            "Autofill.AddressSuggestionOnTypingFieldTypeAddedToStrikeDatabase",
+            field_type_ignored);
+      }
   }
 }
 
