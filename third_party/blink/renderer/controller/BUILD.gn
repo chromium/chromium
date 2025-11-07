@@ -193,6 +193,7 @@ test("blink_unittests") {
   fuzztests = [
     "BlinkAttributeFuzzTestFixture.NoElementAttributeCrashes",
     "HTMLDomScenarioRunner.HTML",
+    "HTMLDomScenarioRunner.MathMLInHTML",
     "HTMLDomScenarioRunner.SVGInHTML",
   ]
 }

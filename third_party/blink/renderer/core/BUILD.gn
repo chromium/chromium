@@ -1752,6 +1752,8 @@ source_set("fuzztest_utils") {
     "testing/fuzztest_utils/dom_scenario_runner.h",
     "testing/fuzztest_utils/html_domains.cc",
     "testing/fuzztest_utils/html_domains.h",
+    "testing/fuzztest_utils/mathml_domains.cc",
+    "testing/fuzztest_utils/mathml_domains.h",
     "testing/fuzztest_utils/svg_domains.cc",
     "testing/fuzztest_utils/svg_domains.h",
   ]
