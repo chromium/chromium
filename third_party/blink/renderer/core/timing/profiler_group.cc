@@ -173,7 +173,8 @@ Profiler* ProfilerGroup::CreateProfiler(ScriptState* script_state,
       V8String(isolate_, profiler_id),
       v8::CpuProfilingOptions(
           v8::kLeafNodeLineNumbers, init_options.maxBufferSize(),
-          static_cast<int>(sample_interval_us), script_state->GetContext()),
+          static_cast<int>(sample_interval_us), script_state->GetContext(),
+          v8::CpuProfileSource::kSelfProfiling),
       std::make_unique<DiscardedSamplesDelegate>(this, profiler_id));
 
   switch (status) {
