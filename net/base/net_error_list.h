@@ -1057,6 +1057,10 @@ NET_ERROR(DNS_NO_MATCHING_SUPPORTED_ALPN, -811)
 // requested probe record either had no answer or was invalid.
 NET_ERROR(DNS_SECURE_PROBE_RECORD_INVALID, -814)
 
+// Returned when DNS cache invalidation is in progress. This is a
+// transient error. Callers may want to retry later.
+NET_ERROR(DNS_CACHE_INVALIDATION_IN_PROGRESS, -815)
+
 // The following errors are for mapped from a subset of invalid
 // storage::BlobStatus.
 

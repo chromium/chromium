@@ -1966,6 +1966,7 @@ Called by update_net_error_codes.py.-->
   <int value="-902" label="BLOB_FILE_WRITE_FAILED"/>
   <int value="-901" label="BLOB_OUT_OF_MEMORY"/>
   <int value="-900" label="BLOB_INVALID_CONSTRUCTION_ARGUMENTS"/>
+  <int value="-815" label="DNS_CACHE_INVALIDATION_IN_PROGRESS"/>
   <int value="-814" label="DNS_SECURE_PROBE_RECORD_INVALID"/>
   <int value="-813" label="DICTIONARY_ORIGIN_CHECK_FAILED"/>
   <int value="-812" label="DICTIONARY_LOAD_FAILED (old)"/>
@@ -21380,6 +21381,7 @@ Called by update_net_error_codes.py.-->
   <int value="812" label="DICTIONARY_LOAD_FAILED (old)"/>
   <int value="813" label="DICTIONARY_ORIGIN_CHECK_FAILED"/>
   <int value="814" label="DNS_SECURE_PROBE_RECORD_INVALID"/>
+  <int value="815" label="DNS_CACHE_INVALIDATION_IN_PROGRESS"/>
   <int value="900" label="BLOB_INVALID_CONSTRUCTION_ARGUMENTS"/>
   <int value="901" label="BLOB_OUT_OF_MEMORY"/>
   <int value="902" label="BLOB_FILE_WRITE_FAILED"/>
