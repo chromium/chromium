@@ -1990,9 +1990,10 @@ void LayerContextImpl::DoDrawInternal(const BeginFrameArgs& begin_frame_args,
     return;
   }
 
-  if (!host_impl_->CanDraw()) {
-    return;
-  }
+  // Client/Renderer will never call UpdateDisplayTree if CanDraw() is false.
+  // (crbug.com/454680865): Using DUMP_WILL_BE_CHECK allows all non official
+  // builds to fail the check whereas official builds dumps without crashing.
+  DUMP_WILL_BE_CHECK(host_impl_->CanDraw());
 
   host_impl_->WillBeginImplFrame(begin_frame_args);
 
@@ -2004,8 +2005,14 @@ void LayerContextImpl::DoDrawInternal(const BeginFrameArgs& begin_frame_args,
   frame.begin_frame_ack = BeginFrameAck(begin_frame_args, has_damage);
   frame.origin_begin_main_frame_args = begin_frame_args;
   stage_breakdown.start_prepare_to_draw = base::TimeTicks::Now();
-  host_impl_->PrepareToDraw(
-      &frame, /*expects_to_draw=*/frame_has_damage.value_or(false));
+
+  auto expects_to_draw = frame_has_damage.value_or(false);
+  auto draw_result = host_impl_->PrepareToDraw(&frame, expects_to_draw);
+
+  // If a frame is expected to be drawn, then draw should succeed.
+  if (expects_to_draw) {
+    DUMP_WILL_BE_CHECK_EQ(draw_result, cc::DrawResult::kSuccess);
+  }
 
   // Notifies the client which of the tilings it nominated for deletion are
   // actually safe to delete. This is done after PrepareToDraw() so that we have
@@ -2015,7 +2022,12 @@ void LayerContextImpl::DoDrawInternal(const BeginFrameArgs& begin_frame_args,
 
   stage_breakdown.start_draw_layers = base::TimeTicks::Now();
   frame.set_trees_in_viz_timestamps(std::move(stage_breakdown));
-  host_impl_->DrawLayers(&frame);
+
+  // |DrawLayers| is expected to succeed. Adding a check to ensure that
+  // is happening.
+  std::optional<cc::SubmitInfo> submit_info = host_impl_->DrawLayers(&frame);
+  DUMP_WILL_BE_CHECK(submit_info.has_value());
+
   host_impl_->DidDrawAllLayers(frame);
   host_impl_->DidFinishImplFrame(begin_frame_args);
 }
