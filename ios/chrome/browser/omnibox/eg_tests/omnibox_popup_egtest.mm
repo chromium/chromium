@@ -332,8 +332,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
       performAction:grey_tap()];
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:chrome_test_util::Omnibox()];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      performAction:grey_replaceText(omniboxInput)];
+  [ChromeEarlGreyUI replaceTextInOmnibox:omniboxInput];
 
   TapSwitchToTabButton(_URL1);
   [ChromeEarlGrey waitForWebStateContainingText:kPage1];
@@ -358,8 +357,8 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
       performAction:grey_tap()];
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:chrome_test_util::Omnibox()];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      performAction:grey_replaceText([NSString cr_fromString:_URL1.GetHost()])];
+  [ChromeEarlGreyUI
+      replaceTextInOmnibox:[NSString cr_fromString:_URL1.GetHost()]];
 
   // Omnibox can reorder itself in multiple animations, so add an extra wait
   // here.
@@ -430,8 +429,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
       performAction:grey_tap()];
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:chrome_test_util::Omnibox()];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      performAction:grey_replaceText(omniboxInput)];
+  [ChromeEarlGreyUI replaceTextInOmnibox:omniboxInput];
 
   // Check that both elements are displayed.
   // Omnibox can reorder itself in multiple animations, so add an extra wait
@@ -543,8 +541,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
       performAction:grey_tap()];
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:chrome_test_util::Omnibox()];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      performAction:grey_replaceText(@"abc")];
+  [ChromeEarlGreyUI replaceTextInOmnibox:@"abc"];
 
   // Matcher for a URL-what-you-typed suggestion.
   id<GREYMatcher> textMatcher = grey_descendant(
@@ -662,8 +659,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [ChromeEarlGreyUI focusOmnibox];
 
   // Typing the title of page1.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      performAction:grey_replaceText([NSString cr_fromString:kPage1Title])];
+  [ChromeEarlGreyUI replaceTextInOmnibox:[NSString cr_fromString:kPage1Title]];
 
   // Wait for suggestions to show.
   [ChromeEarlGrey

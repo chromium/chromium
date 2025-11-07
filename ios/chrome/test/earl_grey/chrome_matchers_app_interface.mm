@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/omnibox/public/omnibox_ui_features.h"
 #import "ios/chrome/browser/omnibox/ui/keyboard_assist/omnibox_assistive_keyboard_views_utils.h"
 #import "ios/chrome/browser/omnibox/ui/omnibox_text_field_ios.h"
+#import "ios/chrome/browser/omnibox/ui/omnibox_text_view_ios.h"
 #import "ios/chrome/browser/popup_menu/ui_bundled/popup_menu_constants.h"
 #import "ios/chrome/browser/recent_tabs/public/recent_tabs_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_add_credit_card_view_controller.h"
@@ -536,8 +537,10 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 }
 
 + (id<GREYMatcher>)omnibox {
-  return grey_allOf(grey_kindOfClass([OmniboxTextFieldIOS class]),
-                    grey_userInteractionEnabled(), nil);
+  return grey_allOf(
+      grey_anyOf(grey_kindOfClass([OmniboxTextFieldIOS class]),
+                 grey_kindOfClass([OmniboxTextViewIOS class]), nil),
+      grey_userInteractionEnabled(), nil);
 }
 
 + (id<GREYMatcher>)omniboxAtBottom {
@@ -570,8 +573,9 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 + (id<GREYMatcher>)omniboxText:(NSString*)text {
   GREYElementMatcherBlock* matcher = [GREYElementMatcherBlock
       matcherWithMatchesBlock:^BOOL(id element) {
-        OmniboxTextFieldIOS* omnibox =
-            base::apple::ObjCCast<OmniboxTextFieldIOS>(element);
+        id<OmniboxTextInput> omnibox =
+            base::apple::ObjCCast<OmniboxTextFieldIOS>(element)
+                ?: base::apple::ObjCCast<OmniboxTextViewIOS>(element);
         return [omnibox.text isEqualToString:text];
       }
       descriptionBlock:^void(id<GREYDescription> description) {
@@ -585,8 +589,9 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 + (id<GREYMatcher>)omniboxContainingText:(NSString*)text {
   GREYElementMatcherBlock* matcher = [GREYElementMatcherBlock
       matcherWithMatchesBlock:^BOOL(id element) {
-        OmniboxTextFieldIOS* omnibox =
-            base::apple::ObjCCast<OmniboxTextFieldIOS>(element);
+        id<OmniboxTextInput> omnibox =
+            base::apple::ObjCCast<OmniboxTextFieldIOS>(element)
+                ?: base::apple::ObjCCast<OmniboxTextViewIOS>(element);
         return [omnibox.text containsString:text];
       }
       descriptionBlock:^void(id<GREYDescription> description) {
@@ -604,8 +609,9 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 
   GREYElementMatcherBlock* matcher = [GREYElementMatcherBlock
       matcherWithMatchesBlock:^BOOL(id element) {
-        OmniboxTextFieldIOS* omnibox =
-            base::apple::ObjCCast<OmniboxTextFieldIOS>(element);
+        id<OmniboxTextInput> omnibox =
+            base::apple::ObjCCast<OmniboxTextFieldIOS>(element)
+                ?: base::apple::ObjCCast<OmniboxTextViewIOS>(element);
 
         NSArray* textComponents =
             [omnibox.accessibilityValue componentsSeparatedByString:@"||||"];
