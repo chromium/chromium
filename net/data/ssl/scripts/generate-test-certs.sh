@@ -4,6 +4,34 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+
+
+# *****************************************************************************
+# *****************************************************************************
+# *********** Please DO NOT add new checked-in certificate files! *************
+# *****************************************************************************
+# *****************************************************************************
+#
+# Checked-in certificate files are a maintenance burden and should be avoided,
+# see https://issues.chromium.org/issues/40802244. Alternatives exist which
+# should be preferred when possible. (If the alternatives do not work for you,
+# please ask for advice.)
+#
+# For tests using EmbeddedTestServer, prefer to use the runtime-generated
+# certificates through ServerCertificateConfig. (If the certificate DNS names
+# are the only thing that need to be configured, the SetCertHostnames helper
+# can be used.)
+#
+# For tests that need a certificate directly, CertBuilder may be used.
+#
+# Please ask net/cert/OWNERS for advice before adding new checked-in
+# certificates.
+#
+# *****************************************************************************
+# *****************************************************************************
+
+
+
 # This script generates a set of test (end-entity, intermediate, root)
 # certificates that can be used to test fetching of an intermediate via AIA.
 set -e -x
