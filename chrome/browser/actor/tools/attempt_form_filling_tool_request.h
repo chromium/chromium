@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ACTOR_TOOLS_ATTEMPT_FORM_FILLING_TOOL_REQUEST_H_
 #define CHROME_BROWSER_ACTOR_TOOLS_ATTEMPT_FORM_FILLING_TOOL_REQUEST_H_
 
+#include <iosfwd>
 #include <memory>
 #include <string>
 #include <vector>
@@ -59,7 +60,7 @@ class AttemptFormFillingToolRequest : public TabToolRequest {
     FormFillingRequest(FormFillingRequest&&);
     FormFillingRequest& operator=(FormFillingRequest&&);
 
-    RequestedData requested_data;
+    RequestedData requested_data{};
     std::vector<PageTarget> trigger_fields;
   };
 
@@ -79,6 +80,17 @@ class AttemptFormFillingToolRequest : public TabToolRequest {
  private:
   std::vector<FormFillingRequest> requests_;
 };
+
+// To support JournalDetailsBuilder which calls base::ToString(), implement the
+// ostream operator<<.
+std::ostream& operator<<(
+    std::ostream& out,
+    const AttemptFormFillingToolRequest::FormFillingRequest& request);
+
+std::ostream& operator<<(
+    std::ostream& out,
+    const std::vector<AttemptFormFillingToolRequest::FormFillingRequest>&
+        requests);
 
 }  // namespace actor
 
