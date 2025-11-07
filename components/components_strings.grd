@@ -341,6 +341,7 @@
       <part file="user_education_strings.grdp" />
       <part file="version_ui_strings.grdp" />
       <part file="webapps_strings.grdp" />
+      <part file="wallet_strings.grdp" />
       <part file="collaboration_strings.grdp" />
       <part file="contextual_tasks_strings.grdp" />
       <if expr="is_android">

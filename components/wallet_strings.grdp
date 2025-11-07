@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grit-part>
+
+  <!-- Consent prompt -->
+  <message name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_TITLE" desc="Title text of the consent dialog.">
+    Save info to Google Wallet from pages you view
+  </message>
+
+  <message name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_NO_THANKS_BUTTON" desc="Text displayed on the decline/cancel button of the consent dialog.">
+    No thanks
+  </message>
+
+  <message name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_TURN_ON_BUTTON" desc="Text displayed on the accept/ok button of the consent dialog.">
+    Turn on
+  </message>
+
+  <message name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" desc="Text for the 'Learn more' link in the consent dialog.">
+    saving info to Google Wallet in settings
+  </message>
+
+  <message name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_SUBTITLE_DESCRIPTION" desc="Subtitle text of the consent dialog.">
+    Save tickets, events, and other info from pages you view — not just forms you fill. Then quickly access your passes, like event tickets and loyalty cards. Your saved info can appear on your devices and across Google products.
+  </message>
+
+  <message name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_SUBTITLE_ACTION" desc="Subtitle text of the consent dialog.">
+    To offer suggestions and improve this feature, the URL and full page content of the site you visit are shared with Google. Learn more about <ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE">$1<ex>saving info to Google Wallet in settings</ex></ph>.
+  </message>
+</grit-part>

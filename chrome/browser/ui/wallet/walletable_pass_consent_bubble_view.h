@@ -12,6 +12,9 @@ namespace content {
 class WebContents;
 }  // namespace content
 
+namespace views {
+class StyledLabel;
+}  // namespace views
 namespace wallet {
 
 class WalletablePassConsentBubbleController;
@@ -27,6 +30,16 @@ class WalletablePassConsentBubbleView : public WalletablePassBubbleViewBase {
       content::WebContents* web_contents,
       WalletablePassConsentBubbleController* controller);
   ~WalletablePassConsentBubbleView() override;
+
+  // LocationBarBubbleDelegateView:
+  void AddedToWidget() override;
+
+ private:
+  std::unique_ptr<views::StyledLabel> GetSubtitleDescriptionLabel();
+
+  std::unique_ptr<views::StyledLabel> GetSubtitleActionLabel();
+
+  void OnLearnMoreClicked();
 };
 
 }  // namespace wallet
