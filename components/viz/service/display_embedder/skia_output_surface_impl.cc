@@ -654,9 +654,9 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImageSinglePlane(
   }
 
   if (graphite_recorder_) {
-    skgpu::graphite::TextureInfo texture_info = gpu::GraphitePromiseTextureInfo(
-        gr_context_type_, format, image_context->ycbcr_info(),
-        /*plane_index=*/0, mipmap);
+    skgpu::graphite::TextureInfo texture_info =
+        GetGraphitePromiseTextureInfo(image_context,
+                                      /*plane_index=*/0, mipmap);
     SkColorInfo color_info(color_type, image_context->alpha_type(),
                            image_context->GetSkColorSpace());
     skgpu::Origin origin = image_context->origin() == kTopLeft_GrSurfaceOrigin
@@ -670,9 +670,8 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImageSinglePlane(
     image_context->SetImage(std::move(image), {texture_info});
   } else {
     CHECK(gr_context_thread_safe_);
-    GrBackendFormat backend_format = GetGrBackendFormatForTexture(
-        format, /*plane_index=*/0, image_context->texture_target(),
-        image_context->ycbcr_info(), image_context->color_space());
+    GrBackendFormat backend_format =
+        GetGrBackendFormatForTexture(image_context, /*plane_index=*/0);
     auto image = SkImages::PromiseTextureFrom(
         gr_context_thread_safe_, backend_format,
         gfx::SizeToSkISize(image_context->size()),
@@ -721,8 +720,8 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImageMultiPlane(
       CHECK_EQ(image_context->origin(), kTopLeft_GrSurfaceOrigin);
       fulfill_array[plane_index] = FulfillForPlane(image_context, plane_index);
       fulfill_ptrs[plane_index] = &fulfill_array[plane_index];
-      texture_infos.emplace_back(gpu::GraphitePromiseTextureInfo(
-          gr_context_type_, format, /*ycbcr_info=*/std::nullopt, plane_index));
+      texture_infos.emplace_back(GetGraphitePromiseTextureInfo(
+          image_context, plane_index, /*mipmap=*/false));
     }
 
     skgpu::graphite::YUVABackendTextureInfo yuva_backend_info(
@@ -743,9 +742,8 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImageMultiPlane(
       CHECK_EQ(image_context->origin(), kTopLeft_GrSurfaceOrigin);
       // NOTE: To compute the format, it is necessary to pass the ColorSpace
       // that came originally from the TransferableResource.
-      formats.push_back(GetGrBackendFormatForTexture(
-          format, plane_index, image_context->texture_target(),
-          image_context->ycbcr_info(), color_space));
+      formats.push_back(
+          GetGrBackendFormatForTexture(image_context, plane_index));
       fulfills[plane_index] = new FulfillForPlane(image_context, plane_index);
     }
 
@@ -1529,15 +1527,23 @@ void SkiaOutputSurfaceImpl::FlushGpuTasksWithImpl(
   }
 }
 
-GrBackendFormat SkiaOutputSurfaceImpl::GetGrBackendFormatForTexture(
-    SharedImageFormat si_format,
+skgpu::graphite::TextureInfo
+SkiaOutputSurfaceImpl::GetGraphitePromiseTextureInfo(
+    ImageContextImpl* image_context,
     int plane_index,
-    uint32_t gl_texture_target,
-    const std::optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
-    const gfx::ColorSpace& yuv_color_space) {
+    bool mipmap) {
+  return gpu::GraphitePromiseTextureInfo(
+      gr_context_type_, image_context->format(), image_context->ycbcr_info(),
+      plane_index, mipmap);
+}
+
+GrBackendFormat SkiaOutputSurfaceImpl::GetGrBackendFormatForTexture(
+    ImageContextImpl* image_context,
+    int plane_index) {
+  const SharedImageFormat si_format = image_context->format();
 #if BUILDFLAG(ENABLE_VULKAN)
   if (gr_context_type_ == gpu::GrContextType::kVulkan) {
-    if (!si_format.PrefersExternalSampler() && !ycbcr_info) {
+    if (!si_format.PrefersExternalSampler() && !image_context->ycbcr_info()) {
       // For per-plane sampling, can just return the VkFormat for the plane if
       // VulkanYcbCrInfo isn't present.
       return GrBackendFormats::MakeVk(gpu::ToVkFormat(si_format, plane_index));
@@ -1555,7 +1561,8 @@ GrBackendFormat SkiaOutputSurfaceImpl::GetGrBackendFormatForTexture(
                                             ->GetDeviceQueue()
                                             ->GetVulkanPhysicalDevice(),
                                         VK_IMAGE_TILING_OPTIMAL, vk_format,
-                                        si_format, yuv_color_space, ycbcr_info);
+                                        si_format, image_context->color_space(),
+                                        image_context->ycbcr_info());
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     // Textures that were allocated _on linux_ with ycbcr info came from
     // VaapiVideoDecoder, which exports using DRM format modifiers.
@@ -1579,7 +1586,8 @@ GrBackendFormat SkiaOutputSurfaceImpl::GetGrBackendFormatForTexture(
         impl_on_gpu_->GetFeatureInfo(), gl_storage_internal_format,
         gr_context_thread_safe_);
 
-    return GrBackendFormats::MakeGL(texture_storage_format, gl_texture_target);
+    return GrBackendFormats::MakeGL(texture_storage_format,
+                                    image_context->texture_target());
   }
 }
 

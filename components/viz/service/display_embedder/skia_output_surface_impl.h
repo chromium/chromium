@@ -263,12 +263,13 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
   void FlushGpuTasksWithImpl(SyncMode sync_mode,
                              SkiaOutputSurfaceImplOnGpu* impl_on_gpu,
                              const gpu::SyncToken& release);
-  GrBackendFormat GetGrBackendFormatForTexture(
-      SharedImageFormat si_format,
+  GrBackendFormat GetGrBackendFormatForTexture(ImageContextImpl* image_context,
+                                               int plane_index);
+  skgpu::graphite::TextureInfo GetGraphitePromiseTextureInfo(
+      ImageContextImpl* image_context,
       int plane_index,
-      uint32_t gl_texture_target,
-      const std::optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
-      const gfx::ColorSpace& yuv_color_space);
+      bool mipmap);
+
   void MakePromiseSkImageSinglePlane(ImageContextImpl* image_context,
                                      bool mipmapped,
                                      bool force_rgbx);
