@@ -64,7 +64,6 @@ void LineFlexer::FreezeViolations(ViolationsIndicesVector& violations) {
 
 bool LineFlexer::ResolveFlexibleLengths() {
   LayoutUnit total_violation;
-  LayoutUnit used_free_space;
   ViolationsIndicesVector min_violations;
   ViolationsIndicesVector max_violations;
 
@@ -102,7 +101,6 @@ bool LineFlexer::ResolveFlexibleLengths() {
         item.main_axis_min_max_sizes.ClampSizeToMinAndMax(child_size);
     DCHECK_GE(adjusted_child_size, 0);
     item.flexed_content_size = adjusted_child_size;
-    used_free_space += adjusted_child_size - item.base_content_size;
 
     const LayoutUnit violation = adjusted_child_size - child_size;
     if (violation > 0) {
@@ -115,11 +113,10 @@ bool LineFlexer::ResolveFlexibleLengths() {
 
   if (total_violation) {
     FreezeViolations(total_violation < 0 ? max_violations : min_violations);
-  } else {
-    remaining_free_space_ -= used_free_space;
+    return true;
   }
 
-  return total_violation;
+  return false;
 }
 
 }  // namespace blink
