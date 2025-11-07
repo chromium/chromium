@@ -34,13 +34,13 @@ BASE_FEATURE_ENUM_PARAM(ActorPaintStabilityMode,
 const base::FeatureParam<base::TimeDelta>
     kActorPaintStabilityIntialPaintTimeout{
         &kGlicActor, "actor-paint-stability-initial-paint-timeout",
-        base::Seconds(1)};
+        base::Seconds(3)};
 // Timeout controlling how long the paint stability monitor waits for subsequent
 // contenful paints before considering the UI to have stabilized.
 const base::FeatureParam<base::TimeDelta>
     kActorPaintStabilitySubsequentPaintTimeout{
         &kGlicActor, "actor-paint-stability-subsequent-paint-timeout",
-        base::Seconds(1)};
+        base::Seconds(2)};
 
 #if BUILDFLAG(IS_WIN)
 // When enabled, notifications from PWA's will use the PWA icon and name,
@@ -366,7 +366,7 @@ const base::FeatureParam<base::TimeDelta> kGlicActorPageStabilityLocalTimeout{
 
 // The overall observation timeout when waiting on a renderer tool to complete.
 const base::FeatureParam<base::TimeDelta> kGlicActorPageStabilityTimeout{
-    &kGlicActor, "glic-actor-page-stability-timeout", base::Seconds(4)};
+    &kGlicActor, "glic-actor-page-stability-timeout", base::Seconds(5)};
 
 // An artificial delay before signalling the tools that the page has become
 // stable. This has no effect when kGlicActorPageStabilityMinWait is enabled.
@@ -378,7 +378,7 @@ const base::FeatureParam<base::TimeDelta>
 // The minimum amount of time to wait for page stability before invoking the
 // callback.
 const base::FeatureParam<base::TimeDelta> kGlicActorPageStabilityMinWait{
-    &kGlicActor, "glic-actor-page-stability-min-wait", base::Seconds(1)};
+    &kGlicActor, "glic-actor-page-stability-min-wait", base::Seconds(2)};
 
 // The overall observation timeout when waiting for a tool to complete.
 // This timeout is long but based on the NavigationToLoadEventFired UMA. This
@@ -389,7 +389,7 @@ const base::FeatureParam<base::TimeDelta> kActorObservationDelayTimeout{
 // The additional delay before completing a tool if LCP is not detected yet upon
 // loading.
 const base::FeatureParam<base::TimeDelta> kActorObservationDelayLcp{
-    &kGlicActor, "actor-observation-delay-lcp", base::Seconds(1)};
+    &kGlicActor, "actor-observation-delay-lcp", base::Seconds(3)};
 
 // Controls whether typing happens incrementally.
 BASE_FEATURE(kGlicActorIncrementalTyping, base::FEATURE_ENABLED_BY_DEFAULT);
