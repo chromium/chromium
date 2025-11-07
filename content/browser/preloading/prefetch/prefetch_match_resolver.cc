@@ -316,8 +316,9 @@ void PrefetchMatchResolver::StartWaitFor(const PrefetchKey& prefetch_key,
                                          PrefetchServableState servable_state) {
   TRACE_EVENT("loading", "PrefetchMatchResolver::StartWaitFor");
   // By #prefetch-key-availability
-  CHECK(candidates_.contains(prefetch_key));
-  auto& candidate_data = candidates_[prefetch_key];
+  auto it = candidates_.find(prefetch_key);
+  CHECK(it != candidates_.end());
+  CandidateData* candidate_data = it->second.get();
   CHECK(candidate_data->prefetch_container);
   PrefetchContainer& prefetch_container = *candidate_data->prefetch_container;
 
@@ -360,10 +361,11 @@ void PrefetchMatchResolver::UnregisterCandidate(
     bool is_served,
     PrefetchPotentialCandidateServingResult serving_result) {
   // By #prefetch-key-availability
-  CHECK(candidates_.contains(prefetch_key));
-  auto& candidate_data = candidates_[prefetch_key];
+  auto it = candidates_.find(prefetch_key);
+  CHECK(it != candidates_.end());
+  CandidateData* candidate_data = it->second.get();
   TRACE_EVENT("loading", "PrefetchMatchResolver::UnregisterCandidate",
-              perfetto::TerminatingFlow::FromPointer(candidate_data.get()),
+              perfetto::TerminatingFlow::FromPointer(candidate_data),
               "serving_result", static_cast<int>(serving_result));
   CHECK(candidate_data->prefetch_container);
   PrefetchContainer& prefetch_container = *candidate_data->prefetch_container;
@@ -392,7 +394,7 @@ void PrefetchMatchResolver::UnregisterCandidate(
                                            serving_result, is_nav_prerender_,
                                            GetBlockedDuration());
   prefetch_container.RemoveObserver(this);
-  candidates_.erase(prefetch_key);
+  candidates_.erase(it);
 }
 
 void PrefetchMatchResolver::OnWillBeDestroyed(
@@ -539,8 +541,9 @@ void PrefetchMatchResolver::OnPrefetchCompletedOrFailed(
 
 void PrefetchMatchResolver::OnTimeout(PrefetchKey prefetch_key) {
   // `timeout_timer` is alive, which implies `candidate` is alive.
-  CHECK(candidates_.contains(prefetch_key));
-  auto& candidate_data = candidates_[prefetch_key];
+  auto it = candidates_.find(prefetch_key);
+  CHECK(it != candidates_.end());
+  CandidateData* candidate_data = it->second.get();
   CHECK(candidate_data->prefetch_container);
 
   MaybeUnblockForUnmatch(
@@ -552,8 +555,9 @@ void PrefetchMatchResolver::UnblockForMatch(const PrefetchKey& prefetch_key) {
   TRACE_EVENT0("loading", "PrefetchMatchResolver::UnblockForMatch");
 
   // By #prefetch-key-availability
-  CHECK(candidates_.contains(prefetch_key));
-  auto& candidate_data = candidates_[prefetch_key];
+  auto it = candidates_.find(prefetch_key);
+  CHECK(it != candidates_.end());
+  CandidateData* candidate_data = it->second.get();
   CHECK(candidate_data->prefetch_container);
   PrefetchContainer& prefetch_container = *candidate_data->prefetch_container;
 
@@ -630,8 +634,9 @@ void PrefetchMatchResolver::UnblockForCookiesChanged(const PrefetchKey& key) {
   // `PrefetchContainer::OnDetectedCookiesChange()`.
   for (auto& prefetch_key : Keys(candidates_)) {
     // By #prefetch-key-availability
-    CHECK(candidates_.contains(prefetch_key));
-    auto& candidate_data = candidates_[prefetch_key];
+    auto it = candidates_.find(prefetch_key);
+    CHECK(it != candidates_.end());
+    CandidateData* candidate_data = it->second.get();
     CHECK(candidate_data->prefetch_container);
     PrefetchContainer& prefetch_container = *candidate_data->prefetch_container;
 
