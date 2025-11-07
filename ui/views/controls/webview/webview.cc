@@ -15,6 +15,7 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -89,12 +90,13 @@ bool WebView::IsWebViewContents(const content::WebContents* web_contents) {
   return web_contents->GetUserData(kIsWebViewContentsKey);
 }
 
-content::WebContents* WebView::GetWebContents(base::Location creator_location) {
+content::WebContents* WebView::GetWebContents(const GURL& url,
+                                              base::Location creator_location) {
   if (!web_contents()) {
     if (!browser_context_) {
       return nullptr;
     }
-    wc_owner_ = CreateWebContents(browser_context_, creator_location);
+    wc_owner_ = CreateWebContents(browser_context_, url, creator_location);
     wc_owner_->SetDelegate(this);
     SetWebContents(wc_owner_.get());
   }
@@ -150,7 +152,9 @@ void WebView::LoadInitialURL(const GURL& url,
   params.transition_type = ui::PAGE_TRANSITION_AUTO_TOPLEVEL;
   params.force_no_https_upgrade =
       https_upgrade_policy == HttpsUpgradePolicy::kNoUpgrade;
-  content::WebContents* web_contents = GetWebContents(invoke_location);
+
+  // TODO(elkurin): Pass `url` value to `GetWebContents()` if it is valid.
+  content::WebContents* web_contents = GetWebContents(GURL(), invoke_location);
   DCHECK(web_contents);
   web_contents->GetController().LoadURLWithParams(params);
 }
@@ -515,6 +519,7 @@ void WebView::NotifyAccessibilityWebContentsChanged() {
 
 std::unique_ptr<content::WebContents> WebView::CreateWebContents(
     content::BrowserContext* browser_context,
+    const GURL& url,
     base::Location creator_location) {
   std::unique_ptr<content::WebContents> contents;
   if (*GetCreatorForTesting()) {
@@ -524,6 +529,10 @@ std::unique_ptr<content::WebContents> WebView::CreateWebContents(
   if (!contents) {
     content::WebContents::CreateParams create_params(browser_context,
                                                      creator_location);
+    if (!url.is_empty()) {
+      create_params.site_instance =
+          content::SiteInstance::CreateForURL(browser_context, url);
+    }
     return content::WebContents::Create(create_params);
   }
 
