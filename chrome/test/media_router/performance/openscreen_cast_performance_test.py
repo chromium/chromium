@@ -11,6 +11,7 @@ like dropped frames and smoothness.
 """
 
 import argparse
+import json
 import logging
 import multiprocessing
 import os
@@ -19,6 +20,7 @@ import socket
 import subprocess
 import sys
 import time
+import urllib.request
 
 from contextlib import AbstractContextManager
 
@@ -41,12 +43,13 @@ sys.path.append(CHROME_FUCHSIA_ROOT)
 import server
 import video_analyzer
 
+# --- Chrome for Testing Constants ---
+CFT_JSON_URL = "https://googlechromelabs.github.io/chrome-for-testing/known-good-versions-with-downloads.json"
 TEST_SCRIPTS_ROOT = os.path.join(REPO_ROOT, 'build', 'fuchsia', 'test')
+
 sys.path.append(TEST_SCRIPTS_ROOT)
 from repeating_log import RepeatingLog
 # pylint: enable=import-error, wrong-import-position
-
-
 
 CHROMEDRIVER_PORT = int(os.environ.get('CHROMEDRIVER_PORT', '49573'))
 SERVER_PORT = int(os.environ.get('SERVER_PORT', '8000'))
@@ -71,9 +74,11 @@ CHROME_OPTIONS = [
     "--v=1",
     # Sets specific verbose logging levels for specific components relevant to
     # media routing and casting.
-    "--vmodule=media_router*=3,discovery_mdns*=3,cast*=3,webrtc_logging*=3"
-    # Uses a basic password store for consistent automated authentication.
-    # "--password-store=basic"
+    "--vmodule=media_router*=3,discovery_mdns*=3,cast*=3,webrtc_logging*=3",
+    # Skips the first-run experience modal.
+    "--no-first-run",
+    # Prevents the "Set as default browser" prompt from appearing.
+    "--no-default-browser-check"
 ]
 
 METRICS = [
@@ -103,10 +108,8 @@ VIDEOS = [
     }
 ]
 
-
-
 SENDER_CHROMEDRIVER_CMD = (
-    f'nohup /opt/homebrew/bin/chromedriver --port={CHROMEDRIVER_PORT} '
+    f'nohup /tmp/chromedriver --port={CHROMEDRIVER_PORT} '
     f'--allowed-origins=\"*\" '
     f'--verbose '
     f'--log-path=/tmp/chromedriver_verbose.log '
@@ -203,10 +206,68 @@ def terminate_old_chromedriver(args):
         time.sleep(1)
     raise RuntimeError("Chromedriver processes lingered after kill attempts.")
 
-def start_new_chromedriver(args):
-    """Starts a new chromedriver process on the remote machine."""
-    send_ssh_command(args.sender, args.username, SENDER_CHROMEDRIVER_CMD)
+def download_cft_urls(version=None):
+    """
+    Downloads the CfT JSON and finds the URLs for a specific version.
+    """
+    logging.info("Downloading Chrome for Testing JSON data...")
+    with urllib.request.urlopen(CFT_JSON_URL) as url:
+        data = json.loads(url.read().decode())
+
+    for v in reversed(data['versions']):
+        if not version or v['version'] == version:
+            chrome_url = None
+            driver_url = None
+            for download in v['downloads']['chrome']:
+                if download['platform'] == 'mac-arm64':
+                    chrome_url = download['url']
+            for download in v['downloads']['chromedriver']:
+                if download['platform'] == 'mac-arm64':
+                    driver_url = download['url']
+            if chrome_url and driver_url:
+                logging.info("Found URLs for version %s", v['version'])
+                return chrome_url, driver_url
+
+    raise RuntimeError(f"Could not find downloads for version {version}")
+
+def install_and_setup_chrome(args, chrome_version):
+    """
+    Downloads and sets up a specific version of Chrome for Testing and its
+    matching chromedriver.
+    """
+    chrome_url, driver_url = download_cft_urls(chrome_version)
+    chrome_zip = chrome_url.split('/')[-1]
+    driver_zip = driver_url.split('/')[-1]
+    chrome_unzip_dir = chrome_zip.replace('.zip', '')
+    driver_unzip_dir = driver_zip.replace('.zip', '')
+    # --- Download and Unzip on Remote ---
+    logging.info("Downloading Chrome and Chromedriver on remote machine.")
+    download_commands = (
+        f"curl -L {chrome_url} -o /tmp/{chrome_zip} && "
+        f"curl -L {driver_url} -o /tmp/{driver_zip} && "
+        f"unzip -o /tmp/{chrome_zip} -d /tmp && "
+        f"unzip -o /tmp/{driver_zip} -d /tmp"
+    )
+    send_ssh_command(args.sender, args.username, download_commands,
+                     blocking=True)
+    remote_app_path = f'/tmp/{chrome_unzip_dir}/Google Chrome for Testing.app'
+    remote_chromedriver_path = f'/tmp/{driver_unzip_dir}/chromedriver'
+
+    # --- Start Chromedriver ---
+    chmod_command = f'chmod +x {remote_chromedriver_path}'
+    send_ssh_command(args.sender, args.username, chmod_command, blocking=True)
+
+    start_driver_cmd = (
+        f'nohup {remote_chromedriver_path} --port={CHROMEDRIVER_PORT} '
+        f'--allowed-origins=\"*\" '
+        f'--verbose '
+        f'--log-path=/tmp/chromedriver_verbose.log '
+        f'--enable-chrome-logs '
+        f'> /dev/null 2>&1 &'
+    )
+    send_ssh_command(args.sender, args.username, start_driver_cmd)
     logging.info("Started new chromedriver.")
+    return remote_app_path
 
 def wait_for_chromedriver(args):
     """Waits for the new chromedriver to be ready by checking its status URL."""
@@ -239,6 +300,8 @@ def start_ssh_tunnel(args):
         f'~/.ssh/id_ed25519',
         '-L',
         f'{CHROMEDRIVER_PORT}:127.0.0.1:{CHROMEDRIVER_PORT}',
+        '-R',
+        f'{SERVER_PORT}:127.0.0.1:{SERVER_PORT}',
         f'{args.username}@{args.sender}',
         '-N'
     ]
@@ -246,9 +309,13 @@ def start_ssh_tunnel(args):
     logging.info("Started tunnel.")
     return tunnel_proc
 
-def connect_to_remote_driver(chrome_options):
+def connect_to_remote_driver(chrome_options, binary_location):
     """Attempts to connect to the remote chromedriver via the tunnel."""
     logging.info("Attempting connection to %s.", REMOTE_URL)
+
+    # Set the binary location directly on the options object.
+    if binary_location:
+        chrome_options.binary_location = binary_location
 
     for _ in range(20):
         try:
@@ -258,12 +325,12 @@ def connect_to_remote_driver(chrome_options):
             )
             logging.info("Successfully connected!")
             return driver
-        except Exception: #pylint: disable=broad-exception-caught
-            logging.info("Tunnel not yet up. Sleeping ...")
+        except Exception as e: #pylint: disable=broad-exception-caught
+            logging.info("Tunnel not yet up. Sleeping ... Error: %s", e)
             time.sleep(2)
     raise RuntimeError("Could not connect to the remote chromedriver.")
 
-def setup_test_environment(args):
+def setup_test_environment(args, chrome_version):
     """
     Sets up the remote chromedriver and SSH tunnel for testing.
 
@@ -275,15 +342,23 @@ def setup_test_environment(args):
         tuple: A tuple containing the WebDriver and the tunnel process.
     """
     terminate_old_chromedriver(args)
-    start_new_chromedriver(args)
+    remote_app_path = install_and_setup_chrome(args, chrome_version)
     wait_for_chromedriver(args)
     tunnel_proc = start_ssh_tunnel(args)
 
     chrome_options = ChromeOptions()
     for option in CHROME_OPTIONS:
         chrome_options.add_argument(option)
-    driver = connect_to_remote_driver(chrome_options)
 
+    binary_path = None
+    if 'mac' in args.sender or args.username == 'swarming':
+        binary_path = (
+            f'{remote_app_path}/Contents/MacOS/Google Chrome for Testing'
+        )
+        logging.info("Setting binary_location to: %s", binary_path)
+
+    chrome_options.binary_location = binary_path
+    driver = connect_to_remote_driver(chrome_options, binary_path)
     enable_tab_mirroring(driver)
 
     return driver, tunnel_proc
@@ -304,12 +379,12 @@ def teardown_recording_process(rec_proc):
             rec_proc.communicate(timeout=20)
             logging.info("Recording finished.")
         except subprocess.TimeoutExpired as e:
-            logging.warning("WARNING: Recording process timed out after 20 \
-                            seconds. Terminating it now.")
+            logging.warning("WARNING: Recording process timed out after 20 "
+                            "seconds. Terminating it now.")
             rec_proc.terminate()
             rec_proc.wait()
-            raise RuntimeError("Recording process timed out and was forcefully \
-                                terminated.") from e
+            raise RuntimeError("Recording process timed out and was forcefully "
+                               "terminated.") from e
 
 def teardown_test_environment(driver, tunnel_proc, args):
     """
@@ -333,13 +408,19 @@ def teardown_test_environment(driver, tunnel_proc, args):
         tunnel_proc.terminate()
         logging.info("Terminated tunnel.")
 
+    cleanup_command = (
+        "rm -rf /tmp/chrome-mac-arm64 /tmp/chromedriver-mac-arm64 /tmp/*.zip"
+    )
+    send_ssh_command(args.sender, args.username, cleanup_command)
+    logging.info("Cleaned up tmp files on remote machine.")
+
 def enable_tab_mirroring(driver):
     """
     Navigates to the CastHelloVideo page and enables Cast discovery.
 
     This function first loads a specific URL, waits for the 'Launch app' button
-    to be clickable, clicks it, and then sends a CDP command to enable
-    Cast discovery in the browser.
+    to be clickable, clicks it, sends a CDP command to enable Cast discovery,
+    and then waits for a receiver to be found.
 
     Args:
         driver: The Selenium WebDriver instance.
@@ -353,6 +434,11 @@ def enable_tab_mirroring(driver):
     logging.info("Enabling Cast discovery via CDP...")
     driver.execute_cdp_cmd("Cast.enable", {"presentationUrl": ""})
 
+    # Wait for the debug message to indicate a receiver has been found.
+    logging.info("Waiting for receiver to be found...")
+    wait.until(ec.text_to_be_present_in_element((By.ID, "debugmessage"),
+                                                "receiver found"))
+    logging.info("Receiver found in debug message.")
 
 def start_tab_mirroring(driver, args):
     """
@@ -429,10 +515,11 @@ def run_performance_test(video_file: str, framerate: int,
     ]
 
     wait = WebDriverWait(driver, 30)
-    driver.get(f'http://{socket.gethostbyname(socket.gethostname())}:'
+    driver.get(f'http://127.0.0.1:'
                f'{SERVER_PORT}/video.html?file={video_file}')
     wait.until(ec.presence_of_element_located((By.ID, "video")))
 
+    casting = False
     try:
         # pylint: disable=consider-using-with
         rec_proc_local = subprocess.Popen(
@@ -490,7 +577,6 @@ def run_performance_test(video_file: str, framerate: int,
 
         results = video_analyzer.from_original_video(
             output_file, f"/usr/local/cipd/videostack_videos_30s/{video_file}")
-
         if not results:
             raise RuntimeError("Missing video analyzer results. See log for "
                                "further details.")
@@ -506,7 +592,6 @@ def run_performance_test(video_file: str, framerate: int,
             record(metric)
 
         logging.warning('Video analysis result of %s: %s', video_file, results)
-
     except Exception as e:
         raise RuntimeError(f"Error during CDP Cast command: {e}\nCheck "
                            "the chromedriver log on the remote laptop for "
@@ -544,12 +629,16 @@ def main():
     parser = argparse.ArgumentParser(
         description="Performance test for media played via Chromecast.",
     )
-
     parser.add_argument('--username', help='Sender device username.')
     parser.add_argument('--sender', help='Sender device IP.')
     parser.add_argument('--receiver',help='Receiver device sink name.')
-
+    parser.add_argument(
+        '--chrome-version',
+        default=None,
+        help='Chrome for Testing version to use. Defaults to the latest '
+    'known good version.')
     args, _ = parser.parse_known_args()
+    cv = args.chrome_version
 
     if os.path.exists(RECORDINGS_DIR):
         shutil.rmtree(RECORDINGS_DIR)
@@ -559,7 +648,7 @@ def main():
     tunnel_proc = None
 
     try:
-        driver, tunnel_proc = setup_test_environment(args)
+        driver, tunnel_proc = setup_test_environment(args, cv)
         for video in VIDEOS:
             logging.info("Starting test for video: %s", video['name'])
             rec_proc = None
