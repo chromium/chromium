@@ -32,4 +32,14 @@ public interface TouchToFillResourceProvider {
      */
     @DrawableRes
     int getLoyaltyCardHeaderDrawableId();
+
+    /**
+     * Returns the drawable id to be displayed as a Buy-now-pay-later issuer image.
+     *
+     * @param issuerId The ID of the BNPL issuer.
+     * @param isLinked Whether the issuer is linked or not.
+     * @return A {@link DrawableRes} that is never 0.
+     */
+    @DrawableRes
+    int getBnplIssuerDrawableId(String issuerId, boolean isLinked);
 }
