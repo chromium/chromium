@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.omnibox.AutocompleteRequestType;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.ListObservable;
@@ -174,6 +175,9 @@ class NavigationAttachmentsMediator {
      */
     void setToolbarVisible(boolean visible) {
         mModel.set(NavigationAttachmentsProperties.ATTACHMENTS_TOOLBAR_VISIBLE, visible);
+        mModel.set(
+                NavigationAttachmentsProperties.COMPACT_UI,
+                OmniboxFeatures.sCompactFusebox.getValue());
     }
 
     public void setAutocompleteRequestTypeChangeable(boolean isChangeable) {

@@ -110,9 +110,9 @@ public class NavigationAttachmentsViewBinderUnitTest {
                         || testCase == Variant.DEDICATED_BUTTON_WITH_HINT);
         OmniboxFeatures.sShowTryAiModeHintInDedicatedModeButton.setForTesting(
                 testCase == Variant.DEDICATED_BUTTON_WITH_HINT);
-        OmniboxFeatures.sCompactFusebox.setForTesting(testCase == Variant.COMPACT);
 
         // Reflect the active state of the fusebox toolbar.
+        mModel.set(NavigationAttachmentsProperties.COMPACT_UI, testCase == Variant.COMPACT);
         mModel.set(NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE, requestType);
         mModel.set(
                 NavigationAttachmentsProperties.SHOW_DEDICATED_MODE_BUTTON,
@@ -260,7 +260,7 @@ public class NavigationAttachmentsViewBinderUnitTest {
         var lp = (ConstraintLayout.LayoutParams) mViewHolder.addButton.getLayoutParams();
         assertEquals(R.id.url_bar, lp.topToTop);
         assertEquals(ConstraintSet.UNSET, lp.topToBottom);
-        assertEquals(R.id.url_bar, lp.bottomToBottom);
+        assertEquals(ConstraintSet.UNSET, lp.bottomToBottom);
     }
 
     @Test

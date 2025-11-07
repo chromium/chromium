@@ -30,6 +30,8 @@ class NavigationAttachmentsViewBinder {
         } else if (propertyKey == NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE) {
             reanchorViewsForCompactFusebox(model, view);
             updateModeSelectorVisibility(model, view);
+        } else if (propertyKey == NavigationAttachmentsProperties.COMPACT_UI) {
+            reanchorViewsForCompactFusebox(model, view);
         } else if (propertyKey
                 == NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE_CLICKED) {
             view.requestType.setOnClickListener(
@@ -162,15 +164,14 @@ class NavigationAttachmentsViewBinder {
 
     static void reanchorViewsForCompactFusebox(
             PropertyModel model, NavigationAttachmentsViewHolder views) {
-        if (!OmniboxFeatures.sCompactFusebox.getValue()) return;
-
-        boolean isSearchMode =
+        boolean shouldShowCompactUi =
                 model.get(NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE)
-                        == AutocompleteRequestType.SEARCH;
+                                == AutocompleteRequestType.SEARCH
+                        && model.get(NavigationAttachmentsProperties.COMPACT_UI);
 
-        int topToTop = isSearchMode ? R.id.url_bar : ConstraintSet.UNSET;
-        int topToBottom = isSearchMode ? ConstraintSet.UNSET : R.id.url_bar;
-        int bottomToBottom = isSearchMode ? R.id.url_bar : ConstraintSet.PARENT_ID;
+        int topToTop = shouldShowCompactUi ? R.id.url_bar : ConstraintSet.UNSET;
+        int topToBottom = shouldShowCompactUi ? ConstraintSet.UNSET : R.id.url_bar;
+        int bottomToBottom = shouldShowCompactUi ? ConstraintSet.UNSET : ConstraintSet.PARENT_ID;
 
         var cs = new ConstraintSet();
         cs.clone(views.parentView);

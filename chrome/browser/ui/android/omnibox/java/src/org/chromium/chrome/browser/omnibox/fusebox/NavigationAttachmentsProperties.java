@@ -48,6 +48,9 @@ class NavigationAttachmentsProperties {
     public static final WritableObjectPropertyKey<Runnable> BUTTON_ADD_CLICKED =
             new WritableObjectPropertyKey<>();
 
+    /** Whether the UI is in compact mode. */
+    public static final WritableBooleanPropertyKey COMPACT_UI = new WritableBooleanPropertyKey();
+
     /** Action to perform when the user clicks the "add current tab" button */
     public static final WritableObjectPropertyKey<Runnable> CURRENT_TAB_BUTTON_CLICKED =
             new WritableObjectPropertyKey<>();
@@ -109,6 +112,7 @@ class NavigationAttachmentsProperties {
         AUTOCOMPLETE_REQUEST_TYPE_CHANGEABLE,
         AUTOCOMPLETE_REQUEST_TYPE_CLICKED,
         BUTTON_ADD_CLICKED,
+        COMPACT_UI,
         CURRENT_TAB_BUTTON_CLICKED,
         CURRENT_TAB_BUTTON_THUMBNAIL,
         CURRENT_TAB_BUTTON_TINT,
