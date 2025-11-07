@@ -400,6 +400,8 @@ class CONTENT_EXPORT ServiceWorkerClient final
   void SetNetworkURLLoaderFactoryForTesting(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
+  bool is_initiated_by_prefetch() const { return is_initiated_by_prefetch_; }
+
   base::WeakPtr<ServiceWorkerClient> AsWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }

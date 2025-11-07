@@ -2076,6 +2076,18 @@ void StoragePartitionImpl::OnAuthRequired(
           // reaches here.
           is_primary_main_frame_navigation = false;
           is_navigation_request = false;
+        } else if (service_worker_client->is_initiated_by_prefetch()) {
+          // Do not process auth requests associated with prefetching clients
+          // because there are no corresponding Window yet.
+          // `is_initiated_by_prefetch()` can be true here (and similarly at
+          // `OnCertificateRequested()`) e.g. when a speculation rules prefetch
+          // request is intercepted by a ServiceWorker fetch handler and then
+          // is fetched as a ServiceWorker subresource via
+          // `event.respondWith(fetch(event.request))`.
+          static_cast<mojo::Remote<network::mojom::AuthChallengeResponder>>(
+              std::move(auth_challenge_responder))
+              ->OnAuthCredentials(std::nullopt);
+          return;
         } else if (NavigationRequest* ongoing_navigation =
                        service_worker_client
                            ->GetOngoingNavigationRequestBeforeCommit(
@@ -2382,6 +2394,13 @@ void StoragePartitionImpl::OnCertificateRequested(
               service_worker_client->GetRenderFrameHostId();
           context = URLLoaderNetworkContext::CreateForRenderFrameHost(
               render_frame_host_id);
+        } else if (service_worker_client->is_initiated_by_prefetch()) {
+          // Do not process certification requests associated with prefetching
+          // clients because there are no corresponding Window yet. See also the
+          // comment at `OnAuthRequired()` for when `is_initiated_by_prefetch()`
+          // can be true here.
+          CallCancelRequest(std::move(cert_responder));
+          return;
         } else if (NavigationRequest* ongoing_navigation =
                        service_worker_client
                            ->GetOngoingNavigationRequestBeforeCommit(

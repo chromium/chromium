@@ -537,6 +537,21 @@ class PrerenderBrowserTest : public ContentBrowserTest,
     return EvalJs(host, js).ExtractBool();
   }
 
+  void RegisterServiceWorker(const std::string& service_worker_url) {
+    const std::string_view script = R"(
+      (async () => {
+        if (await navigator.serviceWorker.getRegistration('/') !== undefined) {
+          return 'FAIL';
+        }
+        await navigator.serviceWorker.register($1, {scope: '/'});
+        await navigator.serviceWorker.ready;
+        return 'DONE';
+      })();
+    )";
+    EXPECT_EQ("DONE", EvalJs(web_contents_impl()->GetPrimaryMainFrame(),
+                             JsReplace(script, service_worker_url)));
+  }
+
   void NavigatePrimaryPage(const GURL& url) {
     prerender_helper_->NavigatePrimaryPage(url);
   }
@@ -4190,6 +4205,90 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, CancelOnAuthRequestedSubResource) {
       PrerenderFinalStatus::kLoginAuthRequested);
 }
 
+// Prefetch requests should be canceled upon auth requested.
+// The following tests are for the cases where:
+// - No ServiceWorker intercepts the prefetch request.
+// - A ServiceWorker intercepts the request but falls back to the network.
+// - A ServiceWorker intercepts the request and fetches it as ServiceWorker
+//   subresource. This is the regression tests for https://crbug.com/445521064.
+// These tests (and `PrefetchCertificateValidation_*` tests) are placed here to
+// reuse the common test helpers for testing cert/auth errors.
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
+                       PrefetchCancelOnAuthRequested_NoServiceWorker) {
+  // Navigate to an initial page.
+  const GURL kInitialUrl = GetUrl("/title1.html");
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  // Start a prefetch and wait for its completion.
+  test::TestPrefetchWatcher test_prefetch_watcher;
+  const GURL prefetch_url = GetUrl("/auth-basic");
+  AddPrefetchAsync(prefetch_url);
+  test_prefetch_watcher.WaitUntilPrefetchResponseCompleted(
+      static_cast<RenderFrameHostImpl*>(
+          shell()->web_contents()->GetPrimaryMainFrame())
+          ->GetDocumentToken(),
+      prefetch_url);
+
+  // Check that the prefetch has failed and isn't used for navigation.
+  histogram_tester().ExpectUniqueSample("Preloading.Prefetch.PrefetchStatus",
+                                        PrefetchStatus::kPrefetchFailedNon2XX,
+                                        1);
+  ASSERT_TRUE(NavigateToURL(shell(), prefetch_url));
+  EXPECT_FALSE(test_prefetch_watcher.PrefetchUsedInLastNavigation());
+}
+
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
+                       PrefetchCancelOnAuthRequested_ServiceWorkerFallback) {
+  // Navigate to an initial page.
+  const GURL kInitialUrl = GetUrl("/title1.html");
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  RegisterServiceWorker("/fetch_event_passthrough.js");
+
+  // Start a prefetch and wait for its completion.
+  test::TestPrefetchWatcher test_prefetch_watcher;
+  const GURL prefetch_url = GetUrl("/auth-basic");
+  AddPrefetchAsync(prefetch_url);
+  test_prefetch_watcher.WaitUntilPrefetchResponseCompleted(
+      static_cast<RenderFrameHostImpl*>(
+          shell()->web_contents()->GetPrimaryMainFrame())
+          ->GetDocumentToken(),
+      prefetch_url);
+
+  // Check that the prefetch has failed and isn't used for navigation.
+  histogram_tester().ExpectUniqueSample("Preloading.Prefetch.PrefetchStatus",
+                                        PrefetchStatus::kPrefetchFailedNon2XX,
+                                        1);
+  ASSERT_TRUE(NavigateToURL(shell(), prefetch_url));
+  EXPECT_FALSE(test_prefetch_watcher.PrefetchUsedInLastNavigation());
+}
+
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
+                       PrefetchCancelOnAuthRequested_ServiceWorkerSubresource) {
+  // Navigate to an initial page.
+  const GURL kInitialUrl = GetUrl("/title1.html");
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  RegisterServiceWorker("/fetch_event_respond_with_fetch.js");
+
+  // Start a prefetch and wait for its completion.
+  test::TestPrefetchWatcher test_prefetch_watcher;
+  const GURL prefetch_url = GetUrl("/auth-basic");
+  AddPrefetchAsync(prefetch_url);
+  test_prefetch_watcher.WaitUntilPrefetchResponseCompleted(
+      static_cast<RenderFrameHostImpl*>(
+          shell()->web_contents()->GetPrimaryMainFrame())
+          ->GetDocumentToken(),
+      prefetch_url);
+
+  // Check that the prefetch has failed and isn't used for navigation.
+  histogram_tester().ExpectUniqueSample("Preloading.Prefetch.PrefetchStatus",
+                                        PrefetchStatus::kPrefetchFailedNon2XX,
+                                        1);
+  ASSERT_TRUE(NavigateToURL(shell(), prefetch_url));
+  EXPECT_FALSE(test_prefetch_watcher.PrefetchUsedInLastNavigation());
+}
+
 IN_PROC_BROWSER_TEST_F(PrerenderTargetHintBrowserTest,
                        CancelOnSpeculationCandidateRemoved) {
   GURL url_ping(GetUrl(kPagehideEventPath));
@@ -7045,6 +7144,14 @@ class SSLPrerenderBrowserTest
         return PrerenderFinalStatus::kSslCertificateError;
     }
   }
+  int GetExpectedNetError() {
+    switch (GetParam()) {
+      case SSLPrerenderTestErrorBlockType::kClientCertRequested:
+        return net::ERR_SSL_CLIENT_AUTH_CERT_NEEDED;
+      case SSLPrerenderTestErrorBlockType::kCertError:
+        return net::ERR_CERT_COMMON_NAME_INVALID;
+    }
+  }
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -7178,6 +7285,91 @@ IN_PROC_BROWSER_TEST_P(SSLPrerenderBrowserTest,
   host_observer.WaitForDestroyed();
   EXPECT_TRUE(prerender_helper()->GetHostForUrl(kPrerenderingUrl).is_null());
   ExpectFinalStatusForSpeculationRule(GetExpectedFinalStatus());
+}
+
+// Prefetch requests should be canceled upon cert validation errors.
+// See also the comment at `PrefetchCancelOnAuthRequested_*`.
+IN_PROC_BROWSER_TEST_P(SSLPrerenderBrowserTest,
+                       PrefetchCertificateValidation_NoServiceWorker) {
+  // Navigate to an initial page.
+  const GURL kInitialUrl = GetUrl("/empty.html");
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  // Reset the server's config.
+  RequireClientCertsOrSendExpiredCerts();
+
+  test::TestPrefetchWatcher test_prefetch_watcher;
+  const GURL prefetch_url = GetUrl("/title1.html");
+  AddPrefetchAsync(prefetch_url);
+
+  test_prefetch_watcher.WaitUntilPrefetchResponseCompleted(
+      static_cast<RenderFrameHostImpl*>(
+          shell()->web_contents()->GetPrimaryMainFrame())
+          ->GetDocumentToken(),
+      prefetch_url);
+
+  // Check that the prefetch has failed.
+  histogram_tester().ExpectUniqueSample(
+      "PrefetchProxy.Prefetch.Mainframe.NetError",
+      std::abs(GetExpectedNetError()), 1);
+}
+
+IN_PROC_BROWSER_TEST_P(SSLPrerenderBrowserTest,
+                       PrefetchCertificateValidation_ServiceWorkerFallback) {
+  // Navigate to an initial page.
+  const GURL kInitialUrl = GetUrl("/empty.html");
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  RegisterServiceWorker("/fetch_event_passthrough.js");
+
+  // Reset the server's config.
+  RequireClientCertsOrSendExpiredCerts();
+
+  test::TestPrefetchWatcher test_prefetch_watcher;
+  const GURL prefetch_url = GetUrl("/title1.html");
+  AddPrefetchAsync(prefetch_url);
+
+  test_prefetch_watcher.WaitUntilPrefetchResponseCompleted(
+      static_cast<RenderFrameHostImpl*>(
+          shell()->web_contents()->GetPrimaryMainFrame())
+          ->GetDocumentToken(),
+      prefetch_url);
+
+  // Check that the prefetch has failed.
+  histogram_tester().ExpectUniqueSample(
+      "PrefetchProxy.Prefetch.Mainframe.NetError",
+      std::abs(GetExpectedNetError()), 1);
+}
+
+IN_PROC_BROWSER_TEST_P(SSLPrerenderBrowserTest,
+                       PrefetchCertificateValidation_ServiceWorkerSubresource) {
+  // Navigate to an initial page.
+  const GURL kInitialUrl = GetUrl("/empty.html");
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  RegisterServiceWorker("/fetch_event_respond_with_fetch.js");
+
+  // Reset the server's config.
+  RequireClientCertsOrSendExpiredCerts();
+
+  test::TestPrefetchWatcher test_prefetch_watcher;
+  const GURL prefetch_url = GetUrl("/title1.html");
+  AddPrefetchAsync(prefetch_url);
+
+  test_prefetch_watcher.WaitUntilPrefetchResponseCompleted(
+      static_cast<RenderFrameHostImpl*>(
+          shell()->web_contents()->GetPrimaryMainFrame())
+          ->GetDocumentToken(),
+      prefetch_url);
+
+  // Check that the prefetch has failed. Unlike other
+  // `PrefetchCertificateValidation_*` tests above, as the fetch failure is
+  // passed from the ServiceWorker fetch handler's JavaScript to the originating
+  // prefetch request in the browser process, the detailed error code isn't
+  // exposed and just a general network error is reported.
+  histogram_tester().ExpectUniqueSample(
+      "PrefetchProxy.Prefetch.Mainframe.NetError", std::abs(net::ERR_FAILED),
+      1);
 }
 
 // Tests for feature restrictions in prerendered pages =========================
