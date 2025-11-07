@@ -332,22 +332,22 @@
       <message name="IDS_TRACKING_PROTECTIONS_BUBBLE_TITLE" desc="Title shown on the tracking protections bubble. 'Tracking protections' is the term used for features that try to protect users from being tracked across different sites.">
         Tracking protections
       </message>
-      <message name="IDS_TRACKING_PROTECTIONS_BUTTON_RESUME_PROTECTIONS_LABEL" desc="Label for a button in the tracking protections bubble that allows the user to re-enable tracking protections on the current site." formatter_data="android_java">
+      <message name="IDS_TRACKING_PROTECTIONS_BUTTON_RESUME_PROTECTIONS_LABEL" desc="Label for a button in the tracking protections bubble that allows the user to re-enable tracking protections on the current site.">
         Resume tracking protections
       </message>
-      <message name="IDS_TRACKING_PROTECTIONS_BUTTON_PAUSE_PROTECTIONS_LABEL" desc="Label for a button in the tracking protections bubble that allows the user to pause tracking protections on the curent site." formatter_data="android_java">
+      <message name="IDS_TRACKING_PROTECTIONS_BUTTON_PAUSE_PROTECTIONS_LABEL" desc="Label for a button in the tracking protections bubble that allows the user to pause tracking protections on the curent site.">
         Pause tracking protections
       </message>
       <message name="IDS_TRACKING_PROTECTIONS_BUTTON_RELOADING_SITE_LABEL" desc="Label for a button in the tracking protections bubble that is shown after a user triggers a reload by pausing or resuming tracking protections on the current site. This button is disabled and can't be clicked as it's just meant to indicate to the user that there is no action for them to take while the site is reloading.">
         Reloading site
       </message>
-      <message name="IDS_TRACKING_PROTECTIONS_ACTIVE_PROTECTIONS_DESCRIPTION" desc="Descriptive text in the tracking protections bubble shown when tracking protections are active on the current site. Explains that pausing tracking protections may help fix features on the site that are not working." formatter_data="android_java">
+      <message name="IDS_TRACKING_PROTECTIONS_ACTIVE_PROTECTIONS_DESCRIPTION" desc="Descriptive text in the tracking protections bubble shown when tracking protections are active on the current site. Explains that pausing tracking protections may help fix features on the site that are not working.">
         Try pausing tracking protections on this site, which can help site features work as expected.
       </message>
       <message name="IDS_TRACKING_PROTECTIONS_PAUSED_PROTECTIONS_DESCRIPTION" desc="Descriptive text in the tracking protections bubble shown when tracking protections are paused on the current site. Explains that tracking protections will remain paused on this site until the user closes all Incognito windows.">
         Protections are paused until all Incognito windows are closed.
       </message>
-      <message name="IDS_TRACKING_PROTECTIONS_PAUSED_PROTECTIONS_TITLE" desc="Subtitle in the tracking protections bubble shown when tracking protections are paused on the current site." formatter_data="android_java">
+      <message name="IDS_TRACKING_PROTECTIONS_PAUSED_PROTECTIONS_TITLE" desc="Subtitle in the tracking protections bubble shown when tracking protections are paused on the current site.">
         Tracking protections are paused on this site
       </message>
       <if expr="_google_chrome">
@@ -393,7 +393,7 @@
         Tracking protections enabled
       </message>
       <!-- Page Info -->
-      <message name="IDS_PAGE_INFO_PRIVACY_SITE_DATA_HEADER" desc="The header for the 'Privacy and site data' subpage in the page info bubble." formatter_data="android_java">
+      <message name="IDS_PAGE_INFO_PRIVACY_SITE_DATA_HEADER" desc="The header for the 'Privacy and site data' subpage in the page info bubble.">
         Privacy and site data
       </message>
       <message name="IDS_PAGE_INFO_PRIVACY_SITE_DATA_TOOLTIP" desc="A tooltip that appears when the user hovers over the 'Privacy and site data' button. Options on the next screen include: a button to pause or resume tracking protections, a link to the tracking protections settings page, and a button for the on-device site data dialog.">
@@ -401,9 +401,6 @@
       </message>
       <message name="IDS_PAGE_INFO_PRIVACY_SITE_DATA_DESCRIPTION" desc="Descriptive text in the 'Privacy and site data' subpage explaining that third-party cookies are blocked and that there are additional tracking protections available in Incognito.">
         Third-party cookies are blocked. Incognito can also provide additional tracking protections.
-      </message>
-      <message name="IDS_PAGE_INFO_PRIVACY_SITE_DATA_PAUSED_PROTECTIONS_DESCRIPTION_ANDROID" formatter_data="android_java" desc="Descriptive text in the 'Privacy and site data' subpage shown when tracking protections are paused on the current site. Explains that tracking protections will remain paused on this site until the user closes all Incognito tabs. Additionally contains a feedback link so the user can given feedback as to why they paused tracking protections on this site.">
-        Protections are paused until all Incognito tabs are closed. <ph name="BEGIN_LINK">&lt;link&gt;</ph>Send feedback<ph name="END_LINK">&lt;/link&gt;</ph>
       </message>
       <if expr="_google_chrome">
         <then>

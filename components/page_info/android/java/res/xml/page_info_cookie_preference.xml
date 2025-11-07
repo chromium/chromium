@@ -22,12 +22,6 @@ found in the LICENSE file.
         app:allowDividerBelow="true" />
 
     <org.chromium.components.browser_ui.settings.TextMessagePreference
-        android:key="tracking_protections_summary"
-        android:layout="@layout/page_info_summary"
-        app:allowDividerAbove="true"
-        app:allowDividerBelow="false" />
-
-    <org.chromium.components.browser_ui.settings.TextMessagePreference
         android:key="tpc_title"
         android:layout="@layout/page_info_title"
         app:allowDividerAbove="true" />
@@ -41,11 +35,6 @@ found in the LICENSE file.
         android:key="cookie_switch"
         android:persistent="false"
         android:title="@string/page_info_cookies_third_party_cookies_label"
-        app:allowDividerAbove="false" />
-
-    <org.chromium.components.browser_ui.settings.ButtonPreference
-        android:key="tracking_protections_button"
-        android:persistent="false"
         app:allowDividerAbove="false" />
 
 </PreferenceScreen>
