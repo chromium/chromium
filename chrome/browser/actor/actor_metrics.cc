@@ -5,7 +5,9 @@
 #include "chrome/browser/actor/actor_metrics.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
+#include "chrome/browser/actor/actor_task.h"
 
 namespace actor {
 
@@ -60,6 +62,32 @@ void RecordActorTaskCompletion(bool success,
   base::UmaHistogramCounts1000(
       base::StrCat({"Actor.Task.Count.", ToCancelledOrCompleted(success)}),
       actions_count);
+}
+
+void RecordActorTaskVisibilityDurationHistograms(
+    base::TimeDelta visible_duration,
+    base::TimeDelta non_visible_duration,
+    ActorTask::State state) {
+  std::string state_string;
+  switch (state) {
+    case ActorTask::State::kCancelled:
+      state_string = ToString(state);
+      break;
+    case ActorTask::State::kFinished:
+      state_string = "Completed";
+      break;
+    default:
+      NOTREACHED() << "ActorTask must be in Finished or Cancelled State to "
+                      "record these histograms.";
+  }
+
+  base::UmaHistogramLongTimes100(
+      base::StrCat({"Actor.Task.Duration.Visible.", state_string}),
+      visible_duration);
+
+  base::UmaHistogramLongTimes100(
+      base::StrCat({"Actor.Task.Duration.NotVisible.", state_string}),
+      non_visible_duration);
 }
 
 }  // namespace actor

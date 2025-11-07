@@ -33,5 +33,19 @@ void RecordActorTaskCompletion(bool success,
                                size_t interruptions_count,
                                size_t actions_count);
 
+// Records histograms tracking the total visible and non-visible durations of an
+// ActorTask while in an actor-controlled state upon completion or cancellation.
+//
+// Records two histograms:
+// - The total actor-controlled time while at least one of its tabs was visible
+// - The total actor-controlled time while none of it's tabs were visible
+//
+// This function only records histograms if `state` is either kFinished or
+// kCancelled. Calls with other states will trigger NOTREACHED().
+void RecordActorTaskVisibilityDurationHistograms(
+    base::TimeDelta visible_duration,
+    base::TimeDelta non_visible_duration,
+    ActorTask::State state);
+
 }  // namespace actor
 #endif  // CHROME_BROWSER_ACTOR_ACTOR_METRICS_H_

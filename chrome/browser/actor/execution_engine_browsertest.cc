@@ -471,6 +471,9 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineBrowserTest,
   EXPECT_FALSE(browser_client().external_protocol_result().value());
 }
 
+// TODO(crbug.com/456759397): Add coverage for multi-tab cases in
+// foreground/background visibility metric.
+
 // Android uses a different dropdown UI that doesn't respect styling.
 #if !BUILDFLAG(IS_ANDROID)
 class ExecutionEnginePixelBrowserTest : public ExecutionEngineBrowserTest {

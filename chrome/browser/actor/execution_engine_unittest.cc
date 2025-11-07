@@ -77,6 +77,15 @@ constexpr char kActorTaskDurationWallClockCompletedHistogram[] =
 constexpr char kActorTaskDurationWallClockCancelledHistogram[] =
     "Actor.Task.Duration.WallClock.Cancelled";
 
+constexpr char kActorTaskDurationVisibleCompletedHistogram[] =
+    "Actor.Task.Duration.Visible.Completed";
+constexpr char kActorTaskDurationNotVisibleCompletedHistogram[] =
+    "Actor.Task.Duration.NotVisible.Completed";
+constexpr char kActorTaskDurationVisibleCancelledHistogram[] =
+    "Actor.Task.Duration.Visible.Cancelled";
+constexpr char kActorTaskDurationNotVisibleCancelledHistogram[] =
+    "Actor.Task.Duration.NotVisible.Cancelled";
+
 class FakeChromeRenderFrame : public chrome::mojom::ChromeRenderFrame {
  public:
   FakeChromeRenderFrame() = default;
@@ -644,6 +653,122 @@ TEST_F(ExecutionEngineTest, CompletedWithInterruptHistogram) {
   histograms_.ExpectTimeBucketCount(
       kActorTaskDurationWallClockCompletedHistogram, base::Milliseconds(650),
       1);
+}
+
+TEST_F(ExecutionEngineTest, VisibleNotVisibleActuationCompletedHistogram) {
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("http://localhost/"));
+  task_->AddTab(GetTab()->GetHandle(), base::DoNothing());
+  web_contents()->WasShown();
+
+  // Simulate visible actuation.
+  const base::TimeDelta visible_duration = base::Milliseconds(100);
+  task_environment()->FastForwardBy(visible_duration);
+
+  // Deactivate the tab to simulate not-visible actuation.
+  web_contents()->WasHidden();
+
+  // Simulate not-visible actuation.
+  const base::TimeDelta not_visible_duration = base::Milliseconds(50);
+  task_environment()->FastForwardBy(not_visible_duration);
+
+  task_->Stop(/*success=*/true);
+
+  histograms_.ExpectTimeBucketCount(kActorTaskDurationVisibleCompletedHistogram,
+                                    visible_duration, 1);
+
+  histograms_.ExpectTimeBucketCount(
+      kActorTaskDurationNotVisibleCompletedHistogram, not_visible_duration, 1);
+}
+
+TEST_F(ExecutionEngineTest, VisibleNotVisibleActuationCancelledHistogram) {
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("http://localhost/"));
+  task_->AddTab(GetTab()->GetHandle(), base::DoNothing());
+  web_contents()->WasShown();
+
+  // Simulate visible actuation.
+  const base::TimeDelta visible_duration = base::Milliseconds(100);
+  task_environment()->FastForwardBy(visible_duration);
+
+  // Deactivate the tab to simulate not-visible actuation.
+  web_contents()->WasHidden();
+
+  // Simulate not-visible actuation.
+  const base::TimeDelta not_visible_duration = base::Milliseconds(50);
+  task_environment()->FastForwardBy(not_visible_duration);
+
+  task_->Stop(/*success=*/false);
+
+  histograms_.ExpectTimeBucketCount(kActorTaskDurationVisibleCancelledHistogram,
+                                    visible_duration, 1);
+  histograms_.ExpectTimeBucketCount(
+      kActorTaskDurationNotVisibleCancelledHistogram, not_visible_duration, 1);
+}
+
+TEST_F(ExecutionEngineTest, VisibleNotVisibleActuationWithPauseHistogram) {
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("http://localhost/"));
+  task_->AddTab(GetTab()->GetHandle(), base::DoNothing());
+  web_contents()->WasShown();
+
+  // Simulate visible actuation.
+  const base::TimeDelta visible_duration1 = base::Milliseconds(100);
+  task_environment()->FastForwardBy(visible_duration1);
+
+  // Pause the task.
+  task_->Pause(/*from_actor=*/true);
+
+  // This time should not be counted.
+  task_environment()->FastForwardBy(base::Milliseconds(500));
+
+  // Resume the task.
+  task_->Resume();
+
+  // Simulate more visible actuation.
+  const base::TimeDelta visible_duration2 = base::Milliseconds(50);
+  task_environment()->FastForwardBy(visible_duration2);
+
+  task_->Stop(/*success=*/true);
+
+  histograms_.ExpectTimeBucketCount(kActorTaskDurationVisibleCompletedHistogram,
+                                    visible_duration1 + visible_duration2, 1);
+  histograms_.ExpectTimeBucketCount(
+      kActorTaskDurationNotVisibleCompletedHistogram, base::Milliseconds(0), 1);
+}
+
+TEST_F(ExecutionEngineTest, VisibleNotVisibleActuationWithWaitingHistogram) {
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("http://localhost/"));
+  task_->AddTab(GetTab()->GetHandle(), base::DoNothing());
+  web_contents()->WasShown();
+  task_->SetState(ActorTask::State::kReflecting);
+
+  // Simulate visible actuation.
+  const base::TimeDelta visible_duration1 = base::Milliseconds(100);
+  task_environment()->FastForwardBy(visible_duration1);
+
+  // Interrupt the task.
+  task_->Interrupt();
+
+  // This time should be counted.
+  const base::TimeDelta waiting_duration = base::Milliseconds(500);
+  task_environment()->FastForwardBy(waiting_duration);
+
+  // Uninterrupt the task.
+  task_->Uninterrupt();
+
+  // Simulate more visible actuation.
+  const base::TimeDelta visible_duration2 = base::Milliseconds(50);
+  task_environment()->FastForwardBy(visible_duration2);
+
+  task_->Stop(/*success=*/true);
+
+  histograms_.ExpectTimeBucketCount(
+      kActorTaskDurationVisibleCompletedHistogram,
+      visible_duration1 + waiting_duration + visible_duration2, 1);
+  histograms_.ExpectTimeBucketCount(
+      kActorTaskDurationNotVisibleCompletedHistogram, base::Milliseconds(0), 1);
 }
 
 }  // namespace
