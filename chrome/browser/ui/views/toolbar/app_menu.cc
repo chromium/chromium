@@ -374,8 +374,7 @@ std::u16string GetSigninStatusChipString(Profile* profile) {
 
   if (signin_util::IsSigninPending(
           IdentityManagerFactory::GetForProfile(profile))) {
-    // TODO(b/347011002): Use a non sync related string.
-    return l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SYNC_PAUSED);
+    return l10n_util::GetStringUTF16(IDS_PROFILE_ROW_VERIFY_MESSAGE);
   }
 
   return l10n_util::GetStringUTF16(IDS_PROFILE_ROW_SIGNED_IN_MESSAGE);
