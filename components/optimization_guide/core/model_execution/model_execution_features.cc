@@ -158,6 +158,7 @@ std::optional<proto::OptimizationTarget> GetOptimizationTargetForCapability(
     case ModelBasedCapabilityKey::kZeroStateSuggestions:
     case ModelBasedCapabilityKey::kWalletablePassExtraction:
     case ModelBasedCapabilityKey::kAmountExtraction:
+    case ModelBasedCapabilityKey::kIosSmartTabGrouping:
       return std::nullopt;
   }
 }

@@ -119,6 +119,9 @@ std::string_view GetStringNameForModelExecutionFeature(
     case proto::ModelExecutionFeature::
         MODEL_EXECUTION_FEATURE_ON_DEVICE_SPEECH_RECOGNITION:
       return "OnDeviceSpeechRecognition";
+    case proto::ModelExecutionFeature::
+        MODEL_EXECUTION_FEATURE_IOS_SMART_TAB_GROUPING:
+      return "IosSmartTabGrouping";
     case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED:
       return "Unknown";
       // Must be in sync with the ModelExecutionFeature variant in

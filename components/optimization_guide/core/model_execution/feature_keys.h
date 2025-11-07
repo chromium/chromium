@@ -55,6 +55,8 @@ enum class ModelBasedCapabilityKey {
       proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_AMOUNT_EXTRACTION,
   kOnDeviceSpeechRecognition = proto::ModelExecutionFeature::
       MODEL_EXECUTION_FEATURE_ON_DEVICE_SPEECH_RECOGNITION,
+  kIosSmartTabGrouping = proto::ModelExecutionFeature::
+      MODEL_EXECUTION_FEATURE_IOS_SMART_TAB_GROUPING,
 };
 
 inline std::ostream& operator<<(std::ostream& out,
@@ -102,6 +104,8 @@ inline std::ostream& operator<<(std::ostream& out,
       return out << "AmountExtraction";
     case ModelBasedCapabilityKey::kOnDeviceSpeechRecognition:
       return out << "OnDeviceSpeechRecognition";
+    case ModelBasedCapabilityKey::kIosSmartTabGrouping:
+      return out << "IosSmartTabGrouping";
   }
   return out;
 }
@@ -129,6 +133,7 @@ inline constexpr auto kAllModelBasedCapabilityKeys =
         ModelBasedCapabilityKey::kWalletablePassExtraction,
         ModelBasedCapabilityKey::kAmountExtraction,
         ModelBasedCapabilityKey::kOnDeviceSpeechRecognition,
+        ModelBasedCapabilityKey::kIosSmartTabGrouping,
     });
 
 // A "real" feature implemented by a model-based capability.
@@ -208,6 +213,8 @@ inline ModelBasedCapabilityKey ToModelBasedCapabilityKey(
       return ModelBasedCapabilityKey::kZeroStateSuggestions;
     case mojom::ModelBasedCapabilityKey::kOnDeviceSpeechRecognition:
       return ModelBasedCapabilityKey::kOnDeviceSpeechRecognition;
+    case mojom::ModelBasedCapabilityKey::kIosSmartTabGrouping:
+      return ModelBasedCapabilityKey::kIosSmartTabGrouping;
   }
 }
 
@@ -266,6 +273,9 @@ inline ModelBasedCapabilityKey ToModelBasedCapabilityKey(
     case proto::ModelExecutionFeature::
         MODEL_EXECUTION_FEATURE_ON_DEVICE_SPEECH_RECOGNITION:
       return ModelBasedCapabilityKey::kOnDeviceSpeechRecognition;
+    case proto::ModelExecutionFeature::
+        MODEL_EXECUTION_FEATURE_IOS_SMART_TAB_GROUPING:
+      return ModelBasedCapabilityKey::kIosSmartTabGrouping;
     case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED:
       NOTREACHED() << "Invalid feature";
   }
@@ -332,6 +342,9 @@ inline proto::ModelExecutionFeature ToModelExecutionFeatureProto(
     case ModelBasedCapabilityKey::kOnDeviceSpeechRecognition:
       return proto::ModelExecutionFeature::
           MODEL_EXECUTION_FEATURE_ON_DEVICE_SPEECH_RECOGNITION;
+    case ModelBasedCapabilityKey::kIosSmartTabGrouping:
+      return proto::ModelExecutionFeature::
+          MODEL_EXECUTION_FEATURE_IOS_SMART_TAB_GROUPING;
   }
 }
 
