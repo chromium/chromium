@@ -224,7 +224,6 @@
     "webdriverio": "9.20.0",
     "websocket": "1.0.35",
     "wireit": "0.14.12",
-    "ws": "8.18.3",
     "yargs": "18.0.0"
   },
   "dependencies": {

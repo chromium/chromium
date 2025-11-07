@@ -20,16 +20,10 @@ import {mkdtemp} from 'fs/promises';
 import os from 'os';
 import path from 'path';
 
-import {
-  CDP_WEBSOCKET_ENDPOINT_REGEX,
-  launch,
-  type Process,
-} from '@puppeteer/browsers';
+import {launch, type Process} from '@puppeteer/browsers';
 import debug from 'debug';
-import WebSocket from 'ws';
 
 import {MapperCdpConnection} from '../cdp/CdpConnection.js';
-import {WebSocketTransport} from '../utils/WebsocketTransport.js';
 
 import {MapperServerCdpConnection} from './MapperCdpConnection.js';
 import {PipeTransport} from './PipeTransport.js';
@@ -80,12 +74,10 @@ export class BrowserInstance {
       '--no-default-browser-check',
       '--no-first-run',
       '--password-store=basic',
+      '--remote-debugging-pipe',
       '--use-mock-keychain',
       `--user-data-dir=${profileDir}`,
       // keep-sorted end
-      ...(chromeOptions.chromeArgs.includes('--remote-debugging-pipe')
-        ? []
-        : ['--remote-debugging-port=9222']),
       ...chromeOptions.chromeArgs,
       'about:blank',
     ];
@@ -97,12 +89,11 @@ export class BrowserInstance {
       throw new Error('Could not find Chrome binary');
     }
 
-    const pipe = chromeArguments.includes('--remote-debugging-pipe');
     const launchArguments = {
       executablePath,
       args: chromeArguments,
       env: process.env,
-      pipe,
+      pipe: true,
     };
 
     debugInternal(`Launching browser`, {
@@ -112,20 +103,7 @@ export class BrowserInstance {
 
     const browserProcess = launch(launchArguments);
 
-    let cdpConnection;
-    if (pipe) {
-      cdpConnection = this.#establishPipeConnection(browserProcess);
-    } else {
-      const cdpEndpoint = await browserProcess.waitForLineOutput(
-        CDP_WEBSOCKET_ENDPOINT_REGEX,
-      );
-
-      // There is a conflict between prettier and eslint here.
-      // prettier-ignore
-      cdpConnection = await this.#establishCdpConnection(
-        cdpEndpoint
-      );
-    }
+    const cdpConnection = this.#establishPipeConnection(browserProcess);
     // 2. Get `BiDi-CDP` mapper JS binaries.
     const mapperTabSource = await getMapperTabSource();
 
@@ -157,24 +135,6 @@ export class BrowserInstance {
 
   bidiSession(): SimpleTransport {
     return this.#mapperCdpConnection.bidiSession();
-  }
-
-  static #establishCdpConnection(cdpUrl: string): Promise<MapperCdpConnection> {
-    return new Promise((resolve, reject) => {
-      debugInternal('Establishing session with cdpUrl: ', cdpUrl);
-
-      const ws = new WebSocket(cdpUrl);
-
-      ws.once('error', reject);
-
-      ws.on('open', () => {
-        debugInternal('Session established.');
-
-        const transport = new WebSocketTransport(ws);
-        const connection = new MapperCdpConnection(transport);
-        resolve(connection);
-      });
-    });
   }
 
   static #establishPipeConnection(
