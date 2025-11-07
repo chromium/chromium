@@ -196,6 +196,7 @@ source_set("profile_util_impl") {
     "//chrome/browser/safe_browsing",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/profiles",
+    "//chrome/browser/webauthn:chrome_web_authentication_delegate",
     "//chrome/browser/webdata_services",
     "//chrome/common",
     "//chrome/common:constants",
