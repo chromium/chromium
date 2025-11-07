@@ -352,7 +352,15 @@ HEADLESS_MODE_PROTOCOL_TEST(ScreenDetailsWorkAreaScaled,
 
 HEADLESS_MODE_PROTOCOL_TEST(RequestFullscreen, "shared/request-fullscreen.js")
 
-HEADLESS_MODE_PROTOCOL_TEST(RequestFullscreenOnSecondaryScreen,
+// TODO(crbug.com/429035133): Times out on macOS. Fix and re-enable.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_RequestFullscreenOnSecondaryScreen \
+  DISABLED_RequestFullscreenOnSecondaryScreen
+#else
+#define MAYBE_RequestFullscreenOnSecondaryScreen \
+  RequestFullscreenOnSecondaryScreen
+#endif  // BUILDFLAG(IS_MAC)
+HEADLESS_MODE_PROTOCOL_TEST(MAYBE_RequestFullscreenOnSecondaryScreen,
                             "shared/request-fullscreen-on-secondary-screen.js")
 
 HEADLESS_MODE_PROTOCOL_TEST(CreateTargetPosition,
