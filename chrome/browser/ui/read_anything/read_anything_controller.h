@@ -26,6 +26,12 @@ class ReadAnythingController {
   ReadAnythingController& operator=(const ReadAnythingController&) = delete;
   ~ReadAnythingController();
 
+  enum class PresentationState {
+    kInactive,
+    kInSidePanel,
+    kInImmersiveOverlay,
+  };
+
   explicit ReadAnythingController(tabs::TabInterface* tab);
 
   DECLARE_USER_DATA(ReadAnythingController);
@@ -40,6 +46,9 @@ class ReadAnythingController {
   // tab.
   // TODO(crbug.com/447418049): Open immersive reading mode via this entrypoint.
   void ToggleReadAnythingSidePanel(SidePanelOpenTrigger trigger);
+
+  // Returns the current presentation state of the Reading Mode feature.
+  PresentationState GetPresentationState() const;
 
  private:
   // Returns the SidePanelUI for the active tab if it can be shown.

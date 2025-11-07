@@ -55,3 +55,19 @@ void ReadAnythingController::ToggleReadAnythingSidePanel(
                           trigger);
   }
 }
+
+// TODO(crbug.com/458335664): Add logic to check if IRM SidePanel is showing
+ReadAnythingController::PresentationState
+ReadAnythingController::GetPresentationState() const {
+  if (tab_ && tab_->GetBrowserWindowInterface()) {
+    SidePanelUI* side_panel_ui =
+        tab_->GetBrowserWindowInterface()->GetFeatures().side_panel_ui();
+
+    if (side_panel_ui &&
+        side_panel_ui->IsSidePanelEntryShowing(
+            SidePanelEntryKey(SidePanelEntryId::kReadAnything))) {
+      return PresentationState::kInSidePanel;
+    }
+  }
+  return PresentationState::kInactive;
+}

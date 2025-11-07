@@ -154,6 +154,43 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingControllerBrowserTest,
   }));
 }
 
+IN_PROC_BROWSER_TEST_P(ReadAnythingControllerBrowserTest,
+                       GetPresentationState_InitialState) {
+  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+  ASSERT_TRUE(tab);
+  auto* controller = ReadAnythingController::From(tab);
+
+  if (is_immersive_read_anything_enabled_) {
+    ASSERT_TRUE(controller);
+
+    EXPECT_EQ(controller->GetPresentationState(),
+              ReadAnythingController::PresentationState::kInactive);
+  } else {
+    ASSERT_FALSE(controller);
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(ReadAnythingControllerBrowserTest,
+                       GetPresentationState_SidePanelState) {
+  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+  ASSERT_TRUE(tab);
+  auto* controller = ReadAnythingController::From(tab);
+
+  if (is_immersive_read_anything_enabled_) {
+    ASSERT_TRUE(controller);
+
+    controller->ShowUI(SidePanelOpenTrigger::kAppMenu);
+
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return controller->GetPresentationState() ==
+             ReadAnythingController::PresentationState::kInSidePanel;
+    }));
+
+  } else {
+    ASSERT_FALSE(controller);
+  }
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          ReadAnythingControllerBrowserTest,
                          ::testing::Bool());
