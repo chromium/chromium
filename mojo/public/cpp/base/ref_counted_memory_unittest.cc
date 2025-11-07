@@ -20,8 +20,7 @@ TEST(RefCountedMemoryTest, Data) {
   ASSERT_TRUE(
       mojo::test::SerializeAndDeserialize<mojom::RefCountedMemory>(in, out));
   ASSERT_EQ(out->size(), in->size());
-  for (size_t i = 0; i < out->size(); ++i)
-    UNSAFE_TODO(EXPECT_EQ(in->front()[i], out->front()[i]));
+  EXPECT_TRUE(in->Equals(out));
 }
 
 TEST(RefCountedMemoryTest, Null) {
