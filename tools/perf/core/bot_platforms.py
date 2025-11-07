@@ -609,16 +609,18 @@ _CROSSBENCH_WEBVIEW = frozenset([
         arguments=[
             '--wpr=crossbench_android_embedder_000.wprgo',
             '--skip-wpr-script-injection',
-            '--embedder=com.google.android.googlequicksearchbox',
+            '--embedder=../../clank/android_webview/tools/crossbench_config/cipd/arm64/Velvet_arm64.apk',
             '--splashscreen=skip',
             '--cuj-config=../../third_party/crossbench/config/team/woa/embedder_cuj_config.hjson',
             '--probe-config=../../clank/android_webview/tools/crossbench_config/'
             'agsa_probe_config.hjson',
             '--repetitions=50',
             '--cool-down-threshold=moderate',
-            '--http-request-timeout=15s',
-            '--action-runner=android',
+            '--http-request-timeout=10s',
             '--ignore-partial-failures',
+            '--embedder-process-name=googleapp',
+            '--embedder-setup-command-config=../../clank/android_webview/tools/crossbench_config/'
+            'agsa_setup_config.hjson',
         ]),
 ])
 # pylint: enable=line-too-long
