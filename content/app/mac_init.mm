@@ -6,8 +6,16 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include "base/command_line.h"
 #include "base/mac/mac_util.h"
 #include "content/common/mac/system_policy.h"
+
+namespace {
+
+constexpr char kAllowNSAutoFillHeuristicController[] =
+    "allow-ns-autofill-heuristic-controller";
+
+}  // namespace
 
 namespace content {
 
@@ -30,15 +38,22 @@ void InitializeMac() {
     @"NSAppSleepDisabled" : @YES,
   }];
 
-  if (base::mac::MacOSVersion() >= 26'00'00) {
+  if (base::mac::MacOSVersion() >= 26'00'00 &&
+      !base::CommandLine::ForCurrentProcess()->HasSwitch(
+          kAllowNSAutoFillHeuristicController)) {
     [NSUserDefaults.standardUserDefaults registerDefaults:@{
-      // Disable NSAutoFillHeuristicController on macOS 26. On macOS 26, the
-      // browser process sends synchronized IPC messages to the renderer process
-      // on pages with <input> tags. At this point, if the renderer process
-      // sends a synchronized IPC message to the browser process, it will cause
-      // a deadlock.
-      // https://crbug.com/446070423
-      // https://crbug.com/446481994
+      // Disable NSAutoFillHeuristicController on macOS 26. On macOS 26,
+      // NSAutoFillHeuristicController triggers a large number of synchronous
+      // IME IPCs, which block the main thread and cause stalling and other
+      // usability issues. See https://crbug.com/446070423 and
+      // https://crbug.com/446481994.
+      //
+      // A command-line flag is provided to enable NSAutoFillHeuristicController
+      // for testing purposes. A base::Feature isn't used because this function
+      // is called too early in startup for that to work.
+      //
+      // TODO(https://crbug.com/452372350): Figure out a sustainable approach to
+      // getting NSAutoFillHeuristicController to work.
       @"NSAutoFillHeuristicControllerEnabled" : @NO,
     }];
   }
