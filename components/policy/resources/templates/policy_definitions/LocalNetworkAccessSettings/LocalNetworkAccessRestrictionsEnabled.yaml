@@ -6,10 +6,12 @@ owners:
 caption: Specifies whether to apply restrictions to requests to local
   network endpoints
 
+deprecated: true
+
 desc: |-
   When this policy is set to Enabled, any time when a warning is supposed to be
   displayed in <ph name="CHROME_DEVTOOLS_NAME">Chrome DevTools</ph> due to <ph
-  name="LOCAL_NETWORK_ACCCESS">Local Network Access</ph> checks failing, the
+  name="LOCAL_NETWORK_ACCESS">Local Network Access</ph> checks failing, the
   main request will be blocked instead.
 
   When this policy is set to Disabled or unset, <ph
@@ -18,6 +20,9 @@ desc: |-
 
   See https://wicg.github.io/local-network-access/ for <ph
   name="LOCAL_NETWORK_ACCESS">Local Network Access</ph> restrictions.
+
+  This policy is deprecated because <ph name="LOCAL_NETWORK_ACCESS">Local Network Access</ph>
+  has launched by default. The policy will be removed in a future release.
 default: false
 
 supported_on:
