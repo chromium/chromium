@@ -35,8 +35,10 @@ class FakeBrowserBoundKeyStore : public BrowserBoundKeyStore {
   void DeleteBrowserBoundKey(std::vector<uint8_t> bbk_id) override;
   bool GetDeviceSupportsHardwareKeys() override;
 
-  // Insert a fake key.
-  void PutFakeKey(FakeBrowserBoundKey bbk);
+  // Insert a fake key. If the optional `bbk_id` is not provided, the key's own
+  // identifier will be used as the map key for retrieving the BBK.
+  void PutFakeKey(FakeBrowserBoundKey bbk,
+                  std::optional<std::vector<uint8_t>> bbk_id = std::nullopt);
 
   // Return whether the key with identifier `bbk_id` is present.
   bool ContainsFakeKey(std::vector<uint8_t> bbk_id) const;

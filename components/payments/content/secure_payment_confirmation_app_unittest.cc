@@ -60,9 +60,7 @@ using ::testing::Property;
 using ::testing::Return;
 using ::testing::SaveArg;
 
-#if BUILDFLAG(IS_ANDROID)
 static constexpr char kAlgorithmIdentifier = 1;
-#endif  // BUILDFLAG(IS_ANDROID)
 static constexpr char kChallengeBase64[] = "aaaa";
 static constexpr char kCredentialIdBase64[] = "cccc";
 
@@ -134,7 +132,8 @@ class SecurePaymentConfirmationAppTest : public testing::Test,
 
   scoped_refptr<FakeBrowserBoundKeyStore> browser_bound_key_store_ =
       base::MakeRefCounted<FakeBrowserBoundKeyStore>();
-  content::BrowserTaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   content::TestBrowserContext context_;
   content::TestWebContentsFactory web_contents_factory_;
   raw_ptr<content::WebContents> web_contents_;
@@ -188,7 +187,6 @@ TEST_F(SecurePaymentConfirmationAppTest, Smoke) {
   EXPECT_FALSE(on_instrument_details_error_called_);
 }
 
-#if BUILDFLAG(IS_ANDROID)
 struct BrowserBoundKeyTestParams {
   std::optional<
       std::vector<::device::PublicKeyCredentialParams::CredentialInfo>>
@@ -393,6 +391,32 @@ TEST_P(SecurePaymentConfirmationAppBrowserBindingTest,
       .WillOnce(InvokeAuthenticatorCallback(client_data_json));
   app.InvokePaymentApp(/*delegate=*/weak_ptr_factory_.GetWeakPtr());
 
+  if (GetParam().expect_browser_bound_key) {
+    // Last used time should only be set/updated on Windows platform.
+#if BUILDFLAG(IS_WIN)
+    if (GetParam().is_new_bbk) {
+      EXPECT_CALL(
+          *mock_service,
+          SetBrowserBoundKey(
+              _, _, _,
+              /*last_used=*/testing::Optional(base::Time::NowFromSystemTime()),
+              _));
+    } else {
+      EXPECT_CALL(*mock_service,
+                  UpdateBrowserBoundKeyLastUsed(
+                      _, _, /*last_used=*/base::Time::NowFromSystemTime(), _));
+    }
+#else
+    if (GetParam().is_new_bbk) {
+      EXPECT_CALL(
+          *mock_service,
+          SetBrowserBoundKey(_, _, _, /*last_used=*/Eq(std::nullopt), _));
+    } else {
+      EXPECT_CALL(*mock_service, UpdateBrowserBoundKeyLastUsed).Times(0);
+    }
+#endif
+  }
+
   // Simulate the retrieval of an existing browser bound key.
   ASSERT_FALSE(web_data_service_callback.is_null());
   auto metadata_result =
@@ -421,7 +445,6 @@ TEST_P(SecurePaymentConfirmationAppBrowserBindingTest,
       GetParam().expected_inclusion_metric_result,
       /*expected_bucket_count=*/1);
 }
-#endif  // BUILDFLAG(IS_ANDROID)
 
 class SecurePaymentConfirmationAppWithUxRefreshFlagTest
     : public SecurePaymentConfirmationAppTest {

@@ -43,6 +43,10 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "components/payments/content/content_payment_request_delegate.h"
+#endif
+
 namespace payments {
 namespace {
 
@@ -350,12 +354,10 @@ void SecurePaymentConfirmationAppFactory::Create(
   delegate->OnDoneCreatingPaymentApps();
 }
 
-#if BUILDFLAG(IS_ANDROID)
 void SecurePaymentConfirmationAppFactory::SetBrowserBoundKeyStoreForTesting(
     scoped_refptr<BrowserBoundKeyStore> key_store) {
   browser_bound_key_store_for_testing_ = std::move(key_store);
 }
-#endif  // BUILDFLAG(IS_ANDROID)
 
 void SecurePaymentConfirmationAppFactory::SetCredentialFinderForTesting(
     std::unique_ptr<SecurePaymentConfirmationCredentialFinder>
@@ -534,17 +536,16 @@ void SecurePaymentConfirmationAppFactory::DidDownloadAllIcons(
 
   std::unique_ptr<PasskeyBrowserBinder> passkey_browser_binder;
   bool device_supports_browser_bound_keys_in_hardware = false;
-#if BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(
           blink::features::kSecurePaymentConfirmationBrowserBoundKeys)) {
     scoped_refptr key_store =
         browser_bound_key_store_for_testing_
             ? std::move(browser_bound_key_store_for_testing_)
-            : GetBrowserBoundKeyStoreInstance(BrowserBoundKeyStore::Config {
+            : GetBrowserBoundKeyStoreInstance(BrowserBoundKeyStore::Config{
 #if BUILDFLAG(IS_MAC)
-                .keychain_access_group =
-                    request->delegate->GetPaymentRequestDelegate()
-                        ->GetSecurePaymentConfirmationKeychainAccessGroup();
+                  .keychain_access_group =
+                      request->delegate->GetPaymentRequestDelegate()
+                          ->GetSecurePaymentConfirmationKeychainAccessGroup()
 #endif  // BUILDFLAG(IS_MAC)
               });
     device_supports_browser_bound_keys_in_hardware =
@@ -552,7 +553,6 @@ void SecurePaymentConfirmationAppFactory::DidDownloadAllIcons(
     passkey_browser_binder = std::make_unique<PasskeyBrowserBinder>(
         std::move(key_store), request->web_data_service);
   }
-#endif  // BUILDFLAG(IS_ANDROID)
 
   request->delegate->OnPaymentAppCreated(
       std::make_unique<SecurePaymentConfirmationApp>(

@@ -42,8 +42,12 @@ bool FakeBrowserBoundKeyStore::GetDeviceSupportsHardwareKeys() {
   return device_supports_hardware_keys_;
 }
 
-void FakeBrowserBoundKeyStore::PutFakeKey(FakeBrowserBoundKey bbk) {
-  key_map_.insert(std::make_pair(bbk.GetIdentifier(), std::move(bbk)));
+void FakeBrowserBoundKeyStore::PutFakeKey(
+    FakeBrowserBoundKey bbk,
+    std::optional<std::vector<uint8_t>> bbk_id) {
+  key_map_.insert(
+      std::make_pair(bbk_id.has_value() ? bbk_id.value() : bbk.GetIdentifier(),
+                     std::move(bbk)));
 }
 
 bool FakeBrowserBoundKeyStore::ContainsFakeKey(

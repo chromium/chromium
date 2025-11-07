@@ -184,6 +184,9 @@ void PasskeyBrowserBinder::DeleteBrowserBoundKeys(
       base::ToVector(bbk_metas,
                      [](auto& meta) { return std::move(meta.passkey); }),
       std::move(callback));
+  for (const BrowserBoundKeyMetadata& bbk_meta : bbk_metas) {
+    key_store_->DeleteBrowserBoundKey(bbk_meta.browser_bound_key_id);
+  }
 }
 
 void PasskeyBrowserBinder::GetBoundKeyForPasskey(
@@ -266,7 +269,7 @@ void PasskeyBrowserBinder::GetOrCreateBrowserBoundKey(
       key_store_->GetOrCreateBrowserBoundKeyForCredentialId(
           browser_bound_key_id, allowed_algorithms);
   if (needs_to_be_created && browser_bound_key) {
-    BindKey(UnboundKey(std::move(browser_bound_key_id),
+    BindKey(UnboundKey(browser_bound_key->GetIdentifier(),
                        /*browser_bound_key=*/{}, key_store_),
             std::move(credential_id), std::move(relying_party),
             std::move(last_used));
