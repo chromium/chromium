@@ -6419,6 +6419,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.SyncedSetUp.RemoteAppliedPrefCount" units="count"
+    expires_after="2026-05-06">
+  <owner>ericekey@google.com</owner>
+  <owner>bwwilliams@google.com</owner>
+  <owner>scottyoder@google.com</owner>
+  <summary>
+    Records the number of preferences applied from a remote device to the
+    current device. Logged each time the user accepts a suggestion to update
+    their settings.
+  </summary>
+</histogram>
+
 <histogram name="IOS.SyncedSetUp.Snackbar.Interaction"
     enum="SyncedSetUpSnackbarInteraction" expires_after="2026-05-06">
   <owner>ericekey@google.com</owner>

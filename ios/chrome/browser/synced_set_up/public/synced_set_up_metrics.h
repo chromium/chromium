@@ -74,4 +74,8 @@ enum class SyncedSetUpSnackbarInteraction {
 // Records the user's interaction with the Synced Set Up snackbar.
 void LogSyncedSetUpSnackbarInteraction(SyncedSetUpSnackbarInteraction event);
 
+// Logs the number of remote prefs applied to the local device in a single
+// batch.
+void LogSyncedSetUpRemoteAppliedPrefCount(int count);
+
 #endif  // IOS_CHROME_BROWSER_SYNCED_SET_UP_PUBLIC_SYNCED_SET_UP_METRICS_H_

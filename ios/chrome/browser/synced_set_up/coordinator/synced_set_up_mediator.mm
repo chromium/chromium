@@ -517,6 +517,9 @@ void LogSnackbarInteraction(SyncedSetUpState state,
 
 // Applies profile and local-state prefs from a remote device.
 - (void)applyPrefsFromRemoteDevice {
+  int count = _profilePrefsToApply.size() + _localStatePrefsToApply.size();
+  LogSyncedSetUpRemoteAppliedPrefCount(count);
+
   PrefService* localState = GetApplicationContext()->GetLocalState();
 
   for (const auto& [pref_name, remote_pref_value] : _profilePrefsToApply) {
