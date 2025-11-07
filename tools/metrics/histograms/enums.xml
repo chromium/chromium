@@ -1467,11 +1467,6 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="1" label="Registration is a duplicate"/>
 </enum>
 
-<enum name="BooleanRelroAvailableImmediately">
-  <int value="0" label="Available Later"/>
-  <int value="1" label="Available Immediately"/>
-</enum>
-
 <enum name="BooleanRequested">
   <int value="0" label="Not requested"/>
   <int value="1" label="Requested"/>
@@ -23925,24 +23920,6 @@ Called by update_net_error_codes.py.-->
   <int value="2" label="Failure"/>
   <int value="3" label="Device does't have a passcode set up."/>
   <int value="4" label="Open Passcode Settings."/>
-</enum>
-
-<enum name="RelroSharingStatus">
-  <int value="0" label="Using shared RELRO failed: other reasons"/>
-  <int value="1" label="Using shared RELRO succeeded"/>
-  <int value="2" label="Using shared RELRO failed: contents did not match"/>
-  <int value="3" label="Using shared RELRO failed: RELRO FD was not provided"/>
-  <int value="4"
-      label="Using shared RELRO failed: RELRO region not found in the current
-             process"/>
-  <int value="5"
-      label="Using shared RELRO failed: could not find shared memory
-             functions"/>
-  <int value="6"
-      label="Using shared RELRO failed: failed to mmap on top of previous
-             RELRO"/>
-  <int value="7" label="Using shared RELRO failed: invalid RELRO information"/>
-  <int value="8" label="Using shared RELRO failed: load address was reset"/>
 </enum>
 
 <enum name="RemotePlaybackInitiationLocation">

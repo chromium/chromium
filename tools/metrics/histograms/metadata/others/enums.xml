@@ -33,6 +33,11 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="BuyerAndSellerReportingId"/>
 </enum>
 
+<enum name="BooleanRelroAvailableImmediately">
+  <int value="0" label="Available Later"/>
+  <int value="1" label="Available Immediately"/>
+</enum>
+
 <!-- LINT.IfChange(DetachKernelDriverOutcome) -->
 
 <enum name="DetachKernelDriverOutcome">
@@ -188,6 +193,24 @@ chromium-metrics-reviews@google.com.
   <int value="12" label="Feedback Tool Hot Rod"/>
   <int value="13" label="Feedback Tool User Descriptions"/>
   <int value="14" label="Feedback Tool System Logs"/>
+</enum>
+
+<enum name="RelroSharingStatus">
+  <int value="0" label="Using shared RELRO failed: other reasons"/>
+  <int value="1" label="Using shared RELRO succeeded"/>
+  <int value="2" label="Using shared RELRO failed: contents did not match"/>
+  <int value="3" label="Using shared RELRO failed: RELRO FD was not provided"/>
+  <int value="4"
+      label="Using shared RELRO failed: RELRO region not found in the current
+             process"/>
+  <int value="5"
+      label="Using shared RELRO failed: could not find shared memory
+             functions"/>
+  <int value="6"
+      label="Using shared RELRO failed: failed to mmap on top of previous
+             RELRO"/>
+  <int value="7" label="Using shared RELRO failed: invalid RELRO information"/>
+  <int value="8" label="Using shared RELRO failed: load address was reset"/>
 </enum>
 
 <enum name="RequestWorkletServiceOutcome">
