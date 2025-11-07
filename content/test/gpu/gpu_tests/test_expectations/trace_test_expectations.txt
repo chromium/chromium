@@ -260,6 +260,9 @@ crbug.com/398149367 [ win11 amd-0x7480 ] WebGPUCachingTraceTest_RenderPipelineIn
 # crbug.com/329138770 [ win11 amd-0x150e ] WebGPUCachingTraceTest_RenderPipelineDifferentOrigins [ Failure ]
 # crbug.com/329138770 [ win11 amd-0x150e ] WebGPUCachingTraceTest_RenderPipelineIncognito [ Failure ]
 
+# New CopyToGpuMemoryBufferAsync events not found.
+crbug.com/397485312 [ win10 intel-0x9bc5 ] TraceTest_MediaFoundationD3D11VideoCapture [ Failure ]
+crbug.com/397485312 [ win10 amd-0x7340 ] TraceTest_MediaFoundationD3D11VideoCapture [ Failure ]
 
 # Win11/RTX 4070 Super/GTX 1660/AMD RX 7600 failures after upgrading to driver 580.88
 crbug.com/450323461 [ win11 nvidia-0x2783 ] VideoPathTraceTest_DirectComposition_Video_MP4 [ RetryOnFailure ]
