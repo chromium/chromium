@@ -93,11 +93,7 @@ enum class FlushReason {
   // This inhibits vector printing.
   kCopyToSkBitmap = 18,
 
-  // The canvas was uploaded to a WebGL texture.
-  // This inhibits vector printing.
-  kWebGLTexImage = 19,
-
-  kOther = 20,
+  kOther = 19,
 
   kMaxValue = kOther,
 };

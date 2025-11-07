@@ -214,8 +214,8 @@ TEST_F(OffscreenCanvasTest, SwitchFrameByCanvasImageSource) {
 
   // GetSourceImageForCanvas() should call UniqueFontSelector::DidSwitchFrame().
   SourceImageStatus source_image_status;
-  canvas->GetSourceImageForCanvas(FlushReason::kWebGLTexImage,
-                                  &source_image_status, {100, 100});
+  canvas->GetSourceImageForCanvas(FlushReason::kOther, &source_image_status,
+                                  {100, 100});
   EXPECT_GT(FrameGenerationOf(*selector), original_generation);
 }
 

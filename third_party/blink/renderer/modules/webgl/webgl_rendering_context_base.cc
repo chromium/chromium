@@ -5705,7 +5705,7 @@ void WebGLRenderingContextBase::TexImageStaticBitmapImage(
   scoped_refptr<StaticBitmapImage> color_converted_image;
   if (params.unpack_colorspace_conversion && image->IsTextureBacked()) {
     color_converted_image = StaticBitmapImageTransform::ConvertToColorSpace(
-        FlushReason::kWebGLTexImage, image,
+        FlushReason::kOther, image,
         PredefinedColorSpaceToSkColorSpace(unpack_color_space_));
     if (!color_converted_image) {
       SynthesizeGLError(GL_OUT_OF_MEMORY, func_name,
@@ -5845,7 +5845,7 @@ scoped_refptr<Image> WebGLRenderingContextBase::DrawImageIntoBufferForTexImage(
                     draw_options);
       });
 
-  return resource_provider_bitmap->Snapshot(FlushReason::kWebGLTexImage);
+  return resource_provider_bitmap->Snapshot(FlushReason::kOther);
 }
 
 WebGLTexture* WebGLRenderingContextBase::ValidateTexImageBinding(
@@ -6059,7 +6059,7 @@ void WebGLRenderingContextBase::TexImageHelperHTMLImageElement(
     if (have_svg_image) {
       SourceImageStatus status;
       image_for_render = image->GetSourceImageForCanvas(
-          FlushReason::kWebGLTexImage, &status, gfx::SizeF(300, 150));
+          FlushReason::kOther, &status, gfx::SizeF(300, 150));
       // Since the size of the source has not been previously validated,
       // GetSourceImageForCanvas() can return nullptr.
       if (!image_for_render) {
@@ -6340,7 +6340,7 @@ void WebGLRenderingContextBase::TexImageHelperCanvasRenderingContextHost(
 
   SourceImageStatus source_image_status = kInvalidSourceImageStatus;
   scoped_refptr<Image> image = context_host->GetSourceImageForCanvas(
-      FlushReason::kWebGLTexImage, &source_image_status,
+      FlushReason::kOther, &source_image_status,
       gfx::SizeF(*params.width, *params.height));
   if (source_image_status != kNormalSourceImageStatus)
     return;
