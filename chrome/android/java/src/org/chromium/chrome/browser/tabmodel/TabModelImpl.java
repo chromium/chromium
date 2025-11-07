@@ -222,6 +222,7 @@ public class TabModelImpl extends TabModelJniBridge {
     @Override
     public void destroy() {
         commitAllTabClosures();
+        for (TabModelObserver obs : mObservers) obs.onDestroy();
         for (Tab tab : mTabs) {
             // When reparenting tabs, we skip destroying tabs that we're intentionally keeping in
             // memory.

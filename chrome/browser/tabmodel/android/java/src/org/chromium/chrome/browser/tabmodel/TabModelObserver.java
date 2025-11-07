@@ -228,4 +228,12 @@ public interface TabModelObserver {
 
     /** Called when the set of multi-selected tabs has changed. */
     default void onTabsSelectionChanged() {}
+
+    /**
+     * Called when the TabModel is destroyed. Note that for the incognito tab model this may be
+     * called multiple times as the observer is registered to the outer tab model, but the inner
+     * delegate model will be destroyed whenever the tab count becomes zero, and recreated if the
+     * tab count becomes non-zero.
+     */
+    default void onDestroy() {}
 }

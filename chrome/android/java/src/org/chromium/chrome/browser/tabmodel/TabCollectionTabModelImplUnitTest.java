@@ -12,6 +12,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -224,6 +225,7 @@ public class TabCollectionTabModelImplUnitTest {
         assertEquals(
                 "Tab count should be 0 when native is not initialized", 0, mTabModel.getCount());
         verify(mTabCollectionTabModelImplJni, never()).getTabCountRecursive(anyLong());
+        verify(mTabModelObserver, atLeastOnce()).onDestroy();
     }
 
     @Test

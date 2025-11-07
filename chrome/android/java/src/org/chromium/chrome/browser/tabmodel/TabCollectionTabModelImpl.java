@@ -360,6 +360,10 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     @Override
     public void destroy() {
         assertOnUiThread();
+        commitAllTabClosures();
+
+        for (TabModelObserver obs : mTabModelObservers) obs.onDestroy();
+
         // Cache the list of tabs so we have them before native is destroyed.
         List<Tab> tabs = getAllTabs();
 
