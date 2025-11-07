@@ -9,7 +9,10 @@ assert(!is_android)
 build_webui("build") {
   grd_prefix = "legion_internals"
 
-  static_files = [ "legion_internals.html" ]
+  static_files = [
+    "legion_internals.css",
+    "legion_internals.html",
+  ]
 
   ts_files = [ "legion_internals.ts" ]
 }
