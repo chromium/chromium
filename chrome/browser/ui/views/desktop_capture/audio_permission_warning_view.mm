@@ -11,6 +11,7 @@
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/component_extension_resources.h"
 #include "chrome/grit/generated_resources.h"
+#include "ui/accessibility/platform/ax_platform.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_types.h"
@@ -36,13 +37,13 @@ AudioPermissionWarningView::AudioPermissionWarningView(
   content_wrapper_layout->SetOrientation(views::LayoutOrientation::kVertical);
   content_wrapper_layout->SetInteriorMargin(gfx::Insets(12));
 
-  auto* label = content_wrapper->AddChildView(
+  label_ = content_wrapper->AddChildView(
       std::make_unique<views::Label>(l10n_util::GetStringUTF16(
           IDS_DESKTOP_MEDIA_PICKER_SYSTEM_AUDIO_PERMISSION_TEXT_MAC)));
 
-  label->SetMultiLine(true);
-  label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  label->SetTextStyle(views::style::STYLE_BODY_4);
+  label_->SetMultiLine(true);
+  label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  label_->SetTextStyle(views::style::STYLE_BODY_4);
 
   auto* button_container =
       content_wrapper->AddChildView(std::make_unique<views::View>());
@@ -54,22 +55,40 @@ AudioPermissionWarningView::AudioPermissionWarningView(
       views::BoxLayout::MainAxisAlignment::kEnd);
 
   // Cancel button.
-  auto* cancel_button =
+  cancel_button_ =
       button_container->AddChildView(std::make_unique<views::MdTextButton>(
           cancel_callback_, l10n_util::GetStringUTF16(IDS_APP_CANCEL)));
-  cancel_button->SetStyle(ui::ButtonStyle::kText);
+  cancel_button_->SetStyle(ui::ButtonStyle::kText);
 
   // Open system settings button.
-  button_container->AddChildView(std::make_unique<views::MdTextButton>(
-      base::BindRepeating(&AudioPermissionWarningView::OpenSystemSettings,
-                          base::Unretained(this)),
-      l10n_util::GetStringUTF16(
-          IDS_DESKTOP_MEDIA_PICKER_PERMISSION_BUTTON_MAC)));
+  system_settings_button_ =
+      button_container->AddChildView(std::make_unique<views::MdTextButton>(
+          base::BindRepeating(&AudioPermissionWarningView::OpenSystemSettings,
+                              base::Unretained(this)),
+          l10n_util::GetStringUTF16(
+              IDS_DESKTOP_MEDIA_PICKER_PERMISSION_BUTTON_MAC)));
 
   AddAccelerator(ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
 }
 
 AudioPermissionWarningView::~AudioPermissionWarningView() = default;
+
+void AudioPermissionWarningView::VisibilityChanged(views::View* starting_from,
+                                                   bool is_visible) {
+  // Child views may remain in focus even though their parent is hidden,
+  // unless their focus behavior is set to 'never'.
+  cancel_button_->SetFocusBehavior(is_visible ? FocusBehavior::ACCESSIBLE_ONLY
+                                              : FocusBehavior::NEVER);
+  system_settings_button_->SetFocusBehavior(
+      is_visible ? FocusBehavior::ACCESSIBLE_ONLY : FocusBehavior::NEVER);
+
+  if (is_visible && ui::AXPlatform::GetInstance().IsScreenReaderActive()) {
+    label_->SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
+    label_->RequestFocus();
+  } else {
+    label_->SetFocusBehavior(FocusBehavior::NEVER);
+  }
+}
 
 void AudioPermissionWarningView::OpenSystemSettings() {
   base::ThreadPool::PostTask(

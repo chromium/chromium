@@ -74,6 +74,9 @@ std::u16string_view DesktopMediaContentPaneView::GetAudioLabelText() const {
 void DesktopMediaContentPaneView::SetAudioWarningVisible(bool visible) {
   if (audio_warning_view_) {
     audio_warning_view_->SetVisible(visible);
+    if (!visible) {
+      share_audio_view_->RequestFocus();
+    }
   }
 }
 
