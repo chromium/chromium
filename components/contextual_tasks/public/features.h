@@ -21,6 +21,9 @@ extern const base::FeatureParam<double> kMinEmbeddingSimilarityScore;
 // Whether to only consider titles for similarity.
 extern const base::FeatureParam<bool> kOnlyUseTitlesForSimilarity;
 
+// Minimum score, computed using multiple signals, to consider a tab relevant.
+extern const base::FeatureParam<double> kMinMultiSignalScore;
+
 // Returns the base URL for the AI page.
 extern std::string GetContextualTasksAiPageUrl();
 

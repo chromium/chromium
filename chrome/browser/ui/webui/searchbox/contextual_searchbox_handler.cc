@@ -37,6 +37,8 @@
 
 namespace {
 
+using ::contextual_tasks::TabSelectionMode;
+
 constexpr int kThumbnailWidth = 125;
 constexpr int kThumbnailHeight = 200;
 
@@ -434,7 +436,7 @@ void ContextualSearchboxHandler::ComputeAndOpenQueryUrl(
   // Do not provide a callback as this method is only used for dark experiment.
   if (contextual_tasks_context_service_) {
     contextual_tasks_context_service_->GetRelevantTabsForQuery(
-        query_text, base::DoNothing());
+        query_text, TabSelectionMode::kEmbeddingsMatch, base::DoNothing());
   }
 #endif
 }

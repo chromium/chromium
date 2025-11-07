@@ -30,7 +30,10 @@ const base::FeatureParam<std::string> kContextualTasksSignInDomains{
 
 const base::FeatureParam<double> kMinEmbeddingSimilarityScore{
     &kContextualTasksContext, "ContextualTasksContextEmbeddingSimilarityScore",
-    0.85};
+    0.8};
+
+const base::FeatureParam<double> kMinMultiSignalScore{
+    &kContextualTasksContext, "ContextualTasksContextMinMultiSignalScore", 0.8};
 
 const base::FeatureParam<bool> kOnlyUseTitlesForSimilarity(
     &kContextualTasksContext,

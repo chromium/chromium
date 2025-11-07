@@ -6,6 +6,7 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/simple_test_tick_clock.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -112,7 +113,9 @@ class ContextualTasksContextServiceTest : public InProcessBrowserTest {
   virtual void InitializeFeatureList() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{kContextualTasksContext,
-          {{{"ContextualTasksContextOnlyUseTitles", "false"}}}},
+          {{{"ContextualTasksContextOnlyUseTitles", "false"},
+            {"ContextualTasksContextEmbeddingSimilarityScore", "0.8"},
+            {"ContextualTasksContextMinMultiSignalScore", "0.8"}}}},
          {passage_embeddings::kPassageEmbedder, {}}},
         /*disabled_features=*/{});
   }
@@ -147,21 +150,25 @@ class ContextualTasksContextServiceTest : public InProcessBrowserTest {
         ->SetTestingFactoryAndUse(
             browser_context,
             base::BindRepeating(
-                [](passage_embeddings::EmbedderMetadataProvider*
+                [](base::TickClock* test_clock,
+                   passage_embeddings::EmbedderMetadataProvider*
                        embedder_metadata_provider,
                    passage_embeddings::Embedder* embedder,
                    content::BrowserContext* context)
                     -> std::unique_ptr<KeyedService> {
                   Profile* profile = Profile::FromBrowserContext(context);
-                  return std::make_unique<ContextualTasksContextService>(
-                      profile,
-                      passage_embeddings::PageEmbeddingsServiceFactory::
-                          GetForProfile(profile),
-                      embedder_metadata_provider, embedder,
-                      OptimizationGuideKeyedServiceFactory::GetForProfile(
-                          profile));
+                  auto service =
+                      std::make_unique<ContextualTasksContextService>(
+                          profile,
+                          passage_embeddings::PageEmbeddingsServiceFactory::
+                              GetForProfile(profile),
+                          embedder_metadata_provider, embedder,
+                          OptimizationGuideKeyedServiceFactory::GetForProfile(
+                              profile));
+                  service->SetClockForTesting(test_clock);
+                  return service;
                 },
-                &embedder_metadata_provider_, &embedder_));
+                &test_clock_, &embedder_metadata_provider_, &embedder_));
   }
 
   ContextualTasksContextService* service() {
@@ -204,6 +211,7 @@ class ContextualTasksContextServiceTest : public InProcessBrowserTest {
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::SimpleTestTickClock test_clock_;
 
  private:
   FakeEmbedderMetadataProvider embedder_metadata_provider_;
@@ -216,7 +224,8 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest, NoEmbedder) {
   NavigateToValidURL();
 
   base::test::TestFuture<std::vector<content::WebContents*>> future;
-  service()->GetRelevantTabsForQuery("some text", future.GetCallback());
+  service()->GetRelevantTabsForQuery(
+      "some text", TabSelectionMode::kEmbeddingsMatch, future.GetCallback());
   EXPECT_TRUE(future.Get().empty());
 
   histogram_tester.ExpectTotalCount("ContextualTasks.Context.RelevantTabsCount",
@@ -238,7 +247,8 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest, EmbedderFailed) {
       passage_embeddings::ComputeEmbeddingsStatus::kExecutionFailure);
 
   base::test::TestFuture<std::vector<content::WebContents*>> future;
-  service()->GetRelevantTabsForQuery("some text", future.GetCallback());
+  service()->GetRelevantTabsForQuery(
+      "some text", TabSelectionMode::kEmbeddingsMatch, future.GetCallback());
   EXPECT_TRUE(future.Get().empty());
 
   histogram_tester.ExpectTotalCount("ContextualTasks.Context.RelevantTabsCount",
@@ -259,7 +269,8 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
   NotifyEmbedderMetadata();
 
   base::test::TestFuture<std::vector<content::WebContents*>> future;
-  service()->GetRelevantTabsForQuery("some text", future.GetCallback());
+  service()->GetRelevantTabsForQuery(
+      "some text", TabSelectionMode::kEmbeddingsMatch, future.GetCallback());
   EXPECT_TRUE(future.Get().empty());
 
   histogram_tester.ExpectUniqueSample(
@@ -295,7 +306,8 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest, Success) {
       .WillOnce(Return(fake_page_embeddings));
 
   base::test::TestFuture<std::vector<content::WebContents*>> future;
-  service()->GetRelevantTabsForQuery("some text", future.GetCallback());
+  service()->GetRelevantTabsForQuery(
+      "some text", TabSelectionMode::kEmbeddingsMatch, future.GetCallback());
   EXPECT_EQ(1u, future.Get().size());
 
   histogram_tester.ExpectUniqueSample(
@@ -307,6 +319,139 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest, Success) {
       ContextDeterminationStatus::kSuccess, 1);
 }
 
+IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
+                       MultiSignalScoringHistograms) {
+  base::HistogramTester histogram_tester;
+
+  test_clock_.SetNowTicks(base::TimeTicks::Now());
+  NavigateToValidURL();
+
+  NotifyEmbedderMetadata();
+
+  std::vector<passage_embeddings::PassageEmbedding> fake_page_embeddings = {
+      {std::make_pair("passage 1",
+                      passage_embeddings::PassageType::kPageContent),
+       CreateFakeEmbedding(0.1f)},
+      {std::make_pair("passage 2",
+                      passage_embeddings::PassageType::kPageContent),
+       CreateFakeEmbedding(1.0f)}};
+  EXPECT_CALL(*page_embeddings_service(), GetEmbeddings(_))
+      .WillOnce(Return(fake_page_embeddings));
+
+  test_clock_.Advance(base::Seconds(10));
+
+  base::test::TestFuture<std::vector<content::WebContents*>> future;
+  service()->GetRelevantTabsForQuery(
+      "some text", TabSelectionMode::kMultiSignalScoring, future.GetCallback());
+  EXPECT_EQ(1u, future.Get().size());
+
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.Context.RelevantTabsCount", 1, 1);
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.Context.ContextCalculationLatency", 1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.Context.ContextDeterminationStatus",
+      ContextDeterminationStatus::kSuccess, 1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.Context.EmbeddingSimilarityScore", 99, 1);
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.Context.DurationSinceLastActive", 1);
+  histogram_tester.ExpectUniqueSample("ContextualTasks.Context.TabScore", 100,
+                                      1);
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
+                       HighEmbeddingsScoreQualifiesTab) {
+  base::HistogramTester histogram_tester;
+
+  test_clock_.SetNowTicks(base::TimeTicks::Now());
+  NavigateToValidURL();
+
+  NotifyEmbedderMetadata();
+
+  // Passage 2 has high embeddings score.
+  std::vector<passage_embeddings::PassageEmbedding> fake_page_embeddings = {
+      {std::make_pair("passage 1",
+                      passage_embeddings::PassageType::kPageContent),
+       CreateFakeEmbedding(0.1f)},
+      {std::make_pair("passage 2",
+                      passage_embeddings::PassageType::kPageContent),
+       CreateFakeEmbedding(1.0f)}};
+  EXPECT_CALL(*page_embeddings_service(), GetEmbeddings(_))
+      .WillOnce(Return(fake_page_embeddings));
+
+  // Tab got old.
+  test_clock_.Advance(base::Seconds(1800));
+
+  base::test::TestFuture<std::vector<content::WebContents*>> future;
+  service()->GetRelevantTabsForQuery(
+      "some text", TabSelectionMode::kMultiSignalScoring, future.GetCallback());
+  EXPECT_EQ(1u, future.Get().size());
+
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.Context.RelevantTabsCount", 1, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
+                       HighRecencyScoreQualifiesTab) {
+  base::HistogramTester histogram_tester;
+
+  test_clock_.SetNowTicks(base::TimeTicks::Now());
+  NavigateToValidURL();
+
+  NotifyEmbedderMetadata();
+
+  // None of the passages have high embeddings score.
+  std::vector<passage_embeddings::PassageEmbedding> fake_page_embeddings = {
+      {std::make_pair("passage 1",
+                      passage_embeddings::PassageType::kPageContent),
+       CreateFakeEmbedding(-1.0f)},
+      {std::make_pair("passage 2",
+                      passage_embeddings::PassageType::kPageContent),
+       CreateFakeEmbedding(-1.0f)}};
+  EXPECT_CALL(*page_embeddings_service(), GetEmbeddings(_))
+      .WillOnce(Return(fake_page_embeddings));
+
+  // Recently active tab.
+  test_clock_.Advance(base::Seconds(5));
+
+  base::test::TestFuture<std::vector<content::WebContents*>> future;
+  service()->GetRelevantTabsForQuery(
+      "some text", TabSelectionMode::kMultiSignalScoring, future.GetCallback());
+  EXPECT_EQ(1u, future.Get().size());
+
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.Context.RelevantTabsCount", 1, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest, NotRelevantTab) {
+  base::HistogramTester histogram_tester;
+
+  test_clock_.SetNowTicks(base::TimeTicks::Now());
+  NavigateToValidURL();
+
+  NotifyEmbedderMetadata();
+
+  // None of the passages have high embeddings score.
+  std::vector<passage_embeddings::PassageEmbedding> fake_page_embeddings = {
+      {std::make_pair("passage 1",
+                      passage_embeddings::PassageType::kPageContent),
+       CreateFakeEmbedding(-1.0f)},
+      {std::make_pair("passage 2",
+                      passage_embeddings::PassageType::kPageContent),
+       CreateFakeEmbedding(-1.0f)}};
+  EXPECT_CALL(*page_embeddings_service(), GetEmbeddings(_))
+      .WillOnce(Return(fake_page_embeddings));
+
+  // Recently active tab.
+  test_clock_.Advance(base::Seconds(1800));
+
+  base::test::TestFuture<std::vector<content::WebContents*>> future;
+  service()->GetRelevantTabsForQuery(
+      "some text", TabSelectionMode::kMultiSignalScoring, future.GetCallback());
+  EXPECT_EQ(0u, future.Get().size());
+}
+
 IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest, SkipsNonHttp) {
   base::HistogramTester histogram_tester;
 
@@ -315,7 +460,8 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest, SkipsNonHttp) {
   EXPECT_CALL(*page_embeddings_service(), GetEmbeddings(_)).Times(0);
 
   base::test::TestFuture<std::vector<content::WebContents*>> future;
-  service()->GetRelevantTabsForQuery("some text", future.GetCallback());
+  service()->GetRelevantTabsForQuery(
+      "some text", TabSelectionMode::kEmbeddingsMatch, future.GetCallback());
   EXPECT_TRUE(future.Get().empty());
 
   histogram_tester.ExpectUniqueSample(
@@ -357,7 +503,8 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTitlesOnlyTest, Success) {
       .WillOnce(Return(fake_page_embeddings));
 
   base::test::TestFuture<std::vector<content::WebContents*>> future;
-  service()->GetRelevantTabsForQuery("some text", future.GetCallback());
+  service()->GetRelevantTabsForQuery(
+      "some text", TabSelectionMode::kEmbeddingsMatch, future.GetCallback());
   EXPECT_EQ(1u, future.Get().size());
 }
 

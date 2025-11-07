@@ -45,6 +45,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ContextualTasks.Context.DurationSinceLastActive"
+    units="seconds" expires_after="2026-03-22">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>abhayprakash@google.com</owner>
+  <summary>
+    Recorded every time a query is successfully made in the contextual tasks.
+    Records seconds (upto 3600) since each of the tab was active.
+  </summary>
+</histogram>
+
+<histogram name="ContextualTasks.Context.EmbeddingSimilarityScore"
+    units="count" expires_after="2026-03-22">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>abhayprakash@google.com</owner>
+  <summary>
+    Recorded every time a query is successfully made in the contextual tasks.
+    Records 100*best_similarity_score between query embeddings and passage
+    embeddings for the page.
+  </summary>
+</histogram>
+
 <histogram name="ContextualTasks.Context.RelevantTabsCount" units="count"
     expires_after="2026-03-22">
   <owner>sophiechang@chromium.org</owner>
@@ -53,6 +74,17 @@ chromium-metrics-reviews@google.com.
     Recorded every time a query is successfully made in the contextual tasks
     framework and context was calculated successfully. Records the number of
     tabs that were determined to be relevant to the query.
+  </summary>
+</histogram>
+
+<histogram name="ContextualTasks.Context.TabScore" units="count"
+    expires_after="2026-03-22">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>abhayprakash@google.com</owner>
+  <summary>
+    Recorded every time a query is successfully made in the contextual tasks
+    framework when using multi-signal scoring. Records the final computed score
+    for each tab, multiplied by 100.
   </summary>
 </histogram>
 
