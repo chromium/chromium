@@ -1665,29 +1665,25 @@ void OmniboxViewViews::OnBlur() {
     RevertAll();
   }
 
-  // If the full WebUI popup is enabled, it's expected to take focus.
-  // In this case, we should NOT close the popup when the omnibox view
-  // is blurred, because the focus is simply moving to the popup itself.
-  if (!base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopup)) {
-    controller()->edit_model()->OnWillKillFocus();
+  controller()->edit_model()->OnWillKillFocus();
 
-    // If ZeroSuggest is active, and there is evidence that there is a text
-    // update to show, revert to ensure that update is shown now.  Otherwise,
-    // at least call CloseOmniboxPopup(), so that if ZeroSuggest is in the
-    // midst of running but hasn't yet opened the popup, it will be halted.
-    // If we fully reverted in this case, we'd lose the cursor/highlight
-    // information saved above.
-    if (!controller()->edit_model()->user_input_in_progress() &&
-        controller()->edit_model()->PopupIsOpen() &&
-        GetText() != controller()->edit_model()->GetPermanentDisplayText()) {
-      RevertAll();
-    } else {
-      CloseOmniboxPopup();
-    }
-
-    // Tell the model to reset itself.
-    controller()->edit_model()->OnKillFocus();
+  // If ZeroSuggest is active, and there is evidence that there is a text
+  // update to show, revert to ensure that update is shown now.  Otherwise,
+  // at least call CloseOmniboxPopup(), so that if ZeroSuggest is in the
+  // midst of running but hasn't yet opened the popup, it will be halted.
+  // If we fully reverted in this case, we'd lose the cursor/highlight
+  // information saved above.
+  if (!controller()->edit_model()->user_input_in_progress() &&
+      controller()->edit_model()->PopupIsOpen() &&
+      GetText() != controller()->edit_model()->GetPermanentDisplayText()) {
+    RevertAll();
+  } else {
+    CloseOmniboxPopup();
   }
+
+  // Tell the model to reset itself.
+  controller()->edit_model()->OnKillFocus();
+
   // Deselect the text. Ensures the cursor is an I-beam.
   SetSelectedRange(gfx::Range(GetCursorPosition()));
 
