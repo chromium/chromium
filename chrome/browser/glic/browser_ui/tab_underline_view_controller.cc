@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/glic/browser_ui/underline_view_updater.h"
+#include "chrome/browser/glic/browser_ui/tab_underline_view_controller.h"
 
 #include "base/debug/crash_logging.h"
-#include "chrome/browser/glic/browser_ui/glic_tab_underline_view.h"
+#include "chrome/browser/glic/browser_ui/tab_underline_view.h"
 #include "chrome/browser/glic/public/context/glic_sharing_manager.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
@@ -17,8 +17,9 @@
 
 namespace glic {
 
-UnderlineViewUpdater::UnderlineViewUpdater(Browser* browser,
-                                           GlicTabUnderlineView* underline_view)
+TabUnderlineViewController::TabUnderlineViewController(
+    Browser* browser,
+    TabUnderlineView* underline_view)
     : underline_view_(underline_view), browser_(browser) {
   auto* glic_service = GetGlicKeyedService();
   GlicSharingManager& sharing_manager = glic_service->sharing_manager();
@@ -26,13 +27,14 @@ UnderlineViewUpdater::UnderlineViewUpdater(Browser* browser,
   if (!GlicEnabling::IsMultiInstanceEnabledByFlags()) {
     // Subscribe to changes in the focused tab.
     focus_change_subscription_ = sharing_manager.AddFocusedTabChangedCallback(
-        base::BindRepeating(&UnderlineViewUpdater::OnFocusedTabChanged,
+        base::BindRepeating(&TabUnderlineViewController::OnFocusedTabChanged,
                             base::Unretained(this)));
     // Subscribe to changes in the context access indicator status.
     indicator_change_subscription_ =
         glic_service->AddContextAccessIndicatorStatusChangedCallback(
-            base::BindRepeating(&UnderlineViewUpdater::OnIndicatorStatusChanged,
-                                base::Unretained(this)));
+            base::BindRepeating(
+                &TabUnderlineViewController::OnIndicatorStatusChanged,
+                base::Unretained(this)));
 
     // Observe changes in the floaty state.
     glic_service->GetSingleInstanceWindowController().AddStateObserver(this);
@@ -40,16 +42,18 @@ UnderlineViewUpdater::UnderlineViewUpdater(Browser* browser,
 
   // Subscribe to changes in the set of pinned tabs.
   pinned_tabs_change_subscription_ =
-      sharing_manager.AddPinnedTabsChangedCallback(base::BindRepeating(
-          &UnderlineViewUpdater::OnPinnedTabsChanged, base::Unretained(this)));
+      sharing_manager.AddPinnedTabsChangedCallback(
+          base::BindRepeating(&TabUnderlineViewController::OnPinnedTabsChanged,
+                              base::Unretained(this)));
 
   // Subscribe to when new requests are made by glic.
   user_input_submitted_subscription_ =
-      glic_service->AddUserInputSubmittedCallback(base::BindRepeating(
-          &UnderlineViewUpdater::OnUserInputSubmitted, base::Unretained(this)));
+      glic_service->AddUserInputSubmittedCallback(
+          base::BindRepeating(&TabUnderlineViewController::OnUserInputSubmitted,
+                              base::Unretained(this)));
 }
 
-UnderlineViewUpdater::~UnderlineViewUpdater() {
+TabUnderlineViewController::~TabUnderlineViewController() {
   if (!GlicEnabling::IsMultiInstanceEnabledByFlags()) {
     GetGlicKeyedService()
         ->GetSingleInstanceWindowController()
@@ -57,7 +61,7 @@ UnderlineViewUpdater::~UnderlineViewUpdater() {
   }
 }
 
-void UnderlineViewUpdater::OnFocusedTabChanged(
+void TabUnderlineViewController::OnFocusedTabChanged(
     const FocusedTabData& focused_tab_data) {
   tabs::TabInterface* tab = focused_tab_data.focus();
   auto* previous_focus = glic_current_focused_contents_.get();
@@ -109,7 +113,7 @@ void UnderlineViewUpdater::OnFocusedTabChanged(
   }
 }
 
-void UnderlineViewUpdater::OnIndicatorStatusChanged(bool enabled) {
+void TabUnderlineViewController::OnIndicatorStatusChanged(bool enabled) {
   if (context_access_indicator_enabled_ == enabled) {
     return;
   }
@@ -119,7 +123,7 @@ void UnderlineViewUpdater::OnIndicatorStatusChanged(bool enabled) {
                           : UpdateUnderlineReason::kContextAccessIndicatorOff);
 }
 
-void UnderlineViewUpdater::OnPinnedTabsChanged(
+void TabUnderlineViewController::OnPinnedTabsChanged(
     const std::vector<content::WebContents*>& pinned_contents) {
   if (!GetTabInterface()) {
     // If the TabInterface is invalid at this point, there is no relevant UI
@@ -137,7 +141,7 @@ void UnderlineViewUpdater::OnPinnedTabsChanged(
       UpdateUnderlineReason::kPinnedTabsChanged_TabNotInPinnedSet);
 }
 
-void UnderlineViewUpdater::PanelStateChanged(
+void TabUnderlineViewController::PanelStateChanged(
     const glic::mojom::PanelState& panel_state,
     const GlicWindowController::PanelStateContext& context) {
   UpdateUnderlineView(
@@ -146,15 +150,16 @@ void UnderlineViewUpdater::PanelStateChanged(
           : UpdateUnderlineReason::kPanelStateChanged_PanelShowing);
 }
 
-void UnderlineViewUpdater::OnUserInputSubmitted() {
+void TabUnderlineViewController::OnUserInputSubmitted() {
   UpdateUnderlineView(UpdateUnderlineReason::kUserInputSubmitted);
 }
 
-GlicKeyedService* UnderlineViewUpdater::GetGlicKeyedService() {
+GlicKeyedService* TabUnderlineViewController::GetGlicKeyedService() {
   return GlicKeyedServiceFactory::GetGlicKeyedService(browser_->GetProfile());
 }
 
-base::WeakPtr<tabs::TabInterface> UnderlineViewUpdater::GetTabInterface() {
+base::WeakPtr<tabs::TabInterface>
+TabUnderlineViewController::GetTabInterface() {
   if (underline_view_ && underline_view_->tab_) {
     if (auto tab_interface = underline_view_->tab_->data().tab_interface) {
       return tab_interface;
@@ -163,7 +168,7 @@ base::WeakPtr<tabs::TabInterface> UnderlineViewUpdater::GetTabInterface() {
   return nullptr;
 }
 
-bool UnderlineViewUpdater::IsUnderlineTabPinned() {
+bool TabUnderlineViewController::IsUnderlineTabPinned() {
   if (auto tab_interface = GetTabInterface()) {
     if (auto* glic_service = GetGlicKeyedService()) {
       return glic_service->sharing_manager().IsTabPinned(
@@ -173,7 +178,7 @@ bool UnderlineViewUpdater::IsUnderlineTabPinned() {
   return false;
 }
 
-bool UnderlineViewUpdater::IsUnderlineTabSharedThroughActiveFollow() {
+bool TabUnderlineViewController::IsUnderlineTabSharedThroughActiveFollow() {
   if (auto tab_interface = GetTabInterface()) {
     if (auto* glic_service = GetGlicKeyedService()) {
       return (glic_service->sharing_manager().GetFocusedTabData().focus() ==
@@ -184,7 +189,8 @@ bool UnderlineViewUpdater::IsUnderlineTabSharedThroughActiveFollow() {
   return false;
 }
 
-void UnderlineViewUpdater::UpdateUnderlineView(UpdateUnderlineReason reason) {
+void TabUnderlineViewController::UpdateUnderlineView(
+    UpdateUnderlineReason reason) {
   AddReasonForDebugging(reason);
   auto reasons_string = UpdateReasonsToString();
   SCOPED_CRASH_KEY_STRING1024("crbug-398319435", "update_reasons",
@@ -310,22 +316,22 @@ void UnderlineViewUpdater::UpdateUnderlineView(UpdateUnderlineReason reason) {
   }
 }
 
-void UnderlineViewUpdater::ShowAndAnimateUnderline() {
+void TabUnderlineViewController::ShowAndAnimateUnderline() {
   underline_view_->StopShowing();
   underline_view_->Show();
 }
 
-void UnderlineViewUpdater::HideUnderline() {
+void TabUnderlineViewController::HideUnderline() {
   if (underline_view_->IsShowing()) {
     underline_view_->StartRampingDown();
   }
 }
 
-void UnderlineViewUpdater::AnimateUnderline() {
+void TabUnderlineViewController::AnimateUnderline() {
   underline_view_->ResetAnimationCycle();
 }
 
-void UnderlineViewUpdater::ShowOrAnimatePinnedUnderline() {
+void TabUnderlineViewController::ShowOrAnimatePinnedUnderline() {
   if (!IsUnderlineTabPinned()) {
     return;
   }
@@ -344,11 +350,11 @@ void UnderlineViewUpdater::ShowOrAnimatePinnedUnderline() {
   }
 }
 
-bool UnderlineViewUpdater::IsGlicWindowShowing() const {
+bool TabUnderlineViewController::IsGlicWindowShowing() const {
   return underline_view_->GetGlicService()->IsWindowShowing();
 }
 
-bool UnderlineViewUpdater::IsTabInCurrentWindow(
+bool TabUnderlineViewController::IsTabInCurrentWindow(
     const content::WebContents* tab) const {
   auto* model = browser_->GetTabStripModel();
   CHECK(model);
@@ -356,7 +362,7 @@ bool UnderlineViewUpdater::IsTabInCurrentWindow(
   return index != TabStripModel::kNoTab;
 }
 
-std::string UnderlineViewUpdater::UpdateReasonToString(
+std::string TabUnderlineViewController::UpdateReasonToString(
     UpdateUnderlineReason reason) {
   switch (reason) {
     case UpdateUnderlineReason::kContextAccessIndicatorOn:
@@ -386,14 +392,15 @@ std::string UnderlineViewUpdater::UpdateReasonToString(
   }
 }
 
-void UnderlineViewUpdater::AddReasonForDebugging(UpdateUnderlineReason reason) {
+void TabUnderlineViewController::AddReasonForDebugging(
+    UpdateUnderlineReason reason) {
   underline_update_reasons_.push_back(UpdateReasonToString(reason));
   if (underline_update_reasons_.size() > kNumReasonsToKeep) {
     underline_update_reasons_.pop_front();
   }
 }
 
-std::string UnderlineViewUpdater::UpdateReasonsToString() const {
+std::string TabUnderlineViewController::UpdateReasonsToString() const {
   std::ostringstream oss;
   for (const auto& r : underline_update_reasons_) {
     oss << r << ",";

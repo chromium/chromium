@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_GLIC_BROWSER_UI_GLIC_BORDER_VIEW_H_
-#define CHROME_BROWSER_GLIC_BROWSER_UI_GLIC_BORDER_VIEW_H_
+#ifndef CHROME_BROWSER_GLIC_BROWSER_UI_CONTEXT_SHARING_BORDER_VIEW_H_
+#define CHROME_BROWSER_GLIC_BROWSER_UI_CONTEXT_SHARING_BORDER_VIEW_H_
 
-#include "chrome/browser/glic/browser_ui/glic_animated_effect_view.h"
+#include "chrome/browser/glic/browser_ui/animated_effect_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/metadata/view_factory.h"
@@ -19,17 +19,18 @@ class Canvas;
 
 namespace glic {
 
-class BorderViewUpdater;
+class ContextSharingBorderViewController;
 class GlicKeyedService;
 
-class GlicBorderView : public GlicAnimatedEffectView {
-  METADATA_HEADER(GlicBorderView, views::View)
+class ContextSharingBorderView : public AnimatedEffectView {
+  METADATA_HEADER(ContextSharingBorderView, views::View)
 
  public:
   // Allows the test to inject the tester at the border's creation.
   class Factory {
    public:
-    static std::unique_ptr<GlicBorderView> Create(Browser*, ContentsWebView*);
+    static std::unique_ptr<ContextSharingBorderView> Create(Browser*,
+                                                            ContentsWebView*);
     static void set_factory(Factory* factory) { factory_ = factory; }
 
    protected:
@@ -37,7 +38,7 @@ class GlicBorderView : public GlicAnimatedEffectView {
     virtual ~Factory() = default;
 
     // For tests to override.
-    virtual std::unique_ptr<GlicBorderView> CreateBorderView(
+    virtual std::unique_ptr<ContextSharingBorderView> CreateBorderView(
         Browser* browser,
         ContentsWebView* contents_web_view) = 0;
 
@@ -45,9 +46,9 @@ class GlicBorderView : public GlicAnimatedEffectView {
     static Factory* factory_;
   };
 
-  GlicBorderView(const GlicBorderView&) = delete;
-  GlicBorderView& operator=(const GlicBorderView&) = delete;
-  ~GlicBorderView() override;
+  ContextSharingBorderView(const ContextSharingBorderView&) = delete;
+  ContextSharingBorderView& operator=(const ContextSharingBorderView&) = delete;
+  ~ContextSharingBorderView() override;
 
   void SetRoundedCorners(const gfx::RoundedCornersF& radii);
 
@@ -55,13 +56,13 @@ class GlicBorderView : public GlicAnimatedEffectView {
 
  protected:
   friend class Factory;
-  friend class BorderViewUpdater;
-  explicit GlicBorderView(Browser* browser,
-                          ContentsWebView* contents_web_view,
-                          std::unique_ptr<Tester> tester);
+  friend class ContextSharingBorderViewController;
+  explicit ContextSharingBorderView(Browser* browser,
+                                    ContentsWebView* contents_web_view,
+                                    std::unique_ptr<Tester> tester);
 
  private:
-  // `GlicAnimatedEffectView`:
+  // `AnimatedEffectView`:
   bool IsCycleDone(base::TimeTicks timestamp) override;
   base::TimeDelta GetTotalDuration() const override;
   void PopulateShaderUniforms(
@@ -81,16 +82,16 @@ class GlicBorderView : public GlicAnimatedEffectView {
 
   // A utility class that subscribe to `GlicKeyedService` for various browser UI
   // status change.
-  const std::unique_ptr<BorderViewUpdater> updater_;
+  const std::unique_ptr<ContextSharingBorderViewController> updater_;
 };
 
-BEGIN_VIEW_BUILDER(, GlicBorderView, GlicAnimatedEffectView)
+BEGIN_VIEW_BUILDER(, ContextSharingBorderView, AnimatedEffectView)
 VIEW_BUILDER_PROPERTY(bool, Visible)
 VIEW_BUILDER_PROPERTY(bool, CanProcessEventsWithinSubtree)
 END_VIEW_BUILDER
 
 }  // namespace glic
 
-DEFINE_VIEW_BUILDER(, glic::GlicBorderView)
+DEFINE_VIEW_BUILDER(, glic::ContextSharingBorderView)
 
-#endif  // CHROME_BROWSER_GLIC_BROWSER_UI_GLIC_BORDER_VIEW_H_
+#endif  // CHROME_BROWSER_GLIC_BROWSER_UI_CONTEXT_SHARING_BORDER_VIEW_H_

@@ -44,7 +44,7 @@
 #include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/browser_ui/glic_border_view.h"
+#include "chrome/browser/glic/browser_ui/context_sharing_border_view.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #endif
 
@@ -122,8 +122,8 @@ ContentsContainerView::ContentsContainerView(BrowserView* browser_view)
 #if BUILDFLAG(ENABLE_GLIC)
   if (glic::GlicEnabling::IsProfileEligible(browser_view->GetProfile())) {
     glic_border_ =
-        AddChildView(views::Builder<glic::GlicBorderView>(
-                         glic::GlicBorderView::Factory::Create(
+        AddChildView(views::Builder<glic::ContextSharingBorderView>(
+                         glic::ContextSharingBorderView::Factory::Create(
                              browser_view->browser(), contents_view_))
                          .SetVisible(false)
                          .SetCanProcessEventsWithinSubtree(false)

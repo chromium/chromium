@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/glic/browser_ui/glic_tab_underline_view.h"
+#include "chrome/browser/glic/browser_ui/tab_underline_view.h"
 
 #include "base/debug/crash_logging.h"
 #include "cc/paint/paint_flags.h"
-#include "chrome/browser/glic/browser_ui/underline_view_updater.h"
+#include "chrome/browser/glic/browser_ui/tab_underline_view_controller.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
@@ -44,33 +44,32 @@ constexpr static float kCornerRadius = kEffectHeight / 2.0f;
 
 }  // namespace
 
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(GlicTabUnderlineView,
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TabUnderlineView,
                                       kGlicTabUnderlineElementId);
 
-GlicTabUnderlineView::Factory* GlicTabUnderlineView::Factory::factory_ =
-    nullptr;
+TabUnderlineView::Factory* TabUnderlineView::Factory::factory_ = nullptr;
 
-std::unique_ptr<GlicTabUnderlineView> GlicTabUnderlineView::Factory::Create(
+std::unique_ptr<TabUnderlineView> TabUnderlineView::Factory::Create(
     Browser* browser,
     Tab* tab) {
   if (factory_) [[unlikely]] {
     return factory_->CreateUnderlineView(browser, tab);
   }
   return base::WrapUnique(
-      new GlicTabUnderlineView(browser, tab, /*tester=*/nullptr));
+      new TabUnderlineView(browser, tab, /*tester=*/nullptr));
 }
 
-GlicTabUnderlineView::GlicTabUnderlineView(Browser* browser,
-                                           Tab* tab,
-                                           std::unique_ptr<Tester> tester)
-    : GlicAnimatedEffectView(browser, std::move(tester)),
-      updater_(std::make_unique<UnderlineViewUpdater>(browser, this)),
+TabUnderlineView::TabUnderlineView(Browser* browser,
+                                   Tab* tab,
+                                   std::unique_ptr<Tester> tester)
+    : AnimatedEffectView(browser, std::move(tester)),
+      updater_(std::make_unique<TabUnderlineViewController>(browser, this)),
       tab_(tab) {
   SetProperty(views::kElementIdentifierKey, kGlicTabUnderlineElementId);
   auto* glic_service =
       GlicKeyedServiceFactory::GetGlicKeyedService(browser->GetProfile());
   // Post-initialization updates. Don't do the update in the updater's ctor
-  // because at that time GlicTabUnderlineView isn't fully initialized, which
+  // because at that time TabUnderlineView isn't fully initialized, which
   // can lead to undefined behavior.
   //
   // Fetch the latest context access indicator status from service. We can't
@@ -80,24 +79,24 @@ GlicTabUnderlineView::GlicTabUnderlineView(Browser* browser,
       glic_service->is_context_access_indicator_enabled());
 }
 
-GlicTabUnderlineView::~GlicTabUnderlineView() = default;
+TabUnderlineView::~TabUnderlineView() = default;
 
-bool GlicTabUnderlineView::IsCycleDone(base::TimeTicks timestamp) {
+bool TabUnderlineView::IsCycleDone(base::TimeTicks timestamp) {
   return progress_ == 1.f;
 }
 
-base::TimeDelta GlicTabUnderlineView::GetTotalDuration() const {
+base::TimeDelta TabUnderlineView::GetTotalDuration() const {
   return kCycleDuration;
 }
 
-void GlicTabUnderlineView::PopulateShaderUniforms(
+void TabUnderlineView::PopulateShaderUniforms(
     std::vector<cc::PaintShader::FloatUniform>& float_uniforms,
     std::vector<cc::PaintShader::Float2Uniform>& float2_uniforms,
     std::vector<cc::PaintShader::Float4Uniform>& float4_uniforms,
     std::vector<cc::PaintShader::IntUniform>& int_uniforms) const {
   const auto u_resolution = GetLocalBounds();
   // Insets aren't relevant to the tab underline effect, but are defined in the
-  // uniforms of the GlicBorderView shader.
+  // uniforms of the ContextSharingBorderView shader.
   gfx::Insets uniform_insets = gfx::Insets();
 
   float_uniforms.push_back(
@@ -127,7 +126,7 @@ void GlicTabUnderlineView::PopulateShaderUniforms(
                                            kCornerRadius, kCornerRadius}});
 }
 
-int GlicTabUnderlineView::ComputeWidth() {
+int TabUnderlineView::ComputeWidth() {
   // At the smallest tab sizes, favicons can be clipped and so a shorter
   // underline is required.
   if (size().width() < kMinimumTabWidthThreshold) {
@@ -144,8 +143,8 @@ int GlicTabUnderlineView::ComputeWidth() {
   return underline_width;
 }
 
-void GlicTabUnderlineView::DrawEffect(gfx::Canvas* canvas,
-                                      const cc::PaintFlags& flags) {
+void TabUnderlineView::DrawEffect(gfx::Canvas* canvas,
+                                  const cc::PaintFlags& flags) {
   int underline_width = ComputeWidth();
   int underline_x = (size().width() - underline_width + 1) / 2;
 
@@ -178,7 +177,7 @@ void GlicTabUnderlineView::DrawEffect(gfx::Canvas* canvas,
   canvas->DrawRoundRect(gfx::RectF(effect_bounds), kCornerRadius, new_flags);
 }
 
-BEGIN_METADATA(GlicTabUnderlineView)
+BEGIN_METADATA(TabUnderlineView)
 END_METADATA
 
 }  // namespace glic

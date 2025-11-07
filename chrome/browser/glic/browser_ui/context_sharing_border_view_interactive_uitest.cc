@@ -12,7 +12,7 @@
 #include "chrome/browser/actor/actor_task_metadata.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/ui/actor_ui_tab_controller.h"
-#include "chrome/browser/glic/browser_ui/glic_border_view.h"
+#include "chrome/browser/glic/browser_ui/context_sharing_border_view.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
 #include "chrome/browser/ui/browser.h"
@@ -100,7 +100,7 @@ void WaitForMinimize(Browser* browser) {
   observer.Wait();
 }
 
-class TesterImpl : public GlicBorderView::Tester {
+class TesterImpl : public ContextSharingBorderView::Tester {
  public:
   TesterImpl() = default;
   TesterImpl(const TesterImpl&) = delete;
@@ -123,7 +123,7 @@ class TesterImpl : public GlicBorderView::Tester {
     wait_for_ramp_down_started_.Quit();
   }
 
-  void set_border(GlicBorderView* border) { border_ = border; }
+  void set_border(ContextSharingBorderView* border) { border_ = border; }
 
   void ResetWaitForAnimationStart() { animation_started_ = false; }
   void WaitForAnimationStart() {
@@ -166,7 +166,7 @@ class TesterImpl : public GlicBorderView::Tester {
 
  private:
   const base::TimeTicks creation_time_ = base::TimeTicks::Now();
-  raw_ptr<GlicBorderView> border_;
+  raw_ptr<ContextSharingBorderView> border_;
   base::TimeTicks next_time_tick_ = creation_time_;
 
   bool animation_started_ = false;
@@ -179,25 +179,29 @@ class TesterImpl : public GlicBorderView::Tester {
   base::RunLoop wait_for_ramp_down_started_;
 };
 
-class TestBorderView : public GlicBorderView {
+class TestBorderView : public ContextSharingBorderView {
  public:
   TestBorderView(Browser* browser,
                  ContentsWebView* contents_web_view,
                  std::unique_ptr<Tester> tester)
-      : GlicBorderView(browser, contents_web_view, std::move(tester)) {}
+      : ContextSharingBorderView(browser,
+                                 contents_web_view,
+                                 std::move(tester)) {}
   ~TestBorderView() override = default;
 };
 
-class TestFactory : public GlicBorderView::Factory {
+class TestFactory : public ContextSharingBorderView::Factory {
  public:
-  TestFactory() { GlicBorderView::Factory::set_factory(this); }
-  ~TestFactory() override { GlicBorderView::Factory::set_factory(nullptr); }
+  TestFactory() { ContextSharingBorderView::Factory::set_factory(this); }
+  ~TestFactory() override {
+    ContextSharingBorderView::Factory::set_factory(nullptr);
+  }
 
  protected:
-  std::unique_ptr<GlicBorderView> CreateBorderView(
+  std::unique_ptr<ContextSharingBorderView> CreateBorderView(
       Browser* browser,
       ContentsWebView* contents_web_view) override {
-    GlicBorderView* new_border = new TestBorderView(
+    ContextSharingBorderView* new_border = new TestBorderView(
         browser, contents_web_view, std::make_unique<TesterImpl>());
     TesterImpl* tester = static_cast<TesterImpl*>(new_border->tester());
     tester->set_border(new_border);
@@ -205,16 +209,16 @@ class TestFactory : public GlicBorderView::Factory {
   }
 };
 
-class GlicBorderViewUiTest : public test::InteractiveGlicTest {
+class ContextSharingBorderViewUiTest : public test::InteractiveGlicTest {
  public:
-  GlicBorderViewUiTest() {
+  ContextSharingBorderViewUiTest() {
     // Toggling UiGpuRasterization is only possible via command line.
     features_.InitFromCommandLine(
         "UiGpuRasterization",
         // These features disable animation, so disable them here.
         "GlicForceSimplifiedBorder,GlicForceNonSkSLBorder");
   }
-  ~GlicBorderViewUiTest() override = default;
+  ~ContextSharingBorderViewUiTest() override = default;
 
   void SetUpOnMainThread() override {
     embedded_test_server()->ServeFilesFromSourceDirectory(
@@ -279,7 +283,7 @@ class GlicBorderViewUiTest : public test::InteractiveGlicTest {
 
 // Exercise that, the border is resized correctly whenever the browser's size
 // changes.
-IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, BorderResize) {
+IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewUiTest, BorderResize) {
   // TODO(crbug.com/385828490): We should exercise the proper closing flow.
   // Currently the BookmarkModel has a dangling observer during destruction, if
   // the glic UI is toggled.
@@ -320,7 +324,7 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, BorderResize) {
 // Regression test for https://crbug.com/387458471: The border shouldn't be
 // visible before Show is called, and shouldn't be visible after
 // StopShowing is called.
-IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, Visibility) {
+IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewUiTest, Visibility) {
   auto* border = browser()
                      ->window()
                      ->AsBrowserView()
@@ -350,7 +354,7 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, Visibility) {
 
 // Exercise the default user journey: toggles the border animation and wait for
 // it to finish.
-IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, SmokeTest) {
+IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewUiTest, SmokeTest) {
   auto* border = browser()
                      ->window()
                      ->AsBrowserView()
@@ -413,7 +417,7 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, SmokeTest) {
 
 // Ensures that the border animation state is reset after canceling the
 // animation.
-IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, AnimationStateReset) {
+IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewUiTest, AnimationStateReset) {
   auto* border = browser()
                      ->window()
                      ->AsBrowserView()
@@ -444,7 +448,8 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, AnimationStateReset) {
 
 // Ensures that the border animation state is reset after canceling the
 // animation via closePanelAndShutdown.
-IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, AnimationStateResetOnShutdown) {
+IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewUiTest,
+                       AnimationStateResetOnShutdown) {
   if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
     // TODO(b/453696965): Broken in multi-instance.
     GTEST_SKIP() << "Skipping for kGlicMultiInstance";
@@ -481,7 +486,7 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, AnimationStateResetOnShutdown) {
 }
 
 // Ensures that the emphasis animation is restarted when tab focus changes.
-IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, FocusedTabChange) {
+IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewUiTest, FocusedTabChange) {
   if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
     // TODO(b/453696965): Broken in multi-instance.
     GTEST_SKIP() << "Skipping for kGlicMultiInstance";
@@ -543,7 +548,7 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, FocusedTabChange) {
 
 // Ensures that only the emphasis animation is restarted when the focused tab is
 // destroyed.
-IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, FocusedTabDestroyed) {
+IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewUiTest, FocusedTabDestroyed) {
   if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
     // TODO(b/453696965): Broken in multi-instance.
     GTEST_SKIP() << "Skipping for kGlicMultiInstance";
@@ -616,7 +621,8 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, FocusedTabDestroyed) {
 #else
 #define MAYBE_FocusedWindowChange FocusedWindowChange
 #endif
-IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, MAYBE_FocusedWindowChange) {
+IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewUiTest,
+                       MAYBE_FocusedWindowChange) {
   if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
     // TODO(b/453696965): Broken in multi-instance.
     GTEST_SKIP() << "Skipping for kGlicMultiInstance";
@@ -630,10 +636,10 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, MAYBE_FocusedWindowChange) {
   TesterImpl* tester = static_cast<TesterImpl*>(border->tester());
 
   Browser* browser2 = CreateBrowser(browser()->GetProfile());
-  GlicBorderView* border2 = browser2->window()
-                                ->AsBrowserView()
-                                ->GetActiveContentsContainerView()
-                                ->glic_border_view();
+  ContextSharingBorderView* border2 = browser2->window()
+                                          ->AsBrowserView()
+                                          ->GetActiveContentsContainerView()
+                                          ->glic_border_view();
   auto* tester2 = static_cast<TesterImpl*>(border2->tester());
 
   // Start the animation in the first browser window.
@@ -691,7 +697,8 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, MAYBE_FocusedWindowChange) {
 
 // Ensures that the border fades out before disappearing entirely during
 // emphasis ramp up.
-IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, RampingDownDuringEmphasisRampUp) {
+IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewUiTest,
+                       RampingDownDuringEmphasisRampUp) {
   auto* border = browser()
                      ->window()
                      ->AsBrowserView()
@@ -745,7 +752,8 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, RampingDownDuringEmphasisRampUp) {
 
 // Ensures that the border fades out before disappearing entirely during opacity
 // ramp up.
-IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, RampingDownDuringOpacityRampUp) {
+IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewUiTest,
+                       RampingDownDuringOpacityRampUp) {
   auto* border = browser()
                      ->window()
                      ->AsBrowserView()
@@ -801,7 +809,8 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, RampingDownDuringOpacityRampUp) {
 
 // Ensures that the border fades out before disappearing entirely during stable
 // state.
-IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, RampingDownDuringStableState) {
+IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewUiTest,
+                       RampingDownDuringStableState) {
   auto* border = browser()
                      ->window()
                      ->AsBrowserView()
@@ -850,7 +859,7 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, RampingDownDuringStableState) {
   EXPECT_FALSE(border->IsShowing());
 }
 
-IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, EnsureTimeWraps) {
+IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewUiTest, EnsureTimeWraps) {
   auto* border = browser()
                      ->window()
                      ->AsBrowserView()
@@ -878,7 +887,8 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, EnsureTimeWraps) {
 
 // Ensures that the effect time starts from where it was left off when
 // switching to a new tab.
-IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, FocusedTabChangeEffectTime) {
+IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewUiTest,
+                       FocusedTabChangeEffectTime) {
   if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
     // TODO(b/453696965): Broken in multi-instance.
     GTEST_SKIP() << "Skipping for kGlicMultiInstance";
@@ -919,20 +929,21 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, FocusedTabChangeEffectTime) {
   EXPECT_EQ(effect_time_before_tab_switching, effect_time_after_tab_switching);
 }
 
-class GlicBorderViewWithActorGlowUiTest : public GlicBorderViewUiTest {
+class ContextSharingBorderViewWithActorGlowUiTest
+    : public ContextSharingBorderViewUiTest {
  public:
-  GlicBorderViewWithActorGlowUiTest() {
+  ContextSharingBorderViewWithActorGlowUiTest() {
     features_.InitAndEnableFeatureWithParameters(
         features::kGlicActorUi,
         {{features::kGlicActorUiStandaloneBorderGlow.name, "false"}});
   }
-  ~GlicBorderViewWithActorGlowUiTest() override = default;
+  ~ContextSharingBorderViewWithActorGlowUiTest() override = default;
 
  private:
   base::test::ScopedFeatureList features_;
 };
 
-IN_PROC_BROWSER_TEST_F(GlicBorderViewWithActorGlowUiTest,
+IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewWithActorGlowUiTest,
                        ActorGlowShowsBorderWhenIndicatorIsOff) {
   auto* border = browser()
                      ->window()
@@ -981,21 +992,22 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewWithActorGlowUiTest,
   EXPECT_FALSE(border->GetVisible());
 }
 
-class GlicBorderViewStandaloneGlowUiTest : public GlicBorderViewUiTest {
+class ContextSharingBorderViewStandaloneGlowUiTest
+    : public ContextSharingBorderViewUiTest {
  public:
-  GlicBorderViewStandaloneGlowUiTest() {
+  ContextSharingBorderViewStandaloneGlowUiTest() {
     features_.InitAndEnableFeatureWithParameters(
         features::kGlicActorUi,
         {{features::kGlicActorUiStandaloneBorderGlow.name, "true"}});
   }
-  ~GlicBorderViewStandaloneGlowUiTest() override = default;
+  ~ContextSharingBorderViewStandaloneGlowUiTest() override = default;
 
  private:
   base::test::ScopedFeatureList features_;
 };
 
 IN_PROC_BROWSER_TEST_F(
-    GlicBorderViewStandaloneGlowUiTest,
+    ContextSharingBorderViewStandaloneGlowUiTest,
     ActorGlowHidesBorderWhenIndicatorIsOffAndStandaloneIsOn) {
   auto* border = browser()
                      ->window()
@@ -1033,12 +1045,13 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 namespace {
-class GlicBorderViewFeatureDisabledBrowserTest : public GlicBorderViewUiTest {
+class ContextSharingBorderViewFeatureDisabledBrowserTest
+    : public ContextSharingBorderViewUiTest {
  public:
-  GlicBorderViewFeatureDisabledBrowserTest() {
+  ContextSharingBorderViewFeatureDisabledBrowserTest() {
     features_.InitAndDisableFeature(features::kGlic);
   }
-  ~GlicBorderViewFeatureDisabledBrowserTest() override = default;
+  ~ContextSharingBorderViewFeatureDisabledBrowserTest() override = default;
 
  private:
   base::test::ScopedFeatureList features_;
@@ -1047,7 +1060,8 @@ class GlicBorderViewFeatureDisabledBrowserTest : public GlicBorderViewUiTest {
 
 // Regression test for https://crbug.com/387458471: The border is not
 // initialized if the feature is disabled.
-IN_PROC_BROWSER_TEST_F(GlicBorderViewFeatureDisabledBrowserTest, NoBorder) {
+IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewFeatureDisabledBrowserTest,
+                       NoBorder) {
   auto* border = browser()
                      ->window()
                      ->AsBrowserView()
@@ -1057,13 +1071,14 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewFeatureDisabledBrowserTest, NoBorder) {
 }
 
 namespace {
-class GlicBorderViewPrefersReducedMotionUiTest : public GlicBorderViewUiTest {
+class ContextSharingBorderViewPrefersReducedMotionUiTest
+    : public ContextSharingBorderViewUiTest {
  public:
-  GlicBorderViewPrefersReducedMotionUiTest() = default;
-  ~GlicBorderViewPrefersReducedMotionUiTest() override = default;
+  ContextSharingBorderViewPrefersReducedMotionUiTest() = default;
+  ~ContextSharingBorderViewPrefersReducedMotionUiTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    GlicBorderViewUiTest::SetUpCommandLine(command_line);
+    ContextSharingBorderViewUiTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch(switches::kForcePrefersReducedMotion);
   }
 };
@@ -1072,7 +1087,7 @@ class GlicBorderViewPrefersReducedMotionUiTest : public GlicBorderViewUiTest {
 // Ensures that when PrefersReducedMotion is true, the emphasis animation is
 // skipped and we just show an opacity ramp up and ramp down animation.
 // Note: Ramp up and ramp down duration in PrefersReducedMotion is 200ms.
-IN_PROC_BROWSER_TEST_F(GlicBorderViewPrefersReducedMotionUiTest,
+IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewPrefersReducedMotionUiTest,
                        BasicRampingUpAndDown) {
   ASSERT_TRUE(gfx::Animation::PrefersReducedMotion());
   auto* border = browser()
@@ -1146,7 +1161,7 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewPrefersReducedMotionUiTest,
 // Ensures that when PrefersReducedMotion is true and the focused tab is
 // destroyed, the border stays as is without replaying the opacity ramp
 // up animation.
-IN_PROC_BROWSER_TEST_F(GlicBorderViewPrefersReducedMotionUiTest,
+IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewPrefersReducedMotionUiTest,
                        FocusedTabDestroyed) {
   if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
     // TODO(b/453696965): Broken in multi-instance.
@@ -1204,11 +1219,12 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewPrefersReducedMotionUiTest,
 }
 
 namespace {
-class GlicBorderViewWithoutHardwareAccelerationUiTest
-    : public GlicBorderViewUiTest {
+class ContextSharingBorderViewWithoutHardwareAccelerationUiTest
+    : public ContextSharingBorderViewUiTest {
  public:
-  GlicBorderViewWithoutHardwareAccelerationUiTest() = default;
-  ~GlicBorderViewWithoutHardwareAccelerationUiTest() override = default;
+  ContextSharingBorderViewWithoutHardwareAccelerationUiTest() = default;
+  ~ContextSharingBorderViewWithoutHardwareAccelerationUiTest() override =
+      default;
 
   void SetUp() override {
     UseSoftwareCompositing();
@@ -1220,8 +1236,9 @@ class GlicBorderViewWithoutHardwareAccelerationUiTest
 // Ensures that when there is no hardware acceleration, the emphasis animation
 // is skipped and we just show an opacity ramp up and ramp down animation.
 // Note: Ramp up and ramp down duration in this case is 200ms.
-IN_PROC_BROWSER_TEST_F(GlicBorderViewWithoutHardwareAccelerationUiTest,
-                       BasicRampingUpAndDown) {
+IN_PROC_BROWSER_TEST_F(
+    ContextSharingBorderViewWithoutHardwareAccelerationUiTest,
+    BasicRampingUpAndDown) {
   auto* border = browser()
                      ->window()
                      ->AsBrowserView()
@@ -1285,21 +1302,23 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewWithoutHardwareAccelerationUiTest,
 // Regression test for crbug.com/409649143. Ensure we clear the "start ramp down
 // state" if StopShowing is called immediately after starting the ramp down.
 #if BUILDFLAG(IS_LINUX)
-class GlicBorderViewPixelOutputUiTest : public GlicBorderViewUiTest {
+class ContextSharingBorderViewPixelOutputUiTest
+    : public ContextSharingBorderViewUiTest {
  public:
-  GlicBorderViewPixelOutputUiTest() = default;
-  ~GlicBorderViewPixelOutputUiTest() override = default;
+  ContextSharingBorderViewPixelOutputUiTest() = default;
+  ~ContextSharingBorderViewPixelOutputUiTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // On linux, we don't get widget show state notifications on minimize unless
     // we have this switch set (the window doesn't show without it).
     command_line->AppendSwitch(switches::kEnablePixelOutputInTests);
-    GlicBorderViewUiTest::SetUpCommandLine(command_line);
+    ContextSharingBorderViewUiTest::SetUpCommandLine(command_line);
   }
 };
-IN_PROC_BROWSER_TEST_F(GlicBorderViewPixelOutputUiTest, MinimizeRestore) {
+IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewPixelOutputUiTest,
+                       MinimizeRestore) {
 #else
-IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, MinimizeRestore) {
+IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewUiTest, MinimizeRestore) {
 #endif
   if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
     // TODO(b/453696965): Broken in multi-instance.
@@ -1344,18 +1363,20 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, MinimizeRestore) {
   EXPECT_TRUE(border->IsShowing());
 }
 
-class GlicBorderViewSideBySideUiTest : public GlicBorderViewUiTest {
+class ContextSharingBorderViewSideBySideUiTest
+    : public ContextSharingBorderViewUiTest {
  public:
-  GlicBorderViewSideBySideUiTest() {
+  ContextSharingBorderViewSideBySideUiTest() {
     feature_list_.InitAndEnableFeature(features::kSideBySide);
   }
-  ~GlicBorderViewSideBySideUiTest() override = default;
+  ~ContextSharingBorderViewSideBySideUiTest() override = default;
 
  protected:
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(GlicBorderViewSideBySideUiTest, BasicVisiblity) {
+IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewSideBySideUiTest,
+                       BasicVisiblity) {
   if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
     // TODO(b/453696965): Broken in multi-instance.
     GTEST_SKIP() << "Skipping for kGlicMultiInstance";

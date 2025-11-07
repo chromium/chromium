@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/glic/browser_ui/glic_animated_effect_view.h"
+#include "chrome/browser/glic/browser_ui/animated_effect_view.h"
 
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
@@ -87,8 +87,8 @@ std::vector<float> GetParameterizedFloats() {
 
 }  // namespace
 
-GlicAnimatedEffectView::GlicAnimatedEffectView(Browser* browser,
-                                               std::unique_ptr<Tester> tester)
+AnimatedEffectView::AnimatedEffectView(Browser* browser,
+                                       std::unique_ptr<Tester> tester)
     : browser_(browser),
       creation_time_(base::TimeTicks::Now()),
       tester_(std::move(tester)),
@@ -108,9 +108,9 @@ GlicAnimatedEffectView::GlicAnimatedEffectView(Browser* browser,
   CHECK(!shader_.empty()) << "Shader not initialized.";
 }
 
-GlicAnimatedEffectView::~GlicAnimatedEffectView() = default;
+AnimatedEffectView::~AnimatedEffectView() = default;
 
-void GlicAnimatedEffectView::OnPaint(gfx::Canvas* canvas) {
+void AnimatedEffectView::OnPaint(gfx::Canvas* canvas) {
   if (!compositor_) {
     return;
   }
@@ -161,7 +161,7 @@ void GlicAnimatedEffectView::OnPaint(gfx::Canvas* canvas) {
   DrawEffect(canvas, flags);
 }
 
-void GlicAnimatedEffectView::OnAnimationStep(base::TimeTicks timestamp) {
+void AnimatedEffectView::OnAnimationStep(base::TimeTicks timestamp) {
   if (tester_) [[unlikely]] {
     timestamp = tester_->GetTestTimestamp();
   }
@@ -224,12 +224,11 @@ void GlicAnimatedEffectView::OnAnimationStep(base::TimeTicks timestamp) {
   SchedulePaint();
 }
 
-void GlicAnimatedEffectView::OnCompositingShuttingDown(
-    ui::Compositor* compositor) {
+void AnimatedEffectView::OnCompositingShuttingDown(ui::Compositor* compositor) {
   StopShowing();
 }
 
-void GlicAnimatedEffectView::OnGpuInfoUpdate() {
+void AnimatedEffectView::OnGpuInfoUpdate() {
   auto* gpu_data_manager = content::GpuDataManager::GetInstance();
   bool has_hardware_acceleration =
       gpu_data_manager->IsGpuRasterizationForUIEnabled();
@@ -244,17 +243,17 @@ void GlicAnimatedEffectView::OnGpuInfoUpdate() {
   }
 }
 
-bool GlicAnimatedEffectView::IsShowing() const {
+bool AnimatedEffectView::IsShowing() const {
   // `compositor_` is set when the effect starts to show and is unset when the
   // effect stops showing.
   return !!compositor_;
 }
 
-float GlicAnimatedEffectView::GetEffectTimeForTesting() const {
+float AnimatedEffectView::GetEffectTimeForTesting() const {
   return GetEffectTime();
 }
 
-void GlicAnimatedEffectView::Show() {
+void AnimatedEffectView::Show() {
   if (compositor_) {
     // The user can click on the glic icon after the window is shown. The
     // animation is already playing at that time.
@@ -291,7 +290,7 @@ void GlicAnimatedEffectView::Show() {
   }
 }
 
-void GlicAnimatedEffectView::StopShowing() {
+void AnimatedEffectView::StopShowing() {
   if (!compositor_) {
     return;
   }
@@ -314,7 +313,7 @@ void GlicAnimatedEffectView::StopShowing() {
   SetVisible(false);
 }
 
-void GlicAnimatedEffectView::ResetAnimationCycle() {
+void AnimatedEffectView::ResetAnimationCycle() {
   // TOOD(crbug.com/398319435): Remove once we know why this is called before
   // `Show()`.
   if (!compositor_) {
@@ -350,7 +349,7 @@ void GlicAnimatedEffectView::ResetAnimationCycle() {
   }
 }
 
-float GlicAnimatedEffectView::GetOpacity(base::TimeTicks timestamp) {
+float AnimatedEffectView::GetOpacity(base::TimeTicks timestamp) {
   auto ramp_up_duration = skip_animation_cycle_ ? kFastOpacityRampUpDuration
                                                 : kOpacityRampUpDuration;
   if (!first_ramp_down_frame_.is_null()) {
@@ -381,7 +380,7 @@ float GlicAnimatedEffectView::GetOpacity(base::TimeTicks timestamp) {
   }
 }
 
-void GlicAnimatedEffectView::StartRampingDown() {
+void AnimatedEffectView::StartRampingDown() {
   CHECK(compositor_);
 
   // From now on the opacity will be decreased until it reaches 0.
@@ -396,7 +395,7 @@ void GlicAnimatedEffectView::StartRampingDown() {
   }
 }
 
-float GlicAnimatedEffectView::GetEffectTime() const {
+float AnimatedEffectView::GetEffectTime() const {
   if (last_animation_step_time_.is_null()) {
     return 0;
   }
@@ -415,8 +414,7 @@ float GlicAnimatedEffectView::GetEffectTime() const {
   return time_since_creation.InSecondsF();
 }
 
-float GlicAnimatedEffectView::GetEffectProgress(
-    base::TimeTicks timestamp) const {
+float AnimatedEffectView::GetEffectProgress(base::TimeTicks timestamp) const {
   if (skip_animation_cycle_) {
     return 0.0;
   }
@@ -427,26 +425,26 @@ float GlicAnimatedEffectView::GetEffectProgress(
       0.0f, 1.0f);
 }
 
-base::TimeTicks GlicAnimatedEffectView::GetCreationTime() const {
+base::TimeTicks AnimatedEffectView::GetCreationTime() const {
   if (tester_ && !tester_->GetTestCreationTime().is_null()) [[unlikely]] {
     return tester_->GetTestCreationTime();
   }
   return creation_time_;
 }
 
-bool GlicAnimatedEffectView::ForceSimplifiedShader() const {
+bool AnimatedEffectView::ForceSimplifiedShader() const {
   return base::FeatureList::IsEnabled(features::kGlicForceSimplifiedBorder) ||
          !has_hardware_acceleration_;
 }
 
-GlicKeyedService* GlicAnimatedEffectView::GetGlicService() const {
+GlicKeyedService* AnimatedEffectView::GetGlicService() const {
   auto* service =
       GlicKeyedServiceFactory::GetGlicKeyedService(browser_->GetProfile());
   CHECK(service);
   return service;
 }
 
-void GlicAnimatedEffectView::UpdateShader() {
+void AnimatedEffectView::UpdateShader() {
   if (base::FeatureList::IsEnabled(features::kGlicParameterizedShader) &&
       !colors_.empty() && !floats_.empty()) {
     shader_ =
@@ -465,8 +463,8 @@ void GlicAnimatedEffectView::UpdateShader() {
   }
 }
 
-void GlicAnimatedEffectView::SetDefaultColors(cc::PaintFlags& paint_flags,
-                                              const gfx::RectF& bounds) const {
+void AnimatedEffectView::SetDefaultColors(cc::PaintFlags& paint_flags,
+                                          const gfx::RectF& bounds) const {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   const int kNumDefaultColors = 3;
   if (colors_.size() >= kNumDefaultColors) {
@@ -489,7 +487,7 @@ void GlicAnimatedEffectView::SetDefaultColors(cc::PaintFlags& paint_flags,
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 
-BEGIN_METADATA(GlicAnimatedEffectView)
+BEGIN_METADATA(AnimatedEffectView)
 END_METADATA
 
 }  // namespace glic

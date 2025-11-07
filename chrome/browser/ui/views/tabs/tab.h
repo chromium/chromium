@@ -50,7 +50,7 @@ enum class TabAlert;
 
 #if BUILDFLAG(ENABLE_GLIC)
 namespace glic {
-class GlicTabUnderlineView;
+class TabUnderlineView;
 }  // namespace glic
 #endif
 
@@ -214,7 +214,7 @@ class Tab : public gfx::AnimationDelegate,
   void UpdateInsets();
 
 #if BUILDFLAG(ENABLE_GLIC)
-  glic::GlicTabUnderlineView* glic_underline() const {
+  glic::TabUnderlineView* glic_underline() const {
     return glic_tab_underline_view_;
   }
 #endif
@@ -278,7 +278,7 @@ class Tab : public gfx::AnimationDelegate,
   bool closing_ = false;
 
 #if BUILDFLAG(ENABLE_GLIC)
-  raw_ptr<glic::GlicTabUnderlineView> glic_tab_underline_view_ = nullptr;
+  raw_ptr<glic::TabUnderlineView> glic_tab_underline_view_ = nullptr;
 #endif
 
   raw_ptr<TabIcon> icon_ = nullptr;

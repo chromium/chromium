@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/glic/browser_ui/border_view_updater.h"
+#include "chrome/browser/glic/browser_ui/context_sharing_border_view_controller.h"
 
 #include "base/debug/crash_logging.h"
 #include "chrome/browser/actor/ui/actor_border_view_controller.h"
-#include "chrome/browser/glic/browser_ui/glic_border_view.h"
+#include "chrome/browser/glic/browser_ui/context_sharing_border_view.h"
 #include "chrome/browser/glic/public/context/glic_sharing_manager.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
@@ -18,8 +18,9 @@
 
 namespace glic {
 
-BorderViewUpdater::BorderViewUpdater(GlicBorderView* border_view,
-                                     ContentsWebView* contents_web_view)
+ContextSharingBorderViewController::ContextSharingBorderViewController(
+    ContextSharingBorderView* border_view,
+    ContentsWebView* contents_web_view)
     : border_view_(border_view), contents_web_view_(contents_web_view) {
   auto* glic_service = border_view->GetGlicService();
 
@@ -28,7 +29,7 @@ BorderViewUpdater::BorderViewUpdater(GlicBorderView* border_view,
     actor_border_view_controller_subscription_ =
         ActorBorderViewController::From(border_view_->browser_)
             ->AddOnActorBorderGlowUpdatedCallback(base::BindRepeating(
-                &BorderViewUpdater::OnActorBorderGlowUpdated,
+                &ContextSharingBorderViewController::OnActorBorderGlowUpdated,
                 base::Unretained(this)));
   }
 
@@ -38,19 +39,22 @@ BorderViewUpdater::BorderViewUpdater(GlicBorderView* border_view,
   // Subscribe to changes in the focus tab.
   focus_change_subscription_ =
       glic_service->sharing_manager().AddFocusedTabChangedCallback(
-          base::BindRepeating(&BorderViewUpdater::OnFocusedTabChanged,
-                              base::Unretained(this)));
+          base::BindRepeating(
+              &ContextSharingBorderViewController::OnFocusedTabChanged,
+              base::Unretained(this)));
 
   // Subscribe to changes in the context access indicator status.
   indicator_change_subscription_ =
       glic_service->AddContextAccessIndicatorStatusChangedCallback(
-          base::BindRepeating(&BorderViewUpdater::OnIndicatorStatusChanged,
-                              base::Unretained(this)));
+          base::BindRepeating(
+              &ContextSharingBorderViewController::OnIndicatorStatusChanged,
+              base::Unretained(this)));
 }
 
-BorderViewUpdater::~BorderViewUpdater() = default;
+ContextSharingBorderViewController::~ContextSharingBorderViewController() =
+    default;
 
-void BorderViewUpdater::OnFocusedTabChanged(
+void ContextSharingBorderViewController::OnFocusedTabChanged(
     const FocusedTabData& focused_tab_data) {
   tabs::TabInterface* tab = focused_tab_data.focus();
   auto* previous_focus = glic_focused_contents_in_current_view_.get();
@@ -80,8 +84,9 @@ void BorderViewUpdater::OnFocusedTabChanged(
   }
 }
 
-void BorderViewUpdater::OnActorBorderGlowUpdated(tabs::TabInterface* tab,
-                                                 bool enabled) {
+void ContextSharingBorderViewController::OnActorBorderGlowUpdated(
+    tabs::TabInterface* tab,
+    bool enabled) {
   if (!IsTabInCurrentView(tab->GetContents())) {
     return;
   }
@@ -115,7 +120,8 @@ void BorderViewUpdater::OnActorBorderGlowUpdated(tabs::TabInterface* tab,
   }
 }
 
-void BorderViewUpdater::OnIndicatorStatusChanged(bool enabled) {
+void ContextSharingBorderViewController::OnIndicatorStatusChanged(
+    bool enabled) {
   if (context_access_indicator_enabled_ == enabled) {
     return;
   }
@@ -126,7 +132,8 @@ void BorderViewUpdater::OnIndicatorStatusChanged(bool enabled) {
           : UpdateBorderReason::kContextAccessIndicatorOff);
 }
 
-void BorderViewUpdater::OnViewIsDeleting(views::View* observed_view) {
+void ContextSharingBorderViewController::OnViewIsDeleting(
+    views::View* observed_view) {
   contents_web_view_observation_.Reset();
   indicator_change_subscription_ = {};
   focus_change_subscription_ = {};
@@ -134,7 +141,8 @@ void BorderViewUpdater::OnViewIsDeleting(views::View* observed_view) {
   contents_web_view_ = nullptr;
 }
 
-void BorderViewUpdater::MaybeRunBorderViewUpdate(UpdateBorderReason reason) {
+void ContextSharingBorderViewController::MaybeRunBorderViewUpdate(
+    UpdateBorderReason reason) {
   // We only want to override the latest reason if it's one that would result
   // in showing vs hiding the border. `kFocusedTabChanged_NoFocusChange` only
   // replays an animation, it does not change the state.
@@ -147,7 +155,8 @@ void BorderViewUpdater::MaybeRunBorderViewUpdate(UpdateBorderReason reason) {
   }
 }
 
-void BorderViewUpdater::UpdateBorderView(UpdateBorderReason reason) {
+void ContextSharingBorderViewController::UpdateBorderView(
+    UpdateBorderReason reason) {
   AddReasonForDebugging(reason);
   auto reasons_string = UpdateReasonsToString();
   SCOPED_CRASH_KEY_STRING1024("crbug-398319435", "update_reasons",
@@ -199,16 +208,16 @@ void BorderViewUpdater::UpdateBorderView(UpdateBorderReason reason) {
   }
 }
 
-bool BorderViewUpdater::IsGlicWindowShowing() const {
+bool ContextSharingBorderViewController::IsGlicWindowShowing() const {
   return border_view_->GetGlicService()->IsWindowShowing();
 }
 
-bool BorderViewUpdater::IsTabInCurrentView(
+bool ContextSharingBorderViewController::IsTabInCurrentView(
     const content::WebContents* tab) const {
   return contents_web_view_->web_contents() == tab;
 }
 
-bool BorderViewUpdater::ShouldShowBorderAnimation() {
+bool ContextSharingBorderViewController::ShouldShowBorderAnimation() {
   if (!glic_focused_contents_in_current_view_) {
     return false;
   }
@@ -227,7 +236,8 @@ bool BorderViewUpdater::ShouldShowBorderAnimation() {
   return IsGlicWindowShowing();
 }
 
-std::string BorderViewUpdater::UpdateReasonToString(UpdateBorderReason reason) {
+std::string ContextSharingBorderViewController::UpdateReasonToString(
+    UpdateBorderReason reason) {
   switch (reason) {
     case UpdateBorderReason::kContextAccessIndicatorOn:
       return "IndicatorOn";
@@ -243,14 +253,15 @@ std::string BorderViewUpdater::UpdateReasonToString(UpdateBorderReason reason) {
   NOTREACHED();
 }
 
-void BorderViewUpdater::AddReasonForDebugging(UpdateBorderReason reason) {
+void ContextSharingBorderViewController::AddReasonForDebugging(
+    UpdateBorderReason reason) {
   border_update_reasons_.push_back(UpdateReasonToString(reason));
   if (border_update_reasons_.size() > kNumReasonsToKeep) {
     border_update_reasons_.pop_front();
   }
 }
 
-std::string BorderViewUpdater::UpdateReasonsToString() const {
+std::string ContextSharingBorderViewController::UpdateReasonsToString() const {
   std::ostringstream oss;
   for (const auto& r : border_update_reasons_) {
     oss << r << ",";

@@ -8,16 +8,16 @@ assert(enable_glic)
 
 source_set("browser_ui") {
   sources = [
-    "border_view_updater.cc",
-    "glic_animated_effect_view.cc",
-    "glic_border_view.cc",
+    "animated_effect_view.cc",
+    "context_sharing_border_view.cc",
+    "context_sharing_border_view_controller.cc",
     "glic_button_controller.cc",
     "glic_iph_controller.cc",
     "glic_tab_indicator_helper.cc",
-    "glic_tab_underline_view.cc",
     "glic_vector_icon_manager.cc",
     "scoped_glic_button_indicator.cc",
-    "underline_view_updater.cc",
+    "tab_underline_view.cc",
+    "tab_underline_view_controller.cc",
   ]
   deps = [
     "//chrome/browser/actor/ui",
@@ -58,10 +58,10 @@ source_set("interactive_ui_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   sources = [
-    "glic_border_view_interactive_uitest.cc",
+    "context_sharing_border_view_interactive_uitest.cc",
     "glic_iph_controller_interactive_uitest.cc",
     "glic_tab_indicator_helper_interactive_uitest.cc",
-    "glic_tab_underline_view_interactive_uitest.cc",
+    "tab_underline_view_interactive_uitest.cc",
   ]
   deps = [
     ":browser_ui",

@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/glic/browser_ui/glic_border_view.h"
+#include "chrome/browser/glic/browser_ui/context_sharing_border_view.h"
 
 #include <math.h>
 
 #include "base/debug/crash_logging.h"
 #include "chrome/browser/actor/ui/actor_border_view_controller.h"
-#include "chrome/browser/glic/browser_ui/border_view_updater.h"
+#include "chrome/browser/glic/browser_ui/context_sharing_border_view_controller.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
@@ -66,23 +66,28 @@ gfx::Insets GetContentsBorderInsets(BrowserView& browser_view,
 
 }  // namespace
 
-GlicBorderView::Factory* GlicBorderView::Factory::factory_ = nullptr;
+ContextSharingBorderView::Factory* ContextSharingBorderView::Factory::factory_ =
+    nullptr;
 
-std::unique_ptr<GlicBorderView> GlicBorderView::Factory::Create(
-    Browser* browser,
-    ContentsWebView* contents_web_view) {
+std::unique_ptr<ContextSharingBorderView>
+ContextSharingBorderView::Factory::Create(Browser* browser,
+                                          ContentsWebView* contents_web_view) {
   if (factory_) [[unlikely]] {
     return factory_->CreateBorderView(browser, contents_web_view);
   }
-  return base::WrapUnique(new GlicBorderView(browser, contents_web_view,
-                                             /*tester=*/nullptr));
+  return base::WrapUnique(new ContextSharingBorderView(browser,
+                                                       contents_web_view,
+                                                       /*tester=*/nullptr));
 }
 
-GlicBorderView::GlicBorderView(Browser* browser,
-                               ContentsWebView* contents_web_view,
-                               std::unique_ptr<Tester> tester)
-    : GlicAnimatedEffectView(browser, std::move(tester)),
-      updater_(std::make_unique<BorderViewUpdater>(this, contents_web_view)) {
+ContextSharingBorderView::ContextSharingBorderView(
+    Browser* browser,
+    ContentsWebView* contents_web_view,
+    std::unique_ptr<Tester> tester)
+    : AnimatedEffectView(browser, std::move(tester)),
+      updater_(std::make_unique<ContextSharingBorderViewController>(
+          this,
+          contents_web_view)) {
   auto* glic_service =
       GlicKeyedServiceFactory::GetGlicKeyedService(browser->GetProfile());
   // Post-initialization updates. Don't do the update in the updater's ctor
@@ -96,9 +101,9 @@ GlicBorderView::GlicBorderView(Browser* browser,
       glic_service->is_context_access_indicator_enabled());
 }
 
-GlicBorderView::~GlicBorderView() = default;
+ContextSharingBorderView::~ContextSharingBorderView() = default;
 
-void GlicBorderView::PopulateShaderUniforms(
+void ContextSharingBorderView::PopulateShaderUniforms(
     std::vector<cc::PaintShader::FloatUniform>& float_uniforms,
     std::vector<cc::PaintShader::Float2Uniform>& float2_uniforms,
     std::vector<cc::PaintShader::Float4Uniform>& float4_uniforms,
@@ -145,7 +150,7 @@ void GlicBorderView::PopulateShaderUniforms(
                      corner_radius.lower_right(), corner_radius.lower_left()}});
 }
 
-void GlicBorderView::DrawSimplifiedEffect(gfx::Canvas* canvas) const {
+void ContextSharingBorderView::DrawSimplifiedEffect(gfx::Canvas* canvas) const {
   const float kBorderWidth = 5.0f;
   gfx::RectF bounds(GetLocalBounds());
   // Ensure that the border does not spill out of the viewport (and taking the
@@ -186,8 +191,8 @@ void GlicBorderView::DrawSimplifiedEffect(gfx::Canvas* canvas) const {
   canvas->sk_canvas()->drawRRect(rrect, border_flags);
 }
 
-void GlicBorderView::DrawEffect(gfx::Canvas* canvas,
-                                const cc::PaintFlags& flags) {
+void ContextSharingBorderView::DrawEffect(gfx::Canvas* canvas,
+                                          const cc::PaintFlags& flags) {
   auto bounds = GetLocalBounds();
   gfx::Insets uniform_insets =
       GetContentsBorderInsets(browser_->GetBrowserView(),
@@ -239,13 +244,14 @@ void GlicBorderView::DrawEffect(gfx::Canvas* canvas,
   canvas->DrawRect(gfx::RectF(bottom), flags);
 }
 
-bool GlicBorderView::IsCycleDone(base::TimeTicks timestamp) {
+bool ContextSharingBorderView::IsCycleDone(base::TimeTicks timestamp) {
   base::TimeDelta emphasis_since_first_frame = timestamp - first_cycle_frame_;
   emphasis_ = GetEmphasis(emphasis_since_first_frame);
   return emphasis_ == 0.f && !emphasis_since_first_frame.is_zero();
 }
 
-void GlicBorderView::SetRoundedCorners(const gfx::RoundedCornersF& radii) {
+void ContextSharingBorderView::SetRoundedCorners(
+    const gfx::RoundedCornersF& radii) {
   if (corner_radius_ == radii) {
     return;
   }
@@ -259,7 +265,7 @@ void GlicBorderView::SetRoundedCorners(const gfx::RoundedCornersF& radii) {
   }
 }
 
-float GlicBorderView::GetEmphasis(base::TimeDelta delta) const {
+float ContextSharingBorderView::GetEmphasis(base::TimeDelta delta) const {
   if (skip_animation_cycle_) {
     return 0.f;
   }
@@ -274,13 +280,13 @@ float GlicBorderView::GetEmphasis(base::TimeDelta delta) const {
   return ClampAndInterpolate(gfx::Tween::Type::EASE_IN_OUT_2, target, 1, 0);
 }
 
-base::TimeDelta GlicBorderView::GetTotalDuration() const {
+base::TimeDelta ContextSharingBorderView::GetTotalDuration() const {
   base::TimeDelta total_duration =
       kEmphasisRampUpDuration + kEmphasisRampDownDuration + kEmphasisDuration;
   return total_duration;
 }
 
-gfx::RoundedCornersF GlicBorderView::GetContentBorderRadius() const {
+gfx::RoundedCornersF ContextSharingBorderView::GetContentBorderRadius() const {
   if (!corner_radius_.IsEmpty()) {
     return corner_radius_;
   }
@@ -302,7 +308,7 @@ gfx::RoundedCornersF GlicBorderView::GetContentBorderRadius() const {
   return gfx::RoundedCornersF();
 }
 
-BEGIN_METADATA(GlicBorderView)
+BEGIN_METADATA(ContextSharingBorderView)
 END_METADATA
 
 }  // namespace glic
