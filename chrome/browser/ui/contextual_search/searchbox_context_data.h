@@ -23,7 +23,7 @@ class SearchboxContextData {
     ~Context();
 
     std::string text;
-    std::vector<searchbox::mojom::SelectedFileInfoPtr> file_infos;
+    std::vector<searchbox::mojom::SearchContextAttachmentStubPtr> file_infos;
     searchbox::mojom::ToolMode mode = searchbox::mojom::ToolMode::kDefault;
   };
 

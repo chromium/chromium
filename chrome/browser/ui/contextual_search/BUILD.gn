@@ -21,8 +21,10 @@ source_set("unit_tests") {
   sources = [ "searchbox_context_data_unittest.cc" ]
   deps = [
     ":contextual_search",
+    "//base",
     "//base/test:test_support",
     "//components/omnibox/browser:mojo_bindings",
     "//testing/gtest",
+    "//url",
   ]
 }
