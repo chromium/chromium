@@ -315,6 +315,7 @@ public class StatusBarColorControllerTest {
     @LargeTest
     @Feature({"StatusBar"})
     @Restriction({DeviceFormFactor.PHONE}) // Status bar is always black on tablets
+    @DisabledTest(message = "crbug.com/458551111")
     public void testBrandColorIgnoredWhenOmniboxIsFocused_FeatureMatchToolbarColorEnabled()
             throws Exception {
         ChromeTabbedActivity activity = mActivityTestRule.getActivity();
