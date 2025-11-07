@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "ash/display/cursor_window_controller.h"
-#include "base/memory/raw_ptr.h"
 
 #include <cmath>
 #include <utility>
@@ -13,16 +12,19 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/display/display_util.h"
 #include "ash/display/window_tree_host_manager.h"
+#include "ash/host/ash_window_tree_host.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/prefs/pref_service.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/aura/client/cursor_shape_client.h"
+#include "ui/aura/test/aura_test_utils.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/cursor/cursor.h"
@@ -142,8 +144,6 @@ TEST_F(CursorWindowControllerTest, MoveToDifferentDisplay) {
           .id();
   aura::Window* primary_root =
       window_tree_host_manager->GetRootWindowForDisplayId(primary_display_id);
-  aura::Window* secondary_root =
-      window_tree_host_manager->GetRootWindowForDisplayId(secondary_display_id);
 
   ui::test::EventGenerator primary_generator(primary_root);
   primary_generator.MoveMouseToInHost(20, 50);
@@ -157,20 +157,21 @@ TEST_F(CursorWindowControllerTest, MoveToDifferentDisplay) {
   EXPECT_EQ(20, cursor_bounds.x() + hot_point.x());
   EXPECT_EQ(50, cursor_bounds.y() + hot_point.y());
 
-  // The cursor can only be moved between displays via
-  // WindowTreeHost::MoveCursorTo(). EventGenerator uses a hack to move the
-  // cursor between displays.
-  // Screen location: 220, 50
-  // Root location: 20, 50
-  secondary_root->MoveCursorTo(gfx::Point(20, 50));
+  // Move to secondary.
+  AshWindowTreeHost* secondary_ash_wth =
+      window_tree_host_manager->GetAshWindowTreeHostForDisplayId(
+          secondary_display_id);
+  auto* secondary_wth = secondary_ash_wth->AsWindowTreeHost();
+  auto* secondary_root = secondary_wth->window();
 
-  // Chrome relies on WindowTreeHost::MoveCursorTo() dispatching a mouse move
-  // asynchronously. This is implemented in a platform specific way. Generate a
-  // fake mouse move instead of waiting.
-  gfx::Point new_cursor_position_in_host(20, 50);
-  secondary_root->GetHost()->ConvertDIPToPixels(&new_cursor_position_in_host);
+  MoveCursorTo(secondary_ash_wth, gfx::Point(299, 50), true);
+
+  // Chrome relies on WindowTreeHost::MoveCursorToInternal() dispatching a mouse
+  // move asynchronously. This is implemented in a platform specific way.
+  // Generate a fake mouse move instead of waiting.
+  auto& pos = aura::test::QueryLatestMousePositionRequestInHost(secondary_wth);
   ui::test::EventGenerator secondary_generator(secondary_root);
-  secondary_generator.MoveMouseToInHost(new_cursor_position_in_host);
+  secondary_generator.MoveMouseToInHost(pos);
 
   EXPECT_TRUE(secondary_root->Contains(GetCursorHostWindow()));
   EXPECT_EQ(secondary_display_id, GetCursorDisplayId());
@@ -178,7 +179,7 @@ TEST_F(CursorWindowControllerTest, MoveToDifferentDisplay) {
   hot_point = GetCursorHotPoint();
   EXPECT_EQ(gfx::Point(6, 4), hot_point);
   cursor_bounds = GetCursorBounds();
-  EXPECT_EQ(320, cursor_bounds.x() + hot_point.x());
+  EXPECT_EQ(300, cursor_bounds.x() + hot_point.x());
   EXPECT_EQ(50, cursor_bounds.y() + hot_point.y());
 }
 
@@ -431,6 +432,33 @@ TEST_F(CursorWindowControllerTest, LargeCursorColoringSpotCheck) {
   // Set back to the default color and ensure cursor compositing is disabled.
   prefs->SetBoolean(prefs::kAccessibilityLargeCursorEnabled, false);
   SetCursorCompositionEnabled(false);
+}
+
+TEST_F(CursorWindowControllerTest, RefreshRateChangeUpdatesMaxUpdateRates) {
+  const int64_t display_id =
+      display::test::DisplayManagerTestApi(display_manager())
+          .SetFirstDisplayAsInternalDisplay();
+
+  display::Display display = display::Screen::Get()->GetPrimaryDisplay();
+  auto display_bounds = display.bounds();
+
+  // Default refresh rate is 60.
+  EXPECT_NEAR(cursor_window_controller()->max_update_rate_ms(), 11.11, 0.01f);
+
+  // Change refresh rate to 30.
+  float refresh_rate = 30.f;
+  display::ManagedDisplayInfo info =
+      display::CreateDisplayInfo(display_id, display_bounds);
+  info.set_refresh_rate(refresh_rate);
+  display::ManagedDisplayMode mode(display_bounds.size(), refresh_rate,
+                                   /*is_interlaced=*/false,
+                                   /*native=*/true);
+  info.SetManagedDisplayModes({mode});
+
+  std::vector<display::ManagedDisplayInfo> display_info_list;
+  display_info_list.push_back(info);
+  display_manager()->OnNativeDisplaysChanged(display_info_list);
+  EXPECT_NEAR(cursor_window_controller()->max_update_rate_ms(), 22.22, 0.01f);
 }
 
 }  // namespace ash

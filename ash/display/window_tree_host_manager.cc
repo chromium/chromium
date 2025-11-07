@@ -467,16 +467,16 @@ WindowTreeHostManager::GetAllRootWindowControllers() {
 }
 
 void WindowTreeHostManager::UpdateMouseLocationAfterDisplayChange() {
-  if (!base::SysInfo::IsRunningOnChromeOS()) {
+  auto* screen = display::Screen::Get();
+  auto* cursor_manager = Shell::Get()->cursor_manager();
+  auto display_id = cursor_manager->GetDisplay().id();
+  display::Display display;
+  if (screen->GetDisplayWithDisplayId(display_id, &display)) {
+    cursor_manager->SetDisplay(display);
     // DRM cursor controls how cursor position should be updated on the device
     // when the display configuration changes.  The following code is a best
     // effort to emulate DRM's cursor implementation, but not 100% equivalent.
-    auto* screen = display::Screen::Get();
-    auto* cursor_manager = Shell::Get()->cursor_manager();
-    auto display_id = cursor_manager->GetDisplay().id();
-    display::Display display;
-    if (screen->GetDisplayWithDisplayId(display_id, &display)) {
-      cursor_manager->SetDisplay(display);
+    if (!base::SysInfo::IsRunningOnChromeOS()) {
       gfx::Point point_in_screen =
           display::Screen::Get()->GetCursorScreenPoint();
       if (!display.bounds().Contains(point_in_screen)) {
