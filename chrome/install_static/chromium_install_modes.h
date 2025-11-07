@@ -38,7 +38,7 @@ inline constexpr auto kInstallModes = std::to_array<InstallConstants>({
         .base_app_id = L"Chromium",                // A distinct base_app_id.
         .browser_prog_id_prefix = L"ChromiumHTM",  // Browser ProgID prefix.
         .browser_prog_id_description =
-            L"Chromium HTML Document",         // Browser ProgID description.
+            L"Chromium HTML Document",  // Browser ProgID description.
         .direct_launch_url_scheme = "chromium",
         .pdf_prog_id_prefix = L"ChromiumPDF",  // PDF ProgID prefix.
         .pdf_prog_id_description =
@@ -59,12 +59,12 @@ inline constexpr auto kInstallModes = std::to_array<InstallConstants>({
                            0x4D6B,
                            {0x8B, 0xFE, 0x83, 0xBF, 0x8C, 0xA1, 0xB1,
                             0xB0}},  // Elevator CLSID.
-        .elevator_iid = {0xb88c45b9,
-                         0x8825,
-                         0x4629,
-                         {0xb8, 0x3e, 0x77, 0xcc, 0x67, 0xd9, 0xce,
-                          0xed}},  // IElevator IID and TypeLib
-        // {B88C45B9-8825-4629-B83E-77CC67D9CEED}.
+        .elevator_iid = {0xbb19a0e5,
+                         0xc6,
+                         0x4966,
+                         {0x94, 0xb2, 0x5a, 0xfe, 0xc6, 0xfe, 0xd9,
+                          0x3a}},  // IElevator IID and TypeLib
+        // {BB19A0E5-00C6-4966-94B2-5AFEC6FED93A}.
         .tracing_service_clsid = {0x83f69367,
                                   0x442d,
                                   0x447f,

@@ -82,6 +82,14 @@ static_assert(ExtractProtectionLevel(PackFlagsAndProtectionLevel(0x12345678,
 class Elevator
     : public Microsoft::WRL::RuntimeClass<
           Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,
+          IElevator2,
+          IElevator2Chromium,
+          IElevator2Chrome,
+          IElevator2ChromeBeta,
+          IElevator2ChromeDev,
+          IElevator2ChromeCanary,
+
+          // This class also implements all the Elevator methods.
           IElevator,
           IElevatorChromium,
           IElevatorChrome,
@@ -139,6 +147,14 @@ class Elevator
   IFACEMETHODIMP DecryptData(const BSTR ciphertext,
                              BSTR* plaintext,
                              DWORD* last_error) override;
+
+  IFACEMETHODIMP RunIsolatedChrome(DWORD flags,
+                                   const WCHAR* command_line,
+                                   BSTR* log,
+                                   ULONG_PTR* proc_handle,
+                                   DWORD* last_error) override;
+
+  IFACEMETHODIMP AcceptInvitation(const wchar_t* server_name) override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ElevatorTest, StringHandlingTest);

@@ -28,8 +28,13 @@ extern const char kAppBoundTestOutputFilename[];
 class FakeInstallDetails : public install_static::PrimaryInstallDetails {
  public:
   // Copy template from first mode from install modes. Some of the values will
-  // then be overridden.
-  FakeInstallDetails();
+  // then be overridden. If `use_old_elevator_interface` is true then the
+  // IElevator interface will be used otherwise IElevator2 will be used.
+  // Production code uses IElevator2 so IElevator compatibility is only used to
+  // verify interface compatibility for tests.
+  // TODO(crbug.com/383157189): Remove the test calls to IElevator once
+  // IElevator2 has shipped to stable for a few milestones.
+  explicit FakeInstallDetails(bool use_old_elevator_interface = false);
 
   FakeInstallDetails(const FakeInstallDetails&) = delete;
   FakeInstallDetails& operator=(const FakeInstallDetails&) = delete;

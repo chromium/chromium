@@ -241,6 +241,18 @@ HRESULT Elevator::DecryptData(const BSTR ciphertext,
   return should_reencrypt ? kSuccessShouldReencrypt : S_OK;
 }
 
+HRESULT Elevator::RunIsolatedChrome(DWORD flags,
+                                    const WCHAR* command_line,
+                                    BSTR* log,
+                                    ULONG_PTR* proc_handle,
+                                    DWORD* last_error) {
+  return E_NOTIMPL;
+}
+
+HRESULT Elevator::AcceptInvitation(const wchar_t* server_name) {
+  return E_NOTIMPL;
+}
+
 // static
 void Elevator::AppendStringWithLength(const std::string& to_append,
                                       std::string& base) {
