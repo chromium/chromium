@@ -48,6 +48,16 @@ using google::protobuf::RepeatedPtrField;
 using ModelExecutionError =
     OptimizationGuideModelExecutionError::ModelExecutionError;
 
+void LogSessionCreation(OptimizationGuideLogger* logger,
+                        ModelBasedCapabilityKey feature) {
+  if (logger && logger->ShouldEnableDebugLogs()) {
+    OPTIMIZATION_GUIDE_LOGGER(
+        optimization_guide_common::mojom::LogSource::MODEL_EXECUTION, logger)
+        << "Starting on-device session for "
+        << std::string(GetStringNameForModelExecutionFeature(feature));
+  }
+}
+
 }  // namespace
 
 SessionImpl::SessionImpl(ModelBasedCapabilityKey feature,
@@ -59,6 +69,7 @@ SessionImpl::SessionImpl(ModelBasedCapabilityKey feature,
   if (on_device_opts.ShouldUse()) {
     TRACE_EVENT("optimization_guide", "SessionImpl::Warmup", "target",
                 base::ToString(feature_));
+    LogSessionCreation(on_device_opts.logger.get(), feature_);
     on_device_context_ =
         std::make_unique<OnDeviceContext>(std::move(on_device_opts), feature_);
     // Prewarm the initial session to make sure the service is started.

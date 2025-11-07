@@ -162,7 +162,7 @@ class ModelBrokerAndroidTest : public testing::Test {
 
 TEST_F(ModelBrokerAndroidTest, RequirePersistentModeForTest) {
   InstallTestFeatureConfig();
-  ModelBrokerClient client(BindAndPassRemote());
+  ModelBrokerClient client(BindAndPassRemote(), nullptr);
 
   base::test::TestFuture<ModelBrokerClient::CreateSessionResult> future;
   client.CreateSession(mojom::ModelBasedCapabilityKey::kTest,
@@ -180,7 +180,7 @@ TEST_F(ModelBrokerAndroidTest, RequirePersistentModeForTest) {
 
 TEST_F(ModelBrokerAndroidTest, DoesNotRequirePersistentModeForScamDetection) {
   InstallScamDetectionFeatureConfig();
-  ModelBrokerClient client(BindAndPassRemote());
+  ModelBrokerClient client(BindAndPassRemote(), nullptr);
 
   base::test::TestFuture<ModelBrokerClient::CreateSessionResult> future;
   client.CreateSession(mojom::ModelBasedCapabilityKey::kScamDetection,
@@ -199,7 +199,7 @@ TEST_F(ModelBrokerAndroidTest, DoesNotRequirePersistentModeForScamDetection) {
 // Verify that when requesting a session while assets are still pending, the
 // client will wait for the assets before resolving the callback.
 TEST_F(ModelBrokerAndroidTest, PendingClient) {
-  ModelBrokerClient client(BindAndPassRemote());
+  ModelBrokerClient client(BindAndPassRemote(), nullptr);
   // Requesting test feature, but assets not available.
   base::test::TestFuture<ModelBrokerClient::CreateSessionResult> future;
   client.CreateSession(mojom::ModelBasedCapabilityKey::kTest,
@@ -216,7 +216,7 @@ TEST_F(ModelBrokerAndroidTest, PendingClient) {
 // Verify that CreateSession and ExecuteModel works when the download succeeds.
 TEST_F(ModelBrokerAndroidTest, ExecuteModel) {
   InstallTestFeatureConfig();
-  ModelBrokerClient client(BindAndPassRemote());
+  ModelBrokerClient client(BindAndPassRemote(), nullptr);
 
   auto session = DownloadModelAndCreateSession(
       client, mojom::ModelBasedCapabilityKey::kTest);
@@ -255,7 +255,7 @@ TEST_F(ModelBrokerAndroidTest, ExecuteModel) {
 // Verify that ExecuteModel succeeds after the model is disconnected.
 TEST_F(ModelBrokerAndroidTest, ExecuteModelAfterModelDisconnected) {
   InstallTestFeatureConfig();
-  ModelBrokerClient client(BindAndPassRemote());
+  ModelBrokerClient client(BindAndPassRemote(), nullptr);
 
   auto session = DownloadModelAndCreateSession(
       client, mojom::ModelBasedCapabilityKey::kTest);
@@ -282,7 +282,7 @@ TEST_F(ModelBrokerAndroidTest, ExecuteModelAfterModelDisconnected) {
 // Verify that when download fails, the client is notified.
 TEST_F(ModelBrokerAndroidTest, DownloadFailure) {
   InstallTestFeatureConfig();
-  ModelBrokerClient client(BindAndPassRemote());
+  ModelBrokerClient client(BindAndPassRemote(), nullptr);
 
   // Requesting the feature we've provided assets for should fail.
   base::test::TestFuture<ModelBrokerClient::CreateSessionResult> future;
@@ -313,7 +313,7 @@ TEST_F(ModelBrokerAndroidTest, EnterprisePolicyDisallowsModel) {
                            GenAILocalFoundationalModelEnterprisePolicySettings::
                                kDisallowed));
   InstallTestFeatureConfig();
-  ModelBrokerClient client(BindAndPassRemote());
+  ModelBrokerClient client(BindAndPassRemote(), nullptr);
 
   base::test::TestFuture<ModelBrokerClient::CreateSessionResult> future;
   client.CreateSession(mojom::ModelBasedCapabilityKey::kTest,
@@ -336,7 +336,7 @@ TEST_F(ModelBrokerAndroidTest, DownloadSuccessForAlreadyUsedFeature) {
       features::GetOnDeviceEligibleModelFeatureRecentUsePeriod() -
       base::Days(1));
 
-  ModelBrokerClient client(BindAndPassRemote());
+  ModelBrokerClient client(BindAndPassRemote(), nullptr);
   auto session = DownloadModelAndCreateSession(
       client, mojom::ModelBasedCapabilityKey::kTest);
   ASSERT_TRUE(session);
@@ -355,7 +355,7 @@ class ModelBrokerAndroidRequirePersistentModeEnabledTest
 TEST_F(ModelBrokerAndroidRequirePersistentModeEnabledTest,
        RequirePersistentModeForScamDetection) {
   InstallScamDetectionFeatureConfig();
-  ModelBrokerClient client(BindAndPassRemote());
+  ModelBrokerClient client(BindAndPassRemote(), nullptr);
 
   base::test::TestFuture<ModelBrokerClient::CreateSessionResult> future;
   client.CreateSession(mojom::ModelBasedCapabilityKey::kScamDetection,
@@ -382,7 +382,7 @@ class ModelBrokerAndroidFeatureDisabledTest : public ModelBrokerAndroidTest {
 
 TEST_F(ModelBrokerAndroidFeatureDisabledTest, FeatureDisabled) {
   InstallTestFeatureConfig();
-  ModelBrokerClient client(BindAndPassRemote());
+  ModelBrokerClient client(BindAndPassRemote(), nullptr);
 
   base::test::TestFuture<ModelBrokerClient::CreateSessionResult> future;
   client.CreateSession(mojom::ModelBasedCapabilityKey::kTest,

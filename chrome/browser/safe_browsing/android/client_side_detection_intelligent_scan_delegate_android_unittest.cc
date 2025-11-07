@@ -58,7 +58,7 @@ class ClientSideDetectionIntelligentScanDelegateAndroidTestBase
     fake_broker_->settings().set_execute_result({response});
     auto model_broker_client =
         std::make_unique<optimization_guide::ModelBrokerClient>(
-            fake_broker_->BindAndPassRemote());
+            fake_broker_->BindAndPassRemote(), nullptr);
     delegate_ =
         std::make_unique<ClientSideDetectionIntelligentScanDelegateAndroid>(
             pref_service_, std::move(model_broker_client));

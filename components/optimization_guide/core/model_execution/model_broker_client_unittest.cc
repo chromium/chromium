@@ -24,9 +24,11 @@ namespace optimization_guide {
 // Verify that a ModelBrokerClient that is not connected fails callbacks.
 TEST(ModelBrokerClientTest, DisconnectedClient) {
   base::test::TaskEnvironment task_environment_;
+  OptimizationGuideLogger logger;
 
   mojo::PendingReceiver<mojom::ModelBroker> receiver;
-  ModelBrokerClient client(receiver.InitWithNewPipeAndPassRemote());
+  ModelBrokerClient client(receiver.InitWithNewPipeAndPassRemote(),
+                           logger.GetWeakPtr());
   receiver.reset();
 
   base::test::TestFuture<ModelBrokerClient::CreateSessionResult> future;
@@ -42,9 +44,11 @@ TEST(ModelBrokerClientTest, DisconnectedClient) {
 // client will wait for the assets before resolving the callback.
 TEST(ModelBrokerClientTest, PendingClient) {
   base::test::TaskEnvironment task_environment_;
+  OptimizationGuideLogger logger;
   FakeAdaptationAsset fake_asset({.config = SimpleComposeConfig()});
   FakeModelBroker fake_broker(fake_asset);
-  ModelBrokerClient client(fake_broker.BindAndPassRemote());
+  ModelBrokerClient client(fake_broker.BindAndPassRemote(),
+                           logger.GetWeakPtr());
   EXPECT_FALSE(client.HasSubscriber(mojom::ModelBasedCapabilityKey::kTest));
 
   base::test::TestFuture<ModelBrokerClient::CreateSessionResult> future;
@@ -64,6 +68,7 @@ TEST(ModelBrokerClientTest, PendingClient) {
 // Verify that CreateSession works when all the assets are provided.
 TEST(ModelBrokerClientTest, ReadyWithSetupClient) {
   base::test::TaskEnvironment task_environment_;
+  OptimizationGuideLogger logger;
   FakeAdaptationAsset test_asset({
       .config =
           []() {
@@ -74,7 +79,8 @@ TEST(ModelBrokerClientTest, ReadyWithSetupClient) {
           }(),
   });
   FakeModelBroker fake_broker(test_asset);
-  ModelBrokerClient client(fake_broker.BindAndPassRemote());
+  ModelBrokerClient client(fake_broker.BindAndPassRemote(),
+                           logger.GetWeakPtr());
   base::test::TestFuture<ModelBrokerClient::CreateSessionResult> future;
 
   // Requesting the feature we've provided assets for should succeed.
@@ -103,7 +109,8 @@ TEST(ModelBrokerClientTest, UnavailableAdaptationRejectsSession) {
   auto asset_manager = broker.CreateAssetManager(&model_provider_);
 
   mojo::PendingReceiver<mojom::ModelBroker> pending_broker;
-  ModelBrokerClient broker_client(broker.BindAndPassRemote());
+  ModelBrokerClient broker_client(broker.BindAndPassRemote(),
+                                  logger.GetWeakPtr());
 
   base::test::TestFuture<std::unique_ptr<OnDeviceSession>> session_future;
   broker_client.CreateSession(mojom::ModelBasedCapabilityKey::kTest,

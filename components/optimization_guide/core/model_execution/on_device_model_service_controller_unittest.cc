@@ -219,7 +219,7 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
 
   std::unique_ptr<OnDeviceSession> CreateSession(
       const SessionConfigParams& params) {
-    return controller().CreateSession(kFeature, params);
+    return controller().CreateSession(kFeature, logger_.GetWeakPtr(), params);
   }
 
   void ExpectFailedSession(OnDeviceModelEligibilityReason reason) {
@@ -486,11 +486,13 @@ TEST_F(OnDeviceModelServiceControllerTest,
       .adaptations = {&compose_asset, &test_asset},
   });
 
-  auto session_compose = controller().CreateSession(
-      ModelBasedCapabilityKey::kCompose, SessionConfigParams{});
+  auto session_compose =
+      controller().CreateSession(ModelBasedCapabilityKey::kCompose,
+                                 logger_.GetWeakPtr(), SessionConfigParams{});
   ASSERT_TRUE(session_compose);
-  auto session_test = controller().CreateSession(ModelBasedCapabilityKey::kTest,
-                                                 SessionConfigParams{});
+  auto session_test =
+      controller().CreateSession(ModelBasedCapabilityKey::kTest,
+                                 logger_.GetWeakPtr(), SessionConfigParams{});
   ASSERT_TRUE(session_test);
 
   ResponseHolder compose_response;
@@ -542,11 +544,13 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelAdaptationAndBaseModelSuccess) {
       .adaptations = {&compose_asset, &test_asset},
   });
 
-  auto session_compose = controller().CreateSession(
-      ModelBasedCapabilityKey::kCompose, SessionConfigParams{});
+  auto session_compose =
+      controller().CreateSession(ModelBasedCapabilityKey::kCompose,
+                                 logger_.GetWeakPtr(), SessionConfigParams{});
   ASSERT_TRUE(session_compose);
-  auto session_test = controller().CreateSession(ModelBasedCapabilityKey::kTest,
-                                                 SessionConfigParams{});
+  auto session_test =
+      controller().CreateSession(ModelBasedCapabilityKey::kTest,
+                                 logger_.GetWeakPtr(), SessionConfigParams{});
   ASSERT_TRUE(session_test);
 
   ResponseHolder compose_response;
@@ -588,8 +592,9 @@ TEST_F(OnDeviceModelServiceControllerTest,
   Initialize(standard_assets_);
 
   base::HistogramTester histogram_tester;
-  auto session = controller().CreateSession(ModelBasedCapabilityKey::kCompose,
-                                            SessionConfigParams{});
+  auto session =
+      controller().CreateSession(ModelBasedCapabilityKey::kCompose,
+                                 logger_.GetWeakPtr(), SessionConfigParams{});
   EXPECT_FALSE(session);
 
   histogram_tester.ExpectUniqueSample(
@@ -639,7 +644,8 @@ TEST_F(OnDeviceModelServiceControllerTest, BaseModelAvailableAfterInit) {
 TEST_F(OnDeviceModelServiceControllerTest, MidSessionModelUpdate) {
   Initialize(standard_assets_);
 
-  auto session = controller().CreateSession(kFeature, SessionConfigParams{});
+  auto session = controller().CreateSession(kFeature, logger_.GetWeakPtr(),
+                                            SessionConfigParams{});
 
   // Simulate a model update.
   FakeBaseModelAsset next_model({
@@ -689,6 +695,7 @@ TEST_F(OnDeviceModelServiceControllerTest, SessionFailsForInvalidFeature) {
   base::HistogramTester histogram_tester;
 
   EXPECT_FALSE(controller().CreateSession(ModelBasedCapabilityKey::kTest,
+                                          logger_.GetWeakPtr(),
                                           SessionConfigParams{}));
 
   histogram_tester.ExpectUniqueSample(
@@ -720,11 +727,13 @@ TEST_F(OnDeviceModelServiceControllerTest, UpdatingSafetyModelEnablesModels) {
 
   // Compose capability can't start because it's missing safety model.
   EXPECT_FALSE(controller().CreateSession(ModelBasedCapabilityKey::kCompose,
+                                          logger_.GetWeakPtr(),
                                           SessionConfigParams{}));
 
   // Test capability starts because it doesn't require a safety model.
-  auto test_session = controller().CreateSession(ModelBasedCapabilityKey::kTest,
-                                                 SessionConfigParams{});
+  auto test_session =
+      controller().CreateSession(ModelBasedCapabilityKey::kTest,
+                                 logger_.GetWeakPtr(), SessionConfigParams{});
   EXPECT_TRUE(test_session);
 
   // Executing with test_session should force model to be loaded.
@@ -744,8 +753,9 @@ TEST_F(OnDeviceModelServiceControllerTest, UpdatingSafetyModelEnablesModels) {
   controller().MaybeUpdateSafetyModel(
       SafetyModelInfo::Load(SafetyModelInfo::SafetyModelType::kTextSafetyModel,
                             safety_asset.model_info()));
-  auto compose_session = controller().CreateSession(
-      ModelBasedCapabilityKey::kCompose, SessionConfigParams{});
+  auto compose_session =
+      controller().CreateSession(ModelBasedCapabilityKey::kCompose,
+                                 logger_.GetWeakPtr(), SessionConfigParams{});
   ASSERT_TRUE(compose_session);
 
   ResponseHolder compose_response;
@@ -954,7 +964,8 @@ TEST_F(OnDeviceModelServiceControllerTest, SucceedsWithPassingSafetyChecks) {
       .adaptations = {&standard_assets_.compose},
   });
 
-  auto session = controller().CreateSession(kFeature, SessionConfigParams{});
+  auto session = controller().CreateSession(kFeature, logger_.GetWeakPtr(),
+                                            SessionConfigParams{});
   ASSERT_TRUE(session);
 
   fake_settings_.set_execute_result({"safe_output"});
@@ -1002,7 +1013,8 @@ TEST_F(OnDeviceModelServiceControllerTest,
       .adaptations = {&standard_assets_.compose},
   });
 
-  auto session = controller().CreateSession(kFeature, SessionConfigParams{});
+  auto session = controller().CreateSession(kFeature, logger_.GetWeakPtr(),
+                                            SessionConfigParams{});
   ASSERT_TRUE(session);
 
   fake_settings_.set_execute_result({"safe_output"});
@@ -1054,7 +1066,8 @@ TEST_F(OnDeviceModelServiceControllerTest,
       .adaptations = {&standard_assets_.compose},
   });
 
-  auto session = controller().CreateSession(kFeature, SessionConfigParams{});
+  auto session = controller().CreateSession(kFeature, logger_.GetWeakPtr(),
+                                            SessionConfigParams{});
   ASSERT_TRUE(session);
 
   fake_settings_.set_execute_result({"safe_output"});
@@ -1094,7 +1107,8 @@ TEST_F(OnDeviceModelServiceControllerTest,
       .adaptations = {&standard_assets_.compose},
   });
 
-  auto session = controller().CreateSession(kFeature, SessionConfigParams{});
+  auto session = controller().CreateSession(kFeature, logger_.GetWeakPtr(),
+                                            SessionConfigParams{});
   ASSERT_TRUE(session);
 
   fake_settings_.set_execute_result({"unsafe_output"});
@@ -1145,7 +1159,8 @@ TEST_F(OnDeviceModelServiceControllerTest, FailsWithInvalidRawOutputChecks) {
       .adaptations = {&standard_assets_.compose},
   });
 
-  auto session = controller().CreateSession(kFeature, SessionConfigParams{});
+  auto session = controller().CreateSession(kFeature, logger_.GetWeakPtr(),
+                                            SessionConfigParams{});
   ASSERT_TRUE(session);
 
   fake_settings_.set_execute_result({"safe_output"});
@@ -1187,7 +1202,8 @@ TEST_F(OnDeviceModelServiceControllerTest,
       .adaptations = {&standard_assets_.compose},
   });
 
-  auto session = controller().CreateSession(kFeature, SessionConfigParams{});
+  auto session = controller().CreateSession(kFeature, logger_.GetWeakPtr(),
+                                            SessionConfigParams{});
   ASSERT_TRUE(session);
 
   fake_settings_.set_execute_result({"safe_output"});
@@ -1234,7 +1250,8 @@ TEST_F(OnDeviceModelServiceControllerTest,
       .adaptations = {&standard_assets_.compose},
   });
 
-  auto session = controller().CreateSession(kFeature, SessionConfigParams{});
+  auto session = controller().CreateSession(kFeature, logger_.GetWeakPtr(),
+                                            SessionConfigParams{});
   ASSERT_TRUE(session);
 
   fake_settings_.set_execute_result({"safe_output"});
@@ -1284,7 +1301,8 @@ TEST_F(OnDeviceModelServiceControllerTest,
       .adaptations = {&standard_assets_.compose},
   });
 
-  auto session = controller().CreateSession(kFeature, SessionConfigParams{});
+  auto session = controller().CreateSession(kFeature, logger_.GetWeakPtr(),
+                                            SessionConfigParams{});
   ASSERT_TRUE(session);
 
   fake_settings_.set_execute_result({"safe_output"});
@@ -1398,7 +1416,8 @@ TEST_F(OnDeviceModelServiceControllerTest, CancelsExecuteOnAddContext) {
 
 TEST_F(OnDeviceModelServiceControllerTest, CancelsExecuteOnExecute) {
   Initialize(standard_assets_);
-  auto session = controller().CreateSession(kFeature, SessionConfigParams{});
+  auto session = controller().CreateSession(kFeature, logger_.GetWeakPtr(),
+                                            SessionConfigParams{});
   ASSERT_TRUE(session);
 
   ResponseHolder resp1;
@@ -1620,7 +1639,8 @@ TEST_F(OnDeviceModelServiceControllerTest, AddContextDisconnectExecute) {
 
 TEST_F(OnDeviceModelServiceControllerTest, AddContextExecuteDisconnect) {
   Initialize(standard_assets_);
-  auto session = controller().CreateSession(kFeature, SessionConfigParams{});
+  auto session = controller().CreateSession(kFeature, logger_.GetWeakPtr(),
+                                            SessionConfigParams{});
   ASSERT_TRUE(session);
   session->AddContext(UserInputRequest("foo"));
   task_environment_.RunUntilIdle();
@@ -1667,7 +1687,8 @@ TEST_F(OnDeviceModelServiceControllerTest, FailsOnGpuBlockedService) {
   Initialize(standard_assets_);
   fake_settings_.service_disconnect_reason =
       on_device_model::ServiceDisconnectReason::kGpuBlocked;
-  auto session = controller().CreateSession(kFeature, SessionConfigParams{});
+  auto session = controller().CreateSession(kFeature, logger_.GetWeakPtr(),
+                                            SessionConfigParams{});
   ASSERT_TRUE(session);
 
   // Wait for the service to launch, and be shut down.
@@ -1698,7 +1719,8 @@ TEST_F(OnDeviceModelServiceControllerTest, AddContextInvalidConfig) {
   controller().MaybeUpdateModelAdaptation(bad_compose_asset.feature(),
                                           bad_compose_asset.metadata());
 
-  auto session = controller().CreateSession(kFeature, SessionConfigParams{});
+  auto session = controller().CreateSession(kFeature, logger_.GetWeakPtr(),
+                                            SessionConfigParams{});
   ASSERT_TRUE(session);
   {
     base::HistogramTester histogram_tester;
@@ -1730,7 +1752,8 @@ TEST_F(OnDeviceModelServiceControllerTest, ExecuteInvalidConfig) {
   controller().MaybeUpdateModelAdaptation(bad_compose_asset.feature(),
                                           bad_compose_asset.metadata());
 
-  auto session = controller().CreateSession(kFeature, SessionConfigParams{});
+  auto session = controller().CreateSession(kFeature, logger_.GetWeakPtr(),
+                                            SessionConfigParams{});
   ASSERT_TRUE(session);
   base::HistogramTester histogram_tester;
   session->ExecuteModel(PageUrlRequest("2"), response_.GetStreamingCallback());
@@ -1743,7 +1766,8 @@ TEST_F(OnDeviceModelServiceControllerTest, ExecuteInvalidConfig) {
 TEST_F(OnDeviceModelServiceControllerTest,
        FailOnDisconnectWhileWaitingForExecute) {
   Initialize(standard_assets_);
-  auto session = controller().CreateSession(kFeature, SessionConfigParams{});
+  auto session = controller().CreateSession(kFeature, logger_.GetWeakPtr(),
+                                            SessionConfigParams{});
   ASSERT_TRUE(session);
   task_environment_.RunUntilIdle();
   fake_launcher_.CrashService();
@@ -2293,7 +2317,7 @@ TEST_F(OnDeviceModelServiceControllerTest, UsesSessionTopKAndTemperature) {
   };
 
   auto session = controller().CreateSession(
-      kFeature,
+      kFeature, logger_.GetWeakPtr(),
       SessionConfigParams{.sampling_params = expected_sampling_params});
   ASSERT_TRUE(session);
 
@@ -3324,7 +3348,7 @@ TEST_F(OnDeviceModelServiceControllerTest, CloneUsesSessionTopKAndTemperature) {
   };
 
   auto session = controller().CreateSession(
-      kFeature,
+      kFeature, logger_.GetWeakPtr(),
       SessionConfigParams{.sampling_params = expected_sampling_params});
   ASSERT_TRUE(session);
   auto clone = session->Clone();
@@ -3376,7 +3400,8 @@ TEST_F(OnDeviceModelServiceControllerTest,
       .adaptations = {&standard_assets_.compose},
   });
 
-  auto session = controller().CreateSession(kFeature, SessionConfigParams{});
+  auto session = controller().CreateSession(kFeature, logger_.GetWeakPtr(),
+                                            SessionConfigParams{});
   ASSERT_TRUE(session);
   auto clone = session->Clone();
   EXPECT_TRUE(clone);
@@ -3516,8 +3541,10 @@ TEST_F(OnDeviceModelServiceControllerTest, CloneAddContextDisconnectExecute) {
 TEST_F(OnDeviceModelServiceControllerTest, Broker) {
   mojo::PendingReceiver<mojom::ModelBroker> pending_broker;
 
-  ModelBrokerClient broker_client(
-      pending_broker.InitWithNewPipeAndPassRemote());
+  OptimizationGuideLogger logger;
+
+  ModelBrokerClient broker_client(pending_broker.InitWithNewPipeAndPassRemote(),
+                                  logger.GetWeakPtr());
 
   base::test::TestFuture<std::unique_ptr<OnDeviceSession>> session_future;
   broker_client.CreateSession(mojom::ModelBasedCapabilityKey::kCompose,
@@ -3545,8 +3572,10 @@ TEST_F(OnDeviceModelServiceControllerTest,
       model_execution::prefs::localstate::kOnDevicePerformanceClassVersion,
       "0.0.0.1");
 
-  ModelBrokerClient broker_client(
-      pending_broker.InitWithNewPipeAndPassRemote());
+  OptimizationGuideLogger logger;
+
+  ModelBrokerClient broker_client(pending_broker.InitWithNewPipeAndPassRemote(),
+                                  logger.GetWeakPtr());
   base::test::TestFuture<std::unique_ptr<OnDeviceSession>> session_future;
   broker_client.CreateSession(mojom::ModelBasedCapabilityKey::kCompose,
                               SessionConfigParams{},
@@ -3682,7 +3711,8 @@ TEST_F(OnDeviceModelServiceControllerTest, TokenCounts) {
 
 TEST_F(OnDeviceModelServiceControllerTest, ResponseConstraintOnExecute) {
   Initialize(standard_assets_);
-  auto session = controller().CreateSession(kFeature, SessionConfigParams{});
+  auto session = controller().CreateSession(kFeature, logger_.GetWeakPtr(),
+                                            SessionConfigParams{});
   ASSERT_TRUE(session);
   session->ExecuteModelWithResponseConstraint(
       PageUrlRequest("input"),
@@ -3713,7 +3743,8 @@ TEST_F(OnDeviceModelServiceControllerTest, ResponseConstraintConfigJson) {
       .adaptations = {&test_asset},
   });
 
-  auto session = controller().CreateSession(kFeature, SessionConfigParams{});
+  auto session = controller().CreateSession(kFeature, logger_.GetWeakPtr(),
+                                            SessionConfigParams{});
   ASSERT_TRUE(session);
 
   session->ExecuteModel(PageUrlRequest("input"),
@@ -3743,7 +3774,8 @@ TEST_F(OnDeviceModelServiceControllerTest, ResponseConstraintConfigRegex) {
       .adaptations = {&test_asset},
   });
 
-  auto session = controller().CreateSession(kFeature, SessionConfigParams{});
+  auto session = controller().CreateSession(kFeature, logger_.GetWeakPtr(),
+                                            SessionConfigParams{});
   ASSERT_TRUE(session);
 
   session->ExecuteModel(PageUrlRequest("input"),
@@ -3812,8 +3844,8 @@ TEST_F(OnDeviceModelServiceControllerTest, EvictModelForRankUpdate) {
       .adaptations = {&rank1_asset},
   });
 
-  auto session =
-      controller().CreateSession(rank1_asset.feature(), SessionConfigParams{});
+  auto session = controller().CreateSession(
+      rank1_asset.feature(), logger_.GetWeakPtr(), SessionConfigParams{});
   ASSERT_TRUE(session);
   MultimodalMessage msg1(PageUrlRequest("input"));
   session->SetInput(std::move(msg1), {});

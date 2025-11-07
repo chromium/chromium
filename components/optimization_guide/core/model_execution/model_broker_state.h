@@ -58,7 +58,8 @@ class ModelBrokerState final : public OnDeviceCapability {
       mojo::PendingReceiver<mojom::ModelBroker> receiver) override;
   std::unique_ptr<OnDeviceSession> StartSession(
       ModelBasedCapabilityKey feature,
-      const SessionConfigParams& config_params) override;
+      const SessionConfigParams& config_params,
+      base::WeakPtr<OptimizationGuideLogger> logger) override;
   OnDeviceModelEligibilityReason GetOnDeviceModelEligibility(
       ModelBasedCapabilityKey feature) override;
   void GetOnDeviceModelEligibilityAsync(

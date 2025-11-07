@@ -13,6 +13,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/optimization_guide/core/model_execution/on_device_capability.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom-data-view.h"
 
 namespace {
@@ -141,7 +142,9 @@ CreateOnDeviceSessionTask::StartSession() {
   SessionConfigParams config_params = SessionConfigParams{};
 
   UpdateSessionConfigParams(&config_params);
-  return service->StartSession(feature_, config_params);
+  return service->StartSession(
+      feature_, config_params,
+      OptimizationGuideLogger::GetInstance()->GetWeakPtr());
 }
 
 OptimizationGuideKeyedService*

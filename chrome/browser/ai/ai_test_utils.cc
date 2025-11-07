@@ -169,7 +169,7 @@ void AITestUtils::AITestBase::SetupNullOptimizationGuideKeyedService() {
 
 void AITestUtils::AITestBase::SetupMockSession() {
   ON_CALL(*mock_optimization_guide_keyed_service_,
-          StartSession(testing::_, testing::_))
+          StartSession(testing::_, testing::_, testing::_))
       .WillByDefault([&] {
         return std::make_unique<
             testing::NiceMock<optimization_guide::MockSession>>(&session_);

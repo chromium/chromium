@@ -27,11 +27,12 @@ namespace {
 
 std::unique_ptr<OnDeviceSession> CreateSessionWithParams(
     const SessionConfigParams& config_params,
+    base::WeakPtr<OptimizationGuideLogger> logger,
     base::WeakPtr<ModelClient> client) {
   if (!client) {
     return nullptr;
   }
-  return client->CreateSession(config_params);
+  return client->CreateSession(config_params, logger);
 }
 
 }  // namespace
@@ -89,7 +90,8 @@ void ModelClient::StartSession(
 }
 
 std::unique_ptr<OnDeviceSession> ModelClient::CreateSession(
-    const SessionConfigParams& config_params) {
+    const SessionConfigParams& config_params,
+    base::WeakPtr<OptimizationGuideLogger> logger) {
   OnDeviceOptions opts;
   opts.model_client = std::make_unique<ModelClient::OnDeviceOptionsClient>(
       weak_ptr_factory_.GetWeakPtr());
@@ -98,6 +100,7 @@ std::unique_ptr<OnDeviceSession> ModelClient::CreateSession(
   opts.safety_checker = std::make_unique<SafetyChecker>(
       weak_ptr_factory_.GetWeakPtr(), SafetyConfig(safety_config_));
   opts.token_limits = feature_adapter_->GetTokenLimits();
+  opts.logger = logger;
   opts.session_params = config_params;
   if (!opts.session_params.sampling_params) {
     opts.session_params.sampling_params =
@@ -115,8 +118,9 @@ ModelSubscriberImpl::~ModelSubscriberImpl() = default;
 
 void ModelSubscriberImpl::CreateSession(
     const SessionConfigParams& config_params,
-    CreateSessionCallback callback) {
-  WaitForClient(base::BindOnce(&CreateSessionWithParams, config_params)
+    CreateSessionCallback callback,
+    base::WeakPtr<OptimizationGuideLogger> logger) {
+  WaitForClient(base::BindOnce(&CreateSessionWithParams, config_params, logger)
                     .Then(std::move(callback)));
 }
 
@@ -171,8 +175,9 @@ void ModelSubscriber::OnDisconnect() {
 }
 
 ModelBrokerClient::ModelBrokerClient(
-    mojo::PendingRemote<mojom::ModelBroker> remote)
-    : remote_(std::move(remote)) {}
+    mojo::PendingRemote<mojom::ModelBroker> remote,
+    base::WeakPtr<OptimizationGuideLogger> logger)
+    : remote_(std::move(remote)), logger_(logger) {}
 ModelBrokerClient::~ModelBrokerClient() = default;
 
 ModelSubscriber& ModelBrokerClient::GetSubscriber(
@@ -196,7 +201,7 @@ void ModelBrokerClient::CreateSession(mojom::ModelBasedCapabilityKey key,
                                       const SessionConfigParams& config_params,
                                       CreateSessionCallback callback) {
   GetSubscriber(key).CreateSession(std::move(config_params),
-                                   std::move(callback));
+                                   std::move(callback), logger_);
 }
 
 }  // namespace optimization_guide

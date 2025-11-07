@@ -22,6 +22,8 @@
 #include "services/on_device_model/public/cpp/capabilities.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 
+class OptimizationGuideLogger;
+
 namespace optimization_guide {
 
 // A response type used for OnDeviceSession.
@@ -306,7 +308,8 @@ class OnDeviceCapability {
   // not outlive OnDeviceCapability.
   virtual std::unique_ptr<OnDeviceSession> StartSession(
       ModelBasedCapabilityKey feature,
-      const SessionConfigParams& config_params);
+      const SessionConfigParams& config_params,
+      base::WeakPtr<OptimizationGuideLogger> logger);
 
   // Observer for on-device model availability changes.
   virtual void AddOnDeviceModelAvailabilityChangeObserver(

@@ -56,11 +56,12 @@ void ModelBrokerState::BindModelBroker(
 
 std::unique_ptr<OnDeviceSession> ModelBrokerState::StartSession(
     ModelBasedCapabilityKey feature,
-    const SessionConfigParams& config_params) {
+    const SessionConfigParams& config_params,
+    base::WeakPtr<OptimizationGuideLogger> logger) {
   if (!features::IsOnDeviceExecutionEnabled()) {
     return nullptr;
   }
-  return service_controller_->CreateSession(feature, config_params);
+  return service_controller_->CreateSession(feature, logger, config_params);
 }
 
 OnDeviceModelEligibilityReason ModelBrokerState::GetOnDeviceModelEligibility(

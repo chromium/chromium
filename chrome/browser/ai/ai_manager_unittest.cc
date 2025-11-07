@@ -81,7 +81,7 @@ class AIManagerTest : public AITestUtils::AITestBase {
   void SetupMockOptimizationGuideKeyedService() override {
     AITestUtils::AITestBase::SetupMockOptimizationGuideKeyedService();
 
-    ON_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
+    ON_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _, _))
         .WillByDefault(
             [&] { return std::make_unique<NiceMock<MockSession>>(&session_); });
     ON_CALL(session_, GetTokenLimits())
@@ -105,7 +105,7 @@ class AIManagerTest : public AITestUtils::AITestBase {
     ON_CALL(*mock_optimization_guide_keyed_service_, CreateModelBrokerClient())
         .WillByDefault([&]() {
           return std::make_unique<optimization_guide::ModelBrokerClient>(
-              fake_broker_.BindAndPassRemote());
+              fake_broker_.BindAndPassRemote(), nullptr);
         });
   }
 

@@ -82,7 +82,7 @@ class MockExecutor : public MockOnDeviceCapability {
 class HistoryEmbeddingsMlIntentClassifierTest : public testing::Test {
  public:
   void SetUp() override {
-    ON_CALL(executor_, StartSession(_, _)).WillByDefault([&] {
+    ON_CALL(executor_, StartSession(_, _, _)).WillByDefault([&] {
       return std::make_unique<NiceMock<MockSession>>(&session_);
     });
   }
@@ -131,7 +131,7 @@ TEST_F(HistoryEmbeddingsMlIntentClassifierTest, ExecutionFails) {
 
 TEST_F(HistoryEmbeddingsMlIntentClassifierTest, FailToCreateSession) {
   MockOnDeviceCapability executor;
-  EXPECT_CALL(executor, StartSession(_, _)).WillRepeatedly([] {
+  EXPECT_CALL(executor, StartSession(_, _, _)).WillRepeatedly([] {
     return nullptr;
   });
   MlIntentClassifier intent_classifier(&executor);

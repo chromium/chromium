@@ -29,6 +29,7 @@ using ::base::test::EqualsProto;
 using ::blink::mojom::AILanguageCode;
 using ::blink::mojom::AILanguageCodePtr;
 using ::testing::_;
+using ::testing::Return;
 
 constexpr char kSharedContextString[] = "test shared context";
 constexpr char kContextString[] = "test context";
@@ -283,12 +284,8 @@ TEST_F(AISummarizerTest, CreateSummarizerNoService) {
 
 TEST_F(AISummarizerTest, CreateSummarizerModelNotEligible) {
   SetupMockOptimizationGuideKeyedService();
-  EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
-      .WillOnce(
-          [&](optimization_guide::ModelBasedCapabilityKey feature,
-              const optimization_guide::SessionConfigParams& config_params) {
-            return nullptr;
-          });
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _, _))
+      .WillOnce(Return(nullptr));
   EXPECT_CALL(*mock_optimization_guide_keyed_service_,
               GetOnDeviceModelEligibilityAsync(_, _, _))
       .WillOnce([](auto feature, auto capabilities, auto callback) {
@@ -320,16 +317,12 @@ TEST_F(AISummarizerTest,
   SetupMockOptimizationGuideKeyedService();
 
   // StartSession must be called twice.
-  EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _, _))
+      .WillOnce(Return(nullptr))
       .WillOnce(
           [&](optimization_guide::ModelBasedCapabilityKey feature,
-              const optimization_guide::SessionConfigParams& config_params) {
-            // Returns a nullptr for the first call.
-            return nullptr;
-          })
-      .WillOnce(
-          [&](optimization_guide::ModelBasedCapabilityKey feature,
-              const optimization_guide::SessionConfigParams& config_params) {
+              const optimization_guide::SessionConfigParams& config_params,
+              base::WeakPtr<OptimizationGuideLogger> logger) {
             // Returns a MockSession for the second call.
             return std::make_unique<
                 testing::NiceMock<optimization_guide::MockSession>>(&session_);
@@ -438,12 +431,8 @@ TEST_F(AISummarizerTest,
        CreateSummarizerAbortAfterConfigNotAvailableForFeature) {
   SetupMockOptimizationGuideKeyedService();
 
-  EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
-      .WillOnce(
-          [&](optimization_guide::ModelBasedCapabilityKey feature,
-              const optimization_guide::SessionConfigParams& config_params) {
-            return nullptr;
-          });
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _, _))
+      .WillOnce(Return(nullptr));
 
   EXPECT_CALL(*mock_optimization_guide_keyed_service_,
               GetOnDeviceModelEligibilityAsync(_, _, _))

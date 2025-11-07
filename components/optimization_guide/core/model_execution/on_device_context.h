@@ -48,6 +48,8 @@ struct OnDeviceOptions final {
   TokenLimits token_limits;
   SessionConfigParams session_params;
 
+  base::WeakPtr<OptimizationGuideLogger> logger;
+
   // Returns true if the on-device model may be used.
   bool ShouldUse() const;
 };

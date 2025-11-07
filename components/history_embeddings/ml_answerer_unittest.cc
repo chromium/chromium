@@ -95,7 +95,7 @@ class HistoryEmbeddingsMlAnswererTest : public testing::Test {
 };
 
 TEST_F(HistoryEmbeddingsMlAnswererTest, ComputeAnswerNoSession) {
-  ON_CALL(model_executor_, StartSession(_, _)).WillByDefault([&] {
+  ON_CALL(model_executor_, StartSession(_, _, _)).WillByDefault([&] {
     return nullptr;
   });
 
@@ -115,7 +115,7 @@ TEST_F(HistoryEmbeddingsMlAnswererTest, ComputeAnswerNoSession) {
 
 #if !BUILDFLAG(IS_FUCHSIA)
 TEST_F(HistoryEmbeddingsMlAnswererTest, ComputeAnswerExecutionFailure) {
-  ON_CALL(model_executor_, StartSession(_, _)).WillByDefault([&] {
+  ON_CALL(model_executor_, StartSession(_, _, _)).WillByDefault([&] {
     return std::make_unique<NiceMock<MockSession>>(&session_1_);
   });
 
@@ -158,7 +158,7 @@ TEST_F(HistoryEmbeddingsMlAnswererTest, ComputeAnswerExecutionFailure) {
 #endif
 
 TEST_F(HistoryEmbeddingsMlAnswererTest, ComputeAnswerSingleUrl) {
-  ON_CALL(model_executor_, StartSession(_, _)).WillByDefault([&] {
+  ON_CALL(model_executor_, StartSession(_, _, _)).WillByDefault([&] {
     return std::make_unique<NiceMock<MockSession>>(&session_1_);
   });
 
@@ -197,7 +197,7 @@ TEST_F(HistoryEmbeddingsMlAnswererTest, ComputeAnswerSingleUrl) {
 }
 
 TEST_F(HistoryEmbeddingsMlAnswererTest, ComputeAnswerMultipleUrls) {
-  ON_CALL(model_executor_, StartSession(_, _))
+  ON_CALL(model_executor_, StartSession(_, _, _))
       .WillByDefault([&]() -> std::unique_ptr<MockSession> {
         if (model_executor_.GetCounter() == 0) {
           model_executor_.IncrementCounter();
@@ -265,7 +265,7 @@ TEST_F(HistoryEmbeddingsMlAnswererTest, ComputeAnswerMultipleUrls) {
 }
 
 TEST_F(HistoryEmbeddingsMlAnswererTest, ComputeAnswerUnanswerable) {
-  ON_CALL(model_executor_, StartSession(_, _)).WillByDefault([&] {
+  ON_CALL(model_executor_, StartSession(_, _, _)).WillByDefault([&] {
     return std::make_unique<NiceMock<MockSession>>(&session_1_);
   });
 
@@ -290,7 +290,7 @@ TEST_F(HistoryEmbeddingsMlAnswererTest, ComputeAnswerUnanswerable) {
 }
 
 TEST_F(HistoryEmbeddingsMlAnswererTest, ComputeAnswerNullScores) {
-  ON_CALL(model_executor_, StartSession(_, _)).WillByDefault([&] {
+  ON_CALL(model_executor_, StartSession(_, _, _)).WillByDefault([&] {
     return std::make_unique<NiceMock<MockSession>>(&session_1_);
   });
 

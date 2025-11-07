@@ -310,7 +310,7 @@ void MlAnswerer::ComputeAnswer(std::string query,
   for (const auto& url_and_passages : context.url_passages_map) {
     std::unique_ptr<Session> session = model_executor_->StartSession(
         optimization_guide::ModelBasedCapabilityKey::kHistorySearch,
-        session_config);
+        session_config, nullptr);
     if (session == nullptr) {
       session_manager_->FinishAndResetSessions(AnswererResult(
           ComputeAnswerStatus::kModelUnavailable, query, Answer()));

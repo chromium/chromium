@@ -38,7 +38,8 @@ class ModelClient final : public TextSafetyClient {
 
   // Construct a session for this capability.
   std::unique_ptr<OnDeviceSession> CreateSession(
-      const SessionConfigParams& config_params);
+      const SessionConfigParams& config_params,
+      base::WeakPtr<OptimizationGuideLogger> logger);
 
   // TextSafetyClient:
   void StartSession(
@@ -96,7 +97,8 @@ class ModelSubscriberImpl : public mojom::ModelSubscriber {
   // Creates and returns a session via callback as soon as a model is available.
   // Calls the callback with nullptr if the state become NotSupported.
   void CreateSession(const SessionConfigParams& config_params,
-                     CreateSessionCallback callback);
+                     CreateSessionCallback callback,
+                     base::WeakPtr<OptimizationGuideLogger> logger);
 
   // Wait for the client to be available and call the callback with a reference.
   // Calls the callback with nullptr if the state become NotSupported.
@@ -130,7 +132,8 @@ class ModelSubscriber final : public ModelSubscriberImpl {
 
 class ModelBrokerClient final {
  public:
-  explicit ModelBrokerClient(mojo::PendingRemote<mojom::ModelBroker> remote);
+  explicit ModelBrokerClient(mojo::PendingRemote<mojom::ModelBroker> remote,
+                             base::WeakPtr<OptimizationGuideLogger> logger);
   ~ModelBrokerClient();
 
   using CreateSessionResult = ModelSubscriber::CreateSessionResult;
@@ -149,6 +152,7 @@ class ModelBrokerClient final {
 
  private:
   mojo::Remote<mojom::ModelBroker> remote_;
+  base::WeakPtr<OptimizationGuideLogger> logger_;
 
   absl::flat_hash_map<mojom::ModelBasedCapabilityKey,
                       std::unique_ptr<ModelSubscriber>>

@@ -94,6 +94,7 @@ class OnDeviceModelServiceController final {
   // context, executing input, and sending the response.
   std::unique_ptr<OnDeviceSession> CreateSession(
       ModelBasedCapabilityKey feature,
+      base::WeakPtr<OptimizationGuideLogger> logger,
       const SessionConfigParams& config_params);
 
   // Sets the language detection model to be used by the ODM service when text

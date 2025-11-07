@@ -360,6 +360,6 @@ std::unique_ptr<optimization_guide::OnDeviceSession>
 ClientSideDetectionIntelligentScanDelegateDesktop::GetModelExecutorSession() {
   return opt_guide_->StartSession(
       optimization_guide::ModelBasedCapabilityKey::kScamDetection,
-      ::optimization_guide::SessionConfigParams{});
+      ::optimization_guide::SessionConfigParams{}, nullptr);
 }
 }  // namespace safe_browsing

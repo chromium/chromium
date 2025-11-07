@@ -107,7 +107,8 @@ OnDeviceCapability::~OnDeviceCapability() = default;
 
 std::unique_ptr<OnDeviceSession> OnDeviceCapability::StartSession(
     ModelBasedCapabilityKey feature,
-    const SessionConfigParams& config_params) {
+    const SessionConfigParams& config_params,
+    base::WeakPtr<OptimizationGuideLogger> logger) {
   return nullptr;
 }
 

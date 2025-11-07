@@ -30,6 +30,7 @@ using ::base::test::EqualsProto;
 using ::blink::mojom::AILanguageCode;
 using ::blink::mojom::AILanguageCodePtr;
 using ::testing::_;
+using ::testing::Return;
 
 constexpr char kInputString[] = "input string";
 constexpr char kInputStringWithError[] = "`input` string";
@@ -211,12 +212,8 @@ TEST_F(AIProofreaderTest, CreateProofreaderNoService) {
 
 TEST_F(AIProofreaderTest, CreateProofreaderModelNotEligible) {
   SetupMockOptimizationGuideKeyedService();
-  EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
-      .WillOnce(
-          [&](optimization_guide::ModelBasedCapabilityKey feature,
-              const optimization_guide::SessionConfigParams& config_params) {
-            return nullptr;
-          });
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _, _))
+      .WillOnce(Return(nullptr));
   EXPECT_CALL(*mock_optimization_guide_keyed_service_,
               GetOnDeviceModelEligibilityAsync(_, _, _))
       .WillOnce([](auto feature, auto capabilities, auto callback) {
@@ -247,12 +244,8 @@ TEST_F(AIProofreaderTest,
        CreateProofreaderAbortAfterConfigNotAvailableForFeature) {
   SetupMockOptimizationGuideKeyedService();
 
-  EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
-      .WillOnce(
-          [&](optimization_guide::ModelBasedCapabilityKey feature,
-              const optimization_guide::SessionConfigParams& config_params) {
-            return nullptr;
-          });
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _, _))
+      .WillOnce(Return(nullptr));
 
   EXPECT_CALL(*mock_optimization_guide_keyed_service_,
               GetOnDeviceModelEligibilityAsync(_, _, _))

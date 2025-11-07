@@ -156,7 +156,8 @@ class OptimizationGuideKeyedService
       override;
   std::unique_ptr<optimization_guide::OnDeviceSession> StartSession(
       optimization_guide::ModelBasedCapabilityKey feature,
-      const optimization_guide::SessionConfigParams& config_params) override;
+      const optimization_guide::SessionConfigParams& config_params,
+      base::WeakPtr<OptimizationGuideLogger> logger) override;
   void AddOnDeviceModelAvailabilityChangeObserver(
       optimization_guide::ModelBasedCapabilityKey feature,
       optimization_guide::OnDeviceModelAvailabilityObserver* observer) override;

@@ -27,6 +27,7 @@ using ::optimization_guide::proto::ModelExecutionInfo;
 using ::optimization_guide::proto::ScamDetectionResponse;
 using ::testing::_;
 using ::testing::NiceMock;
+using ::testing::Return;
 
 namespace safe_browsing {
 
@@ -81,10 +82,11 @@ class ClientSideDetectionIntelligentScanDelegateDesktopTest
 
   void EnableOnDeviceModelWithSession() {
     EnableOnDeviceModel();
-    EXPECT_CALL(mock_opt_guide_, StartSession(_, _))
+    EXPECT_CALL(mock_opt_guide_, StartSession(_, _, _))
         .WillOnce(
             [&](optimization_guide::ModelBasedCapabilityKey feature,
-                const optimization_guide::SessionConfigParams& config_params) {
+                const optimization_guide::SessionConfigParams& config_params,
+                base::WeakPtr<OptimizationGuideLogger> logger) {
               return std::make_unique<NiceMock<MockSession>>(&session_);
             });
   }
@@ -247,10 +249,11 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
       /*log_failed_eligibility_reason=*/true));
 
   testing::NiceMock<MockSession> session;
-  EXPECT_CALL(mock_opt_guide_, StartSession(_, _))
+  EXPECT_CALL(mock_opt_guide_, StartSession(_, _, _))
       .WillOnce(
           [&](optimization_guide::ModelBasedCapabilityKey feature,
-              const optimization_guide::SessionConfigParams& config_params) {
+              const optimization_guide::SessionConfigParams& config_params,
+              base::WeakPtr<OptimizationGuideLogger> logger) {
             return std::make_unique<NiceMock<MockSession>>(&session);
           });
   // No need to add the observer because the session is created immediately.
@@ -500,12 +503,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
        TestSessionCreationFailure) {
   EnableOnDeviceModel();
 
-  EXPECT_CALL(mock_opt_guide_, StartSession(_, _))
-      .WillOnce(
-          [&](optimization_guide::ModelBasedCapabilityKey feature,
-              const optimization_guide::SessionConfigParams& config_params) {
-            return nullptr;
-          });
+  EXPECT_CALL(mock_opt_guide_, StartSession(_, _, _)).WillOnce(Return(nullptr));
 
   base::test::TestFuture<IntelligentScanResult> future;
   delegate_->InquireOnDeviceModel("", future.GetCallback());
@@ -544,10 +542,11 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
       "SBClientPhishing.OnDeviceModelSessionCreationSuccess", true, 1);
 
   // A second session can be created while the first one is still alive.
-  EXPECT_CALL(mock_opt_guide_, StartSession(_, _))
+  EXPECT_CALL(mock_opt_guide_, StartSession(_, _, _))
       .WillOnce(
           [&](optimization_guide::ModelBasedCapabilityKey feature,
-              const optimization_guide::SessionConfigParams& config_params) {
+              const optimization_guide::SessionConfigParams& config_params,
+              base::WeakPtr<OptimizationGuideLogger> logger) {
             return std::make_unique<NiceMock<MockSession>>(&session_);
           });
 
@@ -564,10 +563,11 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
        TestMultipleSessions) {
   EnableOnDeviceModel();
 
-  EXPECT_CALL(mock_opt_guide_, StartSession(_, _))
+  EXPECT_CALL(mock_opt_guide_, StartSession(_, _, _))
       .WillOnce(
           [&](optimization_guide::ModelBasedCapabilityKey feature,
-              const optimization_guide::SessionConfigParams& config_params) {
+              const optimization_guide::SessionConfigParams& config_params,
+              base::WeakPtr<OptimizationGuideLogger> logger) {
             return std::make_unique<NiceMock<MockSession>>(&session_);
           });
 
@@ -577,10 +577,11 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
   EXPECT_FALSE(session_id1->is_empty());
 
   testing::NiceMock<MockSession> session2;
-  EXPECT_CALL(mock_opt_guide_, StartSession(_, _))
+  EXPECT_CALL(mock_opt_guide_, StartSession(_, _, _))
       .WillOnce(
           [&](optimization_guide::ModelBasedCapabilityKey feature,
-              const optimization_guide::SessionConfigParams& config_params) {
+              const optimization_guide::SessionConfigParams& config_params,
+              base::WeakPtr<OptimizationGuideLogger> logger) {
             return std::make_unique<NiceMock<MockSession>>(&session2);
           });
 
@@ -615,10 +616,11 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
        TestMultipleSessionsCancellation) {
   EnableOnDeviceModel();
 
-  EXPECT_CALL(mock_opt_guide_, StartSession(_, _))
+  EXPECT_CALL(mock_opt_guide_, StartSession(_, _, _))
       .WillOnce(
           [&](optimization_guide::ModelBasedCapabilityKey feature,
-              const optimization_guide::SessionConfigParams& config_params) {
+              const optimization_guide::SessionConfigParams& config_params,
+              base::WeakPtr<OptimizationGuideLogger> logger) {
             return std::make_unique<NiceMock<MockSession>>(&session_);
           });
 
@@ -628,10 +630,11 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
   EXPECT_FALSE(session_id1->is_empty());
 
   testing::NiceMock<MockSession> session2;
-  EXPECT_CALL(mock_opt_guide_, StartSession(_, _))
+  EXPECT_CALL(mock_opt_guide_, StartSession(_, _, _))
       .WillOnce(
           [&](optimization_guide::ModelBasedCapabilityKey feature,
-              const optimization_guide::SessionConfigParams& config_params) {
+              const optimization_guide::SessionConfigParams& config_params,
+              base::WeakPtr<OptimizationGuideLogger> logger) {
             return std::make_unique<NiceMock<MockSession>>(&session2);
           });
 
@@ -844,10 +847,11 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
   EXPECT_EQ(delegate_->GetAliveSessionCountForTesting(), 1);
 
   // Create a second session
-  EXPECT_CALL(mock_opt_guide_, StartSession(_, _))
+  EXPECT_CALL(mock_opt_guide_, StartSession(_, _, _))
       .WillOnce(
           [&](optimization_guide::ModelBasedCapabilityKey feature,
-              const optimization_guide::SessionConfigParams& config_params) {
+              const optimization_guide::SessionConfigParams& config_params,
+              base::WeakPtr<OptimizationGuideLogger> logger) {
             return std::make_unique<NiceMock<MockSession>>(&session_);
           });
   base::test::TestFuture<IntelligentScanResult> future2;

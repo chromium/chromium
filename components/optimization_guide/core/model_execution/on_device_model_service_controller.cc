@@ -179,6 +179,7 @@ OnDeviceModelEligibilityReason OnDeviceModelServiceController::CanCreateSession(
 
 std::unique_ptr<OnDeviceSession> OnDeviceModelServiceController::CreateSession(
     ModelBasedCapabilityKey feature,
+    base::WeakPtr<OptimizationGuideLogger> logger,
     const SessionConfigParams& config_params) {
   // Ensure an initial solution is computed to avoid giving kUnknown error.
   UpdateSolutionProvider(feature);
@@ -199,7 +200,7 @@ std::unique_ptr<OnDeviceSession> OnDeviceModelServiceController::CreateSession(
   return model_broker_impl_.GetSolutionProvider(feature)
       .local_subscriber()
       .client()
-      ->CreateSession(config_params);
+      ->CreateSession(config_params, logger);
 }
 
 void OnDeviceModelServiceController::SetLanguageDetectionModel(

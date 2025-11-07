@@ -23,7 +23,8 @@ class MockOnDeviceCapability : public OnDeviceCapability {
   MOCK_METHOD(std::unique_ptr<OnDeviceSession>,
               StartSession,
               (ModelBasedCapabilityKey feature,
-               const SessionConfigParams& config_params),
+               const SessionConfigParams& config_params,
+               base::WeakPtr<OptimizationGuideLogger> logger),
               (override));
 
   MOCK_METHOD(OnDeviceModelEligibilityReason,

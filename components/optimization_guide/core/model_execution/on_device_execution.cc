@@ -20,6 +20,47 @@ using google::protobuf::RepeatedPtrField;
 using ModelExecutionError =
     OptimizationGuideModelExecutionError::ModelExecutionError;
 
+void LogRequest(OptimizationGuideLogger* logger,
+                const proto::OnDeviceModelServiceRequest& logged_request) {
+  if (logger && logger->ShouldEnableDebugLogs()) {
+    OPTIMIZATION_GUIDE_LOGGER(
+        optimization_guide_common::mojom::LogSource::MODEL_EXECUTION, logger)
+        << "Executing model "
+        << (logged_request.input_context_string().empty()
+                ? ""
+                : base::StringPrintf(
+                      "with input context of %d tokens:\n%s\n",
+                      logged_request.input_context_num_tokens_processed(),
+                      logged_request.input_context_string().c_str()))
+        << "with string:\n"
+        << logged_request.execution_string();
+  }
+}
+
+void LogRawResponse(OptimizationGuideLogger* logger,
+                    ModelBasedCapabilityKey feature,
+                    const std::string& raw_response) {
+  if (logger && logger->ShouldEnableDebugLogs()) {
+    OPTIMIZATION_GUIDE_LOGGER(
+        optimization_guide_common::mojom::LogSource::MODEL_EXECUTION, logger)
+        << "Model generates raw response with "
+        << std::string(GetStringNameForModelExecutionFeature(feature)) << ":\n"
+        << raw_response;
+  }
+}
+
+void LogRepeatedResponse(OptimizationGuideLogger* logger,
+                         ModelBasedCapabilityKey feature,
+                         const std::string& repeated_response) {
+  if (logger && logger->ShouldEnableDebugLogs()) {
+    OPTIMIZATION_GUIDE_LOGGER(
+        optimization_guide_common::mojom::LogSource::MODEL_EXECUTION, logger)
+        << "Model generates repeated response with "
+        << std::string(GetStringNameForModelExecutionFeature(feature)) << ":\n"
+        << repeated_response;
+  }
+}
+
 void LogResponseHasRepeats(ModelBasedCapabilityKey feature, bool has_repeats) {
   base::UmaHistogramBoolean(
       base::StrCat(
@@ -155,6 +196,7 @@ void OnDeviceExecution::BeginExecution(OnDeviceContext& context) {
                        input->should_ignore_input_context);
 
   logged_request->set_execution_string(input->ToString());
+  LogRequest(opts_.logger.get(), *logged_request);
 
   if (input->input->pieces.size() > 0) {
     auto append_options = on_device_model::mojom::AppendOptions::New();
@@ -249,6 +291,7 @@ void OnDeviceExecution::OnResponse(
     receiver_.reset();
     logged_response->set_has_repeats(true);
     if (features::GetOnDeviceModelRetractRepeats()) {
+      LogRepeatedResponse(opts_.logger.get(), feature_, current_response_);
       logged_response->set_status(
           proto::ON_DEVICE_MODEL_SERVICE_RESPONSE_STATUS_RETRACTED);
       CancelPendingResponse(Result::kResponseHadRepeats,
@@ -366,6 +409,7 @@ void OnDeviceExecution::MaybeParseResponse(ResponseCompleteness completeness) {
 
   std::string safe_response =
       current_response_.substr(0, latest_safe_raw_output_.length);
+  LogRawResponse(opts_.logger.get(), feature_, safe_response);
   MutableLoggedResponse()->set_output_string(safe_response);
   size_t previous_response_pos = latest_response_pos_;
   latest_response_pos_ = latest_safe_raw_output_.length;
