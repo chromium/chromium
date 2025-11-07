@@ -1072,9 +1072,14 @@ ci.thin_tester(
                     shards = 12,
                 ),
             ),
+            "content_unittests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 2,
+                ),
+            ),
             "interactive_ui_tests": targets.mixin(
                 swarming = targets.swarming(
-                    shards = 8,
+                    shards = 14,
                 ),
             ),
             "sync_integration_tests": targets.mixin(
