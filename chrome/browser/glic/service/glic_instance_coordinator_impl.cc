@@ -413,8 +413,8 @@ void GlicInstanceCoordinatorImpl::ToggleFloaty(
     bool prevent_close,
     glic::mojom::InvocationSource source) {
   GetOrCreateInstanceImplForFloaty()->Toggle(
-      ShowOptions::ForFloating(/*anchor_browser=*/nullptr), prevent_close,
-      source);
+      ShowOptions::ForFloating(/*source_tab=*/tabs::TabHandle::Null()),
+      prevent_close, source);
 }
 
 void GlicInstanceCoordinatorImpl::ToggleSidePanel(

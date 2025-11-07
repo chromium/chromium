@@ -35,7 +35,12 @@ class GlicUiEmbedder {
     virtual void WillCloseFor(EmbedderKey key) = 0;
     virtual Host& host() = 0;
     virtual void Show(const ShowOptions& options) = 0;
-    virtual void Detach(tabs::TabInterface* tab) = 0;
+    // Closes the side panel UI and opens the floating UI for this instance.
+    virtual void Detach(tabs::TabInterface& tab) = 0;
+    // Closes the floating UI for this instance and opens the side panel UI
+    // in the tab that it was detached from. This should only be called from
+    // GlicFloatingUi.
+    virtual void Attach(tabs::TabInterface& tab) = 0;
     // Called after the value of GetPanelState() changes.
     virtual void NotifyPanelStateChanged() = 0;
   };

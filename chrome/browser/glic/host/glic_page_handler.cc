@@ -679,7 +679,9 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
                   base::Unretained(this)));
     }
 
-    browser_attach_observation_ = ObserveBrowserForAttachment(profile_, this);
+    if (!GlicEnabling::IsMultiInstanceEnabledByFlags()) {
+      browser_attach_observation_ = ObserveBrowserForAttachment(profile_, this);
+    }
 
     system_permission_settings_observation_ =
         system_permission_settings::Observe(base::BindRepeating(
@@ -726,7 +728,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
 
     state->focused_tab_data =
         CreateFocusedTabData(sharing_manager().GetFocusedTabData());
-    state->can_attach = browser_attach_observation_->CanAttachToBrowser();
+    state->can_attach = ComputeCanAttach();
     state->panel_is_active = active_state_calculator_.IsActive();
 
     if (base::FeatureList::IsEnabled(glic::mojom::features::kGlicMultiTab)) {
@@ -1462,6 +1464,11 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
 
   // GlicWebClientAccess implementation.
 
+  void FloatingPanelCanAttachChanged(bool can_attach) override {
+    floating_panel_can_attach_ = can_attach;
+    NotifyCanAttachChanged();
+  }
+
   void PanelWillOpen(glic::mojom::PanelOpeningDataPtr panel_opening_data,
                      PanelWillOpenCallback done) override {
     base::UmaHistogramBoolean("Glic.Host.OpenedInRegularTab", false);
@@ -1501,7 +1508,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
 
   // BrowserAttachmentObserver implementation.
   void CanAttachToBrowserChanged(bool can_attach) override {
-    web_client_->NotifyPanelCanAttachChange(can_attach);
+    NotifyCanAttachChanged();
   }
   // ActiveStateCalculator implementation.
   void ActiveStateChanged(bool is_active) override {
@@ -1620,6 +1627,22 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   }
 
  private:
+  bool ComputeCanAttach() const {
+    if (GlicEnabling::IsMultiInstanceEnabledByFlags()) {
+      return floating_panel_can_attach_;
+    }
+    return floating_panel_can_attach_ ||
+           (browser_attach_observation_ &&
+            browser_attach_observation_->CanAttachToBrowser());
+  }
+
+  void NotifyCanAttachChanged() {
+    if (!web_client_) {
+      return;
+    }
+    web_client_->NotifyPanelCanAttachChange(ComputeCanAttach());
+  }
+
   void Uninstall() {
     page_metadata_manager_.reset();
     SetAudioDucking(false, base::DoNothing());
@@ -1843,6 +1866,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   JournalHandler journal_handler_;
   std::unique_ptr<DebouncerDeduper> debouncer_deduper_;
   std::unique_ptr<PageMetadataManager> page_metadata_manager_;
+  bool floating_panel_can_attach_ = false;
 };
 
 GlicPageHandler::GlicPageHandler(

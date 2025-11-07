@@ -36,6 +36,7 @@ struct SidePanelShowOptions {
 
 struct FloatingShowOptions {
   gfx::Rect initial_bounds;
+  tabs::TabInterface::Handle source_tab;
 };
 
 using EmbedderOptions = std::variant<SidePanelShowOptions, FloatingShowOptions>;
@@ -49,7 +50,7 @@ struct ShowOptions {
 
   // Uses `anchor_browser` to get initial location. If `anchor_browser` is
   // nullptr, it will use default location values.
-  static ShowOptions ForFloating(BrowserWindowInterface* anchor_browser);
+  static ShowOptions ForFloating(tabs::TabInterface::Handle source_tab);
   static ShowOptions ForFloating(gfx::Rect initial_bounds);
   static ShowOptions ForSidePanel(tabs::TabInterface& bound_tab);
 

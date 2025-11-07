@@ -58,6 +58,8 @@ class GlicWebClientAccess {
       actor::TaskId task_id,
       const url::Origin& navigation_origin,
       actor::ActorTaskDelegate::NavigationConfirmationCallback callback) = 0;
+
+  virtual void FloatingPanelCanAttachChanged(bool can_attach) = 0;
 };
 
 }  // namespace glic

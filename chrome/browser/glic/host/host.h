@@ -357,6 +357,8 @@ class Host : public GlicSharingManagerProvider {
       const url::Origin& navigation_origin,
       actor::ActorTaskDelegate::NavigationConfirmationCallback callback);
 
+  void FloatingPanelCanAttachChanged(bool can_attach);
+
  private:
   friend class HostManager;
 
