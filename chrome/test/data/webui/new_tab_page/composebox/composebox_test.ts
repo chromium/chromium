@@ -853,24 +853,23 @@ suite('NewTabPageComposeboxTest', () => {
         createAutocompleteResult({matches}));
     await microtasksFinished();
     assertTrue(await areMatchesShowing());
-    const matchEls =
-        composeboxElement.$.matches.shadowRoot.querySelectorAll(
-            'cr-composebox-match');
 
-    // Case 1: composeboxCloseByEscape_ = false. Escape should select the
-    // first suggestion.
+    // Case 1: composeboxCloseByEscape_ = false. Escape should clear the text.
     (composeboxElement as any).composeboxCloseByEscape_ = false;
-    assertFalse(matchEls[0]!.hasAttribute(Attributes.SELECTED));
     const closePromise = eventToPromise('close-composebox', composeboxElement);
     let closed = false;
     closePromise.then(() => closed = true);
+
+    composeboxElement.$.input.value = 'test';
+    composeboxElement.$.input.dispatchEvent(new Event('input'));
+    await microtasksFinished();
 
     composeboxElement.$.input.dispatchEvent(new KeyboardEvent(
         'keydown', {key: 'Escape', bubbles: true, composed: true}));
     await microtasksFinished();
 
     assertFalse(closed);
-    assertTrue(matchEls[0]!.hasAttribute(Attributes.SELECTED));
+    assertEquals('', composeboxElement.$.input.value);
 
     // Case 2: composeboxCloseByEscape_ = true. Escape should close the
     // composebox.
