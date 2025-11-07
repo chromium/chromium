@@ -68,6 +68,9 @@ export class BrowserInstance {
     const chromeArguments = [
       // keep-sorted start
       '--allow-browser-signin=false',
+      '--disable-background-networking',
+      '--disable-background-timer-throttling',
+      '--disable-backgrounding-occluded-windows',
       '--disable-component-update',
       '--disable-default-apps',
       '--disable-notifications',

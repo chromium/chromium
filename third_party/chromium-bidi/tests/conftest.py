@@ -138,7 +138,11 @@ async def websocket(test_headless_mode, capabilities, request):
                     # Required to prevent automatic switch to https.
                     "--disable-features=HttpsFirstBalancedModeAutoEnable,HttpsUpgrades,LocalNetworkAccessChecks",
                     # Required for bluetooth testing.
-                    "--enable-features=WebBluetooth"
+                    "--enable-features=WebBluetooth",
+                    # Prevent throttling.
+                    "--disable-background-networking",
+                    "--disable-background-timer-throttling",
+                    "--disable-backgrounding-occluded-windows",
                 ]
             }
         }
@@ -176,7 +180,7 @@ async def websocket(test_headless_mode, capabilities, request):
                 }
             }
         },
-                              timeout=20)
+                              timeout=40)
 
     async def connect_and_create_new_session():
         """

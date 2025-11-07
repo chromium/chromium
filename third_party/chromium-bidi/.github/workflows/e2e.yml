@@ -48,8 +48,8 @@ jobs:
         head: [headful, 'new-headless', 'old-headless']
         # `cd` runs e2e via `chromedriver`. `node` runs tests using `NodeJS` runner.
         kind: [cd, node]
-        total_chunks: [4]
-        this_chunk: [0, 1, 2, 3]
+        total_chunks: [6]
+        this_chunk: [0, 1, 2, 3, 4, 5]
         exclude:
           # Run e2e via NodeJS only in new headless ubuntu.
           - os: macos-latest
