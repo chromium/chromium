@@ -1755,8 +1755,9 @@ void PermissionRequestManager::SetCurrentRequestsInitialStatuses() {
 
 ContentSetting PermissionRequestManager::GetRequestInitialStatus(
     PermissionRequest* request) {
-  if (current_requests_initial_statuses_.contains(request)) {
-    return current_requests_initial_statuses_.at(request);
+  auto it = current_requests_initial_statuses_.find(request);
+  if (it != current_requests_initial_statuses_.end()) {
+    return it->second;
   }
 
   return CONTENT_SETTING_DEFAULT;
