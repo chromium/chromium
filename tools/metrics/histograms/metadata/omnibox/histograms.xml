@@ -1869,6 +1869,54 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </summary>
 </histogram>
 
+<histogram name="Omnibox.InputToAcceptNonAction" units="ms"
+    expires_after="2026-11-01">
+  <owner>kouhei@google.com</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records the time taken between the OS captured input event timestamp to an
+    URL is about to be selected. Recorded once per call to
+    OmniboxEditModel::OpenSelection if an OmniboxAction is involved.
+
+    This uses the same time origin with
+    Omnibox.SuggestionUsed.Search.InputToNavigationStart2. See also
+    Omnibox.InputToOpenSelection for the breakdown of input routing latency. See
+    also Omnibox.InputToExecuteAction which covers the other branch.
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.InputToExecuteAction" units="ms"
+    expires_after="2026-11-01">
+  <owner>kouhei@google.com</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records the time taken between the OS captured input event timestamp to
+    OmniboxAction is about to be executed. Recorded once per call to
+    OmniboxEditModel::OpenSelection if an OmniboxAction is involved.
+
+    This uses the same time origin with
+    Omnibox.SuggestionUsed.Search.InputToNavigationStart2. See also
+    Omnibox.InputToOpenSelection for the breakdown of input routing latency. See
+    also Omnibox.InputToAcceptNonAction which covers the other branch.
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.InputToOpenSelection" units="ms"
+    expires_after="2026-11-01">
+  <owner>kouhei@google.com</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records the time taken between the OS captured input event timestamp to
+    OmniboxEditModel::OpenSelection. Recorded once per call to
+    OmniboxEditModel::OpenSelection.
+
+    This uses the same time origin with
+    Omnibox.SuggestionUsed.Search.InputToNavigationStart2. See also
+    Omnibox.InputToExecuteAction and Omnibox.InputToAcceptNonAction for other
+    breakdowns of the metric.
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.InputType" enum="OmniboxInputType"
     expires_after="2026-05-25">
   <owner>jdonnelly@chromium.org</owner>

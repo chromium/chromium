@@ -788,6 +788,9 @@ void OmniboxEditModel::OpenSelection(OmniboxPopupSelection selection,
                                      base::TimeTicks timestamp,
                                      WindowOpenDisposition disposition,
                                      bool via_keyboard) {
+  base::UmaHistogramMicrosecondsTimes("Omnibox.InputToOpenSelection",
+                                      base::TimeTicks::Now() - timestamp);
+
   // Check for AIM button focus state first, since it can have a line selection
   // of `kNoMatch`, which would otherwise be handled by the `AcceptInput` case
   // below.
@@ -2637,6 +2640,9 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
         base::BindOnce(&OmniboxClient::OnAutocompleteAccept,
                        controller_->client()->AsWeakPtr()),
         match_selection_timestamp, disposition);
+    base::UmaHistogramMicrosecondsTimes(
+        "Omnibox.InputToExecuteAction",
+        base::TimeTicks::Now() - match_selection_timestamp);
     action->Execute(context);
     if (context.enter_starter_pack_id_ != 0 && template_url_service) {
       if (const TemplateURL* starter_pack_turl =
@@ -2679,6 +2685,9 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
       // This calls RevertAll again.
       base::AutoReset<bool> tmp(&in_revert_, true);
 
+      base::UmaHistogramMicrosecondsTimes(
+          "Omnibox.InputToAcceptNonAction",
+          base::TimeTicks::Now() - match_selection_timestamp);
       controller_->client()->OnAutocompleteAccept(
           destination_url, match.post_content.get(), disposition,
           ui::PageTransitionFromInt(match.transition |
