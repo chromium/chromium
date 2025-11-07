@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
 #include "third_party/blink/renderer/core/html/html_dialog_element.h"
 #include "third_party/blink/renderer/core/html/html_style_element.h"
+#include "third_party/blink/renderer/core/layout/anchor_evaluator_impl.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/style/anchor_specifier_value.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
@@ -3681,9 +3682,12 @@ TEST_F(StyleResolverTest, TryTacticsSet_Flip) {
           CSSPropertyID::kLeft, TryTacticTransform()));
   ASSERT_TRUE(try_tactics_set);
 
-  const ComputedStyle* try_style =
-      StyleForId("div", StyleRecalcContext{.try_set = try_set,
-                                           .try_tactics_set = try_tactics_set});
+  AnchorEvaluatorImpl anchor_evaluator(
+      {WritingMode::kHorizontalTb, TextDirection::kLtr});
+  const ComputedStyle* try_style = StyleForId(
+      "div", StyleRecalcContext{.anchor_evaluator = &anchor_evaluator,
+                                .try_set = try_set,
+                                .try_tactics_set = try_tactics_set});
   ASSERT_TRUE(try_style);
   EXPECT_EQ("200px", ComputedValue("left", *try_style));
   EXPECT_EQ("100px", ComputedValue("right", *try_style));

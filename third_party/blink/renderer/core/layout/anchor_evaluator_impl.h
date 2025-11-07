@@ -32,8 +32,10 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
 
  public:
   // An empty evaluator that always return `nullopt`. This instance can still
-  // compute `HasAnchorFunctions()`.
-  AnchorEvaluatorImpl() = default;
+  // compute `HasAnchorFunctions()` and is used to keep the container's
+  // writing-direction for logical flip-* operations.
+  explicit AnchorEvaluatorImpl(WritingDirectionMode container_writing_direction)
+      : container_writing_direction_(container_writing_direction) {}
 
   AnchorEvaluatorImpl(const LayoutBox& query_box,
                       const AnchorMap& anchor_map,
@@ -77,6 +79,10 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
 
   std::optional<PhysicalOffset> ComputeAnchorCenterOffsets(
       const ComputedStyleBuilder&) override;
+
+  WritingDirectionMode GetContainerWritingDirection() const override {
+    return container_writing_direction_;
+  }
 
   const AnchorMap* GetAnchorMap() const { return anchor_map_; }
 

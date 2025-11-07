@@ -1510,7 +1510,7 @@ const CSSValue* StyleCascade::ResolveFlipRevert(const CSSProperty& property,
   // Note: the value is transformed *from* the property we're reverting *to*.
   const CSSValue* flipped = TryValueFlips::FlipValue(
       /* from_property */ to_property.PropertyID(), unflipped,
-      value.Transform(), state_.StyleBuilder().GetWritingDirection());
+      value.Transform(), state_.GetAnchoredContainerWritingDirection());
   return Resolve(property, *flipped, tree_scope,
                  /*mixin_parameter_bindings=*/nullptr, priority, origin,
                  resolver);

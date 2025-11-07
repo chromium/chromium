@@ -45,6 +45,9 @@ class TestAnchorEvaluator : public AnchorEvaluator {
       const ComputedStyleBuilder&) override {
     return std::nullopt;
   }
+  WritingDirectionMode GetContainerWritingDirection() const override {
+    return {WritingMode::kHorizontalTb, TextDirection::kLtr};
+  }
 
  private:
   std::optional<LayoutUnit> result_;

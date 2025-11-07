@@ -58,6 +58,9 @@ class ModeCheckingAnchorEvaluator : public AnchorEvaluator {
       const ComputedStyleBuilder& builder) override {
     return std::nullopt;
   }
+  WritingDirectionMode GetContainerWritingDirection() const override {
+    return {WritingMode::kHorizontalTb, TextDirection::kLtr};
+  }
 
  private:
   AnchorScope::Mode required_mode_;

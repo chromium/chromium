@@ -86,6 +86,10 @@ class CORE_EXPORT AnchorEvaluator {
   virtual std::optional<PhysicalOffset> ComputeAnchorCenterOffsets(
       const ComputedStyleBuilder&) = 0;
 
+  // Return the writing-direction of the abs-pos container for the anchored
+  // element.
+  virtual WritingDirectionMode GetContainerWritingDirection() const = 0;
+
   virtual void Trace(Visitor*) const {}
 
  protected:

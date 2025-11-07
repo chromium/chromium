@@ -193,6 +193,10 @@ class CORE_EXPORT StyleResolverState {
   void SetPositionAnchor(ScopedCSSName*);
   void SetPositionAreaOffsets(const std::optional<PositionAreaOffsets>&);
 
+  // Return the writing-direction of the abs-pos container for an anchored
+  // element.
+  WritingDirectionMode GetAnchoredContainerWritingDirection() const;
+
   CSSParserMode GetParserMode() const;
 
   // If the input CSSValue is a CSSLightDarkValuePair, return the light or dark

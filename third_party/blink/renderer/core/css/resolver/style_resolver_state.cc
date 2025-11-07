@@ -345,6 +345,16 @@ void StyleResolverState::SetPositionAreaOffsets(
   }
 }
 
+WritingDirectionMode StyleResolverState::GetAnchoredContainerWritingDirection()
+    const {
+  AnchorEvaluator* anchor_evaluator = GetAnchorEvaluator();
+  CHECK(anchor_evaluator)
+      << "Should only be invoked for flips, which only happen from "
+         "UpdateStyleAndLayoutTreeForOutOfFlow() for which we always have a "
+         "non-null AnchorEvaluator";
+  return anchor_evaluator->GetContainerWritingDirection();
+}
+
 CSSParserMode StyleResolverState::GetParserMode() const {
   return GetDocument().InQuirksMode() ? kHTMLQuirksMode : kHTMLStandardMode;
 }

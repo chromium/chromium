@@ -1918,7 +1918,7 @@ AnchorEvaluatorImpl OutOfFlowLayoutPart::CreateAnchorEvaluator(
                                container_info.writing_direction, container_rect,
                                scroll_rect);
   }
-  return AnchorEvaluatorImpl();
+  return AnchorEvaluatorImpl(container_info.writing_direction);
 }
 
 OutOfFlowLayoutPart::NodeInfo OutOfFlowLayoutPart::SetupNodeInfo(
