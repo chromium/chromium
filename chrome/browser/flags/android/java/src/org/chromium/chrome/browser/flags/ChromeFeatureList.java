@@ -188,6 +188,7 @@ public abstract class ChromeFeatureList {
     public static final String ANDROID_FIRST_RUN_LAUNCH_BOUNDS = "AndroidFirstRunLaunchBounds";
     public static final String ANDROID_LOGO_VIEW_REFACTOR = "AndroidLogoViewRefactor";
     public static final String ANDROID_MINIMAL_UI_LARGE_SCREEN = "AndroidMinimalUiLargeScreen";
+    public static final String ANDROID_NEW_MEDIA_PICKER = "AndroidNewMediaPicker";
     public static final String ANDROID_NO_VISIBLE_HINT_FOR_DIFFERENT_TLD =
             "AndroidNoVisibleHintForDifferentTLD";
     public static final String ANDROID_OMNIBOX_FOCUSED_NEW_TAB_PAGE =
@@ -747,6 +748,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(ANDROID_MINIMAL_UI_LARGE_SCREEN, true);
     public static final CachedFlag sAndroidOpenIncognitoAsWindow =
             newCachedFlag(ANDROID_OPEN_INCOGNITO_AS_WINDOW, BuildConfig.IS_DESKTOP_ANDROID);
+    public static final CachedFlag sAndroidNewMediaPicker =
+            newCachedFlag(ANDROID_NEW_MEDIA_PICKER, false);
     public static final CachedFlag sAndroidProgressBarVisualUpdate =
             newCachedFlag(
                     ANDROID_PROGRESS_BAR_VISUAL_UPDATE,
@@ -1120,6 +1123,7 @@ public abstract class ChromeFeatureList {
                     sAndroidLogoViewRefactor,
                     sAndroidMinimalUiLargeScreen,
                     sAndroidOpenIncognitoAsWindow,
+                    sAndroidNewMediaPicker,
                     sAndroidProgressBarVisualUpdate,
                     sAndroidSettingsContainment,
                     sAndroidSurfaceColorUpdate,

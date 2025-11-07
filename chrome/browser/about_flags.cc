@@ -11965,6 +11965,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAndroidMinimalUiLargeScreenDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(webapps::features::kAndroidMinimalUiLargeScreen)},
 
+    {"enable-android-new-media-picker",
+     flag_descriptions::kAndroidNewMediaPickerName,
+     flag_descriptions::kAndroidNewMediaPickerDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kAndroidNewMediaPicker)},
+
     {"enable-android-window-controls-overlay",
      flag_descriptions::kAndroidWindowControlsOverlayName,
      flag_descriptions::kAndroidWindowControlsOverlayDescription, kOsAndroid,

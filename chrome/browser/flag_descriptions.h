@@ -4943,6 +4943,11 @@ inline constexpr char kAndroidOpenPdfInlineName[] =
 inline constexpr char kAndroidOpenPdfInlineDescription[] =
     "Enable Open PDF Inline on Android.";
 
+inline constexpr char kAndroidNewMediaPickerName[] =
+    "Enable new media capture picker on Android";
+inline constexpr char kAndroidNewMediaPickerDescription[] =
+    "Enables the new media capture picker UI on Android.";
+
 inline constexpr char kAndroidPdfAssistContentName[] =
     "Provide assist content for PDF";
 inline constexpr char kAndroidPdfAssistContentDescription[] =

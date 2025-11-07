@@ -12386,6 +12386,7 @@ from previous Chrome versions.
       label="ReleaseNotesNotificationAlwaysEligible:enabled"/>
   <int value="-690852008"
       label="EnableGenericOidcAuthProfileManagement:enabled"/>
+  <int value="-690798416" label="AndroidNewMediaPicker:disabled"/>
   <int value="-690660906" label="ProductivityLauncherAnimation:disabled"/>
   <int value="-690455069" label="TabArchivalDragDropAndroid:disabled"/>
   <int value="-690288799" label="MenuElements:disabled"/>
@@ -20265,6 +20266,7 @@ from previous Chrome versions.
   <int value="2077703516" label="FSPsInRecents:disabled"/>
   <int value="2077917024"
       label="enable-supervised-user-managed-bookmarks-folder"/>
+  <int value="2078062163" label="AndroidNewMediaPicker:enabled"/>
   <int value="2078599705" label="ShelfAppScaling:enabled"/>
   <int value="2078857788"
       label="NewConfirmationBubbleForGeneratedPasswords:disabled"/>

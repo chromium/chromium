@@ -2954,6 +2954,11 @@
     "expiry_milestone": 145
   },
   {
+    "name": "enable-android-new-media-picker",
+    "owners": [ "edcourtney@chromium.org", "lt-web-apps-team@google.com" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "enable-android-spellcheck-full-api-blink",
     "owners": [
       "jhtin@google.com",
