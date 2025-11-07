@@ -1578,29 +1578,31 @@ TEST_F(AnimationTest, GetPlaybackConfig) {
       {{/*start_offset=*/kAnimationDuration / 4,
         /*end_offset=*/kAnimationDuration * 3 / 4}},
       /*initial_offset=*/kAnimationDuration / 2,
-      /*initial_completed_cycles=*/2, Animation::Style::kThrobbing);
+      /*initial_completed_cycles=*/2,
+      /*style=*/Animation::Style::kThrobbing,
+      /*ignore_reduced_motion=*/false);
   animation_->Start(test_config);
   ASSERT_TRUE(animation_->GetPlaybackConfig());
-  EXPECT_THAT(
-      *animation_->GetPlaybackConfig(),
-      FieldsAre(ElementsAre(
-                    FieldsAre(test_config.scheduled_cycles.front().start_offset,
-                              test_config.scheduled_cycles.front().end_offset)),
-                test_config.initial_offset,
-                test_config.initial_completed_cycles, test_config.style));
+  EXPECT_THAT(*animation_->GetPlaybackConfig(),
+              FieldsAre(ElementsAre(FieldsAre(
+                            test_config.scheduled_cycles.front().start_offset,
+                            test_config.scheduled_cycles.front().end_offset)),
+                        test_config.initial_offset,
+                        test_config.initial_completed_cycles, test_config.style,
+                        test_config.ignore_reduced_motion));
   animation_->Stop();
   EXPECT_FALSE(animation_->GetPlaybackConfig());
   test_config.scheduled_cycles.front().start_offset = kAnimationDuration / 2;
   test_config.style = Animation::Style::kLoop;
   animation_->Start(test_config);
   ASSERT_TRUE(animation_->GetPlaybackConfig());
-  EXPECT_THAT(
-      *animation_->GetPlaybackConfig(),
-      FieldsAre(ElementsAre(
-                    FieldsAre(test_config.scheduled_cycles.front().start_offset,
-                              test_config.scheduled_cycles.front().end_offset)),
-                test_config.initial_offset,
-                test_config.initial_completed_cycles, test_config.style));
+  EXPECT_THAT(*animation_->GetPlaybackConfig(),
+              FieldsAre(ElementsAre(FieldsAre(
+                            test_config.scheduled_cycles.front().start_offset,
+                            test_config.scheduled_cycles.front().end_offset)),
+                        test_config.initial_offset,
+                        test_config.initial_completed_cycles, test_config.style,
+                        test_config.ignore_reduced_motion));
 }
 
 TEST_F(AnimationTest, GetNumCompletedCycles) {

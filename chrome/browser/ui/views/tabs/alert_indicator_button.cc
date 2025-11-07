@@ -186,8 +186,15 @@ void AlertIndicatorButton::MaybeLoadActorAccessingSpinner() {
   custom_cycle.end_offset = end_offset;
   std::vector<lottie::Animation::CycleBoundaries> scheduled_cycles;
   scheduled_cycles.push_back(custom_cycle);
-  actor_indicator_config_.emplace(scheduled_cycles, custom_cycle.start_offset,
-                                  0, lottie::Animation::Style::kLoop);
+  if (base::FeatureList::IsEnabled(
+          features::kGlicActorUiTabIndicatorSpinnerIgnoreReducedMotion)) {
+    actor_indicator_config_.emplace(scheduled_cycles, custom_cycle.start_offset,
+                                    0, lottie::Animation::Style::kLoop,
+                                    /*ignore_reduced_motion=*/true);
+  } else {
+    actor_indicator_config_.emplace(scheduled_cycles, custom_cycle.start_offset,
+                                    0, lottie::Animation::Style::kLoop);
+  }
 
   // Set all spinner properties.
   actor_indicator_spinner_->SetPaintToLayer(ui::LAYER_TEXTURED);
