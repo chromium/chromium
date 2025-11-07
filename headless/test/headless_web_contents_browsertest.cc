@@ -576,8 +576,12 @@ class CookiesEnabled : public HeadlessDevTooledBrowserTest {
         "Page.loadEventFired",
         base::BindRepeating(&CookiesEnabled::OnLoadEventFired,
                             base::Unretained(this)));
-    devtools_client_.SendCommand("Page.enable");
+    devtools_client_.SendCommand(
+        "Page.enable", base::BindOnce(&CookiesEnabled::OnPageDomainEnabled,
+                                      base::Unretained(this)));
+  }
 
+  void OnPageDomainEnabled(base::Value::Dict) {
     devtools_client_.SendCommand(
         "Page.navigate",
         Param("url", embedded_test_server()->GetURL("/cookie.html").spec()));
