@@ -8,6 +8,7 @@ assert(enable_glic)
 
 source_set("browser_ui") {
   sources = [
+    "border_view_updater.cc",
     "glic_animated_effect_view.cc",
     "glic_border_view.cc",
     "glic_button_controller.cc",
@@ -16,6 +17,7 @@ source_set("browser_ui") {
     "glic_tab_underline_view.cc",
     "glic_vector_icon_manager.cc",
     "scoped_glic_button_indicator.cc",
+    "underline_view_updater.cc",
   ]
   deps = [
     "//chrome/browser/actor/ui",

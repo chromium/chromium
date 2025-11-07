@@ -26,7 +26,17 @@ class Canvas;
 namespace glic {
 
 class GlicKeyedService;
+class UnderlineViewUpdater;
 
+// The following logic makes many references to "pinned" tabs. All of these
+// refer to tabs that are selected to be shared with Gemini under the glic
+// multitab feature. This is different from the older existing notion of
+// "pinned" tabs in the tabstrip, which is the UI treatment that fixes a Tab
+// view to one side with a reduced visual. Separate terminology should be used
+// for the glic multitab concept in order to disambiguate, but landed code
+// already adopts the "pinning" term and so that continues to be used here.
+// TODO(crbug.com/433131600): update glic multitab sharing code to use less
+// conflicting terminology.
 class GlicTabUnderlineView : public GlicAnimatedEffectView {
   METADATA_HEADER(GlicTabUnderlineView, views::View)
 
@@ -64,6 +74,8 @@ class GlicTabUnderlineView : public GlicAnimatedEffectView {
                                 std::unique_ptr<Tester> tester);
 
  private:
+  friend class UnderlineViewUpdater;
+
   // `GlicAnimatedEffectView`:
   bool IsCycleDone(base::TimeTicks timestamp) override;
   base::TimeDelta GetTotalDuration() const override;
@@ -78,7 +90,6 @@ class GlicTabUnderlineView : public GlicAnimatedEffectView {
 
   // A utility class that subscribes to `GlicKeyedService` for various browser
   // UI status changes that affect showing and animating of the tab underlines.
-  class UnderlineViewUpdater;
   const std::unique_ptr<UnderlineViewUpdater> updater_;
 
   raw_ptr<Tab> tab_ = nullptr;

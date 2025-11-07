@@ -16,6 +16,7 @@ assert(enable_glic)
 # the "impl" target.
 source_set("glic") {
   sources = [
+    "browser_ui/border_view_updater.h",
     "browser_ui/glic_animated_effect_view.h",
     "browser_ui/glic_border_view.h",
     "browser_ui/glic_button_controller.h",
@@ -25,6 +26,7 @@ source_set("glic") {
     "browser_ui/glic_tab_underline_view.h",
     "browser_ui/glic_vector_icon_manager.h",
     "browser_ui/scoped_glic_button_indicator.h",
+    "browser_ui/underline_view_updater.h",
     "fre/glic_fre_ui.h",
     "gemini_act_on_web_settings_policy_handler.h",
     "glic_hotkey.h",
