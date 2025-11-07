@@ -24,32 +24,42 @@ class GpuPersistentCacheTest : public testing::Test {
  public:
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    auto db_path = temp_dir_.GetPath().AppendASCII("test.db");
-    auto journal_path = temp_dir_.GetPath().AppendASCII("test.journal");
-
-    cache_params_.type = persistent_cache::BackendType::kSqlite;
-    cache_params_.db_file = CreateFile(db_path);
-    cache_params_.db_file_is_writable = true;
-    cache_params_.journal_file = CreateFile(journal_path);
-    cache_params_.journal_file_is_writable = true;
-    cache_params_.shared_lock = base::UnsafeSharedMemoryRegion::Create(
-        sizeof(persistent_cache::SharedAtomicLock));
-    ASSERT_TRUE(cache_params_.db_file.IsValid());
-    ASSERT_TRUE(cache_params_.journal_file.IsValid());
-    ASSERT_TRUE(cache_params_.shared_lock.IsValid());
+    cache_params_ = CreateBackendParams(/*create_new=*/true);
   }
 
  protected:
-  base::File CreateFile(const base::FilePath& path) {
-    return base::File(path, base::File::FLAG_CREATE_ALWAYS |
-                                base::File::FLAG_READ | base::File::FLAG_WRITE);
+  persistent_cache::BackendParams CreateBackendParams(bool create_new) {
+    base::FilePath db_path = temp_dir_.GetPath().AppendASCII("test.db");
+    base::FilePath journal_path =
+        temp_dir_.GetPath().AppendASCII("test.journal");
+
+    uint32_t file_flags = base::File::FLAG_READ | base::File::FLAG_WRITE;
+    if (create_new) {
+      file_flags |= base::File::FLAG_CREATE_ALWAYS;
+    } else {
+      file_flags |= base::File::FLAG_OPEN;
+    }
+
+    persistent_cache::BackendParams params;
+    params.type = persistent_cache::BackendType::kSqlite;
+    params.db_file = base::File(db_path, file_flags);
+    params.db_file_is_writable = true;
+    params.journal_file = base::File(journal_path, file_flags);
+    params.journal_file_is_writable = true;
+    params.shared_lock = base::UnsafeSharedMemoryRegion::Create(
+        sizeof(persistent_cache::SharedAtomicLock));
+    CHECK(params.db_file.IsValid());
+    CHECK(params.journal_file.IsValid());
+    CHECK(params.shared_lock.IsValid());
+    return params;
   }
 
   void InitializeCache() { cache_.InitializeCache(std::move(cache_params_)); }
 
   void RunStoreAndLoadDataMultiThreaded(int num_threads);
 
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::ScopedTempDir temp_dir_;
   persistent_cache::BackendParams cache_params_;
   GpuPersistentCache cache_{"Test"};
@@ -237,6 +247,145 @@ TEST_F(GpuPersistentCacheTest, StoreAndLoadDataMultiThreadedWithSqlTrace) {
   RunStoreAndLoadDataMultiThreaded(3);
 
   base::trace_event::TraceLog::GetInstance()->SetDisabled();
+}
+
+class GpuPersistentCacheAsyncTest : public GpuPersistentCacheTest {
+ public:
+  void SetUp() override {
+    GpuPersistentCacheTest::SetUp();
+    GpuPersistentCache::AsyncDiskWriteOpts options;
+    options.task_runner = base::SingleThreadTaskRunner::GetCurrentDefault();
+    async_cache_ =
+        std::make_unique<GpuPersistentCache>("TestAsync", std::move(options));
+    async_cache_->InitializeCache(std::move(cache_params_));
+  }
+
+ protected:
+  std::unique_ptr<GpuPersistentCache> async_cache_;
+};
+
+// Tests that when an async task runner is used, the data is written to disk
+// after a delay. It also verifies that the underlying DiskCache is kept alive
+// by the posted task, even after the GpuPersistentCache instance is destroyed.
+TEST_F(GpuPersistentCacheAsyncTest, StoreAndLoadDataAsync) {
+  const std::string key = "my_key";
+  const std::string value = "my_value";
+
+  // Store data. This will be a delayed write.
+  async_cache_->StoreData(key.c_str(), key.size(), value.c_str(), value.size());
+
+  // Destroy the cache. The posted write task will keep the underlying
+  // DiskCache alive until it has run.
+  async_cache_.reset();
+
+  // To verify that the write is delayed, we can create a new cache that reads
+  // from the same files.
+  GpuPersistentCache read_cache("TestRead");
+  read_cache.InitializeCache(CreateBackendParams(/*create_new=*/false));
+
+  // Immediately loading should fail.
+  std::vector<char> buffer(value.size());
+  size_t loaded_size = read_cache.LoadData(key.c_str(), key.size(),
+                                           buffer.data(), buffer.size());
+  EXPECT_EQ(loaded_size, 0u);
+
+  // Fast forward time to trigger the write.
+  task_environment_.FastForwardBy(base::Seconds(2));
+
+  // Now loading should succeed.
+  loaded_size = read_cache.LoadData(key.c_str(), key.size(), buffer.data(),
+                                    buffer.size());
+  EXPECT_EQ(loaded_size, value.size());
+  EXPECT_EQ(std::string(buffer.begin(), buffer.end()), value);
+}
+
+// Tests the idle-rescheduling logic. If another cache operation occurs during
+// the delay period, the write task should be postponed.
+TEST_F(GpuPersistentCacheAsyncTest, StoreAndLoadDataAsync_IdleReschedule) {
+  const std::string key = "my_key";
+  const std::string value = "my_value";
+
+  // Store data. This will be a delayed write.
+  async_cache_->StoreData(key.c_str(), key.size(), value.c_str(), value.size());
+
+  // Fast forward a bit, but less than the delay.
+  task_environment_.FastForwardBy(base::Milliseconds(500));
+
+  // Perform another operation to reset the idle timer.
+  std::vector<char> dummy_buffer(1);
+  async_cache_->LoadData("some_other_key", 14, dummy_buffer.data(), 1);
+
+  // Fast forward past the original delay time. The write should not have
+  // happened yet because it was rescheduled.
+  task_environment_.FastForwardBy(base::Seconds(1));
+
+  // Verify write has not happened by reading from a new cache instance.
+  // Destroy the original cache first.
+  async_cache_.reset();
+
+  GpuPersistentCache read_cache("TestRead");
+  read_cache.InitializeCache(CreateBackendParams(/*create_new=*/false));
+
+  std::vector<char> buffer(value.size());
+  size_t loaded_size = read_cache.LoadData(key.c_str(), key.size(),
+                                           buffer.data(), buffer.size());
+  EXPECT_EQ(loaded_size, 0u);
+
+  // Fast forward again to let the rescheduled write complete.
+  task_environment_.FastForwardBy(base::Seconds(1));
+
+  // Now it should be there.
+  loaded_size = read_cache.LoadData(key.c_str(), key.size(), buffer.data(),
+                                    buffer.size());
+  EXPECT_EQ(loaded_size, value.size());
+  EXPECT_EQ(std::string(buffer.begin(), buffer.end()), value);
+}
+
+// Tests that if pending bytes exceed the limit, the write happens after the
+// first delay without being rescheduled.
+TEST_F(GpuPersistentCacheAsyncTest,
+       StoreAndLoadDataAsync_ExceedMaxPendingBytes) {
+  // Recreate the cache with a pending byte limit.
+  GpuPersistentCache::AsyncDiskWriteOpts options;
+  options.task_runner = base::SingleThreadTaskRunner::GetCurrentDefault();
+  options.max_pending_bytes_to_write = 10;
+  async_cache_ =
+      std::make_unique<GpuPersistentCache>("TestAsync", std::move(options));
+  async_cache_->InitializeCache(CreateBackendParams(/*create_new=*/false));
+
+  const std::string key = "my_key";
+  const std::string value = "my_value_is_longer_than_10";
+  ASSERT_GT(key.size() + value.size(), 10u);
+
+  // Store data. This will be a delayed write.
+  async_cache_->StoreData(key.c_str(), key.size(), value.c_str(), value.size());
+
+  // Fast forward a bit, but less than the delay.
+  task_environment_.FastForwardBy(base::Milliseconds(500));
+
+  // Perform another operation to reset the idle timer. This is to ensure that
+  // the write is triggered by the pending bytes limit and not the idle timeout.
+  std::vector<char> dummy_buffer(1);
+  async_cache_->LoadData("some_other_key", 14, dummy_buffer.data(), 1);
+
+  // Fast forward past the delay. The write should have happened because of the
+  // pending bytes limit, even though the cache was not idle.
+  task_environment_.FastForwardBy(base::Seconds(1));
+
+  // Destroy the cache.
+  async_cache_.reset();
+
+  // The write should have happened. We can verify this by creating a new cache
+  // that reads from the same files.
+  GpuPersistentCache read_cache("TestRead");
+  read_cache.InitializeCache(CreateBackendParams(/*create_new=*/false));
+
+  // Now loading should succeed.
+  std::vector<char> buffer(value.size());
+  size_t loaded_size = read_cache.LoadData(key.c_str(), key.size(),
+                                           buffer.data(), buffer.size());
+  EXPECT_EQ(loaded_size, value.size());
+  EXPECT_EQ(std::string(buffer.begin(), buffer.end()), value);
 }
 
 }  // namespace gpu
