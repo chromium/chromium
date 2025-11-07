@@ -19,7 +19,6 @@
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
-#include "chrome/browser/ui/views/omnibox/omnibox_popup_aim_presenter.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_content.h"
@@ -52,10 +51,6 @@ OmniboxPopupViewWebUI::OmniboxPopupViewWebUI(OmniboxViewViews* omnibox_view,
       location_bar_view_(location_bar_view) {
   presenter_ =
       std::make_unique<OmniboxPopupPresenter>(location_bar_view, controller);
-  if (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxAimPopup)) {
-    aim_presenter_ = std::make_unique<OmniboxPopupAimPresenter>(
-        location_bar_view, controller);
-  }
   controller->edit_model()->set_popup_view(this);
   edit_model_observation_.Observe(controller->edit_model());
 }
@@ -93,14 +88,6 @@ void OmniboxPopupViewWebUI::UpdatePopupAppearance() {
 
 void OmniboxPopupViewWebUI::OnContentsChanged() {
   UpdatePopupAppearance();
-}
-
-void OmniboxPopupViewWebUI::OnAiModeChanged(bool ai_mode) {
-  if (ai_mode) {
-    aim_presenter_->Show();
-    return;
-  }
-  aim_presenter_->Hide();
 }
 
 void OmniboxPopupViewWebUI::ProvideButtonFocusHint(size_t line) {
