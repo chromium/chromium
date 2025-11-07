@@ -21,10 +21,6 @@ namespace extensions {
 
 // Manages the native side of a connection between an extension and an Android
 // app.
-//
-// This class must only be created, called, and deleted on the IO thread.
-// Public methods typically accept callbacks which will be invoked on the UI
-// thread.
 class NativeMessageAndroidHost : public NativeMessageHost {
  public:
   NativeMessageAndroidHost(const ExtensionId& source_extension_id,

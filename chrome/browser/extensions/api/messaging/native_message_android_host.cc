@@ -37,24 +37,23 @@ NativeMessageAndroidHost::NativeMessageAndroidHost(
     : source_extension_id_(source_extension_id),
       native_app_name_(native_host_name) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  task_runner_ = content::GetIOThreadTaskRunner({});
 }
 
-NativeMessageAndroidHost::~NativeMessageAndroidHost() {
-  DCHECK(task_runner_->BelongsToCurrentThread());
-}
+NativeMessageAndroidHost::~NativeMessageAndroidHost() = default;
 
-void NativeMessageAndroidHost::OnMessage(const std::string& json) {}
+void NativeMessageAndroidHost::OnMessage(const std::string& json) {
+  // TODO(crbug.com/417786914): Send the `json` message to the Android app
+  // `native_app_name_`.
+}
 
 void NativeMessageAndroidHost::Start(Client* client) {
-  DCHECK(task_runner_->BelongsToCurrentThread());
   DCHECK(!client_);
   client_ = client;
 }
 
 scoped_refptr<base::SingleThreadTaskRunner>
 NativeMessageAndroidHost::task_runner() const {
-  return task_runner_;
+  return base::SingleThreadTaskRunner::GetCurrentDefault();
 }
 
 }  // namespace extensions
