@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/test/mock_callback.h"
 #include "chrome/browser/picture_in_picture/auto_picture_in_picture_tab_strip_observer_helper.h"
+
+#include "base/test/mock_callback.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
@@ -18,6 +20,11 @@ using testing::_;
 
 class AutoPictureInPictureTabStripObserverHelperBrowserTest
     : public InProcessBrowserTest {
+ public:
+  AutoPictureInPictureTabStripObserverHelperBrowserTest() {
+    feature_list_.InitWithFeatures({features::kSideBySide}, {});
+  }
+
  protected:
   void OpenNewForegroundTab(Browser* browser) {
     ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
@@ -32,6 +39,9 @@ class AutoPictureInPictureTabStripObserverHelperBrowserTest
         WindowOpenDisposition::NEW_BACKGROUND_TAB,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabStripObserverHelperBrowserTest,
@@ -189,6 +199,35 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabStripObserverHelperBrowserTest,
               original_web_contents));
   second_browser->tab_strip_model()->AppendTab(std::move(detached_tab),
                                                /*foreground=*/true);
+  testing::Mock::VerifyAndClearExpectations(&callback);
+}
+
+IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabStripObserverHelperBrowserTest,
+                       DoesNotTriggerWhenActivatingOtherTabInSplitView) {
+  auto* original_web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  base::MockCallback<
+      AutoPictureInPictureTabStripObserverHelper::ActivatedChangedCallback>
+      callback;
+  AutoPictureInPictureTabStripObserverHelper helper(original_web_contents,
+                                                    callback.Get());
+  helper.StartObserving();
+
+  // Opening a new tab in the background should not trigger the callback.
+  EXPECT_CALL(callback, Run(_)).Times(0);
+  OpenNewBackgroundTab(browser());
+  testing::Mock::VerifyAndClearExpectations(&callback);
+
+  // Creating a new split view should not trigger the callback.
+  EXPECT_CALL(callback, Run(_)).Times(0);
+  browser()->tab_strip_model()->AddToNewSplit(
+      {1}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource());
+  testing::Mock::VerifyAndClearExpectations(&callback);
+
+  // Activating the other tab in the split view should not trigger the callback.
+  EXPECT_CALL(callback, Run(_)).Times(0);
+  browser()->tab_strip_model()->ActivateTabAt(1);
   testing::Mock::VerifyAndClearExpectations(&callback);
 }
 

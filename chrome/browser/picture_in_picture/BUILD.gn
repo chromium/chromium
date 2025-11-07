@@ -196,6 +196,7 @@ if (!is_android) {
       "//chrome/browser/preloading:test_support",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui",
+      "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/views/page_info",
       "//chrome/browser/ui/web_applications",
       "//chrome/browser/web_applications",
