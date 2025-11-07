@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.ui;
 
-import android.app.Activity;
+import android.content.Context;
 
 import org.jni_zero.NativeMethods;
 
@@ -97,10 +97,9 @@ public class ExclusiveAccessManager
                         });
     }
 
-    // TODO(https://crbug.com/456395886): use Context instead of Activity.
     public void initialize(
             TabModelSelector modelSelector,
-            Activity activity,
+            Context context,
             ActivityTabProvider activityTabProvider) {
         mTabModelSelector = modelSelector;
         for (TabModel model : modelSelector.getModels()) {
@@ -109,7 +108,7 @@ public class ExclusiveAccessManager
 
         mExclusiveAccessManagerAndroidNativePointer =
                 ExclusiveAccessManagerJni.get()
-                        .init(this, activity, mFullscreenManager, activityTabProvider);
+                        .init(this, context, mFullscreenManager, activityTabProvider);
     }
 
     public ObservableSupplier<Boolean> getExclusiveAccessStateSupplier() {
@@ -295,7 +294,7 @@ public class ExclusiveAccessManager
     public interface Natives {
         long init(
                 ExclusiveAccessManager caller,
-                Activity activity,
+                Context context,
                 FullscreenManager fullscreenManager,
                 ActivityTabProvider activityTabProvider);
 
