@@ -1,4 +1,4 @@
-file://chrome/browser/win/installer_downloader/OWNERS
+file://components/infobars/OWNERS
 
 per-file *.mojom=set noparent
 per-file *.mojom=file://ipc/SECURITY_OWNERS
