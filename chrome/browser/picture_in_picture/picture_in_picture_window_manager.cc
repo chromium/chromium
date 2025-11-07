@@ -37,7 +37,6 @@
 #include "chrome/browser/picture_in_picture/picture_in_picture_window.h"
 #include "media/base/media_switches.h"
 #include "net/base/url_util.h"
-#include "third_party/blink/public/common/features.h"
 #include "ui/views/view.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -670,13 +669,6 @@ PictureInPictureWindowManager::GetOverlayView(
     views::BubbleBorder::Arrow arrow) {
   // This should probably CHECK, but tests often can't set the controller.
   if (!pip_window_controller_) {
-    return nullptr;
-  }
-
-  // This is redundant with the check for `auto_pip_tab_helper`, below.
-  // However, for safety, early-out here when the flag is off.
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kMediaSessionEnterPictureInPicture)) {
     return nullptr;
   }
 

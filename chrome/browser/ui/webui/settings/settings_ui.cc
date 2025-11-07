@@ -508,11 +508,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       "isBatterySaverModeManagedByOS",
       performance_manager::user_tuning::IsBatterySaverModeManagedByOS());
 
-  html_source->AddBoolean(
-      "enableAutoPictureInPicture",
-      base::FeatureList::IsEnabled(
-          blink::features::kMediaSessionEnterPictureInPicture));
-
   html_source->AddBoolean("enableCapturedSurfaceControl",
                           base::FeatureList::IsEnabled(
                               features::kCapturedSurfaceControlKillswitch));

@@ -574,6 +574,7 @@ std::vector<ContentSettingsType> GetVisiblePermissionCategories(
   // so are not included here.
   static base::NoDestructor<std::vector<ContentSettingsType>> base_types{{
       ContentSettingsType::AR,
+      ContentSettingsType::AUTO_PICTURE_IN_PICTURE,
       ContentSettingsType::AUTOMATIC_DOWNLOADS,
       ContentSettingsType::BACKGROUND_SYNC,
       ContentSettingsType::CLIPBOARD_READ_WRITE,
@@ -632,11 +633,6 @@ std::vector<ContentSettingsType> GetVisiblePermissionCategories(
     if (base::FeatureList::IsEnabled(
             subresource_filter::kSafeBrowsingSubresourceFilter)) {
       base_types->push_back(ContentSettingsType::ADS);
-    }
-
-    if (base::FeatureList::IsEnabled(
-            blink::features::kMediaSessionEnterPictureInPicture)) {
-      base_types->push_back(ContentSettingsType::AUTO_PICTURE_IN_PICTURE);
     }
 
     if (base::FeatureList::IsEnabled(blink::features::kSpeakerSelection)) {

@@ -147,9 +147,6 @@ class MediaSessionImplServiceRoutingTest
     : public RenderViewHostImplTestHarness {
  public:
   MediaSessionImplServiceRoutingTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kMediaSessionEnterPictureInPicture);
-
     actions_.insert(MediaSessionAction::kPlay);
     actions_.insert(MediaSessionAction::kPause);
     actions_.insert(MediaSessionAction::kStop);
@@ -290,8 +287,6 @@ class MediaSessionImplServiceRoutingTest
   media_session::MediaMetadata empty_metadata_;
 
   std::set<MediaSessionAction> actions_;
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(MediaSessionImplServiceRoutingTest, NoFrameProducesAudio) {

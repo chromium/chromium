@@ -155,7 +155,6 @@
 #include "pdf/buildflags.h"
 #include "printing/buildflags/buildflags.h"
 #include "rlz/buildflags/buildflags.h"
-#include "third_party/blink/public/common/features.h"
 #include "ui/accessibility/accessibility_features.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -346,16 +345,14 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
       autofill::AutofillClientProviderFactory::GetForProfile(profile);
   autofill_client_provider.CreateClientForWebContents(web_contents);
 
-  if (base::FeatureList::IsEnabled(
-          blink::features::kMediaSessionEnterPictureInPicture)) {
 #if BUILDFLAG(IS_ANDROID)
-    if (base::FeatureList::IsEnabled(media::kAutoPictureInPictureAndroid)) {
-      AutoPictureInPictureTabHelper::CreateForWebContents(web_contents);
-    }
-#else
+  if (base::FeatureList::IsEnabled(media::kAutoPictureInPictureAndroid)) {
     AutoPictureInPictureTabHelper::CreateForWebContents(web_contents);
-#endif
   }
+#else
+  AutoPictureInPictureTabHelper::CreateForWebContents(web_contents);
+#endif
+
 #if BUILDFLAG(IS_ANDROID)
   // The sensitive content client has to be instantiated after the autofill
   // client, because the sensitive content client starts a flow which uses

@@ -1414,10 +1414,6 @@ bool PageInfo::ShouldShowPermission(
     }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-    if (!base::FeatureList::IsEnabled(
-            blink::features::kMediaSessionEnterPictureInPicture)) {
-      return false;
-    }
     if (delegate_->HasAutoPictureInPictureBeenRegistered()) {
       return true;
     }

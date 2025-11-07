@@ -295,13 +295,11 @@
           category="[[contentSettingsTypesEnum_.LOCAL_FONTS]]"
           icon="privacy:font-download" label="$i18n{fonts}">
       </site-details-permission>
-      <template is="dom-if" if="[[enableAutoPictureInPicture_]]">
-        <site-details-permission
-            category="[[contentSettingsTypesEnum_.AUTO_PICTURE_IN_PICTURE]]"
-            icon="settings:picture-in-picture"
-            label="$i18n{siteSettingsAutoPictureInPicture}">
-        </site-details-permission>
-      </template>
+      <site-details-permission
+          category="[[contentSettingsTypesEnum_.AUTO_PICTURE_IN_PICTURE]]"
+          icon="settings:picture-in-picture"
+          label="$i18n{siteSettingsAutoPictureInPicture}">
+      </site-details-permission>
       <template is="dom-if" if="[[enableCapturedSurfaceControl_]]">
         <site-details-permission
             category="[[contentSettingsTypesEnum_.CAPTURED_SURFACE_CONTROL]]"

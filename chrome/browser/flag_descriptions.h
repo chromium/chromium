@@ -1287,11 +1287,6 @@ inline constexpr char
         "iframes which are not currently rendered. See"
         "https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/"
         "IframeMediaPause/iframe_media_pausing.md for more information.";
-inline constexpr char kMediaSessionEnterPictureInPictureName[] =
-    "Media Session enterpictureinpicture action";
-inline constexpr char kMediaSessionEnterPictureInPictureDescription[] =
-    "Enables the 'enterpictureinpicture' MediaSessionAction to allow websites "
-    "to register an action handler for entering picture-in-picture.";
 
 inline constexpr char kCollaborationEntrepriseV2Name[] =
     "Collaboration Entreprise V2";

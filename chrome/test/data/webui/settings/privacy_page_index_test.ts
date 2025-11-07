@@ -27,7 +27,6 @@ suite('PrivacyPageIndex', function() {
 
     loadTimeData.overrideValues(Object.assign(
         {
-          enableAutoPictureInPicture: false,
           enableBundledSecuritySettings: false,
           enableCapturedSurfaceControl: false,
           enableExperimentalWebPlatformFeatures: false,
@@ -458,14 +457,6 @@ suite('PrivacyPageIndex', function() {
 
       return testViewsForRoute(
           routes.SITE_SETTINGS_ADS, ['siteSettingsAds'], 'privacy');
-    });
-
-    test('RoutingAutoPictureInPicture', async function() {
-      assertFalse(loadTimeData.getBoolean('enableAutoPictureInPicture'));
-      await createPrivacyPageIndex({enableAutoPictureInPicture: true});
-      return testViewsForRoute(
-          routes.SITE_SETTINGS_AUTO_PICTURE_IN_PICTURE,
-          ['siteSettingsAutoPictureInPicture'], 'privacy');
     });
 
     test('RoutingBluetoothDevices', async function() {

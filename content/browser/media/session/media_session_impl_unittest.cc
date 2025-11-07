@@ -148,7 +148,6 @@ class MediaSessionImplTest : public RenderViewHostTestHarness {
         {media_session::features::kMediaSessionService,
          media_session::features::kAudioFocusEnforcement,
          media::kGlobalMediaControlsPictureInPicture,
-         blink::features::kMediaSessionEnterPictureInPicture,
          blink::features::kBrowserInitiatedAutomaticPictureInPicture},
         {});
 

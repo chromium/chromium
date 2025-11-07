@@ -78,11 +78,6 @@ export class SettingsPrivacyPageIndexElement extends
         value: false,
       },
 
-      enableAutoPictureInPicture_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('enableAutoPictureInPicture'),
-      },
-
       enableBundledSecuritySettings_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('enableBundledSecuritySettings'),
@@ -206,7 +201,6 @@ export class SettingsPrivacyPageIndexElement extends
   declare private pageVisibility_: PageVisibility;
   declare private routes_: SettingsRoutes;
   declare private showPrivacyGuidePromo_: boolean;
-  declare private enableAutoPictureInPicture_: boolean;
   declare private enableBundledSecuritySettings_: boolean;
   declare private enableCapturedSurfaceControl_: boolean;
   declare private enableFederatedIdentityApiContentSetting_: boolean;

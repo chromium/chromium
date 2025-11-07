@@ -917,8 +917,7 @@ class AutoPictureInPictureTabHelperBrowserTest : public WebRtcTestBase {
 
  protected:
   virtual std::vector<base::test::FeatureRef> GetEnabledFeatures() {
-    return {blink::features::kDocumentPictureInPictureAPI,
-            blink::features::kMediaSessionEnterPictureInPicture};
+    return {blink::features::kDocumentPictureInPictureAPI};
   }
 
   virtual std::vector<base::test::FeatureRef> GetDisabledFeatures() {

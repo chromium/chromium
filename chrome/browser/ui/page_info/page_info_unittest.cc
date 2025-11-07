@@ -68,7 +68,6 @@
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/origin.h"
 
@@ -744,11 +743,6 @@ TEST_F(PageInfoTest, HideAutograntedRWSPermissions) {
 // permission is available for that platform.
 TEST_F(PageInfoTest, AutoPictureInPicturePermissionShownOnChange) {
   std::set<ContentSettingsType> expected_visible_permissions;
-
-  // Enable auto-pip feature.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {blink::features::kMediaSessionEnterPictureInPicture}, {});
 
   // Create the tab helper.
   AutoPictureInPictureTabHelper::CreateForWebContents(web_contents());

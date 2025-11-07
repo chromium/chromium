@@ -188,15 +188,13 @@
     </settings-anti-abuse-page>
   </template>
 
-  <template is="dom-if" if="[[enableAutoPictureInPicture_]]">
-    <template is="dom-if" if="[[renderView_(
-        routes_.SITE_SETTINGS_AUTO_PICTURE_IN_PICTURE, currentRoute,
-        inSearchMode)]]" update-when-false>
-      <settings-auto-picture-in-picture-page slot="view"
-          id="siteSettingsAutoPictureInPicture" data-parent-view-id="privacy"
-          route-path$="[[routes_.SITE_SETTINGS_AUTO_PICTURE_IN_PICTURE.path]]">
-      </settings-auto-picture-in-picture-page>
-    </template>
+  <template is="dom-if" if="[[renderView_(
+      routes_.SITE_SETTINGS_AUTO_PICTURE_IN_PICTURE, currentRoute,
+      inSearchMode)]]" update-when-false>
+    <settings-auto-picture-in-picture-page slot="view"
+        id="siteSettingsAutoPictureInPicture" data-parent-view-id="privacy"
+        route-path$="[[routes_.SITE_SETTINGS_AUTO_PICTURE_IN_PICTURE.path]]">
+    </settings-auto-picture-in-picture-page>
   </template>
 
   <template is="dom-if" if="[[renderView_(

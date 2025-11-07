@@ -38,7 +38,6 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
-import org.chromium.blink_public.common.BlinkFeatures;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.media.PictureInPictureActivity;
@@ -72,7 +71,6 @@ import java.util.concurrent.TimeoutException;
     MediaSwitches.AUTOPLAY_NO_GESTURE_REQUIRED_POLICY,
 })
 @EnableFeatures({
-    BlinkFeatures.MEDIA_SESSION_ENTER_PICTURE_IN_PICTURE,
     MediaFeatures.AUTO_PICTURE_IN_PICTURE_ANDROID,
     MediaFeatures.AUTO_PICTURE_IN_PICTURE_FOR_VIDEO_PLAYBACK
 })

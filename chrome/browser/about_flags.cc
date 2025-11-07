@@ -9746,12 +9746,6 @@ const FeatureEntry kFeatureEntries[] = {
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_CHROMEOS)
-    {"media-session-enter-picture-in-picture",
-     flag_descriptions::kMediaSessionEnterPictureInPictureName,
-     flag_descriptions::kMediaSessionEnterPictureInPictureDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(blink::features::kMediaSessionEnterPictureInPicture)},
-
     {"auto-picture-in-picture-for-video-playback",
      flag_descriptions::kAutoPictureInPictureForVideoPlaybackName,
      flag_descriptions::kAutoPictureInPictureForVideoPlaybackDescription,

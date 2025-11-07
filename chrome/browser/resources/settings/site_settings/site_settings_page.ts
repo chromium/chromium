@@ -99,7 +99,6 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       icon: 'settings:picture-in-picture',
       enabledLabel: 'siteSettingsAutoPictureInPictureAllowed',
       disabledLabel: 'siteSettingsAutoPictureInPictureBlocked',
-      shouldShow: () => loadTimeData.getBoolean('enableAutoPictureInPicture'),
     },
     {
       route: routes.SITE_SETTINGS_BACKGROUND_SYNC,

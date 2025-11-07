@@ -3262,11 +3262,6 @@
       status: "stable",
     },
     {
-      name: "MediaSessionEnterPictureInPicture",
-      public: true,
-      status: "stable",
-    },
-    {
       name: "MediaSourceExperimental",
       status: "experimental",
     },
