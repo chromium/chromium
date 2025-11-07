@@ -30,6 +30,7 @@
 #include "content/public/test/test_web_contents_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace autofill {
 
@@ -39,10 +40,12 @@ using ::base::test::ErrorIs;
 using ::base::test::HasValue;
 using ::base::test::ValueIs;
 using ::testing::AllOf;
+using ::testing::Contains;
 using ::testing::Each;
 using ::testing::ElementsAre;
 using ::testing::Field;
 using ::testing::IsEmpty;
+using ::testing::IsSupersetOf;
 using ::testing::Matcher;
 using ::testing::Not;
 using ::testing::Return;
@@ -86,6 +89,47 @@ FillRequest CreditCardFillRequest(std::vector<FieldGlobalId> field_ids) {
           std::move(field_ids)};
 }
 
+// Returns the value that `group` would fill into a field with a certain `type`.
+std::u16string GetFillValue(const FormGroup& group, FieldType type) {
+  return group.GetInfo(AutofillType(FieldTypeSet({type})), "en-us");
+}
+
+class RecordingTestContentAutofillDriver : public TestContentAutofillDriver {
+ public:
+  using TestContentAutofillDriver::TestContentAutofillDriver;
+  ~RecordingTestContentAutofillDriver() override = default;
+
+  // TestContentAutofillDriver:
+  base::flat_set<FieldGlobalId> ApplyFormAction(
+      mojom::FormActionType action_type,
+      mojom::ActionPersistence action_persistence,
+      base::span<const FormFieldData> fields,
+      const url::Origin& triggered_origin,
+      const base::flat_map<FieldGlobalId, FieldType>& field_type_map,
+      const Section& section_for_clear_form_on_ios) override {
+    base::flat_set<FieldGlobalId> filled_fields =
+        TestContentAutofillDriver::ApplyFormAction(
+            action_type, action_persistence, fields, triggered_origin,
+            field_type_map, section_for_clear_form_on_ios);
+    for (const FormFieldData& field : fields) {
+      if (filled_fields.contains(field.global_id())) {
+        last_filled_values_[field.global_id()] = field.value();
+      }
+    }
+    return filled_fields;
+  }
+
+  // Returns the values that this driver would have sent to the renderer for
+  // filling.
+  const absl::flat_hash_map<FieldGlobalId, std::u16string>& last_filled_values()
+      const {
+    return last_filled_values_;
+  }
+
+ private:
+  absl::flat_hash_map<FieldGlobalId, std::u16string> last_filled_values_;
+};
+
 class ActorFormFillingServiceTest : public ChromeRenderViewHostTestHarness {
  public:
   ActorFormFillingServiceTest() = default;
@@ -95,9 +139,9 @@ class ActorFormFillingServiceTest : public ChromeRenderViewHostTestHarness {
     ON_CALL(mock_tab, GetContents()).WillByDefault(Return(web_contents()));
     NavigateAndCommit(GURL("about:blank"));
     client().GetPersonalDataManager().address_data_manager().AddProfile(
-        test::GetFullProfile());
+        GetProfile1());
     client().GetPersonalDataManager().payments_data_manager().AddCreditCard(
-        test::GetCreditCard());
+        GetCreditCard1());
   }
 
   FormData SeeForm(test::FormDescription form_description) {
@@ -111,18 +155,27 @@ class ActorFormFillingServiceTest : public ChromeRenderViewHostTestHarness {
   AutofillClient& client() {
     return CHECK_DEREF(autofill_client_injector_[web_contents()]);
   }
+  RecordingTestContentAutofillDriver& driver() {
+    return CHECK_DEREF(autofill_driver_injector_[web_contents()]);
+  }
   TestBrowserAutofillManager& manager() {
     return CHECK_DEREF(autofill_manager_injector_[web_contents()]);
   }
   ActorFormFillingService& service() { return service_; }
   tabs::TabInterface& tab() { return mock_tab; }
 
+  // Returns the test data available in `AddressDataManager`.
+  AutofillProfile GetProfile1() { return test::GetFullProfile(); }
+
+  // Returns the test data available in `PaymentsDataManager`.
+  CreditCard GetCreditCard1() { return test::GetCreditCard(); }
+
  private:
   test::AutofillUnitTestEnvironment autofill_test_environment_;
   tabs::MockTabInterface mock_tab;
   TestAutofillClientInjector<TestContentAutofillClient>
       autofill_client_injector_;
-  TestAutofillDriverInjector<TestContentAutofillDriver>
+  TestAutofillDriverInjector<RecordingTestContentAutofillDriver>
       autofill_driver_injector_;
   TestAutofillManagerInjector<TestBrowserAutofillManager>
       autofill_manager_injector_;
@@ -178,6 +231,46 @@ TEST_F(ActorFormFillingServiceTest, SimpleAddressForm) {
       tab(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
       fill_future.GetCallback());
   EXPECT_THAT(fill_future.Get(), HasValue());
+  EXPECT_THAT(driver().last_filled_values(),
+              Contains(std::pair(form.fields()[0].global_id(),
+                                 GetFillValue(GetProfile1(), NAME_FULL))));
+}
+
+// Tests that filling an "actor form" that is split across two Autofill forms
+// works.
+TEST_F(ActorFormFillingServiceTest, SplitAddressForm) {
+  FormData form1 = SeeForm({.fields = {{.server_type = NAME_FIRST},
+                                       {.server_type = NAME_LAST},
+                                       {.server_type = EMAIL_ADDRESS},
+                                       {.server_type = PHONE_HOME_NUMBER}}});
+  FormData form2 = SeeForm({.fields = {{.server_type = ADDRESS_HOME_LINE1},
+                                       {.server_type = ADDRESS_HOME_CITY},
+                                       {.server_type = ADDRESS_HOME_ZIP},
+                                       {.server_type = ADDRESS_HOME_COUNTRY}}});
+  FieldGlobalId form_1_trigger_id = form1.fields()[0].global_id();
+  FieldGlobalId form_2_trigger_id = form2.fields()[0].global_id();
+
+  GetSuggestionsFuture future;
+  service().GetSuggestions(
+      tab(), {AddressFillRequest({form_1_trigger_id, form_2_trigger_id})},
+      future.GetCallback());
+  EXPECT_THAT(future.Get(),
+              ValueIs(ElementsAre(IsActorFormFillingRequest(
+                  ActorFormFillingRequest::RequestedData::
+                      FormFillingRequest_RequestedData_ADDRESS))));
+
+  std::vector<ActorFormFillingRequest> requests = future.Take().value();
+  FillSuggestionsFuture fill_future;
+  service().FillSuggestions(
+      tab(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
+      fill_future.GetCallback());
+  EXPECT_THAT(fill_future.Get(), HasValue());
+  EXPECT_THAT(driver().last_filled_values(),
+              IsSupersetOf({std::pair(form_1_trigger_id,
+                                      GetFillValue(GetProfile1(), NAME_FIRST)),
+                            std::pair(form_2_trigger_id,
+                                      GetFillValue(GetProfile1(),
+                                                   ADDRESS_HOME_LINE1))}));
 }
 
 // Tests that a suggestion generation and filling work with simple credit card
@@ -203,6 +296,10 @@ TEST_F(ActorFormFillingServiceTest, SimpleCreditCardForm) {
       tab(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
       fill_future.GetCallback());
   EXPECT_THAT(fill_future.Get(), HasValue());
+  EXPECT_THAT(driver().last_filled_values(),
+              Contains(std::pair(
+                  form.fields()[0].global_id(),
+                  GetFillValue(GetCreditCard1(), CREDIT_CARD_NAME_FULL))));
 }
 
 // Tests that a `kOther` error is returned if an invalid suggestion id is passed
