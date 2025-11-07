@@ -504,9 +504,6 @@ crbug.com/370694819 [ angle-opengl asan graphite-disabled mac ] Pixel_WebGPUDest
 # Should be re-added when the conflicting Failure expectation is removed.
 # crbug.com/419469465 [ win intel-0x9bc5 ] Pixel_MeetEffects* [ RetryOnFailure ]
 
-# Failure on Win10 Nvidia bot
-crbug.com/420902568 [ win10 nvidia-0x2184 target-cpu-32 ] Pixel_MeetEffectsTruckerHat [ Failure ]
-
 # Video tests flakily cause Android Pixel 6 Ganesh to crash.
 crbug.com/421412516 [ android-chromium android-pixel-6 android-t angle-vulkan graphite-disabled passthrough ] Pixel_Video_Context_Loss_VP9 [ RetryOnFailure ]
 crbug.com/421412516 [ android android-chromium graphite-disabled passthrough angle-vulkan android-pixel-6 ] Pixel_Video_MP4_Rounded_Corner [ RetryOnFailure ]

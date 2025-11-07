@@ -11,6 +11,7 @@
 #import "ios/chrome/common/ui/elements/gradient_view.h"
 #import "ios/chrome/common/ui/promo_style/utils.h"
 #import "ios/chrome/common/ui/util/button_util.h"
+#import "ios/chrome/common/ui/util/chrome_button.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -37,7 +38,7 @@ const CGFloat kScrollViewTopMargin = 45.0;
 // Animation duration for the tip bubble.
 const CGFloat kBubbleViewAnimationDuration = 0.3;
 // Margin below the action button.
-const CGFloat kButtonBottomMargin = 45.0;
+const CGFloat kButtonBottomMargin = 20.0;
 // Margin above the HUD view.
 const CGFloat kHUDViewTopMargin = 20.0;
 }  // namespace
@@ -68,13 +69,11 @@ const CGFloat kHUDViewTopMargin = 20.0;
   // Whether the bubble is currently being hidden.
   BOOL _isBubbleHiding;
   // The primary action button.
-  UIButton* _actionButton;
-  // The button's centered constraint for its initial state.
-  NSLayoutConstraint* _buttonCenteredConstraint;
-  // Whether the action button has been transformed to the primary style.
-  BOOL _buttonTransformed;
+  ChromeButton* _actionButton;
   // The footer view containing the action button.
   UIView* _footerContainerView;
+  // The separator line in the footer.
+  UIView* _separatorLine;
   // A list of gesture recognizers that were disabled.
   NSMutableArray<UIGestureRecognizer*>* _disabledGestures;
   // Whether the user has interacted with the Lens view.
@@ -99,133 +98,10 @@ const CGFloat kHUDViewTopMargin = 20.0;
 
 - (void)viewDidLoad {
   [super viewDidLoad];
+  self.view.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
 
-  UIView* view = self.view;
-  view.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
-  UILayoutGuide* widthLayoutGuide = AddPromoStyleWidthLayoutGuide(view);
-
-  // Add a gradient to the background.
-  GradientView* gradientView = [[GradientView alloc]
-      initWithTopColor:[UIColor colorNamed:kPrimaryBackgroundColor]
-           bottomColor:[UIColor colorNamed:kSecondaryBackgroundColor]];
-  gradientView.translatesAutoresizingMaskIntoConstraints = NO;
-  [view addSubview:gradientView];
-  AddSameConstraints(gradientView, view);
-
-  // Create and constrain the scroll view containing the title and subtitle. The
-  // content will only be scrollable after the Lens view has first compressed as
-  // much as it can.
-  _textScrollView = [self textScrollView];
-  [view addSubview:_textScrollView];
-  [NSLayoutConstraint activateConstraints:@[
-    [_textScrollView.topAnchor
-        constraintEqualToAnchor:view.safeAreaLayoutGuide.topAnchor
-                       constant:kScrollViewTopMargin],
-    [_textScrollView.leadingAnchor
-        constraintEqualToAnchor:widthLayoutGuide.leadingAnchor],
-    [_textScrollView.trailingAnchor
-        constraintEqualToAnchor:widthLayoutGuide.trailingAnchor],
-  ]];
-  NSLayoutConstraint* heightConstraint = [_textScrollView.heightAnchor
-      constraintEqualToAnchor:_textScrollView.contentLayoutGuide.heightAnchor];
-  // UILayoutPriorityDefaultHigh is the default priority for content
-  // compression. Setting this lower avoids compressing the content of the
-  // scroll view.
-  heightConstraint.priority = UILayoutPriorityDefaultHigh - 1;
-  heightConstraint.active = YES;
-
-  // Create and constrain the footer view containing the action button.
-  _footerContainerView = [self footerContainerView];
-  [view addSubview:_footerContainerView];
-  AddSameConstraintsToSides(
-      _footerContainerView, view,
-      LayoutSides::kLeading | LayoutSides::kTrailing | LayoutSides::kBottom);
-
-  // Add the container for the background image view.
-  _backgroundContainerView = [[UIView alloc] init];
-  _backgroundContainerView.translatesAutoresizingMaskIntoConstraints = NO;
-  _backgroundContainerView.clipsToBounds = YES;
-  _backgroundContainerView.layer.cornerRadius = kLensViewCornerRadius;
-  _backgroundContainerView.layer.maskedCorners =
-      kCALayerMinXMinYCorner | kCALayerMaxXMinYCorner;
-  [view addSubview:_backgroundContainerView];
-
-  // Create the background image view and constrain it to its container.
-  _backgroundImageView = [[UIImageView alloc] init];
-  _backgroundImageView.translatesAutoresizingMaskIntoConstraints = NO;
-  _backgroundImageView.contentMode = UIViewContentModeScaleAspectFill;
-  _backgroundImageView.layer.cornerRadius = kLensViewCornerRadius;
-  _backgroundImageView.layer.maskedCorners =
-      kCALayerMinXMinYCorner | kCALayerMaxXMinYCorner;
-  _backgroundImageView.layer.borderWidth = 0.5;
-  _backgroundImageView.layer.borderColor =
-      [UIColor colorNamed:kGrey300Color].CGColor;
-  [_backgroundContainerView addSubview:_backgroundImageView];
-  AddSameConstraintsToSides(
-      _backgroundImageView, _backgroundContainerView,
-      LayoutSides::kLeading | LayoutSides::kTrailing | LayoutSides::kTop);
-
-  // Add and constrain the Lens view.
-  [_lensViewController willMoveToParentViewController:self];
-  [self addChildViewController:_lensViewController];
-  UIView* lensView = _lensViewController.view;
-  lensView.translatesAutoresizingMaskIntoConstraints = NO;
-  [view addSubview:lensView];
-
-  // Make the background image view should be the same size/position as the lens
-  // view since it will sit directly behind.
-  AddSameConstraints(_backgroundContainerView, lensView);
-
-  NSLayoutConstraint* lensViewTopAnchor =
-      [lensView.topAnchor constraintEqualToAnchor:_textScrollView.bottomAnchor
-                                         constant:kLensViewTopMargin];
-  lensViewTopAnchor.priority = UILayoutPriorityDefaultLow;
-  [NSLayoutConstraint activateConstraints:@[
-    // The Lens view has both a minimum possible height (relative to the height
-    // of its superview) and a maximum possible height (relative to the height
-    // of the Lens overlay image asset).
-    lensViewTopAnchor,
-    [lensView.heightAnchor
-        constraintGreaterThanOrEqualToAnchor:view.heightAnchor
-                                  multiplier:kLensViewMinHeightMultiplier],
-    [lensView.heightAnchor
-        constraintLessThanOrEqualToAnchor:lensView.widthAnchor
-                               multiplier:kLensViewMaxHeightMultiplier],
-    [lensView.leadingAnchor
-        constraintEqualToAnchor:widthLayoutGuide.leadingAnchor
-                       constant:kLensViewHorizontalMargin],
-    [lensView.trailingAnchor
-        constraintEqualToAnchor:widthLayoutGuide.trailingAnchor
-                       constant:-kLensViewHorizontalMargin],
-    [lensView.bottomAnchor
-        constraintEqualToAnchor:_footerContainerView.topAnchor],
-    [lensView.topAnchor
-        constraintGreaterThanOrEqualToAnchor:_textScrollView.bottomAnchor
-                                    constant:kLensViewTopMargin],
-  ]];
-  [_lensViewController didMoveToParentViewController:self];
-
-  // Create and constrain the bubble view so that it is pinned to the Lens view
-  // and always below the title/subtitle.
-  _bubbleView = [self bubbleView];
-  [view addSubview:_bubbleView];
-  CGSize bubbleViewPreferredHeight = [_bubbleView
-      sizeThatFits:CGSizeMake(view.bounds.size.width, CGFLOAT_MAX)];
-  _bubbleViewBottomConstraint =
-      [_bubbleView.bottomAnchor constraintEqualToAnchor:lensView.topAnchor];
-  [NSLayoutConstraint activateConstraints:@[
-    [_bubbleView.centerXAnchor constraintEqualToAnchor:view.centerXAnchor],
-    [_bubbleView.leadingAnchor
-        constraintEqualToAnchor:view.safeAreaLayoutGuide.leadingAnchor],
-    [_bubbleView.trailingAnchor
-        constraintEqualToAnchor:view.safeAreaLayoutGuide.trailingAnchor],
-    [_bubbleView.topAnchor
-        constraintGreaterThanOrEqualToAnchor:_textScrollView.bottomAnchor
-                                    constant:kBubbleViewTopMargin],
-    [_bubbleView.heightAnchor
-        constraintEqualToConstant:bubbleViewPreferredHeight.height],
-    _bubbleViewBottomConstraint,
-  ]];
+  [self setUpViews];
+  [self setUpConstraints];
 
   [self startBubbleAnimation];
 }
@@ -295,6 +171,150 @@ const CGFloat kHUDViewTopMargin = 20.0;
 }
 
 #pragma mark - Private
+
+// Sets up the initial view hierarchy.
+- (void)setUpViews {
+  // Add a gradient to the background.
+  GradientView* gradientView = [[GradientView alloc]
+      initWithTopColor:[UIColor colorNamed:kPrimaryBackgroundColor]
+           bottomColor:[UIColor colorNamed:kSecondaryBackgroundColor]];
+  gradientView.translatesAutoresizingMaskIntoConstraints = NO;
+  [self.view addSubview:gradientView];
+  AddSameConstraints(gradientView, self.view);
+
+  _textScrollView = [self textScrollView];
+  [self.view addSubview:_textScrollView];
+
+  _footerContainerView = [self footerContainerView];
+  [self.view addSubview:_footerContainerView];
+
+  _backgroundContainerView = [[UIView alloc] init];
+  _backgroundContainerView.translatesAutoresizingMaskIntoConstraints = NO;
+  _backgroundContainerView.clipsToBounds = YES;
+  _backgroundContainerView.layer.cornerRadius = kLensViewCornerRadius;
+  _backgroundContainerView.layer.maskedCorners =
+      kCALayerMinXMinYCorner | kCALayerMaxXMinYCorner;
+  [self.view addSubview:_backgroundContainerView];
+
+  _backgroundImageView = [[UIImageView alloc] init];
+  _backgroundImageView.translatesAutoresizingMaskIntoConstraints = NO;
+  _backgroundImageView.contentMode = UIViewContentModeScaleAspectFill;
+  _backgroundImageView.layer.cornerRadius = kLensViewCornerRadius;
+  _backgroundImageView.layer.maskedCorners =
+      kCALayerMinXMinYCorner | kCALayerMaxXMinYCorner;
+  _backgroundImageView.layer.borderWidth = 0.5;
+  _backgroundImageView.layer.borderColor =
+      [UIColor colorNamed:kGrey300Color].CGColor;
+  [_backgroundContainerView addSubview:_backgroundImageView];
+
+  [_lensViewController willMoveToParentViewController:self];
+  [self addChildViewController:_lensViewController];
+  UIView* lensView = _lensViewController.view;
+  lensView.translatesAutoresizingMaskIntoConstraints = NO;
+  [self.view addSubview:lensView];
+  [_lensViewController didMoveToParentViewController:self];
+
+  _bubbleView = [self bubbleView];
+  [self.view addSubview:_bubbleView];
+}
+
+// Sets up the layout constraints for the view hierarchy.
+- (void)setUpConstraints {
+  UIView* view = self.view;
+  UILayoutGuide* widthLayoutGuide = AddPromoStyleWidthLayoutGuide(view);
+
+  [NSLayoutConstraint activateConstraints:@[
+    [_textScrollView.topAnchor
+        constraintEqualToAnchor:view.safeAreaLayoutGuide.topAnchor
+                       constant:kScrollViewTopMargin],
+    [_textScrollView.leadingAnchor
+        constraintEqualToAnchor:widthLayoutGuide.leadingAnchor],
+    [_textScrollView.trailingAnchor
+        constraintEqualToAnchor:widthLayoutGuide.trailingAnchor],
+  ]];
+  NSLayoutConstraint* heightConstraint = [_textScrollView.heightAnchor
+      constraintEqualToAnchor:_textScrollView.contentLayoutGuide.heightAnchor];
+  heightConstraint.priority = UILayoutPriorityDefaultHigh - 1;
+  heightConstraint.active = YES;
+
+  AddSameConstraintsToSides(
+      _footerContainerView, view,
+      LayoutSides::kLeading | LayoutSides::kTrailing | LayoutSides::kBottom);
+
+  [NSLayoutConstraint activateConstraints:@[
+    [_separatorLine.topAnchor
+        constraintEqualToAnchor:_footerContainerView.topAnchor],
+    [_separatorLine.leadingAnchor
+        constraintEqualToAnchor:_footerContainerView.leadingAnchor],
+    [_separatorLine.trailingAnchor
+        constraintEqualToAnchor:_footerContainerView.trailingAnchor],
+    [_separatorLine.heightAnchor constraintEqualToConstant:1.0]
+  ]];
+
+  UILayoutGuide* footerWidthLayoutGuide =
+      AddPromoStyleWidthLayoutGuide(_footerContainerView);
+  [NSLayoutConstraint activateConstraints:@[
+    [_actionButton.leadingAnchor
+        constraintEqualToAnchor:footerWidthLayoutGuide.leadingAnchor],
+    [_actionButton.trailingAnchor
+        constraintEqualToAnchor:footerWidthLayoutGuide.trailingAnchor],
+    [_actionButton.bottomAnchor
+        constraintEqualToAnchor:view.safeAreaLayoutGuide.bottomAnchor
+                       constant:-kButtonBottomMargin],
+    [_actionButton.topAnchor constraintEqualToAnchor:_separatorLine.bottomAnchor
+                                            constant:kButtonVerticalInsets]
+  ]];
+
+  AddSameConstraintsToSides(
+      _backgroundImageView, _backgroundContainerView,
+      LayoutSides::kLeading | LayoutSides::kTrailing | LayoutSides::kTop);
+
+  UIView* lensView = _lensViewController.view;
+  AddSameConstraints(_backgroundContainerView, lensView);
+
+  NSLayoutConstraint* lensViewTopAnchor =
+      [lensView.topAnchor constraintEqualToAnchor:_textScrollView.bottomAnchor
+                                         constant:kLensViewTopMargin];
+  lensViewTopAnchor.priority = UILayoutPriorityDefaultLow;
+  [NSLayoutConstraint activateConstraints:@[
+    lensViewTopAnchor,
+    [lensView.heightAnchor
+        constraintGreaterThanOrEqualToAnchor:view.heightAnchor
+                                  multiplier:kLensViewMinHeightMultiplier],
+    [lensView.heightAnchor
+        constraintLessThanOrEqualToAnchor:lensView.widthAnchor
+                               multiplier:kLensViewMaxHeightMultiplier],
+    [lensView.leadingAnchor
+        constraintEqualToAnchor:widthLayoutGuide.leadingAnchor
+                       constant:kLensViewHorizontalMargin],
+    [lensView.trailingAnchor
+        constraintEqualToAnchor:widthLayoutGuide.trailingAnchor
+                       constant:-kLensViewHorizontalMargin],
+    [lensView.bottomAnchor
+        constraintEqualToAnchor:_footerContainerView.topAnchor],
+    [lensView.topAnchor
+        constraintGreaterThanOrEqualToAnchor:_textScrollView.bottomAnchor
+                                    constant:kLensViewTopMargin],
+  ]];
+
+  CGSize bubbleViewPreferredHeight = [_bubbleView
+      sizeThatFits:CGSizeMake(view.bounds.size.width, CGFLOAT_MAX)];
+  _bubbleViewBottomConstraint =
+      [_bubbleView.bottomAnchor constraintEqualToAnchor:lensView.topAnchor];
+  [NSLayoutConstraint activateConstraints:@[
+    [_bubbleView.centerXAnchor constraintEqualToAnchor:view.centerXAnchor],
+    [_bubbleView.leadingAnchor
+        constraintEqualToAnchor:view.safeAreaLayoutGuide.leadingAnchor],
+    [_bubbleView.trailingAnchor
+        constraintEqualToAnchor:view.safeAreaLayoutGuide.trailingAnchor],
+    [_bubbleView.topAnchor
+        constraintGreaterThanOrEqualToAnchor:_textScrollView.bottomAnchor
+                                    constant:kBubbleViewTopMargin],
+    [_bubbleView.heightAnchor
+        constraintEqualToConstant:bubbleViewPreferredHeight.height],
+    _bubbleViewBottomConstraint,
+  ]];
+}
 
 // Returns a new image with the Lens search image padded at the top with white
 // space.
@@ -411,37 +431,16 @@ const CGFloat kHUDViewTopMargin = 20.0;
 - (UIView*)footerContainerView {
   UIView* footerContainerView = [[UIView alloc] init];
   footerContainerView.translatesAutoresizingMaskIntoConstraints = NO;
-  footerContainerView.backgroundColor = [UIColor whiteColor];
+  footerContainerView.backgroundColor =
+      [UIColor colorNamed:kPrimaryBackgroundColor];
 
-  UIView* separatorLine = [[UIView alloc] init];
-  separatorLine.translatesAutoresizingMaskIntoConstraints = NO;
-  separatorLine.backgroundColor = [UIColor colorWithWhite:0.9 alpha:1.0];
-  [footerContainerView addSubview:separatorLine];
+  _separatorLine = [[UIView alloc] init];
+  _separatorLine.translatesAutoresizingMaskIntoConstraints = NO;
+  _separatorLine.backgroundColor = [UIColor colorNamed:kSeparatorColor];
+  [footerContainerView addSubview:_separatorLine];
 
-  [NSLayoutConstraint activateConstraints:@[
-    [separatorLine.topAnchor
-        constraintEqualToAnchor:footerContainerView.topAnchor],
-    [separatorLine.leadingAnchor
-        constraintEqualToAnchor:footerContainerView.leadingAnchor],
-    [separatorLine.trailingAnchor
-        constraintEqualToAnchor:footerContainerView.trailingAnchor],
-    [separatorLine.heightAnchor constraintEqualToConstant:1.0]
-  ]];
-
-  UIButton* button = [self buttonView];
-  [footerContainerView addSubview:button];
-
-  _buttonCenteredConstraint = [button.centerXAnchor
-      constraintEqualToAnchor:footerContainerView.centerXAnchor];
-
-  [NSLayoutConstraint activateConstraints:@[
-    _buttonCenteredConstraint,
-    [button.topAnchor constraintEqualToAnchor:separatorLine.bottomAnchor
-                                     constant:kButtonVerticalInsets],
-    [button.bottomAnchor
-        constraintEqualToAnchor:footerContainerView.bottomAnchor
-                       constant:-kButtonBottomMargin],
-  ]];
+  _actionButton = [self createActionButton];
+  [footerContainerView addSubview:_actionButton];
 
   return footerContainerView;
 }
@@ -479,29 +478,17 @@ const CGFloat kHUDViewTopMargin = 20.0;
 }
 
 // Creates and returns the action button.
-- (UIButton*)buttonView {
-  _actionButton = [UIButton buttonWithType:UIButtonTypeSystem];
-  UIButtonConfiguration* buttonConfiguration =
-      [UIButtonConfiguration plainButtonConfiguration];
-  buttonConfiguration.background.backgroundColor = [UIColor clearColor];
-  buttonConfiguration.baseForegroundColor = [UIColor colorNamed:kBlueColor];
-  buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
-      kButtonVerticalInsets, 0, kButtonVerticalInsets, 0);
-  _actionButton.configuration = buttonConfiguration;
+- (ChromeButton*)createActionButton {
+  ChromeButton* actionButton =
+      [[ChromeButton alloc] initWithStyle:ChromeButtonStyleSecondary];
   NSString* buttonTitle = l10n_util::GetNSString(
       IDS_IOS_INTERACTIVE_LENS_OVERLAY_PROMO_SKIP_BUTTON);
-  SetConfigurationTitle(_actionButton, buttonTitle);
-  SetConfigurationFont(_actionButton,
-                       [UIFont preferredFontForTextStyle:UIFontTextStyleBody]);
+  actionButton.title = buttonTitle;
 
-  _actionButton.translatesAutoresizingMaskIntoConstraints = NO;
-  _actionButton.titleLabel.adjustsFontForContentSizeCategory = YES;
-  _actionButton.pointerInteractionEnabled = YES;
-  _actionButton.pointerStyleProvider = CreateOpaqueButtonPointerStyleProvider();
-  [_actionButton addTarget:self
-                    action:@selector(buttonTapped)
-          forControlEvents:UIControlEventTouchUpInside];
-  return _actionButton;
+  [actionButton addTarget:self
+                   action:@selector(buttonTapped)
+         forControlEvents:UIControlEventTouchUpInside];
+  return actionButton;
 }
 
 // Handles taps on the action button.
@@ -512,28 +499,14 @@ const CGFloat kHUDViewTopMargin = 20.0;
 // Transforms the action button from its initial plain style to a primary
 // action button style.
 - (void)transformButtonToPrimaryAction {
-  if (_buttonTransformed) {
+  if (_actionButton.style == ChromeButtonStylePrimary) {
     return;
   }
-  _buttonTransformed = YES;
 
-  // Create a temporary primary action button to copy its configuration.
-  UIButton* primaryButton = PrimaryActionButton();
-  _actionButton.configuration = primaryButton.configuration;
+  _actionButton.style = ChromeButtonStylePrimary;
   NSString* continueButtonTitle = l10n_util::GetNSString(
       IDS_IOS_INTERACTIVE_LENS_OVERLAY_PROMO_START_BROWSING_BUTTON);
-  SetConfigurationTitle(_actionButton, continueButtonTitle);
-
-  // Update constraints to make the button full-width.
-  _buttonCenteredConstraint.active = NO;
-  UILayoutGuide* widthLayoutGuide =
-      AddPromoStyleWidthLayoutGuide(_footerContainerView);
-  [NSLayoutConstraint activateConstraints:@[
-    [_actionButton.leadingAnchor
-        constraintEqualToAnchor:widthLayoutGuide.leadingAnchor],
-    [_actionButton.trailingAnchor
-        constraintEqualToAnchor:widthLayoutGuide.trailingAnchor],
-  ]];
+  _actionButton.title = continueButtonTitle;
 }
 
 // Hides the bubble view with a fade-out effect.

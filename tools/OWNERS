@@ -46,3 +46,6 @@ per-file update_pgo_profiles.py=wnwen@chromium.org
 
 per-file sample_clang_tidy_results.py=dsinclair@chromium.org
 per-file sample_clang_tidy_results.py=gbiv@chromium.org
+
+per-file lldb/chromium_visualizers.py=leese@chromium.org
+

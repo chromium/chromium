@@ -8,7 +8,7 @@
 #include <cstdint>
 
 #include "base/observer_list.h"
-#include "content/browser/media/capture/screen_capture_kit_device_utils_mac.h"
+#include "content/browser/media/capture/capture_util_mac.h"
 
 namespace content {
 

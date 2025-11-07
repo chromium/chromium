@@ -576,16 +576,18 @@ void CronetContext::NetworkTasks::MaybeDestroyURLRequestContext(
   // Default network context is never deleted.
   if (network == net::handles::kInvalidNetworkHandle)
     return;
-  if (!contexts_.contains(network))
+  auto it = contexts_.find(network);
+  if (it == contexts_.end()) {
     return;
+  }
 
-  auto& context = contexts_[network];
+  auto& context = it->second;
   // For a URLRequestContext to be destroyed, two conditions must be satisfied:
   // 1. The network associated to that context must be no longer connected
   // 2. There must be no URLRequests associated to that context
   if (context->url_requests()->size() == 0 &&
       IsNetworkNoLongerConnected(network)) {
-    contexts_.erase(network);
+    contexts_.erase(it);
   }
 }
 
@@ -779,16 +781,18 @@ void CronetContext::NetworkTasks::OnNetworkDisconnected(
     net::handles::NetworkHandle network) {
   DCHECK_CALLED_ON_VALID_THREAD(network_thread_checker_);
 
-  if (!contexts_.contains(network))
+  auto it = contexts_.find(network);
+  if (it == contexts_.end()) {
     return;
+  }
 
-  auto& context = contexts_[network];
+  auto& context = it->second;
   // After `network` disconnects, we can delete the URLRequestContext
   // associated with it only if it has no pending URLRequests.
   // If there are, their destruction procedure will take care of destroying
   // this context (see MaybeDestroyURLRequestContext for more info).
   if (context->url_requests()->size() == 0)
-    contexts_.erase(network);
+    contexts_.erase(it);
 }
 
 void CronetContext::NetworkTasks::OnNetworkConnected(

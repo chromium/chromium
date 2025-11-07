@@ -3308,28 +3308,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
-<histogram name="Autofill.DynamicElement.Focusability" enum="Boolean"
-    expires_after="2026-12-12">
-  <owner>jihadghanna@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    Emitted every time a blink::WebInputElement is dynamically added to the DOM
-    or reassociated within the DOM. Records whether the input element is
-    focusable or not.
-  </summary>
-</histogram>
-
-<histogram name="Autofill.DynamicElement.Type"
-    enum="AutofillDynamicElementType" expires_after="2026-12-12">
-  <owner>jihadghanna@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    Emitted every time a blink::WebElement is dynamically added to the DOM or
-    reassociated within the DOM. Records the type of the dynamic element. (see
-    AutofillDynamicElementType).
-  </summary>
-</histogram>
-
 <histogram name="Autofill.EditedAutofilledFieldAtSubmission.AddressOnTyping"
     enum="AutofilledFieldUserEditingStatus" expires_after="2026-06-19">
   <owner>brunobraga@google.com</owner>

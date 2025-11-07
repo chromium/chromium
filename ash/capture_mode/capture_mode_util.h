@@ -242,7 +242,6 @@ gfx::Rect GetEffectivePartialRegionBounds(
     const gfx::Rect& partial_region_bounds,
     aura::Window* root_window);
 
-// TODO(http://b/368674223): Add some type of ordering mechanism to the API.
 // Adds a new action button to a sunfish capture session if the session is
 // active.
 ASH_EXPORT void AddActionButton(views::Button::PressedCallback callback,

@@ -32,6 +32,10 @@ inline constexpr sorted_unique_t sorted_unique;
 
 namespace internal {
 
+// A concept to determine if a given Compare type is transparent.
+template <typename Comp>
+concept IsTransparent = requires(Comp) { typename Comp::is_transparent; };
+
 // Helper functions used in DCHECKs below to make sure that inputs tagged with
 // sorted_unique are indeed sorted and unique.
 template <typename Range, typename Comp>
@@ -522,9 +526,7 @@ class flat_tree {
 
   // If the compare is not transparent we want to construct key_type once.
   template <typename K>
-  using KeyTypeOrK = std::conditional_t<requires {
-    typename key_compare::is_transparent;
-  }, K, key_type>;
+  using KeyTypeOrK = std::conditional_t<IsTransparent<KeyCompare>, K, key_type>;
 };
 
 // ----------------------------------------------------------------------------

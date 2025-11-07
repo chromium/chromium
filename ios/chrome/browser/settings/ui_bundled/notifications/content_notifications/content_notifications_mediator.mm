@@ -213,7 +213,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   switchItem.accessibilityIdentifier = accessibilityIdentifier;
   switchItem.iconImage = symbol;
   switchItem.iconTintColor = tint;
-  switchItem.iconCornerRadius = kColorfulBackgroundSymbolCornerRadius;
   switchItem.iconBackgroundColor = backgroundColor;
   switchItem.iconBorderWidth = borderWidth;
 

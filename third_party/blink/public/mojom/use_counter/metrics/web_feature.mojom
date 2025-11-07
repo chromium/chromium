@@ -339,7 +339,7 @@ enum WebFeature {
   kSVGTransformListConsolidate = 569,
   kSVGAnimatedTransformListBaseVal = 570,
   kOBSOLETE_QuotedAnimationName = 571,
-  kQuotedKeyframesRule = 572,
+  kOBSOLETE_QuotedKeyframesRule = 572,
   kSrcsetDroppedCandidate = 573,
   kWindowPostMessage = 574,
   kRenderRuby = 576,

@@ -124,6 +124,12 @@
 // content.
 - (void)focusOmniboxAndType:(NSString*)text;
 
+// Simulates the physical keyboard event.
+- (void)pressEnter;
+
+// Replaces the content of the omnibox with the given text.
+- (void)replaceTextInOmnibox:(NSString*)text;
+
 // Focuses the omnibox by tapping and replaces its content with `text`.
 // The '\n' symbol can be passed in order to commit the string.
 // If `text` is empty or nil, the omnibox is just focused.

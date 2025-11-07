@@ -308,15 +308,15 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
-  'src_internal_revision': '320292ee3ac32ea61d8bf4975ef142c07773d22b',
+  'src_internal_revision': '3360a54bbde1561c1f41a4caa0857d4ca930e809',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Skia
   # and whatever else without interference from each other.
-  'skia_revision': '360fe72b5bf49b02969197088db1935efe644e48',
+  'skia_revision': '581d1ecd50297a9dc71efa67ce4cb0e98534dbc5',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
-  'v8_revision': 'f8a272db67f853fea82a519a2c618c52b0c92c17',
+  'v8_revision': '36a972bd1e642ca9da4afef19f4b6824989aebf1',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ANGLE
   # and whatever else without interference from each other.
@@ -380,7 +380,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling CrossBench
   # and whatever else without interference from each other.
-  'crossbench_revision': 'e53cbc6a1a7c5ad9012f215431f0ee9b2b09ed90',
+  'crossbench_revision': '2809a28af8c7e9c8283aa7e5a72a0f358166dd98',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling CrossBench
   # and whatever else without interference from each other.
@@ -400,7 +400,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling devtools-frontend
   # and whatever else without interference from each other.
-  'devtools_frontend_revision': '2bf49a8b90cc69be41ec722ee2681e5b30d0f9cb',
+  'devtools_frontend_revision': '50e335b24f15c2cf34431df1e2dd78d830d6a03a',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libprotobuf-mutator
   # and whatever else without interference from each other.
@@ -1103,7 +1103,7 @@ deps = {
     'packages': [
       {
         'package': 'chromium/testing/meet-effects-videos',
-        'version': 'version:1.0',
+        'version': 'FSo3cmbzDsTKY2z_P-d3yBMgtaXIKzHpW4q6w4z4HpYC',
       }
     ],
     'dep_type': 'cipd',
@@ -1113,10 +1113,10 @@ deps = {
     'bucket': 'chromium-telemetry',
     'objects': [
       {
-        'object_name': 'meet-gpu-tests/794607354.tar.gz',
-        'sha256sum': 'b6323f30b63286b6b23657f90766d7779a46c6051d872087ade177ecdad2fe92',
-        'size_bytes': 192558604,
-        'generation': 1755101371733816,
+        'object_name': 'meet-gpu-tests/827463640.tar.gz',
+        'sha256sum': '407e7142167b03820130086f2f7482f5dea89297d0a6771ca26767b4e84772b1',
+        'size_bytes': 216535134,
+        'generation': 1762179060727319,
       },
     ],
   },
@@ -1204,7 +1204,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/chrome/android/orderfiles/arm64',
-              'version': 's7rK4ZFXmJ5FoXZ21I6d72V-7Oryy19hI4mC-WfhjTwC',
+              'version': 'SWOObKMP_qsuU_ABo1ZAbH1BH25QVXn0wXEX-ZGHN98C',
           },
       ],
       'condition': 'checkout_android and non_git_source',
@@ -1226,7 +1226,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/android_webview/tools/orderfiles/arm64',
-              'version': 'Qfyffz-g_MqBKAWfZLKwzGHbDk6ErAek_xsiWnno8g0C',
+              'version': 'PtgMhXyoZ7TeqmCh_W_r3PARBpWMlyaqVN0U8MUnAaUC',
           },
       ],
       'condition': 'checkout_android and non_git_source',
@@ -1622,7 +1622,7 @@ deps = {
 
   'src/clank': {
     'url': Var('chrome_git') + '/clank/internal/apps.git' + '@' +
-    '3c3e122715e44adf00fadc195399938a7d36ee3b',
+    'a6d7d8c25c470997cd5e3911f1ac5eb8ccf1d762',
     'condition': 'checkout_android and checkout_src_internal',
   },
 
@@ -1722,7 +1722,7 @@ deps = {
     'packages': [
       {
           'package': 'chromium/third_party/androidx',
-          'version': '630L7Ub_HMcw22y9F_bVWxiONLz76o3u8laL0fF2l4QC',
+          'version': 'IFfe0EPQFo3lXVrbz2WGZuFIXFfERc01KyvX3q7okiIC',
       },
     ],
     'condition': 'checkout_android and non_git_source',
@@ -2608,7 +2608,7 @@ deps = {
     Var('pdfium_git') + '/pdfium.git' + '@' +  Var('pdfium_revision'),
 
   'src/third_party/perfetto':
-    Var('chromium_git') + '/external/github.com/google/perfetto.git' + '@' + '518d8e88617ec1f77dbbf7afb79411b3e22a8a0f',
+    Var('chromium_git') + '/external/github.com/google/perfetto.git' + '@' + '67a618058780e24c0eb8b493722efbd5997d04ab',
 
   'src/base/tracing/test/data': {
     'bucket': 'perfetto',
@@ -2979,7 +2979,7 @@ deps = {
     Var('chromium_git') + '/webpagereplay.git' + '@' + Var('webpagereplay_revision'),
 
   'src/third_party/webrtc':
-    Var('webrtc_git') + '/src.git' + '@' + '5cc311e4203fa475e75887360b5993951c651542',
+    Var('webrtc_git') + '/src.git' + '@' + 'ee67d179b7f0c366f8a536b4cf41dc319ca10014',
 
   # Wuffs' canonical repository is at github.com/google/wuffs, but we use
   # Skia's mirror of Wuffs, the same as in upstream Skia's DEPS file.
@@ -3167,7 +3167,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/projector_app/app',
-        'version': 'oKQla6E366ukGV7o7H7sMKBqRY8XGESh5qNGyVOFgQEC',
+        'version': 'gyofTu0Os0Fs_FBUiCYMgk5xGeBUfL-yRkfLgRWx1m4C',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',

@@ -712,7 +712,6 @@ const CGFloat kAIMButtonAnimationDuration = 0.25f;
   NSMutableArray* menuItems = [NSMutableArray
       arrayWithObjects:fileAction, galleryAction, cameraAction, nil];
 
-  if (base::FeatureList::IsEnabled(kAIMPrototypeTabPicker)) {
     UIAction* selectTabsAction = [UIAction
         // TODO(crbug.com/40280872): Localize this string.
         actionWithTitle:@"Attach tabs"
@@ -723,12 +722,10 @@ const CGFloat kAIMButtonAnimationDuration = 0.25f;
                   [weakSelf handleAttachTabs];
                 }];
     [menuItems addObject:selectTabsAction];
-  }
 
-  if (_canAttachCurrentTab &&
-      !base::FeatureList::IsEnabled(kAIMPrototypeTabPicker)) {
-    [menuItems addObject:attachCurrentTabAction];
-  }
+    if (_canAttachCurrentTab) {
+      [menuItems addObject:attachCurrentTabAction];
+    }
 
   plusButton.menu = [UIMenu menuWithTitle:@"" children:menuItems];
   return plusButton;

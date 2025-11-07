@@ -120,10 +120,8 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   auto query_contoller_config_params = std::make_unique<
       contextual_search::ContextualSearchContextController::ConfigParams>();
   query_contoller_config_params->send_lns_surface = false;
-  query_contoller_config_params->enable_multi_context_input_flow =
-      base::FeatureList::IsEnabled(kAIMPrototypeTabPicker);
-  query_contoller_config_params->enable_viewport_images =
-      !base::FeatureList::IsEnabled(kAIMPrototypeTabPicker);
+  query_contoller_config_params->enable_multi_context_input_flow = true;
+  query_contoller_config_params->enable_viewport_images = false;
 
   auto composeboxQueryController =
       std::make_unique<ComposeboxQueryControllerIOS>(

@@ -4,31 +4,161 @@
 
 #include "chrome/browser/ui/wallet/walletable_pass_consent_bubble_view.h"
 
+#include "build/branding_buildflags.h"
+#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/wallet/walletable_pass_consent_bubble_controller.h"
+#include "chrome/common/url_constants.h"
+#include "chrome/grit/browser_resources.h"
+#include "components/strings/grit/components_strings.h"
+#include "components/vector_icons/vector_icons.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model_utils.h"
+#include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/controls/image_view.h"
+#include "ui/views/controls/label.h"
+#include "ui/views/controls/styled_label.h"
+#include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/style/typography.h"
 
 namespace wallet {
+namespace {
+
+constexpr int kBubbleWidth = 320;
+constexpr int kWalletIconSize = 20;
+constexpr int kSubTitleBottomMargin = 16;
+
+ui::ImageModel GetIcon() {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  return ui::ImageModel::FromVectorIcon(vector_icons::kGoogleWalletIcon,
+                                        ui::kColorIcon, kWalletIconSize);
+
+#else
+  // This is a placeholder icon on non-branded builds.
+  return ui::ImageModel::FromVectorIcon(vector_icons::kGlobeIcon,
+                                        ui::kColorIcon, kWalletIconSize);
+#endif
+}
+
+std::unique_ptr<views::BoxLayoutView> GetSubtitleDescriptionContainer() {
+  return views::Builder<views::BoxLayoutView>()
+      .SetOrientation(views::BoxLayout::Orientation::kVertical)
+      .SetInsideBorderInsets(gfx::Insets::TLBR(0, 0, kSubTitleBottomMargin, 0))
+      .Build();
+}
+}  // namespace
 
 WalletablePassConsentBubbleView::WalletablePassConsentBubbleView(
     views::View* anchor_view,
     content::WebContents* web_contents,
     WalletablePassConsentBubbleController* controller)
     : WalletablePassBubbleViewBase(anchor_view, web_contents, controller) {
-  set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
-      views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
-  SetShowCloseButton(true);
-  SetButtons(static_cast<int>(ui::mojom::DialogButton::kOk) |
-             static_cast<int>(ui::mojom::DialogButton::kCancel));
+  set_fixed_width(kBubbleWidth);
   SetLayoutManager(std::make_unique<views::FlexLayout>())
-      ->SetOrientation(views::LayoutOrientation::kVertical)
-      .SetMainAxisAlignment(views::LayoutAlignment::kStart)
-      .SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
+      ->SetOrientation(views::LayoutOrientation::kVertical);
+  SetAccessibleTitle(l10n_util::GetStringUTF16(
+      IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_TITLE));
 
-  // TODO(crbug.com/445826875): Set UI once get assets.
+  auto* main_content_wrapper =
+      AddChildView(views::Builder<views::BoxLayoutView>()
+                       .SetOrientation(views::BoxLayout::Orientation::kVertical)
+                       .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
+                       .Build());
+
+  std::unique_ptr<views::BoxLayoutView> subtitle_description_container =
+      GetSubtitleDescriptionContainer();
+
+  subtitle_description_container->AddChildView(GetSubtitleDescriptionLabel());
+  main_content_wrapper->AddChildView(std::move(subtitle_description_container));
+  main_content_wrapper->AddChildView(GetSubtitleActionLabel());
+
+  SetShowCloseButton(true);
+  SetButtonLabel(ui::mojom::DialogButton::kOk,
+                 l10n_util::GetStringUTF16(
+                     IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_TURN_ON_BUTTON));
+  SetButtonLabel(
+      ui::mojom::DialogButton::kCancel,
+      l10n_util::GetStringUTF16(
+          IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_NO_THANKS_BUTTON));
 }
 
 WalletablePassConsentBubbleView::~WalletablePassConsentBubbleView() = default;
+
+std::unique_ptr<views::StyledLabel>
+WalletablePassConsentBubbleView::GetSubtitleDescriptionLabel() {
+  const std::u16string description = l10n_util::GetStringUTF16(
+      IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_SUBTITLE_DESCRIPTION);
+  return views::Builder<views::StyledLabel>()
+      .SetText(description)
+      .SetDefaultTextStyle(views::style::STYLE_BODY_4)
+      .SetDefaultEnabledColorId(ui::kColorSysOnSurfaceSubtle)
+      .SetAccessibleRole(ax::mojom::Role::kDetails)
+      .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
+      .Build();
+}
+
+std::unique_ptr<views::StyledLabel>
+WalletablePassConsentBubbleView::GetSubtitleActionLabel() {
+  std::vector<size_t> offsets;
+  const std::u16string learn_more_text = l10n_util::GetStringUTF16(
+      IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE);
+  std::u16string formatted_text = l10n_util::GetStringFUTF16(
+      IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_SUBTITLE_ACTION,
+      {learn_more_text}, &offsets);
+
+  gfx::Range learn_more_range(offsets[0], offsets[0] + learn_more_text.size());
+  auto learn_more = views::StyledLabel::RangeStyleInfo::CreateForLink(
+      base::BindRepeating(&WalletablePassConsentBubbleView::OnLearnMoreClicked,
+                          base::Unretained(this)));
+
+  return views::Builder<views::StyledLabel>()
+      .SetText(std::move(formatted_text))
+      .SetDefaultTextStyle(views::style::STYLE_BODY_4)
+      .SetDefaultEnabledColorId(ui::kColorSysOnSurfaceSubtle)
+      .SetAccessibleRole(ax::mojom::Role::kDetails)
+      .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
+      .AddStyleRange(learn_more_range, learn_more)
+      .Build();
+}
+
+void WalletablePassConsentBubbleView::AddedToWidget() {
+  // Set header view
+  ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
+  // TODO(crbug.com/445826875): Replace with wallet-specific lottie image.
+  std::unique_ptr<views::ImageView> image_view =
+      std::make_unique<views::ImageView>(
+          bundle.GetThemedLottieImageNamed(IDR_AUTOFILL_SAVE_VEHICLE_LOTTIE));
+  image_view->GetViewAccessibility().SetIsInvisible(true);
+
+  GetBubbleFrameView()->SetHeaderView(std::move(image_view));
+
+  // Set title view
+  auto title_view =
+      views::Builder<views::BoxLayoutView>()
+          .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
+          .SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kCenter)
+          .Build();
+
+  auto* label = title_view->AddChildView(
+      views::Builder<views::Label>()
+          .SetText(l10n_util::GetStringUTF16(
+              IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_TITLE))
+          .SetTextStyle(views::style::STYLE_HEADLINE_4)
+          .SetMultiLine(true)
+          .SetAccessibleRole(ax::mojom::Role::kTitleBar)
+          .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
+          .Build());
+
+  title_view->AddChildView(std::make_unique<views::ImageView>(GetIcon()));
+  title_view->SetFlexForView(label, 1);
+  GetBubbleFrameView()->SetTitleView(std::move(title_view));
+}
+
+void WalletablePassConsentBubbleView::OnLearnMoreClicked() {
+  // TODO(crbug.com/445826875): Implement the learn more link action.
+}
 
 BEGIN_METADATA(WalletablePassConsentBubbleView)
 END_METADATA

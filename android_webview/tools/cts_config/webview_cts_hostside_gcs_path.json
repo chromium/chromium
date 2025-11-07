@@ -27,6 +27,10 @@
           {
             "match": "com.android.cts.webkit.WebViewHostSideMultipleProfileTest#testSecondProfile",
             "_bug_id": "crbug.com/326395159"
+          },
+          {
+            "match": "com.android.cts.webkit.WebViewHostSideStartupTest#testCookieManager",
+            "_bug_id": "crbug.com/449701151"
           }
         ]
       }
@@ -60,6 +64,10 @@
           {
             "match": "com.android.cts.webkit.WebViewHostSideMultipleProfileTest#testSecondProfile",
             "_bug_id": "crbug.com/326395159"
+          },
+          {
+            "match": "com.android.cts.webkit.WebViewHostSideStartupTest#testCookieManager",
+            "_bug_id": "crbug.com/449701151"
           }
         ]
       }

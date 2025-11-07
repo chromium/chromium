@@ -10,6 +10,8 @@ or as standalone FuzzTest domains for custom test scenarios. Additional domain
 functions, as well as support for other specifications, are encouraged.
 
 - **`html_domains.h/cc`** - HTML tag and attribute generators
+- **`mathml_domains.h/cc`** - MathML tag and attribute generators
+- **`svg_domains.h/cc`** - SVG tag and attribute generators
 - **`css_domains.h/cc`** - CSS property and value generators
 - **`common_domains.h/cc`** - Shared utilities for domain composition
 

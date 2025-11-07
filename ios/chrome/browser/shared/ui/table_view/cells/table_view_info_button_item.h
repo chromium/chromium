@@ -20,9 +20,6 @@
 // The background color of the icon.
 @property(nonatomic, strong) UIColor* iconBackgroundColor;
 
-// The corner radius of the UIImage view.
-@property(nonatomic, assign) CGFloat iconCornerRadius;
-
 // The tint color of the icon.
 @property(nonatomic, strong) UIColor* iconTintColor;
 

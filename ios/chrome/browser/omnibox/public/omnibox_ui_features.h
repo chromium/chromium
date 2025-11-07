@@ -14,9 +14,6 @@ const base::NotFatalUntil kOmniboxRefactoringNotFatalUntil =
 // A tentative fix for crbug.com/361003475.
 BASE_DECLARE_FEATURE(kBeginCursorAtPointTentativeFix);
 
-// Feature flag to use UITextView instead of UITextField in the omnibox.
-BASE_DECLARE_FEATURE(kIOSOmniboxUseTextView);
-
 // Returns whether rich autocompletion is enabled.
 bool IsRichAutocompletionEnabled();
 

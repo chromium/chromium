@@ -455,7 +455,7 @@
 #include "chromeos/ash/components/network/managed_cellular_pref_handler.h"
 #include "chromeos/ash/components/network/network_metadata_store.h"
 #include "chromeos/ash/components/network/proxy/proxy_config_handler.h"
-#include "chromeos/ash/components/policy/local_auth_factors/local_auth_factors_complexity_checker.h"
+#include "chromeos/ash/components/policy/local_auth_factors/local_auth_factors_prefs.h"
 #include "chromeos/ash/components/policy/restriction_schedule/device_restriction_schedule_controller.h"
 #include "chromeos/ash/components/policy/system_features_disable_list/system_features_disable_list_policy_utils.h"
 #include "chromeos/ash/components/quickoffice/quickoffice_prefs.h"
@@ -2166,7 +2166,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   plugin_vm::prefs::RegisterProfilePrefs(registry);
   policy::ArcAppInstallEventLogger::RegisterProfilePrefs(registry);
   policy::AppInstallEventLogManagerWrapper::RegisterProfilePrefs(registry);
-  policy::LocalAuthFactorsComplexityChecker::RegisterProfilePrefs(registry);
+  policy::local_auth_factors::RegisterProfilePrefs(registry);
   policy::StatusCollector::RegisterProfilePrefs(registry);
   ash::SystemProxyManager::RegisterProfilePrefs(registry);
   ChromeShelfPrefs::RegisterProfilePrefs(registry);

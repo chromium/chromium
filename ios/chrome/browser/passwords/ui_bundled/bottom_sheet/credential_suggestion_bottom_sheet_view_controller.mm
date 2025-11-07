@@ -38,14 +38,8 @@ using autofill::SuggestionType;
 
 namespace {
 
-// Spacing use for the spacing before the logo title in the bottom sheet.
-CGFloat const kSpacingBeforeTitle = 16;
-
 // Width of the image for suggestion.
 CGFloat const kSuggestionImageWidth = 30;
-
-// Spacing use for the spacing after the logo title in the bottom sheet.
-CGFloat const kSpacingAfterTitle = 4;
 
 // Returns the username to display for the given `suggestion`.
 NSString* GetSuggestionDisplayUsername(FormSuggestion* suggestion) {
@@ -131,17 +125,7 @@ void LogSuggestionAcceptedMetrics(BOOL is_backup_suggestion,
 #pragma mark - UIViewController
 
 - (void)viewDidLoad {
-  // Image needs to be above title view, which is the case only when the latter
-  // is a `titleView`. In more common case without the image, title should be an
-  // `aboveTitleView`.
-  if (self.image) {
-    self.titleView = [self setUpTitleView];
-    self.customSpacing = 0;
-  } else {
-    self.aboveTitleView = [self setUpTitleView];
-    self.customSpacing = kSpacingAfterTitle;
-    self.customSpacingBeforeImageIfNoNavigationBar = kSpacingBeforeTitle;
-  }
+  self.navigationItem.titleView = [self setUpTitleView];
 
   // Set the properties read by the super when constructing the
   // views in `-[ConfirmationAlertViewController viewDidLoad]`.
@@ -349,7 +333,6 @@ void LogSuggestionAcceptedMetrics(BOOL is_backup_suggestion,
   NSString* title =
       l10n_util::GetNSString(IDS_IOS_CREDENTIAL_BOTTOM_SHEET_TITLE);
   UIView* titleView = password_manager::CreatePasswordManagerTitleView(title);
-  titleView.backgroundColor = self.mainBackgroundColor;
   titleView.accessibilityLabel = [NSString
       stringWithFormat:@"%@. %@", title,
                        l10n_util::GetNSString(

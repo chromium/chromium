@@ -13,6 +13,7 @@
 namespace autofill {
 
 class AutofillClient;
+class AutofillField;
 
 class PasswordManagerAutofillHelper
     : public PasswordManagerAutofillHelperDelegate {
@@ -27,6 +28,9 @@ class PasswordManagerAutofillHelper
   // PasswordManagerAutofillHelperDelegate:
   bool IsFieldFilledWithOtp(FormGlobalId form_id,
                             FieldGlobalId field_id) override;
+
+  // Returns true if the field is autofilled with an OTP.
+  static bool IsOtpFilledField(const AutofillField& field);
 
  private:
   // Owner:

@@ -1529,10 +1529,12 @@ StyleRuleKeyframes* CSSParserImpl::ConsumeKeyframesRule(
   wtf_size_t prelude_offset_start = stream.LookAheadOffset();
   const CSSParserToken& name_token = stream.Peek();
   String name;
-  if (name_token.GetType() == kIdentToken) {
+  if (name_token.GetType() == kIdentToken &&
+      css_parsing_utils::IsValidIdentAnimationName(
+          name_token.Value().ToAtomicString())) {
     name = name_token.Value().ToString();
-  } else if (name_token.GetType() == kStringToken && webkit_prefixed) {
-    context_->Count(WebFeature::kQuotedKeyframesRule);
+  } else if (name_token.GetType() == kStringToken) {
+    context_->Count(WebFeature::kOBSOLETE_QuotedKeyframesRule);
     name = name_token.Value().ToString();
   } else {
     ConsumeErroneousAtRule(stream, CSSAtRuleID::kCSSAtRuleKeyframes);

@@ -9,11 +9,13 @@ component("local_auth_factors") {
   defines = [ "IS_CHROMEOS_ASH_COMPONENTS_POLICY_IMPL" ]
 
   public = [
-    "local_auth_factors_complexity_checker.h",
+    "local_auth_factors_complexity.h",
+    "local_auth_factors_prefs.h",
   ]
 
   sources = [
-    "local_auth_factors_complexity_checker.cc",
+    "local_auth_factors_complexity.cc",
+    "local_auth_factors_prefs.cc",
   ]
 
   public_deps = [
@@ -30,7 +32,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
-    "local_auth_factors_complexity_checker_unittest.cc",
+    "local_auth_factors_complexity_unittest.cc",
   ]
 
   deps = [
