@@ -95,8 +95,8 @@ int TabStateStorageService::GetStorageId(const TabCollection* collection) {
 }
 
 int TabStateStorageService::GetStorageId(const TabInterface* tab) {
-  return ::tabs::GetOrCreateStorageId(tab, tab_handle_to_storage_id_,
-                                      next_storage_id_);
+  return ::tabs::GetOrCreateStorageId(
+      tab_canonicalizer_.Run(tab), tab_handle_to_storage_id_, next_storage_id_);
 }
 
 void TabStateStorageService::Save(const TabInterface* tab) {

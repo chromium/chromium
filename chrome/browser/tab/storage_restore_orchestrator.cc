@@ -4,8 +4,11 @@
 
 #include "chrome/browser/tab/storage_restore_orchestrator.h"
 
+#include "chrome/browser/tab/collection_storage_observer.h"
 #include "chrome/browser/tab/tab_storage_util.h"
 #include "components/tabs/public/pinned_tab_collection.h"
+#include "components/tabs/public/tab_collection.h"
+#include "components/tabs/public/tab_interface.h"
 
 namespace tabs {
 
@@ -65,7 +68,10 @@ StorageRestoreOrchestrator::StorageRestoreOrchestrator(
     TabStripCollection* collection,
     TabStateStorageService* service,
     StorageLoadedData* loaded_data)
-    : collection_(collection), service_(service), loaded_data_(loaded_data) {}
+    : default_observer_(service),
+      collection_(collection),
+      service_(service),
+      loaded_data_(loaded_data) {}
 
 StorageRestoreOrchestrator::~StorageRestoreOrchestrator() = default;
 
@@ -85,10 +91,14 @@ void StorageRestoreOrchestrator::OnChildrenAdded(
 }
 
 void StorageRestoreOrchestrator::OnChildrenRemoved(
-    const TabCollectionNodes& handles) {}
+    const TabCollectionNodes& handles) {
+  default_observer_.OnChildrenRemoved(handles);
+}
 
 void StorageRestoreOrchestrator::OnChildMoved(
     const TabCollection::Position& to_position,
-    const NodeData& node_data) {}
+    const NodeData& node_data) {
+  default_observer_.OnChildMoved(to_position, node_data);
+}
 
 }  // namespace tabs
