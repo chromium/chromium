@@ -1,0 +1,207 @@
+description = "Clean up a `base::Feature` and its associated code"
+prompt = """
+Your task is to clean up the `base::Feature` "{{args}}" and its associated code.
+
+Steps:
+1. Search for the `BASE_FEATURE` definition that defines the feature's state.
+   Make a note of the feature's default state (enabled or disabled), then delete
+   the definition.
+    * If you can't find a Blink-releated feature, it might be generated from the
+      config file in
+      `//third_party/blink/renderer/platform/runtime_enabled_features.json5`. Do
+      not proceed in that case because determining the default state isn't
+      trivial.
+2. Find all C++ callsites where `base::FeatureList::IsEnabled` checks the
+   feature's enablement. Simplify the code as if you had inlined the default
+   value.
+     * The final code should never contain `true` or `false` literals. Any
+       `true` or `false` in a boolean expression should be simplified as much as
+       possible. Any free `Is<X>Enabled` helper functions that are just returning
+       `true` or `false` should be inlined.
+     * Whenever you remove code, you must also recursively search for and remove
+       code that will become unreachable (i.e., the last caller has been removed).
+     * Similarly, remove any constants that become unused.
+     * Remember to clean up both declarations in `.h` files and definitions in
+       `.cc` files.
+     * Check for `#include`s and forward declarations that can be removed.
+     * WebUI is a framework to build Chrome-internal UIs using web technologies.
+       If you clean up C++ WebUI backend code (e.g., interacts with a
+       `content::WebUIDataSource`), you must also search the frontend
+       TypeScript files for code paths that can be simplified. See "Simplifying
+       WebUI" below for an example.
+     * Similarly, when removing code that loads a resource file, remove the
+       resource file too if no other references remain.
+     * If any code removed references localized strings (e.g.,
+       `l10n_util::GetString16(ID_...`), search for a `.grd` or `.grdp` file
+       that defines that localized string ID and clean up any orphaned entries.
+       Also, remove any screenshot hashes (`.png.sha1` files) that describe the
+       orphaned strings.
+3. Check if "{{args}}" is registered in
+   `//chrome/browser/flags/android/chrome_feature_list.cc`, which are features
+   exposed to Java code. If so:
+     * Remove the entry from `kFeaturesExposedToJava` in
+       `chrome_feature_list.cc`.
+     * Find and remove a constant with the feature's name in
+       `//chrome/browser/flags/android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureList.java`.
+     * Simplify Java code that checks the feature using a procedure similar to
+       the C++ case. Java code checks feature enablement with
+       `ChromeFeatureList.isEnabled(ChromeFeatureList.MY_FEATURE)`.
+4. Remove any flags in `//chrome/browser/about_flags.cc` and
+   `//ios/chrome/browser/flags/about_flags.mm` that reference the removed
+   feature. Do not touch any unrelated entries or alter their expiry
+   milestones. If you remove any flags, you must also remove all related entries
+   from:
+     * `//chrome/browser/flag-metadata.json`
+     * `//chrome/browser/flag_descriptions.h`
+     * `//ios/chrome/browser/flags/ios_chrome_flag_descriptions.h`
+     * `//ios/chrome/browser/flags/ios_chrome_flag_descriptions.cc`
+5. Check if the output directory is for desktop or Android. Use `autoninja` to
+   confirm `chrome` (for desktop) or `chrome_public_apk` (for Android) still
+   builds. Fix any errors before proceeding.
+6. Find all test files that reference the "{{args}}" feature and remove any
+   stale tests or assertions that exercise the non-default state. Depending on
+   the production code cleaned earlier, there may be C++, Java, or TypeScript
+   tests to clean up.
+    * To clean up parameterized GTests (`TEST_P`), do not delete the entire test
+      class. You should keep the coverage for the feature's default state by
+      changing the tests into `TEST_F` or removing a parameter from a `TEST_P`.
+      See "Simplifying a test" below for an example.
+    * After each test file update, use `//tools/autotest.py` to validate that
+      the tests still build and pass.
+    * Remove any references to the feature in test names.
+7. Remove any stale stanzas from
+   `//testing/variations/fieldtrial_testing_config.json`.
+8. Run `git cl format` to format the code.
+
+General guidelines:
+* Whenever you modify code, check immediately above the modified code block for
+  comments that need changes. If the entire comment no longer applies (e.g.,
+  stale TODO), the comment should be removed.
+* When removing an entire block of code, do not insert a newline where code
+  used to be.
+* Do not modify any logic for unrelated features. You'll often see families of
+  related features that share a prefix, but you should only focus on "{{args}}".
+* In addition to removing dead code, try to simplify any data structures or
+  method parameters. For example:
+    * Suppose a method takes a `std::optional<T>` that's `std::nullopt` with the
+      feature disabled, and `T` with the feature enabled. If the
+      feature-disabled case is being removed, then the parameter can just become
+      a value of type `T`.
+* Use `rg` and `fdfind` to search for files when possible. Only use other tools
+  as a last resort.
+* Do not touch `//tools/metrics/histograms/enums.xml`. The entries are still
+  needed for decoding data in future Chrome versions.
+* Do not stage or commit any changes so that the user can review your work
+  first.
+
+# Examples
+
+## Removing unreachable code
+
+Suppose we have code like:
+
+```cpp
+BASE_FEATURE(kFeatureV2, base::FEATURE_ENABLED_BY_DEFAULT);
+
+void DoFeatureV1() {
+  // <code for feature v1>
+}
+
+void DoFeatureV2() {
+  // <code for feature v2>
+}
+
+void DoFeature() {
+  // TODO: Remove v1 path once v2 ships.
+  if (base::FeatureList::IsEnabled(kFeatureV2)) {
+    DoFeatureV2();
+  } else {
+    DoFeatureV1();
+  }
+}
+```
+
+... where `DoFeature` is the only caller of `DoFeatureV1`. Then, the final
+state should look like:
+
+```cpp
+void DoFeature() {
+  // <code for feature v2>
+}
+```
+
+It's better to inline `DoFeatureV2()` into `DoFeature()` because there's no
+longer any need to distinguish against `DoFeatureV1()`.
+
+## Simplifying a test
+
+A common pattern to test both feature enabled/disabled paths is to use a test
+fixture parameterized over a boolean that specifies the feature state. The
+fixture holds a `ScopedFeatureList` that enables/disables the feature for the
+duration of the test:
+
+```cpp
+class FeatureTest : public testing::TestWithParam<bool> {
+ public:
+  FeatureTest() {
+    if (IsFeatureEnabled()) {
+      scoped_feature_list_.InitAndEnableFeature(kFeature);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(kFeature);
+    }
+  }
+
+  bool IsFeatureEnabled() { return GetParam(); }
+
+  // <other stuff>
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+}
+
+INSTANTIATE_TEST_SUITE_P(, FeatureTest, ::testing::Bool());
+
+TEST_P(FeatureTest, TestCase) {
+  // <common assertions>
+  if (IsFeatureEnabled()) {
+    // <assert feature enabled behavior>
+  } else {
+    // <assert feature disabled behavior>
+  }
+}
+```
+
+For `kFeature` enabled by default, the test can be simplified to:
+
+```cpp
+class FeatureTest {
+ public:
+  FeatureTest() = default;
+
+  // <other stuff>
+}
+
+TEST_F(FeatureTest, TestCase) {
+  // <common assertions>
+  // <assert feature-enabled behavior>
+}
+```
+
+## Simplifying WebUI
+
+Suppose we have a WebUI controller like:
+
+```cpp
+BASE_FEATURE(kMyFeature, base::FEATURE_ENABLED_BY_DEFAULT);
+
+FooDialogUI::FooDialogUI(content::WebUI* web_ui) {
+  content::WebUIDataSource* html_source = /* ... */;
+
+  html_source->AddBoolean("isMyFeatureEnabled",
+                          base::FeatureList::IsEnabled(kMyFeature));
+}
+```
+
+To clean up this code, we should remove the `AddBoolean()` line, then search for
+TypeScript files that consume `isMyFeatureEnabled` and simplify those callsites
+as if we had inlined `true`.
+"""
