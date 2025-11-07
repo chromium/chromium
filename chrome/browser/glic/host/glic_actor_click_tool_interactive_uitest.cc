@@ -16,6 +16,8 @@ namespace apc = ::optimization_guide::proto;
 using apc::ClickAction;
 using ClickType = ClickAction::ClickType;
 using ClickCount = ClickAction::ClickCount;
+using apc::BoundingRect;
+using apc::ContentNode;
 
 constexpr std::string_view kClickableButtonLabel = "clickable";
 

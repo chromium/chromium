@@ -155,6 +155,7 @@ void InteractionPointRefiner::AddExclusion(const gfx::Rect& exclusion) {
 }
 
 std::optional<gfx::PointF> InteractionPointFromWebNode(
+    WebWidget* widget,
     const blink::WebNode& node) {
   if (!base::FeatureList::IsEnabled(
           features::kGlicActorIterativeInteractionPointDiscovery)) {
@@ -189,8 +190,6 @@ std::optional<gfx::PointF> InteractionPointFromWebNode(
   if (!first_point.has_value()) {
     return std::nullopt;
   }
-  WebFrameWidget* widget =
-      node.GetDocument().GetFrame()->LocalRoot()->FrameWidget();
   DCHECK(widget);
   for (std::optional<gfx::PointF> test_point = ipr.GetPoint();
        test_point.has_value(); test_point = ipr.GetPoint()) {

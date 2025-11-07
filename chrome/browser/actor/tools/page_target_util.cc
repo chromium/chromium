@@ -87,29 +87,33 @@ RenderFrameHost* FindTargetLocalRootFrame(tabs::TabHandle tab_handle,
 
 // Return TargetNodeInfo from hit test against last observed APC. Returns
 // std::nullopt if Target does not hit any node.
-std::optional<TargetNodeInfo> FindLastObservedNodeForActionTarget(
+std::optional<TargetNodeInfo> FindLastObservedNodeForActionTargetId(
     const AnnotatedPageContent* apc,
-    const PageTarget& target) {
+    const DomNode& target) {
   if (!apc) {
     return std::nullopt;
   }
-  // TODO(rodneyding): Refactor FindNode* API to include optional target frame
-  // document identifier to reduce search space.
-  if (std::holds_alternative<gfx::Point>(target)) {
-    return optimization_guide::FindNodeAtPoint(*apc,
-                                               std::get<gfx::Point>(target));
-  }
-  CHECK(std::holds_alternative<DomNode>(target));
   std::optional<TargetNodeInfo> result = optimization_guide::FindNodeWithID(
-      *apc, std::get<DomNode>(target).document_identifier,
-      std::get<DomNode>(target).node_id);
+      *apc, target.document_identifier, target.node_id);
   // If such a node isn't found or the node is found under a different
   // document it's an error.
   if (!result || result->document_identifier.serialized_token() !=
-                     std::get<DomNode>(target).document_identifier) {
+                     target.document_identifier) {
     return std::nullopt;
   }
   return result;
+}
+
+std::optional<TargetNodeInfo> FindLastObservedNodeForActionTargetPoint(
+    const AnnotatedPageContent* apc,
+    const gfx::Point& target_pixels) {
+  if (!apc) {
+    return std::nullopt;
+  }
+
+  // TODO(rodneyding): Refactor FindNode* API to include optional target frame
+  // document identifier to reduce search space.
+  return optimization_guide::FindNodeAtPoint(*apc, target_pixels);
 }
 
 }  // namespace actor
