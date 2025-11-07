@@ -111,7 +111,13 @@ class SqlPersistentStore::BackendShard {
   IndexState GetIndexStateForHash(CacheEntryKey::Hash key_hash) const;
 
   void LoadInMemoryIndex(ErrorCallback callback);
+
+  // If there are entries that were doomed in a previous session, this method
+  // triggers a task to delete them from the database. The cleanup is performed
+  // in the background. Returns true if a cleanup task was scheduled, and false
+  // otherwise. `callback` is invoked upon completion of the cleanup task.
   bool MaybeRunCleanupDoomedEntries(ErrorCallback callback);
+
   void MaybeRunCheckpoint(base::OnceCallback<void(bool)> callback);
 
   void EnableStrictCorruptionCheckForTesting();

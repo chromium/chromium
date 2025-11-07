@@ -402,17 +402,21 @@ bool SqlPersistentStore::MaybeRunCleanupDoomedEntries(ErrorCallback callback) {
   auto barrier_callback = CreateBarrierErrorCallback(std::move(callback));
   size_t sync_return_count = 0;
   for (const auto& backend_shard : backend_shards_) {
-    if (backend_shard->MaybeRunCleanupDoomedEntries(barrier_callback)) {
+    if (!backend_shard->MaybeRunCleanupDoomedEntries(barrier_callback)) {
+      // If a shard completes synchronously, it returns false. Count how many do
+      // so.
       ++sync_return_count;
     }
   }
   if (sync_return_count == GetSizeOfShards()) {
-    return true;
+    // If all shards completed synchronously, no cleanup task was scheduled.
+    return false;
   }
   for (size_t i = 0; i < sync_return_count; ++i) {
     barrier_callback.Run(Error::kOk);
   }
-  return false;
+  // Reaching this point means at least one shard scheduled a task.
+  return true;
 }
 
 void SqlPersistentStore::MaybeRunCheckpoint(
