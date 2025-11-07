@@ -366,7 +366,7 @@ public class ViewConditions {
         }
     }
 
-    private static String writeMatchingViewsStatusMessage(List<ViewAndRoot> viewMatches) {
+    public static String writeMatchingViewsStatusMessage(List<ViewAndRoot> viewMatches) {
         // TODO(crbug.com/456770151): Print which root matches are in.
         if (viewMatches.isEmpty()) {
             return "No matching Views";

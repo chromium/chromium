@@ -4,17 +4,29 @@
 
 package org.chromium.base.test.transit;
 
+import static androidx.test.espresso.matcher.RootMatchers.withDecorView;
+
+import static org.hamcrest.CoreMatchers.is;
+
+import static org.chromium.base.test.transit.Condition.whether;
+import static org.chromium.base.test.transit.SimpleConditions.instrumentationThreadCondition;
+
+import android.app.Activity;
+import android.app.ActivityManager;
+import android.content.Context;
 import android.view.View;
 
 import androidx.test.espresso.Espresso;
+import androidx.test.espresso.Root;
 import androidx.test.espresso.ViewAction;
 import androidx.test.espresso.ViewAssertion;
-import androidx.test.espresso.ViewInteraction;
 import androidx.test.espresso.action.ViewActions;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.hamcrest.Matcher;
 
+import org.chromium.base.ContextUtils;
+import org.chromium.base.Log;
 import org.chromium.base.test.transit.ViewConditions.DisplayedCondition;
 import org.chromium.base.test.transit.ViewConditions.NotDisplayedAnymoreCondition;
 import org.chromium.base.test.util.ForgivingClickAction;
@@ -35,6 +47,7 @@ import org.chromium.build.annotations.Nullable;
  */
 @NullMarked
 public class ViewElement<ViewT extends View> extends Element<ViewT> {
+    private static final String TAG = "Transit";
 
     /**
      * Minimum percentage of the View that needs to be displayed for a ViewElement's enter
@@ -154,19 +167,76 @@ public class ViewElement<ViewT extends View> extends Element<ViewT> {
     public TripBuilder performViewActionTo(ViewAction action) {
         return new TripBuilder()
                 .withContext(this)
-                .withTrigger(() -> newViewInteraction().perform(action));
+                .withTrigger(
+                        () -> {
+                            Root rootMatched = getDisplayedCondition().getRootMatched();
+                            assert rootMatched != null;
+
+                            // If the window isn't focused, Espresso will wait for it to be focused
+                            // as part of onView().perform().
+                            //
+                            // Call moveTaskToFront to focus on that window, which will
+                            // asynchronously move it to the front.
+                            //
+                            // This is crucial in multiwindow. Even when two tasks are displayed
+                            // side-by-side, only the window of the task last interacted with is
+                            // focused.
+                            if (!rootMatched.getDecorView().hasWindowFocus()) {
+                                Log.i(TAG, "Root does not have window focus, moving to front.");
+                                focusWindow(rootMatched);
+                            }
+
+                            Espresso.onView(mViewSpec.getViewMatcher())
+                                    .inRoot(withDecorView(is(rootMatched.getDecorView())))
+                                    .perform(action);
+                        });
+    }
+
+    private void focusWindow(Root rootMatched) {
+        Activity activity;
+
+        ActivityElement<?> activityElement = mOwner.determineActivityElement();
+        if (activityElement == null) {
+            Context context = rootMatched.getDecorView().getContext();
+            activity = ContextUtils.activityFromContext(context);
+
+            if (activity == null) {
+                Log.w(TAG, "Root is not tied to an Activity, cannot move it to front.");
+                return;
+            }
+        } else {
+            activity = activityElement.get();
+            assert activity != null;
+        }
+
+        Facility<?> viewSettledFacility = new Facility<>("ViewSettled");
+        viewSettledFacility.declareView(
+                getViewSpec(), copyOptions().initialSettleTime(1000).unscoped().build());
+
+        Triggers.runTo(
+                        () -> {
+                            ActivityManager activityManager =
+                                    (ActivityManager)
+                                            activity.getSystemService(Context.ACTIVITY_SERVICE);
+                            activityManager.moveTaskToFront(activity.getTaskId(), 0);
+                        })
+                .withContext(this)
+                .waitForAnd(
+                        instrumentationThreadCondition(
+                                "Root has window focus",
+                                () -> whether(rootMatched.getDecorView().hasWindowFocus())))
+                .enterFacility(viewSettledFacility);
     }
 
     /** Trigger an Espresso ViewAssertion on this View. */
     public void check(ViewAssertion assertion) {
-        newViewInteraction().check(assertion);
-    }
+        Root rootMatched = getDisplayedCondition().getRootMatched();
+        assert rootMatched != null;
+        assert rootMatched.getDecorView().hasWindowFocus() : "Window is not focused";
 
-    private ViewInteraction newViewInteraction() {
-        // TODO(crbug.com/456785513): Ensure the View is still there rechecking DisplayedCondition,
-        // find the root and use inRoot() to avoid interacting with a matching View in a different
-        // window.
-        return Espresso.onView(mViewSpec.getViewMatcher());
+        Espresso.onView(mViewSpec.getViewMatcher())
+                .inRoot(withDecorView(is(rootMatched.getDecorView())))
+                .check(assertion);
     }
 
     /** Creates a Condition fulfilled if the View matches the |matcher|. */

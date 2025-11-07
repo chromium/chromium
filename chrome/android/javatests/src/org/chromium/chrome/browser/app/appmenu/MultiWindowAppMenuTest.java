@@ -147,4 +147,27 @@ public class MultiWindowAppMenuTest {
 
         TransitAsserts.assertFinalDestinations(pageInSecondWindow);
     }
+
+    @Test
+    @LargeTest
+    @EnableFeatures(OPEN_WINDOW_ON_TOP)
+    public void testInteractWithBothWindows_robustWindowManagementExperimentalEnabled() {
+        doTestInteractWithBothWindows();
+    }
+
+    @Test
+    @LargeTest
+    @DisableFeatures(ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL)
+    public void testInteractWithBothWindows() {
+        doTestInteractWithBothWindows();
+    }
+
+    private void doTestInteractWithBothWindows() {
+        WebPageStation pageInFirstWindow = mCtaTestRule.startOnBlankPage();
+        RegularNewTabPageStation pageInSecondWindow =
+                pageInFirstWindow.openRegularTabAppMenu().openNewWindow();
+
+        pageInFirstWindow.openRegularTabAppMenu().openSettings();
+        pageInSecondWindow.openRegularTabSwitcher();
+    }
 }

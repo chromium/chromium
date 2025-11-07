@@ -6,8 +6,10 @@ package org.chromium.base.test.transit;
 
 import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.RootMatchers.withDecorView;
 import static androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
+
+import static org.hamcrest.CoreMatchers.is;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
@@ -15,14 +17,14 @@ import android.view.View;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.IntDef;
-import androidx.test.espresso.NoMatchingViewException;
 import androidx.test.espresso.PerformException;
+import androidx.test.espresso.Root;
 import androidx.test.espresso.action.ViewActions;
 
 import org.hamcrest.Matcher;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.transit.ScrollableFacility.Item.Presence;
-import org.chromium.base.test.util.RawFailureHandler;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -267,14 +269,25 @@ public abstract class ScrollableFacility<HostStationT extends Station<?>>
             ItemOnScreenFacility focusedItem = new ItemOnScreenFacility(this);
 
             assumeNonNull(mViewSpec);
-            try {
-                onView(mViewSpec.getViewMatcher())
-                        .withFailureHandler(RawFailureHandler.getInstance())
-                        .check(matches(isCompletelyDisplayed()));
-                return noopTo().enterFacility(focusedItem);
-            } catch (AssertionError | NoMatchingViewException e) {
-                return scrollToItemTo().enterFacility(focusedItem);
+
+            Root root = determineRoot();
+            assert root != null;
+
+            List<ViewAndRoot> viewMatches =
+                    ThreadUtils.runOnUiThreadBlocking(
+                            () -> ViewFinder.findViews(List.of(root), mViewSpec.getViewMatcher()));
+            if (viewMatches.size() > 1) {
+                throw new IllegalStateException(
+                        ViewConditions.writeMatchingViewsStatusMessage(viewMatches));
             }
+
+            if (viewMatches.size() == 1) {
+                if (isCompletelyDisplayed().matches(viewMatches.get(0).view)) {
+                    return noopTo().enterFacility(focusedItem);
+                }
+            }
+
+            return scrollToItemTo().enterFacility(focusedItem);
         }
 
         public @Presence int getPresence() {
@@ -294,12 +307,18 @@ public abstract class ScrollableFacility<HostStationT extends Station<?>>
 
         /** Scroll to the item to start a Transition. */
         public TripBuilder scrollToItemTo() {
+            Root root = determineRoot();
+            assert root != null;
+
             if (mOffScreenDataMatcher != null) {
                 // If there is a data matcher, use it to scroll as the item might be in a
                 // RecyclerView.
                 try {
                     return runTo(
-                            () -> onData(mOffScreenDataMatcher).perform(ViewActions.scrollTo()));
+                            () ->
+                                    onData(mOffScreenDataMatcher)
+                                            .inRoot(withDecorView(is(root.getDecorView())))
+                                            .perform(ViewActions.scrollTo()));
                 } catch (PerformException performException) {
                     throw TravelException.newTravelException(
                             String.format(
@@ -315,6 +334,7 @@ public abstract class ScrollableFacility<HostStationT extends Station<?>>
                     return runTo(
                             () ->
                                     onView(mViewSpec.getViewMatcher())
+                                            .inRoot(withDecorView(is(root.getDecorView())))
                                             .perform(ViewActions.scrollTo()));
                 } catch (PerformException performException) {
                     throw TravelException.newTravelException(
@@ -325,6 +345,18 @@ public abstract class ScrollableFacility<HostStationT extends Station<?>>
                 }
             }
         }
+    }
+
+    private @Nullable Root determineRoot() {
+        assertInPhase(Phase.ACTIVE);
+
+        // Get the root of the first ViewElement declared.
+        for (Element<?> e : getElements().getElements()) {
+            if (e instanceof ViewElement<?> viewElement) {
+                return viewElement.getDisplayedCondition().getRootMatched();
+            }
+        }
+        throw new IllegalStateException("No ViewElement found in " + this);
     }
 
     /** Get all {@link Item}s declared in this {@link ScrollableFacility}. */
