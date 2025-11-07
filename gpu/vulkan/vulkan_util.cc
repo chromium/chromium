@@ -543,7 +543,7 @@ bool CheckVulkanCompatibilities(
   // Imagination GPUs.
   if (device_properties.vendor_id == kVendorImagination) {
     // Only PowerVR D series and newer allowed in V1.
-    if (base::MatchPattern(device_properties.device_name, "PowerVR ?-Series")) {
+    if (base::MatchPattern(device_properties.device_name, "PowerVR ?-Series*")) {
       return true;
     }
     return IsVulkanV2EnabledForImagination(gpu_info);
