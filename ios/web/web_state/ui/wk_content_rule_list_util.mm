@@ -39,7 +39,7 @@ NSString* CreateLocalBlockingJsonRuleList() {
   NSDictionary* allow_crbug = @{
     @"trigger" : @{
       @"url-filter" : @"https://bugs\\.chromium\\.org/.*",
-      @"if-top-url" : @[ @"file://.*" ],
+      @"if-top-url" : @[ @"chrome://.*" ],
       @"resource-type" : @[
         // Allow opening crbug from chrome:// urls
         @"popup"
