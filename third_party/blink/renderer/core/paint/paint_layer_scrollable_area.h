@@ -370,6 +370,14 @@ class CORE_EXPORT PaintLayerScrollableArea final
                            scroll_type, source_type, scroll_behavior);
   }
 
+  // Scrolls by one page in the given direction, using PageScrollSnapStrategy
+  // to find the appropriate snap position. This ensures consistent behavior
+  // across all paging operations (clicking scrollbar track, page down, space
+  // bar, ::scroll-button). Returns true if the scroll was performed.
+  bool ScrollByPageWithSnap(ScrollDirectionPhysical direction,
+                            mojom::blink::ScrollBehavior scroll_behavior =
+                                mojom::blink::ScrollBehavior::kAuto);
+
   // This will set the scroll position without clamping, and it will do all
   // post-update work even if the scroll position didn't change.
   void SetScrollOffsetUnconditionally(

@@ -2483,7 +2483,9 @@ bool HTMLElement::IsValidBuiltinCommand(HTMLElement& invoker,
          (RuntimeEnabledFeatures::HTMLCommandActionsV2Enabled() &&
           (command == CommandEventType::kToggleFullscreen ||
            command == CommandEventType::kRequestFullscreen ||
-           command == CommandEventType::kExitFullscreen));
+           command == CommandEventType::kExitFullscreen)) ||
+         (RuntimeEnabledFeatures::HTMLCommandForScrollCommandsEnabled() &&
+          Element::IsScrollCommand(command));
 }
 
 bool HTMLElement::HandleCommandInternal(HTMLElement& invoker,
@@ -2758,6 +2760,34 @@ CommandEventType HTMLElement::GetCommandEventType(
   }
   if (EqualIgnoringASCIICase(action, keywords::kToggleMuted)) {
     return CommandEventType::kToggleMuted;
+  }
+
+  // Scroll command cases
+  if (RuntimeEnabledFeatures::HTMLCommandForScrollCommandsEnabled()) {
+    if (EqualIgnoringASCIICase(action, keywords::kPage_Up)) {
+      return CommandEventType::kPageUp;
+    }
+    if (EqualIgnoringASCIICase(action, keywords::kPage_Down)) {
+      return CommandEventType::kPageDown;
+    }
+    if (EqualIgnoringASCIICase(action, keywords::kPageLeft)) {
+      return CommandEventType::kPageLeft;
+    }
+    if (EqualIgnoringASCIICase(action, keywords::kPageRight)) {
+      return CommandEventType::kPageRight;
+    }
+    if (EqualIgnoringASCIICase(action, keywords::kPageBlockStart)) {
+      return CommandEventType::kPageBlockStart;
+    }
+    if (EqualIgnoringASCIICase(action, keywords::kPageBlockEnd)) {
+      return CommandEventType::kPageBlockEnd;
+    }
+    if (EqualIgnoringASCIICase(action, keywords::kPageInlineStart)) {
+      return CommandEventType::kPageInlineStart;
+    }
+    if (EqualIgnoringASCIICase(action, keywords::kPageInlineEnd)) {
+      return CommandEventType::kPageInlineEnd;
+    }
   }
 
   return CommandEventType::kNone;

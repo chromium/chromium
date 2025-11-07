@@ -2776,6 +2776,12 @@
       name: "HTMLCommandActionsV2",
       status: "test",
     },
+    // Adds support for scroll commands such as 'page-up' and 'page-block-end'.
+    // https://github.com/danielsakhapov/declarative-scroll-commands-for-html-explainer
+    {
+      name: "HTMLCommandForScrollCommands",
+      status: "experimental",
+    },
     // Adds support for the 'request-close' command.
     // https://open-ui.org/components/invokers.explainer/
     {

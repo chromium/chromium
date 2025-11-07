@@ -100,6 +100,15 @@
     "toggle-menu",
     "hide-menu",
     "show-menu",
+    // command for scroll
+    {name: "page-up", Symbol: "kPage_Up"},
+    {name: "page-down", Symbol: "kPage_Down"},
+    "page-left",
+    "page-right",
+    "page-block-start",
+    "page-block-end",
+    "page-inline-start",
+    "page-inline-end",
 
     // loading attribute
     // https://github.com/scott-little/lazyload#ways-the-loading-attribute-can-be-used

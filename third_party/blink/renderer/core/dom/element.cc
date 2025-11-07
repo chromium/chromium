@@ -224,6 +224,7 @@
 #include "third_party/blink/renderer/core/resize_observer/resize_observer_size.h"
 #include "third_party/blink/renderer/core/sanitizer/sanitizer_api.h"
 #include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
+#include "third_party/blink/renderer/core/scroll/scroll_types.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
 #include "third_party/blink/renderer/core/speculation_rules/document_speculation_rules.h"
@@ -258,6 +259,7 @@
 #include "third_party/blink/renderer/platform/restriction_target_id.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/bidi_paragraph.h"
+#include "third_party/blink/renderer/platform/text/writing_mode_utils.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/hash_functions.h"
@@ -334,6 +336,38 @@ class DisplayLockStyleScope {
   Element* element_;
   bool did_update_children_ = false;
 };
+
+ScrollDirectionPhysical GetPhysicalDirectionForCommand(
+    CommandEventType command,
+    const ComputedStyle& style) {
+  if (command == CommandEventType::kPageUp) {
+    return kScrollUp;
+  } else if (command == CommandEventType::kPageDown) {
+    return kScrollDown;
+  } else if (command == CommandEventType::kPageLeft) {
+    return kScrollLeft;
+  } else if (command == CommandEventType::kPageRight) {
+    return kScrollRight;
+  } else {
+    LogicalToPhysical<bool> mapping(
+        style.GetWritingDirection(),
+        command == CommandEventType::kPageInlineStart,
+        command == CommandEventType::kPageInlineEnd,
+        command == CommandEventType::kPageBlockStart,
+        command == CommandEventType::kPageBlockEnd);
+
+    if (mapping.Top()) {
+      return kScrollUp;
+    } else if (mapping.Bottom()) {
+      return kScrollDown;
+    } else if (mapping.Left()) {
+      return kScrollLeft;
+    } else if (mapping.Right()) {
+      return kScrollRight;
+    }
+  }
+  NOTREACHED();
+}
 
 bool IsRootEditableElementWithCounting(const Element& element) {
   bool is_editable = IsRootEditableElement(element);
@@ -2995,6 +3029,33 @@ bool Element::ScrollFrameTo(const ScrollToOptions* scroll_to_options) {
   return viewport->SetScrollOffset(
       new_offset, mojom::blink::ScrollType::kProgrammatic,
       cc::ScrollSourceType::kAbsoluteScroll, scroll_behavior);
+}
+
+bool Element::HandleScrollCommand(CommandEventType command) {
+  DCHECK(RuntimeEnabledFeatures::HTMLCommandForScrollCommandsEnabled());
+
+  if (!InActiveDocument()) {
+    return false;
+  }
+
+  GetDocument().UpdateStyleAndLayoutForNode(this,
+                                            DocumentUpdateReason::kJavaScript);
+
+  LayoutBox* box = GetLayoutBoxForScrolling();
+  if (!box) {
+    return false;
+  }
+
+  // TODO(457939344): Support root scroller.
+  PaintLayerScrollableArea* scrollable_area = box->GetScrollableArea();
+  if (!scrollable_area) {
+    return false;
+  }
+
+  ScrollDirectionPhysical physical_direction =
+      GetPhysicalDirectionForCommand(command, *box->Style());
+
+  return scrollable_area->ScrollByPageWithSnap(physical_direction);
 }
 
 gfx::Rect Element::BoundsInWidget() const {

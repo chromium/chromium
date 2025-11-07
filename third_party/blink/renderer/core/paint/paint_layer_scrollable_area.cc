@@ -1024,6 +1024,23 @@ void PaintLayerScrollableArea::SetScrollOffsetUnconditionally(
                       cc::ScrollSourceType::kAbsoluteScroll);
 }
 
+bool PaintLayerScrollableArea::ScrollByPageWithSnap(
+    ScrollDirectionPhysical direction,
+    mojom::blink::ScrollBehavior scroll_behavior) {
+  gfx::Vector2dF displacement = ToScrollDelta(direction, 1);
+  displacement.Scale(
+      ScrollStep(ui::ScrollGranularity::kScrollByPage, kHorizontalScrollbar),
+      ScrollStep(ui::ScrollGranularity::kScrollByPage, kVerticalScrollbar));
+
+  gfx::PointF current_position = ScrollPosition();
+  std::unique_ptr<cc::SnapSelectionStrategy> strategy =
+      PageScrollSnapStrategy(direction);
+  gfx::PointF new_position = GetSnapPositionAndSetTarget(*strategy).value_or(
+      current_position + displacement);
+
+  return ScrollToAbsolutePosition(new_position, scroll_behavior);
+}
+
 void PaintLayerScrollableArea::UpdateAfterLayout() {
   EnqueueForSnapUpdateIfNeeded();
   EnqueueForStickyUpdateIfNeeded();
