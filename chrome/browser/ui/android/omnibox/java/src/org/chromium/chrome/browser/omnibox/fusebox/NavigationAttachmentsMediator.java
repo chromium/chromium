@@ -254,7 +254,19 @@ class NavigationAttachmentsMediator {
     private void onAddCurrentTab(Tab tab) {
         if (mComposeBoxQueryControllerBridge == null) return;
         activateAiMode();
-        @Nullable String token = mComposeBoxQueryControllerBridge.addTabContext(tab);
+        @Nullable String token;
+        // Web contents can be null when a tab has not been reloaded during the current Chrome
+        // session. In this case, try to fetch cached web contents.
+        if (tab.getWebContents() != null) {
+            token = mComposeBoxQueryControllerBridge.addTabContext(tab);
+        } else {
+            token = mComposeBoxQueryControllerBridge.addTabContextFromCache(tab.getId());
+        }
+
+        addTabAttachment(tab, token);
+    }
+
+    private void addTabAttachment(Tab tab, @Nullable String token) {
         if (TextUtils.isEmpty(token)) return;
         AttachmentDetails attachmentDetails =
                 new AttachmentDetails(
@@ -285,8 +297,18 @@ class NavigationAttachmentsMediator {
     }
 
     void onTabPickerResult(int resultCode, @Nullable Intent data) {
-        if (resultCode != Activity.RESULT_OK || data == null) return;
-        // TODO(haileywang): Handle data returned
+        if (resultCode != Activity.RESULT_OK || data == null || data.getExtras() == null) return;
+        // Retrieve list of tab ids.
+        // TODO(haileywang): Fill with the real intent extra string when available.
+        long[] tabIds = data.getLongArrayExtra("TAB_IDS");
+        if (tabIds == null) return;
+        for (long tabId : tabIds) {
+            TabModelSelector tabModelSelector = mTabModelSelectorSupplier.get();
+            if (tabModelSelector == null) return;
+            Tab tab = mTabModelSelectorSupplier.get().getTabById((int) tabId);
+            if (tab == null) return;
+            onAddCurrentTab(tab);
+        }
     }
 
     @VisibleForTesting

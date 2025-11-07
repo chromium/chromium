@@ -19,6 +19,10 @@ namespace content {
 class WebContents;
 }  //  namespace content
 
+namespace optimization_guide::proto {
+class PageContext;
+}  // namespace optimization_guide::proto
+
 class Profile;
 class GURL;
 
@@ -38,6 +42,9 @@ class ComposeboxQueryControllerBridge
   base::android::ScopedJavaLocalRef<jobject> AddTabContext(
       JNIEnv* env,
       content::WebContents* web_contents);
+  base::android::ScopedJavaLocalRef<jobject> AddTabContextFromCache(
+      JNIEnv* env,
+      long tab_id);
   GURL GetAimUrl(JNIEnv* env, std::string& query_text);
   void RemoveAttachment(JNIEnv* env, const std::string& token);
 
@@ -54,6 +61,10 @@ class ComposeboxQueryControllerBridge
       JNIEnv* env,
       const base::UnguessableToken& context_token,
       std::unique_ptr<lens::ContextualInputData> page_content_data);
+  void OnGetPageContentFromCache(
+      JNIEnv* env,
+      const base::UnguessableToken& context_token,
+      std::optional<optimization_guide::proto::PageContext> page_context);
 
   raw_ptr<Profile> profile_;
   std::unique_ptr<ComposeboxQueryController> query_controller_;

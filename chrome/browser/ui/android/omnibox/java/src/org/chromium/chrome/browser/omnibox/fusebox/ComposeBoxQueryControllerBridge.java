@@ -75,6 +75,15 @@ public class ComposeBoxQueryControllerBridge {
                 .addTabContext(mNativeInstance, tab.getWebContents());
     }
 
+    /**
+     * Uploads the given tab, adding it to the current session. If the upload can't be performed,
+     * null is returned.
+     */
+    @Nullable String addTabContextFromCache(long tabId) {
+        return ComposeBoxQueryControllerBridgeJni.get()
+                .addTabContextFromCache(mNativeInstance, tabId);
+    }
+
     GURL getAimUrl(String queryText) {
         return ComposeBoxQueryControllerBridgeJni.get().getAimUrl(mNativeInstance, queryText);
     }
@@ -107,6 +116,9 @@ public class ComposeBoxQueryControllerBridge {
         @NativeClassQualifiedName("ComposeboxQueryControllerBridge")
         @Nullable String addTabContext(
                 long nativeInstance, @JniType("content::WebContents*") WebContents webContents);
+
+        @NativeClassQualifiedName("ComposeboxQueryControllerBridge")
+        @Nullable String addTabContextFromCache(long nativeInstance, long tabId);
 
         @NativeClassQualifiedName("ComposeboxQueryControllerBridge")
         @JniType("GURL")

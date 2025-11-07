@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/page_content_annotations/annotate_page_content_request.h"
 #include "chrome/browser/page_content_annotations/page_content_annotations_web_contents_observer.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_types.h"
@@ -35,9 +36,12 @@ WebStateWrapper ToWebStateWrapper(content::WebContents* web_contents) {
 }
 
 optimization_guide::proto::PageContext ToPageContext(
-    optimization_guide::proto::AnnotatedPageContent apc) {
+    optimization_guide::proto::AnnotatedPageContent apc,
+    content::WebContents* web_contents) {
   optimization_guide::proto::PageContext page_context;
   *page_context.mutable_annotated_page_content() = std::move(apc);
+  page_context.set_url(web_contents->GetLastCommittedURL().spec());
+  page_context.set_title(base::UTF16ToUTF8(web_contents->GetTitle()));
   return page_context;
 }
 
@@ -93,8 +97,8 @@ void PageContentExtractionService::OnPageContentExtracted(
   }
 
   page_content_cache_handler_->ProcessPageContentExtraction(
-      tab_id, ToWebStateWrapper(web_contents), ToPageContext(page_content),
-      base::Time::Now());
+      tab_id, ToWebStateWrapper(web_contents),
+      ToPageContext(page_content, web_contents), base::Time::Now());
 }
 
 std::optional<ExtractedPageContentResult>
@@ -126,7 +130,8 @@ void PageContentExtractionService::OnVisibilityChanged(
     if (extracted_result) {
       page_content_cache_handler_->OnVisibilityChanged(
           tab_id, ToWebStateWrapper(web_contents),
-          ToPageContext(std::move(extracted_result->page_content)),
+          ToPageContext(std::move(extracted_result->page_content),
+                        web_contents),
           extracted_result->extraction_timestamp);
     }
   }

@@ -12,6 +12,8 @@
 #include "base/unguessable_token.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/page_content_annotations/page_content_extraction_service.h"
+#include "chrome/browser/page_content_annotations/page_content_extraction_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
@@ -21,6 +23,7 @@
 #include "components/lens/lens_bitmap_processing.h"
 #include "components/lens/tab_contextualization_controller.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
+#include "components/page_content_annotations/core/page_content_cache.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/unowned_user_data/user_data_factory.h"
@@ -148,6 +151,32 @@ ComposeboxQueryControllerBridge::AddTabContext(
   return base::android::ConvertUTF8ToJavaString(env, file_token.ToString());
 }
 
+base::android::ScopedJavaLocalRef<jobject>
+ComposeboxQueryControllerBridge::AddTabContextFromCache(JNIEnv* env,
+                                                        long tab_id) {
+  page_content_annotations::PageContentExtractionService* service =
+      page_content_annotations::PageContentExtractionServiceFactory::
+          GetForProfile(profile_);
+  if (!service) {
+    return {};
+  }
+
+  page_content_annotations::PageContentCache* cache =
+      service->GetPageContentCache();
+  if (!cache) {
+    return {};
+  }
+
+  base::UnguessableToken file_token = base::UnguessableToken::Create();
+
+  cache->GetPageContentForTab(
+      tab_id, base::BindOnce(
+                  &ComposeboxQueryControllerBridge::OnGetPageContentFromCache,
+                  weak_ptr_factory_.GetWeakPtr(), env, file_token));
+
+  return base::android::ConvertUTF8ToJavaString(env, file_token.ToString());
+}
+
 GURL ComposeboxQueryControllerBridge::GetAimUrl(JNIEnv* env,
                                                 std::string& query_text) {
   // TODO(crbug.com/448149357): Update the bridge interface to take in
@@ -189,4 +218,42 @@ void ComposeboxQueryControllerBridge::OnGetTabPageContext(
 
   query_controller_->StartFileUploadFlow(
       context_token, std::move(page_content_data), std::move(image_options));
+}
+
+void ComposeboxQueryControllerBridge::OnGetPageContentFromCache(
+    JNIEnv* env,
+    const base::UnguessableToken& context_token,
+    std::optional<optimization_guide::proto::PageContext> page_context) {
+  // TODO(crbug.com/457869241): Merge this and the code in
+  // TabContextualizationController.
+  if (!page_context.has_value()) {
+    return;
+  }
+
+  std::unique_ptr<lens::ContextualInputData> input_data =
+      std::make_unique<lens::ContextualInputData>();
+  input_data->context_input = std::vector<lens::ContextualInput>();
+
+  // Page URL and Title.
+  if (page_context->has_url()) {
+    input_data->page_url = GURL(page_context->url());
+  }
+  if (page_context->has_title()) {
+    input_data->page_title = page_context->title();
+  }
+
+#if BUILDFLAG(ENABLE_PDF)
+  // TODO(crbug.com/457869538): Handle pdf.
+#endif  // BUILDFLAG(ENABLE_PDF)
+
+  // If the page is not a PDF, get the annotated page content.
+  if (page_context->has_annotated_page_content()) {
+    std::string serialized_apc;
+    page_context->annotated_page_content().SerializeToString(&serialized_apc);
+    input_data->context_input->emplace_back(
+        std::vector<uint8_t>(serialized_apc.begin(), serialized_apc.end()),
+        lens::MimeType::kAnnotatedPageContent);
+  }
+
+  OnGetTabPageContext(env, context_token, std::move(input_data));
 }
