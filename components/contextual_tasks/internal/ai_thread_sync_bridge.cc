@@ -168,11 +168,13 @@ bool AiThreadSyncBridge::IsEntityDataValid(
 sync_pb::EntitySpecifics
 AiThreadSyncBridge::TrimAllSupportedFieldsFromRemoteSpecifics(
     const sync_pb::EntitySpecifics& entity_specifics) const {
+  // LINT.IfChange(TrimAllSupportedFieldsFromRemoteSpecifics)
   sync_pb::AiThreadSpecifics trimmed_specifics = entity_specifics.ai_thread();
   trimmed_specifics.clear_type();
   trimmed_specifics.clear_server_id();
   trimmed_specifics.clear_conversation_turn_id();
   trimmed_specifics.clear_title();
+  // LINT.ThenChange(//components/sync/protocol/ai_thread_specifics.proto:AiThreadSpecifics)
 
   sync_pb::EntitySpecifics trimmed_entity_specifics;
   if (trimmed_specifics.ByteSizeLong() > 0) {

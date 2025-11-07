@@ -121,7 +121,7 @@ TEST_F(ContextualTaskSyncBridgeTest,
 
   EXPECT_FALSE(trimmed_specifics.contextual_task().has_guid());
   EXPECT_FALSE(trimmed_specifics.contextual_task().has_version());
-  EXPECT_TRUE(trimmed_specifics.contextual_task().has_contextual_task());
+  EXPECT_FALSE(trimmed_specifics.contextual_task().has_contextual_task());
   EXPECT_FALSE(
       trimmed_specifics.contextual_task().contextual_task().has_title());
   EXPECT_FALSE(

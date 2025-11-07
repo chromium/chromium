@@ -16,6 +16,7 @@ package sync_pb;
 
 // Represents the most recent snapshot of a thread when a user is interacting
 // with AI features.
+// LINT.IfChange(AiThreadSpecifics)
 message AiThreadSpecifics {
   enum ThreadType {
     UNKNOWN = 0;
@@ -34,3 +35,4 @@ message AiThreadSpecifics {
   // Title of the thread.
   optional string title = 4;
 }
+// LINT.ThenChange(//components/contextual_tasks/internal/ai_thread_sync_bridge.cc:TrimAllSupportedFieldsFromRemoteSpecifics)

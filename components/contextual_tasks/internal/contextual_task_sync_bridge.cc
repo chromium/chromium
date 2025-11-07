@@ -301,6 +301,7 @@ bool ContextualTaskSyncBridge::IsEntityDataValid(
 sync_pb::EntitySpecifics
 ContextualTaskSyncBridge::TrimAllSupportedFieldsFromRemoteSpecifics(
     const sync_pb::EntitySpecifics& entity_specifics) const {
+  // LINT.IfChange(TrimAllSupportedFieldsFromRemoteSpecifics)
   sync_pb::ContextualTaskSpecifics trimmed_specifics =
       entity_specifics.contextual_task();
   trimmed_specifics.clear_guid();
@@ -311,6 +312,10 @@ ContextualTaskSyncBridge::TrimAllSupportedFieldsFromRemoteSpecifics(
     task->clear_title();
     task->clear_thread_id();
     task->clear_thread_type();
+
+    if (task->ByteSizeLong() == 0) {
+      trimmed_specifics.clear_contextual_task();
+    }
   }
 
   if (trimmed_specifics.has_url_resource()) {
@@ -318,11 +323,18 @@ ContextualTaskSyncBridge::TrimAllSupportedFieldsFromRemoteSpecifics(
         trimmed_specifics.mutable_url_resource();
     url_resource->clear_task_guid();
     url_resource->clear_url();
+
+    if (url_resource->ByteSizeLong() == 0) {
+      trimmed_specifics.clear_url_resource();
+    }
   }
+  // LINT.ThenChange(//components/sync/protocol/contextual_task_specifics.proto:ContextualTaskSpecifics)
 
   sync_pb::EntitySpecifics trimmed_entity_specifics;
-  *trimmed_entity_specifics.mutable_contextual_task() =
-      std::move(trimmed_specifics);
+  if (trimmed_specifics.ByteSizeLong() > 0) {
+    *trimmed_entity_specifics.mutable_contextual_task() =
+        std::move(trimmed_specifics);
+  }
   return trimmed_entity_specifics;
 }
 

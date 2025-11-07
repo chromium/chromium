@@ -16,6 +16,8 @@ package sync_pb;
 
 import "components/sync/protocol/ai_thread_specifics.proto";
 
+// LINT.IfChange(ContextualTaskSpecifics)
+
 // Sync datatype representing a contextual task.
 message ContextualTaskSpecifics {
   // ID to uniquely identify the specifics proto.
@@ -52,3 +54,5 @@ message UrlResource {
   // URL attached to the task.
   optional string url = 2;
 }
+
+// LINT.ThenChange(//components/contextual_tasks/internal/contextual_task_sync_bridge.cc:TrimAllSupportedFieldsFromRemoteSpecifics)
