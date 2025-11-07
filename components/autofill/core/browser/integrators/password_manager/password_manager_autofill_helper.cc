@@ -17,20 +17,36 @@ PasswordManagerAutofillHelper::PasswordManagerAutofillHelper(
 
 PasswordManagerAutofillHelper::~PasswordManagerAutofillHelper() = default;
 
+namespace {
+
+AutofillField* GetAutofillField(AutofillManager* manager,
+                                FormGlobalId form_id,
+                                FieldGlobalId field_id) {
+  if (!manager) {
+    return nullptr;
+  }
+  FormStructure* form = manager->FindCachedFormById(form_id);
+  if (!form) {
+    return nullptr;
+  }
+  return form->GetFieldById(field_id);
+}
+
+}  // namespace
+
+// static
+bool PasswordManagerAutofillHelper::IsOtpFilledField(
+    const AutofillField& field) {
+  return field.is_autofilled() &&
+         field.filling_product() == FillingProduct::kOneTimePassword;
+}
+
 bool PasswordManagerAutofillHelper::IsFieldFilledWithOtp(
     FormGlobalId form_id,
     FieldGlobalId field_id) {
   AutofillManager* manager = client_->GetAutofillManagerForPrimaryMainFrame();
-  if (!manager) {
-    return false;
-  }
-
-  if (FormStructure* form = manager->FindCachedFormById(form_id)) {
-    if (AutofillField* field = form->GetFieldById(field_id)) {
-      return field->filling_product() == FillingProduct::kOneTimePassword;
-    }
-  }
-  return false;
+  AutofillField* field = GetAutofillField(manager, form_id, field_id);
+  return field && IsOtpFilledField(*field);
 }
 
 }  // namespace autofill
