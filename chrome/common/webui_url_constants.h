@@ -707,6 +707,7 @@ inline constexpr char kSyncSetupSubPage[] = "syncSetup";
 inline constexpr char kSyncSetupAdvancedSubPage[] = "syncSetup/advanced";
 inline constexpr char kTriggeredResetProfileSettingsSubPage[] =
     "triggeredResetProfileSettings";
+inline constexpr char kYourSavedInfoSubPage[] = "yourSavedInfo";
 
 #if BUILDFLAG(IS_WIN)
 inline constexpr char kCleanupSubPage[] = "cleanup";

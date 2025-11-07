@@ -105,6 +105,7 @@ class ProfileMenuView : public ProfileMenuViewBase {
   void OnManageProfilesButtonClicked();
   void OnEditProfileButtonClicked();
   void OnAutofillSettingsButtonClicked();
+  void OnYourSavedInfoSettingsButtonClicked();
   void OnBatchUploadButtonClicked(ActionableItem button_type);
 
   // We normally close the bubble any time it becomes inactive but this can lead
