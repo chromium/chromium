@@ -9,4 +9,11 @@ License File: LICENSE
 Shipped: yes
 Security Critical: no
 Description: A javascript library to distill the dom.
-Local Modifications: None
+Local Modifications:
+
+Readability.js and Readability-readerable.js are cloned into the
+modded_src/ directory to enable rapid develop cycle. Effort should be
+made to upstream changes to Readability. When rolling Readability, also
+update the modded_src/version and update the list of changes below.
+
+(No active mods)

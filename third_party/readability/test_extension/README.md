@@ -65,9 +65,9 @@ distillation algorithm.
     commands to create symbolic links:
 
     ```bash
-    # Link to Readability.js files
-    ln -s ../src/Readability.js .
-    ln -s ../src/Readability-readerable.js .
+    # Link to (modded) Readability.js files
+    ln -s ../modded_src/Readability.js .
+    ln -s ../modded_src/Readability-readerable.js .
 
     # Link to dom_distiller core files
     ln -s ../../../components/dom_distiller/core/css/distilledpage_common.css .

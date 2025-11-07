@@ -7,7 +7,7 @@
 function initialize() {
   // This include will be processed at build time by grit.
   // clang-format off
-        // <include src="../../../../third_party/readability/src/Readability-readerable.js">
+        // <include src="../../../../third_party/readability/modded_src/Readability-readerable.js">
   // clang-format on
   window.isProbablyReaderable = isProbablyReaderable;
 }
