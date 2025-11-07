@@ -838,7 +838,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="569" label="SVGTransformListConsolidate"/>
   <int value="570" label="SVGAnimatedTransformListBaseVal"/>
   <int value="571" label="OBSOLETE_QuotedAnimationName"/>
-  <int value="572" label="QuotedKeyframesRule"/>
+  <int value="572" label="OBSOLETE_QuotedKeyframesRule"/>
   <int value="573" label="SrcsetDroppedCandidate"/>
   <int value="574" label="WindowPostMessage"/>
   <int value="575" label="WindowPostMessageWithLegacyTargetOriginArgument"/>
