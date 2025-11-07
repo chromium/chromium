@@ -275,7 +275,7 @@ TEST(ProcessMemoryDumpTest, Suballocations) {
   ASSERT_TRUE(found_edge[1]);
 
   // Check that calling serialization routines doesn't cause a crash.
-  std::unique_ptr<TracedValue> traced_value(new TracedValue);
+  auto traced_value = std::make_unique<TracedValue>();
   pmd->SerializeAllocatorDumpsInto(traced_value.get());
 
   pmd.reset();

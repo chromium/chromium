@@ -781,7 +781,7 @@ TEST_F(MemoryDumpManagerTest, UnregisterAndDeleteDumpProviderSoon) {
   int dtor_count = 0;
   std::vector<std::unique_ptr<MemoryDumpProvider>> mdps;
   for (int i = 0; i < kNumProviders; ++i) {
-    std::unique_ptr<MockMemoryDumpProvider> mdp(new MockMemoryDumpProvider);
+    auto mdp = std::make_unique<MockMemoryDumpProvider>();
     mdp->enable_mock_destructor = true;
     EXPECT_CALL(*mdp, Destructor()).WillOnce([&dtor_count] { dtor_count++; });
     RegisterDumpProvider(mdp.get(), nullptr, kDefaultOptions);
@@ -802,7 +802,7 @@ TEST_F(MemoryDumpManagerTest, UnregisterAndDeleteDumpProviderSoon) {
 // from another thread. The OnMemoryDump() and the dtor call are expected to
 // happen on the same thread (the MemoryDumpManager utility thread).
 TEST_F(MemoryDumpManagerTest, UnregisterAndDeleteDumpProviderSoonDuringDump) {
-  std::unique_ptr<MockMemoryDumpProvider> mdp(new MockMemoryDumpProvider);
+  auto mdp = std::make_unique<MockMemoryDumpProvider>();
   mdp->enable_mock_destructor = true;
   RegisterDumpProvider(mdp.get(), nullptr, kDefaultOptions);
 
@@ -874,7 +874,7 @@ TEST_F(MemoryDumpManagerTest, NoStackOverflowWithTooManyMDPs) {
     RegisterDumpProvider(mdps.back().get(), nullptr, kDefaultOptions,
                          kAllowlistedMDPName);
   }
-  std::unique_ptr<Thread> stopped_thread(new Thread("test thread"));
+  auto stopped_thread = std::make_unique<Thread>("test thread");
   stopped_thread->Start();
   for (int i = 0; i < kMDPCount; ++i) {
     mdps.push_back(std::make_unique<SimpleMockMemoryDumpProvider>(0));

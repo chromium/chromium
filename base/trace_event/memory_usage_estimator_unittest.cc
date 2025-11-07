@@ -6,6 +6,7 @@
 
 #include <stdlib.h>
 
+#include <memory>
 #include <string>
 
 #include "base/memory/ptr_util.h"
@@ -110,13 +111,13 @@ TEST(EstimateMemoryUsageTest, UniquePtr) {
 
   // Not empty
   {
-    std::unique_ptr<Data> ptr(new Data());
+    auto ptr = std::make_unique<Data>();
     EXPECT_EQ_32_64(21u, 25u, EstimateMemoryUsage(ptr));
   }
 
   // With a pointer
   {
-    std::unique_ptr<Data*> ptr(new Data*());
+    auto ptr = std::make_unique<Data*>();
     EXPECT_EQ(sizeof(void*), EstimateMemoryUsage(ptr));
   }
 }

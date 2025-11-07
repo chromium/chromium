@@ -96,7 +96,7 @@ MemoryDumpManager* MemoryDumpManager::GetInstance() {
 std::unique_ptr<MemoryDumpManager>
 MemoryDumpManager::CreateInstanceForTesting() {
   DCHECK(!g_memory_dump_manager_for_testing);
-  std::unique_ptr<MemoryDumpManager> instance(new MemoryDumpManager());
+  auto instance = base::WrapUnique(new MemoryDumpManager());
   g_memory_dump_manager_for_testing = instance.get();
   return instance;
 }

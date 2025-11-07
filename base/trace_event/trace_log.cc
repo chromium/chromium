@@ -678,7 +678,7 @@ void TraceLog::OnTraceData(const char* data, size_t size, bool has_more) {
     return;
   }
   if (size) {
-    std::unique_ptr<uint8_t[]> data_copy(new uint8_t[size]);
+    auto data_copy = std::make_unique<uint8_t[]>(size);
     memcpy(&data_copy[0], data, size);
     auto status = trace_processor_->Parse(std::move(data_copy), size);
     DCHECK(status.ok()) << status.message();
