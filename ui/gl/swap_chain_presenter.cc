@@ -80,37 +80,12 @@ const char* ProtectedVideoTypeToString(gfx::ProtectedVideoType type) {
   }
 }
 
-bool CreateSurfaceHandleHelper(HANDLE* handle) {
-  using PFN_DCOMPOSITION_CREATE_SURFACE_HANDLE =
-      HRESULT(WINAPI*)(DWORD, SECURITY_ATTRIBUTES*, HANDLE*);
-  static PFN_DCOMPOSITION_CREATE_SURFACE_HANDLE create_surface_handle_function =
-      nullptr;
-
-  if (!create_surface_handle_function) {
-    HMODULE dcomp = ::GetModuleHandleA("dcomp.dll");
-    if (!dcomp) {
-      DLOG(ERROR) << "Failed to get handle for dcomp.dll";
-      return false;
-    }
-    create_surface_handle_function =
-        reinterpret_cast<PFN_DCOMPOSITION_CREATE_SURFACE_HANDLE>(
-            ::GetProcAddress(dcomp, "DCompositionCreateSurfaceHandle"));
-    if (!create_surface_handle_function) {
-      DLOG(ERROR)
-          << "Failed to get address for DCompositionCreateSurfaceHandle";
-      return false;
-    }
-  }
-
-  HRESULT hr = create_surface_handle_function(COMPOSITIONOBJECT_ALL_ACCESS,
-                                              nullptr, handle);
-  if (FAILED(hr)) {
-    DLOG(ERROR) << "DCompositionCreateSurfaceHandle failed with error 0x"
-                << std::hex << hr;
-    return false;
-  }
-
-  return true;
+base::win::ScopedHandle CreateDCompSurfaceHandle() {
+  HANDLE handle = INVALID_HANDLE_VALUE;
+  const HRESULT hr = ::DCompositionCreateSurfaceHandle(
+      COMPOSITIONOBJECT_ALL_ACCESS, nullptr, &handle);
+  CHECK_EQ(hr, S_OK);
+  return base::win::ScopedHandle(handle);
 }
 
 const char* DxgiFormatToString(DXGI_FORMAT format) {
@@ -1394,10 +1369,7 @@ bool SwapChainPresenter::PresentToDecodeSwapChain(
 
     decode_resource_ = decode_resource;
 
-    HANDLE handle = INVALID_HANDLE_VALUE;
-    if (!CreateSurfaceHandleHelper(&handle))
-      return false;
-    base::win::ScopedHandle swap_chain_handle(handle);
+    base::win::ScopedHandle swap_chain_handle = CreateDCompSurfaceHandle();
 
     Microsoft::WRL::ComPtr<IDXGIDevice> dxgi_device;
     d3d11_device_.As(&dxgi_device);
@@ -1917,8 +1889,9 @@ bool SwapChainPresenter::FinishPresentToSwapChain() {
   return true;
 }
 // static
-bool SwapChainPresenter::CreateSurfaceHandleHelperForTesting(HANDLE* handle) {
-  return CreateSurfaceHandleHelper(handle);
+base::win::ScopedHandle
+SwapChainPresenter::CreateDCompSurfaceHandleForTesting() {
+  return CreateDCompSurfaceHandle();
 }
 
 SwapChainPresenter::PresentationMode
@@ -2420,10 +2393,7 @@ bool SwapChainPresenter::ReallocateSwapChain(
 
   // The composition surface handle is only used to create YUV swap chains since
   // CreateSwapChainForComposition can't do that.
-  HANDLE handle = INVALID_HANDLE_VALUE;
-  if (!CreateSurfaceHandleHelper(&handle))
-    return false;
-  base::win::ScopedHandle swap_chain_handle(handle);
+  base::win::ScopedHandle swap_chain_handle = CreateDCompSurfaceHandle();
 
   first_present_ = true;
 

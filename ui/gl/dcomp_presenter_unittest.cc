@@ -3591,17 +3591,22 @@ class DCompPresenterLetterboxingTest
 
   class MockDCOMPSurfaceProxy : public gl::DCOMPSurfaceProxy {
    public:
-    MockDCOMPSurfaceProxy() = default;
+    MockDCOMPSurfaceProxy()
+        : scoped_handle_(
+              gl::SwapChainPresenter::CreateDCompSurfaceHandleForTesting()) {}
     MOCK_METHOD(gfx::Size&, GetSize, (), (const, override));
-    MOCK_METHOD(HANDLE, GetSurfaceHandle, (), (override));
     MOCK_METHOD(void,
                 SetRect,
                 (const gfx::Rect& window_relative_rect),
                 (override));
     MOCK_METHOD(void, SetParentWindow, (HWND parent), (override));
 
+    HANDLE GetSurfaceHandle() override { return scoped_handle_.Get(); }
+
    private:
     ~MockDCOMPSurfaceProxy() override = default;
+
+    const base::win::ScopedHandle scoped_handle_;
   };
 
   void ScheduleFullScreenOverlay(DCLayerOverlayParams overlay) {
@@ -3654,11 +3659,6 @@ class DCompPresenterLetterboxingTest
       const gfx::Rect& clip_rect,
       std::optional<gfx::Rect> dcomp_surface_set_rect_override = std::nullopt) {
     auto dcomp_surface_proxy = base::MakeRefCounted<MockDCOMPSurfaceProxy>();
-    HANDLE handle = INVALID_HANDLE_VALUE;
-    EXPECT_TRUE(
-        gl::SwapChainPresenter::CreateSurfaceHandleHelperForTesting(&handle));
-    EXPECT_CALL(*dcomp_surface_proxy, GetSurfaceHandle())
-        .WillRepeatedly(::testing::Return(handle));
     EXPECT_CALL(*dcomp_surface_proxy, SetParentWindow(testing::_))
         .Times(testing::AnyNumber());
     EXPECT_CALL(*dcomp_surface_proxy, GetSize())

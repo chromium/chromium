@@ -286,6 +286,7 @@ component("gl") {
     ]
 
     libs = [
+      "dcomp.lib",
       "dxgi.lib",
       "dxguid.lib",
       "dwmapi.lib",

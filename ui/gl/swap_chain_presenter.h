@@ -76,7 +76,7 @@ class SwapChainPresenter : public base::PowerStateObserver {
 
   // Valid HANDLE is needed for testing to create an IDCompositionSurface with
   // `CreateSurfaceFromHandle`.
-  GL_EXPORT static bool CreateSurfaceHandleHelperForTesting(HANDLE* handle);
+  GL_EXPORT static base::win::ScopedHandle CreateDCompSurfaceHandleForTesting();
 
   // This only differs from `VideoPresentationMode` because that does not
   // include MF surface proxy.
