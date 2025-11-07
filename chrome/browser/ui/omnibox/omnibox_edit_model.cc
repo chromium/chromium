@@ -762,8 +762,9 @@ void OmniboxEditModel::SetInAiMode(bool ai_mode) {
 
 void OmniboxEditModel::OpenAiMode(bool via_keyboard) {
   std::u16string query_text =
-      AutocompleteMatch::IsSearchType(current_match_.type) ?
-      current_match_.contents : u"";
+      AutocompleteMatch::IsSearchType(current_match_.type)
+          ? current_match_.contents
+          : u"";
   RecordAiModeMetrics(query_text, /*activated=*/true, via_keyboard);
 
   if (query_text.empty() &&
@@ -1825,8 +1826,10 @@ void OmniboxEditModel::SetPopupSelection(OmniboxPopupSelection new_selection,
           ? AutocompleteMatch()
           : autocomplete_controller()->result().match_at(popup_selection_.line);
 
+  // Can't select keyword chip if the match shouldn't show a keyword chip.
   DCHECK(popup_selection_.state != OmniboxPopupSelection::KEYWORD_MODE ||
          !match.associated_keyword.empty());
+
   if (popup_selection_.IsButtonFocused()) {
     old_focused_url_ = match.destination_url;
     SetAccessibilityLabel(match);
@@ -1846,14 +1849,14 @@ void OmniboxEditModel::SetPopupSelection(OmniboxPopupSelection new_selection,
                           controller_->client()->IsHistoryEmbeddingsEnabled(),
                           &keyword, &keyword_placeholder, &is_keyword_hint);
 
+  // Don't update the edit model if entering or leaving keyword mode; doing so
+  // breaks keyword mode. Updating when there is no line change is necessary
+  // because omnibox text changes when:
+  // a) Moving down from a header row.
+  // b) Focusing other states; e.g. the switch-to-tab chip.
   if (old_selection.line != popup_selection_.line ||
       (old_selection.state != OmniboxPopupSelection::KEYWORD_MODE &&
        new_selection.state != OmniboxPopupSelection::KEYWORD_MODE)) {
-    // Don't update the edit model if entering or leaving keyword mode; doing so
-    // breaks keyword mode. Updating when there is no line change is necessary
-    // because omnibox text changes when:
-    // a) Moving down from a header row.
-    // b) Focusing other states; e.g. the switch-to-tab chip.
     if (reset_to_default) {
       OnPopupDataChanged(
           std::u16string(),
@@ -1866,8 +1869,6 @@ void OmniboxEditModel::SetPopupSelection(OmniboxPopupSelection new_selection,
                          match);
     }
   }
-  // Without this, focus indicators may appear stale (see crbug.com/1369229).
-  observers_.Notify(&Observer::OnContentsChanged);
 }
 
 bool OmniboxEditModel::IsPopupSelectionOnInitialLine() const {
@@ -2126,31 +2127,16 @@ void OmniboxEditModel::OnPopupResultChanged() {
   }
   rich_suggestion_bitmaps_.clear();
   const AutocompleteResult& result = autocomplete_controller()->result();
-  size_t old_selected_line = GetPopupSelection().line;
 
-  OmniboxPopupSelection::LineState old_selected_state = popup_selection_.state;
-  if (result.default_match()) {
-    OmniboxPopupSelection selection = GetPopupSelection();
-    selection.line = 0;
+  // Reset selection.
+  const OmniboxPopupSelection old_selection = popup_selection_;
+  popup_selection_ = OmniboxPopupSelection(
+      result.default_match() ? 0 : OmniboxPopupSelection::kNoMatch,
+      OmniboxPopupSelection::NORMAL);
 
-    const bool has_focused_match =
-        selection.state == OmniboxPopupSelection::FOCUSED_BUTTON_ACTION &&
-        result.match_at(selection.line).has_tab_match.value_or(false);
-    const bool has_changed =
-        selection.line != old_selected_line ||
-        result.match_at(selection.line).destination_url != old_focused_url_;
-
-    if (!has_focused_match || has_changed) {
-      selection.state = OmniboxPopupSelection::NORMAL;
-    }
-    popup_selection_ = selection;
-  } else {
-    popup_selection_ = OmniboxPopupSelection(OmniboxPopupSelection::kNoMatch,
-                                             OmniboxPopupSelection::NORMAL);
-  }
   // If the AI button was previously focused and the selection state changed,
   // remove the focus ring from the AI mode button.
-  if (old_selected_state == OmniboxPopupSelection::FOCUSED_BUTTON_AIM &&
+  if (old_selection.state == OmniboxPopupSelection::FOCUSED_BUTTON_AIM &&
       popup_selection_.state != OmniboxPopupSelection::FOCUSED_BUTTON_AIM) {
     view_->ApplyFocusRingToAimButton(false);
   }
