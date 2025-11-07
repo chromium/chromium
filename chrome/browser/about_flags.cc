@@ -1727,6 +1727,15 @@ const FeatureEntry::FeatureVariation kNtpRealboxNextVariations[] = {
      std::size(kShowNextRealboxCompactCyclingPlaceholders), nullptr},
 };
 
+const FeatureEntry::FeatureParam kNtpNextShowStaticText[] = {
+    {"NtpNextShowStaticTextParam", "true"},
+};
+
+const FeatureEntry::FeatureVariation kNtpNextVariations[] = {
+    {"- Show Static Text", kNtpNextShowStaticText,
+     std::size(kNtpNextShowStaticText), nullptr},
+};
+
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) ||
         // BUILDFLAG(IS_WIN)
 
@@ -7613,7 +7622,9 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"ntp-next-features", flag_descriptions::kNtpNextFeaturesName,
      flag_descriptions::kNtpNextFeaturesDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(ntp_features::kNtpNextFeatures)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_features::kNtpNextFeatures,
+                                    kNtpNextVariations,
+                                    "NtpNextFeatures")},
 
     {"ntp-modules-drag-and-drop", flag_descriptions::kNtpModulesDragAndDropName,
      flag_descriptions::kNtpModulesDragAndDropDescription, kOsDesktop,
