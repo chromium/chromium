@@ -79,6 +79,7 @@ GlicInstanceCoordinatorImpl::GlicInstanceCoordinatorImpl(
     GlicEnabling* enabling,
     contextual_cueing::ContextualCueingService* contextual_cueing_service)
     : profile_(profile),
+      service_(service),
       contextual_cueing_service_(contextual_cueing_service),
       memory_pressure_listener_registration_(
           FROM_HERE,
@@ -115,16 +116,30 @@ void GlicInstanceCoordinatorImpl::OnInstanceActivationChanged(
     return;
   }
   NotifyActiveInstanceChanged();
+  ComputeContentAccessIndicator();
 }
 
 void GlicInstanceCoordinatorImpl::OnInstanceVisibilityChanged(
     GlicInstanceImpl* instance,
     bool is_showing) {
   global_show_hide_callback_list_.Notify();
+  if (instance == active_instance_) {
+    ComputeContentAccessIndicator();
+  }
 }
 
 void GlicInstanceCoordinatorImpl::NotifyActiveInstanceChanged() {
   active_instance_changed_callback_list_.Notify(active_instance_);
+}
+
+void GlicInstanceCoordinatorImpl::ComputeContentAccessIndicator() {
+  if (active_instance_) {
+    service_->SetContextAccessIndicator(
+        active_instance_->IsShowing() &&
+        active_instance_->host().IsContextAccessIndicatorEnabled());
+  } else {
+    service_->SetContextAccessIndicator(false);
+  }
 }
 
 GlicInstanceImpl* GlicInstanceCoordinatorImpl::GetInstanceImplForTab(
@@ -493,6 +508,12 @@ void GlicInstanceCoordinatorImpl::UnbindTabFromAnyInstance(
   if (auto* instance = GetInstanceImplForTab(tab)) {
     instance->UnbindEmbedder(EmbedderKey(tab));
   }
+}
+
+void GlicInstanceCoordinatorImpl::ContextAccessIndicatorChanged(
+    GlicInstanceImpl& source_instance,
+    bool enabled) {
+  ComputeContentAccessIndicator();
 }
 
 void GlicInstanceCoordinatorImpl::SetWarmingEnabledForTesting(

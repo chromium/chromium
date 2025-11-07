@@ -125,6 +125,20 @@ GlicInstance* GlicInstanceTracker::GetGlicInstance() {
     }
     return nullptr;
   }
+  if (track_only_glic_instance_) {
+    auto instances = service->window_controller().GetInstances();
+    // Ignore the warming instance.
+    if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+      auto iter = std::find(
+          instances.begin(), instances.end(),
+          GetInstanceCoordinator(*service).GetWarmedInstanceForTesting());
+      if (iter != instances.end()) {
+        instances.erase(iter);
+      }
+    }
+    CHECK_LT(instances.size(), 2u);
+    return instances.empty() ? nullptr : instances[0];
+  }
 
   if (GlicEnabling::IsMultiInstanceEnabledByFlags()) {
     if (track_floating_glic_instance_) {

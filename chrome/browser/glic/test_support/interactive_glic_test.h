@@ -1035,6 +1035,8 @@ class InteractiveGlicTestMixin : public T {
     instance_tracker_.TrackFloatingGlicInstance();
   }
 
+  void TrackOnlyGlicInstance() { instance_tracker_.TrackOnlyGlicInstance(); }
+
   // Returns the currently tracked glic instance.
   GlicInstance* GetGlicInstance() {
     return instance_tracker_.GetGlicInstance();

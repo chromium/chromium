@@ -309,6 +309,10 @@ GlicUiEmbedder* GlicInstanceImpl::GetEmbedderForTab(tabs::TabInterface* tab) {
   return GetEmbedderForKey(EmbedderKey(tab));
 }
 
+bool GlicInstanceImpl::ContextAccessIndicatorEnabled() {
+  return host().IsContextAccessIndicatorEnabled();
+}
+
 GlicUiEmbedder* GlicInstanceImpl::GetEmbedderForKey(EmbedderKey key) {
   auto it = embedders_.find(key);
   if (it != embedders_.end()) {
@@ -811,6 +815,12 @@ void GlicInstanceImpl::WebUiStateChanged(mojom::WebUiState state) {
     if (auto* embedder = GetActiveEmbedder()) {
       embedder->Focus();
     }
+  }
+}
+
+void GlicInstanceImpl::ContextAccessIndicatorChanged(bool enabled) {
+  if (coordinator_delegate_) {
+    coordinator_delegate_->ContextAccessIndicatorChanged(*this, enabled);
   }
 }
 

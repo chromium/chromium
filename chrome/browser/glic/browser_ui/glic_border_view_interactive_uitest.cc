@@ -252,9 +252,7 @@ class GlicBorderViewUiTest : public test::InteractiveGlicTest {
 
   void ClickGlicButtonInBrowser(Browser* browser) {
     RunTestSequenceInContext(BrowserElements::From(browser)->GetContext(),
-                             PressButton(kGlicButtonElementId)),
-        CheckControllerHasWidget(true),
-        CheckControllerWidgetMode(GlicWindowMode::kAttached);
+                             PressButton(kGlicButtonElementId));
   }
 
   void AppendTabAndNavigate(Browser* browser, const GURL& url) {

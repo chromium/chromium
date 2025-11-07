@@ -100,6 +100,12 @@ class GlicInstanceTracker {
     track_floating_glic_instance_ = true;
   }
 
+  // Track the only glic instance. CHECK fails if there is ever more than one.
+  void TrackOnlyGlicInstance() {
+    Clear();
+    track_only_glic_instance_ = true;
+  }
+
   Host* GetHost();
 
   [[nodiscard]] bool WaitForPanelState(mojom::PanelStateKind state);
@@ -130,6 +136,7 @@ class GlicInstanceTracker {
   std::optional<int> glic_instance_tab_index_ = 0;
   std::optional<tabs::TabInterface::Handle> glic_instance_tab_handle_;
   bool track_floating_glic_instance_ = false;
+  bool track_only_glic_instance_ = false;
 };
 
 // Signs in a primary account, accepts the FRE, and enables model execution
