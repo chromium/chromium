@@ -5,34 +5,10 @@
 load("@chromium-luci//notifiers.star", "notifiers")
 
 luci.notifier(
-    name = "chromesec-lkgr-failures",
-    on_status_change = True,
-    notify_emails = [
-        "chromesec-lkgr-failures@google.com",
-    ],
-)
-
-luci.notifier(
     name = "chrome-fuzzing-core",
     on_status_change = True,
     notify_emails = [
         "chrome-fuzzing-core+bots@google.com",
-    ],
-)
-
-luci.notifier(
-    name = "chrome-lacros-engprod-alerts",
-    on_status_change = True,
-    notify_emails = [
-        "chrome-lacros-engprod-alerts@google.com",
-    ],
-)
-
-luci.notifier(
-    name = "chrome-memory-safety",
-    on_status_change = True,
-    notify_emails = [
-        "chrome-memory-safety+bots@google.com",
     ],
 )
 
@@ -52,14 +28,6 @@ luci.notifier(
     failed_step_regexp = "package rust",
     notify_emails = [
         "chrome-rust-experiments+toolchain@google.com",
-    ],
-)
-
-luci.notifier(
-    name = "chrome-memory-sheriffs",
-    on_status_change = True,
-    notify_emails = [
-        "chrome-memory-sheriffs+bots@google.com",
     ],
 )
 
@@ -102,14 +70,6 @@ luci.notifier(
     on_status_change = True,
     notify_emails = [
         "chrome-fuchsia-engprod+builder-notification@grotations.appspotmail.com",
-    ],
-)
-
-luci.notifier(
-    name = "cr-fuchsia-engprod",
-    on_status_change = True,
-    notify_emails = [
-        "chrome-fuchsia-engprod+builder-notification@google.com",
     ],
 )
 
@@ -223,18 +183,6 @@ tree_closure_notifier(
         "tikuta@chromium.org",
         "ukai@chromium.org",
         "yyanagisawa@chromium.org",
-    ],
-)
-
-tree_closure_notifier(
-    name = "linux-ozone-rel",
-    notify_emails = [
-        "fwang@chromium.org",
-        "maksim.sisov@chromium.org",
-        "rjkroege@chromium.org",
-        "thomasanderson@chromium.org",
-        "timbrown@chromium.org",
-        "tonikitoo@chromium.org",
     ],
 )
 
