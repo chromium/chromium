@@ -3020,6 +3020,8 @@ source_set("browser") {
     }
     if (is_mac) {
       sources += [
+        "media/capture/capture_util_mac.h",
+        "media/capture/capture_util_mac.mm",
         "media/capture/desktop_capture_device_mac.cc",
         "media/capture/desktop_capture_device_mac.h",
         "media/capture/io_surface_capture_device_base_mac.cc",
@@ -3031,8 +3033,6 @@ source_set("browser") {
         "media/capture/pip_screen_capture_coordinator_impl.h",
         "media/capture/screen_capture_kit_device_mac.h",
         "media/capture/screen_capture_kit_device_mac.mm",
-        "media/capture/screen_capture_kit_device_utils_mac.h",
-        "media/capture/screen_capture_kit_device_utils_mac.mm",
         "media/capture/screen_capture_kit_fullscreen_module.h",
         "media/capture/screen_capture_kit_fullscreen_module.mm",
         "media/capture/views_widget_video_capture_device_mac.cc",

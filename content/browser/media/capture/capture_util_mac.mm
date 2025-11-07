@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/media/capture/screen_capture_kit_device_utils_mac.h"
+#include "content/browser/media/capture/capture_util_mac.h"
 
 #include <AppKit/AppKit.h>
 
