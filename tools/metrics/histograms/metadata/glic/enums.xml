@@ -632,6 +632,8 @@ chromium-metrics-reviews@google.com.
 <enum name="GlicWebUseCounter">
   <int value="0" label="Default"/>
   <int value="1" label="Submit Prompt with Auto Mode"/>
+  <int value="2" label="Task interrupted for user confirmation"/>
+  <int value="3" label="Task interrupted for user cancellation"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/host/glic.mojom:WebUseCounter) -->

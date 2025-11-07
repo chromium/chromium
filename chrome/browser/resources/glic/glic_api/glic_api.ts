@@ -2353,6 +2353,8 @@ export enum WebUseCounter {
   // Default counter. Never used.
   DEFAULT = 0,
   SUBMIT_PROMPT_WITH_AUTO_MODE = 1,
+  TASK_INTERRUPTED_FOR_USER_CONFIRMATION = 2,
+  TASK_INTERRUPTED_FOR_USER_CLARIFICATION = 3,
 }
 
 ///////////////////////////////////////////////

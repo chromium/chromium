@@ -1024,6 +1024,8 @@ enum WebUseCounter {
   // Default counter. Never used.
   [Default] kDefault = 0,
   kSubmitPromptWithAutoMode = 1,
+  kTaskInterruptedForUserConfirmation = 2,
+  kTaskInterruptedForUserClarification = 3,
 };
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicWebUseCounter)
