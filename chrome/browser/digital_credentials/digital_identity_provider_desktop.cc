@@ -235,33 +235,34 @@ void DigitalIdentityProviderDesktop::OnFinished(
     return;
   }
 
+  RequestStatusForMetrics status;
   std::visit(
-      absl::Overload{
-          [this](SystemError error) {
-            EndRequestWithError(RequestStatusForMetrics::kErrorOther);
-          },
-          [this](ProtocolError error) {
-            EndRequestWithError(RequestStatusForMetrics::kErrorOther);
-          },
-          [this](RemoteError error) {
-            switch (error) {
-              case RemoteError::kNoCredential:
-                EndRequestWithError(
-                    RequestStatusForMetrics::kErrorNoCredential);
-                break;
-              case RemoteError::kUserCanceled:
-                EndRequestWithError(
-                    RequestStatusForMetrics::kErrorUserDeclined);
-                break;
-              case RemoteError::kDeviceAborted:
-                EndRequestWithError(RequestStatusForMetrics::kErrorAborted);
-                break;
-              case RemoteError::kOther:
-                EndRequestWithError(RequestStatusForMetrics::kErrorOther);
-                break;
-            }
-          }},
+      absl::Overload{[&status](SystemError error) {
+                       status = RequestStatusForMetrics::kErrorOther;
+                     },
+                     [&status](ProtocolError error) {
+                       status = RequestStatusForMetrics::kErrorOther;
+                     },
+                     [&status](RemoteError error) {
+                       switch (error) {
+                         case RemoteError::kNoCredential:
+                           status = RequestStatusForMetrics::kErrorNoCredential;
+                           break;
+                         case RemoteError::kUserCanceled:
+                           status = RequestStatusForMetrics::kErrorUserDeclined;
+                           break;
+                         case RemoteError::kDeviceAborted:
+                           status = RequestStatusForMetrics::kErrorAborted;
+                           break;
+                         case RemoteError::kOther:
+                           status = RequestStatusForMetrics::kErrorOther;
+                           break;
+                       }
+                     }},
       result.error());
+  EndRequestWithError(status);
+  // NOTE: `EndRequestWithError` may delete `this`, so it must be the last
+  // thing called in this method.
 }
 
 DigitalIdentityMultiStepDialog*
