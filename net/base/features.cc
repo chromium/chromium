@@ -614,6 +614,9 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    "Threshold",
                    base::Seconds(120));
 
+BASE_FEATURE(kDeviceBoundSessionSigningQuotaAndCaching,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kSpdySessionForProxyAdditionalChecks,
              base::FEATURE_ENABLED_BY_DEFAULT);
 

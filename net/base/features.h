@@ -737,6 +737,10 @@ NET_EXPORT BASE_DECLARE_FEATURE_PARAM(
     base::TimeDelta,
     kDeviceBoundSessionProactiveRefreshThreshold);
 
+// This feature controls whether DBSC has a signing quota instead of a refresh
+// quota, and has associated signing caching for refreshes.
+NET_EXPORT BASE_DECLARE_FEATURE(kDeviceBoundSessionSigningQuotaAndCaching);
+
 // Enables more checks when creating a SpdySession for proxy. These checks are
 // already applied to non-proxy SpdySession creations.
 // TODO(crbug.com/343519247): Remove this once we are sure that these checks are

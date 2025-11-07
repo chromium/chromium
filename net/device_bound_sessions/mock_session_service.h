@@ -87,6 +87,23 @@ class SessionServiceMock : public SessionService {
                base::span<const uint8_t> wrapped_key,
                base::OnceCallback<void(bool)> callback),
               (override));
+  MOCK_METHOD(const SignedRefreshChallenge*,
+              GetLatestSignedRefreshChallenge,
+              (const SessionKey& session_key),
+              (override));
+  MOCK_METHOD(void,
+              SetLatestSignedRefreshChallenge,
+              (SessionKey session_key,
+               SignedRefreshChallenge signed_refresh_challenge),
+              (override));
+  MOCK_METHOD(bool,
+              RefreshSigningQuotaExceeded,
+              (const SchemefulSite& site),
+              (override));
+  MOCK_METHOD(void,
+              AddRefreshSigningOccurrence,
+              (const SchemefulSite& site),
+              (override));
 };
 
 }  // namespace net::device_bound_sessions

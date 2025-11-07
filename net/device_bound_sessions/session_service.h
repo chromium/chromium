@@ -39,15 +39,17 @@ class NET_EXPORT SessionService {
   // numeric values should never be reused.
   // LINT.IfChange(DeviceBoundSessionRefreshResult)
   enum class RefreshResult {
-    kRefreshed = 0,           // Refresh was successful.
-    kInitializedService = 1,  // Service is now initialized, refresh may still
-                              // be needed.
-    kUnreachable = 2,         // Refresh endpoint was unreachable.
-    kServerError = 3,         // Refresh endpoint served a transient error.
-    kQuotaExceeded = 4,       // Refresh quota exceeded.
-    kFatalError = 5,          // Refresh failed and session was terminated. No
-                              // further refresh needed.
-    kMaxValue = kFatalError
+    kRefreshed = 0,             // Refresh was successful.
+    kInitializedService = 1,    // Service is now initialized, refresh may still
+                                // be needed.
+    kUnreachable = 2,           // Refresh endpoint was unreachable.
+    kServerError = 3,           // Refresh endpoint served a transient error.
+    kRefreshQuotaExceeded = 4,  // Refresh quota exceeded. This is being
+                                // replaced with `kRefreshSigningQuotaExceeded`.
+    kFatalError = 5,            // Refresh failed and session was terminated. No
+                                // further refresh needed.
+    kRefreshSigningQuotaExceeded = 6,  // Refresh signing quota exceeded.
+    kMaxValue = kRefreshSigningQuotaExceeded
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:DeviceBoundSessionRefreshResult)
   using RefreshCompleteCallback = base::OnceCallback<void(RefreshResult)>;
@@ -74,6 +76,19 @@ class NET_EXPORT SessionService {
     // If `is_pending_initialization` is false, we're deferring due to
     // missing credentials on this session.
     std::optional<Session::Id> session_id;
+  };
+
+  // Stores a signed refresh challenge as well as the inputs used for the
+  // signing. This is an optimization to avoid redundant resigning, which is
+  // slow + resource-intensive, and could also cause issues like triggering the
+  // signing quota unnecessarily.
+  struct NET_EXPORT SignedRefreshChallenge {
+    // The signed challenge that was cached.
+    std::string signed_challenge;
+    // The challenge used to generate `signed_challenge`.
+    std::string challenge;
+    // The key_id used to generate `signed_challenge`.
+    unexportable_keys::UnexportableKeyId key_id;
   };
 
   // Returns nullptr if unexportable key provider is not supported by the
@@ -178,6 +193,21 @@ class NET_EXPORT SessionService {
                           SessionParams params,
                           base::span<const uint8_t> wrapped_key,
                           base::OnceCallback<void(bool)> callback) = 0;
+
+  // Finds the latest signed refresh challenge and relevant signing context for
+  // the `session_key`. If no challenge is found, returns nullptr.
+  virtual const SignedRefreshChallenge* GetLatestSignedRefreshChallenge(
+      const SessionKey& session_key) = 0;
+  // Sets the latest signed refresh challenge and relevant signing context for
+  // the `session_key`.
+  virtual void SetLatestSignedRefreshChallenge(
+      SessionKey session_key,
+      SignedRefreshChallenge signed_refresh_challenge) = 0;
+
+  // Whether the `site` has exceeded its signing quota.
+  virtual bool RefreshSigningQuotaExceeded(const SchemefulSite& site) = 0;
+  // Increments signing usage for this `site`.
+  virtual void AddRefreshSigningOccurrence(const SchemefulSite& site) = 0;
 
  protected:
   SessionService() = default;

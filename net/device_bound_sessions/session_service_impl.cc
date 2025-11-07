@@ -70,7 +70,8 @@ class DebugHeaderBuilder {
         item = structured_headers::Item("server_error",
                                         structured_headers::Item::kTokenType);
         break;
-      case SessionService::RefreshResult::kQuotaExceeded:
+      case SessionService::RefreshResult::kRefreshQuotaExceeded:
+      case SessionService::RefreshResult::kRefreshSigningQuotaExceeded:
         item = structured_headers::Item("quota_exceeded",
                                         structured_headers::Item::kTokenType);
         break;
@@ -444,7 +445,7 @@ void SessionServiceImpl::DeferRequestForRefresh(
   }
 
   if (RefreshQuotaExceeded(session_key.site)) {
-    UnblockDeferredRequests(session_key, RefreshResult::kQuotaExceeded);
+    UnblockDeferredRequests(session_key, RefreshResult::kRefreshQuotaExceeded);
     return;
   }
 
@@ -682,6 +683,24 @@ void SessionServiceImpl::AddSession(const SchemefulSite& site,
                      std::move(callback)));
 }
 
+const SessionService::SignedRefreshChallenge*
+SessionServiceImpl::GetLatestSignedRefreshChallenge(
+    const SessionKey& session_key) {
+  auto signed_challenge_it =
+      latest_signed_refresh_challenges_.find(session_key);
+  if (signed_challenge_it == latest_signed_refresh_challenges_.end()) {
+    return nullptr;
+  }
+  return &signed_challenge_it->second;
+}
+
+void SessionServiceImpl::SetLatestSignedRefreshChallenge(
+    SessionKey session_key,
+    SessionService::SignedRefreshChallenge signed_refresh_challenge) {
+  latest_signed_refresh_challenges_[std::move(session_key)] =
+      std::move(signed_refresh_challenge);
+}
+
 void SessionServiceImpl::OnAddSessionKeyRestored(
     const SchemefulSite& site,
     SessionParams params,
@@ -891,11 +910,17 @@ SessionError::ErrorType SessionServiceImpl::OnRefreshRequestCompletionInternal(
     DeleteSessionAndNotify(*deletion_reason, session_key, on_access_callback);
     UnblockDeferredRequests(session_key, RefreshResult::kFatalError);
   } else {
+    RefreshResult refresh_result;
+    if (registration_result.error().IsServerError()) {
+      refresh_result = RefreshResult::kServerError;
+    } else if (registration_result.error().type ==
+               SessionError::kRefreshSigningQuotaExceeded) {
+      refresh_result = RefreshResult::kRefreshSigningQuotaExceeded;
+    } else {
+      refresh_result = RefreshResult::kUnreachable;
+    }
     // Transient error, unblock the request without cookies.
-    UnblockDeferredRequests(session_key,
-                            registration_result.error().IsServerError()
-                                ? RefreshResult::kServerError
-                                : RefreshResult::kUnreachable);
+    UnblockDeferredRequests(session_key, refresh_result);
   }
 
   refresh_last_result_.insert_or_assign(
@@ -946,7 +971,11 @@ void SessionServiceImpl::RefreshSessionInternal(
   request->net_log().AddEventReferencingSource(
       net::NetLogEventType::DBSC_REFRESH_REQUEST, net_log_source_for_refresh);
 
-  refresh_times_[session_key.site].push_back(base::TimeTicks::Now());
+  if (!features::kDeviceBoundSessionsOriginTrialFeedback.Get() ||
+      !base::FeatureList::IsEnabled(
+          features::kDeviceBoundSessionSigningQuotaAndCaching)) {
+    refresh_times_[session_key.site].push_back(base::TimeTicks::Now());
+  }
 
   auto registration_param =
       RegistrationRequestParam::CreateForRefresh(*session);
@@ -968,6 +997,12 @@ void SessionServiceImpl::RefreshSessionInternal(
 }
 
 bool SessionServiceImpl::RefreshQuotaExceeded(const SchemefulSite& site) {
+  if (features::kDeviceBoundSessionsOriginTrialFeedback.Get() &&
+      base::FeatureList::IsEnabled(
+          features::kDeviceBoundSessionSigningQuotaAndCaching)) {
+    return false;
+  }
+
   if (ignore_refresh_quota_) {
     return false;
   }
@@ -998,6 +1033,48 @@ bool SessionServiceImpl::RefreshQuotaExceeded(const SchemefulSite& site) {
   }
 
   return refresh_count >= kRefreshQuota;
+}
+
+bool SessionServiceImpl::RefreshSigningQuotaExceeded(
+    const SchemefulSite& site) {
+  if (!features::kDeviceBoundSessionsOriginTrialFeedback.Get() ||
+      !base::FeatureList::IsEnabled(
+          features::kDeviceBoundSessionSigningQuotaAndCaching)) {
+    return false;
+  }
+
+  if (ignore_refresh_quota_) {
+    return false;
+  }
+
+  auto it = refresh_signing_times_.find(site);
+  if (it == refresh_signing_times_.end()) {
+    return false;
+  }
+
+  std::erase_if(it->second, [](base::TimeTicks time) {
+    return base::TimeTicks::Now() - time >= kRefreshQuotaInterval;
+  });
+
+  size_t refresh_sign_count = it->second.size();
+  if (refresh_sign_count == 0) {
+    refresh_signing_times_.erase(it);
+  }
+
+  bool is_exceeded = refresh_sign_count >= kRefreshQuota;
+  if (auto result_it = refresh_last_result_.find(site);
+      is_exceeded && result_it != refresh_last_result_.end()) {
+    base::UmaHistogramEnumeration(
+        "Net.DeviceBoundSessions.RefreshSigningQuotaExceededLastResult",
+        result_it->second.type);
+  }
+
+  return is_exceeded;
+}
+
+void SessionServiceImpl::AddRefreshSigningOccurrence(
+    const SchemefulSite& site) {
+  refresh_signing_times_[site].push_back(base::TimeTicks::Now());
 }
 
 void SessionServiceImpl::RemoveFetcher(RegistrationFetcher* fetcher) {

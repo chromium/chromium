@@ -530,6 +530,10 @@ void Session::InformOfRefreshResult(bool was_proactive,
     case kNetError:
     case kProxyError:
       break;
+    // There is no need to increment backoff because the signing quota
+    // prevents a network request.
+    case kRefreshSigningQuotaExceeded:
+      break;
     case kTransientHttpError:
     case kBoundCookieSetForbidden:
       backoff_.InformOfRequest(/*succeeded=*/false);
