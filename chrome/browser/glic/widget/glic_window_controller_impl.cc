@@ -5,6 +5,7 @@
 #include "chrome/browser/glic/widget/glic_window_controller_impl.h"
 
 #include <algorithm>
+#include <utility>
 
 #include "base/check.h"
 #include "base/check_deref.h"
@@ -67,6 +68,7 @@
 #include "ui/display/display_observer.h"
 #include "ui/display/screen.h"
 #include "ui/events/event_observer.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/event_monitor.h"
@@ -577,10 +579,16 @@ std::unique_ptr<views::View> GlicWindowControllerImpl::CreateViewForSidePanel(
 }
 
 void GlicWindowControllerImpl::SetupAndShowGlicWidget(Browser* browser) {
-  auto initial_bounds = GetInitialBounds(browser);
-  glic_widget_ = GlicWidget::Create(profile_, initial_bounds,
-                                    glic_panel_hotkey_manager_->GetWeakPtr(),
-                                    user_resizable_);
+  const gfx::Rect initial_bounds = GetInitialBounds(browser);
+
+  auto glic_view =
+      std::make_unique<GlicView>(profile_, initial_bounds.size(),
+                                 glic_panel_hotkey_manager_->GetWeakPtr());
+  glic_delegate_ =
+      GlicWidget::CreateWidgetDelegate(std::move(glic_view), user_resizable_);
+  glic_widget_ = GlicWidget::Create(glic_delegate_.get(), profile_,
+                                    initial_bounds, user_resizable_);
+
   glic_widget_observation_.Observe(glic_widget_.get());
   SetupGlicWidgetAccessibilityText();
 
@@ -1039,6 +1047,7 @@ void GlicWindowControllerImpl::ResetAndHidePanel() {
   glic_window_animator_.reset();
   glic_widget_observation_.Reset();
   glic_widget_.reset();
+  glic_delegate_.reset();
   scoped_glic_button_indicator_.reset();
 
   // Attached Side Panel State.

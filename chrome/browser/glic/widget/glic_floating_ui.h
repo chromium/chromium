@@ -18,6 +18,7 @@
 #include "components/web_modal/web_contents_modal_dialog_manager_delegate.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/views/widget/widget_delegate.h"
 #include "ui/views/widget/widget_observer.h"
 
 class BrowserWindowInterface;
@@ -131,6 +132,9 @@ class GlicFloatingUi : public GlicUiEmbedder,
   std::unique_ptr<LocalHotkeyManager> application_hotkey_manager_;
   std::unique_ptr<LocalHotkeyManager> glic_panel_hotkey_manager_;
   std::unique_ptr<GlicWindowAnimator> glic_window_animator_;
+
+  // Must outlive `glic_widget_`
+  std::unique_ptr<views::WidgetDelegate> glic_delegate_;
   std::unique_ptr<GlicWidget> glic_widget_;
   std::unique_ptr<GlicWindowEventObserver> window_event_observer_;
   mojom::PanelState panel_state_;

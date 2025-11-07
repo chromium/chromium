@@ -346,8 +346,12 @@ class GlicWindowControllerImpl
   Host host_;
   std::unique_ptr<HostManager> host_manager_;
 
+  // Must outlive `glic_widget_`
+  std::unique_ptr<views::WidgetDelegate> glic_delegate_;
+
   // Exists when the glic panel is open and in window mode.
   std::unique_ptr<GlicWidget> glic_widget_;
+
   // Exists when the glic panel is open and in side panel mode.
   // Owned by the `SidePanelEntry` showing the view.
   raw_ptr<GlicView> glic_view_;

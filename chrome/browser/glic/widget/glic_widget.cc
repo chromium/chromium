@@ -149,24 +149,6 @@ gfx::Rect GetInitialDetachedBoundsNoBrowser(const gfx::Size& target_size) {
 }
 }  // namespace
 
-// TODO(zoraiznaemm): Fix the lifetime of the delegate.
-class GlicWidgetDelegate : public views::WidgetDelegate {
- public:
-  GlicWidgetDelegate() {
-    RegisterDeleteDelegateCallback(
-        RegisterDeleteCallbackPassKey(),
-        base::BindOnce(&GlicWidgetDelegate::Destroy, base::Unretained(this)));
-  }
-
-  GlicWidgetDelegate(const GlicWidgetDelegate&) = delete;
-  GlicWidgetDelegate& operator=(const GlicWidgetDelegate&) = delete;
-
-  ~GlicWidgetDelegate() override = default;
-
- private:
-  void Destroy() { delete this; }
-};
-
 void* kGlicWidgetIdentifier = &kGlicWidgetIdentifier;
 
 GlicWidget::GlicWidget(ThemeService* theme_service, InitParams params)
@@ -234,13 +216,26 @@ bool GlicWidget::IsWidgetLocationAllowed(const gfx::Rect& bounds) {
   });
 }
 
-// End Static
-
-std::unique_ptr<GlicWidget> GlicWidget::Create(
-    Profile* profile,
-    const gfx::Rect& initial_bounds,
-    base::WeakPtr<ui::AcceleratorTarget> accelerator_delegate,
+std::unique_ptr<views::WidgetDelegate> GlicWidget::CreateWidgetDelegate(
+    std::unique_ptr<GlicView> contents_view,
     bool user_resizable) {
+  auto delegate = std::make_unique<views::WidgetDelegate>();
+  delegate->SetFocusTraversesOut(true);
+  delegate->SetCanResize(user_resizable);
+  delegate->SetContentsView(std::move(contents_view));
+  delegate->SetClientViewFactory(base::BindOnce(
+      [](views::Widget* widget,
+         views::View* contents_view) -> std::unique_ptr<views::ClientView> {
+        return std::make_unique<GlicClientView>(widget, contents_view);
+      }));
+
+  return delegate;
+}
+
+std::unique_ptr<GlicWidget> GlicWidget::Create(views::WidgetDelegate* delegate,
+                                               Profile* profile,
+                                               const gfx::Rect& initial_bounds,
+                                               bool user_resizable) {
   views::Widget::InitParams params(
       views::Widget::InitParams::CLIENT_OWNS_WIDGET,
       ShouldCreateNonClientView()
@@ -263,19 +258,7 @@ std::unique_ptr<GlicWidget> GlicWidget::Create(
     params.remove_standard_frame = true;
   }
 
-  auto glic_view = std::make_unique<GlicView>(profile, initial_bounds.size(),
-                                              accelerator_delegate);
-  auto delegate = std::make_unique<GlicWidgetDelegate>();
-  delegate->SetFocusTraversesOut(true);
-  delegate->SetCanResize(user_resizable);
-  delegate->SetContentsView(std::move(glic_view));
-  delegate->SetClientViewFactory(base::BindOnce(
-      [](views::Widget* widget,
-         views::View* contents_view) -> std::unique_ptr<views::ClientView> {
-        return std::make_unique<GlicClientView>(widget, contents_view);
-      }));
-
-  params.delegate = delegate.release();
+  params.delegate = delegate;
 
   // -------------- Platform-Specific Pre-Init Parameters.
 #if BUILDFLAG(IS_OZONE)
@@ -344,6 +327,8 @@ std::unique_ptr<GlicWidget> GlicWidget::Create(
 #endif  // BUILDFLAG(IS_WIN)
   return widget;
 }
+
+// End Static
 
 display::Display GlicWidget::GetDisplay() {
   std::optional<display::Display> display = GetNearestDisplay();
