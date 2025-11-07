@@ -393,19 +393,13 @@ void PasswordChangeDelegateImpl::OnLoginStateCheckResult(bool is_logged_in) {
 
   blocking_challenge_detected_ = true;
   if (!login_state_checker_->ReachedAttemptsLimit()) {
-    if (current_state_ == State::kLoginFormDetectedUserCanContinue) {
-      return;
-    }
-
     // Update the UI to encourage user to complete sign in.
-    UpdateState(current_state_ == State::kLoginFormDetected
-                    ? State::kLoginFormDetectedUserCanContinue
-                    : State::kLoginFormDetected);
+    UpdateState(State::kLoginFormDetected);
     return;
   }
 
-  // Maximum number of retries reached, stop checking. Let the user decide
-  // whether to cancel the flow or proceed once they are fully logged in.
+  // Maximum number of retries reached, convert to terminal state.
+  UpdateState(State::kChangePasswordFormNotFound);
   login_state_checker_.reset();
 }
 
