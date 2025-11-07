@@ -2018,6 +2018,179 @@ suite('NewTabPageComposeboxTest', () => {
       });
 
 
+  test('isCollapsible attribute sets expanded state when true', async () => {
+    createComposeboxElement();
+    const collapsibleBox = composeboxElement;
+    (collapsibleBox as any).isCollapsible = true;
+    document.body.appendChild(collapsibleBox);
+    await collapsibleBox.updateComplete;
+
+    const collapsibleInput = collapsibleBox.$.input;
+    collapsibleBox.$.composebox.dispatchEvent(new FocusEvent('focusin'));
+    await collapsibleBox.updateComplete;
+    assertTrue(
+        collapsibleBox.hasAttribute('expanded_'),
+        'Collapsible should be expanded initially due to focus event');
+
+    collapsibleBox.$.composebox.dispatchEvent(
+        new FocusEvent('focusout', {relatedTarget: document.body}));
+    await collapsibleBox.updateComplete;
+    assertFalse(
+        collapsibleBox.hasAttribute('expanded_'),
+        'Collapsible should collapse on blur without text');
+
+    collapsibleBox.$.composebox.dispatchEvent(new FocusEvent('focusin'));
+    await collapsibleBox.updateComplete;
+    assertTrue(
+        collapsibleBox.hasAttribute('expanded_'),
+        'Collapsible should expand on focus');
+
+    // Set text and re-test blur logic
+    collapsibleInput.value = 'some text';
+    collapsibleInput.dispatchEvent(new Event('input'));
+    await collapsibleBox.updateComplete;
+
+    collapsibleBox.$.composebox.dispatchEvent(
+        new FocusEvent('focusout', {relatedTarget: document.body}));
+    await collapsibleBox.updateComplete;
+    assertTrue(
+        collapsibleBox.hasAttribute('expanded_'),
+        'Collapsible should stay expanded on blur with text');
+  });
+
+  test('isCollapsible attribute sets expanded state with file', async () => {
+    createComposeboxElement();
+    (composeboxElement as any).isCollapsible = true;
+    await microtasksFinished();
+
+    composeboxElement.$.composebox.dispatchEvent(new FocusEvent('focusin'));
+    await composeboxElement.updateComplete;
+    assertTrue(
+        composeboxElement.hasAttribute('expanded_'),
+        'Collapsible should be expanded initially due to focus event');
+
+    // Initially, carousel is not shown.
+    assertFalse(composeboxElement.hasAttribute('show-file-carousel_'));
+
+    // Set a thumbnail.
+    const thumbnailUrl = 'data:image/png;base64,sometestdata';
+    searchboxCallbackRouterRemote.addFileContext(FAKE_TOKEN_STRING, {
+      fileName: 'Visual Selection',
+      mimeType: 'image/png',
+      imageDataUrl: thumbnailUrl,
+      isDeletable: true,
+      selectionTime: new Date(),
+    } as SelectedFileInfo);
+    await microtasksFinished();
+
+    // Assert thumbnail is shown.
+    assertTrue(composeboxElement.hasAttribute('show-file-carousel_'));
+    const fileCarousel = composeboxElement.$.context.$.carousel;
+    assertTrue(!!fileCarousel);
+    await microtasksFinished();
+
+    composeboxElement.$.composebox.dispatchEvent(
+        new FocusEvent('focusout', {relatedTarget: document.body}));
+    await composeboxElement.updateComplete;
+    assertTrue(
+        composeboxElement.hasAttribute('expanded_'),
+        'Collapsible should remain expanded on blur with file');
+
+    // Delete the thumbnail.
+    const fileThumbnail =
+        fileCarousel.shadowRoot.querySelector('cr-composebox-file-thumbnail');
+    assertTrue(!!fileThumbnail);
+
+    const removeImgButton =
+        fileThumbnail.shadowRoot.querySelector<HTMLElement>('#removeImgButton');
+    assertTrue(!!removeImgButton);
+    removeImgButton.click();
+    await microtasksFinished();
+
+    // Focus the composebox again.
+    composeboxElement.$.composebox.dispatchEvent(new FocusEvent('focusin'));
+    await composeboxElement.updateComplete;
+    assertTrue(
+        composeboxElement.hasAttribute('expanded_'),
+        'Collapsible should still expand when focused in');
+
+    // Blur the composebox again.
+    composeboxElement.$.composebox.dispatchEvent(
+        new FocusEvent('focusout', {relatedTarget: document.body}));
+    await composeboxElement.updateComplete;
+    assertFalse(
+        composeboxElement.hasAttribute('expanded_'),
+        'Collapsible should collapse on blur with no file');
+  });
+
+  test('isCollapsible attribute sets expanded state when false', async () => {
+    createComposeboxElement();
+    const collapsibleBox = composeboxElement;
+    const collapsibleInput = collapsibleBox.$.input;
+    (collapsibleBox as any).isCollapsible = false;
+    await collapsibleBox.updateComplete;
+
+    // Blur the input first, since connectedCallback focuses it by default. This
+    // ensures the component is in a state where it can be collapsed.
+    collapsibleInput.blur();
+    await collapsibleBox.updateComplete;
+
+    assertTrue(
+        collapsibleBox.hasAttribute('expanded_'),
+        'Non-collapsible should be expanded');
+  });
+
+  test('collapsible composebox collapses after query submitted', async () => {
+    createComposeboxElement();
+    const collapsibleBox = composeboxElement;
+    const collapsibleInput = collapsibleBox.$.input;
+    (collapsibleBox as any).isCollapsible = true;
+    await collapsibleBox.updateComplete;
+
+    collapsibleInput.focus();
+    collapsibleInput.value = 'some text';
+    collapsibleInput.dispatchEvent(new Event('input'));
+    await collapsibleBox.updateComplete;
+    assertTrue(
+        collapsibleBox.hasAttribute('expanded_'),
+        'Collapsible should be expanded before submit');
+
+    // Mock an autocomplete result to allow submission.
+    const matches = [createSearchMatch({allowedToBeDefaultMatch: true})];
+    searchboxCallbackRouterRemote.autocompleteResultChanged(
+        createAutocompleteResult({
+          input: 'some text',
+          matches,
+        }));
+    await searchboxCallbackRouterRemote.$.flushForTesting();
+    await collapsibleBox.updateComplete;
+
+    // Submit query.
+    collapsibleBox.$.submitContainer.click();
+    await collapsibleBox.updateComplete;
+    await microtasksFinished();
+
+    assertStyle(composeboxElement.$.submitContainer, 'cursor', 'default');
+    assertEquals('', collapsibleInput.value, 'Input should be cleared');
+  });
+
+  test('isCollapsible attribute sets expanded state when false', async () => {
+    createComposeboxElement();
+    const collapsibleBox = composeboxElement;
+    const collapsibleInput = collapsibleBox.$.input;
+    (collapsibleBox as any).isCollapsible = false;
+    await collapsibleBox.updateComplete;
+
+    // Blur the input first, since connectedCallback focuses it by default. This
+    // ensures the component is in a state where it can be collapsed.
+    collapsibleInput.blur();
+    await collapsibleBox.updateComplete;
+
+    assertTrue(
+        collapsibleBox.hasAttribute('expanded_'),
+        'Non-collapsible should be expanded');
+  });
+
   suite('Context menu', () => {
     suiteSetup(() => {
       loadTimeData.overrideValues({

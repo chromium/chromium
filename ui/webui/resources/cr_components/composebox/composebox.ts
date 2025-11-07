@@ -861,9 +861,9 @@ export class ComposeboxElement extends I18nMixinLit
     if (this.$.composebox.contains(e.relatedTarget as Node)) {
       return;
     }
-    // If the input is blurred and the composebox is expandable, collapse it.
+    // If the the composebox is collapsible and empty, collapse it.
     // Else, keep the composebox expanded.
-    this.expanded_ = !this.isCollapsible;
+    this.expanded_ = this.isCollapsible ? this.submitEnabled_ : true;
     this.pageHandler_.focusChanged(false);
     this.fire('composebox-focus-out');
   }
@@ -929,8 +929,8 @@ export class ComposeboxElement extends I18nMixinLit
     // submitting.
     if (this.isCollapsible) {
       this.clearAllInputs();
-      this.$.input.blur();
       this.submitEnabled_ = false;
+      this.$.input.blur();
     }
   }
 
