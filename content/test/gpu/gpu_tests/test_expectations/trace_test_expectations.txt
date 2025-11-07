@@ -299,6 +299,9 @@ crbug.com/438512194 [ win11 amd-0x7480 ] OverlayModeTraceTest_DirectComposition_
 # Win11/Qualcomm Snapdragon X Elite
 crbug.com/453704683 [ win11 qualcomm-0x36334330 ] OverlayModeTraceTest_DirectComposition* [ Failure ]
 
+# TreesInViz damage calculation issues
+crbug.com/454680865 [ android ] TraceTest_Video_MP4_TreesInViz [ RetryOnFailure ]
+
 ###############################
 # Permanent Slow Expectations #
 ###############################
