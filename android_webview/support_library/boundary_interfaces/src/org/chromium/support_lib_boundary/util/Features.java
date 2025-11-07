@@ -375,8 +375,8 @@ public class Features {
     // WebSettingsCompat#getHasEnrolledInstrumentEnabled
     public static final String PAYMENT_REQUEST = "PAYMENT_REQUEST";
 
-    // WebViewBuilder
-    public static final String WEBVIEW_BUILDER = "WEBVIEW_BUILDER";
+    // WebViewBuilder.build
+    public static final String WEBVIEW_BUILDER = "WEBVIEW_BUILDER_V1";
 
     // WebSettingsCompat.setIncludeCookiesOnIntercept
     // WebSettingsCompat.getIncludeCookiesOnIntercept

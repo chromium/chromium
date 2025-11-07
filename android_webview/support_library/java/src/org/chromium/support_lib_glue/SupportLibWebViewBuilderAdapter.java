@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 import com.android.webview.chromium.SharedWebViewChromium;
 import com.android.webview.chromium.WebkitToSharedGlueConverter;
 
+import org.chromium.android_webview.AwBrowserContextStore;
 import org.chromium.android_webview.AwContents;
 import org.chromium.support_lib_boundary.WebViewBuilderBoundaryInterface;
 import org.chromium.support_lib_boundary.WebViewBuilderBoundaryInterface.ConfigField;
@@ -40,10 +41,10 @@ class SupportLibWebViewBuilderAdapter implements WebViewBuilderBoundaryInterface
 
     static class Builder implements BiConsumer<@ConfigField Integer, Object> {
         private boolean mRestrictJavascriptInterface;
-
         private @Nullable List<Object> mJavascriptInterfaceObjects;
         private @Nullable List<String> mJavascriptInterfaceNames;
         private @Nullable List<List<String>> mJavascriptInterfaceOriginPatterns;
+        private @Nullable String mProfileName;
 
         @Override
         public void accept(@ConfigField Integer key, Object value) {
@@ -68,6 +69,11 @@ class SupportLibWebViewBuilderAdapter implements WebViewBuilderBoundaryInterface
                                     (List<List<String>>) interfaceParams[2];
                             break;
                         }
+                    case ConfigField.PROFILE_NAME:
+                        {
+                            mProfileName = (String) value;
+                            break;
+                        }
                 }
             } catch (ClassCastException e) {
                 throw new InternalApiMismatchException(key + " was not configured correctly", e);
@@ -82,6 +88,11 @@ class SupportLibWebViewBuilderAdapter implements WebViewBuilderBoundaryInterface
             SharedWebViewChromium sharedWebViewChromium =
                     WebkitToSharedGlueConverter.getSharedWebViewChromium(webview);
             AwContents awContents = sharedWebViewChromium.getAwContents();
+
+            if (mProfileName != null) {
+                awContents.setBrowserContextForPublicApi(
+                        AwBrowserContextStore.getNamedContext(mProfileName, true));
+            }
 
             boolean allowlistJavascriptInterfaces =
                     mJavascriptInterfaceObjects != null
