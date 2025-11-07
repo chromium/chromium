@@ -42,7 +42,7 @@ export interface TraceRecorderElement {
 }
 
 // <if expr="is_win">
-type EtwProviderType = 'scheduler'|'memory';
+type EtwProviderType = 'scheduler'|'memory'|'file';
 // </if>
 
 export class TraceRecorderElement extends CrLitElement {
@@ -131,6 +131,7 @@ export class TraceRecorderElement extends CrLitElement {
       {[provider in EtwProviderType]: Set<string>} = {
         'memory': new Set(),
         'scheduler': new Set(),
+        'file': new Set(),
       };
   protected accessor etwExpanded_: boolean = false;
   // </if>
@@ -387,6 +388,7 @@ export class TraceRecorderElement extends CrLitElement {
           [...this.enabledEtwEvents['scheduler']];
       this.etwConfig.memoryProviderEvents =
           [...this.enabledEtwEvents['memory']];
+      this.etwConfig.fileProviderEvents = [...this.enabledEtwEvents['file']];
     }
 
     this.updateUrlFromConfig_();
@@ -476,6 +478,12 @@ export class TraceRecorderElement extends CrLitElement {
         keyword: 'MEMINFO',
         provider: 'memory',
         description: 'Enables memory counters (free list, zero list, etc.)',
+      },
+      {
+        name: 'File I/O',
+        keyword: 'FILE_IO',
+        provider: 'file',
+        description: 'Enables file I/O events',
       },
     ];
     // </if>
@@ -690,6 +698,8 @@ export class TraceRecorderElement extends CrLitElement {
           new Set(this.etwConfig.schedulerProviderEvents);
       this.enabledEtwEvents['memory'] =
           new Set(this.etwConfig.memoryProviderEvents);
+      this.enabledEtwEvents['file'] =
+          new Set(this.etwConfig.fileProviderEvents);
     }
     // </if>
   }

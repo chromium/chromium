@@ -42,9 +42,11 @@ class TRACING_EXPORT EtwConsumer
 
   // Constructs an instance that will consume ETW events on behalf of the client
   // process identified by `client_pid` and emit Perfetto events via
-  // `trace_writer`.
+  // `trace_writer`. If `privacy_filtering_enabled` is true, omits strings from
+  // the trace.
   EtwConsumer(base::ProcessId client_pid,
-              std::unique_ptr<perfetto::TraceWriterBase> trace_writer);
+              std::unique_ptr<perfetto::TraceWriterBase> trace_writer,
+              bool privacy_filtering_enabled);
   EtwConsumer(const EtwConsumer&) = delete;
   EtwConsumer& operator=(const EtwConsumer&) = delete;
   ~EtwConsumer();
@@ -86,6 +88,11 @@ class TRACING_EXPORT EtwConsumer
                           base::span<const uint8_t> packet_data)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
   void HandleThreadEvent(const EVENT_HEADER& header,
+                         const ETW_BUFFER_CONTEXT& buffer_context,
+                         size_t pointer_size,
+                         base::span<const uint8_t> packet_data)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
+  void HandleFileIoEvent(const EVENT_HEADER& header,
                          const ETW_BUFFER_CONTEXT& buffer_context,
                          size_t pointer_size,
                          base::span<const uint8_t> packet_data)
@@ -147,6 +154,54 @@ class TRACING_EXPORT EtwConsumer
                               base::span<const uint8_t> packet_data)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
+  // Decodes a `FileIo_Create` event and emits a Perfetto trace event.
+  // Returns true on success, or false if `packet_data` is invalid.
+  bool DecodeFileIoCreateEvent(const EVENT_HEADER& header,
+                               const ETW_BUFFER_CONTEXT& buffer_context,
+                               size_t pointer_size,
+                               base::span<const uint8_t> packet_data)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
+
+  // Decodes a `FileIo_DirEnum` event and emits a Perfetto trace event.
+  // Returns true on success, or false if `packet_data` is invalid.
+  bool DecodeFileIoDirEnumEvent(const EVENT_HEADER& header,
+                                const ETW_BUFFER_CONTEXT& buffer_context,
+                                size_t pointer_size,
+                                base::span<const uint8_t> packet_data)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
+
+  // Decodes a `FileIo_Info` event and emits a Perfetto trace event.
+  // Returns true on success, or false if `packet_data` is invalid.
+  bool DecodeFileIoInfoEvent(const EVENT_HEADER& header,
+                             const ETW_BUFFER_CONTEXT& buffer_context,
+                             size_t pointer_size,
+                             base::span<const uint8_t> packet_data)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
+
+  // Decodes a `FileIo_ReadWrite` event and emits a Perfetto trace event.
+  // Returns true on success, or false if `packet_data` is invalid.
+  bool DecodeFileIoReadWriteEvent(const EVENT_HEADER& header,
+                                  const ETW_BUFFER_CONTEXT& buffer_context,
+                                  size_t pointer_size,
+                                  base::span<const uint8_t> packet_data)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
+
+  // Decodes a `FileIo_SimpleOp` event and emits a Perfetto trace event.
+  // Returns true on success, or false if `packet_data` is invalid.
+  bool DecodeFileIoSimpleOpEvent(const EVENT_HEADER& header,
+                                 const ETW_BUFFER_CONTEXT& buffer_context,
+                                 size_t pointer_size,
+                                 base::span<const uint8_t> packet_data)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
+
+  // Decodes a `FileIo_OpEnd` event and emits a Perfetto trace event.
+  // Returns true on success, or false if `packet_data` is invalid.
+  bool DecodeFileIoOpEndEvent(const EVENT_HEADER& header,
+                              const ETW_BUFFER_CONTEXT& buffer_context,
+                              size_t pointer_size,
+                              base::span<const uint8_t> packet_data)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
+
   // Returns a new perfetto trace event to be emitted for an ETW event with a
   // given event header. The timestamp and cpu fields of the returned event are
   // prepopulated.
@@ -166,6 +221,8 @@ class TRACING_EXPORT EtwConsumer
       GUARDED_BY_CONTEXT(sequence_checker_);
   raw_ptr<perfetto::protos::pbzero::EtwTraceEventBundle> etw_events_
       GUARDED_BY_CONTEXT(sequence_checker_) = nullptr;
+  // Whether to omit sensitive fields, like strings, from the trace.
+  bool privacy_filtering_enabled_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

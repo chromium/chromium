@@ -64,6 +64,7 @@ if (is_win) {
 
     deps = [
       "//base",
+      "//crypto",
       "//third_party/perfetto:libperfetto",
     ]
   }
