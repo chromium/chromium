@@ -1275,7 +1275,13 @@ void SyncServiceImpl::SyncAuthAccountStateChanged() {
     // `is_sync_consented` and/or `managed_status` have changed. Start up or
     // reconfigure.
     if (!engine_) {
-      TryStart();
+      // If sync startup is still deferred, then honor that. (In practice, this
+      // mostly happens when the `managed_status` of the account gets
+      // determined.)
+      if (!base::FeatureList::IsEnabled(kSyncDetermineAccountManagedStatus) ||
+          deferring_first_start_since_.is_null()) {
+        TryStart();
+      }
       NotifyObservers();
     } else {
       ConfigureDataTypeManager(ConfigureReason::kReconfiguration,
