@@ -29,6 +29,7 @@
 #include "ui/views/border.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/view.h"
 #include "ui/views/widget/native_widget.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -99,12 +100,6 @@ class HTClientView : public views::ClientView {
 BEGIN_METADATA(HTClientView)
 END_METADATA
 
-std::unique_ptr<views::ClientView> MakeClientView(views::Widget* widget) {
-  auto view = std::make_unique<HUDDisplayView>();
-  auto* weak_view = view.get();
-  return std::make_unique<HTClientView>(weak_view, widget, view.release());
-}
-
 }  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -127,8 +122,15 @@ void HUDDisplayView::Toggle() {
   }
 
   auto delegate = std::make_unique<views::WidgetDelegate>();
-  delegate->SetClientViewFactory(base::BindOnce(&MakeClientView));
+  delegate->SetContentsView(std::make_unique<HUDDisplayView>());
   delegate->SetOwnedByWidget(views::WidgetDelegate::OwnedByWidgetPassKey());
+  delegate->SetClientViewFactory(base::BindOnce(
+      [](views::Widget* widget,
+         views::View* contents_view) -> std::unique_ptr<views::ClientView> {
+        return std::make_unique<HTClientView>(
+            /*hud_display=*/static_cast<HUDDisplayView*>(contents_view), widget,
+            contents_view);
+      }));
 
   views::Widget::InitParams params(
       views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,

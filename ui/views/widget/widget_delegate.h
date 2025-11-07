@@ -270,7 +270,8 @@ using AccessibleTitleChangedCallback = base::RepeatingCallback<void()>;
 class VIEWS_EXPORT WidgetDelegate {
  public:
   using ClientViewFactory =
-      base::OnceCallback<std::unique_ptr<ClientView>(Widget*)>;
+      base::OnceCallback<std::unique_ptr<ClientView>(Widget*,
+                                                     /*contents_view=*/View*)>;
   using OverlayViewFactory = base::OnceCallback<std::unique_ptr<View>()>;
 
   // FrameViewFactory is a RepeatingCallback because the
