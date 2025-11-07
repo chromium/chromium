@@ -17,7 +17,6 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/common/string_util.h"
-#import "ios/chrome/common/ui/button_stack/button_stack_constants.h"
 #import "ios/chrome/common/ui/confirmation_alert/constants.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -419,9 +418,8 @@ void TapShareButtonAndWaitForSpinnerToDisappear() {
                             nil)] assertWithMatcher:grey_sufficientlyVisible()];
 
   // Click the "Got It" button.
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityID(
-                     kButtonStackPrimaryActionAccessibilityIdentifier)]
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ButtonStackPrimaryButton()]
       performAction:grey_tap()];
 
   // Check that the current view is the password details view.
@@ -455,9 +453,8 @@ void TapShareButtonAndWaitForSpinnerToDisappear() {
               nil)] assertWithMatcher:grey_sufficientlyVisible()];
 
   // Click the "Got It" button.
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityID(
-                     kButtonStackPrimaryActionAccessibilityIdentifier)]
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ButtonStackPrimaryButton()]
       performAction:grey_tap()];
 
   // Check that the current view is the password details view.
@@ -616,9 +613,8 @@ void TapShareButtonAndWaitForSpinnerToDisappear() {
   TapShareButtonAndWaitForSpinnerToDisappear();
 
   // Tap the cancel button.
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityID(
-                     kButtonStackSecondaryActionAccessibilityIdentifier)]
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ButtonStackSecondaryButton()]
       performAction:grey_tap()];
 
   // Check that the current view is the password details view.
@@ -651,10 +647,8 @@ void TapShareButtonAndWaitForSpinnerToDisappear() {
 
   TapShareButtonAndWaitForSpinnerToDisappear();
 
-  // Tap the share button in the first run experience view.
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityID(
-                     kButtonStackPrimaryActionAccessibilityIdentifier)]
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ButtonStackPrimaryButton()]
       performAction:grey_tap()];
 
   // Check that the current view is the family picker view.

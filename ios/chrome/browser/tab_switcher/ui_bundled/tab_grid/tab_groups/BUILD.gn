@@ -403,7 +403,6 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/inactive_tabs:inactive_tabs_constants",
     "//ios/chrome/browser/tab_switcher/ui_bundled/test:utils",
     "//ios/chrome/browser/tabs/model/inactive_tabs:features",
-    "//ios/chrome/common/ui/button_stack:constants",
     "//ios/chrome/common/ui/promo_style:constants",
     "//ios/chrome/test:eg_test_support+eg2",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",

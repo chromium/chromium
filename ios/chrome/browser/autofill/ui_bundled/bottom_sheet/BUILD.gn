@@ -497,7 +497,6 @@ source_set("virtual_card_enrollment_bottom_sheet_egtest") {
     "//ios/chrome/browser/autofill/ui_bundled/authentication:egtest_util",
     "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
     "//ios/chrome/browser/settings/ui_bundled:settings_root_constants",
-    "//ios/chrome/common/ui/button_stack:constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//net:test_support",

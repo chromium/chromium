@@ -39,7 +39,6 @@
 #import "ios/chrome/browser/settings/ui_bundled/password/widget_promo_instructions/widget_promo_instructions_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_root_table_constants.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
-#import "ios/chrome/common/ui/button_stack/button_stack_constants.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_event.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
@@ -360,9 +359,8 @@ id<GREYMatcher> PasswordManagerWidgetPromoInstructions() {
 // Returns matcher for the close button of the Password Manager widget promo
 // instruction screen.
 id<GREYMatcher> PasswordManagerWidgetPromoInstructionsCloseButton() {
-  return grey_allOf(
-      grey_accessibilityID(kButtonStackSecondaryActionAccessibilityIdentifier),
-      grey_interactable(), nullptr);
+  return grey_allOf(chrome_test_util::ButtonStackSecondaryButton(),
+                    grey_interactable(), nullptr);
 }
 
 // Returns matcher for the Password Details move to account button.

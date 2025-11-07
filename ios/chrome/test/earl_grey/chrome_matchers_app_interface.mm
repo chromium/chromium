@@ -63,6 +63,7 @@
 #import "ios/chrome/browser/toolbar/ui_bundled/buttons/buttons_constants.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/primary_toolbar_view.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/public/toolbar_constants.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/confirmation_alert/constants.h"
 #import "ios/chrome/common/ui/promo_style/constants.h"
@@ -1960,6 +1961,27 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 + (id<GREYMatcher>)tabGroupsPanel {
   return grey_allOf(grey_accessibilityID(kTabGroupsPanelIdentifier),
                     grey_sufficientlyVisible(), nil);
+}
+
+#pragma mark - Button Stack
+
++ (id<GREYMatcher>)buttonStackPrimaryButton {
+  return grey_accessibilityID(kButtonStackPrimaryActionAccessibilityIdentifier);
+}
+
++ (id<GREYMatcher>)buttonStackSecondaryButton {
+  return grey_accessibilityID(
+      kButtonStackSecondaryActionAccessibilityIdentifier);
+}
+
++ (id<GREYMatcher>)buttonStackTertiaryButton {
+  return grey_accessibilityID(
+      kButtonStackTertiaryActionAccessibilityIdentifier);
+}
+
++ (id<GREYMatcher>)buttonStackCheckmarkSymbol {
+  return grey_accessibilityID(
+      kButtonStackCheckmarkSymbolAccessibilityIdentifier);
 }
 
 @end

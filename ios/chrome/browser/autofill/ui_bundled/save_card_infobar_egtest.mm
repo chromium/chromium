@@ -23,7 +23,6 @@
 #import "ios/chrome/browser/infobars/ui_bundled/banners/infobar_banner_constants.h"
 #import "ios/chrome/browser/infobars/ui_bundled/modals/infobar_save_card_modal_constants.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
-#import "ios/chrome/common/ui/button_stack/button_stack_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -110,8 +109,7 @@ id<GREYMatcher> UploadBottomSheetCancelButtonMatcher() {
 // Matcher for the activity indicator.
 id<GREYMatcher> ActivityIndicatorMatcher() {
   return grey_allOf(grey_kindOfClassName(@"UIActivityIndicatorView"),
-                    grey_ancestor(grey_accessibilityID(
-                        kButtonStackPrimaryActionAccessibilityIdentifier)),
+                    grey_ancestor(chrome_test_util::ButtonStackPrimaryButton()),
                     nil);
 }
 
@@ -906,9 +904,8 @@ void FillAndSubmitXframeCreditCardForm() {
 
   // Assert the accept button is disabled and has accessibility label for
   // loading state.
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityID(
-                     kButtonStackPrimaryActionAccessibilityIdentifier)]
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ButtonStackPrimaryButton()]
       assertWithMatcher:
           grey_allOf(
               grey_not(grey_enabled()),
@@ -917,9 +914,8 @@ void FillAndSubmitXframeCreditCardForm() {
               nil)];
 
   // Assert the cancel button is disabled.
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityID(
-                     kButtonStackSecondaryActionAccessibilityIdentifier)]
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ButtonStackSecondaryButton()]
       assertWithMatcher:grey_not(grey_enabled())];
 
   // Inject a response from the payments server when saving the card.
@@ -940,9 +936,8 @@ void FillAndSubmitXframeCreditCardForm() {
 
   // Assert the accept button is still disabled and has accessibility label for
   // confirmation state.
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityID(
-                     kButtonStackPrimaryActionAccessibilityIdentifier)]
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ButtonStackPrimaryButton()]
       assertWithMatcher:
           grey_allOf(
               grey_not(grey_enabled()),
@@ -951,17 +946,14 @@ void FillAndSubmitXframeCreditCardForm() {
               nil)];
 
   // Assert a checkmark symbol is being shown in the confirmation state.
-  [[[EarlGrey selectElementWithMatcher:
-                  grey_accessibilityID(
-                      kButtonStackCheckmarkSymbolAccessibilityIdentifier)]
-      inRoot:grey_accessibilityID(
-                 kButtonStackPrimaryActionAccessibilityIdentifier)]
+  [[[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ButtonStackCheckmarkSymbol()]
+      inRoot:chrome_test_util::ButtonStackPrimaryButton()]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Assert the cancel button is disabled.
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityID(
-                     kButtonStackSecondaryActionAccessibilityIdentifier)]
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ButtonStackSecondaryButton()]
       assertWithMatcher:grey_not(grey_enabled())];
 
   // Wait for bottomsheet to auto-dismiss.
@@ -1266,9 +1258,8 @@ void FillAndSubmitXframeCreditCardForm() {
 
     // Assert the accept button is disabled and has accessibility label for
     // confirmation state.
-    [[EarlGrey selectElementWithMatcher:
-                   grey_accessibilityID(
-                       kButtonStackPrimaryActionAccessibilityIdentifier)]
+    [[EarlGrey
+        selectElementWithMatcher:chrome_test_util::ButtonStackPrimaryButton()]
         assertWithMatcher:
             grey_allOf(
                 grey_not(grey_enabled()),
@@ -1277,11 +1268,9 @@ void FillAndSubmitXframeCreditCardForm() {
                 nil)];
 
     // Assert a checkmark symbol is being shown in the confirmation state.
-    [[[EarlGrey selectElementWithMatcher:
-                    grey_accessibilityID(
-                        kButtonStackCheckmarkSymbolAccessibilityIdentifier)]
-        inRoot:grey_accessibilityID(
-                   kButtonStackPrimaryActionAccessibilityIdentifier)]
+    [[[EarlGrey
+        selectElementWithMatcher:chrome_test_util::ButtonStackCheckmarkSymbol()]
+        inRoot:chrome_test_util::ButtonStackPrimaryButton()]
         assertWithMatcher:grey_sufficientlyVisible()];
 
     // Assert the cancel button is disabled.

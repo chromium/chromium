@@ -979,6 +979,20 @@ id<GREYMatcher> FakeJoinFlowView();
 // Returns the matcher for the tab groups page of the tab grid.
 id<GREYMatcher> TabGroupsPanel();
 
+#pragma mark - Button Stack
+
+// Returns a matcher for the primary button in a button stack.
+id<GREYMatcher> ButtonStackPrimaryButton();
+
+// Returns a matcher for the secondary button in a button stack.
+id<GREYMatcher> ButtonStackSecondaryButton();
+
+// Returns a matcher for the tertiary button in a button stack.
+id<GREYMatcher> ButtonStackTertiaryButton();
+
+// Returns a matcher for the checkmark symbol in a button stack.
+id<GREYMatcher> ButtonStackCheckmarkSymbol();
+
 }  // namespace chrome_test_util
 
 #endif  // IOS_CHROME_TEST_EARL_GREY_CHROME_MATCHERS_H_

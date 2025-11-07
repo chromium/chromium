@@ -25,7 +25,6 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_groups_eg_utils.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/test/query_title_server_util.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/test/tabs_egtest_util.h"
-#import "ios/chrome/common/ui/button_stack/button_stack_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -265,9 +264,8 @@ void WaitForFakeJoinFlowView() {
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Dismiss it, go back and re-enter.
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityID(
-                     kButtonStackPrimaryActionAccessibilityIdentifier)]
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ButtonStackPrimaryButton()]
       performAction:grey_tap()];
   [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:educationScreen];
   [[EarlGrey selectElementWithMatcher:CloseTabGroupButton()]

@@ -14,7 +14,6 @@
 #import "ios/chrome/browser/settings/ui_bundled/settings_table_view_controller_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
-#import "ios/chrome/common/ui/button_stack/button_stack_constants.h"
 #import "ios/chrome/common/ui/confirmation_alert/constants.h"
 #import "ios/chrome/common/ui/promo_style/constants.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -167,9 +166,8 @@ NSString* const kInvalidPasswordUsername = @"Superman";
       /// Verify visibility and that the reminder button is not displaying.
       GREYAssertTrue(IsSafariDataImportEntryPointVisible(),
                      @"Safari data import workflow is not displayed.");
-      [[EarlGrey selectElementWithMatcher:
-                     grey_accessibilityID(
-                         kButtonStackTertiaryActionAccessibilityIdentifier)]
+      [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                              ButtonStackTertiaryButton()]
           assertWithMatcher:grey_notVisible()];
       /// Also verify that swipe would not be supported.
       [[EarlGrey selectElementWithMatcher:
