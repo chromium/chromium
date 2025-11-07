@@ -84,7 +84,7 @@ class AffiliationService : public KeyedService {
   // Retrieves psl extension list. This list includes domain which shouldn't be
   // considered as PSL match.
   virtual void GetPSLExtensions(
-      base::OnceCallback<void(std::vector<std::string>)> callback) const = 0;
+      base::OnceCallback<void(std::vector<std::string>)> callback) = 0;
 
   // This method will fetch the latest affiliation and branding information for
   // |facets| even if local cache is still fresh. |callback| is invoked on

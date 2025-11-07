@@ -185,7 +185,7 @@ class MockAffiliationService : public affiliations::FakeAffiliationService {
   MOCK_METHOD(void,
               GetPSLExtensions,
               (base::OnceCallback<void(std::vector<std::string>)>),
-              (const override));
+              (override));
 };
 
 class PasswordManualFallbackFlowTest : public Test {

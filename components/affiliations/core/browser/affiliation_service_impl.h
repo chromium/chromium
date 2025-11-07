@@ -35,6 +35,10 @@ class SharedURLLoaderFactory;
 
 namespace affiliations {
 
+// Enables fetching of ePSL during the init of AffiliationServiceImpl. It's
+// later used to fetch change password urls properly.
+BASE_DECLARE_FEATURE(kCachePSLExtensions);
+
 extern const char kGetChangePasswordURLMetricName[];
 
 // Change password info request requires branding_info enabled.
@@ -120,8 +124,8 @@ class AffiliationServiceImpl : public AffiliationService {
   void TrimUnusedCache(std::vector<FacetURI> facet_uris) override;
   void GetGroupingInfo(std::vector<FacetURI> facet_uris,
                        GroupsCallback callback) override;
-  void GetPSLExtensions(base::OnceCallback<void(std::vector<std::string>)>
-                            callback) const override;
+  void GetPSLExtensions(
+      base::OnceCallback<void(std::vector<std::string>)> callback) override;
   void UpdateAffiliationsAndBranding(const std::vector<FacetURI>& facets,
                                      base::OnceClosure callback) override;
   void RegisterSource(std::unique_ptr<AffiliationSource> source) override;
@@ -147,10 +151,15 @@ class AffiliationServiceImpl : public AffiliationService {
   void OnFetchFinished(const FetchInfo& fetch_info,
                        AffiliationFetcherInterface::FetchResult fetch_result);
 
+  void OnPSLExtensionsLoaded(
+      base::OnceCallback<void(std::vector<std::string>)> callback,
+      std::vector<std::string> psl_extensions);
+
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::map<FacetURI, ChangePasswordUrlMatch> change_password_urls_;
   std::unique_ptr<AffiliationFetcherManager> fetcher_manager_;
   AffiliationPrefetcher prefetcher_{this};
+  base::flat_set<std::string> psl_extension_list_;
 
   // The backend, owned by this AffiliationService instance, but
   // living on the backend thread. It will be deleted asynchronously during
