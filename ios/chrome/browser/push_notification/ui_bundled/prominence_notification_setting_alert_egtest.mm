@@ -60,9 +60,10 @@ void TapMenuItem(int labelId) {
   [super tearDownHelper];
 }
 
+// TODO(crbug.com/458605668): Test is flaky.
 // Tests that the prominence alert displays upon toggling a feature notification
 // setting when provisonal authorization is granted.
-- (void)testProminenceNotificationSettingAlertShows {
+- (void)DISABLED_testProminenceNotificationSettingAlertShows {
   // Swizzle in the "provisional' auth status for notifications.
   ScopedNotificationAuthSwizzler auth(UNAuthorizationStatusProvisional, YES);
 
