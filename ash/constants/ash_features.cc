@@ -1053,9 +1053,6 @@ BASE_FEATURE(kHelpAppOpensInsteadOfReleaseNotesNotification,
 // is dependent on the 'ScalableIph' feature being enabled as well.
 BASE_FEATURE(kHelpAppWelcomeTips, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enable ChromeOS hibernation features.
-BASE_FEATURE(kHibernate, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables a warning about connecting to hidden WiFi networks.
 // https://crbug.com/903908
 BASE_FEATURE(kHiddenNetworkWarning, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -2907,10 +2904,6 @@ bool IsHeliumArcvmKioskEnabled() {
 bool IsHeliumArcvmKioskDevModeEnabled() {
   return IsHeliumArcvmKioskEnabled() &&
          base::FeatureList::IsEnabled(kHeliumArcvmKioskDevMode);
-}
-
-bool IsHibernateEnabled() {
-  return base::FeatureList::IsEnabled(kHibernate);
 }
 
 bool IsHideShelfControlsInTabletModeEnabled() {

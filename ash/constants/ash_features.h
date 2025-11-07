@@ -500,7 +500,6 @@ BASE_DECLARE_FEATURE(kHelpAppOnboardingRevamp);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kHelpAppOpensInsteadOfReleaseNotesNotification);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kHelpAppWelcomeTips);
-COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kHibernate);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kHiddenNetworkWarning);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kHideShelfControlsInTabletMode);
@@ -1196,7 +1195,6 @@ bool AreAnyGlanceablesTimeManagementViewsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool AreHealthdInternalsTabsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHeliumArcvmKioskEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHeliumArcvmKioskDevModeEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHibernateEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHideShelfControlsInTabletModeEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHomeButtonQuickAppAccessEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHybridChargerNotificationsEnabled();
