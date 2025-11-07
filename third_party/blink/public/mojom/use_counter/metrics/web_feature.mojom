@@ -338,7 +338,7 @@ enum WebFeature {
   kNotificationShowEvent = 565,
   kSVGTransformListConsolidate = 569,
   kSVGAnimatedTransformListBaseVal = 570,
-  kQuotedAnimationName = 571,
+  kOBSOLETE_QuotedAnimationName = 571,
   kQuotedKeyframesRule = 572,
   kSrcsetDroppedCandidate = 573,
   kWindowPostMessage = 574,

@@ -509,10 +509,8 @@ const CSSValue* AnimationName::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     const CSSParserLocalContext& local_context) const {
-  // Allow quoted name if this is an alias property.
   return css_parsing_utils::ConsumeCommaSeparatedList(
-      css_parsing_utils::ConsumeAnimationName, stream, context,
-      local_context.UseAliasParsing());
+      css_parsing_utils::ConsumeAnimationName, stream, context);
 }
 
 const CSSValue* AnimationName::CSSValueFromComputedStyleInternal(
@@ -520,17 +518,8 @@ const CSSValue* AnimationName::CSSValueFromComputedStyleInternal(
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  CSSValueList* list = CSSValueList::CreateCommaSeparated();
-  const CSSAnimationData* animation_data = style.Animations();
-  if (animation_data) {
-    for (wtf_size_t i = 0; i < animation_data->NameList().size(); ++i) {
-      list->Append(*MakeGarbageCollected<CSSCustomIdentValue>(
-          animation_data->NameList()[i]));
-    }
-  } else {
-    list->Append(*InitialValue());
-  }
-  return list;
+  return ComputedStyleUtils::ValueForAnimationNameList(style.Animations(),
+                                                       style);
 }
 
 const CSSValue* AnimationName::InitialValue() const {

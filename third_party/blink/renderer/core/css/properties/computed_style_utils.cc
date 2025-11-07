@@ -2843,6 +2843,31 @@ CSSValue* ComputedStyleUtils::ValueForTimelineTriggerTimelineList(
       &ValueForAnimationTimeline, style);
 }
 
+CSSValue* ComputedStyleUtils::ValueForAnimationName(const AtomicString& name) {
+  // Serialize as <string> if the value is not a valid <custom-ident>.
+  if (name.empty()) {
+    return CSSIdentifierValue::Create(CSSValueID::kNone);
+  }
+  if (css_parsing_utils::IsValidIdentAnimationName(name)) {
+    return MakeGarbageCollected<CSSCustomIdentValue>(name);
+  }
+  return MakeGarbageCollected<CSSStringValue>(name);
+}
+
+CSSValue* ComputedStyleUtils::ValueForAnimationNameList(
+    const CSSAnimationData* animation_data,
+    const ComputedStyle& style) {
+  CSSValueList* list = CSSValueList::CreateCommaSeparated();
+  if (animation_data) {
+    for (AtomicString name : animation_data->NameList()) {
+      list->Append(*ValueForAnimationName(name));
+    }
+  } else {
+    list->Append(*CSSIdentifierValue::Create(CSSValueID::kNone));
+  }
+  return list;
+}
+
 CSSValueList* ComputedStyleUtils::ValuesForBorderRadiusCorner(
     const LengthSize& radius,
     const ComputedStyle& style) {

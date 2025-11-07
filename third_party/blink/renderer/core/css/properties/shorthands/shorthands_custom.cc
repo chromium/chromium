@@ -61,8 +61,7 @@ bool IsResetOnlyAnimationProperty(CSSPropertyID property) {
 // Legacy parsing allows <string>s for animation-name.
 CSSValue* ConsumeAnimationValue(CSSPropertyID property,
                                 CSSParserTokenStream& stream,
-                                const CSSParserContext& context,
-                                bool use_legacy_parsing) {
+                                const CSSParserContext& context) {
   switch (property) {
     case CSSPropertyID::kAnimationDelay:
       return css_parsing_utils::ConsumeTime(
@@ -80,8 +79,7 @@ CSSValue* ConsumeAnimationValue(CSSPropertyID property,
     case CSSPropertyID::kAnimationIterationCount:
       return css_parsing_utils::ConsumeAnimationIterationCount(stream, context);
     case CSSPropertyID::kAnimationName:
-      return css_parsing_utils::ConsumeAnimationName(stream, context,
-                                                     use_legacy_parsing);
+      return css_parsing_utils::ConsumeAnimationName(stream, context);
     case CSSPropertyID::kAnimationPlayState:
       return css_parsing_utils::ConsumeIdent<CSSValueID::kRunning,
                                              CSSValueID::kPaused>(stream);
@@ -110,8 +108,7 @@ bool ParseAnimationShorthand(const StylePropertyShorthand& shorthand,
       longhands(longhand_count);
   if (!css_parsing_utils::ConsumeAnimationShorthand(
           shorthand, longhands, ConsumeAnimationValue,
-          IsResetOnlyAnimationProperty, stream, context,
-          local_context.UseAliasParsing())) {
+          IsResetOnlyAnimationProperty, stream, context)) {
     return false;
   }
 
@@ -156,8 +153,12 @@ const CSSValue* CSSValueFromComputedAnimation(
           CSSTimingData::GetRepeated(animation_data->FillModeList(), i)));
       list->Append(*ComputedStyleUtils::ValueForAnimationPlayState(
           CSSTimingData::GetRepeated(animation_data->PlayStateList(), i)));
-      list->Append(*MakeGarbageCollected<CSSCustomIdentValue>(
-          animation_data->NameList()[i]));
+      const AtomicString& name = animation_data->NameList()[i];
+      if (name == CSSAnimationData::InitialName()) {
+        list->Append(*CSSIdentifierValue::Create(CSSValueID::kNone));
+      } else {
+        list->Append(*MakeGarbageCollected<CSSCustomIdentValue>(name));
+      }
       animations_list->Append(*list);
     }
     return animations_list;
@@ -4327,8 +4328,7 @@ namespace {
 
 CSSValue* ConsumeTransitionValue(CSSPropertyID property,
                                  CSSParserTokenStream& stream,
-                                 const CSSParserContext& context,
-                                 bool use_legacy_parsing) {
+                                 const CSSParserContext& context) {
   switch (property) {
     case CSSPropertyID::kTransitionDelay:
       return css_parsing_utils::ConsumeTime(
@@ -4369,7 +4369,7 @@ bool Transition::ParseShorthand(
       longhands(longhand_count);
   if (!css_parsing_utils::ConsumeAnimationShorthand(
           shorthand, longhands, ConsumeTransitionValue, is_reset_only_function,
-          stream, context, local_context.UseAliasParsing())) {
+          stream, context)) {
     return false;
   }
 

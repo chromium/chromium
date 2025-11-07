@@ -4249,23 +4249,26 @@ CSSValue* ConsumeAnimationIterationCount(CSSParserTokenStream& stream,
                        CSSPrimitiveValue::ValueRange::kNonNegative);
 }
 
+bool IsValidIdentAnimationName(const AtomicString& name) {
+  return !EqualIgnoringASCIICase(name, "none") &&
+         !EqualIgnoringASCIICase(name, "default") && !IsCSSWideKeyword(name);
+}
+
 CSSValue* ConsumeAnimationName(CSSParserTokenStream& stream,
-                               const CSSParserContext& context,
-                               bool allow_quoted_name) {
+                               const CSSParserContext& context) {
   if (stream.Peek().Id() == CSSValueID::kNone) {
     return ConsumeIdent(stream);
   }
 
-  if (allow_quoted_name && stream.Peek().GetType() == kStringToken) {
-    // Legacy support for strings in prefixed animations.
-    context.Count(WebFeature::kQuotedAnimationName);
+  if (stream.Peek().GetType() == kStringToken) {
+    context.Count(WebFeature::kOBSOLETE_QuotedAnimationName);
 
     const CSSParserToken& token = stream.ConsumeIncludingWhitespace();
-    if (EqualIgnoringASCIICase(token.Value(), "none")) {
-      return CSSIdentifierValue::Create(CSSValueID::kNone);
+    if (IsValidIdentAnimationName(token.Value().ToAtomicString())) {
+      return MakeGarbageCollected<CSSCustomIdentValue>(
+          token.Value().ToAtomicString());
     }
-    return MakeGarbageCollected<CSSCustomIdentValue>(
-        token.Value().ToAtomicString());
+    return MakeGarbageCollected<CSSStringValue>(token.Value().ToString());
   }
 
   return ConsumeCustomIdent(stream, context);
@@ -4523,8 +4526,7 @@ bool ConsumeAnimationShorthand(
     ConsumeAnimationItemValue consumeLonghandItem,
     IsResetOnlyFunction is_reset_only,
     CSSParserTokenStream& stream,
-    const CSSParserContext& context,
-    bool use_legacy_parsing) {
+    const CSSParserContext& context) {
   DCHECK(consumeLonghandItem);
   const unsigned longhand_count = shorthand.length();
   DCHECK_LE(longhand_count, kMaxNumAnimationLonghands);
@@ -4543,9 +4545,8 @@ bool ConsumeAnimationShorthand(
           continue;
         }
 
-        CSSValue* value =
-            consumeLonghandItem(shorthand.properties()[i]->PropertyID(), stream,
-                                context, use_legacy_parsing);
+        CSSValue* value = consumeLonghandItem(
+            shorthand.properties()[i]->PropertyID(), stream, context);
         if (value) {
           parsed_longhand[i] = true;
           found_property = true;

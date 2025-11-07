@@ -37,7 +37,7 @@ std::optional<double> CSSAnimationData::InitialDuration() {
 }
 
 const AtomicString& CSSAnimationData::InitialName() {
-  DEFINE_STATIC_LOCAL(const AtomicString, name, ("none"));
+  DEFINE_STATIC_LOCAL(const AtomicString, name, (""));
   return name;
 }
 
