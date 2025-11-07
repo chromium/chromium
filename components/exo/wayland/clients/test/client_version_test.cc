@@ -132,8 +132,7 @@ void RegistryHandler(void* data,
   if (globals->protocol_tested.length() == 0) {
     globals->protocols.push_back(interface);
     return;
-  } else if (UNSAFE_TODO(strcmp(interface, globals->protocol_tested.c_str())) ==
-             0) {
+  } else if (globals->protocol_tested == interface) {
     switch (globals->validity_type) {
       case ClientVersionTest::VersionValidityType::INVALID_NULL:
         version = 0;
