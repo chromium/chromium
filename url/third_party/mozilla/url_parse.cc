@@ -371,13 +371,11 @@ void DoParseAfterSpecialScheme(std::basic_string_view<CHAR> spec,
 template <typename CharT>
 Parsed DoParseStandardUrl(std::basic_string_view<CharT> url) {
   // Strip leading & trailing spaces and control characters.
-  int begin = 0;
-  int url_len = base::checked_cast<int>(url.size());
-  TrimURL(url.data(), &begin, &url_len);
+  auto [begin, url_len] = TrimUrl(url);
+  url = url.substr(0, url_len);
 
   int after_scheme;
   Parsed parsed;
-  url = url.substr(0, url_len);
   if (DoExtractScheme(url, &parsed.scheme)) {
     after_scheme = parsed.scheme.end() + 1;  // Skip past the colon.
   } else {
@@ -385,7 +383,7 @@ Parsed DoParseStandardUrl(std::basic_string_view<CharT> url) {
     // everything is the scheme. Both would produce an invalid URL, but this way
     // seems less wrong in more cases.
     parsed.scheme.reset();
-    after_scheme = begin;
+    after_scheme = base::checked_cast<int>(begin);
   }
   DoParseAfterSpecialScheme(url, after_scheme, &parsed);
   return parsed;
@@ -485,13 +483,11 @@ template <typename CharT>
 Parsed DoParseNonSpecialUrl(std::basic_string_view<CharT> url,
                             bool trim_path_end) {
   // Strip leading & trailing spaces and control characters.
-  int begin = 0;
-  int url_len = base::checked_cast<int>(url.size());
-  TrimURL(url.data(), &begin, &url_len, trim_path_end);
+  auto [begin, url_len] = TrimUrl(url, trim_path_end);
+  url = url.substr(0, url_len);
 
   int after_scheme;
   Parsed parsed;
-  url = url.substr(0, url_len);
   if (DoExtractScheme(url, &parsed.scheme)) {
     after_scheme = parsed.scheme.end() + 1;  // Skip past the colon.
   } else {
@@ -508,27 +504,26 @@ Parsed DoParseNonSpecialUrl(std::basic_string_view<CharT> url,
 template <typename CharT>
 Parsed DoParseFileSystemUrl(std::basic_string_view<CharT> url) {
   // Strip leading & trailing spaces and control characters.
-  int begin = 0;
-  int url_len = base::checked_cast<int>(url.size());
-  TrimURL(url.data(), &begin, &url_len);
+  auto [begin, url_len] = TrimUrl(url);
 
   // Handle empty specs or ones that contain only whitespace or control chars.
   if (begin == url_len) {
     return {};
   }
 
-  int inner_start = -1;
+  size_t inner_start = std::basic_string_view<CharT>::npos;
   // Extract the scheme.  We also handle the case where there is no scheme.
   Parsed parsed;
   if (DoExtractScheme(url.substr(begin, url_len - begin), &parsed.scheme)) {
     // Offset the results since we gave ExtractScheme a substring.
-    parsed.scheme.begin += begin;
+    parsed.scheme.OffsetBy(begin);
 
-    if (parsed.scheme.end() == url_len - 1) {
+    size_t scheme_end = parsed.scheme.CheckedEnd();
+    if (scheme_end == url_len - 1) {
       return parsed;
     }
 
-    inner_start = parsed.scheme.end() + 1;
+    inner_start = scheme_end + 1;
   } else {
     // No scheme found; that's not valid for filesystem URLs.
     return {};
@@ -539,9 +534,9 @@ Parsed DoParseFileSystemUrl(std::basic_string_view<CharT> url) {
       url.substr(inner_start, url_len - inner_start);
   if (DoExtractScheme(inner_url, &inner_scheme)) {
     // Offset the results since we gave ExtractScheme a substring.
-    inner_scheme.begin += inner_start;
+    inner_scheme.OffsetBy(inner_start);
 
-    if (inner_scheme.end() == url_len - 1) {
+    if (inner_scheme.CheckedEnd() == url_len - 1) {
       return parsed;
     }
   } else {
@@ -599,7 +594,8 @@ Parsed DoParseFileSystemUrl(std::basic_string_view<CharT> url) {
     return parsed;
   }
   int inner_path_end = inner_parsed.path.begin + 1;  // skip the leading slash
-  while (inner_path_end < url_len && !IsSlashOrBackslash(url[inner_path_end])) {
+  while (static_cast<size_t>(inner_path_end) < url_len &&
+         !IsSlashOrBackslash(url[inner_path_end])) {
     ++inner_path_end;
   }
   parsed.path.begin = inner_path_end;
@@ -614,24 +610,22 @@ Parsed DoParseFileSystemUrl(std::basic_string_view<CharT> url) {
 template <typename CharT>
 Parsed DoParsePathUrl(std::basic_string_view<CharT> url, bool trim_path_end) {
   // Strip leading & trailing spaces and control characters.
-  int scheme_begin = 0;
-  int url_len = base::checked_cast<int>(url.size());
-  TrimURL(url.data(), &scheme_begin, &url_len, trim_path_end);
+  auto [scheme_begin, url_len] = TrimUrl(url, trim_path_end);
 
   // Handle empty specs or ones that contain only whitespace or control chars.
   if (scheme_begin == url_len) {
     return {};
   }
 
-  int path_begin;
+  size_t path_begin;
   Parsed parsed;
   // Extract the scheme, with the path being everything following. We also
   // handle the case where there is no scheme.
   if (ExtractScheme(url.substr(scheme_begin, url_len - scheme_begin),
                     &parsed.scheme)) {
     // Offset the results since we gave ExtractScheme a substring.
-    parsed.scheme.begin += scheme_begin;
-    path_begin = parsed.scheme.end() + 1;
+    parsed.scheme.OffsetBy(scheme_begin);
+    path_begin = parsed.scheme.CheckedEnd() + 1;
   } else {
     // No scheme case.
     parsed.scheme.reset();
@@ -651,29 +645,26 @@ Parsed DoParsePathUrl(std::basic_string_view<CharT> url, bool trim_path_end) {
 template <typename CharT>
 Parsed DoParseMailtoUrl(std::basic_string_view<CharT> url) {
   // Strip leading & trailing spaces and control characters.
-  int begin = 0;
-  // TODO(crbug.com/325408566): Transition to size_t and avoid the checked_cast
-  // once Component's members are no longer integers.
-  int url_len = base::checked_cast<int>(url.size());
-  TrimURL(url.data(), &begin, &url_len);
+  auto [begin, url_len] = TrimUrl(url);
 
   // Handle empty specs or ones that contain only whitespace or control chars.
   if (begin == url_len) {
     return {};
   }
 
-  int path_begin = -1;
-  int path_end = -1;
+  size_t path_begin = std::basic_string_view<CharT>::npos;
+  size_t path_end = std::basic_string_view<CharT>::npos;
 
   // Extract the scheme, with the path being everything following. We also
   // handle the case where there is no scheme.
   Parsed parsed;
   if (ExtractScheme(url.substr(begin, url_len - begin), &parsed.scheme)) {
     // Offset the results since we gave ExtractScheme a substring.
-    parsed.scheme.begin += begin;
+    parsed.scheme.OffsetBy(begin);
 
-    if (parsed.scheme.end() != url_len - 1) {
-      path_begin = parsed.scheme.end() + 1;
+    size_t scheme_end = parsed.scheme.CheckedEnd();
+    if (scheme_end != url_len - 1) {
+      path_begin = scheme_end + 1;
       path_end = url_len;
     }
   } else {
@@ -684,7 +675,7 @@ Parsed DoParseMailtoUrl(std::basic_string_view<CharT> url) {
   }
 
   // Split [path_begin, path_end) into a path + query.
-  for (int i = path_begin; i < path_end; ++i) {
+  for (size_t i = path_begin; i < path_end; ++i) {
     if (url[i] == '?') {
       parsed.query = MakeRange(i + 1, path_end);
       path_end = i;

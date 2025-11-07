@@ -38,7 +38,19 @@ struct Component {
   explicit Component(std::basic_string_view<CharT> view)
       : begin(0), len(base::checked_cast<int>(view.size())) {}
 
+  // Adjusts the beginning of the component by the given offset. This is useful
+  // for adjusting component offsets when they are relative to a substring
+  // rather than the original string. Crashes if `begin + offset` overflows.
+  void OffsetBy(size_t offset) {
+    size_t new_begin = static_cast<size_t>(begin) + offset;
+    begin = base::checked_cast<int>(new_begin);
+  }
+
   constexpr int end() const { return begin + len; }
+
+  // Returns the `end` value in size_t. This crashes if this object is
+  // not valid.
+  size_t CheckedEnd() const { return base::checked_cast<size_t>(end()); }
 
   // Returns true if this component is valid, meaning the length is given.
   // Valid components may be empty to record the fact that they exist.
