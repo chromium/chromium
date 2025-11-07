@@ -80,6 +80,7 @@ enum class MemoryPressureListenerTag {
   kLruRendererCache = 47,
   kCastMemoryPressureControllerImpl = 48,
   kFontGlobalContext = 49,
+  kClientDiscardableSharedMemoryManager = 50,
   kMax,
 };
 

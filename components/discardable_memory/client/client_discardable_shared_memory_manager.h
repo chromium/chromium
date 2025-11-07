@@ -12,6 +12,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/discardable_memory_allocator.h"
+#include "base/memory/memory_pressure_listener.h"
 #include "base/memory/post_delayed_memory_reduction_task.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -37,6 +38,7 @@ namespace discardable_memory {
 class DISCARDABLE_MEMORY_EXPORT ClientDiscardableSharedMemoryManager
     : public base::DiscardableMemoryAllocator,
       public base::trace_event::MemoryDumpProvider,
+      public base::MemoryPressureListener,
       public base::RefCountedDeleteOnSequence<
           ClientDiscardableSharedMemoryManager> {
  public:
@@ -80,6 +82,9 @@ class DISCARDABLE_MEMORY_EXPORT ClientDiscardableSharedMemoryManager
   void SetBytesAllocatedLimitForTesting(size_t limit) {
     bytes_allocated_limit_for_testing_ = limit;
   }
+
+  // base::MemoryPressureListener
+  void OnMemoryPressure(base::MemoryPressureLevel level) override;
 
   // Anything younger than |kMinAgeForScheduledPurge| is not discarded when we
   // do our periodic purge.
@@ -210,6 +215,9 @@ class DISCARDABLE_MEMORY_EXPORT ClientDiscardableSharedMemoryManager
   // we're in the foreground. This is parallel to what we do in
   // RenderThreadImpl.
   bool foregrounded_ = false;
+
+  base::AsyncMemoryPressureListenerRegistration
+      memory_pressure_listener_registration_;
 
   THREAD_CHECKER(thread_checker_);
 };

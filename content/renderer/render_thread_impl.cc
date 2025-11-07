@@ -1712,8 +1712,6 @@ void RenderThreadImpl::OnMemoryPressure(
     blink::WebMemoryPressureListener::OnMemoryPressure(memory_pressure_level);
   }
   if (memory_pressure_level == base::MEMORY_PRESSURE_LEVEL_CRITICAL) {
-    discardable_memory_allocator_->ReleaseFreeMemory();
-
     // Do not call into blink if it is not initialized.
     if (blink_platform_impl_) {
       // Purge Skia font cache, resource cache, and image filter.
