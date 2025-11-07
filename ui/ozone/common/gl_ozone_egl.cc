@@ -74,6 +74,19 @@ std::unique_ptr<NativePixmapGLBinding> GLOzoneEGL::ImportNativePixmap(
   return nullptr;
 }
 
+std::unique_ptr<NativePixmapGLBinding> GLOzoneEGL::ImportNativePixmap(
+    scoped_refptr<gfx::NativePixmap> pixmap,
+    viz::SharedImageFormat plane_format,
+    gfx::BufferPlane plane,
+    gfx::Size plane_size,
+    const gfx::ColorSpace& color_space,
+    GLenum target,
+    GLuint texture_id) {
+  return ImportNativePixmap(pixmap,
+                            viz::SharedImageFormatToBufferFormat(plane_format),
+                            plane, plane_size, color_space, target, texture_id);
+}
+
 bool GLOzoneEGL::GetGLWindowSystemBindingInfo(
     const gl::GLVersionInfo& gl_info,
     gl::GLWindowSystemBindingInfo* info) {
