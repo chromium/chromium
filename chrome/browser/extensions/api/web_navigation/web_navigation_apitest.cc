@@ -65,6 +65,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
@@ -934,6 +935,7 @@ IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType, Crash) {
 #endif
 IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType, MAYBE_Xslt) {
   if (!base::FeatureList::IsEnabled(blink::features::kXSLT) ||
+      !base::FeatureList::IsEnabled(blink::features::kXSLTSpecialTrial) ||
       base::FeatureList::IsEnabled(blink::features::kXMLParsingRust)) {
     return;
   }

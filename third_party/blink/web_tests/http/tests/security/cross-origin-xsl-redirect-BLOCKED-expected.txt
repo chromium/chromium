@@ -1,5 +1,9 @@
-CONSOLE ERROR: Unsafe attempt to load URL http://localhost:8000/security/resources/forbidden-stylesheet.xsl from frame with URL http://127.0.0.1:8000/security/resources/cross-origin-xsl-redirect.xml. Domains, protocols and ports must match.
-
-CONSOLE WARNING: XSLTProcessor and XSLT Processing Instructions have been deprecated by all browsers. These features will be removed from this browser soon. See https://chromestatus.com/feature/4709671889534976.
+CONSOLE WARNING: Usage of XSLTProcessor or XSLT Processing Instructions was detected. These features have been deprecated by all browsers, and a special early trial of complete removal is underway in this browser.
+--> If you are a *user* experiencing a problem, please report the issue directly to the operator of the website.
+--> If you are a site owner, and you think this trial is causing an unexpected issue, please report a bug at https://issues.chromium.org/issues/new?component=1456730&template=2210866
 This test loads the XML document in an iframe so that it can call dumpAsText(). This test passes if the iframe below does not contain a message starting with "FAIL".
 
+--------
+Frame: '<!--framePath //<!--frame0-->-->'
+--------
+PASS: Forbidden XML stylesheet did not run.

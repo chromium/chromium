@@ -28775,6 +28775,27 @@
             ]
         }
     ],
+    "XSLTSpecialTrial": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Disabled",
+                    "disable_features": [
+                        "XSLTSpecialTrial"
+                    ]
+                }
+            ]
+        }
+    ],
     "YieldWithInputHint": [
         {
             "platforms": [

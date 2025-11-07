@@ -6021,6 +6021,51 @@
     ],
     "expires": "Oct 24, 2026"
   },
+  "Currently, XSLT is disabled on ToT for tests, via the",
+  "fieldtrial_testing_config.json file which disables the XSLTSpecialTrial",
+  "flag. The `xslt-enabled` virtual suite re-enables the XSLTSpecialTrial",
+  "flag, which should re-enable XSLT. The `xslt-disabled` virtual suite",
+  "re-enables the XSLTSpecialTrial flag and disables the main XSLT flag,",
+  "which should keep XSLT disabled.",
+  {
+    "prefix": "xslt-enabled",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [
+      "fast/parser",
+      "fast/xsl",
+      "external/wpt/dom/xslt",
+      "http/tests/xsl",
+      "external/wpt/content-security-policy/xslt/xsltprocessor-include-blocked.html",
+      "external/wpt/fetch/metadata/xslt.https.sub.html",
+      "fast/css/dumpAsText/xml-stylesheet-pi-not-in-prolog.xml",
+      "http/tests/document-policy/resources/document-policy-in-xsl.xslt",
+      "http/tests/inspector-protocol/issues/xsltpi-issue.js",
+      "http/tests/inspector-protocol/issues/xsltprocessor-issue.js",
+      "http/tests/loading/css-no-cache-revalidation.html",
+      "http/tests/misc/xslt-bad-import.html",
+      "http/tests/permissions-policy/permissions-policy-frame-policy-in-xsl.html",
+      "http/tests/security/contentSecurityPolicy/xsl-blocked.php",
+      "http/tests/security/contentSecurityPolicy/xsl-unaffected-by-style-src-1.php",
+      "inspector-protocol/debugger/unpause-after-xslt-commit.js",
+      "loader/resources/document-updated-by-xslt.svg",
+      "svg/custom/invalid-xslt-crash.svg",
+      "xmlviewer/long-multi-byte-char.xml"
+    ],
+    "exclusive_tests": [
+      "http/tests/inspector-protocol/issues/xsltpi-issue.js",
+      "http/tests/inspector-protocol/issues/xsltprocessor-issue.js",
+      "http/tests/loading/css-no-cache-revalidation.html",
+      "http/tests/permissions-policy/permissions-policy-frame-policy-in-xsl.html"
+    ],
+    "args": [ "--enable-blink-features=XSLTSpecialTrial" ],
+    "owners": [
+      "masonf@chromium.org"
+    ],
+    "expires": "Aug 1, 2026"
+  },
+  "This suite just verifies that both XSLT-disabled flags work. The main ToT",
+  "code verifies XSLTSpecialTrial, since it is enabled via fieldtrial testing",
+  "config. This virtual suite verifies the XSLT flag.",
   {
     "prefix": "xslt-disabled",
     "platforms": ["Linux", "Mac", "Win"],
@@ -6036,28 +6081,10 @@
       "svg/custom/invalid-xslt-crash.svg",
       "external/wpt/fetch/metadata/xslt.https.sub.html"
     ],
-    "args": [ "--disable-blink-features=XSLT" ],
-    "owners": [
-      "masonf@chromium.org"
+    "args": [
+      "--disable-blink-features=XSLT",
+      "--enable-blink-features=XSLTSpecialTrial"
     ],
-    "expires": "Aug 1, 2026"
-  },
-  {
-    "prefix": "xslt-special-trial-disabled",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": [
-      "fast/css/dumpAsText/xml-stylesheet-pi-not-in-prolog.xml",
-      "fast/parser",
-      "fast/xsl",
-      "external/wpt/dom/xslt",
-      "http/tests/xsl",
-      "http/tests/document-policy/resources/document-policy-in-xsl.xslt",
-      "http/tests/misc/xslt-bad-import.html",
-      "loader/resources/document-updated-by-xslt.svg",
-      "svg/custom/invalid-xslt-crash.svg",
-      "external/wpt/fetch/metadata/xslt.https.sub.html"
-    ],
-    "args": [ "--disable-blink-features=XSLTSpecialTrial" ],
     "owners": [
       "masonf@chromium.org"
     ],

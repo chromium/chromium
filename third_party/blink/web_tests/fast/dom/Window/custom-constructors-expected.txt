@@ -1,4 +1,3 @@
-CONSOLE WARNING: XSLTProcessor and XSLT Processing Instructions have been deprecated by all browsers. These features will be removed from this browser soon. See https://chromestatus.com/feature/4709671889534976.
 Test constructors for classes in Window
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
@@ -11,7 +10,6 @@ PASS WebKitCSSMatrix.prototype.toString.call(new WebKitCSSMatrix()) is 'matrix(1
 PASS new WebKitCSSMatrix(null) threw exception SyntaxError: Failed to construct 'DOMMatrix': Failed to parse 'null'..
 FAIL new WebKitCSSMatrix(undefined) should throw an exception. Was matrix(1, 0, 0, 1, 0, 0).
 PASS XMLHttpRequest.prototype.toString.call(new XMLHttpRequest) is '[object XMLHttpRequest]'
-PASS XSLTProcessor.prototype.toString.call(new XSLTProcessor) is '[object XSLTProcessor]'
 PASS successfullyParsed is true
 
 TEST COMPLETE

@@ -1,0 +1,7 @@
+CONSOLE WARNING: XSLTProcessor and XSLT Processing Instructions have been deprecated by all browsers. These features will be removed from this browser soon. See https://chromestatus.com/feature/4709671889534976.
+C
+D
+
+This tests that XSLT transforms can traverse into XHTML template element content when applying XSL template. If the test succeeds, the transform will have swapped the position of the body spans (A and B) with the template content spans (C and D) and replaced the spans with divs.
+
+Body divs: CD, Template content divs: AB

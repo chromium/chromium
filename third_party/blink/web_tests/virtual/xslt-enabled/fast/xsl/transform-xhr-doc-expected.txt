@@ -1,0 +1,4 @@
+CONSOLE WARNING: XSLTProcessor and XSLT Processing Instructions have been deprecated by all browsers. These features will be removed from this browser soon. See https://chromestatus.com/feature/4709671889534976.
+Test for bug 10313: xsl:import doesn't work in stylesheets loaded via XMLHttpRequest.
+
+SUCCESS
