@@ -22,9 +22,22 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="EmbedderType">
+  <variant name="Floaty" summary="a floating embedder"/>
+  <variant name="SidePanel" summary="a side panel embedder"/>
+</variants>
+
 <variants name="PanelEvent">
   <variant name="OnClose" summary="the glic panel is closed."/>
   <variant name="OnOpen" summary="the glic panel is opened."/>
+</variants>
+
+<variants name="Visibility">
+  <variant name="Nonvisible"
+      summary="the instance was not visible (e.g., pre-warmed) when the
+               metric was recorded"/>
+  <variant name="Visible"
+      summary="the instance was visible when the metric was recorded"/>
 </variants>
 
 <variants name="WebClientMode">
@@ -683,6 +696,105 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.Instance.PanelPresentationTime.{EmbedderType}" units="ms"
+    expires_after="2026-11-01">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Measures the time from when a user toggles the Glic panel to be shown until
+    the web client signals that it is ready. Recorded each time a {EmbedderType}
+    panel is shown.
+  </summary>
+  <token key="EmbedderType" variants="EmbedderType"/>
+</histogram>
+
+<histogram name="Glic.Instance.Session.CreateTabCount" units="count"
+    expires_after="2026-10-27">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    The number of new tabs that are created during a single Glic multi-instance
+    session. Recorded when the session ends.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Instance.Session.Duration" units="ms"
+    expires_after="2026-10-27">
+  <owner>birnie@google.com</owner>
+  <owner>carlosk@chromium.org</owner>
+  <summary>
+    Records the duration of a single Glic multi-instance session. A session
+    represents a period of continuous user engagement with a single Glic
+    instance. It starts after the instance has been visible for a short duration
+    (to exclude accidental opens) or when the user submits input. It ends after
+    a period of inactivity, being hidden for too long, or when the instance is
+    destroyed. See `chrome/browser/glic/service/glic_metrics_session_manager.h`
+    for more details.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Instance.Session.EndReason"
+    enum="GlicMultiInstanceSessionEndReason" expires_after="2026-10-27">
+  <owner>birnie@google.com</owner>
+  <owner>carlosk@chromium.org</owner>
+  <summary>
+    Records the reason why a Glic multi-instance session ended. Recorded each
+    time a session finishes.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Instance.Session.HadEvent" enum="GlicInstanceEvent"
+    expires_after="2026-06-01">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Records events that happen during a Glic Sessions's lifecycle. This
+    histogram answers the question: How many sessions had each event type occur
+    at least once? Even if an event occurs multiple times in a session, only one
+    event is recorded per session.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Instance.Session.InputModesUsed"
+    enum="GlicInputModesUsed" expires_after="2026-10-27">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@chromium.org</owner>
+  <summary>
+    The input modes that were used during a Glic multi-instance session.
+    Recorded when the session ends.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Instance.Session.ToggleCount" units="count"
+    expires_after="2026-10-27">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    The number of times that a single Glic session was toggled. Recorded when
+    the session ends.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Instance.Session.TurnCount" units="count"
+    expires_after="2026-10-27">
+  <owner>birnie@google.com</owner>
+  <owner>carlosk@chromium.org</owner>
+  <summary>
+    The number of turns that occurred in a single Glic multi-instance session.
+    Recorded when the session ends.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Instance.SessionCount" units="count"
+    expires_after="2026-10-27">
+  <owner>birnie@google.com</owner>
+  <owner>carlosk@chromium.org</owner>
+  <summary>
+    The number of Glic multi-instance sessions that occurred in a single Glic
+    instance's lifetime. Recorded when the instance is destroyed.
+  </summary>
+</histogram>
+
 <histogram name="Glic.Instance.SidePanel.OpenDuration" units="ms"
     expires_after="2026-06-01">
   <owner>birnie@google.com</owner>
@@ -701,6 +813,20 @@ chromium-metrics-reviews@google.com.
     Records the source of the invocation that caused the side panel GlicInstance
     to be toggled. Recorded each time the instance is toggled.
   </summary>
+</histogram>
+
+<histogram name="Glic.Instance.TimeBetweenSessions.{Range}" units="ms"
+    expires_after="2026-10-27">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@chromium.org</owner>
+  <summary>
+    Records the time between the end of one Glic multi-instance session and the
+    start of the next one within the same instance. Max bucket is {Range}.
+  </summary>
+  <token key="Range">
+    <variant name="7D" summary="7 days"/>
+    <variant name="24H" summary="24 hours"/>
+  </token>
 </histogram>
 
 <histogram name="Glic.Instance.TotalActiveDuration" units="ms"
@@ -784,6 +910,19 @@ chromium-metrics-reviews@google.com.
     Records the duration of a single, uninterrupted period of time that a
     GlicInstance was visible. Recorded each time an instance becomes hidden.
   </summary>
+</histogram>
+
+<histogram name="Glic.Instance.WebUiLoadTime.{Visibility}" units="ms"
+    expires_after="2026-11-01">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Measures the time it takes for the Glic WebUI to load, from the `kBeginLoad`
+    state to the `kReady` state. This is recorded for both user-visible loads
+    and non-visible pre-warming loads, distinguished by the {Visibility}
+    variant.
+  </summary>
+  <token key="Visibility" variants="Visibility"/>
 </histogram>
 
 <histogram name="Glic.MaybeReplaceNavigation.Result" enum="Boolean"
@@ -1078,6 +1217,16 @@ chromium-metrics-reviews@google.com.
   <owner>dewittj@google.com</owner>
   <owner>iwells@google.com</owner>
   <summary>Record the current state when the the panel is closed.</summary>
+</histogram>
+
+<histogram name="Glic.PanelWebUiState.FinishState3" enum="WebUiState"
+    expires_after="2026-10-28">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Record the current state when the the panel is closed for multi instance
+    supported clients.
+  </summary>
 </histogram>
 
 <histogram name="Glic.PercentOverlapWithBrowser.{Event}" enum="PercentOverlap"
@@ -1574,6 +1723,16 @@ chromium-metrics-reviews@google.com.
     <variant name="Canned"/>
     <variant name="Modelled"/>
   </token>
+</histogram>
+
+<histogram name="Glic.Turn.InvocationSource" enum="GlicInvocationSource"
+    expires_after="2026-10-16">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Records the last invocation source that was used to open the Glic panel for
+    a given turn. Recorded at the end of each turn.
+  </summary>
 </histogram>
 
 <histogram name="Glic.Turn.ResponseStartTime" units="ms"

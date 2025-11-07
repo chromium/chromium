@@ -5,18 +5,19 @@
 #ifndef CHROME_BROWSER_GLIC_SERVICE_GLIC_INSTANCE_METRICS_H_
 #define CHROME_BROWSER_GLIC_SERVICE_GLIC_INSTANCE_METRICS_H_
 
-#include <map>
-#include <optional>
-#include <string>
-
-#include "base/containers/enum_set.h"
-#include "base/time/time.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/browser/glic/service/glic_metrics_session_manager.h"
 #include "chrome/browser/glic/service/glic_ui_types.h"
 
 namespace tabs {
 class TabInterface;
 }
+
+namespace base {
+class TimeTicks;
+class TimeDelta;
+}  // namespace base
+
 namespace glic {
 
 struct ShowOptions;
@@ -201,8 +202,13 @@ class GlicInstanceMetrics {
   void OnTurnCompleted(mojom::WebClientModel model, base::TimeDelta duration);
   void OnReaction(mojom::MetricUserInputReactionType reaction_type);
 
+  bool is_active() const { return is_active_; }
+
  private:
-  // These members are cleared in OnResponseStopped.
+  friend class GlicMetricsSessionManager;
+
+  // Stores info scoped to the current turn. These members are cleared in
+  // OnResponseStopped.
   struct TurnInfo {
     base::TimeTicks input_submitted_time_;
     // Set to true in OnResponseStarted() and set to false in
@@ -275,13 +281,24 @@ class GlicInstanceMetrics {
   // also logs to the EventCounts histogram. Increments the counter.
   void LogEvent(GlicInstanceEvent event, int& event_counter);
 
+  // Called by the session manager when it starts and ends.
+  void OnSessionStarted();
+  void OnSessionFinished();
+
   GlicInstanceEventCounts event_counts_;
+  // An Instance is active when it is showing in an embedder of an active
+  // browser.
   bool is_active_ = false;
+  // An Instance is visible when it is showing in an embedder. The embedder may
+  // be occluded (if side panel) or inactive and still considered visible.
   bool is_visible_ = false;
+
+  // Keeps track of the current number of bound tabs to this instance.
+  // Incremented in OnBind and decremented in OnUnbindEmbedder.
   int bound_tab_count_ = 0;
+  // Stores the max bound_tab_count_ value during the instances lifetime.
   int max_concurrently_bound_tabs_ = 0;
 
-  // Turn metrics.
   TurnInfo turn_;
   mojom::WebClientMode input_mode_ = mojom::WebClientMode::kUnknown;
   base::EnumSet<mojom::WebClientMode,
@@ -295,6 +312,10 @@ class GlicInstanceMetrics {
   base::TimeTicks last_visibility_change_time_;
   base::TimeDelta total_active_time_;
   base::TimeDelta total_visible_time_;
+
+  GlicMetricsSessionManager session_manager_;
+  base::TimeTicks last_session_end_time_;
+  int session_count_ = 0;
 };
 
 }  // namespace glic

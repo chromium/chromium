@@ -893,6 +893,27 @@ BASE_FEATURE(kGlicWebActuationSetting, base::FEATURE_ENABLED_BY_DEFAULT);
 const base::FeatureParam<std::string> kGlicWebActuationAllowedTiers{
     &kGlicWebActuationSetting, "allowed_tiers", ""};
 
+BASE_FEATURE(kGlicMetricsSession, base::FEATURE_ENABLED_BY_DEFAULT);
+// The duration of inactivity after which a session is considered ended.
+const base::FeatureParam<base::TimeDelta> kGlicMetricsSessionInactivityTimeout{
+    &kGlicMetricsSession, "glic-metrics-session-inactivity-timeout",
+    base::Minutes(45)};
+// The duration of being hidden after which a session is considered ended.
+const base::FeatureParam<base::TimeDelta> kGlicMetricsSessionHiddenTimeout{
+    &kGlicMetricsSession, "glic-metrics-session-hidden-timeout",
+    base::Minutes(30)};
+// The duration of a transient state change (flicker) that is ignored.
+// This must be less than kGlicMetricsSessionHiddenTimeout and
+// kGlicMetricsSessionInactivityTimeout.
+const base::FeatureParam<base::TimeDelta>
+    kGlicMetricsSessionRestartDebounceTimer{
+        &kGlicMetricsSession, "glic-metrics-session-restart-debounce-timer",
+        base::Seconds(5)};
+// The duration of continuous visibility required to start a session.
+const base::FeatureParam<base::TimeDelta> kGlicMetricsSessionStartTimeout{
+    &kGlicMetricsSession, "glic-metrics-session-start-timeout",
+    base::Seconds(5)};
+
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
 // Enables the `google-chrome://` URI scheme.
