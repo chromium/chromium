@@ -628,7 +628,6 @@ source_set("browser_sources") {
     "//ui/events",
     "//ui/gl",
     "//ui/shell_dialogs",
-    "//ui/surface",
   ]
 
   allow_circular_includes_from = [

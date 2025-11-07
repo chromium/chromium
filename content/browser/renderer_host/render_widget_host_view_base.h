@@ -52,7 +52,6 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_ui_types.h"
 #include "ui/gfx/range/range.h"
-#include "ui/surface/transport_dib.h"
 #include "url/origin.h"
 
 namespace blink {

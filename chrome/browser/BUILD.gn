@@ -2622,7 +2622,6 @@ static_library("browser") {
     "//ui/shell_dialogs",
     "//ui/snapshot",
     "//ui/strings",
-    "//ui/surface",
     "//ui/webui",
 
     # TODO(crbug.com/430804948): Remove this dependency when profiles/profile_manager.h

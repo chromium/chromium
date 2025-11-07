@@ -29,7 +29,6 @@
 #include "content/public/common/common_param_traits_macros.h"
 #include "ipc/param_traits_utils.h"
 #include "ui/gfx/native_ui_types.h"
-#include "ui/surface/transport_dib.h"
 #include "url/ipc/url_param_traits.h"
 
 #if BUILDFLAG(IS_WIN)

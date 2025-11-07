@@ -319,7 +319,6 @@ target(link_target_type, "renderer") {
     "//ui/latency",
     "//ui/native_theme",
     "//ui/strings:auto_image_annotation_strings_grit",
-    "//ui/surface",
     "//url",
     "//v8",
   ]

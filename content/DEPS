@@ -109,7 +109,6 @@ include_rules = [
   "+ui/shell_dialogs",
   "+ui/snapshot",
   "+ui/strings/grit/ui_strings.h",
-  "+ui/surface",
   "+ui/touch_selection",
   "+ui/webui/resources/grit/webui_resources.h",
   "+ui/webui/resources/grit/webui_resources_map.h",

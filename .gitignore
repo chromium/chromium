@@ -306,8 +306,6 @@ vs-chromium-project.txt
 /ui/file_manager/integration_tests/tsconfig.json
 /ui/keyboard/keyboard_mojom_bindings.xml
 /ui/gl/resources/angle-metal
-/ui/surface/surface.xml
-/ui/surface/surface_gpu_tests.xml
 /webkit/data
 /webpagereplay_logs/
 /x86-generic_out/

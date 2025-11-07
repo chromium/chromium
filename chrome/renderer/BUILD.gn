@@ -234,7 +234,6 @@ static_library("renderer") {
     "//third_party/re2",
     "//third_party/widevine/cdm:buildflags",
     "//ui/gfx/geometry",
-    "//ui/surface",
     "//v8",
   ]
 

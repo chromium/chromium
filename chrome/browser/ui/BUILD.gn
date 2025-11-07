@@ -661,7 +661,6 @@ static_library("ui") {
     "//ui/shell_dialogs",
     "//ui/snapshot",
     "//ui/strings",
-    "//ui/surface",
     "//ui/webui",
     "//v8:v8_version",
   ]

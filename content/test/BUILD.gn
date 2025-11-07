@@ -699,7 +699,6 @@ static_library("test_support") {
     "//ui/resources",
     "//ui/shell_dialogs",
     "//ui/strings:auto_image_annotation_strings",
-    "//ui/surface",
     "//url",
     "//url/mojom:url_mojom_gurl",
     "//v8",

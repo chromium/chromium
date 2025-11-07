@@ -273,7 +273,6 @@ source_set("common_sources") {
     "//ui/accessibility",
     "//ui/base/cursor/mojom:cursor_type",
     "//ui/gfx/geometry",
-    "//ui/surface",
     "//url/ipc:url_ipc",
   ]
   deps = [
