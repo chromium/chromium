@@ -288,13 +288,6 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
   static std::optional<std::string> GenerateCacheKeyForRequest(
       const HttpRequestInfo* request);
 
-  // Generates the cache key for a request, but using a different URL. This is
-  // more efficient than copying the HttpRequestInfo object and changing the
-  // URL.
-  static std::optional<std::string> GenerateCacheKeyForRequestWithAlternateURL(
-      const HttpRequestInfo* request,
-      const GURL& url);
-
   // Generates the cache partition key, which is the cache key not including the
   // URL. This does include the upload data identifier when needed.
   static std::optional<std::string> GenerateCachePartitionKeyForRequest(
@@ -540,7 +533,6 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
   // CanGenerateCacheKeyForRequest() returned true. Otherwise returns nullopt.
   static std::optional<std::string> GenerateCacheKeyInternal(
       const HttpRequestInfo& request,
-      const GURL& url,
       bool include_url);
 
   // Generates a cache key given the various pieces used to construct the key.
