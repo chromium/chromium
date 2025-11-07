@@ -4,10 +4,15 @@
 
 package org.chromium.chrome.browser.autofill.settings;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.VisibleForTesting;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceScreen;
 
@@ -16,9 +21,12 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.autofill.AutofillUiUtils;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
+import org.chromium.components.autofill.payments.BnplIssuerForSettings;
+import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsFragment;
 
@@ -26,9 +34,13 @@ import org.chromium.components.browser_ui.settings.SettingsFragment;
 @NullMarked
 public class AutofillBuyNowPayLaterFragment extends ChromeBaseSettingsFragment
         implements PersonalDataManager.PersonalDataManagerObserver,
+                Preference.OnPreferenceClickListener,
                 Preference.OnPreferenceChangeListener {
     @VisibleForTesting
     static final String PREF_KEY_ENABLE_BUY_NOW_PAY_LATER = "enable_buy_now_pay_later";
+
+    @VisibleForTesting static final String PREF_KEY_BNPL_ISSUER_TERM = "bnpl_issuers_term_key";
+    @VisibleForTesting static final String PREF_LIST_TERMS_URL = "bnpl_issuers_terms_url";
 
     private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
@@ -40,6 +52,9 @@ public class AutofillBuyNowPayLaterFragment extends ChromeBaseSettingsFragment
 
         // Create blank preference screen.
         PreferenceScreen screen = getPreferenceManager().createPreferenceScreen(getStyledContext());
+        // Suppresses unwanted animations while Preferences are removed from and re-added to the
+        // screen.
+        screen.setShouldUseGeneratedIds(false);
         setPreferenceScreen(screen);
     }
 
@@ -54,6 +69,9 @@ public class AutofillBuyNowPayLaterFragment extends ChromeBaseSettingsFragment
         getPreferenceScreen().removeAll();
         getPreferenceScreen().setOrderingAsAdded(true);
         createBuyNowPayLaterSwitch();
+        if (mPersonalDataManager.isBuyNowPayLaterEnabled()) {
+            createPreferencesForBnplTerms();
+        }
     }
 
     private void createBuyNowPayLaterSwitch() {
@@ -67,9 +85,52 @@ public class AutofillBuyNowPayLaterFragment extends ChromeBaseSettingsFragment
         getPreferenceScreen().addPreference(buyNowPayLaterSwitch);
     }
 
+    private void createPreferencesForBnplTerms() {
+        for (BnplIssuerForSettings issuer : mPersonalDataManager.getBnplIssuersForSettings()) {
+            // Add a preference for the BNPL issuer.
+            ChromeBasePreference issuerPref = new ChromeBasePreference(getStyledContext());
+            issuerPref.setDividerAllowedAbove(true);
+            issuerPref.setDividerAllowedBelow(true);
+            issuerPref.setTitle(issuer.getDisplayName());
+            issuerPref.setKey(PREF_KEY_BNPL_ISSUER_TERM);
+
+            // Add BNPL issuer site redirect.
+            Bundle args = issuerPref.getExtras();
+            args.putString(
+                    PREF_LIST_TERMS_URL,
+                    AutofillUiUtils.getManagePaymentMethodUrlForInstrumentId(
+                            issuer.getInstrumentId()));
+            issuerPref.setOnPreferenceClickListener(this);
+
+            // Set BNPL issuer icon.
+            issuerPref.setIcon(
+                    AppCompatResources.getDrawable(getStyledContext(), issuer.getIconId()));
+
+            // Add GPay icon.
+            issuerPref.setWidgetLayoutResource(R.layout.autofill_server_data_label);
+
+            getPreferenceScreen().addPreference(issuerPref);
+        }
+    }
+
+    private void openUrlInCct(String url) {
+        new CustomTabsIntent.Builder()
+                .setShowTitle(true)
+                .build()
+                .launchUrl(getContext(), Uri.parse(url));
+    }
+
     @Override
     public void onPersonalDataChanged() {
         rebuildPage();
+    }
+
+    @Override
+    public boolean onPreferenceClick(Preference preference) {
+        openUrlInCct(assumeNonNull(preference.getExtras().getString(PREF_LIST_TERMS_URL)));
+        // TODO(crbug.com/430575808): Record user action metric for opening the BNPL issuer terms
+        // URL.
+        return true;
     }
 
     @Override

@@ -28,6 +28,7 @@ import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.autofill.IbanRecordType;
 import org.chromium.components.autofill.VirtualCardEnrollmentState;
 import org.chromium.components.autofill.payments.BankAccount;
+import org.chromium.components.autofill.payments.BnplIssuerForSettings;
 import org.chromium.components.autofill.payments.Ewallet;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -1165,6 +1166,12 @@ public class PersonalDataManager implements Destroyable {
         mPrefService.setBoolean(Pref.AUTOFILL_BNPL_ENABLED, enable);
     }
 
+    /** Gets the BNPL issuers to show in the settings page. */
+    public BnplIssuerForSettings[] getBnplIssuersForSettings() {
+        ThreadUtils.assertOnUiThread();
+        return PersonalDataManagerJni.get().getBnplIssuersForSettings(mPersonalDataManagerAndroid);
+    }
+
     @NativeMethods
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {
@@ -1277,5 +1284,7 @@ public class PersonalDataManager implements Destroyable {
                 long nativePersonalDataManagerAndroid, @JniType("std::string") String guid);
 
         boolean shouldShowBnplSettings(long nativePersonalDataManagerAndroid);
+
+        BnplIssuerForSettings[] getBnplIssuersForSettings(long nativePersonalDataManagerAndroid);
     }
 }
