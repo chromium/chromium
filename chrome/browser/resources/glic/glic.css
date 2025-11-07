@@ -221,7 +221,7 @@ webview:not([hidden]) {
 
 .panel .close-button {
   --cr-icon-button-size: 24px;
-  --cr-icon-button-icon-size: 14px;
+  --cr-icon-button-icon-size: 20px;
   color: var(--color--on-surface-variant);
 }
 

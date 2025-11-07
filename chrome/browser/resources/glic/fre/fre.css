@@ -50,7 +50,7 @@ body {
 
 #fre-app-container .close-button {
   --cr-icon-button-size: var(--header-height);
-  --cr-icon-button-icon-size: 14px;
+  --cr-icon-button-icon-size: 20px;
   color: var(--cr-fallback-color-on-surface);
 }
 
