@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
 #include "base/process/process.h"
 #include "base/system/sys_info.h"
@@ -27,22 +28,29 @@
 // Event objects are immutable upon construction and are thread-safe. Builders
 // are not thread-safe.
 //
-// Usage examples:
+// Example API usage:
 //
-// Create an event using its builder:
-//
-//    std::unique_ptr<updater::InstallStartEvent> event =
-//        updater::InstallStartEvent::Builder()
-//            .SetEventId("custom-event-id-123")
-//            .SetAppId("my-app-id")
-//            .AddError({.category = 1, .code = 2, .extracode1 = 3})
-//            .Build();
-//
-// Serialize an event to a dictionary:
-//
-//    base::Value::Dict event_dict = event->ToDict();
+//    updater::InstallStartEvent::Builder()
+//        .SetEventId("custom-event-id-123")
+//        .SetAppId("my-app-id")
+//        .AddError({.category = 1, .code = 2, .extracode1 = 3})
+//        .Write();
 
 namespace updater {
+
+// Must be called before any events are written to initialize global logging
+// state. A log file at `path` is created if one does not already exist.
+//
+// For system-scoped installations, this operation updates the file permissions
+// / security descriptor for `path` to allow any user to read the log. This is
+// essential for non-privileged presentation layers (e.g. Chrome) to load the
+// data.
+//
+// Under normal circumstances this function should be called once per process,
+// however it is safe to call multiple times (e.g. to redirect all future
+// logging to a different file). Initialization is thread-safe, even if
+// reinitializing.
+void InitHistoryLogging(const base::FilePath& path);
 
 // Generates an event ID unique to this process. An ID is required for all
 // events. The same ID may be used in multiple events, e.g. to link START and
@@ -94,6 +102,8 @@ class Event {
   virtual void ToDictInternal(base::Value::Dict& dict) const = 0;
 
  private:
+  void Write() const;
+
   const std::string event_type_;
   const Bound bound_;
   const std::string event_id_;
@@ -144,6 +154,18 @@ class Event::BuilderMixin {
   T& AddError(const Event::Error& error) {
     errors_.push_back(error);
     return static_cast<T&>(*this);
+  }
+
+  // Builds, serializes, and writes the event to storage. Errors are VLOGed. A
+  // failure to build the event indicates a programming error; a dump is created
+  // without crashing.
+  void Write() {
+    std::unique_ptr<Event> event = static_cast<T*>(this)->Build();
+    if (!event) {
+      base::debug::DumpWithoutCrashing();
+      return;
+    }
+    event->Write();
   }
 
  protected:

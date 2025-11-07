@@ -6,7 +6,12 @@
 
 #include <memory>
 
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
+#include "base/json/json_reader.h"
 #include "base/json/values_util.h"
+#include "base/strings/string_split.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -55,7 +60,20 @@ MATCHER(IsPositiveTimeDeltaValue, "") {
   return td.has_value() && td->is_positive();
 }
 
-TEST(EventHistoryTest, ErrorToDict) {
+class EventHistoryTest : public testing::Test {
+ public:
+  void SetUp() override {
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+    log_path_ = temp_dir_.GetPath().Append(FILE_PATH_LITERAL("event.log"));
+    InitHistoryLogging(log_path_);
+  }
+
+ protected:
+  base::ScopedTempDir temp_dir_;
+  base::FilePath log_path_;
+};
+
+TEST_F(EventHistoryTest, ErrorToDict) {
   Event::Error error{.category = 1, .code = 2, .extracode1 = 3};
   EXPECT_THAT(error.ToDict(), DictHasFields(ExpectedFields({
                                   {"category", ValueIs(1)},
@@ -71,7 +89,75 @@ int GetCurrentPid() {
   return base::Process::Current().Pid();
 }
 
-TEST(EventHistoryTest, InstallStartEventMembers) {
+TEST_F(EventHistoryTest, Write) {
+  InstallStartEvent::Builder()
+      .SetEventId("test-event-id-1")
+      .SetAppId("test-app-id-1")
+      .AddError({.category = 1, .code = 2, .extracode1 = 3})
+      .Write();
+
+  InstallEndEvent::Builder()
+      .SetEventId("test-event-id-2")
+      .SetVersion("1.2.3.4")
+      .Write();
+
+  std::string contents;
+  ASSERT_TRUE(base::ReadFileToString(log_path_, &contents));
+  std::vector<std::string> lines = base::SplitString(
+      contents, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  ASSERT_EQ(lines.size(), 2U);
+
+  std::optional<base::Value> json1 =
+      base::JSONReader::Read(lines[0], base::JSON_PARSE_RFC);
+  ASSERT_TRUE(json1);
+  ASSERT_TRUE(json1->is_dict());
+
+  std::optional<base::Value> json2 =
+      base::JSONReader::Read(lines[1], base::JSON_PARSE_RFC);
+  ASSERT_TRUE(json2);
+  ASSERT_TRUE(json2->is_dict());
+
+  base::Value::List expected_errors =
+      base::Value::List().Append(base::Value::Dict()
+                                     .Set("category", 1)
+                                     .Set("code", 2)
+                                     .Set("extracode1", 3));
+  EXPECT_THAT(json1->GetDict(),
+              DictHasFields(ExpectedFields({
+                  {"eventType", ValueIs("INSTALL")},
+                  {"bound", ValueIs("START")},
+                  {"eventId", ValueIs("test-event-id-1")},
+                  {"appId", ValueIs("test-app-id-1")},
+                  {"deviceUptime", IsPositiveTimeDeltaValue()},
+                  {"pid", ValueIs(GetCurrentPid())},
+                  {"processToken", ValueIs(InstallStartEvent::Builder()
+                                               .SetEventId("test-event-id-1")
+                                               .SetAppId("test-app-id-1")
+                                               .Build()
+                                               ->process_token())},
+                  {"errors", Eq(std::cref(expected_errors))},
+              })));
+
+  EXPECT_THAT(json2->GetDict(),
+              DictHasFields(ExpectedFields({
+                  {"eventType", ValueIs("INSTALL")},
+                  {"bound", ValueIs("END")},
+                  {"eventId", ValueIs("test-event-id-2")},
+                  {"version", ValueIs("1.2.3.4")},
+                  {"deviceUptime", IsPositiveTimeDeltaValue()},
+                  {"pid", ValueIs(GetCurrentPid())},
+                  {"processToken", ValueIs(InstallEndEvent::Builder()
+                                               .SetEventId("test-event-id-2")
+                                               .SetVersion("1.2.3.4")
+                                               .Build()
+                                               ->process_token())},
+              })));
+
+  // Reset logging state.
+  InitHistoryLogging(base::FilePath());
+}
+
+TEST_F(EventHistoryTest, InstallStartEventMembers) {
   std::unique_ptr<InstallStartEvent> event =
       InstallStartEvent::Builder()
           .SetEventId("test-event-id")
@@ -88,7 +174,7 @@ TEST(EventHistoryTest, InstallStartEventMembers) {
                                 Field(&Event::Error::extracode1, Eq(3)))));
 }
 
-TEST(EventHistoryTest, InstallStartEventToDict) {
+TEST_F(EventHistoryTest, InstallStartEventToDict) {
   std::unique_ptr<InstallStartEvent> event =
       InstallStartEvent::Builder()
           .SetEventId("test-event-id")
@@ -114,7 +200,7 @@ TEST(EventHistoryTest, InstallStartEventToDict) {
               })));
 }
 
-TEST(EventHistoryTest, InstallEndEventMembers) {
+TEST_F(EventHistoryTest, InstallEndEventMembers) {
   std::unique_ptr<InstallEndEvent> event = InstallEndEvent::Builder()
                                                .SetEventId("test-event-id")
                                                .SetVersion("1.2.3.4")
@@ -126,7 +212,7 @@ TEST(EventHistoryTest, InstallEndEventMembers) {
   EXPECT_THAT(event->errors(), IsEmpty());
 }
 
-TEST(EventHistoryTest, InstallEndEventToDict) {
+TEST_F(EventHistoryTest, InstallEndEventToDict) {
   std::unique_ptr<InstallEndEvent> event = InstallEndEvent::Builder()
                                                .SetEventId("test-event-id")
                                                .SetVersion("1.2.3.4")
@@ -143,7 +229,7 @@ TEST(EventHistoryTest, InstallEndEventToDict) {
               })));
 }
 
-TEST(EventHistoryTest, InstallEndEventNoVersionToDict) {
+TEST_F(EventHistoryTest, InstallEndEventNoVersionToDict) {
   std::unique_ptr<InstallEndEvent> event =
       InstallEndEvent::Builder().SetEventId("test-event-id").Build();
   EXPECT_THAT(event->ToDict(),
@@ -157,7 +243,7 @@ TEST(EventHistoryTest, InstallEndEventNoVersionToDict) {
               })));
 }
 
-TEST(EventHistoryTest, InstallStartEventBuilderReturnsNullptrOnMissingAppId) {
+TEST_F(EventHistoryTest, InstallStartEventBuilderReturnsNullptrOnMissingAppId) {
   EXPECT_EQ(InstallStartEvent::Builder().SetEventId("test-event-id").Build(),
             nullptr);
 }
