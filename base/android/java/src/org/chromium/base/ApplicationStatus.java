@@ -92,9 +92,14 @@ public class ApplicationStatus {
         }
     }
 
-    /** A map of which observers listen to state changes from which {@link Activity}. */
+    /**
+     * A map of which observers listen to state changes from which {@link Activity}.
+     *
+     * <p>Access to the cached state should be synchronized by this map.
+     **/
+    @GuardedBy("sActivityInfo")
     private static final Map<Activity, ActivityInfo> sActivityInfo =
-            Collections.synchronizedMap(new HashMap<Activity, ActivityInfo>());
+            new HashMap<Activity, ActivityInfo>();
 
     /** A map to cache TaskId for each {@link Activity}. */
     public static final Map<Activity, Integer> sActivityTaskId =
@@ -555,8 +560,10 @@ public class ApplicationStatus {
     public static int getStateForActivity(@Nullable Activity activity) {
         assert isInitialized();
         if (activity == null) return ActivityState.DESTROYED;
-        ActivityInfo info = sActivityInfo.get(activity);
-        return info != null ? info.getStatus() : ActivityState.DESTROYED;
+        synchronized (sActivityInfo) {
+            ActivityInfo info = sActivityInfo.get(activity);
+            return info != null ? info.getStatus() : ActivityState.DESTROYED;
+        }
     }
 
     /**
@@ -595,7 +602,9 @@ public class ApplicationStatus {
     @AnyThread
     public static boolean isEveryActivityDestroyed() {
         assert isInitialized();
-        return sActivityInfo.isEmpty();
+        synchronized (sActivityInfo) {
+            return sActivityInfo.isEmpty();
+        }
     }
 
     /**
@@ -608,11 +617,13 @@ public class ApplicationStatus {
     @AnyThread
     public static boolean isTaskVisible(int taskId) {
         assert isInitialized();
-        for (Map.Entry<Activity, ActivityInfo> entry : sActivityInfo.entrySet()) {
-            if (getTaskId(entry.getKey()) == taskId) {
-                @ActivityState int state = entry.getValue().getStatus();
-                if (state == ActivityState.RESUMED || state == ActivityState.PAUSED) {
-                    return true;
+        synchronized (sActivityInfo) {
+            for (Map.Entry<Activity, ActivityInfo> entry : sActivityInfo.entrySet()) {
+                if (getTaskId(entry.getKey()) == taskId) {
+                    @ActivityState int state = entry.getValue().getStatus();
+                    if (state == ActivityState.RESUMED || state == ActivityState.PAUSED) {
+                        return true;
+                    }
                 }
             }
         }
@@ -686,13 +697,15 @@ public class ApplicationStatus {
         assert isInitialized();
         assert activity != null;
 
-        ActivityInfo info = sActivityInfo.get(activity);
-        assert info != null
-                : String.format(
-                        "Found untracked Activity: %s isDestroyed=%s isFinishing=%s",
-                        activity, activity.isDestroyed(), activity.isFinishing());
-        assert info.getStatus() != ActivityState.DESTROYED : activity.toString();
-        info.getListeners().addObserver(listener);
+        synchronized (sActivityInfo) {
+            ActivityInfo info = sActivityInfo.get(activity);
+            assert info != null
+                    : String.format(
+                            "Found untracked Activity: %s isDestroyed=%s isFinishing=%s",
+                            activity, activity.isDestroyed(), activity.isFinishing());
+            assert info.getStatus() != ActivityState.DESTROYED : activity.toString();
+            info.getListeners().addObserver(listener);
+        }
     }
 
     /**
