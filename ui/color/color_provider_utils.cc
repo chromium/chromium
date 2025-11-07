@@ -154,16 +154,16 @@ ColorProviderUtilsCallbacks::~ColorProviderUtilsCallbacks() = default;
 #include "ui/color/color_id_map_macros.inc"
 
 std::string ColorIdName(ColorId color_id) {
-  static constexpr const auto color_id_map =
+  static constexpr auto kColorIdMap =
       base::MakeFixedFlatMap<ColorId, const char*>({COLOR_IDS});
-  auto i = color_id_map.find(color_id);
-  if (i != color_id_map.cend()) {
-    return {i->second};
+  auto it = kColorIdMap.find(color_id);
+  if (it != kColorIdMap.cend()) {
+    return {it->second};
   }
   std::string_view color_name;
   if (g_color_provider_utils_callbacks &&
       g_color_provider_utils_callbacks->ColorIdName(color_id, &color_name)) {
-    return std::string(color_name.data(), color_name.length());
+    return std::string(color_name);
   }
   return base::StringPrintf("ColorId(%d)", color_id);
 }
@@ -281,24 +281,32 @@ std::string SkColorName(SkColor color) {
   auto color_with_alpha = color;
   SkAlpha color_alpha = SkColorGetA(color_with_alpha);
   color = SkColorSetA(color, color_alpha != 0 ? SK_AlphaOPAQUE : color_alpha);
-  auto i = color_name_map.find(color);
-  if (i != color_name_map.cend()) {
-    if (SkColorGetA(color_with_alpha) == SkColorGetA(color)) {
-      return i->second;
-    }
-    return base::StringPrintf("rgba(%s, %f)", i->second, 1.0 / color_alpha);
+  auto it = color_name_map.find(color);
+  if (it == color_name_map.cend()) {
+    return color_utils::SkColorToRgbaString(color);
   }
-  return color_utils::SkColorToRgbaString(color);
+  if (SkColorGetA(color_with_alpha) == SkColorGetA(color)) {
+    return it->second;
+  }
+  return base::StringPrintf("rgba(%s, %f)", it->second, 1.0 / color_alpha);
 }
 
-std::string ConvertColorProviderColorIdToCSSColorId(std::string color_id_name) {
-  color_id_name.replace(color_id_name.begin(), color_id_name.begin() + 1, "-");
+std::string ConvertColorProviderColorIdToCSSColorId(
+    std::string_view color_id_name) {
   std::string css_color_id_name;
-  for (char i : color_id_name) {
-    if (base::IsAsciiUpper(i)) {
-      css_color_id_name += std::string("-");
+  // Based on runtime analysis, the most number of capital letters in
+  // `css_color_id_name` is 11. Reserve slightly more space than that.
+  css_color_id_name.reserve(color_id_name.size() + 15);
+
+  // Preprocess the first character and skip it in the loop.
+  css_color_id_name.push_back('-');
+  for (char c : color_id_name.substr(1)) {
+    if (base::IsAsciiUpper(c)) {
+      css_color_id_name.push_back('-');
+      css_color_id_name.push_back(base::ToLowerASCII(c));
+    } else {
+      css_color_id_name.push_back(c);
     }
-    css_color_id_name += base::ToLowerASCII(i);
   }
   return css_color_id_name;
 }

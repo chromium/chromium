@@ -43,7 +43,7 @@ std::string COMPONENT_EXPORT(COLOR) SkColorName(SkColor color);
 // Converts Color Provider Color Id in string format from kColorXXX to
 // "--color-X-X-X" for CSS
 std::string COMPONENT_EXPORT(COLOR)
-    ConvertColorProviderColorIdToCSSColorId(std::string color_id_name);
+    ConvertColorProviderColorIdToCSSColorId(std::string_view color_id_name);
 
 // Converts SkColor in ARGB format to CSS color in RGBA color. Returns the color
 // in a Hex string representation.

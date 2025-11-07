@@ -15,9 +15,9 @@
 using ColorProviderUtilsTest = ::testing::Test;
 
 TEST_F(ColorProviderUtilsTest, ConvertColorProviderColorIdToCSSColorId) {
-  EXPECT_EQ(std::string("--color-primary-background"),
+  EXPECT_EQ("--color-primary-background",
             ui::ConvertColorProviderColorIdToCSSColorId(
-                std::string(ui::ColorIdName(ui::kColorPrimaryBackground))));
+                ui::ColorIdName(ui::kColorPrimaryBackground)));
 }
 
 TEST_F(ColorProviderUtilsTest, ConvertSkColorToCSSColor) {
