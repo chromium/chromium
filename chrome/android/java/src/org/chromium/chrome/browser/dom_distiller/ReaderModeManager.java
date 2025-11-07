@@ -888,8 +888,6 @@ public class ReaderModeManager extends EmptyTabObserver
         String distillerUrl =
                 DomDistillerUrlUtils.getDistillerViewUrlFromUrl(
                         DISTILLER_SCHEME, url.getSpec(), webContents.getTitle());
-        // Override default accessibility zoom for custom tab distillation.
-        DomDistillerTabUtils.overrideDefaultZoomForReaderModePage(webContents, distillerUrl);
 
         assertNonNull(activity);
         CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();

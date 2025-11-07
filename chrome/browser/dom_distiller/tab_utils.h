@@ -35,8 +35,5 @@ void RunReadabilityHeuristicsOnWebContents(
     content::WebContents* web_contents,
     base::OnceCallback<void(bool)> callback);
 
-// Overrides the default zoom level for a reader mode page.
-void OverrideDefaultZoomForReaderModePage(content::WebContents* web_contents,
-                                          const GURL& url);
 
 #endif  // CHROME_BROWSER_DOM_DISTILLER_TAB_UTILS_H_

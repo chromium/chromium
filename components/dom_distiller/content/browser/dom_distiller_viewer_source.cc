@@ -31,6 +31,7 @@
 #include "components/dom_distiller/core/viewer.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/back_forward_cache.h"
+#include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
@@ -174,6 +175,17 @@ void DomDistillerViewerSource::RequestViewerHandle::DOMContentLoaded(
   if (render_frame_host->GetParentOrOuterDocument()) {
     return;
   }
+
+#if BUILDFLAG(IS_ANDROID)
+  // Reading mode should not be affected by the default zoom level. There is a
+  // JS font scaling applied based on distilled_page_prefs, so we want to set
+  // temporary zoom level of 0 so that the zoom settings do not stack on top of
+  // one another.
+  content::HostZoomMap* host_zoom_map =
+      content::HostZoomMap::GetForWebContents(web_contents());
+  host_zoom_map->SetTemporaryZoomLevel(
+      web_contents()->GetPrimaryMainFrame()->GetGlobalId(), 0.0);
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // Execute the scripts in buffer_ one-by-one, starting from the front of the
   // list.
