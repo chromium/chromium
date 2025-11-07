@@ -103,12 +103,14 @@ able, 0
 abo.pa, 0
 abogado, 0
 abr.it, 0
+abrdns.com, 4
 abruzzo.it, 0
 abu.yamaguchi.jp, 0
 abudhabi, 0
 ac, 0
 ac.ae, 0
 ac.at, 0
+ac.bd, 0
 ac.be, 0
 ac.bw, 0
 ac.ci, 0
@@ -236,6 +238,7 @@ aguni.okinawa.jp, 0
 ah.cn, 0
 ah.no, 0
 ai, 0
+ai.bd, 0
 ai.in, 0
 ai.jo, 0
 ai.kr, 0
@@ -285,9 +288,6 @@ airflow.us-east-2.on.aws, 6
 airflow.us-west-1.on.aws, 6
 airflow.us-west-2.on.aws, 6
 airforce, 0
-airkitapps-au.com, 4
-airkitapps.com, 4
-airkitapps.eu, 4
 airline.aero, 0
 airport.aero, 0
 airtel, 0
@@ -734,6 +734,7 @@ band, 0
 bandai.fukushima.jp, 0
 bando.ibaraki.jp, 0
 bank, 0
+bank.in, 0
 bar, 0
 bar.ec, 0
 bar.pro, 0
@@ -803,12 +804,13 @@ bbva, 0
 bc.ca, 0
 bcg, 0
 bcn, 0
-bd, 2
+bd, 0
 bd.se, 0
 be, 0
 be.eu.org, 4
 beagleboard.io, 4
 bearalvahki.no, 0
+bearblog.dev, 4
 beardu.no, 0
 beats, 0
 beauty, 0
@@ -954,6 +956,7 @@ boldlygoingnowhere.org, 4
 boleslawiec.pl, 0
 bolivia.bo, 0
 bologna.it, 0
+bolt.host, 4
 bolt.hu, 0
 bolzano-altoadige.it, 0
 bolzano.it, 0
@@ -1077,6 +1080,7 @@ cab, 0
 cable-modem.org, 4
 cafe, 0
 caffeine.site, 4
+caffeine.xyz, 4
 cafjs.com, 4
 cagliari.it, 0
 cahcesuolo.no, 0
@@ -1107,6 +1111,9 @@ canon, 0
 cantho.vn, 0
 canva-apps.cn, 4
 canva-apps.com, 4
+canva-hosted-embed.com, 4
+canva.run, 4
+canvacode.com, 4
 caobang.vn, 0
 capetown, 0
 capital, 0
@@ -1346,6 +1353,7 @@ clinique, 0
 clothing, 0
 cloud, 0
 cloud-ip.biz, 4
+cloud-ip.cc, 4
 cloud.fedoraproject.org, 4
 cloud.goog, 4
 cloud.interhostsolutions.be, 4
@@ -1359,6 +1367,7 @@ cloudapps.digital, 4
 cloudbeesusercontent.io, 4
 cloudera.site, 6
 cloudflare-ipfs.com, 4
+cloudflare.app, 4
 cloudflare.net, 4
 cloudfront.net, 4
 cloudfunctions.net, 4
@@ -1409,6 +1418,7 @@ co.ao, 0
 co.at, 0
 co.az, 0
 co.bb, 0
+co.bd, 0
 co.bi, 0
 co.biz.ng, 4
 co.bj, 0
@@ -1513,6 +1523,7 @@ com.aw, 0
 com.az, 0
 com.ba, 0
 com.bb, 0
+com.bd, 0
 com.bh, 0
 com.bi, 0
 com.bj, 0
@@ -1898,6 +1909,7 @@ direct, 0
 direct.quickconnect.cn, 4
 direct.quickconnect.to, 4
 directory, 0
+directwp.eu, 4
 disco.ec, 0
 discordsays.com, 4
 discordsez.com, 4
@@ -1993,7 +2005,6 @@ dtwh.nl-ams.scw.cloud, 4
 dtwh.pl-waw.scw.cloud, 4
 dubai, 0
 duckdns.org, 4
-dunlop, 0
 dupont, 0
 durban, 0
 durumis.com, 4
@@ -2047,6 +2058,7 @@ dynvpn.de, 4
 dyroy.no, 0
 dz, 0
 e.bg, 0
+e.id, 4
 e.se, 0
 e12.ve, 0
 e164.arpa, 0
@@ -2099,6 +2111,7 @@ edu.au, 0
 edu.az, 0
 edu.ba, 0
 edu.bb, 0
+edu.bd, 0
 edu.bh, 0
 edu.bi, 0
 edu.bj, 0
@@ -2452,6 +2465,7 @@ eu.ngrok.io, 4
 eu.org, 4
 eu.platform.sh, 4
 eu.pythonanywhere.com, 4
+eu1-plenit.com, 4
 eun.eg, 0
 eurodir.ru, 4
 eurovision, 0
@@ -2580,6 +2594,7 @@ filegear.me, 4
 film, 0
 film.hu, 0
 fin.ec, 0
+fin.in, 0
 fin.tn, 0
 final, 0
 finance, 0
@@ -2943,6 +2958,7 @@ giske.no, 0
 git-pages.rit.edu, 4
 git-repos.de, 4
 gitapp.si, 4
+gitbook.io, 4
 github.app, 4
 github.io, 4
 githubpreview.dev, 4
@@ -3069,6 +3085,7 @@ gov.au, 0
 gov.az, 0
 gov.ba, 0
 gov.bb, 0
+gov.bd, 0
 gov.bf, 0
 gov.bh, 0
 gov.bm, 0
@@ -3619,6 +3636,7 @@ i.se, 0
 i234.me, 4
 ia.br, 0
 ia.us, 0
+ia.ve, 0
 iamallama.com, 4
 ibara.okayama.jp, 0
 ibaraki.ibaraki.jp, 0
@@ -3649,6 +3667,7 @@ icu, 0
 icurus.jp, 4
 id, 0
 id.au, 0
+id.bd, 0
 id.cv, 0
 id.firewalledreplit.co, 4
 id.forgerock.io, 4
@@ -3779,6 +3798,7 @@ info, 0
 info.at, 4
 info.az, 0
 info.bb, 0
+info.bd, 0
 info.bj, 0
 info.bo, 0
 info.cx, 4
@@ -3988,6 +4008,7 @@ istmein.de, 4
 isumi.chiba.jp, 0
 it, 0
 it.ao, 0
+it.bd, 0
 it.com, 4
 it.eu.org, 4
 it.kr, 0
@@ -4628,6 +4649,7 @@ l.se, 0
 la, 0
 la-spezia.it, 0
 la.us, 0
+la1-plenit.com, 4
 laakesvuemie.no, 0
 labeling.ap-northeast-1.sagemaker.aws, 4
 labeling.ap-northeast-2.sagemaker.aws, 4
@@ -4688,6 +4710,9 @@ lds, 0
 le.it, 0
 leadpages.co, 4
 leangaviika.no, 0
+leapcell.app, 4
+leapcell.dev, 4
+leapcell.online, 4
 lease, 0
 leasing.aero, 0
 lebesby.no, 0
@@ -5148,6 +5173,7 @@ mil.al, 0
 mil.ar, 0
 mil.az, 0
 mil.ba, 0
+mil.bd, 0
 mil.bo, 0
 mil.br, 0
 mil.by, 0
@@ -5680,6 +5706,7 @@ ne.us, 0
 neat-url.com, 4
 nec, 0
 nedre-eiker.no, 0
+needle.run, 4
 nemuro.hokkaido.jp, 0
 nerdpol.ovh, 4
 nerima.tokyo.jp, 0
@@ -5704,6 +5731,7 @@ net.au, 0
 net.az, 0
 net.ba, 0
 net.bb, 0
+net.bd, 0
 net.bh, 0
 net.bj, 0
 net.bm, 0
@@ -6332,6 +6360,7 @@ org.au, 0
 org.az, 0
 org.ba, 0
 org.bb, 0
+org.bd, 0
 org.bh, 0
 org.bi, 0
 org.bj, 0
@@ -7038,6 +7067,7 @@ ri.it, 0
 ri.us, 0
 ribeirao.br, 0
 ric.jelastic.vps-host.net, 4
+rice-labs.com, 4
 rich, 0
 richardli, 0
 ricoh, 0
@@ -7600,6 +7630,7 @@ scbl.fr-par.scw.cloud, 4
 scbl.nl-ams.scw.cloud, 4
 scbl.pl-waw.scw.cloud, 4
 sch.ae, 0
+sch.bd, 0
 sch.id, 0
 sch.ir, 0
 sch.jo, 0
@@ -8058,6 +8089,7 @@ stathelle.no, 0
 static-access.net, 4
 static.hf.space, 4
 static.observableusercontent.com, 4
+statichost.page, 4
 statics.cloud, 6
 stavanger.no, 0
 stavern.no, 0
@@ -8175,6 +8207,7 @@ supersale.jp, 4
 supplies, 0
 supply, 0
 support, 0
+support.site, 4
 surf, 0
 surgery, 0
 surnadal.no, 0
@@ -8359,6 +8392,7 @@ tel.tr, 0
 telebit.app, 4
 telebit.io, 4
 telebit.xyz, 6
+teleport.sh, 4
 temasek, 0
 temp-dns.com, 4
 tempio-olbia.it, 0
@@ -8716,6 +8750,7 @@ tuxfamily.org, 4
 tuyenquang.vn, 0
 tv, 0
 tv.bb, 0
+tv.bd, 0
 tv.bo, 0
 tv.br, 0
 tv.eg, 0
@@ -8863,6 +8898,7 @@ us.org, 4
 us.platform.sh, 4
 us.reclaim.cloud, 4
 us.ug, 0
+us1-plenit.com, 4
 usa.oita.jp, 0
 user.aseinet.ne.jp, 4
 user.fm, 6
@@ -9115,6 +9151,7 @@ warabi.saitama.jp, 0
 warmia.pl, 0
 warszawa.pl, 0
 washtenaw.mi.us, 0
+wasmer.app, 4
 wassamu.hokkaido.jp, 0
 watarai.mie.jp, 0
 watari.miyagi.jp, 0
@@ -9163,6 +9200,7 @@ weblike.jp, 4
 webpaas.ovh.net, 6
 webredirect.org, 4
 website, 0
+website.one, 4
 website.yandexcloud.net, 4
 websitebuilder.online, 4
 websozai.jp, 4
@@ -9308,6 +9346,7 @@ x0.to, 4
 x443.pw, 4
 xbox, 0
 xen.prgmr.com, 4
+xenonconnect.de, 6
 xerox, 0
 xihuan, 0
 xii.jp, 4
