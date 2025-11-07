@@ -78,6 +78,7 @@
 <translation id="112840717907525620">แคชนโยบายใช้ได้</translation>
 <translation id="1131264053432022307">รูปภาพที่คุณคัดลอก</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – หากต้องการออกจากโหมดเต็มหน้าจอ ให้ลากจากด้านบนแล้วแตะปุ่มย้อนกลับ</translation>
+<translation id="1133418583142946603">เพิ่มแท็บปัจจุบัน</translation>
 <translation id="1138458427267715730">รับการแจ้งเตือนเมื่อราคาต่ำลงในเว็บไซต์ใดก็ตามทั่วทั้งอินเทอร์เน็ต</translation>
 <translation id="1142713751288681188">ประเภทกระดาษ</translation>
 <translation id="1142965388643537393">ข้อมูลท่องเที่ยว</translation>
@@ -208,7 +209,7 @@
 <translation id="1329916999021038454">ส่งรายงาน</translation>
 <translation id="1330449323196174374">พับทบด้านซ้าย</translation>
 <translation id="1333745675627230582">เล่นเกมไดโนเสาร์ Chrome</translation>
-<translation id="1333989956347591814">ผู้อื่น<ph name="BEGIN_EMPHASIS" />อาจยังมองเห็น<ph name="END_EMPHASIS" />กิจกรรมของคุณ:
+<translation id="1333989956347591814">บุคคลหรือองค์กรต่อไปนี้<ph name="BEGIN_EMPHASIS" />อาจยังมองเห็น<ph name="END_EMPHASIS" />กิจกรรมของคุณ
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />เว็บไซต์ที่คุณเข้าชม
           <ph name="LIST_ITEM" />นายจ้างหรือโรงเรียน

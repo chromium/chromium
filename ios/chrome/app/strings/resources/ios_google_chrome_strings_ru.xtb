@@ -142,7 +142,7 @@
 <translation id="4633328489441962921">Браузеру Chrome не удается проверить наличие обновлений</translation>
 <translation id="4636900170638246267">Войдите на этот сайт и в Chrome.</translation>
 <translation id="4647910807533196601">Открыть последнюю вкладку в Chrome.</translation>
-<translation id="4693084815234024320">Включен режим инкогнито в Chrome</translation>
+<translation id="4693084815234024320">Chrome в режиме инкогнито</translation>
 <translation id="4708857722625759026">Вы сможете быстрее открывать Chrome на панели Dock вашего iPad.</translation>
 <translation id="4713740144985377441">Чтобы загрузить файл, вернитесь в Chrome.</translation>
 <translation id="4713907610796204963">Чтобы начать работу с Chrome, изучите полезную базовую информацию.</translation>
@@ -173,6 +173,7 @@
 <translation id="5305440589062022504">Откроется Менеджер паролей в Chrome.</translation>
 <translation id="5310957470610282541">Некоторые данные Chrome ещё не сохранены в аккаунте Google.
 Подождите несколько минут. Если выйти сейчас, эти данные будут удалены.</translation>
+<translation id="5342685492141499976">Ваши данные будут сохранены в Google Менеджере паролей для аккаунта <ph name="USER_EMAIL" />.</translation>
 <translation id="5389212809648216794">Google Chrome не может получить доступ к камере, поскольку она используется другим приложением.</translation>
 <translation id="5395376160638294582">Обеспечьте доступ к данным Chrome в аккаунте Google.</translation>
 <translation id="5404252374083197467">Сделать Chrome браузером по умолчанию?</translation>
@@ -200,6 +201,7 @@
 <translation id="5808435672482059465">Посмотреть историю Chrome</translation>
 <translation id="5833027901704861726">Некоторые ваши данные Chrome ещё не сохранены в аккаунте <ph name="EMAIL" />.
 Подождите несколько минут, прежде чем переключаться на другой аккаунт, иначе эти данные будут удалены.</translation>
+<translation id="5853754888722423892">Импортировать в Google Менеджер паролей</translation>
 <translation id="5998675059699164418">По правилам организации, чтобы использовать Chrome, нужно выполнить вход.</translation>
 <translation id="6021312115739110405">Лента, созданная Google специально для вас, с последними событиями, новостями спорта и прогнозом погоды</translation>
 <translation id="6022659036123304283">Настройте Chrome для себя</translation>

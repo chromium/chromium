@@ -533,6 +533,7 @@ Certaines fonctionnalités seront peut-être inaccessibles. Veuillez spécifier 
 <translation id="7274695763216404502">La fonctionnalité a été épinglée! Utilisez à nouveau la recherche d'images à partir de la barre d'outils</translation>
 <translation id="7288567540154601580">Onglets et extensions</translation>
 <translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{Chromium vous recommande de la retirer}one{Chromium vous recommande de la retirer}other{Chromium vous recommande de les retirer}}</translation>
+<translation id="7296334833518879294">Pour partager l'audio du système, ouvrez les paramètres système et autorisez « Enregistrement audio du système uniquement » pour Chromium. Vous devrez ensuite redémarrer Chromium.</translation>
 <translation id="7309928523159922338">La mesure des annonces permet aux sites que vous visitez de demander des informations à Chromium afin de leur permettre de mesurer la performance de leurs annonces. La mesure des annonces limite les suivis intersites en transférant le moins d'informations possible entre les sites.</translation>
 <translation id="731795002583552498">Mise à jour de Chromium en cours…</translation>
 <translation id="7318036098707714271">Votre fichier de préférences est corrompu ou invalide.

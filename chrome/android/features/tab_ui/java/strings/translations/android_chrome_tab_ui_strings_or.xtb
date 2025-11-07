@@ -128,6 +128,7 @@
 <translation id="5556417849629758491">ଷ୍ଟୋରର ସୂଚନା ଦେଖନ୍ତୁ, ସ୍କ୍ରିନର ଶୀର୍ଷଭାଗର ନିକଟରେ ବିକଳ୍ପ ଉପଲବ୍ଧ ଅଛି</translation>
 <translation id="5627941783489838464">କୌଣସି ଟାବ ଅପଡେଟ ନାହିଁ</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{Chromeରୁ <ph name="TABS_COUNT_ONE" />ଟି ଲିଙ୍କ}other{Chromeରୁ <ph name="TABS_COUNT_MANY" />ଟି ଲିଙ୍କ}}</translation>
+<translation id="5740354908255726955">{TAB_COUNT,plural, =1{ଟାବକୁ ବାମକୁ ମୁଭ କରନ୍ତୁ}other{ଟାବଗୁଡ଼ିକୁ ବାମକୁ ମୁଭ କରନ୍ତୁ}}</translation>
 <translation id="5746204836956568669">ଶୀଘ୍ର କାମ କରିବା ପାଇଁ <ph name="NUMBER_OF_TABS" /> ଟାବକୁ ଗ୍ରୁପ କରିବେ?</translation>
 <translation id="5773295109010386583">ନିଷ୍କ୍ରିୟ ଆଇଟମଗୁଡ଼ିକୁ ସ୍ୱତଃ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="58326064309361797">ସେଗୁଡ଼ିକର ଗୋଷ୍ଠୀ କରିବାକୁ ଟାବ୍‌ଗୁଡ଼ିକୁ ଟାଣନ୍ତୁ</translation>
@@ -138,6 +139,7 @@
 <translation id="6109251075362363230">ନିକଟରେ ବ୍ୟବହାର କରାଯାଇଥିବା କପି ବ୍ୟତୀତ ସମସ୍ତ ନକଲି ଟାବ ମଧ୍ୟ ବର୍ତ୍ତମାନ ଆର୍କାଇଭ ହେବ।</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ଚୟନିତ ଆଇଟମକୁ ବନ୍ଦ କରନ୍ତୁ}other{<ph name="TABS_COUNT_MANY" /> ଚୟନିତ ଆଇଟମକୁ ବନ୍ଦ କରନ୍ତୁ}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{ଗ୍ରୁପକୁ ନୂଆ ୱିଣ୍ଡୋକୁ ମୁଭ କରନ୍ତୁ}other{ଗ୍ରୁପକୁ ଅନ୍ୟ ଏକ ୱିଣ୍ଡୋକୁ ମୁଭ କରନ୍ତୁ}}</translation>
+<translation id="6212374449852603982">{TAB_COUNT,plural, =1{ଟାବକୁ ଡାହାଣକୁ ମୁଭ କରନ୍ତୁ}other{ଟାବଗୁଡ଼ିକୁ ଡାହାଣକୁ ମୁଭ କରନ୍ତୁ}}</translation>
 <translation id="6228793724645064692">(ଷ୍ଟୋର୍ ରେଟିଂ)</translation>
 <translation id="625996437999624951">{TAB_COUNT,plural, =1{ଗ୍ରୁପରୁ ଟାବକୁ କାଢ଼ି ଦିଅନ୍ତୁ}other{ଗ୍ରୁପରୁ ଟାବଗୁଡ଼ିକୁ କାଢ଼ି ଦିଅନ୍ତୁ}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{ନୂଆ ଗ୍ରୁପରେ ଟାବ ଯୋଗ କରନ୍ତୁ}other{ନୂଆ ଗ୍ରୁପରେ ଟାବଗୁଡ଼ିକ ଯୋଗ କରନ୍ତୁ}}</translation>

@@ -49,6 +49,7 @@
 <translation id="1181037720776840403">Hapus</translation>
 <translation id="1183189057400844278">Untuk memastikan Anda selalu dapat menggunakan sandi yang tersimpan di Akun Google Anda, verifikasi diri Anda</translation>
 <translation id="1187810343066461819">Hapus juga bookmark, histori, dan data lainnya dari mobil ini</translation>
+<translation id="1193589902336218259">Aktifkan notifikasi Tips</translation>
 <translation id="1193729455103054076">Gunakan sandi kuat?</translation>
 <translation id="11947597112837849">alamat email</translation>
 <translation id="1197267115302279827">Pindahkan bookmark</translation>
@@ -236,6 +237,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="200114059308480249">Sertakan teks di sekitar dalam penelusuran Google?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, Tab Samaran yang Disematkan dan Dibisukan</translation>
 <translation id="2021896219286479412">Kontrol situs layar penuh</translation>
+<translation id="2029669011553795746">Pilihan untuk mengaktifkan notifikasi tips dibuka setengah</translation>
 <translation id="2038563949887743358">Aktifkan Ubah situs desktop</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> juga memiliki data di Chrome</translation>
 <translation id="2047378580182589770">Sentuh lama untuk keluar dari mode Samaran</translation>
@@ -245,6 +247,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="2063047797624276601">Organisasi Anda mengaktifkan Safe Browsing yang Disempurnakan</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 download gagal}other{# download gagal}}</translation>
 <translation id="2067805253194386918">teks</translation>
+<translation id="2072027001582274150">Tab duplikat atau yang tidak digunakan</translation>
 <translation id="2074527029802029717">Lepas sematan tab</translation>
 <translation id="2079545284768500474">Urungkan</translation>
 <translation id="2082238445998314030">Hasil <ph name="RESULT_NUMBER" /> dari <ph name="TOTAL_RESULTS" /></translation>
@@ -405,6 +408,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="2781151931089541271">1 detik lagi</translation>
 <translation id="2789486458103222910">Oke</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chrome menemukan sandi yang digunakan ulang yang dapat Anda perbaiki}other{Chrome menemukan # sandi yang digunakan ulang yang dapat Anda perbaiki}}</translation>
+<translation id="2794551654724114396">Aktifkan notifikasi untuk mendapatkan tips bermanfaat yang membantu Anda mengoptimalkan penggunaan Chrome</translation>
 <translation id="2800066122460699237">Tab <ph name="TAB_TITLE" /> akan ditutup</translation>
 <translation id="2805210243313393104">Dapatkan bookmark dan info Anda yang lain di semua perangkat Anda</translation>
 <translation id="2805756323405976993">Aplikasi</translation>
@@ -640,6 +644,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="3824259034819781947">Lampirkan file</translation>
 <translation id="38243391581572867">Lens tidak tersedia di akun ini.</translation>
 <translation id="38258275871320156">Hanya tersedia untuk jendela kecil</translation>
+<translation id="3826529618131025925">Panel bawah pilihan untuk mengaktifkan bantuan dan panduan notifikasi tips</translation>
 <translation id="3845098929839618392">Buka di tab Samaran</translation>
 <translation id="3847319713229060696">Bantu tingkatkan keamanan di web untuk semuanya</translation>
 <translation id="385051799172605136">Kembali</translation>
@@ -773,6 +778,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="4405636711880428279">Hapus kartu virtual Anda?</translation>
 <translation id="4408965460206576430">File ini berisi malware atau berasal dari situs yang mencurigakan</translation>
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> dan <ph name="TAB_COUNT" /> tab lainnya</translation>
+<translation id="441100617989818073">Tab dan grup duplikat atau yang tidak digunakan</translation>
 <translation id="4414179633735763985"><ph name="TAB_GROUPS_AND_TABS_PART" /> dihapus</translation>
 <translation id="4415276339145661267">Kelola Akun Google Anda</translation>
 <translation id="4425140285732600465">Memantau harga. Dapatkan notifikasi jika ada diskon di situs mana pun.</translation>
@@ -801,6 +807,7 @@ Akun Google Anda mungkin memiliki bentuk histori penjelajahan lain seperti penel
 <translation id="452750746583162491">Tinjau data Anda yang disinkronkan</translation>
 <translation id="4532845899244822526">Pilih folder</translation>
 <translation id="4535755320005483982">Grup tab bersama <ph name="GROUP_TITLE" /></translation>
+<translation id="4537137366307982887">Pilihan untuk mengaktifkan notifikasi tips dibuka sepenuhnya</translation>
 <translation id="4543131175509360848">Sheet tidak ada kunci sandi</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> tab}other{<ph name="TAB_COUNT_MANY" /> tab, <ph name="TAB_COUNT_INCOGNITO" /> samaran}}</translation>
 <translation id="4558311620361989323">Pintasan halaman web</translation>
@@ -952,6 +959,7 @@ Akun Google Anda mungkin memiliki bentuk histori penjelajahan lain seperti penel
 <translation id="5123685120097942451">Tab samaran</translation>
 <translation id="5142281402488957685">Untuk melihat artikel baru, tarik ke bawah untuk memuat ulang</translation>
 <translation id="5144385790872094440">Beberapa halaman yang Anda buka akan dipramuat. Halaman mungkin dipramuat melalui server Google saat ditautkan dari situs atau aplikasi Google.</translation>
+<translation id="5145887002054615868">Tab duplikat atau tab yang tidak digunakan selama <ph name="DAYS_INACTIVE" /> hari akan dipindahkan ke sini<ph name="AUTODELETE_SECTION" />. Anda dapat mengubahnya kapan saja di <ph name="DECLUTTER_SETTINGS_TITLE" />.</translation>
 <translation id="5152843274749979095">Aplikasi yang didukung tidak terinstal</translation>
 <translation id="5161254044473106830">Perlu judul</translation>
 <translation id="5161262286013276579">Sheet konfirmasi kunci sandi dibuka</translation>
@@ -1114,6 +1122,7 @@ Akun Google Anda mungkin memiliki bentuk histori penjelajahan lain seperti penel
 <translation id="5864419784173784555">Menunggu proses download lain…</translation>
 <translation id="5865733239029070421">Secara otomatis mengirimkan statistik penggunaan dan laporan kerusakan ke Google</translation>
 <translation id="5869522115854928033">Sandi tersimpan</translation>
+<translation id="5870416898561279542">Tab dan grup duplikat atau yang tidak digunakan selama <ph name="DAYS_INACTIVE" /> hari akan dipindahkan ke sini<ph name="AUTODELETE_SECTION" />. Anda dapat mengubahnya kapan saja di <ph name="DECLUTTER_SETTINGS_TITLE" />.</translation>
 <translation id="587735546353481577">Untuk mengikuti situs, buka situs, buka menu Chrome, dan ketuk Ikuti.</translation>
 <translation id="5883855034004058011">Biometrik terlalu sering gagal. Kunci dan buka kunci perangkat untuk mencoba lagi.</translation>
 <translation id="5885378508678660271">Notifikasi <ph name="SEPARATOR" /> Chrome menghapus izin ini karena situs ini berbahaya</translation>
@@ -1874,6 +1883,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="8942627711005830162">Buka di jendela lain</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - Bahasa ini tidak dapat didownload. Coba lagi nanti.</translation>
 <translation id="8946759102391960088">Tetap pertahankan akses ke sandi Anda</translation>
+<translation id="895442993047180128">Pilihan untuk mengaktifkan notifikasi tips ditutup</translation>
 <translation id="8957528460562961174">Untuk mempertahankan akses ke sandi Anda, ekspor sandi sekarang, lalu impor sandi tersebut ke pengelola sandi pilihan Anda. Pengelola Sandi Google berhenti berfungsi karena layanan Google Play tidak tersedia.</translation>
 <translation id="8963117664422609631">Buka setelan situs</translation>
 <translation id="8965591936373831584">ditunda</translation>

@@ -78,6 +78,7 @@
 <translation id="112840717907525620">OK ang cache ng patakaran</translation>
 <translation id="1131264053432022307">Larawang Kinopya Mo</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – Para lumabas sa full screen, mag-drag mula sa itaas at pindutin ang button na bumalik</translation>
+<translation id="1133418583142946603">Idagdag ang kasalukuyang tab</translation>
 <translation id="1138458427267715730">Makatanggap ng mga alerto kapag bumaba ang presyo sa anumang site sa buong web</translation>
 <translation id="1142713751288681188">Uri ng papel</translation>
 <translation id="1142965388643537393">Impormasyon sa paglalakbay</translation>
@@ -444,6 +445,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1717218214683051432">Mga sensor ng paggalaw</translation>
 <translation id="1717494416764505390">Mailbox 3</translation>
 <translation id="1717688554309417925">Mga Serbisyo sa Debit at Checking</translation>
+<translation id="1717882880162336471">Subukan ang AI Mode</translation>
 <translation id="1719434663396780149">Naka-on ang mga alerto sa pagbaba ng presyo. Puwede mo itong baguhin sa <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="1719838434204287058">24 x 30 in</translation>
 <translation id="1720941539803966190">Isara ang tutorial</translation>
@@ -2015,6 +2017,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4258748452823770588">Maling lagda</translation>
 <translation id="4265635050210404830">Ang mga loyalty card mo</translation>
 <translation id="4265872034478892965">Pinayagan ng iyong administrator</translation>
+<translation id="4267590181863312380">Para makuha ang iyong history mula sa iba mo pang device, mag-sign in at i-sync ang history. Makukuha mo rin ang iyong mga password at higit pa sa lahat ng device mo. Puwede mong ihinto ang pag-sync anumang oras sa mga setting. Puwedeng i-personalize ng Google ang Search at iba pang serbisyo batay sa iyong history.</translation>
 <translation id="4269029136757623689">Mga Bentilador sa Bahay</translation>
 <translation id="4269264543938335308">Kasuotang Panlangoy</translation>
 <translation id="4269599248168651462">Ibinibigay ang certificate ng server sa isang non-unique na pangalan.</translation>
@@ -2891,6 +2894,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5715918316982363436"><ph name="TAB_COUNT" /> mula sa <ph name="WINDOW_COUNT" /> sa device na ito</translation>
 <translation id="5716325061445053985">I-tap para buksan ang tab sa iyong telepono</translation>
 <translation id="5717509257172454543">Ice Skating</translation>
+<translation id="5718601519531438273">May kasamang impormasyon gaya ng mga passport at lisensya sa pagmamaneho</translation>
 <translation id="5720705177508910913">Kasalukuyang user</translation>
 <translation id="5720895412771013401">Mga Desktop Computer</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2}, at 1 pa}one{{website_1}, {website_2}, at {more_count} pa}other{{website_1}, {website_2}, at {more_count} pa}}</translation>
@@ -4561,6 +4565,7 @@ Mga karagdagang detalye:
 <translation id="8449036207308062757">Pamahalaan ang storage</translation>
 <translation id="8449155699563577224">17 x 24 in</translation>
 <translation id="8449836157089738489">Buksan lahat sa bagong grupo ng tab</translation>
+<translation id="8451518040456311377">I-save at punan ang mga dokumento ng pagkakakilanlan</translation>
 <translation id="84561192812921051">Puwedeng remote na gumawa ng mga pagbabago sa profile at browser mo, magsuri ng impormasyon tungkol sa browser sa pamamagitan ng pag-uulat, at gumawa ng iba pang kinakailangang gawain ang iyong administrator. Puwede ring pamahalaan sa labas ng Chrome ang aktibidad sa device na ito.  <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="8456383681414356368">Nakasara ang bottom sheet.</translation>
 <translation id="8456775115498700722">Puwede mo nang i-autofill ang iyong mga <ph name="CARD_ISSUER_NAME" /> card dahil naka-link sa Google Pay ang iyong <ph name="CARD_ISSUER_NAME" /> account.</translation>

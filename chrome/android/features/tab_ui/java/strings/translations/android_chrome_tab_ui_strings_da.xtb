@@ -128,6 +128,7 @@
 <translation id="5556417849629758491">Se butiksoplysninger. Valgmuligheden findes øverst på skærmen</translation>
 <translation id="5627941783489838464">Ingen faneopdateringer</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> link fra Chrome}one{<ph name="TABS_COUNT_MANY" /> link fra Chrome}other{<ph name="TABS_COUNT_MANY" /> links fra Chrome}}</translation>
+<translation id="5740354908255726955">{TAB_COUNT,plural, =1{Flyt fane til venstre}one{Flyt fane til venstre}other{Flyt faner til venstre}}</translation>
 <translation id="5746204836956568669">Vil du gruppere <ph name="NUMBER_OF_TABS" /> faner, så du kan arbejde hurtigere?</translation>
 <translation id="5773295109010386583">Luk automatisk inaktive elementer</translation>
 <translation id="58326064309361797">Træk og slip faner for at gruppere dem</translation>
@@ -138,6 +139,7 @@
 <translation id="6109251075362363230">Alle dubletter af faner arkiveres nu også med undtagelse af den senest anvendte kopi.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Luk <ph name="TABS_COUNT_ONE" /> valgt element}one{Luk <ph name="TABS_COUNT_MANY" /> valgt element}other{Luk <ph name="TABS_COUNT_MANY" /> valgte elementer}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Flyt gruppe til det nye vindue}one{Flyt gruppe til det nye vindue}other{Flyt gruppe til et andet vindue}}</translation>
+<translation id="6212374449852603982">{TAB_COUNT,plural, =1{Flyt fane til højre}one{Flyt fane til højre}other{Flyt faner til højre}}</translation>
 <translation id="6228793724645064692">(butiksanmeldelse)</translation>
 <translation id="625996437999624951">{TAB_COUNT,plural, =1{Fjern fane fra gruppe}one{Fjern fane fra gruppe}other{Fjern faner fra gruppe}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Føj fane til ny gruppe}one{Føj fane til ny gruppe}other{Føj faner til ny gruppe}}</translation>

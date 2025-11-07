@@ -78,6 +78,7 @@
 <translation id="112840717907525620">Mezipaměť zásady je v pořádku</translation>
 <translation id="1131264053432022307">Obrázek, který jste zkopírovali</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – Pokud chcete ukončit režim celé obrazovky, přejeďte shora dolů a klepněte na tlačítko Zpět</translation>
+<translation id="1133418583142946603">Přidat aktuální kartu</translation>
 <translation id="1138458427267715730">Nechte si zaslat upozornění, když na kterémkoli webu klesne cena</translation>
 <translation id="1142713751288681188">Typ papíru</translation>
 <translation id="1142965388643537393">Cestovní informace</translation>
@@ -1009,6 +1010,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2627847595568876492">Extrahování textu z PDF…</translation>
 <translation id="2628025184666666186">Tento server nemohl prokázat, že patří do domény <ph name="DOMAIN" />, protože používá bezpečnostní certifikát, kterému Chrome ani konfigurace vašeho systému pro šifrování webového provozu nedůvěřují. Může to být způsobeno nesprávnou konfigurací nebo tím, že vaše připojení zachytává útočník.</translation>
 <translation id="2628224721443278970">Přihlásit se k Microsoft OneDrive</translation>
+<translation id="2631387782019878060">Ověřovací kód: <ph name="OTP" /></translation>
 <translation id="2634124572758952069">IP adresa serveru <ph name="HOST_NAME" /> nebyla nalezena.</translation>
 <translation id="2638567100095052009">Zadáním znaku @ můžete vyhledávat ve vyhledávačích <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="2639739919103226564">Stav:</translation>
@@ -2798,6 +2800,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="5558083606899411167">Klimatizace</translation>
 <translation id="5558125320634132440">Tento web byl zablokován, protože může zahrnovat obsah nevhodný pro děti</translation>
 <translation id="5559311991468302423">Smazat adresu</translation>
+<translation id="5561747310506483298">Průkazy totožnosti</translation>
 <translation id="55635442646131152">Osnova dokumentu</translation>
 <translation id="5563589142503817291">Pokud chcete používat polohu, udělte Chromu přístup v <ph name="LINK" />.</translation>
 <translation id="5565613213060953222">Otevřít anonymní kartu</translation>

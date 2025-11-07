@@ -128,6 +128,7 @@
 <translation id="5556417849629758491">Прикажи информации за продавница, опција достапна во горниот дел од екранот</translation>
 <translation id="5627941783489838464">Нема новости во картичките</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> линк од Chrome}one{<ph name="TABS_COUNT_MANY" /> линк од Chrome}other{<ph name="TABS_COUNT_MANY" /> линка од Chrome}}</translation>
+<translation id="5740354908255726955">{TAB_COUNT,plural, =1{Премести ја картичката налево}one{Премести ги картичките налево}other{Премести ги картичките налево}}</translation>
 <translation id="5746204836956568669">Да се групираат <ph name="NUMBER_OF_TABS" /> картички за да работите побрзо?</translation>
 <translation id="5773295109010386583">Затворај ги автоматски неактивните ставки</translation>
 <translation id="58326064309361797">Повлечете ги картичките за ги групирате</translation>
@@ -138,6 +139,7 @@
 <translation id="6109251075362363230">Отсега ќе се архивираат сите дупликат картички, со исклучок на последната копија што се користела.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Затвори <ph name="TABS_COUNT_ONE" /> избрана ставка}one{Затвори <ph name="TABS_COUNT_MANY" /> избрана ставка}other{Затвори <ph name="TABS_COUNT_MANY" /> избрани ставки}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Преместете ја групата во нов прозорец}one{Преместете ја групата во друг прозорец}other{Преместете ја групата во друг прозорец}}</translation>
+<translation id="6212374449852603982">{TAB_COUNT,plural, =1{Премести ја картичката надесно}one{Премести ги картичките надесно}other{Премести ги картичките надесно}}</translation>
 <translation id="6228793724645064692">(оцена за продавницата)</translation>
 <translation id="625996437999624951">{TAB_COUNT,plural, =1{Отстрани ја картичката од групата}one{Отстрани ги картичките од групата}other{Отстрани ги картичките од групата}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Додајте картичка во нова група}one{Додајте картички во нова група}other{Додајте картички во нова група}}</translation>

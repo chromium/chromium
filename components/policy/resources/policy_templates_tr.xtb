@@ -10593,21 +10593,6 @@ Politika, Devre Dışı değerine ayarlanırsa sıkıştırılmış sözlük akt
 
       Bu politika ayarlanırsa kullanıcı tarafından değiştirilemez veya geçersiz kılınamaz.</translation>
 <translation id="8080200590486938727">Eklenti bulucuyu devre dışı bırak</translation>
-<translation id="8082268442825947283">Bu politika ayarlandığında, hedef URL'ye ve diğer koşullara bağlı olarak tarayıcının kullanacağı proxy'yi belirleyen kurallar yapılandırılır. Bu politika; <ph name="PROXY_SETTINGS_POLICY_NAME" /> politikası, <ph name="PROXY_SETTINGS_EXTENSION_API" /> uzantı API'si veya manuel kullanıcı ayarları aracılığıyla belirlenen proxy ayarlarına göre öncelikli olur.
-
-Politika ayarlanmadan bırakılırsa diğer proxy politikaları veya kullanıcı ayarları etkilenmez.
-
-Tarayıcının, kullanacağı proxy'ye karar vermesi gerektiğinde <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> kapsamındaki URL ana makinelerinden en az biriyle eşleşen bir giriş bulunana ve <ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> kapsamındaki tüm girişler karşılanana kadar <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> politikasının girişleri sırayla değerlendirilir. Bu tür bir eşleşme için proxy olarak <ph name="PROXY_OVERRIDE_RULES_PROXY_CHAIN" /> içindeki değer kullanılır. Eşleşme bulunamazsa proxy ayarları, <ph name="PROXY_SETTINGS_POLICY_NAME" /> politikasında ayarlanan değerlere geri döner.
-
-<ph name="PROXY_OVERRIDE_RULES_PROXY_CHAIN" /> alan girişleri, PAC dosyalarının dize değerlerine karşılık gelir. Örneğin:
-  * DIRECT
-  * PROXY host:port
-  * HTTPS host:port
-Ulaşılabilecek ilk giriş, proxy olarak kullanılır.
-
-<ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> alanı, geçersiz kılma kuralı kullanılarak proxy'ye karar verilmesi için karşılanması gereken koşulların listesini içerir. Ayarlanmadan bırakılırsa <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> içinde en az bir ana makine eşleştiği sürece giriş kullanılır.
-
-<ph name="PROXY_OVERRIDE_RULES_DNS_PROBE" /> koşulu, sağlanan DNS <ph name="PROXY_OVERRIDE_RULES_HOST" /> öğesinin bir IP adresine çözümlenip çözümlenemediğini kontrol eder. <ph name="PROXY_OVERRIDE_RULES_RESULT" /> değeri "<ph name="PROXY_OVERRIDE_RULES_RESOLVES" />" ise koşul karşılanmış kabul edilir. Değer <ph name="PROXY_OVERRIDE_RULES_NOT_FOUND" /> olarak ayarlanmışsa çözüm başarısız olduğunda koşul karşılanmış kabul edilir.</translation>
 <translation id="8086746212954621799">Doğru değerine ayarlandığında otomatik güncellemeleri devre dışı bırakır.
 
 Bu ayar yapılandırılmadığında veya Yanlış değerine ayarlandığında <ph name="PRODUCT_OS_NAME" /> cihazlar güncellemeleri otomatik olarak kontrol eder.

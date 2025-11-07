@@ -531,6 +531,7 @@
 <translation id="7274695763216404502">已固定！可通过工具栏再次使用图片搜索功能</translation>
 <translation id="7288567540154601580">标签页和扩展程序</translation>
 <translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{Chromium 建议您移除它}other{Chromium 建议您移除它们}}</translation>
+<translation id="7296334833518879294">如需分享系统音频，请打开“系统设置”，并为 Chromium 启用“仅系统录音”。然后，您需要重启 Chromium。</translation>
 <translation id="7309928523159922338">借助 Ad measurement，您访问的网站可向 Chromium 请求信息，以便对网站上的广告进行效果衡量。Ad measurement 会在网站间传输尽可能少的信息，从而限制跨网站跟踪。</translation>
 <translation id="731795002583552498">正在更新 Chromium</translation>
 <translation id="7318036098707714271">您的偏好设置文件已损坏或无效。

@@ -78,6 +78,7 @@
 <translation id="112840717907525620">Policy cache OK</translation>
 <translation id="1131264053432022307">Image that you copied</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – to exit full screen, drag from the top and touch the back button</translation>
+<translation id="1133418583142946603">Add current tab</translation>
 <translation id="1138458427267715730">Get alerts when the price drops on any site across the web</translation>
 <translation id="1142713751288681188">Paper type</translation>
 <translation id="1142965388643537393">Travel info</translation>
@@ -1009,6 +1010,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2627847595568876492">Extracting text from PDF…</translation>
 <translation id="2628025184666666186">This server could not prove that it is <ph name="DOMAIN" /> because it is using a security certificate that is not trusted by Chrome or your system configuration for web traffic encryption. This may be caused by a misconfiguration or an attacker intercepting your connection.</translation>
 <translation id="2628224721443278970">Sign in to Microsoft OneDrive</translation>
+<translation id="2631387782019878060">Verification code: <ph name="OTP" /></translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" />’s server IP address could not be found.</translation>
 <translation id="2638567100095052009">Type @ to search across <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="2639739919103226564">Status:</translation>
@@ -2802,6 +2804,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5558083606899411167">Air Conditioners</translation>
 <translation id="5558125320634132440">This site is blocked because it may have mature content</translation>
 <translation id="5559311991468302423">Delete address</translation>
+<translation id="5561747310506483298">Identity cards</translation>
 <translation id="55635442646131152">Document outline</translation>
 <translation id="5563589142503817291">To use your location, give Chrome access in <ph name="LINK" />.</translation>
 <translation id="5565613213060953222">Open incognito tab</translation>

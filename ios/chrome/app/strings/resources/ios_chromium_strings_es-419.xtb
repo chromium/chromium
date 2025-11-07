@@ -238,6 +238,7 @@ Aspectos que debes tener en cuenta:
 <translation id="6154098560469640583">Usa Chromium cada vez que presiones vínculos en mensajes, documentos y otras apps.</translation>
 <translation id="6157162508956739031">Accede rápidamente a apps y sitios con el autocompletado de contraseñas y llaves de acceso de Chromium</translation>
 <translation id="6170619162539716595">Permite que Chromium use Google Maps para brindarte instrucciones sobre cómo llegar y datos locales sobre las direcciones detectadas.</translation>
+<translation id="6244277266078678766">Tus datos se guardarán en el Administrador de contraseñas de <ph name="USER_EMAIL" /></translation>
 <translation id="6268381023930128611">¿Salir de Chromium?</translation>
 <translation id="6301717043141881464">Para obtener fácilmente tus contraseñas guardadas en otras apps, elige Autocompletar en Chromium</translation>
 <translation id="6324041800010509197">Visitar la cuadrícula de pestañas en Chromium</translation>
@@ -315,6 +316,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="8119542592987737574">Accede a Chromium más rápido desde el Dock de la pantalla de inicio de tu iPhone.</translation>
 <translation id="8164086860209325020">Ve a la configuración de Chromium</translation>
 <translation id="8197822717502700527">Ahora puedes aprovechar Chromium al máximo en tu dispositivo.</translation>
+<translation id="8236210361418193126">Importar al Administrador de contraseñas</translation>
 <translation id="8254729934443216898">Explora nuevas funciones que te ayudarán a aprovechar Chromium al máximo.</translation>
 <translation id="8293572045658095405">Estás en el modo Incógnito de Chromium</translation>
 <translation id="830951810931292870">Abre las URLs ingresadas en Chromium en modo Incógnito.</translation>

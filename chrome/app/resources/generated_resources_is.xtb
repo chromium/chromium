@@ -2470,6 +2470,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2667463864537187133">Stjórna ritvilluleit</translation>
 <translation id="2668604389652548400">Fjarlægðu hana eða skiptu henni út fyrir svipaðar viðbætur úr <ph name="BEGIN_LINK" />Vefverslun Chrome<ph name="END_LINK" />.</translation>
 <translation id="2669241540496514785">Ekki tókst að opna <ph name="APP_NAME" /></translation>
+<translation id="2669250147452250961">Kveiktu á þessu til að fá aðgang að vafraferlinum þínum og flipum úr öðrum tækjum</translation>
 <translation id="2669454659051515572">Allir sem nota þetta tæki geta séð sóttar skrár</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> deilir flipa í Chrome.</translation>
 <translation id="2670168377011445813">Ef Chrome finnur eitt aðgangsorðanna þinna í opinberu öryggisbroti getur Google-aðgangsorðastjórnun boðist til að breyta því fyrir þig ef þú ert skráð(ur) inn. <ph name="BEGIN_LINK" />Nánar um sjálfvirka breytingu aðgangsorða<ph name="END_LINK" /></translation>
@@ -8616,6 +8617,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="6961327401577924850">Yfirleitt leita vefsvæði að Bluetooth-tækjum til að nota eiginleika eins og að setja upp eða samstilla lágspennuvita, heilsu- eða hreystimæli eða snjallljós</translation>
 <translation id="6963772203726867701">Fannst ekki</translation>
 <translation id="6963872466817251924">Merkja textabendil</translation>
+<translation id="6964239097707154771">eru viðbætur við sem Chrome geta hjálpað þér að koma meiru í verk</translation>
 <translation id="6964390816189577014">Hetja</translation>
 <translation id="6964760285928603117">Fjarlægja úr hópi</translation>
 <translation id="6965382102122355670">Í lagi</translation>
@@ -8927,6 +8929,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7186088072322679094">Halda á stikunni</translation>
 <translation id="7186303001964993981"><ph name="ORIGIN" /> getur ekki opnað þessa möppu vegna þess að hún inniheldur kerfisskrár</translation>
 <translation id="7186568385131859684">Stjórnaðu því hvernig vafraferillinn er notaður með öðrum gögnum úr Google-þjónustum</translation>
+<translation id="7186903260115204164">Bættu við teikningum, undirskriftum og yfirstrikunum með nýja teikniverkfærinu</translation>
 <translation id="7188508872042490670">Vefsvæðagögn í tækinu</translation>
 <translation id="7189234443051076392">Gakktu úr skugga um að það sé nóg pláss á tækinu</translation>
 <translation id="7189451821249468368">Þú ert ekki með tilskildar uppfærslur til að skrá þetta tæki. Hafðu samband við söludeild til að kaupa uppfærslur. Ef þú telur að þessi villuboð ættu ekki að birtast þér skaltu hafa samband við þjónustudeild.</translation>
@@ -10756,6 +10759,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8427213022735114808">Upplestur sendir rödd þína til Google til að gera raddinnslátt mögulegan í hvaða textareit sem er.</translation>
 <translation id="8427292751741042100">fellt inn í hvaða hýsli sem er</translation>
 <translation id="8428213095426709021">Stillingar</translation>
+<translation id="8428257636009471988">Opna vefverslun</translation>
 <translation id="8428271547607112339">Bæta við skólareikningi</translation>
 <translation id="8428634594422941299">Ég skil</translation>
 <translation id="84297032718407999">Þú verður skráð(ur) út eftir <ph name="LOGOUT_TIME_LEFT" /></translation>

@@ -2459,6 +2459,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2667463864537187133">Orfoqrafik yoxlanışı idarə edin</translation>
 <translation id="2668604389652548400">Onu silin və ya <ph name="BEGIN_LINK" />Chrome Veb Marketdən<ph name="END_LINK" /> bənzər artırmalar ilə əvəz edin</translation>
 <translation id="2669241540496514785"><ph name="APP_NAME" /> açılmadı</translation>
+<translation id="2669250147452250961">Digər cihazlardan brauzer tarixçəsi və tabları əldə etmək üçün aktiv edin</translation>
 <translation id="2669454659051515572">Bu cihazdan istifadə edən hər kəs endirilmiş faylları görə bilər</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> tətbiqi Chrome panelini paylaşır.</translation>
 <translation id="2670168377011445813">Chrome parollarınızdan birini ictimai data pozuntusunda aşkar edərsə, hesabınıza daxil olduğunuz halda, Google Parol Meneceri sizin əvəzinizə parolu dəyişdirməyi təklif edə bilər. <ph name="BEGIN_LINK" />Avtomatik parol dəyişikliyi haqqında daha çox məlumat<ph name="END_LINK" /></translation>
@@ -8599,6 +8600,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="6961327401577924850">Saytlar adətən aşağı enerji mayakını, sağlamlıq və ya fitnes izləyicisini, yaxud smart işıq lampasını qurmaq və ya sinxronlaşdırmaq kimi xüsusiyyətlər üçün Bluetooth cihazlarını axrarır</translation>
 <translation id="6963772203726867701">Aşkarlanmadı</translation>
 <translation id="6963872466817251924">Mətn kursoru vurğulayıcısı</translation>
+<translation id="6964239097707154771">Chrome əlavələridir və sizə daha çox kömək edə bilər</translation>
 <translation id="6964390816189577014">Qəhrəman</translation>
 <translation id="6964760285928603117">Qrupdan Çıxarın</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -8910,6 +8912,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7186088072322679094">Alətlər panelində saxlayın</translation>
 <translation id="7186303001964993981"><ph name="ORIGIN" /> sistem faylları ehtiva etdiyinə görə bu qovluğu aça bilmir</translation>
 <translation id="7186568385131859684">Brauzer tarixçəsinin Google xidmətlərindəki digər data ilə necə istifadə olunduğuna nəzarət edin</translation>
+<translation id="7186903260115204164">Yeni Rəsm aləti ilə sərbəst çəkilmiş rəsmlər, imzalar və vurğular əlavə edin</translation>
 <translation id="7188508872042490670">Cihazda olan sayt məlumatları</translation>
 <translation id="7189234443051076392">Əmin olun ki cihazda kifayət qədər yer var</translation>
 <translation id="7189451821249468368">Bu cihazı qeydiyyata almaq üçün yetərincə güncəlləməniz yoxdur. Daha çoxunu almaq üçün satış şöbəsi ilə əlaqə saxlayın. Bu mesajın səhvən göndərildiyini düünürsünüzsə, dəstək xidməti ilə əlaqə saxlayın.</translation>
@@ -10739,6 +10742,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8427213022735114808">Diktant istənilən mətn sahəsində səs yazmağa icazə vermək üçün səsinizi Google'a göndərir.</translation>
 <translation id="8427292751741042100">hər hansı hosta yerləşdirilmiş</translation>
 <translation id="8428213095426709021">Ayarlar</translation>
+<translation id="8428257636009471988">Veb Marketə daxil olun</translation>
 <translation id="8428271547607112339">Məktəb hesabı əlavə edin</translation>
 <translation id="8428634594422941299">Anladım</translation>
 <translation id="84297032718407999"><ph name="LOGOUT_TIME_LEFT" /> ərzində çıxış edəcəksiniz</translation>

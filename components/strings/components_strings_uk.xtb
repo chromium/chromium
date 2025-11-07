@@ -78,6 +78,7 @@
 <translation id="112840717907525620">Кеш-пам’ять правила не пошкоджено</translation>
 <translation id="1131264053432022307">Скопійоване зображення</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – щоб вийти з повноекранного режиму, проведіть пальцем від верхнього краю екрана й натисніть кнопку "Назад"</translation>
+<translation id="1133418583142946603">Додати поточну вкладку</translation>
 <translation id="1138458427267715730">Отримуйте сповіщення про зниження ціни на будь-якому вебсайті</translation>
 <translation id="1142713751288681188">Тип паперу</translation>
 <translation id="1142965388643537393">Інформація про подорожі</translation>
@@ -1009,6 +1010,7 @@
 <translation id="2627847595568876492">Отримання тексту з файлу PDF…</translation>
 <translation id="2628025184666666186">Серверу не вдалося підтвердити, що це домен <ph name="DOMAIN" />, оскільки він використовує сертифікат безпеки, який Chrome або ваша системна конфігурація для шифрування вебтрафіку не вважає надійним. Можливо, сервер налаштовано неправильно або хтось намагається перехопити ваше з’єднання.</translation>
 <translation id="2628224721443278970">Увійти в Microsoft OneDrive</translation>
+<translation id="2631387782019878060">Код підтвердження: <ph name="OTP" /></translation>
 <translation id="2634124572758952069">IP-адресу сервера <ph name="HOST_NAME" /> не знайдено.</translation>
 <translation id="2638567100095052009">Введіть @, щоб шукати на вебсайтах <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="2639739919103226564">Статус:</translation>
@@ -2802,6 +2804,7 @@
 <translation id="5558083606899411167">Кондиціонери</translation>
 <translation id="5558125320634132440">Сайт заблоковано, оскільки він може містити контент для повнолітніх.</translation>
 <translation id="5559311991468302423">Видалити адресу</translation>
+<translation id="5561747310506483298">Посвідчення особи</translation>
 <translation id="55635442646131152">Структура документа</translation>
 <translation id="5563589142503817291">Щоб використовувати геодані, відкрийте <ph name="LINK" /> й надайте Chrome відповідний доступ.</translation>
 <translation id="5565613213060953222">Відкрити анонімну вкладку</translation>

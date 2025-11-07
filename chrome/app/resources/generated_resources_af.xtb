@@ -2469,6 +2469,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="2667463864537187133">Bestuur speltoets</translation>
 <translation id="2668604389652548400">Verwyder of vervang dit met soortgelyke uitbreidings van die <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /> af</translation>
 <translation id="2669241540496514785">Kon nie "<ph name="APP_NAME" />" oopmaak nie</translation>
+<translation id="2669250147452250961">Skakel aan om jou blaaigeskiedenis en oortjies van ander toestelle af te kry</translation>
 <translation id="2669454659051515572">Enigiemand wat hierdie toestel gebruik, kan afgelaaide lêers sien</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> deel tans 'n Chrome-oortjie.</translation>
 <translation id="2670168377011445813">As Chrome een van jou wagwoorde in ’n publieke dataskending vind, kan Google Wagwoordbestuurder aanbied om jou wagwoord vir jou te verander as jy aangemeld is. <ph name="BEGIN_LINK" />Meer oor outomatiese wagwoordverandering<ph name="END_LINK" /></translation>
@@ -8614,6 +8615,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="6961327401577924850">Werwe soek gewoonlik na Bluetooth-toestelle vir kenmerke soos om ’n lae-energiebaken, ’n gesondheid- of fiksheidnaspoorder, of ’n slimgloeilamp op te stel of te sinkroniseer</translation>
 <translation id="6963772203726867701">Nie bespeur nie</translation>
 <translation id="6963872466817251924">Teksskermpyltjiemerker</translation>
+<translation id="6964239097707154771">is byvoegings vir Chrome wat jou kan help om meer te doen</translation>
 <translation id="6964390816189577014">Held</translation>
 <translation id="6964760285928603117">Verwyder uit groep</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -8925,6 +8927,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7186088072322679094">Hou in nutsbalk</translation>
 <translation id="7186303001964993981"><ph name="ORIGIN" /> kan nie hierdie vouer oopmaak nie omdat dit stelsellêers bevat</translation>
 <translation id="7186568385131859684">Beheer hoe blaaigeskiedenis met jou ander data oral in Google-dienste gebruik word</translation>
+<translation id="7186903260115204164">Voeg vryhandtekeninge, handtekeninge en kleurmerke by met die nuwe Teken-nutsding</translation>
 <translation id="7188508872042490670">Werfdata op toestel</translation>
 <translation id="7189234443051076392">Maak seker dat daar genoeg spasie op jou toestel is</translation>
 <translation id="7189451821249468368">Jy het nie genoeg opgraderings om hierdie toestel in te skryf nie. Kontak asseblief die verkoopsafdeling om meer te koop. As jy meen dis 'n fout dat jy hierdie boodskap sien, moet jy asseblief steundienste kontak.</translation>
@@ -10754,6 +10757,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8427213022735114808">Diktee stuur jou stem na Google om steminvoer in enige teksveld moontlik te maak.</translation>
 <translation id="8427292751741042100">op enige gasheer ingebed</translation>
 <translation id="8428213095426709021">Instellings</translation>
+<translation id="8428257636009471988">Besoek Webwinkel</translation>
 <translation id="8428271547607112339">Voeg skoolrekening by</translation>
 <translation id="8428634594422941299">Het dit</translation>
 <translation id="84297032718407999">Jy sal oor <ph name="LOGOUT_TIME_LEFT" /> afgemeld word</translation>

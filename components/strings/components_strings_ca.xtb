@@ -78,6 +78,7 @@
 <translation id="112840717907525620">La memòria cau de la política està en bon estat</translation>
 <translation id="1131264053432022307">Imatge que has copiat</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" />. Per sortir de la pantalla completa, arrossega des de la part superior i toca el botó Enrere.</translation>
+<translation id="1133418583142946603">Afegeix la pestanya actual</translation>
 <translation id="1138458427267715730">Rep alertes quan el preu baixi en qualsevol lloc web d'Internet</translation>
 <translation id="1142713751288681188">Tipus de paper</translation>
 <translation id="1142965388643537393">Informació de viatges</translation>
@@ -444,6 +445,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1717218214683051432">Sensors de moviment</translation>
 <translation id="1717494416764505390">Bústia de correu 3</translation>
 <translation id="1717688554309417925">Serveis de targetes de dèbit i de xecs</translation>
+<translation id="1717882880162336471">Prova el mode IA</translation>
 <translation id="1719434663396780149">Les alertes de baixada de preu estan activades. Pots canviar aquesta opció a la <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="1719838434204287058">24 x 30 polzades</translation>
 <translation id="1720941539803966190">Tanca el tutorial</translation>
@@ -2015,6 +2017,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4258748452823770588">Signatura errònia</translation>
 <translation id="4265635050210404830">Les teves targetes de fidelització</translation>
 <translation id="4265872034478892965">Permès per l'administrador</translation>
+<translation id="4267590181863312380">Per accedir a l'historial dels teus altres dispositius, inicia la sessió i sincronitza l'historial. També obtindràs les contrasenyes i altres dades en tots els teus dispositius. Pots aturar la sincronització en qualsevol moment a la configuració. És possible que Google personalitzi la Cerca i altres serveis en funció del teu historial.</translation>
 <translation id="4269029136757623689">Ventiladors domèstics</translation>
 <translation id="4269264543938335308">Roba de bany</translation>
 <translation id="4269599248168651462">El certificat de servidor s'emet a un nom que no és únic.</translation>
@@ -2891,6 +2894,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5715918316982363436"><ph name="TAB_COUNT" /> de <ph name="WINDOW_COUNT" /> en aquest dispositiu</translation>
 <translation id="5716325061445053985">Toca per obrir la pestanya al teu telèfon</translation>
 <translation id="5717509257172454543">Patinatge sobre gel</translation>
+<translation id="5718601519531438273">Inclou informació com ara passaports i permisos de conduir</translation>
 <translation id="5720705177508910913">Usuari actual</translation>
 <translation id="5720895412771013401">Ordinadors</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} i 1 més}other{{website_1}, {website_2} i {more_count} més}}</translation>
@@ -4561,6 +4565,7 @@ Detalls addicionals:
 <translation id="8449036207308062757">Gestiona l'emmagatzematge</translation>
 <translation id="8449155699563577224">17 x 24 polzades</translation>
 <translation id="8449836157089738489">Obre'ls tots en un grup de pestanyes nou</translation>
+<translation id="8451518040456311377">Desa i emplena documents d'identitat</translation>
 <translation id="84561192812921051">L'administrador pot fer canvis al perfil i al navegador de manera remota, analitzar informació sobre el navegador mitjançant informes i dur a terme altres tasques necessàries. És possible que l'activitat d'aquest dispositiu també es gestioni fora de Chrome.  <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="8456383681414356368">El full inferior està tancat.</translation>
 <translation id="8456775115498700722">Ara pots emplenar automàticament les dades de les teves targetes de <ph name="CARD_ISSUER_NAME" /> perquè el teu compte de <ph name="CARD_ISSUER_NAME" /> està enllaçat a Google Pay.</translation>

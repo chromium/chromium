@@ -49,6 +49,7 @@
 <translation id="1181037720776840403">Fjern</translation>
 <translation id="1183189057400844278">Verificer din identitet for at sikre, at du altid kan bruge adgangskoderne på din Google-konto</translation>
 <translation id="1187810343066461819">Slet også bogmærker, historik m.m. fra denne bil</translation>
+<translation id="1193589902336218259">Aktivér notifikationer med tips</translation>
 <translation id="1193729455103054076">Vil du bruge en stærk adgangskode?</translation>
 <translation id="11947597112837849">mailadresse</translation>
 <translation id="1197267115302279827">Flyt bogmærker</translation>
@@ -236,6 +237,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="200114059308480249">Vil du medtage omgivende tekst i Google-søgninger?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, fastgjort inkognitofane med lyden slået fra</translation>
 <translation id="2021896219286479412">Kontrolelementer på website i fuld skærm</translation>
+<translation id="2029669011553795746">Tilvalg af notifikationer med tips er åbnet i halv højde</translation>
 <translation id="2038563949887743358">Slå computerversionen af websitet til</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> har også data i Chrome</translation>
 <translation id="2047378580182589770">Hold fingeren nede for at skifte væk fra Inkognito</translation>
@@ -245,6 +247,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="2063047797624276601">Din organisation har aktiveret Udvidet beskyttet browsing</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 download mislykkedes}one{# download mislykkedes}other{# downloads mislykkedes}}</translation>
 <translation id="2067805253194386918">tekst</translation>
+<translation id="2072027001582274150">Ubrugte faner eller dubletter af faner</translation>
 <translation id="2074527029802029717">Frigør fane</translation>
 <translation id="2079545284768500474">Fortryd</translation>
 <translation id="2082238445998314030">Resultat <ph name="RESULT_NUMBER" /> af <ph name="TOTAL_RESULTS" /></translation>
@@ -405,6 +408,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="2781151931089541271">1 sekund tilbage</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chrome har fundet en genbrugt adgangskode, som du kan forbedre}one{Chrome har fundet # genbrugt adgangskode, som du kan forbedre}other{Chrome har fundet # genbrugte adgangskoder, som du kan forbedre}}</translation>
+<translation id="2794551654724114396">Aktivér notifikationer for at få nyttige tips, der hjælper dig med at få mest muligt ud af Chrome</translation>
 <translation id="2800066122460699237">Fanen <ph name="TAB_TITLE" /> lukkes</translation>
 <translation id="2805210243313393104">Få dine bogmærker m.m. på alle dine enheder</translation>
 <translation id="2805756323405976993">Apps</translation>
@@ -640,6 +644,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="3824259034819781947">Vedhæft filer</translation>
 <translation id="38243391581572867">Lens er ikke tilgængelig på denne konto.</translation>
 <translation id="38258275871320156">Kun tilgængelig for små vinduer</translation>
+<translation id="3826529618131025925">Felt i bunden med hjælp og vejledning til tilvalg af notifikationer med tips</translation>
 <translation id="3845098929839618392">Åbn i inkognitofane</translation>
 <translation id="3847319713229060696">Vær med til at forbedre sikkerheden på nettet for alle</translation>
 <translation id="385051799172605136">Tilbage</translation>
@@ -773,6 +778,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="4405636711880428279">Vil du fjerne dit virtuelle kort?</translation>
 <translation id="4408965460206576430">Denne fil indeholder malware eller stammer fra et mistænkeligt website</translation>
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> og <ph name="TAB_COUNT" /> andre faner</translation>
+<translation id="441100617989818073">Faner og grupper (ubrugte el. dubletter)</translation>
 <translation id="4414179633735763985"><ph name="TAB_GROUPS_AND_TABS_PART" /> er slettet</translation>
 <translation id="4415276339145661267">Administrer din Google-konto</translation>
 <translation id="4425140285732600465">Der holdes øje med prisen. Få besked, hvis prisen falder på et website.</translation>
@@ -801,6 +807,7 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="452750746583162491">Gennemgå dine synkroniserede data</translation>
 <translation id="4532845899244822526">Vælg mappe</translation>
 <translation id="4535755320005483982">Delt <ph name="GROUP_TITLE" />-fanegruppe</translation>
+<translation id="4537137366307982887">Tilvalg af notifikationer med tips er åbnet i fuld højde</translation>
 <translation id="4543131175509360848">Feltet "Ingen tilgængelige adgangsnøgler"</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> fane}one{<ph name="TAB_COUNT_MANY" /> fane og <ph name="TAB_COUNT_INCOGNITO" /> inkognitofane}other{<ph name="TAB_COUNT_MANY" /> faner og <ph name="TAB_COUNT_INCOGNITO" /> inkognitofaner}}</translation>
 <translation id="4558311620361989323">Genveje på websider</translation>
@@ -952,6 +959,7 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="5123685120097942451">Inkognitofane</translation>
 <translation id="5142281402488957685">Hvis du vil se nye historier, skal du trække nedad for at opdatere</translation>
 <translation id="5144385790872094440">Nogle af de sider, du besøger, er forudindlæst. Sider forudindlæses muligvis via Googles servere, når de er linket fra et Google-website eller en Google-app.</translation>
+<translation id="5145887002054615868">Dubletter af faner eller faner, der ikke er blevet brugt i <ph name="DAYS_INACTIVE" /> dage, flyttes hertil<ph name="AUTODELETE_SECTION" />. Du kan til enhver tid ændre dette i <ph name="DECLUTTER_SETTINGS_TITLE" />.</translation>
 <translation id="5152843274749979095">Der er ikke installeret nogen understøttede apps</translation>
 <translation id="5161254044473106830">Der skal angives en titel</translation>
 <translation id="5161262286013276579">Feltet til bekræftelse af adgangsnøgle er åbnet</translation>
@@ -1114,6 +1122,7 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="5864419784173784555">Venter på en anden download…</translation>
 <translation id="5865733239029070421">Sender automatisk brugsstatistikker og nedbrudsrapporter til Google</translation>
 <translation id="5869522115854928033">Gemte adgangskoder</translation>
+<translation id="5870416898561279542">Dubletter af faner og grupper eller faner og grupper, der ikke er blevet brugt i <ph name="DAYS_INACTIVE" /> dage, flyttes hertil<ph name="AUTODELETE_SECTION" />. Du kan til enhver tid ændre dette i <ph name="DECLUTTER_SETTINGS_TITLE" />.</translation>
 <translation id="587735546353481577">Følg et website ved at gå til websitet, åbne Chrome-menuen og trykke på Følg.</translation>
 <translation id="5883855034004058011">Forsøg på login med biometriske data mislykkedes for mange gange. Lås enheden, og prøv igen.</translation>
 <translation id="5885378508678660271">Notifikationer <ph name="SEPARATOR" /> Chrome har fjernet disse tilladelser, fordi dette website er farligt</translation>
@@ -1874,6 +1883,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="8942627711005830162">Åbn i et andet vindue</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> – Dette sprog kunne ikke downloades. Prøv igen senere.</translation>
 <translation id="8946759102391960088">Bevar adgangen til dine adgangskoder</translation>
+<translation id="895442993047180128">Tilvalg af notifikationer med tips er lukket</translation>
 <translation id="8957528460562961174">Hvis du fortsat vil have adgang til dine adgangskoder, skal du eksportere dem nu og derefter importere dem til din foretrukne adgangskodeadministrator. Google Adgangskodeadministrator stoppede med at fungere, fordi Google Play-tjenester ikke er tilgængelige.</translation>
 <translation id="8963117664422609631">Gå til indstillingerne for websitet</translation>
 <translation id="8965591936373831584">afventer</translation>

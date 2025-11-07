@@ -534,6 +534,7 @@ Moguće je da neke funkcije neće biti dostupne. Odredite drugi direktorij profi
 <translation id="7274695763216404502">Zakačeno! Ponovo koristite pretraživanje pomoću slika s alatne trake</translation>
 <translation id="7288567540154601580">Kartice i ekstenzije</translation>
 <translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{Chromium preporučuje da je uklonite}one{Chromium preporučuje da ih uklonite}few{Chromium preporučuje da ih uklonite}other{Chromium preporučuje da ih uklonite}}</translation>
+<translation id="7296334833518879294">Da dijelite zvuk sistema, otvorite Postavke sistema i dozvolite "Snimanje samo zvuka sistema" za Chromium. Zatim ćete morati ponovo pokrenuti Chromium.</translation>
 <translation id="7309928523159922338">Mjerenje oglasa omogućava web lokacijama koje posjećujete da zatraže informaciju iz Chromiuma koja će im pomoći da izmjere performanse svojih oglasa. Mjerenje oglasa ograničava unakrsno praćenje web lokacija prenoseći minimalnu količinu informacija između njih.</translation>
 <translation id="731795002583552498">Ažuriranje Chromiuma</translation>
 <translation id="7318036098707714271">Vaš fajl s postavkama je oštećen ili nevažeći.

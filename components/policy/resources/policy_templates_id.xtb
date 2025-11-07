@@ -10869,21 +10869,6 @@ Jika kebijakan disetel ke Nonaktif, fitur transpor kamus kompresi akan dinonakti
 
       Jika kebijakan ini disetel, pengguna tidak dapat mengubah atau menggantinya.</translation>
 <translation id="8080200590486938727">Nonaktifkan pencari plugin</translation>
-<translation id="8082268442825947283">Menyetel kebijakan ini akan mengonfigurasi aturan yang menentukan proxy mana yang digunakan browser, bergantung pada URL tujuan dan kondisi lainnya. Kebijakan ini akan lebih diutamakan daripada setelan proxy yang ditetapkan dari kebijakan <ph name="PROXY_SETTINGS_POLICY_NAME" />, API ekstensi <ph name="PROXY_SETTINGS_EXTENSION_API" />, atau setelan pengguna manual jika ada yang disetel.
-
-Jika kebijakan ini tidak disetel, kebijakan proxy atau setelan pengguna lainnya tidak akan terpengaruh.
-
-Saat browser perlu memutuskan proxy mana yang akan digunakan, entri dari kebijakan <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> akan dievaluasi secara berurutan hingga salah satu entri cocok dengan setidaknya satu host URL di <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> dan jika semua entri di <ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> terpenuhi. Nilai dalam <ph name="PROXY_OVERRIDE_RULES_PROXY_CHAIN" /> akan digunakan sebagai proxy untuk kecocokan tersebut. Jika tidak ditemukan kecocokan, setelan proxy akan kembali ke setelan yang ditetapkan dalam kebijakan <ph name="PROXY_SETTINGS_POLICY_NAME" />.
-
-Entri kolom <ph name="PROXY_OVERRIDE_RULES_PROXY_CHAIN" /> sesuai dengan nilai string file PAC seperti:
-  * DIRECT
-  * PROXY host:port
-  * HTTPS host:port
-Entri pertama yang dapat dijangkau akan digunakan sebagai proxy.
-
-Kolom <ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> berisi daftar kondisi yang harus dipenuhi agar aturan penggantian dapat digunakan untuk menentukan proxy yang akan digunakan. Jika tidak disetel, entri akan digunakan selama setidaknya ada satu host di <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> yang cocok.
-
-Kondisi <ph name="PROXY_OVERRIDE_RULES_DNS_PROBE" /> memeriksa apakah DNS yang diberikan <ph name="PROXY_OVERRIDE_RULES_HOST" /> dapat di-resolve ke alamat IP. Jika nilai <ph name="PROXY_OVERRIDE_RULES_RESULT" /> adalah "<ph name="PROXY_OVERRIDE_RULES_RESOLVES" />", kondisi tersebut dianggap terpenuhi. Jika nilai tersebut disetel ke <ph name="PROXY_OVERRIDE_RULES_NOT_FOUND" />, kondisi akan dianggap terpenuhi jika resolusi gagal.</translation>
 <translation id="8086746212954621799">Jika setelan disetel ke Benar (True), update otomatis akan dinonaktifkan.
 
 Jika setelan ini tidak dikonfigurasi atau disetel ke Salah (False), perangkat <ph name="PRODUCT_OS_NAME" /> otomatis memeriksa update.

@@ -49,6 +49,7 @@
 <translation id="1181037720776840403">Eemalda</translation>
 <translation id="1183189057400844278">Selleks, et saaksite oma Google'i kontol alati kasutada paroole, kinnitage oma isik</translation>
 <translation id="1187810343066461819">Kustuta sellest autost ka järjehoidjad, ajalugu ja muu</translation>
+<translation id="1193589902336218259">Lülita nõuandemärguanded sisse</translation>
 <translation id="1193729455103054076">Kas kasutada tugevat parooli?</translation>
 <translation id="11947597112837849">e-posti aadress</translation>
 <translation id="1197267115302279827">Teisalda järjehoidjad</translation>
@@ -236,6 +237,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="200114059308480249">Kas kaasata ümbritsev tekst Google'i otsingutesse?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, kinnitatud vaigistatud inkognito vaheleht</translation>
 <translation id="2021896219286479412">Saidi juhtelemendid täisekraanil</translation>
+<translation id="2029669011553795746">Nõuandemärguannete lubamine on avatud poolel kõrgusel</translation>
 <translation id="2038563949887743358">Valiku Taotle arvutisaiti sisselülitamine</translation>
 <translation id="204321170514947529">Rakendusel <ph name="APP_NAME" /> on samuti Chrome’i andmeid</translation>
 <translation id="2047378580182589770">Inkognito režiimist väljumiseks puudutage pikalt</translation>
@@ -245,6 +247,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="2063047797624276601">Teie organisatsioon lülitas täiustatud ohutu sirvimise sisse</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 allalaadimine ebaõnnestus}other{# allalaadimist ebaõnnestusid}}</translation>
 <translation id="2067805253194386918">tekst</translation>
+<translation id="2072027001582274150">Kasutamata või duplikaatvahelehed</translation>
 <translation id="2074527029802029717">Vabasta vaheleht</translation>
 <translation id="2079545284768500474">Võta tagasi</translation>
 <translation id="2082238445998314030">Tulemus <ph name="RESULT_NUMBER" />/<ph name="TOTAL_RESULTS" /></translation>
@@ -405,6 +408,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="2781151931089541271">Jäänud on 1 sekund</translation>
 <translation id="2789486458103222910">Selge</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chrome leidis korduvalt kasutatud parooli, mida saaksite tugevdada}other{Chrome leidis # korduvalt kasutatud parooli, mida saaksite tugevdada}}</translation>
+<translation id="2794551654724114396">Lülitage sisse märguanded, et saada kasulikke nõuandeid Chrome’i parimal moel kasutamiseks</translation>
 <translation id="2800066122460699237">Vaheleht <ph name="TAB_TITLE" /> suletakse</translation>
 <translation id="2805210243313393104">Kõigis seadmetes oma järjehoidjatele ja muule juurdepääsemine</translation>
 <translation id="2805756323405976993">Rakendused</translation>
@@ -640,6 +644,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="3824259034819781947">Failide manustamine</translation>
 <translation id="38243391581572867">Lens pole sellel kontol saadaval.</translation>
 <translation id="38258275871320156">Saadaval ainult väikeste akende jaoks</translation>
+<translation id="3826529618131025925">Nõuandemärguannete lubamise abi ja juhiste alumine leht</translation>
 <translation id="3845098929839618392">Ava inkognito vahelehel</translation>
 <translation id="3847319713229060696">Aidake veebi kõigi jaoks turvalisemaks muuta</translation>
 <translation id="385051799172605136">Tagasi</translation>
@@ -773,6 +778,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="4405636711880428279">Kas eemaldada virtuaalkaart?</translation>
 <translation id="4408965460206576430">See fail sisaldab pahavara või pärineb kahtlaselt saidilt</translation>
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> ja veel <ph name="TAB_COUNT" /> vahelehte</translation>
+<translation id="441100617989818073">Kasutamata või duplikaatvahelehed ja -rühmad</translation>
 <translation id="4414179633735763985"><ph name="TAB_GROUPS_AND_TABS_PART" /> on kustutatud</translation>
 <translation id="4415276339145661267">Google'i konto haldamine</translation>
 <translation id="4425140285732600465">Jälgite hinda. Teile saadetakse märguanne, kui hind mõnel saidil langeb.</translation>
@@ -801,6 +807,7 @@ Veebisaidil <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 
 <translation id="452750746583162491">Vaadake oma sünkroonitud andmed üle</translation>
 <translation id="4532845899244822526">Kausta valimine</translation>
 <translation id="4535755320005483982">Jagatud vahelehegrupp <ph name="GROUP_TITLE" /></translation>
+<translation id="4537137366307982887">Nõuandemärguannete lubamine on avatud täiskõrgusel</translation>
 <translation id="4543131175509360848">Pääsuvõtmete puudumise leht</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> vaheleht}other{<ph name="TAB_COUNT_MANY" /> vahelehte, <ph name="TAB_COUNT_INCOGNITO" /> inkognito}}</translation>
 <translation id="4558311620361989323">Veebilehe otseteed</translation>
@@ -952,6 +959,7 @@ Veebisaidil <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 
 <translation id="5123685120097942451">Inkognito vaheleht</translation>
 <translation id="5142281402488957685">Uute lugude nägemiseks tõmmake värskendamiseks alla</translation>
 <translation id="5144385790872094440">Mõned teie külastatavad lehed on eellaaditud. Lehed võidakse eellaadida Google'i serverite kaudu, kui need on lingitud Google'i saidilt või rakendusest.</translation>
+<translation id="5145887002054615868">Duplikaatvahelehed või need, mida pole <ph name="DAYS_INACTIVE" /> päeva kasutatud, teisaldatakse siia<ph name="AUTODELETE_SECTION" />. Seda saab alati muuta jaotises <ph name="DECLUTTER_SETTINGS_TITLE" />.</translation>
 <translation id="5152843274749979095">Toetatud rakendusi pole installitud</translation>
 <translation id="5161254044473106830">Pealkiri on kohustuslik</translation>
 <translation id="5161262286013276579">Pääsuvõtme kinnitusleht on avatud</translation>
@@ -1114,6 +1122,7 @@ Veebisaidil <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 
 <translation id="5864419784173784555">Teise allalaadimise ootamine …</translation>
 <translation id="5865733239029070421">Google'ile saadetakse automaatselt kasutusstatistikat ja krahhiaruandeid</translation>
 <translation id="5869522115854928033">Salvestatud paroolid</translation>
+<translation id="5870416898561279542">Duplikaatvahelehed ja -rühmad, mida pole <ph name="DAYS_INACTIVE" /> päeva kasutatud, teisaldatakse siia<ph name="AUTODELETE_SECTION" />. Seda saab alati muuta jaotises <ph name="DECLUTTER_SETTINGS_TITLE" />.</translation>
 <translation id="587735546353481577">Saidi jälgimiseks minge saidile, avage Chrome'i menüü ja puudutage nuppu Jälgi.</translation>
 <translation id="5883855034004058011">Biomeetria nurjus liiga palju kordi. Uuesti proovimiseks lukustage ja avage seade.</translation>
 <translation id="5885378508678660271">Märguanded <ph name="SEPARATOR" /> Chrome eemaldas need load, kuna see sait on ohtlik</translation>
@@ -1874,6 +1883,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="8942627711005830162">Ava teises aknas</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> – seda keelt ei saanud alla laadida. Proovige hiljem uuesti.</translation>
 <translation id="8946759102391960088">Säilitage juurdepääs oma paroolidele</translation>
+<translation id="895442993047180128">Nõuandemärguannete lubamine on suletud</translation>
 <translation id="8957528460562961174">Paroolide kasutamise jätkamiseks eksportige need kohe ja importige need seejärel paroolihaldurisse, mida soovite kasutada. Google Password Manager ei tööta enam, sest Google Play teenused ei ole saadaval.</translation>
 <translation id="8963117664422609631">Saidi seadete avamine</translation>
 <translation id="8965591936373831584">ootel</translation>

@@ -49,6 +49,7 @@
 <translation id="1181037720776840403">Fjern</translation>
 <translation id="1183189057400844278">For å sikre at du alltid kan bruke passordene i Google-kontoen din, må du bekrefte at det er deg</translation>
 <translation id="1187810343066461819">Slett også bokmerker, logg og annet fra denne bilen</translation>
+<translation id="1193589902336218259">Slå på varsler for tips</translation>
 <translation id="1193729455103054076">Vil du bruke det sterke passordet?</translation>
 <translation id="11947597112837849">e-postadressen din</translation>
 <translation id="1197267115302279827">Flytt bokmerker</translation>
@@ -236,6 +237,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="200114059308480249">Vil du inkludere omliggende tekst i Google-søk?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, festet inkognitofane med dempet lyd</translation>
 <translation id="2021896219286479412">Navigering i full skjerm</translation>
+<translation id="2029669011553795746">Samtykke for varsler for tips er åpnet i halv høyde</translation>
 <translation id="2038563949887743358">Slå på Bruk skrivebordsversjon</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> har også data i Chrome</translation>
 <translation id="2047378580182589770">Trykk og hold for å gå ut av Inkognito</translation>
@@ -245,6 +247,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="2063047797624276601">Organisasjonen din har slått på Safe Browsing med økt beskyttelse</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 nedlasting mislyktes}other{# nedlastinger mislyktes}}</translation>
 <translation id="2067805253194386918">tekst</translation>
+<translation id="2072027001582274150">Ubrukte eller dupliserte faner</translation>
 <translation id="2074527029802029717">Løsne fanen</translation>
 <translation id="2079545284768500474">Angre</translation>
 <translation id="2082238445998314030">Resultat <ph name="RESULT_NUMBER" /> av <ph name="TOTAL_RESULTS" /></translation>
@@ -405,6 +408,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="2781151931089541271">1 sekund igjen</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chrome fant et gjenbrukt passord du kan forbedre}other{Chrome fant # gjenbrukte passord du kan forbedre}}</translation>
+<translation id="2794551654724114396">Slå på varsler for å få nyttige tips som hjelper deg med å få mest mulig ut av Chrome</translation>
 <translation id="2800066122460699237">Fanen <ph name="TAB_TITLE" /> blir lukket</translation>
 <translation id="2805210243313393104">Få bokmerker, logg med mer på alle enhetene dine.</translation>
 <translation id="2805756323405976993">Apper</translation>
@@ -640,6 +644,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="3824259034819781947">Legg ved filer</translation>
 <translation id="38243391581572867">Lens er ikke tilgjengelig for denne kontoen.</translation>
 <translation id="38258275871320156">Bare tilgjengelig for små vinduer</translation>
+<translation id="3826529618131025925">Felt nederst med hjelp og veiledning med samtykke for varsler for tips</translation>
 <translation id="3845098929839618392">Åpne i inkognitofane</translation>
 <translation id="3847319713229060696">Bidra til å gjøre nettet sikrere for alle</translation>
 <translation id="385051799172605136">Tilbake</translation>
@@ -773,6 +778,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="4405636711880428279">Vil du fjerne det virtuelle kortet ditt?</translation>
 <translation id="4408965460206576430">Denne filen inneholder skadelig programvare eller kommer fra et mistenkelig nettsted</translation>
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> og <ph name="TAB_COUNT" /> faner til</translation>
+<translation id="441100617989818073">Ubrukte/dupliserte faner/grupper</translation>
 <translation id="4414179633735763985"><ph name="TAB_GROUPS_AND_TABS_PART" /> ble slettet</translation>
 <translation id="4415276339145661267">Administrer Google-kontoen din</translation>
 <translation id="4425140285732600465">Sporer prisen. Du får varsler hvis prisen settes ned på noe nettsted.</translation>
@@ -801,6 +807,7 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="452750746583162491">Gjennomgå de synkroniserte dataene dine</translation>
 <translation id="4532845899244822526">Velg en mappe</translation>
 <translation id="4535755320005483982">Delte fanegruppen <ph name="GROUP_TITLE" /></translation>
+<translation id="4537137366307982887">Samtykke for varsler for tips er åpnet i full høyde</translation>
 <translation id="4543131175509360848">Ark for ingen passnøkler</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> fane}other{<ph name="TAB_COUNT_MANY" /> faner, <ph name="TAB_COUNT_INCOGNITO" /> inkognito}}</translation>
 <translation id="4558311620361989323">Hurtigtaster for nettsider</translation>
@@ -952,6 +959,7 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="5123685120097942451">Inkognitofane</translation>
 <translation id="5142281402488957685">For å se nye artikler, dra ned for å laste inn feeden på nytt</translation>
 <translation id="5144385790872094440">Noen av sidene du besøker, er forhåndslastede. Sider kan bli forhåndslastet via Googles tjenere når de er linket på Google-nettsteder eller i Google-apper.</translation>
+<translation id="5145887002054615868">Dupliserte faner eller faner som ikke er brukt på <ph name="DAYS_INACTIVE" /> dager, flyttes hit<ph name="AUTODELETE_SECTION" />. Du kan når som helst endre dette i <ph name="DECLUTTER_SETTINGS_TITLE" />.</translation>
 <translation id="5152843274749979095">Ingen støttede apper er installert</translation>
 <translation id="5161254044473106830">Du må oppgi en tittel</translation>
 <translation id="5161262286013276579">Arket for passnøkkelbekreftelse er åpnet</translation>
@@ -1114,6 +1122,7 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="5864419784173784555">Venter på en annen nedlasting …</translation>
 <translation id="5865733239029070421">Sender automatisk brukerstatistikk og programstopprapporter til Google</translation>
 <translation id="5869522115854928033">Lagrede passord</translation>
+<translation id="5870416898561279542">Dupliserte faner og grupper eller faner og grupper som ikke er brukt på <ph name="DAYS_INACTIVE" /> dager, flyttes hit<ph name="AUTODELETE_SECTION" />. Du kan når som helst endre dette i <ph name="DECLUTTER_SETTINGS_TITLE" />.</translation>
 <translation id="587735546353481577">For å følge et nettsted, gå til nettstedet, åpne Chrome-menyen og trykk på Følg.</translation>
 <translation id="5883855034004058011">Biometri mislyktes for mange ganger. Lås og lås opp enheten for å prøve på nytt.</translation>
 <translation id="5885378508678660271">Varsler <ph name="SEPARATOR" /> Chrome har fjernet disse tillatelsene fordi dette nettstedet er farlig</translation>
@@ -1874,6 +1883,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="8942627711005830162">Åpne i et annet vindu</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> – Kunne ikke laste ned dette språket. Prøv på nytt senere.</translation>
 <translation id="8946759102391960088">Behold tilgangen til passordene dine</translation>
+<translation id="895442993047180128">Samtykke for varsler for tips er lukket</translation>
 <translation id="8957528460562961174">For å beholde tilgangen til passordene dine, eksporter dem nå og importer dem deretter til passordlagringsverktøyet du vil bruke. Google Passordlagring har sluttet å fungere fordi Google Play-tjenester ikke er tilgjengelig.</translation>
 <translation id="8963117664422609631">Gå til nettstedsinnstillingene</translation>
 <translation id="8965591936373831584">venter</translation>

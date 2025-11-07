@@ -78,6 +78,7 @@
 <translation id="112840717907525620">Gidalerroaren cachea egoera onean dago</translation>
 <translation id="1131264053432022307">Kopiatu duzun irudia</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – Pantaila osoko ikuspegitik irteteko, arrastatu goitik eta sakatu atzera egiteko botoia</translation>
+<translation id="1133418583142946603">Gehitu fitxa hau</translation>
 <translation id="1138458427267715730">Jaso alertak sareko edozein webgunetan prezioa jaisten denean</translation>
 <translation id="1142713751288681188">Paper mota</translation>
 <translation id="1142965388643537393">Bidaia-informazioa</translation>
@@ -1009,6 +1010,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2627847595568876492">PDFtik testua ateratzen…</translation>
 <translation id="2628025184666666186">Zerbitzariak ezin izan du frogatu <ph name="DOMAIN" /> denik, Chrome-k edo zure sareko trafikoa enkriptatzeko sistema-konfigurazioak fidagarritzat hartzen ez duen segurtasun-ziurtagiri bat darabilelako. Baliteke oker konfiguratuta dagoelako edo erasotzaile batek zure konexioa atzeman duelako izatea.</translation>
 <translation id="2628224721443278970">Hasi saioa Microsoft OneDrive-n</translation>
+<translation id="2631387782019878060">Egiaztapen-kodea: <ph name="OTP" /></translation>
 <translation id="2634124572758952069">Ezin izan da aurkitu <ph name="HOST_NAME" /> ostalariaren IP helbidea.</translation>
 <translation id="2638567100095052009">Idatzi @ hauetan bilatzeko: <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="2639739919103226564">Egoera:</translation>
@@ -2798,6 +2800,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="5558083606899411167">Aire-girogailuak</translation>
 <translation id="5558125320634132440">Webgunea blokeatu egin da, agian helduentzako edukiak baititu</translation>
 <translation id="5559311991468302423">Ezabatu helbidea</translation>
+<translation id="5561747310506483298">Nortasun-agiriak</translation>
 <translation id="55635442646131152">Dokumentuaren eskema</translation>
 <translation id="5563589142503817291">Kokapena erabiltzeko, eman Chrome-ri baimena hemen: <ph name="LINK" />.</translation>
 <translation id="5565613213060953222">Ireki ezkutuko moduko fitxa bat</translation>

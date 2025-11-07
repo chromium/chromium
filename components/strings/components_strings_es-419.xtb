@@ -78,6 +78,7 @@
 <translation id="112840717907525620">Caché de política correcta</translation>
 <translation id="1131264053432022307">Imagen que copiaste</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" />: Para salir de la pantalla completa, arrastra desde la parte superior y presiona el botón Atrás</translation>
+<translation id="1133418583142946603">Agregar pestaña actual</translation>
 <translation id="1138458427267715730">Recibe alertas cuando haya reducciones de precio en cualquier sitio de la Web</translation>
 <translation id="1142713751288681188">Tipo de papel</translation>
 <translation id="1142965388643537393">Información de viaje</translation>
@@ -1009,6 +1010,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2627847595568876492">Extrayendo texto del PDF…</translation>
 <translation id="2628025184666666186">Este servidor no pudo probar que su dominio sea <ph name="DOMAIN" /> porque usa un certificado de seguridad que no es de confianza para Chrome o la configuración del sistema para la encriptación del tráfico web. Es posible que se deba a una configuración incorrecta o a que un atacante haya interceptado tu conexión.</translation>
 <translation id="2628224721443278970">Acceder a Microsoft OneDrive</translation>
+<translation id="2631387782019878060">Código de verificación: <ph name="OTP" /></translation>
 <translation id="2634124572758952069">No se pudo encontrar la dirección IP del servidor de <ph name="HOST_NAME" />.</translation>
 <translation id="2638567100095052009">Escribe @ para buscar en <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="2639739919103226564">Estado:</translation>
@@ -2803,6 +2805,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5558083606899411167">Equipos de aire acondicionado</translation>
 <translation id="5558125320634132440">Se bloqueó este sitio porque puede incluir contenido para mayores de edad</translation>
 <translation id="5559311991468302423">Borrar dirección</translation>
+<translation id="5561747310506483298">Documentos de identidad</translation>
 <translation id="55635442646131152">Esquema del documento</translation>
 <translation id="5563589142503817291">Para usar la ubicación, otorga acceso a Chrome en la <ph name="LINK" />.</translation>
 <translation id="5565613213060953222">Abrir pestaña de incógnito</translation>

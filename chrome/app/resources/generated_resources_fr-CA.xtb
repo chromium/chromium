@@ -2458,6 +2458,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2667463864537187133">Gérer le correcteur orthographique</translation>
 <translation id="2668604389652548400">Retirez-la ou remplacez-la par une extension semblable de la <ph name="BEGIN_LINK" />boutique en ligne Chrome Web Store<ph name="END_LINK" /></translation>
 <translation id="2669241540496514785">Impossible d'ouvrir <ph name="APP_NAME" /></translation>
+<translation id="2669250147452250961">Activez cette option pour récupérer votre historique de navigation et vos onglets à partir d'autres appareils</translation>
 <translation id="2669454659051515572">Toute personne utilisant cet appareil peut voir les fichiers téléchargés</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> partage un onglet Chrome.</translation>
 <translation id="2670168377011445813">Si Chrome indique qu'un de vos mots de passe a été découvert dans un cas de violation de données public, le gestionnaire de mots de passe Google peut vous proposer de le modifier pour vous si votre compte est connecté. <ph name="BEGIN_LINK" />En savoir plus sur la modification automatique du mot de passe<ph name="END_LINK" /></translation>
@@ -8603,6 +8604,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="6961327401577924850">Les sites recherchent généralement les appareils Bluetooth pour proposer des fonctionnalités comme la configuration ou la synchronisation d'une balise à faible consommation d'énergie, d'un moniteur de santé ou d'activité physique, ou d'une ampoule intelligente</translation>
 <translation id="6963772203726867701">Non détecté</translation>
 <translation id="6963872466817251924">Surligneur du curseur de texte</translation>
+<translation id="6964239097707154771">sont des modules complémentaires pour Chrome qui vous aident à être plus productif</translation>
 <translation id="6964390816189577014">Héros</translation>
 <translation id="6964760285928603117">Supprimer du groupe</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -8914,6 +8916,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7186088072322679094">Garder dans la barre d'outils</translation>
 <translation id="7186303001964993981"><ph name="ORIGIN" /> ne peut pas ouvrir ce dossier parce qu'il contient des fichiers système</translation>
 <translation id="7186568385131859684">Contrôlez la manière dont l'historique de navigation est utilisé avec vos autres données dans les services Google</translation>
+<translation id="7186903260115204164">Ajoutez des dessins à main levée, des signatures et des mises en évidence avec le nouvel outil Dessin</translation>
 <translation id="7188508872042490670">Données relatives aux sites sur l’appareil</translation>
 <translation id="7189234443051076392">Assurez-vous qu'il y a suffisamment d'espace sur votre appareil</translation>
 <translation id="7189451821249468368">Vous n'avez pas suffisamment de mises à niveau pour inscrire cet appareil. Veuillez communiquer avec le service commercial pour en acheter d'autres. Si vous pensez que ce message s'affiche par erreur, veuillez communiquer avec l'assistance technique.</translation>
@@ -10743,6 +10746,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8427213022735114808">La fonction de dictée envoie votre voix à Google pour autoriser la saisie vocale dans n'importe quel champ de texte.</translation>
 <translation id="8427292751741042100">intégrée à n'importe quel hôte</translation>
 <translation id="8428213095426709021">Paramètres</translation>
+<translation id="8428257636009471988">Visiter la boutique en ligne Chrome</translation>
 <translation id="8428271547607112339">Ajouter un compte scolaire</translation>
 <translation id="8428634594422941299">OK</translation>
 <translation id="84297032718407999">Vous serez déconnecté dans <ph name="LOGOUT_TIME_LEFT" /></translation>

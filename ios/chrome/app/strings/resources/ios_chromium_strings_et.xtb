@@ -238,6 +238,7 @@ Tasub teada
 <translation id="6154098560469640583">Kasutage Chromiumi iga kord, kui puudutate linke sõnumites, dokumentides ja teistes rakendustes</translation>
 <translation id="6157162508956739031">Chromiumis salvestatud paroolide ja pääsuvõtmete automaatne sisestamine, et rakendustes ja saitidel kiirelt sisse logida</translation>
 <translation id="6170619162539716595">Lubage Chromiumil kasutada Google Mapsi teile tuvastatud aadresside kohta juhiste ja kohaliku teabe esitamiseks.</translation>
+<translation id="6244277266078678766">Teie andmed salvestatakse konto <ph name="USER_EMAIL" /> paroolihaldurisse.</translation>
 <translation id="6268381023930128611">Kas logida Chromiumist välja?</translation>
 <translation id="6301717043141881464">Selleks et muudes rakendustes hõlpsasti oma salvestatud paroolidele juurde pääseda, valige funktsioon Chromium automaattäite jaoks</translation>
 <translation id="6324041800010509197">Ava Chromiumis vahelehtede ruudustik</translation>
@@ -315,6 +316,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="8119542592987737574">Chromiumi saab kiiremini avada iPhone'i avakuva dokist.</translation>
 <translation id="8164086860209325020">Chromiumi seadete avamine</translation>
 <translation id="8197822717502700527">Nüüd saate Chromiumu kasutada oma seadmes parimal viisil.</translation>
+<translation id="8236210361418193126">Importimine paroolihaldurisse</translation>
 <translation id="8254729934443216898">Avastage uusi funktsioone, mis aitavad teil Chromiumi parimal moel kasutada.</translation>
 <translation id="8293572045658095405">Olete Chromiumi inkognito režiimis</translation>
 <translation id="830951810931292870">Avab sisestatud URL-id Google Chromiumis inkognito režiimis.</translation>

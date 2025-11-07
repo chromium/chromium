@@ -49,6 +49,7 @@
 <translation id="1181037720776840403">काढून टाका</translation>
 <translation id="1183189057400844278">तुम्ही तुमच्या Google खाते मधील पासवर्ड कधीही वापरू शकता याची खात्री करण्यासाठी, हे तुम्हीच असल्याची पडताळणी करा</translation>
 <translation id="1187810343066461819">या कारमधून बुकमार्क, इतिहास आणि आणखी बरेच काही हटवा</translation>
+<translation id="1193589902336218259">टिपा यांसाठी नोटिफिकेशन सुरू करा</translation>
 <translation id="1193729455103054076">क्लिष्ट पासवर्ड वापरायचा का?</translation>
 <translation id="11947597112837849">ईमेल अ‍ॅड्रेस</translation>
 <translation id="1197267115302279827">बुकर्माक हलवा</translation>
@@ -236,6 +237,7 @@
 <translation id="200114059308480249">Google वर शोधताना आसपासच्या मजकुराचा समावेश करायचा आहे का?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, पिन केलेला म्यूट केलेला गुप्त टॅब</translation>
 <translation id="2021896219286479412">फुल स्क्रीन साइट नियंत्रणे</translation>
+<translation id="2029669011553795746">टिपा यांसाठीच्या नोटिफिकेशनची निवड अर्ध्या उंचीवर उघडली आहे</translation>
 <translation id="2038563949887743358">डेस्कटॉप साइट विनंती सुरू करा</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" />चा Chrome मध्ये देखील डेटा आहे</translation>
 <translation id="2047378580182589770">गुप्त मोडमधून बाहेर स्विच करण्यासाठी स्पर्श करून धरून ठेवा</translation>
@@ -245,6 +247,7 @@
 <translation id="2063047797624276601">तुमच्या संस्थेने वर्धित सुरक्षित ब्राउझिंग सुरू केले आहे</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{एक डाउनलोड करता आले नाही}other{# डाउनलोड करता आले नाहीत}}</translation>
 <translation id="2067805253194386918">मजकूर</translation>
+<translation id="2072027001582274150">न वापरलेले किंवा डुप्लिकेट टॅब</translation>
 <translation id="2074527029802029717">टॅब अनपिन करा</translation>
 <translation id="2079545284768500474">पहिल्यासारखे करा</translation>
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" /> पैकी <ph name="RESULT_NUMBER" /> परिणाम</translation>
@@ -405,6 +408,7 @@
 <translation id="2781151931089541271">1 सेकंद शिल्लक</translation>
 <translation id="2789486458103222910">ठीक आहे</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chrome ला पुन्हा वापरलेला पासवर्ड आढळला आहे, ज्यामध्ये तुम्ही सुधारणा करू शकता}other{Chrome ला # पुन्हा वापरलेले पासवर्ड आढळले आहेत, ज्यांमध्ये तुम्ही सुधारणा करू शकता}}</translation>
+<translation id="2794551654724114396">तुम्हाला Chrome चा पुरेपूर वापर करण्यात मदत व्हावी, यासाठीच्या उपयुक्त टिपांकरिता नोटिफिकेशन सुरू करा</translation>
 <translation id="2800066122460699237"><ph name="TAB_TITLE" /> टॅब बंद केला जाईल</translation>
 <translation id="2805210243313393104">तुमच्या सर्व डिव्हाइसवर तुमचे बुकमार्क आणि आणखी बरेच काही मिळवा</translation>
 <translation id="2805756323405976993">ॲप्लिकेशन</translation>
@@ -640,6 +644,7 @@
 <translation id="3824259034819781947">फाइल अटॅच करा</translation>
 <translation id="38243391581572867">या खात्यासाठी Lens उपलब्ध नाही.</translation>
 <translation id="38258275871320156">फक्त लहान विंडोसाठी उपलब्ध आहे</translation>
+<translation id="3826529618131025925">टिपा यांसाठी नोटिफिकेशन निवडण्यासाठी, तळाशी असलेली मदत आणि मार्गदर्शन यासंबंधित शीट</translation>
 <translation id="3845098929839618392">गुप्त टॅबमध्ये उघडा</translation>
 <translation id="3847319713229060696">वेबवरील प्रत्येकासाठी सुरक्षिततेत सुधारणा करण्यात मदत करा</translation>
 <translation id="385051799172605136">मागील</translation>
@@ -773,6 +778,7 @@
 <translation id="4405636711880428279">तुमचे व्हर्च्युअल कार्ड काढून टाकायचे का?</translation>
 <translation id="4408965460206576430">या फाइलमध्ये मालवेअर आहे किंवा ती संशयास्पद साइटवरून आली आहे</translation>
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> आणि आणखी <ph name="TAB_COUNT" /> टॅब</translation>
+<translation id="441100617989818073">न वापरलेले किंवा डुप्लिकेट टॅब आणि गट</translation>
 <translation id="4414179633735763985"><ph name="TAB_GROUPS_AND_TABS_PART" /> हटवले आहेत</translation>
 <translation id="4415276339145661267">तुमचे Google खाते व्यवस्थापित करा</translation>
 <translation id="4425140285732600465">किमतीचा माग ठेवत आहे. कोणत्याही साइटवर किंमत कमी झाल्यास सूचना मिळवा.</translation>
@@ -801,6 +807,7 @@
 <translation id="452750746583162491">तुमच्या सिंक केलेल्या डेटाचे पुनरावलोकन करा</translation>
 <translation id="4532845899244822526">फोल्डर निवडा</translation>
 <translation id="4535755320005483982">शेअर केलेला <ph name="GROUP_TITLE" /> टॅब गट</translation>
+<translation id="4537137366307982887">टिपा यांसाठीच्या नोटिफिकेशनची निवड पूर्ण उंचीवर उघडली आहे</translation>
 <translation id="4543131175509360848">कोणतीही पासकी शीट नाही</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> टॅब}other{<ph name="TAB_COUNT_MANY" /> टॅब, <ph name="TAB_COUNT_INCOGNITO" /> गुप्त मोड}}</translation>
 <translation id="4558311620361989323">वेबपेज शॉर्टकट</translation>
@@ -952,6 +959,7 @@
 <translation id="5123685120097942451">गुप्त टॅब</translation>
 <translation id="5142281402488957685">नवीन बातम्यांसाठी, रिफ्रेश करण्याकरिता खाली खेचा</translation>
 <translation id="5144385790872094440">तुम्ही भेट देत असलेली काही पेज प्रीलोड केली जातात. Google साइट किंवा अ‍ॅपवरून लिंक केल्यावर पेज Google सर्व्हरद्वारे प्रीलोड केली जाऊ शकतात.</translation>
+<translation id="5145887002054615868">डुप्लिकेट टॅब किंवा <ph name="DAYS_INACTIVE" /> दिवसांपासून न वापरलेले टॅब इथे हलवले जातात<ph name="AUTODELETE_SECTION" />. तुम्ही हे <ph name="DECLUTTER_SETTINGS_TITLE" /> मध्ये कधीही बदलू शकता.</translation>
 <translation id="5152843274749979095">कोणतीही सपोर्ट असलेली ॲप्स इंस्टॉल केली नाहीत</translation>
 <translation id="5161254044473106830">शीर्षक आवश्यक</translation>
 <translation id="5161262286013276579">पासकी कन्फर्मेशन शीट उघडली</translation>
@@ -1045,7 +1053,9 @@
 <translation id="5596627076506792578">अधिक पर्याय</translation>
 <translation id="5599455543593328020">गुप्त मोड</translation>
 <translation id="5601180634394228718">तुमच्या Chrome अनुभवामध्ये सुधारणा करण्यासाठी डेटा वापरणाऱ्या आणखी सेटिंग्जकरिता, <ph name="BEGIN_LINK" />Google सेवा<ph name="END_LINK" /> यावर जा.</translation>
+<translation id="5601924940067278327">तुमच्या सर्व डिव्हाइसवर तुमचे टॅब आणि आणखी बरेच काही मिळवा</translation>
 <translation id="5611398002774823980">खात्यामध्ये सेव्ह करा</translation>
+<translation id="5613381935190035031">तुमच्या सर्व डिव्हाइसवर तुमचे टॅब आणि आणखी बरेच काही मिळवण्यासाठी, Chrome मध्ये <ph name="EMAIL" /> म्हणून साइन इन करा</translation>
 <translation id="5614625640221885312">तुमच्या सर्व डिव्हाइसवर तुमचे बुकमार्क, पासवर्ड आणि आणखी बऱ्याच गोष्टी मिळवण्यासाठी साइन इन करा</translation>
 <translation id="5619633276517849615">तुमच्या संस्थेने सुरक्षित ब्राउझिंग सुरू केले आहे</translation>
 <translation id="5620163320393916465">सेव्ह केलेले पासवर्ड नाहीत</translation>
@@ -1114,6 +1124,7 @@
 <translation id="5864419784173784555">दुसर्‍या डाउनलोडची वाट पाहत आहे…</translation>
 <translation id="5865733239029070421">Google ला वापरविषयक आकडेवारी आणि क्रॅश अहवाल आपोआप पाठवते</translation>
 <translation id="5869522115854928033">सेव्ह केलेले पासवर्ड</translation>
+<translation id="5870416898561279542">डुप्लिकेट टॅब आणि गट किंवा <ph name="DAYS_INACTIVE" /> दिवसांपासून न वापरलेले टॅब इथे हलवले जातात<ph name="AUTODELETE_SECTION" />. तुम्ही हे <ph name="DECLUTTER_SETTINGS_TITLE" /> मध्ये कधीही बदलू शकता.</translation>
 <translation id="587735546353481577">साइटला फॉलो करण्यासाठी, साइटवर जा, Chrome मेनू उघडा आणि फॉलो करा वर टॅप करा.</translation>
 <translation id="5883855034004058011">बायोमेट्रिक खूप वेळा यशस्वी झाले नाही. पुन्हा प्रयत्न करण्यासाठी तुमचे डिव्हाइस लॉक करा आणि अनलॉक करा.</translation>
 <translation id="5885378508678660271">नोटिफिकेशन <ph name="SEPARATOR" /> ही साइट धोकादायक असल्यामुळे Chrome ने या परवानग्या काढून टाकल्या आहेत</translation>
@@ -1689,6 +1700,7 @@
 <translation id="8110024788458304985">Chrome ची वैशिष्ट्ये आणि परफॉर्मन्समध्ये सुधारणा करण्यात मदत करा</translation>
 <translation id="8110087112193408731">Digital wellbeing मध्ये तुमची Chrome ॲक्टिव्हिटी दाखवायची का?</translation>
 <translation id="8118117428362942925">तुम्हाला मदत हवी असल्यास, तुमचे पालक (<ph name="PARENT_NAME" />) यांना विचारा</translation>
+<translation id="8118151008374483324">तुमच्या सर्व डिव्हाइसवर तुमचे टॅब आणि आणखी बरेच काही मिळवण्यासाठी, Chrome मध्ये साइन इन करा</translation>
 <translation id="8120286190326371840">कोणतेही धोक्यात असलेले पासवर्ड या डिव्हाइसवर नाहीत</translation>
 <translation id="8122623268651408616">नवीनतमनुसार क्रमाने लावत आहे</translation>
 <translation id="8127542551745560481">होमपेज संपादित करा</translation>
@@ -1874,6 +1886,7 @@
 <translation id="8942627711005830162">इतर विंडोमध्ये उघडा</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - ही भाषा डाउनलोड करता आली नाही. नंतर पुन्हा प्रयत्न करा.</translation>
 <translation id="8946759102391960088">तुमच्या सर्व पासवर्डचा अ‍ॅक्सेस ठेवा</translation>
+<translation id="895442993047180128">टिपा यांसाठीच्या नोटिफिकेशनची निवड बंद केली आहे</translation>
 <translation id="8957528460562961174">तुमच्या पासवर्डचा ॲक्सेस कायम ठेवण्यासाठी, ते आता एक्सपोर्ट करा आणि नंतर ते तुमच्या प्राधान्य दिलेल्या पासवर्ड व्यवस्थापकामध्ये इंपोर्ट करा. Google Play सेवा उपलब्ध नसल्यामुळे, Google Password Manager काम करणे थांबले आहे.</translation>
 <translation id="8963117664422609631">साइट सेटिंग्जवर जा</translation>
 <translation id="8965591936373831584">प्रलंबित</translation>
@@ -1945,6 +1958,7 @@
 <translation id="9212845824145208577">तळाशी जाऊ शकत नाही. पेजच्या आणखी तळाशी जाऊन सुरुवात करून पहा.</translation>
 <translation id="9218430445555521422">डीफॉल्ट म्हणून सेट करा</translation>
 <translation id="9219103736887031265">इमेज</translation>
+<translation id="9222198206152536936">तुमच्या सर्व डिव्हाइसवर तुमचे टॅब आणि आणखी बरेच काही मिळवण्यासाठी, <ph name="EMAIL" /> म्हणून साइन इन करा</translation>
 <translation id="924447568950697217">Chrome ला तुमचा डीफॉल्ट ब्राउझर बनवा</translation>
 <translation id="926205370408745186">Digital wellbeing वरून तुमची Chrome ॲक्टिव्हिटी काढून टाका</translation>
 <translation id="927968626442779827">Google Chrome वर लाइट मोड वापरा</translation>

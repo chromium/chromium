@@ -128,6 +128,7 @@
 <translation id="5556417849629758491">Skatiet veikala informāciju; opcija ir pieejama ekrāna augšdaļā</translation>
 <translation id="5627941783489838464">Nav ciļņu atjauninājumu</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> saite no pārlūka Chrome}zero{<ph name="TABS_COUNT_MANY" /> saišu no pārlūka Chrome}one{<ph name="TABS_COUNT_MANY" /> saite no pārlūka Chrome}other{<ph name="TABS_COUNT_MANY" /> saites no pārlūka Chrome}}</translation>
+<translation id="5740354908255726955">{TAB_COUNT,plural, =1{Pārvietot cilni pa kreisi}zero{Pārvietot cilnes pa kreisi}one{Pārvietot cilnes pa kreisi}other{Pārvietot cilnes pa kreisi}}</translation>
 <translation id="5746204836956568669">Vai grupēt <ph name="NUMBER_OF_TABS" /> cilnes ātrākam darbam?</translation>
 <translation id="5773295109010386583">Automātiski aizvērt neaktīvus vienumus</translation>
 <translation id="58326064309361797">Velciet cilnes, lai tās sagrupētu</translation>
@@ -138,6 +139,7 @@
 <translation id="6109251075362363230">Tagad tiks arhivētas arī visas dublētās cilnes, atstājot tikai to, kuru izmantojāt pēdējo.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Aizvērt <ph name="TABS_COUNT_ONE" /> atlasīto vienumu}zero{Aizvērt <ph name="TABS_COUNT_MANY" /> atlasītos vienumus}one{Aizvērt <ph name="TABS_COUNT_MANY" /> atlasīto vienumu}other{Aizvērt <ph name="TABS_COUNT_MANY" /> atlasītos vienumus}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Pārvietot grupu uz jaunu logu}zero{Pārvietot grupu uz citu logu}one{Pārvietot grupu uz citu logu}other{Pārvietot grupu uz citu logu}}</translation>
+<translation id="6212374449852603982">{TAB_COUNT,plural, =1{Pārvietot cilni pa labi}zero{Pārvietot cilnes pa labi}one{Pārvietot cilnes pa labi}other{Pārvietot cilnes pa labi}}</translation>
 <translation id="6228793724645064692">(veikala vērtējums)</translation>
 <translation id="625996437999624951">{TAB_COUNT,plural, =1{Noņemt cilni no grupas}zero{Noņemt cilnes no grupas}one{Noņemt cilnes no grupas}other{Noņemt cilnes no grupas}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Pievienot cilni jaunai grupai}zero{Pievienot cilnes jaunai grupai}one{Pievienot cilnes jaunai grupai}other{Pievienot cilnes jaunai grupai}}</translation>

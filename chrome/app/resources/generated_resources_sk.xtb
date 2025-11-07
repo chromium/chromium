@@ -2458,6 +2458,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2667463864537187133">Správa kontroly pravopisu</translation>
 <translation id="2668604389652548400">Odstráňte rozšírenie z <ph name="BEGIN_LINK" />Internetového obchodu Chrome<ph name="END_LINK" /> alebo ho nahraďte podobnými</translation>
 <translation id="2669241540496514785">Aplikáciu <ph name="APP_NAME" /> sa nepodarilo otvoriť</translation>
+<translation id="2669250147452250961">Túto možnosť zapnite, ak chcete získať históriu prehliadania a karty z iných zariadení</translation>
 <translation id="2669454659051515572">Stiahnuté súbory uvidia všetci používatelia tohto zariadenia</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> zdieľa kartu Chromu.</translation>
 <translation id="2670168377011445813">Ak Chrome zistí, že niektoré z vašich hesiel bolo odhalené pri verejnom porušení ochrany údajov a máte prihlásený účet, Správca hesiel Google vám môže ponúknuť zmenu hesla. <ph name="BEGIN_LINK" />Ďalšie informácie o automatizovanej zmene hesla<ph name="END_LINK" /></translation>
@@ -8604,6 +8605,7 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="6961327401577924850">Weby zvyčajne vyhľadávajú zariadenia s rozhraním Bluetooth, aby mohli poskytovať funkcie, ktoré napríklad umožňujú nastavovať alebo synchronizovať majáčiky s nízkou spotrebou energie, nástroje na sledovanie zdravia či kondície alebo žiarovky inteligentných svetiel</translation>
 <translation id="6963772203726867701">Nerozpoznané</translation>
 <translation id="6963872466817251924">Zvýrazňovač textového kurzora</translation>
+<translation id="6964239097707154771">sú doplnky pre Chrome, ktoré zvýšia vašu produktivitu</translation>
 <translation id="6964390816189577014">Hrdina</translation>
 <translation id="6964760285928603117">Odstrániť zo skupiny</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -8916,6 +8918,7 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="7186088072322679094">Ponechať na paneli s nástrojmi</translation>
 <translation id="7186303001964993981">Web <ph name="ORIGIN" /> nemôže otvoriť tento priečinok, pretože obsahuje súbory systému</translation>
 <translation id="7186568385131859684">Ovládajte, ako sa história prehliadania používa s inými údajmi v službách Googlu</translation>
+<translation id="7186903260115204164">Pridávajte ručne nákresy, podpisy a zvýraznenia pomocou nového nástroja na kreslenie</translation>
 <translation id="7188508872042490670">Dáta webov v zariadení</translation>
 <translation id="7189234443051076392">Uistite sa, či máte v zariadení dosť miesta</translation>
 <translation id="7189451821249468368">Nemáte dostatočný počet inovácií na registráciu tohto zariadenia. Kontaktujte obchodné oddelenie a kúpte si ďalšie. Ak sa domnievate, že ide o chybu, kontaktujte podporu.</translation>
@@ -10745,6 +10748,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8427213022735114808">Diktovanie odosiela váš hlas do Googlu a umožňuje tak hlasové zadávanie do všetkých textových polí.</translation>
 <translation id="8427292751741042100">vložené do ľubovoľného webu</translation>
 <translation id="8428213095426709021">Nastavenia</translation>
+<translation id="8428257636009471988">Navštíviť Internetový obchod</translation>
 <translation id="8428271547607112339">Pridať školský účet</translation>
 <translation id="8428634594422941299">Dobre</translation>
 <translation id="84297032718407999">Odhlásenie prebehne o <ph name="LOGOUT_TIME_LEFT" /></translation>

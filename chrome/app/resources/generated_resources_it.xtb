@@ -1275,7 +1275,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1851551847729706116">Condivisione di <ph name="TAB_NAME" /> con questa scheda in corso…</translation>
 <translation id="1854180393107901205">Interrompi trasmissione</translation>
 <translation id="1856715684130786728">Aggiungi posizione...</translation>
-<translation id="1857044401921988155">Quando fai clic su Salva, questo gruppo di schede diventerà una cartella di segnalibri e verrà rimosso dai tuoi gruppi su tutti i dispositivi</translation>
+<translation id="1857044401921988155">Quando fai clic su Salva, questo gruppo di schede diventerà una cartella di preferiti e verrà rimosso dai tuoi gruppi su tutti i dispositivi</translation>
 <translation id="185766080319917408">Il tasto Avvio app si trova a sinistra del tasto Alt sinistro</translation>
 <translation id="1859294693760125695">Non mi interessa più</translation>
 <translation id="1859339856433307593">Una password per questo account è già salvata nel tuo <ph name="BRAND" /> (<ph name="USER_EMAIL" />)</translation>
@@ -2456,6 +2456,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2667463864537187133">Gestisci controllo ortografico</translation>
 <translation id="2668604389652548400">Rimuovila o sostituiscila con estensioni simili dal <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /></translation>
 <translation id="2669241540496514785">Impossibile aprire <ph name="APP_NAME" /></translation>
+<translation id="2669250147452250961">Attiva per recuperare la cronologia di navigazione e le schede da altri dispositivi</translation>
 <translation id="2669454659051515572">Tutte le persone che usano questo dispositivo possono vedere i file scaricati</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> condivide una scheda Chrome.</translation>
 <translation id="2670168377011445813">Se Chrome rileva che una delle tue password è stata compromessa nell'ambito di una violazione dei dati pubblici, Gestore delle password di Google può offrirti di cambiarla automaticamente se hai eseguito l'accesso. <ph name="BEGIN_LINK" />Scopri di più sulla modifica automatica delle password<ph name="END_LINK" /></translation>
@@ -2513,7 +2514,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="271033894570825754">Nuova raccolta</translation>
 <translation id="2710507903599773521">Il tuo <ph name="DEVICE_TYPE" /> è ora sbloccato</translation>
 <translation id="2710676967944965821">Reimpostare tutte le autorizzazioni del lettore di smart card?</translation>
-<translation id="2713106313042589954">Disattiva fotocamera</translation>
+<translation id="2713106313042589954">Disattiva videocamera</translation>
 <translation id="2713444072780614174">Bianco</translation>
 <translation id="2714180132046334502">Sfondo scuro</translation>
 <translation id="2714393097308983682">Google Play Store</translation>
@@ -6132,7 +6133,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5222676887888702881">Esci</translation>
 <translation id="5225324770654022472">Mostra scorciatoia app</translation>
 <translation id="52254442782792731">L'attuale impostazione di visibilità non è ancora stata impostata</translation>
-<translation id="5225463052809312700">Attiva fotocamera</translation>
+<translation id="5225463052809312700">Attiva videocamera</translation>
 <translation id="5226253862147382094">Esamina gli aggiornamenti di logo e URL</translation>
 <translation id="5226514125747186">Viene visualizzato un cerchio tratteggiato attorno alle icone dei siti. <ph name="BEGIN_LINK" />Scopri di più sulle schede non attive<ph name="END_LINK" /></translation>
 <translation id="5226731562812684363">I siti web non sono autorizzati a utilizzare la tua posizione</translation>
@@ -8596,6 +8597,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6961327401577924850">Solitamente i siti cercano dispositivi Bluetooth per funzionalità come la configurazione o la sincronizzazione di beacon a bassa energia, tracker per fitness e benessere o lampadine smart</translation>
 <translation id="6963772203726867701">Non rilevato</translation>
 <translation id="6963872466817251924">Evidenziazione del cursore di testo</translation>
+<translation id="6964239097707154771">sono componenti aggiuntivi per Chrome che ti consentono di fare di più</translation>
 <translation id="6964390816189577014">Eroe</translation>
 <translation id="6964760285928603117">Rimuovi dal gruppo</translation>
 <translation id="6965382102122355670">Ok</translation>
@@ -8908,6 +8910,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7186088072322679094">Mantieni in barra degli strumenti</translation>
 <translation id="7186303001964993981"><ph name="ORIGIN" /> non può aprire questa cartella perché contiene file di sistema</translation>
 <translation id="7186568385131859684">Controlla il modo in cui la cronologia di navigazione viene utilizzata con gli altri dati sui servizi Google</translation>
+<translation id="7186903260115204164">Aggiungi disegni a mano libera, firme ed evidenziazioni con il nuovo strumento Disegna</translation>
 <translation id="7188508872042490670">Dati dei siti sul dispositivo</translation>
 <translation id="7189234443051076392">Assicurati di avere spazio sufficiente sul dispositivo</translation>
 <translation id="7189451821249468368">Non disponi di licenze Upgrade sufficienti per registrare questo dispositivo. Contatta l'ufficio vendite per acquistarne altre. Se ritieni che questo messaggio sia stato visualizzato per sbaglio, contatta l'assistenza.</translation>
@@ -10738,6 +10741,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8427213022735114808">La dettatura invia i tuoi dati audio a Google per consentire la digitazione vocale in tutti i campi di testo.</translation>
 <translation id="8427292751741042100">incorporata su qualsiasi host</translation>
 <translation id="8428213095426709021">Impostazioni</translation>
+<translation id="8428257636009471988">Visita il Web Store</translation>
 <translation id="8428271547607112339">Aggiungi account della scuola</translation>
 <translation id="8428634594422941299">Ok</translation>
 <translation id="84297032718407999">Verrai disconnesso tra <ph name="LOGOUT_TIME_LEFT" />.</translation>

@@ -1345,7 +1345,7 @@
 <translation id="1913749768968678106">投放、保存和分享</translation>
 <translation id="19147273405311768">将工具栏重置为默认设置</translation>
 <translation id="1915073950770830761">Canary</translation>
-<translation id="1915307458270490472">中止</translation>
+<translation id="1915307458270490472">挂断</translation>
 <translation id="1915734383465415025">商店编号</translation>
 <translation id="1916502483199172559">默认的红色头像</translation>
 <translation id="1916770123977586577">要将您更新后的设置应用到此网站，请重新加载此页面</translation>
@@ -3408,7 +3408,7 @@
 <translation id="3348131053948466246">建议的表情符号。按向上或向下箭头键即可浏览，按 Enter 键即可插入。</translation>
 <translation id="3348973040180736882">正在解压缩</translation>
 <translation id="3349933790966648062">内存占用</translation>
-<translation id="3350450887151703713">重放 10 秒</translation>
+<translation id="3350450887151703713">回放 10 秒</translation>
 <translation id="3351472127384196879">添加或寻找触控笔按钮</translation>
 <translation id="3353786022389205125">开启“从休眠状态唤醒时显示锁定屏幕”，然后重试</translation>
 <translation id="3354768182971982851">2022 年 12 月之后，旧版 Chrome 应用将无法在 Mac 设备上开启。您可查看是否有可用的新版本。</translation>
@@ -4471,7 +4471,7 @@
 <translation id="4044964245574571633">使用 Microsoft OneDrive 存储空间</translation>
 <translation id="4045196801416070837">设备提示音</translation>
 <translation id="4046013316139505482">这些扩展程序不需要查看和更改此网站上的信息。</translation>
-<translation id="4046123991198612571">下一曲</translation>
+<translation id="4046123991198612571">下一首</translation>
 <translation id="4046655456159965535">删除显示的数据？</translation>
 <translation id="4047345532928475040">无</translation>
 <translation id="4047581153955375979">USB4</translation>
@@ -8585,6 +8585,7 @@
 <translation id="6961327401577924850">网站通常会寻找蓝牙设备以实现某些功能（例如设置或同步低功耗信标、健康/健身智能手环或智能灯泡）</translation>
 <translation id="6963772203726867701">未检测到</translation>
 <translation id="6963872466817251924">文本光标突出显示工具</translation>
+<translation id="6964239097707154771">是 Chrome 的插件，可帮助您事半功倍</translation>
 <translation id="6964390816189577014">英雄</translation>
 <translation id="6964760285928603117">从分组中移除</translation>
 <translation id="6965382102122355670">确定</translation>
@@ -8897,6 +8898,7 @@
 <translation id="7186088072322679094">固定在工具栏中</translation>
 <translation id="7186303001964993981"><ph name="ORIGIN" /> 无法打开此文件夹，因为其中含有系统文件</translation>
 <translation id="7186568385131859684">控制 Google 服务如何使用浏览记录及您的其他数据</translation>
+<translation id="7186903260115204164">使用新的“绘图”工具添加手绘图、签名和突出显示内容</translation>
 <translation id="7188508872042490670">设备端网站数据</translation>
 <translation id="7189234443051076392">确保您的设备上有足够的空间</translation>
 <translation id="7189451821249468368">您没有足够的升级许可来注册此设备。请与销售代表联系，以购买更多升级许可。如果您认为自己不应看到这条消息，请与支持人员联系。</translation>
@@ -10831,7 +10833,7 @@
 <translation id="8497219075884839166">Windows 实用程序</translation>
 <translation id="8497819894150712946">通过 Chrome 保存</translation>
 <translation id="8498214519255567734">可让您更舒适地在黯淡的光线下查看屏幕或阅读文字</translation>
-<translation id="8499083585497694743">将麦克风取消静音</translation>
+<translation id="8499083585497694743">取消麦克风静音</translation>
 <translation id="8500044868721690197">此网站已被禁止控制您的 MIDI 设备以及为其重新编程</translation>
 <translation id="8500123638242682652">窗口已向上移动</translation>
 <translation id="8500132602331251964">应用有更新</translation>

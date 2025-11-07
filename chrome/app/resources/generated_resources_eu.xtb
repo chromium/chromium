@@ -2456,6 +2456,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2667463864537187133">Kudeatu ortografia-zuzentzailea</translation>
 <translation id="2668604389652548400">Ken ezazu edo ordez ezazu <ph name="BEGIN_LINK" />Chrome Web Store-ko<ph name="END_LINK" /> antzeko luzapenekin</translation>
 <translation id="2669241540496514785">Ezin izan da ireki <ph name="APP_NAME" /></translation>
+<translation id="2669250147452250961">Aktibatu aukera hau beste gailu batzuetako arakatze-historia eta fitxak lortzeko</translation>
 <translation id="2669454659051515572">Gailu hau darabilen edonork ikus ditzake deskargatutako fitxategiak</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> Chrome-ko fitxa bat partekatzen ari da.</translation>
 <translation id="2670168377011445813">Datuen isilpekotasunaren urratze publiko batean zure pasahitzetako bat aurkitzen badu Chrome-k, pasahitza aldatzeko eskain diezazuke Google-ren Pasahitz-kudeatzailea zerbitzuak, saioa hasita badaukazu. <ph name="BEGIN_LINK" />Pasahitz-aldaketa automatizatuari buruzko informazio gehiago<ph name="END_LINK" /></translation>
@@ -8593,6 +8594,7 @@ Arriskuan dauden # pasahitz gehiago dauzkazu. Google-ren Pasahitz-kudeatzailea z
 <translation id="6961327401577924850">Webguneek Bluetooth bidezko gailuak bilatu ohi dituzte, kontsumo txikiko kokapen-adierazle bat, osasunaren edo fitnessaren jarraipena egiteko gailu bat, edo bonbilla adimendun bat konfiguratzeko edo sinkronizatzeko, eta antzeko eginbideak eskaintzeko</translation>
 <translation id="6963772203726867701">Ez da hauteman</translation>
 <translation id="6963872466817251924">Testu-kurtsorea nabarmentzeko eginbidea</translation>
+<translation id="6964239097707154771">gauza gehiago egiten laguntzen dizuten Chrome-rako gehigarriak dira</translation>
 <translation id="6964390816189577014">Heroia</translation>
 <translation id="6964760285928603117">Kendu taldetik</translation>
 <translation id="6965382102122355670">Ados</translation>
@@ -8904,6 +8906,7 @@ Arriskuan dauden # pasahitz gehiago dauzkazu. Google-ren Pasahitz-kudeatzailea z
 <translation id="7186088072322679094">Mantendu tresna-barran</translation>
 <translation id="7186303001964993981"><ph name="ORIGIN" /> webguneak ezin du ireki karpeta sistemaren fitxategiak dituelako</translation>
 <translation id="7186568385131859684">Kontrolatu nola erabiltzen den arakatze-historia Google-ren zerbitzuetako zure beste datuekin</translation>
+<translation id="7186903260115204164">Gehitu eskuz egindako marrazkiak, sinadurak eta nabarmentzeak marrazketa-tresna berriarekin</translation>
 <translation id="7188508872042490670">Gailuan gordetako webguneetako datuak</translation>
 <translation id="7189234443051076392">Ziurtatu gailuan behar adina toki duzula</translation>
 <translation id="7189451821249468368">Ez dituzu behar adina lizentzia gailua erregistratzeko. Gehiago erosteko, jarri salmenta sailarekin harremanetan. Mezu hau ikusi beharko ez zenukeela uste baduzu, jarri laguntza-zerbitzuarekin harremanetan.</translation>
@@ -10732,6 +10735,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8427213022735114808">Diktaketak ahotsa bidaltzen dio Google-ri, testu-eremuetan diktatu ahal izateko.</translation>
 <translation id="8427292751741042100">edozein ostalaritan kapsulatuta</translation>
 <translation id="8428213095426709021">Ezarpenak</translation>
+<translation id="8428257636009471988">Joan Web Store-ra</translation>
 <translation id="8428271547607112339">Gehitu ikastetxeko kontua</translation>
 <translation id="8428634594422941299">Ados</translation>
 <translation id="84297032718407999">Saioa amaituko egingo da <ph name="LOGOUT_TIME_LEFT" /> igarotakoan</translation>

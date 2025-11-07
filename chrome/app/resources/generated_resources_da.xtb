@@ -2471,6 +2471,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2667463864537187133">Administrer stavekontrollen</translation>
 <translation id="2668604389652548400">Fjern eller erstat den med lignende udvidelser fra <ph name="BEGIN_LINK" />Chrome Webshop<ph name="END_LINK" /></translation>
 <translation id="2669241540496514785"><ph name="APP_NAME" /> kunne ikke åbnes.</translation>
+<translation id="2669250147452250961">Aktivér for at få adgang til din browserhistorik og dine faner via andre enheder</translation>
 <translation id="2669454659051515572">Alle, der bruger denne enhed, kan se downloadede filer</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> deler en Chrome-fane.</translation>
 <translation id="2670168377011445813">Hvis Chrome registrerer, at én af dine adgangskoder er blevet lækket i forbindelse med et offentligt brud på datasikkerheden, kan Google Adgangskodeadministrator tilbyde at ændre adgangskoden for dig, hvis du er logget ind. <ph name="BEGIN_LINK" />Mere om automatisk ændring af adgangskoder<ph name="END_LINK" /></translation>
@@ -8617,6 +8618,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="6961327401577924850">Websites søger normalt efter Bluetooth-enheder i forbindelse med funktioner som f.eks. konfiguration eller synkronisering af en lavenergibeacon, en sundheds- eller motionstracker eller en smartpære</translation>
 <translation id="6963772203726867701">Ikke registreret</translation>
 <translation id="6963872466817251924">Fremhævning af tekstmarkør</translation>
+<translation id="6964239097707154771">er tilføjelser til Chrome, der kan hjælpe dig med at få mere fra hånden</translation>
 <translation id="6964390816189577014">Helt</translation>
 <translation id="6964760285928603117">Fjern fra gruppe</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -8929,6 +8931,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="7186088072322679094">Behold på værktøjslinjen</translation>
 <translation id="7186303001964993981"><ph name="ORIGIN" /> kan ikke åbne denne mappe, da den indeholder systemfiler</translation>
 <translation id="7186568385131859684">Administrer, hvordan browserhistorik bruges sammen med dine øvrige data i Google-tjenester</translation>
+<translation id="7186903260115204164">Tilføj frihåndstegninger, underskrifter og fremhævelser med det nye tegneværktøj</translation>
 <translation id="7188508872042490670">Websitedata på enheden</translation>
 <translation id="7189234443051076392">Sørg for, at der er nok ledig plads på din enhed</translation>
 <translation id="7189451821249468368">Du har ikke nok opgraderinger til at tilmelde denne enhed. Kontakt salgsafdelingen for at købe flere. Hvis du mener, at du får denne meddelelse ved en fejl, skal du kontakte support.</translation>
@@ -10759,6 +10762,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8427213022735114808">Diktering sender din stemme til Google, så du kan indtale tekst i alle tekstfelter.</translation>
 <translation id="8427292751741042100">indlejret på hvilken som helst host</translation>
 <translation id="8428213095426709021">Indstillinger</translation>
+<translation id="8428257636009471988">Gå til Webshop</translation>
 <translation id="8428271547607112339">Tilføj skolekonto</translation>
 <translation id="8428634594422941299">OK</translation>
 <translation id="84297032718407999">Du logges ud om <ph name="LOGOUT_TIME_LEFT" /></translation>

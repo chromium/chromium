@@ -10576,21 +10576,6 @@ Se la policy viene disattivata, la funzionalità di trasporto dei dizionari di c
 
       Se questa policy viene impostata, l'utente non può modificarla o ignorarla.</translation>
 <translation id="8080200590486938727">Disattiva la ricerca dei plug-in</translation>
-<translation id="8082268442825947283">Se configuri questa policy, vengono impostate regole che selezionano il proxy utilizzato dal browser in base all'URL di destinazione e ad altre condizioni. Questa policy avrà la precedenza sulle impostazioni del proxy configurate dalla policy<ph name="PROXY_SETTINGS_POLICY_NAME" />, dall'API dell'estensione <ph name="PROXY_SETTINGS_EXTENSION_API" /> o dalle impostazioni manuali dell'utente, se presenti.
-
-Se la policy non viene configurata, non influisce su altre policy del proxy o impostazioni utente.
-
-Quando il browser deve decidere quale proxy utilizzare, le voci della policy <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> vengono valutate in sequenza finché una voce non corrisponde ad almeno uno degli host URL in <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> e se tutte le voci in <ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> sono soddisfatte. Il valore in <ph name="PROXY_OVERRIDE_RULES_PROXY_CHAIN" /> verrà utilizzato come proxy per questa corrispondenza. Se non viene trovata alcuna corrispondenza, le impostazioni del proxy verranno ripristinate in base a quanto impostato nella policy <ph name="PROXY_SETTINGS_POLICY_NAME" />.
-
-Le voci del campo <ph name="PROXY_OVERRIDE_RULES_PROXY_CHAIN" /> corrispondono a valori stringa dei file PAC, ad esempio:
-  * DIRECT
-  * PROXY host:port
-  * HTTPS host:port
-La prima voce raggiungibile verrà utilizzata come proxy.
-
-Il campo <ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> contiene un elenco di condizioni, le quali devono essere tutte soddisfatte affinché la regola di override venga utilizzata per decidere il proxy da utilizzare. Se non viene impostato, la voce verrà utilizzata finché almeno un host in <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> corrisponde.
-
-La condizione <ph name="PROXY_OVERRIDE_RULES_DNS_PROBE" /> verifica se il DNS <ph name="PROXY_OVERRIDE_RULES_HOST" /> fornito riesce a trovare un indirizzo IP corrispondente. Se il valore di <ph name="PROXY_OVERRIDE_RULES_RESULT" /> è "<ph name="PROXY_OVERRIDE_RULES_RESOLVES" />", la condizione viene considerata soddisfatta. Se il valore è invece impostato su <ph name="PROXY_OVERRIDE_RULES_NOT_FOUND" />, la condizione viene considerata soddisfatta se la risoluzione non è riuscita.</translation>
 <translation id="8086746212954621799">Se questa policy viene impostata su True, gli aggiornamenti automatici vengono disattivati.
 
 Se questa policy non viene configurata o viene impostata su False, i <ph name="PRODUCT_OS_NAME" /> controllano automaticamente la disponibilità di aggiornamenti.

@@ -78,6 +78,7 @@
 <translation id="112840717907525620">Siyosat keshida xatoliklar yo‘q</translation>
 <translation id="1131264053432022307">Nusxalangan rasm</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – Butun ekran rejimidan chiqish uchun ekranni yuqori chetidan pastga torting va “Orqaga” tugmasini bosing.</translation>
+<translation id="1133418583142946603">Joriy varaqqa kiritish</translation>
 <translation id="1138458427267715730">Internetdagi istalgan saytda narx tushganda bildirishnoma oling</translation>
 <translation id="1142713751288681188">Qogʻoz turi</translation>
 <translation id="1142965388643537393">Sayohat haqida axborot</translation>
@@ -443,6 +444,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="1717218214683051432">Harakat sensorlari</translation>
 <translation id="1717494416764505390">Pochta qutisi 3</translation>
 <translation id="1717688554309417925">Qarz tekshiruvi xizmatlari</translation>
+<translation id="1717882880162336471">AI rejimini sinang</translation>
 <translation id="1719434663396780149">Narxi tushishi haqidagi bildirishnomalar yoniq. Bu parametrni <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" /> orqali oʻzgartira olasiz.</translation>
 <translation id="1719838434204287058">24 x 30 in</translation>
 <translation id="1720941539803966190">Qoʻllanmani yopish</translation>
@@ -2010,6 +2012,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="4258748452823770588">Imzo buzilgan</translation>
 <translation id="4265635050210404830">Sodiq mijoz kartalaringiz</translation>
 <translation id="4265872034478892965">Administrator ruxsat bergan</translation>
+<translation id="4267590181863312380">Boshqa qurilmalardagi tarix qaydlarini olish uchun hisobga kiring va tarixni sinxronlang. Shuningdek, parollar va boshqa maʼlumotlardan barcha qurilmalarda foydalana olasiz. Sinxronlashni istalgan vaqt sozlamalar orqali toʻxtatish mumkin. Brauzer tarixi asosida Google Qidiruv va boshqa xizmatlarni moslashtirishi mumkin.</translation>
 <translation id="4269029136757623689">Maishiy ventilyatorlar</translation>
 <translation id="4269264543938335308">Suzish kiyimlari</translation>
 <translation id="4269599248168651462">Server sertifikati unikal boʻlmagan nom bilan taqdim etildi.</translation>
@@ -2886,6 +2889,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5715918316982363436">Bu qurilmada <ph name="TAB_COUNT" />/<ph name="WINDOW_COUNT" /> ta varaq</translation>
 <translation id="5716325061445053985">Varaqni telefonda ochish uchun bosing</translation>
 <translation id="5717509257172454543">Konkida uchish</translation>
+<translation id="5718601519531438273">Pasport hamda haydovchilik guvohnomalari kabi axborotlar ham kiradi</translation>
 <translation id="5720705177508910913">Joriy foydalanuvchi</translation>
 <translation id="5720895412771013401">Kompyuterlar</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} va yana 1 ta}other{{website_1}, {website_2} va yana {more_count} ta}}</translation>
@@ -3451,6 +3455,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6654224358955673568">Rasmiy</translation>
 <translation id="6654244995031366386">Shisha (teksturali)</translation>
 <translation id="6655085656059574817">Hisob ulanganidan keyin <ph name="BNPL_ISSUER_NAME" /> bilan tezroq toʻlash mumkin. Hisobni <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /> sahifasi orqali uzish mumkin.</translation>
+<translation id="6656935431494847393">Parvoz bandlovlari va transport vositasi haqidagi maʼlumotlar kabi axborotlarni oʻz ichiga oladi</translation>
 <translation id="6657585470893396449">Parol</translation>
 <translation id="6659246032834639189">Bu past narx</translation>
 <translation id="6660413144148052430">joylashuv</translation>
@@ -4554,6 +4559,7 @@ Batafsil axborot:
 <translation id="8449036207308062757">Xotirani boshqarish</translation>
 <translation id="8449155699563577224">17 x 24 in</translation>
 <translation id="8449836157089738489">Barchasini yangi varaqlar guruhida ochish</translation>
+<translation id="8451518040456311377">Shaxsni tasdiqlash hujjatlarini saqlash va kiritish</translation>
 <translation id="84561192812921051">Administrator profil va brauzer sozlamalarini masofadan oʻzgartirishi, brauzer maʼlumotlaridan iborat hisobotlarni tahlil qilishi hamda boshqa vazifalarni bajarishi mumkin. Bu qurilmadagi amallar Chrome tashqarisidan boshqarilishi mumkin.  <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="8456383681414356368">Quyi ekran yopildi.</translation>
 <translation id="8456775115498700722"><ph name="CARD_ISSUER_NAME" /> hisobingiz Google Pay xizmatiga ulangani sababli <ph name="CARD_ISSUER_NAME" /> karta maʼlumotlarini avtomatik kiritish mumkin.</translation>
@@ -4663,6 +4669,7 @@ Batafsil axborot:
 <translation id="865255447216708819">Teskari bosib chiqarish uchun film</translation>
 <translation id="8654126188050905496">55 x 91 mm</translation>
 <translation id="8660780831677950176">Odatda bu vaqtda ochiladigan sahifalar</translation>
+<translation id="8661820486298572829">Avtomatik kiritilgan kod</translation>
 <translation id="8662463432865928030">Tijoriy koʻchmas mulk</translation>
 <translation id="8663226718884576429">Buyurtma axboroti, <ph name="TOTAL_LABEL" />, Batafsil</translation>
 <translation id="8663909737634214500">Optik disk</translation>
@@ -4744,6 +4751,7 @@ Batafsil axborot:
 <translation id="8781278378794969337">Sahifani tarjima qilish tugmasi, bu sahifani Google Tarjima orqali tarjima qilish uchun faollashtiring</translation>
 <translation id="8785658048882205566">Mototsikllar</translation>
 <translation id="8790007591277257123">&amp;Qayta o‘chirish</translation>
+<translation id="8790668801880409584">Sayohat axborotini saqlash va kiritish</translation>
 <translation id="8792272652220298572">Plastik (yaltiroq)</translation>
 <translation id="8792621596287649091"><ph name="ORG_NAME" /> hisobingiz xavf ostida va shaxsiy ma’lumotlaringizni kimdir ko‘rishi mumkin. Parolingizni hoziroq o‘zgartirishni tavsiya etamiz.</translation>
 <translation id="8792626944327216835">mikrofon</translation>

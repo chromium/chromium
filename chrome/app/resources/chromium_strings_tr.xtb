@@ -529,6 +529,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="7274695763216404502">Sabitlendi. Araç çubuğundan Görsel Arama'yı tekrar kullanabilirsiniz</translation>
 <translation id="7288567540154601580">Sekmeler ve uzantılar</translation>
 <translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{Chromium bunu kaldırmanızı öneriyor}other{Chromium bunları kaldırmanızı öneriyor}}</translation>
+<translation id="7296334833518879294">Sistem sesini paylaşmak için Sistem Ayarları'nı açıp Chromium için "Yalnızca Sistem Ses Kaydı" seçeneğine izin verin. Ardından Chromium'u yeniden başlatmanız gerekir.</translation>
 <translation id="7309928523159922338">Reklam ölçümü, ziyaret ettiğiniz sitelerin Chromium'dan bilgi istemesine olanak tanır. Bu bilgiler de sitenin, reklamlarının performansını ölçmesine yardımcı olur. Reklam ölçümü, siteler arasında mümkün olduğunca az bilgi aktararak siteler arası izlemeyi kısıtlar.</translation>
 <translation id="731795002583552498">Chromium güncelleniyor</translation>
 <translation id="7318036098707714271">Tercihler dosyanız bozuk veya geçersiz.

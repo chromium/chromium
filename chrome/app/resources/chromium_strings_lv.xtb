@@ -531,6 +531,7 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai iz
 <translation id="7274695763216404502">Piesprausts! Varat atkal piekļūt funkcijai Attēlu meklēšana no rīkjoslas.</translation>
 <translation id="7288567540154601580">Cilnes un paplašinājumi</translation>
 <translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{Chromium iesaka to noņemt.}zero{Chromium iesaka tos noņemt.}one{Chromium iesaka tos noņemt.}other{Chromium iesaka tos noņemt.}}</translation>
+<translation id="7296334833518879294">Lai kopīgotu sistēmas audio, pārejiet uz sistēmas iestatījumiem un iespējojiet iestatījumu “Tikai sistēmas audio ierakstīšana” pārlūkam Chromium. Pēc tam jums būs jārestartē pārlūks Chromium.</translation>
 <translation id="7309928523159922338">Reklāmu izvērtēšana ļauj jūsu apmeklētajām vietnēm pieprasīt informāciju no Chromium, lai efektīvāk novērtētu vietnēs rādīto reklāmu veiktspēju. Reklāmu izvērtēšana ierobežo starpvietņu izsekošanu, pārsūtot starp vietnēm pēc iespējas mazāk informācijas.</translation>
 <translation id="731795002583552498">Notiek Chromium atjaunināšana</translation>
 <translation id="7318036098707714271">Jūsu preferenču fails ir bojāts vai nederīgs. Chromium nespēj atkopt jūsu iestatījumus.</translation>

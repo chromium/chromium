@@ -173,6 +173,7 @@ Oodake enne väljalogimist paar minutit. Kui logite kohe välja, siis need andme
 <translation id="5305440589062022504">Avab Chrome’is paroolihalduri</translation>
 <translation id="5310957470610282541">Teatud Chrome’i andmeid pole veel teie Google’i kontole salvestatud.
 Oodake enne väljalogimist paar minutit. Kui logite kohe välja, siis need andmed kustutatakse.</translation>
+<translation id="5342685492141499976">Teie andmed salvestatakse konto <ph name="USER_EMAIL" /> Google'i paroolihaldurisse.</translation>
 <translation id="5389212809648216794">Google Chrome ei saa kaamerat kasutada, kuna seda kasutab muu rakendus</translation>
 <translation id="5395376160638294582">Veenduge, et saaksite alati kasutada oma Google'i kontol Chrome'i andmeid</translation>
 <translation id="5404252374083197467">Kas määrata Chrome vaikebrauseriks?</translation>
@@ -200,6 +201,7 @@ Oodake enne väljalogimist paar minutit. Kui logite kohe välja, siis need andme
 <translation id="5808435672482059465">Chrome’i ajaloo vaatamine</translation>
 <translation id="5833027901704861726">Mõned teie Chrome'i andmed ei ole veel kontole <ph name="EMAIL" /> salvestatud.
 Oodake enne konto vahetamist paar minutit. Kui vahetate kohe kontot, siis need andmed kustutatakse.</translation>
+<translation id="5853754888722423892">Importimine Google'i paroolihaldurisse</translation>
 <translation id="5998675059699164418">Teie organisatsioon nõuab, et logiksite Chrome'i kasutamiseks sisse.</translation>
 <translation id="6021312115739110405">Teie jaoks Google’i loodud kohandatud voog. Sisaldab uudiseid, sporti ja ilmateadet.</translation>
 <translation id="6022659036123304283">Isikupärastage Chrome'i</translation>

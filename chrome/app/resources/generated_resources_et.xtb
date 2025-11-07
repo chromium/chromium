@@ -2460,6 +2460,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2667463864537187133">Õigekirjakontrolli haldamine</translation>
 <translation id="2668604389652548400">Eemaldage see või asendage sarnase laiendusega <ph name="BEGIN_LINK" />Chrome'i veebipoest<ph name="END_LINK" /></translation>
 <translation id="2669241540496514785">Rakendust <ph name="APP_NAME" /> ei saanud avada</translation>
+<translation id="2669250147452250961">Lülitage sisse, et hankida oma sirvimisajalugu ja vahelehed teistest seadmetest.</translation>
 <translation id="2669454659051515572">Kõik inimesed, kes seda seadet kasutavad, näevad allalaaditud faile</translation>
 <translation id="2670102641511624474">Rakendus <ph name="APP_NAME" /> jagab Chrome'i vahelehte.</translation>
 <translation id="2670168377011445813">Kui Chrome leiab avalikust andmetega seotud rikkumisest mõne teie parooli, võib Google’i paroolihaldur pakkuda teile võimalust parool ära muuta, kui sisse logite. <ph name="BEGIN_LINK" />Lisateave parooli automaatse muutmise kohta<ph name="END_LINK" /></translation>
@@ -8604,6 +8605,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="6961327401577924850">Saidid otsivad Bluetooth-seadmeid tavaliselt teatud funktsioonide jaoks, nagu väikese energiakuluga majaka, tervise- või treeningurakenduse või nutivalgusti pirni seadistamine või sünkroonimine</translation>
 <translation id="6963772203726867701">Pole tuvastatud</translation>
 <translation id="6963872466817251924">Tekstikursori esiletõstmine</translation>
+<translation id="6964239097707154771">on Chrome'i pistikprogrammid, mis aitavad teil rohkem teha</translation>
 <translation id="6964390816189577014">Kangelane</translation>
 <translation id="6964760285928603117">Grupist eemaldamine</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -8916,6 +8918,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7186088072322679094">Tööriistaribale jätmine</translation>
 <translation id="7186303001964993981"><ph name="ORIGIN" /> ei saa seda kausta avada, kuna see sisaldab süsteemifaile</translation>
 <translation id="7186568385131859684">Hallake, kuidas kasutatakse sirvimisajalugu teie muude andmetega Google'i teenustes</translation>
+<translation id="7186903260115204164">Lisage uue joonistamistööriista abil vabakäejoonistusi, allkirju ja esiletõste</translation>
 <translation id="7188508872042490670">Seadmes olevad saidiandmed</translation>
 <translation id="7189234443051076392">Veenduge, et seadmes oleks piisavalt ruumi</translation>
 <translation id="7189451821249468368">Teil ei ole piisavalt täiendusi selle seadme registreerimiseks. Täienduste ostmiseks võtke ühendust müügiosakonnaga. Kui arvate, et saite selle sõnumi ekslikult, võtke ühendust toega.</translation>
@@ -10746,6 +10749,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8427213022735114808">Dikteerimisel saadetakse teie hääl Google'ile, et lubada häälsisestus kõigil tekstiväljadel.</translation>
 <translation id="8427292751741042100">manustatud mis tahes hostile</translation>
 <translation id="8428213095426709021">Seaded</translation>
+<translation id="8428257636009471988">Külastage veebipoodi</translation>
 <translation id="8428271547607112339">Lisa koolikonto</translation>
 <translation id="8428634594422941299">Selge</translation>
 <translation id="84297032718407999">Teid logitakse välja <ph name="LOGOUT_TIME_LEFT" /> pärast</translation>

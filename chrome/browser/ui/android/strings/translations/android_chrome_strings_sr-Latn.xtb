@@ -1053,7 +1053,9 @@ Google nalog možda ima druge oblike istorije pregledanja, poput pretraga i akti
 <translation id="5596627076506792578">Još opcija</translation>
 <translation id="5599455543593328020">Režim bez arhiviranja</translation>
 <translation id="5601180634394228718">Još podešavanja koja koriste podatke za poboljšanje doživljaja Chrome-a potražite u <ph name="BEGIN_LINK" />Google uslugama<ph name="END_LINK" />.</translation>
+<translation id="5601924940067278327">Pristupajte karticama i drugom sadržaju na svim uređajima</translation>
 <translation id="5611398002774823980">Sačuvaj na nalogu</translation>
+<translation id="5613381935190035031">Da bi vam kartice i drugi sadržaj bili dostupni na svim uređajima, prijavite se u Chrome kao <ph name="EMAIL" /></translation>
 <translation id="5614625640221885312">Prijavite se da biste pristupali obeleživačima, lozinkama i drugom sadržaju na svim uređajima</translation>
 <translation id="5619633276517849615">Organizacija je uključila Bezbedno pregledanje</translation>
 <translation id="5620163320393916465">Nema sačuvanih lozinki</translation>
@@ -1698,6 +1700,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chrome p
 <translation id="8110024788458304985">Pomozite nam da poboljšamo funkcije i učinak Chrome OS-a</translation>
 <translation id="8110087112193408731">Želite li da se Chrome aktivnosti prikazuju u Digitalnom blagostanju?</translation>
 <translation id="8118117428362942925">Ako ti treba pomoć, pitaj roditelja (<ph name="PARENT_NAME" />)</translation>
+<translation id="8118151008374483324">Da bi vam kartice i drugi sadržaj bili dostupni na svim uređajima, prijavite se u Chrome</translation>
 <translation id="8120286190326371840">Nema ugroženih lozinki na ovom uređaju</translation>
 <translation id="8122623268651408616">Sortira se prema najnovijem</translation>
 <translation id="8127542551745560481">Izmenite početnu stranicu</translation>
@@ -1955,6 +1958,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chrome p
 <translation id="9212845824145208577">Ne možete da odete niže. Probajte da počnete sa manje visine na stranici.</translation>
 <translation id="9218430445555521422">Podesi kao podrazumevano</translation>
 <translation id="9219103736887031265">Slike</translation>
+<translation id="9222198206152536936">Da bi vam kartice i drugi sadržaj bili dostupni na svim uređajima, prijavite se kao <ph name="EMAIL" /></translation>
 <translation id="924447568950697217">Postavite Chrome za podrazumevani pregledač</translation>
 <translation id="926205370408745186">Uklonite Chrome aktivnosti iz Digitalnog blagostanja</translation>
 <translation id="927968626442779827">Koristite Lite režim u Google Chrome-u</translation>

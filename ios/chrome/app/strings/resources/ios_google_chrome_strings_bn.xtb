@@ -173,6 +173,7 @@
 <translation id="5305440589062022504">Chrome-এ Password Manager খোলে</translation>
 <translation id="5310957470610282541">আপনার Chrome ডেটার কিছুটা এখনও Google অ্যাকাউন্টে সেভ হয়নি।
 সাইন-আউট করার আগে কয়েক মিনিট অপেক্ষা করে দেখুন। আপনি এখনই সাইন-আউট করলে, এই ডেটা মুছে যাবে।</translation>
+<translation id="5342685492141499976"><ph name="USER_EMAIL" />-এর জন্য Google Password Manager-এ আপনার ডেটা সেভ হয়ে যাবে</translation>
 <translation id="5389212809648216794">Google Chrome আপনার ক্যামেরা ব্যবহার করতে পারছে না কারণ এটি অন্য একটি অ্যাপ্লিকেশান দ্বারা ব্যবহার করা হচ্ছে</translation>
 <translation id="5395376160638294582">আপনার Google অ্যাকাউন্টে সবসময় Chrome ডেটা ব্যবহার করতে পারবেন তা কনফার্ম করুন</translation>
 <translation id="5404252374083197467">Chrome ডিফল্ট হিসেবে সেট করতে চান?</translation>
@@ -200,6 +201,7 @@
 <translation id="5808435672482059465">আপনার Chrome ইতিহাস দেখুন</translation>
 <translation id="5833027901704861726">আপনার Chrome ডেটার কিছুটা এখনও <ph name="EMAIL" />-এ সেভ করা হয়নি।
 অ্যাকাউন্ট পাল্টানোর আগে কয়েক মিনিট অপেক্ষা করে দেখুন। আপনি এখনই অ্যাকাউন্ট পাল্টালে, এই ডেটা মুছে যাবে।</translation>
+<translation id="5853754888722423892">Google Password Manager-এ ইমপোর্ট করুন</translation>
 <translation id="5998675059699164418">Chrome ব্যবহার করতে আপনার সংস্থার প্রয়োজন অনুযায়ী আপনাকে সাইন-ইন করতে হবে।</translation>
 <translation id="6021312115739110405">আপনার জন্য Google-এর তৈরি কাস্টম ফিড। এতে খবর, খেলাধূলা ও আবহাওয়ার তথ্য আছে।</translation>
 <translation id="6022659036123304283">Chrome-কে আপনার করে নিন</translation>

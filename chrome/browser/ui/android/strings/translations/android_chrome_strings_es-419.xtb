@@ -49,6 +49,7 @@
 <translation id="1181037720776840403">Quitar</translation>
 <translation id="1183189057400844278">Para asegurarte de que siempre puedas usar las contraseñas en tu Cuenta de Google, verifica tu identidad</translation>
 <translation id="1187810343066461819">Borrar también los favoritos, el historial y otros datos de este automóvil</translation>
+<translation id="1193589902336218259">Activar las notificaciones de sugerencias</translation>
 <translation id="1193729455103054076">¿Quieres usar una contraseña segura?</translation>
 <translation id="11947597112837849">dirección de correo electrónico</translation>
 <translation id="1197267115302279827">Mover favoritos</translation>
@@ -236,6 +237,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="200114059308480249">¿Quieres incluir el texto adyacente en las búsquedas de Google?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, pestaña de incógnito fijada y silenciada</translation>
 <translation id="2021896219286479412">Controles en pantalla completa</translation>
+<translation id="2029669011553795746">Se abrió la opción de habilitar las notificaciones de sugerencias a media altura</translation>
 <translation id="2038563949887743358">Activar la opción para solicitar versión de escritorio</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> también tiene datos en Chrome</translation>
 <translation id="2047378580182589770">Mantén presionado para salir del modo Incógnito</translation>
@@ -245,6 +247,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="2063047797624276601">Tu organización activó la Navegación segura mejorada</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{No se pudo realizar 1 descarga}other{No se pudieron realizar # descargas}}</translation>
 <translation id="2067805253194386918">texto</translation>
+<translation id="2072027001582274150">Pestañas sin usar o duplicadas</translation>
 <translation id="2074527029802029717">Anular fijación de pestaña</translation>
 <translation id="2079545284768500474">Deshacer</translation>
 <translation id="2082238445998314030">Resultado <ph name="RESULT_NUMBER" /> de <ph name="TOTAL_RESULTS" /></translation>
@@ -405,6 +408,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="2781151931089541271">1 segundo restante</translation>
 <translation id="2789486458103222910">Aceptar</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chrome encontró una contraseña reutilizada que podrías mejorar}other{Chrome encontró # contraseñas reutilizadas que podrías mejorar}}</translation>
+<translation id="2794551654724114396">Activa las notificaciones para recibir sugerencias útiles que te ayudarán a aprovechar Chrome al máximo</translation>
 <translation id="2800066122460699237">Se cerrará la pestaña <ph name="TAB_TITLE" />.</translation>
 <translation id="2805210243313393104">Accede a tus favoritos y más desde todos tus dispositivos</translation>
 <translation id="2805756323405976993">Aplicaciones</translation>
@@ -640,6 +644,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="3824259034819781947">Adjuntar archivos</translation>
 <translation id="38243391581572867">Lens no está disponible en esta cuenta.</translation>
 <translation id="38258275871320156">Solo disponible para ventanas pequeñas</translation>
+<translation id="3826529618131025925">Hoja inferior de ayuda y orientación para habilitar las notificaciones de sugerencias</translation>
 <translation id="3845098929839618392">Abrir en pestaña de incógnito</translation>
 <translation id="3847319713229060696">Ayudar a mejorar la seguridad en la Web para todos los usuarios</translation>
 <translation id="385051799172605136">Atrás</translation>
@@ -773,6 +778,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="4405636711880428279">¿Quieres quitar tu tarjeta virtual?</translation>
 <translation id="4408965460206576430">Este archivo contiene software malicioso o proviene de un sitio sospechoso</translation>
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> y <ph name="TAB_COUNT" /> pestañas más</translation>
+<translation id="441100617989818073">Pestañas y grupos sin usar o duplicados</translation>
 <translation id="4414179633735763985">Se borró <ph name="TAB_GROUPS_AND_TABS_PART" /></translation>
 <translation id="4415276339145661267">Administrar tu Cuenta de Google</translation>
 <translation id="4425140285732600465">Sigues el precio. Recibe alertas si baja el precio en algún sitio.</translation>
@@ -801,6 +807,7 @@ Es posible que tu cuenta de Google tenga otros formularios de historial de naveg
 <translation id="452750746583162491">Revisar tus datos sincronizados</translation>
 <translation id="4532845899244822526">Seleccionar carpeta</translation>
 <translation id="4535755320005483982">Grupo de pestañas compartido <ph name="GROUP_TITLE" /></translation>
+<translation id="4537137366307982887">La opción de habilitar las notificaciones de sugerencias está totalmente abierta</translation>
 <translation id="4543131175509360848">No ninguna hoja de llaves de acceso</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> pestaña}other{<ph name="TAB_COUNT_MANY" /> pestañas, <ph name="TAB_COUNT_INCOGNITO" /> de incógnito}}</translation>
 <translation id="4558311620361989323">Accesos directos a páginas web</translation>
@@ -952,6 +959,7 @@ Es posible que tu cuenta de Google tenga otros formularios de historial de naveg
 <translation id="5123685120097942451">Pestaña de incógnito</translation>
 <translation id="5142281402488957685">Para obtener noticias nuevas, actualiza la pantalla deslizando el dedo hacia abajo.</translation>
 <translation id="5144385790872094440">Algunas de las páginas que visitas están precargadas. Las páginas pueden precargarse por medio de servidores de Google cuando están vinculadas desde una app o un sitio de Google.</translation>
+<translation id="5145887002054615868">Las pestañas duplicadas o las que no se usaron durante <ph name="DAYS_INACTIVE" /> días se moverán aquí <ph name="AUTODELETE_SECTION" />. Puedes cambiar este parámetro cuando lo desees en <ph name="DECLUTTER_SETTINGS_TITLE" />.</translation>
 <translation id="5152843274749979095">No hay apps compatibles instaladas</translation>
 <translation id="5161254044473106830">Se requiere un título</translation>
 <translation id="5161262286013276579">Se abrió la hoja de confirmación de la llave de acceso</translation>
@@ -1114,6 +1122,7 @@ Es posible que tu cuenta de Google tenga otros formularios de historial de naveg
 <translation id="5864419784173784555">Esperando que finalice otra descarga…</translation>
 <translation id="5865733239029070421">Envía automáticamente informes de fallas y estadísticas de uso a Google</translation>
 <translation id="5869522115854928033">Contraseñas almacenadas</translation>
+<translation id="5870416898561279542">Las pestañas y los grupos duplicados o que no se usaron durante <ph name="DAYS_INACTIVE" /> días se mueven aquí<ph name="AUTODELETE_SECTION" />. Puedes cambiar este parámetro cuando lo desees en <ph name="DECLUTTER_SETTINGS_TITLE" />.</translation>
 <translation id="587735546353481577">Para seguir un sitio, visítalo, abre el menú de Chrome y presiona Seguir.</translation>
 <translation id="5883855034004058011">El reconocimiento de datos biométricos falló demasiadas veces. Bloquea y desbloquea el dispositivo para volver a intentarlo.</translation>
 <translation id="5885378508678660271">Notificaciones <ph name="SEPARATOR" /> Chrome quitó estos permisos porque este sitio es peligroso</translation>
@@ -1874,6 +1883,7 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="8942627711005830162">Abrir en otra ventana</translation>
 <translation id="8945143127965743188"><ph name="LANG" />: no se pudo descargar este idioma. Vuelve a intentarlo más tarde.</translation>
 <translation id="8946759102391960088">Mantén el acceso a tus contraseñas</translation>
+<translation id="895442993047180128">Se cerró la opción de habilitar las notificaciones de sugerencias</translation>
 <translation id="8957528460562961174">Para mantener el acceso a tus contraseñas, expórtalas ahora y, luego, impórtalas al administrador de contraseñas que prefieras. El Administrador de contraseñas de Google dejó de funcionar porque los Servicios de Google Play no están disponibles.</translation>
 <translation id="8963117664422609631">Ir a la configuración del sitio</translation>
 <translation id="8965591936373831584">pendiente</translation>

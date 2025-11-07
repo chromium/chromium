@@ -78,6 +78,7 @@
 <translation id="112840717907525620">Кеш смерница је у реду</translation>
 <translation id="1131264053432022307">Копирана слика</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – Да бисте изашли из режима целог екрана, превуците од врха и додирните дугме Назад</translation>
+<translation id="1133418583142946603">Додај актуелну картицу</translation>
 <translation id="1138458427267715730">Добијајте обавештења када падне цена на било ком сајту широм веба</translation>
 <translation id="1142713751288681188">Тип папира</translation>
 <translation id="1142965388643537393">Информације у вези са путовањем</translation>
@@ -444,6 +445,7 @@
 <translation id="1717218214683051432">Сензори покрета</translation>
 <translation id="1717494416764505390">3. поштанско сандуче</translation>
 <translation id="1717688554309417925">Услуге у вези са дебитним картицама и чековима</translation>
+<translation id="1717882880162336471">Испробајте AI режим</translation>
 <translation id="1719434663396780149">Обавештења о снижењима су укључена. Ово можете да промените у одељку <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="1719838434204287058">24×30 in</translation>
 <translation id="1720941539803966190">Затворите водич</translation>
@@ -2015,6 +2017,7 @@
 <translation id="4258748452823770588">Неисправан потпис</translation>
 <translation id="4265635050210404830">Картице лојалности</translation>
 <translation id="4265872034478892965">Дозвољава администратор</translation>
+<translation id="4267590181863312380">Да бисте преузели историју са других уређаја, пријавите се и синхронизујте историју. Моћи ћете да приступате и својим лозинкама и другом садржају на свим уређајима. Увек можете да зауставите синхронизацију у подешавањима. Google може да персонализује Претрагу и друге услуге на основу историје.</translation>
 <translation id="4269029136757623689">Кућни вентилатори</translation>
 <translation id="4269264543938335308">Одећа за пливање</translation>
 <translation id="4269599248168651462">Сертификат сервера се издаје са називом који није јединствен.</translation>
@@ -2891,6 +2894,7 @@
 <translation id="5715918316982363436"><ph name="TAB_COUNT" /> из <ph name="WINDOW_COUNT" /> на овом уређају</translation>
 <translation id="5716325061445053985">Додирните да бисте отворили картицу на телефону</translation>
 <translation id="5717509257172454543">Клизање на леду</translation>
+<translation id="5718601519531438273">Обухвата информације као што су пасоши и возачке дозволе</translation>
 <translation id="5720705177508910913">Тренутни корисник</translation>
 <translation id="5720895412771013401">Рачунари</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} и још 1}one{{website_1}, {website_2} и још {more_count}}few{{website_1}, {website_2} и још {more_count}}other{{website_1}, {website_2} и још {more_count}}}</translation>
@@ -4505,7 +4509,7 @@
 <translation id="8364627913115013041">Није подешено.</translation>
 <translation id="8366057325711477500">Вести из света</translation>
 <translation id="836616551641291797">Сазнајте више о томе како се управља прегледачем</translation>
-<translation id="8367705492654390392">Питајте било шта</translation>
+<translation id="8367705492654390392">Упитајте било шта</translation>
 <translation id="8368001212524806591">Прати цену</translation>
 <translation id="8368027906805972958">Непознат или неподржан уређај (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Google Play услуге</translation>
@@ -4560,6 +4564,7 @@
 <translation id="8449036207308062757">Управљај меморијским простором</translation>
 <translation id="8449155699563577224">17×24 in</translation>
 <translation id="8449836157089738489">Отвори све у новој групи картица</translation>
+<translation id="8451518040456311377">Сачувај и попуни личне документе</translation>
 <translation id="84561192812921051">Администратор може даљински да уноси промене у профил и прегледач, да анализира информације о прегледачу помоћу извештавања и обавља друге неопходне задатке. Активностима на овом уређају може да се управља и ван Chrome-а.  <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="8456383681414356368">Доња табела је затворена.</translation>
 <translation id="8456775115498700722">Сада можете аутоматски да попуњавате <ph name="CARD_ISSUER_NAME" /> картице јер је <ph name="CARD_ISSUER_NAME" /> налог повезан са Google Pay-ом.</translation>

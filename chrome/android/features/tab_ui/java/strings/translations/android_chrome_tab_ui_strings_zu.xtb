@@ -128,6 +128,7 @@
 <translation id="5556417849629758491">Buka ulwazi lwesitoreji, inketho itholakala eduze naphezulu kwesikrini</translation>
 <translation id="5627941783489838464">Azikho izibuyekezo zamathebhu</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{Ilinki engu-<ph name="TABS_COUNT_ONE" /> esuka ku-Chrome}one{Amalinki angu-<ph name="TABS_COUNT_MANY" /> asuka ku-Chrome}other{Amalinki angu-<ph name="TABS_COUNT_MANY" /> asuka ku-Chrome}}</translation>
+<translation id="5740354908255726955">{TAB_COUNT,plural, =1{Hambisa ithebhu ngakwesobunxele}one{Hambisa amathebhu kwesokunxele}other{Hambisa amathebhu kwesokunxele}}</translation>
 <translation id="5746204836956568669">Hlela njengeqembu amathebhu angu-<ph name="NUMBER_OF_TABS" /> ukuze usebenze ngokushesha?</translation>
 <translation id="5773295109010386583">Vala ngokuzenzakalelayo izinto ezingasebenzi</translation>
 <translation id="58326064309361797">Hudula amathebhu ukuze uwafake eqenjini</translation>
@@ -138,6 +139,7 @@
 <translation id="6109251075362363230">Wonke amathebhu ayimpinda nawo azofakwa kungobo yomlando, kuyokwenzeka okuhlukile ngamakhophi asanda kusetshenziswa.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Vala into engu-<ph name="TABS_COUNT_ONE" /> ekhethiwe}one{Vala izinto ezingu-<ph name="TABS_COUNT_MANY" /> ezikhethiwe}other{Vala izinto ezingu-<ph name="TABS_COUNT_MANY" /> ezikhethiwe}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Hambisa iqembu ewindini elisha}one{Hambisa iqembu kwelinye iwindi}other{Hambisa iqembu kwelinye iwindi}}</translation>
+<translation id="6212374449852603982">{TAB_COUNT,plural, =1{Yisa ithebhu kwesokudla}one{Yisa amathebhu kwesokudla}other{Yisa amathebhu kwesokudla}}</translation>
 <translation id="6228793724645064692">(isilinganiso sesitolo)</translation>
 <translation id="625996437999624951">{TAB_COUNT,plural, =1{Susa ithebhu eqenjini}one{Susa amathebhu eqenjini}other{Susa amathebhu eqenjini}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Engeza ithebhu eqenjini elisha}one{Engeza amathebhu eqenjini elisha}other{Engeza amathebhu eqenjini elisha}}</translation>

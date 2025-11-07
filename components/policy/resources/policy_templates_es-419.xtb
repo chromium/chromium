@@ -10859,21 +10859,6 @@ Si inhabilitas la política, se desactivará la función Compression Dictionary 
 
       Si estableces esta política, el usuario no podrá cambiarla ni anularla.</translation>
 <translation id="8080200590486938727">Inhabilitar el buscador de complementos</translation>
-<translation id="8082268442825947283">Si estableces esta política, se configuran reglas que seleccionan qué proxy usa el navegador según la URL de destino y otras condiciones. Esta política tendrá prioridad sobre la configuración de proxy establecida desde la política <ph name="PROXY_SETTINGS_POLICY_NAME" />, la API de extensión <ph name="PROXY_SETTINGS_EXTENSION_API" /> o la configuración manual del usuario, si se establece alguna.
-
-Si no estableces la política, no se verán afectadas otras políticas de proxy ni la configuración del usuario.
-
-Cuando el navegador necesita decidir qué proxy usar, las entradas de la política <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> se evalúan en secuencia hasta que una entrada tenga una coincidencia para al menos uno de los hosts de URL en <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> y si se cumplen todas las entradas en <ph name="PROXY_OVERRIDE_RULES_CONDITIONS" />. El valor de <ph name="PROXY_OVERRIDE_RULES_PROXY_CHAIN" /> se usará como un proxy para esa coincidencia. Si no se encuentra ninguna coincidencia, la configuración del proxy volverá a la que se estableció en la política <ph name="PROXY_SETTINGS_POLICY_NAME" />.
-
-Las entradas del campo <ph name="PROXY_OVERRIDE_RULES_PROXY_CHAIN" /> corresponden a valores de cadena de archivos PAC, como los siguientes:
-  * DIRECT
-  * PROXY host:port
-  * HTTPS host:port
-La primera entrada accesible se usará como proxy.
-
-El campo <ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> contiene una lista de condiciones que se deben cumplir para que se use su regla de anulación a la hora de decidir el proxy que se usará. Si no se establece, la entrada se usará siempre que coincida al menos un host en <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" />.
-
-La condición <ph name="PROXY_OVERRIDE_RULES_DNS_PROBE" /> verifica si el DNS <ph name="PROXY_OVERRIDE_RULES_HOST" /> proporcionado puede resolverse en una dirección IP. Si el valor de <ph name="PROXY_OVERRIDE_RULES_RESULT" /> es "<ph name="PROXY_OVERRIDE_RULES_RESOLVES" />", se considera que se cumple la condición. Si el valor se establece en <ph name="PROXY_OVERRIDE_RULES_NOT_FOUND" />, la condición se considera cumplida si la resolución falló.</translation>
 <translation id="8086746212954621799">Si la estableces como verdadera, se desactivarán las actualizaciones automáticas.
 
 Cuando no estableces esta configuración o la estableces como falsa, los dispositivos <ph name="PRODUCT_OS_NAME" /> buscarán actualizaciones de forma automática.

@@ -49,6 +49,7 @@
 <translation id="1181037720776840403">Remover</translation>
 <translation id="1183189057400844278">Confirme sua identidade para sempre poder usar as senhas na sua Conta do Google</translation>
 <translation id="1187810343066461819">Excluir também favoritos, histórico e muito mais deste carro</translation>
+<translation id="1193589902336218259">Ativar notificações de dicas</translation>
 <translation id="1193729455103054076">Usar uma senha forte?</translation>
 <translation id="11947597112837849">e-mail</translation>
 <translation id="1197267115302279827">Mover favoritos</translation>
@@ -236,6 +237,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="200114059308480249">Incluir o texto ao redor nas pesquisas do Google?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, guia anônima com áudio desativado fixada</translation>
 <translation id="2021896219286479412">Controles de site em tela cheia</translation>
+<translation id="2029669011553795746">A opção de ativar as notificações de dicas foi aberta na metade da altura</translation>
 <translation id="2038563949887743358">Ativar "Ver versão para computador"</translation>
 <translation id="204321170514947529">O app <ph name="APP_NAME" /> também tem dados no Chrome</translation>
 <translation id="2047378580182589770">Toque e pressione para sair da navegação anônima</translation>
@@ -245,6 +247,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="2063047797624276601">Sua organização ativou a Navegação Segura com Maior Proteção</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{Falha em 1 download}one{Falha em # download}other{Falha em # downloads}}</translation>
 <translation id="2067805253194386918">texto</translation>
+<translation id="2072027001582274150">Guias não usadas ou duplicadas</translation>
 <translation id="2074527029802029717">Liberar guia</translation>
 <translation id="2079545284768500474">Desfazer</translation>
 <translation id="2082238445998314030">Resultado <ph name="RESULT_NUMBER" /> de <ph name="TOTAL_RESULTS" /></translation>
@@ -405,6 +408,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="2781151931089541271">Um segundo restante</translation>
 <translation id="2789486458103222910">Ok</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{O Chrome encontrou uma senha reutilizada que pode ser melhorada}one{O Chrome encontrou # senha reutilizada que pode ser melhorada}other{O Chrome encontrou # senhas reutilizadas que podem ser melhoradas}}</translation>
+<translation id="2794551654724114396">Ative as notificações para receber dicas úteis e aproveitar o Chrome ao máximo</translation>
 <translation id="2800066122460699237">A guia <ph name="TAB_TITLE" /> será fechada</translation>
 <translation id="2805210243313393104">Acesse favoritos e muito mais em todos os seus dispositivos</translation>
 <translation id="2805756323405976993">Apps</translation>
@@ -640,6 +644,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="3824259034819781947">Anexar arquivos</translation>
 <translation id="38243391581572867">O Lens não está disponível nesta conta.</translation>
 <translation id="38258275871320156">Disponível apenas para janelas pequenas</translation>
+<translation id="3826529618131025925">Página inferior com ajuda e orientações para ativar as notificações de dicas</translation>
 <translation id="3845098929839618392">Abrir em guia anônima</translation>
 <translation id="3847319713229060696">Ajudar a melhorar a segurança para todas as pessoas na Web</translation>
 <translation id="385051799172605136">Voltar</translation>
@@ -773,6 +778,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="4405636711880428279">Remover seu cartão virtual?</translation>
 <translation id="4408965460206576430">Este arquivo contém malware ou vem de um site suspeito</translation>
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> e mais <ph name="TAB_COUNT" /> guias</translation>
+<translation id="441100617989818073">Guias e grupos não usados ou duplicados</translation>
 <translation id="4414179633735763985"><ph name="TAB_GROUPS_AND_TABS_PART" /> foram excluídos</translation>
 <translation id="4415276339145661267">Gerenciar sua Conta do Google</translation>
 <translation id="4425140285732600465">Monitorando o preço. Receba alertas se houver uma redução no preço em algum site.</translation>
@@ -802,6 +808,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="452750746583162491">Revisar dados sincronizados</translation>
 <translation id="4532845899244822526">Escolher pasta</translation>
 <translation id="4535755320005483982">Grupo de guias <ph name="GROUP_TITLE" /> compartilhado</translation>
+<translation id="4537137366307982887">A opção de ativar as notificações de dicas foi aberta na altura máxima</translation>
 <translation id="4543131175509360848">Nenhuma página de chaves de acesso</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> guia}one{<ph name="TAB_COUNT_MANY" /> guia e <ph name="TAB_COUNT_INCOGNITO" /> guia anônima}other{<ph name="TAB_COUNT_MANY" /> guias e <ph name="TAB_COUNT_INCOGNITO" /> guia anônima}}</translation>
 <translation id="4558311620361989323">Atalhos de páginas da Web</translation>
@@ -953,6 +960,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="5123685120097942451">Guia anônima</translation>
 <translation id="5142281402488957685">Puxe para baixo para atualizar e ver novas matérias</translation>
 <translation id="5144385790872094440">Algumas das páginas que você visita serão pré-carregadas. As páginas podem ser pré-carregadas por servidores do Google quando o link for de um site ou app do Google.</translation>
+<translation id="5145887002054615868">As guias duplicadas ou não usadas há <ph name="DAYS_INACTIVE" /> dias são movidas para cá<ph name="AUTODELETE_SECTION" />. Você pode mudar essa opção quando quiser nas <ph name="DECLUTTER_SETTINGS_TITLE" />.</translation>
 <translation id="5152843274749979095">Nenhum app compatível instalado</translation>
 <translation id="5161254044473106830">O título é obrigatório</translation>
 <translation id="5161262286013276579">Página de confirmação da chave de acesso aberta</translation>
@@ -1115,6 +1123,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="5864419784173784555">Aguardando outro download…</translation>
 <translation id="5865733239029070421">Envia estatísticas de uso e relatórios de erros automaticamente para o Google</translation>
 <translation id="5869522115854928033">Senhas salvas</translation>
+<translation id="5870416898561279542">As guias e os grupos duplicados ou não usados há <ph name="DAYS_INACTIVE" /> dias são movidos para cá<ph name="AUTODELETE_SECTION" />. Você pode mudar essa opção quando quiser nas <ph name="DECLUTTER_SETTINGS_TITLE" />.</translation>
 <translation id="587735546353481577">Para seguir um site, acesse-o, abra o menu do Google Chrome e toque em "Seguir".</translation>
 <translation id="5883855034004058011">A biometria falhou muitas vezes. Bloqueie e desbloqueie o dispositivo para tentar de novo.</translation>
 <translation id="5885378508678660271">Notificações <ph name="SEPARATOR" /> O Chrome removeu essa permissão porque esse site é perigoso</translation>
@@ -1875,6 +1884,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="8942627711005830162">Abrir em outra janela</translation>
 <translation id="8945143127965743188"><ph name="LANG" />: não foi possível fazer o download desse idioma. Tente novamente mais tarde.</translation>
 <translation id="8946759102391960088">Mantenha o acesso às suas senhas</translation>
+<translation id="895442993047180128">A opção de ativar as notificações de dicas foi fechada</translation>
 <translation id="8957528460562961174">Para manter o acesso às suas senhas, exporte e depois importe para o gerenciador de senhas que preferir. O Gerenciador de senhas do Google parou de funcionar porque o Google Play Services não está disponível.</translation>
 <translation id="8963117664422609631">Acessar as configurações do site</translation>
 <translation id="8965591936373831584">pendente</translation>

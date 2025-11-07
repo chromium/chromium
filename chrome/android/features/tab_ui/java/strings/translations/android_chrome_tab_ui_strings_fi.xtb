@@ -128,6 +128,7 @@
 <translation id="5556417849629758491">Näytä kaupan tiedot, vaihtoehto lähellä näytön yläreunaa</translation>
 <translation id="5627941783489838464">Ei välilehtipäivityksiä</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> linkki Chromesta}other{<ph name="TABS_COUNT_MANY" /> linkkiä Chromesta}}</translation>
+<translation id="5740354908255726955">{TAB_COUNT,plural, =1{Siirrä välilehteä vasemmalle}other{Siirrä välilehtiä vasemmalle}}</translation>
 <translation id="5746204836956568669">Ryhmitetäänkö <ph name="NUMBER_OF_TABS" /> välilehteä, jotta työskentely nopeutuu?</translation>
 <translation id="5773295109010386583">Sulje ei-aktiiviset kohteet automaattisesti</translation>
 <translation id="58326064309361797">Ryhmittele välilehtiä vetämällä niitä</translation>
@@ -138,6 +139,7 @@
 <translation id="6109251075362363230">Myös kaikki välilehtien kopiot arkistoidaan nyt, lukuun ottamatta viimeksi käytettyä kopiota.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Sulje <ph name="TABS_COUNT_ONE" /> valittu kohde}other{Sulje <ph name="TABS_COUNT_MANY" /> valittua kohdetta}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Siirrä ryhmä uuteen ikkunaan}other{Siirrä ryhmä toiseen ikkunaan}}</translation>
+<translation id="6212374449852603982">{TAB_COUNT,plural, =1{Siirrä välilehteä oikealle}other{Siirrä välilehtiä oikealle}}</translation>
 <translation id="6228793724645064692">(kauppa-arvio)</translation>
 <translation id="625996437999624951">{TAB_COUNT,plural, =1{Poista välilehti ryhmästä}other{Poista välilehdet ryhmästä}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Lisää välilehti uuteen ryhmään}other{Lisää välilehtiä uuteen ryhmään}}</translation>

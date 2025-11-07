@@ -49,6 +49,7 @@
 <translation id="1181037720776840403">삭제</translation>
 <translation id="1183189057400844278">Google 계정에서 언제든지 비밀번호를 사용할 수 있도록 본인 인증을 완료하세요</translation>
 <translation id="1187810343066461819">이 차량의 북마크 및 방문 기록 삭제</translation>
+<translation id="1193589902336218259">팁 알림 사용 설정</translation>
 <translation id="1193729455103054076">안전한 비밀번호를 사용하시겠습니까?</translation>
 <translation id="11947597112837849">이메일 주소</translation>
 <translation id="1197267115302279827">북마크 이동</translation>
@@ -236,6 +237,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="200114059308480249">Google 검색어에 주변 텍스트를 포함하시겠습니까?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, 고정되고 음소거된 시크릿 탭</translation>
 <translation id="2021896219286479412">전체화면 사이트 컨트롤</translation>
+<translation id="2029669011553795746">팁 알림 수신 동의가 절반 높이로 열림</translation>
 <translation id="2038563949887743358">데스크톱 버전으로 보기 사용 설정</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" />도 Chrome에서 데이터를 보유하고 있습니다</translation>
 <translation id="2047378580182589770">시크릿 모드를 종료하려면 길게 터치하세요.</translation>
@@ -245,6 +247,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="2063047797624276601">조직에서 향상된 세이프 브라우징을 사용 설정했습니다.</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{다운로드 1개 실패}other{다운로드 #개 실패}}</translation>
 <translation id="2067805253194386918">텍스트</translation>
+<translation id="2072027001582274150">사용하지 않거나 중복된 탭</translation>
 <translation id="2074527029802029717">탭 고정 해제</translation>
 <translation id="2079545284768500474">실행취소</translation>
 <translation id="2082238445998314030">전체 결과 <ph name="TOTAL_RESULTS" />개 중 <ph name="RESULT_NUMBER" />개</translation>
@@ -405,6 +408,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="2781151931089541271">1초 남음</translation>
 <translation id="2789486458103222910">확인</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chrome에서 개선이 가능한 재사용된 비밀번호를 찾았습니다.}other{Chrome에서 개선이 가능한 재사용된 비밀번호 #개를 찾았습니다.}}</translation>
+<translation id="2794551654724114396">알림을 사용 설정하여 Chrome을 최대한 활용하는 데 도움이 되는 유용한 팁을 받아 보세요.</translation>
 <translation id="2800066122460699237"><ph name="TAB_TITLE" /> 탭이 닫힙니다.</translation>
 <translation id="2805210243313393104">모든 기기에 북마크 등을 가져오세요</translation>
 <translation id="2805756323405976993">앱</translation>
@@ -640,6 +644,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="3824259034819781947">파일 첨부</translation>
 <translation id="38243391581572867">이 계정에서는 렌즈를 사용할 수 없습니다.</translation>
 <translation id="38258275871320156">작은 창에서만 사용 가능</translation>
+<translation id="3826529618131025925">팁 알림 수신 동의 도움말 및 안내 하단 시트</translation>
 <translation id="3845098929839618392">시크릿 탭에서 열기</translation>
 <translation id="3847319713229060696">모든 웹 사용자를 위한 보안 개선에 참여</translation>
 <translation id="385051799172605136">뒤로</translation>
@@ -773,6 +778,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="4405636711880428279">가상 카드를 삭제하시겠습니까?</translation>
 <translation id="4408965460206576430">멀웨어가 포함되어 있거나 의심스러운 사이트에서 가져온 파일입니다.</translation>
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> 외 탭 <ph name="TAB_COUNT" />개</translation>
+<translation id="441100617989818073">사용하지 않거나 중복된 탭 및 그룹</translation>
 <translation id="4414179633735763985"><ph name="TAB_GROUPS_AND_TABS_PART" /> 삭제됨</translation>
 <translation id="4415276339145661267">Google 계정 관리</translation>
 <translation id="4425140285732600465">가격 추적 중입니다. 사이트에서 가격이 인하되면 알림이 전송됩니다.</translation>
@@ -801,6 +807,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="452750746583162491">동기화된 데이터 검토</translation>
 <translation id="4532845899244822526">폴더 선택</translation>
 <translation id="4535755320005483982">공유된 <ph name="GROUP_TITLE" /> 탭 그룹</translation>
+<translation id="4537137366307982887">팁 알림 수신 동의가 전체 높이로 열림</translation>
 <translation id="4543131175509360848">패스키 시트 없음</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{탭 <ph name="TAB_COUNT_ONE" />개}other{탭 <ph name="TAB_COUNT_MANY" />개(시크릿 탭 <ph name="TAB_COUNT_INCOGNITO" />개)}}</translation>
 <translation id="4558311620361989323">웹페이지 단축키</translation>
@@ -952,6 +959,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="5123685120097942451">시크릿 탭</translation>
 <translation id="5142281402488957685">새로운 스토리를 보려면 아래로 당겨 새로고침하세요.</translation>
 <translation id="5144385790872094440">방문한 페이지 중 일부가 미리 로드되었습니다. Google 사이트 또는 앱에서 페이지에 연결하는 경우 Google 서버를 통해 페이지가 미리 로드될 수 있습니다.</translation>
+<translation id="5145887002054615868">중복된 탭 또는 <ph name="DAYS_INACTIVE" />일 동안 사용하지 않은 탭은 여기로 이동되며<ph name="AUTODELETE_SECTION" /> 언제든지 <ph name="DECLUTTER_SETTINGS_TITLE" />에서 변경할 수 있습니다.</translation>
 <translation id="5152843274749979095">지원되는 앱이 설치되어 있지 않음</translation>
 <translation id="5161254044473106830">제목이 필요합니다.</translation>
 <translation id="5161262286013276579">패스키 확인 시트 열림</translation>
@@ -1114,6 +1122,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="5864419784173784555">다른 다운로드 대기 중…</translation>
 <translation id="5865733239029070421">사용 통계 및 비정상 종료 보고서를 Google에 자동으로 전송합니다.</translation>
 <translation id="5869522115854928033">저장된 비밀번호</translation>
+<translation id="5870416898561279542">중복되거나 <ph name="DAYS_INACTIVE" />일 동안 사용하지 않은 탭 및 그룹은 여기로 이동되며<ph name="AUTODELETE_SECTION" />. 언제든지 <ph name="DECLUTTER_SETTINGS_TITLE" />에서 변경할 수 있습니다.</translation>
 <translation id="587735546353481577">사이트를 팔로우하려면 사이트로 이동해서 Chrome 메뉴를 연 다음 팔로우를 탭합니다.</translation>
 <translation id="5883855034004058011">생체 인식 실패 횟수가 너무 많습니다. 기기를 잠갔다가 잠금 해제한 후 다시 시도하세요.</translation>
 <translation id="5885378508678660271">알림 <ph name="SEPARATOR" /> 위험한 사이트이므로 Chrome에서 이러한 권한을 삭제했습니다.</translation>
@@ -1874,6 +1883,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="8942627711005830162">다른 창에서 열기</translation>
 <translation id="8945143127965743188"><ph name="LANG" />: 다운로드할 수 없는 언어입니다. 나중에 다시 시도해 보세요.</translation>
 <translation id="8946759102391960088">비밀번호에 계속 액세스</translation>
+<translation id="895442993047180128">팁 알림 수신 동의 닫힘</translation>
 <translation id="8957528460562961174">비밀번호에 계속 액세스하려면 지금 비밀번호를 내보낸 후 원하는 비밀번호 관리자로 가져오세요. Google Play 서비스를 사용할 수 없으므로 Google 비밀번호 관리자 작동이 중지되었습니다.</translation>
 <translation id="8963117664422609631">사이트 설정으로 이동</translation>
 <translation id="8965591936373831584">보류 중</translation>

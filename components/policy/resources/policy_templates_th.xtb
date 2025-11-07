@@ -10352,21 +10352,6 @@ https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns
 
       หากตั้งค่านโยบายนี้ ผู้ใช้จะเปลี่ยนแปลงหรือลบล้างนโยบายไม่ได้</translation>
 <translation id="8080200590486938727">ปิดใช้เครื่องมือค้นหาปลั๊กอิน</translation>
-<translation id="8082268442825947283">การตั้งค่านโยบายนี้จะกำหนดค่ากฎที่เลือกพร็อกซีที่เบราว์เซอร์จะใช้โดยขึ้นอยู่กับ URL ของปลายทางและเงื่อนไขอื่นๆ นโยบายนี้จะมีความสำคัญเหนือกว่าการตั้งค่าพร็อกซีที่ตั้งจากนโยบาย <ph name="PROXY_SETTINGS_POLICY_NAME" />, API ส่วนขยายของ <ph name="PROXY_SETTINGS_EXTENSION_API" /> หรือการตั้งค่าของผู้ใช้ด้วยตนเอง หากมีการตั้งค่าไว้
-
-การไม่ตั้งค่านโยบายนี้จะไม่มีผลต่อนโยบายพร็อกซีหรือการตั้งค่าของผู้ใช้อื่นๆ
-
-เมื่อเบราว์เซอร์ต้องตัดสินใจว่าจะใช้พร็อกซีใด รายการของนโยบาย <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> จะได้รับการประเมินตามลำดับจนกว่ารายการจะมีรายการที่ตรงกันสำหรับโฮสต์ URL อย่างน้อย 1 รายการใน <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> และหากตรงตามรายการทั้งหมดใน <ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> ระบบจะใช้ค่าใน <ph name="PROXY_OVERRIDE_RULES_PROXY_CHAIN" /> เป็นพร็อกซีสำหรับการจับคู่ดังกล่าว หากไม่พบรายการที่ตรงกัน การตั้งค่าพร็อกซีจะกลับไปใช้การตั้งค่าที่กำหนดไว้ในนโยบาย <ph name="PROXY_SETTINGS_POLICY_NAME" />
-
-รายการในช่อง <ph name="PROXY_OVERRIDE_RULES_PROXY_CHAIN" /> จะสอดคล้องกับค่าสตริงของไฟล์ PAC เช่น
-  * DIRECT
-  * PROXY host:port
-  * HTTPS host:port
-ระบบจะใช้รายการแรกที่เข้าถึงได้เป็นพร็อกซี
-
-ช่อง <ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> มีรายการเงื่อนไขทั้งหมดที่ต้องเป็นไปตามกฎการลบล้างเพื่อตัดสินใจเลือกพร็อกซีที่จะใช้ หากไม่ได้ตั้งค่า ระบบจะใช้รายการนี้ตราบใดที่ตรงกับโฮสต์อย่างน้อย 1 รายการใน <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" />
-
-เงื่อนไข <ph name="PROXY_OVERRIDE_RULES_DNS_PROBE" /> จะตรวจสอบว่า DNS <ph name="PROXY_OVERRIDE_RULES_HOST" /> ที่ระบุสามารถแก้ปัญหาที่อยู่ IP ได้ไหม หากค่าของ <ph name="PROXY_OVERRIDE_RULES_RESULT" /> เป็น "<ph name="PROXY_OVERRIDE_RULES_RESOLVES" />" ระบบจะถือว่าตรงตามเงื่อนไข หากตั้งค่าเป็น <ph name="PROXY_OVERRIDE_RULES_NOT_FOUND" /> แทน ระบบจะถือว่าตรงตามเงื่อนไข หากการแก้ปัญหาล้มเหลว</translation>
 <translation id="8086746212954621799">ปิดใช้การอัปเดตอัตโนมัติเมื่อตั้งค่าเป็น "จริง"
 
 อุปกรณ์ <ph name="PRODUCT_OS_NAME" /> จะตรวจหาการอัปเดตโดยอัตโนมัติเมื่อไม่ได้ตั้งค่านโยบายนี้หรือตั้งค่าเป็น "เท็จ"

@@ -128,6 +128,7 @@
 <translation id="5556417849629758491">View shop info, option available near top of the screen</translation>
 <translation id="5627941783489838464">No tab updates</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> link from Chrome}other{<ph name="TABS_COUNT_MANY" /> links from Chrome}}</translation>
+<translation id="5740354908255726955">{TAB_COUNT,plural, =1{Move tab left}other{Move tabs left}}</translation>
 <translation id="5746204836956568669">Group <ph name="NUMBER_OF_TABS" /> tabs to work faster?</translation>
 <translation id="5773295109010386583">Automatically close inactive items</translation>
 <translation id="58326064309361797">Drag tabs to group them</translation>
@@ -138,6 +139,7 @@
 <translation id="6109251075362363230">All duplicate tabs will now also be archived, with the exception of the most recently used copy.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Close <ph name="TABS_COUNT_ONE" /> selected item}other{Close <ph name="TABS_COUNT_MANY" /> selected items}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Move group to new window}other{Move group to another window}}</translation>
+<translation id="6212374449852603982">{TAB_COUNT,plural, =1{Move tab right}other{Move tabs right}}</translation>
 <translation id="6228793724645064692">(store rating)</translation>
 <translation id="625996437999624951">{TAB_COUNT,plural, =1{Remove tab from group}other{Remove tabs from group}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Add tab to new group}other{Add tabs to new group}}</translation>

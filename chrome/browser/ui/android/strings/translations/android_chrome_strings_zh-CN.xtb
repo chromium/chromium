@@ -49,6 +49,7 @@
 <translation id="1181037720776840403">移除</translation>
 <translation id="1183189057400844278">为了确保您可以一直使用 Google 账号中的密码，请验证是您本人在操作</translation>
 <translation id="1187810343066461819">同时从此车载系统中删除书签、历史记录等信息</translation>
+<translation id="1193589902336218259">开启“提示”通知</translation>
 <translation id="1193729455103054076">使用安全系数高的密码？</translation>
 <translation id="11947597112837849">邮箱</translation>
 <translation id="1197267115302279827">移动书签</translation>
@@ -236,6 +237,7 @@
 <translation id="200114059308480249">将上下文内容纳入到 Google 搜索查询中？</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />，已固定的无痕式标签页，已设为静音</translation>
 <translation id="2021896219286479412">全屏网站控件</translation>
+<translation id="2029669011553795746">提示通知选择启用底部动作条已以一半高度显示</translation>
 <translation id="2038563949887743358">开启“请求切换到桌面版网站”</translation>
 <translation id="204321170514947529">Chrome 中也有<ph name="APP_NAME" />的数据</translation>
 <translation id="2047378580182589770">轻触并按住即可退出无痕模式</translation>
@@ -245,6 +247,7 @@
 <translation id="2063047797624276601">您的组织已开启“增强型安全浏览”功能</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 项下载失败}other{# 项下载失败}}</translation>
 <translation id="2067805253194386918">文本</translation>
+<translation id="2072027001582274150">未使用或重复的标签页</translation>
 <translation id="2074527029802029717">取消固定标签页</translation>
 <translation id="2079545284768500474">撤消</translation>
 <translation id="2082238445998314030">第 <ph name="RESULT_NUMBER" /> 条结果，共 <ph name="TOTAL_RESULTS" /> 条</translation>
@@ -405,6 +408,7 @@
 <translation id="2781151931089541271">还剩 1 秒</translation>
 <translation id="2789486458103222910">确定</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chrome 发现了 1 个重复使用的密码，建议您改进}other{Chrome 发现了 # 个重复使用的密码，建议您改进}}</translation>
+<translation id="2794551654724114396">开启通知，获取实用提示，尽享 Chrome 的出色功能</translation>
 <translation id="2800066122460699237">系统将会关闭标签页“<ph name="TAB_TITLE" />”</translation>
 <translation id="2805210243313393104">在您的所有设备上获取书签等信息</translation>
 <translation id="2805756323405976993">应用</translation>
@@ -640,6 +644,7 @@
 <translation id="3824259034819781947">附加文件</translation>
 <translation id="38243391581572867">此账号无法使用智能镜头。</translation>
 <translation id="38258275871320156">仅适用于小窗口</translation>
+<translation id="3826529618131025925">提示通知选择启用帮助和指导底部动作条</translation>
 <translation id="3845098929839618392">在无痕式标签页中打开</translation>
 <translation id="3847319713229060696">帮助我们为所有人改善网络安全环境</translation>
 <translation id="385051799172605136">返回</translation>
@@ -773,6 +778,7 @@
 <translation id="4405636711880428279">移除您的虚拟卡？</translation>
 <translation id="4408965460206576430">此文件包含恶意软件或来自可疑网站</translation>
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" />及另外 <ph name="TAB_COUNT" /> 个标签页</translation>
+<translation id="441100617989818073">未使用或重复的标签页和标签页分组</translation>
 <translation id="4414179633735763985">已删除 <ph name="TAB_GROUPS_AND_TABS_PART" /></translation>
 <translation id="4415276339145661267">管理您的 Google 账号</translation>
 <translation id="4425140285732600465">正在跟踪价格。当任一网站上的商品降价时，您会收到提醒。</translation>
@@ -801,6 +807,7 @@
 <translation id="452750746583162491">查看您已同步的数据</translation>
 <translation id="4532845899244822526">选择文件夹</translation>
 <translation id="4535755320005483982">共享“<ph name="GROUP_TITLE" />”标签页分组</translation>
+<translation id="4537137366307982887">提示通知选择启用底部动作条已以最大高度显示</translation>
 <translation id="4543131175509360848">无通行密钥表格</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> 个标签页}other{<ph name="TAB_COUNT_MANY" /> 个标签页，<ph name="TAB_COUNT_INCOGNITO" /> 个无痕式标签页}}</translation>
 <translation id="4558311620361989323">网页快捷键</translation>
@@ -952,6 +959,7 @@
 <translation id="5123685120097942451">无痕式标签页</translation>
 <translation id="5142281402488957685">若要获取新报道，请下拉页面进行刷新</translation>
 <translation id="5144385790872094440">预加载您访问的部分网页。从 Google 网站或应用链接到的网页可能会通过 Google 服务器预加载。</translation>
+<translation id="5145887002054615868">重复的标签页或已闲置 <ph name="DAYS_INACTIVE" /> 天的标签页会移至此处，<ph name="AUTODELETE_SECTION" />。您随时可在<ph name="DECLUTTER_SETTINGS_TITLE" />中更改此设置。</translation>
 <translation id="5152843274749979095">尚未安装任何支持的应用</translation>
 <translation id="5161254044473106830">必须提供标题</translation>
 <translation id="5161262286013276579">已打开通行密钥确认工作表</translation>
@@ -1114,6 +1122,7 @@
 <translation id="5864419784173784555">正在等待完成另一项下载…</translation>
 <translation id="5865733239029070421">自动将使用情况统计信息和崩溃报告发送给 Google</translation>
 <translation id="5869522115854928033">已保存的密码</translation>
+<translation id="5870416898561279542">重复的标签页和分组或已闲置 <ph name="DAYS_INACTIVE" /> 天的标签页和分组会移至此处，<ph name="AUTODELETE_SECTION" />。您随时可在<ph name="DECLUTTER_SETTINGS_TITLE" />中更改此设置。</translation>
 <translation id="587735546353481577">若要关注某个网站，请转到该网站，打开 Chrome 菜单，然后点按“关注”。</translation>
 <translation id="5883855034004058011">生物识别失败次数过多。请锁定设备并解锁，然后重试。</translation>
 <translation id="5885378508678660271">通知 <ph name="SEPARATOR" /> Chrome 撤消了这些权限，因为此网站具有危险性</translation>
@@ -1872,6 +1881,7 @@
 <translation id="8942627711005830162">在其他窗口中打开</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - 无法下载此语言。请稍后再试。</translation>
 <translation id="8946759102391960088">继续使用您的密码</translation>
+<translation id="895442993047180128">提示通知选择启用底部动作条已关闭</translation>
 <translation id="8957528460562961174">如需继续使用您的密码，请立即将其导出，然后将其导入您偏好的密码管理工具。由于未安装 Google Play 服务，Google 密码管理工具已停止运行。</translation>
 <translation id="8963117664422609631">转到网站设置</translation>
 <translation id="8965591936373831584">待下载</translation>

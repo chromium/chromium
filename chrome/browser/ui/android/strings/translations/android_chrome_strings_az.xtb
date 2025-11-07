@@ -49,6 +49,7 @@
 <translation id="1181037720776840403">Silin</translation>
 <translation id="1183189057400844278">Google Hesabında parollardan hər zaman istifadə edə bilmək üçün kimliyinizi doğrulayın</translation>
 <translation id="1187810343066461819">Əlfəcin, tarixçə və s. datanı da bu avtomobildən silin</translation>
+<translation id="1193589902336218259">İpucu bildirişlərini aktiv edin</translation>
 <translation id="1193729455103054076">Güclü paroldan istifadə edilsin?</translation>
 <translation id="11947597112837849">e-poçt ünvanı</translation>
 <translation id="1197267115302279827">Əlfəcinləri köçürün</translation>
@@ -236,6 +237,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="200114059308480249">Google axtarışlarına ətrafdakı mətn daxil edilsin?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, Bərkidilmiş, susdurulmuş anonim tab</translation>
 <translation id="2021896219286479412">Tam ekran sayt nəzarətləri</translation>
+<translation id="2029669011553795746">İpucu bildirişlərinə qoşulma pəncərəsi yarım hündürlükdə açıldı</translation>
 <translation id="2038563949887743358">Əsas Versiya Sorğusunu aktiv edin</translation>
 <translation id="204321170514947529">Həmçinin, <ph name="APP_NAME" /> tətbiqinin Chrome'da datası var</translation>
 <translation id="2047378580182589770">Anonim rejimdən çıxmaq üçün toxunub saxlayın</translation>
@@ -245,6 +247,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="2063047797624276601">Təşkilat Qabaqcıl Güvənli Baxışı yandırıb</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 endirmə alınmadı}other{# endirmə alınmadı}}</translation>
 <translation id="2067805253194386918">mətn</translation>
+<translation id="2072027001582274150">İstifadə olunmayan və ya dublikat tablar</translation>
 <translation id="2074527029802029717">Paneli çıxarın</translation>
 <translation id="2079545284768500474">Geri qaytarın</translation>
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" /> nəticədən <ph name="RESULT_NUMBER" /></translation>
@@ -405,6 +408,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="2781151931089541271">1 saniyə qaldı</translation>
 <translation id="2789486458103222910">Oldu</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chrome təkmilləşdirə biləcəyiniz təkrar işlənən parol aşkarladı}other{Chrome təkmilləşdirə biləcəyiniz # təkrar işlənən parol aşkarladı}}</translation>
+<translation id="2794551654724114396">Chrome-dan maksimum yararlanmağınıza kömək edəcək faydalı ipucular üçün bildirişləri aktiv edin</translation>
 <translation id="2800066122460699237"><ph name="TAB_TITLE" /> tabı bağlanacaq</translation>
 <translation id="2805210243313393104">Əlfəcinləri və digər məlumatları bütün cihazlarınızda əldə edin</translation>
 <translation id="2805756323405976993">Tətbiq</translation>
@@ -640,6 +644,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="3824259034819781947">Fayllar əlavə edin</translation>
 <translation id="38243391581572867">Linza bu hesabda əlçatan deyil.</translation>
 <translation id="38258275871320156">Yalnız kiçik pəncərələr üçün əlçatandır</translation>
+<translation id="3826529618131025925">İpucu bildirişlərinə qoşulma ilə bağlı kömək və bələdçi üzrə aşağıdakı vərəq</translation>
 <translation id="3845098929839618392">Anonim tabda açın</translation>
 <translation id="3847319713229060696">Vebdə hər kəsin güvənliyini artırmağa yardım edin</translation>
 <translation id="385051799172605136">Geri</translation>
@@ -773,6 +778,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="4405636711880428279">Virtual kartınız silinsin?</translation>
 <translation id="4408965460206576430">Bu faylda zərərli proqram var və ya şübhəli saytdan gəlir</translation>
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> və daha <ph name="TAB_COUNT" /> tab</translation>
+<translation id="441100617989818073">İstifadə edilməyən və ya dublikat tablar və qruplar</translation>
 <translation id="4414179633735763985"><ph name="TAB_GROUPS_AND_TABS_PART" /> silindi</translation>
 <translation id="4415276339145661267">Google Hesabını idarə edin</translation>
 <translation id="4425140285732600465">Qiymət izlənilir. Hər hansı bir saytda qiymət enərsə, bildiriş alın</translation>
@@ -801,6 +807,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="452750746583162491">Sinxronlaşdırılmış datanızı nəzərdən keçirin</translation>
 <translation id="4532845899244822526">Qovluq seçin</translation>
 <translation id="4535755320005483982"><ph name="GROUP_TITLE" /> tab qrupu paylaşıldı</translation>
+<translation id="4537137366307982887">İpucu bildirişlərinə qoşulma pəncərəsi tam hündürlükdə açıldı</translation>
 <translation id="4543131175509360848">Giriş açarı vərəqi yoxdur</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> tab}other{<ph name="TAB_COUNT_MANY" /> tab, <ph name="TAB_COUNT_INCOGNITO" /> anonim}}</translation>
 <translation id="4558311620361989323">Veb səhifə qısayolları</translation>
@@ -952,6 +959,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="5123685120097942451">Anonim tab</translation>
 <translation id="5142281402488957685">Yeni hekayələr üçün aşağı çəkərək yeniləyin</translation>
 <translation id="5144385790872094440">Daxil olduğunuz bəzi səhifələr əvvəlcədən yüklənib. Səhifələr Google saytından və ya tətbiqindən əlaqələndirildikdə Google serverləri vasitəsilə əvvəlcədən yüklənə bilər.</translation>
+<translation id="5145887002054615868">Dublikat tablar və ya <ph name="DAYS_INACTIVE" /> gün istifadə edilməyən tablar bura köçürülür<ph name="AUTODELETE_SECTION" />. Bunu istənilən vaxt <ph name="DECLUTTER_SETTINGS_TITLE" /> bölməsində dəyişə bilərsiniz.</translation>
 <translation id="5152843274749979095">Heç bir dəstəklənən tətbiq quraşdırılmayıb</translation>
 <translation id="5161254044473106830">Başlıq tələb olunur</translation>
 <translation id="5161262286013276579">Giriş açarı təsdiqi üçün vərəq açıldı</translation>
@@ -1114,6 +1122,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="5864419784173784555">Başqa endirmə gözlənilir…</translation>
 <translation id="5865733239029070421">İstifadə statistikası və qəza raportlarını avtomatik Google'a göndərir</translation>
 <translation id="5869522115854928033">Saxlanılmış parollar</translation>
+<translation id="5870416898561279542">Dublikat tab və qruplar və ya <ph name="DAYS_INACTIVE" /> gün istifadə edilməyənlər bura köçürülür<ph name="AUTODELETE_SECTION" />. Bunu istənilən vaxt <ph name="DECLUTTER_SETTINGS_TITLE" /> bölməsində dəyişə bilərsiniz.</translation>
 <translation id="587735546353481577">Bir saytı izləmək üçün sayta keçin, Chrome menyusunu açın və İzlə seçiminə toxunun.</translation>
 <translation id="5883855034004058011">Biometrik göstəricilər dəfələrlə uğursuz olub. Yenidən cəhd etmək üçün cihazı kilidləyin və kilidini açın.</translation>
 <translation id="5885378508678660271">Bildirişlər <ph name="SEPARATOR" /> Bu sayt təhlükəli olduğu üçün Chrome bu icazələri sildi</translation>
@@ -1872,6 +1881,7 @@ Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını 
 <translation id="8942627711005830162">Başqa pəncərədə açın</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - Bu dili endirmək mümkün olmadı. Sonra cəhd edin.</translation>
 <translation id="8946759102391960088">Parollarınıza girişi saxlayın</translation>
+<translation id="895442993047180128">İpucu bildirişlərinə qoşulma pəncərəsi bağlandı</translation>
 <translation id="8957528460562961174">Parollarınıza girişi saxlamaq üçün onları indi eksport edin və sonra tərcih etdiyiniz parol menecerinə import edin. Google Play xidmətləri əlçatan olmadığı üçün Google Parol Meneceri dayandı.</translation>
 <translation id="8963117664422609631">Sayt ayarlarına keçin</translation>
 <translation id="8965591936373831584">gözlənilir</translation>

@@ -2466,6 +2466,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2667463864537187133">Dhibiti kikagua maendelezo</translation>
 <translation id="2668604389652548400">Kiondoe au utumie viendelezi vinavyofanana vilivyo katika <ph name="BEGIN_LINK" />Duka la Chrome kwenye Wavuti<ph name="END_LINK" /></translation>
 <translation id="2669241540496514785">Imeshindwa kufungua <ph name="APP_NAME" /></translation>
+<translation id="2669250147452250961">Washa ili upate historia ya kuvinjari na vichupo vyako kutoka kwenye vifaa vingine</translation>
 <translation id="2669454659051515572">Mtu yeyote anayetumia kifaa hiki anaweza kuona faili zilizopakuliwa</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> inashiriki kichupo cha Chrome.</translation>
 <translation id="2670168377011445813">Chrome ikipata mojawapo ya manenosiri yako katika ufichuzi haramu wa data kwa umma, Kidhibiti cha Manenosiri cha Google kinaweza kupendekeza kukubadilishia nenosiri lako ikiwa umeingia katika akaunti. <ph name="BEGIN_LINK" />Maelezo zaidi kuhusu kubadilisha nenosiri kiotomatiki<ph name="END_LINK" /></translation>
@@ -8608,6 +8609,7 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="6961327401577924850">Tovuti hutafuta vifaa vyenye Bluetooth kwa vipengele kama vile kuweka mipangilio au kusawazisha kiashiria chenye nishati ya kiwango cha chini, kifuatiliaji cha afya au siha au balbu ya taa mahiri</translation>
 <translation id="6963772203726867701">Haijatambuliwa</translation>
 <translation id="6963872466817251924">Kiangazia kiteuzi cha matini</translation>
+<translation id="6964239097707154771">ni programu jalizi za Chrome zinazoweza kukusaidia kutekeleza mambo mengi</translation>
 <translation id="6964390816189577014">Shujaa</translation>
 <translation id="6964760285928603117">Ondoa Kwenye Kikundi</translation>
 <translation id="6965382102122355670">Sawa</translation>
@@ -8920,6 +8922,7 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="7186088072322679094">Weka katika Upau wa Vidhibiti</translation>
 <translation id="7186303001964993981"><ph name="ORIGIN" /> haiwezi kufungua folda hii kwa sababu ina faili za mfumo</translation>
 <translation id="7186568385131859684">Dhibiti jinsi historia ya kuvinjari inavyotumika na data yako nyingine kwenye huduma za Google</translation>
+<translation id="7186903260115204164">Weka sahihi, mihtasari na michoro iliyochorwa kwa mkono ukitumia zana mpya ya Kuchora</translation>
 <translation id="7188508872042490670">Data ya tovuti kwenye kifaa</translation>
 <translation id="7189234443051076392">Hakikisha kuwa una nafasi ya kutosha kwenye kifaa chako</translation>
 <translation id="7189451821249468368">Huna leseni za kutosha kusajili kifaa hiki. Tafadhali wasiliana na huduma ya mauzo ili ununue nyingine. Ikiwa unaamini kuwa unaona ujumbe huu kimakosa, tafadhali wasiliana na kituo cha usaidizi.</translation>
@@ -10750,6 +10753,7 @@ Weka faili yako ya funguo mahali salama. Utaihitaji kuunda matoleo mapya ya kien
 <translation id="8427213022735114808">Utamkaji hutuma sauti yako kwa Google ili kuruhusu huduma ya kuandika kwa kutamka katika sehemu yoyote ya maandishi.</translation>
 <translation id="8427292751741042100">pachika kwenye seva pangishi yoyote</translation>
 <translation id="8428213095426709021">Mipangilio</translation>
+<translation id="8428257636009471988">Tembelea Duka la Wavuti</translation>
 <translation id="8428271547607112339">Weka akaunti ya shule</translation>
 <translation id="8428634594422941299">Nimeelewa</translation>
 <translation id="84297032718407999">Utaondolewa kwenye akaunti baada ya <ph name="LOGOUT_TIME_LEFT" /></translation>

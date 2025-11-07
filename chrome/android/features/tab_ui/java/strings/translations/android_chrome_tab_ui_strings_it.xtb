@@ -128,6 +128,7 @@
 <translation id="5556417849629758491">Visualizza informazioni sul negozio, opzione disponibile nella parte superiore dello schermo</translation>
 <translation id="5627941783489838464">Nessun aggiornamento della scheda</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> link da Chrome}other{<ph name="TABS_COUNT_MANY" /> link da Chrome}}</translation>
+<translation id="5740354908255726955">{TAB_COUNT,plural, =1{Sposta scheda a sinistra}other{Sposta schede a sinistra}}</translation>
 <translation id="5746204836956568669">Vuoi raggruppare <ph name="NUMBER_OF_TABS" /> schede per lavorare più velocemente?</translation>
 <translation id="5773295109010386583">Chiudi automaticamente gli elementi non attivi</translation>
 <translation id="58326064309361797">Trascina le schede per raggrupparle</translation>
@@ -138,6 +139,7 @@
 <translation id="6109251075362363230">Ora verranno archiviate anche tutte le schede duplicate, fatta eccezione per la copia utilizzata più di recente.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Chiudi <ph name="TABS_COUNT_ONE" /> elemento selezionato}other{Chiudi <ph name="TABS_COUNT_MANY" /> elementi selezionati}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Sposta gruppo in una nuova finestra}other{Sposta gruppo in un'altra finestra}}</translation>
+<translation id="6212374449852603982">{TAB_COUNT,plural, =1{Sposta scheda a destra}other{Sposta schede a destra}}</translation>
 <translation id="6228793724645064692">(valutazione del negozio)</translation>
 <translation id="625996437999624951">{TAB_COUNT,plural, =1{Rimuovi scheda dal gruppo}other{Rimuovi schede dal gruppo}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Aggiungi scheda a nuovo gruppo}other{Aggiungi schede a nuovo gruppo}}</translation>

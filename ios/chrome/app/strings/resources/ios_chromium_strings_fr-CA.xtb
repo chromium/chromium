@@ -238,6 +238,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="6154098560469640583">Utilisez Chromium chaque fois que vous touchez des liens dans des messages, des documents et d'autres applications.</translation>
 <translation id="6157162508956739031">Connectez-vous rapidement aux applis et aux sites en remplissant automatiquement vos mots de passe et vos clés d'accès à partir de Chromium</translation>
 <translation id="6170619162539716595">Autorisez Chromium à utiliser Google Maps pour vous fournir des itinéraires et des renseignements locaux sur les adresses détectées.</translation>
+<translation id="6244277266078678766">Vos données seront enregistrées dans le gestionnaire de mots de passe du compte <ph name="USER_EMAIL" /></translation>
 <translation id="6268381023930128611">Se déconnecter de Chromium?</translation>
 <translation id="6301717043141881464">Pour obtenir facilement vos mots de passe enregistrés dans vos autres applis, choisissez Chromium pour le remplissage automatique</translation>
 <translation id="6324041800010509197">Consulter la grille d'onglets dans Chromium</translation>
@@ -315,6 +316,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="8119542592987737574">Accédez à Chromium plus rapidement à partir du Dock de l'écran d'accueil de votre iPhone.</translation>
 <translation id="8164086860209325020">Accédez aux paramètres de chromium</translation>
 <translation id="8197822717502700527">Vous allez maintenant tirer le meilleur parti de Chromium sur votre appareil.</translation>
+<translation id="8236210361418193126">Importer dans le gestionnaire de mots de passe</translation>
 <translation id="8254729934443216898">Découvrez de nouvelles fonctionnalités qui vous aident à tirer le meilleur parti de Chromium.</translation>
 <translation id="8293572045658095405">Vous utilisez la Navigation privée de Chromium</translation>
 <translation id="830951810931292870">Ouvre les URL entrées dans Chromium en Navigation privée.</translation>

@@ -533,6 +533,7 @@ Niektoré funkcie nemusia byť k dispozícii. Zadajte iný adresár profilu aleb
 <translation id="7274695763216404502">Pripnuté! Vyhľadávanie podľa obrázkov môžete znova používať z panela s nástrojmi.</translation>
 <translation id="7288567540154601580">Karty a rozšírenia</translation>
 <translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{Chromium odporúča, aby ste ho odstránili}few{Chromium odporúča, aby ste ich odstránili}many{Chromium recommends that you remove them}other{Chromium odporúča, aby ste ich odstránili}}</translation>
+<translation id="7296334833518879294">Ak chcete zdieľať zvuk systému, otvorte nastavenia systému a povoľte pre Chromium možnosť Iba zvukové nahrávky systému. Potom budete musieť Chromium reštartovať.</translation>
 <translation id="7309928523159922338">Meranie reklám umožňuje webom, ktoré navštívite, požadovať od prehliadača Chromium údaje, ktoré im pomáhajú merať výkonnosť reklám. Meranie reklám obmedzuje sledovanie na rôznych weboch presúvaním minimálneho množstva údajov medzi webmi.</translation>
 <translation id="731795002583552498">Chromium sa aktualizuje</translation>
 <translation id="7318036098707714271">Súbor predvolieb je poškodený alebo neplatný. 

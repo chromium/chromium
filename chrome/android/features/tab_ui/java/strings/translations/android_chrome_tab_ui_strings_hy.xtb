@@ -128,6 +128,7 @@
 <translation id="5556417849629758491">Դիտել խանութի մասին տեղեկությունները, գործողությունը հասանելի է էկրանի վերին մասում</translation>
 <translation id="5627941783489838464">Ներդիրների մասին թարմացումներ չկան</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> հղում Chrome-ից}one{<ph name="TABS_COUNT_MANY" /> հղում Chrome-ից}other{<ph name="TABS_COUNT_MANY" /> հղում Chrome-ից}}</translation>
+<translation id="5740354908255726955">{TAB_COUNT,plural, =1{Տեղափոխել ներդիրը ձախ}one{Տեղափոխել ներդիրը ձախ}other{Տեղափոխել ներդիրները ձախ}}</translation>
 <translation id="5746204836956568669">Խմբավորե՞լ <ph name="NUMBER_OF_TABS" /> ներդիրները՝ ավելի արագ աշխատանքի համար</translation>
 <translation id="5773295109010386583">Ավտոմատ փակել ոչ ակտիվ տարրերը</translation>
 <translation id="58326064309361797">Քաշեք ներդիրները՝ դրանք խմբավորելու համար</translation>
@@ -138,6 +139,7 @@
 <translation id="6109251075362363230">Բոլոր կրկնօրինակ ներդիրները նույնպես կարխիվացվեն՝ բացառությամբ ամենավերջին կրկնօրինակից։</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Փակել ընտրված <ph name="TABS_COUNT_ONE" /> տարր}one{Փակել ընտրված <ph name="TABS_COUNT_MANY" /> տարր}other{Փակել ընտրված <ph name="TABS_COUNT_MANY" /> տարր}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Խումբը տեղափոխել նոր պատուհան}one{Խումբը տեղափոխել այլ պատուհան}other{Խումբը տեղափոխել այլ պատուհան}}</translation>
+<translation id="6212374449852603982">{TAB_COUNT,plural, =1{Տեղափոխել ներդիրն աջ}one{Տեղափոխել ներդիրն աջ}other{Տեղափոխել ներդիրներն աջ}}</translation>
 <translation id="6228793724645064692">(խանութի վարկանիշը)</translation>
 <translation id="625996437999624951">{TAB_COUNT,plural, =1{Հեռացնել ներդիրը խմբից}one{Հեռացնել ներդիրը խմբից}other{Հեռացնել ներդիրները խմբից}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Ավելացնել ներդիր նոր խմբում}one{Ավելացնել ներդիր նոր խմբում}other{Ավելացնել ներդիրներ նոր խմբում}}</translation>

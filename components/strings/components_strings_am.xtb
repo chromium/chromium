@@ -78,6 +78,7 @@
 <translation id="112840717907525620">የመምሪያ መሸጎጫ እሺ</translation>
 <translation id="1131264053432022307">እርስዎ የቀዱት ምስል</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – ከሙሉ ገጽ ዕይታ ለመውጣት የላይኛውን ይጎትቱ እና የተመለስ አዝራሩን ይንኩ</translation>
+<translation id="1133418583142946603">የአሁኑን ትር ያክሉ</translation>
 <translation id="1138458427267715730">በመላ ድሩ በማንኛውም ጣቢያ ላይ ዋጋው ሲቀንስ ማንቂያዎችን ያግኙ</translation>
 <translation id="1142713751288681188">የወረቀት ዓይነት</translation>
 <translation id="1142965388643537393">የጉዞ መረጃ</translation>
@@ -1009,6 +1010,7 @@
 <translation id="2627847595568876492">ከPDF ላይ ጽሁፍ በማውጣት ላይ...</translation>
 <translation id="2628025184666666186">ይህ አገልጋይ ለድር ትራፊክ ምሥጠራ በChrome ወይም በእርስዎ የሥርዓት ውቅረት ተዓማኒነት የሌለው የደኅንነት የዕውቅና ማረጋገጫ እየተጠቀመ ስለሆነ <ph name="DOMAIN" /> መሆኑን ማረጋገጥ አልቻለም። ይህ በተሳሳተ አወቃቀር ወይም አንድ አጥቂ ግንኙነትዎን በመጥለፉ የተከሰተ ሊሆን ይችላል።</translation>
 <translation id="2628224721443278970">ወደ Microsoft OneDrive ይግቡ</translation>
+<translation id="2631387782019878060">የማረጋገጫ ኮድ፦ <ph name="OTP" /></translation>
 <translation id="2634124572758952069">የ<ph name="HOST_NAME" /> አገልጋይ አይፒ አድራሻ ሊገኝ አልቻለም።</translation>
 <translation id="2638567100095052009">በመላው <ph name="FEATURED_SEARCH_LIST" /> ላይ ለመፈለግ @ ይተይቡ</translation>
 <translation id="2639739919103226564">ሁኔታ፦</translation>
@@ -2801,6 +2803,7 @@
 <translation id="5558083606899411167">የአየር ማቀዝቀዣዎች</translation>
 <translation id="5558125320634132440">ይህ ጣቢያ የአዋቂ ይዘት ሊኖረው ስለሚችል ታግዷል</translation>
 <translation id="5559311991468302423">አድራሻን ይሰርዙ</translation>
+<translation id="5561747310506483298">መታወቂያ ካርዶች</translation>
 <translation id="55635442646131152">የሰነድ ቢጋር</translation>
 <translation id="5563589142503817291">አካባቢዎን ለመጠቀም በ<ph name="LINK" /> ውስጥ ለChrome መዳረሻ ይስጡ።</translation>
 <translation id="5565613213060953222">ማንነት የማያሳውቅ ትርን ክፈት</translation>

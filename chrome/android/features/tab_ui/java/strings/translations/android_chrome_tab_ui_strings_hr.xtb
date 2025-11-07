@@ -128,6 +128,7 @@
 <translation id="5556417849629758491">Pogledajte podatke o trgovini, opciju koja je dostupna pri vrhu zaslona</translation>
 <translation id="5627941783489838464">Nema ažuriranja kartica</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> veza iz Chromea}one{<ph name="TABS_COUNT_MANY" /> veza iz Chromea}few{<ph name="TABS_COUNT_MANY" /> veze iz Chromea}other{<ph name="TABS_COUNT_MANY" /> veza iz Chromea}}</translation>
+<translation id="5740354908255726955">{TAB_COUNT,plural, =1{Pomakni karticu ulijevo}one{Pomakni kartice ulijevo}few{Pomakni kartice ulijevo}other{Pomakni kartice ulijevo}}</translation>
 <translation id="5746204836956568669">Želite li grupirati kartice (njih <ph name="NUMBER_OF_TABS" />) za brži rad?</translation>
 <translation id="5773295109010386583">Automatski zatvori neaktivne stavke</translation>
 <translation id="58326064309361797">Povucite kartice da biste ih grupirali</translation>
@@ -138,6 +139,7 @@
 <translation id="6109251075362363230">Sve duplicirane kartice sada će se arhivirati, osim posljednje korištene kopije.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Zatvori <ph name="TABS_COUNT_ONE" /> odabranu stavku}one{Zatvori <ph name="TABS_COUNT_MANY" /> odabranu stavku}few{Zatvori <ph name="TABS_COUNT_MANY" /> odabrane stavke}other{Zatvori <ph name="TABS_COUNT_MANY" /> odabranih stavki}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Premještanje grupe u novi prozor}one{Premještanje grupe u drugi prozor}few{Premještanje grupe u drugi prozor}other{Premještanje grupe u drugi prozor}}</translation>
+<translation id="6212374449852603982">{TAB_COUNT,plural, =1{Pomakni karticu udesno}one{Pomakni kartice udesno}few{Pomakni kartice udesno}other{Pomakni kartice udesno}}</translation>
 <translation id="6228793724645064692">(ocjena trgovine)</translation>
 <translation id="625996437999624951">{TAB_COUNT,plural, =1{Ukloni karticu iz grupe}one{Ukloni kartice iz grupe}few{Ukloni kartice iz grupe}other{Ukloni kartice iz grupe}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Dodaj karticu novoj grupi}one{Dodaj kartice novoj grupi}few{Dodaj kartice novoj grupi}other{Dodaj kartice novoj grupi}}</translation>

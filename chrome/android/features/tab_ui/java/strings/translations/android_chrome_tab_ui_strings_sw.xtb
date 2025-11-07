@@ -128,6 +128,7 @@
 <translation id="5556417849629758491">Angalia maelezo ya duka, chaguo hili linapatikana karibu na sehemu ya juu ya skrini</translation>
 <translation id="5627941783489838464">Hakuna masasisho ya vichupo</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{Kiungo <ph name="TABS_COUNT_ONE" /> kutoka Chrome}other{Viungo <ph name="TABS_COUNT_MANY" /> kutoka Chrome}}</translation>
+<translation id="5740354908255726955">{TAB_COUNT,plural, =1{Sogeza kichupo kushoto}other{Sogeza vichupo kushoto}}</translation>
 <translation id="5746204836956568669">Ungependa kupanga vichupo <ph name="NUMBER_OF_TABS" /> katika vikundi ili vifanye kazi haraka?</translation>
 <translation id="5773295109010386583">Funga kiotomatiki vipengee visivyotumika</translation>
 <translation id="58326064309361797">Buruta vichupo ili uviweke katika kikundi</translation>
@@ -138,6 +139,7 @@
 <translation id="6109251075362363230">Vichupo vyote vinavyojirudia sasa vitahifadhiwa kwenye kumbukumbu, isipokuwa nakala ulizotumia hivi majuzi.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Funga kipengee <ph name="TABS_COUNT_ONE" /> ulichochagua}other{Funga vipengee <ph name="TABS_COUNT_MANY" /> ulivyochagua}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Hamishia kikundi kwenye dirisha jipya}other{Hamishia kikundi kwenye dirisha lingine}}</translation>
+<translation id="6212374449852603982">{TAB_COUNT,plural, =1{Sogeza kichupo kulia}other{Sogeza vichupo kulia}}</translation>
 <translation id="6228793724645064692">(ukadiriaji wa duka)</translation>
 <translation id="625996437999624951">{TAB_COUNT,plural, =1{Ondoa kichupo kwenye kikundi}other{Ondoa vichupo kwenye kikundi}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Weka kichupo kwenye kikundi kipya}other{Weka vichupo kwenye kikundi kipya}}</translation>

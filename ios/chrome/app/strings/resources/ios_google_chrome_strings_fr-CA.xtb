@@ -173,6 +173,7 @@ Essayez d'attendre quelques minutes avant de vous déconnecter. Si vous vous dé
 <translation id="5305440589062022504">Ouvre le gestionnaire de mots de passe dans Chrome</translation>
 <translation id="5310957470610282541">Certaines de vos données Chrome n'ont pas encore été enregistrées dans votre compte Google.
 Essayez d'attendre quelques minutes avant de vous déconnecter. Si vous vous déconnectez maintenant, ces données seront supprimées.</translation>
+<translation id="5342685492141499976">Vos données seront enregistrées dans le gestionnaire de mots de passe Google du compte <ph name="USER_EMAIL" /></translation>
 <translation id="5389212809648216794">Google Chrome ne peut pas utiliser votre appareil photo, car il est utilisé par une autre application</translation>
 <translation id="5395376160638294582">S'assurer de toujours pouvoir utiliser les données Chrome dans votre compte Google</translation>
 <translation id="5404252374083197467">Définir Chrome comme navigateur par défaut?</translation>
@@ -200,6 +201,7 @@ Essayez d'attendre quelques minutes avant de vous déconnecter. Si vous vous dé
 <translation id="5808435672482059465">Afficher votre historique de Chrome</translation>
 <translation id="5833027901704861726">Certaines de vos données Chrome n'ont pas encore été enregistrées dans votre compte <ph name="EMAIL" />.
 Essayez d'attendre quelques minutes avant de changer de compte. Si vous changez de compte maintenant, ces données seront supprimées.</translation>
+<translation id="5853754888722423892">Importer dans le gestionnaire de mots de passe Google</translation>
 <translation id="5998675059699164418">Votre organisation vous demande de vous connecter pour utiliser Chrome.</translation>
 <translation id="6021312115739110405">Un flux personnalisé créé pour vous par Google. Comprend les actualités, les sports et la météo.</translation>
 <translation id="6022659036123304283">Appropriez-vous Chrome</translation>

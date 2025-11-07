@@ -532,6 +532,7 @@ Certaines fonctionnalités seront peut-être indisponibles. Veuillez spécifier 
 <translation id="7274695763216404502">Recherche dans des images épinglée. Réutilisez-la à partir de la barre d'outils.</translation>
 <translation id="7288567540154601580">Onglets et extensions</translation>
 <translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{Chromium vous recommande de la supprimer}one{Chromium vous recommande de la supprimer}other{Chromium vous recommande de les supprimer}}</translation>
+<translation id="7296334833518879294">Pour partager l'audio du système, ouvrez les réglages système et autorisez l'enregistrement des sons du système uniquement pour Chromium. Vous devrez ensuite redémarrer Chromium.</translation>
 <translation id="7309928523159922338">Ad Measurement autorise les sites que vous consultez à demander à Chromium des informations pour les aider à mesurer les performances de leurs annonces. Cette API limite le suivi intersites en transférant le minimum d'informations entre les sites.</translation>
 <translation id="731795002583552498">Mise à jour de Chromium...</translation>
 <translation id="7318036098707714271">Le fichier des préférences est corrompu ou n'est pas valide. 

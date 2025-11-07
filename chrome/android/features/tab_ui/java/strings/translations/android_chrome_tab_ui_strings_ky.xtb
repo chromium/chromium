@@ -128,6 +128,7 @@
 <translation id="5556417849629758491">Дүкөн тууралуу маалыматты көрүңүз. Параметр экрандын жогору жагында берилген</translation>
 <translation id="5627941783489838464">Өтмөктөрдө жаңыртуу жок</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{Chrome'дон <ph name="TABS_COUNT_ONE" /> шилтеме}other{Chrome'дон <ph name="TABS_COUNT_MANY" /> шилтеме}}</translation>
+<translation id="5740354908255726955">{TAB_COUNT,plural, =1{Өтмөктү солго жылдыруу}other{Өтмөктөрдү солго жылдыруу}}</translation>
 <translation id="5746204836956568669">Тезирээк иштөө үчүн <ph name="NUMBER_OF_TABS" /> өтмөктү топтоштурасызбы?</translation>
 <translation id="5773295109010386583">Жигерсиз өтмөктөр автоматтык түрдө жабылсын</translation>
 <translation id="58326064309361797">Топтоо үчүн өтмөктөрдү сүйрөп келиңиз</translation>
@@ -138,6 +139,7 @@
 <translation id="6109251075362363230">Эми эң акыркы колдонулгандан башка бардык кайталанма өтмөктөр архивделет.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Тандалган <ph name="TABS_COUNT_ONE" /> өтмөктү жабуу}other{Тандалган <ph name="TABS_COUNT_MANY" /> өтмөктү жабуу}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Топту жаңы терезеге жылдыруу}other{Топту башка терезеге жылдыруу}}</translation>
+<translation id="6212374449852603982">{TAB_COUNT,plural, =1{Өтмөктү оңго жылдыруу}other{Өтмөктөрдү оңго жылдыруу}}</translation>
 <translation id="6228793724645064692">(дүкөндүн рейтинги)</translation>
 <translation id="625996437999624951">{TAB_COUNT,plural, =1{Топтогу өтмөктү алып салуу}other{Топтогу өтмөктөрдү алып салуу}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Өтмөктү жаңы топко кошуу}other{Өтмөктү жаңы топко кошуу}}</translation>

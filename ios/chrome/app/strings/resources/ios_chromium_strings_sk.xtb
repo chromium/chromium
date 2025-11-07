@@ -238,6 +238,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje pr
 <translation id="6154098560469640583">Chromium môžete kedykoľvek použiť kliknutím na odkazy v správach, dokumentoch a ďalších aplikáciách.</translation>
 <translation id="6157162508956739031">Rýchlo sa prihlasujte do aplikácií a na weboch automatickým dopĺňaním hesiel a prístupových kľúčov z prehliadača Chromium</translation>
 <translation id="6170619162539716595">Povoľte prehliadaču Chromium používať Mapy Google na účely poskytovania trás a miestnych informácií o rozpoznaných adresách.</translation>
+<translation id="6244277266078678766">Vaše údaje budú uložené do Správcu hesiel pre <ph name="USER_EMAIL" />.</translation>
 <translation id="6268381023930128611">Odhlásiť sa z prehliadača Chromium?</translation>
 <translation id="6301717043141881464">Ak chcete ľahko získať svoje uložené heslá v iných aplikáciách, vyberte automatické dopĺňanie v prehliadači Chromium</translation>
 <translation id="6324041800010509197">Prejsť na mriežku kariet v prehliadači Chromium</translation>
@@ -315,6 +316,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje pr
 <translation id="8119542592987737574">Získavajte prístup k prehliadaču Chromium rýchlejšie z Docku na ploche iPhonu.</translation>
 <translation id="8164086860209325020">Prejdite do Nastavení prehliadača Chromium</translation>
 <translation id="8197822717502700527">Teraz budete môcť využívať Chromium vo svojom zariadení naplno.</translation>
+<translation id="8236210361418193126">Import do Správcu hesiel</translation>
 <translation id="8254729934443216898">Preskúmajte nové funkcie, ktoré vám pomôžu využívať Chromium naplno.</translation>
 <translation id="8293572045658095405">Ste v režime inkognito prehliadača Chromium</translation>
 <translation id="830951810931292870">Otvorí zadané webové adresy v režime inkognito prehliadača Chromium.</translation>

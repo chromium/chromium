@@ -78,6 +78,7 @@
 <translation id="112840717907525620">Irányelv-gyorsítótár OK</translation>
 <translation id="1131264053432022307">Vágólapra másolt kép</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – A teljes képernyős nézetből való kilépéshez húzza lefelé az ujját a képernyő tetejétől, majd érintse meg a Vissza gombot</translation>
+<translation id="1133418583142946603">Jelenlegi lap felvétele</translation>
 <translation id="1138458427267715730">Értesítéseket kaphat, ha valamelyik webhelyen csökken az ár</translation>
 <translation id="1142713751288681188">Papírtípus</translation>
 <translation id="1142965388643537393">Utazási információk</translation>
@@ -1009,6 +1010,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2627847595568876492">Szöveg kinyerése PDF-ből…</translation>
 <translation id="2628025184666666186">A szerver nem tudta bizonyítani, hogy valóban a(z) <ph name="DOMAIN" /> domain, mert olyan biztonsági tanúsítványt használ, amelyet a Chrome vagy a rendszerkonfiguráció nem tart megbízhatónak a webes forgalom titkosításához. Ezt okozhatja konfigurációs hiba, vagy az, hogy egy támadó eltérítette az Ön kapcsolatát.</translation>
 <translation id="2628224721443278970">Bejelentkezés a Microsoft OneDrive szolgáltatásba</translation>
+<translation id="2631387782019878060">Ellenőrző kód: <ph name="OTP" /></translation>
 <translation id="2634124572758952069">A(z) <ph name="HOST_NAME" /> szerver IP-címe nem található.</translation>
 <translation id="2638567100095052009">Írja be a @ jelet a következőkön való kereséshez: <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="2639739919103226564">Állapot:</translation>
@@ -2799,6 +2801,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5558083606899411167">Légkondicionálók</translation>
 <translation id="5558125320634132440">Ez a webhely le van tiltva a rajta található esetleges felnőtteknek szóló tartalmak miatt</translation>
 <translation id="5559311991468302423">Cím törlése</translation>
+<translation id="5561747310506483298">Személyazonosító okmányok</translation>
 <translation id="55635442646131152">Dokumentumvázlat</translation>
 <translation id="5563589142503817291">A tartózkodási hely használatához adjon hozzáférést a Chrome-nak itt: <ph name="LINK" />.</translation>
 <translation id="5565613213060953222">Inkognitó lap megnyitása</translation>

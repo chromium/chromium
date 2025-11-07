@@ -173,6 +173,7 @@
 <translation id="5305440589062022504">इससे Chrome में Password Manager खुलता है.</translation>
 <translation id="5310957470610282541">Chromium से जुड़ा आपका कुछ डेटा, अब तक आपके Google खाते में सेव नहीं किया गया है.
 साइन आउट करने से पहले कुछ मिनट इंतज़ार करें. अभी साइन आउट करने पर यह डेटा मिट जाएगा.</translation>
+<translation id="5342685492141499976">आपका डेटा <ph name="USER_EMAIL" /> के लिए Google Password Manager में सेव किया जाएगा</translation>
 <translation id="5389212809648216794">Google Chrome आपके कैमरे का उपयोग नहीं कर सकता क्योंकि दूसरा ऐप्लिकेशन उसका उपयोग कर रहा है</translation>
 <translation id="5395376160638294582">यह पक्का करें कि आप जब चाहें, अपने Google खाते में Chrome के डेटा का इस्तेमाल कर सकें</translation>
 <translation id="5404252374083197467">क्या Chrome को डिफ़ॉल्ट ब्राउज़र के तौर पर सेट करना है?</translation>
@@ -200,6 +201,7 @@
 <translation id="5808435672482059465">अपना 'Chrome इतिहास' देखें</translation>
 <translation id="5833027901704861726">आपके Chrome का कुछ डेटा, <ph name="EMAIL" /> में सेव नहीं किया गया है.
 खाता बदलने से पहले कुछ मिनट इंतज़ार करें. अभी खाता बदलने से यह डेटा मिट जाएगा.</translation>
+<translation id="5853754888722423892">Google Password Manager में इंपोर्ट करें</translation>
 <translation id="5998675059699164418">आपके संगठन के मुताबिक, यह ज़रूरी है कि Chrome का इस्तेमाल करने के लिए आप साइन इन करें.</translation>
 <translation id="6021312115739110405">आपके हिसाब से Google का बनाया गया एक फ़ीड. इसमें खबरें, खेल-कूद, और मौसम की जानकारी शामिल होती है.</translation>
 <translation id="6022659036123304283">Chrome को अपने मुताबिक बनाएं</translation>

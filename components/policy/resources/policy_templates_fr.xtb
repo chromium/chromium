@@ -10393,21 +10393,6 @@ Si elle est désactivée, la fonctionnalité de transport de compression par dic
 
       Si cette règle est définie, l'utilisateur ne peut pas la modifier ni l'ignorer.</translation>
 <translation id="8080200590486938727">Désactiver l'outil de recherche de plug-ins</translation>
-<translation id="8082268442825947283">Configurer cette règle permet de sélectionner le proxy que le navigateur utilise en fonction de l'URL de destination et d'autres conditions. Cette règle est prioritaire sur les paramètres de proxy définis dans la règle <ph name="PROXY_SETTINGS_POLICY_NAME" />, l'API d'extension <ph name="PROXY_SETTINGS_EXTENSION_API" /> ou manuellement dans les paramètres utilisateur, le cas échéant.
-
-Si cette règle n'est pas configurée, cela n'a aucune incidence sur les autres règles de proxy et les paramètres utilisateur.
-
-Lorsque le navigateur doit décider quel proxy utiliser, les entrées de la règle <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> sont évaluées dans l'ordre jusqu'à ce qu'une entrée corresponde à au moins un des hôtes d'URL dans <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> et que toutes les entrées de <ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> remplissent les conditions. En cas de correspondance, la valeur de <ph name="PROXY_OVERRIDE_RULES_PROXY_CHAIN" /> sera utilisée comme proxy. Si aucune correspondance n'est trouvée, les paramètres de proxy seront ceux définis dans la règle <ph name="PROXY_SETTINGS_POLICY_NAME" />.
-
-Les entrées du champ <ph name="PROXY_OVERRIDE_RULES_PROXY_CHAIN" /> correspondent à des valeurs de chaîne de fichiers PAC, telles que :
-  * DIRECT
-  * PROXY host:port
-  * HTTPS host:port
-La première entrée accessible sera utilisée comme proxy.
-
-Le champ <ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> contient une liste de conditions qui doivent toutes être remplies pour que la règle de remplacement serve à déterminer le proxy à utiliser. Si ce champ n'est pas défini, l'entrée sera utilisée tant qu'au moins un hôte dans <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> correspondra.
-
-La condition <ph name="PROXY_OVERRIDE_RULES_DNS_PROBE" /> vérifie si l’<ph name="PROXY_OVERRIDE_RULES_HOST" /> DNS fourni peut être résolu en une adresse IP. La condition est considérée comme remplie, si la valeur de <ph name="PROXY_OVERRIDE_RULES_RESULT" /> est "<ph name="PROXY_OVERRIDE_RULES_RESOLVES" />". Si la valeur est définie sur <ph name="PROXY_OVERRIDE_RULES_NOT_FOUND" />, la condition est considérée comme remplie si la résolution a échoué.</translation>
 <translation id="8086746212954621799">Désactive les mises à jour automatiques lorsque cette règle est définie sur "True".
 
 Les appareils <ph name="PRODUCT_OS_NAME" /> recherchent automatiquement les mises à jour lorsque ce paramètre n'est pas configuré ou lorsqu'il est défini sur "False".

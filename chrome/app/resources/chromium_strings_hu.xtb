@@ -530,6 +530,7 @@
 <translation id="7274695763216404502">Sikeres kitűzés. Ha megint használni szeretné a Képkeresőt, megteheti az eszköztárból</translation>
 <translation id="7288567540154601580">Lapok és bővítmények</translation>
 <translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{A Chromium az eltávolítását javasolja}other{A Chromium az eltávolításukat javasolja}}</translation>
+<translation id="7296334833518879294">A rendszerhang megosztásához nyissa meg a Rendszerbeállításokat, és engedélyezze a „System Audio Recording Only” (Csak a rendszerhang rögzítése) beállítást a Chromiumra vonatkozóan. Ezután újra kell indítania a Chromiumot.</translation>
 <translation id="7309928523159922338">A hirdetésmérés segítségével az Ön által felkeresett webhelyek olyan adatokat kérhetnek a Chromiumtól, amelyek segítségével a webhely mérheti hirdetéseinek teljesítményét. A hirdetésmérés azáltal korlátozza a webhelyeken átnyúló nyomon követést, hogy a lehető legkevesebb adatot továbbítja a webhelyek között.</translation>
 <translation id="731795002583552498">A Chromium frissítése</translation>
 <translation id="7318036098707714271">A beállításait tartalmazó fájl hibás vagy érvénytelen.

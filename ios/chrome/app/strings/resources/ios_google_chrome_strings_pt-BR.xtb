@@ -173,6 +173,7 @@ Aguarde alguns minutos antes de sair. Se você sair agora, esses dados serão ex
 <translation id="5305440589062022504">Abre o Gerenciador de senhas no Chrome</translation>
 <translation id="5310957470610282541">Alguns dos seus dados do Chrome ainda não foram salvos na sua Conta do Google.
 Aguarde alguns minutos antes de sair. Se você sair agora, esses dados serão excluídos.</translation>
+<translation id="5342685492141499976">Os dados serão salvos no Gerenciador de Senhas do Google da conta <ph name="USER_EMAIL" /></translation>
 <translation id="5389212809648216794">O Google Chrome não pode usar a câmera porque ela está sendo usada por outro app</translation>
 <translation id="5395376160638294582">Garanta que você sempre possa usar os dados do Chrome na sua Conta do Google</translation>
 <translation id="5404252374083197467">Definir o Chrome como padrão?</translation>
@@ -200,6 +201,7 @@ Aguarde alguns minutos antes de sair. Se você sair agora, esses dados serão ex
 <translation id="5808435672482059465">Ver seu histórico do Chrome</translation>
 <translation id="5833027901704861726">Alguns dos seus dados do Chrome ainda não foram salvos na conta <ph name="EMAIL" />.
 Aguarde alguns minutos antes de trocar de conta. Se você mudar de conta agora, esses dados serão excluídos.</translation>
+<translation id="5853754888722423892">Importar para o Gerenciador de Senhas do Google</translation>
 <translation id="5998675059699164418">Sua organização exige que você faça login para usar o Chrome.</translation>
 <translation id="6021312115739110405">Um feed personalizado feito pelo Google. Inclui notícias, esportes e clima.</translation>
 <translation id="6022659036123304283">Deixe o Chrome do seu jeito</translation>

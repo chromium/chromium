@@ -238,6 +238,7 @@ Points à prendre en compte :
 <translation id="6154098560469640583">Utiliser Chromium chaque fois que vous appuyez sur un lien dans un message, un document ou une autre appli.</translation>
 <translation id="6157162508956739031">Connectez-vous rapidement aux applis et aux sites en saisissant automatiquement vos mots de passe et vos clés d'accès depuis Chromium</translation>
 <translation id="6170619162539716595">Autorisez Chromium à utiliser Google Maps pour vous fournir des itinéraires et des informations locales sur les adresses détectées.</translation>
+<translation id="6244277266078678766">Vos données seront enregistrées dans le Gestionnaire de mots de passe pour <ph name="USER_EMAIL" />.</translation>
 <translation id="6268381023930128611">Se déconnecter de Chromium ?</translation>
 <translation id="6301717043141881464">Pour retrouver facilement vos mots de passe enregistrés dans vos autres applis, choisissez Chromium pour la saisie automatique</translation>
 <translation id="6324041800010509197">Accéder à la grille d'onglets dans Chromium</translation>
@@ -315,6 +316,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="8119542592987737574">Accédez plus rapidement à Chromium depuis le dock de l'écran d'accueil de votre iPhone.</translation>
 <translation id="8164086860209325020">Accéder aux paramètres Chromium</translation>
 <translation id="8197822717502700527">Vous pouvez maintenant exploiter tout le potentiel de Chromium sur votre appareil.</translation>
+<translation id="8236210361418193126">Importer dans le Gestionnaire de mots de passe</translation>
 <translation id="8254729934443216898">Découvrez les nouvelles fonctionnalités qui vous aideront à exploiter tout le potentiel de Chromium.</translation>
 <translation id="8293572045658095405">Vous êtes en navigation privée Chromium</translation>
 <translation id="830951810931292870">Ouvre les URL saisies dans Chromium en navigation privée.</translation>

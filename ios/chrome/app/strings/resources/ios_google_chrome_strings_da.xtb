@@ -173,6 +173,7 @@ Prøv at vente et par minutter, før du logger ud. Hvis du logger ud nu, slettes
 <translation id="5305440589062022504">Åbner Adgangskodeadministrator i Chrome</translation>
 <translation id="5310957470610282541">Nogle af dine Chrome-data er endnu ikke gemt på din Google-konto.
 Prøv at vente et par minutter, før du logger ud. Hvis du logger ud nu, slettes de pågældende data.</translation>
+<translation id="5342685492141499976">Dine data gemmes i Google Adgangskodeadministrator for <ph name="USER_EMAIL" /></translation>
 <translation id="5389212809648216794">Google Chrome kan ikke bruge dit kamera, da det bruges af en anden app</translation>
 <translation id="5395376160638294582">Sørg for, at du altid kan bruge Chrome-dataene på din Google-konto</translation>
 <translation id="5404252374083197467">Vil du angive Chrome som standard?</translation>
@@ -200,6 +201,7 @@ Prøv at vente et par minutter, før du logger ud. Hvis du logger ud nu, slettes
 <translation id="5808435672482059465">Se din Chrome-historik</translation>
 <translation id="5833027901704861726">Nogle af dine Chrome-data er endnu ikke gemt på <ph name="EMAIL" />.
 Prøv at vente et par minutter, før du skifter konto. Hvis du skifter konto nu, slettes disse data.</translation>
+<translation id="5853754888722423892">Importér til Google Adgangskodeadministrator</translation>
 <translation id="5998675059699164418">Din organisation kræver, at du logger ind for at bruge Chrome.</translation>
 <translation id="6021312115739110405">Et tilpasset feed, der er som skabt til dig af Google. Består af nyheder, sport og vejr.</translation>
 <translation id="6022659036123304283">Gør Chrome til din egen</translation>

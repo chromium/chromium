@@ -10307,21 +10307,6 @@ Gemini 只能在部分国家/地区启用，并且仅支持部分语言。设置
 
       如果您设置了此政策，用户将无法更改或覆盖它。</translation>
 <translation id="8080200590486938727">停用插件查找器</translation>
-<translation id="8082268442825947283">设置此政策会配置规则，根据目标网址和其他条件选择浏览器使用的代理。如果通过 <ph name="PROXY_SETTINGS_POLICY_NAME" /> 政策、<ph name="PROXY_SETTINGS_EXTENSION_API" /> 扩展程序 API 或用户手动设置了代理，此政策将优先于这些代理设置。
-
-如果您未设置此政策，其他代理政策或用户设置不会受到影响。
-
-当浏览器需要决定使用哪个代理时，系统会按顺序评估 <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> 政策的条目，直到某个条目至少与 <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> 中的一个网址主机匹配，并且满足 <ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> 中的所有条目为止。对于此类匹配情况，<ph name="PROXY_OVERRIDE_RULES_PROXY_CHAIN" /> 中的值将作为代理。如果未找到匹配项，代理设置将回退到 <ph name="PROXY_SETTINGS_POLICY_NAME" /> 政策中设置的内容。
-
-<ph name="PROXY_OVERRIDE_RULES_PROXY_CHAIN" /> 字段条目对应于 PAC 文件的字符串值，例如：
-  * DIRECT
-  * PROXY host:port
-  * HTTPS host:port
-第一个可访问的条目将用作代理。
-
-<ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> 字段列出了所有必须满足的条件，只有满足后，系统才会使用其替换规则来决定要使用的代理。如果未设置，只要 <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> 中至少有一个主机匹配，就会使用该条目。
-
-<ph name="PROXY_OVERRIDE_RULES_DNS_PROBE" /> 条件会检查提供的 DNS <ph name="PROXY_OVERRIDE_RULES_HOST" />是否能够解析为 IP 地址。如果 <ph name="PROXY_OVERRIDE_RULES_RESULT" /> 的值为“<ph name="PROXY_OVERRIDE_RULES_RESOLVES" />”，则认为满足条件。如果该值设为 <ph name="PROXY_OVERRIDE_RULES_NOT_FOUND" />，则当解析失败时，系统会认为条件已满足。</translation>
 <translation id="8086746212954621799">将此政策设为 true 即可停用自动更新功能。
 
 如果此政策设为 false 或未配置，<ph name="PRODUCT_OS_NAME" /> 设备就会自动检查更新。

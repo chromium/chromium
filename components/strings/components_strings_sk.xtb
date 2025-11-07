@@ -78,6 +78,7 @@
 <translation id="112840717907525620">Vyrovnávacia pamäť pravidla je v poriadku</translation>
 <translation id="1131264053432022307">Skopírovaný obrázok</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – Ak chcete ukončiť režim celej obrazovky, potiahnite zhora a klepnite na tlačidlo Späť</translation>
+<translation id="1133418583142946603">Pridať aktuálnu kartu</translation>
 <translation id="1138458427267715730">Dostávajte upozornenia na pokles ceny na ľubovoľnom webe na internete</translation>
 <translation id="1142713751288681188">Typ papiera</translation>
 <translation id="1142965388643537393">Informácie o cestovaní</translation>
@@ -1009,6 +1010,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2627847595568876492">Extrahuje sa text zo súboru PDF…</translation>
 <translation id="2628025184666666186">Tento server nedokázal potvrdiť, či ide o doménu <ph name="DOMAIN" />, pretože používa bezpečnostný certifikát, ktorý nie je pre Chrome alebo vašu systémovú konfiguráciu šifrovania internetovej návštevnosti dôveryhodný. Môže to byť spôsobené nesprávnou konfiguráciou alebo napadnutím vášho pripojenia útočníkom.</translation>
 <translation id="2628224721443278970">Prihlásiť sa do služby Microsoft OneDrive</translation>
+<translation id="2631387782019878060">Overovací kód: <ph name="OTP" /></translation>
 <translation id="2634124572758952069">Adresu IP servera <ph name="HOST_NAME" /> sa nepodarilo nájsť.</translation>
 <translation id="2638567100095052009">Ak chcete vyhľadávať v službách <ph name="FEATURED_SEARCH_LIST" />, zadajte @</translation>
 <translation id="2639739919103226564">Stav:</translation>
@@ -2798,6 +2800,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="5558083606899411167">Klimatizácie</translation>
 <translation id="5558125320634132440">Tento web je blokovaný, pretože sa na ňom môže nachádzať obsah nevhodný pre deti</translation>
 <translation id="5559311991468302423">Odstrániť adresu</translation>
+<translation id="5561747310506483298">Doklady totožnosti</translation>
 <translation id="55635442646131152">Osnova dokumentu</translation>
 <translation id="5563589142503817291">Ak chcete používať polohu, udeľte Chromu prístup v sekcii <ph name="LINK" />.</translation>
 <translation id="5565613213060953222">Otvoriť kartu inkognito</translation>

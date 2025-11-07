@@ -532,6 +532,7 @@ Neke su značajke možda nedostupne. Navedite neki drugi direktorij profila ili 
 <translation id="7274695763216404502">Prikvačeno! Ponovo upotrijebite pretraživanje slika s alatne trake</translation>
 <translation id="7288567540154601580">Kartice i proširenja</translation>
 <translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{Chromium preporučuje da ga uklonite}one{Chromium preporučuje da ih uklonite}few{Chromium preporučuje da ih uklonite}other{Chromium preporučuje da ih uklonite}}</translation>
+<translation id="7296334833518879294">Da biste dijelili zvuk sustava, otvorite postavke sustava i dopustite samo snimanje zvuka sustava za Chromium. Zatim ćete trebati ponovno pokrenuti Chromium.</translation>
 <translation id="7309928523159922338">Ad measurement API omogućuje web-lokacijama koje posjećujete da od Chromiuma traže podatke koji im pomažu mjeriti izvedbu svojih oglasa. Ad measurement API ograničava praćenje na različitim web-lokacijama tako što se između web-lokacija prenosi što je manje moguće podataka.</translation>
 <translation id="731795002583552498">Ažuriranje Chromiuma</translation>
 <translation id="7318036098707714271">Datoteka vaših postavki oštećena je ili nevažeća.

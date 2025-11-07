@@ -78,6 +78,7 @@
 <translation id="112840717907525620">Cache de la règle valide</translation>
 <translation id="1131264053432022307">L'image que vous avez copiée</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – Pour quitter le mode Plein écran, faites glisser le curseur à partir du haut de l'écran et touchez le bouton Précédent</translation>
+<translation id="1133418583142946603">Ajouter l'onglet actuel</translation>
 <translation id="1138458427267715730">Recevez des alertes lorsque le prix baisse sur n'importe quel site du Web</translation>
 <translation id="1142713751288681188">Type de papier</translation>
 <translation id="1142965388643537393">Renseignements sur les voyages</translation>
@@ -1009,6 +1010,7 @@
 <translation id="2627847595568876492">Extraction de texte à partir d'un fichier PDF en cours…</translation>
 <translation id="2628025184666666186">Ce serveur n'a pas pu prouver qu'il s'agit bien de <ph name="DOMAIN" /> parce qu'il utilise un certificat de sécurité qui n'est pas approuvé par Chrome ni par la configuration de votre système pour le chiffrement du trafic Web. Cela peut être dû à une mauvaise configuration ou à l'interception de votre connexion par un pirate informatique.</translation>
 <translation id="2628224721443278970">Se connecter à Microsoft OneDrive</translation>
+<translation id="2631387782019878060">Code de validation : <ph name="OTP" /></translation>
 <translation id="2634124572758952069">Impossible de trouver l'adresse IP du serveur de <ph name="HOST_NAME" />.</translation>
 <translation id="2638567100095052009">Tapez @ pour effectuer une recherche dans <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="2639739919103226564">État :</translation>
@@ -2802,6 +2804,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="5558083606899411167">Climatiseurs</translation>
 <translation id="5558125320634132440">Ce site a été bloqué, car il est possible qu'il comporte du contenu réservé aux adultes</translation>
 <translation id="5559311991468302423">Supprimer l'adresse</translation>
+<translation id="5561747310506483298">Cartes d'identité</translation>
 <translation id="55635442646131152">Plan du document</translation>
 <translation id="5563589142503817291">Pour utiliser votre position, accordez l'accès à Chrome dans <ph name="LINK" />.</translation>
 <translation id="5565613213060953222">Ouvrir l'onglet de navigation privée</translation>

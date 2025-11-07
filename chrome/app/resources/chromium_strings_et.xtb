@@ -532,6 +532,7 @@ On võimalik, et mõni funktsioon ei ole saadaval. Määrake muu profiilikataloo
 <translation id="7274695763216404502">Kinnitatud! Kasutage pildiotsingut uuesti tööriistariba kaudu.</translation>
 <translation id="7288567540154601580">Vahelehed ja laiendused</translation>
 <translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{Chromium soovitab selle eemaldada}other{Chromium soovitab need eemaldada}}</translation>
+<translation id="7296334833518879294">Süsteemiheli jagamiseks avage System Settings ja lubage Chromiumi jaoks valik „System Audio Recording Only“. Seejärel peate Chromiumi taaskäivitama.</translation>
 <translation id="7309928523159922338">Reklaamide mõõtmine võimaldab külastatavatel saitidel paluda Chromiumilt teavet, mis aitab saidil oma reklaamide toimivust mõõta. Reklaamide mõõtmine piirab saitidevahelist jälgimist, edastades saitide vahel võimalikult vähe teavet.</translation>
 <translation id="731795002583552498">Chromiumi värskendamine</translation>
 <translation id="7318036098707714271">Teie eelistuste fail on rikutud või kehtetu.

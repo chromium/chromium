@@ -78,6 +78,7 @@
 <translation id="112840717907525620">Cache da política OK</translation>
 <translation id="1131264053432022307">Imagem que você copiou</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – Para sair da tela cheia, arraste de cima para baixo da tela e toque no botão de voltar</translation>
+<translation id="1133418583142946603">Adicionar guia atual</translation>
 <translation id="1138458427267715730">Receba alertas quando houver uma redução no preço em qualquer site</translation>
 <translation id="1142713751288681188">Tipo de papel</translation>
 <translation id="1142965388643537393">Informações de viagem</translation>
@@ -1009,6 +1010,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2627847595568876492">Extraindo texto do PDF…</translation>
 <translation id="2628025184666666186">Este servidor não conseguiu provar que é <ph name="DOMAIN" /> porque está usando um certificado de segurança que não é confiável para o Chrome ou sua configuração do sistema para criptografia de tráfego da Web. Isso pode ser causado por uma configuração incorreta ou por um invasor que tenha interceptado sua conexão.</translation>
 <translation id="2628224721443278970">Fazer login no Microsoft OneDrive</translation>
+<translation id="2631387782019878060">Código de verificação: <ph name="OTP" /></translation>
 <translation id="2634124572758952069">Não foi possível encontrar o endereço IP do servidor de <ph name="HOST_NAME" />.</translation>
 <translation id="2638567100095052009">Digite @ para pesquisar em <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="2639739919103226564">Status:</translation>
@@ -2802,6 +2804,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5558083606899411167">Aparelhos de ar-condicionado</translation>
 <translation id="5558125320634132440">Este site foi bloqueado porque pode apresentar conteúdo para maiores</translation>
 <translation id="5559311991468302423">Excluir endereço</translation>
+<translation id="5561747310506483298">Documentos de identificação</translation>
 <translation id="55635442646131152">Visualização do documento</translation>
 <translation id="5563589142503817291">Para usar sua localização, permita o acesso ao Chrome em <ph name="LINK" />.</translation>
 <translation id="5565613213060953222">Abrir guia anônima</translation>

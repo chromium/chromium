@@ -49,6 +49,7 @@
 <translation id="1181037720776840403">Ta bort</translation>
 <translation id="1183189057400844278">Verifiera din identitet för att se till att du alltid kan använda lösenorden i Google-kontot</translation>
 <translation id="1187810343066461819">Radera även bokmärken, historik med mera från den här bilen</translation>
+<translation id="1193589902336218259">Aktivera tipsaviseringar</translation>
 <translation id="1193729455103054076">Vill du använda ett starkt lösenord?</translation>
 <translation id="11947597112837849">din e-postadress</translation>
 <translation id="1197267115302279827">Flytta bokmärken</translation>
@@ -236,6 +237,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="200114059308480249">Vill du inkludera omgivande text i sökningar på Google?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, fäst inkognitoflik med ljud av</translation>
 <translation id="2021896219286479412">Helskärmskontroller på webbsidan</translation>
+<translation id="2029669011553795746">Dialogrutan om att välja att få tipsaviseringar har öppnats över halva skärmen</translation>
 <translation id="2038563949887743358">Aktivera begäran av skrivbordsversion</translation>
 <translation id="204321170514947529">Data för <ph name="APP_NAME" /> finns även i Chrome</translation>
 <translation id="2047378580182589770">Tryck länge för att avsluta inkognito</translation>
@@ -245,6 +247,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="2063047797624276601">Organisationen har aktiverat Förbättrad säker webbsökning</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 nedladdning misslyckades}other{# nedladdningar misslyckades}}</translation>
 <translation id="2067805253194386918">text</translation>
+<translation id="2072027001582274150">Oanvända eller dubbla flikar</translation>
 <translation id="2074527029802029717">Lossa flik</translation>
 <translation id="2079545284768500474">Ångra</translation>
 <translation id="2082238445998314030">Resultat <ph name="RESULT_NUMBER" /> av <ph name="TOTAL_RESULTS" /></translation>
@@ -405,6 +408,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="2781151931089541271">1 sekund kvar</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chrome har hittat ett återanvänt lösenord som du kan förbättra}other{Chrome har hittat # återanvända lösenord som du kan förbättra}}</translation>
+<translation id="2794551654724114396">Aktivera aviseringar om användbara tips som hjälper dig att få ut mesta möjliga av Chrome</translation>
 <translation id="2800066122460699237">Fliken <ph name="TAB_TITLE" /> stängs</translation>
 <translation id="2805210243313393104">Använd dina bokmärken med mera på alla dina enheter</translation>
 <translation id="2805756323405976993">Appar</translation>
@@ -640,6 +644,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="3824259034819781947">Bifoga filer</translation>
 <translation id="38243391581572867">Lens är inte tillgängligt i det här kontot.</translation>
 <translation id="38258275871320156">Endast tillgängligt för små fönster</translation>
+<translation id="3826529618131025925">Ark på nedre delen av skärmen med hjälp och vägledning om att välja att få tipsaviseringar</translation>
 <translation id="3845098929839618392">Öppna i inkognitoflik
 </translation>
 <translation id="3847319713229060696">Hjälp till att förbättra säkerheten på webben för alla</translation>
@@ -774,6 +779,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="4405636711880428279">Vill du ta bort det virtuella kortet?</translation>
 <translation id="4408965460206576430">Den här filen innehåller skadlig kod eller kommer från en misstänkt webbplats</translation>
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> och <ph name="TAB_COUNT" /> flikar till</translation>
+<translation id="441100617989818073">Dubbla/oanvända flikar och grupper</translation>
 <translation id="4414179633735763985"><ph name="TAB_GROUPS_AND_TABS_PART" /> har raderats</translation>
 <translation id="4415276339145661267">Hantera Google-kontot</translation>
 <translation id="4425140285732600465">Bevakar pris. Få aviseringar när priset sjunker på en webbplats.</translation>
@@ -802,6 +808,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="452750746583162491">Granska din synkroniserade data</translation>
 <translation id="4532845899244822526">Välj mapp</translation>
 <translation id="4535755320005483982">Delade flikgruppen <ph name="GROUP_TITLE" /></translation>
+<translation id="4537137366307982887">Dialogrutan om att välja att få tipsaviseringar har öppnats över hela skärmen</translation>
 <translation id="4543131175509360848">Inget nyckelark</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> flik}other{<ph name="TAB_COUNT_MANY" /> flikar, <ph name="TAB_COUNT_INCOGNITO" /> inkognitoflikar}}</translation>
 <translation id="4558311620361989323">Kortkommandon på webbsidor</translation>
@@ -953,6 +960,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5123685120097942451">Inkognitoflik</translation>
 <translation id="5142281402488957685">Om du vill se nya artiklar drar du nedåt för att uppdatera</translation>
 <translation id="5144385790872094440">Vissa av sidorna du besöker läses in i förväg. Sidor kan läsas in i förväg via Googles servrar när de länkas från en Google-webbplats eller -app.</translation>
+<translation id="5145887002054615868">Dubbla eller oanvända flikar som inte har använts på <ph name="DAYS_INACTIVE" /> dagar flyttas hit<ph name="AUTODELETE_SECTION" />. Du kan när som helst ändra detta i <ph name="DECLUTTER_SETTINGS_TITLE" />.</translation>
 <translation id="5152843274749979095">Inga appar som stöds finns installerade</translation>
 <translation id="5161254044473106830">Titel krävs</translation>
 <translation id="5161262286013276579">Bekräftelseark för nyckel har öppnats</translation>
@@ -1115,6 +1123,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5864419784173784555">Väntar på nästa nedladdning …</translation>
 <translation id="5865733239029070421">Skickar användningsstatistik och felrapporter till Google automatiskt</translation>
 <translation id="5869522115854928033">Sparade lösenord</translation>
+<translation id="5870416898561279542">Dubbla eller oanvända flikar som inte har använts på <ph name="DAYS_INACTIVE" /> dagar flyttas hit<ph name="AUTODELETE_SECTION" />. Du kan när som helst ändra detta i <ph name="DECLUTTER_SETTINGS_TITLE" />.</translation>
 <translation id="587735546353481577">Om du vill följa en webbplats besöker du den, öppnar Chrome-menyn och trycker på Följ.</translation>
 <translation id="5883855034004058011">Biometri misslyckades för många gånger. Lås och lås upp enheten för att försöka igen.</translation>
 <translation id="5885378508678660271">Aviseringar <ph name="SEPARATOR" /> Chrome har tagit bort dessa behörigheter eftersom den här webbplatsen är farlig</translation>
@@ -1875,6 +1884,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="8942627711005830162">Öppna i ett annat fönster</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> – Det gick inte att ladda ned språket. Försök igen senare.</translation>
 <translation id="8946759102391960088">Behåll åtkomsten till dina lösenord</translation>
+<translation id="895442993047180128">Dialogrutan om att välja att få tipsaviseringar har stängts</translation>
 <translation id="8957528460562961174">Om du vill behålla åtkomsten till dina lösenord kan du exportera dem nu och sedan importera dem till din favoritlösenordshanterare. Google Lösenordshantering slutade fungera eftersom Google Play-tjänster inte är tillgängliga.</translation>
 <translation id="8963117664422609631">Öppna webbplatsinställningarna</translation>
 <translation id="8965591936373831584">väntar</translation>

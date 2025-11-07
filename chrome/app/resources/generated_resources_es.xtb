@@ -2457,6 +2457,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2667463864537187133">Gestionar el corrector ortográfico</translation>
 <translation id="2668604389652548400">Quítala o sustitúyela por extensiones similares de <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /></translation>
 <translation id="2669241540496514785">No se ha podido abrir el archivo <ph name="APP_NAME" /></translation>
+<translation id="2669250147452250961">Activa esta opción para obtener tu historial de navegación y tus pestañas de otros dispositivos</translation>
 <translation id="2669454659051515572">Cualquier persona que use este dispositivo puede ver los archivos descargados</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> está compartiendo una pestaña de Chrome.</translation>
 <translation id="2670168377011445813">Si Chrome detecta que una de tus contraseñas aparece en una brecha pública de seguridad de datos, el Gestor de contraseñas de Google puede ofrecerte cambiarla si has iniciado sesión. <ph name="BEGIN_LINK" />Más información sobre el cambio de contraseña automatizado<ph name="END_LINK" /></translation>
@@ -8598,6 +8599,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="6961327401577924850">Los sitios suelen buscar dispositivos Bluetooth para usar funciones como configurar o sincronizar una baliza electrónica de bajo consumo, una pulsera de actividad física o de salud, o una bombilla inteligente</translation>
 <translation id="6963772203726867701">No detectado</translation>
 <translation id="6963872466817251924">Subrayador de cursor de texto</translation>
+<translation id="6964239097707154771">son complementos de Chrome que te ayudan a hacer más cosas</translation>
 <translation id="6964390816189577014">Héroe</translation>
 <translation id="6964760285928603117">Quitar del grupo</translation>
 <translation id="6965382102122355670">Aceptar</translation>
@@ -8910,6 +8912,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7186088072322679094">Mantener en la barra de herramientas</translation>
 <translation id="7186303001964993981"><ph name="ORIGIN" /> no puede abrir esta carpeta porque contiene archivos del sistema</translation>
 <translation id="7186568385131859684">Controla cómo se usa el historial de navegación con tus otros datos en los servicios de Google</translation>
+<translation id="7186903260115204164">Añade dibujos a mano alzada, firmas y contenido resaltado con la nueva herramienta de dibujo</translation>
 <translation id="7188508872042490670">Datos de sitios en el dispositivo</translation>
 <translation id="7189234443051076392">Deja suficiente espacio en tu dispositivo</translation>
 <translation id="7189451821249468368">No tienes las licencias necesarias para registrar este dispositivo. Ponte en contacto con el departamento de ventas para comprar más. Si crees que este mensaje ha aparecido por error, ponte en contacto con el servicio de asistencia.</translation>
@@ -10740,6 +10743,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8427213022735114808">Dictado envía tu voz a Google para que puedas usar Escribir por voz en cualquier campo de texto.</translation>
 <translation id="8427292751741042100">insertado en otro host</translation>
 <translation id="8428213095426709021">Configuración</translation>
+<translation id="8428257636009471988">Visitar Web Store</translation>
 <translation id="8428271547607112339">Añadir cuenta de centro educativo</translation>
 <translation id="8428634594422941299">Entendido</translation>
 <translation id="84297032718407999">Tu sesión se cerrará en <ph name="LOGOUT_TIME_LEFT" /></translation>

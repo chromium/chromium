@@ -49,6 +49,7 @@
 <translation id="1181037720776840403">Премахване</translation>
 <translation id="1183189057400844278">Потвърдете, че това сте вие, така че винаги да можете да използвате паролите в профила си в Google</translation>
 <translation id="1187810343066461819">Изтриване и на отметките, историята и др. от този автомобил</translation>
+<translation id="1193589902336218259">Включване на известията със съвети</translation>
 <translation id="1193729455103054076">Да се използва ли надеждна парола?</translation>
 <translation id="11947597112837849">имейл адрес</translation>
 <translation id="1197267115302279827">Преместване на отметки</translation>
@@ -236,6 +237,7 @@
 <translation id="200114059308480249">Да се включи ли съседният текст в търсенията с Google?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" /> – фиксиран раздел в режим „инкогнито“, чийто звук е спрян</translation>
 <translation id="2021896219286479412">Контроли за сайтове на цял екран</translation>
+<translation id="2029669011553795746">Долният лист за включване на известията със съвети е отворен на половината височина</translation>
 <translation id="2038563949887743358">Включване на функцията за заявяване на настолни сайтове</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> също има данни в Chrome</translation>
 <translation id="2047378580182589770">Докоснете и задръжте, за да излезете от режим „инкогнито“</translation>
@@ -245,6 +247,7 @@
 <translation id="2063047797624276601">Организацията ви включи подобрената защита от Безопасно сърфиране</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 изтегляне не бе успешно}other{# изтегляния не бяха успешни}}</translation>
 <translation id="2067805253194386918">текст</translation>
+<translation id="2072027001582274150">Неизползвани или дублирани раздели</translation>
 <translation id="2074527029802029717">Освобождаване на раздела</translation>
 <translation id="2079545284768500474">Отмяна</translation>
 <translation id="2082238445998314030">Резултат <ph name="RESULT_NUMBER" /> от <ph name="TOTAL_RESULTS" /></translation>
@@ -405,6 +408,7 @@
 <translation id="2781151931089541271">Остава 1 сек</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chrome откри повторно използвана парола, която можете да подобрите}other{Chrome откри # повторно използвани пароли, които можете да подобрите}}</translation>
+<translation id="2794551654724114396">Включете известията за полезни съвети, с чиято помощ да се възползвате от най-добрите функции на Chrome</translation>
 <translation id="2800066122460699237">Разделът <ph name="TAB_TITLE" /> ще бъде затворен</translation>
 <translation id="2805210243313393104">Получете своите отметки и др. на всичките си устройства</translation>
 <translation id="2805756323405976993">Приложения</translation>
@@ -640,6 +644,7 @@
 <translation id="3824259034819781947">Прикачване на файлове</translation>
 <translation id="38243391581572867">Обектив не е налице за този профил.</translation>
 <translation id="38258275871320156">Налице само за малки прозорци</translation>
+<translation id="3826529618131025925">Долен лист с помощ и указания за включване на известията със съвети</translation>
 <translation id="3845098929839618392">Отваряне в раздел „инкогнито“</translation>
 <translation id="3847319713229060696">Помогнете за всеобщото подобряване на сигурността в мрежата</translation>
 <translation id="385051799172605136">Назад</translation>
@@ -773,6 +778,7 @@
 <translation id="4405636711880428279">Да се премахне ли виртуалната ви карта?</translation>
 <translation id="4408965460206576430">Този файл съдържа злонамерен софтуер или e от подозрителен сайт</translation>
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> и още <ph name="TAB_COUNT" /> раздела</translation>
+<translation id="441100617989818073">Неизползвани или дублирани раздели и групи</translation>
 <translation id="4414179633735763985">Изтрихте <ph name="TAB_GROUPS_AND_TABS_PART" /></translation>
 <translation id="4415276339145661267">Управление на профила ви в Google</translation>
 <translation id="4425140285732600465">Цената се проследява. Ще получавате сигнали, когато има понижение в който и да е сайт.</translation>
@@ -801,6 +807,7 @@
 <translation id="452750746583162491">Преглед на синхронизираните ви данни</translation>
 <translation id="4532845899244822526">Избиране на папка</translation>
 <translation id="4535755320005483982"><ph name="GROUP_TITLE" /> – споделена група раздели</translation>
+<translation id="4537137366307982887">Долният лист за включване на известията със съвети е отворен на пълната височина</translation>
 <translation id="4543131175509360848">Долен лист без налични ключове за достъп</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> раздел}other{<ph name="TAB_COUNT_MANY" /> раздела, <ph name="TAB_COUNT_INCOGNITO" /> в режим „инкогнито“}}</translation>
 <translation id="4558311620361989323">Комбинации за уеб страници</translation>
@@ -952,6 +959,7 @@
 <translation id="5123685120097942451">Раздел в режим „инкогнито“</translation>
 <translation id="5142281402488957685">За нови материали дръпнете надолу, за да опресните</translation>
 <translation id="5144385790872094440">Някои от страниците, които посещавате, са заредени предварително. Страниците може да се зареждат предварително чрез сървърите ни, когато към тези страници водят връзки от сайт или приложение на Google.</translation>
+<translation id="5145887002054615868">Дублираните раздели или тези, които не са използвани от <ph name="DAYS_INACTIVE" /> дни, се преместват тук<ph name="AUTODELETE_SECTION" />. Можете да промените това по всяко време от „<ph name="DECLUTTER_SETTINGS_TITLE" />“.</translation>
 <translation id="5152843274749979095">Никое от поддържаните приложения не е инсталирано</translation>
 <translation id="5161254044473106830">Изисква се заглавие</translation>
 <translation id="5161262286013276579">Листът за потвърждение за ключа за достъп е отворен</translation>
@@ -1114,6 +1122,7 @@
 <translation id="5864419784173784555">Изчаква се друго изтегляне…</translation>
 <translation id="5865733239029070421">Автоматично изпраща до Google статистически данни за използването на Chrome и сигнали за сривове</translation>
 <translation id="5869522115854928033">Запазени пароли</translation>
+<translation id="5870416898561279542">Дублираните раздели и групи или тези, които не са използвани от <ph name="DAYS_INACTIVE" /> дни, се преместват тук<ph name="AUTODELETE_SECTION" />. Можете да промените това по всяко време от „<ph name="DECLUTTER_SETTINGS_TITLE" />“.</translation>
 <translation id="587735546353481577">За да последвате даден сайт, посетете го, отворете менюто на Chrome и докоснете съответната опция.</translation>
 <translation id="5883855034004058011">Твърде много неуспешни опити за биометрично удостоверяване. За да опитате отново, заключете устройството си и го отключете.</translation>
 <translation id="5885378508678660271">Известия <ph name="SEPARATOR" /> Chrome премахна тези разрешения, защото сайтът е опасен</translation>
@@ -1874,6 +1883,7 @@
 <translation id="8942627711005830162">Отваряне в другия прозорец</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> – този език не бе изтеглен. Опитайте отново по-късно.</translation>
 <translation id="8946759102391960088">Запазете достъп до паролите си</translation>
+<translation id="895442993047180128">Долният лист за включване на известията със съвети е затворен</translation>
 <translation id="8957528460562961174">За да запазите достъпа до паролите си, експортирайте ги сега, след което ги импортирайте в предпочитания от вас мениджър на пароли. Google Мениджър на пароли спря да работи, защото услугите за Google Play не са налице.</translation>
 <translation id="8963117664422609631">Към настройките за сайта</translation>
 <translation id="8965591936373831584">изчаква</translation>

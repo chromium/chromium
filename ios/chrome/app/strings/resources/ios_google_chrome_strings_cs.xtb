@@ -173,6 +173,7 @@ Zkuste s odhlášením několik minut počkat. Pokud se teď odhlásíte, tato 
 <translation id="5305440589062022504">Otevře Správce hesel v prohlížeči Chrome</translation>
 <translation id="5310957470610282541">Některá data prohlížeče Chrome ještě nebyla uložena do vašeho účtu Google.
 Zkuste s odhlášením několik minut počkat. Pokud se teď odhlásíte, tato data budou smazána.</translation>
+<translation id="5342685492141499976">Data se uloží do Správce hesel Google pro účet <ph name="USER_EMAIL" />.</translation>
 <translation id="5389212809648216794">Google Chrome nemůže použít fotoaparát, protože jej právě používá jiná aplikace</translation>
 <translation id="5395376160638294582">Zajistěte, abyste mohli vždy používat data prohlížeče Chrome ve svém účtu Google</translation>
 <translation id="5404252374083197467">Nastavit Chrome jako výchozí prohlížeč?</translation>
@@ -200,6 +201,7 @@ Zkuste s odhlášením několik minut počkat. Pokud se teď odhlásíte, tato 
 <translation id="5808435672482059465">Zobrazit historii Chromu</translation>
 <translation id="5833027901704861726">Některá data prohlížeče Chrome ještě nebyla uložena do účtu <ph name="EMAIL" />.
 Zkuste před přepnutím účtů pár minut počkat. Pokud teď přepnete účty, tato data se smažou.</translation>
+<translation id="5853754888722423892">Importovat do Správce hesel Google</translation>
 <translation id="5998675059699164418">Vaše organizace vyžaduje, abyste se k používání Chromu přihlásili.</translation>
 <translation id="6021312115739110405">Feed od Googlu přizpůsobený speciálně pro vás – včetně zpráv, sportu a počasí.</translation>
 <translation id="6022659036123304283">Přizpůsobte si Chrome</translation>

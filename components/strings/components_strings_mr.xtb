@@ -78,6 +78,7 @@
 <translation id="112840717907525620">धोरण कॅशे  ठीक</translation>
 <translation id="1131264053432022307">तुम्ही कॉपी केलेली इमेज</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – फुल स्क्रीनमधून बाहेर पडण्यासाठी, वरून ड्रॅग करा आणि मागे जा बटणाला स्पर्श करा</translation>
+<translation id="1133418583142946603">सध्याचा टॅब जोडा</translation>
 <translation id="1138458427267715730">संपूर्ण वेबवरील कोणत्याही साइटवर किंमत कमी झाल्यावर सूचना मिळवा</translation>
 <translation id="1142713751288681188">पेपर टाइप</translation>
 <translation id="1142965388643537393">प्रवासाशी संबंधित माहिती</translation>
@@ -444,6 +445,7 @@
 <translation id="1717218214683051432">मोशन सेन्सर</translation>
 <translation id="1717494416764505390">मेलबॉक्स ३</translation>
 <translation id="1717688554309417925">डेबिट आणि तपासणी सेवा</translation>
+<translation id="1717882880162336471">AI मोड वापरून पहा</translation>
 <translation id="1719434663396780149">किमतीतील घट याच्याशी संबंधित सूचना सुरू आहेत. तुम्ही या <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" /> मध्ये हे बदलू शकता.</translation>
 <translation id="1719838434204287058">२४ x ३० इं</translation>
 <translation id="1720941539803966190">ट्यूटोरियल बंद करा</translation>
@@ -2014,6 +2016,7 @@
 <translation id="4258748452823770588">खराब स्वाक्षरी</translation>
 <translation id="4265635050210404830">तुमची लॉयल्टी कार्ड</translation>
 <translation id="4265872034478892965">तुमच्या ॲडमिनिस्ट्रेटरकडून परवानगी असलेले</translation>
+<translation id="4267590181863312380">तुमच्या इतर डिव्हाइसवरील तुमचा इतिहास मिळवण्यासाठी, साइन इन करा आणि इतिहास सिंक करा. तुम्हाला तुमच्या सर्व डिव्हाइसवर तुमचे पासवर्ड आणि आणखी बरेच काही मिळेल. तुम्ही सेटिंग्जमध्ये सिंक करणे कधीही थांबवू शकता. Google तुमच्या इतिहासाच्या आधारे Search आणि इतर सेवा पर्सनलाइझ करू शकते.</translation>
 <translation id="4269029136757623689">घरगुती पंखे</translation>
 <translation id="4269264543938335308">पोहताना घालायचे कपडे</translation>
 <translation id="4269599248168651462">युनिक नसलेल्या नावासाठी सर्व्हर सर्टिफिकेट जारी केले आहे.</translation>
@@ -2890,6 +2893,7 @@
 <translation id="5715918316982363436">या डिव्हाइसवर <ph name="WINDOW_COUNT" /> मध्ये <ph name="TAB_COUNT" /></translation>
 <translation id="5716325061445053985">तुमच्या फोनवर टॅब उघडण्यासाठी टॅप करा</translation>
 <translation id="5717509257172454543">आइस स्केटिंग</translation>
+<translation id="5718601519531438273">पासपोर्ट आणि ड्रायव्हरचा परवाना यांसारख्या माहितीचा समावेश आहे</translation>
 <translation id="5720705177508910913">वर्तमान वापरकर्ता</translation>
 <translation id="5720895412771013401">डेस्कटॉप कॉंप्युटर</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} आणि आणखी १}other{{website_1}, {website_2} आणि आणखी {more_count}}}</translation>
@@ -4561,6 +4565,7 @@
 <translation id="8449036207308062757">स्टोरेज व्यवस्थापित करा</translation>
 <translation id="8449155699563577224">१७ x २४ इं</translation>
 <translation id="8449836157089738489">सर्व नवीन टॅब गटामध्ये उघडा</translation>
+<translation id="8451518040456311377">ओळखीशी संबंधित दस्तऐवज सेव्ह करा आणि भरा</translation>
 <translation id="84561192812921051">तुमचा अ‍ॅडमिनिस्ट्रेटर हा तुमच्या प्रोफाइल आणि ब्राउझरमध्ये रिमोट पद्धतीने बदल करू शकतो, तक्रारीद्वारे ब्राउझरशी संबंधित माहितीचे विश्लेषण करू शकतो व इतर आवश्यक टास्क करू शकतो. या डिव्हाइसवरील अ‍ॅक्टिव्हिटी ही Chrome च्या बाहेरदेखील व्यवस्थापित केली जाऊ शकते.  <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="8456383681414356368">तळाशी असलेली शीट बंद केलेली आहे.</translation>
 <translation id="8456775115498700722">तुम्ही आता तुमची <ph name="CARD_ISSUER_NAME" /> कार्ड ऑटोफिल करू शकता, कारण तुमचे <ph name="CARD_ISSUER_NAME" /> खाते Google Pay शी लिंक केलेले आहे.</translation>

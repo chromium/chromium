@@ -2465,6 +2465,7 @@
 <translation id="2667463864537187133">ፊደል አራሚን ያቀናብሩ</translation>
 <translation id="2668604389652548400">ከ<ph name="BEGIN_LINK" />Chrome የድር መደብር<ph name="END_LINK" /> በመጡ ተመሳሳይ ቅጥያዎች ያስወግዱት ወይም ይተኩት</translation>
 <translation id="2669241540496514785"><ph name="APP_NAME" />ን መክፈት አልተቻለም</translation>
+<translation id="2669250147452250961">ከሌሎች መሣሪያዎች ላይ የእርስዎን የአሰሳ ታሪክ እና ትሮች ለማግኘት ያብሩ</translation>
 <translation id="2669454659051515572">ይህን መሣሪያ የሚጠቀም ማንኛውም ሰው የወረዱ ፋይሎችን መመልከት ይችላል</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> የChrome ትር እያጋራ ነው።</translation>
 <translation id="2670168377011445813">Chrome ከእርስዎ የይለፍ ቃላት ላይ አንዱን በይፋዊ ውሂብ ጥሰት ውስጥ ካገኘ፣ Google የይለፍ ቃል አስተዳዳሪ በመለያ ገብተው ከሆነ ለእርስዎ የይለፍ ቃልዎን ለመለወጥ ሊያቀርብ ይችላል። <ph name="BEGIN_LINK" />ስለ ራስ-ሰር የተደረገ የይለፍ ቃል ለውጥ ተጨማሪ<ph name="END_LINK" /></translation>
@@ -8609,6 +8610,7 @@
 <translation id="6961327401577924850">ጣቢያዎች እንደ ዝቅተኛ ኃይል ያለው የምልክት ምንጭ፣ የጤና ወይም የአካል ብቃት መከታተያ ወይም የዘመናዊ መብራት አምፖል ማቀናበር ወይም ማስመር ያሉ ባህሪያትን ለማግኘት አብዛኛውን ጊዜ የብሉቱዝ መሣሪያዎችን ይፈልጋሉ</translation>
 <translation id="6963772203726867701">አልተገኘም</translation>
 <translation id="6963872466817251924">የጽሑፍ ጠቋሚ አድማቂ</translation>
+<translation id="6964239097707154771">ተጨማሪ እንዲሠሩ ሊያግዙዎ የሚችሉ የChrome ተጨማሪዎች ናቸው</translation>
 <translation id="6964390816189577014">ጀግና</translation>
 <translation id="6964760285928603117">ከቡድን አስወግድ</translation>
 <translation id="6965382102122355670">እሺ</translation>
@@ -8921,6 +8923,7 @@
 <translation id="7186088072322679094">በመሣሪያ አሞሌ ውስጥ አቆይ</translation>
 <translation id="7186303001964993981">ይህን አቃፊ የስርዓት ፋይሎችን ስለያዘ <ph name="ORIGIN" /> ሊከፍተው አይችልም</translation>
 <translation id="7186568385131859684">በመላ የGoogle አገልግሎቶች ውስጥ ከሌላ ውሂብዎ ጋር የአሰሳ ታሪክ እንዴት ጥቅም ላይ እንደሚውል ይቆጣጠሩ</translation>
+<translation id="7186903260115204164">በአዲሱ የመሳያ መሣሪያ የነፃ እጅ ስዕሎችን፣ ፊርማዎችን እና ድምቀቶችን ያክሉ</translation>
 <translation id="7188508872042490670">በመሣሪያ ላይ ያለ የጣቢያ ውሂብ</translation>
 <translation id="7189234443051076392">በእርስዎ መሣሪያ ላይ በቂ ባዶ ቦታ መኖሩን ያረጋግጡ</translation>
 <translation id="7189451821249468368">ይህን መሣሪያ ለማስመዝገብ በቂ ማላቂያዎች የለዎትም። ተጨማሪ ለመግዛት እባክዎ ሽያጭን ያነጋግሩ። ይህን መልዕክት የሚያዩት በስህተት ነው ብለው ካመኑ እባክዎ ድጋፍን ያነጋግሩ።</translation>
@@ -10756,6 +10759,7 @@ nil</translation>
 <translation id="8427213022735114808">በቃል ማስጻፍ በማንኛውም የጽሑፍ መስክ ውስጥ የድምጽ ትየባን ለመፍቀድ ድምጽዎን ወደ Google ይልካል።</translation>
 <translation id="8427292751741042100">በማንኛውም አስተናጋጅ ላይ ተከትቷል</translation>
 <translation id="8428213095426709021">ቅንብሮች</translation>
+<translation id="8428257636009471988">የድር መደብርን ይጎብኙ</translation>
 <translation id="8428271547607112339">የትምህርት ቤት መለያ አክል</translation>
 <translation id="8428634594422941299">ገባኝ</translation>
 <translation id="84297032718407999">በ<ph name="LOGOUT_TIME_LEFT" /> ውስጥ ዘግተው እንዲወጡ ይደረጋሉ</translation>

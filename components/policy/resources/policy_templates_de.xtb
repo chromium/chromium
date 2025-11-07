@@ -10368,21 +10368,6 @@ Ist die Richtlinie deaktiviert, wird die Funktion für den komprimierten Wörter
 
       Ist diese Richtlinie festgelegt, kann der Nutzer sie weder ändern noch überschreiben.</translation>
 <translation id="8080200590486938727">Plug-in-Suchfunktion deaktivieren</translation>
-<translation id="8082268442825947283">Wenn du diese Richtlinie festlegst, werden Regeln konfiguriert, über die der vom Browser verwendete Proxy je nach der Ziel-URL und anderen Bedingungen ausgewählt wird. Diese Richtlinie hat Vorrang vor den Proxy-Einstellungen, die über die Richtlinie „<ph name="PROXY_SETTINGS_POLICY_NAME" />“, die Erweiterungs-API „<ph name="PROXY_SETTINGS_EXTENSION_API" />“ oder manuelle Nutzereinstellungen festgelegt werden, sofern vorhanden.
-
-Wenn die Richtlinie nicht festgelegt ist, hat dies keine Auswirkungen auf andere Proxy-Richtlinien oder Nutzereinstellungen.
-
-Wenn die Proxy-Auswahl über den Browser getroffen wird, werden die Einträge der Richtlinie „<ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" />“ der Reihe nach ausgewertet, bis ein Eintrag eine Übereinstimmung mit mindestens einem der URL-Hosts in <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> hat und alle Einträge in <ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> erfüllt sind. Der Wert in <ph name="PROXY_OVERRIDE_RULES_PROXY_CHAIN" /> wird als Proxy für eine solche Übereinstimmung verwendet. Wenn keine Übereinstimmung gefunden wird, werden die Proxy-Einstellungen auf die in der Richtlinie „<ph name="PROXY_SETTINGS_POLICY_NAME" />“ festgelegten Werte zurückgesetzt.
-
-Die Einträge im Feld „<ph name="PROXY_OVERRIDE_RULES_PROXY_CHAIN" />“ entsprechen Stringwerten von PAC-Dateien wie:
-  * DIRECT
-  * PROXY host:port
-  * HTTPS host:port
-Der erste erreichbare Eintrag wird als Proxy verwendet.
-
-Das Feld „<ph name="PROXY_OVERRIDE_RULES_CONDITIONS" />“ enthält eine Liste von Bedingungen, die alle erfüllt sein müssen, damit die Überschreibungsregel zur Auswahl des zu verwendenden Proxys genutzt wird. Bei Nichtfestlegung wird der Eintrag verwendet, solange mindestens ein Host in <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> übereinstimmt.
-
-Die Bedingung „<ph name="PROXY_OVERRIDE_RULES_DNS_PROBE" />“ prüft, ob das angegebene DNS „<ph name="PROXY_OVERRIDE_RULES_HOST" />“ in eine IP-Adresse aufgelöst werden kann. Wenn der Wert von <ph name="PROXY_OVERRIDE_RULES_RESULT" /> „<ph name="PROXY_OVERRIDE_RULES_RESOLVES" />“ ist, gilt die Bedingung als erfüllt. Wenn der Wert stattdessen auf „<ph name="PROXY_OVERRIDE_RULES_NOT_FOUND" />“ festgelegt ist, gilt die Bedingung als erfüllt, wenn die Auflösung fehlgeschlagen ist.</translation>
 <translation id="8086746212954621799">Bei Festlegung auf „true“ werden automatische Updates deaktiviert.
 
 Ist diese Einstellung nicht konfiguriert oder auf „false“ gesetzt, suchen <ph name="PRODUCT_OS_NAME" />-Geräte automatisch nach Updates.

@@ -78,6 +78,7 @@
 <translation id="112840717907525620">Keš smernica je u redu</translation>
 <translation id="1131264053432022307">Kopirana slika</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – Da biste izašli iz režima celog ekrana, prevucite od vrha i dodirnite dugme Nazad</translation>
+<translation id="1133418583142946603">Dodaj aktuelnu karticu</translation>
 <translation id="1138458427267715730">Dobijajte obaveštenja kada padne cena na bilo kom sajtu širom veba</translation>
 <translation id="1142713751288681188">Tip papira</translation>
 <translation id="1142965388643537393">Informacije u vezi sa putovanjem</translation>
@@ -444,6 +445,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="1717218214683051432">Senzori pokreta</translation>
 <translation id="1717494416764505390">3. poštansko sanduče</translation>
 <translation id="1717688554309417925">Usluge u vezi sa debitnim karticama i čekovima</translation>
+<translation id="1717882880162336471">Isprobajte AI režim</translation>
 <translation id="1719434663396780149">Obaveštenja o sniženjima su uključena. Ovo možete da promenite u odeljku <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="1719838434204287058">24×30 in</translation>
 <translation id="1720941539803966190">Zatvorite vodič</translation>
@@ -2015,6 +2017,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="4258748452823770588">Neispravan potpis</translation>
 <translation id="4265635050210404830">Kartice lojalnosti</translation>
 <translation id="4265872034478892965">Dozvoljava administrator</translation>
+<translation id="4267590181863312380">Da biste preuzeli istoriju sa drugih uređaja, prijavite se i sinhronizujte istoriju. Moći ćete da pristupate i svojim lozinkama i drugom sadržaju na svim uređajima. Uvek možete da zaustavite sinhronizaciju u podešavanjima. Google može da personalizuje Pretragu i druge usluge na osnovu istorije.</translation>
 <translation id="4269029136757623689">Kućni ventilatori</translation>
 <translation id="4269264543938335308">Odeća za plivanje</translation>
 <translation id="4269599248168651462">Sertifikat servera se izdaje sa nazivom koji nije jedinstven.</translation>
@@ -2891,6 +2894,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="5715918316982363436"><ph name="TAB_COUNT" /> iz <ph name="WINDOW_COUNT" /> na ovom uređaju</translation>
 <translation id="5716325061445053985">Dodirnite da biste otvorili karticu na telefonu</translation>
 <translation id="5717509257172454543">Klizanje na ledu</translation>
+<translation id="5718601519531438273">Obuhvata informacije kao što su pasoši i vozačke dozvole</translation>
 <translation id="5720705177508910913">Trenutni korisnik</translation>
 <translation id="5720895412771013401">Računari</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} i još 1}one{{website_1}, {website_2} i još {more_count}}few{{website_1}, {website_2} i još {more_count}}other{{website_1}, {website_2} i još {more_count}}}</translation>
@@ -4505,7 +4509,7 @@ Dodatni detalji:
 <translation id="8364627913115013041">Nije podešeno.</translation>
 <translation id="8366057325711477500">Vesti iz sveta</translation>
 <translation id="836616551641291797">Saznajte više o tome kako se upravlja pregledačem</translation>
-<translation id="8367705492654390392">Pitajte bilo šta</translation>
+<translation id="8367705492654390392">Upitajte bilo šta</translation>
 <translation id="8368001212524806591">Prati cenu</translation>
 <translation id="8368027906805972958">Nepoznat ili nepodržan uređaj (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Google Play usluge</translation>
@@ -4560,6 +4564,7 @@ Dodatni detalji:
 <translation id="8449036207308062757">Upravljaj memorijskim prostorom</translation>
 <translation id="8449155699563577224">17×24 in</translation>
 <translation id="8449836157089738489">Otvori sve u novoj grupi kartica</translation>
+<translation id="8451518040456311377">Sačuvaj i popuni lične dokumente</translation>
 <translation id="84561192812921051">Administrator može daljinski da unosi promene u profil i pregledač, da analizira informacije o pregledaču pomoću izveštavanja i obavlja druge neophodne zadatke. Aktivnostima na ovom uređaju može da se upravlja i van Chrome-a.  <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="8456383681414356368">Donja tabela je zatvorena.</translation>
 <translation id="8456775115498700722">Sada možete automatski da popunjavate <ph name="CARD_ISSUER_NAME" /> kartice jer je <ph name="CARD_ISSUER_NAME" /> nalog povezan sa Google Pay-om.</translation>

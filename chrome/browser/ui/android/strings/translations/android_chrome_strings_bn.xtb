@@ -49,6 +49,7 @@
 <translation id="1181037720776840403">সরান</translation>
 <translation id="1183189057400844278">আপনার Google অ্যাকাউন্টে সবসময় পাসওয়ার্ড যাতে ব্যবহার করতে পারেন তা কনফার্ম করার জন্য, নিজের পরিচয় যাচাই করুন</translation>
 <translation id="1187810343066461819">এছাড়া, এই গাড়ি থেকে বুকমার্ক, ইতিহাস এবং আরও অনেক কিছু মুছে দিন</translation>
+<translation id="1193589902336218259">পরামর্শ সংক্রান্ত বিজ্ঞপ্তি চালু করুন</translation>
 <translation id="1193729455103054076">শক্তিশালী পাসওয়ার্ড ব্যবহার করতে চান?</translation>
 <translation id="11947597112837849">ইমেল অ্যাড্রেস</translation>
 <translation id="1197267115302279827">বুকমার্কগুলি সরান</translation>
@@ -236,6 +237,7 @@
 <translation id="200114059308480249">Google searches-এ কোনও কিছু সার্চ করার সময় সার্চের সাথে মেলে এমন টেক্সট অন্তর্ভুক্ত করবেন?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, পিন করা মিউট করা ছদ্মবেশী ট্যাব</translation>
 <translation id="2021896219286479412">পূর্ণ স্ক্রিন সাইট নিয়ন্ত্রণ</translation>
+<translation id="2029669011553795746">স্ক্রিনের নিচে অ্যাটাচ করা শিট অর্ধেক খোলা অবস্থায়, সেখানে দেখানো পরামর্শের বিজ্ঞপ্তি অপ্ট-ইন করার স্ক্রিন</translation>
 <translation id="2038563949887743358">ডেস্কটপ সাইটের অনুরোধ চালু করুন</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> অ্যাপের ডেটা Chrome ব্রাউজারেও আছে</translation>
 <translation id="2047378580182589770">ছদ্মবেশী মোড থেকে বেরিয়ে আসতে স্পর্শ করে ধরে রাখুন</translation>
@@ -245,6 +247,7 @@
 <translation id="2063047797624276601">আপনার সংস্থা উন্নত Safe Browsing চালু করেছে</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{১টি ডাউনলোড করা যায়নি}one{#টি ডাউনলোড করা যায়নি}other{#টি ডাউনলোড করা যায়নি}}</translation>
 <translation id="2067805253194386918">টেক্সট</translation>
+<translation id="2072027001582274150">ব্যবহার করা হয়নি বা ডুপ্লিকেট ট্যাব</translation>
 <translation id="2074527029802029717">আনপিন ট্যাব</translation>
 <translation id="2079545284768500474">আগের অবস্থায় ফিরুন</translation>
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" /> এর মধ্যে <ph name="RESULT_NUMBER" /> টি ফলাফল</translation>
@@ -405,6 +408,7 @@
 <translation id="2781151931089541271">১ সেকেন্ড বাকি আছে</translation>
 <translation id="2789486458103222910">ঠিক আছে</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chrome, একই পাসওয়ার্ড যা আবার ব্যবহার করা হয়েছে এমন একটি পাসওয়ার্ড খুঁজে পেয়েছে, যা আপনি শক্তিশালী করতে পারবেন}one{Chrome, একই পাসওয়ার্ড যা আবার ব্যবহার করা হয়েছে এমন #টি পাসওয়ার্ড খুঁজে পেয়েছে, যা আপনি শক্তিশালী করতে পারবেন}other{Chrome, একই পাসওয়ার্ড যা আবার ব্যবহার করা হয়েছে এমন #টি পাসওয়ার্ড খুঁজে পেয়েছে, যা আপনি শক্তিশালী করতে পারবেন}}</translation>
+<translation id="2794551654724114396">Chrome থেকে সেরা অভিজ্ঞতা পেতে সহায়ক পরামর্শ পাওয়ার জন্য বিজ্ঞপ্তি চালু করুন</translation>
 <translation id="2800066122460699237"><ph name="TAB_TITLE" /> নামের ট্যাবটি বন্ধ করা হবে</translation>
 <translation id="2805210243313393104">আপনার সবকটি ডিভাইসে বুকমার্ক ও আরও অনেক কিছু পান</translation>
 <translation id="2805756323405976993">অ্যাপ্স</translation>
@@ -640,6 +644,7 @@
 <translation id="3824259034819781947">ফাইল অ্যাটাচ করুন</translation>
 <translation id="38243391581572867">এই অ্যাকাউন্টে Lens উপলভ্য নেই।</translation>
 <translation id="38258275871320156">শুধুমাত্র ছোট উইন্ডোর জন্য উপলভ্য</translation>
+<translation id="3826529618131025925">পরামর্শের বিজ্ঞপ্তি অপ্ট-ইন করা সংক্রান্ত সহায়তা ও নির্দেশিকার স্ক্রিনের নিচে অ্যাটাচ করা শিট</translation>
 <translation id="3845098929839618392">ছদ্মবেশী ট্যাবে খুলুন</translation>
 <translation id="3847319713229060696">সকলের জন্য ওয়েবে নিরাপত্তা উন্নত করতে সাহায্য করে</translation>
 <translation id="385051799172605136">ফিরুন</translation>
@@ -773,6 +778,7 @@
 <translation id="4405636711880428279">আপনার ভার্চুয়াল কার্ড সরাতে চান?</translation>
 <translation id="4408965460206576430">এই ফাইলে ম্যালওয়্যার আছে বা এটি কোনও সন্দেহজনক সাইট থেকে এসেছে</translation>
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> এবং অন্য <ph name="TAB_COUNT" />টি ট্যাব</translation>
+<translation id="441100617989818073">ব্যবহার হয়নি বা ডুপ্লিকেট ট্যাব ও গ্রুপ</translation>
 <translation id="4414179633735763985"><ph name="TAB_GROUPS_AND_TABS_PART" /> মোছা হয়েছে</translation>
 <translation id="4415276339145661267">আপনার Google অ্যাকাউন্ট ম্যানেজ করুন</translation>
 <translation id="4425140285732600465">দাম ট্র্যাক করা হচ্ছে। কোনও সাইটে দাম কমলে সেই বিষয়ে বিজ্ঞপ্তি পান।</translation>
@@ -801,6 +807,7 @@
 <translation id="452750746583162491">আপনার সিঙ্ক করা ডেটা পর্যালোচনা করুন</translation>
 <translation id="4532845899244822526">ফোল্ডার বেছে নিন</translation>
 <translation id="4535755320005483982"><ph name="GROUP_TITLE" /> ট্যাব গ্রুপ শেয়ার করা হয়েছে</translation>
+<translation id="4537137366307982887">স্ক্রিনের নিচে অ্যাটাচ করা শিট সম্পূর্ণ খোলা অবস্থায়, সেখানে দেখানো পরামর্শের বিজ্ঞপ্তি অপ্ট-ইন করার স্ক্রিন</translation>
 <translation id="4543131175509360848">কোনও পাসকী শিট নেই</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" />টি ট্যাব}one{<ph name="TAB_COUNT_MANY" />টি ট্যাব, <ph name="TAB_COUNT_INCOGNITO" />টি ছদ্মবেশী ট্যাব}other{<ph name="TAB_COUNT_MANY" />টি ট্যাব, <ph name="TAB_COUNT_INCOGNITO" />টি ছদ্মবেশী ট্যাব}}</translation>
 <translation id="4558311620361989323">ওয়েবপৃষ্ঠার শর্টকাটগুলি</translation>
@@ -952,6 +959,7 @@
 <translation id="5123685120097942451">ছদ্মবেশী ট্যাব</translation>
 <translation id="5142281402488957685">নতুন খবরের জন্য, রিফ্রেশ করতে নিচের দিকে সোয়াইপ করুন</translation>
 <translation id="5144385790872094440">আপনি যেসব পৃষ্ঠা দেখেন সেগুলির মধ্যে কয়েকটি প্রিলোড করা হয়েছে। Google সাইট বা অ্যাপের সাথে লিঙ্ক করা হলে, Google সার্ভারের মাধ্যমে পৃষ্ঠা প্রিলোড করা হতে পারে।</translation>
+<translation id="5145887002054615868">ডুপ্লিকেট ট্যাব অথবা <ph name="DAYS_INACTIVE" /> দিন ধরে ব্যবহার করা হয়নি এমন ট্যাব এখানে সরানো হয়েছে<ph name="AUTODELETE_SECTION" />। আপনি যেকোনও সময় <ph name="DECLUTTER_SETTINGS_TITLE" /> থেকে এটি পরিবর্তন করতে পারবেন।</translation>
 <translation id="5152843274749979095">কোনো সমর্থিত অ্যাপ্লিকেশান ইনস্টল করা নেই</translation>
 <translation id="5161254044473106830">শিরোনাম প্রয়োজন</translation>
 <translation id="5161262286013276579">পাসকী কনফার্মেশন শিট খোলা হয়েছে</translation>
@@ -1114,6 +1122,7 @@
 <translation id="5864419784173784555">অন্য ডাউনলোডের জন্য অপেক্ষা করা হচ্ছে…</translation>
 <translation id="5865733239029070421">ব্যবহারের পরিসংখ্যান এবং ক্র্যাশ রিপোর্ট নিজে থেকেই Google-কে পাঠায়</translation>
 <translation id="5869522115854928033">সংরক্ষিত পাসওয়ার্ড</translation>
+<translation id="5870416898561279542">ডুপ্লিকেট ট্যাব ও গ্রুপ অথবা <ph name="DAYS_INACTIVE" /> দিন ধরে ব্যবহার করা হয়নি এমন ট্যাব ও গ্রুপ এখানে সরানো হয়েছে<ph name="AUTODELETE_SECTION" />। আপনি যেকোনও সময় <ph name="DECLUTTER_SETTINGS_TITLE" /> থেকে এটি পরিবর্তন করতে পারবেন।</translation>
 <translation id="587735546353481577">কোনও সাইট ফলো করতে, সাইটে যান, 'Chrome' মেনু খুলুন এবং 'ফলো করুন' বিকল্পে ট্যাপ করুন।</translation>
 <translation id="5883855034004058011">অনেকবার চেষ্টার পরেও বায়োমেট্রিক্স কাজ করেনি। আবার চেষ্টা করতে, আপনার ডিভাইস লক করে আবার আনলক করুন।</translation>
 <translation id="5885378508678660271">বিজ্ঞপ্তি <ph name="SEPARATOR" /> Chrome এইসব অনুমতি সরিয়ে দিয়েছে কারণ এই সাইটটি বিপজ্জনক</translation>
@@ -1874,6 +1883,7 @@
 <translation id="8942627711005830162">অন্য উইন্ডোতে খুলুন</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - এই ভাষাটি ডাউনলোড করা যায়নি। পরে আবার চেষ্টা করুন।</translation>
 <translation id="8946759102391960088">আপনার পাসওয়ার্ডে অ্যাক্সেস রাখুন</translation>
+<translation id="895442993047180128">পরামর্শ সংক্রান্ত বিজ্ঞপ্তি অপ্ট-ইন করার সুবিধা বন্ধ রয়েছে</translation>
 <translation id="8957528460562961174">আপনার পাসওয়ার্ডে অ্যাক্সেস বজায় রাখতে, সেগুলি এখন এক্সপোর্ট করুন তারপর তা আপনার পছন্দের Password Manager-এ ইমপোর্ট করুন। Google Play পরিষেবা উপলভ্য না হওয়ার কারণে Google Password Manager কাজ করা বন্ধ করে দিয়েছে।</translation>
 <translation id="8963117664422609631">সাইট সেটিংসে যান</translation>
 <translation id="8965591936373831584">বাকি আছে</translation>

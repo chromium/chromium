@@ -10551,21 +10551,6 @@ Internet Explorer의 <ph name="IEEM_SITELIST_POLICY" /> 정책(https://docs.micr
 
       정책을 설정하면 사용자가 이러한 작동을 변경하거나 재정의할 수 없습니다.</translation>
 <translation id="8080200590486938727">플러그인 파인더 사용 안함</translation>
-<translation id="8082268442825947283">이 정책을 설정하면 대상 URL 및 기타 조건에 따라 브라우저에서 사용할 프록시를 선택하는 규칙이 구성됩니다. 이 정책은 <ph name="PROXY_SETTINGS_POLICY_NAME" /> 정책, <ph name="PROXY_SETTINGS_EXTENSION_API" /> 확장 프로그램 API 또는 수동 사용자 설정에서 설정된 프록시 설정보다 우선 적용됩니다.
-
-정책을 설정하지 않아도 다른 프록시 정책 또는 사용자 설정에 영향을 미치지 않습니다.
-
-브라우저에서 사용할 프록시를 결정해야 하는 경우 <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" />의 URL 호스트 중 하나 이상과 일치하는 항목이 있고 <ph name="PROXY_OVERRIDE_RULES_CONDITIONS" />의 모든 항목이 충족될 때까지 <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> 정책의 항목이 순서대로 평가됩니다. <ph name="PROXY_OVERRIDE_RULES_PROXY_CHAIN" />의 값이 이러한 일치의 프록시로 사용됩니다. 일치하는 항목이 없으면 프록시 설정이 <ph name="PROXY_SETTINGS_POLICY_NAME" /> 정책에 설정된 항목으로 되돌아갑니다.
-
-<ph name="PROXY_OVERRIDE_RULES_PROXY_CHAIN" /> 필드 항목은 다음과 같은 PAC 파일의 문자열 값에 해당합니다.
-  * DIRECT
-  * PROXY host:port
-  * HTTPS host:port
-연결 가능한 첫 번째 항목이 프록시로 사용됩니다.
-
-<ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> 필드에는 사용할 프록시를 결정하기 위해 재정의 규칙을 사용하려면 모두 충족해야 하는 조건 목록이 포함됩니다. 설정하지 않으면 <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" />의 호스트 중 하나 이상이 일치하는 한 항목이 사용됩니다.
-
-<ph name="PROXY_OVERRIDE_RULES_DNS_PROBE" /> 조건은 제공된 DNS <ph name="PROXY_OVERRIDE_RULES_HOST" />가 IP 주소로 확인할 수 있는지 확인합니다. <ph name="PROXY_OVERRIDE_RULES_RESULT" />의 값이 "<ph name="PROXY_OVERRIDE_RULES_RESOLVES" />"인 경우 조건이 충족된 것으로 간주됩니다. 대신 값이 <ph name="PROXY_OVERRIDE_RULES_NOT_FOUND" />로 설정되면 해결이 실패한 경우 조건이 충족된 것으로 간주됩니다.</translation>
 <translation id="8086746212954621799">true로 설정되면 자동 업데이트가 사용 중지됩니다.
 
 설정이 구성되지 않거나 false로 설정되면 <ph name="PRODUCT_OS_NAME" /> 기기에서 자동으로 업데이트를 확인합니다.

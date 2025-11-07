@@ -173,6 +173,7 @@ A kijelentkezés előtt várjon néhány percet. Ha most jelentkezik ki, akkor e
 <translation id="5305440589062022504">Megnyitja a Jelszókezelőt a Chrome-ban</translation>
 <translation id="5310957470610282541">Az Ön bizonyos Chrome-adatait még nem mentette a rendszer a Google-fiókjába.
 A kijelentkezés előtt várjon néhány percet. Ha most jelentkezik ki, akkor ezek az adatok törlődnek.</translation>
+<translation id="5342685492141499976">Adatait menti a rendszer a fiókhoz (<ph name="USER_EMAIL" />) kapcsolt Google Jelszókezelőbe.</translation>
 <translation id="5389212809648216794">A Google Chrome nem tudja használni a kamerát, mivel egy másik alkalmazás használja</translation>
 <translation id="5395376160638294582">Biztosítsa, hogy mindig használhassa a Google-fiókjában lévő Chrome-adatokat</translation>
 <translation id="5404252374083197467">Beállítja a Chrome-ot alapértelmezett böngészőként?</translation>
@@ -200,6 +201,7 @@ A kijelentkezés előtt várjon néhány percet. Ha most jelentkezik ki, akkor e
 <translation id="5808435672482059465">Chrome-előzmények megtekintése</translation>
 <translation id="5833027901704861726">Az Ön bizonyos Chrome-adatait még nem mentette a rendszer a(z) <ph name="EMAIL" /> fiókba.
 A fiókváltás előtt várjon néhány percet. Ha most vált fiókot, akkor ezek az adatok törlődnek.</translation>
+<translation id="5853754888722423892">Importálás a Google Jelszókezelőbe</translation>
 <translation id="5998675059699164418">Szervezete megköveteli a bejelentkezést a Chrome használatához.</translation>
 <translation id="6021312115739110405">A Google által az Ön számára létrehozott egyéni feed. Tartalmaz híreket, sportot és időjárást.</translation>
 <translation id="6022659036123304283">Tegye személyessé a Chrome-ot</translation>

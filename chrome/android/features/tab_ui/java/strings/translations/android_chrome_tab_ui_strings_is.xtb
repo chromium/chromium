@@ -128,6 +128,7 @@
 <translation id="5556417849629758491">Skoða upplýsingar um verslun, valkostir eru ofarlega á skjánum</translation>
 <translation id="5627941783489838464">Engar uppfærslur á flipum</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tengill frá Chrome}one{<ph name="TABS_COUNT_MANY" /> tengill frá Chrome}other{<ph name="TABS_COUNT_MANY" /> tenglar frá Chrome}}</translation>
+<translation id="5740354908255726955">{TAB_COUNT,plural, =1{Færa flipa til vinstri}one{Færa flipa til vinstri}other{Færa flipa til vinstri}}</translation>
 <translation id="5746204836956568669">Skipa <ph name="NUMBER_OF_TABS" /> flipa saman til að vinna hraðar?</translation>
 <translation id="5773295109010386583">Loka óvirkum atriðum sjálfkrafa</translation>
 <translation id="58326064309361797">Dragðu flipa til að sameina þá</translation>
@@ -138,6 +139,7 @@
 <translation id="6109251075362363230">Allir tvíteknir flipar verða nú einnig settir í geymslu, fyrir utan það afrit sem síðast var notað.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Loka <ph name="TABS_COUNT_ONE" /> völdu atriði}one{Loka <ph name="TABS_COUNT_MANY" /> völdu atriði}other{Loka <ph name="TABS_COUNT_MANY" /> völdum atriðum}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Færa hóp í nýjan glugga}one{Færa hóp í annan glugga}other{Færa hóp í annan glugga}}</translation>
+<translation id="6212374449852603982">{TAB_COUNT,plural, =1{Færa flipa til hægri}one{Færa flipa til hægri}other{Færa flipa til hægri}}</translation>
 <translation id="6228793724645064692">(einkunn verslunar)</translation>
 <translation id="625996437999624951">{TAB_COUNT,plural, =1{Fjarlægja flipa úr hópi}one{Fjarlægja flipa úr hópi}other{Fjarlægja flipa úr hópi}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Bæta flipa við nýjan hóp}one{Bæta flipum við nýjan hóp}other{Bæta flipum við nýjan hóp}}</translation>

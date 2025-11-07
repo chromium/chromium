@@ -78,6 +78,7 @@
 <translation id="112840717907525620">Reegli vahemälu töötab probleemideta</translation>
 <translation id="1131264053432022307">Teie kopeeritud pilt</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – Täisekraanilt väljumiseks lohistage ülaosast alla ja puudutage nuppu Tagasi</translation>
+<translation id="1133418583142946603">Lisa praegune vaheleht</translation>
 <translation id="1138458427267715730">Teile saadetakse teavitus, kui hinda alandatakse ükskõik millisel veebisaidil</translation>
 <translation id="1142713751288681188">Paberi tüüp</translation>
 <translation id="1142965388643537393">Reisiteave</translation>
@@ -1009,6 +1010,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2627847595568876492">PDF-ist teksti ekstraktimine…</translation>
 <translation id="2628025184666666186">See server ei suutnud tõestada, et tegemist on domeeniga <ph name="DOMAIN" />, kuna kasutab turbesertifikaati, mida Chrome või teie süsteemi veebiliikluse krüpteerimise seadistus ei usalda. Põhjuseks võib olla vale seadistus või teie ühendusele juurdepääsu saanud ründaja.</translation>
 <translation id="2628224721443278970">Logi sisse Microsoft OneDrive'i</translation>
+<translation id="2631387782019878060">Kinnituskood: <ph name="OTP" /></translation>
 <translation id="2634124572758952069">Hosti <ph name="HOST_NAME" /> serveri IP-aadressi ei leitud.</translation>
 <translation id="2638567100095052009">Sisestage @, et otsida saitidelt <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="2639739919103226564">Olek:</translation>
@@ -2802,6 +2804,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5558083606899411167">Õhukonditsioneerid</translation>
 <translation id="5558125320634132440">See sait blokeeriti, kuna see võib sisaldada täiskasvanutele mõeldud sisu</translation>
 <translation id="5559311991468302423">Kustuta aadress</translation>
+<translation id="5561747310506483298">ID-kaardid</translation>
 <translation id="55635442646131152">Dokumendi liigendus</translation>
 <translation id="5563589142503817291">Asukoha kasutamiseks andke Chrome'ile juurdepääs jaotises <ph name="LINK" />.</translation>
 <translation id="5565613213060953222">Ava inkognito vaheleht</translation>

@@ -173,6 +173,7 @@
 <translation id="5305440589062022504">Chrome-нан "Password Manager" бөлімін ашады.</translation>
 <translation id="5310957470610282541">Chrome деректерінің кейбірі Google аккаунтыңызда әлі сақталмаған.
 Шығу алдында бірнеше минут күтіп көріңіз. Қазір шықсаңыз, бұл деректер жойылады.</translation>
+<translation id="5342685492141499976">Деректеріңіз <ph name="USER_EMAIL" /> аккаунтына арналған Google Password Manager-ге сақталады.</translation>
 <translation id="5389212809648216794">Камераны басқа қолданба пайдаланып жатқандықтан, Google Chrome оны пайдалана алмайды</translation>
 <translation id="5395376160638294582">Google аккаунтыңызда Chrome деректерін үнемі пайдалана алатыныңызға көз жеткізу</translation>
 <translation id="5404252374083197467">Chrome-ды әдепкі браузер ретінде орнату керек пе?</translation>
@@ -200,6 +201,7 @@
 <translation id="5808435672482059465">Chrome тарихын көру</translation>
 <translation id="5833027901704861726">Chrome деректерінің кейбірі <ph name="EMAIL" /> аккаунтыңызда әлі сақталмаған.
 Аккаунттарды ауыстырмас бұрын бірнеше минут күтіп көріңіз. Аккаунттарды қазір ауыстырсаңыз, бұл деректер жойылады.</translation>
+<translation id="5853754888722423892">Google Password Manager-ге импорттау</translation>
 <translation id="5998675059699164418">Ұйымыңыз Chrome-ды пайдалану үшін жүйеге кіруді талап етеді.</translation>
 <translation id="6021312115739110405">Google сізге арнап жасаған арнаулы фид. Жаңалықтар, спорт пен ауа райы да осында.</translation>
 <translation id="6022659036123304283">Chrome браузерін өз талғамыңызға сай реттеңіз</translation>

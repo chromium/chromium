@@ -128,6 +128,7 @@
 <translation id="5556417849629758491">Ver informações da loja, opção disponível perto da parte superior da tela</translation>
 <translation id="5627941783489838464">Nenhuma atualização de guias</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> link do Chrome}one{<ph name="TABS_COUNT_MANY" /> link do Chrome}other{<ph name="TABS_COUNT_MANY" /> links do Chrome}}</translation>
+<translation id="5740354908255726955">{TAB_COUNT,plural, =1{Mover guia para a esquerda}one{Mover guia para a esquerda}other{Mover guias para a esquerda}}</translation>
 <translation id="5746204836956568669">Agrupar <ph name="NUMBER_OF_TABS" /> guias para trabalhar mais rápido?</translation>
 <translation id="5773295109010386583">Fechar itens inativos automaticamente</translation>
 <translation id="58326064309361797">Arraste as guias para agrupá-las</translation>
@@ -138,6 +139,7 @@
 <translation id="6109251075362363230">Todas as guias duplicadas serão arquivadas também, com exceção da cópia usada mais recentemente.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Fechar <ph name="TABS_COUNT_ONE" /> item selecionado}one{Fechar <ph name="TABS_COUNT_MANY" /> item selecionado}other{Fechar <ph name="TABS_COUNT_MANY" /> itens selecionados}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Mover grupo para nova janela}one{Mover grupo para outra janela}other{Mover grupo para outras janelas}}</translation>
+<translation id="6212374449852603982">{TAB_COUNT,plural, =1{Mover guia para a direita}one{Mover guia para a direita}other{Mover guias para a direita}}</translation>
 <translation id="6228793724645064692">(nota da loja)</translation>
 <translation id="625996437999624951">{TAB_COUNT,plural, =1{Remover guia do grupo}one{Remover guia do grupo}other{Remover guias do grupo}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Adicionar guia ao novo grupo}one{Adicionar guia ao novo grupo}other{Adicionar guias ao novo grupo}}</translation>

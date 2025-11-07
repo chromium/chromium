@@ -78,6 +78,7 @@
 <translation id="112840717907525620">המטמון של המדיניות תקין</translation>
 <translation id="1131264053432022307">תמונה שהעתקת</translation>
 <translation id="1132735979845538847">‫<ph name="ORIGIN" /> – כדי לצאת ממסך מלא, צריך לגרור מלמעלה וללחוץ על הכפתור "הקודם".</translation>
+<translation id="1133418583142946603">הוספה של הכרטיסייה הנוכחית</translation>
 <translation id="1138458427267715730">קבלת התראות כשיש הנחות באתרים באינטרנט</translation>
 <translation id="1142713751288681188">סוג הנייר</translation>
 <translation id="1142965388643537393">מידע למטיילים</translation>
@@ -444,6 +445,7 @@
 <translation id="1717218214683051432">חיישני תנועה</translation>
 <translation id="1717494416764505390">תיבת דואר 3</translation>
 <translation id="1717688554309417925">שירותי חיוב ובדיקת אשראי</translation>
+<translation id="1717882880162336471">‏כדאי לנסות את מצב AI</translation>
 <translation id="1719434663396780149">ההתראות על הנחות מופעלות. אפשר לשנות זאת ב<ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="1719838434204287058">‏24x30 אינץ'</translation>
 <translation id="1720941539803966190">סגירת המדריך</translation>
@@ -2015,6 +2017,7 @@
 <translation id="4258748452823770588">חתימה שגויה</translation>
 <translation id="4265635050210404830">כרטיסי מועדון הלקוחות שלך</translation>
 <translation id="4265872034478892965">אושרה על-ידי מנהל המערכת</translation>
+<translation id="4267590181863312380">‏כדי לקבל את ההיסטוריה מהמכשירים האחרים שלך, צריך להיכנס לחשבון ולסנכרן את ההיסטוריה. סיסמאות ונתונים נוספים יופיעו בכל המכשירים שלך. בהגדרות אפשר תמיד להפסיק את הסנכרון. ‫Google עשויה להתאים אישית את החיפוש ושירותים נוספים על סמך ההיסטוריה שלך.</translation>
 <translation id="4269029136757623689">מאווררים לבית</translation>
 <translation id="4269264543938335308">בגדי ים</translation>
 <translation id="4269599248168651462">אישור השרת מונפק לשם לא ייחודי.</translation>
@@ -2896,6 +2899,7 @@ Del</translation>
 <translation id="5715918316982363436">‫<ph name="TAB_COUNT" /> מתוך <ph name="WINDOW_COUNT" /> במכשיר הזה</translation>
 <translation id="5716325061445053985">צריך ללחוץ כדי לפתוח את הכרטיסייה בטלפון</translation>
 <translation id="5717509257172454543">החלקה על הקרח</translation>
+<translation id="5718601519531438273">כולל מידע כמו דרכונים ורישיונות נהיגה</translation>
 <translation id="5720705177508910913">משתמש נוכחי:</translation>
 <translation id="5720895412771013401">מחשבים</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{‫{website_1},‏ {website_2} ועוד אתר אחד}one{‫{website_1},‏ {website_2} ועוד {more_count} אתרים}other{‫{website_1},‏ {website_2} ועוד {more_count} אתרים}}</translation>
@@ -4566,6 +4570,7 @@ Del</translation>
 <translation id="8449036207308062757">ניהול האחסון</translation>
 <translation id="8449155699563577224">‏17x24 אינץ'</translation>
 <translation id="8449836157089738489">פתיחת הכול בקבוצת כרטיסיות חדשה</translation>
+<translation id="8451518040456311377">שמירה ומילוי של מסמכי זיהוי</translation>
 <translation id="84561192812921051">‏לאדמין יש אפשרות לבצע מרחוק שינויים בפרופיל ובדפדפן, לנתח מידע על הדפדפן באמצעות דוחות ולבצע משימות חשובות אחרות. אפשר לנהל את הפעילות במכשיר הזה גם מחוץ ל-Chrome.  <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="8456383681414356368">הגיליון התחתון סגור.</translation>
 <translation id="8456775115498700722">‏עכשיו אפשר למלא את הפרטים של כרטיסי <ph name="CARD_ISSUER_NAME" /> שלך באופן אוטומטי כי החשבון שלך ב-<ph name="CARD_ISSUER_NAME" /> מקושר ל-Google Pay.</translation>

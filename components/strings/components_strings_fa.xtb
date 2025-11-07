@@ -78,6 +78,7 @@
 <translation id="112840717907525620">حافظه پنهان خط‌مشی مورد تأیید است</translation>
 <translation id="1131264053432022307">تصویری که کپی کرده‌اید</translation>
 <translation id="1132735979845538847">‫<ph name="ORIGIN" /> – برای خارج شدن از حالت تمام‌صفحه، از بالا بکشید و «دکمه برگشتن» را لمس کنید</translation>
+<translation id="1133418583142946603">افزودن زبانه کنونی</translation>
 <translation id="1138458427267715730">وقتی قیمت در هر سایتی در وب کاهش پیدا کند، هشدار دریافت می‌کنید</translation>
 <translation id="1142713751288681188">نوع کاغذ</translation>
 <translation id="1142965388643537393">اطلاعات سفر</translation>
@@ -444,6 +445,7 @@
 <translation id="1717218214683051432">حسگرهای حرکتی</translation>
 <translation id="1717494416764505390">صندوق پست ۳</translation>
 <translation id="1717688554309417925">خدمات کارت نقدی و چک</translation>
+<translation id="1717882880162336471">«حالت هوش مصنوعی» را امتحان کنید</translation>
 <translation id="1719434663396780149">هشدارهای کاهش قیمت روشن هستند. می‌توانید این گزینه را در <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" /> تغییر دهید.</translation>
 <translation id="1719838434204287058">۳۰ × ۲۴ اینچ</translation>
 <translation id="1720941539803966190">بستن آموزش گام‌به‌گام</translation>
@@ -2015,6 +2017,7 @@
 <translation id="4258748452823770588">امضای نادرست</translation>
 <translation id="4265635050210404830">کارت‌های وفاداری شما</translation>
 <translation id="4265872034478892965">توسط سرپرست مجاز شده است</translation>
+<translation id="4267590181863312380">‏برای اینکه به سابقه‌تان در سایر دستگاه‌ها دسترسی داشته باشید، به سیستم وارد شوید و سابقه را همگام‌سازی کنید. به گذرواژه‌هایتان و اطلاعات دیگر نیز در همه دستگاه‌هایتان دسترسی خواهید داشت. همیشه می‌توانید همگام‌سازی را در تنظیمات متوقف کنید. Google ممکن است «جستجو» و سرویس‌های دیگر را براساس سابقه‌تان شخصی‌سازی کند.</translation>
 <translation id="4269029136757623689">پنکه‌های خانگی</translation>
 <translation id="4269264543938335308">لباس شنا</translation>
 <translation id="4269599248168651462">گواهی سرور برای نام غیریکتایی صادر شده است.</translation>
@@ -2891,6 +2894,7 @@
 <translation id="5715918316982363436">‫<ph name="TAB_COUNT" /> از <ph name="WINDOW_COUNT" /> در این دستگاه</translation>
 <translation id="5716325061445053985">برای باز کردن زبانه در تلفنتان، تک‌ضرب بزنید</translation>
 <translation id="5717509257172454543">اسکیت روی یخ</translation>
+<translation id="5718601519531438273">شامل اطلاعاتی مانند گذرنامه و گواهینامه رانندگی می‌شود</translation>
 <translation id="5720705177508910913">کاربر کنونی</translation>
 <translation id="5720895412771013401">رایانه رومیزی</translation>
 <translation id="5721367770070844253">{count,plural, =1{‫{website_1}}=2{‫{website_1}،‏ {website_2}}=3{‫{website_1}،‏ {website_2}، و ۱ وب‌سایت دیگر}one{‫{website_1}،‏ {website_2}، و {more_count} وب‌سایت دیگر}other{‫{website_1}،‏ {website_2}، و {more_count} وب‌سایت دیگر}}</translation>
@@ -4561,6 +4565,7 @@
 <translation id="8449036207308062757">مدیریت فضای ذخیره‌سازی</translation>
 <translation id="8449155699563577224">۲۴ × ۱۷ اینچ</translation>
 <translation id="8449836157089738489">باز کردن همه در گروه زبانه جدید</translation>
+<translation id="8451518040456311377">ذخیره و تکمیل مدارک شناسایی</translation>
 <translation id="84561192812921051">‏سرپرست شما می‌تواند تنظیمات نمایه و مرورگرتان را از دور تغییر دهد، اطلاعات مربوط به مرورگر را ازطریق گزارش گرفتن تجزیه‌وتحلیل کند، و دیگر اقدامات ضروری را انجام دهد. ممکن است فعالیت‌های انجام‌شده در این دستگاه از خارج از Chrome هم مدیریت شود.  <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="8456383681414356368">برگ زیرین بسته شد.</translation>
 <translation id="8456775115498700722">‏اکنون می‌توانید اطلاعات کارت <ph name="CARD_ISSUER_NAME" /> خود را به‌طور خودکار تکمیل کنید، زیرا حساب <ph name="CARD_ISSUER_NAME" /> شما به Google Pay پیوند شده است.</translation>

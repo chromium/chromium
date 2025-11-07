@@ -128,6 +128,7 @@
 <translation id="5556417849629758491">Geschäftsinformationen anzeigen, Option ist oben auf dem Bildschirm verfügbar</translation>
 <translation id="5627941783489838464">Keine Tab-Updates</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> Link aus Chrome}other{<ph name="TABS_COUNT_MANY" /> Links aus Chrome}}</translation>
+<translation id="5740354908255726955">{TAB_COUNT,plural, =1{Tab nach links verschieben}other{Tabs nach links verschieben}}</translation>
 <translation id="5746204836956568669"><ph name="NUMBER_OF_TABS" /> Tabs gruppieren, um schneller zu arbeiten?</translation>
 <translation id="5773295109010386583">Inaktive Elemente automatisch schließen</translation>
 <translation id="58326064309361797">Tabs zum Gruppieren ziehen</translation>
@@ -138,6 +139,7 @@
 <translation id="6109251075362363230">Alle doppelten Tabs werden jetzt ebenfalls archiviert, mit Ausnahme des zuletzt verwendeten Elements.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ausgewähltes Element schließen}other{<ph name="TABS_COUNT_MANY" /> ausgewählte Elemente schließen}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Gruppe in ein neues Fenster verschieben}other{Gruppe in ein anderes Fenster verschieben}}</translation>
+<translation id="6212374449852603982">{TAB_COUNT,plural, =1{Tab nach rechts verschieben}other{Tabs nach rechts verschieben}}</translation>
 <translation id="6228793724645064692">(Händlerbewertung)</translation>
 <translation id="625996437999624951">{TAB_COUNT,plural, =1{Tab aus Gruppe entfernen}other{Tabs aus Gruppe entfernen}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Tab zu neuer Gruppe hinzufügen}other{Tabs zu neuer Gruppe hinzufügen}}</translation>

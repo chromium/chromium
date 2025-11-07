@@ -78,6 +78,7 @@
 <translation id="112840717907525620">Beleidkas OK</translation>
 <translation id="1131264053432022307">Prent wat jy gekopieer het</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – Sleep van bo af en raak die terugknoppie om uit volskerm te gaan</translation>
+<translation id="1133418583142946603">Voeg huidige oortjie by</translation>
 <translation id="1138458427267715730">Kry opletberigte wanneer die prys op enige werf op die web daal</translation>
 <translation id="1142713751288681188">Papiersoort</translation>
 <translation id="1142965388643537393">Reisinligting</translation>
@@ -1009,6 +1010,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2627847595568876492">Onttrek tans teks uit PDF …</translation>
 <translation id="2628025184666666186">Hierdie bediener kon nie bewys dat dit <ph name="DOMAIN" /> is nie omdat dit ’n sekuriteitsertifikaat gebruik wat nie deur Chrome of jou stelselopstelling vir webverkeerenkripsie vertrou word nie. Dit is dalk veroorsaak deur 'n wanopstelling of 'n aanvaller wat jou verbinding onderskep het.</translation>
 <translation id="2628224721443278970">Meld aan by Microsoft OneDrive</translation>
+<translation id="2631387782019878060">Verifikasiekode: <ph name="OTP" /></translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" /> se bediener se IP-adres kon nie gevind word nie.</translation>
 <translation id="2638567100095052009">Tik @ in om in <ph name="FEATURED_SEARCH_LIST" /> te soek</translation>
 <translation id="2639739919103226564">Status:</translation>
@@ -2802,6 +2804,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5558083606899411167">Lugversorgers</translation>
 <translation id="5558125320634132440">Hierdie werf is geblokkeer omdat dit dalk inhoud vir volwassenes bevat</translation>
 <translation id="5559311991468302423">Vee adres uit</translation>
+<translation id="5561747310506483298">Identiteitkaarte</translation>
 <translation id="55635442646131152">Dokumentraamwerk</translation>
 <translation id="5563589142503817291">Gee in <ph name="LINK" /> vir Chrome toegang om jou ligging te gebruik.</translation>
 <translation id="5565613213060953222">Maak Incognito-oortjie oop</translation>

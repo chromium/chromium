@@ -238,6 +238,7 @@ Megjegyzések:
 <translation id="6154098560469640583">Mostantól bármikor használhatja a Chromiumot, amikor üzenetekben, dokumentumokban és más alkalmazásokban található linkekre koppint.</translation>
 <translation id="6157162508956739031">Gyorsan bejelentkezhet az alkalmazásokba és a webhelyekre a Chromiumból származó jelszavak és azonosítókulcsok automatikus kitöltésével</translation>
 <translation id="6170619162539716595">Engedélyezze a Chromium számára a Google Térkép használatát, hogy útvonalterveket és helyi információkat jeleníthessen meg az észlelt címekkel kapcsolatban.</translation>
+<translation id="6244277266078678766">Adatait menti a rendszer a fiókhoz (<ph name="USER_EMAIL" />) kapcsolt Jelszókezelőbe</translation>
 <translation id="6268381023930128611">Kijelentkezik a Chromiumból?</translation>
 <translation id="6301717043141881464">Válassza a Chromium automatikus kitöltési funkcióját, hogy egyszerűen hozzáférhessen mentett jelszavaihoz a többi alkalmazásában is</translation>
 <translation id="6324041800010509197">A laprács megnyitása Chromiumban</translation>
@@ -315,6 +316,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="8119542592987737574">Gyorsabb hozzáférés a Chromiumhoz az iPhone főképernyőjének Dockjáról.</translation>
 <translation id="8164086860209325020">Lépjen a Chromium beállításaihoz.</translation>
 <translation id="8197822717502700527">Mostantól a legtöbbet hozhatja ki a Chromiumból az eszközén.</translation>
+<translation id="8236210361418193126">Importálás a Jelszókezelőbe</translation>
 <translation id="8254729934443216898">Fedezze fel az új funkciókat, amelyek segítségével a legtöbbet hozhatja ki a Chromiumból.</translation>
 <translation id="8293572045658095405">A Chromium inkognitó módjában van</translation>
 <translation id="830951810931292870">Inkognitó módban nyitja meg a bevitt URL-eket a Chromiumban.</translation>

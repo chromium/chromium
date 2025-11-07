@@ -128,6 +128,7 @@
 <translation id="5556417849629758491">የመደብር መረጃን ይመልከቱ፣ አማራጩ ከማያ ገጹ አናት አጠገብ ይገኛል</translation>
 <translation id="5627941783489838464">ምንም የትር ዝማኔዎች የሉም</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> አገናኝ ከChrome}one{<ph name="TABS_COUNT_MANY" /> አገናኝ ከChrome}other{<ph name="TABS_COUNT_MANY" /> አገናኞች ከChrome}}</translation>
+<translation id="5740354908255726955">{TAB_COUNT,plural, =1{ትርን ወደ ግራ አንቀሳቅስ}one{ትርን ወደ ግራ አንቀሳቅስ}other{ትሮችን ወደ ግራ አንቀሳቅስ}}</translation>
 <translation id="5746204836956568669">በፍጥነት እንዲሰሩ <ph name="NUMBER_OF_TABS" /> ትሮች ይቦደኑ?</translation>
 <translation id="5773295109010386583">የቦዘኑ ንጥሎችን በራስ-ሰር ይዘጋል</translation>
 <translation id="58326064309361797">ለመቦደን ትሮችን ይጎትቱ</translation>
@@ -138,6 +139,7 @@
 <translation id="6109251075362363230">በጣም በቅርብ ጊዜ ጥቅም ላይ ከዋለው ቅጂ በስተቀር ሁሉም የተባዙ ትሮች አሁን በማህደር ይቀመጣሉ።</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> የተመረጠ ንጥልን ዝጋ}one{<ph name="TABS_COUNT_MANY" /> የተመረጠ ንጥልን ዝጋ}other{<ph name="TABS_COUNT_MANY" /> የተመረጡ ንጥሎችን ዝጋ}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{ስብስብን ወደ አዲስ መስኮት አንቀሳቅስ}one{ስብስብን ወደ ሌላ መስኮት አንቀሳቅስ}other{ስብስብን ወደ ሌላ መስኮት አንቀሳቅስ}}</translation>
+<translation id="6212374449852603982">{TAB_COUNT,plural, =1{ትርን ወደ ቀኝ አንቀሳቅስ}one{ትርን ወደ ቀኝ አንቀሳቅስ}other{ትሮችን ወደ ቀኝ አንቀሳቅስ}}</translation>
 <translation id="6228793724645064692">(የተሰጠ ደረጃ)</translation>
 <translation id="625996437999624951">{TAB_COUNT,plural, =1{ትርን ከቡድን አስወግድ}one{ትርን ከቡድን አስወግድ}other{ትሮችን ከቡድን አስወግድ}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{ትርን ወደ አዲስ ቡድን ያክሉ}one{ትርን ወደ አዲስ ቡድን ያክሉ}other{ትሮችን ወደ አዲስ ቡድን ያክሉ}}</translation>

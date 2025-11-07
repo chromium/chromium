@@ -173,6 +173,7 @@ Pokušajte pričekati nekoliko minuta prije odjave. Ako se sada odjavite, ovi ć
 <translation id="5305440589062022504">Otvara Upravitelj zaporki u Chromeu</translation>
 <translation id="5310957470610282541">Neki vaši podaci iz Chromea još nisu spremljeni na vaš Google račun.
 Pokušajte pričekati nekoliko minuta prije odjave. Ako se sada odjavite, ovi će se podaci izbrisati.</translation>
+<translation id="5342685492141499976">Vaši podaci će se spremiti u Google upravitelj zaporki za korisnika <ph name="USER_EMAIL" /></translation>
 <translation id="5389212809648216794">Google Chrome ne može upotrebljavati vaš fotoaparat jer ga upotrebljava neka druga aplikacija</translation>
 <translation id="5395376160638294582">Provjerite možete li uvijek upotrebljavati podatke iz Chromea na svom Google računu</translation>
 <translation id="5404252374083197467">Želite li postaviti Chrome kao zadani preglednik?</translation>
@@ -200,6 +201,7 @@ Pokušajte pričekati nekoliko minuta prije odjave. Ako se sada odjavite, ovi ć
 <translation id="5808435672482059465">Pregledaj povijest na Chromeu</translation>
 <translation id="5833027901704861726">Neki vaši podaci iz Chromea još nisu spremljeni na račun <ph name="EMAIL" />.
 Pokušajte pričekati nekoliko minuta prije prebacivanja na drugi račun. Ako sada promijenite račune, ti će se podaci izbrisati.</translation>
+<translation id="5853754888722423892">Uvoz u Google upravitelj zaporki</translation>
 <translation id="5998675059699164418">Vaša organizacija zahtijeva da se prijavite da biste koristili Chrome.</translation>
 <translation id="6021312115739110405">Prilagođeni feed koji je Google izradio za vas. Uključuje vijesti, sport i vremensku prognozu.</translation>
 <translation id="6022659036123304283">Prilagodite Chrome sebi</translation>

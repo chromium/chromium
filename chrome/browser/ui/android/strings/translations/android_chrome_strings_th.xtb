@@ -49,6 +49,7 @@
 <translation id="1181037720776840403">นำออก</translation>
 <translation id="1183189057400844278">โปรดยืนยันว่าเป็นคุณเพื่อให้ใช้รหัสผ่านในบัญชี Google ได้เสมอ</translation>
 <translation id="1187810343066461819">ลบบุ๊กมาร์ก ประวัติการเข้าชม และอื่นๆ จากรถคันนี้ด้วย</translation>
+<translation id="1193589902336218259">เปิดการแจ้งเตือนเคล็ดลับ</translation>
 <translation id="1193729455103054076">หากต้องการใช้รหัสผ่านที่รัดกุม</translation>
 <translation id="11947597112837849">อีเมล</translation>
 <translation id="1197267115302279827">ย้ายบุ๊กมาร์ก</translation>
@@ -236,6 +237,7 @@
 <translation id="200114059308480249">รวมข้อความที่อยู่โดยรอบในการค้นหาบน Google ไหม</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, แท็บที่ไม่ระบุตัวตนที่ปักหมุดซึ่งปิดเสียงอยู่</translation>
 <translation id="2021896219286479412">ส่วนควบคุมเว็บไซต์แบบเต็มหน้าจอ</translation>
+<translation id="2029669011553795746">การเลือกรับการแจ้งเตือนเคล็ดลับเปิดอยู่ครึ่งหน้าจอ</translation>
 <translation id="2038563949887743358">เปิดการขอเว็บไซต์เดสก์ท็อป</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> มีข้อมูลอยู่ใน Chrome ด้วย</translation>
 <translation id="2047378580182589770">แตะค้างไว้เพื่อออกจากโหมดไม่ระบุตัวตน</translation>
@@ -245,6 +247,7 @@
 <translation id="2063047797624276601">องค์กรเปิด Google Safe Browsing พร้อมการปกป้องที่ดียิ่งขึ้นไว้</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{ดาวน์โหลด 1 รายการไม่สำเร็จ}other{ดาวน์โหลด # รายการไม่สำเร็จ}}</translation>
 <translation id="2067805253194386918">ข้อความ</translation>
+<translation id="2072027001582274150">แท็บที่ไม่ได้ใช้งานหรือซ้ำกัน</translation>
 <translation id="2074527029802029717">ยกเลิกการปักหมุดแท็บ</translation>
 <translation id="2079545284768500474">เลิกทำ</translation>
 <translation id="2082238445998314030">ผลลัพธ์ <ph name="RESULT_NUMBER" /> จาก <ph name="TOTAL_RESULTS" /> รายการ</translation>
@@ -405,6 +408,7 @@
 <translation id="2781151931089541271">เหลือ 1 วิ</translation>
 <translation id="2789486458103222910">ตกลง</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chrome พบรหัสผ่านที่ใช้ซ้ำซึ่งคุณควรเปลี่ยนให้ดีขึ้น}other{Chrome พบรหัสผ่านที่ใช้ซ้ำ # รายการซึ่งคุณควรเปลี่ยนให้ดีขึ้น}}</translation>
+<translation id="2794551654724114396">เปิดการแจ้งเตือนเพื่อรับเคล็ดลับที่เป็นประโยชน์ที่จะช่วยให้คุณใช้ Chrome ได้อย่างเต็มประสิทธิภาพ</translation>
 <translation id="2800066122460699237">ระบบจะปิดแท็บ <ph name="TAB_TITLE" /></translation>
 <translation id="2805210243313393104">รับบุ๊กมาร์กและข้อมูลอื่นๆ ในทุกอุปกรณ์</translation>
 <translation id="2805756323405976993">แอป</translation>
@@ -640,6 +644,7 @@
 <translation id="3824259034819781947">แนบไฟล์</translation>
 <translation id="38243391581572867">Lens ไม่พร้อมใช้งานกับบัญชีนี้</translation>
 <translation id="38258275871320156">ใช้ได้กับหน้าต่างขนาดเล็กเท่านั้น</translation>
+<translation id="3826529618131025925">Bottom Sheet ความช่วยเหลือและคำแนะนำในการเลือกรับการแจ้งเตือนเคล็ดลับ</translation>
 <translation id="3845098929839618392">เปิดในแท็บที่ไม่ระบุตัวตน</translation>
 <translation id="3847319713229060696">ช่วยปรับปรุงความปลอดภัยในอินเทอร์เน็ตให้กับทุกคน</translation>
 <translation id="385051799172605136">กลับ</translation>
@@ -773,6 +778,7 @@
 <translation id="4405636711880428279">นำบัตรเสมือนออกใช่ไหม</translation>
 <translation id="4408965460206576430">ไฟล์นี้มีมัลแวร์หรือมาจากเว็บไซต์ที่น่าสงสัย</translation>
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> และอีก <ph name="TAB_COUNT" /> แท็บ</translation>
+<translation id="441100617989818073">แท็บและกลุ่มที่ไม่ได้ใช้งานหรือซ้ำกัน</translation>
 <translation id="4414179633735763985">ลบ <ph name="TAB_GROUPS_AND_TABS_PART" />แล้ว</translation>
 <translation id="4415276339145661267">จัดการบัญชี Google</translation>
 <translation id="4425140285732600465">กำลังติดตามราคา รับการแจ้งเตือนหากราคาลดลงในเว็บไซต์ใดก็ตาม</translation>
@@ -801,6 +807,7 @@
 <translation id="452750746583162491">ตรวจสอบข้อมูลที่ซิงค์</translation>
 <translation id="4532845899244822526">เลือกโฟลเดอร์</translation>
 <translation id="4535755320005483982">กลุ่มแท็บ <ph name="GROUP_TITLE" /> ที่แชร์</translation>
+<translation id="4537137366307982887">การเลือกรับการแจ้งเตือนเคล็ดลับเปิดอยู่แบบเต็มความสูง</translation>
 <translation id="4543131175509360848">ไม่มีชีตพาสคีย์</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> แท็บ}other{<ph name="TAB_COUNT_MANY" /> แท็บ <ph name="TAB_COUNT_INCOGNITO" /> แท็บที่ไม่ระบุตัวตน}}</translation>
 <translation id="4558311620361989323">แป้นพิมพ์ลัดสำหรับหน้าเว็บ</translation>
@@ -952,6 +959,7 @@
 <translation id="5123685120097942451">แท็บที่ไม่ระบุตัวตน</translation>
 <translation id="5142281402488957685">สำหรับเรื่องราวใหม่ๆ ให้ดึงลงเพื่อรีเฟรช</translation>
 <translation id="5144385790872094440">ระบบจะโหลดหน้าเว็บบางหน้าที่คุณเข้าชมไว้ล่วงหน้า ระบบอาจโหลดหน้าเว็บล่วงหน้าผ่านเซิร์ฟเวอร์ของ Google เมื่อลิงก์จากเว็บไซต์หรือแอป Google</translation>
+<translation id="5145887002054615868">แท็บที่ซ้ำกันหรือไม่ได้ใช้งานเป็นเวลา <ph name="DAYS_INACTIVE" /> วันจะย้ายมาที่นี่<ph name="AUTODELETE_SECTION" /> คุณเปลี่ยนตัวเลือกนี้ได้ทุกเมื่อใน<ph name="DECLUTTER_SETTINGS_TITLE" /></translation>
 <translation id="5152843274749979095">ไม่มีแอปที่รองรับติดตั้งอยู่</translation>
 <translation id="5161254044473106830">ต้องระบุชื่อ</translation>
 <translation id="5161262286013276579">ชีตการยืนยันพาสคีย์เปิดอยู่</translation>
@@ -1114,6 +1122,7 @@
 <translation id="5864419784173784555">กำลังรอการดาวน์โหลดรายการอื่น…</translation>
 <translation id="5865733239029070421">ส่งสถิติการใช้งานและรายงานข้อขัดข้องให้กับ Google โดยอัตโนมัติ</translation>
 <translation id="5869522115854928033">รหัสผ่านที่บันทึกไว้</translation>
+<translation id="5870416898561279542">แท็บและกลุ่มที่ซ้ำกันหรือไม่ได้ใช้งานเป็นเวลา <ph name="DAYS_INACTIVE" /> วันจะย้ายมาที่นี่<ph name="AUTODELETE_SECTION" /> คุณเปลี่ยนตัวเลือกนี้ได้ทุกเมื่อใน<ph name="DECLUTTER_SETTINGS_TITLE" /></translation>
 <translation id="587735546353481577">หากต้องการติดตามเว็บไซต์ ให้ไปที่เว็บไซต์นั้น เปิดเมนู Chrome แล้วแตะ "ติดตาม"</translation>
 <translation id="5883855034004058011">ตรวจสอบข้อมูลไบโอเมตริกไม่ผ่านหลายครั้งเกินไป โปรดล็อกและปลดล็อกอุปกรณ์เพื่อลองอีกครั้ง</translation>
 <translation id="5885378508678660271">การแจ้งเตือน <ph name="SEPARATOR" /> Chrome นำสิทธิ์เหล่านี้ออกเนื่องจากเว็บไซต์นี้อันตราย</translation>
@@ -1874,6 +1883,7 @@
 <translation id="8942627711005830162">เปิดในหน้าต่างอื่น</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - ดาวน์โหลดภาษานี้ไม่ได้ ลองอีกครั้งในภายหลัง</translation>
 <translation id="8946759102391960088">เข้าถึงรหัสผ่านต่อไป</translation>
+<translation id="895442993047180128">ปิดการเลือกรับการแจ้งเตือนเคล็ดลับแล้ว</translation>
 <translation id="8957528460562961174">หากต้องการเข้าถึงรหัสผ่านต่อไป ให้ส่งออกรหัสผ่านตอนนี้ แล้วนำเข้าไปยังเครื่องมือจัดการรหัสผ่านที่คุณต้องการ เครื่องมือจัดการรหัสผ่านบน Google หยุดทำงานเนื่องจากบริการ Google Play ไม่พร้อมใช้งาน</translation>
 <translation id="8963117664422609631">ไปที่การตั้งค่าเว็บไซต์</translation>
 <translation id="8965591936373831584">รอดำเนินการ</translation>

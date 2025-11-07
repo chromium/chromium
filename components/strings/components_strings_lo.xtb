@@ -78,6 +78,7 @@
 <translation id="112840717907525620">ແຄຊ໌ນະໂຍບາຍໃຊ້ໄດ້</translation>
 <translation id="1131264053432022307">ຮູບພາບທີ່ທ່ານສຳເນົາ</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – ເພື່ອອອກຈາກໂໝດເຕັມຈໍ, ໃຫ້ລາກຈາກເທິງສຸດແລ້ວແຕະປຸ່ມກັບຄືນ</translation>
+<translation id="1133418583142946603">ເພີ່ມແຖບປັດຈຸບັນ</translation>
 <translation id="1138458427267715730">ຮັບການແຈ້ງເຕືອນເມື່ອລາຄາຫຼຸດລົງໃນທຸກເວັບໄຊທົ່ວເວັບ</translation>
 <translation id="1142713751288681188">ປະເພດເຈ້ຍ</translation>
 <translation id="1142965388643537393">ຂໍ້ມູນທ່ອງທ່ຽວ</translation>
@@ -444,6 +445,7 @@
 <translation id="1717218214683051432">ເຊັນກວດຈັບການເຄື່ອນໄຫວ</translation>
 <translation id="1717494416764505390">ກ່ອງຈົດໝາຍ 3</translation>
 <translation id="1717688554309417925">ບໍລິການບັດເດບິດ ແລະ ບັນຊີລາຍວັນ</translation>
+<translation id="1717882880162336471">ລອງໃຊ້ໂໝດ AI</translation>
 <translation id="1719434663396780149">ເປີດໃຊ້ການແຈ້ງເຕືອນການຫຼຸດລາຄາແລ້ວ. ທ່ານສາມາດປ່ຽນສິ່ງນີ້ໄດ້ໃນ <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="1719838434204287058">24 x 30 ນິ້ວ</translation>
 <translation id="1720941539803966190">ປິດສອນການນຳໃຊ້</translation>
@@ -2015,6 +2017,7 @@
 <translation id="4258748452823770588">ລາຍ​ເຊັນ​ບໍ່​ດີ</translation>
 <translation id="4265635050210404830">ບັດສະມາຊິກຂອງທ່ານ</translation>
 <translation id="4265872034478892965">ອະນຸຍາດໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ</translation>
+<translation id="4267590181863312380">ເພື່ອຮັບປະ​ຫວັດ​ຂອງທ່ານຈາກອຸປະກອນອື່ນໆ, ໃຫ້ເຂົ້າສູ່ລະບົບ ແລະ ຊິ້ງປະຫວັດ. ນອກຈາກນີ້, ທ່ານຍັງຈະຮັບລະຫັດຜ່ານ ແລະ ຂໍ້ມູນອື່ນໆໃນອຸປະກອນທຸກເຄື່ອງຂອງທ່ານໄດ້ນຳ. ທ່ານສາມາດຢຸດຊິ້ງຂໍ້ມູນຕອນໃດກໍໄດ້ໃນການຕັ້ງຄ່າ. Google ອາດປັບແຕ່ງການຊອກຫາ ແລະ ບໍລິການອື່ນໆໃຫ້ເປັນແບບສ່ວນຕົວໂດຍອ້າງອີງໃສ່ປະຫວັດຂອງທ່ານ.</translation>
 <translation id="4269029136757623689">ພັດລົມໃນຄົວເຮືອນ</translation>
 <translation id="4269264543938335308">ຊຸດລອຍນ້ຳ</translation>
 <translation id="4269599248168651462">ໃບຮັບຮອງເຊີບເວີຖືກອອກໃຫ້ຊື່ທີ່ບໍ່ຊ້ຳກັນ.</translation>
@@ -2891,6 +2894,7 @@
 <translation id="5715918316982363436"><ph name="TAB_COUNT" /> ຈາກ <ph name="WINDOW_COUNT" /> ຢູ່ອຸປະກອນນີ້</translation>
 <translation id="5716325061445053985">ແຕະເພື່ອເປີດແຖບຢູ່ໂທລະສັບຂອງທ່ານ</translation>
 <translation id="5717509257172454543">ສະເກັດນ້ຳກ້ອນ</translation>
+<translation id="5718601519531438273">ຮວມທັງຂໍ້ມູນຕ່າງໆ ເຊັ່ນ: ໜັງສືຜ່ານແດນ ແລະ ໃບອະນຸຍາດຂັບຂີ່</translation>
 <translation id="5720705177508910913">ຜູ້​ໃຊ້​ປະ​ຈຸ​ບັນ</translation>
 <translation id="5720895412771013401">ຄອມພິວເຕີຕັ້ງໂຕະ</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} ແລະ ອີກ 1 ເວັບໄຊ}other{{website_1}, {website_2} ແລະ ອີກ {more_count} ເວັບໄຊ}}</translation>
@@ -4560,6 +4564,7 @@
 <translation id="8449036207308062757">ຈັດການບ່ອນເກັບຂໍ້ມູນ</translation>
 <translation id="8449155699563577224">17 x 24 ນິ້ວ</translation>
 <translation id="8449836157089738489">ເປີດທັງໝົດໃນກຸ່ມແຖບໃໝ່</translation>
+<translation id="8451518040456311377">ບັນທຶກ ແລະ ຕື່ມຂໍ້ມູນເອກະສານລະບຸຕົວຕົນ</translation>
 <translation id="84561192812921051">ຜູ້ເບິ່ງແຍງຂອງທ່ານສາມາດປ່ຽນແປງໂປຣໄຟລ໌ ແລະ ໂປຣແກຣມທ່ອງເວັບຂອງທ່ານຈາກທາງໄກ, ວິເຄາະຂໍ້ມູນກ່ຽວກັບໂປຣແກຣມທ່ອງເວັບຜ່ານການລາຍງານ ແລະ ເຮັດໜ້າວຽກທີ່ຈຳເປັນອື່ນໆໄດ້. ການເຄື່ອນໄຫວຢູ່ອຸປະກອນນີ້ອາດຖືກຈັດການຢູ່ນອກ Chrome ໄດ້ນຳ.  <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
 <translation id="8456383681414356368">ຊີດລຸ່ມສຸດປິດຢູ່.</translation>
 <translation id="8456775115498700722">ຕອນນີ້ທ່ານສາມາດຕື່ມຂໍ້ມູນບັດ <ph name="CARD_ISSUER_NAME" /> ຂອງທ່ານໂດຍອັດຕະໂນມັດເນື່ອງຈາກບັນຊີ <ph name="CARD_ISSUER_NAME" /> ຂອງທ່ານຖືກລິ້ງກັບ Google Pay ແລ້ວ.</translation>

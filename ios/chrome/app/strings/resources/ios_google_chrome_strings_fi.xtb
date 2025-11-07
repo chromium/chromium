@@ -173,6 +173,7 @@ Odota muutama minuutti ennen uloskirjautumista. Jos kirjaudut ulos nyt, tämä d
 <translation id="5305440589062022504">Avaa Salasanat Chromessa.</translation>
 <translation id="5310957470610282541">Osaa Chrome-datastasi ei ole vielä tallennettu Google-tilillesi.
 Odota muutama minuutti ennen uloskirjautumista. Jos kirjaudut ulos nyt, tämä data poistetaan.</translation>
+<translation id="5342685492141499976">Data tallennetaan Google Salasanoihin tälle tilille: <ph name="USER_EMAIL" /></translation>
 <translation id="5389212809648216794">Google Chrome ei voi käyttää kameraa, koska se on toisen sovelluksen käytössä.</translation>
 <translation id="5395376160638294582">Varmista, että voit aina käyttää Chrome-dataa Google-tilillä</translation>
 <translation id="5404252374083197467">Valitaanko Chrome oletukseksi?</translation>
@@ -200,6 +201,7 @@ Odota muutama minuutti ennen uloskirjautumista. Jos kirjaudut ulos nyt, tämä d
 <translation id="5808435672482059465">Tarkista Chrome-historiasi</translation>
 <translation id="5833027901704861726">Osaa Chrome-datastasi ei ole vielä tallennettu tälle tilille: <ph name="EMAIL" />.
 Odota muutama minuutti ennen tilin vaihtamista. Jos vaihdat tiliä nyt, tämä data poistetaan.</translation>
+<translation id="5853754888722423892">Tuo Google Salasanoihin</translation>
 <translation id="5998675059699164418">Organisaatiosi edellyttää sisäänkirjautumista, jotta voit käyttää Chromea.</translation>
 <translation id="6021312115739110405">Googlen sinulle luoma fiidi. Sisältää uutiset, urheilun ja sään.</translation>
 <translation id="6022659036123304283">Tee Chromesta näköisesi</translation>

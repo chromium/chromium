@@ -2458,6 +2458,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2667463864537187133">Správa kontroly pravopisu</translation>
 <translation id="2668604389652548400">Odstraňte ho nebo ho nahraďte podobnými rozšířeními z <ph name="BEGIN_LINK" />Internetového obchodu Chrome<ph name="END_LINK" />.</translation>
 <translation id="2669241540496514785">Aplikaci <ph name="APP_NAME" /> nelze otevřít</translation>
+<translation id="2669250147452250961">Když tuto možnost zapnete, budete mít k dispozici historii procházení a karty z ostatních zařízení</translation>
 <translation id="2669454659051515572">Stažené soubory může vidět kdokoli, kdo používá tohle zařízení</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> sdílí kartu Chrome.</translation>
 <translation id="2670168377011445813">Pokud Chrome některé z vašich hesel najde ve veřejném seznamu dat prozrazených při porušení zabezpečení údajů a budete přihlášení, může vám nabídnout, že dané heslo změní. <ph name="BEGIN_LINK" />Další informace o automatické změně hesla<ph name="END_LINK" /></translation>
@@ -8598,6 +8599,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="6961327401577924850">Weby vyhledávají zařízení Bluetooth obvykle kvůli funkcím, jako je nastavení nebo synchronizace nízkoenergetických lokátorů, zařízení ke sledování kondice a zdraví nebo chytrých žárovek</translation>
 <translation id="6963772203726867701">Nedekováno</translation>
 <translation id="6963872466817251924">Zvýrazňovač textového kurzoru</translation>
+<translation id="6964239097707154771">jsou doplňky pro Chrome, které vám pomůžou stihnout víc věcí</translation>
 <translation id="6964390816189577014">Hrdina</translation>
 <translation id="6964760285928603117">Odebrat ze skupiny</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -8910,6 +8912,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7186088072322679094">Ponechat na liště</translation>
 <translation id="7186303001964993981">Web <ph name="ORIGIN" /> tuto složku nemůže otevřít, protože obsahuje systémové soubory</translation>
 <translation id="7186568385131859684">Mějte pod kontrolou, jak se historie prohlížení používá s vašimi dalšími daty ve službách Google</translation>
+<translation id="7186903260115204164">Přidávejte ruční kresby, podpisy a zvýraznění pomocí nového nástroje Kreslení</translation>
 <translation id="7188508872042490670">Data webu v zařízení</translation>
 <translation id="7189234443051076392">V zařízení musí být dost místa</translation>
 <translation id="7189451821249468368">Nemáte dostatečný počet upgradů k registraci tohoto zařízení. Kontaktujte obchodní oddělení a kupte si další. Pokud se domníváte, že se jedná o chybu, kontaktujte podporu.</translation>
@@ -10639,7 +10642,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8356409598322585307">Toto zařízení jste již zaregistrovali. Není potřeba ho registrovat znovu.</translation>
 <translation id="8357388086258943206">Při instalaci systému Linux došlo k chybě</translation>
 <translation id="8358685469073206162">Obnovit stránky?</translation>
-<translation id="835927394551949760">Informace z Googlu</translation>
+<translation id="835927394551949760">Zeptat se Googlu</translation>
 <translation id="835951711479681002">Uložit do účtu Google</translation>
 <translation id="8360140320636871023">Personalizace motivu zobrazení</translation>
 <translation id="8360267485906769442">Tlačítko Odeslat zpětnou vazbu</translation>
@@ -10739,6 +10742,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8427213022735114808">Diktování odesílá váš hlas do Googlu, aby bylo možné hlasově zadávat do libovolného textového pole.</translation>
 <translation id="8427292751741042100">vloženo na libovolném webu</translation>
 <translation id="8428213095426709021">Nastavení</translation>
+<translation id="8428257636009471988">Navštívit Internetový obchod</translation>
 <translation id="8428271547607112339">Přidat školní účet</translation>
 <translation id="8428634594422941299">Rozumím</translation>
 <translation id="84297032718407999">Za <ph name="LOGOUT_TIME_LEFT" /> budete odhlášeni</translation>

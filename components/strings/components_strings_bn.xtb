@@ -78,6 +78,7 @@
 <translation id="112840717907525620">নীতি ক্যাশেটি ঠিক আছে</translation>
 <translation id="1131264053432022307">আপনার কপি করা ছবি</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – ফুল-স্ক্রিন থেকে বেরিয়ে আসতে উপর থেকে টেনে আনুন এবং ফিরে যাওয়ার বোতাম টাচ করুন</translation>
+<translation id="1133418583142946603">বর্তমান ট্যাব যোগ করুন</translation>
 <translation id="1138458427267715730">ওয়েব জুড়ে কোনও সাইটের দাম কমে গেলে সতর্কতা পান</translation>
 <translation id="1142713751288681188">পেপারের ধরন</translation>
 <translation id="1142965388643537393">ভ্রমণের তথ্য</translation>
@@ -1010,6 +1011,7 @@
 <translation id="2627847595568876492">পিডিএফ থেকে টেক্সট এক্সট্র্যাক্ট করা হচ্ছে...</translation>
 <translation id="2628025184666666186">এই সার্ভারটি প্রমাণ দিতে পারেনি যে এটি <ph name="DOMAIN" />, কারণ এটি এমন একটি নিরাপত্তা সার্টিফিকেট ব্যবহার করছে যা Chrome বা আপনার ওয়েব ট্রাফিক এনক্রিপশনের জন্য সেট করা সিস্টেম কনফিগারেশনের বিশ্বস্ত নয়। ভুল কনফিগারেশনের কারণে বা কোনও আক্রমণকারী আপনার কানেকশন ইন্টারসেপ্ট করার চেষ্টা করলে এটি হতে পারে।</translation>
 <translation id="2628224721443278970">Microsoft OneDrive-এ সাইন-ইন করুন</translation>
+<translation id="2631387782019878060">যাচাইকরণ কোড: <ph name="OTP" /></translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" />-এর সার্ভার আইপি অ্যাড্রেস পাওয়া যায়নি।</translation>
 <translation id="2638567100095052009"><ph name="FEATURED_SEARCH_LIST" /> জুড়ে সার্চ করতে @ টাইপ করুন</translation>
 <translation id="2639739919103226564">স্থিতি: </translation>
@@ -2803,6 +2805,7 @@
 <translation id="5558083606899411167">এয়ার কন্ডিশনার</translation>
 <translation id="5558125320634132440">প্রাপ্তবয়স্কদের জন্য কন্টেন্ট থাকার কারণে হয়ত এই সাইট ব্লক করা হয়েছে</translation>
 <translation id="5559311991468302423">ঠিকানা মুছুন</translation>
+<translation id="5561747310506483298">পরিচয়পত্র</translation>
 <translation id="55635442646131152">ডকুমেন্ট আউটলাইন</translation>
 <translation id="5563589142503817291">আপনার মাইক্রোফোন ব্যবহার করতে, <ph name="LINK" /> থেকে Chrome-কে অ্যাক্সেস দিন।</translation>
 <translation id="5565613213060953222">ছদ্মবেশী ট্যাব খুলুন</translation>

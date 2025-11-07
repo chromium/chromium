@@ -78,6 +78,7 @@
 <translation id="112840717907525620">У кэшы правіла няма памылак</translation>
 <translation id="1131264053432022307">Скапіраваны вамі відарыс</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" />: каб выйсці з поўнаэкраннага рэжыму, правядзіце пальцам па экране зверху ўніз і націсніце кнопку "Назад"</translation>
+<translation id="1133418583142946603">Дадаць бягучую ўкладку</translation>
 <translation id="1138458427267715730">Атрымлівайце абвесткі, калі цана зніжаецца на любым сайце ў інтэрнэце</translation>
 <translation id="1142713751288681188">Тып паперы</translation>
 <translation id="1142965388643537393">Інфармацыя пра паездкі</translation>
@@ -1010,6 +1011,7 @@
 <translation id="2627847595568876492">Вымаецца тэкст з PDF…</translation>
 <translation id="2628025184666666186">Серверу не ўдалося даказаць, што гэта дамен <ph name="DOMAIN" />, бо ён выкарыстоўвае сертыфікат бяспекі, якому не давярае Chrome ці канфігурацыя вашай сістэмы для шыфравання інтэрнэт-трафіка. Прычынай могуць быць няправільныя налады або спроба зламысніка перахапіць падключэнне.</translation>
 <translation id="2628224721443278970">Увайсці ў Microsoft OneDrive</translation>
+<translation id="2631387782019878060">Код спраўджання: <ph name="OTP" /></translation>
 <translation id="2634124572758952069">IP-адрас сервера хоста <ph name="HOST_NAME" /> не знойдзены.</translation>
 <translation id="2638567100095052009">Увядзіце @ для пошуку тут: <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="2639739919103226564">Стан:</translation>
@@ -2801,6 +2803,7 @@
 <translation id="5558083606899411167">Кандыцыянеры</translation>
 <translation id="5558125320634132440">Сайт заблакіраваны, бо ён можа змяшчаць змесціва для дарослых</translation>
 <translation id="5559311991468302423">Выдаленне адраса</translation>
+<translation id="5561747310506483298">Пасведчанні асобы</translation>
 <translation id="55635442646131152">Структура дакумента</translation>
 <translation id="5563589142503817291">Каб выкарыстоўваць месцазнаходжанне, адкрыйце <ph name="LINK" /> і дайце Chrome доступ.</translation>
 <translation id="5565613213060953222">Адкрыць укладку ў рэжыме інкогніта</translation>

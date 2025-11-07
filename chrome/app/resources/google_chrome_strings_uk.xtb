@@ -442,6 +442,7 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="6025087594896450715">Google Chrome перезапуститься через <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">Закрити</translation>
 <translation id="604424701295382420">Google Об’єктив закріплено. Щоб скористатися ним, натисніть нову кнопку на панелі інструментів.</translation>
+<translation id="6046028983725193307">Щоб надати доступ до системного аудіо, відкрийте системні налаштування й дозвольте Chrome записувати лише системне аудіо. Потім вам потрібно буде перезапустити Chrome.</translation>
 <translation id="6069027071882229820">Копіювати як зображення</translation>
 <translation id="6070348360322141662">Щоб підвищити безпеку, Google Chrome шифруватиме ваші дані</translation>
 <translation id="6075300983329039771">За вимогами вашої організації (<ph name="MANAGER" />), ви повинні ввійти в обліковий запис Chrome</translation>

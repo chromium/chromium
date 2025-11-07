@@ -78,6 +78,7 @@
 <translation id="112840717907525620">ذاكرة التخزين المؤقت للسياسة بحالة جيدة</translation>
 <translation id="1131264053432022307">الصورة التي نسختها</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> - للخروج من وضع ملء الشاشة، يمكنك السحب من أعلى الشاشة والنقر على زرّ الرجوع</translation>
+<translation id="1133418583142946603">إضافة علامة التبويب الحالية</translation>
 <translation id="1138458427267715730">تلقَّ تنبيهات عند انخفاض السعر على أي موقع إلكتروني على الويب</translation>
 <translation id="1142713751288681188">نوع الورق</translation>
 <translation id="1142965388643537393">معلومات السفر</translation>
@@ -211,7 +212,7 @@
 <translation id="1333989956347591814">قد يظل <ph name="BEGIN_EMPHASIS" />نشاطك مرئيًا<ph name="END_EMPHASIS" /> للجهات التالية:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />المواقع الإلكترونية التي تزورها
-          <ph name="LIST_ITEM" />صاحب العمل أو المدرسة
+          <ph name="LIST_ITEM" />صاحب العمل أو المؤسسة التعليمية
           <ph name="LIST_ITEM" />مزوّد خدمة الإنترنت
         <ph name="END_LIST" /></translation>
 <translation id="1337692097987160377">مشاركة علامة التبويب هذه</translation>
@@ -257,7 +258,7 @@
 <translation id="1407135791313364759">فتح الكل</translation>
 <translation id="1408696301184924537">‏لملء رقم الحساب هذا بصيغة IBAN في المرة القادمة تلقائيًا، يجب حفظه في حسابك على Google</translation>
 <translation id="1408787208417187241">وضع ثلاثة دبابيس بالأعلى</translation>
-<translation id="1410365862999780287">‏لن يتمكّن مستخدمو هذا الجهاز الآخرون من الاطّلاع على نشاطك، لذا يمكنك التصفُّح بخصوصية تامة. ولن يؤدي ذلك إلى تغيير طريقة جمع البيانات من قِبل المواقع الإلكترونية التي تزورها والخدمات التي تستخدمها، بما في ذلك Google. ولكن سيتم حفظ عمليات التنزيل والإشارات المرجعية وعناصر قائمة القراءة.</translation>
+<translation id="1410365862999780287">‏لن يتمكّن مستخدمو هذا الجهاز الآخرون من الاطّلاع على نشاطك، لذا يمكنك التصفُّح بخصوصية تامة. ولن تتغيّر طريقة جمع البيانات، سواء من المواقع الإلكترونية التي تزورها أو من الخدمات التي تستخدمها هذه المواقع، بما في ذلك Google. ولكن سيتم حفظ عمليات التنزيل والإشارات المرجعية وعناصر قائمة القراءة.</translation>
 <translation id="1410941016594047814">ظرف دعوة</translation>
 <translation id="1413809658975081374">خطأ في الخصوصية</translation>
 <translation id="1414134146594747368">رياض أطفال</translation>
@@ -444,6 +445,7 @@
 <translation id="1717218214683051432">أجهزة استشعار الحركة</translation>
 <translation id="1717494416764505390">صندوق البريد الإلكتروني 3</translation>
 <translation id="1717688554309417925">خدمات بطاقات الخصم والحسابات الجارية</translation>
+<translation id="1717882880162336471">‏"وضع AI" بانتظارك</translation>
 <translation id="1719434663396780149">ميزة "إشعارات بانخفاض الأسعار" مفعَّلة. يمكنك إيقافها من خلال <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="1719838434204287058">24 × 30 بوصة</translation>
 <translation id="1720941539803966190">إغلاق البرنامج التعليمي</translation>
@@ -2015,6 +2017,7 @@
 <translation id="4258748452823770588">توقيع غير صالح</translation>
 <translation id="4265635050210404830">بطاقات الولاء</translation>
 <translation id="4265872034478892965">تم السماح من قبل المشرف</translation>
+<translation id="4267590181863312380">‏للحصول على السجلّ من أجهزتك الأخرى، يُرجى تسجيل الدخول ومزامنة السجلّ. بإمكانك أيضًا الوصول إلى كلمات المرور وغيرها من البيانات على جميع أجهزتك. ويمكنك إيقاف المزامنة في أي وقت من خلال الإعدادات. وقد تستخدم Google السجلّ لتخصيص "بحث Google" والخدمات الأخرى.</translation>
 <translation id="4269029136757623689">مراوح منزلية</translation>
 <translation id="4269264543938335308">ملابس سباحة</translation>
 <translation id="4269599248168651462">تم إصدار شهادة الخادم لمضيف اسمه غير فريد.</translation>
@@ -2891,6 +2894,7 @@
 <translation id="5715918316982363436">‫<ph name="TAB_COUNT" /> من <ph name="WINDOW_COUNT" /> على هذا الجهاز</translation>
 <translation id="5716325061445053985">انقر لفتح علامة التبويب على هاتفك</translation>
 <translation id="5717509257172454543">تزلُّج على الجليد</translation>
+<translation id="5718601519531438273">يمكن تضمين معلومات مثل جوازات السفر ورخص القيادة</translation>
 <translation id="5720705177508910913">المستخدم الحالي</translation>
 <translation id="5720895412771013401">أجهزة كمبيوتر مكتبي</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{‫{website_1} و{website_2}}=3{‫{website_1} و{website_2} وموقع إلكتروني آخر}zero{‫{website_1} و{website_2} و{more_count} موقع إلكتروني آخر}few{‫{website_1} و{website_2} و{more_count} مواقع إلكترونية أخرى}many{‫{website_1} و{website_2} و{more_count} موقعًا إلكترونيًا آخر}other{‫{website_1} و{website_2} و{more_count} موقع إلكتروني آخر}}</translation>
@@ -4563,6 +4567,7 @@
 <translation id="8449036207308062757">إدارة مساحة التخزين</translation>
 <translation id="8449155699563577224">17 × 24 بوصة</translation>
 <translation id="8449836157089738489">فتح الكل في مجموعة علامات تبويب جديدة</translation>
+<translation id="8451518040456311377">حفظ مستندات الهوية وملؤها</translation>
 <translation id="84561192812921051">‏يمكن للمشرف إجراء تغييرات على ملفك الشخصي والمتصفّح عن بُعد، وتحليل المعلومات عن المتصفّح من خلال إعداد التقارير وتنفيذ المهام الضرورية الأخرى. وقد تتم أيضًا إدارة النشاط على هذا الجهاز خارج Chrome.  <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="8456383681414356368">تمّ إغلاق البطاقة السفلية.</translation>
 <translation id="8456775115498700722">‏يمكنك الآن ملء بيانات بطاقات <ph name="CARD_ISSUER_NAME" /> تلقائيًا لأنّ حسابك على <ph name="CARD_ISSUER_NAME" /> مرتبط بحساب Google Pay.</translation>

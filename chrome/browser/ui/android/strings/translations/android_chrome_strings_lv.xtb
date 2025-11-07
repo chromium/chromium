@@ -49,6 +49,7 @@
 <translation id="1181037720776840403">Noņemt</translation>
 <translation id="1183189057400844278">Lai vienmēr varētu izmantot Google kontā saglabātās paroles, apstipriniet savu identitāti</translation>
 <translation id="1187810343066461819">Arī izdzēst grāmatzīmes, vēsturi un citu informāciju šajā automašīnas profilā</translation>
+<translation id="1193589902336218259">Ieslēgt padomu paziņojumus</translation>
 <translation id="1193729455103054076">Vai izmantot drošu paroli?</translation>
 <translation id="11947597112837849">e-pasta adrese</translation>
 <translation id="1197267115302279827">Pārvietot grāmatzīmes</translation>
@@ -236,6 +237,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="200114059308480249">Vai iekļaut apkārtējo tekstu Google meklēšanā?</translation>
 <translation id="2004096469149679223">Piesprausta inkognito cilne <ph name="TAB_TITLE" />, kuras skaņa ir izslēgta</translation>
 <translation id="2021896219286479412">Pilnekrāna vietnes vadīklas</translation>
+<translation id="2029669011553795746">Padomu paziņojumu izvēles ekrāns ir atvērts pusekrāna augstumā</translation>
 <translation id="2038563949887743358">Ieslēgt iestatījumu “Pieprasīt datora vietni”</translation>
 <translation id="204321170514947529">Pārlūkā Chrome ir arī “<ph name="APP_NAME" />” dati</translation>
 <translation id="2047378580182589770">Pieskarieties un turiet, lai pārslēgtos no inkognito režīma.</translation>
@@ -245,6 +247,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="2063047797624276601">Jūsu organizācija ieslēdza funkciju “Droša pārlūkošana ar papildu aizsardzību”.</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 lejupielāde neizdevās}zero{# lejupielādes neizdevās}one{# lejupielāde neizdevās}other{# lejupielādes neizdevās}}</translation>
 <translation id="2067805253194386918">teksts</translation>
+<translation id="2072027001582274150">Neizmantotas vai dublētas cilnes</translation>
 <translation id="2074527029802029717">Atspraust cilni</translation>
 <translation id="2079545284768500474">Atsaukt</translation>
 <translation id="2082238445998314030"><ph name="RESULT_NUMBER" />. rezultāts no <ph name="TOTAL_RESULTS" /></translation>
@@ -405,6 +408,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="2781151931089541271">Atlikusi 1 s</translation>
 <translation id="2789486458103222910">Labi</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Pārlūkā Chrome tika konstatēta atkārtoti izmantota parole, ko jūs varētu uzlabot.}zero{Pārlūkā Chrome tika konstatētas # atkārtoti izmantotas paroles, ko jūs varētu uzlabot.}one{Pārlūkā Chrome tika konstatēta # atkārtoti izmantota parole, ko jūs varētu uzlabot.}other{Pārlūkā Chrome tika konstatētas # atkārtoti izmantotas paroles, ko jūs varētu uzlabot.}}</translation>
+<translation id="2794551654724114396">Ieslēdziet paziņojumus, lai saņemtu noderīgus padomus par efektīvu Chrome izmantošanu.</translation>
 <translation id="2800066122460699237">Cilne “<ph name="TAB_TITLE" />” tiks aizvērta.</translation>
 <translation id="2805210243313393104">Iegūstiet savas grāmatzīmes un citus datus visās savās ierīcēs</translation>
 <translation id="2805756323405976993">Lietotnes</translation>
@@ -640,6 +644,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="3824259034819781947">Pievienot failus</translation>
 <translation id="38243391581572867">Tehnoloģija Lens šajā kontā nav pieejama.</translation>
 <translation id="38258275871320156">Pieejams tikai maziem logiem</translation>
+<translation id="3826529618131025925">Padomu paziņojumu izvēles palīdzības un norādījumu ekrāna apakšdaļas lapa</translation>
 <translation id="3845098929839618392">Atvērt inkognito cilnē</translation>
 <translation id="3847319713229060696">Palīdzēt uzlabot drošību tīmeklī visiem lietotājiem</translation>
 <translation id="385051799172605136">Atpakaļ</translation>
@@ -773,6 +778,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="4405636711880428279">Vai noņemt virtuālo karti?</translation>
 <translation id="4408965460206576430">Šajā failā ir ļaunprātīga programmatūra, vai arī tas ir no aizdomīgas vietnes.</translation>
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> un citas cilnes (skaits: <ph name="TAB_COUNT" />)</translation>
+<translation id="441100617989818073">Neizmantotas/dublētas cilnes/grupas</translation>
 <translation id="4414179633735763985">Izdzēstas: <ph name="TAB_GROUPS_AND_TABS_PART" />.</translation>
 <translation id="4415276339145661267">Google konta pārvaldība</translation>
 <translation id="4425140285732600465">Notiek cenas izsekošana. Saņemiet paziņojumus, ja kādā vietnē tiek konstatēts cenas kritums.</translation>
@@ -801,6 +807,7 @@ Jūsu Google kontam vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph nam
 <translation id="452750746583162491">Pārskatīt sinhronizētos datus</translation>
 <translation id="4532845899244822526">Mapes izvēlēšanās</translation>
 <translation id="4535755320005483982">Kopīgotā ciļņu grupa “<ph name="GROUP_TITLE" />”</translation>
+<translation id="4537137366307982887">Padomu paziņojumu izvēles ekrāns ir atvērts pilna ekrāna augstumā</translation>
 <translation id="4543131175509360848">Lapa “Nav piekļuves atslēgu”</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> cilne}zero{<ph name="TAB_COUNT_MANY" /> ciļņu, <ph name="TAB_COUNT_INCOGNITO" /> inkognito}one{<ph name="TAB_COUNT_MANY" /> cilne, <ph name="TAB_COUNT_INCOGNITO" /> inkognito}other{<ph name="TAB_COUNT_MANY" /> cilnes, <ph name="TAB_COUNT_INCOGNITO" /> inkognito}}</translation>
 <translation id="4558311620361989323">Tīmekļa lapu īsinājumtaustiņi</translation>
@@ -952,6 +959,7 @@ Jūsu Google kontam vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph nam
 <translation id="5123685120097942451">Inkognito cilne</translation>
 <translation id="5142281402488957685">Velciet lejup, lai saturs tiktu atsvaidzināts un tiktu rādīti jauni raksti.</translation>
 <translation id="5144385790872094440">Dažas no jūsu apmeklētajām lapām tiek ielādētas iepriekš. Lapas var tikt ielādētas iepriekš, izmantojot Google serverus, ja novirzīšana tiek veikta no Google vietnes vai lietotnes.</translation>
+<translation id="5145887002054615868">Šeit tiek pārvietotas dublētās cilnes vai cilnes, kas nav izmantotas <ph name="DAYS_INACTIVE" /> dienas, <ph name="AUTODELETE_SECTION" />. Jebkurā brīdī varat to mainīt sadaļā <ph name="DECLUTTER_SETTINGS_TITLE" />.</translation>
 <translation id="5152843274749979095">Nav instalēta neviena atbalstīta lietotne</translation>
 <translation id="5161254044473106830">Jānorāda nosaukums</translation>
 <translation id="5161262286013276579">Piekļuves atslēgas apstiprinājuma lapa ir atvērta</translation>
@@ -1114,6 +1122,7 @@ Jūsu Google kontam vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph nam
 <translation id="5864419784173784555">Tiek gaidīta cita lejupielāde…</translation>
 <translation id="5865733239029070421">Automātiski sūtīt lietojuma statistiku un avāriju pārskatus Google serveriem</translation>
 <translation id="5869522115854928033">Saglabātās paroles</translation>
+<translation id="5870416898561279542">Šeit tiek pārvietotas dublētās cilnes un grupas vai cilnes un grupas, kas nav izmantotas <ph name="DAYS_INACTIVE" /> dienas, <ph name="AUTODELETE_SECTION" />. Jebkurā brīdī varat to mainīt sadaļā <ph name="DECLUTTER_SETTINGS_TITLE" />.</translation>
 <translation id="587735546353481577">Lai sekotu kādai vietnei, atveriet attiecīgo vietni, atveriet Chrome izvēlni un pieskarieties vienumam Sekot.</translation>
 <translation id="5883855034004058011">Pārāk daudz reižu neizdevās izmantot biometriju. Lai mēģinātu vēlreiz, bloķējiet un atbloķējiet ierīci.</translation>
 <translation id="5885378508678660271">Paziņojumi <ph name="SEPARATOR" /> Pārlūkā Chrome tika noņemtas šīs atļaujas, jo šī vietne ir bīstama</translation>
@@ -1874,6 +1883,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chrome datus s
 <translation id="8942627711005830162">Atvērt citā logā</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> — šo valodu nevarēja lejupielādēt. Vēlāk mēģiniet vēlreiz.</translation>
 <translation id="8946759102391960088">Saglabājiet piekļuvi savām parolēm</translation>
+<translation id="895442993047180128">Padomu paziņojumu izvēles ekrāns ir aizvērts</translation>
 <translation id="8957528460562961174">Lai saglabātu piekļuvi savām parolēm, eksportējiet tās tūlīt un pēc tam importējiet tās vēlamajā paroļu pārvaldniekā. Google paroļu pārvaldnieka darbība tika pārtraukta, jo nav pieejami Google Play pakalpojumi.</translation>
 <translation id="8963117664422609631">Pāriet uz vietnes iestatījumiem</translation>
 <translation id="8965591936373831584">gaida</translation>

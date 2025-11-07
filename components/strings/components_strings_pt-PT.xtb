@@ -78,6 +78,7 @@
 <translation id="112840717907525620">Cache da política OK</translation>
 <translation id="1131264053432022307">Imagem que copiou</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – Para sair do ecrã inteiro, arraste a partir da parte superior e toque no botão anterior</translation>
+<translation id="1133418583142946603">Adicionar separador atual</translation>
 <translation id="1138458427267715730">Receba alertas quando o preço descer em qualquer site na Web</translation>
 <translation id="1142713751288681188">Tipo de papel</translation>
 <translation id="1142965388643537393">Informações de viagem</translation>
@@ -444,6 +445,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1717218214683051432">Sensores de movimento</translation>
 <translation id="1717494416764505390">Caixa de correio 3</translation>
 <translation id="1717688554309417925">Serviços de débito e conta-corrente</translation>
+<translation id="1717882880162336471">Experimentar Modo IA</translation>
 <translation id="1719434663396780149">Os alertas de descida do preço estão ativados. Pode alterar esta definição nas <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="1719838434204287058">24 x 30 pol.</translation>
 <translation id="1720941539803966190">Fechar tutorial</translation>
@@ -2015,6 +2017,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4258748452823770588">Assinatura incorreta</translation>
 <translation id="4265635050210404830">Os seus cartões de fidelidade</translation>
 <translation id="4265872034478892965">Permitida pelo gestor</translation>
+<translation id="4267590181863312380">Para ver o histórico dos seus outros dispositivos, inicie sessão e sincronize o histórico. Também tem acesso às suas palavras-passe e muito mais em todos os seus dispositivos. Pode parar a sincronização em qualquer altura nas definições. A Google pode personalizar a Pesquisa e outros serviços com base no seu histórico.</translation>
 <translation id="4269029136757623689">Ventoinhas de uso doméstico</translation>
 <translation id="4269264543938335308">Vestuário de natação</translation>
 <translation id="4269599248168651462">O certificado do servidor é emitido para um nome não exclusivo.</translation>
@@ -2891,6 +2894,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5715918316982363436"><ph name="TAB_COUNT" /> de <ph name="WINDOW_COUNT" /> neste dispositivo</translation>
 <translation id="5716325061445053985">Toque para abrir o separador no telemóvel</translation>
 <translation id="5717509257172454543">Patinagem no gelo</translation>
+<translation id="5718601519531438273">Inclui informações como passaportes e cartas de condução</translation>
 <translation id="5720705177508910913">Utilizador atual</translation>
 <translation id="5720895412771013401">Computadores desktop</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} e mais 1}other{{website_1}, {website_2} e mais {more_count}}}</translation>
@@ -4560,6 +4564,7 @@ Detalhes adicionais:
 <translation id="8449036207308062757">Gerir armazenamento</translation>
 <translation id="8449155699563577224">17 x 24 pol.</translation>
 <translation id="8449836157089738489">Abrir tudo num novo grupo de separadores</translation>
+<translation id="8451518040456311377">Guardar e preencher documentos de identificação</translation>
 <translation id="84561192812921051">O administrador pode fazer alterações ao perfil e navegador remotamente, analisar informações sobre o navegador através de relatórios e realizar outras tarefas necessárias. A atividade neste dispositivo também pode ser gerida fora do Chrome.  <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="8456383681414356368">A secção inferior está fechada.</translation>
 <translation id="8456775115498700722">Agora, pode preencher automaticamente os seus cartões <ph name="CARD_ISSUER_NAME" /> porque a sua conta <ph name="CARD_ISSUER_NAME" /> está associada ao Google Pay.</translation>

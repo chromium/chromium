@@ -49,6 +49,7 @@
 <translation id="1181037720776840403">Odebrat</translation>
 <translation id="1183189057400844278">Pokud chcete mít vždy možnost použít hesla ve svém účtu Google, ověřte svou totožnost</translation>
 <translation id="1187810343066461819">Také z tohoto auta vymazat záložky, historii a další položky</translation>
+<translation id="1193589902336218259">Zapnout oznámení s tipy</translation>
 <translation id="1193729455103054076">Použít silné heslo?</translation>
 <translation id="11947597112837849">e‑mailová adresa</translation>
 <translation id="1197267115302279827">Přesunutí záložek</translation>
@@ -236,6 +237,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="200114059308480249">Zahrnovat při vyhledávání na Googlu okolní text?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, připnutá ztlumená anonymní karta</translation>
 <translation id="2021896219286479412">Ovládání webu na celé obrazovce</translation>
+<translation id="2029669011553795746">Přihlášení k oznámením s tipy otevřené na polovinu výšky</translation>
 <translation id="2038563949887743358">Zapnout funkci Verze webu pro PC</translation>
 <translation id="204321170514947529">Aplikace <ph name="APP_NAME" /> má také data v Chromu</translation>
 <translation id="2047378580182589770">Podržením vypnete anonymní režim</translation>
@@ -245,6 +247,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="2063047797624276601">Vaše organizace zapnula Vylepšené Bezpečné prohlížení</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{Stažení 1 souboru se nezdařilo}few{Stažení # souborů se nezdařilo}many{Stažení # souboru se nezdařilo}other{Stažení # souborů se nezdařilo}}</translation>
 <translation id="2067805253194386918">text</translation>
+<translation id="2072027001582274150">Nepoužívané nebo duplicitní karty</translation>
 <translation id="2074527029802029717">Odepnout kartu</translation>
 <translation id="2079545284768500474">Vrátit zpět</translation>
 <translation id="2082238445998314030">Výsledek <ph name="RESULT_NUMBER" /> z <ph name="TOTAL_RESULTS" /></translation>
@@ -405,6 +408,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="2781151931089541271">Zbývá: 1 s</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chrome našel opakovaně použité heslo, které byste mohli vylepšit}few{Chrome našel # opakovaně použitá hesla, která byste mohli vylepšit}many{Chrome našel # opakovaně použitého hesla, které byste mohli vylepšit}other{Chrome našel # opakovaně použitých hesel, která byste mohli vylepšit}}</translation>
+<translation id="2794551654724114396">Zapněte si oznámení s užitečnými tipy, které vám pomůžou využít Chrome na maximum</translation>
 <translation id="2800066122460699237">Zavře se karta <ph name="TAB_TITLE" /></translation>
 <translation id="2805210243313393104">Mějte své záložky a další obsah na všech svých zařízeních</translation>
 <translation id="2805756323405976993">Aplikace</translation>
@@ -640,6 +644,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="3824259034819781947">Připojit soubory</translation>
 <translation id="38243391581572867">Funkce Lens není v tomto účtu k dispozici.</translation>
 <translation id="38258275871320156">K dispozici pouze pro malá okna</translation>
+<translation id="3826529618131025925">Spodní panel s nápovědou a pokyny k přihlášení k odběru oznámení s tipy</translation>
 <translation id="3845098929839618392">Otevřít na anonymní kartě</translation>
 <translation id="3847319713229060696">Pomáhat se zlepšováním bezpečnosti internetu pro všechny</translation>
 <translation id="385051799172605136">Zpět</translation>
@@ -773,6 +778,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="4405636711880428279">Odstranit virtuální kartu?</translation>
 <translation id="4408965460206576430">Tento soubor obsahuje malware nebo pochází z podezřelého webu</translation>
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> a další karty (<ph name="TAB_COUNT" />)</translation>
+<translation id="441100617989818073">Nepoužívané nebo duplicitní karty a skupiny</translation>
 <translation id="4414179633735763985">Smazáno: <ph name="TAB_GROUPS_AND_TABS_PART" /></translation>
 <translation id="4415276339145661267">Spravovat účet Google</translation>
 <translation id="4425140285732600465">Sledování ceny. Pokud cena na některém webu klesne, dostanete upozornění.</translation>
@@ -801,6 +807,7 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="452750746583162491">Zkontrolovat synchronizovaná data</translation>
 <translation id="4532845899244822526">Výběr složky</translation>
 <translation id="4535755320005483982">Sdílená skupina karet <ph name="GROUP_TITLE" /></translation>
+<translation id="4537137366307982887">Přihlášení k odběru oznámení s tipy otevřené na celou výšku</translation>
 <translation id="4543131175509360848">Tabulka s oznámením, že nejsou k dispozici žádné přístupové klíče</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> karta}few{<ph name="TAB_COUNT_MANY" /> karty, anonymní: <ph name="TAB_COUNT_INCOGNITO" />}many{<ph name="TAB_COUNT_MANY" /> karty, anonymní: <ph name="TAB_COUNT_INCOGNITO" />}other{<ph name="TAB_COUNT_MANY" /> karet, anonymní: <ph name="TAB_COUNT_INCOGNITO" />}}</translation>
 <translation id="4558311620361989323">Zkratky webových stránek</translation>
@@ -952,6 +959,7 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="5123685120097942451">Anonymní karta</translation>
 <translation id="5142281402488957685">Přetažením dolů načtete nové příběhy</translation>
 <translation id="5144385790872094440">Některé stránky, které navštěvujete, se načítají předběžně. Pokud na stránky odkazuje web nebo aplikace Google, mohou se předběžně načíst prostřednictvím serverů Google.</translation>
+<translation id="5145887002054615868">Sem se přesouvají duplicitní karty nebo karty, které po dobu <ph name="DAYS_INACTIVE" /> dní nebyly použity <ph name="AUTODELETE_SECTION" />. V <ph name="DECLUTTER_SETTINGS_TITLE" /> to můžete kdykoli změnit.</translation>
 <translation id="5152843274749979095">Nejsou nainstalovány žádné podporované aplikace</translation>
 <translation id="5161254044473106830">Je požadován název</translation>
 <translation id="5161262286013276579">Byla otevřena tabulka k potvrzení přístupového klíče</translation>
@@ -1114,6 +1122,7 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="5864419784173784555">Čekání na další stahování…</translation>
 <translation id="5865733239029070421">Automaticky odesílá statistiky o využívání a zprávy o selhání do Googlu</translation>
 <translation id="5869522115854928033">Uložená hesla</translation>
+<translation id="5870416898561279542">Sem se přesouvají duplicitní karty a skupiny nebo ty, které po dobu <ph name="DAYS_INACTIVE" /> dní nebyly použity<ph name="AUTODELETE_SECTION" />. V <ph name="DECLUTTER_SETTINGS_TITLE" /> to můžete kdykoli změnit.</translation>
 <translation id="587735546353481577">Pokud nějaký web chcete sledovat, přejděte na něj, otevřené nabídku Chrome a klepněte na Sledovat.</translation>
 <translation id="5883855034004058011">Biometrie příliš mnohokrát selhala. Zamkněte a odemkněte zařízení a zkuste to znovu.</translation>
 <translation id="5885378508678660271">Oznámení <ph name="SEPARATOR" /> Chrome tato oprávnění odebral, protože tento web je nebezpečný</translation>
@@ -1874,6 +1883,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="8942627711005830162">Otevřít v jiném okně</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> – Tento jazyk se nepodařilo stáhnout. Zkuste to znovu později.</translation>
 <translation id="8946759102391960088">Nepřijděte o svá hesla</translation>
+<translation id="895442993047180128">Přihlášení k odběru oznámení s tipy zavřeno</translation>
 <translation id="8957528460562961174">Pokud chcete zachovat přístup ke svým heslům, exportujte je a poté je importujte do preferovaného správce hesel. Správce hesel Google přestal fungovat, protože služby Google Play nejsou k dispozici.</translation>
 <translation id="8963117664422609631">Přejít do nastavení webu</translation>
 <translation id="8965591936373831584">nevyřízeno</translation>

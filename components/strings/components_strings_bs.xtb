@@ -78,6 +78,7 @@
 <translation id="112840717907525620">Keš memorija pravila UREDU</translation>
 <translation id="1131264053432022307">Slika koju ste kopirali</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – da zatvorite prikaz preko cijelog ekrana, prevucite s vrha i dodirnite dugme za nazad</translation>
+<translation id="1133418583142946603">Dodaj trenutnu karticu</translation>
 <translation id="1138458427267715730">Dobijte obavještenje kada cijena padne na bilo kojoj web lokaciji</translation>
 <translation id="1142713751288681188">Vrsta papira</translation>
 <translation id="1142965388643537393">Informacije o putovanju</translation>
@@ -1009,6 +1010,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="2627847595568876492">Izdvajanje teksta iz PDF-a…</translation>
 <translation id="2628025184666666186">Server nije mogao dokazati da je <ph name="DOMAIN" /> jer koristi sigurnosni certifikat koji Chrome ili konfiguracija sistema za šifriranje web saobraćaja ne smatraju pouzdanim. Uzrok tome može biti pogrešna konfiguracija ili napadač koji je prekinuo vašu vezu.</translation>
 <translation id="2628224721443278970">Prijavite se na Microsoft OneDrive</translation>
+<translation id="2631387782019878060">Kôd za potvrdu: <ph name="OTP" /></translation>
 <translation id="2634124572758952069">Pronalaženje IP adrese servera <ph name="HOST_NAME" /> nije uspjelo.</translation>
 <translation id="2638567100095052009">Upišite @ da pretražite <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="2639739919103226564">Status:</translation>
@@ -2802,6 +2804,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="5558083606899411167">Klima uređaji</translation>
 <translation id="5558125320634132440">Ova web lokacija je blokirana zbog mogućeg sadržaja za odrasle</translation>
 <translation id="5559311991468302423">Izbrišite adresu</translation>
+<translation id="5561747310506483298">Lične karte</translation>
 <translation id="55635442646131152">Pregled dokumenta</translation>
 <translation id="5563589142503817291">Da koristite lokaciju, odobrite Chromeu pristup odlaskom u <ph name="LINK" />.</translation>
 <translation id="5565613213060953222">Otvori anonimnu karticu</translation>

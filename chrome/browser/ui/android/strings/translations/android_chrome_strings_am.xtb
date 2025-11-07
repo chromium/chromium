@@ -49,6 +49,7 @@
 <translation id="1181037720776840403">አስወግድ</translation>
 <translation id="1183189057400844278">በGoogle መለያዎ ውስጥ ያሉትን የይለፍ ቃላት ሁልጊዜ መጠቀም መቻልዎን ለማረጋገጥ እርስዎ መሆንዎን ያረጋግጡ</translation>
 <translation id="1187810343066461819">እንዲሁም እልባቶችን፣ ታሪኮችን እና ሌሎችንም ከዚህ መኪና ይሰርዙ</translation>
+<translation id="1193589902336218259">የጠቃሚ ምክሮች ማሳወቂያዎችን አብራ</translation>
 <translation id="1193729455103054076">ጠንካራ የይለፍ ቃል ይጠቀማሉ?</translation>
 <translation id="11947597112837849">የኢሜይል አድራሻ</translation>
 <translation id="1197267115302279827">ዕልባቶችን ውሰድ</translation>
@@ -236,6 +237,7 @@
 <translation id="200114059308480249">በGoogle ፍለጋዎች ውስጥ በዙሪያው ያለው ጽሁፍ ይካተት?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />፣ ፒን የተደረገ ድምፀ-ከል የተደረገ ማንነት የማያሳውቅ ትር</translation>
 <translation id="2021896219286479412">የሙሉ ማያ ገፅ ጣቢያ መቆጣጠሪያዎች</translation>
+<translation id="2029669011553795746">የጠቃሚ ምክሮች ማሳወቂያዎች መርጡ መግባት በግማሽ ቁመት ተከፍቷል</translation>
 <translation id="2038563949887743358">የዴስክቶፕ ጣቢያን ጠይቅን አብራ</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> እንዲሁም በChrome ውስጥ ውሂብ አለው</translation>
 <translation id="2047378580182589770">ከማንነት የማያሳውቅ ቀይረው ለመውጣት ይንኩ እና ይያዙ</translation>
@@ -245,6 +247,7 @@
 <translation id="2063047797624276601">ድርጅትዎ የተሻሻለ የደህንነት አሰሳን አብርቷል</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 ማውረድ አልተሳካም}one{# ማውረዶች አልተሳኩም}other{# ማውረዶች አልተሳኩም}}</translation>
 <translation id="2067805253194386918">ጽሁፍ</translation>
+<translation id="2072027001582274150">ጥቅም ላይ ያልዋሉ ወይም የተባዙ ትሮች</translation>
 <translation id="2074527029802029717">ትር ይንቀሉ</translation>
 <translation id="2079545284768500474">ቀልብስ</translation>
 <translation id="2082238445998314030">ውጤት <ph name="RESULT_NUMBER" /> ከ<ph name="TOTAL_RESULTS" /></translation>
@@ -405,6 +408,7 @@
 <translation id="2781151931089541271">1 ሰከንድ ይቀራል</translation>
 <translation id="2789486458103222910">እሺ</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chrome ሊያሻሽሉት የሚችሉት ዳግም ጥቅም ላይ የዋለ የይለፍ ቃል አግኝቷል}one{Chrome ሊያሻሽሉት የሚችሉት # ዳግም ጥቅም ላይ የዋለ የይለፍ ቃል አግኝቷል}other{Chrome ሊያሻሽሏቸው የሚችሏቸው # ዳግም ጥቅም ላይ የዋሉ የይለፍ ቃላትን አግኝቷል}}</translation>
+<translation id="2794551654724114396">ከChrome ምርጡን ለማግኘት እንዲያግዙዎት ለአጋዥ ጠቃሚ ምክሮች ማሳወቂያዎችን ያብሩ</translation>
 <translation id="2800066122460699237">ትር <ph name="TAB_TITLE" /> ይዘጋል</translation>
 <translation id="2805210243313393104">የእርስዎን ዕልባቶች እና ሌሎችም በሁሉም መሣሪያዎችዎ ላይ ያግኙ</translation>
 <translation id="2805756323405976993">መተግበሪያዎች</translation>
@@ -640,6 +644,7 @@
 <translation id="3824259034819781947">ፋይሎችን ያያይዙ</translation>
 <translation id="38243391581572867">ሌንስ በዚህ መለያ ላይ አይገኝም።</translation>
 <translation id="38258275871320156">ለአነስተኛ መስኮቶች ብቻ የሚገኝ</translation>
+<translation id="3826529618131025925">የጠቃሚ ምክሮች ማሳወቂያዎች መርጦ መግባት እገዛ እና መመሪያ የግርጌ ሉህ</translation>
 <translation id="3845098929839618392">ማንነትን በማያሳውቅ ትር ክፈት</translation>
 <translation id="3847319713229060696">ድር ላይ ለሁሉም ሰው ደህንነት እንዲሻሻል ያግዙ</translation>
 <translation id="385051799172605136">ተመለስ</translation>
@@ -773,6 +778,7 @@
 <translation id="4405636711880428279">ምናባዊ ካርድዎ ይወገድ?</translation>
 <translation id="4408965460206576430">ይህ ፋይል ተንኮል አዘል ዌር አለው ወይም ከተጠራጣሪ ጣቢያ የመጣ ነው</translation>
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> እና <ph name="TAB_COUNT" /> ሌሎች ትሮች</translation>
+<translation id="441100617989818073">ጥቅም ላይ ያልዋሉ ወይም የተባዙ ትሮች እና ቡድኖች</translation>
 <translation id="4414179633735763985"><ph name="TAB_GROUPS_AND_TABS_PART" /> ተሰርዟል</translation>
 <translation id="4415276339145661267">የGoogle መለያዎን ያቀናብሩ</translation>
 <translation id="4425140285732600465">ዋጋዎችን በመከታተል ላይ። በማንኛውም ጣቢያ ላይ ዋጋው ቢቀንስ ማንቂያዎችን ያግኙ።</translation>
@@ -801,6 +807,7 @@
 <translation id="452750746583162491">የሰመረ ውሂብዎን ይገምግሙ</translation>
 <translation id="4532845899244822526">አቃፊ ይምረጡ</translation>
 <translation id="4535755320005483982">የተጋራ <ph name="GROUP_TITLE" /> የትር ቡድን</translation>
+<translation id="4537137366307982887">የጠቃሚ ምክሮች ማሳወቂያዎች መርጦ መግባት በሙሉ ቁመት ተከፍቷል</translation>
 <translation id="4543131175509360848">ምንም የይለፍ ቁልፎች ሉህ የለም</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ትር}one{<ph name="TAB_COUNT_MANY" /> ትሮች፣ <ph name="TAB_COUNT_INCOGNITO" /> ማንነት የማያሳውቅ}other{<ph name="TAB_COUNT_MANY" /> ትሮች፣ <ph name="TAB_COUNT_INCOGNITO" /> ማንነት የማያሳውቅ}}</translation>
 <translation id="4558311620361989323">የድረ-ገፅ አቋራጮች</translation>
@@ -952,6 +959,7 @@
 <translation id="5123685120097942451">ማንነት የማያሳውቅ ትር</translation>
 <translation id="5142281402488957685">ለአዳዲስ ታሪኮች ለማደስ ወደ ታች ይጎትቱ</translation>
 <translation id="5144385790872094440">የሚጎበኟቸው አንዳንድ ገፆች ቅድሚያ የተጫኑ ናቸው። ገፆች ከGoogle ጣቢያ ወይም መተግበሪያ ላይ ከተገናኙ በGoogle አገልጋዮች በኩል ቅድሚያ ሊጫኑ ይችላሉ።</translation>
+<translation id="5145887002054615868">የተባዙ ትሮች ወይም ለ<ph name="DAYS_INACTIVE" /> ቀናት ጥቅም ላይ ያልዋሉ ትሮች ወደዚህ<ph name="AUTODELETE_SECTION" /> ይንቀሳቀሳሉ። ይህን በማንኛውም ጊዜ በ<ph name="DECLUTTER_SETTINGS_TITLE" /> ውስጥ መለወጥ ይችላሉ።</translation>
 <translation id="5152843274749979095">ምንም የሚደገፉ መተግበሪያዎች አልተጫኑም</translation>
 <translation id="5161254044473106830">ርዕስ ያስፈልጋል</translation>
 <translation id="5161262286013276579">የይለፍ ቁልፍ ማረጋገጫ ሉህ ተከፍቷል</translation>
@@ -1114,6 +1122,7 @@
 <translation id="5864419784173784555">ሌላ ውርድን በመጠበቅ ላይ…</translation>
 <translation id="5865733239029070421">የአጠቃቀም ስታስቲክስን እና የብልሽት ሪፖርቶችን በራስ-ሰር ወደ Google ይልካል</translation>
 <translation id="5869522115854928033">የተቀመጡ የይለፍ ቃሎች</translation>
+<translation id="5870416898561279542">የተባዙ ትሮች እና ቡድኖች ወይም ለ<ph name="DAYS_INACTIVE" /> ቀናት ጥቅም ላይ ያልዋሉ ወደዚህ <ph name="AUTODELETE_SECTION" /> ይንቀሳቀሳሉ። ይህን በማንኛውም ጊዜ በ<ph name="DECLUTTER_SETTINGS_TITLE" /> ውስጥ መለወጥ ይችላሉ።</translation>
 <translation id="587735546353481577">አንድን ጣቢያ ለመከተል ወደ ጣቢያው ይሂዱ፣ የChrome ምናሌውን ይክፈቱ እና ይከተሉን መታ ያድርጉ።</translation>
 <translation id="5883855034004058011">ባዮሜትሪክስ በጣም ብዙ ጊዜ አልተሳካም። እንደገና ለመሞከር መሣሪያዎን ይክፈቱ እና ይቆልፉ።</translation>
 <translation id="5885378508678660271">ማሳወቂያዎች <ph name="SEPARATOR" /> ይህ ጣቢያ አደገኛ ስለሆነ Chrome እነዚህን ፈቃዶች አስወግዷል</translation>
@@ -1874,6 +1883,7 @@
 <translation id="8942627711005830162">በሌላ መስኮት ውስጥ ክፈት</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - ይህ ቋንቋ ሊወርድ አልቻለም ቆይተው እንደገና ይሞክሩ።</translation>
 <translation id="8946759102391960088">ለይለፍ ቃላትዎ መዳረሻን ያቆዩ</translation>
+<translation id="895442993047180128">የጠቃሚ ምክሮች ማሳወቂያዎች መርጦ መግባት ተዘግቷል</translation>
 <translation id="8957528460562961174">የይለፍ ቃላትዎን መዳረሻ ለማቆየት አሁን ወደ ውጪ ይላኳቸው ከዚያም ወደመረጡት የይለፍ ቃል አስተዳዳሪ ያስመጧቸው። Google Play አገልግሎቶች ስለማይገኝ Google የይለፍ ቃል አስተዳዳሪ መስራት አቁሟል።</translation>
 <translation id="8963117664422609631">ወደ የጣቢያ ቅንብሮች ይሂዱ</translation>
 <translation id="8965591936373831584">በመጠበቅ ላይ</translation>

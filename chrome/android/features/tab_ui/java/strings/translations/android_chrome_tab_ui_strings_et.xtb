@@ -128,6 +128,7 @@
 <translation id="5556417849629758491">Poe teabe vaatamine, valik saadaval ekraanikuva ülaosas</translation>
 <translation id="5627941783489838464">Vahelehtede värskendused puuduvad</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> link Chrome'ist}other{<ph name="TABS_COUNT_MANY" /> linki Chrome'ist}}</translation>
+<translation id="5740354908255726955">{TAB_COUNT,plural, =1{Vahelehe teisaldamine vasakule}other{Vahelehtede teisaldamine vasakule}}</translation>
 <translation id="5746204836956568669">Kas grupeerida kiiremaks töötegemiseks <ph name="NUMBER_OF_TABS" /> vahelehte?</translation>
 <translation id="5773295109010386583">Sulge automaatselt mitteaktiivsed üksused</translation>
 <translation id="58326064309361797">Lohistage vahelehti, et neid grupeerida</translation>
@@ -138,6 +139,7 @@
 <translation id="6109251075362363230">Nüüd arhiivitakse ka kõik vahelehtede duplikaadid, välja arvatud viimati kasutatud koopia.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Sule <ph name="TABS_COUNT_ONE" /> valitud üksus}other{Sule <ph name="TABS_COUNT_MANY" /> valitud üksust}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Teisaldage grupp uude aknasse}other{Teisaldage grupp uude aknasse}}</translation>
+<translation id="6212374449852603982">{TAB_COUNT,plural, =1{Vahelehe teisaldamine paremale}other{Vahelehtede teisaldamine paremale}}</translation>
 <translation id="6228793724645064692">(hinnang poes)</translation>
 <translation id="625996437999624951">{TAB_COUNT,plural, =1{Eemalda vaheleht grupist}other{Eemalda vahelehted grupist}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Vahelehe lisamine uude gruppi}other{Vahelehtede lisamine uude gruppi}}</translation>

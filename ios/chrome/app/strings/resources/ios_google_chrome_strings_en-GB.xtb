@@ -173,6 +173,7 @@ Try waiting a few minutes before signing out. If you sign out now, this data wil
 <translation id="5305440589062022504">Opens the Password Manager in Chrome</translation>
 <translation id="5310957470610282541">Some of your Chrome data hasn't been saved in your Google Account yet.
 Try waiting a few minutes before signing out. If you sign out now, this data will be deleted.</translation>
+<translation id="5342685492141499976">Your data will be saved to Google Password Manager for <ph name="USER_EMAIL" /></translation>
 <translation id="5389212809648216794">Google Chrome can't use your camera because it's in use by another application</translation>
 <translation id="5395376160638294582">Make sure that you can always use the Chrome data in your Google Account</translation>
 <translation id="5404252374083197467">Set Chrome as default?</translation>
@@ -200,6 +201,7 @@ Try waiting a few minutes before signing out. If you sign out now, this data wil
 <translation id="5808435672482059465">View Your Chrome History</translation>
 <translation id="5833027901704861726">Some of your Chrome data hasn't been saved in <ph name="EMAIL" /> yet.
 Try waiting a few minutes before switching accounts. If you switch accounts now, this data will be deleted.</translation>
+<translation id="5853754888722423892">Import to Google Password Manager</translation>
 <translation id="5998675059699164418">Your organisation requires you to sign in to use Chrome.</translation>
 <translation id="6021312115739110405">A custom feed made for you by Google. Including news, sports and weather.</translation>
 <translation id="6022659036123304283">Make Chrome your own</translation>

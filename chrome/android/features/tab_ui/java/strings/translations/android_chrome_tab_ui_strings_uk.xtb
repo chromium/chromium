@@ -128,6 +128,7 @@
 <translation id="5556417849629758491">Переглянути інформацію про магазин. Опція доступна вгорі екрана.</translation>
 <translation id="5627941783489838464">Немає оновлень щодо вкладок</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> посилання з Chrome}one{<ph name="TABS_COUNT_MANY" /> посилання з Chrome}few{<ph name="TABS_COUNT_MANY" /> посилання з Chrome}many{<ph name="TABS_COUNT_MANY" /> посилань із Chrome}other{<ph name="TABS_COUNT_MANY" /> посилання з Chrome}}</translation>
+<translation id="5740354908255726955">{TAB_COUNT,plural, =1{Перемістити вкладку ліворуч}one{Перемістити вкладки ліворуч}few{Перемістити вкладки ліворуч}many{Перемістити вкладки ліворуч}other{Перемістити вкладки ліворуч}}</translation>
 <translation id="5746204836956568669">Згрупувати вкладки (<ph name="NUMBER_OF_TABS" />), щоб працювати швидше?</translation>
 <translation id="5773295109010386583">Автоматично закривати неактивні об’єкти</translation>
 <translation id="58326064309361797">Перетягуйте вкладки, щоб групувати їх</translation>
@@ -138,6 +139,7 @@
 <translation id="6109251075362363230">Тепер також архівуватимуться всі повторювані вкладки, за винятком тієї, що використовувалась останньою.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Закрити <ph name="TABS_COUNT_ONE" /> вибраний об’єкт}one{Закрити <ph name="TABS_COUNT_MANY" /> вибраний об’єкт}few{Закрити <ph name="TABS_COUNT_MANY" /> вибрані об’єкти}many{Закрити <ph name="TABS_COUNT_MANY" /> вибраних об’єктів}other{Закрити <ph name="TABS_COUNT_MANY" /> вибраного об’єкта}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Перемістити групу в нове вікно}one{Перемістити групи в інше вікно}few{Перемістити групи в інше вікно}many{Перемістити групи в інше вікно}other{Перемістити групи в інше вікно}}</translation>
+<translation id="6212374449852603982">{TAB_COUNT,plural, =1{Перемістити вкладку праворуч}one{Перемістити вкладки праворуч}few{Перемістити вкладки праворуч}many{Перемістити вкладки праворуч}other{Перемістити вкладки праворуч}}</translation>
 <translation id="6228793724645064692">(оцінка магазину)</translation>
 <translation id="625996437999624951">{TAB_COUNT,plural, =1{Вилучити вкладку з групи}one{Вилучити вкладки з групи}few{Вилучити вкладки з групи}many{Вилучити вкладки з групи}other{Вилучити вкладки з групи}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Додати вкладку в нову групу}one{Додати вкладки в нову групу}few{Додати вкладки в нову групу}many{Додати вкладки в нову групу}other{Додати вкладки в нову групу}}</translation>

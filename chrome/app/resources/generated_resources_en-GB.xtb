@@ -2469,6 +2469,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2667463864537187133">Manage spell check</translation>
 <translation id="2668604389652548400">Remove or replace it with similar extensions from the <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /></translation>
 <translation id="2669241540496514785">Couldn't open <ph name="APP_NAME" /></translation>
+<translation id="2669250147452250961">Turn on to get your browsing history and tabs from other devices</translation>
 <translation id="2669454659051515572">Anyone using this device can see downloaded files</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> is sharing a Chrome tab.</translation>
 <translation id="2670168377011445813">If Chrome finds one of your passwords in a public data breach, Google Password Manager can offer to change your password for you if you're signed in. <ph name="BEGIN_LINK" />More about automated password change<ph name="END_LINK" /></translation>
@@ -8613,6 +8614,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6961327401577924850">Sites usually look for Bluetooth devices for features like setting up or syncing a low-energy beacon, a health or fitness tracker or a smart light bulb</translation>
 <translation id="6963772203726867701">Not detected</translation>
 <translation id="6963872466817251924">Text cursor highlighter</translation>
+<translation id="6964239097707154771">are add-ons for Chrome that can help you do more</translation>
 <translation id="6964390816189577014">Hero</translation>
 <translation id="6964760285928603117">Remove from group</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -8925,6 +8927,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7186088072322679094">Keep in Toolbar</translation>
 <translation id="7186303001964993981"><ph name="ORIGIN" /> can't open this folder because it contains system files</translation>
 <translation id="7186568385131859684">Control how browsing history is used with your other data across Google services</translation>
+<translation id="7186903260115204164">Add freehand drawings, signatures and highlights with the new Draw tool</translation>
 <translation id="7188508872042490670">On-device site data</translation>
 <translation id="7189234443051076392">Make sure that there is enough space on your device</translation>
 <translation id="7189451821249468368">You do not have enough upgrades to enrol this device. Please contact sales to purchase more. If you believe that you're seeing this message in error, please contact support.</translation>
@@ -10755,6 +10758,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8427213022735114808">Dictation sends your voice to Google to allow voice typing in any text field.</translation>
 <translation id="8427292751741042100">embedded on any host</translation>
 <translation id="8428213095426709021">Settings</translation>
+<translation id="8428257636009471988">Visit Web Store</translation>
 <translation id="8428271547607112339">Add school account</translation>
 <translation id="8428634594422941299">Got it</translation>
 <translation id="84297032718407999">You'll be signed out in <ph name="LOGOUT_TIME_LEFT" /></translation>

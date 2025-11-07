@@ -528,6 +528,7 @@
 <translation id="7274695763216404502">Se fijó. Vuelve a usar la Búsqueda con imágenes desde la barra de herramientas.</translation>
 <translation id="7288567540154601580">Pestañas y extensiones</translation>
 <translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{Chromium te recomienda quitarla}other{Chromium te recomienda quitarlas}}</translation>
+<translation id="7296334833518879294">Para compartir el audio del sistema, abre la configuración del sistema y permite la opción "Solo grabación de audio del sistema" para Chromium. Luego, deberás reiniciar Chromium.</translation>
 <translation id="7309928523159922338">La medición de anuncios les permite a los sitios que visitas solicitar información a Chromium a fin de medir el rendimiento de los anuncios. La medición de anuncios restringe el seguimiento entre sitios web, ya que se transfiere la menor cantidad de información posible entre sitios.</translation>
 <translation id="731795002583552498">Actualizando Chromium</translation>
 <translation id="7318036098707714271">Tu archivo de preferencias está dañado o no es válido. Chromium no puede recuperar tu configuración.</translation>

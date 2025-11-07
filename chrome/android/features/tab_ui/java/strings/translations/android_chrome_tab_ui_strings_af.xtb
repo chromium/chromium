@@ -128,6 +128,7 @@
 <translation id="5556417849629758491">Bekyk winkelinligting; opsie beskikbaar naby bokant van die skerm</translation>
 <translation id="5627941783489838464">Geen oortjie-opdaterings nie</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> skakel vanaf Chrome}other{<ph name="TABS_COUNT_MANY" /> skakels vanaf Chrome}}</translation>
+<translation id="5740354908255726955">{TAB_COUNT,plural, =1{Skuif oortjie na links}other{Skuif oortjies na links}}</translation>
 <translation id="5746204836956568669">Groepeer <ph name="NUMBER_OF_TABS" /> oortjies om vinniger te werk?</translation>
 <translation id="5773295109010386583">Maak onaktiewe items outomaties toe</translation>
 <translation id="58326064309361797">Sleep oortjies om hulle te groepeer</translation>
@@ -138,6 +139,7 @@
 <translation id="6109251075362363230">Alle duplikaatoortjies sal nou ook geargiveer word, met die uitsondering van die mees onlangse kopie.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Maak <ph name="TABS_COUNT_ONE" /> gekose item toe}other{Maak <ph name="TABS_COUNT_MANY" /> gekose items toe}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Skuif groep na nuwe venster}other{Skuif groep na ’n ander venster}}</translation>
+<translation id="6212374449852603982">{TAB_COUNT,plural, =1{Skuif oortjie na regs}other{Skuif oortjies na regs}}</translation>
 <translation id="6228793724645064692">(winkelgradering)</translation>
 <translation id="625996437999624951">{TAB_COUNT,plural, =1{Verwyder oortjie uit groep}other{Verwyder oortjies uit groep}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Voeg oortjie by nuwe groep}other{Voeg oortjies by nuwe groep}}</translation>

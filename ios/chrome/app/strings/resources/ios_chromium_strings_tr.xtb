@@ -238,6 +238,7 @@ Dikkate alınması gereken noktalar:
 <translation id="6154098560469640583">Mesajlardaki, dokümanlardaki ve diğer uygulamalardaki bağlantılara dokunduğunuzda Chromium'u kullanabilirsiniz</translation>
 <translation id="6157162508956739031">Chromium'daki şifrelerinizi ve geçiş anahtarlarınızı otomatik doldurarak uygulamalarda ve sitelerde hızlıca oturum açın</translation>
 <translation id="6170619162539716595">Chromium'un, algılanan adreslerle ilgili yol tarifleri ve yerel bilgiler sağlaması için Google Haritalar'ı kullanmasına izin verin.</translation>
+<translation id="6244277266078678766">Verileriniz, <ph name="USER_EMAIL" /> için Şifre Yöneticisi'ne kaydedilir.</translation>
 <translation id="6268381023930128611">Chromium oturumunu kapatıyor musunuz?</translation>
 <translation id="6301717043141881464">Kayıtlı şifrelerinizi diğer uygulamalarınızda da kolayca görmek amacıyla Otomatik Doldurma için Chromium'u kullanın</translation>
 <translation id="6324041800010509197">Chromium'daki Sekme Izgarasına Git</translation>
@@ -315,6 +316,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="8119542592987737574">iPhone'unuzun ana ekran yuvasından Chromium'a daha hızlı erişin.</translation>
 <translation id="8164086860209325020">Chromium Ayarları'na gidin</translation>
 <translation id="8197822717502700527">Artık cihazınızda Chromium'dan en iyi şekilde yararlanabileceksiniz.</translation>
+<translation id="8236210361418193126">Şifre Yöneticisi'ne aktarın</translation>
 <translation id="8254729934443216898">Chromium'dan en iyi şekilde yararlanmanıza yardımcı olacak yeni özellikleri keşfedin.</translation>
 <translation id="8293572045658095405">Chromium'un Gizli modundasınız</translation>
 <translation id="830951810931292870">Girilen URL'leri Chromium'da Gizli modda açar.</translation>

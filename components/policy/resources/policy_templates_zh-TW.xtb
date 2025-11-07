@@ -10171,21 +10171,6 @@ Gemini 啟動功能僅支援部分國家/地區和語言。設定這項政策無
 
       如果設定了這項政策，使用者就無法變更或覆寫。</translation>
 <translation id="8080200590486938727">停用外掛程式尋找工具</translation>
-<translation id="8082268442825947283">設定這項政策可設定規則，根據目的地網址和其他條件選取瀏覽器使用的 Proxy。如果 Proxy 是透過 <ph name="PROXY_SETTINGS_POLICY_NAME" /> 政策、<ph name="PROXY_SETTINGS_EXTENSION_API" /> 擴充功能 API，或者使用者手動設定，這項政策的效力會高於這些 Proxy 設定。
-
-如果未設定這項政策，其他 Proxy 政策或使用者設定都不會受到影響。
-
-瀏覽器必須決定要使用的 Proxy 時，會依序評估 <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> 政策的項目，直到至少有一個項目與 <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> 中網址主機相符，而且符合 <ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> 中的所有項目為止。<ph name="PROXY_OVERRIDE_RULES_PROXY_CHAIN" /> 的值會用於這類比對的 Proxy。如果找不到相符項目，就會回過頭使用 <ph name="PROXY_SETTINGS_POLICY_NAME" /> 政策中設定的 Proxy 設定。
-
-<ph name="PROXY_OVERRIDE_RULES_PROXY_CHAIN" /> 欄位項目會對應到 PAC 檔案的字串值，例如：
-  * DIRECT
-  * PROXY 主機:通訊埠
-  * HTTPS 主機:通訊埠
-第一個可連線的項目會做為 Proxy。
-
-<ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> 欄位內含一份條件清單，當中的條件必須完全符合，才能使用覆寫規則決定要使用的 Proxy。如果未設定，只要 <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> 有一個主機符合條件，系統就會使用該項目。
-
-<ph name="PROXY_OVERRIDE_RULES_DNS_PROBE" /> 條件會檢查提供的 DNS <ph name="PROXY_OVERRIDE_RULES_HOST" /> 能否解析為 IP 位址。如果 <ph name="PROXY_OVERRIDE_RULES_RESULT" /> 的值為 <ph name="PROXY_OVERRIDE_RULES_RESOLVES" />，就會判定符合條件。如果值改設為 <ph name="PROXY_OVERRIDE_RULES_NOT_FOUND" />，解析失敗時，系統會判定符合條件。</translation>
 <translation id="8086746212954621799">設為 True 時停用自動更新。
 
 如果不設定這項設定或設為 False，<ph name="PRODUCT_OS_NAME" /> 裝置會自動檢查更新。

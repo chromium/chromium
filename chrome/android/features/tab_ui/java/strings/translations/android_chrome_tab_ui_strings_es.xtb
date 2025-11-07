@@ -128,6 +128,7 @@
 <translation id="5556417849629758491">Ver información de la tienda, opción disponible cerca de la parte superior de la pantalla</translation>
 <translation id="5627941783489838464">No hay actualizaciones de pestañas</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> enlace de Chrome}other{<ph name="TABS_COUNT_MANY" /> enlaces de Chrome}}</translation>
+<translation id="5740354908255726955">{TAB_COUNT,plural, =1{Mover pestaña a la izquierda}other{Mover pestañas a la izquierda}}</translation>
 <translation id="5746204836956568669">¿Agrupar <ph name="NUMBER_OF_TABS" /> pestañas para trabajar más rápido?</translation>
 <translation id="5773295109010386583">Cerrar automáticamente los elementos inactivos</translation>
 <translation id="58326064309361797">Arrastra las pestañas para agruparlas</translation>
@@ -138,6 +139,7 @@
 <translation id="6109251075362363230">Ahora también se archivarán todas las pestañas duplicadas, excepto la copia usada más recientemente.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Cerrar <ph name="TABS_COUNT_ONE" /> elemento seleccionado}other{Cerrar <ph name="TABS_COUNT_MANY" /> elemento seleccionado}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Mover grupo a una nueva ventana}other{Mover grupo a otra ventana}}</translation>
+<translation id="6212374449852603982">{TAB_COUNT,plural, =1{Mover pestaña a la derecha}other{Mover pestañas a la derecha}}</translation>
 <translation id="6228793724645064692">(valoración de la tienda)</translation>
 <translation id="625996437999624951">{TAB_COUNT,plural, =1{Quitar pestaña del grupo}other{Quitar pestañas del grupo}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Añadir pestaña al nuevo grupo}other{Añadir pestañas al nuevo grupo}}</translation>

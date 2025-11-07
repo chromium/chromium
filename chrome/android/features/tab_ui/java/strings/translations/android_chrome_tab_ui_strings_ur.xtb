@@ -128,6 +128,7 @@
 <translation id="5556417849629758491">اسٹور کی معلومات دیکھنے کا اختیار اسکرین کے اوپری حصے کے قریپ دستیاب ہے</translation>
 <translation id="5627941783489838464">کوئی ٹیب اپ ڈیٹ نہیں ہے</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{‏Chrome سے <ph name="TABS_COUNT_ONE" /> لنک}other{‏Chrome سے <ph name="TABS_COUNT_MANY" /> لنکس}}</translation>
+<translation id="5740354908255726955">{TAB_COUNT,plural, =1{ٹیب کو بائیں طرف منتقل کریں}other{ٹیبز کو بائیں طرف منتقل کریں}}</translation>
 <translation id="5746204836956568669">زیادہ تیز کام کرنے کیلئے، <ph name="NUMBER_OF_TABS" /> ٹیبز کو گروپ بند کریں؟</translation>
 <translation id="5773295109010386583">غیر فعال آئٹمز کو خودکار طور پر بند کریں</translation>
 <translation id="58326064309361797">ان کی گروپ بندی کرنے کے لیے ٹیبز کو گھسیٹیں</translation>
@@ -138,6 +139,7 @@
 <translation id="6109251075362363230">حال ہی میں سب سے زیادہ مستعمل کاپی کے استثناء کے ساتھ تمام ڈپلیکیٹ ٹیبز کو بھی آرکائیو کیا جائے گا۔</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{منتخب کردہ <ph name="TABS_COUNT_ONE" /> آئٹم کو بند کریں}other{منتخب کردہ <ph name="TABS_COUNT_MANY" /> آئٹمز کو بند کریں}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{گروپ کو نئی ونڈو میں منتقل کریں}other{گروپ کو دوسری ونڈو میں منتقل کریں}}</translation>
+<translation id="6212374449852603982">{TAB_COUNT,plural, =1{ٹیب کو دائیں طرف منتقل کریں}other{ٹیبز کو دائیں طرف منتقل کریں}}</translation>
 <translation id="6228793724645064692">(اسٹور کی درجہ بندی)</translation>
 <translation id="625996437999624951">{TAB_COUNT,plural, =1{ٹیب کو گروپ سے ہٹائیں}other{ٹیبز کو گروپ سے ہٹائیں}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{ٹیب کو نئے گروپ میں شامل کریں}other{ٹیبز کو نئے گروپ میں شامل کریں}}</translation>

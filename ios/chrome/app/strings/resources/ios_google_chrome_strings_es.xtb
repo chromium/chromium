@@ -173,6 +173,7 @@ Prueba a esperar unos minutos antes de cerrar sesión. Si cierras sesión ahora,
 <translation id="5305440589062022504">Abre el Gestor de contraseñas en Chrome</translation>
 <translation id="5310957470610282541">Algunos de tus datos de Chrome aún no se han guardado en tu cuenta de Google.
 Prueba a esperar unos minutos antes de cerrar sesión. Si cierras sesión ahora, estos datos se eliminarán.</translation>
+<translation id="5342685492141499976">Tus datos se guardarán en el Gestor de contraseñas de Google de <ph name="USER_EMAIL" /></translation>
 <translation id="5389212809648216794">Google Chrome no puede utilizar la cámara porque la está usando otra aplicación</translation>
 <translation id="5395376160638294582">Asegúrate de que siempre puedas usar los datos de Chrome en tu cuenta de Google</translation>
 <translation id="5404252374083197467">¿Establecer Chrome como predeterminado?</translation>
@@ -200,6 +201,7 @@ Prueba a esperar unos minutos antes de cerrar sesión. Si cierras sesión ahora,
 <translation id="5808435672482059465">Ver tu historial de Chrome</translation>
 <translation id="5833027901704861726">Algunos de tus datos de Chrome aún no se han guardado en <ph name="EMAIL" />.
 Espera unos minutos antes de cambiar de cuenta. Si cambias de cuenta ahora, estos datos se eliminarán.</translation>
+<translation id="5853754888722423892">Importar al Gestor de contraseñas de Google</translation>
 <translation id="5998675059699164418">Tu organización requiere que inicies sesión para usar Chrome.</translation>
 <translation id="6021312115739110405">Un feed personalizado creado por Google para ti. Incluye noticias, deportes y el tiempo.</translation>
 <translation id="6022659036123304283">Personaliza Chrome</translation>

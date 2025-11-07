@@ -128,6 +128,7 @@
 <translation id="5556417849629758491">Mağaza məlumatlarına baxın, seçim ekranın yuxarı hissəsində əlçatandır</translation>
 <translation id="5627941783489838464">Tab yeniləməsi yoxdur</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{Chrome'dan <ph name="TABS_COUNT_ONE" /> keçid}other{Chrome'dan <ph name="TABS_COUNT_MANY" /> keçid}}</translation>
+<translation id="5740354908255726955">{TAB_COUNT,plural, =1{Tabı sola köçürün}other{Tabları sola köçürün}}</translation>
 <translation id="5746204836956568669">Daha sürətli işləmək üçün <ph name="NUMBER_OF_TABS" /> tab qruplaşdırılsın?</translation>
 <translation id="5773295109010386583">Qeyri-aktiv elementləri avtomatik bağlayın</translation>
 <translation id="58326064309361797">Tabları qruplaşdırmaq üçün sürüşdürün</translation>
@@ -138,6 +139,7 @@
 <translation id="6109251075362363230">Ən son istifadə olunan nüsxə istisna olmaqla bütün dublikat tablar da artıq arxivlənəcək.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Seçilmiş <ph name="TABS_COUNT_ONE" /> elementi bağlayın}other{Seçilmiş <ph name="TABS_COUNT_MANY" /> elementi bağlayın}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Qrupu yeni pəncərəyə köçürün}other{Qrupu başqa pəncərəyə köçürün}}</translation>
+<translation id="6212374449852603982">{TAB_COUNT,plural, =1{Tabı sağa köçürün}other{Tabları sağa köçürün}}</translation>
 <translation id="6228793724645064692">(mağaza reytinqi)</translation>
 <translation id="625996437999624951">{TAB_COUNT,plural, =1{Tabı qrupdan silin}other{Tabları qrupdan silin}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Yeni qrupa tab əlavə edin}other{Yeni qrupa tablar əlavə edin}}</translation>

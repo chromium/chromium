@@ -232,6 +232,7 @@
 <translation id="370962675267501463">{COUNT,plural, =0{Administrator yangilishlarni oʻrnatish uchun Chromium brauzerini qayta ishga tushirishni soʻramoqda}=1{Administrator yangilishlarni oʻrnatish uchun Chromium brauzerini qayta ishga tushirishni soʻramoqda Inkognito oynalar qayta ochilmaydi.}other{Administrator yangilishlarni oʻrnatish uchun Chromium brauzerini qayta ishga tushirishni soʻramoqda # ta inkognito oyna qayta ochilmaydi.}}</translation>
 <translation id="3713809861844741608">Havolani yangi Chromium oynasida ochish</translation>
 <translation id="3728124580182886854">Chromium va boshqa Google xizmatlarini moslashtirish kabi maqsadlarda ulang</translation>
+<translation id="3729187154190517324">“Varaq kiritish va hokazo” tugmasi yordamida bir nechta varaq, fayl va vositalar kiritish orqali qidiruvni chuqurlashtiring</translation>
 <translation id="3788675262216168505">Chromium profillarini boshqaring</translation>
 <translation id="3790262771324122253">Chromium ayrim yuklanmalarni nega bloklashi haqida</translation>
 <translation id="379589255253486813">Chromium biror sozlamaga diqqat qilish kerak boʻlganda sizga xabar qiladi.</translation>
@@ -353,6 +354,7 @@
 <translation id="5286907366254680517">Aniqlandi</translation>
 <translation id="5294316920224716406">Inkognito rejimida ishlayotganingizda, xavfsiz ulanishli saytga kirganingizda Chromium sizni ogohlantiradi.</translation>
 <translation id="5313228254328109263">Chromium Updater ichki xizmati</translation>
+<translation id="5346389065299425353">Bir nechta varaq, fayl va vositalar kiritish orqali qidiruvni chuqurlashtiring</translation>
 <translation id="5352264705793813212">Sizda Chromium bilan ishlashda xavfsizlikka oid bir nechta tavsiya bor</translation>
 <translation id="5352361688875342522">Boshqa Chromium profillari</translation>
 <translation id="5358375970380395591">Siz boshqaruvdagi hisobga kiryapsiz va uning administratoriga Chromium profilingizni boshqarishga ruxsat beryapsiz. Ilovalar, xatcho‘plar, brauzer tarixi, parollar va boshqa sozlamalar kabi barcha Chromium ma’lumotlaringiz <ph name="USER_NAME" /> hisobiga biriktiriladi. Siz bu ma’lumotlarni Google hisoblar shaxsiy kabinetidan o‘chirishingiz mumkin, lekin bu ma’lumotlarni boshqa hisob bilan bog‘lay olmaysiz. <ph name="LEARN_MORE" /></translation>

@@ -78,6 +78,7 @@
 <translation id="112840717907525620">नीति क्यास ठिक छ</translation>
 <translation id="1131264053432022307">तपाईंले प्रतिलिपि गर्नुभएको फोटो</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – फुल स्क्रिनबाट बाहिरिन सिरानबाट ड्र्याग गर्नुहोस् र "पछाडि जानुहोस्" बटनमा टच गर्नुहोस्</translation>
+<translation id="1133418583142946603">हालको ट्याब थप्नुहोस्</translation>
 <translation id="1138458427267715730">इन्टरनेटमा भएको कुनै पनि साइटमा उत्पादनको मूल्य घटेका खण्डमा अलर्ट प्राप्त गर्नुहोस्</translation>
 <translation id="1142713751288681188">पेपरको प्रकार</translation>
 <translation id="1142965388643537393">यात्रासम्बन्धी जानकारी</translation>
@@ -1009,6 +1010,7 @@
 <translation id="2627847595568876492">PDF बाट टेक्स्ट एक्स्ट्रयाक्ट गरिँदै छ...</translation>
 <translation id="2628025184666666186">यसले वेब ट्राफिक इन्क्रिप्सनका लागि तपाईंको सिस्टम कन्फिगुरेसन वा Chrome ले विश्वास नगर्ने सुरक्षासम्बन्धी सर्टिफिकेट प्रयोग गरिरहेकाले यो सर्भरले यो <ph name="DOMAIN" /> नै हो भन्ने कुरा पुष्टि गर्न सकेन। गलत कन्फिगुरेसन वा ह्याकरले तपाईंको कनेक्सनमा अवरोध गरिरहेका कारण यसो भएको हुन सक्छ।</translation>
 <translation id="2628224721443278970">Microsoft OneDrive मा साइन इन गर्नुहोस्</translation>
+<translation id="2631387782019878060">पुष्टि कोड: <ph name="OTP" /></translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" /> को सर्भरको IP एड्रेस फेला पार्न सकिएन।</translation>
 <translation id="2638567100095052009"><ph name="FEATURED_SEARCH_LIST" /> मा खोज्न @ टाइप गर्नुहोस्</translation>
 <translation id="2639739919103226564">स्थिति:</translation>
@@ -2800,6 +2802,7 @@
 <translation id="5558083606899411167">एयर कन्डिसनर</translation>
 <translation id="5558125320634132440">यस साइटमा वयस्क सामग्री समावेश हुन सक्ने भएकाले यसलाई रोक लगाइएको छ</translation>
 <translation id="5559311991468302423">ठेगाना मेटाउनुहोस्</translation>
+<translation id="5561747310506483298">परिचय पत्रहरू</translation>
 <translation id="55635442646131152">कागजातको रूपरेखा</translation>
 <translation id="5563589142503817291">लोकेसन प्रयोग गर्न <ph name="LINK" /> मा गई Chrome लाई लोकेसन एक्सेस गर्ने अनुमति दिनुहोस्।</translation>
 <translation id="5565613213060953222">इन्कोग्निटो ट्याब खोल्नुहोस्</translation>

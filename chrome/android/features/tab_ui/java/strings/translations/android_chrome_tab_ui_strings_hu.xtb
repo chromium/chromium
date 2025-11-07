@@ -128,6 +128,7 @@
 <translation id="5556417849629758491">Az üzlet adatainak megtekintése; a lehetőség a képernyő tetején található</translation>
 <translation id="5627941783489838464">Nincsenek lapfrissítések</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> link a Chrome-ból}other{<ph name="TABS_COUNT_MANY" /> link a Chrome-ból}}</translation>
+<translation id="5740354908255726955">{TAB_COUNT,plural, =1{Lap áthelyezése balra}other{Lapok áthelyezése balra}}</translation>
 <translation id="5746204836956568669">Csoportosít <ph name="NUMBER_OF_TABS" /> lapot a gyorsabb munkavégzés érdekében?</translation>
 <translation id="5773295109010386583">Inaktív elemek automatikus bezárása</translation>
 <translation id="58326064309361797">A lapokat húzással csoportosíthatja</translation>
@@ -138,6 +139,7 @@
 <translation id="6109251075362363230">Mostantól az összes ismétlődő lap is archiválva lesz a legutóbb használt példány kivételével.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> kijelölt elem bezárása}other{<ph name="TABS_COUNT_MANY" /> kijelölt elem bezárása}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Csoport áthelyezése egy új ablakba}other{Csoport áthelyezése egy másik ablakba}}</translation>
+<translation id="6212374449852603982">{TAB_COUNT,plural, =1{Lap áthelyezése jobbra}other{Lapok áthelyezése jobbra}}</translation>
 <translation id="6228793724645064692">(az üzlet értékelése)</translation>
 <translation id="625996437999624951">{TAB_COUNT,plural, =1{Lap eltávolítása a csoportból}other{Lapok eltávolítása a csoportból}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Lap hozzáadása új csoporthoz}other{Lapok hozzáadása új csoporthoz}}</translation>

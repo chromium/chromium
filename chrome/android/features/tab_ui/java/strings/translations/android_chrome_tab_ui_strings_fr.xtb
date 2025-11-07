@@ -128,6 +128,7 @@
 <translation id="5556417849629758491">Afficher les infos sur le magasin, option disponible en haut de l'écran</translation>
 <translation id="5627941783489838464">Aucun onglet modifié</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> lien de Chrome}one{<ph name="TABS_COUNT_MANY" /> lien de Chrome}other{<ph name="TABS_COUNT_MANY" /> liens de Chrome}}</translation>
+<translation id="5740354908255726955">{TAB_COUNT,plural, =1{Déplacer l'onglet vers la gauche}one{Déplacer l'onglet vers la gauche}other{Déplacer les onglets vers la gauche}}</translation>
 <translation id="5746204836956568669">Regrouper <ph name="NUMBER_OF_TABS" /> onglets pour travailler plus rapidement ?</translation>
 <translation id="5773295109010386583">Fermer automatiquement les éléments inactifs</translation>
 <translation id="58326064309361797">Faites glisser les onglets pour les regrouper</translation>
@@ -138,6 +139,7 @@
 <translation id="6109251075362363230">Tous les onglets en double seront désormais également archivés, à l'exception de la dernière copie utilisée.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Fermer <ph name="TABS_COUNT_ONE" /> élément sélectionné}one{Fermer <ph name="TABS_COUNT_MANY" /> élément sélectionné}other{Fermer <ph name="TABS_COUNT_MANY" /> éléments sélectionnés}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Déplacer le groupe vers une nouvelle fenêtre}one{Déplacer le groupe vers une autre fenêtre}other{Déplacer le groupe vers une autre fenêtre}}</translation>
+<translation id="6212374449852603982">{TAB_COUNT,plural, =1{Déplacer l'onglet vers la droite}one{Déplacer l'onglet vers la droite}other{Déplacer les onglets vers la droite}}</translation>
 <translation id="6228793724645064692">(note du magasin)</translation>
 <translation id="625996437999624951">{TAB_COUNT,plural, =1{Supprimer l'onglet du groupe}one{Supprimer l'onglet du groupe}other{Supprimer les onglets du groupe}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Ajouter l'onglet à un nouveau groupe}one{Ajouter l'onglet à un nouveau groupe}other{Ajouter les onglets à un nouveau groupe}}</translation>

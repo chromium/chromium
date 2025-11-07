@@ -10846,21 +10846,6 @@ Se a política for desativada, esse recurso será desativado.</translation>
 
       Se for definida, o usuário não vai poder modificar ou substituir esta política.</translation>
 <translation id="8080200590486938727">Desativar o localizador de plug-ins</translation>
-<translation id="8082268442825947283">A definição desta política configura regras que selecionam qual proxy o navegador usa, dependendo do URL de destino e de outras condições. Esta política terá precedência sobre as configurações de proxy definidas pela política <ph name="PROXY_SETTINGS_POLICY_NAME" />, pela API de extensão <ph name="PROXY_SETTINGS_EXTENSION_API" /> ou pelas configurações manuais do usuário, se alguma delas estiver definida.
-
-Se a política não for definida, isso não vai afetar outras políticas de proxy ou configurações do usuário.
-
-Quando o navegador precisa decidir qual proxy usar, as entradas da política <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> são avaliadas em sequência até que uma delas corresponda a pelo menos um dos hosts de URL em <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> e se todas as entradas em <ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> são atendidas. O valor em <ph name="PROXY_OVERRIDE_RULES_PROXY_CHAIN" /> será usado como proxy para essa correspondência. Se nenhuma correspondência for encontrada, as configurações de proxy vão voltar para o que está definido na política <ph name="PROXY_SETTINGS_POLICY_NAME" />.
-
-As entradas do campo <ph name="PROXY_OVERRIDE_RULES_PROXY_CHAIN" /> correspondem a valores de string de arquivos PAC, como:
-  * DIRECT
-  * PROXY host:port
-  * HTTPS host:port
-A primeira entrada acessível será usada como proxy.
-
-O campo <ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> tem uma lista de condições que precisam ser atendidas para que a regra de substituição seja usada para decidir o proxy. Se for deixado sem definição, a entrada será usada desde que tenha correspondência com pelo menos um host em <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" />.
-
-A condição <ph name="PROXY_OVERRIDE_RULES_DNS_PROBE" /> verifica se o <ph name="PROXY_OVERRIDE_RULES_HOST" /> DNS fornecido pode ser resolvido para um endereço IP. Se o valor de <ph name="PROXY_OVERRIDE_RULES_RESULT" /> for "<ph name="PROXY_OVERRIDE_RULES_RESOLVES" />", a condição será considerada atendida. Se o valor for definido como <ph name="PROXY_OVERRIDE_RULES_NOT_FOUND" />, a condição será considerada atendida se a resolução falhar.</translation>
 <translation id="8086746212954621799">Desativa as atualizações automáticas quando configurada como verdadeira.
 
 Quando essa configuração não for definida ou quando for configurada como falsa, os dispositivos <ph name="PRODUCT_OS_NAME" /> verificarão automaticamente se há atualizações.

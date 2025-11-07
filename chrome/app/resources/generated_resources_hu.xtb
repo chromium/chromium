@@ -2468,6 +2468,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2667463864537187133">Helyesírás-ellenőrzés kezelése</translation>
 <translation id="2668604389652548400">Távolítsa el, vagy cserélje le hasonló bővítményre a <ph name="BEGIN_LINK" />Chrome Webáruházban<ph name="END_LINK" /></translation>
 <translation id="2669241540496514785">Nem sikerült megnyitni a következőt: <ph name="APP_NAME" /></translation>
+<translation id="2669250147452250961">Kapcsolja be, ha szeretné megkapni a böngészési előzményeit és a lapjait más eszközökről</translation>
 <translation id="2669454659051515572">A letöltött fájlokat bárki láthatja, aki az eszközt használja</translation>
 <translation id="2670102641511624474">A(z) <ph name="APP_NAME" /> megosztja a Chrome egy lapját.</translation>
 <translation id="2670168377011445813">Ha a Chrome megtalálja az Ön egyik jelszavát egy nyilvános adatvédelmi incidensben, akkor amikor be van jelentkezve, a Google Jelszókezelő felajánlhatja, hogy módosítja az Ön jelszavát. <ph name="BEGIN_LINK" />További információ az automatizált jelszómódosításról<ph name="END_LINK" />.</translation>
@@ -8612,6 +8613,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="6961327401577924850">A webhelyek általában olyan funkciók használatához keresnek Bluetooth-eszközöket, mint például a kevés energiát fogyasztó jelzők, az egészségügyi vagy sportsegédeszközök, illetve az okosizzók beállítása és szinkronizálása.</translation>
 <translation id="6963772203726867701">Nincs észlelve</translation>
 <translation id="6963872466817251924">Szövegkurzor-kiemelő</translation>
+<translation id="6964239097707154771">a Chrome kiegészítői, amelyek segítségével több mindent elvégezhet.</translation>
 <translation id="6964390816189577014">Hős</translation>
 <translation id="6964760285928603117">Eltávolítás a csoportból</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -8924,6 +8926,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7186088072322679094">Gomb megtartása az eszköztáron</translation>
 <translation id="7186303001964993981">A(z) <ph name="ORIGIN" /> nem nyithatja meg ezt a mappát, mert rendszerfájlok találhatók benne.</translation>
 <translation id="7186568385131859684">Annak vezérlése, hogy a böngészési előzmények hogyan használhatók az Ön egyéb adataival a Google-szolgáltatásokban</translation>
+<translation id="7186903260115204164">Szabadkezes rajzokat, aláírásokat és kiemeléseket adhat hozzá az új Rajz eszközzel</translation>
 <translation id="7188508872042490670">Eszközön tárolt webhelyadatok</translation>
 <translation id="7189234443051076392">Győződjön meg arról, hogy elegendő tárhely áll rendelkezésre az eszközön</translation>
 <translation id="7189451821249468368">Ön nem rendelkezik elegendő bővítéssel az eszköz regisztrálásához. Kérjük, vegye fel a kapcsolatot az értékesítéssel továbbiak vásárlásához. Ha úgy gondolja, ezt az üzenetet tévesen kapta meg, forduljon az ügyfélszolgálathoz.</translation>
@@ -10753,6 +10756,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8427213022735114808">A diktálás elküldi a hangját a Google számára, hogy bármely szövegmezőbe írhasson hangvezérléssel.</translation>
 <translation id="8427292751741042100">beágyazva bármilyen más gazdagépen</translation>
 <translation id="8428213095426709021">Beállítások</translation>
+<translation id="8428257636009471988">Internetes áruház felkeresése</translation>
 <translation id="8428271547607112339">Iskolai fiók felvétele</translation>
 <translation id="8428634594422941299">Értem</translation>
 <translation id="84297032718407999"><ph name="LOGOUT_TIME_LEFT" /> múlva kijelentkezteti a rendszer</translation>

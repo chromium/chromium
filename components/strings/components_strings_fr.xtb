@@ -78,6 +78,7 @@
 <translation id="112840717907525620">Cache de la règle valide.</translation>
 <translation id="1131264053432022307">Image copiée</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – Pour quitter le plein écran, faites glisser depuis le haut, puis appuyez sur le bouton Retour</translation>
+<translation id="1133418583142946603">Ajouter l'onglet actuel</translation>
 <translation id="1138458427267715730">Recevez des alertes en cas de baisse de prix sur n'importe quel site Web</translation>
 <translation id="1142713751288681188">Type de papier</translation>
 <translation id="1142965388643537393">Informations de voyage</translation>
@@ -257,7 +258,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1407135791313364759">Tout ouvrir</translation>
 <translation id="1408696301184924537">Pour que cet IBAN soit renseigné automatiquement la prochaine fois, enregistrez-le dans votre compte Google</translation>
 <translation id="1408787208417187241">Triple agrafe en haut</translation>
-<translation id="1410365862999780287">Vous pouvez naviguer plus en privé, car les autres utilisateurs de cet appareil ne voient pas votre activité. Cela ne change pas comment les sites Web et les services qu'ils utilisent, y compris Google, collectent les données. Les téléchargements, favoris et éléments de la liste de lecture sont enregistrés.</translation>
+<translation id="1410365862999780287">Vous pouvez naviguer plus confidentiellement, car les autres utilisateurs de cet appareil ne voient pas votre activité. Cela ne change pas la façon dont les sites Web et les services qu'ils utilisent, y compris Google, collectent les données. Les téléchargements, favoris et éléments de la liste de lecture sont enregistrés.</translation>
 <translation id="1410941016594047814">Enveloppe d'invitation</translation>
 <translation id="1413809658975081374">Erreur liée à la confidentialité</translation>
 <translation id="1414134146594747368">Centre préscolaire</translation>
@@ -1009,6 +1010,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2627847595568876492">Extraction du texte du PDF...</translation>
 <translation id="2628025184666666186">Impossible de vérifier que ce serveur est bien <ph name="DOMAIN" />, car il utilise un certificat de sécurité qui n'est pas approuvé par Chrome ni par la configuration de votre système pour le chiffrement du trafic Web. Cela peut être dû à une mauvaise configuration ou à l'interception de votre connexion par un pirate informatique.</translation>
 <translation id="2628224721443278970">Se connecter à Microsoft OneDrive</translation>
+<translation id="2631387782019878060">Code de validation : <ph name="OTP" /></translation>
 <translation id="2634124572758952069">Impossible de trouver l'adresse IP du serveur de <ph name="HOST_NAME" />.</translation>
 <translation id="2638567100095052009">Tapez @ pour rechercher sur <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="2639739919103226564">État : </translation>
@@ -2802,6 +2804,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="5558083606899411167">Climatiseurs</translation>
 <translation id="5558125320634132440">Ce site a été bloqué, car il est possible qu'il comporte du contenu réservé à un public averti</translation>
 <translation id="5559311991468302423">Supprimer l'adresse</translation>
+<translation id="5561747310506483298">Cartes d'identité</translation>
 <translation id="55635442646131152">Plan du document</translation>
 <translation id="5563589142503817291">Pour utiliser votre position, autorisez Chrome à y accéder dans les <ph name="LINK" />.</translation>
 <translation id="5565613213060953222">Ouvrir un onglet de navigation privée</translation>
@@ -3454,7 +3457,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6652101503459149953">Utiliser Windows Hello</translation>
 <translation id="6654224358955673568">Rendre plus formel</translation>
 <translation id="6654244995031366386">Verre (texturé)</translation>
-<translation id="6655085656059574817">En maintenant votre compte associé, vous pouvez payer plus rapidement avec <ph name="BNPL_ISSUER_NAME" />. Toutefois, vous pouvez le dissocier en accédant à <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" />.</translation>
+<translation id="6655085656059574817">Garder votre compte lié vous permet de payer plus vite avec <ph name="BNPL_ISSUER_NAME" />, mais vous pouvez le dissocier en vous rendant sur <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" />.</translation>
 <translation id="6657585470893396449">Mot de passe</translation>
 <translation id="6659246032834639189">Ce prix est bas</translation>
 <translation id="6660413144148052430">position</translation>

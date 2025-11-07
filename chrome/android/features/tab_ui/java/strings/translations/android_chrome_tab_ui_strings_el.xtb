@@ -128,6 +128,7 @@
 <translation id="5556417849629758491">Δείτε πληροφορίες καταστήματος, η επιλογή είναι διαθέσιμη στο επάνω μέρος της οθόνης</translation>
 <translation id="5627941783489838464">Δεν υπάρχουν ενημερώσεις καρτελών</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> σύνδεσμος από το Chrome}other{<ph name="TABS_COUNT_MANY" /> σύνδεσμοι από το Chrome}}</translation>
+<translation id="5740354908255726955">{TAB_COUNT,plural, =1{Μετακίνηση καρτέλας προς τα αριστερά}other{Μετακίνηση καρτελών προς τα αριστερά}}</translation>
 <translation id="5746204836956568669">Να ομαδοποιηθούν <ph name="NUMBER_OF_TABS" /> καρτέλες για ταχύτερη εργασία;</translation>
 <translation id="5773295109010386583">Αυτόματο κλείσιμο ανενεργών στοιχείων</translation>
 <translation id="58326064309361797">Σύρετε καρτέλες για να τις ομαδοποιήσετε.</translation>
@@ -138,6 +139,7 @@
 <translation id="6109251075362363230">Από εδώ και στο εξής, όλες οι διπλότυπες καρτέλες θα αρχειοθετούνται, με εξαίρεση το αντίγραφο που χρησιμοποιήθηκε πιο πρόσφατα.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Κλείσιμο <ph name="TABS_COUNT_ONE" /> επιλεγμένου στοιχείου}other{Κλείσιμο <ph name="TABS_COUNT_MANY" /> επιλεγμένων στοιχείων}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Μετακίνηση ομάδας σε νέο παράθυρο}other{Μετακίνηση ομάδας σε άλλα παράθυρα}}</translation>
+<translation id="6212374449852603982">{TAB_COUNT,plural, =1{Μετακίνηση καρτέλας προς τα δεξιά}other{Μετακίνηση καρτελών προς τα δεξιά}}</translation>
 <translation id="6228793724645064692">(αξιολόγηση καταστήματος)</translation>
 <translation id="625996437999624951">{TAB_COUNT,plural, =1{Κατάργηση καρτέλας από την ομάδα}other{Κατάργηση καρτελών από την ομάδα}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Προσθήκη καρτέλας σε νέα ομάδα}other{Προσθήκη καρτελών σε νέα ομάδα}}</translation>

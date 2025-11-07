@@ -128,6 +128,7 @@
 <translation id="5556417849629758491">Прагледзець звесткі пра краму; гэты варыянт выбару даступны ўверсе экрана</translation>
 <translation id="5627941783489838464">Абнаўленняў укладак няма</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> спасылка з Chrome}one{<ph name="TABS_COUNT_MANY" /> спасылка з Chrome}few{<ph name="TABS_COUNT_MANY" /> спасылкі з Chrome}many{<ph name="TABS_COUNT_MANY" /> спасылак з Chrome}other{<ph name="TABS_COUNT_MANY" /> спасылкі з Chrome}}</translation>
+<translation id="5740354908255726955">{TAB_COUNT,plural, =1{Перамясціць укладку ўлева}one{Перамясціць укладкі ўлева}few{Перамясціць укладкі ўлева}many{Перамясціць укладкі ўлева}other{Перамясціць укладкі ўлева}}</translation>
 <translation id="5746204836956568669">Згрупаваць укладкі (<ph name="NUMBER_OF_TABS" />), каб паскорыць працу?</translation>
 <translation id="5773295109010386583">Аўтаматычна закрываць неактыўныя элементы</translation>
 <translation id="58326064309361797">Каб згрупаваць укладкі, перацягвайце іх</translation>
@@ -138,6 +139,7 @@
 <translation id="6109251075362363230">Цяпер усе паўторныя ўкладкі будуць таксама адпраўляцца ў архіў, за выключэннем той, якая выкарыстоўвалася апошняй.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Закрыць <ph name="TABS_COUNT_ONE" /> выбраны элемент}one{Закрыць <ph name="TABS_COUNT_MANY" /> выбраны элемент}few{Закрыць <ph name="TABS_COUNT_MANY" /> выбраныя элементы}many{Закрыць <ph name="TABS_COUNT_MANY" /> выбраных элементаў}other{Закрыць <ph name="TABS_COUNT_MANY" /> выбранага элемента}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Перамясціць групу ўкладак у новае акно}one{Перамясціць групу ўкладак у яшчэ адно акно}few{Перамясціць групу ўкладак у яшчэ адно акно}many{Перамясціць групу ўкладак у яшчэ адно акно}other{Перамясціць групу ўкладак у яшчэ адно акно}}</translation>
+<translation id="6212374449852603982">{TAB_COUNT,plural, =1{Перамясціць укладку ўправа}one{Перамясціць укладкі ўправа}few{Перамясціць укладкі ўправа}many{Перамясціць укладкі ўправа}other{Перамясціць укладкі ўправа}}</translation>
 <translation id="6228793724645064692">(ацэнка крамы)</translation>
 <translation id="625996437999624951">{TAB_COUNT,plural, =1{Выдаліць укладку з групы}one{Выдаліць укладкі з групы}few{Выдаліць укладкі з групы}many{Выдаліць укладкі з групы}other{Выдаліць укладкі з групы}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Дадаць укладку ў новую групу}one{Дадаць укладкі ў новую групу}few{Дадаць укладкі ў новую групу}many{Дадаць укладкі ў новую групу}other{Дадаць укладкі ў новую групу}}</translation>

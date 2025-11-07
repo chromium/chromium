@@ -78,6 +78,7 @@
 <translation id="112840717907525620">Cache for politik er OK</translation>
 <translation id="1131264053432022307">Billede, du har kopieret</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – Du kan afslutte fuld skærm ved at trække fra toppen og trykke på knappen Tilbage</translation>
+<translation id="1133418583142946603">Tilføj den aktuelle fane</translation>
 <translation id="1138458427267715730">Få underretninger, når prisen falder på produktet på et hvilket som helst website på nettet</translation>
 <translation id="1142713751288681188">Papirtype</translation>
 <translation id="1142965388643537393">Rejseoplysninger</translation>
@@ -1009,6 +1010,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2627847595568876492">Udtrækning af tekst fra PDF…</translation>
 <translation id="2628025184666666186">Denne server kunne ikke bevise, at den er <ph name="DOMAIN" />, fordi den bruger et sikkerhedscertifikat, som Chrome eller din systemkonfiguration til kryptering af webtrafik ikke har tillid til. Dette kan skyldes en fejlkonfiguration, eller at en hacker har opfanget din forbindelse.</translation>
 <translation id="2628224721443278970">Log ind på Microsoft OneDrive</translation>
+<translation id="2631387782019878060">Verificeringskode: <ph name="OTP" /></translation>
 <translation id="2634124572758952069">IP-adressen på serveren for <ph name="HOST_NAME" /> blev ikke fundet.</translation>
 <translation id="2638567100095052009">Skriv @ for at søge på <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="2639739919103226564">Status:</translation>
@@ -2802,6 +2804,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5558083606899411167">Airconditionanlæg</translation>
 <translation id="5558125320634132440">Dette website er blokeret, fordi indholdet kan være uegnet for børn</translation>
 <translation id="5559311991468302423">Slet adresse</translation>
+<translation id="5561747310506483298">Id-kort</translation>
 <translation id="55635442646131152">Indholdsfortegnelse</translation>
 <translation id="5563589142503817291">Giv Chrome adgang i <ph name="LINK" /> for at bruge lokationen.</translation>
 <translation id="5565613213060953222">Åbn inkognitofane</translation>

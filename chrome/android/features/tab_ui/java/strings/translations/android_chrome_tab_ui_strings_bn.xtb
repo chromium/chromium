@@ -128,6 +128,7 @@
 <translation id="5556417849629758491">স্টোর সংক্রান্ত তথ্য দেখুন, স্ক্রিনের সবচেয়ে উপরের অংশে এই বিকল্প উপলভ্য আছে</translation>
 <translation id="5627941783489838464">কোনও ট্যাব সম্পর্কিত আপডেট নেই</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{Chrome থেকে <ph name="TABS_COUNT_ONE" />টি লিঙ্ক}one{Chrome থেকে <ph name="TABS_COUNT_MANY" />টি লিঙ্ক}other{Chrome থেকে <ph name="TABS_COUNT_MANY" />টি লিঙ্ক}}</translation>
+<translation id="5740354908255726955">{TAB_COUNT,plural, =1{ট্যাব বাঁদিকে সরান}one{ট্যাব বাঁদিকে সরান}other{ট্যাব বাঁদিকে সরান}}</translation>
 <translation id="5746204836956568669">আপনি দ্রুত কাজ করার জন্য <ph name="NUMBER_OF_TABS" />টি ট্যাব গ্রুপে রাখতে চান?</translation>
 <translation id="5773295109010386583">ইনঅ্যাক্টিভ আইটেম অটোমেটিক বন্ধ করে দেয়</translation>
 <translation id="58326064309361797">ট্যাবগুলি গ্রুপ করতে ড্র্যাগ করুন</translation>
@@ -138,6 +139,7 @@
 <translation id="6109251075362363230">সবচেয়ে সাম্প্রতিক ব্যবহৃত ডুপ্লিকেট ট্যাব ছাড়া সব ডুপ্লিকেট ট্যাব এখন আর্কাইভ করা হবে।</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" />টি বেছে নেওয়া আইটেম বন্ধ করুন}one{<ph name="TABS_COUNT_MANY" />টি বেছে নেওয়া আইটেম বন্ধ করুন}other{<ph name="TABS_COUNT_MANY" />টি বেছে নেওয়া আইটেম বন্ধ করুন}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{নতুন উইন্ডোতে গ্রুপ সরান}one{অন্য উইন্ডোতে গ্রুপ সরান}other{অন্য উইন্ডোতে গ্রুপ সরান}}</translation>
+<translation id="6212374449852603982">{TAB_COUNT,plural, =1{ট্যাব ডানদিকে সরান}one{ট্যাব ডানদিকে সরান}other{ট্যাব ডানদিকে সরান}}</translation>
 <translation id="6228793724645064692">(স্টোর রেটিং)</translation>
 <translation id="625996437999624951">{TAB_COUNT,plural, =1{গ্রুপ থেকে ট্যাব সরিয়ে দিন}one{গ্রুপ থেকে ট্যাব সরান}other{গ্রুপ থেকে ট্যাব সরান}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{নতুন গ্রুপে ট্যাব যোগ করুন}one{নতুন গ্রুপে ট্যাব যোগ করুন}other{নতুন গ্রুপে ট্যাব যোগ করুন}}</translation>

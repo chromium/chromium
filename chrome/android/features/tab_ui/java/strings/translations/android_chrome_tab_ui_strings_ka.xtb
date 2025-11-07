@@ -128,6 +128,7 @@
 <translation id="5556417849629758491">მაღაზიის ინფორმაციის ნახვა, ვარიანტი ხელმისაწვდომია ეკრანის ზედა ნაწილთან</translation>
 <translation id="5627941783489838464">ჩანართის შესახებ განახლებები არ არის</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ბმული Chrome-იდან}other{<ph name="TABS_COUNT_MANY" /> ბმული Chrome-იდან}}</translation>
+<translation id="5740354908255726955">{TAB_COUNT,plural, =1{ჩანართის მარცხნივ გადატანა}other{ჩანართების მარცხნივ გადატანა}}</translation>
 <translation id="5746204836956568669">გსურთ, დააჯგუფოთ <ph name="NUMBER_OF_TABS" /> ჩანართი, რომ უფრო სწრაფად იმუშაოთ?</translation>
 <translation id="5773295109010386583">არააქტიური ერთეულების ავტომატურად დახურვა</translation>
 <translation id="58326064309361797">ჩანართების დასაჯგუფებლად ჩავლებით გადაიტანეთ ისინი</translation>
@@ -138,6 +139,7 @@
 <translation id="6109251075362363230">ყველა დუბლირებული ჩანართი დაარქივდება, ყველაზე ხშირად გამოყენებული დუბლიკატის გარდა.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> არჩეული ერთეულის დახურვა}other{<ph name="TABS_COUNT_MANY" /> არჩეული ერთეულის დახურვა}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{ჯგუფის გადატანა ახალ ფანჯარაში}other{ჯგუფის გადატანა სხვა ფანჯარაში}}</translation>
+<translation id="6212374449852603982">{TAB_COUNT,plural, =1{ჩანართის მარჯვნივ გადატანა}other{ჩანართების მარჯვნივ გადატანა}}</translation>
 <translation id="6228793724645064692">(მაღაზიის შეფასება)</translation>
 <translation id="625996437999624951">{TAB_COUNT,plural, =1{ჩანართის ამოშლა ჯგუფიდან}other{ჩანართების ამოშლა ჯგუფიდან}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{ჩანართის დამატება ახალ ჯგუფში}other{ჩანართის დამატება ახალ ჯგუფში}}</translation>

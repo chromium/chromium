@@ -128,6 +128,7 @@
 <translation id="5556417849629758491">Дүкен туралы ақпаратты көру (опция экранның жоғарғы жағында орналасқан)</translation>
 <translation id="5627941783489838464">Қойындыларда өзгеріс жоқ.</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{Chrome-нан <ph name="TABS_COUNT_ONE" /> сілтеме}other{Chrome-нан <ph name="TABS_COUNT_MANY" /> сілтеме}}</translation>
+<translation id="5740354908255726955">{TAB_COUNT,plural, =1{Қойындыны солға жылжыту}other{Қойындыларды солға жылжыту}}</translation>
 <translation id="5746204836956568669">Жылдамырақ жұмыс істеу үшін <ph name="NUMBER_OF_TABS" /> қойындыны топтау қажет пе?</translation>
 <translation id="5773295109010386583">Әрекетсіз элементтерді автоматты түрде жабу</translation>
 <translation id="58326064309361797">Қойындыларды топтастыру үшін оларды сүйреңіз.</translation>
@@ -138,6 +139,7 @@
 <translation id="6109251075362363230">Ең соңғы қолданылған көшірмені есепке алмағанда, барлық қайталанатын қойынды да мұрағатталады.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> таңдалған элементті жабу}other{<ph name="TABS_COUNT_MANY" /> таңдалған элементті жабу}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Топты жаңа терезеге тасымалдау}other{Топты басқа терезеге тасымалдау}}</translation>
+<translation id="6212374449852603982">{TAB_COUNT,plural, =1{Қойындыны оңға жылжыту}other{Қойындыларды оңға жылжыту}}</translation>
 <translation id="6228793724645064692">(дүкен рейтингісі)</translation>
 <translation id="625996437999624951">{TAB_COUNT,plural, =1{Қойындыны топтан өшіру}other{Қойындыларды топтан өшіру}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Жаңа топқа қойынды қосу}other{Жаңа топқа қойындылар қосу}}</translation>

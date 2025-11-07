@@ -78,6 +78,7 @@
 <translation id="112840717907525620">Cache dasar OK</translation>
 <translation id="1131264053432022307">Imej yang Anda Salin</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – Untuk keluar daripada skrin penuh, seret dari bahagian atas dan sentuh butang kembali</translation>
+<translation id="1133418583142946603">Tambah tab semasa</translation>
 <translation id="1138458427267715730">Terima makluman jika harga produk tersebut turun pada mana-mana laman merentas web</translation>
 <translation id="1142713751288681188">Jenis kertas</translation>
 <translation id="1142965388643537393">Maklumat perjalanan</translation>
@@ -444,6 +445,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1717218214683051432">Penderia gerakan</translation>
 <translation id="1717494416764505390">Peti mel 3</translation>
 <translation id="1717688554309417925">Perkhidmatan Debit &amp; Cek</translation>
+<translation id="1717882880162336471">Cuba AI Mode</translation>
 <translation id="1719434663396780149">Makluman penurunan harga dihidupkan. Anda boleh menukar tetapan ini dalam <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="1719838434204287058">24 x 30 in</translation>
 <translation id="1720941539803966190">Tutup tutorial</translation>
@@ -2016,6 +2018,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4258748452823770588">Tandatangan tidak elok</translation>
 <translation id="4265635050210404830">Kad kesetiaan anda</translation>
 <translation id="4265872034478892965">Dibenarkan oleh pentadbir anda</translation>
+<translation id="4267590181863312380">Untuk mendapatkan sejarah anda daripada peranti anda yang lain, log masuk dan segerakkan sejarah. Anda juga akan mendapat kata laluan anda dan pelbagai lagi pada semua peranti anda. Anda boleh menghentikan penyegerakan pada bila-bila masa dalam tetapan ini. Google mungkin memeribadikan Search dan perkhidmatan lain berdasarkan sejarah anda.</translation>
 <translation id="4269029136757623689">Kipas Rumah</translation>
 <translation id="4269264543938335308">Pakaian renang</translation>
 <translation id="4269599248168651462">Sijil pelayan dikeluarkan kepada nama bukan unik.</translation>
@@ -2892,6 +2895,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5715918316982363436"><ph name="TAB_COUNT" /> daripada <ph name="WINDOW_COUNT" /> pada peranti ini</translation>
 <translation id="5716325061445053985">Ketik untuk buka tab tersebut pada telefon anda</translation>
 <translation id="5717509257172454543">Meluncur Ais</translation>
+<translation id="5718601519531438273">Termasuk maklumat seperti pasport dan lesen memandu</translation>
 <translation id="5720705177508910913">Pengguna semasa</translation>
 <translation id="5720895412771013401">Komputer Meja</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} dan 1 lagi}other{{website_1}, {website_2} dan {more_count} lagi}}</translation>
@@ -4562,6 +4566,7 @@ Butiran tambahan:
 <translation id="8449036207308062757">Urus storan</translation>
 <translation id="8449155699563577224">17 x 24 in</translation>
 <translation id="8449836157089738489">Buka semua dalam kumpulan tab baharu</translation>
+<translation id="8451518040456311377">Simpan dan isi dokumen identiti</translation>
 <translation id="84561192812921051">Pentadbir anda boleh membuat perubahan pada profil dan penyemak imbas anda dari jauh, menganalisis maklumat tentang penyemak imbas melalui pelaporan dan melaksanakan tugas penting yang lain. Aktiviti pada peranti ini mungkin turut diurus di luar Chrome.  <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="8456383681414356368">Helaian bawah ditutup.</translation>
 <translation id="8456775115498700722">Kini anda boleh membuat autolengkap kad <ph name="CARD_ISSUER_NAME" /> anda kerana akaun <ph name="CARD_ISSUER_NAME" /> anda dipautkan kepada Google Pay.</translation>

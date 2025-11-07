@@ -2459,6 +2459,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2667463864537187133">Upravljanje provjerom pravopisa</translation>
 <translation id="2668604389652548400">Uklonite ga ili zamijenite sličnim proširenjima iz <ph name="BEGIN_LINK" />Chrome web-trgovine<ph name="END_LINK" />.</translation>
 <translation id="2669241540496514785">Aplikaciju <ph name="APP_NAME" /> nije moguće otvoriti</translation>
+<translation id="2669250147452250961">Uključite ovu opciju da biste dobili povijest pregledavanja i kartice s drugih uređaja</translation>
 <translation id="2669454659051515572">Svi koji upotrebljavaju ovaj uređaj mogu vidjeti preuzete datoteke</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> dijeli Chromeovu karticu.</translation>
 <translation id="2670168377011445813">Ako Chrome pronađe jednu od vaših zaporki u neovlaštenom pristupu javnim podacima, Google upravitelj zaporki može vam ponuditi da za vas promijeni zaporku ako ste prijavljeni. <ph name="BEGIN_LINK" />Više o automatiziranoj promjeni zaporke<ph name="END_LINK" /></translation>
@@ -8601,6 +8602,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="6961327401577924850">Web-lokacije obično traže Bluetooth uređaje radi značajki poput postavljanja ili sinkroniziranja niskoenergetskog lokatora, uređaja za praćenje zdravlja ili fitnessa ili male žarulje</translation>
 <translation id="6963772203726867701">Nije otkriveno</translation>
 <translation id="6963872466817251924">Alat za isticanje pokazivača teksta</translation>
+<translation id="6964239097707154771">su dodaci za Chrome koji vam mogu pomoći da postignete više</translation>
 <translation id="6964390816189577014">Junak</translation>
 <translation id="6964760285928603117">Ukloni iz grupe</translation>
 <translation id="6965382102122355670">U redu</translation>
@@ -8913,6 +8915,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7186088072322679094">Zadrži na alatnoj traci</translation>
 <translation id="7186303001964993981"><ph name="ORIGIN" /> ne može otvoriti ovu mapu jer sadrži datoteke sustava</translation>
 <translation id="7186568385131859684">Upravljajte načinom na koji se povijest pregledavanja upotrebljava s vašim ostalim podacima na Googleovim uslugama</translation>
+<translation id="7186903260115204164">Dodajte vlastoručne crteže, potpise i isticanja pomoću novog alata za crtanje</translation>
 <translation id="7188508872042490670">Podaci web-lokacije na uređaju</translation>
 <translation id="7189234443051076392">Provjerite ima li dovoljno prostora na uređaju</translation>
 <translation id="7189451821249468368">Nemate dovoljno nadogradnji za prijavu ovog uređaja. Obratite se prodaji da biste kupili više. Ako smatrate da vam se ova poruka prikazuje pogreškom, obratite se podršci.</translation>
@@ -10743,6 +10746,7 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="8427213022735114808">Diktat šalje Googleu audiopodatke o vašem glasu kako biste mogli unositi tekst govorom u bilo koje tekstno polje.</translation>
 <translation id="8427292751741042100">ugrađeno na bilo kojem hostu</translation>
 <translation id="8428213095426709021">Postavke</translation>
+<translation id="8428257636009471988">Posjetite web-trgovinu</translation>
 <translation id="8428271547607112339">Dodavanje školskog računa</translation>
 <translation id="8428634594422941299">Shvaćam</translation>
 <translation id="84297032718407999">Odjavit ćete se za <ph name="LOGOUT_TIME_LEFT" /></translation>
@@ -10939,7 +10943,7 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="8566916288687510520">Primljena je nova zaporka</translation>
 <translation id="8569673829373920831">Više o aplikaciji <ph name="APP_NAME" /></translation>
 <translation id="8569682776816196752">Nije pronađeno nijedno odredište</translation>
-<translation id="8571213806525832805">Protekla 4 tjedna</translation>
+<translation id="8571213806525832805">Posljednja 4 tjedna</translation>
 <translation id="8571323456914890254">Otvori u podijeljenom prikazu</translation>
 <translation id="8571687764447439720">Dodavanje Kerberosovog tiketa</translation>
 <translation id="8572052284359771939">URL-ove web-lokacija koje posjećujete i mali uzorak sadržaja stranice, preuzimanja, aktivnosti proširenja i informacija o sustavu šalje Google sigurnom pregledavanju kako bi se provjerilo jesu li štetni.</translation>

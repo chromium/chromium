@@ -78,6 +78,7 @@
 <translation id="112840717907525620">ନୀତି କେଚ୍‍ ଠିକ୍ ଅଛି</translation>
 <translation id="1131264053432022307">ଆପଣ ଯେଉଁ ଛବି କପି କରିଥିଲେ</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନରୁ ବାହାରି ଯିବା ପାଇଁ ଶୀର୍ଷରୁ ଡ୍ରାଗ କରନ୍ତୁ ଏବଂ ପଛକୁ ଫେରନ୍ତୁ ବଟନକୁ ସ୍ପର୍ଶ କରନ୍ତୁ</translation>
+<translation id="1133418583142946603">ବର୍ତ୍ତମାନର ଟାବ୍ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="1138458427267715730">ସମଗ୍ର ୱେବରେ ଯେ କୌଣସି ସାଇଟରେ ମୂଲ୍ୟ ହ୍ରାସ ହେଲେ ଆଲର୍ଟ ପାଆନ୍ତୁ</translation>
 <translation id="1142713751288681188">କାଗଜର ପ୍ରକାର</translation>
 <translation id="1142965388643537393">ଟ୍ରାଭେଲ ସୂଚନା</translation>
@@ -1009,6 +1010,7 @@
 <translation id="2627847595568876492">PDFରୁ ଟେକ୍ସଟକୁ ଏକ୍ସଟ୍ରାକ୍ଟ କରାଯାଉଛି...</translation>
 <translation id="2628025184666666186">ଏହି ସର୍ଭର ଏହା <ph name="DOMAIN" /> ଅଟେ ବୋଲି ପ୍ରମାଣିତ କରିପାରିଲା ନାହିଁ କାରଣ ଏହା ଏକ ସିକ୍ୟୁରିଟି ସାର୍ଟିଫିକେଟ ବ୍ୟବହାର କରୁଛି ଯାହା Chrome କିମ୍ବା ୱେବ ଟ୍ରାଫିକ ଏନକ୍ରିପସନ ପାଇଁ ଆପଣଙ୍କର ସିଷ୍ଟମ କନଫିଗରେସନ ଦ୍ୱାରା ବିଶ୍ୱସନୀୟ ନୁହେଁ। ଏହା ଏକ ଭୁଲ କନଫିଗରେସନ କିମ୍ବା ଜଣେ ଆକ୍ରମଣକାରୀ ଆପଣଙ୍କ କନେକ୍ସନକୁ ବାଧା ଦେଉଥିବା ଯୋଗୁଁ ହୋଇଥାଇପାରେ।</translation>
 <translation id="2628224721443278970">Microsoft OneDriveରେ ସାଇନ ଇନ କରନ୍ତୁ</translation>
+<translation id="2631387782019878060">ଯାଞ୍ଚକରଣ କୋଡ: <ph name="OTP" /></translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" />ର ସର୍ଭର୍ IP ଠିକଣା ମିଳିଲା ନାହିଁ।</translation>
 <translation id="2638567100095052009">ସମଗ୍ର <ph name="FEATURED_SEARCH_LIST" />ରେ ସର୍ଚ୍ଚ କରିବାକୁ @ ଟାଇପ କରନ୍ତୁ</translation>
 <translation id="2639739919103226564">ସ୍ଥିତି:</translation>
@@ -2799,6 +2801,7 @@
 <translation id="5558083606899411167">ଏୟାର କଣ୍ଡିସନର</translation>
 <translation id="5558125320634132440">ଏହି ସାଇଟ୍‍‍କୁ ବ୍ଲକ୍ କରାଯାଇଛି କାରଣ ଏଥିରେ ବୟସ୍କଙ୍କ ପାଇଁ ଉଦ୍ଦିଷ୍ଟ ବିଷୟବସ୍ତୁ ଥାଇପାରେ</translation>
 <translation id="5559311991468302423">ଠିକଣା ଡିଲିଟ କରନ୍ତୁ</translation>
+<translation id="5561747310506483298">ପରିଚୟ କାର୍ଡ</translation>
 <translation id="55635442646131152">ଡକ୍ୟୁମେଣ୍ଟ ଆଉଟଲାଇନ୍</translation>
 <translation id="5563589142503817291">ଆପଣଙ୍କ ଲୋକେସନକୁ ବ୍ୟବହାର କରିବା ପାଇଁ <ph name="LINK" />ରେ Chromeକୁ ଆକ୍ସେସ ଦିଅନ୍ତୁ।</translation>
 <translation id="5565613213060953222">ଇନକଗ୍ନିଟୋ ଟାବ ଖୋଲନ୍ତୁ</translation>

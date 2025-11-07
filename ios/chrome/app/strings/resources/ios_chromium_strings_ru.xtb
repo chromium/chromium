@@ -238,6 +238,7 @@
 <translation id="6154098560469640583">Открывайте ссылки в сообщениях, документах и других приложениях с помощью Chromium.</translation>
 <translation id="6157162508956739031">Пароли и ключи доступа из Chromium будут вводиться автоматически. Это позволит быстро входить в аккаунты на сайтах и в приложениях.</translation>
 <translation id="6170619162539716595">Чтобы браузер Chromium показывал полезную информацию о найденных адресах и прокладывал маршруты, разрешите ему использовать Google Карты.</translation>
+<translation id="6244277266078678766">Ваши данные будут сохранены в Менеджере паролей для аккаунта <ph name="USER_EMAIL" />.</translation>
 <translation id="6268381023930128611">Выйти из Chromium?</translation>
 <translation id="6301717043141881464">Чтобы быстро вводить сохраненные пароли в других приложениях, выберите автозаполнение Chromium.</translation>
 <translation id="6324041800010509197">Страница вкладок в Chromium</translation>
@@ -315,6 +316,7 @@
 <translation id="8119542592987737574">Вы сможете быстрее открывать Chromium на главном экране iPhone.</translation>
 <translation id="8164086860209325020">Откройте настройки Chromium.</translation>
 <translation id="8197822717502700527">Теперь вам доступны все возможности Chromium.</translation>
+<translation id="8236210361418193126">Импортировать в Менеджер паролей</translation>
 <translation id="8254729934443216898">Узнайте больше о новых возможностях Chromium.</translation>
 <translation id="8293572045658095405">Включен режим инкогнито в Chromium</translation>
 <translation id="830951810931292870">Введенные URL будут открыты в Chromium в режиме инкогнито.</translation>

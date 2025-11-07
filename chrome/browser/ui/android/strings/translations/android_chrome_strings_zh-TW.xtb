@@ -49,6 +49,7 @@
 <translation id="1181037720776840403">移除</translation>
 <translation id="1183189057400844278">為確保你隨時可以使用 Google 帳戶中的密碼，請驗證身分</translation>
 <translation id="1187810343066461819">一併刪除這部車上的書籤、歷史記錄和其他資料</translation>
+<translation id="1193589902336218259">開啟提示通知</translation>
 <translation id="1193729455103054076">要使用高強度密碼嗎？</translation>
 <translation id="11947597112837849">電子郵件地址</translation>
 <translation id="1197267115302279827">移動書籤</translation>
@@ -236,6 +237,7 @@
 <translation id="200114059308480249">要在使用 Google 搜尋時納入前後文嗎？</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />，固定的無痕分頁，已設為靜音</translation>
 <translation id="2021896219286479412">全螢幕網站控制</translation>
+<translation id="2029669011553795746">提示通知啟用畫面顯示在畫面下半部</translation>
 <translation id="2038563949887743358">開啟「要求電腦版網站」</translation>
 <translation id="204321170514947529">「<ph name="APP_NAME" />」在 Chrome 中也有資料</translation>
 <translation id="2047378580182589770">按住即可關閉無痕模式</translation>
@@ -245,6 +247,7 @@
 <translation id="2063047797624276601">貴機構已開啟安全瀏覽強化防護功能</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{無法完成 1 項下載作業}other{無法完成 # 項下載作業}}</translation>
 <translation id="2067805253194386918">文字</translation>
+<translation id="2072027001582274150">閒置或重複的分頁</translation>
 <translation id="2074527029802029717">取消分頁固定</translation>
 <translation id="2079545284768500474">復原</translation>
 <translation id="2082238445998314030">第 <ph name="RESULT_NUMBER" /> 個結果，共 <ph name="TOTAL_RESULTS" /> 個</translation>
@@ -405,6 +408,7 @@
 <translation id="2781151931089541271">還剩 1 秒</translation>
 <translation id="2789486458103222910">確定</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chrome 發現重複使用的密碼，建議改用其他密碼}other{Chrome 發現 # 個重複使用的密碼，建議改用其他密碼}}</translation>
+<translation id="2794551654724114396">開啟通知功能，取得有助充分運用 Chrome 的實用提示</translation>
 <translation id="2800066122460699237">即將關閉「<ph name="TAB_TITLE" />」分頁</translation>
 <translation id="2805210243313393104">在所有裝置上存取書籤和其他資料</translation>
 <translation id="2805756323405976993">應用程式</translation>
@@ -640,6 +644,7 @@
 <translation id="3824259034819781947">附加檔案</translation>
 <translation id="38243391581572867">這個帳戶無法使用智慧鏡頭。</translation>
 <translation id="38258275871320156">僅適用於小視窗</translation>
+<translation id="3826529618131025925">提示通知啟用說明和指引底部功能表</translation>
 <translation id="3845098929839618392">在無痕分頁中開啟</translation>
 <translation id="3847319713229060696">協助我們改善所有人的網路安全性</translation>
 <translation id="385051799172605136">返回</translation>
@@ -773,6 +778,7 @@
 <translation id="4405636711880428279">要移除虛擬卡片嗎？</translation>
 <translation id="4408965460206576430">這個檔案含有惡意軟體或來自可疑網站</translation>
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> 和另外 <ph name="TAB_COUNT" /> 個分頁</translation>
+<translation id="441100617989818073">閒置或重複的分頁和分頁群組</translation>
 <translation id="4414179633735763985">已刪除 <ph name="TAB_GROUPS_AND_TABS_PART" /></translation>
 <translation id="4415276339145661267">管理你的 Google 帳戶</translation>
 <translation id="4425140285732600465">正在追蹤價格。如果產品在任何網站上降價，你會收到通知。</translation>
@@ -801,6 +807,7 @@
 <translation id="452750746583162491">查看已同步處理的資料</translation>
 <translation id="4532845899244822526">選擇資料夾</translation>
 <translation id="4535755320005483982">共用的「<ph name="GROUP_TITLE" />」分頁群組</translation>
+<translation id="4537137366307982887">提示通知啟用畫面顯示在整個畫面</translation>
 <translation id="4543131175509360848">說明沒有密碼金鑰的底部功能表</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> 個分頁}other{<ph name="TAB_COUNT_MANY" /> 個分頁、<ph name="TAB_COUNT_INCOGNITO" /> 個無痕分頁}}</translation>
 <translation id="4558311620361989323">網頁快速鍵</translation>
@@ -952,6 +959,7 @@
 <translation id="5123685120097942451">無痕式分頁</translation>
 <translation id="5142281402488957685">如要重新整理動態消息內容，請將頁面往下拉</translation>
 <translation id="5144385790872094440">預先載入要造訪的某些網頁。如果是從 Google 網站或應用程式連到這些網頁，系統可能會透過 Google 伺服器預先載入。</translation>
+<translation id="5145887002054615868">重複或閒置 <ph name="DAYS_INACTIVE" /> 天的分頁都會移到這裡，<ph name="AUTODELETE_SECTION" />。你隨時可以前往「<ph name="DECLUTTER_SETTINGS_TITLE" />」變更。</translation>
 <translation id="5152843274749979095">尚未安裝系統支援的應用程式</translation>
 <translation id="5161254044473106830">請輸入標題</translation>
 <translation id="5161262286013276579">已開啟密碼金鑰確認工作表</translation>
@@ -1114,6 +1122,7 @@
 <translation id="5864419784173784555">正在等待其他下載程序完成…</translation>
 <translation id="5865733239029070421">自動將使用統計資料和當機報告傳送給 Google</translation>
 <translation id="5869522115854928033">已儲存的密碼</translation>
+<translation id="5870416898561279542">重複或閒置 <ph name="DAYS_INACTIVE" /> 天的分頁和分頁群組都會移到這裡，<ph name="AUTODELETE_SECTION" />。你隨時可以前往「<ph name="DECLUTTER_SETTINGS_TITLE" />」變更。</translation>
 <translation id="587735546353481577">如要追蹤網站，只要前往該網站並開啟 Chrome 選單，然後輕觸 [追蹤] 即可。</translation>
 <translation id="5883855034004058011">生物辨識失敗次數過多，鎖定裝置再解鎖即可重試。</translation>
 <translation id="5885378508678660271">通知 <ph name="SEPARATOR" /> 這是危險網站，因此 Chrome 已移除這些權限</translation>
@@ -1874,6 +1883,7 @@
 <translation id="8942627711005830162">在其他視窗中開啟</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - 無法下載這個語言套件，請稍後再試。</translation>
 <translation id="8946759102391960088">繼續存取密碼</translation>
+<translation id="895442993047180128">提示通知啟用畫面已關閉</translation>
 <translation id="8957528460562961174">如要繼續存取密碼，請立即匯出密碼，然後匯入至偏好的密碼管理工具。由於無法使用 Google Play 服務，Google 密碼管理工具已停止運作。</translation>
 <translation id="8963117664422609631">前往網站設定</translation>
 <translation id="8965591936373831584">正在等待下載</translation>

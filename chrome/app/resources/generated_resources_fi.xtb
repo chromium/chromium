@@ -2468,6 +2468,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2667463864537187133">Hallitse oikeinkirjoituksen tarkistusta</translation>
 <translation id="2668604389652548400">Poista se tai korvaa se samanlaisilla laajennuksilla <ph name="BEGIN_LINK" />Chrome Web Storesta<ph name="END_LINK" /></translation>
 <translation id="2669241540496514785"><ph name="APP_NAME" />:n avaus ei onnistunut</translation>
+<translation id="2669250147452250961">Laita päälle, niin saat selaushistorian ja välilehdet muilta laitteilta</translation>
 <translation id="2669454659051515572">Kaikki tämän laitteen käyttäjät voivat nähdä ladatut tiedostot</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> jakaa Chrome-välilehden.</translation>
 <translation id="2670168377011445813">Jos Chrome löytää yhden salasanoistasi julkisesta tietosuojaloukkauksesta, Google Salasanat voi tarjota salasanan vaihtamista ollessasi sisäänkirjautuneena. <ph name="BEGIN_LINK" />Lue lisää automaattisesta salasanan vaihdosta<ph name="END_LINK" /></translation>
@@ -8609,6 +8610,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="6961327401577924850">Sivustot etsivät yleensä Bluetooth-laitteita esimerkiksi ottaakseen käyttöön tai synkronoidakseen vähän virtaa käyttävän majakan, terveys- tai liikuntaseurannan tai älylampun</translation>
 <translation id="6963772203726867701">Ei havaittu</translation>
 <translation id="6963872466817251924">Tekstikohdistimen korostus</translation>
+<translation id="6964239097707154771">ovat Chromen laajennuksia, joiden avulla voit tehdä enemmän</translation>
 <translation id="6964390816189577014">Sankari</translation>
 <translation id="6964760285928603117">Poista ryhmästä</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -8921,6 +8923,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7186088072322679094">Pidä yläpalkissa</translation>
 <translation id="7186303001964993981"><ph name="ORIGIN" /> ei saa avata tätä kansiota, koska se sisältää järjestelmätiedostoja</translation>
 <translation id="7186568385131859684">Valitse, miten selaushistoriaa käytetään muun datan kanssa Googlen palveluissa</translation>
+<translation id="7186903260115204164">Lisää käsin piirrettyjä kuvia, allekirjoituksia ja korostuksia uudella piirtotyökalulla</translation>
 <translation id="7188508872042490670">Laitepohjainen sivustodata</translation>
 <translation id="7189234443051076392">Varmista, että laitteellasi on tarpeeksi tilaa.</translation>
 <translation id="7189451821249468368">Sinulla ei ole tarpeeksi päivityksiä tämän laitteen rekisteröintiä varten. Osta niitä lisää ottamalla yhteyttä myyntitiimiin. Jos sinun ei mielestäsi pitäisi nähdä tätä viestiä, ota yhteyttä tukeen.</translation>
@@ -10751,6 +10754,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8427213022735114808">Sanelu lähettää äänesi Googlelle, jotta puhekirjoitus on mahdollista kaikissa tekstikentissä.</translation>
 <translation id="8427292751741042100">verkkopalveluun upotettu</translation>
 <translation id="8428213095426709021">Asetukset</translation>
+<translation id="8428257636009471988">Siirry Web Storeen</translation>
 <translation id="8428271547607112339">Lisää koulutili</translation>
 <translation id="8428634594422941299">Selvä</translation>
 <translation id="84297032718407999">Sinut kirjataan ulos <ph name="LOGOUT_TIME_LEFT" /> päästä</translation>

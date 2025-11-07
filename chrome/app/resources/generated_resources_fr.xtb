@@ -2348,7 +2348,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2588636910004461974">Appareils de <ph name="VENDOR_NAME" /></translation>
 <translation id="2589658397149952302">Ne jamais afficher les fichiers Drive</translation>
 <translation id="2593499352046705383">Avant de commencer, vérifiez que vous avez une copie de sauvegarde de vos données. L'installation de <ph name="DEVICE_OS" /> va écraser les données de votre disque dur. En savoir plus : g.co/flex/InstallGuide.</translation>
-<translation id="2597073208962000830">La fonctionnalité Partage à proximité utilise la recherche Bluetooth pour identifier les appareils à proximité.</translation>
+<translation id="2597073208962000830">La fonctionnalité Partage à proximité utilise la recherche Bluetooth pour trouver les appareils à proximité.</translation>
 <translation id="2598136842498757793">Personnaliser les boutons de la barre d'outils</translation>
 <translation id="2598710988533271874">Nouvelle version de Chrome disponible</translation>
 <translation id="2599048253926156421">Nom d'utilisateur copié dans le presse-papiers</translation>
@@ -2457,6 +2457,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2667463864537187133">Gérer le correcteur orthographique</translation>
 <translation id="2668604389652548400">Supprimez-la ou remplacez-la par des extensions similaires du <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /></translation>
 <translation id="2669241540496514785">Impossible d'ouvrir <ph name="APP_NAME" /></translation>
+<translation id="2669250147452250961">Activez l'option pour récupérer votre historique de navigation et vos onglets depuis d'autres appareils</translation>
 <translation id="2669454659051515572">Toute personne utilisant cet appareil peut voir les fichiers téléchargés</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> partage un onglet Chrome.</translation>
 <translation id="2670168377011445813">Si Chrome découvre que l'un de vos mots de passe a été exposé lors d'une violation de données publiques, le Gestionnaire de mots de passe de Google peut vous proposer de le modifier pour vous si vous êtes connecté. <ph name="BEGIN_LINK" />En savoir plus sur la modification automatisée du mot de passe<ph name="END_LINK" /></translation>
@@ -8172,7 +8173,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="6667187897999649121">Pour le moment, vous ne pouvez partager des mots de passe qu'avec des membres de votre famille. <ph name="BEGIN_LINK" />Créez un groupe familial<ph name="END_LINK" /> réunissant jusqu'à six personnes, et profitez pleinement de vos produits et abonnements sur Google.</translation>
 <translation id="666731172850799929">Ouvrir dans <ph name="APP_NAME" /></translation>
 <translation id="6669195257625975787">Les données sont traitées de la même manière que le site que vous consultez</translation>
-<translation id="6669865825859209286">Cliquer ici pour séparer ou organiser la vue fractionnée</translation>
+<translation id="6669865825859209286">Cliquez ici pour séparer ou organiser la vue fractionnée</translation>
 <translation id="6670142487971298264"><ph name="APP_NAME" /> désormais disponible</translation>
 <translation id="6670767097276846646">Certaines extensions peuvent ajouter des moteurs de recherche dans Chrome</translation>
 <translation id="6670983860904543332">Les mises à jour automatiques vous offrent les toutes dernières fonctionnalités. Découvrez les principaux éléments des récentes mises à jour.</translation>
@@ -8600,6 +8601,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="6961327401577924850">Les sites recherchent généralement des appareils Bluetooth pour proposer des fonctionnalités comme la configuration ou la synchronisation d'une balise à faible consommation d'énergie, d'un bracelet d'activité sport et santé ou d'une ampoule connectée</translation>
 <translation id="6963772203726867701">Non détecté</translation>
 <translation id="6963872466817251924">Mettre le curseur de texte en surbrillance</translation>
+<translation id="6964239097707154771"> : modules complémentaires pour Chrome qui peuvent vous aider à en faire plus</translation>
 <translation id="6964390816189577014">Héros</translation>
 <translation id="6964760285928603117">Retirer du groupe</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -8912,6 +8914,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7186088072322679094">Garder dans la barre d'outils</translation>
 <translation id="7186303001964993981"><ph name="ORIGIN" /> ne peut pas ouvrir ce dossier, car il contient des fichiers système</translation>
 <translation id="7186568385131859684">Contrôlez la façon dont l'historique de navigation est utilisé avec vos autres données dans l'ensemble des services Google</translation>
+<translation id="7186903260115204164">Ajoutez des dessins à main levée, des signatures et des mises en surbrillance avec le nouvel outil Draw</translation>
 <translation id="7188508872042490670">Données des sites sur l'appareil</translation>
 <translation id="7189234443051076392">Assurez-vous de disposer de suffisamment d'espace sur votre appareil</translation>
 <translation id="7189451821249468368">Vous n'avez pas suffisamment de licences de mise à niveau pour enregistrer cet appareil. Veuillez contacter le service commercial pour en acheter d'autres. Si vous pensez que ce message s'affiche par erreur, veuillez contacter l'assistance technique.</translation>
@@ -10742,6 +10745,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8427213022735114808">La fonctionnalité de dictée transmet votre voix à Google et permet d'utiliser ainsi la saisie vocale dans n'importe quelle zone de texte.</translation>
 <translation id="8427292751741042100">intégré sur n'importe quel hôte</translation>
 <translation id="8428213095426709021">Paramètres</translation>
+<translation id="8428257636009471988">Accéder au Web Store</translation>
 <translation id="8428271547607112339">Ajouter un compte scolaire</translation>
 <translation id="8428634594422941299">OK</translation>
 <translation id="84297032718407999">Vous allez être déconnecté dans <ph name="LOGOUT_TIME_LEFT" /></translation>
@@ -11406,7 +11410,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="8875520811099717934">Mise à niveau de Linux</translation>
 <translation id="8875736897340638404">Sélectionnez un paramètre de visibilité</translation>
 <translation id="8876307312329369159">Impossible de modifier ce paramètre dans une session de démonstration.</translation>
-<translation id="8876965259056847565">Le <ph name="FEATURE_NAME" /> utilise la recherche Bluetooth pour identifier les appareils à proximité.</translation>
+<translation id="8876965259056847565"><ph name="FEATURE_NAME" /> utilise la recherche Bluetooth pour trouver les appareils à proximité.</translation>
 <translation id="8877448029301136595">[répertoire parent]</translation>
 <translation id="8879284080359814990">Afficher dan&amp;s un onglet</translation>
 <translation id="8879921471468674457">Mémoriser les informations de connexion</translation>

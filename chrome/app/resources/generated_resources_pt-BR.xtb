@@ -2470,6 +2470,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2667463864537187133">Gerenciar a verificação ortográfica</translation>
 <translation id="2668604389652548400">Remova ou substitua por extensões semelhantes da <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />.</translation>
 <translation id="2669241540496514785">Não foi possível abrir o app <ph name="APP_NAME" /></translation>
+<translation id="2669250147452250961">Ative para acessar seu histórico de navegação e guias de outros dispositivos</translation>
 <translation id="2669454659051515572">Qualquer pessoa que use este dispositivo pode ver os arquivos baixados</translation>
 <translation id="2670102641511624474">O app <ph name="APP_NAME" /> está compartilhando uma guia do Chrome.</translation>
 <translation id="2670168377011445813">Se o Chrome encontrar uma das suas senhas em uma violação de dados pública, o Gerenciador de Senhas do Google poderá oferecer a opção de mudar a senha se você estiver com a conta conectada. <ph name="BEGIN_LINK" />Mais informações sobre a mudança automática de senha<ph name="END_LINK" /></translation>
@@ -8617,6 +8618,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6961327401577924850">Os sites geralmente procuram dispositivos Bluetooth para recursos como a configuração ou sincronização de um sensor de baixa energia, um tracker de condicionamento físico e saúde ou uma lâmpada de iluminação inteligente</translation>
 <translation id="6963772203726867701">Não detectado</translation>
 <translation id="6963872466817251924">Destaque do cursor de texto</translation>
+<translation id="6964239097707154771">são complementos do Chrome que ajudam você a fazer muito mais</translation>
 <translation id="6964390816189577014">Hero</translation>
 <translation id="6964760285928603117">Remover do grupo</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -8929,6 +8931,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7186088072322679094">Manter na barra de ferramentas</translation>
 <translation id="7186303001964993981"><ph name="ORIGIN" /> não pode abrir esta pasta porque ela contém arquivos do sistema</translation>
 <translation id="7186568385131859684">Controle como o histórico de navegação é usado com seus outros dados nos Serviços do Google</translation>
+<translation id="7186903260115204164">Adicione desenhos à mão livre, assinaturas e destaques com a nova ferramenta "Desenhar"</translation>
 <translation id="7188508872042490670">Dados do site no dispositivo</translation>
 <translation id="7189234443051076392">Verifique se há espaço suficiente no seu dispositivo</translation>
 <translation id="7189451821249468368">Você não tem upgrades suficientes para registrar esse dispositivo. Fale com o departamento de vendas para adquirir mais. Se acredita que recebeu esta mensagem por engano, entre em contato com o suporte.</translation>
@@ -10759,6 +10762,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8427213022735114808">O ditado envia sua voz para o Google e permite Digitação por Voz em qualquer campo de texto.</translation>
 <translation id="8427292751741042100">incorporado em qualquer host</translation>
 <translation id="8428213095426709021">Configurações</translation>
+<translation id="8428257636009471988">Acessar a loja on-line</translation>
 <translation id="8428271547607112339">Adicionar conta escolar</translation>
 <translation id="8428634594422941299">Entendi</translation>
 <translation id="84297032718407999">Você será desconectado em <ph name="LOGOUT_TIME_LEFT" /></translation>

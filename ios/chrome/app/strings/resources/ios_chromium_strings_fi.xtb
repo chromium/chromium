@@ -238,6 +238,7 @@ Huomioitavaa:
 <translation id="6154098560469640583">Käytä Chromiumia aina, kun napautat linkkejä viesteissä, dokumenteissa ja muissa sovelluksissa.</translation>
 <translation id="6157162508956739031">Kirjaudu sovelluksiin ja sivustoille nopeasti täyttämällä salasanat ja avainkoodit automaattisesti Chromiumista</translation>
 <translation id="6170619162539716595">Salli Chromiumin käyttää Google Mapsia reittiohjeiden ja paikallisten tietojen tarjoamiseen havaituissa osoitteissa.</translation>
+<translation id="6244277266078678766">Data tallennetaan Salasanoihin tälle tilille: <ph name="USER_EMAIL" /></translation>
 <translation id="6268381023930128611">Kirjaudutaanko ulos?</translation>
 <translation id="6301717043141881464">Löydät muiden sovellusten tallennetut salasanat helposti käyttämällä Chromiumia automaattiseen täyttöön</translation>
 <translation id="6324041800010509197">Siirry Chromiumin välilehtiruudukkoon</translation>
@@ -315,6 +316,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="8119542592987737574">Avaa Chromium nopeammin iPhonen aloitusnäytön alapalkista.</translation>
 <translation id="8164086860209325020">Siirry Chromiumin asetuksiin</translation>
 <translation id="8197822717502700527">Saat nyt parhaan hyödyn Chromiumista laitteellasi.</translation>
+<translation id="8236210361418193126">Tuo Salasanoihin</translation>
 <translation id="8254729934443216898">Tutustu uusiin ominaisuuksiin, joiden avulla saat parhaan hyödyn Chromiumista.</translation>
 <translation id="8293572045658095405">Olet Chromiumin incognito-tilassa</translation>
 <translation id="830951810931292870">Avaa syötetyt URL-osoitteet Chromiumin incognito-tilassa.</translation>

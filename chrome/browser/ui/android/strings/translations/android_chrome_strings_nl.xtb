@@ -33,7 +33,7 @@
 <translation id="1111673857033749125">Hier zie je bookmarks die je op andere apparaten hebt opgeslagen.</translation>
 <translation id="1126696498560056882">Accounts op dit apparaat beheren</translation>
 <translation id="1135018701024399762">Met de incognitomodus kun je je browse-activiteit privé houden voor anderen die je apparaat gebruiken</translation>
-<translation id="113752097246673894">Log in bij Chrome als <ph name="EMAIL" /> om onder andere je bookmarks op al je apparaten te gebruiken</translation>
+<translation id="113752097246673894">Log in bij Chrome met het e-mailadres <ph name="EMAIL" /> om onder andere je bookmarks op al je apparaten te gebruiken</translation>
 <translation id="1138458427267715730">Krijg meldingen als de prijs daalt op een site op internet</translation>
 <translation id="1140317858355046628">Als je de groep verwijdert, raakt iedereen meteen de toegang tot de tabbladgroep <ph name="GROUP_NAME" /> kwijt en wordt deze verwijderd van alle apparaten.</translation>
 <translation id="1142732900304639782">Niet aanbieden om deze sites te vertalen</translation>
@@ -49,6 +49,7 @@
 <translation id="1181037720776840403">Verwijderen</translation>
 <translation id="1183189057400844278">Bevestig dat jij het bent zodat je de wachtwoorden in je Google-account altijd kunt gebruiken</translation>
 <translation id="1187810343066461819">Ook bookmarks, geschiedenis en meer verwijderen uit deze auto</translation>
+<translation id="1193589902336218259">Meldingen met tips aanzetten</translation>
 <translation id="1193729455103054076">Sterk wachtwoord gebruiken?</translation>
 <translation id="11947597112837849">e-mailadres</translation>
 <translation id="1197267115302279827">Bookmarks verplaatsen</translation>
@@ -236,6 +237,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="200114059308480249">Omringende tekst opnemen in Google-zoekopdrachten?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, vastgezet incognitotabblad met geluid uit</translation>
 <translation id="2021896219286479412">Siteopties op volledig scherm</translation>
+<translation id="2029669011553795746">Aanmelding voor meldingen met tips is op halve hoogte geopend</translation>
 <translation id="2038563949887743358">'Desktopsite aanvragen' aanzetten</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> heeft ook gegevens in Chrome</translation>
 <translation id="2047378580182589770">Houd je vinger hierop om de incognitomodus te verlaten</translation>
@@ -245,6 +247,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="2063047797624276601">Je organisatie heeft de uitgebreide versie van Safe Browsing aangezet</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 download mislukt}other{# downloads mislukt}}</translation>
 <translation id="2067805253194386918">sms</translation>
+<translation id="2072027001582274150">Ongebruikte of dubbele tabbladen</translation>
 <translation id="2074527029802029717">Tabblad losmaken</translation>
 <translation id="2079545284768500474">Ongedaan maken</translation>
 <translation id="2082238445998314030">Resultaat <ph name="RESULT_NUMBER" /> van <ph name="TOTAL_RESULTS" /></translation>
@@ -396,7 +399,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="2723001399770238859">audio</translation>
 <translation id="2739887572830526131">Behoud deze groep om later tabbladen toe te voegen of verwijder de groep als je deze niet meer nodig hebt.</translation>
 <translation id="2742373789128106053"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> is op dit moment niet beschikbaar.</translation>
-<translation id="2751271371269891762">Log in als <ph name="EMAIL" /> om onder andere je bookmarks op al je apparaten te gebruiken</translation>
+<translation id="2751271371269891762">Log in met het e-mailadres <ph name="EMAIL" /> om onder andere je bookmarks op al je apparaten te gebruiken</translation>
 <translation id="2760805590727089264">MM/JJ</translation>
 <translation id="2762000892062317888">zojuist</translation>
 <translation id="276969039800130567">Ingelogd als <ph name="USER_EMAIL_ADDRESS" />.</translation>
@@ -405,6 +408,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="2781151931089541271">1 seconde resterend</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chrome heeft een hergebruikt wachtwoord gevonden dat je kunt verbeteren}other{Chrome heeft # hergebruikte wachtwoorden gevonden die je kunt verbeteren}}</translation>
+<translation id="2794551654724114396">Zet meldingen aan voor nuttige tips om het beste uit Chrome te halen</translation>
 <translation id="2800066122460699237">Het tabblad <ph name="TAB_TITLE" /> wordt gesloten</translation>
 <translation id="2805210243313393104">Je bookmarks en meer gebruiken op al je apparaten</translation>
 <translation id="2805756323405976993">Apps</translation>
@@ -640,6 +644,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="3824259034819781947">Bestanden bijvoegen</translation>
 <translation id="38243391581572867">Lens is niet beschikbaar voor dit account.</translation>
 <translation id="38258275871320156">Alleen beschikbaar voor kleine vensters</translation>
+<translation id="3826529618131025925">Blad onderaan voor hulp en begeleiding voor aanmelding voor meldingen met tips</translation>
 <translation id="3845098929839618392">Openen op incognitotabblad</translation>
 <translation id="3847319713229060696">Helpen om het internet voor iedereen veiliger te maken</translation>
 <translation id="385051799172605136">Terug</translation>
@@ -773,6 +778,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="4405636711880428279">Je virtuele kaart verwijderen?</translation>
 <translation id="4408965460206576430">Dit bestand bevat malware of is afkomstig van een verdachte site</translation>
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> en <ph name="TAB_COUNT" /> andere tabbladen</translation>
+<translation id="441100617989818073">Ongebruikte of dubbele tabbladen en groepen</translation>
 <translation id="4414179633735763985"><ph name="TAB_GROUPS_AND_TABS_PART" /> verwijderd</translation>
 <translation id="4415276339145661267">Je Google-account beheren</translation>
 <translation id="4425140285732600465">Prijs wordt gevolgd. Krijg meldingen bij een prijsdaling op een site.</translation>
@@ -801,6 +807,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="452750746583162491">Je gesynchroniseerde gegevens controleren</translation>
 <translation id="4532845899244822526">Map kiezen</translation>
 <translation id="4535755320005483982">Gedeelde tabbladgroep <ph name="GROUP_TITLE" /></translation>
+<translation id="4537137366307982887">Aanmelding voor meldingen met tips is op volledige hoogte geopend</translation>
 <translation id="4543131175509360848">Blad Geen toegangssleutels</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> tabblad}other{<ph name="TAB_COUNT_MANY" /> tabbladen, <ph name="TAB_COUNT_INCOGNITO" /> incognitotabbladen}}</translation>
 <translation id="4558311620361989323">Sneltoetsen voor webpagina's</translation>
@@ -952,6 +959,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="5123685120097942451">Incognitotabblad</translation>
 <translation id="5142281402488957685">Trek omlaag om te vernieuwen voor nieuwe stories</translation>
 <translation id="5144385790872094440">Sommige pagina's die je bezoekt, zijn vooraf geladen. Pagina's kunnen vooraf worden geladen via Google-servers als ernaar wordt gelinkt vanaf een Google-site of -app.</translation>
+<translation id="5145887002054615868">Dubbele tabbladen of tabbladen die <ph name="DAYS_INACTIVE" /> dagen niet zijn gebruikt, worden hierheen verplaatst<ph name="AUTODELETE_SECTION" />. Je kunt dit op elk moment wijzigen via <ph name="DECLUTTER_SETTINGS_TITLE" />.</translation>
 <translation id="5152843274749979095">Geen ondersteunde apps geïnstalleerd</translation>
 <translation id="5161254044473106830">Titel is vereist</translation>
 <translation id="5161262286013276579">Bevestigingsblad voor toegangssleutel geopend</translation>
@@ -1045,7 +1053,9 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="5596627076506792578">Meer opties</translation>
 <translation id="5599455543593328020">Incognitomodus</translation>
 <translation id="5601180634394228718">Ga naar <ph name="BEGIN_LINK" />Google-services<ph name="END_LINK" /> voor meer instellingen die gegevens gebruiken om je Chrome-functionaliteit te verbeteren.</translation>
+<translation id="5601924940067278327">Gebruik onder andere je tabbladen op al je apparaten</translation>
 <translation id="5611398002774823980">Opslaan in account</translation>
+<translation id="5613381935190035031">Log in bij Chrome als <ph name="EMAIL" /> om onder andere je tabbladen op al je apparaten te gebruiken</translation>
 <translation id="5614625640221885312">Log in om onder andere je bookmarks en wachtwoorden op al je apparaten te gebruiken</translation>
 <translation id="5619633276517849615">Je organisatie heeft Safe Browsing aangezet</translation>
 <translation id="5620163320393916465">Geen opgeslagen wachtwoorden</translation>
@@ -1114,6 +1124,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="5864419784173784555">Wachten op andere download…</translation>
 <translation id="5865733239029070421">Hiermee worden automatisch gebruiksstatistieken en crashrapporten naar Google verzonden</translation>
 <translation id="5869522115854928033">Opgeslagen wachtwoorden</translation>
+<translation id="5870416898561279542">Dubbele tabbladen en groepen of tabbladen en groepen die <ph name="DAYS_INACTIVE" /> dagen niet zijn gebruikt, worden hierheen verplaatst<ph name="AUTODELETE_SECTION" />. Je kunt dit op elk moment wijzigen via <ph name="DECLUTTER_SETTINGS_TITLE" />.</translation>
 <translation id="587735546353481577">Als je een site wilt volgen, ga je naar de site, open je het Chrome-menu en tik je op Volgen.</translation>
 <translation id="5883855034004058011">Biometrische authenticatie is te vaak mislukt. Vergrendel en ontgrendel je apparaat om het opnieuw te proberen.</translation>
 <translation id="5885378508678660271">Meldingen <ph name="SEPARATOR" /> Chrome heeft deze rechten verwijderd omdat deze site gevaarlijk is</translation>
@@ -1689,6 +1700,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="8110024788458304985">Help de functies en prestaties van Chrome te verbeteren</translation>
 <translation id="8110087112193408731">Chrome-activiteit in Digitaal welzijn bekijken?</translation>
 <translation id="8118117428362942925">Vraag zo nodig je ouder (<ph name="PARENT_NAME" />) om hulp</translation>
+<translation id="8118151008374483324">Log in bij Chrome om onder andere je tabbladen op al je apparaten te gebruiken</translation>
 <translation id="8120286190326371840">Geen gehackte wachtwoorden op dit apparaat</translation>
 <translation id="8122623268651408616">Sorteren op nieuwste</translation>
 <translation id="8127542551745560481">Homepage bewerken</translation>
@@ -1874,6 +1886,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="8942627711005830162">Openen in een ander venster</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - Deze taal kan niet worden gedownload. Probeer het later opnieuw.</translation>
 <translation id="8946759102391960088">Toegang houden tot je wachtwoorden</translation>
+<translation id="895442993047180128">Aanmelding voor meldingen met tips gesloten</translation>
 <translation id="8957528460562961174">Als je toegang wilt houden tot je wachtwoorden, exporteer je ze nu en importeer je ze daarna in de wachtwoordmanager van je keuze. Google Wachtwoordmanager werkt niet meer omdat Google Play-services niet beschikbaar is.</translation>
 <translation id="8963117664422609631">Naar de site-instellingen</translation>
 <translation id="8965591936373831584">in behandeling</translation>
@@ -1945,6 +1958,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="9212845824145208577">Kan niet verder omlaag gaan. Probeer lager op de pagina te beginnen.</translation>
 <translation id="9218430445555521422">Instellen als standaard</translation>
 <translation id="9219103736887031265">Afbeeldingen</translation>
+<translation id="9222198206152536936">Log in als <ph name="EMAIL" /> om onder andere je tabbladen op al je apparaten te gebruiken</translation>
 <translation id="924447568950697217">Chrome instellen als je standaardbrowser</translation>
 <translation id="926205370408745186">Je Chrome-activiteit verwijderen uit Digitaal welzijn</translation>
 <translation id="927968626442779827">Lite-versie van Google Chrome gebruiken</translation>

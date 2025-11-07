@@ -78,6 +78,7 @@
 <translation id="112840717907525620">Skyndiminni reglu í lagi</translation>
 <translation id="1131264053432022307">Myndir sem þú afritaðir</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – Til að hætta í öllum skjánum, draga ofan frá og snerta hnappinn til baka</translation>
+<translation id="1133418583142946603">Bæta núverandi flipa við</translation>
 <translation id="1138458427267715730">Fáðu tilkynningar ef verð lækkar á hvaða vefsvæði sem er</translation>
 <translation id="1142713751288681188">Pappírsgerð</translation>
 <translation id="1142965388643537393">Ferðaupplýsingar</translation>
@@ -1009,6 +1010,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2627847595568876492">Dregur texta út úr PDF-skjali...</translation>
 <translation id="2628025184666666186">Þessi þjónn gat ekki sannað að hann væri <ph name="DOMAIN" /> vegna þess að hann notar öryggisvottorð sem Chrome eða kerfisstillingin þín treystir ekki fyrir dulkóðun vefumferðar. Þetta kann að orsakast af rangri stillingu eða tölvuþrjóti sem hefur komist inn í tenginguna.</translation>
 <translation id="2628224721443278970">Skrá inn í Microsoft OneDrive</translation>
+<translation id="2631387782019878060">Staðfestingarkóði: <ph name="OTP" /></translation>
 <translation id="2634124572758952069">IP-tala þjóns <ph name="HOST_NAME" /> fannst ekki.</translation>
 <translation id="2638567100095052009">Slá inn @ til að leita á <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="2639739919103226564">Staða:</translation>
@@ -2802,6 +2804,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="5558083606899411167">Loftræstingar</translation>
 <translation id="5558125320634132440">Lokað var á þetta svæði vegna þess að það kann að innihalda efni sem er ætlað fullorðnum</translation>
 <translation id="5559311991468302423">Eyða heimilisfangi</translation>
+<translation id="5561747310506483298">Skilríki</translation>
 <translation id="55635442646131152">Uppsetning skjals</translation>
 <translation id="5563589142503817291">Veittu Chrome aðgang að staðsetningunni þinni í <ph name="LINK" /> til að geta notað hana.</translation>
 <translation id="5565613213060953222">Opna huliðsflipa</translation>

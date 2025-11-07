@@ -128,6 +128,7 @@
 <translation id="5556417849629758491">Zobraziť informácie o obchode, možnosť je k dispozícii v dolnej časti obrazovky</translation>
 <translation id="5627941783489838464">Žiadne aktualizácie kariet</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> odkaz z Chromu}few{<ph name="TABS_COUNT_MANY" /> odkazy z Chromu}many{<ph name="TABS_COUNT_MANY" /> links from Chrome}other{<ph name="TABS_COUNT_MANY" /> odkazov z Chromu}}</translation>
+<translation id="5740354908255726955">{TAB_COUNT,plural, =1{Presunúť kartu doľava}few{Presunúť karty doľava}many{Move tabs left}other{Presunúť karty doľava}}</translation>
 <translation id="5746204836956568669">Chcete zoskupiť niekoľko kariet (<ph name="NUMBER_OF_TABS" />), aby ste mohli pracovať rýchlejšie?</translation>
 <translation id="5773295109010386583">Automaticky zatvárať neaktívne položky</translation>
 <translation id="58326064309361797">Karty zoskupíte presunutím</translation>
@@ -138,6 +139,7 @@
 <translation id="6109251075362363230">Všetky duplicitné karty s výnimkou naposledy použitej kópie budú odteraz archivované.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Zavrieť <ph name="TABS_COUNT_ONE" /> vybranú položku}few{Zavrieť <ph name="TABS_COUNT_MANY" /> vybrané položky}many{Close <ph name="TABS_COUNT_MANY" /> selected items}other{Zavrieť <ph name="TABS_COUNT_MANY" /> vybraných položiek}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Presunúť skupinu do nového okna}few{Presunúť skupinu do iného okna}many{Presunúť skupinu do iného okna}other{Presunúť skupinu do iného okna}}</translation>
+<translation id="6212374449852603982">{TAB_COUNT,plural, =1{Presunúť kartu doprava}few{Presunúť karty doprava}many{Move tabs right}other{Presunúť karty doprava}}</translation>
 <translation id="6228793724645064692">(hodnotenie obchodu)</translation>
 <translation id="625996437999624951">{TAB_COUNT,plural, =1{Odstrániť kartu zo skupiny}few{Odstrániť karty zo skupiny}many{Remove tabs from group}other{Odstrániť karty zo skupiny}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Pridať kartu do novej skupiny}few{Pridať karty do novej skupiny}many{Add tabs to new group}other{Pridať karty do novej skupiny}}</translation>

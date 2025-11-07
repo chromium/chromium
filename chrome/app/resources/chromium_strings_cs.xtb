@@ -533,6 +533,7 @@ Některé funkce mohou být nedostupné. Zadejte prosím jiný adresář profilu
 <translation id="7274695763216404502">Připnuto! Příště vyhledávání obrázků použijte z lišty</translation>
 <translation id="7288567540154601580">Karty a rozšíření</translation>
 <translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{Chromium vám doporučuje odstranit ho}few{Chromium vám doporučuje odstranit je}many{Chromium vám doporučuje odstranit je}other{Chromium vám doporučuje odstranit je}}</translation>
+<translation id="7296334833518879294">Pokud chcete sdílet systémový zvuk, otevřete Nastavení systému a povolte pro Chromium možnost Pouze nahrávání systémového zvuku. Chromium bude potřeba restartovat.</translation>
 <translation id="7309928523159922338">Měření reklam umožňuje navštíveným webům žádat Chromium o informace, na základě kterých mohou měřit výkonnost svých reklam. Měření reklam zabraňuje sledování mezi weby, protože se při něm mezi weby přenáší co možná nejméně informací.</translation>
 <translation id="731795002583552498">Aktualizace prohlížeče Chromium</translation>
 <translation id="7318036098707714271">Soubor nastavení je poškozený nebo neplatný.

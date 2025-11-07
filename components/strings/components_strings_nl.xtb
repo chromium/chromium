@@ -78,6 +78,7 @@
 <translation id="112840717907525620">Cachegeheugen van beleid is OK</translation>
 <translation id="1131264053432022307">Afbeelding die je hebt gekopieerd</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" />: als je het volledige scherm wilt sluiten, sleep je vanaf de bovenkant en tik je op de terugknop</translation>
+<translation id="1133418583142946603">Huidig tabblad toevoegen</translation>
 <translation id="1138458427267715730">Krijg meldingen als de prijs daalt op een site op internet</translation>
 <translation id="1142713751288681188">Type papier</translation>
 <translation id="1142965388643537393">Reisinformatie</translation>
@@ -444,6 +445,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1717218214683051432">Bewegingssensoren</translation>
 <translation id="1717494416764505390">Mailbox 3</translation>
 <translation id="1717688554309417925">Bank- en girorekeningen</translation>
+<translation id="1717882880162336471">Probeer de AI-modus</translation>
 <translation id="1719434663396780149">Meldingen over prijsdalingen staan aan. Je kunt dit wijzigen in <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="1719838434204287058">24 x 30 inch</translation>
 <translation id="1720941539803966190">Tutorial sluiten</translation>
@@ -2009,6 +2011,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="4258748452823770588">Onjuiste handtekening</translation>
 <translation id="4265635050210404830">Je klantenkaarten</translation>
 <translation id="4265872034478892965">Toegestaan door je beheerder</translation>
+<translation id="4267590181863312380">Log in en synchroniseer je geschiedenis om de geschiedenis van je andere apparaten te krijgen. Je kunt ook onder andere je wachtwoorden op al je apparaten gebruiken. Je kunt de synchronisatie op elk moment stopzetten via de instellingen. Google kan Zoeken en andere services personaliseren op basis van je geschiedenis.</translation>
 <translation id="4269029136757623689">Ventilatoren voor thuisgebruik</translation>
 <translation id="4269264543938335308">Zwemkleding</translation>
 <translation id="4269599248168651462">Het servercertificaat is uitgegeven aan een niet-unieke naam.</translation>
@@ -2885,6 +2888,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5715918316982363436"><ph name="TAB_COUNT" /> van <ph name="WINDOW_COUNT" /> op dit apparaat</translation>
 <translation id="5716325061445053985">Tik om het tabblad op je telefoon te openen</translation>
 <translation id="5717509257172454543">Schaatsen</translation>
+<translation id="5718601519531438273">Bevat informatie zoals paspoorten en rijbewijzen</translation>
 <translation id="5720705177508910913">Huidige gebruiker</translation>
 <translation id="5720895412771013401">Desktopcomputers</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} en nog 1}other{{website_1}, {website_2} en nog {more_count}}}</translation>
@@ -4554,6 +4558,7 @@ Aanvullende informatie:
 <translation id="8449036207308062757">Opslag beheren</translation>
 <translation id="8449155699563577224">17 x 24 inch</translation>
 <translation id="8449836157089738489">Alles openen in nieuwe tabbladgroep</translation>
+<translation id="8451518040456311377">Identiteitsdocumenten opslaan en invullen</translation>
 <translation id="84561192812921051">Je beheerder kan op afstand wijzigingen aanbrengen in je profiel en browser, informatie over de browser analyseren via rapportage en andere nodige taken uitvoeren. Activiteit op dit apparaat kan ook buiten Chrome worden beheerd.  <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="8456383681414356368">Het blad onderaan is gesloten.</translation>
 <translation id="8456775115498700722">Je kunt nu je <ph name="CARD_ISSUER_NAME" />-kaarten automatisch invullen omdat je <ph name="CARD_ISSUER_NAME" />-account aan Google Pay is gekoppeld.</translation>

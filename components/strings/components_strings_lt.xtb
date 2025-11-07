@@ -78,6 +78,7 @@
 <translation id="112840717907525620">Gera politikos talpykla</translation>
 <translation id="1131264053432022307">Nukopijuotas vaizdas</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – jei norite išeiti iš viso ekrano režimo, vilkite nuo viršaus ir palieskite mygtuką „Atgal“</translation>
+<translation id="1133418583142946603">Pridėti dabartinį skirtuką</translation>
 <translation id="1138458427267715730">Gaukite įspėjimus, kai kaina sumažės bet kurioje žiniatinklio svetainėje</translation>
 <translation id="1142713751288681188">Popieriaus tipas</translation>
 <translation id="1142965388643537393">Kelionės informacija</translation>
@@ -444,6 +445,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1717218214683051432">Judesių jutikliai</translation>
 <translation id="1717494416764505390">3 pašto dėžutė</translation>
 <translation id="1717688554309417925">Debeto ir einamųjų sąskaitų paslaugos</translation>
+<translation id="1717882880162336471">Išbandykite DI režimą</translation>
 <translation id="1719434663396780149">Įspėjimai apie sumažintas kainas įjungti. Tai galite pakeisti skiltyje <ph name="BEGIN_LINK" />„<ph name="NOTIFICATION_SETTINGS" />“<ph name="END_LINK" />.</translation>
 <translation id="1719838434204287058">24 x 30 col.</translation>
 <translation id="1720941539803966190">Uždaryti mokymo programą</translation>
@@ -2016,6 +2018,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="4258748452823770588">Netinkamas parašas</translation>
 <translation id="4265635050210404830">Lojalumo kortelės</translation>
 <translation id="4265872034478892965">Leidžia jūsų administratorius</translation>
+<translation id="4267590181863312380">Jei norite gauti istoriją iš kitų įrenginių, prisijunkite ir sinchronizuokite istoriją. Be to, slaptažodžius ir kitas funkcijas pasieksite visuose įrenginiuose. Galite bet kada sustabdyti sinchronizavimą skiltyje „Nustatymai“. „Google“ gali suasmeninti Paiešką ir kitas paslaugas pagal jūsų istoriją.</translation>
 <translation id="4269029136757623689">Buitinis ventiliatorius</translation>
 <translation id="4269264543938335308">Plaukimo drabužiai</translation>
 <translation id="4269599248168651462">Serverio sertifikatas išduodamas neunikaliam pavadinimui.</translation>
@@ -2892,6 +2895,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="5715918316982363436"><ph name="TAB_COUNT" /> iš <ph name="WINDOW_COUNT" /> šiame įrenginyje</translation>
 <translation id="5716325061445053985">Palieskite, kad atidarytumėte skirtuką telefone</translation>
 <translation id="5717509257172454543">Čiuožimas</translation>
+<translation id="5718601519531438273">Apima tokią informaciją kaip pasai ir vairuotojų pažymėjimai</translation>
 <translation id="5720705177508910913">Dabartinis naudotojas</translation>
 <translation id="5720895412771013401">Staliniai kompiuteriai</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} ir dar 1}one{{website_1}, {website_2} ir dar {more_count}}few{{website_1}, {website_2} ir dar {more_count}}many{{website_1}, {website_2} ir dar {more_count}}other{{website_1}, {website_2} ir dar {more_count}}}</translation>
@@ -4562,6 +4566,7 @@ Papildoma išsami informacija:
 <translation id="8449036207308062757">Tvarkyti saugyklą</translation>
 <translation id="8449155699563577224">17 x 24 col.</translation>
 <translation id="8449836157089738489">Atidaryti viską naujoje skirtukų grupėje</translation>
+<translation id="8451518040456311377">Išsaugoti ir užpildyti asmens tapatybės dokumentus</translation>
 <translation id="84561192812921051">Administratorius gali nuotoliniu būdu atlikti profilio ir naršyklės pakeitimų, analizuoti informaciją apie naršyklę pateikdamas ataskaitas ir atlikti kitas reikiamas užduotis. Veiklą šiame įrenginyje taip pat galima tvarkyti ne naršyklėje „Chrome“.  <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="8456383681414356368">Apatinis lapas uždarytas.</translation>
 <translation id="8456775115498700722">Dabar galite automatiškai užpildyti „<ph name="CARD_ISSUER_NAME" />“ korteles, nes „<ph name="CARD_ISSUER_NAME" />“ paskyra susieta su „Google Pay“.</translation>

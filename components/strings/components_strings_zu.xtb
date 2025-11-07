@@ -78,6 +78,7 @@
 <translation id="112840717907525620">Inqolobale yenqubomgomo ILUNGILE</translation>
 <translation id="1131264053432022307">Isithombe osikopishile</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – Ukuze uphume esikrinini esigcwele, donsa usuka phezulu bese uthinta inkinobho engemuva</translation>
+<translation id="1133418583142946603">Engeza ithebhu yamanje</translation>
 <translation id="1138458427267715730">Thola izexwayiso uma intengo yehla kunoma iliphi isayithi kuyo yonke iwebhu</translation>
 <translation id="1142713751288681188">Uhlobo lwephepha</translation>
 <translation id="1142965388643537393">Imininingwane yohambo</translation>
@@ -1009,6 +1010,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="2627847595568876492">Ikhipha umbhalo ku-PDF...</translation>
 <translation id="2628025184666666186">Le seva ayikwazanga ukufakazela ukuthi iyi-<ph name="DOMAIN" /> ngoba isebenzisa isitifiketi sokuvikeleka esingathenjwa yiChrome noma ukulungiselelwa kwesistimu yakho yokubethela kwethrafikhi yewebhu. Lokhu kungase kubangelwe ukungalungiseki kahle, noma umhlaseli uhlangabeze ukuxhumeka kwakho.</translation>
 <translation id="2628224721443278970">Ngena ngemvume kuMicrosoft OneDrive</translation>
+<translation id="2631387782019878060">Ikhodi Yokuqinisekisa: <ph name="OTP" /></translation>
 <translation id="2634124572758952069">Ikheli lasesizindeni se-inthanethi le-<ph name="HOST_NAME" /> alikwazanga ukutholwa.</translation>
 <translation id="2638567100095052009">Thayipha u-@ ukuze useshe ku-<ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="2639739919103226564">Isimo:</translation>
@@ -2799,6 +2801,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="5558083606899411167">Iziphephetha-moya</translation>
 <translation id="5558125320634132440">Leli sayithi livinjiwe ngoba lingaba nokuqukethwe kwabantu abadala</translation>
 <translation id="5559311991468302423">Sula ikheli</translation>
+<translation id="5561747310506483298">Amakhadi kamazisi</translation>
 <translation id="55635442646131152">Uhlaka lwedokhumenti</translation>
 <translation id="5563589142503817291">Ukuze usebenzise indawo yakho, nika iChrome ukufinyelela ku-<ph name="LINK" />.</translation>
 <translation id="5565613213060953222">Vula ithebhu ye-Incognito</translation>

@@ -78,6 +78,7 @@
 <translation id="112840717907525620">정책 캐시 확인</translation>
 <translation id="1131264053432022307">복사한 이미지</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" />: 전체 화면을 종료하려면 상단에서 드래그한 후 뒤로 버튼을 터치하세요.</translation>
+<translation id="1133418583142946603">현재 탭 추가</translation>
 <translation id="1138458427267715730">웹에 가격이 인하된 사이트가 있으면 알림이 전송됩니다.</translation>
 <translation id="1142713751288681188">용지 종류</translation>
 <translation id="1142965388643537393">여행 정보</translation>
@@ -208,7 +209,7 @@
 <translation id="1329916999021038454">보고서 보내기</translation>
 <translation id="1330449323196174374">왼쪽 게이트 폴드</translation>
 <translation id="1333745675627230582">Chrome 공룡 게임 플레이</translation>
-<translation id="1333989956347591814">다음의 관계자는 내 활동 내역을 <ph name="BEGIN_EMPHASIS" />확인할 수도 있습니다<ph name="END_EMPHASIS" />.
+<translation id="1333989956347591814">내 활동 내역을 <ph name="BEGIN_EMPHASIS" />확인할 수도 있는<ph name="END_EMPHASIS" /> 주체:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />방문한 웹사이트
           <ph name="LIST_ITEM" />고용주 또는 학교

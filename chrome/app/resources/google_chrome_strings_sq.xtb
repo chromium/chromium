@@ -93,6 +93,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="2018528049276128029">Secili profil duhet të zotërojë informacionin e vet të Chrome, si: faqeshënuesit, historikun, fjalëkalimet etj.</translation>
 <translation id="2018879682492276940">Instalimi nuk u krye. Provo përsëri.</translation>
 <translation id="2024959665595762054">Për të përdorur dhe për të ruajtur të dhënat e Chrome në "Llogarinë tënde të Google", verifiko që je ti</translation>
+<translation id="2026377840141807639">Profilet e Chrome të lejojnë t'i mbash të veçuar shfletimin personal dhe atë të punës. Shto një profil të ri tani.</translation>
 <translation id="2034233344106846793">Chrome i përmirëson lidhjet e pasigurta automatikisht në HTTPS kur është e mundur</translation>
 <translation id="2039417478970545937">Cilësimet.</translation>
 <translation id="2091012649849228750">Për të marrë përditësimet e ardhshme të Google Chrome, do të të duhet Windows 10 ose një version i mëvonshëm. Ky kompjuter përdor Windows 8.</translation>
@@ -155,6 +156,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="2738871930057338499">Lidhja me internetin nuk mund të kryhej. HTTP 403 (E ndaluar). Kontrollo konfigurimin e proxy-t.</translation>
 <translation id="2742320827292110288">Paralajmërim: Google Chrome nuk mund të parandalojë regjistrimin e historikut të shfletimit nga shtesat. Për ta çaktivizuar këtë shtesë në modalitetin "e fshehtë", anulo zgjedhjen e këtij opsioni.</translation>
 <translation id="2753623023919742414">Kliko për të kërkuar</translation>
+<translation id="2757826245013442432">{COUNT,plural, =0{"Mbrojtja e përparuar" kërkon që të hapësh përsëri Chrome për të zbatuar një përditësim}=1{"Mbrojtja e përparuar" kërkon që të hapësh përsëri Chrome për të zbatuar një përditësim. Dritarja jote "e fshehtë" nuk do të rihapet.}other{"Mbrojtja e përparuar" kërkon që të hapësh përsëri Chrome për të zbatuar një përditësim. # dritaret e tua "të fshehta" nuk do të rihapen.}}</translation>
 <translation id="2765403129283291972">Chrome ka nevojë për leje për t'u qasur te mikrofoni yt për këtë sajt</translation>
 <translation id="2775140325783767197">Chrome nuk mund t'i kontrollojë fjalëkalimet e tua. Provo të kontrollosh lidhjen e internetit.</translation>
 <translation id="2797864378188255696">Kur identifikohesh me <ph name="USER_EMAIL" /> në shërbimet e Google, si p.sh. Gmail ose YouTube, mund të identifikohesh automatikisht në Chrome me të njëjtën llogari</translation>
@@ -366,6 +368,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 Disa funksione mund të mos ofrohen. Specifiko një direktori tjetër të profilit ose përdor një version më të ri të Chrome.</translation>
 <translation id="5174969993834422967">Ti i bllokon zakonisht njoftimet. Për ta lejuar këtë sajt që të të njoftojë, kliko tek ikona e njoftimit në këndin e djathtë të shiritit të vendndodhjes.</translation>
 <translation id="5174983315706567306">Nuk ka hapësirë të mjaftueshme në disk.</translation>
+<translation id="5190467473654176081">Personalizo Chrome për t'i dhënë një pamje të re</translation>
 <translation id="5201744974236816379">Përditësimi i Chrome</translation>
 <translation id="521447420733633466">Nëse e ndan një pajisje, miqtë dhe familja mund të shfletojnë veçmas dhe ta konfigurojnë Chrome pikërisht ashtu si dëshirojnë.</translation>
 <translation id="5234764350956374838">Hiq</translation>
@@ -389,6 +392,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="5510398294750420479">Shkarko Chrome në telefon për të shtuar një shtresë shtesë mbrojtjeje kur je në lëvizje</translation>
 <translation id="5524890928877629608">këndi lart majtas i zonës së kërkimit: majtas <ph name="LEFT" />%, lart <ph name="TOP" />%</translation>
 <translation id="5530733413481476019">Bëje Chrome më të shpejtë</translation>
+<translation id="5550137307985173298">Kliko te butoni "Personalizo Chrome" në faqen e skedës së re për t'i dhënë Chrome një pamje të re</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5579324208890605088">Gabim në nisje: ekzekuto instaluesin si përdorues i rregullt, jo si administrator.</translation>
 <translation id="5596627076506792578">Më shumë opsione</translation>
@@ -417,6 +421,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="5736850870166430177">Nëse një sajt përpiqet të vjedhë fjalëkalimin tënd ose kur shkarkon një skedar të dëmshëm, Chrome mund t'i dërgojë gjithashtu URL-të, duke përfshirë pjesë të përmbajtjes së faqeve, te "Shfletimi i sigurt".</translation>
 <translation id="5756509061973259733">Një profil i Chrome me këtë llogari ekziston tashmë në këtë pajisje</translation>
 <translation id="5759947850379142561">Zgjidh një tekst ose imazh çfarëdo për të kërkuar me "Lenten e Google" ose shtyp butonin "Escape" për të dalë nga "Lentja e Google"</translation>
+<translation id="5762867845020858790">Shto një profil të ri të Chrome për t'i mbajtur të veçuar faqeshënuesit, fjalëkalimet dhe cilësimet.</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
 <translation id="5804318322022881572">Chrome nuk mund të hapej. Provo përsëri.</translation>
 <translation id="5809516625706423866">Lidhja me internetin nuk mund të kryhej. HTTP 401 (E paautorizuar). Kontrollo konfigurimin e proxy-t.</translation>
@@ -444,6 +449,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="6025087594896450715">Google Chrome do të riniset pas <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">Mbyll</translation>
 <translation id="604424701295382420">U gozhdua! Mund të qasesh sërish te "Lentja e Google" nga butoni i ri në shiritin e veglave</translation>
+<translation id="6046028983725193307">Për të ndarë audion e sistemit, hap "Cilësimet e sistemit" dhe lejo "Vetëm regjistrimin e audios së sistemit" për Chrome. Më pas do të të duhet të rinisësh Chrome.</translation>
 <translation id="6069027071882229820">Kopjo si imazh</translation>
 <translation id="6070348360322141662">Për më shumë siguri, Google Chrome do t'i enkriptojë të dhënat e tua</translation>
 <translation id="6075300983329039771">Organizata jote, <ph name="MANAGER" />, kërkon që të identifikohesh në Chrome</translation>
@@ -517,6 +523,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="6800285125190089494">Identifikohu më shpejt në sajte duke përdorur fjalëkalimet e ruajtura për Chrome në iOS</translation>
 <translation id="6831043979455480757">Përkthe</translation>
 <translation id="683440813066116847">Rregulli hyrës për Google Chrome për të lejuar trafikun mDNS.</translation>
+<translation id="6841242485723266823">Profilet e Chrome të ndihmojnë t'i mbash të veçuara pjesë të ndryshme të jetës sate. Shto një profil të ri tani.</translation>
 <translation id="684888714667046800">Lidhja me internetin nuk mund të kryhej. Nëse përdor një mur mbrojtës, sigurohu që <ph name="PRODUCT_EXE_NAME" /> të jetë në listën e lejimeve.</translation>
 <translation id="6877155553248388166">këndi poshtë djathtas i zonës së kërkimit: djathtas <ph name="RIGHT" />%, poshtë <ph name="BOTTOM" />%</translation>
 <translation id="6881299373831449287">Po përditëson Chrome</translation>
@@ -680,6 +687,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="8625237574518804553">{0,plural, =1{Chrome do të hapet përsëri për 1 minutë}other{Chrome do të hapet përsëri për # minuta}}</translation>
 <translation id="8637932705841171563">Për të ndarë dritaren tënde, lejo regjistrimin e ekranit për Chrome te "Cilësimet e sistemit"</translation>
 <translation id="8641606876632989680">Chrome do të të njoftojë kur të identifikohesh me një fjalëkalim të komprometuar</translation>
+<translation id="8647930742055103497">Mbaji të gjitha në Chrome</translation>
 <translation id="8656634243791296665">Hap Gemini në Chrome Dev</translation>
 <translation id="8669527147644353129">Ndihmësi i Google Chrome</translation>
 <translation id="8677922833187616101">Shfaq gjithmonë shkurtoren e "Modalitetit të IA-së së Google"</translation>

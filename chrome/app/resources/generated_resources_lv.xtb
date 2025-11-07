@@ -2458,6 +2458,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2667463864537187133">Pareizrakstības pārbaudes pārvaldība</translation>
 <translation id="2668604389652548400">Noņemiet paplašinājumu vai aizstājiet to ar līdzīgiem paplašinājumiem no <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />.</translation>
 <translation id="2669241540496514785">Nevarēja atvērt lietotni <ph name="APP_NAME" /></translation>
+<translation id="2669250147452250961">Ieslēdziet šo iestatījumu, lai iegūtu pārlūkošanas vēsturi un cilnes no citām ierīcēm.</translation>
 <translation id="2669454659051515572">Lejupielādētie faili ir redzami visiem šīs ierīces lietotājiem.</translation>
 <translation id="2670102641511624474">Lietotne <ph name="APP_NAME" /> koplieto Chrome cilni.</translation>
 <translation id="2670168377011445813">Ja pārlūkā Chrome tiek konstatēts, ka kāda no jūsu parolēm ir atklāta publiska datu aizsardzības pārkāpuma dēļ, un ja esat pierakstījies, Google paroļu pārvaldnieks var piedāvāt nomainīt attiecīgo paroli. <ph name="BEGIN_LINK" />Plašāka informācija par automatizētu paroles maiņu<ph name="END_LINK" /></translation>
@@ -8600,6 +8601,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="6961327401577924850">Parasti vietnes meklē Bluetooth ierīces, lai nodrošinātu noteiktas funkcijas, piemēram, iestatītu vai sinhronizētu samazināta enerģijas patēriņa signālierīci, veselības uzraudzības vai fizisko aktivitāšu uzskaites ierīci vai viedā apgaismojuma ierīces spuldzīti.</translation>
 <translation id="6963772203726867701">Kustība netika konstatēta</translation>
 <translation id="6963872466817251924">Teksta kursora izcelšana</translation>
+<translation id="6964239097707154771">ir Chrome papildinājumi, kas var palīdzēt paveikt vairāk.</translation>
 <translation id="6964390816189577014">Varonis</translation>
 <translation id="6964760285928603117">Noņemt no grupas</translation>
 <translation id="6965382102122355670">Labi</translation>
@@ -8912,6 +8914,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="7186088072322679094">Saglabāšana rīkjoslā</translation>
 <translation id="7186303001964993981"><ph name="ORIGIN" /> nevar atvērt šo mapi, jo tajā ir arī sistēmas faili</translation>
 <translation id="7186568385131859684">Varat kontrolēt, kā Google pakalpojumos tiek izmantota pārlūkošanas vēsture un citi jūsu dati</translation>
+<translation id="7186903260115204164">Izmantojot jauno rīku Zīmēt, varat ar brīvu roku zīmēt, pievienot parakstus un atzīmēt saturu.</translation>
 <translation id="7188508872042490670">Vietnes dati ierīcē</translation>
 <translation id="7189234443051076392">Ierīcē ir jābūt pietiekami daudz vietas.</translation>
 <translation id="7189451821249468368">Jums nav pietiekami daudz jauninātu licenču, lai reģistrētu šo ierīci. Lūdzu, sazinieties ar tirdzniecības nodaļu, lai iegādātos vairāk licenču. Ja uzskatāt, ka šis ziņojums tiek rādīts kļūdas dēļ, lūdzu, sazinieties ar atbalsta dienestu.</translation>
@@ -10742,6 +10745,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8427213022735114808">Diktēšanas funkcija nosūta jūsu balss datus Google serveriem, lai atļautu rakstīšanu ar balsi jebkurā teksta laukā.</translation>
 <translation id="8427292751741042100">iegulta jebkurā vietnē</translation>
 <translation id="8428213095426709021">Iestatījumi</translation>
+<translation id="8428257636009471988">Apmeklēt Interneta veikalu</translation>
 <translation id="8428271547607112339">Pievienot skolas kontu</translation>
 <translation id="8428634594422941299">Labi</translation>
 <translation id="84297032718407999">Jūs tiksiet izrakstīts pēc šāda laika: <ph name="LOGOUT_TIME_LEFT" /></translation>

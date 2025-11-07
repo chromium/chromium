@@ -78,6 +78,7 @@
 <translation id="112840717907525620">Pamięć podręczna zasad: OK</translation>
 <translation id="1131264053432022307">Skopiowany obraz</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – aby zamknąć pełny ekran, przeciągnij od góry i kliknij przycisk Wstecz</translation>
+<translation id="1133418583142946603">Dodaj bieżącą kartę</translation>
 <translation id="1138458427267715730">Otrzymuj alerty, gdy cena spadnie w dowolnej witrynie w internecie</translation>
 <translation id="1142713751288681188">Typ papieru</translation>
 <translation id="1142965388643537393">Informacje o podróży</translation>
@@ -444,6 +445,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1717218214683051432">Czujniki ruchu</translation>
 <translation id="1717494416764505390">Zestaw tac odbiorczych 3</translation>
 <translation id="1717688554309417925">Usługi kont debetowych i bieżących</translation>
+<translation id="1717882880162336471">Wypróbuj tryb AI</translation>
 <translation id="1719434663396780149">Alerty o obniżkach cen są włączone. Aby to zmienić, otwórz <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="1719838434204287058">24 x 30 cali</translation>
 <translation id="1720941539803966190">Zamknij samouczek</translation>
@@ -2015,6 +2017,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4258748452823770588">Nieprawidłowy podpis</translation>
 <translation id="4265635050210404830">Twoje karty lojalnościowe</translation>
 <translation id="4265872034478892965">Dozwolone przez administratora</translation>
+<translation id="4267590181863312380">Aby zobaczyć historię z innych urządzeń, zaloguj się i zsynchronizuj ją. Będziesz też mieć dostęp do haseł i innych danych na wszystkich swoich urządzeniach. Synchronizację możesz wyłączyć w każdej chwili w ustawieniach. Google może korzystać z Twojej historii, aby dostosowywać działanie wyszukiwarki i innych usług.</translation>
 <translation id="4269029136757623689">Wentylatory domowe</translation>
 <translation id="4269264543938335308">Kostiumy kąpielowe</translation>
 <translation id="4269599248168651462">Certyfikat serwera jest wystawiany dla nazwy, która nie jest unikalna.</translation>
@@ -2891,6 +2894,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5715918316982363436"><ph name="TAB_COUNT" /> z <ph name="WINDOW_COUNT" /> na tym urządzeniu</translation>
 <translation id="5716325061445053985">Kliknij, aby otworzyć kartę na telefonie</translation>
 <translation id="5717509257172454543">Łyżwiarstwo</translation>
+<translation id="5718601519531438273">Obejmuje informacje takie jak paszporty i prawa jazdy</translation>
 <translation id="5720705177508910913">Bieżący użytkownik</translation>
 <translation id="5720895412771013401">Komputery stacjonarne</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} i jeszcze 1}few{{website_1}, {website_2} i jeszcze {more_count}}many{{website_1}, {website_2} i jeszcze {more_count}}other{{website_1}, {website_2} i jeszcze {more_count}}}</translation>
@@ -4561,6 +4565,7 @@ Dodatkowe informacje:
 <translation id="8449036207308062757">Zarządzaj miejscem na dane</translation>
 <translation id="8449155699563577224">17 x 24 cale</translation>
 <translation id="8449836157089738489">Otwórz wszystko w nowej grupie kart</translation>
+<translation id="8451518040456311377">Zapisuj i uzupełniaj dokumenty tożsamości</translation>
 <translation id="84561192812921051">Administrator może zdalnie wprowadzać zmiany w Twoim profilu i przeglądarce, analizować informacje o przeglądarce za pomocą raportów i wykonywać inne niezbędne zadania. Aktywność na tym urządzeniu może być zarządzana również poza Chrome.  <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="8456383681414356368">Plansza dolna jest zamknięta.</translation>
 <translation id="8456775115498700722">Dane kart <ph name="CARD_ISSUER_NAME" /> mogą być teraz uzupełniane automatycznie, ponieważ Twoje konto <ph name="CARD_ISSUER_NAME" /> jest połączone z Google Pay.</translation>
