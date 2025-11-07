@@ -11,15 +11,14 @@ import type {ComposeboxElement} from './composebox.js';
 export function getHtml(this: ComposeboxElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-  <div class="gradient gradient-outer-glow"></div>
-  <div class="gradient"></div>
-  <div class="background"></div>
+  <search-animated-glow
+      animation-state="${this.animationState_}">
+  </search-animated-glow>
   <ntp-error-scrim id="errorScrim"
     ?compact-mode="${this.searchboxLayoutMode === 'Compact' &&
                      this.contextFilesSize_ === 0}"
     @error-scrim-visibility-changed="${this.onErrorScrimVisibilityChanged_}">
   </ntp-error-scrim>
-  <div id="dragDropPlaceholder"> Drop your file here </div>
   <div id="composebox" @keydown="${this.onKeydown_}"
       @focusin="${this.handleComposeboxFocusIn_}"
       @focusout="${this.handleComposeboxFocusOut_}"
