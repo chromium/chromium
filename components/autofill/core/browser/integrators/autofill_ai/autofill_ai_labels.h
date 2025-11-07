@@ -39,13 +39,13 @@ using EntityLabel = std::vector<std::u16string>;
 // `attribute_types_to_ignore` contains types that shouldn't be used to generate
 // labels.
 //
-// If `prioritize_disambiguating_types` is true, only disambiguating types are
-// considered. For example, for a passport, the name and country are considered,
-// but the number is not.
+// If `only_disambiguating_types` is true, only `AttributeType`s satisfying
+// `AttributeType::is_disambiguating_type()` are considered. For example, for a
+// passport, the name and country are considered, but the number is not.
 std::vector<EntityLabel> GetLabelsForEntities(
-    base::span<const EntityInstance*> entities,
+    base::span<const EntityInstance* const> entities,
     DenseSet<AttributeType> attribute_types_to_ignore,
-    bool prioritize_disambiguating_types,
+    bool only_disambiguating_types,
     const std::string& app_locale);
 
 }  // namespace autofill

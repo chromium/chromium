@@ -1556,6 +1556,7 @@ source_set("unit_tests") {
     "heuristic_source_unittest.cc",
     "integrators/address_on_typing/address_on_typing_manager_unittest.cc",
     "integrators/autofill_ai/autofill_ai_import_utils_unittest.cc",
+    "integrators/autofill_ai/autofill_ai_labels_unittest.cc",
     "integrators/autofill_ai/autofill_ai_manager_unittest.cc",
     "integrators/autofill_ai/metrics/autofill_ai_logger_unittest.cc",
     "integrators/one_time_tokens/metrics/otp_form_event_logger_unittest.cc",
