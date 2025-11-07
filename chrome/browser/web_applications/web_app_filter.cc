@@ -119,4 +119,11 @@ WebAppFilter WebAppFilter::IsTrusted() {
   return filter;
 }
 
+// static
+WebAppFilter WebAppFilter::IsIsolatedWebAppIncludingUninstalling() {
+  WebAppFilter filter;
+  filter.is_isolated_apps_including_uninstalling_ = true;
+  return filter;
+}
+
 }  // namespace web_app

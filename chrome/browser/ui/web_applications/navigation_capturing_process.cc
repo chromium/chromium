@@ -841,7 +841,8 @@ void NavigationCapturingProcess::MaybeNotifyIwaTabCounterService(
   const webapps::AppId* app_id =
       opener ? WebAppTabHelper::GetAppId(opener) : nullptr;
 
-  if (app_id && provider->registrar_unsafe().IsIsolated(*app_id)) {
+  if (app_id && provider->registrar_unsafe().AppMatches(
+                    *app_id, WebAppFilter::IsIsolatedApp())) {
     iwa_opener_app_id = *app_id;
   }
 

@@ -31,6 +31,7 @@
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_management_type.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -171,7 +172,8 @@ class SubAppsServiceImplBrowserTest : public IsolatedWebAppBrowserTestHarness {
 
     EXPECT_EQ(proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
               provider().registrar_unsafe().GetInstallState(parent_app_id_));
-    EXPECT_TRUE(provider().registrar_unsafe().IsIsolated(parent_app_id_));
+    EXPECT_TRUE(provider().registrar_unsafe().AppMatches(
+        parent_app_id_, WebAppFilter::IsIsolatedApp()));
     EXPECT_EQ(0ul, GetAllSubAppIds(parent_app_id_).size());
 
     return parent_app;

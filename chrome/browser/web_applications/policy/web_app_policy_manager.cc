@@ -40,6 +40,7 @@
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_management_type.h"
@@ -297,8 +298,8 @@ std::vector<std::string> WebAppPolicyManager::GetPolicyIds(
   WebAppRegistrar& web_app_registrar =
       WebAppProvider::GetForWebApps(profile)->registrar_unsafe();
 
-  if (web_app_registrar.IsIsolated(app_id) &&
-      web_app_registrar.IsInstalledByPolicy(app_id)) {
+  if (web_app_registrar.AppMatches(
+          app_id, WebAppFilter::PolicyInstalledIsolatedWebApp())) {
     // This is an IWA - and thus, web_bundle_id == policy_id == URL hostname
     return {web_app.start_url().GetHost()};
   }

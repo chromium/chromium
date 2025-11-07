@@ -18,7 +18,9 @@ class WebAppFilter {
   static WebAppFilter OpensInDedicatedWindow();
   // Only consider web apps that capture links in scope.
   static WebAppFilter CapturesLinksInScope();
-  // Only consider isolated web apps.
+  // Only consider isolated web apps, that are not scheduled for uninstallation,
+  // like stub ones. To also consider stub apps, use
+  // `IsIsolatedWebAppIncludingUninstalling()` instead.
   static WebAppFilter IsIsolatedApp();
   // Only consider force-installed Isolated Web Apps.
   static WebAppFilter PolicyInstalledIsolatedWebApp();
@@ -57,6 +59,10 @@ class WebAppFilter {
   // sources, like admin or preinstalled apps.
   static WebAppFilter IsTrusted();
 
+  // Consider any isolated web apps, even ones that are stubs and have
+  // `is_uninstalling` set to true.
+  static WebAppFilter IsIsolatedWebAppIncludingUninstalling();
+
   WebAppFilter(const WebAppFilter&);
   WebAppFilter& operator=(const WebAppFilter&) = default;
   ~WebAppFilter() = default;
@@ -90,6 +96,7 @@ class WebAppFilter {
   // future we might want to have a more generic "and" mechanism for filters.
   bool is_crafted_app_and_opens_in_dedicated_window_ = false;
   bool is_app_trusted_ = false;
+  bool is_isolated_apps_including_uninstalling_ = false;
 };
 
 }  // namespace web_app

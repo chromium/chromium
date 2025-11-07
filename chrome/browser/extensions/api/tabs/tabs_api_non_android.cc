@@ -75,6 +75,7 @@
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/ui/window_sizer/window_sizer.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -564,7 +565,7 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
     // returned window's tab count is always equal to 1 -- this will limit the
     // extension's ability to figure out which IWAs are installed without the
     // `tabs` permission.
-    if (registrar.IsIsolated(iwa_id)) {
+    if (registrar.AppMatches(iwa_id, web_app::WebAppFilter::IsIsolatedApp())) {
       ASSIGN_OR_RETURN(
           NavigateParams navigate_params,
           create_nav_params(registrar.GetAppStartUrl(iwa_id)),

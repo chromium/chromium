@@ -253,7 +253,8 @@ bool ChromePageInfoDelegate::IsIsolatedWebApp() {
 
   const webapps::AppId* app_id =
       web_app::WebAppTabHelper::GetAppId(web_contents_);
-  return app_id && provider->registrar_unsafe().IsIsolated(*app_id);
+  return app_id && provider->registrar_unsafe().AppMatches(
+                       *app_id, web_app::WebAppFilter::IsIsolatedApp());
 }
 
 void ChromePageInfoDelegate::ShowSiteSettings(const GURL& site_url) {

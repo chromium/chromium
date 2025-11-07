@@ -40,6 +40,7 @@
 #include "chrome/browser/usb/usb_chooser_context_factory.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/pref_names.h"
@@ -1459,7 +1460,8 @@ std::vector<web_app::IsolatedWebAppUrlInfo> GetInstalledIsolatedWebApps(
   std::vector<web_app::IsolatedWebAppUrlInfo> iwas;
   web_app::WebAppRegistrar& registrar = web_app_provider->registrar_unsafe();
   for (const web_app::WebApp& web_app : registrar.GetApps()) {
-    if (!registrar.IsIsolated(web_app.app_id())) {
+    if (!registrar.AppMatches(web_app.app_id(),
+                              web_app::WebAppFilter::IsIsolatedApp())) {
       continue;
     }
     base::expected<web_app::IsolatedWebAppUrlInfo, std::string> url_info =

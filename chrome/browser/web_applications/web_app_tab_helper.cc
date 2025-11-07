@@ -331,7 +331,8 @@ void WebAppTabHelper::OnAssociatedAppChanged(
     task_manager::WebContentsTags::ClearTag(web_contents());
     task_manager::WebContentsTags::CreateForWebApp(
         web_contents(), new_app_id.value(),
-        provider_->registrar_unsafe().IsIsolated(new_app_id.value()));
+        provider_->registrar_unsafe().AppMatches(
+            new_app_id.value(), WebAppFilter::IsIsolatedApp()));
   } else {
     // case 4:
     if (previous_app_id.has_value() && !previous_app_id->empty()) {

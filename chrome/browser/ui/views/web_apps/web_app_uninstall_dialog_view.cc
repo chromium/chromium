@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/ui/web_applications/web_app_info_image_source.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
+#include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -125,7 +126,8 @@ WebAppUninstallDialogDelegateView::WebAppUninstallDialogDelegateView(
 
   // For IWAs checkbox will not be displayed, removal of storage is
   // automatically enforced.
-  if (!provider_->registrar_unsafe().IsIsolated(app_id_)) {
+  if (!provider_->registrar_unsafe().AppMatches(
+          app_id_, web_app::WebAppFilter::IsIsolatedApp())) {
     std::u16string checkbox_label =
         l10n_util::GetStringUTF16(IDS_APP_ALSO_DELETE_APPS_DATA);
 
@@ -147,7 +149,8 @@ WebAppUninstallDialogDelegateView::~WebAppUninstallDialogDelegateView() {
 
 void WebAppUninstallDialogDelegateView::OnDialogAccepted() {
   DCHECK(provider_);
-  bool is_isolated_web_app = provider_->registrar_unsafe().IsIsolated(app_id_);
+  bool is_isolated_web_app = provider_->registrar_unsafe().AppMatches(
+      app_id_, web_app::WebAppFilter::IsIsolatedApp());
   bool clear_site_data = checkbox_ && checkbox_->GetChecked();
 
   HistogramCloseAction action =

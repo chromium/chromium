@@ -124,7 +124,8 @@ bool IsForceInstalledIwaOrigin(content::RenderFrameHost& host,
                    GetRegistrar(host, origin), [] { return false; });
   ASSIGN_OR_RETURN(webapps::AppId app_id, GetAppId(registrar, origin),
                    [] { return false; });
-  return registrar.IsInstalledByPolicy(app_id) && registrar.IsIsolated(app_id);
+  return registrar.AppMatches(
+      app_id, web_app::WebAppFilter::PolicyInstalledIsolatedWebApp());
 }
 
 // Check whether an app with the target origin is in the WebAppRegistrar.

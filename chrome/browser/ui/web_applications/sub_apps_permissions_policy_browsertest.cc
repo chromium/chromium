@@ -65,7 +65,8 @@ class SubAppsPermissionsPolicyBrowserTest
     EXPECT_EQ(proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
               provider().registrar_unsafe().GetInstallState(parent_app_id_));
 
-    EXPECT_TRUE(provider().registrar_unsafe().IsIsolated(parent_app_id_));
+    EXPECT_TRUE(provider().registrar_unsafe().AppMatches(
+        parent_app_id_, WebAppFilter::IsIsolatedApp()));
 
     ASSERT_THAT(web_app, Pointee(test::Property(
                              "untranslated_name", &WebApp::untranslated_name,

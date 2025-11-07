@@ -35,6 +35,7 @@
 #include "chrome/browser/web_applications/ui_manager/update_dialog_types.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
@@ -203,7 +204,8 @@ bool WebAppBrowserController::AppUsesTabbed() const {
 }
 
 bool WebAppBrowserController::IsIsolatedWebApp() const {
-  return is_isolated_web_app_for_testing_ || registrar().IsIsolated(app_id());
+  return is_isolated_web_app_for_testing_ ||
+         registrar().AppMatches(app_id(), WebAppFilter::IsIsolatedApp());
 }
 
 void WebAppBrowserController::SetIsolatedWebAppTrueForTesting() {

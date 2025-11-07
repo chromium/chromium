@@ -13,6 +13,7 @@
 #include "chrome/browser/web_applications/link_capturing_features.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
+#include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_scope.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
@@ -215,7 +216,8 @@ void WebAppSettingsPageHandler::GetOverlappingPreferredApps(
 void WebAppSettingsPageHandler::SetWindowMode(const std::string& app_id,
                                               apps::WindowMode window_mode) {
   // Changing window mode is not allowed for isolated web apps.
-  if (provider().registrar_unsafe().IsIsolated(app_id)) {
+  if (provider().registrar_unsafe().AppMatches(
+          app_id, web_app::WebAppFilter::IsIsolatedApp())) {
     return;
   }
 
@@ -297,7 +299,8 @@ app_management::mojom::AppPtr WebAppSettingsPageHandler::CreateApp(
     app->scope_extensions = GetScopeExtensions(app->id, provider());
   }
 
-  app->hide_window_mode = provider().registrar_unsafe().IsIsolated(app->id);
+  app->hide_window_mode = provider().registrar_unsafe().AppMatches(
+      app->id, web_app::WebAppFilter::IsIsolatedApp());
 
   app->show_system_notifications_settings_link = false;
 #if BUILDFLAG(IS_MAC)

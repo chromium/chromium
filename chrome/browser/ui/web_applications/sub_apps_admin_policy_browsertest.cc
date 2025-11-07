@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
+#include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/pref_names.h"
@@ -81,7 +82,8 @@ class SubAppsAdminPolicyTest : public IsolatedWebAppBrowserTestHarness {
 
     EXPECT_EQ(provider().registrar_unsafe().GetInstallState(parent_app_id_),
               proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
-    EXPECT_THAT(provider().registrar_unsafe().IsIsolated(parent_app_id_),
+    EXPECT_THAT(provider().registrar_unsafe().AppMatches(
+                    parent_app_id_, WebAppFilter::IsIsolatedApp()),
                 IsTrue());
     EXPECT_THAT(GetAllSubAppIds(parent_app_id_), IsEmpty());
 

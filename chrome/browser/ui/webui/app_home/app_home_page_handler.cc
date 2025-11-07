@@ -41,6 +41,7 @@
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
@@ -384,9 +385,10 @@ app_home::mojom::AppInfoPtr AppHomePageHandler::CreateAppInfoPtrFromWebApp(
 
   app_info->store_page_url = std::nullopt;
   app_info->may_uninstall = registrar.CanUserUninstallWebApp(app_id);
-  app_info->app_type = registrar.IsIsolated(app_id)
-                           ? app_home::mojom::AppType::kIsolatedWebApp
-                           : app_home::mojom::AppType::kWebApp;
+  app_info->app_type =
+      registrar.AppMatches(app_id, web_app::WebAppFilter::IsIsolatedApp())
+          ? app_home::mojom::AppType::kIsolatedWebApp
+          : app_home::mojom::AppType::kWebApp;
   return app_info;
 }
 

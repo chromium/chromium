@@ -33,6 +33,7 @@
 #include "chrome/browser/ui/webui_browser/webui_browser.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
@@ -92,7 +93,8 @@ std::optional<std::string> GetIsolatedWebAppNameAndVersion(
   const web_app::WebAppRegistrar& registrar = provider->registrar_unsafe();
   const web_app::WebApp* web_app = registrar.GetAppById(*app_id);
 
-  if (web_app && registrar.IsIsolated(*app_id)) {
+  if (web_app &&
+      registrar.AppMatches(*app_id, web_app::WebAppFilter::IsIsolatedApp())) {
     // Version is a key part of IWA so should be displayed in inspect tool
     return base::StrCat({registrar.GetAppShortName(*app_id), " (",
                          web_app->isolation_data()->version().GetString(),

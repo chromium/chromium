@@ -299,7 +299,6 @@ class WebAppRegistrar {
   const apps::FileHandlers* GetAppFileHandlers(
       const webapps::AppId& app_id) const;
   bool IsAppFileHandlerPermissionBlocked(const webapps::AppId& app_id) const;
-  bool IsIsolated(const webapps::AppId& app_id) const;
 
   // Returns approval state for File Handling API including
   // DefaultHandlersForFileExtensions policy check.
@@ -699,6 +698,7 @@ class WebAppRegistrar {
   std::vector<webapps::AppId> GetAppIdsForAppSet(const AppSet& app_set) const;
 
  private:
+  bool IsIsolated(const webapps::AppId& app_id) const;
   // Returns if the given app_id is the most recently installed application of
   // the set of other apps with matching scopes, AND no other app has user link
   // capturing explicitly turned on. Note that this doesn't consider the link
