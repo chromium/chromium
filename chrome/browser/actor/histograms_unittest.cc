@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/test/metrics/histogram_variants_reader.h"
+#include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/tool_request_variant.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -39,6 +40,23 @@ TEST(ActorHistogramsTest, CheckToolRequestVariantNames) {
   CheckToolRequestVariantNamesImpl(
       *tool_requests, std::make_index_sequence<
                           std::variant_size_v<actor::ToolRequestVariant>>{});
+}
+
+TEST(ActorHistogramsTest, CheckActorTaskStateVariantNames) {
+  std::optional<base::HistogramVariantsEntryMap> task_states =
+      base::ReadVariantsFromHistogramsXml("ActorTaskState", "actor");
+  ASSERT_TRUE(task_states.has_value());
+  ASSERT_EQ(task_states->size(),
+            static_cast<size_t>(ActorTask::State::kMaxValue) + 1);
+
+  for (int i = 0; i <= static_cast<int>(ActorTask::State::kMaxValue); i++) {
+    std::string state_string = ToString(static_cast<ActorTask::State>(i));
+    EXPECT_TRUE(task_states->contains(state_string))
+        << "ActorTask::State " << state_string
+        << " not found in "
+           "//tools/metrics/histograms/metadata/actor/"
+           "histograms.xml:ActorTaskState.";
+  }
 }
 
 }  // namespace
