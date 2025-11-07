@@ -13,7 +13,6 @@
 #include "base/apple/foundation_util.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/process/process_iterator.h"
 #include "chrome/enterprise_companion/installer_paths.h"
 #include "chrome/updater/app/app_utils.h"

@@ -8,8 +8,8 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
 #include "chrome/common/chrome_paths.h"

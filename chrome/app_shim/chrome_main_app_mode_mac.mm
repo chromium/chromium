@@ -22,7 +22,6 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_sending_event.h"

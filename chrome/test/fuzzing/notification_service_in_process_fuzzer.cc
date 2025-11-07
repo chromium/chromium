@@ -4,7 +4,6 @@
 
 #include <string_view>
 
-#include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/ui_test_utils.h"

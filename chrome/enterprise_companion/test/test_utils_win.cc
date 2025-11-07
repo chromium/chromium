@@ -12,7 +12,6 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"

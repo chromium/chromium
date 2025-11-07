@@ -11,7 +11,6 @@
 #include <array>
 
 #include "base/compiler_specific.h"
-#include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "build/build_config.h"
 #include "chrome/browser/after_startup_task_utils.h"

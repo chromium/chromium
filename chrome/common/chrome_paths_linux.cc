@@ -9,7 +9,7 @@
 
 #include "base/base_paths.h"
 #include "base/environment.h"
-#include "base/files/file_util.h"
+#include "base/files/file_path.h"
 #include "base/nix/xdg_util.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"

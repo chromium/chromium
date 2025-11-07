@@ -16,7 +16,6 @@
 #include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/files/platform_file.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"

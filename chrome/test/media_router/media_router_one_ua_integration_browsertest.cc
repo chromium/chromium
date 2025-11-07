@@ -4,7 +4,6 @@
 #include <memory>
 
 #include "base/cfi_buildflags.h"
-#include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "build/build_config.h"
 #include "chrome/test/media_router/media_router_integration_browsertest.h"
