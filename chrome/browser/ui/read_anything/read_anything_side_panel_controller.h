@@ -116,6 +116,12 @@ class ReadAnythingSidePanelController : public SidePanelEntryObserver,
   // visibility and background tabs do nothing.
   void UpdateIphVisibility();
 
+  // Runs a heuristic to check if the current tab's contents are a good
+  // candidate for distillation in Reading mode. The result is returned in the
+  // OnReadabilityResult call below, and is used to determine whether or not to
+  // show the omnibox entrypoint for RM.
+  void CheckIfGoodCandidateForReadingMode();
+
   // Show or hide the omnibox entry point.
   void OnReadabilityResult(bool should_show);
 

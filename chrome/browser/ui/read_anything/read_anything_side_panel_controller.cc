@@ -243,6 +243,7 @@ bool ReadAnythingSidePanelController::IsActivePageDistillable() const {
 
 void ReadAnythingSidePanelController::TabForegrounded(tabs::TabInterface* tab) {
   UpdateIphVisibility();
+  CheckIfGoodCandidateForReadingMode();
 }
 
 void ReadAnythingSidePanelController::TabWillDetach(
@@ -281,8 +282,11 @@ void ReadAnythingSidePanelController::DidStopLoading() {
   // The page finished loading.
   loading_ = false;
   UpdateIphVisibility();
+  CheckIfGoodCandidateForReadingMode();
+}
 
-  if (!features::IsReadAnythingOmniboxChipEnabled()) {
+void ReadAnythingSidePanelController::CheckIfGoodCandidateForReadingMode() {
+  if (!features::IsReadAnythingOmniboxChipEnabled() || !tab_->IsActivated()) {
     return;
   }
 
