@@ -2213,7 +2213,10 @@ TEST_F(PasswordAutofillAgentTest, FillIntoReadonlyTextField) {
 }
 
 // Tests that `FillInfoField` correctly fills the username field.
-TEST_F(PasswordAutofillAgentTest, FillIntoUsernameField) {
+TEST_F(PasswordAutofillAgentTest, FillIntoUsernameField_FlagOn) {
+  scoped_feature_list_.InitAndEnableFeature(
+      password_manager::features::kActorLoginTreatFillingAsUserInput);
+
   // Neither field should be autocompleted.
   CheckTextFieldsDOMState(
       /*username=*/std::string(), /*username_autofilled=*/false,
@@ -2225,9 +2228,36 @@ TEST_F(PasswordAutofillAgentTest, FillIntoUsernameField) {
       form_util::GetFieldRendererId(username_element_), kAliceUsername16,
       autofill::FieldPropertiesFlags::kAutofilledOnUserTrigger,
       mock_reply.Get());
+
   CheckTextFieldsDOMState(
       /*username=*/kAliceUsername, /*username_autofilled=*/true,
       /*password=*/std::string(), /*password_autofilled=*/false);
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return fake_driver_.called_inform_about_user_input_count() == 1;
+  }));
+}
+
+// Tests that `FillInfoField` correctly fills the username field.
+TEST_F(PasswordAutofillAgentTest, FillIntoUsernameField_FlagOff) {
+  scoped_feature_list_.InitAndDisableFeature(
+      password_manager::features::kActorLoginTreatFillingAsUserInput);
+  // Neither field should be autocompleted.
+  CheckTextFieldsDOMState(
+      /*username=*/std::string(), /*username_autofilled=*/false,
+      /*password=*/std::string(), /*password_autofilled=*/false);
+
+  base::MockCallback<base::OnceCallback<void(bool)>> mock_reply;
+  EXPECT_CALL(mock_reply, Run(true));
+  password_autofill_agent_->FillField(
+      form_util::GetFieldRendererId(username_element_), kAliceUsername16,
+      autofill::FieldPropertiesFlags::kAutofilledOnUserTrigger,
+      mock_reply.Get());
+
+  CheckTextFieldsDOMState(
+      /*username=*/kAliceUsername, /*username_autofilled=*/true,
+      /*password=*/std::string(), /*password_autofilled=*/false);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(0, fake_driver_.called_inform_about_user_input_count());
 }
 
 // Tests that `FillInfoField` correctly fills the password field.
