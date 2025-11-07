@@ -24,6 +24,7 @@
 #include "media/base/color_plane_layout.h"
 #include "media/base/format_utils.h"
 #include "media/base/media_log.h"
+#include "media/base/video_codecs.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"
 #include "media/gpu/buffer_validation.h"
@@ -43,6 +44,17 @@ namespace {
 // VEAs. Currently this value is selected as 40 instances are enough to pass
 // the CTS tests.
 constexpr size_t kMaxConcurrentClients = 8;
+
+bool ForceL1T3Encode(const media::VideoEncodeAccelerator::Config& config) {
+  if (media::VideoCodecProfileToVideoCodec(config.output_profile) !=
+      media::VideoCodec::kH264) {
+    return false;
+  }
+  // We force to encode in L1T3 for H264 stream in ChromeOS Selphie.
+  static bool isSelphie = base::SysInfo::GetLsbReleaseBoard() == "selphie";
+
+  return isSelphie;
+}
 }  // namespace
 
 // static
@@ -140,6 +152,21 @@ GpuArcVideoEncodeAccelerator::InitializeTask(
   if (base::FeatureList::IsEnabled(kVideoEncodeUseMappableSI) && !sii_) {
     DLOG(ERROR) << "Was passed null SharedImageInterface on construction";
     return mojom::VideoEncodeAccelerator::Result::kPlatformFailureError;
+  }
+
+  if (ForceL1T3Encode(config)) {
+    auto& cfg = const_cast<media::VideoEncodeAccelerator::Config&>(config);
+    cfg.spatial_layers.clear();
+    cfg.spatial_layers.push_back(
+        media::VideoEncodeAccelerator::Config::SpatialLayer{
+            .width = config.input_visible_size.width(),
+            .height = config.input_visible_size.height(),
+            .bitrate_bps = config.bitrate.target_bps(),
+            .framerate = config.framerate,
+            .max_qp = 0,  // Not used by ChromeOS VEA.
+            .num_of_temporal_layers = 3,
+        });
+    DVLOGF(1) << "Enforce L1T3 encoding for H264 stream for ARC";
   }
 
   visible_size_ = config.input_visible_size;
