@@ -253,7 +253,8 @@ bool DoCanonicalize(std::basic_string_view<CHAR> spec,
                     CanonOutput* output,
                     Parsed* output_parsed) {
   // Trim leading C0 control characters and spaces.
-  spec = TrimUrl(spec, trim_path_end).first;
+  auto [begin, end] = TrimUrl(spec, trim_path_end);
+  spec = spec.substr(begin, end - begin);
 
   output->ReserveSizeIfNeeded(spec.length());
 

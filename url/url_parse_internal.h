@@ -60,27 +60,26 @@ inline void TrimURL(const CHAR* spec, int* begin, int* len,
 }
 
 // This shrinks the input URL string to eliminate "should-be-trimmed"
-// characters. The returned value is a pair of the trimmed string and its offset
-// from the beginning of the input URL.
+// characters. The returned value is a pair of the start index of the remaining
+// string and the start index of the trailing trimmed string in `spec`.
 template <typename CHAR>
-inline std::pair<std::basic_string_view<CHAR>, size_t> TrimUrl(
-    std::basic_string_view<CHAR> spec,
-    bool trim_path_end = true) {
-  size_t offset = 0;
+inline std::pair<size_t, size_t> TrimUrl(std::basic_string_view<CHAR> spec,
+                                         bool trim_path_end = true) {
+  size_t begin = 0;
+  size_t end = spec.length();
   // Strip leading whitespace and control characters.
-  while (!spec.empty() && ShouldTrimFromURL(spec[0])) {
-    spec = spec.substr(1);
-    ++offset;
+  while (begin < end && ShouldTrimFromURL(spec[begin])) {
+    ++begin;
   }
 
   if (trim_path_end) {
-    // Strip trailing whitespace and control characters. We need the empty()
-    // test for when the input string is all blanks.
-    while (!spec.empty() && ShouldTrimFromURL(spec[spec.length() - 1])) {
-      spec = spec.substr(0, spec.length() - 1);
+    // Strip trailing whitespace and control characters. We need the `begin <
+    // end` test for when the input string is all blanks.
+    while (begin < end && ShouldTrimFromURL(spec[end - 1])) {
+      --end;
     }
   }
-  return {spec, offset};
+  return {begin, end};
 }
 
 // Counts the number of consecutive slashes or backslashes starting at the given

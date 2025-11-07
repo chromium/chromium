@@ -115,9 +115,8 @@ bool DoIsRelativeUrl(std::string_view base,
   *is_relative = false;  // So we can default later to not relative.
 
   // Trim whitespace and construct a new range for the substring.
-  auto trim_result = TrimUrl(input_url);
-  size_t begin = trim_result.second;
-  std::basic_string_view<CHAR> url = trim_result.first;
+  auto [begin, end] = TrimUrl(input_url);
+  std::basic_string_view<CHAR> url = input_url.substr(begin, end - begin);
   if (url.empty()) {
     // Empty URLs are relative, but do nothing.
     if (!is_base_hierarchical) {
