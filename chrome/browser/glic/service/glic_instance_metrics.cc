@@ -19,6 +19,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/glic/glic_metrics.h"
+#include "chrome/browser/glic/service/glic_metrics_session_manager.h"
 #include "components/tabs/public/tab_interface.h"
 
 namespace glic {
@@ -51,9 +52,6 @@ std::string GetDaisyChainSourceString(DaisyChainSource source) {
 
 }  // namespace
 
-GlicInstanceMetrics::GlicInstanceEventCounts::GlicInstanceEventCounts() =
-    default;
-
 GlicInstanceMetrics::GlicInstanceMetrics() : session_manager_(this) {}
 
 GlicInstanceMetrics::~GlicInstanceMetrics() {
@@ -65,7 +63,7 @@ void GlicInstanceMetrics::OnInstanceCreated() {
   creation_time_ = base::TimeTicks::Now();
   last_activation_change_time_ = creation_time_;
   last_visibility_change_time_ = creation_time_;
-  LogEvent(GlicInstanceEvent::kInstanceCreated, event_counts_.instance_created);
+  LogEvent(GlicInstanceEvent::kInstanceCreated);
 }
 
 void GlicInstanceMetrics::OnInstanceDestroyed() {
@@ -104,11 +102,11 @@ void GlicInstanceMetrics::OnInstanceDestroyed() {
                                 lifetime, base::Milliseconds(1), base::Days(21),
                                 50);
   base::UmaHistogramCounts100("Glic.Instance.TotalTabsBoundInLifetime",
-                              event_counts_.tab_bound);
+                              GetEventCount(GlicInstanceEvent::kTabBound));
   base::UmaHistogramCounts100("Glic.Instance.MaxConcurrentlyBoundTabs",
                               max_concurrently_bound_tabs_);
   base::UmaHistogramCounts100("Glic.Instance.TurnCount",
-                              event_counts_.turn_count);
+                              GetEventCount(GlicInstanceEvent::kTurnCompleted));
   base::UmaHistogramCounts100("Glic.Instance.SessionCount", session_count_);
 
   InputModesUsed modes_used = InputModesUsed::kNone;
@@ -173,27 +171,24 @@ void GlicInstanceMetrics::OnBind() {
   if (bound_tab_count_ > max_concurrently_bound_tabs_) {
     max_concurrently_bound_tabs_ = bound_tab_count_;
   }
-  LogEvent(GlicInstanceEvent::kTabBound, event_counts_.tab_bound);
+  LogEvent(GlicInstanceEvent::kTabBound);
 }
 
 void GlicInstanceMetrics::OnInstancePromoted() {
   base::RecordAction(base::UserMetricsAction("Glic.Instance.Promoted"));
-  LogEvent(GlicInstanceEvent::kInstancePromoted,
-           event_counts_.instance_promoted);
+  LogEvent(GlicInstanceEvent::kInstancePromoted);
 }
 
 void GlicInstanceMetrics::OnWarmedInstanceCreated() {
   base::RecordAction(
       base::UserMetricsAction("Glic.Instance.CreatedWarmedInstance"));
-  LogEvent(GlicInstanceEvent::kWarmedInstanceCreated,
-           event_counts_.warmed_instance_created);
+  LogEvent(GlicInstanceEvent::kWarmedInstanceCreated);
 }
 
 void GlicInstanceMetrics::OnInstanceCreatedWithoutWarming() {
   base::RecordAction(
       base::UserMetricsAction("Glic.Instance.CreatedInstanceWithoutWarming"));
-  LogEvent(GlicInstanceEvent::kInstanceCreatedWithoutWarming,
-           event_counts_.instance_created_without_warming);
+  LogEvent(GlicInstanceEvent::kInstanceCreatedWithoutWarming);
 }
 
 void GlicInstanceMetrics::OnSwitchFromConversation(
@@ -202,13 +197,11 @@ void GlicInstanceMetrics::OnSwitchFromConversation(
           show_options.embedder_options)) {
     base::RecordAction(
         base::UserMetricsAction("Glic.Instance.SwitchFromConversation.Floaty"));
-    LogEvent(GlicInstanceEvent::kConversationSwitchedFromFloaty,
-             event_counts_.conversation_switched_from_floaty);
+    LogEvent(GlicInstanceEvent::kConversationSwitchedFromFloaty);
   } else {
     base::RecordAction(base::UserMetricsAction(
         "Glic.Instance.SwitchFromConversation.SidePanel"));
-    LogEvent(GlicInstanceEvent::kConversationSwitchedFromSidePanel,
-             event_counts_.conversation_switched_from_side_panel);
+    LogEvent(GlicInstanceEvent::kConversationSwitchedFromSidePanel);
   }
 }
 
@@ -218,13 +211,11 @@ void GlicInstanceMetrics::OnSwitchToConversation(
           show_options.embedder_options)) {
     base::RecordAction(
         base::UserMetricsAction("Glic.Instance.SwitchToConversation.Floaty"));
-    LogEvent(GlicInstanceEvent::kConversationSwitchedToFloaty,
-             event_counts_.conversation_switched_to_floaty);
+    LogEvent(GlicInstanceEvent::kConversationSwitchedToFloaty);
   } else {
     base::RecordAction(base::UserMetricsAction(
         "Glic.Instance.SwitchToConversation.SidePanel"));
-    LogEvent(GlicInstanceEvent::kConversationSwitchedToSidePanel,
-             event_counts_.conversation_switched_to_side_panel);
+    LogEvent(GlicInstanceEvent::kConversationSwitchedToSidePanel);
   }
 }
 
@@ -234,13 +225,13 @@ void GlicInstanceMetrics::OnShowInSidePanel(tabs::TabInterface* tab) {
   }
   side_panel_open_times_[tab->GetHandle().raw_value()] = base::TimeTicks::Now();
   base::RecordAction(base::UserMetricsAction("Glic.Instance.Show.SidePanel"));
-  LogEvent(GlicInstanceEvent::kSidePanelShown, event_counts_.side_panel_shown);
+  LogEvent(GlicInstanceEvent::kSidePanelShown);
 }
 
 void GlicInstanceMetrics::OnShowInFloaty() {
   floaty_open_time_ = base::TimeTicks::Now();
   base::RecordAction(base::UserMetricsAction("Glic.Instance.Show.Floaty"));
-  LogEvent(GlicInstanceEvent::kFloatyShown, event_counts_.floaty_shown);
+  LogEvent(GlicInstanceEvent::kFloatyShown);
 }
 
 void GlicInstanceMetrics::OnFloatyClosed() {
@@ -270,13 +261,12 @@ void GlicInstanceMetrics::OnSidePanelClosed(tabs::TabInterface* tab) {
 
 void GlicInstanceMetrics::OnDetach() {
   base::RecordAction(base::UserMetricsAction("Glic.Instance.Detach"));
-  LogEvent(GlicInstanceEvent::kDetachedToFloaty,
-           event_counts_.detached_to_floaty);
+  LogEvent(GlicInstanceEvent::kDetachedToFloaty);
 }
 
 void GlicInstanceMetrics::OnUnbindEmbedder(EmbedderKey key) {
   base::RecordAction(base::UserMetricsAction("Glic.Instance.UnBind"));
-  LogEvent(GlicInstanceEvent::kUnbindEmbedder, event_counts_.unbind_embedder);
+  LogEvent(GlicInstanceEvent::kUnbindEmbedder);
 
   auto* tab_ptr = std::get_if<tabs::TabInterface*>(&key);
   if (tab_ptr) {
@@ -302,11 +292,9 @@ void GlicInstanceMetrics::OnDaisyChain(DaisyChainSource source, bool success) {
                     success ? "Success" : "Failure"})
           .c_str()));
   if (success) {
-    LogEvent(GlicInstanceEvent::kTabBoundViaDaisyChain,
-             event_counts_.tab_bound_via_daisy_chain);
+    LogEvent(GlicInstanceEvent::kTabBoundViaDaisyChain);
   } else {
-    LogEvent(GlicInstanceEvent::kDaisyChainFailed,
-             event_counts_.daisy_chain_failed);
+    LogEvent(GlicInstanceEvent::kDaisyChainFailed);
   }
 }
 
@@ -314,18 +302,17 @@ void GlicInstanceMetrics::OnRegisterConversation(
     const std::string& conversation_id) {
   base::RecordAction(
       base::UserMetricsAction("Glic.Instance.RegisterConversation"));
-  LogEvent(GlicInstanceEvent::kRegisterConversation,
-           event_counts_.register_conversation);
+  LogEvent(GlicInstanceEvent::kRegisterConversation);
 }
 
 void GlicInstanceMetrics::OnInstanceHidden() {
   base::RecordAction(base::UserMetricsAction("Glic.Instance.Hide"));
-  LogEvent(GlicInstanceEvent::kInstanceHidden, event_counts_.instance_hidden);
+  LogEvent(GlicInstanceEvent::kInstanceHidden);
 }
 
 void GlicInstanceMetrics::OnClose() {
   base::RecordAction(base::UserMetricsAction("Glic.Instance.Close"));
-  LogEvent(GlicInstanceEvent::kClose, event_counts_.close);
+  LogEvent(GlicInstanceEvent::kClose);
   base::UmaHistogramEnumeration("Glic.PanelWebUiState.FinishState3",
                                 last_web_ui_state_);
 }
@@ -343,59 +330,55 @@ void GlicInstanceMetrics::OnToggle(glic::mojom::InvocationSource source,
     base::UmaHistogramEnumeration("Glic.Instance.SidePanel.ToggleSource",
                                   source);
   }
-  LogEvent(GlicInstanceEvent::kToggle, event_counts_.toggle);
+  LogEvent(GlicInstanceEvent::kToggle);
 }
 
 void GlicInstanceMetrics::OnBoundTabDestroyed() {
   base::RecordAction(
       base::UserMetricsAction("Glic.Instance.BoundTabDestroyed"));
-  LogEvent(GlicInstanceEvent::kBoundTabDestroyed,
-           event_counts_.bound_tab_destroyed);
+  LogEvent(GlicInstanceEvent::kBoundTabDestroyed);
 }
 
 void GlicInstanceMetrics::OnCreateTab() {
   base::RecordAction(base::UserMetricsAction("Glic.Instance.CreateTab"));
-  LogEvent(GlicInstanceEvent::kCreateTab, event_counts_.create_tab);
+  LogEvent(GlicInstanceEvent::kCreateTab);
 }
 
 void GlicInstanceMetrics::OnCreateTask() {
   base::RecordAction(base::UserMetricsAction("Glic.Instance.CreateTask"));
-  LogEvent(GlicInstanceEvent::kCreateTask, event_counts_.create_task);
+  LogEvent(GlicInstanceEvent::kCreateTask);
 }
 
 void GlicInstanceMetrics::OnPerformActions() {
   base::RecordAction(base::UserMetricsAction("Glic.Instance.PerformActions"));
-  LogEvent(GlicInstanceEvent::kPerformActions, event_counts_.perform_actions);
+  LogEvent(GlicInstanceEvent::kPerformActions);
 }
 
 void GlicInstanceMetrics::OnStopActorTask() {
   base::RecordAction(base::UserMetricsAction("Glic.Instance.StopActorTask"));
-  LogEvent(GlicInstanceEvent::kStopActorTask, event_counts_.stop_actor_task);
+  LogEvent(GlicInstanceEvent::kStopActorTask);
 }
 
 void GlicInstanceMetrics::OnPauseActorTask() {
   base::RecordAction(base::UserMetricsAction("Glic.Instance.PauseActorTask"));
-  LogEvent(GlicInstanceEvent::kPauseActorTask, event_counts_.pause_actor_task);
+  LogEvent(GlicInstanceEvent::kPauseActorTask);
 }
 
 void GlicInstanceMetrics::OnResumeActorTask() {
   base::RecordAction(base::UserMetricsAction("Glic.Instance.ResumeActorTask"));
-  LogEvent(GlicInstanceEvent::kResumeActorTask,
-           event_counts_.resume_actor_task);
+  LogEvent(GlicInstanceEvent::kResumeActorTask);
 }
 
 void GlicInstanceMetrics::InterruptActorTask() {
   base::RecordAction(
       base::UserMetricsAction("Glic.Instance.InterruptActorTask"));
-  LogEvent(GlicInstanceEvent::kInterruptActorTask,
-           event_counts_.interrupt_actor_task);
+  LogEvent(GlicInstanceEvent::kInterruptActorTask);
 }
 
 void GlicInstanceMetrics::UninterruptActorTask() {
   base::RecordAction(
       base::UserMetricsAction("Glic.Instance.UninterruptActorTask"));
-  LogEvent(GlicInstanceEvent::kUninterruptActorTask,
-           event_counts_.uninterrupt_actor_task);
+  LogEvent(GlicInstanceEvent::kUninterruptActorTask);
 }
 
 void GlicInstanceMetrics::OnWebUiStateChanged(mojom::WebUiState state) {
@@ -404,57 +387,48 @@ void GlicInstanceMetrics::OnWebUiStateChanged(mojom::WebUiState state) {
     case mojom::WebUiState::kUninitialized:
       base::RecordAction(base::UserMetricsAction(
           "Glic.Instance.WebUiStateChanged.Uninitialized"));
-      LogEvent(GlicInstanceEvent::kWebUiStateUninitialized,
-               event_counts_.web_ui_state_uninitialized);
+      LogEvent(GlicInstanceEvent::kWebUiStateUninitialized);
       break;
     case mojom::WebUiState::kBeginLoad:
       web_ui_load_start_time_ = base::TimeTicks::Now();
       base::RecordAction(
           base::UserMetricsAction("Glic.Instance.WebUiStateChanged.BeginLoad"));
-      LogEvent(GlicInstanceEvent::kWebUiStateBeginLoad,
-               event_counts_.web_ui_state_begin_load);
+      LogEvent(GlicInstanceEvent::kWebUiStateBeginLoad);
       break;
     case mojom::WebUiState::kShowLoading:
       base::RecordAction(base::UserMetricsAction(
           "Glic.Instance.WebUiStateChanged.ShowLoading"));
-      LogEvent(GlicInstanceEvent::kWebUiStateShowLoading,
-               event_counts_.web_ui_state_show_loading);
+      LogEvent(GlicInstanceEvent::kWebUiStateShowLoading);
       break;
     case mojom::WebUiState::kHoldLoading:
       base::RecordAction(base::UserMetricsAction(
           "Glic.Instance.WebUiStateChanged.HoldLoading"));
-      LogEvent(GlicInstanceEvent::kWebUiStateHoldLoading,
-               event_counts_.web_ui_state_hold_loading);
+      LogEvent(GlicInstanceEvent::kWebUiStateHoldLoading);
       break;
     case mojom::WebUiState::kFinishLoading:
       base::RecordAction(base::UserMetricsAction(
           "Glic.Instance.WebUiStateChanged.FinishLoading"));
-      LogEvent(GlicInstanceEvent::kWebUiStateFinishLoading,
-               event_counts_.web_ui_state_finish_loading);
+      LogEvent(GlicInstanceEvent::kWebUiStateFinishLoading);
       break;
     case mojom::WebUiState::kError:
       base::RecordAction(
           base::UserMetricsAction("Glic.Instance.WebUiStateChanged.Error"));
-      LogEvent(GlicInstanceEvent::kWebUiStateError,
-               event_counts_.web_ui_state_error);
+      LogEvent(GlicInstanceEvent::kWebUiStateError);
       break;
     case mojom::WebUiState::kOffline:
       base::RecordAction(
           base::UserMetricsAction("Glic.Instance.WebUiStateChanged.Offline"));
-      LogEvent(GlicInstanceEvent::kWebUiStateOffline,
-               event_counts_.web_ui_state_offline);
+      LogEvent(GlicInstanceEvent::kWebUiStateOffline);
       break;
     case mojom::WebUiState::kUnavailable:
       base::RecordAction(base::UserMetricsAction(
           "Glic.Instance.WebUiStateChanged.Unavailable"));
-      LogEvent(GlicInstanceEvent::kWebUiStateUnavailable,
-               event_counts_.web_ui_state_unavailable);
+      LogEvent(GlicInstanceEvent::kWebUiStateUnavailable);
       break;
     case mojom::WebUiState::kReady: {
       base::RecordAction(
           base::UserMetricsAction("Glic.Instance.WebUiStateChanged.Ready"));
-      LogEvent(GlicInstanceEvent::kWebUiStateReady,
-               event_counts_.web_ui_state_ready);
+      LogEvent(GlicInstanceEvent::kWebUiStateReady);
       if (!web_ui_load_start_time_.is_null()) {
         base::TimeDelta load_time =
             base::TimeTicks::Now() - web_ui_load_start_time_;
@@ -470,26 +444,22 @@ void GlicInstanceMetrics::OnWebUiStateChanged(mojom::WebUiState state) {
     case mojom::WebUiState::kUnresponsive:
       base::RecordAction(base::UserMetricsAction(
           "Glic.Instance.WebUiStateChanged.Unresponsive"));
-      LogEvent(GlicInstanceEvent::kWebUiStateUnresponsive,
-               event_counts_.web_ui_state_unresponsive);
+      LogEvent(GlicInstanceEvent::kWebUiStateUnresponsive);
       break;
     case mojom::WebUiState::kSignIn:
       base::RecordAction(
           base::UserMetricsAction("Glic.Instance.WebUiStateChanged.SignIn"));
-      LogEvent(GlicInstanceEvent::kWebUiStateSignIn,
-               event_counts_.web_ui_state_sign_in);
+      LogEvent(GlicInstanceEvent::kWebUiStateSignIn);
       break;
     case mojom::WebUiState::kGuestError:
       base::RecordAction(base::UserMetricsAction(
           "Glic.Instance.WebUiStateChanged.GuestError"));
-      LogEvent(GlicInstanceEvent::kWebUiStateGuestError,
-               event_counts_.web_ui_state_guest_error);
+      LogEvent(GlicInstanceEvent::kWebUiStateGuestError);
       break;
     case mojom::WebUiState::kDisabledByAdmin:
       base::RecordAction(base::UserMetricsAction(
           "Glic.Instance.WebUiStateChanged.DisabledByAdmin"));
-      LogEvent(GlicInstanceEvent::kWebUiStateDisabledByAdmin,
-               event_counts_.web_ui_state_disabled_by_admin);
+      LogEvent(GlicInstanceEvent::kWebUiStateDisabledByAdmin);
       break;
   }
 }
@@ -508,32 +478,38 @@ void GlicInstanceMetrics::OnClientReady(EmbedderType type) {
   invocation_start_time_ = base::TimeTicks();
 }
 
-void GlicInstanceMetrics::LogEvent(GlicInstanceEvent event,
-                                   int& event_counter) {
+void GlicInstanceMetrics::LogEvent(GlicInstanceEvent event) {
   base::UmaHistogramEnumeration("Glic.Instance.EventCounts", event);
-  if (event_counter == 0) {
+  if (event_counts_[event] == 0) {
+    // This is recorded only the first time an event occurs within this sessions
+    // lifetime.
     base::UmaHistogramEnumeration("Glic.Instance.HadEvent", event);
   }
-  event_counter++;
+  event_counts_[event]++;
+
+  session_manager_.OnEvent(event);
+}
+
+int GlicInstanceMetrics::GetEventCount(GlicInstanceEvent event) {
+  const auto it = event_counts_.find(event);
+  return it == event_counts_.end() ? 0 : it->second;
 }
 
 void GlicInstanceMetrics::OnUserInputSubmitted(mojom::WebClientMode mode) {
   session_manager_.OnUserInputSubmitted(mode);
-  LogEvent(GlicInstanceEvent::kUserInputSubmitted,
-           event_counts_.user_input_submitted);
+  LogEvent(GlicInstanceEvent::kUserInputSubmitted);
   turn_.input_submitted_time_ = base::TimeTicks::Now();
   input_mode_ = mode;
   inputs_modes_used_.Put(mode);
 }
 
 void GlicInstanceMetrics::DidRequestContextFromFocusedTab() {
-  LogEvent(GlicInstanceEvent::kContextRequested,
-           event_counts_.context_requested);
+  LogEvent(GlicInstanceEvent::kContextRequested);
   turn_.did_request_context_ = true;
 }
 
 void GlicInstanceMetrics::OnResponseStarted() {
-  LogEvent(GlicInstanceEvent::kResponseStarted, event_counts_.response_started);
+  LogEvent(GlicInstanceEvent::kResponseStarted);
   turn_.response_started_ = true;
 
   // It doesn't make sense to record response start without input submission.
@@ -559,7 +535,7 @@ void GlicInstanceMetrics::OnResponseStarted() {
 }
 
 void GlicInstanceMetrics::OnResponseStopped(mojom::ResponseStopCause cause) {
-  LogEvent(GlicInstanceEvent::kResponseStopped, event_counts_.response_stopped);
+  LogEvent(GlicInstanceEvent::kResponseStopped);
   // The client may call "stopped" without "started" for very short responses.
   // We synthetically call it ourselves in this case.
   if (!turn_.input_submitted_time_.is_null() && !turn_.response_started_) {
@@ -592,10 +568,7 @@ void GlicInstanceMetrics::OnResponseStopped(mojom::ResponseStopCause cause) {
 
 void GlicInstanceMetrics::OnTurnCompleted(mojom::WebClientModel model,
                                           base::TimeDelta duration) {
-  session_manager_.OnTurnCompleted();
-
-  LogEvent(GlicInstanceEvent::kTurnCompleted, event_counts_.turn_completed);
-  event_counts_.turn_count++;
+  LogEvent(GlicInstanceEvent::kTurnCompleted);
   base::UmaHistogramMediumTimes(model == mojom::WebClientModel::kActor
                                     ? "Glic.Turn.Duration.Actor"
                                     : "Glic.Turn.Duration.Default",
@@ -604,7 +577,7 @@ void GlicInstanceMetrics::OnTurnCompleted(mojom::WebClientModel model,
 
 void GlicInstanceMetrics::OnReaction(
     mojom::MetricUserInputReactionType reaction_type) {
-  LogEvent(GlicInstanceEvent::kReaction, event_counts_.reaction);
+  LogEvent(GlicInstanceEvent::kReaction);
   if (turn_.input_submitted_time_.is_null() ||
       input_mode_ != mojom::WebClientMode::kText) {
     return;
