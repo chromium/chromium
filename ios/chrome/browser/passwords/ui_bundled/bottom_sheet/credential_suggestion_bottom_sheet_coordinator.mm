@@ -59,7 +59,10 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
 
 @end
 
-@implementation CredentialSuggestionBottomSheetCoordinator
+@implementation CredentialSuggestionBottomSheetCoordinator {
+  // The navigation controller containing the Suggestion.
+  UINavigationController* _navigationController;
+}
 
 - (instancetype)
     initWithBaseViewController:(UIViewController*)viewController
@@ -76,6 +79,9 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
     self.viewController = [[CredentialSuggestionBottomSheetViewController alloc]
         initWithHandler:self
                     URL:URL];
+
+    _navigationController = [[UINavigationController alloc]
+        initWithRootViewController:self.viewController];
 
     ProfileIOS* profile = browser->GetProfile()->GetOriginalProfile();
 
@@ -127,7 +133,7 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
   self.viewController.parentViewControllerHeight =
       self.baseViewController.view.frame.size.height;
   __weak __typeof(self) weakSelf = self;
-  [self.baseViewController presentViewController:self.viewController
+  [self.baseViewController presentViewController:_navigationController
                                         animated:YES
                                       completion:^{
                                         [weakSelf setInitialVoiceOverFocus];
@@ -148,7 +154,7 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
   // delegate will likely -stop the coordinator when closing suggestions, so the
   // coordinator should be in the most up to date state where it can be safely
   // stopped.
-  if (!self.viewController.presentingViewController) {
+  if (!_navigationController.presentingViewController) {
     [self.mediator logExitReason:kCouldNotPresent];
     [self.browserCoordinatorCommandsHandler dismissPasswordSuggestions];
   }
@@ -170,7 +176,7 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
   [self.mediator logExitReason:kShowPasswordManager];
 
   __weak __typeof(self) weakSelf = self;
-  [self.viewController.presentingViewController
+  [_navigationController.presentingViewController
       dismissViewControllerAnimated:NO
                          completion:^{
                            [weakSelf displaySavedPasswordList];
@@ -187,7 +193,7 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
       [self.mediator getCredentialForFormSuggestion:formSuggestion];
 
   __weak __typeof(self) weakSelf = self;
-  [self.viewController.presentingViewController
+  [_navigationController.presentingViewController
       dismissViewControllerAnimated:NO
                          completion:^{
                            if (credential.has_value()) {
@@ -220,7 +226,7 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
   ProceduralBlock completion = ^{
     [weakSelf.browserCoordinatorCommandsHandler dismissPasswordSuggestions];
   };
-  [self.viewController.presentingViewController
+  [_navigationController.presentingViewController
       dismissViewControllerAnimated:YES
                          completion:^{
                            [weakSelf.mediator didSelectSuggestion:formSuggestion
@@ -251,7 +257,7 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
 
 - (void)secondaryButtonTapped {
   // "Use Keyboard" button, which dismisses the bottom sheet.
-  [self.viewController.presentingViewController
+  [_navigationController.presentingViewController
       dismissViewControllerAnimated:YES
                          completion:nil];
 }
@@ -289,7 +295,7 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
 
   // Dismiss the bottom sheet, then the presentation will be fully torn down
   // upon calling -viewDidDisappear.
-  [self.viewController.presentingViewController
+  [_navigationController.presentingViewController
       dismissViewControllerAnimated:NO
                          completion:nil];
 }

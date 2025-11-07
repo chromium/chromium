@@ -167,11 +167,8 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
   self.showsVerticalScrollIndicator = NO;
   self.showDismissBarButton = NO;
   self.topAlignedLayout = YES;
-  self.customContentBottomInset = 0;
 
   [super viewDidLoad];
-
-  self.showsGradientView = NO;
 
   // Assign table view's width anchor now that it is in the same hierarchy as
   // the top view.
@@ -217,29 +214,6 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
     forRowAtIndexPath:(NSIndexPath*)indexPath {
   // If only one suggestion exists, the item should not be selectable.
   cell.userInteractionEnabled = [self rowCount] > 1;
-}
-
-#pragma mark - UIScrollViewDelegate
-
-- (void)scrollViewDidScroll:(UIScrollView*)scrollView {
-  self.showsGradientView = ![self isScrolledToBottom];
-}
-
-#pragma mark - UISheetPresentationControllerDelegate
-
-- (void)sheetPresentationControllerDidChangeSelectedDetentIdentifier:
-    (UISheetPresentationController*)sheetPresentationController
-    API_AVAILABLE(ios(16)) {
-  // Show the gradient view to let the user know that the view can be scrolled
-  // when the bottom sheet is in minimized state or if the expanded state takes
-  // more space than the screen.
-  NSString* selectedDetentIdentifier =
-      sheetPresentationController.selectedDetentIdentifier;
-
-  self.showsGradientView =
-      selectedDetentIdentifier == kCustomMinimizedDetentIdentifier ||
-      (selectedDetentIdentifier == kCustomDetentIdentifier &&
-       _expandSizeTooLarge);
 }
 
 #pragma mark - Private
@@ -302,10 +276,6 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
   // `initialNumberOfVisibleCells` rows).
   NSMutableArray* currentDetents = [[NSMutableArray alloc] init];
   if (useMinimizedState) {
-    // Show gradient view when the user is in minimized state to show that the
-    // view can be scrolled.
-    self.showsGradientView = YES;
-
     CGFloat bottomSheetHeight = [self initialHeight];
     auto detentBlock = ^CGFloat(
         id<UISheetPresentationControllerDetentResolutionContext> context) {
