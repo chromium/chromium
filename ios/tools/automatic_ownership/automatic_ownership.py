@@ -346,6 +346,17 @@ if __name__ == '__main__':
         '--disable-owner-exclusion',
         action='store_true',
         help='Disable exclusion of higher-level owners from review stats.')
+    parser.add_argument(
+        '--commit-threshold',
+        type=int,
+        default=5,
+        help='The minimum number of commits required to use the Z-score method.'
+        ' Defaults to 5.')
+    parser.add_argument(
+        '--use-blame-for-low-commit-dirs',
+        action='store_true',
+        help='If enabled, use the git blame method for directories with commit '
+        'counts below the threshold. Defaults to False.')
     args = parser.parse_args()
 
     root_folder = args.root_directory
@@ -393,12 +404,13 @@ if __name__ == '__main__':
                 end='',
                 flush=True)
 
+        owners = []
         # Decide which algorithm to use based on commit history.
-        if stats_per_folder[root]['total_commit'] > 5:
+        if stats_per_folder[root]['total_commit'] >= args.commit_threshold:
             owners = determine_owners_from_zscore(stats_per_folder[root])
             if not quiet_mode:
                 print('[Z-Score] ' + root + '\tRESULT: ' + str(owners))
-        else:
+        elif args.use_blame_for_low_commit_dirs:
             owners = determine_owners_from_git_blame(
                 root,
                 files,
