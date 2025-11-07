@@ -1,0 +1,9 @@
+This is a wdspec test.
+[FAIL] test_filter_same_site[none-default]
+  AssertionError: assert 3 == 2
+[FAIL] test_filter_same_site[default-lax]
+  assert 0 == 2
+[FAIL] test_filter_same_site[default-strict]
+  assert 0 == 2
+Harness: the test ran to completion.
+

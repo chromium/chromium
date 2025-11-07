@@ -1,41 +1,37 @@
 This is a wdspec test.
-[FAIL] test_system
+[FAIL] test_params_proxy_http_proxy_invalid_value[http://foo]
   webdriver.bidi.error.UnknownErrorException: unknown error (Failed to create browser context.)
-[FAIL] test_autodetect
-  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Autodetect proxy is not supported per user context)
-[FAIL] test_direct
+[FAIL] test_params_proxy_http_proxy_invalid_value[foo:-1]
   webdriver.bidi.error.UnknownErrorException: unknown error (Failed to create browser context.)
-[FAIL] test_manual[None-None-None-None]
+[FAIL] test_params_proxy_http_proxy_invalid_value[foo:65536]
   webdriver.bidi.error.UnknownErrorException: unknown error (Failed to create browser context.)
-[FAIL] test_manual[None-None-None-127.0.0.1:80]
+[FAIL] test_params_proxy_http_proxy_invalid_value[foo/test]
   webdriver.bidi.error.UnknownErrorException: unknown error (Failed to create browser context.)
-[FAIL] test_manual[None-None-127.0.0.1:443-None]
+[FAIL] test_params_proxy_http_proxy_invalid_value[foo#42]
   webdriver.bidi.error.UnknownErrorException: unknown error (Failed to create browser context.)
-[FAIL] test_manual[None-None-127.0.0.1:443-127.0.0.1:80]
+[FAIL] test_params_proxy_http_proxy_invalid_value[foo?foo=bar]
   webdriver.bidi.error.UnknownErrorException: unknown error (Failed to create browser context.)
-[FAIL] test_manual[None-noProxy1-None-None]
+[FAIL] 1]
   webdriver.bidi.error.UnknownErrorException: unknown error (Failed to create browser context.)
-[FAIL] test_manual[None-noProxy1-None-127.0.0.1:80]
+[FAIL] test_params_proxy_ssl_proxy_invalid_value[https://foo]
   webdriver.bidi.error.UnknownErrorException: unknown error (Failed to create browser context.)
-[FAIL] test_manual[None-noProxy1-127.0.0.1:443-None]
+[FAIL] test_params_proxy_ssl_proxy_invalid_value[foo:-1]
   webdriver.bidi.error.UnknownErrorException: unknown error (Failed to create browser context.)
-[FAIL] test_manual[None-noProxy1-127.0.0.1:443-127.0.0.1:80]
+[FAIL] test_params_proxy_ssl_proxy_invalid_value[foo:65536]
   webdriver.bidi.error.UnknownErrorException: unknown error (Failed to create browser context.)
-[FAIL] test_manual[socks1-None-None-None]
+[FAIL] test_params_proxy_ssl_proxy_invalid_value[foo/test]
   webdriver.bidi.error.UnknownErrorException: unknown error (Failed to create browser context.)
-[FAIL] test_manual[socks1-None-None-127.0.0.1:80]
+[FAIL] test_params_proxy_ssl_proxy_invalid_value[foo#42]
   webdriver.bidi.error.UnknownErrorException: unknown error (Failed to create browser context.)
-[FAIL] test_manual[socks1-None-127.0.0.1:443-None]
+[FAIL] test_params_proxy_ssl_proxy_invalid_value[foo?foo=bar]
   webdriver.bidi.error.UnknownErrorException: unknown error (Failed to create browser context.)
-[FAIL] test_manual[socks1-None-127.0.0.1:443-127.0.0.1:80]
+[FAIL] test_params_proxy_socks_proxy_invalid_type[42]
   webdriver.bidi.error.UnknownErrorException: unknown error (Failed to create browser context.)
-[FAIL] test_manual[socks1-noProxy1-None-None]
+[FAIL] test_params_proxy_socks_proxy_invalid_type[True]
   webdriver.bidi.error.UnknownErrorException: unknown error (Failed to create browser context.)
-[FAIL] test_manual[socks1-noProxy1-None-127.0.0.1:80]
+[FAIL] test_params_proxy_socks_proxy_invalid_type[value2]
   webdriver.bidi.error.UnknownErrorException: unknown error (Failed to create browser context.)
-[FAIL] test_manual[socks1-noProxy1-127.0.0.1:443-None]
-  webdriver.bidi.error.UnknownErrorException: unknown error (Failed to create browser context.)
-[FAIL] test_manual[socks1-noProxy1-127.0.0.1:443-127.0.0.1:80]
+[FAIL] test_params_proxy_socks_proxy_invalid_type[value3]
   webdriver.bidi.error.UnknownErrorException: unknown error (Failed to create browser context.)
 Harness: the test ran to completion.
 
