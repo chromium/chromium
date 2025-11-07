@@ -360,6 +360,10 @@ enum OptimizationType {
   // Provides information about whether a page is eligible for walletable
   // boarding pass detection.
   WALLETABLE_PASS_DETECTION_BOARDING_PASS_ALLOWLIST = 109;
+
+  // This optimization provides information about the eligibility of a URL
+  // for Reader Mode.
+  READER_MODE_ELIGIBLE = 112;
 }
 
 // Presents semantics for how page load URLs should be matched.

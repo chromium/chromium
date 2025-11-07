@@ -448,6 +448,9 @@ chromium-metrics-reviews@google.com.
   <variant name="PrivacyPolicyAnnotation"
       summary="Provides information about whether a URL is a privacy policy
                page."/>
+  <variant name="ReaderModeEligible"
+      summary="Provides information about the eligibility of a URL for
+               Reading Mode."/>
   <variant name="SalientImage"
       summary="Provides information about images for a URL."/>
   <variant name="SavedTabGroup"
