@@ -1103,7 +1103,7 @@ deps = {
     'packages': [
       {
         'package': 'chromium/testing/meet-effects-videos',
-        'version': 'version:1.0',
+        'version': 'FSo3cmbzDsTKY2z_P-d3yBMgtaXIKzHpW4q6w4z4HpYC',
       }
     ],
     'dep_type': 'cipd',
@@ -1113,10 +1113,10 @@ deps = {
     'bucket': 'chromium-telemetry',
     'objects': [
       {
-        'object_name': 'meet-gpu-tests/794607354.tar.gz',
-        'sha256sum': 'b6323f30b63286b6b23657f90766d7779a46c6051d872087ade177ecdad2fe92',
-        'size_bytes': 192558604,
-        'generation': 1755101371733816,
+        'object_name': 'meet-gpu-tests/827463640.tar.gz',
+        'sha256sum': '407e7142167b03820130086f2f7482f5dea89297d0a6771ca26767b4e84772b1',
+        'size_bytes': 216535134,
+        'generation': 1762179060727319,
       },
     ],
   },

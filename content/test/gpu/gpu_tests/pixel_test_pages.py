@@ -12,6 +12,7 @@ import logging
 import os
 import posixpath
 import time
+import urllib.parse
 
 from telemetry.internal.browser import browser as browser_module
 
@@ -1829,6 +1830,8 @@ class PixelTestPages():
 
   @staticmethod
   def MeetEffectsPages(base_name: str) -> list[PixelTestPage]:
+    test_cases_path = os.path.join(gpu_path_util.MEET_EFFECTS_VIDEO_DIR,
+                                   'test_cases.json')
     video_path = os.path.join(gpu_path_util.MEET_EFFECTS_VIDEO_DIR,
                               'effects-normal-light.y4m')
     video_args = [
@@ -1851,23 +1854,19 @@ class PixelTestPages():
     # caused by rendered content shifting by a fraction of a pixel, which causes
     # a large number of differences along edges. See b/434910221 for more
     # information.
-    return [
-        PixelTestPage('meet_effects/meet-gpu-tests/index.html?effectId=359',
-                      f'{base_name}_MeetEffectsCatOnHead',
-                      crop_action=standard_crop,
-                      browser_args=video_args,
-                      matching_algorithm=meet_sample_area_matching,
-                      known_flaky_output_test=True),
-        PixelTestPage('meet_effects/meet-gpu-tests/index.html?effectId=539',
-                      f'{base_name}_MeetEffectsRainbowWig',
-                      crop_action=standard_crop,
-                      browser_args=video_args,
-                      matching_algorithm=meet_sample_area_matching,
-                      known_flaky_output_test=True),
-        PixelTestPage('meet_effects/meet-gpu-tests/index.html?effectId=530',
-                      f'{base_name}_MeetEffectsTruckerHat',
-                      crop_action=standard_crop,
-                      browser_args=video_args,
-                      matching_algorithm=meet_sample_area_matching,
-                      known_flaky_output_test=True),
-    ]
+    output = []
+    with open(test_cases_path, 'r', encoding='utf-8') as f:
+      for name, value in json.load(f).items():
+        query_params = {'config': json.dumps(value['processingConfig'])}
+        if 'extraFlags' in value:
+          query_params['extraFlags'] = json.dumps(value['extraFlags'])
+        params = urllib.parse.urlencode(query_params)
+        output.append(
+            PixelTestPage(f'meet_effects/meet-gpu-tests/index.html?{params}',
+                          f'{base_name}_MeetEffects_{name.replace(" ", "_")}',
+                          crop_action=standard_crop,
+                          browser_args=video_args,
+                          matching_algorithm=meet_sample_area_matching,
+                          known_flaky_output_test=True))
+
+    return output
