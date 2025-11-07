@@ -30,7 +30,7 @@ class CollectionSaveForwarder {
                                  TabStripCollection* collection,
                                  TabStateStorageService* service);
 
-  void Save();
+  void SavePayload();
 
  private:
   raw_ptr<TabStateStorageService> service_;

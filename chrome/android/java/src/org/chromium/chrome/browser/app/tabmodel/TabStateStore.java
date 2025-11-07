@@ -105,9 +105,7 @@ public class TabStateStore implements TabPersistentStore {
 
                     CollectionSaveForwarder forwarder =
                             CollectionSaveForwarder.createForTabGroup(
-                                    destinationTab.getProfile(),
-                                    groupId,
-                                    collection);
+                                    destinationTab.getProfile(), groupId, collection);
                     mGroupForwarderMap.put(groupId, forwarder);
                 }
 
@@ -122,18 +120,18 @@ public class TabStateStore implements TabPersistentStore {
                 @Override
                 public void didChangeTabGroupCollapsed(
                         Token tabGroupId, boolean isCollapsed, boolean animate) {
-                    saveTabGroup(tabGroupId);
+                    saveTabGroupPayload(tabGroupId);
                 }
 
                 @Override
                 public void didChangeTabGroupColor(
                         Token tabGroupId, @TabGroupColorId int newColor) {
-                    saveTabGroup(tabGroupId);
+                    saveTabGroupPayload(tabGroupId);
                 }
 
                 @Override
                 public void didChangeTabGroupTitle(Token tabGroupId, @Nullable String newTitle) {
-                    saveTabGroup(tabGroupId);
+                    saveTabGroupPayload(tabGroupId);
                 }
             };
 
@@ -446,10 +444,10 @@ public class TabStateStore implements TabPersistentStore {
                 .createFrozenTab(tabState, tabId, index);
     }
 
-    private void saveTabGroup(Token tabGroupId) {
+    private void saveTabGroupPayload(Token tabGroupId) {
         CollectionSaveForwarder forwarder = mGroupForwarderMap.get(tabGroupId);
         if (forwarder == null) return;
-        forwarder.save();
+        forwarder.savePayload();
     }
 
     private void initVisualDataTracking() {

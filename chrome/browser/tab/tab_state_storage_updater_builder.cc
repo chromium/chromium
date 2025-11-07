@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/logging.h"
+#include "chrome/browser/tab/payload.h"
 #include "chrome/browser/tab/storage_update_unit.h"
 #include "chrome/browser/tab/tab_state_storage_database.h"
 #include "chrome/browser/tab/tab_state_storage_updater.h"
@@ -43,6 +44,26 @@ class SaveNodeUpdateUnit : public StorageUpdateUnit {
   int id_;
   TabStorageType type_;
   std::unique_ptr<StoragePackage> package_;
+};
+
+class SavePayloadUpdateUnit : public StorageUpdateUnit {
+ public:
+  SavePayloadUpdateUnit(int id, std::unique_ptr<Payload> payload)
+      : id_(id), payload_(std::move(payload)) {}
+
+  bool Execute(TabStateStorageDatabase* db,
+               OpenTransaction* transaction) override {
+    std::string payload = payload_->SerializePayload();
+    bool success = db->SaveNodePayload(transaction, id_, std::move(payload));
+    if (!success) {
+      DLOG(ERROR) << "Could not perform save node operation.";
+    }
+    return success;
+  }
+
+ private:
+  int id_;
+  std::unique_ptr<Payload> payload_;
 };
 
 class SaveChildrenUpdateUnit : public StorageUpdateUnit {
@@ -96,6 +117,13 @@ void TabStateStorageUpdaterBuilder::SaveNode(
     std::unique_ptr<StoragePackage> package) {
   updater_->Add(
       std::make_unique<SaveNodeUpdateUnit>(id, type, std::move(package)));
+}
+
+void TabStateStorageUpdaterBuilder::SaveNodePayload(
+    int id,
+    std::unique_ptr<Payload> payload) {
+  updater_->Add(
+      std::make_unique<SavePayloadUpdateUnit>(id, std::move(payload)));
 }
 
 void TabStateStorageUpdaterBuilder::SaveChildren(

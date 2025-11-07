@@ -57,8 +57,8 @@ void CollectionSaveForwarderAndroid::Destroy(JNIEnv* env) {
   delete this;
 }
 
-void CollectionSaveForwarderAndroid::Save(JNIEnv* env) {
-  save_forwarder_->Save();
+void CollectionSaveForwarderAndroid::SavePayload(JNIEnv* env) {
+  save_forwarder_->SavePayload();
 }
 
 }  // namespace tabs

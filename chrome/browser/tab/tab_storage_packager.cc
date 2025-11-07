@@ -117,24 +117,27 @@ std::unique_ptr<StoragePackage> TabStoragePackager::Package(
   tabs_pb::Children children_proto;
   PopulateChildren(children_proto, collection, mapping);
 
-  // TODO(crbug.com/450532811): Handle collection subtype-specific data.
-  std::unique_ptr<Payload> metadata;
+  return std::make_unique<CollectionStoragePackage>(
+      TabStoragePackager::PackagePayload(collection, mapping),
+      std::move(children_proto));
+}
+
+std::unique_ptr<Payload> TabStoragePackager::PackagePayload(
+    const TabCollection* collection,
+    StorageIdMapping& mapping) {
   TabStorageType type = TabCollectionTypeToTabStorageType(collection->type());
   if (type == TabStorageType::kSplit) {
-    metadata = PackageSplitTabCollectionData(
+    return PackageSplitTabCollectionData(
         static_cast<const SplitTabCollection*>(collection), mapping);
   } else if (type == TabStorageType::kGroup) {
-    metadata = PackageTabGroupTabCollectionData(
+    return PackageTabGroupTabCollectionData(
         static_cast<const TabGroupTabCollection*>(collection), mapping);
   } else if (type == TabStorageType::kTabStrip) {
-    metadata = PackageTabStripCollectionData(
+    return PackageTabStripCollectionData(
         static_cast<const TabStripCollection*>(collection), mapping);
   } else {
-    metadata = std::make_unique<EmptyPayload>();
+    return std::make_unique<EmptyPayload>();
   }
-
-  return std::make_unique<CollectionStoragePackage>(std::move(metadata),
-                                                    std::move(children_proto));
 }
 
 std::unique_ptr<Payload> TabStoragePackager::PackageChildren(

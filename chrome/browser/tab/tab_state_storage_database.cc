@@ -145,20 +145,42 @@ bool TabStateStorageDatabase::SaveNode(OpenTransaction* transaction,
   CHECK(db_);
   DCHECK(OpenTransaction::IsValid(transaction));
 
-  static constexpr char kInsertTabSql[] =
+  static constexpr char kInsertNodeSql[] =
       "INSERT OR REPLACE INTO nodes"
       "(id, type, payload, children)"
       "VALUES (?,?,?,?)";
 
-  DCHECK(db_->IsSQLValid(kInsertTabSql));
+  DCHECK(db_->IsSQLValid(kInsertNodeSql));
 
   sql::Statement write_statement(
-      db_->GetCachedStatement(SQL_FROM_HERE, kInsertTabSql));
+      db_->GetCachedStatement(SQL_FROM_HERE, kInsertNodeSql));
 
   write_statement.BindInt(0, id);
   write_statement.BindInt(1, static_cast<int>(type));
   write_statement.BindBlob(2, std::move(payload));
   write_statement.BindBlob(3, std::move(children));
+
+  return write_statement.Run();
+}
+
+bool TabStateStorageDatabase::SaveNodePayload(OpenTransaction* transaction,
+                                              int id,
+                                              std::string payload) {
+  CHECK(db_);
+  DCHECK(OpenTransaction::IsValid(transaction));
+
+  static constexpr char kUpdatePayloadSql[] =
+      "UPDATE nodes "
+      "SET payload = ? "
+      "WHERE id = ?";
+
+  DCHECK(db_->IsSQLValid(kUpdatePayloadSql));
+
+  sql::Statement write_statement(
+      db_->GetCachedStatement(SQL_FROM_HERE, kUpdatePayloadSql));
+
+  write_statement.BindBlob(0, std::move(payload));
+  write_statement.BindInt(1, id);
 
   return write_statement.Run();
 }
@@ -170,8 +192,8 @@ bool TabStateStorageDatabase::SaveNodeChildren(OpenTransaction* transaction,
   DCHECK(OpenTransaction::IsValid(transaction));
 
   static constexpr char kUpdateChildrenSql[] =
-      "UPDATE nodes"
-      "SET children = ?"
+      "UPDATE nodes "
+      "SET children = ? "
       "WHERE id = ?";
 
   DCHECK(db_->IsSQLValid(kUpdateChildrenSql));
@@ -190,7 +212,7 @@ bool TabStateStorageDatabase::RemoveNode(OpenTransaction* transaction, int id) {
   DCHECK(OpenTransaction::IsValid(transaction));
 
   static constexpr char kDeleteChildrenSql[] =
-      "DELETE FROM nodes"
+      "DELETE FROM nodes "
       "WHERE id = ?";
 
   DCHECK(db_->IsSQLValid(kDeleteChildrenSql));

@@ -46,10 +46,10 @@ public class CollectionSaveForwarder implements Destroyable {
         mNativePtr = 0;
     }
 
-    /** Saves the collection to storage. */
-    public void save() {
+    /** Saves the collection metadata to storage. */
+    public void savePayload() {
         assert mNativePtr != 0;
-        CollectionSaveForwarderJni.get().save(mNativePtr);
+        CollectionSaveForwarderJni.get().savePayload(mNativePtr);
     }
 
     @NativeMethods
@@ -61,6 +61,6 @@ public class CollectionSaveForwarder implements Destroyable {
 
         void destroy(long nativeCollectionSaveForwarderAndroid);
 
-        void save(long nativeCollectionSaveForwarderAndroid);
+        void savePayload(long nativeCollectionSaveForwarderAndroid);
     }
 }

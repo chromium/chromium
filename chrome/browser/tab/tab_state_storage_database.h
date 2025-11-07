@@ -74,6 +74,12 @@ class TabStateStorageDatabase {
                 std::string payload,
                 std::string children);
 
+  // Saves a node payload to the database.
+  // This will silently fail if the node does not already exist.
+  bool SaveNodePayload(OpenTransaction* transaction,
+                       int id,
+                       std::string payload);
+
   // Saves the children of a node to the database.
   // This will silently fail if the node does not already exist.
   bool SaveNodeChildren(OpenTransaction* transaction,

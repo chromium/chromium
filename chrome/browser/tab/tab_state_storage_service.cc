@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/token.h"
+#include "chrome/browser/tab/payload.h"
 #include "chrome/browser/tab/protocol/tab_state.pb.h"
 #include "chrome/browser/tab/storage_package.h"
 #include "chrome/browser/tab/tab_group_collection_data.h"
@@ -117,6 +118,19 @@ void TabStateStorageService::Save(const TabCollection* collection) {
   TabStorageType type = TabCollectionTypeToTabStorageType(collection->type());
   TabStateStorageUpdaterBuilder builder;
   builder.SaveNode(storage_id, type, std::move(package));
+  tab_backend_->Update(builder.Build());
+}
+
+void TabStateStorageService::SavePayload(const TabCollection* collection) {
+  DCHECK(packager_);
+
+  std::unique_ptr<Payload> payload =
+      packager_->PackagePayload(collection, *this);
+  DCHECK(payload) << "Packager should return a payload";
+
+  int storage_id = GetStorageId(collection);
+  TabStateStorageUpdaterBuilder builder;
+  builder.SaveNodePayload(storage_id, std::move(payload));
   tab_backend_->Update(builder.Build());
 }
 

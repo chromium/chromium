@@ -52,6 +52,10 @@ class TabStateStorageService : public KeyedService,
   void Save(const TabInterface* tab);
   void Save(const TabCollection* collection);
 
+  // This will silently fail if the collection has not already been saved to the
+  // database.
+  void SavePayload(const TabCollection* collection);
+
   void Move(const TabInterface* tab, const TabCollection* prev_parent);
   void Move(const TabCollection* collection, const TabCollection* prev_parent);
 

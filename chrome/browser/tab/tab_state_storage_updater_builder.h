@@ -26,6 +26,7 @@ class TabStateStorageUpdaterBuilder {
   void SaveNode(int id,
                 TabStorageType type,
                 std::unique_ptr<StoragePackage> package);
+  void SaveNodePayload(int id, std::unique_ptr<Payload> payload);
   void SaveChildren(int id, std::unique_ptr<Payload> children);
   void RemoveNode(int id);
 

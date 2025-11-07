@@ -33,7 +33,7 @@ class CollectionSaveForwarderAndroid {
   // Should only be destroyed through Java object.
   void Destroy(JNIEnv* env);
 
-  void Save(JNIEnv* env);
+  void SavePayload(JNIEnv* env);
 
  private:
   std::unique_ptr<CollectionSaveForwarder> save_forwarder_;

@@ -28,8 +28,8 @@ CollectionSaveForwarder::CreateForTabGroupTabCollection(
       tab_strip_collection->GetTabGroupCollection(group_id), service);
 }
 
-void CollectionSaveForwarder::Save() {
-  service_->Save(collection_);
+void CollectionSaveForwarder::SavePayload() {
+  service_->SavePayload(collection_);
 }
 
 }  // namespace tabs
