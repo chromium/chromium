@@ -42,6 +42,7 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modelutil.ListObservable;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -116,6 +117,23 @@ class NavigationAttachmentsMediator {
         mModel.set(NavigationAttachmentsProperties.POPUP_AI_MODE_CLICKED, this::activateAiMode);
         mModel.set(
                 NavigationAttachmentsProperties.POPUP_TAB_PICKER_CLICKED, this::onTabPickerClicked);
+
+        mModelList.addObserver(
+                new ListObservable.ListObserver<>() {
+                    @Override
+                    public void onItemRangeInserted(ListObservable source, int index, int count) {
+                        mModel.set(
+                                NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE,
+                                !mModelList.isEmpty());
+                    }
+
+                    @Override
+                    public void onItemRangeRemoved(ListObservable source, int index, int count) {
+                        mModel.set(
+                                NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE,
+                                !mModelList.isEmpty());
+                    }
+                });
     }
 
     private void onRequestTypeButtonClicked() {
@@ -136,7 +154,6 @@ class NavigationAttachmentsMediator {
         if (mAutocompleteRequestTypeSupplier.get() == AutocompleteRequestType.SEARCH) return;
         mAutocompleteRequestTypeSupplier.set(AutocompleteRequestType.SEARCH);
 
-        mModel.set(NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE, false);
         mComposeBoxQueryControllerBridge.notifySessionAbandoned();
         mModelList.clear();
     }
@@ -479,8 +496,6 @@ class NavigationAttachmentsMediator {
     private void addAttachment(
             AttachmentDetailsFetcher.AttachmentDetails attachmentDetails, String token) {
         activateAiMode();
-
-        mModel.set(NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE, true);
 
         PropertyModel model =
                 new PropertyModel.Builder(NavigationAttachmentItemProperties.ALL_KEYS)
