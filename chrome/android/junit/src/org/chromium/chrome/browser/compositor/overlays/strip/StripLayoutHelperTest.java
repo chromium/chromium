@@ -34,6 +34,7 @@ import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.MAX_TAB_WIDTH_DP;
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.MIN_TAB_WIDTH_DP;
+import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.PINNED_TAB_WIDTH_DP;
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.TAB_GROUP_BOTTOM_INDICATOR_WIDTH_OFFSET;
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.TAB_OVERLAP_WIDTH_DP;
 import static org.chromium.components.data_sharing.SharedGroupTestHelper.GROUP_MEMBER1;
@@ -7051,9 +7052,9 @@ public class StripLayoutHelperTest {
 
         float expectedDrawXWithPinnedTab = PADDING_LEFT;
 
-        // 183.5(tabWidth) = (800(screenWidth) - 10(leftPadding) - 60(rightPadding) -
-        // 80(pinnedTabWidth) + 28(overlapWidth) * 3) / 4(numTab).
-        float expectedTabWidthWithPinnedTab = 183.5f;
+        // 191.5(tabWidth) = (800(screenWidth) - 10(leftPadding) - 60(rightPadding) -
+        // 48(pinnedTabWidth) + (28(overlapWidth) * 3) / 4(numTab).
+        float expectedTabWidthWithPinnedTab = 191.5f;
 
         // Verify the tabs are resized and positioned correctly after pinning.
         for (int i = 0; i < tabs.length; i++) {
@@ -7065,7 +7066,12 @@ public class StripLayoutHelperTest {
             if (i == 0) {
                 assertTrue("The tab should be pinned", tabs[i].getIsPinned());
                 assertEquals(
-                        "The tab's width is incorrect", MIN_TAB_WIDTH_DP, tabs[i].getWidth(), 0.1f);
+                        "The pinned tab's width is incorrect",
+                        PINNED_TAB_WIDTH_DP,
+                        tabs[i].getWidth(),
+                        0.1f);
+                assertFalse(
+                        "The pinned tab's close button should hide", tabs[i].canShowCloseButton());
             } else {
                 assertFalse("The tab should not be pinned", tabs[i].getIsPinned());
                 assertEquals(
@@ -7073,6 +7079,9 @@ public class StripLayoutHelperTest {
                         expectedTabWidthWithPinnedTab,
                         tabs[i].getWidth(),
                         0.1f);
+                assertTrue(
+                        "The unpinned tab's close button should show",
+                        tabs[i].canShowCloseButton());
             }
             expectedDrawXWithPinnedTab += tabs[i].getWidth() - TAB_OVERLAP_WIDTH_DP;
         }
@@ -7134,16 +7143,21 @@ public class StripLayoutHelperTest {
 
         float expectedDrawXWithPinnedTab = SCREEN_WIDTH - PADDING_LEFT - TAB_OVERLAP_WIDTH_DP;
 
-        // 183.5(tabWidth) = (800(screenWidth) - 10(leftPadding) - 60(rightPadding) -
-        // 80(pinnedTabWidth) + 28(overlapWidth) * 3) / 4(numTab).
-        float expectedTabWidthWithPinnedTab = 183.5f;
+        // 191.5(tabWidth) = (800(screenWidth) - 10(leftPadding) - 60(rightPadding) -
+        // 48(pinnedTabWidth) + (28(overlapWidth) * 3) / 4(numTab).
+        float expectedTabWidthWithPinnedTab = 191.5f;
 
         // Verify the tabs are resized and positioned correctly after pinning.
         for (int i = 0; i < tabs.length; i++) {
             if (i == 0) {
                 assertTrue("The tab should be pinned", tabs[i].getIsPinned());
                 assertEquals(
-                        "The tab's width is incorrect", MIN_TAB_WIDTH_DP, tabs[i].getWidth(), 0.1f);
+                        "The pinned tab's width is incorrect",
+                        PINNED_TAB_WIDTH_DP,
+                        tabs[i].getWidth(),
+                        0.1f);
+                assertFalse(
+                        "The pinned tab's close button should hide", tabs[i].canShowCloseButton());
             } else {
                 assertFalse("The tab should not be pinned", tabs[i].getIsPinned());
                 assertEquals(
@@ -7151,6 +7165,9 @@ public class StripLayoutHelperTest {
                         expectedTabWidthWithPinnedTab,
                         tabs[i].getWidth(),
                         0.1f);
+                assertTrue(
+                        "The unpinned tab's close button should show",
+                        tabs[i].canShowCloseButton());
             }
             expectedDrawXWithPinnedTab -= (tabs[i].getWidth() - TAB_OVERLAP_WIDTH_DP);
             assertEquals(

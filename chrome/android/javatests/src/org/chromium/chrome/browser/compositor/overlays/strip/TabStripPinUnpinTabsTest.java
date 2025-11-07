@@ -17,6 +17,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.PINNED_TAB_WIDTH_DP;
 import static org.chromium.chrome.test.util.ChromeTabUtils.getTabCountOnUiThread;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
@@ -61,11 +62,10 @@ public class TabStripPinUnpinTabsTest {
     public AutoResetCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.fastAutoResetCtaActivityRule();
 
-    private static final float PINNED_TAB_WIDTH_WITH_OVERLAP =
-            StripLayoutUtils.shouldApplyMoreDensity() ? 76f : 108f;
-    private static final float PINNED_TAB_WIDTH_WITHOUT_OVERLAP =
-            StripLayoutUtils.shouldApplyMoreDensity() ? 48f : 80f;
+    private static final float PINNED_TAB_WIDTH_WITH_OVERLAP = PINNED_TAB_WIDTH_DP;
     private static final float TAB_OVERLAP_WIDTH = 28f;
+    private static final float PINNED_TAB_WIDTH_WITHOUT_OVERLAP =
+            PINNED_TAB_WIDTH_WITH_OVERLAP - TAB_OVERLAP_WIDTH;
 
     private StripLayoutHelper mStripLayoutHelper;
     private TabModel mTabModel;
