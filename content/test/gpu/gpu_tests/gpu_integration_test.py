@@ -311,6 +311,9 @@ class GpuIntegrationTest(
         # results. (Note that this argument takes a list of IPH that will be
         # allowed; specifying none disables all IPH.)
         '--propagate-iph-for-testing',
+        # TODO(crbug.com/458424927): Remove this once the feature no longer
+        # causes test failures.
+        '--disable-features=SessionRestoreInfobar',
     ]
     if cls._SuiteSupportsParallelTests():
       # When running tests in parallel, windows can be treated as occluded if a
