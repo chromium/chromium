@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
+## [11.0.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v10.6.1...chromium-bidi-v11.0.0) (2025-11-07)
+
+
+### ⚠ BREAKING CHANGES
+
+* **chrome:** update the pinned browser version to 144.0.7505.0 ([#3870](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3870))
+
+### Features
+
+* **chrome:** update the pinned browser version to 144.0.7505.0 ([#3870](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3870)) ([178b335](https://github.com/GoogleChromeLabs/chromium-bidi/commit/178b3356efbf50cdd9e27faeb333fa936d901968))
+* respect `emulation.setLocaleOverride` in `navigator.language` and `Accept-Language` ([#3884](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3884)) ([bc755f4](https://github.com/GoogleChromeLabs/chromium-bidi/commit/bc755f47029bb93758a25e3f66f3d414a0792d07))
+
+
+### Bug Fixes
+
+* emulations per context vs per user context ([#3885](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3885)) ([8af52e0](https://github.com/GoogleChromeLabs/chromium-bidi/commit/8af52e09e91488cb66150459c8309aa10fa2fb51))
+* update `viewport` and `screenOrientation` in parallel ([#3892](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3892)) ([b0ed10d](https://github.com/GoogleChromeLabs/chromium-bidi/commit/b0ed10d556d52c8a73ddb404675f4d7f7b1afab0))
+
 ## [10.6.1](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v10.6.0...chromium-bidi-v10.6.1) (2025-10-22)
 
 
