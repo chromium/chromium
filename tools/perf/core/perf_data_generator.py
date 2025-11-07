@@ -162,28 +162,7 @@ PUBLIC_PERF_BUILDERS = [
 ]
 
 # This is an opt-in list for builders which uses dynamic sharding.
-DYNAMIC_SHARDING_TESTERS = ['linux-perf-calibration']
-
-CALIBRATION_BUILDERS = {
-    'linux-perf-calibration': {
-        'tests': [
-            {
-                'isolate': 'performance_test_suite',
-                'extra_args': [
-                    '--assert-gpu-compositing',
-                ],
-            },
-        ],
-        'platform':
-        'linux',
-        'dimension': {
-            'gpu': '10de:1cb3-440.100',
-            'os': 'Ubuntu-18.04',
-            'pool': 'chrome.tests.perf',
-            'synthetic_product_name': 'PowerEdge R230 (Dell Inc.)'
-        },
-    },
-}
+DYNAMIC_SHARDING_TESTERS = []
 
 FYI_BUILDERS = {
     'android-cfi-builder-perf-fyi': {
@@ -1453,10 +1432,6 @@ def update_all_fyi_builders(file_path):
   return _update_builders(FYI_BUILDERS, file_path)
 
 
-def update_all_calibration_builders(file_path):
-  return _update_builders(CALIBRATION_BUILDERS, file_path)
-
-
 def update_processors_specs(file_path):
   """Updates the processor specs with the given builders dict."""
   return _update_processor_builders(BUILDERS, file_path)
@@ -2091,8 +2066,6 @@ ALL_UPDATERS_AND_FILES = [
     (update_all_pinpoint_builders,
      'testing/buildbot/chromium.perf.pinpoint.json'),
     (update_all_fyi_builders, 'testing/buildbot/chromium.perf.fyi.json'),
-    (update_all_calibration_builders,
-     'testing/buildbot/chromium.perf.calibration.json'),
     (update_benchmark_csv, 'tools/perf/benchmark.csv'),
     (update_system_health_stories, 'tools/perf/system_health_stories.csv'),
     (update_labs_docs_md, 'docs/speed/perf_lab_platforms.md'),

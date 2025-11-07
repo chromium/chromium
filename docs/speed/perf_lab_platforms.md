@@ -30,7 +30,6 @@
 ### Linux
 
  * [linux-falcon-rak-5070-perf](https://ci.chromium.org/p/chrome/builders/ci/linux-falcon-rak-5070-perf): Linux Falcon RAK 5070.
- * [linux-perf-calibration](https://ci.chromium.org/p/chrome/builders/ci/linux-perf-calibration): Ubuntu-18.04, 8 core, NVIDIA Quadro P400.
  * [linux-perf-rel](https://ci.chromium.org/p/chrome/builders/ci/linux-perf-rel): Ubuntu-18.04, 8 core, NVIDIA Quadro P400.
  * [linux-r350-perf](https://ci.chromium.org/p/chrome/builders/ci/linux-r350-perf): Ubuntu-22.04, 16 core.
 

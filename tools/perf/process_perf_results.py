@@ -23,7 +23,10 @@ from core import path_util
 
 path_util.AddTelemetryToPath()
 
-from core import bot_platforms
+# We don't use bot_platforms, but importing it is needed to ensure the
+# inclusion of some dependencies required for testing.
+from core import bot_platforms  # pylint: disable=unused-import
+
 from core import results_merger
 from core import upload_results_to_perf_dashboard
 import cross_device_test_config
@@ -399,12 +402,6 @@ def process_perf_results(output_json,
     # we are deprecating perf-id crbug.com/817823
     configuration_name = build_properties_map['buildername']
 
-  # The calibration project is paused and the experiments of adding device id,
-  # which currently broken, is removed for now.
-  # _update_perf_results_for_calibration(benchmarks_shard_map_file,
-  #                                      benchmark_enabled_map,
-  #                                      benchmark_directory_map,
-  #                                      configuration_name)
   if not smoke_test_mode and handle_perf:
     try:
       return_code, benchmark_upload_result_map = _handle_perf_results(
@@ -745,32 +742,6 @@ def _update_perf_json_with_summary_on_device_id(directory, device_id):
     logging.error('Failed to writing perf_results.json to %s: %s',
                   perf_json_path, e)
   logging.info('Finished adding device id %s in perf result.', device_id)
-
-
-def _should_add_device_id_in_perf_result(builder_name):
-  # We should always add device id in calibration builders.
-  # For testing purpose, adding fyi as well for faster turnaround, because
-  # calibration builders run every 24 hours.
-  return any(builder_name == p.name
-             for p in bot_platforms.CALIBRATION_PLATFORMS) or (
-                 builder_name == 'android-pixel2-perf-fyi')
-
-
-def _update_perf_results_for_calibration(benchmarks_shard_map_file,
-                                         benchmark_enabled_map,
-                                         benchmark_directory_map,
-                                         configuration_name):
-  if not _should_add_device_id_in_perf_result(configuration_name):
-    return
-  logging.info('Updating perf results for %s.', configuration_name)
-  for benchmark_name, directories in benchmark_directory_map.items():
-    if not benchmark_enabled_map.get(benchmark_name, False):
-      continue
-    for directory in directories:
-      shard_id = _load_shard_id_from_test_results(directory)
-      device_id = _find_device_id_by_shard_id(benchmarks_shard_map_file,
-                                              shard_id)
-      _update_perf_json_with_summary_on_device_id(directory, device_id)
 
 
 def _handle_perf_results(benchmark_enabled_map,

@@ -214,18 +214,6 @@ TARGET_DEVICES = {
         'speedometer3.1.crossbench': 20,
         'speedometer3.a11y.crossbench': 20,
     },
-    'linux-perf-calibration': {
-        'jetstream2': {
-            'JetStream2': 10,
-        },
-        'speedometer2': {
-            'Speedometer2': 28,
-        },
-        'speedometer3': {
-            'Speedometer3': 28,
-        },
-        'blink_perf.shadow_dom': 31
-    },
     'mac-laptop_high_end-perf': {
         'jetstream2': {
             'JetStream2': 5,
