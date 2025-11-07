@@ -307,6 +307,9 @@ public class BookmarkBarCoordinator
         mTopControlsStacker = topControlsStacker;
         mTopControlsStacker.addControl(this);
         mTopControlsStacker.requestLayerUpdate(false);
+
+        mMediator.setTopMargin(
+                mTopControlsStacker.getHeightFromLayerToTop(TopControlType.BOOKMARK_BAR));
     }
 
     /** Destroys the bookmark bar coordinator. */
@@ -450,6 +453,11 @@ public class BookmarkBarCoordinator
         // TODO(crbug.com/417238089): We should not hardcode this offset functionality since it
         // assumes an absolute BookmarkBar position, and fails when topControlsHeight becomes 0.
         mMediator.setTopMargin(topControlsHeight - getTopControlHeight());
+        mMediator.onBrowserControlsChanged(
+                topControlsHeight, mBrowserControlsStateProvider.getBottomControlsHeight());
+        mBookmarkBarSceneLayerModel.set(
+                BookmarkBarSceneLayerProperties.SCENE_LAYER_OFFSET_HEIGHT,
+                sceneLayerHeightOffset());
     }
 
     // BookmarkBarVisibilityObserver implementation:
@@ -540,17 +548,6 @@ public class BookmarkBarCoordinator
     }
 
     @Override
-    public void onTopControlsHeightChanged(int topControlsHeight, int topControlsMinHeight) {
-        // TODO(crbug.com/430058918): Replace w/ positioning construct like `BottomControlsStacker`.
-        mMediator.setTopMargin(sceneLayerHeightOffset());
-        mMediator.onBrowserControlsChanged(
-                topControlsHeight, mBrowserControlsStateProvider.getBottomControlsHeight());
-        mBookmarkBarSceneLayerModel.set(
-                BookmarkBarSceneLayerProperties.SCENE_LAYER_OFFSET_HEIGHT,
-                sceneLayerHeightOffset());
-    }
-
-    @Override
     public void updateOffsetTag(@Nullable BrowserControlsOffsetTagsInfo offsetTagsInfo) {
         // The Bookmarks Bar will only be present when the control container is at the top.
         if (mBrowserControlsStateProvider.getControlsPosition() != ControlsPosition.TOP) return;
@@ -609,7 +606,8 @@ public class BookmarkBarCoordinator
         // the bookmark bar. Subtract the bookmark bar's height from the top controls height when
         // calculating offset/topMargin in order to bottom align the bookmark bar relative to other
         // top browser controls.
-        return mBrowserControlsStateProvider.getTopControlsHeight() - getTopControlHeight();
+        // TODO(crbug.com/454114987): Use offset from TopControlsStacker instead.
+        return mTopControlsStacker.getVisibleTopControlsTotalHeight() - getTopControlHeight();
     }
 
     @VisibleForTesting
