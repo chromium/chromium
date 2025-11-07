@@ -48,6 +48,11 @@ class PermissionUtil {
   // can be retrieved through `GetCombinedPermissionAndDeviceStatus(...)`).
   CONTENT_EXPORT static bool IsDevicePermission(
       const blink::mojom::PermissionDescriptorPtr&);
+
+  // Returns true if the given descriptor is a capability that can be accessed
+  // through an embedded permission element.
+  CONTENT_EXPORT static bool IsEmbeddablePermission(
+      const blink::mojom::PermissionDescriptorPtr&);
 };
 
 }  // namespace content

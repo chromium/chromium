@@ -173,8 +173,10 @@ void PermissionServiceImpl::RegisterPageEmbeddedPermissionControl(
       web_contents->GetPrimaryPage());
   std::set<PermissionName> permission_names;
   for (const auto& permission : permissions) {
-    // Check for duplicates.
-    if (!permission_names.insert(permission->name).second) {
+    // Check for duplicates, and ensure we're only handling permission types
+    // which can be accessed through embedded controls:
+    if (PermissionUtil::IsEmbeddablePermission(permission) &&
+        !permission_names.insert(permission->name).second) {
       ReceivedBadMessage();
       return;
     }
