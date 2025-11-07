@@ -445,8 +445,6 @@ void CollaborationControllerDelegateDesktop::
   // `status.signin_status`. We cannot currently use `status.signin_status`, as
   // it may not update in time after `SignInFromSingleAccountPromo` sets the
   // primary account.
-  // TODO (crbug.com/443679624): Consider updating and using
-  // `status.signin_status` instead for consistency.
   signin_ui_util::TriggerSignInForHistorySyncOptIn(
       browser_, browser_->profile(),
       signin_metrics::AccessPoint::kCollaborationShareTabGroup);
