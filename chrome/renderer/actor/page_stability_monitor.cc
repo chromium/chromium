@@ -311,8 +311,12 @@ void PageStabilityMonitor::MoveToState(State new_state) {
         MoveToState(State::kMaybeDelayCallback);
       }
       break;
+    case State::kMojoDisconnected:
+      // There's no need to invoke the callback as the mojo pipeline has
+      // disconnected.
+      MoveToState(State::kDone);
+      break;
     case State::kDone: {
-      CHECK(!is_stable_callback_);
       // As we may not destroy PageStabilityMonitor, clean up here.
       Cleanup();
       break;
@@ -396,15 +400,18 @@ void PageStabilityMonitor::DCheckStateTransition(State old_state,
           // clang-format off
           {State::kInitial, {
               State::kMonitorStartDelay,
-              State::kRenderFrameGoingAway}},
+              State::kRenderFrameGoingAway,
+              State::kMojoDisconnected}},
           {State::kMonitorStartDelay, {
               State::kWaitForNavigation,
               State::kTimeoutGlobal,
-              State::kRenderFrameGoingAway}},
+              State::kRenderFrameGoingAway,
+              State::kMojoDisconnected}},
           {State::kWaitForNavigation, {
               State::kStartMonitoring,
               State::kTimeoutGlobal,
-              State::kRenderFrameGoingAway}},
+              State::kRenderFrameGoingAway,
+              State::kMojoDisconnected}},
           {State::kStartMonitoring, {
               State::kWaitForNetworkIdle,
               State::kWaitForMainThreadIdle}},
@@ -412,13 +419,15 @@ void PageStabilityMonitor::DCheckStateTransition(State old_state,
               State::kWaitForMainThreadIdle,
               State::kPaintStabilityReached,
               State::kTimeoutGlobal,
-              State::kRenderFrameGoingAway}},
+              State::kRenderFrameGoingAway,
+              State::kMojoDisconnected}},
           {State::kWaitForMainThreadIdle, {
               State::kMaybeDelayCallback,
               State::kPaintStabilityReached,
               State::kTimeoutMainThread,
               State::kTimeoutGlobal,
-              State::kRenderFrameGoingAway}},
+              State::kRenderFrameGoingAway,
+              State::kMojoDisconnected}},
           {State::kTimeoutMainThread, {
               State::kInvokeCallback}},
           {State::kTimeoutGlobal, {
@@ -428,12 +437,15 @@ void PageStabilityMonitor::DCheckStateTransition(State old_state,
               State::kInvokeCallback,
               State::kTimeoutMainThread,
               State::kTimeoutGlobal,
-              State::kRenderFrameGoingAway}},
+              State::kRenderFrameGoingAway,
+              State::kMojoDisconnected}},
           {State::kRenderFrameGoingAway, {
               State::kInvokeCallback}},
           {State::kPaintStabilityReached, {
               State::kMaybeDelayCallback,
               State::kInvokeCallback}},
+          {State::kMojoDisconnected, {
+              State::kDone}},
           {State::kInvokeCallback, {
               State::kDone}}
 
@@ -462,8 +474,7 @@ void PageStabilityMonitor::Bind(
 }
 
 void PageStabilityMonitor::OnMojoDisconnected() {
-  journal_->Log(task_id_, "OnMojoDisconnected",
-                JournalDetailsBuilder().Add("state", state_).Build());
+  MoveToState(State::kMojoDisconnected);
 }
 
 // static
@@ -493,6 +504,8 @@ std::string_view PageStabilityMonitor::StateToString(State state) {
       return "RenderFrameGoingAway";
     case State::kPaintStabilityReached:
       return "PaintStabilityReached";
+    case State::kMojoDisconnected:
+      return "MojoDisconnected";
     case State::kDone:
       return "Done";
   }

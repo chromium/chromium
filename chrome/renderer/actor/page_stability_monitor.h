@@ -104,6 +104,9 @@ class PageStabilityMonitor : public content::RenderFrameObserver,
     // been reached. This just moves to kInokeCallback.
     kPaintStabilityReached,
 
+    // The mojo pipeline gets disconnected. This just moves to kDone.
+    kMojoDisconnected,
+
     kDone
   } state_ = State::kInitial;
   static std::string_view StateToString(State state);
