@@ -198,6 +198,7 @@ public class BrandColorTest {
     @Test
     @SmallTest
     @Restriction(DeviceFormFactor.PHONE)
+    @DisabledTest(message = "crbug.com/380043209")
     @Feature({"StatusBar", "Omnibox"})
     public void testNavigatingToBrandColorAndBack() {
         startMainActivityWithURL("about:blank");
