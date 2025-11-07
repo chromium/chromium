@@ -17,7 +17,6 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.SurfaceView;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.View.OnLayoutChangeListener;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -92,8 +91,7 @@ public class SnackbarView implements InsetObserver.WindowInsetObserver {
      * Creates an instance of the {@link SnackbarView}.
      *
      * @param activity The activity that displays the snackbar.
-     * @param listener An {@link OnClickListener} that will be called when the action button is
-     *     clicked.
+     * @param manager The {@link SnackbarManager} that manages this view.
      * @param snackbar The snackbar to be displayed.
      * @param parentView The ViewGroup used to display this snackbar.
      * @param windowAndroid The WindowAndroid used for starting animation. If it is null,
@@ -101,20 +99,19 @@ public class SnackbarView implements InsetObserver.WindowInsetObserver {
      */
     public SnackbarView(
             Activity activity,
-            OnClickListener listener,
+            SnackbarManager manager,
             Snackbar snackbar,
             ViewGroup parentView,
             @Nullable WindowAndroid windowAndroid,
             boolean isTablet) {
-        this(activity, listener, snackbar, parentView, windowAndroid, null, isTablet);
+        this(activity, manager, snackbar, parentView, windowAndroid, null, isTablet);
     }
 
     /**
      * Creates an instance of the {@link SnackbarView}.
      *
      * @param activity The activity that displays the snackbar.
-     * @param listener An {@link OnClickListener} that will be called when the action button is
-     *     clicked.
+     * @param manager The {@link SnackbarManager} that manages this view.
      * @param snackbar The snackbar to be displayed.
      * @param parentView The ViewGroup used to display this snackbar.
      * @param windowAndroid The WindowAndroid used for starting animation. If it is null,
@@ -124,7 +121,7 @@ public class SnackbarView implements InsetObserver.WindowInsetObserver {
      */
     public SnackbarView(
             Activity activity,
-            OnClickListener listener,
+            SnackbarManager manager,
             Snackbar snackbar,
             ViewGroup parentView,
             @Nullable WindowAndroid windowAndroid,
@@ -147,6 +144,12 @@ public class SnackbarView implements InsetObserver.WindowInsetObserver {
 
         // Make sure clicks are not consumed by content beneath the container view.
         mContainerView.setClickable(true);
+        mContainerView.setOnClickListener((event) -> manager.resetSnackbarTimeout());
+        mContainerView.setOnTouchListener(
+                (view, event) -> {
+                    mContainerView.performClick();
+                    return true;
+                });
 
         mSnackbarView = mContainerView.findViewById(R.id.snackbar);
         mAnimationDuration =
@@ -154,10 +157,10 @@ public class SnackbarView implements InsetObserver.WindowInsetObserver {
         mMessageView =
                 (TemplatePreservingTextView) mContainerView.findViewById(R.id.snackbar_message);
         mActionButtonView = (TextView) mContainerView.findViewById(R.id.snackbar_button);
-        mActionButtonView.setOnClickListener(listener);
+        mActionButtonView.setOnClickListener(manager);
         mProfileImageView = (ImageView) mContainerView.findViewById(R.id.snackbar_profile_image);
         mEdgeToEdgeSupplier = edgeToEdgeSupplier;
-        // TODO(crbug/com/451807932): Replace with a custom pad adjuster to account for inset
+        // TODO(crbug.com/451807932): Replace with a custom pad adjuster to account for inset
         //  changes.
         if (SnackbarManager.isFloatingSnackbarEnabled()) {
             // Add bottom margin to extend the snackbar view into the bottom window inset. This

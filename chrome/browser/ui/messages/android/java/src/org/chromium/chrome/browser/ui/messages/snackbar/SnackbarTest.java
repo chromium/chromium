@@ -72,6 +72,15 @@ public class SnackbarTest {
     private static FrameLayout sAlternateParent1;
     private static FrameLayout sAlternateParent2;
     private boolean mDismissed;
+    private boolean mActionClicked;
+
+    private final SnackbarController mActionController =
+            new SnackbarController() {
+                @Override
+                public void onAction(Object actionData) {
+                    mActionClicked = true;
+                }
+            };
 
     @BeforeClass
     public static void setupSuite() {
@@ -577,6 +586,32 @@ public class SnackbarTest {
                 "Snackbar isShowing() and isShowingSupplier().get() values are not "
                         + "both false after dismissing snackbar.",
                 () -> !mManager.isShowing() && !mManager.isShowingSupplier().get());
+    }
+
+    @Test
+    @SmallTest
+    public void testResetTimeoutOnTouch() throws InterruptedException {
+        int timeout = 200;
+        SnackbarManager.setDurationForTesting(timeout);
+        final Snackbar snackbar =
+                Snackbar.make(
+                        "persistent",
+                        mActionController,
+                        Snackbar.TYPE_ACTION,
+                        Snackbar.UMA_TEST_SNACKBAR);
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> mManager.showSnackbar(snackbar));
+        pollSnackbarCondition(
+                "Snackbar not shown.",
+                () -> mManager.isShowing() && mManager.getCurrentSnackbarForTesting() == snackbar);
+        TimeUnit.MILLISECONDS.sleep(timeout / 2);
+        PostTask.runOrPostTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    mManager.resetSnackbarTimeout();
+                });
+        pollSnackbarCondition("Snackbar dismissed early.", () -> mManager.isShowing());
+        TimeUnit.MILLISECONDS.sleep(timeout);
+        pollSnackbarCondition("Snackbar did not time out.", () -> !mManager.isShowing());
     }
 
     void pollSnackbarCondition(String message, Supplier<Boolean> condition) {

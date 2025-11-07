@@ -236,6 +236,16 @@ public class SnackbarManager
         }
     }
 
+    /** Resets the timeout to hide the snackbar. */
+    public void resetSnackbarTimeout() {
+        mUiThreadHandler.removeCallbacks(mHideRunnable);
+        Snackbar currentSnackbar = mSnackbars.getCurrent();
+        if (currentSnackbar != null && !currentSnackbar.isTypePersistent()) {
+            int durationMs = getDuration(currentSnackbar);
+            mUiThreadHandler.postDelayed(mHideRunnable, durationMs);
+        }
+    }
+
     /** Handles click event for action button at end of snackbar. */
     @Override
     public void onClick(View v) {
