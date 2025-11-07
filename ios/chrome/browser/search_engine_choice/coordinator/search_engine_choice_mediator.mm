@@ -144,12 +144,31 @@ SnippetSearchEngineElement* CreateSnippetSearchEngineElementFromTemplateURL(
   NSMutableArray<SnippetSearchEngineElement*>* searchEngineList =
       [[NSMutableArray<SnippetSearchEngineElement*> alloc]
           initWithCapacity:_choiceScreenData->search_engines().size()];
+  // Current sesarch engine to highlight if any.
+  const TemplateURL* currentDefaultSearchEngineToHighlight =
+      _choiceScreenData->current_default_to_highlight();
   // Convert TemplateURLs to SnippetSearchEngineElements.
+  BOOL currentDefaultSearchEngineToHighlightFound = NO;
   for (auto& templateURL : _choiceScreenData->search_engines()) {
     SnippetSearchEngineElement* element =
         CreateSnippetSearchEngineElementFromTemplateURL(*templateURL);
+    if (currentDefaultSearchEngineToHighlight == templateURL.get()) {
+      element.currentDefaultState = CurrentDefaultState::kIsCurrentDefault;
+      currentDefaultSearchEngineToHighlightFound = YES;
+    } else if (currentDefaultSearchEngineToHighlight) {
+      element.currentDefaultState = CurrentDefaultState::kHasCurrentDefault;
+    }
     [searchEngineList addObject:element];
   }
+  // The current default search engine must be part of the search engine list.
+  std::u16string keyword;
+  if (currentDefaultSearchEngineToHighlight) {
+    keyword = currentDefaultSearchEngineToHighlight->keyword();
+  }
+  CHECK(!currentDefaultSearchEngineToHighlight ||
+            currentDefaultSearchEngineToHighlightFound,
+        base::NotFatalUntil::M150)
+      << base::UTF16ToUTF8(keyword);
   self.consumer.searchEngines = [searchEngineList copy];
 }
 

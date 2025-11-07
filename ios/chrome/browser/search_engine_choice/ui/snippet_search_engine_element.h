@@ -9,6 +9,21 @@
 
 enum class SnippetState;
 
+// This enum set the state of the current default search engine to highlight.
+// The elements state should be either:
+// - all elements are in `kNoCurrentDefault`.
+// - all elements are in `kHasCurrentDefault` except the right element that is
+//   in `kIsCurrentDefault`.
+enum class CurrentDefaultState {
+  // There is no current default search engine to highlight.
+  kNoCurrentDefault,
+  // This is not the current default search engine, but there is a current
+  // default search engine.
+  kHasCurrentDefault,
+  // This search engine is the current default.
+  kIsCurrentDefault,
+};
+
 // SnippetSearchEngineElement contains the model data for a
 // SnippetSearchEngineButton.
 @interface SnippetSearchEngineElement : NSObject
@@ -21,6 +36,8 @@ enum class SnippetState;
 @property(nonatomic, strong) UIImage* faviconImage;
 // Search engine keyword. Unique per search engine.
 @property(nonatomic, copy) NSString* keyword;
+// See `CurrentDefaultState`. The default value is `kNoCurrentDefault`.
+@property(nonatomic, assign) CurrentDefaultState currentDefaultState;
 
 @end
 
