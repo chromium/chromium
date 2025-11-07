@@ -42,6 +42,7 @@
 #include "chromeos/ash/components/boca/student_screen_presenter.h"
 #include "chromeos/ash/components/boca/teacher_screen_presenter.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
+#include "chromeos/services/network_config/public/mojom/network_types.mojom-data-view.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user_manager.h"
@@ -113,7 +114,11 @@ BocaSessionManager::BocaSessionManager(
     session_manager_observation_.Observe(
         session_manager::SessionManager::Get());
   }
+  // Session load will be triggered when network state loaded.
   LoadInitialNetworkState();
+  // This load thereotically can be removed in favor of the load after network
+  // fetch completes. For keep it as we've seen inconsistency in network status
+  // report in testing.
   LoadCurrentSession(/*from_polling=*/false);
   StartSessionPolling(/*in_session=*/false);
 }
@@ -159,33 +164,6 @@ void BocaSessionManager::Observer::OnConsumerActivityUpdated(
     const std::map<std::string, ::boca::StudentStatus>& activities) {}
 
 void BocaSessionManager::Observer::OnReceiverInvalidation() {}
-
-void BocaSessionManager::OnNetworkStateChanged(
-    chromeos::network_config::mojom::NetworkStatePropertiesPtr network_state) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Check network types comment here:
-  // chromeos/services/network_config/public/mojom/network_types.mojom
-  if (chromeos::network_config::StateIsConnected(
-          network_state->connection_state)) {
-    // Update network restriction before load session.
-    UpdateNetworkRestriction(std::move(network_state));
-    if (!is_network_connected_) {
-      // Explicitly trigger a load whenever network back online. This will cover
-      // the case for initial ctor too.
-      // Other network change may trigger this events too, only handle when
-      // flipped from offline to online.
-      is_network_connected_ = true;
-      LoadCurrentSession(/*from_polling=*/false);
-      if (IsScreenSharingEnabled()) {
-        for (auto& observer : observers_) {
-          observer.OnReceiverInvalidation();
-        }
-      }
-    }
-  } else {
-    is_network_connected_ = false;
-  }
-}
 
 void BocaSessionManager::NotifyError(BocaError error) {}
 
@@ -249,7 +227,6 @@ void BocaSessionManager::LoadCurrentSession(bool from_polling) {
                          /*dispatch_event=*/true);
     return;
   }
-
   auto request = std::make_unique<GetSessionRequest>(
       session_client_impl_->sender(),
       BocaAppClient::Get()->GetSchoolToolsServerBaseUrl(), is_producer_,
@@ -520,20 +497,64 @@ void BocaSessionManager::LoadInitialNetworkState() {
           chromeos::network_config::mojom::FilterType::kVisible,
           chromeos::network_config::mojom::NetworkType::kAll,
           /*limit=*/0),
-      base::BindOnce(&BocaSessionManager::OnNetworkStateFetched,
+      base::BindOnce(&BocaSessionManager::OnActiveNetworksChanged,
                      weak_factory_.GetWeakPtr()));
 }
 
-void BocaSessionManager::OnNetworkStateFetched(
+bool BocaSessionManager::IsNetworkManaged(
+    chromeos::network_config::mojom::NetworkStatePropertiesPtr& network_state) {
+  return network_state->source ==
+             chromeos::network_config::mojom::OncSource::kUserPolicy ||
+         network_state->source ==
+             chromeos::network_config::mojom::OncSource::kDevicePolicy;
+}
+
+void BocaSessionManager::OnActiveNetworksChanged(
     std::vector<chromeos::network_config::mojom::NetworkStatePropertiesPtr>
         networks) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  bool has_managed_network = false;
+  bool has_active_network = false;
   for (chromeos::network_config::mojom::NetworkStatePropertiesPtr& network :
        networks) {
-    if (chromeos::network_config::StateIsConnected(network->connection_state)) {
-      is_network_connected_ = true;
-      UpdateNetworkRestriction(std::move(network));
-      break;
+    if (network->connection_state ==
+        chromeos::network_config::mojom::ConnectionStateType::kOnline) {
+      has_active_network = true;
+      if (IsNetworkManaged(network)) {
+        has_managed_network = true;
+      }
+    }
+  }
+
+  if (!has_active_network) {
+    is_network_connected_ = false;
+    return;
+  }
+
+  // Explicitly trigger a session reload either when go back online, or stay
+  // online but managed network status changed. Do not reset session if changing
+  // from online to offline.
+  bool should_load_session = false;
+
+  bool should_disable_on_non_managed_network =
+      HasNetworkRestriction(has_managed_network);
+  if (should_disable_on_non_managed_network !=
+      disabled_on_non_managed_network_) {
+    disabled_on_non_managed_network_ = should_disable_on_non_managed_network;
+    should_load_session = true;
+  }
+
+  if (is_network_connected_ != has_active_network) {
+    is_network_connected_ = has_active_network;
+    should_load_session = true;
+  }
+
+  if (should_load_session) {
+    LoadCurrentSession(/*from_polling=*/false);
+    if (IsScreenSharingEnabled()) {
+      for (auto& observer : observers_) {
+        observer.OnReceiverInvalidation();
+      }
     }
   }
 }
@@ -874,24 +895,14 @@ void BocaSessionManager::OnStudentHeartbeat(
   StartSendingStudentHeartbeatRequests();
 }
 
-void BocaSessionManager::UpdateNetworkRestriction(
-    chromeos::network_config::mojom::NetworkStatePropertiesPtr network_state) {
-  bool should_disable_on_non_managed_network =
-      (features::IsBocaNetworkRestrictionEnabled() ||
-       (pref_service_->FindPreference(
-            prefs::kClassManagementToolsNetworkRestrictionSetting) &&
-        pref_service_->GetBoolean(
-            prefs::kClassManagementToolsNetworkRestrictionSetting))) &&
-      network_state->source !=
-          chromeos::network_config::mojom::OncSource::kUserPolicy &&
-      network_state->source !=
-          chromeos::network_config::mojom::OncSource::kDevicePolicy;
-
-  if (should_disable_on_non_managed_network !=
-      disabled_on_non_managed_network_) {
-    disabled_on_non_managed_network_ = should_disable_on_non_managed_network;
-    LoadCurrentSession(/*from_polling=*/false);
-  }
+bool BocaSessionManager::HasNetworkRestriction(
+    bool has_active_managed_network) {
+  return (features::IsBocaNetworkRestrictionEnabled() ||
+          (pref_service_->FindPreference(
+               prefs::kClassManagementToolsNetworkRestrictionSetting) &&
+           pref_service_->GetBoolean(
+               prefs::kClassManagementToolsNetworkRestrictionSetting))) &&
+         !has_active_managed_network;
 }
 
 void BocaSessionManager::NotifySodaStatusListeners(SodaStatus status) {
