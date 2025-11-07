@@ -9,14 +9,150 @@ This script is a wrapper around the `gemini extensions` commands.
 """
 
 import argparse
+import json
 import shutil
 import subprocess
 import sys
+from dataclasses import dataclass
 from pathlib import Path
 
 _PROJECT_ROOT = Path(__file__).resolve().parents[2]
 sys.path.append(str(_PROJECT_ROOT))
 from agents.common import gemini_helpers
+
+
+IGNORED_EXTENSIONS = ['example-server']
+
+
+@dataclass
+class ExtensionInfo:
+    """Holds information about an extension."""
+    name: str
+    available: str = '-'
+    installed: str = '-'
+    linked: bool = False
+    enabled_for_workspace: bool = False
+
+
+def _get_extension_version(extension_path: Path) -> str:
+    """Returns the version of the extension from its manifest file."""
+    manifest_path = extension_path / 'gemini-extension.json'
+    if not manifest_path.exists():
+        return '-'
+    with open(manifest_path, encoding='utf-8') as f:
+        try:
+            data = json.load(f)
+            return data.get('version', '-')
+        except json.JSONDecodeError:
+            return '-'
+
+
+def _get_available_extensions(
+        project_root: Path | None,
+        extra_extensions_dirs: list[Path] | None) -> dict[str, ExtensionInfo]:
+    """Returns a dictionary of available extensions."""
+    data = {}
+    dirs = get_extensions_dirs(project_root,
+                               extra_extensions_dirs=extra_extensions_dirs)
+    for extensions_dir in dirs:
+        for name in get_extensions_from_dir(extensions_dir):
+            if name in IGNORED_EXTENSIONS:
+                continue
+            path = extensions_dir / name
+            version = _get_extension_version(path)
+            data[name] = ExtensionInfo(name=name, available=version)
+    return data
+
+
+def _parse_installed_extensions_output(
+        output: str) -> dict[str, ExtensionInfo]:
+    """Parses the output of `gemini extensions list` and returns a dictionary of
+    installed extension details.
+    """
+    data: dict[str, ExtensionInfo] = {}
+    current_name = None
+    for line in output.splitlines():
+        is_indented = line.lstrip() != line
+        if not is_indented:
+            # This is a name/version line
+            parts = line.split()
+            if (len(parts) >= 2 and parts[-1].startswith('(')
+                    and parts[-1].endswith(')')):
+                name = parts[-2]
+                version = parts[-1].strip('()')
+                current_name = name
+                data[current_name] = ExtensionInfo(
+                    name=name,
+                    installed=version,
+                )
+        elif current_name and is_indented:
+            # This is a detail line
+            stripped_line = line.strip()
+            current_ext = data[current_name]
+            if (stripped_line.startswith('Source:')
+                    and '(Type: link)' in stripped_line):
+                current_ext.linked = True
+            elif (stripped_line.startswith('Enabled (Workspace):')
+                  and 'true' in stripped_line):
+                current_ext.enabled_for_workspace = True
+
+    return data
+
+
+def _print_extensions_table(data: dict[str, ExtensionInfo]) -> None:
+    """Prints a formatted table of extensions."""
+    headers = ['EXTENSION', 'AVAILABLE', 'INSTALLED', 'LINKED', 'ENABLED']
+    col_widths = {h: len(h) for h in headers}
+    for name, ext_data in data.items():
+        col_widths['EXTENSION'] = max(col_widths['EXTENSION'], len(name))
+        col_widths['AVAILABLE'] = max(col_widths['AVAILABLE'],
+                                      len(ext_data.available))
+        col_widths['INSTALLED'] = max(col_widths['INSTALLED'],
+                                      len(ext_data.installed))
+        col_widths['ENABLED'] = max(
+            col_widths['ENABLED'],
+            len('workspace') if ext_data.enabled_for_workspace else 0)
+
+    col_sep = '  '
+    header_line = col_sep.join(h.ljust(col_widths[h]) for h in headers)
+    print(header_line)
+    print(col_sep.join('-' * col_widths[h] for h in headers))
+
+    for name in sorted(data.keys()):
+        ext_data = data[name]
+        row = [
+            name.ljust(col_widths['EXTENSION']),
+            ext_data.available.ljust(col_widths['AVAILABLE']),
+            ext_data.installed.ljust(col_widths['INSTALLED']),
+            ('yes' if ext_data.linked else 'no').ljust(col_widths['LINKED']),
+            ('workspace' if ext_data.enabled_for_workspace else '-').ljust(
+                col_widths['ENABLED']),
+        ]
+        print(col_sep.join(row))
+
+
+def _handle_list_command(project_root: Path | None,
+                         extra_extensions_dirs: list[Path]) -> None:
+    """Shows all available and installed extensions."""
+    gemini_cmd = gemini_helpers.get_gemini_executable()
+    all_data = _get_available_extensions(project_root, extra_extensions_dirs)
+
+    # Get installed extensions
+    result = subprocess.run([gemini_cmd, 'extensions', 'list'],
+                            capture_output=True,
+                            text=True,
+                            check=True)
+    installed_data = _parse_installed_extensions_output(result.stdout)
+
+    for name, data in installed_data.items():
+        if name not in all_data:
+            all_data[name] = data
+        else:
+            all_data[name].installed = data.installed
+            all_data[name].linked = data.linked
+            all_data[name].enabled_for_workspace = data.enabled_for_workspace
+
+    _print_extensions_table(all_data)
 
 
 def get_extensions_from_dir(extensions_dir: Path) -> list[str]:
@@ -286,7 +422,7 @@ def main() -> None:
     gemini_cmd = gemini_helpers.get_gemini_executable()
 
     if args.command == 'list':
-        _run_command([gemini_cmd, 'extensions', 'list'])
+        _handle_list_command(project_root, args.extra_extensions_dir)
         return
 
     if args.command == 'fix':

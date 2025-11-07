@@ -31,6 +31,14 @@ To see a list of available extensions and their install status:
 vpython3 agents/extensions/install.py list
 ```
 
+The output table includes the following columns:
+
+*   **EXTENSION**: The name of the extension.
+*   **AVAILABLE**: The version of the extension found in the Chromium source tree. A `-` indicates it's not available locally.
+*   **INSTALLED**: The version of the extension currently installed in your Gemini CLI user-level extensions directory. A `-` indicates it's not installed.
+*   **LINKED**: Indicates if the installed extension is a symbolic link (`yes`) to the source directory or a copy (`no`).
+*   **ENABLED**: Indicates if the extension is enabled for the current workspace (`workspace`) or not (`-`).
+
 ### Adding Extensions
 
 By default, extensions are installed as links in your user-level extension
