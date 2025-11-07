@@ -1,5 +1,0 @@
-This is a wdspec test.
-[FAIL] test_locale_and_timezone_for_user_context
-  AssertionError: assert 'en-US' == 'de-DE'
-Harness: the test ran to completion.
-

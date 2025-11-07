@@ -1,8 +1,4 @@
 This is a wdspec test.
-[FAIL] test_multiple_headers[fetch]
-  AssertionError: assert ['some_header_value_1, some_header_value_2'] == ['some_header_value_2']
-[FAIL] test_multiple_headers[navigation]
-  AssertionError: assert ['some_header_value_1, some_header_value_2'] == ['some_header_value_2']
 [ERROR] test_headers_merged[Custom user context]
   setup error: webdriver.bidi.error.UnknownErrorException: unknown error (Failed to create browser context.)
 Harness: the test ran to completion.
