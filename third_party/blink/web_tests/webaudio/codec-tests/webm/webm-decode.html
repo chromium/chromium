@@ -27,6 +27,12 @@
               'test-webm.webm',
             ]);
 
+        // Optionally save the decoded output for manual inspection.
+        const filename = 'webm-decode-actual.wav';
+        if (downloadAudioBuffer(decodedBuffer, filename, true)) {
+          assert_true(true, `Saved reference file: ${filename}`);
+        }
+
         assert_equals(context.sampleRate, 48000, 'AudioContext sampleRate');
         assert_equals(
             decodedBuffer.numberOfChannels,
@@ -59,12 +65,6 @@
               actual[i], reference[i], kAbsTolerance,
               `Channel ${channel}, sample ${i}`);
           }
-        }
-
-        // Optionally save the decoded output for manual inspection.
-        const filename = 'resources/webm-decode-actual.wav';
-        if (downloadAudioBuffer(decodedBuffer, filename)) {
-          assert_true(true, `Saved reference file: ${filename}`);
         }
       }, 'Decoded WebM matches reference WAV within tolerance');
     </script>
