@@ -1642,6 +1642,8 @@ const FeatureEntry::FeatureParam kComposeboxNext[] = {
     {"ShowCreateImageTool", "true"},
     {"ForceToolsAndModels", "true"},
     {"ShowRecentTabChip", "true"},
+    {"CloseComposeboxByEscape", "false"},
+    {"CloseComposeboxByClickOutside", "false"},
 };
 const FeatureEntry::FeatureParam kComposeboxNextSingleContext[] = {
     {"MaxNumFiles", "1"},
@@ -1653,6 +1655,8 @@ const FeatureEntry::FeatureParam kComposeboxNextSingleContext[] = {
     {"ShowCreateImageTool", "true"},
     {"ForceToolsAndModels", "true"},
     {"ShowRecentTabChip", "true"},
+    {"CloseComposeboxByEscape", "false"},
+    {"CloseComposeboxByClickOutside", "false"},
 };
 
 const FeatureEntry::FeatureVariation kNtpComposeboxVariations[] = {
