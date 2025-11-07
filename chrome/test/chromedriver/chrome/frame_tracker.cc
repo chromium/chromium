@@ -211,3 +211,9 @@ Status FrameTracker::OnEvent(DevToolsClient* client,
   }
   return Status(kOk);
 }
+
+void FrameTracker::ForEachTarget(base::RepeatingCallback<void(WebView&)> func) {
+  for (auto& pair : frame_to_target_map_) {
+    func.Run(*pair.second);
+  }
+}

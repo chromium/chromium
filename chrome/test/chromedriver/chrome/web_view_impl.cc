@@ -2196,6 +2196,10 @@ bool WebViewImpl::IsLocked() const {
 void WebViewImpl::SetDetached() {
   is_detached_ = true;
   client_->SetDetached();
+  if (frame_tracker_) {
+    frame_tracker_->ForEachTarget(base::BindRepeating(
+        [](WebView& view) { static_cast<WebViewImpl&>(view).SetDetached(); }));
+  }
 }
 
 bool WebViewImpl::IsDetached() const {
