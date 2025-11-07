@@ -175,9 +175,12 @@ const CGFloat kFadeAnimationVerticalOffset = 12;
         addSubview:self.popupContainerView];
     [self.viewController didMoveToParentViewController:parentVC];
 
-    BOOL enableFocusAnimation =
-        IsBottomOmniboxAvailable() && isFocusingOmnibox &&
+    BOOL isBottomOmnibox =
+        IsBottomOmniboxAvailable() &&
         _unfocusedOmniboxToolbarType == ToolbarType::kSecondary;
+    BOOL enableFocusAnimation =
+        isFocusingOmnibox &&
+        (isBottomOmnibox || IsMultilineBrowserOmniboxEnabled());
 
     [self initialLayoutAnimated:enableFocusAnimation];
 
