@@ -196,7 +196,8 @@ public class PageInfoContainer extends FrameLayout {
                 this,
                 subPageTitle != null
                         ? subPageTitle
-                        : getResources().getString(R.string.accessibility_toolbar_btn_site_info));
+                        : getResources()
+                                .getString(R.string.accessibility_toolbar_btn_site_info_dialog));
     }
 
     /** Returns true if replacing the content view is still in progress. */

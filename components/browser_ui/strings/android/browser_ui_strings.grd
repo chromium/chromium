@@ -671,8 +671,8 @@
       <message name="IDS_COOKIES_TITLE" desc="Title for the Cookies settings screen [CHAR_LIMIT=32]">
           Cookies
       </message>
-      <message name="IDS_ACCESSIBILITY_TOOLBAR_BTN_SITE_INFO" desc="Content description for the page icon that gives more site information when clicked. The icon can be a magnifier for search result pages, or other icons representing the page state.">
-        Site information
+      <message name="IDS_ACCESSIBILITY_TOOLBAR_BTN_SITE_INFO_DIALOG" is_accessibility_with_no_ui="true" desc="Spoken by screen readers to describe the Site information dialog, which provides more site information when clicked.">
+        Site information, dialog
       </message>
       <message name="IDS_ACCESSIBILITY_TOOLBAR_VIEW_SITE_INFO" desc="Spoken by screen readers to explain that clicking on the status icon will show more site information when clicked. The string is read in the context of the 'Double tap to...' Android screen reader accessibility prompt e.g. 'Double tap to view site information'.">
         View site information
