@@ -17,6 +17,7 @@ typedef NS_ENUM(NSInteger, ScreenType) {
   kLensInteractivePromo,
   kLensAnimatedPromo,
   // Actions that are performed post first-run experience.
+  kSyncedSetUp,
   kGuidedTour,
   kSafariImport,
   // It isn't a screen, but a signal that no more screen should be

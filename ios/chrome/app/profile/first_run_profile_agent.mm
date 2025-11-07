@@ -34,6 +34,7 @@
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/guided_tour_commands.h"
+#import "ios/chrome/browser/shared/public/commands/synced_set_up_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_grid_toolbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -253,6 +254,9 @@ const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
         [[FirstRunPostActionProvider alloc] initWithPrefService:prefService];
   }
   switch ([_postActionsProvider nextScreenType]) {
+    case kSyncedSetUp:
+      [self showSyncedSetUp];
+      break;
     case kGuidedTour:
       [self showGuidedTourPrompt];
       break;
@@ -448,6 +452,17 @@ const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
     return nullptr;
   }
   return browser->GetProfile()->GetOriginalProfile();
+}
+
+// Starts the Synced Set Up screen.
+- (void)showSyncedSetUp {
+  __weak __typeof(self) weakSelf = self;
+
+  id<SyncedSetUpCommands> syncedSetUpCommandsHandler =
+      HandlerForProtocol([self commandDispatcher], SyncedSetUpCommands);
+  [syncedSetUpCommandsHandler showSyncedSetUpWithDismissalCompletion:^{
+    [weakSelf performNextPostFirstRunAction];
+  }];
 }
 
 @end

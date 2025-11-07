@@ -216,6 +216,7 @@ using base::UserMetricsAction;
     case kLensInteractivePromo:
     case kLensAnimatedPromo:
     case kStepsCompleted:
+    case kSyncedSetUp:
     case kGuidedTour:
     case kSafariImport:
       break;

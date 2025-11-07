@@ -239,6 +239,7 @@ class FirstRunCoordinatorMetricsHelper final {
       lensAnimatedPromoCoordinator.firstRunDelegate = self;
       return lensAnimatedPromoCoordinator;
     }
+    case kSyncedSetUp:
     case kGuidedTour:
     case kSafariImport:
     case kStepsCompleted:

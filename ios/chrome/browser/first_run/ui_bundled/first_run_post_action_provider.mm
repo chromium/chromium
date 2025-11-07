@@ -12,6 +12,9 @@
 
 - (instancetype)initWithPrefService:(PrefService*)prefService {
   NSMutableArray<NSNumber*>* screens = [NSMutableArray array];
+  if (IsSyncedSetUpEnabled()) {
+    [screens addObject:@(kSyncedSetUp)];
+  }
   if (IsBestOfAppGuidedTourEnabled()) {
     [screens addObject:@(kGuidedTour)];
   }
