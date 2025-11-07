@@ -266,6 +266,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ServiceWorker.ChromeExtensionUpdateIPAddressSpace"
+    units="ServiceWorkerIPAddressSpace" expires_after="2026-02-22">
+  <owner>hchao@chromium.org</owner>
+  <owner>cthomp@chromium.org</owner>
+  <owner>chrome-secure-web-and-net@google.com</owner>
+  <summary>
+    How many times we need to update the address space for an extensions service
+    worker to kLoopback. Value of histogram is what address space was saved in
+    the service worker registration database when the registration was loaded.
+  </summary>
+</histogram>
+
 <histogram
     name="ServiceWorker.ContainerHostForClient.AllowServiceWorkerCallTime"
     units="microseconds" expires_after="2026-09-06">
