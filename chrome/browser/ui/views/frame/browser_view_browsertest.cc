@@ -15,6 +15,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/policy/dm_token_utils.h"
+#include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/chrome_enterprise_url_lookup_service_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -1045,7 +1046,9 @@ class FakeRealTimeUrlLookupService
 
 class BrowserViewDataProtectionTest : public InProcessBrowserTest {
  public:
-  BrowserViewDataProtectionTest() {
+  BrowserViewDataProtectionTest()
+      : scoped_prewarm_feature_list_(test::ScopedPrewarmFeatureList::
+                                         PrewarmState::kEnabledWithNoTrigger) {
     scoped_feature_list_.InitAndEnableFeature(features::kSideBySide);
   }
   BrowserViewDataProtectionTest(const BrowserViewDataProtectionTest&) = delete;
@@ -1095,6 +1098,12 @@ class BrowserViewDataProtectionTest : public InProcessBrowserTest {
 
  private:
   base::CallbackListSubscription create_services_subscription_;
+  // TODO(https://crbug.com/458274323): browser()->GetWidget() seems returning
+  // a wrong Widget, one for the prewarm page, unexpectedly, might be due to
+  // missing MPArch support?
+  // Investigate details, and fix it to remove this workaround so that
+  // DC_Screenshot test can pass stably.
+  test::ScopedPrewarmFeatureList scoped_prewarm_feature_list_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
