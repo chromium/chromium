@@ -444,6 +444,7 @@ public class ChildProcessRankingTest {
                 /* intersectsViewport= */ false,
                 /* isSpareRenderer= */ false,
                 ChildProcessImportance.IMPORTANT);
+        c2.removeVisibleBinding();
         ranking.addConnection(
                 c2,
                 /* visible= */ true,
@@ -451,6 +452,7 @@ public class ChildProcessRankingTest {
                 /* intersectsViewport= */ false,
                 /* isSpareRenderer= */ false,
                 ChildProcessImportance.NORMAL);
+        c3.removeVisibleBinding();
         ranking.addConnection(
                 c3,
                 /* visible= */ true,
@@ -498,6 +500,7 @@ public class ChildProcessRankingTest {
                 /* isSpareRenderer= */ false,
                 ChildProcessImportance.IMPORTANT);
         c2.addNotPerceptibleBinding();
+        c2.removeVisibleBinding();
         ranking.addConnection(
                 c2,
                 /* visible= */ true,
@@ -506,6 +509,7 @@ public class ChildProcessRankingTest {
                 /* isSpareRenderer= */ false,
                 ChildProcessImportance.NORMAL);
         c3.addNotPerceptibleBinding();
+        c3.removeVisibleBinding();
         ranking.addConnection(
                 c3,
                 /* visible= */ true,
@@ -535,6 +539,7 @@ public class ChildProcessRankingTest {
         // is no conflict.
         TestChildProcessConnection c4 = createConnection();
         c4.addNotPerceptibleBinding();
+        c4.removeVisibleBinding();
         ranking.addConnection(
                 c4,
                 /* visible= */ true,
@@ -580,6 +585,7 @@ public class ChildProcessRankingTest {
         // in background.
         TestChildProcessConnection c5 = createConnection();
         c5.addNotPerceptibleBinding();
+        c5.removeVisibleBinding();
         ranking.addConnection(
                 c5,
                 /* visible= */ true,
@@ -677,6 +683,7 @@ public class ChildProcessRankingTest {
                 /* isSpareRenderer= */ false,
                 ChildProcessImportance.MODERATE);
         c3.addNotPerceptibleBinding();
+        c3.removeVisibleBinding();
         ranking.addConnection(
                 c3,
                 /* visible= */ true,
@@ -685,6 +692,7 @@ public class ChildProcessRankingTest {
                 /* isSpareRenderer= */ false,
                 ChildProcessImportance.NORMAL);
         c4.addNotPerceptibleBinding();
+        c4.removeVisibleBinding();
         ranking.addConnection(
                 c4,
                 /* visible= */ true,
@@ -716,6 +724,7 @@ public class ChildProcessRankingTest {
 
         // Adding a new low rank connection causes rebind on high rank connections.
         TestChildProcessConnection c6 = createConnection();
+        c6.removeVisibleBinding();
         ranking.addConnection(
                 c6,
                 /* visible= */ true,
