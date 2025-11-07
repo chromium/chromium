@@ -66,6 +66,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/url_loading/model",
     "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
     "//ui/base",
     "//ui/strings:ui_strings_grit",
     "//url",
