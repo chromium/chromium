@@ -70,12 +70,12 @@ function WebRequestEventImpl(eventName, opt_argSchemas, opt_extraArgSchemas,
 }
 $Object.setPrototypeOf(WebRequestEventImpl.prototype, null);
 
-// Checks if the given callback is registered for this event.
+// Test if the given callback is registered for this event.
 WebRequestEventImpl.prototype.hasListener = function(cb) {
   return this.findListener_(cb) > -1;
 };
 
-// Checks if any callbacks are registered for this event.
+// Test if any callbacks are registered fur thus event.
 WebRequestEventImpl.prototype.hasListeners = function() {
   return this.subEvents.length > 0;
 };
