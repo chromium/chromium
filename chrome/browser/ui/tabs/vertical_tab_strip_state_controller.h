@@ -46,6 +46,10 @@ class VerticalTabStripStateController {
   base::CallbackListSubscription RegisterOnStateChanged(
       StateChangedCallback callback);
 
+  static constexpr char kCollapsedKey[] = "vertical_tab_strip_collapsed";
+  static constexpr char kUncollapsedWidthKey[] =
+      "vertical_tab_strip_uncollapsed_width";
+
  private:
   void NotifyStateChanged();
 

@@ -312,6 +312,12 @@ class Browser : public TabStripModelObserver,
     // Document Picture in Picture options, specific to TYPE_PICTURE_IN_PICTURE.
     std::optional<blink::mojom::PictureInPictureWindowOptions> pip_options;
 
+    // Specifies the collapsed state for the Vertical Tab Strip. True if the
+    // browser is collapsed.
+    std::optional<bool> vertical_tab_strip_collapsed;
+    // Specifies the width for the uncollapsed Vertical Tab Strip.
+    std::optional<int> vertical_tab_strip_uncollapsed_width;
+
    private:
     friend class Browser;
     friend class WindowSizerChromeOSTest;
@@ -410,6 +416,12 @@ class Browser : public TabStripModelObserver,
   Type type() const { return type_; }
   const std::string& app_name() const { return app_name_; }
   const std::string& user_title() const { return user_title_; }
+  std::optional<bool> is_vertical_tabs_initially_collapsed() const {
+    return initial_vertical_tab_strip_collapsed_;
+  }
+  std::optional<int> get_vertical_tabs_initial_uncollapsed_width() const {
+    return initial_vertical_tab_strip_uncollapsed_width_;
+  }
   bool is_trusted_source() const { return is_trusted_source_; }
   Profile* profile() const { return profile_; }
   gfx::Rect override_bounds() const { return override_bounds_; }
@@ -1335,6 +1347,9 @@ class Browser : public TabStripModelObserver,
   bool window_has_shown_;
 
   std::string user_title_;
+
+  std::optional<bool> initial_vertical_tab_strip_collapsed_;
+  std::optional<int> initial_vertical_tab_strip_uncollapsed_width_;
 
   std::unique_ptr<ScopedKeepAlive> keep_alive_;
 

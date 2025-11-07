@@ -12,6 +12,7 @@
 
 #include "base/check_deref.h"
 #include "base/feature_list.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/token.h"
 #include "base/uuid.h"
 #include "base/values.h"
@@ -29,10 +30,12 @@
 #include "chrome/browser/ui/browser_tabrestore.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_action_context_desktop.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/buildflags.h"
@@ -162,7 +165,20 @@ std::map<std::string, std::string> BrowserLiveTabContext::GetExtraDataForTab(
 
 std::map<std::string, std::string>
 BrowserLiveTabContext::GetExtraDataForWindow() const {
-  return std::map<std::string, std::string>();
+  std::map<std::string, std::string> data;
+
+  if (tabs::IsVerticalTabsFeatureEnabled()) {
+    auto* controller =
+        browser_->GetFeatures().vertical_tab_strip_state_controller();
+    if (controller) {
+      data[tabs::VerticalTabStripStateController::kCollapsedKey] =
+          base::ToString(controller->IsCollapsed());
+      data[tabs::VerticalTabStripStateController::kUncollapsedWidthKey] =
+          base::NumberToString(controller->GetUncollapsedWidth());
+    }
+  }
+
+  return data;
 }
 
 std::optional<tab_groups::TabGroupId> BrowserLiveTabContext::GetTabGroupForTab(
@@ -410,6 +426,27 @@ sessions::LiveTabContext* BrowserLiveTabContext::Create(
   create_params->initial_show_state = show_state;
   create_params->initial_workspace = workspace;
   create_params->user_title = user_title;
+
+  if (tabs::IsVerticalTabsFeatureEnabled()) {
+    if (extra_data.contains(
+            tabs::VerticalTabStripStateController::kCollapsedKey)) {
+      create_params->vertical_tab_strip_collapsed =
+          extra_data.at(tabs::VerticalTabStripStateController::kCollapsedKey) ==
+          "true";
+    }
+
+    if (extra_data.contains(
+            tabs::VerticalTabStripStateController::kUncollapsedWidthKey)) {
+      int uncollapsed_width = 0;
+      if (base::StringToInt(
+              extra_data.at(
+                  tabs::VerticalTabStripStateController::kUncollapsedWidthKey),
+              &uncollapsed_width)) {
+        create_params->vertical_tab_strip_uncollapsed_width = uncollapsed_width;
+      }
+    }
+  }
+
   Browser* browser = Browser::Create(*create_params.get());
 
   return browser->GetFeatures().live_tab_context();

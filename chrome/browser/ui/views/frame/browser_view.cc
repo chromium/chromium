@@ -1021,6 +1021,22 @@ BrowserView::BrowserView(Browser* browser)
 
   browser_->GetFeatures().InitPostBrowserViewConstruction(this);
 
+  if (tabs::IsVerticalTabsFeatureEnabled()) {
+    const std::optional<bool>& restored_state_collapsed =
+        browser_->is_vertical_tabs_initially_collapsed();
+    const std::optional<int>& restored_state_uncollapsed_width =
+        browser_->get_vertical_tabs_initial_uncollapsed_width();
+    if (restored_state_collapsed.has_value() &&
+        restored_state_uncollapsed_width.has_value()) {
+      browser_->GetFeatures()
+          .vertical_tab_strip_state_controller()
+          ->SetCollapsed(restored_state_collapsed.value());
+      browser_->GetFeatures()
+          .vertical_tab_strip_state_controller()
+          ->SetUncollapsedWidth(restored_state_uncollapsed_width.value());
+    }
+  }
+
   GetViewAccessibility().SetRole(ax::mojom::Role::kClient);
 
   if (GetFocusManager()) {

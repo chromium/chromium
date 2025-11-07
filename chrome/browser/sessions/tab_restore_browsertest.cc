@@ -39,10 +39,12 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_action_context_desktop.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/url_constants.h"
@@ -3084,6 +3086,58 @@ IN_PROC_BROWSER_TEST_F(TabRestoreSavedGroupsTest,
   // Verify the local group id exists in the TabGroupModel of the new browser.
   EXPECT_TRUE(
       group_model->ContainsTabGroup(saved_group.local_group_id().value()));
+}
+
+class TabRestoreVerticalTabsTest : public TabRestoreTest {
+ public:
+  TabRestoreVerticalTabsTest() {
+    scoped_feature_list.InitAndEnableFeature(tabs::kVerticalTabs);
+  }
+
+  TabRestoreVerticalTabsTest(const TabRestoreVerticalTabsTest&) = delete;
+  TabRestoreVerticalTabsTest& operator=(const TabRestoreVerticalTabsTest&) =
+      delete;
+
+ protected:
+  const bool kIsCollapsed = true;
+  const int kUncollapsedWidth = 200;
+
+  base::test::ScopedFeatureList scoped_feature_list;
+};
+
+IN_PROC_BROWSER_TEST_F(TabRestoreVerticalTabsTest,
+                       RestoreVerticalTabStripState) {
+  // Enable session service in default mode.
+  AddFileSchemeTabs(browser(), 1);
+
+  auto* state_controller =
+      browser()->GetFeatures().vertical_tab_strip_state_controller();
+  state_controller->SetCollapsed(kIsCollapsed);
+  state_controller->SetUncollapsedWidth(kUncollapsedWidth);
+
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL(chrome::kChromeUINewTabURL),
+      WindowOpenDisposition::NEW_WINDOW,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_BROWSER);
+  EXPECT_EQ(2u, active_browser_list_->size());
+
+  // Close the first browser.
+  CloseBrowserSynchronously(browser());
+  EXPECT_EQ(1u, active_browser_list_->size());
+
+  // Restore the closed window.
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
+  chrome::RestoreTab(GetLastActiveBrowserWindowInterfaceWithAnyProfile());
+  BrowserWindowInterface* const restored_browser_window =
+      browser_created_observer.Wait();
+  Browser* restored_browser =
+      restored_browser_window->GetBrowserForMigrationOnly();
+
+  // Verify the state.
+  auto* new_state_controller =
+      restored_browser->GetFeatures().vertical_tab_strip_state_controller();
+  EXPECT_EQ(new_state_controller->IsCollapsed(), kIsCollapsed);
+  EXPECT_EQ(new_state_controller->GetUncollapsedWidth(), kUncollapsedWidth);
 }
 
 }  // namespace sessions

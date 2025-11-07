@@ -600,7 +600,11 @@ Browser::Browser(const CreateParams& params)
       creation_source_(params.creation_source),
       unload_controller_(this),
       window_has_shown_(false),
-      user_title_(params.user_title) {
+      user_title_(params.user_title),
+      initial_vertical_tab_strip_collapsed_(
+          params.vertical_tab_strip_collapsed),
+      initial_vertical_tab_strip_uncollapsed_width_(
+          params.vertical_tab_strip_uncollapsed_width) {
   if (!profile_->IsOffTheRecord()) {
     profile_keep_alive_ = std::make_unique<ScopedProfileKeepAlive>(
         params.profile->GetOriginalProfile(),
