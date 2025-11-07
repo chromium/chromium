@@ -28,8 +28,6 @@
 @property(nonatomic, readwrite, copy) NSString* thirdRowText;
 // Detail text to be displayed instead of the URL.
 @property(nonatomic, copy) NSString* detailText;
-// Identifier to match a URLItem with its URLCell.
-@property(nonatomic, readonly) NSString* uniqueIdentifier;
 // Attributes for the favicon.
 @property(nonatomic, strong) FaviconAttributes* faviconAttributes;
 

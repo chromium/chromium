@@ -1171,7 +1171,6 @@ struct EnhancedSafeBrowsingActivePromoData
   switchItem.iconImage = symbol;
   switchItem.iconTintColor = UIColor.whiteColor;
   switchItem.iconBackgroundColor = backgroundColor;
-  switchItem.iconCornerRadius = kColorfulBackgroundSymbolCornerRadius;
   switchItem.accessibilityIdentifier = accessibilityIdentifier;
 
   return switchItem;
@@ -1195,7 +1194,6 @@ struct EnhancedSafeBrowsingActivePromoData
     DCHECK(imageBackground);
     infoButton.iconBackgroundColor = imageBackground;
     infoButton.iconTintColor = UIColor.whiteColor;
-    infoButton.iconCornerRadius = kColorfulBackgroundSymbolCornerRadius;
   }
   infoButton.accessibilityHint = accessibilityHint;
   infoButton.accessibilityIdentifier = accessibilityIdentifier;

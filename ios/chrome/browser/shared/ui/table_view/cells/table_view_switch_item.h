@@ -18,9 +18,6 @@
 // The background color of the icon.
 @property(nonatomic, strong) UIColor* iconBackgroundColor;
 
-// The corner radius of the UIImage view.
-@property(nonatomic, assign) CGFloat iconCornerRadius;
-
 // The border width of the UIImage view. Is zero (no border) by default.
 @property(nonatomic, assign) CGFloat iconBorderWidth;
 
