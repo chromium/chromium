@@ -24,6 +24,21 @@ const char kCBCMServiceAccountRefreshToken[] =
 // to kDeviceRobotAnyApiRefreshToken on ChromeOS.
 const char kCBCMServiceAccountEmail[] = "cbcm.service_account_email";
 
+DeviceOAuth2TokenStoreDesktop::PendingSetTokenRequest::PendingSetTokenRequest(
+    const std::string& token,
+    StatusCallback callback)
+    : refresh_token(token), callback(std::move(callback)) {}
+
+DeviceOAuth2TokenStoreDesktop::PendingSetTokenRequest::PendingSetTokenRequest(
+    PendingSetTokenRequest&& other) noexcept = default;
+
+DeviceOAuth2TokenStoreDesktop::PendingSetTokenRequest&
+DeviceOAuth2TokenStoreDesktop::PendingSetTokenRequest::operator=(
+    PendingSetTokenRequest&& other) noexcept = default;
+
+DeviceOAuth2TokenStoreDesktop::PendingSetTokenRequest::
+    ~PendingSetTokenRequest() = default;
+
 DeviceOAuth2TokenStoreDesktop::DeviceOAuth2TokenStoreDesktop(
     PrefService* local_state,
     os_crypt_async::OSCryptAsync* os_crypt_async)
@@ -48,6 +63,17 @@ void DeviceOAuth2TokenStoreDesktop::OnOsCryptReady(
     InitCallback callback,
     os_crypt_async::Encryptor encryptor) {
   encryptor_ = std::move(encryptor);
+
+  const bool had_pending_requests = !pending_set_token_requests_.empty();
+  for (auto& request : pending_set_token_requests_) {
+    SetAndSaveRefreshToken(request.refresh_token, std::move(request.callback));
+  }
+  pending_set_token_requests_.clear();
+  if (had_pending_requests) {
+    std::move(callback).Run(/*init_result=*/true,
+                            /*validation_required=*/false);
+    return;
+  }
 
   std::string base64_encrypted_token =
       local_state_->GetString(kCBCMServiceAccountRefreshToken);
@@ -94,8 +120,13 @@ std::string DeviceOAuth2TokenStoreDesktop::GetRefreshToken() const {
 void DeviceOAuth2TokenStoreDesktop::SetAndSaveRefreshToken(
     const std::string& refresh_token,
     StatusCallback result_callback) {
+  if (!encryptor_) {
+    pending_set_token_requests_.emplace_back(refresh_token,
+                                             std::move(result_callback));
+    return;
+  }
+
   std::string encrypted_token;
-  CHECK(encryptor_) << "SetAndSaveRefreshToken called before Init completed";
   bool success = encryptor_->EncryptString(refresh_token, &encrypted_token);
 
   if (success) {
