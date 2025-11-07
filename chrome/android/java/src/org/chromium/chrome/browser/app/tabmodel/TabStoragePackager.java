@@ -30,6 +30,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Supplier;
 
 /** Saves Java-accessible data for use in C++. */
 @JNINamespace("tabs")
@@ -42,31 +43,35 @@ public class TabStoragePackager {
     private static class TabModelInfo {
         public final @WindowId int windowId;
         public final @TabModelType int tabModelType;
-        public final @Nullable Tab activeTab;
+        public final Supplier<@Nullable Tab> activeTabSupplier;
 
         /**
          * @param windowId The {@link WindowId} the {@link TabModel} is associated with.
          * @param tabModelType The type of tab model being saved.
-         * @param activeTab The active tab in the tab model.
+         * @param activeTabSupplier The supplier of the active tab in the tab model.
          */
         TabModelInfo(
-                @WindowId int windowId, @TabModelType int tabModelType, @Nullable Tab activeTab) {
+                @WindowId int windowId,
+                @TabModelType int tabModelType,
+                Supplier<@Nullable Tab> activeTabSupplier) {
             this.windowId = windowId;
             this.tabModelType = tabModelType;
-            this.activeTab = activeTab;
+            this.activeTabSupplier = activeTabSupplier;
         }
 
         /**
          * @param windowId The {@link WindowId} the {@link TabModel} is associated with.
          * @param isOffTheRecord Whether the tab model is off the record.
-         * @param activeTab The active tab in the tab model.
+         * @param activeTabSupplier The supplier of the active tab in the tab model.
          */
         public static TabModelInfo createForWindowScopedModel(
-                @WindowId int windowId, boolean isOffTheRecord, @Nullable Tab activeTab) {
+                @WindowId int windowId,
+                boolean isOffTheRecord,
+                Supplier<@Nullable Tab> activeTabSupplier) {
             return new TabModelInfo(
                     windowId,
                     isOffTheRecord ? TabModelType.INCOGNITO : TabModelType.REGULAR,
-                    activeTab);
+                    activeTabSupplier);
         }
 
         /**
@@ -77,7 +82,7 @@ public class TabStoragePackager {
             return new TabModelInfo(
                     TabWindowManager.INVALID_WINDOW_ID,
                     TabModelType.ARCHIVED,
-                    /* activeTab= */ null);
+                    /* activeTabSupplier= */ () -> null);
         }
     }
 
@@ -136,7 +141,7 @@ public class TabStoragePackager {
         assert windowId != TabWindowManager.INVALID_WINDOW_ID;
 
         return TabModelInfo.createForWindowScopedModel(
-                windowId, tabModel.isOffTheRecord(), tabModel.getCurrentTabSupplier().get());
+                windowId, tabModel.isOffTheRecord(), tabModel.getCurrentTabSupplier());
     }
 
     @Nullable
@@ -164,7 +169,7 @@ public class TabStoragePackager {
                         mNativeTabStoragePackager,
                         info.windowId,
                         info.tabModelType,
-                        info.activeTab);
+                        info.activeTabSupplier.get());
     }
 
     @NativeMethods
