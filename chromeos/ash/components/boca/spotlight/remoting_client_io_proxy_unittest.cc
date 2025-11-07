@@ -18,6 +18,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "chromeos/ash/components/boca/spotlight/spotlight_frame_consumer.h"
 #include "remoting/base/oauth_token_info.h"
 #include "remoting/client/common/client_status_observer.h"
 #include "remoting/proto/audio.pb.h"
@@ -43,11 +44,11 @@ class FakeRemotingClientWrapper
  public:
   FakeRemotingClientWrapper(
       base::OnceClosure quit_closure,
-      remoting::protocol::FrameConsumer* frame_consumer,
-      base::WeakPtr<remoting::protocol::AudioStub> audio_stub)
+      std::unique_ptr<SpotlightFrameConsumer> frame_consumer,
+      std::unique_ptr<SpotlightAudioStreamConsumer> audio_stream_consumer)
       : quit_closure_(std::move(quit_closure)),
-        frame_consumer_(frame_consumer),
-        audio_stub_(audio_stub) {}
+        frame_consumer_(std::move(frame_consumer)),
+        audio_stream_consumer_(std::move(audio_stream_consumer)) {}
 
   FakeRemotingClientWrapper(const FakeRemotingClientWrapper&) = delete;
   FakeRemotingClientWrapper& operator=(const FakeRemotingClientWrapper&) =
@@ -73,24 +74,24 @@ class FakeRemotingClientWrapper
     return oauth_token_info_;
   }
 
-  remoting::protocol::FrameConsumer* frame_consumer() const {
-    return frame_consumer_;
+  SpotlightFrameConsumer* frame_consumer() const {
+    return frame_consumer_.get();
   }
 
   base::WeakPtr<remoting::protocol::AudioStub> audio_stub() const {
-    return audio_stub_;
+    return audio_stream_consumer_->GetWeakPtr();
   }
 
   base::WeakPtr<FakeRemotingClientWrapper> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
-  void SimulateCrdSessionEnded() { std::move(quit_closure_).Run(); }
+  base::OnceClosure TakeCrdSessionEndedCb() { return std::move(quit_closure_); }
 
  private:
   base::OnceClosure quit_closure_;
-  raw_ptr<remoting::protocol::FrameConsumer> frame_consumer_;
-  base::WeakPtr<remoting::protocol::AudioStub> audio_stub_;
+  std::unique_ptr<SpotlightFrameConsumer> frame_consumer_;
+  std::unique_ptr<SpotlightAudioStreamConsumer> audio_stream_consumer_;
 
   std::string support_access_code_;
   remoting::OAuthTokenInfo oauth_token_info_;
@@ -110,13 +111,15 @@ class RemotingClientIOProxyImplTest : public testing::Test {
         /*create_remoting_client_wrapper_cb=*/
         base::BindLambdaForTesting(
             [this](base::OnceClosure quit_closure,
-                   remoting::protocol::FrameConsumer* frame_consumer,
-                   base::WeakPtr<remoting::protocol::AudioStub> audio_stub,
+                   std::unique_ptr<SpotlightFrameConsumer> frame_consumer,
+                   std::unique_ptr<SpotlightAudioStreamConsumer>
+                       audio_stream_consumer,
                    scoped_refptr<network::SharedURLLoaderFactory>)
                 -> std::unique_ptr<
                     RemotingClientIOProxyImpl::RemotingClientWrapper> {
               auto wrapper = std::make_unique<FakeRemotingClientWrapper>(
-                  std::move(quit_closure), frame_consumer, audio_stub);
+                  std::move(quit_closure), std::move(frame_consumer),
+                  std::move(audio_stream_consumer));
               fake_remoting_client_wrapper_ = wrapper->GetWeakPtr();
               return wrapper;
             }));
@@ -153,7 +156,7 @@ TEST_F(RemotingClientIOProxyImplTest, StartCrdClient) {
   EXPECT_EQ(fake_remoting_client_wrapper_->oauth_token_info().user_email(),
             std::string(kAuthorizedHelperEmail));
 
-  fake_remoting_client_wrapper_->SimulateCrdSessionEnded();
+  fake_remoting_client_wrapper_->TakeCrdSessionEndedCb().Run();
   EXPECT_TRUE(crd_session_end_signal.Wait());
 }
 
@@ -188,6 +191,34 @@ TEST_F(RemotingClientIOProxyImplTest, OnAudioReceived) {
       std::make_unique<remoting::AudioPacket>(), base::DoNothing());
 
   EXPECT_TRUE(audio_packet_received_future_.Wait());
+}
+
+TEST_F(RemotingClientIOProxyImplTest,
+       StopCrdClientShouldInvalidateCrdSessionEndedCb) {
+  base::test::TestFuture<void> first_crd_session_ended_future;
+  base::test::TestFuture<void> second_crd_session_ended_future;
+  remoting_client_io_proxy_->StartCrdClient(
+      std::string(kConnectionCode), std::string(kAccessToken),
+      std::string(kAuthorizedHelperEmail),
+      first_crd_session_ended_future.GetCallback());
+  base::OnceClosure first_quit_closure =
+      fake_remoting_client_wrapper_->TakeCrdSessionEndedCb();
+  // Stop first CRD session then start a new one.
+  remoting_client_io_proxy_->StopCrdClient(base::DoNothing());
+  remoting_client_io_proxy_->StartCrdClient(
+      std::string(kConnectionCode), std::string(kAccessToken),
+      std::string(kAuthorizedHelperEmail),
+      second_crd_session_ended_future.GetCallback());
+  base::OnceClosure second_quit_closure =
+      fake_remoting_client_wrapper_->TakeCrdSessionEndedCb();
+  std::move(first_quit_closure).Run();
+  task_environment_.RunUntilIdle();
+
+  EXPECT_FALSE(first_crd_session_ended_future.IsReady());
+  EXPECT_FALSE(second_crd_session_ended_future.IsReady());
+
+  std::move(second_quit_closure).Run();
+  EXPECT_TRUE(second_crd_session_ended_future.Wait());
 }
 
 }  // namespace

@@ -28,10 +28,6 @@ namespace remoting {
 class AudioPacket;
 struct OAuthTokenInfo;
 class RemotingClient;
-namespace protocol {
-class AudioStub;
-class FrameConsumer;
-}  // namespace protocol
 }  // namespace remoting
 
 namespace webrtc {
@@ -88,8 +84,8 @@ class RemotingClientIOProxyImpl : public RemotingClientIOProxy,
   using CreateRemotingClientWrapperCb =
       base::RepeatingCallback<std::unique_ptr<RemotingClientWrapper>(
           base::OnceClosure,
-          remoting::protocol::FrameConsumer*,
-          base::WeakPtr<remoting::protocol::AudioStub>,
+          std::unique_ptr<SpotlightFrameConsumer>,
+          std::unique_ptr<SpotlightAudioStreamConsumer>,
           scoped_refptr<network::SharedURLLoaderFactory>)>;
 
   RemotingClientIOProxyImpl(
@@ -123,8 +119,8 @@ class RemotingClientIOProxyImpl : public RemotingClientIOProxy,
  private:
   static std::unique_ptr<RemotingClientWrapper> CreateRemotingClientWrapper(
       base::OnceClosure quit_closure,
-      remoting::protocol::FrameConsumer* frame_consumer,
-      base::WeakPtr<remoting::protocol::AudioStub> audio_stream_consumer,
+      std::unique_ptr<SpotlightFrameConsumer> frame_consumer,
+      std::unique_ptr<SpotlightAudioStreamConsumer> audio_stream_consumer,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
   // Accepts the CRD ended event on the current sequence and forwards it to the
@@ -145,7 +141,6 @@ class RemotingClientIOProxyImpl : public RemotingClientIOProxy,
   // for a previous session.
   void ResetRemotingClient(
       std::unique_ptr<RemotingClientWrapper> remoting_client_wrapper,
-      std::unique_ptr<SpotlightFrameConsumer> frame_consumer,
       base::OnceClosure on_stopped_callback);
 
   SEQUENCE_CHECKER(sequence_checker_);
@@ -161,8 +156,6 @@ class RemotingClientIOProxyImpl : public RemotingClientIOProxy,
       audio_packet_received_callback_;
   // Callback for `CrdConnectionState` updates.
   SpotlightCrdStateUpdatedCallback status_updated_callback_;
-  std::unique_ptr<SpotlightFrameConsumer> frame_consumer_;
-  std::unique_ptr<SpotlightAudioStreamConsumer> audio_stream_consumer_;
   std::unique_ptr<RemotingClientWrapper> remoting_client_wrapper_;
   CreateRemotingClientWrapperCb create_remoting_client_wrapper_cb_;
 
