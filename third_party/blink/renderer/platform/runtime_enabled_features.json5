@@ -2425,6 +2425,12 @@
       status: "stable",
     },
     {
+      // Fix for strikethrough toggle not working in empty
+      // contenteditable. See https://crbug.com/427915243
+      name: "FixStrikethroughToggleInEmptyContentEditable",
+      status: "stable",
+    },
+    {
       name: "Fledge",
       status: "stable",
       base_feature: "none",
