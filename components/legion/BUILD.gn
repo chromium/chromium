@@ -25,6 +25,7 @@ source_set("legion") {
     "client.h",
     "crypter.cc",
     "crypter.h",
+    "error_code.h",
     "features.cc",
     "features.h",
     "legion_common.h",
