@@ -189,6 +189,8 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kIncognitoMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel,
                                       kPasswordAndAutofillMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kPasswordManagerMenuItem);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kIdentityDocsMenuItem);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kTravelMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kShowLensOverlay);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kSaveAndShareMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kCastTitleItem);
@@ -767,6 +769,20 @@ PasswordsAndAutofillSubMenuModel::PasswordsAndAutofillSubMenuModel(
   AddItemWithStringIdAndVectorIcon(this, IDC_SHOW_ADDRESSES,
                                    IDS_ADDRESSES_AND_MORE_SUBMENU_OPTION,
                                    vector_icons::kLocationOnChromeRefreshIcon);
+
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kYourSavedInfoSettingsPage)) {
+    AddItemWithStringIdAndVectorIcon(this, IDC_SHOW_IDENTITY_DOCS,
+                                     IDS_IDENTITY_DOCS_SUBMENU_OPTION,
+                                     vector_icons::kIdCardIcon);
+    SetElementIdentifierAt(GetIndexOfCommandId(IDC_SHOW_IDENTITY_DOCS).value(),
+                           AppMenuModel::kIdentityDocsMenuItem);
+    AddItemWithStringIdAndVectorIcon(this, IDC_SHOW_TRAVEL,
+                                     IDS_TRAVEL_SUBMENU_OPTION,
+                                     vector_icons::kTripIcon);
+    SetElementIdentifierAt(GetIndexOfCommandId(IDC_SHOW_TRAVEL).value(),
+                           AppMenuModel::kTravelMenuItem);
+  }
 }
 
 class FindAndEditSubMenuModel : public ui::SimpleMenuModel {
@@ -1736,6 +1752,20 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
                                       delta);
       }
       LogMenuAction(MENU_ACTION_SHOW_ADDRESSES);
+      break;
+    case IDC_SHOW_IDENTITY_DOCS:
+      if (!uma_action_recorded_) {
+        base::UmaHistogramMediumTimes(
+            "WrenchMenu.TimeToAction.ShowIdentityDocs", delta);
+      }
+      LogMenuAction(MENU_ACTION_SHOW_IDENTITY_DOCS);
+      break;
+    case IDC_SHOW_TRAVEL:
+      if (!uma_action_recorded_) {
+        base::UmaHistogramMediumTimes("WrenchMenu.TimeToAction.ShowTravel",
+                                      delta);
+      }
+      LogMenuAction(MENU_ACTION_SHOW_TRAVEL);
       break;
     case IDC_PERFORMANCE:
       if (!uma_action_recorded_) {

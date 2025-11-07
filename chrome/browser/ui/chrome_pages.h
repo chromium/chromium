@@ -144,6 +144,8 @@ void ShowPrivacySandboxSettings(Browser* browser);
 void ShowPrivacySandboxAdMeasurementSettings(Browser* browser);
 void ShowAddresses(BrowserWindowInterface* bwi);
 void ShowPaymentMethods(BrowserWindowInterface* bwi);
+void ShowIdentityDocs(BrowserWindowInterface* bwi);
+void ShowTravel(BrowserWindowInterface* bwi);
 void ShowAllSitesSettingsFilteredByRwsOwner(
     Browser* browser,
     const std::string& rws_owner_host_name);

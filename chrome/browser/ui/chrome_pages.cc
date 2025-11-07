@@ -647,6 +647,16 @@ void ShowPaymentMethods(BrowserWindowInterface* bwi) {
   ShowSettingsSubPage(bwi->GetBrowserForMigrationOnly(), kPaymentsSubPage);
 }
 
+void ShowIdentityDocs(BrowserWindowInterface* bwi) {
+  base::RecordAction(UserMetricsAction("Options_ShowIdentityDocs"));
+  ShowSettingsSubPage(bwi->GetBrowserForMigrationOnly(), kIdentityDocsSubPage);
+}
+
+void ShowTravel(BrowserWindowInterface* bwi) {
+  base::RecordAction(UserMetricsAction("Options_ShowTravel"));
+  ShowSettingsSubPage(bwi->GetBrowserForMigrationOnly(), kTravelSubPage);
+}
+
 void ShowAllSitesSettingsFilteredByRwsOwner(
     Browser* browser,
     const std::string& rws_owner_host_name) {

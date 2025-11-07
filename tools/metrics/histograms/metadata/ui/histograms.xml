@@ -1058,6 +1058,7 @@ features through Chrome Labs. -->
     <variant name="ShowDownloads"/>
     <variant name="ShowHistory"/>
     <variant name="ShowHistoryClustersSidePanel"/>
+    <variant name="ShowIdentityDocs"/>
     <variant name="ShowKaleidoscope"/>
     <variant name="ShowLensOverlay"/>
     <variant name="ShowPasswordManager"/>
@@ -1069,6 +1070,7 @@ features through Chrome Labs. -->
     <variant name="ShowSigninWhenPaused"/>
     <variant name="ShowSyncSettings"/>
     <variant name="ShowTranslate"/>
+    <variant name="ShowTravel"/>
     <variant name="ShowTurnOnSync"/>
     <variant name="SiteSettings"/>
     <variant name="SwitchToAnotherProfile"/>

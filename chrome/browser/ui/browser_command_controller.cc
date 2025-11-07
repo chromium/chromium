@@ -802,6 +802,12 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
     case IDC_SHOW_ADDRESSES:
       ShowAddresses(browser_);
       break;
+    case IDC_SHOW_IDENTITY_DOCS:
+      ShowIdentityDocs(browser_);
+      break;
+    case IDC_SHOW_TRAVEL:
+      ShowTravel(browser_);
+      break;
     case IDC_FILLED_CARD_INFORMATION:
       ShowFilledCardInformationBubble(browser_);
       break;
@@ -1594,6 +1600,8 @@ void BrowserCommandController::InitCommandState() {
   command_updater_.UpdateCommandEnabled(IDC_SHOW_SIGNIN_WHEN_PAUSED, true);
   command_updater_.UpdateCommandEnabled(IDC_SHOW_SIGNIN, true);
   command_updater_.UpdateCommandEnabled(IDC_SHOW_ADDRESSES, !guest_session);
+  command_updater_.UpdateCommandEnabled(IDC_SHOW_IDENTITY_DOCS, !guest_session);
+  command_updater_.UpdateCommandEnabled(IDC_SHOW_TRAVEL, !guest_session);
   command_updater_.UpdateCommandEnabled(IDC_HELP_MENU, true);
   command_updater_.UpdateCommandEnabled(IDC_HELP_PAGE_VIA_KEYBOARD, true);
   command_updater_.UpdateCommandEnabled(IDC_HELP_PAGE_VIA_MENU, true);

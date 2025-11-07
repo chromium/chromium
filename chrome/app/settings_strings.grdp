@@ -408,6 +408,12 @@
   <message name="IDS_SETTINGS_YOUR_SAVED_INFO" desc="Name of the settings page which allows managing data saved by users in chrome.">
     Your saved info
   </message>
+  <message name="IDS_IDENTITY_DOCS_SUBMENU_OPTION" desc="Text label of the Identity docs item in the Your saved info 3-dot submenu">
+    Identity docs
+  </message>
+  <message name="IDS_TRAVEL_SUBMENU_OPTION" desc="Text label of the Travel item in the Your saved info 3-dot submenu">
+    Travel
+  </message>
   <message name="IDS_SETTINGS_YOUR_SAVED_INFO_DESCRIPTION" desc="Description of the 'Your saved info' page.">
     Manage your autofill info for faster browsing &#x2014; info like passwords, payment methods, addresses, and ID cards
   </message>

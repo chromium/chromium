@@ -42,6 +42,7 @@
 #include "chrome/test/base/menu_model_test.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -514,7 +515,43 @@ INSTANTIATE_TEST_SUITE_P(
                     IDC_SHOW_PASSWORD_MANAGER,
                     IDC_SHOW_PAYMENT_METHODS,
                     IDC_SHOW_ADDRESSES,
+                    IDC_SHOW_IDENTITY_DOCS,
+                    IDC_SHOW_TRAVEL,
                     AppMenuModel::kMinOtherProfileCommandId));
+
+TEST_F(AppMenuModelTest, YourSavedInfoSubmenusShown) {
+  feature_list_.InitAndEnableFeature(
+      autofill::features::kYourSavedInfoSettingsPage);
+  AppMenuModel model(this, browser());
+  model.Init();
+
+  const size_t your_saved_info_menu_index =
+      model.GetIndexOfCommandId(IDC_PASSWORDS_AND_AUTOFILL_MENU).value();
+  ui::SimpleMenuModel* your_saved_info_menu = static_cast<ui::SimpleMenuModel*>(
+      model.GetSubmenuModelAt(your_saved_info_menu_index));
+
+  EXPECT_TRUE(your_saved_info_menu->GetIndexOfCommandId(IDC_SHOW_IDENTITY_DOCS)
+                  .has_value());
+  EXPECT_TRUE(
+      your_saved_info_menu->GetIndexOfCommandId(IDC_SHOW_TRAVEL).has_value());
+}
+
+TEST_F(AppMenuModelTest, YourSavedInfoSubmenusDisabled) {
+  feature_list_.InitAndDisableFeature(
+      autofill::features::kYourSavedInfoSettingsPage);
+  AppMenuModel model(this, browser());
+  model.Init();
+
+  const size_t your_saved_info_menu_index =
+      model.GetIndexOfCommandId(IDC_PASSWORDS_AND_AUTOFILL_MENU).value();
+  ui::SimpleMenuModel* your_saved_info_menu = static_cast<ui::SimpleMenuModel*>(
+      model.GetSubmenuModelAt(your_saved_info_menu_index));
+
+  EXPECT_FALSE(your_saved_info_menu->GetIndexOfCommandId(IDC_SHOW_IDENTITY_DOCS)
+                   .has_value());
+  EXPECT_FALSE(
+      your_saved_info_menu->GetIndexOfCommandId(IDC_SHOW_TRAVEL).has_value());
+}
 
 TEST_F(AppMenuModelTest, ProfileSyncOnTest) {
   signin::IdentityManager* identity_manager =

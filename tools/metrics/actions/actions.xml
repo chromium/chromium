@@ -34427,6 +34427,12 @@ should be able to be added at any place in this file.
   <description>Setings: Customize fonts</description>
 </action>
 
+<action name="Options_ShowIdentityDocs">
+  <owner>ireneuszszulc@google.com</owner>
+  <owner>chrome-autofill-team@google.com</owner>
+  <description>Settings: Show identity docs page</description>
+</action>
+
 <action name="Options_ShowKeyboardSettings">
   <owner>stevenjb@chromium.org</owner>
   <description>Settings: Keyboard settings</description>
@@ -34491,6 +34497,12 @@ should be able to be added at any place in this file.
 <action name="Options_ShowTouchpadSettings">
   <owner>stevenjb@chromium.org</owner>
   <description>Settings: Touchpad settings</description>
+</action>
+
+<action name="Options_ShowTravel">
+  <owner>ireneuszszulc@google.com</owner>
+  <owner>chrome-autofill-team@google.com</owner>
+  <description>Settings: Show travel page</description>
 </action>
 
 <action name="Options_ShowUserNamesOnSignin_Disable">

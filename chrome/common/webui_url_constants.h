@@ -684,6 +684,8 @@ inline constexpr char kPasskeysSubPage[] = "passkeys";
 inline constexpr char kPasswordCheckSubPage[] = "passwords/check?start=true";
 inline constexpr char kPasswordManagerSubPage[] = "passwords";
 inline constexpr char kPaymentsSubPage[] = "payments";
+inline constexpr char kIdentityDocsSubPage[] = "identityDocs";
+inline constexpr char kTravelSubPage[] = "travel";
 inline constexpr char kPeopleSubPage[] = "people";
 inline constexpr char kPerformanceSubPage[] = "performance";
 inline constexpr char kPrintingSettingsSubPage[] = "printing";

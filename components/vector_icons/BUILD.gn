@@ -260,6 +260,7 @@ if (current_toolchain == default_toolchain) {
       "touchpad_mouse.icon",
       "touchpad_mouse_off.icon",
       "translate.icon",
+      "trip.icon",
       "undo.icon",
       "usb.icon",
       "usb_chrome_refresh.icon",

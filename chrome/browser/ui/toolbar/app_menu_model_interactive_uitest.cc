@@ -44,6 +44,7 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/interaction/tracked_element_webcontents.h"
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/crx_file/id_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/performance_manager/public/features.h"
@@ -691,6 +692,50 @@ IN_PROC_BROWSER_TEST_F(UniversalInstallAppMenuModelInteractiveTest,
       ScrollIntoView(AppMenuModel::kSaveAndShareMenuItem),
       SelectMenuItem(AppMenuModel::kSaveAndShareMenuItem),
       EnsurePresent(AppMenuModel::kInstallAppItem));
+}
+
+class YourSavedInfoMenuItemInteractiveTest
+    : public AppMenuModelInteractiveTest {
+ public:
+  YourSavedInfoMenuItemInteractiveTest() {
+    feature_list_.InitAndEnableFeature(
+        autofill::features::kYourSavedInfoSettingsPage);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(YourSavedInfoMenuItemInteractiveTest,
+                       IdentityDocsNavigation) {
+  base::HistogramTester histograms;
+  RunTestSequence(
+      InstrumentTab(kPrimaryTabPageElementId),
+      PressButton(kToolbarAppMenuButtonElementId),
+      SelectMenuItem(AppMenuModel::kPasswordAndAutofillMenuItem),
+      SelectMenuItem(AppMenuModel::kIdentityDocsMenuItem),
+      WaitForWebContentsNavigation(
+          kPrimaryTabPageElementId,
+          GURL(chrome::GetSettingsUrl(chrome::kIdentityDocsSubPage))));
+
+  histograms.ExpectTotalCount("WrenchMenu.TimeToAction.ShowIdentityDocs", 1);
+  histograms.ExpectBucketCount("WrenchMenu.MenuAction",
+                               MENU_ACTION_SHOW_IDENTITY_DOCS, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(YourSavedInfoMenuItemInteractiveTest, TravelNavigation) {
+  base::HistogramTester histograms;
+  RunTestSequence(InstrumentTab(kPrimaryTabPageElementId),
+                  PressButton(kToolbarAppMenuButtonElementId),
+                  SelectMenuItem(AppMenuModel::kPasswordAndAutofillMenuItem),
+                  SelectMenuItem(AppMenuModel::kTravelMenuItem),
+                  WaitForWebContentsNavigation(
+                      kPrimaryTabPageElementId,
+                      GURL(chrome::GetSettingsUrl(chrome::kTravelSubPage))));
+
+  histograms.ExpectTotalCount("WrenchMenu.TimeToAction.ShowTravel", 1);
+  histograms.ExpectBucketCount("WrenchMenu.MenuAction", MENU_ACTION_SHOW_TRAVEL,
+                               1);
 }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)

@@ -1100,6 +1100,8 @@ chromium-metrics-reviews@google.com.
   <int value="96" label="Show signin page"/>
   <int value="97" label="Open recent tabs from other devices"/>
   <int value="98" label="Trigger installed app update dialog"/>
+  <int value="99" label="Identity docs"/>
+  <int value="100" label="Travel"/>
 </enum>
 
 <!-- LINT.ThenChange(/chrome/browser/ui/toolbar/app_menu_model.h:AppMenuAction) -->
