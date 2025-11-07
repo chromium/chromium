@@ -29,8 +29,8 @@ class IterationMetrics:
 
 
 def merge_metrics(
-        iteration_metrics: Iterable[IterationMetrics]
-) -> dict[str, list[float]]:
+    iteration_metrics: Iterable[IterationMetrics]
+) -> dict[str, dict[str, list[float]]]:
     """Merges data for the same tests/metric names into a single list.
 
     Args:
@@ -38,13 +38,24 @@ def merge_metrics(
 
     Returns:
         A dict mapping a unique test/metric name combination to a list of all
-        reported values for that combination.
+        reported values for that combination. In the format:
+        {
+            'test_1': {
+                'metric_1': [value_1, value_2],
+                'metric_2': [value_3, value_4],
+            },
+            'test_2': {
+                'metric_1': [value_5, value_6],
+                'metric_2': [value_7, value_8],
+            },
+        }
     """
     merged_metrics = {}
     for im in iteration_metrics:
         config_file = str(im.config.src_relative_test_file)
         for k, v in iterate_over_nested_metrics(im.metrics):
-            merged_metrics.setdefault(f'{config_file}.{k}', []).append(v)
+            merged_metrics.setdefault(config_file, {}).setdefault(k,
+                                                                  []).append(v)
     return merged_metrics
 
 

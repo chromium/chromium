@@ -29,9 +29,14 @@ class MergeMetricsUnittest(unittest.TestCase):
                 },
             ),
         ]
-        self.assertEqual(metrics.merge_metrics(iteration_metrics), {
-            'test.yaml.a': [1.0],
-        })
+        self.assertEqual(
+            metrics.merge_metrics(iteration_metrics),
+            {
+                'test.yaml': {
+                    'a': [1.0],
+                },
+            },
+        )
 
     def test_multiple_iteration_metrics_same_test(self):
         config = mock.Mock(spec=eval_config.TestConfig)
@@ -50,9 +55,14 @@ class MergeMetricsUnittest(unittest.TestCase):
                 },
             ),
         ]
-        self.assertEqual(metrics.merge_metrics(iteration_metrics), {
-            'test.yaml.a': [1.0, 2.0],
-        })
+        self.assertEqual(
+            metrics.merge_metrics(iteration_metrics),
+            {
+                'test.yaml': {
+                    'a': [1.0, 2.0],
+                },
+            },
+        )
 
     def test_multiple_iteration_metrics_different_tests(self):
         config1 = mock.Mock(spec=eval_config.TestConfig)
@@ -73,10 +83,17 @@ class MergeMetricsUnittest(unittest.TestCase):
                 },
             ),
         ]
-        self.assertEqual(metrics.merge_metrics(iteration_metrics), {
-            'test1.yaml.a': [1.0],
-            'test2.yaml.b': [2.0],
-        })
+        self.assertEqual(
+            metrics.merge_metrics(iteration_metrics),
+            {
+                'test1.yaml': {
+                    'a': [1.0]
+                },
+                'test2.yaml': {
+                    'b': [2.0]
+                }
+            },
+        )
 
 
 class IterateOverNestedMetricsUnittest(unittest.TestCase):

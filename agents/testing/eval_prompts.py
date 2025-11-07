@@ -492,17 +492,11 @@ def _parse_args() -> argparse.Namespace:
                              'Must be set if --enable-perf-uploading is set.'))
     group.add_argument(
         '--builder-group',
-        # TODO(crbug.com/449818513): Remove default once the
-        # recipe is updated to pass this in.
-        default='chromium.prompt_eval',
         help=('The name of the group the builder running these '
               'tests belongs to. Must be set if '
               '--enable-perf-uploading is set.'))
     group.add_argument(
         '--build-number',
-        # TODO(crbug.com/449818513): Remove default once the
-        # recipe is updated to pass this in.
-        default=1,
         type=int,
         help=('The build number of the build running these '
               'tests. Must be set if --enable-perf-uploading '

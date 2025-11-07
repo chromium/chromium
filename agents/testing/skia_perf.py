@@ -96,23 +96,27 @@ class SkiaPerfMetricReporter:
             'git_hash': self._git_revision,
             'key': {
                 'benchmark': 'gcli_prompt_eval',
-                'bot': self._builder,
+                'builder_group': self._builder_group,
+                'builder': self._builder,
             },
             'results': [],
             'links': {
                 'build': f'https://ci.chromium.org/b/{self._build_id}',
             },
         }
-        for metric_name, metric_values in merged_metrics.items():
-            result = {
-                'key': {
-                    'test': metric_name,
-                },
-                'measurements': {
-                    'stat': _generate_stats_for_metric_values(metric_values),
-                },
-            }
-            dashboard_json['results'].append(result)
+        for test_name, metrics_mapping in merged_metrics.items():
+            for metric_name, metric_values in metrics_mapping.items():
+                result = {
+                    'key': {
+                        'test': test_name,
+                        'metric': metric_name
+                    },
+                    'measurements': {
+                        'stat':
+                        _generate_stats_for_metric_values(metric_values),
+                    },
+                }
+                dashboard_json['results'].append(result)
 
         return dashboard_json
 
