@@ -48,8 +48,8 @@ omnibox::NTPComposeboxConfig GetNTPComposeboxConfig() {
   default_config.mutable_entry_point()->set_num_page_load_animations(3);
 
   auto* composebox = default_config.mutable_composebox();
-  composebox->set_close_by_escape(true);
-  composebox->set_close_by_click_outside(true);
+  composebox->set_close_by_escape(kCloseComposeboxByEscape.Get());
+  composebox->set_close_by_click_outside(kCloseComposeboxByClickOutside.Get());
 
   auto* image_upload = composebox->mutable_image_upload();
   image_upload->set_enable_webp_encoding(false);
@@ -286,6 +286,15 @@ const base::FeatureParam<int> kMaxNumFiles(&kNtpComposebox, "MaxNumFiles", 1);
 const base::FeatureParam<bool> kEnableDragAndDrop(&kNtpComposebox,
                                                   "EnableDragAndDrop",
                                                   true);
+
+const base::FeatureParam<bool> kCloseComposeboxByEscape(&kNtpComposebox,
+                                                    "CloseComposeboxByEscape",
+                                                    true);
+
+const base::FeatureParam<bool> kCloseComposeboxByClickOutside(
+                                                    &kNtpComposebox,
+                                                    "CloseComposeboxByClickOutside",
+                                                    true);
 
 FeatureConfig::FeatureConfig() : config(GetNTPComposeboxConfig()) {}
 

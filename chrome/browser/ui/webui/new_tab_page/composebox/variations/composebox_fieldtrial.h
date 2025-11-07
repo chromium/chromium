@@ -78,6 +78,10 @@ extern const base::FeatureParam<bool> kShowSmartCompose;
 extern const base::FeatureParam<bool> kShowVoiceSearchInSteadyComposebox;
 // Whether to show the voice search button in expanded composebox.
 extern const base::FeatureParam<bool> kShowVoiceSearchInExpandedComposebox;
+// Whether to exit AI mode when the user clicks Escape in the composebox.
+extern const base::FeatureParam<bool> kCloseComposeboxByEscape;
+// Whether to exit AI mode when the user clicks outside the composebox.
+extern const base::FeatureParam<bool> kCloseComposeboxByClickOutside;
 
 bool IsNtpComposeboxEnabled(Profile* profile);
 
