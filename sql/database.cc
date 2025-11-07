@@ -1006,7 +1006,6 @@ bool Database::RazeInternal() {
 
   DCHECK_GE(transaction_nesting_, 0);
   if (transaction_nesting_ > 0) {
-    DLOG(FATAL) << "Cannot raze within a transaction";
     RecordRazeDatabaseFailureReason(
         histogram_tag_, RazeDatabaseFailedReason::kPendingTransaction);
     return false;
@@ -1328,7 +1327,7 @@ bool Database::CommitTransaction(InternalApiToken) {
   // to sqlite3_get_autocommit(...) can be used to know if there is still a
   // pending transaction or if the connection is back to normal with the
   // autocommit mode (no pending transaction).
-  if (!succeeded && sqlite3_get_autocommit(db_) == 0) {
+  if (!succeeded && is_open() && sqlite3_get_autocommit(db_) == 0) {
     // In modern SQLite (post 3.7.11), rollback is design to be robust and
     // reliable and it will bring back the connection in a clean state.
     DoRollback();
@@ -1339,7 +1338,9 @@ bool Database::CommitTransaction(InternalApiToken) {
   ReleaseCacheMemoryIfNeeded(false);
 
   // There should be no pending transactions.
-  CHECK_NE(sqlite3_get_autocommit(db_), 0);
+  if (is_open()) {
+    CHECK_NE(sqlite3_get_autocommit(db_), 0);
+  }
 
   return succeeded;
 }

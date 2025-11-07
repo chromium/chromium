@@ -262,6 +262,43 @@ TEST_F(SQLTransactionTest, TransactionCommitWithActiveTransaction) {
   ASSERT_TRUE(other_transaction.Commit());
 }
 
+TEST_F(SQLTransactionTest, TransactionOnRazedDB) {
+  ASSERT_TRUE(db_.Execute("CREATE TABLE rows(id INTEGER PRIMARY KEY)"));
+  ASSERT_TRUE(db_.Execute("INSERT INTO rows(id) VALUES(1)"));
+  ASSERT_TRUE(db_.Execute("INSERT INTO rows(id) VALUES(2)"));
+
+  Transaction transaction(&db_);
+  EXPECT_TRUE(transaction.Begin());
+
+  Statement select(db_.GetUniqueStatement("SELECT * FROM rows"));
+  EXPECT_TRUE(select.Step());
+
+  // Raze won't succeed if there is a pending transaction. The pending commit
+  // will succeed to apply the modifications.
+  EXPECT_FALSE(db_.Raze());
+  EXPECT_TRUE(transaction.Commit());
+}
+
+TEST_F(SQLTransactionTest, TransactionOnPoisonedDB) {
+  ASSERT_TRUE(db_.Execute("CREATE TABLE rows(id INTEGER PRIMARY KEY)"));
+  ASSERT_TRUE(db_.Execute("INSERT INTO rows(id) VALUES(1)"));
+
+  Transaction transaction(&db_);
+  EXPECT_TRUE(transaction.Begin());
+  db_.Poison();
+  EXPECT_FALSE(transaction.Commit());
+}
+
+TEST_F(SQLTransactionTest, TransactionOnClosedDB) {
+  ASSERT_TRUE(db_.Execute("CREATE TABLE rows(id INTEGER PRIMARY KEY)"));
+  ASSERT_TRUE(db_.Execute("INSERT INTO rows(id) VALUES(1)"));
+
+  Transaction transaction(&db_);
+  EXPECT_TRUE(transaction.Begin());
+  db_.Close();
+  EXPECT_FALSE(transaction.Commit());
+}
+
 TEST(SQLTransactionDatabaseDestroyedTest, BeginIsNoOp) {
   auto db = std::make_unique<Database>(test::kTestTag);
   ASSERT_TRUE(db->OpenInMemory());
