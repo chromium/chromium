@@ -809,6 +809,13 @@ void GlicInstanceImpl::WillCloseFor(EmbedderKey key) {
   MaybeDeactivateEmbedder(key);
 }
 
+void GlicInstanceImpl::ClientReadyToShow(
+    const mojom::OpenPanelInfo& open_info) {
+  if (auto* embedder = GetActiveEmbedder()) {
+    embedder->OnClientReady();
+  }
+}
+
 void GlicInstanceImpl::WebUiStateChanged(mojom::WebUiState state) {
   instance_metrics_.OnWebUiStateChanged(state);
   if (state == mojom::WebUiState::kReady) {

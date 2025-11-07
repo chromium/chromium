@@ -71,6 +71,9 @@ class GlicUiEmbedder {
 
   // Returns the size of the panel.
   virtual gfx::Size GetPanelSize() = 0;
+
+  // Called when the client is ready to show.
+  virtual void OnClientReady() {}
 };
 
 }  // namespace glic

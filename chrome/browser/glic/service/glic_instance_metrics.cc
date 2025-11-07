@@ -326,11 +326,16 @@ void GlicInstanceMetrics::OnInstanceHidden() {
 void GlicInstanceMetrics::OnClose() {
   base::RecordAction(base::UserMetricsAction("Glic.Instance.Close"));
   LogEvent(GlicInstanceEvent::kClose, event_counts_.close);
+  base::UmaHistogramEnumeration("Glic.PanelWebUiState.FinishState3",
+                                last_web_ui_state_);
 }
 
 void GlicInstanceMetrics::OnToggle(glic::mojom::InvocationSource source,
                                    const ShowOptions& options,
                                    bool is_showing) {
+  if (!is_showing) {
+    invocation_start_time_ = base::TimeTicks::Now();
+  }
   base::RecordAction(base::UserMetricsAction("Glic.Instance.Toggle"));
   if (std::holds_alternative<FloatingShowOptions>(options.embedder_options)) {
     base::UmaHistogramEnumeration("Glic.Instance.Floaty.ToggleSource", source);
@@ -394,6 +399,7 @@ void GlicInstanceMetrics::UninterruptActorTask() {
 }
 
 void GlicInstanceMetrics::OnWebUiStateChanged(mojom::WebUiState state) {
+  last_web_ui_state_ = state;
   switch (state) {
     case mojom::WebUiState::kUninitialized:
       base::RecordAction(base::UserMetricsAction(
@@ -402,6 +408,7 @@ void GlicInstanceMetrics::OnWebUiStateChanged(mojom::WebUiState state) {
                event_counts_.web_ui_state_uninitialized);
       break;
     case mojom::WebUiState::kBeginLoad:
+      web_ui_load_start_time_ = base::TimeTicks::Now();
       base::RecordAction(
           base::UserMetricsAction("Glic.Instance.WebUiStateChanged.BeginLoad"));
       LogEvent(GlicInstanceEvent::kWebUiStateBeginLoad,
@@ -443,12 +450,23 @@ void GlicInstanceMetrics::OnWebUiStateChanged(mojom::WebUiState state) {
       LogEvent(GlicInstanceEvent::kWebUiStateUnavailable,
                event_counts_.web_ui_state_unavailable);
       break;
-    case mojom::WebUiState::kReady:
+    case mojom::WebUiState::kReady: {
       base::RecordAction(
           base::UserMetricsAction("Glic.Instance.WebUiStateChanged.Ready"));
       LogEvent(GlicInstanceEvent::kWebUiStateReady,
                event_counts_.web_ui_state_ready);
+      if (!web_ui_load_start_time_.is_null()) {
+        base::TimeDelta load_time =
+            base::TimeTicks::Now() - web_ui_load_start_time_;
+        std::string_view visibility_suffix =
+            is_visible_ ? ".Visible" : ".Nonvisible";
+        base::UmaHistogramCustomTimes(
+            base::StrCat({"Glic.Instance.WebUiLoadTime", visibility_suffix}),
+            load_time, base::Milliseconds(1), base::Seconds(60), 50);
+        web_ui_load_start_time_ = base::TimeTicks();
+      }
       break;
+    }
     case mojom::WebUiState::kUnresponsive:
       base::RecordAction(base::UserMetricsAction(
           "Glic.Instance.WebUiStateChanged.Unresponsive"));
@@ -474,6 +492,20 @@ void GlicInstanceMetrics::OnWebUiStateChanged(mojom::WebUiState state) {
                event_counts_.web_ui_state_disabled_by_admin);
       break;
   }
+}
+
+void GlicInstanceMetrics::OnClientReady(EmbedderType type) {
+  if (invocation_start_time_.is_null()) {
+    return;
+  }
+  base::TimeDelta presentation_time =
+      base::TimeTicks::Now() - invocation_start_time_;
+  const char* suffix =
+      (type == EmbedderType::kSidePanel) ? "SidePanel" : "Floaty";
+  base::UmaHistogramCustomTimes(
+      base::StrCat({"Glic.Instance.PanelPresentationTime.", suffix}),
+      presentation_time, base::Milliseconds(1), base::Seconds(60), 50);
+  invocation_start_time_ = base::TimeTicks();
 }
 
 void GlicInstanceMetrics::LogEvent(GlicInstanceEvent event,

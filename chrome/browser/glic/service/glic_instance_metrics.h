@@ -91,6 +91,11 @@ enum class GlicInstanceEvent {
 // Tracks and logs lifecycle events for a single GlicInstance.
 class GlicInstanceMetrics {
  public:
+  enum class EmbedderType {
+    kSidePanel,
+    kFloaty,
+  };
+
   GlicInstanceMetrics();
   ~GlicInstanceMetrics();
 
@@ -193,6 +198,9 @@ class GlicInstanceMetrics {
 
   // Called when GlicInstanceImpl::WebUiStateChanged is called.
   void OnWebUiStateChanged(mojom::WebUiState state);
+
+  // Called when the client is ready to show.
+  void OnClientReady(EmbedderType type);
 
   // Turn metrics.
   void OnUserInputSubmitted(mojom::WebClientMode mode);
@@ -305,6 +313,13 @@ class GlicInstanceMetrics {
                 mojom::WebClientMode::kMinValue,
                 mojom::WebClientMode::kMaxValue>
       inputs_modes_used_;
+
+  // The last web ui state received.
+  mojom::WebUiState last_web_ui_state_ = mojom::WebUiState::kUninitialized;
+  // Timestamp of last show start.
+  base::TimeTicks invocation_start_time_;
+  base::TimeTicks web_ui_load_start_time_;
+
   base::TimeTicks creation_time_;
   base::TimeTicks floaty_open_time_;
   std::map<int, base::TimeTicks> side_panel_open_times_;
