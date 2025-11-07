@@ -49,8 +49,10 @@ class BwgBrowserAgent : public BrowserUserData<BwgBrowserAgent> {
                      PageContextWrapperError> expected_page_context);
 
   // Presents the BWG overlay on a given view controller in a pending state
-  // without a PageContext.
-  void PresentPendingBwgOverlay(UIViewController* base_view_controller);
+  // with a partial PageContext.
+  void PresentPendingBwgOverlay(
+      UIViewController* base_view_controller,
+      std::unique_ptr<optimization_guide::proto::PageContext> page_context);
 
   // Updates the page context for the BWG overlay.
   void UpdateBwgOverlayPageContext(
@@ -62,13 +64,12 @@ class BwgBrowserAgent : public BrowserUserData<BwgBrowserAgent> {
   friend class BrowserUserData<BwgBrowserAgent>;
 
   // Presents the BWG overlay on a given view controller with page context,
-  // given specific computation and attachment states.
+  // given specific computation state.
   void PresentBwgOverlayWithState(
       UIViewController* base_view_controller,
       std::unique_ptr<optimization_guide::proto::PageContext>
           page_context_proto,
-      ios::provider::BWGPageContextComputationState computation_state,
-      ios::provider::BWGPageContextAttachmentState attachment_state);
+      ios::provider::BWGPageContextComputationState computation_state);
 
   // Fetches the favicon for the page or a default favicon if not available.
   UIImage* FetchPageFavicon();
