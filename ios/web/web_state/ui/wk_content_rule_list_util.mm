@@ -11,10 +11,18 @@
 namespace web {
 
 NSString* CreateLocalBlockingJsonRuleList() {
-  NSMutableDictionary* local_block = [@{
-    @"trigger" : [@{
+  NSMutableArray* local_schemes_urls = [@[ @"file://.*" ] mutableCopy];
+  WebClient::Schemes schemes;
+  GetWebClient()->AddAdditionalSchemes(&schemes);
+  GetWebClient()->GetAdditionalWebUISchemes(&(schemes.standard_schemes));
+  for (std::string scheme : schemes.standard_schemes) {
+    [local_schemes_urls addObject:base::SysUTF8ToNSString(scheme + "://.*")];
+  }
+
+  NSDictionary* local_block = @{
+    @"trigger" : @{
       @"url-filter" : @"https?://.*",
-      @"if-top-url" : [@[ @"file://.*" ] mutableCopy],
+      @"if-top-url" : local_schemes_urls,
       @"resource-type" : @[
         // These should be all resource types except document.
         // "document" cannot be blocked because it breaks error pages displayed
@@ -22,18 +30,11 @@ NSString* CreateLocalBlockingJsonRuleList() {
         @"image", @"style-sheet", @"script", @"font", @"raw", @"svg-document",
         @"media", @"popup", @"ping"
       ],
-    } mutableCopy],
+    },
     @"action" : @{
       @"type" : @"block",
     },
-  } mutableCopy];
-  WebClient::Schemes schemes;
-  GetWebClient()->AddAdditionalSchemes(&schemes);
-  GetWebClient()->GetAdditionalWebUISchemes(&(schemes.standard_schemes));
-  for (std::string scheme : schemes.standard_schemes) {
-    [local_block[@"trigger"][@"if-top-url"]
-        addObject:base::SysUTF8ToNSString(scheme + "://.*")];
-  }
+  };
 
   NSDictionary* allow_crbug = @{
     @"trigger" : @{
