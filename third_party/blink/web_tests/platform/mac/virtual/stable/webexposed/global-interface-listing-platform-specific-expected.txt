@@ -83,6 +83,13 @@ interface BluetoothUUID
     attribute @@toStringTag
     method constructor
 interface Clipboard : EventTarget
+    getter onclipboardchange
+    setter onclipboardchange
+interface ClipboardChangeEvent : Event
+    attribute @@toStringTag
+    getter changeId
+    getter types
+    method constructor
 interface Navigator
     getter bluetooth
 interface Notification : EventTarget
