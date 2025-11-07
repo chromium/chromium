@@ -9,6 +9,7 @@
 
 #include "base/check_deref.h"
 #include "base/command_line.h"
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_util.h"
@@ -24,9 +25,11 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/regional_capabilities/program_settings.h"
 #include "components/regional_capabilities/regional_capabilities_prefs.h"
+#include "components/regional_capabilities/regional_capabilities_utils.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/search_engines_pref_names.h"
+#include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data_util.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -39,6 +42,19 @@
 using ::country_codes::CountryId;
 
 namespace search_engines {
+
+namespace {
+std::vector<std::unique_ptr<TemplateURL>> ToOwnedTemplateURLs(
+    const std::vector<const TemplateURLPrepopulateData::PrepopulatedEngine*>&
+        engines) {
+  return base::ToVector(
+      engines,
+      [](const TemplateURLPrepopulateData::PrepopulatedEngine* engine) {
+        auto data = TemplateURLDataFromPrepopulatedEngine(*engine);
+        return std::make_unique<TemplateURL>(*data);
+      });
+}
+}  // namespace
 
 const CountryId kFranceCountryId = CountryId("FR");
 
@@ -141,6 +157,63 @@ TEST_F(SearchEngineChoiceUtilsTest, ChoiceScreenDisplayState_FromDict_Errors) {
   // Special case: makes the dictionary invalid.
   dict.Set("list_is_modified_by_current_default", true);
   EXPECT_FALSE(ChoiceScreenDisplayState::FromDict(dict).has_value());
+}
+
+TEST_F(SearchEngineChoiceUtilsTest, ChoiceScreenDisplayStateConstuction) {
+  SearchTermsData search_terms_data;
+
+  auto owned_template_urls = ToOwnedTemplateURLs(
+      regional_capabilities::GetDefaultPrepopulatedEngines());
+  ChoiceScreenData choice_screen_data(std::move(owned_template_urls),
+                                      /* current_default_to_highlight=*/nullptr,
+                                      CountryId(), search_terms_data);
+
+  EXPECT_FALSE(
+      choice_screen_data.display_state().is_current_default_search_presented);
+  EXPECT_FALSE(
+      choice_screen_data.display_state().includes_non_regional_set_engine);
+}
+
+TEST_F(SearchEngineChoiceUtilsTest,
+       ChoiceScreenDisplayStateConstuction_DseHighlightProperties) {
+  SearchTermsData search_terms_data;
+  auto owned_template_urls = ToOwnedTemplateURLs(
+      regional_capabilities::GetDefaultPrepopulatedEngines());
+  const TemplateURL* current_default_to_highlight =
+      owned_template_urls[0].get();
+
+  ChoiceScreenData choice_screen_data(std::move(owned_template_urls),
+                                      current_default_to_highlight, CountryId(),
+                                      search_terms_data);
+
+  EXPECT_TRUE(
+      choice_screen_data.display_state().is_current_default_search_presented);
+  EXPECT_FALSE(
+      choice_screen_data.display_state().includes_non_regional_set_engine);
+}
+
+TEST_F(SearchEngineChoiceUtilsTest,
+       ChoiceScreenDisplayStateConstuction_DseHighlightNonRegional) {
+  SearchTermsData search_terms_data;
+
+  auto owned_template_urls = ToOwnedTemplateURLs(
+      regional_capabilities::GetDefaultPrepopulatedEngines());
+
+  TemplateURLData template_url_data;
+  template_url_data.id = 0;
+  template_url_data.SetKeyword(u"custom");
+  template_url_data.SetURL("https://www.example.com/?q={searchTerms}");
+  auto current_default_to_highlight =
+      std::make_unique<TemplateURL>(template_url_data);
+
+  ChoiceScreenData choice_screen_data(std::move(owned_template_urls),
+                                      current_default_to_highlight.get(),
+                                      CountryId(), search_terms_data);
+
+  EXPECT_TRUE(
+      choice_screen_data.display_state().is_current_default_search_presented);
+  EXPECT_TRUE(
+      choice_screen_data.display_state().includes_non_regional_set_engine);
 }
 
 TEST_F(SearchEngineChoiceUtilsTest, GetChoiceCompletionMetadata_Success) {
