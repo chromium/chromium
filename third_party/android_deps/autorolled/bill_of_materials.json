@@ -1397,7 +1397,7 @@
     {
         "name": "error_prone_annotations",
         "group": "com.google.errorprone",
-        "version": "2.43.0"
+        "version": "2.44.0"
     },
     {
         "name": "firebase-annotations",
