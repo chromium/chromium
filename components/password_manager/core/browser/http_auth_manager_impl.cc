@@ -128,7 +128,7 @@ void HttpAuthManagerImpl::OnReauthCompleted(
     const std::u16string& password,
     base::OnceClosure on_filling_complete,
     bool auth_result) {
-  if (auth_result) {
+  if (observer_ && auth_result) {
     observer_->OnAutofillDataAvailable(username, password);
     std::move(on_filling_complete).Run();
   }
