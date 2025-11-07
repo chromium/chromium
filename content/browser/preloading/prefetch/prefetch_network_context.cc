@@ -6,6 +6,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "components/embedder_support/user_agent_utils.h"
+#include "components/variations/net/omnibox_autofocus_http_headers.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "content/browser/loader/url_loader_factory_utils.h"
 #include "content/browser/preloading/prefetch/prefetch_network_context_client.h"
@@ -135,6 +136,7 @@ void PrefetchNetworkContext::CreateIsolatedURLLoaderFactory(
   if (base::FeatureList::IsEnabled(
           kVariationsHeaderForCrossSiteSpeculationRulesPrefetch)) {
     variations::UpdateCorsExemptHeaderForVariations(context_params.get());
+    variations::UpdateCorsExemptHeaderForOmniboxAutofocus(context_params.get());
   }
   context_params->cookie_manager_params =
       network::mojom::CookieManagerParams::New();

@@ -43,5 +43,31 @@ static_library("net") {
       "//components/variations:variations_mojom",
       "//third_party/blink/public/common",
     ]
+    public_deps += [ ":omnibox_autofocus_http_headers" ]
+  }
+}
+
+if (use_blink) {
+  component("omnibox_autofocus_http_headers") {
+    output_name = "omnibox_autofocus_http_headers"
+
+    defines = [ "IS_OMNIBOX_AUTOFOCUS_HTTP_HEADERS_IMPL" ]
+
+    sources = [
+      "omnibox_autofocus_http_headers.cc",
+      "omnibox_autofocus_http_headers.h",
+      "omnibox_autofocus_url_loader_throttle.cc",
+      "omnibox_autofocus_url_loader_throttle.h",
+    ]
+
+    deps = [
+      "//base",
+      "//components/google/core/common",
+      "//net",
+      "//services/network/public/cpp",
+      "//services/network/public/cpp:cpp_base",
+      "//third_party/blink/public/common",
+      "//url",
+    ]
   }
 }

@@ -71,6 +71,7 @@
 #include "components/sync/base/features.h"
 #include "components/sync_sessions/features.h"
 #include "components/touch_to_search/core/browser/contextual_search_field_trial.h"
+#include "components/variations/net/omnibox_autofocus_http_headers.h"
 #include "components/visited_url_ranking/public/features.h"
 #include "components/viz/common/features.h"
 #include "components/webapps/browser/features.h"
@@ -371,7 +372,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kNotificationPermissionVariant,
     &kNotificationTrampoline,
     &kOmahaMinSdkVersionAndroid,
-    &kOmniboxAutofocusOnIncognitoNtp,
     &kPCCTMinimumHeight,
     &kPageAnnotationsService,
     &kPageContentProvider,
@@ -515,6 +515,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &syncer::kUnoPhase2FollowUp,
     &syncer::kWebApkBackupAndRestoreBackend,
     &tab_groups::kUseAlternateHistorySyncIllustration,
+    &variations::kOmniboxAutofocusOnIncognitoNtp,
     &visited_url_ranking::features::kGroupSuggestionService,
     &visited_url_ranking::features::kVisitedURLRankingService,
     &webapps::features::kAndroidMinimalUiLargeScreen,
@@ -721,7 +722,6 @@ BASE_FEATURE(kNotificationPermissionBottomSheet, base::FEATURE_DISABLED_BY_DEFAU
 BASE_FEATURE(kNotificationPermissionVariant, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kNotificationTrampoline, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kOmahaMinSdkVersionAndroid, base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kOmniboxAutofocusOnIncognitoNtp, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kPCCTMinimumHeight, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kPageAnnotationsService, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kPageContentProvider, base::FEATURE_ENABLED_BY_DEFAULT);

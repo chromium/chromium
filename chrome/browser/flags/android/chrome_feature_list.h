@@ -206,7 +206,6 @@ BASE_DECLARE_FEATURE(kNotificationPermissionBottomSheet);
 BASE_DECLARE_FEATURE(kNotificationPermissionVariant);
 BASE_DECLARE_FEATURE(kNotificationTrampoline);
 BASE_DECLARE_FEATURE(kOmahaMinSdkVersionAndroid);
-BASE_DECLARE_FEATURE(kOmniboxAutofocusOnIncognitoNtp);
 BASE_DECLARE_FEATURE(kOptimizeGeolocationHeaderGeneration);
 BASE_DECLARE_FEATURE(kPCCTMinimumHeight);
 BASE_DECLARE_FEATURE(kPageAnnotationsService);

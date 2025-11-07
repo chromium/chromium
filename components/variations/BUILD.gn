@@ -271,6 +271,13 @@ source_set("unit_tests") {
     sources += [ "variations_request_scheduler_mobile_unittest.cc" ]
   }
 
+  if (use_blink) {
+    sources += [
+      "net/omnibox_autofocus_http_headers_unittest.cc",
+      "net/omnibox_autofocus_url_loader_throttle_unittest.cc",
+    ]
+  }
+
   if (is_chromeos) {
     sources += [ "variations_crash_keys_chromeos_unittest.cc" ]
   }
@@ -296,6 +303,7 @@ source_set("unit_tests") {
     "//components/crash/core/common:crash_key",
     "//components/prefs:test_support",
     "//components/variations/field_trial_config",
+    "//services/network:test_support",
     "//services/network/public/cpp:cpp_base",
     "//testing/gmock",
     "//testing/gtest",
@@ -303,6 +311,10 @@ source_set("unit_tests") {
     "//third_party/zlib/google:compression_utils",
     "//url",
   ]
+
+  if (use_blink) {
+    deps += [ "//third_party/blink/public/common" ]
+  }
 
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
   # enable the diagnostic by removing this line.
