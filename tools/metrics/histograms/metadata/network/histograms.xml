@@ -5094,6 +5094,7 @@ chromium-metrics-reviews@google.com.
     units="microseconds" expires_after="2026-03-15">
   <owner>olivier@chromium.org</owner>
   <owner>cduvall@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Logs the time spent in CorsURLLoaderFactory::CreateLoaderAndStart.
 
