@@ -179,6 +179,8 @@ source_set("browser") {
     "page_load_metrics/aw_page_load_metrics_memory_tracker_factory.h",
     "page_load_metrics/aw_page_load_metrics_provider.cc",
     "page_load_metrics/aw_page_load_metrics_provider.h",
+    "page_load_metrics/aw_web_performance_metrics_observer.cc",
+    "page_load_metrics/aw_web_performance_metrics_observer.h",
     "page_load_metrics/page_load_metrics_initialize.cc",
     "page_load_metrics/page_load_metrics_initialize.h",
     "page_load_metrics/service_level_page_load_metrics_observer.cc",
