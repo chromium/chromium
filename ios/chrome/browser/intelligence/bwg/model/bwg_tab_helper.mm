@@ -494,34 +494,8 @@ void BwgTabHelper::OnOptimizationGuideDecision(
 
   latest_load_contextual_cueing_metadata_ = metadata.ParsedMetadata<
       optimization_guide::proto::GlicContextualCueingMetadata>();
-  if (latest_load_contextual_cueing_metadata_) {
-    if (IsAskGeminiSnackbarEnabled()) {
-      SnackbarMessageAction* action = [[SnackbarMessageAction alloc] init];
-      action.handler = ^{
-        [bwg_commands_handler_
-            startBWGFlowWithEntryPoint:bwg::EntryPoint::Promo];
-      };
-      action.title = [NSString stringWithFormat:@"✦ %@", @"Ask Gemini"];
-      SnackbarMessage* message =
-          [[SnackbarMessage alloc] initWithTitle:@"Ask about page?"];
-      message.action = action;
-      [snackbar_commands_handler_ showSnackbarMessage:message];
-    } else {
-      UIImage* badge_image =
-          [BWGUIUtils createGradientGeminiLogo:kBadgeSymbolPointSize];
-      NSString* cue_label = base::SysUTF8ToNSString(
-          latest_load_contextual_cueing_metadata_->cueing_configurations(0)
-              .cue_label());
-      LocationBarBadgeConfiguration* badge_config =
-          [[LocationBarBadgeConfiguration alloc]
-               initWithBadgeType:LocationBarBadgeType::kGeminiContextualCueChip
-              accessibilityLabel:cue_label
-                      badgeImage:badge_image];
-
-      badge_config.badgeText = cue_label;
-      badge_config.shouldHideBadgeAfterChipCollapse = true;
-      [location_bar_badge_commands_handler_ updateBadgeConfig:badge_config];
-    }
+  if (!latest_load_contextual_cueing_metadata_) {
+    return;
   }
 
   ProfileIOS* profile =
