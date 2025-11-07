@@ -4752,6 +4752,11 @@ CSSValue* ComputedStyleUtils::ValueForIntrinsicLength(
     return CSSIdentifierValue::Create(CSSValueID::kNone);
   }
 
+  if (intrinsic_length.MatchesElement()) {
+    DCHECK(RuntimeEnabledFeatures::ResponsiveIframesEnabled());
+    return CSSIdentifierValue::Create(CSSValueID::kFromElement);
+  }
+
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
   if (intrinsic_length.HasAuto()) {
     list->Append(*CSSIdentifierValue::Create(CSSValueID::kAuto));
