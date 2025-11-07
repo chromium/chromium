@@ -64,6 +64,7 @@ class HomeCustomizationMediatorUnitTest : public PlatformTest {
 
  protected:
   web::WebTaskEnvironment task_environment_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   HomeCustomizationMediator* mediator_;
   raw_ptr<DiscoverFeedVisibilityBrowserAgent, DanglingUntriaged>
       discover_feed_visibility_browser_agent_;

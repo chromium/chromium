@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/shared/public/commands/contextual_panel_entrypoint_commands.h"
 #import "ios/chrome/browser/shared/public/commands/page_side_swipe_commands.h"
 #import "ios/chrome/browser/shared/public/commands/reader_mode_chip_commands.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gmock/include/gmock/gmock.h"
@@ -107,6 +108,7 @@ class ReaderModeBrowserAgentTest : public ReaderModeTest {
   }
 
  protected:
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestBrowser> test_browser_;
   id fake_reader_mode_chip_handler_;
   id side_swipe_handler_;

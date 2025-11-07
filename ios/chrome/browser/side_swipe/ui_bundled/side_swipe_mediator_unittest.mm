@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_mediator+Testing.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_source_tab_helper.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "ios/web/common/crw_obscured_insets_controller.h"
 #import "ios/web/common/crw_web_view_content_view.h"
@@ -112,6 +113,7 @@ class SideSwipeMediatorTest : public ReaderModeTest {
     active_web_state_index_.reset();
   }
 
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<Browser> browser_;
   UIView* view_;
   SideSwipeMediator* side_swipe_mediator_;

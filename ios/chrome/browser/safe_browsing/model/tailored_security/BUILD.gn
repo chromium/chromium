@@ -70,6 +70,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/prefs:browser_prefs",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/signin/model",
+    "//ios/chrome/test:test_support",
     "//ios/web/public/test",
     "//testing/gmock",
     "//testing/gtest",

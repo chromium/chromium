@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/omnibox/model/suggestions/pedal_suggestion_wrapper.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 
@@ -66,7 +67,7 @@ class AutocompleteResultWrapperTest : public PlatformTest {
   ~AutocompleteResultWrapperTest() override { [wrapper_ disconnect]; }
 
   web::WebTaskEnvironment task_environment_;
-
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   AutocompleteResultWrapper* wrapper_;
   search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;
   std::unique_ptr<TestProfileIOS> profile_;

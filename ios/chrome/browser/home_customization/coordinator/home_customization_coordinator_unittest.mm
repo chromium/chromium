@@ -52,6 +52,7 @@ class HomeCustomizationCoordinatorUnitTest : public PlatformTest {
 
  protected:
   web::WebTaskEnvironment task_environment_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   HomeCustomizationCoordinator* coordinator_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;

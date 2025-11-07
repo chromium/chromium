@@ -50,6 +50,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/common/ui/colors",
+    "//ios/chrome/test:test_support",
     "//ios/web/public/test",
     "//testing/gmock",
     "//testing/gtest",
