@@ -151,6 +151,20 @@ class BookmarkDataTypeProcessor : public syncer::DataTypeProcessor,
   // bookmarks in the model depending on the selected behavior.
   void TriggerWipeModelUponSyncDisabledBehavior();
 
+  // Handles the error state from the given `model_metadata` if a previous sync
+  // cycle reported an error. Returns true if there was an error to be handled.
+  [[nodiscard]] bool HandlePreviousErrorState(
+      const sync_pb::BookmarkModelMetadata& model_metadata);
+
+  // Handles the case where metadata needs to be cleared when the model is
+  // ready. Returns true if there was a pending clear metadata operation.
+  [[nodiscard]] bool HandlePendingClearMetadata(
+      const std::string& metadata_str);
+
+  // Processes the metadata and initializes the tracker if the metadata is valid
+  // and there was no previous error.
+  void ProcessMetadataAndMaybeInitTracker(const std::string& metadata_str);
+
   // Creates a DictionaryValue for local and remote debugging information about
   // `node` and appends it to `all_nodes`. It does the same for child nodes
   // recursively. `index` is the index of `node` within its parent. `index`
