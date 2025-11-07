@@ -347,11 +347,7 @@ GlicInstanceCoordinatorImpl::GetOrCreateGlicInstanceImplForTab(
   }
 
   // Create a new conversation and instance.
-  auto* new_instance = CreateGlicInstance();
-  if (tab) {
-    new_instance->sharing_manager().PinTabs({tab->GetHandle()});
-  }
-  return new_instance;
+  return CreateGlicInstance();
 }
 
 GlicInstanceImpl* GlicInstanceCoordinatorImpl::GetInstanceImplFor(
