@@ -3167,29 +3167,42 @@ chromium-metrics-reviews@google.com.
   <summary>Compressed/Decompressed size ratio.</summary>
 </histogram>
 
-<histogram name="CertificateType2{CertificateTypeBRValidity2}" units="units"
-    expires_after="never">
+<histogram name="CertificateType2.{BRValidity}.{ChainPosition}.{Algorithm}"
+    units="units" expires_after="never">
 <!-- expires-never: histograms are used to assess policy -->
 
 <!-- https://crbug.com/732640#c5 -->
 
-  <owner>rsleevi@chromium.org</owner>
+  <owner>mattm@chromium.org</owner>
+  <owner>src/net/cert/OWNERS</owner>
   <summary>
     Information about the certificate algorithms and sizes in use on the web, to
     examine compliance with the CA/Browser Forum requirements and security best
     practice. This histogram considers the notBefore as the issuance date, for
-    purposes of what requirements apply. {CertificateTypeBRValidity2}
+    purposes of what requirements apply. {BRValidity}
+
+    Records the size in bits of the key for certificates with chain position
+    {ChainPosition} and algorithm {Algorithm}.
   </summary>
-  <token key="CertificateTypeBRValidity2">
-    <variant name=""/>
-    <variant name=".BR"
+  <token key="BRValidity">
+    <variant name="BR"
         summary="The *leaf* certificate of the chain expires after 2013-12-31
                  and was issued on or after 2012-07-01, as judged by the
                  notBefore, meaning that it should be in scope for the
-                 Baseline Requirement's key size requirements"/>
-    <variant name=".NonBR"
+                 Baseline Requirement's key size requirements."/>
+    <variant name="NonBR"
         summary="The *leaf* certificate of the chain expires on or before
-                 2013-12-31 or was issued before 2012-07-01"/>
+                 2013-12-31 or was issued before 2012-07-01."/>
+  </token>
+  <token key="ChainPosition">
+    <variant name="Intermediate" summary="Intermediate"/>
+    <variant name="Leaf" summary="Leaf"/>
+    <variant name="Root" summary="Root"/>
+  </token>
+  <token key="Algorithm">
+    <variant name="ECDSA" summary="ECDSA"/>
+    <variant name="RSA" summary="RSA"/>
+    <variant name="Unknown" summary="SPKI unrecognized by cert library"/>
   </token>
 </histogram>
 

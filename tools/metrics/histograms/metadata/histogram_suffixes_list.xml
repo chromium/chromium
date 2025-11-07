@@ -237,31 +237,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Autofill.UnmaskPrompt.TimeBeforeAbandonUnmasking"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="CertificateTypeAlgorithms" separator=".">
-  <owner>rsleevi@chromium.org</owner>
-  <suffix name="DH" label="DH"/>
-  <suffix name="DSA" label="DSA"/>
-  <suffix name="ECDH" label="ECDH"/>
-  <suffix name="ECDSA" label="ECDSA"/>
-  <suffix name="RSA" label="RSA"/>
-  <suffix name="Unknown" label="SPKI unrecognized by cert library"/>
-  <suffix name="Unsupported" label="Un-histogrammed type - please fix"/>
-  <affected-histogram name="CertificateType2.BR.Intermediate"/>
-  <affected-histogram name="CertificateType2.BR.Leaf"/>
-  <affected-histogram name="CertificateType2.BR.Root"/>
-  <affected-histogram name="CertificateType2.NonBR.Intermediate"/>
-  <affected-histogram name="CertificateType2.NonBR.Leaf"/>
-  <affected-histogram name="CertificateType2.NonBR.Root"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="CertificateTypeChainPosition" separator=".">
-  <suffix name="Intermediate" label="Intermediate's SPKI"/>
-  <suffix name="Leaf" label="Leaf's SPKI"/>
-  <suffix name="Root" label="Root's SPKI"/>
-  <affected-histogram name="CertificateType2.BR"/>
-  <affected-histogram name="CertificateType2.NonBR"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="Cras_ClientType" separator=".">
   <suffix name="ARC" label="A client created by ARC++."/>
   <suffix name="ARCVM" label="A client created by ARCVM."/>
