@@ -825,7 +825,7 @@ TEST(FilePersistentMemoryAllocatorTest, CreationTest) {
     writer.Write(0, (const char*)local.data(), local.used());
   }
 
-  std::unique_ptr<MemoryMappedFile> mmfile(new MemoryMappedFile());
+  auto mmfile = std::make_unique<MemoryMappedFile>();
   ASSERT_TRUE(mmfile->Initialize(file_path));
   EXPECT_TRUE(mmfile->IsValid());
   const size_t mmlength = mmfile->length();
@@ -884,7 +884,7 @@ TEST(FilePersistentMemoryAllocatorTest, ExtendTest) {
 
   // Map it as an extendable read/write file and append to it.
   {
-    std::unique_ptr<MemoryMappedFile> mmfile(new MemoryMappedFile());
+    auto mmfile = std::make_unique<MemoryMappedFile>();
     ASSERT_TRUE(mmfile->Initialize(
         File(file_path, File::FLAG_OPEN | File::FLAG_READ | File::FLAG_WRITE),
         region, MemoryMappedFile::READ_WRITE_EXTEND));
@@ -904,7 +904,7 @@ TEST(FilePersistentMemoryAllocatorTest, ExtendTest) {
 
   // Verify that it's still an acceptable file.
   {
-    std::unique_ptr<MemoryMappedFile> mmfile(new MemoryMappedFile());
+    auto mmfile = std::make_unique<MemoryMappedFile>();
     ASSERT_TRUE(mmfile->Initialize(
         File(file_path, File::FLAG_OPEN | File::FLAG_READ | File::FLAG_WRITE),
         region, MemoryMappedFile::READ_WRITE_EXTEND));
@@ -1051,7 +1051,7 @@ TEST_F(PersistentMemoryAllocatorTest, TruncateTest) {
     for (bool read_only : {false, true}) {
       SCOPED_TRACE(StringPrintf("read_only=%s", read_only ? "true" : "false"));
 
-      std::unique_ptr<MemoryMappedFile> mmfile(new MemoryMappedFile());
+      auto mmfile = std::make_unique<MemoryMappedFile>();
       ASSERT_TRUE(mmfile->Initialize(
           File(file_path, File::FLAG_OPEN |
                               (read_only ? File::FLAG_READ

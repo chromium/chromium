@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <memory>
 #include <string_view>
 #include <utility>
 
@@ -1188,7 +1189,7 @@ TEST_F(FieldTrialListTest, PassFieldTrialSharedMemoryOnCommandLine) {
   // Setup some field trial state.
   test::ScopedFeatureList scoped_feature_list1;
   scoped_feature_list1.InitWithEmptyFeatureAndFieldTrialLists();
-  std::unique_ptr<FeatureList> feature_list(new FeatureList);
+  auto feature_list = std::make_unique<FeatureList>();
   feature_list->InitFromCommandLine(kTestFeatureA.name, kTestFeatureB.name);
   FieldTrial* trial = FieldTrialList::CreateFieldTrial("Trial1", "Group1");
   feature_list->RegisterFieldTrialOverride(
