@@ -1,0 +1,7 @@
+This is a wdspec test.
+[FAIL] test_set_to_user_context_and_then_to_context
+  AssertionError: assert 'America/Los_Angeles' == 'Asia/Yekaterinburg'
+[FAIL] test_set_to_context_and_then_to_user_context
+  AssertionError: assert 'Europe/Berlin' == 'Asia/Yekaterinburg'
+Harness: the test ran to completion.
+

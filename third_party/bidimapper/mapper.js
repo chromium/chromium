@@ -962,11 +962,6 @@
             return await context.print(params);
         }
         async setViewport(params) {
-            const maxDimensionSize = 10_000_000;
-            if ((params.viewport?.height ?? 0) > maxDimensionSize ||
-                (params.viewport?.width ?? 0) > maxDimensionSize) {
-                throw new UnsupportedOperationException(`Viewport dimension over ${maxDimensionSize} are not supported`);
-            }
             const config = {};
             if (params.devicePixelRatio !== undefined) {
                 config.devicePixelRatio = params.devicePixelRatio;
@@ -981,10 +976,7 @@
             if (params.context !== undefined) {
                 this.#contextConfigStorage.updateBrowsingContextConfig(params.context, config);
             }
-            await Promise.all(impactedTopLevelContexts.map(async (context) => {
-                const config = this.#contextConfigStorage.getActiveConfig(context.id, context.userContext);
-                await context.setViewport(config.viewport ?? null, config.devicePixelRatio ?? null, config.screenOrientation ?? null);
-            }));
+            await Promise.all(impactedTopLevelContexts.map((context) => context.setViewport(params.viewport, params.devicePixelRatio)));
             return {};
         }
         async #getRelatedTopLevelBrowsingContexts(browsingContextId, userContextIds) {
@@ -1154,10 +1146,7 @@
                     geolocation,
                 });
             }
-            await Promise.all(browsingContexts.map(async (context) => {
-                const config = this.#contextConfigStorage.getActiveConfig(context.id, context.userContext);
-                await context.setGeolocationOverride(config.geolocation ?? null);
-            }));
+            await Promise.all(browsingContexts.map(async (context) => await context.setGeolocationOverride(geolocation)));
             return {};
         }
         async setLocaleOverride(params) {
@@ -1176,13 +1165,7 @@
                     locale,
                 });
             }
-            await Promise.all(browsingContexts.map(async (context) => {
-                const config = this.#contextConfigStorage.getActiveConfig(context.id, context.userContext);
-                await Promise.all([
-                    context.setLocaleOverride(config.locale ?? null),
-                    context.setUserAgentAndAcceptLanguage(config.userAgent, config.locale),
-                ]);
-            }));
+            await Promise.all(browsingContexts.map(async (context) => await context.setLocaleOverride(locale)));
             return {};
         }
         async setScriptingEnabled(params) {
@@ -1198,10 +1181,7 @@
                     scriptingEnabled,
                 });
             }
-            await Promise.all(browsingContexts.map(async (context) => {
-                const config = this.#contextConfigStorage.getActiveConfig(context.id, context.userContext);
-                await context.setScriptingEnabled(config.scriptingEnabled ?? null);
-            }));
+            await Promise.all(browsingContexts.map(async (context) => await context.setScriptingEnabled(scriptingEnabled)));
             return {};
         }
         async setScreenOrientationOverride(params) {
@@ -1216,10 +1196,7 @@
                     screenOrientation: params.screenOrientation,
                 });
             }
-            await Promise.all(browsingContexts.map(async (context) => {
-                const config = this.#contextConfigStorage.getActiveConfig(context.id, context.userContext);
-                await context.setViewport(config.viewport ?? null, config.devicePixelRatio ?? null, config.screenOrientation ?? null);
-            }));
+            await Promise.all(browsingContexts.map(async (context) => await context.setScreenOrientationOverride(params.screenOrientation)));
             return {};
         }
         async #getRelatedTopLevelBrowsingContexts(browsingContextIds, userContextIds, allowGlobal = false) {
@@ -1278,10 +1255,7 @@
                     timezone,
                 });
             }
-            await Promise.all(browsingContexts.map(async (context) => {
-                const config = this.#contextConfigStorage.getActiveConfig(context.id, context.userContext);
-                await context.setTimezoneOverride(config.timezone ?? null);
-            }));
+            await Promise.all(browsingContexts.map(async (context) => await context.setTimezoneOverride(timezone)));
             return {};
         }
         async setUserAgentOverrideParams(params) {
@@ -1304,10 +1278,7 @@
                     userAgent: params.userAgent,
                 });
             }
-            await Promise.all(browsingContexts.map(async (context) => {
-                const config = this.#contextConfigStorage.getActiveConfig(context.id, context.userContext);
-                await context.setUserAgentAndAcceptLanguage(config.userAgent, config.locale);
-            }));
+            await Promise.all(browsingContexts.map(async (context) => await context.setUserAgentOverride(params.userAgent)));
             return {};
         }
         async setNetworkConditions(params) {
@@ -1332,8 +1303,8 @@
                 throw new UnsupportedOperationException(`Unsupported network conditions ${params.networkConditions.type}`);
             }
             await Promise.all(browsingContexts.map(async (context) => {
-                const config = this.#contextConfigStorage.getActiveConfig(context.id, context.userContext);
-                await context.setEmulatedNetworkConditions(config.emulatedNetworkConditions ?? null);
+                const emulatedNetworkConditions = this.#contextConfigStorage.getActiveConfig(context.id, context.userContext).emulatedNetworkConditions ?? null;
+                await context.setEmulatedNetworkConditions(emulatedNetworkConditions);
             }));
             return {};
         }
@@ -4043,7 +4014,13 @@
                 if (value.trim() !== value) {
                     throw new InvalidArgumentException(`Header value should not contain trailing or ending whitespaces`);
                 }
-                parsedHeaders[bidiHeader.name] = bidiHeader.value.value;
+                if (parsedHeaders[bidiHeader.name] === undefined) {
+                    parsedHeaders[bidiHeader.name] = bidiHeader.value.value;
+                }
+                else {
+                    parsedHeaders[bidiHeader.name] =
+                        `${parsedHeaders[bidiHeader.name]}, ${bidiHeader.value.value}`;
+                }
             }
             else {
                 throw new UnsupportedOperationException('Only string headers values are supported');
@@ -7355,8 +7332,8 @@
                 url: navigationState.url,
             };
         }
-        async setViewport(viewport, devicePixelRatio, screenOrientation) {
-            await this.cdpTarget.setDeviceMetricsOverride(viewport, devicePixelRatio, screenOrientation);
+        async setViewport(viewport, devicePixelRatio) {
+            await this.cdpTarget.setViewport(viewport, devicePixelRatio);
         }
         async handleUserPrompt(accept, userText) {
             await this.top.#cdpTarget.cdpClient.sendCommand('Page.handleJavaScriptDialog', {
@@ -7865,11 +7842,14 @@
         async setGeolocationOverride(geolocation) {
             await Promise.all(this.#getAllRelatedCdpTargets().map(async (cdpTarget) => await cdpTarget.setGeolocationOverride(geolocation)));
         }
+        async setScreenOrientationOverride(screenOrientation) {
+            await this.#cdpTarget.setScreenOrientationOverride(screenOrientation);
+        }
         async setScriptingEnabled(scriptingEnabled) {
             await Promise.all(this.#getAllRelatedCdpTargets().map(async (cdpTarget) => await cdpTarget.setScriptingEnabled(scriptingEnabled)));
         }
-        async setUserAgentAndAcceptLanguage(userAgent, acceptLanguage) {
-            await Promise.all(this.#getAllRelatedCdpTargets().map(async (cdpTarget) => await cdpTarget.setUserAgentAndAcceptLanguage(userAgent, acceptLanguage)));
+        async setUserAgentOverride(userAgent) {
+            await Promise.all(this.#getAllRelatedCdpTargets().map(async (cdpTarget) => await cdpTarget.setUserAgent(userAgent)));
         }
         async setEmulatedNetworkConditions(networkConditions) {
             await Promise.all(this.#getAllRelatedCdpTargets().map(async (cdpTarget) => await cdpTarget.setEmulatedNetworkConditions(networkConditions)));
@@ -9136,9 +9116,7 @@
                 case 'Image':
                     return 'image';
                 case 'Document':
-                    return this.#request.info?.initiator.type === 'parser'
-                        ? 'iframe'
-                        : 'document';
+                    return this.#request.info?.initiator.type === 'parser' ? 'iframe' : '';
                 default:
                     return '';
             }
@@ -9576,6 +9554,13 @@
         contextConfigStorage;
         #unblocked = new Deferred();
         #logger;
+        #previousDeviceMetricsOverride = {
+            width: 0,
+            height: 0,
+            deviceScaleFactor: 0,
+            mobile: false,
+            dontSetVisibleSize: true,
+        };
         #windowId;
         #deviceAccessEnabled = false;
         #cacheDisableState = false;
@@ -9905,21 +9890,37 @@
                 return script.initInTarget(this, true);
             }));
         }
-        async setDeviceMetricsOverride(viewport, devicePixelRatio, screenOrientation) {
-            if (viewport === null &&
-                devicePixelRatio === null &&
-                screenOrientation === null) {
+        async setViewport(viewport, devicePixelRatio) {
+            if (viewport === null && devicePixelRatio === null) {
                 await this.cdpClient.sendCommand('Emulation.clearDeviceMetricsOverride');
                 return;
             }
-            const metricsOverride = {
-                width: viewport?.width ?? 0,
-                height: viewport?.height ?? 0,
-                deviceScaleFactor: devicePixelRatio ?? 0,
-                screenOrientation: this.#toCdpScreenOrientationAngle(screenOrientation) ?? undefined,
-                mobile: false,
-            };
-            await this.cdpClient.sendCommand('Emulation.setDeviceMetricsOverride', metricsOverride);
+            const newViewport = { ...this.#previousDeviceMetricsOverride };
+            if (viewport === null) {
+                newViewport.width = 0;
+                newViewport.height = 0;
+            }
+            else if (viewport !== undefined) {
+                newViewport.width = viewport.width;
+                newViewport.height = viewport.height;
+            }
+            if (devicePixelRatio === null) {
+                newViewport.deviceScaleFactor = 0;
+            }
+            else if (devicePixelRatio !== undefined) {
+                newViewport.deviceScaleFactor = devicePixelRatio;
+            }
+            try {
+                await this.cdpClient.sendCommand('Emulation.setDeviceMetricsOverride', newViewport);
+                this.#previousDeviceMetricsOverride = newViewport;
+            }
+            catch (err) {
+                if (err.message.startsWith(
+                'Width and height values must be positive')) {
+                    throw new UnsupportedOperationException('Provided viewport dimensions are not supported');
+                }
+                throw err;
+            }
         }
         async #setUserContextConfig(config) {
             const promises = [];
@@ -9930,9 +9931,13 @@
                 .catch(() => {
             }));
             if (config.viewport !== undefined ||
-                config.devicePixelRatio !== undefined ||
-                config.screenOrientation !== undefined) {
-                promises.push(this.setDeviceMetricsOverride(config.viewport ?? null, config.devicePixelRatio ?? null, config.screenOrientation ?? null).catch(() => {
+                config.devicePixelRatio !== undefined) {
+                promises.push(this.setViewport(config.viewport, config.devicePixelRatio).catch(() => {
+                }));
+            }
+            if (config.screenOrientation !== undefined &&
+                config.screenOrientation !== null) {
+                promises.push(this.setScreenOrientationOverride(config.screenOrientation).catch(() => {
                 }));
             }
             if (config.geolocation !== undefined && config.geolocation !== null) {
@@ -9947,8 +9952,8 @@
             if (config.extraHeaders !== undefined) {
                 promises.push(this.setExtraHeaders(config.extraHeaders));
             }
-            if (config.userAgent !== undefined || config.locale !== undefined) {
-                promises.push(this.setUserAgentAndAcceptLanguage(config.userAgent, config.locale));
+            if (config.userAgent !== undefined) {
+                promises.push(this.setUserAgent(config.userAgent));
             }
             if (config.scriptingEnabled !== undefined) {
                 promises.push(this.setScriptingEnabled(config.scriptingEnabled));
@@ -10001,10 +10006,19 @@
                 throw new UnknownErrorException('Unexpected geolocation coordinates value');
             }
         }
-        #toCdpScreenOrientationAngle(orientation) {
-            if (orientation === null) {
-                return null;
+        async setScreenOrientationOverride(screenOrientation) {
+            const newViewport = { ...this.#previousDeviceMetricsOverride };
+            if (screenOrientation === null) {
+                delete newViewport.screenOrientation;
             }
+            else {
+                newViewport.screenOrientation =
+                    this.#toCdpScreenOrientationAngle(screenOrientation);
+            }
+            await this.cdpClient.sendCommand('Emulation.setDeviceMetricsOverride', newViewport);
+            this.#previousDeviceMetricsOverride = newViewport;
+        }
+        #toCdpScreenOrientationAngle(orientation) {
             if (orientation.natural === "portrait" ) {
                 switch (orientation.type) {
                     case 'portrait-primary':
@@ -10091,10 +10105,9 @@
                 headers,
             });
         }
-        async setUserAgentAndAcceptLanguage(userAgent, acceptLanguage) {
+        async setUserAgent(userAgent) {
             await this.cdpClient.sendCommand('Emulation.setUserAgentOverride', {
                 userAgent: userAgent ?? '',
-                acceptLanguage: acceptLanguage ?? undefined,
             });
         }
         async setEmulatedNetworkConditions(networkConditions) {

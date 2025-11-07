@@ -1,7 +1,13 @@
 This is a wdspec test.
+[FAIL] test_user_contexts
+  AssertionError: assert 'en-US' == 'de-DE'
+[FAIL] test_set_to_default_user_context
+  AssertionError: assert 'en-US' == 'de-DE'
+[FAIL] test_set_to_multiple_user_contexts
+  AssertionError: assert 'en-US' == 'es-ES'
 [FAIL] test_set_to_user_context_and_then_to_context
-  AssertionError: assert ['de-DE'] == ['en-US']
+  AssertionError: assert 'en-US' == 'fr-FR'
 [FAIL] test_set_to_context_and_then_to_user_context
-  AssertionError: assert ['es-ES'] == ['en-US']
+  AssertionError: assert 'en-US' == 'es-ES'
 Harness: the test ran to completion.
 
