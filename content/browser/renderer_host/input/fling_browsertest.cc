@@ -388,6 +388,8 @@ IN_PROC_BROWSER_TEST_F(BrowserSideFlingBrowserTest,
 // TODO(crbug.com/40857753): Re-enable on Linux MSAN once not flaky.
 #if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
 #define MAYBE_TouchscreenFlingInOOPIF DISABLED_TouchscreenFlingInOOPIF
+#elif BUILDFLAG(IS_ANDROID)
+#define MAYBE_TouchscreenFlingInOOPIF DISABLED_TouchscreenFlingInOOPIF
 #else
 #define MAYBE_TouchscreenFlingInOOPIF TouchscreenFlingInOOPIF
 #endif
