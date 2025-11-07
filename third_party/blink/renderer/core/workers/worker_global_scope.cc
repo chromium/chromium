@@ -214,9 +214,6 @@ void WorkerGlobalScope::Dispose() {
   DCHECK(IsContextThread());
   loading_virtual_time_pauser_ = WebScopedVirtualTimePauser();
   closing_ = true;
-  if (font_matching_metrics_) {
-    font_matching_metrics_->PublishAllMetrics();
-  }
   WorkerOrWorkletGlobalScope::Dispose();
 }
 
@@ -859,8 +856,7 @@ bool WorkerGlobalScope::HasPendingActivity() const {
 
 FontMatchingMetrics* WorkerGlobalScope::GetFontMatchingMetrics() {
   if (!font_matching_metrics_) {
-    font_matching_metrics_ = std::make_unique<FontMatchingMetrics>(
-        this, GetTaskRunner(TaskType::kInternalDefault));
+    font_matching_metrics_ = std::make_unique<FontMatchingMetrics>(this);
   }
   return font_matching_metrics_.get();
 }

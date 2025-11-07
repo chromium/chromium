@@ -4,31 +4,13 @@
 
 #include "third_party/blink/renderer/core/frame/font_matching_metrics.h"
 
-#include "base/metrics/histogram_macros.h"
-#include "base/task/single_thread_task_runner.h"
-#include "services/metrics/public/cpp/ukm_recorder.h"
-#include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
-#include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
-#include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
-#include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/dactyloscoper.h"
-#include "third_party/blink/renderer/platform/fonts/font_global_context.h"
-#include "third_party/blink/renderer/platform/privacy_budget/identifiability_digest_helpers.h"
-#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
-FontMatchingMetrics::FontMatchingMetrics(
-    ExecutionContext* execution_context,
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-    : ukm_recorder_(execution_context->UkmRecorder()),
-      source_id_(execution_context->UkmSourceID()),
-      execution_context_(execution_context),
-      identifiability_metrics_timer_(
-          task_runner,
-          this,
-          &FontMatchingMetrics::IdentifiabilityMetricsTimerFired) {}
+FontMatchingMetrics::FontMatchingMetrics(ExecutionContext* execution_context)
+    : execution_context_(execution_context) {}
 
 void FontMatchingMetrics::ReportSuccessfulFontFamilyMatch(
     const AtomicString& font_family_name) {
@@ -74,49 +56,6 @@ void FontMatchingMetrics::ReportLocalFontExistenceByUniqueOrFamilyName(
   Dactyloscoper::TraceFontLookup(
       execution_context_, font_name,
       Dactyloscoper::FontLookupType::kUniqueOrFamilyName);
-  if (!IdentifiabilityStudySettings::Get()->ShouldSampleType(
-          IdentifiableSurface::Type::kLocalFontExistenceByUniqueOrFamilyName)) {
-    return;
-  }
-  IdentifiableTokenKey input_key(
-      IdentifiabilityBenignCaseFoldingStringToken(font_name));
-  local_font_existence_by_unique_or_family_name_.insert(input_key, font_exists);
-  OnFontLookup();
-}
-
-void FontMatchingMetrics::PublishIdentifiabilityMetrics() {
-  if (!IdentifiabilityStudySettings::Get()->ShouldSampleType(
-          IdentifiableSurface::Type::kLocalFontExistenceByUniqueOrFamilyName)) {
-    return;
-  }
-
-  IdentifiabilityMetricBuilder builder(source_id_);
-
-  for (const auto& individual_lookup :
-       local_font_existence_by_unique_or_family_name_) {
-    builder.Add(
-        IdentifiableSurface::FromTypeAndToken(
-            IdentifiableSurface::Type::kLocalFontExistenceByUniqueOrFamilyName,
-            individual_lookup.key.token),
-        individual_lookup.value);
-  }
-  local_font_existence_by_unique_or_family_name_.clear();
-
-  builder.Record(ukm_recorder_);
-}
-
-void FontMatchingMetrics::OnFontLookup() {
-  if (!identifiability_metrics_timer_.IsActive()) {
-    identifiability_metrics_timer_.StartOneShot(base::Minutes(1), FROM_HERE);
-  }
-}
-
-void FontMatchingMetrics::IdentifiabilityMetricsTimerFired(TimerBase*) {
-  PublishIdentifiabilityMetrics();
-}
-
-void FontMatchingMetrics::PublishAllMetrics() {
-  PublishIdentifiabilityMetrics();
 }
 
 }  // namespace blink

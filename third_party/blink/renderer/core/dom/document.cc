@@ -3367,10 +3367,6 @@ void Document::Shutdown() {
   if (num_canvases_ > 0)
     UMA_HISTOGRAM_COUNTS_100("Blink.Canvas.NumCanvasesPerPage", num_canvases_);
 
-  if (font_matching_metrics_) {
-    font_matching_metrics_->PublishAllMetrics();
-  }
-
   GetViewportData().Shutdown();
 
   View()->Dispose();
@@ -8455,8 +8451,7 @@ FontMatchingMetrics* Document::GetFontMatchingMetrics() {
   }
   if (font_matching_metrics_)
     return font_matching_metrics_.get();
-  font_matching_metrics_ = std::make_unique<FontMatchingMetrics>(
-      dom_window_, GetTaskRunner(TaskType::kInternalDefault));
+  font_matching_metrics_ = std::make_unique<FontMatchingMetrics>(dom_window_);
   return font_matching_metrics_.get();
 }
 
