@@ -70,7 +70,6 @@ public class ClipDrawableProgressBar extends ImageView {
     private int mStaticBackgroundColor;
     protected final int mProgressBarHeight;
     private float mProgress;
-    private int mDesiredVisibility;
 
     // The visibility of the android and composited UI shouldn't be coupled together. During
     // browser controls movement, the android view goes invisible, but the composited layers should
@@ -79,6 +78,7 @@ public class ClipDrawableProgressBar extends ImageView {
     // subclassing a View anymore, so we would only need the composited layers visibility, and the
     // android progress bar animations might need cleaning up.
     private int mCompositedLayersVisibility;
+    private int mDesiredAndroidVisibility;
 
     /**
      * The width of the moving background drawable in pixels. This is used when {@link
@@ -101,7 +101,7 @@ public class ClipDrawableProgressBar extends ImageView {
         super(context, attrs);
 
         if (!shouldAnimateCompositedLayer()) {
-            mDesiredVisibility = getVisibility();
+            mDesiredAndroidVisibility = getVisibility();
         }
 
         mForegroundColor = SemanticColorUtils.getProgressBarForeground(getContext());
@@ -346,8 +346,8 @@ public class ClipDrawableProgressBar extends ImageView {
 
     private void updateInternalVisibility() {
         int oldVisibility = getVisibility();
-        int newVisibility = mDesiredVisibility;
-        if (getAlpha() == 0 && mDesiredVisibility == VISIBLE) newVisibility = INVISIBLE;
+        int newVisibility = mDesiredAndroidVisibility;
+        if (getAlpha() == 0 && mDesiredAndroidVisibility == VISIBLE) newVisibility = INVISIBLE;
         if (oldVisibility != newVisibility && !shouldAnimateCompositedLayer()) {
             super.setVisibility(newVisibility);
         }
@@ -360,12 +360,12 @@ public class ClipDrawableProgressBar extends ImageView {
     // View implementations.
 
     /**
-     * Note that this visibility might not be respected for optimization. For example, if alpha
-     * is 0, it will remain View#INVISIBLE even if this is called with View#VISIBLE.
+     * Note that this visibility might not be respected for optimization. For example, if alpha is
+     * 0, it will remain View#INVISIBLE even if this is called with View#VISIBLE.
      */
     @Override
     public void setVisibility(int visibility) {
-        mDesiredVisibility = visibility;
+        mDesiredAndroidVisibility = visibility;
         updateInternalVisibility();
     }
 
@@ -427,10 +427,8 @@ public class ClipDrawableProgressBar extends ImageView {
     protected boolean onSetAlpha(int alpha) {
         int oldVisibility = mCompositedLayersVisibility;
         if (alpha == 0) {
-            mDesiredVisibility = INVISIBLE;
             mCompositedLayersVisibility = INVISIBLE;
         } else {
-            mDesiredVisibility = VISIBLE;
             mCompositedLayersVisibility = VISIBLE;
         }
 
