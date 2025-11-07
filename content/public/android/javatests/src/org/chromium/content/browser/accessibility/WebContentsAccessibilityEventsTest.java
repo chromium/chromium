@@ -174,6 +174,22 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
+    public void test_alertShadowDomIgnoredReparented() {
+        performTest(
+                "alert-shadow-dom-ignored-reparented.html",
+                "alert-shadow-dom-ignored-reparented-expected-android.txt");
+    }
+
+    @Test
+    @SmallTest
+    public void test_alertShadowDomIgnoredChanged() {
+        performTest(
+                "alert-shadow-dom-ignored-changed.html",
+                "alert-shadow-dom-ignored-changed-expected-android.txt");
+    }
+
+    @Test
+    @SmallTest
     public void test_addChild() {
         performTest("add-child.html", "add-child-expected-android.txt");
     }
