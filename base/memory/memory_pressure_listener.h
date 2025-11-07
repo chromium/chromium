@@ -81,7 +81,7 @@ enum class MemoryPressureListenerTag {
   kCastMemoryPressureControllerImpl = 48,
   kFontGlobalContext = 49,
   kClientDiscardableSharedMemoryManager = 50,
-  kMax,
+  kMemoryReclaimerPressureListener = 51,
 };
 
 // To start listening, derive from MemoryPressureListener, and use

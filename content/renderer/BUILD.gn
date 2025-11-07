@@ -96,6 +96,8 @@ target(link_target_type, "renderer") {
     "media/renderer_webaudiodevice_impl.h",
     "memory_coordinator/renderer_memory_coordinator_policy.cc",
     "memory_coordinator/renderer_memory_coordinator_policy.h",
+    "memory_reclaimer_pressure_listener.cc",
+    "memory_reclaimer_pressure_listener.h",
     "mhtml_handle_writer.cc",
     "mhtml_handle_writer.h",
     "mojo/blink_interface_registry_impl.cc",
