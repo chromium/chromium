@@ -969,7 +969,7 @@ BUILDERS = {
         'platform':
         'linux',
         'dimension': {
-            'os': 'Ubuntu-24.04.3',
+            'os': 'Ubuntu-22.04.5',
             'pool':
             'chrome.tests.perf',
             'synthetic_product_name':
