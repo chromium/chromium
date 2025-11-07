@@ -20,6 +20,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
+#include "base/numerics/clamped_math.h"
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -95,8 +96,25 @@ void SetWorldReadablePermissions(const base::FilePath& path) {
 
 }  // namespace
 
-void InitHistoryLogging(const base::FilePath& path) {
+void InitHistoryLogging(const base::FilePath& path,
+                        size_t max_file_size_bytes) {
   base::AutoLock lock(GetLoggingLock());
+
+  if (GetLogFile().IsValid()) {
+    GetLogFile().Close();
+  }
+
+  std::optional<int64_t> file_size = base::GetFileSize(path);
+  if (file_size &&
+      base::ClampedNumeric<size_t>(*file_size) > max_file_size_bytes) {
+    const base::FilePath rotated_path =
+        path.AddExtension(FILE_PATH_LITERAL(".old"));
+    base::DeleteFile(rotated_path);
+    if (!base::Move(path, rotated_path)) {
+      VPLOG(1) << "Failed to rotate event history log";
+    }
+  }
+
   uint32_t flags = base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_APPEND;
 #if BUILDFLAG(IS_WIN)
   // base::File opens with FILE_SHARE_READ and FILE_SHARE_WRITE by default if

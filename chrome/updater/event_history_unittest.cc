@@ -65,7 +65,7 @@ class EventHistoryTest : public testing::Test {
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     log_path_ = temp_dir_.GetPath().Append(FILE_PATH_LITERAL("event.log"));
-    InitHistoryLogging(log_path_);
+    InitHistoryLogging(log_path_, 1024);
   }
 
  protected:
@@ -154,7 +154,29 @@ TEST_F(EventHistoryTest, Write) {
               })));
 
   // Reset logging state.
-  InitHistoryLogging(base::FilePath());
+  InitHistoryLogging(base::FilePath(), 0);
+}
+
+TEST_F(EventHistoryTest, Rotate) {
+  // Write a bunch of events to force the log to rotate.
+  for (int i = 0; i < 10; ++i) {
+    InstallStartEvent::Builder()
+        .SetEventId("test-event-id-1")
+        .SetAppId("test-app-id-1")
+        .Write();
+  }
+  std::optional<int64_t> log_size = base::GetFileSize(log_path_);
+  EXPECT_GT(log_size, 0);
+
+  // Re-init to trigger rotation.
+  InitHistoryLogging(log_path_, 10);
+
+  EXPECT_TRUE(base::PathExists(log_path_));
+  EXPECT_EQ(base::GetFileSize(log_path_), 0);
+  base::FilePath rotated_log_path =
+      log_path_.AddExtension(FILE_PATH_LITERAL("old"));
+  EXPECT_TRUE(base::PathExists(rotated_log_path));
+  EXPECT_EQ(base::GetFileSize(rotated_log_path), log_size);
 }
 
 TEST_F(EventHistoryTest, InstallStartEventMembers) {

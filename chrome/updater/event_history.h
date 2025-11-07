@@ -50,7 +50,11 @@ namespace updater {
 // however it is safe to call multiple times (e.g. to redirect all future
 // logging to a different file). Initialization is thread-safe, even if
 // reinitializing.
-void InitHistoryLogging(const base::FilePath& path);
+//
+// If the log file is larger than `max_file_size_bytes` at the time of
+// initialization, it is rotated to `path`.old, deleting the previous "old" file
+// if it exists.
+void InitHistoryLogging(const base::FilePath& path, size_t max_file_size_bytes);
 
 // Generates an event ID unique to this process. An ID is required for all
 // events. The same ID may be used in multiple events, e.g. to link START and
