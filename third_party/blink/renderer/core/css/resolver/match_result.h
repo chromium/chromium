@@ -119,7 +119,7 @@ WTF_ALLOW_MOVE_AND_INIT_WITH_MEM_FUNCTIONS(blink::MatchedProperties)
 namespace blink {
 
 using MatchedPropertiesVector = HeapVector<MatchedProperties, 64>;
-using MatchedPropertiesHashVector = HeapVector<MatchedPropertiesHash, 64>;
+using MatchedPropertiesHashVector = Vector<MatchedPropertiesHash, 64>;
 
 class CORE_EXPORT MatchResult {
   STACK_ALLOCATED();
