@@ -22,7 +22,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_split.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -38,7 +37,6 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/buildflags.h"
-#include "content/public/common/webplugininfo.h"
 #include "gpu/config/gpu_info.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/display/display.h"
@@ -47,20 +45,16 @@
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(ENABLE_PLUGINS)
-#include "content/public/browser/plugin_service.h"
-#endif
-
 namespace autofill {
 namespace risk {
 
 namespace {
 
-const int32_t kFingerprinterVersion = 1;
+constexpr int32_t kFingerprinterVersion = 1;
 
 // Maximum amount of time, in seconds, to wait for loading asynchronous
 // fingerprint data.
-const int kTimeoutSeconds = 4;
+constexpr base::TimeDelta kTimeout = base::Seconds(4);
 
 // Returns the delta between the local timezone and UTC.
 base::TimeDelta GetTimezoneOffset() {
@@ -94,19 +88,6 @@ void AddFontsToFingerprint(const base::Value::List& fonts,
     std::string font_name = it.GetList()[1].GetString();
 
     machine->add_font(font_name);
-  }
-}
-
-// Adds the list of |plugins| to the |machine|.
-void AddPluginsToFingerprint(const std::vector<content::WebPluginInfo>& plugins,
-                             Fingerprint::MachineCharacteristics* machine) {
-  for (const content::WebPluginInfo& it : plugins) {
-    Fingerprint::MachineCharacteristics::Plugin* plugin = machine->add_plugin();
-    plugin->set_name(base::UTF16ToUTF8(it.name));
-    plugin->set_description(base::UTF16ToUTF8(it.desc));
-    for (const content::WebPluginMimeType& mime_type : it.mime_types)
-      plugin->add_mime_type(mime_type.mime_type);
-    plugin->set_version(base::UTF16ToUTF8(it.version));
   }
 }
 
@@ -200,7 +181,6 @@ class FingerprintDataLoader : public content::GpuDataManagerObserver {
 
   // Callbacks for asynchronously loaded data.
   void OnGotFonts(base::Value::List fonts);
-  void OnGotPlugins(const std::vector<content::WebPluginInfo>& plugins);
 
   // If all of the asynchronous data has been loaded, calls |callback_| with
   // the fingerprint data.
@@ -234,8 +214,6 @@ class FingerprintDataLoader : public content::GpuDataManagerObserver {
 
   // Data that will be loaded asynchronously.
   std::unique_ptr<base::Value::List> fonts_;
-  std::vector<content::WebPluginInfo> plugins_;
-  bool waiting_on_plugins_ = true;
 
   // Timer to enforce a maximum timeout before the |callback_| is called, even
   // if not all asynchronous data has been loaded.
@@ -288,14 +266,6 @@ FingerprintDataLoader::FingerprintDataLoader(
     OnGpuInfoUpdate();
   }
 
-#if BUILDFLAG(ENABLE_PLUGINS)
-  // Load plugin data.
-  content::PluginService::GetInstance()->GetPlugins(base::BindOnce(
-      &FingerprintDataLoader::OnGotPlugins, weak_ptr_factory_.GetWeakPtr()));
-#else
-  waiting_on_plugins_ = false;
-#endif
-
   // Load font data.
   content::GetFontListAsync(base::BindOnce(&FingerprintDataLoader::OnGotFonts,
                                            weak_ptr_factory_.GetWeakPtr()));
@@ -316,28 +286,20 @@ void FingerprintDataLoader::OnGotFonts(base::Value::List fonts) {
   MaybeFillFingerprint();
 }
 
-void FingerprintDataLoader::OnGotPlugins(
-    const std::vector<content::WebPluginInfo>& plugins) {
-  DCHECK(waiting_on_plugins_);
-  waiting_on_plugins_ = false;
-  plugins_ = plugins;
-  MaybeFillFingerprint();
-}
-
 void FingerprintDataLoader::MaybeFillFingerprint() {
   // If all of the data has been loaded, or if the |timeout_timer_| has expired,
   // fill the fingerprint and clean up.
   if (!timeout_timer_.IsRunning() ||
       ((!gpu_data_manager_->GpuAccessAllowed(nullptr) ||
         gpu_data_manager_->IsEssentialGpuInfoAvailable()) &&
-       fonts_ && !waiting_on_plugins_)) {
+       fonts_)) {
     FillFingerprint();
     delete this;
   }
 }
 
 void FingerprintDataLoader::FillFingerprint() {
-  std::unique_ptr<Fingerprint> fingerprint(new Fingerprint);
+  auto fingerprint = std::make_unique<Fingerprint>();
   Fingerprint::MachineCharacteristics* machine =
       fingerprint->mutable_machine_characteristics();
 
@@ -353,9 +315,9 @@ void FingerprintDataLoader::FillFingerprint() {
   machine->set_browser_build(version_);
   machine->set_browser_feature(
       Fingerprint::MachineCharacteristics::FEATURE_REQUEST_AUTOCOMPLETE);
-  if (fonts_)
+  if (fonts_) {
     AddFontsToFingerprint(*fonts_, machine);
-  AddPluginsToFingerprint(plugins_, machine);
+  }
   AddAcceptLanguagesToFingerprint(accept_languages_, machine);
   AddScreenInfoToFingerprint(screen_info_, machine);
   AddCpuInfoToFingerprint(machine);
@@ -443,8 +405,8 @@ void GetFingerprint(
 
   internal::GetFingerprintInternal(
       obfuscated_gaia_id, window_bounds, content_bounds, screen_info, version,
-      charset, accept_languages, install_time, app_locale, user_agent,
-      base::Seconds(kTimeoutSeconds), std::move(callback));
+      charset, accept_languages, install_time, app_locale, user_agent, kTimeout,
+      std::move(callback));
 }
 
 }  // namespace risk
