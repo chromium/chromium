@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <limits>
 #include <memory>
+#include <numeric>
 #include <optional>
 #include <string>
 #include <utility>
@@ -1162,7 +1163,19 @@ bool TabsUngroupFunction::UngroupTab(int tab_id, std::string* error) {
     return false;
   }
 
-  tab_strip_model->RemoveFromGroup({tab_index});
+  std::optional<split_tabs::SplitTabId> split_id =
+      tab_strip_model->GetSplitForTab(tab_index);
+  if (split_id.has_value()) {
+    // If the tab is part of a split view, ungroup both tabs.
+    gfx::Range index_range =
+        tab_strip_model->GetSplitData(split_id.value())->GetIndexRange();
+    std::vector<int> split_indices(index_range.length());
+    std::iota(split_indices.begin(), split_indices.end(),
+              static_cast<int>(index_range.start()));
+    tab_strip_model->RemoveFromGroup(split_indices);
+  } else {
+    tab_strip_model->RemoveFromGroup({tab_index});
+  }
 
   return true;
 }
