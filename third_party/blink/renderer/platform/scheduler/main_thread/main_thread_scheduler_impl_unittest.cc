@@ -326,7 +326,8 @@ class MainThreadSchedulerImplForTest : public MainThreadSchedulerImpl {
     String use_case =
         UseCaseToString(main_thread_only().current_use_case).value;
     if (main_thread_only().blocking_input_expected_soon) {
-      use_cases_.push_back(use_case + " blocking input expected");
+      use_cases_.push_back((use_case ? use_case : "none") +
+                           " blocking input expected");
     } else {
       use_cases_.push_back(use_case);
     }
@@ -2114,9 +2115,9 @@ TEST_F(MainThreadSchedulerImplTest, EnsureUpdatePolicyNotTriggeredTooOften) {
   // transitions from 'not_scrolling touchstart expected' to 'not_scrolling'.
   test_task_runner_->FastForwardUntilNoTasksRemain();
   EXPECT_THAT(scheduler_->use_cases_,
-              testing::ElementsAre("none", "compositor_gesture",
+              testing::ElementsAre(nullptr, "compositor_gesture",
                                    "compositor_gesture blocking input expected",
-                                   "none blocking input expected", "none"));
+                                   "none blocking input expected", nullptr));
 }
 
 TEST_F(MainThreadSchedulerImplTest,
