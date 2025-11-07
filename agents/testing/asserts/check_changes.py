@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 """Asserts for checking changed files in git."""
 
+import os
 import subprocess
 
 
@@ -63,3 +64,19 @@ def check_files_changed(_: str, context):
 def check_files_added(_: str, context):
     """Checks if specific files have been added and uncommitted."""
     return _check_files_status(context, ['A', '??'], 'added')
+
+
+def check_files_exist(_: str, context):
+    """Checks if specific files exist on the filesystem."""
+    files = context.get('config', {}).get('files', {})
+    files_that_do_not_exist = [
+        file for file in files if not os.path.exists(file)
+    ]
+    if files_that_do_not_exist:
+        non_existent_files = '\n'.join(files_that_do_not_exist)
+        return {
+            'pass': False,
+            'reason': f'Expected files do not exist:\n{non_existent_files}',
+            'score': 0
+        }
+    return {'pass': True, 'reason': 'All expected files exist.', 'score': 1}
