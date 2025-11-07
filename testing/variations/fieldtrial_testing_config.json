@@ -2465,21 +2465,6 @@
             ]
         }
     ],
-    "AutofillEnableCardBenefitsForBmo": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillEnableCardBenefitsForBmo"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillEnableCvcStorageIOS": [
         {
             "platforms": [
@@ -2536,21 +2521,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "AutofillEnableFillingPhoneCountryCodesByAddressCountryCodes"
-                    ]
-                }
-            ]
-        }
-    ],
-    "AutofillEnableFlatRateCardBenefitsFromCurinos": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillEnableFlatRateCardBenefitsFromCurinos"
                     ]
                 }
             ]
