@@ -263,8 +263,7 @@ class LensOverlayLiveTest : public signin::test::LiveTest {
 
     // Expect the Lens Overlay results panel to open.
     ASSERT_TRUE(base::test::RunUntil(
-        [&]() { return controller->state() == State::kOverlayAndResults; }));
-    ASSERT_TRUE(IsLensOverlaySidePanelShowing());
+        [&]() { return IsLensOverlaySidePanelShowing(); }));
 
     // Wait for the panel to finish loading.
     EXPECT_TRUE(content::WaitForLoadStop(
@@ -447,15 +446,10 @@ class LensOverlayTranslateLiveTest : public LensOverlayLiveTest {
     // for the overlay to compute their bounding boxes for highlighted lines.
     // For this reason, keep clicking on the line until the side panel actually
     // opens.
-    auto* controller = browser()
-                           ->tab_strip_model()
-                           ->GetActiveTab()
-                           ->GetTabFeatures()
-                           ->lens_overlay_controller();
     ASSERT_TRUE(base::test::RunUntil([&]() {
       EvalJs(content::JsReplace(kFindAndClickDivWithClassScript,
                                 kDivTranslatedLineClass));
-      return controller->state() == State::kOverlayAndResults;
+      return IsLensOverlaySidePanelShowing();
     }));
   }
 
