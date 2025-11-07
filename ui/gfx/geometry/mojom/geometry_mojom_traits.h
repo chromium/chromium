@@ -5,6 +5,7 @@
 #ifndef UI_GFX_GEOMETRY_MOJOM_GEOMETRY_MOJOM_TRAITS_H_
 #define UI_GFX_GEOMETRY_MOJOM_GEOMETRY_MOJOM_TRAITS_H_
 
+#include "ui/gfx/geometry/axis_transform2d.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/insets_f.h"
 #include "ui/gfx/geometry/mojom/geometry.mojom-shared.h"
@@ -214,6 +215,21 @@ struct StructTraits<gfx::mojom::QuadFDataView, gfx::QuadF> {
     }
     out->set_p4(p4);
     return true;
+  }
+};
+
+template <>
+struct StructTraits<gfx::mojom::AxisTransform2dDataView, gfx::AxisTransform2d> {
+  static const gfx::Vector2dF& scale(const gfx::AxisTransform2d& a) {
+    return a.scale();
+  }
+  static const gfx::Vector2dF& translation(const gfx::AxisTransform2d& a) {
+    return a.translation();
+  }
+  static bool Read(gfx::mojom::AxisTransform2dDataView data,
+                   gfx::AxisTransform2d* out) {
+    return data.ReadScale(&out->scale_) &&
+           data.ReadTranslation(&out->translation_);
   }
 };
 

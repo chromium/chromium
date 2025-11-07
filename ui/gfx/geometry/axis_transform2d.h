@@ -13,7 +13,16 @@
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
+namespace mojo {
+template <typename DataViewType, typename T>
+struct StructTraits;
+}  // namespace mojo
+
 namespace gfx {
+
+namespace mojom {
+class AxisTransform2dDataView;
+}  // namespace mojom
 
 struct DecomposedTransform;
 
@@ -114,6 +123,9 @@ class COMPONENT_EXPORT(GEOMETRY) AxisTransform2d {
   std::string ToString() const;
 
  private:
+  friend struct mojo::StructTraits<mojom::AxisTransform2dDataView,
+                                   AxisTransform2d>;
+
   constexpr AxisTransform2d(const Vector2dF& scale,
                             const Vector2dF& translation)
       : scale_(scale), translation_(translation) {}

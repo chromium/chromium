@@ -93,3 +93,8 @@ struct QuadF {
   PointF p3;
   PointF p4;
 };
+
+struct AxisTransform2d {
+  Vector2dF scale;
+  Vector2dF translation;
+};

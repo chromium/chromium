@@ -7,6 +7,7 @@
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/mojom/geometry_traits_test_service.mojom.h"
 #include "ui/gfx/geometry/point.h"
@@ -278,6 +279,17 @@ TEST_F(GeometryStructTraitsTest, QuadF) {
   EXPECT_EQ(p2, output.p2());
   EXPECT_EQ(p3, output.p3());
   EXPECT_EQ(p4, output.p4());
+  EXPECT_EQ(input, output);
+}
+
+TEST_F(GeometryStructTraitsTest, AxisTransform2d) {
+  const gfx::Vector2dF scale(2.f, 3.f);
+  const gfx::Vector2dF translate(10.f, 20.f);
+  gfx::AxisTransform2d input =
+      gfx::AxisTransform2d::FromScaleAndTranslation(scale, translate);
+  gfx::AxisTransform2d output;
+  mojo::test::SerializeAndDeserialize<gfx::mojom::AxisTransform2d>(input,
+                                                                   output);
   EXPECT_EQ(input, output);
 }
 

@@ -70,6 +70,10 @@ mojom("mojom") {
         mojom = "gfx.mojom.Vector3dF"
         cpp = "::gfx::Vector3dF"
       },
+      {
+        mojom = "gfx.mojom.AxisTransform2d"
+        cpp = "::gfx::AxisTransform2d"
+      },
     ]
 
     traits_headers = [ "geometry_mojom_traits.h" ]
@@ -97,6 +101,7 @@ source_set("unit_test") {
     "//base",
     "//base/test:test_support",
     "//mojo/public/cpp/bindings",
+    "//mojo/public/cpp/test_support:test_utils",
     "//testing/gtest",
     "//ui/gfx/geometry",
   ]
