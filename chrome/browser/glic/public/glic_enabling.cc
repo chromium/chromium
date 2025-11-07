@@ -130,6 +130,11 @@ bool GlicEnabling::IsProfileEligible(const Profile* profile) {
   }
   auto* user = ash::BrowserContextHelper::Get()->GetUserByBrowserContext(
       const_cast<Profile*>(profile));
+  if (user == nullptr) {
+    // When there is no signed in user on ChromeOS, assume that the profile is
+    // not eligible.
+    return false;
+  }
   switch (user->GetType()) {
     case user_manager::UserType::kRegular:
     case user_manager::UserType::kChild:
