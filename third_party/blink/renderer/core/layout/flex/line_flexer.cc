@@ -11,32 +11,30 @@ LineFlexer::LineFlexer(base::span<FlexItem> line_items,
                        LayoutUnit sum_flex_base_size,
                        LayoutUnit main_axis_inner_size)
     : line_items_(line_items),
-      flex_sign_(sum_hypothetical_main_size < main_axis_inner_size
-                     ? kPositive
-                     : kNegative) {
+      mode_(sum_hypothetical_main_size < main_axis_inner_size ? kGrow
+                                                              : kShrink) {
   // Per https://drafts.csswg.org/css-flexbox/#resolve-flexible-lengths step 2,
   // we freeze all items with a flex factor of 0 as well as those with a min/max
   // size violation.
   remaining_free_space_ = main_axis_inner_size - sum_flex_base_size;
 
   ViolationsIndicesVector new_inflexible_items;
-  for (wtf_size_t i = 0; i < line_items_.size(); ++i) {
-    auto& flex_item = line_items_[i];
-    DCHECK(!flex_item.frozen);
+  for (wtf_size_t i = 0u; i < line_items_.size(); ++i) {
+    auto& item = line_items_[i];
+    DCHECK(!item.frozen);
 
-    total_flex_grow_ += flex_item.flex_grow;
-    total_flex_shrink_ += flex_item.flex_shrink;
-    total_weighted_flex_shrink_ +=
-        flex_item.flex_shrink * flex_item.base_content_size;
+    total_flex_grow_ += item.flex_grow;
+    total_flex_shrink_ += item.flex_shrink;
+    total_weighted_flex_shrink_ += item.flex_shrink * item.base_content_size;
 
-    float flex_factor =
-        (flex_sign_ == kPositive) ? flex_item.flex_grow : flex_item.flex_shrink;
-    if (flex_factor == 0 ||
-        (flex_sign_ == kPositive &&
-         flex_item.base_content_size > flex_item.hypothetical_content_size) ||
-        (flex_sign_ == kNegative &&
-         flex_item.base_content_size < flex_item.hypothetical_content_size)) {
-      flex_item.flexed_content_size = flex_item.hypothetical_content_size;
+    const float flex_factor =
+        (mode_ == kGrow) ? item.flex_grow : item.flex_shrink;
+    if (flex_factor == 0.f ||
+        (mode_ == kGrow &&
+         item.base_content_size > item.hypothetical_content_size) ||
+        (mode_ == kShrink &&
+         item.base_content_size < item.hypothetical_content_size)) {
+      item.flexed_content_size = item.hypothetical_content_size;
       new_inflexible_items.push_back(i);
     }
   }
@@ -71,7 +69,7 @@ bool LineFlexer::ResolveFlexibleLengths() {
   ViolationsIndicesVector max_violations;
 
   const double sum_flex_factors =
-      (flex_sign_ == kPositive) ? total_flex_grow_ : total_flex_shrink_;
+      (mode_ == kGrow) ? total_flex_grow_ : total_flex_shrink_;
   if (sum_flex_factors > 0 && sum_flex_factors < 1) {
     LayoutUnit fractional(initial_free_space_ * sum_flex_factors);
     if (fractional.Abs() < remaining_free_space_.Abs()) {
@@ -79,34 +77,32 @@ bool LineFlexer::ResolveFlexibleLengths() {
     }
   }
 
-  for (wtf_size_t i = 0; i < line_items_.size(); ++i) {
-    auto& flex_item = line_items_[i];
-    if (flex_item.frozen) {
+  for (wtf_size_t i = 0u; i < line_items_.size(); ++i) {
+    auto& item = line_items_[i];
+    if (item.frozen) {
       continue;
     }
 
-    LayoutUnit child_size = flex_item.base_content_size;
+    LayoutUnit child_size = item.base_content_size;
     double extra_space = 0;
-    if (remaining_free_space_ > 0 && total_flex_grow_ > 0 &&
-        flex_sign_ == kPositive && std::isfinite(total_flex_grow_)) {
-      extra_space =
-          remaining_free_space_ * flex_item.flex_grow / total_flex_grow_;
+    if (remaining_free_space_ > 0 && total_flex_grow_ > 0 && mode_ == kGrow &&
+        std::isfinite(total_flex_grow_)) {
+      extra_space = remaining_free_space_ * item.flex_grow / total_flex_grow_;
     } else if (remaining_free_space_ < 0 && total_weighted_flex_shrink_ > 0 &&
-               flex_sign_ == kNegative &&
-               std::isfinite(total_weighted_flex_shrink_) &&
-               flex_item.flex_shrink) {
-      extra_space = remaining_free_space_ * flex_item.flex_shrink *
-                    flex_item.base_content_size / total_weighted_flex_shrink_;
+               mode_ == kShrink && std::isfinite(total_weighted_flex_shrink_) &&
+               item.flex_shrink) {
+      extra_space = remaining_free_space_ * item.flex_shrink *
+                    item.base_content_size / total_weighted_flex_shrink_;
     }
     if (std::isfinite(extra_space)) {
       child_size += LayoutUnit::FromFloatRound(extra_space);
     }
 
     const LayoutUnit adjusted_child_size =
-        flex_item.main_axis_min_max_sizes.ClampSizeToMinAndMax(child_size);
+        item.main_axis_min_max_sizes.ClampSizeToMinAndMax(child_size);
     DCHECK_GE(adjusted_child_size, 0);
-    flex_item.flexed_content_size = adjusted_child_size;
-    used_free_space += adjusted_child_size - flex_item.base_content_size;
+    item.flexed_content_size = adjusted_child_size;
+    used_free_space += adjusted_child_size - item.base_content_size;
 
     const LayoutUnit violation = adjusted_child_size - child_size;
     if (violation > 0) {

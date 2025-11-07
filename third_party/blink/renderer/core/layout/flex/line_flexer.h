@@ -31,16 +31,16 @@ class LineFlexer {
  private:
   typedef Vector<wtf_size_t, 8> ViolationsIndicesVector;
 
-  enum FlexSign {
-    kPositive,
-    kNegative,
+  enum FlexerMode {
+    kGrow,
+    kShrink,
   };
 
   void FreezeViolations(ViolationsIndicesVector& violations);
   bool ResolveFlexibleLengths();
 
   base::span<FlexItem> line_items_;
-  const FlexSign flex_sign_;
+  const FlexerMode mode_;
 
   double total_flex_grow_ = 0.0;
   double total_flex_shrink_ = 0.0;
