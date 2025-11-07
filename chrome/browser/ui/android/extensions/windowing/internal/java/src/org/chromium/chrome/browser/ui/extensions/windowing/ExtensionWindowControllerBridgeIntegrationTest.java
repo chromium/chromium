@@ -18,7 +18,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.BaseSwitches;
 import org.chromium.base.IntentUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -33,6 +35,7 @@ import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.tabmodel.IncognitoTabHostUtils;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskFeature;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskTrackerFactory;
@@ -40,6 +43,7 @@ import org.chromium.chrome.browser.webapps.WebappActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -48,8 +52,27 @@ import java.util.Collections;
 import java.util.List;
 
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(value = Batch.PER_CLASS)
+@CommandLineFlags.Add({
+    // Force DeviceInfo#isDesktop() to be true so that the DISABLE_INSTANCE_LIMIT
+    // flag in @EnableFeatures can be effective when running tests on an
+    // emulator without "--force-desktop-android".
+    //
+    // See MultiWindowUtils#getMaxInstances() for the reason:
+    // https://source.chromium.org/chromium/chromium/src/+/main:chrome/android/java/src/org/chromium/chrome/browser/multiwindow/MultiWindowUtils.java;l=213;drc=0bcba72c5246a910240b311def40233f7d3f15af
+    BaseSwitches.FORCE_DESKTOP_ANDROID,
+    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE
+})
+@Features.EnableFeatures({
+    // Disable ChromeTabbedActivity instance limit so that the total number of
+    // windows created by the entire test suite won't be limited.
+    //
+    // See MultiWindowUtils#getMaxInstances() for the reason:
+    // https://source.chromium.org/chromium/chromium/src/+/main:chrome/android/java/src/org/chromium/chrome/browser/multiwindow/MultiWindowUtils.java;l=209;drc=0bcba72c5246a910240b311def40233f7d3f15af
+    ChromeFeatureList.DISABLE_INSTANCE_LIMIT,
+    ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW
+})
+@MinAndroidSdkLevel(Build.VERSION_CODES.R)
 @NullMarked
 public class ExtensionWindowControllerBridgeIntegrationTest {
 
@@ -104,7 +127,6 @@ public class ExtensionWindowControllerBridgeIntegrationTest {
 
     @Test
     @MediumTest
-    @MinAndroidSdkLevel(Build.VERSION_CODES.R)
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP /* Test needs "new window" in app menu. */)
     public void startChromeTabbedActivity_openNewWindow_notifyExtensionInternalsOfWindowCreation() {
         // Arrange:
@@ -134,6 +156,52 @@ public class ExtensionWindowControllerBridgeIntegrationTest {
         // Cleanup.
         ExtensionWindowControllerBridgeImpl.removeWindowControllerListObserverForTesting();
         ntpStation.getActivity().finish();
+    }
+
+    /**
+     * Tests the short-term fix for <a
+     * href="http://crbug.com/450234852">http://crbug.com/450234852</a>.
+     */
+    @Test
+    @MediumTest
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP /* Test needs "new window" in app menu. */)
+    public void
+            openIncognitoWindow_destroyIncognitoTabModel_notifyExtensionInternalsOfWindowDestruction() {
+        // Arrange:
+        // (1) Launch ChromeTabbedActivity (the first window).
+        // (2) Add a native WindowControllerListObserverForTesting to capture extension internal
+        // events.
+        // (3) Open an incognito window.
+        WebPageStation blankPageStation = mFreshCtaTransitTestRule.startOnBlankPage();
+        ExtensionWindowControllerBridgeImpl.addWindowControllerListObserverForTesting();
+        IncognitoNewTabPageStation incognitoNtpStation =
+                blankPageStation.openRegularTabAppMenu().openNewIncognitoWindow();
+        int incognitoTaskId = incognitoNtpStation.getActivity().getTaskId();
+        var extensionWindowControllerBridge = getExtensionWindowControllerBridge(incognitoTaskId);
+        assertNotNull(extensionWindowControllerBridge);
+        int incognitoExtensionWindowId =
+                extensionWindowControllerBridge.getExtensionWindowIdForTesting();
+
+        // Act:
+        // (1) Destroy incognito tab model.
+        // (2) Wait for the incognito window to be destroyed.
+        ThreadUtils.runOnUiThreadBlocking(IncognitoTabHostUtils::closeAllIncognitoTabs);
+        CriteriaHelper.pollUiThread(
+                () -> getChromeAndroidTask(incognitoTaskId) == null,
+                /* maxTimeoutMs= */ 10000L,
+                /* checkIntervalMs= */ 1000L);
+
+        // Assert.
+        var extensionInternalEvents =
+                ExtensionWindowControllerBridgeImpl.getExtensionInternalEventsForTesting()
+                        .get(incognitoExtensionWindowId);
+        assertNotNull(extensionInternalEvents);
+        assertEquals(
+                ExtensionInternalWindowEventForTesting.REMOVED,
+                (int) extensionInternalEvents.get(extensionInternalEvents.size() - 1));
+
+        // Cleanup.
+        ExtensionWindowControllerBridgeImpl.removeWindowControllerListObserverForTesting();
     }
 
     @Test
@@ -203,7 +271,6 @@ public class ExtensionWindowControllerBridgeIntegrationTest {
 
     @Test
     @MediumTest
-    @MinAndroidSdkLevel(Build.VERSION_CODES.R)
     @Restriction(
             // Test needs "new window" in app menu and the tablet behavior to enter split screen
             // mode to trigger a window bounds change.

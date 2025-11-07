@@ -38,6 +38,7 @@ android_library("java") {
   ]
   deps = [
     "//build/android:build_java",
+    "//chrome/browser/profiles/android:java",
     "//chrome/browser/ui/android/extensions/windowing:java",
     "//chrome/browser/ui/browser_window/public/android:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
