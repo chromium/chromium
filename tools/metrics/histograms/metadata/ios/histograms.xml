@@ -6471,6 +6471,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.SyncedSetUp.PrefApplied" enum="SyncedSetUpAppliedPref"
+    expires_after="2026-11-05">
+  <owner>bwwilliams@google.com</owner>
+  <owner>scottyoder@google.com</owner>
+  <owner>ericekey@google.com</owner>
+  <summary>
+    Records the application of specific appearance and customization preferences
+    from the user's remote devices to the current device. Logged once for each
+    preference in an applied batch.
+  </summary>
+</histogram>
+
 <histogram name="IOS.SyncedSetUp.RemoteAppliedPrefCount" units="count"
     expires_after="2026-05-06">
   <owner>ericekey@google.com</owner>

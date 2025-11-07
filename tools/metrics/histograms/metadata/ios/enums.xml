@@ -1946,6 +1946,21 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/ios/chrome/browser/safari_data_import/public/safari_data_import_stage.h:SafariDataImportStage) -->
 
+<!-- LINT.IfChange(SyncedSetUpAppliedPref) -->
+
+<enum name="SyncedSetUpAppliedPref">
+  <int value="0" label="OmniboxPosition"/>
+  <int value="1" label="MagicStackHomeModule"/>
+  <int value="2" label="MostVisitedHomeModule"/>
+  <int value="3" label="PriceTrackingHomeModule"/>
+  <int value="4" label="SafetyCheckHomeModule"/>
+  <int value="5" label="TabResumptionHomeModule"/>
+  <int value="6" label="TipsHomeModule"/>
+  <int value="7" label="Unknown"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/synced_set_up/public/synced_set_up_metrics.h:SyncedSetUpAppliedPref) -->
+
 <!-- LINT.IfChange(SyncedSetUpRemotePrefDifference) -->
 
 <enum name="SyncedSetUpRemotePrefDifference">

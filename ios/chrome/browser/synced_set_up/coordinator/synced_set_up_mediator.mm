@@ -524,9 +524,11 @@ void LogSnackbarInteraction(SyncedSetUpState state,
   PrefService* localState = GetApplicationContext()->GetLocalState();
 
   for (const auto& [pref_name, remote_pref_value] : _profilePrefsToApply) {
+    LogSyncedSetUpPrefApplied(pref_name);
     _profilePrefService->Set(pref_name, remote_pref_value.remote_value);
   }
   for (const auto& [pref_name, remote_pref_value] : _localStatePrefsToApply) {
+    LogSyncedSetUpPrefApplied(pref_name);
     localState->Set(pref_name, remote_pref_value.remote_value);
   }
 }
