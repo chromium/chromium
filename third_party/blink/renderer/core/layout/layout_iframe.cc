@@ -33,7 +33,7 @@ LayoutIFrame::LayoutIFrame(HTMLFrameOwnerElement* element)
     : LayoutEmbeddedContent(element) {}
 
 bool LayoutIFrame::IsResponsivelySized() const {
-  return StyleRef().ContainIntrinsicInlineSize().MatchesElement();
+  return StyleRef().ContainIntrinsicBlockSize().MatchesElement();
 }
 
 void LayoutIFrame::UpdateAfterLayout() {
