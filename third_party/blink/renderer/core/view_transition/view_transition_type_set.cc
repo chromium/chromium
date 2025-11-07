@@ -90,8 +90,7 @@ void ViewTransitionTypeSet::InvalidateStyle() {
   }
 
   Document* document = view_transition_->DomWindow()->document();
-  if (ViewTransitionSupplement::From(*document)->GetTransition() !=
-      view_transition_) {
+  if (document->GetViewTransitions().GetTransition() != view_transition_) {
     return;
   }
 

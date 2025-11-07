@@ -21,15 +21,8 @@ class DOMViewTransition;
 
 class CORE_EXPORT ViewTransitionSupplement
     : public GarbageCollected<ViewTransitionSupplement>,
-      public Supplement<Document>,
       public ViewTransition::Delegate {
  public:
-  static const char kSupplementName[];
-
-  // Supplement functionality.
-  static ViewTransitionSupplement* From(Document&);
-  static ViewTransitionSupplement* FromIfExists(const Document&);
-
   // Creates and starts a same-document ViewTransition initiated using the
   // script API.
   // With callback:
@@ -90,7 +83,7 @@ class CORE_EXPORT ViewTransitionSupplement
   ~ViewTransitionSupplement() override;
 
   // GC functionality.
-  void Trace(Visitor* visitor) const override;
+  void Trace(Visitor* visitor) const;
 
   // ViewTransition::Delegate implementation.
   void AddPendingRequest(std::unique_ptr<ViewTransitionRequest>) override;
@@ -145,6 +138,9 @@ class CORE_EXPORT ViewTransitionSupplement
   void SetCrossDocumentOptIn(mojom::blink::ViewTransitionSameOriginOptIn);
 
   void SendOptInStatusToHost();
+
+  // The document we belong to.
+  Member<Document> document_;
 
   // Document-level view transition.
   // TODO(crbug.com/394052227): Change document transitions to be stored in

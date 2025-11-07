@@ -190,7 +190,7 @@ void PageAnimator::ServiceScriptedAnimations(
           CHECK(!window->HasBeenRevealed());
 
           if (auto* supplement =
-                  ViewTransitionSupplement::FromIfExists(*window->document())) {
+                  window->document()->GetViewTransitionsIfExists()) {
             DOMViewTransition* view_transition =
                 supplement->ResolveCrossDocumentViewTransition();
             page_reveal->SetViewTransition(view_transition);

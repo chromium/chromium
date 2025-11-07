@@ -188,8 +188,9 @@ CullRectUpdater::CullRectUpdater(PaintLayer& starting_layer,
       expansion_ratio_(disable_expansion
                            ? 0.f
                            : ExpansionRatio(starting_layer.GetLayoutObject())) {
-  view_transition_supplement_ = ViewTransitionSupplement::FromIfExists(
-      starting_layer.GetLayoutObject().GetDocument());
+  view_transition_supplement_ = starting_layer.GetLayoutObject()
+                                    .GetDocument()
+                                    .GetViewTransitionsIfExists();
 }
 
 void CullRectUpdater::Update() {
@@ -546,7 +547,7 @@ void CullRectUpdater::PaintPropertiesChanged(
   if (object.HasLayer()) {
     bool subtree_should_use_infinite_cull_rect = false;
     auto* view_transition_supplement =
-        ViewTransitionSupplement::FromIfExists(object.GetDocument());
+        object.GetDocument().GetViewTransitionsIfExists();
     should_use_infinite_cull_rect = ShouldUseInfiniteCullRect(
         *To<LayoutBoxModelObject>(object).Layer(), view_transition_supplement,
         subtree_should_use_infinite_cull_rect);

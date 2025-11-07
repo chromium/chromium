@@ -2693,8 +2693,8 @@ void StyleEngine::UpdateViewTransitionOptIn() {
     }
   }
 
-  ViewTransitionSupplement::From(GetDocument())
-      ->OnViewTransitionsStyleUpdated(cross_document_enabled, types);
+  GetDocument().GetViewTransitions().OnViewTransitionsStyleUpdated(
+      cross_document_enabled, types);
 }
 
 bool StyleEngine::HasRulesForId(const AtomicString& id) const {

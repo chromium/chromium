@@ -152,7 +152,7 @@ PseudoElement* ViewTransitionUtils::FindPseudoIf(const Element& element,
 
 // static
 ViewTransition* ViewTransitionUtils::GetTransition(const Document& document) {
-  auto* supplement = ViewTransitionSupplement::FromIfExists(document);
+  auto* supplement = document.GetViewTransitionsIfExists();
   if (!supplement) {
     return nullptr;
   }
@@ -165,8 +165,7 @@ ViewTransition* ViewTransitionUtils::GetTransition(const Document& document) {
 
 // static
 ViewTransition* ViewTransitionUtils::GetTransition(const Element& element) {
-  auto* supplement =
-      ViewTransitionSupplement::FromIfExists(element.GetDocument());
+  auto* supplement = element.GetDocument().GetViewTransitionsIfExists();
   if (!supplement) {
     return nullptr;
   }
@@ -203,7 +202,7 @@ ViewTransition* ViewTransitionUtils::TransitionForTaggedElement(
 void ViewTransitionUtils::ForEachTransition(
     const Document& document,
     base::FunctionRef<void(ViewTransition&)> function) {
-  if (auto* supplement = ViewTransitionSupplement::FromIfExists(document)) {
+  if (auto* supplement = document.GetViewTransitionsIfExists()) {
     supplement->ForEachTransition(function);
   }
 }
@@ -231,7 +230,7 @@ ViewTransition* ViewTransitionUtils::GetOutgoingCrossDocumentTransition(
 // static
 VectorOf<std::unique_ptr<ViewTransitionRequest>>
 ViewTransitionUtils::GetPendingRequests(const Document& document) {
-  auto* supplement = ViewTransitionSupplement::FromIfExists(document);
+  auto* supplement = document.GetViewTransitionsIfExists();
   if (supplement) {
     return supplement->TakePendingRequests();
   }
@@ -266,7 +265,7 @@ ViewTransitionUtils::GetPropertyCSSValueScope::GetPropertyCSSValueScope(
     return;
   }
 
-  if (auto* supplement = ViewTransitionSupplement::FromIfExists(document_)) {
+  if (auto* supplement = document_.GetViewTransitionsIfExists()) {
     supplement->WillEnterGetComputedStyleScope();
   }
 }
@@ -276,13 +275,13 @@ ViewTransitionUtils::GetPropertyCSSValueScope::~GetPropertyCSSValueScope() {
     return;
   }
 
-  if (auto* supplement = ViewTransitionSupplement::FromIfExists(document_)) {
+  if (auto* supplement = document_.GetViewTransitionsIfExists()) {
     supplement->WillExitGetComputedStyleScope();
   }
 }
 
 void ViewTransitionUtils::WillUpdateStyleAndLayoutTree(Document& document) {
-  if (auto* supplement = ViewTransitionSupplement::FromIfExists(document)) {
+  if (auto* supplement = document.GetViewTransitionsIfExists()) {
     supplement->WillUpdateStyleAndLayoutTree();
   }
 }

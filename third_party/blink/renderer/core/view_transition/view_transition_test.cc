@@ -239,7 +239,7 @@ TEST_P(ViewTransitionTest, LayoutShift) {
   // resolving.
   test::RunPendingTasks();
   auto start_requests =
-      ViewTransitionSupplement::From(GetDocument())->TakePendingRequests();
+      GetDocument().GetViewTransitions().TakePendingRequests();
   EXPECT_FALSE(start_requests.empty());
   EXPECT_EQ(GetState(transition), State::kAnimating);
 
@@ -1425,7 +1425,7 @@ TEST_P(ViewTransitionTest, ScriptCallAfterNavigationTransition) {
       GetDocument(), blink::ViewTransitionToken(), std::move(page_swap_params),
       BindOnce([](const ViewTransitionState&) {}));
 
-  ASSERT_TRUE(ViewTransitionSupplement::From(GetDocument())->GetTransition());
+  ASSERT_TRUE(GetDocument().GetViewTransitions().GetTransition());
 
   bool callback_issued = false;
 

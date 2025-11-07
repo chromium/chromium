@@ -2736,7 +2736,7 @@ void LocalDOMWindow::SetHasBeenRevealed(bool revealed) {
     return;
   has_been_revealed_ = revealed;
   CHECK(document_);
-  ViewTransitionSupplement::From(*document_)->DidChangeRevealState();
+  document_->GetViewTransitions().DidChangeRevealState();
 }
 
 void LocalDOMWindow::UpdateEventListenerCountsToDocumentForReuseIfNeeded() {

@@ -151,6 +151,7 @@ class AnimationClock;
 class AriaNotificationOptions;
 class Attr;
 class BeforeUnloadEventListener;
+class ViewTransitionSupplement;
 class CaretPosition;
 class CaretPositionFromPointOptions;
 class CDATASection;
@@ -2278,6 +2279,18 @@ class CORE_EXPORT Document : public ContainerNode,
   // nullptr.
   CustomElementRegistry* EffectiveGlobalCustomElementRegistry() const;
 
+  ViewTransitionSupplement* GetViewTransitionsIfExists() const {
+    return view_transitions_;
+  }
+
+  ViewTransitionSupplement& GetViewTransitions() {
+    if (view_transitions_) {
+      return *view_transitions_;
+    } else {
+      return CreateViewTransitions();
+    }
+  }
+
  protected:
   void ClearXMLVersion() { xml_version_ = String(); }
 
@@ -2586,6 +2599,10 @@ class CORE_EXPORT Document : public ContainerNode,
   // Note that not all prerendering pages block script execution; prerendering
   // pages' triggers can determine whether or not to block scripts.
   void UnblockScriptExecutionForPrerenderActivation();
+
+  // Slow path for GetViewTransitions() when view_transitions_ does not already
+  // exist.
+  ViewTransitionSupplement& CreateViewTransitions();
 
   // Mutable because the token is lazily-generated on demand if no token is
   // explicitly set.
@@ -3137,6 +3154,11 @@ class CORE_EXPORT Document : public ContainerNode,
   // Document owns pending preloads, prefetches and modulepreloads initiated by
   // link header so that they won't be incidentally GC-ed and cancelled.
   HeapHashSet<Member<const PendingLinkPreload>> pending_link_header_preloads_;
+
+  // Contains information about which view transitions exist for this document,
+  // and for any elements contained in it. Created dynamically on first call
+  // to GetViewTransitions().
+  Member<ViewTransitionSupplement> view_transitions_;
 
   // This is incremented when a module script is evaluated.
   // http://crbug.com/1079044

@@ -2359,7 +2359,7 @@ void Document::DidChangeVisibilityState() {
                                                        UkmSourceID());
   }
 
-  ViewTransitionSupplement::From(*this)->DidChangeVisibilityState();
+  GetViewTransitions().DidChangeVisibilityState();
 }
 
 String Document::nodeName() const {
@@ -4154,8 +4154,8 @@ void Document::WillInsertBody() {
   if (Loader())
     fetcher_->LoosenLoadThrottlingPolicy();
 
-  if (auto* supplement = ViewTransitionSupplement::FromIfExists(*this)) {
-    supplement->WillInsertBody();
+  if (view_transitions_) {
+    view_transitions_->WillInsertBody();
   }
 
   if (render_blocking_resource_manager_) {
@@ -5279,6 +5279,11 @@ void Document::UnblockScriptExecutionForPrerenderActivation() {
   if (prerender_script_runner_delayer_) {
     prerender_script_runner_delayer_->Deactivate();
   }
+}
+
+ViewTransitionSupplement& Document::CreateViewTransitions() {
+  view_transitions_ = MakeGarbageCollected<ViewTransitionSupplement>(*this);
+  return *view_transitions_;
 }
 
 CSSStyleSheet& Document::ElementSheet() {
@@ -9580,6 +9585,7 @@ void Document::Trace(Visitor* visitor) const {
 #if BUILDFLAG(IS_ANDROID)
   visitor->Trace(payment_link_handler_);
 #endif  // BUILDFLAG(IS_ANDROID)
+  visitor->Trace(view_transitions_);
   Supplementable<Document>::Trace(visitor);
   TreeScope::Trace(visitor);
   ContainerNode::Trace(visitor);

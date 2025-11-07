@@ -40,26 +40,6 @@ bool CompareTransitions(const Member<ViewTransition>& left,
 }  // namespace
 
 // static
-const char ViewTransitionSupplement::kSupplementName[] = "ViewTransition";
-
-// static
-ViewTransitionSupplement* ViewTransitionSupplement::FromIfExists(
-    const Document& document) {
-  return Supplement<Document>::From<ViewTransitionSupplement>(document);
-}
-
-// static
-ViewTransitionSupplement* ViewTransitionSupplement::From(Document& document) {
-  auto* supplement =
-      Supplement<Document>::From<ViewTransitionSupplement>(document);
-  if (!supplement) {
-    supplement = MakeGarbageCollected<ViewTransitionSupplement>(document);
-    Supplement<Document>::ProvideTo(document, supplement);
-  }
-  return supplement;
-}
-
-// static
 DOMViewTransition* ViewTransitionSupplement::StartViewTransitionForElement(
     ScriptState* script_state,
     Element* element,
@@ -71,9 +51,8 @@ DOMViewTransition* ViewTransitionSupplement::StartViewTransitionForElement(
     return nullptr;
   }
 
-  auto* supplement = From(element->GetDocument());
-  return supplement->StartTransition(*element, callback, types,
-                                     exception_state);
+  return element->GetDocument().GetViewTransitions().StartTransition(
+      *element, callback, types, exception_state);
 }
 
 DOMViewTransition* ViewTransitionSupplement::startViewTransition(
@@ -110,7 +89,7 @@ DOMViewTransition* ViewTransitionSupplement::startViewTransition(
 // static
 DOMViewTransition* ViewTransitionSupplement::activeViewTransition(
     Document& document) {
-  auto* supplement = FromIfExists(document);
+  auto* supplement = document.GetViewTransitionsIfExists();
   if (!supplement) {
     return nullptr;
   }
@@ -178,7 +157,7 @@ DOMViewTransition* ViewTransitionSupplement::StartTransition(
 }
 
 void ViewTransitionSupplement::DidChangeVisibilityState() {
-  if (GetSupplementable()->hidden() && document_transition_) {
+  if (document_->hidden() && document_transition_) {
     document_transition_->SkipTransition(
         ViewTransition::PromiseResponse::kRejectInvalidState);
   }
@@ -187,13 +166,12 @@ void ViewTransitionSupplement::DidChangeVisibilityState() {
 
 void ViewTransitionSupplement::SendOptInStatusToHost() {
   // If we have a frame, notify the frame host that the opt-in has changed.
-  Document* document = GetSupplementable();
-  if (!document || !document->GetFrame() || !document->domWindow()) {
+  if (!document_ || !document_->GetFrame() || !document_->domWindow()) {
     return;
   }
 
-  document->GetFrame()->GetLocalFrameHostRemote().OnViewTransitionOptInChanged(
-      (document->domWindow()->HasBeenRevealed() && !document->hidden())
+  document_->GetFrame()->GetLocalFrameHostRemote().OnViewTransitionOptInChanged(
+      (document_->domWindow()->HasBeenRevealed() && !document_->hidden())
           ? cross_document_opt_in_
           : mojom::blink::ViewTransitionSameOriginOptIn::kDisabled);
 }
@@ -214,9 +192,8 @@ void ViewTransitionSupplement::SnapshotDocumentForNavigation(
     const blink::ViewTransitionToken& navigation_id,
     mojom::blink::PageSwapEventParamsPtr params,
     ViewTransition::ViewTransitionStateCallback callback) {
-  auto* supplement = From(document);
-  supplement->StartTransition(document, navigation_id, std::move(params),
-                              std::move(callback));
+  document.GetViewTransitions().StartTransition(
+      document, navigation_id, std::move(params), std::move(callback));
 }
 
 void ViewTransitionSupplement::StartTransition(
@@ -258,13 +235,13 @@ void ViewTransitionSupplement::StartTransition(
 void ViewTransitionSupplement::CreateFromSnapshotForNavigation(
     Document& document,
     ViewTransitionState transition_state) {
-  auto* supplement = From(document);
-  supplement->StartTransition(document, std::move(transition_state));
+  document.GetViewTransitions().StartTransition(document,
+                                                std::move(transition_state));
 }
 
 // static
 void ViewTransitionSupplement::AbortTransition(Document& document) {
-  auto* supplement = FromIfExists(document);
+  auto* supplement = document.GetViewTransitionsIfExists();
   if (supplement && supplement->document_transition_) {
     supplement->document_transition_->SkipTransition();
     DCHECK(!supplement->document_transition_);
@@ -289,8 +266,7 @@ void ViewTransitionSupplement::OnTransitionFinished(
     document_transition_ = nullptr;
     if (pending_navigation_transition_) {
       CHECK(RuntimeEnabledFeatures::TwoPhaseViewTransitionEnabled());
-      GetSupplementable()
-          ->GetTaskRunner(TaskType::kDOMManipulation)
+      document_->GetTaskRunner(TaskType::kDOMManipulation)
           ->PostTask(
               FROM_HERE,
               BindOnce(
@@ -298,7 +274,7 @@ void ViewTransitionSupplement::OnTransitionFinished(
                      PendingNavigationTransition
                          pending_navigation_transition) {
                     supplement->StartTransition(
-                        *supplement->GetSupplementable(),
+                        *supplement->document_,
                         pending_navigation_transition.navigation_id,
                         std::move(pending_navigation_transition.params),
                         std::move(pending_navigation_transition.callback));
@@ -325,8 +301,7 @@ void ViewTransitionSupplement::OnTransitionFinished(
 
   // Notify the animator if the set of active view transitions is empty.
   if (!document_transition_ && element_transitions_.empty()) {
-    Document* document = To<Document>(GetSupplementable());
-    if (auto* page = document->GetPage()) {
+    if (auto* page = document_->GetPage()) {
       page->Animator().SetHasViewTransition(false);
     }
   }
@@ -427,17 +402,16 @@ void ViewTransitionSupplement::WillUpdateStyleAndLayoutTree() {
 }
 
 ViewTransitionSupplement::ViewTransitionSupplement(Document& document)
-    : Supplement<Document>(document) {}
+    : document_(document) {}
 
 ViewTransitionSupplement::~ViewTransitionSupplement() = default;
 
 void ViewTransitionSupplement::Trace(Visitor* visitor) const {
+  visitor->Trace(document_);
   visitor->Trace(document_transition_);
   visitor->Trace(element_transitions_);
   visitor->Trace(skipped_with_pending_dom_callback_);
   visitor->Trace(captured_transitions_);
-
-  Supplement<Document>::Trace(visitor);
 }
 
 void ViewTransitionSupplement::AddPendingRequest(
@@ -447,16 +421,16 @@ void ViewTransitionSupplement::AddPendingRequest(
   }
   pending_requests_.push_back(std::move(request));
 
-  auto* document = GetSupplementable();
-  if (!document || !document->GetPage() || !document->View())
+  if (!document_ || !document_->GetPage() || !document_->View()) {
     return;
+  }
 
   // Schedule a new frame.
-  document->View()->ScheduleAnimation();
+  document_->View()->ScheduleAnimation();
 
   // Ensure paint artifact compositor does an update, since that's the mechanism
   // we use to pass transition requests to the compositor.
-  document->View()->SetPaintArtifactCompositorNeedsUpdate();
+  document_->View()->SetPaintArtifactCompositorNeedsUpdate();
 }
 
 VectorOf<std::unique_ptr<ViewTransitionRequest>>
@@ -480,8 +454,7 @@ void ViewTransitionSupplement::WillInsertBody() {
     return;
   }
 
-  auto* document = GetSupplementable();
-  CHECK(document);
+  CHECK(document_);
 
   // Update active styles will compute the @view-transition
   // navigation opt in.
@@ -491,7 +464,7 @@ void ViewTransitionSupplement::WillInsertBody() {
   // @view-transition rather than all rules. Note: the opt-in is checked below
   // from dispatching the pagereveal event during the first update-the-rendering
   // steps.
-  document->GetStyleEngine().UpdateActiveStyle();
+  document_->GetStyleEngine().UpdateActiveStyle();
 }
 
 DOMViewTransition*
@@ -504,12 +477,12 @@ ViewTransitionSupplement::ResolveCrossDocumentViewTransition() {
   // We auto-skip *outbound* transitions when the document has not been
   // revealed yet. We expect it to not be revealed yet when resolving the
   // inbound transition.
-  CHECK(!GetSupplementable()->domWindow()->HasBeenRevealed());
+  CHECK(!document_->domWindow()->HasBeenRevealed());
 
   if (cross_document_opt_in_ ==
       mojom::blink::ViewTransitionSameOriginOptIn::kDisabled) {
     document_transition_->SkipTransition();
-    CHECK(!ViewTransitionUtils::GetTransition(*GetSupplementable()));
+    CHECK(!ViewTransitionUtils::GetTransition(*document_));
     return nullptr;
   }
 
