@@ -1072,6 +1072,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterListPref(policy::policy_prefs::kIncognitoModeBlocklist);
   registry->RegisterListPref(policy::policy_prefs::kIncognitoModeAllowlist);
 
+  // Prefs for the Synced Set Up Feature.
+  registry->RegisterIntegerPref(prefs::kSyncedSetUpImpressionCount, 0);
+
   // Deprecated 02/2025 (migrated to LocalState pref).
   registry->RegisterIntegerPref(prefs::kNTPLensEntryPointNewBadgeShownCount, 0);
 

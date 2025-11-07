@@ -301,6 +301,7 @@
 #import "ios/chrome/browser/sync/model/sync_error_browser_agent.h"
 #import "ios/chrome/browser/synced_set_up/coordinator/synced_set_up_coordinator.h"
 #import "ios/chrome/browser/synced_set_up/coordinator/synced_set_up_coordinator_delegate.h"
+#import "ios/chrome/browser/synced_set_up/utils/utils.h"
 #import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
 #import "ios/chrome/browser/tab_switcher/tab_strip/coordinator/tab_strip_coordinator.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_group_action_type.h"
@@ -3675,6 +3676,7 @@ const char kChromeAppStoreUrl[] =
 
 - (void)showSyncedSetUpWithDismissalCompletion:(ProceduralBlock)completion {
   CHECK(IsSyncedSetUpEnabled());
+  CHECK(CanShowSyncedSetUp(self.profile->GetPrefs()));
 
   _runAfterSyncedSetUpDismissal = [completion copy];
 

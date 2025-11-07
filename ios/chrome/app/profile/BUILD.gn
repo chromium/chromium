@@ -223,6 +223,7 @@ source_set("first_run_profile_agent") {
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:signin_util",
     "//ios/chrome/browser/synced_set_up/public",
+    "//ios/chrome/browser/synced_set_up/utils",
   ]
 }
 

@@ -1118,6 +1118,14 @@ BASE_DECLARE_FEATURE(kIOSSyncedSetUp);
 // Returns true if `kIOSSyncedSetUp` is enabled.
 bool IsSyncedSetUpEnabled();
 
+// Name of the Finch parameter controlling the maximum number of impressions
+// allowed for the Synced Set Up promo.
+extern const char kSyncedSetUpImpressionLimit[];
+
+// Returns the maximum number of impressions allowed for the Synced Set Up
+// promo, as specified by the `kSyncedSetUpImpressionLimit` Finch parameter.
+int GetSyncedSetUpImpressionLimit();
+
 // Enables the MultilineBrowserOmnibox feature.
 BASE_DECLARE_FEATURE(kMultilineBrowserOmnibox);
 

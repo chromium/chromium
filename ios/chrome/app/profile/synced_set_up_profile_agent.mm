@@ -9,6 +9,7 @@
 #import "base/callback_list.h"
 #import "base/check.h"
 #import "base/functional/bind.h"
+#import "components/prefs/pref_service.h"
 #import "components/sync_device_info/device_info.h"
 #import "components/sync_preferences/cross_device_pref_tracker/timestamped_pref_value.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
@@ -104,6 +105,10 @@
 // applicable.
 - (void)maybeTriggerSyncedSetUpWithSource:(SyncedSetUpTriggerSource)source {
   CHECK(IsSyncedSetUpEnabled());
+  PrefService* profilePrefService = self.profileState.profile->GetPrefs();
+  if (!CanShowSyncedSetUp(profilePrefService)) {
+    return;
+  }
 
   // This agent must not initiate the Synced Set Up flow during First Run.
   if (self.profileState.appState.startupInformation.isFirstRun) {

@@ -396,6 +396,7 @@ void LogSnackbarInteraction(SyncedSetUpState state,
     _snackbarCount++;
     LogSnackbarInteraction(_state, SnackbarInteractionType::kShown);
     [_snackbarCommandsHandler showSnackbarMessage:[self snackbarMessage]];
+    [self.delegate recordSyncedSetUpShown:self];
     return YES;
   }
   return NO;

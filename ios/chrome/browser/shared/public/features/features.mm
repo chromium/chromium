@@ -1166,6 +1166,13 @@ bool IsSyncedSetUpEnabled() {
          base::FeatureList::IsEnabled(kIOSSyncedSetUp);
 }
 
+const char kSyncedSetUpImpressionLimit[] = "SyncedSetUpImpressionLimit";
+
+int GetSyncedSetUpImpressionLimit() {
+  return base::GetFieldTrialParamByFeatureAsInt(
+      kIOSSyncedSetUp, kSyncedSetUpImpressionLimit, /*default_value=*/1);
+}
+
 BASE_FEATURE(kMultilineBrowserOmnibox, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsMultilineBrowserOmniboxEnabled() {

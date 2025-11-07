@@ -12,6 +12,9 @@
 // Delegate for the `SyncedSetUpMediator`.
 @protocol SyncedSetUpMediatorDelegate
 
+// Called when the Synced Set Up UI is shown to the user.
+- (void)recordSyncedSetUpShown:(SyncedSetUpMediator*)mediator;
+
 // Called when the `SyncedSetUpMediator` is used during the post-FRE flow.
 - (void)mediatorWillStartPostFirstRunFlow:(SyncedSetUpMediator*)mediator;
 
