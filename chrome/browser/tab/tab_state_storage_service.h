@@ -14,6 +14,8 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
+#include "chrome/browser/tab/restore_id_associator.h"
+#include "chrome/browser/tab/restore_id_associator_builder.h"
 #include "chrome/browser/tab/storage_id_mapping.h"
 #include "chrome/browser/tab/storage_loaded_data.h"
 #include "chrome/browser/tab/tab_group_collection_data.h"
@@ -32,6 +34,11 @@ namespace tabs {
 using TabCanonicalizer =
     base::RepeatingCallback<const TabInterface*(const TabInterface*)>;
 
+// Constructs an associater using the specified callbacks. This indirection is
+// required to minimize OS-specific coupling.
+using AssociatorBuilderFactory = base::RepeatingCallback<std::unique_ptr<
+    RestoreIdAssociatorBuilder>(OnTabAssociation, OnCollectionAssociation)>;
+
 class TabStateStorageService : public KeyedService,
                                public base::SupportsUserData,
                                public StorageIdMapping {
@@ -42,7 +49,8 @@ class TabStateStorageService : public KeyedService,
   explicit TabStateStorageService(
       std::unique_ptr<TabStateStorageBackend> tab_backend,
       std::unique_ptr<TabStoragePackager> packager,
-      TabCanonicalizer tab_canonicalizer);
+      TabCanonicalizer tab_canonicalizer,
+      AssociatorBuilderFactory builder_factory);
   ~TabStateStorageService() override;
 
   // StorageIdMapping:
@@ -76,11 +84,13 @@ class TabStateStorageService : public KeyedService,
                         std::vector<NodeState> entries);
 
   void OnTabCreated(int storage_id, const TabInterface* tab);
+  void OnCollectionCreated(int storage_id, const TabCollection* collection);
 
   std::unique_ptr<TabStateStorageBackend> tab_backend_;
   std::unique_ptr<TabStoragePackager> packager_;
 
   TabCanonicalizer tab_canonicalizer_;
+  AssociatorBuilderFactory builder_factory_;
 
   // Storage ids need to be unique across tabs and collections, but the handles
   // do not have this guarantee. Track them separately.

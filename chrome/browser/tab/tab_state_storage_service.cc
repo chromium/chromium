@@ -10,6 +10,8 @@
 #include "base/token.h"
 #include "chrome/browser/tab/payload.h"
 #include "chrome/browser/tab/protocol/tab_state.pb.h"
+#include "chrome/browser/tab/restore_id_associator.h"
+#include "chrome/browser/tab/restore_id_associator_builder.h"
 #include "chrome/browser/tab/storage_package.h"
 #include "chrome/browser/tab/tab_group_collection_data.h"
 #include "chrome/browser/tab/tab_state_storage_updater_builder.h"
@@ -76,10 +78,12 @@ void MoveNodeSequence(const TabCollection* prev_parent,
 TabStateStorageService::TabStateStorageService(
     std::unique_ptr<TabStateStorageBackend> tab_backend,
     std::unique_ptr<TabStoragePackager> packager,
-    TabCanonicalizer tab_canonicalizer)
+    TabCanonicalizer tab_canonicalizer,
+    AssociatorBuilderFactory builder_factory)
     : tab_backend_(std::move(tab_backend)),
       packager_(std::move(packager)),
-      tab_canonicalizer_(tab_canonicalizer) {
+      tab_canonicalizer_(tab_canonicalizer),
+      builder_factory_(builder_factory) {
   tab_backend_->Initialize();
 }
 
@@ -169,27 +173,51 @@ void TabStateStorageService::ClearState() {
 
 void TabStateStorageService::OnAllNodesLoaded(LoadDataCallback callback,
                                               std::vector<NodeState> entries) {
-  auto loaded_data = std::make_unique<StorageLoadedData>();
+  auto on_tab_association = base::BindRepeating(
+      &TabStateStorageService::OnTabCreated, weak_ptr_factory_.GetWeakPtr());
+  auto on_collection_association =
+      base::BindRepeating(&TabStateStorageService::OnCollectionCreated,
+                          weak_ptr_factory_.GetWeakPtr());
+
+  std::vector<LoadedTabState> loaded_tabs;
+  std::vector<std::unique_ptr<TabGroupCollectionData>> loaded_groups;
+  std::unique_ptr<RestoreIdAssociatorBuilder> builder =
+      builder_factory_.Run(on_tab_association, on_collection_association);
+
+  DCHECK(builder) << "Associator builder has not been instantiated";
+
   int max_storage_id = 0;
   for (auto& entry : entries) {
     max_storage_id = std::max(max_storage_id, entry.id);
     if (entry.type == TabStorageType::kTab) {
       tabs_pb::TabState tab_state;
       if (tab_state.ParseFromString(entry.payload)) {
-        loaded_data->loaded_tabs.emplace_back(
+        builder->RegisterTab(entry.id, tab_state);
+        loaded_tabs.emplace_back(
             std::move(tab_state),
             base::BindOnce(&TabStateStorageService::OnTabCreated,
                            weak_ptr_factory_.GetWeakPtr(), entry.id));
       }
-    } else if (entry.type == TabStorageType::kGroup) {
-      tabs_pb::TabGroupCollectionState group_state;
-      if (group_state.ParseFromString(entry.payload)) {
-        loaded_data->loaded_groups.emplace_back(
-            std::make_unique<TabGroupCollectionData>(group_state));
+    } else {
+      tabs_pb::Children children;
+      if (children.ParseFromString(entry.children)) {
+        builder->RegisterCollection(entry.id, children);
+      }
+
+      if (entry.type == TabStorageType::kGroup) {
+        tabs_pb::TabGroupCollectionState group_state;
+        if (group_state.ParseFromString(entry.payload)) {
+          loaded_groups.emplace_back(
+              std::make_unique<TabGroupCollectionData>(group_state));
+        }
       }
     }
   }
   next_storage_id_ = max_storage_id + 1;
+
+  auto loaded_data = std::make_unique<StorageLoadedData>(
+      std::move(loaded_tabs), std::move(loaded_groups),
+      builder->BuildAssociator());
   std::move(callback).Run(std::move(loaded_data));
 }
 
@@ -204,6 +232,20 @@ void TabStateStorageService::OnTabCreated(int storage_id,
   }
 
   tab_handle_to_storage_id_[canonicalized_tab->GetHandle().raw_value()] =
+      storage_id;
+}
+
+void TabStateStorageService::OnCollectionCreated(
+    int storage_id,
+    const TabCollection* collection) {
+  if (collection == nullptr) {
+    // TODO(https://crbug.com/448151790): Consider removing from the database.
+    // Though if a complete post-initialization raze is coming, maybe it
+    // doesn't matter.
+    return;
+  }
+
+  collection_handle_to_storage_id_[collection->GetHandle().raw_value()] =
       storage_id;
 }
 
