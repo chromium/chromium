@@ -269,7 +269,7 @@ void SqlPersistentStore::OpenNextEntry(
 }
 
 SqlPersistentStore::EvictionUrgency SqlPersistentStore::GetEvictionUrgency() {
-  if (eviction_in_progress_) {
+  if (eviction_result_callback_) {
     return EvictionUrgency::kNotNeeded;
   }
   // Checks if the total size of entries exceeds the high watermark and the
@@ -288,52 +288,19 @@ void SqlPersistentStore::StartEviction(
     std::vector<ResIdAndShardId> excluded_list,
     bool is_idle_time_eviction,
     ErrorCallback callback) {
-  CHECK(!eviction_in_progress_);
+  CHECK(!eviction_result_callback_);
+  CHECK(callback);
   const int64_t size_to_be_removed = GetSizeOfAllEntries() - low_watermark_;
   if (size_to_be_removed <= 0) {
     std::move(callback).Run(Error::kOk);
     return;
   }
-  eviction_in_progress_ = true;
+  eviction_result_callback_ = std::move(callback);
   auto barrier_callback = base::BarrierCallback<ResIdListOrError>(
       GetSizeOfShards(),
-      base::BindOnce(
-          [](base::WeakPtr<SqlPersistentStore> weak_ptr,
-             bool is_idle_time_eviction, base::TimeTicks start_time,
-             ErrorCallback callback, std::vector<ResIdListOrError> results) {
-            if (weak_ptr) {
-              weak_ptr->eviction_in_progress_ = false;
-            }
-            Error error = Error::kOk;
-            size_t count = 0;
-            for (const auto& result : results) {
-              if (!result.has_value()) {
-                error = result.error();
-                break;
-              }
-              count += result.value().size();
-            }
-            const std::string_view kMethodName =
-                is_idle_time_eviction ? "RunEviction" : "RunEvictionOnIdleTime";
-            base::UmaHistogramMicrosecondsTimes(
-                base::StrCat(
-                    {kSqlDiskCacheBackendHistogramPrefix, kMethodName,
-                     error == Error::kOk ? ".SuccessTime" : ".FailureTime"}),
-                base::TimeTicks::Now() - start_time);
-            base::UmaHistogramEnumeration(
-                base::StrCat({kSqlDiskCacheBackendHistogramPrefix, kMethodName,
-                              ".Result"}),
-                error);
-            if (error == Error::kOk) {
-              base::UmaHistogramCounts1000(
-                  base::StrCat({kSqlDiskCacheBackendHistogramPrefix,
-                                kMethodName, ".EntryCount"}),
-                  count);
-            }
-            std::move(callback).Run(error);
-          },
-          weak_factory_.GetWeakPtr(), is_idle_time_eviction,
-          base::TimeTicks::Now(), std::move(callback)));
+      base::BindOnce(&SqlPersistentStore::OnEvictionFinished,
+                     weak_factory_.GetWeakPtr(), is_idle_time_eviction,
+                     base::TimeTicks::Now()));
   auto aggregator = base::MakeRefCounted<EvictionCandidateAggregator>(
       size_to_be_removed, background_task_runners_);
   auto res_id_sets =
@@ -343,6 +310,42 @@ void SqlPersistentStore::StartEviction(
         size_to_be_removed, std::move(res_id_sets[i]), is_idle_time_eviction,
         aggregator, barrier_callback);
   }
+}
+
+void SqlPersistentStore::OnEvictionFinished(
+    bool is_idle_time_eviction,
+    base::TimeTicks start_time,
+    std::vector<ResIdListOrError> results) {
+  Error error = Error::kOk;
+  size_t count = 0;
+  for (const auto& result : results) {
+    if (!result.has_value()) {
+      error = result.error();
+      break;
+    }
+    count += result.value().size();
+  }
+  const std::string_view kMethodName =
+      is_idle_time_eviction ? "RunEviction" : "RunEvictionOnIdleTime";
+  base::UmaHistogramMicrosecondsTimes(
+      base::StrCat({kSqlDiskCacheBackendHistogramPrefix, kMethodName,
+                    error == Error::kOk ? ".SuccessTime" : ".FailureTime"}),
+      base::TimeTicks::Now() - start_time);
+  base::UmaHistogramEnumeration(
+      base::StrCat(
+          {kSqlDiskCacheBackendHistogramPrefix, kMethodName, ".Result"}),
+      error);
+  if (error == Error::kOk) {
+    base::UmaHistogramCounts1000(
+        base::StrCat(
+            {kSqlDiskCacheBackendHistogramPrefix, kMethodName, ".EntryCount"}),
+        count);
+  }
+
+  CHECK(eviction_result_callback_);
+  auto callback = std::move(eviction_result_callback_);
+  eviction_result_callback_.Reset();
+  std::move(callback).Run(error);
 }
 
 int64_t SqlPersistentStore::MaxFileSize() const {
