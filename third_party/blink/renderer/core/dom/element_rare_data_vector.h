@@ -31,6 +31,7 @@ class ShadowRoot;
 class NamedNodeMap;
 class DOMTokenList;
 class DatasetDOMStringMap;
+class DisplayAdElementMonitor;
 class ElementAnimations;
 class Attr;
 typedef HeapVector<Member<Attr>> AttrNodeList;
@@ -99,8 +100,9 @@ class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
     kCustomElementRegistry = 37,
     kAnimationTriggerData = 38,
     kFocusgroupLastFocused = 39,
+    kDisplayAdElementMonitor = 40,
 
-    kNumFields = 40,
+    kNumFields = 41,
   };
 
   ElementRareDataField* GetField(FieldId field_id) const;
@@ -340,6 +342,9 @@ class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
 
   ElementAnimationTriggerData* AnimationTriggerData();
   ElementAnimationTriggerData& EnsureAnimationTriggerData();
+
+  DisplayAdElementMonitor* GetDisplayAdElementMonitor() const;
+  DisplayAdElementMonitor& EnsureDisplayAdElementMonitor(Element*);
 
   void SetDidAttachInternals() { fields_.did_attach_internals = true; }
   bool DidAttachInternals() const { return fields_.did_attach_internals; }

@@ -394,6 +394,66 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
   EXPECT_TRUE(reported_average_viewport_density);
 }
 
+// TODO(crbug.com/431787502): Re-enable this test.
+// The test seems to be flaky on multiple platforms.
+IN_PROC_BROWSER_TEST_F(
+    AdsPageLoadMetricsObserverBrowserTest,
+    DISABLED_AverageViewportAdDensity_SpanBackgroundImageAd) {
+  SetRulesetWithRules(
+      {subresource_filter::testing::CreateSuffixRule("pixel.png")});
+
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  auto waiter = CreatePageLoadMetricsTestWaiter();
+
+  GURL url = embedded_test_server()->GetURL(
+      "a.com", "/ads_observer/blank_with_adiframe_writer.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  page_load_metrics::AddTextAndWaitForFirstContentfulPaint(web_contents,
+                                                           waiter.get());
+
+  waiter->SetMainFrameAdRectsExpectation();
+
+  GURL image_url =
+      embedded_test_server()->GetURL("b.com", "/ads_observer/pixel.png");
+
+  std::string create_span_script = content::JsReplace(R"(
+        const span = document.createElement('span');
+        span.style.position = 'fixed';
+        span.style.left = 0;
+        span.style.top = 0;
+        span.style.width = '5px';
+        span.style.height = '5px';
+        span.style.display = 'block';
+        span.style.backgroundImage = 'url(' + $1 + ')';
+        document.body.appendChild(span);)",
+                                                      image_url.spec());
+
+  EXPECT_TRUE(ExecJs(web_contents, create_span_script));
+
+  waiter->Wait();
+
+  EXPECT_TRUE(waiter->DidObserveMainFrameAdRect(gfx::Rect(0, 0, 5, 5)));
+
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
+
+  auto entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::AdPageLoadCustomSampling4::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+
+  const int64_t* reported_average_viewport_density =
+      ukm_recorder.GetEntryMetric(entries.front(),
+                                  ukm::builders::AdPageLoadCustomSampling4::
+                                      kAverageViewportAdDensityName);
+
+  EXPECT_TRUE(reported_average_viewport_density);
+}
+
 // Test that viewport ad density does not accumulate for ads that are injected
 // while the tab is in the background.
 // TODO(crbug.com/448982399): Re-enable this test

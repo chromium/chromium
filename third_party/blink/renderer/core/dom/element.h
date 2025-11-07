@@ -1666,9 +1666,14 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   virtual void SetActive(bool active);
   virtual void SetHovered(bool hovered);
 
-  // Classes overriding this method can return true when an element has
-  // been determined to be from an ad. Returns false by default.
-  virtual bool IsAdRelated() const { return false; }
+  // Manages the element's ad-related status.
+  //
+  // `HTMLFrameOwnerElement` manages its ad status separately. Therefore:
+  // 1. `SetIsAdRelated()` should not be called on a frame owner.
+  // 2. `IsAdRelated()` is overridden by `HTMLFrameOwnerElement` to return its
+  //    own frame-derived status.
+  void SetIsAdRelated();
+  virtual bool IsAdRelated() const;
 
   void NotifyInlineStyleMutation();
 

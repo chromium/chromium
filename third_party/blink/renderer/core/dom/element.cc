@@ -158,6 +158,7 @@
 #include "third_party/blink/renderer/core/html/custom/custom_element.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_registry.h"
 #include "third_party/blink/renderer/core/html/custom/element_internals.h"
+#include "third_party/blink/renderer/core/html/display_ad_element_monitor.h"
 #include "third_party/blink/renderer/core/html/forms/html_button_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_data_list_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_field_set_element.h"
@@ -3968,6 +3969,11 @@ Node::InsertionNotificationRequest Element::InsertedInto(
       if (auto* context = rare_data->GetDisplayLockContext()) {
         context->ElementConnected();
       }
+
+      if (DisplayAdElementMonitor* ad_monitor =
+              rare_data->GetDisplayAdElementMonitor()) {
+        ad_monitor->EnsureStarted();
+      }
     }
 
     ProcessElementRenderBlocking(GetIdAttribute());
@@ -4147,6 +4153,11 @@ void Element::RemovedFrom(ContainerNode& insertion_point) {
         // invoker. Set that invoker to the no-interest state.
         invoker->ChangeInterestState(this, InterestState::kNoInterest);
       }
+    }
+
+    if (DisplayAdElementMonitor* ad_monitor =
+            data->GetDisplayAdElementMonitor()) {
+      ad_monitor->OnElementRemovedOrUntagged();
     }
   }
 
@@ -8327,6 +8338,19 @@ bool Element::ActivateDisplayLockIfNeeded(DisplayLockActivationReason reason) {
     }
   }
   return activated;
+}
+
+void Element::SetIsAdRelated() {
+  DCHECK(!IsA<HTMLFrameOwnerElement>(this));
+
+  EnsureElementRareData().EnsureDisplayAdElementMonitor(this);
+}
+
+bool Element::IsAdRelated() const {
+  if (const ElementRareDataVector* data = GetElementRareData()) {
+    return data->GetDisplayAdElementMonitor();
+  }
+  return false;
 }
 
 bool Element::HasUndoStack() const {

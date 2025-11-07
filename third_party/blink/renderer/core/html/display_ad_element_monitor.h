@@ -14,7 +14,8 @@ namespace blink {
 // (including its removal and re-insertion) to the `PageTimingMetricsSender`.
 class CORE_EXPORT DisplayAdElementMonitor
     : public GarbageCollected<DisplayAdElementMonitor>,
-      public LocalFrameView::LifecycleNotificationObserver {
+      public LocalFrameView::LifecycleNotificationObserver,
+      public ElementRareDataField {
  public:
   enum class OverlayVisibility {
     kSkipped,

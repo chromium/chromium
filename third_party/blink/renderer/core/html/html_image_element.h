@@ -31,7 +31,6 @@
 #include "third_party/blink/renderer/core/dom/create_element_flags.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/html/canvas/image_element_base.h"
-#include "third_party/blink/renderer/core/html/display_ad_element_monitor.h"
 #include "third_party/blink/renderer/core/html/forms/form_associated.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/html_image_loader.h"
@@ -163,10 +162,6 @@ class CORE_EXPORT HTMLImageElement
     return is_legacy_format_or_unoptimized_image_;
   }
 
-  // Keeps track of whether the image comes from an ad.
-  void SetIsAdRelated();
-  bool IsAdRelated() const override { return display_ad_element_monitor_; }
-
   // Keeps track whether this image is an LCP element.
   // If the element is reused for loading another image, this flag might be
   // retained so use with caution.
@@ -265,7 +260,6 @@ class CORE_EXPORT HTMLImageElement
   Member<HTMLFormElement> form_;
   AtomicString best_fit_image_url_;
   float image_device_pixel_ratio_;
-  Member<DisplayAdElementMonitor> display_ad_element_monitor_;
   Member<HTMLSourceElement> source_;
   LayoutDisposition layout_disposition_;
   bool form_was_set_by_parser_ : 1;

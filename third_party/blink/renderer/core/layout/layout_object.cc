@@ -4350,6 +4350,19 @@ void LayoutObject::ImageNotifyFinished(ImageResourceContent* image) {
     ImageElementTiming::From(*window).NotifyImageFinished(*this, image);
   if (LocalFrameView* frame_view = GetFrameView())
     frame_view->GetPaintTimingDetector().NotifyImageFinished(*this, image);
+
+  if (!image->ErrorOccurred() && image->IsAdResource()) {
+    if (auto* element = DynamicTo<Element>(GetNode())) {
+      // Skip setting the ad status for `HTMLFrameOwnerElement`, as frame owners
+      // manage their ad status separately (i.e., requires content frame
+      // notifications and allows untagging).
+      //
+      // TODO(yaoxia): Determine if this can be replaced with a DCHECK.
+      if (!IsA<HTMLFrameOwnerElement>(element)) {
+        element->SetIsAdRelated();
+      }
+    }
+  }
 }
 
 Element* LayoutObject::ScrollParent(const Element* base) const {

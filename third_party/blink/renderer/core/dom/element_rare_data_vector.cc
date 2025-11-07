@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/html/custom/custom_element_definition.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_registry.h"
 #include "third_party/blink/renderer/core/html/custom/element_internals.h"
+#include "third_party/blink/renderer/core/html/display_ad_element_monitor.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/intersection_observer/element_intersection_observer_data.h"
 #include "third_party/blink/renderer/core/layout/anchor_position_scroll_data.h"
@@ -602,6 +603,18 @@ ElementAnimationTriggerData&
 ElementRareDataVector::EnsureAnimationTriggerData() {
   return EnsureField<ElementAnimationTriggerData>(
       FieldId::kAnimationTriggerData);
+}
+
+DisplayAdElementMonitor* ElementRareDataVector::GetDisplayAdElementMonitor()
+    const {
+  return static_cast<DisplayAdElementMonitor*>(
+      GetField(FieldId::kDisplayAdElementMonitor));
+}
+
+DisplayAdElementMonitor& ElementRareDataVector::EnsureDisplayAdElementMonitor(
+    Element* element) {
+  return EnsureField<DisplayAdElementMonitor>(FieldId::kDisplayAdElementMonitor,
+                                              element);
 }
 
 void ElementRareDataVector::SetFocusgroupLastFocused(Element* element) {

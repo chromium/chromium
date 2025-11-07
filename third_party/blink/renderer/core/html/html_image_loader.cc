@@ -99,8 +99,6 @@ void HTMLImageLoader::ImageNotifyFinished(ImageResourceContent*) {
     if (load_error) {
       image->EnsureCollapsedOrFallbackContent();
     } else {
-      if (cached_image->IsAdResource())
-        image->SetIsAdRelated();
       image->EnsurePrimaryContent();
     }
   }

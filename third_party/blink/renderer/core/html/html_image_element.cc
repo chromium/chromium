@@ -131,7 +131,6 @@ void HTMLImageElement::Trace(Visitor* visitor) const {
   visitor->Trace(image_loader_);
   visitor->Trace(listener_);
   visitor->Trace(form_);
-  visitor->Trace(display_ad_element_monitor_);
   visitor->Trace(source_);
 
   HTMLElement::Trace(visitor);
@@ -544,10 +543,6 @@ void HTMLImageElement::AttachLayoutTree(AttachContext& context) {
 
 Node::InsertionNotificationRequest HTMLImageElement::InsertedInto(
     ContainerNode& insertion_point) {
-  if (display_ad_element_monitor_) {
-    display_ad_element_monitor_->EnsureStarted();
-  }
-
   if (!form_was_set_by_parser_ ||
       NodeTraversal::HighestAncestorOrSelf(insertion_point) !=
           NodeTraversal::HighestAncestorOrSelf(*form_.Get()))
@@ -602,10 +597,6 @@ Node::InsertionNotificationRequest HTMLImageElement::InsertedInto(
 }
 
 void HTMLImageElement::RemovedFrom(ContainerNode& insertion_point) {
-  if (display_ad_element_monitor_) {
-    display_ad_element_monitor_->OnElementRemovedOrUntagged();
-  }
-
   if (!form_ || NodeTraversal::HighestAncestorOrSelf(*form_.Get()) !=
                     NodeTraversal::HighestAncestorOrSelf(*this))
     ResetFormOwner();
@@ -755,13 +746,6 @@ bool HTMLImageElement::IsURLAttribute(const Attribute& attribute) const {
 bool HTMLImageElement::HasLegalLinkAttribute(const QualifiedName& name) const {
   return name == html_names::kSrcAttr ||
          HTMLElement::HasLegalLinkAttribute(name);
-}
-
-void HTMLImageElement::SetIsAdRelated() {
-  if (!display_ad_element_monitor_) {
-    display_ad_element_monitor_ =
-        MakeGarbageCollected<DisplayAdElementMonitor>(this);
-  }
 }
 
 void HTMLImageElement::DidFinishLayout() {
