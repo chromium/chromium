@@ -17,9 +17,6 @@
 #import "url/gurl.h"
 
 namespace {
-constexpr CGFloat kPreferredCornerRadius = 20;
-constexpr CGFloat kDismissSymbolSizeIOS18 = 22;
-constexpr CGFloat kDismissSymbolSizeIOS26 = 16;
 NSString* const kWhatsNewInstructionsLabelAccessibilityIdentifier =
     @"WhatsNewTitleAccessibilityIdentifier";
 }  // namespace
@@ -28,8 +25,6 @@ NSString* const kWhatsNewInstructionsLabelAccessibilityIdentifier =
 
 // Child view controller used to display the alert full-screen.
 @property(nonatomic, strong) ConfirmationAlertViewController* alertScreen;
-// The label with title.
-@property(nonatomic, strong) UILabel* titleLabel;
 // What's New item.
 @property(nonatomic, strong) WhatsNewItem* item;
 
@@ -79,25 +74,10 @@ NSString* const kWhatsNewInstructionsLabelAccessibilityIdentifier =
   _alertScreen = [[ConfirmationAlertViewController alloc]
       initWithConfiguration:configuration];
   _alertScreen.underTitleView = instructionView;
-  _alertScreen.titleView = self.titleLabel;
   _alertScreen.actionHandler = self.actionHandler;
-  _alertScreen.showDismissBarButton = YES;
+  _alertScreen.showDismissBarButton = NO;
 
-  UIImage* xmarkSymbol;
-  if (@available(iOS 26, *)) {
-    UIImageConfiguration* symbolConfiguration = [UIImageSymbolConfiguration
-        configurationWithPointSize:kDismissSymbolSizeIOS26
-                            weight:UIImageSymbolWeightLight
-                             scale:UIImageSymbolScaleUnspecified];
-    xmarkSymbol =
-        DefaultSymbolWithConfiguration(kXMarkSymbol, symbolConfiguration);
-  } else {
-    xmarkSymbol =
-        SymbolWithPalette(DefaultSymbolWithPointSize(kXMarkCircleFillSymbol,
-                                                     kDismissSymbolSizeIOS18),
-                          @[ [UIColor colorNamed:kGrey600Color] ]);
-  }
-  _alertScreen.customDismissBarButtonImage = xmarkSymbol;
+  self.title = l10n_util::GetNSString(IDS_IOS_WHATS_HOW_TO_ENABLE_TITLE);
 
   _alertScreen.topAlignedLayout = YES;
 
@@ -135,27 +115,6 @@ NSString* const kWhatsNewInstructionsLabelAccessibilityIdentifier =
     [self.alertScreen.view.trailingAnchor
         constraintEqualToAnchor:self.view.trailingAnchor],
   ]];
-  presentationController.preferredCornerRadius = kPreferredCornerRadius;
-}
-
-- (UILabel*)titleLabel {
-  if (_titleLabel) {
-    return _titleLabel;
-  }
-
-  _titleLabel = [[UILabel alloc] init];
-  _titleLabel.numberOfLines = 0;
-  _titleLabel.font =
-      CreateDynamicFont(UIFontTextStyleBody, UIFontWeightSemibold);
-  _titleLabel.text = l10n_util::GetNSString(IDS_IOS_WHATS_HOW_TO_ENABLE_TITLE);
-  _titleLabel.textAlignment = NSTextAlignmentCenter;
-  _titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
-  _titleLabel.adjustsFontForContentSizeCategory = YES;
-  _titleLabel.accessibilityIdentifier =
-      kWhatsNewInstructionsLabelAccessibilityIdentifier;
-  _titleLabel.accessibilityTraits |= UIAccessibilityTraitHeader;
-
-  return _titleLabel;
 }
 
 @end
