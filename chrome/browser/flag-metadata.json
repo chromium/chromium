@@ -6130,6 +6130,11 @@
     "expiry_milestone": 137
   },
   {
+    "name": "ios-keyboard-accessory-default-view",
+    "owners": [ "leozhao@google.com", "tmartino@google.com", "bling-transactions@google.com" ],
+    "expiry_milestone": 145
+  },
+  {
     "name": "ios-keyboard-accessory-two-bubble",
     "owners": [ "leozhao@google.com", "tmartino@google.com", "bling-transactions@google.com" ],
     "expiry_milestone": 145

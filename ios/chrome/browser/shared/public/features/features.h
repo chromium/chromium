@@ -642,8 +642,14 @@ bool IsContentPushNotificationsSetUpListRegistrationOnly();
 // false otherwise.
 bool IsLiquidGlassEffectEnabled();
 
+// Feature flag to enable the default input accessory view.
+BASE_DECLARE_FEATURE(kIOSKeyboardAccessoryDefaultView);
+
 // Feature flag to enable the two-bubble design for the Keyboard Accessory view.
 BASE_DECLARE_FEATURE(kIOSKeyboardAccessoryTwoBubble);
+
+// Returns true if the default input accessory view is enabled.
+bool IsIOSKeyboardAccessoryDefaultViewEnabled();
 
 // Returns true if the two-bubble design for the keyboard accessory view is
 // enabled.

@@ -642,6 +642,13 @@ bool IsLiquidGlassEffectEnabled() {
   return false;
 }
 
+BASE_FEATURE(kIOSKeyboardAccessoryDefaultView,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsIOSKeyboardAccessoryDefaultViewEnabled() {
+  return base::FeatureList::IsEnabled(kIOSKeyboardAccessoryDefaultView);
+}
+
 BASE_FEATURE(kIOSKeyboardAccessoryTwoBubble, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsIOSKeyboardAccessoryTwoBubbleEnabled() {

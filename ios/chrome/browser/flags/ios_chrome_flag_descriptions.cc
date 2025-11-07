@@ -761,6 +761,12 @@ const char kIOSFuseboxName[] = "IOSFusebox";
 const char kIOSFuseboxDescription[] =
     "When enabled, shows the fusebox instead of the regular omnibox.";
 
+const char kIOSKeyboardAccessoryDefaultViewName[] =
+    "Default Input Accessory View";
+const char kIOSKeyboardAccessoryDefaultViewDescription[] =
+    "When enabled, a default Keyboard Accessory view with navigation buttons "
+    "is provided for a <select> HTML element.";
+
 const char kIOSKeyboardAccessoryTwoBubbleName[] =
     "Enable the two-bubble design for the Keyboard Accessory view";
 const char kIOSKeyboardAccessoryTwoBubbleDescription[] =
