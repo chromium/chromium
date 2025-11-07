@@ -664,7 +664,11 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
             SelectionMenuItem menuItem = delegate.getMinimalMenuItem(item);
             logSelectionAction(menuItem.groupId, menuItem.id);
             boolean isSubmenuParent = item.containsKey(ListMenuSubmenuItemProperties.SUBMENU_ITEMS);
-            mCallback.onDropdownItemClicked(menuItem, !isSubmenuParent);
+            View.OnClickListener clickListener = delegate.getClickListener(item);
+            if (!mCallback.onDropdownItemClicked(menuItem, !isSubmenuParent)
+                    && clickListener != null) {
+                clickListener.onClick(null);
+            }
         };
     }
 

@@ -7,6 +7,7 @@ package org.chromium.content_public.browser.selection;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.view.Menu;
 import android.view.View;
 
 import androidx.annotation.IdRes;
@@ -77,11 +78,20 @@ public interface SelectionDropdownMenuDelegate {
                                 itemModel, ListMenuItemProperties.GROUP_ID, 0))
                 .setOrder(
                         PropertyModel.getFromModelOrDefault(
-                                itemModel, ListMenuItemProperties.ORDER, -1))
+                                itemModel, ListMenuItemProperties.ORDER, Menu.CATEGORY_ALTERNATIVE))
                 .setIntent(
                         PropertyModel.getFromModelOrDefault(
                                 itemModel, ListMenuItemProperties.INTENT, null))
                 .build();
+    }
+
+    /**
+     * Returns the click listener for the given item. If the click listener is unset or the key
+     * doesn't exist, return null.
+     */
+    default View.@Nullable OnClickListener getClickListener(PropertyModel itemModel) {
+        return PropertyModel.getFromModelOrDefault(
+                itemModel, ListMenuItemProperties.CLICK_LISTENER, null);
     }
 
     /** Returns a divider menu item to be shown in the dropdown menu. */
