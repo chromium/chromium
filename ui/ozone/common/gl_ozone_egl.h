@@ -39,14 +39,6 @@ class GLOzoneEGL : public GLOzone {
   bool CanImportNativePixmap(viz::SharedImageFormat format) override;
   std::unique_ptr<NativePixmapGLBinding> ImportNativePixmap(
       scoped_refptr<gfx::NativePixmap> pixmap,
-      gfx::BufferFormat plane_format,
-      gfx::BufferPlane plane,
-      gfx::Size plane_size,
-      const gfx::ColorSpace& color_space,
-      GLenum target,
-      GLuint texture_id) override;
-  std::unique_ptr<NativePixmapGLBinding> ImportNativePixmap(
-      scoped_refptr<gfx::NativePixmap> pixmap,
       viz::SharedImageFormat plane_format,
       gfx::BufferPlane plane,
       gfx::Size plane_size,
@@ -80,6 +72,17 @@ class GLOzoneEGL : public GLOzone {
   // Sets up GL bindings for the native surface.
   virtual bool LoadGLES2Bindings(
       const gl::GLImplementationParts& implementation) = 0;
+
+ private:
+  // GLOzone:
+  std::unique_ptr<NativePixmapGLBinding> ImportNativePixmap(
+      scoped_refptr<gfx::NativePixmap> pixmap,
+      gfx::BufferFormat plane_format,
+      gfx::BufferPlane plane,
+      gfx::Size plane_size,
+      const gfx::ColorSpace& color_space,
+      GLenum target,
+      GLuint texture_id) override;
 };
 
 }  // namespace ui

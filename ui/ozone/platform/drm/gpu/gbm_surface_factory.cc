@@ -130,19 +130,6 @@ class GLOzoneEGLGbm : public GLOzoneEGL {
     return NativePixmapEGLBinding::IsSharedImageFormatSupported(format);
   }
 
-  std::unique_ptr<NativePixmapGLBinding> ImportNativePixmap(
-      scoped_refptr<gfx::NativePixmap> pixmap,
-      gfx::BufferFormat plane_format,
-      gfx::BufferPlane plane,
-      gfx::Size plane_size,
-      const gfx::ColorSpace& color_space,
-      GLenum target,
-      GLuint texture_id) override {
-    return NativePixmapEGLBinding::Create(pixmap, plane_format, plane,
-                                          plane_size, color_space, target,
-                                          texture_id);
-  }
-
   scoped_refptr<gl::GLSurface> CreateViewGLSurface(
       gl::GLDisplay* display,
       gfx::AcceleratedWidget window) override {
@@ -201,6 +188,19 @@ class GLOzoneEGLGbm : public GLOzoneEGL {
   }
 
  private:
+  std::unique_ptr<NativePixmapGLBinding> ImportNativePixmap(
+      scoped_refptr<gfx::NativePixmap> pixmap,
+      gfx::BufferFormat plane_format,
+      gfx::BufferPlane plane,
+      gfx::Size plane_size,
+      const gfx::ColorSpace& color_space,
+      GLenum target,
+      GLuint texture_id) override {
+    return NativePixmapEGLBinding::Create(pixmap, plane_format, plane,
+                                          plane_size, color_space, target,
+                                          texture_id);
+  }
+
   raw_ptr<GbmSurfaceFactory> surface_factory_;
   raw_ptr<DrmThreadProxy> drm_thread_proxy_;
   gl::EGLDisplayPlatform native_display_;

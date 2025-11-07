@@ -77,14 +77,6 @@ class COMPONENT_EXPORT(OZONE_BASE) GLOzone {
   // live until glDeleteTextures fn is called on all platforms.
   virtual std::unique_ptr<NativePixmapGLBinding> ImportNativePixmap(
       scoped_refptr<gfx::NativePixmap> pixmap,
-      gfx::BufferFormat plane_format,
-      gfx::BufferPlane plane,
-      gfx::Size plane_size,
-      const gfx::ColorSpace& color_space,
-      GLenum target,
-      GLuint texture_id) = 0;
-  virtual std::unique_ptr<NativePixmapGLBinding> ImportNativePixmap(
-      scoped_refptr<gfx::NativePixmap> pixmap,
       viz::SharedImageFormat plane_format,
       gfx::BufferPlane plane,
       gfx::Size plane_size,
@@ -124,6 +116,16 @@ class COMPONENT_EXPORT(OZONE_BASE) GLOzone {
   virtual scoped_refptr<gl::GLSurface> CreateOffscreenGLSurface(
       gl::GLDisplay* display,
       const gfx::Size& size) = 0;
+
+ private:
+  virtual std::unique_ptr<NativePixmapGLBinding> ImportNativePixmap(
+      scoped_refptr<gfx::NativePixmap> pixmap,
+      gfx::BufferFormat plane_format,
+      gfx::BufferPlane plane,
+      gfx::Size plane_size,
+      const gfx::ColorSpace& color_space,
+      GLenum target,
+      GLuint texture_id) = 0;
 };
 
 }  // namespace ui
