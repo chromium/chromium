@@ -1459,6 +1459,20 @@ const FeatureEntry::FeatureVariation kZeroStateSuggestionsVariations[] = {
      std::size(kZeroStateSuggestionsPlacementAskGeminiParam), nullptr},
 };
 
+const char kFRESignInHeaderTextUpdateParamName[] =
+    "FRESignInHeaderTextUpdateParam";
+const FeatureEntry::FeatureParam kFRESignInHeaderTextUpdateArm0[] = {
+    {kFRESignInHeaderTextUpdateParamName, "Arm0"}};
+const FeatureEntry::FeatureParam kFRESignInHeaderTextUpdateArm1[] = {
+    {kFRESignInHeaderTextUpdateParamName, "Arm1"}};
+
+const FeatureEntry::FeatureVariation kFRESignInHeaderTextUpdateVariations[] = {
+    {"Header variation #1", kFRESignInHeaderTextUpdateArm0,
+     std::size(kFRESignInHeaderTextUpdateArm0), nullptr},
+    {"Header variation #2", kFRESignInHeaderTextUpdateArm1,
+     std::size(kFRESignInHeaderTextUpdateArm1), nullptr},
+};
+
 // To add a new entry, add to the end of kFeatureEntries. There are four
 // distinct types of entries:
 // . ENABLE_DISABLE_VALUE: entry is either enabled, disabled, or uses the
@@ -2893,6 +2907,12 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
     {"gemini-navigation-promo", flag_descriptions::kGeminiNavigationPromoName,
      flag_descriptions::kGeminiNavigationPromoDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kGeminiNavigationPromo)},
+    {"fre-sign-in-header-text-update",
+     flag_descriptions::kFRESignInHeaderTextUpdateName,
+     flag_descriptions::kFRESignInHeaderTextUpdateDescription, flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kFRESignInHeaderTextUpdate,
+                                    kFRESignInHeaderTextUpdateVariations,
+                                    "FRESignInHeaderTextUpdate")},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

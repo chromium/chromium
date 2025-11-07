@@ -5337,6 +5337,14 @@
     "expiry_milestone": 81
   },
   {
+    "name": "fre-sign-in-header-text-update",
+    "owners": [
+      "pabouchard@google.com",
+      "bling-mony-pod@google.com"
+    ],
+    "expiry_milestone": 146
+  },
+  {
     "name": "freezing-on-energy-saver",
     "owners": [ "fdoray@chromium.org" ],
     "expiry_milestone": 134
