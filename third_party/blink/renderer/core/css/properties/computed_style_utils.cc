@@ -2699,14 +2699,7 @@ CSSValue* ComputedStyleUtils::ValueForAnimationTimeline(
   }
   if (timeline.IsName()) {
     const ScopedCSSName& scoped_name = timeline.GetName();
-    const AtomicString& name = scoped_name.GetName();
-    // Serialize as <string> if the value is not a valid <custom-ident>.
-    if (css_parsing_utils::IsCSSWideKeyword(name) ||
-        EqualIgnoringASCIICase(name, "auto") ||
-        EqualIgnoringASCIICase(name, "none")) {
-      return MakeGarbageCollected<CSSStringValue>(name);
-    }
-    return MakeGarbageCollected<CSSCustomIdentValue>(name);
+    return ValueForAnimationName(scoped_name.GetName());
   }
   if (timeline.IsView()) {
     const StyleTimeline::ViewData& view_data = timeline.GetView();
@@ -2866,6 +2859,36 @@ CSSValue* ComputedStyleUtils::ValueForAnimationNameList(
     list->Append(*CSSIdentifierValue::Create(CSSValueID::kNone));
   }
   return list;
+}
+
+bool ComputedStyleUtils::AnimationNameIsTimingFunction(
+    const AtomicString& name) {
+  return EqualIgnoringASCIICase(name, "linear") ||
+         EqualIgnoringASCIICase(name, "ease") ||
+         EqualIgnoringASCIICase(name, "ease-in") ||
+         EqualIgnoringASCIICase(name, "ease-out") ||
+         EqualIgnoringASCIICase(name, "ease-in-out") ||
+         EqualIgnoringASCIICase(name, "step-start") ||
+         EqualIgnoringASCIICase(name, "step-end");
+}
+
+bool ComputedStyleUtils::AnimationNameIsFillMode(const AtomicString& name) {
+  return EqualIgnoringASCIICase(name, "none") ||
+         EqualIgnoringASCIICase(name, "forwards") ||
+         EqualIgnoringASCIICase(name, "backwards") ||
+         EqualIgnoringASCIICase(name, "both");
+}
+
+bool ComputedStyleUtils::AnimationNameIsDirection(const AtomicString& name) {
+  return EqualIgnoringASCIICase(name, "normal") ||
+         EqualIgnoringASCIICase(name, "reverse") ||
+         EqualIgnoringASCIICase(name, "alternate") ||
+         EqualIgnoringASCIICase(name, "alternate-reverse");
+}
+
+bool ComputedStyleUtils::AnimationNameIsPlayState(const AtomicString& name) {
+  return EqualIgnoringASCIICase(name, "running") ||
+         EqualIgnoringASCIICase(name, "paused");
 }
 
 CSSValueList* ComputedStyleUtils::ValuesForBorderRadiusCorner(

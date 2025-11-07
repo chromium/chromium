@@ -250,6 +250,10 @@ class CORE_EXPORT ComputedStyleUtils {
   static CSSValue* ValueForAnimationName(const AtomicString&);
   static CSSValue* ValueForAnimationNameList(const CSSAnimationData*,
                                              const ComputedStyle&);
+  static bool AnimationNameIsTimingFunction(const AtomicString&);
+  static bool AnimationNameIsFillMode(const AtomicString&);
+  static bool AnimationNameIsDirection(const AtomicString&);
+  static bool AnimationNameIsPlayState(const AtomicString&);
 
   static CSSValueList* ValuesForBorderRadiusCorner(const LengthSize&,
                                                    const ComputedStyle&);
