@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/media/android/media_capture_picker_dialog_bridge.h"
+#include "chrome/browser/media/android/media_capture_picker_manager_bridge.h"
 
 #include <string>
 
@@ -13,24 +13,24 @@
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "chrome/android/chrome_jni_headers/MediaCapturePickerDialogBridge_jni.h"
+#include "chrome/android/chrome_jni_headers/MediaCapturePickerManagerBridge_jni.h"
 
 using base::android::JavaParamRef;
 
-MediaCapturePickerDialogBridge::MediaCapturePickerDialogBridge() {
+MediaCapturePickerManagerBridge::MediaCapturePickerManagerBridge() {
   JNIEnv* env = base::android::AttachCurrentThread();
-  java_object_.Reset(Java_MediaCapturePickerDialogBridge_create(
+  java_object_.Reset(Java_MediaCapturePickerManagerBridge_create(
       env, reinterpret_cast<intptr_t>(this)));
 }
 
-MediaCapturePickerDialogBridge::~MediaCapturePickerDialogBridge() {
+MediaCapturePickerManagerBridge::~MediaCapturePickerManagerBridge() {
   // We should always have responded to any outstanding callback.
   CHECK(callback_.is_null());
-  Java_MediaCapturePickerDialogBridge_destroy(
+  Java_MediaCapturePickerManagerBridge_destroy(
       base::android::AttachCurrentThread(), java_object_);
 }
 
-void MediaCapturePickerDialogBridge::Show(
+void MediaCapturePickerManagerBridge::Show(
     content::WebContents* web_contents,
     const std::u16string& app_name,
     bool request_audio,
@@ -39,12 +39,12 @@ void MediaCapturePickerDialogBridge::Show(
   CHECK(callback_.is_null());
   callback_ = std::move(callback);
   JNIEnv* env = base::android::AttachCurrentThread();
-  Java_MediaCapturePickerDialogBridge_showDialog(
+  Java_MediaCapturePickerManagerBridge_showDialog(
       env, java_object_, web_contents->GetJavaWebContents(), app_name,
       request_audio);
 }
 
-void MediaCapturePickerDialogBridge::OnPickTab(
+void MediaCapturePickerManagerBridge::OnPickTab(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& java_web_contents,
     bool audio_share) {
@@ -61,19 +61,19 @@ void MediaCapturePickerDialogBridge::OnPickTab(
   std::move(callback_).Run(desktop_media_id);
 }
 
-void MediaCapturePickerDialogBridge::OnPickWindow(JNIEnv* env) {
+void MediaCapturePickerManagerBridge::OnPickWindow(JNIEnv* env) {
   auto desktop_media_id = content::DesktopMediaID(
       content::DesktopMediaID::TYPE_WINDOW, content::DesktopMediaID::kNullId);
   std::move(callback_).Run(desktop_media_id);
 }
 
-void MediaCapturePickerDialogBridge::OnPickScreen(JNIEnv* env) {
+void MediaCapturePickerManagerBridge::OnPickScreen(JNIEnv* env) {
   auto desktop_media_id = content::DesktopMediaID(
       content::DesktopMediaID::TYPE_SCREEN, content::DesktopMediaID::kNullId);
   std::move(callback_).Run(desktop_media_id);
 }
 
-void MediaCapturePickerDialogBridge::OnCancel(JNIEnv* env) {
+void MediaCapturePickerManagerBridge::OnCancel(JNIEnv* env) {
   std::move(callback_).Run(base::unexpected(
       blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED_BY_USER));
 }

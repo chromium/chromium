@@ -1257,9 +1257,11 @@ chrome_java_sources = [
 if (enable_screen_capture) {
   chrome_java_sources += [
     "java/src/org/chromium/chrome/browser/media/MediaCapturePickerDialog.java",
-    "java/src/org/chromium/chrome/browser/media/MediaCapturePickerDialogBridge.java",
     "java/src/org/chromium/chrome/browser/media/MediaCapturePickerHeadlessFragment.java",
+    "java/src/org/chromium/chrome/browser/media/MediaCapturePickerInvoker.java",
     "java/src/org/chromium/chrome/browser/media/MediaCapturePickerItemProperties.java",
     "java/src/org/chromium/chrome/browser/media/MediaCapturePickerItemViewBinder.java",
+    "java/src/org/chromium/chrome/browser/media/MediaCapturePickerManager.java",
+    "java/src/org/chromium/chrome/browser/media/MediaCapturePickerManagerBridge.java",
   ]
 }

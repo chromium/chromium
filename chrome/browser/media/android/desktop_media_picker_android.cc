@@ -4,7 +4,7 @@
 
 #include "chrome/browser/media/android/desktop_media_picker_android.h"
 
-#include "chrome/browser/media/android/media_capture_picker_dialog_bridge.h"
+#include "chrome/browser/media/android/media_capture_picker_manager_bridge.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"

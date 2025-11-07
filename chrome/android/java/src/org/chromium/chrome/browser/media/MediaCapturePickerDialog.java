@@ -26,7 +26,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLoadIfNeededCaller;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.media.capture.ScreenCapture;
-import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
@@ -58,27 +57,7 @@ public class MediaCapturePickerDialog implements AllTabObserver.Observer {
     private final Map<Tab, TabItemState> mTabItemStateMap = new HashMap<>();
     private @Nullable TabItemState mLastSelectedTabItemState;
     private @Nullable PropertyModel mPropertyModel;
-    private @Nullable Delegate mDelegate;
-
-    /** A delegate for handling returning the picker result. */
-    interface Delegate {
-        /**
-         * Called when the user has selected a tab to share.
-         *
-         * @param webContents The contents to share.
-         * @param audioShare True if tab audio should be shared.
-         */
-        void onPickTab(WebContents webContents, boolean audioShare);
-
-        /** Called when the user has selected a window to share. */
-        void onPickWindow();
-
-        /** Called when the user has selected a screen to share. */
-        void onPickScreen();
-
-        /** Called when the user has elected to not share anything. */
-        void onCancel();
-    }
+    private MediaCapturePickerManager.@Nullable Delegate mDelegate;
 
     private class TabItemState {
         private final Tab mTab;
@@ -122,37 +101,12 @@ public class MediaCapturePickerDialog implements AllTabObserver.Observer {
         int DEFAULT = 0;
     }
 
-    private static @Nullable Context maybeGetContext(WebContents webContents) {
-        final WindowAndroid window = webContents.getTopLevelNativeWindow();
-        if (window == null) return null;
-        return window.getContext().get();
-    }
-
-    /**
-     * Shows the media capture picker dialog.
-     *
-     * @param webContents The {@link WebContents} to show the dialog on behalf of.
-     * @param appName Name of the app that wants to share content.
-     * @param requestAudio True if audio sharing is also requested.
-     * @param delegate Invoked with a WebContents if a tab is selected, or {@code null} if the
-     *     dialog is dismissed.
-     */
-    public static void showDialog(
-            WebContents webContents, String appName, boolean requestAudio, Delegate delegate) {
-        final Context context = maybeGetContext(webContents);
-        if (context == null) {
-            delegate.onCancel();
-            return;
-        }
-        new MediaCapturePickerDialog(context, webContents, appName, requestAudio, delegate).show();
-    }
-
-    private MediaCapturePickerDialog(
+    MediaCapturePickerDialog(
             Context context,
             WebContents webContents,
             String appName,
             boolean requestAudio,
-            Delegate delegate) {
+            MediaCapturePickerManager.Delegate delegate) {
         mWebContents = webContents;
         mModalDialogManager = ((ModalDialogManagerHolder) context).getModalDialogManager();
         mAppName = appName;
@@ -243,7 +197,7 @@ public class MediaCapturePickerDialog implements AllTabObserver.Observer {
                 });
     }
 
-    private void show() {
+    void show() {
         var allTabObserver = new AllTabObserver(this);
 
         var controller =

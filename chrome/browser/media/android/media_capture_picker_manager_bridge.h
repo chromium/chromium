@@ -1,8 +1,8 @@
 // Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-#ifndef CHROME_BROWSER_MEDIA_ANDROID_MEDIA_CAPTURE_PICKER_DIALOG_BRIDGE_H_
-#define CHROME_BROWSER_MEDIA_ANDROID_MEDIA_CAPTURE_PICKER_DIALOG_BRIDGE_H_
+#ifndef CHROME_BROWSER_MEDIA_ANDROID_MEDIA_CAPTURE_PICKER_MANAGER_BRIDGE_H_
+#define CHROME_BROWSER_MEDIA_ANDROID_MEDIA_CAPTURE_PICKER_MANAGER_BRIDGE_H_
 
 #include <jni.h>
 
@@ -17,17 +17,17 @@ namespace content {
 class WebContents;
 }  // namespace content
 
-class MediaCapturePickerDialogBridge {
+class MediaCapturePickerManagerBridge {
  public:
-  MediaCapturePickerDialogBridge();
-  MediaCapturePickerDialogBridge(const MediaCapturePickerDialogBridge&) =
+  MediaCapturePickerManagerBridge();
+  MediaCapturePickerManagerBridge(const MediaCapturePickerManagerBridge&) =
       delete;
-  MediaCapturePickerDialogBridge& operator=(
-      const MediaCapturePickerDialogBridge&) = delete;
-  MediaCapturePickerDialogBridge(MediaCapturePickerDialogBridge&&) = delete;
-  MediaCapturePickerDialogBridge& operator=(MediaCapturePickerDialogBridge&&) =
-      delete;
-  ~MediaCapturePickerDialogBridge();
+  MediaCapturePickerManagerBridge& operator=(
+      const MediaCapturePickerManagerBridge&) = delete;
+  MediaCapturePickerManagerBridge(MediaCapturePickerManagerBridge&&) = delete;
+  MediaCapturePickerManagerBridge& operator=(
+      MediaCapturePickerManagerBridge&&) = delete;
+  ~MediaCapturePickerManagerBridge();
 
   // Shows a dialog to select a media source to capture. The initiator (not
   // necessarily target) of the capture request is `web_contents`.
@@ -57,4 +57,4 @@ class MediaCapturePickerDialogBridge {
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
 };
 
-#endif  // CHROME_BROWSER_MEDIA_ANDROID_MEDIA_CAPTURE_PICKER_DIALOG_BRIDGE_H_
+#endif  // CHROME_BROWSER_MEDIA_ANDROID_MEDIA_CAPTURE_PICKER_MANAGER_BRIDGE_H_

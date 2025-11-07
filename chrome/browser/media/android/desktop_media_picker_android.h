@@ -5,10 +5,10 @@
 #ifndef CHROME_BROWSER_MEDIA_ANDROID_DESKTOP_MEDIA_PICKER_ANDROID_H_
 #define CHROME_BROWSER_MEDIA_ANDROID_DESKTOP_MEDIA_PICKER_ANDROID_H_
 
-#include "chrome/browser/media/android/media_capture_picker_dialog_bridge.h"
+#include "chrome/browser/media/android/media_capture_picker_manager_bridge.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker.h"
 
-class MediaCapturePickerDialogBridge;
+class MediaCapturePickerManagerBridge;
 
 // Implementation of DesktopMediaPicker for Android.
 class DesktopMediaPickerAndroid : public DesktopMediaPicker {
@@ -29,7 +29,7 @@ class DesktopMediaPickerAndroid : public DesktopMediaPicker {
             DoneCallback done_callback) override;
 
  private:
-  MediaCapturePickerDialogBridge dialog_bridge_;
+  MediaCapturePickerManagerBridge dialog_bridge_;
   DoneCallback callback_;
 };
 
