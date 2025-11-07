@@ -108,6 +108,7 @@ class GnomeDesktopResizer : public DesktopResizer {
   void MaybeDelayClearPreferredConfig();
 
   double GetTextScalingFactor() const;
+  void SetTextScalingFactor(double text_scaling_factor);
 
   base::WeakPtr<CaptureStreamManager> stream_manager_
       GUARDED_BY_CONTEXT(sequence_checker_);

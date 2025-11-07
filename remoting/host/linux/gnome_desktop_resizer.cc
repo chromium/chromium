@@ -42,6 +42,15 @@ constexpr GnomeDisplayConfig::LayoutMode kPreferredLayoutMode =
 
 constexpr base::TimeDelta kClearPreferredConfigDelay = base::Seconds(5);
 
+// Minimum text scaling factor (inverted if less than 1) required to be applied,
+// meaning the text scale will only be applied if
+// `preferred_scale / best_monitor_scale` is higher than kTextScaleThreshold,
+// or lower than `1 / kTextScaleThreshold`, otherwise it will be reverted to 1.
+// This is to prevent setting the text scale when the monitor scale is close
+// enough to the preferred scale, since a non-1 text scale usually negatively
+// affects how the OS layouts UI elements.
+constexpr double kTextScaleThreshold = 1.25;
+
 inline double InverseIfLessThanOne(double v) {
   return v < 1.0 ? 1.0 / v : v;
 }
@@ -481,14 +490,8 @@ void GnomeDesktopResizer::DoApplyPreferredMonitorsConfig() {
     // is globally applied, so we only do this for the primary monitor.
     // Note: an integer scale is usually supported, so this is usually only
     // applied when the client requests a fractional scale for a monitor.
-    if (monitor.is_primary &&
-        !IsSameScale(monitor.scale * GetTextScalingFactor(),
-                     preferred_config.scale)) {
-      if (registry_ &&
-          !g_settings_set_double(registry_.get(), "text-scaling-factor",
-                                 preferred_config.scale / monitor.scale)) {
-        LOG(ERROR) << "Failed to set text-scaling-factor";
-      }
+    if (monitor.is_primary) {
+      SetTextScalingFactor(preferred_config.scale / best_monitor_scale);
     }
   }
 
@@ -565,6 +568,21 @@ double GnomeDesktopResizer::GetTextScalingFactor() const {
     return 1.0;
   }
   return g_settings_get_double(registry_.get(), "text-scaling-factor");
+}
+
+void GnomeDesktopResizer::SetTextScalingFactor(double text_scaling_factor) {
+  if (!registry_) {
+    return;
+  }
+  if (InverseIfLessThanOne(text_scaling_factor) < kTextScaleThreshold) {
+    // Revert text scale to 1 if it doesn't exceed the threshold.
+    text_scaling_factor = 1.0;
+  }
+  if (!IsSameScale(GetTextScalingFactor(), text_scaling_factor) &&
+      !g_settings_set_double(registry_.get(), "text-scaling-factor",
+                             text_scaling_factor)) {
+    LOG(ERROR) << "Failed to set text-scaling-factor";
+  }
 }
 
 }  // namespace remoting
