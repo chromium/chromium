@@ -574,14 +574,17 @@ void AnchorElementInteractionTracker::ViewportIntersectionUpdate(
   const base::TimeTicks now = clock_->NowTicks();
   for (const auto& anchor : entered_viewport) {
     LocalFrame* frame = anchor->GetDocument().GetFrame();
-    if (!frame->IsMainFrame() || !frame->View()) {
+    if (!frame || !frame->IsMainFrame() || !frame->View()) {
       continue;
     }
-
+    KURL url = GetHrefEligibleForPreloading(*anchor);
+    if (url.IsEmpty()) {
+      continue;
+    }
     eager_viewport_heuristics_candidates_.insert(
-        anchor->Href(), EagerViewportHeuristicsCandidate{
-                            .anchor_id = AnchorElementId(*anchor),
-                            .timestamp = now + EagerViewportPresentTime()});
+        url, EagerViewportHeuristicsCandidate{
+                 .anchor_id = AnchorElementId(*anchor),
+                 .timestamp = now + EagerViewportPresentTime()});
     has_added = true;
   }
   if (has_added && !eager_viewport_heuristic_timer_.IsActive()) {
