@@ -421,8 +421,13 @@ bool MultiContentsViewDropTargetController::PointOverlapsWithOSDropTarget(
       drop_target_view_->parent(), point_in_view);
   const views::Widget* top_level_widget =
       drop_target_parent_view_->GetWidget()->GetTopLevelWidget();
-  const int screen_width =
-      top_level_widget->GetWorkAreaBoundsInScreen().width();
+  const gfx::Rect screen_bounds = top_level_widget->GetWorkAreaBoundsInScreen();
+  const int screen_width = screen_bounds.width();
+
+  // On some platforms, the point may have negative values if using
+  // multiple displays.
+  const int drag_x_relative_to_screen_bounds =
+      point_in_screen.x() - screen_bounds.x();
 
   const float hide_for_os_width = std::max(
       features::kSideBySideDropTargetHideForOSWidth.Get(),
@@ -430,8 +435,8 @@ bool MultiContentsViewDropTargetController::PointOverlapsWithOSDropTarget(
           screen_width *
           features::kSideBySideDropTargetHideForOSPercentage.Get() / 100));
 
-  return (point_in_screen.x() < hide_for_os_width) ||
-         (point_in_screen.x() > screen_width - hide_for_os_width);
+  return (drag_x_relative_to_screen_bounds < hide_for_os_width) ||
+         (drag_x_relative_to_screen_bounds > screen_width - hide_for_os_width);
 }
 
 void MultiContentsViewDropTargetController::
