@@ -268,7 +268,7 @@ public class ChromeBackupAgentImpl extends SplitCompatBackupAgent.Impl {
         final ArrayList<String> backupNames = new ArrayList<>();
         final ArrayList<byte[]> backupValues = new ArrayList<>();
 
-        final AtomicReference<CoreAccountInfo> signedInAccount = new AtomicReference<>();
+        final AtomicReference<@Nullable CoreAccountInfo> signedInAccount = new AtomicReference<>();
 
         // The native preferences can only be read on the UI thread.
         Boolean nativePrefsRead =

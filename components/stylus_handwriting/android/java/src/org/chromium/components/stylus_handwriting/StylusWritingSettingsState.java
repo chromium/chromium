@@ -40,10 +40,9 @@ public class StylusWritingSettingsState {
     private static final String URI_DIRECT_WRITING = "direct_writing";
     private static final String URI_STYLUS_HANDWRITING = "stylus_handwriting_enabled";
 
-    private final AtomicReference<@Nullable String> mDefaultInputMethod =
-            new AtomicReference<>(null);
+    private final AtomicReference<@Nullable String> mDefaultInputMethod = new AtomicReference<>();
     private final AtomicReference<@Nullable Integer> mDirectWritingSetting =
-            new AtomicReference<>(null);
+            new AtomicReference<>();
     private final AtomicInteger mStylusHandWritingSetting = new AtomicInteger(0);
 
     // Lazily construct on the UI thread in getObserverList(), as the state object may be created on

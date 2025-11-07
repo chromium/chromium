@@ -97,7 +97,8 @@ public class ScreenCapture implements ImageHandler.Delegate {
     // Starting a MediaProjection session involves plumbing the results from the content picker,
     // which is done via ActivityResult. This class does not handle how that is achieved, but
     // requires this state to begin the session.
-    private static final AtomicReference<PickState> sNextPickState = new AtomicReference<>(null);
+    private static final AtomicReference<@Nullable PickState> sNextPickState =
+            new AtomicReference<>();
 
     // Starting a MediaProjection session requires a foreground service to be running. This class
     // does not handle how that is achieved, but `sLatch` provides a way for this class to wait

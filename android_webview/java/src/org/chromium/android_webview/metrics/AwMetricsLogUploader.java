@@ -24,6 +24,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.net.HttpURLConnection;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -41,7 +42,8 @@ public class AwMetricsLogUploader implements AndroidMetricsLogConsumer {
     private static final String TAG = "AwMetricsLogUploader";
     private static final long SERVICE_CONNECTION_TIMEOUT_MS = 10_000;
 
-    private final AtomicReference<MetricsLogUploaderServiceConnection> mInitialConnection;
+    private final AtomicReference<@Nullable MetricsLogUploaderServiceConnection>
+            mInitialConnection = new AtomicReference();
     private final boolean mIsAsync;
 
     /**
@@ -51,7 +53,6 @@ public class AwMetricsLogUploader implements AndroidMetricsLogConsumer {
     public AwMetricsLogUploader(boolean isAsync) {
         // A service connection that is used to establish an initial connection to the
         // MetricsUploadService to keep it alive until the first metrics log is ready.
-        mInitialConnection = new AtomicReference();
         mIsAsync = isAsync;
     }
 

@@ -64,7 +64,8 @@ public class SplashContentProvider extends ContentProvider
     /** The encoding type of the last image vended by the ContentProvider. */
     private static Bitmap.@Nullable CompressFormat sEncodingFormat;
 
-    private static final AtomicReference<ExpiringData> sCachedSplashBytes = new AtomicReference<>();
+    private static final AtomicReference<@Nullable ExpiringData> sCachedSplashBytes =
+            new AtomicReference<>();
 
     /** The URI handled by this content provider. */
     private String mContentProviderUri;

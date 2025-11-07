@@ -74,10 +74,10 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
 
     private final ObserverList<AccountsChangeObserver> mObservers = new ObserverList<>();
 
-    private final AtomicReference<List<Account>> mAllAccounts = new AtomicReference<>();
-    private final AtomicReference<List<PlatformAccount>> mAllPlatformAccounts =
+    private final AtomicReference<@Nullable List<Account>> mAllAccounts = new AtomicReference<>();
+    private final AtomicReference<@Nullable List<PlatformAccount>> mAllPlatformAccounts =
             new AtomicReference<>();
-    private final AtomicReference<List<PatternMatcher>> mAccountRestrictionPatterns =
+    private final AtomicReference<@Nullable List<PatternMatcher>> mAccountRestrictionPatterns =
             new AtomicReference<>();
     private Promise<List<AccountInfo>> mAccountsPromise = new Promise<>();
 
