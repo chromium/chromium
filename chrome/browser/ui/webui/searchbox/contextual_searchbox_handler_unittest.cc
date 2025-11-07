@@ -712,6 +712,28 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest, GetRecentTabs) {
   EXPECT_EQ(tabs[1]->tab_id, gmail_tab->GetHandle().raw_value());
 }
 
+TEST_F(ContextualSearchboxHandlerTestTabsTest,
+       GetRecentTabs_SetsShowInRecentTabChip) {
+  // Add a regular tab, a google search tab, and another regular tab.
+  auto* example_tab = AddTab(GURL("https://www.example.com"));
+  auto* search_tab = AddTab(GURL("https://www.google.com/search?q=test"));
+  auto* chromium_tab = AddTab(GURL("https://www.chromium.org"));
+
+  // Get the recent tabs.
+  base::test::TestFuture<std::vector<searchbox::mojom::TabInfoPtr>> future;
+  handler().GetRecentTabs(future.GetCallback());
+  auto tabs = future.Take();
+
+  // Expect all three tabs to be returned.
+  ASSERT_EQ(tabs.size(), 3u);
+  EXPECT_EQ(tabs[0]->tab_id, chromium_tab->GetHandle().raw_value());
+  EXPECT_TRUE(tabs[0]->show_in_recent_tab_chip);
+  EXPECT_EQ(tabs[1]->tab_id, search_tab->GetHandle().raw_value());
+  EXPECT_FALSE(tabs[1]->show_in_recent_tab_chip);
+  EXPECT_EQ(tabs[2]->tab_id, example_tab->GetHandle().raw_value());
+  EXPECT_TRUE(tabs[2]->show_in_recent_tab_chip);
+}
+
 TEST_F(ContextualSearchboxHandlerTestTabsTest, DuplicateTabsShownMetric) {
   // Add tabs with duplicate titles.
   AddTab(GURL("https://a1.com"));

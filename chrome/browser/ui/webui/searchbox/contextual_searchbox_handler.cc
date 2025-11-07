@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "components/contextual_search/contextual_search_metrics_recorder.h"
+#include "components/google/core/common/google_util.h"
 #include "components/lens/contextual_input.h"
 #include "components/lens/tab_contextualization_controller.h"
 #include "components/omnibox/browser/vector_icons.h"
@@ -104,15 +105,21 @@ void ContextualSearchboxHandler::GetRecentTabs(GetRecentTabsCallback callback) {
         TabRendererData::FromTabInModel(tab_strip_model, i);
     const auto& last_committed_url = tab_renderer_data.last_committed_url;
     // Skip tabs that are still loading, and skip webui.
-    if (!last_committed_url.is_valid() || last_committed_url.is_empty() ||
+    const bool is_invalid_url = !last_committed_url.is_valid();
+    const bool is_internal_page =
         last_committed_url.SchemeIs(content::kChromeUIScheme) ||
-        last_committed_url.SchemeIs(content::kChromeUIUntrustedScheme)) {
+        last_committed_url.SchemeIs(content::kChromeUIUntrustedScheme);
+
+    if (is_invalid_url || is_internal_page) {
       continue;
     }
+
     auto tab_data = searchbox::mojom::TabInfo::New();
     tab_data->tab_id = tab->GetHandle().raw_value();
     tab_data->title = base::UTF16ToUTF8(tab_renderer_data.title);
     tab_data->url = last_committed_url;
+    tab_data->show_in_recent_tab_chip =
+        !google_util::IsGoogleSearchUrl(last_committed_url);
     tab_data->last_active =
         std::max(web_contents->GetLastActiveTimeTicks(),
                  web_contents->GetLastInteractionTimeTicks());

@@ -7,6 +7,7 @@ import {ComposeboxElement, ComposeboxProxyImpl} from 'chrome://new-tab-page/lazy
 import {$$} from 'chrome://new-tab-page/new_tab_page.js';
 import {PageCallbackRouter, PageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
 import {FileUploadErrorType, FileUploadStatus} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
+import type {RecentTabChipElement} from 'chrome://resources/cr_components/composebox/recent_tab_chip.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {AutocompleteMatch, AutocompleteResult, PageRemote as SearchboxPageRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
@@ -2236,11 +2237,43 @@ suite('NewTabPageComposeboxTest', () => {
       assertEquals(files[0]!.name, sampleTabTitle);
     });
 
-    test('shows recent tab chip when suggestions are available', async () => {
+    test('recent tab chip shows first available suggestion', async () => {
+      const tabInfo1 = {
+        tabId: 1,
+        title: 'Tab 1',
+        url: {url: 'https://www.google.com/search?q=foo'},
+        showInRecentTabChip: false,
+      };
+      const tabInfo2 = {
+        tabId: 2,
+        title: 'Tab 2',
+        url: {url: 'https://www.example.com'},
+        showInRecentTabChip: true,
+      };
+      const tabInfo3 = {
+        tabId: 3,
+        title: 'Tab 3',
+        url: {url: 'https://www.chromium.org'},
+        showInRecentTabChip: true,
+      };
+      searchboxHandler.setResultFor(
+          'getRecentTabs',
+          Promise.resolve({tabs: [tabInfo1, tabInfo2, tabInfo3]}));
+      createComposeboxElement();
+      await microtasksFinished();
+
+      const recentTabChip = await getRecentTabChip();
+      assertTrue(!!recentTabChip);
+      assertEquals(tabInfo2, (recentTabChip as RecentTabChipElement).recentTab);
+      assertEquals(3, composeboxElement.$.context.tabSuggestions.length);
+    });
+
+    test('recent tab chip shows when available', async () => {
       const tabInfo = {
         tabId: 1,
         title: 'Sample Tab',
         url: {url: 'https://example.com'},
+        showInRecentTabChip: true,
         lastActive: {internalValue: 0n},
       };
       searchboxHandler.setResultFor(
@@ -2256,6 +2289,7 @@ suite('NewTabPageComposeboxTest', () => {
         tabId: 1,
         title: 'Sample Tab',
         url: {url: 'https://example.com'},
+        showInRecentTabChip: true,
         lastActive: {internalValue: 0n},
       };
       searchboxHandler.setResultFor(
