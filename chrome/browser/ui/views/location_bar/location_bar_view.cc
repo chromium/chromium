@@ -74,7 +74,6 @@
 #include "chrome/browser/ui/views/location_bar/selected_keyword_view.h"
 #include "chrome/browser/ui/views/location_bar/star_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_context_menu.h"
-#include "chrome/browser/ui/views/omnibox/omnibox_popup_aim_presenter.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_views.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_webui.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
@@ -332,13 +331,6 @@ void LocationBarView::Init() {
 
   omnibox_view_ = AddChildView(std::move(omnibox_view));
   omnibox_view_->Init();
-
-  if (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxAimPopup)) {
-    omnibox_popup_aim_presenter_ = std::make_unique<OmniboxPopupAimPresenter>(
-        this, omnibox_controller_.get());
-    // Add observer so that we know when to show/hide the AIM popup.
-    omnibox_controller_->edit_model()->AddObserver(this);
-  }
 
   const bool web_ui_popup_dropdown_only =
       base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxPopup) &&
@@ -1763,16 +1755,6 @@ bool LocationBarView::CanStartDragForView(View* sender,
                                           const gfx::Point& press_pt,
                                           const gfx::Point& p) {
   return true;
-}
-
-// OmniboxEditModel::Observer:
-void LocationBarView::OnAiModeChanged(bool ai_mode) {
-  if (ai_mode) {
-    omnibox_popup_aim_presenter_->Show();
-    return;
-  }
-
-  omnibox_popup_aim_presenter_->Hide();
 }
 
 void LocationBarView::AnimationProgressed(const gfx::Animation* animation) {

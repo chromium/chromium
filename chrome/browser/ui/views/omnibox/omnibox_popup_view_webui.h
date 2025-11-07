@@ -23,7 +23,8 @@
 class LocationBarView;
 class OmniboxController;
 class OmniboxViewViews;
-class OmniboxPopupPresenterBase;
+class OmniboxPopupPresenter;
+class OmniboxPopupAimPresenter;
 
 class OmniboxPopupViewWebUI : public OmniboxPopupView,
                               OmniboxEditModel::Observer {
@@ -48,7 +49,7 @@ class OmniboxPopupViewWebUI : public OmniboxPopupView,
                           OmniboxPopupSelection selection) override {}
   void OnMatchIconUpdated(size_t index) override {}
   void OnContentsChanged() override;
-  void OnAiModeChanged(bool ai_mode) override {}
+  void OnAiModeChanged(bool ai_mode) override;
 
  protected:
   friend class OmniboxPopupViewWebUITest;
@@ -60,14 +61,19 @@ class OmniboxPopupViewWebUI : public OmniboxPopupView,
   // Time when this instance was constructed, or null after use for histogram.
   base::TimeTicks construction_time_;
 
-  // The edit view owned by `location_bar_view_`. May be nullptr in tests.
+  // The edit view owned by `location_bar_view_`. May be nullptr in tests. Never
+  // null.
   raw_ptr<OmniboxViewViews> omnibox_view_;
 
-  // The location bar view that owns `this`. May be nullptr in tests.
+  // The location bar view that owns `this`. May be nullptr in tests. Never
+  // null.
   raw_ptr<LocationBarView> location_bar_view_;
 
-  // The presenter that manages its own widget and WebUI presentation.
-  std::unique_ptr<OmniboxPopupPresenterBase> presenter_;
+  // The presenters that manage their own widget and WebUI presentations.
+  // Never null.
+  std::unique_ptr<OmniboxPopupPresenter> presenter_;
+  // Null if `kWebUIOmniboxAimPopup` is disabled.
+  std::unique_ptr<OmniboxPopupAimPresenter> aim_presenter_;
 
   // Observe `OmniboxEditModel` for updates that require updating the views.
   base::ScopedObservation<OmniboxEditModel, OmniboxEditModel::Observer>
