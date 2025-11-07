@@ -21,6 +21,7 @@ include_rules = [
   "+chrome/browser/ui/views/frame",
   "+chrome/browser/ui/webui/ash/login/app_launch_splash_screen_handler.h",
   "+chrome/browser/ui/webui/ash/login/error_screen_handler.h",
+  "+chrome/browser/ui/webui/ash/os_feedback_dialog/os_feedback_dialog.h",
   "+chrome/browser/web_applications/isolated_web_apps",
   "+chrome/common/url_constants.h",
   "+extensions/components/native_app_window/native_app_window_views.h",
