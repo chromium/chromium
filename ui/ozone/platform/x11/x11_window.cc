@@ -733,7 +733,7 @@ void X11Window::SetFullscreen(bool fullscreen, int64_t target_display_id) {
 void X11Window::Maximize() {
   if (IsFullscreen()) {
     // Unfullscreen the window if it is fullscreen.
-    SetFullscreen(false);
+    SetFullscreen(false, display::kInvalidDisplayId);
 
     // Resize the window so that it does not have the same size as a monitor.
     // (Otherwise, some window managers immediately put the window back in

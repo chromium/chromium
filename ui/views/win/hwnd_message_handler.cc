@@ -811,6 +811,9 @@ void HWNDMessageHandler::Hide() {
 }
 
 void HWNDMessageHandler::Maximize() {
+  if (IsFullscreen()) {
+    SetFullscreen(false, display::kInvalidDisplayId);
+  }
   ExecuteSystemMenuCommand(SC_MAXIMIZE);
 }
 

@@ -2405,6 +2405,69 @@ IN_PROC_BROWSER_TEST_F(
       Browser::WindowFeature::kFeatureTitleBar));
 }
 
+// TODO(https://crbug.com/458599317) Maximizing fullscreen window doesn't work
+// correctly on Mac
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_FullscreenMaximizeAndRestoreWindowWithApi \
+  DISABLED_FullscreenMaximizeAndRestoreWindowWithApi
+#else
+#define MAYBE_FullscreenMaximizeAndRestoreWindowWithApi \
+  FullscreenMaximizeAndRestoreWindowWithApi
+#endif
+IN_PROC_BROWSER_TEST_F(
+    WebAppFrameToolbarBrowserTest_AdditionalWindowingControls,
+    MAYBE_FullscreenMaximizeAndRestoreWindowWithApi) {
+  InstallAndLaunchWebApp();
+  helper()->GrantWindowManagementPermission();
+  auto* web_contents = helper()->browser_view()->GetActiveWebContents();
+
+  // Ensure maximizing is allowed.
+  helper()->browser_view()->SetCanMaximize(true);
+  EXPECT_TRUE(helper()->browser_view()->CanMaximize());
+  content::WaitForLoadStop(web_contents);
+
+  // Enter fullscreen
+  EXPECT_TRUE(
+      ExecJs(web_contents, "document.documentElement.requestFullscreen();"));
+  EXPECT_TRUE(
+      RunUntil([&]() { return helper()->browser_view()->IsFullscreen(); }));
+  EXPECT_TRUE(RunUntil([&]() {
+    return MatchMediaMatches(
+        web_contents,
+        "window.matchMedia('(display-state: fullscreen)').matches");
+  }));
+  EXPECT_TRUE(helper()->browser_view()->IsFullscreen());
+  EXPECT_FALSE(helper()->browser_view()->browser()->SupportsWindowFeature(
+      Browser::WindowFeature::kFeatureTitleBar));
+
+  // Maximize window
+  EXPECT_TRUE(ExecJs(web_contents, "window.maximize()"));
+  EXPECT_TRUE(
+      RunUntil([&]() { return helper()->browser_view()->IsMaximized(); }));
+  EXPECT_TRUE(RunUntil([&]() {
+    return MatchMediaMatches(
+        web_contents,
+        "window.matchMedia('(display-state: maximized)').matches");
+  }));
+  EXPECT_TRUE(helper()->browser_view()->IsMaximized());
+  EXPECT_FALSE(helper()->browser_view()->IsFullscreen());
+  EXPECT_TRUE(helper()->browser_view()->browser()->SupportsWindowFeature(
+      Browser::WindowFeature::kFeatureTitleBar));
+
+  // Restore window
+  EXPECT_TRUE(ExecJs(web_contents, "window.restore()"));
+  EXPECT_TRUE(
+      RunUntil([&]() { return !helper()->browser_view()->IsMaximized(); }));
+  EXPECT_TRUE(RunUntil([&]() {
+    return MatchMediaMatches(
+        web_contents, "window.matchMedia('(display-state: normal)').matches");
+  }));
+  EXPECT_FALSE(helper()->browser_view()->IsMaximized());
+  EXPECT_FALSE(helper()->browser_view()->IsFullscreen());
+  EXPECT_TRUE(helper()->browser_view()->browser()->SupportsWindowFeature(
+      Browser::WindowFeature::kFeatureTitleBar));
+}
+
 IN_PROC_BROWSER_TEST_F(
     WebAppFrameToolbarBrowserTest_AdditionalWindowingControls,
     MaximizeFullscreenAndRestoreWindowWithApi) {

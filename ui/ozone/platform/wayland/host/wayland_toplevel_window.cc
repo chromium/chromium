@@ -807,13 +807,20 @@ void WaylandToplevelWindow::TriggerStateChanges(
     } else if (window_state == PlatformWindowState::kFullScreen) {
       xdg_toplevel_->SetFullscreen(
           GetWaylandOutputForDisplayId(fullscreen_display_id_));
-    } else if (GetLatestRequestedState().window_state ==
-               PlatformWindowState::kFullScreen) {
-      xdg_toplevel_->UnSetFullscreen();
     } else if (window_state == PlatformWindowState::kMaximized) {
+      if (GetLatestRequestedState().window_state ==
+          PlatformWindowState::kFullScreen) {
+        xdg_toplevel_->UnSetFullscreen();
+      }
       xdg_toplevel_->SetMaximized();
     } else if (window_state == PlatformWindowState::kNormal) {
-      xdg_toplevel_->UnSetMaximized();
+      if (GetLatestRequestedState().window_state ==
+          PlatformWindowState::kFullScreen) {
+        xdg_toplevel_->UnSetFullscreen();
+      } else if (GetLatestRequestedState().window_state ==
+                 PlatformWindowState::kMaximized) {
+        xdg_toplevel_->UnSetMaximized();
+      }
     }
   }
 
