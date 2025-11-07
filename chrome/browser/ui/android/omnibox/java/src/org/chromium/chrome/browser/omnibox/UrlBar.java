@@ -105,6 +105,7 @@ public class UrlBar extends AutocompleteEditText {
     private @Nullable OnKeyListener mKeyDownListener;
     private @Nullable UrlBarTextContextMenuDelegate mTextContextMenuDelegate;
     private @Nullable Callback<Integer> mUrlDirectionListener;
+    private @Nullable Callback<Boolean> mUrlTextWrappingChangeListener;
 
     private final Rect mClipBounds = new Rect();
     @VisibleForTesting final Runnable mEnforceMaxTextHeight = this::enforceMaxTextHeight;
@@ -143,6 +144,7 @@ public class UrlBar extends AutocompleteEditText {
     private int mOriginEndIndex;
 
     private boolean mUseSmallTextHeight;
+    private boolean mTextIsWrapped;
 
     /** What scrolling action should be taken after the URL bar text changes. */
     @IntDef({ScrollType.NO_SCROLL, ScrollType.SCROLL_TO_TLD, ScrollType.SCROLL_TO_BEGINNING})
@@ -333,6 +335,7 @@ public class UrlBar extends AutocompleteEditText {
         }
 
         mFocused = focused;
+
         if (!mFocused) mFocusEventEmitted = false;
         super.onFocusChanged(focused, direction, previouslyFocusedRect);
 
@@ -470,6 +473,19 @@ public class UrlBar extends AutocompleteEditText {
         }
 
         limitDisplayableLength();
+
+        post(this::detectAndNotifyOnTextWrappingChanges);
+    }
+
+    private void detectAndNotifyOnTextWrappingChanges() {
+        var layout = getLayout();
+        boolean textIsWrapped = layout != null && layout.getLineCount() > 1;
+
+        if (mTextIsWrapped == textIsWrapped) return;
+        mTextIsWrapped = textIsWrapped;
+
+        if (mUrlTextWrappingChangeListener == null) return;
+        mUrlTextWrappingChangeListener.onResult(mTextIsWrapped);
     }
 
     @Override
@@ -625,6 +641,15 @@ public class UrlBar extends AutocompleteEditText {
         if (mUrlDirectionListener != null) {
             mUrlDirectionListener.onResult(mUrlDirection);
         }
+    }
+
+    /**
+     * Set the listener to be notified when the URL text wraps.
+     *
+     * @param listener The listener to be notified.
+     */
+    /* package */ void setUrlTextWrappingChangeListener(Callback<Boolean> listener) {
+        mUrlTextWrappingChangeListener = listener;
     }
 
     /**

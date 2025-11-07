@@ -14,6 +14,7 @@ import android.view.inputmethod.InputMethodManager;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ObserverList;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.UrlBar.ScrollType;
@@ -50,6 +51,8 @@ public class UrlBarCoordinator
     private final UrlBarMediator mMediator;
     private final KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
     private final Callback<Boolean> mFocusChangeCallback;
+    private final Callback<Boolean> mTextWrappedCallback;
+    private final ObserverList<Callback<Boolean>> mTextWrapListeners = new ObserverList<>();
     private @Nullable Runnable mKeyboardHideTask;
     private boolean mHasFocus;
 
@@ -82,6 +85,7 @@ public class UrlBarCoordinator
         mUrlBar = urlBar;
         mKeyboardVisibilityDelegate = keyboardVisibilityDelegate;
         mFocusChangeCallback = focusChangeCallback;
+        mTextWrappedCallback = this::onTextWrappingChanged;
 
         PropertyModel model =
                 new PropertyModel.Builder(UrlBarProperties.ALL_KEYS)
@@ -89,6 +93,7 @@ public class UrlBarCoordinator
                         .with(UrlBarProperties.DELEGATE, delegate)
                         .with(UrlBarProperties.INCOGNITO_COLORS_ENABLED, isIncognitoBranded)
                         .with(UrlBarProperties.LONG_CLICK_LISTENER, onLongClickListener)
+                        .with(UrlBarProperties.TEXT_WRAPPED_CALLBACK, mTextWrappedCallback)
                         .build();
         PropertyModelChangeProcessor.create(model, urlBar, UrlBarViewBinder::bind);
 
@@ -103,6 +108,30 @@ public class UrlBarCoordinator
             mUrlBar.removeCallbacks(mKeyboardHideTask);
         }
         mUrlBar.destroy();
+    }
+
+    /**
+     * Adds a listener for text wrapping changes.
+     *
+     * @param listener The listener to be added.
+     */
+    public void addTextWrappingChangeListener(Callback<Boolean> listener) {
+        mTextWrapListeners.addObserver(listener);
+    }
+
+    /**
+     * Removes a listener for text wrapping changes.
+     *
+     * @param listener The listener to be removed.
+     */
+    public void removeTextWrappingChangeListener(Callback<Boolean> listener) {
+        mTextWrapListeners.removeObserver(listener);
+    }
+
+    private void onTextWrappingChanged(boolean isWrapped) {
+        for (Callback<Boolean> listener : mTextWrapListeners) {
+            listener.onResult(isWrapped);
+        }
     }
 
     /**
