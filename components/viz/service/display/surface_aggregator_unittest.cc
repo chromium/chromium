@@ -10282,6 +10282,8 @@ class OnScreenshotCapturedWaiter : public mojom::FrameSinkManagerClient {
     observed_token_ = destination_token;
     run_loop_.Quit();
   }
+  void OnVizTouchStateAvailable(
+      base::ReadOnlySharedMemoryRegion region) override {}
 
   void Wait() { run_loop_.Run(); }
 

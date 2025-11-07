@@ -13,12 +13,14 @@
 #include "base/debug/crash_logging.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/writable_shared_memory_region.h"
 #include "base/observer_list.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "components/input/utils.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
+#include "components/viz/common/input/viz_touch_state.h"
 #include "components/viz/common/performance_hint_utils.h"
 #include "components/viz/common/surfaces/surface_info.h"
 #include "components/viz/host/renderer_settings_creation.h"
@@ -32,7 +34,9 @@ namespace viz {
 HostFrameSinkManager::HostFrameSinkManager()
     : debug_renderer_settings_(CreateDefaultDebugRendererSettings()) {}
 
-HostFrameSinkManager::~HostFrameSinkManager() = default;
+HostFrameSinkManager::~HostFrameSinkManager() {
+  viz_touch_state_ro_mapping_ = base::ReadOnlySharedMemoryMapping();
+}
 
 void HostFrameSinkManager::SetLocalManager(
     mojom::FrameSinkManager* frame_sink_manager) {
@@ -366,6 +370,13 @@ void HostFrameSinkManager::RequestInputBack() {
   frame_sink_manager_->RequestInputBack();
 }
 
+const VizTouchState* HostFrameSinkManager::GetVizTouchStatePtr() const {
+  if (viz_touch_state_ro_mapping_.IsValid()) {
+    return viz_touch_state_ro_mapping_.GetMemoryAs<const VizTouchState>();
+  }
+  return nullptr;
+}
+
 void HostFrameSinkManager::SetOnCopyOutputReadyCallback(
     const blink::SameDocNavigationScreenshotDestinationToken& destination_token,
     ScreenshotDestinationReadyCallback callback) {
@@ -426,6 +437,9 @@ void HostFrameSinkManager::OnConnectionLost() {
   rir_delegate_registry_.reset();
 
   metrics_recorder_remote_.reset();
+
+  // Clear the shared memory mapping
+  viz_touch_state_ro_mapping_ = base::ReadOnlySharedMemoryMapping();
 
 #if BUILDFLAG(IS_ANDROID)
   // Any cached back buffers are invalid once the connection to the
@@ -530,6 +544,21 @@ void HostFrameSinkManager::OnScreenshotCaptured(
   auto callback = std::move(it->second);
   screenshot_destinations_.erase(it);
   std::move(callback).Run(std::move(copy_output_result));
+}
+
+void HostFrameSinkManager::OnVizTouchStateAvailable(
+    base::ReadOnlySharedMemoryRegion region) {
+  DCHECK(!viz_touch_state_ro_mapping_.IsValid());
+  if (!region.IsValid()) {
+    DLOG(ERROR) << "Received invalid ReadOnlySharedMemoryRegion from Viz.";
+    return;
+  }
+
+  viz_touch_state_ro_mapping_ = region.Map();
+  if (!viz_touch_state_ro_mapping_.IsValid()) {
+    DLOG(ERROR) << "Failed to map VizTouchState shared memory.";
+    return;
+  }
 }
 
 #if BUILDFLAG(IS_ANDROID)

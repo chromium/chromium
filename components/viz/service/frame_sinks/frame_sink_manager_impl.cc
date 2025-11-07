@@ -155,6 +155,15 @@ void FrameSinkManagerImpl::BindAndSetClient(
              frame_sink_manager_receiver_);
   client_remote_.Bind(std::move(client));
   client_ = client_remote_.get();
+
+  if (client_ && input_manager_) {
+    base::ReadOnlySharedMemoryRegion region =
+        input_manager_->DuplicateVizTouchStateRegion();
+    if (region.IsValid()) {
+      // Send via the Mojo interface implemented by HostFrameSinkManager.
+      client_->OnVizTouchStateAvailable(std::move(region));
+    }
+  }
 }
 
 void FrameSinkManagerImpl::SetLocalClient(

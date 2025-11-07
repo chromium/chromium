@@ -123,6 +123,8 @@ class MockFrameSinkManagerClient : public mojom::FrameSinkManagerClient {
       const blink::SameDocNavigationScreenshotDestinationToken&
           destination_token,
       std::unique_ptr<CopyOutputResult> copy_output_result) override {}
+  void OnVizTouchStateAvailable(
+      base::ReadOnlySharedMemoryRegion region) override {}
 };
 
 class CompositorFrameSinkSupportTestBase : public testing::Test {

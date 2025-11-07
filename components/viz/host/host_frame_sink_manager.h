@@ -19,6 +19,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -27,6 +28,7 @@
 #include "components/viz/common/hit_test/hit_test_data_provider.h"
 #include "components/viz/common/hit_test/hit_test_query.h"
 #include "components/viz/common/hit_test/hit_test_region_observer.h"
+#include "components/viz/common/input/viz_touch_state.h"
 #include "components/viz/common/surfaces/frame_sink_bundle_id.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/host/client_frame_sink_video_capturer.h"
@@ -49,6 +51,7 @@ namespace viz {
 
 class CopyOutputResult;
 class SurfaceInfo;
+struct VizTouchState;
 
 enum class ReportFirstSurfaceActivation { kYes, kNo };
 
@@ -242,6 +245,8 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
   // crbug.com/392044047 for more details.
   void RequestInputBack();
 
+  const VizTouchState* GetVizTouchStatePtr() const;
+
   using ScreenshotDestinationReadyCallback =
       base::OnceCallback<void(std::unique_ptr<CopyOutputResult>)>;
 
@@ -384,6 +389,8 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
       const blink::SameDocNavigationScreenshotDestinationToken&
           destination_token,
       std::unique_ptr<CopyOutputResult> copy_output_result) override;
+  void OnVizTouchStateAvailable(
+      base::ReadOnlySharedMemoryRegion region) override;
 
   mojo::Remote<mojom::RendererInputRouterDelegateRegistry>
       rir_delegate_registry_;
@@ -397,6 +404,9 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
       frame_sink_manager_client_receiver_{this};
   mojo::Remote<mojom::FrameSinksMetricsRecorder> metrics_recorder_remote_;
   mojo::Remote<mojom::FrameSinkManagerTestApi> test_api_remote_;
+
+  // Shared memory for VizTouchState (Browser's read-only view).
+  base::ReadOnlySharedMemoryMapping viz_touch_state_ro_mapping_;
 
   // Per CompositorFrameSink data.
   std::unordered_map<FrameSinkId, FrameSinkData, FrameSinkIdHash>

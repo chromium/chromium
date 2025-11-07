@@ -35,6 +35,9 @@ class COMPONENT_EXPORT(INPUT) InputReceiverData
   // AndroidInputCallback::Observer:
   void OnMotionEvent(
       const base::android::ScopedInputEvent& input_event) override;
+  // InputReceiverData owns the AndroidInputCallback, so it's responsible for
+  // its destruction.
+  void OnCallbackDestroyed() override {}
 
   // `receiver` is only set for Android 16+, where the receiver could be either
   // destroyed right away or waits for touch sequence to have finished before
