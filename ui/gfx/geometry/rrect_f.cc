@@ -9,6 +9,7 @@
 #include <iostream>
 #include <sstream>
 
+#include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/values.h"
 #include "third_party/skia/include/core/SkMatrix.h"

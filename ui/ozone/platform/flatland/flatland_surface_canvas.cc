@@ -20,6 +20,7 @@
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
 #include "third_party/skia/include/core/SkColorType.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/vsync_provider.h"
 

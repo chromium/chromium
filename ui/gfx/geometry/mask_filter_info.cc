@@ -5,6 +5,7 @@
 #include "ui/gfx/geometry/mask_filter_info.h"
 
 #include "base/strings/string_number_conversions.h"
+#include "third_party/skia/include/core/SkMatrix.h"
 #include "ui/gfx/geometry/axis_transform2d.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/geometry/transform.h"

@@ -36,6 +36,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/quad_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
 namespace cc {

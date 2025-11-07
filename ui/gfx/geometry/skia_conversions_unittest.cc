@@ -5,7 +5,12 @@
 #include "ui/gfx/geometry/skia_conversions.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkM44.h"
+#include "third_party/skia/include/core/SkMatrix.h"
+#include "third_party/skia/include/core/SkRect.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/transform.h"
 
 namespace gfx {

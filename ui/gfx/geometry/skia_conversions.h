@@ -6,21 +6,26 @@
 #define UI_GFX_GEOMETRY_SKIA_CONVERSIONS_H_
 
 #include "base/component_export.h"
-#include "third_party/skia/include/core/SkM44.h"
-#include "third_party/skia/include/core/SkMatrix.h"
-#include "third_party/skia/include/core/SkRect.h"
-#include "ui/gfx/geometry/quad_f.h"
-#include "ui/gfx/geometry/size.h"
 
+class SkM44;
 class SkMatrix;
+struct SkIPoint;
+struct SkIRect;
+struct SkISize;
+struct SkPoint;
+struct SkRect;
+struct SkSize;
 
 namespace gfx {
 
 class AxisTransform2d;
 class Point;
 class PointF;
+class QuadF;
 class Rect;
 class RectF;
+class Size;
+class SizeF;
 class Transform;
 
 // Convert between Skia and gfx types.
