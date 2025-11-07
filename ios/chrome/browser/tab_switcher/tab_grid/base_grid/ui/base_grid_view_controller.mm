@@ -1902,7 +1902,8 @@ typedef NS_ENUM(NSInteger, DragEntrySide) {
     // item.
     if ([cell.itemIdentifier.tabSwitcherItem isEqual:innerItem]) {
       cell.icon = tabSnapshotAndFavicon.favicon;
-      cell.snapshot = tabSnapshotAndFavicon.snapshot;
+      cell.snapshot =
+          innerItem.hidesSnapshot ? nil : tabSnapshotAndFavicon.snapshot;
     }
   };
   [self.snapshotAndfaviconDataSource fetchTabSnapshotAndFavicon:item

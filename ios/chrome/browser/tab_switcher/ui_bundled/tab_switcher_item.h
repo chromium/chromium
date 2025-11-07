@@ -44,6 +44,10 @@ typedef void (^TabSwitcherImageFetchingCompletionBlock)(TabSwitcherItem* item,
 @property(nonatomic, readonly) BOOL hidesTitle;
 @property(nonatomic, readonly) BOOL showsActivity;
 
+// Setting this property to YES will show the `GridEmptyThumbnailView` instead
+// of the snapshot.
+@property(nonatomic, assign) BOOL hidesSnapshot;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_TAB_SWITCHER_UI_BUNDLED_TAB_SWITCHER_ITEM_H_

@@ -142,10 +142,14 @@
 
   for (int i = 0; i < self.webStateList->count(); ++i) {
     web::WebState* webState = self.webStateList->GetWebStateAt(i);
+    GridItemIdentifier* item = [GridItemIdentifier tabIdentifier:webState];
     if (validCachedwebStatesIDs.contains(base::NumberToString(
             webState->GetUniqueIdentifier().identifier()))) {
-      [items addObject:[GridItemIdentifier tabIdentifier:webState]];
+      item.tabSwitcherItem.hidesSnapshot = NO;
+    } else {
+      item.tabSwitcherItem.hidesSnapshot = YES;
     }
+    [items addObject:item];
   }
 
   completion(items);
