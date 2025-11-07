@@ -13948,6 +13948,25 @@
             ]
         }
     ],
+    "IOSSyncedSetUp": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "SyncedSetUpImpressionLimit": "1"
+                    },
+                    "enable_features": [
+                        "EnableCrossDevicePrefTracker",
+                        "IOSSyncedSetUp"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSTFLiteLanguageDetection": [
         {
             "platforms": [
