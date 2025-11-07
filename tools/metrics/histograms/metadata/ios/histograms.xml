@@ -3181,6 +3181,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.MagicStack.AppBundlePromo.Impression" enum="Boolean"
+    expires_after="2026-02-05">
+  <owner>ericekey@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
+  <summary>
+    Records impressions for the App Bundle Promo module in the Magic Stack.
+  </summary>
+</histogram>
+
 <histogram name="IOS.MagicStack.Module.Click" enum="IOSMagicStackModuleType"
     expires_after="2026-03-22">
   <owner>thegreenfrog@chromium.org</owner>

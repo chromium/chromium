@@ -38,6 +38,9 @@ const char kTabResumptionWithPriceTrackingImpression[] =
 const char kTabResumptionImpression[] =
     "IOS.MagicStack.TabResumption.Regular.Impression";
 
+const char kAppBundlePromoImpression[] =
+    "IOS.MagicStack.AppBundlePromo.Impression";
+
 const char kContentNotificationSnackbarAction[] =
     "ContentNotifications.Promo.Snackbar.ActionButtonTapped";
 
