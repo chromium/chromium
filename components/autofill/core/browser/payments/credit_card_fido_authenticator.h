@@ -11,7 +11,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/synchronization/waitable_event.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
@@ -295,9 +294,6 @@ class CreditCardFidoAuthenticator
   // authentication.
   std::unique_ptr<FidoAuthenticationStrikeDatabase>
       fido_authentication_strike_database_;
-
-  // Signaled when callback for IsUserVerifiable() is invoked.
-  base::WaitableEvent user_is_verifiable_callback_received_;
 
   // The context token used for sharing context between different server
   // requests. Will be populated only for virtual card unmasking.

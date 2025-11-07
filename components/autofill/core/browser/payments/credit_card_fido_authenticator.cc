@@ -13,7 +13,6 @@
 #include "base/base64.h"
 #include "base/containers/flat_set.h"
 #include "base/strings/string_util.h"
-#include "base/synchronization/waitable_event.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_progress_dialog_type.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
@@ -59,11 +58,7 @@ CreditCardFidoAuthenticator::CreditCardFidoAuthenticator(AutofillDriver* driver,
       autofill_client_(client),
       payments_network_interface_(
           client->GetPaymentsAutofillClient()->GetPaymentsNetworkInterface()),
-      user_is_verifiable_callback_received_(
-          base::WaitableEvent::ResetPolicy::AUTOMATIC,
-          base::WaitableEvent::InitialState::NOT_SIGNALED) {
-  user_is_opted_in_ = IsUserOptedIn();
-}
+      user_is_opted_in_(IsUserOptedIn()) {}
 
 CreditCardFidoAuthenticator::~CreditCardFidoAuthenticator() {
   UpdateUserPref();
