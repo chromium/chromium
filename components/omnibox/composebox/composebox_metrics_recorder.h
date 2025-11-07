@@ -89,6 +89,8 @@ class ComposeboxMetricsRecorder {
                                 lens::MimeType file_type,
                                 FileUploadStatus file_status);
 
+  std::string GetMetricsRecorderName() const { return metric_category_name_; }
+
  private:
   // Called when the session starts to correctly track session
   // durations.

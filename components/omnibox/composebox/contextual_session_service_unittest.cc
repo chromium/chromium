@@ -8,6 +8,7 @@
 #include "components/search_engines/search_engines_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/variations/variations_client.h"
+#include "contextual_session_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -73,6 +74,9 @@ TEST_F(ContextualSessionServiceTest, Session) {
   auto session1_handle1 = service_->CreateSession(std::move(config_params1));
   ASSERT_THAT(session1_handle1, NotNull());
   ASSERT_THAT(session1_handle1->GetController(), NotNull());
+  ASSERT_THAT(session1_handle1->GetMetricsRecorder(), NotNull());
+  EXPECT_EQ(session1_handle1->GetMetricsRecorderName(),
+            ContextualSessionService::kDefaultRecorderName);
 
   // Create another new session.
   auto config_params2 = std::make_unique<
@@ -81,14 +85,24 @@ TEST_F(ContextualSessionServiceTest, Session) {
   config_params2->suppress_lns_surface_param_if_no_image = true;
   config_params2->enable_multi_context_input_flow = false;
   config_params2->enable_viewport_images = false;
-  auto session2_handle1 = service_->CreateSession(std::move(config_params2));
+  const std::string metric_recorder_name = "TestRecorder2";
+  auto session2_handle1 =
+      service_->CreateSession(std::move(config_params2), metric_recorder_name);
   ASSERT_THAT(session2_handle1, NotNull());
   ASSERT_THAT(session2_handle1->GetController(), NotNull());
+  ASSERT_THAT(session2_handle1->GetMetricsRecorder(), NotNull());
+  EXPECT_EQ(session2_handle1->GetMetricsRecorderName(), metric_recorder_name);
 
   // Get a new handle to session two.
   auto session2_handle2 = service_->GetSession(session2_handle1->session_id());
   ASSERT_THAT(session2_handle2, NotNull());
   EXPECT_EQ(session2_handle2->GetController(),
+            session2_handle1->GetController());
+  EXPECT_EQ(session2_handle2->GetMetricsRecorder(),
+            session2_handle1->GetMetricsRecorder());
+  EXPECT_NE(session1_handle1->GetMetricsRecorder(),
+            session2_handle1->GetMetricsRecorder());
+  EXPECT_NE(session1_handle1->GetController(),
             session2_handle1->GetController());
 
   // Release the first handle to session two. The session should still be alive.
@@ -97,6 +111,8 @@ TEST_F(ContextualSessionServiceTest, Session) {
   ASSERT_THAT(session2_handle3, NotNull());
   EXPECT_EQ(session2_handle3->GetController(),
             session2_handle2->GetController());
+  EXPECT_EQ(session2_handle3->GetMetricsRecorder(),
+            session2_handle2->GetMetricsRecorder());
 
   // Release the remaining handles to session two. The session should be
   // released.
@@ -111,4 +127,6 @@ TEST_F(ContextualSessionServiceTest, Session) {
   ASSERT_THAT(session1_handle2, NotNull());
   EXPECT_EQ(session1_handle2->GetController(),
             session1_handle1->GetController());
+  EXPECT_EQ(session1_handle2->GetMetricsRecorder(),
+            session1_handle1->GetMetricsRecorder());
 }

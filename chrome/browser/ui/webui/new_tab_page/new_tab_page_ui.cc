@@ -95,7 +95,6 @@
 #include "components/ntp_tiles/tile_type.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
-#include "components/omnibox/composebox/composebox_metrics_recorder.h"
 #include "components/omnibox/composebox/composebox_query_controller.h"
 #include "components/omnibox/composebox/contextual_session_service.h"
 #include "components/page_image_service/image_service.h"
@@ -168,7 +167,7 @@ NewTabPageUIConfig::CreateWebUIController(content::WebUI* web_ui,
 namespace {
 
 constexpr char kPrevNavigationTimePrefName[] = "NewTabPage.PrevNavigationTime";
-constexpr char kComposeboxMetricsReporterPrefName[] = "NewTabPage.";
+constexpr char kComposeboxMetricsReporterMetricSource[] = "NewTabPage.";
 
 bool HasCredentials(Profile* profile) {
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
@@ -858,7 +857,6 @@ void NewTabPageUI::BindInterface(
 
 void NewTabPageUI::BindInterface(
     mojo::PendingReceiver<searchbox::mojom::PageHandler> pending_page_handler) {
-  std::unique_ptr<ComposeboxMetricsRecorder> composebox_metrics_recorder;
   // Only create the composebox query controller and metrics recorder needed for
   // contextual search if realbox next is enabled.
   if (ntp_realbox::IsNtpRealboxNextEnabled(profile_)) {
@@ -871,16 +869,14 @@ void NewTabPageUI::BindInterface(
           ContextualSessionServiceFactory::GetForProfile(profile_);
       auto contextual_session_handle =
           contextual_session_service->CreateSession(
-              ntp_composebox::CreateQueryControllerConfigParams());
+              ntp_composebox::CreateQueryControllerConfigParams(),
+              kComposeboxMetricsReporterMetricSource);
       contextual_session_web_contents_helper->set_session_handle(
           std::move(contextual_session_handle));
     }
-    composebox_metrics_recorder = std::make_unique<ComposeboxMetricsRecorder>(
-        kComposeboxMetricsReporterPrefName);
   }
   realbox_handler_ = std::make_unique<RealboxHandler>(
-      std::move(pending_page_handler), std::move(composebox_metrics_recorder),
-      profile_, web_contents());
+      std::move(pending_page_handler), profile_, web_contents());
 }
 
 void NewTabPageUI::BindInterface(
@@ -1089,7 +1085,8 @@ void NewTabPageUI::CreatePageHandler(
     auto* contextual_session_service =
         ContextualSessionServiceFactory::GetForProfile(profile_);
     auto contextual_session_handle = contextual_session_service->CreateSession(
-        ntp_composebox::CreateQueryControllerConfigParams());
+        ntp_composebox::CreateQueryControllerConfigParams(),
+        kComposeboxMetricsReporterMetricSource);
     contextual_session_web_contents_helper->set_session_handle(
         std::move(contextual_session_handle));
   }
@@ -1097,8 +1094,6 @@ void NewTabPageUI::CreatePageHandler(
   composebox_handler_ = std::make_unique<ComposeboxHandler>(
       std::move(pending_page_handler), std::move(pending_page),
       std::move(pending_searchbox_handler),
-      std::make_unique<ComposeboxMetricsRecorder>(
-          kComposeboxMetricsReporterPrefName),
       profile_, web_contents());
 
   // TODO(crbug.com/435288212): Move searchbox mojom to use factory pattern.

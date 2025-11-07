@@ -215,13 +215,11 @@ ContextualSearchboxHandler::ContextualSearchboxHandler(
         pending_searchbox_handler,
     Profile* profile,
     content::WebContents* web_contents,
-    std::unique_ptr<ComposeboxMetricsRecorder> composebox_metrics_recorder,
     std::unique_ptr<OmniboxController> controller)
     : SearchboxHandler(std::move(pending_searchbox_handler),
                        profile,
                        web_contents,
                        std::move(controller)),
-      composebox_metrics_recorder_(std::move(composebox_metrics_recorder)),
       web_contents_(web_contents) {
   if (auto* query_controller = GetQueryController()) {
     file_upload_status_observer_.Observe(query_controller);
@@ -261,20 +259,36 @@ ComposeboxQueryController* ContextualSearchboxHandler::GetQueryController() {
                                    : nullptr;
 }
 
+ComposeboxMetricsRecorder* ContextualSearchboxHandler::GetMetricsRecorder() {
+  auto* contextual_session_web_contents_helper =
+      ContextualSessionWebContentsHelper::FromWebContents(web_contents_);
+  auto* contextual_session_handle =
+      contextual_session_web_contents_helper
+          ? contextual_session_web_contents_helper->session_handle()
+          : nullptr;
+  return contextual_session_handle
+             ? contextual_session_handle->GetMetricsRecorder()
+             : nullptr;
+}
+
 void ContextualSearchboxHandler::NotifySessionStarted() {
   if (auto* query_controller = GetQueryController()) {
     query_controller->NotifySessionStarted();
+    if (auto* metrics_recorder = GetMetricsRecorder()) {
+      metrics_recorder->NotifySessionStateChanged(
+          SessionState::kSessionStarted);
+    }
   }
-  composebox_metrics_recorder_->NotifySessionStateChanged(
-      SessionState::kSessionStarted);
 }
 
 void ContextualSearchboxHandler::NotifySessionAbandoned() {
   if (auto* query_controller = GetQueryController()) {
     query_controller->NotifySessionAbandoned();
+    if (auto* metrics_recorder = GetMetricsRecorder()) {
+      metrics_recorder->NotifySessionStateChanged(
+          SessionState::kSessionAbandoned);
+    }
   }
-  composebox_metrics_recorder_->NotifySessionStateChanged(
-      SessionState::kSessionAbandoned);
 }
 
 void ContextualSearchboxHandler::AddFileContext(
@@ -282,7 +296,11 @@ void ContextualSearchboxHandler::AddFileContext(
     mojo_base::BigBuffer file_bytes,
     AddFileContextCallback callback) {
   auto* query_controller = GetQueryController();
+  auto* metrics_recorder = GetMetricsRecorder();
   if (!query_controller) {
+    return;
+  }
+  if (!metrics_recorder) {
     return;
   }
   base::UnguessableToken file_token = base::UnguessableToken::Create();
@@ -311,8 +329,7 @@ void ContextualSearchboxHandler::AddFileContext(
       lens::ContextualInput(std::move(file_data_vector), mime_type));
 
   std::move(callback).Run(file_token);
-  composebox_metrics_recorder_->RecordFileSizeMetric(mime_type,
-                                                     file_bytes.size());
+  metrics_recorder->RecordFileSizeMetric(mime_type, file_bytes.size());
   query_controller->StartFileUploadFlow(file_token, std::move(input_data),
                                         std::move(image_options));
 }
@@ -391,8 +408,10 @@ void ContextualSearchboxHandler::DeleteContext(
                   : FileUploadStatus::kNotUploaded;
 
     bool success = query_controller->DeleteFile(context_token);
-    composebox_metrics_recorder_->RecordFileDeletedMetrics(
-        success, file_type, file_status);
+    if (auto* metrics_recorder = GetMetricsRecorder()) {
+      metrics_recorder->RecordFileDeletedMetrics(success, file_type,
+                                                 file_status);
+    }
   }
 }
 
@@ -421,8 +440,10 @@ void ContextualSearchboxHandler::OnFileUploadStatusChanged(
     const std::optional<FileUploadErrorType>& error_type) {
   page_->OnContextualInputStatusChanged(file_token, file_upload_status,
                                         error_type);
-  composebox_metrics_recorder_->OnFileUploadStatusChanged(
-      mime_type, file_upload_status, error_type);
+  if (auto* metrics_recorder = GetMetricsRecorder()) {
+    metrics_recorder->OnFileUploadStatusChanged(mime_type, file_upload_status,
+                                                error_type);
+  }
 }
 
 std::string ContextualSearchboxHandler::AutocompleteIconToResourceName(
@@ -446,12 +467,16 @@ void ContextualSearchboxHandler::ComputeAndOpenQueryUrl(
     return;
   }
 
+  auto* metrics_recorder = GetMetricsRecorder();
+  if (!metrics_recorder) {
+    return;
+  }
+
   // This is the time that the user clicked the submit button, however optional
   // autocomplete logic may be run before this if there was a match associated
   // with the query.
   base::Time query_start_time = base::Time::Now();
-  composebox_metrics_recorder_->NotifySessionStateChanged(
-      SessionState::kQuerySubmitted);
+  metrics_recorder->NotifySessionStateChanged(SessionState::kQuerySubmitted);
   std::unique_ptr<ComposeboxQueryController::CreateSearchUrlRequestInfo>
       search_url_request_info = std::make_unique<
           ComposeboxQueryController::CreateSearchUrlRequestInfo>();
@@ -460,9 +485,9 @@ void ContextualSearchboxHandler::ComputeAndOpenQueryUrl(
   search_url_request_info->additional_params = additional_params;
   OpenUrl(query_controller->CreateSearchUrl(std::move(search_url_request_info)),
           disposition);
-  composebox_metrics_recorder_->NotifySessionStateChanged(
+  metrics_recorder->NotifySessionStateChanged(
       SessionState::kNavigationOccurred);
-  composebox_metrics_recorder_->RecordQueryMetrics(
+  metrics_recorder->RecordQueryMetrics(
       query_text.size(), query_controller->num_files_in_request());
 }
 

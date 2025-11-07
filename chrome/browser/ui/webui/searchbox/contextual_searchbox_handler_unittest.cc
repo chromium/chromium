@@ -78,12 +78,10 @@ class FakeContextualSearchboxHandler : public ContextualSearchboxHandler {
       mojo::PendingReceiver<searchbox::mojom::PageHandler> pending_page_handler,
       Profile* profile,
       content::WebContents* web_contents,
-      std::unique_ptr<ComposeboxMetricsRecorder> metrics_recorder,
       std::unique_ptr<OmniboxController> controller)
       : ContextualSearchboxHandler(std::move(pending_page_handler),
                                    profile,
                                    web_contents,
-                                   std::move(metrics_recorder),
                                    std::move(controller)) {}
   ~FakeContextualSearchboxHandler() override = default;
 
@@ -98,6 +96,10 @@ class FakeContextualSearchboxHandler : public ContextualSearchboxHandler {
                      bool meta_key,
                      bool shift_key) override {}
   void OnThumbnailRemoved() override {}
+
+  ComposeboxMetricsRecorder* GetMetricsRecorder() {
+    return ContextualSearchboxHandler::GetMetricsRecorder();
+  }
 };
 }  // namespace
 
@@ -120,23 +122,23 @@ class ContextualSearchboxHandlerTest
         fake_variations_client(), std::move(query_controller_config_params));
     query_controller_ = query_controller_ptr.get();
 
+    auto metrics_recorder_ptr =
+        std::make_unique<MockComposeboxMetricsRecorder>();
+
     service_ = std::make_unique<ContextualSessionService>(
         /*identity_manager=*/nullptr, url_loader_factory(),
         template_url_service(), fake_variations_client(),
         version_info::Channel::UNKNOWN, "en-US");
-    auto contextual_session_handle =
-        service_->CreateSessionForTesting(std::move(query_controller_ptr));
+    auto contextual_session_handle = service_->CreateSessionForTesting(
+        std::move(query_controller_ptr), std::move(metrics_recorder_ptr));
     ContextualSessionWebContentsHelper::GetOrCreateForWebContents(
         web_contents())
         ->set_session_handle(std::move(contextual_session_handle));
 
     web_contents()->SetDelegate(&delegate_);
-    auto metrics_recorder_ptr =
-        std::make_unique<MockComposeboxMetricsRecorder>();
-    metrics_recorder_ = metrics_recorder_ptr.get();
     handler_ = std::make_unique<FakeContextualSearchboxHandler>(
         mojo::PendingReceiver<searchbox::mojom::PageHandler>(), profile(),
-        web_contents(), std::move(metrics_recorder_ptr),
+        web_contents(),
         std::make_unique<OmniboxController>(
             /*view=*/nullptr, std::make_unique<TestOmniboxClient>()));
 
@@ -155,8 +157,15 @@ class ContextualSearchboxHandlerTest
 
   FakeContextualSearchboxHandler& handler() { return *handler_; }
   MockQueryController& query_controller() { return *query_controller_; }
-  MockComposeboxMetricsRecorder& metrics_recorder() {
-    return *metrics_recorder_;
+
+  MockComposeboxMetricsRecorder* GetMetricsRecorderPtr() {
+    if (handler_) {
+      /* Cast since what we pass into the handler was a mock version to begin
+       * with. */
+      return static_cast<MockComposeboxMetricsRecorder*>(
+          handler_->GetMetricsRecorder());
+    }
+    return nullptr;
   }
 
   void TearDown() override {
@@ -180,8 +189,11 @@ class ContextualSearchboxHandlerTest
 
 TEST_F(ContextualSearchboxHandlerTest, SessionStarted) {
   SessionState state_arg = SessionState::kNone;
+  auto* metrics_recorder_ptr = GetMetricsRecorderPtr();
+  ASSERT_THAT(metrics_recorder_ptr, testing::NotNull());
+
   EXPECT_CALL(query_controller(), NotifySessionStarted);
-  EXPECT_CALL(metrics_recorder(), NotifySessionStateChanged)
+  EXPECT_CALL(*metrics_recorder_ptr, NotifySessionStateChanged)
       .WillOnce(testing::SaveArg<0>(&state_arg));
   handler().NotifySessionStarted();
   EXPECT_EQ(state_arg, SessionState::kSessionStarted);
@@ -189,8 +201,11 @@ TEST_F(ContextualSearchboxHandlerTest, SessionStarted) {
 
 TEST_F(ContextualSearchboxHandlerTest, SessionAbandoned) {
   SessionState state_arg = SessionState::kNone;
+  auto* metrics_recorder_ptr = GetMetricsRecorderPtr();
+  ASSERT_THAT(metrics_recorder_ptr, testing::NotNull());
+
   EXPECT_CALL(query_controller(), NotifySessionAbandoned);
-  EXPECT_CALL(metrics_recorder(), NotifySessionStateChanged)
+  EXPECT_CALL(*metrics_recorder_ptr, NotifySessionStateChanged)
       .WillOnce(testing::SaveArg<0>(&state_arg));
   handler().NotifySessionAbandoned();
   EXPECT_EQ(state_arg, SessionState::kSessionAbandoned);
@@ -273,7 +288,10 @@ TEST_F(ContextualSearchboxHandlerTest, SubmitQuery) {
       }));
 
   std::vector<SessionState> session_states;
-  EXPECT_CALL(metrics_recorder(), NotifySessionStateChanged)
+  auto* metrics_recorder_ptr = GetMetricsRecorderPtr();
+  ASSERT_THAT(metrics_recorder_ptr, testing::NotNull());
+
+  EXPECT_CALL(*metrics_recorder_ptr, NotifySessionStateChanged)
       .Times(3)
       .WillRepeatedly([&](SessionState session_state) {
         session_states.push_back(session_state);
@@ -476,8 +494,7 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest,
   auto handler_with_null_session =
       std::make_unique<FakeContextualSearchboxHandler>(
           mojo::PendingReceiver<searchbox::mojom::PageHandler>(), profile(),
-          web_contents(), std::make_unique<MockComposeboxMetricsRecorder>(),
-          nullptr);
+          web_contents(), nullptr);
 
   // Use a new MockSearchboxPage for the new handler.
   testing::NiceMock<MockSearchboxPage> local_mock_searchbox_page;

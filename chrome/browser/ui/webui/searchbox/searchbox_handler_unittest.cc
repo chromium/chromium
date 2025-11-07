@@ -102,8 +102,7 @@ class RealboxHandlerTest : public SearchboxHandlerTest {
     web_contents_ =
         content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
     handler_ = std::make_unique<RealboxHandler>(
-        mojo::PendingReceiver<searchbox::mojom::PageHandler>(),
-        /*composebox_metrics_recorder=*/nullptr, profile(),
+        mojo::PendingReceiver<searchbox::mojom::PageHandler>(), profile(),
         web_contents_.get());
     handler_->SetPage(page_.BindAndGetRemote());
   }
@@ -201,7 +200,7 @@ TEST_F(RealboxHandlerTest, GetPlaceholderConfig) {
   handler_->GetPlaceholderConfig(future.GetCallback());
   auto config = future.Take();
 
-  ASSERT_TRUE(config->texts.size() > 0);
+  ASSERT_GT(config->texts.size(), 0u);
   ASSERT_EQ(config->change_text_animation_interval.InMilliseconds(), 4000u);
   ASSERT_EQ(config->fade_text_animation_duration.InMilliseconds(), 250u);
 }
