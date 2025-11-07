@@ -13,18 +13,21 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_service_wrapper.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_types.h"
 #include "chrome/browser/ash/child_accounts/time_limits/web_time_navigation_observer.h"
-#include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+
+namespace ash {
+class BrowserDelegate;
+}
 
 namespace base {
 class Time;
 class UnguessableToken;
 }  // namespace base
 
-class Browser;
 class BrowserWindowInterface;
 
 namespace ash::app_time {
@@ -34,7 +37,7 @@ class AppTimeController;
 enum class ChromeAppActivityState;
 
 class WebTimeActivityProvider : public WebTimeNavigationObserver::EventListener,
-                                public BrowserListObserver,
+                                public ash::BrowserController::Observer,
                                 public TabStripModelObserver,
                                 public AppServiceWrapper::EventListener {
  public:
@@ -57,9 +60,9 @@ class WebTimeActivityProvider : public WebTimeNavigationObserver::EventListener,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
 
-  // BrowserListObserver:
-  void OnBrowserAdded(Browser* browser) override;
-  void OnBrowserRemoved(Browser* browser) override;
+  // ash::BrowserController::Observer:
+  void OnBrowserCreated(ash::BrowserDelegate* browser) override;
+  void OnBrowserClosed(ash::BrowserDelegate* browser) override;
 
   // AppServiceWrapper::EventListener:
   void OnAppActive(const AppId& app_id,

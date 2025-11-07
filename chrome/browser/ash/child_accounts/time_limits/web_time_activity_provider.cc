@@ -10,6 +10,7 @@
 #include "base/containers/contains.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_activity_registry.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_service_wrapper.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_controller.h"
@@ -17,7 +18,6 @@
 #include "chrome/browser/ash/child_accounts/time_limits/app_types.h"
 #include "chrome/browser/ash/child_accounts/time_limits/web_time_navigation_observer.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
@@ -106,12 +106,12 @@ WebTimeActivityProvider::WebTimeActivityProvider(
   DCHECK(app_time_controller_);
   DCHECK(app_service_wrapper);
 
-  BrowserList::GetInstance()->AddObserver(this);
+  ash::BrowserController::GetInstance()->AddObserver(this);
   app_service_wrapper_observation_.Observe(app_service_wrapper);
 }
 
 WebTimeActivityProvider::~WebTimeActivityProvider() {
-  BrowserList::GetInstance()->RemoveObserver(this);
+  ash::BrowserController::GetInstance()->RemoveObserver(this);
   TabStripModelObserver::StopObservingAll(this);
 }
 
@@ -186,11 +186,15 @@ void WebTimeActivityProvider::OnTabStripModelChanged(
   MaybeNotifyStateChange(base::Time::Now());
 }
 
-void WebTimeActivityProvider::OnBrowserAdded(Browser* browser) {
+void WebTimeActivityProvider::OnBrowserCreated(
+    ash::BrowserDelegate* browser_delegate) {
+  Browser* browser = &browser_delegate->GetBrowser();
   browser->tab_strip_model()->AddObserver(this);
 }
 
-void WebTimeActivityProvider::OnBrowserRemoved(Browser* browser) {
+void WebTimeActivityProvider::OnBrowserClosed(
+    ash::BrowserDelegate* browser_delegate) {
+  Browser* browser = &browser_delegate->GetBrowser();
   if (!base::Contains(active_browsers_, browser)) {
     return;
   }

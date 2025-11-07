@@ -17,6 +17,7 @@ include_rules = [
   "+chrome/browser/apps/app_service",
   "+chrome/browser/ash/app_list/arc",
   "+chrome/browser/ash/arc",
+  "+chrome/browser/ash/browser_delegate",
   "+chrome/browser/ash/child_accounts",
   "+chrome/browser/ash/policy/core",
   "+chrome/browser/ash/profiles",
