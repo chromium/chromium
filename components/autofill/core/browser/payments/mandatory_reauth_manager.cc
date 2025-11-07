@@ -63,19 +63,14 @@ MandatoryReauthManager::GetNonInteractivePaymentMethodType(
 void MandatoryReauthManager::Authenticate(
     device_reauth::DeviceAuthenticator::AuthenticateCallback callback) {
   CHECK(device_authenticator_);
-  device_authenticator_->AuthenticateWithMessage(
-      u"", base::BindOnce(&MandatoryReauthManager::OnAuthenticationCompleted,
-                          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  device_authenticator_->AuthenticateWithMessage(u"", std::move(callback));
 }
 
 void MandatoryReauthManager::AuthenticateWithMessage(
     const std::u16string& message,
     device_reauth::DeviceAuthenticator::AuthenticateCallback callback) {
   CHECK(device_authenticator_);
-  device_authenticator_->AuthenticateWithMessage(
-      message,
-      base::BindOnce(&MandatoryReauthManager::OnAuthenticationCompleted,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  device_authenticator_->AuthenticateWithMessage(message, std::move(callback));
 }
 
 void MandatoryReauthManager::StartDeviceAuthentication(
@@ -116,12 +111,6 @@ void MandatoryReauthManager::StartDeviceAuthentication(
 #else
   NOTREACHED();
 #endif
-}
-
-void MandatoryReauthManager::OnAuthenticationCompleted(
-    device_reauth::DeviceAuthenticator::AuthenticateCallback callback,
-    bool success) {
-  std::move(callback).Run(success);
 }
 
 bool MandatoryReauthManager::ShouldOfferOptin(
