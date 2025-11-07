@@ -192,6 +192,21 @@ Study::Channel ConvertProductChannelToStudyChannel(
   NOTREACHED();
 }
 
+void MaybeActivateMetricsNoopTrial() {
+  if (base::FieldTrial* trial =
+          base::FieldTrialList::Find("MetricsNoopRegressionAutoAdvance")) {
+    // If the user is in the Enabled group, we want to randomly activate the
+    // field trial half the time.
+    if (trial->GetGroupNameWithoutActivation() == "Enabled") {
+      if (rand() % 2 == 0) {
+        trial->Activate();
+      }
+    } else {
+      trial->Activate();
+    }
+  }
+}
+
 }  // namespace
 
 BASE_FEATURE(kForceFieldTrialSetupCrashForTesting,
@@ -352,6 +367,9 @@ bool VariationsFieldTrialCreator::SetUpFieldTrials(
     // VariationsSafeModeEndToEndBrowserTest.ExtendedSafeSeedEndToEnd.
     base::Process::TerminateCurrentProcessImmediately(0x7E57C0D3);
   }
+
+  // TODO(crbug.com/458408055): Remove this once the experiment is over.
+  MaybeActivateMetricsNoopTrial();
 
   // This must be called after |local_state_| is initialized.
   platform_field_trials->OnVariationsSetupComplete();
