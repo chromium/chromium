@@ -3,6 +3,7 @@
 -DistilledPageJsTest.AddClassesToYTIFramesTest
 -DistilledPageJsTest.IdentifyEmptySVGsTest
 -DistilledPageJsTest.ImageClassifierTest
+-DistilledPageJsTest.ListClassifierTest
 -DistilledPageJsTest.SettingsDialogTest
 -DistilledPageJsTest.WrapTablesTest
 -DistillerPageWebContentsTest.BasicDistillationWorks
