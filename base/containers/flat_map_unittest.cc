@@ -221,6 +221,24 @@ TEST(FlatMap, SubscriptMoveOnlyKey) {
   EXPECT_EQ(44, m[MoveOnlyInt(1)]);
 }
 
+// operator[](K&&)
+TEST(FlatMap, SubscriptConstructibleKey) {
+  base::flat_map<std::string, int> m;
+
+  // Default construct elements that don't exist yet.
+  int& s = m[std::string_view("a")];
+  EXPECT_EQ(0, s);
+  EXPECT_EQ(1u, m.size());
+
+  // The returned mapped reference should refer into the map.
+  s = 22;
+  EXPECT_EQ(22, m[std::string_view("a")]);
+
+  // Overwrite existing elements.
+  m[std::string_view("a")] = 44;
+  EXPECT_EQ(44, m[std::string_view("a")]);
+}
+
 // Mapped& at(const Key&)
 // const Mapped& at(const Key&) const
 TEST(FlatMap, AtFunction) {

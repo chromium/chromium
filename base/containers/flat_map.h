@@ -125,6 +125,7 @@ struct GetFirst {
 // Insert and accessor functions:
 //   mapped_type&         operator[](const key_type&);
 //   mapped_type&         operator[](key_type&&);
+//   mapped_type&         operator[](K&&);
 //   mapped_type&         at(const K&);
 //   const mapped_type&   at(const K&) const;
 //   pair<iterator, bool> insert(const value_type&);
@@ -227,6 +228,9 @@ class flat_map : public ::base::internal::
 
   mapped_type& operator[](const key_type& key);
   mapped_type& operator[](key_type&& key);
+  template <class K>
+    requires(internal::IsTransparent<Compare>)
+  mapped_type& operator[](K&& key);
 
   template <class K, class M>
   std::pair<iterator, bool> insert_or_assign(K&& key, M&& obj);
@@ -291,6 +295,18 @@ auto flat_map<Key, Mapped, Compare, Container>::operator[](key_type&& key)
   iterator found = tree::lower_bound(key);
   if (found == tree::end() || tree::key_comp()(key, found->first)) {
     found = tree::unsafe_emplace(found, std::move(key), mapped_type());
+  }
+  return found->second;
+}
+
+template <class Key, class Mapped, class Compare, class Container>
+template <class K>
+  requires(internal::IsTransparent<Compare>)
+auto flat_map<Key, Mapped, Compare, Container>::operator[](K&& key)
+    -> mapped_type& {
+  iterator found = tree::lower_bound(key);
+  if (found == tree::end() || tree::key_comp()(key, found->first)) {
+    found = tree::unsafe_emplace(found, std::forward<K>(key), mapped_type());
   }
   return found->second;
 }
