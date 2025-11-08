@@ -14,7 +14,6 @@
 #include "base/strings/string_util.h"
 #include "build/branding_buildflags.h"
 #include "chrome/common/channel_info.h"
-#include "chrome/common/request_header_integrity/build_derived_values.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/google/core/common/google_util.h"
 #include "google_apis/google_api_keys.h"
@@ -23,6 +22,7 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chrome/common/request_header_integrity/internal/build_derived_values.h"
 #include "chrome/common/request_header_integrity/internal/google_header_names.h"
 #endif
 
@@ -40,6 +40,14 @@
 
 #if !defined(COPYRIGHT_HEADER_NAME)
 #define COPYRIGHT_HEADER_NAME "X-Placeholder-4"
+#endif
+
+#if !defined(CHROME_COPYRIGHT)
+#define CHROME_COPYRIGHT "X-COPYRIGHT"
+#endif
+
+#if !defined(LASTCHANGE_YEAR)
+#define LASTCHANGE_YEAR "1969"
 #endif
 
 namespace request_header_integrity {
