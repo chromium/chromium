@@ -1258,6 +1258,77 @@ suite('NewTabPageComposeboxTest', () => {
     assertTrue(composeboxDropdown.hidden);
   });
 
+  test('dropdown does not show for typed suggest with context', async () => {
+    loadTimeData.overrideValues(
+        {composeboxShowZps: true, composeboxShowTypedSuggest: true});
+    createComposeboxElement();
+    await microtasksFinished();
+
+    // Add typed input.
+    composeboxElement.$.input.value = 'Test';
+    composeboxElement.$.input.dispatchEvent(new Event('input'));
+    await microtasksFinished();
+
+    const composeboxDropdown =
+        composeboxElement.shadowRoot.querySelector<HTMLElement>('#matches');
+    assertTrue(!!composeboxDropdown);
+
+    const matches = [
+      createSearchMatch(
+          {fillIntoEdit: 'hello world 1', allowedToBeDefaultMatch: true}),
+      createSearchMatch({fillIntoEdit: 'hello world 2'}),
+      createSearchMatch({fillIntoEdit: 'hello world 3'}),
+      createSearchMatch({fillIntoEdit: 'hello world 4'}),
+    ];
+    searchboxCallbackRouterRemote.autocompleteResultChanged(
+        createAutocompleteResult({
+          matches: matches,
+          input: 'Test',
+        }));
+    await microtasksFinished();
+
+    // Dropdown should show for when matches are available.
+    assertFalse(composeboxDropdown.hidden);
+
+    // If context files are added, the dropdown should no longer be visible.
+    composeboxElement.$.context.dispatchEvent(
+      new CustomEvent('on-context-files-changed', {
+        detail: {files: 1},
+      }));
+    await microtasksFinished();
+    assertTrue(composeboxDropdown.hidden);
+  });
+
+  test('dropdown does not show for typed suggest with verbatim match only',
+       async () => {
+        loadTimeData.overrideValues(
+            {composeboxShowZps: true, composeboxShowTypedSuggest: true});
+        createComposeboxElement();
+        await microtasksFinished();
+
+        // Add typed input.
+        composeboxElement.$.input.value = 'Test';
+        composeboxElement.$.input.dispatchEvent(new Event('input'));
+        await microtasksFinished();
+
+        const composeboxDropdown =
+            composeboxElement.shadowRoot.querySelector<HTMLElement>('#matches');
+        assertTrue(!!composeboxDropdown);
+
+        const matches = [
+          createSearchMatch(),
+        ];
+        searchboxCallbackRouterRemote.autocompleteResultChanged(
+            createAutocompleteResult({
+              matches: matches,
+              input: 'Test',
+            }));
+        await microtasksFinished();
+
+        // Dropdown should not show when only the verbatim match is present.
+        assertTrue(composeboxDropdown.hidden);
+      });
+
   test('notify browser when image is added in create image mode', async () => {
     loadTimeData.overrideValues({
       composeboxShowZps: true,
