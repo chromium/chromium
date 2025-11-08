@@ -376,6 +376,9 @@ class HttpsUpgradesBrowserTest
     browser()->profile()->GetPrefs()->ClearPref(
         prefs::kHttpsUpgradeNavigations);
     browser()->profile()->GetPrefs()->ClearPref(prefs::kHttpsFirstBalancedMode);
+
+    HttpsUpgradesInterceptor::SetHttpsPortForTesting(0);
+    HttpsUpgradesInterceptor::SetHttpPortForTesting(0);
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -569,9 +572,12 @@ class HttpsUpgradesBrowserTest
             contents));
   }
 
+  base::SimpleTestClock* GetTestClock() { return &test_clock_; }
+
   // Prepare the profile so that HFM can be automatically enabled.
-  void SatisfyTypicallySecureHeuristicRequirements(
-      base::SimpleTestClock* clock) {
+  void SatisfyTypicallySecureHeuristicRequirements() {
+    base::SimpleTestClock* clock = GetTestClock();
+
     // The total engagement score of all sites must be over a certain threshold.
     SetSiteEngagementScore(GURL("https://google.com:12345"), 90);
 
@@ -641,6 +647,12 @@ class HttpsUpgradesBrowserTest
   base::HistogramTester histograms_;
   raw_ptr<Browser, AcrossTasksDanglingUntriaged> incognito_browser_ = nullptr;
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
+
+  // A clock that can be installed with
+  // HttpsFirstModeService::SetClockForTesting(). This must outlive the test
+  // because HttpsFirstModeService can access it from shutdown tasks that run
+  // during PostRunTestOnMainThread().
+  base::SimpleTestClock test_clock_;
 };
 
 // HttpsUpgradesBrowserTest is NOT instantiated for unusual configurations like
@@ -1445,17 +1457,16 @@ IN_PROC_BROWSER_TEST_P(
   // score.
   SetSiteEngagementScore(GURL("https://google.com"), 90);
 
-  base::SimpleTestClock clock;
   base::Time now;
   EXPECT_TRUE(base::Time::FromUTCString("2023-10-15T06:00:00Z", &now));
   // Start the clock at standard system time.
-  clock.SetNow(now);
+  GetTestClock()->SetNow(now);
 
-  profile->SetCreationTimeForTesting(clock.Now() - base::Days(30));
+  profile->SetCreationTimeForTesting(GetTestClock()->Now() - base::Days(30));
 
   HttpsFirstModeService* hfm_service =
       HttpsFirstModeServiceFactory::GetForProfile(profile);
-  hfm_service->SetClockForTesting(&clock);
+  hfm_service->SetClockForTesting(GetTestClock());
 
   GURL http_url = http_server()->GetURL("bad-https.com", "/simple.html");
   GURL https_url = https_server()->GetURL("bad-https.com", "/simple.html");
@@ -1483,7 +1494,7 @@ IN_PROC_BROWSER_TEST_P(
   // Move the clock forward and revisit HTTP. Profile is old enough now, but
   // Typically Secure Users feature will only auto-enable HFM after a restart
   // and show an interstitial.
-  clock.Advance(base::Days(15));
+  GetTestClock()->Advance(base::Days(15));
   NavigateAndWaitForFallback(contents, http_url);
   EXPECT_EQ(http_url, contents->GetLastCommittedURL());
 
@@ -1526,8 +1537,7 @@ IN_PROC_BROWSER_TEST_P(
 
   // Advance the clock to one day after the last fallback event, which happened
   // on the 15th day.
-  base::SimpleTestClock clock;
-  clock.SetNow(base::Time::NowFromSystemTime() + base::Days(16));
+  GetTestClock()->SetNow(base::Time::NowFromSystemTime() + base::Days(16));
 
   content::WebContents* contents =
       GetBrowser()->tab_strip_model()->GetActiveWebContents();
@@ -1540,7 +1550,7 @@ IN_PROC_BROWSER_TEST_P(
     hfm_service->IncrementRecentNavigationCount();
   }
 
-  hfm_service->SetClockForTesting(&clock);
+  hfm_service->SetClockForTesting(GetTestClock());
   // HFM service runs this on startup, but we can't set the test clock before it
   // runs, and we need to move the clock forward for this to work. So call it
   // explicitly again here.
@@ -1590,7 +1600,7 @@ IN_PROC_BROWSER_TEST_P(
 
   // Move the clock forward a day and revisit HTTP. Should still show HFM
   // interstitial.
-  clock.Advance(base::Days(1));
+  GetTestClock()->Advance(base::Days(1));
   NavigateAndWaitForFallback(contents, http_url);
   EXPECT_EQ(http_url, contents->GetLastCommittedURL());
   EXPECT_EQ(initial_navigation_count + 2u,
@@ -1663,8 +1673,7 @@ IN_PROC_BROWSER_TEST_P(
   HttpsUpgradesInterceptor::SetHttpPortForTesting(0);
   auto url_loader_interceptor = MakeInterceptorForSiteEngagementHeuristic();
 
-  base::SimpleTestClock clock;
-  SatisfyTypicallySecureHeuristicRequirements(&clock);
+  SatisfyTypicallySecureHeuristicRequirements();
   // This should auto-enable HFM now:
   hfm_service()
       ->CheckUserIsTypicallySecureAndMaybeEnableHttpsFirstBalancedMode();
@@ -1711,8 +1720,7 @@ IN_PROC_BROWSER_TEST_P(
   HttpsUpgradesInterceptor::SetHttpPortForTesting(0);
   auto url_loader_interceptor = MakeInterceptorForSiteEngagementHeuristic();
 
-  base::SimpleTestClock clock;
-  SatisfyTypicallySecureHeuristicRequirements(&clock);
+  SatisfyTypicallySecureHeuristicRequirements();
 
   // Before running the heuristic checks, also navigate to a non-unique
   // hostname. This will result in an interstitial iff strict mode is enabled.
