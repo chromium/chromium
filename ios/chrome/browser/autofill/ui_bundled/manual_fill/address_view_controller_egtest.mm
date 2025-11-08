@@ -262,7 +262,7 @@ void OpenAddressManualFillViewWithNoSavedAddresses() {
 // Tests that the saved address chip buttons are all visible in the address
 // table view controller, and that they have the right accessibility label.
 - (void)testAddressChipButtonsAreAllVisible {
-  // TODO(crbug.com/385172448): Make this test work on all platforms.
+  // TODO(crbug.com/458784359): Make this test work on all platforms.
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"The keyboard accessory can't show all the buttons "
                            @"at once on some tablets.");
