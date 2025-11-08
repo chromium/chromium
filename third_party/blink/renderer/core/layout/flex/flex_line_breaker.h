@@ -18,14 +18,11 @@ struct InitialFlexLine {
 
  public:
   InitialFlexLine(wtf_size_t count,
-                  LayoutUnit sum_flex_base_size,
                   LayoutUnit sum_hypothetical_main_size)
       : count(count),
-        sum_flex_base_size(sum_flex_base_size),
         sum_hypothetical_main_size(sum_hypothetical_main_size) {}
 
   const wtf_size_t count;
-  const LayoutUnit sum_flex_base_size;
   const LayoutUnit sum_hypothetical_main_size;
 };
 

@@ -1372,8 +1372,8 @@ void FlexLayoutAlgorithm::PlaceFlexItems(
     // Flex the items.
     auto [line_items, remaining_items] = items.split_at(line.count);
     items = remaining_items;
-    LineFlexer(line_items, line.sum_hypothetical_main_size,
-               line.sum_flex_base_size, main_axis_inner_size)
+    LineFlexer(line_items, main_axis_inner_size,
+               line.sum_hypothetical_main_size, gap_between_items_)
         .Run();
 
     Vector<wtf_size_t> item_indices;

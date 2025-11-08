@@ -7,26 +7,22 @@
 namespace blink {
 
 LineFlexer::LineFlexer(base::span<FlexItem> line_items,
+                       LayoutUnit main_axis_inner_size,
                        LayoutUnit sum_hypothetical_main_size,
-                       LayoutUnit sum_flex_base_size,
-                       LayoutUnit main_axis_inner_size)
+                       LayoutUnit gap_between_items)
     : line_items_(line_items),
+      main_axis_inner_size_(main_axis_inner_size),
+      gap_between_items_(gap_between_items),
       mode_(sum_hypothetical_main_size < main_axis_inner_size ? kGrow
                                                               : kShrink) {
-  // Per https://drafts.csswg.org/css-flexbox/#resolve-flexible-lengths step 2,
-  // we freeze all items with a flex factor of 0 as well as those with a min/max
-  // size violation.
-  remaining_free_space_ = main_axis_inner_size - sum_flex_base_size;
-
-  ViolationsIndicesVector new_inflexible_items;
-  for (wtf_size_t i = 0u; i < line_items_.size(); ++i) {
-    auto& item = line_items_[i];
+  LayoutUnit used_space;
+  for (auto& item : line_items_) {
     DCHECK(!item.frozen);
 
-    total_flex_grow_ += item.flex_grow;
-    total_flex_shrink_ += item.flex_shrink;
-    total_weighted_flex_shrink_ += item.flex_shrink * item.base_content_size;
-
+    // Per https://drafts.csswg.org/css-flexbox/#resolve-flexible-lengths
+    // step 3, freeze any item with:
+    //  - A flex-factor of 0.
+    //  - Any with a min/max size violation.
     const float flex_factor =
         (mode_ == kGrow) ? item.flex_grow : item.flex_shrink;
     if (flex_factor == 0.f ||
@@ -35,10 +31,19 @@ LineFlexer::LineFlexer(base::span<FlexItem> line_items,
         (mode_ == kShrink &&
          item.base_content_size < item.hypothetical_content_size)) {
       item.flexed_content_size = item.hypothetical_content_size;
-      new_inflexible_items.push_back(i);
+      item.frozen = true;
+      used_space += item.FlexedMarginBoxSize() + gap_between_items_;
+      continue;
     }
+
+    total_flex_grow_ += item.flex_grow;
+    total_flex_shrink_ += item.flex_shrink;
+    total_weighted_flex_shrink_ += item.flex_shrink * item.base_content_size;
+    used_space += item.FlexBaseMarginBoxSize() + gap_between_items_;
   }
-  FreezeViolations(new_inflexible_items);
+  used_space -= gap_between_items_;
+
+  remaining_free_space_ = main_axis_inner_size - used_space;
   initial_free_space_ = remaining_free_space_;
 }
 
