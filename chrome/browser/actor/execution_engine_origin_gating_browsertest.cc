@@ -487,30 +487,40 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
                        BlockedNavigationNotAddedToAllowlist) {
-  const GURL start_url =
-      embedded_https_test_server().GetURL("example.com", "/actor/blank.html");
+  const GURL start_url = embedded_https_test_server().GetURL(
+      "www.example.com", "/actor/blank.html");
   const GURL blocked_origin_url = embedded_https_test_server().GetURL(
       "blocked.example.com", "/actor/blank.html");
-
-  OpenGlicAndCreateTask();
+  const GURL blocked_origin_link_url = embedded_https_test_server().GetURL(
+      "blocked.example.com",
+      base::StrCat({"/actor/link_full_page.html?href=",
+                    EncodeURI(blocked_origin_url.spec())}));
+  const GURL link_page_url = embedded_https_test_server().GetURL(
+      "www.example.com", base::StrCat({"/actor/link_full_page.html?href=",
+                                       EncodeURI(blocked_origin_url.spec())}));
 
   // Start on example.com.
   ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
-  // Navigate to blocked
+  OpenGlicAndCreateTask();
+
+  // Navigate to blocked origin.
   std::unique_ptr<ToolRequest> navigate_to_blocked =
-      MakeNavigateRequest(*active_tab(), blocked_origin_url.spec());
+      MakeNavigateRequest(*active_tab(), blocked_origin_link_url.spec());
+  // Clicks on full-page link to blocked origin.
+  std::unique_ptr<ToolRequest> click_link_same_origin =
+      MakeClickRequest(*active_tab(), gfx::Point(1, 1));
   // Navigate from back to start
-  std::unique_ptr<ToolRequest> navigate_back_to_start =
-      MakeNavigateRequest(*active_tab(), start_url.spec());
-  // Navigate from back to blocked
-  std::unique_ptr<ToolRequest> navigate_back_to_blocked =
-      MakeNavigateRequest(*active_tab(), blocked_origin_url.spec());
+  std::unique_ptr<ToolRequest> navigate_to_link_page =
+      MakeNavigateRequest(*active_tab(), link_page_url.spec());
+  // Clicks on full-page link to blocked origin.
+  std::unique_ptr<ToolRequest> click_link_x_origin =
+      MakeClickRequest(*active_tab(), gfx::Point(1, 1));
 
   RunTestSequence(CreateMockWebClientRequest(
       content::JsReplace(kHandleUserConfirmationDialogTempl, true)));
   ActResultFuture result;
-  actor_task().Act(ToRequestList(navigate_to_blocked, navigate_back_to_start,
-                                 navigate_back_to_blocked),
+  actor_task().Act(ToRequestList(navigate_to_blocked, click_link_same_origin,
+                                 navigate_to_link_page, click_link_x_origin),
                    result.GetCallback());
   ExpectOkResult(result);
 
@@ -521,18 +531,22 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
   // Trigger ExecutionEngine destructor for metrics.
   actor_keyed_service().ResetForTesting();
 
-  // We should have applied the gate twice. Once for each navigation to blocked.
+  // Navigation gating should only be applied to the first navigation action.
   histogram_tester_for_init_.ExpectBucketCount(
-      "Actor.NavigationGating.AppliedGate", false, 1);
+      "Actor.NavigationGating.AppliedGate", true, 1);
+  // All other navigations should not have gating
   histogram_tester_for_init_.ExpectBucketCount(
-      "Actor.NavigationGating.AppliedGate", true, 2);
+      "Actor.NavigationGating.AppliedGate", false, 3);
   // Permission should have been explicitly granted twice. Once for each
   // navigation to blocked.
   histogram_tester_for_init_.ExpectBucketCount(
-      "Actor.NavigationGating.PermissionGranted", true, 2);
+      "Actor.NavigationGating.PermissionGranted", true, 1);
   // The allow-list should have 2 entries at the end of the task.
   histogram_tester_for_init_.ExpectBucketCount(
       "Actor.NavigationGating.AllowListSize", 2, 1);
+  // The list of confirmed sensitive origins should have 1 entry.
+  histogram_tester_for_init_.ExpectBucketCount(
+      "Actor.NavigationGating.ConfirmedListSize", 1, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,

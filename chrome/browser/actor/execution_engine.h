@@ -143,8 +143,10 @@ class ExecutionEngine : public ToolDelegate {
   void RequestToShowAutofillSuggestions(
       std::vector<autofill::ActorFormFillingRequest> requests,
       AutofillSuggestionSelectedCallback callback) override;
+
+  using AllowedOriginSet = absl::flat_hash_set<url::Origin>;
   void AddWritableMainframeOrigins(
-      const absl::flat_hash_set<url::Origin>& added_writable_mainframe_origins);
+      const AllowedOriginSet& added_writable_mainframe_origins);
 
   // Callback invoked when ConfirmCrossOriginNavigation, which spawns an IPC to
   // the web client, receives its response. This callback gets a boolean
@@ -273,9 +275,11 @@ class ExecutionEngine : public ToolDelegate {
   // This may also be called when the browser detects the actor navigating to
   // a novel origin when `kGlicPromptUserForNavigationToNewOrigins` is enabled.
   void SendUserConfirmationDialogRequest(const url::Origin& navigation_origin,
+                                         bool for_blocklisted_origin,
                                          NavigationDecisionCallback callback);
   void OnPromptUserToConfirmNavigationDecision(
       url::Origin navigation_origin,
+      bool for_blocklisted_origin,
       NavigationDecisionCallback callback,
       webui::mojom::UserConfirmationDialogResponsePtr response);
 
@@ -313,9 +317,15 @@ class ExecutionEngine : public ToolDelegate {
   std::vector<ActionResultWithLatencyInfo> action_results_;
 
   // Origins which the browser is allowed to navigate to under actor control
-  // without prompting the user. This is applied to all navigations, including
-  // those initiated by the renderer with web content.
-  absl::flat_hash_set<url::Origin> allowed_navigation_origins_;
+  // without needing to confirm the navigation with the web client. This set can
+  // have origins added to it by the server actions or by confirming the new
+  // origin with the model or user. Sensitive origins that are on the
+  // optimization guide blocklist are not exempt by this list.
+  AllowedOriginSet allowed_navigation_origins_;
+  // Separate allowlist for sensitive origins on the optimization guide
+  // blocklist. We cache these origins separately to not double prompt the user
+  // when they already confirmed the actor can interact with the origin.
+  AllowedOriginSet user_confirmed_blocklisted_origins_;
 
   // For multi-step login, this is the credential that the user has chosen to
   // allow the actor to use. The key is the

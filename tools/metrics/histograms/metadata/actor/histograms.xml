@@ -178,8 +178,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the size of the allow list of origins which the actor can navigate
     to for the given task. These origins come from server actions or when a
-    navigation confirmation request is granted. Recorded every time the actor
-    navigates the main frame.
+    navigation confirmation request is granted. Recorded at the end of every
+    task.
   </summary>
 </histogram>
 
@@ -193,6 +193,17 @@ chromium-metrics-reviews@google.com.
     navigation was deferred until confirmation. False means the navigation was
     allowed to continue without gating. Recorded whenever the actor navigates
     the main frame.
+  </summary>
+</histogram>
+
+<histogram name="Actor.NavigationGating.ConfirmedListSize" units="origins"
+    expires_after="2026-03-30">
+  <owner>dylancutler@google.com</owner>
+  <owner>johannhof@google.com</owner>
+  <summary>
+    Records the size of the list of sensitive origins on the optimization guide
+    blocklist that the user confirmed the actor can interact with. Recorded at
+    the end of every task.
   </summary>
 </histogram>
 
