@@ -552,6 +552,9 @@ crbug.com/437973213 [ android android-brya ] Pixel_Video_Context_Loss_VP9 [ Fail
 # Win11 Canvas Timeout
 crbug.com/446719056 [ win11 angle-d3d11 qualcomm-0x41333430 graphite-disabled ] Pixel_OffscreenCanvas2DResizeOnWorker [ Failure ]
 
+# Win11/Snapdragon X Elite
+crbug.com/458633864 [ win qualcomm-0x36334330 ] Pixel_MediaFoundationClearDirectComposition [ Failure ]
+
 # Pixel 10 failures
 crbug.com/446181110 [ android android-pixel-10 android-webview-instrumentation ] Pixel_CanvasLowLatency2D [ Failure ]
 crbug.com/446181110 [ android android-pixel-10 android-webview-instrumentation ] Pixel_CanvasLowLatency2DDrawImage [ Failure ]

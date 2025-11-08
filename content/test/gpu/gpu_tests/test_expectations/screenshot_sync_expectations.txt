@@ -123,6 +123,9 @@ crbug.com/324934210 [ mac angle-metal intel-0x3e9b passthrough asan ] Screenshot
 # Win11 / NVIDIA RTX 4070 Super
 crbug.com/450325666 [ win11 nvidia-0x2783 ] ScreenshotSync_GPURasterWithDivs [ RetryOnFailure ]
 
+# Win11 / Qualcomm Snapdragon X Elite
+crbug.com/458607668 [ win qualcomm-0x36334330 ] ScreenshotSync_SWRasterWithDivs [ Failure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################

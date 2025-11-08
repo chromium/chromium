@@ -135,6 +135,8 @@ crbug.com/426594100 [ android android-pixel-2 graphite-disabled ] ExpectedColor_
 
 crbug.com/446124895 [ android android-pixel-10 ] ExpectedColor_MediaRecorderFromVideoElement [ Failure ]
 
+crbug.com/458633863 [ win qualcomm-0x36334330 ] ExpectedColor_MediaRecorderFrom2DCanvas [ Failure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################
