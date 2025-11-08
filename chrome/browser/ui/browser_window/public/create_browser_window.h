@@ -64,6 +64,31 @@ struct BrowserWindowCreateParams {
 // first, then executed once the OS has fully initialized the window. We
 // recommend all code calling this function to anticipate this scenario.
 //
+// Detailed behavior for the returned `BrowserWindowInterface`:
+//
+// GetUnownedUserDataHost() will always return an initialized
+// UnownedUserDataHost. However, we can't guarantee there is any feature
+// associated with it.
+//
+// GetWindow() will return a ui::BaseWindow object that's not guaranteed to be
+// backed by a real window in the OS. If there is no real window, functions of
+// ui::BaseWindow have the following behavior:
+// (1) functions updating window states will be queued and executed when the OS
+// has initialized the real window;
+// (2) functions returning window states will return the predicted states based
+// on `create_params` and the queued calls to functions in (1).
+//
+// For each of the following Get*() functions, it will return the corresponding
+// value associated with the window, and the value will remain constant for the
+// lifetime of the window:
+// (1) GetProfile() will return the Profile associated with the window;
+// (2) GetSessionID() will return the session ID associated with the window;
+// (3) GetType() will return the type of the window.
+//
+// OpenURL() isn't guaranteed to work as it may require the OS to initialize
+// the window and associate with UnownedUserDataHost features that facilitate
+// browser navigation. If OpenURL() can't work, calling it will cause a crash.
+//
 // If you need to ensure the browser window is fully initialized, please use the
 // asynchronous version of this function.
 BrowserWindowInterface* CreateBrowserWindow(
