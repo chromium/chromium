@@ -29,14 +29,12 @@ class LineFlexer {
   }
 
  private:
-  typedef Vector<wtf_size_t, 8> ViolationsIndicesVector;
-
   enum FlexerMode {
     kGrow,
     kShrink,
   };
 
-  void FreezeViolations(ViolationsIndicesVector& violations);
+  void FreezeViolations(FlexerState should_freeze);
   bool ResolveFlexibleLengths();
 
   base::span<FlexItem> line_items_;

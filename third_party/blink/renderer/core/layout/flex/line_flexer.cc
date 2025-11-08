@@ -17,8 +17,6 @@ LineFlexer::LineFlexer(base::span<FlexItem> line_items,
                                                               : kShrink) {
   LayoutUnit used_space;
   for (auto& item : line_items_) {
-    DCHECK(!item.frozen);
-
     // Per https://drafts.csswg.org/css-flexbox/#resolve-flexible-lengths
     // step 3, freeze any item with:
     //  - A flex-factor of 0.
@@ -31,7 +29,7 @@ LineFlexer::LineFlexer(base::span<FlexItem> line_items,
         (mode_ == kShrink &&
          item.base_content_size < item.hypothetical_content_size)) {
       item.flexed_content_size = item.hypothetical_content_size;
-      item.frozen = true;
+      item.state = FlexerState::kFrozen;
       used_space += item.FlexedMarginBoxSize() + gap_between_items_;
       continue;
     }
@@ -43,35 +41,45 @@ LineFlexer::LineFlexer(base::span<FlexItem> line_items,
   }
   used_space -= gap_between_items_;
 
-  remaining_free_space_ = main_axis_inner_size - used_space;
+  remaining_free_space_ = main_axis_inner_size_ - used_space;
   initial_free_space_ = remaining_free_space_;
 }
 
-void LineFlexer::FreezeViolations(ViolationsIndicesVector& violations) {
-  for (auto violation_index : violations) {
-    auto& violation = line_items_[violation_index];
-    DCHECK(!violation.frozen);
-    remaining_free_space_ -=
-        violation.flexed_content_size - violation.base_content_size;
-    total_flex_grow_ -= violation.flex_grow;
-    total_flex_shrink_ -= violation.flex_shrink;
-    total_weighted_flex_shrink_ -=
-        violation.flex_shrink * violation.base_content_size;
-    // total_weighted_flex_shrink can be negative when we exceed the precision
-    // of a double when we initially calculate total_weighted_flex_shrink. We
-    // then subtract each child's weighted flex shrink with full precision, now
-    // leading to a negative result. See
-    // css3/flexbox/large-flex-shrink-assert.html
-    total_weighted_flex_shrink_ = std::max(total_weighted_flex_shrink_, 0.0);
-    violation.frozen = true;
+void LineFlexer::FreezeViolations(FlexerState should_freeze) {
+  // Re-calculate the flex-factor sums, and free-space.
+  //
+  // NOTE: Because floating-point isn't associative we don't subtract the
+  // flex-factors.
+  // https://en.wikipedia.org/wiki/Associative_property#Nonassociativity_of_floating-point_calculation
+  total_flex_grow_ = 0.0;
+  total_flex_shrink_ = 0.0;
+  total_weighted_flex_shrink_ = 0.0;
+
+  LayoutUnit used_space;
+  for (auto& item : line_items_) {
+    // Determine if we should freeze this item.
+    item.state =
+        (item.state == FlexerState::kFrozen || item.state == should_freeze)
+            ? FlexerState::kFrozen
+            : FlexerState::kNone;
+
+    // If this item is frozen don't add to the flex-factor sums.
+    if (item.state == FlexerState::kFrozen) {
+      used_space += item.FlexedMarginBoxSize() + gap_between_items_;
+      continue;
+    }
+
+    total_flex_grow_ += item.flex_grow;
+    total_flex_shrink_ += item.flex_shrink;
+    total_weighted_flex_shrink_ += item.flex_shrink * item.base_content_size;
+    used_space += item.FlexBaseMarginBoxSize() + gap_between_items_;
   }
+  used_space -= gap_between_items_;
+
+  remaining_free_space_ = main_axis_inner_size_ - used_space;
 }
 
 bool LineFlexer::ResolveFlexibleLengths() {
-  LayoutUnit total_violation;
-  ViolationsIndicesVector min_violations;
-  ViolationsIndicesVector max_violations;
-
   const double sum_flex_factors =
       (mode_ == kGrow) ? total_flex_grow_ : total_flex_shrink_;
   if (sum_flex_factors > 0 && sum_flex_factors < 1) {
@@ -81,9 +89,9 @@ bool LineFlexer::ResolveFlexibleLengths() {
     }
   }
 
-  for (wtf_size_t i = 0u; i < line_items_.size(); ++i) {
-    auto& item = line_items_[i];
-    if (item.frozen) {
+  LayoutUnit total_violation;
+  for (auto& item : line_items_) {
+    if (item.state == FlexerState::kFrozen) {
       continue;
     }
 
@@ -104,20 +112,22 @@ bool LineFlexer::ResolveFlexibleLengths() {
 
     const LayoutUnit adjusted_child_size =
         item.main_axis_min_max_sizes.ClampSizeToMinAndMax(child_size);
-    DCHECK_GE(adjusted_child_size, 0);
+    DCHECK_GE(adjusted_child_size, LayoutUnit());
     item.flexed_content_size = adjusted_child_size;
 
     const LayoutUnit violation = adjusted_child_size - child_size;
-    if (violation > 0) {
-      min_violations.push_back(i);
-    } else if (violation < 0) {
-      max_violations.push_back(i);
+    if (violation > LayoutUnit()) {
+      item.state = FlexerState::kMinViolation;
+    } else if (violation < LayoutUnit()) {
+      item.state = FlexerState::kMaxViolation;
     }
     total_violation += violation;
   }
 
   if (total_violation) {
-    FreezeViolations(total_violation < 0 ? max_violations : min_violations);
+    FreezeViolations(total_violation < LayoutUnit()
+                         ? FlexerState::kMaxViolation
+                         : FlexerState::kMinViolation);
     return true;
   }
 
