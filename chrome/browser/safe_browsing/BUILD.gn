@@ -663,6 +663,7 @@ source_set("unit_tests") {
     sources += [ "safe_browsing_pref_change_handler_unittest.cc" ]
 
     deps += [
+      "//chrome/browser/sync",
       "//chrome/browser/ui",
       "//chrome/browser/ui/toasts",
       "//testing/gmock",
