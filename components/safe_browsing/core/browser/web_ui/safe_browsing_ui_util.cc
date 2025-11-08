@@ -234,27 +234,27 @@ std::string AddFullHashCacheInfo(
 #endif
 
 std::string SerializeClientDownloadRequest(const ClientDownloadRequest& cdr) {
-  return SerializeJson(Serialize(cdr));
+  return SerializeJson(ToValue(cdr));
 }
 
 std::string SerializeClientDownloadResponse(const ClientDownloadResponse& cdr) {
-  return SerializeJson(Serialize(cdr));
+  return SerializeJson(ToValue(cdr));
 }
 
 std::string SerializeClientPhishingRequest(
     const ClientPhishingRequestAndToken& cprat) {
-  base::Value value = Serialize(cprat.request);
+  base::Value value = ToValue(cprat.request);
   CHECK(value.is_dict());
   value.GetDict().Set("scoped_oauthtoken", cprat.token);
   return SerializeJson(value);
 }
 
 std::string SerializeClientPhishingResponse(const ClientPhishingResponse& cpr) {
-  return SerializeJson(Serialize(cpr));
+  return SerializeJson(ToValue(cpr));
 }
 
 std::string SerializeCSBRR(const ClientSafeBrowsingReportRequest& report) {
-  return SerializeJson(Serialize(report));
+  return SerializeJson(ToValue(report));
 }
 
 std::string SerializeHitReport(const HitReport& hit_report) {
@@ -432,25 +432,25 @@ base::Value::Dict SerializeReferringAppInfo(
 
 std::string SerializePGPing(
     const LoginReputationClientRequestAndToken& request_and_token) {
-  base::Value request = Serialize(request_and_token.request);
+  base::Value request = ToValue(request_and_token.request);
   CHECK(request.is_dict());
   request.GetDict().Set("scoped_oauth_token", request_and_token.token);
   return SerializeJson(request);
 }
 
 std::string SerializePGResponse(const LoginReputationClientResponse& response) {
-  return SerializeJson(Serialize(response));
+  return SerializeJson(ToValue(response));
 }
 
 std::string SerializeURTLookupPing(const URTLookupRequest& ping) {
-  base::Value request = Serialize(ping.request);
+  base::Value request = ToValue(ping.request);
   CHECK(request.is_dict());
   request.GetDict().Set("scoped_oauth_token", ping.token);
   return SerializeJson(request);
 }
 
 std::string SerializeURTLookupResponse(const RTLookupResponse& response) {
-  return SerializeJson(Serialize(response));
+  return SerializeJson(ToValue(response));
 }
 
 std::string SerializeHPRTLookupPing(const HPRTLookupRequest& ping) {
@@ -481,7 +481,7 @@ std::string SerializeHPRTLookupPing(const HPRTLookupRequest& ping) {
 
 std::string SerializeHPRTLookupResponse(
     const V5::SearchHashesResponse& response) {
-  return SerializeJson(Serialize(response));
+  return SerializeJson(ToValue(response));
 }
 
 base::Value::Dict SerializeLogMessage(base::Time timestamp,
@@ -509,8 +509,8 @@ base::Value::Dict SerializeUploadEventsRequest(
   message.Set("request",
               base::EscapeNonASCII(upload_events_request.SerializeAsString()));
 #else
-  message.Set("request", ::chrome::cros::reporting::proto::Serialize(
-                             upload_events_request));
+  message.Set("request",
+              ::chrome::cros::reporting::proto::ToValue(upload_events_request));
 #endif
   message.Set("response", result.Clone());
 
@@ -535,7 +535,7 @@ std::string SerializeContentAnalysisRequest(
     const std::string& upload_info,
     const std::string& upload_url,
     const enterprise_connectors::ContentAnalysisRequest& request) {
-  base::Value request_value = Serialize(request);
+  base::Value request_value = ToValue(request);
   CHECK(request_value.is_dict());
   base::Value::Dict& request_dict = request_value.GetDict();
   request_dict.Set("access_token", access_token_truncated);
@@ -546,7 +546,7 @@ std::string SerializeContentAnalysisRequest(
 
 std::string SerializeContentAnalysisResponse(
     const enterprise_connectors::ContentAnalysisResponse& response) {
-  return SerializeJson(Serialize(response));
+  return SerializeJson(ToValue(response));
 }
 
 base::Value::Dict SerializeDeepScanDebugData(const std::string& token,

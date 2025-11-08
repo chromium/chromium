@@ -50,7 +50,7 @@ void SetWebAppPendingUpdateAsIgnored(const webapps::AppId& app_id,
         *app_to_update->pending_update_info();
     update_info.set_was_ignored(true);
     debug_value.Set("result", "Pending Info updated");
-    debug_value.Set("updated_pending_info", proto::Serialize(update_info));
+    debug_value.Set("updated_pending_info", proto::ToValue(update_info));
     app_to_update->SetPendingUpdateInfo(std::move(update_info));
   }
 

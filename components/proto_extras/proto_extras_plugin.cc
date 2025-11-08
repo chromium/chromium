@@ -134,9 +134,9 @@ void FieldToValueFunction(const FieldDescriptor* field, Printer* printer) {
       case CPPTYPE_ENUM:
         return base::StrCat({QualifiedClassName(field->enum_type()), "_Name"});
       case CPPTYPE_MESSAGE:
-        // The Serialize function for the message is in the namespace of the
+        // The ToValue function for the message is in the namespace of the
         // nested message itself.
-        return base::StrCat({Namespace(field->message_type()), "::Serialize"});
+        return base::StrCat({Namespace(field->message_type()), "::ToValue"});
     }
     NOTREACHED();
   };
@@ -149,7 +149,7 @@ void CreateToValueSerializationDefinitions(
     const ProtoExtrasGeneratorOptions& options) {
   printer->Emit(
       {{"message_type", ClassName(&message)},
-       {"serialize_fields",
+       {"to_value_fields",
         [&]() {
           for (int j = 0; j < message.field_count(); j++) {
             const FieldDescriptor* field = message.field(j);
@@ -216,19 +216,19 @@ void CreateToValueSerializationDefinitions(
           }
         }}},
       R"(
-base::Value Serialize(const $message_type$& message) {
+base::Value ToValue(const $message_type$& message) {
   base::DictValue dict;
   ::proto_extras::SerializeUnknownFields(message, dict);
-  $serialize_fields$
+  $to_value_fields$
   return base::Value(std::move(dict));
 }
-void MaybeSerialize(const std::optional<$message_type$>& opt_message,
+void MaybeToValue(const std::optional<$message_type$>& opt_message,
                     std::string_view name,
                     base::DictValue& output_dictionary) {
   if (!opt_message.has_value()) {
     return;
   }
-  output_dictionary.Set(name, Serialize(*opt_message));
+  output_dictionary.Set(name, ToValue(*opt_message));
 }
 )");
 }
@@ -240,8 +240,8 @@ void CreateOstreamDefinition(const Descriptor& message,
   printer->Emit({{"message_type", message_type}},
                 R"(
 std::ostream& operator<<(std::ostream& out, const $message_type$& message) {
-  // This relies on Serialize() from *.to_value.h.
-  return out << Serialize(message).DebugString();
+  // This relies on ToValue() from *.to_value.h.
+  return out << ToValue(message).DebugString();
 }
 )");
 }
@@ -584,13 +584,13 @@ $function_definitions$
     }
     std::string message_type = ClassName(&message);
     if (options.generate_to_value_serialization) {
-      printer->Print("base::Value Serialize(const $m$& message);", "m",
+      printer->Print("base::Value ToValue(const $m$& message);", "m",
                      message_type);
       printer->Print(
           R"(
-void MaybeSerialize(const std::optional<$m$>& opt_message,
-                    std::string_view output_dictionary_field_name,
-                    base::DictValue& output_dictionary);
+void MaybeToValue(const std::optional<$m$>& opt_message,
+                  std::string_view output_dictionary_field_name,
+                  base::DictValue& output_dictionary);
 )",
           "m", message_type);
     }

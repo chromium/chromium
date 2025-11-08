@@ -1262,7 +1262,7 @@ base::Value WebApp::AsDebugValueWithOnlyPlatformAgnosticFields() const {
            always_show_toolbar_in_fullscreen_);
 
   root.Set("current_os_integration_states",
-           proto::os_state::Serialize(current_os_integration_states_));
+           proto::os_state::ToValue(current_os_integration_states_));
 
   root.Set("isolation_data", OptionalAsDebugValue(isolation_data_));
 
@@ -1271,7 +1271,7 @@ base::Value WebApp::AsDebugValueWithOnlyPlatformAgnosticFields() const {
 
   root.Set("latest_install_time", base::ToString(latest_install_time_));
 
-  proto::MaybeSerialize(generated_icon_fix_, "generated_icon_fix", root);
+  proto::MaybeToValue(generated_icon_fix_, "generated_icon_fix", root);
 
   root.Set("supported_links_offer_ignore_count",
            supported_links_offer_ignore_count_);
@@ -1287,7 +1287,7 @@ base::Value WebApp::AsDebugValueWithOnlyPlatformAgnosticFields() const {
   root.Set("related_applications",
            RelatedApplicationsToDebugValue(related_applications_));
 
-  proto::MaybeSerialize(pending_update_info_, "pending_update_info", root);
+  proto::MaybeToValue(pending_update_info_, "pending_update_info", root);
 
   root.Set("trusted_icons", ConvertDebugValueList(trusted_icons_));
 

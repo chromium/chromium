@@ -468,7 +468,7 @@ void SafeBrowsingUIHandler::GetReferrerChain(const base::Value::List& args) {
 
   base::Value::List referrer_list;
   for (const ReferrerChainEntry& entry : referrer_chain) {
-    referrer_list.Append(Serialize(entry));
+    referrer_list.Append(ToValue(entry));
   }
 
   std::string referrer_chain_serialized = web_ui::SerializeJson(referrer_list);
@@ -564,7 +564,7 @@ base::Value::Dict SafeBrowsingUIHandler::GetFormattedTailoredVerdictOverride() {
                         base::Value("Override set from another tab."));
     }
     override_dict.Set(kOverrideValueKey,
-                      Serialize(*override_data.override_value));
+                      ToValue(*override_data.override_value));
   }
 #endif  // BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) &&
         // !BUILDFLAG(IS_ANDROID)

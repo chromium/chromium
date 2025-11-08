@@ -26,7 +26,7 @@ TEST(ProtoExtrasToValueTest, BasicField) {
   TestMessage message;
   EXPECT_THAT(message, EqualsTestMessage(TestMessage()));
 
-  EXPECT_EQ(Serialize(message), base::test::ParseJson(R"!({
+  EXPECT_EQ(ToValue(message), base::test::ParseJson(R"!({
     "double_field": 0.0,
     "int32_field": 0,
     "enum_field": "UNKNOWN",
@@ -40,7 +40,7 @@ TEST(ProtoExtrasToValueTest, BasicField) {
   message.set_string_field("abc");
   message.set_bytes_field("\x01\x02\x03");
 
-  EXPECT_EQ(Serialize(message), base::test::ParseJson(R"!({
+  EXPECT_EQ(ToValue(message), base::test::ParseJson(R"!({
     "double_field": 1.0,
     "int32_field": 2,
     "nested_message_field": {
@@ -56,7 +56,7 @@ TEST(ProtoExtrasToValueTest, BasicField) {
 TEST(ProtoExtrasToValueTest, Uint64Field) {
   TestMessage message;
   message.set_uint64_field(std::numeric_limits<uint64_t>::max());
-  EXPECT_EQ(Serialize(message), base::test::ParseJson(R"!({
+  EXPECT_EQ(ToValue(message), base::test::ParseJson(R"!({
     "double_field": 0.0,
     "int32_field": 0,
     "enum_field": "UNKNOWN",
@@ -68,7 +68,7 @@ TEST(ProtoExtrasToValueTest, RepeatedField) {
   TestMessage message;
 
   // Default fields only if empty
-  EXPECT_EQ(Serialize(message), base::test::ParseJson(R"!({
+  EXPECT_EQ(ToValue(message), base::test::ParseJson(R"!({
     "double_field": 0.0,
     "int32_field": 0,
     "enum_field": "UNKNOWN",
@@ -79,7 +79,7 @@ TEST(ProtoExtrasToValueTest, RepeatedField) {
   message.add_repeated_int32_field(2);
   message.add_repeated_int32_field(3);
 
-  EXPECT_EQ(Serialize(message), base::test::ParseJson(R"!({
+  EXPECT_EQ(ToValue(message), base::test::ParseJson(R"!({
     "double_field": 0.0,
     "int32_field": 0,
     "enum_field": "UNKNOWN",
@@ -92,7 +92,7 @@ TEST(ProtoExtrasToValueTest, DepedentFile) {
   TestMessage message;
   message.mutable_dependency_message()->set_int32_field(4);
 
-  EXPECT_EQ(Serialize(message), base::test::ParseJson(R"!({
+  EXPECT_EQ(ToValue(message), base::test::ParseJson(R"!({
     "double_field": 0.0,
     "int32_field": 0,
     "enum_field": "UNKNOWN",
@@ -108,7 +108,7 @@ TEST(ProtoExtrasToValueTest, OneofField) {
 
   // Test with maybe_int32_field set
   message.set_maybe_int32_field(100);
-  EXPECT_EQ(Serialize(message), base::test::ParseJson(R"!({
+  EXPECT_EQ(ToValue(message), base::test::ParseJson(R"!({
     "double_field": 0.0,
     "int32_field": 0,
     "enum_field": "UNKNOWN",
@@ -118,7 +118,7 @@ TEST(ProtoExtrasToValueTest, OneofField) {
 
   // Test with maybe_string_field set
   message.set_maybe_string_field("hello oneof");
-  EXPECT_EQ(Serialize(message), base::test::ParseJson(R"!({
+  EXPECT_EQ(ToValue(message), base::test::ParseJson(R"!({
     "double_field": 0.0,
     "int32_field": 0,
     "enum_field": "UNKNOWN",
@@ -128,7 +128,7 @@ TEST(ProtoExtrasToValueTest, OneofField) {
 
   // Test with maybe_dependency_message set
   message.mutable_maybe_dependency_message()->set_int32_field(200);
-  EXPECT_EQ(Serialize(message), base::test::ParseJson(R"!({
+  EXPECT_EQ(ToValue(message), base::test::ParseJson(R"!({
     "double_field": 0.0,
     "int32_field": 0,
     "enum_field": "UNKNOWN",
@@ -140,7 +140,7 @@ TEST(ProtoExtrasToValueTest, OneofField) {
 
   // Test with maybe_enum_field set
   message.set_maybe_enum_field(TestMessage::ENUM_A);
-  EXPECT_EQ(Serialize(message), base::test::ParseJson(R"!({
+  EXPECT_EQ(ToValue(message), base::test::ParseJson(R"!({
     "double_field": 0.0,
     "int32_field": 0,
     "enum_field": "UNKNOWN",
@@ -150,7 +150,7 @@ TEST(ProtoExtrasToValueTest, OneofField) {
 
   // Test with no oneof field set (should be same as default fields only)
   TestMessage message_oneof_unset;
-  EXPECT_EQ(Serialize(message_oneof_unset), base::test::ParseJson(R"!({
+  EXPECT_EQ(ToValue(message_oneof_unset), base::test::ParseJson(R"!({
     "double_field": 0.0,
     "int32_field": 0,
     "enum_field": "UNKNOWN",
@@ -163,7 +163,7 @@ TEST(ProtoExtrasToValueTest, MapField) {
   (*message.mutable_primitive_map_field())[1] = "hello";
   DependencyMessage dependency_message;
   (*message.mutable_message_map_field())["hello"].set_int32_field(4);
-  EXPECT_EQ(Serialize(message), base::test::ParseJson(R"!({
+  EXPECT_EQ(ToValue(message), base::test::ParseJson(R"!({
     "double_field": 0.0,
     "int32_field": 0,
     "enum_field": "UNKNOWN",
@@ -182,7 +182,7 @@ TEST(ProtoExtrasToValueTest, MapField) {
 TEST(ProtoExtrasToValueTest, UnknownFields) {
   TestMessage message;
   *message.mutable_unknown_fields() = "unknownfielddata";
-  EXPECT_EQ(Serialize(message), base::test::ParseJson(R"!({
+  EXPECT_EQ(ToValue(message), base::test::ParseJson(R"!({
     "double_field": 0.0,
     "int32_field": 0,
     "enum_field": "UNKNOWN",
@@ -193,11 +193,11 @@ TEST(ProtoExtrasToValueTest, UnknownFields) {
 
 TEST(ProtoExtrasProto2ToValueTest, EmbeddedMessageToValue) {
   EmbeddedMessage message;
-  base::Value result = Serialize(message);
+  base::Value result = ToValue(message);
   EXPECT_TRUE(result.is_dict());
   EXPECT_EQ(0ul, result.GetDict().size());
   message.set_str_field("test");
-  result = Serialize(message);
+  result = ToValue(message);
   EXPECT_TRUE(result.is_dict());
   ASSERT_TRUE(result.GetDict().FindString("str_field")) << result.DebugString();
   EXPECT_EQ("test", *result.GetDict().FindString("str_field"));
@@ -207,7 +207,7 @@ TEST(ProtoExtrasProto2ToValueTest, EmbeddedMessageToValue) {
 TEST(ProtoExtrasToValueTest, EmptyEmbeddedMessage) {
   TestMessage message;
   message.mutable_empty_embedded_message();
-  EXPECT_EQ(Serialize(message), base::test::ParseJson(R"!({
+  EXPECT_EQ(ToValue(message), base::test::ParseJson(R"!({
     "double_field": 0.0,
     "int32_field": 0,
     "enum_field": "UNKNOWN",
@@ -219,7 +219,7 @@ TEST(ProtoExtrasToValueTest, EmptyEmbeddedMessage) {
 TEST(ProtoExtrasToValueTest, CordBytesField) {
   TestMessage message;
   message.set_cord_bytes_field("123");
-  EXPECT_EQ(Serialize(message), base::test::ParseJson(R"!({
+  EXPECT_EQ(ToValue(message), base::test::ParseJson(R"!({
     "cord_bytes_field": "MTIz",
     "double_field": 0.0,
     "enum_field": "UNKNOWN",
@@ -232,7 +232,7 @@ TEST(ProtoExtrasToValueTest, OptionalField) {
   TestMessage message;
 
   // By default, the optional field should not be present.
-  EXPECT_EQ(Serialize(message), base::test::ParseJson(R"!({
+  EXPECT_EQ(ToValue(message), base::test::ParseJson(R"!({
     "double_field": 0.0,
     "int32_field": 0,
     "enum_field": "UNKNOWN",
@@ -240,7 +240,7 @@ TEST(ProtoExtrasToValueTest, OptionalField) {
   })!"));
 
   message.set_optional_int_field(0);
-  EXPECT_EQ(Serialize(message), base::test::ParseJson(R"!({
+  EXPECT_EQ(ToValue(message), base::test::ParseJson(R"!({
     "double_field": 0.0,
     "int32_field": 0,
     "enum_field": "UNKNOWN",
@@ -249,7 +249,7 @@ TEST(ProtoExtrasToValueTest, OptionalField) {
   })!"));
 
   message.set_optional_int_field(123);
-  EXPECT_EQ(Serialize(message), base::test::ParseJson(R"!({
+  EXPECT_EQ(ToValue(message), base::test::ParseJson(R"!({
     "double_field": 0.0,
     "int32_field": 0,
     "enum_field": "UNKNOWN",
@@ -262,7 +262,7 @@ TEST(ProtoExtrasToValueTest, OptionalEmptyMessageField) {
   TestMessage message;
 
   // By default, the optional field should not be present.
-  EXPECT_EQ(Serialize(message), base::test::ParseJson(R"!({
+  EXPECT_EQ(ToValue(message), base::test::ParseJson(R"!({
     "double_field": 0.0,
     "int32_field": 0,
     "enum_field": "UNKNOWN",
@@ -270,7 +270,7 @@ TEST(ProtoExtrasToValueTest, OptionalEmptyMessageField) {
   })!"));
 
   message.mutable_optional_empty_embedded_message_field();
-  EXPECT_EQ(Serialize(message), base::test::ParseJson(R"!({
+  EXPECT_EQ(ToValue(message), base::test::ParseJson(R"!({
     "double_field": 0.0,
     "int32_field": 0,
     "enum_field": "UNKNOWN",
@@ -282,7 +282,7 @@ TEST(ProtoExtrasToValueTest, OptionalEmptyMessageField) {
 TEST(ProtoExtrasProto2ToValueTest, Basic) {
   TestMessageProto2 message;
   const std::string expected_empty_message_str = R"({})";
-  EXPECT_EQ(Serialize(message),
+  EXPECT_EQ(ToValue(message),
             base::JSONReader::Read(expected_empty_message_str,
                                    base::JSON_PARSE_CHROMIUM_EXTENSIONS));
   message.mutable_embedded_message()->set_str_field("test");
@@ -327,7 +327,7 @@ TEST(ProtoExtrasProto2ToValueTest, Basic) {
       "uint64_field": "0",
       "unknown_fields": "dW5rbm93bmZpZWxkZGF0YQ=="
     })";
-  EXPECT_EQ(Serialize(message),
+  EXPECT_EQ(ToValue(message),
             base::JSONReader::Read(expected_json_str,
                                    base::JSON_PARSE_CHROMIUM_EXTENSIONS));
 }
@@ -335,22 +335,22 @@ TEST(ProtoExtrasProto2ToValueTest, Basic) {
 TEST(ProtoExtrasProto2ToValueTest, OneofField) {
   TestMessageProto2 message;
   EXPECT_EQ(
-      Serialize(message),
+      ToValue(message),
       base::JSONReader::Read(R"({})", base::JSON_PARSE_CHROMIUM_EXTENSIONS));
   message.set_maybe_int(1);
-  EXPECT_EQ(Serialize(message),
+  EXPECT_EQ(ToValue(message),
             base::JSONReader::Read(R"({
     "maybe_int": 1
 })",
                                    base::JSON_PARSE_CHROMIUM_EXTENSIONS));
   message.set_maybe_bool(true);
-  EXPECT_EQ(Serialize(message),
+  EXPECT_EQ(ToValue(message),
             base::JSONReader::Read(R"({
     "maybe_bool": true
 })",
                                    base::JSON_PARSE_CHROMIUM_EXTENSIONS));
   message.mutable_maybe_message()->set_str_field("test");
-  EXPECT_EQ(Serialize(message),
+  EXPECT_EQ(ToValue(message),
             base::JSONReader::Read(R"({
     "maybe_message": {
       "str_field": "test"
@@ -358,13 +358,13 @@ TEST(ProtoExtrasProto2ToValueTest, OneofField) {
 })",
                                    base::JSON_PARSE_CHROMIUM_EXTENSIONS));
   message.set_maybe_enum(OUTER_ENUM_OPTION1);
-  EXPECT_EQ(Serialize(message),
+  EXPECT_EQ(ToValue(message),
             base::JSONReader::Read(R"({
     "maybe_enum": "OUTER_ENUM_OPTION1"
 })",
                                    base::JSON_PARSE_CHROMIUM_EXTENSIONS));
   message.set_maybe_bytes("test");
-  EXPECT_EQ(Serialize(message),
+  EXPECT_EQ(ToValue(message),
             base::JSONReader::Read(R"({
     "maybe_bytes": "dGVzdA=="
 })",
@@ -374,7 +374,7 @@ TEST(ProtoExtrasProto2ToValueTest, OneofField) {
 TEST(ProtoExtrasProto2ToValueTest, Uint64Field) {
   TestMessageProto2 message;
   message.set_uint64_field(std::numeric_limits<uint64_t>::max());
-  EXPECT_EQ(Serialize(message), base::test::ParseJson(R"!({
+  EXPECT_EQ(ToValue(message), base::test::ParseJson(R"!({
     "uint64_field": "18446744073709551615"
   })!"));
 }
@@ -383,7 +383,7 @@ TEST(ProtoExtrasProto2ToValueTest, MapField) {
   TestMessageProto2 message;
   message.mutable_primitive_map_field()->insert({1, "hello"});
   (*message.mutable_message_map_field())["hello"].set_str_field("world");
-  EXPECT_EQ(Serialize(message), base::test::ParseJson(R"!({
+  EXPECT_EQ(ToValue(message), base::test::ParseJson(R"!({
     "primitive_map_field": {
       "1": "hello"
     },
@@ -743,9 +743,9 @@ TEST(ProtoExtrasProtoEqualityProto2, MapField) {
 TEST(ProtoExtrasProto2ToValueTest, EmptyEmbeddedMessageToValue) {
   TestMessageProto2 message;
   message.mutable_empty_embedded_message();
-  base::Value result = Serialize(message);
+  base::Value result = ToValue(message);
   ASSERT_TRUE(result.is_dict());
-  EXPECT_EQ(Serialize(message), base::test::ParseJson(R"!({
+  EXPECT_EQ(ToValue(message), base::test::ParseJson(R"!({
     "empty_embedded_message": {}
   })!"));
 }
@@ -753,9 +753,9 @@ TEST(ProtoExtrasProto2ToValueTest, EmptyEmbeddedMessageToValue) {
 TEST(ProtoExtrasProto2ToValueTest, TestEditionMessage) {
   TestMessageEdition message;
   message.set_text("test");
-  base::Value result = Serialize(message);
+  base::Value result = ToValue(message);
   ASSERT_TRUE(result.is_dict());
-  EXPECT_EQ(Serialize(message), base::test::ParseJson(R"!({
+  EXPECT_EQ(ToValue(message), base::test::ParseJson(R"!({
     "text": "test"
   })!"));
 }

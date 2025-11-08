@@ -12,7 +12,7 @@
 
 namespace proto_extras {
 
-base::DictValue Serialize(
+base::DictValue ToValue(
     const google::protobuf::UnknownFieldSet& unknown_fields) {
   base::DictValue dict;
   for (int i = 0; i < unknown_fields.field_count(); ++i) {
@@ -32,7 +32,7 @@ base::DictValue Serialize(
         dict.Set(field_name, field.length_delimited());
         break;
       case google::protobuf::UnknownField::TYPE_GROUP:
-        dict.Set(field_name, Serialize(field.group()));
+        dict.Set(field_name, ToValue(field.group()));
         break;
     }
   }

@@ -336,7 +336,7 @@ void PrintTo(const $message_type$& msg, std::ostream* os);)");
     printer->Emit({{"message_type", message_class_name}},
                   R"(
 void PrintTo(const $message_type$& msg, std::ostream* os) {
-  *os << Serialize(msg).DebugString();
+  *os << ToValue(msg).DebugString();
 })");
   }
 

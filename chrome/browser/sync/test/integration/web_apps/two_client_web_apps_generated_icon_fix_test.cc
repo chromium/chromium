@@ -32,7 +32,7 @@ namespace proto {
 // Used by GTEST for pretty printing in EXPECT_EQ.
 static void PrintTo(const GeneratedIconFix& generated_icon_fix,
                     std::ostream* out) {
-  *out << Serialize(generated_icon_fix);
+  *out << ToValue(generated_icon_fix);
 }
 
 }  // namespace proto
