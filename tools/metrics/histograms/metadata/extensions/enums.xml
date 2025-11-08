@@ -89,6 +89,25 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Programmatic API Call"/>
 </enum>
 
+<enum name="ExtensionAlarmsNameLength">
+  <int value="0" label="Up to 10"/>
+  <int value="1" label="From 11 to 25"/>
+  <int value="2" label="From 26 to 50"/>
+  <int value="3" label="From 51 to 75"/>
+  <int value="4" label="From 76 to 100"/>
+  <int value="5" label="From 101 to 125"/>
+  <int value="6" label="From 126 to 250"/>
+  <int value="7" label="From 251 to 500"/>
+  <int value="8" label="From 501 to 1000"/>
+  <int value="9" label="From 1001 to 2000"/>
+  <int value="10" label="From 2001 to 5000"/>
+  <int value="11" label="From 5001 to 10K"/>
+  <int value="12" label="From 10K+1 to 100K"/>
+  <int value="13" label="From 100K+1 to 1M"/>
+  <int value="14" label="From 1M+1 to 100M"/>
+  <int value="15" label="Over 100M"/>
+</enum>
+
 <enum name="ExtensionAllowlistOmahaAttributeValue">
   <int value="0" label="Undefined"/>
   <int value="1" label="Allowlisted"/>

@@ -275,6 +275,19 @@ This is emitted for two scenarios when a worker may be unregistered:
   </summary>
 </histogram>
 
+<histogram name="Extensions.AlarmManager.AlarmsMaxNameLength"
+    enum="ExtensionAlarmsNameLength" expires_after="M150">
+  <owner>rdevlin.cronin@chromium.org</owner>
+  <owner>bershanskyi@gmail.com</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    The length of the longest alarm name (in characters) an extension has set.
+    It is emitted every time an extension is loaded (during user profile load).
+    It is not emitted for extensions that do not have any saved alarms on
+    extension load.
+  </summary>
+</histogram>
+
 <histogram name="Extensions.AppLaunch" enum="AppLaunch"
     expires_after="2026-04-05">
   <owner>benwells@chromium.org</owner>
