@@ -20,6 +20,17 @@ NETWORK_SWITCH(kEnableUserAlternateProtocolPorts,
 NETWORK_SWITCH(kEnableQuic, "enable-quic")
 
 // Ignores certificate-related errors.
+// Note: In tests using net::EmbeddedTestServer with a custom hostname not
+// covered by the default test certs, using this switch is usually incorrect.
+// Strongly prefer to use ServerCertificateConfig with `dns_names` (if possible,
+// by calling the helper SetCertHostnames() on the EmbeddedTestServer instance),
+// to configure the test server with a valid certificate instead of ignoring
+// all certificate errors. If the test fixture inherits from
+// content::BrowserTestBase, consider using the `embedded_https_test_server()`
+// it provides, which is configured by default with a valid certificate for a
+// handful of hostnames commonly used in tests.
+// TODO(crbug.com/40147519): Retire this switch. This switch is an attractive
+// nuisance that doesn't do the right thing.
 NETWORK_SWITCH(kIgnoreCertificateErrors, "ignore-certificate-errors")
 
 // Specifies a comma separated list of host-port pairs to force use of QUIC on.
