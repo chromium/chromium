@@ -55,8 +55,6 @@ class GlicActorTaskManager {
   base::WeakPtr<GlicActorTaskManager> GetWeakPtr();
 
  private:
-  void StopActorTask(actor::TaskId task_id, bool success);
-
   void PerformActionsFinished(
       mojom::WebClientHandler::PerformActionsCallback callback,
       actor::TaskId task_id,

@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
+#include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_task_delegate.h"
 #include "chrome/browser/actor/aggregated_journal.h"
 #include "chrome/common/actor/action_result.h"
@@ -39,7 +40,6 @@ class ActorUiStateManagerInterface;
 }
 
 class ActorPolicyChecker;
-class ActorTask;
 class ActorTaskMetadata;
 class ToolRequest;
 
@@ -92,9 +92,9 @@ class ActorKeyedService : public KeyedService {
                       ActorTaskMetadata task_metadata,
                       PerformActionsCallback callback);
 
-  // Stops a task by its ID, `success` determines if the task was finished
-  // successfully or ended early.
-  void StopTask(TaskId task_id, bool success);
+  // Stops a task by its ID, `stop_reason` determines the reason for the task
+  // stopping.
+  void StopTask(TaskId task_id, ActorTask::StoppedReason stop_reason);
 
   // Returns the task with the given ID. Returns nullptr if the task does not
   // exist.

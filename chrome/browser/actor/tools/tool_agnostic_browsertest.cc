@@ -158,7 +158,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTest,
     ASSERT_EQ(web_contents(), foreground_contents);
   }
 
-  actor_task().Stop(true);
+  actor_task().Stop(ActorTask::StoppedReason::kTaskComplete);
 
   // Now that the actor has stopped, the background should lose focus
   EXPECT_EQ(false, EvalJs(background_contents, "document.hasFocus()"));

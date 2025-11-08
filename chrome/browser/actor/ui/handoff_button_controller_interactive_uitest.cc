@@ -136,16 +136,16 @@ class ActorUiHandoffButtonControllerInteractiveUiTest
 IN_PROC_BROWSER_TEST_F(ActorUiHandoffButtonControllerInteractiveUiTest,
                        WidgetIsCreatedAndDestroyed) {
   StartActingOnTab();
-  RunTestSequence(
-      ClearOmniboxFocus(),
-      InAnyContext(
-          WaitForShow(HandoffButtonController::kHandoffButtonElementId)),
-      // Trigger the event to destroy the button.
-      Do([&]() {
-        GetActorKeyedService()->StopTask(task_id_, /*success*/ true);
-      }),
-      InAnyContext(
-          WaitForHide(HandoffButtonController::kHandoffButtonElementId)));
+  RunTestSequence(ClearOmniboxFocus(),
+                  InAnyContext(WaitForShow(
+                      HandoffButtonController::kHandoffButtonElementId)),
+                  // Trigger the event to destroy the button.
+                  Do([&]() {
+                    GetActorKeyedService()->StopTask(
+                        task_id_, ActorTask::StoppedReason::kTaskComplete);
+                  }),
+                  InAnyContext(WaitForHide(
+                      HandoffButtonController::kHandoffButtonElementId)));
 }
 
 IN_PROC_BROWSER_TEST_F(ActorUiHandoffButtonControllerInteractiveUiTest,

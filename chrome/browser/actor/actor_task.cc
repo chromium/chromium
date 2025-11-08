@@ -8,7 +8,6 @@
 #include <ostream>
 
 #include "base/feature_list.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/state_transitions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -161,19 +160,20 @@ void ActorTask::SetState(State new_state) {
       allowed_transitions(base::StateTransitions<State>(
           {{kCreated,
             {kActing, kReflecting, kPausedByActor, kPausedByUser, kCancelled,
-             kFinished}},
+             kFinished, kFailed}},
            {kActing,
-            {kReflecting, kPausedByActor, kPausedByUser, kCancelled,
-             kFinished}},
+            {kReflecting, kPausedByActor, kPausedByUser, kCancelled, kFinished,
+             kFailed}},
            {kReflecting,
             {kActing, kPausedByActor, kPausedByUser, kCancelled, kFinished,
-             kWaitingOnUser}},
-           {kPausedByActor, {kReflecting, kCancelled, kFinished}},
-           {kPausedByUser, {kReflecting, kCancelled, kFinished}},
+             kWaitingOnUser, kFailed}},
+           {kPausedByActor, {kReflecting, kCancelled, kFinished, kFailed}},
+           {kPausedByUser, {kReflecting, kCancelled, kFinished, kFailed}},
            {kWaitingOnUser,
             {kActing, kReflecting, kPausedByActor, kPausedByUser, kCancelled,
-             kFinished}},
+             kFinished, kFailed}},
            {kCancelled, {}},
+           {kFailed, {}},
            {kFinished, {}}}));
   if (new_state != state_) {
     DCHECK_STATE_TRANSITION(allowed_transitions,
@@ -286,7 +286,7 @@ void ActorTask::OnFinishedAct(
                           std::move(action_results));
 }
 
-void ActorTask::Stop(bool success) {
+void ActorTask::Stop(StoppedReason stop_reason) {
   if (execution_engine_) {
     execution_engine_->CancelOngoingActions(
         mojom::ActionResultCode::kTaskWentAway);
@@ -297,15 +297,25 @@ void ActorTask::Stop(bool success) {
   while (!controlled_tabs_.empty()) {
     RemoveTab(controlled_tabs_.begin()->first);
   }
-  if (success) {
-    SetState(State::kFinished);
-  } else {
-    SetState(State::kCancelled);
+  State final_state;
+  switch (stop_reason) {
+    case StoppedReason::kStoppedByUser:
+    case StoppedReason::kTabDetached:
+      final_state = State::kCancelled;
+      break;
+    case StoppedReason::kTaskComplete:
+      final_state = State::kFinished;
+      break;
+    case StoppedReason::kModelError:
+    case StoppedReason::kChromeFailure:
+      final_state = State::kFailed;
+      break;
   }
+  SetState(final_state);
 }
 
 void ActorTask::Pause(bool from_actor) {
-  if (GetState() == State::kFinished) {
+  if (IsCompleted()) {
     return;
   }
   if (execution_engine_) {
@@ -353,7 +363,8 @@ bool ActorTask::IsUnderActorControl() const {
 }
 
 bool ActorTask::IsCompleted() const {
-  return (GetState() == State::kFinished) || (GetState() == State::kCancelled);
+  return (GetState() == State::kFinished) ||
+         (GetState() == State::kCancelled) || (GetState() == State::kFailed);
 }
 
 base::Time ActorTask::GetEndTime() const {
@@ -501,7 +512,8 @@ void ActorTask::OnTabWillDetach(tabs::TabInterface* tab,
                     .Add("tab_id", tab->GetHandle().raw_value())
                     .Build());
 
-  actor::ActorKeyedService::Get(profile_)->StopTask(id(), /*success=*/false);
+  actor::ActorKeyedService::Get(profile_)->StopTask(
+      id(), StoppedReason::kTabDetached);
 }
 
 void ActorTask::UpdateVisibilityTimes() {
@@ -672,6 +684,8 @@ std::string ToString(const ActorTask::State& state) {
       return "Finished";
     case kWaitingOnUser:
       return "WaitingOnUser";
+    case kFailed:
+      return "Failed";
   }
 }
 

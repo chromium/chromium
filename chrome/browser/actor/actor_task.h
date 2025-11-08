@@ -17,7 +17,6 @@
 #include "base/timer/elapsed_timer.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
-#include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_task_delegate.h"
 #include "chrome/browser/actor/aggregated_journal.h"
 #include "chrome/browser/actor/tools/tool_request.h"
@@ -34,6 +33,7 @@ class Profile;
 namespace actor {
 
 class ExecutionEngine;
+class ActorKeyedService;
 namespace ui {
 class UiEventDispatcher;
 }
@@ -79,11 +79,12 @@ class ActorTask {
   base::WeakPtr<ActorTaskDelegate> delegate() const { return delegate_; }
 
   // Once `state_` leaves kCreated it should never go back. Once `state_` enters
-  // kFinished or kCancelled it should never change. These states are granular,
-  // prefer using the Is[Actor|User]Controlled and IsCompleted methods rather
-  // than querying `state_` directly.
+  // kFinished, kCancelled, or kFailed it should never change. These states are
+  // granular, prefer using the Is[Actor|User]Controlled and IsCompleted methods
+  // rather than querying `state_` directly.
+  //
   // LINT.IfChange(State)
-  // These enum values are persisted to logs.  Do not renumber or reuse numeric
+  // These enum values are persisted to logs. Do not renumber or reuse numeric
   // values.
   enum class State {
     kCreated = 0,
@@ -94,9 +95,20 @@ class ActorTask {
     kCancelled = 5,
     kFinished = 6,
     kWaitingOnUser = 7,
-    kMaxValue = kWaitingOnUser,
+    kFailed = 8,
+    kMaxValue = kFailed,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/actor/histograms.xml:ActorTaskState)
+
+  // The reason a task was stopped.
+  enum class StoppedReason {
+    kStoppedByUser = 0,
+    kTaskComplete = 1,
+    kModelError = 2,
+    kChromeFailure = 3,
+    kTabDetached = 4,
+    kMaxValue = kTabDetached,
+  };
 
   State GetState() const;
   void SetState(State new_state);
@@ -106,9 +118,8 @@ class ActorTask {
   void Act(std::vector<std::unique_ptr<ToolRequest>>&& actions,
            ActCallback callback);
 
-  // Sets State to kFinished if `success` is true or to kCancelled if
-  // `success` is false and cancels any pending actions.
-  void Stop(bool success);
+  // Sets State to `stop_reason` and cancels any pending actions.
+  void Stop(StoppedReason stop_reason);
 
   // Pause() is called to indicate that either the actor or user is pausing
   // actor actions, determined by the `from_actor` flag. This will cancel any

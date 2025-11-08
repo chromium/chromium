@@ -128,7 +128,7 @@ const std::map<TaskId, const ActorTask*> ActorKeyedService::GetInactiveTasks()
 
 void ActorKeyedService::ResetForTesting() {
   for (auto it = active_tasks_.begin(); it != active_tasks_.end();) {
-    StopTask((it++)->first, /*success=*/true);
+    StopTask((it++)->first, ActorTask::StoppedReason::kTaskComplete);
   }
   active_tasks_.clear();
   inactive_tasks_.clear();
@@ -345,25 +345,26 @@ void ActorKeyedService::FailAllTasks() {
       FindTaskIdsInActive([](const ActorTask& task) { return true; });
   GetJournal().Log(GURL(), TaskId(), "ActorKeyedService::FailAllTasks", {});
   for (const auto& task_id : tasks_to_stop) {
-    StopTask(task_id, /*success=*/false);
+    StopTask(task_id, ActorTask::StoppedReason::kChromeFailure);
   }
 }
 
-void ActorKeyedService::StopTask(TaskId task_id, bool success) {
+void ActorKeyedService::StopTask(TaskId task_id,
+                                 ActorTask::StoppedReason stop_reason) {
   TRACE_EVENT0("actor", "ActorKeyedService::StopTask");
   GetJournal().Log(GURL(), TaskId(), "ActorKeyedService::StopTask",
                    JournalDetailsBuilder()
                        .Add("task_id", task_id)
-                       .Add("success", success)
+                       .Add("stop_reason", stop_reason)
                        .Build());
 
   auto task = active_tasks_.extract(task_id);
   if (!task.empty()) {
     if (base::FeatureList::IsEnabled(kActorDoNotStoreCompletedTasks)) {
-      task.mapped()->Stop(success);
+      task.mapped()->Stop(stop_reason);
     } else {
       auto ret = inactive_tasks_.insert(std::move(task));
-      ret.position->second->Stop(success);
+      ret.position->second->Stop(stop_reason);
     }
   }
 }

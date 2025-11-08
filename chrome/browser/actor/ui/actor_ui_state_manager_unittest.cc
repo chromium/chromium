@@ -139,17 +139,6 @@ class ActorUiStateManagerTest : public testing::Test {
     actor_ui_state_manager()->OnUiEvent(reflecting_task_event);
   }
 
-  void StopActorTask(TaskId task_id, bool success) {
-    actor_keyed_service()->StopTask(task_id, success);
-    if (success) {
-      actor_ui_state_manager()->OnUiEvent(
-          TaskStateChanged(task_id, ActorTask::State::kFinished, /*title=*/""));
-    } else {
-      actor_ui_state_manager()->OnUiEvent(TaskStateChanged(
-          task_id, ActorTask::State::kCancelled, /*title=*/""));
-    }
-  }
-
  private:
   content::BrowserTaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -251,6 +240,12 @@ const auto kActorTaskTestValues = std::vector<
          .border_glow_visible = false,
      }},
     {ActorTask::State::kCancelled,
+     UiTabState{
+         .actor_overlay = {.is_active = false, .border_glow_visible = false},
+         .handoff_button = {.is_active = false},
+         .tab_indicator_visible = false,
+     }},
+    {ActorTask::State::kFailed,
      UiTabState{
          .actor_overlay = {.is_active = false, .border_glow_visible = false},
          .handoff_button = {.is_active = false},

@@ -442,7 +442,7 @@ TEST_F(ExecutionEngineTest, ActorTaskCompletedHistogram) {
   const base::TimeDelta task_duration = base::Milliseconds(123);
   task_environment()->FastForwardBy(task_duration);
 
-  task_->Stop(/*success=*/true);
+  task_->Stop(ActorTask::StoppedReason::kTaskComplete);
   histograms_.ExpectTimeBucketCount(kActorTaskDurationCompletedHistogram,
                                     task_duration, 1);
   histograms_.ExpectBucketCount(kActorTaskCountCompletedHistogram, 4, 1);
@@ -478,7 +478,7 @@ TEST_F(ExecutionEngineTest, ActorTaskCompletedWithPauseHistogram) {
   const base::TimeDelta active_duration2 = base::Milliseconds(50);
   task_environment()->FastForwardBy(active_duration2);
 
-  task_->Stop(/*success=*/true);
+  task_->Stop(ActorTask::StoppedReason::kTaskComplete);
   histograms_.ExpectTimeBucketCount(kActorTaskDurationCompletedHistogram,
                                     active_duration1 + active_duration2, 1);
   histograms_.ExpectBucketCount(kActorTaskCountCompletedHistogram, 1, 1);
@@ -505,7 +505,7 @@ TEST_F(ExecutionEngineTest, ActorTaskCancelledHistogram) {
   const base::TimeDelta task_duration = base::Milliseconds(456);
   task_environment()->FastForwardBy(task_duration);
 
-  task_->Stop(/*success=*/false);
+  task_->Stop(ActorTask::StoppedReason::kStoppedByUser);
   histograms_.ExpectTimeBucketCount(kActorTaskDurationCancelledHistogram,
                                     task_duration, 1);
   histograms_.ExpectBucketCount(kActorTaskCountCancelledHistogram, 2, 1);
@@ -568,7 +568,7 @@ TEST_F(ExecutionEngineTest, ActorTaskCountAndDurationHistograms) {
 
   // Task in Finished state.
   task_environment()->FastForwardBy(reflecting_duration);
-  task_->Stop(/*success=*/true);
+  task_->Stop(ActorTask::StoppedReason::kTaskComplete);
   histograms_.ExpectTimeBucketCount(
       "Actor.Task.StateTransition.Duration.Reflecting", reflecting_duration, 2);
   histograms_.ExpectBucketCount(
@@ -645,7 +645,7 @@ TEST_F(ExecutionEngineTest, CompletedWithInterruptHistogram) {
   const base::TimeDelta active_duration2 = base::Milliseconds(50);
   task_environment()->FastForwardBy(active_duration2);
 
-  task_->Stop(/*success=*/true);
+  task_->Stop(ActorTask::StoppedReason::kTaskComplete);
   histograms_.ExpectTimeBucketCount(kActorTaskDurationCompletedHistogram,
                                     active_duration1 + active_duration2, 1);
   histograms_.ExpectBucketCount(kActorTaskCountCompletedHistogram, 1, 1);
@@ -672,7 +672,7 @@ TEST_F(ExecutionEngineTest, VisibleNotVisibleActuationCompletedHistogram) {
   const base::TimeDelta not_visible_duration = base::Milliseconds(50);
   task_environment()->FastForwardBy(not_visible_duration);
 
-  task_->Stop(/*success=*/true);
+  task_->Stop(ActorTask::StoppedReason::kTaskComplete);
 
   histograms_.ExpectTimeBucketCount(kActorTaskDurationVisibleCompletedHistogram,
                                     visible_duration, 1);
@@ -698,7 +698,7 @@ TEST_F(ExecutionEngineTest, VisibleNotVisibleActuationCancelledHistogram) {
   const base::TimeDelta not_visible_duration = base::Milliseconds(50);
   task_environment()->FastForwardBy(not_visible_duration);
 
-  task_->Stop(/*success=*/false);
+  task_->Stop(ActorTask::StoppedReason::kStoppedByUser);
 
   histograms_.ExpectTimeBucketCount(kActorTaskDurationVisibleCancelledHistogram,
                                     visible_duration, 1);
@@ -729,7 +729,7 @@ TEST_F(ExecutionEngineTest, VisibleNotVisibleActuationWithPauseHistogram) {
   const base::TimeDelta visible_duration2 = base::Milliseconds(50);
   task_environment()->FastForwardBy(visible_duration2);
 
-  task_->Stop(/*success=*/true);
+  task_->Stop(ActorTask::StoppedReason::kTaskComplete);
 
   histograms_.ExpectTimeBucketCount(kActorTaskDurationVisibleCompletedHistogram,
                                     visible_duration1 + visible_duration2, 1);
@@ -762,7 +762,7 @@ TEST_F(ExecutionEngineTest, VisibleNotVisibleActuationWithWaitingHistogram) {
   const base::TimeDelta visible_duration2 = base::Milliseconds(50);
   task_environment()->FastForwardBy(visible_duration2);
 
-  task_->Stop(/*success=*/true);
+  task_->Stop(ActorTask::StoppedReason::kTaskComplete);
 
   histograms_.ExpectTimeBucketCount(
       kActorTaskDurationVisibleCompletedHistogram,

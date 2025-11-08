@@ -108,7 +108,8 @@ IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest, StartStopTask) {
   TaskId first_task_id = actor_keyed_service()->CreateTask();
   EXPECT_FALSE(first_task_id.is_null());
 
-  actor_keyed_service()->StopTask(first_task_id, /*success=*/true);
+  actor_keyed_service()->StopTask(first_task_id,
+                                  ActorTask::StoppedReason::kTaskComplete);
 
   TaskId second_task_id = actor_keyed_service()->CreateTask();
   EXPECT_FALSE(first_task_id.is_null());
@@ -139,7 +140,8 @@ IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
   EXPECT_EQ(result_future.Get<2>().size(), 1u);
   EXPECT_EQ(web_contents()->GetURL(), url);
 
-  actor_keyed_service()->StopTask(first_task_id, /*success=*/true);
+  actor_keyed_service()->StopTask(first_task_id,
+                                  ActorTask::StoppedReason::kTaskComplete);
 
   TaskId second_task_id = actor_keyed_service()->CreateTask();
   EXPECT_FALSE(first_task_id.is_null());
@@ -181,7 +183,8 @@ IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
   EXPECT_EQ(frame_metadata.meta_tags(2).name(), "sis");
   EXPECT_EQ(frame_metadata.meta_tags(2).content(), "val");
 
-  actor_keyed_service()->StopTask(task_id, /*success=*/true);
+  actor_keyed_service()->StopTask(task_id,
+                                  ActorTask::StoppedReason::kTaskComplete);
 }
 
 IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,

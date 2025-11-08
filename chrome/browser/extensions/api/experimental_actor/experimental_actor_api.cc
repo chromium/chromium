@@ -144,7 +144,8 @@ ExtensionFunction::ResponseAction ExperimentalActorStopTaskFunction::Run() {
 
   auto* actor_service = actor::ActorKeyedService::Get(browser_context());
 
-  actor_service->StopTask(actor::TaskId(params->task_id), /*success=*/true);
+  actor_service->StopTask(actor::TaskId(params->task_id),
+                          actor::ActorTask::StoppedReason::kTaskComplete);
   return RespondNow(
       ArgumentList(api::experimental_actor::StopTask::Results::Create()));
 }

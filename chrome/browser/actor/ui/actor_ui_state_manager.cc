@@ -141,6 +141,9 @@ void ActorUiStateManager::OnActorTaskStateChange(
     case ActorTask::State::kPausedByActor:
       ui_tab_state = GetPausedUiTabState();
       break;
+    // TODO(crbug.com/453997100): Propagate failure state to nudge impl,
+    // failure states should trigger the nudge for 'Check your Tasks'.
+    case ActorTask::State::kFailed:
     case ActorTask::State::kCancelled:
       ui_tab_state = GetCompletedUiTabState();
       break;
