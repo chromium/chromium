@@ -743,7 +743,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1504253885059472207">Fixar a visualização dividida</translation>
 <translation id="1504551620756424144">As pastas compartilhadas estão disponíveis no Windows em <ph name="BASE_DIR" />.</translation>
 <translation id="1505494256539862015">exportar as senhas</translation>
-<translation id="1505654899813338756">Você pode agrupar guias para manter páginas relacionadas juntas e salvas em todos os seus dispositivos</translation>
+<translation id="1505654899813338756">Monte grupos para manter suas guias relacionadas juntas e sincronizadas em todos os seus dispositivos.</translation>
 <translation id="1506061864768559482">Mecanismo de pesquisa</translation>
 <translation id="1506187449813838456">Aumentar tom de voz</translation>
 <translation id="1507170440449692343">Esta página foi impedida de acessar sua câmera.</translation>
@@ -3424,7 +3424,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3348131053948466246">Emoji sugerido. Pressione a seta para cima ou para baixo para navegar e "Enter" para inserir.</translation>
 <translation id="3348973040180736882">Descompactando</translation>
 <translation id="3349933790966648062">Consumo de memória</translation>
-<translation id="3350450887151703713">Repetir 10 segundos</translation>
+<translation id="3350450887151703713">Voltar 10 segundos</translation>
 <translation id="3351472127384196879">Adicionar ou localizar botões na caneta</translation>
 <translation id="3353786022389205125">Ative a opção "Mostrar tela de bloqueio ao sair do modo de suspensão" e tente novamente.</translation>
 <translation id="3354768182971982851">Depois de dezembro de 2022, não vai mais ser possível abrir as versões antigas dos apps do Chrome em dispositivos Mac. Verifique se há uma nova versão disponível.</translation>
@@ -4985,7 +4985,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4405224443901389797">Mover para…</translation>
 <translation id="4405781821077215583">Aumente ou diminua os itens na tela, incluindo o texto</translation>
 <translation id="4406308048672435032">Você pode deixar essa guia inativa ou atualizar a página para ver a lista completa de novo</translation>
-<translation id="4406883609789734330">Legenda Instantânea</translation>
+<translation id="4406883609789734330">Legenda instantânea</translation>
 <translation id="4408599188496843485">A&amp;juda</translation>
 <translation id="4409271659088619928">Seu mecanismo de pesquisa é o <ph name="DSE" />. Veja as instruções dele para excluir o histórico de pesquisa, se aplicável.</translation>
 <translation id="4409340274650920844">{NUM_APPS,plural,offset:2 =1{O administrador pode gravar sua tela com o app <ph name="APP0_NAME" />. Você vai receber uma notificação quando a gravação começar.}=2{O administrador pode gravar sua tela com os apps <ph name="APP0_NAME" /> e <ph name="APP1_NAME" />. Você vai receber uma notificação quando a gravação começar.}=3{O administrador pode gravar sua tela com os apps <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> e mais 1. Você vai receber uma notificação quando a gravação começar.}one{O administrador pode gravar sua tela com os apps <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> e mais #. Você vai receber uma notificação quando a gravação começar.}other{O administrador pode gravar sua tela com os apps <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> e mais #. Você vai receber uma notificação quando a gravação começar.}}</translation>
@@ -11392,7 +11392,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="8872506776304248286">Abrir no app</translation>
 <translation id="8872774989979382243">O som está desativado. Selecione para ativar.</translation>
 <translation id="887292602123626481">Saiba mais sobre os mecanismos de pesquisa padrão</translation>
-<translation id="8873075098103007382">Mantenha a organização com grupos de guias</translation>
+<translation id="8873075098103007382">Deixe tudo organizado com os grupos de guias</translation>
 <translation id="8874341931345877644">Transmitir para um dispositivo:</translation>
 <translation id="8874448314264883207">A extensão "<ph name="EXTENSION_NAME" />" foi desativada</translation>
 <translation id="8874647982044395866">Orgânico</translation>

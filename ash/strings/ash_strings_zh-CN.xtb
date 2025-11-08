@@ -284,7 +284,7 @@
 <translation id="1896383923047738322">自定义键盘</translation>
 <translation id="1904997243703671177">关闭蓝牙后，<ph name="DEVICE_COUNT" /> 个外部设备将与您的 <ph name="DEVICE_TYPE" /> 断开连接，包括：</translation>
 <translation id="1908992311423394684">新安装</translation>
-<translation id="1915307458270490472">中止</translation>
+<translation id="1915307458270490472">挂断</translation>
 <translation id="1918022425394817322">相机已对准右上角</translation>
 <translation id="1920390473494685033">通讯录</translation>
 <translation id="1923539912171292317">自动点击</translation>
@@ -1060,7 +1060,7 @@
 <translation id="4471432286288241507">{0,plural, =0{立即更新此设备}=1{请在 1 秒内更新此设备}other{请在 # 秒内更新此设备}}</translation>
 <translation id="4472575034687746823">开始使用</translation>
 <translation id="4473489370276014885">Google 通讯录</translation>
-<translation id="4477350412780666475">下一曲</translation>
+<translation id="4477350412780666475">下一首</translation>
 <translation id="4477751544736611934">这可能会产生流量费用。
 已连接 1 部设备。</translation>
 <translation id="4477892968187500306">此设备可能包含未经 Google 验证的应用。</translation>

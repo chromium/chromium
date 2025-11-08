@@ -1348,7 +1348,7 @@
 <translation id="1913749768968678106">Транслировать, сохранить, поделиться</translation>
 <translation id="19147273405311768">Сбросить настройки панели инструментов</translation>
 <translation id="1915073950770830761">Canary</translation>
-<translation id="1915307458270490472">Закрыть</translation>
+<translation id="1915307458270490472">Завершить</translation>
 <translation id="1915734383465415025">Номер филиала</translation>
 <translation id="1916502483199172559">Аватар по умолчанию (красный)</translation>
 <translation id="1916770123977586577">Чтобы применить к сайту новые настройки, перезагрузите страницу</translation>
@@ -2513,7 +2513,7 @@
 <translation id="271033894570825754">Новое</translation>
 <translation id="2710507903599773521">Устройство <ph name="DEVICE_TYPE" /> разблокировано</translation>
 <translation id="2710676967944965821">Сбросить все разрешения для устройств чтения смарт-карт?</translation>
-<translation id="2713106313042589954">Выключить камеру</translation>
+<translation id="2713106313042589954">Отключить камеру</translation>
 <translation id="2713444072780614174">Белый</translation>
 <translation id="2714180132046334502">Темный фон</translation>
 <translation id="2714393097308983682">Google Play</translation>
@@ -2946,7 +2946,7 @@
 <translation id="3003623123441819449">Кеш CSS</translation>
 <translation id="3003967365858406397">Устройство "<ph name="PHONE_NAME" />" создаст закрытое подключение к сети Wi-Fi.</translation>
 <translation id="3004385386820284928">Настроить клавиши клавиатуры</translation>
-<translation id="300580149047131921">Разрешение использовалось недавно</translation>
+<translation id="300580149047131921">Использовалось недавно</translation>
 <translation id="3006881078666935414">Нет данных об использовании</translation>
 <translation id="3007555010975143508">Эти приложения будут использоваться для записи вашего экрана:</translation>
 <translation id="3007771295016901659">Дублировать вкладку</translation>

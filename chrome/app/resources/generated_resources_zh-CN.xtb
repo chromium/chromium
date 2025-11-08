@@ -739,7 +739,7 @@
 <translation id="1504253885059472207">固定拆分视图</translation>
 <translation id="1504551620756424144">在 Windows 中，共享文件夹是位于 <ph name="BASE_DIR" /> 下。</translation>
 <translation id="1505494256539862015">导出密码</translation>
-<translation id="1505654899813338756">您可以为标签页分组，将彼此相关的网页保存在一起，并在所有设备上同步保存</translation>
+<translation id="1505654899813338756">您可以为标签页分组，让相关网页集中在一起，并在所有设备上同步保存</translation>
 <translation id="1506061864768559482">搜索引擎</translation>
 <translation id="1506187449813838456">调高音调</translation>
 <translation id="1507170440449692343">已阻止此网页使用您的摄像头。</translation>
@@ -1339,7 +1339,7 @@
 <translation id="1913749768968678106">投放、保存和分享</translation>
 <translation id="19147273405311768">将工具栏重置为默认设置</translation>
 <translation id="1915073950770830761">Canary</translation>
-<translation id="1915307458270490472">中止</translation>
+<translation id="1915307458270490472">挂断</translation>
 <translation id="1915734383465415025">商店编号</translation>
 <translation id="1916502483199172559">默认的红色头像</translation>
 <translation id="1916770123977586577">要将您更新后的设置应用到此网站，请重新加载此页面</translation>
@@ -3400,7 +3400,7 @@
 <translation id="3348131053948466246">建议的表情符号。按向上或向下箭头键即可浏览，按 Enter 键即可插入。</translation>
 <translation id="3348973040180736882">正在解压缩</translation>
 <translation id="3349933790966648062">内存占用</translation>
-<translation id="3350450887151703713">重放 10 秒</translation>
+<translation id="3350450887151703713">回放 10 秒</translation>
 <translation id="3351472127384196879">添加或寻找触控笔按钮</translation>
 <translation id="3353786022389205125">开启“从休眠状态唤醒时显示锁定屏幕”，然后重试</translation>
 <translation id="3354768182971982851">2022 年 12 月之后，旧版 Chrome 应用将无法在 Mac 设备上开启。您可查看是否有可用的新版本。</translation>
@@ -4467,7 +4467,7 @@
 <translation id="4044964245574571633">使用 Microsoft OneDrive 存储空间</translation>
 <translation id="4045196801416070837">设备提示音</translation>
 <translation id="4046013316139505482">这些扩展程序不需要查看和更改此网站上的信息。</translation>
-<translation id="4046123991198612571">下一曲</translation>
+<translation id="4046123991198612571">下一首</translation>
 <translation id="4046655456159965535">删除显示的数据？</translation>
 <translation id="4047345532928475040">无</translation>
 <translation id="4047581153955375979">USB4</translation>
@@ -10810,7 +10810,7 @@
 <translation id="8496717697661868878">运行此插件</translation>
 <translation id="8497219075884839166">Windows 实用程序</translation>
 <translation id="8498214519255567734">可让您更舒适地在黯淡的光线下查看屏幕或阅读文字</translation>
-<translation id="8499083585497694743">将麦克风取消静音</translation>
+<translation id="8499083585497694743">取消麦克风静音</translation>
 <translation id="8500044868721690197">此网站已被禁止控制您的 MIDI 设备以及为其重新编程</translation>
 <translation id="8500123638242682652">窗口已向上移动</translation>
 <translation id="8500132602331251964">应用有更新</translation>
