@@ -35,8 +35,7 @@ typedef (HTMLScriptElement or SVGScriptElement) HTMLOrSVGScriptElement;
     [CallWith=Document] constructor();
     [SameObject] readonly attribute DOMImplementation implementation;
     [ImplementedAs=urlForBinding] readonly attribute USVString URL;
-    // FIXME: documentURI should not be nullable.
-    [ImplementedAs=urlForBinding] readonly attribute USVString? documentURI;
+    [ImplementedAs=urlForBinding] readonly attribute USVString documentURI;
     readonly attribute DOMString compatMode;
 
     readonly attribute DOMString characterSet;
