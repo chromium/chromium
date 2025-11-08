@@ -72,7 +72,7 @@ public class NavigationAttachmentsCoordinator
         mAutocompleteRequestTypeSupplier = autocompleteRequestTypeSupplier;
 
         if (!OmniboxFeatures.sOmniboxMultimodalInput.isEnabled()
-                || parent.findViewById(R.id.location_bar_attachments_toolbar) == null) {
+                || parent.findViewById(R.id.fusebox_request_type) == null) {
             mViewHolder = null;
             mLocationBarDataProvider = null;
             mModel = new PropertyModel();

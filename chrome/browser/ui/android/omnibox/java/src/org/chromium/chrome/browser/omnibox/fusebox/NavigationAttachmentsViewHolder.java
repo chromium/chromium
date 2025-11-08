@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.omnibox.fusebox;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.constraintlayout.widget.Group;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.build.annotations.NullMarked;
@@ -19,7 +18,6 @@ import org.chromium.ui.widget.ChromeImageView;
 class NavigationAttachmentsViewHolder {
     public final ConstraintLayout parentView;
     public final RecyclerView attachmentsView;
-    public final Group attachmentsToolbar;
     public final ChromeImageView addButton;
     public final ChromeImageView settingsButton;
     public final NavigationAttachmentsPopup popup;
@@ -29,7 +27,6 @@ class NavigationAttachmentsViewHolder {
     NavigationAttachmentsViewHolder(ConstraintLayout parent, NavigationAttachmentsPopup popup) {
         parentView = parent;
         attachmentsView = parent.findViewById(R.id.location_bar_attachments);
-        attachmentsToolbar = parent.findViewById(R.id.location_bar_attachments_toolbar);
         addButton = parent.findViewById(R.id.location_bar_attachments_add);
         settingsButton = parent.findViewById(R.id.location_bar_attachments_settings);
         requestType = parent.findViewById(R.id.fusebox_request_type);

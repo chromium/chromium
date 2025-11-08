@@ -24,14 +24,6 @@ found in the LICENSE file.
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
 
-    <!-- Helper group allowing us to toggle all attachment views. -->
-    <androidx.constraintlayout.widget.Group
-        android:id="@+id/location_bar_attachments_toolbar"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:visibility="gone"
-        app:constraint_referenced_ids="location_bar_attachments_add,fusebox_request_type"/>
-
     <org.chromium.ui.widget.ChromeImageView
         android:id="@+id/location_bar_attachments_add"
         android:layout_width="@dimen/fusebox_button_size"

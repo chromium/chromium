@@ -47,7 +47,7 @@ class NavigationAttachmentsViewBinder {
             boolean visible = model.get(NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE);
             view.attachmentsView.setVisibility(visible ? View.VISIBLE : View.GONE);
         } else if (propertyKey == NavigationAttachmentsProperties.ATTACHMENTS_TOOLBAR_VISIBLE) {
-            view.attachmentsToolbar.setVisibility(
+            view.addButton.setVisibility(
                     model.get(NavigationAttachmentsProperties.ATTACHMENTS_TOOLBAR_VISIBLE)
                             ? View.VISIBLE
                             : View.GONE);

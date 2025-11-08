@@ -130,10 +130,10 @@ public class NavigationAttachmentsViewBinderUnitTest {
                 NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE,
                 AutocompleteRequestType.AI_MODE);
         mModel.set(NavigationAttachmentsProperties.ATTACHMENTS_TOOLBAR_VISIBLE, true);
-        assertEquals(View.VISIBLE, mViewHolder.attachmentsToolbar.getVisibility());
+        assertEquals(View.VISIBLE, mViewHolder.addButton.getVisibility());
 
         mModel.set(NavigationAttachmentsProperties.ATTACHMENTS_TOOLBAR_VISIBLE, false);
-        assertEquals(View.GONE, mViewHolder.attachmentsToolbar.getVisibility());
+        assertEquals(View.GONE, mViewHolder.addButton.getVisibility());
     }
 
     @Test
