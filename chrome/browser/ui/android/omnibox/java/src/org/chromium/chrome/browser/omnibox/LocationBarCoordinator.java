@@ -623,8 +623,8 @@ public class LocationBarCoordinator
     }
 
     @Override
-    public void setHideStatusIconForSecureOrigins(boolean hideStatusIconForSecureOrigins) {
-        mStatusCoordinator.setHideStatusIconForSecureOrigins(hideStatusIconForSecureOrigins);
+    public void setShowStatusIconForSecureOrigins(boolean showStatusIconForSecureOrigins) {
+        mStatusCoordinator.setShowStatusIconForSecureOrigins(showStatusIconForSecureOrigins);
     }
 
     @Override

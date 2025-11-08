@@ -189,8 +189,8 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
     }
 
     /** Toggle whether the status icon should be hidden for secure origins. */
-    public void setHideStatusIconForSecureOrigins(boolean hideStatusIconForSecureOrigins) {
-        mMediator.setHideStatusIconForSecureOrigins(hideStatusIconForSecureOrigins);
+    public void setShowStatusIconForSecureOrigins(boolean showStatusIconForSecureOrigins) {
+        mMediator.setShowStatusIconForSecureOrigins(showStatusIconForSecureOrigins);
     }
 
     /**

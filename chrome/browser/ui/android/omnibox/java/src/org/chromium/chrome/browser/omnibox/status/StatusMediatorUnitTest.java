@@ -751,7 +751,7 @@ public final class StatusMediatorUnitTest {
         mMediator.updateVerboseStatus(ConnectionSecurityLevel.SECURE, false, false);
         Assert.assertTrue(mModel.get(StatusProperties.SHOW_STATUS_VIEW));
 
-        mMediator.setHideStatusIconForSecureOrigins(true);
+        mMediator.setShowStatusIconForSecureOrigins(false);
         Assert.assertFalse(mModel.get(StatusProperties.SHOW_STATUS_VIEW));
 
         mMediator.updateVerboseStatus(ConnectionSecurityLevel.WARNING, false, false);
@@ -760,7 +760,7 @@ public final class StatusMediatorUnitTest {
         mMediator.updateVerboseStatus(ConnectionSecurityLevel.SECURE, false, false);
         Assert.assertFalse(mModel.get(StatusProperties.SHOW_STATUS_VIEW));
 
-        mMediator.setHideStatusIconForSecureOrigins(false);
+        mMediator.setShowStatusIconForSecureOrigins(true);
         Assert.assertTrue(mModel.get(StatusProperties.SHOW_STATUS_VIEW));
     }
 

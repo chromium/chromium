@@ -124,7 +124,7 @@ public class StatusMediator
     private Drawable mDefaultStatusBackgroundIncognito;
     private Drawable mVerboseStatusBackground;
     private Drawable mVerboseStatusBackgroundIncognito;
-    private boolean mHideStatusIconForSecureOrigins;
+    private boolean mShowStatusIconForSecureOrigins;
 
     /**
      * @param model The {@link PropertyModel} for this mediator.
@@ -158,6 +158,7 @@ public class StatusMediator
         mModel = model;
         mLocationBarDataProvider = locationBarDataProvider;
         mTemplateUrlServiceSupplier = templateUrlServiceSupplier;
+        mShowStatusIconForSecureOrigins = true;
         mTemplateUrlServiceSupplier.onAvailable(
                 (templateUrlService) -> {
                     templateUrlService.addObserver(this);
@@ -266,8 +267,8 @@ public class StatusMediator
         }
     }
 
-    void setHideStatusIconForSecureOrigins(boolean hideStatusIconForSecureOrigins) {
-        mHideStatusIconForSecureOrigins = hideStatusIconForSecureOrigins;
+    void setShowStatusIconForSecureOrigins(boolean showStatusIconForSecureOrigins) {
+        mShowStatusIconForSecureOrigins = showStatusIconForSecureOrigins;
         updateVisibilityForOriginSecurity();
     }
 
@@ -944,7 +945,7 @@ public class StatusMediator
 
     private void updateVisibilityForOriginSecurity() {
         setShowStatusView(
-                !mHideStatusIconForSecureOrigins
+                mShowStatusIconForSecureOrigins
                         || mPageSecurityLevel != ConnectionSecurityLevel.SECURE);
     }
 }
