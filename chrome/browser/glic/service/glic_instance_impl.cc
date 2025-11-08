@@ -371,6 +371,8 @@ tabs::TabInterface* GlicInstanceImpl::CreateTab(
     const std::optional<int32_t>& window_id,
     glic::mojom::WebClientHandler::CreateTabCallback callback) {
   instance_metrics_.OnCreateTab();
+  auto* active_embedder = GetActiveEmbedder();
+  bool embedder_has_focus = active_embedder && active_embedder->HasFocus();
   tabs::TabInterface* created_tab = service_->CreateTab(
       url, open_in_background, window_id, std::move(callback));
   if (!created_tab) {
@@ -379,12 +381,10 @@ tabs::TabInterface* GlicInstanceImpl::CreateTab(
     return nullptr;
   }
 
-  auto* active_embedder = GetActiveEmbedder();
-  bool hasFocus = active_embedder && active_embedder->HasFocus();
   SidePanelShowOptions side_panel_options{*created_tab};
   side_panel_options.suppress_opening_animation = true;
   auto show_options = ShowOptions{side_panel_options};
-  show_options.focus_on_show = created_tab->IsActivated() || hasFocus;
+  show_options.focus_on_show = created_tab->IsActivated() || embedder_has_focus;
   Show(show_options);
   instance_metrics_.OnDaisyChain(DaisyChainSource::kGlicContents,
                                  /*success=*/true);
