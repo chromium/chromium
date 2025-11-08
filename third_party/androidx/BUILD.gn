@@ -3683,7 +3683,10 @@ if (!limit_android_deps) {
       ":*",
       "//third_party/android_deps:*",
     ]
-    deps = [ ":androidx_tracing_tracing_java" ]
+    deps = [
+      ":androidx_tracing_tracing_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+    ]
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
