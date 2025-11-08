@@ -70,6 +70,14 @@ class InstanceSwitcherItemViewBinder {
         } else if (InstanceSwitcherItemProperties.CLICK_LISTENER == propertyKey) {
             view.setOnClickListener(model.get(InstanceSwitcherItemProperties.CLICK_LISTENER));
 
+        } else if (InstanceSwitcherItemProperties.CLOSE_BUTTON_ENABLED == propertyKey) {
+            ImageView closeButton = view.findViewById(R.id.close_button);
+            boolean enabled = model.get(InstanceSwitcherItemProperties.CLOSE_BUTTON_ENABLED);
+            closeButton.setEnabled(enabled);
+        } else if (InstanceSwitcherItemProperties.MORE_MENU_ENABLED == propertyKey) {
+            ImageView moreButton = view.findViewById(R.id.more);
+            boolean enabled = model.get(InstanceSwitcherItemProperties.MORE_MENU_ENABLED);
+            moreButton.setEnabled(enabled);
         } else if (InstanceSwitcherItemProperties.CLOSE_BUTTON_CLICK_LISTENER == propertyKey) {
             ImageView closeButton = view.findViewById(R.id.close_button);
             closeButton.setVisibility(View.VISIBLE);

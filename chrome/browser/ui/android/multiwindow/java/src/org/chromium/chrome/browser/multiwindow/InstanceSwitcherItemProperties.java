@@ -43,12 +43,15 @@ public class InstanceSwitcherItemProperties {
             CLOSE_BUTTON_CLICK_LISTENER = new PropertyModel.WritableObjectPropertyKey<>();
     public static final PropertyModel.WritableObjectPropertyKey<String>
             CLOSE_BUTTON_CONTENT_DESCRIPTION = new PropertyModel.WritableObjectPropertyKey<>();
+    public static final PropertyModel.WritableBooleanPropertyKey CLOSE_BUTTON_ENABLED =
+            new PropertyModel.WritableBooleanPropertyKey();
 
     public static final PropertyModel.WritableObjectPropertyKey<ListMenuDelegate> MORE_MENU =
             new PropertyModel.WritableObjectPropertyKey<>();
-
     public static final PropertyModel.WritableObjectPropertyKey<String>
             MORE_MENU_CONTENT_DESCRIPTION = new PropertyModel.WritableObjectPropertyKey<>();
+    public static final PropertyModel.WritableBooleanPropertyKey MORE_MENU_ENABLED =
+            new PropertyModel.WritableBooleanPropertyKey();
 
     public static final PropertyModel.WritableObjectPropertyKey<String> LAST_ACCESSED =
             new PropertyModel.WritableObjectPropertyKey<>();
@@ -68,9 +71,11 @@ public class InstanceSwitcherItemProperties {
                 CLICK_LISTENER,
                 CLOSE_BUTTON_CLICK_LISTENER,
                 CLOSE_BUTTON_CONTENT_DESCRIPTION,
+                CLOSE_BUTTON_ENABLED,
+                LAST_ACCESSED,
                 MORE_MENU,
                 MORE_MENU_CONTENT_DESCRIPTION,
-                LAST_ACCESSED,
+                MORE_MENU_ENABLED,
                 IS_SELECTED
             };
 }
