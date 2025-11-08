@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "device/fido/features.h"
 #include "device/fido/fido_constants.h"
 
 namespace device {
