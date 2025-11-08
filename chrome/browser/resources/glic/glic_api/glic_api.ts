@@ -1943,6 +1943,8 @@ export declare interface Credential {
   // The original website or application for which this credential was saved
   // for.
   sourceSiteOrApp: string;
+  // The origin for which this credential was requested.
+  requestOrigin?: string;
   // The optional icon for the credential, encoded as a PNG image.
   getIcon?(): Promise<Blob>;
 }

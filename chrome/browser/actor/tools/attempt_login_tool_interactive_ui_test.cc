@@ -266,6 +266,8 @@ IN_PROC_BROWSER_TEST_P(AttemptLoginToolInteractiveUiTest, MAYBE_SmokeTest) {
       "+wxhQIAAAAGSURBVAMAZIwUAbOgDh0AAAAASUVORK5CYII=";
   const std::string kExpectedIconDataUrl =
       base::StrCat({"data:image/png;base64,", kExpectedIconBase64Url});
+  const std::string expected_request_origin =
+      url::Origin::Create(url).Serialize();
   auto expected_request =
       base::Value::Dict()
           .Set("taskId", actor_task().id().value())
@@ -277,12 +279,14 @@ IN_PROC_BROWSER_TEST_P(AttemptLoginToolInteractiveUiTest, MAYBE_SmokeTest) {
                                .Set("username", "username1")
                                .Set("sourceSiteOrApp",
                                     url.GetWithEmptyPath().spec())
+                               .Set("requestOrigin", expected_request_origin)
                                .Set("icon", kExpectedIconDataUrl))
                    .Append(base::Value::Dict()
                                .Set("id", GenerateCredentialId().value())
                                .Set("username", "username2")
                                .Set("sourceSiteOrApp",
                                     url.GetWithEmptyPath().spec())
+                               .Set("requestOrigin", expected_request_origin)
                                .Set("icon", kExpectedIconDataUrl)));
 
   // Verify the dialog request content.

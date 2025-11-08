@@ -2312,6 +2312,11 @@ function selectCredentialDialogRequestToClient(
   }
   return {
     ...request,
+    credentials: request.credentials.map(
+        credential => ({
+          ...credential,
+          requestOrigin: originToClient(credential.requestOrigin),
+        })),
     icons,
   };
 }
