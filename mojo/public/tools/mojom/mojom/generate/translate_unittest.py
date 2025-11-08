@@ -124,6 +124,73 @@ class TranslateTest(unittest.TestCase):
     with self.assertRaises(Exception):
       translate.OrderedModule(tree, "mojom_tree", [])
 
+  def testExtensibleEnumWithNoDefault(self):
+    tree = ast.Mojom(None, ast.ImportList(), [
+        ast.Enum(
+            ast.Name('TestEnum'),
+            ast.AttributeList([
+                ast.Attribute(ast.Name('Extensible'), True),
+            ]),
+            ast.EnumValueList([ast.EnumValue(ast.Name('kValue'), None, None)]))
+    ])
+
+    with self.assertRaises(Exception) as context:
+      translate.OrderedModule(tree, 'mojom_tree', [])
+    self.assertIn('must specify a [Default] enumerator', str(context.exception))
+
+    # Not allowlisted in ChromeOS so this should still warn.
+    with self.assertRaises(Exception) as context:
+      translate.OrderedModule(tree,
+                              'mojom_tree', [],
+                              extensible_enum_mode=translate.ExtensibleEnumMode.
+                              RELAXED_FOR_CHROMEOS)
+    self.assertIn('must specify a [Default] enumerator', str(context.exception))
+
+    # However, backwards compatibility checks always suppress this warning.
+    translate.OrderedModule(tree,
+                            'mojom_tree', [],
+                            extensible_enum_mode=translate.ExtensibleEnumMode.
+                            RELAXED_FOR_BACKWARDS_COMPAT_CHECK)
+
+    # Test that temporary suppressions for non-CrOS do not throw an exception.
+    temporarily_suppressed_tree = ast.Mojom(
+        ast.Module(ast.Identifier('test.mojom'), None), ast.ImportList(), [
+            ast.Enum(
+                ast.Name('ExtensibleEnumForUnitTests'),
+                ast.AttributeList([
+                    ast.Attribute(ast.Name('Extensible'), True),
+                ]),
+                ast.EnumValueList(
+                    [ast.EnumValue(ast.Name('kValue'), None, None)]))
+        ])
+
+    translate.OrderedModule(temporarily_suppressed_tree, 'mojom_tree', [])
+    translate.OrderedModule(
+        temporarily_suppressed_tree,
+        'mojom_tree', [],
+        extensible_enum_mode=translate.ExtensibleEnumMode.RELAXED_FOR_CHROMEOS)
+
+    # Test that permanent (for now) suppressions for CrOS do not throw an
+    # exception–but are still treated as errors in non-ChromeOS mode.
+    suppressed_for_chromeos_tree = ast.Mojom(
+        ast.Module(ast.Identifier('test.mojom'), None), ast.ImportList(), [
+            ast.Enum(
+                ast.Name('ExtensibleEnumForUnitTestsCrOS'),
+                ast.AttributeList([
+                    ast.Attribute(ast.Name('Extensible'), True),
+                ]),
+                ast.EnumValueList(
+                    [ast.EnumValue(ast.Name('kValue'), None, None)]))
+        ])
+    with self.assertRaises(Exception) as context:
+      translate.OrderedModule(suppressed_for_chromeos_tree, 'mojom_tree', [])
+    self.assertIn('must specify a [Default] enumerator', str(context.exception))
+    translate.OrderedModule(
+        suppressed_for_chromeos_tree,
+        'mojom_tree', [],
+        extensible_enum_mode=translate.ExtensibleEnumMode.RELAXED_FOR_CHROMEOS)
+
+
   def testEnumWithReservedValues(self):
     """Verifies that assigning reserved values to enumerators fails."""
     # -128 is reserved for the empty representation in blink::HashTraits.

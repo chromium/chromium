@@ -112,7 +112,9 @@ def _ValidateDelta(root, delta):
     all_modules = {}
     all_modules.update(unmodified_modules)
     all_modules.update(override_modules)
-    modules[mojom] = translate.OrderedModule(ast, mojom, all_modules)
+    modules[mojom] = translate.OrderedModule(
+        ast, mojom, all_modules,
+        translate.ExtensibleEnumMode.RELAXED_FOR_BACKWARDS_COMPAT_CHECK)
 
   old_modules = {}
   for mojom in old_files:

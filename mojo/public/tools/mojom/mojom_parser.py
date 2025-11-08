@@ -111,7 +111,8 @@ def _GetModuleFilename(mojom_filename):
 
 
 def _EnsureInputLoaded(mojom_abspath, module_path, abs_paths, asts,
-                       dependencies, loaded_modules, module_metadata):
+                       dependencies, loaded_modules, module_metadata,
+                       is_chromeos: bool):
   """Recursively ensures that a module and its dependencies are loaded.
 
   Args:
@@ -126,6 +127,7 @@ def _EnsureInputLoaded(mojom_abspath, module_path, abs_paths, asts,
         modules that were pulled in as transitive dependencies of the inputs.
     module_metadata: Metadata to be attached to every module loaded by this
         helper.
+    is_chromeos: True when targetting ChromeOS and False otherwise.
 
   Returns:
     None
@@ -140,14 +142,16 @@ def _EnsureInputLoaded(mojom_abspath, module_path, abs_paths, asts,
   for dep_abspath, dep_path in sorted(dependencies[mojom_abspath]):
     if dep_abspath not in loaded_modules:
       _EnsureInputLoaded(dep_abspath, dep_path, abs_paths, asts, dependencies,
-                         loaded_modules, module_metadata)
+                         loaded_modules, module_metadata, is_chromeos)
 
   imports = {}
   for imp in asts[mojom_abspath].import_list:
     path = imp.import_filename
     imports[path] = loaded_modules[abs_paths[path]]
   loaded_modules[mojom_abspath] = translate.OrderedModule(
-      asts[mojom_abspath], module_path, imports)
+      asts[mojom_abspath], module_path, imports,
+      translate.ExtensibleEnumMode.RELAXED_FOR_CHROMEOS
+      if is_chromeos else translate.ExtensibleEnumMode.STRICT)
   loaded_modules[mojom_abspath].metadata = dict(module_metadata)
 
 
@@ -346,7 +350,8 @@ def _ParseMojoms(mojom_files,
   num_existing_modules_loaded = len(loaded_modules)
   for mojom_abspath, mojom_path in mojom_files_to_parse.items():
     _EnsureInputLoaded(mojom_abspath, mojom_path, abs_paths, loaded_mojom_asts,
-                       input_dependencies, loaded_modules, module_metadata)
+                       input_dependencies, loaded_modules, module_metadata,
+                       'is_chromeos' in enabled_features)
   assert (num_existing_modules_loaded +
           len(mojom_files_to_parse) == len(loaded_modules))
 
