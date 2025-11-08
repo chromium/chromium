@@ -309,10 +309,6 @@ crbug.com/454680865 [ android ] TraceTest_Video_MP4_TreesInViz [ RetryOnFailure 
 # Slow on DCHECK builds being used on fuchsia builders.
 crbug.com/425745937 [ fuchsia web-engine-shell ] TraceTest_Canvas2DBlitText [ Slow ]
 
-####################### TreesInViz suppressions ##############################
-# Suppressing a flaky test on Android in TreesInViz mode.
-crbug.com/454680865 [ android android-chromium ] TraceTest_Video_MP4_TreesInViz [ Failure ]
-
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################
