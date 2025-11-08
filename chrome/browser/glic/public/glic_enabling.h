@@ -103,6 +103,10 @@ class GlicEnabling : public signin::IdentityManager::Observer {
   // kGlicMultiTab, and kGlicMultitabUnderlines - are enabled.
   static bool IsMultiInstanceEnabledByFlags();
 
+  // Returns true if glic is enabled for the profile, the feature is enabled,
+  // and the account is non-enterprise (or for glic dev).
+  static bool IsShareImageEnabledForProfile(Profile* profile);
+
   struct ProfileEnablement {
     // These conditions are checked first and may prevent following checks from
     // occurring.

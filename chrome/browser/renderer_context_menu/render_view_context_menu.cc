@@ -2082,8 +2082,7 @@ void RenderViewContextMenu::AppendSearchWebForImageItems() {
 
 void RenderViewContextMenu::AppendGlicShareImageItem() {
 #if BUILDFLAG(ENABLE_GLIC)
-  if (glic::GlicEnabling::IsEnabledForProfile(GetProfile()) &&
-      base::FeatureList::IsEnabled(features::kGlicShareImage) &&
+  if (glic::GlicEnabling::IsShareImageEnabledForProfile(GetProfile()) &&
       !IsGlicWindow(this, browser_context_)) {
     tabs::TabInterface* tab =
         tabs::TabInterface::MaybeGetFromContents(source_web_contents_);
@@ -4378,8 +4377,7 @@ void RenderViewContextMenu::ExecSaveAs() {
 
 void RenderViewContextMenu::ExecGlicShareImage() {
 #if BUILDFLAG(ENABLE_GLIC)
-  if (!glic::GlicEnabling::IsEnabledForProfile(GetProfile()) ||
-      !base::FeatureList::IsEnabled(features::kGlicShareImage)) {
+  if (!glic::GlicEnabling::IsShareImageEnabledForProfile(GetProfile())) {
     // If this has changed since the context menu was summoned, bail early.
     return;
   }
