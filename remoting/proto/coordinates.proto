@@ -10,7 +10,7 @@ package remoting.protocol;
 
 // Fractional coordinate information. Fractional coordinates define a location
 // as a number in the range [0, 1], interpreted relative to the bounds of a
-// monitor identified by |stream_id| in the most recent VideoLayout message sent
+// monitor identified by `screen_id` in the most recent VideoLayout message sent
 // by the host.
 message FractionalCoordinate {
   optional float x = 1;

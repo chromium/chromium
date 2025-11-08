@@ -34,6 +34,7 @@
 #include "remoting/host/remote_open_url/url_forwarder_configurator.h"
 #include "remoting/host/webauthn/remote_webauthn_state_change_notifier.h"
 #include "remoting/proto/control.pb.h"
+#include "remoting/proto/coordinates.pb.h"
 #include "remoting/proto/event.pb.h"
 #include "remoting/proto/url_forwarder_control.pb.h"
 #include "remoting/protocol/clipboard_stub.h"
@@ -174,6 +175,8 @@ class DesktopSessionProxy
   void OnAudioPacket(std::unique_ptr<AudioPacket> audio_packet) override;
   void OnDesktopDisplayChanged(const protocol::VideoLayout& layout) override;
   void OnMouseCursorChanged(const webrtc::MouseCursor& mouse_cursor) override;
+  void OnMouseCursorFractionalPositionChanged(
+      const protocol::FractionalCoordinate& position) override;
   void OnKeyboardLayoutChanged(const protocol::KeyboardLayout& layout) override;
   void OnLocalMouseMoveDetected(
       const webrtc::DesktopVector& new_position) override;
@@ -325,6 +328,12 @@ class DesktopSessionProxy
       set_up_url_forwarder_callback_ GUARDED_BY_CONTEXT(sequence_checker_);
   mojom::UrlForwarderState current_url_forwarder_state_ GUARDED_BY_CONTEXT(
       sequence_checker_) = mojom::UrlForwarderState::kUnknown;
+
+  // Whether the host cursor is rendered by the client.
+  // TODO: crbug.com/455622961 - Remove this once the clientRenderedHostCursor
+  // experiment is fully rolled out, where this is always set to true.
+  bool host_cursor_rendered_by_client_ GUARDED_BY_CONTEXT(sequence_checker_) =
+      false;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

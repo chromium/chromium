@@ -269,7 +269,19 @@ void DesktopSessionAgent::OnMouseCursorPosition(
     const webrtc::DesktopVector& position) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
-  video_capturers_.SetMouseCursorPosition(position);
+  if (!host_cursor_rendered_by_client_) {
+    video_capturers_.SetMouseCursorPosition(position);
+  }
+}
+
+void DesktopSessionAgent::OnMouseCursorFractionalPosition(
+    const protocol::FractionalCoordinate& position) {
+  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+
+  if (desktop_session_event_handler_) {
+    desktop_session_event_handler_->OnMouseCursorFractionalPositionChanged(
+        position);
+  }
 }
 
 void DesktopSessionAgent::OnClipboardEvent(
@@ -410,8 +422,10 @@ void DesktopSessionAgent::InjectMouseEvent(const protocol::MouseEvent& event) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
   CHECK(started_);
 
-  video_capturers_.SetComposeEnabled(event.has_delta_x() ||
-                                     event.has_delta_y());
+  if (!host_cursor_rendered_by_client_) {
+    video_capturers_.SetComposeEnabled(event.has_delta_x() ||
+                                       event.has_delta_y());
+  }
 
   // InputStub implementations must verify events themselves, so we don't need
   // verification here. This matches HostEventDispatcher.
@@ -507,6 +521,21 @@ void DesktopSessionAgent::BeginFileWrite(const base::FilePath& file_path,
                                                    std::move(callback));
 }
 
+void DesktopSessionAgent::SetHostCursorRenderedByClient() {
+  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+
+  if (host_cursor_rendered_by_client_) {
+    return;
+  }
+
+  host_cursor_rendered_by_client_ = true;
+  // Hide the host cursor from the desktop frames.
+  video_capturers_.SetComposeEnabled(false);
+  if (mouse_shape_pump_) {
+    mouse_shape_pump_->SetSendCursorPositionToClient(true);
+  }
+}
+
 void DesktopSessionAgent::OnDesktopEnvironmentCreated(
     const ScreenResolution& resolution,
     StartCallback callback,
@@ -562,6 +591,12 @@ void DesktopSessionAgent::OnDesktopEnvironmentCreated(
       desktop_environment_->CreateMouseCursorMonitor(),
       /*CursorShapeStub*/ nullptr);
   mouse_shape_pump_->SetMouseCursorMonitorCallback(this);
+  if (host_cursor_rendered_by_client_) {
+    // Just always send cursor positions to the "client", i.e. the network
+    // process. The MouseShapePump in the network process will decide whether
+    // they should actually be sent to the client.
+    mouse_shape_pump_->SetSendCursorPositionToClient(true);
+  }
 
   // Unretained is sound because callback will never be invoked after
   // |keyboard_layout_monitor_| is destroyed.

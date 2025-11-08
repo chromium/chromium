@@ -1149,12 +1149,8 @@ void ClientSession::OnDesktopEnvironmentCreated(
     host_capabilities_.append(protocol::kRemoteOpenUrlCapability);
   }
 
-#if !BUILDFLAG(IS_WIN)
-  // TODO: crbug.com/455622961 - Append capability for Windows once it is made
-  // to work.
   host_capabilities_.append(" ");
   host_capabilities_.append(protocol::kClientRenderedHostCursorCapability);
-#endif
 
   // Create the object that controls the screen resolution.
   screen_controls_ = desktop_environment_->CreateScreenControls();

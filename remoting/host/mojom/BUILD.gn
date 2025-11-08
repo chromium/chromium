@@ -83,6 +83,10 @@ mojom("mojom") {
           cpp = "::remoting::protocol::FileTransfer_Error"
         },
         {
+          mojom = "remoting.mojom.FractionalCoordinate"
+          cpp = "::remoting::protocol::FractionalCoordinate"
+        },
+        {
           mojom = "remoting.mojom.FileTransferError.Type"
           cpp = "::remoting::protocol::FileTransfer_Error_Type"
         },

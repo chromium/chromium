@@ -189,6 +189,12 @@ std::string DesktopSessionProxy::GetCapabilities() const {
 void DesktopSessionProxy::SetCapabilities(const std::string& capabilities) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  host_cursor_rendered_by_client_ = HasCapability(
+      capabilities, protocol::kClientRenderedHostCursorCapability);
+  if (desktop_session_control_ && host_cursor_rendered_by_client_) {
+    desktop_session_control_->SetHostCursorRenderedByClient();
+  }
+
   // Delay creation of the desktop session until the client screen resolution is
   // received if the desktop session requires the initial screen resolution
   // (when enable_curtaining() is true) and the client is expected to
@@ -327,6 +333,10 @@ void DesktopSessionProxy::OnDesktopSessionAgentStarted(
     if (capturer) {
       RequestMojoVideoCapturer(id, capturer);
     }
+  }
+
+  if (host_cursor_rendered_by_client_) {
+    desktop_session_control_->SetHostCursorRenderedByClient();
   }
 
   if (client_session_events_) {
@@ -687,6 +697,15 @@ void DesktopSessionProxy::OnMouseCursorChanged(
   if (mouse_cursor_monitor_) {
     mouse_cursor_monitor_->OnMouseCursor(
         base::WrapUnique(webrtc::MouseCursor::CopyOf(mouse_cursor)));
+  }
+}
+
+void DesktopSessionProxy::OnMouseCursorFractionalPositionChanged(
+    const protocol::FractionalCoordinate& position) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (mouse_cursor_monitor_) {
+    mouse_cursor_monitor_->OnMouseCursorFractionalPosition(position);
   }
 }
 

@@ -35,4 +35,10 @@ void IpcMouseCursorMonitor::OnMouseCursor(
   callback_->OnMouseCursor(std::move(cursor));
 }
 
+void IpcMouseCursorMonitor::OnMouseCursorFractionalPosition(
+    const protocol::FractionalCoordinate& position) {
+  DCHECK(callback_);
+  callback_->OnMouseCursorFractionalPosition(position);
+}
+
 }  // namespace remoting

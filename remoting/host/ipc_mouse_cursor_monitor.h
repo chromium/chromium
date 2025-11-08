@@ -36,6 +36,10 @@ class IpcMouseCursorMonitor : public protocol::MouseCursorMonitor {
   // Called when the cursor shape has changed.
   void OnMouseCursor(std::unique_ptr<webrtc::MouseCursor> cursor);
 
+  // Called when the fractional position of the mouse cursor has changed.
+  void OnMouseCursorFractionalPosition(
+      const protocol::FractionalCoordinate& position);
+
  private:
   // The callback passed to |MouseCursorMonitor::Init()|.
   raw_ptr<MouseCursorMonitor::Callback> callback_;

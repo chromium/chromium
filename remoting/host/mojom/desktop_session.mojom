@@ -178,6 +178,16 @@ struct TouchEvent {
   array<TouchEventPoint> touch_points;
 };
 
+// Fractional coordinate information. Fractional coordinates define a location
+// as a number in the range [0, 1], interpreted relative to the bounds of a
+// monitor identified by `screen_id` in the most recent VideoLayout message sent
+// by the host.
+struct FractionalCoordinate {
+  float x;
+  float y;
+  int64 screen_id;
+};
+
 // The state of the URL forwarder setup.
 enum UrlForwarderState {
   kUnknown = 0,
@@ -434,6 +444,14 @@ interface DesktopSessionControl {
   // Opens a new file for writing when the remote user chooses to upload a file.
   BeginFileWrite(mojo_base.mojom.FilePath file_path)
       => (BeginFileWriteResult result);
+
+  // Informs the desktop process that the host cursor should be rendered by the
+  // client. In other words, it should just send cursor positions to the network
+  // process so that they can be used by the client to render the host's cursor,
+  // instead of composing the cursor onto the desktop frame.
+  // TODO: crbug.com/455622961 - Remove this once the clientRenderedHostCursor
+  // experiment is fully rolled out, where this function is always called.
+  SetHostCursorRenderedByClient();
 };
 
 struct CreateVideoCapturerResult {
@@ -542,6 +560,10 @@ interface DesktopSessionEventHandler {
 
   // Notifies the network process that the mouse cursor has changed.
   OnMouseCursorChanged(MouseCursor mouse_cursor);
+
+  // Notifies the network process that the fractional position of the mouse
+  // cursor has changed.
+  OnMouseCursorFractionalPositionChanged(FractionalCoordinate position);
 
   // Notifies the network process that the keyboard layout has changed.
   OnKeyboardLayoutChanged(KeyboardLayout keyboard_layout);

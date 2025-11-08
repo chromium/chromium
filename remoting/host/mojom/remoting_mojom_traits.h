@@ -39,6 +39,7 @@
 #include "remoting/host/mojom/wrapped_primitives.mojom-shared.h"
 #include "remoting/proto/audio.pb.h"
 #include "remoting/proto/control.pb.h"
+#include "remoting/proto/coordinates.pb.h"
 #include "remoting/proto/event.pb.h"
 #include "remoting/proto/file_transfer.pb.h"
 #include "remoting/protocol/file_transfer_helpers.h"
@@ -1689,6 +1690,27 @@ class StructTraits<remoting::mojom::SourceLocationDataView,
 
   static bool Read(remoting::mojom::SourceLocationDataView data_view,
                    ::remoting::SourceLocation* out_source_info);
+};
+
+template <>
+class StructTraits<remoting::mojom::FractionalCoordinateDataView,
+                   ::remoting::protocol::FractionalCoordinate> {
+ public:
+  static int64_t screen_id(
+      const ::remoting::protocol::FractionalCoordinate& coordinate) {
+    return coordinate.screen_id();
+  }
+
+  static float x(const ::remoting::protocol::FractionalCoordinate& coordinate) {
+    return coordinate.x();
+  }
+
+  static float y(const ::remoting::protocol::FractionalCoordinate& coordinate) {
+    return coordinate.y();
+  }
+
+  static bool Read(remoting::mojom::FractionalCoordinateDataView data_view,
+                   ::remoting::protocol::FractionalCoordinate* out_coordinate);
 };
 
 }  // namespace mojo

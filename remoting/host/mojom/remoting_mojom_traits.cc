@@ -609,4 +609,15 @@ bool mojo::StructTraits<remoting::mojom::SourceLocationDataView,
   return true;
 }
 
+// static
+bool mojo::StructTraits<remoting::mojom::FractionalCoordinateDataView,
+                        ::remoting::protocol::FractionalCoordinate>::
+    Read(remoting::mojom::FractionalCoordinateDataView data_view,
+         ::remoting::protocol::FractionalCoordinate* out_coordinate) {
+  out_coordinate->set_screen_id(data_view.screen_id());
+  out_coordinate->set_x(data_view.x());
+  out_coordinate->set_y(data_view.y());
+  return true;
+}
+
 }  // namespace mojo
