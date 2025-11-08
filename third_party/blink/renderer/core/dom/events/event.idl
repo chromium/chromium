@@ -53,7 +53,7 @@
 
     [Measure] undefined initEvent(DOMString type, optional boolean bubbles = false, optional boolean cancelable = false);
 
-    [MeasureAs=EventSrcElement] readonly attribute EventTarget srcElement;
+    [MeasureAs=EventSrcElement] readonly attribute EventTarget? srcElement;
     [MeasureAs=EventReturnValue, CallWith=ScriptState, ImplementedAs=legacyReturnValue] attribute boolean returnValue;
     [MeasureAs=EventCancelBubble, CallWith=ScriptState] attribute boolean cancelBubble;
 };
