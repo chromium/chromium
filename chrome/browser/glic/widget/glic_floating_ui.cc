@@ -325,6 +325,10 @@ void GlicFloatingUi::ClosePanel() {
 }
 
 void GlicFloatingUi::Focus() {
+  if (!IsShowing()) {
+    return;
+  }
+  GetGlicWidget()->Activate();
   if (auto* web_contents = delegate_->host().webui_contents()) {
     web_contents->Focus();
   }
