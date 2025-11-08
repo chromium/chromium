@@ -60,6 +60,10 @@ OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
       "resultChangedToPaintMetricName",
       "Omnibox.Popup.WebUI.ResultChangedToRepaintLatency.ToPaint");
 
+  source->AddBoolean(
+      "showContextEntrypoint",
+      base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxAimPopup));
+
   // Add composebox data.
   source->AddBoolean("composeboxShowContextMenu",
                      ntp_composebox::kShowContextMenu.Get());
