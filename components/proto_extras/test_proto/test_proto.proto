@@ -10,6 +10,10 @@ option optimize_for = LITE_RUNTIME;
 
 import "components/proto_extras/test_proto/test_proto_dependency.proto";
 
+message TestMessageAboveEmbeddedMessage {
+  EmptyEmbeddedMessage empty_embedded_message = 1;
+}
+
 message EmptyEmbeddedMessage {}
 
 message TestMessage {

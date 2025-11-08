@@ -98,9 +98,18 @@ class ProtoGmockGenerator : public google::protobuf::compiler::CodeGenerator {
               h_printer.Print("#include \"$f$\"\n", "f", include);
             }
           }},
+         {"equals_proto_declarations",
+          [&] {
+            NamespaceOpener ns(Namespace(file), &h_printer);
+            for (int i = 0; i < file->message_type_count(); i++) {
+              EqualsProtoDeclarationsRecursive(*file->message_type(i),
+                                               &h_printer);
+            }
+          }},
          {"matchers",
           [&] {
             NamespaceOpener ns(Namespace(file), &h_printer);
+            NamespaceOpener internal_ns("internal", &h_printer);
             for (int i = 0; i < file->message_type_count(); i++) {
               PrintMatchersRecursive(*file->message_type(i), &h_printer);
             }
@@ -122,6 +131,8 @@ class ProtoGmockGenerator : public google::protobuf::compiler::CodeGenerator {
 
 $includes$
 
+$equals_proto_declarations$
+
 $matchers$
 
 $print_to_declarations$
@@ -142,6 +153,14 @@ $print_to_declarations$
          {"to_value_header",
           proto_file_path.ReplaceExtension(FILE_PATH_LITERAL("to_value.h"))
               .AsUTF8Unsafe()},
+         {"equals_proto_definitions",
+          [&] {
+            NamespaceOpener ns(Namespace(file), &cc_printer);
+            for (int i = 0; i < file->message_type_count(); i++) {
+              EqualsProtoDefinitionRecursive(*file->message_type(i),
+                                             &cc_printer);
+            }
+          }},
          {"print_to_definitions",
           [&] {
             NamespaceOpener ns(Namespace(file), &cc_printer);
@@ -159,6 +178,8 @@ $print_to_declarations$
 #include "base/values.h"
 #include "$to_value_header$"
 
+$equals_proto_definitions$
+
 $print_to_definitions$
 
 )");
@@ -171,9 +192,8 @@ $print_to_definitions$
   }
 
   std::string QualifiedMatcher(const Descriptor& message) const {
-    return base::StrCat({Namespace(&message), "::", "Equals",
-                         ClassName(&message), "<", QualifiedClassName(&message),
-                         ">"});
+    return base::StrCat(
+        {Namespace(&message), "::", "Equals", ClassName(&message)});
   }
 
   void PrintFieldMatcher(const FieldDescriptor& field,
@@ -322,6 +342,48 @@ MATCHER_P($matcher_name$, expected, "") {
       PrintMatchersRecursive(*message.nested_type(i), printer);
     }
     PrintMatcher(message, printer);
+  }
+
+  void EqualsProtoDeclaration(const Descriptor& message,
+                              Printer* printer) const {
+    std::string message_class_name = ClassName(&message);
+    printer->Emit({{"message_type", message_class_name}},
+                  R"(
+::testing::Matcher<const $message_type$&> Equals$message_type$(const $message_type$& expected);)");
+  }
+
+  void EqualsProtoDefinition(const Descriptor& message,
+                             Printer* printer) const {
+    std::string message_class_name = ClassName(&message);
+    printer->Emit({{"message_type", message_class_name},
+                   {"namespace", Namespace(&message)},
+                   {"qualified_message_type", QualifiedClassName(&message)}},
+                  R"(
+::testing::Matcher<const $message_type$&> Equals$message_type$(const $message_type$& expected) {
+  return $namespace$::internal::Equals$message_type$<$qualified_message_type$>(expected);
+})");
+  }
+
+  void EqualsProtoDeclarationsRecursive(const Descriptor& message,
+                                        Printer* printer) const {
+    if (IsSyntheticMapEntry(message)) {
+      return;
+    }
+    EqualsProtoDeclaration(message, printer);
+    for (int i = 0; i < message.nested_type_count(); i++) {
+      EqualsProtoDeclarationsRecursive(*message.nested_type(i), printer);
+    }
+  }
+
+  void EqualsProtoDefinitionRecursive(const Descriptor& message,
+                                      Printer* printer) const {
+    if (IsSyntheticMapEntry(message)) {
+      return;
+    }
+    EqualsProtoDefinition(message, printer);
+    for (int i = 0; i < message.nested_type_count(); i++) {
+      EqualsProtoDefinitionRecursive(*message.nested_type(i), printer);
+    }
   }
 
   void PrintToDeclaration(const Descriptor& message, Printer* printer) const {
