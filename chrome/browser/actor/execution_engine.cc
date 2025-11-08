@@ -11,6 +11,7 @@
 
 #include "base/check.h"
 #include "base/check_deref.h"
+#include "base/check_is_test.h"
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -28,6 +29,7 @@
 #include "chrome/browser/actor/actor_policy_checker.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/browser_action_util.h"
+#include "chrome/browser/actor/safety_list_manager.h"
 #include "chrome/browser/actor/site_policy.h"
 #include "chrome/browser/actor/tools/navigate_tool_request.h"
 #include "chrome/browser/actor/tools/tool_controller.h"
@@ -70,6 +72,11 @@ using tabs::TabInterface;
 namespace actor {
 
 namespace {
+
+const RenderFrameHost* GetPrimaryMainFrame(
+    content::NavigationHandle& navigation_handle) {
+  return navigation_handle.GetWebContents()->GetPrimaryMainFrame();
+}
 
 void PostTaskForActCallback(
     ActorTask::ActCallback callback,
@@ -198,43 +205,53 @@ bool ExecutionEngine::ShouldGateNavigation(
   if (!base::FeatureList::IsEnabled(kGlicCrossOriginNavigationGating)) {
     return false;
   }
-  std::optional<bool> should_apply =
-      ShouldGateNavigationInternal(navigation_handle, std::move(callback));
 
-  if (should_apply.has_value()) {
-    LogNavigationGating(navigation_handle.GetInitiatorOrigin(),
-                        navigation_handle.GetURL(), should_apply.value());
+  CHECK(navigation_handle.GetNavigatingFrameType() ==
+            content::FrameType::kPrimaryMainFrame ||
+        navigation_handle.GetNavigatingFrameType() ==
+            content::FrameType::kPrerenderMainFrame);
+
+  GatingDecision decision =
+      ShouldGateNavigationInternal(navigation_handle, std::move(callback));
+  if (decision == GatingDecision::kNeedsAsyncCheck) {
+    return true;
   }
-  return should_apply.value_or(true);
+
+  bool applied_gate = decision == GatingDecision::kBlockByStaticList;
+  LogNavigationGating(
+      /*initiator_origin=*/GetPrimaryMainFrame(navigation_handle)
+          ->GetLastCommittedOrigin(),
+      navigation_handle.GetURL(), applied_gate);
+  return applied_gate;
 }
 
-std::optional<bool> ExecutionEngine::ShouldGateNavigationInternal(
+ExecutionEngine::GatingDecision ExecutionEngine::ShouldGateNavigationInternal(
     content::NavigationHandle& navigation_handle,
     ExecutionEngine::NavigationDecisionCallback callback) {
+  CHECK(!navigation_handle.HasCommitted());
   base::ScopedUmaHistogramTimer timer(
       "Actor.NavigationGating.TimeElapsedForGating");
 
-  // Assumes the initiator origin is safe since it is currently being actuated
-  // on.
-  const std::optional<url::Origin>& initiator_origin =
-      navigation_handle.GetInitiatorOrigin();
-  if (initiator_origin &&
-      initiator_origin->IsSameOriginWith(
-          url::Origin::Create(navigation_handle.GetURL()))) {
-    return false;
+  const GURL source_url =
+      GetPrimaryMainFrame(navigation_handle)->GetLastCommittedURL();
+  const GURL& destination_url = navigation_handle.GetURL();
+  const GatingDecision decision =
+      DetermineGatingDecision(source_url, destination_url);
+  base::UmaHistogramEnumeration("Actor.NavigationGating.GatingDecision",
+                                decision);
+  if (decision == GatingDecision::kBlockByStaticList) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), /*may_continue=*/false));
+  } else if (decision == GatingDecision::kNeedsAsyncCheck) {
+    bool skip_prompt = navigation_handle.IsInPrerenderedMainFrame();
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&ExecutionEngine::CheckNavigationBlocklist, GetWeakPtr(),
+                       navigation_handle.GetInitiatorOrigin(), destination_url,
+                       skip_prompt, std::move(callback)));
   }
-  // Do not prompt user for permission in pre-rendered frames.
-  bool skip_prompt = navigation_handle.IsInPrerenderedMainFrame();
 
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&ExecutionEngine::CheckNavigationBlocklist, GetWeakPtr(),
-                     navigation_handle.GetInitiatorOrigin(),
-                     navigation_handle.GetURL(), skip_prompt,
-                     std::move(callback)));
-
-  // We do not yet know if we should apply the gate or not, so return nullopt.
-  return std::nullopt;
+  return decision;
 }
 
 void ExecutionEngine::LogNavigationGating(
@@ -251,6 +268,29 @@ void ExecutionEngine::LogNavigationGating(
                           !net::SchemefulSite::IsSameSite(
                               initiator_origin->GetURL(), navigation_url));
   }
+}
+
+ExecutionEngine::GatingDecision ExecutionEngine::DetermineGatingDecision(
+    const GURL& source_url,
+    const GURL& destination_url) const {
+  if (url::IsSameOriginWith(source_url, destination_url)) {
+    return GatingDecision::kAllowSameOrigin;
+  }
+
+  const SafetyListManager& safety_list_manager =
+      *SafetyListManager::GetInstance();
+
+  if (safety_list_manager.get_blocked_list().ContainsUrlPair(source_url,
+                                                             destination_url)) {
+    return GatingDecision::kBlockByStaticList;
+  }
+
+  if (safety_list_manager.get_allowed_list().ContainsUrlPair(source_url,
+                                                             destination_url)) {
+    return GatingDecision::kAllowByStaticList;
+  }
+
+  return GatingDecision::kNeedsAsyncCheck;
 }
 
 void ExecutionEngine::CheckNavigationBlocklist(

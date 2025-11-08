@@ -71,6 +71,28 @@ class ExecutionEngine : public ToolDelegate {
     kComplete,
   };
 
+  // This enum represents the possible outcomes of the synchronous part of the
+  // navigation gating logic.
+  // LINT.IfChange(GatingDecision)
+  // These enum values are persisted to logs.  Do not renumber or reuse numeric
+  // values.
+  enum class GatingDecision {
+    // The source origin and navigation origin are the same and should not be
+    // gated.
+    kAllowSameOrigin = 0,
+    // The navigation is allowed by the static allow-list.
+    kAllowByStaticList = 1,
+    // The navigation is blocked by the static block-list. The user will not be
+    // prompted for confirmation.
+    kBlockByStaticList = 2,
+    // The navigation is not on any allowlist or blocklist and requires an
+    // asynchronous check to determine the final outcome.
+    kNeedsAsyncCheck = 3,
+    kMaxValue = kNeedsAsyncCheck,
+  };
+
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/actor/enums.xml:GatingDecision)
+
   class StateObserver : public base::CheckedObserver {
    public:
     ~StateObserver() override = default;
@@ -131,7 +153,8 @@ class ExecutionEngine : public ToolDelegate {
       base::OnceCallback<void(bool may_continue)>;
 
   // Returns a boolean indicating if ActorNavigationThrottle should defer a
-  // navigation until the decision callback is invoked.
+  // navigation until the decision callback is invoked. This method can only
+  // be called on the primary main frame or a prerendered main frame.
   bool ShouldGateNavigation(content::NavigationHandle& navigation_handle,
                             NavigationDecisionCallback callback);
 
@@ -207,12 +230,17 @@ class ExecutionEngine : public ToolDelegate {
 
   // `std::nullopt` is returned when the decision to gate the navigation is done
   // async.
-  std::optional<bool> ShouldGateNavigationInternal(
+  GatingDecision ShouldGateNavigationInternal(
       content::NavigationHandle& navigation_handle,
       NavigationDecisionCallback callback);
   void LogNavigationGating(const std::optional<url::Origin>& initiator_origin,
                            const GURL& navigation_url,
                            bool applied_gate);
+
+  // Returns the highest-priority navigation gating decision. Prioritizes
+  // blocking navigations over allowing (except on same origin navigations).
+  GatingDecision DetermineGatingDecision(const GURL& source_url,
+                                         const GURL& destination_url) const;
 
   void CheckNavigationBlocklist(
       const std::optional<url::Origin>& initiator_origin,

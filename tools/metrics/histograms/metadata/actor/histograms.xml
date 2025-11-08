@@ -217,6 +217,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Actor.NavigationGating.GatingDecision" enum="GatingDecision"
+    expires_after="2026-03-30">
+  <owner>tquintanilla@google.com</owner>
+  <owner>dylancutler@google.com</owner>
+  <summary>
+    Records the outcome of actor navigation gating decisions. Recorded every
+    time the actor attempts to navigate to a new URL and the origin gating
+    feature is enabled.
+  </summary>
+</histogram>
+
 <histogram name="Actor.NavigationGating.PermissionGranted" enum="Boolean"
     expires_after="2026-03-30">
   <owner>dylancutler@google.com</owner>

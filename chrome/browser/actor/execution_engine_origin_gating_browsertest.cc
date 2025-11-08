@@ -9,6 +9,7 @@
 #include "chrome/browser/actor/actor_task_metadata.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/execution_engine.h"
+#include "chrome/browser/actor/safety_list_manager.h"
 #include "chrome/browser/actor/ui/event_dispatcher.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_features.mojom.h"
@@ -563,6 +564,328 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
   // The allow-list should have 1 entry at the end of the task.
   histogram_tester_for_init_.ExpectBucketCount(
       "Actor.NavigationGating.AllowListSize", 1, 1);
+}
+
+IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
+                       NavigationNotGatedWithStaticList) {
+  const GURL start_url =
+      embedded_https_test_server().GetURL("example.com", "/actor/link.html");
+  const GURL second_url =
+      embedded_https_test_server().GetURL("foo.com", "/actor/blank.html");
+
+  SafetyListManager::GetInstance()->ParseSafetyLists(R"json(
+    {
+      "navigation_allowed": [
+        { "from": "*", "to": "[*.]example.com" },
+        { "from": "[*.]example.com", "to": "[*.]foo.com" }
+      ]
+    }
+  )json");
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
+  OpenGlicAndCreateTask();
+
+  RunTestSequence(CreateMockWebClientRequest(
+      content::JsReplace(kHandleNavigationConfirmationTempl, false)));
+
+  EXPECT_TRUE(content::ExecJs(web_contents(),
+                              content::JsReplace("setLink($1);", second_url)));
+  ClickTarget("#link", mojom::ActionResultCode::kOk);
+
+  // The navigation should log that gating was not applied due to the static
+  // list.
+  histogram_tester_for_init_.ExpectUniqueSample(
+      "Actor.NavigationGating.AppliedGate", false, 1);
+  // Should log that there was one same-site navigation and one cross-site
+  // navigation.
+  histogram_tester_for_init_.ExpectUniqueSample(
+      "Actor.NavigationGating.CrossSite", true, 1);
+  // Should not log permission granted since the static list was used.
+  histogram_tester_for_init_.ExpectTotalCount(
+      "Actor.NavigationGating.PermissionGranted", 0);
+  // Second navigation should be allowed by static allowlist.
+  histogram_tester_for_init_.ExpectUniqueSample(
+      "Actor.NavigationGating.GatingDecision",
+      ExecutionEngine::GatingDecision::kAllowByStaticList, 1);
+}
+
+IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
+                       SameOriginNavigationInStaticAllowList) {
+  const GURL start_url =
+      embedded_https_test_server().GetURL("example.com", "/actor/link.html");
+  SafetyListManager::GetInstance()->ParseSafetyLists(R"json(
+     {
+       "navigation_allowed": [
+         { "from": "[*.]example.com", "to": "[*.]example.com" }
+       ]
+     }
+   )json");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
+  OpenGlicAndCreateTask();
+
+  RunTestSequence(CreateMockWebClientRequest(
+      content::JsReplace(kHandleNavigationConfirmationTempl, false)));
+  EXPECT_TRUE(content::ExecJs(web_contents(),
+                              content::JsReplace("setLink($1);", start_url)));
+
+  ClickTarget("#link", mojom::ActionResultCode::kOk);
+
+  // The navigation should be allowed due to same origin, even though it's also
+  // in the static allow list.
+  histogram_tester_for_init_.ExpectUniqueSample(
+      "Actor.NavigationGating.GatingDecision",
+      ExecutionEngine::GatingDecision::kAllowSameOrigin, 1);
+}
+
+IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
+                       SameOriginNavigationInStaticBlockList) {
+  const GURL start_url =
+      embedded_https_test_server().GetURL("example.com", "/actor/link.html");
+  SafetyListManager::GetInstance()->ParseSafetyLists(R"json(
+  {
+    "navigation_blocked": [
+      { "from": "[*.]example.com", "to": "[*.]example.com" }
+    ]
+  }
+)json");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
+  OpenGlicAndCreateTask();
+
+  RunTestSequence(CreateMockWebClientRequest(
+      content::JsReplace(kHandleNavigationConfirmationTempl, false)));
+
+  EXPECT_TRUE(content::ExecJs(web_contents(),
+                              content::JsReplace("setLink($1);", start_url)));
+  ClickTarget("#link", mojom::ActionResultCode::kOk);
+
+  // The navigation should be allowed due to same origin, even though it's also
+  // in the static block list.
+  histogram_tester_for_init_.ExpectUniqueSample(
+      "Actor.NavigationGating.GatingDecision",
+      ExecutionEngine::GatingDecision::kAllowSameOrigin, 1);
+}
+
+IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
+                       CrossOriginNavigationInStaticBlockListAndAllowList) {
+  const GURL start_url =
+      embedded_https_test_server().GetURL("example.com", "/actor/link.html");
+  const GURL blocked_url =
+      embedded_https_test_server().GetURL("foo.com", "/actor/blank.html");
+  SafetyListManager::GetInstance()->ParseSafetyLists(R"json(
+    {
+      "navigation_allowed": [
+        { "from": "[*.]example.com", "to": "[*.]foo.com" }
+      ],
+      "navigation_blocked": [
+        { "from": "[*.]example.com", "to": "[*.]foo.com" }
+      ]
+    }
+  )json");
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
+  OpenGlicAndCreateTask();
+
+  RunTestSequence(CreateMockWebClientRequest(
+      content::JsReplace(kHandleNavigationConfirmationTempl, false)));
+
+  EXPECT_TRUE(content::ExecJs(web_contents(),
+                              content::JsReplace("setLink($1);", blocked_url)));
+  ClickTarget("#link", mojom::ActionResultCode::kTriggeredNavigationBlocked);
+
+  // The navigation should be allowed because the allow list is checked before
+  // the block list.
+  histogram_tester_for_init_.ExpectUniqueSample(
+      "Actor.NavigationGating.GatingDecision",
+      ExecutionEngine::GatingDecision::kBlockByStaticList, 1);
+}
+
+IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
+                       StaticBlockOverridesDynamicList) {
+  const GURL start_url =
+      embedded_https_test_server().GetURL("example.com", "/actor/link.html");
+  const GURL blocked_url =
+      embedded_https_test_server().GetURL("foo.com", "/actor/blank.html");
+
+  SafetyListManager::GetInstance()->ParseSafetyLists(R"json(
+    {
+      "navigation_blocked": [
+        { "from": "[*.]example.com", "to": "[*.]foo.com" }
+      ]
+    }
+  )json");
+
+  OpenGlicAndCreateTask();
+  actor_task().GetExecutionEngine()->AddWritableMainframeOrigins(
+      {url::Origin::Create(blocked_url)});
+
+  // Start on example.com.
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
+  // Navigate to blocked
+  std::unique_ptr<ToolRequest> navigate_to_blocked =
+      MakeNavigateRequest(*active_tab(), blocked_url.spec());
+
+  RunTestSequence(CreateMockWebClientRequest(
+      content::JsReplace(kHandleNavigationConfirmationTempl, true)));
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(navigate_to_blocked), result.GetCallback());
+  ExpectErrorResult(result,
+                    mojom::ActionResultCode::kTriggeredNavigationBlocked);
+
+  actor_keyed_service().ResetForTesting();
+
+  histogram_tester_for_init_.ExpectUniqueSample(
+      "Actor.NavigationGating.GatingDecision",
+      ExecutionEngine::GatingDecision::kBlockByStaticList, 1);
+  histogram_tester_for_init_.ExpectBucketCount(
+      "Actor.NavigationGating.AppliedGate", true, 1);
+}
+
+IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
+                       StaticAllowListOverridesDynamicList) {
+  const GURL start_url =
+      embedded_https_test_server().GetURL("example.com", "/actor/link.html");
+  const GURL allowed_url =
+      embedded_https_test_server().GetURL("foo.com", "/actor/blank.html");
+
+  SafetyListManager::GetInstance()->ParseSafetyLists(R"json(
+    {
+      "navigation_allowed": [
+        { "from": "[*.]example.com", "to": "[*.]foo.com" }
+      ]
+    }
+  )json");
+
+  OpenGlicAndCreateTask();
+
+  // Start on example.com.
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
+  // Navigate to blocked
+  std::unique_ptr<ToolRequest> navigate_to_allow =
+      MakeNavigateRequest(*active_tab(), allowed_url.spec());
+
+  RunTestSequence(CreateMockWebClientRequest(
+      content::JsReplace(kHandleNavigationConfirmationTempl, true)));
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(navigate_to_allow), result.GetCallback());
+  ExpectOkResult(result);
+
+  histogram_tester_for_init_.ExpectUniqueSample(
+      "Actor.NavigationGating.GatingDecision",
+      ExecutionEngine::GatingDecision::kAllowByStaticList, 1);
+  histogram_tester_for_init_.ExpectBucketCount(
+      "Actor.NavigationGating.AppliedGate", false, 1);
+  histogram_tester_for_init_.ExpectBucketCount(
+      "Actor.NavigationGating.CrossSite", true, 1);
+}
+
+IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
+                       NavigationBlockedByStaticList) {
+  const GURL start_url =
+      embedded_https_test_server().GetURL("example.com", "/actor/link.html");
+  const GURL blocked_url =
+      embedded_https_test_server().GetURL("foo.com", "/actor/blank.html");
+
+  SafetyListManager::GetInstance()->ParseSafetyLists(R"json(
+    {
+      "navigation_blocked": [
+        { "from": "[*.]example.com", "to": "[*.]foo.com" }
+      ]
+    }
+  )json");
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
+  OpenGlicAndCreateTask();
+
+  RunTestSequence(CreateMockWebClientRequest(
+      content::JsReplace(kHandleNavigationConfirmationTempl, false)));
+
+  EXPECT_TRUE(content::ExecJs(web_contents(),
+                              content::JsReplace("setLink($1);", start_url)));
+
+  ClickTarget("#link", mojom::ActionResultCode::kOk);
+
+  EXPECT_TRUE(content::ExecJs(web_contents(),
+                              content::JsReplace("setLink($1);", blocked_url)));
+  ClickTarget("#link", mojom::ActionResultCode::kTriggeredNavigationBlocked);
+
+  // First navigation should be allowed due to same origin.
+  histogram_tester_for_init_.ExpectBucketCount(
+      "Actor.NavigationGating.GatingDecision",
+      ExecutionEngine::GatingDecision::kAllowSameOrigin, 1);
+  // Second navigation should be blocked by static blocklist = 3.
+  histogram_tester_for_init_.ExpectBucketCount(
+      "Actor.NavigationGating.GatingDecision",
+      ExecutionEngine::GatingDecision::kBlockByStaticList, 1);
+}
+
+IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
+                       NavigationWithOpaqueSourceOriginBlockedUnderWildcard) {
+  const GURL blocked_url =
+      embedded_https_test_server().GetURL("example.com", "/actor/blank.html");
+  SafetyListManager::GetInstance()->ParseSafetyLists(R"json(
+    {
+      "navigation_blocked": [
+        { "from": "*", "to": "[*.]example.com" }
+      ]
+    }
+  )json");
+
+  OpenGlicAndCreateTask();
+
+  RunTestSequence(CreateMockWebClientRequest(
+      content::JsReplace(kHandleNavigationConfirmationTempl, false)));
+
+  std::unique_ptr<ToolRequest> navigate_blocked =
+      MakeNavigateRequest(*active_tab(), blocked_url.spec());
+
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(navigate_blocked), result.GetCallback());
+  ExpectErrorResult(result,
+                    mojom::ActionResultCode::kTriggeredNavigationBlocked);
+  // Second navigation should be blocked by static blocklist = 3.
+  histogram_tester_for_init_.ExpectBucketCount(
+      "Actor.NavigationGating.GatingDecision",
+      ExecutionEngine::GatingDecision::kBlockByStaticList, 1);
+}
+
+IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
+                       NavigateToSandboxedPageBlockedByStaticList) {
+  const GURL start_url =
+      embedded_https_test_server().GetURL("example.com", "/actor/link.html");
+  const GURL sandboxed_url = embedded_https_test_server().GetURL(
+      "foo.com", "/actor/sandbox_main_frame_csp.html");
+
+  SafetyListManager::GetInstance()->ParseSafetyLists(R"json(
+    {
+      "navigation_blocked": [
+        { "from": "[*.]example.com", "to": "[*.]foo.com" }
+      ]
+    }
+  )json");
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
+  OpenGlicAndCreateTask();
+
+  RunTestSequence(CreateMockWebClientRequest(
+      content::JsReplace(kHandleNavigationConfirmationTempl, false)));
+
+  EXPECT_TRUE(content::ExecJs(web_contents(),
+                              content::JsReplace("setLink($1);", start_url)));
+
+  ClickTarget("#link", mojom::ActionResultCode::kOk);
+
+  EXPECT_TRUE(content::ExecJs(
+      web_contents(), content::JsReplace("setLink($1);", sandboxed_url)));
+  ClickTarget("#link", mojom::ActionResultCode::kTriggeredNavigationBlocked);
+
+  // First navigation should be allowed due to same origin.
+  histogram_tester_for_init_.ExpectBucketCount(
+      "Actor.NavigationGating.GatingDecision",
+      ExecutionEngine::GatingDecision::kAllowSameOrigin, 1);
+  // Second navigation should be blocked by static blocklist = 3.
+  histogram_tester_for_init_.ExpectBucketCount(
+      "Actor.NavigationGating.GatingDecision",
+      ExecutionEngine::GatingDecision::kBlockByStaticList, 1);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
