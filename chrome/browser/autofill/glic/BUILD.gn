@@ -1,0 +1,17 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("glic") {
+  sources = [
+    "actor_form_filling_service.h",
+    "actor_form_filling_service_impl.cc",
+    "actor_form_filling_service_impl.h",
+  ]
+  deps = [ "//components/tabs:public" ]
+  public_deps = [
+    "//base",
+    "//components/autofill/core/browser/integrators/glic:actor_form_filling_types",
+    "//components/autofill/core/common",
+  ]
+}

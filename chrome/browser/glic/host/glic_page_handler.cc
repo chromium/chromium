@@ -17,6 +17,7 @@
 #include "base/observer_list_types.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -1763,7 +1764,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
           static_cast<int64_t>(request.requested_data);
       for (const auto& suggestion : request.suggestions) {
         auto mojo_suggestion = actor::webui::mojom::AutofillSuggestion::New();
-        mojo_suggestion->id = suggestion.id;
+        mojo_suggestion->id = base::NumberToString(suggestion.id.value());
         mojo_suggestion->title = suggestion.title;
         mojo_suggestion->details = suggestion.details;
         if (suggestion.icon) {
