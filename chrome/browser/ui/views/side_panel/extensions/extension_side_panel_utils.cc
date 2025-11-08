@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/views/side_panel/extensions/extension_side_panel_manager.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/common/extension_id.h"
 
@@ -110,9 +111,7 @@ void OpenGlobalExtensionSidePanel(BrowserWindowInterface& browser_window,
   // There's an open contextual entry in the active tab. In this case, we set
   // the active global entry in the global registry, which will take effect
   // when a different tab activates.
-  SidePanelRegistry* global_registry = browser_window.GetFeatures()
-                                           .side_panel_coordinator()
-                                           ->GetWindowRegistry();
+  SidePanelRegistry* global_registry = SidePanelRegistry::From(&browser_window);
   CHECK(global_registry);
   SidePanelEntry* entry = global_registry->GetEntryForKey(extension_key);
   CHECK(entry);
@@ -159,9 +158,8 @@ void CloseGlobalExtensionSidePanel(BrowserWindowInterface* browser_window,
     // active global panel for this extension, reset the global side panel so it
     // doesn’t open when switching to any tab that doesn’t contain a contextual
     // panel (for example, a new tab).
-    SidePanelCoordinator* coordinator =
-        browser_window->GetFeatures().side_panel_coordinator();
-    SidePanelRegistry* global_registry = coordinator->GetWindowRegistry();
+    SidePanelRegistry* const global_registry =
+        SidePanelRegistry::From(browser_window);
     if (IsKeyActiveInRegistry(global_registry, extension_key)) {
       global_registry->ResetActiveEntryFor(
           ExtensionSidePanelCoordinator::GetPanelType());

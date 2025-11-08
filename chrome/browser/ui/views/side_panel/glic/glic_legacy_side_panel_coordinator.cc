@@ -13,10 +13,12 @@
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_actions.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_scope.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
 #include "components/tabs/public/tab_interface.h"
 #include "ui/actions/actions.h"
@@ -35,15 +37,12 @@ actions::ActionItem* GetGlicActionItem(actions::ActionItem* root_action_item) {
 
 }  // namespace
 
-GlicLegacySidePanelCoordinator::GlicLegacySidePanelCoordinator(
-    Browser* browser,
-    SidePanelCoordinator* side_panel_coordinator)
+GlicLegacySidePanelCoordinator::GlicLegacySidePanelCoordinator(Browser* browser)
     : browser_(browser),
       glic_service_(
           GlicKeyedServiceFactory::GetGlicKeyedService(browser->GetProfile())),
       glic_action_(
-          GetGlicActionItem(browser->GetActions()->root_action_item())),
-      side_panel_coordinator_(side_panel_coordinator) {
+          GetGlicActionItem(browser->GetActions()->root_action_item())) {
   DCHECK(!GlicEnabling::IsMultiInstanceEnabledByFlags());
 
   on_glic_enabled_changed_subscription_ =
@@ -71,7 +70,8 @@ void GlicLegacySidePanelCoordinator::CreateAndRegisterEntry(
 
 void GlicLegacySidePanelCoordinator::OnEntryShown(SidePanelEntry* entry) {
   SidePanelEntry::Key glic_key = SidePanelEntry::Key(SidePanelEntry::Id::kGlic);
-  if (side_panel_coordinator_->IsSidePanelEntryShowing(glic_key)) {
+  if (browser_->GetFeatures().side_panel_ui()->IsSidePanelEntryShowing(
+          glic_key)) {
     glic_service_->GetSingleInstanceWindowController().SidePanelShown(browser_);
   }
 }
@@ -82,8 +82,7 @@ void GlicLegacySidePanelCoordinator::OnGlicEnabledChanged() {
   // Show / hide browser action.
   glic_action_->SetVisible(isAllowed);
   // Register / deregister side panel entry.
-  SidePanelRegistry* global_registry =
-      side_panel_coordinator_->GetWindowRegistry();
+  SidePanelRegistry* global_registry = SidePanelRegistry::From(browser_);
   if (isAllowed) {
     CreateAndRegisterEntry(browser_, global_registry);
   } else {
@@ -93,8 +92,10 @@ void GlicLegacySidePanelCoordinator::OnGlicEnabledChanged() {
         global_registry->GetEntryForKey(glic_key);
     if (glic_entry) {
       glic_entry->RemoveObserver(this);
-      if (side_panel_coordinator_->IsSidePanelEntryShowing(glic_key)) {
-        side_panel_coordinator_->Close(glic_entry->type());
+      SidePanelUI* const side_panel_ui =
+          browser_->GetFeatures().side_panel_ui();
+      if (side_panel_ui->IsSidePanelEntryShowing(glic_key)) {
+        side_panel_ui->Close(glic_entry->type());
       }
     }
     global_registry->Deregister(glic_key);

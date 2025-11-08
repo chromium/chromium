@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_waiter.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_header.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_header_controller.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_toolbar_pinning_controller.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
@@ -45,7 +46,8 @@ SidePanelCoordinator::SidePanelCoordinator(BrowserView* browser_view)
 SidePanelCoordinator::~SidePanelCoordinator() = default;
 
 void SidePanelCoordinator::Init(Browser* browser) {
-  SidePanelUtil::PopulateGlobalEntries(browser, window_registry_.get());
+  SidePanelUtil::PopulateGlobalEntries(browser,
+                                       SidePanelRegistry::From(browser));
 }
 
 void SidePanelCoordinator::TearDownPreBrowserWindowDestruction() {
@@ -235,7 +237,7 @@ SidePanelEntry* SidePanelCoordinator::GetEntryForKey(
     return contextual_entry;
   }
 
-  return window_registry_->GetEntryForKey(entry_key);
+  return SidePanelRegistry::From(browser_)->GetEntryForKey(entry_key);
 }
 
 void SidePanelCoordinator::PopulateSidePanel(
@@ -319,7 +321,7 @@ void SidePanelCoordinator::PopulateSidePanel(
 
 void SidePanelCoordinator::ClearCachedEntryViews(
     SidePanelEntry::PanelType type) {
-  window_registry_->ClearCachedEntryViews(type);
+  SidePanelRegistry::From(browser_)->ClearCachedEntryViews(type);
   TabStripModel* model = browser_view_->browser()->tab_strip_model();
   for (tabs::TabInterface* tab : *model) {
     tab->GetTabFeatures()->side_panel_registry()->ClearCachedEntryViews(type);
@@ -417,7 +419,7 @@ void SidePanelCoordinator::OnViewVisibilityChanged(views::View* observed_view,
   if (auto* contextual_registry = GetActiveContextualRegistry()) {
     contextual_registry->ResetActiveEntryFor(side_panel->type());
   }
-  window_registry_->ResetActiveEntryFor(side_panel->type());
+  SidePanelRegistry::From(browser_)->ResetActiveEntryFor(side_panel->type());
   ClearCachedEntryViews(side_panel->type());
 
   // `OnEntryWillDeregister` (triggered by calling `OnEntryHidden`) may

@@ -72,7 +72,6 @@ class SidePanelUIBase : public SidePanelUI, public TabStripModelObserver {
                                bool for_tab) const;
 
   Browser* browser() const { return browser_; }
-  SidePanelRegistry* GetWindowRegistry() { return window_registry_.get(); }
 
  protected:
   friend class SidePanelEntryWaiter;
@@ -167,9 +166,6 @@ class SidePanelUIBase : public SidePanelUI, public TabStripModelObserver {
   SidePanelEntryWaiter* waiter(SidePanelEntry::PanelType type) const;
 
   const raw_ptr<Browser> browser_;
-
-  // This registry is scoped to the browser window and is owned by this class.
-  std::unique_ptr<SidePanelRegistry> window_registry_;
 
  private:
   // TabStripModelObserver:

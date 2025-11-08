@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_key.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_observer.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_scope.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 class SidePanelCoordinator;
 
@@ -26,6 +27,7 @@ class WebContents;
 class SidePanelRegistry final : public SidePanelEntryObserver,
                                 public SidePanelEntryScope {
  public:
+  DECLARE_USER_DATA(SidePanelRegistry);
   using SidePanelEntryScope::GetBrowserWindowInterface;
   using SidePanelEntryScope::GetTabInterface;
 
@@ -42,6 +44,9 @@ class SidePanelRegistry final : public SidePanelEntryObserver,
   // Gets the contextual registry for the tab associated with |web_contents|.
   // Can return null for non-tab contents.
   static SidePanelRegistry* GetDeprecated(content::WebContents* web_contents);
+
+  static SidePanelRegistry* From(
+      BrowserWindowInterface* browser_window_interface);
 
   SidePanelEntry* GetEntryForKey(const SidePanelEntry::Key& entry_key);
   void ResetActiveEntryFor(SidePanelEntry::PanelType type);
@@ -88,6 +93,8 @@ class SidePanelRegistry final : public SidePanelEntryObserver,
   const std::variant<tabs::TabInterface*, BrowserWindowInterface*> owner_;
 
   std::optional<SidePanelEntryKey> deregistering_entry_key_ = std::nullopt;
+
+  ui::ScopedUnownedUserData<SidePanelRegistry> scoped_unowned_user_data_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_REGISTRY_H_

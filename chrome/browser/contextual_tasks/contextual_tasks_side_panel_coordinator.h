@@ -11,7 +11,6 @@
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 class BrowserWindowInterface;
-class SidePanelCoordinator;
 class SidePanelEntryScope;
 class SidePanelRegistry;
 
@@ -48,9 +47,8 @@ class ContextualTasksSidePanelCoordinator {
   };
   DECLARE_USER_DATA(ContextualTasksSidePanelCoordinator);
 
-  ContextualTasksSidePanelCoordinator(
-      BrowserWindowInterface* browser_window,
-      SidePanelCoordinator* side_panel_coordinator);
+  explicit ContextualTasksSidePanelCoordinator(
+      BrowserWindowInterface* browser_window);
   ContextualTasksSidePanelCoordinator(
       const ContextualTasksSidePanelCoordinator&) = delete;
   ContextualTasksSidePanelCoordinator& operator=(
@@ -114,9 +112,6 @@ class ContextualTasksSidePanelCoordinator {
 
   // Subscription to listen for tab change.
   base::CallbackListSubscription active_tab_subscription_;
-
-  // `side_panel_coordinator_` is expected to outlife this class.
-  const raw_ptr<SidePanelCoordinator> side_panel_coordinator_ = nullptr;
 
   // Context controller to query task information.
   const raw_ptr<ContextualTasksContextController> context_controller_;

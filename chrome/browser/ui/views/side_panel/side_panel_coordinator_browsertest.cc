@@ -297,7 +297,7 @@ class SidePanelCoordinatorTest : public InProcessBrowserTest {
   }
 
   SidePanelRegistry* global_registry() {
-    return coordinator()->GetWindowRegistry();
+    return SidePanelRegistry::From(browser());
   }
 
   int MaybeAdjustWidthForNewLayout(int expected_width) {
@@ -1801,9 +1801,8 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
   SidePanel* side_panel = browser_view->contents_height_side_panel();
   ASSERT_TRUE(side_panel);
 
-  SidePanelEntry* bookmarks_entry =
-      coordinator()->GetWindowRegistry()->GetEntryForKey(
-          SidePanelEntry::Key(SidePanelEntryId::kBookmarks));
+  SidePanelEntry* const bookmarks_entry = global_registry()->GetEntryForKey(
+      SidePanelEntry::Key(SidePanelEntryId::kBookmarks));
   ASSERT_TRUE(bookmarks_entry);
 
   // Set a custom default width for the bookmarks side panel.
@@ -1833,9 +1832,8 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
   SidePanel* side_panel = browser_view->contents_height_side_panel();
   ASSERT_TRUE(side_panel);
 
-  SidePanelEntry* bookmarks_entry =
-      coordinator()->GetWindowRegistry()->GetEntryForKey(
-          SidePanelEntry::Key(SidePanelEntryId::kBookmarks));
+  SidePanelEntry* const bookmarks_entry = global_registry()->GetEntryForKey(
+      SidePanelEntry::Key(SidePanelEntryId::kBookmarks));
   ASSERT_TRUE(bookmarks_entry);
 
   const int kTestDefaultContentWidth = 450;
@@ -1867,9 +1865,8 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
   coordinator()->DisableAnimationsForTesting();
 
   // Ensure the bookmarks side panel does not have a custom default width.
-  SidePanelEntry* bookmarks_entry =
-      coordinator()->GetWindowRegistry()->GetEntryForKey(
-          SidePanelEntry::Key(SidePanelEntryId::kBookmarks));
+  SidePanelEntry* const bookmarks_entry = global_registry()->GetEntryForKey(
+      SidePanelEntry::Key(SidePanelEntryId::kBookmarks));
   ASSERT_TRUE(bookmarks_entry);
   bookmarks_entry->SetDefaultContentWidthForTesting(
       SidePanelEntry::kSidePanelDefaultContentWidth);

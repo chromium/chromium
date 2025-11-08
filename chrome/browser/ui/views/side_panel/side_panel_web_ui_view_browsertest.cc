@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_key.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
@@ -75,8 +76,9 @@ class SidePanelWebUIViewTest : public InProcessBrowserTest {
   // InProcessBrowserTest:
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
-    GetSidePanelCoordinator()->SetNoDelaysForTesting(true);
-    GetSidePanelCoordinator()->DisableAnimationsForTesting();
+    SidePanelUI* const side_panel_ui = browser()->GetFeatures().side_panel_ui();
+    side_panel_ui->SetNoDelaysForTesting(true);
+    side_panel_ui->DisableAnimationsForTesting();
   }
 
   // Registers a per-browser-window side panel entry with the test's default
@@ -93,7 +95,7 @@ class SidePanelWebUIViewTest : public InProcessBrowserTest {
             browser()->profile()),
         /*default_content_width_callback=*/base::NullCallback());
 
-    GetSidePanelCoordinator()->GetWindowRegistry()->Register(std::move(entry));
+    SidePanelRegistry::From(browser())->Register(std::move(entry));
   }
 
   // Registers a per-tab side panel entry with the test's default browser active
@@ -116,21 +118,18 @@ class SidePanelWebUIViewTest : public InProcessBrowserTest {
         ->side_panel_registry()
         ->Register(std::move(entry));
   }
-
-  SidePanelCoordinator* GetSidePanelCoordinator() {
-    return browser()->GetFeatures().side_panel_coordinator();
-  }
 };
 
 IN_PROC_BROWSER_TEST_F(SidePanelWebUIViewTest,
                        BrowserInterfaceSetForWindowSidePanels) {
   // Register and show a window scoped side panel.
   RegisterBrowserSidePanelEntry();
-  GetSidePanelCoordinator()->Show(kTestGlobalEntryId);
-  EXPECT_TRUE(GetSidePanelCoordinator()->IsSidePanelEntryShowing(
+  SidePanelUI* const side_panel_ui = browser()->GetFeatures().side_panel_ui();
+  side_panel_ui->Show(kTestGlobalEntryId);
+  EXPECT_TRUE(side_panel_ui->IsSidePanelEntryShowing(
       SidePanelEntryKey(kTestGlobalEntryId)));
   content::WebContents* side_panel_webui_contents =
-      GetSidePanelCoordinator()->GetWebContentsForTest(kTestGlobalEntryId);
+      side_panel_ui->GetWebContentsForTest(kTestGlobalEntryId);
   EXPECT_TRUE(side_panel_webui_contents);
 
   // The browser window interface should be correctly set on the webview's
@@ -143,11 +142,12 @@ IN_PROC_BROWSER_TEST_F(SidePanelWebUIViewTest,
                        TabScopedSidePanel_WebUIContextSetCorrectlyOnShow) {
   // Register and show a tab scoped side panel.
   RegisterTabSidePanelEntry();
-  GetSidePanelCoordinator()->Show(kTestTabEntryId);
-  EXPECT_TRUE(GetSidePanelCoordinator()->IsSidePanelEntryShowing(
+  SidePanelUI* const side_panel_ui = browser()->GetFeatures().side_panel_ui();
+  side_panel_ui->Show(kTestTabEntryId);
+  EXPECT_TRUE(side_panel_ui->IsSidePanelEntryShowing(
       SidePanelEntryKey(kTestTabEntryId)));
   content::WebContents* side_panel_webui_contents =
-      GetSidePanelCoordinator()->GetWebContentsForTest(kTestTabEntryId);
+      side_panel_ui->GetWebContentsForTest(kTestTabEntryId);
   EXPECT_TRUE(side_panel_webui_contents);
 
   // The browser and window interface should be correctly set on the webview's
@@ -172,11 +172,12 @@ IN_PROC_BROWSER_TEST_F(
 
   // Register and show a tab scoped side panel.
   RegisterTabSidePanelEntry();
-  GetSidePanelCoordinator()->Show(kTestTabEntryId);
-  EXPECT_TRUE(GetSidePanelCoordinator()->IsSidePanelEntryShowing(
+  SidePanelUI* const side_panel_ui = browser()->GetFeatures().side_panel_ui();
+  side_panel_ui->Show(kTestTabEntryId);
+  EXPECT_TRUE(side_panel_ui->IsSidePanelEntryShowing(
       SidePanelEntryKey(kTestTabEntryId)));
   content::WebContents* side_panel_webui_contents =
-      GetSidePanelCoordinator()->GetWebContentsForTest(kTestTabEntryId);
+      side_panel_ui->GetWebContentsForTest(kTestTabEntryId);
   EXPECT_TRUE(side_panel_webui_contents);
 
   // The browser and window interface should be correctly set on the webview's

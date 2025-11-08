@@ -11,6 +11,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
@@ -76,10 +77,8 @@ class ContextualTasksWebView : public views::WebView {
 };
 
 ContextualTasksSidePanelCoordinator::ContextualTasksSidePanelCoordinator(
-    BrowserWindowInterface* browser_window,
-    SidePanelCoordinator* side_panel_coordinator)
+    BrowserWindowInterface* browser_window)
     : browser_window_(browser_window),
-      side_panel_coordinator_(side_panel_coordinator),
       context_controller_(
           ContextualTasksContextControllerFactory::GetForProfile(
               browser_window->GetProfile())),
@@ -87,7 +86,7 @@ ContextualTasksSidePanelCoordinator::ContextualTasksSidePanelCoordinator(
           browser_window->GetProfile())),
       scoped_unowned_user_data_(browser_window->GetUnownedUserDataHost(),
                                 *this) {
-  CreateAndRegisterEntry(side_panel_coordinator_->GetWindowRegistry());
+  CreateAndRegisterEntry(SidePanelRegistry::From(browser_window_));
   active_tab_subscription_ =
       browser_window->RegisterActiveTabDidChange(base::BindRepeating(
           &ContextualTasksSidePanelCoordinator::OnActiveTabChanged,
@@ -130,24 +129,27 @@ void ContextualTasksSidePanelCoordinator::Show() {
     return;
   }
 
-  side_panel_coordinator_->Show(
+  browser_window_->GetFeatures().side_panel_ui()->Show(
       SidePanelEntry::Key(SidePanelEntry::Id::kContextualTasks));
   UpdateOpenStateForCurrentTask(/*is_open=*/true);
 }
 
 void ContextualTasksSidePanelCoordinator::Close() {
   UpdateOpenStateForCurrentTask(/*is_open=*/false);
-  side_panel_coordinator_->Close(SidePanelEntry::PanelType::kToolbar);
+  browser_window_->GetFeatures().side_panel_ui()->Close(
+      SidePanelEntry::PanelType::kToolbar);
 }
 
 bool ContextualTasksSidePanelCoordinator::IsSidePanelOpen() {
-  return side_panel_coordinator_->IsSidePanelShowing(
+  return browser_window_->GetFeatures().side_panel_ui()->IsSidePanelShowing(
       SidePanelEntry::PanelType::kToolbar);
 }
 
 bool ContextualTasksSidePanelCoordinator::IsSidePanelOpenForContextualTask() {
-  return side_panel_coordinator_->IsSidePanelEntryShowing(
-      SidePanelEntry::Key(SidePanelEntry::Id::kContextualTasks));
+  return browser_window_->GetFeatures()
+      .side_panel_ui()
+      ->IsSidePanelEntryShowing(
+          SidePanelEntry::Key(SidePanelEntry::Id::kContextualTasks));
 }
 
 void ContextualTasksSidePanelCoordinator::TransferWebContentsFromTab(

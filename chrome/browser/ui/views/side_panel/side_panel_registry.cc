@@ -17,17 +17,25 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/common/extension_id.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
+
+DEFINE_USER_DATA(SidePanelRegistry);
 
 SidePanelRegistry::SidePanelRegistry(tabs::TabInterface* tab_interface)
     : SidePanelEntryScope(SidePanelEntryScope::ScopeType::kTab),
-      owner_(tab_interface) {
+      owner_(tab_interface),
+      scoped_unowned_user_data_(tab_interface->GetUnownedUserDataHost(),
+                                *this) {
   CHECK(tab_interface);
 }
 
 SidePanelRegistry::SidePanelRegistry(
     BrowserWindowInterface* browser_window_interface)
     : SidePanelEntryScope(SidePanelEntryScope::ScopeType::kBrowser),
-      owner_(browser_window_interface) {
+      owner_(browser_window_interface),
+      scoped_unowned_user_data_(
+          browser_window_interface->GetUnownedUserDataHost(),
+          *this) {
   CHECK(browser_window_interface);
 }
 
@@ -38,6 +46,12 @@ SidePanelRegistry* SidePanelRegistry::GetDeprecated(
     content::WebContents* web_contents) {
   tabs::TabInterface* tab = tabs::TabInterface::GetFromContents(web_contents);
   return tab->GetTabFeatures()->side_panel_registry();
+}
+
+// static
+SidePanelRegistry* SidePanelRegistry::From(
+    BrowserWindowInterface* browser_window_interface) {
+  return Get(browser_window_interface->GetUnownedUserDataHost());
 }
 
 SidePanelEntry* SidePanelRegistry::GetEntryForKey(

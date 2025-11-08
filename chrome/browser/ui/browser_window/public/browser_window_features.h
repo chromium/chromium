@@ -73,6 +73,7 @@ class BrowserSelectFileDialogController;
 class ScrimViewController;
 class SearchboxContextData;
 class SidePanelCoordinator;
+class SidePanelRegistry;
 class SidePanelUI;
 class SigninViewController;
 class SplitViewIphController;
@@ -572,6 +573,8 @@ class BrowserWindowFeatures {
 #endif
 
   std::unique_ptr<ScrimViewController> scrim_view_controller_;
+
+  std::unique_ptr<SidePanelRegistry> side_panel_registry_;
 
   std::unique_ptr<SidePanelCoordinator> side_panel_coordinator_;
 

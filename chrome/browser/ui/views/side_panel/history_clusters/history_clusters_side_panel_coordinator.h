@@ -16,7 +16,6 @@ class Profile;
 class HistoryClustersSidePanelUI;
 class SidePanelEntryScope;
 class SidePanelRegistry;
-class SidePanelCoordinator;
 
 namespace views {
 class View;
@@ -26,10 +25,8 @@ class View;
 // the history clusters SidePanelEntry.
 class HistoryClustersSidePanelCoordinator {
  public:
-  HistoryClustersSidePanelCoordinator(
-      BrowserWindowInterface* browser,
-      Profile* profile,
-      SidePanelCoordinator* side_panel_coordinator);
+  HistoryClustersSidePanelCoordinator(BrowserWindowInterface* browser,
+                                      Profile* profile);
   ~HistoryClustersSidePanelCoordinator();
 
   // Returns whether HistoryClustersSidePanelCoordinator is supported for
@@ -59,7 +56,6 @@ class HistoryClustersSidePanelCoordinator {
 
   const raw_ref<BrowserWindowInterface> browser_;
   const raw_ref<Profile> profile_;
-  const raw_ref<SidePanelCoordinator> side_panel_coordinator_;
 
   // A weak reference to the last-created UI object for this browser.
   base::WeakPtr<HistoryClustersSidePanelUI> history_clusters_ui_;

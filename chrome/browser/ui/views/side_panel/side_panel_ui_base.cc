@@ -39,9 +39,7 @@ SidePanelUIBase::PanelData::PanelData()
     : waiter(std::make_unique<SidePanelEntryWaiter>()) {}
 SidePanelUIBase::PanelData::~PanelData() = default;
 
-SidePanelUIBase::SidePanelUIBase(Browser* browser)
-    : browser_(browser),
-      window_registry_(std::make_unique<SidePanelRegistry>(browser)) {
+SidePanelUIBase::SidePanelUIBase(Browser* browser) : browser_(browser) {
   for (auto panel_type : SidePanelEntry::PanelTypes::All()) {
     panel_data_[panel_type] = std::make_unique<PanelData>();
   }
@@ -139,7 +137,7 @@ std::optional<SidePanelUIBase::UniqueKey> SidePanelUIBase::GetUniqueKeyForKey(
   }
 
   // For window-scoped side panels.
-  if (window_registry_->GetEntryForKey(entry_key)) {
+  if (SidePanelRegistry::From(browser_)->GetEntryForKey(entry_key)) {
     return UniqueKey{/*tab_handle=*/std::nullopt, entry_key};
   }
   return std::nullopt;
@@ -155,7 +153,7 @@ SidePanelEntry* SidePanelUIBase::GetEntryForUniqueKey(
       entry = tab_registry->GetEntryForKey(unique_key.key);
     }
   } else {
-    entry = window_registry_->GetEntryForKey(unique_key.key);
+    entry = SidePanelRegistry::From(browser_)->GetEntryForKey(unique_key.key);
   }
   return entry;
 }
@@ -206,11 +204,12 @@ SidePanelUIBase::GetNewActiveKeyOnTabChanged(SidePanelEntry::PanelType type) {
   }
 
   std::optional<UniqueKey> current_key = this->current_key(type);
-  if (current_key && window_registry_->GetEntryForKey(current_key->key)) {
+  SidePanelRegistry* const window_registry = SidePanelRegistry::From(browser_);
+  if (current_key && window_registry->GetEntryForKey(current_key->key)) {
     return GetUniqueKeyForKey(current_key->key);
   }
 
-  if (auto entry = window_registry_->GetActiveEntryFor(type)) {
+  if (auto entry = window_registry->GetActiveEntryFor(type)) {
     return GetUniqueKeyForKey((*entry)->key());
   }
 

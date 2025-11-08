@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_waiter.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_window.h"
@@ -33,7 +34,8 @@ WebUIBrowserSidePanelUI::WebUIBrowserSidePanelUI(Browser* browser)
   // coordinators are constructed prior to this call. For the remaining
   // global entries, we should either move construction to
   // BrowserWindowFeatures::Init() or else explicitly disable support.
-  SidePanelUtil::PopulateGlobalEntries(browser, GetWindowRegistry());
+  SidePanelUtil::PopulateGlobalEntries(browser,
+                                       SidePanelRegistry::From(browser));
 }
 
 WebUIBrowserSidePanelUI::~WebUIBrowserSidePanelUI() = default;
@@ -219,7 +221,8 @@ void WebUIBrowserSidePanelUI::OnSidePanelClosed(
         SidePanelEntry::PanelType::kContent);
   }
 
-  window_registry_->ResetActiveEntryFor(SidePanelEntry::PanelType::kContent);
+  SidePanelRegistry::From(browser())->ResetActiveEntryFor(
+      SidePanelEntry::PanelType::kContent);
 
   current_side_panel_view_.reset();
   // TODO(webium): Clear cached views for registry entries for global and

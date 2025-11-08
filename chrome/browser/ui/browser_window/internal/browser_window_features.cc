@@ -102,6 +102,7 @@
 #include "chrome/browser/ui/views/side_panel/history_clusters/history_clusters_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/reading_list/reading_list_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/views/tabs/recent_activity_bubble_dialog_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_action_container.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_coordinator.h"
@@ -334,6 +335,9 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
       std::make_unique<BrowserLocationBarModelDelegate>(tab_strip_model_);
   location_bar_model_ = std::make_unique<LocationBarModelImpl>(
       location_bar_model_delegate_.get(), content::kMaxURLDisplayChars);
+
+  side_panel_registry_ =
+      GetUserDataFactory().CreateInstance<SidePanelRegistry>(*browser, browser);
 
   reading_list_side_panel_coordinator_ =
       std::make_unique<ReadingListSidePanelCoordinator>(
@@ -651,7 +655,7 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
 
   history_clusters_side_panel_coordinator_ =
       std::make_unique<HistoryClustersSidePanelCoordinator>(
-          browser_, browser_->GetProfile(), side_panel_coordinator_.get());
+          browser_, browser_->GetProfile());
 
   if (CommentsSidePanelCoordinator::IsSupported()) {
     comments_side_panel_coordinator_ =
@@ -662,7 +666,7 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
       glic::GlicKeyedService::Get(browser_view->GetProfile())) {
     glic_side_panel_coordinator_ =
         std::make_unique<glic::GlicLegacySidePanelCoordinator>(
-            browser_view->browser(), side_panel_coordinator_.get());
+            browser_view->browser());
   }
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
@@ -671,15 +675,14 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
         GetUserDataFactory()
             .CreateInstance<
                 contextual_tasks::ContextualTasksSidePanelCoordinator>(
-                *browser_, browser_, side_panel_coordinator_.get());
+                *browser_, browser_);
   }
 
   side_panel_coordinator_->Init(browser_view->browser());
 
   extension_side_panel_manager_ =
       std::make_unique<extensions::ExtensionSidePanelManager>(
-          browser_view->browser(),
-          side_panel_coordinator_->GetWindowRegistry());
+          browser_view->browser(), side_panel_registry_.get());
 
   immersive_mode_controller_ =
       GetUserDataFactory().CreateInstanceWithFactoryMethod(

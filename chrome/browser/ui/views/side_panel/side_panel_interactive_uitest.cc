@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_key.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/views/toolbar/pinned_action_toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -72,7 +73,8 @@ class SidePanelInteractiveTest : public InteractiveBrowserTest {
 IN_PROC_BROWSER_TEST_F(SidePanelInteractiveTest, SidePanelNotShownOnPwa) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTabElementId);
   GURL second_tab_url("https://test.com");
-  auto* coordinator = browser()->GetFeatures().side_panel_coordinator();
+  auto* const side_panel_ui =
+      browser()->browser_window_features()->side_panel_ui();
 
   RunTestSequence(
       // Add a second tab to the tab strip
@@ -101,11 +103,11 @@ IN_PROC_BROWSER_TEST_F(SidePanelInteractiveTest, SidePanelNotShownOnPwa) {
               return std::make_unique<views::View>();
             }),
             /*default_content_width_callback=*/base::NullCallback()));
-        coordinator->Show(SidePanelEntry::Id::kCustomizeChrome);
+        side_panel_ui->Show(SidePanelEntry::Id::kCustomizeChrome);
       })),
       WaitForShow(kSidePanelElementId),
-      CheckResult(base::BindLambdaForTesting([coordinator]() {
-                    return coordinator->IsSidePanelEntryShowing(
+      CheckResult(base::BindLambdaForTesting([side_panel_ui]() {
+                    return side_panel_ui->IsSidePanelEntryShowing(
                         SidePanelEntryKey(SidePanelEntryId::kCustomizeChrome));
                   }),
                   true));
@@ -226,7 +228,7 @@ class PinnedSidePanelInteractiveTest : public InteractiveFeaturePromoTest {
 
   auto ShowSidePanelForKey(SidePanelEntryKey key) {
     return Do(base::BindLambdaForTesting([=, this]() {
-      browser()->GetFeatures().side_panel_coordinator()->Show(key);
+      browser()->browser_window_features()->side_panel_ui()->Show(key);
     }));
   }
 };
@@ -237,8 +239,7 @@ IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest,
                        OpenReadingModeSidePanel) {
   // Replace the contents of the ReadingMode side panel with an empty view so it
   // loads faster.
-  auto* registry =
-      browser()->GetFeatures().side_panel_coordinator()->GetWindowRegistry();
+  auto* const registry = SidePanelRegistry::From(browser());
   registry->Deregister(SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything));
   registry->Register(std::make_unique<SidePanelEntry>(
       SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything),
@@ -246,13 +247,13 @@ IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest,
           [](SidePanelEntryScope&) { return std::make_unique<views::View>(); }),
       /*default_content_width_callback=*/base::NullCallback()));
 
-  SidePanelCoordinator* const coordinator =
-      browser()->GetFeatures().side_panel_coordinator();
-  coordinator->SetNoDelaysForTesting(true);
+  SidePanelUI* const side_panel_ui =
+      browser()->browser_window_features()->side_panel_ui();
+  side_panel_ui->SetNoDelaysForTesting(true);
 
   chrome::ExecuteCommand(browser(), IDC_SHOW_READING_MODE_SIDE_PANEL);
 
-  EXPECT_TRUE(coordinator->IsSidePanelEntryShowing(
+  EXPECT_TRUE(side_panel_ui->IsSidePanelEntryShowing(
       SidePanelEntryKey(SidePanelEntryId::kReadAnything)));
 }
 
@@ -274,14 +275,14 @@ IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest,
           [](SidePanelEntryScope&) { return std::make_unique<views::View>(); }),
       /*default_content_width_callback=*/base::NullCallback()));
 
-  SidePanelCoordinator* const coordinator =
-      browser()->GetFeatures().side_panel_coordinator();
-  coordinator->SetNoDelaysForTesting(true);
+  SidePanelUI* const side_panel_ui =
+      browser()->browser_window_features()->side_panel_ui();
+  side_panel_ui->SetNoDelaysForTesting(true);
 
   RunTestSequence(
       EnsureNotPresent(kSidePanelElementId), OpenCustomizeChromeSidePanel(),
-      CheckResult(base::BindLambdaForTesting([coordinator]() {
-                    return coordinator->IsSidePanelEntryShowing(
+      CheckResult(base::BindLambdaForTesting([side_panel_ui]() {
+                    return side_panel_ui->IsSidePanelEntryShowing(
                         SidePanelEntryKey(SidePanelEntryId::kCustomizeChrome));
                   }),
                   true));
@@ -290,8 +291,7 @@ IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest,
 // Verify that we can open the history cluster side panel from the app menu.
 IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest,
                        OpenHistoryClusterSidePanel) {
-  auto* registry =
-      browser()->GetFeatures().side_panel_coordinator()->GetWindowRegistry();
+  auto* const registry = SidePanelRegistry::From(browser());
   registry->Deregister(
       SidePanelEntry::Key(SidePanelEntry::Id::kHistoryClusters));
   registry->Register(std::make_unique<SidePanelEntry>(
@@ -300,12 +300,9 @@ IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest,
           [](SidePanelEntryScope&) { return std::make_unique<views::View>(); }),
       /*default_content_width_callback=*/base::NullCallback()));
 
-  SidePanelCoordinator* const coordinator =
-      browser()->GetFeatures().side_panel_coordinator();
-
   chrome::ExecuteCommand(browser(), IDC_SHOW_HISTORY_CLUSTERS_SIDE_PANEL);
 
-  EXPECT_TRUE(coordinator->IsSidePanelEntryShowing(
+  EXPECT_TRUE(browser()->GetFeatures().side_panel_ui()->IsSidePanelEntryShowing(
       SidePanelEntryKey(SidePanelEntryId::kHistoryClusters)));
 }
 
@@ -357,8 +354,7 @@ IN_PROC_BROWSER_TEST_F(
     MAYBE_PinnedToolbarButtonsHighlightWhileSidePanelVisible) {
   // Replace the contents of the ReadingMode side panel with an empty view so it
   // loads faster.
-  auto* registry =
-      browser()->GetFeatures().side_panel_coordinator()->GetWindowRegistry();
+  auto* const registry = SidePanelRegistry::From(browser());
   registry->Deregister(SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything));
   registry->Register(std::make_unique<SidePanelEntry>(
       SidePanelEntryKey(SidePanelEntry::Id::kReadAnything),
@@ -425,7 +421,8 @@ IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest,
                        SwitchBetweenDifferentEntries) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kBookmarksWebContentsId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kReadLaterWebContentsId);
-  auto* coordinator = browser()->GetFeatures().side_panel_coordinator();
+  auto* const side_panel_ui =
+      browser()->browser_window_features()->side_panel_ui();
 
   RunTestSequence(
       // Ensure the side panel isn't open
@@ -435,8 +432,8 @@ IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest,
       InstrumentNonTabWebView(kBookmarksWebContentsId,
                               kBookmarkSidePanelWebViewElementId),
 
-      CheckResult(base::BindLambdaForTesting([coordinator]() {
-                    return coordinator->IsSidePanelEntryShowing(
+      CheckResult(base::BindLambdaForTesting([side_panel_ui]() {
+                    return side_panel_ui->IsSidePanelEntryShowing(
                         SidePanelEntryKey(SidePanelEntryId::kBookmarks));
                   }),
                   true),
@@ -445,8 +442,8 @@ IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest,
       InstrumentNonTabWebView(kReadLaterWebContentsId,
                               kReadLaterSidePanelWebViewElementId),
 
-      CheckResult(base::BindLambdaForTesting([coordinator]() {
-                    return coordinator->IsSidePanelEntryShowing(
+      CheckResult(base::BindLambdaForTesting([side_panel_ui]() {
+                    return side_panel_ui->IsSidePanelEntryShowing(
                         SidePanelEntryKey(SidePanelEntryId::kReadingList));
                   }),
                   true),
@@ -496,11 +493,8 @@ IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest,
       // Deregister the entry and verify the side panel and ephemeral toolbar
       // button are hidden.
       Do([this]() {
-        browser()
-            ->GetFeatures()
-            .side_panel_coordinator()
-            ->GetWindowRegistry()
-            ->Deregister(SidePanelEntry::Key(SidePanelEntry::Id::kBookmarks));
+        SidePanelRegistry::From(browser())->Deregister(
+            SidePanelEntry::Key(SidePanelEntry::Id::kBookmarks));
       }),
       WaitForHide(kSidePanelElementId), WaitForHide(kBookmarksButton));
 }

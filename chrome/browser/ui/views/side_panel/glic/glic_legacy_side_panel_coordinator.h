@@ -9,7 +9,6 @@
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/ui/browser_actions.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_observer.h"
 #include "ui/actions/actions.h"
 
@@ -29,8 +28,7 @@ class GlicKeyedService;
 // GlicMultiInstance flag is off (global panel scope).
 class GlicLegacySidePanelCoordinator : public SidePanelEntryObserver {
  public:
-  GlicLegacySidePanelCoordinator(Browser* browser,
-                                 SidePanelCoordinator* side_panel_coordinator);
+  explicit GlicLegacySidePanelCoordinator(Browser* browser);
   ~GlicLegacySidePanelCoordinator() override = default;
 
   // Create and register the Glic side panel entry.
@@ -51,7 +49,6 @@ class GlicLegacySidePanelCoordinator : public SidePanelEntryObserver {
   raw_ptr<Browser> browser_ = nullptr;
   raw_ptr<GlicKeyedService> glic_service_ = nullptr;
   raw_ptr<actions::ActionItem> glic_action_ = nullptr;
-  raw_ptr<SidePanelCoordinator> side_panel_coordinator_ = nullptr;
   base::CallbackListSubscription on_glic_enabled_changed_subscription_;
 };
 

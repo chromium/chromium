@@ -13,7 +13,6 @@
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/side_panel/comments/comments_side_panel_coordinator.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/test/tab_strip_interactive_test_mixin.h"
@@ -133,10 +132,7 @@ IN_PROC_BROWSER_TEST_F(CommentsSidePanelCoordinatorInteractiveUiTest,
                        EntryIsRegistered) {
   // The comments entry should be registered in the window registry.
   EXPECT_EQ(
-      browser()
-          ->GetFeatures()
-          .side_panel_coordinator()
-          ->GetWindowRegistry()
+      SidePanelRegistry::From(browser())
           ->GetEntryForKey(SidePanelEntry::Key(SidePanelEntry::Id::kComments))
           ->key()
           .id(),
