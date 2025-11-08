@@ -3129,41 +3129,6 @@ suite('NewTabPageRealboxTest', () => {
       await microtasksFinished();
     });
 
-    test(
-        'fires dropdown-visible-changed event when the feature is on',
-        async () => {
-          // Confirm false -> true causes an event.
-          let whenDropdownVisibleChanged =
-              eventToPromise('dropdown-visible-changed', realbox);
-          realbox.$.input.value = 'he';
-          realbox.$.input.dispatchEvent(new InputEvent('input'));
-
-          const matches = [createSearchMatch()];
-          testProxy.callbackRouterRemote.autocompleteResultChanged(
-              createAutocompleteResult({
-                input: realbox.$.input.value.trimStart(),
-                matches: matches,
-              }));
-          assertTrue(await areMatchesShowing());
-          const e1 = await whenDropdownVisibleChanged;
-          assertTrue(e1.detail.value);
-
-          // Confirm true -> false causes an event.
-          whenDropdownVisibleChanged =
-              eventToPromise('dropdown-visible-changed', realbox);
-          // Pressing 'Escape' when no matches are selected closes the dropdown.
-          const escapeEvent = new KeyboardEvent('keydown', {
-            bubbles: true,
-            cancelable: true,
-            composed: true,  // So it propagates across shadow DOM boundary.
-            key: 'Escape',
-          });
-          realbox.$.input.dispatchEvent(escapeEvent);
-          assertFalse(await areMatchesShowing());
-          const e2 = await whenDropdownVisibleChanged;
-          assertFalse(e2.detail.value);
-        });
-
     test('hides recent tab chip when searchbox is not focused', async () => {
       const tabInfo = {
         tabId: 1,

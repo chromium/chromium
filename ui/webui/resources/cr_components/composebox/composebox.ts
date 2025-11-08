@@ -265,23 +265,12 @@ export class ComposeboxElement extends I18nMixinLit
     const changedPrivateProperties =
         changedProperties as Map<PropertyKey, unknown>;
 
-    let showDropdownUpdated = changedPrivateProperties.has('showDropdown_');
     // When the result initially gets set check if dropdown should show.
     if (changedPrivateProperties.has('input_') ||
         changedPrivateProperties.has('result_') ||
         changedPrivateProperties.has('contextFilesSize_') ||
         changedPrivateProperties.has('errorScrimVisible_')) {
-      const prevValue = this.showDropdown_;
       this.showDropdown_ = this.computeShowDropdown_();
-      showDropdownUpdated ||= this.showDropdown_ !== prevValue;
-    }
-    if (this.ntpRealboxNextEnabled && showDropdownUpdated) {
-      this.dispatchEvent(
-          new CustomEvent('composebox-dropdown-visible-changed', {
-            bubbles: true,
-            composed: true,
-            detail: {value: this.showDropdown_},
-          }));
     }
   }
 

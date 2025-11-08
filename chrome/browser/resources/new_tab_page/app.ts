@@ -302,8 +302,6 @@ export class AppElement extends AppElementBase {
 
       ntpNextFeaturesEnabled_: {type: Boolean},
 
-      dropdownIsVisible_: {type: Boolean, reflect: true},
-
       searchboxInputFocused_: {type: Boolean},
       composeboxInputFocused_: {type: Boolean},
       /**
@@ -383,7 +381,6 @@ export class AppElement extends AppElementBase {
       loadTimeData.getBoolean('searchboxCyclingPlaceholders');
   protected accessor ntpNextFeaturesEnabled_: boolean =
       loadTimeData.getBoolean('ntpNextFeaturesEnabled');
-  protected accessor dropdownIsVisible_: boolean = false;
   protected accessor searchboxInputFocused_: boolean = false;
   protected accessor composeboxInputFocused_: boolean = false;
   protected accessor showScrim_: boolean = false;
@@ -1281,10 +1278,6 @@ export class AppElement extends AppElementBase {
 
   protected showThemeAttribution_(): boolean {
     return !!this.theme_?.backgroundImage?.attributionUrl;
-  }
-
-  protected onDropdownVisibleChanged_(e: CustomEvent<{value: boolean}>) {
-    this.dropdownIsVisible_ = e.detail.value;
   }
 
   protected onInputFocusChanged_(e: CustomEvent<{value: boolean}>) {
