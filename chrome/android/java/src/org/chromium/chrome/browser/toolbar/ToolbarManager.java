@@ -67,10 +67,8 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
-import org.chromium.chrome.browser.browser_controls.TopControlLayer;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker.TopControlType;
-import org.chromium.chrome.browser.browser_controls.TopControlsStacker.TopControlVisibility;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelManager.OverlayPanelManagerObserver;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
@@ -179,7 +177,6 @@ import org.chromium.chrome.browser.toolbar.top.ToolbarUtils.ToolbarComponentId;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator;
 import org.chromium.chrome.browser.toolbar.top.ViewShiftingActionBarDelegate;
 import org.chromium.chrome.browser.toolbar.top.tab_strip.TabStripTransitionCoordinator;
-import org.chromium.chrome.browser.toolbar.top.tab_strip.TabStripTransitionCoordinator.TabStripHeightObserver;
 import org.chromium.chrome.browser.toolbar.top.tab_strip.TabStripTransitionCoordinator.TabStripTransitionDelegate;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
@@ -365,8 +362,7 @@ public class ToolbarManager
     private final OverlayPanelManagerObserver mOverlayPanelManagerObserver;
     private final ObservableSupplierImpl<Boolean> mOverlayPanelVisibilitySupplier =
             new ObservableSupplierImpl<>();
-    private TabStripHeightSupplier mTabStripHeightSupplier;
-    private @Nullable TabStripHeightObserver mTabStripHeightObserver;
+    private final TabStripTopControlLayer mTabStripTopControlLayer;
     private final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
     private final @Nullable MultiInstanceManager mMultiInstanceManager;
     private final OneshotSupplierImpl<TabStripTransitionDelegate>
@@ -1165,16 +1161,16 @@ public class ToolbarManager
                         progressBar,
                         historyDelegate,
                         topControlsStacker);
-        mTabStripHeightSupplier = new TabStripHeightSupplier(mToolbar.getTabStripHeight());
+        mTabStripTopControlLayer = new TabStripTopControlLayer(mToolbar.getTabStripHeight());
         if (ChromeFeatureList.sTopControlsRefactor.isEnabled()) {
-            mTopControlsStacker.addControl(mTabStripHeightSupplier);
+            mTopControlsStacker.addControl(mTabStripTopControlLayer);
         }
         mActionModeController =
                 new ActionModeController(
                         mActivity,
                         mActionBarDelegate,
                         toolbarActionModeCallback,
-                        mTabStripHeightSupplier);
+                        mTabStripTopControlLayer);
 
         tabObscuringHandler.addObserver(this);
 
@@ -1272,7 +1268,7 @@ public class ToolbarManager
                         mLocationBarModel,
                         clickDelegate,
                         scrimTarget,
-                        mTabStripHeightSupplier,
+                        mTabStripTopControlLayer,
                         mBottomControlsStacker);
 
         var omnibox = mLocationBar.getOmniboxStub();
@@ -2401,7 +2397,7 @@ public class ToolbarManager
                 mSuppressToolbarSceneLayerSupplier,
                 onProgressInfoUpdate,
                 mCaptureResourceIdSupplier);
-        mTabStripHeightSupplier.set(mToolbar.getTabStripHeight());
+        mTabStripTopControlLayer.set(mToolbar.getTabStripHeight());
 
         mAttachStateChangeListener =
                 new OnAttachStateChangeListener() {
@@ -2430,17 +2426,7 @@ public class ToolbarManager
             stripLayoutHelperManager.setIsTabStripHiddenByHeightTransition(
                     mToolbar.getTabStripHeight() == 0);
         }
-
-        mTabStripHeightObserver =
-                new TabStripHeightObserver() {
-                    @Override
-                    public void onTransitionRequested(int newHeight) {
-                        // TODO(crbug.com/41481630): Supplier can have an inconsistent value
-                        //  with mToolbar.getTabStripHeight().
-                        mTabStripHeightSupplier.set(newHeight);
-                    }
-                };
-        mToolbar.addTabStripHeightObserver(mTabStripHeightObserver);
+        mToolbar.addTabStripHeightObserver(mTabStripTopControlLayer);
 
         mUpdateMenuItemHelper = UpdateMenuItemHelper.getInstance(profile);
         if (mMenuStateObserver != null) {
@@ -2618,12 +2604,8 @@ public class ToolbarManager
             mToolbar.removeOnAttachStateChangeListener(mAttachStateChangeListener);
             mAttachStateChangeListener = null;
         }
-        if (mTabStripHeightObserver != null) {
-            mToolbar.removeTabStripHeightObserver(mTabStripHeightObserver);
-            mTabStripHeightObserver = null;
-        }
-        mTopControlsStacker.removeControl(mTabStripHeightSupplier);
-        mTabStripHeightSupplier = null;
+        mToolbar.removeTabStripHeightObserver(mTabStripTopControlLayer);
+        mTopControlsStacker.removeControl(mTabStripTopControlLayer);
         mToolbar.destroy();
         mToolbarLongPressMenuHandler.destroy();
 
@@ -2831,7 +2813,7 @@ public class ToolbarManager
 
     /** Get the supplier for the current height of the tab strip. Always returns a valid integer. */
     public ObservableSupplier<Integer> getTabStripHeightSupplier() {
-        return mTabStripHeightSupplier;
+        return mTabStripTopControlLayer;
     }
 
     /** Return the TabStripTransitionCoordinator. */
@@ -3479,39 +3461,5 @@ public class ToolbarManager
      */
     public @Nullable ExtensionToolbarCoordinator getExtensionToolbarCoordinator() {
         return mExtensionToolbarCoordinator;
-    }
-
-    // Top control layer representing tab strip. It can have different state than the current
-    // height store in the StripLayoutHelperManager, as this represents the target height it is
-    // going for during tab strip height transition.
-    private static class TabStripHeightSupplier extends ObservableSupplierImpl<Integer>
-            implements TopControlLayer {
-
-        public TabStripHeightSupplier(int tabStripHeight) {
-            super(tabStripHeight);
-        }
-
-        @Override
-        public @TopControlType int getTopControlType() {
-            return TopControlType.TABSTRIP;
-        }
-
-        @Override
-        public int getTopControlHeight() {
-            return get();
-        }
-
-        @Override
-        public int getTopControlVisibility() {
-            // The tab strip adds to the total height of the top controls regardless of whether or
-            // not it is "visible" to the user, i.e. we take its inherent height into account even
-            // when scrolled offscreen or obscured, except when hidden by height transition.
-            //
-            // TODO(crbug.com/417238089): Possibly add way to notify stacker of visibility changes.
-            boolean isTabStripVisibleAsLayer = get() > 0;
-            return isTabStripVisibleAsLayer
-                    ? TopControlVisibility.VISIBLE
-                    : TopControlVisibility.HIDDEN;
-        }
     }
 }
