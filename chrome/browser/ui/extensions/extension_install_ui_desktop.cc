@@ -7,7 +7,6 @@
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
@@ -45,11 +44,6 @@ using extensions::Extension;
 namespace {
 
 Browser* FindOrCreateVisibleBrowser(Profile* profile) {
-  // TODO(mpcomplete): remove this workaround for http://crbug.com/244246
-  // after fixing http://crbug.com/38676.
-  if (!IncognitoModePrefs::CanOpenBrowser(profile)) {
-    return nullptr;
-  }
   chrome::ScopedTabbedBrowserDisplayer displayer(profile);
   Browser* browser = displayer.browser();
   if (browser->tab_strip_model()->count() == 0) {
@@ -80,11 +74,10 @@ void ShowAppInstalledNotification(
 #else
   Profile* current_profile = profile->GetOriginalProfile();
   Browser* browser = FindOrCreateVisibleBrowser(current_profile);
-  if (browser) {
-    NavigateParams params(
-        GetSingletonTabNavigateParams(browser, GURL(chrome::kChromeUIAppsURL)));
-    Navigate(&params);
-  }
+  CHECK(browser);
+  NavigateParams params(
+      GetSingletonTabNavigateParams(browser, GURL(chrome::kChromeUIAppsURL)));
+  Navigate(&params);
 #endif
 }
 
@@ -114,6 +107,7 @@ void ExtensionInstallUIDesktop::OnInstallSuccess(
   // the install in a normal window.
   Profile* current_profile = profile()->GetOriginalProfile();
   Browser* browser = FindOrCreateVisibleBrowser(current_profile);
+  CHECK(browser);
 
   if (!extension->is_app()) {
     ShowBubble(extension, browser, *icon);
@@ -123,10 +117,6 @@ void ExtensionInstallUIDesktop::OnInstallSuccess(
   if (!use_app_installed_bubble()) {
     ShowAppInstalledNotification(extension, profile());
     return;
-  }
-
-  if (browser) {
-    ShowBubble(extension, browser, *icon);
   }
 }
 
