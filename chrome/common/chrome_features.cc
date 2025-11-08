@@ -820,6 +820,8 @@ BASE_FEATURE(kGlicPanelResetSizeAndLocationOnOpen,
 
 BASE_FEATURE(kGlicPersonalContext, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kGlicPopupWindowsEnabled, base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kGlicRecordActorJournal, base::FEATURE_ENABLED_BY_DEFAULT);
 extern const base::FeatureParam<int> kGlicRecordActorJournalFeedbackProductId{
     &kGlicRecordActorJournal, "glic-record-actor-journal-feedback-product-id",

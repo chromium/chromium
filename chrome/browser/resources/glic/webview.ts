@@ -352,8 +352,15 @@ export class WebviewController {
     if (!this.host) {
       return;
     }
+
     event.preventDefault();
-    this.host.openLinkInNewTab(event.targetUrl);
+    if (loadTimeData.getBoolean('glicPopupWindowsEnabled') &&
+        event.windowOpenDisposition === 'new_popup') {
+      this.host.openLinkInPopup(
+          event.targetUrl, event.initialWidth, event.initialHeight);
+    } else {
+      this.host.openLinkInNewTab(event.targetUrl);
+    }
     event.stopPropagation();
   }
 

@@ -151,6 +151,7 @@ declare global {
         initialWidth: number;
         initialHeight: number;
         name: string;
+        windowOpenDisposition: string;
       }
 
       export interface MediaPermissionRequest {

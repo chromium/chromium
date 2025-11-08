@@ -739,6 +739,20 @@ class InteractiveGlicTestMixin : public T {
         expected_count, "CheckTabCount");
   }
 
+  auto CheckPopupCount(int expected_count) {
+    return Api::CheckResult(
+        [] {
+          int popup_count = 0;
+          for (Browser* browser : *BrowserList::GetInstance()) {
+            if (browser && browser->is_type_popup()) {
+              popup_count++;
+            }
+          }
+          return popup_count;
+        },
+        expected_count, "CheckPopupCount");
+  }
+
   auto CheckOcclusionTracked(bool expect_is_tracked) {
     return Api::CheckResult(
         [this]() {

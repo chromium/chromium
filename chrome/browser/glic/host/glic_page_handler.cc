@@ -104,6 +104,8 @@
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/window_open_disposition.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/geometry/mojom/geometry.mojom.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/widget/widget.h"
@@ -595,6 +597,30 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     }
     page_handler_->host().RegisterConversation(std::move(info),
                                                std::move(callback));
+  }
+
+  void OpenLinkInPopup(const ::GURL& url,
+                       int32_t popup_width,
+                       int32_t popup_height) override {
+    if (!url.SchemeIsHTTPOrHTTPS()) {
+      return;
+    }
+
+    content::WebContents* parent_web_contents = page_handler_->webui_contents();
+    gfx::NativeView native_view = parent_web_contents->GetContentNativeView();
+    const display::Display& display =
+        display::Screen::Get()->GetDisplayNearestView(native_view);
+    const gfx::Rect work_area = display.work_area();
+
+    // Calculate the center coordinates.
+    const int x = work_area.x() + (work_area.width() - popup_width) / 2;
+    const int y = work_area.y() + (work_area.height() - popup_height) / 2;
+
+    NavigateParams params(profile_, url, ui::PAGE_TRANSITION_LINK);
+    params.disposition = WindowOpenDisposition::NEW_POPUP;
+    params.opened_by_another_window = true;
+    params.window_features.bounds = gfx::Rect(x, y, popup_width, popup_height);
+    Navigate(&params);
   }
 
   void WebClientCreated(

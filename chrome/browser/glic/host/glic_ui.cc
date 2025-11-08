@@ -200,6 +200,9 @@ GlicUI::GlicUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
                      features::kGlicReloadMaxLoadingTimeMs.Get());
   source->AddBoolean("caaGuestError", base::FeatureList::IsEnabled(
                                           features::kGlicCaaGuestError));
+  source->AddBoolean(
+      "glicPopupWindowsEnabled",
+      base::FeatureList::IsEnabled(features::kGlicPopupWindowsEnabled));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(GlicUI)
