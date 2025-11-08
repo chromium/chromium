@@ -14,6 +14,7 @@ _default_allowed_violations = [
   # TODO(b/452971335): Audit entries below.
   "../../chrome/browser/internal/resources/additional_modules_list.input",
   "../../chrome/browser/internal/transform_additional_modules_list.py",
+  "../../chrome/common/request_header_integrity/internal/*",
   "../../components/autofill/core/browser/form_parsing/internal_resources/0_default_regex_patterns.json",
   "../../components/plus_addresses/core/browser/resources/internal/*",
   "../../components/vector_icons/google_chrome/*",
