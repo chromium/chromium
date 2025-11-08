@@ -3460,6 +3460,7 @@
 <translation id="6654224358955673568">Формално</translation>
 <translation id="6654244995031366386">Стакло (са текстуром)</translation>
 <translation id="6655085656059574817">Ако налог остане повезан, брже ћете плаћати користећи <ph name="BNPL_ISSUER_NAME" />, али можете да опозовете везу ако одете на <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /></translation>
+<translation id="6656935431494847393">Обухвата информације као што су резервације летова и информације о возилу</translation>
 <translation id="6657585470893396449">Лозинка</translation>
 <translation id="6659246032834639189">Ова цена је ниска</translation>
 <translation id="6660413144148052430">локација</translation>
@@ -4288,6 +4289,7 @@
 <translation id="7987087088851949178">Издаваоци опције Купите одмах, платите касније доступни за плаћање током времена отворени су на целом екрану.</translation>
 <translation id="799149739215780103">Повезивање</translation>
 <translation id="7992044431894087211">Настављено је дељење садржаја екрана са апликацијом <ph name="APPLICATION_TITLE" /></translation>
+<translation id="799384093520583425">Организација је блокирала коришћење Алатки за програмере на овој страници</translation>
 <translation id="7995512525968007366">Није наведено</translation>
 <translation id="7997855386298213183">дељене картице</translation>
 <translation id="8001912761979890298">Овај сервер не може да докаже да је <ph name="DOMAIN" /> јер користи безбедносни сертификат који Chromium или конфигурација система за шифровање веб-саобраћаја не сматрају поузданим. Узрок томе је можда погрешна конфигурација или нападач који је прекинуо везу. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Прикажи сертификат<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
@@ -4675,6 +4677,7 @@
 <translation id="865255447216708819">Филм за штампање на задњој страни</translation>
 <translation id="8654126188050905496">55×91 mm</translation>
 <translation id="8660780831677950176">Често посећујете у ово време</translation>
+<translation id="8661820486298572829">Аутоматски попуњен кôд</translation>
 <translation id="8662463432865928030">Комерцијални објекти</translation>
 <translation id="8663226718884576429">Резиме поруџбине, <ph name="TOTAL_LABEL" />, још детаља</translation>
 <translation id="8663909737634214500">Оптички диск</translation>
@@ -4756,6 +4759,7 @@
 <translation id="8781278378794969337">Дугме Преведи страницу, активирајте га да бисте превели ову страницу помоћу Google преводиоца</translation>
 <translation id="8785658048882205566">Мотоцикли</translation>
 <translation id="8790007591277257123">&amp;Понови брисање</translation>
+<translation id="8790668801880409584">Сачувај и попуни информације о путовању</translation>
 <translation id="8792272652220298572">Пластика (сјајна)</translation>
 <translation id="8792621596287649091">Можете да изгубите приступ налогу за <ph name="ORG_NAME" /> или би могло да дође до крађе идентитета. Chromium вам препоручује да одмах промените лозинку.</translation>
 <translation id="8792626944327216835">микрофон</translation>
@@ -4831,6 +4835,7 @@
 <translation id="8922013791253848639">Увек дозвољавај огласе на овом сајту</translation>
 <translation id="8922734931659847428">Ограничена листа URL-ова страница које посећујете на којима се дешавају <ph name="BEGIN_LINK" />догађаји са застарелом технологијом<ph name="END_LINK" /></translation>
 <translation id="892588693504540538">Бушење у горњем десном углу</translation>
+<translation id="8926082624786998759">Алатке за програмере нису дозвољене на овој страници</translation>
 <translation id="8926389886865778422">Не питај ме поново</translation>
 <translation id="8926400492587758246">Плаћајте у малим месечним ратама</translation>
 <translation id="8932102934695377596">Сат вам касни</translation>

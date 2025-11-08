@@ -1054,7 +1054,9 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5596627076506792578">Fler alternativ</translation>
 <translation id="5599455543593328020">Inkognitoläge</translation>
 <translation id="5601180634394228718">Du hittar fler inställningar som använder data för att förbättra Chrome-upplevelsen under <ph name="BEGIN_LINK" />Googles tjänster<ph name="END_LINK" />.</translation>
+<translation id="5601924940067278327">Använd dina flikar med mera på alla dina enheter</translation>
 <translation id="5611398002774823980">Spara i kontot</translation>
+<translation id="5613381935190035031">Logga in i Chrome som <ph name="EMAIL" /> om du vill få tillgång till dina flikar med mera på alla dina enheter</translation>
 <translation id="5614625640221885312">Logga in om du vill ha dina bokmärken, lösenord med mera på alla dina enheter</translation>
 <translation id="5619633276517849615">Organisationen har aktiverat Säker webbsökning</translation>
 <translation id="5620163320393916465">Inga sparade lösenord</translation>
@@ -1699,6 +1701,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="8110024788458304985">Hjälp oss att förbättra funktioner och prestanda i Chrome</translation>
 <translation id="8110087112193408731">Vill du att din aktivitet i Chrome ska visas i Digitalt välmående?</translation>
 <translation id="8118117428362942925">Prata med din förälder (<ph name="PARENT_NAME" />) om du behöver hjälp</translation>
+<translation id="8118151008374483324">Logga in i Chrome om du vill få tillgång till dina flikar med mera på alla dina enheter</translation>
 <translation id="8120286190326371840">Inga utsatta lösenord på den här enheten</translation>
 <translation id="8122623268651408616">Sorterar efter senaste</translation>
 <translation id="8127542551745560481">Redigera startsida</translation>
@@ -1956,6 +1959,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="9212845824145208577">Markeringen kan inte utökas mer i riktning nedåt. Testa att börja någonstans längre ned på sidan.</translation>
 <translation id="9218430445555521422">Ange som standard</translation>
 <translation id="9219103736887031265">Bilder</translation>
+<translation id="9222198206152536936">Logga in som <ph name="EMAIL" /> om du vill få tillgång till dina flikar med mera på alla dina enheter</translation>
 <translation id="924447568950697217">Använda Chrome som standardwebbläsare</translation>
 <translation id="926205370408745186">Ta bort din aktivitet i Chrome från Digitalt välmående</translation>
 <translation id="927968626442779827">Använd begränsat läge i Google Chrome</translation>

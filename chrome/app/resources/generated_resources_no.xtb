@@ -1895,6 +1895,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2281863813036651454">Venstre museknapp</translation>
 <translation id="2282146716419988068">GPU-prosess</translation>
 <translation id="228293613124499805">De fleste nettsteder du besøker, lagrer sannsynligvis data på enheten din. Ofte gjøres dette for å gi deg en bedre opplevelse, ved at preferansene dine eller informasjonen du deler med nettstedet, blir lagret. Vi anbefaler at du lar denne innstillingen være på.</translation>
+<translation id="2283599456633275070">Reise</translation>
 <translation id="2285109769884538519">{COUNT,plural, =0{Åpne alle i &amp;ny fanegruppe}=1{Åpne i &amp;ny fanegruppe}other{Åpne alle ({COUNT}) i &amp;ny fanegruppe}}</translation>
 <translation id="2285942871162473373">Gjenkjente ikke fingeravtrykket ditt. Prøv på nytt.</translation>
 <translation id="2287617382468007324">IPP-adresse for utskrift</translation>
@@ -5286,6 +5287,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4622051949285931942">Vil du slå av automatiske oppdateringer?</translation>
 <translation id="4623167406982293031">Bekreft kontoen</translation>
 <translation id="4623189117674524348">Systemet kunne ikke godkjenne API-tilgang for denne enheten.</translation>
+<translation id="4623894491222334521">Identitetsdokumenter</translation>
 <translation id="4624054169152573743">Fargetema</translation>
 <translation id="4625078469366263107">Slå på appen</translation>
 <translation id="4625905218692741757">Grå standardfarge</translation>
@@ -10863,6 +10865,7 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8505669004895429027">Små besparelser</translation>
 <translation id="8507227974644337342">Skjermoppløsning</translation>
 <translation id="850763987657366362">Kan ikke importere sertifikatet</translation>
+<translation id="8508532351844333131"><ph name="WEBSITE_ORIGIN" /> lagrer informasjon på mobilenheten din</translation>
 <translation id="8509177919508253835">Tilbakestill sikkerhetsnøkler, og opprett PIN-koder</translation>
 <translation id="8509646642152301857">Nedlastingen av ordboken for stavekontroll mislyktes.</translation>
 <translation id="8509967119010808787">For å søke i fanene dine, klikk her</translation>

@@ -1053,7 +1053,9 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="5596627076506792578">Flere valgmuligheder</translation>
 <translation id="5599455543593328020">Inkognitotilstand</translation>
 <translation id="5601180634394228718">Du kan finde flere indstillinger, der bruger data til at forbedre din Chrome-oplevelse, ved at gå til <ph name="BEGIN_LINK" />Google-tjenester<ph name="END_LINK" />.</translation>
+<translation id="5601924940067278327">Få adgang til dine faner m.m. på alle dine enheder</translation>
 <translation id="5611398002774823980">Gem på konto</translation>
+<translation id="5613381935190035031">Log ind i Chrome som <ph name="EMAIL" /> for at få adgang til dine faner m.m. på alle dine enheder</translation>
 <translation id="5614625640221885312">Log ind for at få adgang til dine bogmærker, adgangskoder og meget mere på alle dine enheder</translation>
 <translation id="5619633276517849615">Din organisation har aktiveret Beskyttet browsing</translation>
 <translation id="5620163320393916465">Der er ingen gemte adgangskoder</translation>
@@ -1698,6 +1700,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="8110024788458304985">Vær med til at forbedre funktioner og ydeevne i Chrome</translation>
 <translation id="8110087112193408731">Vil du se din Chrome-aktivitet i Digital balance?</translation>
 <translation id="8118117428362942925">Spørg din forælder (<ph name="PARENT_NAME" />), hvis du har brug for hjælp</translation>
+<translation id="8118151008374483324">Log ind i Chrome for at få adgang til dine faner m.m. på alle dine enheder</translation>
 <translation id="8120286190326371840">Ingen kompromitterede adgangskoder på denne enhed</translation>
 <translation id="8122623268651408616">Sorteres efter nyeste</translation>
 <translation id="8127542551745560481">Rediger startside</translation>
@@ -1955,6 +1958,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="9212845824145208577">Du kan ikke komme længere ned. Prøv at starte længere nede på siden.</translation>
 <translation id="9218430445555521422">Angiv som standard</translation>
 <translation id="9219103736887031265">Billeder</translation>
+<translation id="9222198206152536936">Log ind som <ph name="EMAIL" /> for at få adgang til dine faner m.m. på alle dine enheder</translation>
 <translation id="924447568950697217">Gør Chrome til din standardbrowser</translation>
 <translation id="926205370408745186">Fjern din Chrome-aktivitet fra Digital balance</translation>
 <translation id="927968626442779827">Brug Lite-tilstand i Google Chrome</translation>

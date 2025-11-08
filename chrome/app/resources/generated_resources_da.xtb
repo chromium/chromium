@@ -1903,6 +1903,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2281863813036651454">Venstre museknap</translation>
 <translation id="2282146716419988068">GPU-proces</translation>
 <translation id="228293613124499805">De fleste af de websites, du besøger, gemmer sandsynligvis data på din enhed, ofte for at forbedre din brugeroplevelse ved at gemme de præferencer eller oplysninger, du deler med websitet. Vi anbefaler, at denne indstilling forbliver aktiveret.</translation>
+<translation id="2283599456633275070">Rejser</translation>
 <translation id="2285109769884538519">{COUNT,plural, =0{Åbn alle i gruppen &amp;Ny fane}=1{Åbn i gruppen &amp;Ny fane}one{Åbn ({COUNT}) i gruppen &amp;Ny fane}other{Åbn alle ({COUNT}) i gruppen &amp;Ny fane}}</translation>
 <translation id="2285942871162473373">Dit fingeraftryk blev ikke genkendt. Prøv igen.</translation>
 <translation id="2287617382468007324">IPP-adresse til udskrivning</translation>
@@ -5296,6 +5297,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4622051949285931942">Vil du deaktivere automatiske opdateringer?</translation>
 <translation id="4623167406982293031">Verificer konto</translation>
 <translation id="4623189117674524348">Systemet har ikke godkendt API-adgang for denne enhed.</translation>
+<translation id="4623894491222334521">Id-dokumenter</translation>
 <translation id="4624054169152573743">Farvetema</translation>
 <translation id="4625078469366263107">Aktivér app</translation>
 <translation id="4625905218692741757">Grå standardfarve</translation>

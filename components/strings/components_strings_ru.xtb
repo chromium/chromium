@@ -1221,7 +1221,7 @@
 <translation id="299990983510665749">Автомобили типа "хетчбэк"</translation>
 <translation id="3002501248619246229">Проверить данные входного лотка</translation>
 <translation id="3005723025932146533">Открыть сохраненную копию</translation>
-<translation id="300580149047131921">Разрешение использовалось недавно</translation>
+<translation id="300580149047131921">Использовалось недавно</translation>
 <translation id="3006864083554020786">домашний адрес</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab, чтобы посмотреть доступные действия, затем Ввод, чтобы выполнить выбранное.</translation>
 <translation id="3010991137650052245">Чтобы использовать функцию "<ph name="PERMISSION" />" на этом сайте, предоставьте доступ браузеру <ph name="SHORT_PRODUCT_NAME" />.</translation>
@@ -3460,6 +3460,7 @@
 <translation id="6654224358955673568">Сделать формальнее</translation>
 <translation id="6654244995031366386">Стекло (текстурированное)</translation>
 <translation id="6655085656059574817">Привязанный аккаунт сервиса "<ph name="BNPL_ISSUER_NAME" />" поможет оплачивать покупки быстрее. Если вы захотите отменить связь, перейдите на страницу <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" />.</translation>
+<translation id="6656935431494847393">Например, сведения о бронировании авиабилетов, автомобилях и т. д.</translation>
 <translation id="6657585470893396449">Пароль</translation>
 <translation id="6659246032834639189">Это низкая цена</translation>
 <translation id="6660413144148052430">геолокация</translation>
@@ -4674,6 +4675,7 @@
 <translation id="865255447216708819">Пленка для обратной печати</translation>
 <translation id="8654126188050905496">55 x 91 мм</translation>
 <translation id="8660780831677950176">Часто посещаете в это время дня</translation>
+<translation id="8661820486298572829">Код, подставленный автоматически</translation>
 <translation id="8662463432865928030">Коммерческая недвижимость</translation>
 <translation id="8663226718884576429">Информация о заказе, <ph name="TOTAL_LABEL" />, дополнительные сведения</translation>
 <translation id="8663909737634214500">Оптический диск</translation>
@@ -4755,6 +4757,7 @@
 <translation id="8781278378794969337">Кнопка "Перевести страницу". Нажмите ее, чтобы перевести эту страницу с помощью Google Переводчика.</translation>
 <translation id="8785658048882205566">Мотоциклы</translation>
 <translation id="8790007591277257123">&amp;Повторить удаление</translation>
+<translation id="8790668801880409584">Сохранять и автоматически вставлять информацию о поездках</translation>
 <translation id="8792272652220298572">Пластик (глянцевый)</translation>
 <translation id="8792621596287649091">Кто-то посторонний мог получить доступ к вашим личным данным или аккаунту в домене <ph name="ORG_NAME" />. Рекомендуем немедленно сменить пароль.</translation>
 <translation id="8792626944327216835">микрофон</translation>

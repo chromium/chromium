@@ -1354,7 +1354,7 @@
 <translation id="1913749768968678106">Транслировать, сохранить, поделиться</translation>
 <translation id="19147273405311768">Сбросить настройки панели инструментов</translation>
 <translation id="1915073950770830761">Canary</translation>
-<translation id="1915307458270490472">Закрыть</translation>
+<translation id="1915307458270490472">Завершить</translation>
 <translation id="1915734383465415025">Номер филиала</translation>
 <translation id="1916502483199172559">Аватар по умолчанию (красный)</translation>
 <translation id="1916770123977586577">Чтобы применить к сайту новые настройки, перезагрузите страницу</translation>
@@ -1890,6 +1890,7 @@
 <translation id="2281863813036651454">Нажатие левой кнопки мыши</translation>
 <translation id="2282146716419988068">Процесс GPU</translation>
 <translation id="228293613124499805">Большинство сайтов, которые вы посещаете, скорее всего, сохраняют на устройстве такую информацию, как ваши предпочтения или данные, которыми вы делитесь с ними. Чаще всего это делается для вашего удобства. Мы рекомендуем не отключать этот параметр.</translation>
+<translation id="2283599456633275070">Путешествия</translation>
 <translation id="2285109769884538519">{COUNT,plural, =0{Открыть все URL в &amp;новой группе вкладок}=1{Открыть в &amp;новой группе вкладок}one{Открыть все URL ({COUNT}) в &amp;новой группе вкладок}few{Открыть все URL ({COUNT}) в &amp;новой группе вкладок}many{Открыть все URL ({COUNT}) в &amp;новой группе вкладок}other{Открыть все URL ({COUNT}) в &amp;новой группе вкладок}}</translation>
 <translation id="2285942871162473373">Не удалось распознать отпечаток пальца. Повторите попытку.</translation>
 <translation id="2287617382468007324">Печать адреса IPP…</translation>
@@ -2516,7 +2517,7 @@
 <translation id="271033894570825754">Новое</translation>
 <translation id="2710507903599773521">Устройство <ph name="DEVICE_TYPE" /> разблокировано</translation>
 <translation id="2710676967944965821">Сбросить все разрешения для устройств чтения смарт-карт?</translation>
-<translation id="2713106313042589954">Выключить камеру</translation>
+<translation id="2713106313042589954">Отключить камеру</translation>
 <translation id="2713444072780614174">Белый</translation>
 <translation id="2714180132046334502">Темный фон</translation>
 <translation id="2714393097308983682">Google Play</translation>
@@ -2952,7 +2953,7 @@
 <translation id="3003623123441819449">Кеш CSS</translation>
 <translation id="3003967365858406397">Устройство "<ph name="PHONE_NAME" />" создаст закрытое подключение к сети Wi-Fi.</translation>
 <translation id="3004385386820284928">Настроить клавиши клавиатуры</translation>
-<translation id="300580149047131921">Разрешение использовалось недавно</translation>
+<translation id="300580149047131921">Использовалось недавно</translation>
 <translation id="3006881078666935414">Нет данных об использовании</translation>
 <translation id="3007555010975143508">Эти приложения будут использоваться для записи вашего экрана:</translation>
 <translation id="3007771295016901659">Дублировать вкладку</translation>
@@ -5283,6 +5284,7 @@
 <translation id="4622051949285931942">Отключить автоматическое обновление?</translation>
 <translation id="4623167406982293031">Подтвердите, что это ваш аккаунт.</translation>
 <translation id="4623189117674524348">Не удалось предоставить доступ API на этом устройстве.</translation>
+<translation id="4623894491222334521">Удостоверения личности</translation>
 <translation id="4624054169152573743">Цветовая тема</translation>
 <translation id="4625078469366263107">Включить приложение</translation>
 <translation id="4625905218692741757">Серый цвет по умолчанию</translation>
@@ -10867,6 +10869,7 @@
 <translation id="8505669004895429027">Небольшая экономия</translation>
 <translation id="8507227974644337342">Разрешение экрана</translation>
 <translation id="850763987657366362">Не удалось импортировать сертификат.</translation>
+<translation id="8508532351844333131">После этого сайт <ph name="WEBSITE_ORIGIN" /> сможет сохранить информацию на вашем устройстве Android.</translation>
 <translation id="8509177919508253835">Сбросить настройки электронных ключей и создать PIN-коды</translation>
 <translation id="8509646642152301857">Не удалось скачать словарь проверки правописания</translation>
 <translation id="8509967119010808787">Нажмите здесь, чтобы выполнить поиск по вкладкам.</translation>

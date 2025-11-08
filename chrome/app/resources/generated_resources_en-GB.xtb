@@ -1284,7 +1284,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1851551847729706116">Sharing <ph name="TAB_NAME" /> to this tab</translation>
 <translation id="1854180393107901205">Stop casting</translation>
 <translation id="1856715684130786728">Add location...</translation>
-<translation id="1857044401921988155">When you click save, this tab group will become a bookmark folder and will be removed from your groups on all devices</translation>
+<translation id="1857044401921988155">When you click Save, this tab group will become a bookmark folder and will be removed from your groups on all devices</translation>
 <translation id="185766080319917408">Launcher key is located left of the left alt key</translation>
 <translation id="1859294693760125695">No longer interested</translation>
 <translation id="1859339856433307593">A password for this account is already saved to your <ph name="BRAND" /> (<ph name="USER_EMAIL" />)</translation>
@@ -1901,6 +1901,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2281863813036651454">Left mouse click</translation>
 <translation id="2282146716419988068">GPU Process</translation>
 <translation id="228293613124499805">Most sites that you visit probably save data to your device, often to improve your experience by saving your preferences or information that you share with the site. We recommend keeping this setting on.</translation>
+<translation id="2283599456633275070">Travel</translation>
 <translation id="2285109769884538519">{COUNT,plural, =0{Open all in &amp;new tab group}=1{Open in &amp;new tab group}other{Open all ({COUNT}) in &amp;new tab group}}</translation>
 <translation id="2285942871162473373">Your fingerprint couldn't be recognised. Try again.</translation>
 <translation id="2287617382468007324">Printing IPP Address</translation>
@@ -5294,6 +5295,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4622051949285931942">Turn off automatic updates?</translation>
 <translation id="4623167406982293031">Verify account</translation>
 <translation id="4623189117674524348">The system failed to authorise API access for this device.</translation>
+<translation id="4623894491222334521">Identity docs</translation>
 <translation id="4624054169152573743">Colour theme</translation>
 <translation id="4625078469366263107">Enable App</translation>
 <translation id="4625905218692741757">Grey default colour</translation>

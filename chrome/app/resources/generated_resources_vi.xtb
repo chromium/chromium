@@ -1901,6 +1901,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2281863813036651454">Nhấn chuột trái</translation>
 <translation id="2282146716419988068">Quá trình GPU</translation>
 <translation id="228293613124499805">Hầu hết trang web bạn truy cập có thể sẽ lưu dữ liệu vào thiết bị, thường là để cải thiện trải nghiệm của bạn bằng cách lưu các lựa chọn ưu tiên hoặc thông tin mà bạn chia sẻ với trang web. Chúng tôi khuyên bạn luôn bật chế độ cài đặt này.</translation>
+<translation id="2283599456633275070">Du lịch</translation>
 <translation id="2285109769884538519">{COUNT,plural, =0{Mở tất cả trong &amp;nhóm thẻ mới}=1{Mở trong &amp;nhóm thẻ mới}other{Mở tất cả ({COUNT}) trong &amp;nhóm thẻ mới}}</translation>
 <translation id="2285942871162473373">Không thể nhận dạng vân tay của bạn. Hãy thử lại.</translation>
 <translation id="2287617382468007324">Địa chỉ IPP của máy in</translation>
@@ -5294,6 +5295,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4622051949285931942">Tắt tính năng cập nhật tự động?</translation>
 <translation id="4623167406982293031">Xác minh tài khoản</translation>
 <translation id="4623189117674524348">Hệ thống không thể cấp quyền truy cập API cho thiết bị này.</translation>
+<translation id="4623894491222334521">Giấy tờ tuỳ thân</translation>
 <translation id="4624054169152573743">Giao diện màu</translation>
 <translation id="4625078469366263107">Bật ứng dụng</translation>
 <translation id="4625905218692741757">Màu mặc định là màu xám</translation>
@@ -10876,6 +10878,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8505669004895429027">Mức tiết kiệm nhỏ</translation>
 <translation id="8507227974644337342">Độ phân giải màn hình</translation>
 <translation id="850763987657366362">Không nhập được chứng chỉ</translation>
+<translation id="8508532351844333131"><ph name="WEBSITE_ORIGIN" /> muốn lưu thông tin trên thiết bị Android của bạn</translation>
 <translation id="8509177919508253835">Đặt lại khóa bảo mật và tạo mã PIN</translation>
 <translation id="8509646642152301857">Tải xuống từ điển kiểm tra lỗi chính tả không thành công.</translation>
 <translation id="8509967119010808787">Để tìm kiếm các thẻ của bạn, hãy nhấp vào đây</translation>

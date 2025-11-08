@@ -449,6 +449,7 @@
 <translation id="1717218214683051432">Շարժման տվիչներ</translation>
 <translation id="1717494416764505390">Փոստարկղ 3</translation>
 <translation id="1717688554309417925">Դեբետային և ստուգման ծառայություններ</translation>
+<translation id="1717882880162336471">Փորձեք ԱԲ ռեժիմը</translation>
 <translation id="1719434663396780149">Գների իջեցման մասին ծանուցումները միացված են։ Այս պարամետրը փոխելու համար անցեք <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />։</translation>
 <translation id="1719838434204287058">24 x 30 դյույմ</translation>
 <translation id="1720941539803966190">Փակել ուղեցույցը</translation>
@@ -2022,6 +2023,7 @@
 <translation id="4258748452823770588">Սխալ ստորագրություն</translation>
 <translation id="4265635050210404830">Ձեր մշտական հաճախորդի քարտերը</translation>
 <translation id="4265872034478892965">Թույլատրվել է ձեր ադմինիստրատորի կողմից</translation>
+<translation id="4267590181863312380">Ձեր մյուս սարքերի պատմությունն օգտագործելու համար մտեք հաշիվ և համաժամացրեք ձեր պատմությունը։ Ձեր գաղտնաբառերը և այլ տվյալներ նույնպես հասանելի կլինեն բոլոր սարքերում։ Ցանկացած ժամանակ կարգավորումներում կարող եք կանգնեցնել համաժամացումը։ Google-ը կարող է ձեր պատմության հիման վրա անհատականացնել Որոնումը և այլ ծառայություններ։</translation>
 <translation id="4269029136757623689">Կենցաղային հովացուցիչներ</translation>
 <translation id="4269264543938335308">Լողազգեստ</translation>
 <translation id="4269599248168651462">Սերվերի վկայագիրը թողարկվել է ոչ եզակի անվանման համար։</translation>
@@ -2901,6 +2903,7 @@
 <translation id="5715918316982363436"><ph name="WINDOW_COUNT" />ի <ph name="TAB_COUNT" /> այս սարքում</translation>
 <translation id="5716325061445053985">Հպեք՝ ներդիրը ձեր հեռախոսում բացելու համար</translation>
 <translation id="5717509257172454543">Չմշկասահք</translation>
+<translation id="5718601519531438273">Ներառում է այնպիսի տեղեկություններ, ինչպիսիք են անձնագրերը և վարորդական վկայականները</translation>
 <translation id="5720705177508910913">ընթացիկ օգտատիրոջը</translation>
 <translation id="5720895412771013401">Համակարգիչներ</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} ու ևս 1 կայք}one{{website_1}, {website_2} ու ևս {more_count} կայք}other{{website_1}, {website_2} ու ևս {more_count} կայք}}</translation>
@@ -4570,6 +4573,7 @@
 <translation id="8449036207308062757">Կառավարել հիշողությունը</translation>
 <translation id="8449155699563577224">17 x 24 դյույմ</translation>
 <translation id="8449836157089738489">Բացել բոլորը նոր ներդիրների խմբում</translation>
+<translation id="8451518040456311377">Պահել և ինքնալրացնել անձը հաստատող փաստաթղթերը</translation>
 <translation id="84561192812921051">Ձեր ադմինիստրատորը կարող է հեռակա կարգով փոխել ձեր պրոֆիլի և դիտարկիչի կարգավորումները, վերլուծել դիտարկիչի մասին տեղեկությունները հաշվետվությունների միջոցով և կատարել այլ անհրաժեշտ առաջադրանքներ։ Սարքում արվող գործողությունները նույնպես կարող են կառավարվել Chrome-ից դուրս։  <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="8456383681414356368">Ներքևի էկրանը փակված է։</translation>
 <translation id="8456775115498700722">Այժմ դուք կարող եք ավտոմատ լրացնել ձեր <ph name="CARD_ISSUER_NAME" /> քարտերը, քանի որ ձեր <ph name="CARD_ISSUER_NAME" /> հաշիվը կապված է Google Pay-ի հետ։</translation>

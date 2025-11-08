@@ -1053,7 +1053,9 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="5596627076506792578">More options</translation>
 <translation id="5599455543593328020">Incognito mode</translation>
 <translation id="5601180634394228718">For more settings that use data to improve your Chrome experience, go to <ph name="BEGIN_LINK" />Google services<ph name="END_LINK" />.</translation>
+<translation id="5601924940067278327">Get your tabs and more on all your devices</translation>
 <translation id="5611398002774823980">Save in account</translation>
+<translation id="5613381935190035031">To get your tabs and more on all your devices, sign in to Chrome as <ph name="EMAIL" /></translation>
 <translation id="5614625640221885312">Sign in to get your bookmarks, passwords and more on all your devices</translation>
 <translation id="5619633276517849615">Your organisation turned on Safe Browsing</translation>
 <translation id="5620163320393916465">No saved passwords</translation>
@@ -1698,6 +1700,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="8110024788458304985">Help improve Chrome\u2019s features and performance</translation>
 <translation id="8110087112193408731">Show your Chrome activity in Digital Wellbeing?</translation>
 <translation id="8118117428362942925">If you need help, ask your parent (<ph name="PARENT_NAME" />)</translation>
+<translation id="8118151008374483324">To get your tabs and more on all your devices, sign in to Chrome</translation>
 <translation id="8120286190326371840">No compromised passwords on this device</translation>
 <translation id="8122623268651408616">Sorting by newest</translation>
 <translation id="8127542551745560481">Edit homepage</translation>
@@ -1955,6 +1958,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="9212845824145208577">Can\u2019t go lower. Try starting from further down the page.</translation>
 <translation id="9218430445555521422">Set as default</translation>
 <translation id="9219103736887031265">Images</translation>
+<translation id="9222198206152536936">To get your tabs and more on all your devices, sign in as <ph name="EMAIL" /></translation>
 <translation id="924447568950697217">Make Chrome your default browser</translation>
 <translation id="926205370408745186">Remove your Chrome activity from Digital Wellbeing</translation>
 <translation id="927968626442779827">Use lite mode on Google Chrome</translation>

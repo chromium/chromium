@@ -1053,7 +1053,9 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="5596627076506792578">Weitere Optionen</translation>
 <translation id="5599455543593328020">Inkognitomodus</translation>
 <translation id="5601180634394228718">Weitere Einstellungen, bei denen Daten zur Verbesserung von Chrome verwendet werden, findest du in den <ph name="BEGIN_LINK" />Google-Diensten<ph name="END_LINK" />.</translation>
+<translation id="5601924940067278327">Tabs und mehr auf allen deinen Geräten abrufen</translation>
 <translation id="5611398002774823980">In Konto speichern</translation>
+<translation id="5613381935190035031">Wenn du auf allen deinen Geräten auf deine Tabs und mehr zugreifen möchtest, melde dich mit <ph name="EMAIL" /> in Chrome an</translation>
 <translation id="5614625640221885312">Melde dich an, damit du deine Lesezeichen, Passwörter und andere Daten auf allen deinen Geräten abrufen kannst</translation>
 <translation id="5619633276517849615">Deine Organisation hat Safe Browsing aktiviert</translation>
 <translation id="5620163320393916465">Keine gespeicherten Passwörter</translation>
@@ -1698,6 +1700,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="8110024788458304985">Hilf uns, die Funktionen und die Leistung von Chrome zu verbessern</translation>
 <translation id="8110087112193408731">Deine Chrome-Aktivitäten in Digital Wellbeing anzeigen?</translation>
 <translation id="8118117428362942925">Wenn du Hilfe brauchst, sprich mit deinen Eltern (<ph name="PARENT_NAME" />)</translation>
+<translation id="8118151008374483324">Wenn du auf allen deinen Geräten auf deine Tabs und mehr zugreifen möchtest, melde dich in Chrome an</translation>
 <translation id="8120286190326371840">Keine kompromittierten Passwörter auf diesem Gerät</translation>
 <translation id="8122623268651408616">Neueste zuerst</translation>
 <translation id="8127542551745560481">Startseite bearbeiten</translation>
@@ -1955,6 +1958,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="9212845824145208577">Screenshot kann nicht nach unten erweitert werden. Beginne weiter unten auf der Seite.</translation>
 <translation id="9218430445555521422">Als Standard festlegen</translation>
 <translation id="9219103736887031265">Bilder</translation>
+<translation id="9222198206152536936">Wenn du auf allen deinen Geräten auf deine Tabs und mehr zugreifen möchtest, melde dich als <ph name="EMAIL" /> an</translation>
 <translation id="924447568950697217">Chrome als Standardbrowser festlegen</translation>
 <translation id="926205370408745186">Chrome-Aktivitäten aus Digital Wellbeing entfernen</translation>
 <translation id="927968626442779827">Verwende den Lite-Modus in Google Chrome</translation>

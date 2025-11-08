@@ -445,6 +445,7 @@
 <translation id="1717218214683051432">चालसम्बन्धी सेन्सरहरू</translation>
 <translation id="1717494416764505390">मेलबक्स ३</translation>
 <translation id="1717688554309417925">डेबिट तथा चेकिङ सेवा</translation>
+<translation id="1717882880162336471">AI मोड प्रयोग गरी हेर्नुहोस्</translation>
 <translation id="1719434663396780149">मूल्य घट्दा अलर्ट पठाउने सुविधा अन छ। तपाईं <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" /> मा गई यो सुविधा अफ गर्न सक्नुहुन्छ।</translation>
 <translation id="1719838434204287058">२४ x ३० इन्च</translation>
 <translation id="1720941539803966190">ट्युटोरियल बन्द गर्नुहोस्</translation>
@@ -2014,6 +2015,7 @@
 <translation id="4258748452823770588">खराब हस्ताक्षर</translation>
 <translation id="4265635050210404830">तपाईंका लोयल्टी कार्डहरू</translation>
 <translation id="4265872034478892965">तपाईंका प्रशासकले अनुमति दिनुभएको</translation>
+<translation id="4267590181863312380">आफ्ना अन्य डिभाइसबाट आफ्नो हिस्ट्री प्राप्त गर्न साइन इन गर्नुहोस् र हिस्ट्री सिंक गर्नुहोस्। तपाईं सबै डिभाइसमा आफ्ना पासवर्डलगायतका थप कुराहरू पनि प्राप्त गर्नु हुने छ। तपाईं जुनसुकै बेला सेटिङमा गई सिंक गर्ने कार्य रोक्न सक्नुहुन्छ। Google ले तपाईंको हिस्ट्रीका आधारमा Search तथा अन्य सेवाहरू पर्सनलाइज गर्न सक्छ।</translation>
 <translation id="4269029136757623689">घरायसी पङ्खाहरू</translation>
 <translation id="4269264543938335308">स्विमवेयर</translation>
 <translation id="4269599248168651462">सर्भरको सर्टिफिकेट डोमेनका सामान्य नामलाई प्रदान गरिन्छ।</translation>
@@ -2890,6 +2892,7 @@
 <translation id="5715918316982363436">यो डिभाइसमार्फत <ph name="WINDOW_COUNT" /> मा <ph name="TAB_COUNT" /> खोलिएका छन्</translation>
 <translation id="5716325061445053985">यो ट्याब आफ्नो फोनमा खोल्न ट्याप गर्नुहोस्</translation>
 <translation id="5717509257172454543">आइस स्केटिङ</translation>
+<translation id="5718601519531438273">यसमा राहदानी र चालक अनुमति पत्र जस्ता जानकारी समावेश हुन्छन्</translation>
 <translation id="5720705177508910913">हालको प्रयोगकर्ता</translation>
 <translation id="5720895412771013401">डेस्कटप कम्प्युटरहरू</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} र थप एउटा साइट}other{{website_1}, {website_2} र थप {more_count} वटा साइट}}</translation>
@@ -4559,6 +4562,7 @@
 <translation id="8449036207308062757">भण्डारणको व्यवस्थापन गर्नुहोस्</translation>
 <translation id="8449155699563577224">१७ x २४ इन्च</translation>
 <translation id="8449836157089738489">सबै URL नयाँ ट्याब समूहमा खोल्नुहोस्</translation>
+<translation id="8451518040456311377">पहिचान खुलाउने कागजातहरू सेभ गर्नुहोस् र तिनमा भएका जानकारी स्वतः भर्नुहोस्</translation>
 <translation id="84561192812921051">तपाईंका एड्मिन टाढैबाट तपाईंको प्रोफाइल र ब्राउजरमा परिवर्तन गर्न, रिपोर्टिङमार्फत ब्राउजरको जानकारी विश्लेषण गर्न र अन्य आवश्यक कार्यहरू गर्न सक्छन्। यो डिभाइसमा गरिएका क्रियाकलाप Chrome बाहिरबाट पनि व्यवस्थापन गरिन सक्छ।  <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="8456383681414356368">पुछारको पाना बन्द गरिएको छ।</translation>
 <translation id="8456775115498700722">तपाईंको <ph name="CARD_ISSUER_NAME" /> खाता Google Pay सँग लिंक गरिएको हुनाले तपाईं अब आफ्ना <ph name="CARD_ISSUER_NAME" /> कार्डहरू अटोफिल गर्न सक्नुहुन्छ।</translation>

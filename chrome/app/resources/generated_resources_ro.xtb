@@ -1889,6 +1889,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2281863813036651454">Clic stânga pe mouse</translation>
 <translation id="2282146716419988068">Proces GPU</translation>
 <translation id="228293613124499805">Probabil că majoritatea site-urilor pe care le accesezi salvează date pe dispozitiv, adesea pentru a-ți îmbunătăți experiența, salvând preferințele sau informațiile la care permiți accesul site-ului. Îți recomandăm să păstrezi activată această setare.</translation>
+<translation id="2283599456633275070">Călătorii</translation>
 <translation id="2285109769884538519">{COUNT,plural, =0{Deschide-le pe toate într-un &amp;nou grup de file}=1{Deschide într-un &amp;nou grup de file}few{Deschide-le pe toate ({COUNT}) într-un &amp;nou grup de file}other{Deschide-le pe toate ({COUNT}) într-un &amp;nou grup de file}}</translation>
 <translation id="2285942871162473373">Amprenta nu a fost recunoscută. Încearcă din nou.</translation>
 <translation id="2287617382468007324">Adresa IPP pentru printare</translation>
@@ -5281,6 +5282,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4622051949285931942">Dezactivezi actualizările automate?</translation>
 <translation id="4623167406982293031">Confirmă contul</translation>
 <translation id="4623189117674524348">Sistemul nu a putut să autorizeze accesul la API pentru acest dispozitiv.</translation>
+<translation id="4623894491222334521">Acte de identitate</translation>
 <translation id="4624054169152573743">Temă de culoare</translation>
 <translation id="4625078469366263107">Activează aplicația</translation>
 <translation id="4625905218692741757">Culoarea gri prestabilită</translation>

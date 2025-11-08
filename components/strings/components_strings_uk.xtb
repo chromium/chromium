@@ -445,6 +445,7 @@
 <translation id="1717218214683051432">Датчики руху</translation>
 <translation id="1717494416764505390">Поштова скринька 3</translation>
 <translation id="1717688554309417925">Дебетові й розрахункові послуги</translation>
+<translation id="1717882880162336471">Спробуйте режим ШІ</translation>
 <translation id="1719434663396780149">Сповіщення про зниження цін увімкнено. Щоб вимкнути їх, перейдіть у <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="1719838434204287058">24 x 30 дюйм.</translation>
 <translation id="1720941539803966190">Закрити навчальний посібник</translation>
@@ -2016,6 +2017,7 @@
 <translation id="4258748452823770588">Недійсний підпис</translation>
 <translation id="4265635050210404830">Ваші картки постійного покупця</translation>
 <translation id="4265872034478892965">Дозволено адміністратором</translation>
+<translation id="4267590181863312380">Щоб мати доступ до історії з інших пристроїв, синхронізуйте її, увійшовши в обліковий запис. Крім того, ви отримаєте доступ до паролів і інших даних на всіх своїх пристроях. Синхронізацію можна будь-коли вимкнути в налаштуваннях. Google може персоналізувати Пошук і інші сервіси на основі вашої історії.</translation>
 <translation id="4269029136757623689">Побутові вентилятори</translation>
 <translation id="4269264543938335308">Одяг для плавання</translation>
 <translation id="4269599248168651462">Сертифікат сервера видається на неунікальне ім’я.</translation>
@@ -2892,6 +2894,7 @@
 <translation id="5715918316982363436"><ph name="TAB_COUNT" /> в <ph name="WINDOW_COUNT" /> на цьому пристрої</translation>
 <translation id="5716325061445053985">Торкніться, щоб відкрити вкладку на телефоні</translation>
 <translation id="5717509257172454543">Катання на ковзанах</translation>
+<translation id="5718601519531438273">Зберігатимуться, зокрема, дані паспортів і посвідчень водія</translation>
 <translation id="5720705177508910913">Поточний користувач</translation>
 <translation id="5720895412771013401">Стаціонарні комп’ютери</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} і ще 1}one{{website_1}, {website_2} і ще {more_count}}few{{website_1}, {website_2} і ще {more_count}}many{{website_1}, {website_2} і ще {more_count}}other{{website_1}, {website_2} і ще {more_count}}}</translation>
@@ -4562,6 +4565,7 @@
 <translation id="8449036207308062757">Керувати сховищем</translation>
 <translation id="8449155699563577224">17 x 24 дюйм.</translation>
 <translation id="8449836157089738489">Відкрити всі в новій групі вкладок</translation>
+<translation id="8451518040456311377">Зберігати дані посвідчень особи для автозаповнення</translation>
 <translation id="84561192812921051">Адміністратор може віддалено вносити зміни у ваш профіль і вебпереглядач, аналізувати інформацію про вебпереглядач за допомогою звітів і виконувати інші необхідні дії. Діями на цьому пристрої можна керувати за межами Chrome.  <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="8456383681414356368">Нижній екран закрито.</translation>
 <translation id="8456775115498700722">Тепер ви можете автоматично заповнювати дані карток <ph name="CARD_ISSUER_NAME" />, оскільки ваш обліковий запис <ph name="CARD_ISSUER_NAME" /> зв’язано з Google Pay.</translation>

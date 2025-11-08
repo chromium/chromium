@@ -3461,6 +3461,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6654224358955673568">Tornar mais formal</translation>
 <translation id="6654244995031366386">Vidro (com textura)</translation>
 <translation id="6655085656059574817">Manter a conta associada ajuda a pagar mais rapidamente com a <ph name="BNPL_ISSUER_NAME" />, mas pode desassociá-la em <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /></translation>
+<translation id="6656935431494847393">Inclui informações como reservas de voos e informações do veículo</translation>
 <translation id="6657585470893396449">Palavra-passe</translation>
 <translation id="6659246032834639189">Este preço é baixo</translation>
 <translation id="6660413144148052430">localização</translation>
@@ -4288,6 +4289,7 @@ Detalhes adicionais:
 <translation id="7987087088851949178">Emissores do método Comprar agora e pagar depois disponíveis para pagamento em prestações abertos à altura total.</translation>
 <translation id="799149739215780103">Encadernar</translation>
 <translation id="7992044431894087211">A partilha de ecrã com a aplicação <ph name="APPLICATION_TITLE" /> foi retomada.</translation>
+<translation id="799384093520583425">A sua organização bloqueou a utilização das DevTools nesta página</translation>
 <translation id="7995512525968007366">Não especificado</translation>
 <translation id="7997855386298213183">separadores partilhados</translation>
 <translation id="8001912761979890298">Este servidor não conseguiu provar que é o domínio <ph name="DOMAIN" /> porque está a usar um certificado de segurança que não é considerado fidedigno pelo Chromium nem pela configuração do sistema para a encriptação do tráfego Web. Isto pode ser o resultado de uma configuração incorreta ou de um atacante que intercetou a sua ligação. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Veja o certificado<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
@@ -4675,6 +4677,7 @@ Detalhes adicionais:
 <translation id="865255447216708819">Filme de impressão retro</translation>
 <translation id="8654126188050905496">55 x 91 mm</translation>
 <translation id="8660780831677950176">Visita frequentemente a esta hora</translation>
+<translation id="8661820486298572829">Código preenchido automaticamente</translation>
 <translation id="8662463432865928030">Propriedades comerciais</translation>
 <translation id="8663226718884576429">Resumo da encomenda, <ph name="TOTAL_LABEL" />, mais detalhes</translation>
 <translation id="8663909737634214500">Disco ótico</translation>
@@ -4756,6 +4759,7 @@ Detalhes adicionais:
 <translation id="8781278378794969337">Botão Traduzir página; ative para traduzir esta página com o Google Tradutor</translation>
 <translation id="8785658048882205566">Motos</translation>
 <translation id="8790007591277257123">&amp;Refazer eliminação</translation>
+<translation id="8790668801880409584">Guardar e preencher informações de viagem</translation>
 <translation id="8792272652220298572">Plástico (brilhante)</translation>
 <translation id="8792621596287649091">Pode perder o acesso à sua conta do serviço <ph name="ORG_NAME" /> ou ser vítima de roubo de identidade. O Chromium recomenda a alteração da palavra-passe agora.</translation>
 <translation id="8792626944327216835">microfone</translation>
@@ -4831,6 +4835,7 @@ Detalhes adicionais:
 <translation id="8922013791253848639">Permitir sempre anúncios neste site</translation>
 <translation id="8922734931659847428">Uma lista limitada de URLs de páginas que visita onde estão a ocorrer <ph name="BEGIN_LINK" />eventos de tecnologia antiga<ph name="END_LINK" /></translation>
 <translation id="892588693504540538">Perfurar na parte superior direita</translation>
+<translation id="8926082624786998759">As DevTools não são permitidas nesta página</translation>
 <translation id="8926389886865778422">Não voltar a perguntar</translation>
 <translation id="8926400492587758246">Pague em prestações mensais baixas</translation>
 <translation id="8932102934695377596">O seu relógio está atrasado</translation>

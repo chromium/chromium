@@ -445,6 +445,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1717218214683051432">Sensorët e lëvizjes</translation>
 <translation id="1717494416764505390">Kutia postare 3</translation>
 <translation id="1717688554309417925">Shërbime për karta debiti dhe llogari rrjedhëse</translation>
+<translation id="1717882880162336471">Provo "Modalitetin e IA-së"</translation>
 <translation id="1719434663396780149">Sinjalizimet për uljet e çmimeve janë aktive. Mund ta ndryshosh këtë te <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="1719838434204287058">24 x 30 inç</translation>
 <translation id="1720941539803966190">Mbyll udhëzuesin</translation>
@@ -2016,6 +2017,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4258748452823770588">Nënshkrim i gabuar</translation>
 <translation id="4265635050210404830">Kartat e tua të besnikërisë</translation>
 <translation id="4265872034478892965">Lejuar nga administratori yt</translation>
+<translation id="4267590181863312380">Për të marrë historikun tënd nga pajisjet e tua të tjera, identifikohu dhe sinkronizo historikun. Do të marrësh gjithashtu fjalëkalimet dhe më shumë në të gjitha pajisjet e tua. Mund ta ndalosh sinkronizimin në çdo kohë te cilësimet. Google mund t'i personalizojë "Kërko" dhe shërbimet e tjera bazuar në historikun tënd.</translation>
 <translation id="4269029136757623689">Ventilatorë shtëpie</translation>
 <translation id="4269264543938335308">Kostume banje</translation>
 <translation id="4269599248168651462">Certifikata e serverit është lëshuar për një emër jounik.</translation>
@@ -2892,6 +2894,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5715918316982363436"><ph name="TAB_COUNT" /> nga <ph name="WINDOW_COUNT" /> në këtë pajisje</translation>
 <translation id="5716325061445053985">Trokit për ta hapur skedën në telefonin tënd</translation>
 <translation id="5717509257172454543">Patinazh në akull</translation>
+<translation id="5718601519531438273">Përfshin informacione si pasaportat dhe lejet e drejtimit</translation>
 <translation id="5720705177508910913">Përdoruesi aktual</translation>
 <translation id="5720895412771013401">Kompjuterë desktopë</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} dhe 1 tjetër}other{{website_1}, {website_2} dhe {more_count} të tjera}}</translation>
@@ -4560,6 +4563,7 @@ Detaje shtesë:
 <translation id="8449036207308062757">Menaxho hapësirën ruajtëse</translation>
 <translation id="8449155699563577224">17 x 24 inç</translation>
 <translation id="8449836157089738489">Hapi të gjitha në një grup të ri skedash</translation>
+<translation id="8451518040456311377">Ruaj dhe plotëso dokumentet e identitetit</translation>
 <translation id="84561192812921051">Administratori yt mund të bëjë ndryshime në profilin dhe shfletuesin tënd në distancë, mund të analizojë informacionet rreth shfletuesit nëpërmjet raportimit dhe mund të kryejë detyra të tjera të nevojshme. Aktiviteti në këtë pajisje mund të menaxhohet edhe jashtë Chrome.  <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="8456383681414356368">Fleta e poshtme është e mbyllur.</translation>
 <translation id="8456775115498700722">Tani mund t'i plotësosh automatikisht kartat e tua të <ph name="CARD_ISSUER_NAME" /> pasi llogaria jote e <ph name="CARD_ISSUER_NAME" /> është e lidhur me Google Pay.</translation>

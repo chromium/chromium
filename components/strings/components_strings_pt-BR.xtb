@@ -445,6 +445,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1717218214683051432">Sensores de movimento</translation>
 <translation id="1717494416764505390">Caixa de e-mails 3</translation>
 <translation id="1717688554309417925">Serviços de crédito e débito</translation>
+<translation id="1717882880162336471">Teste o Modo IA</translation>
 <translation id="1719434663396780149">Os alertas de redução no preço estão ativados. Para mudar isso, acesse as <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="1719838434204287058">24 x 30 pol.</translation>
 <translation id="1720941539803966190">Fechar tutorial</translation>
@@ -1429,7 +1430,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="334438173029876234">Equipamentos de skate</translation>
 <translation id="3347146863028219517">Esqui e snowboard</translation>
 <translation id="3349952286488694786">SRA2</translation>
-<translation id="3350450887151703713">Repetir 10 segundos</translation>
+<translation id="3350450887151703713">Voltar 10 segundos</translation>
 <translation id="3352881017886802007">Jogos de esporte</translation>
 <translation id="335809815767823">Exportadas</translation>
 <translation id="3359565626472459400">Casamento</translation>
@@ -2016,6 +2017,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4258748452823770588">Assinatura inválida</translation>
 <translation id="4265635050210404830">Seus cartões fidelidade</translation>
 <translation id="4265872034478892965">Com permissão do administrador</translation>
+<translation id="4267590181863312380">Para acessar o histórico dos seus outros dispositivos, faça login e sincronize o histórico. Você também terá acesso a senhas e muito mais em todos os seus aparelhos. É possível parar a sincronização a qualquer momento nas configurações. O Google pode personalizar a Pesquisa e outros serviços com base no seu histórico.</translation>
 <translation id="4269029136757623689">Ventiladores domésticos</translation>
 <translation id="4269264543938335308">Trajes de banho</translation>
 <translation id="4269599248168651462">O certificado do servidor é emitido para um nome não exclusivo.</translation>
@@ -2107,7 +2109,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4395550503472021297">Esta política controla o comportamento padrão das seguintes políticas: <ph name="POLICIES" /></translation>
 <translation id="4396554829965096368">Carteira de habilitação</translation>
 <translation id="4397978002248035985">Abre um pop-up de confirmação no site do seu banco</translation>
-<translation id="4406883609789734330">Legenda Instantânea</translation>
+<translation id="4406883609789734330">Legenda instantânea</translation>
 <translation id="4406896451731180161">resultados da pesquisa</translation>
 <translation id="4407758156081352648">Por segurança, sua organização não permite que senhas sejam reutilizadas no Chrome. As senhas no Chrome são criptografadas para proteger a privacidade do usuário.</translation>
 <translation id="4408413947728134509">Cookies: <ph name="NUM_COOKIES" /></translation>
@@ -2892,6 +2894,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5715918316982363436"><ph name="TAB_COUNT" /> de <ph name="WINDOW_COUNT" /> neste dispositivo</translation>
 <translation id="5716325061445053985">Toque para abrir a guia no smartphone</translation>
 <translation id="5717509257172454543">Patinação no gelo</translation>
+<translation id="5718601519531438273">Inclui informações como passaportes e carteiras de habilitação</translation>
 <translation id="5720705177508910913">Usuário atual</translation>
 <translation id="5720895412771013401">Computadores desktop</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} e mais 1}one{{website_1}, {website_2} e mais {more_count}}other{{website_1}, {website_2} e mais {more_count}}}</translation>
@@ -4562,6 +4565,7 @@ Mais detalhes:
 <translation id="8449036207308062757">Gerenciar armazenamento</translation>
 <translation id="8449155699563577224">17 x 24 pol.</translation>
 <translation id="8449836157089738489">Abrir tudo em um novo grupo de guias</translation>
+<translation id="8451518040456311377">Salvar e preencher documentos de identificação</translation>
 <translation id="84561192812921051">O administrador pode fazer mudanças no seu perfil e no seu navegador remotamente, analisar informações sobre o navegador com relatórios e realizar outras tarefas necessárias. A atividade deste dispositivo também pode ser gerenciada fora do Chrome.  <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="8456383681414356368">A página inferior está fechada.</translation>
 <translation id="8456775115498700722">Agora, você pode preencher automaticamente seus cartões do <ph name="CARD_ISSUER_NAME" /> porque sua conta do <ph name="CARD_ISSUER_NAME" /> está vinculada ao Google Pay.</translation>

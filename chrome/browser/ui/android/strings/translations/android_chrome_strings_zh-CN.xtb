@@ -1053,7 +1053,9 @@
 <translation id="5596627076506792578">更多选项</translation>
 <translation id="5599455543593328020">无痕模式</translation>
 <translation id="5601180634394228718">如需更多使用数据来提升 Chrome 体验的设置，请前往 <ph name="BEGIN_LINK" />Google 服务<ph name="END_LINK" />。</translation>
+<translation id="5601924940067278327">在您的所有设备上获取标签页等信息</translation>
 <translation id="5611398002774823980">保存到账号</translation>
+<translation id="5613381935190035031">如需在您的所有设备上获取标签页等信息，请以 <ph name="EMAIL" /> 的身份登录 Chrome</translation>
 <translation id="5614625640221885312">登录后即可在任何设备上使用您的书签、密码等信息</translation>
 <translation id="5619633276517849615">您的组织已开启“安全浏览”功能</translation>
 <translation id="5620163320393916465">尚未保存任何密码</translation>
@@ -1696,6 +1698,7 @@
 <translation id="8110024788458304985">帮助改进 Chrome 的功能和性能</translation>
 <translation id="8110087112193408731">在“数字健康”应用中显示您的 Chrome 活动记录？</translation>
 <translation id="8118117428362942925">如需帮助，请找家长（<ph name="PARENT_NAME" />）帮忙</translation>
+<translation id="8118151008374483324">如需在您的所有设备上获取标签页等信息，请登录 Chrome</translation>
 <translation id="8120286190326371840">此设备上没有任何已泄露的密码</translation>
 <translation id="8122623268651408616">按从新到旧排序</translation>
 <translation id="8127542551745560481">修改主页</translation>
@@ -1953,6 +1956,7 @@
 <translation id="9212845824145208577">无法继续向下滚动屏幕了。请尝试从页面中更靠下的位置开始截屏。</translation>
 <translation id="9218430445555521422">设为默认</translation>
 <translation id="9219103736887031265">图片</translation>
+<translation id="9222198206152536936">如需在您的所有设备上获取标签页等信息，请以 <ph name="EMAIL" /> 的身份登录</translation>
 <translation id="924447568950697217">将 Chrome 设置为您的默认浏览器</translation>
 <translation id="926205370408745186">从“数字健康”应用中移除您的 Chrome 活动记录</translation>
 <translation id="927968626442779827">使用 Google Chrome 的精简模式</translation>

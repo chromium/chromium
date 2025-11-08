@@ -445,6 +445,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1717218214683051432">Sensores de movimiento</translation>
 <translation id="1717494416764505390">Buzón de correo 3</translation>
 <translation id="1717688554309417925">Servicios de débito y cheques</translation>
+<translation id="1717882880162336471">Prueba el Modo IA</translation>
 <translation id="1719434663396780149">Las alertas de bajadas de precio están activadas. Puedes cambiar esta opción en <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="1719838434204287058">24x30 pulgadas</translation>
 <translation id="1720941539803966190">Cerrar tutorial</translation>
@@ -1429,7 +1430,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="334438173029876234">Equipamiento de monopatín</translation>
 <translation id="3347146863028219517">Esquí y snowboard</translation>
 <translation id="3349952286488694786">SRA2</translation>
-<translation id="3350450887151703713">Volver a reproducir 10 segundos</translation>
+<translation id="3350450887151703713">Retroceder 10 segundos</translation>
 <translation id="3352881017886802007">Juegos deportivos</translation>
 <translation id="335809815767823">Exportadas</translation>
 <translation id="3359565626472459400">Matrimonio</translation>
@@ -2016,6 +2017,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4258748452823770588">Firma errónea</translation>
 <translation id="4265635050210404830">Tus tarjetas de fidelización</translation>
 <translation id="4265872034478892965">Permitido por el administrador</translation>
+<translation id="4267590181863312380">Para ver el historial de tus otros dispositivos, inicia sesión y sincronízalo. También tendrás tus contraseñas y otra información en todos tus dispositivos. Puedes detener la sincronización en cualquier momento desde la configuración. Google puede personalizar la Búsqueda y otros servicios en función de tu historial.</translation>
 <translation id="4269029136757623689">Ventiladores de uso doméstico</translation>
 <translation id="4269264543938335308">Trajes de baño</translation>
 <translation id="4269599248168651462">El certificado de servidor se emite a un nombre que no es único.</translation>
@@ -2892,6 +2894,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5715918316982363436"><ph name="TAB_COUNT" /> de <ph name="WINDOW_COUNT" /> en este dispositivo</translation>
 <translation id="5716325061445053985">Toca para abrir la pestaña en tu teléfono</translation>
 <translation id="5717509257172454543">Patinaje sobre hielo</translation>
+<translation id="5718601519531438273">Incluye información como pasaportes y carnés de conducir</translation>
 <translation id="5720705177508910913">Usuario actual</translation>
 <translation id="5720895412771013401">Ordenadores</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1} y {website_2}}=3{{website_1}, {website_2} y 1 más}other{{website_1}, {website_2} y {more_count} más}}</translation>
@@ -4562,6 +4565,7 @@ Más información:
 <translation id="8449036207308062757">Gestionar almacenamiento</translation>
 <translation id="8449155699563577224">17x24 pulgadas</translation>
 <translation id="8449836157089738489">Abrir todas en un grupo de pestañas</translation>
+<translation id="8451518040456311377">Guardar y rellenar documentos de identidad</translation>
 <translation id="84561192812921051">Tu administrador puede hacer cambios en tu perfil y navegador de forma remota, analizar información del navegador mediante informes y realizar otras tareas necesarias. Es posible que la actividad de este dispositivo también se administre fuera de Chrome.  <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="8456383681414356368">La hoja inferior está cerrada.</translation>
 <translation id="8456775115498700722">Ahora puedes rellenar automáticamente los datos de tus tarjetas de <ph name="CARD_ISSUER_NAME" /> porque tu cuenta de <ph name="CARD_ISSUER_NAME" /> está vinculada a Google Pay.</translation>

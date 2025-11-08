@@ -445,6 +445,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1717218214683051432">Sensores de movemento</translation>
 <translation id="1717494416764505390">Caixa de correo 3</translation>
 <translation id="1717688554309417925">Servizos de débito e cheques</translation>
+<translation id="1717882880162336471">Proba o modo IA</translation>
 <translation id="1719434663396780149">As alertas de baixada de prezos están activadas. Podes cambiar esta opción en <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="1719838434204287058">24 x 30 polgadas</translation>
 <translation id="1720941539803966190">Pechar titorial</translation>
@@ -2016,6 +2017,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4258748452823770588">Sinatura incorrecta</translation>
 <translation id="4265635050210404830">As túas tarxetas de fidelidade</translation>
 <translation id="4265872034478892965">Permitido polo administrador</translation>
+<translation id="4267590181863312380">Para acceder ao teu historial doutros dispositivos, inicia sesión e sincronízao. Tamén poderás desfrutar dos teus contrasinais e moito máis en todos os teus dispositivos. Podes deter a sincronización cando queiras na configuración. Google pode personalizar a Busca e outros servizos en función do teu historial.</translation>
 <translation id="4269029136757623689">Ventiladores domésticos</translation>
 <translation id="4269264543938335308">Roupa de baño</translation>
 <translation id="4269599248168651462">O certificado do servidor emítese para un nome que non é exclusivo.</translation>
@@ -2892,6 +2894,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5715918316982363436"><ph name="TAB_COUNT" /> e <ph name="WINDOW_COUNT" /> neste dispositivo</translation>
 <translation id="5716325061445053985">Toca para abrir a pestana no teléfono</translation>
 <translation id="5717509257172454543">Patinaxe sobre xeo</translation>
+<translation id="5718601519531438273">Inclúe información como pasaportes e permisos de conducir</translation>
 <translation id="5720705177508910913">Usuario actual</translation>
 <translation id="5720895412771013401">Ordenadores de escritorio</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1} e {website_2}}=3{{website_1}, {website_2} e 1 sitio máis}other{{website_1}, {website_2} e {more_count} sitios máis}}</translation>
@@ -4561,6 +4564,7 @@ Detalles adicionais:
 <translation id="8449036207308062757">Xestionar almacenamento</translation>
 <translation id="8449155699563577224">17 x 24 polgadas</translation>
 <translation id="8449836157089738489">Abrir todo nun grupo de pestanas novo</translation>
+<translation id="8451518040456311377">Gardar e completar os documentos de identidade</translation>
 <translation id="84561192812921051">A persoa administradora pode facer cambios no teu perfil e no teu navegador de forma remota, analizar información sobre o navegador mediante informes e realizar outras tarefas necesarias. A actividade deste dispositivo tamén se pode xestionar fóra de Chrome.  <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="8456383681414356368">Panel inferior pechado.</translation>
 <translation id="8456775115498700722">Xa podes autocompletar as tarxetas de <ph name="CARD_ISSUER_NAME" /> porque a túa conta de <ph name="CARD_ISSUER_NAME" /> está vinculada a Google Pay.</translation>

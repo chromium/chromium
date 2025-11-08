@@ -445,6 +445,7 @@
 <translation id="1717218214683051432">Hərəkət sensorları</translation>
 <translation id="1717494416764505390">Poçt qutusu 3</translation>
 <translation id="1717688554309417925">Debet və çek xidmətləri</translation>
+<translation id="1717882880162336471">Sİ Rejimini sınayın</translation>
 <translation id="1719434663396780149">Qiymət endirimi xəbərdarlıqları aktivdir. Bunu <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" /> bölməsində dəyişə bilərsiniz.</translation>
 <translation id="1719838434204287058">24 x 30 düym</translation>
 <translation id="1720941539803966190">Dərsliyi bağlayın</translation>
@@ -2012,6 +2013,7 @@
 <translation id="4258748452823770588">Yanlış imza</translation>
 <translation id="4265635050210404830">Loyallıq kartlarınız</translation>
 <translation id="4265872034478892965">Administrator tərəfindən icazə verildi</translation>
+<translation id="4267590181863312380">Digər cihazlarınızdakı tarixçələrə giriş əldə etmək üçün hesabınıza daxil olun və tarixçəni sinxronlaşdırın. Həmçinin bütün cihazlarınızda parollarınızı və daha çoxunu əldə edəcəksiniz. Ayarlarda sinxronlaşdırmanı istənilən vaxt dayandıra bilərsiniz. Google tarixçənizə əsasən Axtarış və digər xidmətləri fərdiləşdirə bilər.</translation>
 <translation id="4269029136757623689">Məişət sərinkeşləri</translation>
 <translation id="4269264543938335308">Çimərlik geyimi</translation>
 <translation id="4269599248168651462">Server sertifikatı unikal olmayan ada təyin edilib.</translation>
@@ -2888,6 +2890,7 @@
 <translation id="5715918316982363436">Bu cihazda <ph name="WINDOW_COUNT" />dən <ph name="TAB_COUNT" /></translation>
 <translation id="5716325061445053985">Telefonda tabı açmaq üçün toxunun</translation>
 <translation id="5717509257172454543">Buzüstü konkisürmə</translation>
+<translation id="5718601519531438273">Pasportlar və sürücülük vəsiqələri kimi məlumatlar daxildir</translation>
 <translation id="5720705177508910913">Cari istifadəçi</translation>
 <translation id="5720895412771013401">Masaüstü Kompüterlər</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} və digər 1 veb-sayt}other{{website_1}, {website_2} və digər {more_count} icazə}}</translation>
@@ -4557,6 +4560,7 @@
 <translation id="8449036207308062757">Yaddaş idarəetməsi</translation>
 <translation id="8449155699563577224">17 x 24 düym</translation>
 <translation id="8449836157089738489">Hamısını yeni tab qrupunda açın</translation>
+<translation id="8451518040456311377">Kimlik sənədlərini yadda saxlayın və doldurun</translation>
 <translation id="84561192812921051">Administrator profil və brauzerinizə uzaqdan dəyişikliklər edə, hesabat vasitəsilə brauzer haqqında məlumatları təhlil edə və digər zəruri tapşırıqları yerinə yetirə bilər. Bu cihazdakı fəaliyyət Chrome-dan kənarda da idarə edilə bilər.  <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="8456383681414356368">Aşağıdakı vərəq bağlıdır.</translation>
 <translation id="8456775115498700722"><ph name="CARD_ISSUER_NAME" /> hesabınız Google Pay ilə əlaqələndirildiyinə görə <ph name="CARD_ISSUER_NAME" /> kartlarınızı avtomatik doldura bilərsiniz.</translation>

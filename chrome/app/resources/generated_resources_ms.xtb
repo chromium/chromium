@@ -1901,6 +1901,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2281863813036651454">Klik kiri tetikus</translation>
 <translation id="2282146716419988068">Proses GPU</translation>
 <translation id="228293613124499805">Kebanyakan laman yang anda lawati mungkin menyimpan data pada peranti anda, selalunya untuk meningkatkan pengalaman anda dengan menyimpan pilihan anda atau maklumat yang anda kongsi dengan laman tersebut. Kami mengesyorkan agar anda membiarkan tetapan ini dihidupkan.</translation>
+<translation id="2283599456633275070">Perjalanan</translation>
 <translation id="2285109769884538519">{COUNT,plural, =0{Buka semua dalam kumpulan tab &amp;baharu}=1{Buka dalam kumpulan tab &amp;baharu}other{Buka semua ({COUNT}) dalam kumpulan tab &amp;baharu}}</translation>
 <translation id="2285942871162473373">Cap jari anda tidak dapat dicam. Cuba lagi.</translation>
 <translation id="2287617382468007324">Mencetak Alamat IPP</translation>
@@ -5294,6 +5295,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="4622051949285931942">Matikan kemaskinian automatik?</translation>
 <translation id="4623167406982293031">Sahkan akaun</translation>
 <translation id="4623189117674524348">Sistem gagal membenarkan akses API untuk peranti ini.</translation>
+<translation id="4623894491222334521">Dokumen identiti</translation>
 <translation id="4624054169152573743">Tema warna</translation>
 <translation id="4625078469366263107">Dayakan Apl</translation>
 <translation id="4625905218692741757">Warna lalai kelabu</translation>
@@ -10875,6 +10877,7 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8505669004895429027">Penjimatan Kecil</translation>
 <translation id="8507227974644337342">Peleraian skrin</translation>
 <translation id="850763987657366362">Tidak dapat mengimport sijil</translation>
+<translation id="8508532351844333131"><ph name="WEBSITE_ORIGIN" /> mahu menyimpan maklumat pada peranti Android anda</translation>
 <translation id="8509177919508253835">Tetapkan semula kunci keselamatan dan buat PIN</translation>
 <translation id="8509646642152301857">Muat turun kamus semakan ejaan gagal.</translation>
 <translation id="8509967119010808787">Untuk mencari tab anda, klik di sini</translation>

@@ -445,6 +445,7 @@
 <translation id="1717218214683051432">動作感應器</translation>
 <translation id="1717494416764505390">出紙槽 3</translation>
 <translation id="1717688554309417925">扣帳及簽帳服務</translation>
+<translation id="1717882880162336471">試用「AI 模式」</translation>
 <translation id="1719434663396780149">減價通知已開啟。您可前往<ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />變更。</translation>
 <translation id="1719838434204287058">24 x 30 吋</translation>
 <translation id="1720941539803966190">閂教學課程</translation>
@@ -2015,6 +2016,7 @@
 <translation id="4258748452823770588">簽名有誤</translation>
 <translation id="4265635050210404830">你的會員卡</translation>
 <translation id="4265872034478892965">根據管理員的設定允許</translation>
+<translation id="4267590181863312380">如要查看其他裝置上的記錄，請登入並同步記錄。你也可在你的所有裝置上取得密碼和其他資料。你可在設定中隨時停止同步。Google 可能會根據你的記錄，提供個人化「搜尋」和其他服務。</translation>
 <translation id="4269029136757623689">家用風扇</translation>
 <translation id="4269264543938335308">泳衣</translation>
 <translation id="4269599248168651462">伺服器憑證的核發名稱重複。</translation>
@@ -2891,6 +2893,7 @@
 <translation id="5715918316982363436">此裝置上的 <ph name="TAB_COUNT" /> (<ph name="WINDOW_COUNT" />)</translation>
 <translation id="5716325061445053985">輕按即可在手機開啟分頁</translation>
 <translation id="5717509257172454543">溜冰</translation>
+<translation id="5718601519531438273">包括護照和駕駛執照等資料</translation>
 <translation id="5720705177508910913">目前使用者</translation>
 <translation id="5720895412771013401">桌面電腦</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}、{website_2}}=3{{website_1}、{website_2} 和另外 1 個}other{{website_1}、{website_2} 和另外 {more_count} 個}}</translation>
@@ -4561,6 +4564,7 @@
 <translation id="8449036207308062757">管理儲存空間</translation>
 <translation id="8449155699563577224">17 x 24 吋</translation>
 <translation id="8449836157089738489">在新分頁群組中開啟所有網址</translation>
+<translation id="8451518040456311377">儲存並填入身分證明文件</translation>
 <translation id="84561192812921051">管理員可遠端變更你的設定檔和瀏覽器、透過報告分析瀏覽器相關資料，以及執行其他必要工作。此裝置上的活動亦可透過 Chrome 以外的服務管理。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="8456383681414356368">頁底面板閂咗。</translation>
 <translation id="8456775115498700722">你的 <ph name="CARD_ISSUER_NAME" /> 帳戶已連結 Google Pay，因此現可自動填入 <ph name="CARD_ISSUER_NAME" /> 卡的資料。</translation>

@@ -445,6 +445,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1717218214683051432">Mozgásérzékelők</translation>
 <translation id="1717494416764505390">3. postaláda</translation>
 <translation id="1717688554309417925">Betéti és csekkfizetési szolgáltatások</translation>
+<translation id="1717882880162336471">AI-mód kipróbálása</translation>
 <translation id="1719434663396780149">Az árcsökkenésre vonatkozó értesítések be vannak kapcsolva. Ezt itt módosíthatja: <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="1719838434204287058">24 × 30 hüvelyk</translation>
 <translation id="1720941539803966190">Útmutató bezárása</translation>
@@ -2013,6 +2014,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4258748452823770588">Rossz aláírás</translation>
 <translation id="4265635050210404830">Az Ön hűségkártyái</translation>
 <translation id="4265872034478892965">A rendszergazda engedélyezte</translation>
+<translation id="4267590181863312380">Ha a többi eszközén lévő előzményeihez is szeretne hozzáférni, jelentkezzen be, majd szinkronizálja az előzményeit. Egyebek mellett a jelszavaihoz is hozzáférhet bármely eszközén. A beállítások között bármikor leállíthatja a szinkronizálást. A Google az Ön előzményei alapján személyre szabhatja a Keresőt és más szolgáltatásokat.</translation>
 <translation id="4269029136757623689">Háztartási ventilátorok</translation>
 <translation id="4269264543938335308">Úszóruházat</translation>
 <translation id="4269599248168651462">A szervertanúsítvány nem egyedi névre van kiállítva.</translation>
@@ -2889,6 +2891,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5715918316982363436"><ph name="WINDOW_COUNT" />/<ph name="TAB_COUNT" /> ezen az eszközön</translation>
 <translation id="5716325061445053985">Koppintson rá a lap telefonon való megnyitásához</translation>
 <translation id="5717509257172454543">Jégkorcsolyázás</translation>
+<translation id="5718601519531438273">Olyan információkat tartalmaz, mint az útlevelek és a vezetői engedélyek</translation>
 <translation id="5720705177508910913">Jelenlegi felhasználó</translation>
 <translation id="5720895412771013401">Asztali számítógépek</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} és további 1}other{{website_1}, {website_2} és további {more_count}}}</translation>
@@ -4560,6 +4563,7 @@ További részletek:
 <translation id="8449036207308062757">Tárhely kezelése</translation>
 <translation id="8449155699563577224">17 × 24 hüvelyk</translation>
 <translation id="8449836157089738489">Az összes megnyitása új lapcsoportban</translation>
+<translation id="8451518040456311377">Személyazonosító okmányok mentése és kitöltése</translation>
 <translation id="84561192812921051">A rendszergazda távolról módosításokat végezhet az Ön profiljában és böngészőjében, jelentésekkel elemezheti a böngészőadatait, és egyéb szükséges feladatokat is elvégezhet. Az is lehetséges, hogy az eszközön végzett tevékenységeket a Chrome-on kívülről felügyelik.  <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" /></translation>
 <translation id="8456383681414356368">Az alsó lap be van zárva.</translation>
 <translation id="8456775115498700722">Mostantól automatikusan kitöltheti <ph name="CARD_ISSUER_NAME" />-kártyái adatait, mert <ph name="CARD_ISSUER_NAME" />-fiókja össze van kapcsolva a Google Pay szolgáltatással.</translation>

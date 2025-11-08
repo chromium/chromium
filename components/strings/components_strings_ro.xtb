@@ -445,6 +445,7 @@
 <translation id="1717218214683051432">Senzori de mișcare</translation>
 <translation id="1717494416764505390">Căsuța de e-mail 3</translation>
 <translation id="1717688554309417925">Servicii de debit și cecuri</translation>
+<translation id="1717882880162336471">Încearcă Modul AI</translation>
 <translation id="1719434663396780149">Alertele privind scăderea prețurilor sunt activate. Poți modifica opțiunea în <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="1719838434204287058">24 x 30 in</translation>
 <translation id="1720941539803966190">Închide tutorialul</translation>
@@ -2016,6 +2017,7 @@
 <translation id="4258748452823770588">Semnătură greșită</translation>
 <translation id="4265635050210404830">Cardurile tale de fidelitate</translation>
 <translation id="4265872034478892965">Permisă de administrator</translation>
+<translation id="4267590181863312380">Pentru a accesa istoricul de pe alte dispozitive, conectează-te și sincronizează istoricul. În plus, vei putea accesa parolele și multe altele pe toate dispozitivele. Poți opri sincronizarea oricând din setări. Google poate personaliza Căutarea și alte servicii pe baza istoricului.</translation>
 <translation id="4269029136757623689">Ventilatoare pentru casă</translation>
 <translation id="4269264543938335308">Costume de baie</translation>
 <translation id="4269599248168651462">Certificatul de server este emis pentru un nume care nu este unic.</translation>
@@ -2892,6 +2894,7 @@
 <translation id="5715918316982363436"><ph name="TAB_COUNT" /> din <ph name="WINDOW_COUNT" /> pe acest dispozitiv</translation>
 <translation id="5716325061445053985">Atinge pentru a deschide fila pe telefon</translation>
 <translation id="5717509257172454543">Patinaj</translation>
+<translation id="5718601519531438273">Include informații precum pașapoartele și permisele de conducere</translation>
 <translation id="5720705177508910913">Utilizator curent</translation>
 <translation id="5720895412771013401">Computere</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} și încă unul}few{{website_1}, {website_2} și încă {more_count}}other{{website_1}, {website_2} și încă {more_count}}}</translation>
@@ -4562,6 +4565,7 @@ Detalii suplimentare:
 <translation id="8449036207308062757">Gestionează stocarea</translation>
 <translation id="8449155699563577224">17 x 24 in</translation>
 <translation id="8449836157089738489">Deschideți-le pe toate într-un nou grup de file</translation>
+<translation id="8451518040456311377">Salvează și completează datele actelor de identitate</translation>
 <translation id="84561192812921051">Administratorul poate să modifice profilul și browserul de la distanță, să analizeze informațiile despre browser cu ajutorul rapoartelor și să finalizeze alte activități necesare. Este posibil ca activitatea de pe acest dispozitiv să fie gestionată și din afara Chrome.  <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="8456383681414356368">Foaia din partea de jos este închisă.</translation>
 <translation id="8456775115498700722">Acum poți să completezi automat cardurile <ph name="CARD_ISSUER_NAME" />, deoarece contul <ph name="CARD_ISSUER_NAME" /> este conectat la Google Pay.</translation>

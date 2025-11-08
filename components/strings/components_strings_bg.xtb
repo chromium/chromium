@@ -445,6 +445,7 @@
 <translation id="1717218214683051432">Сензори за движение</translation>
 <translation id="1717494416764505390">Пощенска кутия 3</translation>
 <translation id="1717688554309417925">Услуги за дебитни карти и чекове</translation>
+<translation id="1717882880162336471">Изпробвайте режима с AI</translation>
 <translation id="1719434663396780149">Сигналите за понижение на цената са включени. Можете да промените това от <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="1719838434204287058">24 x 30 инча</translation>
 <translation id="1720941539803966190">Затваряне на урока</translation>
@@ -2016,6 +2017,7 @@
 <translation id="4258748452823770588">Невалиден подпис</translation>
 <translation id="4265635050210404830">Вашите карти за лоялност</translation>
 <translation id="4265872034478892965">Разрешено от администратора ви</translation>
+<translation id="4267590181863312380">За да получите историята от другите си устройства, влезте в профила си и я синхронизирайте. Също така ще получите паролите си и др. на всичките си устройства. Можете да спрете синхронизирането по всяко време от настройките. Google може да персонализира Търсене и други услуги въз основа на историята ви.</translation>
 <translation id="4269029136757623689">Вентилатори за дома</translation>
 <translation id="4269264543938335308">Бански костюми</translation>
 <translation id="4269599248168651462">Сертификатът на сървъра е издаден за неуникално име.</translation>
@@ -2892,6 +2894,7 @@
 <translation id="5715918316982363436"><ph name="TAB_COUNT" /> от <ph name="WINDOW_COUNT" /> на това устройство</translation>
 <translation id="5716325061445053985">Докоснете, за да отворите раздела на телефона си</translation>
 <translation id="5717509257172454543">Фигурно пързаляне</translation>
+<translation id="5718601519531438273">Включва различна информация, като например паспорти и шофьорски книжки</translation>
 <translation id="5720705177508910913">Текущият потребител</translation>
 <translation id="5720895412771013401">Настолни компютри</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} и още 1}other{{website_1}, {website_2} и още {more_count}}}</translation>
@@ -4562,6 +4565,7 @@
 <translation id="8449036207308062757">Управление на хранилището</translation>
 <translation id="8449155699563577224">17 x 24 инча</translation>
 <translation id="8449836157089738489">Отваряне на всички в нова група раздели</translation>
+<translation id="8451518040456311377">Запазване и попълване на документите за самоличност</translation>
 <translation id="84561192812921051">Администраторът ви може да извършва промени в потребителския профил и браузъра ви отдалечено, да анализира информацията за браузъра чрез отчитане и да изпълнява други необходими задачи. Възможно е активността на това устройство да се управлява и извън Chrome.  <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="8456383681414356368">Долният лист е затворен.</translation>
 <translation id="8456775115498700722">Вече можете да попълвате картите си в(ъв) <ph name="CARD_ISSUER_NAME" /> автоматично, защото профилът ви в(ъв) <ph name="CARD_ISSUER_NAME" /> е свързан с Google Pay.</translation>

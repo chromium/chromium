@@ -1053,7 +1053,9 @@
 <translation id="5596627076506792578">更多選項</translation>
 <translation id="5599455543593328020">無痕模式</translation>
 <translation id="5601180634394228718">如需其他會運用資料提升 Chrome 使用體驗的設定，請前往 <ph name="BEGIN_LINK" />Google 服務<ph name="END_LINK" />。</translation>
+<translation id="5601924940067278327">在所有裝置上存取分頁和其他資料</translation>
 <translation id="5611398002774823980">儲存到帳戶</translation>
+<translation id="5613381935190035031">以「<ph name="EMAIL" />」身分登入 Chrome，就能在所有裝置上存取分頁和其他資料</translation>
 <translation id="5614625640221885312">登入帳戶後，就能在所有裝置上存取你的書籤、密碼等資訊</translation>
 <translation id="5619633276517849615">貴機構已開啟安全瀏覽功能</translation>
 <translation id="5620163320393916465">未儲存任何密碼</translation>
@@ -1698,6 +1700,7 @@
 <translation id="8110024788458304985">協助改善 Chrome 的功能與效能</translation>
 <translation id="8110087112193408731">要在數位健康中顯示你的 Chrome 活動記錄嗎？</translation>
 <translation id="8118117428362942925">如需協助，請找家長 (<ph name="PARENT_NAME" />) 幫忙</translation>
+<translation id="8118151008374483324">登入 Chrome，就能在所有裝置上存取分頁和其他資料</translation>
 <translation id="8120286190326371840">這部裝置上沒有任何密碼外洩</translation>
 <translation id="8122623268651408616">由新到舊排序</translation>
 <translation id="8127542551745560481">編輯首頁</translation>
@@ -1955,6 +1958,7 @@
 <translation id="9212845824145208577">無法再向下捲動。請嘗試從下一頁開始。</translation>
 <translation id="9218430445555521422">設為預設</translation>
 <translation id="9219103736887031265">圖片</translation>
+<translation id="9222198206152536936">以「<ph name="EMAIL" />」身分登入，就能在所有裝置上存取分頁和其他資料</translation>
 <translation id="924447568950697217">將 Chrome 設為預設瀏覽器</translation>
 <translation id="926205370408745186">將你的 Chrome 活動記錄從數位健康中移除</translation>
 <translation id="927968626442779827">使用 Google Chrome 精簡模式</translation>

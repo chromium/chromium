@@ -445,6 +445,7 @@
 <translation id="1717218214683051432">Қозғалыс датчиктері</translation>
 <translation id="1717494416764505390">3-ші пошта жәшігі</translation>
 <translation id="1717688554309417925">Дебеттік және чектік қызметтер</translation>
+<translation id="1717882880162336471">AI режимін қолданып көру</translation>
 <translation id="1719434663396780149">Бағаның төмендегенін хабарлайтын хабарландырулар қосулы. Мұны <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" /> бөлімінен өзгертуге болады.</translation>
 <translation id="1719838434204287058">24 x 30 дюйм</translation>
 <translation id="1720941539803966190">Оқулықты жабу</translation>
@@ -2015,6 +2016,7 @@
 <translation id="4258748452823770588">Қолтаңба жарамсыз</translation>
 <translation id="4265635050210404830">Тұрақты клиент карталарыңыз</translation>
 <translation id="4265872034478892965">Әкімші рұқсат берген</translation>
+<translation id="4267590181863312380">Басқа құрылғылардағы тарихты алу үшін аккаунтқа кіріп, тарихты синхрондаңыз. Құпия сөздер мен басқа да деректеріңіз барлық құрылғыңызда қолжетімді болады. Синхрондауды кез келген уақытта параметрлерде тоқтатуға болады. Google жүйесі Search пен басқа да қызметтерді тарихыңызға негіздеп жекелендіре алады.</translation>
 <translation id="4269029136757623689">Тұмыстық желдеткіштер</translation>
 <translation id="4269264543938335308">Жүзуге арналған киім</translation>
 <translation id="4269599248168651462">Сервер сертификаты бірегей емес атқа берілді.</translation>
@@ -2891,6 +2893,7 @@
 <translation id="5715918316982363436">Осы құрылғыдағы <ph name="WINDOW_COUNT" /> ішіндегі <ph name="TAB_COUNT" /></translation>
 <translation id="5716325061445053985">Қойындыны телефоннан ашу үшін түртіңіз.</translation>
 <translation id="5717509257172454543">Мұзда коньки тебу</translation>
+<translation id="5718601519531438273">Паспорттар мен жүргізуші куәліктері сияқты ақпаратты қамтиды.</translation>
 <translation id="5720705177508910913">Ағымдағы пайдаланушы</translation>
 <translation id="5720895412771013401">Компьютерлер</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} және тағы 1 веб-сайт}other{{website_1}, {website_2} және тағы {more_count} веб-сайт}}</translation>
@@ -4560,6 +4563,7 @@
 <translation id="8449036207308062757">Жадты басқару</translation>
 <translation id="8449155699563577224">17 x 24 дюйм</translation>
 <translation id="8449836157089738489">Барлығын жаңа қойындылар тобында ашу</translation>
+<translation id="8451518040456311377">Жеке куәліктерді сақтау және толтыру</translation>
 <translation id="84561192812921051">Әкімші профиль мен браузерге қашықтан өзгеріс енгізе алады, есеп беру арқылы браузер туралы ақпаратты талдай алады және басқа қажетті тапсырмаларды орындай алады. Бұл құрылғыдағы әрекеттерді Chrome браузерінен тыс та басқаруға болады.  <ph name="BEGIN_LINK" />Толық ақпарат<ph name="END_LINK" /></translation>
 <translation id="8456383681414356368">Төменгі парақша жабылды.</translation>
 <translation id="8456775115498700722">Енді <ph name="CARD_ISSUER_NAME" /> карталарын автоматты түрде толтыра аласыз, себебі <ph name="CARD_ISSUER_NAME" /> аккаунтыңыз Google Pay-мен байланыстырылған.</translation>

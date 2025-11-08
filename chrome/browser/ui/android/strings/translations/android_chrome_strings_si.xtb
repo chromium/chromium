@@ -1053,7 +1053,9 @@
 <translation id="5596627076506792578">තවත් විකල්ප</translation>
 <translation id="5599455543593328020">අප්‍රසිද්ධ ප්‍රකාරය</translation>
 <translation id="5601180634394228718">ඔබේ Chrome අත්දැකීම වැඩි දියුණු කිරීමට දත්ත භාවිතා කරන තවත් සැකසීම් සඳහා, <ph name="BEGIN_LINK" />Google සේවා<ph name="END_LINK" /> වෙත යන්න.</translation>
+<translation id="5601924940067278327">ඔබේ සියලු උපාංග මත ඔබේ පටිති සහ තවත් දේ ලබා ගන්න</translation>
 <translation id="5611398002774823980">ගිණුමේ සුරකින්න</translation>
+<translation id="5613381935190035031">ඔබේ සියලු උපාංග මත ඔබේ පටිති සහ තවත් දේ ලබා ගැනීමට, Chrome වෙත <ph name="EMAIL" /> ලෙස පුරන්න</translation>
 <translation id="5614625640221885312">ඔබේ සියලු උපාංග මත ඔබේ පිටුසන්, මුරපද, සහ තවත් දේ ලබා ගැනීමට පුරන්න</translation>
 <translation id="5619633276517849615">ඔබේ සංවිධානය ආරක්ෂිත බ්‍රවුස් කිරීම ක්‍රියාත්මක කර ඇත</translation>
 <translation id="5620163320393916465">සුරැකි මුරපද නැත</translation>
@@ -1698,6 +1700,7 @@
 <translation id="8110024788458304985">Chrome හි විශේෂාංග සහ කාර්යසාධනය වැඩි දියුණු කිරීමට උදවු වන්න</translation>
 <translation id="8110087112193408731">ඩිජිටල් සුවතාව තුළ ඔබේ Chrome ක්‍රියාකාරකම් පෙන්වන්න ද?</translation>
 <translation id="8118117428362942925">ඔබට උදව් අවශ්‍ය නම්, ඔබේ දෙමාපියන්ගෙන් විමසන්න (<ph name="PARENT_NAME" />)</translation>
+<translation id="8118151008374483324">ඔබේ සියලු උපාංග මත ඔබේ පටිති සහ තවත් දේ ලබා ගැනීමට, Chrome වෙත පුරන්න</translation>
 <translation id="8120286190326371840">මෙම උපාංගයෙහි අවදානමට ලක් වූ මුරපද නොමැත</translation>
 <translation id="8122623268651408616">නවතම අනුව වර්ග කිරීම</translation>
 <translation id="8127542551745560481">මුල් පිටුව සංස්කරණ කරන්න</translation>
@@ -1955,6 +1958,7 @@
 <translation id="9212845824145208577">පහළට යාමට නොහැකිය. පිටුවේ තවදුරටත් පහළින් ආරම්භ කිරීමට උත්සාහ කරන්න.</translation>
 <translation id="9218430445555521422">පෙරනිමි ලෙස සකසන්න</translation>
 <translation id="9219103736887031265">රූප</translation>
+<translation id="9222198206152536936">ඔබේ සියලු ම උපාංගවල පටිති සහ තවත් දේ ලබා ගැනීමට, <ph name="EMAIL" /> ලෙස පුරනය වන්න</translation>
 <translation id="924447568950697217">Chrome ඔබේ පෙරනිමි බ්‍රව්සරය කරන්න</translation>
 <translation id="926205370408745186">ඩිජිටල් සුවතාව වෙතින් ඔබේ Chrome ක්‍රියාකාරකම් ඉවත් කරන්න</translation>
 <translation id="927968626442779827">Google Chrome හි සැහැල්ලු ප්‍රකාරය භාවිත කරන්න</translation>

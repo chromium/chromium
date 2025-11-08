@@ -440,6 +440,7 @@
 <translation id="1717218214683051432">మోషన్ సెన్సార్‌లు</translation>
 <translation id="1717494416764505390">మెయిల్‌బాక్స్ 3</translation>
 <translation id="1717688554309417925">డెబిట్ &amp; చెకింగ్ సర్వీస్‌లు</translation>
+<translation id="1717882880162336471">AI మోడ్‌ను ట్రై చేయండి</translation>
 <translation id="1719434663396780149">ధర తగ్గుదల అలర్ట్‌లు ఆన్‌లో ఉన్నాయి. మీరు దీన్ని <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />‌లో మార్చవచ్చు.</translation>
 <translation id="1719838434204287058">24 x 30 అంగుళాలు</translation>
 <translation id="1720941539803966190">ట్యుటోరియల్‌ను మూసివేయండి</translation>
@@ -2011,6 +2012,7 @@
 <translation id="4258748452823770588">చెల్లని సంతకం</translation>
 <translation id="4265635050210404830">మీ లాయల్టీ కార్డ్‌లు</translation>
 <translation id="4265872034478892965">మీ నిర్వాహకులు అనుమతించారు</translation>
+<translation id="4267590181863312380">మీ ఇతర డివైజ్‌ల నుండి మీ హిస్టరీని పొందడానికి, సైన్ ఇన్ చేసి, హిస్టరీని సింక్ చేయండి. మీరు మీ అన్ని డివైజ్‌లలో మీ పాస్‌వర్డ్‌లు, మరిన్ని ప్రయోజనాలను కూడా పొందుతారు. మీరు సింక్ అవ్వడాన్ని ఏ సమయంలోనైనా సెట్టింగ్‌లలో ఆపివేయవచ్చు. మీ హిస్టరీ ఆధారంగా Searchను, ఇతర సర్వీస్‌లను Google వ్యక్తిగతీకరించవచ్చు.</translation>
 <translation id="4269029136757623689">ఇంటిలో ఉపయోగించే ఫ్యాన్‌లు</translation>
 <translation id="4269264543938335308">ఈత దుస్తులు</translation>
 <translation id="4269599248168651462">నాన్-యూనిక్ పేరుకు సర్వర్ సర్టిఫికెట్ జారీ చేయబడింది.</translation>
@@ -2887,6 +2889,7 @@
 <translation id="5715918316982363436">ఈ పరికరంలో <ph name="WINDOW_COUNT" /> నుండి <ph name="TAB_COUNT" />‌కు సంబంధించిన డేటాను క్లియర్ చేయండి</translation>
 <translation id="5716325061445053985">మీ ఫోన్‌లో ట్యాబ్‌ను తెరవడానికి ట్యాప్ చేయండి</translation>
 <translation id="5717509257172454543">ఐస్ స్కేటింగ్</translation>
+<translation id="5718601519531438273">ఇందులో పాస్‌పోర్ట్‌లు, డ్రైవర్ లైసెన్స్‌ల వంటి సమాచారం ఉంటుంది</translation>
 <translation id="5720705177508910913">ప్రస్తుత వినియోగదారు</translation>
 <translation id="5720895412771013401">డెస్క్‌టాప్ కంప్యూటర్‌లు</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2}, ఇంకా మరో 1}other{{website_1}, {website_2}, ఇంకా మరో {more_count}}}</translation>
@@ -4557,6 +4560,7 @@
 <translation id="8449036207308062757">స్టోరేజ్‌ను మేనేజ్ చేయండి</translation>
 <translation id="8449155699563577224">17 x 24 అంగుళాలు</translation>
 <translation id="8449836157089738489">అన్నింటినీ కొత్త ట్యాబ్ గ్రూప్‌లో తెరవండి</translation>
+<translation id="8451518040456311377">ఐడెంటిటీ డాక్యుమెంట్‌లను సేవ్ చేసి, ఫిల్ చేయండి</translation>
 <translation id="84561192812921051">మీ అడ్మినిస్ట్రేటర్ మీ ప్రొఫైల్, బ్రౌజర్ సెట్టింగ్‌లకు రిమోట్‌గా మార్పులు చేయవచ్చు, రిపోర్టింగ్ ద్వారా బ్రౌజర్ గురించిన సమాచారాన్ని విశ్లేషించవచ్చు, అవసరమైన ఇతర టాస్క్‌లను అమలు చేయవచ్చు. ఈ పరికరంలోని యాక్టివిటీని Chrome వెలుపల కూడా మేనేజ్ చేయవచ్చు.  <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="8456383681414356368">దిగువున ఉన్న షీట్ మూసివేయబడింది.</translation>
 <translation id="8456775115498700722">మీ <ph name="CARD_ISSUER_NAME" /> ఖాతా Google Payకి లింక్ చేసినందున ఇప్పుడు మీరు మీ <ph name="CARD_ISSUER_NAME" /> కార్డ్‌లను ఆటోఫిల్ చేయవచ్చు.</translation>

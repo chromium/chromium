@@ -445,6 +445,7 @@
 <translation id="1717218214683051432">Датчыкі руху</translation>
 <translation id="1717494416764505390">Паштовая скрынка 3</translation>
 <translation id="1717688554309417925">Дэбетовыя і разліковыя паслугі</translation>
+<translation id="1717882880162336471">Паспрабуйце рэжым AI</translation>
 <translation id="1719434663396780149">Абвесткі пра зніжэнне цэн уключаны. Каб выключыць іх, перайдзіце ў <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="1719838434204287058">24 x 30 цаляў</translation>
 <translation id="1720941539803966190">Закрыць дапаможнік</translation>
@@ -2016,6 +2017,7 @@
 <translation id="4258748452823770588">Недапушчальны подпіс</translation>
 <translation id="4265635050210404830">Вашы карткі лаяльнасці</translation>
 <translation id="4265872034478892965">Дазволена адміністратарам</translation>
+<translation id="4267590181863312380">Каб бачыць гісторыю са сваіх іншых прылад, увайдзіце ва ўліковы запіс і сінхранізуйце гісторыю. Таксама вы атрымаеце доступ да сваіх пароляў і іншых даных на ўсіх сваіх прыладах. Вы заўсёды можаце спыніць сінхранізацыю ў наладах. Google можа персаналізаваць Пошук і іншыя сэрвісы на аснове вашай гісторыі прагляду сайтаў.</translation>
 <translation id="4269029136757623689">Бытавыя вентылятары</translation>
 <translation id="4269264543938335308">Купальныя касцюмы</translation>
 <translation id="4269599248168651462">Сертыфікат сервера выданы на неўнікальнае імя.</translation>
@@ -2891,6 +2893,7 @@
 <translation id="5715918316982363436"><ph name="TAB_COUNT" /> з <ph name="WINDOW_COUNT" /> на гэтай прыладзе</translation>
 <translation id="5716325061445053985">Націсніце, каб адкрыць укладку на тэлефоне</translation>
 <translation id="5717509257172454543">Катанне на каньках</translation>
+<translation id="5718601519531438273">Уключае такую інфармацыю, як даныя пашпартоў і вадзіцельскіх пасведчанняў</translation>
 <translation id="5720705177508910913">Бягучы карыстальнік</translation>
 <translation id="5720895412771013401">Настольныя камп’ютары</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} і яшчэ 1}one{{website_1}, {website_2} і яшчэ {more_count}}few{{website_1}, {website_2} і яшчэ {more_count}}many{{website_1}, {website_2} і яшчэ {more_count}}other{{website_1}, {website_2} і яшчэ {more_count}}}</translation>
@@ -4561,6 +4564,7 @@
 <translation id="8449036207308062757">Кіраванне сховішчам</translation>
 <translation id="8449155699563577224">17 x 24 цалі</translation>
 <translation id="8449836157089738489">Адкрыць усе ў новай групе ўкладак</translation>
+<translation id="8451518040456311377">Захоўваць і запаўняць даныя пасведчанняў асобы</translation>
 <translation id="84561192812921051">Ваш адміністратар можа аддалена змяняць налады профілю і браўзера, аналізаваць інфармацыю пра браўзер з дапамогай справаздач і выконваць іншыя неабходныя задачы. Сама прылада таксама можа быць пад знешнім кіраваннем.  <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="8456383681414356368">Ніжні аркуш закрыты.</translation>
 <translation id="8456775115498700722">Цяпер вы можаце аўтаматычна запаўняць даныя картак <ph name="CARD_ISSUER_NAME" />, бо ўліковы запіс картак <ph name="CARD_ISSUER_NAME" /> звязаны з Google Pay.</translation>

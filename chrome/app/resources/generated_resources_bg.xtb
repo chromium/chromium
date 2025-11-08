@@ -1897,6 +1897,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2281863813036651454">Кликване с левия бутон на мишката</translation>
 <translation id="2282146716419988068">Процес на графичния процесор</translation>
 <translation id="228293613124499805">Повечето посещавани от вас сайтове вероятно запазват данни на устройството ви, често с цел подобряване на практическата ви работа, като съхраняват предпочитанията ви или информацията, която споделяте със сайта. Препоръчваме ви да оставите тази настройка включена.</translation>
+<translation id="2283599456633275070">Пътувания</translation>
 <translation id="2285109769884538519">{COUNT,plural, =0{Отваряне на всички в &amp;нова група с раздели}=1{Отваряне в &amp;нова група с раздели}other{Отваряне на всички ({COUNT}) в &amp;нова група с раздели}}</translation>
 <translation id="2285942871162473373">Отпечатъкът ви не бе разпознат. Опитайте отново.</translation>
 <translation id="2287617382468007324">IPP адрес за отпечатване</translation>
@@ -5291,6 +5292,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4622051949285931942">Да се изключат ли автоматичните актуализации?</translation>
 <translation id="4623167406982293031">Потвърждаване на профила</translation>
 <translation id="4623189117674524348">Системата не успя да упълномощи достъпа на това устройство до API.</translation>
+<translation id="4623894491222334521">Документи за самоличност</translation>
 <translation id="4624054169152573743">Цветова тема</translation>
 <translation id="4625078469366263107">Активиране на приложението</translation>
 <translation id="4625905218692741757">Сив цвят по подразбиране</translation>

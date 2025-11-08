@@ -33,6 +33,7 @@
 <translation id="1409338233051621926">Trykk på Apper og deretter på Standardapper</translation>
 <translation id="1415402041810619267">Nettadressen er avkortet</translation>
 <translation id="1415855080660575082">La Chrome dele de nylige fanene dine med enheten din, slik at du kan se dem på applisten og i søkeresultater på enheten. Du kan slå dette på eller av i Chrome-innstillingene.</translation>
+<translation id="1420688843103859429">Naviger frem og tilbake ved å sveipe med to fingre på styreflaten</translation>
 <translation id="1432650420699700107">Nettsteder kan be om å få koble til enheter på det lokale nettverket ditt</translation>
 <translation id="1448064542941920355">Zoom ut</translation>
 <translation id="1464044141348608623">Ikke la nettsteder få vite når du bruker enheten aktivt</translation>
@@ -433,6 +434,7 @@ Avansert beskyttelse styrer disse Chrome-innstillingene:
 <translation id="5750869797196646528">Håndsporing</translation>
 <translation id="5753570386948603678">Slett fra loggen</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> er blokkert</translation>
+<translation id="5792627621688759634">Sveip mellom sider med en styreflate</translation>
 <translation id="5801457289562671820">Anbefalt av organisasjonen din</translation>
 <translation id="5804241973901381774">Tillatelser</translation>
 <translation id="5822675474983796325">Feltet nederst for tilpasning av Ny fane-siden er åpnet i full høyde</translation>

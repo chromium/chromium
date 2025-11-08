@@ -33,6 +33,7 @@
 <translation id="1409338233051621926">[アプリ]、[デフォルトのアプリ] をタップします</translation>
 <translation id="1415402041810619267">URL の短縮バージョンです</translation>
 <translation id="1415855080660575082">Chrome で最近使ったタブをデバイスと共有して、デバイスのアプリリストと検索結果に表示できます。この機能は Chrome の設定でオンまたはオフにできます。</translation>
+<translation id="1420688843103859429">タッチパッドを 2 本の指でスワイプして前後に移動します</translation>
 <translation id="1432650420699700107">サイトがローカル ネットワーク上のデバイスへの接続を要求できるようにする</translation>
 <translation id="1448064542941920355">縮小</translation>
 <translation id="1464044141348608623">サイトによるデバイスのアクティブ状態の検出を許可しない</translation>
@@ -433,6 +434,7 @@
 <translation id="5750869797196646528">ハンド トラッキング</translation>
 <translation id="5753570386948603678">履歴から削除</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" />をブロック</translation>
+<translation id="5792627621688759634">タッチパッドを使用してページ間をスワイプする</translation>
 <translation id="5801457289562671820">組織からのおすすめ</translation>
 <translation id="5804241973901381774">権限</translation>
 <translation id="5822675474983796325">[新しいタブページをカスタマイズ] のボトムシートが画面全体に表示されています</translation>

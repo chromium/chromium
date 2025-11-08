@@ -1902,6 +1902,7 @@
 <translation id="2281863813036651454">마우스 왼쪽 버튼 클릭</translation>
 <translation id="2282146716419988068">GPU 프로세스</translation>
 <translation id="228293613124499805">내가 방문하는 대부분의 사이트에서는 기기에 데이터를 저장하며, 사이트에 공유한 환경설정이나 정보를 저장하여 사용자 환경을 개선하는 경우가 많습니다. 이 설정을 유지하는 것이 좋습니다.</translation>
+<translation id="2283599456633275070">여행</translation>
 <translation id="2285109769884538519">{COUNT,plural, =0{새 탭 그룹에서 모두 열기(&amp;N)}=1{새 탭 그룹에서 열기(&amp;N)}other{새 탭 그룹에서 {COUNT}개 모두 열기(&amp;N)}}</translation>
 <translation id="2285942871162473373">지문을 인식할 수 없습니다. 다시 시도해 보세요.</translation>
 <translation id="2287617382468007324">인쇄 IPP 주소</translation>
@@ -3433,7 +3434,7 @@
 <translation id="3348131053948466246">추천 그림 이모티콘이 표시되어 있습니다. 위 또는 아래를 눌러 이동하고 Enter를 눌러 입력합니다.</translation>
 <translation id="3348973040180736882">압축 해제</translation>
 <translation id="3349933790966648062">메모리 사용량</translation>
-<translation id="3350450887151703713">10초 다시 재생</translation>
+<translation id="3350450887151703713">10초 뒤로 이동</translation>
 <translation id="3351472127384196879">펜에서 버튼 추가 또는 찾기</translation>
 <translation id="3353786022389205125">'절전 모드가 해제될 때 잠금 화면 표시'를 사용 설정한 후 다시 시도해 주세요.</translation>
 <translation id="3354768182971982851">2022년 12월 이후에는 이전 버전의 Chrome 앱이 Mac 기기에서 열리지 않습니다. 이용 가능한 새 버전이 있는지 확인해 보세요.</translation>
@@ -5295,6 +5296,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4622051949285931942">자동 업데이트 사용을 중지하시겠습니까?</translation>
 <translation id="4623167406982293031">계정을 인증하세요.</translation>
 <translation id="4623189117674524348">시스템에서 이 기기의 API 액세스를 승인하지 못했습니다.</translation>
+<translation id="4623894491222334521">신원 확인 문서</translation>
 <translation id="4624054169152573743">색상 테마</translation>
 <translation id="4625078469366263107">앱 사용</translation>
 <translation id="4625905218692741757">회색 기본 색상</translation>

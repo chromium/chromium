@@ -1054,7 +1054,9 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="5596627076506792578">Mais opções</translation>
 <translation id="5599455543593328020">Modo de navegação anônima</translation>
 <translation id="5601180634394228718">Para conferir mais configurações que usam dados para melhorar sua experiência do Chrome, acesse os <ph name="BEGIN_LINK" />Serviços do Google<ph name="END_LINK" />.</translation>
+<translation id="5601924940067278327">Acesse suas guias e muito mais em todos os seus dispositivos</translation>
 <translation id="5611398002774823980">Salvar na conta</translation>
+<translation id="5613381935190035031">Para acessar suas guias e muito mais em todos os seus dispositivos, faça login no Chrome com a conta <ph name="EMAIL" /></translation>
 <translation id="5614625640221885312">Faça login e acesse favoritos, senhas e mais em todos os seus dispositivos</translation>
 <translation id="5619633276517849615">Sua organização ativou a Navegação Segura</translation>
 <translation id="5620163320393916465">Nenhuma senha salva</translation>
@@ -1699,6 +1701,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="8110024788458304985">Ajudar a melhorar os recursos e o desempenho do Chrome</translation>
 <translation id="8110087112193408731">Mostrar sua atividade do Chrome no Bem-estar digital?</translation>
 <translation id="8118117428362942925">Se precisar de ajuda, entre em contato com seu familiar responsável (<ph name="PARENT_NAME" />)</translation>
+<translation id="8118151008374483324">Para acessar suas guias e muito mais em todos os seus dispositivos, faça login no Chrome</translation>
 <translation id="8120286190326371840">Nenhuma senha comprometida neste dispositivo</translation>
 <translation id="8122623268651408616">Ordenar por mais recentes</translation>
 <translation id="8127542551745560481">Editar página inicial</translation>
@@ -1956,6 +1959,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="9212845824145208577">Não é possível descer mais. Tente começar a arrastar mais abaixo na página.</translation>
 <translation id="9218430445555521422">Definir como padrão</translation>
 <translation id="9219103736887031265">Imagens</translation>
+<translation id="9222198206152536936">Para acessar suas guias e muito mais em todos os seus dispositivos, faça login com a conta <ph name="EMAIL" /></translation>
 <translation id="924447568950697217">Definir o Google Chrome como o navegador padrão</translation>
 <translation id="926205370408745186">Remover sua atividade do Chorme do Bem-estar digital</translation>
 <translation id="927968626442779827">Use o Modo Lite no Google Chrome</translation>

@@ -33,6 +33,7 @@
 <translation id="1409338233051621926">Valitse Sovellukset ja sitten Oletussovellukset</translation>
 <translation id="1415402041810619267">URL näkyy lyhennettynä</translation>
 <translation id="1415855080660575082">Salli Chromen jakaa viimeaikaiset välilehdet laitteelle, jotta näet ne laitteen sovelluslistalla ja hakutuloksissa. Voit laittaa tämän päälle tai pois päältä Chromen asetuksista.</translation>
+<translation id="1420688843103859429">Siirry taakse- ja eteenpäin pyyhkäisemällä kosketuslevyllä kahdella sormella</translation>
 <translation id="1432650420699700107">Sivustot voivat pyytää lupaa yhdistää paikallisessa verkossa oleviin laitteisiin</translation>
 <translation id="1448064542941920355">Vähennä zoomausta</translation>
 <translation id="1464044141348608623">Älä salli sivustojen tietää, milloin käytät laitetta aktiivisesti</translation>
@@ -433,6 +434,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="5750869797196646528">Käsien seuranta</translation>
 <translation id="5753570386948603678">Poista historiasta</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> estetty</translation>
+<translation id="5792627621688759634">Pyyhkäise sivujen välillä kosketuslevyllä</translation>
 <translation id="5801457289562671820">Organisaation suosittelema</translation>
 <translation id="5804241973901381774">Luvat</translation>
 <translation id="5822675474983796325">"Muuta Uusi välilehti ‑sivua" -alapaneeli avattu koko näytölle</translation>

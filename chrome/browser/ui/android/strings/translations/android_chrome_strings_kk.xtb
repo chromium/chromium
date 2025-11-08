@@ -1053,7 +1053,9 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="5596627076506792578">Қосымша опциялар</translation>
 <translation id="5599455543593328020">Инкогнито режимі</translation>
 <translation id="5601180634394228718">Chrome тәжірибесін жақсарту үшін деректерді қолданатын басқа параметрлерді <ph name="BEGIN_LINK" />Google қызметтерінен<ph name="END_LINK" /> қараңыз.</translation>
+<translation id="5601924940067278327">Қойындылар мен басқа ақпаратты барлық құрылғыдан алыңыз.</translation>
 <translation id="5611398002774823980">Аккаунтта сақтау</translation>
+<translation id="5613381935190035031">Қойындылар мен басқа ақпаратты барлық құрылғыдан алу үшін Chrome аккаунтына <ph name="EMAIL" /> ретінде кіріңіз.</translation>
 <translation id="5614625640221885312">Барлық құрылғыда бетбелгілер, құпия сөздер және т.б. ақпарат алу үшін аккаунтқа кіріңіз.</translation>
 <translation id="5619633276517849615">Ұйымыңыз Safe Browsing функциясын қосты.</translation>
 <translation id="5620163320393916465">Ешқандай құпия сөз сақталмаған.</translation>
@@ -1698,6 +1700,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="8110024788458304985">Chrome-ның функциялары мен өнімділігін жақсартуға көмектесу</translation>
 <translation id="8110087112193408731">Digital Wellbeing қызметінде Chrome браузерін пайдалану деректері көрсетілсін бе?</translation>
 <translation id="8118117428362942925">Көмек қажет болса, ата-анаңыздан (<ph name="PARENT_NAME" />) сұраңыз</translation>
+<translation id="8118151008374483324">Қойындылар мен басқа ақпаратты барлық құрылғыдан алу үшін Chrome аккаунтына кіріңіз.</translation>
 <translation id="8120286190326371840">Бұл құрылғыда ұрланған құпия сөздер жоқ</translation>
 <translation id="8122623268651408616">Ең жаңасы бойынша сұрыптау</translation>
 <translation id="8127542551745560481">Негізгі бетті өзгерту</translation>
@@ -1955,6 +1958,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="9212845824145208577">Бұдан төмен түспейді. Беттің төменгі жағынан бастап көріңіз.</translation>
 <translation id="9218430445555521422">Әдепкі ретінде орнату</translation>
 <translation id="9219103736887031265">Кескіндер</translation>
+<translation id="9222198206152536936">Қойындылар мен басқа деректерді барлық құрылғыдан алу үшін <ph name="EMAIL" /> ретінде кіріңіз.</translation>
 <translation id="924447568950697217">Chrome қолданбасын әдепкі браузер ету</translation>
 <translation id="926205370408745186">Digital Wellbeing функциясынан Chrome браузерін пайдалану деректерін өшіру</translation>
 <translation id="927968626442779827">Google Chrome браузерінде Lite режимін пайдаланыңыз.</translation>

@@ -445,6 +445,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1717218214683051432">Bewegingsensors</translation>
 <translation id="1717494416764505390">Posbus 3</translation>
 <translation id="1717688554309417925">Debiet- en kontroledienste</translation>
+<translation id="1717882880162336471">Probeer KI-modus</translation>
 <translation id="1719434663396780149">Opletberigte oor prysverlagings is aan. Jy kan dit in <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" /> verander.</translation>
 <translation id="1719838434204287058">24x30 dm.</translation>
 <translation id="1720941539803966190">Maak tutoriaal toe</translation>
@@ -2016,6 +2017,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4258748452823770588">Swak handtekening</translation>
 <translation id="4265635050210404830">Jou lojaliteitskaarte</translation>
 <translation id="4265872034478892965">Toegelaat deur jou administrateur</translation>
+<translation id="4267590181863312380">Meld aan en sinkroniseer geskiedenis om jou geskiedenis vanaf jou ander toestelle te kry. Jy sal ook jou wagwoorde en meer op al jou toestelle kry. Jy kan enige tyd in instellings ophou sinkroniseer. Google kan Search en ander dienste op grond van jou geskiedenis personaliseer.</translation>
 <translation id="4269029136757623689">Huishoudelike waaiers</translation>
 <translation id="4269264543938335308">Swemdrag</translation>
 <translation id="4269599248168651462">Die bedienersertifikaat is aan ’n nie-unieke naam uitgereik.</translation>
@@ -2892,6 +2894,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5715918316982363436"><ph name="TAB_COUNT" /> van <ph name="WINDOW_COUNT" /> op hierdie toestel</translation>
 <translation id="5716325061445053985">Tik om die oortjie op jou foon oop te maak</translation>
 <translation id="5717509257172454543">Ysskaats</translation>
+<translation id="5718601519531438273">Sluit inligting soos paspoorte en rybewyse in</translation>
 <translation id="5720705177508910913">Huidige gebruiker</translation>
 <translation id="5720895412771013401">Rekenaars</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} en nog 1}other{{website_1}, {website_2} en nog {more_count}}}</translation>
@@ -4561,6 +4564,7 @@ Bykomende besonderhede:
 <translation id="8449036207308062757">Bestuur berging</translation>
 <translation id="8449155699563577224">17x24 dm.</translation>
 <translation id="8449836157089738489">Maak almal in nuwe oortjiegroep oop</translation>
+<translation id="8451518040456311377">Stoor en vul identiteitsdokumente in</translation>
 <translation id="84561192812921051">Jou administrateur kan oor ’n afstand veranderinge aan jou profiel en blaaier maak, inligting oor die blaaier ontleed deur middel van verslagdoening, en ander nodige take uitvoer. Aktiwiteit op hierdie toestel kan ook buite Chrome bestuur word.  <ph name="BEGIN_LINK" />Meer inligting<ph name="END_LINK" /></translation>
 <translation id="8456383681414356368">Die onderste blad is toegemaak.</translation>
 <translation id="8456775115498700722">Jy kan nou jou <ph name="CARD_ISSUER_NAME" />-kaarte outovul, want jou <ph name="CARD_ISSUER_NAME" />-rekening is aan Google Pay gekoppel.</translation>

@@ -445,6 +445,7 @@
 <translation id="1717218214683051432">モーション センサー</translation>
 <translation id="1717494416764505390">用紙受け 3</translation>
 <translation id="1717688554309417925">デビット、小切手</translation>
+<translation id="1717882880162336471">AI モードを試す</translation>
 <translation id="1719434663396780149">値下げアラートはオンになっています。[<ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />] で変更できます。</translation>
 <translation id="1719838434204287058">24x30 インチ</translation>
 <translation id="1720941539803966190">チュートリアルを閉じる</translation>
@@ -2016,6 +2017,7 @@
 <translation id="4258748452823770588">署名が不適切です</translation>
 <translation id="4265635050210404830">ポイントカード</translation>
 <translation id="4265872034478892965">管理者によって許可されています</translation>
+<translation id="4267590181863312380">他のデバイスと同じ履歴を使用するには、ログインして履歴を同期します。同期すると、すべてのデバイスでパスワードなどの設定も使用できるようになります。同期は [設定] でいつでも停止できます。Google では、履歴に基づいて検索やその他のサービスをカスタマイズすることがあります。</translation>
 <translation id="4269029136757623689">家庭用扇風機</translation>
 <translation id="4269264543938335308">水着</translation>
 <translation id="4269599248168651462">サーバー証明書が一意でない名前に対して発行されました。</translation>
@@ -2892,6 +2894,7 @@
 <translation id="5715918316982363436">このデバイスの <ph name="WINDOW_COUNT" /> 個のウィンドウの <ph name="TAB_COUNT" /> 個のタブ</translation>
 <translation id="5716325061445053985">スマートフォンでタブを開くにはタップしてください</translation>
 <translation id="5717509257172454543">アイススケート</translation>
+<translation id="5718601519531438273">パスポートや運転免許証などの情報が含まれます</translation>
 <translation id="5720705177508910913">現在のユーザー</translation>
 <translation id="5720895412771013401">デスクトップ パソコン</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}、{website_2}}=3{{website_1}、{website_2}、他 1 個}other{{website_1}、{website_2}、他 {more_count} 個}}</translation>
@@ -3458,6 +3461,7 @@
 <translation id="6654224358955673568">よりフォーマルに</translation>
 <translation id="6654244995031366386">ガラス（テクスチャ）</translation>
 <translation id="6655085656059574817">アカウントをリンクしたままにすると、<ph name="BNPL_ISSUER_NAME" /> ですばやくお支払いできます。もしくは、<ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /> でリンクを解除できます。</translation>
+<translation id="6656935431494847393">フライトの予約や車両情報などの情報が含められます</translation>
 <translation id="6657585470893396449">パスワード</translation>
 <translation id="6659246032834639189">この価格は低額です</translation>
 <translation id="6660413144148052430">現在地情報</translation>
@@ -4563,6 +4567,7 @@
 <translation id="8449036207308062757">ストレージを管理</translation>
 <translation id="8449155699563577224">17x24 インチ</translation>
 <translation id="8449836157089738489">すべてを新しいタブグループで開く</translation>
+<translation id="8451518040456311377">身分証明書を保存して自動入力する</translation>
 <translation id="84561192812921051">管理者は、ユーザーのプロフィールやブラウザをリモートで変更したり、レポートを通じてブラウザに関する情報を分析したり、その他の必要なタスクを行ったりすることができます。このデバイスでのアクティビティは、Chrome 以外でも管理されている可能性があります。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="8456383681414356368">ボトムシートが閉じられました。</translation>
 <translation id="8456775115498700722"><ph name="CARD_ISSUER_NAME" /> アカウントが Google Pay にリンクされているため、<ph name="CARD_ISSUER_NAME" /> カードを自動入力できるようになりました。</translation>
@@ -4673,6 +4678,7 @@
 <translation id="865255447216708819">バックプリント フィルム</translation>
 <translation id="8654126188050905496">55x91 mm</translation>
 <translation id="8660780831677950176">この時間帯に頻繁にアクセス</translation>
+<translation id="8661820486298572829">自動入力されたコード</translation>
 <translation id="8662463432865928030">商業用不動産</translation>
 <translation id="8663226718884576429">ご注文の概要、<ph name="TOTAL_LABEL" />、その他の詳細</translation>
 <translation id="8663909737634214500">光ディスク</translation>
@@ -4754,6 +4760,7 @@
 <translation id="8781278378794969337">[ページを翻訳] ボタンです。実行すると、Google 翻訳を使用してこのページを翻訳できます</translation>
 <translation id="8785658048882205566">オートバイ</translation>
 <translation id="8790007591277257123">削除のやり直し（&amp;R）</translation>
+<translation id="8790668801880409584">旅行情報を保存して自動入力する</translation>
 <translation id="8792272652220298572">プラスチック（光沢）</translation>
 <translation id="8792621596287649091"><ph name="ORG_NAME" /> アカウントにアクセスできなくなったり、個人情報が盗まれたりする可能性があります。今すぐパスワードを変更することをおすすめします。</translation>
 <translation id="8792626944327216835">マイク</translation>

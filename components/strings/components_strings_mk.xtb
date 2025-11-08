@@ -445,6 +445,7 @@
 <translation id="1717218214683051432">Сензори за движење</translation>
 <translation id="1717494416764505390">Поштенско сандаче 3</translation>
 <translation id="1717688554309417925">Услуги за дебитни картички и тековни сметки</translation>
+<translation id="1717882880162336471">Испробајте го „AI-режимот“</translation>
 <translation id="1719434663396780149">Известувањата за намалени цени се вклучени. Ова може да го промените во <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="1719838434204287058">24 x 30 инчи</translation>
 <translation id="1720941539803966190">Затвори го упатството</translation>
@@ -2016,6 +2017,7 @@
 <translation id="4258748452823770588">Лош потпис</translation>
 <translation id="4265635050210404830">Вашите картички за лојалност</translation>
 <translation id="4265872034478892965">Дозволено од администраторот</translation>
+<translation id="4267590181863312380">За да ја добиете историјата од другите ваши уреди, најавете се и синхронизирајте ја историјата. Ќе ги добиете и вашите лозинки и друго на сите ваши уреди. Може да ја сопрете синхронизацијата кога сакате во поставките. Google може да ги персонализира „Пребарување“ и другите услуги според вашата историја.</translation>
 <translation id="4269029136757623689">Вентилатори</translation>
 <translation id="4269264543938335308">Костими за капење</translation>
 <translation id="4269599248168651462">Сертификатот за серверот е издаден на неуникатно име.</translation>
@@ -2892,6 +2894,7 @@
 <translation id="5715918316982363436"><ph name="TAB_COUNT" /> од <ph name="WINDOW_COUNT" /> на уредов</translation>
 <translation id="5716325061445053985">Допрете за да ја отворите картичката на телефонот</translation>
 <translation id="5717509257172454543">Уметничко лизгање</translation>
+<translation id="5718601519531438273">Опфаќа податоци како пасоши и возачки дозволи</translation>
 <translation id="5720705177508910913">Тековен корисник</translation>
 <translation id="5720895412771013401">Компјутери</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} и уште 1}one{{website_1}, {website_2} и уште {more_count}}other{{website_1}, {website_2} и уште {more_count}}}</translation>
@@ -4561,6 +4564,7 @@
 <translation id="8449036207308062757">Управувајте со просторот</translation>
 <translation id="8449155699563577224">17 x 24 инчи</translation>
 <translation id="8449836157089738489">Отвори ги сите во нова група картички</translation>
+<translation id="8451518040456311377">Зачувувај ги и пополнувај ги документите за идентификација</translation>
 <translation id="84561192812921051">Администраторот може да врши промени во вашиот профил и прелистувач далечински, да ги анализира информациите за прелистувачот преку извештаите и да извршува други неопходни задачи. Со активноста на уредов може да се управува и надвор од Chrome.  <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="8456383681414356368">Долниот лист е затворен.</translation>
 <translation id="8456775115498700722">Отсега може да ги пополнувате автоматски картичките на <ph name="CARD_ISSUER_NAME" /> бидејќи вашата сметка на <ph name="CARD_ISSUER_NAME" /> е поврзана со Google Pay.</translation>

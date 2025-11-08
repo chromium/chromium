@@ -445,6 +445,7 @@
 <translation id="1717218214683051432">মোশন সেন্সর</translation>
 <translation id="1717494416764505390">মেলবক্স ৩</translation>
 <translation id="1717688554309417925">ডেবিট ও চেকিং পরিষেবা</translation>
+<translation id="1717882880162336471">AI মোড ব্যবহার করে দেখুন</translation>
 <translation id="1719434663396780149">দাম কমার বিজ্ঞপ্তি চালু করা আছে। আপনি <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" /> থেকে এটি পরিবর্তন করতে পারবেন।</translation>
 <translation id="1719838434204287058">২৪ x ৩০ ইঞ্চি</translation>
 <translation id="1720941539803966190">টিউটোরিয়াল বন্ধ করুন</translation>
@@ -2017,6 +2018,7 @@
 <translation id="4258748452823770588">ত্রুটিপূর্ণ স্বাক্ষর</translation>
 <translation id="4265635050210404830">আপনার লয়ালটি কার্ড</translation>
 <translation id="4265872034478892965">আপনার প্রশাসক অনুমতি দিয়েছে</translation>
+<translation id="4267590181863312380">আপনার অন্যান্য ডিভাইস থেকে ইতিহাস পেতে, সাইন-ইন করে ইতিহাস সিঙ্ক করুন। আপনার সব ডিভাইসে পাসওয়ার্ড ও আরও অনেক কিছু পাবেন। সেটিংস থেকে আপনি যেকোনও সময় সিঙ্ক করা বন্ধ করতে পারবেন। আপনার ইতিহাসের ভিত্তিতে, সার্চ ও অন্যান্য পরিষেবা পছন্দমতো করে তুলতে Google এই ডেটা ব্যবহার করতে পারে।</translation>
 <translation id="4269029136757623689">বাড়ির ফ্যান</translation>
 <translation id="4269264543938335308">সাঁতারের পোশাক</translation>
 <translation id="4269599248168651462">সার্ভার শংসাপত্র এমন ডোমেনের নামে নেওয়া হয়েছে যা অনন্য নয়।</translation>
@@ -2893,6 +2895,7 @@
 <translation id="5715918316982363436">এই ডিভাইসে <ph name="WINDOW_COUNT" /> থেকে <ph name="TAB_COUNT" /></translation>
 <translation id="5716325061445053985">আপনার ফোনে ট্যাব খুলতে ট্যাপ করুন</translation>
 <translation id="5717509257172454543">আইস স্কেটিং</translation>
+<translation id="5718601519531438273">পাসপোর্ট ও ড্রাইভিং লাইসেন্সের মতো তথ্য অন্তর্ভুক্ত থাকে</translation>
 <translation id="5720705177508910913">বর্তমান ব্যবহারকারী</translation>
 <translation id="5720895412771013401">ডেস্কটপ কম্পিউটার</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} ও আরও ১টি}one{{website_1}, {website_2} ও আরও {more_count}টি}other{{website_1}, {website_2} ও আরও {more_count}টি}}</translation>
@@ -4562,6 +4565,7 @@
 <translation id="8449036207308062757">স্টোরেজ পরিচালনা করুন</translation>
 <translation id="8449155699563577224">১৭ x ২৪ ইঞ্চি</translation>
 <translation id="8449836157089738489">সবকটি নতুন ট্যাব গ্রুপে খুলুন</translation>
+<translation id="8451518040456311377">পরিচয় সংক্রান্ত ডকুমেন্ট সেভ ও অটোফিল করুন</translation>
 <translation id="84561192812921051">আপনার অ্যাডমিনিস্ট্রেটর রিমোট লোকেশন থেকে আপনার প্রোফাইল সেটিংসে পরিবর্তন করতে পারবেন। একই সাথে রিপোর্টিংয়ের সাহায্যে ব্রাউজার সম্পর্কিত তথ্য বিশ্লেষণ ও অন্যান্য প্রয়োজনীয় কাজ করতে পারবে। এই ডিভাইসের অ্যাক্টিভিটি Chrome-এর বাইরে থেকেও ম্যানেজ করা যেতে পারে।  <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="8456383681414356368">নিচের শিট বন্ধ আছে।</translation>
 <translation id="8456775115498700722">এখন আপনার <ph name="CARD_ISSUER_NAME" /> অ্যাকাউন্ট Google Pay-এর সাথে লিঙ্ক করা আছে বলে নিজের <ph name="CARD_ISSUER_NAME" /> কার্ড অটোফিল করতে পারবেন।</translation>

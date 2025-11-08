@@ -446,6 +446,7 @@
 <translation id="1717218214683051432">मोशन सेंसर</translation>
 <translation id="1717494416764505390">मेलबॉक्स 3</translation>
 <translation id="1717688554309417925">डेबिट और जांच सेवाएं</translation>
+<translation id="1717882880162336471">एआई मोड को आज़माएं</translation>
 <translation id="1719434663396780149">कीमत में कमी से जुड़ी सूचनाएं पाने की सुविधा चालू है. <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" /> पर जाकर, इसे बंद किया जा सकता है.</translation>
 <translation id="1719838434204287058">24 x 30 इंच</translation>
 <translation id="1720941539803966190">ट्यूटोरियल बंद करें</translation>
@@ -2016,6 +2017,7 @@
 <translation id="4258748452823770588">खराब हस्ताक्षर</translation>
 <translation id="4265635050210404830">आपके लॉयल्टी कार्ड</translation>
 <translation id="4265872034478892965">आपके व्यवस्थापक ने अनुमति दी है</translation>
+<translation id="4267590181863312380">अपने अन्य डिवाइसों से इतिहास पाने के लिए, साइन इन करके ब्राउज़िंग इतिहास को सिंक करें. इससे आपको सभी डिवाइसों पर पासवर्ड वगैरह का ऐक्सेस भी मिलेगा. सेटिंग में जाकर, सिंक करने की सुविधा को किसी भी समय बंद किया जा सकता है. Google आपके इतिहास के आधार पर, Search और अन्य सेवाओं को आपकी दिलचस्पी के मुताबिक बना सकता है.</translation>
 <translation id="4269029136757623689">घरेलू पंखे</translation>
 <translation id="4269264543938335308">तैराकी के लिए कपड़े</translation>
 <translation id="4269599248168651462">सर्वर के सर्टिफ़िकेट को किसी ऐसे डोमेन नेम के लिए जारी किया गया है जो यूनीक नहीं है.</translation>
@@ -2892,6 +2894,7 @@
 <translation id="5715918316982363436">इस डिवाइस पर मौजूद, <ph name="WINDOW_COUNT" /> से <ph name="TAB_COUNT" /></translation>
 <translation id="5716325061445053985">इस टैब को अपने फ़ोन पर खोलने के लिए टैप करें</translation>
 <translation id="5717509257172454543">आइस स्केटिंग</translation>
+<translation id="5718601519531438273">इसमें पासपोर्ट और ड्राइविंग लाइसेंस जैसी जानकारी शामिल होती है</translation>
 <translation id="5720705177508910913">मौजूदा उपयोगकर्ता</translation>
 <translation id="5720895412771013401">डेस्कटॉप कंप्यूटर</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2}, और 1 वेबसाइट}one{{website_1}, {website_2}, और {more_count} वेबसाइट}other{{website_1}, {website_2}, और {more_count} वेबसाइटें}}</translation>
@@ -4562,6 +4565,7 @@
 <translation id="8449036207308062757">जगह प्रबंधित करें</translation>
 <translation id="8449155699563577224">17 x 24 इंच</translation>
 <translation id="8449836157089738489">सभी यूआरएल नए टैब ग्रुप में खोलें</translation>
+<translation id="8451518040456311377">पहचान की पुष्टि करने वाले दस्तावेज़ सेव करें और ऑटोमैटिक तरीके से जानकारी भरने की सुविधा इस्तेमाल करें</translation>
 <translation id="84561192812921051">प्रोफ़ाइल का एडमिन, दूर से आपकी प्रोफ़ाइल और ब्राउज़र में बदलाव कर सकता है. साथ ही, रिपोर्टिंग के ज़रिए ब्राउज़र से जुड़ी जानकारी का विश्लेषण और दूसरे ज़रूरी काम कर सकता है. इस डिवाइस में की गई गतिविधि को Chrome से बाहर भी मैनेज किया जा सकता है.  <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
 <translation id="8456383681414356368">बॉटम शीट बंद है.</translation>
 <translation id="8456775115498700722">आपका <ph name="CARD_ISSUER_NAME" /> खाता, Google Pay से लिंक है. इसलिए, <ph name="CARD_ISSUER_NAME" /> कार्ड की जानकारी भरने के लिए ऑटोमैटिक तरीके से भरने की सुविधा का इस्तेमाल किया जा सकता है.</translation>

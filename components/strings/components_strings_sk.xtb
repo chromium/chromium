@@ -445,6 +445,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="1717218214683051432">Senzory pohybu</translation>
 <translation id="1717494416764505390">Poštová schránka č. 3</translation>
 <translation id="1717688554309417925">Služby pre debetné a šekové operácie</translation>
+<translation id="1717882880162336471">Vyskúšajte režim AI</translation>
 <translation id="1719434663396780149">Upozornenia na pokles ceny sú zapnuté. Túto možnosť môžete zmeniť v sekcii <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="1719838434204287058">24 × 30 palcov</translation>
 <translation id="1720941539803966190">Zavrieť návod</translation>
@@ -2012,6 +2013,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="4258748452823770588">Chybný podpis</translation>
 <translation id="4265635050210404830">Vaše vernostné karty</translation>
 <translation id="4265872034478892965">Povolené správcom</translation>
+<translation id="4267590181863312380">Ak chcete získať históriu zo svojich ostatných zariadení, prihláste sa a synchronizujte históriu. Navyše budete mať k dispozícii heslá a ďalší obsah vo všetkých svojich zariadeniach. Synchronizáciu môžete kedykoľvek zastaviť v nastaveniach. Google môže prispôsobovať Vyhľadávanie a ďalšie služby na základe vašej histórie.</translation>
 <translation id="4269029136757623689">Ventilátory do domácnosti</translation>
 <translation id="4269264543938335308">Plavky</translation>
 <translation id="4269599248168651462">Certifikát servera je vydaný s názvom, ktorý nie je jedinečný.</translation>
@@ -2888,6 +2890,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="5715918316982363436">Karty (<ph name="TAB_COUNT" />) z <ph name="WINDOW_COUNT" /> v tomto zariadení</translation>
 <translation id="5716325061445053985">Klepnutím otvoríte kartu v telefóne</translation>
 <translation id="5717509257172454543">Ľadové korčuľovanie</translation>
+<translation id="5718601519531438273">Zahŕňa informácie, ako sú pasy a vodičské preukazy</translation>
 <translation id="5720705177508910913">Aktuálny používateľ</translation>
 <translation id="5720895412771013401">Desktopy</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} a 1 ďalší web}few{{website_1}, {website_2} a {more_count} ďalšie weby}many{{website_1}, {website_2}, and {more_count} more}other{{website_1}, {website_2} a {more_count} ďalších webov}}</translation>
@@ -4557,6 +4560,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="8449036207308062757">Spravovať úložisko</translation>
 <translation id="8449155699563577224">17 × 24 palcov</translation>
 <translation id="8449836157089738489">Otvoriť všetko v novej skupine kariet</translation>
+<translation id="8451518040456311377">Ukladajte a vypĺňajte doklady totožnosti</translation>
 <translation id="84561192812921051">Správca môže vzdialene vykonávať zmeny v profile a prehliadači, analyzovať informácie o prehliadači na základe reportov a vykonávať ďalšie potrebné úlohy. Aktivita v tomto zariadení môže byť spravovaná aj mimo Chromu.  <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="8456383681414356368">Dolný hárok je zavretý.</translation>
 <translation id="8456775115498700722">Teraz môžete automaticky dopĺňať svoje karty <ph name="CARD_ISSUER_NAME" />, pretože váš účet <ph name="CARD_ISSUER_NAME" /> je prepojený so službou Google Pay.</translation>

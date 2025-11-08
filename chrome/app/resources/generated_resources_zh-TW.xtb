@@ -1888,6 +1888,7 @@
 <translation id="2281863813036651454">按一下滑鼠左鍵</translation>
 <translation id="2282146716419988068">GPU 處理程序</translation>
 <translation id="228293613124499805">你造訪的大多數網站可能會在裝置上儲存資料 (偏好設定或你與網站分享的資訊)，通常是為了改善使用體驗。建議你將這項設定保持開啟。</translation>
+<translation id="2283599456633275070">旅遊</translation>
 <translation id="2285109769884538519">{COUNT,plural, =0{在新分頁群組中開啟所有網址(&amp;N)}=1{在新分頁群組中開啟網址(&amp;N)}other{在新分頁群組中開啟所有 ({COUNT} 個) 網址(&amp;N)}}</translation>
 <translation id="2285942871162473373">無法辨識你的指紋，請再試一次。</translation>
 <translation id="2287617382468007324">列印 IPP 位址</translation>
@@ -5195,7 +5196,7 @@
 <translation id="4565377596337484307">隱藏密碼</translation>
 <translation id="4565917129334815774">儲存系統記錄</translation>
 <translation id="4566170377336116390">如果要在完成註冊後切換裝置，必須將裝置恢復原廠設定 (Powerwash)。</translation>
-<translation id="4566417217121906555">將麥克風設為靜音</translation>
+<translation id="4566417217121906555">關閉麥克風</translation>
 <translation id="456717285308019641">要翻譯的網頁語言</translation>
 <translation id="4567512141633030272">登入選項有誤？</translation>
 <translation id="4567533462991917415">設定完成後，你可以隨時新增更多使用者。每位使用者都可以建立個人專屬的帳戶，並保護資料的私密性。</translation>
@@ -5274,6 +5275,7 @@
 <translation id="4622051949285931942">要關閉自動更新功能嗎？</translation>
 <translation id="4623167406982293031">驗證帳戶</translation>
 <translation id="4623189117674524348">系統無法對這個裝置授予 API 存取權。</translation>
+<translation id="4623894491222334521">身分證明文件</translation>
 <translation id="4624054169152573743">色彩主題</translation>
 <translation id="4625078469366263107">啟用應用程式</translation>
 <translation id="4625905218692741757">使用灰色做為預設顏色</translation>
@@ -10835,7 +10837,7 @@
 <translation id="8497219075884839166">Windows 公用程式</translation>
 <translation id="8497819894150712946">透過 Chrome 儲存</translation>
 <translation id="8498214519255567734">讓你在光線昏暗的環境下更容易看清畫面內容或閱讀文字</translation>
-<translation id="8499083585497694743">將麥克風取消靜音</translation>
+<translation id="8499083585497694743">開啟麥克風</translation>
 <translation id="8500044868721690197">這個網站無法控制 MIDI 裝置及重設程式</translation>
 <translation id="8500123638242682652">視窗已向上移動</translation>
 <translation id="8500132602331251964">應用程式有可用更新</translation>
