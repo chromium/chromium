@@ -11,10 +11,14 @@
 #include <set>
 #include <vector>
 
+#include "base/functional/bind.h"
 #include "base/unguessable_token.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "third_party/webrtc/api/media_stream_interface.h"
+#include "third_party/webrtc/api/peer_connection_interface.h"
 #include "third_party/webrtc/api/rtc_error.h"
+#include "third_party/webrtc/api/rtp_transceiver_interface.h"
 #include "third_party/webrtc/api/scoped_refptr.h"
 #include "third_party/webrtc/api/transport/network_types.h"
 #include "third_party/webrtc/p2p/base/port_allocator.h"
@@ -23,9 +27,12 @@
 
 namespace webrtc {
 class DtlsTransportInformation;
+class KeyParams;
 class MediaStreamInterface;
 class MediaStreamTrackInterface;
+class PeerConnectionFactoryInterface;
 class RtpReceiverInterface;
+class RTCCertificate;
 class SctpTransportInformation;
 class VideoTrackInterface;
 struct DataBuffer;
@@ -76,6 +83,19 @@ struct CrossThreadCopier<webrtc::Candidate>
 };
 
 template <>
+struct CrossThreadCopier<webrtc::KeyParams>
+    : public CrossThreadCopierPassThrough<webrtc::KeyParams> {
+  STATIC_ONLY(CrossThreadCopier);
+};
+
+template <>
+struct CrossThreadCopier<webrtc::scoped_refptr<webrtc::RTCCertificate>>
+    : public CrossThreadCopierByValuePassThrough<
+          webrtc::scoped_refptr<webrtc::RTCCertificate>> {
+  STATIC_ONLY(CrossThreadCopier);
+};
+
+template <>
 struct CrossThreadCopier<std::pair<webrtc::Candidate, webrtc::Candidate>>
     : public CrossThreadCopierPassThrough<
           std::pair<webrtc::Candidate, webrtc::Candidate>> {
@@ -105,8 +125,16 @@ struct CrossThreadCopier<webrtc::RTCError>
 };
 
 template <>
+struct CrossThreadCopier<
+    webrtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface>>
+    : public CrossThreadCopierByValuePassThrough<
+          webrtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface>> {
+  STATIC_ONLY(CrossThreadCopier);
+};
+
+template <>
 struct CrossThreadCopier<webrtc::scoped_refptr<webrtc::RtpReceiverInterface>>
-    : public CrossThreadCopierPassThrough<
+    : public CrossThreadCopierByValuePassThrough<
           webrtc::scoped_refptr<webrtc::RtpReceiverInterface>> {
   STATIC_ONLY(CrossThreadCopier);
 };
@@ -180,6 +208,28 @@ struct CrossThreadCopier<webrtc::Environment>
 template <>
 struct CrossThreadCopier<webrtc::Timestamp>
     : public CrossThreadCopierPassThrough<webrtc::Timestamp> {
+  STATIC_ONLY(CrossThreadCopier);
+};
+
+template <>
+struct CrossThreadCopier<webrtc::PeerConnectionInterface::RTCOfferAnswerOptions>
+    : public CrossThreadCopierPassThrough<
+          webrtc::PeerConnectionInterface::RTCOfferAnswerOptions> {
+  STATIC_ONLY(CrossThreadCopier);
+};
+
+template <>
+struct CrossThreadCopier<
+    std::reference_wrapper<const webrtc::RtpTransceiverInit>>
+    : public CrossThreadCopierPassThrough<
+          std::reference_wrapper<const webrtc::RtpTransceiverInit>> {
+  STATIC_ONLY(CrossThreadCopier);
+};
+
+template <>
+struct CrossThreadCopier<std::reference_wrapper<const webrtc::MediaType>>
+    : public CrossThreadCopierPassThrough<
+          std::reference_wrapper<const webrtc::MediaType>> {
   STATIC_ONLY(CrossThreadCopier);
 };
 

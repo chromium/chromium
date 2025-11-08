@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/feature_list.h"
-#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
@@ -293,7 +292,7 @@ class LocalNetworkAccessPermission final
         CreatePermissionDescriptor(
             mojom::blink::PermissionName::LOCAL_NETWORK_ACCESS),
         /*user_gesture=*/false,
-        base::BindRepeating(
+        BindRepeating(
             &LocalNetworkAccessPermission::OnPermissionRequested,
             // This is safe because this class owns `permission_service_` which
             // won't call its callback after its destroyed.
@@ -352,7 +351,7 @@ class LocalNetworkAccessPermissionFactory final
 
     return std::make_unique<LocalNetworkAccessPermission>(
         originator_address_space_, std::move(permission_service),
-        blink::BindPostTask(
+        BindPostTask(
             main_thread_task_runner_,
             CrossThreadBindRepeating(
                 &PeerConnectionDependencyFactory::CountLocalNetworkAccess,
@@ -662,7 +661,7 @@ void ReportUmaEncodeDecodeCapabilities(
 void WaitForEncoderSupportReady(
     media::GpuVideoAcceleratorFactories* gpu_factories) {
   gpu_factories->NotifyEncoderSupportKnown(
-      base::BindOnce(&ReportUmaEncodeDecodeCapabilities, gpu_factories));
+      BindOnce(&ReportUmaEncodeDecodeCapabilities, Unretained(gpu_factories)));
 }
 
 }  // namespace
@@ -887,22 +886,24 @@ void PeerConnectionDependencyFactory::InitializeSignalingThread(
   std::unique_ptr<webrtc::VideoEncoderFactory> webrtc_encoder_factory =
       blink::CreateWebrtcVideoEncoderFactory(
           gpu_factories, std::move(video_encoder_metrics_provider_factory),
-          base::BindRepeating(&WebrtcVideoPerfReporter::StoreWebrtcVideoStats,
-                              WrapCrossThreadWeakPersistent(
-                                  webrtc_video_perf_reporter_.Get())));
+          ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
+              &WebrtcVideoPerfReporter::StoreWebrtcVideoStats,
+              WrapCrossThreadWeakPersistent(
+                  webrtc_video_perf_reporter_.Get()))));
   std::unique_ptr<webrtc::VideoDecoderFactory> webrtc_decoder_factory =
       blink::CreateWebrtcVideoDecoderFactory(
           gpu_factories, render_color_space,
-          base::BindRepeating(&WebrtcVideoPerfReporter::StoreWebrtcVideoStats,
-                              WrapCrossThreadWeakPersistent(
-                                  webrtc_video_perf_reporter_.Get())));
+          ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
+              &WebrtcVideoPerfReporter::StoreWebrtcVideoStats,
+              WrapCrossThreadWeakPersistent(
+                  webrtc_video_perf_reporter_.Get()))));
 
   if (!encode_decode_capabilities_reported_) {
     encode_decode_capabilities_reported_ = true;
     if (gpu_factories) {
       // Wait until decoder and encoder support are known.
       gpu_factories->NotifyDecoderSupportKnown(
-          base::BindOnce(&WaitForEncoderSupportReady, gpu_factories));
+          BindOnce(&WaitForEncoderSupportReady, Unretained(gpu_factories)));
     } else {
       ReportUmaEncodeDecodeCapabilities(gpu_factories);
     }
@@ -1201,9 +1202,9 @@ void PeerConnectionDependencyFactory::CleanupPeerConnectionFactory() {
   if (signaling_thread) {
     // To avoid a PROXY block-invoke to ~webrtc::PeerConnectionFactory(), we
     // move our reference to the signaling thread in a PostTask.
-    signaling_thread->PostTask(
-        FROM_HERE,
-        base::BindOnce(
+    PostCrossThreadTask(
+        *signaling_thread, FROM_HERE,
+        CrossThreadBindOnce(
             [](webrtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface>
                    pcf) {
               // The binding releases `pcf` on the signaling thread as this

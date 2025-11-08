@@ -14,7 +14,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
@@ -62,6 +61,7 @@
 #include "third_party/blink/renderer/platform/peerconnection/rtc_session_description_platform.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_stats.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_void_request.h"
+#include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/webrtc/api/data_channel_interface.h"
@@ -585,9 +585,10 @@ class RTCPeerConnectionHandlerTest : public SimTest {
     base::WaitableEvent waitable_event(
         base::WaitableEvent::ResetPolicy::MANUAL,
         base::WaitableEvent::InitialState::NOT_SIGNALED);
-    mock_dependency_factory_->GetWebRtcSignalingTaskRunner()->PostTask(
-        FROM_HERE, base::BindOnce(&base::WaitableEvent::Signal,
-                                  base::Unretained(&waitable_event)));
+    PostCrossThreadTask(
+        *mock_dependency_factory_->GetWebRtcSignalingTaskRunner(), FROM_HERE,
+        CrossThreadBindOnce(&base::WaitableEvent::Signal,
+                            CrossThreadUnretained(&waitable_event)));
     waitable_event.Wait();
     base::RunLoop().RunUntilIdle();
   }

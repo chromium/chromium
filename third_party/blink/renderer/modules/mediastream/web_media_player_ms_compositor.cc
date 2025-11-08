@@ -45,12 +45,6 @@
 
 namespace blink {
 
-template <typename T>
-struct CrossThreadCopier<std::optional<T>>
-    : public CrossThreadCopierPassThrough<std::optional<T>> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
 namespace {
 
 // These values are persisted to logs. Entries should not be renumbered and

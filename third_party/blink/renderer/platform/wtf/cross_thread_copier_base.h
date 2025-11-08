@@ -33,6 +33,7 @@
 
 #include "base/files/file.h"
 #include "base/files/file_error_or.h"
+#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/base/big_buffer.h"
@@ -122,6 +123,12 @@ struct CrossThreadCopier<
   static Type Copy(Type pointer) {
     return pointer;  // This is in fact a move.
   }
+};
+
+template <typename T>
+struct CrossThreadCopier<base::OnceCallback<T>>
+    : public CrossThreadCopierByValuePassThrough<base::OnceCallback<T>> {
+  STATIC_ONLY(CrossThreadCopier);
 };
 
 }  // namespace blink

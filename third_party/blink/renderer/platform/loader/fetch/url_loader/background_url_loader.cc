@@ -95,13 +95,6 @@ struct CrossThreadCopier<net::RedirectInfo>
 };
 
 template <>
-struct CrossThreadCopier<std::vector<std::string>> {
-  STATIC_ONLY(CrossThreadCopier);
-  using Type = std::vector<std::string>;
-  static Type Copy(Type&& value) { return std::move(value); }
-};
-
-template <>
 struct CrossThreadCopier<std::vector<std::unique_ptr<URLLoaderThrottle>>> {
   STATIC_ONLY(CrossThreadCopier);
   using Type = std::vector<std::unique_ptr<URLLoaderThrottle>>;

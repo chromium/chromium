@@ -90,6 +90,24 @@ struct CrossThreadCopier<std::basic_string<CharT, Traits, Allocator>> {
   }
 };
 
+template <typename T>
+struct CrossThreadCopier<std::optional<T>> {
+  STATIC_ONLY(CrossThreadCopier);
+  using Type = std::optional<T>;
+  static Type Copy(const Type& optional) {
+    if (!optional) {
+      return std::nullopt;
+    }
+    return std::make_optional(CrossThreadCopier<T>::Copy(*optional));
+  }
+};
+
+template <>
+struct CrossThreadCopier<std::vector<std::string>>
+    : public CrossThreadCopierPassThrough<std::vector<std::string>> {
+  STATIC_ONLY(CrossThreadCopier);
+};
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_CROSS_THREAD_COPIER_STD_H_
