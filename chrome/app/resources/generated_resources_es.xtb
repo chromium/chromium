@@ -2930,7 +2930,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2990583317361835189">No permitir que los sitios usen sensores de movimiento</translation>
 <translation id="2991182900092497283">Introduce un motivo para pegar estos datos:</translation>
 <translation id="2992931425024192067">Mostrar todo el contenido de las notificaciones</translation>
-<translation id="2993517869960930405">Información de la app</translation>
+<translation id="2993517869960930405">Información de la aplicación</translation>
 <translation id="2995472388018163047">{NUM_GROUPS,plural, =1{Mantén este grupo para añadir pestañas más adelante o abandónalo si ya no quieres tener acceso}other{Mantén estos grupos para añadir pestañas más adelante o abandónalos si ya no quieres tener acceso}}</translation>
 <translation id="2996071302059856125">Más información sobre cómo la IA influye en tu experiencia y los controles que ofrece Chrome</translation>
 <translation id="2996108796702395498">El número de serie de tu dispositivo es <ph name="SERIAL_NUMBER" />. Este número se puede usar para ayudar a activar el servicio.</translation>
@@ -3417,7 +3417,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3348131053948466246">Emoji sugerido. Pulsa arriba o abajo para desplazarte, e Intro para insertarlo.</translation>
 <translation id="3348973040180736882">Descomprimiendo</translation>
 <translation id="3349933790966648062">Uso de memoria</translation>
-<translation id="3350450887151703713">Volver a reproducir 10 segundos</translation>
+<translation id="3350450887151703713">Retroceder 10 segundos</translation>
 <translation id="3351472127384196879">Añadir o localizar botones en tu lápiz</translation>
 <translation id="3353786022389205125">Activa "Mostrar la pantalla de bloqueo al activar el dispositivo" y vuelve a intentarlo</translation>
 <translation id="3354768182971982851">Las versiones antiguas de las aplicaciones de Chrome no se abrirán en dispositivos Mac después de diciembre del 2022. Puedes comprobar si hay una versión nueva disponible.</translation>
@@ -10741,6 +10741,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8427213022735114808">Dictado envía tu voz a Google para que puedas usar Escribir por voz en cualquier campo de texto.</translation>
 <translation id="8427292751741042100">insertado en otro host</translation>
 <translation id="8428213095426709021">Configuración</translation>
+<translation id="8428257636009471988">Visitar Web Store</translation>
 <translation id="8428271547607112339">Añadir cuenta de centro educativo</translation>
 <translation id="8428634594422941299">Entendido</translation>
 <translation id="84297032718407999">Tu sesión se cerrará en <ph name="LOGOUT_TIME_LEFT" /></translation>
@@ -10844,7 +10845,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8497219075884839166">Utilidades de Windows</translation>
 <translation id="8497819894150712946">Guardada desde Chrome</translation>
 <translation id="8498214519255567734">Resulta más fácil ver la pantalla con poca luz</translation>
-<translation id="8499083585497694743">Activar el micrófono</translation>
+<translation id="8499083585497694743">Activar micrófono</translation>
 <translation id="8500044868721690197">Este sitio no tiene permiso para controlar ni reprogramar tus dispositivos MIDI</translation>
 <translation id="8500123638242682652">Ventana movida hacia arriba</translation>
 <translation id="8500132602331251964">Actualización de aplicación disponible</translation>

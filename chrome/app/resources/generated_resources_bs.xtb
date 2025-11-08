@@ -473,7 +473,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="1303671224831497365">Nije pronađen nijedan Bluetooth uređaj</translation>
 <translation id="130491383855577612">Linux aplikacije i fajlovi su uspješno zamijenjeni</translation>
 <translation id="1306518237408758433">Otvaranje aplikacije <ph name="BOOKMARK_TITLE" /></translation>
-<translation id="1306606229401759371">Promijeni postavke</translation>
+<translation id="1306606229401759371">Promijenite postavke</translation>
 <translation id="1307165550267142340">Vaš PIN je kreiran</translation>
 <translation id="1307431692088049276">Ne pitaj me ponovo</translation>
 <translation id="130744661532298792">Da uvijek možete koristiti lozinke na Google računu, potvrdite identitet</translation>
@@ -10759,6 +10759,7 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8427213022735114808">Diktiranje šalje vaš glas Googleu kako bi se omogućilo pisanje govorom u bilo kojoj rubrici za tekst.</translation>
 <translation id="8427292751741042100">ugrađeno na bilo kojem host računaru</translation>
 <translation id="8428213095426709021">Postavke</translation>
+<translation id="8428257636009471988">Posjetite Web trgovinu</translation>
 <translation id="8428271547607112339">Dodaj školski račun</translation>
 <translation id="8428634594422941299">Razumijem</translation>
 <translation id="84297032718407999">Bit ćete odjavljeni za <ph name="LOGOUT_TIME_LEFT" /></translation>
@@ -11723,7 +11724,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="9069417381769492963">Nema nijedne oznake koja se podudara s pretraživanjem</translation>
 <translation id="9070231741075992882">Odobrenja koja dozvolite za aplikaciju <ph name="APP_NAME" /> će se dozvoliti i za njene instalirane i prenesene aplikacije.</translation>
 <translation id="9070342919388027491">Kartica je pomjerena ulijevo</translation>
-<translation id="9072918088200875065">Dali ste Geminiju odobrenje da se prijavljuje na ove web lokacije da izvršava zadatke za vas</translation>
+<translation id="9072918088200875065">Dali ste Geminiju odobrenje da se prijavljuje na ove web lokacije kako bi izvršavao zadatke za vas</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9074836595010225693">USB miš je povezan</translation>
 <translation id="9075413375877487220">Poboljšano Sigurno pregledanje ne smatra ovu ekstenziju pouzdanom.</translation>

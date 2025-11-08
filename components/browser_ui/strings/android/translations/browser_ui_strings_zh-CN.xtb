@@ -75,7 +75,7 @@
 <translation id="1881806992065048905">“新标签页”页面外观底部动作条</translation>
 <translation id="1887786770086287077">此设备的位置信息使用权已关闭；若想开启这项权限，请转到 <ph name="BEGIN_LINK" />Android 设置<ph name="END_LINK" />。</translation>
 <translation id="1906181697255754968">网站通常会访问您设备上的文件和文件夹以实现某些功能（例如自动保存您的工作成果）</translation>
-<translation id="1915307458270490472">中止</translation>
+<translation id="1915307458270490472">挂断</translation>
 <translation id="1919950603503897840">选择联系人</translation>
 <translation id="1923695749281512248">已下载 <ph name="BYTES_DOWNLOADED_WITH_UNITS" />，共 <ph name="FILE_SIZE_WITH_UNITS" /></translation>
 <translation id="1939059826036755332">自动进入画中画模式</translation>
@@ -289,7 +289,7 @@
 <translation id="4002066346123236978">标题</translation>
 <translation id="4031179711345676612">已允许使用麦克风</translation>
 <translation id="4042597221652780603">大致位置</translation>
-<translation id="4046123991198612571">下一曲</translation>
+<translation id="4046123991198612571">下一首</translation>
 <translation id="4077310749977440510">网站通常会读取您的剪贴板内容以实现某些功能，例如保留您所复制文字的格式</translation>
 <translation id="4082080074595021446">由于该 Android 设备的 RAM 不足，因此不允许将特定网站添加为例外网站。</translation>
 <translation id="4149890623864272035">确定要删除所有本地数据（包括 Cookie）并重置此网站的所有权限吗？</translation>
@@ -675,7 +675,7 @@
 <translation id="8487700953926739672">可离线使用</translation>
 <translation id="848952951823693243">始终请求访问移动网站</translation>
 <translation id="8492822722330266509">网站可以发送弹出式窗口并使用重定向</translation>
-<translation id="8499083585497694743">将麦克风取消静音</translation>
+<translation id="8499083585497694743">取消麦克风静音</translation>
 <translation id="8514955299594277296">不允许网站将数据保存在设备上（不推荐）</translation>
 <translation id="851751545965956758">禁止网站连接到设备</translation>
 <translation id="8525306231823319788">全屏</translation>

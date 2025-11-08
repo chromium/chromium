@@ -278,6 +278,7 @@
 <translation id="199425419756152024">Shiko fjalëkalimin</translation>
 <translation id="1996318269856535896">Mund t'i përdorësh ende të dhënat ekzistuese të shfletimit në këtë pajisje. Për ta përdorur, dil nga llogaria jote e menaxhuar.</translation>
 <translation id="2010008505735295285">Ringarko</translation>
+<translation id="2012723204723845092">Mirë se erdhe përsëri!</translation>
 <translation id="2015722694326466240">Për të parë fjalëkalimet, duhet të vendosësh në fillim një kod në pajisjen tënde.</translation>
 <translation id="201759455285471444">Zgjero grupin e skedave.</translation>
 <translation id="202070562065520783">Ma shpjego këtë</translation>
@@ -648,6 +649,7 @@
 <translation id="3530024057633834563">Nuk ke asnjë çelës kalimi apo fjalëkalim të ruajtur, por mund të fshish listën e sajteve dhe aplikacioneve për të cilat ke zgjedhur që të mos i ruash asnjëherë informacionet e identifikimit. Nuk do të fshihet asnjë llogari që ke krijuar për sajtet dhe aplikacionet.</translation>
 <translation id="3530206579861815432">Gjej me shpejtësi skedat e hapura dhe skedat e mbyllura së fundi nëpër pajisjet e tua të sinkronizuara.</translation>
 <translation id="3530767473765895035">Menaxho llogaritë në këtë pajisje…</translation>
+<translation id="353340646084395154">Preferencat për faqen e skedës së re u hoqën</translation>
 <translation id="3533436815740441613">Skedë e re</translation>
 <translation id="3540141921715814660">Shto te faqeshënuesit</translation>
 <translation id="3546122170015471515">"Variantet paraprake të Maps" në Google.com</translation>
@@ -676,6 +678,7 @@
 <translation id="3642060527569456384">Grupet e skedave ruhen dhe përditësohen automatikisht në të gjitha pajisjet e tua.</translation>
 <translation id="3643338347976071250">{count,plural, =1{{count} fjalëkalim është ruajtur vetëm në këtë pajisje. Për ta përdorur atë në pajisje të tjera, ruaje atë në "Llogarinë tënde të Google", {email}.}other{{count} fjalëkalime janë ruajtur vetëm në këtë pajisje. Për t'i përdorur në pajisjet e tua të tjera, ruaji në "Llogarinë tënde të Google", {email}.}}</translation>
 <translation id="3659297405161482746">Nuk u gjet asnjë mënyrë pagese</translation>
+<translation id="3662966164093827811">{count,plural, =1{1 e zgjedhur}other{# të zgjedhura}}</translation>
 <translation id="3668816008081204991">"Lista e leximit" është e fshehur</translation>
 <translation id="3670030362669914947">Numri</translation>
 <translation id="3679163990085797665">Fshi të lexuarat</translation>
@@ -1000,6 +1003,7 @@
 <translation id="4894963374040315706">Kjo të lejon të kërkosh me anë të zërit</translation>
 <translation id="4895540042460820904">Hapur së fundi</translation>
 <translation id="4896467949657706481">Skedat janë mbyllur dhe ti ke dalë nga llogaria</translation>
+<translation id="4911042367886397055">Mirë se u ktheve, <ph name="USER_NAME" />!</translation>
 <translation id="4913626501929406101">Mund të ndash në mënyrë të sigurt një kopje të fjalëkalimit tënd me dikë në grupin tënd të familjes. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="4917025507570489430">Mund t'i përdorësh të dhënat ekzistuese të shfletimit kur je identifikuar si <ph name="USER_EMAIL" />. Organizata jote mund të jetë në gjendje t'i shohë këto të dhëna.</translation>
 <translation id="4918086044614829423">Prano</translation>
@@ -1051,6 +1055,7 @@
 <translation id="508645147179720015">Shënimi është më shumë se 1000 karaktere</translation>
 <translation id="5087098519049306025">Monitorimi i çmimeve</translation>
 <translation id="5090832849094901128">Fshirja e këtij fjalëkalimi nuk do ta fshijë llogarinë tënde në <ph name="WEBSITE" />.</translation>
+<translation id="5113960131843706315">Po merren gjërat e tua…</translation>
 <translation id="5118462200606189584">Shto një llogari…</translation>
 <translation id="5118764316110575523">Joaktiv</translation>
 <translation id="5119329531859909472">Për të monitoruar produktin, trokit te "Monitoro"</translation>
@@ -1121,6 +1126,7 @@
 <translation id="537853552771686272">Menaxho temat dhe sajtet që të interesojnë</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} u mbyll}other{{count} u mbyllën}}</translation>
 <translation id="5394975111793637642">Fshih kartën "Komentet e produktit për ty"</translation>
+<translation id="5407806496954700135">Dëshiron t'i zbatosh personalizimet e faqes së skedës së re nga një pajisje tjetër?</translation>
 <translation id="5414763847370083940">Do të marrësh një sinjalizim nëse ulet çmimi në ndonjë sajt.</translation>
 <translation id="5415289094036440596">Çelësat e kalimit nuk mund të ndahen</translation>
 <translation id="5416455648658732408">Zhvendose te grupi i skedave</translation>
@@ -1756,6 +1762,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="7696316012653762532">Opsionet për përkthimin e faqes</translation>
 <translation id="7700527812567437847">Kërko në ekran me "Lenten e Google"</translation>
 <translation id="7701040980221191251">Asnjë</translation>
+<translation id="7708668404222666001">U zbatuan preferencat e tua për faqen e skedës së re</translation>
 <translation id="7708994397325774423">Merr të gjitha fjalëkalimet e tua</translation>
 <translation id="7711440461521638739">Nuk je duke ripërdorur asnjë fjalëkalim</translation>
 <translation id="7712361583414030698">Po shikon versionin offline</translation>

@@ -66,7 +66,7 @@
 <translation id="1101672080107056897">Fehleraktion</translation>
 <translation id="1101902632743388185">Meine Vergleichstabellen</translation>
 <translation id="1104409666019087579">Einige Pflichtfelder sind leer. Bitte fülle sie vor dem Speichern aus.</translation>
-<translation id="1104860668737945357">Schaltfläche „Passwörter verwalten“ – aktivieren, um in den Chrome-Einstellungen Passwörter abzurufen und zu verwalten</translation>
+<translation id="1104860668737945357">Button „Passwörter verwalten“ – aktivieren, um in den Chrome-Einstellungen Passwörter abzurufen und zu verwalten</translation>
 <translation id="1108464073729874771">A3x4</translation>
 <translation id="1110809716549020493">Virtuelle Karte nicht ausgefüllt? Klicke auf die Details der virtuellen Karte, um sie in die Zwischenablage zu kopieren. <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL_VIRTUAL_CARD" /></translation>
 <translation id="1110994991967754504">Berechtigung für <ph name="PERMISSION_NAME" /> auswählen</translation>
@@ -92,7 +92,7 @@
 <translation id="1161325031994447685">WLAN-Verbindung erneut herstellen</translation>
 <translation id="1161663161838091892">Tabs und Verlauf synchronisieren, um fortzufahren</translation>
 <translation id="1163507966173624031">Volksmusik und traditionelle Musik</translation>
-<translation id="11635448457105324">Schaltfläche „Adressen verwalten“ – aktivieren, um in den Chrome-Einstellungen Adressen hinzuzufügen und zu verwalten</translation>
+<translation id="11635448457105324">Button „Adressen verwalten“ – aktivieren, um in den Chrome-Einstellungen Adressen hinzuzufügen und zu verwalten</translation>
 <translation id="1165039591588034296">Fehler</translation>
 <translation id="1165174597379888365">Seite aufgerufen</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{Keine}=1{Von 1 Website (du bleibst in deinem Google-Konto angemeldet)}other{Von # Websites (du bleibst in deinem Google-Konto angemeldet)}}</translation>
@@ -260,7 +260,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1410941016594047814">Umschlag Invite</translation>
 <translation id="1413809658975081374">Datenschutzfehler</translation>
 <translation id="1414134146594747368">Vorschule</translation>
-<translation id="1419305130220238697">Schaltfläche „Downloads in Chrome verwalten“ – aktivieren, um in Chrome heruntergeladene Dateien zu verwalten</translation>
+<translation id="1419305130220238697">Button „Downloads in Chrome verwalten“ – aktivieren, um in Chrome heruntergeladene Dateien zu verwalten</translation>
 <translation id="1420345875188552368">Für diese Zahlung kann die Zahlungsmethode verwendet werden, die du für automatische Zahlungen festgelegt hast. Wenn du E‑Wallets in Chrome deaktivieren möchtest, rufe deine <ph name="BEGIN_LINK1" />Zahlungseinstellungen<ph name="END_LINK1" /> auf.</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" />, um eine Kopplung zu ermöglichen</translation>
 <translation id="1421484961346698724">Gelöschtes Konto</translation>
@@ -399,7 +399,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1640180200866533862">Nutzerrichtlinien</translation>
 <translation id="1640244768702815859">Versuche, <ph name="BEGIN_LINK" />die Startseite aufzurufen<ph name="END_LINK" />.</translation>
 <translation id="1641976391427233992">Ausgabe verzögern bis</translation>
-<translation id="1643651787397909318">Schaltfläche „Chrome-Sicherheitscheck aufrufen“ – aktivieren, um in den Einstellungen die Seite für den Chrome-Sicherheitscheck aufzurufen</translation>
+<translation id="1643651787397909318">Button „Chrome-Sicherheitscheck aufrufen“ – aktivieren, um in den Einstellungen die Seite für den Chrome-Sicherheitscheck aufzurufen</translation>
 <translation id="1644574205037202324">Verlauf</translation>
 <translation id="1645004815457365098">Unbekannte Quelle</translation>
 <translation id="1645368109819982629">Nicht unterstütztes Protokoll</translation>
@@ -479,7 +479,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1756555787993603971">Du kannst jetzt eine virtuelle Karte verwenden, um mit Autofill sicherer zu bezahlen.</translation>
 <translation id="175656076281618225">Magie</translation>
 <translation id="1757773103848038814">Dicktengleiche Schrift</translation>
-<translation id="1757935267918149452">Schaltfläche „Google-Passwort ändern“ – aktivieren, um das Passwort für dein Google-Konto zu ändern</translation>
+<translation id="1757935267918149452">Button „Google-Passwort ändern“ – aktivieren, um das Passwort für dein Google-Konto zu ändern</translation>
 <translation id="1762779605905950734">Straße</translation>
 <translation id="1763864636252898013">Dieser Server konnte nicht beweisen, dass er <ph name="DOMAIN" /> ist. Sein Sicherheitszertifikat wird vom Betriebssystem deines Geräts als nicht vertrauenswürdig eingestuft. Mögliche Gründe sind eine fehlerhafte Konfiguration oder ein Angreifer, der deine Verbindung abfängt.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Versuche, die Windows-Netzwerkdiagnose auszuführen.<ph name="END_LINK" /></translation>
@@ -562,7 +562,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1919367280705858090">Hilfe bei bestimmten Fehlermeldungen</translation>
 <translation id="1919526244108283799">400 × 600 mm</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Keine}=1{1 Website}other{# Websites}}</translation>
-<translation id="192095259937375524">Schaltfläche „Tab teilen“ – aktivieren, um diesen Tab über den Link, über einen QR-Code, über Streamen usw. zu teilen</translation>
+<translation id="192095259937375524">Button „Tab teilen“ – aktivieren, um diesen Tab über den Link, über einen QR-Code, über Streamen usw. zu teilen</translation>
 <translation id="1924727005275031552">Neu</translation>
 <translation id="1927439846988093361">Haarpflege</translation>
 <translation id="1935353813610900265">Feedback zur KI‑gestützten Verlaufssuche senden</translation>
@@ -608,7 +608,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2003709556000175978">Jetzt Passwort zurücksetzen</translation>
 <translation id="2003775180883135320">Vierfache Lochung oben</translation>
 <translation id="2004697686368036666">Einige Websites funktionieren dann möglicherweise nicht mehr richtig</translation>
-<translation id="2009942480257059311">Schaltfläche „Termin erstellen“ – aktivieren, um schnell einen neuen Termin in Google Kalender zu erstellen</translation>
+<translation id="2009942480257059311">Button „Termin erstellen“ – aktivieren, um schnell einen neuen Termin in Google Kalender zu erstellen</translation>
 <translation id="201174227998721785">Berechtigungen und gespeicherte Daten von Websites in den Chrome-Einstellungen verwalten</translation>
 <translation id="2018769312928511665">Stoff (glänzend)</translation>
 <translation id="2021333772895814435">Durch diese Richtlinie wird die geräteübergreifende Synchronisierung automatisch deaktiviert für: <ph name="ACTION_LIST" />.</translation>
@@ -719,7 +719,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2174875517416416684">Deine Transaktion konnte nicht durchgeführt werden. Es wurden keine Beträge von deinem Konto abgebucht.</translation>
 <translation id="2175630235841878061">Dateien mit mehr als 100 MB können nicht heruntergeladen werden</translation>
 <translation id="217631816678106981">Nicht einfügen</translation>
-<translation id="2178665390943006934">Schaltfläche „Chrome aktualisieren“ – aktivieren, um Chrome über die Chrome-Einstellungen zu aktualisieren</translation>
+<translation id="2178665390943006934">Button „Chrome aktualisieren“ – aktivieren, um Chrome über die Chrome-Einstellungen zu aktualisieren</translation>
 <translation id="2178904466768126352">Auf dieser Website besteht die Gefahr, dass Angreifer Schadsoftware installieren, mit der beispielsweise Passwörter, Fotos, Nachrichten oder Kreditkartennummern gestohlen oder gelöscht werden können.</translation>
 <translation id="2179003720612888584"><ph name="SITE_TITLE" /> auf <ph name="SITE_DOMAIN_NAME" /></translation>
 <translation id="2181821976797666341">Richtlinien</translation>
@@ -802,7 +802,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2300306941146563769">Nicht hochgeladen</translation>
 <translation id="2301098101308036335">Welche Websites zu welchem Zeitpunkt besucht werden.</translation>
 <translation id="2302571905116831849">Kundenkarte automatisch ausfüllen</translation>
-<translation id="230286397113210245">Schaltfläche „Inkognitofenster öffnen“ – aktivieren, um ein neues Inkognitofenster zu öffnen und privat zu surfen</translation>
+<translation id="230286397113210245">Button „Inkognitofenster öffnen“ – aktivieren, um ein neues Inkognitofenster zu öffnen und privat zu surfen</translation>
 <translation id="2303437270440428119">OpenDocument-Tabelle</translation>
 <translation id="2305294852062272447">Führerschein speichern?</translation>
 <translation id="2306124309679506798">Immersive Nutzung zulassen?</translation>
@@ -830,7 +830,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2347764072711098973">Mit Affirm, Zip oder Klarna in Raten bezahlen</translation>
 <translation id="2348509731468399833">Preis-Tracking gestoppt.</translation>
 <translation id="2348836501965732644">Du kannst deine Informationen verwalten oder diese Vorschläge in den Einstellungen deaktivieren</translation>
-<translation id="2349957959687031096">Schaltfläche „Inkognitotab öffnen“ – aktivieren, um einen neuen Inkognitotab zu öffnen und privat zu surfen</translation>
+<translation id="2349957959687031096">Button „Inkognitotab öffnen“ – aktivieren, um einen neuen Inkognitotab zu öffnen und privat zu surfen</translation>
 <translation id="2350796302381711542">Öffnen aller <ph name="PROTOCOL" />-Links durch <ph name="HANDLER_HOSTNAME" /> anstatt <ph name="REPLACED_HANDLER_TITLE" /> zulassen?</translation>
 <translation id="2351718832234620840">Dieser Server konnte nicht beweisen, dass er <ph name="DOMAIN" /> ist, da er ein Sicherheitszertifikat verwendet, das von Chromium oder deiner Systemkonfiguration für die Verschlüsselung von Web-Traffic nicht als vertrauenswürdig eingestuft wird. Mögliche Gründe sind eine fehlerhafte Konfiguration oder ein Angreifer, der deine Verbindung abfängt.</translation>
 <translation id="2353297238722298836">Kamera- und Mikrofonnutzung zulässig</translation>
@@ -1159,7 +1159,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2922792708490674">{0,plural, =1{Datei kann nicht heruntergeladen werden}other{<ph name="FILE_COUNT" /> Dateien können nicht heruntergeladen werden}}</translation>
 <translation id="2923275635648511531">Bräunungs- und Sonnenschutzprodukte</translation>
 <translation id="292371311537977079">Chrome-Einstellungen</translation>
-<translation id="2925454999967523701">Schaltfläche „Dokument erstellen“ – aktivieren, um schnell ein neues Google-Dokument zu erstellen</translation>
+<translation id="2925454999967523701">Button „Dokument erstellen“ – aktivieren, um schnell ein neues Google-Dokument zu erstellen</translation>
 <translation id="2925673989565098301">Lieferoption</translation>
 <translation id="2928426578619531300">Nutzer verknüpft</translation>
 <translation id="2928905813689894207">Rechnungsadresse</translation>
@@ -1305,7 +1305,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3145945101586104090">Fehler beim Dekodieren der Antwort</translation>
 <translation id="3147941219998826815">Billig- und Last-Minute-Reisen</translation>
 <translation id="3150653042067488994">Vorübergehender Serverfehler</translation>
-<translation id="3150889484970506196">Schaltfläche „Tabelle erstellen“ – aktivieren, um schnell eine neue Google-Tabelle zu erstellen</translation>
+<translation id="3150889484970506196">Button „Tabelle erstellen“ – aktivieren, um schnell eine neue Google-Tabelle zu erstellen</translation>
 <translation id="3154506275960390542">Auf dieser Seite befindet sich ein Formular, das Daten möglicherweise unsicher überträgt. Gesendete Daten können während der Übertragung von anderen gelesen oder von Angreifern geändert werden, sodass der Server modifizierte Daten erhält.</translation>
 <translation id="3154987252551138431">Bei der Verwendung von Nearby Share ist ein Fehler aufgetreten</translation>
 <translation id="315504272643575312">Dein Konto wird von <ph name="MANAGER" /> verwaltet.</translation>
@@ -1408,7 +1408,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3304073249511302126">Bluetooth-Suche</translation>
 <translation id="3304777285002411338">A2x3</translation>
 <translation id="33073482541490531">Das eingegebene Passwort wurde in einer Datenpanne gefunden. Der Passwortmanager empfiehlt, dieses Passwort jetzt zu ändern.</translation>
-<translation id="3307649904964670439">Schaltfläche „Chrome anpassen“ – aktivieren, um das Erscheinungsbild des Browsers anzupassen</translation>
+<translation id="3307649904964670439">Button „Chrome anpassen“ – aktivieren, um das Erscheinungsbild des Browsers anzupassen</translation>
 <translation id="3308006649705061278">Organisationseinheit (OU)</translation>
 <translation id="3312952471765023168">Upload erfolgreich</translation>
 <translation id="3318016344440038475">Comedy-Fernsehserien</translation>
@@ -1465,7 +1465,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3413466783792948876">Wenn du ein öffentliches Netzwerk verwendest, ist es am sichersten, diese Website erst später aufzurufen. Das Risiko ist bei einem vertrauenswürdigen Netzwerk – wie dem WLAN zu Hause oder am Arbeitsplatz – geringer.</translation>
 <translation id="3414275587143250384">Verteilte Rechnersysteme und Cloud-Computing</translation>
 <translation id="3414952576877147120">Größe:</translation>
-<translation id="341513675006332771">Schaltfläche „Chrome Dino spielen“ – aktivieren, um Chrome Dino zu spielen</translation>
+<translation id="341513675006332771">Button „Chrome Dino spielen“ – aktivieren, um Chrome Dino zu spielen</translation>
 <translation id="3415471717466570460">Deine Suchanfragen, die besten Ergebnisse und die zugehörigen Seiteninhalte werden an Google gesendet und möglicherweise von Prüfern gelesen, um diese Funktion zu verbessern. Dies ist eine experimentelle Funktion, die manchmal fehlerhaft sein kann.</translation>
 <translation id="3422248202833853650">Versuche, andere Programme zu beenden, um Speicher freizugeben.</translation>
 <translation id="3422472998109090673"><ph name="HOST_NAME" /> ist momentan nicht erreichbar.</translation>
@@ -1502,7 +1502,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" />, derzeit geöffnet, Tabulatortaste und dann Eingabetaste drücken, um zum offenen Tab zu wechseln</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücke die Tabulatortaste und dann die Eingabetaste, um alle geöffneten Inkognitofenster zu schließen</translation>
 <translation id="3472469028191701821">Wird in neuem Tab geöffnet</translation>
-<translation id="3474392552865647225">Schaltfläche „Schriftarten anpassen“ – aktivieren, um Schriftgrößen und Schriftarten in Chrome anzupassen</translation>
+<translation id="3474392552865647225">Button „Schriftarten anpassen“ – aktivieren, um Schriftgrößen und Schriftarten in Chrome anzupassen</translation>
 <translation id="3478033058537426179">Nach Gruppe</translation>
 <translation id="3479552764303398839">Jetzt nicht</translation>
 <translation id="3484560055331845446">Du könntest den Zugriff auf dein Google-Konto verlieren. Chrome empfiehlt dir, dein Passwort jetzt zu ändern. Du wirst dazu aufgefordert, dich anzumelden.</translation>
@@ -1584,7 +1584,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3596918995172292499">Kennzeichen – Bundesstaat</translation>
 <translation id="3600106876108433070">Informationen zu Vergleichstabellen</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
-<translation id="3600492954573979888">Schaltfläche „Datenschutzeinstellungen des Google-Kontos verwalten“ – aktivieren, um die Datenschutzeinstellungen deines Google-Kontos aufzurufen</translation>
+<translation id="3600492954573979888">Button „Datenschutzeinstellungen des Google-Kontos verwalten“ – aktivieren, um die Datenschutzeinstellungen deines Google-Kontos aufzurufen</translation>
 <translation id="3603507503523709">App durch Administrator blockiert</translation>
 <translation id="3605899229568538311">5 × 5 Zoll</translation>
 <translation id="3606917451836803637">Fernsehsendungen</translation>
@@ -1602,7 +1602,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3624292976554877583">Etiketten (matt)</translation>
 <translation id="3628905806504633297">{0,plural, =1{Gemäß der Administratorrichtlinie wird nicht empfohlen, diese Datei auf „<ph name="DESTINATION_NAME" />“ zu übertragen}other{Gemäß der Administratorrichtlinie wird nicht empfohlen, diese Dateien auf „<ph name="DESTINATION_NAME" />“ zu übertragen}}</translation>
 <translation id="3630155396527302611">Falls das Programm schon in der Liste mit erlaubtem Netzwerkzugriff eingetragen ist, entferne es aus der Liste und füge es noch einmal hinzu.</translation>
-<translation id="3630426379756188722">Schaltfläche „Mein Gerät finden“ – aktivieren, um „Mein Gerät finden“ im Google-Konto zu finden</translation>
+<translation id="3630426379756188722">Button „Mein Gerät finden“ – aktivieren, um „Mein Gerät finden“ im Google-Konto zu finden</translation>
 <translation id="3630699740441428070">Administratoren dieses Geräts haben deine Netzwerkverbindung konfiguriert. Dadurch erhalten sie möglicherweise Einblick in deinen Netzwerkverkehr und können sehen, welche Websites du besuchst.</translation>
 <translation id="3632503704576938756">Bildschirmfreigabe fortgesetzt</translation>
 <translation id="3632892046558972264">Bildschirmfreigabe pausiert</translation>
@@ -1647,7 +1647,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3687920599421452763">Vans und Minivans</translation>
 <translation id="3693327506115126094">Methode zur Bestätigung deiner Identität auswählen</translation>
 <translation id="3698353241727597930">Dein Administrator hat festgelegt, dass <ph name="FILES" /> im unternehmensverwalteten <ph name="CLOUD_STORAGE" />‑Speicher gespeichert werden. Diese Dateien werden möglicherweise überwacht, geprüft und aufbewahrt, nachdem du sie gelöscht hast.</translation>
-<translation id="3698629142018988477">Schaltfläche „Website erstellen“ – aktivieren, um schnell eine neue Website in Google Sites zu erstellen</translation>
+<translation id="3698629142018988477">Button „Website erstellen“ – aktivieren, um schnell eine neue Website in Google Sites zu erstellen</translation>
 <translation id="3700094625653511150">Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> auf</translation>
 <translation id="3700966190175650601">Du verwendest deinen Fingerabdruck zum Ausfüllen von Passwörtern</translation>
 <translation id="3701325639446035885">Ticketverkauf</translation>
@@ -1955,7 +1955,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4186035307311647330">Preis nicht mehr beobachten</translation>
 <translation id="4190446002599583608">KI‑gestützte Verlaufssuche</translation>
 <translation id="4191334393248735295">Länge</translation>
-<translation id="4195459680867822611">Schaltfläche „Chrome-Tipps aufrufen“ – aktivieren, um mehr über die Funktionen von Chrome zu erfahren</translation>
+<translation id="4195459680867822611">Button „Chrome-Tipps aufrufen“ – aktivieren, um mehr über die Funktionen von Chrome zu erfahren</translation>
 <translation id="4195643157523330669">In neuem Tab öffnen</translation>
 <translation id="4196861286325780578">&amp;Verschieben wiederholen</translation>
 <translation id="4199637363739172710">Smartwatches</translation>
@@ -2127,7 +2127,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4445133368066241428">Beliebte Themen</translation>
 <translation id="4445694043187340808"><ph name="STARTER_PACK_TABS_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücke die Eingabetaste, um nach Tabs zu suchen</translation>
 <translation id="4445964943162061557">Dies ist eine experimentelle Funktion, die manchmal fehlerhaft sein kann.</translation>
-<translation id="4449116177348980384">Schaltfläche „Website-Einstellungen verwalten“ – aktivieren, um in den Chrome-Einstellungen Berechtigungen und gespeicherte Daten von Websites zu verwalten</translation>
+<translation id="4449116177348980384">Button „Website-Einstellungen verwalten“ – aktivieren, um in den Chrome-Einstellungen Berechtigungen und gespeicherte Daten von Websites zu verwalten</translation>
 <translation id="4451135742916150903">Darf nachfragen, wenn sie eine Verbindung mit HID-Geräten herstellen möchte</translation>
 <translation id="4451684391620232683">Text, der dem Nutzer angezeigt wurde:</translation>
 <translation id="4452328064229197696">Das Passwort, das du gerade verwendet hast, wurde in einer Datenpanne gefunden. Zum besseren Schutz deiner Konten empfiehlt der Google Passwortmanager, deine gespeicherten Passwörter zu prüfen.</translation>
@@ -2250,7 +2250,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4686942373615810936">Gerade eben erstellt</translation>
 <translation id="4687718960473379118">Von Websites vorgeschlagene Werbung</translation>
 <translation id="4690205240253392065">Anbieter für „Später bezahlen“ auswählen</translation>
-<translation id="469028408546145398">Schaltfläche „Alle Inkognitofenster schließen“ – aktivieren, um alle derzeit geöffneten Inkognitofenster zu schließen.</translation>
+<translation id="469028408546145398">Button „Alle Inkognitofenster schließen“ – aktivieren, um alle derzeit geöffneten Inkognitofenster zu schließen.</translation>
 <translation id="4691093235373904540">Dachdeckerei</translation>
 <translation id="4692623383562244444">Suchmaschinen</translation>
 <translation id="4695702626068620848"><ph name="KEYWORD" /> – <ph name="KEYWORD_SHORT_NAME" /> fragen</translation>
@@ -2423,7 +2423,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4950898438188848926">Schaltfläche zum Wechseln von Tabs, Eingabetaste drücken, um zum offenen Tab "<ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" />" zu wechseln</translation>
 <translation id="495170559598752135">Aktionen</translation>
 <translation id="4953689047182316270">Auf Bedienungshilfen reagieren</translation>
-<translation id="4957080528849277028">Schaltfläche „Chrome-Verlauf ansehen“ – aktivieren, um in den Chrome-Einstellungen deinen Browserverlauf aufzurufen und zu verwalten</translation>
+<translation id="4957080528849277028">Button „Chrome-Verlauf ansehen“ – aktivieren, um in den Chrome-Einstellungen deinen Browserverlauf aufzurufen und zu verwalten</translation>
 <translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{und 1 weiteren Website}other{und # weiteren Websites}}</translation>
 <translation id="4958444002117714549">Liste einblenden</translation>
 <translation id="4960068118612257147">In den Datenschutzeinstellungen für Werbung von Chrome kannst du jederzeit Änderungen vornehmen.</translation>
@@ -2594,7 +2594,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5241048084654737238">Bestätigung, dass Kartendaten nicht gespeichert werden können</translation>
 <translation id="5242610955375133957">Trockenfilm</translation>
 <translation id="5243004157379865295">Adresse aktualisieren</translation>
-<translation id="5244521145258281926">Schaltfläche „Google-Konto verwalten“ – aktivieren, um Daten, Datenschutz- und Sicherheits­einstellungen in deinem Google-Konto zu verwalten</translation>
+<translation id="5244521145258281926">Button „Google-Konto verwalten“ – aktivieren, um Daten, Datenschutz- und Sicherheits­einstellungen in deinem Google-Konto zu verwalten</translation>
 <translation id="5244732203286792411">Wird geladen…
     Dies kann einen Moment dauern.</translation>
 <translation id="5248543496748975054">Fehlt die Kartennummer?</translation>
@@ -2744,7 +2744,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5485100387355669506">Extradick</translation>
 <translation id="5485973315555778056">Cloudgerät</translation>
 <translation id="5488367146069768854">Web-App-Installationen</translation>
-<translation id="5488590678320979185">Schaltfläche „Notiz erstellen“ – aktivieren, um schnell eine neue Notiz in Google Notizen zu erstellen</translation>
+<translation id="5488590678320979185">Button „Notiz erstellen“ – aktivieren, um schnell eine neue Notiz in Google Notizen zu erstellen</translation>
 <translation id="5490432419156082418">Adressen und andere Daten</translation>
 <translation id="5492298309214877701">Diese Website im Intranet des Unternehmens, der Organisation oder der Schule hat die gleiche URL wie eine externe Website.
     <ph name="LINE_BREAK" />
@@ -2895,7 +2895,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5729442113829771034">Früherziehung</translation>
 <translation id="5730040223043577876">Chrome empfiehlt, dein Passwort zurückzusetzen, wenn du es auf anderen Websites verwendet hast.</translation>
 <translation id="5732392974455271431">Deine Eltern können die Blockierung aufheben</translation>
-<translation id="573555826359077410">Schaltfläche „Formular erstellen“ – aktivieren, um schnell ein neues Formular in Google Formulare zu erstellen</translation>
+<translation id="573555826359077410">Button „Formular erstellen“ – aktivieren, um schnell ein neues Formular in Google Formulare zu erstellen</translation>
 <translation id="5738385766833540397">Lege fest, wie du über Preisnachlässe bei beobachteten Produkten benachrichtigt werden willst</translation>
 <translation id="5739619009927381786">Du kannst dein Display im nächsten Schritt auf gewohnte Weise per Fingerabdruck entsperren. Alternativ kannst du eine <ph name="BEGIN_LINK" />andere Bestätigungsmethode ausprobieren<ph name="END_LINK" />.</translation>
 <translation id="573974402615125334">Wenn du Tabgruppen teilen, ihnen beitreten und gemeinsam mit anderen an ihnen arbeiten möchtest, synchronisiere deinen Verlauf und deine Tabs</translation>
@@ -3385,7 +3385,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6520509611422418552"><ph name="MEMBER_FIRST_NAME" /> ist der Tabgruppe „<ph name="GROUP_NAME" />“ beigetreten</translation>
 <translation id="6521745193039995384">Nicht aktiv</translation>
 <translation id="6522682797352430154">Klassische Musik</translation>
-<translation id="6524830701589638230">Schaltfläche „Einstellungen für Bedienungshilfen verwalten“ – aktivieren, um die Bedienungshilfen in den Chrome-Einstellungen zu personalisieren</translation>
+<translation id="6524830701589638230">Button „Einstellungen für Bedienungshilfen verwalten“ – aktivieren, um die Bedienungshilfen in den Chrome-Einstellungen zu personalisieren</translation>
 <translation id="6525222262307262764">Aktuelle Standardeinstellung beibehalten</translation>
 <translation id="6527049834925947126">Lebensmittelindustrie</translation>
 <translation id="6529173248185917884">Siebte Rolle</translation>
@@ -3405,7 +3405,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6557715786897013164">14 × 17 Zoll</translation>
 <translation id="6560786330438719938">Installierte bzw. deinstallierte Apps und Häufigkeit ihrer Verwendung</translation>
 <translation id="6567832540451970450">Dein Administrator erlaubt die Berechtigung „<ph name="PERMISSION" />“ für diese Website</translation>
-<translation id="6568793038316600992">Schaltfläche „Zahlungsmethoden verwalten“ – aktivieren, um Zahlungen und Kreditkartendaten in den Chrome-Einstellungen zu verwalten</translation>
+<translation id="6568793038316600992">Button „Zahlungsmethoden verwalten“ – aktivieren, um Zahlungen und Kreditkartendaten in den Chrome-Einstellungen zu verwalten</translation>
 <translation id="6569060085658103619">Dies ist eine Erweiterungsseite</translation>
 <translation id="6571992525120410251"><ph name="ENGINE_NAME" /> eine Frage stellen</translation>
 <translation id="6572867903637058088">Ist das hilfreich?</translation>
@@ -3433,7 +3433,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6628463337424475685"><ph name="ENGINE" />-Suche</translation>
 <translation id="6629652037942826935">Luxusreisen</translation>
 <translation id="6630043285902923878">USB-Geräte werden gesucht…</translation>
-<translation id="6630388727238334626">Schaltfläche „Einstellungen verwalten“ – aktivieren, um deine Chrome-Einstellungen aufzurufen</translation>
+<translation id="6630388727238334626">Button „Einstellungen verwalten“ – aktivieren, um deine Chrome-Einstellungen aufzurufen</translation>
 <translation id="6631133499533814479">Australian Football</translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6633405994164965230">Computer-Ausbildung und ‑Weiterbildung</translation>
@@ -3562,7 +3562,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6841864657731852591">Tiefdruckzylinder</translation>
 <translation id="6842196666980060516">184 × 260 mm</translation>
 <translation id="6844998850832008753">Handtracking dieses Mal zugelassen</translation>
-<translation id="6849023911358004088">Schaltfläche „Sicherheitseinstellungen verwalten“ – aktivieren, um in den Chrome-Einstellungen beispielsweise Safe Browsing zu verwalten</translation>
+<translation id="6849023911358004088">Button „Sicherheitseinstellungen verwalten“ – aktivieren, um in den Chrome-Einstellungen beispielsweise Safe Browsing zu verwalten</translation>
 <translation id="6850286078059909152">Schriftfarbe</translation>
 <translation id="6852204201400771460">App neu laden?</translation>
 <translation id="6854691830678097752">Du kannst diesen CVC in deinem Konto <ph name="ACCOUNT_EMAIL" /> speichern, um schneller zu bezahlen</translation>
@@ -3920,7 +3920,7 @@ Weitere Details:
 <translation id="7419106976560586862">Profilpfad</translation>
 <translation id="7421067045979951561">Protokoll-Handler</translation>
 <translation id="7422347648202898039">Etiketten (Sicherheit)</translation>
-<translation id="7423283032694727565">Schaltfläche „Cookies verwalten“ – aktivieren, um in den Chrome-Einstellungen deine Cookie-Einstellungen zu verwalten</translation>
+<translation id="7423283032694727565">Button „Cookies verwalten“ – aktivieren, um in den Chrome-Einstellungen deine Cookie-Einstellungen zu verwalten</translation>
 <translation id="742435751935045381">Installierte Apps und Erweiterungen im Arbeitsprofil</translation>
 <translation id="7424421098814895617">Die Option „Adresse löschen“ wurde ausgewählt</translation>
 <translation id="7425037327577270384">Formuliere für mich</translation>
@@ -3938,7 +3938,7 @@ Weitere Details:
 <translation id="7444176988908839653">{COUNT,plural, =0{Cookies werden heute wieder blockiert}=1{Cookies werden morgen wieder blockiert}other{Noch # Tage, bis Cookies wieder blockiert werden}}</translation>
 <translation id="7447234474237738389">Bekleidungsdienstleistungen</translation>
 <translation id="7447625772313191651"><ph name="NAME" /> (<ph name="WIDTH" /> mm × <ph name="HEIGHT" /> mm)</translation>
-<translation id="7450577240311017924">Schaltfläche „Synchronisierung verwalten“ – aktivieren, um in den Chrome-Einstellungen zu verwalten, welche Informationen synchronisiert werden</translation>
+<translation id="7450577240311017924">Button „Synchronisierung verwalten“ – aktivieren, um in den Chrome-Einstellungen zu verwalten, welche Informationen synchronisiert werden</translation>
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /> zu diesem Problem.</translation>
 <translation id="745208957946308667">Dino-Spiel – drücke die Leertaste, um das Spiel zu starten</translation>
 <translation id="7453849010505253492">Dieser Server konnte nicht beweisen, dass er <ph name="DOMAIN" /> ist, da er ein Sicherheitszertifikat verwendet, das von Chrome oder deiner Systemkonfiguration für die Verschlüsselung von Web-Traffic nicht als vertrauenswürdig eingestuft wird. Mögliche Gründe sind eine fehlerhafte Konfiguration oder ein Angreifer, der deine Verbindung abfängt. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Zertifikat ansehen<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
@@ -4253,7 +4253,7 @@ Weitere Details:
 <translation id="7951415247503192394">(32-Bit)</translation>
 <translation id="7952192831285741665">EDP (Europa)</translation>
 <translation id="7952250633095257243">Kürzel darf nicht leer sein</translation>
-<translation id="7952327717479677595">Schaltfläche „Suchmaschinen verwalten“ – aktivieren, um deine standardmäßige Suchmaschine und Websitesuche zu verwalten</translation>
+<translation id="7952327717479677595">Button „Suchmaschinen verwalten“ – aktivieren, um deine standardmäßige Suchmaschine und Websitesuche zu verwalten</translation>
 <translation id="7953236668995583915">Aktualisiere diese Seite, um die neuen Einstellungen auf dieser Website zu übernehmen</translation>
 <translation id="7953569069500808819">Mehrere Heftklammern oben</translation>
 <translation id="7955105108888461311">Persönlich fragen</translation>
@@ -4293,7 +4293,7 @@ Weitere Details:
 <translation id="8022542098135319050">Reiseagenturen und ‑dienstleistungen</translation>
 <translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" /> – Drück die Tabulatortaste und dann die Eingabetaste, um Chrome als Standardbrowser für das System festzulegen</translation>
 <translation id="8027077570865220386">Fach 15</translation>
-<translation id="8027585818882015174">Schaltfläche „Chrome-Sicherheitscheck ausführen“ – aktivieren, um in den Chrome-Einstellungen den Sicherheitscheck auszuführen</translation>
+<translation id="8027585818882015174">Button „Chrome-Sicherheitscheck ausführen“ – aktivieren, um in den Chrome-Einstellungen den Sicherheitscheck auszuführen</translation>
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücke die Tabulatortaste und dann die Eingabetaste, um schnell ein neues Formular in Google Formulare zu erstellen</translation>
 <translation id="8028892419725165118">Casual Games</translation>
 <translation id="8028960012888758725">Nach Auftrag zuschneiden</translation>
@@ -4732,7 +4732,7 @@ Weitere Details:
 <translation id="8766943070169463815">Ansicht zum Authentifizieren der sicheren Anmeldedaten für Zahlungen ist geöffnet</translation>
 <translation id="8767765348545497220">Infofeld schließen</translation>
 <translation id="8767881944435256294">{COUNT,plural, =1{1 Zahlungsmethode}other{# Zahlungsmethoden}}</translation>
-<translation id="8768225988514678921">Schaltfläche „Präsentation erstellen“ – aktivieren, um schnell eine neue Präsentation in Google Präsentationen zu erstellen</translation>
+<translation id="8768225988514678921">Button „Präsentation erstellen“ – aktivieren, um schnell eine neue Präsentation in Google Präsentationen zu erstellen</translation>
 <translation id="8769662576926275897">Kartendaten</translation>
 <translation id="8769858749286369844">Lederbraun 2</translation>
 <translation id="8770286973007342895">Rasenmäher</translation>
@@ -4742,7 +4742,7 @@ Weitere Details:
 <translation id="8775863327608679820">Die Liste der Anbieter von „Jetzt kaufen, später bezahlen“, die für Ratenzahlung verfügbar sind, ist halb geöffnet.</translation>
 <translation id="8776941011841875705">Known Traveler Number speichern?</translation>
 <translation id="877985182522063539">A4</translation>
-<translation id="8781278378794969337">Schaltfläche „Seite übersetzen“ – aktivieren, um diese Seite mit Google Übersetzer übersetzen zu lassen</translation>
+<translation id="8781278378794969337">Button „Seite übersetzen“ – aktivieren, um diese Seite mit Google Übersetzer übersetzen zu lassen</translation>
 <translation id="8785658048882205566">Motorräder</translation>
 <translation id="8790007591277257123">&amp;Löschen wiederholen</translation>
 <translation id="8792272652220298572">Kunststoff (glänzend)</translation>
@@ -4984,7 +4984,7 @@ Weitere Details:
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> verwendet ein nicht unterstütztes Protokoll.</translation>
 <translation id="918454845714257218">Prüfe den Code auf der <ph name="SIDE_OF_CARD" /> und versuch es noch einmal</translation>
-<translation id="9186203289258525843">Schaltfläche „Google Chrome als Standardbrowser festlegen“ – aktivieren, um Chrome als Standardbrowser für das System festzulegen</translation>
+<translation id="9186203289258525843">Button „Google Chrome als Standardbrowser festlegen“ – aktivieren, um Chrome als Standardbrowser für das System festzulegen</translation>
 <translation id="9186371298532546532">Diese Adresse an weiteren Orten verwenden</translation>
 <translation id="9189468832660648522"><ph name="MEMBER_FIRST_NAME" /> hat diesen Tab geändert</translation>
 <translation id="9189789270972826888">Falls die Karte nicht automatisch ausgefüllt wurde, klicke unten auf die Kartendetails, um sie manuell einzufügen. <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>

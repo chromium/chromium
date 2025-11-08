@@ -1873,7 +1873,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="4067774859633143413">Pantaila osotik irten eta deskarga ikusteko, eduki sakatuta |<ph name="ACCELERATOR" />|</translation>
 <translation id="4067947977115446013">Gehitu balio duen helbide bat</translation>
 <translation id="4072486802667267160">Errore bat gertatu da eskaera prozesatzean. Saiatu berriro.</translation>
-<translation id="4073376909608563327">Ezin izan da erabili gailu-desblokeoa</translation>
+<translation id="4073376909608563327">Ezin izan da erabili gailuaren desblokeoa</translation>
 <translation id="4073797364926776829">Ikusi txartela</translation>
 <translation id="4075732493274867456">Bezeroak eta zerbitzariak ez dute onartzen SSL protokoloaren bertsio edo enkriptatze multzo arrunta.</translation>
 <translation id="4079302484614802869">Proxy-konfigurazioa .pac scripteko URLa erabiltzeko dago ezarrita, ez proxy-zerbitzari finkoak.</translation>
@@ -2351,7 +2351,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="484462545196658690">Automatikoa</translation>
 <translation id="4844937814014739139">Fitxa partekatuetan gora/behera egitea eta zooma erabiltzea</translation>
 <translation id="484671803914931257">Eskuratu deskontuak <ph name="MERCHANT_NAME" /> eta beste saltzaile batzuen produktuetan</translation>
-<translation id="484988093836683706">Erabili gailu-desblokeoa</translation>
+<translation id="484988093836683706">Erabili gailuaren desblokeoa</translation>
 <translation id="4850669014075537160">Desplazamendua</translation>
 <translation id="4850886885716139402">Ikusi</translation>
 <translation id="4854853140771946034">Sortu bizkor ohar bat Google Keep-en</translation>
@@ -2990,7 +2990,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="5921185718311485855">Aktibatuta</translation>
 <translation id="5921639886840618607">Google-ko kontuan gorde nahi duzu txartela?</translation>
 <translation id="5921952831792678223">Pickup kamioiak</translation>
-<translation id="5923492272538889093">Gailu-desblokeoa erabili nahi duzu CVCaren ordez?</translation>
+<translation id="5923492272538889093">Gailuaren desblokeoa erabili nahi duzu CVCaren ordez?</translation>
 <translation id="5924510104057992926">Ireki aurretik, berrikusi egin behar da</translation>
 <translation id="5924782825030413055">Baimenaren azken eguneratzearen iturburua:</translation>
 <translation id="5925040402342933574">Disko optikoa (erdidistiratsua)</translation>
@@ -3322,7 +3322,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6433490469411711332">Editatu harremanetarako informazioa</translation>
 <translation id="6433501201775827830">Aukeratu bilatzailea</translation>
 <translation id="6433595998831338502">Konexioa baztertu du <ph name="HOST_NAME" /> webguneak.</translation>
-<translation id="6433797564277305076">Aurrerantzean, berretsi txartelak bizkorrago gailu-desblokeoa erabilita</translation>
+<translation id="6433797564277305076">Aurrerantzean, berretsi txartelak bizkorrago gailuaren desblokeoa erabilita</translation>
 <translation id="6436994298828707228">Konexioa blokeatuta dago, orri publiko batek abiarazi duelako zure sare lokaleko gailu edo zerbitzarietara konektatzeko helburuarekin.</translation>
 <translation id="6437647869369934905">Google Marrazkiak</translation>
 <translation id="643917412048333145">Soinekoak</translation>

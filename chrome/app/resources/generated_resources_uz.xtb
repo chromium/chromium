@@ -7454,7 +7454,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6160290816917599257">Kod xato. Xatosiz formatda kiritilishi zarur <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ manzil<ph name="LPA_2" />$<ph name="LPA_3" />ixtiyoriy mos id<ph name="LPA_4" /></translation>
 <translation id="6160625263637492097">Haqiqiylik tekshiruvi uchun sertifikatlar taqdim etilishi</translation>
 <translation id="6160887111111841751">Saqlangan axborotlar shu yerda chiqadi</translation>
-<translation id="616290554291007512">Gemini saytlarga nomingizdan kirishiga ruxsat berilmasin</translation>
+<translation id="616290554291007512">Gemini saytlarga nomimdan kirishiga ruxsat berilmasin</translation>
 <translation id="6163363155248589649">&amp;Odatiy</translation>
 <translation id="6163376401832887457">Kerberos sozlamalari</translation>
 <translation id="6163522313638838258">Barchasini yoyish...</translation>

@@ -163,7 +163,7 @@ La protezione avanzata controlla queste impostazioni di Chrome:
 <translation id="2682367912565197520">Elimina il livello di zoom salvato</translation>
 <translation id="2683434792633810741">Vuoi eliminare e reimpostare?</translation>
 <translation id="2685514716378236873">Autorizzazione non concessa</translation>
-<translation id="2713106313042589954">Disattiva fotocamera</translation>
+<translation id="2713106313042589954">Disattiva videocamera</translation>
 <translation id="2717722538473713889">Indirizzi email</translation>
 <translation id="2726059656860238749">Avvia Chrome con l'omnibox in primo piano per ridurre i tempi di avvio sui dispositivi di fascia bassa.</translation>
 <translation id="2750481671343847896">I siti possono mostrare richieste di accesso da servizi di identità.</translation>
@@ -387,7 +387,7 @@ La protezione avanzata controlla queste impostazioni di Chrome:
 <translation id="5197729504361054390">I contatti che selezioni verranno condivisi con <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5198930230016462977">Riquadro inferiore di Personalizza la pagina Nuova scheda chiuso</translation>
 <translation id="5216942107514965959">Ultima visita: oggi</translation>
-<translation id="5225463052809312700">Attiva fotocamera</translation>
+<translation id="5225463052809312700">Attiva videocamera</translation>
 <translation id="5234764350956374838">Ignora</translation>
 <translation id="5239623327352565343">Posizione consentita</translation>
 <translation id="5246825184569358663">Questa azione eliminerà tutti i dati locali, compresi i cookie, e reimposterà tutte le autorizzazioni per <ph name="DOMAIN" /> e per tutti i siti secondari</translation>

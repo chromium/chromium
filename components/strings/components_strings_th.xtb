@@ -122,7 +122,7 @@
 <translation id="1198412233443148072"><ph name="MEMBER_FIRST_NAME" /> นำแท็บ "<ph name="WEBSITE_TITLE" />" ออกแล้ว</translation>
 <translation id="1201402288615127009">ถัดไป</translation>
 <translation id="1201895884277373915">เพิ่มเติมจากไซต์นี้</translation>
-<translation id="1202892408424955784">ผลิตภัณฑ์ที่ติดตาม</translation>
+<translation id="1202892408424955784">สินค้าที่ติดตาม</translation>
 <translation id="1204184165594298176">{0,plural, =1{ไฟล์ถูกบล็อกไม่ให้มีการคัดลอก}other{ไฟล์ <ph name="FILE_COUNT" /> รายการถูกบล็อกไม่ให้มีการคัดลอก}}</translation>
 <translation id="120509973613679868">การเดินทางเพื่อทำงาน</translation>
 <translation id="120587177308723209">แฟนตาซีสปอร์ต</translation>
@@ -207,7 +207,7 @@
 <translation id="1329916999021038454">ส่งรายงาน</translation>
 <translation id="1330449323196174374">พับทบด้านซ้าย</translation>
 <translation id="1333745675627230582">เล่นเกมไดโนเสาร์ Chrome</translation>
-<translation id="1333989956347591814">ผู้อื่น<ph name="BEGIN_EMPHASIS" />อาจยังมองเห็น<ph name="END_EMPHASIS" />กิจกรรมของคุณ:
+<translation id="1333989956347591814">บุคคลหรือองค์กรต่อไปนี้<ph name="BEGIN_EMPHASIS" />อาจยังมองเห็น<ph name="END_EMPHASIS" />กิจกรรมของคุณ
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />เว็บไซต์ที่คุณเข้าชม
           <ph name="LIST_ITEM" />นายจ้างหรือโรงเรียน
@@ -1119,7 +1119,7 @@
 <translation id="2843623755398178332">เลื่อนและซูมแท็บที่แชร์ไหม</translation>
 <translation id="2851291081585704741">คุณออฟไลน์อยู่</translation>
 <translation id="2858134430383535011">200 x 300 มม.</translation>
-<translation id="2859383374160668142">คุณดูการลดราคาของผลิตภัณฑ์ที่ติดตามได้ทุกเมื่อ</translation>
+<translation id="2859383374160668142">คุณดูการลดราคาของสินค้าที่ติดตามได้ทุกเมื่อ</translation>
 <translation id="2859806420264540918">เว็บไซต์นี้แสดงโฆษณาที่แทรกหรือทำให้เข้าใจผิด</translation>
 <translation id="28618371182701850">รถยนต์ไฟฟ้าและปลั๊กอินไฮบริด</translation>
 <translation id="287387905105155974">บับเบิลความช่วยเหลือ</translation>
@@ -3161,7 +3161,7 @@
 <translation id="6189351761800074311">ระบบจะส่งข้อความและเนื้อหาหน้าเว็บของคุณไปยัง Google แต่จะไม่นำไปใช้เพื่อปรับปรุง AI
     <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="6190518157737269631">ลบล้างแป้นพิมพ์บางแป้นบนแป้นพิมพ์ของคุณ เช่น Esc</translation>
-<translation id="6194209731893739467">ดูผลิตภัณฑ์ที่ติดตามทั้งหมดที่นี่</translation>
+<translation id="6194209731893739467">ดูสินค้าที่ติดตามทั้งหมดที่นี่</translation>
 <translation id="6195371403461054755">ธรณีวิทยา</translation>
 <translation id="6195418151868446719">เครื่องใช้ไฟฟ้าทั่วไป</translation>
 <translation id="6196640612572343990">บล็อกคุกกี้ของบุคคลที่สาม</translation>
@@ -3425,7 +3425,7 @@
 <translation id="6596573334527383067">แสดงผลลัพธ์จากเมื่อวาน</translation>
 <translation id="6597665340361269064">90 องศา</translation>
 <translation id="6598976221101665070">ภาพยนตร์ดราม่า</translation>
-<translation id="6599642189720630047">ผลิตภัณฑ์ที่ติดตาม</translation>
+<translation id="6599642189720630047">สินค้าที่ติดตาม</translation>
 <translation id="6613742613135780554">การติดตามการเคลื่อนไหวของมือ</translation>
 <translation id="6613866251791999074">ดูข้อมูลเพิ่มเติมเกี่ยวกับเครื่องมือค้นหาใน Chrome</translation>
 <translation id="6615297766614333076">สแต็กเกอร์ 2</translation>

@@ -655,7 +655,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="3911609878849982353">Sortiranje od Ž do A</translation>
 <translation id="3924911262913579434">Uključen je način <ph name="SAFE_BROWSING_MODE" /></translation>
 <translation id="3927692899758076493">Sans Serif</translation>
-<translation id="3931947361983910192">od protekla 4 tjedna</translation>
+<translation id="3931947361983910192">posljednja 4 tjedna</translation>
 <translation id="393697183122708255">Glasovno pretraživanje nije dostupno</translation>
 <translation id="3950820424414687140">Prijava</translation>
 <translation id="395377504920307820">Koristite bez računa</translation>
@@ -1787,7 +1787,7 @@ Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke C
 <translation id="8560602726703398413">Pronađite svoj popis za čitanje u Google oznakama</translation>
 <translation id="8565021320663436446">Želite li da se ukloni <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="8570677896027847510">Datoteka se ne može sigurno preuzeti</translation>
-<translation id="8571213806525832805">Protekla 4 tjedna</translation>
+<translation id="8571213806525832805">Posljednja 4 tjedna</translation>
 <translation id="8580435650274205305">Datum isteka, obavezno</translation>
 <translation id="8582529315803410153">Ovdje ćete pronaći svoje kartice s ostalih uređaja</translation>
 <translation id="8585103689515290060">Usluge automatskog popunjavanja</translation>

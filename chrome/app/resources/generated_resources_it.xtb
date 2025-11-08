@@ -1276,7 +1276,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1851551847729706116">Condivisione di <ph name="TAB_NAME" /> con questa scheda in corso…</translation>
 <translation id="1854180393107901205">Interrompi trasmissione</translation>
 <translation id="1856715684130786728">Aggiungi posizione...</translation>
-<translation id="1857044401921988155">Quando fai clic su Salva, questo gruppo di schede diventerà una cartella di segnalibri e verrà rimosso dai tuoi gruppi su tutti i dispositivi</translation>
+<translation id="1857044401921988155">Quando fai clic su Salva, questo gruppo di schede diventerà una cartella di preferiti e verrà rimosso dai tuoi gruppi su tutti i dispositivi</translation>
 <translation id="185766080319917408">Il tasto Avvio app si trova a sinistra del tasto Alt sinistro</translation>
 <translation id="1859294693760125695">Non mi interessa più</translation>
 <translation id="1859339856433307593">Una password per questo account è già salvata nel tuo <ph name="BRAND" /> (<ph name="USER_EMAIL" />)</translation>
@@ -2512,7 +2512,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="271033894570825754">Nuova raccolta</translation>
 <translation id="2710507903599773521">Il tuo <ph name="DEVICE_TYPE" /> è ora sbloccato</translation>
 <translation id="2710676967944965821">Reimpostare tutte le autorizzazioni del lettore di smart card?</translation>
-<translation id="2713106313042589954">Disattiva fotocamera</translation>
+<translation id="2713106313042589954">Disattiva videocamera</translation>
 <translation id="2713444072780614174">Bianco</translation>
 <translation id="2714180132046334502">Sfondo scuro</translation>
 <translation id="2714393097308983682">Google Play Store</translation>
@@ -6130,7 +6130,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5222676887888702881">Esci</translation>
 <translation id="5225324770654022472">Mostra scorciatoia app</translation>
 <translation id="52254442782792731">L'attuale impostazione di visibilità non è ancora stata impostata</translation>
-<translation id="5225463052809312700">Attiva fotocamera</translation>
+<translation id="5225463052809312700">Attiva videocamera</translation>
 <translation id="5226253862147382094">Esamina gli aggiornamenti di logo e URL</translation>
 <translation id="5226514125747186">Viene visualizzato un cerchio tratteggiato attorno alle icone dei siti. <ph name="BEGIN_LINK" />Scopri di più sulle schede non attive<ph name="END_LINK" /></translation>
 <translation id="5226731562812684363">I siti web non sono autorizzati a utilizzare la tua posizione</translation>
@@ -10739,6 +10739,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8427213022735114808">La dettatura invia i tuoi dati audio a Google per consentire la digitazione vocale in tutti i campi di testo.</translation>
 <translation id="8427292751741042100">incorporata su qualsiasi host</translation>
 <translation id="8428213095426709021">Impostazioni</translation>
+<translation id="8428257636009471988">Visita il Web Store</translation>
 <translation id="8428271547607112339">Aggiungi account della scuola</translation>
 <translation id="8428634594422941299">Ok</translation>
 <translation id="84297032718407999">Verrai disconnesso tra <ph name="LOGOUT_TIME_LEFT" />.</translation>

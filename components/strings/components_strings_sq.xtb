@@ -1844,6 +1844,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4014895360827978999">Shërbime për tregtarë dhe sisteme pagesash</translation>
 <translation id="4018819349042761761">Çelësi publik</translation>
 <translation id="4023431997072828269">Për shkak se ky formular po dërgohet duke përdorur një lidhje që nuk është e sigurt, informacionet e tua do të jenë të dukshme për të tjerët.</translation>
+<translation id="4024673763872230929">Ruaj informacionet e tua dhe plotëso formularët më shpejt. Ruhet në pajisjen tënde.</translation>
 <translation id="4025325634010721551">Politikat u ringarkuan</translation>
 <translation id="4025338605225449265">Monedhat dhe këmbimi valutor</translation>
 <translation id="4025777154208238692">Rendi i kundërt</translation>
@@ -2277,6 +2278,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4732860731866514038">Po shkarkohet paketa gjuhësore në <ph name="LANGUAGE" />... <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> kërkon të përdorë vendndodhjen e pajisjes sate</translation>
 <translation id="473414950835101501">Të përdorë kamerat e tua</translation>
+<translation id="4734343956394152985"><ph name="BEGIN_BOLD" />Parazgjedhja aktuale<ph name="END_BOLD" /> · <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="4736825316280949806">Rinis Chromium</translation>
 <translation id="4736934858538408121">Karta virtuale</translation>
 <translation id="473775607612524610">Përditësoje</translation>
@@ -2339,6 +2341,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4822493756793346865">Çmimet tipike bazohen në dyqane nga i gjithë uebi gjatë 90 ditëve të fundit.</translation>
 <translation id="4822922322149719535">Rishiko evidencën e gabimeve</translation>
 <translation id="4823699521959851389"><ph name="SHORT_PRODUCT_NAME" /> ka nevojë për qasje te "<ph name="PERMISSION" />" në pajisjen tënde</translation>
+<translation id="4825311006392962663">Shfaq opsionet për të paguar më vonë në përfundim të blerjes</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, shtyp Tab pastaj Enter për të krijuar shpejt një "Fletë të re të Google</translation>
 <translation id="4826588772550366629">kamerën dhe mikrofonin</translation>
 <translation id="4827283332383516812">Fshi kartën</translation>
@@ -3384,6 +3387,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6521745193039995384">Jo aktiv</translation>
 <translation id="6522682797352430154">Muzikë klasike</translation>
 <translation id="6524830701589638230">Butoni "Menaxho cilësimet e qasshmërisë". Aktivizoje për të personalizuar veglat e qasshmërisë te cilësimet e Chrome</translation>
+<translation id="6525222262307262764">Mbaj parazgjedhjen aktuale</translation>
 <translation id="6527049834925947126">Prodhimi ushqimor</translation>
 <translation id="6529173248185917884">Ruli i shtatë</translation>
 <translation id="6529602333819889595">&amp;Bëje përsëri fshirjen</translation>
@@ -3404,6 +3408,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6567832540451970450">Administratori yt lejon <ph name="PERMISSION" /> për këtë sajt</translation>
 <translation id="6568793038316600992">Butoni "Menaxho mënyrat e pagesës". Aktivizoje për të menaxhuar informacionet e pagesave dhe të kartave të kreditit te cilësimet e Chrome</translation>
 <translation id="6569060085658103619">Po shikon një faqe të shtesës</translation>
+<translation id="6571992525120410251">Pyet <ph name="ENGINE_NAME" /> për çdo gjë</translation>
 <translation id="6572867903637058088">A është e dobishme kjo?</translation>
 <translation id="6573200754375280815">Dy shpime djathtas</translation>
 <translation id="6575408526598156416">Ruaje te llogaria</translation>
@@ -3453,6 +3458,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="666259744093848177">(x86_64 i përkthyer)</translation>
 <translation id="6665553082534466207">Tri shpime djathtas</translation>
 <translation id="6668389483194953109">U gjet një madhësi letre me emrin "custom", por karakteristika "custom_size" është bosh ose e pavlefshme.</translation>
+<translation id="6670729408462528018">Galeria</translation>
 <translation id="6671169470640320959">Financim për makina</translation>
 <translation id="6671697161687535275">Të hiqet sugjerimi i formularit nga Chromium?</translation>
 <translation id="6675846980676550611">AR-ja nuk u lejua</translation>
@@ -3600,7 +3606,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6917795328362592458">Fjalëkalimi që sapo përdore u gjet në një nxjerrje të paautorizuar të të dhënave. Për të mbrojtur llogaritë e tua, "Menaxheri i fjalëkalimeve" rekomandon që të kontrollosh fjalëkalimet e ruajtura.</translation>
 <translation id="6917873303492266709">Për të ndarë, për t'u bashkuar dhe për të bashkëpunuar në grupet e skedave, hap cilësimet dhe aktivizo "Lejo identifikimin në Chrome"</translation>
 <translation id="6921197121276419421">Instalimi i aplikacioneve të uebit lejohet</translation>
-<translation id="69238565902785824">Mbajtja e llogarisë të lidhur të ndihmon të paguash më shpejt me <ph name="BNPL_ISSUER_NAME" />, por mund ta shkëputësh atë duke shkuar te <ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /></translation>
+<translation id="69238565902785824">Mbajtja e llogarisë të lidhur të ndihmon të paguash më shpejt me <ph name="BNPL_ISSUER_NAME" />, por mund ta shkëputësh atë duke shkuar në <ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /></translation>
 <translation id="6924013822850225188">Zgjidh nëse do t'i shikosh përfitimet e kartës në përfundim të blerjes (zbatohen kushtet e bankës)</translation>
 <translation id="6924933062125062950">Fshi kartën e identitetit</translation>
 <translation id="6925267999184670015">B+ (Amerika e Veriut)</translation>
