@@ -1628,7 +1628,7 @@ targets.mixin(
     swarming = targets.swarming(
         dimensions = {
             "gpu": "8086:e20c-25.0.7",
-            "os": "Ubuntu-22.04",
+            "os": "Ubuntu-24.04",
             "display_attached": "1",
             "pool": "chromium.tests.gpu.experimental",
         },

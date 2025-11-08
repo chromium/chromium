@@ -1325,12 +1325,23 @@ ci.thin_tester(
     ),
     targets = targets.bundle(
         targets = [
-            "gpu_noop_sleep_telemetry_test",
+            # If the experimental configuration is the same as stable, this should
+            # only be running 'gpu_noop_sleep_telemetry_test'. Otherwise, this
+            # should be running the same tests as 'Linux FYI Release (Intel Arc B570)'.
+            "gpu_fyi_linux_release_gtests",
+            "gpu_fyi_linux_release_telemetry_tests",
         ],
         mixins = [
             "very_limited_capacity_bot",
             "linux_intel_arc_b570_experimental",
         ],
+        per_test_modifications = {
+            "gl_tests_passthrough": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/linux.intel.arc_b570.gl_tests_passthrough.filter",
+                ],
+            ),
+        },
     ),
     targets_settings = targets.settings(
         browser_config = targets.browser_config.RELEASE,
@@ -1338,10 +1349,10 @@ ci.thin_tester(
     ),
     gardener_rotations = args.ignore_default(None),
     # Uncomment this entry when this experimental tester is actually in use.
-    # console_view_entry = consoles.console_view_entry(
-    #     category = "Linux|Intel",
-    #     short_name = "exp",
-    # ),
+    console_view_entry = consoles.console_view_entry(
+        category = "Linux|Intel",
+        short_name = "exp",
+    ),
     list_view = "chromium.gpu.experimental",
     execution_timeout = 12 * time.hour,
 )
