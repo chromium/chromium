@@ -33,6 +33,7 @@ Media.InputStreamDuration
 Media.OutputStreamDuration
 MobileStartup.LaunchCause
 NewTabPage.TimeSpent
+Notifications.Scheduler.NotificationLifeCycleEvent.Tips
 Omnibox.SuggestionUsed.ClientSummarizedResultType
 Omnibox.SuggestionUsed.SearchVsUrl
 PasswordManager.AccountStore.TotalAccountsHiRes3.ByType.Overall.
@@ -44,7 +45,6 @@ PasswordManager.ProfileStore.TotalAccountsHiRes3.ByType.Overall.
 PasswordManager.ProfileStore.TotalAccountsHiRes3.WithScheme.Https
 PasswordManager.SaveUIDismissalReason
 PasswordManager.SavedPasswordIsGenerated
-SafeBrowsing.Settings.UserAction.Default
 Session.TotalDuration
 Session.TotalDuration.WithAccount
 Signin.IOSNumberOfDeviceAccounts

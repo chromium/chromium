@@ -699,6 +699,14 @@ TEST_F(SegmentationPlatformServiceFactoryTest, TestTipsNotificationsRanker) {
       kBottomOmniboxStatus, processing::ProcessedValue::FromFloat(1));
   input_context->metadata_args.emplace(
       kBottomOmniboxUsage, processing::ProcessedValue::FromFloat(1));
+  input_context->metadata_args.emplace(
+      kEnhancedSafeBrowsingTipShown, processing::ProcessedValue::FromFloat(1));
+  input_context->metadata_args.emplace(
+      kQuickDeleteTipShown, processing::ProcessedValue::FromFloat(1));
+  input_context->metadata_args.emplace(
+      kGoogleLensTipShown, processing::ProcessedValue::FromFloat(1));
+  input_context->metadata_args.emplace(
+      kBottomOmniboxTipShown, processing::ProcessedValue::FromFloat(1));
 
   ExpectGetClassificationResult(
       segmentation_platform::kTipsNotificationsRankerKey, prediction_options,

@@ -37,6 +37,10 @@ class TipsNotificationsRanker : public DefaultModelProvider {
     kBottomOmniboxIsEnabledIdx,
     kBottomOmniboxWasEverUsedIdx,
     kAllFeatureTipsShownCountIdx,
+    kEnhancedSafeBrowsingTipShownIdx,
+    kQuickDeleteTipShownIdx,
+    kGoogleLensTipShownIdx,
+    kBottomOmniboxTipShownIdx,
     kFeatureCount
   };
 

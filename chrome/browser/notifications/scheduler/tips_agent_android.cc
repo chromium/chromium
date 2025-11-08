@@ -11,6 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
+#include "chrome/common/pref_names.h"
 #include "components/browsing_data/core/pref_names.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/prefs/pref_service.h"
@@ -131,6 +132,33 @@ static jboolean JNI_TipsAgent_MaybeScheduleNotification(
       segmentation_platform::kBottomOmniboxUsage,
       segmentation_platform::processing::ProcessedValue(
           bottom_omnibox_ever_used));
+
+  bool enhanced_safe_browsing_tip_shown =
+      pref_service->GetBoolean(prefs::kAndroidTipNotificationShownESB);
+  input_context->metadata_args.emplace(
+      segmentation_platform::kEnhancedSafeBrowsingTipShown,
+      segmentation_platform::processing::ProcessedValue(
+          enhanced_safe_browsing_tip_shown));
+
+  bool quick_delete_tip_shown =
+      pref_service->GetBoolean(prefs::kAndroidTipNotificationShownQuickDelete);
+  input_context->metadata_args.emplace(
+      segmentation_platform::kQuickDeleteTipShown,
+      segmentation_platform::processing::ProcessedValue(
+          quick_delete_tip_shown));
+
+  bool google_lens_tip_shown =
+      pref_service->GetBoolean(prefs::kAndroidTipNotificationShownLens);
+  input_context->metadata_args.emplace(
+      segmentation_platform::kGoogleLensTipShown,
+      segmentation_platform::processing::ProcessedValue(google_lens_tip_shown));
+
+  bool bottom_omnibox_tip_shown = pref_service->GetBoolean(
+      prefs::kAndroidTipNotificationShownBottomOmnibox);
+  input_context->metadata_args.emplace(
+      segmentation_platform::kBottomOmniboxTipShown,
+      segmentation_platform::processing::ProcessedValue(
+          bottom_omnibox_tip_shown));
 
   bool notification_scheduled = false;
   segmentation_platform_service->GetClassificationResult(
