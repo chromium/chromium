@@ -1852,8 +1852,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testManualResizeChanged) {
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testResizeWindowTooSmall) {
   TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
   // Web client requests the window to be resized to 0x0, bellow the minimum
-  // dimensions (see GlicWindowController#GetLastRequestedSizeClamped), so it
-  // gets discarded in favor of the initial size.
+  // dimensions, so it gets discarded in favor of the initial size.
   gfx::Size expected_size = GlicWidget::GetInitialSize();
   GlicWidget* glic_widget = window_controller().GetGlicWidget();
   ASSERT_TRUE(glic_widget);
@@ -1868,10 +1867,9 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testResizeWindowTooSmall) {
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testResizeWindowTooLarge) {
   TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
   // Web client requests the window to be resized to 20000x20000, above the
-  // maximum dimensions (see GlicWindowController#GetLastRequestedSizeClamped),
-  // so it gets discarded in favor of the max size. This max size is still
-  // larger than the display work area so we clamp the dimensions down to fit on
-  // screen.
+  // maximum dimensions, so it gets discarded in favor of the max size. This max
+  // size is still larger than the display work area so we clamp the dimensions
+  // down to fit on screen.
   ExecuteJsTest();
   gfx::Rect display_bounds =
       display::Screen::Get()->GetPrimaryDisplay().work_area();
