@@ -523,6 +523,16 @@ void GlicKeyedService::UninterruptActorTask(actor::TaskId task_id) {
   actor_task_manager_->UninterruptActorTask(task_id);
 }
 
+void GlicKeyedService::CreateActorTab(
+    actor::TaskId task_id,
+    bool foreground,
+    const std::optional<int32_t>& initiator_tab_id,
+    const std::optional<int32_t>& initiator_window_id,
+    glic::mojom::WebClientHandler::CreateActorTabCallback callback) {
+  actor_task_manager_->CreateActorTab(task_id, foreground, initiator_tab_id,
+                                      initiator_window_id, std::move(callback));
+}
+
 base::CallbackListSubscription GlicKeyedService::AddTabDataChangedCallback(
     TabDataChangedCallback callback) {
   return tab_data_observer_->AddTabDataChangedCallback(std::move(callback));

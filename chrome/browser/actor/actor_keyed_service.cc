@@ -26,14 +26,21 @@
 #include "chrome/browser/actor/ui/actor_ui_state_manager.h"
 #include "chrome/browser/actor/ui/event_dispatcher.h"
 #include "chrome/browser/page_content_annotations/multi_source_page_context_fetcher.h"
+#include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/actor/journal_details_builder.h"
 #include "chrome/common/actor/task_id.h"
 #include "chrome/common/chrome_features.h"
+#include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
+#include "ui/base/window_open_disposition.h"
 
 namespace {
 void RunLater(base::OnceClosure task) {
@@ -90,6 +97,88 @@ const ActorTask* ActorKeyedService::GetActingActorTaskForWebContents(
   }
 
   return nullptr;
+}
+
+void ActorKeyedService::CreateActorTab(TaskId task_id,
+                                       bool foreground,
+                                       tabs::TabHandle initiator_tab_handle,
+                                       SessionID initiator_window_id,
+                                       CreateActorTabCallback callback) {
+  GetJournal().Log(
+      GURL(), task_id, "CreateActorTask",
+      JournalDetailsBuilder()
+          .Add("task_id", task_id)
+          .Add("foreground", foreground)
+          .Add("initiator_tab_id", initiator_tab_handle.raw_value())
+          .Add("initiator_window_id", initiator_window_id.id())
+          .Build());
+  ActorTask* task = GetTask(task_id);
+  if (!task) {
+    GetJournal().Log(GURL(), task_id, "CreateActorTask",
+                     JournalDetailsBuilder().AddError("Invalid Task").Build());
+  }
+
+  BrowserWindowInterface* window_for_new_tab = nullptr;
+  tabs::TabInterface* initiator_tab = initiator_tab_handle.Get();
+
+  // If the initiating tab is still live, create the new tab in the same window.
+  if (initiator_tab) {
+    if (initiator_tab->IsInNormalWindow()) {
+      window_for_new_tab = initiator_tab->GetBrowserWindowInterface();
+      GetJournal().Log(GURL(), task_id, "CreateActorTask",
+                       JournalDetailsBuilder()
+                           .Add("Using initiator_tab's window",
+                                window_for_new_tab->GetSessionID().id())
+                           .Build());
+    }
+  } else {
+    // If the tab was closed, open it in the window it was in (at the time of
+    // task initiation).
+    window_for_new_tab =
+        BrowserWindowInterface::FromSessionID(initiator_window_id);
+    GetJournal().Log(
+        GURL(), task_id, "CreateActorTask",
+        JournalDetailsBuilder()
+            .Add("Using initiator_window", initiator_window_id.id())
+            .Build());
+  }
+
+  NavigateParams params(profile_.get(), GURL(url::kAboutBlankURL),
+                        ::ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
+
+  if (window_for_new_tab) {
+    params.disposition = foreground ? WindowOpenDisposition::NEW_FOREGROUND_TAB
+                                    : WindowOpenDisposition::NEW_BACKGROUND_TAB;
+    params.browser = window_for_new_tab;
+  } else {
+    GetJournal().Log(
+        GURL(), task_id, "CreateActorTask",
+        JournalDetailsBuilder().Add("Creating New Window", "").Build());
+    // If window_for_new_tab is still null (e.g. the initiating window was
+    // closed) the tab will be created in a new window.
+    // TODO(b/454046200): Reconsider what should happen in this case.
+    params.disposition = WindowOpenDisposition::NEW_WINDOW;
+    params.window_action = NavigateParams::WindowAction::kShowWindow;
+  }
+
+  base::WeakPtr<content::NavigationHandle> handle = Navigate(&params);
+  if (!handle) {
+    GetJournal().Log(
+        GURL(), task_id, "CreateActorTask",
+        JournalDetailsBuilder().AddError("Failed creating navigation").Build());
+    std::move(callback).Run(nullptr);
+    return;
+  }
+
+  content::WebContents* contents = handle->GetWebContents();
+  if (!contents) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+
+  // It might be good to wait for this navigation to finish but given we're
+  // navigating to about:blank it probably doesn't matter in practice.
+  std::move(callback).Run(tabs::TabInterface::GetFromContents(contents));
 }
 
 base::WeakPtr<ActorKeyedService> ActorKeyedService::GetWeakPtr() {

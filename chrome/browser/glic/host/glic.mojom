@@ -661,6 +661,17 @@ interface WebClientHandler {
   // No-op if the task is not in the interrupted state.
   UninterruptActorTask(int32 task_id);
 
+  // Creates a new tab for an actor task to act in. The initiator tab and window
+  // are used to place the new tab in the window the task was started from,
+  // regardless of whether context from that initial tab was shared or not.
+  // Note: task_id is used primarily for the journal, the new tab isn't
+  // associated with the task in any way until acted on. Returns the TabData
+  // for the newly created tab or undefined if tab creation failed.
+  CreateActorTab(int32 task_id,
+                 bool foreground,
+                 int32? initiator_tab_id,
+                 int32? initiator_window_id) => (TabData? tab_data);
+
   // Foregrounds the given tab.
   // No-op if the tab doesn't exist or is already in the foreground.
   ActivateTab(int32 task_id);

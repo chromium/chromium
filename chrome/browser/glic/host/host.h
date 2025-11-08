@@ -110,6 +110,13 @@ class Host : public GlicSharingManagerProvider {
     virtual void InterruptActorTask(actor::TaskId task_id) = 0;
     virtual void UninterruptActorTask(actor::TaskId task_id) = 0;
 
+    virtual void CreateActorTab(
+        actor::TaskId task_id,
+        bool foreground,
+        const std::optional<int32_t>& initiator_tab_id,
+        const std::optional<int32_t>& initiator_window_id,
+        glic::mojom::WebClientHandler::CreateActorTabCallback callback) = 0;
+
     virtual void FetchZeroStateSuggestions(
         bool is_first_run,
         std::optional<std::vector<std::string>> supported_tools,

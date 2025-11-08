@@ -22,6 +22,8 @@
 #include "chrome/common/actor/journal_details_builder.h"
 #include "chrome/common/chrome_features.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
+#include "components/sessions/core/session_id.h"
+#include "components/tabs/public/tab_interface.h"
 #include "mojo/public/cpp/base/proto_wrapper.h"
 
 namespace glic {
@@ -365,6 +367,33 @@ void GlicActorTaskManager::UninterruptActorTask(actor::TaskId task_id) {
     return;
   }
   task->Uninterrupt();
+}
+
+void GlicActorTaskManager::CreateActorTab(
+    actor::TaskId task_id,
+    bool foreground,
+    const std::optional<int32_t>& initiator_tab_id,
+    const std::optional<int32_t>& initiator_window_id,
+    glic::mojom::WebClientHandler::CreateActorTabCallback callback) {
+  tabs::TabHandle initiator_tab_handle =
+      initiator_tab_id.has_value() ? tabs::TabHandle(*initiator_tab_id)
+                                   : tabs::TabHandle::Null();
+  SessionID initiator_window_session_id =
+      initiator_window_id.has_value()
+          ? SessionID::FromSerializedValue(*initiator_window_id)
+          : SessionID::InvalidValue();
+
+  actor_keyed_service_->CreateActorTab(
+      task_id, foreground, initiator_tab_handle, initiator_window_session_id,
+      base::BindOnce(&GlicActorTaskManager::CreateActorTabFinished,
+                     GetWeakPtr(), std::move(callback)));
+}
+
+void GlicActorTaskManager::CreateActorTabFinished(
+    glic::mojom::WebClientHandler::CreateActorTabCallback callback,
+    tabs::TabInterface* new_tab) {
+  std::move(callback).Run(
+      CreateTabData(new_tab ? new_tab->GetContents() : nullptr));
 }
 
 void GlicActorTaskManager::CancelTask() {

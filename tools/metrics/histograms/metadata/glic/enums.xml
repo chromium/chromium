@@ -339,6 +339,7 @@ chromium-metrics-reviews@google.com.
   <int value="74" label="InterruptActorTask"/>
   <int value="75" label="UninterruptActorTask"/>
   <int value="76" label="ActivateTab"/>
+  <int value="77" label="CreateActorTab"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/resources/glic/glic_api_impl/request_types.ts:ApiRequestType) -->
