@@ -107,7 +107,6 @@ constexpr char16_t kTotalSteps[] = u"5";
 
 // Actions ---------------------------------------------------------------------
 
-// TODO(http://b/277094923): Try to promote to //base/test/gmock_move_support.h.
 // Existing support is limited in that the gMock framework provides const-only
 // access to `args` for all except the last action. This action lessens the
 // effect of that limitation by supporting multiple moves at a time.
