@@ -21,8 +21,7 @@ class RoundedOmniboxResultsFrame : public views::View {
 
  public:
   RoundedOmniboxResultsFrame(views::View* contents,
-                             LocationBarView* location_bar,
-                             bool include_cutout = true);
+                             LocationBarView* location_bar);
   RoundedOmniboxResultsFrame(const RoundedOmniboxResultsFrame&) = delete;
   RoundedOmniboxResultsFrame& operator=(const RoundedOmniboxResultsFrame&) =
       delete;
@@ -47,6 +46,8 @@ class RoundedOmniboxResultsFrame : public views::View {
   // Returns the `contents_` view.
   views::View* GetContents();
 
+  void SetCutoutVisibility(bool visible);
+
   // views::View:
   void Layout(PassKey) override;
   void AddedToWidget() override;
@@ -61,7 +62,6 @@ class RoundedOmniboxResultsFrame : public views::View {
   raw_ptr<views::View> top_background_ = nullptr;
   raw_ptr<views::View> contents_host_ = nullptr;
   raw_ptr<views::View> contents_;
-  bool include_cutout_ = true;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OMNIBOX_ROUNDED_OMNIBOX_RESULTS_FRAME_H_

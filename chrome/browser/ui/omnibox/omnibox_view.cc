@@ -229,6 +229,12 @@ void OmniboxView::ShowVirtualKeyboardIfEnabled() {}
 
 void OmniboxView::HideImeIfNeeded() {}
 
+void OmniboxView::ShowAiModeInPopup() {}
+
+bool OmniboxView::IsAiModeInPopup() const {
+  return false;
+}
+
 OmniboxView::State OmniboxView::GetState() const {
   State state;
   state.text = GetText();

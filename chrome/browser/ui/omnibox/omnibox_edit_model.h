@@ -238,6 +238,9 @@ class OmniboxEditModel {
   // and is set to `false` if AI Mode was invoked via mouse / gesture event.
   void OpenAiMode(bool via_keyboard);
 
+  // Returns true if the popup is open and is in in AI-Mode.
+  bool PopupInAiMode() const;
+
   // Opens given selection. Most kinds of selection invoke an action or
   // otherwise call `OpenMatch`, but some may `AcceptInput` which is not
   // guaranteed to open a match or commit the omnibox.

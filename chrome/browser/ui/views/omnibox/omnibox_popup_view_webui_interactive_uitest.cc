@@ -180,7 +180,7 @@ void OmniboxPopupViewWebUITest::SetUp() {
 
 void OmniboxPopupViewWebUITest::WaitForHandler() {
   auto* omnibox_popup_webui_content =
-      popup_view()->presenter_->GetOmniboxPopupWebUIContent();
+      popup_view()->presenter_->GetActivePopupWebUIContent();
 
   auto* web_contents = omnibox_popup_webui_content->GetWebContents();
   content::WaitForLoadStop(web_contents);
@@ -231,7 +231,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewWebUITest,
 
 IN_PROC_BROWSER_TEST_F(OmniboxPopupViewWebUITest, PopupLoadsAndAcceptsCalls) {
   WaitForHandler();
-  popup_view()->presenter_->Show();
+  popup_view()->presenter_->Show(/*ai_mode=*/false);
   popup_view()->UpdatePopupAppearance();
   OmniboxPopupSelection selection(OmniboxPopupSelection::kNoMatch);
   popup_view()->ProvideButtonFocusHint(0);

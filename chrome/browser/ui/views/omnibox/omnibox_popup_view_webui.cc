@@ -17,8 +17,11 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_multi_presenter.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_result_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_row_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
@@ -45,9 +48,14 @@ OmniboxPopupViewWebUI::OmniboxPopupViewWebUI(OmniboxViewViews* omnibox_view,
     : OmniboxPopupView(controller),
       construction_time_(base::TimeTicks::Now()),
       omnibox_view_(omnibox_view),
-      location_bar_view_(location_bar_view),
-      presenter_(std::make_unique<OmniboxPopupPresenter>(location_bar_view,
-                                                         controller)) {
+      location_bar_view_(location_bar_view) {
+  if (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxAimPopup)) {
+    presenter_ = std::make_unique<OmniboxPopupMultiPresenter>(location_bar_view,
+                                                              controller);
+  } else {
+    presenter_ =
+        std::make_unique<OmniboxPopupPresenter>(location_bar_view, controller);
+  }
   model()->set_popup_view(this);
 }
 
@@ -62,12 +70,37 @@ bool OmniboxPopupViewWebUI::IsOpen() const {
 void OmniboxPopupViewWebUI::InvalidateLine(size_t line) {}
 
 void OmniboxPopupViewWebUI::UpdatePopupAppearance() {
-  if (controller()->autocomplete_controller()->result().empty() ||
-      omnibox_view_->IsImeShowingPopup()) {
+  UpdatePopupAppearanceInternal(/*ai_mode=*/false);
+}
+
+void OmniboxPopupViewWebUI::ProvideButtonFocusHint(size_t line) {
+  // TODO(crbug.com/40062053): Not implemented for WebUI omnibox popup yet.
+}
+
+void OmniboxPopupViewWebUI::OnDragCanceled() {}
+
+void OmniboxPopupViewWebUI::GetPopupAccessibleNodeData(
+    ui::AXNodeData* node_data) const {}
+
+void OmniboxPopupViewWebUI::OpenAiMode() {
+  CHECK(base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxAimPopup));
+  VLOG(4) << "OpenAiMode()";
+  UpdatePopupAppearanceInternal(/*ai_mode=*/true);
+}
+
+bool OmniboxPopupViewWebUI::IsAiModeOpen() const {
+  auto content_index = presenter_->GetShowingWebUIContentIndex();
+  return content_index.has_value() && (content_index.value() > 0);
+}
+
+void OmniboxPopupViewWebUI::UpdatePopupAppearanceInternal(bool ai_mode) {
+  if (!ai_mode && (controller()->autocomplete_controller()->result().empty() ||
+                   omnibox_view_->IsImeShowingPopup())) {
     presenter_->Hide();
   } else {
     const bool was_visible = presenter_->IsShown();
-    presenter_->Show();
+    VLOG(4) << "presenter_->Show(" << (ai_mode ? "true" : "false") << ");";
+    presenter_->Show(ai_mode);
     if (!was_visible) {
       NotifyOpenListeners();
       if (!construction_time_.is_null()) {
@@ -80,12 +113,3 @@ void OmniboxPopupViewWebUI::UpdatePopupAppearance() {
     }
   }
 }
-
-void OmniboxPopupViewWebUI::ProvideButtonFocusHint(size_t line) {
-  // TODO(crbug.com/40062053): Not implemented for WebUI omnibox popup yet.
-}
-
-void OmniboxPopupViewWebUI::OnDragCanceled() {}
-
-void OmniboxPopupViewWebUI::GetPopupAccessibleNodeData(
-    ui::AXNodeData* node_data) const {}
