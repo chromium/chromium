@@ -346,8 +346,6 @@ TrayBubbleView::TrayBubbleView(const InitParams& init_params)
   // Always create a layer so that the layer for FocusRing stays in this view's
   // layer. Without it, the layer for FocusRing goes above the NativeViewHost
   // and may steal events.
-  // TODO(crbug.com/40832096): In the dark light mode feature, remove layer
-  // creation in children views of this view to improve performance.
   SetPaintToLayer(init_params.transparent ? ui::LAYER_NOT_DRAWN
                                           : ui::LAYER_TEXTURED);
 
