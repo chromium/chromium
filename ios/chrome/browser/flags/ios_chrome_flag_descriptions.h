@@ -858,6 +858,9 @@ extern const char kReaderModeTranslationDescription[];
 extern const char kReaderModeTranslationWithInfobarName[];
 extern const char kReaderModeTranslationWithInfobarDescription[];
 
+extern const char kReaderModeUSEnabledName[];
+extern const char kReaderModeUSEnabledDescription[];
+
 extern const char kRefactorToolbarsSizeName[];
 extern const char kRefactorToolbarsSizeDescription[];
 

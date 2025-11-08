@@ -319,6 +319,7 @@ void TestResponseProvider::GetLanguageResponse(
       [self isRunningTest:@selector(testNoAutotranslateInReaderMode)] ||
       [self isRunningTest:@selector(testTranslateInClosedReaderMode)]) {
     config.features_enabled.push_back(kEnableReaderMode);
+    config.features_enabled.push_back(kEnableReaderModeInUS);
   }
 
   return config;

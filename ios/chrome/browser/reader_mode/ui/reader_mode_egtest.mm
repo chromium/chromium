@@ -153,8 +153,10 @@ id<GREYMatcher> VisibleContextMenuItem(int message_id) {
     config.features_enabled_and_params.push_back(
         {kEnableReaderMode,
          {{{kReaderModeDistillationTimeoutDurationStringName, "0s"}}}});
+    config.features_enabled_and_params.push_back({kEnableReaderModeInUS, {}});
   } else {
     config.features_enabled_and_params.push_back({kEnableReaderMode, {}});
+    config.features_enabled_and_params.push_back({kEnableReaderModeInUS, {}});
   }
   if ([self isRunningTest:@selector(testTurnOnReaderModeViaPageActionMenu)] ||
       [self isRunningTest:@selector(testReaderModeChipShowsAIHubIfAvailable)]) {

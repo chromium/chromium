@@ -13749,6 +13749,7 @@
                     "enable_features": [
                         "EnableReadabilityHeuristic",
                         "EnableReaderMode",
+                        "EnableReaderModeInUS",
                         "EnableReaderModeTranslation",
                         "ReaderModeUseReadability"
                     ],

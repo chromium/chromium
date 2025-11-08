@@ -1442,6 +1442,10 @@ const char kReaderModeTranslationWithInfobarDescription[] =
     "Enables translation of web pages in Reader Mode with Settings available "
     "via the infobar.";
 
+const char kReaderModeUSEnabledName[] = "Enables Reader Mode in US";
+const char kReaderModeUSEnabledDescription[] =
+    "Enables Reader Mode for users in the US. Requires reader-mode-enabled.";
+
 const char kRefactorToolbarsSizeName[] = "Refactor toolbars size";
 const char kRefactorToolbarsSizeDescription[] =
     "When enabled, the toolbars size does not use broadcaster but observers.";

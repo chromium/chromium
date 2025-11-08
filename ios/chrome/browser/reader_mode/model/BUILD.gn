@@ -102,6 +102,7 @@ source_set("features") {
   deps = [
     ":constants",
     "//base",
+    "//components/variations/service",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/public/features:system_flags",

@@ -116,6 +116,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
   if ([self isRunningTest:@selector(testSearchWithReaderMode)]) {
     config.features_enabled.push_back(kEnableReaderMode);
+    config.features_enabled.push_back(kEnableReaderModeInUS);
   }
   return config;
 }

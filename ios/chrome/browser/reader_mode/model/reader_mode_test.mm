@@ -35,7 +35,7 @@ void ReaderModeTest::SetUp() {
       {kReaderModeDistillationTimeoutDurationStringName, "5s"}};
   scoped_feature_list_.InitWithFeaturesAndParameters(
       /*enabled_features=*/
-      {{kEnableReaderMode, custom_time_params}},
+      {{kEnableReaderMode, custom_time_params}, {kEnableReaderModeInUS, {}}},
       /*disabled_features=*/{});
   profile_ = TestProfileIOS::Builder().Build();
 

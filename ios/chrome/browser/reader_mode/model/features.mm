@@ -7,6 +7,8 @@
 #import "base/feature_list.h"
 #import "base/json/values_util.h"
 #import "base/metrics/field_trial_params.h"
+#import "base/strings/string_util.h"
+#import "components/variations/service/variations_service_utils.h"
 #import "ios/chrome/browser/reader_mode/model/constants.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -21,9 +23,17 @@ constexpr int kReaderModeDefaultBrowserPromoNumDaysCriteria = 14;
 // browser promo.
 constexpr int kReaderModeDefaultBrowserPromoActiveDaysCriteria = 2;
 
+// Returns whether the user's current country code is US.
+bool IsUSCountryCode() {
+  return base::ToLowerASCII(GetCurrentCountryCode(
+             GetApplicationContext()->GetVariationsService())) == "us";
+}
+
 }  // namespace
 
 BASE_FEATURE(kEnableReaderMode, base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kEnableReaderModeInUS, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableReaderModeOmniboxEntryPoint,
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -63,6 +73,11 @@ const base::TimeDelta ReaderModeHeuristicPageLoadDelay() {
 bool IsReaderModeAvailable() {
   if (IsDiamondPrototypeEnabled()) {
     return true;
+  }
+  if (IsUSCountryCode() &&
+      !experimental_flags::ShouldIgnoreDeviceLocaleConditions()) {
+    return base::FeatureList::IsEnabled(kEnableReaderMode) &&
+           base::FeatureList::IsEnabled(kEnableReaderModeInUS);
   }
   return base::FeatureList::IsEnabled(kEnableReaderMode);
 }

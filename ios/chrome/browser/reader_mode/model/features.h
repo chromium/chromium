@@ -11,6 +11,9 @@
 // Feature to enable Reader Mode UI and entry points.
 BASE_DECLARE_FEATURE(kEnableReaderMode);
 
+// Feature to enable Reader Mode UI in the US country code.
+BASE_DECLARE_FEATURE(kEnableReaderModeInUS);
+
 // Feature to enable Reader Mode omnibox entry point.
 BASE_DECLARE_FEATURE(kEnableReaderModeOmniboxEntryPoint);
 
