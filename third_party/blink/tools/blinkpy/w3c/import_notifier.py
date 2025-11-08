@@ -57,7 +57,9 @@ from blinkpy.w3c.wpt_manifest import TestType
 _log = logging.getLogger(__name__)
 
 GITHUB_COMMIT_PREFIX = WPT_GH_URL + 'commit/'
-CHECKS_URL_TEMPLATE = 'https://chromium-review.googlesource.com/c/chromium/src/+/{}/{}?checksPatchset=1&tab=checks'
+CHECKS_URL_TEMPLATE = (
+    'https://chromium-review.googlesource.com/c/chromium/src/+/'
+    '{issue}/{patchset}?checksResultsFilter={test_filter}&tab=checks')
 BUGANIZER_WPT_COMPONENT = '1456176'
 
 IssuesByDir = Mapping[str, BuganizerIssue]
@@ -289,7 +291,6 @@ class ImportNotifier:
         """
         assert cl_revision.patchset, cl_revision
         cl_revision_no_ps = CLRevisionID(cl_revision.issue)
-        checks_url = CHECKS_URL_TEMPLATE.format(cl_revision.issue, '1')
         imported_commits = self.local_wpt.commits_in_range(*wpt_range)
         bugs = {}
         for directory, failures in self.new_failures_by_directory.items():
@@ -317,6 +318,9 @@ class ImportNotifier:
                         'List of new failures:\n'.format(
                             cl_revision_no_ps, directory))
             failure_list = failures.format_for_description(cl_revision)
+            checks_url = CHECKS_URL_TEMPLATE.format(issue=cl_revision.issue,
+                                                    patchset=1,
+                                                    test_filter=directory)
             checks = '\nSee {} for details.\n'.format(checks_url)
 
             expectations_statement = (
