@@ -382,6 +382,25 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </token>
 </histogram>
 
+<histogram name="Omnibox.AimEligibility.EligibilityRequestRetries.{Status}"
+    units="count" expires_after="2026-08-05">
+  <owner>mahmadi@chromium.org</owner>
+  <owner>avivkiss@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    The AIM Eligibility service makes HTTP requests to determine which AIM
+    features the user is eligible for. This metric logs the number of retries
+    for failed requests. Retries are triggered on network changes or DNS
+    resolution failures. A count of 0 indicates that the request succeeded or
+    failed on the first attempt (and wasn't within policy for a retry). This
+    metric is logged only when the request completes.
+  </summary>
+  <token key="Status">
+    <variant name="Failed" summary="failed"/>
+    <variant name="Succeeded" summary="succeeded"/>
+  </token>
+</histogram>
+
 <histogram
     name="Omnibox.AimEligibility.EligibilityRequestStatus{RequestSource}"
     enum="AimEligibilityRequestStatus" expires_after="2026-08-05">
