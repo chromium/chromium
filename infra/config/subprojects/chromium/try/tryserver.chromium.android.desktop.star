@@ -21,9 +21,6 @@ try_.defaults.set(
     compilator_cores = 32,
     contact_team_email = "clank-engprod@google.com",
     execution_timeout = try_constants.DEFAULT_EXECUTION_TIMEOUT,
-    experiments = {
-        "chromium_tests.resultdb_module": 100,
-    },
     orchestrator_cores = 4,
     service_account = try_constants.DEFAULT_SERVICE_ACCOUNT,
     siso_project = siso.project.DEFAULT_UNTRUSTED,
