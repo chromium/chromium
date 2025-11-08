@@ -1052,17 +1052,17 @@
     {
         "name": "tracing",
         "group": "androidx.tracing",
-        "version": "1.3.0"
+        "version": "2.0.0-SNAPSHOT"
     },
     {
         "name": "tracing-android",
         "group": "androidx.tracing",
-        "version": "1.3.0"
+        "version": "2.0.0-SNAPSHOT"
     },
     {
         "name": "tracing-ktx",
         "group": "androidx.tracing",
-        "version": "1.3.0"
+        "version": "2.0.0-SNAPSHOT"
     },
     {
         "name": "tracing-perfetto",
