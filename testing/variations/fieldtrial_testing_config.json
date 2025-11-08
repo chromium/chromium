@@ -23452,7 +23452,8 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "ServiceWorkerStaticRouterRaceNetworkRequestPerformanceImprovement"
+                        "ServiceWorkerStaticRouterRaceNetworkRequestPerformanceImprovement",
+                        "ServiceWorkerStaticRouterRaceRequestFix2"
                     ]
                 }
             ]
