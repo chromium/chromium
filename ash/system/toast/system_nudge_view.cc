@@ -360,8 +360,6 @@ SystemNudgeView::SystemNudgeView(
           .SizeToFit(label_width)
           .Build());
 
-  // TODO(b/302368860): Add support for a view to display keyboard shortcuts in
-  // the same style as the launcher and the new keyboard shortcut app.
   if (!nudge_data.keyboard_codes.empty()) {
     AddPaddingView(text_container, image_and_text_container->width(),
                    kTitleBottomPadding);
