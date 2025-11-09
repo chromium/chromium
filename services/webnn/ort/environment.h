@@ -41,16 +41,16 @@ class Environment : public base::subtle::RefCountedThreadSafeBase {
   void AddRef() const;
   void Release() const;
 
-  // Returns a vector of selected execution provider devices for WebNN based on
-  // the specified device type.
-  // In this method, the input `available_devices` are first reordered using
-  // WebNN's custom sorting logic. Repeated calls with the same device set and
-  // the specified device type will return the same ordered devices, regardless
-  // of the input order of `available_devices`. At most 3 EP devices will be
-  // selected.
-  // TODO(crbug.com/444049496): Log these selected EP devices when ORT logging
-  // level is set to VERBOSE or INFO.
-  static std::vector<const OrtEpDevice*> SelectEpDevicesForDeviceType(
+  // Returns a vector of selected execution provider devices for WebNN. First
+  // try to select only one EP device specified by `kWebNNOrtEpDevice` user
+  // switch. If no user switch is specified, select EP devices based on the
+  // given device type.
+  // If select based on the given device type, the input `available_devices` are
+  // first reordered using WebNN's custom sorting logic. Repeated calls with the
+  // same device set and the specified device type will return the same ordered
+  // devices, regardless of the input order of `available_devices`. At most 3 EP
+  // devices will be selected.
+  static std::vector<const OrtEpDevice*> SelectEpDevices(
       base::span<const OrtEpDevice* const> available_devices,
       mojom::Device device_type);
 

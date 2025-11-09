@@ -13,6 +13,7 @@
 #include "base/memory/raw_span.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/cstring_view.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split_win.h"
 #include "base/strings/utf_string_conversions.h"
 #include "services/webnn/ort/logging.h"
@@ -402,6 +403,91 @@ std::vector<const OrtEpDevice*> SortEpDevices(
   return sorted_devices;
 }
 
+// Indicates the information of an execution provider device.
+struct EpDeviceInfo {
+  std::string ep_name;
+  uint32_t hardware_vendor_id;
+  uint32_t hardware_device_id;
+};
+
+// Parses the value of --webnn-ort-ep-device switch into an EpDeviceInfo.
+// Returns an error string if the value is invalid.
+base::expected<EpDeviceInfo, std::string> ParseEpDeviceSwitch(
+    std::string_view value) {
+  std::vector<std::string> parts = base::SplitString(
+      value, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  if (parts.size() != 3) {
+    return base::unexpected(
+        "Invalid format: Expected "
+        "<ep_name>,<hardware_vendor_id>,<hardware_device_id>, both "
+        "hardware_vendor_id and hardware_device_id are hexadecimal strings.");
+  }
+
+  EpDeviceInfo info;
+  info.ep_name = parts[0];
+
+  if (!base::HexStringToUInt(parts[1], &info.hardware_vendor_id) ||
+      !base::HexStringToUInt(parts[2], &info.hardware_device_id)) {
+    return base::unexpected(
+        "Failed to parse hardware_vendor_id or hardware_device_id as "
+        "uint32_t.");
+  }
+
+  return info;
+}
+
+// Returns true if the device matches the user-specified EpDeviceInfo.
+bool MatchSpecifiedEpDevice(const OrtEpDevice* ep_device,
+                            const EpDeviceInfo& ep_device_info,
+                            const OrtApi* ort_api) {
+  const char* ep_name = ort_api->EpDevice_EpName(ep_device);
+  base::cstring_view ep_name_view = UNSAFE_BUFFERS(base::cstring_view(ep_name));
+  uint32_t hardware_vendor_id =
+      ort_api->HardwareDevice_VendorId(ort_api->EpDevice_Device(ep_device));
+  uint32_t hardware_device_id =
+      ort_api->HardwareDevice_DeviceId(ort_api->EpDevice_Device(ep_device));
+  return ep_name_view == ep_device_info.ep_name &&
+         hardware_vendor_id == ep_device_info.hardware_vendor_id &&
+         hardware_device_id == ep_device_info.hardware_device_id;
+}
+
+// Selects the user-specified EP device from the available devices based on the
+// switch value. Returns nullptr if no matching device is found or an error
+// occurs during parsing the switch value.
+const OrtEpDevice* SelectUserSpecifiedEpDevice(
+    base::span<const OrtEpDevice* const> available_devices,
+    std::string_view switch_value) {
+  base::expected<EpDeviceInfo, std::string> ep_device_info_result =
+      ParseEpDeviceSwitch(switch_value);
+  if (!ep_device_info_result.has_value()) {
+    LOG(ERROR)
+        << "[WebNN] No EP device can be selected due to error in parsing "
+        << switches::kWebNNOrtEpDevice << ": " << ep_device_info_result.error();
+    return nullptr;
+  }
+
+  const EpDeviceInfo& specified_ep_device = ep_device_info_result.value();
+  const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
+  // Find the first matching device.
+  auto it = std::find_if(available_devices.begin(), available_devices.end(),
+                         [&](const OrtEpDevice* ep_device) {
+                           return MatchSpecifiedEpDevice(
+                               ep_device, specified_ep_device, ort_api);
+                         });
+
+  if (it == available_devices.end()) {
+    LOG(ERROR)
+        << "[WebNN] No EP device can be selected due to no matching "
+           "device for user-specified "
+        << switches::kWebNNOrtEpDevice << ": " << switch_value
+        << ". Please check the registered EP devices in the logs by setting "
+        << switches::kWebNNOrtLoggingLevel << " to VERBOSE or INFO.";
+    return nullptr;
+  }
+
+  return *it;
+}
+
 }  // namespace
 
 // static
@@ -522,28 +608,40 @@ void Environment::Release() const {
 }
 
 // static
-std::vector<const OrtEpDevice*> Environment::SelectEpDevicesForDeviceType(
+std::vector<const OrtEpDevice*> Environment::SelectEpDevices(
     base::span<const OrtEpDevice* const> available_devices,
     mojom::Device device_type) {
-  // Apply WebNN's custom sorting.
-  std::vector<const OrtEpDevice*> sorted_devices =
-      SortEpDevices(available_devices);
-
-  // Select devices based on the requested device type.
+  // Try to select only one EP device by user switch first.
   std::vector<const OrtEpDevice*> selected_devices;
-  switch (device_type) {
-    case mojom::Device::kCpu:
-      selected_devices = SelectEpDevicesForCpu(sorted_devices);
-      break;
-    case mojom::Device::kGpu:
-      selected_devices = SelectEpDevicesForGpu(sorted_devices);
-      break;
-    case mojom::Device::kNpu:
-      selected_devices = SelectEpDevicesForNpu(sorted_devices);
-      break;
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kWebNNOrtEpDevice)) {
+    std::string switch_value =
+        base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+            switches::kWebNNOrtEpDevice);
+    const OrtEpDevice* specified_ep_device =
+        SelectUserSpecifiedEpDevice(available_devices, switch_value);
+    if (specified_ep_device) {
+      selected_devices.push_back(specified_ep_device);
+    }
+  } else {
+    // Apply WebNN's custom sorting.
+    std::vector<const OrtEpDevice*> sorted_devices =
+        SortEpDevices(available_devices);
+    // Select devices based on the requested device type.
+    switch (device_type) {
+      case mojom::Device::kCpu:
+        selected_devices = SelectEpDevicesForCpu(sorted_devices);
+        break;
+      case mojom::Device::kGpu:
+        selected_devices = SelectEpDevicesForGpu(sorted_devices);
+        break;
+      case mojom::Device::kNpu:
+        selected_devices = SelectEpDevicesForNpu(sorted_devices);
+        break;
+    }
+    CHECK_LE(selected_devices.size(), 3u);
   }
 
-  CHECK_LE(selected_devices.size(), 3u);
   return selected_devices;
 }
 
@@ -559,7 +657,7 @@ EpWorkarounds Environment::GetEpWorkarounds(mojom::Device device_type) const {
   base::span<const OrtEpDevice* const> registered_ep_devices =
       GetRegisteredEpDevicesImpl(ort_api, this->get());
   std::vector<const OrtEpDevice*> selected_ep_devices =
-      SelectEpDevicesForDeviceType(registered_ep_devices, device_type);
+      SelectEpDevices(registered_ep_devices, device_type);
   for (const auto* ep_device : selected_ep_devices) {
     CHECK(ep_device);
       const char* ep_name = ort_api->EpDevice_EpName(ep_device);
@@ -579,7 +677,7 @@ std::vector<SessionConfigEntry> Environment::GetEpConfigEntries(
   base::span<const OrtEpDevice* const> registered_ep_devices =
       GetRegisteredEpDevicesImpl(ort_api, this->get());
   std::vector<const OrtEpDevice*> selected_ep_devices =
-      SelectEpDevicesForDeviceType(registered_ep_devices, device_type);
+      SelectEpDevices(registered_ep_devices, device_type);
   std::vector<SessionConfigEntry> ep_config_entries;
   // Track processed EP names to avoid duplicates.
   std::set<base::cstring_view> processed_ep_names;

@@ -37,7 +37,7 @@ ScopedOrtMemoryInfo CreateMemoryInfo(const OrtApi* ort_api,
         ScopedOrtMemoryInfo::Receiver(memory_info).get()));
     CHECK(memory_info.get());
   } else {
-    LOG(WARNING) << "Device allocator is not supported for " << ep_name;
+    LOG(WARNING) << "[WebNN] Device allocator is not supported for " << ep_name;
   }
 
   return memory_info;
@@ -55,9 +55,13 @@ scoped_refptr<DeviceAllocator> DeviceAllocator::Create(
   base::span<const OrtEpDevice* const> registered_ep_devices =
       env->GetRegisteredEpDevices();
   std::vector<const OrtEpDevice*> selected_ep_devices =
-      Environment::SelectEpDevicesForDeviceType(registered_ep_devices,
-                                                device_type);
-  CHECK(!selected_ep_devices.empty());
+      Environment::SelectEpDevices(registered_ep_devices, device_type);
+  if (selected_ep_devices.empty()) {
+    LOG(ERROR)
+        << "[WebNN] No suitable EP device found for creating DeviceAllocator.";
+    return nullptr;
+  }
+
   const OrtEpDevice* first_selected_device = selected_ep_devices.front();
   CHECK(first_selected_device);
 

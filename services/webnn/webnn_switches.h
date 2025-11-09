@@ -56,6 +56,25 @@ inline constexpr char kWebNNOrtLibraryPathForTesting[] =
 inline constexpr char kWebNNOrtEpLibraryPathForTesting[] =
     "webnn-ort-ep-library-path-for-testing";
 
+// Force ONNX Runtime to only select one specific execution provider (EP) device
+// which matches the given EP name, hardware vendor id and hardware device id
+// for WebNN during the ORT session creation stage.
+// Notes:
+// 1. Available EP devices can be queried in logs when the
+// `webnn-ort-logging-level` is set to `VERBOSE` or `INFO`. If no matching
+// device is found, the ORT session creation fails.
+// 2. The CPU fallback EP device is added implicitly in ORT by default unless
+// disabled explicitly by `webnn-ort-disable-cpu-fallback` switch.
+//
+// The value should be in the format:
+// <ep_name>,<hardware_vendor_id>,<hardware_device_id>
+// Please note that all the entries must be provided in order, and both
+// hardware_vendor_id and hardware_device_id are hexadecimal strings.
+//
+// Usage: For example, specifying an Intel GPU device using OpenVINO EP:
+// --webnn-ort-ep-device=OpenVINOExecutionProvider,0x8086,0x4680
+inline constexpr char kWebNNOrtEpDevice[] = "webnn-ort-ep-device";
+
 // Configure the graph optimization level of ONNX Runtime.
 // Usage: --webnn-ort-graph-optimization-level=DISABLE_ALL
 // Other levels could be "BASIC", "EXTENDED" and "ALL".

@@ -24,18 +24,6 @@ namespace webnn::ort {
 
 namespace {
 
-// Helper to convert `mojom::Device` to string for logging.
-std::string_view WebNNDeviceTypeToString(mojom::Device device_type) {
-  switch (device_type) {
-    case mojom::Device::kCpu:
-      return "CPU";
-    case mojom::Device::kGpu:
-      return "GPU";
-    case mojom::Device::kNpu:
-      return "NPU";
-  }
-}
-
 // Execution Provider selection delegate function that selects EPs based on
 // WebNN device type.
 // TODO(crbug.com/425487285): Select EPs based on WebNN power preference.
@@ -68,7 +56,7 @@ EpSelectionPolicyDelegate(const OrtEpDevice** ep_devices,
   // According to:
   // https://github.com/microsoft/onnxruntime/blob/f8c6262399e2c7e0a58cd494f0e58d4f4262dc43/onnxruntime/core/session/provider_policy_context.cc#L159
   std::vector<const OrtEpDevice*> selected_devices =
-      Environment::SelectEpDevicesForDeviceType(available_devices, device_type);
+      Environment::SelectEpDevices(available_devices, device_type);
   CHECK_LE(selected_devices.size(), max_selected)
       << "Selected device count (" << selected_devices.size()
       << ") exceeds maximum allowed (" << max_selected << ")";
@@ -78,9 +66,7 @@ EpSelectionPolicyDelegate(const OrtEpDevice** ep_devices,
       ort_logging_level == ORT_LOGGING_LEVEL_INFO) {
     // Logs selected EP devices for the given WebNN device type.
     const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
-    LogEpDevices(ort_api, selected_devices,
-                 base::StrCat({"Selected OrtEpDevice for WebNN ",
-                               WebNNDeviceTypeToString(device_type)}));
+    LogEpDevices(ort_api, selected_devices, "Selected OrtEpDevice");
   }
 
   for (size_t i = 0; i < selected_devices.size(); ++i) {
