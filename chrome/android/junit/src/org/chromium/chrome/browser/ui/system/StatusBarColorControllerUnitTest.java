@@ -270,8 +270,8 @@ public class StatusBarColorControllerUnitTest {
                         mTopUiThemeColorProvider,
                         mSystemBarColorHelper,
                         mDesktopWindowStateManager,
-                        mOverviewColorSupplier,
-                        supportEdgeToEdge);
+                        mOverviewColorSupplier);
+        mStatusBarColorController.maybeInitializeForCustomizedNtp(mContext, supportEdgeToEdge);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
     }
 }
