@@ -101,6 +101,7 @@ class DomStorageDatabase {
   // `total_size` might NOT exist until after the first write.
   struct MapMetadata {
     MapLocator map_locator;
+
     std::optional<base::Time> last_accessed;
     std::optional<base::Time> last_modified;
     std::optional<base::ByteSize> total_size;
@@ -135,6 +136,11 @@ class DomStorageDatabase {
   // Get all map locators along with their size and usage. Also gets the next
   // available map id that the database will assign to a newly created map.
   virtual StatusOr<Metadata> ReadAllMetadata() = 0;
+
+  // Put `metadata` in the database. Overwrites existing values if present.  For
+  // example, if `metadata.map_metadata` contains map X then `PutMetadata()`
+  // will replace map X's metadata in the database.
+  virtual DbStatus PutMetadata(Metadata metadata) = 0;
 
   // For LevelDB only. Rewrites the database on disk to
   // clean up traces of deleted entries.

@@ -35,6 +35,12 @@ SessionStorageLevelDB::ReadAllMetadata() {
   return base::unexpected(DbStatus::NotSupported(""));
 }
 
+DbStatus SessionStorageLevelDB::PutMetadata(Metadata metadata) {
+  // TODO(crbug.com/377242771): Implement `DomStorageDatabase` for session
+  // storage to make backend swappable for SQLite.
+  return DbStatus::NotSupported("");
+}
+
 DbStatus SessionStorageLevelDB::RewriteDB() {
   return leveldb_->RewriteDB();
 }

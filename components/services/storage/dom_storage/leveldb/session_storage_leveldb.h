@@ -76,6 +76,7 @@ class SessionStorageLevelDB : public DomStorageDatabase {
   //  (3) The last access time from the "METAACCESS:" entry's value, which is a
   //      `LocalStorageAreaAccessMetaData` protobuf.
   StatusOr<Metadata> ReadAllMetadata() override;
+  DbStatus PutMetadata(Metadata metadata) override;
   DbStatus RewriteDB() override;
 
   // Test-only functions.

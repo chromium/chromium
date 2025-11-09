@@ -113,6 +113,16 @@ class LocalStorageLevelDB : public DomStorageDatabase {
   //  (3) The last access time from the "METAACCESS:" entry's value, which is a
   //      `LocalStorageAreaAccessMetaData` protobuf.
   StatusOr<Metadata> ReadAllMetadata() override;
+
+  // Writes LevelDB entries for map usage metadata.  Writes up to two entries
+  // for each map in `metadata.map_metadata`:
+  //
+  // (1) Writes a "META:" entry when the map's usage contains a last modified
+  //     time and total size.
+  //
+  // (2) Writes a "METAACCESS:" entry when the map's usage contains a last
+  //     accessed time.
+  DbStatus PutMetadata(Metadata metadata) override;
   DbStatus RewriteDB() override;
 
   // Test-only functions.

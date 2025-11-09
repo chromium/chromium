@@ -6,6 +6,7 @@
 #define COMPONENTS_SERVICES_STORAGE_DOM_STORAGE_TEST_SUPPORT_DOM_STORAGE_DATABASE_TESTING_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/containers/span.h"
 #include "components/services/storage/dom_storage/dom_storage_database.h"
@@ -36,6 +37,11 @@ void OpenAsyncDomStorageDatabaseInMemorySync(
 // `AsyncDomStorageDatabase::ReadAllMetadata()`.  Expects success.
 void ReadAllMetadataSync(AsyncDomStorageDatabase& database,
                          DomStorageDatabase::Metadata* metadata_results);
+
+// A synchronous wrapper for
+// `AsyncDomStorageDatabase::PutMetadata()`.  Expects success.
+void PutMetadataSync(AsyncDomStorageDatabase& database,
+                     DomStorageDatabase::Metadata metadata);
 
 }  // namespace storage
 

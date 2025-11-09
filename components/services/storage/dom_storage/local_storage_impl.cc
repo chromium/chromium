@@ -122,6 +122,7 @@ void DeleteStorageKeys(AsyncDomStorageDatabase* database,
           storage_keys),
       std::move(callback));
 }
+
 StorageAreaImpl::Options createOptions() {
   // Delay for a moment after a value is set in anticipation
   // of other values being set, so changes are batched.
@@ -178,20 +179,15 @@ class LocalStorageImpl::StorageAreaHolder final
             context_->origins_to_purge_on_shutdown_.end()) {
       return;
     }
-    context_->database_->RunDatabaseTask(
-        base::BindOnce(
-            [](const blink::StorageKey& storage_key,
-               DomStorageDatabaseLevelDB& db) {
-              std::unique_ptr<DomStorageBatchOperationLevelDB> batch =
-                  db.CreateBatchOperation();
-              batch->Put(
-                  LocalStorageLevelDB::CreateAccessMetaDataKey(storage_key),
-                  LocalStorageLevelDB::CreateAccessMetaDataValue(
-                      /*last_accessed=*/base::Time::Now()));
-              return batch->Commit();
-            },
-            storage_key_),
-        base::BindOnce([](DbStatus status) {
+
+    // Update the storage area map's last access time.
+    DomStorageDatabase::Metadata usage;
+    usage.map_metadata.push_back({
+        .map_locator{kLocalStorageSessionId, storage_key_},
+        .last_accessed{base::Time::Now()},
+    });
+    context_->database_->PutMetadata(
+        std::move(usage), base::BindOnce([](DbStatus status) {
           base::UmaHistogramBoolean(
               "LocalStorage.AccessMetaDataUpdateAtShutdown", status.ok());
         }));

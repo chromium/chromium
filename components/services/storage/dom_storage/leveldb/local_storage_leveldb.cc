@@ -6,6 +6,7 @@
 
 #include "base/types/expected_macros.h"
 #include "components/services/storage/dom_storage/dom_storage_constants.h"
+#include "components/services/storage/dom_storage/leveldb/dom_storage_batch_operation_leveldb.h"
 #include "components/services/storage/dom_storage/leveldb/dom_storage_database_leveldb.h"
 #include "components/services/storage/dom_storage/leveldb/local_storage_database.pb.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
@@ -220,6 +221,34 @@ StatusOr<DomStorageDatabase::Metadata> LocalStorageLevelDB::ReadAllMetadata() {
     results.emplace_back(std::move(storage_key_metadata.second));
   }
   return Metadata{std::move(results)};
+}
+
+DbStatus LocalStorageLevelDB::PutMetadata(Metadata metadata) {
+  // Local storage does not record the next map id in LevelDB.
+  CHECK(!metadata.next_map_id);
+
+  std::unique_ptr<DomStorageBatchOperationLevelDB> batch =
+      leveldb_->CreateBatchOperation();
+
+  // Record usage for each map in `metadata`.
+  for (const DomStorageDatabase::MapMetadata& map_usage :
+       metadata.map_metadata) {
+    const blink::StorageKey& storage_key = map_usage.map_locator.storage_key();
+
+    if (map_usage.last_accessed) {
+      // Add "METAACCESS:" entry.
+      batch->Put(CreateAccessMetaDataKey(storage_key),
+                 CreateAccessMetaDataValue(*map_usage.last_accessed));
+    }
+
+    if (map_usage.last_modified && map_usage.total_size) {
+      // Add "META:" entry.
+      batch->Put(CreateWriteMetaDataKey(storage_key),
+                 CreateWriteMetaDataValue(*map_usage.last_modified,
+                                          *map_usage.total_size));
+    }
+  }
+  return batch->Commit();
 }
 
 DbStatus LocalStorageLevelDB::RewriteDB() {

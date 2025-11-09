@@ -10,11 +10,10 @@
 
 #include "base/barrier_closure.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "components/services/storage/dom_storage/dom_storage_constants.h"
 #include "components/services/storage/dom_storage/dom_storage_database.h"
 #include "components/services/storage/dom_storage/leveldb/dom_storage_batch_operation_leveldb.h"
@@ -26,30 +25,40 @@
 
 namespace storage {
 
+namespace {
+constexpr const char kFirstFakeUrlString[] = "https://a-fake-url.test";
+constexpr const char kSecondFakeUrlString[] = "https://b-fake-url.test";
+constexpr const char kThirdFakeUrlString[] = "https://c-fake-url.test";
+constexpr const char kFourthFakeUrlString[] = "https://d-fake-url.test";
+}  // namespace
+
 class AsyncDomStorageDatabaseTest : public testing::Test {
  public:
-  AsyncDomStorageDatabaseTest() = default;
+  AsyncDomStorageDatabaseTest();
   ~AsyncDomStorageDatabaseTest() override = default;
 
  protected:
   base::test::TaskEnvironment task_environment_;
+  const blink::StorageKey kFirstStorageKey;
+  const blink::StorageKey kSecondStorageKey;
+  const blink::StorageKey kThirdStorageKey;
+  const blink::StorageKey kFourthStorageKey;
 };
 
-TEST_F(AsyncDomStorageDatabaseTest, ReadAllMetadata) {
+AsyncDomStorageDatabaseTest::AsyncDomStorageDatabaseTest()
+    : kFirstStorageKey(
+          blink::StorageKey::CreateFromStringForTesting(kFirstFakeUrlString)),
+      kSecondStorageKey(
+          blink::StorageKey::CreateFromStringForTesting(kSecondFakeUrlString)),
+      kThirdStorageKey(
+          blink::StorageKey::CreateFromStringForTesting(kThirdFakeUrlString)),
+      kFourthStorageKey(
+          blink::StorageKey::CreateFromStringForTesting(kFourthFakeUrlString)) {
+}
+
+TEST_F(AsyncDomStorageDatabaseTest, ReadAndWriteLocalStorageMetadata) {
   // Define test values to write to the database.
-  const blink::StorageKey kFirstStorageKey =
-      blink::StorageKey::CreateFromStringForTesting("https://a-fake-url.test");
-
-  const blink::StorageKey kSecondStorageKey =
-      blink::StorageKey::CreateFromStringForTesting("https://b-fake-url.test");
-
-  const blink::StorageKey kThirdStorageKey =
-      blink::StorageKey::CreateFromStringForTesting("https://c-fake-url.test");
-
-  const blink::StorageKey kFourthStorageKey =
-      blink::StorageKey::CreateFromStringForTesting("https://d-fake-url.test");
-
-  const DomStorageDatabase::MapMetadata kExpectedMapMetadata[] = {
+  const DomStorageDatabase::MapMetadata kExpectedMapMetadataArray[] = {
       {
           .map_locator{kLocalStorageSessionId, kFirstStorageKey},
           .last_accessed{base::Time::Now() - base::Days(7)},
@@ -70,59 +79,55 @@ TEST_F(AsyncDomStorageDatabaseTest, ReadAllMetadata) {
           .total_size{211114},
       },
   };
+  const base::span<const DomStorageDatabase::MapMetadata> kExpectedMapMetadata =
+      kExpectedMapMetadataArray;
 
   // Open the database.
   std::unique_ptr<AsyncDomStorageDatabase> database;
   ASSERT_NO_FATAL_FAILURE(OpenAsyncDomStorageDatabaseInMemorySync(
       StorageType::kLocalStorage, &database));
 
-  // Reading an empty database must succeed without results.
-  DomStorageDatabase::Metadata all_metadata;
-  ASSERT_NO_FATAL_FAILURE(ReadAllMetadataSync(*database, &all_metadata));
-  EXPECT_EQ(all_metadata.map_metadata.size(), 0u);
-  EXPECT_EQ(all_metadata.next_map_id, std::nullopt);
+  // Writing empty metadata must not update the local storage LevelDB.
+  ASSERT_NO_FATAL_FAILURE(PutMetadataSync(*database, /*metadata=*/{}));
 
-  // Write the metadata to the database.
-  // TODO(crbug.com/377242771): Replace this with future `DomStorageDatabase`
-  // based implementation.
-  base::RunLoop run_loop;
-  DbStatus status;
-  database->RunDatabaseTask(
-      base::BindOnce(
-          base::BindLambdaForTesting([&](DomStorageDatabaseLevelDB& leveldb) {
-            std::unique_ptr<DomStorageBatchOperationLevelDB> batch =
-                leveldb.CreateBatchOperation();
-            for (const auto& metadata : kExpectedMapMetadata) {
-              const blink::StorageKey& storage_key =
-                  metadata.map_locator.storage_key();
-              if (metadata.last_accessed) {
-                // Write a "METAACCESS:" entry.
-                batch->Put(
-                    LocalStorageLevelDB::CreateAccessMetaDataKey(storage_key),
-                    LocalStorageLevelDB::CreateAccessMetaDataValue(
-                        *metadata.last_accessed));
-              }
-              if (metadata.last_modified && metadata.total_size) {
-                // Write a "META:" entry.
-                batch->Put(
-                    LocalStorageLevelDB::CreateWriteMetaDataKey(storage_key),
-                    LocalStorageLevelDB::CreateWriteMetaDataValue(
-                        *metadata.last_modified, *metadata.total_size));
-              }
-            }
-            return batch->Commit();
-          })),
-      base::BindLambdaForTesting([&](DbStatus write_status) {
-        status = std::move(write_status);
-        run_loop.Quit();
-      }));
-  run_loop.Run();
-  EXPECT_TRUE(status.ok()) << status.ToString();
+  DomStorageDatabase::Metadata read_metadata;
+  ASSERT_NO_FATAL_FAILURE(ReadAllMetadataSync(*database, &read_metadata));
+  EXPECT_EQ(read_metadata.map_metadata.size(), 0u);
+  EXPECT_EQ(read_metadata.next_map_id, std::nullopt);
 
-  // Read the metadata from the database.
-  ASSERT_NO_FATAL_FAILURE(ReadAllMetadataSync(*database, &all_metadata));
-  ExpectEqualsMapMetadataSpan(all_metadata.map_metadata, kExpectedMapMetadata);
-  EXPECT_EQ(all_metadata.next_map_id, std::nullopt);
+  // Writing metadata without usage must not update the local storage LevelDB.
+  DomStorageDatabase::Metadata metadata_without_usage;
+  metadata_without_usage.map_metadata.push_back({
+      .map_locator{kLocalStorageSessionId, kSecondStorageKey},
+  });
+  ASSERT_NO_FATAL_FAILURE(
+      PutMetadataSync(*database, std::move(metadata_without_usage)));
+
+  ASSERT_NO_FATAL_FAILURE(ReadAllMetadataSync(*database, &read_metadata));
+  EXPECT_EQ(read_metadata.map_metadata.size(), 0u);
+  EXPECT_EQ(read_metadata.next_map_id, std::nullopt);
+
+  // Write each map's metadata to the database.
+  for (size_t i = 0; i < kExpectedMapMetadata.size(); ++i) {
+    // Write the metadata for a single map.
+    DomStorageDatabase::Metadata cloned_metadata;
+    cloned_metadata.map_metadata =
+        CloneMapMetadata(base::span_from_ref(kExpectedMapMetadata[i]));
+
+    ASSERT_NO_FATAL_FAILURE(
+        PutMetadataSync(*database, std::move(cloned_metadata)));
+
+    // Read the metadata from the database.
+    ASSERT_NO_FATAL_FAILURE(ReadAllMetadataSync(*database, &read_metadata));
+
+    // Read back the metadata written so far.
+    auto expected_read_metadata = kExpectedMapMetadata.first(/*count=*/i + 1);
+    ExpectEqualsMapMetadataSpan(read_metadata.map_metadata,
+                                expected_read_metadata);
+
+    // Local storage does not store the next map id number.
+    EXPECT_EQ(read_metadata.next_map_id, std::nullopt);
+  }
 }
 
 TEST_F(AsyncDomStorageDatabaseTest, EnqueuePendingTasksWhileOpening) {
@@ -138,76 +143,38 @@ TEST_F(AsyncDomStorageDatabaseTest, EnqueuePendingTasksWhileOpening) {
       },
   };
 
-  // Create a run loop that waits for 3 database tasks to complete: open, write
-  // and read.
-  base::RunLoop run_loop;
-  base::RepeatingClosure task_completed_callback =
-      base::BarrierClosure(3u, run_loop.QuitClosure());
-
   // Start the database open task.
   scoped_refptr<base::SequencedTaskRunner> database_task_runner =
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::WithBaseSyncPrimitives(),
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
 
-  DbStatus open_status;
+  // Open an in-memory LevelDB.
+  base::test::TestFuture<DbStatus> open_status_future;
   std::unique_ptr<AsyncDomStorageDatabase> database =
       AsyncDomStorageDatabase::Open(
           StorageType::kLocalStorage, /*directory=*/base::FilePath(),
           "TestPendingTasks",
           /*memory_dump_id=*/std::nullopt, database_task_runner,
-          base::BindLambdaForTesting([&](DbStatus status) {
-            open_status = std::move(status);
-            task_completed_callback.Run();
-          }));
+          open_status_future.GetCallback());
 
   // Immediately start using the database, which will enqueue pending tasks
   // while opening.
-  //
-  // Start the task to write metadata to the database.
-  // TODO(crbug.com/377242771): Replace this with future `DomStorageDatabase`
-  // based implementation.
-  DbStatus write_status;
-  database->RunDatabaseTask(
-      base::BindOnce(
-          base::BindLambdaForTesting([&](DomStorageDatabaseLevelDB& leveldb) {
-            std::unique_ptr<DomStorageBatchOperationLevelDB> batch =
-                leveldb.CreateBatchOperation();
-            for (const auto& metadata : kExpectedMapMetadata) {
-              const blink::StorageKey& storage_key =
-                  metadata.map_locator.storage_key();
-              if (metadata.last_accessed) {
-                // Write a "METAACCESS:" entry.
-                batch->Put(
-                    LocalStorageLevelDB::CreateAccessMetaDataKey(storage_key),
-                    LocalStorageLevelDB::CreateAccessMetaDataValue(
-                        *metadata.last_accessed));
-              }
-              if (metadata.last_modified && metadata.total_size) {
-                // Write a "META:" entry.
-                batch->Put(
-                    LocalStorageLevelDB::CreateWriteMetaDataKey(storage_key),
-                    LocalStorageLevelDB::CreateWriteMetaDataValue(
-                        *metadata.last_modified, *metadata.total_size));
-              }
-            }
-            return batch->Commit();
-          })),
-      base::BindLambdaForTesting([&](DbStatus status) {
-        write_status = std::move(status);
-        task_completed_callback.Run();
-      }));
+  DomStorageDatabase::Metadata cloned_metadata(
+      CloneMapMetadata(kExpectedMapMetadata));
+
+  base::test::TestFuture<DbStatus> write_status_future;
+  database->PutMetadata(std::move(cloned_metadata),
+                        write_status_future.GetCallback());
 
   // Start the task to read metadata from the database.
-  StatusOr<DomStorageDatabase::Metadata> metadata;
-  database->ReadAllMetadata(base::BindLambdaForTesting(
-      [&](StatusOr<DomStorageDatabase::Metadata> result) {
-        metadata = std::move(result);
-        task_completed_callback.Run();
-      }));
+  base::test::TestFuture<StatusOr<DomStorageDatabase::Metadata>>
+      metadata_future;
+  database->ReadAllMetadata(metadata_future.GetCallback());
 
-  // Wait for the open, read and write tasks to finish.
-  run_loop.Run();
+  const DbStatus& open_status = open_status_future.Get();
+  const DbStatus& write_status = write_status_future.Get();
+  StatusOr<DomStorageDatabase::Metadata> metadata = metadata_future.Take();
 
   EXPECT_TRUE(open_status.ok()) << open_status.ToString();
   EXPECT_TRUE(write_status.ok()) << write_status.ToString();

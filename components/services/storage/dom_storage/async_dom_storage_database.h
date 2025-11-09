@@ -107,6 +107,8 @@ class AsyncDomStorageDatabase {
   using ReadAllMetadataCallback =
       base::OnceCallback<void(StatusOr<DomStorageDatabase::Metadata>)>;
   void ReadAllMetadata(ReadAllMetadataCallback callback);
+  void PutMetadata(DomStorageDatabase::Metadata metadata,
+                   StatusCallback callback);
   void RewriteDB(StatusCallback callback);
 
   // TODO(crbug.com/377242771): Temporarily overload `RunDatabaseTask()` to

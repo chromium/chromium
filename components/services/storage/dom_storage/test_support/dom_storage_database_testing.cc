@@ -5,10 +5,9 @@
 #include "components/services/storage/dom_storage/test_support/dom_storage_database_testing.h"
 
 #include "base/memory/scoped_refptr.h"
-#include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "components/services/storage/dom_storage/async_dom_storage_database.h"
 #include "storage/common/database/db_status.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -97,8 +96,7 @@ std::vector<DomStorageDatabase::MapMetadata> CloneMapMetadata(
 void OpenAsyncDomStorageDatabaseInMemorySync(
     StorageType storage_type,
     std::unique_ptr<AsyncDomStorageDatabase>* result) {
-  DbStatus status;
-  base::RunLoop run_loop;
+  base::test::TestFuture<DbStatus> status_future;
 
   scoped_refptr<base::SequencedTaskRunner> database_task_runner =
       base::ThreadPool::CreateSequencedTaskRunner(
@@ -109,35 +107,30 @@ void OpenAsyncDomStorageDatabaseInMemorySync(
       AsyncDomStorageDatabase::Open(
           storage_type, /*directory=*/base::FilePath(),
           "TestInMemoryDomStorageDatabase", /*memory_dump_id=*/std::nullopt,
-          std::move(database_task_runner),
-          base::BindLambdaForTesting([&](DbStatus open_db_status) {
-            status = std::move(open_db_status);
-            run_loop.Quit();
-          }));
+          std::move(database_task_runner), status_future.GetCallback());
 
-  run_loop.Run();
-
+  const DbStatus& status = status_future.Get();
   ASSERT_TRUE(status.ok()) << status.ToString();
   *result = std::move(database);
 }
 
 void ReadAllMetadataSync(AsyncDomStorageDatabase& database,
                          DomStorageDatabase::Metadata* metadata_results) {
-  DbStatus status;
-  base::RunLoop run_loop;
+  base::test::TestFuture<StatusOr<DomStorageDatabase::Metadata>>
+      metadata_future;
+  database.ReadAllMetadata(metadata_future.GetCallback());
 
-  database.ReadAllMetadata(base::BindLambdaForTesting(
-      [&](StatusOr<DomStorageDatabase::Metadata> status_or_metadata) {
-        if (status_or_metadata.has_value()) {
-          *metadata_results = *std::move(status_or_metadata);
-        } else {
-          status = std::move(status_or_metadata.error());
-        }
-        run_loop.Quit();
-      }));
+  StatusOr<DomStorageDatabase::Metadata> metadata = metadata_future.Take();
+  ASSERT_TRUE(metadata.has_value()) << metadata.error().ToString();
+  *metadata_results = *std::move(metadata);
+}
 
-  run_loop.Run();
+void PutMetadataSync(AsyncDomStorageDatabase& database,
+                     DomStorageDatabase::Metadata metadata) {
+  base::test::TestFuture<DbStatus> status_future;
+  database.PutMetadata(std::move(metadata), status_future.GetCallback());
 
+  const DbStatus& status = status_future.Get();
   EXPECT_TRUE(status.ok()) << status.ToString();
 }
 

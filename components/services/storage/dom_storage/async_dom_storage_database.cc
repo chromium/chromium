@@ -47,6 +47,17 @@ void AsyncDomStorageDatabase::ReadAllMetadata(
                   std::move(callback));
 }
 
+void AsyncDomStorageDatabase::PutMetadata(DomStorageDatabase::Metadata metadata,
+                                          StatusCallback callback) {
+  RunDatabaseTask(
+      base::BindOnce(
+          [](DomStorageDatabase::Metadata metadata, DomStorageDatabase& db) {
+            return db.PutMetadata(std::move(metadata));
+          },
+          std::move(metadata)),
+      std::move(callback));
+}
+
 void AsyncDomStorageDatabase::RewriteDB(StatusCallback callback) {
   RunDatabaseTask(
       base::BindOnce([](DomStorageDatabase& db) { return db.RewriteDB(); }),

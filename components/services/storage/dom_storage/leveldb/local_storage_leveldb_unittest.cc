@@ -41,8 +41,15 @@ std::optional<DomStorageDatabase::MapMetadata> TryParseAccessMetadata(
 
 namespace {
 
-constexpr const char kFakeUrlString[] = "https://fake.test";
+// Define test constants used to populate the database.
+constexpr const char kFakeUrlString[] = "https://a-fake.test";
+constexpr const char kSecondFakeUrlString[] = "https://b-fake.test";
+constexpr const char kThirdFakeUrlString[] = "https://c-fake.test";
+constexpr const char kFourthFakeUrlString[] = "https://d-fake.test";
+
 constexpr base::ByteSize kMapTotalSize{312};
+constexpr base::ByteSize kSecondTotalSize{102454};
+constexpr base::ByteSize kThirdTotalSize{50121524};
 
 }  // namespace
 
@@ -58,16 +65,36 @@ class LocalStorageLevelDBTest : public testing::Test {
                     std::vector<DomStorageDatabase::KeyValuePair> entries);
 
   base::test::TaskEnvironment task_environment_;
+
   const blink::StorageKey kFakeUrlStorageKey;
+  const blink::StorageKey kSecondStorageKey;
+  const blink::StorageKey kThirdStorageKey;
+  const blink::StorageKey kFourthStorageKey;
+
   const base::Time kMapLastAccessed;
+  const base::Time kSecondLastAccessed;
+  const base::Time kFourthLastAccessed;
+
   const base::Time kMapLastModified;
+  const base::Time kSecondLastModified;
+  const base::Time kThirdLastModified;
 };
 
 LocalStorageLevelDBTest::LocalStorageLevelDBTest()
     : kFakeUrlStorageKey(
           blink::StorageKey::CreateFromStringForTesting(kFakeUrlString)),
+      kSecondStorageKey(
+          blink::StorageKey::CreateFromStringForTesting(kSecondFakeUrlString)),
+      kThirdStorageKey(
+          blink::StorageKey::CreateFromStringForTesting(kThirdFakeUrlString)),
+      kFourthStorageKey(
+          blink::StorageKey::CreateFromStringForTesting(kFourthFakeUrlString)),
       kMapLastAccessed(base::Time::Now() - base::Minutes(10)),
-      kMapLastModified(base::Time::Now()) {}
+      kSecondLastAccessed(base::Time::Now() - base::Hours(10)),
+      kFourthLastAccessed(base::Time::Now() - base::Days(10)),
+      kMapLastModified(base::Time::Now()),
+      kSecondLastModified(base::Time::Now() - base::Hours(1)),
+      kThirdLastModified(base::Time::Now() - base::Minutes(23)) {}
 
 void LocalStorageLevelDBTest::OpenInMemory(
     std::unique_ptr<LocalStorageLevelDB>* result) {
@@ -101,14 +128,14 @@ TEST_F(LocalStorageLevelDBTest, CreateAccessMetaDataKey) {
   DomStorageDatabase::Key access_metadata_key =
       LocalStorageLevelDB::CreateAccessMetaDataKey(kFakeUrlStorageKey);
   EXPECT_EQ(access_metadata_key,
-            base::as_byte_span(std::string("METAACCESS:https://fake.test")));
+            base::as_byte_span(std::string("METAACCESS:https://a-fake.test")));
 }
 
 TEST_F(LocalStorageLevelDBTest, CreateWriteMetaDataKey) {
   DomStorageDatabase::Key write_metadata_key =
       LocalStorageLevelDB::CreateWriteMetaDataKey(kFakeUrlStorageKey);
   EXPECT_EQ(write_metadata_key,
-            base::as_byte_span(std::string("META:https://fake.test")));
+            base::as_byte_span(std::string("META:https://a-fake.test")));
 }
 
 TEST_F(LocalStorageLevelDBTest, TryExtractStorageKeyWithEmptyPrefix) {
@@ -383,24 +410,6 @@ TEST_F(LocalStorageLevelDBTest, ReadAllMetadataWithWriteAndAccessMetadata) {
 // Combine all previous tests into a single test using four storage
 // keys for four different maps.
 TEST_F(LocalStorageLevelDBTest, ReadAllMetadataWithMultipleStorageKeys) {
-  const blink::StorageKey kFirstStorageKey =
-      blink::StorageKey::CreateFromStringForTesting("https://a-fake.test");
-
-  const blink::StorageKey kSecondStorageKey =
-      blink::StorageKey::CreateFromStringForTesting("https://b-fake.test");
-  const base::Time kSecondLastAccessed = base::Time::Now() - base::Hours(10);
-  const base::Time kSecondLastModified = base::Time::Now() - base::Hours(1);
-  const base::ByteSize kSecondTotalSize{102454};
-
-  const blink::StorageKey kThirdStorageKey =
-      blink::StorageKey::CreateFromStringForTesting("https://c-fake.test");
-  const base::Time kThirdLastModified = base::Time::Now() - base::Minutes(23);
-  const base::ByteSize kThirdTotalSize{50121524};
-
-  const blink::StorageKey kFourthStorageKey =
-      blink::StorageKey::CreateFromStringForTesting("https://d-fake.test");
-  const base::Time kFourthLastAccessed = base::Time::Now() - base::Days(10);
-
   std::unique_ptr<LocalStorageLevelDB> local_storage_leveldb;
   ASSERT_NO_FATAL_FAILURE(OpenInMemory(&local_storage_leveldb));
 
@@ -418,7 +427,7 @@ TEST_F(LocalStorageLevelDBTest, ReadAllMetadataWithMultipleStorageKeys) {
                                                             kSecondTotalSize),
           },
           {
-              LocalStorageLevelDB::CreateAccessMetaDataKey(kFirstStorageKey),
+              LocalStorageLevelDB::CreateAccessMetaDataKey(kFakeUrlStorageKey),
               LocalStorageLevelDB::CreateAccessMetaDataValue(kMapLastAccessed),
           },
           // Invalid entry.
@@ -437,7 +446,7 @@ TEST_F(LocalStorageLevelDBTest, ReadAllMetadataWithMultipleStorageKeys) {
                   kSecondLastAccessed),
           },
           {
-              LocalStorageLevelDB::CreateWriteMetaDataKey(kFirstStorageKey),
+              LocalStorageLevelDB::CreateWriteMetaDataKey(kFakeUrlStorageKey),
               LocalStorageLevelDB::CreateWriteMetaDataValue(kMapLastModified,
                                                             kMapTotalSize),
           },
@@ -449,7 +458,7 @@ TEST_F(LocalStorageLevelDBTest, ReadAllMetadataWithMultipleStorageKeys) {
 
   const DomStorageDatabase::MapMetadata kExpectedAllMapMetadata[] = {
       {
-          .map_locator{kLocalStorageSessionId, kFirstStorageKey},
+          .map_locator{kLocalStorageSessionId, kFakeUrlStorageKey},
           .last_accessed{kMapLastAccessed},
           .last_modified{kMapLastModified},
           .total_size{kMapTotalSize},
@@ -473,6 +482,197 @@ TEST_F(LocalStorageLevelDBTest, ReadAllMetadataWithMultipleStorageKeys) {
   ExpectEqualsMapMetadataSpan(all_metadata->map_metadata,
                               kExpectedAllMapMetadata);
   EXPECT_EQ(all_metadata->next_map_id, std::nullopt);
+}
+
+TEST_F(LocalStorageLevelDBTest, PutMetadataWithEmpty) {
+  std::unique_ptr<LocalStorageLevelDB> local_storage_leveldb;
+  ASSERT_NO_FATAL_FAILURE(OpenInMemory(&local_storage_leveldb));
+
+  // Write the metadata.
+  DbStatus status = local_storage_leveldb->PutMetadata({});
+  EXPECT_TRUE(status.ok()) << status.ToString();
+
+  // Verify the contents in the database.
+  std::vector<DomStorageDatabase::KeyValuePair> all_entries;
+  status = local_storage_leveldb->GetLevelDB().GetPrefixed({}, &all_entries);
+
+  EXPECT_TRUE(status.ok()) << status.ToString();
+  EXPECT_EQ(all_entries.size(), 0u);
+}
+
+TEST_F(LocalStorageLevelDBTest, PutMetadataWithNoUsage) {
+  std::unique_ptr<LocalStorageLevelDB> local_storage_leveldb;
+  ASSERT_NO_FATAL_FAILURE(OpenInMemory(&local_storage_leveldb));
+
+  // Write the metadata.
+  DomStorageDatabase::Metadata metadata;
+  metadata.map_metadata.push_back({
+      .map_locator{kLocalStorageSessionId, kFakeUrlStorageKey},
+  });
+  DbStatus status = local_storage_leveldb->PutMetadata(std::move(metadata));
+  EXPECT_TRUE(status.ok()) << status.ToString();
+
+  // Verify the contents in the database.
+  std::vector<DomStorageDatabase::KeyValuePair> all_entries;
+  status = local_storage_leveldb->GetLevelDB().GetPrefixed({}, &all_entries);
+
+  EXPECT_TRUE(status.ok()) << status.ToString();
+  EXPECT_EQ(all_entries.size(), 0u);
+}
+
+TEST_F(LocalStorageLevelDBTest, PutMetadataWithWriteMetadata) {
+  std::unique_ptr<LocalStorageLevelDB> local_storage_leveldb;
+  ASSERT_NO_FATAL_FAILURE(OpenInMemory(&local_storage_leveldb));
+
+  // Write the metadata.
+  DomStorageDatabase::Metadata metadata;
+  metadata.map_metadata.push_back({
+      .map_locator{kLocalStorageSessionId, kFakeUrlStorageKey},
+      .last_modified{kMapLastModified},
+      .total_size{kMapTotalSize},
+  });
+
+  DbStatus status = local_storage_leveldb->PutMetadata(std::move(metadata));
+  EXPECT_TRUE(status.ok()) << status.ToString();
+
+  std::vector<DomStorageDatabase::KeyValuePair> all_entries;
+  status = local_storage_leveldb->GetLevelDB().GetPrefixed({}, &all_entries);
+
+  // Verify the contents in the database.
+  EXPECT_TRUE(status.ok()) << status.ToString();
+  ASSERT_EQ(all_entries.size(), 1u);
+
+  // Verify "META:" entry.
+  EXPECT_EQ(all_entries[0].key,
+            LocalStorageLevelDB::CreateWriteMetaDataKey(kFakeUrlStorageKey));
+  EXPECT_EQ(all_entries[0].value, LocalStorageLevelDB::CreateWriteMetaDataValue(
+                                      kMapLastModified, kMapTotalSize));
+}
+
+TEST_F(LocalStorageLevelDBTest, PutMetadataWithAccessMetadata) {
+  std::unique_ptr<LocalStorageLevelDB> local_storage_leveldb;
+  ASSERT_NO_FATAL_FAILURE(OpenInMemory(&local_storage_leveldb));
+
+  DomStorageDatabase::Metadata metadata;
+  metadata.map_metadata.push_back({
+      .map_locator{kLocalStorageSessionId, kFakeUrlStorageKey},
+      .last_accessed{kMapLastAccessed},
+  });
+
+  // Write the metadata.
+  DbStatus status = local_storage_leveldb->PutMetadata(std::move(metadata));
+  EXPECT_TRUE(status.ok()) << status.ToString();
+
+  // Verify the contents in the database.
+  std::vector<DomStorageDatabase::KeyValuePair> all_entries;
+  status = local_storage_leveldb->GetLevelDB().GetPrefixed({}, &all_entries);
+
+  EXPECT_TRUE(status.ok()) << status.ToString();
+  ASSERT_EQ(all_entries.size(), 1u);
+
+  // Verify "METAACCESS:" entry.
+  EXPECT_EQ(all_entries[0].key,
+            LocalStorageLevelDB::CreateAccessMetaDataKey(kFakeUrlStorageKey));
+  EXPECT_EQ(all_entries[0].value,
+            LocalStorageLevelDB::CreateAccessMetaDataValue(kMapLastAccessed));
+}
+
+TEST_F(LocalStorageLevelDBTest, PutMetadataWithAccessAndWriteMetadata) {
+  std::unique_ptr<LocalStorageLevelDB> local_storage_leveldb;
+  ASSERT_NO_FATAL_FAILURE(OpenInMemory(&local_storage_leveldb));
+
+  DomStorageDatabase::Metadata metadata;
+  metadata.map_metadata.push_back({
+      .map_locator{kLocalStorageSessionId, kFakeUrlStorageKey},
+      .last_accessed{kMapLastAccessed},
+      .last_modified{kMapLastModified},
+      .total_size{kMapTotalSize},
+  });
+
+  // Write the metadata.
+  DbStatus status = local_storage_leveldb->PutMetadata(std::move(metadata));
+  EXPECT_TRUE(status.ok()) << status.ToString();
+
+  // Verify the contents in the database.
+  std::vector<DomStorageDatabase::KeyValuePair> all_entries;
+  status = local_storage_leveldb->GetLevelDB().GetPrefixed({}, &all_entries);
+
+  EXPECT_TRUE(status.ok()) << status.ToString();
+  ASSERT_EQ(all_entries.size(), 2u);
+
+  // Verify "META:" entry.
+  EXPECT_EQ(all_entries[0].key,
+            LocalStorageLevelDB::CreateWriteMetaDataKey(kFakeUrlStorageKey));
+  EXPECT_EQ(all_entries[0].value, LocalStorageLevelDB::CreateWriteMetaDataValue(
+                                      kMapLastModified, kMapTotalSize));
+
+  // Verify "METAACCESS:" entry.
+  EXPECT_EQ(all_entries[1].key,
+            LocalStorageLevelDB::CreateAccessMetaDataKey(kFakeUrlStorageKey));
+  EXPECT_EQ(all_entries[1].value,
+            LocalStorageLevelDB::CreateAccessMetaDataValue(kMapLastAccessed));
+}
+
+TEST_F(LocalStorageLevelDBTest, PutMetadataWithMultipleMaps) {
+  std::unique_ptr<LocalStorageLevelDB> local_storage_leveldb;
+  ASSERT_NO_FATAL_FAILURE(OpenInMemory(&local_storage_leveldb));
+
+  DomStorageDatabase::Metadata metadata;
+  metadata.map_metadata.push_back({
+      .map_locator{kLocalStorageSessionId, kFakeUrlStorageKey},
+      .last_accessed{kMapLastAccessed},
+      .last_modified{kMapLastModified},
+      .total_size{kMapTotalSize},
+  });
+  metadata.map_metadata.push_back({
+      .map_locator{kLocalStorageSessionId, kSecondStorageKey},
+      .last_accessed{kSecondLastAccessed},
+  });
+  metadata.map_metadata.push_back({
+      .map_locator{kLocalStorageSessionId, kThirdStorageKey},
+      .last_modified{kThirdLastModified},
+      .total_size{kThirdTotalSize},
+  });
+  // Add a map with no usage metadata, which must not write anything to LevelDB.
+  metadata.map_metadata.push_back({
+      .map_locator{kLocalStorageSessionId, kFourthStorageKey},
+  });
+
+  // Write the metadata.
+  DbStatus status = local_storage_leveldb->PutMetadata(std::move(metadata));
+  EXPECT_TRUE(status.ok()) << status.ToString();
+
+  // Verify the contents in the database.
+  std::vector<DomStorageDatabase::KeyValuePair> all_entries;
+  status = local_storage_leveldb->GetLevelDB().GetPrefixed({}, &all_entries);
+
+  EXPECT_TRUE(status.ok()) << status.ToString();
+  ASSERT_EQ(all_entries.size(), 4u);
+
+  // Verify "META:" entry for the first storage key.
+  EXPECT_EQ(all_entries[0].key,
+            LocalStorageLevelDB::CreateWriteMetaDataKey(kFakeUrlStorageKey));
+  EXPECT_EQ(all_entries[0].value, LocalStorageLevelDB::CreateWriteMetaDataValue(
+                                      kMapLastModified, kMapTotalSize));
+
+  // Verify "META:" entry for the third storage key.
+  EXPECT_EQ(all_entries[1].key,
+            LocalStorageLevelDB::CreateWriteMetaDataKey(kThirdStorageKey));
+  EXPECT_EQ(all_entries[1].value, LocalStorageLevelDB::CreateWriteMetaDataValue(
+                                      kThirdLastModified, kThirdTotalSize));
+
+  // Verify "METAACCESS:" entry for the first storage key.
+  EXPECT_EQ(all_entries[2].key,
+            LocalStorageLevelDB::CreateAccessMetaDataKey(kFakeUrlStorageKey));
+  EXPECT_EQ(all_entries[2].value,
+            LocalStorageLevelDB::CreateAccessMetaDataValue(kMapLastAccessed));
+
+  // Verify "METAACCESS:" entry for the second storage key.
+  EXPECT_EQ(all_entries[3].key,
+            LocalStorageLevelDB::CreateAccessMetaDataKey(kSecondStorageKey));
+  EXPECT_EQ(
+      all_entries[3].value,
+      LocalStorageLevelDB::CreateAccessMetaDataValue(kSecondLastAccessed));
 }
 
 }  // namespace storage
