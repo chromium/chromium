@@ -9901,3 +9901,6 @@ crbug.com/457578724 [ Win11-arm64 ] external/wpt/webxr/xrView_visibility_mask_ch
 
 # Gardener 2025-11-05, 2025-11-06
 crbug.com/457924681 [ Linux ] external/wpt/css/css-anchor-position/anchored-transition-display-none-001.html [ Failure Timeout ]
+
+# Gardener 2025-11-10
+crbug.com/444447168 [ Mac15-arm64 ] virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/dequantizeLinear.https.any.html?cpu [ Failure ]
