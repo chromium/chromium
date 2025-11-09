@@ -69,6 +69,7 @@
 #include "partition_alloc/partition_root.h"
 #include "partition_alloc/pointers/instance_tracer.h"
 #include "partition_alloc/pointers/raw_ptr.h"
+#include "partition_alloc/scheduler_loop_quarantine.h"
 #include "partition_alloc/shim/allocator_shim.h"
 #include "partition_alloc/shim/allocator_shim_default_dispatch_to_partition_alloc.h"
 #include "partition_alloc/shim/allocator_shim_dispatch_to_noop_on_free.h"
@@ -815,6 +816,11 @@ void ReconfigurePartitionForKnownProcess(const std::string& process_type) {
   // experiments.
 }
 
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+BASE_FEATURE(kPartitionAllocMakeSchedulerLoopQuarantinePurgeNoOp,
+             FEATURE_ENABLED_BY_DEFAULT);
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+
 void MakeFreeNoOp() {
   // Ignoring `free()` during Shutdown would allow developers to introduce new
   // dangling pointers. So we want to avoid ignoring free when it is enabled.
@@ -826,9 +832,18 @@ void MakeFreeNoOp() {
     return;
   }
 #endif  // PA_BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
+
 #if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
   allocator_shim::InsertNoOpOnFreeAllocatorShimOnShutDown();
 #endif  // PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
+
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  if (base::FeatureList::IsEnabled(
+          kPartitionAllocMakeSchedulerLoopQuarantinePurgeNoOp)) {
+    partition_alloc::internal::ThreadBoundSchedulerLoopQuarantineBranch::
+        DangerouslyDisablePurge();
+  }
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 }
 
 PartitionAllocSupport* PartitionAllocSupport::Get() {
