@@ -12,6 +12,7 @@ extern const char kNtpShortcutsType[];
 extern const char kNtpCustomLinksVisible[];
 extern const char kNtpEnterpriseShortcutsVisible[];
 extern const char kNtpPersonalShortcutsVisible[];
+extern const char kNtpShowAllMostVisitedTiles[];
 }  // namespace ntp_prefs
 
 #endif  // CHROME_BROWSER_UI_WEBUI_NEW_TAB_PAGE_NTP_PREF_NAMES_H_

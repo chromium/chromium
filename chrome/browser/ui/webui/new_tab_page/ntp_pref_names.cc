@@ -25,4 +25,6 @@ const char kNtpEnterpriseShortcutsVisible[] =
 // Tracks whether the user has chosen to hide the personal tiles on the NTP.
 // Used when enterprise shortcuts are enabled and mixed with personal tiles.
 const char kNtpPersonalShortcutsVisible[] = "ntp.personal_shortcuts_visible";
+// Tracks whether the user has chosen to show all most visited tiles on the NTP.
+const char kNtpShowAllMostVisitedTiles[] = "ntp.show_all_most_visited_tiles";
 }  // namespace ntp_prefs
