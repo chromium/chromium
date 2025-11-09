@@ -7,8 +7,6 @@
     export: "CORE_EXPORT",
   },
 
-  // If you add any tag names here, remember to update html_tree_builder_test.cc.
-
   // Note that if an element is associated with a feature flag that has an
   // origin trial, you must:
   // * set runtimeFlagHasOriginTrial to true below, which disables the checks
