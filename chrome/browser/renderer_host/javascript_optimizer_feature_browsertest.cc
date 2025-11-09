@@ -3,12 +3,24 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/chrome_content_browser_client.h"
+#include "chrome/browser/content_settings/generated_javascript_optimizer_pref.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/safe_browsing/safe_browsing_service.h"
+#include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
+#include "chrome/browser/site_protection/site_familiarity_fetcher.h"
+#include "chrome/browser/site_protection/site_familiarity_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/platform_browser_test.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/features.h"
+#include "components/history/core/browser/history_service.h"
+#include "components/keyed_service/core/service_access_type.h"
+#include "components/prefs/pref_service.h"
+#include "components/safe_browsing/core/browser/db/fake_database_manager.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/process_selection_deferring_condition.h"
@@ -17,6 +29,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_host_resolver.h"
@@ -26,6 +39,8 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/origin.h"
+
+typedef site_protection::SiteFamiliarityFetcher::Verdict FamiliarityVerdict;
 
 class JavascriptOptimizerBrowserTest : public PlatformBrowserTest {
  public:
@@ -43,11 +58,15 @@ class JavascriptOptimizerBrowserTest : public PlatformBrowserTest {
     return chrome_test_utils::GetActiveWebContents(this);
   }
 
+  Profile* profile() { return chrome_test_utils::GetProfile(this); }
+
+  bool AreV8OptimizationsDisabledForRenderFrame(content::RenderFrameHost* rfh) {
+    return rfh->GetProcess()->AreV8OptimizationsDisabled();
+  }
+
   bool AreV8OptimizationsDisabledOnActiveWebContents() {
-    return web_contents()
-        ->GetPrimaryMainFrame()
-        ->GetProcess()
-        ->AreV8OptimizationsDisabled();
+    return AreV8OptimizationsDisabledForRenderFrame(
+        web_contents()->GetPrimaryMainFrame());
   }
 };
 
@@ -80,8 +99,7 @@ class JavascriptOptimizerBrowserTest_OriginKeyedProcessesByDefault
 // by default via chrome://settings.
 IN_PROC_BROWSER_TEST_F(JavascriptOptimizerBrowserTest,
                        V8SiteSettingDefaultOff) {
-  auto* map = HostContentSettingsMapFactory::GetForProfile(
-      chrome_test_utils::GetProfile(this));
+  auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
   map->SetDefaultContentSetting(ContentSettingsType::JAVASCRIPT_OPTIMIZER,
                                 ContentSetting::CONTENT_SETTING_BLOCK);
 
@@ -94,8 +112,7 @@ IN_PROC_BROWSER_TEST_F(JavascriptOptimizerBrowserTest,
 // via chrome://settings for a specific site.
 IN_PROC_BROWSER_TEST_F(JavascriptOptimizerBrowserTest,
                        DisabledViaSiteSpecificSetting) {
-  auto* map = HostContentSettingsMapFactory::GetForProfile(
-      chrome_test_utils::GetProfile(this));
+  auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
   map->SetDefaultContentSetting(ContentSettingsType::JAVASCRIPT_OPTIMIZER,
                                 ContentSetting::CONTENT_SETTING_ALLOW);
   map->SetContentSettingCustomScope(
@@ -118,8 +135,7 @@ IN_PROC_BROWSER_TEST_F(
     JavascriptOptimizerBrowserTest_NoOriginKeyedProcessesByDefault,
     ExceptionOriginLoadedInSubframeIsNotIsolatedOnFirstNavigation) {
   auto* policy = content::ChildProcessSecurityPolicy::GetInstance();
-  auto* map = HostContentSettingsMapFactory::GetForProfile(
-      chrome_test_utils::GetProfile(this));
+  auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
   map->SetDefaultContentSetting(ContentSettingsType::JAVASCRIPT_OPTIMIZER,
                                 ContentSetting::CONTENT_SETTING_ALLOW);
   map->SetContentSettingCustomScope(
@@ -180,8 +196,7 @@ IN_PROC_BROWSER_TEST_F(
     JavascriptOptimizerBrowserTest_NoOriginKeyedProcessesByDefault,
     ExceptionOriginLoadedFirstWillBeIsolatedInSubframe) {
   auto* policy = content::ChildProcessSecurityPolicy::GetInstance();
-  auto* map = HostContentSettingsMapFactory::GetForProfile(
-      chrome_test_utils::GetProfile(this));
+  auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
   map->SetDefaultContentSetting(ContentSettingsType::JAVASCRIPT_OPTIMIZER,
                                 ContentSetting::CONTENT_SETTING_ALLOW);
   map->SetContentSettingCustomScope(
@@ -231,8 +246,7 @@ IN_PROC_BROWSER_TEST_F(
     JavascriptOptimizerBrowserTest_NoOriginKeyedProcessesByDefault,
     RemoveRuleOriginIsStillIsolatedButIsAllowed) {
   auto* policy = content::ChildProcessSecurityPolicy::GetInstance();
-  auto* map = HostContentSettingsMapFactory::GetForProfile(
-      chrome_test_utils::GetProfile(this));
+  auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
   map->SetDefaultContentSetting(ContentSettingsType::JAVASCRIPT_OPTIMIZER,
                                 ContentSetting::CONTENT_SETTING_ALLOW);
   map->SetContentSettingCustomScope(
@@ -303,8 +317,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     JavascriptOptimizerBrowserTest_NoOriginKeyedProcessesByDefault,
     ExceptionForSiteAppliesToSubSite) {
-  auto* map = HostContentSettingsMapFactory::GetForProfile(
-      chrome_test_utils::GetProfile(this));
+  auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
   map->SetDefaultContentSetting(ContentSettingsType::JAVASCRIPT_OPTIMIZER,
                                 ContentSetting::CONTENT_SETTING_ALLOW);
   map->SetContentSettingCustomScope(
@@ -338,8 +351,7 @@ IN_PROC_BROWSER_TEST_F(
     GTEST_SKIP()
         << "skipping: OriginKeyedProcessesEnabledByDefault needs to be true";
   }
-  auto* map = HostContentSettingsMapFactory::GetForProfile(
-      chrome_test_utils::GetProfile(this));
+  auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
   map->SetDefaultContentSetting(ContentSettingsType::JAVASCRIPT_OPTIMIZER,
                                 ContentSetting::CONTENT_SETTING_ALLOW);
   map->SetContentSettingCustomScope(
@@ -369,8 +381,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(JavascriptOptimizerBrowserTest,
                        ExceptionForSiteAppliesToSubSiteButCannotBeOverridden) {
   auto* policy = content::ChildProcessSecurityPolicy::GetInstance();
-  auto* map = HostContentSettingsMapFactory::GetForProfile(
-      chrome_test_utils::GetProfile(this));
+  auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
   map->SetDefaultContentSetting(ContentSettingsType::JAVASCRIPT_OPTIMIZER,
                                 ContentSetting::CONTENT_SETTING_ALLOW);
   map->SetContentSettingCustomScope(
@@ -452,8 +463,7 @@ IN_PROC_BROWSER_TEST_F(
 #endif
 
   auto* policy = content::ChildProcessSecurityPolicy::GetInstance();
-  auto* map = HostContentSettingsMapFactory::GetForProfile(
-      chrome_test_utils::GetProfile(this));
+  auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
   map->SetDefaultContentSetting(ContentSettingsType::JAVASCRIPT_OPTIMIZER,
                                 ContentSetting::CONTENT_SETTING_ALLOW);
   map->SetContentSettingCustomScope(
@@ -506,8 +516,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     JavascriptOptimizerBrowserTest_NoOriginKeyedProcessesByDefault,
     ExceptionForTopFrameDoesNotApplyToSubFrame) {
-  auto* map = HostContentSettingsMapFactory::GetForProfile(
-      chrome_test_utils::GetProfile(this));
+  auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
   map->SetDefaultContentSetting(ContentSettingsType::JAVASCRIPT_OPTIMIZER,
                                 ContentSetting::CONTENT_SETTING_ALLOW);
   map->SetContentSettingCustomScope(
@@ -549,8 +558,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(JavascriptOptimizerBrowserTest, ProcessLimitWorks) {
   content::RenderProcessHost::SetMaxRendererProcessCount(1);
 
-  auto* map = HostContentSettingsMapFactory::GetForProfile(
-      chrome_test_utils::GetProfile(this));
+  auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
   map->SetDefaultContentSetting(ContentSettingsType::JAVASCRIPT_OPTIMIZER,
                                 ContentSetting::CONTENT_SETTING_ALLOW);
   map->SetContentSettingCustomScope(
@@ -658,13 +666,15 @@ namespace {
 // content::ProcessSelectionDeferringCondition subclass which sets
 // `did_select_final_process` bool passed to constructor when
 // ProcessSelectionDeferringCondition::OnWillSelectFinalProcess() is called.
-class DeferringCondition : public content::ProcessSelectionDeferringCondition {
+class ProcessSelectionObserverCondition
+    : public content::ProcessSelectionDeferringCondition {
  public:
-  DeferringCondition(content::NavigationHandle& navigation_handle,
-                     bool* did_select_final_process)
+  ProcessSelectionObserverCondition(
+      content::NavigationHandle& navigation_handle,
+      bool* did_select_final_process)
       : content::ProcessSelectionDeferringCondition(navigation_handle),
         did_select_final_process_(did_select_final_process) {}
-  ~DeferringCondition() override = default;
+  ~ProcessSelectionObserverCondition() override = default;
 
   content::ProcessSelectionDeferringCondition::Result OnWillSelectFinalProcess(
       base::OnceClosure resume) override {
@@ -685,7 +695,7 @@ class DeferProcessSelectionBrowserClient : public ChromeContentBrowserClient {
   std::vector<std::unique_ptr<content::ProcessSelectionDeferringCondition>>
   CreateProcessSelectionDeferringConditionsForNavigation(
       content::NavigationHandle& navigation_handle) override {
-    auto condition = std::make_unique<DeferringCondition>(
+    auto condition = std::make_unique<ProcessSelectionObserverCondition>(
         navigation_handle, &did_select_final_process_);
     std::vector<std::unique_ptr<content::ProcessSelectionDeferringCondition>>
         conditions;
@@ -693,10 +703,12 @@ class DeferProcessSelectionBrowserClient : public ChromeContentBrowserClient {
     return conditions;
   }
 
-  bool AreV8OptimizationsDisabledForSite(
+  bool AreV8OptimizationsEnabledForSite(
       content::BrowserContext* browser_context,
+      const std::optional<base::SafeRef<content::ProcessSelectionUserData>>&
+          process_selection_user_data,
       const GURL& site_url) override {
-    return should_disable_v8_optimizations_;
+    return !should_disable_v8_optimizations_;
   }
 
   bool DidSelectFinalProcess() { return did_select_final_process_; }
@@ -709,12 +721,16 @@ class DeferProcessSelectionBrowserClient : public ChromeContentBrowserClient {
 
 }  // anonymous namespace
 
-class JavascriptOptimizerBrowserTest_ProcessSelectionDeferralEnabled
+class JavascriptOptimizerBrowserTest_CustomDeferralCondition
     : public JavascriptOptimizerBrowserTest {
  public:
-  JavascriptOptimizerBrowserTest_ProcessSelectionDeferralEnabled() {
-    feature_list_.InitAndEnableFeature(
-        features::kProcessSelectionDeferringConditions);
+  JavascriptOptimizerBrowserTest_CustomDeferralCondition() {
+    feature_list_
+        .InitWithFeatures(/*enabled_features=*/
+                          {features::kProcessSelectionDeferringConditions,
+                           content_settings::features::
+                               kBlockV8OptimizerOnUnfamiliarSitesSetting},
+                          /*disabled_features=*/{});
   }
 
   void SetUpOnMainThread() override {
@@ -738,9 +754,8 @@ class JavascriptOptimizerBrowserTest_ProcessSelectionDeferralEnabled
 
 // Test that crbug.com/441727826 is fixed. Test that navigations use the
 // v8-optimizer state at final process selection time and not prior.
-IN_PROC_BROWSER_TEST_F(
-    JavascriptOptimizerBrowserTest_ProcessSelectionDeferralEnabled,
-    ChangeJavascriptOptimizerStatePriorToProcessSelection) {
+IN_PROC_BROWSER_TEST_F(JavascriptOptimizerBrowserTest_CustomDeferralCondition,
+                       ChangeJavascriptOptimizerStatePriorToProcessSelection) {
   const GURL kTestUrl =
       embedded_https_test_server().GetURL("a.com", "/simple.html");
 
@@ -758,4 +773,333 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(browser_client_->DidSelectFinalProcess());
   content::RenderFrameHost* frame = web_contents()->GetPrimaryMainFrame();
   EXPECT_TRUE(frame->GetProcess()->AreV8OptimizationsDisabled());
+}
+
+// Base class for integration tests which enable/disable the "disable JavaScript
+// optimization for unfamiliar sites" feature.
+class JavascriptOptimizerBrowserTest_UseSiteFamiliarityBase
+    : public JavascriptOptimizerBrowserTest {
+ public:
+  JavascriptOptimizerBrowserTest_UseSiteFamiliarityBase() = default;
+  ~JavascriptOptimizerBrowserTest_UseSiteFamiliarityBase() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    JavascriptOptimizerBrowserTest::SetUpCommandLine(command_line);
+
+    if (ShouldForceSitePerProcess()) {
+      command_line->AppendSwitch(::switches::kSitePerProcess);
+    }
+
+    if (ShouldEnableSiteFamiliarityFeature()) {
+      feature_list_
+          .InitWithFeatures(/*enabled_features=*/
+                            {features::kProcessSelectionDeferringConditions,
+                             content_settings::features::
+                                 kBlockV8OptimizerOnUnfamiliarSitesSetting},
+                            /*disabled_features=*/{});
+    } else {
+      feature_list_.InitWithFeatures(
+          /*enabled_features=*/{},
+          /*disabled_features=*/
+          {features::kProcessSelectionDeferringConditions,
+           content_settings::features::
+               kBlockV8OptimizerOnUnfamiliarSitesSetting});
+    }
+  }
+
+  void CreatedBrowserMainParts(
+      content::BrowserMainParts* browser_main_parts) override {
+    JavascriptOptimizerBrowserTest::CreatedBrowserMainParts(browser_main_parts);
+    // Test UI manager and test database manager should be set before
+    // the browser is started but after threads are created.
+    factory_.SetTestDatabaseManager(
+        new safe_browsing::FakeSafeBrowsingDatabaseManager(
+            content::GetUIThreadTaskRunner({})));
+    safe_browsing::SafeBrowsingService::RegisterFactory(&factory_);
+  }
+
+  void SetUpOnMainThread() override {
+    JavascriptOptimizerBrowserTest::SetUpOnMainThread();
+
+    auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
+    map->SetDefaultContentSetting(ContentSettingsType::JAVASCRIPT_OPTIMIZER,
+                                  ContentSetting::CONTENT_SETTING_ALLOW);
+    profile()->GetPrefs()->SetBoolean(
+        prefs::kJavascriptOptimizerBlockedForUnfamiliarSites, true);
+    EXPECT_EQ(ShouldEnableSiteFamiliarityFeature(),
+              site_protection::AreV8OptimizationsDisabledOnUnfamiliarSites(
+                  profile()));
+  }
+
+  void RunCallbackAndStoreVerdict(const base::RepeatingClosure& callback,
+                                  FamiliarityVerdict* verdict_out,
+                                  FamiliarityVerdict verdict) {
+    *verdict_out = verdict;
+    callback.Run();
+  }
+
+  void CheckSiteFamiliarity(const GURL& url,
+                            FamiliarityVerdict expected_verdict) {
+    site_protection::SiteFamiliarityFetcher fetcher(profile());
+    FamiliarityVerdict verdict = FamiliarityVerdict::kFamiliar;
+    FamiliarityVerdict* verdict_ptr = &verdict;
+    base::RunLoop run_loop;
+    fetcher.Start(
+        url, base::BindOnce(
+                 &JavascriptOptimizerBrowserTest_UseSiteFamiliarityBase::
+                     RunCallbackAndStoreVerdict,
+                 base::Unretained(this), run_loop.QuitClosure(), verdict_ptr));
+    run_loop.Run();
+    EXPECT_EQ(expected_verdict, verdict);
+  }
+
+  void CheckUnfamiliarSite(bool expect_v8_optimizations_enabled) {
+    const GURL kTestUrl =
+        embedded_https_test_server().GetURL("a.com", "/simple.html");
+    ASSERT_TRUE(content::NavigateToURL(web_contents(), kTestUrl));
+    EXPECT_EQ(!expect_v8_optimizations_enabled,
+              AreV8OptimizationsDisabledOnActiveWebContents());
+    CheckSiteFamiliarity(kTestUrl, FamiliarityVerdict::kUnfamiliar);
+  }
+
+  void MarkAsFamiliar(const GURL& url) {
+    // Mark site as familiar by adding a chrome://history entry older than 24
+    // hours.
+    HistoryServiceFactory::GetInstance()
+        ->GetForProfile(profile(), ServiceAccessType::IMPLICIT_ACCESS)
+        ->AddPage(url, base::Time::Now() - base::Hours(25),
+                  history::SOURCE_BROWSED);
+    CheckSiteFamiliarity(url, FamiliarityVerdict::kFamiliar);
+  }
+
+ protected:
+  virtual bool ShouldEnableSiteFamiliarityFeature() = 0;
+
+  virtual bool ShouldForceSitePerProcess() { return true; }
+
+ private:
+  safe_browsing::TestSafeBrowsingServiceFactory factory_;
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Test harness for integration tests which enable the "disable JavaScript
+// optimization for unfamiliar sites" feature.
+class JavascriptOptimizerBrowserTest_UseSiteFamiliarity
+    : public JavascriptOptimizerBrowserTest_UseSiteFamiliarityBase {
+ public:
+  JavascriptOptimizerBrowserTest_UseSiteFamiliarity() = default;
+  ~JavascriptOptimizerBrowserTest_UseSiteFamiliarity() override = default;
+
+ protected:
+  bool ShouldEnableSiteFamiliarityFeature() override { return true; }
+};
+
+IN_PROC_BROWSER_TEST_F(JavascriptOptimizerBrowserTest_UseSiteFamiliarity,
+                       ExpectOptimizationEnabledFamiliarSite) {
+  const GURL kTestUrl =
+      embedded_https_test_server().GetURL("a.com", "/simple.html");
+  MarkAsFamiliar(kTestUrl);
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), kTestUrl));
+  EXPECT_FALSE(AreV8OptimizationsDisabledOnActiveWebContents());
+}
+
+IN_PROC_BROWSER_TEST_F(JavascriptOptimizerBrowserTest_UseSiteFamiliarity,
+                       ExpectOptimizationDisabledForUnfamiliarSite) {
+  const GURL kTestUrl =
+      embedded_https_test_server().GetURL("a.com", "/simple.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), kTestUrl));
+  CheckUnfamiliarSite(/*expect_v8_optimizations_enabled=*/false);
+}
+
+// Test that if there is a content-setting-exception to enable v8-optimizers
+// for a specific site but the site is unfamiliar due to the heuristic that
+// the content-setting-exception takes precedence.
+IN_PROC_BROWSER_TEST_F(JavascriptOptimizerBrowserTest_UseSiteFamiliarity,
+                       ExpectContentSettingExceptionTakesPrecedence) {
+  const GURL kTestUrl =
+      embedded_https_test_server().GetURL("a.com", "/simple.html");
+  const ContentSettingsPattern kTestOriginPattern =
+      ContentSettingsPattern::FromString("https://a.com/");
+  auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
+  map->SetContentSettingCustomScope(kTestOriginPattern,
+                                    ContentSettingsPattern::Wildcard(),
+                                    ContentSettingsType::JAVASCRIPT_OPTIMIZER,
+                                    ContentSetting::CONTENT_SETTING_ALLOW);
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), kTestUrl));
+  CheckSiteFamiliarity(kTestUrl, FamiliarityVerdict::kUnfamiliar);
+  EXPECT_FALSE(AreV8OptimizationsDisabledOnActiveWebContents());
+}
+
+// Check that v8-optimization is enabled for chrome:// URLs.
+IN_PROC_BROWSER_TEST_F(JavascriptOptimizerBrowserTest_UseSiteFamiliarity,
+                       ExpectOptimizationEnabledForChromeScheme) {
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), GURL("chrome://version")));
+  EXPECT_FALSE(AreV8OptimizationsDisabledOnActiveWebContents());
+}
+
+IN_PROC_BROWSER_TEST_F(JavascriptOptimizerBrowserTest_UseSiteFamiliarity,
+                       ExpectOptimizationsEnabledInSpeculativeRenderFrameHost) {
+  // TODO(crbug.com/452130797): Determine desired behavior for this test case.
+
+  const GURL kTestUrl = embedded_https_test_server().GetURL(
+      "a.com", "/infinitely_loading_image.html");
+  content::TestNavigationManager navigation_manager(web_contents(), kTestUrl);
+  web_contents()->GetController().LoadURLWithParams(
+      content::NavigationController::LoadURLParams(kTestUrl));
+  navigation_manager.WaitForSpeculativeRenderFrameHostCreation();
+  content::RenderFrameHost* speculative_render_frame_host =
+      navigation_manager.GetCreatedSpeculativeRFH();
+  EXPECT_FALSE(speculative_render_frame_host->GetProcess()
+                   ->AreV8OptimizationsDisabled());
+}
+
+IN_PROC_BROWSER_TEST_F(JavascriptOptimizerBrowserTest_UseSiteFamiliarity,
+                       ExpectOptimizationsEnabledInSpareRenderer) {
+  // TODO(crbug.com/452689705): Consider creating both: (1) spare renderer
+  // processes with v8-optimizer enabled and (2) spare renderer processes with
+  // v8-optimizer disabled.
+
+  auto& spare_manager = content::SpareRenderProcessHostManager::Get();
+  spare_manager.WarmupSpare(profile());
+  ASSERT_EQ(spare_manager.GetSpares().size(), 1u);
+  EXPECT_FALSE(spare_manager.GetSpares()[0]->AreV8OptimizationsDisabled());
+}
+
+// Check that v8-optimizer is enabled if <iframe> URL is familiar.
+IN_PROC_BROWSER_TEST_F(JavascriptOptimizerBrowserTest_UseSiteFamiliarity,
+                       ExpectOptimizationEnabledForFamiliarIframe) {
+  const GURL kTestUrl =
+      embedded_https_test_server().GetURL("a.com", "/iframe_cross_site.html");
+  const url::Origin kChildOrigin =
+      url::Origin::Create(embedded_https_test_server().GetURL("b.com", "/"));
+
+  MarkAsFamiliar(kChildOrigin.GetURL());
+  CheckSiteFamiliarity(kTestUrl, FamiliarityVerdict::kUnfamiliar);
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), kTestUrl));
+
+  EXPECT_TRUE(AreV8OptimizationsDisabledOnActiveWebContents());
+  content::RenderFrameHost* child_frame =
+      content::ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
+  EXPECT_EQ(kChildOrigin, child_frame->GetLastCommittedOrigin());
+  EXPECT_FALSE(AreV8OptimizationsDisabledForRenderFrame(child_frame));
+}
+
+// Check that v8-optimizer is disabled if <iframe> URL is unfamiliar.
+IN_PROC_BROWSER_TEST_F(JavascriptOptimizerBrowserTest_UseSiteFamiliarity,
+                       ExpectOptimizationDisabledForUnfamiliarIframe) {
+  const GURL kTestUrl =
+      embedded_https_test_server().GetURL("a.com", "/iframe_cross_site.html");
+  const url::Origin kChildOrigin =
+      url::Origin::Create(embedded_https_test_server().GetURL("b.com", "/"));
+
+  MarkAsFamiliar(kTestUrl);
+  CheckSiteFamiliarity(kChildOrigin.GetURL(), FamiliarityVerdict::kUnfamiliar);
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), kTestUrl));
+
+  EXPECT_FALSE(AreV8OptimizationsDisabledOnActiveWebContents());
+  content::RenderFrameHost* child_frame =
+      content::ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
+  EXPECT_EQ(kChildOrigin, child_frame->GetLastCommittedOrigin());
+  EXPECT_TRUE(AreV8OptimizationsDisabledForRenderFrame(child_frame));
+}
+
+// Check that v8-optimization is disabled for data: <iframe> when
+// the data:// URL is navigated to from a cross-origin <iframe> that also has v8
+// optimizations disabled.
+IN_PROC_BROWSER_TEST_F(JavascriptOptimizerBrowserTest_UseSiteFamiliarity,
+                       ExpectOptimizationDisabledForDataUrlIframe) {
+  const GURL kTestUrl =
+      embedded_https_test_server().GetURL("a.com", "/iframe_cross_site.html");
+  const GURL kDataUrl = GURL("data:,hello%20world");
+
+  MarkAsFamiliar(kTestUrl);
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), kTestUrl));
+  EXPECT_FALSE(AreV8OptimizationsDisabledOnActiveWebContents());
+
+  content::RenderFrameHost* child_frame =
+      content::ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
+  ASSERT_TRUE(content::NavigateToURLFromRenderer(child_frame, kDataUrl));
+
+  EXPECT_FALSE(AreV8OptimizationsDisabledOnActiveWebContents());
+  child_frame = content::ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
+  EXPECT_TRUE(child_frame->GetProcess()->AreV8OptimizationsDisabled());
+}
+
+// Check that site-familiarity does not impede a data:// URL iframe from sharing
+// a render process with the iframe parent.
+IN_PROC_BROWSER_TEST_F(JavascriptOptimizerBrowserTest_UseSiteFamiliarity,
+                       ExpectDataUrlIframeSameProcessAsParent) {
+  const GURL kTestUrl =
+      embedded_https_test_server().GetURL("a.com", "/iframe_data_url.html");
+  MarkAsFamiliar(kTestUrl);
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), kTestUrl));
+
+  // Parent frame is familiar. V8-optimization should be enabled.
+  EXPECT_FALSE(AreV8OptimizationsDisabledOnActiveWebContents());
+
+  // Child frame should use same render process as main frame.
+  content::RenderFrameHost* child_frame =
+      content::ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
+  ASSERT_EQ(child_frame->GetLastCommittedURL().scheme(), "data");
+  EXPECT_EQ(child_frame->GetProcess(),
+            web_contents()->GetPrimaryMainFrame()->GetProcess());
+}
+
+class JavascriptOptimizerBrowserTest_UseSiteFamiliarity_DisableSiteIsolation
+    : public JavascriptOptimizerBrowserTest_UseSiteFamiliarity {
+ public:
+  JavascriptOptimizerBrowserTest_UseSiteFamiliarity_DisableSiteIsolation() =
+      default;
+  ~JavascriptOptimizerBrowserTest_UseSiteFamiliarity_DisableSiteIsolation()
+      override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    JavascriptOptimizerBrowserTest_UseSiteFamiliarity::SetUpCommandLine(
+        command_line);
+    command_line->AppendSwitch(switches::kDisableSiteIsolation);
+  }
+
+  bool ShouldForceSitePerProcess() override { return false; }
+};
+
+// Check that site-familiarity is ignored when site-isolation is disabled.
+// TODO(crbug.com/454006392): Determine desired site-familiarity behavior for
+// unlocked processes if the site-familiarity feature is launched on Android.
+IN_PROC_BROWSER_TEST_F(
+    JavascriptOptimizerBrowserTest_UseSiteFamiliarity_DisableSiteIsolation,
+    ExpectIgnoreFamiliarityWhenSiteIsolationDisabled) {
+  const GURL kTestUrl =
+      embedded_https_test_server().GetURL("a.com", "/simple.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), kTestUrl));
+  CheckUnfamiliarSite(/*expect_v8_optimizations_enabled=*/true);
+  EXPECT_FALSE(AreV8OptimizationsDisabledOnActiveWebContents());
+}
+
+// Test harness for integration tests which disable the "disable JavaScript
+// optimization for unfamiliar sites" feature.
+class JavascriptOptimizerBrowserTest_DoNotUseSiteFamiliarity
+    : public JavascriptOptimizerBrowserTest_UseSiteFamiliarityBase {
+ public:
+  JavascriptOptimizerBrowserTest_DoNotUseSiteFamiliarity() = default;
+  ~JavascriptOptimizerBrowserTest_DoNotUseSiteFamiliarity() override = default;
+
+ protected:
+  bool ShouldEnableSiteFamiliarityFeature() override { return false; }
+};
+
+IN_PROC_BROWSER_TEST_F(JavascriptOptimizerBrowserTest_DoNotUseSiteFamiliarity,
+                       ExpectIgnoreFamiliarity_OptimizerAllowedByDefault) {
+  auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
+  map->SetDefaultContentSetting(ContentSettingsType::JAVASCRIPT_OPTIMIZER,
+                                ContentSetting::CONTENT_SETTING_ALLOW);
+  CheckUnfamiliarSite(/*expect_v8_optimizations_enabled=*/true);
+}
+
+IN_PROC_BROWSER_TEST_F(JavascriptOptimizerBrowserTest_DoNotUseSiteFamiliarity,
+                       ExpectIgnoreFamiliarity_OptimizerBlockedByDefault) {
+  auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
+  map->SetDefaultContentSetting(ContentSettingsType::JAVASCRIPT_OPTIMIZER,
+                                ContentSetting::CONTENT_SETTING_BLOCK);
+  CheckUnfamiliarSite(/*expect_v8_optimizations_enabled=*/false);
 }

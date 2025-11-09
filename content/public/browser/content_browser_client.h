@@ -258,6 +258,7 @@ class NavigationUIData;
 class PrefetchServiceDelegate;
 class PrerenderWebContentsDelegate;
 class PresentationObserver;
+class ProcessSelectionUserData;
 class ReceiverPresentationServiceDelegate;
 class RenderFrameHost;
 class RenderProcessHost;
@@ -2867,7 +2868,7 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual bool IsJitDisabledForSite(BrowserContext* browser_context,
                                     const GURL& site_url);
 
-  // Whether v8 optimizations should be disabled for the given |browser_context|
+  // Whether v8 optimizations should be enabled for the given |browser_context|
   // and |site_url|. Pass an empty GURL for |site_url| to get the default
   // optimization policy for |browser_context|. Don't resolve |site_url| to an
   // effective URL before passing it to this function.
@@ -2875,11 +2876,13 @@ class CONTENT_EXPORT ContentBrowserClient {
   // This is distinct from IsJitDisabledForSite(): IsJitDisabledForSite()
   // disables JIT compilation altogether in the process, which fully disables
   // wasm and forces v8 to operate in interpreted mode.
-  // AreV8OptimizationsDisabledForSite() only disables v8's "higher tier"
-  // optimizers, leaving the basic JIT compiler and the wasm JIT compiler
-  // enabled.
-  virtual bool AreV8OptimizationsDisabledForSite(
+  // AreV8OptimizationsEnabledForSite() only controls the enabled-state of v8's
+  // "higher tier" optimizers, leaving the basic JIT compiler and the wasm JIT
+  // compiler unaffected.
+  virtual bool AreV8OptimizationsEnabledForSite(
       BrowserContext* browser_context,
+      const std::optional<base::SafeRef<ProcessSelectionUserData>>&
+          process_selection_user_data,
       const GURL& site_url);
 
   // Whether v8 feature flag overrides are disallowed for the given `site_url`.

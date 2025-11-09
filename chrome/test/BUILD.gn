@@ -6753,6 +6753,7 @@ test("unit_tests") {
       "../browser/policy/messaging_layer/util/reporting_server_connector_unittest.cc",
       "../browser/screen_ai/screen_ai_install_state_unittest.cc",
       "../browser/segmentation_platform/client_util/local_tab_handler_unittest.cc",
+      "../browser/site_protection/site_familiarity_process_selection_deferring_condition_unittest.cc",
       "../browser/site_protection/site_protection_metrics_observer_unittest.cc",
       "../browser/ssl/generated_https_first_mode_pref_unittest.cc",
       "../browser/ui/webui/profile_internals/profile_internals_handler_unittest.cc",

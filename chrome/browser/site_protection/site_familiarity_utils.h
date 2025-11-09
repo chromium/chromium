@@ -11,6 +11,12 @@ class Profile;
 
 namespace site_protection {
 
+// Returns whether v8-optimizations are disabled by default on sites which are
+// unfamiliar to the user. Site familiarity is computed using a heuristic based
+// on the user's navigation history and the safe-browsing
+// high-confidence-allowlist.
+bool AreV8OptimizationsDisabledOnUnfamiliarSites(Profile* profile);
+
 // Computes the default Javascript-Optimizer setting. Ignores content-setting
 // exceptions.
 content_settings::JavascriptOptimizerSetting
