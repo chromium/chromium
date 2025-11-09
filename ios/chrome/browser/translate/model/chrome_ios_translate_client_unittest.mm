@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/translate/model/chrome_ios_translate_client.h"
 
-#import "base/files/file_util.h"
 #import "base/metrics/metrics_hashes.h"
 #import "base/path_service.h"
 #import "base/test/metrics/histogram_tester.h"

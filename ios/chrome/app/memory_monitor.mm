@@ -9,7 +9,6 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/files/file_path.h"
-#import "base/files/file_util.h"
 #import "base/functional/bind.h"
 #import "base/location.h"
 #import "base/metrics/histogram_functions.h"

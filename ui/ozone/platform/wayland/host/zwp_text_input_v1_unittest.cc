@@ -8,7 +8,6 @@
 
 #include <string_view>
 
-#include "base/files/file_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "text-input-unstable-v1-server-protocol.h"

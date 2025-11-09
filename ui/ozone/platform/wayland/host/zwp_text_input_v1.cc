@@ -12,7 +12,6 @@
 
 #include "base/base64.h"
 #include "base/check.h"
-#include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/notimplemented.h"

@@ -11,7 +11,6 @@
 #include "base/base64.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
 #include "net/log/file_net_log_observer.h"

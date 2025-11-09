@@ -85,7 +85,6 @@ using media_gpu_vaapi::kModuleVa_prot;
 #endif
 
 #if BUILDFLAG(IS_LINUX)
-#include "base/files/file_util.h"
 #include "base/strings/string_split.h"
 #endif
 

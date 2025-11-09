@@ -14,7 +14,6 @@
 #import "base/containers/contains.h"
 #import "base/dcheck_is_on.h"
 #import "base/files/file_path.h"
-#import "base/files/file_util.h"
 #import "base/functional/bind.h"
 #import "base/location.h"
 #import "base/memory/weak_ptr.h"

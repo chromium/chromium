@@ -25,7 +25,6 @@
 #include "ash/style/typography.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/strings/string_util.h"
 #include "base/task/task_traits.h"

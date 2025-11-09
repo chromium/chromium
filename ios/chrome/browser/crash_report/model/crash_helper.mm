@@ -15,7 +15,6 @@
 #import "base/feature_list.h"
 #import "base/files/file_enumerator.h"
 #import "base/files/file_path.h"
-#import "base/files/file_util.h"
 #import "base/functional/bind.h"
 #import "base/ios/ios_util.h"
 #import "base/location.h"

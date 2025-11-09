@@ -21,7 +21,6 @@
 #include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
-#include "base/files/file_util.h"
 #include "base/format_macros.h"
 #include "base/i18n/time_formatting.h"
 #include "base/message_loop/message_pump_type.h"

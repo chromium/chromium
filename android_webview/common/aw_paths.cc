@@ -6,7 +6,7 @@
 
 #include "base/android/path_utils.h"
 #include "base/base_paths_android.h"
-#include "base/files/file_util.h"
+#include "base/files/file_path.h"
 #include "base/path_service.h"
 
 namespace android_webview {

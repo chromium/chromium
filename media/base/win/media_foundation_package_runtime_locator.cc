@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/native_library.h"
 #include "base/no_destructor.h"

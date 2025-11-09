@@ -7,7 +7,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/files/file_util.h"
 #include "base/lazy_instance.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"

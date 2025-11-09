@@ -4,7 +4,6 @@
 
 #include "base/files/file_enumerator.h"
 
-#include "base/files/file_util.h"
 #include "base/functional/function_ref.h"
 
 namespace base {

@@ -14,7 +14,6 @@
 #include "ash/quick_insert/model/quick_insert_action_type.h"
 #include "ash/quick_insert/views/quick_insert_item_view.h"
 #include "base/files/file.h"
-#include "base/files/file_util.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"

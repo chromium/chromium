@@ -5,7 +5,6 @@
 // This file ensures that these header files don't include Windows.h and can
 // compile without including Windows.h. This helps to improve compile times.
 
-#include "base/files/file_util.h"
 #include "base/files/platform_file.h"
 #include "base/process/process_handle.h"
 #include "base/synchronization/condition_variable.h"

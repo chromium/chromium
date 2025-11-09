@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/browser_view/ui_bundled/browser_coordinator.h"
 
-#import "base/files/file_util.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/bookmarks/test/bookmark_test_helpers.h"
 #import "components/commerce/core/mock_shopping_service.h"

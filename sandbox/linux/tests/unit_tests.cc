@@ -24,9 +24,9 @@
 
 #include <tuple>
 
+#include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/debug/leak_annotations.h"
-#include "base/files/file_util.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/pattern.h"
 #include "build/build_config.h"

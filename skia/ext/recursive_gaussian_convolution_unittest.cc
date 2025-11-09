@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/time/time.h"
 #include "skia/ext/convolver.h"
 #include "testing/gtest/include/gtest/gtest.h"

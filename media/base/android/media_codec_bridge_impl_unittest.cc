@@ -19,7 +19,6 @@
 #include "base/containers/extend.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/to_vector.h"
-#include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/time/time.h"

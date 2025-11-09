@@ -10,7 +10,6 @@
 #import "base/containers/contains.h"
 #import "base/files/file.h"
 #import "base/files/file_path.h"
-#import "base/files/file_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/time/time.h"
 #import "components/prefs/pref_service.h"

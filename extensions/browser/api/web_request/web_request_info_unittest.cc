@@ -4,7 +4,6 @@
 
 #include "extensions/browser/api/web_request/web_request_info.h"
 
-#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_writer.h"
 #include "content/public/test/browser_task_environment.h"

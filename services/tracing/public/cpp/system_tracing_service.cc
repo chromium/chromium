@@ -11,7 +11,6 @@
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
-#include "base/files/file_util.h"
 #include "base/files/platform_file.h"
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"

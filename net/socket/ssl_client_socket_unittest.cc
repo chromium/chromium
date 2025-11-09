@@ -19,7 +19,6 @@
 
 #include "base/containers/span.h"
 #include "base/containers/span_reader.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"

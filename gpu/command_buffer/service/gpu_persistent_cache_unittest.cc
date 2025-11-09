@@ -5,7 +5,6 @@
 #include "gpu/command_buffer/service/gpu_persistent_cache.h"
 
 #include "base/barrier_closure.h"
-#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"

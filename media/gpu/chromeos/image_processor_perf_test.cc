@@ -9,7 +9,6 @@
 
 #include "base/bits.h"
 #include "base/containers/span.h"
-#include "base/files/file_util.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"

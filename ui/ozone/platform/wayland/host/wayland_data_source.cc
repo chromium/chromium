@@ -11,7 +11,6 @@
 #include <cstdint>
 #include <vector>
 
-#include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/notimplemented.h"
 #include "ui/base/dragdrop/drag_drop_types.h"

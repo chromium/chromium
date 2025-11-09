@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/omnibox/eg_tests/omnibox_app_interface.h"
 
 #import "base/apple/foundation_util.h"
-#import "base/files/file_util.h"
 #import "base/no_destructor.h"
 #import "base/path_service.h"
 #import "base/strings/string_number_conversions.h"

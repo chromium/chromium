@@ -16,7 +16,6 @@
 #include "base/bits.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
 #include "base/test/launcher/unit_test_launcher.h"

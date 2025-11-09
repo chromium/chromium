@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/gfx/font_render_params.h"
+#include "ui/gfx/font_render_params_linux.h"
 
 #include <fontconfig/fontconfig.h>
 
 #include "base/check_op.h"
-#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
@@ -16,7 +15,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/test_fonts/fontconfig/fontconfig_util_linux.h"
 #include "ui/gfx/font.h"
-#include "ui/gfx/font_render_params_linux.h"
+#include "ui/gfx/font_render_params.h"
 #include "ui/gfx/linux/fontconfig_util.h"
 
 #if BUILDFLAG(IS_LINUX)

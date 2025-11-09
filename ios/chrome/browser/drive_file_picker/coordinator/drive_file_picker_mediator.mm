@@ -10,7 +10,6 @@
 #import "base/apple/foundation_util.h"
 #import "base/cancelable_callback.h"
 #import "base/files/file_path.h"
-#import "base/files/file_util.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/timer/timer.h"

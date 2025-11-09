@@ -6,7 +6,6 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/files/file_path.h"
-#import "base/files/file_util.h"
 #import "base/metrics/histogram_base.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/numerics/safe_conversions.h"

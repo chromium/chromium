@@ -8,7 +8,6 @@
 #include <string_view>
 
 #include "base/files/file.h"
-#include "base/files/file_util.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"

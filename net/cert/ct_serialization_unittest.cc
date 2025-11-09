@@ -9,7 +9,6 @@
 #include <string_view>
 
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/strings/string_view_util.h"
 #include "net/base/test_completion_callback.h"
 #include "net/cert/merkle_tree_leaf.h"

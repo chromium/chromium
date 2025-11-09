@@ -11,14 +11,15 @@
 
 #include <fcntl.h>
 #include <stddef.h>
+#include <unistd.h>
 
 #include <unordered_map>
 
-#include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/format_macros.h"
 #include "base/logging.h"
 #include "base/memory/page_size.h"
+#include "base/posix/eintr_wrapper.h"
 #include "base/strings/string_split.h"
 #include "build/build_config.h"
 

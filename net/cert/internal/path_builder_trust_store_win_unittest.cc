@@ -6,8 +6,7 @@
 
 #include "base/base_paths.h"
 #include "base/compiler_specific.h"
-#include "base/files/file_util.h"
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback.h"
 #include "base/path_service.h"
 #include "base/test/bind.h"
 #include "base/win/wincrypt_shim.h"

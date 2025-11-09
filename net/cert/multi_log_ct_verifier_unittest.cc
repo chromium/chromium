@@ -9,7 +9,6 @@
 #include <string_view>
 
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_samples.h"
 #include "base/metrics/statistics_recorder.h"

@@ -9,7 +9,6 @@
 
 #import "base/containers/contains.h"
 #import "base/files/file_path.h"
-#import "base/files/file_util.h"
 #import "base/files/scoped_temp_dir.h"
 #import "base/ios/ios_util.h"
 #import "base/run_loop.h"

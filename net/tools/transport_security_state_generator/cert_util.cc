@@ -9,7 +9,6 @@
 
 #include "base/base64.h"
 #include "base/compiler_specific.h"
-#include "base/files/file_util.h"
 #include "base/numerics/clamped_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"

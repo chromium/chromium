@@ -12,7 +12,6 @@
 #include "ash/public/cpp/capture_mode/capture_mode_delegate.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
-#include "base/files/file_util.h"
 #include "base/functional/callback.h"
 #include "base/threading/thread_restrictions.h"
 #include "chromeos/ash/services/recording/public/mojom/recording_service.mojom.h"
