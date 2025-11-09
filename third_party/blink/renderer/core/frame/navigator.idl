@@ -42,3 +42,4 @@ Navigator includes NavigatorLanguage;
 Navigator includes NavigatorOnLine;
 Navigator includes NavigatorAutomationInformation;
 Navigator includes NavigatorUA;
+Navigator includes NavigatorPlugins;
