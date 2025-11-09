@@ -9707,6 +9707,11 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerReinvocationBrowserTest,
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return !query_controller->last_queried_region().is_null(); }));
 
+  // Verify that the side panel web contents has focus.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return side_panel_web_contents->GetRenderWidgetHostView()->HasFocus();
+  }));
+
   // Verify that no navigation occurred and the URL is unchanged.
   EXPECT_TRUE(base::test::RunUntil([&]() {
     auto vsint_after = query_controller->GetVisualSearchInteractionData();

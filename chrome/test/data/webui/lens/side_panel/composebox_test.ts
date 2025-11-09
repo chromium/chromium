@@ -10,7 +10,7 @@ import {PageCallbackRouter, PageHandlerRemote} from 'chrome-untrusted://resource
 import {ComposeboxProxyImpl} from 'chrome-untrusted://resources/cr_components/composebox/composebox_proxy.js';
 import {loadTimeData} from 'chrome-untrusted://resources/js/load_time_data.js';
 import {type AutocompleteMatch, type AutocompleteResult, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, type PageRemote as SearchboxPageRemote} from 'chrome-untrusted://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome-untrusted://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome-untrusted://webui-test/test_mock.js';
 import {isVisible} from 'chrome-untrusted://webui-test/test_util.js';
@@ -708,5 +708,24 @@ suite('Composebox', () => {
     await waitAfterNextRender(lensSidePanelElement);
 
     assertFalse(lensButton.hasAttribute('disabled'));
+  });
+
+  test('FocusesComposeboxOnCallback', async () => {
+    loadTimeData.overrideValues({enableAimSearchbox: true});
+    const composebox = await setupTest();
+    const input =
+        composebox.shadowRoot!.querySelector<HTMLTextAreaElement>('textarea');
+    assertTrue(!!input);
+
+    // Make sure input is not focused initially.
+    input.blur();
+    assertNotEquals(input, composebox.shadowRoot!.activeElement);
+
+    // Trigger the mojom callback to focus the composebox.
+    testBrowserProxy.page.focusSearchbox();
+    await waitAfterNextRender(composebox);
+
+    // Verify the input is now focused.
+    assertEquals(input, composebox.shadowRoot!.activeElement);
   });
 });

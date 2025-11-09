@@ -114,4 +114,7 @@ interface LensSidePanelPage {
 
   // Informs the side panel that the overlay is showing or hiding.
   SetIsOverlayShowing(bool is_showing);
+
+  // Informs the side panel to focus the searchbox.
+  FocusSearchbox();
 };

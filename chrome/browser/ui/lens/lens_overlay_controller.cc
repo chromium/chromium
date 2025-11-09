@@ -2543,6 +2543,9 @@ void LensOverlayController::HandleInteractionURLResponse(
           results_side_panel_coordinator->GetSidePanelNewTabUrl()) &&
       IsVisualSelectionType(lens_selection_type_) &&
       lens::features::GetEnableLensButtonInSearchbox()) {
+    // Focus the side panel contents so the composebox can be properly focused.
+    results_side_panel_coordinator->FocusSearchbox();
+
     // The latest vsint is stored in the query controller. By returning here,
     // the URL will not be loaded into the side panel. Instead, when the user
     // makes a query in the composebox, the vsint will be sent to the results.

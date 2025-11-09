@@ -769,6 +769,14 @@ void LensOverlaySidePanelCoordinator::FocusResultsFrame() {
   }
 }
 
+void LensOverlaySidePanelCoordinator::FocusSearchbox() {
+  auto* web_contents = GetSidePanelWebContents();
+  if (web_contents && side_panel_page_) {
+    web_contents->Focus();
+    side_panel_page_->FocusSearchbox();
+  }
+}
+
 void LensOverlaySidePanelCoordinator::SuppressGhostLoader() {
   if (side_panel_page_) {
     side_panel_page_->SuppressGhostLoader();
