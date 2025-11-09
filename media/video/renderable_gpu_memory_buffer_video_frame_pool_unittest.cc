@@ -376,7 +376,7 @@ TEST_P(RenderableGpuMemoryBufferVideoFramePoolTest,
   base::WeakPtr<FakeContext> context;
   std::unique_ptr<RenderableGpuMemoryBufferVideoFramePool> pool;
 
-  // Case 1 — requires_cpu_access = true
+  // Case 1: requires_cpu_access = true
   {
     auto context_strong = std::make_unique<FakeContext>();
     context = context_strong->GetWeakPtr();
@@ -412,7 +412,7 @@ TEST_P(RenderableGpuMemoryBufferVideoFramePoolTest,
   EXPECT_TRUE(base::test::RunUntil([&]() { return destroy_count == 1; }));
   EXPECT_EQ(destroy_count, 1);
 
-  // Case 2 — requires_cpu_access = false
+  // Case 2: requires_cpu_access = false
   {
     auto context_strong = std::make_unique<FakeContext>();
     context = context_strong->GetWeakPtr();
