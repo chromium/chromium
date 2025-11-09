@@ -7,6 +7,8 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/browser_management/browser_management_service.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_user_status_code.h"
 #include "chrome/browser/glic/glic_user_status_fetcher.h"
@@ -15,6 +17,7 @@
 #include "chrome/browser/glic/host/glic_features.mojom-features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_features.h"
@@ -34,6 +37,28 @@
 #endif
 
 namespace glic {
+
+namespace {
+
+bool HasGoogleInternalProfile() {
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  if (!profile_manager) {
+    return false;
+  }
+  std::vector<Profile*> profiles = profile_manager->GetLoadedProfiles();
+  for (Profile* profile : profiles) {
+    auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
+    if (!identity_manager) {
+      continue;
+    }
+    if (IsPrimaryAccountGoogleInternal(*identity_manager)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+}  // namespace
 
 GlicEnabling::ProfileEnablement GlicEnabling::EnablementForProfile(
     Profile* profile) {
@@ -257,8 +282,16 @@ bool GlicEnabling::IsShareImageEnabledForProfile(Profile* profile) {
     return false;
   }
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(::switches::kGlicDev) &&
-      IsPrimaryAccountGoogleInternal(*identity_manager)) {
+      HasGoogleInternalProfile()) {
     return true;
+  }
+
+  auto* browser_management_service =
+      policy::ManagementServiceFactory::GetForProfile(profile);
+  const bool is_managed =
+      browser_management_service && browser_management_service->IsManaged();
+  if (is_managed) {
+    return false;
   }
 
   // Should only have a cached value for enterprise accounts.

@@ -731,7 +731,19 @@ IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest, NonEnterpriseSignIn) {
   ASSERT_FALSE(GetCachedStatusDict().has_value());
 
   ASSERT_TRUE(IsGlicEnabled());
-  EXPECT_TRUE(IsShareImageEnabled());
+
+  {
+    policy::ScopedManagementServiceOverrideForTesting platform_management(
+        policy::ManagementServiceFactory::GetForProfile(profile()),
+        policy::EnterpriseManagementAuthority::CLOUD);
+    EXPECT_FALSE(IsShareImageEnabled());
+  }
+  {
+    policy::ScopedManagementServiceOverrideForTesting platform_management(
+        policy::ManagementServiceFactory::GetForProfile(profile()),
+        policy::EnterpriseManagementAuthority::NONE);
+    EXPECT_TRUE(IsShareImageEnabled());
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest,
