@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<title>Canvas.setHitTestRegions: text should be selectable</title>
+<title>Canvas descendant text should be selectable</title>
 <link rel="help" href="https://github.com/WICG/html-in-canvas">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -21,9 +21,6 @@
 <script>
   const ctx = canvas.getContext('2d');
   ctx.drawElementImage(target, 0, 0);
-  ctx.setHitTestRegions([
-    { element: target, rect: {x: 0, y: 0} },
-  ]);
 
   promise_test(async () => {
     let doubleClickEventFired = false;

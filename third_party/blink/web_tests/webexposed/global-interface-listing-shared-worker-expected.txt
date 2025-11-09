@@ -2783,7 +2783,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method samplerParameterf
 [Worker]     method samplerParameteri
 [Worker]     method scissor
-[Worker]     method setHitTestRegions
 [Worker]     method shaderSource
 [Worker]     method stencilFunc
 [Worker]     method stencilFuncSeparate
@@ -3288,7 +3287,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method renderbufferStorage
 [Worker]     method sampleCoverage
 [Worker]     method scissor
-[Worker]     method setHitTestRegions
 [Worker]     method shaderSource
 [Worker]     method stencilFunc
 [Worker]     method stencilFuncSeparate

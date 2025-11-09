@@ -1261,7 +1261,6 @@ interface CanvasRenderingContext2D
     method roundRect
     method save
     method scale
-    method setHitTestRegions
     method setLineDash
     method setTransform
     method stroke
@@ -10913,7 +10912,6 @@ interface WebGL2RenderingContext
     method samplerParameterf
     method samplerParameteri
     method scissor
-    method setHitTestRegions
     method shaderSource
     method stencilFunc
     method stencilFuncSeparate
@@ -11417,7 +11415,6 @@ interface WebGLRenderingContext
     method renderbufferStorage
     method sampleCoverage
     method scissor
-    method setHitTestRegions
     method shaderSource
     method stencilFunc
     method stencilFuncSeparate

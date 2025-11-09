@@ -787,23 +787,6 @@ void CanvasRenderingContext2D::drawElementImage(
   DrawElementInternal(element, x, y, dwidth, dheight, exception_state);
 }
 
-void CanvasRenderingContext2D::setHitTestRegions(
-    VectorOf<CanvasElementHitTestRegion> hit_test_regions,
-    ExceptionState& exception_state) {
-  HTMLCanvasElement* canvas_element = HostAsHTMLCanvasElement();
-  DCHECK(canvas_element);
-  canvas_element->GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
-      DocumentUpdateReason::kCanvasDrawElementImage);
-
-  VectorOf<HTMLCanvasElement::ElementHitTestRegion> result;
-  if (!ConvertHitTestRegionsToHTMLCanvasRegions(
-          hit_test_regions, result, "setHitTestRegions()", exception_state)) {
-    return;
-  }
-
-  HostAsHTMLCanvasElement()->SetHitTestRegions(std::move(result));
-}
-
 void CanvasRenderingContext2D::EnableAccelerationIfPossible() {
   if (canvas()->GetRasterModeForCanvas2D() == RasterMode::kCPU &&
       SharedGpuContext::AllowSoftwareToAcceleratedCanvasUpgrade()) {

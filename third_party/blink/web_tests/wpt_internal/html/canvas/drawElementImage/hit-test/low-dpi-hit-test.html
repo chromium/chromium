@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-<title>Canvas.setHitTestRegions: hit test regions low dpi tests</title>
+<title>Low-DPI hit tests</title>
 <link rel="help" href="https://github.com/WICG/html-in-canvas">
 <link rel="author" href="mailto:vmpstr@chromium.org">
 
@@ -19,7 +19,7 @@
 div {
   width: 100px;
   height: 100px;
-  background: red;
+  background: green;
 }
 </style>
 
@@ -44,6 +44,14 @@ function noHit(reject, signal) {
 async function cleanup(controller) {
   await movePointer(0, 0);
   controller.abort();
+  const target = canvas.querySelector("#target");
+  target.style.pointerEvents = '';
+  target.style.transformOrigin = '';
+  target.style.transform = '';
+  const negative = canvas.querySelector("#negative");
+  negative.style.pointerEvents = '';
+  negative.style.transformOrigin = '';
+  negative.style.transform = '';
 }
 
 promise_test((t) => {
@@ -53,22 +61,20 @@ promise_test((t) => {
 
     const canvas = document.getElementById("canvas");
     const canvasRect = canvas.getBoundingClientRect();
-    const target = canvas.querySelector("#target");
-    const ctx = canvas.getContext("2d");
 
-    ctx.reset();
-    ctx.setHitTestRegions([
-      {
-        element: target,
-        rect: {x: 15, y: 35, width: 1, height: 1}
-      }
-    ]);
+    const target = canvas.querySelector("#target");
+    target.style.transformOrigin = "0 0";
+    target.style.transform = "translate(15px, 35px) scale(0.01)";
+
+    // Do not hit test #negative for this test.
+    const negative = canvas.querySelector("#negative");
+    negative.style.pointerEvents = "none";
 
     target.addEventListener("pointerenter", resolve, { signal: controller.signal });
     await movePointer(canvasRect.x + 15, canvasRect.y + 35);
     requestAnimationFrame(() => noHit(reject, controller.signal));
   });
-}, "single target and region");
+}, "single target");
 
 promise_test((t) => {
   return new Promise(async (resolve, reject) => {
@@ -77,28 +83,21 @@ promise_test((t) => {
 
     const canvas = document.getElementById("canvas");
     const canvasRect = canvas.getBoundingClientRect();
+
     const target = canvas.querySelector("#target");
+    target.style.transformOrigin = "0 0";
+    target.style.transform = "translate(15px, 35px) scale(0.01)";
+
     const negative = canvas.querySelector("#negative");
-    const ctx = canvas.getContext("2d");
+    negative.style.transformOrigin = "0 0";
+    negative.style.transform = "translate(15px, 35px) scale(0.01)";
 
-    ctx.reset();
-    ctx.setHitTestRegions([
-      {
-        element: negative,
-        rect: {x: 15, y: 35, width: 1, height: 1}
-      },
-      {
-        element: target,
-        rect: {x: 15, y: 35, width: 1, height: 1}
-      }
-    ]);
-
-    target.addEventListener("pointerenter", resolve, { signal: controller.signal });
-    negative.addEventListener("pointerenter", reject, { signal: controller.signal });
+    target.addEventListener("pointerenter", reject, { signal: controller.signal });
+    negative.addEventListener("pointerenter", resolve, { signal: controller.signal });
     await movePointer(canvasRect.x + 15, canvasRect.y + 35);
     requestAnimationFrame(() => noHit(reject, controller.signal));
   });
-}, "multiple targets in the same region");
+}, "multiple targets, should only hit first");
 
 promise_test((t) => {
   return new Promise(async (resolve, reject) => {
@@ -107,16 +106,10 @@ promise_test((t) => {
 
     const canvas = document.getElementById("canvas");
     const canvasRect = canvas.getBoundingClientRect();
-    const negative = canvas.querySelector("#negative");
-    const ctx = canvas.getContext("2d");
 
-    ctx.reset();
-    ctx.setHitTestRegions([
-      {
-        element: negative,
-        rect: {x: 15, y: 35, width: 1, height: 1}
-      },
-    ]);
+    const negative = canvas.querySelector("#negative");
+    negative.style.transformOrigin = "0 0";
+    negative.style.transform = "translate(15px, 35px) scale(0.01)";
 
     negative.addEventListener("pointerenter", reject, { signal: controller.signal });
     await movePointer(canvasRect.x + 14, canvasRect.y + 35);
@@ -134,16 +127,14 @@ promise_test((t) => {
 
     const canvas = document.getElementById("canvas");
     const canvasRect = canvas.getBoundingClientRect();
-    const target = canvas.querySelector("#target");
-    const ctx = canvas.getContext("2d");
 
-    ctx.reset();
-    ctx.setHitTestRegions([
-      {
-        element: target,
-        rect: {x: 15, y: 35}
-      }
-    ]);
+    const target = canvas.querySelector("#target");
+    target.style.transformOrigin = "0 0";
+    target.style.transform = "translate(15px, 35px) scale(0.01)";
+
+    // Do not hit test #negative for this test.
+    const negative = canvas.querySelector("#negative");
+    negative.style.pointerEvents = "none";
 
     target.addEventListener("pointerenter", resolve, { signal: controller.signal });
     await movePointer(canvasRect.x + 15, canvasRect.y + 35);

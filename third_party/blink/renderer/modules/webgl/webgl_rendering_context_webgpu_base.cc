@@ -2253,12 +2253,6 @@ void WebGLRenderingContextWebGPUBase::texElement2D(
   NOTIMPLEMENTED();
 }
 
-void WebGLRenderingContextWebGPUBase::setHitTestRegions(
-    VectorOf<CanvasElementHitTestRegion> hit_test_regions,
-    ExceptionState& exception_state) {
-  NOTIMPLEMENTED();
-}
-
 void WebGLRenderingContextWebGPUBase::texSubImage2D(GLenum target,
                                                     GLint level,
                                                     GLint xoffset,

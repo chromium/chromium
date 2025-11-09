@@ -36,7 +36,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "cc/paint/paint_record.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_canvas_element_hit_test_region.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_context_creation_attributes_core.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_performance_monitor.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
@@ -227,8 +226,6 @@ class MODULES_EXPORT CanvasRenderingContext2D final
                         double dwidth,
                         double dheight,
                         ExceptionState& exception_state);
-  void setHitTestRegions(VectorOf<CanvasElementHitTestRegion> hit_test_regions,
-                         ExceptionState& exception_state);
 
   CanvasRenderingContextHost* GetCanvasRenderingContextHost() const override;
   ExecutionContext* GetTopExecutionContext() const override;

@@ -6869,23 +6869,6 @@ void WebGLRenderingContextBase::texElementImage2D(
   DrawElementImage(image_for_render, params, exception_state);
 }
 
-void WebGLRenderingContextBase::setHitTestRegions(
-    VectorOf<CanvasElementHitTestRegion> hit_test_regions,
-    ExceptionState& exception_state) {
-  HTMLCanvasElement* canvas_element = canvas();
-  DCHECK(canvas_element);
-  canvas_element->GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
-      DocumentUpdateReason::kCanvasDrawElementImage);
-
-  VectorOf<HTMLCanvasElement::ElementHitTestRegion> result;
-  if (!ConvertHitTestRegionsToHTMLCanvasRegions(
-          hit_test_regions, result, "setHitTestRegions()", exception_state)) {
-    return;
-  }
-
-  canvas()->SetHitTestRegions(std::move(result));
-}
-
 void WebGLRenderingContextBase::texSubImage2D(
     GLenum target,
     GLint level,

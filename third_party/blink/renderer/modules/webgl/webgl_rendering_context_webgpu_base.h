@@ -10,7 +10,6 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_canvas_element_hit_test_region.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_predefined_color_space.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_webgl_context_attributes.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
@@ -614,9 +613,6 @@ class MODULES_EXPORT WebGLRenderingContextWebGPUBase
                     GLenum type,
                     Element* element,
                     ExceptionState& exception_state);
-
-  void setHitTestRegions(VectorOf<CanvasElementHitTestRegion> hit_test_regions,
-                         ExceptionState& exception_state);
 
   void texSubImage2D(GLenum target,
                      GLint level,

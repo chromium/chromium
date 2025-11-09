@@ -29,7 +29,6 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_canvas_element_hit_test_region.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_canvas_hit_test_rect.h"
 #include "third_party/blink/renderer/core/animation_frame/worker_animation_frame_provider.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -279,43 +278,6 @@ scoped_refptr<StaticBitmapImage> CanvasRenderingContext::GetElementImage(
   return UnacceleratedStaticBitmapImage::Create(surface->makeImageSnapshot());
 }
 
-bool CanvasRenderingContext::ConvertHitTestRegionsToHTMLCanvasRegions(
-    const HeapVector<Member<CanvasElementHitTestRegion>>& hit_test_regions,
-    VectorOf<HTMLCanvasElement::ElementHitTestRegion>& result,
-    const String& func_name,
-    ExceptionState& exception_state) {
-  for (const auto& region : hit_test_regions) {
-    if (!IsDrawElementImageEligible(region->element(), func_name,
-                                    exception_state)) {
-      return false;
-    }
-
-    double width = [&]() -> double {
-      if (region->rect()->hasWidth()) {
-        return *region->rect()->width();
-      }
-      gfx::RectF bounds =
-          region->element()->GetBoundingClientRectNoLifecycleUpdate();
-      return bounds.width();
-    }();
-
-    double height = [&]() -> double {
-      if (region->rect()->hasHeight()) {
-        return *region->rect()->height();
-      }
-      gfx::RectF bounds =
-          region->element()->GetBoundingClientRectNoLifecycleUpdate();
-      return bounds.height();
-    }();
-
-    result.push_back(
-        MakeGarbageCollected<HTMLCanvasElement::ElementHitTestRegion>(
-            region->element(), gfx::RectF(region->rect()->x(),
-                                          region->rect()->y(), width, height)));
-  }
-  return true;
-}
-
 void CanvasRenderingContext::DidDraw(
     const SkIRect& dirty_rect,
     CanvasPerformanceMonitor::DrawType draw_type) {
@@ -477,16 +439,6 @@ CanvasRenderingContext::GetCanvasPerformanceMonitor() {
   DEFINE_THREAD_SAFE_STATIC_LOCAL(ThreadSpecific<CanvasPerformanceMonitor>,
                                   monitor, ());
   return *monitor;
-}
-
-CanvasRenderingContext::ElementHitTestRegion::ElementHitTestRegion(
-    Element* element,
-    const gfx::RectF& rect)
-    : element_(element), rect_(rect) {}
-
-void CanvasRenderingContext::ElementHitTestRegion::Trace(
-    Visitor* visitor) const {
-  visitor->Trace(element_);
 }
 
 }  // namespace blink

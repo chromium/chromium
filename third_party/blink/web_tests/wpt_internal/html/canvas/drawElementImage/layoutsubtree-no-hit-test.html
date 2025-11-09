@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-<title>Canvas.drawElementImage: no hit testing with layoutsubtree</title>
+<title>Canvas.drawElementImage: no hit testing without layoutsubtree</title>
 <link rel="help" href="https://github.com/WICG/html-in-canvas">
 <link rel="author" href="mailto:vmpstr@chromium.org">
 
@@ -24,7 +24,7 @@
 }
 </style>
 
-<canvas id=canvas width="200" height="200" layoutsubtree>
+<canvas id=canvas width="200" height="200">
   <div id=child></div>
 </canvas>
 
@@ -43,8 +43,6 @@ function clickMouse(x, y) {
 }
 
 async_test((t) => {
-  canvas.getContext("2d").clearRect(0, 0, 200, 200);
-  canvas.getContext("2d").drawElementImage(child, 20, 30);
   t.step(() => {
     assert_equals(document.elementFromPoint(20, 20), canvas);
     assert_equals(document.elementFromPoint(40, 40), canvas);
@@ -52,12 +50,10 @@ async_test((t) => {
     assert_equals(document.elementFromPoint(150, 150), canvas);
   });
   t.done();
-}, "canvas drawElementImage elementFromPoint");
+}, "canvas elementFromPoint");
 
 promise_test(() => {
   return new Promise((resolve, reject) => {
-    canvas.getContext("2d").clearRect(0, 0, 200, 200);
-    canvas.getContext("2d").drawElementImage(child, 20, 30);
     child.addEventListener("pointerenter", e => reject(`${e.x}, ${e.y}`));
     requestAnimationFrame(async () => {
       await moveMouse(20, 20);
@@ -67,12 +63,10 @@ promise_test(() => {
       requestAnimationFrame(resolve);
     });
   });
-}, "canvas drawElementImage mouseenter");
+}, "canvas mouseenter");
 
 promise_test(() => {
   return new Promise((resolve, reject) => {
-    canvas.getContext("2d").clearRect(0, 0, 200, 200);
-    canvas.getContext("2d").drawElementImage(child, 20, 30);
     child.addEventListener("click", e => reject(`${e.x}, ${e.y}`));
     requestAnimationFrame(async () => {
       await clickMouse(20, 20);
@@ -82,7 +76,7 @@ promise_test(() => {
       requestAnimationFrame(resolve);
     });
   });
-}, "canvas drawElementImage click");
+}, "canvas click");
 
 </script>
 </html>

@@ -72,9 +72,6 @@ interface CanvasRenderingContext2D {
                          unrestricted double x, unrestricted double y,
                          unrestricted double dwidth, unrestricted double dheight);
 
-    [RuntimeEnabled=CanvasDrawElement, RaisesException]
-    void setHitTestRegions(sequence<CanvasElementHitTestRegion> hitTestRegions);
-
     [MeasureAs=GetCanvas2DContextAttributes] CanvasRenderingContext2DSettings getContextAttributes();
 };
 

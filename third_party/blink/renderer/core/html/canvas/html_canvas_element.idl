@@ -31,11 +31,6 @@ dictionary CanvasHitTestRect {
   double? height;
 };
 
-dictionary CanvasElementHitTestRegion {
-  Element element;
-  CanvasHitTestRect rect;
-};
-
 // https://html.spec.whatwg.org/C/canvas.html#htmlcanvaselement
 [
     Exposed=Window

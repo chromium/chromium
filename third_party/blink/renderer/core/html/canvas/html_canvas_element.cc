@@ -1524,7 +1524,7 @@ bool HTMLCanvasElement::ShouldAccelerate() const {
 }
 
 bool HTMLCanvasElement::CanStartSelection() const {
-  if (GetHitTestRegions().empty()) {
+  if (!layoutSubtree()) {
     return false;
   }
   return HTMLElement::CanStartSelection();
@@ -1533,16 +1533,6 @@ bool HTMLCanvasElement::CanStartSelection() const {
 bool HTMLCanvasElement::ShouldDisableAccelerationBecauseOfReadback() const {
   return DisabledAccelerationCounterSupplement::From(GetDocument())
       .ShouldDisableAcceleration();
-}
-
-void HTMLCanvasElement::SetHitTestRegions(
-    VectorOf<ElementHitTestRegion> hit_test_regions) {
-  hit_test_regions_ = std::move(hit_test_regions);
-}
-
-const VectorOf<HTMLCanvasElement::ElementHitTestRegion>&
-HTMLCanvasElement::GetHitTestRegions() const {
-  return hit_test_regions_;
 }
 
 void HTMLCanvasElement::NotifyGpuContextLost() {
@@ -1554,7 +1544,6 @@ void HTMLCanvasElement::NotifyGpuContextLost() {
 void HTMLCanvasElement::Trace(Visitor* visitor) const {
   visitor->Trace(listeners_);
   visitor->Trace(context_);
-  visitor->Trace(hit_test_regions_);
   ExecutionContextLifecycleObserver::Trace(visitor);
   PageVisibilityObserver::Trace(visitor);
   CanvasRenderingContextHost::Trace(visitor);

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-<title>Canvas.setHitTestRegions: hit test regions should appear in elementsFromPoint</title>
+<title>Elements should appear in elementsFromPoint</title>
 <link rel="help" href="https://github.com/WICG/html-in-canvas">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -12,7 +12,7 @@
   div {
     width: 100px;
     height: 100px;
-    background: red;
+    background: green;
   }
 </style>
 
@@ -20,37 +20,22 @@
   <div id=a></div>
   <div id=b></div>
   <div id=pointerEventsNone style="pointer-events: none;"></div>
+  <div id=inert inert></div>
 </canvas>
 
 <script>
   test(function () {
-    const ctx = canvas.getContext('2d');
-    ctx.setHitTestRegions([
-      {
-        element: a,
-        rect: {x: 0, y: 0, width: 100, height: 100}
-      },
-      {
-        element: b,
-        rect: {x: 50, y: 50, width: 100, height: 100}
-      }
-    ]);
     assert_array_equals(document.elementsFromPoint(60, 60),
                         [b, a, canvas, document.body, document.documentElement],
                         'Should have returned a sequence with `[b, a, canvas, body, html]`');
-  }, 'Later hit test regions should be hit before earlier ones');
+  }, 'Pointer-events: none and inert should be excluded from elementsFromPoint');
 
   test(function () {
-    const ctx = canvas.getContext('2d');
-    ctx.setHitTestRegions([
-      {
-        element: pointerEventsNone,
-        rect: {x: 0, y: 0, width: 100, height: 100}
-      },
-    ]);
-    assert_array_equals(document.elementsFromPoint(60, 60),
-                        [canvas, document.body, document.documentElement],
-                        'Should have returned a sequence with `[canvas, body, html]`');
-  }, 'Pointer-events: none should be excluded from elementsFromPoint');
+    b.style.transform = 'translate(50px, 50px)';
+    assert_array_equals(document.elementsFromPoint(110, 110),
+                        [b, canvas, document.body, document.documentElement],
+                        'Should have returned a sequence with `[b, canvas, body, html]`');
+    b.style.transform = '';
+  }, 'CSS transform should be used for hit testing');
 </script>
 </html>
