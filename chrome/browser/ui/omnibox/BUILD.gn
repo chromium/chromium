@@ -121,7 +121,9 @@ source_set("impl") {
       "//chrome/browser/ui/location_bar",
       "//chrome/browser/ui/omnibox",
       "//chrome/browser/ui/search",
+      "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/views/location_bar",
+      "//chrome/browser/ui/webui:webui_util",
       "//chrome/common",
       "//components/bookmarks/browser",
       "//components/dom_distiller/core",
@@ -237,6 +239,7 @@ if (!is_android) {
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
     sources = [
       "alternate_nav_infobar_delegate_browsertest.cc",
+      "omnibox_context_menu_controller_browsertest.cc",
       "omnibox_search_aggregator_browsertest.cc",
     ]
     deps = [
