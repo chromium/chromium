@@ -136,6 +136,7 @@ BASE_DECLARE_FEATURE(kClankWhatsNew);
 BASE_DECLARE_FEATURE(kCleanupLegacyTabState);
 BASE_DECLARE_FEATURE(kClearBrowsingDataAndroidSurvey);
 BASE_DECLARE_FEATURE(kClearInstanceInfoWhenClosedIntentionally);
+BASE_DECLARE_FEATURE(kClearIntentWhenRecreated);
 BASE_DECLARE_FEATURE(kCommandLineOnNonRooted);
 BASE_DECLARE_FEATURE(kContextMenuTranslateWithGoogleLens);
 BASE_DECLARE_FEATURE(kContextualSearchDisableOnlineDetection);

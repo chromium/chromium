@@ -361,6 +361,7 @@ public abstract class ChromeFeatureList {
             "ClearBrowsingDataAndroidSurvey";
     public static final String CLEAR_INSTANCE_INFO_WHEN_CLOSED_INTENTIONALLY =
             "ClearInstanceInfoWhenClosedIntentionally";
+    public static final String CLEAR_INTENT_WHEN_RECREATED = "ClearIntentWhenRecreated";
     public static final String COMMAND_LINE_ON_NON_ROOTED = "CommandLineOnNonRooted";
     public static final String COMMERCE_MERCHANT_VIEWER = "CommerceMerchantViewer";
     public static final String CONTEXTUAL_PAGE_ACTIONS = "ContextualPageActions";
@@ -876,6 +877,8 @@ public abstract class ChromeFeatureList {
                     CLEANUP_LEGACY_TABSTATE,
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ true);
+    public static final CachedFlag sClearIntentWhenRecreated =
+            newCachedFlag(CLEAR_INTENT_WHEN_RECREATED, /* defaultValue= */ true);
     public static final CachedFlag sCommandLineOnNonRooted =
             newCachedFlag(COMMAND_LINE_ON_NON_ROOTED, false);
     public static final CachedFlag sContextMenuPictureInPictureAndroid =
@@ -1178,6 +1181,7 @@ public abstract class ChromeFeatureList {
                     sClampAutomotiveScaling,
                     sClankStartupLatencyInjection,
                     sCleanupLegacyTabState,
+                    sClearIntentWhenRecreated,
                     sCommandLineOnNonRooted,
                     sContextMenuPictureInPictureAndroid,
                     sCpaSpecUpdate,

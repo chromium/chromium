@@ -307,6 +307,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCleanupLegacyTabState,
     &kClearBrowsingDataAndroidSurvey,
     &kClearInstanceInfoWhenClosedIntentionally,
+    &kClearIntentWhenRecreated,
     &kCommandLineOnNonRooted,
     &kContextMenuTranslateWithGoogleLens,
     &kContextualSearchDisableOnlineDetection,
@@ -651,6 +652,7 @@ BASE_FEATURE(kClankWhatsNew, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kCleanupLegacyTabState, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kClearBrowsingDataAndroidSurvey, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kClearInstanceInfoWhenClosedIntentionally, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kClearIntentWhenRecreated, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kCommandLineOnNonRooted, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kContextMenuTranslateWithGoogleLens, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kContextualSearchDisableOnlineDetection, base::FEATURE_DISABLED_BY_DEFAULT);

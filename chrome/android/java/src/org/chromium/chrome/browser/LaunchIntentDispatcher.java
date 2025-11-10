@@ -46,7 +46,6 @@ import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.firstrun.FirstRunFlowSequencer;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.intents.BrowserIntentUtils;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.notifications.NotificationPlatformBridge;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
@@ -149,12 +148,6 @@ public class LaunchIntentDispatcher {
     private LaunchIntentDispatcher(Activity activity, Intent intent) {
         mActivity = activity;
         mIntent = assertNonNull(IntentUtils.sanitizeIntent(intent));
-
-        // Needs to be called as early as possible, to accurately capture the
-        // time at which the intent was received.
-        if (BrowserIntentUtils.getStartupRealtimeMillis(mIntent) == -1) {
-            BrowserIntentUtils.addStartupTimestampsToIntent(mIntent);
-        }
     }
 
     /**

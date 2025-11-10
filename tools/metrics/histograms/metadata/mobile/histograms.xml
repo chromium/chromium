@@ -1232,18 +1232,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="MobileStartup.IntentToCreationTime{ActivityType}" units="ms"
-    expires_after="2026-03-22">
-  <owner>tedchoc@chromium.org</owner>
+<histogram name="MobileStartup.IntentToCreationTime2{ActivityType}" units="ms"
+    expires_after="2026-11-07">
+  <owner>mthiesse@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
   <summary>
-    Android: The time it takes from creating an intent for ChromeActivity to
-    activity creation. This includes activity creation time spent in the
-    framework. {ActivityType}
+    Android: The time it takes from receiving an intent for a {ActivityType}
+    activity in the launcher activity to {ActivityType} activity creation.
   </summary>
   <token key="ActivityType">
-    <variant name=""/>
+    <variant name="" summary="Chrome"/>
     <variant name=".CustomTabs" summary="CustomTabs"/>
     <variant name=".TabbedMode" summary="TabbedMode"/>
     <variant name=".WebApk" summary="WebApk"/>

@@ -15,6 +15,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.format.DateUtils;
 import android.util.Pair;
 import android.view.KeyEvent;
 import android.view.View;
@@ -1135,16 +1136,28 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
     public void recordIntentToCreationTime(long timeMs) {
         super.recordIntentToCreationTime(timeMs);
 
-        RecordHistogram.recordTimesHistogram(
-                "MobileStartup.IntentToCreationTime.CustomTabs", timeMs);
+        RecordHistogram.recordCustomTimesHistogram(
+                "MobileStartup.IntentToCreationTime2.CustomTabs",
+                timeMs,
+                1,
+                DateUtils.MINUTE_IN_MILLIS,
+                50);
         @ActivityType int activityType = getActivityType();
         if (activityType == ActivityType.WEBAPP || activityType == ActivityType.WEB_APK) {
-            RecordHistogram.recordTimesHistogram(
-                    "MobileStartup.IntentToCreationTime.Webapp", timeMs);
+            RecordHistogram.recordCustomTimesHistogram(
+                    "MobileStartup.IntentToCreationTime2.Webapp",
+                    timeMs,
+                    1,
+                    DateUtils.MINUTE_IN_MILLIS,
+                    50);
         }
         if (activityType == ActivityType.WEB_APK) {
-            RecordHistogram.recordTimesHistogram(
-                    "MobileStartup.IntentToCreationTime.WebApk", timeMs);
+            RecordHistogram.recordCustomTimesHistogram(
+                    "MobileStartup.IntentToCreationTime2.WebApk",
+                    timeMs,
+                    1,
+                    DateUtils.MINUTE_IN_MILLIS,
+                    50);
         }
     }
 

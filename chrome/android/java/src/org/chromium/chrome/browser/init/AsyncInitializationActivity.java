@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.base.ColdStartTracker;
 import org.chromium.chrome.browser.firstrun.FirstRunFlowSequencer;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcherProvider;
 import org.chromium.chrome.browser.metrics.SimpleStartupForegroundSessionDetector;
@@ -328,6 +329,9 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
     @SuppressLint("MissingSuperCall") // Called in onCreateInternal.
     protected final void onCreate(@Nullable Bundle savedInstanceState) {
         TraceEvent.begin("AsyncInitializationActivity.onCreate()");
+        if (ChromeFeatureList.sClearIntentWhenRecreated.isEnabled()) {
+            setIntent(IntentHandler.rewriteFromHistoryIntent(getIntent(), savedInstanceState));
+        }
         onPreCreate();
         boolean willCreate = onCreateInternal(savedInstanceState);
         if (!willCreate) {
@@ -376,7 +380,9 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
      */
     private boolean onCreateInternal(@Nullable Bundle savedInstanceState) {
         initializeStartupMetrics();
-        setIntent(IntentHandler.rewriteFromHistoryIntent(getIntent()));
+        if (!ChromeFeatureList.sClearIntentWhenRecreated.isEnabled()) {
+            setIntent(IntentHandler.rewriteFromHistoryIntent(getIntent(), null));
+        }
 
         @LaunchIntentDispatcher.Action
         int dispatchAction = maybeDispatchLaunchIntent(getIntent(), savedInstanceState);

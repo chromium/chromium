@@ -169,8 +169,8 @@ public class CustomTabObserver extends EmptyTabObserver {
      * load.
      */
     public void trackNextPageLoadForLaunch(Tab tab, Intent sourceIntent) {
-        mIntentReceivedRealtimeMillis = BrowserIntentUtils.getStartupRealtimeMillis(sourceIntent);
-        mIntentReceivedUptimeMillis = BrowserIntentUtils.getStartupUptimeMillis(sourceIntent);
+        mIntentReceivedRealtimeMillis = BrowserIntentUtils.getLaunchedRealtimeMillis(sourceIntent);
+        mIntentReceivedUptimeMillis = BrowserIntentUtils.getLaunchedUptimeMillis(sourceIntent);
         if (tab.isLoading()) {
             mCurrentState = State.WAITING_LOAD_FINISH;
         } else {
@@ -189,9 +189,9 @@ public class CustomTabObserver extends EmptyTabObserver {
         if (mIntentReceivedRealtimeMillis != 0) return;
         mUsedHiddenTabSpeculation = usedSpeculation;
         mLaunchedForSpeculationRealtimeMillis =
-                BrowserIntentUtils.getStartupRealtimeMillis(sourceIntent);
+                BrowserIntentUtils.getLaunchedRealtimeMillis(sourceIntent);
         mLaunchedForSpeculationUptimeMillis =
-                BrowserIntentUtils.getStartupUptimeMillis(sourceIntent);
+                BrowserIntentUtils.getLaunchedUptimeMillis(sourceIntent);
         trackNextLCP();
         if (usedSpeculation && hasCommitted) {
             recordFirstCommitNavigation(webContents);

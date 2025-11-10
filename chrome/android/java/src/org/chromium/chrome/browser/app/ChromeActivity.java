@@ -24,6 +24,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.text.format.DateUtils;
 import android.util.Pair;
 import android.util.TypedValue;
 import android.view.Display.Mode;
@@ -633,7 +634,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                 getLaunchCauseMetrics().onReceivedIntent();
             }
 
-            long intentTimestamp = BrowserIntentUtils.getStartupRealtimeMillis(getIntent());
+            long intentTimestamp = BrowserIntentUtils.getLaunchedRealtimeMillis(getIntent());
             if (intentTimestamp != -1) {
                 recordIntentToCreationTime(getOnCreateTimestampMs() - intentTimestamp);
             }
@@ -1549,11 +1550,13 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
     /**
      * Records the time it takes from creating an intent for {@link ChromeActivity} to activity
      * creation, including time spent in the framework.
+     *
      * @param timeMs The time from creating an intent to activity creation.
      */
     @CallSuper
     protected void recordIntentToCreationTime(long timeMs) {
-        RecordHistogram.recordTimesHistogram("MobileStartup.IntentToCreationTime", timeMs);
+        RecordHistogram.recordCustomTimesHistogram(
+                "MobileStartup.IntentToCreationTime2", timeMs, 1, DateUtils.MINUTE_IN_MILLIS, 50);
     }
 
     @Override

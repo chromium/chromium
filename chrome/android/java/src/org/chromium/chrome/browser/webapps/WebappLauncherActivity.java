@@ -150,7 +150,7 @@ public class WebappLauncherActivity extends Activity {
 
         // Triggers UnsafeIntentLaunch lint warning. https://crbug.com/1412281
         Intent intent = getIntent();
-        BrowserIntentUtils.addStartupTimestampsToIntent(intent);
+        BrowserIntentUtils.addLauncherTimestampsToIntent(intent);
 
         if (WebappActionsNotificationManager.handleNotificationAction(intent)) {
             finish();
