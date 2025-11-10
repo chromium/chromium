@@ -29,13 +29,10 @@ found in the LICENSE file.
         </item>
     </style>
 
-    <!-- Navigation Attachments bar styles -->
-    <style name="NavigationAttachments"/>
-    <style name="NavigationAttachments.PopupMenu"/>
-    <style
-        name="NavigationAttachments.PopupMenu.Header"
-        parent="@style/TextButton">
-
+    <!-- Fusebox bar styles -->
+    <style name="Fusebox"/>
+    <style name="Fusebox.PopupMenu"/>
+    <style name="Fusebox.PopupMenu.Header" parent="@style/TextButton">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">
             @dimen/min_touch_target_size
@@ -52,12 +49,11 @@ found in the LICENSE file.
             @color/default_icon_color_tint_list
         </item>
         <item name="buttonTextColor">@null</item>
-
     </style>
 
     <style
-        name="NavigationAttachments.PopupMenu.Item"
-        parent="@style/NavigationAttachments.PopupMenu.Header">
+        name="Fusebox.PopupMenu.Item"
+        parent="@style/Fusebox.PopupMenu.Header">
 
         <item name="android:textAppearance">
             @style/TextAppearance.TextMedium.Primary
@@ -65,7 +61,7 @@ found in the LICENSE file.
 
     </style>
 
-    <style name="NavigationAttachments.PopupMenu.Divider">
+    <style name="Fusebox.PopupMenu.Divider">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">1dp</item>
         <item name="android:layout_marginTop">8dp</item>
