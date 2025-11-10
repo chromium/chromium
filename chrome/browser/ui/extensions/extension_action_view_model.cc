@@ -16,7 +16,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/extensions/api/side_panel/side_panel_service.h"
 #include "chrome/browser/extensions/commands/command_service.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_context_menu_model.h"
@@ -29,7 +28,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/extensions/extension_action_platform_delegate.h"
 #include "chrome/browser/ui/extensions/extension_popup_types.h"
-#include "chrome/browser/ui/extensions/extension_side_panel_utils.h"
 #include "chrome/browser/ui/extensions/icon_with_badge_image_source.h"
 #include "chrome/browser/ui/tabs/tab_list_interface.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
@@ -49,6 +47,11 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/native_ui_types.h"
 #include "ui/native_theme/native_theme.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/extensions/api/side_panel/side_panel_service.h"
+#include "chrome/browser/ui/extensions/extension_side_panel_utils.h"
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 using extensions::ActionInfo;
 using extensions::CommandService;
@@ -346,10 +349,15 @@ bool ExtensionActionViewModel::IsEnabled(
     return true;
   }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   extensions::SidePanelService* side_panel_service =
       extensions::SidePanelService::Get(profile_);
-  return side_panel_service &&
-         side_panel_service->HasSidePanelActionForTab(*extension(), tab_id);
+  if (side_panel_service &&
+      side_panel_service->HasSidePanelActionForTab(*extension(), tab_id)) {
+    return true;
+  }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)}
+  return false;
 }
 
 bool ExtensionActionViewModel::IsShowingPopup() const {
@@ -413,8 +421,10 @@ void ExtensionActionViewModel::ExecuteUserAction(InvocationSource source) {
     TriggerPopup(PopupShowAction::kShow, kByUser, ShowPopupCallback());
   } else if (action ==
              extensions::ExtensionAction::ShowAction::kToggleSidePanel) {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
     extensions::side_panel_util::ToggleExtensionSidePanel(browser_,
                                                           extension()->id());
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
   }
 }
 
@@ -680,11 +690,15 @@ ExtensionActionViewModel::GetIconImageSource(content::WebContents* web_contents,
   // is disabled.
   bool action_is_visible = extension_action_->GetIsVisible(tab_id);
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   extensions::SidePanelService* side_panel_service =
       extensions::SidePanelService::Get(profile_);
   bool has_side_panel_action =
       side_panel_service &&
       side_panel_service->HasSidePanelActionForTab(*extension(), tab_id);
+#else   // BUILDFLAG(ENABLE_EXTENSIONS)
+  bool has_side_panel_action = false;
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
   bool is_grayscale =
       GetSiteInteraction(web_contents) ==
           extensions::SitePermissionsHelper::SiteInteraction::kNone &&
