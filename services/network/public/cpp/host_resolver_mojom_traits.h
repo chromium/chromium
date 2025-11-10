@@ -108,6 +108,11 @@ struct COMPONENT_EXPORT(NETWORK_CPP_HOST_RESOLVER)
   static network::mojom::DnsConfigOverrides_Tristate
   allow_dns_over_https_upgrade(const net::DnsConfigOverrides& overrides);
 
+  static const std::optional<std::vector<net::IPEndPoint>>&
+  fallback_doh_nameservers(const net::DnsConfigOverrides& overrides) {
+    return overrides.fallback_doh_nameservers;
+  }
+
   static bool clear_hosts(const net::DnsConfigOverrides& overrides) {
     return overrides.clear_hosts;
   }

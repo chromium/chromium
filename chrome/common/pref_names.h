@@ -2903,6 +2903,11 @@ inline constexpr char kDnsOverHttpsMode[] = "dns_over_https.mode";
 // insecure resolvers.
 inline constexpr char kDnsOverHttpsTemplates[] = "dns_over_https.templates";
 
+// Boolean that specifies whether Secure DNS in automatic mode should prefer to
+// fallback to DoH with Google DNS instead of using insecure DNS.
+inline constexpr char kDnsOverHttpsAutomaticModeFallbackToDoh[] =
+    "dns_over_https.automatic_mode_fallback_to_doh";
+
 #if BUILDFLAG(IS_CHROMEOS)
 // String containing a space-separated list of DNS over HTTPS URI templates,
 // with placeholders for user and device identifiers, to use in secure mode or

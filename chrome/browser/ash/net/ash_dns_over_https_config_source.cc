@@ -36,6 +36,11 @@ std::string AshDnsOverHttpsConfigSource::GetDnsOverHttpsTemplates() const {
   return secure_dns_manager_ ? dns_over_https_templates_ : std::string();
 }
 
+bool AshDnsOverHttpsConfigSource::AutomaticModeFallbackToDohEnabled() const {
+  // TODO(crbug.com/448683318): Add support for the fallback on Chrome OS here.
+  return false;
+}
+
 bool AshDnsOverHttpsConfigSource::IsConfigManaged() const {
   return local_state_->FindPreference(prefs::kDnsOverHttpsMode)->IsManaged();
 }

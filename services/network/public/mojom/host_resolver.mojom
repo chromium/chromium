@@ -106,6 +106,9 @@ struct DnsConfigOverrides {
   // Whether automatic upgrade to DNS over HTTPS servers is permitted.
   Tristate allow_dns_over_https_upgrade = Tristate.NO_OVERRIDE;
 
+  // See net::DnsConfig::fallback_doh_nameservers.
+  array<IPEndPoint>? fallback_doh_nameservers;
+
   // Whether to clear data read from the system HOSTS file.
   bool clear_hosts = false;
 };

@@ -764,7 +764,8 @@ void ShellContentBrowserClient::OnNetworkServiceCreated(
         base::FeatureList::IsEnabled(net::features::kHappyEyeballsV3),
         /*secure_dns_mode=*/net::SecureDnsMode::kAutomatic,
         net::DnsOverHttpsConfig(),
-        /*additional_dns_types_enabled=*/true);
+        /*additional_dns_types_enabled=*/true,
+        /*fallback_doh_nameservers=*/{});
   }
 #endif
 }

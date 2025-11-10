@@ -54,31 +54,6 @@
 
 namespace {
 
-// Detailed descriptions of the secure DNS mode. These values are logged to UMA.
-// Entries should not be renumbered and numeric values should never be reused.
-// Please keep in sync with "SecureDnsModeDetails" in
-// src/tools/metrics/histograms/enums.xml.
-enum class SecureDnsModeDetailsForHistogram {
-  // The mode is controlled by the user and is set to 'off'.
-  kOffByUser = 0,
-  // The mode is controlled via enterprise policy and is set to 'off'.
-  kOffByEnterprisePolicy = 1,
-  // Chrome detected a managed environment and forced the mode to 'off'.
-  kOffByDetectedManagedEnvironment = 2,
-  // Chrome detected parental controls and forced the mode to 'off'.
-  kOffByDetectedParentalControls = 3,
-  // The mode is controlled by the user and is set to 'automatic' (the default
-  // mode).
-  kAutomaticByUser = 4,
-  // The mode is controlled via enterprise policy and is set to 'automatic'.
-  kAutomaticByEnterprisePolicy = 5,
-  // The mode is controlled by the user and is set to 'secure'.
-  kSecureByUser = 6,
-  // The mode is controlled via enterprise policy and is set to 'secure'.
-  kSecureByEnterprisePolicy = 7,
-  kMaxValue = kSecureByEnterprisePolicy,
-};
-
 #if BUILDFLAG(IS_WIN)
 bool ShouldDisableDohForWindowsParentalControls() {
   return GetWinParentalControls().web_filter;
@@ -303,6 +278,15 @@ bool StubResolverConfigReader::GetHappyEyeballsV3Enabled() const {
   return base::FeatureList::IsEnabled(net::features::kHappyEyeballsV3);
 }
 
+// static
+std::vector<net::IPEndPoint>
+StubResolverConfigReader::GetFallbackDohNameservers() {
+  // Note, if this has multiple nameservers we could randomize the entries
+  // here so that Chrome can split load across startups.
+  return {net::IPEndPoint(net::IPAddress(8, 8, 8, 8),
+                          net::dns_protocol::kDefaultPort)};
+}
+
 void StubResolverConfigReader::OnParentalControlsDelayTimer() {
   DCHECK(!parental_controls_delay_timer_.IsRunning());
 
@@ -409,6 +393,26 @@ SecureDnsConfig StubResolverConfigReader::GetAndUpdateConfiguration(
   bool additional_dns_query_types_enabled =
       local_state_->GetBoolean(prefs::kAdditionalDnsQueryTypesEnabled);
 
+  net::DnsOverHttpsConfig doh_config;
+  std::vector<net::IPEndPoint> fallback_doh_nameservers;
+  if (secure_dns_mode != net::SecureDnsMode::kOff) {
+    doh_config = net::DnsOverHttpsConfig::FromStringLax(
+        GetDnsOverHttpsConfigSource()->GetDnsOverHttpsTemplates());
+    if (secure_dns_mode == net::SecureDnsMode::kAutomatic &&
+        GetDnsOverHttpsConfigSource()->AutomaticModeFallbackToDohEnabled() &&
+        base::FeatureList::IsEnabled(
+            net::features::kAddAutomaticWithDohFallbackMode)) {
+      bool fallback_pref_managed = local_state_->IsManagedPreference(
+          prefs::kDnsOverHttpsAutomaticModeFallbackToDoh);
+      mode_details = fallback_pref_managed
+                         ? SecureDnsModeDetailsForHistogram::
+                               kAutomaticWithDohFallbackByEnterprisePolicy
+                         : SecureDnsModeDetailsForHistogram::
+                               kAutomaticWithDohFallbackByUser;
+      fallback_doh_nameservers = GetFallbackDohNameservers();
+    }
+  }
+
   if (record_metrics) {
     UMA_HISTOGRAM_ENUMERATION("Net.DNS.DnsConfig.SecureDnsMode", mode_details);
     if (!additional_dns_query_types_enabled || ShouldDisableDohForManaged()) {
@@ -417,19 +421,16 @@ SecureDnsConfig StubResolverConfigReader::GetAndUpdateConfiguration(
     }
   }
 
-  net::DnsOverHttpsConfig doh_config;
-  if (secure_dns_mode != net::SecureDnsMode::kOff) {
-    doh_config = net::DnsOverHttpsConfig::FromStringLax(
-        GetDnsOverHttpsConfigSource()->GetDnsOverHttpsTemplates());
-  }
   if (update_network_service) {
     content::GetNetworkService()->ConfigureStubHostResolver(
         GetInsecureStubResolverEnabled(), GetHappyEyeballsV3Enabled(),
-        secure_dns_mode, doh_config, additional_dns_query_types_enabled);
+        secure_dns_mode, doh_config, additional_dns_query_types_enabled,
+        fallback_doh_nameservers);
   }
 
   return SecureDnsConfig(secure_dns_mode, std::move(doh_config),
-                         forced_management_mode);
+                         forced_management_mode,
+                         std::move(fallback_doh_nameservers));
 }
 
 #if BUILDFLAG(IS_ANDROID)

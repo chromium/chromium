@@ -186,6 +186,8 @@ class SecureDnsManagerTest : public testing::Test {
                                                 SecureDnsConfig::kModeOff);
     local_state_.registry()->RegisterStringPref(::prefs::kDnsOverHttpsTemplates,
                                                 "");
+    local_state_.registry()->RegisterBooleanPref(
+        ::prefs::kDnsOverHttpsAutomaticModeFallbackToDoh, false);
     local_state_.registry()->RegisterStringPref(
         ::prefs::kDnsOverHttpsEffectiveTemplatesChromeOS, "");
     local_state_.registry()->RegisterListPref(

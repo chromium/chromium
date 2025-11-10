@@ -18,6 +18,7 @@ import "services/network/public/mojom/first_party_sets.mojom";
 import "services/network/public/mojom/host_resolver.mojom";
 import "services/network/public/mojom/http_raw_headers.mojom";
 import "services/network/public/mojom/ip_address_space.mojom";
+import "services/network/public/mojom/ip_endpoint.mojom";
 import "services/network/public/mojom/key_pinning.mojom";
 import "services/network/public/mojom/mutable_network_traffic_annotation_tag.mojom";
 import "services/network/public/mojom/net_log.mojom";
@@ -253,11 +254,17 @@ interface NetworkService {
   //
   // `happy_eyeballs_v3_enabled` controls whether the Happy Eyeballs V3 is
   //  enabled.
+  //
+  // `fallback_doh_nameservers` may be used in AUTOMATIC mode if falling back to
+  // DoH is preferred to falling back to insecure DNS. If these nameservers are
+  // successfully upgraded to DoH, they are used in the order defined by
+  // `net::ResolveContext::GetDohIterator`.
   ConfigureStubHostResolver(bool insecure_dns_client_enabled,
                             bool happy_eyeballs_v3_enabled,
                             SecureDnsMode secure_dns_mode,
                             DnsOverHttpsConfig dns_over_https_config,
-                            bool additional_dns_types_enabled);
+                            bool additional_dns_types_enabled,
+                            array<IPEndPoint> fallback_doh_nameservers);
 
   // Disables QUIC for the NetworkService. Affects all existing NetworkContexts,
   // and all new ones that are created. Once called, QUIC cannot be re-enabled.
