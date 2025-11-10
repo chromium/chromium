@@ -16,6 +16,8 @@ export {ContentController, ContentListener, ContentState, ContentType, HIGHLIGHT
 export {ESTIMATED_WORDS_PER_MS, MIN_MS_TO_READ, NodeStore} from './content/node_store.js';
 export {SelectionController} from './content/selection_controller.js';
 export type {ColorMenuElement} from './menus/color_menu.js';
+export type {FontMenuElement} from './menus/font_menu.js';
+export type {FontSelectElement} from './menus/font_select.js';
 export type {HighlightMenuElement} from './menus/highlight_menu.js';
 export type {LetterSpacingMenuElement} from './menus/letter_spacing_menu.js';
 export type {LineSpacingMenuElement} from './menus/line_spacing_menu.js';

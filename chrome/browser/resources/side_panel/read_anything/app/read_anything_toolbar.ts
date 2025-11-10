@@ -6,6 +6,8 @@ import './icons.html.js';
 import '../read_aloud/voice_selection_menu.js';
 import '../menus/simple_action_menu.js';
 import '../menus/color_menu.js';
+import '../menus/font_menu.js';
+import '../menus/font_select.js';
 import '../menus/line_spacing_menu.js';
 import '../menus/letter_spacing_menu.js';
 import '../menus/highlight_menu.js';
@@ -27,6 +29,7 @@ import {CrLitElement, html, type TemplateResult} from '//resources/lit/v3_0/lit.
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {ColorMenuElement} from '../menus/color_menu.js';
+import type {FontMenuElement} from '../menus/font_menu.js';
 import type {HighlightMenuElement} from '../menus/highlight_menu.js';
 import type {LetterSpacingMenuElement} from '../menus/letter_spacing_menu.js';
 import type {LineSpacingMenuElement} from '../menus/line_spacing_menu.js';
@@ -48,7 +51,7 @@ export interface ReadAnythingToolbarElement {
     colorMenu: ColorMenuElement,
     lineSpacingMenu: LineSpacingMenuElement,
     letterSpacingMenu: LetterSpacingMenuElement,
-    fontMenu: CrLazyRenderLitElement<CrActionMenuElement>,
+    fontMenu: FontMenuElement,
     fontSizeMenu: CrLazyRenderLitElement<CrActionMenuElement>,
     moreOptionsMenu: CrLazyRenderLitElement<CrActionMenuElement>,
     voiceSelectionMenu: VoiceSelectionMenuElement,
@@ -127,12 +130,10 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
       previewVoicePlaying: {type: Object},
       settingsPrefs: {type: Object},
       areFontsLoaded_: {type: Boolean},
-      fontOptions_: {type: Array},
       textStyleOptions_: {type: Array},
       textStyleToggles_: {type: Array},
       hideSpinner_: {type: Boolean},
       speechRate_: {type: Number},
-      fontName_: {type: String},
       moreOptionsButtons_: {type: Array},
       pageLanguage: {type: String},
     };
@@ -164,7 +165,6 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   };
   accessor selectedVoice: SpeechSynthesisVoice|undefined;
   accessor pageLanguage: string = '';
-  protected accessor fontOptions_: string[] = [];
   protected accessor hideSpinner_: boolean = true;
   protected isReadAloudEnabled_: boolean = true;
   // Overflow buttons on the toolbar that open a menu of options.
@@ -182,8 +182,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
                loadTimeData.getString('enableLinksLabel'),
     },
   ];
-  private accessor areFontsLoaded_: boolean = false;
-  private accessor fontName_: string = '';
+  protected accessor areFontsLoaded_: boolean = false;
 
   // Member variables below
   private startTime_: number = Date.now();
@@ -204,10 +203,6 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     if (changedProperties.has('isSpeechActive') ||
         changedProperties.has('isAudioCurrentlyPlaying')) {
       this.onSpeechPlayingStateChanged_();
-    }
-
-    if (changedProperties.has('pageLanguage')) {
-      this.updateFonts_();
     }
   }
 
@@ -317,7 +312,6 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     this.windowResizeCallback_ = this.maybeUpdateMoreOptions_.bind(this);
     window.addEventListener('resize', this.windowResizeCallback_);
 
-    this.initFonts_();
     this.loadFontsStylesheet();
     this.initializeMenuButtons_();
     this.isSetupComplete_ = true;
@@ -349,8 +343,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
             id: 'font',
             icon: 'read-anything:font',
             ariaLabel: loadTimeData.getString('fontNameTitle'),
-            openMenu: (target: HTMLElement) =>
-                openMenu(this.$.fontMenu.get(), target),
+            openMenu: (target: HTMLElement) => this.$.fontMenu.open(target),
           },
       );
     }
@@ -439,57 +432,13 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     this.moreOptionsButtons_ = this.textStyleOptions_.slice(firstHiddenButton);
   }
 
-  private restoreFontMenu_() {
-    assert(this.fontOptions_, 'No font options');
-    // Default to the first font option if the previously used font is no
-    // longer available.
-    let currentFontIndex =
-        this.fontOptions_.indexOf(chrome.readingMode.fontName);
-    if (currentFontIndex < 0) {
-      currentFontIndex = 0;
-      this.propagateFontChange_(
-          this.fontOptions_[0]!, /*isTemporaryFallback=*/ true);
-    }
-    this.fontName_ = this.fontOptions_[currentFontIndex]!;
-    if (!this.isReadAloudEnabled_) {
-      const select = this.$.toolbarContainer.querySelector<HTMLSelectElement>(
-          '#font-select');
-      assert(select, 'no font select menu');
-      select.selectedIndex = currentFontIndex;
-    }
-  }
-
   restoreSettingsFromPrefs() {
-    this.restoreFontMenu_();
-
     this.updateLinkToggleButton();
     this.updateImagesToggleButton();
 
     if (this.isReadAloudEnabled_) {
       this.speechRate_ = getCurrentSpeechRate();
     }
-  }
-
-  private updateFonts_() {
-    this.initFonts_();
-    this.restoreFontMenu_();
-  }
-
-  private initFonts_() {
-    this.fontOptions_ = Object.assign([], chrome.readingMode.supportedFonts);
-  }
-
-  protected isFontItemSelected_(item: number): boolean {
-    return item === this.fontOptions_.indexOf(this.fontName_);
-  }
-
-  protected getFontItemLabel_(item: string): string {
-    // Before fonts are loaded, append the loading text to the font names
-    // so that the names will appear in the font menu like:
-    // Poppins (loading).
-    return this.areFontsLoaded_ ?
-        `${item}` :
-        `${item}\u00A0${this.i18n('readingModeFontLoadingText')}`;
   }
 
   protected playPauseButtonAriaLabel_() {
@@ -504,10 +453,6 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   protected playPauseButtonIronIcon_() {
     return this.isSpeechActive ? 'read-anything-20:pause' :
                                  'read-anything-20:play';
-  }
-
-  private closeMenus_() {
-    this.$.fontMenu.getIfExists()?.close();
   }
 
   protected onNextGranularityClick_() {
@@ -580,31 +525,9 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     }
   }
 
-  protected onFontClick_(e: Event) {
-    this.logger_.logTextSettingsChange(ReadAnythingSettingsChange.FONT_CHANGE);
-
-    const currentTarget = e.currentTarget as HTMLElement;
-    const index = Number.parseInt(currentTarget.dataset['index']!);
-    this.fontName_ = this.fontOptions_[index]!;
-    this.propagateFontChange_(this.fontName_);
-
-    this.closeMenus_();
-  }
-
-  protected onFontSelectValueChange_(event: Event) {
-    this.fontName_ = (event.target as HTMLSelectElement).value;
-    this.propagateFontChange_(this.fontName_);
-  }
-
-  private propagateFontChange_(
-      fontName: string, isTemporaryFallback: boolean = false) {
-    if (!isTemporaryFallback) {
-      // Persist the change only if it's a direct user selection, not a
-      // temporary fallback.
-      chrome.readingMode.onFontChange(fontName);
-    }
-    this.fire(ToolbarEvent.FONT);
-    this.style.fontFamily = chrome.readingMode.getValidatedFontName(fontName);
+  protected onFontChange_(event: CustomEvent<{data: string}>) {
+    this.style.fontFamily =
+        chrome.readingMode.getValidatedFontName(event.detail.data);
   }
 
   protected onRateChange_(event: CustomEvent<{data: number}>) {
@@ -906,15 +829,6 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   protected getRateTabIndex_(): number {
     return (!this.isReadAloudPlayable || this.currentFocusId_ === 'rate') ? 0 :
                                                                             -1;
-  }
-
-  protected onFontSelectKeyDown_(e: KeyboardEvent) {
-    // The default behavior goes to the next select option. However, we want
-    // to instead go to the next toolbar button (handled in onToolbarKeyDown_).
-    // ArrowDown and ArrowUp will still move to the next/previous option.
-    if (isHorizontalArrow(e.key)) {
-      e.preventDefault();
-    }
   }
 
   // When Read Aloud is enabled, we want the aria label of the toolbar

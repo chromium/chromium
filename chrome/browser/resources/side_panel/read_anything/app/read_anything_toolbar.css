@@ -6,9 +6,8 @@
  * #type=style-lit
  * #import=//resources/cr_elements/cr_icons_lit.css.js
  * #import=//resources/cr_elements/cr_shared_vars.css.js
- * #import=//resources/cr_elements/md_select_lit.css.js
  * #import=./toolbar_styles_shared.css.js
- * #include=toolbar-styles-shared md-select-lit cr-icons-lit
+ * #include=toolbar-styles-shared cr-icons-lit
  * #scheme=relative
  * #css_wrapper_metadata_end */
 
@@ -90,14 +89,6 @@
   font-size: 13px;
 }
 
-.check-mark-hidden-true {
-  visibility: hidden;
-}
-
-.check-mark-hidden-false {
-  visibility: visible;
-}
-
 .toolbar-container {
   display: flex;
   flex-direction: row;
@@ -148,16 +139,6 @@
   display: inline-block;
   height: 100%;
   vertical-align: middle;
-}
-
-.md-select {
-  --md-select-text-color: var(--cr-primary-text-color);
-  --md-select-width: fit-content;
-  margin: 4px 8px 4px 0px;
-}
-
-.md-select option {
-  --md-select-option-bg-color: var(--color-sys-base-container-elevated);
 }
 
 .more-options-icon {

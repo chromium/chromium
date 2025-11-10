@@ -87,15 +87,12 @@ export function getHtml(this: ReadAnythingToolbarElement) {
     </cr-icon-button>
   `: html`
     <!-- isReadAloudEnabled_ === false -->
-    <select id="font-select" class="md-select" tabindex="0"
-        @change="${this.onFontSelectValueChange_}"
-        @keydown="${this.onFontSelectKeyDown_}"
-        aria-label="$i18n{fontNameTitle}"
-        title="$i18n{fontNameTitle}">
-      ${this.fontOptions_.map((item) => html`
-        <option value="${item}">${this.getFontItemLabel_(item)}</option>
-      `)}
-    </select>
+    <font-select id="font-select" tabindex="0"
+      .settingsPrefs="${this.settingsPrefs}"
+      .pageLanguage="${this.pageLanguage}"
+      .areFontsLoaded="${this.areFontsLoaded_}"
+      @font-change="${this.onFontChange_}">
+    </font-select>
     <hr class="separator" aria-hidden="true">
     <div id="size-announce" class="announce-block" aria-live="polite"></div>
     <cr-icon-button id="font-size-decrease-old" tabindex="-1"
@@ -212,24 +209,13 @@ export function getHtml(this: ReadAnythingToolbarElement) {
       id="letterSpacingMenu"
       .settingsPrefs="${this.settingsPrefs}">
   </letter-spacing-menu>
-  <cr-lazy-render-lit id="fontMenu" .template='${() => html`
-    <cr-action-menu accessibility-label="$i18n{fontNameTitle}"
-        role-description="$i18n{menu}">
-      ${this.fontOptions_.map((item, index) => html`
-        <button class="dropdown-item" @click="${this.onFontClick_}"
-            data-index="${index}"
-            style="font-family:${item}">
-          <cr-icon
-              class="button-image check-mark check-mark-hidden-${!this.isFontItemSelected_(index)}"
-              icon="read-anything-20:check-mark"
-              aria-label="$i18n{selected}">
-          </cr-icon>
-          ${this.getFontItemLabel_(item)}
-        </button>
-      `)}
-    </cr-action-menu>
-  `}'>
-  </cr-lazy-render-lit>
+  <font-menu
+      id="fontMenu"
+      .areFontsLoaded="${this.areFontsLoaded_}"
+      .settingsPrefs="${this.settingsPrefs}"
+      .pageLanguage="${this.pageLanguage}"
+      @font-change="${this.onFontChange_}">
+  </font-menu>
 </div>
 <!--_html_template_end_-->`;
   // clang-format on

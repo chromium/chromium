@@ -89,6 +89,16 @@ suite('Toolbar', () => {
       const audioControls = shadowRoot.querySelector('#audio-controls');
       assertTrue(!!audioControls);
     });
+
+    test('font is dropdown menu from button', () => {
+      stubAnimationFrame();
+      const fontButton = getButton('font');
+
+      assertTrue(!!fontButton);
+      fontButton.click();
+
+      assertTrue(toolbar.$.fontMenu.$.menu.$.lazyMenu.get().open);
+    });
   });
 
   suite('without read aloud', () => {
@@ -131,6 +141,11 @@ suite('Toolbar', () => {
     test('does not have audio controls', () => {
       const audioControls = shadowRoot.querySelector('#audio-controls');
       assertFalse(!!audioControls);
+    });
+
+    test('font is select element', () => {
+      const fontSelect = shadowRoot.querySelector('#font-select');
+      assertTrue(!!fontSelect);
     });
   });
 

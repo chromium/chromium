@@ -8,13 +8,6 @@
  * #scheme=relative
  * #css_wrapper_metadata_end */
 
- cr-icon {
-  --icon-size: 20px;
-  height: var(--icon-size);
-  margin: 0px 8px 0px 4px;
-  width: var(--icon-size);
-}
-
 cr-icon-button {
   --cr-icon-button-icon-size: 16px;
   --cr-icon-button-size: 24px;
@@ -24,15 +17,4 @@ cr-icon-button {
 
 cr-icon-button.active {
   background-color: var(--cr-active-background-color);
-}
-
-.check-mark {
-  margin: 0;
-}
-
-.dropdown-item {
-  align-items: center;
-  font-size: 13px;
-  min-width: 180px;
-  padding-left: 20px;
 }
