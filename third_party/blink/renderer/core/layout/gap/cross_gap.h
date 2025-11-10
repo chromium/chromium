@@ -151,6 +151,12 @@ class CORE_EXPORT CrossGap {
     gap_segment_state_ranges_->emplace_back(gap_segment_state_range);
   }
 
+  static void UpdateCrossGapRangeEdgeState(
+      Vector<CrossGap>& cross_gaps,
+      wtf_size_t start_index,
+      wtf_size_t end_index,
+      CrossGap::EdgeIntersectionState new_state);
+
  private:
   LogicalOffset gap_logical_offset_;
 

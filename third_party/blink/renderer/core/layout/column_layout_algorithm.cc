@@ -367,6 +367,23 @@ const LayoutResult* ColumnLayoutAlgorithm::Layout() {
     auto* gap_geometry =
         MakeGarbageCollected<GapGeometry>(GapGeometry::kMultiColumn);
 
+    // We need to update the edge states for cross gaps in the last row, since
+    // we are not able to accurately do so when we laid them out.
+    if (!main_gaps_.empty() && main_gaps_.back().HasCrossGapsBefore()) {
+      // There could be a scenario in which a spanner is the last thing in the
+      // fragment, in which case the edge states will already be up to date.
+      wtf_size_t start_index = main_gaps_.back().GetCrossGapBeforeEnd() + 1;
+      CrossGap::UpdateCrossGapRangeEdgeState(
+          cross_gaps_, start_index, cross_gaps_.size() - 1,
+          CrossGap::EdgeIntersectionState::kEnd);
+    } else {
+      // If we have no main gaps, it means that all the cross gaps are adjacent
+      // to the content end.
+      CrossGap::UpdateCrossGapRangeEdgeState(
+          cross_gaps_, 0, cross_gaps_.size() - 1,
+          CrossGap::EdgeIntersectionState::kEnd);
+    }
+
     // For the content inline and block ends, we must take the max of where the
     // fragment starts and ends and where the last cross gap and main gap are.
     // This is so that when content overflows the container, we still paint the
@@ -1229,9 +1246,13 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutLine(
         }
         LayoutUnit gap_center =
             column_logical_rect.InlineStartOffset() - (column_gap_size_ / 2);
+        CrossGap::EdgeIntersectionState edge_state =
+            main_gaps_.empty() || main_gaps_.back().IsEndSpannerMainGap()
+                ? CrossGap::EdgeIntersectionState::kStart
+                : CrossGap::EdgeIntersectionState::kNone;
         cross_gaps_.emplace_back(
             LogicalOffset(gap_center, column_logical_rect.BlockStartOffset()),
-            CrossGap::EdgeIntersectionState::kBoth);
+            edge_state);
       }
 
       if (!first_column_offset_.has_value()) {
@@ -1357,6 +1378,15 @@ BreakStatus ColumnLayoutAlgorithm::LayoutSpanner(
       // gaps, and no preceding adjacent spanner). Insert a break for column
       // rules. They are not to overlap with the margin box of spanners.
       AddMainGap(intrinsic_block_size_, SpannerMainGapType::kStart);
+      // Cross Gaps adjacent to spanners are considered "edge" gaps. As such,
+      // when we add a spanner that is preceded by column content we must update
+      // the cross gaps that are adjacent to it accordingly.
+      if (main_gaps_.back().HasCrossGapsBefore()) {
+        CrossGap::UpdateCrossGapRangeEdgeState(
+            cross_gaps_, main_gaps_.back().GetCrossGapBeforeStart(),
+            main_gaps_.back().GetCrossGapBeforeEnd(),
+            CrossGap::EdgeIntersectionState::kEnd);
+      }
     }
   }
 

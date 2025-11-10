@@ -208,14 +208,28 @@ void GapDecorationsPainter::Paint(GridTrackSizingDirection track_direction,
       // * `0` if the intersection is at the content edge of the container.
       // * The cross gutter size if it is an intersection with another gap.
       // https://drafts.csswg.org/css-gaps-1/#crossing-gap-width
+      //
+      // TODO(crbug.com/446616449): Recently we have resolved to always use the
+      // cross gutter size for resolving the "crossing gap width", however, it
+      // is still an open question what this means for multicol containers where
+      // intersection points don't actually intersect another gap. As a result,
+      // for now, we continue to resolve the crossing gap width as `0` for any
+      // intersection in multicol containers. Discussion about this can be found
+      // in https://github.com/w3c/csswg-drafts/issues/12784.
       const LayoutUnit start_width =
-          gap_geometry.IsEdgeIntersection(
-              gap_index, start, intersections.size(), is_main, intersections)
+          gap_geometry.GetContainerType() ==
+                      GapGeometry::ContainerType::kMultiColumn ||
+                  gap_geometry.IsEdgeIntersection(gap_index, start,
+                                                  intersections.size(), is_main,
+                                                  intersections)
               ? LayoutUnit()
               : cross_gutter_width;
       const LayoutUnit end_width =
-          gap_geometry.IsEdgeIntersection(gap_index, end, intersections.size(),
-                                          is_main, intersections)
+          gap_geometry.GetContainerType() ==
+                      GapGeometry::ContainerType::kMultiColumn ||
+                  gap_geometry.IsEdgeIntersection(gap_index, end,
+                                                  intersections.size(), is_main,
+                                                  intersections)
               ? LayoutUnit()
               : cross_gutter_width;
 

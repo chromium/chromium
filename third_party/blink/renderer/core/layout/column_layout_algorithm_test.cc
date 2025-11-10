@@ -6775,13 +6775,13 @@ TEST_F(ColumnLayoutAlgorithmTest, GapDecorationColumnWrapBasic) {
   const Vector<MainGap> expected_row_gaps = {MainGap(LayoutUnit(62))};
   const Vector<CrossGap> expected_column_gaps = {
       CrossGap(LogicalOffset(LayoutUnit(67), LayoutUnit(2)),
-               CrossGap::EdgeIntersectionState::kBoth),
+               CrossGap::EdgeIntersectionState::kStart),
       CrossGap(LogicalOffset(LayoutUnit(137), LayoutUnit(2)),
-               CrossGap::EdgeIntersectionState::kBoth),
+               CrossGap::EdgeIntersectionState::kStart),
       CrossGap(LogicalOffset(LayoutUnit(67), LayoutUnit(72)),
-               CrossGap::EdgeIntersectionState::kBoth),
+               CrossGap::EdgeIntersectionState::kEnd),
       CrossGap(LogicalOffset(LayoutUnit(137), LayoutUnit(72)),
-               CrossGap::EdgeIntersectionState::kBoth),
+               CrossGap::EdgeIntersectionState::kEnd),
   };
 
   const Vector<CrossGapRange> expected_cross_gap_ranges_for_main_gaps = {
@@ -6827,7 +6827,7 @@ TEST_F(ColumnLayoutAlgorithmTest,
     border: 2px solid rgb(96 139 168);
     width: 200px;
     height: 200px;
-    column-height: 60px;
+    column-height: 80px;
     column-gap: 10px;
     row-gap: 10px;
     column-rule-width: 10px;
@@ -6839,7 +6839,6 @@ TEST_F(ColumnLayoutAlgorithmTest,
     column-wrap: wrap;
     column-width: 60px;
     column-count: 3;
-    column-fill: auto;
   }
 
   p {
@@ -6854,7 +6853,7 @@ TEST_F(ColumnLayoutAlgorithmTest,
     color: #fff;
     margin: 0px;
     opacity: 0.5;
-    height: 40px;
+    height: 10px;
   }
 </style>
 
@@ -6862,13 +6861,11 @@ TEST_F(ColumnLayoutAlgorithmTest,
   <div id="container">
     <p>One</p>
     <p>Two</p>
-    <h2>Spanner</h2>
+    <h2></h2>
     <p>Three</p>
     <p>Four</p>
     <p>Five</p>
     <p>Six</p>
-    <p>Seven</p>
-    <p>Eight</p>
   </div>
 </body>
   )HTML");
@@ -6887,44 +6884,40 @@ TEST_F(ColumnLayoutAlgorithmTest,
 
   ASSERT_TRUE(gap_geometry);
 
-  const Vector<MainGap> expected_main_gaps = {
-      MainGap(LayoutUnit(62)), MainGap(LayoutUnit(72)),
-      MainGap(LayoutUnit(112)), MainGap(LayoutUnit(132)),
-      MainGap(LayoutUnit(202))};
+  const Vector<MainGap> expected_main_gaps = {MainGap(LayoutUnit(42)),
+                                              MainGap(LayoutUnit(52)),
+                                              MainGap(LayoutUnit(82))};
   const Vector<CrossGap> expected_column_gaps = {
       CrossGap(LogicalOffset(LayoutUnit(67), LayoutUnit(2)),
                CrossGap::EdgeIntersectionState::kBoth),
       CrossGap(LogicalOffset(LayoutUnit(137), LayoutUnit(2)),
                CrossGap::EdgeIntersectionState::kBoth),
-      CrossGap(LogicalOffset(LayoutUnit(67), LayoutUnit(112)),
-               CrossGap::EdgeIntersectionState::kBoth),
-      CrossGap(LogicalOffset(LayoutUnit(137), LayoutUnit(112)),
-               CrossGap::EdgeIntersectionState::kBoth),
-      CrossGap(LogicalOffset(LayoutUnit(67), LayoutUnit(142)),
-               CrossGap::EdgeIntersectionState::kBoth),
-      CrossGap(LogicalOffset(LayoutUnit(137), LayoutUnit(142)),
-               CrossGap::EdgeIntersectionState::kBoth),
-      CrossGap(LogicalOffset(LayoutUnit(67), LayoutUnit(212)),
-               CrossGap::EdgeIntersectionState::kBoth)};
+      CrossGap(LogicalOffset(LayoutUnit(67), LayoutUnit(52)),
+               CrossGap::EdgeIntersectionState::kStart),
+      CrossGap(LogicalOffset(LayoutUnit(137), LayoutUnit(52)),
+               CrossGap::EdgeIntersectionState::kStart),
+      CrossGap(LogicalOffset(LayoutUnit(67), LayoutUnit(92)),
+               CrossGap::EdgeIntersectionState::kEnd),
+      CrossGap(LogicalOffset(LayoutUnit(137), LayoutUnit(92)),
+               CrossGap::EdgeIntersectionState::kEnd)};
 
   const Vector<CrossGapRange> expected_cross_gap_ranges_for_main_gaps = {
-      CrossGapRange(0, 1), CrossGapRange(2, 3), CrossGapRange(4, 5)};
+      CrossGapRange(0, 1), CrossGapRange(2, 3)};
 
   const Vector<MainGap>& main_gaps = gap_geometry->GetMainGaps();
   const Vector<CrossGap>& column_gaps = gap_geometry->GetCrossGaps();
-  ASSERT_EQ(main_gaps.size(), 5);
-  ASSERT_EQ(column_gaps.size(), 7);
+  ASSERT_EQ(main_gaps.size(), 3);
+  ASSERT_EQ(column_gaps.size(), 6);
 
   EXPECT_EQ(gap_geometry->GetContentInlineStart(), LayoutUnit(2));
   EXPECT_EQ(gap_geometry->GetContentBlockStart(), LayoutUnit(2));
   EXPECT_EQ(gap_geometry->GetContentInlineEnd(), LayoutUnit(202));
   EXPECT_EQ(gap_geometry->GetContentBlockEnd(), LayoutUnit(202));
 
-  EXPECT_FALSE(main_gaps[0].IsSpannerMainGap());
-  EXPECT_TRUE(main_gaps[1].IsStartSpannerMainGap());
-  EXPECT_TRUE(main_gaps[2].IsEndSpannerMainGap());
-  EXPECT_FALSE(main_gaps[3].IsSpannerMainGap());
-  EXPECT_FALSE(main_gaps[4].IsSpannerMainGap());
+  EXPECT_TRUE(main_gaps[0].IsSpannerMainGap());
+  EXPECT_TRUE(main_gaps[0].IsStartSpannerMainGap());
+  EXPECT_TRUE(main_gaps[1].IsEndSpannerMainGap());
+  EXPECT_FALSE(main_gaps[2].IsSpannerMainGap());
 
   VerifyMainGaps(expected_main_gaps, main_gaps);
   VerifyCrossGaps(expected_column_gaps, column_gaps);
@@ -6988,23 +6981,23 @@ TEST_F(ColumnLayoutAlgorithmTest,
                                              MainGap(LayoutUnit(340))};
   const Vector<CrossGap> expected_column_gaps = {
       CrossGap(LogicalOffset(LayoutUnit(110), LayoutUnit(0)),
-               CrossGap::EdgeIntersectionState::kBoth),
+               CrossGap::EdgeIntersectionState::kStart),
       CrossGap(LogicalOffset(LayoutUnit(230), LayoutUnit(0)),
-               CrossGap::EdgeIntersectionState::kBoth),
+               CrossGap::EdgeIntersectionState::kStart),
       CrossGap(LogicalOffset(LayoutUnit(350), LayoutUnit(0)),
-               CrossGap::EdgeIntersectionState::kBoth),
+               CrossGap::EdgeIntersectionState::kStart),
       CrossGap(LogicalOffset(LayoutUnit(110), LayoutUnit(120)),
-               CrossGap::EdgeIntersectionState::kBoth),
+               CrossGap::EdgeIntersectionState::kNone),
       CrossGap(LogicalOffset(LayoutUnit(230), LayoutUnit(120)),
-               CrossGap::EdgeIntersectionState::kBoth),
+               CrossGap::EdgeIntersectionState::kNone),
       CrossGap(LogicalOffset(LayoutUnit(350), LayoutUnit(120)),
-               CrossGap::EdgeIntersectionState::kBoth),
+               CrossGap::EdgeIntersectionState::kNone),
       CrossGap(LogicalOffset(LayoutUnit(110), LayoutUnit(240)),
-               CrossGap::EdgeIntersectionState::kBoth),
+               CrossGap::EdgeIntersectionState::kNone),
       CrossGap(LogicalOffset(LayoutUnit(230), LayoutUnit(240)),
-               CrossGap::EdgeIntersectionState::kBoth),
+               CrossGap::EdgeIntersectionState::kNone),
       CrossGap(LogicalOffset(LayoutUnit(350), LayoutUnit(240)),
-               CrossGap::EdgeIntersectionState::kBoth)};
+               CrossGap::EdgeIntersectionState::kNone)};
 
   const Vector<CrossGapRange> expected_cross_gap_ranges_for_main_gaps = {
       CrossGapRange(0, 2), CrossGapRange(3, 5), CrossGapRange(6, 8)};
