@@ -55,13 +55,8 @@ class TestCrossDevicePrefTracker
 
     std::vector<sync_preferences::TimestampedPrefValue> result;
     for (const auto& timestamped_value : it->second) {
-      sync_preferences::TimestampedPrefValue copied_value;
-      copied_value.value = timestamped_value.value.Clone();
-      copied_value.last_observed_change_time =
-          timestamped_value.last_observed_change_time;
-      copied_value.device_sync_cache_guid =
-          timestamped_value.device_sync_cache_guid;
-
+      sync_preferences::TimestampedPrefValue copied_value =
+          timestamped_value.Clone();
       result.push_back(std::move(copied_value));
     }
     return result;

@@ -1853,5 +1853,31 @@ TEST_F(CrossDevicePrefTrackerTest,
   tracker_->RemoveObserver(&mock_observer);
 }
 
+// Verifies that cloning a `TimestampedPrefValue` returns a deep copy of the
+// object.
+TEST_F(CrossDevicePrefTrackerTest, CloningTimestampedValueReturnsDeepCopy) {
+  TimestampedPrefValue original_value{
+      .value = base::Value(5),
+      .last_observed_change_time = base::Time::Now(),
+      .device_sync_cache_guid = "guid",
+  };
+
+  TimestampedPrefValue cloned_value = original_value.Clone();
+
+  ASSERT_EQ(original_value.value, cloned_value.value);
+  ASSERT_EQ(original_value.last_observed_change_time,
+            cloned_value.last_observed_change_time);
+  ASSERT_EQ(original_value.device_sync_cache_guid,
+            cloned_value.device_sync_cache_guid);
+
+  // Memory should not be shared between the original and cloned values.
+  EXPECT_NE(&original_value, &cloned_value);
+  EXPECT_NE(&original_value.value, &cloned_value.value);
+  EXPECT_NE(&original_value.last_observed_change_time,
+            &cloned_value.last_observed_change_time);
+  EXPECT_NE(&original_value.device_sync_cache_guid,
+            &cloned_value.device_sync_cache_guid);
+}
+
 }  // namespace
 }  // namespace sync_preferences

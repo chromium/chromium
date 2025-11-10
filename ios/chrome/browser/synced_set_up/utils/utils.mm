@@ -40,18 +40,6 @@ struct DeviceData {
 // of synced prefs and number of observed remote pref changes.
 using DeviceDataMap = std::map<std::string, DeviceData>;
 
-// Helper for copying a `TimestampedPrefValue`.
-sync_preferences::TimestampedPrefValue CloneTimestampedPrefValue(
-    const sync_preferences::TimestampedPrefValue& timestamped_value) {
-  sync_preferences::TimestampedPrefValue cloned_value;
-  cloned_value.value = timestamped_value.value.Clone();
-  cloned_value.last_observed_change_time =
-      timestamped_value.last_observed_change_time;
-  cloned_value.device_sync_cache_guid =
-      timestamped_value.device_sync_cache_guid;
-  return cloned_value;
-}
-
 // Helper for adding `DeviceData` entries related to a `DeviceDataMap`, using
 // prefs contained in `pref_map`.
 template <size_t N>
@@ -81,8 +69,8 @@ void BuildDeviceDataMapFromPrefMap(
       if (it == device_data_entry.pref_map.end() ||
           pref_value.last_observed_change_time >=
               it->second.last_observed_change_time) {
-        device_data_entry.pref_map.insert_or_assign(
-            tracked_pref.first, CloneTimestampedPrefValue(pref_value));
+        device_data_entry.pref_map.insert_or_assign(tracked_pref.first,
+                                                    pref_value.Clone());
       }
 
       // Count total observed pref changes.

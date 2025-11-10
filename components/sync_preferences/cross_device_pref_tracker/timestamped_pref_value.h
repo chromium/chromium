@@ -22,6 +22,15 @@ struct TimestampedPrefValue {
   base::Value value;
   base::Time last_observed_change_time;
   std::string device_sync_cache_guid;
+
+  // Returns a deep copy of this `TimestampedPrefValue`.
+  TimestampedPrefValue Clone() const {
+    return TimestampedPrefValue{
+        .value = value.Clone(),
+        .last_observed_change_time = last_observed_change_time,
+        .device_sync_cache_guid = device_sync_cache_guid,
+    };
+  }
 };
 
 }  // namespace sync_preferences
