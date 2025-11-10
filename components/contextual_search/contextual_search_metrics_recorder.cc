@@ -315,6 +315,8 @@ std::string ContextualSearchMetricsRecorder::MimeTypeToString(
 std::string ContextualSearchMetricsRecorder::ContextualSearchSourceToString(
     ContextualSearchSource source) {
   switch (source) {
+    case ContextualSearchSource::kOmnibox:
+      return "Omnibox";
     case ContextualSearchSource::kNewTabPage:
       return "NewTabPage";
     case ContextualSearchSource::kUnknown:

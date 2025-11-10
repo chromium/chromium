@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/location_bar/omnibox_popup_file_selector.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_context_menu.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_aim_presenter.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
 #include "chrome/browser/ui/views/omnibox/rounded_omnibox_results_frame.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
@@ -99,7 +100,11 @@ void OmniboxPopupWebUIBaseContent::ShowCustomContextMenu(
   ConvertPointToScreen(this, &point);
   context_menu_ = std::make_unique<OmniboxContextMenu>(
       GetWidget(), GetWebContents(),
-      location_bar_view_->GetOmniboxPopupFileSelector());
+      location_bar_view_->GetOmniboxPopupFileSelector(),
+      location_bar_view_->GetOmniboxPopupAimPresenter()
+          ->GetWebUIContent()
+          ->GetWebContents(),
+      controller()->edit_model());
   context_menu_->RunMenuAt(point, ui::mojom::MenuSourceType::kMouse);
 }
 

@@ -9,6 +9,8 @@
 
 #include "base/feature_list.h"
 #include "base/strings/string_number_conversions.h"
+#include "chrome/browser/contextual_search/contextual_search_service_factory.h"
+#include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -25,6 +27,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/omnibox_popup_resources.h"
 #include "chrome/grit/omnibox_popup_resources_map.h"
+#include "components/contextual_search/contextual_search_service.h"
 #include "components/favicon_base/favicon_url_parser.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -189,10 +192,24 @@ void OmniboxPopupUI::CreatePageHandler(
         pending_searchbox_handler) {
   DCHECK(pending_page.is_valid());
 
-  composebox_handler_ = std::make_unique<ComposeboxHandler>(
-      std::move(pending_page_handler), std::move(pending_page),
-      std::move(pending_searchbox_handler),
-      profile_, web_ui()->GetWebContents());
+  // Create a contextual session for this WebContents if one does not exist.
+  if (auto* contextual_search_web_contents_helper =
+          ContextualSearchWebContentsHelper::GetOrCreateForWebContents(
+              web_ui()->GetWebContents());
+      !contextual_search_web_contents_helper->session_handle()) {
+    auto* contextual_search_service =
+        ContextualSearchServiceFactory::GetForProfile(profile_);
+    auto contextual_session_handle = contextual_search_service->CreateSession(
+        ntp_composebox::CreateQueryControllerConfigParams(),
+        contextual_search::ContextualSearchSource::kOmnibox);
+    contextual_search_web_contents_helper->set_session_handle(
+        std::move(contextual_session_handle));
+
+    composebox_handler_ = std::make_unique<ComposeboxHandler>(
+        std::move(pending_page_handler), std::move(pending_page),
+        std::move(pending_searchbox_handler), profile_,
+        web_ui()->GetWebContents());
+  }
 
   // TODO(crbug.com/435288212): Move searchbox mojom to use factory pattern.
   composebox_handler_->SetPage(std::move(pending_searchbox_page));

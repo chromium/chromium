@@ -76,9 +76,11 @@
 #include "chrome/browser/ui/views/location_bar/star_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_context_menu.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_aim_presenter.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_views.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_webui.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_base_content.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_content.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/page_action/action_ids.h"
 #include "chrome/browser/ui/views/page_action/page_action_container_view.h"
@@ -1917,14 +1919,20 @@ bool LocationBarView::IsEditingOrEmpty() const {
 void LocationBarView::OnLocationIconPressed(const ui::MouseEvent& event) {
   if (browser_ &&
       GetOmniboxController()->edit_model()->ShouldShowAddContextButton()) {
+    auto omnibox_popup_view_webui =
+        GetOmniboxPopupView()->GetOmniboxPopupViewWebUI();
+    if (!omnibox_popup_view_webui) {
+      return;
+    }
+
     omnibox_context_menu_ = std::make_unique<OmniboxContextMenu>(
         GetWidget(),
-        GetOmniboxPopupView()
-            ->GetOmniboxPopupViewWebUI()
-            ->presenter()
+        omnibox_popup_view_webui->presenter()
             ->GetWebUIContent()
             ->GetWebContents(),
-        omnibox_popup_file_selector_.get());
+        omnibox_popup_file_selector_.get(),
+        omnibox_popup_aim_presenter_->GetWebUIContent()->GetWebContents(),
+        GetOmniboxController()->edit_model());
     gfx::Point point(0, location_icon_view_->height());
     views::View::ConvertPointToScreen(location_icon_view_, &point);
     run_omnibox_context_menu_callback_.Run(omnibox_context_menu_.get(), point);

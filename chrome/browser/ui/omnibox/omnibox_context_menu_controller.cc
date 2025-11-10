@@ -14,12 +14,14 @@
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
+#include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/location_bar/omnibox_popup_file_selector.h"
@@ -49,9 +51,18 @@ struct TabInfo {
 
 OmniboxContextMenuController::OmniboxContextMenuController(
     content::WebContents* web_contents,
-    OmniboxPopupFileSelector* file_selector)
+    OmniboxPopupFileSelector* file_selector,
+    content::WebContents* aim_web_contents,
+    OmniboxEditModel* edit_model)
     : web_contents_(web_contents->GetWeakPtr()),
-      file_selector_(file_selector->GetWeakPtr()) {
+      file_selector_(file_selector->GetWeakPtr()),
+      edit_model_(edit_model) {
+  if (aim_web_contents) {
+    query_controller_ =
+        ContextualSearchWebContentsHelper::FromWebContents(aim_web_contents)
+            ->session_handle()
+            ->GetController();
+  }
   menu_model_ = std::make_unique<ui::SimpleMenuModel>(this);
   next_command_id_ = kMinOmniboxContextMenuRecentTabsCommandId;
   BuildMenu();
@@ -222,12 +233,14 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
   switch (id) {
     case IDC_OMNIBOX_CONTEXT_ADD_IMAGE: {
       file_selector_->OpenFileUploadDialog(web_contents_.get(),
-                                           /*is_image=*/true);
+                                           /*is_image=*/true, query_controller_,
+                                           edit_model_);
       break;
     }
     case IDC_OMNIBOX_CONTEXT_ADD_FILE:
       file_selector_->OpenFileUploadDialog(web_contents_.get(),
-                                           /*is_image=*/false);
+                                           /*is_image=*/false,
+                                           query_controller_, edit_model_);
       break;
     default:
       NOTREACHED();

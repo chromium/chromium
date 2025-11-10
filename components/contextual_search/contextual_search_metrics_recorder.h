@@ -25,6 +25,7 @@ namespace contextual_search {
 enum class ContextualSearchSource {
   kUnknown,
   kNewTabPage,
+  kOmnibox,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and
