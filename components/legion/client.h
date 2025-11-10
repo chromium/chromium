@@ -41,12 +41,18 @@ class Client {
   using OnGenerateContentRequestCompletedCallback = base::OnceCallback<void(
       base::expected<proto::GenerateContentResponse, ErrorCode> result)>;
 
-  static Client Create(network::mojom::NetworkContext* network_context,
-                       proto::FeatureName feature_name);
+  static std::unique_ptr<Client> Create(
+      network::mojom::NetworkContext* network_context,
+      proto::FeatureName feature_name);
 
-  static Client CreateWithUrl(const GURL& url,
-                              network::mojom::NetworkContext* network_context,
-                              proto::FeatureName feature_name);
+  static std::unique_ptr<Client> CreateWithUrl(
+      const GURL& url,
+      network::mojom::NetworkContext* network_context,
+      proto::FeatureName feature_name);
+
+  // Takes a URL without scheme and an api_key and returns a URL.
+  static GURL FormatUrl(const std::string& url, const std::string& api_key);
+
   ~Client();
 
   Client(const Client&) = delete;

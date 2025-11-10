@@ -57,7 +57,7 @@ IN_PROC_BROWSER_TEST_F(LegionWebSocketClientBrowserTest, MANUAL_Client) {
   auto client = Client::Create(network_context, feature_name);
 
   base::test::TestFuture<base::expected<std::string, ErrorCode>> future;
-  client.SendTextRequest(text, future.GetCallback());
+  client->SendTextRequest(text, future.GetCallback());
 
   const auto& result = future.Get();
   ASSERT_TRUE(result.has_value());

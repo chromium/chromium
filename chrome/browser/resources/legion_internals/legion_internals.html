@@ -16,15 +16,15 @@ found in the LICENSE file.
     <div>
       <label>
         Server URL:
-        <input type="text" id="legionServerUrl">
+        <input type="text" id="legionServerUrl" value="$i18n{default_url}">
       </label>
     </div>
     <div>
       <label>
         API Key:
-        <input type="text" id="legionServerApiKey">
+        <input type="text" id="legionServerApiKey"
+               value="$i18n{default_api_key}">
       </label>
-
     </div>
 
     <button id="create-connection-button">Connect</button>
@@ -40,5 +40,4 @@ found in the LICENSE file.
       </div>
     </div>
   </body>
-
 </html>

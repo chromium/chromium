@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/logging.h"
+#include "base/memory/ptr_util.h"
 #include "base/strings/strcat.h"
 #include "components/legion/attestation_handler_impl.h"
 #include "components/legion/features.h"
@@ -69,17 +70,19 @@ void OnRequestSent(
 }  // namespace
 
 // static
-Client Client::Create(network::mojom::NetworkContext* network_context,
-                      proto::FeatureName feature_name) {
-  auto url = GURL(base::StrCat({"wss://", legion::kLegionUrl.Get(),
-                                "?key=", legion::kLegionApiKey.Get()}));
-  return CreateWithUrl(url, network_context, feature_name);
+std::unique_ptr<Client> Client::Create(
+    network::mojom::NetworkContext* network_context,
+    proto::FeatureName feature_name) {
+  return CreateWithUrl(
+      FormatUrl(legion::kLegionUrl.Get(), legion::kLegionApiKey.Get()),
+      network_context, feature_name);
 }
 
 // static
-Client Client::CreateWithUrl(const GURL& url,
-                             network::mojom::NetworkContext* network_context,
-                             proto::FeatureName feature_name) {
+std::unique_ptr<Client> Client::CreateWithUrl(
+    const GURL& url,
+    network::mojom::NetworkContext* network_context,
+    proto::FeatureName feature_name) {
   // Create dependencies for SecureChannelImpl.
   auto transport = std::make_unique<WebSocketClient>(
       url, base::BindRepeating(
@@ -92,7 +95,12 @@ Client Client::CreateWithUrl(const GURL& url,
       std::move(transport), std::move(secure_session),
       std::move(attestation_handler));
 
-  return Client(std::move(secure_channel), feature_name);
+  return base::WrapUnique(new Client(std::move(secure_channel), feature_name));
+}
+
+// static
+GURL Client::FormatUrl(const std::string& url, const std::string& api_key) {
+  return GURL(base::StrCat({"wss://", url, "?key=", api_key}));
 }
 
 Client::Client(std::unique_ptr<SecureChannel> secure_channel,
