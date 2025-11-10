@@ -131,7 +131,7 @@ constexpr TimeDelta IOJankMonitoringWindow::kMonitoringWindow;
 // static
 constexpr TimeDelta IOJankMonitoringWindow::kTimeDiscrepancyTimeout;
 // static
-constexpr int IOJankMonitoringWindow::kNumIntervals;
+constexpr size_t IOJankMonitoringWindow::kNumIntervals;
 
 // static
 scoped_refptr<IOJankMonitoringWindow>
@@ -251,36 +251,46 @@ void IOJankMonitoringWindow::OnBlockingCallCompleted(TimeTicks call_start,
 
   // Begin attributing jank to the first interval in which it appeared, no
   // matter how far into the interval the jank began.
-  const int jank_start_index =
-      ClampFloor((call_start - start_time_) / kIOJankInterval);
+  const size_t jank_start_index =
+      ClampFloor<size_t, double>((call_start - start_time_) / kIOJankInterval);
 
   // Round the jank duration so the total number of intervals marked janky is as
   // close as possible to the actual jank duration.
-  const int num_janky_intervals =
-      ClampRound((call_end - call_start) / kIOJankInterval);
+  const size_t num_janky_intervals =
+      ClampRound<size_t, double>((call_end - call_start) / kIOJankInterval);
 
   AddJank(jank_start_index, num_janky_intervals);
 }
 
-void IOJankMonitoringWindow::AddJank(int local_jank_start_index,
-                                     int num_janky_intervals) {
-  DCHECK_GE(local_jank_start_index, 0);
+void IOJankMonitoringWindow::AddJank(size_t local_jank_start_index,
+                                     size_t num_janky_intervals) {
   DCHECK_LT(local_jank_start_index, kNumIntervals);
 
   // Increment jank counts for intervals in this window. If
   // |num_janky_intervals| lands beyond kNumIntervals, the additional intervals
   // will be reported to |next_|.
-  const int jank_end_index = local_jank_start_index + num_janky_intervals;
-  const int local_jank_end_index = std::min(kNumIntervals, jank_end_index);
+  const size_t jank_end_index = local_jank_start_index + num_janky_intervals;
+  const size_t local_jank_end_index = std::min(kNumIntervals, jank_end_index);
+
+  const ptrdiff_t jank_start_index_ptrdiff =
+      checked_cast<ptrdiff_t>(local_jank_start_index);
+  const ptrdiff_t jank_end_index_ptrdiff =
+      checked_cast<ptrdiff_t>(local_jank_end_index);
 
   {
     // Note: while this window could be |canceled| here we must add our count
     // unconditionally as it is only thread-safe to read |canceled| in
     // ~IOJankMonitoringWindow().
     AutoLock lock(intervals_lock_);
-    for (int i = local_jank_start_index; i < local_jank_end_index; ++i) {
-      ++UNSAFE_TODO(intervals_jank_count_[i]);
-    }
+
+    DCHECK_LE(static_cast<size_t>(jank_start_index_ptrdiff),
+              intervals_jank_count_.size());
+    DCHECK_LE(static_cast<size_t>(jank_end_index_ptrdiff),
+              intervals_jank_count_.size());
+
+    std::for_each(intervals_jank_count_.begin() + jank_start_index_ptrdiff,
+                  intervals_jank_count_.begin() + jank_end_index_ptrdiff,
+                  [](size_t& n) { ++n; });
   }
 
   if (jank_end_index != local_jank_end_index) {

@@ -5,6 +5,7 @@
 #ifndef BASE_THREADING_SCOPED_BLOCKING_CALL_INTERNAL_H_
 #define BASE_THREADING_SCOPED_BLOCKING_CALL_INTERNAL_H_
 
+#include <array>
 #include <optional>
 
 #include "base/auto_reset.h"
@@ -97,7 +98,7 @@ class BASE_EXPORT [[maybe_unused, nodiscard]] IOJankMonitoringWindow
   static constexpr TimeDelta kIOJankInterval = Seconds(1);
   static constexpr TimeDelta kMonitoringWindow = Minutes(1);
   static constexpr TimeDelta kTimeDiscrepancyTimeout = kIOJankInterval * 10;
-  static constexpr int kNumIntervals = kMonitoringWindow / kIOJankInterval;
+  static constexpr size_t kNumIntervals = kMonitoringWindow / kIOJankInterval;
 
   // kIOJankIntervals must integrally fill kMonitoringWindow
   static_assert((kMonitoringWindow % kIOJankInterval).is_zero(), "");
@@ -142,7 +143,7 @@ class BASE_EXPORT [[maybe_unused, nodiscard]] IOJankMonitoringWindow
   // starting at |local_jank_start_index|. Having this logic separately helps
   // sane management of |intervals_lock_| when recursive calls through |next_|
   // pointers are necessary.
-  void AddJank(int local_jank_start_index, int num_janky_intervals);
+  void AddJank(size_t local_jank_start_index, size_t num_janky_intervals);
 
   static Lock& current_jank_window_lock();
   static scoped_refptr<IOJankMonitoringWindow>& current_jank_window_storage()
@@ -154,7 +155,8 @@ class BASE_EXPORT [[maybe_unused, nodiscard]] IOJankMonitoringWindow
       EXCLUSIVE_LOCKS_REQUIRED(current_jank_window_lock());
 
   Lock intervals_lock_;
-  size_t intervals_jank_count_[kNumIntervals] GUARDED_BY(intervals_lock_) = {};
+  std::array<size_t, kNumIntervals> intervals_jank_count_
+      GUARDED_BY(intervals_lock_) = {};
 
   const TimeTicks start_time_;
 
