@@ -105,20 +105,6 @@ base::expected<std::string, ImportResults::Status> ValidateString(
   return std::move(string);
 }
 
-ImportEntry::Status GetConflictType(
-    password_manager::PasswordForm::Store target_store) {
-  switch (target_store) {
-    case PasswordForm::Store::kProfileStore:
-      return ImportEntry::Status::CONFLICT_PROFILE;
-    case PasswordForm::Store::kAccountStore:
-      return ImportEntry::Status::CONFLICT_ACCOUNT;
-    case PasswordForm::Store::kNotSet:
-      return ImportEntry::Status::UNKNOWN_ERROR;
-    default:
-      NOTREACHED();
-  }
-}
-
 ImportEntry CreateFailedImportEntry(const CredentialUIEntry& credential,
                                     const ImportEntry::Status status) {
   ImportEntry result;
@@ -620,11 +606,6 @@ void PasswordImporter::ConsumePasswords(
                              duplicates_count);
 
   if (conflicts.empty() && !user_confirmation_required_) {
-    for (const std::vector<PasswordForm>& forms : conflicts) {
-      results.displayed_entries.push_back(CreateFailedImportEntry(
-          CredentialUIEntry(forms), GetConflictType(to_store)));
-    }
-
     ExecuteImport(std::move(results_callback), std::move(results),
                   std::move(incoming_passwords), start_time, conflicts.size());
     return;
