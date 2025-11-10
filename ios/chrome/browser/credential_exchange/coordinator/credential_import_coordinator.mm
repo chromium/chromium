@@ -10,6 +10,7 @@
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
+#import "components/webauthn/core/browser/passkey_model.h"
 #import "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
 #import "ios/chrome/browser/credential_exchange/coordinator/credential_import_mediator.h"
 #import "ios/chrome/browser/credential_exchange/ui/credential_import_view_controller.h"
@@ -18,6 +19,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/password/create_password_manager_title_view.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/webauthn/model/ios_passkey_model_factory.h"
 #import "ios/chrome/browser/webauthn/public/passkey_welcome_screen_util.h"
 #import "ios/chrome/common/credential_provider/passkey_keychain_provider_bridge.h"
 #import "ios/chrome/common/credential_provider/ui/passkey_welcome_screen_strings.h"
@@ -84,7 +86,9 @@
                  initWithUUID:_UUID
                      delegate:self
                     userEmail:_userEmail
-      savedPasswordsPresenter:std::move(savedPasswordsPresenter)];
+      savedPasswordsPresenter:std::move(savedPasswordsPresenter)
+                 passkeyModel:IOSPasskeyModelFactory::GetForProfile(
+                                  self.profile)];
   _mediator.consumer = _viewController;
   _navigationController = [[UINavigationController alloc]
       initWithRootViewController:_viewController];

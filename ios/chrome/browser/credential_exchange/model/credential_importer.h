@@ -7,6 +7,10 @@
 
 #import <Foundation/Foundation.h>
 
+namespace webauthn {
+class PasskeyModel;
+}  // namespace webauthn
+
 namespace password_manager {
 class SavedPasswordsPresenter;
 }  // namespace password_manager
@@ -27,6 +31,7 @@ class SavedPasswordsPresenter;
 - (instancetype)initWithDelegate:(id<CredentialImporterDelegate>)delegate
          savedPasswordsPresenter:
              (password_manager::SavedPasswordsPresenter*)savedPasswordsPresenter
+                    passkeyModel:(webauthn::PasskeyModel*)passkeyModel
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 

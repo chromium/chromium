@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/credential_exchange/coordinator/credential_import_mediator.h"
 
 #import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
+#import "components/webauthn/core/browser/passkey_model.h"
 #import "ios/chrome/browser/credential_exchange/model/credential_importer.h"
 #import "ios/chrome/browser/credential_exchange/ui/credential_import_consumer.h"
 #import "ios/chrome/browser/data_import/public/import_data_item.h"
@@ -32,14 +33,16 @@
                    userEmail:(std::string)userEmail
      savedPasswordsPresenter:
          (std::unique_ptr<password_manager::SavedPasswordsPresenter>)
-             savedPasswordsPresenter {
+             savedPasswordsPresenter
+                passkeyModel:(webauthn::PasskeyModel*)passkeyModel {
   self = [super init];
   if (self) {
     _savedPasswordsPresenter = std::move(savedPasswordsPresenter);
     _savedPasswordsPresenter->Init();
     _credentialImporter = [[CredentialImporter alloc]
                initWithDelegate:self
-        savedPasswordsPresenter:_savedPasswordsPresenter.get()];
+        savedPasswordsPresenter:_savedPasswordsPresenter.get()
+                   passkeyModel:passkeyModel];
     [_credentialImporter prepareImport:UUID];
     _delegate = delegate;
     _userEmail = std::move(userEmail);

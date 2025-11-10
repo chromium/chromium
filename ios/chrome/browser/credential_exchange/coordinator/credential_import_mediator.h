@@ -14,6 +14,10 @@ namespace password_manager {
 class SavedPasswordsPresenter;
 }  // namespace password_manager
 
+namespace webauthn {
+class PasskeyModel;
+}  // namespace webauthn
+
 @protocol CredentialImportConsumer;
 
 // Delegate for CredentialImportMediator.
@@ -34,7 +38,9 @@ class SavedPasswordsPresenter;
                    userEmail:(std::string)userEmail
      savedPasswordsPresenter:
          (std::unique_ptr<password_manager::SavedPasswordsPresenter>)
-             savedPasswordsPresenter NS_DESIGNATED_INITIALIZER;
+             savedPasswordsPresenter
+                passkeyModel:(webauthn::PasskeyModel*)passkeyModel
+    NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
 // Consumer of this mediator.

@@ -21,6 +21,7 @@ source_set("model") {
     "//components/password_manager/core/browser/ui:credential_ui_entry",
     "//components/webauthn/core/browser",
     "//components/webauthn/core/browser:passkey_model",
+    "//components/webauthn/core/browser/import",
     "//net",
   ]
 }
