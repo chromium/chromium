@@ -8129,6 +8129,9 @@ TEST_F(HostResolverManagerDnsTest, SetDnsConfigOverrides) {
   const SecureDnsMode secure_dns_mode = SecureDnsMode::kSecure;
   overrides.secure_dns_mode = secure_dns_mode;
   overrides.allow_dns_over_https_upgrade = true;
+  const std::vector<IPEndPoint> fallback_doh_nameservers = {
+      CreateExpected("8.8.8.8", net::dns_protocol::kDefaultPort)};
+  overrides.fallback_doh_nameservers = fallback_doh_nameservers;
   overrides.clear_hosts = true;
 
   // This test is expected to test overriding all fields.
@@ -8155,6 +8158,8 @@ TEST_F(HostResolverManagerDnsTest, SetDnsConfigOverrides) {
   EXPECT_EQ(secure_dns_mode, overridden_config->secure_dns_mode);
   EXPECT_TRUE(overridden_config->allow_dns_over_https_upgrade);
   EXPECT_THAT(overridden_config->hosts, testing::IsEmpty());
+  EXPECT_EQ(fallback_doh_nameservers,
+            overridden_config->fallback_doh_nameservers);
 
   base::RunLoop().RunUntilIdle();  // Notifications are async.
   EXPECT_EQ(1, config_observer.dns_changed_calls());

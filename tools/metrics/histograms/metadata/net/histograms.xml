@@ -3120,6 +3120,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.DNS.UpgradeConfig.InsecureUpgradeWithFallbackSucceeded"
+    enum="Boolean" expires_after="2026-05-31">
+  <owner>kaklilu@chromium.org</owner>
+  <owner>awillia@chromium.org</owner>
+  <owner>src/net/dns/OWNERS</owner>
+  <summary>
+    Recorded if upgrading to DoH from insecure DNS was attempted, failed, then
+    succeeded using the fallback DoH server config. This is only emitted when
+    Secure DNS is used in automatic-with-doh-fallback mode. We also only try
+    using the fallback if and the system DNS provider was not in Chrome's
+    supported DoH provider list.
+  </summary>
+</histogram>
+
 <histogram name="Net.DNS.UpgradeConfigFailed.LocalNameserverState"
     enum="DnsConfigLocalNameserverState" expires_after="2026-10-24">
   <owner>kaklilu@chromium.org</owner>

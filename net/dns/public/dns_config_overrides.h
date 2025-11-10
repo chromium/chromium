@@ -61,6 +61,7 @@ struct NET_EXPORT DnsConfigOverrides {
   std::optional<DnsOverHttpsConfig> dns_over_https_config;
   std::optional<SecureDnsMode> secure_dns_mode;
   std::optional<bool> allow_dns_over_https_upgrade;
+  std::optional<std::vector<IPEndPoint>> fallback_doh_nameservers;
 
   // |hosts| is not supported for overriding except to clear it.
   bool clear_hosts = false;

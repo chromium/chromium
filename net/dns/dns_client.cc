@@ -27,6 +27,7 @@
 #include "net/dns/dns_util.h"
 #include "net/dns/opt_record_rdata.h"
 #include "net/dns/public/dns_over_https_config.h"
+#include "net/dns/public/dns_protocol.h"
 #include "net/dns/public/secure_dns_mode.h"
 #include "net/dns/resolve_context.h"
 #include "net/log/net_log.h"
@@ -69,8 +70,8 @@ void UpdateConfigForDohUpgrade(DnsConfig* config) {
   bool has_doh_servers = !config->doh_config.servers().empty();
   // Do not attempt upgrade when there are already DoH servers specified or
   // when there are aspects of the system DNS config that are unhandled.
-  if (!config->unhandled_options && config->allow_dns_over_https_upgrade &&
-      !has_doh_servers &&
+  if (!config->unhandled_options && !has_doh_servers &&
+      config->allow_dns_over_https_upgrade &&
       config->secure_dns_mode == SecureDnsMode::kAutomatic) {
     // If we're in strict mode on Android, only attempt to upgrade the
     // specified DoT hostname.
@@ -92,13 +93,16 @@ void UpdateConfigForDohUpgrade(DnsConfig* config) {
                             !all_local);
       config->doh_config = DnsOverHttpsConfig(
           GetDohUpgradeServersFromNameservers(config->nameservers));
+      // If the DoH upgrade fails because there aren't matching providers
+      // in the hardcoded list use a well-known DoH provider as a fallback.
+      //
+      // Note: we don't apply this upgrade if the DNS config has a local
+      // nameserver to give local resolvers priority over fallback DoH.
       has_doh_servers = !config->doh_config.servers().empty();
-      UMA_HISTOGRAM_BOOLEAN("Net.DNS.UpgradeConfig.InsecureUpgradeSucceeded",
-                            has_doh_servers);
-
-      // We only emit these metrics if auto-upgrade fails.
-      // TODO: crbug.com/448683318 - add DoH fallback here.
+      bool upgraded_config_using_fallback = false;
       if (!has_doh_servers) {
+        bool fallback_doh_nameservers_provided =
+            !config->fallback_doh_nameservers.empty();
         bool has_loopback_nameserver = false;
         bool has_local_non_loopback_nameserver = false;
         for (const auto& server : config->nameservers) {
@@ -113,7 +117,24 @@ void UpdateConfigForDohUpgrade(DnsConfig* config) {
             "Net.DNS.UpgradeConfigFailed.LocalNameserverState",
             GetDnsConfigLocalNameserverState(
                 has_loopback_nameserver, has_local_non_loopback_nameserver));
+        bool has_local_nameserver =
+            has_loopback_nameserver || has_local_non_loopback_nameserver;
+        if (!has_local_nameserver && fallback_doh_nameservers_provided &&
+            base::FeatureList::IsEnabled(
+                net::features::kAddAutomaticWithDohFallbackMode)) {
+          config->doh_config =
+              DnsOverHttpsConfig(GetDohUpgradeServersFromNameservers(
+                  config->fallback_doh_nameservers));
+          upgraded_config_using_fallback =
+              !config->doh_config.servers().empty();
+        }
+        has_doh_servers = !config->doh_config.servers().empty();
       }
+      UMA_HISTOGRAM_BOOLEAN(
+          "Net.DNS.UpgradeConfig.InsecureUpgradeWithFallbackSucceeded",
+          upgraded_config_using_fallback);
+      UMA_HISTOGRAM_BOOLEAN("Net.DNS.UpgradeConfig.InsecureUpgradeSucceeded",
+                            has_doh_servers);
     }
   } else {
     UMA_HISTOGRAM_BOOLEAN("Net.DNS.UpgradeConfig.Ineligible.DohSpecified",

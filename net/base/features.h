@@ -912,6 +912,10 @@ NET_EXPORT BASE_DECLARE_FEATURE_PARAM(std::string, kQuicOptions);
 
 NET_EXPORT BASE_DECLARE_FEATURE(kDnsResponseDiscardPartialQuestions);
 
+// When enabled, users can make Secure DNS in AUTOMATIC mode fallback to a
+// well-known DoH provider before using insecure DNS.
+NET_EXPORT BASE_DECLARE_FEATURE(kAddAutomaticWithDohFallbackMode);
+
 }  // namespace net::features
 
 #endif  // NET_BASE_FEATURES_H_
