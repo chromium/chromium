@@ -165,6 +165,13 @@ public interface ChromeAndroidTask {
     void setActivityScopedObjects(ActivityScopedObjects activityScopedObjects);
 
     /**
+     * Called when native initialization has finished.
+     *
+     * <p>This signals when this {@link ChromeAndroidTask} is fully initialized.
+     */
+    void onNativeInitializationFinished();
+
+    /**
      * Convenience API to return the {@link ActivityWindowAndroid} in {@link ActivityScopedObjects},
      * or {@code null} if there is none.
      */

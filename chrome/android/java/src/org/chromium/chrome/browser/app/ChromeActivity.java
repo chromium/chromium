@@ -1983,6 +1983,11 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
 
         getProfileProviderSupplier().runSyncOrOnAvailable(this::initializeManualFillingComponent);
 
+        var chromeAndroidTask = getChromeAndroidTaskSupplier().get();
+        if (chromeAndroidTask != null) {
+            chromeAndroidTask.onNativeInitializationFinished();
+        }
+
         mTabReparentingControllerSupplier.set(
                 new TabReparentingController(
                         ReparentingDelegateFactory.createReparentingControllerDelegate(

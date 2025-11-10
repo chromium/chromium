@@ -250,6 +250,7 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
         var task =
                 mChromeAndroidTaskTracker.obtainTask(
                         BrowserWindowType.NORMAL, newActivityScopedObjects, pendingId);
+        pendingTask.onNativeInitializationFinished();
 
         // Assert.
         assertNull(mChromeAndroidTaskTracker.getPendingTaskForTesting(pendingId));
@@ -283,6 +284,7 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
         var task =
                 mChromeAndroidTaskTracker.obtainTask(
                         BrowserWindowType.NORMAL, activityScopedObjects, pendingId);
+        task.onNativeInitializationFinished();
 
         // Assert.
         assertEquals("The pending task should be adopted.", pendingTask, task);
@@ -709,6 +711,7 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
                                 BrowserWindowType.NORMAL,
                                 newActivityScopedObjects,
                                 assumeNonNull(pendingTask.getPendingTaskInfo()).mPendingTaskId);
+        newTask.onNativeInitializationFinished();
         newTask.onTopResumedActivityChangedWithNative(true);
 
         // Assert: Penultimately activated task gets activated.

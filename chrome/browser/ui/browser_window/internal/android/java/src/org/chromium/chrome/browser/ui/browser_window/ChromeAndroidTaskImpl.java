@@ -244,6 +244,32 @@ final class ChromeAndroidTaskImpl
     }
 
     @Override
+    public void onNativeInitializationFinished() {
+        if (mPendingTaskInfo == null) return;
+        synchronized (mActivityScopedObjectsLock) {
+            if (mActivityScopedObjects == null) return;
+            var activityWindowAndroid = mActivityScopedObjects.mActivityWindowAndroid;
+            // Transition from PENDING_CREATE to IDLE.
+            assert mState.get() == State.PENDING_CREATE;
+            assert mId == null;
+
+            mId = getActivity(activityWindowAndroid).getTaskId();
+
+            mState.set(State.IDLE);
+            dispatchPendingActionsLocked(activityWindowAndroid);
+
+            JniOnceCallback<Long> taskCreationCallbackForNative =
+                    mPendingTaskInfo.mTaskCreationCallbackForNative;
+            if (taskCreationCallbackForNative != null) {
+                taskCreationCallbackForNative.onResult(
+                        mAndroidBrowserWindow.getOrCreateNativePtr());
+            }
+
+            mPendingTaskInfo = null;
+        }
+    }
+
+    @Override
     public @Nullable ActivityWindowAndroid getActivityWindowAndroid() {
         synchronized (mActivityScopedObjectsLock) {
             return getActivityWindowAndroidInternalLocked(/* assertAlive= */ true);
@@ -258,7 +284,7 @@ final class ChromeAndroidTaskImpl
     @Override
     public void addFeature(ChromeAndroidTaskFeature feature) {
         synchronized (mFeaturesLock) {
-            assertAlive();
+            assertPendingCreateOrIdle();
             mFeatures.add(feature);
             feature.onAddedToTask();
         }
@@ -706,19 +732,13 @@ final class ChromeAndroidTaskImpl
             mActivityScopedObjects = activityScopedObjects;
 
             var activityWindowAndroid = activityScopedObjects.mActivityWindowAndroid;
-            switch (getState()) {
-                case PENDING_CREATE:
-                    assert mId == null;
-                    assert mPendingTaskInfo != null;
-                    break;
-                case IDLE:
-                    assert mPendingTaskInfo == null;
-                    assert mId != null;
-                    assert mId == getActivity(activityWindowAndroid).getTaskId()
-                            : "The new ActivityWindowAndroid doesn't belong to this Task.";
-                    break;
-                default:
-                    assert false : "Found unexpected Task state.";
+            assertPendingCreateOrIdle();
+            if (getState() == State.IDLE) {
+                assert mId != null;
+                assert mId == getActivity(activityWindowAndroid).getTaskId()
+                        : "The new ActivityWindowAndroid doesn't belong to this Task.";
+            } else {
+                assert mId == null;
             }
 
             // Register Activity LifecycleObservers
@@ -735,23 +755,6 @@ final class ChromeAndroidTaskImpl
             activityScopedObjects.mTabModel.addObserver(this);
             activityScopedObjects.mTabModel.associateWithBrowserWindow(
                     mAndroidBrowserWindow.getOrCreateNativePtr());
-
-            // Transition from PENDING_CREATE to IDLE.
-            if (mState.get() == State.PENDING_CREATE) {
-                mId = getActivity(activityWindowAndroid).getTaskId();
-
-                mState.set(State.IDLE);
-                dispatchPendingActionsLocked(activityWindowAndroid);
-
-                JniOnceCallback<Long> taskCreationCallbackForNative =
-                        assertNonNull(mPendingTaskInfo).mTaskCreationCallbackForNative;
-                if (taskCreationCallbackForNative != null) {
-                    taskCreationCallbackForNative.onResult(
-                            mAndroidBrowserWindow.getOrCreateNativePtr());
-                }
-
-                mPendingTaskInfo = null;
-            }
         }
     }
 
@@ -881,6 +884,11 @@ final class ChromeAndroidTaskImpl
     private void assertAlive() {
         assert mState.get() == State.IDLE || mState.get() == State.PENDING_UPDATE
                 : "This Task is not alive.";
+    }
+
+    private void assertPendingCreateOrIdle() {
+        assert mState.get() == State.IDLE || mState.get() == State.PENDING_CREATE
+                : "This Task is neither pending create nor idle.";
     }
 
     @GuardedBy("mActivityScopedObjectsLock")

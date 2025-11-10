@@ -258,6 +258,7 @@ public class ChromeAndroidTaskImplUnitTest {
 
         // Act.
         pendingTask.setActivityScopedObjects(activityScopedObjects);
+        pendingTask.onNativeInitializationFinished();
 
         // Assert.
         assertEquals(taskId, (int) pendingTask.getId());
@@ -1662,6 +1663,7 @@ public class ChromeAndroidTaskImplUnitTest {
 
         // Act.
         pendingTask.setActivityScopedObjects(activityScopedObjects);
+        pendingTask.onNativeInitializationFinished();
 
         // Assert.
         verify(mockActivityManager).moveTaskToFront(taskId, 0);
@@ -1685,6 +1687,7 @@ public class ChromeAndroidTaskImplUnitTest {
 
         // Act.
         pendingTask.setActivityScopedObjects(activityScopedObjects);
+        pendingTask.onNativeInitializationFinished();
 
         // Assert.
         verify(mockActivity).finishAndRemoveTask();
@@ -1710,6 +1713,7 @@ public class ChromeAndroidTaskImplUnitTest {
 
         // Act.
         pendingTask.setActivityScopedObjects(activityScopedObjects);
+        pendingTask.onNativeInitializationFinished();
 
         // Assert.
         verify(mockActivityManager).moveTaskToFront(taskId, 0);
@@ -1729,6 +1733,7 @@ public class ChromeAndroidTaskImplUnitTest {
         // Act.
         chromeAndroidTask.setActivityScopedObjects(
                 chromeAndroidTaskWithMockDeps.mActivityScopedObjects);
+        chromeAndroidTask.onNativeInitializationFinished();
 
         // Assert.
         var boundsCaptor = ArgumentCaptor.forClass(Rect.class);
@@ -1752,6 +1757,7 @@ public class ChromeAndroidTaskImplUnitTest {
 
         // Act.
         chromeAndroidTask.setActivityScopedObjects(activityScopedObjects);
+        chromeAndroidTask.onNativeInitializationFinished();
 
         // Assert.
         verify(mockActivity).moveTaskToBack(true);
@@ -1780,6 +1786,7 @@ public class ChromeAndroidTaskImplUnitTest {
         // Act.
         chromeAndroidTask.setActivityScopedObjects(
                 chromeAndroidTaskWithMockDeps.mActivityScopedObjects);
+        chromeAndroidTask.onNativeInitializationFinished();
 
         // Assert.
         Rect expectedBoundsInPx = DisplayUtil.scaleToEnclosingRect(pendingBoundsInDp, dipScale);
@@ -1833,6 +1840,7 @@ public class ChromeAndroidTaskImplUnitTest {
         // Act.
         chromeAndroidTask.setActivityScopedObjects(
                 chromeAndroidTaskWithMockDeps.mActivityScopedObjects);
+        chromeAndroidTask.onNativeInitializationFinished();
 
         // Assert.
         Rect expectedBoundsInPx = DisplayUtil.scaleToEnclosingRect(pendingBoundsInDp, dipScale);
@@ -1854,6 +1862,7 @@ public class ChromeAndroidTaskImplUnitTest {
 
         // Act.
         task.setActivityScopedObjects(activityScopedObjects);
+        task.onNativeInitializationFinished();
 
         // Assert.
         verify(pendingTaskInfo.mTaskCreationCallbackForNative)

@@ -51,6 +51,9 @@ void AssertBrowserWindow(BrowserWindowInterface* browser_window,
   if (expect_fully_initialized) {
     auto* tab_list_interface = TabListInterface::From(browser_window);
     ASSERT_NE(tab_list_interface, nullptr);
+    EXPECT_EQ(tab_list_interface->GetTabCount(), 1);
+    EXPECT_EQ(tab_list_interface->GetActiveIndex(), 0);
+    ASSERT_NE(tab_list_interface->GetActiveTab(), nullptr);
   }
 }
 }  // namespace

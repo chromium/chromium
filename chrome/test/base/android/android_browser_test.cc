@@ -81,10 +81,18 @@ void AndroidBrowserTest::PreRunTestOnMainThread() {}
 
 void AndroidBrowserTest::PostRunTestOnMainThread() {
   for (TabModel* model : TabModelList::models()) {
+    bool isOtrTabModel = model->IsOffTheRecord();
     if (model->GetTabCount()) {
       model->ForceCloseAllTabs();
     }
-    ASSERT_EQ(0, model->GetTabCount());
+
+    // Off-the-record (incognito) TabModel will be destroyed by
+    // ForceCloseAllTabs() above, so we can't call TabModel::GetTabCount()
+    // again for off-the-record TabModel.
+    // Otherwise, we'll dereference a non-null, but invalid pointer.
+    if (!isOtrTabModel) {
+      ASSERT_EQ(0, model->GetTabCount());
+    }
   }
 
   // Run any shutdown events from closing tabs.
