@@ -466,8 +466,10 @@ If you're a Googler, follow
 
 Otherwise, set the environment variable depending on your situation:
 
-* To ReAuth locally: `GOOGLE_AUTH_WEBAUTHN_PLUGIN=luci-auth-fido2-plugin`
-* To ReAuth over SSH: `GOOGLE_AUTH_WEBAUTHN_PLUGIN=luci-auth-ssh-plugin`
+* Inside `screen`, etc., running locally:
+  `GOOGLE_AUTH_WEBAUTHN_PLUGIN=luci-auth-fido2-plugin`
+* Inside `screen`, etc., running remotely with `luci-auth-ssh-helper`:
+  `GOOGLE_AUTH_WEBAUTHN_PLUGIN=luci-auth-ssh-plugin`
 
 Then run `git credential-luci reauth`.
 
