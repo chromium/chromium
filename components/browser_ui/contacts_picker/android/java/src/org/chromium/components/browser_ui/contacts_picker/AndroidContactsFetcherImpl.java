@@ -8,10 +8,11 @@ import android.content.ContentResolver;
 
 import org.chromium.base.task.AsyncTask;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.content_public.browser.ContactsFetcher;
 
-/** A class to retrieve contact data in background. */
+/** A class to retrieve contact data from Android Framework. */
 @NullMarked
-public class ContactsFetcherImpl implements ContactsFetcher {
+public class AndroidContactsFetcherImpl implements ContactsFetcher {
     // The content resolver to use for looking up contacts.
     private final ContentResolver mContentResolver;
 
@@ -20,7 +21,7 @@ public class ContactsFetcherImpl implements ContactsFetcher {
      *
      * @param contentResolver The ContentResolver to use for the lookup.
      */
-    public ContactsFetcherImpl(ContentResolver contentResolver) {
+    public AndroidContactsFetcherImpl(ContentResolver contentResolver) {
         mContentResolver = contentResolver;
     }
 

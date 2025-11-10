@@ -8,6 +8,7 @@ import static org.chromium.build.NullUtil.assertNonNull;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.widget.FullscreenAlertDialog;
+import org.chromium.content_public.browser.ContactsFetcher;
 import org.chromium.content_public.browser.ContactsPickerListener;
 import org.chromium.ui.base.WindowAndroid;
 

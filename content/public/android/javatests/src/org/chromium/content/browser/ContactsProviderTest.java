@@ -10,6 +10,7 @@ import androidx.test.filters.SmallTest;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,6 +22,9 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.Features;
+import org.chromium.content_public.browser.ContactsDialogHost;
+import org.chromium.content_public.browser.ContactsFetcher;
+import org.chromium.content_public.browser.ContactsPermissionProvider;
 import org.chromium.content_public.browser.ContactsPicker;
 import org.chromium.content_public.browser.ContactsPickerListener;
 import org.chromium.content_public.browser.RenderFrameHost;
@@ -58,6 +62,17 @@ public class ContactsProviderTest {
 
     @Rule
     public ContentShellActivityTestRule mActivityTestRule = new ContentShellActivityTestRule();
+
+    @BeforeClass
+    public static void setUpClass() {
+        ContactsDialogHost.setPermissionProvider(
+                new ContactsPermissionProvider() {
+                    @Override
+                    public void run(WebContents webContents, Callback callback) {
+                        callback.onAllowed(null);
+                    }
+                });
+    }
 
     @Before
     public void setUp() {
@@ -133,7 +148,8 @@ public class ContactsProviderTest {
                                     boolean tels,
                                     boolean addresses,
                                     boolean icons,
-                                    String formattedOrigin) -> {
+                                    String formattedOrigin,
+                                    ContactsFetcher contactsFetcher) -> {
                                 List<ContactsPickerListener.Contact> contacts = new ArrayList();
                                 List<String> contactsNames = new ArrayList();
                                 contactsNames.add("test");

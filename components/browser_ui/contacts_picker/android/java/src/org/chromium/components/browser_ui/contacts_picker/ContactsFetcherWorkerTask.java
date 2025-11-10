@@ -15,6 +15,8 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.content_public.browser.ContactsFetcher;
+import org.chromium.content_public.browser.ContactsFetcher.RetrievedContact;
 import org.chromium.payments.mojom.PaymentAddress;
 
 import java.util.ArrayList;
@@ -24,7 +26,7 @@ import java.util.Map;
 
 /** A worker task to retrieve images for contacts. */
 @NullMarked
-class ContactsFetcherWorkerTask extends AsyncTask<@Nullable ArrayList<ContactDetails>> {
+class ContactsFetcherWorkerTask extends AsyncTask<@Nullable ArrayList<RetrievedContact>> {
     private static final String[] PROJECTION = {
         ContactsContract.Contacts._ID,
         ContactsContract.Contacts.LOOKUP_KEY,
@@ -80,7 +82,7 @@ class ContactsFetcherWorkerTask extends AsyncTask<@Nullable ArrayList<ContactDet
      * @return The icon representing a contact.
      */
     @Override
-    protected @Nullable ArrayList<ContactDetails> doInBackground() {
+    protected @Nullable ArrayList<RetrievedContact> doInBackground() {
         assert !ThreadUtils.runningOnUiThread();
 
         if (isCancelled()) return null;
@@ -227,7 +229,7 @@ class ContactsFetcherWorkerTask extends AsyncTask<@Nullable ArrayList<ContactDet
      *
      * @return The contact list as an array.
      */
-    public ArrayList<ContactDetails> getAllContacts() {
+    public ArrayList<RetrievedContact> getAllContacts() {
         Map<String, ArrayList<String>> emailMap =
                 mIncludeEmails
                         ? getDetails(
@@ -269,7 +271,7 @@ class ContactsFetcherWorkerTask extends AsyncTask<@Nullable ArrayList<ContactDet
             return new ArrayList<>();
         }
 
-        ArrayList<ContactDetails> contacts = new ArrayList<>(cursor.getCount());
+        ArrayList<RetrievedContact> contacts = new ArrayList<>(cursor.getCount());
         do {
             String id =
                     cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.Contacts._ID));
@@ -297,7 +299,7 @@ class ContactsFetcherWorkerTask extends AsyncTask<@Nullable ArrayList<ContactDet
      * @param contacts The contacts retrieved.
      */
     @Override
-    protected void onPostExecute(@Nullable ArrayList<ContactDetails> contacts) {
+    protected void onPostExecute(@Nullable ArrayList<RetrievedContact> contacts) {
         assert ThreadUtils.runningOnUiThread();
 
         if (isCancelled()) return;

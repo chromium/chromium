@@ -2,24 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.content.browser;
+package org.chromium.content_public.browser;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
-
-import android.Manifest;
-import android.content.pm.PackageManager;
-import android.text.TextUtils;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.content_public.browser.ContactsPicker;
-import org.chromium.content_public.browser.ContactsPickerListener;
-import org.chromium.content_public.browser.WebContents;
-import org.chromium.ui.base.WindowAndroid;
 
 import java.nio.ByteBuffer;
 import java.util.List;
@@ -31,8 +24,22 @@ import java.util.List;
 @JNINamespace("content")
 @NullMarked
 public class ContactsDialogHost implements ContactsPickerListener {
+    private static final String TAG = "ContactsDialogHost";
+
     private long mNativeContactsProviderAndroid;
     private final WebContents mWebContents;
+
+    private static @Nullable ContactsPermissionProvider sContactsPermissionProvider;
+
+    /**
+     * Allows setting a {@link ContactsPermissionProvider}.
+     *
+     * @param contactsPermissionProvider A {@link ContactsPermissionProvider} instance.
+     */
+    public static void setPermissionProvider(
+            ContactsPermissionProvider contactsPermissionProvider) {
+        sContactsPermissionProvider = contactsPermissionProvider;
+    }
 
     @CalledByNative
     static ContactsDialogHost create(WebContents webContents, long nativeContactsProviderAndroid) {
@@ -62,61 +69,45 @@ public class ContactsDialogHost implements ContactsPickerListener {
             boolean includeAddresses,
             boolean includeIcons,
             String formattedOrigin) {
-        WindowAndroid windowAndroid = mWebContents.getTopLevelNativeWindow();
-        assert windowAndroid != null;
-
-        if (windowAndroid.getActivity().get() == null) {
+        if (sContactsPermissionProvider == null) {
+            Log.e(TAG, "Permission provider not set");
             ContactsDialogHostJni.get().endWithPermissionDenied(mNativeContactsProviderAndroid);
-            return;
-        }
+        } else {
+            ContactsPickerListener listener = this;
 
-        if (windowAndroid.hasPermission(Manifest.permission.READ_CONTACTS)) {
-            if (!ContactsPicker.showContactsPicker(
+            sContactsPermissionProvider.run(
                     mWebContents,
-                    this,
-                    multiple,
-                    includeNames,
-                    includeEmails,
-                    includeTel,
-                    includeAddresses,
-                    includeIcons,
-                    formattedOrigin)) {
-                ContactsDialogHostJni.get().endWithPermissionDenied(mNativeContactsProviderAndroid);
-            }
-            return;
-        }
+                    new ContactsPermissionProvider.Callback() {
+                        @Override
+                        public void onAllowed(ContactsFetcher contactsFetcher) {
+                            if (isDestroyed()) {
+                                return;
+                            }
+                            if (!ContactsPicker.showContactsPicker(
+                                    mWebContents,
+                                    listener,
+                                    multiple,
+                                    includeNames,
+                                    includeEmails,
+                                    includeTel,
+                                    includeAddresses,
+                                    includeIcons,
+                                    formattedOrigin,
+                                    contactsFetcher)) {
+                                onDenied();
+                            }
+                        }
 
-        if (!windowAndroid.canRequestPermission(Manifest.permission.READ_CONTACTS)) {
-            ContactsDialogHostJni.get().endWithPermissionDenied(mNativeContactsProviderAndroid);
-            return;
-        }
-
-        windowAndroid.requestPermissions(
-                new String[] {Manifest.permission.READ_CONTACTS},
-                (permissions, grantResults) -> {
-                    if (isDestroyed()) return;
-                    if (permissions.length == 1
-                            && grantResults.length == 1
-                            && TextUtils.equals(permissions[0], Manifest.permission.READ_CONTACTS)
-                            && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                        if (!ContactsPicker.showContactsPicker(
-                                mWebContents,
-                                this,
-                                multiple,
-                                includeNames,
-                                includeEmails,
-                                includeTel,
-                                includeAddresses,
-                                includeIcons,
-                                formattedOrigin)) {
+                        @Override
+                        public void onDenied() {
+                            if (isDestroyed()) {
+                                return;
+                            }
                             ContactsDialogHostJni.get()
                                     .endWithPermissionDenied(mNativeContactsProviderAndroid);
                         }
-                    } else {
-                        ContactsDialogHostJni.get()
-                                .endWithPermissionDenied(mNativeContactsProviderAndroid);
-                    }
-                });
+                    });
+        }
     }
 
     @Override

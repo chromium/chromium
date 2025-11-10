@@ -10,6 +10,8 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.content_public.browser.ContactsFetcher;
+import org.chromium.content_public.browser.ContactsFetcher.RetrievedContact;
 
 import java.util.ArrayList;
 import java.util.concurrent.Phaser;
@@ -20,11 +22,11 @@ import java.util.concurrent.Phaser;
  */
 @NullMarked
 class ContactsFetcherTestImpl implements ContactsFetcher {
-    private ArrayList<ContactDetails> mTestContacts = new ArrayList<>();
+    private ArrayList<RetrievedContact> mTestContacts = new ArrayList<>();
     private @Nullable Bitmap mTestIcon;
     private final Phaser mPhaser = new Phaser(1);
 
-    public void setTestContacts(ArrayList<ContactDetails> contacts) {
+    public void setTestContacts(ArrayList<RetrievedContact> contacts) {
         mTestContacts = contacts;
     }
 

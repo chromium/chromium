@@ -22,6 +22,8 @@ import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.content_public.browser.ContactsFetcher;
+import org.chromium.content_public.browser.ContactsFetcher.RetrievedContact;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -247,11 +249,19 @@ public abstract class PickerAdapter extends Adapter<RecyclerView.ViewHolder>
 
     // ContactsFetcherWorkerTask.ContactsRetrievedCallback:
     @Override
-    public void contactsRetrieved(ArrayList<ContactDetails> contacts) {
+    public void contactsRetrieved(ArrayList<RetrievedContact> contacts) {
         mOwnerEmail = sTestOwnerEmail != null ? sTestOwnerEmail : findOwnerEmail();
 
-        if (!processOwnerInfo(contacts, mOwnerEmail)) addOwnerInfoToContacts(contacts);
-        mContactDetails = contacts;
+        mContactDetails = new ArrayList<>(contacts.size());
+
+        for (RetrievedContact retrievedContact : contacts) {
+            mContactDetails.add(ContactDetails.fromRetrievedContact(retrievedContact));
+        }
+
+        if (!processOwnerInfo(mContactDetails, mOwnerEmail)) {
+            addOwnerInfoToContacts(mContactDetails);
+        }
+
         update();
     }
 

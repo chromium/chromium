@@ -43,6 +43,8 @@ import org.chromium.components.browser_ui.widget.RecyclerViewTestUtils;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate.SelectionObserver;
 import org.chromium.content.browser.contacts.ContactsPickerProperties;
+import org.chromium.content_public.browser.ContactsFetcher;
+import org.chromium.content_public.browser.ContactsFetcher.RetrievedContact;
 import org.chromium.content_public.browser.ContactsPicker;
 import org.chromium.content_public.browser.ContactsPickerListener;
 import org.chromium.content_public.browser.Visibility;
@@ -87,7 +89,7 @@ public class ContactsPickerDialogTest
     private ContactsPickerDialog mDialog;
 
     // The data to show in the dialog.
-    private ArrayList<ContactDetails> mTestContacts;
+    private ArrayList<RetrievedContact> mTestContacts;
 
     // The selection delegate for the dialog.
     private SelectionDelegate<ContactDetails> mSelectionDelegate;
@@ -236,7 +238,8 @@ public class ContactsPickerDialogTest
                                     boolean tels,
                                     boolean addresses,
                                     boolean icons,
-                                    String formattedOrigin) -> {
+                                    String formattedOrigin,
+                                    ContactsFetcher contactsFetcher) -> {
                                 mDialog =
                                         new ContactsPickerDialog(
                                                 webContents.getTopLevelNativeWindow(),
@@ -259,7 +262,7 @@ public class ContactsPickerDialogTest
                                                 icons,
                                                 formattedOrigin,
                                                 /* shouldPadForContent= */ false,
-                                                mContactsFetcher);
+                                                contactsFetcher);
 
                                 mDialog.show();
                                 return true;
@@ -274,7 +277,8 @@ public class ContactsPickerDialogTest
                             includeTel,
                             includeAddresses,
                             includeIcons,
-                            "example.com")) {
+                            "example.com",
+                            mContactsFetcher)) {
                         return;
                     }
 
@@ -313,7 +317,8 @@ public class ContactsPickerDialogTest
             Assert.assertEquals(expectedSelectionCount, mCurrentContactSelection.size());
             Assert.assertEquals(
                     expectSelection,
-                    mSelectionDelegate.isItemSelected(mTestContacts.get(position)));
+                    mSelectionDelegate.isItemSelected(
+                            ContactDetails.fromRetrievedContact(mTestContacts.get(position))));
         }
     }
 
@@ -503,8 +508,8 @@ public class ContactsPickerDialogTest
                             Arrays.asList("owner@example.com"),
                             /* phoneNumbers= */ null,
                             /* addresses= */ null);
-            mTestContacts.add(owner);
-            mTestContacts.add(owner2);
+            mTestContacts.add(0, owner);
+            mTestContacts.add(1, owner2);
         }
 
         mContactsFetcher.setTestContacts(mTestContacts);

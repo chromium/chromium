@@ -32,6 +32,7 @@ import org.chromium.components.browser_ui.widget.selectable_list.SelectableListL
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListToolbar;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.content.browser.contacts.ContactsPickerProperties;
+import org.chromium.content_public.browser.ContactsFetcher;
 import org.chromium.content_public.browser.ContactsPicker;
 import org.chromium.content_public.browser.ContactsPickerListener;
 import org.chromium.ui.base.WindowAndroid;

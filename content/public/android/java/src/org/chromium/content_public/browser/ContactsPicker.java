@@ -51,9 +51,9 @@ public final class ContactsPicker {
 
     /**
      * Called to display the contacts picker.
+     *
      * @param webContents The Web Contents that triggered this call.
-     * @param listener The listener that will be notified of the action the user took in the
-     *                 picker.
+     * @param listener The listener that will be notified of the action the user took in the picker.
      * @param allowMultiple Whether to allow multiple contacts to be selected.
      * @param includeNames Whether to include names of the shared contacts.
      * @param includeEmails Whether to include emails of the shared contacts.
@@ -61,7 +61,8 @@ public final class ContactsPicker {
      * @param includeAddresses Whether to include addresses of the shared contacts.
      * @param includeIcons Whether to include icons of the shared contacts.
      * @param formattedOrigin The origin the data will be shared with, formatted for display with
-     *         the scheme omitted.
+     *     the scheme omitted.
+     * @param contactsFetcher The source of contact information.
      * @return whether a contacts picker is successfully shown.
      */
     public static boolean showContactsPicker(
@@ -73,7 +74,8 @@ public final class ContactsPicker {
             boolean includeTel,
             boolean includeAddresses,
             boolean includeIcons,
-            String formattedOrigin) {
+            String formattedOrigin,
+            ContactsFetcher contactsFetcher) {
         if (sContactsPickerDelegate == null) return false;
         assert sPicker == null;
 
@@ -90,7 +92,8 @@ public final class ContactsPicker {
                         includeTel,
                         includeAddresses,
                         includeIcons,
-                        formattedOrigin);
+                        formattedOrigin,
+                        contactsFetcher);
         return true;
     }
 

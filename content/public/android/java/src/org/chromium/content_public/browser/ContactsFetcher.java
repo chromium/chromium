@@ -2,19 +2,34 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.components.browser_ui.contacts_picker;
+package org.chromium.content_public.browser;
 
 import android.graphics.Bitmap;
 
 import org.chromium.base.task.AsyncTask;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.payments.mojom.PaymentAddress;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /** An interface to fetch contact information for a contact picker. */
 @NullMarked
 public interface ContactsFetcher {
+    /** An interface to pass contact information retrieved from a source. */
+    interface RetrievedContact {
+        String getId();
+
+        String getDisplayName();
+
+        List<String> getEmails();
+
+        List<String> getPhoneNumbers();
+
+        List<PaymentAddress> getAddresses();
+    }
+
     /** An interface to use to communicate back the results to the client. */
     interface ContactsRetrievedCallback {
         /**
@@ -22,7 +37,7 @@ public interface ContactsFetcher {
          *
          * @param contacts The contacts retrieved.
          */
-        void contactsRetrieved(ArrayList<ContactDetails> contacts);
+        void contactsRetrieved(ArrayList<RetrievedContact> contacts);
     }
 
     /** An interface to use to communicate back the results to the client. */

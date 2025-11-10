@@ -22,6 +22,7 @@ public interface ContactsPickerDelegate {
      * @param includeIcons Whether to include icons of the shared contacts.
      * @param formattedOrigin The origin the data will be shared with, formatted for display with
      *     the scheme omitted.
+     * @param contactsFetcher The source of contact information.
      * @return the contacts picker object.
      */
     Object showContactsPicker(
@@ -33,5 +34,6 @@ public interface ContactsPickerDelegate {
             boolean includeTel,
             boolean includeAddresses,
             boolean includeIcons,
-            String formattedOrigin);
+            String formattedOrigin,
+            ContactsFetcher contactsFetcher);
 }

@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.init;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.ActivityManager;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
@@ -114,8 +113,7 @@ import org.chromium.chrome.browser.webapps.WebApkUninstallTracker;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;
 import org.chromium.components.browser_ui.accessibility.PageZoomUtils;
-import org.chromium.components.browser_ui.contacts_picker.ContactsFetcher;
-import org.chromium.components.browser_ui.contacts_picker.ContactsFetcherImpl;
+import org.chromium.components.browser_ui.contacts_picker.AndroidContactsPermissionProviderImpl;
 import org.chromium.components.browser_ui.contacts_picker.ContactsPickerDialog;
 import org.chromium.components.browser_ui.photo_picker.DecoderServiceHost;
 import org.chromium.components.browser_ui.photo_picker.PhotoPickerDelegateBase;
@@ -132,6 +130,8 @@ import org.chromium.components.safe_browsing.SafeBrowsingApiBridge;
 import org.chromium.components.webapps.AppBannerManager;
 import org.chromium.components.webapps.AppDetailsDelegate;
 import org.chromium.content_public.browser.ChildProcessLauncherHelper;
+import org.chromium.content_public.browser.ContactsDialogHost;
+import org.chromium.content_public.browser.ContactsFetcher;
 import org.chromium.content_public.browser.ContactsPicker;
 import org.chromium.content_public.browser.ContactsPickerListener;
 import org.chromium.content_public.browser.DeviceUtils;
@@ -428,6 +428,8 @@ public class ProcessInitializationHandler {
                     }
                 });
 
+        ContactsDialogHost.setPermissionProvider(new AndroidContactsPermissionProviderImpl());
+
         ContactsPicker.setContactsPickerDelegate(
                 (WebContents webContents,
                         ContactsPickerListener listener,
@@ -437,13 +439,12 @@ public class ProcessInitializationHandler {
                         boolean includeTel,
                         boolean includeAddresses,
                         boolean includeIcons,
-                        String formattedOrigin) -> {
+                        String formattedOrigin,
+                        ContactsFetcher contactsFetcher) -> {
                     WindowAndroid windowAndroid = webContents.getTopLevelNativeWindow();
                     assumeNonNull(windowAndroid);
                     Context context = windowAndroid.getContext().get();
                     assumeNonNull(context);
-                    ContentResolver contentResolver = context.getContentResolver();
-                    ContactsFetcher contactsFetcher = new ContactsFetcherImpl(contentResolver);
                     ContactsPickerDialog dialog =
                             new ContactsPickerDialog(
                                     windowAndroid,

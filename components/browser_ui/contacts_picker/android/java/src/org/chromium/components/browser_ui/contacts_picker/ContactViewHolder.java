@@ -14,6 +14,7 @@ import org.chromium.base.task.AsyncTask;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.content_public.browser.ContactsFetcher;
 
 /** Holds on to a {@link ContactView} that displays information about a contact. */
 @NullMarked

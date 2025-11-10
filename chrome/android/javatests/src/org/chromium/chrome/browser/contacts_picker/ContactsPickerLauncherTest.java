@@ -42,7 +42,8 @@ public class ContactsPickerLauncherTest {
                             /* includeTel= */ true,
                             /* includeAddresses= */ true,
                             /* includeIcons= */ true,
-                            webContents.getMainFrame().getLastCommittedOrigin().getScheme());
+                            webContents.getMainFrame().getLastCommittedOrigin().getScheme(),
+                            /* contactsFetcher= */ null);
                 });
     }
 
