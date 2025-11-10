@@ -23,8 +23,8 @@ public class DirectionalScrollListener extends RecyclerView.OnScrollListener {
     private final Handler mHandler;
     private boolean mIsThrottled;
 
-    private static final int DEFAULT_THROTTLE_MS = 100;
-    private static final int DEFAULT_SCROLL_THRESHOLD = 10;
+    private static final int DEFAULT_THROTTLE_MS = 50;
+    private static final int DEFAULT_SCROLL_THRESHOLD = 2;
 
     /**
      * Creates a new instance of {@link DirectionalScrollListener}.
