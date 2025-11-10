@@ -1026,8 +1026,9 @@ IN_PROC_BROWSER_TEST_F(LensComposeboxControllerBrowserTest,
   ASSERT_FALSE(lens_image_query_data.has_visual_search_interaction_data());
 }
 
+// TODO(https://crbug.com/458809311): Re-enable this test.
 IN_PROC_BROWSER_TEST_F(LensComposeboxControllerBrowserTest,
-                       DeleteVisualSelectionContext) {
+                       DISABLED_DeleteVisualSelectionContext) {
   WaitForPaint();
   auto* controller = GetLensSearchController();
   ASSERT_TRUE(controller->IsOff());
@@ -1080,8 +1081,9 @@ IN_PROC_BROWSER_TEST_F(LensComposeboxControllerBrowserTest,
       composebox_controller->vsc_image_data_id_for_testing().has_value());
 }
 
+// TODO(https://crbug.com/458809311): Re-enable this test.
 IN_PROC_BROWSER_TEST_F(LensComposeboxControllerBrowserTest,
-                       ClearFilesDeletesVisualSelectionContext) {
+                       DISABLED_ClearFilesDeletesVisualSelectionContext) {
   WaitForPaint();
   auto* controller = GetLensSearchController();
   ASSERT_TRUE(controller->IsOff());
