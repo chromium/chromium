@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
+#include "chrome/browser/glic/host/glic.mojom-shared.h"
 #include "chrome/browser/glic/widget/glic_widget.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "components/tabs/public/tab_interface.h"
@@ -38,6 +39,7 @@ struct SidePanelShowOptions {
 struct FloatingShowOptions {
   gfx::Rect initial_bounds;
   tabs::TabInterface::Handle source_tab;
+  mojom::WebClientMode initial_mode = mojom::WebClientMode::kUnknown;
 };
 
 using EmbedderOptions = std::variant<SidePanelShowOptions, FloatingShowOptions>;
@@ -51,8 +53,12 @@ struct ShowOptions {
 
   // Uses `anchor_browser` to get initial location. If `anchor_browser` is
   // nullptr, it will use default location values.
-  static ShowOptions ForFloating(tabs::TabInterface::Handle source_tab);
-  static ShowOptions ForFloating(gfx::Rect initial_bounds);
+  static ShowOptions ForFloating(
+      tabs::TabInterface::Handle source_tab,
+      mojom::WebClientMode initial_mode = mojom::WebClientMode::kUnknown);
+  static ShowOptions ForFloating(
+      gfx::Rect initial_bounds,
+      mojom::WebClientMode initial_mode = mojom::WebClientMode::kUnknown);
   static ShowOptions ForSidePanel(tabs::TabInterface& bound_tab);
 
   // Shared show options

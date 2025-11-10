@@ -93,6 +93,7 @@ enum class GlicInstanceEvent {
 class GlicInstanceMetrics {
  public:
   enum class EmbedderType {
+    kUnknown,
     kSidePanel,
     kFloaty,
   };
@@ -125,7 +126,7 @@ class GlicInstanceMetrics {
   void OnShowInSidePanel(tabs::TabInterface* tab);
 
   // Called when this instance is shown in a floaty.
-  void OnShowInFloaty();
+  void OnShowInFloaty(const ShowOptions& options);
 
   // Called when the floaty is hidden.
   void OnFloatyClosed();
@@ -148,7 +149,10 @@ class GlicInstanceMetrics {
   void OnDetach();
 
   // Called when daisy chaining occurs on the instance.
-  void OnDaisyChain(DaisyChainSource source, bool success);
+  void OnDaisyChain(DaisyChainSource source,
+                    bool success,
+                    tabs::TabInterface* new_tab = nullptr,
+                    tabs::TabInterface* source_tab = nullptr);
 
   // Called when GlicInstanceImpl::RegisterConversation is called.
   void OnRegisterConversation(const std::string& conversation_id);
@@ -230,6 +234,8 @@ class GlicInstanceMetrics {
     bool did_request_context_ = false;
     bool reported_reaction_time_canned_ = false;
     bool reported_reaction_time_modelled_ = false;
+    EmbedderType ui_mode_ = EmbedderType::kUnknown;
+    mojom::WebClientMode input_mode_ = mojom::WebClientMode::kUnknown;
   };
 
   // Logs the given event to the EventTotals histogram, and if the count is 0,
@@ -248,6 +254,7 @@ class GlicInstanceMetrics {
   // An Instance is visible when it is showing in an embedder. The embedder may
   // be occluded (if side panel) or inactive and still considered visible.
   bool is_visible_ = false;
+  EmbedderType current_ui_mode_ = EmbedderType::kUnknown;
 
   // Keeps track of the current number of bound tabs to this instance.
   // Incremented in OnBind and decremented in OnUnbindEmbedder.
@@ -273,7 +280,7 @@ class GlicInstanceMetrics {
 
   base::TimeTicks creation_time_;
   base::TimeTicks floaty_open_time_;
-  std::map<int, base::TimeTicks> side_panel_open_times_;
+  std::map<tabs::TabHandle, base::TimeTicks> side_panel_open_times_;
   base::TimeTicks last_activation_change_time_;
   base::TimeTicks last_visibility_change_time_;
   base::TimeDelta total_active_time_;
@@ -282,6 +289,8 @@ class GlicInstanceMetrics {
   GlicMetricsSessionManager session_manager_;
   base::TimeTicks last_session_end_time_;
   int session_count_ = 0;
+
+  std::map<tabs::TabHandle, int> tab_depths_;
 };
 
 }  // namespace glic

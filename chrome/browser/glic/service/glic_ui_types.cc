@@ -29,7 +29,8 @@ ShowOptions& ShowOptions::operator=(const ShowOptions&) = default;
 ShowOptions::~ShowOptions() = default;
 
 // static
-ShowOptions ShowOptions::ForFloating(tabs::TabInterface::Handle source_tab) {
+ShowOptions ShowOptions::ForFloating(tabs::TabInterface::Handle source_tab,
+                                     mojom::WebClientMode initial_mode) {
   BrowserWindowInterface* anchor_browser = nullptr;
   if (auto* tab = source_tab.Get()) {
     anchor_browser = tab->GetBrowserWindowInterface();
@@ -37,12 +38,13 @@ ShowOptions ShowOptions::ForFloating(tabs::TabInterface::Handle source_tab) {
   return ShowOptions{
       FloatingShowOptions{GlicWidget::GetInitialBounds(
                               anchor_browser, GlicFloatingUi::GetDefaultSize()),
-                          source_tab}};
+                          source_tab, initial_mode}};
 }
 
-ShowOptions ShowOptions::ForFloating(gfx::Rect initial_bounds) {
-  return ShowOptions{
-      FloatingShowOptions{initial_bounds, tabs::TabInterface::Handle::Null()}};
+ShowOptions ShowOptions::ForFloating(gfx::Rect initial_bounds,
+                                     mojom::WebClientMode initial_mode) {
+  return ShowOptions{FloatingShowOptions{
+      initial_bounds, tabs::TabInterface::Handle::Null(), initial_mode}};
 }
 
 ShowOptions ShowOptions::ForSidePanel(tabs::TabInterface& bound_tab) {

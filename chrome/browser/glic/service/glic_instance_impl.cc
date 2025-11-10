@@ -99,11 +99,13 @@ class GlicTabContentsObserver : public content::WebContentsObserver {
       show_options.focus_on_show = tab_to_bind->IsActivated();
       instance_->Show(show_options);
       instance_->metrics()->OnDaisyChain(DaisyChainSource::kTabContents,
-                                         /*success=*/true);
+                                         /*success=*/true, tab_to_bind,
+                                         source_tab);
     } else {
       // Record the failure.
       instance_->metrics()->OnDaisyChain(DaisyChainSource::kTabContents,
-                                         /*success=*/false);
+                                         /*success=*/false, tab_to_bind,
+                                         source_tab);
     }
   }
 
@@ -270,7 +272,8 @@ void GlicInstanceImpl::Show(const ShowOptions& options) {
 
 void GlicInstanceImpl::Detach(tabs::TabInterface& tab) {
   instance_metrics_.OnDetach();
-  auto show_options = ShowOptions::ForFloating(tab.GetHandle());
+  auto show_options =
+      ShowOptions::ForFloating(tab.GetHandle(), interaction_mode_);
   show_options.focus_on_show = true;
   Show(show_options);
   Close(CreateSidePanelEmbedderKey(&tab));
@@ -387,7 +390,7 @@ tabs::TabInterface* GlicInstanceImpl::CreateTab(
   show_options.focus_on_show = created_tab->IsActivated() || embedder_has_focus;
   Show(show_options);
   instance_metrics_.OnDaisyChain(DaisyChainSource::kGlicContents,
-                                 /*success=*/true);
+                                 /*success=*/true, created_tab);
   return nullptr;
 }
 
@@ -991,7 +994,7 @@ void GlicInstanceImpl::OnTabAddedToTask(
   side_panel_options.suppress_opening_animation = true;
   Show(ShowOptions{side_panel_options});
   instance_metrics_.OnDaisyChain(DaisyChainSource::kActorAddTab,
-                                 /*success=*/true);
+                                 /*success=*/true, tab);
 }
 
 void GlicInstanceImpl::RequestToShowCredentialSelectionDialog(
