@@ -1037,8 +1037,13 @@ export enum SelectAutofillSuggestionsDialogErrorReason {
   // The hosting WebUI received the request, but the web client has not
   // subscribed to the request yet. We couldn't show the dialog in this case.
   DIALOG_PROMISE_NO_SUBSCRIBER = 0,
-  // The requested task id did not match the response task id.
+  // The requested task id did not match the response task id. This error is
+  // internal to the browser and not sent by the client over mojo.
   MISMATCHED_TASK_ID = 1,
+  // The task is not connected to a delegate. I.e. attempting to run the task
+  // from the experimental actor API. This error is internal to the browser and
+  // not sent by the client over mojo.
+  NO_ACTOR_TASK_DELEGATE = 2,
 }
 // LINT.ThenChange(//chrome/common/actor_webui.mojom:SelectAutofillSuggestionsDialogErrorReason)
 

@@ -775,4 +775,15 @@ void GlicKeyedService::RequestToConfirmNavigation(
       task_id, navigation_origin, std::move(callback));
 }
 
+void GlicKeyedService::RequestToShowAutofillSuggestionsDialog(
+    actor::TaskId task_id,
+    std::vector<autofill::ActorFormFillingRequest> requests,
+    AutofillSuggestionSelectedCallback callback) {
+  CHECK(UseDefaultWindowController());
+  auto* window_controller_impl =
+      static_cast<GlicWindowControllerImpl*>(window_controller_.get());
+  window_controller_impl->host().RequestToShowAutofillSuggestionsDialog(
+      task_id, std::move(requests), std::move(callback));
+}
+
 }  // namespace glic

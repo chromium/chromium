@@ -21,6 +21,7 @@
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/common/chrome_features.h"
+#include "components/autofill/core/browser/integrators/glic/actor_form_filling_types.h"
 #include "components/guest_view/browser/guest_view_base.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
@@ -572,6 +573,24 @@ void Host::RequestToConfirmNavigation(
   }
   handler_info_->web_client->RequestToConfirmNavigation(
       task_id, navigation_origin, std::move(callback));
+}
+
+void Host::RequestToShowAutofillSuggestionsDialog(
+    actor::TaskId task_id,
+    std::vector<autofill::ActorFormFillingRequest> requests,
+    actor::ActorTaskDelegate::AutofillSuggestionSelectedCallback callback) {
+  if (!IsReady()) {
+    std::move(callback).Run(
+        actor::webui::mojom::SelectAutofillSuggestionsDialogResponse::New(
+            task_id.value(),
+            actor::webui::mojom::SelectAutofillSuggestionsDialogResult::
+                NewErrorReason(actor::webui::mojom::
+                                   SelectAutofillSuggestionsDialogErrorReason::
+                                       kDialogPromiseNoSubscriber)));
+    return;
+  }
+  handler_info_->web_client->RequestToShowAutofillSuggestionsDialog(
+      task_id, std::move(requests), std::move(callback));
 }
 
 void Host::FloatingPanelCanAttachChanged(bool can_attach) {

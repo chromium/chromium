@@ -75,6 +75,7 @@ source_set("glic") {
     "//chrome/browser/ui:browser_list",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/tabs:tab_strip_model_observer",
+    "//components/autofill/core/browser/integrators/glic:actor_form_filling_types",
     "//components/content_extraction/content/browser",
     "//components/favicon/core",
     "//components/metrics",

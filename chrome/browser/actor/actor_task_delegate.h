@@ -8,6 +8,7 @@
 #include "base/functional/callback.h"
 #include "chrome/common/actor/task_id.h"
 #include "chrome/common/actor_webui.mojom.h"
+#include "components/autofill/core/browser/integrators/glic/actor_form_filling_types.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_types.h"
 #include "components/tabs/public/tab_interface.h"
 #include "ui/gfx/image/image.h"
@@ -46,6 +47,13 @@ class ActorTaskDelegate {
       TaskId task_id,
       const url::Origin& navigation_origin,
       NavigationConfirmationCallback callback) = 0;
+
+  using AutofillSuggestionSelectedCallback = base::OnceCallback<void(
+      webui::mojom::SelectAutofillSuggestionsDialogResponsePtr)>;
+  virtual void RequestToShowAutofillSuggestionsDialog(
+      actor::TaskId task_id,
+      std::vector<autofill::ActorFormFillingRequest> requests,
+      AutofillSuggestionSelectedCallback callback) = 0;
 };
 
 }  // namespace actor

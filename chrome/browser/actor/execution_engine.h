@@ -23,6 +23,7 @@
 #include "chrome/browser/password_manager/actor_login/actor_login_service.h"
 #include "chrome/common/actor.mojom-forward.h"
 #include "chrome/common/actor/task_id.h"
+#include "components/autofill/core/browser/integrators/glic/actor_form_filling_types.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
@@ -107,6 +108,7 @@ class ExecutionEngine : public ToolDelegate {
   AggregatedJournal& GetJournal() override;
   favicon::FaviconService* GetFaviconService() override;
   actor_login::ActorLoginService& GetActorLoginService() override;
+  autofill::ActorFormFillingService& GetActorFormFillingService() override;
   void PromptToSelectCredential(
       const std::vector<actor_login::Credential>& credentials,
       const base::flat_map<std::string, gfx::Image>& icons,
@@ -115,7 +117,9 @@ class ExecutionEngine : public ToolDelegate {
       const CredentialWithPermission& credential) override;
   const std::optional<CredentialWithPermission> GetUserSelectedCredential(
       const url::Origin& request_origin) const override;
-
+  void RequestToShowAutofillSuggestions(
+      std::vector<autofill::ActorFormFillingRequest> requests,
+      AutofillSuggestionSelectedCallback callback) override;
   void AddWritableMainframeOrigins(
       const absl::flat_hash_set<url::Origin>& added_writable_mainframe_origins);
 
@@ -253,6 +257,8 @@ class ExecutionEngine : public ToolDelegate {
   // request.
   std::unique_ptr<ToolController> tool_controller_;
   std::unique_ptr<actor_login::ActorLoginService> actor_login_service_;
+  std::unique_ptr<autofill::ActorFormFillingService>
+      actor_form_filling_service_;
   std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher_;
 
   std::vector<std::unique_ptr<ToolRequest>> action_sequence_;

@@ -20,7 +20,6 @@
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/actor/task_id.h"
 #include "chrome/common/buildflags.h"
-#include "components/autofill/core/browser/integrators/glic/actor_form_filling_types.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/tabs/public/tab_interface.h"
 
@@ -134,31 +133,6 @@ class ActorKeyedService : public KeyedService {
       TaskStateChangedCallback callback);
 
   void NotifyTaskStateChanged(const ActorTask& task);
-
-  // Allows the subscribers to be notified when an autofill suggestion prompt
-  // is requested by a tool.
-  using AutofillSuggestionsSelectedCallback = base::RepeatingCallback<void(
-      webui::mojom::SelectAutofillSuggestionsDialogResponsePtr)>;
-  using RequestToShowAutofillSuggestionsDialogSubscriberCallback =
-      base::RepeatingCallback<void(
-          TaskId,
-          const std::vector<autofill::ActorFormFillingRequest>&,
-          AutofillSuggestionsSelectedCallback)>;
-  base::CallbackListSubscription
-  AddRequestToShowAutofillSuggestionsDialogSubscriberCallback(
-      RequestToShowAutofillSuggestionsDialogSubscriberCallback callback);
-
-  // Notifies the subscribers that an autofill suggestion selection prompt is
-  // requested for the given task.
-  void NotifyRequestToShowAutofillSuggestionsDialog(
-      TaskId task_id,
-      const std::vector<autofill::ActorFormFillingRequest>& requests);
-
-  // Callback for when an autofill suggestion is selected.
-  void OnAutofillSuggestionsSelected(
-      TaskId request_task_id,
-      webui::mojom::SelectAutofillSuggestionsDialogResponsePtr response);
-
   void OnActOnWebCapabilityChanged(bool can_act_on_web);
 
   using ActOnWebCapabilityChangedCallback = base::RepeatingCallback<void(bool)>;
@@ -201,10 +175,6 @@ class ActorKeyedService : public KeyedService {
 
   base::RepeatingCallbackList<void(const ActorTask&)>
       tab_state_change_callback_list_;
-
-  base::RepeatingCallbackList<
-      RequestToShowAutofillSuggestionsDialogSubscriberCallback::RunType>
-      request_to_show_autofill_suggestions_dialog_callback_list_;
 
   base::RepeatingCallbackList<ActOnWebCapabilityChangedCallback::RunType>
       act_on_web_capability_changed_callback_list_;

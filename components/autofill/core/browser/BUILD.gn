@@ -22,6 +22,7 @@ source_set("country_data") {
     "//third_party/icu",
   ]
 }
+
 if (is_android) {
   import("//build/config/android/rules.gni")
 }

@@ -25,6 +25,10 @@ ActorFormFillingRequest& ActorFormFillingRequest::operator=(
 ActorFormFillingRequest::~ActorFormFillingRequest() = default;
 
 ActorFormFillingSelection::ActorFormFillingSelection() = default;
+
+ActorFormFillingSelection::ActorFormFillingSelection(ActorSuggestionId id)
+    : selected_suggestion_id(id) {}
+
 ActorFormFillingSelection::ActorFormFillingSelection(
     const ActorFormFillingSelection&) = default;
 ActorFormFillingSelection& ActorFormFillingSelection::operator=(
@@ -34,5 +38,7 @@ ActorFormFillingSelection::ActorFormFillingSelection(
 ActorFormFillingSelection& ActorFormFillingSelection::operator=(
     ActorFormFillingSelection&&) = default;
 ActorFormFillingSelection::~ActorFormFillingSelection() = default;
+bool ActorFormFillingSelection::operator==(
+    const ActorFormFillingSelection&) const = default;
 
 }  // namespace autofill

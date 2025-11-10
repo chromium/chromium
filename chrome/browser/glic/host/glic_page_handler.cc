@@ -699,13 +699,6 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
         // when this object is destructed.
         // TODO(crbug.com/445224605): Right now this code assumes that
         //   ActorKeyedService only owns a single Execution engine instance.
-        request_to_show_autofill_suggestions_dialog_subscription_ =
-            actor_service
-                ->AddRequestToShowAutofillSuggestionsDialogSubscriberCallback(
-                    base::BindRepeating(
-                        &GlicWebClientHandler::
-                            RequestToShowAutofillSuggestionsDialog,
-                        base::Unretained(this)));
         act_on_web_capability_changed_subscription_ =
             actor_service->AddActOnWebCapabilityChangedCallback(
                 base::BindRepeating(
@@ -1656,7 +1649,6 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     focus_changed_subscription_ = {};
     pinned_tabs_changed_subscription_ = {};
     pinned_tab_data_changed_subscription_ = {};
-    request_to_show_autofill_suggestions_dialog_subscription_ = {};
     browser_attach_observation_.reset();
     if (glic_service_->zero_state_suggestions_manager()) {
       glic_service_->zero_state_suggestions_manager()->Reset();
@@ -1752,37 +1744,6 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     web_client_->NotifyActorTaskStateChanged(task.id().value(), state);
   }
 
-  void RequestToShowAutofillSuggestionsDialog(
-      actor::TaskId task_id,
-      const std::vector<autofill::ActorFormFillingRequest>& requests,
-      actor::ActorKeyedService::AutofillSuggestionsSelectedCallback
-          on_autofill_suggestions_selected) {
-    std::vector<actor::webui::mojom::FormFillingRequestPtr> mojo_requests;
-    for (const auto& request : requests) {
-      auto mojo_request = actor::webui::mojom::FormFillingRequest::New();
-      mojo_request->requested_data =
-          static_cast<int64_t>(request.requested_data);
-      for (const auto& suggestion : request.suggestions) {
-        auto mojo_suggestion = actor::webui::mojom::AutofillSuggestion::New();
-        mojo_suggestion->id = base::NumberToString(suggestion.id.value());
-        mojo_suggestion->title = suggestion.title;
-        mojo_suggestion->details = suggestion.details;
-        if (suggestion.icon) {
-          mojo_suggestion->icon = suggestion.icon->AsBitmap();
-        }
-        mojo_request->suggestions.push_back(std::move(mojo_suggestion));
-      }
-      mojo_requests.push_back(std::move(mojo_request));
-    }
-
-    auto dialog_request =
-        actor::webui::mojom::SelectAutofillSuggestionsDialogRequest::New(
-            task_id.value(), std::move(mojo_requests));
-
-    web_client_->RequestToShowAutofillSuggestionsDialog(
-        std::move(dialog_request), std::move(on_autofill_suggestions_selected));
-  }
-
   void RequestToShowCredentialSelectionDialog(
       actor::TaskId task_id,
       const base::flat_map<std::string, gfx::Image>& icons,
@@ -1841,6 +1802,37 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
         std::move(callback));
   }
 
+  void RequestToShowAutofillSuggestionsDialog(
+      actor::TaskId task_id,
+      std::vector<autofill::ActorFormFillingRequest> requests,
+      actor::ActorTaskDelegate::AutofillSuggestionSelectedCallback
+          on_autofill_suggestions_selected) override {
+    std::vector<actor::webui::mojom::FormFillingRequestPtr> mojo_requests;
+    for (const auto& request : requests) {
+      auto mojo_request = actor::webui::mojom::FormFillingRequest::New();
+      mojo_request->requested_data =
+          static_cast<int64_t>(request.requested_data);
+      for (const auto& suggestion : request.suggestions) {
+        auto mojo_suggestion = actor::webui::mojom::AutofillSuggestion::New();
+        mojo_suggestion->id = base::NumberToString(suggestion.id.value());
+        mojo_suggestion->title = suggestion.title;
+        mojo_suggestion->details = suggestion.details;
+        if (suggestion.icon) {
+          mojo_suggestion->icon = suggestion.icon->AsBitmap();
+        }
+        mojo_request->suggestions.push_back(std::move(mojo_suggestion));
+      }
+      mojo_requests.push_back(std::move(mojo_request));
+    }
+
+    auto dialog_request =
+        actor::webui::mojom::SelectAutofillSuggestionsDialogRequest::New(
+            task_id.value(), std::move(mojo_requests));
+
+    web_client_->RequestToShowAutofillSuggestionsDialog(
+        std::move(dialog_request), std::move(on_autofill_suggestions_selected));
+  }
+
   PrefChangeRegistrar pref_change_registrar_;
   PrefChangeRegistrar local_state_pref_change_registrar_;
   raw_ptr<Profile> profile_;
@@ -1858,8 +1850,6 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   base::CallbackListSubscription focused_browser_changed_subscription_;
   base::CallbackListSubscription active_browser_changed_subscription_;
   base::CallbackListSubscription actor_task_state_changed_subscription_;
-  base::CallbackListSubscription
-      request_to_show_autofill_suggestions_dialog_subscription_;
   base::CallbackListSubscription act_on_web_capability_changed_subscription_;
   mojo::Receiver<glic::mojom::WebClientHandler> receiver_;
   mojo::Remote<glic::mojom::WebClient> web_client_;
