@@ -78,6 +78,9 @@ export declare type HostRequestTypes = ValidateRequestMap<{
     request: {options?: OpenSettingsOptions},
     backgroundAllowed: true,
   },
+  glicBrowserOpenPasswordManagerSettingsPage: {
+    backgroundAllowed: true,
+  },
   glicBrowserClosePanel: {
     backgroundAllowed: true,
   },
@@ -835,6 +838,7 @@ export const HOST_REQUEST_TYPES: HostRequestEnumNamesType&{MAX_VALUE: number} =
         UninterruptActorTask: 75,
         ActivateTab: 76,
         CreateActorTab: 77,
+        OpenPasswordManagerSettingsPage: 78,
       };
       return {...result, MAX_VALUE: Math.max(...Object.values(result))};
     })();

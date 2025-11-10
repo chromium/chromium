@@ -153,6 +153,11 @@ class ApiTests extends ApiTestFixtureBase {
     await sleep(500);
   }
 
+  async testOpenPasswordManagerSettingsPage() {
+    assertDefined(this.host.openPasswordManagerSettingsPage);
+    this.host.openPasswordManagerSettingsPage();
+  }
+
   async testGetPanelStateAttached() {
     assertDefined(this.host.getPanelState);
     // getPanelState and notifyPanelWillOpen should signal the ATTACHED state.

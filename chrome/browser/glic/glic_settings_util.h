@@ -15,6 +15,8 @@ void OpenGlicOsToggleSetting(Profile* profile);
 
 void OpenGlicKeyboardShortcutSetting(Profile* profile);
 
+void OpenPasswordManagerSettingsPage(Profile* profile);
+
 }  // namespace glic
 
 #endif  // CHROME_BROWSER_GLIC_GLIC_SETTINGS_UTIL_H_

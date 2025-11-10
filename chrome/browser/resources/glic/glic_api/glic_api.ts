@@ -460,6 +460,12 @@ export declare interface GlicBrowserHost {
    */
   openGlicSettingsPage?(options?: OpenSettingsOptions): void;
 
+  /**
+   * Opens a tab to the password manager settings page. If an open tab already
+   * has the page loaded, it is focused instead.
+   */
+  openPasswordManagerSettingsPage?(): void;
+
   /** Requests the closing of the panel containing the web client. */
   closePanel?(): Promise<void>;
 

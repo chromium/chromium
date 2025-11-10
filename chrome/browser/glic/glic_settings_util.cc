@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
@@ -75,6 +76,13 @@ void OpenGlicKeyboardShortcutSetting(Profile* profile) {
 
   OpenGlicSettingsPageWithPromo(
       profile, features::kGlicKeyboardShortcutNewBadge, std::move(params));
+}
+
+void OpenPasswordManagerSettingsPage(Profile* profile) {
+  NavigateParams params(profile, GURL(GetGooglePasswordManagerSubPageURLStr()),
+                        ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
+  params.disposition = WindowOpenDisposition::SINGLETON_TAB;
+  Navigate(&params);
 }
 
 }  // namespace glic
