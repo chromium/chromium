@@ -9,7 +9,9 @@
 #include "ui/gfx/canvas.h"
 
 MainBackgroundRegionView::MainBackgroundRegionView(BrowserView& browser_view)
-    : browser_view_(browser_view) {}
+    : browser_view_(browser_view) {
+  SetVisible(false);
+}
 MainBackgroundRegionView::~MainBackgroundRegionView() = default;
 
 void MainBackgroundRegionView::OnPaint(gfx::Canvas* canvas) {
