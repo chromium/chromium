@@ -20,7 +20,6 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/plugins/chrome_plugin_service_filter.h"
 #include "chrome/browser/plugins/plugin_metadata.h"
-#include "chrome/browser/plugins/plugin_prefs.h"
 #include "chrome/browser/plugins/plugin_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_otr_state.h"
@@ -166,8 +165,7 @@ PluginInfoHostImpl::Context::Context(int render_process_id, Profile* profile)
       extension_registry_(extensions::ExtensionRegistry::Get(profile)),
 #endif
       host_content_settings_map_(
-          HostContentSettingsMapFactory::GetForProfile(profile)),
-      plugin_prefs_(PluginPrefs::GetForProfile(profile)) {
+          HostContentSettingsMapFactory::GetForProfile(profile)) {
 }
 
 PluginInfoHostImpl::Context::~Context() = default;
@@ -365,9 +363,4 @@ void PluginInfoHostImpl::Context::MaybeGrantAccess(
     ChromePluginServiceFilter::GetInstance()->AuthorizePlugin(
         render_process_id_, path);
   }
-}
-
-bool PluginInfoHostImpl::Context::IsPluginEnabled(
-    const content::WebPluginInfo& plugin) const {
-  return plugin_prefs_->IsPluginEnabled(plugin);
 }

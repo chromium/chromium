@@ -10,10 +10,8 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner_helpers.h"
 #include "chrome/browser/plugins/plugin_metadata.h"
-#include "chrome/browser/plugins/plugin_prefs.h"
 #include "chrome/common/plugin.mojom.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/keyed_service/core/keyed_service_shutdown_notifier.h"
@@ -66,7 +64,6 @@ class PluginInfoHostImpl : public chrome::mojom::PluginInfoHost {
         std::unique_ptr<PluginMetadata>* plugin_metadata) const;
     void MaybeGrantAccess(chrome::mojom::PluginStatus status,
                           const base::FilePath& path) const;
-    bool IsPluginEnabled(const content::WebPluginInfo& plugin) const;
 
    private:
     int render_process_id_;
@@ -76,7 +73,6 @@ class PluginInfoHostImpl : public chrome::mojom::PluginInfoHost {
 #endif
     raw_ptr<const HostContentSettingsMap, AcrossTasksDanglingUntriaged>
         host_content_settings_map_;
-    scoped_refptr<PluginPrefs> plugin_prefs_;
   };
 
   PluginInfoHostImpl(int render_process_id, Profile* profile);
