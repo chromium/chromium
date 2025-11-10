@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "sql/recovery.h"
 
 #include <stddef.h>
@@ -18,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -98,7 +94,7 @@ class SqlRecoveryTest : public testing::Test,
                     base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
     static constexpr char kText[] = "Now is the winter of our discontent.";
     constexpr int kTextBytes = sizeof(kText) - 1;
-    return file.Write(0, kText, kTextBytes) == kTextBytes;
+    return UNSAFE_TODO(file.Write(0, kText, kTextBytes)) == kTextBytes;
   }
 
  protected:

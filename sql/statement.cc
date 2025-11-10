@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "sql/statement.h"
 
 #include <stddef.h>
@@ -20,6 +15,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/dcheck_is_on.h"
 #include "base/location.h"
@@ -576,8 +572,8 @@ base::span<const uint8_t> Statement::ColumnBlob(int column_index) {
   DCHECK(result_size == 0 || result_buffer != nullptr)
       << "sqlite3_column_blob() returned a null buffer for a non-empty BLOB";
 
-  return base::span(static_cast<const uint8_t*>(result_buffer),
-                    base::checked_cast<size_t>(result_size));
+  return UNSAFE_TODO(base::span(static_cast<const uint8_t*>(result_buffer),
+                                base::checked_cast<size_t>(result_size)));
 }
 
 std::string Statement::ColumnBlobAsString(int column_index) {
