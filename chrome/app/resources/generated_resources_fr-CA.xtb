@@ -2929,7 +2929,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="2990583317361835189">Ne pas autoriser les sites à utiliser les capteurs de mouvement</translation>
 <translation id="2991182900092497283">Veuillez entrer la raison pour laquelle vous collez ces données :</translation>
 <translation id="2992931425024192067">Afficher l'intégralité du contenu des notifications</translation>
-<translation id="2993517869960930405">Détails de l'application</translation>
+<translation id="2993517869960930405">Détails de l'appli</translation>
 <translation id="2995472388018163047">{NUM_GROUPS,plural, =1{Conservez ce groupe pour y ajouter des onglets plus tard ou quittez-le si vous ne voulez plus y accéder}one{Conservez ce groupe pour y ajouter des onglets plus tard ou quittez-le si vous ne voulez plus y accéder}other{Conservez ces groupes pour y ajouter des onglets plus tard ou quittez-les si vous ne voulez plus y accéder}}</translation>
 <translation id="2996071302059856125">En savoir plus sur la façon dont l'IA façonne votre expérience et sur les commandes offertes par Chrome</translation>
 <translation id="2996108796702395498">Le numéro de série de votre appareil est <ph name="SERIAL_NUMBER" />. Ce numéro peut être utilisé pour aider à activer le service.</translation>
@@ -3388,7 +3388,7 @@ l'<ph name="BEGIN_LINK" />
 <translation id="3327050066667856415">Les Chromebook sont conçus en fonction de la sécurité. Votre appareil est automatiquement protégé contre les logiciels malveillants. Aucun logiciel supplémentaire n'est requis.</translation>
 <translation id="3328489342742826322">La restauration à partir d'une sauvegarde supprimera les applications Linux existantes et les données dans vos dossiers Linux.</translation>
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
-<translation id="3331974543021145906">Détails de l'application</translation>
+<translation id="3331974543021145906">Détails de l'appli</translation>
 <translation id="3333190335304955291">Vous pouvez désactiver ce service dans le menu Paramètres.</translation>
 <translation id="3333961966071413176">Tous les contacts</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> – Lecture de la vidéo en mode d'incrustation d'image en cours…</translation>
