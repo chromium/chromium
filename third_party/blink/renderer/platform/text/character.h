@@ -33,6 +33,7 @@
 
 #include <unicode/uchar.h>
 #include <unicode/uniset.h>
+#include <unicode/uscript.h>
 
 #include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
@@ -257,6 +258,7 @@ class PLATFORM_EXPORT Character {
   // Returns whether a script code could be determined for the given character
   // and that script code is not USCRIPT_COMMON or USCRIPT_INHERITED.
   static bool HasDefiniteScript(UChar32);
+  static UScriptCode GetScriptBasedOnUnicodeBlock(UChar32);
 
   static bool IsModernGeorgianUppercase(UChar32 c) {
     return IsInRange(c, 0x1C90, 0x1CBF);
