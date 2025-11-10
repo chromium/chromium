@@ -105,6 +105,16 @@ class AllTabContentsesList {
   ~AllTabContentsesList() = default;
 };
 
+// TODO(crbug.com/431671320): Replace all current usage of this with
+// `ForEachTabInterface()` and remove this.
 const AllTabContentsesList& AllTabContentses();
+
+namespace tabs {
+
+// Iterates through all TabInterfaces across all Profiles and Browsers. If
+// `on_tab` returns false iteration is stopped.
+void ForEachTabInterface(base::FunctionRef<bool(tabs::TabInterface*)> on_tab);
+
+}  // namespace tabs
 
 #endif  // CHROME_BROWSER_UI_TAB_CONTENTS_TAB_CONTENTS_ITERATOR_H_

@@ -135,7 +135,10 @@ if (!is_android) {
   source_set("browser_tests") {
     testonly = true
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-    sources = [ "chrome_web_contents_menu_helper_browsertest.cc" ]
+    sources = [
+      "chrome_web_contents_menu_helper_browsertest.cc",
+      "tab_contents_iterator_browsertest.cc",
+    ]
     deps = [
       "//base/test:test_support",
       "//chrome/browser:browser_process",

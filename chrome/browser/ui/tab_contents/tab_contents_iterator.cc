@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 
 // This does not create a useful iterator, but providing a default constructor
@@ -60,3 +61,26 @@ const AllTabContentsesList& AllTabContentses() {
   static const AllTabContentsesList all_tabs;
   return all_tabs;
 }
+
+namespace tabs {
+
+void ForEachTabInterface(base::FunctionRef<bool(tabs::TabInterface*)> on_tab) {
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&](BrowserWindowInterface* browser) {
+        // Store initial tab list as weak pointers to handle tab destruction
+        // during iteration.
+        std::vector<base::WeakPtr<tabs::TabInterface>> tabs_weak;
+        std::ranges::transform(browser->GetAllTabInterfaces(),
+                               std::back_inserter(tabs_weak),
+                               &tabs::TabInterface::GetWeakPtr);
+
+        for (auto tab_weak : tabs_weak) {
+          if (tab_weak && !on_tab(tab_weak.get())) {
+            return false;  // stop iteration.
+          }
+        }
+        return true;  // continue iteration.
+      });
+}
+
+}  // namespace tabs
