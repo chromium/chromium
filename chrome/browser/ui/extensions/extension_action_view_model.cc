@@ -53,6 +53,7 @@
 #include "chrome/browser/ui/extensions/extension_side_panel_utils.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
+using content::WebContentsObserver;
 using extensions::ActionInfo;
 using extensions::CommandService;
 using extensions::ExtensionActionRunner;
@@ -184,9 +185,8 @@ ExtensionActionViewModel::ExtensionActionViewModel(
       icon_factory_(extension_.get(), extension_action, this),
       extension_registry_(extension_registry) {
   platform_delegate_->AttachToModel(this);
-  // TODO(crbug.com/448199168): Get rid of the dependency to TabStripModel that
-  // is not available on Android.
-  browser_->GetTabStripModel()->AddObserver(this);
+  WebContentsObserver::Observe(GetCurrentWebContents());
+  tab_list_observation_.Observe(TabListInterface::From(browser_));
   toolbar_model_observation_.Observe(ToolbarActionsModel::Get(profile_));
   command_service_observation_.Observe(
       extensions::CommandService::Get(profile_));
@@ -194,6 +194,7 @@ ExtensionActionViewModel::ExtensionActionViewModel(
 
 ExtensionActionViewModel::~ExtensionActionViewModel() {
   DCHECK(!IsShowingPopup());
+  WebContentsObserver::Observe(nullptr);
   platform_delegate_->DetachFromModel();
 }
 
@@ -448,22 +449,13 @@ void ExtensionActionViewModel::UnregisterCommand() {
   platform_delegate_->UnregisterCommand();
 }
 
-void ExtensionActionViewModel::TabChangedAt(content::WebContents* contents,
-                                            int index,
-                                            TabChangeType change_type) {
-  if (change_type == TabChangeType::kLoadingOnly) {
-    return;
-  }
+void ExtensionActionViewModel::DidFinishNavigation(
+    content::NavigationHandle* handle) {
   NotifyObserver();
 }
 
-void ExtensionActionViewModel::OnTabStripModelChanged(
-    TabStripModel* tab_strip_model,
-    const TabStripModelChange& change,
-    const TabStripSelectionChange& selection) {
-  if (!selection.active_tab_changed()) {
-    return;
-  }
+void ExtensionActionViewModel::OnActiveTabChanged(tabs::TabInterface* tab) {
+  WebContentsObserver::Observe(GetCurrentWebContents());
   NotifyObserver();
 }
 
@@ -539,7 +531,7 @@ content::WebContents* ExtensionActionViewModel::GetCurrentWebContents() const {
 }
 
 void ExtensionActionViewModel::NotifyObserver() {
-  if (!observer_ || !browser_->GetActiveTabInterface()) {
+  if (!observer_ || !TabListInterface::From(browser_)->GetActiveTab()) {
     return;
   }
   observer_.Run();

@@ -22,6 +22,7 @@
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_action_test_util.h"
 #include "chrome/browser/extensions/extension_util.h"
+#include "chrome/browser/extensions/extension_view_host.h"
 #include "chrome/browser/extensions/load_error_reporter.h"
 #include "chrome/browser/extensions/permissions/permissions_updater.h"
 #include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
@@ -29,6 +30,7 @@
 #include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/extensions/user_script_listener.h"
+#include "chrome/browser/ui/extensions/extension_action_platform_delegate.h"
 #include "chrome/browser/ui/extensions/extensions_container.h"
 #include "chrome/browser/ui/extensions/icon_with_badge_image_source.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -1219,4 +1221,61 @@ IN_PROC_BROWSER_TEST_P(ExtensionActionViewModelFeatureRolloutBrowserTest,
   image_source = model->GetIconImageSourceForTesting(web_contents, view_size());
   EXPECT_TRUE(image_source->grayscale());
   EXPECT_FALSE(model->IsEnabled(web_contents));
+}
+
+// A fake implementation of ExtensionActionPlatformDelegate that does nothing.
+class FakeExtensionActionPlatformDelegate
+    : public ExtensionActionPlatformDelegate {
+ public:
+  void AttachToModel(ExtensionActionViewModel* model) override {}
+  void DetachFromModel() override {}
+  void RegisterCommand() override {}
+  void UnregisterCommand() override {}
+  bool IsShowingPopup() const override { return false; }
+  void HidePopup() override {}
+  gfx::NativeView GetPopupNativeView() override { return gfx::NativeView(); }
+  void TriggerPopup(std::unique_ptr<extensions::ExtensionViewHost> host,
+                    PopupShowAction show_action,
+                    bool by_user,
+                    ShowPopupCallback callback) override {}
+  void ShowContextMenuAsFallback() override {}
+  bool CloseOverflowMenuIfOpen() override { return false; }
+};
+
+// Ensures that the observer is called on navigation.
+IN_PROC_BROWSER_TEST_P(ExtensionActionViewModelFeatureRolloutBrowserTest,
+                       ObserverCalledOnNavigation) {
+  Init();
+  const std::string id =
+      CreateAndAddExtension("extension", extensions::ActionInfo::Type::kPage)
+          ->id();
+
+  // Create ExtensionActionViewModel that is not associated with the
+  // lifetime of the view.
+  auto action = ExtensionActionViewModel::Create(
+      id, browser(), std::make_unique<FakeExtensionActionPlatformDelegate>());
+
+  // Register an observer.
+  bool observer_called = false;
+  action->SetUpdateObserver(base::BindRepeating(
+      [](bool* observer_called) { *observer_called = true; },
+      &observer_called));
+
+  // The observer is not immediately called.
+  EXPECT_FALSE(observer_called);
+
+  // Navigate to a different page.
+  NavigateAndCommitActiveTab(GURL("https://www.example.com/2"));
+  EXPECT_TRUE(observer_called);
+  observer_called = false;
+
+  // Create a new tab.
+  AddTab(browser(), GURL("https://www.example.com/3"));
+  EXPECT_TRUE(observer_called);
+  observer_called = false;
+
+  // Navigate to a different page.
+  NavigateAndCommitActiveTab(GURL("https://www.example.com/4"));
+  EXPECT_TRUE(observer_called);
+  observer_called = false;
 }

@@ -11,10 +11,11 @@
 #include "chrome/browser/extensions/extension_context_menu_model.h"
 #include "chrome/browser/extensions/permissions/site_permissions_helper.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#include "chrome/browser/ui/tabs/tab_list_interface_observer.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_hover_card_types.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "extensions/browser/extension_action_icon_factory.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_host_observer.h"
@@ -24,6 +25,7 @@
 class ExtensionActionPlatformDelegate;
 class IconWithBadgeImageSource;
 enum class PopupShowAction;
+class TabListInterface;
 
 namespace extensions {
 class Command;
@@ -50,7 +52,8 @@ class ImageModel;
 // TODO(crbug.com/437774758): Enable this class on Desktop Android.
 class ExtensionActionViewModel
     : public ToolbarActionViewModel,
-      public TabStripModelObserver,
+      public content::WebContentsObserver,
+      public TabListInterfaceObserver,
       public ToolbarActionsModel::Observer,
       public extensions::ExtensionActionIconFactory::Observer,
       public extensions::CommandService::Observer,
@@ -98,14 +101,11 @@ class ExtensionActionViewModel
   void RegisterCommand() override;
   void UnregisterCommand() override;
 
-  // TabStripModelObserver:
-  void TabChangedAt(content::WebContents* contents,
-                    int index,
-                    TabChangeType change_type) override;
-  void OnTabStripModelChanged(
-      TabStripModel* tab_strip_model,
-      const TabStripModelChange& change,
-      const TabStripSelectionChange& selection) override;
+  // content::WebContentsObserver:
+  void DidFinishNavigation(content::NavigationHandle* handle) override;
+
+  // TabListInterfaceObserver:
+  void OnActiveTabChanged(tabs::TabInterface* tab) override;
 
   // ToolbarActionsModel::Observer:
   void OnToolbarActionAdded(
@@ -227,6 +227,9 @@ class ExtensionActionViewModel
 
   base::ScopedObservation<ToolbarActionsModel, ToolbarActionsModel::Observer>
       toolbar_model_observation_{this};
+
+  base::ScopedObservation<TabListInterface, TabListInterfaceObserver>
+      tab_list_observation_{this};
 
   base::ScopedObservation<extensions::CommandService,
                           extensions::CommandService::Observer>
