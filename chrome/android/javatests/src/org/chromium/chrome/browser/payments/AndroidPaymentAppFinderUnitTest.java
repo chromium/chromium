@@ -39,7 +39,6 @@ import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features;
-import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
@@ -227,10 +226,6 @@ public class AndroidPaymentAppFinderUnitTest {
     @Test
     @UiThreadTest
     public void testNoValidPaymentMethodNames() {
-        var histograms =
-                HistogramWatcher.newBuilder()
-                        .expectNoRecords("PaymentRequest.NumberOfSupportedMethods.AndroidApp")
-                        .build();
         verifyNoAppsFound(
                 findApps(
                         new String[] {
@@ -241,17 +236,12 @@ public class AndroidPaymentAppFinderUnitTest {
                         mPaymentManifestDownloader,
                         mPaymentManifestParser,
                         mPackageManagerDelegate));
-        histograms.assertExpected("No apps, so 0 records are expected");
     }
 
     @SmallTest
     @Test
     @UiThreadTest
     public void testQueryWithoutApps() {
-        var histograms =
-                HistogramWatcher.newBuilder()
-                        .expectNoRecords("PaymentRequest.NumberOfSupportedMethods.AndroidApp")
-                        .build();
         Mockito.when(
                         mPackageManagerDelegate.getActivitiesThatCanRespondToIntentWithMetaData(
                                 ArgumentMatchers.argThat(sPayIntentArgumentMatcher)))
@@ -267,17 +257,12 @@ public class AndroidPaymentAppFinderUnitTest {
         Mockito.verify(mPackageManagerDelegate, Mockito.never())
                 .getStringArrayResourceForApplication(
                         ArgumentMatchers.any(ApplicationInfo.class), ArgumentMatchers.anyInt());
-        histograms.assertExpected("No apps, so 0 records are expected");
     }
 
     @SmallTest
     @Test
     @UiThreadTest
     public void testQueryWithoutMetaData() {
-        var histograms =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "PaymentRequest.NumberOfSupportedMethods.AndroidApp", /* value= */ 0);
-
         List<ResolveInfo> activities = new ArrayList<>();
         ResolveInfo alicePay = new ResolveInfo();
         alicePay.activityInfo = new ActivityInfo();
@@ -302,19 +287,12 @@ public class AndroidPaymentAppFinderUnitTest {
         Mockito.verify(mPackageManagerDelegate, Mockito.never())
                 .getStringArrayResourceForApplication(
                         ArgumentMatchers.any(ApplicationInfo.class), ArgumentMatchers.anyInt());
-
-        histograms.assertExpected(
-                "The installed app should have declared support for 0 payment methods");
     }
 
     @SmallTest
     @Test
     @UiThreadTest
     public void testQueryWithoutLabel() {
-        var histograms =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "PaymentRequest.NumberOfSupportedMethods.AndroidApp", /* value= */ 1);
-
         List<ResolveInfo> activities = new ArrayList<>();
         ResolveInfo alicePay = new ResolveInfo();
         alicePay.activityInfo = new ActivityInfo();
@@ -342,18 +320,12 @@ public class AndroidPaymentAppFinderUnitTest {
         Mockito.verify(mPackageManagerDelegate, Mockito.never())
                 .getStringArrayResourceForApplication(
                         ArgumentMatchers.any(ApplicationInfo.class), ArgumentMatchers.anyInt());
-
-        histograms.assertExpected("The installed app should support only \"basic-card\" method");
     }
 
     @SmallTest
     @Test
     @UiThreadTest
     public void testQueryUnsupportedPaymentMethod() {
-        var histograms =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "PaymentRequest.NumberOfSupportedMethods.AndroidApp", /* value= */ 1);
-
         PackageManagerDelegate packageManagerDelegate =
                 installPaymentApps(
                         new String[] {"com.alicepay.app"},
@@ -369,9 +341,6 @@ public class AndroidPaymentAppFinderUnitTest {
         Mockito.verify(packageManagerDelegate, Mockito.never())
                 .getStringArrayResourceForApplication(
                         ArgumentMatchers.any(ApplicationInfo.class), ArgumentMatchers.anyInt());
-
-        histograms.assertExpected(
-                "The installed app should support only \"unsupported-payment-method\" method");
     }
 
     private PackageManagerDelegate installPaymentApps(String[] packageNames, String[] methodNames) {
@@ -403,9 +372,6 @@ public class AndroidPaymentAppFinderUnitTest {
     @Test
     @UiThreadTest
     public void testQueryDifferentPaymentMethod() {
-        var histograms =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "PaymentRequest.NumberOfSupportedMethods.AndroidApp", /* value= */ 1);
         PackageManagerDelegate packageManagerDelegate =
                 installPaymentApps(new String[] {"com.alicepay.app"}, new String[] {"basic-card"});
 
@@ -419,17 +385,12 @@ public class AndroidPaymentAppFinderUnitTest {
         Mockito.verify(packageManagerDelegate, Mockito.never())
                 .getStringArrayResourceForApplication(
                         ArgumentMatchers.any(ApplicationInfo.class), ArgumentMatchers.anyInt());
-
-        histograms.assertExpected("The installed app should support only \"basic-card\" method");
     }
 
     @SmallTest
     @Test
     @UiThreadTest
     public void testQueryNoPaymentMethod() {
-        var histograms =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "PaymentRequest.NumberOfSupportedMethods.AndroidApp", /* value= */ 1);
         PackageManagerDelegate packageManagerDelegate =
                 installPaymentApps(new String[] {"com.alicepay.app"}, new String[] {"basic-card"});
 
@@ -443,80 +404,6 @@ public class AndroidPaymentAppFinderUnitTest {
         Mockito.verify(packageManagerDelegate, Mockito.never())
                 .getStringArrayResourceForApplication(
                         ArgumentMatchers.any(ApplicationInfo.class), ArgumentMatchers.anyInt());
-
-        histograms.assertExpected("The installed app should support only \"basic-card\" method");
-    }
-
-    @SmallTest
-    @Test
-    @UiThreadTest
-    public void testHistogramForMutlipleApps() {
-        var histograms =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecordTimes(
-                                "PaymentRequest.NumberOfSupportedMethods.AndroidApp",
-                                /* value= */ 1,
-                                /* times= */ 2)
-                        .build();
-        PackageManagerDelegate packageManagerDelegate =
-                installPaymentApps(
-                        new String[] {"com.alicepay.app", "com.bobpay.app"},
-                        new String[] {"https://alicepay.test", "https://bobpay.test"});
-
-        // Trigger app lookup.
-        findApps(
-                new String[] {"https://charliepay.test"},
-                mPaymentManifestDownloader,
-                mPaymentManifestParser,
-                packageManagerDelegate);
-
-        histograms.assertExpected(
-                "Two apps are installed with one method each, expected two records with value 1.");
-    }
-
-    @SmallTest
-    @Test
-    @UiThreadTest
-    public void testHistogramForMutlipleMethods() {
-        var histograms =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "PaymentRequest.NumberOfSupportedMethods.AndroidApp", /* value= */ 2);
-        List<ResolveInfo> activities = new ArrayList<>();
-        ResolveInfo bobPay = new ResolveInfo();
-        bobPay.activityInfo = new ActivityInfo();
-        bobPay.activityInfo.packageName = "com.bobpay.app";
-        bobPay.activityInfo.name = "com.bobpay.app.WebPaymentActivity";
-        bobPay.activityInfo.applicationInfo = new ApplicationInfo();
-        Bundle bobPayMetaData = new Bundle();
-        bobPayMetaData.putString(
-                AndroidPaymentAppFinder.META_DATA_NAME_OF_DEFAULT_PAYMENT_METHOD_NAME,
-                "https://bobpay.test");
-        bobPayMetaData.putInt(AndroidPaymentAppFinder.META_DATA_NAME_OF_PAYMENT_METHOD_NAMES, 1);
-        bobPay.activityInfo.metaData = bobPayMetaData;
-        activities.add(bobPay);
-
-        Mockito.when(mPackageManagerDelegate.getAppLabel(Mockito.any(ResolveInfo.class)))
-                .thenReturn("A non-empty label");
-        Mockito.when(
-                        mPackageManagerDelegate.getActivitiesThatCanRespondToIntentWithMetaData(
-                                ArgumentMatchers.argThat(sPayIntentArgumentMatcher)))
-                .thenReturn(activities);
-
-        Mockito.when(
-                        mPackageManagerDelegate.getStringArrayResourceForApplication(
-                                ArgumentMatchers.eq(bobPay.activityInfo.applicationInfo),
-                                ArgumentMatchers.eq(1)))
-                .thenReturn(new String[] {"https://bobpay.test", "https://alicepay.test"});
-
-        // Trigger app lookup.
-        findApps(
-                new String[] {"https://charliepay.test"},
-                mPaymentManifestDownloader,
-                mPaymentManifestParser,
-                mPackageManagerDelegate);
-
-        histograms.assertExpected(
-                "One app is installed with two payment methods, expected one record with value 2.");
     }
 
     @SmallTest

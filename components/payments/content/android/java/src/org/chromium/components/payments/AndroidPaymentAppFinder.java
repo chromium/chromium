@@ -15,7 +15,6 @@ import android.text.TextUtils;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.Contract;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -553,16 +552,6 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
                             defaultUrlMethod,
                             supportedUrlMethods,
                             mMerchantRequestedUrlPaymentMethods));
-
-            // Record the total number of payment methods that this activity `ResolveInfo app`
-            // declares to support in its metadata.
-            if (!TextUtils.isEmpty(defaultMethod)) supportedMethods.add(defaultMethod);
-            RecordHistogram.recordCustomCountHistogram(
-                    /* name= */ "PaymentRequest.NumberOfSupportedMethods.AndroidApp",
-                    /* sample= */ supportedMethods.size(),
-                    /* min= */ 1,
-                    /* max= */ 10,
-                    /* numBuckets= */ 10);
         }
 
         List<PaymentManifestVerifier> manifestVerifiers = new ArrayList<>();
