@@ -4,12 +4,14 @@
 
 #include "chrome/browser/ui/webui/searchbox/contextual_searchbox_handler.h"
 
+#include <algorithm>
 #include <optional>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
@@ -322,10 +324,16 @@ void ContextualSearchboxHandler::AddTabContext(int32_t tab_id,
 
 void ContextualSearchboxHandler::RecordTabClickedMetric(
     tabs::TabInterface* const tab) {
+  auto* metrics_recorder = GetMetricsRecorder();
+  if (!metrics_recorder) {
+    return;
+  }
+
   bool has_duplicate_title = false;
   auto* browser_window_interface =
       webui::GetBrowserWindowInterface(web_contents_);
   if (browser_window_interface) {
+    std::vector<std::pair<int, base::TimeTicks>> last_active_times;
     auto* tab_strip_model = browser_window_interface->GetTabStripModel();
     int tab_index = tab_strip_model->GetIndexOfTab(tab);
     if (tab_index != TabStripModel::kNoTab) {
@@ -340,9 +348,34 @@ void ContextualSearchboxHandler::RecordTabClickedMetric(
         if (tab_renderer_data.title == current_title) {
           title_count++;
         }
+
+        if (tab_renderer_data.tab_interface) {
+          last_active_times.emplace_back(
+              i, tab_renderer_data.tab_interface->GetContents()
+                     ->GetLastActiveTimeTicks());
+        }
       }
       if (title_count > 1) {
         has_duplicate_title = true;
+      }
+
+      std::vector<std::pair<int, base::TimeTicks>>
+          reverse_chron_last_active_times(last_active_times.begin(),
+                                          last_active_times.end());
+      std::sort(reverse_chron_last_active_times.begin(),
+                reverse_chron_last_active_times.end(),
+                [](const std::pair<int, base::TimeTicks>& a,
+                   const std::pair<int, base::TimeTicks>& b) {
+                  return a.second > b.second;
+                });
+      for (size_t i = 0; i < reverse_chron_last_active_times.size(); ++i) {
+        if (reverse_chron_last_active_times[i].first == tab_index) {
+          base::UmaHistogramCounts100(
+              "ContextualSearch.AddedTabContextRecencyRanking." +
+                  GetMetricsRecorder()->GetMetricsSuffix(),
+              i);
+          break;
+        }
       }
     }
   }

@@ -673,6 +673,38 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest,
       "NewTabPage.Composebox.TabWithDuplicateTitleClicked", false, 1);
 }
 
+TEST_F(ContextualSearchboxHandlerTestTabsTest, TabContextRecencyRankingMetric) {
+  // Add tabs with unique titles.
+  tabs::TabInterface* tab_a1 = AddTab(GURL("https://a1.com"));
+  content::WebContentsTester::For(tab_strip_model()->GetWebContentsAt(0))
+      ->SetTitle(u"Title A");
+  AddTab(GURL("https://b1.com"));
+  content::WebContentsTester::For(tab_strip_model()->GetWebContentsAt(1))
+      ->SetTitle(u"Title B");
+
+  // Mock the call to GetPageContext.
+  MockTabContextualizationController* controller_a1 =
+      static_cast<MockTabContextualizationController*>(
+          tab_a1->GetTabFeatures()->tab_contextualization_controller());
+  EXPECT_CALL(*controller_a1, GetPageContext(testing::_))
+      .WillOnce([](lens::TabContextualizationController::GetPageContextCallback
+                       callback) {
+        std::move(callback).Run(std::make_unique<lens::ContextualInputData>());
+      });
+
+  EXPECT_CALL(query_controller(),
+              StartFileUploadFlow(testing::_, testing::NotNull(), testing::_))
+      .Times(1);
+
+  // Click on the first tab.
+  base::MockCallback<ComposeboxHandler::AddTabContextCallback> callback1;
+  EXPECT_CALL(callback1, Run).Times(1);
+  handler().AddTabContext(tab_a1->GetHandle().raw_value(), false,
+                          callback1.Get());
+  histogram_tester().ExpectUniqueSample(
+      "ContextualSearch.AddedTabContextRecencyRanking.NewTabPage", 1, 1);
+}
+
 TEST_F(ContextualSearchboxHandlerTestTabsTest, GetRecentTabs) {
   base::FieldTrialParams params;
   params[ntp_composebox::kContextMenuMaxTabSuggestions.name] = "2";
