@@ -205,8 +205,8 @@ ActorNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
 
 void ActorNavigationThrottle::OnMayActOnUrlResult(
     std::unique_ptr<AggregatedJournal::PendingAsyncEntry> journal_entry,
-    bool may_act) {
-  if (may_act) {
+    MayActOnUrlBlockReason block_reason) {
+  if (block_reason == MayActOnUrlBlockReason::kAllowed) {
     journal_entry->EndEntry(
         JournalDetailsBuilder().Add("result", "Resume").Build());
     Resume();
@@ -218,10 +218,35 @@ void ActorNavigationThrottle::OnMayActOnUrlResult(
   // usage, consider the action a failure. But we don't consider canceled
   // prerenders to be an error.
   if (execution_engine_ && navigation_handle()->IsInPrimaryMainFrame()) {
+    mojom::ActionResultCode tool_failure_code;
+
+    switch (block_reason) {
+      case MayActOnUrlBlockReason::kExternalProtocol:
+        if (base::FeatureList::IsEnabled(
+                kGlicExternalProtocolActionResultCode)) {
+          tool_failure_code =
+              mojom::ActionResultCode::kExternalProtocolNavigationBlocked;
+          break;
+        }
+        [[fallthrough]];
+      case MayActOnUrlBlockReason::kActuactionDisabled:
+      case MayActOnUrlBlockReason::kIpAddress:
+      case MayActOnUrlBlockReason::kLookalikeDomain:
+      case MayActOnUrlBlockReason::kOptimizationGuideBlock:
+      case MayActOnUrlBlockReason::kSafeBrowsing:
+      case MayActOnUrlBlockReason::kTabIsErrorDocument:
+      case MayActOnUrlBlockReason::kUrlNotInAllowlist:
+      case MayActOnUrlBlockReason::kWrongScheme:
+        tool_failure_code =
+            mojom::ActionResultCode::kTriggeredNavigationBlocked;
+        break;
+      case MayActOnUrlBlockReason::kAllowed:
+        NOTREACHED();
+    }
+
     // As the effect of FailCurrentTool w.r.t. CancelDeferredNavigation is
     // asynchronous, order doesn't matter.
-    execution_engine_->FailCurrentTool(
-        mojom::ActionResultCode::kTriggeredNavigationBlocked);
+    execution_engine_->FailCurrentTool(tool_failure_code);
   }
   // Regardless of whether the action is considered a failure, we cancel the
   // navigation itself.

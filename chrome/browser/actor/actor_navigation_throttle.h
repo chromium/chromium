@@ -7,6 +7,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/actor/aggregated_journal.h"
+#include "chrome/browser/actor/site_policy.h"
 #include "chrome/common/actor/task_id.h"
 #include "chrome/common/actor_webui.mojom-forward.h"
 #include "content/public/browser/navigation_throttle.h"
@@ -53,7 +54,7 @@ class ActorNavigationThrottle : public content::NavigationThrottle {
 
   void OnMayActOnUrlResult(
       std::unique_ptr<AggregatedJournal::PendingAsyncEntry> journal_entry,
-      bool may_act);
+      MayActOnUrlBlockReason block_reason);
 
   void OnNavigationConfirmationDecision(bool may_continue);
 

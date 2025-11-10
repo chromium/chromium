@@ -22,6 +22,8 @@ BASE_DECLARE_FEATURE_PARAM(bool, kAllowlistOnly);
 BASE_DECLARE_FEATURE(kGlicActionUseOptimizationGuide);
 BASE_DECLARE_FEATURE(kActorDoNotStoreCompletedTasks);
 
+BASE_DECLARE_FEATURE(kGlicExternalProtocolActionResultCode);
+
 BASE_DECLARE_FEATURE(kGlicBlockNavigationToDangerousContentTypes);
 
 BASE_DECLARE_FEATURE(kGlicBlockFileSystemAccessApiFilePicker);
