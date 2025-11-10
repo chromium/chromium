@@ -20,6 +20,7 @@
 #include "base/containers/map_util.h"
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
+#include "base/features.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
@@ -168,11 +169,21 @@ void WebAppPolicyManager::Start(
 
   policy_settings_and_force_installs_applied_ =
       std::move(policy_settings_and_force_installs_applied);
-  content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
-      ->PostTask(FROM_HERE,
-                 base::BindOnce(
-                     &WebAppPolicyManager::InitChangeRegistrarAndRefreshPolicy,
-                     weak_ptr_factory_.GetWeakPtr()));
+  if (base::FeatureList::IsEnabled(
+          base::features::kScopedBestEffortExecutionFenceForTaskQueue)) {
+    // ScopedBestEffortExecutionFenceForTaskQueue can delay the execution of
+    // BEST_EFFORT tasks for a longer period after startup. The policy for
+    // force-installed apps must be available quickly so with this feature the
+    // registry should be initialized immediately.
+    InitChangeRegistrarAndRefreshPolicy();
+  } else {
+    content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
+        ->PostTask(
+            FROM_HERE,
+            base::BindOnce(
+                &WebAppPolicyManager::InitChangeRegistrarAndRefreshPolicy,
+                weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 void WebAppPolicyManager::Shutdown() {

@@ -557,7 +557,7 @@ base::Value::List ManagementUIHandler::GetApplicationsInfo(
 
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
   // Only display web apps for the profile that contains them.
-  if (provider == nullptr) {
+  if (provider == nullptr || !provider->is_registry_ready()) {
     return applications;
   }
 
