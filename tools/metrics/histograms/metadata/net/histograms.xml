@@ -49,7 +49,6 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="DohProviderId">
-  <variant name="AlekBergNl." summary="alekberg.net Amsterdam."/>
   <variant name="CleanBrowsingAdult." summary="CleanBrowsing adult filter."/>
   <variant name="CleanBrowsingFamily." summary="CleanBrowsing family filter."/>
   <variant name="CleanBrowsingSecure." summary="CleanBrowsing secure filter."/>

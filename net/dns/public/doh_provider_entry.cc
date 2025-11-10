@@ -66,19 +66,10 @@ const DohProviderEntry::List& DohProviderEntry::GetList() {
   // DoH provider list.
   //
   // The provider names in these entries should be kept in sync with the
-  // DohProviderId histogram suffix list in
-  // tools/metrics/histograms/metadata/histogram_suffixes_list.xml.
+  // DohProviderId variant list in
+  // tools/metrics/histograms/metadata/net/histograms.xml.
   static const auto entries(base::NoDestructor(std::to_array<DohProviderEntry>(
-      {{"AlekBergNl",
-        MAKE_BASE_FEATURE_WITH_STATIC_STORAGE(DohProviderAlekBergNl,
-                                              base::FEATURE_ENABLED_BY_DEFAULT),
-        /*dns_over_53_server_ip_strs=*/{}, /*dns_over_tls_hostnames=*/{},
-        "https://dnsnl.alekberg.net/dns-query{?dns}",
-        /*ui_name=*/"alekberg.net (NL)",
-        /*privacy_policy=*/"https://alekberg.net/privacy",
-        /*display_globally=*/false,
-        /*display_countries=*/{"NL"}, LoggingLevel::kNormal},
-       {"CleanBrowsingAdult",
+      {{"CleanBrowsingAdult",
         MAKE_BASE_FEATURE_WITH_STATIC_STORAGE(DohProviderCleanBrowsingAdult,
                                               base::FEATURE_ENABLED_BY_DEFAULT),
         {"185.228.168.10", "185.228.169.11", "2a0d:2a00:1::1",
