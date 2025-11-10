@@ -670,9 +670,8 @@ PolicyStatus<U> PolicyService::QueryPolicy(
           }
         }(std::invoke(policy_query_function, policy_manager));
     if (transformed_result.has_value()) {
-      status.AddPolicyIfNeeded(policy_manager->HasActiveDevicePolicies(),
-                               policy_manager->source(),
-                               transformed_result.value());
+      status.AddPolicy(policy_manager->HasActiveDevicePolicies(),
+                       policy_manager->source(), transformed_result.value());
     }
   }
   return status;
@@ -694,8 +693,8 @@ PolicyStatus<T> PolicyService::QueryAppPolicy(
     std::optional<T> query_result =
         std::invoke(policy_query_function, policy_manager, app_id);
     if (query_result.has_value()) {
-      status.AddPolicyIfNeeded(policy_manager->HasActiveDevicePolicies(),
-                               policy_manager->source(), query_result.value());
+      status.AddPolicy(policy_manager->HasActiveDevicePolicies(),
+                       policy_manager->source(), query_result.value());
     }
   }
 

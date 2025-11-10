@@ -34,6 +34,7 @@
 #include "chrome/updater/test/test_scope.h"
 #include "chrome/updater/test/unit_test_util.h"
 #include "chrome/updater/updater_branding.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -53,6 +54,29 @@ constexpr char kGlobalPolicyKey[] = "";
 #else
 constexpr char kGlobalPolicyKey[] = "global";
 #endif
+
+using ::testing::ElementsAre;
+using ::testing::Optional;
+using ::testing::PrintToString;
+using ::testing::ValuesIn;
+
+MATCHER_P2(PolicyEntry,
+           source,
+           policy,
+           "is a policy entry with source " + PrintToString(source) +
+               " and policy value " + PrintToString(policy)) {
+  if (arg.source != source) {
+    *result_listener << "whose source is " << PrintToString(arg.source)
+                     << " (expected " << PrintToString(source) << ")";
+    return false;
+  }
+  if (arg.policy != policy) {
+    *result_listener << "whose policy value is " << PrintToString(arg.policy)
+                     << " (expected " << PrintToString(policy) << ")";
+    return false;
+  }
+  return true;
+}
 
 }  // namespace
 
@@ -298,21 +322,29 @@ TEST_F(PolicyServiceTest, DefaultPolicyValue) {
       policy_service->GetLastCheckPeriod();
   ASSERT_TRUE(last_check);
   EXPECT_EQ(last_check.policy(), base::Minutes(270));
+  EXPECT_THAT(last_check.all_policies(),
+              testing::ElementsAre(PolicyEntry("Default", base::Minutes(270))));
 
   PolicyStatus<int> app_installs =
       policy_service->GetPolicyForAppInstalls("test1");
   ASSERT_TRUE(app_installs);
   EXPECT_EQ(app_installs.policy(), 1);
+  EXPECT_THAT(app_installs.all_policies(),
+              testing::ElementsAre(PolicyEntry("Default", 1)));
 
   PolicyStatus<int> app_updates =
       policy_service->GetPolicyForAppUpdates("test1");
   ASSERT_TRUE(app_updates);
   EXPECT_EQ(app_updates.policy(), 1);
+  EXPECT_THAT(app_updates.all_policies(),
+              testing::ElementsAre(PolicyEntry("Default", 1)));
 
   PolicyStatus<bool> rollback_allowed =
       policy_service->IsRollbackToTargetVersionAllowed("test1");
   ASSERT_TRUE(rollback_allowed);
   EXPECT_EQ(rollback_allowed.policy(), false);
+  EXPECT_THAT(rollback_allowed.all_policies(),
+              testing::ElementsAre(PolicyEntry("Default", false)));
 
   PolicyStatus<int> major_version_rollout_policy =
       policy_service->GetMajorVersionRolloutPolicy("test1");
@@ -368,22 +400,28 @@ TEST_F(PolicyServiceTest, SinglePolicyManager) {
   ASSERT_TRUE(app1_channel);
   EXPECT_EQ(app1_channel.policy(), "test_channel");
   EXPECT_EQ(app1_channel.conflict_policy(), std::nullopt);
+  EXPECT_THAT(app1_channel.all_policies(),
+              ElementsAre(PolicyEntry("test_source", "test_channel")));
 
   PolicyStatus<std::string> app2_channel =
       policy_service->GetTargetChannel("app2");
   EXPECT_FALSE(app2_channel);
   EXPECT_EQ(app2_channel.conflict_policy(), std::nullopt);
+  EXPECT_TRUE(app2_channel.all_policies().empty());
 
   PolicyStatus<int> app1_update_status =
       policy_service->GetPolicyForAppUpdates("app1");
   EXPECT_FALSE(app1_update_status);
   EXPECT_EQ(app1_update_status.conflict_policy(), std::nullopt);
+  EXPECT_TRUE(app1_update_status.all_policies().empty());
 
   PolicyStatus<int> app2_update_status =
       policy_service->GetPolicyForAppUpdates("app2");
   EXPECT_TRUE(app2_update_status);
   EXPECT_EQ(app2_update_status.policy(), 3);
   EXPECT_EQ(app2_update_status.conflict_policy(), std::nullopt);
+  EXPECT_THAT(app2_update_status.all_policies(),
+              ElementsAre(PolicyEntry("test_source", 3)));
 }
 
 TEST_F(PolicyServiceTest, MultiplePolicyManagers) {
@@ -436,120 +474,109 @@ TEST_F(PolicyServiceTest, MultiplePolicyManagers) {
 
   EXPECT_TRUE(policy_service->CloudPolicyOverridesPlatformPolicy());
   EXPECT_FALSE(policy_service->CloudPolicyOverridesPlatformPolicy().policy());
-  EXPECT_EQ(policy_service->GetPackageCacheSizeLimitMBytes()
-                .effective_policy()
-                .value()
-                .policy,
-            1000);
-  EXPECT_EQ(policy_service->GetPackageCacheExpirationTimeDays()
-                .effective_policy()
-                .value()
-                .policy,
-            60);
-  EXPECT_EQ(policy_service->GetProxyMode().effective_policy().value().policy,
-            "direct");
-  EXPECT_EQ(policy_service->GetProxyPacUrl().effective_policy().value().policy,
-            "url://proxyurl");
-  EXPECT_EQ(policy_service->GetProxyServer().effective_policy().value().policy,
-            "test-server");
+  EXPECT_THAT(
+      policy_service->GetPackageCacheSizeLimitMBytes().effective_policy(),
+      Optional(PolicyEntry("group_policy", 1000)));
+  EXPECT_THAT(
+      policy_service->GetPackageCacheExpirationTimeDays().effective_policy(),
+      Optional(PolicyEntry("device_management", 60)));
+  EXPECT_THAT(policy_service->GetProxyMode().effective_policy(),
+              Optional(PolicyEntry("imaginary", "direct")));
+  EXPECT_THAT(policy_service->GetProxyPacUrl().effective_policy(),
+              Optional(PolicyEntry("imaginary", "url://proxyurl")));
+  EXPECT_THAT(policy_service->GetProxyServer().effective_policy(),
+              Optional(PolicyEntry("imaginary", "test-server")));
 
   PolicyStatus<UpdatesSuppressedTimes> suppressed_time_status =
       policy_service->GetUpdatesSuppressedTimes();
   ASSERT_TRUE(suppressed_time_status);
   EXPECT_TRUE(suppressed_time_status.conflict_policy());
-  EXPECT_EQ(suppressed_time_status.effective_policy().value().source,
-            "group_policy");
-  EXPECT_EQ(suppressed_time_status.policy().start_hour_, 5);
-  EXPECT_EQ(suppressed_time_status.policy().start_minute_, 10);
-  EXPECT_EQ(suppressed_time_status.policy().duration_minute_, 30);
+  EXPECT_THAT(
+      suppressed_time_status.effective_policy(),
+      Optional(PolicyEntry(
+          "group_policy",
+          UpdatesSuppressedTimes{
+              .start_hour_ = 5, .start_minute_ = 10, .duration_minute_ = 30})));
 
   PolicyStatus<std::string> channel_status =
       policy_service->GetTargetChannel("app1");
   ASSERT_TRUE(channel_status);
-  const PolicyStatus<std::string>::Entry& channel_policy =
-      channel_status.effective_policy().value();
-  EXPECT_EQ(channel_policy.source, "group_policy");
-  EXPECT_EQ(channel_policy.policy, "channel_gp");
-  EXPECT_TRUE(channel_status.conflict_policy());
-  const PolicyStatus<std::string>::Entry& channel_conflict_policy =
-      channel_status.conflict_policy().value();
-  EXPECT_EQ(channel_conflict_policy.source, "device_management");
-  EXPECT_EQ(channel_conflict_policy.policy, "channel_dm");
+  EXPECT_THAT(channel_status.effective_policy(),
+              Optional(PolicyEntry("group_policy", "channel_gp")));
+  EXPECT_THAT(channel_status.conflict_policy(),
+              Optional(PolicyEntry("device_management", "channel_dm")));
   EXPECT_EQ(channel_status.policy(), "channel_gp");
+  EXPECT_THAT(channel_status.all_policies(),
+              ElementsAre(PolicyEntry("group_policy", "channel_gp"),
+                          PolicyEntry("device_management", "channel_dm"),
+                          PolicyEntry("imaginary", "channel_imaginary")));
 
   PolicyStatus<int> companion_app_install_status =
       policy_service->GetPolicyForAppInstalls(
           enterprise_companion::kCompanionAppId);
   EXPECT_FALSE(companion_app_install_status)
-      << "Compaion app install cannot be disabled.";
+      << "Companion app install cannot be disabled.";
 
   PolicyStatus<int> companion_app_update_status =
       policy_service->GetPolicyForAppUpdates(
           enterprise_companion::kCompanionAppId);
   EXPECT_FALSE(companion_app_update_status)
-      << "Compaion app update cannot be disabled.";
+      << "Companion app update cannot be disabled.";
 
   PolicyStatus<int> app1_install_status =
       policy_service->GetPolicyForAppInstalls("app1");
   ASSERT_TRUE(app1_install_status);
-  const PolicyStatus<int>::Entry& app1_install_policy =
-      app1_install_status.effective_policy().value();
-  EXPECT_EQ(app1_install_policy.source, "group_policy");
-  EXPECT_EQ(app1_install_policy.policy, 0);
-  EXPECT_TRUE(app1_install_status.conflict_policy());
-  const PolicyStatus<int>::Entry& app1_install_conflict_policy =
-      app1_install_status.conflict_policy().value();
-  EXPECT_EQ(app1_install_conflict_policy.policy, 1);
-  EXPECT_EQ(app1_install_conflict_policy.source, "device_management");
+  EXPECT_THAT(app1_install_status.effective_policy(),
+              Optional(PolicyEntry("group_policy", 0)));
+  EXPECT_THAT(app1_install_status.conflict_policy(),
+              Optional(PolicyEntry("device_management", 1)));
   EXPECT_EQ(app1_install_status.policy(), 0);
+  EXPECT_THAT(app1_install_status.all_policies(),
+              ElementsAre(PolicyEntry("group_policy", 0),
+                          PolicyEntry("device_management", 1),
+                          PolicyEntry("Default", 1)));
 
   PolicyStatus<int> app1_update_status =
       policy_service->GetPolicyForAppUpdates("app1");
   ASSERT_TRUE(app1_update_status);
-  const PolicyStatus<int>::Entry& app1_update_policy =
-      app1_update_status.effective_policy().value();
-  EXPECT_EQ(app1_update_policy.source, "device_management");
-  EXPECT_EQ(app1_update_policy.policy, 3);
-  EXPECT_TRUE(app1_update_status.conflict_policy());
-  const PolicyStatus<int>::Entry& app1_update_conflict_policy =
-      app1_update_status.conflict_policy().value();
-  EXPECT_TRUE(app1_update_status.conflict_policy());
-  EXPECT_EQ(app1_update_conflict_policy.policy, 2);
-  EXPECT_EQ(app1_update_conflict_policy.source, "imaginary");
+  EXPECT_THAT(app1_update_status.effective_policy(),
+              Optional(PolicyEntry("device_management", 3)));
+  EXPECT_THAT(app1_update_status.conflict_policy(),
+              Optional(PolicyEntry("imaginary", 2)));
   EXPECT_EQ(app1_update_status.policy(), 3);
+  EXPECT_THAT(
+      app1_update_status.all_policies(),
+      ElementsAre(PolicyEntry("device_management", 3),
+                  PolicyEntry("imaginary", 2), PolicyEntry("Default", 1)));
 
   PolicyStatus<int> app2_install_status =
       policy_service->GetPolicyForAppInstalls("app2");
   ASSERT_TRUE(app2_install_status);
-  const PolicyStatus<int>::Entry& app2_install_policy =
-      app2_install_status.effective_policy().value();
-  EXPECT_EQ(app2_install_policy.source, "imaginary");
-  EXPECT_EQ(app2_install_policy.policy, 2);
-  EXPECT_TRUE(app2_install_status.conflict_policy());
-  const PolicyStatus<int>::Entry& app2_install_conflict_policy =
-      app2_install_status.conflict_policy().value();
-  EXPECT_EQ(app2_install_conflict_policy.policy, 1);
-  EXPECT_EQ(app2_install_conflict_policy.source, "Default");
+  EXPECT_THAT(app2_install_status.effective_policy(),
+              Optional(PolicyEntry("imaginary", 2)));
+  EXPECT_THAT(app2_install_status.conflict_policy(),
+              Optional(PolicyEntry("Default", 1)));
   EXPECT_EQ(app2_install_status.policy(), 2);
+  EXPECT_THAT(
+      app2_install_status.all_policies(),
+      ElementsAre(PolicyEntry("imaginary", 2), PolicyEntry("Default", 1)));
 
   PolicyStatus<int> app2_update_status =
       policy_service->GetPolicyForAppUpdates("app2");
   ASSERT_TRUE(app2_update_status);
-  const PolicyStatus<int>::Entry& app2_update_policy =
-      app2_update_status.effective_policy().value();
-  EXPECT_EQ(app2_update_policy.source, "group_policy");
-  EXPECT_EQ(app2_update_policy.policy, 1);
+  EXPECT_THAT(app2_update_status.effective_policy(),
+              Optional(PolicyEntry("group_policy", 1)));
   EXPECT_EQ(app2_update_status.policy(), 1);
   EXPECT_EQ(app2_update_status.conflict_policy(), std::nullopt);
+  EXPECT_THAT(
+      app2_update_status.all_policies(),
+      ElementsAre(PolicyEntry("group_policy", 1), PolicyEntry("Default", 1)));
 
   PolicyStatus<std::string> download_preference_status =
       policy_service->GetDownloadPreference();
   ASSERT_TRUE(download_preference_status);
-  const PolicyStatus<std::string>::Entry& download_preference_policy =
-      download_preference_status.effective_policy().value();
-  EXPECT_EQ(download_preference_policy.source, "imaginary");
-  EXPECT_EQ(download_preference_policy.policy, "cacheable");
-  EXPECT_EQ(download_preference_status.policy(), "cacheable");
+  EXPECT_THAT(download_preference_status.effective_policy(),
+              Optional(PolicyEntry("imaginary", "cacheable")));
   EXPECT_EQ(download_preference_status.conflict_policy(), std::nullopt);
 
   EXPECT_EQ(policy_service->GetAllPoliciesAsString(),
@@ -700,58 +727,55 @@ TEST_F(PolicyServiceTest, MultiplePolicyManagers_WithUnmanagedOnes) {
   auto policy_service = CreatePolicyServiceForTesting(std::move(managers));
   EXPECT_EQ(policy_service->source(), "device_management;imaginary;Default");
 
-  PolicyStatus<UpdatesSuppressedTimes> suppressed_time_status =
-      policy_service->GetUpdatesSuppressedTimes();
-  ASSERT_TRUE(suppressed_time_status);
-  EXPECT_EQ(suppressed_time_status.effective_policy().value().source,
-            "device_management");
-  EXPECT_EQ(suppressed_time_status.policy().start_hour_, 5);
-  EXPECT_EQ(suppressed_time_status.policy().start_minute_, 10);
-  EXPECT_EQ(suppressed_time_status.policy().duration_minute_, 30);
+  EXPECT_THAT(
+      policy_service->GetUpdatesSuppressedTimes().effective_policy(),
+      Optional(PolicyEntry(
+          "device_management",
+          UpdatesSuppressedTimes{
+              .start_hour_ = 5, .start_minute_ = 10, .duration_minute_ = 30})));
 
   PolicyStatus<std::string> channel_status =
       policy_service->GetTargetChannel("app1");
   ASSERT_TRUE(channel_status);
-  const PolicyStatus<std::string>::Entry& channel_status_policy =
-      channel_status.effective_policy().value();
-  EXPECT_EQ(channel_status_policy.source, "device_management");
-  EXPECT_EQ(channel_status_policy.policy, "channel_dm");
-  EXPECT_TRUE(channel_status.conflict_policy());
-  const PolicyStatus<std::string>::Entry& channel_status_conflict_policy =
-      channel_status.conflict_policy().value();
-  EXPECT_EQ(channel_status_conflict_policy.policy, "channel_imaginary");
-  EXPECT_EQ(channel_status_conflict_policy.source, "imaginary");
+  EXPECT_THAT(channel_status.effective_policy(),
+              Optional(PolicyEntry("device_management", "channel_dm")));
+  EXPECT_THAT(channel_status.conflict_policy(),
+              Optional(PolicyEntry("imaginary", "channel_imaginary")));
   EXPECT_EQ(channel_status.policy(), "channel_dm");
+  EXPECT_THAT(channel_status.all_policies(),
+              ElementsAre(PolicyEntry("device_management", "channel_dm"),
+                          PolicyEntry("imaginary", "channel_imaginary"),
+                          PolicyEntry("group_policy", "channel_gp")));
 
   PolicyStatus<int> app1_update_status =
       policy_service->GetPolicyForAppUpdates("app1");
   ASSERT_TRUE(app1_update_status);
-  const PolicyStatus<int>::Entry& app1_update_status_policy =
-      app1_update_status.effective_policy().value();
-  EXPECT_EQ(app1_update_status_policy.source, "device_management");
-  EXPECT_EQ(app1_update_status_policy.policy, 3);
-  EXPECT_TRUE(app1_update_status.conflict_policy());
-  const PolicyStatus<int>::Entry& app1_update_status_conflict_policy =
-      app1_update_status.conflict_policy().value();
-  EXPECT_EQ(app1_update_status_conflict_policy.source, "imaginary");
-  EXPECT_EQ(app1_update_status_conflict_policy.policy, 2);
+  EXPECT_THAT(app1_update_status.effective_policy(),
+              Optional(PolicyEntry("device_management", 3)));
+  EXPECT_THAT(app1_update_status.conflict_policy(),
+              Optional(PolicyEntry("imaginary", 2)));
   EXPECT_EQ(app1_update_status.policy(), 3);
+  EXPECT_THAT(
+      app1_update_status.all_policies(),
+      ElementsAre(PolicyEntry("device_management", 3),
+                  PolicyEntry("imaginary", 2), PolicyEntry("Default", 1)));
 
   PolicyStatus<int> app2_update_status =
       policy_service->GetPolicyForAppUpdates("app2");
   ASSERT_TRUE(app2_update_status);
   EXPECT_EQ(app2_update_status.conflict_policy(), std::nullopt);
-  const PolicyStatus<int>::Entry& app2_update_status_policy =
-      app2_update_status.effective_policy().value();
-  EXPECT_EQ(app2_update_status_policy.source, "Default");
-  EXPECT_EQ(app2_update_status_policy.policy, 1);
+  EXPECT_THAT(app2_update_status.effective_policy(),
+              Optional(PolicyEntry("Default", 1)));
   EXPECT_EQ(app2_update_status.policy(), 1);
+  EXPECT_THAT(
+      app2_update_status.all_policies(),
+      ElementsAre(PolicyEntry("Default", 1), PolicyEntry("group_policy", 1)));
 
   PolicyStatus<std::string> download_preference_status =
       policy_service->GetDownloadPreference();
   ASSERT_TRUE(download_preference_status);
-  EXPECT_EQ(download_preference_status.effective_policy().value().source,
-            "imaginary");
+  EXPECT_THAT(download_preference_status.effective_policy(),
+              Optional(PolicyEntry("imaginary", "cacheable")));
   EXPECT_EQ(download_preference_status.policy(), "cacheable");
   EXPECT_EQ(download_preference_status.conflict_policy(), std::nullopt);
 
@@ -792,26 +816,25 @@ class PolicyServiceAreUpdatesSuppressedNowTest
 INSTANTIATE_TEST_SUITE_P(
     PolicyServiceAreUpdatesSuppressedNowTestCases,
     PolicyServiceAreUpdatesSuppressedNowTest,
-    ::testing::ValuesIn(
-        std::vector<PolicyServiceAreUpdatesSuppressedNowTestCase>{
-            // Suppress starting 12:00 for 959 minutes.
-            {{12, 00, 959}, "Sat, 01 July 2023 01:15:00", true},
+    ValuesIn(std::vector<PolicyServiceAreUpdatesSuppressedNowTestCase>{
+        // Suppress starting 12:00 for 959 minutes.
+        {{12, 00, 959}, "Sat, 01 July 2023 01:15:00", true},
 
-            // Suppress starting 12:00 for 959 minutes.
-            {{12, 00, 959}, "Sat, 01 July 2023 04:15:00", false},
+        // Suppress starting 12:00 for 959 minutes.
+        {{12, 00, 959}, "Sat, 01 July 2023 04:15:00", false},
 
-            // Suppress starting 00:00 for 959 minutes.
-            {{00, 00, 959}, "Sat, 01 July 2023 04:15:00", true},
+        // Suppress starting 00:00 for 959 minutes.
+        {{00, 00, 959}, "Sat, 01 July 2023 04:15:00", true},
 
-            // Suppress starting 00:00 for 959 minutes.
-            {{00, 00, 959}, "Sat, 01 July 2023 16:15:00", false},
+        // Suppress starting 00:00 for 959 minutes.
+        {{00, 00, 959}, "Sat, 01 July 2023 16:15:00", false},
 
-            // Suppress starting 18:00 for 12 hours.
-            {{18, 00, 12 * 60}, "Sat, 01 July 2023 05:15:00", true},
+        // Suppress starting 18:00 for 12 hours.
+        {{18, 00, 12 * 60}, "Sat, 01 July 2023 05:15:00", true},
 
-            // Suppress starting 18:00 for 12 hours.
-            {{18, 00, 12 * 60}, "Sat, 01 July 2023 06:15:00", false},
-        }));
+        // Suppress starting 18:00 for 12 hours.
+        {{18, 00, 12 * 60}, "Sat, 01 July 2023 06:15:00", false},
+    }));
 
 TEST_P(PolicyServiceAreUpdatesSuppressedNowTest, TestCases) {
   auto manager = base::MakeRefCounted<FakePolicyManager>(true, "group_policy");

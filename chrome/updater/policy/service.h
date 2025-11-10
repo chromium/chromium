@@ -46,9 +46,9 @@ class PolicyStatus {
   PolicyStatus(const PolicyStatus&) = default;
   PolicyStatus& operator=(const PolicyStatus&) = default;
 
-  void AddPolicyIfNeeded(bool is_managed,
-                         const std::string& source,
-                         const T& policy) {
+  void AddPolicy(bool is_managed, const std::string& source, const T& policy) {
+    all_policies_.emplace_back(source, policy);
+
     if (conflict_policy_) {
       return;  // We already have enough policies.
     }
@@ -67,6 +67,7 @@ class PolicyStatus {
   const std::optional<Entry>& conflict_policy() const {
     return conflict_policy_;
   }
+  const std::vector<Entry>& all_policies() const { return all_policies_; }
 
   std::optional<T> effective_policy_value() const {
     return effective_policy_ ? std::optional<T>(effective_policy_->policy)
@@ -86,6 +87,7 @@ class PolicyStatus {
  private:
   std::optional<Entry> effective_policy_;
   std::optional<Entry> conflict_policy_;
+  std::vector<Entry> all_policies_;
 };
 
 // The PolicyService returns policies for enterprise managed machines from the
