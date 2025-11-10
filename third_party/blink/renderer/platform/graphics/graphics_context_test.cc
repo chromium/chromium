@@ -205,31 +205,17 @@ TEST_F(GraphicsContextDarkModeTest, SimpleInvertForTesting) {
   EXPECT_EQ(0xff777777, bitmap_.getColor(3, 0));
 }
 
-// Invert lightness (in HSL space).
-TEST_F(GraphicsContextDarkModeTest, InvertLightness) {
-  DarkModeSettings settings;
-  settings.mode = DarkModeInversionAlgorithm::kInvertLightness;
-  settings.contrast = 0;
-
-  DrawColorsToContext(true, settings);
-
-  EXPECT_EQ(SK_ColorWHITE, bitmap_.getColor(0, 0));
-  EXPECT_EQ(SK_ColorBLACK, bitmap_.getColor(1, 0));
-  EXPECT_EQ(SK_ColorRED, bitmap_.getColor(2, 0));
-  EXPECT_EQ(0xffe1e1e1, bitmap_.getColor(3, 0));
-}
-
 TEST_F(GraphicsContextDarkModeTest, InvertLightnessPlusContrast) {
   DarkModeSettings settings;
-  settings.mode = DarkModeInversionAlgorithm::kInvertLightness;
+  settings.mode = DarkModeInversionAlgorithm::kInvertLightnessLAB;
   settings.contrast = 0.2;
 
   DrawColorsToContext(true, settings);
 
   EXPECT_EQ(SK_ColorWHITE, bitmap_.getColor(0, 0));
-  EXPECT_EQ(SK_ColorBLACK, bitmap_.getColor(1, 0));
-  EXPECT_EQ(SK_ColorRED, bitmap_.getColor(2, 0));
-  EXPECT_EQ(0xfff1f1f1, bitmap_.getColor(3, 0));
+  EXPECT_EQ(0xff121212, bitmap_.getColor(1, 0));
+  EXPECT_EQ(0xffff1203, bitmap_.getColor(2, 0));
+  EXPECT_EQ(0xff7f7f7f, bitmap_.getColor(3, 0));
 }
 
 }  // namespace

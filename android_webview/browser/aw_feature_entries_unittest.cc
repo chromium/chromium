@@ -31,16 +31,9 @@ const flags_ui::FeatureEntry::FeatureParam kForceDark_SimpleCielab[] = {
     {"foreground_lightness_threshold", "255"},
     {"background_lightness_threshold", "0"}};
 
-const flags_ui::FeatureEntry::FeatureParam kForceDark_SimpleHsl[] = {
-    {"inversion_method", "hsl_based"},
-    {"foreground_lightness_threshold", "255"},
-    {"background_lightness_threshold", "0"}};
-
 const flags_ui::FeatureEntry::FeatureVariation kForceDarkVariations[] = {
     {"with simple CIELAB-based inversion", kForceDark_SimpleCielab,
-     std::size(kForceDark_SimpleCielab), nullptr},
-    {"with simple HSL-based inversion", kForceDark_SimpleHsl,
-     std::size(kForceDark_SimpleHsl), nullptr}};
+     std::size(kForceDark_SimpleCielab), nullptr}};
 
 // Not for display, set the descriptions to empty.
 flags_ui::FeatureEntry kForceDark = {

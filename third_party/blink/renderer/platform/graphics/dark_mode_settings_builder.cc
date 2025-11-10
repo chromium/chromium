@@ -83,8 +83,6 @@ DarkModeInversionAlgorithm GetMode(const SwitchParams& switch_params) {
           kDefaultDarkModeInversionAlgorithm);
     case ForceDarkInversionMethod::kCielabBased:
       return DarkModeInversionAlgorithm::kInvertLightnessLAB;
-    case ForceDarkInversionMethod::kHslBased:
-      return DarkModeInversionAlgorithm::kInvertLightness;
   }
   NOTREACHED();
 }

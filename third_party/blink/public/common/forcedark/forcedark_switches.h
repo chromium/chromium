@@ -14,10 +14,6 @@ enum class ForceDarkInversionMethod {
   // renderer/core/frame/settings.json5.
   kUseBlinkSettings,
 
-  // Modify colors by converting them to the HSL color space and inverting the
-  // lightness (i.e. the "L" in HSL).
-  kHslBased,
-
   // Modify colors by converting them to CIE L*a*b color space and inverting the
   // L value.
   kCielabBased

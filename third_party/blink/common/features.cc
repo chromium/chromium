@@ -909,7 +909,6 @@ const base::FeatureParam<ForceDarkInversionMethod>::Option
     forcedark_inversion_method_options[] = {
         {ForceDarkInversionMethod::kUseBlinkSettings,
          "use_blink_settings_for_method"},
-        {ForceDarkInversionMethod::kHslBased, "hsl_based"},
         {ForceDarkInversionMethod::kCielabBased, "cielab_based"}};
 
 BASE_FEATURE_ENUM_PARAM(ForceDarkInversionMethod,
