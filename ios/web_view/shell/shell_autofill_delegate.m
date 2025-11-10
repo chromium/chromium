@@ -479,6 +479,7 @@ typedef struct {
     case CWVAutofillProgressDialogTypeIbanUnmask:
     case CWVAutofillProgressDialogType3DSFetchVCN:
     case CWVAutofillProgressDialogTypeBNPLFetchVCN:
+    case CWVAutofillProgressDialogTypeBNPLAmountExtraction:
     case CWVAutofillProgressDialogTypeUnspecified:
       dialogText.title = @"Processing...";
       dialogText.message = @"Please wait.";

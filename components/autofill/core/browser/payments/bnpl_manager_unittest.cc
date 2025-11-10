@@ -2201,8 +2201,13 @@ TEST_F(BnplManagerTest,
 
 TEST_F(
     BnplManagerTest,
-    OnDidAcceptBnplSuggestion_WhenInvalidAmount_DoesNotForwardCallToDelegate) {
+    OnDidAcceptBnplSuggestion_WhenAmountIsNotSet_ShowProgressUiNotSelectionUi) {
   EXPECT_CALL(GetBnplUiDelegate(), ShowSelectBnplIssuerUi).Times(0);
+  EXPECT_CALL(
+      GetBnplUiDelegate(),
+      ShowProgressUi(
+          AutofillProgressDialogType::kBnplAmountExtractionProgressUi, _))
+      .WillOnce(base::test::RunOnceCallback<1>());
 
   bnpl_manager_->OnDidAcceptBnplSuggestion(
       /*final_checkout_amount=*/std::nullopt,

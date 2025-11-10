@@ -87,6 +87,8 @@ CWVAutofillProgressDialogType ToCWVAutofillProgressDialogType(
       return CWVAutofillProgressDialogTypeCardInfoRetrievalEnrolledUnmask;
     case autofill::AutofillProgressDialogType::kBnplFetchVcnProgressDialog:
       return CWVAutofillProgressDialogTypeBNPLFetchVCN;
+    case autofill::AutofillProgressDialogType::kBnplAmountExtractionProgressUi:
+      return CWVAutofillProgressDialogTypeBNPLAmountExtraction;
   }
   return CWVAutofillProgressDialogTypeUnspecified;
 }

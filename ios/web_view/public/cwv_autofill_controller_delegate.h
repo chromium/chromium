@@ -72,6 +72,9 @@ typedef NS_ENUM(NSInteger, CWVAutofillProgressDialogType) {
   // Dialog shown while fetching a Virtual Card Number (VCN) for a Buy Now Pay
   // Later (BNPL) flow.
   CWVAutofillProgressDialogTypeBNPLFetchVCN,
+  // Progress Ui Shown while extracting checkout amount for a Buy Now Pay Later
+  // (BNPL) flow.
+  CWVAutofillProgressDialogTypeBNPLAmountExtraction,
 };
 
 // A generic procedural block type that takes no arguments and returns nothing.

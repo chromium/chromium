@@ -313,6 +313,8 @@ std::string_view AutofillMetrics::GetDialogTypeStringForLogging(
       return "3dsFetchVirtualCard";
     case AutofillProgressDialogType::kBnplFetchVcnProgressDialog:
       return "BnplFetchVirtualCard";
+    case AutofillProgressDialogType::kBnplAmountExtractionProgressUi:
+    // TODO(crbug.com/430575808): Implement Logging for progress screen.
     case AutofillProgressDialogType::kUnspecified:
       NOTREACHED();
   }

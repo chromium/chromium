@@ -146,10 +146,15 @@ void BnplManager::OnDidAcceptBnplSuggestion(
                                weak_factory_.GetWeakPtr()),
                 std::move(cancel_callback));
       } else {
-        // TODO(crbug.com/430575808): Implement Android flow logic to show
-        // progress screen. If the amount extraction has failed to return a
-        // valid amount, the selection screen is grayed out, and selecting an
-        // issuer is not possible.
+        // We can only enter this branch if the user selected the BNPL chip
+        // before amount extraction returned. If amount extraction had already
+        // completed without a final checkout amount, the chip would be in a
+        // disabled state and not clickable.
+        CHECK_DEREF(payments_autofill_client().GetBnplUiDelegate())
+            .ShowProgressUi(
+                AutofillProgressDialogType::kBnplAmountExtractionProgressUi,
+                /*cancel_callback=*/base::BindOnce(&BnplManager::Reset,
+                                                   weak_factory_.GetWeakPtr()));
       }
       break;
   }
