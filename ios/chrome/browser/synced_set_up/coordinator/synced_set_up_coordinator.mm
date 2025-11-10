@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
@@ -102,6 +103,17 @@ constexpr base::TimeDelta kDismissalDelay = base::Seconds(5);
 }
 
 #pragma mark - SyncedSetUpMediatorDelegate
+
+- (void)recordSyncedSetUpShown:(SyncedSetUpMediator*)mediator {
+  CHECK_EQ(_mediator, mediator);
+  PrefService* profilePrefService = self.profile->GetPrefs();
+  CHECK(profilePrefService);
+
+  int impressionCount =
+      profilePrefService->GetInteger(prefs::kSyncedSetUpImpressionCount);
+  profilePrefService->SetInteger(prefs::kSyncedSetUpImpressionCount,
+                                 impressionCount + 1);
+}
 
 - (void)mediatorWillStartPostFirstRunFlow:(SyncedSetUpMediator*)mediator {
   CHECK_EQ(_mediator, mediator);

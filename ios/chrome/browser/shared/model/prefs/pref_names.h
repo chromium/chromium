@@ -595,6 +595,11 @@ inline constexpr char kSigninHasAcceptedManagementDialog[] =
 inline constexpr char kSigninWebSignDismissalCount[] =
     "ios.signin.web_signin_dismissal_count";
 
+// Integer preference that stores the number of times the Synced Set Up flow has
+// been shown to the user.
+inline constexpr char kSyncedSetUpImpressionCount[] =
+    "ios.synced_set_up.impression_count";
+
 // Dictionary which stores the zoom levels the user has changed. The zoom levels
 // are unique for a given (iOS Dynamic Type, website domain) pair. Thus, the
 // dictionary keys are the iOS Dynamic Type level, mapping to sub-dictionarys

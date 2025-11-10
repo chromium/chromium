@@ -388,14 +388,18 @@ TEST_F(SyncedSetUpMediatorTest,
   // presentation of another Snackbar, the mediator should not inform the
   // delegate that it is finished.
   OCMExpect([snackbar_handler_mock_ showSnackbarMessage:[OCMArg any]]);
+  OCMExpect([delegate_mock_ recordSyncedSetUpShown:[OCMArg any]]);
   [mediator_ applyPrefs];
   EXPECT_OCMOCK_VERIFY(snackbar_handler_mock_);
+  EXPECT_OCMOCK_VERIFY(delegate_mock_);
 
   task_environment_.FastForwardBy(base::Seconds(3));
 
   OCMExpect([snackbar_handler_mock_ showSnackbarMessage:[OCMArg any]]);
+  OCMExpect([delegate_mock_ recordSyncedSetUpShown:[OCMArg any]]);
   [mediator_ applyPrefs];
   EXPECT_OCMOCK_VERIFY(snackbar_handler_mock_);
+  EXPECT_OCMOCK_VERIFY(delegate_mock_);
 
   OCMReject([delegate_mock_ syncedSetUpMediatorDidComplete:[OCMArg any]]);
   task_environment_.FastForwardBy(base::Seconds(2));

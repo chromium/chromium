@@ -11,6 +11,7 @@
 
 #import "base/notreached.h"
 #import "base/values.h"
+#import "components/prefs/pref_service.h"
 #import "components/sync_device_info/device_info_tracker.h"
 #import "components/sync_preferences/cross_device_pref_tracker/cross_device_pref_tracker.h"
 #import "components/sync_preferences/cross_device_pref_tracker/timestamped_pref_value.h"
@@ -19,6 +20,8 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 
 namespace {
 
@@ -230,4 +233,21 @@ SceneState* GetEligibleSceneForSyncedSetUp(ProfileState* profile_state) {
 
   // All preconditions met.
   return active_scene;
+}
+
+bool CanShowSyncedSetUp(const PrefService* profile_pref_service) {
+  if (!profile_pref_service) {
+    return false;
+  }
+
+  // Impressions preference not registered.
+  if (!profile_pref_service->FindPreference(
+          prefs::kSyncedSetUpImpressionCount)) {
+    return false;
+  }
+
+  int impression_count =
+      profile_pref_service->GetInteger(prefs::kSyncedSetUpImpressionCount);
+
+  return impression_count < GetSyncedSetUpImpressionLimit();
 }

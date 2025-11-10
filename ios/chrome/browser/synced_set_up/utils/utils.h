@@ -28,6 +28,7 @@ namespace sync_preferences {
 class CrossDevicePrefTracker;
 }  // namespace sync_preferences
 
+class PrefService;
 @class ProfileState;
 @class SceneState;
 
@@ -78,5 +79,9 @@ std::map<std::string_view, base::Value> GetCrossDevicePrefsFromRemoteDevice(
 // - There is a foreground active scene.
 // - The active scene is not incognito and belongs to the main browser provider.
 SceneState* GetEligibleSceneForSyncedSetUp(ProfileState* profile_state);
+
+// Returns true if the Synced Set Up UI can be shown based on the impression
+// limit. This should be passed a profile pref service.
+bool CanShowSyncedSetUp(const PrefService* profile_pref_service);
 
 #endif  // IOS_CHROME_BROWSER_SYNCED_SET_UP_UTILS_UTILS_H_

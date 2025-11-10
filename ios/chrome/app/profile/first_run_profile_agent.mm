@@ -9,6 +9,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/metrics/metrics_service.h"
+#import "components/prefs/pref_service.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
 #import "ios/chrome/app/profile/profile_init_stage.h"
@@ -40,6 +41,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/signin_util.h"
 #import "ios/chrome/browser/synced_set_up/public/synced_set_up_metrics.h"
+#import "ios/chrome/browser/synced_set_up/utils/utils.h"
 
 namespace first_run {
 
@@ -249,8 +251,7 @@ const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
 // finished presenting.
 - (void)performNextPostFirstRunAction {
   if (!_postActionsProvider) {
-    ProfileIOS* profile = [self originalProfile];
-    PrefService* prefService = profile ? profile->GetPrefs() : nullptr;
+    PrefService* prefService = [self profilePrefs];
     _postActionsProvider =
         [[FirstRunPostActionProvider alloc] initWithPrefService:prefService];
   }
@@ -455,8 +456,22 @@ const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
   return browser->GetProfile()->GetOriginalProfile();
 }
 
+// Returns the profile pref service for the original (i.e., not off-the-record)
+// profile associated with the current browser. May return nullptr.
+- (PrefService*)profilePrefs {
+  ProfileIOS* profile = [self originalProfile];
+  return profile ? profile->GetPrefs() : nullptr;
+}
+
 // Starts the Synced Set Up screen.
 - (void)showSyncedSetUp {
+  PrefService* profilePrefService = [self profilePrefs];
+
+  if (!CanShowSyncedSetUp(profilePrefService)) {
+    [self performNextPostFirstRunAction];
+    return;
+  }
+
   LogSyncedSetUpTriggerSource(SyncedSetUpTriggerSource::kPostFirstRun);
 
   __weak __typeof(self) weakSelf = self;
