@@ -614,7 +614,8 @@ void ExecutionEngine::OnMayActOnTabDecision(
       DidFinishAsyncSafetyChecks(evaluated_origin, /*may_act=*/true);
       return;
     case MayActOnUrlBlockReason::kOptimizationGuideBlock:
-      if (base::FeatureList::IsEnabled(kGlicCrossOriginNavigationGating)) {
+      if (base::FeatureList::IsEnabled(kGlicCrossOriginNavigationGating) &&
+          kGlicPromptUserForSensitiveNavigations.Get()) {
         SendUserConfirmationDialogRequest(
             evaluated_origin,
             /*for_blocklisted_origin=*/true,
