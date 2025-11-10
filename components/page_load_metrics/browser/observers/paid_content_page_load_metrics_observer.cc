@@ -8,8 +8,10 @@
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
-#include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/mojom/content_extraction/frame_metadata_observer_registry.mojom.h"
 
 PaidContentPageLoadMetricsObserver::PaidContentPageLoadMetricsObserver() =
@@ -36,19 +38,17 @@ PaidContentPageLoadMetricsObserver::OnCommit(
     return STOP_OBSERVING;
   }
 
+  if (navigation_handle->IsSameDocument()) {
+    return CONTINUE_OBSERVING;
+  }
+
   // The PaidContentMetadataObserver only sends when there is paid content,
   // so we initialize to false.
   has_paid_content_ = false;
+  // Reset the receiver and remote on each commit to ensure clean state.
+  receiver_.reset();
+  registry_.reset();
 
-  navigation_handle->GetRenderFrameHost()
-      ->GetRemoteAssociatedInterfaces()
-      ->GetInterface(&registry_);
-  registry_->AddPaidContentMetadataObserver(
-      receiver_.BindNewPipeAndPassRemote());
-  receiver_.set_disconnect_handler(
-      base::BindOnce(&PaidContentPageLoadMetricsObserver::
-                         OnPaidContentMetadataObserverDisconnect,
-                     base::Unretained(this)));
   return CONTINUE_OBSERVING;
 }
 
@@ -73,8 +73,42 @@ void PaidContentPageLoadMetricsObserver::OnPaidContentMetadataChanged(
   has_paid_content_ = has_paid_content;
 }
 
+void PaidContentPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
+    const page_load_metrics::mojom::PageLoadTiming& timing) {
+  // If we are already bound, there is nothing to do.
+  if (receiver_.is_bound()) {
+    return;
+  }
+
+  content::WebContents* web_contents = GetDelegate().GetWebContents();
+  if (!web_contents) {
+    return;
+  }
+
+  content::RenderFrameHost* rfh = web_contents->GetPrimaryMainFrame();
+  if (!rfh || !rfh->IsRenderFrameLive()) {
+    return;
+  }
+  rfh->GetRemoteInterfaces()->GetInterface(
+      registry_.BindNewPipeAndPassReceiver());
+
+  // The registry is associated with the RenderFrameHost, so a disconnect means
+  // the RFH is gone.
+  registry_.set_disconnect_handler(
+      base::BindOnce(&PaidContentPageLoadMetricsObserver::
+                         OnPaidContentMetadataObserverDisconnect,
+                     base::Unretained(this)));
+
+  registry_->AddPaidContentMetadataObserver(
+      receiver_.BindNewPipeAndPassRemote());
+}
+
 void PaidContentPageLoadMetricsObserver::
     OnPaidContentMetadataObserverDisconnect() {
+  // The registry can be null in tests.
+  if (registry_.is_bound()) {
+    registry_.reset();
+  }
   receiver_.reset();
 }
 

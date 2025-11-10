@@ -8,8 +8,8 @@
 #include <optional>
 
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
-#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/content_extraction/frame_metadata_observer_registry.mojom.h"
 
 namespace content {
@@ -34,6 +34,8 @@ class PaidContentPageLoadMetricsObserver
                         const GURL& currently_committed_url,
                         bool started_in_foreground) override;
   ObservePolicy OnCommit(content::NavigationHandle* navigation_handle) override;
+  void OnFirstContentfulPaintInPage(
+      const page_load_metrics::mojom::PageLoadTiming& timing) override;
   ObservePolicy OnFencedFramesStart(
       content::NavigationHandle* navigation_handle,
       const GURL& currently_committed_url) override;
@@ -54,7 +56,7 @@ class PaidContentPageLoadMetricsObserver
   // Set when the page has paid content.
   std::optional<bool> has_paid_content_;
 
-  mojo::AssociatedRemote<blink::mojom::FrameMetadataObserverRegistry> registry_;
+  mojo::Remote<blink::mojom::FrameMetadataObserverRegistry> registry_;
   mojo::Receiver<blink::mojom::PaidContentMetadataObserver> receiver_{this};
 };
 
