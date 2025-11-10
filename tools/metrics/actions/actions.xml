@@ -50771,6 +50771,7 @@ should be able to be added at any place in this file.
   <suffix name="GenericAlwaysTriggerHelpUiFeature"
       label="For generic always show help UI feature."/>
   <suffix name="GlicPromo" label="For Glic feature."/>
+  <suffix name="GlicTryIt" label="For Glic feature with a call to action."/>
   <suffix name="GlobalMediaControls" label="For GlobalMediaControls feature."/>
   <suffix name="GMCCastStartStop"
       label="For Global Media Controls Cast start and stop feature."/>
