@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "printing/common/metafile_utils.h"
 
 #include <string_view>
@@ -336,7 +331,7 @@ sk_sp<SkPicture> DeserializeOopPicture(const void* data,
   if (length < sizeof(pic_id)) {
     NOTREACHED();  // Should not happen if the content is as written.
   }
-  memcpy(&pic_id, data, sizeof(pic_id));
+  UNSAFE_TODO(memcpy(&pic_id, data, sizeof(pic_id)));
 
   auto* context = reinterpret_cast<PictureDeserializationContext*>(ctx);
   auto iter = context->find(pic_id);
