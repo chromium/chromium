@@ -383,22 +383,6 @@ void SpellcheckCustomDictionary::StopSyncing(syncer::DataType type) {
   account_words_.clear();
 }
 
-syncer::SyncDataList SpellcheckCustomDictionary::GetAllSyncDataForTesting(
-    syncer::DataType type) const {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK_EQ(syncer::DICTIONARY, type);
-  syncer::SyncDataList data;
-  size_t i = 0;
-  for (const auto& word : words_) {
-    if (i++ >= spellcheck::kMaxSyncableDictionaryWords)
-      break;
-    sync_pb::EntitySpecifics specifics;
-    specifics.mutable_dictionary()->set_word(word);
-    data.push_back(syncer::SyncData::CreateLocalData(word, word, specifics));
-  }
-  return data;
-}
-
 std::optional<syncer::ModelError>
 SpellcheckCustomDictionary::ProcessSyncChanges(
     const base::Location& from_here,
