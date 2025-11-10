@@ -203,7 +203,7 @@ class FreedesktopSecretKeyProvider : public KeyProvider {
   void OnKWalletNetworkWallet(dbus_utils::CallMethodResultSig<"s"> wallet_name);
   void OnKWalletOpenAsync(dbus_utils::CallMethodResultSig<"i"> t_id);
   void OnKWalletWalletAsyncOpened(
-      dbus_utils::ConnectToSignalResult<int32_t, int32_t> result);
+      dbus_utils::ConnectToSignalResultSig<"ii"> result);
   void OnSignalConnected(const std::string& interface_name,
                          const std::string& signal_name,
                          bool connected);

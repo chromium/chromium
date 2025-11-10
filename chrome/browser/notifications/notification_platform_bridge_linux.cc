@@ -552,7 +552,7 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
                           weak_factory_.GetWeakPtr(),
                           ConnectionInitializationStatusCode::SUCCESS));
 
-    dbus_utils::ConnectToSignal(
+    dbus_utils::ConnectToSignal<"us">(
         notification_proxy_, kFreedesktopNotificationsName,
         kSignalActivationToken,
         base::BindRepeating(
@@ -561,7 +561,7 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
         base::BindOnce(&NotificationPlatformBridgeLinuxImpl::OnSignalConnected,
                        weak_factory_.GetWeakPtr()));
 
-    dbus_utils::ConnectToSignal(
+    dbus_utils::ConnectToSignal<"us">(
         notification_proxy_, kFreedesktopNotificationsName,
         kSignalActionInvoked,
         base::BindRepeating(
@@ -570,7 +570,7 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
         base::BindOnce(&NotificationPlatformBridgeLinuxImpl::OnSignalConnected,
                        weak_factory_.GetWeakPtr()));
 
-    dbus_utils::ConnectToSignal(
+    dbus_utils::ConnectToSignal<"uu">(
         notification_proxy_, kFreedesktopNotificationsName,
         kSignalNotificationClosed,
         base::BindRepeating(
@@ -579,7 +579,7 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
         base::BindOnce(&NotificationPlatformBridgeLinuxImpl::OnSignalConnected,
                        weak_factory_.GetWeakPtr()));
 
-    dbus_utils::ConnectToSignal(
+    dbus_utils::ConnectToSignal<"us">(
         notification_proxy_, kFreedesktopNotificationsName,
         kSignalNotificationReplied,
         base::BindRepeating(

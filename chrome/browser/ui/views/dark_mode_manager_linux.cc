@@ -76,7 +76,7 @@ void DarkModeManagerLinux::OnNativeThemeUpdated(
 
 void DarkModeManagerLinux::OnSystemdUnitStarted(dbus_xdg::SystemdUnitStatus) {
   // Subscribe to changes in the color scheme preference.
-  dbus_utils::ConnectToSignal(
+  dbus_utils::ConnectToSignal<"ssv">(
       settings_proxy_, kFreedesktopSettingsInterface, kSettingChangedSignal,
       base::BindRepeating(&DarkModeManagerLinux::OnPortalSettingChanged,
                           weak_ptr_factory_.GetWeakPtr()),

@@ -35,11 +35,13 @@ using ConnectToSignalResultSig =
 
 namespace internal {
 
-template <typename... Args>
-void OnSignal(base::RepeatingCallback<void(ConnectToSignalResult<Args...>)>
-                  signal_callback,
-              dbus::Signal* signal) {
-  signal_callback.Run(ReadMessage<std::tuple<Args...>>(*signal));
+template <SignatureLiteral ArgsSignature>
+void OnSignal(
+    base::RepeatingCallback<void(ConnectToSignalResultSig<ArgsSignature>)>
+        signal_callback,
+    dbus::Signal* signal) {
+  using ArgsTuple = internal::ParseDBusSignaturePack<ArgsSignature>;
+  signal_callback.Run(ReadMessage<ArgsTuple>(*signal));
 }
 
 }  // namespace internal
@@ -49,20 +51,19 @@ void OnSignal(base::RepeatingCallback<void(ConnectToSignalResult<Args...>)>
 // Linux where a C++ bindings generator is not available, to allow a more
 // declarative style of connecting to D-Bus signals. `signal_callback` takes a
 // base::expected containing a tuple of the signal arguments on success, or a
-// MessageFormatError on failure. The template arguments `Args` are inferred
-// from `signal_callback`.
-template <typename... Args>
+// MessageFormatError on failure. The template argument `ArgsSignature` is
+// a SignatureLiteral that must match the D-Bus signature of the signal
+// arguments.
+template <SignatureLiteral ArgsSignature>
 void ConnectToSignal(
     dbus::ObjectProxy* proxy,
     const std::string& interface,
     const std::string& signal,
-    base::RepeatingCallback<void(ConnectToSignalResult<Args...>)>
+    base::RepeatingCallback<void(ConnectToSignalResultSig<ArgsSignature>)>
         signal_callback,
-    dbus::ObjectProxy::OnConnectedCallback on_connected_callback)
-  requires(IsSupportedDBusType<Args> && ...)
-{
+    dbus::ObjectProxy::OnConnectedCallback on_connected_callback) {
   proxy->ConnectToSignal(interface, signal,
-                         base::BindRepeating(&internal::OnSignal<Args...>,
+                         base::BindRepeating(&internal::OnSignal<ArgsSignature>,
                                              std::move(signal_callback)),
                          std::move(on_connected_callback));
 }

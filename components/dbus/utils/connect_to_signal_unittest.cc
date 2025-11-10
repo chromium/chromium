@@ -90,9 +90,9 @@ TEST_F(ConnectToSignalTest, ConnectSuccess) {
 
   base::test::TestFuture<const std::string&, const std::string&, bool> future;
 
-  ConnectToSignal(mock_proxy_.get(), kTestInterface, kTestSignal,
-                  base::BindRepeating([](ConnectToSignalResult<>) {}),
-                  future.GetCallback());
+  ConnectToSignal<"">(mock_proxy_.get(), kTestInterface, kTestSignal,
+                      base::BindRepeating([](ConnectToSignalResult<>) {}),
+                      future.GetCallback());
 
   EXPECT_TRUE(std::get<2>(future.Get()));
 }
@@ -102,9 +102,9 @@ TEST_F(ConnectToSignalTest, ConnectFailure) {
 
   base::test::TestFuture<const std::string&, const std::string&, bool> future;
 
-  ConnectToSignal(mock_proxy_.get(), kTestInterface, kTestSignal,
-                  base::BindRepeating([](ConnectToSignalResult<>) {}),
-                  future.GetCallback());
+  ConnectToSignal<"">(mock_proxy_.get(), kTestInterface, kTestSignal,
+                      base::BindRepeating([](ConnectToSignalResult<>) {}),
+                      future.GetCallback());
 
   EXPECT_FALSE(std::get<2>(future.Get()));
 }
@@ -116,9 +116,9 @@ TEST_F(ConnectToSignalTest, SignalSuccessNoArgs) {
       connect_future;
   base::test::TestFuture<ConnectToSignalResult<>> signal_future;
 
-  ConnectToSignal(mock_proxy_.get(), kTestInterface, kTestSignal,
-                  signal_future.GetRepeatingCallback(),
-                  connect_future.GetCallback());
+  ConnectToSignal<"">(mock_proxy_.get(), kTestInterface, kTestSignal,
+                      signal_future.GetRepeatingCallback(),
+                      connect_future.GetCallback());
 
   EXPECT_TRUE(std::get<2>(connect_future.Get()));
 
@@ -135,12 +135,11 @@ TEST_F(ConnectToSignalTest, SignalSuccessWithArgs) {
 
   base::test::TestFuture<const std::string&, const std::string&, bool>
       connect_future;
-  base::test::TestFuture<ConnectToSignalResult<std::string, int32_t>>
-      signal_future;
+  base::test::TestFuture<ConnectToSignalResultSig<"si">> signal_future;
 
-  ConnectToSignal(mock_proxy_.get(), kTestInterface, kTestSignal,
-                  signal_future.GetRepeatingCallback(),
-                  connect_future.GetCallback());
+  ConnectToSignal<"si">(mock_proxy_.get(), kTestInterface, kTestSignal,
+                        signal_future.GetRepeatingCallback(),
+                        connect_future.GetCallback());
 
   EXPECT_TRUE(std::get<2>(connect_future.Get()));
 
@@ -160,11 +159,11 @@ TEST_F(ConnectToSignalTest, InvalidResponseFormat_WrongType) {
 
   base::test::TestFuture<const std::string&, const std::string&, bool>
       connect_future;
-  base::test::TestFuture<ConnectToSignalResult<std::string>> signal_future;
+  base::test::TestFuture<ConnectToSignalResultSig<"s">> signal_future;
 
-  ConnectToSignal(mock_proxy_.get(), kTestInterface, kTestSignal,
-                  signal_future.GetRepeatingCallback(),
-                  connect_future.GetCallback());
+  ConnectToSignal<"s">(mock_proxy_.get(), kTestInterface, kTestSignal,
+                       signal_future.GetRepeatingCallback(),
+                       connect_future.GetCallback());
 
   EXPECT_TRUE(std::get<2>(connect_future.Get()));
 
@@ -182,11 +181,11 @@ TEST_F(ConnectToSignalTest, InvalidResponseFormat_MissingData) {
 
   base::test::TestFuture<const std::string&, const std::string&, bool>
       connect_future;
-  base::test::TestFuture<ConnectToSignalResult<std::string>> signal_future;
+  base::test::TestFuture<ConnectToSignalResultSig<"s">> signal_future;
 
-  ConnectToSignal(mock_proxy_.get(), kTestInterface, kTestSignal,
-                  signal_future.GetRepeatingCallback(),
-                  connect_future.GetCallback());
+  ConnectToSignal<"s">(mock_proxy_.get(), kTestInterface, kTestSignal,
+                       signal_future.GetRepeatingCallback(),
+                       connect_future.GetCallback());
 
   EXPECT_TRUE(std::get<2>(connect_future.Get()));
 
@@ -205,9 +204,9 @@ TEST_F(ConnectToSignalTest, ExtraDataInResponse) {
       connect_future;
   base::test::TestFuture<ConnectToSignalResult<>> signal_future;
 
-  ConnectToSignal(mock_proxy_.get(), kTestInterface, kTestSignal,
-                  signal_future.GetRepeatingCallback(),
-                  connect_future.GetCallback());
+  ConnectToSignal<"">(mock_proxy_.get(), kTestInterface, kTestSignal,
+                      signal_future.GetRepeatingCallback(),
+                      connect_future.GetCallback());
 
   EXPECT_TRUE(std::get<2>(connect_future.Get()));
 

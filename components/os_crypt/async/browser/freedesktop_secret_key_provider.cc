@@ -172,7 +172,7 @@ class FreedesktopSecretKeyProvider::Prompter
   void StartPrompt() {
     auto* prompt_proxy = bus_->GetObjectProxy(
         FreedesktopSecretKeyProvider::kSecretServiceName, prompt_path_);
-    dbus_utils::ConnectToSignal(
+    dbus_utils::ConnectToSignal<"bv">(
         prompt_proxy, FreedesktopSecretKeyProvider::kSecretPromptInterface,
         "Completed",
         base::BindRepeating(&Prompter::OnPromptCompletedSignal, this),
@@ -200,7 +200,7 @@ class FreedesktopSecretKeyProvider::Prompter
   }
 
   void OnPromptCompletedSignal(
-      dbus_utils::ConnectToSignalResult<bool, dbus_utils::Variant> result) {
+      dbus_utils::ConnectToSignalResultSig<"bv"> result) {
     if (!result.has_value()) {
       LOG(ERROR) << "Failed to read Prompt.Completed signal args.";
       Finish(base::unexpected(ErrorDetail::kInvalidSignalFormat));
@@ -584,7 +584,7 @@ void FreedesktopSecretKeyProvider::OnKWalletNetworkWallet(
     return;
   }
 
-  dbus_utils::ConnectToSignal(
+  dbus_utils::ConnectToSignal<"ii">(
       kwallet_proxy_, kKWalletInterface, kKWalletSignalWalletAsyncOpened,
       base::BindRepeating(
           &FreedesktopSecretKeyProvider::OnKWalletWalletAsyncOpened,
@@ -627,7 +627,7 @@ void FreedesktopSecretKeyProvider::OnSignalConnected(
 }
 
 void FreedesktopSecretKeyProvider::OnKWalletWalletAsyncOpened(
-    dbus_utils::ConnectToSignalResult<int32_t, int32_t> result) {
+    dbus_utils::ConnectToSignalResultSig<"ii"> result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (kwallet_transaction_id_ == kKWalletInvalidTransactionId) {

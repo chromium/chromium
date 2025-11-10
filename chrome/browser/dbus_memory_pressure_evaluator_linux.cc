@@ -97,7 +97,7 @@ void DbusMemoryPressureEvaluatorLinux::CheckIfLmmIsAvailableResponse(
 
     object_proxy_ =
         system_bus_->GetObjectProxy(kLmmService, dbus::ObjectPath(kLmmObject));
-    dbus_utils::ConnectToSignal(
+    dbus_utils::ConnectToSignal<"y">(
         object_proxy_, kLmmInterface, kLowMemoryWarningSignal,
         base::BindRepeating(
             &DbusMemoryPressureEvaluatorLinux::OnLowMemoryWarning,
@@ -136,7 +136,7 @@ void DbusMemoryPressureEvaluatorLinux::CheckIfPortalIsAvailableResponse(
 
     object_proxy_ = session_bus_->GetObjectProxy(
         kXdgPortalService, dbus::ObjectPath(kXdgPortalObject));
-    dbus_utils::ConnectToSignal(
+    dbus_utils::ConnectToSignal<"y">(
         object_proxy_, kXdgPortalMemoryMonitorInterface,
         kLowMemoryWarningSignal,
         base::BindRepeating(
