@@ -507,6 +507,8 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
     }
 
     private void reInflateViews(PreferenceFragmentCompat fragment) {
+        if (fragment.getListView() == null) return;
+
         var adapter = fragment.getListView().getAdapter();
         fragment.getListView().setAdapter(null);
         fragment.getListView().setAdapter(adapter);
