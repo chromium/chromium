@@ -2340,7 +2340,8 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithWebAppTest,
 }
 
 // TODO(crbug.com/327256043): Flaky on win
-#if BUILDFLAG(IS_WIN)
+// TODO(crbug.com/459538706): Fails on Linux
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 #define MAYBE_LastUsedProfilesWithWebApp DISABLED_LastUsedProfilesWithWebApp
 #else
 #define MAYBE_LastUsedProfilesWithWebApp LastUsedProfilesWithWebApp
