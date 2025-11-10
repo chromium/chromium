@@ -9537,8 +9537,9 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerReinvocationBrowserTest,
   EXPECT_EQ(fake_query_controller->num_page_content_update_requests_sent(), 1);
 }
 
+// TODO(crbug.com/458942668): The test is flaky.
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerReinvocationBrowserTest,
-                       FollowUpRegionSearchDoesNotLoadInSidePanel) {
+                       DIABLED_FollowUpRegionSearchDoesNotLoadInSidePanel) {
   WaitForPaint();
   auto* controller = GetLensOverlayController();
   ASSERT_EQ(controller->state(), State::kOff);
