@@ -42,6 +42,12 @@ class ReloadButtonUI : public TopChromeWebUIController,
 
   void SetReloadButtonState(bool is_loading, bool is_menu_enabled);
 
+  ReloadButtonPageHandler* page_handler_for_testing();
+
+  // For testing:
+  // Sets a custom CommandUpdater for testing purposes.
+  void SetCommandUpdaterForTesting(CommandUpdater* command_updater);
+
  private:
   // reload_button::mojom::PageHandlerFactory:
   void CreatePageHandler(
@@ -49,12 +55,17 @@ class ReloadButtonUI : public TopChromeWebUIController,
       mojo::PendingReceiver<reload_button::mojom::PageHandler> receiver)
       override;
 
+  CommandUpdater* GetCommandUpdater() const;
+
   std::unique_ptr<ReloadButtonPageHandler> page_handler_;
   // The color change handler notifies the WebUI when the color provider
   // changes.
   std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
   mojo::Receiver<reload_button::mojom::PageHandlerFactory>
       page_factory_receiver_{this};
+
+  // Initialized only in tests by SetCommandUpdaterForTesting().
+  raw_ptr<CommandUpdater> command_updater_for_testing_ = nullptr;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

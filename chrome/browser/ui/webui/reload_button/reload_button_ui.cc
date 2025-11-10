@@ -85,9 +85,26 @@ void ReloadButtonUI::CreatePageHandler(
     mojo::PendingReceiver<reload_button::mojom::PageHandler> receiver) {
   CHECK(page);
   auto* web_contents = web_ui()->GetWebContents();
-  auto* command_updater = webui::GetBrowserWindowInterface(web_contents)
-                              ->GetFeatures()
-                              .browser_command_controller();
+  auto* command_updater = GetCommandUpdater();
   page_handler_ = std::make_unique<ReloadButtonPageHandler>(
       std::move(receiver), std::move(page), web_contents, command_updater);
+}
+
+ReloadButtonPageHandler* ReloadButtonUI::page_handler_for_testing() {
+  return page_handler_.get();
+}
+
+CommandUpdater* ReloadButtonUI::GetCommandUpdater() const {
+  if (command_updater_for_testing_) {
+    return command_updater_for_testing_;  // IN-TEST
+  }
+
+  return webui::GetBrowserWindowInterface(web_ui()->GetWebContents())
+      ->GetFeatures()
+      .browser_command_controller();
+}
+
+void ReloadButtonUI::SetCommandUpdaterForTesting(
+    CommandUpdater* command_updater) {
+  command_updater_for_testing_ = command_updater;
 }
