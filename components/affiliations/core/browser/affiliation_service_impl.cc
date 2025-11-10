@@ -67,13 +67,15 @@ FacetURI ConvertGURLToFacet(const GURL& url) {
 // Returns FacetURI corresponding to the top level domain of the `facet`. Empty
 // if `facet` is android app, eTLD+1 can't be extracted, or `facet` is already
 // top level domain.
-FacetURI GetFacetForTopLevelDomain(FacetURI facet) {
+FacetURI GetFacetForTopLevelDomain(
+    FacetURI facet,
+    const base::flat_set<std::string>& psl_extension_list) {
   if (!facet.IsValidWebFacetURI()) {
     return FacetURI();
   }
 
-  std::string top_domain =
-      GetExtendedTopLevelDomain(GURL(facet.canonical_spec()), {});
+  std::string top_domain = GetExtendedTopLevelDomain(
+      GURL(facet.canonical_spec()), psl_extension_list);
   if (top_domain.empty()) {
     return FacetURI();
   }
@@ -99,13 +101,18 @@ void LogChangePasswordURLTypeUsed(
 
 }  // namespace
 
+BASE_FEATURE(kCachePSLExtensions, base::FEATURE_ENABLED_BY_DEFAULT);
+
 const char kGetChangePasswordURLMetricName[] =
     "PasswordManager.AffiliationService.GetChangePasswordUsage";
 
 struct AffiliationServiceImpl::FetchInfo {
-  FetchInfo(FacetURI facet, base::OnceClosure result_callback)
+  FetchInfo(FacetURI facet,
+            const base::flat_set<std::string>& psl_extension_list,
+            base::OnceClosure result_callback)
       : requested_facet(std::move(facet)),
-        top_level_domain(GetFacetForTopLevelDomain(requested_facet)),
+        top_level_domain(
+            GetFacetForTopLevelDomain(requested_facet, psl_extension_list)),
         callback(std::move(result_callback)) {}
 
   FetchInfo(FetchInfo&& other) = default;
@@ -201,7 +208,8 @@ void AffiliationServiceImpl::PrefetchChangePasswordURL(
         FROM_HERE, std::move(callback));
     return;
   }
-  FetchInfo fetch_info(facet_uri, std::move(callback));
+
+  FetchInfo fetch_info(facet_uri, psl_extension_list_, std::move(callback));
   auto facets_to_request = fetch_info.FacetsToRequest();
   fetcher_manager_->Fetch(
       facets_to_request, kChangePasswordUrlRequestInfo,
@@ -284,11 +292,19 @@ void AffiliationServiceImpl::GetGroupingInfo(std::vector<FacetURI> facet_uris,
 }
 
 void AffiliationServiceImpl::GetPSLExtensions(
-    base::OnceCallback<void(std::vector<std::string>)> callback) const {
+    base::OnceCallback<void(std::vector<std::string>)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   // If `backend` is destroyed there is nothing to do.
   if (!backend_) {
     return;
+  }
+
+  if (psl_extension_list_.empty() &&
+      base::FeatureList::IsEnabled(kCachePSLExtensions)) {
+    callback =
+        base::BindOnce(&AffiliationServiceImpl::OnPSLExtensionsLoaded,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback));
   }
 
   backend_task_runner_->PostTaskAndReplyWithResult(
@@ -317,6 +333,13 @@ void AffiliationServiceImpl::UpdateAffiliationsAndBranding(
 void AffiliationServiceImpl::RegisterSource(
     std::unique_ptr<AffiliationSource> source) {
   prefetcher_.RegisterSource(std::move(source));
+}
+
+void AffiliationServiceImpl::OnPSLExtensionsLoaded(
+    base::OnceCallback<void(std::vector<std::string>)> callback,
+    std::vector<std::string> psl_extensions) {
+  psl_extension_list_ = base::flat_set<std::string>(psl_extensions);
+  std::move(callback).Run(std::move(psl_extensions));
 }
 
 }  // namespace affiliations
