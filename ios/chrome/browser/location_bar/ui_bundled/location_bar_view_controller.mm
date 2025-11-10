@@ -225,6 +225,7 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
 
 - (void)setIncognito:(BOOL)incognito {
   _incognito = incognito;
+  self.locationBarSteadyView.incognito = incognito;
   self.locationBarSteadyView.colorScheme =
       [LocationBarSteadyViewColorScheme standardScheme];
 }

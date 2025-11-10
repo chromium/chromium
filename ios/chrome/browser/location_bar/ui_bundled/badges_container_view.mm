@@ -66,12 +66,6 @@ const CGFloat kBackgroundHorizontalInset = 5.0;
 
     [self addSubview:_containerStackView];
     AddSameConstraints(self, _containerStackView);
-
-    if (IsProactiveSuggestionsFrameworkEnabled()) {
-      [self setupUnifiedBadgeBackground];
-      _containerStackView.userInteractionEnabled = NO;
-      [self setupTapOverlay];
-    }
   }
 
   return self;
@@ -248,6 +242,32 @@ const CGFloat kBackgroundHorizontalInset = 5.0;
     ]];
   }
   [self updateViewsVisibility];
+}
+
+- (void)setIncognito:(BOOL)incognito {
+  _incognito = incognito;
+  if (IsProactiveSuggestionsFrameworkEnabled()) {
+    if (!incognito) {
+      if (!_badgeBackgroundView) {
+        [self setupUnifiedBadgeBackground];
+      }
+      _containerStackView.userInteractionEnabled = NO;
+      if (!_tapOverlayButton) {
+        [self setupTapOverlay];
+      }
+      _tapOverlayButton.hidden = NO;
+    } else {
+      _containerStackView.userInteractionEnabled = YES;
+      if (_tapOverlayButton) {
+        _tapOverlayButton.hidden = YES;
+      }
+      if (_badgeBackgroundView) {
+        _badgeBackgroundView.hidden = YES;
+      }
+      self.tintColor = nil;
+    }
+    [self updateBackgroundVisibility];
+  }
 }
 
 #pragma mark - private

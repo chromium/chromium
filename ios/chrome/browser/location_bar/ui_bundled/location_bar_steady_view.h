@@ -109,6 +109,8 @@
     LocationBarBadgesContainerView* badgesContainerView;
 // The page action menu handler.
 @property(nonatomic, weak) id<PageActionMenuCommands> pageActionMenuHandler;
+// Whether the browser is in incognito mode.
+@property(nonatomic, assign, getter=isIncognito) BOOL incognito;
 
 @end
 

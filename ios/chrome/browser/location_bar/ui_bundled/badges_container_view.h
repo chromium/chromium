@@ -38,6 +38,8 @@
 @property(nonatomic, assign) LocationBarPlaceholderType placeholderType;
 // The injected view displaying the Reading mode chip.
 @property(nonatomic, strong) UIView* readerModeChipView;
+// Whether the browser is in incognito mode.
+@property(nonatomic, assign, getter=isIncognito) BOOL incognito;
 // Transparent overlay button for unified badge interaction.
 @property(nonatomic, weak) id<PageActionMenuCommands> pageActionMenuHandler;
 

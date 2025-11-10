@@ -665,4 +665,10 @@ const CGFloat kSmallerLocationLabelFontMultiplier = 0.75;
   [self layoutIfNeeded];
 }
 
+// Propagates the incognito state to the badges container view.
+- (void)setIncognito:(BOOL)incognito {
+  _incognito = incognito;
+  self.badgesContainerView.incognito = incognito;
+}
+
 @end
