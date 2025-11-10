@@ -98,6 +98,18 @@ class ShellUtil {
     SHELL_SHORTCUT_UPDATE_EXISTING,
   };
 
+  enum class ShowSystemUIResult {
+    // The system UI was purposely not shown because it was unneeded.
+    kNotShown = 0,
+    // The system UI was shown successfully.
+    kSuccess,
+    // A fallback system UI was shown.
+    kFallback,
+    // No system UI was shown due to an error.
+    kError,
+    kMaxValue = kError
+  };
+
   // Properties for shortcuts. Properties set will be applied to
   // the shortcut on creation/update. On update, unset properties are ignored;
   // on create (and replaced) unset properties might have a default value (see
@@ -521,8 +533,9 @@ class ShellUtil {
   // If opening the dialog fails, falls back to opening:
   //   * Windows 10: The main "Choose default apps by file type" page
   //   * Windows 11: The "Default apps" settings page for `chrome_exe`
-  // Returns true if any dialog was launched, false otherwise.
-  static bool ShowSetDefaultForFileExtensionSystemUI(
+  // Returns a `ShowSystemUIResult` indicating whether a dialog was launched,
+  // and which if so.
+  static ShowSystemUIResult ShowSetDefaultForFileExtensionSystemUI(
       const base::FilePath& chrome_exe,
       base::wcstring_view file_extension,
       HWND parent_hwnd);

@@ -2022,7 +2022,7 @@ bool ShellUtil::ShowMakeChromeDefaultSystemUI(
   return succeeded;
 }
 
-bool ShellUtil::ShowSetDefaultForFileExtensionSystemUI(
+ShellUtil::ShowSystemUIResult ShellUtil::ShowSetDefaultForFileExtensionSystemUI(
     const base::FilePath& chrome_exe,
     base::wcstring_view file_extension,
     HWND parent_hwnd) {
@@ -2037,26 +2037,28 @@ bool ShellUtil::ShowSetDefaultForFileExtensionSystemUI(
   // If Chrome is not eligible to become the default handler, do nothing.
   if (!install_static::SupportsSetAsDefaultBrowser() ||
       !RegisterChromeBrowser(chrome_exe, std::wstring(), true)) {
-    return false;
+    return ShellUtil::ShowSystemUIResult::kNotShown;
   }
   // If Chrome is already the default handler, do nothing.
   if (GetChromeDefaultFileHandlerState(file_extension) == IS_DEFAULT) {
-    return true;
+    return ShellUtil::ShowSystemUIResult::kNotShown;
   }
   // Open the "Select a default app for `file_extension` files" dialog.
   if (base::win::LaunchDefaultAppForFileExtensionSettings(file_extension,
                                                           parent_hwnd)) {
-    return true;
+    return ShellUtil::ShowSystemUIResult::kSuccess;
   }
   // On Windows 11, fall back to the "Default apps" settings page for Chrome.
-  if (base::win::GetVersion() >= base::win::Version::WIN11) {
-    return base::win::LaunchSettingsDefaultApps(
-        GetApplicationName(chrome_exe), InstallUtil::IsPerUserInstall());
-  }
   // On Windows 10, fall back to the "Choose default apps by file type" page.
-  return base::win::LaunchSettingsUri(
-      L"page=SettingsPageAppsDefaults"
-      L"&target=SettingsPageAppsDefaultsFileExtensionView");
+  const bool fallback_succeeded =
+      base::win::GetVersion() >= base::win::Version::WIN11
+          ? base::win::LaunchSettingsDefaultApps(
+                GetApplicationName(chrome_exe), InstallUtil::IsPerUserInstall())
+          : base::win::LaunchSettingsUri(
+                L"page=SettingsPageAppsDefaults"
+                L"&target=SettingsPageAppsDefaultsFileExtensionView");
+  return fallback_succeeded ? ShellUtil::ShowSystemUIResult::kFallback
+                            : ShellUtil::ShowSystemUIResult::kError;
 }
 
 bool ShellUtil::ShowMakeChromeDefaultProtocolClientSystemUI(

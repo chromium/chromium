@@ -150,6 +150,27 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Foreground XFA (XFAF)"/>
 </enum>
 
+<!-- LINT.IfChange(PdfInfoBarSettingsResult) -->
+
+<enum name="PdfInfoBarSettingsResult">
+  <int value="0" label="NotShown">The settings UI was not shown.</int>
+  <int value="1" label="Success">
+    The settings UI was shown and Chrome was set as default PDF viewer.
+  </int>
+  <int value="2" label="SuccessNoChange">
+    The settings UI was shown, but Chrome wasn't set as default.
+  </int>
+  <int value="3" label="Fallback">
+    The fallback settings UI was shown and Chrome was set as default.
+  </int>
+  <int value="4" label="FallbackNoChange">
+    The fallback settings UI was shown, but Chrome wasn't set as default.
+  </int>
+  <int value="5" label="Error">The settings UI failed to open.</int>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/pdf/infobar/pdf_infobar_delegate.cc:PdfInfoBarSettingsResult) -->
+
 <!-- LINT.IfChange(PDFInfoBarUserInteraction) -->
 
 <enum name="PDFInfoBarUserInteraction">

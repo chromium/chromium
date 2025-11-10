@@ -99,6 +99,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PDF.InfoBar.SettingsResult" enum="PdfInfoBarSettingsResult"
+    expires_after="2026-04-25">
+  <owner>jessemckenna@google.com</owner>
+  <owner>davidbienvenu@chromium.org</owner>
+  <summary>
+    The result of showing the Windows settings UI to set Chrome as the default
+    PDF viewer. Recorded 30 seconds after the call to open the settings dialog
+    returns. Only recorded on Windows.
+  </summary>
+</histogram>
+
 <histogram name="PDF.InfoBar.Shown" enum="BooleanShown"
     expires_after="2026-04-25">
   <owner>jessemckenna@google.com</owner>
