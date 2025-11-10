@@ -102,7 +102,7 @@ TEST_F(AuxiliarySearchDonationServiceTest, FetchesLocalVisitAfterDelay) {
   EXPECT_CALL(*mock_ranking_service(), FetchURLVisitAggregates(_, _)).Times(1);
 
   service.OnPageContentAnnotated(CreateLocalVisit(), CreateAnnotationsResult());
-  task_environment().FastForwardBy(service.GetDonationDelayForTesting());
+  task_environment().FastForwardBy(service.GetDonationDelay());
 }
 
 TEST_F(AuxiliarySearchDonationServiceTest,
@@ -114,8 +114,8 @@ TEST_F(AuxiliarySearchDonationServiceTest,
   EXPECT_CALL(*mock_ranking_service(), FetchURLVisitAggregates(_, _)).Times(1);
 
   service.OnPageContentAnnotated(CreateLocalVisit(), CreateAnnotationsResult());
-  task_environment().FastForwardBy(service.GetDonationDelayForTesting() +
-                                   service.GetDonationDelayForTesting());
+  task_environment().FastForwardBy(service.GetDonationDelay() +
+                                   service.GetDonationDelay());
 }
 
 TEST_F(AuxiliarySearchDonationServiceTest,
@@ -126,10 +126,10 @@ TEST_F(AuxiliarySearchDonationServiceTest,
   EXPECT_CALL(*mock_ranking_service(), FetchURLVisitAggregates(_, _)).Times(2);
 
   service.OnPageContentAnnotated(CreateLocalVisit(), CreateAnnotationsResult());
-  task_environment().FastForwardBy(service.GetDonationDelayForTesting());
+  task_environment().FastForwardBy(service.GetDonationDelay());
 
   service.OnPageContentAnnotated(CreateLocalVisit(), CreateAnnotationsResult());
-  task_environment().FastForwardBy(service.GetDonationDelayForTesting());
+  task_environment().FastForwardBy(service.GetDonationDelay());
 }
 
 TEST_F(AuxiliarySearchDonationServiceTest, FirstFetchUsesDefaultBeginTime) {
@@ -142,7 +142,7 @@ TEST_F(AuxiliarySearchDonationServiceTest, FirstFetchUsesDefaultBeginTime) {
       .WillOnce(WithArg<0>(SaveBeginTime(&begin_time)));
 
   service.OnPageContentAnnotated(CreateLocalVisit(), CreateAnnotationsResult());
-  task_environment().FastForwardBy(service.GetDonationDelayForTesting());
+  task_environment().FastForwardBy(service.GetDonationDelay());
 
   // The begin time for the first fetch is some implementation specific time
   // before donation is triggered.
@@ -175,9 +175,9 @@ TEST_F(AuxiliarySearchDonationServiceTest, FetchUsesLastTime) {
   }
 
   service.OnPageContentAnnotated(CreateLocalVisit(), CreateAnnotationsResult());
-  task_environment().FastForwardBy(service.GetDonationDelayForTesting());
+  task_environment().FastForwardBy(service.GetDonationDelay());
   service.OnPageContentAnnotated(CreateLocalVisit(), CreateAnnotationsResult());
-  task_environment().FastForwardBy(service.GetDonationDelayForTesting());
+  task_environment().FastForwardBy(service.GetDonationDelay());
 
   EXPECT_EQ(begin_time, fake_visit_time);
 }
@@ -206,10 +206,10 @@ TEST_F(AuxiliarySearchDonationServiceTest, FetchDoesNotFetchTooFarBack) {
   }
 
   service.OnPageContentAnnotated(CreateLocalVisit(), CreateAnnotationsResult());
-  task_environment().FastForwardBy(service.GetDonationDelayForTesting());
+  task_environment().FastForwardBy(service.GetDonationDelay());
   task_environment().FastForwardBy(service.GetHistoryAgeThresholdForTesting());
   service.OnPageContentAnnotated(CreateLocalVisit(), CreateAnnotationsResult());
-  task_environment().FastForwardBy(service.GetDonationDelayForTesting());
+  task_environment().FastForwardBy(service.GetDonationDelay());
 
   EXPECT_EQ(begin_time,
             base::Time::Now() - service.GetHistoryAgeThresholdForTesting());
@@ -245,11 +245,11 @@ TEST_F(AuxiliarySearchDonationServiceTest, FetchDoesNotUpdateBeginTimeOnError) {
   }
 
   service.OnPageContentAnnotated(CreateLocalVisit(), CreateAnnotationsResult());
-  task_environment().FastForwardBy(service.GetDonationDelayForTesting());
+  task_environment().FastForwardBy(service.GetDonationDelay());
   service.OnPageContentAnnotated(CreateLocalVisit(), CreateAnnotationsResult());
-  task_environment().FastForwardBy(service.GetDonationDelayForTesting());
+  task_environment().FastForwardBy(service.GetDonationDelay());
   service.OnPageContentAnnotated(CreateLocalVisit(), CreateAnnotationsResult());
-  task_environment().FastForwardBy(service.GetDonationDelayForTesting());
+  task_environment().FastForwardBy(service.GetDonationDelay());
 
   EXPECT_EQ(begin_time, fake_visit_time);
 }

@@ -9,6 +9,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/time/time.h"
 #include "extensions/buildflags/buildflags.h"
 
 namespace chrome::android {
@@ -313,6 +314,12 @@ inline constexpr base::FeatureParam<int>
         &kAndroidAppIntegrationMultiDataSource,
         "cct_visit_duration_limit_sec",
         3);
+
+inline constexpr base::FeatureParam<int>
+    kAuxiliarySearchHistoryDonationDelayInSeconds{
+        &kAuxiliarySearchHistoryDonation,
+        /*name=*/"auxiliary_search_history_donation_delay",
+        /*default_value=*/base::Minutes(5).InSeconds()};
 
 inline constexpr base::FeatureParam<int> kAuxiliarySearchMaxBookmarksCountParam(
     &kAuxiliarySearchDonation,

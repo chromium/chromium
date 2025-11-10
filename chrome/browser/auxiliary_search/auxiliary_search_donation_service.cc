@@ -7,16 +7,13 @@
 #include "base/android/application_status_listener.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/auxiliary_search/fetch_and_rank_helper.h"
+#include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "components/page_content_annotations/core/page_content_annotation_type.h"
 #include "components/page_content_annotations/core/page_content_annotations_common.h"
 #include "components/page_content_annotations/core/page_content_annotations_service.h"
 #include "url/gurl.h"
 
 namespace {
-
-// The delay between a new content annotation and when a history donation is
-// triggered, in order to batch together multiple annotations.
-constexpr base::TimeDelta kDonationDelay = base::Minutes(5);
 
 // The maximum time before "now" to fetch history from.
 constexpr base::TimeDelta kHistoryAgeThreshold = base::Hours(24);
@@ -58,14 +55,14 @@ void AuxiliarySearchDonationService::OnPageContentAnnotated(
 
   if (!donation_timer_.IsRunning()) {
     donation_timer_.Start(
-        FROM_HERE, kDonationDelay, this,
+        FROM_HERE, GetDonationDelay(), this,
         &AuxiliarySearchDonationService::FetchHistoryAndDonate);
   }
 }
 
-base::TimeDelta AuxiliarySearchDonationService::GetDonationDelayForTesting()
-    const {
-  return kDonationDelay;
+base::TimeDelta AuxiliarySearchDonationService::GetDonationDelay() const {
+  return base::Seconds(
+      chrome::android::kAuxiliarySearchHistoryDonationDelayInSeconds.Get());
 }
 
 base::TimeDelta

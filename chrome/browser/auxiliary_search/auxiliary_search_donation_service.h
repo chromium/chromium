@@ -46,7 +46,7 @@ class AuxiliarySearchDonationService
 
   // Returns the delay between a new content annotation and when a history
   // donation is triggered.
-  base::TimeDelta GetDonationDelayForTesting() const;
+  base::TimeDelta GetDonationDelay() const;
 
   // Returns the maximum duration before "now" to fetch history from.
   base::TimeDelta GetHistoryAgeThresholdForTesting() const;
