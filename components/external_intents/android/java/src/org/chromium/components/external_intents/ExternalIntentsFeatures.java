@@ -20,18 +20,14 @@ import org.chromium.build.annotations.NullMarked;
 @NullMarked
 public class ExternalIntentsFeatures {
     public static final String EXTERNAL_NAVIGATION_DEBUG_LOGS_NAME = "ExternalNavigationDebugLogs";
-    public static final String BLOCK_INTENTS_TO_SELF_NAME = "BlockIntentsToSelf";
     public static final String NAVIGATION_CAPTURE_REFACTOR_ANDROID_NAME =
             "NavigationCaptureRefactorAndroid";
 
     public static final ExternalIntentsFeature EXTERNAL_NAVIGATION_DEBUG_LOGS =
             new ExternalIntentsFeature(0, EXTERNAL_NAVIGATION_DEBUG_LOGS_NAME);
 
-    public static final ExternalIntentsFeature BLOCK_INTENTS_TO_SELF =
-            new ExternalIntentsFeature(1, BLOCK_INTENTS_TO_SELF_NAME);
-
     public static final ExternalIntentsFeature NAVIGATION_CAPTURE_REFACTOR_ANDROID =
-            new ExternalIntentsFeature(2, NAVIGATION_CAPTURE_REFACTOR_ANDROID_NAME);
+            new ExternalIntentsFeature(1, NAVIGATION_CAPTURE_REFACTOR_ANDROID_NAME);
 
     public static class ExternalIntentsFeature extends Features {
         private final int mOrdinal;

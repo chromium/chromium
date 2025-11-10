@@ -1313,14 +1313,10 @@ public class ExternalNavigationHandler {
      * like websites launching CCTs).
      */
     private boolean isNavigationToSelf(
-            ExternalNavigationParams params,
             QueryIntentActivitiesSupplier resolvingInfos,
             ResolveActivitySupplier resolveActivity,
             boolean isExternalProtocol) {
         if (sAllowIntentsToSelfForTesting) return false;
-        if (!ExternalIntentsFeatures.BLOCK_INTENTS_TO_SELF.isEnabled() && params.isMainFrame()) {
-            return false;
-        }
         if (!isExternalProtocol) return false;
         if (!resolveInfoContainsSelf(resolvingInfos.get())) return false;
         ResolveInfo intentResolveInfo = resolveActivity.get();
@@ -1893,7 +1889,7 @@ public class ExternalNavigationHandler {
         }
 
         ResolveActivitySupplier resolveActivity = new ResolveActivitySupplier(targetIntent);
-        if (isNavigationToSelf(params, resolvingInfos, resolveActivity, isExternalProtocol)) {
+        if (isNavigationToSelf(resolvingInfos, resolveActivity, isExternalProtocol)) {
             return OverrideUrlLoadingResult.forNavigateTab(intentTargetUrl, params);
         }
 

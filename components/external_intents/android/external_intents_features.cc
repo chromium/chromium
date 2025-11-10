@@ -25,15 +25,12 @@ namespace {
 
 // Array of features exposed through the Java ExternalIntentsFeatures API.
 const base::Feature* const kFeaturesExposedToJava[] = {
-    &kExternalNavigationDebugLogs, &kBlockIntentsToSelf,
-    &kNavigationCaptureRefactorAndroid};
+    &kExternalNavigationDebugLogs, &kNavigationCaptureRefactorAndroid};
 }  // namespace
 
 // Alphabetical:
 
 BASE_FEATURE(kExternalNavigationDebugLogs, base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kBlockIntentsToSelf, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kNavigationCaptureRefactorAndroid,
              base::FEATURE_DISABLED_BY_DEFAULT);
