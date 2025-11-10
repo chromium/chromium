@@ -15,7 +15,11 @@ ActionResultWithLatencyInfo::ActionResultWithLatencyInfo(
     base::TimeTicks start_time,
     base::TimeTicks end_time,
     mojom::ActionResultPtr result)
-    : start_time(start_time), end_time(end_time), result(std::move(result)) {}
+    : start_time(start_time), end_time(end_time), result(std::move(result)) {
+  DCHECK(!start_time.is_null());
+  DCHECK(!end_time.is_null());
+  DCHECK_LE(start_time, end_time);
+}
 ActionResultWithLatencyInfo::ActionResultWithLatencyInfo(
     const ActionResultWithLatencyInfo& other)
     : start_time(other.start_time),
