@@ -40,7 +40,10 @@ class BrowserFrameViewLinux : public OpaqueBrowserFrameView,
   int GetTranslucentTopAreaHeight() const override;
   void LayoutWebAppWindowTitle(const gfx::Rect& available_space,
                                views::Label& window_title_label) const override;
+  BrowserLayoutParams GetBrowserLayoutParams() const override;
   bool CaptionButtonsOnLeadingEdge() const override;
+  bool CaptionButtonsOnTrailingEdge() const override;
+  BoundsAndMargins GetCaptionButtonBounds() const override;
 
   // Gets the shadow metrics (radius, offset, and number of shadows).  This will
   // always return shadow values, even if shadows are not actually drawn.

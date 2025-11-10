@@ -165,6 +165,10 @@ bool BrowserFrameView::CaptionButtonsOnLeadingEdge() const {
   return false;
 }
 
+bool BrowserFrameView::CaptionButtonsOnTrailingEdge() const {
+  return !CaptionButtonsOnLeadingEdge();
+}
+
 void BrowserFrameView::LayoutWebAppWindowTitle(
     const gfx::Rect& available_space,
     views::Label& window_title_label) const {

@@ -63,6 +63,9 @@ class OpaqueBrowserFrameViewLayout : public views::LayoutManager {
       const std::vector<views::FrameButton>& leading_buttons,
       const std::vector<views::FrameButton>& trailing_buttons);
 
+  // Retrieves the given frame button, if present.
+  const views::Button* GetFrameButton(views::FrameButton which) const;
+
   gfx::Rect GetBoundsForTabStripRegion(const gfx::Size& tabstrip_minimum_size,
                                        int total_width) const;
   gfx::Rect GetBoundsForWebAppFrameToolbar(

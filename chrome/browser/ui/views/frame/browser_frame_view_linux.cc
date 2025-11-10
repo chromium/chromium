@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/frame/browser_frame_view_linux.h"
 
+#include "base/notreached.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view_paint_utils_linux.h"
 #include "chrome/browser/ui/views/frame/browser_native_widget_aura_linux.h"
@@ -155,14 +156,66 @@ void BrowserFrameViewLinux::LayoutWebAppWindowTitle(
   window_title_label.SetBoundsRect(bounds);
 }
 
-bool BrowserFrameViewLinux::CaptionButtonsOnLeadingEdge() const {
-  // TODO(https://crbug.com/453919397): Switch to doing the entire layout
-  // computation understanding that these buttons could theoretically be split
-  // between both sides of the window.
-  if (auto* const provider = views::WindowButtonOrderProvider::GetInstance()) {
-    return !provider->leading_buttons().empty();
+BrowserLayoutParams BrowserFrameViewLinux::GetBrowserLayoutParams() const {
+  BrowserLayoutParams params;
+  params.visual_client_area = GetBoundsForClientView();
+
+  // Some opaque frames add small margins next to the caption buttons.
+  const int caption_margin =
+      layout_->GetWindowCaptionSpacing(views::FrameButton::kMinimize,
+                                       /*leading_spacing=*/false,
+                                       /*is_leading_button=*/false);
+
+  // On Linux, buttons may be split between leading and trailing.
+  // Account for both in the exclusion areas.
+
+  auto* const provider = views::WindowButtonOrderProvider::GetInstance();
+
+  gfx::Rect leading_bounds;
+  for (auto button : provider->leading_buttons()) {
+    if (auto* const button_view = layout_->GetFrameButton(button);
+        button_view && button_view->GetVisible()) {
+      leading_bounds.Union(button_view->bounds());
+    }
   }
-  return false;
+  if (!leading_bounds.IsEmpty()) {
+    params.leading_exclusion.content =
+        gfx::SizeF(leading_bounds.right() - params.visual_client_area.x(),
+                   leading_bounds.bottom() - params.visual_client_area.y());
+    params.leading_exclusion.horizontal_padding = caption_margin;
+  }
+
+  gfx::Rect trailing_bounds;
+  for (auto button : provider->trailing_buttons()) {
+    if (auto* const button_view = layout_->GetFrameButton(button);
+        button_view && button_view->GetVisible()) {
+      trailing_bounds.Union(button_view->bounds());
+    }
+  }
+  if (!trailing_bounds.IsEmpty()) {
+    params.trailing_exclusion.content =
+        gfx::SizeF(params.visual_client_area.right() - trailing_bounds.x(),
+                   trailing_bounds.bottom() - params.visual_client_area.y());
+    params.trailing_exclusion.horizontal_padding = caption_margin;
+  }
+
+  MaybeAddAppIconToLayoutParams(params);
+  return params;
+}
+
+bool BrowserFrameViewLinux::CaptionButtonsOnLeadingEdge() const {
+  auto* const provider = views::WindowButtonOrderProvider::GetInstance();
+  return !provider->leading_buttons().empty();
+}
+
+bool BrowserFrameViewLinux::CaptionButtonsOnTrailingEdge() const {
+  auto* const provider = views::WindowButtonOrderProvider::GetInstance();
+  return !provider->trailing_buttons().empty();
+}
+
+BrowserFrameViewLinux::BoundsAndMargins
+BrowserFrameViewLinux::GetCaptionButtonBounds() const {
+  NOTREACHED() << "Linux uses a different computation for caption buttons.";
 }
 
 BEGIN_METADATA(BrowserFrameViewLinux)

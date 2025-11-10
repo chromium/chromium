@@ -22,6 +22,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/window/caption_button_layout_constants.h"
+#include "ui/views/window/frame_buttons.h"
 #include "ui/views/window/frame_caption_button.h"
 
 namespace {
@@ -71,6 +72,20 @@ void OpaqueBrowserFrameViewLayout::SetButtonOrdering(
     const std::vector<views::FrameButton>& trailing_buttons) {
   leading_buttons_ = leading_buttons;
   trailing_buttons_ = trailing_buttons;
+}
+
+const views::Button* OpaqueBrowserFrameViewLayout::GetFrameButton(
+    views::FrameButton which) const {
+  switch (which) {
+    case views::FrameButton::kClose:
+      return close_button_;
+    case views::FrameButton::kMinimize:
+      return minimize_button_;
+    case views::FrameButton::kMaximize:
+      return delegate_->IsMaximized() || delegate_->IsMinimized()
+                 ? restore_button_
+                 : maximize_button_;
+  }
 }
 
 gfx::Rect OpaqueBrowserFrameViewLayout::GetBoundsForTabStripRegion(

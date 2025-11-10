@@ -72,9 +72,20 @@ class BrowserFrameView : public views::FrameView {
   // Called when the browser window's fullscreen state changes.
   virtual void OnFullscreenStateChanged();
 
-  // Returns whether the caption buttons are drawn at the leading edge (e.g. on
-  // the left for LTR languages, such as on macOS).
+  // Returns whether there are caption buttons at the leading edge of the
+  // browser frame (i.e. on the left for LtR languages, such as on macOS).
+  //
+  // Since it is possible to have caption buttons on both the leading and
+  // trailing edge on some platforms (e.g. Linux), if you want to know if there
+  // are buttons on the trailing edge, call `CaptionButtonsOnTrailingEdge()`
+  // instead.
   virtual bool CaptionButtonsOnLeadingEdge() const;
+
+  // Returns whether there are caption buttons drawn at the trailing edge of the
+  // window (i.e. on the right for LtR languages). Defaults to being the
+  // opposite of `CaptionButtonsOnLeadingEdge()` but on some platforms there may
+  // be buttons at both ends.
+  virtual bool CaptionButtonsOnTrailingEdge() const;
 
   // Default implementation for getting browser layout parameters.
   virtual BrowserLayoutParams GetBrowserLayoutParams() const;
