@@ -16,4 +16,5 @@ modded_src/ directory to enable rapid develop cycle. Effort should be
 made to upstream changes to Readability. When rolling Readability, also
 update the modded_src/version and update the list of changes below.
 
-(No active mods)
+- Preserve <img> in <figure> during distillation (crbug.com/457771156).
+  - Does not affect tests.

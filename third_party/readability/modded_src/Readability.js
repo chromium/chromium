@@ -2506,6 +2506,11 @@ Readability.prototype = {
         return false;
       }
 
+      // Handle <img> buried inside nested <div> layers in <figure>.
+      if (tag === "div" && this._hasAncestorTag(node, "figure") && this._isSingleImage(node)) {
+        return false;
+      }
+
       var weight = this._getClassWeight(node);
 
       this.log("Cleaning Conditionally", node);
