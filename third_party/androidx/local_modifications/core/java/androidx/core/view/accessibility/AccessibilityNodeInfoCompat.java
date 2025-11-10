@@ -40,6 +40,8 @@ import android.util.SparseArray;
 import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
+import android.view.accessibility.AccessibilityNodeInfo.Selection;
+import android.view.accessibility.AccessibilityNodeInfo.SelectionPosition;
 import android.view.accessibility.AccessibilityNodeInfo.TouchDelegateInfo;
 
 import androidx.annotation.IntDef;
@@ -76,35 +78,35 @@ import java.util.Map;
  */
 public class AccessibilityNodeInfoCompat {
 
+    private static boolean isAtLeastB_1() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA
+                && Build.VERSION.SDK_INT_FULL >= Build.VERSION_CODES_FULL.BAKLAVA_1;
+    }
+
     /**
-     * A class defining an action that can be performed on an {@link AccessibilityNodeInfo}.
-     * Each action has a unique id and a label.
-     * <p>
-     * There are three categories of actions:
+     * A class defining an action that can be performed on an {@link AccessibilityNodeInfo}. Each
+     * action has a unique id and a label.
+     *
+     * <p>There are three categories of actions:
+     *
      * <ul>
-     * <li><strong>Standard actions</strong> - These are actions that are reported and
-     * handled by the standard UI widgets in the platform. Each standard action is associated with
-     * a resource id, e.g. {@link android.R.id#accessibilityActionScrollUp}. Note that actions were
-     * formerly associated with static constants defined in this class, e.g.
-     * {@link #ACTION_FOCUS}. These actions will have {@code null} labels.
-     * </li>
-     * <li><strong>Custom actions action</strong> - These are actions that are reported
-     * and handled by custom widgets. i.e. ones that are not part of the UI toolkit. For
-     * example, an application may define a custom action for clearing the user history.
-     * </li>
-     * <li><strong>Overriden standard actions</strong> - These are actions that override
-     * standard actions to customize them. For example, an app may add a label to the
-     * standard {@link #ACTION_CLICK} action to indicate to the user that this action clears
-     * browsing history.
+     *   <li><strong>Standard actions</strong> - These are actions that are reported and handled by
+     *       the standard UI widgets in the platform. Each standard action is associated with a
+     *       resource id, e.g. {@link android.R.id#accessibilityActionScrollUp}. Note that actions
+     *       were formerly associated with static constants defined in this class, e.g. {@link
+     *       #ACTION_FOCUS}. These actions will have {@code null} labels.
+     *   <li><strong>Custom actions action</strong> - These are actions that are reported and
+     *       handled by custom widgets. i.e. ones that are not part of the UI toolkit. For example,
+     *       an application may define a custom action for clearing the user history.
+     *   <li><strong>Overriden standard actions</strong> - These are actions that override standard
+     *       actions to customize them. For example, an app may add a label to the standard {@link
+     *       #ACTION_CLICK} action to indicate to the user that this action clears browsing history.
      * </ul>
-     * </p>
-     * <p class="note">
-     * <strong>Note:</strong> Views which support these actions should invoke
-     * {@link ViewCompat#setImportantForAccessibility(View, int)} with
-     * {@link ViewCompat#IMPORTANT_FOR_ACCESSIBILITY_YES} to ensure an
-     * {@link android.accessibilityservice.AccessibilityService} can discover the set of supported
-     * actions.
-     * </p>
+     *
+     * <p class="note"><strong>Note:</strong> Views which support these actions should invoke {@link
+     * ViewCompat#setImportantForAccessibility(View, int)} with {@link
+     * ViewCompat#IMPORTANT_FOR_ACCESSIBILITY_YES} to ensure an {@link
+     * android.accessibilityservice.AccessibilityService} can discover the set of supported actions.
      */
     public static class AccessibilityActionCompat {
 
@@ -715,31 +717,52 @@ public class AccessibilityNodeInfoCompat {
         /**
          * Action that brings fully on screen the next node in the specified direction.
          *
-         * <p>
-         *     This should include wrapping around to the next/previous row, column, etc. in a
-         *     collection if one is available. If there is no node in that direction, the action
-         *     should fail and return false.
-         * </p>
-         * <p>
-         *     This action should be used instead of
-         *     {@link AccessibilityActionCompat#ACTION_SCROLL_TO_POSITION} when a widget does not
-         *     have clear row and column semantics or if a directional search is needed to find a
-         *     node in a complex ViewGroup where individual nodes may span multiple rows or
-         *     columns. The implementing widget must send a
-         *     {@link AccessibilityEventCompat#TYPE_VIEW_TARGETED_BY_SCROLL} accessibility event
-         *     with the scroll target as the source.  An accessibility service can listen for this
-         *     event, inspect its source, and use the result when determining where to place
-         *     accessibility focus.
-         * <p>
-         *     <strong>Arguments:</strong> {@link #ACTION_ARGUMENT_DIRECTION_INT}. This is a
-         *     required argument.<br>
-         * </p>
+         * <p>This should include wrapping around to the next/previous row, column, etc. in a
+         * collection if one is available. If there is no node in that direction, the action should
+         * fail and return false.
+         *
+         * <p>This action should be used instead of {@link
+         * AccessibilityActionCompat#ACTION_SCROLL_TO_POSITION} when a widget does not have clear
+         * row and column semantics or if a directional search is needed to find a node in a complex
+         * ViewGroup where individual nodes may span multiple rows or columns. The implementing
+         * widget must send a {@link AccessibilityEventCompat#TYPE_VIEW_TARGETED_BY_SCROLL}
+         * accessibility event with the scroll target as the source. An accessibility service can
+         * listen for this event, inspect its source, and use the result when determining where to
+         * place accessibility focus.
+         *
+         * <p><strong>Arguments:</strong> {@link #ACTION_ARGUMENT_DIRECTION_INT}. This is a required
+         * argument.<br>
          */
         @OptIn(markerClass = androidx.core.os.BuildCompat.PrereleaseSdkCheck.class)
         public static final @NonNull AccessibilityActionCompat ACTION_SCROLL_IN_DIRECTION =
                 new AccessibilityActionCompat(
                         Build.VERSION.SDK_INT >= 34 ? Api34Impl.getActionScrollInDirection() : null,
-                        android.R.id.accessibilityActionScrollInDirection, null, null, null);
+                        android.R.id.accessibilityActionScrollInDirection,
+                        null,
+                        null,
+                        null);
+
+        /**
+         * Action to set the extended selection. Performing this action with no arguments clears the
+         * selection.
+         *
+         * <p><strong>Example:</strong> <code><pre><p>
+         *  Bundle arguments = new Bundle();
+         *  SelectionCompat selection = new SelectionCompat(null, null);
+         *  arguments.setParcelable(
+         *          AccessibilityNodeInfoCompat.ACTION_ARGUMENT_SELECTION_PARCELABLE,
+         *          selection.mSelection);
+         *  info.performAction(
+         *          AccessibilityActionCompat.ACTION_SET_EXTENDED_SELECTION.getId(), arguments);
+         * </pre></code>
+         */
+        public static final @NonNull AccessibilityActionCompat ACTION_SET_EXTENDED_SELECTION =
+                new AccessibilityActionCompat(
+                        isAtLeastB_1() ? Api36MinorImpl.getActionSetExtendedSelection() : null,
+                        android.R.id.accessibilityActionSetExtendedSelection,
+                        null,
+                        null,
+                        null);
 
         final Object mAction;
         private final int mId;
@@ -1529,11 +1552,6 @@ public class AccessibilityNodeInfoCompat {
                 }
             }
         }
-
-        private static boolean isAtLeastB_1() {
-            return Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA
-                    && Build.VERSION.SDK_INT_FULL >= Build.VERSION_CODES_FULL.BAKLAVA_1;
-        }
     }
 
     /**
@@ -1710,8 +1728,251 @@ public class AccessibilityNodeInfoCompat {
         }
     }
 
-    private static final String ROLE_DESCRIPTION_KEY =
-            "AccessibilityNodeInfo.roleDescription";
+    /**
+     * Compat class for AccessibilityNodeInfo.SelectionPosition, which is a class that defines
+     * either the start or end of a selection that can span across multiple AccessibilityNodeInfo
+     * objects.
+     *
+     * @see AccessibilityNodeInfo.SelectionPosition
+     *     <p>Compatibility:
+     *     <ul>
+     *       <li>API &lt: 36.1: Class methods perform no-op behavior.
+     *     </ul>
+     */
+    public static final class SelectionPositionCompat {
+        final SelectionPosition mPosition;
+
+        /**
+         * Instantiates a new SelectionPositionCompat.
+         *
+         * @param node The {@link AccessibilityNodeInfoCompat} for the node of this selection
+         *     position.
+         * @param offset The offset for a {@link SelectionPositionCompat} within {@code view}'s text
+         *     content, which should be a value between 0 and the length of {@code view}'s text.
+         */
+        public SelectionPositionCompat(@NonNull AccessibilityNodeInfoCompat node, int offset) {
+            if (isAtLeastB_1()) {
+                mPosition = new SelectionPosition(node.unwrap(), offset);
+            } else {
+                mPosition = null;
+            }
+        }
+
+        /**
+         * Instantiates a new SelectionPositionCompat.
+         *
+         * @param view The {@link View} containing the text associated with this selection position.
+         * @param offset The offset for a selection position within {@code view}'s text content,
+         *     which should be a value between 0 and the length of {@code view}'s text.
+         */
+        public SelectionPositionCompat(@NonNull View view, int offset) {
+            if (isAtLeastB_1()) {
+                mPosition = new SelectionPosition(view, offset);
+            } else {
+                mPosition = null;
+            }
+        }
+
+        /**
+         * Instantiates a new SelectionPositionCompat.
+         *
+         * @param view The view whose virtual descendant is associated with the selection position.
+         * @param virtualDescendantId The ID of the virtual descendant within {@code view}'s virtual
+         *     subtree that contains the selection position.
+         * @param offset The offset for a selection position within the virtual descendant's text
+         *     content, which should be a value between 0 and the length of the descendant's text.
+         */
+        public SelectionPositionCompat(@NonNull View view, int virtualDescendantId, int offset) {
+            if (isAtLeastB_1()) {
+                mPosition = new SelectionPosition(view, virtualDescendantId, offset);
+            } else {
+                mPosition = null;
+            }
+        }
+
+        /**
+         * Instantiates a new SelectionPositionCompat.
+         *
+         * @param position The underlying SelectionPosition to wrap.
+         */
+        public SelectionPositionCompat(@NonNull SelectionPosition position) {
+            if (isAtLeastB_1()) {
+                mPosition = position;
+            } else {
+                mPosition = null;
+            }
+        }
+
+        /**
+         * @return The node associated with {@code this} {@link SelectionPositionCompat}
+         *     <p>Compatibility:
+         *     <ul>
+         *       <li>API &lt: 36.1: Always returns {@code null}
+         *     </ul>
+         */
+        public @Nullable AccessibilityNodeInfoCompat getNode() {
+            if (isAtLeastB_1()) {
+                return AccessibilityNodeInfoCompat.wrap(mPosition.getNode());
+            } else {
+                return null;
+            }
+        }
+
+        /**
+         * @return A value from 0 to the length of {@link #getNode()}'s content representing the
+         *     offset of the {@link SelectionPositionCompat}
+         *     <p>Compatibility:
+         *     <ul>
+         *       <li>API &lt: 36.1: Always returns {@code -1}
+         *     </ul>
+         */
+        public int getOffset() {
+            if (isAtLeastB_1()) {
+                return mPosition.getOffset();
+            } else {
+                return -1;
+            }
+        }
+
+        /**
+         * Compatibility:
+         *
+         * <ul>
+         *   <li>API &lt: 36.1: Always returns {@code 0}
+         * </ul>
+         */
+        @Override
+        public int hashCode() {
+            if (isAtLeastB_1()) {
+                return mPosition != null ? mPosition.hashCode() : 0;
+            } else {
+                return 0;
+            }
+        }
+
+        /**
+         * Compatibility:
+         *
+         * <ul>
+         *   <li>API &lt: 36.1: Always returns {@code false}
+         * </ul>
+         */
+        @Override
+        public boolean equals(Object other) {
+            if (isAtLeastB_1()) {
+                return mPosition != null ? mPosition.equals(other) : false;
+            } else {
+                return false;
+            }
+        }
+    }
+
+    /**
+     * Compat class for AccessibilityNodeInfo.Selection, which is a class that represents a
+     * selection of content that may extend across more than one {@link AccessibilityNodeInfo}
+     * instance.
+     *
+     * @see AccessibilityNodeInfo.Selection
+     *     <p>Compatibility:
+     *     <ul>
+     *       <li>API &lt: 36.1: Class methods perform no-op behavior.
+     *     </ul>
+     */
+    public static final class SelectionCompat {
+        final Selection mSelection;
+
+        /**
+         * Instantiates a new SelectionCompat.
+         *
+         * @param start The start of the extended selection.
+         * @param end The end of the extended selection.
+         */
+        public SelectionCompat(
+                @NonNull SelectionPositionCompat start, @NonNull SelectionPositionCompat end) {
+            if (isAtLeastB_1()) {
+                mSelection = new Selection(start.mPosition, end.mPosition);
+            } else {
+                mSelection = null;
+            }
+        }
+
+        /**
+         * Instantiates a new SelectionCompat.
+         *
+         * @param selection The underlying Selection to wrap.
+         */
+        public SelectionCompat(@Nullable Selection selection) {
+            if (isAtLeastB_1()) {
+                mSelection = selection;
+            } else {
+                mSelection = null;
+            }
+        }
+
+        /**
+         * @return The start of the extended selection.
+         *     <p>Compatibility:
+         *     <ul>
+         *       <li>API &lt: 36.1: Always returns {@code null}
+         *     </ul>
+         */
+        public @Nullable SelectionPositionCompat getStart() {
+            if (isAtLeastB_1()) {
+                return new SelectionPositionCompat(mSelection.getStart());
+            } else {
+                return null;
+            }
+        }
+
+        /**
+         * @return The end of the extended selection.
+         *     <p>Compatibility:
+         *     <ul>
+         *       <li>API &lt: 36.1: Always returns {@code null}
+         *     </ul>
+         */
+        public @Nullable SelectionPositionCompat getEnd() {
+            if (isAtLeastB_1()) {
+                return new SelectionPositionCompat(mSelection.getEnd());
+            } else {
+                return null;
+            }
+        }
+
+        /**
+         * Compatibility:
+         *
+         * <ul>
+         *   <li>API &lt: 36.1: Always returns {@code 0}
+         * </ul>
+         */
+        @Override
+        public int hashCode() {
+            if (isAtLeastB_1()) {
+                return mSelection != null ? mSelection.hashCode() : 0;
+            } else {
+                return 0;
+            }
+        }
+
+        /**
+         * Compatibility:
+         *
+         * <ul>
+         *   <li>API &lt: 36.1: Always returns {@code false}
+         * </ul>
+         */
+        @Override
+        public boolean equals(Object obj) {
+            if (isAtLeastB_1()) {
+                return mSelection != null ? mSelection.equals(obj) : false;
+            } else {
+                return false;
+            }
+        }
+    }
+
+    private static final String ROLE_DESCRIPTION_KEY = "AccessibilityNodeInfo.roleDescription";
 
     private static final String PANE_TITLE_KEY =
             "androidx.view.accessibility.AccessibilityNodeInfoCompat.PANE_TITLE_KEY";
@@ -2043,23 +2304,36 @@ public class AccessibilityNodeInfoCompat {
 
     /**
      * Argument for which HTML element to get moving to the next/previous HTML element.
-     * <p>
-     * <strong>Type:</strong> String<br>
-     * <strong>Actions:</strong> {@link AccessibilityActionCompat#ACTION_NEXT_HTML_ELEMENT},
-     *         {@link AccessibilityActionCompat#ACTION_PREVIOUS_HTML_ELEMENT}
-     * </p>
+     *
+     * <p><strong>Type:</strong> String<br>
+     * <strong>Actions:</strong> {@link AccessibilityActionCompat#ACTION_NEXT_HTML_ELEMENT}, {@link
+     * AccessibilityActionCompat#ACTION_PREVIOUS_HTML_ELEMENT}
      */
     public static final String ACTION_ARGUMENT_HTML_ELEMENT_STRING =
-        "ACTION_ARGUMENT_HTML_ELEMENT_STRING";
+            "ACTION_ARGUMENT_HTML_ELEMENT_STRING";
 
     /**
-     * Argument for whether when moving at granularity to extend the selection
-     * or to move it otherwise.
-     * <p>
-     * <strong>Type:</strong> boolean<br>
-     * <strong>Actions:</strong> {@link #ACTION_NEXT_AT_MOVEMENT_GRANULARITY},
-     * {@link #ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY}
-     * </p>
+     * Argument for specifying the extended selection.
+     *
+     * <p><strong>Type:</strong> {@link AccessibilityNodeInfoCompat.SelectionCompat}<br>
+     * <strong>Actions:</strong>
+     *
+     * <ul>
+     *   <li>{@link AccessibilityActionCompat#ACTION_SET_EXTENDED_SELECTION}
+     * </ul>
+     *
+     * @see AccessibilityActionCompat#ACTION_SET_EXTENDED_SELECTION
+     */
+    public static final String ACTION_ARGUMENT_SELECTION_PARCELABLE =
+            "androidx.core.view.accessibility.action.ARGUMENT_SELECTION_PARCELABLE";
+
+    /**
+     * Argument for whether when moving at granularity to extend the selection or to move it
+     * otherwise.
+     *
+     * <p><strong>Type:</strong> boolean<br>
+     * <strong>Actions:</strong> {@link #ACTION_NEXT_AT_MOVEMENT_GRANULARITY}, {@link
+     * #ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY}
      *
      * @see AccessibilityActionCompat#ACTION_NEXT_AT_MOVEMENT_GRANULARITY
      * @see AccessibilityActionCompat#ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY
@@ -4322,6 +4596,28 @@ public class AccessibilityNodeInfoCompat {
     }
 
     /**
+     * Gets the {@link android.view.accessibility.AccessibilityNodeInfo#Selection selection} of this
+     * node.
+     *
+     * @return The selection, or {@code null} if the node has no selection.
+     *     <p>Compatibility:
+     *     <ul>
+     *       <li>API &lt: 36.1: Always returns {@code null}
+     *     </ul>
+     */
+    @Nullable
+    public SelectionCompat getSelection() {
+        if (isAtLeastB_1()) {
+            Selection selection = mInfo.getSelection();
+            if (selection != null) {
+                return new SelectionCompat(selection);
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * Gets the actions that can be performed on the node.
      *
      * @return A list of AccessibilityActions.
@@ -5146,11 +5442,37 @@ public class AccessibilityNodeInfoCompat {
     }
 
     /**
+     * Sets the {@link android.view.accessibility.AccessibilityNodeInfo#Selection selection} of this
+     * node.
+     *
+     * <p><strong>Note:</strong> Cannot be called from an {@link
+     * android.accessibilityservice.AccessibilityService}. This class is made immutable before being
+     * delivered to an AccessibilityService.
+     *
+     * @param selection The selection, or {@code null} to clear the selection.
+     *     <p>Compatibility:
+     *     <ul>
+     *       <li>API &lt: 36.1: Do nothing
+     *     </ul>
+     *
+     * @throws IllegalStateException If called from an AccessibilityService.
+     */
+    public void setSelection(@Nullable SelectionCompat selection) {
+        if (isAtLeastB_1()) {
+            if (selection == null) {
+                mInfo.setSelection(null);
+            } else {
+                mInfo.setSelection(selection.mSelection);
+            }
+        }
+    }
+
+    /**
      * Returns whether the node's text represents a hint for the user to enter text. It should only
      * be {@code true} if the node has editable text.
      *
      * @return {@code true} if the text in the node represents a hint to the user, {@code false}
-     * otherwise.
+     *     otherwise.
      */
     public boolean isShowingHintText() {
         if (Build.VERSION.SDK_INT >= 26) {
@@ -5711,6 +6033,8 @@ public class AccessibilityNodeInfoCompat {
                 return "ACTION_DRAG_CANCEL";
             case android.R.id.accessibilityActionScrollInDirection:
                 return "ACTION_SCROLL_IN_DIRECTION";
+            case android.R.id.accessibilityActionSetExtendedSelection:
+                return "ACTION_SET_EXTENDED_SELECTION";
             default:
                 return "ACTION_UNKNOWN";
         }
@@ -6000,6 +6324,10 @@ public class AccessibilityNodeInfoCompat {
         public static @CollectionItemInfoCompat.SortDirection int getCollectionItemSortDirection(
                 Object info) {
             return ((AccessibilityNodeInfo.CollectionItemInfo) info).getSortDirection();
+        }
+
+        public static AccessibilityNodeInfo.AccessibilityAction getActionSetExtendedSelection() {
+            return AccessibilityNodeInfo.AccessibilityAction.ACTION_SET_EXTENDED_SELECTION;
         }
     }
 }
