@@ -1408,6 +1408,8 @@ policies:
   1407: DefaultIdleDetectionSetting
   1408: IdleDetectionAllowedForUrls
   1409: IdleDetectionBlockedForUrls
+  1410: GeolocationAllowedForUrls
+  1411: GeolocationBlockedForUrls
 
 atomic_groups:
   1: Homepage
@@ -1471,3 +1473,4 @@ atomic_groups:
   59: DeviceAttributesSettings
   60: ProtectedContent
   61: LegacyCookieScopeSettings
+  62: GeolocationSettings

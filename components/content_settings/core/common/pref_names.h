@@ -106,6 +106,10 @@ inline constexpr char kManagedCookiesBlockedForUrls[] =
     "profile.managed_cookies_blocked_for_urls";
 inline constexpr char kManagedCookiesSessionOnlyForUrls[] =
     "profile.managed_cookies_sessiononly_for_urls";
+inline constexpr char kManagedGeolocationAllowedForUrls[] =
+    "profile.managed_geolocation_allowed_for_urls";
+inline constexpr char kManagedGeolocationBlockedForUrls[] =
+    "profile.managed_geolocation_blocked_for_urls";
 inline constexpr char
     kManagedAccessToGetAllScreensMediaInSessionAllowedForUrls[] =
         "profile.managed_access_to_get_all_screens_media_in_session_allowed_"
