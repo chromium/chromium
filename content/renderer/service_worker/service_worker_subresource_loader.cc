@@ -240,9 +240,12 @@ bool ServiceWorkerSubresourceLoader::StartRaceNetworkRequest() {
       network::SharedURLLoaderFactory::Create(fallback_factory_->Clone()));
 
   DCHECK(!race_network_request_loader_client_);
-  race_network_request_loader_client_.emplace(resource_request_.url,
-                                              weak_factory_.GetWeakPtr(),
-                                              std::move(forwarding_client));
+  // TODO(crbug.com/340949948): Ensure the fetch event completion and data
+  // cloning completion for the fetch handler even after returning the response
+  // from the network.
+  race_network_request_loader_client_.emplace(
+      resource_request_.url, weak_factory_.GetWeakPtr(),
+      std::move(forwarding_client), base::DoNothing());
 
   // If the initial state is not kWaitForBody, that means creating data pipes
   // failed. Do not start RaceNetworkRequest this case.

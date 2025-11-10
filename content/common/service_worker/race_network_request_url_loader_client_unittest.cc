@@ -5,6 +5,7 @@
 #include "content/common/service_worker/race_network_request_url_loader_client.h"
 
 #include "base/containers/span.h"
+#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/run_loop.h"
 #include "base/strings/string_view_util.h"
@@ -260,7 +261,7 @@ class ServiceWorkerRaceNetworkRequestURLLoaderClientTest
     client_for_fetch_handler_->Bind(&forwarding_client);
     client_ = std::make_unique<ServiceWorkerRaceNetworkRequestURLLoaderClient>(
         CreateRequest()->url, owner_->GetWeakPtr(),
-        std::move(forwarding_client));
+        std::move(forwarding_client), base::DoNothing());
     EXPECT_EQ(
         client_->state(),
         ServiceWorkerRaceNetworkRequestURLLoaderClient::State::kWaitForBody);

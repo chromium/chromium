@@ -284,9 +284,9 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
       scoped_refptr<ServiceWorkerVersion> active_worker);
 
   // Returns true if `race-network-and-fetch-handler` router source is used, and
-  // the fetch event is not completed yet. This is used to decide the timing of
-  // the object destruction.
-  bool ShouldDelayDeletionUntilFetchEventCompletion();
+  // the fetch event is not completed yet, or the data pipe for `fetch()` is not
+  // consumed yet. This is used to decide the timing of the object destruction.
+  bool ShouldDelayDeletion();
 
   NavigationLoaderInterceptor::FallbackCallback fallback_callback_;
 
