@@ -74,7 +74,7 @@ class EventHistoryTest : public testing::Test {
 };
 
 TEST_F(EventHistoryTest, ErrorToDict) {
-  Event::Error error{.category = 1, .code = 2, .extracode1 = 3};
+  HistoryEventError error{.category = 1, .code = 2, .extracode1 = 3};
   EXPECT_THAT(error.ToDict(), DictHasFields(ExpectedFields({
                                   {"category", ValueIs(1)},
                                   {"code", ValueIs(2)},
@@ -90,16 +90,13 @@ int GetCurrentPid() {
 }
 
 TEST_F(EventHistoryTest, Write) {
-  InstallStartEvent::Builder()
+  InstallStartEvent()
       .SetEventId("test-event-id-1")
       .SetAppId("test-app-id-1")
       .AddError({.category = 1, .code = 2, .extracode1 = 3})
       .Write();
 
-  InstallEndEvent::Builder()
-      .SetEventId("test-event-id-2")
-      .SetVersion("1.2.3.4")
-      .Write();
+  InstallEndEvent().SetEventId("test-event-id-2").SetVersion("1.2.3.4").Write();
 
   std::string contents;
   ASSERT_TRUE(base::ReadFileToString(log_path_, &contents));
@@ -130,11 +127,7 @@ TEST_F(EventHistoryTest, Write) {
                   {"appId", ValueIs("test-app-id-1")},
                   {"deviceUptime", IsPositiveTimeDeltaValue()},
                   {"pid", ValueIs(GetCurrentPid())},
-                  {"processToken", ValueIs(InstallStartEvent::Builder()
-                                               .SetEventId("test-event-id-1")
-                                               .SetAppId("test-app-id-1")
-                                               .Build()
-                                               ->process_token())},
+                  {"processToken", ValueIs(GetProcessToken())},
                   {"errors", Eq(std::cref(expected_errors))},
               })));
 
@@ -146,11 +139,7 @@ TEST_F(EventHistoryTest, Write) {
                   {"version", ValueIs("1.2.3.4")},
                   {"deviceUptime", IsPositiveTimeDeltaValue()},
                   {"pid", ValueIs(GetCurrentPid())},
-                  {"processToken", ValueIs(InstallEndEvent::Builder()
-                                               .SetEventId("test-event-id-2")
-                                               .SetVersion("1.2.3.4")
-                                               .Build()
-                                               ->process_token())},
+                  {"processToken", ValueIs(GetProcessToken())},
               })));
 
   // Reset logging state.
@@ -160,7 +149,7 @@ TEST_F(EventHistoryTest, Write) {
 TEST_F(EventHistoryTest, Rotate) {
   // Write a bunch of events to force the log to rotate.
   for (int i = 0; i < 10; ++i) {
-    InstallStartEvent::Builder()
+    InstallStartEvent()
         .SetEventId("test-event-id-1")
         .SetAppId("test-app-id-1")
         .Write();
@@ -179,26 +168,9 @@ TEST_F(EventHistoryTest, Rotate) {
   EXPECT_EQ(base::GetFileSize(rotated_log_path), log_size);
 }
 
-TEST_F(EventHistoryTest, InstallStartEventMembers) {
-  std::unique_ptr<InstallStartEvent> event =
-      InstallStartEvent::Builder()
-          .SetEventId("test-event-id")
-          .SetAppId("test-app-id")
-          .AddError({.category = 1, .code = 2, .extracode1 = 3})
-          .Build();
-  EXPECT_EQ(event->event_type(), "INSTALL");
-  EXPECT_EQ(event->bound(), Event::Bound::kStart);
-  EXPECT_EQ(event->event_id(), "test-event-id");
-  EXPECT_EQ(event->app_id(), "test-app-id");
-  ASSERT_THAT(event->errors(),
-              ElementsAre(AllOf(Field(&Event::Error::category, Eq(1)),
-                                Field(&Event::Error::code, Eq(2)),
-                                Field(&Event::Error::extracode1, Eq(3)))));
-}
-
 TEST_F(EventHistoryTest, InstallStartEventToDict) {
-  std::unique_ptr<InstallStartEvent> event =
-      InstallStartEvent::Builder()
+  std::optional<base::Value::Dict> event =
+      InstallStartEvent()
           .SetEventId("test-event-id")
           .SetAppId("test-app-id")
           .AddError({.category = 1, .code = 2, .extracode1 = 3})
@@ -209,65 +181,53 @@ TEST_F(EventHistoryTest, InstallStartEventToDict) {
                                      .Set("category", 1)
                                      .Set("code", 2)
                                      .Set("extracode1", 3));
-  EXPECT_THAT(event->ToDict(),
-              DictHasFields(ExpectedFields({
-                  {"eventType", ValueIs("INSTALL")},
-                  {"bound", ValueIs("START")},
-                  {"eventId", ValueIs("test-event-id")},
-                  {"appId", ValueIs("test-app-id")},
-                  {"deviceUptime", IsPositiveTimeDeltaValue()},
-                  {"pid", ValueIs(GetCurrentPid())},
-                  {"processToken", ValueIs(event->process_token())},
-                  {"errors", Eq(std::cref(expected_errors))},
-              })));
-}
-
-TEST_F(EventHistoryTest, InstallEndEventMembers) {
-  std::unique_ptr<InstallEndEvent> event = InstallEndEvent::Builder()
-                                               .SetEventId("test-event-id")
-                                               .SetVersion("1.2.3.4")
-                                               .Build();
-  EXPECT_EQ(event->event_type(), "INSTALL");
-  EXPECT_EQ(event->bound(), Event::Bound::kEnd);
-  EXPECT_EQ(event->event_id(), "test-event-id");
-  EXPECT_EQ(event->version(), "1.2.3.4");
-  EXPECT_THAT(event->errors(), IsEmpty());
+  ASSERT_TRUE(event);
+  EXPECT_THAT(*event, DictHasFields(ExpectedFields({
+                          {"eventType", ValueIs("INSTALL")},
+                          {"bound", ValueIs("START")},
+                          {"eventId", ValueIs("test-event-id")},
+                          {"appId", ValueIs("test-app-id")},
+                          {"deviceUptime", IsPositiveTimeDeltaValue()},
+                          {"pid", ValueIs(GetCurrentPid())},
+                          {"processToken", ValueIs(GetProcessToken())},
+                          {"errors", Eq(std::cref(expected_errors))},
+                      })));
 }
 
 TEST_F(EventHistoryTest, InstallEndEventToDict) {
-  std::unique_ptr<InstallEndEvent> event = InstallEndEvent::Builder()
+  std::optional<base::Value::Dict> event = InstallEndEvent()
                                                .SetEventId("test-event-id")
                                                .SetVersion("1.2.3.4")
                                                .Build();
-  EXPECT_THAT(event->ToDict(),
-              DictHasFields(ExpectedFields({
-                  {"eventType", ValueIs("INSTALL")},
-                  {"bound", ValueIs("END")},
-                  {"eventId", ValueIs("test-event-id")},
-                  {"version", ValueIs("1.2.3.4")},
-                  {"deviceUptime", IsPositiveTimeDeltaValue()},
-                  {"pid", ValueIs(GetCurrentPid())},
-                  {"processToken", ValueIs(event->process_token())},
-              })));
+  ASSERT_TRUE(event);
+  EXPECT_THAT(*event, DictHasFields(ExpectedFields({
+                          {"eventType", ValueIs("INSTALL")},
+                          {"bound", ValueIs("END")},
+                          {"eventId", ValueIs("test-event-id")},
+                          {"version", ValueIs("1.2.3.4")},
+                          {"deviceUptime", IsPositiveTimeDeltaValue()},
+                          {"pid", ValueIs(GetCurrentPid())},
+                          {"processToken", ValueIs(GetProcessToken())},
+                      })));
 }
 
 TEST_F(EventHistoryTest, InstallEndEventNoVersionToDict) {
-  std::unique_ptr<InstallEndEvent> event =
-      InstallEndEvent::Builder().SetEventId("test-event-id").Build();
-  EXPECT_THAT(event->ToDict(),
-              DictHasFields(ExpectedFields({
-                  {"eventType", ValueIs("INSTALL")},
-                  {"bound", ValueIs("END")},
-                  {"eventId", ValueIs("test-event-id")},
-                  {"deviceUptime", IsPositiveTimeDeltaValue()},
-                  {"pid", ValueIs(GetCurrentPid())},
-                  {"processToken", ValueIs(event->process_token())},
-              })));
+  std::optional<base::Value::Dict> event =
+      InstallEndEvent().SetEventId("test-event-id").Build();
+  ASSERT_TRUE(event);
+  EXPECT_THAT(*event, DictHasFields(ExpectedFields({
+                          {"eventType", ValueIs("INSTALL")},
+                          {"bound", ValueIs("END")},
+                          {"eventId", ValueIs("test-event-id")},
+                          {"deviceUptime", IsPositiveTimeDeltaValue()},
+                          {"pid", ValueIs(GetCurrentPid())},
+                          {"processToken", ValueIs(GetProcessToken())},
+                      })));
 }
 
 TEST_F(EventHistoryTest, InstallStartEventBuilderReturnsNullptrOnMissingAppId) {
-  EXPECT_EQ(InstallStartEvent::Builder().SetEventId("test-event-id").Build(),
-            nullptr);
+  EXPECT_EQ(InstallStartEvent().SetEventId("test-event-id").Build(),
+            std::nullopt);
 }
 
 }  // namespace

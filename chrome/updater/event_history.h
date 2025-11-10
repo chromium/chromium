@@ -11,10 +11,10 @@
 #include <vector>
 
 #include "base/debug/dump_without_crashing.h"
+#include "base/json/values_util.h"
 #include "base/logging.h"
 #include "base/process/process.h"
 #include "base/system/sys_info.h"
-#include "base/time/time.h"
 #include "base/values.h"
 
 // This API provides mechanisms to work with updater events, which are recorded
@@ -65,60 +65,11 @@ std::string GenerateEventId();
 // processes with the same PID in cross-process logs due to OS-reuse.
 const std::string& GetProcessToken();
 
-class Event {
- public:
-  // Indicates if the record marks the beginning, end, or an instantaneous
-  // event.
-  enum class Bound { kStart, kEnd, kInstant };
+// Implementation detail which must be exposed for `HistoryEventBuilder`.
+// Users of the API should use the `Write` method on the event class.
+void WriteHistoryEvent(const base::Value::Dict& event);
 
-  struct Error;
-
-  Event(const Event&) = delete;
-  Event& operator=(const Event&) = delete;
-  virtual ~Event();
-
-  // Common properties, as defined in docs/updater/history_log.md.
-  const std::string& event_type() const { return event_type_; }
-  const std::string& event_id() const { return event_id_; }
-  base::TimeDelta device_uptime() const { return device_uptime_; }
-  int pid() const { return pid_; }
-  const std::string& process_token() const { return process_token_; }
-  Bound bound() const { return bound_; }
-  const std::vector<Error>& errors() const { return errors_; }
-
-  // Serializes the event to a `base::Value::Dict` according to the schema.
-  base::Value::Dict ToDict() const;
-
- protected:
-  struct CommonFields;
-
-  // A mixin template for event builders, providing common functionality like
-  // setting event ID and adding errors. See `BuilderMixin` for more details.
-  template <typename T>
-  class BuilderMixin;
-
-  Event(const std::string& event_type,
-        Bound bound,
-        const CommonFields& common_fields);
-
-  // Derived event types implement this method to add event-specific fields to
-  // the serialized dict.
-  virtual void ToDictInternal(base::Value::Dict& dict) const = 0;
-
- private:
-  void Write() const;
-
-  const std::string event_type_;
-  const Bound bound_;
-  const std::string event_id_;
-  const base::TimeDelta device_uptime_;
-  const int pid_;
-  const std::string process_token_;
-  const std::vector<Error> errors_;
-};
-
-// An updater error triplet.
-struct Event::Error {
+struct HistoryEventError {
   int category = 0;
   int code = 0;
   int extracode1 = 0;
@@ -127,132 +78,95 @@ struct Event::Error {
   base::Value::Dict ToDict() const;
 };
 
-// Bundles properties common to all events for implementation brevity.
-struct Event::CommonFields {
-  CommonFields(std::string event_id,
-               base::TimeDelta device_uptime,
-               int pid,
-               const std::string& process_token,
-               const std::vector<Error>& errors);
-  CommonFields(const CommonFields&);
-  CommonFields& operator=(const CommonFields&);
-  CommonFields(CommonFields&&);
-  CommonFields& operator=(CommonFields&&);
-  ~CommonFields();
-
-  std::string event_id;
-  base::TimeDelta device_uptime;
-  int pid;
-  std::string process_token;
-  std::vector<Error> errors;
-};
-
+// A mixin template for event builders, providing common functionality like
+// setting event ID and adding errors.
 template <typename T>
-class Event::BuilderMixin {
+class HistoryEventBuilder {
  public:
   T& SetEventId(const std::string& event_id) {
     event_id_ = event_id;
     return static_cast<T&>(*this);
   }
 
-  T& AddError(const Event::Error& error) {
+  T& AddError(const HistoryEventError& error) {
     errors_.push_back(error);
     return static_cast<T&>(*this);
+  }
+
+  // Builds the base::Value::Dict representation of an event. Returns
+  // `std::nullopt` if a required common field is missing.
+  std::optional<base::Value::Dict> Build() const {
+    if (event_id_.empty()) {
+      VLOG(1) << "Failed to build common fields: event_id is empty";
+      return std::nullopt;
+    }
+    base::Value::Dict dict =
+        base::Value::Dict()
+            .Set("eventId", event_id_)
+            .Set("deviceUptime",
+                 base::TimeDeltaToValue(base::SysInfo::Uptime()))
+            .Set("pid", static_cast<int>(base::Process::Current().Pid()))
+            .Set("processToken", GetProcessToken());
+    if (!errors_.empty()) {
+      base::Value::List errors;
+      for (const auto& error : errors_) {
+        errors.Append(error.ToDict());
+      }
+      dict.Set("errors", std::move(errors));
+    }
+    return BuildInternal(std::move(dict));
   }
 
   // Builds, serializes, and writes the event to storage. Errors are VLOGed. A
   // failure to build the event indicates a programming error; a dump is created
   // without crashing.
   void Write() {
-    std::unique_ptr<Event> event = static_cast<T*>(this)->Build();
+    std::optional<base::Value::Dict> event = Build();
     if (!event) {
       base::debug::DumpWithoutCrashing();
       return;
     }
-    event->Write();
+    WriteHistoryEvent(*event);
   }
 
  protected:
-  BuilderMixin() = default;
-  virtual ~BuilderMixin() = default;
+  HistoryEventBuilder() = default;
+  virtual ~HistoryEventBuilder() = default;
 
-  // Builds the common fields for the event. Returns `std::nullopt` if a
-  // required common field is missing.
-  std::optional<CommonFields> BuildCommonFields() const {
-    if (event_id_.empty()) {
-      VLOG(1) << "Failed to build common fields: event_id is empty";
-      return std::nullopt;
-    }
-    return CommonFields(event_id_, base::SysInfo::Uptime(),
-                        base::Process::Current().Pid(), GetProcessToken(),
-                        errors_);
-  }
+  // To be implemented by concrete event types. Implementors should add
+  // event-specific fields to the `event` dict.
+  virtual std::optional<base::Value::Dict> BuildInternal(
+      base::Value::Dict event) const = 0;
 
   std::string event_id_;
-  std::vector<Event::Error> errors_;
+  std::vector<HistoryEventError> errors_;
 };
 
-class InstallStartEvent : public Event {
+class InstallStartEvent : public HistoryEventBuilder<InstallStartEvent> {
  public:
-  class Builder;
-  InstallStartEvent(const InstallStartEvent&) = delete;
-  InstallStartEvent& operator=(const InstallStartEvent&) = delete;
+  InstallStartEvent();
   ~InstallStartEvent() override;
 
-  // The application id for which installation was intended.
-  const std::string& app_id() const { return app_id_; }
+  InstallStartEvent& SetAppId(const std::string& app_id);
 
  private:
-  InstallStartEvent(const CommonFields& common_fields,
-                    const std::string& app_id);
+  std::optional<base::Value::Dict> BuildInternal(
+      base::Value::Dict event) const override;
 
-  void ToDictInternal(base::Value::Dict& dict) const override;
-
-  const std::string app_id_;
-};
-
-class InstallStartEvent::Builder : public Event::BuilderMixin<Builder> {
- public:
-  Builder();
-  ~Builder() override;
-
-  Builder& SetAppId(const std::string& app_id);
-
-  std::unique_ptr<InstallStartEvent> Build() const;
-
- private:
   std::string app_id_;
 };
 
-class InstallEndEvent : public Event {
+class InstallEndEvent : public HistoryEventBuilder<InstallEndEvent> {
  public:
-  class Builder;
-  InstallEndEvent(const InstallEndEvent&) = delete;
-  InstallEndEvent& operator=(const InstallEndEvent&) = delete;
+  InstallEndEvent();
   ~InstallEndEvent() override;
 
-  // Returns the version of the application which attempted installation.
-  std::optional<std::string> version() const { return version_; }
+  InstallEndEvent& SetVersion(const std::string& version);
 
  private:
-  InstallEndEvent(const CommonFields& common_fields,
-                  std::optional<std::string> version);
+  std::optional<base::Value::Dict> BuildInternal(
+      base::Value::Dict event) const override;
 
-  void ToDictInternal(base::Value::Dict& dict) const override;
-
-  const std::optional<std::string> version_;
-};
-
-class InstallEndEvent::Builder : public Event::BuilderMixin<Builder> {
- public:
-  Builder();
-  ~Builder() override;
-
-  Builder& SetVersion(const std::string& version);
-
-  std::unique_ptr<InstallEndEvent> Build() const;
-
- private:
   std::optional<std::string> version_;
 };
 
