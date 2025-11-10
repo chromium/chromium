@@ -12,8 +12,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/sessions/session_tab_helper_factory.h"
-#include "chrome/browser/ui/toolbar/test_toolbar_action_view_controller.h"
-#include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
+#include "chrome/browser/ui/toolbar/test_toolbar_action_view_model.h"
+#include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "content/public/test/test_web_contents_factory.h"
@@ -117,7 +117,7 @@ class ToolbarActionViewUnitTest : public ChromeViewsTestBase {
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
     controller_ =
-        std::make_unique<TestToolbarActionViewController>("fake controller");
+        std::make_unique<TestToolbarActionViewModel>("fake controller");
     action_view_delegate_ =
         std::make_unique<testing::NiceMock<TestToolbarActionViewDelegate>>();
     widget_ =
@@ -137,7 +137,7 @@ class ToolbarActionViewUnitTest : public ChromeViewsTestBase {
 
   views::Widget* widget() { return widget_.get(); }
 
-  TestToolbarActionViewController* controller() { return controller_.get(); }
+  TestToolbarActionViewModel* controller() { return controller_.get(); }
 
   TestToolbarActionViewDelegate* action_view_delegate() {
     return action_view_delegate_.get();
@@ -148,7 +148,7 @@ class ToolbarActionViewUnitTest : public ChromeViewsTestBase {
   }
 
  private:
-  std::unique_ptr<TestToolbarActionViewController> controller_;
+  std::unique_ptr<TestToolbarActionViewModel> controller_;
   std::unique_ptr<testing::NiceMock<TestToolbarActionViewDelegate>>
       action_view_delegate_;
 
@@ -159,7 +159,7 @@ class ToolbarActionViewUnitTest : public ChromeViewsTestBase {
 // A MenuButton subclass that provides access to some MenuButton internals.
 class TestToolbarActionView : public ToolbarActionView {
  public:
-  TestToolbarActionView(ToolbarActionViewController* view_controller,
+  TestToolbarActionView(ToolbarActionViewModel* view_controller,
                         Delegate* delegate)
       : ToolbarActionView(view_controller, delegate) {}
   TestToolbarActionView(const TestToolbarActionView&) = delete;
@@ -171,7 +171,7 @@ class TestToolbarActionView : public ToolbarActionView {
 // destroyed while holding a |pressed_lock_|.
 TEST_F(ToolbarActionViewUnitTest,
        NoCrashWhenDestroyingToolbarActionViewThatHasAPressedLock) {
-  TestToolbarActionViewController* view_controller = controller();
+  TestToolbarActionViewModel* view_controller = controller();
 
   // Create a new toolbar action view.
   auto view = std::make_unique<ToolbarActionView>(view_controller,
@@ -187,7 +187,7 @@ TEST_F(ToolbarActionViewUnitTest,
 // DCHECK for an unsupported transition from ACTIVATED to ACTION_PENDING.
 TEST_F(ToolbarActionViewUnitTest,
        NoCrashWhenPressingMouseOnToolbarActionViewThatHasAPressedLock) {
-  TestToolbarActionViewController* view_controller = controller();
+  TestToolbarActionViewModel* view_controller = controller();
 
   // Create a new toolbar action view.
   auto view = std::make_unique<ToolbarActionView>(view_controller,
@@ -217,7 +217,7 @@ TEST_F(ToolbarActionViewUnitTest, MAYBE_BasicToolbarActionViewTest) {
   // ViewsTestBase initializes the aura environment, so the factory shouldn't.
   content::TestWebContentsFactory web_contents_factory;
 
-  TestToolbarActionViewController* view_controller = controller();
+  TestToolbarActionViewModel* view_controller = controller();
   TestToolbarActionViewDelegate* view_delegate = action_view_delegate();
 
   // Configure the test controller and delegate.
@@ -305,7 +305,7 @@ TEST_F(ToolbarActionViewUnitTest, MAYBE_BasicToolbarActionViewTest) {
 // Verifies that pressing [Ctrl|Cmd] + Left / Right triggers a call to move the
 // toolbar action.
 TEST_F(ToolbarActionViewUnitTest, TestKeyboardReordering) {
-  TestToolbarActionViewController* view_controller = controller();
+  TestToolbarActionViewModel* view_controller = controller();
 
   auto owned_view = std::make_unique<ToolbarActionView>(view_controller,
                                                         action_view_delegate());

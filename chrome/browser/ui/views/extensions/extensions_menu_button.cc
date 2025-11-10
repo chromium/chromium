@@ -7,7 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
-#include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
+#include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
 #include "chrome/browser/ui/views/bubble_menu_item_factory.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
@@ -22,9 +22,8 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/button/button.h"
 
-ExtensionsMenuButton::ExtensionsMenuButton(
-    Browser* browser,
-    ToolbarActionViewController* controller)
+ExtensionsMenuButton::ExtensionsMenuButton(Browser* browser,
+                                           ToolbarActionViewModel* controller)
     : HoverButton(base::BindRepeating(&ExtensionsMenuButton::ButtonPressed,
                                       base::Unretained(this)),
                   std::u16string()),
@@ -85,7 +84,7 @@ void ExtensionsMenuButton::ButtonPressed() {
   base::RecordAction(
       base::UserMetricsAction("Extensions.Toolbar.ExtensionActivatedFromMenu"));
   controller_->ExecuteUserAction(
-      ToolbarActionViewController::InvocationSource::kMenuEntry);
+      ToolbarActionViewModel::InvocationSource::kMenuEntry);
 }
 
 BEGIN_METADATA(ExtensionsMenuButton)

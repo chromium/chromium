@@ -14,7 +14,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
+#include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -841,7 +841,7 @@ IN_PROC_BROWSER_TEST_P(ActionCommandsApiTest, TriggeringCommandTriggersPopup) {
   // Verify popup is shown.
   ExtensionsToolbarContainer* extensions_container =
       browser()->GetBrowserView().toolbar()->extensions_container();
-  ToolbarActionViewController* popup_owner =
+  ToolbarActionViewModel* popup_owner =
       extensions_container->popup_owner_for_testing();
   EXPECT_TRUE(popup_owner);
   EXPECT_TRUE(popup_owner->GetPopupNativeView());

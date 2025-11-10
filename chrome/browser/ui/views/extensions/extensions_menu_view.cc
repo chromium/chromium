@@ -14,9 +14,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/browser/ui/extensions/extension_action_view_controller.h"
+#include "chrome/browser/ui/extensions/extension_action_view_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
+#include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
 #include "chrome/browser/ui/views/bubble_menu_item_factory.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
@@ -55,8 +55,8 @@ constexpr int EXTENSIONS_SETTINGS_ID = 42;
 
 bool CompareExtensionMenuItemViews(const ExtensionMenuItemView* a,
                                    const ExtensionMenuItemView* b) {
-  return base::i18n::ToLower(a->view_controller()->GetActionName()) <
-         base::i18n::ToLower(b->view_controller()->GetActionName());
+  return base::i18n::ToLower(a->view_model()->GetActionName()) <
+         base::i18n::ToLower(b->view_model()->GetActionName());
 }
 
 // A helper method to convert to an ExtensionMenuItemView. This cannot
@@ -307,8 +307,8 @@ void ExtensionsMenuView::SortMenuItemsByName() {
 
 void ExtensionsMenuView::CreateAndInsertNewItem(
     const ToolbarActionsModel::ActionId& id) {
-  std::unique_ptr<ExtensionActionViewController> controller =
-      ExtensionActionViewController::Create(
+  std::unique_ptr<ExtensionActionViewModel> controller =
+      ExtensionActionViewModel::Create(
           id, browser_,
           std::make_unique<ExtensionActionPlatformDelegateViews>(
               browser_, extensions_container_));
@@ -327,7 +327,7 @@ void ExtensionsMenuView::CreateAndInsertNewItem(
 void ExtensionsMenuView::InsertMenuItem(ExtensionMenuItemView* menu_item) {
   DCHECK(!Contains(menu_item))
       << "Trying to insert a menu item that is already added in a section!";
-  auto site_interaction = menu_item->view_controller()->GetSiteInteraction(
+  auto site_interaction = menu_item->view_model()->GetSiteInteraction(
       browser_->tab_strip_model()->GetActiveWebContents());
   Section* const section = GetSectionForSiteInteraction(site_interaction);
   // Add the view at the end. Note that this *doesn't* insert the item at the
@@ -360,7 +360,7 @@ void ExtensionsMenuView::Update() {
         for (views::View* view : section->menu_items->children()) {
           auto* menu_item = GetAsMenuItemView(view);
           auto site_interaction =
-              menu_item->view_controller()->GetSiteInteraction(web_contents);
+              menu_item->view_model()->GetSiteInteraction(web_contents);
           if (site_interaction == section->site_interaction) {
             continue;
           }
@@ -395,7 +395,7 @@ void ExtensionsMenuView::SanityCheck() {
     for (views::View* view : section->menu_items->children()) {
       auto* menu_item = GetAsMenuItemView(view);
       auto site_interaction =
-          menu_item->view_controller()->GetSiteInteraction(web_contents);
+          menu_item->view_model()->GetSiteInteraction(web_contents);
       DCHECK_EQ(section, GetSectionForSiteInteraction(site_interaction));
       menu_items.push_back(menu_item);
     }
@@ -416,7 +416,7 @@ void ExtensionsMenuView::SanityCheck() {
   // guarantees that we have a view per item in |action_ids| as well).
   for (ExtensionMenuItemView* item : extensions_menu_items_) {
     DCHECK(Contains(item));
-    DCHECK(base::Contains(action_ids, item->view_controller()->GetId()));
+    DCHECK(base::Contains(action_ids, item->view_model()->GetId()));
   }
 #endif
 }
@@ -452,7 +452,7 @@ void ExtensionsMenuView::OnToolbarActionRemoved(
     const ToolbarActionsModel::ActionId& action_id) {
   auto iter = std::ranges::find(extensions_menu_items_, action_id,
                                 [](const ExtensionMenuItemView* item) {
-                                  return item->view_controller()->GetId();
+                                  return item->view_model()->GetId();
                                 });
   CHECK(iter != extensions_menu_items_.end());
   ExtensionMenuItemView* const view = *iter;
@@ -478,7 +478,7 @@ void ExtensionsMenuView::OnToolbarModelInitialized() {
 void ExtensionsMenuView::OnToolbarPinnedActionsChanged() {
   for (ExtensionMenuItemView* menu_item : extensions_menu_items_) {
     extensions::ExtensionId extension_id =
-        GetAsMenuItemView(menu_item)->view_controller()->GetId();
+        GetAsMenuItemView(menu_item)->view_model()->GetId();
     bool is_force_pinned =
         toolbar_model_ && toolbar_model_->IsActionForcePinned(extension_id);
     bool is_pinned =

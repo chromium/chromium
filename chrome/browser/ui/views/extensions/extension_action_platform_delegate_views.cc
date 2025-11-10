@@ -13,7 +13,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/extensions/accelerator_priority.h"
-#include "chrome/browser/ui/extensions/extension_action_view_controller.h"
+#include "chrome/browser/ui/extensions/extension_action_view_model.h"
 #include "chrome/browser/ui/tabs/tab_list_interface.h"
 #include "chrome/browser/ui/views/extensions/extension_popup.h"
 #include "chrome/browser/ui/views/extensions/extensions_container_views.h"
@@ -41,8 +41,8 @@ ExtensionActionPlatformDelegateViews::~ExtensionActionPlatformDelegateViews() {
 
 ExtensionActionPlatformDelegateViews*
 ExtensionActionPlatformDelegateViews::GetPopupOwnerDelegate() {
-  ExtensionActionViewController* owner_controller =
-      static_cast<ExtensionActionViewController*>(
+  ExtensionActionViewModel* owner_controller =
+      static_cast<ExtensionActionViewModel*>(
           extensions_container_->GetActionForId(controller_->GetId()));
   return static_cast<ExtensionActionPlatformDelegateViews*>(
       owner_controller->platform_delegate());
@@ -116,14 +116,14 @@ void ExtensionActionPlatformDelegateViews::OnPopupClosed() {
   extensions_container_->OnPopupClosed(controller_->GetId());
 }
 
-void ExtensionActionPlatformDelegateViews::AttachToController(
-    ExtensionActionViewController* controller) {
+void ExtensionActionPlatformDelegateViews::AttachToModel(
+    ExtensionActionViewModel* controller) {
   CHECK(controller);
   CHECK(!controller_);
   controller_ = controller;
 }
 
-void ExtensionActionPlatformDelegateViews::DetachFromController() {
+void ExtensionActionPlatformDelegateViews::DetachFromModel() {
   CHECK(controller_);
   controller_ = nullptr;
 }
@@ -212,7 +212,7 @@ bool ExtensionActionPlatformDelegateViews::AcceleratorPressed(
     controller_->HidePopup();
   } else {
     controller_->ExecuteUserAction(
-        ToolbarActionViewController::InvocationSource::kCommand);
+        ToolbarActionViewModel::InvocationSource::kCommand);
   }
 
   return true;

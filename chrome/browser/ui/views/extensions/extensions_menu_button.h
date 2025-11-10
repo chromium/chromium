@@ -23,8 +23,7 @@ class ExtensionsMenuButton : public HoverButton {
   METADATA_HEADER(ExtensionsMenuButton, HoverButton)
 
  public:
-  ExtensionsMenuButton(Browser* browser,
-                       ToolbarActionViewController* controller);
+  ExtensionsMenuButton(Browser* browser, ToolbarActionViewModel* controller);
   ExtensionsMenuButton(const ExtensionsMenuButton&) = delete;
   ExtensionsMenuButton& operator=(const ExtensionsMenuButton&) = delete;
   ~ExtensionsMenuButton() override;
@@ -44,7 +43,7 @@ class ExtensionsMenuButton : public HoverButton {
   const raw_ptr<Browser, DanglingUntriaged> browser_;
 
   // Responsible for executing the extension's actions.
-  const raw_ptr<ToolbarActionViewController, DanglingUntriaged> controller_;
+  const raw_ptr<ToolbarActionViewModel, DanglingUntriaged> controller_;
 };
 
 BEGIN_VIEW_BUILDER(/* no export */, ExtensionsMenuButton, HoverButton)

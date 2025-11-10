@@ -24,7 +24,7 @@ class WebContents;
 
 ////////////////////////////////////////////////////////////////////////////////
 // ToolbarActionView
-// A wrapper around a ToolbarActionViewController to display a toolbar action
+// A wrapper around a ToolbarActionViewModel to display a toolbar action
 // action in the browser's toolbar.
 class ToolbarActionView : public views::MenuButton,
                           public ExtensionContextMenuController::Observer {
@@ -67,7 +67,7 @@ class ToolbarActionView : public views::MenuButton,
     ~Delegate() override = default;
   };
 
-  ToolbarActionView(ToolbarActionViewController* view_controller,
+  ToolbarActionView(ToolbarActionViewModel* view_controller,
                     Delegate* delegate);
   ToolbarActionView(const ToolbarActionView&) = delete;
   ToolbarActionView& operator=(const ToolbarActionView&) = delete;
@@ -105,7 +105,7 @@ class ToolbarActionView : public views::MenuButton,
   void OnMouseMoved(const ui::MouseEvent& event) override;
   void OnMouseEntered(const ui::MouseEvent& event) override;
 
-  ToolbarActionViewController* view_controller() { return view_controller_; }
+  ToolbarActionViewModel* view_model() { return view_controller_; }
 
   // Returns button icon so it can be accessed during tests.
   gfx::ImageSkia GetIconForTest();
@@ -139,7 +139,7 @@ class ToolbarActionView : public views::MenuButton,
   std::unique_ptr<views::MenuButtonController::PressedLock> pressed_lock_;
 
   // The controller for this toolbar action view.
-  raw_ptr<ToolbarActionViewController> view_controller_;
+  raw_ptr<ToolbarActionViewModel> view_controller_;
 
   // Delegate that usually represents a container for ToolbarActionView.
   raw_ptr<Delegate> delegate_;

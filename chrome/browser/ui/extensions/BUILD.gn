@@ -56,7 +56,7 @@ source_set("extensions") {
       "app_launch_params.h",
       "application_launch.h",
       "extension_action_platform_delegate.h",
-      "extension_action_view_controller.h",
+      "extension_action_view_model.h",
       "extension_enable_flow.h",
       "extension_installed_bubble_model.h",
       "extension_installed_waiter.h",
@@ -162,7 +162,7 @@ source_set("impl") {
     sources += [
       "app_launch_params.cc",
       "application_launch.cc",
-      "extension_action_view_controller.cc",
+      "extension_action_view_model.cc",
       "extension_enable_flow.cc",
       "extension_installed_bubble_model.cc",
       "extension_installed_waiter.cc",
@@ -269,7 +269,7 @@ source_set("browser_tests") {
 
   if (!is_android) {
     sources += [
-      "extension_action_view_controller_browsertest.cc",
+      "extension_action_view_model_browsertest.cc",
       "extension_enable_flow_browsertest.cc",
       "extension_enable_flow_test_delegate.cc",
       "extension_enable_flow_test_delegate.h",

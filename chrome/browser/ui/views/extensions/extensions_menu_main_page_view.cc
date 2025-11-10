@@ -17,7 +17,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
-#include "chrome/browser/ui/extensions/extension_action_view_controller.h"
+#include "chrome/browser/ui/extensions/extension_action_view_model.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
@@ -94,7 +94,7 @@ ExtensionMenuItemView* GetMenuItem(
     const ToolbarActionsModel::ActionId& action_id) {
   for (views::View* view : parent_view->children()) {
     auto* item_view = GetAsMenuItem(view);
-    if (item_view->view_controller()->GetId() == action_id) {
+    if (item_view->view_model()->GetId() == action_id) {
       return item_view;
     }
   }
@@ -207,7 +207,7 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
 ExtensionsMenuMainPageView::~ExtensionsMenuMainPageView() = default;
 
 void ExtensionsMenuMainPageView::CreateAndInsertMenuItem(
-    std::unique_ptr<ExtensionActionViewController> action_controller,
+    std::unique_ptr<ExtensionActionViewModel> action_controller,
     extensions::ExtensionId extension_id,
     ExtensionsMenuViewModel::MenuItemInfo menu_item,
     int index) {

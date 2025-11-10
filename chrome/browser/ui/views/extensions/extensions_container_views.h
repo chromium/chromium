@@ -15,7 +15,7 @@
 #include "extensions/common/extension_id.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
-class ToolbarActionViewController;
+class ToolbarActionViewModel;
 
 namespace views {
 class FocusManager;
@@ -43,7 +43,7 @@ class ExtensionsContainerViews : public ExtensionsContainer {
   virtual void UndoPopOut() = 0;
 
   // Sets the active popup owner to be |popup_owner|.
-  virtual void SetPopupOwner(ToolbarActionViewController* popup_owner) = 0;
+  virtual void SetPopupOwner(ToolbarActionViewModel* popup_owner) = 0;
 
   // Pops out `action_id`, ensuring it is visible. `closure` will be called once
   // any animation is complete.

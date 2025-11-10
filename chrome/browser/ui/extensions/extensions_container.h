@@ -9,7 +9,7 @@
 
 #include "chrome/browser/ui/extensions/extension_popup_types.h"
 
-class ToolbarActionViewController;
+class ToolbarActionViewModel;
 
 // An interface for containers in the toolbar that host extensions.
 //
@@ -19,7 +19,7 @@ class ToolbarActionViewController;
 class ExtensionsContainer {
  public:
   // Returns the action for the given |id|, if one exists.
-  virtual ToolbarActionViewController* GetActionForId(
+  virtual ToolbarActionViewModel* GetActionForId(
       const std::string& action_id) = 0;
 
   // Hides the actively showing popup, if any.

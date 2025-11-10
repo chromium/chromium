@@ -10,7 +10,7 @@
 #include "chrome/browser/ui/extensions/extension_popup_types.h"
 #include "ui/gfx/native_ui_types.h"
 
-class ExtensionActionViewController;
+class ExtensionActionViewModel;
 
 namespace extensions {
 class ExtensionViewHost;
@@ -20,16 +20,15 @@ class ExtensionActionPlatformDelegate {
  public:
   virtual ~ExtensionActionPlatformDelegate() = default;
 
-  // Attaches the delegate to an ExtensionActionViewController. It is called
+  // Attaches the delegate to an ExtensionActionViewModel. It is called
   // by the controller on its constructor.
-  virtual void AttachToController(
-      ExtensionActionViewController* controller) = 0;
+  virtual void AttachToModel(ExtensionActionViewModel* controller) = 0;
 
-  // Detaches the delegate from an ExtensionActionViewController. It is called
+  // Detaches the delegate from an ExtensionActionViewModel. It is called
   // by the controller on its destructor.
-  virtual void DetachFromController() = 0;
+  virtual void DetachFromModel() = 0;
 
-  // The following are forwarded from ToolbarActionViewController. See that
+  // The following are forwarded from ToolbarActionViewModel. See that
   // class for the definitions.
   virtual void RegisterCommand() = 0;
   virtual void UnregisterCommand() = 0;

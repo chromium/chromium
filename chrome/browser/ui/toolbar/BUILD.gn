@@ -48,7 +48,7 @@ source_set("toolbar") {
       "bookmark_sub_menu_model.h",
       "reading_list_sub_menu_model.h",
       "toolbar_action_hover_card_types.h",
-      "toolbar_action_view_controller.h",
+      "toolbar_action_view_model.h",
       "toolbar_pref_names.cc",
       "toolbar_pref_names.h",
     ]
@@ -242,8 +242,8 @@ source_set("test_support") {
 
   if (enable_extensions) {
     sources += [
-      "test_toolbar_action_view_controller.cc",
-      "test_toolbar_action_view_controller.h",
+      "test_toolbar_action_view_model.cc",
+      "test_toolbar_action_view_model.h",
     ]
     deps += [
       ":toolbar",

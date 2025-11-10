@@ -17,7 +17,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/extensions/extensions_menu_view_model.h"
-#include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
+#include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
@@ -220,7 +220,7 @@ DEFINE_ELEMENT_IDENTIFIER_VALUE(kExtensionMenuItemViewElementId);
 
 ExtensionMenuItemView::ExtensionMenuItemView(
     Browser* browser,
-    std::unique_ptr<ToolbarActionViewController> controller,
+    std::unique_ptr<ToolbarActionViewModel> controller,
     bool allow_pinning)
     : browser_(browser),
       controller_(std::move(controller)),
@@ -310,7 +310,7 @@ ExtensionMenuItemView::ExtensionMenuItemView(
 ExtensionMenuItemView::ExtensionMenuItemView(
     Browser* browser,
     bool is_enterprise,
-    std::unique_ptr<ToolbarActionViewController> controller,
+    std::unique_ptr<ToolbarActionViewModel> controller,
     base::RepeatingCallback<void(bool)> site_access_toggle_callback,
     views::Button::PressedCallback site_permissions_button_callback)
     : browser_(browser),

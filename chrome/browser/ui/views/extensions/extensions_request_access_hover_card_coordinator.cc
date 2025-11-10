@@ -7,7 +7,7 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/extensions/extension_ui_util.h"
 #include "chrome/browser/ui/extensions/extensions_container.h"
-#include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
+#include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
 #include "chrome/browser/ui/views/chrome_widget_sublevel.h"
 #include "chrome/browser/ui/views/extensions/extension_view_utils.h"
 #include "chrome/grit/generated_resources.h"
@@ -41,7 +41,7 @@ void ExtensionsRequestAccessHoverCardCoordinator::ShowBubble(
   const std::u16string url =
       extensions::ui_util::GetFormattedHostForDisplay(*web_contents);
   if (extension_ids.size() == 1) {
-    ToolbarActionViewController* action =
+    ToolbarActionViewModel* action =
         extensions_container->GetActionForId(extension_ids[0]);
     dialog_builder.SetIcon(GetIcon(action, web_contents))
         .AddParagraph(ui::DialogModelLabel::CreateWithReplacements(
@@ -53,7 +53,7 @@ void ExtensionsRequestAccessHoverCardCoordinator::ShowBubble(
         IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON_TOOLTIP_MULTIPLE_EXTENSIONS,
         ui::DialogModelLabel::CreateEmphasizedText(url)));
     for (const auto& extension_id : extension_ids) {
-      ToolbarActionViewController* action =
+      ToolbarActionViewModel* action =
           extensions_container->GetActionForId(extension_id);
       dialog_builder.AddMenuItem(
           GetIcon(action, web_contents), action->GetActionName(),

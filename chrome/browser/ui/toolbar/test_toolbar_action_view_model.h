@@ -2,27 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_TOOLBAR_TEST_TOOLBAR_ACTION_VIEW_CONTROLLER_H_
-#define CHROME_BROWSER_UI_TOOLBAR_TEST_TOOLBAR_ACTION_VIEW_CONTROLLER_H_
+#ifndef CHROME_BROWSER_UI_TOOLBAR_TEST_TOOLBAR_ACTION_VIEW_MODEL_H_
+#define CHROME_BROWSER_UI_TOOLBAR_TEST_TOOLBAR_ACTION_VIEW_MODEL_H_
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/extension_context_menu_model.h"
-#include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
+#include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
 
-// A minimalistic and configurable ToolbarActionViewController for use in
+// A minimalistic and configurable ToolbarActionViewModel for use in
 // testing.
-class TestToolbarActionViewController : public ToolbarActionViewController {
+class TestToolbarActionViewModel : public ToolbarActionViewModel {
  public:
-  explicit TestToolbarActionViewController(const std::string& id);
+  explicit TestToolbarActionViewModel(const std::string& id);
 
-  TestToolbarActionViewController(const TestToolbarActionViewController&) =
+  TestToolbarActionViewModel(const TestToolbarActionViewModel&) = delete;
+  TestToolbarActionViewModel& operator=(const TestToolbarActionViewModel&) =
       delete;
-  TestToolbarActionViewController& operator=(
-      const TestToolbarActionViewController&) = delete;
 
-  ~TestToolbarActionViewController() override;
+  ~TestToolbarActionViewModel() override;
 
-  // ToolbarActionViewController:
+  // ToolbarActionViewModel:
   std::string GetId() const override;
   void SetUpdateObserver(base::RepeatingClosure observer) override;
   ui::ImageModel GetIcon(content::WebContents* web_contents,
@@ -33,7 +32,7 @@ class TestToolbarActionViewController : public ToolbarActionViewController {
   std::u16string GetAccessibleName(
       content::WebContents* web_contents) const override;
   std::u16string GetTooltip(content::WebContents* web_contents) const override;
-  ToolbarActionViewController::HoverCardState GetHoverCardState(
+  ToolbarActionViewModel::HoverCardState GetHoverCardState(
       content::WebContents* web_contents) const override;
   bool IsEnabled(content::WebContents* web_contents) const override;
   bool IsShowingPopup() const override;
@@ -89,4 +88,4 @@ class TestToolbarActionViewController : public ToolbarActionViewController {
   bool popup_showing_ = false;
 };
 
-#endif  // CHROME_BROWSER_UI_TOOLBAR_TEST_TOOLBAR_ACTION_VIEW_CONTROLLER_H_
+#endif  // CHROME_BROWSER_UI_TOOLBAR_TEST_TOOLBAR_ACTION_VIEW_MODEL_H_

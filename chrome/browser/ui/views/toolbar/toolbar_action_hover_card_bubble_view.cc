@@ -12,7 +12,7 @@
 #include "base/notreached.h"
 #include "chrome/browser/extensions/extension_ui_util.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
-#include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
+#include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/extensions/extension_view_utils.h"
@@ -31,7 +31,7 @@
 
 namespace {
 
-using HoverCardState = ToolbarActionViewController::HoverCardState;
+using HoverCardState = ToolbarActionViewModel::HoverCardState;
 
 // Hover card fixed width. Toolbar actions are not visible when window is too
 // small to display them, therefore hover cards wouldn't be displayed if the
@@ -47,7 +47,7 @@ constexpr int kVerticalMargin = 12;
 constexpr int kHoverCardLabelMaxLines = 3;
 
 std::u16string GetSiteAccessTitle(
-    ToolbarActionViewController::HoverCardState::SiteAccess state) {
+    ToolbarActionViewModel::HoverCardState::SiteAccess state) {
   int title_id = -1;
   switch (state) {
     case HoverCardState::SiteAccess::kAllExtensionsAllowed:
@@ -228,7 +228,7 @@ ToolbarActionHoverCardBubbleView::ToolbarActionHoverCardBubbleView(
 void ToolbarActionHoverCardBubbleView::UpdateCardContent(
     const std::u16string& extension_name,
     const std::u16string& action_title,
-    ToolbarActionViewController::HoverCardState state,
+    ToolbarActionViewModel::HoverCardState state,
     content::WebContents* web_contents) {
   title_label_->SetData({extension_name, /*is_filename=*/false});
 

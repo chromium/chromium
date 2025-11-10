@@ -213,7 +213,7 @@ IN_PROC_BROWSER_TEST_F(ToolbarActionHoverCardBubbleViewUITest,
 
 // Verify hover card content and anchor is correctly updated when moving hover
 // from one action view to another. Note that hover card content based on site
-// access is tested more in depth in ExtensionActionViewController unittest,
+// access is tested more in depth in ExtensionActionViewModel unittest,
 // since such class computes the hover card state.
 IN_PROC_BROWSER_TEST_F(ToolbarActionHoverCardBubbleViewUITest,
                        WidgetUpdatedWhenHoveringBetweenActionViews) {

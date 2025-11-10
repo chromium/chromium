@@ -11,8 +11,8 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/extensions/extension_action_view_controller.h"
-#include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
+#include "chrome/browser/ui/extensions/extension_action_view_model.h"
+#include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
 #include "chrome/browser/ui/views/extensions/extension_popup.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_coordinator.h"
@@ -78,7 +78,7 @@ bool ExtensionsMenuTestUtil::HasAction(const extensions::ExtensionId& id) {
 }
 
 void ExtensionsMenuTestUtil::InspectPopup(const extensions::ExtensionId& id) {
-  auto* view_controller = static_cast<ExtensionActionViewController*>(
+  auto* view_controller = static_cast<ExtensionActionViewModel*>(
       extensions_container_->GetActionForId(id));
   DCHECK(view_controller);
   view_controller->InspectPopup();
@@ -104,7 +104,7 @@ void ExtensionsMenuTestUtil::Press(const extensions::ExtensionId& id) {
 }
 
 gfx::NativeView ExtensionsMenuTestUtil::GetPopupNativeView() {
-  ToolbarActionViewController* popup_owner =
+  ToolbarActionViewModel* popup_owner =
       extensions_container_->popup_owner_for_testing();
   return popup_owner ? popup_owner->GetPopupNativeView() : gfx::NativeView();
 }
@@ -200,10 +200,9 @@ ExtensionMenuItemView* ExtensionsMenuTestUtil::GetMenuItemViewForId(
     menu_items = menu_view_->extensions_menu_items_for_testing();
   }
 
-  auto iter =
-      std::ranges::find(menu_items, id, [](ExtensionMenuItemView* view) {
-        return view->view_controller()->GetId();
-      });
+  auto iter = std::ranges::find(
+      menu_items, id,
+      [](ExtensionMenuItemView* view) { return view->view_model()->GetId(); });
   return (iter == menu_items.end()) ? nullptr : *iter;
 }
 

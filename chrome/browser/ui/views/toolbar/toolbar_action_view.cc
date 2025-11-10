@@ -14,7 +14,7 @@
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/layout_constants.h"
-#include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
+#include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/event_utils.h"
@@ -52,9 +52,8 @@ using views::LabelButtonBorder;
 ////////////////////////////////////////////////////////////////////////////////
 // ToolbarActionView
 
-ToolbarActionView::ToolbarActionView(
-    ToolbarActionViewController* view_controller,
-    ToolbarActionView::Delegate* delegate)
+ToolbarActionView::ToolbarActionView(ToolbarActionViewModel* view_controller,
+                                     ToolbarActionView::Delegate* delegate)
     : MenuButton(base::BindRepeating(&ToolbarActionView::ButtonPressed,
                                      base::Unretained(this))),
       view_controller_(view_controller),
@@ -203,7 +202,7 @@ gfx::Size ToolbarActionView::CalculatePreferredSize(
 bool ToolbarActionView::OnMousePressed(const ui::MouseEvent& event) {
   delegate_->UpdateHoverCard(nullptr, ToolbarActionHoverCardUpdateType::kEvent);
   if (event.IsOnlyLeftMouseButton()) {
-    if (view_controller()->IsShowingPopup()) {
+    if (view_model()->IsShowingPopup()) {
       // Left-clicking the button should always hide the popup.  In most cases,
       // this would have happened automatically anyway due to the popup losing
       // activation, but if the popup is currently being inspected, the
@@ -318,7 +317,7 @@ void ToolbarActionView::ButtonPressed() {
     base::RecordAction(base::UserMetricsAction(
         "Extensions.Toolbar.ExtensionActivatedFromToolbar"));
     view_controller_->ExecuteUserAction(
-        ToolbarActionViewController::InvocationSource::kToolbarButton);
+        ToolbarActionViewModel::InvocationSource::kToolbarButton);
   } else {
     // If the action isn't enabled, show the context menu as a fallback.
     context_menu_controller()->ShowContextMenuForView(

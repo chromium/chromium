@@ -20,7 +20,7 @@
 #include "chrome/browser/extensions/test_extension_action_dispatcher_observer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
-#include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
+#include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/version_info/channel.h"
@@ -628,7 +628,7 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPITest,
   ExtensionsContainer* extensions_container =
       browser()->window()->GetExtensionsContainer();
   ASSERT_TRUE(extensions_container);
-  ToolbarActionViewController* action_controller =
+  ToolbarActionViewModel* action_controller =
       extensions_container->GetActionForId(extension->id());
   ASSERT_TRUE(action_controller);
 
@@ -641,7 +641,7 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPITest,
 
   ResultCatcher result_catcher;
   action_controller->ExecuteUserAction(
-      ToolbarActionViewController::InvocationSource::kToolbarButton);
+      ToolbarActionViewModel::InvocationSource::kToolbarButton);
   EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
 
   ProcessManager* process_manager = ProcessManager::Get(profile());
@@ -669,7 +669,7 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPITest,
 
   // Open the popup again.
   action_controller->ExecuteUserAction(
-      ToolbarActionViewController::InvocationSource::kToolbarButton);
+      ToolbarActionViewModel::InvocationSource::kToolbarButton);
   EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
 
   frames = process_manager->GetRenderFrameHostsForExtension(extension->id());

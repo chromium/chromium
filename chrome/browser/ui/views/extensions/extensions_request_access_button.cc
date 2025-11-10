@@ -22,7 +22,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/extensions/extension_dialog_utils.h"
-#include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
+#include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/extensions/extension_view_utils.h"
 #include "chrome/browser/ui/views/extensions/extensions_container_views.h"
@@ -179,7 +179,7 @@ void ExtensionsRequestAccessButton::UpdateTooltipText() {
       IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON_TOOLTIP_MULTIPLE_EXTENSIONS,
       extensions::ui_util::GetFormattedHostForDisplay(*active_contents)));
   for (const auto& extension_id : extension_ids_) {
-    ToolbarActionViewController* action =
+    ToolbarActionViewModel* action =
         extensions_container_->GetActionForId(extension_id);
     tooltip_parts.push_back(action->GetActionName());
   }

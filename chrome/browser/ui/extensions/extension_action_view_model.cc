@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/extensions/extension_action_view_controller.h"
+#include "chrome/browser/ui/extensions/extension_action_view_model.h"
 
 #include <memory>
 #include <string>
@@ -57,8 +57,7 @@ using extensions::PermissionsManager;
 
 namespace {
 
-void RecordInvocationSource(
-    ToolbarActionViewController::InvocationSource source) {
+void RecordInvocationSource(ToolbarActionViewModel::InvocationSource source) {
   base::UmaHistogramEnumeration("Extensions.Toolbar.InvocationSource", source);
 }
 
@@ -71,7 +70,7 @@ void RecordInvocationSource(
 // extensions that want access; and b) it helps us work around tricky
 // calculations where we get into collisions between withheld and denied
 // permission. Otherwise, it should display "does not want access".
-ExtensionActionViewController::HoverCardState::SiteAccess
+ExtensionActionViewModel::HoverCardState::SiteAccess
 GetHoverCardSiteAccessState(
     extensions::PermissionsManager::UserSiteSetting site_setting,
     extensions::SitePermissionsHelper::SiteInteraction site_interaction) {
@@ -79,18 +78,18 @@ GetHoverCardSiteAccessState(
     case extensions::SitePermissionsHelper::SiteInteraction::kGranted:
       return site_setting == extensions::PermissionsManager::UserSiteSetting::
                                  kGrantAllExtensions
-                 ? ExtensionActionViewController::HoverCardState::SiteAccess::
+                 ? ExtensionActionViewModel::HoverCardState::SiteAccess::
                        kAllExtensionsAllowed
-                 : ExtensionActionViewController::HoverCardState::SiteAccess::
+                 : ExtensionActionViewModel::HoverCardState::SiteAccess::
                        kExtensionHasAccess;
 
     case extensions::SitePermissionsHelper::SiteInteraction::kWithheld:
     case extensions::SitePermissionsHelper::SiteInteraction::kActiveTab:
       return site_setting == extensions::PermissionsManager::UserSiteSetting::
                                  kBlockAllExtensions
-                 ? ExtensionActionViewController::HoverCardState::SiteAccess::
+                 ? ExtensionActionViewModel::HoverCardState::SiteAccess::
                        kAllExtensionsBlocked
-                 : ExtensionActionViewController::HoverCardState::SiteAccess::
+                 : ExtensionActionViewModel::HoverCardState::SiteAccess::
                        kExtensionRequestsAccess;
 
     case extensions::SitePermissionsHelper::SiteInteraction::kNone:
@@ -98,9 +97,9 @@ GetHoverCardSiteAccessState(
       // user site setting is "block all extensions".
       return site_setting == extensions::PermissionsManager::UserSiteSetting::
                                  kBlockAllExtensions
-                 ? ExtensionActionViewController::HoverCardState::SiteAccess::
+                 ? ExtensionActionViewModel::HoverCardState::SiteAccess::
                        kAllExtensionsBlocked
-                 : ExtensionActionViewController::HoverCardState::SiteAccess::
+                 : ExtensionActionViewModel::HoverCardState::SiteAccess::
                        kExtensionDoesNotWantAccess;
   }
 }
@@ -108,12 +107,12 @@ GetHoverCardSiteAccessState(
 // Computes hover card policy status based on admin policy. Note that an
 // extension pinned by admin is also installed by admin. Thus, "pinned by admin"
 // has preference.
-ExtensionActionViewController::HoverCardState::AdminPolicy
-GetHoverCardPolicyState(Profile& profile,
-                        const extensions::ExtensionId& extension_id) {
+ExtensionActionViewModel::HoverCardState::AdminPolicy GetHoverCardPolicyState(
+    Profile& profile,
+    const extensions::ExtensionId& extension_id) {
   auto* const model = ToolbarActionsModel::Get(&profile);
   if (model->IsActionForcePinned(extension_id)) {
-    return ExtensionActionViewController::HoverCardState::AdminPolicy::
+    return ExtensionActionViewModel::HoverCardState::AdminPolicy::
         kPinnedByAdmin;
   }
 
@@ -122,18 +121,17 @@ GetHoverCardPolicyState(Profile& profile,
           ->enabled_extensions()
           .GetByID(extension_id);
   if (extensions::Manifest::IsPolicyLocation(extension->location())) {
-    return ExtensionActionViewController::HoverCardState::AdminPolicy::
+    return ExtensionActionViewModel::HoverCardState::AdminPolicy::
         kInstalledByAdmin;
   }
 
-  return ExtensionActionViewController::HoverCardState::AdminPolicy::kNone;
+  return ExtensionActionViewModel::HoverCardState::AdminPolicy::kNone;
 }
 
 }  // namespace
 
 // static
-std::unique_ptr<ExtensionActionViewController>
-ExtensionActionViewController::Create(
+std::unique_ptr<ExtensionActionViewModel> ExtensionActionViewModel::Create(
     const extensions::ExtensionId& extension_id,
     BrowserWindowInterface* browser,
     std::unique_ptr<ExtensionActionPlatformDelegate> platform_delegate) {
@@ -150,14 +148,14 @@ ExtensionActionViewController::Create(
   DCHECK(extension_action);
 
   // WrapUnique() because the constructor is private.
-  return base::WrapUnique(new ExtensionActionViewController(
+  return base::WrapUnique(new ExtensionActionViewModel(
       std::move(extension), browser, extension_action, registry,
       std::move(platform_delegate)));
 }
 
 // static
-bool ExtensionActionViewController::AnyActionHasCurrentSiteAccess(
-    const std::vector<std::unique_ptr<ToolbarActionViewController>>& actions,
+bool ExtensionActionViewModel::AnyActionHasCurrentSiteAccess(
+    const std::vector<std::unique_ptr<ToolbarActionViewModel>>& actions,
     content::WebContents* web_contents) {
   for (const auto& action : actions) {
     if (action->GetSiteInteraction(web_contents) ==
@@ -168,7 +166,7 @@ bool ExtensionActionViewController::AnyActionHasCurrentSiteAccess(
   return false;
 }
 
-ExtensionActionViewController::ExtensionActionViewController(
+ExtensionActionViewModel::ExtensionActionViewModel(
     scoped_refptr<const extensions::Extension> extension,
     BrowserWindowInterface* browser,
     extensions::ExtensionAction* extension_action,
@@ -182,7 +180,7 @@ ExtensionActionViewController::ExtensionActionViewController(
       platform_delegate_(std::move(platform_delegate)),
       icon_factory_(extension_.get(), extension_action, this),
       extension_registry_(extension_registry) {
-  platform_delegate_->AttachToController(this);
+  platform_delegate_->AttachToModel(this);
   // TODO(crbug.com/448199168): Get rid of the dependency to TabStripModel that
   // is not available on Android.
   browser_->GetTabStripModel()->AddObserver(this);
@@ -191,16 +189,16 @@ ExtensionActionViewController::ExtensionActionViewController(
       extensions::CommandService::Get(profile_));
 }
 
-ExtensionActionViewController::~ExtensionActionViewController() {
+ExtensionActionViewModel::~ExtensionActionViewModel() {
   DCHECK(!IsShowingPopup());
-  platform_delegate_->DetachFromController();
+  platform_delegate_->DetachFromModel();
 }
 
-std::string ExtensionActionViewController::GetId() const {
+std::string ExtensionActionViewModel::GetId() const {
   return extension_id_;
 }
 
-void ExtensionActionViewController::SetUpdateObserver(
+void ExtensionActionViewModel::SetUpdateObserver(
     base::RepeatingClosure observer) {
   DCHECK(observer.is_null() ^ observer_.is_null());
   if (observer) {
@@ -211,7 +209,7 @@ void ExtensionActionViewController::SetUpdateObserver(
   }
 }
 
-ui::ImageModel ExtensionActionViewController::GetIcon(
+ui::ImageModel ExtensionActionViewModel::GetIcon(
     content::WebContents* web_contents,
     const gfx::Size& size) {
   if (!ExtensionIsValid()) {
@@ -222,7 +220,7 @@ ui::ImageModel ExtensionActionViewController::GetIcon(
       gfx::ImageSkia(GetIconImageSource(web_contents, size), size));
 }
 
-std::u16string ExtensionActionViewController::GetActionName() const {
+std::u16string ExtensionActionViewModel::GetActionName() const {
   if (!ExtensionIsValid()) {
     return std::u16string();
   }
@@ -230,7 +228,7 @@ std::u16string ExtensionActionViewController::GetActionName() const {
   return base::UTF8ToUTF16(extension_->name());
 }
 
-std::u16string ExtensionActionViewController::GetActionTitle(
+std::u16string ExtensionActionViewModel::GetActionTitle(
     content::WebContents* web_contents) const {
   if (!ExtensionIsValid()) {
     return std::u16string();
@@ -241,7 +239,7 @@ std::u16string ExtensionActionViewController::GetActionTitle(
   return base::UTF8ToUTF16(title);
 }
 
-std::u16string ExtensionActionViewController::GetAccessibleName(
+std::u16string ExtensionActionViewModel::GetAccessibleName(
     content::WebContents* web_contents) const {
   if (!ExtensionIsValid()) {
     return std::u16string();
@@ -283,7 +281,7 @@ std::u16string ExtensionActionViewController::GetAccessibleName(
   return accessible_name;
 }
 
-std::u16string ExtensionActionViewController::GetTooltip(
+std::u16string ExtensionActionViewModel::GetTooltip(
     content::WebContents* web_contents) const {
   if (base::FeatureList::IsEnabled(
           extensions_features::kExtensionsMenuAccessControl)) {
@@ -294,7 +292,7 @@ std::u16string ExtensionActionViewController::GetTooltip(
     url::Origin origin =
         web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin();
     auto* permissions_manager = extensions::PermissionsManager::Get(profile_);
-    ToolbarActionViewController::HoverCardState::SiteAccess site_access =
+    ToolbarActionViewModel::HoverCardState::SiteAccess site_access =
         GetHoverCardSiteAccessState(
             permissions_manager->GetUserSiteSetting(origin),
             GetSiteInteraction(web_contents));
@@ -328,7 +326,7 @@ std::u16string ExtensionActionViewController::GetTooltip(
   return GetAccessibleName(web_contents);
 }
 
-bool ExtensionActionViewController::IsEnabled(
+bool ExtensionActionViewModel::IsEnabled(
     content::WebContents* web_contents) const {
   if (!ExtensionIsValid()) {
     return false;
@@ -354,19 +352,19 @@ bool ExtensionActionViewController::IsEnabled(
          side_panel_service->HasSidePanelActionForTab(*extension(), tab_id);
 }
 
-bool ExtensionActionViewController::IsShowingPopup() const {
+bool ExtensionActionViewModel::IsShowingPopup() const {
   return platform_delegate_->IsShowingPopup();
 }
 
-void ExtensionActionViewController::HidePopup() {
+void ExtensionActionViewModel::HidePopup() {
   return platform_delegate_->HidePopup();
 }
 
-gfx::NativeView ExtensionActionViewController::GetPopupNativeView() {
+gfx::NativeView ExtensionActionViewModel::GetPopupNativeView() {
   return platform_delegate_->GetPopupNativeView();
 }
 
-ui::MenuModel* ExtensionActionViewController::GetContextMenu(
+ui::MenuModel* ExtensionActionViewModel::GetContextMenu(
     extensions::ExtensionContextMenuModel::ContextMenuSource
         context_menu_source) {
   if (!ExtensionIsValid()) {
@@ -383,7 +381,7 @@ ui::MenuModel* ExtensionActionViewController::GetContextMenu(
   return context_menu_model_.get();
 }
 
-void ExtensionActionViewController::ExecuteUserAction(InvocationSource source) {
+void ExtensionActionViewModel::ExecuteUserAction(InvocationSource source) {
   if (!ExtensionIsValid()) {
     return;
   }
@@ -420,8 +418,7 @@ void ExtensionActionViewController::ExecuteUserAction(InvocationSource source) {
   }
 }
 
-void ExtensionActionViewController::TriggerPopupForAPI(
-    ShowPopupCallback callback) {
+void ExtensionActionViewModel::TriggerPopupForAPI(ShowPopupCallback callback) {
   RecordInvocationSource(InvocationSource::kApi);
   // This method is called programmatically by an API; it should never be
   // considered a user action.
@@ -429,7 +426,7 @@ void ExtensionActionViewController::TriggerPopupForAPI(
   TriggerPopup(PopupShowAction::kShow, kByUser, std::move(callback));
 }
 
-void ExtensionActionViewController::RegisterCommand() {
+void ExtensionActionViewModel::RegisterCommand() {
   if (!ExtensionIsValid()) {
     return;
   }
@@ -437,20 +434,20 @@ void ExtensionActionViewController::RegisterCommand() {
   platform_delegate_->RegisterCommand();
 }
 
-void ExtensionActionViewController::UnregisterCommand() {
+void ExtensionActionViewModel::UnregisterCommand() {
   platform_delegate_->UnregisterCommand();
 }
 
-void ExtensionActionViewController::TabChangedAt(content::WebContents* contents,
-                                                 int index,
-                                                 TabChangeType change_type) {
+void ExtensionActionViewModel::TabChangedAt(content::WebContents* contents,
+                                            int index,
+                                            TabChangeType change_type) {
   if (change_type == TabChangeType::kLoadingOnly) {
     return;
   }
   NotifyObserver();
 }
 
-void ExtensionActionViewController::OnTabStripModelChanged(
+void ExtensionActionViewModel::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,
     const TabStripSelectionChange& selection) {
@@ -460,13 +457,13 @@ void ExtensionActionViewController::OnTabStripModelChanged(
   NotifyObserver();
 }
 
-void ExtensionActionViewController::OnToolbarActionAdded(
+void ExtensionActionViewModel::OnToolbarActionAdded(
     const ToolbarActionsModel::ActionId& action_id) {}
 
-void ExtensionActionViewController::OnToolbarActionRemoved(
+void ExtensionActionViewModel::OnToolbarActionRemoved(
     const ToolbarActionsModel::ActionId& action_id) {}
 
-void ExtensionActionViewController::OnToolbarActionUpdated(
+void ExtensionActionViewModel::OnToolbarActionUpdated(
     const ToolbarActionsModel::ActionId& action_id) {
   if (action_id != extension()->id()) {
     return;
@@ -474,11 +471,11 @@ void ExtensionActionViewController::OnToolbarActionUpdated(
   NotifyObserver();
 }
 
-void ExtensionActionViewController::OnToolbarModelInitialized() {}
+void ExtensionActionViewModel::OnToolbarModelInitialized() {}
 
-void ExtensionActionViewController::OnToolbarPinnedActionsChanged() {}
+void ExtensionActionViewModel::OnToolbarPinnedActionsChanged() {}
 
-void ExtensionActionViewController::OnExtensionCommandAdded(
+void ExtensionActionViewModel::OnExtensionCommandAdded(
     const std::string& extension_id,
     const std::string& command_name) {
   if (extension_id != extension()->id()) {
@@ -492,7 +489,7 @@ void ExtensionActionViewController::OnExtensionCommandAdded(
   RegisterCommand();
 }
 
-void ExtensionActionViewController::OnExtensionCommandRemoved(
+void ExtensionActionViewModel::OnExtensionCommandRemoved(
     const std::string& extension_id,
     const std::string& command_name) {
   if (extension_id != extension()->id()) {
@@ -511,20 +508,19 @@ void ExtensionActionViewController::OnExtensionCommandRemoved(
   UnregisterCommand();
 }
 
-void ExtensionActionViewController::OnCommandServiceDestroying() {
+void ExtensionActionViewModel::OnCommandServiceDestroying() {
   DCHECK(command_service_observation_.IsObserving());
   command_service_observation_.Reset();
 }
 
-void ExtensionActionViewController::InspectPopup() {
+void ExtensionActionViewModel::InspectPopup() {
   // This method is only triggered through user action (clicking on the context
   // menu entry).
   TriggerPopup(PopupShowAction::kShowAndInspect, /*by_user*/ true,
                ShowPopupCallback());
 }
 
-content::WebContents* ExtensionActionViewController::GetCurrentWebContents()
-    const {
+content::WebContents* ExtensionActionViewModel::GetCurrentWebContents() const {
   tabs::TabInterface* tab = TabListInterface::From(browser_)->GetActiveTab();
   if (!tab) {
     return nullptr;
@@ -532,29 +528,29 @@ content::WebContents* ExtensionActionViewController::GetCurrentWebContents()
   return tab->GetContents();
 }
 
-void ExtensionActionViewController::NotifyObserver() {
+void ExtensionActionViewModel::NotifyObserver() {
   if (!observer_ || !browser_->GetActiveTabInterface()) {
     return;
   }
   observer_.Run();
 }
 
-void ExtensionActionViewController::OnIconUpdated() {
+void ExtensionActionViewModel::OnIconUpdated() {
   NotifyObserver();
 }
 
 extensions::SitePermissionsHelper::SiteInteraction
-ExtensionActionViewController::GetSiteInteraction(
+ExtensionActionViewModel::GetSiteInteraction(
     content::WebContents* web_contents) const {
   return extensions::SitePermissionsHelper(profile_).GetSiteInteraction(
       *extension(), web_contents);
 }
 
-bool ExtensionActionViewController::ExtensionIsValid() const {
+bool ExtensionActionViewModel::ExtensionIsValid() const {
   return extension_registry_->enabled_extensions().Contains(extension_->id());
 }
 
-bool ExtensionActionViewController::GetExtensionCommand(
+bool ExtensionActionViewModel::GetExtensionCommand(
     extensions::Command* command) const {
   DCHECK(command);
   if (!ExtensionIsValid()) {
@@ -567,8 +563,8 @@ bool ExtensionActionViewController::GetExtensionCommand(
       CommandService::ACTIVE, command, nullptr);
 }
 
-ToolbarActionViewController::HoverCardState
-ExtensionActionViewController::GetHoverCardState(
+ToolbarActionViewModel::HoverCardState
+ExtensionActionViewModel::GetHoverCardState(
     content::WebContents* web_contents) const {
   DCHECK(web_contents);
 
@@ -593,7 +589,7 @@ ExtensionActionViewController::GetHoverCardState(
   return state;
 }
 
-bool ExtensionActionViewController::CanHandleAccelerators() const {
+bool ExtensionActionViewModel::CanHandleAccelerators() const {
   if (!ExtensionIsValid()) {
     return false;
   }
@@ -619,15 +615,15 @@ bool ExtensionActionViewController::CanHandleAccelerators() const {
 }
 
 std::unique_ptr<IconWithBadgeImageSource>
-ExtensionActionViewController::GetIconImageSourceForTesting(
+ExtensionActionViewModel::GetIconImageSourceForTesting(
     content::WebContents* web_contents,
     const gfx::Size& size) {
   return GetIconImageSource(web_contents, size);
 }
 
-void ExtensionActionViewController::TriggerPopup(PopupShowAction show_action,
-                                                 bool by_user,
-                                                 ShowPopupCallback callback) {
+void ExtensionActionViewModel::TriggerPopup(PopupShowAction show_action,
+                                            bool by_user,
+                                            ShowPopupCallback callback) {
   if (!ExtensionIsValid()) {
     return;
   }
@@ -651,9 +647,8 @@ void ExtensionActionViewController::TriggerPopup(PopupShowAction show_action,
 }
 
 std::unique_ptr<IconWithBadgeImageSource>
-ExtensionActionViewController::GetIconImageSource(
-    content::WebContents* web_contents,
-    const gfx::Size& size) {
+ExtensionActionViewModel::GetIconImageSource(content::WebContents* web_contents,
+                                             const gfx::Size& size) {
   // `web_contents` may be null during tab closure or in tests.  Fall back on a
   // generic color provider.
   auto get_color_provider_callback = base::BindRepeating(

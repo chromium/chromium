@@ -18,10 +18,10 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
-#include "chrome/browser/ui/extensions/extension_action_view_controller.h"
+#include "chrome/browser/ui/extensions/extension_action_view_model.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_hover_card_types.h"
-#include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
+#include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/extensions/browser_action_drag_data.h"
@@ -261,11 +261,11 @@ void ExtensionsToolbarContainer::RemoveAction(
   // could be handled inside the model and be invisible to the container when
   // permissions are unchanged.
 
-  auto iter = std::ranges::find(actions_, action_id,
-                                &ToolbarActionViewController::GetId);
+  auto iter =
+      std::ranges::find(actions_, action_id, &ToolbarActionViewModel::GetId);
   CHECK(iter != actions_.end());
   // Ensure the action outlives the UI element to perform any cleanup.
-  std::unique_ptr<ToolbarActionViewController> controller = std::move(*iter);
+  std::unique_ptr<ToolbarActionViewModel> controller = std::move(*iter);
   actions_.erase(iter);
 
   // Undo the popout, if necessary. Actions expect to not be popped out while
@@ -285,7 +285,7 @@ void ExtensionsToolbarContainer::RemoveAction(
 
 void ExtensionsToolbarContainer::UpdateAction(
     const ToolbarActionsModel::ActionId& action_id) {
-  ToolbarActionViewController* action = GetActionForId(action_id);
+  ToolbarActionViewModel* action = GetActionForId(action_id);
   if (action) {
     ToolbarActionView* action_view = GetViewForId(action_id);
     action_view->UpdateState();
@@ -328,7 +328,7 @@ void ExtensionsToolbarContainer::UpdateExtensionsButton(
                                    kBlockAllExtensions) {
     extensions_button_state =
         ExtensionsToolbarButton::State::kAllExtensionsBlocked;
-  } else if (ExtensionActionViewController::AnyActionHasCurrentSiteAccess(
+  } else if (ExtensionActionViewModel::AnyActionHasCurrentSiteAccess(
                  actions_, web_contents)) {
     extensions_button_state =
         ExtensionsToolbarButton::State::kAnyExtensionHasAccess;
@@ -552,7 +552,7 @@ void ExtensionsToolbarContainer::AnchorAndShowWidgetImmediately(
   widget->Show();
 }
 
-ToolbarActionViewController* ExtensionsToolbarContainer::GetActionForId(
+ToolbarActionViewModel* ExtensionsToolbarContainer::GetActionForId(
     const std::string& action_id) {
   for (const auto& action : actions_) {
     if (action->GetId() == action_id) {
@@ -581,7 +581,7 @@ void ExtensionsToolbarContainer::UndoPopOut() {
 }
 
 void ExtensionsToolbarContainer::SetPopupOwner(
-    ToolbarActionViewController* popup_owner) {
+    ToolbarActionViewModel* popup_owner) {
   // We should never be setting a popup owner when one already exists, and
   // never unsetting one when one wasn't set.
   DCHECK((popup_owner_ != nullptr) ^ (popup_owner != nullptr));
@@ -632,7 +632,7 @@ bool ExtensionsToolbarContainer::ShowToolbarActionPopupForAPICall(
     return false;
   }
 
-  ToolbarActionViewController* action = GetActionForId(action_id);
+  ToolbarActionViewModel* action = GetActionForId(action_id);
   DCHECK(action);
   action->TriggerPopupForAPI(std::move(callback));
 
@@ -681,7 +681,7 @@ void ExtensionsToolbarContainer::ReorderAllChildViews() {
 
 void ExtensionsToolbarContainer::CreateActionForId(
     const ToolbarActionsModel::ActionId& action_id) {
-  actions_.push_back(ExtensionActionViewController::Create(
+  actions_.push_back(ExtensionActionViewModel::Create(
       action_id, browser_,
       std::make_unique<ExtensionActionPlatformDelegateViews>(browser_.get(),
                                                              this)));
@@ -773,8 +773,7 @@ void ExtensionsToolbarContainer::WriteDragDataForView(
 
   // Fill in the remaining info.
   size_t index = it - model_->pinned_action_ids().cbegin();
-  BrowserActionDragData drag_data(extension_view->view_controller()->GetId(),
-                                  index);
+  BrowserActionDragData drag_data(extension_view->view_model()->GetId(), index);
   drag_data.Write(browser_->profile(), data);
 }
 
@@ -920,8 +919,8 @@ size_t ExtensionsToolbarContainer::WidthToIconCount(int x_offset) {
 
 ui::ImageModel ExtensionsToolbarContainer::GetExtensionIcon(
     ToolbarActionView* extension_view) {
-  return extension_view->view_controller()->GetIcon(GetCurrentWebContents(),
-                                                    GetToolbarActionSize());
+  return extension_view->view_model()->GetIcon(GetCurrentWebContents(),
+                                               GetToolbarActionSize());
 }
 
 void ExtensionsToolbarContainer::SetExtensionIconVisibility(

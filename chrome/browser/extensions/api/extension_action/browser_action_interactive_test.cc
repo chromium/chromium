@@ -22,7 +22,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/extensions/extension_action_test_helper.h"
-#include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
+#include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -224,14 +224,14 @@ class BrowserActionInteractiveTest : public ExtensionApiTest {
 
   // Returns whether the popup native view exists.
   bool HasPopupNativeView() {
-    ToolbarActionViewController* popup_owner =
+    ToolbarActionViewModel* popup_owner =
         extensions_container()->popup_owner_for_testing();
     return popup_owner ? !!popup_owner->GetPopupNativeView() : false;
   }
 
   // Trigger a focus loss to close the popup.
   void ClosePopupViaFocusLoss() {
-    ToolbarActionViewController* popup_owner =
+    ToolbarActionViewModel* popup_owner =
         extensions_container()->popup_owner_for_testing();
     EXPECT_TRUE(popup_owner);
     EXPECT_TRUE(popup_owner->GetPopupNativeView());
@@ -587,7 +587,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveViewsTest,
 IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, DestroyHWNDDoesNotCrash) {
   OpenPopupViaAPI(false);
 
-  ToolbarActionViewController* popup_owner =
+  ToolbarActionViewModel* popup_owner =
       extensions_container()->popup_owner_for_testing();
   ASSERT_TRUE(popup_owner);
   const gfx::NativeView popup_view = popup_owner->GetPopupNativeView();
@@ -994,14 +994,14 @@ class NavigatingExtensionPopupInteractiveTest
     ASSERT_FALSE(HasFailure());
 
     // Verify extension's action exists.
-    ToolbarActionViewController* action_controller =
+    ToolbarActionViewModel* action_controller =
         extensions_container()->GetActionForId(popup_extension().id());
     ASSERT_TRUE(action_controller);
 
     // Trigger the extension's popup by executing its action.
     content::CreateAndLoadWebContentsObserver popup_observer;
     action_controller->ExecuteUserAction(
-        ToolbarActionViewController::InvocationSource::kToolbarButton);
+        ToolbarActionViewModel::InvocationSource::kToolbarButton);
     content::WebContents* popup = popup_observer.Wait();
 
     // Verify popup is visible.

@@ -6,7 +6,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "build/build_config.h"
-#include "chrome/browser/ui/toolbar/test_toolbar_action_view_controller.h"
+#include "chrome/browser/ui/toolbar/test_toolbar_action_view_model.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_item_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_unittest.h"
@@ -44,8 +44,7 @@ class ExtensionMenuItemViewTest : public ExtensionsToolbarUnitTest,
   raw_ptr<ExtensionsMenuButton, DanglingUntriaged> primary_button_ = nullptr;
   raw_ptr<HoverButton, DanglingUntriaged> pin_button_ = nullptr;
   raw_ptr<HoverButton, DanglingUntriaged> context_menu_button_ = nullptr;
-  raw_ptr<TestToolbarActionViewController, DanglingUntriaged> controller_ =
-      nullptr;
+  raw_ptr<TestToolbarActionViewModel, DanglingUntriaged> controller_ = nullptr;
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -69,7 +68,7 @@ void ExtensionMenuItemViewTest::SetUp() {
 #endif
   widget_->Init(std::move(init_params));
 
-  auto controller = std::make_unique<TestToolbarActionViewController>("hello");
+  auto controller = std::make_unique<TestToolbarActionViewModel>("hello");
   controller_ = controller.get();
   controller_->SetActionName(initial_extension_name_);
   controller_->SetTooltip(initial_tooltip_);

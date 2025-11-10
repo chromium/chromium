@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_TOOLBAR_TOOLBAR_ACTION_VIEW_CONTROLLER_H_
-#define CHROME_BROWSER_UI_TOOLBAR_TOOLBAR_ACTION_VIEW_CONTROLLER_H_
+#ifndef CHROME_BROWSER_UI_TOOLBAR_TOOLBAR_ACTION_VIEW_MODEL_H_
+#define CHROME_BROWSER_UI_TOOLBAR_TOOLBAR_ACTION_VIEW_MODEL_H_
 
 #include <string>
 
@@ -29,7 +29,7 @@ class MenuModel;
 // The basic controller class for an action that is shown on the toolbar -
 // an extension action (like browser actions) or a component action (like
 // Media Router).
-class ToolbarActionViewController {
+class ToolbarActionViewModel {
  public:
   // The source for the action invocation. Used in UMA; do not reorder or delete
   // entries.
@@ -92,7 +92,7 @@ class ToolbarActionViewController {
     AdminPolicy policy;
   };
 
-  virtual ~ToolbarActionViewController() = default;
+  virtual ~ToolbarActionViewModel() = default;
 
   // Returns the unique ID of this particular action. For extensions, this is
   // the extension id; for component actions, this is the name of the component.
@@ -164,4 +164,4 @@ class ToolbarActionViewController {
       content::WebContents* web_contents) const = 0;
 };
 
-#endif  // CHROME_BROWSER_UI_TOOLBAR_TOOLBAR_ACTION_VIEW_CONTROLLER_H_
+#endif  // CHROME_BROWSER_UI_TOOLBAR_TOOLBAR_ACTION_VIEW_MODEL_H_

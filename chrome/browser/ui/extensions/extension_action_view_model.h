@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_ACTION_VIEW_CONTROLLER_H_
-#define CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_ACTION_VIEW_CONTROLLER_H_
+#ifndef CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_ACTION_VIEW_MODEL_H_
+#define CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_ACTION_VIEW_MODEL_H_
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
@@ -13,7 +13,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_hover_card_types.h"
-#include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
+#include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "extensions/browser/extension_action_icon_factory.h"
 #include "extensions/browser/extension_host.h"
@@ -45,31 +45,30 @@ class ImageModel;
 // undefined values, except GetId().
 //
 // TODO(crbug.com/437774758): Enable this class on Desktop Android.
-class ExtensionActionViewController
-    : public ToolbarActionViewController,
+class ExtensionActionViewModel
+    : public ToolbarActionViewModel,
       public TabStripModelObserver,
       public ToolbarActionsModel::Observer,
       public extensions::ExtensionActionIconFactory::Observer,
       public extensions::CommandService::Observer,
       public extensions::ExtensionContextMenuModel::PopupDelegate {
  public:
-  static std::unique_ptr<ExtensionActionViewController> Create(
+  static std::unique_ptr<ExtensionActionViewModel> Create(
       const extensions::ExtensionId& extension_id,
       BrowserWindowInterface* browser,
       std::unique_ptr<ExtensionActionPlatformDelegate> platform_delegate);
 
   // Returns whether any of `actions` given have access to the `web_contents`.
   static bool AnyActionHasCurrentSiteAccess(
-      const std::vector<std::unique_ptr<ToolbarActionViewController>>& actions,
+      const std::vector<std::unique_ptr<ToolbarActionViewModel>>& actions,
       content::WebContents* web_contents);
 
-  ExtensionActionViewController(const ExtensionActionViewController&) = delete;
-  ExtensionActionViewController& operator=(
-      const ExtensionActionViewController&) = delete;
+  ExtensionActionViewModel(const ExtensionActionViewModel&) = delete;
+  ExtensionActionViewModel& operator=(const ExtensionActionViewModel&) = delete;
 
-  ~ExtensionActionViewController() override;
+  ~ExtensionActionViewModel() override;
 
-  // ToolbarActionViewController:
+  // ToolbarActionViewModel:
   std::string GetId() const override;
   void SetUpdateObserver(base::RepeatingClosure observer) override;
   ui::ImageModel GetIcon(content::WebContents* web_contents,
@@ -80,7 +79,7 @@ class ExtensionActionViewController
   std::u16string GetAccessibleName(
       content::WebContents* web_contents) const override;
   std::u16string GetTooltip(content::WebContents* web_contents) const override;
-  ToolbarActionViewController::HoverCardState GetHoverCardState(
+  ToolbarActionViewModel::HoverCardState GetHoverCardState(
       content::WebContents* web_contents) const override;
   extensions::SitePermissionsHelper::SiteInteraction GetSiteInteraction(
       content::WebContents* web_contents) const override;
@@ -152,7 +151,7 @@ class ExtensionActionViewController
 
  private:
   // New instances should be instantiated with Create().
-  ExtensionActionViewController(
+  ExtensionActionViewModel(
       scoped_refptr<const extensions::Extension> extension,
       BrowserWindowInterface* browser,
       extensions::ExtensionAction* extension_action,
@@ -231,4 +230,4 @@ class ExtensionActionViewController
       command_service_observation_{this};
 };
 
-#endif  // CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_ACTION_VIEW_CONTROLLER_H_
+#endif  // CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_ACTION_VIEW_MODEL_H_

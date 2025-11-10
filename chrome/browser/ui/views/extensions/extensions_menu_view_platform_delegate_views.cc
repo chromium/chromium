@@ -19,10 +19,10 @@
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/extensions/extension_action_view_controller.h"
+#include "chrome/browser/ui/extensions/extension_action_view_model.h"
 #include "chrome/browser/ui/extensions/extensions_menu_view_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
-#include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
+#include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/extensions/extension_action_platform_delegate_views.h"
@@ -346,7 +346,7 @@ void ExtensionsMenuViewPlatformDelegateViews::OnToolbarPinnedActionsChanged() {
   std::vector<ExtensionMenuItemView*> menu_items = main_page->GetMenuItems();
   for (auto* menu_item : menu_items) {
     bool is_action_pinned =
-        toolbar_model_->IsActionPinned(menu_item->view_controller()->GetId());
+        toolbar_model_->IsActionPinned(menu_item->view_model()->GetId());
     menu_item->UpdateContextMenuButton(is_action_pinned);
   }
 }
@@ -610,11 +610,11 @@ void ExtensionsMenuViewPlatformDelegateViews::UpdateMainPage(
   std::vector<ExtensionMenuItemView*> menu_items = main_page->GetMenuItems();
   for (auto* menu_item : menu_items) {
     const extensions::Extension* extension =
-        GetExtension(browser_, menu_item->view_controller()->GetId());
+        GetExtension(browser_, menu_item->view_model()->GetId());
     CHECK(extension);
 
     ExtensionsMenuViewModel::MenuItemInfo menu_item_info =
-        menu_model_->GetMenuItemInfo(menu_item->view_controller());
+        menu_model_->GetMenuItemInfo(menu_item->view_model());
     menu_item->Update(menu_item_info);
   }
 }
@@ -632,7 +632,7 @@ void ExtensionsMenuViewPlatformDelegateViews::UpdateSitePermissionsPage(
   const GURL& url = web_contents->GetLastCommittedURL();
   const int icon_size = ChromeLayoutProvider::Get()->GetDistanceMetric(
       DISTANCE_EXTENSIONS_MENU_EXTENSION_ICON_SIZE);
-  ToolbarActionViewController* action_controller =
+  ToolbarActionViewModel* action_controller =
       extensions_container_->GetActionForId(extension_id);
 
   std::u16string extension_name = action_controller->GetActionName();
@@ -689,8 +689,8 @@ void ExtensionsMenuViewPlatformDelegateViews::InsertMenuItemMainPage(
     ExtensionsMenuMainPageView* main_page,
     const extensions::ExtensionId& extension_id,
     int index) {
-  std::unique_ptr<ExtensionActionViewController> action_controller =
-      ExtensionActionViewController::Create(
+  std::unique_ptr<ExtensionActionViewModel> action_controller =
+      ExtensionActionViewModel::Create(
           extension_id, browser_,
           std::make_unique<ExtensionActionPlatformDelegateViews>(
               browser_, extensions_container_));
@@ -708,7 +708,7 @@ void ExtensionsMenuViewPlatformDelegateViews::
         const extensions::ExtensionId& extension_id,
         int index,
         content::WebContents* web_contents) {
-  ToolbarActionViewController* action_controller =
+  ToolbarActionViewModel* action_controller =
       extensions_container_->GetActionForId(extension_id);
   std::u16string name = action_controller->GetActionName();
   const int icon_size = ChromeLayoutProvider::Get()->GetDistanceMetric(

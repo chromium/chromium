@@ -8,7 +8,7 @@
 #include <string_view>
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
+#include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
 #include "chrome/browser/ui/views/tabs/fade_label_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_action_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -38,7 +38,7 @@ class ToolbarActionHoverCardBubbleView
   // Updates the hover card content with the provided values in `web_contents`.
   void UpdateCardContent(const std::u16string& extension_name,
                          const std::u16string& action_title,
-                         ToolbarActionViewController::HoverCardState state,
+                         ToolbarActionViewModel::HoverCardState state,
                          content::WebContents* web_contents);
 
   // Update the text fade to the given percent, which should be between 0 and 1.

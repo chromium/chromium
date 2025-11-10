@@ -15,7 +15,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_list_interface.h"
-#include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
+#include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_view_platform_delegate_views.h"
 #include "components/tabs/public/tab_interface.h"
@@ -490,7 +490,7 @@ void ExtensionsMenuViewModel::ReloadWebContents() {
 }
 
 ExtensionsMenuViewModel::MenuItemInfo ExtensionsMenuViewModel::GetMenuItemInfo(
-    ToolbarActionViewController* action_controller) {
+    ToolbarActionViewModel* action_controller) {
   Profile* profile = browser_->GetProfile();
   // TODO(crbug.com/456285449): If there is an action controller, then the
   // extension should be enabled. We should retrieve the extension from the

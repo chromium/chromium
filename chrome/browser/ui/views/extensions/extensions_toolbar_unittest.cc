@@ -15,7 +15,7 @@
 #include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
 #include "chrome/browser/extensions/permissions/site_permissions_helper.h"
 #include "chrome/browser/extensions/test_extension_system.h"
-#include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
+#include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
 #include "components/crx_file/id_util.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/disable_reason.h"
@@ -235,7 +235,7 @@ ExtensionsToolbarUnitTest::GetPinnedExtensionViews() {
       // queries the underlying model and not GetVisible(), as that relies on an
       // animation running, which is not reliable in unit tests on Mac.
       const bool is_visible = extensions_container()->IsActionVisibleOnToolbar(
-          action->view_controller()->GetId());
+          action->view_model()->GetId());
 #else
       const bool is_visible = action->GetVisible();
 #endif
@@ -249,7 +249,7 @@ ExtensionsToolbarUnitTest::GetPinnedExtensionViews() {
 
 std::vector<std::string> ExtensionsToolbarUnitTest::GetPinnedExtensionNames() {
   return base::ToVector(GetPinnedExtensionViews(), [](ToolbarActionView* view) {
-    return base::UTF16ToUTF8(view->view_controller()->GetActionName());
+    return base::UTF16ToUTF8(view->view_model()->GetActionName());
   });
 }
 

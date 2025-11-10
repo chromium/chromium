@@ -9,7 +9,7 @@
 
 class Browser;
 class ExtensionsToolbarContainer;
-class ToolbarActionViewController;
+class ToolbarActionViewModel;
 
 namespace content {
 class WebContents;
@@ -26,7 +26,7 @@ ExtensionsToolbarContainer* GetExtensionsToolbarContainer(
     gfx::NativeWindow parent);
 
 // Returns the icon corresponding to `action` for the given `web_contents`.
-ui::ImageModel GetIcon(ToolbarActionViewController* action,
+ui::ImageModel GetIcon(ToolbarActionViewModel* action,
                        content::WebContents* web_contents);
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSION_VIEW_UTILS_H_
