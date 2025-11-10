@@ -248,10 +248,6 @@ void Installer::InstallWithSyncPrimitives(
   std::move(callback).Run(result);
 }
 
-void Installer::OnUpdateError(int error) {
-  LOG(ERROR) << "updater error: " << error << " for " << app_id_;
-}
-
 void Installer::Install(const base::FilePath& unpack_path,
                         const std::string& /*public_key*/,
                         std::unique_ptr<InstallParams> install_params,

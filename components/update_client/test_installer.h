@@ -25,8 +25,6 @@ class TestInstaller : public CrxInstaller {
  public:
   TestInstaller();
 
-  void OnUpdateError(int error) override;
-
   void Install(const base::FilePath& unpack_path,
                const std::string& public_key,
                std::unique_ptr<InstallParams> install_params,
@@ -37,8 +35,6 @@ class TestInstaller : public CrxInstaller {
       const std::string& file) override;
 
   bool Uninstall() override;
-
-  int error() const { return error_; }
 
   int install_count() const { return install_count_; }
 
@@ -60,7 +56,6 @@ class TestInstaller : public CrxInstaller {
                        ProgressCallback progress_callback,
                        const Result& result);
 
-  int error_;
   int install_count_;
 
  private:

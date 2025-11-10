@@ -204,11 +204,6 @@ class CrxInstaller : public base::RefCountedThreadSafe<CrxInstaller> {
   using ProgressCallback = base::RepeatingCallback<void(int progress)>;
   using Callback = base::OnceCallback<void(const Result& result)>;
 
-  // Called on the main sequence when there was a problem unpacking or
-  // verifying the CRX. |error| is a non-zero value which is only meaningful
-  // to the caller.
-  virtual void OnUpdateError(int error) = 0;
-
   // Called by the update service when a CRX has been unpacked
   // and it is ready to be installed. This method may be called from a
   // sequence other than the main sequence.

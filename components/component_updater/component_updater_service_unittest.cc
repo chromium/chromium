@@ -51,7 +51,6 @@ using ::testing::Unused;
 class MockInstaller : public update_client::CrxInstaller {
  public:
   MockInstaller() = default;
-  MOCK_METHOD1(OnUpdateError, void(int error));
   MOCK_METHOD5(Install,
                void(const base::FilePath& unpack_path,
                     const std::string& public_key,

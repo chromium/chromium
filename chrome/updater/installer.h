@@ -134,7 +134,6 @@ class Installer final : public update_client::CrxInstaller {
   ~Installer() override;
 
   // Overrides from update_client::CrxInstaller.
-  void OnUpdateError(int error) override;
   void Install(const base::FilePath& unpack_path,
                const std::string& public_key,
                std::unique_ptr<InstallParams> install_params,

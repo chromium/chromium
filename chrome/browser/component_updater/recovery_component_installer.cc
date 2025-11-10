@@ -246,8 +246,6 @@ class RecoveryComponentInstaller : public update_client::CrxInstaller {
   RecoveryComponentInstaller(const base::Version& version, PrefService* prefs);
 
   // ComponentInstaller implementation:
-  void OnUpdateError(int error) override;
-
   void Install(const base::FilePath& unpack_path,
                const std::string& public_key,
                std::unique_ptr<InstallParams> install_params,
@@ -314,10 +312,6 @@ RecoveryComponentInstaller::RecoveryComponentInstaller(
     const base::Version& version,
     PrefService* prefs)
     : current_version_(version), prefs_(prefs) {}
-
-void RecoveryComponentInstaller::OnUpdateError(int error) {
-  VLOG(2) << "Recovery component update error: " << error;
-}
 
 void WaitForInstallToComplete(base::Process process,
                               const base::FilePath& installer_folder,

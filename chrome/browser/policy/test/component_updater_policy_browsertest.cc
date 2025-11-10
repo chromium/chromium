@@ -164,7 +164,6 @@ ComponentUpdaterPolicyTest::MakeComponentRegistration(
       DoInstall(unpack_path, public_key, std::move(callback));
     }
 
-    MOCK_METHOD1(OnUpdateError, void(int error));
     MOCK_METHOD3(DoInstall,
                  void(const base::FilePath& unpack_path,
                       const std::string& public_key,

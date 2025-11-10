@@ -142,10 +142,6 @@ void ComponentInstaller::Register(
                      std::move(callback)));
 }
 
-void ComponentInstaller::OnUpdateError(int error) {
-  VLOG(0) << "Component update error: " << error;
-}
-
 Result ComponentInstaller::InstallHelper(const base::FilePath& unpack_path,
                                          base::Value::Dict* manifest,
                                          base::Version* version,
