@@ -1142,8 +1142,9 @@ TEST_F(AutofillControllerJsTest, InferLabelFromPreviousTextBrAndSpan) {
 
 TEST_F(AutofillControllerJsTest, InferLabelFromListItem) {
   TestInputElementDataEvaluation(
-      @"__gCrWeb.fill.inferLabelFromListItem", @"label",
-      GetTestFormInputElementWithLabelFromListItem(), @"input");
+      @"__gCrWeb.getRegisteredApi('fill_test_api')."
+      @"getFunction('inferLabelFromListItem')",
+      @"label", GetTestFormInputElementWithLabelFromListItem(), @"input");
 }
 
 TEST_F(AutofillControllerJsTest, InferLabelFromTableColumnTD) {
