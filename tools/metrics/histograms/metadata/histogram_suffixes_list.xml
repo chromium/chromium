@@ -939,18 +939,6 @@ chromium-metrics-reviews@google.com.
       name="Net.QuicSession.ConnectRandomPortRequiringConfirmation"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="SecurityInterstitialSSLType" separator="."
-    ordering="prefix">
-  <suffix name="bad_clock" label=""/>
-  <suffix name="https_first_mode" label=""/>
-  <suffix name="legacy_tls" label=""/>
-  <suffix name="ssl_nonoverridable" label=""/>
-  <suffix name="ssl_overridable" label=""/>
-  <affected-histogram name="interstitial.decision"/>
-  <affected-histogram name="interstitial.decision.repeat_visit"/>
-  <affected-histogram name="interstitial.interaction"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="ServiceWorker_EventType" separator="_">
 <!-- TODO(crbug.com/40858621): rewrite with the new way. -->
 
