@@ -33,6 +33,8 @@ fillApi.addFunction(
     'inferLabelFromTableColumn',
     elementInferenceUtil.inferLabelFromTableColumn);
 fillApi.addFunction(
+    'inferLabelFromTableRow', elementInferenceUtil.inferLabelFromTableRow);
+fillApi.addFunction(
     'isAutofillableElement', inferenceUtil.isAutofillableElement);
 fillApi.addFunction(
     'isAutofillableInputElement', inferenceUtil.isAutofillableInputElement);

@@ -290,8 +290,8 @@ export function inferLabelFromTableColumn(element: FormControlElement):
  * @return The label of element.
  */
 // TODO(crbug.com/454044167): Cleanup autofill TS type casting.
-gCrWebLegacy.fill.inferLabelFromTableRow =
-    function(element: FormControlElement): inferenceUtil.InferredLabel|null {
+export function inferLabelFromTableRow(element: FormControlElement):
+    inferenceUtil.InferredLabel|null {
   if (!element) {
     return null;
   }
@@ -402,7 +402,7 @@ gCrWebLegacy.fill.inferLabelFromTableRow =
     previous = previous.previousSibling;
   }
   return r;
-};
+}
 
 /**
  * Helper for |InferLabelForElement()| that infers a label, if possible, from
@@ -614,7 +614,7 @@ gCrWebLegacy.fill.inferLabelForElement =
     } else if (tagName === 'TD') {
       r = inferLabelFromTableColumn(element);
       if (!r) {
-        r = gCrWebLegacy.fill.inferLabelFromTableRow(element);
+        r = inferLabelFromTableRow(element);
       }
     } else if (tagName === 'DD') {
       r = gCrWebLegacy.fill.inferLabelFromDefinitionList(element);

@@ -1170,8 +1170,9 @@ TEST_F(AutofillControllerJsTest, InferLabelFromTableColumnNested) {
 
 TEST_F(AutofillControllerJsTest, InferLabelFromTableRow) {
   TestInputElementDataEvaluation(
-      @"__gCrWeb.fill.inferLabelFromTableRow", @"label",
-      GetTestFormInputElementWithLabelFromTableRow(), @"input");
+      @"__gCrWeb.getRegisteredApi('fill_test_api')."
+      @"getFunction('inferLabelFromTableRow')",
+      @"label", GetTestFormInputElementWithLabelFromTableRow(), @"input");
 }
 
 TEST_F(AutofillControllerJsTest, InferLabelFromDivTable) {
