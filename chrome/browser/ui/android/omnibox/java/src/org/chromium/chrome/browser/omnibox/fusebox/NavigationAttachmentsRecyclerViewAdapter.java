@@ -18,13 +18,13 @@ import java.lang.annotation.RetentionPolicy;
 @NullMarked
 class NavigationAttachmentsRecyclerViewAdapter extends SimpleRecyclerViewAdapter {
     @IntDef({
-        NavigationAttachmentItemType.ATTACHMENT_ITEM,
-        NavigationAttachmentItemType.ATTACHMENT_IMAGE,
-        NavigationAttachmentItemType.ATTACHMENT_TAB
+        FuseboxAttachmentType.ATTACHMENT_FILE,
+        FuseboxAttachmentType.ATTACHMENT_IMAGE,
+        FuseboxAttachmentType.ATTACHMENT_TAB
     })
     @Retention(RetentionPolicy.SOURCE)
-    public @interface NavigationAttachmentItemType {
-        int ATTACHMENT_ITEM = 0;
+    public @interface FuseboxAttachmentType {
+        int ATTACHMENT_FILE = 0;
         int ATTACHMENT_IMAGE = 1;
         int ATTACHMENT_TAB = 2;
     }
@@ -32,28 +32,28 @@ class NavigationAttachmentsRecyclerViewAdapter extends SimpleRecyclerViewAdapter
     NavigationAttachmentsRecyclerViewAdapter(ModelList data) {
         super(data);
         registerType(
-                NavigationAttachmentItemType.ATTACHMENT_ITEM,
+                FuseboxAttachmentType.ATTACHMENT_FILE,
                 (parent) -> {
                     return parent.getContext()
                             .getSystemService(android.view.LayoutInflater.class)
                             .inflate(R.layout.fusebox_attachment_layout, parent, false);
                 },
-                NavigationAttachmentItemViewBinder::bind);
+                FuseboxAttachmentViewBinder::bind);
         registerType(
-                NavigationAttachmentItemType.ATTACHMENT_IMAGE,
+                FuseboxAttachmentType.ATTACHMENT_IMAGE,
                 (parent) -> {
                     return parent.getContext()
                             .getSystemService(android.view.LayoutInflater.class)
                             .inflate(R.layout.fusebox_image_attachment_layout, parent, false);
                 },
-                NavigationAttachmentItemViewBinder::bind);
+                FuseboxAttachmentViewBinder::bind);
         registerType(
-                NavigationAttachmentItemType.ATTACHMENT_TAB,
+                FuseboxAttachmentType.ATTACHMENT_TAB,
                 (parent) -> {
                     return parent.getContext()
                             .getSystemService(android.view.LayoutInflater.class)
                             .inflate(R.layout.fusebox_attachment_layout, parent, false);
                 },
-                NavigationAttachmentItemViewBinder::bind);
+                FuseboxAttachmentViewBinder::bind);
     }
 }

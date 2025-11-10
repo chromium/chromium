@@ -10,9 +10,9 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
-/** The properties associated with a single navigation attachment item. */
+/** The properties associated with a single fusebox attachment item. */
 @NullMarked
-class NavigationAttachmentItemProperties {
+class FuseboxAttachmentProperties {
     /** The handler for a remove button click. */
     public static final WritableObjectPropertyKey<Runnable> ON_REMOVE =
             new WritableObjectPropertyKey<>();

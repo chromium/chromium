@@ -33,8 +33,8 @@ import org.chromium.base.task.AsyncTask;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.R;
-import org.chromium.chrome.browser.omnibox.fusebox.AttachmentDetailsFetcher.AttachmentDetails;
-import org.chromium.chrome.browser.omnibox.fusebox.NavigationAttachmentsRecyclerViewAdapter.NavigationAttachmentItemType;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentDetailsFetcher.AttachmentDetails;
+import org.chromium.chrome.browser.omnibox.fusebox.NavigationAttachmentsRecyclerViewAdapter.FuseboxAttachmentType;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -291,7 +291,7 @@ class NavigationAttachmentsMediator {
         if (TextUtils.isEmpty(token)) return;
         AttachmentDetails attachmentDetails =
                 new AttachmentDetails(
-                        NavigationAttachmentItemType.ATTACHMENT_TAB,
+                        FuseboxAttachmentType.ATTACHMENT_TAB,
                         new BitmapDrawable(
                                 mContext.getResources(),
                                 OmniboxResourceProvider.getFaviconBitmapForTab(tab)),
@@ -372,7 +372,7 @@ class NavigationAttachmentsMediator {
                     byte[] dataBytes = byteArrayOutputStream.toByteArray();
                     AttachmentDetails attachmentDetails =
                             new AttachmentDetails(
-                                    NavigationAttachmentItemType.ATTACHMENT_IMAGE,
+                                    FuseboxAttachmentType.ATTACHMENT_IMAGE,
                                     new BitmapDrawable(mContext.getResources(), bitmap),
                                     "",
                                     "image/png",
@@ -412,7 +412,7 @@ class NavigationAttachmentsMediator {
                     for (var uri : uris) {
                         fetchAttachmentDetails(
                                 uri,
-                                NavigationAttachmentItemType.ATTACHMENT_IMAGE,
+                                FuseboxAttachmentType.ATTACHMENT_IMAGE,
                                 this::uploadAndAddAttachment);
                     }
                 },
@@ -440,7 +440,7 @@ class NavigationAttachmentsMediator {
                     for (var uri : uris) {
                         fetchAttachmentDetails(
                                 uri,
-                                NavigationAttachmentItemType.ATTACHMENT_ITEM,
+                                FuseboxAttachmentType.ATTACHMENT_FILE,
                                 this::uploadAndAddAttachment);
                     }
                 },
@@ -466,7 +466,7 @@ class NavigationAttachmentsMediator {
 
                 AttachmentDetails attachmentDetails =
                         new AttachmentDetails(
-                                NavigationAttachmentItemType.ATTACHMENT_IMAGE,
+                                FuseboxAttachmentType.ATTACHMENT_IMAGE,
                                 new BitmapDrawable(mContext.getResources(), bitmap),
                                 "",
                                 "image/png",
@@ -479,9 +479,10 @@ class NavigationAttachmentsMediator {
     @VisibleForTesting
     void fetchAttachmentDetails(
             Uri uri,
-            @NavigationAttachmentItemType int type,
-            Callback<AttachmentDetailsFetcher.AttachmentDetails> callback) {
-        new AttachmentDetailsFetcher(mContext, mContext.getContentResolver(), uri, type, callback)
+            @FuseboxAttachmentType int type,
+            Callback<FuseboxAttachmentDetailsFetcher.AttachmentDetails> callback) {
+        new FuseboxAttachmentDetailsFetcher(
+                        mContext, mContext.getContentResolver(), uri, type, callback)
                 .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
@@ -491,30 +492,28 @@ class NavigationAttachmentsMediator {
      * @param attachmentDetails The details of the attachment to add.
      */
     /* package */ void uploadAndAddAttachment(
-            AttachmentDetailsFetcher.AttachmentDetails attachmentDetails) {
+            FuseboxAttachmentDetailsFetcher.AttachmentDetails attachmentDetails) {
         String token = uploadAttachment(attachmentDetails);
         if (TextUtils.isEmpty(token)) return;
         addAttachment(attachmentDetails, token);
     }
 
     private void addAttachment(
-            AttachmentDetailsFetcher.AttachmentDetails attachmentDetails, String token) {
+            FuseboxAttachmentDetailsFetcher.AttachmentDetails attachmentDetails, String token) {
         activateAiMode();
 
         PropertyModel model =
-                new PropertyModel.Builder(NavigationAttachmentItemProperties.ALL_KEYS)
+                new PropertyModel.Builder(FuseboxAttachmentProperties.ALL_KEYS)
                         .with(
-                                NavigationAttachmentItemProperties.THUMBNAIL,
+                                FuseboxAttachmentProperties.THUMBNAIL,
                                 attachmentDetails.thumbnail != null
                                         ? attachmentDetails.thumbnail
                                         : mFallbackDrawable)
-                        .with(NavigationAttachmentItemProperties.TITLE, attachmentDetails.title)
+                        .with(FuseboxAttachmentProperties.TITLE, attachmentDetails.title)
                         .build();
 
         var listItem = new MVCListAdapter.ListItem(attachmentDetails.itemType, model);
-        model.set(
-                NavigationAttachmentItemProperties.ON_REMOVE,
-                () -> removeAttachment(listItem, token));
+        model.set(FuseboxAttachmentProperties.ON_REMOVE, () -> removeAttachment(listItem, token));
         mModelList.add(listItem);
     }
 

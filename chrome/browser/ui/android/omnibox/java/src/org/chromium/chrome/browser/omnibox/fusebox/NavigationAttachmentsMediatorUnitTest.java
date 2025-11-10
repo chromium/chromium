@@ -37,8 +37,8 @@ import org.robolectric.RuntimeEnvironment;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.R;
-import org.chromium.chrome.browser.omnibox.fusebox.AttachmentDetailsFetcher.AttachmentDetails;
-import org.chromium.chrome.browser.omnibox.fusebox.NavigationAttachmentsRecyclerViewAdapter.NavigationAttachmentItemType;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentDetailsFetcher.AttachmentDetails;
+import org.chromium.chrome.browser.omnibox.fusebox.NavigationAttachmentsRecyclerViewAdapter.FuseboxAttachmentType;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -211,11 +211,7 @@ public class NavigationAttachmentsMediatorUnitTest {
         byte[] byteArray = new byte[] {1, 2, 3};
         AttachmentDetails attachmentDetails =
                 new AttachmentDetails(
-                        NavigationAttachmentItemType.ATTACHMENT_ITEM,
-                        null,
-                        "title",
-                        "image",
-                        byteArray);
+                        FuseboxAttachmentType.ATTACHMENT_FILE, null, "title", "image", byteArray);
         mMediator.uploadAndAddAttachment(attachmentDetails);
         assertTrue(mModel.get(NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE));
         verify(mComposeBoxQueryControllerBridge).addFile("title", "image", byteArray);
@@ -228,11 +224,7 @@ public class NavigationAttachmentsMediatorUnitTest {
         byte[] byteArray = new byte[] {1, 2, 3};
         AttachmentDetails attachmentDetails =
                 new AttachmentDetails(
-                        NavigationAttachmentItemType.ATTACHMENT_ITEM,
-                        null,
-                        "title",
-                        "image",
-                        byteArray);
+                        FuseboxAttachmentType.ATTACHMENT_FILE, null, "title", "image", byteArray);
         mMediator.uploadAndAddAttachment(attachmentDetails);
         assertFalse(mModel.get(NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE));
     }

@@ -19,7 +19,7 @@ import org.chromium.base.FileUtils;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.omnibox.fusebox.NavigationAttachmentsRecyclerViewAdapter.NavigationAttachmentItemType;
+import org.chromium.chrome.browser.omnibox.fusebox.NavigationAttachmentsRecyclerViewAdapter.FuseboxAttachmentType;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,19 +32,19 @@ import java.io.InputStream;
  * Handle cases where we cannot access the content.
  */
 @NullMarked
-class AttachmentDetailsFetcher
-        extends AsyncTask<AttachmentDetailsFetcher.@Nullable AttachmentDetails> {
+class FuseboxAttachmentDetailsFetcher
+        extends AsyncTask<FuseboxAttachmentDetailsFetcher.@Nullable AttachmentDetails> {
 
     /** A container for the fetched attachment details. */
     public static final class AttachmentDetails {
-        public final @NavigationAttachmentItemType int itemType;
+        public final @FuseboxAttachmentType int itemType;
         public final @Nullable Drawable thumbnail;
         public final String title;
         public final String mimeType;
         public final byte[] data;
 
         AttachmentDetails(
-                @NavigationAttachmentItemType int itemType,
+                @FuseboxAttachmentType int itemType,
                 @Nullable Drawable thumbnail,
                 String title,
                 String mimeType,
@@ -61,14 +61,14 @@ class AttachmentDetailsFetcher
     private final Context mContext;
     private final ContentResolver mContentResolver;
     private final Uri mUri;
-    private final @NavigationAttachmentItemType int mType;
+    private final @FuseboxAttachmentType int mType;
     private final Callback<AttachmentDetails> mCallback;
 
-    AttachmentDetailsFetcher(
+    FuseboxAttachmentDetailsFetcher(
             Context context,
             ContentResolver contentResolver,
             Uri uri,
-            @NavigationAttachmentItemType int type,
+            @FuseboxAttachmentType int type,
             Callback<AttachmentDetails> callback) {
         mContext = context;
         mContentResolver = contentResolver;

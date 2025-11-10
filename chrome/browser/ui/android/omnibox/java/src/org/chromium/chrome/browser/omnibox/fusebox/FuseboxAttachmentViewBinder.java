@@ -14,27 +14,27 @@ import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/** Binds the Navigation Attachment Item properties to the view. */
+/** Binds the Fusebox Attachment Item properties to the view. */
 @NullMarked
-class NavigationAttachmentItemViewBinder {
+class FuseboxAttachmentViewBinder {
     /**
      * @see PropertyModelChangeProcessor.ViewBinder#bind(Object, Object, Object)
      */
     public static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
-        if (propertyKey == NavigationAttachmentItemProperties.THUMBNAIL) {
+        if (propertyKey == FuseboxAttachmentProperties.THUMBNAIL) {
             ImageView imageView = view.findViewById(R.id.attachment_thumbnail);
-            imageView.setImageDrawable(model.get(NavigationAttachmentItemProperties.THUMBNAIL));
-        } else if (propertyKey == NavigationAttachmentItemProperties.TITLE) {
+            imageView.setImageDrawable(model.get(FuseboxAttachmentProperties.THUMBNAIL));
+        } else if (propertyKey == FuseboxAttachmentProperties.TITLE) {
             applyTitleAndDescriptionIfPresent(model, view);
-        } else if (propertyKey == NavigationAttachmentItemProperties.ON_REMOVE) {
+        } else if (propertyKey == FuseboxAttachmentProperties.ON_REMOVE) {
             view.findViewById(R.id.attachment_remove_button)
                     .setOnClickListener(
-                            v -> model.get(NavigationAttachmentItemProperties.ON_REMOVE).run());
+                            v -> model.get(FuseboxAttachmentProperties.ON_REMOVE).run());
         }
     }
 
     private static void applyTitleAndDescriptionIfPresent(PropertyModel model, View view) {
-        CharSequence title = model.get(NavigationAttachmentItemProperties.TITLE);
+        CharSequence title = model.get(FuseboxAttachmentProperties.TITLE);
         TextView titleView = view.findViewById(R.id.attachment_title);
 
         if (titleView == null) return;

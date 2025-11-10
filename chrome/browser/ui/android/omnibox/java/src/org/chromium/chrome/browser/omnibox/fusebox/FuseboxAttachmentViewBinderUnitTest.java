@@ -30,9 +30,9 @@ import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
-/** Unit tests for {@link NavigationAttachmentItemViewBinder}. */
+/** Unit tests for {@link FuseboxAttachmentViewBinder}. */
 @RunWith(BaseRobolectricTestRunner.class)
-public class NavigationAttachmentItemViewBinderUnitTest {
+public class FuseboxAttachmentViewBinderUnitTest {
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
@@ -52,7 +52,7 @@ public class NavigationAttachmentItemViewBinderUnitTest {
                 .onActivity(
                         activity -> {
                             mActivity = activity;
-                            mModel = new PropertyModel(NavigationAttachmentItemProperties.ALL_KEYS);
+                            mModel = new PropertyModel(FuseboxAttachmentProperties.ALL_KEYS);
                             mView =
                                     (ConstraintLayout)
                                             LayoutInflater.from(activity)
@@ -60,34 +60,34 @@ public class NavigationAttachmentItemViewBinderUnitTest {
                                                             R.layout.fusebox_attachment_layout,
                                                             null);
                             PropertyModelChangeProcessor.create(
-                                    mModel, mView, NavigationAttachmentItemViewBinder::bind);
+                                    mModel, mView, FuseboxAttachmentViewBinder::bind);
                         });
     }
 
     @Test
     public void testSetThumbnail() {
-        mModel.set(NavigationAttachmentItemProperties.THUMBNAIL, mDrawable);
+        mModel.set(FuseboxAttachmentProperties.THUMBNAIL, mDrawable);
         ImageView imageView = mView.findViewById(R.id.attachment_thumbnail);
         assertEquals(mDrawable, imageView.getDrawable());
     }
 
     @Test
     public void testSetTitle_emptyString() {
-        mModel.set(NavigationAttachmentItemProperties.TITLE, "");
+        mModel.set(FuseboxAttachmentProperties.TITLE, "");
         TextView textView = mView.findViewById(R.id.attachment_title);
         assertEquals(View.GONE, textView.getVisibility());
     }
 
     @Test
     public void testSetTitle() {
-        mModel.set(NavigationAttachmentItemProperties.TITLE, "My Attachment");
+        mModel.set(FuseboxAttachmentProperties.TITLE, "My Attachment");
         TextView textView = mView.findViewById(R.id.attachment_title);
         assertEquals("My Attachment", textView.getText());
     }
 
     @Test
     public void testSetDescription_withTitle() {
-        mModel.set(NavigationAttachmentItemProperties.TITLE, "My Title");
+        mModel.set(FuseboxAttachmentProperties.TITLE, "My Title");
 
         TextView title = mView.findViewById(R.id.attachment_title);
         assertEquals("My Title", title.getText());
