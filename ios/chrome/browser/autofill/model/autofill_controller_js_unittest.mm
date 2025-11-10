@@ -1069,50 +1069,60 @@ void AutofillControllerJsTest::TestInputElementDataEvaluation(
     NSArray* test_data,
     NSString* tag_name) {
   NSString* html_fragment = [test_data objectAtIndex:0U];
-  web::test::LoadHtml(html_fragment, web_state());
+  ASSERT_TRUE(
+      web::test::LoadHtml(web_view(), html_fragment,
+                          [NSURL URLWithString:@"https://chromium.test/"]));
 
   for (NSUInteger i = 1; i < [test_data count]; ++i) {
     NSString* get_element_javascripts = [NSString
         stringWithFormat:@"window.document.getElementsByTagName('%@')[%" PRIuNS
                           "]",
                          tag_name, i - 1];
-    id actual = ExecuteJavaScript([NSString
-        stringWithFormat:@"%@(%@).label === %@", javascripts_statement,
-                         get_element_javascripts,
-                         [[test_data objectAtIndex:i]
-                             objectForKey:attribute_name]]);
+    id actual = web::test::ExecuteJavaScript(
+        web_view(),
+        [NSString stringWithFormat:@"%@(%@).label === %@",
+                                   javascripts_statement,
+                                   get_element_javascripts,
+                                   [[test_data objectAtIndex:i]
+                                       objectForKey:attribute_name]]);
     EXPECT_NSEQ(@YES, actual);
   }
 }
 
 TEST_F(AutofillControllerJsTest, InferLabelFromPrevious) {
   TestInputElementDataEvaluation(
-      @"__gCrWeb.fill.inferLabelFromPrevious", @"label",
-      GetTestFormInputElementWithLabelFromPrevious(), @"input");
+      @"__gCrWeb.getRegisteredApi('fill_test_api').getFunction('"
+      @"inferLabelFromPrevious')",
+      @"label", GetTestFormInputElementWithLabelFromPrevious(), @"input");
 }
 
 TEST_F(AutofillControllerJsTest, InferLabelFromPreviousSpan) {
   TestInputElementDataEvaluation(
-      @"__gCrWeb.fill.inferLabelFromPrevious", @"label",
-      GetTestFormInputElementWithLabelFromPreviousSpan(), @"input");
+      @"__gCrWeb.getRegisteredApi('fill_test_api')."
+      @"getFunction('inferLabelFromPrevious')",
+      @"label", GetTestFormInputElementWithLabelFromPreviousSpan(), @"input");
 }
 
 TEST_F(AutofillControllerJsTest, InferLabelFromPreviousParagraph) {
   TestInputElementDataEvaluation(
-      @"__gCrWeb.fill.inferLabelFromPrevious", @"label",
-      GetTestFormInputElementWithLabelFromPreviousParagraph(), @"input");
+      @"__gCrWeb.getRegisteredApi('fill_test_api')."
+      @"getFunction('inferLabelFromPrevious')",
+      @"label", GetTestFormInputElementWithLabelFromPreviousParagraph(),
+      @"input");
 }
 
 TEST_F(AutofillControllerJsTest, InferLabelFromPreviousLabel) {
   TestInputElementDataEvaluation(
-      @"__gCrWeb.fill.inferLabelFromPrevious", @"label",
-      GetTestFormInputElementWithLabelFromPreviousLabel(), @"input");
+      @"__gCrWeb.getRegisteredApi('fill_test_api')."
+      @"getFunction('inferLabelFromPrevious')",
+      @"label", GetTestFormInputElementWithLabelFromPreviousLabel(), @"input");
 }
 
 TEST_F(AutofillControllerJsTest, InferLabelFromPreviousLabelOtherIgnored) {
   TestInputElementDataEvaluation(
-      @"__gCrWeb.fill.inferLabelFromPrevious", @"label",
-      GetTestFormInputElementWithLabelFromPreviousLabelOtherIgnored(),
+      @"__gCrWeb.getRegisteredApi('fill_test_api')."
+      @"getFunction('inferLabelFromPrevious')",
+      @"label", GetTestFormInputElementWithLabelFromPreviousLabelOtherIgnored(),
       @"input");
 }
 
@@ -1124,8 +1134,10 @@ TEST_F(AutofillControllerJsTest, InferLabelFromEnclosingLabelBefore) {
 
 TEST_F(AutofillControllerJsTest, InferLabelFromPreviousTextBrAndSpan) {
   TestInputElementDataEvaluation(
-      @"__gCrWeb.fill.inferLabelFromPrevious", @"label",
-      GetTestFormInputElementWithLabelFromPreviousTextBrAndSpan(), @"input");
+      @"__gCrWeb.getRegisteredApi('fill_test_api')."
+      @"getFunction('inferLabelFromPrevious')",
+      @"label", GetTestFormInputElementWithLabelFromPreviousTextBrAndSpan(),
+      @"input");
 }
 
 TEST_F(AutofillControllerJsTest, InferLabelFromListItem) {

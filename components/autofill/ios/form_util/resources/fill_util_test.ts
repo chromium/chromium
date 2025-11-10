@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import * as elementInferenceUtil from '//components/autofill/ios/form_util/resources/fill_element_inference.js';
 import * as inferenceUtil from '//components/autofill/ios/form_util/resources/fill_element_inference_util.js';
 import * as fillUtil from '//components/autofill/ios/form_util/resources/fill_util.js';
 import {CrWebApi, gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
@@ -24,6 +25,8 @@ fillApi.addFunction(
     'getOptionStringsFromElement', fillUtil.getOptionStringsFromElement);
 fillApi.addFunction('getUniqueID', fillUtil.getUniqueID);
 fillApi.addFunction('hasTagName', inferenceUtil.hasTagName);
+fillApi.addFunction(
+    'inferLabelFromPrevious', elementInferenceUtil.inferLabelFromPrevious);
 fillApi.addFunction(
     'isAutofillableElement', inferenceUtil.isAutofillableElement);
 fillApi.addFunction(

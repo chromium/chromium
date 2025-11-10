@@ -113,10 +113,10 @@ function inferLabelFromSibling(
  * @param element An element to examine.
  * @return The label of element.
  */
-gCrWebLegacy.fill.inferLabelFromPrevious =
-    function(element: FormControlElement): inferenceUtil.InferredLabel|null {
+export function inferLabelFromPrevious(element: FormControlElement):
+    inferenceUtil.InferredLabel|null {
   return inferLabelFromSibling(element, false);
-};
+}
 
 /**
  * Same as InferLabelFromPrevious(), but in the other direction.
@@ -578,7 +578,7 @@ gCrWebLegacy.fill.inferLabelForElement =
     }
   }
 
-  r = gCrWebLegacy.fill.inferLabelFromPrevious(element);
+  r = inferLabelFromPrevious(element);
   if (r) {
     return r;
   }
