@@ -138,11 +138,17 @@ std::string GetStringNameForOptimizationType(
     case proto::OptimizationType::AUTOFILL_PREDICTION_IMPROVEMENTS_ALLOWLIST:
       return "AutofillPredictionImprovementsAllowlist";
     case proto::OptimizationType::BUY_NOW_PAY_LATER_ALLOWLIST_AFFIRM:
-      return "BuyNowPayLaterAllowlistAffirm";
+      return "BuyNowPayLaterAllowlistAffirmDesktop";
     case proto::OptimizationType::BUY_NOW_PAY_LATER_ALLOWLIST_ZIP:
-      return "BuyNowPayLaterAllowlistZip";
+      return "BuyNowPayLaterAllowlistZipDesktop";
     case proto::OptimizationType::BUY_NOW_PAY_LATER_ALLOWLIST_KLARNA:
-      return "BuyNowPayLaterAllowlistKlarna";
+      return "BuyNowPayLaterAllowlistKlarnaDesktop";
+    case proto::OptimizationType::BUY_NOW_PAY_LATER_ALLOWLIST_AFFIRM_ANDROID:
+      return "BuyNowPayLaterAllowlistAffirmAndroid";
+    case proto::OptimizationType::BUY_NOW_PAY_LATER_ALLOWLIST_ZIP_ANDROID:
+      return "BuyNowPayLaterAllowlistZipAndroid";
+    case proto::OptimizationType::BUY_NOW_PAY_LATER_ALLOWLIST_KLARNA_ANDROID:
+      return "BuyNowPayLaterAllowlistKlarnaAndroid";
     case proto::OptimizationType::BUY_NOW_PAY_LATER_BLOCKLIST_AFFIRM:
       return "BuyNowPayLaterBlocklistAffirm";
     case proto::OptimizationType::BUY_NOW_PAY_LATER_BLOCKLIST_ZIP:

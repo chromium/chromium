@@ -728,6 +728,44 @@ class BuyNowPayLaterAutofillOptimizationGuideDeciderTest
   ~BuyNowPayLaterAutofillOptimizationGuideDeciderTest() override = default;
 
   bool IsBlocklistFlagEnabled() const { return GetParam(); }
+
+ protected:
+  optimization_guide::proto::OptimizationType GetAffirmOptimizationType()
+      const {
+    if (IsBlocklistFlagEnabled()) {
+      return optimization_guide::proto::BUY_NOW_PAY_LATER_BLOCKLIST_AFFIRM;
+    }
+#if BUILDFLAG(IS_ANDROID)
+    return optimization_guide::proto::
+        BUY_NOW_PAY_LATER_ALLOWLIST_AFFIRM_ANDROID;
+#else
+    return optimization_guide::proto::BUY_NOW_PAY_LATER_ALLOWLIST_AFFIRM;
+#endif
+  }
+
+  optimization_guide::proto::OptimizationType GetZipOptimizationType() const {
+    if (IsBlocklistFlagEnabled()) {
+      return optimization_guide::proto::BUY_NOW_PAY_LATER_BLOCKLIST_ZIP;
+    }
+#if BUILDFLAG(IS_ANDROID)
+    return optimization_guide::proto::BUY_NOW_PAY_LATER_ALLOWLIST_ZIP_ANDROID;
+#else
+    return optimization_guide::proto::BUY_NOW_PAY_LATER_ALLOWLIST_ZIP;
+#endif
+  }
+
+  optimization_guide::proto::OptimizationType GetKlarnaOptimizationType()
+      const {
+    if (IsBlocklistFlagEnabled()) {
+      return optimization_guide::proto::BUY_NOW_PAY_LATER_BLOCKLIST_KLARNA;
+    }
+#if BUILDFLAG(IS_ANDROID)
+    return optimization_guide::proto::
+        BUY_NOW_PAY_LATER_ALLOWLIST_KLARNA_ANDROID;
+#else
+    return optimization_guide::proto::BUY_NOW_PAY_LATER_ALLOWLIST_KLARNA;
+#endif
+  }
 };
 
 INSTANTIATE_TEST_SUITE_P(,
@@ -756,13 +794,8 @@ TEST_P(BuyNowPayLaterAutofillOptimizationGuideDeciderTest,
       test::GetTestLinkedBnplIssuer(BnplIssuer::IssuerId::kBnplAffirm));
 
   // Ensure that on registration the right optimization type is registered.
-  EXPECT_CALL(
-      decider(),
-      RegisterOptimizationTypes(testing::IsSupersetOf(
-          {IsBlocklistFlagEnabled()
-               ? optimization_guide::proto::BUY_NOW_PAY_LATER_BLOCKLIST_AFFIRM
-               : optimization_guide::proto::
-                     BUY_NOW_PAY_LATER_ALLOWLIST_AFFIRM})));
+  EXPECT_CALL(decider(), RegisterOptimizationTypes(testing::IsSupersetOf(
+                             {GetAffirmOptimizationType()})));
 
   guide().OnPaymentsDataLoaded(payments_data_manager());
 }
@@ -789,12 +822,8 @@ TEST_P(BuyNowPayLaterAutofillOptimizationGuideDeciderTest,
       test::GetTestLinkedBnplIssuer(BnplIssuer::IssuerId::kBnplZip));
 
   // Ensure that on registration the right optimization type is registered.
-  EXPECT_CALL(
-      decider(),
-      RegisterOptimizationTypes(testing::IsSupersetOf(
-          {IsBlocklistFlagEnabled()
-               ? optimization_guide::proto::BUY_NOW_PAY_LATER_BLOCKLIST_ZIP
-               : optimization_guide::proto::BUY_NOW_PAY_LATER_ALLOWLIST_ZIP})));
+  EXPECT_CALL(decider(), RegisterOptimizationTypes(testing::IsSupersetOf(
+                             {GetZipOptimizationType()})));
 
   guide().OnPaymentsDataLoaded(payments_data_manager());
 }
@@ -821,13 +850,8 @@ TEST_P(BuyNowPayLaterAutofillOptimizationGuideDeciderTest,
       test::GetTestLinkedBnplIssuer(BnplIssuer::IssuerId::kBnplKlarna));
 
   // Ensure that on registration the right optimization type is registered.
-  EXPECT_CALL(
-      decider(),
-      RegisterOptimizationTypes(testing::IsSupersetOf(
-          {IsBlocklistFlagEnabled()
-               ? optimization_guide::proto::BUY_NOW_PAY_LATER_BLOCKLIST_KLARNA
-               : optimization_guide::proto::
-                     BUY_NOW_PAY_LATER_ALLOWLIST_KLARNA})));
+  EXPECT_CALL(decider(), RegisterOptimizationTypes(testing::IsSupersetOf(
+                             {GetKlarnaOptimizationType()})));
 
   guide().OnPaymentsDataLoaded(payments_data_manager());
 }
@@ -857,13 +881,8 @@ TEST_P(
       test::GetTestLinkedBnplIssuer(BnplIssuer::IssuerId::kBnplKlarna));
 
   // Ensure optimization type for Klarna allowlist is not registered.
-  EXPECT_CALL(
-      decider(),
-      RegisterOptimizationTypes(testing::IsSupersetOf(
-          {IsBlocklistFlagEnabled()
-               ? optimization_guide::proto::BUY_NOW_PAY_LATER_BLOCKLIST_KLARNA
-               : optimization_guide::proto::
-                     BUY_NOW_PAY_LATER_ALLOWLIST_KLARNA})))
+  EXPECT_CALL(decider(), RegisterOptimizationTypes(testing::IsSupersetOf(
+                             {GetKlarnaOptimizationType()})))
       .Times(0);
 
   guide().OnPaymentsDataLoaded(payments_data_manager());
@@ -884,9 +903,8 @@ TEST_P(BuyNowPayLaterAutofillOptimizationGuideDeciderTest,
   }
 
   feature_list.InitWithFeatures(enabled_features, {});
-  FormStructure form_structure{
-      CreateTestCreditCardFormData(/*is_https=*/true,
-                                   /*use_month_type=*/true)};
+  FormStructure form_structure{CreateTestCreditCardFormData(
+      /*is_https=*/true, /*use_month_type=*/true)};
   test_api(form_structure)
       .SetFieldTypes({CREDIT_CARD_NAME_FULL, CREDIT_CARD_NUMBER,
                       CREDIT_CARD_EXP_MONTH, CREDIT_CARD_VERIFICATION_CODE});
@@ -894,13 +912,8 @@ TEST_P(BuyNowPayLaterAutofillOptimizationGuideDeciderTest,
       test::GetTestLinkedBnplIssuer(BnplIssuer::IssuerId::kBnplAffirm));
 
   // Ensure that on registration the right optimization type is registered.
-  EXPECT_CALL(
-      decider(),
-      RegisterOptimizationTypes(testing::IsSupersetOf(
-          {IsBlocklistFlagEnabled()
-               ? optimization_guide::proto::BUY_NOW_PAY_LATER_BLOCKLIST_AFFIRM
-               : optimization_guide::proto::
-                     BUY_NOW_PAY_LATER_ALLOWLIST_AFFIRM})));
+  EXPECT_CALL(decider(), RegisterOptimizationTypes(testing::IsSupersetOf(
+                             {GetAffirmOptimizationType()})));
   guide().OnDidParseForm(form_structure, payments_data_manager());
 }
 
@@ -922,9 +935,8 @@ TEST_P(BuyNowPayLaterAutofillOptimizationGuideDeciderTest,
       enabled_features,
       {features::kAutofillEnableLoadBnplAllowlistAfterSyncing});
 
-  FormStructure form_structure{
-      CreateTestCreditCardFormData(/*is_https=*/true,
-                                   /*use_month_type=*/true)};
+  FormStructure form_structure{CreateTestCreditCardFormData(
+      /*is_https=*/true, /*use_month_type=*/true)};
   test_api(form_structure)
       .SetFieldTypes({CREDIT_CARD_NAME_FULL, CREDIT_CARD_NUMBER,
                       CREDIT_CARD_EXP_MONTH, CREDIT_CARD_VERIFICATION_CODE});
@@ -932,12 +944,8 @@ TEST_P(BuyNowPayLaterAutofillOptimizationGuideDeciderTest,
       test::GetTestLinkedBnplIssuer(BnplIssuer::IssuerId::kBnplZip));
 
   // Ensure that on registration the right optimization type is registered.
-  EXPECT_CALL(
-      decider(),
-      RegisterOptimizationTypes(testing::IsSupersetOf(
-          {IsBlocklistFlagEnabled()
-               ? optimization_guide::proto::BUY_NOW_PAY_LATER_BLOCKLIST_ZIP
-               : optimization_guide::proto::BUY_NOW_PAY_LATER_ALLOWLIST_ZIP})));
+  EXPECT_CALL(decider(), RegisterOptimizationTypes(testing::IsSupersetOf(
+                             {GetZipOptimizationType()})));
 
   guide().OnDidParseForm(form_structure, payments_data_manager());
 }
@@ -960,9 +968,8 @@ TEST_P(BuyNowPayLaterAutofillOptimizationGuideDeciderTest,
       enabled_features,
       {features::kAutofillEnableLoadBnplAllowlistAfterSyncing});
 
-  FormStructure form_structure{
-      CreateTestCreditCardFormData(/*is_https=*/true,
-                                   /*use_month_type=*/true)};
+  FormStructure form_structure{CreateTestCreditCardFormData(
+      /*is_https=*/true, /*use_month_type=*/true)};
   test_api(form_structure)
       .SetFieldTypes({CREDIT_CARD_NAME_FULL, CREDIT_CARD_NUMBER,
                       CREDIT_CARD_EXP_MONTH, CREDIT_CARD_VERIFICATION_CODE});
@@ -970,13 +977,8 @@ TEST_P(BuyNowPayLaterAutofillOptimizationGuideDeciderTest,
       test::GetTestLinkedBnplIssuer(BnplIssuer::IssuerId::kBnplKlarna));
 
   // Ensure that on registration the right optimization type is registered.
-  EXPECT_CALL(
-      decider(),
-      RegisterOptimizationTypes(testing::IsSupersetOf(
-          {IsBlocklistFlagEnabled()
-               ? optimization_guide::proto::BUY_NOW_PAY_LATER_BLOCKLIST_KLARNA
-               : optimization_guide::proto::
-                     BUY_NOW_PAY_LATER_ALLOWLIST_KLARNA})));
+  EXPECT_CALL(decider(), RegisterOptimizationTypes(testing::IsSupersetOf(
+                             {GetKlarnaOptimizationType()})));
   guide().OnDidParseForm(form_structure, payments_data_manager());
 }
 
@@ -999,9 +1001,8 @@ TEST_P(BuyNowPayLaterAutofillOptimizationGuideDeciderTest,
       enabled_features,
       {features::kAutofillEnableLoadBnplAllowlistAfterSyncing});
 
-  FormStructure form_structure{
-      CreateTestCreditCardFormData(/*is_https=*/true,
-                                   /*use_month_type=*/true)};
+  FormStructure form_structure{CreateTestCreditCardFormData(
+      /*is_https=*/true, /*use_month_type=*/true)};
   test_api(form_structure)
       .SetFieldTypes({CREDIT_CARD_NAME_FULL, CREDIT_CARD_NUMBER,
                       CREDIT_CARD_EXP_MONTH, CREDIT_CARD_VERIFICATION_CODE});
@@ -1023,11 +1024,7 @@ TEST_P(BuyNowPayLaterAutofillOptimizationGuideDeciderTest,
   ON_CALL(
       decider(),
       CanApplyOptimization(
-          Eq(GURL("https://www.testurl.test")),
-          Eq(IsBlocklistFlagEnabled()
-                 ? optimization_guide::proto::BUY_NOW_PAY_LATER_BLOCKLIST_AFFIRM
-                 : optimization_guide::proto::
-                       BUY_NOW_PAY_LATER_ALLOWLIST_AFFIRM),
+          Eq(GURL("https://www.testurl.test")), Eq(GetAffirmOptimizationType()),
           Matcher<optimization_guide::OptimizationMetadata*>(Eq(nullptr))))
       .WillByDefault(
           Return(optimization_guide::OptimizationGuideDecision::kTrue));
@@ -1048,11 +1045,7 @@ TEST_P(BuyNowPayLaterAutofillOptimizationGuideDeciderTest,
   ON_CALL(
       decider(),
       CanApplyOptimization(
-          Eq(GURL("https://www.testurl.test")),
-          Eq(IsBlocklistFlagEnabled()
-                 ? optimization_guide::proto::BUY_NOW_PAY_LATER_BLOCKLIST_AFFIRM
-                 : optimization_guide::proto::
-                       BUY_NOW_PAY_LATER_ALLOWLIST_AFFIRM),
+          Eq(GURL("https://www.testurl.test")), Eq(GetAffirmOptimizationType()),
           Matcher<optimization_guide::OptimizationMetadata*>(Eq(nullptr))))
       .WillByDefault(
           Return(optimization_guide::OptimizationGuideDecision::kFalse));
@@ -1073,10 +1066,7 @@ TEST_P(BuyNowPayLaterAutofillOptimizationGuideDeciderTest,
   ON_CALL(
       decider(),
       CanApplyOptimization(
-          Eq(GURL("https://www.testurl.test")),
-          Eq(IsBlocklistFlagEnabled()
-                 ? optimization_guide::proto::BUY_NOW_PAY_LATER_BLOCKLIST_ZIP
-                 : optimization_guide::proto::BUY_NOW_PAY_LATER_ALLOWLIST_ZIP),
+          Eq(GURL("https://www.testurl.test")), Eq(GetZipOptimizationType()),
           Matcher<optimization_guide::OptimizationMetadata*>(Eq(nullptr))))
       .WillByDefault(
           Return(optimization_guide::OptimizationGuideDecision::kTrue));
@@ -1098,10 +1088,7 @@ TEST_P(BuyNowPayLaterAutofillOptimizationGuideDeciderTest,
   ON_CALL(
       decider(),
       CanApplyOptimization(
-          Eq(GURL("https://www.testurl.test")),
-          Eq(IsBlocklistFlagEnabled()
-                 ? optimization_guide::proto::BUY_NOW_PAY_LATER_BLOCKLIST_ZIP
-                 : optimization_guide::proto::BUY_NOW_PAY_LATER_ALLOWLIST_ZIP),
+          Eq(GURL("https://www.testurl.test")), Eq(GetZipOptimizationType()),
           Matcher<optimization_guide::OptimizationMetadata*>(Eq(nullptr))))
       .WillByDefault(
           Return(optimization_guide::OptimizationGuideDecision::kFalse));
@@ -1122,11 +1109,7 @@ TEST_P(BuyNowPayLaterAutofillOptimizationGuideDeciderTest,
   ON_CALL(
       decider(),
       CanApplyOptimization(
-          Eq(GURL("https://www.testurl.test")),
-          Eq(IsBlocklistFlagEnabled()
-                 ? optimization_guide::proto::BUY_NOW_PAY_LATER_BLOCKLIST_KLARNA
-                 : optimization_guide::proto::
-                       BUY_NOW_PAY_LATER_ALLOWLIST_KLARNA),
+          Eq(GURL("https://www.testurl.test")), Eq(GetKlarnaOptimizationType()),
           Matcher<optimization_guide::OptimizationMetadata*>(Eq(nullptr))))
       .WillByDefault(
           Return(optimization_guide::OptimizationGuideDecision::kTrue));
@@ -1148,11 +1131,7 @@ TEST_P(BuyNowPayLaterAutofillOptimizationGuideDeciderTest,
   ON_CALL(
       decider(),
       CanApplyOptimization(
-          Eq(GURL("https://www.testurl.test")),
-          Eq(IsBlocklistFlagEnabled()
-                 ? optimization_guide::proto::BUY_NOW_PAY_LATER_BLOCKLIST_KLARNA
-                 : optimization_guide::proto::
-                       BUY_NOW_PAY_LATER_ALLOWLIST_KLARNA),
+          Eq(GURL("https://www.testurl.test")), Eq(GetKlarnaOptimizationType()),
           Matcher<optimization_guide::OptimizationMetadata*>(Eq(nullptr))))
       .WillByDefault(
           Return(optimization_guide::OptimizationGuideDecision::kFalse));
@@ -1182,11 +1161,7 @@ TEST_P(
   EXPECT_CALL(
       decider(),
       CanApplyOptimization(
-          Eq(GURL("https://www.testurl.test")),
-          Eq(IsBlocklistFlagEnabled()
-                 ? optimization_guide::proto::BUY_NOW_PAY_LATER_BLOCKLIST_AFFIRM
-                 : optimization_guide::proto::
-                       BUY_NOW_PAY_LATER_ALLOWLIST_AFFIRM),
+          Eq(GURL("https://www.testurl.test")), Eq(GetAffirmOptimizationType()),
           Matcher<optimization_guide::OptimizationMetadata*>(Eq(nullptr))))
       .Times(0);
 
@@ -1217,10 +1192,7 @@ TEST_P(
   EXPECT_CALL(
       decider(),
       CanApplyOptimization(
-          Eq(GURL("https://www.testurl.test")),
-          Eq(IsBlocklistFlagEnabled()
-                 ? optimization_guide::proto::BUY_NOW_PAY_LATER_BLOCKLIST_ZIP
-                 : optimization_guide::proto::BUY_NOW_PAY_LATER_ALLOWLIST_ZIP),
+          Eq(GURL("https://www.testurl.test")), Eq(GetZipOptimizationType()),
           Matcher<optimization_guide::OptimizationMetadata*>(Eq(nullptr))))
       .Times(0);
 
@@ -1251,11 +1223,7 @@ TEST_P(
   EXPECT_CALL(
       decider(),
       CanApplyOptimization(
-          Eq(GURL("https://www.testurl.test")),
-          Eq(IsBlocklistFlagEnabled()
-                 ? optimization_guide::proto::BUY_NOW_PAY_LATER_BLOCKLIST_KLARNA
-                 : optimization_guide::proto::
-                       BUY_NOW_PAY_LATER_ALLOWLIST_KLARNA),
+          Eq(GURL("https://www.testurl.test")), Eq(GetKlarnaOptimizationType()),
           Matcher<optimization_guide::OptimizationMetadata*>(Eq(nullptr))))
       .Times(0);
 

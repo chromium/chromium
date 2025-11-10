@@ -319,17 +319,30 @@ chromium-metrics-reviews@google.com.
                merchant url is eligible for wholesale club credit card
                benefits. Applies to only BMO credit cards that support
                benefits on Chrome."/>
-  <variant name="BuyNowPayLaterAllowlistAffirm"
+  <variant name="BuyNowPayLaterAllowlistAffirmAndroid"
       summary="This optimization helps determine if this merchant page is a
-               good candidate for enabling buy now pay later flow with
-               Affirm."/>
-  <variant name="BuyNowPayLaterAllowlistKlarna"
+               good candidate for enabling buy now pay later flow with Affirm
+               on Android OS."/>
+  <variant name="BuyNowPayLaterAllowlistAffirmDesktop"
       summary="This optimization helps determine if this merchant page is a
-               good candidate for enabling buy now pay later flow with
-               Klarna."/>
-  <variant name="BuyNowPayLaterAllowlistZip"
+               good candidate for enabling buy now pay later flow with Affirm
+               on desktop."/>
+  <variant name="BuyNowPayLaterAllowlistKlarnaAndroid"
       summary="This optimization helps determine if this merchant page is a
-               good candidate for enabling buy now pay later flow with Zip."/>
+               good candidate for enabling buy now pay later flow with Klarna
+               on Android OS."/>
+  <variant name="BuyNowPayLaterAllowlistKlarnaDesktop"
+      summary="This optimization helps determine if this merchant page is a
+               good candidate for enabling buy now pay later flow with Klarna
+               on desktop."/>
+  <variant name="BuyNowPayLaterAllowlistZipAndroid"
+      summary="This optimization helps determine if this merchant page is a
+               good candidate for enabling buy now pay later flow with Zip on
+               Android OS."/>
+  <variant name="BuyNowPayLaterAllowlistZipDesktop"
+      summary="This optimization helps determine if this merchant page is a
+               good candidate for enabling buy now pay later flow with Zip on
+               desktop."/>
   <variant name="BuyNowPayLaterBlocklistAffirm"
       summary="This optimization helps determine if this merchant page should
                be blocked for the buy now pay later flow with Affirm."/>
