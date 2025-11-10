@@ -38,17 +38,10 @@ NavigationInterceptor::NavigationInterceptor(
     NavigationThrottleRegistry& registry)
     : NavigationInterceptor(
           registry,
-          base::BindRepeating(
-              [](content::RenderFrameHost* rfh)
-                  -> mojo::Remote<blink::mojom::FederatedAuthRequest> {
-                // TODO(http://crbug.com/455614294): return a RequestService
-                // instance rather than a Remote, once we make RequestService be
-                // owned by DocumentUserData.
-                mojo::Remote<blink::mojom::FederatedAuthRequest> remote;
-                webid::RequestService::Create(
-                    rfh, remote.BindNewPipeAndPassReceiver());
-                return remote;
-              })) {}
+          base::BindRepeating([](content::RenderFrameHost* rfh)
+                                  -> blink::mojom::FederatedAuthRequest* {
+            return webid::RequestService::GetOrCreateForCurrentDocument(rfh);
+          })) {}
 
 NavigationInterceptor::NavigationInterceptor(
     NavigationThrottleRegistry& registry,
@@ -125,9 +118,7 @@ void NavigationInterceptor::OnHeaderParsed(
     return;
   }
 
-  remote_ = service_builder_.Run(rfh);
-
-  remote_->RequestToken(
+  service_builder_.Run(rfh)->RequestToken(
       std::move(*idp_get_params_vector),
       password_manager::CredentialMediationRequirement::kOptional,
       base::BindOnce(&NavigationInterceptor::OnTokenResponse,

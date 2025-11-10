@@ -45,7 +45,7 @@ class CONTENT_EXPORT NavigationInterceptor
   };
 
   using RequestServiceBuilder =
-      base::RepeatingCallback<mojo::Remote<blink::mojom::FederatedAuthRequest>(
+      base::RepeatingCallback<blink::mojom::FederatedAuthRequest*(
           content::RenderFrameHost* rfh)>;
 
   explicit NavigationInterceptor(NavigationThrottleRegistry& registry);

@@ -16,8 +16,6 @@
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/mock_navigation_throttle_registry.h"
 #include "content/public/test/test_renderer_host.h"
-#include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/url_util.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/structured_headers.h"
@@ -33,9 +31,7 @@ namespace content::webid {
 
 class MockFederatedAuthRequest : public blink::mojom::FederatedAuthRequest {
  public:
-  explicit MockFederatedAuthRequest(
-      mojo::PendingReceiver<blink::mojom::FederatedAuthRequest> receiver)
-      : receiver_(this, std::move(receiver)) {}
+  explicit MockFederatedAuthRequest() {}
 
   MOCK_METHOD(
       void,
@@ -88,9 +84,6 @@ class MockFederatedAuthRequest : public blink::mojom::FederatedAuthRequest {
               (blink::mojom::IdentityCredentialDisconnectOptionsPtr options,
                blink::mojom::FederatedAuthRequest::DisconnectCallback callback),
               (override));
-
- private:
-  mojo::Receiver<blink::mojom::FederatedAuthRequest> receiver_;
 };
 
 net::structured_headers::Dictionary EncodeParams(
@@ -187,10 +180,8 @@ TEST_F(NavigationInterceptorTest, WillProcessResponse) {
   // Uses an in-process data decoder service for testing.
   data_decoder::test::InProcessDataDecoder in_process_data_decoder;
 
-  mojo::Remote<blink::mojom::FederatedAuthRequest> remote;
   std::unique_ptr<MockFederatedAuthRequest> federated_auth_request =
-      std::make_unique<MockFederatedAuthRequest>(
-          remote.BindNewPipeAndPassReceiver());
+      std::make_unique<MockFederatedAuthRequest>();
 
   NavigateAndCommit(GURL("https://rp.example/"));
   content::MockNavigationHandle mock_navigation_handle(web_contents());
@@ -212,9 +203,9 @@ TEST_F(NavigationInterceptorTest, WillProcessResponse) {
 
   webid::NavigationInterceptor interceptor(
       registry, base::BindLambdaForTesting(
-                    [&remote](content::RenderFrameHost* rfh)
-                        -> mojo::Remote<blink::mojom::FederatedAuthRequest> {
-                      return std::move(remote);
+                    [&federated_auth_request](content::RenderFrameHost* rfh)
+                        -> blink::mojom::FederatedAuthRequest* {
+                      return federated_auth_request.get();
                     }));
 
   GURL redirect_to("https://rp.example");
@@ -247,9 +238,7 @@ TEST_F(NavigationInterceptorTest, WillProcessResponseTokenRequestFails) {
   // Uses an in-process data decoder service for testing.
   data_decoder::test::InProcessDataDecoder in_process_data_decoder;
 
-  mojo::Remote<blink::mojom::FederatedAuthRequest> remote;
-  auto federated_auth_request = std::make_unique<MockFederatedAuthRequest>(
-      remote.BindNewPipeAndPassReceiver());
+  auto federated_auth_request = std::make_unique<MockFederatedAuthRequest>();
 
   NavigateAndCommit(GURL("https://rp.example/"));
   content::MockNavigationHandle mock_navigation_handle(web_contents());
@@ -271,9 +260,9 @@ TEST_F(NavigationInterceptorTest, WillProcessResponseTokenRequestFails) {
 
   webid::NavigationInterceptor interceptor(
       registry, base::BindLambdaForTesting(
-                    [&remote](content::RenderFrameHost* rfh)
-                        -> mojo::Remote<blink::mojom::FederatedAuthRequest> {
-                      return std::move(remote);
+                    [&federated_auth_request](content::RenderFrameHost* rfh)
+                        -> blink::mojom::FederatedAuthRequest* {
+                      return federated_auth_request.get();
                     }));
 
   EXPECT_CALL(*federated_auth_request.get(), RequestToken(_, _, _))

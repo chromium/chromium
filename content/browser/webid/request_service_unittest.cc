@@ -3512,7 +3512,7 @@ TEST_F(RequestServiceTest,
   EXPECT_FALSE(DidFetchAnyEndpoint());
 
   // Delete the request before DelayTimer kicks in.
-  federated_auth_request_impl_->ResetAndDeleteThis();
+  federated_auth_request_impl_->ResetAndDeleteThisForTesting();
 
   // If double counted, these samples would not be unique so the following
   // checks will fail.
@@ -4133,7 +4133,7 @@ TEST_F(RequestServiceTest, NavigateDuringClientMetadataFetchBFCacheDisabled) {
           base::BindOnce(&NavigateToUrl, web_contents(), GURL(kRpOtherUrl))));
 
   RequestExpectations expectations = {
-      /*return_status=*/std::nullopt,
+      RequestTokenStatus::kError,
       // When the RenderFrameHost changes on navigation, no console message is
       // received, so pass FederatedAuthRequestResult::kSuccess.
       main_rfh()->ShouldChangeRenderFrameHostOnSameSiteNavigation()
@@ -4592,7 +4592,7 @@ TEST_F(RequestServiceTest, AllSuccessfulMultiIdpRequestWithoutIdpReorder) {
   EXPECT_EQ(2u, NumFetched(FetchedEndpoint::ACCOUNTS));
 
   // Check that the appropriate metrics are recorded upon destruction.
-  federated_auth_request_impl_->ResetAndDeleteThis();
+  federated_auth_request_impl_->ResetAndDeleteThisForTesting();
   ukm_loop.Run();
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.NumRequestsPerDocument", 1,
                                        1);
@@ -5258,7 +5258,7 @@ TEST_F(RequestServiceTest, TooManyRequests) {
   EXPECT_FALSE(DidFetchAnyEndpoint());
 
   // Check that the appropriate metrics are recorded upon destruction.
-  federated_auth_request_impl_->ResetAndDeleteThis();
+  federated_auth_request_impl_->ResetAndDeleteThisForTesting();
 
   ukm_loop.Run();
 
@@ -5315,7 +5315,7 @@ TEST_F(RequestServiceTest, TooManyRequestsDifferentIdP) {
   EXPECT_FALSE(DidFetchAnyEndpoint());
 
   // Check that the appropriate metrics are recorded upon destruction.
-  federated_auth_request_impl_->ResetAndDeleteThis();
+  federated_auth_request_impl_->ResetAndDeleteThisForTesting();
 
   ukm_loop.Run();
 
@@ -5359,7 +5359,7 @@ TEST_F(RequestServiceTest, ActiveModeTooManyRequestsWithNewPassiveFlow) {
   EXPECT_FALSE(DidFetchAnyEndpoint());
 
   // Check that the appropriate metrics are recorded upon destruction.
-  federated_auth_request_impl_->ResetAndDeleteThis();
+  federated_auth_request_impl_->ResetAndDeleteThisForTesting();
 
   ukm_loop.Run();
 
@@ -5414,7 +5414,7 @@ TEST_F(RequestServiceTest, ActiveModeTooManyRequestsWithNewActiveFlow) {
   EXPECT_FALSE(DidFetchAnyEndpoint());
 
   // Check that the appropriate metrics are recorded upon destruction.
-  federated_auth_request_impl_->ResetAndDeleteThis();
+  federated_auth_request_impl_->ResetAndDeleteThisForTesting();
 
   ukm_loop.Run();
 
@@ -5469,7 +5469,7 @@ TEST_F(RequestServiceTest, PassiveReplacedByActiveFlow) {
   CheckAuthExpectations(configuration, passive_flow_expectations);
 
   // Check that the appropriate metrics are recorded upon destruction.
-  federated_auth_request_impl_->ResetAndDeleteThis();
+  federated_auth_request_impl_->ResetAndDeleteThisForTesting();
 
   ukm_loop.Run();
 
@@ -6745,7 +6745,7 @@ TEST_F(RequestServiceTest, DoubleMismatchDialog) {
   base::RunLoop().RunUntilIdle();
 
   // Check that the appropriate metrics are recorded upon destruction.
-  federated_auth_request_impl_->ResetAndDeleteThis();
+  federated_auth_request_impl_->ResetAndDeleteThisForTesting();
   ukm_loop.Run();
 
   // The additional mismatch should be recorded in the metrics.
@@ -6892,7 +6892,7 @@ TEST_F(RequestServiceTest, RecordNumRequestsPerDocumentMetric) {
   EXPECT_FALSE(did_show_idp_signin_status_mismatch_dialog());
 
   // Check that the appropriate metrics are recorded upon destruction.
-  federated_auth_request_impl_->ResetAndDeleteThis();
+  federated_auth_request_impl_->ResetAndDeleteThisForTesting();
 
   ukm_loop.Run();
 
@@ -8130,7 +8130,7 @@ TEST_F(RequestServiceTest, VerifyingDialogDestroyExplicitMetrics) {
   config.delay_token_response = true;
 
   RunAuthDontWaitForCallback(kDefaultRequestParameters, config);
-  federated_auth_request_impl_->ResetAndDeleteThis();
+  federated_auth_request_impl_->ResetAndDeleteThisForTesting();
 
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.VerifyingDialogResult",
                                        VerifyingDialogResult::kDestroyExplicit,
@@ -8159,7 +8159,7 @@ TEST_F(RequestServiceTest, VerifyingDialogDestroyAutoReauthnMetrics) {
   config.delay_token_response = true;
 
   RunAuthDontWaitForCallback(kDefaultRequestParameters, config);
-  federated_auth_request_impl_->ResetAndDeleteThis();
+  federated_auth_request_impl_->ResetAndDeleteThisForTesting();
 
   histogram_tester_.ExpectUniqueSample(
       "Blink.FedCm.VerifyingDialogResult",
