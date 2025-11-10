@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/webui/new_tab_footer/new_tab_footer.mojom.h"
 #include "chrome/browser/ui/webui/new_tab_footer/new_tab_footer_helper.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
+#include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_page_handler.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/browser/ui/webui/webui_util_desktop.h"
 #include "chrome/common/pref_names.h"
@@ -235,7 +236,11 @@ void NewTabFooterHandler::AttachedTabStateUpdated(const GURL& url) {
   } else if (ntp_footer::IsExtensionNtp(url, profile_)) {
     ntp_type = new_tab_footer::mojom::NewTabPageType::kExtension;
   }
-  document_->AttachedTabStateUpdated(ntp_type);
+
+  bool can_customize_chrome = CustomizeChromePageHandler::IsSupported(
+      NtpCustomBackgroundServiceFactory::GetForProfile(profile_), profile_);
+
+  document_->AttachedTabStateUpdated(ntp_type, can_customize_chrome);
 }
 
 void NewTabFooterHandler::OnCustomBackgroundImageUpdated() {

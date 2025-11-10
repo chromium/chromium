@@ -27,7 +27,8 @@ class MockNewTabFooterDocument
               (new_tab_footer::mojom::ManagementNoticePtr));
   MOCK_METHOD(void,
               AttachedTabStateUpdated,
-              (new_tab_footer::mojom::NewTabPageType ntp_type));
+              (new_tab_footer::mojom::NewTabPageType ntp_type,
+               bool can_customize_chrome));
   MOCK_METHOD(void,
               SetBackgroundAttribution,
               (new_tab_footer::mojom::BackgroundAttributionPtr));
