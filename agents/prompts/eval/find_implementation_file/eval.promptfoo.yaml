@@ -13,3 +13,6 @@ tests:
   - assert:
     - type: contains
       value: chrome/browser/ui/views/tabs/tab.cc
+    metadata:
+      tags:
+      - stable

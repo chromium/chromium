@@ -20,3 +20,6 @@ tests:
             build/mcp_servers/build_information.py
           tool:
             get_host_os
+    metadata:
+      tags:
+      - stable

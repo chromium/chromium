@@ -15,3 +15,6 @@ tests:
       config:
         files:
         - out/Default/obj/base/base_unittests/strcat_unittest.o
+    metadata:
+      tags:
+      - stable
