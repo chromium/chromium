@@ -16,13 +16,21 @@ import org.chromium.content_public.browser.SelectionMenuItem;
 import org.chromium.content_public.browser.selection.SelectionDropdownMenuDelegate;
 import org.chromium.ui.hierarchicalmenu.HierarchicalMenuController;
 import org.chromium.ui.modelutil.MVCListAdapter;
+import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** A placeholder {@link SelectionDropdownMenuDelegate} to be used with tests. */
 public class TestSelectionDropdownMenuDelegate implements SelectionDropdownMenuDelegate {
+    private static final WritableIntPropertyKey ID = new WritableIntPropertyKey();
+    private static final WritableObjectPropertyKey<String> TITLE =
+            new WritableObjectPropertyKey<>();
+    private static final PropertyKey[] TEST_KEYS = {ID, TITLE};
+
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({ListMenuItemType.DIVIDER, ListMenuItemType.MENU_ITEM})
     public @interface ListMenuItemType {
@@ -45,12 +53,15 @@ public class TestSelectionDropdownMenuDelegate implements SelectionDropdownMenuD
 
     @Override
     public SelectionMenuItem getMinimalMenuItem(PropertyModel itemModel) {
-        return new SelectionMenuItem.Builder("").build();
+        return new SelectionMenuItem.Builder(
+                        PropertyModel.getFromModelOrDefault(itemModel, TITLE, ""))
+                .setId(PropertyModel.getFromModelOrDefault(itemModel, ID, 0))
+                .build();
     }
 
     @Override
     public MVCListAdapter.ListItem getDivider() {
-        return new MVCListAdapter.ListItem(ListMenuItemType.DIVIDER, new PropertyModel());
+        return new MVCListAdapter.ListItem(ListMenuItemType.DIVIDER, new PropertyModel(TEST_KEYS));
     }
 
     @Override
@@ -65,6 +76,9 @@ public class TestSelectionDropdownMenuDelegate implements SelectionDropdownMenuD
             boolean enabled,
             @Nullable Intent intent,
             int order) {
-        return new MVCListAdapter.ListItem(ListMenuItemType.MENU_ITEM, new PropertyModel());
+        PropertyModel model = new PropertyModel(TEST_KEYS);
+        model.set(ID, id);
+        model.set(TITLE, title);
+        return new MVCListAdapter.ListItem(ListMenuItemType.MENU_ITEM, model);
     }
 }
