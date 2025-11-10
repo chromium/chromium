@@ -120,10 +120,8 @@ std::optional<WebPluginInfo> PluginServiceImpl::GetPluginInfoByPathForTesting(
     const base::FilePath& plugin_path) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  std::vector<WebPluginInfo> plugins;
-  PluginList::Singleton()->GetPluginsNoRefresh(&plugins);
-
-  for (const WebPluginInfo& plugin : plugins) {
+  for (const WebPluginInfo& plugin :
+       PluginList::Singleton()->GetPluginsForTesting()) {
     if (plugin.path == plugin_path) {
       return plugin;
     }

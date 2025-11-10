@@ -56,9 +56,8 @@ class CONTENT_EXPORT PluginList {
   // Get all the plugins synchronously, loading them if necessary.
   void GetPlugins(std::vector<WebPluginInfo>* plugins);
 
-  // Copies the list of plugins into |plugins| without loading them.
-  // Returns true if the list of plugins is up to date.
-  bool GetPluginsNoRefresh(std::vector<WebPluginInfo>* plugins);
+  // Returns the list of plugins without loading them.
+  const std::vector<WebPluginInfo>& GetPluginsForTesting() const;
 
   // Returns a list in |info| containing plugins that are found for
   // the given url and mime type (including disabled plugins, for
