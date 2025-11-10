@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -102,7 +103,8 @@ void MemoryPressureLevelReporter::ReportHistogram(base::TimeTicks now) {
         "Memory.PressureLevel2", 1, base::MemoryPressureLevel::kMaxValue + 1,
         base::MemoryPressureLevel::kMaxValue + 2,
         base::HistogramBase::kUmaTargetedHistogramFlag)
-        ->AddCount(current_pressure_level_, duration_s);
+        ->AddCount(current_pressure_level_,
+                   base::saturated_cast<int>(duration_s));
   }
 }
 
