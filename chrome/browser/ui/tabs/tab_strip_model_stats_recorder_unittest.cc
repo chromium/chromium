@@ -94,6 +94,9 @@ TEST_F(TabStripModelStatsRecorderTest,
   tabstrip.CloseAllTabs();
 }
 
+// This histogram is not present in ChromeOS. For more information:
+// crbug.com/457294205
+#if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(TabStripModelStatsRecorderTest, TabSelectionCount) {
   base::HistogramTester histogram_tester;
   TestTabStripModelDelegate delegate;
@@ -126,3 +129,4 @@ TEST_F(TabStripModelStatsRecorderTest, TabSelectionCount) {
   tabstrip.RemoveObserver(&recorder);
   tabstrip.CloseAllTabs();
 }
+#endif
