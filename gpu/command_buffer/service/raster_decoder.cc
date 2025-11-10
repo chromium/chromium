@@ -3026,8 +3026,9 @@ error::Error RasterDecoderImpl::DoRasterCHROMIUM(GLuint raster_shm_id,
       }
 
       std::vector<SkDiscardableHandleId> new_locked_handles;
-      if (!font_manager_->Deserialize(font_buffer_memory, font_shm_size,
-                                      &new_locked_handles)) {
+      if (!font_manager_->Deserialize(
+              UNSAFE_TODO(base::span(font_buffer_memory, font_shm_size)),
+              &new_locked_handles)) {
         LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glRasterCHROMIUM",
                            "Invalid font buffer.");
         return error::kNoError;

@@ -6,6 +6,7 @@
 #define GPU_COMMAND_BUFFER_SERVICE_SERVICE_FONT_MANAGER_H_
 
 #include "base/containers/flat_map.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
@@ -30,8 +31,7 @@ class GPU_GLES2_EXPORT ServiceFontManager
   ServiceFontManager(Client* client, bool disable_oopr_debug_crash_dump);
   void Destroy();
 
-  bool Deserialize(const volatile uint8_t* memory,
-                   uint32_t memory_size,
+  bool Deserialize(base::span<const volatile uint8_t> memory,
                    std::vector<SkDiscardableHandleId>* locked_handles);
   bool Unlock(const std::vector<SkDiscardableHandleId>& handles);
   SkStrikeClient* strike_client() { return strike_client_.get(); }
