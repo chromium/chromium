@@ -526,7 +526,7 @@ public class MultiWindowUtils implements ActivityStateListener {
      * @return Whether the app menu 'Manage windows' should be shown.
      */
     public static boolean shouldShowManageWindowsMenu() {
-        return getInstanceCount() > 1;
+        return getInstanceCountWithFallback(PersistedInstanceType.ANY) > 1;
     }
 
     static boolean isRestorableInstance(int index) {
@@ -1071,7 +1071,7 @@ public class MultiWindowUtils implements ActivityStateListener {
         // Emit histograms for total instance count.
         RecordHistogram.recordExactLinearHistogram(
                 HISTOGRAM_NUM_INSTANCES_DESKTOP_WINDOW,
-                getInstanceCount(),
+                getInstanceCountWithFallback(PersistedInstanceType.ANY),
                 TabWindowManager.MAX_SELECTORS + 1);
     }
 

@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
@@ -216,7 +217,7 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
             // For multi-instance on Android S, this is a restart after the upgrade or fresh
             // installation. Allow merging tabs from CTA/CTA2 used by the previous version
             // if present.
-            return MultiWindowUtils.getInstanceCount() == 0;
+            return MultiWindowUtils.getInstanceCountWithFallback(PersistedInstanceType.ANY) == 0;
         }
 
         // Merge tabs if this TabModelSelector is for a ChromeTabbedActivity created in

@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTask;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -353,7 +354,8 @@ public abstract class TabModelJniBridge implements TabModelInternal {
         LoadUrlParams loadParams = new LoadUrlParams(url);
         @TabLaunchType int launchType = TabLaunchType.FROM_CHROME_UI;
         if (!newWindow
-                || MultiWindowUtils.getInstanceCount() >= MultiWindowUtils.getMaxInstances()) {
+                || MultiWindowUtils.getInstanceCountWithFallback(PersistedInstanceType.ACTIVE)
+                        >= MultiWindowUtils.getMaxInstances()) {
             return assumeNonNull(
                     getTabCreator(/* isIncognito= */ false)
                             .createNewTab(loadParams, launchType, null));

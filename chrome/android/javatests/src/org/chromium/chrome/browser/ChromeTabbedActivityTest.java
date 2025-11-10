@@ -56,6 +56,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.incognito.IncognitoWindowNightModeStateProvider;
 import org.chromium.chrome.browser.multiwindow.InstanceInfo;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.night_mode.NightModeStateProvider;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -345,7 +346,8 @@ public class ChromeTabbedActivityTest {
     @MediumTest
     @MinAndroidSdkLevel(VERSION_CODES.S)
     public void testExplicitViewIntent_OpensInExistingLiveActivity() {
-        int initialWindowCount = MultiWindowUtils.getInstanceCount();
+        int initialWindowCount =
+                MultiWindowUtils.getInstanceCountWithFallback(PersistedInstanceType.ANY);
         Intent intent =
                 new Intent(Intent.ACTION_VIEW, Uri.parse(JUnitTestGURLs.EXAMPLE_URL.getSpec()));
         intent.addCategory(Intent.CATEGORY_BROWSABLE);
@@ -363,7 +365,7 @@ public class ChromeTabbedActivityTest {
         Assert.assertEquals(
                 "No new window should be opened.",
                 initialWindowCount,
-                MultiWindowUtils.getInstanceCount());
+                MultiWindowUtils.getInstanceCountWithFallback(PersistedInstanceType.ANY));
         // A new tab should be opened in the existing ChromeTabbedActivity.
         CriteriaHelper.pollUiThread(
                 () -> {
@@ -745,7 +747,8 @@ public class ChromeTabbedActivityTest {
                         .expectAnyRecord("Android.Reparent.TabGroup.Duration")
                         .build();
         long startTime = SystemClock.elapsedRealtime();
-        int initialWindowCount = MultiWindowUtils.getInstanceCount();
+        int initialWindowCount =
+                MultiWindowUtils.getInstanceCountWithFallback(PersistedInstanceType.ANY);
         Intent intent =
                 new Intent(Intent.ACTION_VIEW, Uri.parse(JUnitTestGURLs.EXAMPLE_URL.getSpec()));
         intent.putExtra(IntentHandler.EXTRA_REPARENT_START_TIME, startTime);
@@ -765,7 +768,7 @@ public class ChromeTabbedActivityTest {
         Assert.assertEquals(
                 "No new window should be opened.",
                 initialWindowCount,
-                MultiWindowUtils.getInstanceCount());
+                MultiWindowUtils.getInstanceCountWithFallback(PersistedInstanceType.ANY));
 
         // An individual tab and 3 grouped tabs should be opened in the existing
         // ChromeTabbedActivity.

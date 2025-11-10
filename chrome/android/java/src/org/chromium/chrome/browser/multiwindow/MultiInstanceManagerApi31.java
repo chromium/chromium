@@ -1068,7 +1068,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
 
         RecordHistogram.recordExactLinearHistogram(
                 "Android.MultiInstance.NumInstances",
-                MultiWindowUtils.getInstanceCount(),
+                MultiWindowUtils.getInstanceCountWithFallback(PersistedInstanceType.ANY),
                 TabWindowManager.MAX_SELECTORS + 1);
     }
 

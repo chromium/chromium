@@ -38,6 +38,7 @@ import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
@@ -188,7 +189,7 @@ public class LauncherShortcutTest {
         Assert.assertEquals(
                 "Number of Chrome instances should be correct.",
                 2,
-                MultiWindowUtils.getInstanceCount());
+                MultiWindowUtils.getInstanceCountWithFallback(PersistedInstanceType.ANY));
 
         // Verify NTP was created in the new activity.
         CriteriaHelper.pollUiThread(() -> newWindowActivity.getActivityTab() != null);

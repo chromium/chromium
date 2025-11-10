@@ -9,6 +9,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -63,7 +64,7 @@ public class QuickDeleteDelegateImpl extends QuickDeleteDelegate {
 
     @Override
     boolean isInMultiWindowMode() {
-        return MultiWindowUtils.getInstanceCount() > 1;
+        return MultiWindowUtils.getInstanceCountWithFallback(PersistedInstanceType.ANY) > 1;
     }
 
     @Override

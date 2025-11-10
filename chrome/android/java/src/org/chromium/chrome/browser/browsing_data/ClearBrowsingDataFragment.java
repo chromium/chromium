@@ -48,6 +48,7 @@ import org.chromium.chrome.browser.browsing_data.BrowsingDataCounterBridge.Brows
 import org.chromium.chrome.browser.browsing_data.TimePeriodUtils.TimePeriodSpinnerOption;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.searchwidget.SearchActivity;
@@ -968,7 +969,7 @@ public class ClearBrowsingDataFragment extends ChromeBaseSettingsFragment
     }
 
     private boolean isInMultiWindowMode() {
-        return MultiWindowUtils.getInstanceCount() > 1;
+        return MultiWindowUtils.getInstanceCountWithFallback(PersistedInstanceType.ANY) > 1;
     }
 
     @Override

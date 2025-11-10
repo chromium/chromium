@@ -110,6 +110,7 @@ import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.metrics.UmaSessionStats;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceIphController;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.night_mode.WebContentsDarkModeMessageController;
 import org.chromium.chrome.browser.notifications.permissions.NotificationPermissionController;
@@ -1036,7 +1037,9 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             TabGroupSyncServiceFactory.getForProfile(originalProfile),
                             UserPrefs.get(originalProfile),
                             () -> {
-                                return MultiWindowUtils.getInstanceCount() <= 1
+                                return MultiWindowUtils.getInstanceCountWithFallback(
+                                                        PersistedInstanceType.ANY)
+                                                <= 1
                                         || ApplicationStatus.getLastTrackedFocusedActivity()
                                                 == mActivity;
                             });
@@ -1573,7 +1576,9 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                                     dataSharingNotificationManager,
                                     mDataSharingTabManager,
                                     () -> {
-                                        return MultiWindowUtils.getInstanceCount() <= 1
+                                        return MultiWindowUtils.getInstanceCountWithFallback(
+                                                                PersistedInstanceType.ANY)
+                                                        <= 1
                                                 || ApplicationStatus.getLastTrackedFocusedActivity()
                                                         == mActivity;
                                     });
