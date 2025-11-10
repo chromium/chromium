@@ -372,7 +372,10 @@ bool SecureEmbedConnectorImpl::IsDisplayLocked() const {
 
 void SecureEmbedConnectorImpl::DidUpdateVisualProperties(
     const cc::RenderFrameMetadata& metadata) {
-  if (metadata.local_surface_id.has_value()) {
+  if (metadata.local_surface_id.has_value() &&
+      local_surface_id_ != *metadata.local_surface_id) {
+    // `local_surface_id_` will be updated in SynchronizeVisualProperties()
+    // after a round-trip to the Plugin.
     delegate_->UpdateLocalSurfaceIdFromChild(
         *metadata.local_surface_id);
   }
