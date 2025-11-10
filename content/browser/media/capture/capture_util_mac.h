@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_MEDIA_CAPTURE_CAPTURE_UTIL_MAC_H_
 #define CONTENT_BROWSER_MEDIA_CAPTURE_CAPTURE_UTIL_MAC_H_
 
+#include "content/browser/media/capture/capture_util.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/desktop_media_id.h"
 
@@ -18,12 +19,10 @@ class WebContents;
 std::unique_ptr<media::VideoCaptureDevice> CONTENT_EXPORT
 CreateScreenCaptureKitDeviceMac(const DesktopMediaID& source);
 
-using NativeWindowIdMac = int64_t;
 // Returns the windowNumber prorperty of the window associated to
 // |web_contents| if there is an associated window with a positive
 // windowNumber, or nullopt otherwise.
-std::optional<NativeWindowIdMac> GetNativeWindowIdMac(
-    WebContents& web_contents);
+std::optional<NativeWindowId> GetNativeWindowIdMac(WebContents& web_contents);
 
 }  // namespace content
 

@@ -44,8 +44,8 @@ void PipScreenCaptureCoordinatorImpl::OnPipClosed() {
   }
 }
 
-std::optional<PipScreenCaptureCoordinatorImpl::NativeWindowId>
-PipScreenCaptureCoordinatorImpl::PipWindowId() const {
+std::optional<NativeWindowId> PipScreenCaptureCoordinatorImpl::PipWindowId()
+    const {
   return pip_window_id_;
 }
 

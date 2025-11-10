@@ -26,8 +26,7 @@ std::unique_ptr<media::VideoCaptureDevice> CreateScreenCaptureKitDeviceMac(
   }
 }
 
-std::optional<NativeWindowIdMac> GetNativeWindowIdMac(
-    WebContents& web_contents) {
+std::optional<NativeWindowId> GetNativeWindowIdMac(WebContents& web_contents) {
   gfx::NativeView native_view = web_contents.GetNativeView();
   NSView* ns_view = native_view.GetNativeNSView();
   if (!ns_view) {

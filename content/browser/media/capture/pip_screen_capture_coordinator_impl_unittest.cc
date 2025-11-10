@@ -10,7 +10,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using NativeWindowId = content::PipScreenCaptureCoordinatorImpl::NativeWindowId;
+using NativeWindowId = content::NativeWindowId;
 using testing::_;
 
 namespace content {

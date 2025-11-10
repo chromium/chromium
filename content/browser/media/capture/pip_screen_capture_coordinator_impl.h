@@ -5,9 +5,8 @@
 #ifndef CONTENT_BROWSER_MEDIA_CAPTURE_PIP_SCREEN_CAPTURE_COORDINATOR_IMPL_H_
 #define CONTENT_BROWSER_MEDIA_CAPTURE_PIP_SCREEN_CAPTURE_COORDINATOR_IMPL_H_
 
-#include <cstdint>
-
 #include "base/observer_list.h"
+#include "content/browser/media/capture/capture_util.h"
 #include "content/browser/media/capture/capture_util_mac.h"
 
 namespace content {
@@ -16,7 +15,6 @@ class WebContents;
 
 class CONTENT_EXPORT PipScreenCaptureCoordinatorImpl {
  public:
-  using NativeWindowId = NativeWindowIdMac;
 
   class Observer : public base::CheckedObserver {
    public:
