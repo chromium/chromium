@@ -330,7 +330,6 @@ crbug.com/40946176 [ Mac ] virtual/view-transition-mpa-serialization/external/wp
 crbug.com/40946176 [ Mac ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/snapshot-containing-block-includes-scrollbar-gutter.html [ Failure Pass ]
 
 
-########## Ref tests can't be rebaselined ##########
 crbug.com/619103 paint/invalidation/background/background-resize-width.html [ Failure Pass ]
 
 crbug.com/784956 fast/history/frameset-repeated-name.html [ Failure Pass ]
@@ -368,13 +367,11 @@ crbug.com/1334900 http/tests/inspector-protocol/fetch/service-worker-module-upda
 crbug.com/1334900 http/tests/inspector-protocol/fetch/service-worker-module-update-network-id-disallowed-response-code.js [ Failure ]
 crbug.com/1334900 http/tests/inspector-protocol/fetch/service-worker-module-update-network-id-disallowed-service-worker-allowed-header.js [ Failure ]
 
-# Looks like a failure to get a paint on time. Test could be changed to use runAfterLayoutAndPaint
-# instead of a timeout, which may fix things.
-crbug.com/713049 images/color-profile-reflection.html [ Failure Pass ]
-crbug.com/713049 [ Mac ] virtual/gpu-rasterization/images/color-profile-reflection.html [ Failure Pass Timeout ]
-
 # This test was attributed to site isolation but times out with or without it. Broken test?
 crbug.com/1050826 external/wpt/mixed-content/gen/top.http-rp/opt-in/object-tag.https.html [ Skip Timeout ]
+
+# Mac doesn't support lowLatency/desynchronized Canvas Contexts.
+crbug.com/922218 [ Mac ] fast/canvas-api/canvas-lowlatency-getContext.html [ Failure ]
 
 # Assorted WPT canvas tests failing
 crbug.com/1093709 [ Mac12-arm64 Release ] external/wpt/html/canvas/offscreen/manual/the-offscreen-canvas/offscreencanvas.resize.html [ Failure Pass ]
@@ -392,6 +389,68 @@ crbug.com/385194416 external/wpt/html/canvas/offscreen/text/2d.text.direction.va
 crbug.com/457930206 [ Mac ] wpt_internal/html/canvas/drawElementImage/privacy/subframe-cross-origin-background-image.https.sub.html [ Failure Pass ]
 crbug.com/457930206 [ Mac ] wpt_internal/html/canvas/drawElementImage/privacy/subframe-cross-origin-frame.https.sub.html [ Failure Pass ]
 crbug.com/457930206 [ Mac ] wpt_internal/html/canvas/drawElementImage/privacy/subframe-cross-origin-html-images.https.sub.html [ Failure Pass ]
+
+crbug.com/400841 media/video-canvas-draw.html [ Failure ]
+
+crbug.com/422811223 external/wpt/html/canvas/element/manual/imagebitmap/createImageBitmap-drawImage.html [ Failure ]
+crbug.com/422811223 external/wpt/html/canvas/element/manual/imagebitmap/createImageBitmap-flipY.html [ Failure ]
+crbug.com/422811223 external/wpt/html/canvas/element/manual/imagebitmap/createImageBitmap-resolves-in-task.any.html [ Failure ]
+crbug.com/422811223 external/wpt/html/canvas/element/manual/imagebitmap/createImageBitmap-resolves-in-task.any.worker.html [ Failure ]
+
+crbug.com/433324167 external/wpt/html/canvas/element/text/2d.text.writingmode.html [ Failure ]
+
+crbug.com/430125748 [ Mac ] external/wpt/html/canvas/element/text/2d.text.measure.width.nullCharacter.html [ Failure ]
+crbug.com/430125748 [ Mac ] external/wpt/html/canvas/offscreen/text/2d.text.measure.width.nullCharacter.html [ Failure ]
+crbug.com/430125748 [ Mac ] external/wpt/html/canvas/offscreen/text/2d.text.measure.width.nullCharacter.worker.html [ Failure ]
+
+crbug.com/340066066 [ Win11-arm64 ] external/wpt/html/canvas/element/text/2d.text.measure.advances-not-defined.html [ Failure Timeout ]
+crbug.com/339317629 external/wpt/html/canvas/element/manual/filters/svg-filter-lh-rlh.html [ Timeout ]
+
+crbug.com/335769262 [ Win11-arm64 ] external/wpt/html/canvas/element/manual/drawing-images-to-the-canvas/image-orientation/drawImage-from-blob.tentative.html [ Failure ]
+crbug.com/335769262 [ Mac14-arm64 ] external/wpt/html/canvas/element/manual/drawing-images-to-the-canvas/image-orientation/drawImage-from-blob.tentative.html [ Failure ]
+crbug.com/335769262 [ Mac13-arm64 ] external/wpt/html/canvas/element/manual/drawing-images-to-the-canvas/image-orientation/drawImage-from-blob.tentative.html [ Failure ]
+crbug.com/335769262 [ Mac12-arm64 ] external/wpt/html/canvas/element/manual/drawing-images-to-the-canvas/image-orientation/drawImage-from-blob.tentative.html [ Failure ]
+
+crbug.com/626703 [ Mac12-arm64 ] external/wpt/density-size-correction/density-corrected-image-in-canvas.html [ Failure Timeout ]
+crbug.com/626703 [ Mac13-arm64 ] external/wpt/density-size-correction/density-corrected-image-in-canvas.html [ Failure Timeout ]
+crbug.com/1464614 [ Win11-arm64 ] external/wpt/density-size-correction/density-corrected-image-in-canvas.html [ Failure Timeout ]
+
+crbug.com/709227 external/wpt/html/canvas/offscreen/path-objects/2d.path.stroke.prune.arc.worker.html [ Failure ]
+crbug.com/709227 external/wpt/html/canvas/offscreen/path-objects/2d.path.stroke.prune.curve.worker.html [ Failure ]
+crbug.com/709227 external/wpt/html/canvas/offscreen/path-objects/2d.path.stroke.prune.line.worker.html [ Failure ]
+
+crbug.com/979422 [ Mac ] fast/borders/border-radius-mask-canvas-with-shadow.html [ Failure ]
+crbug.com/979422 [ Mac ] fast/borders/border-radius-mask-canvas-padding.html [ Failure ]
+crbug.com/979422 [ Mac ] fast/borders/border-radius-mask-canvas-with-mask.html [ Failure ]
+crbug.com/1092794 fast/canvas/OffscreenCanvas-2d-placeholder-willReadFrequently.html [ Failure Pass ]
+crbug.com/1113127 fast/canvas/downsample-quality.html [ Crash Failure Pass ]
+crbug.com/1167309 fast/canvas/canvas-createImageBitmap-drawImage.html [ Failure Pass ]
+crbug.com/1487899 [ Linux ] fast/canvas/canvas-toBlob-jpeg-medium-quality.html [ Failure Pass ]
+crbug.com/40899458 fast/canvas/OffscreenCanvas-copyImage.html [ Failure Pass Timeout ]
+crbug.com/365127791 [ Win11 ] fast/canvas/fillText-emoji.html [ Failure Pass ]
+crbug.com/41493642 external/wpt/html/semantics/embedded-content/the-canvas-element/toBlob-cross-realm-callback-report-exception.html [ Failure Pass ]
+
+# Expect failure for unimplemented canvas color object input
+crbug.com/1187575 external/wpt/html/canvas/element/fill-and-stroke-styles/2d.fillStyle.colorObject.html [ Failure ]
+crbug.com/1187575 external/wpt/html/canvas/element/fill-and-stroke-styles/2d.fillStyle.colorObject.transparency.html [ Failure ]
+crbug.com/1187575 external/wpt/html/canvas/element/fill-and-stroke-styles/2d.strokeStyle.colorObject.html [ Failure ]
+crbug.com/1187575 external/wpt/html/canvas/element/fill-and-stroke-styles/2d.strokeStyle.colorObject.transparency.html [ Failure ]
+
+# Windows subpixel anti-aliasing is inconsistently applied on windows
+crbug.com/396344375 [ Win ] external/wpt/html/canvas/element/fill-and-stroke-styles/2d.gradient.colorInterpolationMethod.html [ Failure ]
+crbug.com/396344375 [ Win ] external/wpt/html/canvas/element/fill-and-stroke-styles/2d.gradient.hueInterpolationMethod.html [ Failure ]
+crbug.com/396344375 [ Win ] external/wpt/html/canvas/offscreen/fill-and-stroke-styles/2d.gradient.colorInterpolationMethod.html [ Failure ]
+crbug.com/396344375 [ Win ] external/wpt/html/canvas/offscreen/fill-and-stroke-styles/2d.gradient.hueInterpolationMethod.html [ Failure ]
+crbug.com/396344375 [ Win ] external/wpt/html/canvas/offscreen/fill-and-stroke-styles/2d.gradient.colorInterpolationMethod.w.html [ Failure ]
+crbug.com/396344375 [ Win ] external/wpt/html/canvas/offscreen/fill-and-stroke-styles/2d.gradient.hueInterpolationMethod.w.html [ Failure ]
+
+crbug.com/1273409 [ Linux ] fast/canvas/OffscreenCanvas-2d-drawImage.html [ Failure Pass ]
+crbug.com/1273409 [ Win10.20h2 ] fast/canvas/OffscreenCanvas-2d-drawImage.html [ Failure Pass ]
+
+# Tentative allow to fail to roll SwiftShader changes.
+crbug.com/726075 [ Linux ] virtual/gpu/fast/canvas/canvas-imageSmoothing-disabled-scaling-down.html [ Failure ]
+
+
 
 # These are testing deprecated features: https://github.com/web-platform-tests/wpt/issues/35662
 external/wpt/editing/run/inserttext.html?2001-last [ Failure ]
@@ -1783,8 +1842,6 @@ crbug.com/40771785 http/tests/devtools/network/network-prefetch.js [ Failure ]
 # codecs, so no benefit to running them again with gpu acceleration enabled.
 crbug.com/555703 virtual/media-gpu-accelerated/* [ Failure Skip ]
 
-crbug.com/400841 media/video-canvas-draw.html [ Failure ]
-
 # switching to apache-win32: needs triaging.
 crbug.com/528062 [ Win ] http/tests/css/missing-repaint-after-slow-style-sheet.pl [ Failure ]
 crbug.com/528062 [ Win ] http/tests/local/blob/send-data-blob.html [ Failure Timeout ]
@@ -2939,10 +2996,6 @@ crbug.com/431542979 [ Win ] external/wpt/speech-api/idlharness.window.html [ Fai
 crbug.com/431542979 virtual/speech-with-unified-autoplay/external/wpt/speech-api/idlharness.window.html [ Failure ]
 crbug.com/431592647 external/wpt/webdriver/tests/bidi/browser/create_user_context/unhandled_prompt_behavior.py [ Failure Timeout ]
 crbug.com/431592647 external/wpt/webdriver/tests/classic/set_window_rect/set.py [ Failure ]
-crbug.com/422811223 external/wpt/html/canvas/element/manual/imagebitmap/createImageBitmap-drawImage.html [ Failure ]
-crbug.com/422811223 external/wpt/html/canvas/element/manual/imagebitmap/createImageBitmap-flipY.html [ Failure ]
-crbug.com/422811223 external/wpt/html/canvas/element/manual/imagebitmap/createImageBitmap-resolves-in-task.any.html [ Failure ]
-crbug.com/422811223 external/wpt/html/canvas/element/manual/imagebitmap/createImageBitmap-resolves-in-task.any.worker.html [ Failure ]
 crbug.com/413633034 external/wpt/html/webappapis/scripting/event-loops/new-scroll-event-dispatched-at-next-updating-rendering-time.html [ Failure ]
 crbug.com/406036293 [ Mac ] external/wpt/css/css-overflow/keyboard-scroll.html [ Failure Pass ]
 crbug.com/626703 [ Mac ] external/wpt/editing/plaintext-only/insertLineBreak.html?white-space=pre [ Failure ]
@@ -3365,7 +3418,6 @@ crbug.com/435913826 [ Win11-arm64 ] virtual/dbsc-enabled/external/wpt/device-bou
 crbug.com/435985896 [ Win11-arm64 ] virtual/split-http-cache/external/wpt/signed-exchange/reporting/sxg-reporting-prefetch-cert_fetch_error-downgraded.tentative.html [ Crash ]
 crbug.com/435913825 [ Win11-arm64 ] virtual/web-bluetooth-new-permissions-backend/external/wpt/bluetooth/bidi/characteristic/readValue/service-is-removed.https.window.html [ Skip Timeout ]
 crbug.com/433297073 external/wpt/css/filter-effects/fecolormatrix-display-p3.html [ Failure ]
-crbug.com/433324167 external/wpt/html/canvas/element/text/2d.text.writingmode.html [ Failure ]
 crbug.com/433297461 external/wpt/workers/shared-worker-from-blob-url.window.html [ Timeout ]
 crbug.com/433297073 virtual/scalefactor200/external/wpt/css/filter-effects/fecolormatrix-display-p3.html [ Failure ]
 crbug.com/432130785 external/wpt/css/css-contain/contain-layout-select-001.tentative.html [ Failure ]
@@ -3492,9 +3544,6 @@ crbug.com/430125723 [ Mac ] external/wpt/webtransport/idlharness.https.any.html 
 crbug.com/430125723 [ Mac ] external/wpt/webtransport/idlharness.https.any.serviceworker.html [ Failure ]
 crbug.com/430125723 [ Mac ] external/wpt/webtransport/idlharness.https.any.worker.html [ Failure ]
 crbug.com/430125723 [ Mac ] external/wpt/webtransport/idlharness.https.any.sharedworker.html [ Failure ]
-crbug.com/430125748 [ Mac ] external/wpt/html/canvas/element/text/2d.text.measure.width.nullCharacter.html [ Failure ]
-crbug.com/430125748 [ Mac ] external/wpt/html/canvas/offscreen/text/2d.text.measure.width.nullCharacter.html [ Failure ]
-crbug.com/430125748 [ Mac ] external/wpt/html/canvas/offscreen/text/2d.text.measure.width.nullCharacter.worker.html [ Failure ]
 crbug.com/429130580 [ Win10.20h2 ] external/wpt/mediacapture-fromelement/HTMLCanvasElement-captureStream-settings.tentative.html [ Pass Timeout ]
 crbug.com/429130580 [ Win11-arm64 ] external/wpt/signed-exchange/reporting/sxg-reporting-prefetch-cert_parse_error-downgraded.tentative.html [ Crash ]
 crbug.com/429112747 [ Win11-arm64 ] virtual/web-bluetooth-new-permissions-backend/external/wpt/bluetooth/bidi/requestDevice/canonicalizeFilter/data-prefix-and-mask-size.https.window.html [ Skip Timeout ]
@@ -4304,8 +4353,6 @@ crbug.com/340167179 [ Win11-arm64 ] external/wpt/fetch/api/response/response-err
 crbug.com/340167179 [ Win11-arm64 ] external/wpt/fetch/api/response/response-stream-bad-chunk.any.serviceworker.html [ Failure Timeout ]
 crbug.com/340066067 [ Mac12 ] external/wpt/speculation-rules/prefetch/navigation-timing-requestStart-responseStart.https.html?include=waitingForResponse [ Timeout ]
 crbug.com/340066067 [ Win11-arm64 ] external/wpt/speculation-rules/prefetch/navigation-timing-requestStart-responseStart.https.html?include=waitingForResponse [ Timeout ]
-crbug.com/340066066 [ Win11-arm64 ] external/wpt/html/canvas/element/text/2d.text.measure.advances-not-defined.html [ Failure Timeout ]
-crbug.com/339317629 external/wpt/html/canvas/element/manual/filters/svg-filter-lh-rlh.html [ Timeout ]
 crbug.com/339310103 [ Win11-arm64 ] external/wpt/focus/focus-restoration-in-different-site-iframes.html [ Timeout ]
 crbug.com/339115424 [ Win11-arm64 ] external/wpt/css/css-color/parsing/color-computed-relative-color.html [ Failure Timeout ]
 crbug.com/338457111 [ Mac12 ] external/wpt/fs/FileSystemFileHandle-move.https.any.worker.html [ Timeout ]
@@ -4317,10 +4364,6 @@ crbug.com/338350366 [ Win11-arm64 ] external/wpt/preload/delaying-onload-link-pr
 crbug.com/337115047 [ Win11-arm64 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/fence-report-event-sub-fencedframe.https.html [ Timeout ]
 crbug.com/337069171 [ Win11-arm64 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/csp-allowed.https.html [ Timeout ]
 crbug.com/336346440 [ Win11-arm64 ] external/wpt/webrtc-extensions/RTCRtpSynchronizationSource-captureTimestamp.html [ Skip Timeout ]
-crbug.com/335769262 [ Win11-arm64 ] external/wpt/html/canvas/element/manual/drawing-images-to-the-canvas/image-orientation/drawImage-from-blob.tentative.html [ Failure ]
-crbug.com/335769262 [ Mac14-arm64 ] external/wpt/html/canvas/element/manual/drawing-images-to-the-canvas/image-orientation/drawImage-from-blob.tentative.html [ Failure ]
-crbug.com/335769262 [ Mac13-arm64 ] external/wpt/html/canvas/element/manual/drawing-images-to-the-canvas/image-orientation/drawImage-from-blob.tentative.html [ Failure ]
-crbug.com/335769262 [ Mac12-arm64 ] external/wpt/html/canvas/element/manual/drawing-images-to-the-canvas/image-orientation/drawImage-from-blob.tentative.html [ Failure ]
 crbug.com/333971751 external/wpt/mathml/relations/css-styling/first-line-first-letter-pseudo-elements-002.html [ Failure ]
 crbug.com/333971751 external/wpt/mathml/relations/css-styling/first-line-first-letter-pseudo-elements-003.html [ Failure ]
 crbug.com/333971751 external/wpt/mathml/relations/css-styling/first-line-first-letter-pseudo-elements-004.html [ Failure ]
@@ -4583,8 +4626,6 @@ crbug.com/626703 external/wpt/css/css-transforms/animation/translate-animation-o
 crbug.com/626703 virtual/backface-visibility-interop/external/wpt/css/css-transforms/animation/translate-animation-on-svg.html [ Failure ]
 crbug.com/626703 [ Win10.20h2 ] virtual/media-foundation-for-clear-dcomp/external/wpt/media-source/dedicated-worker/mediasource-worker-detach-element.html [ Timeout ]
 crbug.com/626703 [ Win11 ] virtual/media-foundation-for-clear-dcomp/external/wpt/media-source/dedicated-worker/mediasource-worker-detach-element.html [ Timeout ]
-crbug.com/626703 [ Mac12-arm64 ] external/wpt/density-size-correction/density-corrected-image-in-canvas.html [ Failure Timeout ]
-crbug.com/626703 [ Mac13-arm64 ] external/wpt/density-size-correction/density-corrected-image-in-canvas.html [ Failure Timeout ]
 crbug.com/626703 [ Win11 ] wpt_internal/geolocation-api/watchPosition-page-visibility.https.html [ Timeout ]
 crbug.com/626703 [ Mac ] external/wpt/url/a-element-xhtml.xhtml?exclude=(file|javascript|mailto) [ Crash Failure ]
 crbug.com/626703 [ Win10.20h2 ] wpt_internal/geolocation-api/watchPosition-page-visibility.https.html [ Timeout ]
@@ -5084,9 +5125,6 @@ crbug.com/40579361 http/tests/devtools/service-workers/service-worker-v8-cache.j
 
 # ====== Tests from enabling .any.js/.worker.js tests begin here ======
 crbug.com/709227 external/wpt/html/browsers/history/the-location-interface/per-global.window.html [ Failure ]
-crbug.com/709227 external/wpt/html/canvas/offscreen/path-objects/2d.path.stroke.prune.arc.worker.html [ Failure ]
-crbug.com/709227 external/wpt/html/canvas/offscreen/path-objects/2d.path.stroke.prune.curve.worker.html [ Failure ]
-crbug.com/709227 external/wpt/html/canvas/offscreen/path-objects/2d.path.stroke.prune.line.worker.html [ Failure ]
 
 # ====== Tests from enabling .any.js/.worker.js tests end here ========
 
@@ -5730,9 +5768,6 @@ crbug.com/910452 media/controls/buttons-after-reset.html [ Failure Pass ]
 # Sheriff 2019-01-07
 crbug.com/919587 [ Linux ] virtual/threaded/fast/idle-callback/idle_periods.html [ Failure Pass ]
 
-# Mac doesn't support lowLatency/desynchronized Canvas Contexts.
-crbug.com/922218 [ Mac ] fast/canvas-api/canvas-lowlatency-getContext.html [ Failure ]
-
 # Sheriff 2019-01-14
 crbug.com/921583 http/tests/preload/meta-viewport-link-headers.html [ Failure Pass ]
 
@@ -5877,11 +5912,6 @@ crbug.com/988432 external/wpt/webrtc/RTCRtpReceiver-getSynchronizationSources.ht
 
 # Sheriff 2019-07-29
 crbug.com/41444682 [ Release Win ] http/tests/devtools/elements/shadow/elements-panel-shadow-selection-on-refresh-3.js [ Failure Pass Timeout ]
-
-# Sheriff 2019-07-31
-crbug.com/979422 [ Mac ] fast/borders/border-radius-mask-canvas-with-shadow.html [ Failure ]
-crbug.com/979422 [ Mac ] fast/borders/border-radius-mask-canvas-padding.html [ Failure ]
-crbug.com/979422 [ Mac ] fast/borders/border-radius-mask-canvas-with-mask.html [ Failure ]
 
 #Sherrif 2019-08-16
 crbug.com/994692 [ Linux ] compositing/reflections/nested-reflection-anchor-point.html [ Failure Pass ]
@@ -6095,12 +6125,8 @@ crbug.com/1105271 [ Mac ] scrollbars/custom-scrollbar-adjust-on-inactive-pseudo.
 # This test fails due to the linked bug since input is now routed through the compositor.
 crbug.com/1112508 fast/forms/number/number-wheel-event.html [ Failure ]
 
-# Sheriff 2020-07-23
-crbug.com/1092794 fast/canvas/OffscreenCanvas-2d-placeholder-willReadFrequently.html [ Failure Pass ]
-
 # Sheriff 2020-08-05
 crbug.com/1113050 fast/borders/border-radius-mask-video-ratio.html [ Failure Pass ]
-crbug.com/1113127 fast/canvas/downsample-quality.html [ Crash Failure Pass ]
 
 # Sheriff 2020-08-06
 crbug.com/1113791 [ Win ] media/video-zoom.html [ Failure Pass ]
@@ -6189,9 +6215,6 @@ crbug.com/1163175 external/wpt/css/css-pseudo/first-letter-punctuation-and-space
 # Sheriff 2021-01-12
 crbug.com/1163793 http/tests/inspector-protocol/page/page-events-associated.js [ Failure Pass ]
 
-# Sheriff 2021-01-15
-crbug.com/1167309 fast/canvas/canvas-createImageBitmap-drawImage.html [ Failure Pass ]
-
 # Sheriff 2021-01-20
 crbug.com/1168522 external/wpt/focus/iframe-activeelement-after-focusing-out-iframes.html [ Failure Pass ]
 
@@ -6223,20 +6246,6 @@ crbug.com/1181857 external/wpt/webaudio/the-audio-api/the-analysernode-interface
 
 # Sheriff 2021-03-08
 crbug.com/1092462 [ Linux ] http/tests/media/media-source/mediasource-duration.html [ Failure Pass ]
-
-# Expect failure for unimplemented canvas color object input
-crbug.com/1187575 external/wpt/html/canvas/element/fill-and-stroke-styles/2d.fillStyle.colorObject.html [ Failure ]
-crbug.com/1187575 external/wpt/html/canvas/element/fill-and-stroke-styles/2d.fillStyle.colorObject.transparency.html [ Failure ]
-crbug.com/1187575 external/wpt/html/canvas/element/fill-and-stroke-styles/2d.strokeStyle.colorObject.html [ Failure ]
-crbug.com/1187575 external/wpt/html/canvas/element/fill-and-stroke-styles/2d.strokeStyle.colorObject.transparency.html [ Failure ]
-
-# Windows subpixel anti-aliasing is inconsistently applied on windows
-crbug.com/396344375 [ Win ] external/wpt/html/canvas/element/fill-and-stroke-styles/2d.gradient.colorInterpolationMethod.html [ Failure ]
-crbug.com/396344375 [ Win ] external/wpt/html/canvas/element/fill-and-stroke-styles/2d.gradient.hueInterpolationMethod.html [ Failure ]
-crbug.com/396344375 [ Win ] external/wpt/html/canvas/offscreen/fill-and-stroke-styles/2d.gradient.colorInterpolationMethod.html [ Failure ]
-crbug.com/396344375 [ Win ] external/wpt/html/canvas/offscreen/fill-and-stroke-styles/2d.gradient.hueInterpolationMethod.html [ Failure ]
-crbug.com/396344375 [ Win ] external/wpt/html/canvas/offscreen/fill-and-stroke-styles/2d.gradient.colorInterpolationMethod.w.html [ Failure ]
-crbug.com/396344375 [ Win ] external/wpt/html/canvas/offscreen/fill-and-stroke-styles/2d.gradient.hueInterpolationMethod.w.html [ Failure ]
 
 # Sheriff 2021-03-19
 crbug.com/40173961 http/tests/devtools/sources/debugger-breakpoints/dom-breakpoints.js [ Failure Pass Timeout ]
@@ -6975,10 +6984,6 @@ crbug.com/1329596 virtual/gpu-rasterization/images/jpeg-with-non-interleaved-dc-
 
 # Sheriff 2022-05-31
 crbug.com/1330555 external/wpt/service-workers/service-worker/resource-timing-fetch-variants.https.html [ Failure Pass ]
-
-# fast/canvas/OffscreenCanvas-2d-drawImage.html
-crbug.com/1273409 [ Linux ] fast/canvas/OffscreenCanvas-2d-drawImage.html [ Failure Pass ]
-crbug.com/1273409 [ Win10.20h2 ] fast/canvas/OffscreenCanvas-2d-drawImage.html [ Failure Pass ]
 
 # Flaky web-bundle tests
 crbug.com/1316343 [ Win ] external/wpt/web-bundle/subresource-loading/reuse-web-bundle-resource.https.tentative.html [ Failure ]
@@ -8017,7 +8022,6 @@ crbug.com/1409152 http/tests/forms/date-picker-keyboard-cross-domain.php [ Failu
 
 # Tests failing on windows11-arm64
 crbug.com/1464614 [ Win11-arm64 ] external/wpt/css/css-text-decor/text-underline-offset-variable.html [ Failure ]  # Reftest image failure
-crbug.com/1464614 [ Win11-arm64 ] external/wpt/density-size-correction/density-corrected-image-in-canvas.html [ Failure Timeout ]
 crbug.com/1464614 [ Win11-arm64 ] external/wpt/mediacapture-streams/MediaDevices-enumerateDevices-per-origin-ids.sub.https.html [ Failure Timeout ]
 crbug.com/1464614 [ Win11-arm64 ] http/tests/images/force-reload-image-document.html [ Failure Timeout ]
 crbug.com/1464614 [ Win11-arm64 ] http/tests/images/force-reload.html [ Failure Timeout ]
@@ -8069,9 +8073,6 @@ external/wpt/cookies/third-party-cookies/third-party-cookie-heuristics.tentative
 http/tests/inspector-protocol/issues/third-party-cookie-phaseout-exclusion.js [ Failure ]
 http/tests/inspector-protocol/network/response-received-extra-info-exempted-cookie.js [ Failure ]
 
-# Gardener 2023-09-29
-crbug.com/1487899 [ Linux ] fast/canvas/canvas-toBlob-jpeg-medium-quality.html [ Failure Pass ]
-
 # Gardener 2023-10-02
 crbug.com/40281592 [ Mac ] http/tests/inspector-protocol/target/browser-auto-attach-tab.js [ Failure Pass Timeout ]
 crbug.com/40281592 [ Linux ] http/tests/inspector-protocol/target/browser-auto-attach-tab.js [ Failure Pass Timeout ]
@@ -8114,9 +8115,6 @@ crbug.com/1495671 [ Win ] external/wpt/webmessaging/with-ports/020.html [ Failur
 
 # Gardener 2023-11-24
 crbug.com/1503086 external/wpt/html/semantics/the-button-element/command-and-commandfor/on-audio-behavior.tentative.html [ Failure Pass Timeout ]
-
-# Tentative allow to fail to roll SwiftShader changes.
-crbug.com/726075 [ Linux ] virtual/gpu/fast/canvas/canvas-imageSmoothing-disabled-scaling-down.html [ Failure ]
 
 # Gardener 2023-12-01
 crbug.com/1506782 fast/dom/HTMLImageElement/image-sizes-1x.html [ Failure Pass ]
@@ -9121,8 +9119,6 @@ crbug.com/353746882 external/wpt/fs/FileSystemFileHandle-cross-primitive-locking
 crbug.com/40186254 fast/events/touch/gesture/gesture-tap-reset-selection-range.html [ Failure Pass Timeout ]
 crbug.com/40186254 fast/events/touch/gesture/long-press-drag-drop-touch-editing-combined-in-iframe.html [ Failure Pass Timeout ]
 
-crbug.com/40899458 fast/canvas/OffscreenCanvas-copyImage.html [ Failure Pass Timeout ]
-
 crbug.com/1362106 [ Win ] virtual/media-foundation-for-clear-dcomp/media/media-playback-while-not-visible-permission-policy-pause-when-hidden.html [ Failure Skip ]
 crbug.com/1362106 [ Win ] virtual/media-foundation-for-clear-dcomp/media/media-playback-while-not-visible-permission-policy-cant-play-if-hidden.html [ Failure Skip ]
 
@@ -9200,7 +9196,6 @@ crbug.com/365127791 [ Win11 ] css2.1/t1202-counters-04-b.html [ Failure Pass ]
 crbug.com/365127791 [ Win11 ] custom-elements/form-validation-bubble-appearance.html [ Failure Pass ]
 crbug.com/365127791 [ Win11 ] external/wpt/html/semantics/embedded-content/the-iframe-element/iframe-loading-lazy-reload-navigation-reload.html [ Crash Pass ]
 crbug.com/365127791 [ Win11-arm64 ] external/wpt/html/semantics/embedded-content/the-iframe-element/iframe-loading-lazy-reload-navigation-reload.html [ Crash Pass ]
-crbug.com/365127791 [ Win11 ] fast/canvas/fillText-emoji.html [ Failure Pass ]
 crbug.com/365127791 [ Win11 ] fast/forms/file/file-appearance-bidi-filenames.html [ Failure Pass ]
 crbug.com/365127791 [ Win11 ] fast/loader/json-document-appearance.html [ Failure Pass ]
 crbug.com/365127791 [ Win11 ] fast/ruby/nested-ruby.html [ Failure Pass ]
@@ -9432,8 +9427,6 @@ crbug.com/390162928 external/wpt/css/css-multicol/multicol-span-all-children-hei
 crbug.com/390162928 external/wpt/css/css-writing-modes/nested-orthogonal-001.html [ Failure Skip ]
 crbug.com/390162928 external/wpt/css/css-contain/contain-size-select-elem-003.html [ Failure Skip ]
 crbug.com/390162928 external/wpt/css/css-multicol/multicol-span-all-013.html [ Failure Skip ]
-
-crbug.com/41493642 external/wpt/html/semantics/embedded-content/the-canvas-element/toBlob-cross-realm-callback-report-exception.html [ Failure Pass ]
 
 #Disable due to high frequency flakiness
 crbug.com/393175977 [ Debug Mac14 ] http/tests/devtools/network/preview-searchable.js [ Failure Pass Timeout ]
