@@ -3301,8 +3301,8 @@ content::KeyboardEventProcessingResult BrowserView::PreHandleKeyboardEvent(
   if (browser_->is_type_app() || browser_->is_type_app_popup()) {
     // Let all keys fall through to a v1 app's web content, even accelerators.
     // We don't use NOT_HANDLED_IS_SHORTCUT here. If we do that, the app
-    // might not be able to see a subsequent Char event. See OnHandleInputEvent
-    // in content/renderer/render_widget.cc for details.
+    // might not be able to see a subsequent Char event. See
+    // blink::WidgetBaseInputHandler::HandleInputEvent for details.
     return content::KeyboardEventProcessingResult::NOT_HANDLED;
   }
 
