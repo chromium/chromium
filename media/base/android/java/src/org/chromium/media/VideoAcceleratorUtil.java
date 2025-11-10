@@ -220,16 +220,6 @@ class VideoAcceleratorUtil {
         return !type.equalsIgnoreCase(MediaCodecUtil.MimeTypes.VIDEO_H264);
     }
 
-    // H.264 high profile isn't required by Android platform, so we can only add support if
-    // we know its supported by the underlying codec.
-    private static boolean hasHighProfileSupport(String name) {
-        var lowerName = name.toLowerCase(Locale.ROOT);
-
-        // Some platforms seem to have a trailing `.` in the name...
-        return lowerName.startsWith("omx.google.h264.decoder")
-                || lowerName.startsWith("c2.android.avc.decoder");
-    }
-
     private static int getNumberOfTemporalLayers(String name) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
             return 1;
@@ -599,14 +589,6 @@ class VideoAcceleratorUtil {
                                     VideoCodecProfile.AV1PROFILE_PROFILE_MAIN, kNoVideoCodecLevel);
                             break;
                     }
-                }
-
-                // Prior to Oreo, high profile support wasn't advertised properly.
-                if (codec == VideoCodec.H264
-                        && Build.VERSION.SDK_INT < Build.VERSION_CODES.O
-                        && hasHighProfileSupport(info.getName())) {
-                    supportedProfileLevels.put(
-                            VideoCodecProfile.H264PROFILE_HIGH, kNoVideoCodecLevel);
                 }
 
                 boolean isSoftwareCodec = MediaCodecUtil.isSoftwareCodec(info);
