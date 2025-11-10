@@ -102,7 +102,7 @@ MemoryPressureWatcherDelegate::MemoryPressureWatcherDelegate(
     base::win::ScopedHandle handle,
     base::OnceClosure callback)
     : handle_(std::move(handle)), callback_(std::move(callback)) {
-  DCHECK(handle_.IsValid());
+  DCHECK(handle_.is_valid());
   CHECK(watcher_.StartWatchingOnce(handle_.Get(), this));
 }
 

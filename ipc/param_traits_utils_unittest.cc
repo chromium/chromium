@@ -263,7 +263,7 @@ TEST(IPCMessageUtilsTest, ScopedHandle) {
   base::PickleIterator iter(message);
   base::win::ScopedHandle read_handle;
   EXPECT_TRUE(ReadParam(&message, &iter, &read_handle));
-  EXPECT_TRUE(read_handle.IsValid());
+  EXPECT_TRUE(read_handle.is_valid());
 }
 #endif  // BUILDFLAG(IS_WIN)
 

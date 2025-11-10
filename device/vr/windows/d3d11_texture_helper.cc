@@ -593,7 +593,7 @@ void D3D11TextureHelper::SetSourceTexture(
   render_state_.source_.right_ = right;
   render_state_.source_.submitted_this_frame_ = true;
 
-  if (!texture_handle.IsValid()) {
+  if (!texture_handle.is_valid()) {
     return;
   }
 

@@ -98,7 +98,7 @@ SkBitmap GLTestHelper::ReadBackWindow(HWND window, const gfx::Size& size) {
   }
 
   base::win::ScopedCreateDC mem_hdc(::CreateCompatibleDC(nullptr));
-  DCHECK(mem_hdc.IsValid());
+  DCHECK(mem_hdc.is_valid());
 
   BITMAPV4HEADER hdr;
   gfx::CreateBitmapV4HeaderForARGB888(size.width(), size.height(), &hdr);

@@ -106,8 +106,9 @@ bool TokenHandleNeedsUpdate(const base::Time& last_refresh) {
 
 bool WaitForQueryResult(const base::win::ScopedHandle& thread_handle,
                         const base::Time& until) {
-  if (!thread_handle.IsValid())
+  if (!thread_handle.is_valid()) {
     return true;
+  }
 
   DWORD time_left = std::max<DWORD>(
       static_cast<DWORD>((until - base::Time::Now()).InMilliseconds()), 0);
@@ -510,7 +511,7 @@ void AssociatedUserValidator::CheckTokenHandleValidity(
     auto existing_validity_it = user_to_token_handle_info_.find(it->first);
     if (existing_validity_it != user_to_token_handle_info_.end() &&
         !existing_validity_it->second->is_valid &&
-        !existing_validity_it->second->pending_query_thread.IsValid()) {
+        !existing_validity_it->second->pending_query_thread.is_valid()) {
       continue;
     }
 
@@ -673,7 +674,7 @@ bool AssociatedUserValidator::IsTokenHandleValidForUser(
   CheckTokenHandleValidity({{sid, validity_it->second->queried_token_handle}});
 
   // If a query is still pending, wait for it and update the validity.
-  if (validity_it->second->pending_query_thread.IsValid()) {
+  if (validity_it->second->pending_query_thread.is_valid()) {
     validity_it->second->is_valid =
         WaitForQueryResult(validity_it->second->pending_query_thread,
                            validity_it->second->last_update);

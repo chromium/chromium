@@ -90,7 +90,7 @@ HRESULT FakeOSProcessManager::GetTokenLogonSID(
     const base::win::ScopedHandle& token,
     PSID* sid) {
   // Make sure the token is valid, but otherwise ignore it.
-  if (!token.IsValid()) {
+  if (!token.is_valid()) {
     return E_INVALIDARG;
   }
 
@@ -330,7 +330,7 @@ HRESULT FakeOSUserManager::CreateLogonToken(const wchar_t* domain,
                         nullptr, CREATE_ALWAYS,
                         FILE_ATTRIBUTE_TEMPORARY | FILE_FLAG_DELETE_ON_CLOSE,
                         nullptr));
-  return token->IsValid() ? S_OK : HRESULT_FROM_WIN32(::GetLastError());
+  return token->is_valid() ? S_OK : HRESULT_FROM_WIN32(::GetLastError());
 }
 
 bool FakeOSUserManager::IsDeviceDomainJoined() {

@@ -38,8 +38,9 @@ bool FallbackCrashHandlerLauncher::Initialize(
                             PROCESS_DUP_HANDLE | PROCESS_TERMINATE;
   self_process_handle_.Set(
       OpenProcess(kAccessMask, TRUE, ::GetCurrentProcessId()));
-  if (!self_process_handle_.IsValid())
+  if (!self_process_handle_.is_valid()) {
     return false;
+  }
 
   // Setup the startup info for inheriting the self process handle into the
   // fallback crash handler.

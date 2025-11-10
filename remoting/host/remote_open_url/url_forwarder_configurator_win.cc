@@ -54,7 +54,7 @@ base::win::ScopedHandle GetCurrentUserToken() {
 // switches.
 bool LaunchConfiguratorProcess(const std::string& switch_name,
                                base::win::ScopedHandle user_token) {
-  DCHECK(user_token.IsValid());
+  DCHECK(user_token.is_valid());
   base::LaunchOptions launch_options;
   launch_options.as_user = user_token.Get();
   // The remoting_desktop.exe binary (where this code runs) has extra manifest
@@ -93,7 +93,7 @@ void UrlForwarderConfiguratorWin::IsUrlForwarderSetUp(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto user_token = GetCurrentUserToken();
-  if (user_token.IsValid()) {
+  if (user_token.is_valid()) {
     io_task_runner_->PostTaskAndReplyWithResult(
         FROM_HERE,
         base::BindOnce(&LaunchConfiguratorProcess, std::string(),
@@ -141,7 +141,7 @@ void UrlForwarderConfiguratorWin::SetUpUrlForwarder(
       FROM_HERE, kReportUserInterventionRequiredDelay, this,
       &UrlForwarderConfiguratorWin::OnReportUserInterventionRequired);
   auto user_token = GetCurrentUserToken();
-  if (!user_token.IsValid()) {
+  if (!user_token.is_valid()) {
     OnSetUpResponse(false);
     return;
   }
@@ -182,7 +182,7 @@ void UrlForwarderConfiguratorWin::OnWtsSessionChange(uint32_t event,
 
   HOST_LOG << "User logged in. Checking URL forwarder setup state now.";
   auto user_token = GetCurrentUserToken();
-  if (!user_token.IsValid()) {
+  if (!user_token.is_valid()) {
     std::move(is_url_forwarder_set_up_callback_).Run(false);
     return;
   }

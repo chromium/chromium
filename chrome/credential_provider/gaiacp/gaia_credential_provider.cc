@@ -164,7 +164,7 @@ BackgroundTokenHandleUpdater::BackgroundTokenHandleUpdater(
 }
 
 BackgroundTokenHandleUpdater::~BackgroundTokenHandleUpdater() {
-  if (token_update_thread_.IsValid()) {
+  if (token_update_thread_.is_valid()) {
     // Tell the background thread to quit and then make sure it does.  This
     // prevents it from accessing data members that have been freed.
     token_update_quit_event_.Signal();

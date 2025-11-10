@@ -920,7 +920,7 @@ class FileStreamPipeTest : public PlatformTest, public WithTaskEnvironment {
         PIPE_TYPE_BYTE, /*nMaxInstances=*/1,
         /*nOutBufferSize=*/0, /*nInBufferSize=*/0, /*nDefaultTimeOut=*/0,
         /*lpSecurityAttributes=*/nullptr));
-    if (pipe.IsValid()) {
+    if (pipe.is_valid()) {
       return base::File(std::move(pipe), /*async=*/true);
     }
     return base::File(base::File::GetLastFileError());
@@ -934,7 +934,7 @@ class FileStreamPipeTest : public PlatformTest, public WithTaskEnvironment {
                       /*dwShareMode=*/0, /*lpSecurityAttributes=*/nullptr,
                       OPEN_EXISTING, /*dwFlagsAndAttributes=*/0,
                       /*hTemplateFile=*/nullptr));
-    if (!pipe.IsValid()) {
+    if (!pipe.is_valid()) {
       return base::File(base::File::GetLastFileError());
     }
     return base::File(std::move(pipe));

@@ -261,7 +261,7 @@ HRESULT AllowLogonSIDOnWinSta0(PSID sid) {
 
   ScopedWindowStationHandle winsta0(
       ::OpenWindowStationW(L"WinSta0", FALSE, READ_CONTROL | WRITE_DAC));
-  if (!winsta0.IsValid()) {
+  if (!winsta0.is_valid()) {
     HRESULT hr = HRESULT_FROM_WIN32(::GetLastError());
     LOGFN(ERROR) << "OpenWindowStation hr=" << putHR(hr);
     return hr;
@@ -324,12 +324,12 @@ HDESK GetAndAllowLogonSIDOnDesktop(const wchar_t* desktop_name,
       desired_access | READ_CONTROL | WRITE_DAC | DESKTOP_CREATEWINDOW;
   ScopedDesktopHandle desktop(
       ::OpenDesktop(desktop_name, 0, FALSE, kDesiredAccess));
-  if (!desktop.IsValid()) {
+  if (!desktop.is_valid()) {
     HRESULT hr = HRESULT_FROM_WIN32(::GetLastError());
     if (hr == HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND)) {
       desktop.Set(::CreateDesktop(desktop_name, nullptr, nullptr, 0,
                                   kDesiredAccess, nullptr));
-      if (!desktop.IsValid()) {
+      if (!desktop.is_valid()) {
         hr = HRESULT_FROM_WIN32(::GetLastError());
         LOGFN(ERROR) << "CreateDesktop hr=" << putHR(hr);
         return nullptr;
@@ -403,7 +403,7 @@ HRESULT SetupPermissionsForLogonSid(PSID sid) {
     ScopedDesktopHandle desktop;
     desktop.Set(
         GetAndAllowLogonSIDOnDesktop(kDesktopName, sid, DESKTOP_SWITCHDESKTOP));
-    if (!desktop.IsValid()) {
+    if (!desktop.is_valid()) {
       hr = HRESULT_FROM_WIN32(::GetLastError());
       LOGFN(ERROR) << "GetAndAllowLogonSIDOnDesktop hr=" << putHR(hr);
       return hr;

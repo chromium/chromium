@@ -391,7 +391,7 @@ bool ProcessSingleton::Create() {
     // since it isn't guaranteed we will get it. It is better to create it
     // without ownership and explicitly get the ownership afterward.
     base::win::ScopedHandle only_me(::CreateMutex(NULL, FALSE, kMutexName));
-    if (!only_me.IsValid()) {
+    if (!only_me.is_valid()) {
       DPLOG(FATAL) << "CreateMutex failed";
       return false;
     }

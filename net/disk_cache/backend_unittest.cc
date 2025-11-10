@@ -3844,12 +3844,12 @@ TEST_F(DiskCacheBackendTest, FileSharing) {
     base::win::ScopedHandle file2(CreateFile(name.value().c_str(), access,
                                              sharing, nullptr, OPEN_EXISTING, 0,
                                              nullptr));
-    EXPECT_FALSE(file2.IsValid());
+    EXPECT_FALSE(file2.is_valid());
 
     sharing |= FILE_SHARE_DELETE;
     file2.Set(CreateFile(name.value().c_str(), access, sharing, nullptr,
                          OPEN_EXISTING, 0, nullptr));
-    EXPECT_TRUE(file2.IsValid());
+    EXPECT_TRUE(file2.is_valid());
 #endif
 
     EXPECT_TRUE(base::DeleteFile(name));

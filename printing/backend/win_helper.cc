@@ -218,7 +218,7 @@ bool ScopedPrinterHandle::OpenPrinterWithName(const wchar_t* printer) {
   if (::OpenPrinter(const_cast<LPTSTR>(printer), &temp_handle, nullptr)) {
     Set(temp_handle);
   }
-  return IsValid();
+  return is_valid();
 }
 
 bool XPSModule::Init() {

@@ -42,14 +42,14 @@ typedef base::win::GenericScopedHandle<ScHandleTraits,
 SpoolerServiceStatus IsSpoolerRunning() {
   ScopedScHandle scm_handle(
       ::OpenSCManager(nullptr, nullptr, SC_MANAGER_CONNECT));
-  if (!scm_handle.IsValid()) {
+  if (!scm_handle.is_valid()) {
     LOG(ERROR) << "Unable to connect to Windows Service Control Manager";
     return SpoolerServiceStatus::kUnknown;
   }
 
   ScopedScHandle sc_handle(
       ::OpenService(scm_handle.Get(), L"Spooler", SERVICE_QUERY_STATUS));
-  if (!sc_handle.IsValid()) {
+  if (!sc_handle.is_valid()) {
     LOG(ERROR) << "Unable to open Windows print spooler service";
     return SpoolerServiceStatus::kUnknown;
   }

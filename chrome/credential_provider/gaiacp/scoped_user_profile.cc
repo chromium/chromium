@@ -433,7 +433,7 @@ ScopedUserProfile::ScopedUserProfile(const std::wstring& sid,
 ScopedUserProfile::~ScopedUserProfile() = default;
 
 bool ScopedUserProfile::IsValid() {
-  return token_.IsValid();
+  return token_.is_valid();
 }
 
 HRESULT ScopedUserProfile::ExtractAssociationInformation(

@@ -31,7 +31,7 @@ HBLUETOOTH_RADIO_FIND BluetoothClassicWrapper::FindFirstRadio(
 
 DWORD BluetoothClassicWrapper::GetRadioInfo(
     PBLUETOOTH_RADIO_INFO out_radio_info) {
-  DCHECK(opened_radio_handle_.IsValid());
+  DCHECK(opened_radio_handle_.is_valid());
   return BluetoothGetRadioInfo(opened_radio_handle_.Get(), out_radio_info);
 }
 
@@ -40,7 +40,7 @@ BOOL BluetoothClassicWrapper::FindRadioClose(HBLUETOOTH_RADIO_FIND handle) {
 }
 
 BOOL BluetoothClassicWrapper::IsConnectable() {
-  DCHECK(opened_radio_handle_.IsValid());
+  DCHECK(opened_radio_handle_.is_valid());
   return BluetoothIsConnectable(opened_radio_handle_.Get());
 }
 
@@ -61,12 +61,12 @@ BOOL BluetoothClassicWrapper::FindDeviceClose(HBLUETOOTH_DEVICE_FIND handle) {
 }
 
 BOOL BluetoothClassicWrapper::EnableDiscovery(BOOL is_enable) {
-  DCHECK(opened_radio_handle_.IsValid());
+  DCHECK(opened_radio_handle_.is_valid());
   return BluetoothEnableDiscovery(opened_radio_handle_.Get(), is_enable);
 }
 
 BOOL BluetoothClassicWrapper::EnableIncomingConnections(BOOL is_enable) {
-  DCHECK(opened_radio_handle_.IsValid());
+  DCHECK(opened_radio_handle_.is_valid());
   return BluetoothEnableIncomingConnections(opened_radio_handle_.Get(),
                                             is_enable);
 }
@@ -76,7 +76,7 @@ DWORD BluetoothClassicWrapper::LastError() {
 }
 
 bool BluetoothClassicWrapper::HasHandle() {
-  return opened_radio_handle_.IsValid();
+  return opened_radio_handle_.is_valid();
 }
 
 }  // namespace win

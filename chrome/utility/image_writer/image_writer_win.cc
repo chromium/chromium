@@ -32,7 +32,7 @@ bool ImageWriter::IsValidDevice() {
                  OPEN_EXISTING,
                  FILE_FLAG_NO_BUFFERING | FILE_FLAG_WRITE_THROUGH,
                  NULL));
-  if (!device_handle.IsValid()) {
+  if (!device_handle.is_valid()) {
     Error(error::kOpenDevice);
     return false;
   }

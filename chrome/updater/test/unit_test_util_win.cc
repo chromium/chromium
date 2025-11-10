@@ -139,7 +139,7 @@ void SetupCmdExe(UpdaterScope scope,
                                  const std::wstring& command_line) {
   ScopedScHandle scm(::OpenSCManager(
       nullptr, nullptr, SC_MANAGER_CONNECT | SC_MANAGER_CREATE_SERVICE));
-  if (!scm.IsValid()) {
+  if (!scm.is_valid()) {
     return false;
   }
 
@@ -148,20 +148,20 @@ void SetupCmdExe(UpdaterScope scope,
       DELETE | SERVICE_QUERY_CONFIG | SERVICE_CHANGE_CONFIG,
       SERVICE_WIN32_OWN_PROCESS, SERVICE_DEMAND_START, SERVICE_ERROR_NORMAL,
       command_line.c_str(), nullptr, nullptr, nullptr, nullptr, nullptr));
-  return service.IsValid() || ::GetLastError() == ERROR_SERVICE_EXISTS;
+  return service.is_valid() || ::GetLastError() == ERROR_SERVICE_EXISTS;
 }
 
 [[nodiscard]] bool DisableService(const std::wstring& service_name) {
   ScopedScHandle scm(::OpenSCManager(
       nullptr, nullptr, SC_MANAGER_CONNECT | SC_MANAGER_CREATE_SERVICE));
-  if (!scm.IsValid()) {
+  if (!scm.is_valid()) {
     return false;
   }
 
   ScopedScHandle service(
       ::OpenService(scm.Get(), service_name.c_str(),
                     SERVICE_QUERY_CONFIG | SERVICE_CHANGE_CONFIG));
-  if (!service.IsValid()) {
+  if (!service.is_valid()) {
     return true;
   }
 

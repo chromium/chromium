@@ -105,7 +105,7 @@ class COMPONENT_EXPORT(MOJO_CPP_PLATFORM) PlatformHandle {
 
 #if BUILDFLAG(IS_WIN)
   bool is_valid() const { return is_valid_handle(); }
-  bool is_valid_handle() const { return handle_.IsValid(); }
+  bool is_valid_handle() const { return handle_.is_valid(); }
   bool is_handle() const { return type_ == Type::kHandle; }
   bool is_pseudo_handle() const {
     return base::win::IsPseudoHandle(handle_.get());

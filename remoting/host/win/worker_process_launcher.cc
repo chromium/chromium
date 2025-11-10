@@ -97,7 +97,7 @@ void WorkerProcessLauncher::OnProcessLaunched(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!launch_timer_.IsRunning());
   DCHECK(!process_watcher_.GetWatchedObject());
-  DCHECK(!worker_process_.IsValid());
+  DCHECK(!worker_process_.is_valid());
 
   if (!process_watcher_.StartWatchingOnce(worker_process.Get(), this)) {
     StopWorker();
@@ -179,7 +179,7 @@ void WorkerProcessLauncher::LaunchWorker() {
 void WorkerProcessLauncher::RecordLaunchResult() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!worker_process_.IsValid()) {
+  if (!worker_process_.is_valid()) {
     LOG(WARNING) << "A worker process failed to start within "
                  << kLaunchResultTimeoutSeconds << " seconds.";
 

@@ -702,11 +702,11 @@ WASAPIAudioInputStream::WASAPIAudioInputStream(
   // Create the event which the audio engine will signal each time
   // a buffer becomes ready to be processed by the client.
   audio_samples_ready_event_.Set(CreateEvent(NULL, FALSE, FALSE, NULL));
-  DCHECK(audio_samples_ready_event_.IsValid());
+  DCHECK(audio_samples_ready_event_.is_valid());
 
   // Create the event which will be set in Stop() when capturing shall stop.
   stop_capture_event_.Set(CreateEvent(NULL, FALSE, FALSE, NULL));
-  DCHECK(stop_capture_event_.IsValid());
+  DCHECK(stop_capture_event_.is_valid());
 
   use_device_sample_format_ =
       base::FeatureList::IsEnabled(kWasapiInputUseDeviceSampleFormat);
@@ -997,7 +997,7 @@ void WASAPIAudioInputStream::Stop() {
   StopAgc();
 
   // Shut down the capture thread.
-  if (stop_capture_event_.IsValid()) {
+  if (stop_capture_event_.is_valid()) {
     SetEvent(stop_capture_event_.Get());
   }
 

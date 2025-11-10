@@ -239,7 +239,7 @@ UnprivilegedProcessDelegate::UnprivilegedProcessDelegate(
 UnprivilegedProcessDelegate::~UnprivilegedProcessDelegate() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!channel_);
-  DCHECK(!worker_process_.IsValid());
+  DCHECK(!worker_process_.is_valid());
 }
 
 void UnprivilegedProcessDelegate::LaunchProcess(
@@ -376,7 +376,7 @@ void UnprivilegedProcessDelegate::KillProcess() {
   CloseChannel();
   event_handler_ = nullptr;
 
-  if (worker_process_.IsValid()) {
+  if (worker_process_.is_valid()) {
     TerminateProcess(worker_process_.Get(), CONTROL_C_EXIT);
     worker_process_.Close();
   }
@@ -427,7 +427,7 @@ void UnprivilegedProcessDelegate::ReportFatalError() {
 void UnprivilegedProcessDelegate::ReportProcessLaunched(
     base::win::ScopedHandle worker_process) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!worker_process_.IsValid());
+  DCHECK(!worker_process_.is_valid());
 
   worker_process_ = std::move(worker_process);
 

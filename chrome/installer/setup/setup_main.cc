@@ -204,14 +204,14 @@ void DelayedOverwriteDisplayVersions(const base::FilePath& setup_exe,
   base::win::ScopedHandle start_event(::CreateEventW(
       &attributes, /*bManualReset=*/TRUE, /*bInitialState=*/FALSE,
       /*lpName=*/nullptr));
-  PLOG_IF(ERROR, !start_event.IsValid()) << "Failed to create child event";
+  PLOG_IF(ERROR, !start_event.is_valid()) << "Failed to create child event";
 
   base::CommandLine command_line(setup_exe);
   command_line.AppendSwitchASCII(installer::switches::kSetDisplayVersionProduct,
                                  id);
   command_line.AppendSwitchASCII(installer::switches::kSetDisplayVersionValue,
                                  version.GetString());
-  if (start_event.IsValid()) {
+  if (start_event.is_valid()) {
     command_line.AppendSwitchNative(
         installer::switches::kStartupEventHandle,
         base::NumberToWString(base::win::HandleToUint32(start_event.Get())));
@@ -223,7 +223,7 @@ void DelayedOverwriteDisplayVersions(const base::FilePath& setup_exe,
   }
 
   base::LaunchOptions launch_options;
-  if (start_event.IsValid()) {
+  if (start_event.is_valid()) {
     launch_options.handles_to_inherit.push_back(start_event.Get());
   }
   launch_options.force_breakaway_from_job_ = true;
@@ -235,7 +235,7 @@ void DelayedOverwriteDisplayVersions(const base::FilePath& setup_exe,
     return;
   }
 
-  if (!start_event.IsValid()) {
+  if (!start_event.is_valid()) {
     return;
   }
 
@@ -263,7 +263,7 @@ void DelayedOverwriteDisplayVersions(const base::FilePath& setup_exe,
 
 // Signals `event` if it is valid and then closes it.
 void SignalAndCloseEvent(base::win::ScopedHandle event) {
-  if (event.IsValid() && !::SetEvent(event.Get())) {
+  if (event.is_valid() && !::SetEvent(event.Get())) {
     // Failure to signal the event likely means that the handle is invalid.
     // Clear the ScopedHandle to prevent a crash upon close and proceed with the
     // operation. The parent process will wait for 30s in this case (see
@@ -288,7 +288,7 @@ LONG OverwriteDisplayVersionsAfterMsiexec(base::win::ScopedHandle startup_event,
   bool acquired_mutex = false;
   base::win::ScopedHandle msi_handle(::OpenMutexW(
       SYNCHRONIZE, /*bInheritHandle=*/FALSE, L"Global\\_MSIExecute"));
-  if (msi_handle.IsValid()) {
+  if (msi_handle.is_valid()) {
     VLOG(1) << "Blocking to acquire MSI mutex.";
 
     // Raise the priority class for the process so that it can do its work as

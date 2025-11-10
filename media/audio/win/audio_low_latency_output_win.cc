@@ -152,11 +152,11 @@ WASAPIAudioOutputStream::WASAPIAudioOutputStream(
   // Create the event which the audio engine will signal each time
   // a buffer becomes ready to be processed by the client.
   audio_samples_render_event_.Set(CreateEvent(nullptr, FALSE, FALSE, nullptr));
-  DCHECK(audio_samples_render_event_.IsValid());
+  DCHECK(audio_samples_render_event_.is_valid());
 
   // Create the event which will be set in Stop() when capturing shall stop.
   stop_render_event_.Set(CreateEvent(nullptr, FALSE, FALSE, nullptr));
-  DCHECK(stop_render_event_.IsValid());
+  DCHECK(stop_render_event_.is_valid());
 }
 
 WASAPIAudioOutputStream::~WASAPIAudioOutputStream() {

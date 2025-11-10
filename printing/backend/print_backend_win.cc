@@ -395,8 +395,9 @@ mojom::ResultCode PrintBackendWin::GetPrinterBasicInfo(
     const std::string& printer_name,
     PrinterBasicInfo* printer_info) {
   ScopedPrinterHandle printer_handle = GetPrinterHandle(printer_name);
-  if (!printer_handle.IsValid())
+  if (!printer_handle.is_valid()) {
     return GetResultCodeFromSystemErrorCode(logging::GetLastSystemErrorCode());
+  }
 
   std::optional<PrinterBasicInfo> info =
       GetBasicPrinterInfo(printer_handle.Get());
@@ -414,7 +415,7 @@ mojom::ResultCode PrintBackendWin::GetPrinterSemanticCapsAndDefaults(
     const std::string& printer_name,
     PrinterSemanticCapsAndDefaults* printer_info) {
   ScopedPrinterHandle printer_handle = GetPrinterHandle(printer_name);
-  if (!printer_handle.IsValid()) {
+  if (!printer_handle.is_valid()) {
     logging::SystemErrorCode err = logging::GetLastSystemErrorCode();
     LOG(WARNING) << "Failed to open printer `" << printer_name
                  << "`, error = " << logging::SystemErrorCodeToString(err);
@@ -572,7 +573,7 @@ std::optional<gfx::Rect> PrintBackendWin::GetPaperPrintableArea(
     const std::string& paper_vendor_id,
     const gfx::Size& paper_size_um) {
   ScopedPrinterHandle printer_handle = GetPrinterHandle(printer_name);
-  if (!printer_handle.IsValid()) {
+  if (!printer_handle.is_valid()) {
     return std::nullopt;
   }
 
@@ -618,13 +619,13 @@ std::optional<gfx::Rect> PrintBackendWin::GetPaperPrintableArea(
 std::vector<std::string> PrintBackendWin::GetPrinterDriverInfo(
     const std::string& printer_name) {
   ScopedPrinterHandle printer = GetPrinterHandle(printer_name);
-  return printer.IsValid() ? GetDriverInfo(printer.Get())
-                           : std::vector<std::string>();
+  return printer.is_valid() ? GetDriverInfo(printer.Get())
+                            : std::vector<std::string>();
 }
 
 bool PrintBackendWin::IsValidPrinter(const std::string& printer_name) {
   ScopedPrinterHandle printer_handle = GetPrinterHandle(printer_name);
-  return printer_handle.IsValid();
+  return printer_handle.is_valid();
 }
 
 void PrintBackendWin::SetPrintableAreaLoadedCallbackForTesting(

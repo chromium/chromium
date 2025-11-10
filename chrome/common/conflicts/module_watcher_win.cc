@@ -210,13 +210,15 @@ void ModuleWatcher::EnumerateAlreadyLoadedModules(
   for (int i = 0; i < 5; ++i) {
     snap.Set(::CreateToolhelp32Snapshot(TH32CS_SNAPMODULE | TH32CS_SNAPMODULE32,
                                         process_id));
-    if (snap.IsValid())
+    if (snap.is_valid()) {
       break;
+    }
     if (::GetLastError() != ERROR_BAD_LENGTH)
       return;
   }
-  if (!snap.IsValid())
+  if (!snap.is_valid()) {
     return;
+  }
 
   // Walk the module list.
   MODULEENTRY32 module = {sizeof(module)};

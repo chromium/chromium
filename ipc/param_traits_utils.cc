@@ -546,7 +546,7 @@ bool ParamTraits<base::ScopedFD>::Read(const base::Pickle* m,
 #if BUILDFLAG(IS_WIN)
 void ParamTraits<base::win::ScopedHandle>::Write(base::Pickle* m,
                                                  const param_type& p) {
-  const bool valid = p.IsValid();
+  const bool valid = p.is_valid();
   WriteParam(m, valid);
   if (!valid) {
     return;

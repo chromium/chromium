@@ -157,7 +157,7 @@ void MediaFoundationRendererWrapper::OnReceiveDCOMPSurface(
     GetDCOMPSurfaceCallback callback,
     base::win::ScopedHandle handle,
     const std::string& error) {
-  if (!handle.IsValid()) {
+  if (!handle.is_valid()) {
     std::move(callback).Run(std::nullopt, "invalid handle: " + error);
     return;
   }

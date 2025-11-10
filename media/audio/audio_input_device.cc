@@ -239,7 +239,7 @@ void AudioInputDevice::OnStreamCreated(
   TRACE_EVENT0("audio", "AudioInputDevice::OnStreamCreated");
   DCHECK(shared_memory_region.IsValid());
 #if BUILDFLAG(IS_WIN)
-  DCHECK(socket_handle.IsValid());
+  DCHECK(socket_handle.is_valid());
 #else
   DCHECK(socket_handle.is_valid());
 #endif

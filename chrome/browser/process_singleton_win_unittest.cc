@@ -109,16 +109,18 @@ MULTIPROCESS_TEST_MAIN(ProcessSingletonTestProcessMain) {
 
   base::win::ScopedHandle ready_event(
       ::OpenEvent(EVENT_MODIFY_STATE, FALSE, ready_event_name.c_str()));
-  if (!ready_event.IsValid())
+  if (!ready_event.is_valid()) {
     return kErrorResultCode;
+  }
 
   std::wstring continue_event_name =
       cmd_line->GetSwitchValueNative(kContinueEventNameFlag);
 
   base::win::ScopedHandle continue_event(
       ::OpenEvent(SYNCHRONIZE, FALSE, continue_event_name.c_str()));
-  if (!continue_event.IsValid())
+  if (!continue_event.is_valid()) {
     return kErrorResultCode;
+  }
 
   ScopedVisibleWindow visible_window;
   if (cmd_line->HasSwitch(kCreateWindowFlag)) {
@@ -185,14 +187,14 @@ class ProcessSingletonTest : public base::MultiProcessTest {
         L"ready-event-" + base::NumberToWString(base::GetCurrentProcId());
     base::win::ScopedHandle ready_event(
         ::CreateEvent(NULL, TRUE, FALSE, ready_event_name_.c_str()));
-    ASSERT_TRUE(ready_event.IsValid());
+    ASSERT_TRUE(ready_event.is_valid());
 
     // Create the named "continue" event, this is unique to our process.
     continue_event_name_ =
         L"continue-event-" + base::NumberToWString(base::GetCurrentProcId());
     continue_event_.Set(
         ::CreateEvent(NULL, TRUE, FALSE, continue_event_name_.c_str()));
-    ASSERT_TRUE(continue_event_.IsValid());
+    ASSERT_TRUE(continue_event_.is_valid());
 
     window_option_ = window_option;
 

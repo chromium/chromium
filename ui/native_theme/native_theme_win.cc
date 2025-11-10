@@ -109,7 +109,7 @@ class ScopedCreateDCWithBitmap {
     dc_.Close();
   }
 
-  bool IsValid() const { return dc_.IsValid(); }
+  bool IsValid() const { return dc_.is_valid(); }
 
   base::win::ScopedCreateDC::Handle Get() const { return dc_.Get(); }
 

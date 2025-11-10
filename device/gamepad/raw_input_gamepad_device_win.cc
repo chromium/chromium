@@ -313,8 +313,9 @@ bool RawInputGamepadDeviceWin::QueryDeviceInfo() {
   // read the product string from the device. If the OS does not return a valid
   // handle this gamepad is invalid.
   auto hid_handle = OpenHidHandle();
-  if (!hid_handle.IsValid())
+  if (!hid_handle.is_valid()) {
     return false;
+  }
 
   // Fetch the human-friendly |product_string_|, if available.
   if (!QueryProductString(hid_handle))
@@ -391,7 +392,7 @@ bool RawInputGamepadDeviceWin::QueryDeviceName() {
 
 bool RawInputGamepadDeviceWin::QueryProductString(
     base::win::ScopedHandle& hid_handle) {
-  DCHECK(hid_handle.IsValid());
+  DCHECK(hid_handle.is_valid());
   // HidD_GetProductString may return successfully even if it didn't write to
   // the buffer. Ensure the buffer is zeroed before calling
   // HidD_GetProductString. See https://crbug.com/1205511.

@@ -196,7 +196,7 @@ DaemonProcessWin::~DaemonProcessWin() = default;
 void DaemonProcessWin::OnChannelConnected(int32_t peer_pid) {
   // Obtain the handle of the network process.
   network_process_.Set(OpenProcess(PROCESS_DUP_HANDLE, false, peer_pid));
-  if (!network_process_.IsValid()) {
+  if (!network_process_.is_valid()) {
     CrashNetworkProcess(FROM_HERE);
     return;
   }
@@ -360,7 +360,7 @@ void DaemonProcessWin::DisableAutoStart() {
   ScopedScHandle scmanager(
       OpenSCManager(nullptr, SERVICES_ACTIVE_DATABASE,
                     SC_MANAGER_CONNECT | SC_MANAGER_ENUMERATE_SERVICE));
-  if (!scmanager.IsValid()) {
+  if (!scmanager.is_valid()) {
     PLOG(INFO) << "Failed to connect to the service control manager";
     return;
   }
@@ -368,7 +368,7 @@ void DaemonProcessWin::DisableAutoStart() {
   DWORD desired_access = SERVICE_CHANGE_CONFIG | SERVICE_QUERY_STATUS;
   ScopedScHandle service(
       OpenService(scmanager.Get(), kWindowsServiceName, desired_access));
-  if (!service.IsValid()) {
+  if (!service.is_valid()) {
     PLOG(INFO) << "Failed to open to the '" << kWindowsServiceName
                << "' service";
     return;
@@ -408,7 +408,7 @@ bool DaemonProcessWin::InitializePairingRegistry() {
       DuplicateRegistryKeyHandle(pairing_registry_privileged_key_);
   base::win::ScopedHandle unprivileged_key =
       DuplicateRegistryKeyHandle(pairing_registry_unprivileged_key_);
-  if (!(privileged_key.IsValid() && unprivileged_key.IsValid())) {
+  if (!(privileged_key.is_valid() && unprivileged_key.is_valid())) {
     return false;
   }
 

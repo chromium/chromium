@@ -125,7 +125,7 @@ bool GpuMemoryBufferTrackerWin::Init(const gfx::Size& dimensions,
 
   base::win::ScopedHandle scoped_handle =
       CreateNV12Texture(d3d_device_.Get(), dimensions);
-  if (!scoped_handle.IsValid()) {
+  if (!scoped_handle.is_valid()) {
     return false;
   }
 

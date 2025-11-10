@@ -226,7 +226,7 @@ void DCOMPTexture::SetDCOMPSurfaceHandle(
 
   base::win::ScopedHandle surface_handle =
       gl::DCOMPSurfaceRegistry::GetInstance()->TakeDCOMPSurfaceHandle(token);
-  if (!surface_handle.IsValid()) {
+  if (!surface_handle.is_valid()) {
     DLOG(ERROR) << __func__ << ": No surface registered for token " << token;
     std::move(callback).Run(false);
     return;

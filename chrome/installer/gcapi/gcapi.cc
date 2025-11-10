@@ -452,7 +452,7 @@ BOOL __stdcall LaunchGoogleChrome() {
       if (_wcsicmp(curr_proc_sid, exp_proc_sid) == 0) {
         ScopedHandle process_handle(::OpenProcess(
             PROCESS_DUP_HANDLE | PROCESS_QUERY_INFORMATION, TRUE, pid));
-        if (process_handle.IsValid()) {
+        if (process_handle.is_valid()) {
           HANDLE process_token = nullptr;
           HANDLE user_token = nullptr;
           if (::OpenProcessToken(process_handle.Get(),

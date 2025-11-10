@@ -28,8 +28,9 @@ HANDLE CreatePowerRequest(POWER_REQUEST_TYPE type,
       const_cast<wchar_t*>(wide_description.c_str());
 
   base::win::ScopedHandle handle(::PowerCreateRequest(&context));
-  if (!handle.IsValid())
+  if (!handle.is_valid()) {
     return INVALID_HANDLE_VALUE;
+  }
 
   if (::PowerSetRequest(handle.Get(), type))
     return handle.Take();
@@ -41,8 +42,9 @@ HANDLE CreatePowerRequest(POWER_REQUEST_TYPE type,
 // Takes ownership of the |handle|.
 void DeletePowerRequest(POWER_REQUEST_TYPE type, HANDLE handle) {
   base::win::ScopedHandle request_handle(handle);
-  if (!request_handle.IsValid())
+  if (!request_handle.is_valid()) {
     return;
+  }
 
   BOOL success = ::PowerClearRequest(request_handle.Get(), type);
   DCHECK(success);

@@ -245,7 +245,7 @@ void GcpSetupTest::CreateSentinelFileToSimulateCrash(
   base::win::ScopedHandle file(
       CreateFile(sentinel_file.value().c_str(), GENERIC_WRITE, 0, nullptr,
                  CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr));
-  ASSERT_TRUE(file.IsValid());
+  ASSERT_TRUE(file.is_valid());
 }
 
 void GcpSetupTest::ExpectSentinelFileToNotExist(

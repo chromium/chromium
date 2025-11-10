@@ -241,7 +241,7 @@ void EjectDeviceInThreadPool(
       volume_name.c_str(), GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE,
       nullptr, OPEN_EXISTING, 0, nullptr));
 
-  if (!volume_handle.IsValid()) {
+  if (!volume_handle.is_valid()) {
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), StorageMonitor::EJECT_FAILURE));

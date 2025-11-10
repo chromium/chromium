@@ -33,7 +33,7 @@ base::WaitableEvent EventForSwitch(const base::CommandLine& command_line,
   VLOG(1) << __func__ << " event name '" << event_name << "'";
   base::win::ScopedHandle handle(
       ::OpenEvent(EVENT_ALL_ACCESS, TRUE, event_name.c_str()));
-  PLOG_IF(ERROR, !handle.IsValid())
+  PLOG_IF(ERROR, !handle.is_valid())
       << __func__ << " cannot open event '" << event_name << "'";
   return base::WaitableEvent(std::move(handle));
 }

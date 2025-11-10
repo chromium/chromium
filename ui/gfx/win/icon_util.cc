@@ -420,7 +420,7 @@ SkBitmap IconUtil::CreateSkBitmapFromHICONHelper(HICON icon,
                            DIB_RGB_COLORS, &bits, nullptr, 0));
     dib_dc = base::win::ScopedCreateDC(CreateCompatibleDC(hdc));
   }
-  if (!dib.is_valid() || !dib_dc.IsValid() || !bits) {
+  if (!dib.is_valid() || !dib_dc.is_valid() || !bits) {
     return SkBitmap();
   }
 

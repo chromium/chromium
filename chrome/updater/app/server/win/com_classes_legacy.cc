@@ -71,7 +71,7 @@ namespace {
 HRESULT OpenCallerProcessHandle(DWORD proc_id,
                                 base::win::ScopedHandle& proc_handle) {
   proc_handle.Set(::OpenProcess(PROCESS_DUP_HANDLE, false, proc_id));
-  return proc_handle.IsValid() ? S_OK : updater::HRESULTFromLastError();
+  return proc_handle.is_valid() ? S_OK : updater::HRESULTFromLastError();
 }
 
 // Extracts a string from a VARIANT if the VARIANT is VT_BSTR or VT_BSTR |

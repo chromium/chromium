@@ -248,7 +248,7 @@ TEST(SetupUtilTest, GetInstallAge) {
       FILE_READ_ATTRIBUTES | FILE_WRITE_ATTRIBUTES,
       FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, nullptr,
       OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, nullptr));
-  ASSERT_TRUE(dir.IsValid());
+  ASSERT_TRUE(dir.is_valid());
 
   FILE_BASIC_INFO info = {};
   ASSERT_NE(0, ::GetFileInformationByHandleEx(dir.Get(), FileBasicInfo, &info,

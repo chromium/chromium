@@ -57,7 +57,7 @@ bool ScopedLockImpl::Initialize(const std::wstring& mutex_name,
                                 CSecurityAttributes* sa,
                                 base::TimeDelta timeout) {
   mutex_.Set(::CreateMutex(sa, false, mutex_name.c_str()));
-  if (!mutex_.IsValid()) {
+  if (!mutex_.is_valid()) {
     return false;
   }
 
@@ -66,7 +66,7 @@ bool ScopedLockImpl::Initialize(const std::wstring& mutex_name,
 }
 
 ScopedLockImpl::~ScopedLockImpl() {
-  if (mutex_.IsValid()) {
+  if (mutex_.is_valid()) {
     ::ReleaseMutex(mutex_.Get());
     VLOG(2) << "Lock released.";
   }

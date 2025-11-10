@@ -69,7 +69,7 @@ int main(int argc, char** argv) {
       PROCESS_VM_OPERATION | PROCESS_VM_WRITE | PROCESS_VM_READ;
   base::win::ScopedHandle process;
   process.Set(OpenProcess(desired_access, FALSE, pid));
-  if (!process.IsValid()) {
+  if (!process.is_valid()) {
     PLOG(ERROR) << "Failed to open the process " << pid;
     return kErrorExitCode;
   }
@@ -78,7 +78,7 @@ int main(int argc, char** argv) {
   base::win::ScopedHandle thread;
   thread.Set(CreateRemoteThread(process.Get(), NULL, 0, NULL, NULL, 0,
                                 &thread_id));
-  if (!thread.IsValid()) {
+  if (!thread.is_valid()) {
     PLOG(ERROR) << "Failed to create a remote thread in " << pid;
     return kErrorExitCode;
   }

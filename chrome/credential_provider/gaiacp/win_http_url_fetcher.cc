@@ -270,7 +270,7 @@ WinHttpUrlFetcher::~WinHttpUrlFetcher() {
 }
 
 bool WinHttpUrlFetcher::IsValid() const {
-  return session_.IsValid();
+  return session_.is_valid();
 }
 
 HRESULT WinHttpUrlFetcher::SetRequestHeader(const char* name,
@@ -301,7 +301,7 @@ HRESULT WinHttpUrlFetcher::Fetch(std::vector<char>* response) {
 
   response->clear();
 
-  if (!session_.IsValid()) {
+  if (!session_.is_valid()) {
     LOGFN(ERROR) << "Invalid fetcher";
     return E_UNEXPECTED;
   }

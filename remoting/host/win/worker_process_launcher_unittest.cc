@@ -284,14 +284,14 @@ void WorkerProcessLauncherTest::KillProcess() {
   event_handler_ = nullptr;
 
   DisconnectClient();
-  if (worker_process_.IsValid()) {
+  if (worker_process_.is_valid()) {
     TerminateProcess(worker_process_.Get(), CONTROL_C_EXIT);
     worker_process_.Close();
   }
 }
 
 void WorkerProcessLauncherTest::TerminateWorker(DWORD exit_code) {
-  if (worker_process_.IsValid()) {
+  if (worker_process_.is_valid()) {
     TerminateProcess(worker_process_.Get(), exit_code);
   }
 }
@@ -364,7 +364,7 @@ void WorkerProcessLauncherTest::QuitMainMessageLoop() {
 
 void WorkerProcessLauncherTest::DoLaunchProcess() {
   EXPECT_TRUE(event_handler_);
-  EXPECT_FALSE(worker_process_.IsValid());
+  EXPECT_FALSE(worker_process_.is_valid());
 
   WCHAR calc[MAX_PATH + 1];
   ASSERT_GT(ExpandEnvironmentStrings(L"\045SystemRoot\045\\system32\\calc.exe",
@@ -385,7 +385,7 @@ void WorkerProcessLauncherTest::DoLaunchProcess() {
                             &startup_info, &temp_process_info));
   base::win::ScopedProcessInformation process_information(temp_process_info);
   worker_process_.Set(process_information.TakeProcessHandle());
-  ASSERT_TRUE(worker_process_.IsValid());
+  ASSERT_TRUE(worker_process_.is_valid());
 
   mojo::MessagePipe pipe;
   client_channel_handle_ = std::move(pipe.handle0);

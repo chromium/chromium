@@ -96,7 +96,7 @@ NamedMojoServerEndpointConnectorWin::~NamedMojoServerEndpointConnectorWin() {
 
 void NamedMojoServerEndpointConnectorWin::Connect() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!pending_named_pipe_handle_.IsValid());
+  DCHECK(!pending_named_pipe_handle_.is_valid());
 
   mojo::NamedPlatformChannel::Options options;
   options.server_name = options_.server_name;

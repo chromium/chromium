@@ -388,7 +388,7 @@ TEST_F(GcpCredentialProviderExecutionTest, UnAdviseDuringGls) {
   constexpr wchar_t kStartGlsEventName[] = L"UnAdviseDuringGls_Signal";
   base::win::ScopedHandle start_event_handle(
       ::CreateEvent(nullptr, false, false, kStartGlsEventName));
-  ASSERT_TRUE(start_event_handle.IsValid());
+  ASSERT_TRUE(start_event_handle.is_valid());
   ASSERT_EQ(S_OK, test->SetStartGlsEventName(kStartGlsEventName));
   base::WaitableEvent start_event(std::move(start_event_handle));
 

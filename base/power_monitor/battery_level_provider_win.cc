@@ -273,7 +273,7 @@ BatteryLevelProviderWin::GetBatteryStateImpl() {
 
     base::win::ScopedHandle battery =
         GetBatteryHandle(devices.get(), &interface_data);
-    if (!battery.IsValid()) {
+    if (!battery.is_valid()) {
       return std::nullopt;
     }
 
