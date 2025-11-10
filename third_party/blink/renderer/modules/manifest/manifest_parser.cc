@@ -474,6 +474,9 @@ bool ManifestParser::Parse() {
                       WebFeature::kWebAppManifestPermissionsPolicy);
   }
 
+  manifest_->update_manifest_url =
+      ParseIsolatedAppUpdateManifestUrl(root_object.get());
+
   manifest_->launch_handler = ParseLaunchHandler(root_object.get());
   if (!manifest_->launch_handler.is_null()) {
     UseCounter::Count(execution_context_,
@@ -670,6 +673,7 @@ KURL ManifestParser::ParseURL(const JSONObject* object,
   if (!url_str.has_value()) {
     return KURL();
   }
+
   if (ignore_empty_string && url_str.value() == "") {
     return KURL();
   }
@@ -2165,6 +2169,17 @@ ManifestParser::ParseIsolatedAppPermissions(const JSONObject* object) {
     out.push_back(std::move(decl));
   }
   return out;
+}
+
+std::optional<KURL> ManifestParser::ParseIsolatedAppUpdateManifestUrl(
+    const JSONObject* object) {
+  KURL url = ParseURL(object, "update_manifest_url", /*base_url=*/KURL(),
+                      ParseURLRestrictions::kNoRestrictions);
+  if (!url.IsValid()) {
+    return std::nullopt;
+  }
+
+  return url;
 }
 
 Vector<String> ManifestParser::ParseOriginAllowlist(

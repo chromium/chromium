@@ -534,6 +534,8 @@ class MODULES_EXPORT ManifestParser {
   // PermissionsPolicyParser.
   Vector<network::ParsedPermissionsPolicyDeclaration>
   ParseIsolatedAppPermissions(const JSONObject* object);
+  std::optional<KURL> ParseIsolatedAppUpdateManifestUrl(
+      const JSONObject* object);
   Vector<String> ParseOriginAllowlist(const JSONArray* allowlist,
                                       const String& feature);
 
