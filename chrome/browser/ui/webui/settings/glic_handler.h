@@ -58,6 +58,12 @@ class GlicHandler : public SettingsPageUIHandler {
   // either on request or because it changed.
   void FireOnGlicDisallowedByAdminChanged();
 
+  // Callback for when the ActorKeyedService notifies of a capability change.
+  void OnWebActuationCapabilityChanged(bool can_act_on_web);
+
+  // Used to listen to changes in web actuation capability status.
+  base::CallbackListSubscription web_actuation_subscription_;
+
   // Used to listen to changes in glic enabling status.
   std::unique_ptr<base::CallbackListSubscription> glic_enabling_subscription_;
 };

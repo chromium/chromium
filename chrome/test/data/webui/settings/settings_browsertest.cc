@@ -564,6 +564,12 @@ IN_PROC_BROWSER_TEST_F(SettingsGlicSubPageWebActuationToggleTest,
           "runMochaSuite('GlicSubpage WebActuationSettingFeatureEnabled')");
 }
 
+IN_PROC_BROWSER_TEST_F(SettingsGlicSubPageWebActuationToggleTest,
+                       SettingsGlicSubPageWebActuationEnterprisePolicy) {
+  RunTest("settings/glic_subpage_test.js",
+          "runMochaSuite('GlicSubpage WebActuationEnterprisePolicy')");
+}
+
 class SettingsGlicSubPageWebActuationAllowedTierToggleTest
     : public SettingsBrowserTest {
  public:

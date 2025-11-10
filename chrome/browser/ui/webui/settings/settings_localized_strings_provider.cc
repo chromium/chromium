@@ -162,6 +162,8 @@
 #endif
 
 #if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/actor/actor_keyed_service_factory.h"
+#include "chrome/browser/actor/actor_policy_checker.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/subscription_eligibility/subscription_eligibility_service.h"
 #include "chrome/browser/subscription_eligibility/subscription_eligibility_service_factory.h"
@@ -736,6 +738,18 @@ void AddDownloadsStrings(content::WebUIDataSource* html_source) {
 
 #if BUILDFLAG(ENABLE_GLIC)
 
+bool IsWebActuationDisabledForEnterprise(Profile* profile) {
+  bool can_act_on_web = true;
+  if (base::FeatureList::IsEnabled(features::kGlicActor)) {
+    auto* actor_service =
+        actor::ActorKeyedServiceFactory::GetActorKeyedService(profile);
+    if (actor_service) {
+      can_act_on_web = actor_service->GetPolicyChecker().can_act_on_web();
+    }
+  }
+  return !can_act_on_web;
+}
+
 bool ShouldShowWebActuationToggle(Profile* profile) {
   auto* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(::switches::kGlicAlwaysShowWebActuationToggle)) {
@@ -775,7 +789,16 @@ bool ShouldShowWebActuationToggle(Profile* profile) {
   // has explicitly modified the preference before.
   const PrefService::Preference* pref = profile->GetPrefs()->FindPreference(
       glic::prefs::kGlicUserEnabledActuationOnWeb);
-  return pref && !pref->IsDefaultValue();
+  if (pref && !pref->IsDefaultValue()) {
+    return true;
+  }
+  // If tiers are empty and the user hasn't set the pref, still show toggle
+  // if enterprise policy is actively blocking it. This ensures users see the
+  // enterprise enforced state instead of it just being missing.
+  if (IsWebActuationDisabledForEnterprise(profile)) {
+    return true;
+  }
+  return false;
 }
 
 void AddGlicStrings(content::WebUIDataSource* html_source, Profile* profile) {
@@ -916,6 +939,8 @@ void AddGlicStrings(content::WebUIDataSource* html_source, Profile* profile) {
       base::FeatureList::IsEnabled(features::kGlicDefaultTabContextSetting));
   html_source->AddBoolean("glicWebActuationFeatureEnabled",
                           ShouldShowWebActuationToggle(profile));
+  html_source->AddBoolean("isWebActuationDisabledForEnterprise",
+                          IsWebActuationDisabledForEnterprise(profile));
   html_source->AddBoolean("glicActorEnabled",
                           base::FeatureList::IsEnabled(features::kGlicActor));
 }
@@ -1319,17 +1344,15 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
        IDS_SETTINGS_RELATED_SERVICES_TITLE},
       {"identityDocsCardTitle", IDS_AUTOFILL_IDENTITY_DOCS_TITLE},
       {"identityDocsOptInToggleLabel",
-        IDS_AUTOFILL_IDENTITY_DOCS_OPT_IN_TOGGLE_LABEL},
+       IDS_AUTOFILL_IDENTITY_DOCS_OPT_IN_TOGGLE_LABEL},
       {"identityDocsOptInToggleSubLabel",
-        IDS_AUTOFILL_IDENTITY_DOCS_OPT_IN_TOGGLE_SUB_LABEL},
-      {"travelOptInToggleLabel",
-        IDS_AUTOFILL_TRAVEL_OPT_IN_TOGGLE_LABEL},
+       IDS_AUTOFILL_IDENTITY_DOCS_OPT_IN_TOGGLE_SUB_LABEL},
+      {"travelOptInToggleLabel", IDS_AUTOFILL_TRAVEL_OPT_IN_TOGGLE_LABEL},
       {"travelOptInToggleSubLabel",
-        IDS_AUTOFILL_TRAVEL_OPT_IN_TOGGLE_SUB_LABEL},
+       IDS_AUTOFILL_TRAVEL_OPT_IN_TOGGLE_SUB_LABEL},
       {"yourSavedInfoDriverLicenseChip",
        IDS_AUTOFILL_AI_DRIVERS_LICENSE_ENTITY_NAME},
-      {"yourSavedInfoNationalIdsChip",
-       IDS_AUTOFILL_AI_NATIONAL_IDS_TITLE},
+      {"yourSavedInfoNationalIdsChip", IDS_AUTOFILL_AI_NATIONAL_IDS_TITLE},
       {"yourSavedInfoPassportChip", IDS_AUTOFILL_AI_PASSPORT_ENTITY_NAME},
       {"travelCardTitle", IDS_AUTOFILL_TRAVEL_TITLE},
       {"yourSavedInfoVehiclesChip", IDS_AUTOFILL_AI_VEHICLES_TITLE},
