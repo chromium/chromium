@@ -375,7 +375,6 @@ class AshTestBase : public testing::Test {
 
   // Methods to emulate blocking and unblocking user session with given
   // |block_reason|.
-  // TODO(crbug.com/383770001): Deprecate these methods.
   void BlockUserSession(UserSessionBlockReason block_reason);
   void UnblockUserSession();
 
