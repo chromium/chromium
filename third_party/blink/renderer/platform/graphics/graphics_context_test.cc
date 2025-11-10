@@ -195,7 +195,6 @@ TEST_F(GraphicsContextDarkModeTest, DarkModeOff) {
 TEST_F(GraphicsContextDarkModeTest, SimpleInvertForTesting) {
   DarkModeSettings settings;
   settings.mode = DarkModeInversionAlgorithm::kSimpleInvertForTesting;
-  settings.contrast = 0;
 
   DrawColorsToContext(true, settings);
 
@@ -205,10 +204,9 @@ TEST_F(GraphicsContextDarkModeTest, SimpleInvertForTesting) {
   EXPECT_EQ(0xff777777, bitmap_.getColor(3, 0));
 }
 
-TEST_F(GraphicsContextDarkModeTest, InvertLightnessPlusContrast) {
+TEST_F(GraphicsContextDarkModeTest, InvertLightnessLAB) {
   DarkModeSettings settings;
   settings.mode = DarkModeInversionAlgorithm::kInvertLightnessLAB;
-  settings.contrast = 0.2;
 
   DrawColorsToContext(true, settings);
 

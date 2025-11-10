@@ -21,7 +21,6 @@ enum class DarkModeInversionAlgorithm {
 struct DarkModeSettings {
   DarkModeInversionAlgorithm mode =
       DarkModeInversionAlgorithm::kInvertLightnessLAB;
-  float contrast = 0.0;                 // Valid range from -1.0 to 1.0
 
   // Foreground colors with brightness below this threshold will be inverted,
   // and above it will be left as in the original, non-dark-mode page.  Set to

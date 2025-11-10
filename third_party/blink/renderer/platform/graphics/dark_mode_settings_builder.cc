@@ -24,7 +24,6 @@ const constexpr DarkModeInversionAlgorithm kDefaultDarkModeInversionAlgorithm =
     DarkModeInversionAlgorithm::kInvertLightnessLAB;
 const constexpr int kDefaultForegroundBrightnessThreshold = 150;
 const constexpr int kDefaultBackgroundBrightnessThreshold = 205;
-const constexpr float kDefaultDarkModeContrastPercent = 0.0f;
 
 typedef std::unordered_map<std::string, std::string> SwitchParams;
 
@@ -61,18 +60,6 @@ T GetIntegerSwitchParamValue(const SwitchParams& switch_params,
   int result;
   return base::StringToInt(it->second, &result) ? static_cast<T>(result)
                                                 : default_value;
-}
-
-float GetFloatSwitchParamValue(const SwitchParams& switch_params,
-                               std::string param,
-                               float default_value) {
-  auto it = switch_params.find(base::ToLowerASCII(param));
-  if (it == switch_params.end())
-    return default_value;
-
-  double result;
-  return base::StringToDouble(it->second, &result) ? static_cast<float>(result)
-                                                   : default_value;
 }
 
 DarkModeInversionAlgorithm GetMode(const SwitchParams& switch_params) {
@@ -121,11 +108,6 @@ DarkModeSettings BuildDarkModeSettings() {
       Clamp<int>(GetForegroundBrightnessThreshold(switch_params), 0, 255);
   settings.background_brightness_threshold =
       Clamp<int>(GetBackgroundBrightnessThreshold(switch_params), 0, 255);
-  settings.contrast =
-      Clamp<float>(GetFloatSwitchParamValue(switch_params, "ContrastPercent",
-                                            kDefaultDarkModeContrastPercent),
-                   -1.0f, 1.0f);
-
   return settings;
 }
 
