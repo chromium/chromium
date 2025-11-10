@@ -8,7 +8,7 @@
 
 #include "base/debug/crash_logging.h"
 #include "chrome/browser/actor/ui/actor_border_view_controller.h"
-#include "chrome/browser/glic/browser_ui/context_sharing_border_view_controller.h"
+#include "chrome/browser/glic/browser_ui/context_sharing_border_view_controller_impl.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -82,7 +82,7 @@ ContextSharingBorderView::ContextSharingBorderView(
     ContentsWebView* contents_web_view,
     std::unique_ptr<Tester> tester)
     : AnimatedEffectView(browser, std::move(tester)),
-      controller_(std::make_unique<ContextSharingBorderViewController>()) {
+      controller_(std::make_unique<ContextSharingBorderViewControllerImpl>()) {
   // Post-initialization updates. Don't do the update in the controller's ctor
   // because at that time BorderView isn't fully initialized, which can lead to
   // undefined behavior.

@@ -6,7 +6,7 @@
 
 #include "base/debug/crash_logging.h"
 #include "cc/paint/paint_flags.h"
-#include "chrome/browser/glic/browser_ui/tab_underline_view_controller.h"
+#include "chrome/browser/glic/browser_ui/tab_underline_view_controller_impl.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -60,7 +60,7 @@ TabUnderlineView::TabUnderlineView(Browser* browser,
                                    Tab* tab,
                                    std::unique_ptr<Tester> tester)
     : AnimatedEffectView(browser, std::move(tester)),
-      controller_(std::make_unique<TabUnderlineViewController>()),
+      controller_(std::make_unique<TabUnderlineViewControllerImpl>()),
       tab_(tab) {
   SetProperty(views::kElementIdentifierKey, kGlicTabUnderlineElementId);
 

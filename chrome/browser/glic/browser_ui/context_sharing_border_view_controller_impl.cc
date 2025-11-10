@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/glic/browser_ui/context_sharing_border_view_controller.h"
+#include "chrome/browser/glic/browser_ui/context_sharing_border_view_controller_impl.h"
 
 #include "base/debug/crash_logging.h"
 #include "chrome/browser/actor/ui/actor_border_view_controller.h"
@@ -18,12 +18,12 @@
 
 namespace glic {
 
-ContextSharingBorderViewController::ContextSharingBorderViewController() =
-    default;
-ContextSharingBorderViewController::~ContextSharingBorderViewController() =
-    default;
+ContextSharingBorderViewControllerImpl::
+    ContextSharingBorderViewControllerImpl() = default;
+ContextSharingBorderViewControllerImpl::
+    ~ContextSharingBorderViewControllerImpl() = default;
 
-void ContextSharingBorderViewController::Initialize(
+void ContextSharingBorderViewControllerImpl::Initialize(
     ContextSharingBorderView* border_view,
     ContentsWebView* contents_web_view,
     Browser* browser) {
@@ -36,9 +36,10 @@ void ContextSharingBorderViewController::Initialize(
   if (features::kGlicActorUiBorderGlow.Get()) {
     actor_border_view_controller_subscription_ =
         ActorBorderViewController::From(browser)
-            ->AddOnActorBorderGlowUpdatedCallback(base::BindRepeating(
-                &ContextSharingBorderViewController::OnActorBorderGlowUpdated,
-                base::Unretained(this)));
+            ->AddOnActorBorderGlowUpdatedCallback(
+                base::BindRepeating(&ContextSharingBorderViewControllerImpl::
+                                        OnActorBorderGlowUpdated,
+                                    base::Unretained(this)));
   }
 
   // Observe the contents web view for when it is deleting.
@@ -48,14 +49,14 @@ void ContextSharingBorderViewController::Initialize(
   focus_change_subscription_ =
       glic_service_->sharing_manager().AddFocusedTabChangedCallback(
           base::BindRepeating(
-              &ContextSharingBorderViewController::OnFocusedTabChanged,
+              &ContextSharingBorderViewControllerImpl::OnFocusedTabChanged,
               base::Unretained(this)));
 
   // Subscribe to changes in the context access indicator status.
   indicator_change_subscription_ =
       glic_service_->AddContextAccessIndicatorStatusChangedCallback(
           base::BindRepeating(
-              &ContextSharingBorderViewController::OnIndicatorStatusChanged,
+              &ContextSharingBorderViewControllerImpl::OnIndicatorStatusChanged,
               base::Unretained(this)));
 
   // Fetch the latest context access indicator status from service. We can't
@@ -65,11 +66,11 @@ void ContextSharingBorderViewController::Initialize(
       glic_service_->is_context_access_indicator_enabled());
 }
 
-ContentsWebView* ContextSharingBorderViewController::contents_web_view() {
+ContentsWebView* ContextSharingBorderViewControllerImpl::contents_web_view() {
   return contents_web_view_;
 }
 
-void ContextSharingBorderViewController::OnFocusedTabChanged(
+void ContextSharingBorderViewControllerImpl::OnFocusedTabChanged(
     const FocusedTabData& focused_tab_data) {
   tabs::TabInterface* tab = focused_tab_data.focus();
   auto* previous_focus = glic_focused_contents_in_current_view_.get();
@@ -99,7 +100,7 @@ void ContextSharingBorderViewController::OnFocusedTabChanged(
   }
 }
 
-void ContextSharingBorderViewController::OnActorBorderGlowUpdated(
+void ContextSharingBorderViewControllerImpl::OnActorBorderGlowUpdated(
     tabs::TabInterface* tab,
     bool enabled) {
   if (!IsTabInCurrentView(tab->GetContents())) {
@@ -135,7 +136,7 @@ void ContextSharingBorderViewController::OnActorBorderGlowUpdated(
   }
 }
 
-void ContextSharingBorderViewController::OnIndicatorStatusChanged(
+void ContextSharingBorderViewControllerImpl::OnIndicatorStatusChanged(
     bool enabled) {
   if (context_access_indicator_enabled_ == enabled) {
     return;
@@ -147,7 +148,7 @@ void ContextSharingBorderViewController::OnIndicatorStatusChanged(
           : UpdateBorderReason::kContextAccessIndicatorOff);
 }
 
-void ContextSharingBorderViewController::OnViewIsDeleting(
+void ContextSharingBorderViewControllerImpl::OnViewIsDeleting(
     views::View* observed_view) {
   contents_web_view_observation_.Reset();
   indicator_change_subscription_ = {};
@@ -156,7 +157,7 @@ void ContextSharingBorderViewController::OnViewIsDeleting(
   contents_web_view_ = nullptr;
 }
 
-void ContextSharingBorderViewController::MaybeRunBorderViewUpdate(
+void ContextSharingBorderViewControllerImpl::MaybeRunBorderViewUpdate(
     UpdateBorderReason reason) {
   // We only want to override the latest reason if it's one that would result
   // in showing vs hiding the border. `kFocusedTabChanged_NoFocusChange` only
@@ -170,7 +171,7 @@ void ContextSharingBorderViewController::MaybeRunBorderViewUpdate(
   }
 }
 
-void ContextSharingBorderViewController::UpdateBorderView(
+void ContextSharingBorderViewControllerImpl::UpdateBorderView(
     UpdateBorderReason reason) {
   AddReasonForDebugging(reason);
   auto reasons_string = UpdateReasonsToString();
@@ -226,16 +227,16 @@ void ContextSharingBorderViewController::UpdateBorderView(
   }
 }
 
-bool ContextSharingBorderViewController::IsGlicWindowShowing() const {
+bool ContextSharingBorderViewControllerImpl::IsGlicWindowShowing() const {
   return glic_service_->IsWindowShowing();
 }
 
-bool ContextSharingBorderViewController::IsTabInCurrentView(
+bool ContextSharingBorderViewControllerImpl::IsTabInCurrentView(
     const content::WebContents* tab) const {
   return contents_web_view_->web_contents() == tab;
 }
 
-bool ContextSharingBorderViewController::ShouldShowBorderAnimation() {
+bool ContextSharingBorderViewControllerImpl::ShouldShowBorderAnimation() {
   if (!glic_focused_contents_in_current_view_) {
     return false;
   }
@@ -254,7 +255,7 @@ bool ContextSharingBorderViewController::ShouldShowBorderAnimation() {
   return IsGlicWindowShowing();
 }
 
-std::string ContextSharingBorderViewController::UpdateReasonToString(
+std::string ContextSharingBorderViewControllerImpl::UpdateReasonToString(
     UpdateBorderReason reason) {
   switch (reason) {
     case UpdateBorderReason::kContextAccessIndicatorOn:
@@ -271,7 +272,7 @@ std::string ContextSharingBorderViewController::UpdateReasonToString(
   NOTREACHED();
 }
 
-void ContextSharingBorderViewController::AddReasonForDebugging(
+void ContextSharingBorderViewControllerImpl::AddReasonForDebugging(
     UpdateBorderReason reason) {
   border_update_reasons_.push_back(UpdateReasonToString(reason));
   if (border_update_reasons_.size() > kNumReasonsToKeep) {
@@ -279,7 +280,8 @@ void ContextSharingBorderViewController::AddReasonForDebugging(
   }
 }
 
-std::string ContextSharingBorderViewController::UpdateReasonsToString() const {
+std::string ContextSharingBorderViewControllerImpl::UpdateReasonsToString()
+    const {
   std::ostringstream oss;
   for (const auto& r : border_update_reasons_) {
     oss << r << ",";
