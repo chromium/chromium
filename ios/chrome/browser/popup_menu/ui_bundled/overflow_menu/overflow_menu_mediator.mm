@@ -194,6 +194,9 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   std::unique_ptr<PrefChangeRegistrar> _prefChangeRegistrar;
   // Search engine observer.
   std::unique_ptr<SearchEngineObserverBridge> _searchEngineObserver;
+
+  // Whether or not model initialization has finished.
+  BOOL _modelInitialized;
 }
 
 // The current web state.
@@ -494,6 +497,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 #pragma mark - Model Creation
 
 - (void)initializeModel {
+  _modelInitialized = NO;
+
   __weak __typeof(self) weakSelf = self;
 
   // Bookmarks destination.
@@ -743,6 +748,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
     self.appActionsGroup, self.pageActionsGroup, self.editActionsGroup,
     self.helpActionsGroup
   ];
+  _modelInitialized = YES;
 }
 
 - (OverflowMenuAction*)toggleReaderModeAction {
@@ -1494,6 +1500,9 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 
 // Updates the model to match the current page state.
 - (void)updateModel {
+  if (!_modelInitialized) {
+    return;
+  }
   // First update the items' states, and then update all the orders.
   [self updateModelItemsState];
   [self updateModelOrdering];
