@@ -610,7 +610,15 @@ def FindTestTargets(target_cache, out_dir, paths, args):
     # back to a list of known test targets if that fails.
     gn_path = os.path.join(DEPOT_TOOLS_DIR, 'gn.py')
 
-    cmd = [sys.executable, gn_path, 'refs', out_dir, '--all'] + paths
+    cmd = [
+        sys.executable,
+        gn_path,
+        'refs',
+        out_dir,
+        '--all',
+        '--relation=source',
+        '--relation=input',
+    ] + paths
     targets = _ParseRefsOutput(RunCommand(cmd))
     test_targets = _TestTargetsFromGnRefs(targets)
 
