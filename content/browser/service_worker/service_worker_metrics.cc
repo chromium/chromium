@@ -354,14 +354,6 @@ void ServiceWorkerMetrics::RecordEventDuration(EventType event,
       DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
           "ServiceWorker.PaymentRequestEvent.Time", time);
       break;
-    case EventType::CAN_MAKE_PAYMENT:
-      DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
-          "ServiceWorker.CanMakePaymentEvent.Time", time);
-      break;
-    case EventType::ABORT_PAYMENT:
-      DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
-          "ServiceWorker.AbortPaymentEvent.Time", time);
-      break;
     case EventType::PERIODIC_SYNC:
       DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
           "ServiceWorker.PeriodicBackgroundSyncEvent.Time", time);
@@ -375,6 +367,8 @@ void ServiceWorkerMetrics::RecordEventDuration(EventType event,
     case EventType::BACKGROUND_FETCH_ABORT:
     case EventType::BACKGROUND_FETCH_CLICK:
     case EventType::BACKGROUND_FETCH_FAIL:
+    case EventType::CAN_MAKE_PAYMENT:
+    case EventType::ABORT_PAYMENT:
     case EventType::COOKIE_CHANGE:
     case EventType::BACKGROUND_FETCH_SUCCESS:
     case EventType::CONTENT_DELETE:

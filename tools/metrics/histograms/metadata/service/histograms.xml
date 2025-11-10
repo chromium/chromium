@@ -147,18 +147,6 @@ chromium-metrics-reviews@google.com.
   <variant name="WriteSideData"/>
 </variants>
 
-<histogram name="ServiceWorker.AbortPaymentEvent.Time" units="ms"
-    expires_after="2024-10-18">
-  <owner>rouslan@chromium.org</owner>
-  <owner>chrome-payments-eng@google.com</owner>
-  <owner>zino@chromium.org</owner>
-  <summary>
-    The time taken between dispatching an AbortPaymentEvent to a Service Worker
-    and receiving a message that it finished handling the event. Includes the
-    time for the waitUntil() promise to settle.
-  </summary>
-</histogram>
-
 <histogram name="ServiceWorker.ActivateEvent.Time2" units="ms"
     expires_after="2026-03-15">
   <owner>yyanagisawa@chromium.org</owner>
@@ -251,18 +239,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     The total length of scripts which are stored to the CacheStorage by the
     installing service worker.
-  </summary>
-</histogram>
-
-<histogram name="ServiceWorker.CanMakePaymentEvent.Time" units="ms"
-    expires_after="2024-10-18">
-  <owner>rouslan@chromium.org</owner>
-  <owner>chrome-payments-eng@google.com</owner>
-  <owner>zino@chromium.org</owner>
-  <summary>
-    The time taken between dispatching an CanMakePaymentEvent to a Service
-    Worker and receiving a message that it finished handling the event. Includes
-    the time for the waitUntil() promise to settle.
   </summary>
 </histogram>
 
