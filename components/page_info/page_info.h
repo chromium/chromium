@@ -178,10 +178,6 @@ class PageInfo : private content_settings::CookieControlsObserver,
   // clicked.
   void OnThirdPartyToggleClicked(bool block_third_party_cookies);
 
-  // Called when the protections button in the privacy and site data subpage
-  // gets clicked.
-  void OnTrackingProtectionButtonPressed();
-
   // Checks whether this permission is currently the factory default, as set by
   // Chrome. Specifically, that the following three conditions are true:
   //   - The current active setting comes from the default or pref provider.
