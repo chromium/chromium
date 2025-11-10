@@ -70,10 +70,10 @@ class BrowserStatusMonitor : public ash::BrowserController::Observer,
 
  private:
   // Add a windowed browser-based app to the shelf.
-  void AddAppBrowserToShelf(BrowserWindowInterface* browser);
+  void AddAppBrowserToShelf(ash::BrowserDelegate* browser_delegate);
 
   // Remove a windowed browser-based app from the shelf.
-  void RemoveAppBrowserFromShelf(BrowserWindowInterface* browser);
+  void RemoveAppBrowserFromShelf(ash::BrowserDelegate* browser_delegate);
 
   // Check if an application is currently in the shelf by browser or app id.
   bool IsAppBrowserInShelf(BrowserWindowInterface* browser);
