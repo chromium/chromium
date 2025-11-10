@@ -222,7 +222,8 @@ void NavigationThrottleRegistryImpl::ProcessNavigationEvent(
 
 void NavigationThrottleRegistryImpl::ResumeProcessingNavigationEvent(
     NavigationThrottle* resuming_throttle) {
-  if (!deferring_throttles_.contains(resuming_throttle)) {
+  auto it = deferring_throttles_.find(resuming_throttle);
+  if (it == deferring_throttles_.end()) {
     // TODO(https://crbug.com/411238078): Upgrade to CHECK_EQ once remaining
     // known cases are fixed. Until then, collect dump data and ignore the
     // resume request to avoid bypassing required throttle checks.
@@ -237,7 +238,7 @@ void NavigationThrottleRegistryImpl::ResumeProcessingNavigationEvent(
     base::debug::DumpWithoutCrashing();
     return;
   }
-  CHECK_EQ(1u, deferring_throttles_.erase(resuming_throttle));
+  deferring_throttles_.erase(it);
 
   navigation_throttle_runner_->ResumeProcessingNavigationEvent(
       resuming_throttle);
