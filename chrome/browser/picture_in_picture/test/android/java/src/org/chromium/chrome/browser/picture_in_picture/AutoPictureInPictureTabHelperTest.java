@@ -581,19 +581,34 @@ public class AutoPictureInPictureTabHelperTest {
     /**
      * Creates a new tab in the background.
      *
+     * <p>A precondition for this function to work correctly is that there are no other tabs that
+     * have been requested to open but are not yet fully open. If there are, the tab count check in
+     * this function could erroneously count a pending tab as the newly created tab.
+     *
      * @param parentTab The parent tab for the new tab.
      * @return The newly created {@link Tab}.
      */
     private Tab createNewTabInBackground(Tab parentTab) {
-        return ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    return mActivity
-                            .getCurrentTabCreator()
-                            .createNewTab(
-                                    new LoadUrlParams("about:blank"),
-                                    TabLaunchType.FROM_LONGPRESS_BACKGROUND,
-                                    parentTab);
-                });
+        final int existingTabCount =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> mActivity.getTabModelSelector().getTotalTabCount());
+        final Tab newTab =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            return mActivity
+                                    .getCurrentTabCreator()
+                                    .createNewTab(
+                                            new LoadUrlParams("about:blank"),
+                                            TabLaunchType.FROM_LONGPRESS_BACKGROUND,
+                                            parentTab);
+                        });
+        CriteriaHelper.pollUiThread(
+                () -> mActivity.getTabModelSelector().getTotalTabCount() == existingTabCount + 1,
+                "New tab wasn't successfully created.");
+        CriteriaHelper.pollUiThread(
+                () -> newTab != null && newTab.getWebContents() != null,
+                "New tab WebContents wasn't initialized.");
+        return newTab;
     }
 
     /**
