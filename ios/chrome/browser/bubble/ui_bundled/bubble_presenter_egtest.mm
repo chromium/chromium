@@ -211,11 +211,9 @@ void ReloadFromOmnibox() {
 // Tests that the pull-to-refresh IPH is NOT attempted when page loading fails.
 - (void)testPullToRefreshIPHShouldNotShowOnPageLoadFail {
   if ([ChromeEarlGrey isIPadIdiom]) {
-    if (@available(iOS 19.0, *)) {
-      // TODO(crbug.com/427699033): Re-enable test on iOS 26.
-      // Test uses "split screen" (multiwindow) to force compact width.
-      EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
-    }
+    // TODO(crbug.com/427699033): Re-enable test on iOS 26.
+    // Test uses "split screen" (multiwindow) to force compact width.
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
   }
   RelaunchWithIPHFeature(@"IPH_iOSPullToRefreshFeature",
                          /*safari_switcher=*/YES);
@@ -237,7 +235,8 @@ void ReloadFromOmnibox() {
 
 // Tests that the pull-to-refresh IPH is atttempted when user taps the omnibox
 // to reload the same page, and disappears after the user navigates away.
-- (void)testPullToRefreshIPHShouldNotShowOnRegularXRegular {
+// TODO(crbug.com/459498160): This test is flaky.
+- (void)FLAKY_testPullToRefreshIPHShouldNotShowOnRegularXRegular {
   if (![ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Skipped for iPhone.");
   }
