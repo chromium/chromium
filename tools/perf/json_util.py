@@ -502,7 +502,7 @@ class JsonUtil:
 
       # Generate a synthetic measurement that ends with "_avg", "_min", "_max",
       # and "_sum" to support the data parity with the chromeperf.
-      if self.generate_synthetic_measurements and not self._is_legacy_benchmark(
+      if self.generate_synthetic_measurements and histogram_helpers.ShouldGenerateStatistics(
           benchmark_name):
         synthetic_keys_base = {
             json_constants.IMPROVEMENT_DIRECTION: improvement_direction,
@@ -606,7 +606,3 @@ class JsonUtil:
       if stat_name in histogram_helpers._STATS_BLACKLIST:  # pylint: disable=protected-access
         return True
     return False
-
-  def _is_legacy_benchmark(self, benchmark_name: str) -> bool:
-    """Port of the IsLegacyBenchmark logic."""
-    return benchmark_name in histogram_helpers._LEGACY_BENCHMARKS  # pylint: disable=protected-access

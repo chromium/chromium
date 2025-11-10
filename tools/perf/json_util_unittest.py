@@ -60,7 +60,6 @@ MOCK_JSON_CONSTANTS = {
     'VALUES': 'values',
     'VERSION': 'version',
     'WEBRTC_GIT_HASH': 'WebRTC',
-    'LEGACY_BENCHMARKS': ['legacy_benchmark1', 'legacy_benchmark2'],
     'STATS_BLOCKLIST': {'std', 'count', 'max', 'min', 'sum'},
 }
 
@@ -231,8 +230,8 @@ class JsonUtilTest(unittest.TestCase):
     mock_json_constants(mock_constants)
     setattr(mock_hist_helpers, '_STATS_BLACKLIST',
             MOCK_JSON_CONSTANTS['STATS_BLOCKLIST'])
-    setattr(mock_hist_helpers, '_LEGACY_BENCHMARKS',
-            MOCK_JSON_CONSTANTS['LEGACY_BENCHMARKS'])
+    mock_hist_helpers.ShouldGenerateStatistics.return_value = True
+
     result2_json = [
         {
             'type': 'GenericSet',
@@ -474,31 +473,8 @@ class JsonUtilTest(unittest.TestCase):
       got = agent.process(details, benchmark_name='speedometer3_modified')
       self.assertDictEqual(got, expected2)
 
-    with self.subTest(
-        name='synthetic_measurements_skipped_for_legacy_benchmark'):
-      # Set flag to True to confirm that legacy status overrides it.
-      agent = json_util.JsonUtil(generate_synthetic_measurements=True)
-
-      # Create a copy of the test data and change the benchmark name.
-      legacy_result2_json = copy.deepcopy(result2_json)
-      benchmark_guid = '9ef9da4a-3b79-4574-9603-bf9e2fe4bbe7'
-      for item in legacy_result2_json:
-        if item.get('guid') == benchmark_guid:
-          item['values'] = ['legacy_benchmark1']
-          break
-      agent.add(legacy_result2_json)
-
-      # The expected output should be the same as the 'no_synthetics' case,
-      # but with the updated benchmark name.
-      expected_legacy = copy.deepcopy(expected)
-      expected_legacy['key']['benchmark'] = 'legacy_benchmark1'
-
-      got = agent.process(details)
-
-      self.assertEqual(len(got['results']), 1)
-      self.assertDictEqual(got, expected_legacy)
-
     with self.subTest(name='generate_synthetic_measurements'):
+      mock_hist_helpers.ShouldGenerateStatistics.return_value = True
       agent = json_util.JsonUtil(generate_synthetic_measurements=True)
       agent.add(result2_json)
       synthetic_measurements_1 = {
@@ -656,7 +632,8 @@ class JsonUtilTest(unittest.TestCase):
   @parameterized.expand([
       (
           'empty_data',
-          False,
+          False,  # synthetic_measurements enabled in JsonUtil
+          True,  # should_generate_stats (Mock return value)
           'some_benchmark',
           None,
           [],
@@ -664,6 +641,7 @@ class JsonUtilTest(unittest.TestCase):
       (
           'without_subtest',
           False,
+          True,
           'some_benchmark',
           {
               ('abc', 'ms_smallerIsBetter', 'down'): [1, 2, 3],
@@ -707,6 +685,7 @@ class JsonUtilTest(unittest.TestCase):
       (
           'with_subtest',
           False,
+          True,
           'some_benchmark',
           {
               ('abc', 'ms_smallerIsBetter', 'down', 'subtest', 'subtest2'): [
@@ -755,6 +734,7 @@ class JsonUtilTest(unittest.TestCase):
       ),
       (
           'without_subtest_with_synthetic_measurements',
+          True,
           True,
           'some_benchmark',
           {
@@ -891,6 +871,7 @@ class JsonUtilTest(unittest.TestCase):
       (
           'with_subtest_with_synthetic_measurements',
           True,
+          True,
           'some_benchmark',
           {
               ('abc', 'ms_smallerIsBetter', 'down', 'subtest', 'subtest2'): [
@@ -1042,9 +1023,10 @@ class JsonUtilTest(unittest.TestCase):
           ],
       ),
       (
-          'legacy_benchmark_with_synthetics_enabled',
-          True,
-          'legacy_benchmark1',
+          'synthetics_enabled_but_blocked_by_helper',
+          True,  # generate_synthetic_measurements=True
+          False,  # should_generate_stats=False (Mock override)
+          'any_benchmark_name',
           {
               ('abc', 'ms_smallerIsBetter', 'down'): [1, 2, 3],
           },
@@ -1087,13 +1069,14 @@ class JsonUtilTest(unittest.TestCase):
   ])
   @mock.patch('json_util.histogram_helpers')
   @mock.patch('json_util.json_constants')
-  def test_measurement(self, _, synthetic_measurements, benchmark_name, data,
-                       expected, mock_constants, mock_hist_helpers):
+  def test_measurement(self, _, synthetic_measurements, should_generate_stats,
+                       benchmark_name, data, expected, mock_constants,
+                       mock_hist_helpers):
     mock_json_constants(mock_constants)
     setattr(mock_hist_helpers, '_STATS_BLACKLIST',
             MOCK_JSON_CONSTANTS['STATS_BLOCKLIST'])
-    setattr(mock_hist_helpers, '_LEGACY_BENCHMARKS',
-            MOCK_JSON_CONSTANTS['LEGACY_BENCHMARKS'])
+    mock_hist_helpers.ShouldGenerateStatistics.return_value = should_generate_stats
+
     instance = json_util.JsonUtil(
         generate_synthetic_measurements=synthetic_measurements)
     got = instance.measurements_from_results(data=data,
@@ -1495,8 +1478,8 @@ class JsonUtilTest(unittest.TestCase):
     mock_json_constants(mock_constants)
     setattr(mock_hist_helpers, '_STATS_BLACKLIST',
             MOCK_JSON_CONSTANTS['STATS_BLOCKLIST'])
-    setattr(mock_hist_helpers, '_LEGACY_BENCHMARKS',
-            MOCK_JSON_CONSTANTS['LEGACY_BENCHMARKS'])
+
+    mock_hist_helpers.ShouldGenerateStatistics.return_value = True
     mock_extractor.return_value = ('sub1', 'sub2')
 
     agent = json_util.JsonUtil()
