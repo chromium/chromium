@@ -177,8 +177,7 @@ inline bool DoCompareSchemeComponent(std::basic_string_view<CHAR> spec,
                                      const char* compare_to) {
   if (component.is_empty())
     return compare_to[0] == 0;  // When component is empty, match empty scheme.
-  return base::EqualsCaseInsensitiveASCII(
-      component.as_string_view_on(spec.data()), compare_to);
+  return base::EqualsCaseInsensitiveASCII(component.AsViewOn(spec), compare_to);
 }
 
 // Returns true and sets |type| to the SchemeType of the given scheme
@@ -303,8 +302,7 @@ bool DoCanonicalize(std::basic_string_view<CHAR> spec,
         CanonicalizeFileSystemUrl(spec, ParseFileSystemUrl(spec),
                                   charset_converter, output, output_parsed);
 
-  } else if (DoIsStandard(std::optional(scheme.as_string_view_on(spec.data())),
-                          &scheme_type)) {
+  } else if (DoIsStandard(std::optional(scheme.AsViewOn(spec)), &scheme_type)) {
     // All "normal" URLs.
     success = CanonicalizeStandardUrl(spec, ParseStandardUrl(spec), scheme_type,
                                       charset_converter, output, output_parsed);
@@ -484,14 +482,13 @@ bool DoReplaceComponents(std::string_view spec,
                                 output, out_parsed);
   }
   SchemeType scheme_type = SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION;
-  // TODO(crbug.com/350788890): We should not use spec.data().
-  const char* spec_ptr = spec.data();
-  if (DoIsStandard(parsed.scheme.maybe_as_string_view_on(spec_ptr),
-                   &scheme_type)) {
+  if (DoIsStandard(parsed.scheme.MaybeAsViewOn(spec), &scheme_type)) {
     return ReplaceStandardUrl(spec, parsed, replacements, scheme_type,
                               charset_converter, output, out_parsed);
   }
 
+  // TODO(crbug.com/350788890): We should not use spec.data().
+  const char* spec_ptr = spec.data();
   if (!DoIsOpaqueNonSpecial(spec_ptr, parsed.scheme)) {
     return ReplaceNonSpecialUrl(spec, parsed, replacements, charset_converter,
                                 *output, *out_parsed);

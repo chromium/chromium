@@ -410,7 +410,7 @@ bool GetValidScheme(const std::string& text,
   // brackets are not in the whitelist.
   url::StdStringCanonOutput canon_scheme_output(canon_scheme);
   url::Component canon_scheme_component;
-  if (!url::CanonicalizeScheme(scheme_component->as_string_view_on(text.data()),
+  if (!url::CanonicalizeScheme(scheme_component->AsViewOn(text),
                                &canon_scheme_output, &canon_scheme_component)) {
     return false;
   }

@@ -345,8 +345,8 @@ TEST_F(URLCanonTest, Scheme) {
 
     std::u16string wide_input(base::UTF8ToUTF16(scheme_case.input));
     in_comp.len = static_cast<int>(wide_input.length());
-    success = CanonicalizeScheme(in_comp.as_string_view_on(wide_input.c_str()),
-                                 &output2, &out_comp);
+    success =
+        CanonicalizeScheme(in_comp.AsViewOn(wide_input), &output2, &out_comp);
     output2.Complete();
 
     EXPECT_EQ(scheme_case.expected_success, success);
@@ -1299,10 +1299,9 @@ TEST_F(URLCanonTest, UserInfo) {
     out_str.clear();
     StdStringCanonOutput output2(&out_str);
     std::u16string wide_input(base::UTF8ToUTF16(user_info_case.input));
-    success = CanonicalizeUserInfo(
-        parsed.username.maybe_as_string_view_on(wide_input.c_str()),
-        parsed.password.maybe_as_string_view_on(wide_input.c_str()), &output2,
-        &out_user, &out_pass);
+    success = CanonicalizeUserInfo(parsed.username.MaybeAsViewOn(wide_input),
+                                   parsed.password.MaybeAsViewOn(wide_input),
+                                   &output2, &out_user, &out_pass);
     output2.Complete();
 
     EXPECT_EQ(user_info_case.expected_success, success);
@@ -1615,8 +1614,7 @@ TEST_F(URLCanonTest, Query) {
       std::string out_str;
 
       StdStringCanonOutput output(&out_str);
-      CanonicalizeQuery(in_comp.as_string_view_on(input16.c_str()), nullptr,
-                        &output, &out_comp);
+      CanonicalizeQuery(in_comp.AsViewOn(input16), nullptr, &output, &out_comp);
       output.Complete();
 
       EXPECT_EQ(query_case.expected, out_str);
@@ -1693,8 +1691,7 @@ TEST_F(URLCanonTest, Ref) {
 
       std::string out_str;
       StdStringCanonOutput output(&out_str);
-      CanonicalizeRef(in_comp.maybe_as_string_view_on(input16.c_str()), &output,
-                      &out_comp);
+      CanonicalizeRef(in_comp.MaybeAsViewOn(input16), &output, &out_comp);
       output.Complete();
 
       EXPECT_EQ(ref_case.expected_component.begin, out_comp.begin);

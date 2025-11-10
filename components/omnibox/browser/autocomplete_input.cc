@@ -338,8 +338,8 @@ metrics::OmniboxInputType AutocompleteInput::Parse(
         http_parts.username.is_nonempty() &&
         http_parts.password.is_nonempty()) {
       // Recognize and re-classify queries like: `site:web.com @query`
-      auto tentative_password_sv = http_parts.password.as_string_view_on(
-          tentative_url_candidate.c_str());
+      auto tentative_password_sv =
+          http_parts.password.AsViewOn(tentative_url_candidate);
       if (tentative_password_sv.find(u' ') != tentative_password_sv.npos) {
         *canonicalized_url = GURL::EmptyGURL();
         return metrics::OmniboxInputType::QUERY;

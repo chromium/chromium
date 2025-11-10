@@ -529,7 +529,7 @@ void DoHost(std::basic_string_view<CHAR> spec,
     return;
   }
 
-  std::basic_string_view<CHAR> host_view = host.as_string_view_on(spec.data());
+  std::basic_string_view<CHAR> host_view = host.AsViewOn(spec);
   bool success;
   if constexpr (canon_mode == CanonMode::kSpecialURL ||
                 canon_mode == CanonMode::kFileURL) {

@@ -188,7 +188,7 @@ bool DoIsRelativeUrl(std::string_view base,
   // scheme state:
   // > 2.6. Otherwise, if url is special, base is non-null, and base’s scheme is
   // >      url’s scheme:
-  if (!IsStandard(base_parsed.scheme.maybe_as_string_view_on(base.data())) ||
+  if (!IsStandard(base_parsed.scheme.MaybeAsViewOn(base)) ||
       !AreSchemesEqual(base.data(), base_parsed.scheme, url.data(), scheme)) {
     return true;
   }
@@ -395,8 +395,8 @@ bool DoResolveRelativePath(std::string_view base_url,
       // just replace everything from the path on with the new versions.
       // Since the input should be canonical hierarchical URL, we should
       // always have a path.
-      success &= CanonicalizePath(path.as_string_view_on(relative_url.data()),
-                                  output, &out_parsed->path);
+      success &= CanonicalizePath(path.AsViewOn(relative_url), output,
+                                  &out_parsed->path);
     } else {
       // Relative path, replace the query, and reference. We take the
       // original path with the file part stripped, and append the new path.
@@ -415,8 +415,7 @@ bool DoResolveRelativePath(std::string_view base_url,
       CopyToLastSlash(base_url, base_path_begin, base_parsed.path.end(),
                       output);
       success &= CanonicalizePartialPathInternal(
-          path.as_string_view_on(relative_url.data()), path_begin, canon_mode,
-          output);
+          path.AsViewOn(relative_url), path_begin, canon_mode, output);
       out_parsed->path = MakeRange(path_begin, output->length());
 
       // Copy the rest of the stuff after the path from the relative path.
@@ -430,8 +429,7 @@ bool DoResolveRelativePath(std::string_view base_url,
     // > url.href
     // => The result should be "git:/.//path", instead of "git://path".
     if (!base_parsed.host.is_valid() && out_parsed->path.is_valid() &&
-        out_parsed->path.as_string_view_on(output->view().data())
-            .starts_with("//")) {
+        out_parsed->path.AsViewOn(output->view()).starts_with("//")) {
       size_t prior_output_length = output->length();
       output->Insert(out_parsed->path.begin, "/.");
       // Adjust path.
@@ -439,10 +437,9 @@ bool DoResolveRelativePath(std::string_view base_url,
       true_path_begin = out_parsed->path.begin;
     }
     // Finish with the query and reference part (these can't fail).
-    CanonicalizeQuery(query.maybe_as_string_view_on(relative_url.data()),
-                      query_converter, output, &out_parsed->query);
-    CanonicalizeRef(ref.maybe_as_string_view_on(relative_url.data()), output,
-                    &out_parsed->ref);
+    CanonicalizeQuery(query.MaybeAsViewOn(relative_url), query_converter,
+                      output, &out_parsed->query);
+    CanonicalizeRef(ref.MaybeAsViewOn(relative_url), output, &out_parsed->ref);
 
     // Fix the path beginning to add back the "C:" we may have written above.
     out_parsed->path = MakeRange(true_path_begin, out_parsed->path.end());
@@ -455,10 +452,9 @@ bool DoResolveRelativePath(std::string_view base_url,
   if (query.is_valid()) {
     // Just the query specified, replace the query and reference (ignore
     // failures for refs)
-    CanonicalizeQuery(query.as_string_view_on(relative_url.data()),
-                      query_converter, output, &out_parsed->query);
-    CanonicalizeRef(ref.maybe_as_string_view_on(relative_url.data()), output,
-                    &out_parsed->ref);
+    CanonicalizeQuery(query.AsViewOn(relative_url), query_converter, output,
+                      &out_parsed->query);
+    CanonicalizeRef(ref.MaybeAsViewOn(relative_url), output, &out_parsed->ref);
     return success;
   }
 
@@ -471,8 +467,7 @@ bool DoResolveRelativePath(std::string_view base_url,
 
   if (ref.is_valid()) {
     // Just the reference specified: replace it (ignoring failures).
-    CanonicalizeRef(ref.as_string_view_on(relative_url.data()), output,
-                    &out_parsed->ref);
+    CanonicalizeRef(ref.AsViewOn(relative_url), output, &out_parsed->ref);
     return success;
   }
 
@@ -494,8 +489,7 @@ bool DoResolveRelativeHost(std::string_view base_url,
                            Parsed* out_parsed) {
   SchemeType scheme_type = SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION;
   const bool is_standard_scheme = GetStandardSchemeType(
-      base_parsed.scheme.maybe_as_string_view_on(base_url.data()),
-      &scheme_type);
+      base_parsed.scheme.MaybeAsViewOn(base_url), &scheme_type);
 
   // Parse the relative URL, just like we would for anything following a
   // scheme.
@@ -584,8 +578,7 @@ bool DoResolveRelativeUrl(std::string_view base_url,
     return true;
   }
 
-  auto relative_url_view =
-      relative_component.as_string_view_on(relative_url.data());
+  auto relative_url_view = relative_component.AsViewOn(relative_url);
   size_t num_slashes =
       CountConsecutiveSlashesOrBackslashes(relative_url_view, 0);
 

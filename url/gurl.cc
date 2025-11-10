@@ -283,8 +283,7 @@ GURL GURL::DeprecatedGetOriginAsURL() const {
 
 GURL GURL::GetAsReferrer() const {
   if (!is_valid() ||
-      !url::IsReferrerScheme(
-          parsed_.scheme.maybe_as_string_view_on(spec_.data()))) {
+      !url::IsReferrerScheme(parsed_.scheme.MaybeAsViewOn(spec_))) {
     return GURL();
   }
 
@@ -336,7 +335,7 @@ GURL GURL::GetWithoutRef() const {
 }
 
 bool GURL::IsStandard() const {
-  return url::IsStandard(parsed_.scheme.maybe_as_string_view_on(spec_.data()));
+  return url::IsStandard(parsed_.scheme.MaybeAsViewOn(spec_));
 }
 
 bool GURL::IsAboutBlank() const {

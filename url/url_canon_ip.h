@@ -533,9 +533,9 @@ constexpr bool DoIPv6AddressToNumber(std::basic_string_view<CHAR> host_view,
     // composed of 4 parts and disallows terminal dots.
     // See https://url.spec.whatwg.org/#concept-ipv6-parser
     if (CanonHostInfo::IPV4 !=
-        DoIPv4AddressToNumber(
-            ipv6_parsed.ipv4_component.as_string_view_on(trimmed.data()),
-            address.subspan(cur_index_in_address), &num_ipv4_components)) {
+        DoIPv4AddressToNumber(ipv6_parsed.ipv4_component.AsViewOn(trimmed),
+                              address.subspan(cur_index_in_address),
+                              &num_ipv4_components)) {
       return false;
     }
     if ((num_ipv4_components != 4 || trailing_dot)) {

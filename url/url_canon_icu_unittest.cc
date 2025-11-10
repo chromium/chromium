@@ -125,8 +125,8 @@ TEST(URLCanonIcuTest, QueryWithConverter) {
       std::string out_str;
 
       StdStringCanonOutput output(&out_str);
-      CanonicalizeQuery(in_comp.as_string_view_on(input16.c_str()), &converter,
-                        &output, &out_comp);
+      CanonicalizeQuery(in_comp.AsViewOn(input16), &converter, &output,
+                        &out_comp);
       output.Complete();
 
       EXPECT_EQ(query_cases[i].expected, out_str);
