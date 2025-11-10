@@ -10,7 +10,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/toolbar/toolbar_action_view_delegate.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
 #include "chrome/browser/ui/views/extensions/extension_context_menu_controller.h"
@@ -20,8 +19,7 @@
 // ExtensionsMenuButton is the single extension action button within a row in
 // the extensions menu. This includes the extension icon and name and triggers
 // the extension action.
-class ExtensionsMenuButton : public HoverButton,
-                             public ToolbarActionViewDelegate {
+class ExtensionsMenuButton : public HoverButton {
   METADATA_HEADER(ExtensionsMenuButton, HoverButton)
 
  public:
@@ -34,14 +32,12 @@ class ExtensionsMenuButton : public HoverButton,
   // HoverButton:
   void AddedToWidget() override;
 
-  // ToolbarActionViewDelegate:
-  void UpdateState() override;
-
   std::u16string_view label_text_for_testing() const {
     return label()->GetText();
   }
 
  private:
+  void UpdateState();
   content::WebContents* GetCurrentWebContents() const;
   void ButtonPressed();
 

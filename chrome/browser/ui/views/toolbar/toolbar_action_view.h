@@ -7,7 +7,6 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/toolbar/toolbar_action_view_delegate.h"
 #include "chrome/browser/ui/views/extensions/extension_context_menu_controller.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_action_hover_card_controller.h"
 #include "extensions/common/extension_id.h"
@@ -28,7 +27,6 @@ class WebContents;
 // A wrapper around a ToolbarActionViewController to display a toolbar action
 // action in the browser's toolbar.
 class ToolbarActionView : public views::MenuButton,
-                          public ToolbarActionViewDelegate,
                           public ExtensionContextMenuController::Observer {
   METADATA_HEADER(ToolbarActionView, views::MenuButton)
 
@@ -96,6 +94,8 @@ class ToolbarActionView : public views::MenuButton,
   // to be deprecated.
   views::BubbleAnchor GetReferenceButtonForPopup();
 
+  void UpdateState();
+
   // views::MenuButton:
   gfx::Rect GetAnchorBoundsInScreen() const override;
   std::unique_ptr<views::LabelButtonBorder> CreateDefaultBorder()
@@ -104,9 +104,6 @@ class ToolbarActionView : public views::MenuButton,
   bool OnKeyPressed(const ui::KeyEvent& event) override;
   void OnMouseMoved(const ui::MouseEvent& event) override;
   void OnMouseEntered(const ui::MouseEvent& event) override;
-
-  // ToolbarActionViewDelegate:
-  void UpdateState() override;
 
   ToolbarActionViewController* view_controller() { return view_controller_; }
 

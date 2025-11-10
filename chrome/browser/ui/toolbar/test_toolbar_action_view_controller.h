@@ -24,7 +24,7 @@ class TestToolbarActionViewController : public ToolbarActionViewController {
 
   // ToolbarActionViewController:
   std::string GetId() const override;
-  void SetDelegate(ToolbarActionViewDelegate* delegate) override;
+  void SetUpdateObserver(base::RepeatingClosure observer) override;
   ui::ImageModel GetIcon(content::WebContents* web_contents,
                          const gfx::Size& size) override;
   std::u16string GetActionName() const override;
@@ -50,7 +50,7 @@ class TestToolbarActionViewController : public ToolbarActionViewController {
   // Instruct the controller to fake showing a popup.
   void ShowPopup(bool by_user);
 
-  // Configure the test controller. These also call UpdateDelegate().
+  // Configure the test controller. These also call NotifyObserver().
   void SetActionName(const std::u16string& name);
   void SetActionTitle(const std::u16string& title);
   void SetAccessibleName(const std::u16string& name);
@@ -60,14 +60,14 @@ class TestToolbarActionViewController : public ToolbarActionViewController {
   int execute_action_count() const { return execute_action_count_; }
 
  private:
-  // Updates the delegate, if one exists.
-  void UpdateDelegate();
+  // Notifies the observer, if one exists.
+  void NotifyObserver();
 
   // The id of the controller.
   std::string id_;
 
-  // The delegate of the controller, if one exists.
-  raw_ptr<ToolbarActionViewDelegate> delegate_ = nullptr;
+  // The observer of the view model, if one exists.
+  base::RepeatingClosure observer_;
 
   // Action name for the controller.
   std::u16string action_name_;

@@ -30,7 +30,8 @@ ExtensionsMenuButton::ExtensionsMenuButton(
                   std::u16string()),
       browser_(browser),
       controller_(controller) {
-  controller_->SetDelegate(this);
+  controller_->SetUpdateObserver(base::BindRepeating(
+      &ExtensionsMenuButton::UpdateState, base::Unretained(this)));
 }
 
 ExtensionsMenuButton::~ExtensionsMenuButton() = default;
@@ -48,7 +49,6 @@ void ExtensionsMenuButton::AddedToWidget() {
   UpdateState();
 }
 
-// ToolbarActionViewDelegate:
 void ExtensionsMenuButton::UpdateState() {
   ChromeLayoutProvider* const provider = ChromeLayoutProvider::Get();
   const int icon_size =

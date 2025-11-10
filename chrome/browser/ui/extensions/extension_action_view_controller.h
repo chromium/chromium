@@ -71,7 +71,7 @@ class ExtensionActionViewController
 
   // ToolbarActionViewController:
   std::string GetId() const override;
-  void SetDelegate(ToolbarActionViewDelegate* delegate) override;
+  void SetUpdateObserver(base::RepeatingClosure observer) override;
   ui::ImageModel GetIcon(content::WebContents* web_contents,
                          const gfx::Size& size) override;
   std::u16string GetActionName() const override;
@@ -162,9 +162,8 @@ class ExtensionActionViewController
   // Returns the current web contents.
   content::WebContents* GetCurrentWebContents() const;
 
-  // Notifies the view delegate that the underlying data has been updated and it
-  // may need to refresh.
-  void NotifyUpdateToDelegate();
+  // Notifies the observer that the underlying data has been updated.
+  void NotifyObserver();
 
   // extensions::ExtensionActionIconFactory::Observer:
   void OnIconUpdated() override;
@@ -209,8 +208,8 @@ class ExtensionActionViewController
   // The context menu model for the extension.
   std::unique_ptr<extensions::ExtensionContextMenuModel> context_menu_model_;
 
-  // Our view delegate.
-  raw_ptr<ToolbarActionViewDelegate> view_delegate_;
+  // Our observer.
+  base::RepeatingClosure observer_;
 
   // The delegate to handle platform-specific implementations.
   std::unique_ptr<ExtensionActionPlatformDelegate> platform_delegate_;

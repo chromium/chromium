@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/functional/callback_forward.h"
 #include "chrome/browser/extensions/extension_context_menu_model.h"
 #include "chrome/browser/extensions/permissions/site_permissions_helper.h"
 #include "chrome/browser/ui/extensions/extension_popup_types.h"
@@ -24,8 +25,6 @@ class Size;
 namespace ui {
 class MenuModel;
 }
-
-class ToolbarActionViewDelegate;
 
 // The basic controller class for an action that is shown on the toolbar -
 // an extension action (like browser actions) or a component action (like
@@ -99,8 +98,8 @@ class ToolbarActionViewController {
   // the extension id; for component actions, this is the name of the component.
   virtual std::string GetId() const = 0;
 
-  // Sets the view delegate, which can handle most of the front-end logic.
-  virtual void SetDelegate(ToolbarActionViewDelegate* delegate) = 0;
+  // Sets the observer of the view model.
+  virtual void SetUpdateObserver(base::RepeatingClosure observer) = 0;
 
   // Returns the icon to use for the given |web_contents| and |size|.
   virtual ui::ImageModel GetIcon(content::WebContents* web_contents,

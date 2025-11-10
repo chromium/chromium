@@ -7,7 +7,6 @@
 #include <string>
 
 #include "chrome/browser/extensions/permissions/site_permissions_helper.h"
-#include "chrome/browser/ui/toolbar/toolbar_action_view_delegate.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/native_ui_types.h"
 
@@ -24,9 +23,9 @@ std::string TestToolbarActionViewController::GetId() const {
   return id_;
 }
 
-void TestToolbarActionViewController::SetDelegate(
-    ToolbarActionViewDelegate* delegate) {
-  delegate_ = delegate;
+void TestToolbarActionViewController::SetUpdateObserver(
+    base::RepeatingClosure observer) {
+  observer_ = observer;
 }
 
 ui::ImageModel TestToolbarActionViewController::GetIcon(
@@ -109,34 +108,34 @@ void TestToolbarActionViewController::ShowPopup(bool by_user) {
 void TestToolbarActionViewController::SetActionName(
     const std::u16string& name) {
   action_name_ = name;
-  UpdateDelegate();
+  NotifyObserver();
 }
 
 void TestToolbarActionViewController::SetActionTitle(
     const std::u16string& title) {
   action_title_ = title;
-  UpdateDelegate();
+  NotifyObserver();
 }
 
 void TestToolbarActionViewController::SetAccessibleName(
     const std::u16string& name) {
   accessible_name_ = name;
-  UpdateDelegate();
+  NotifyObserver();
 }
 
 void TestToolbarActionViewController::SetTooltip(
     const std::u16string& tooltip) {
   tooltip_ = tooltip;
-  UpdateDelegate();
+  NotifyObserver();
 }
 
 void TestToolbarActionViewController::SetEnabled(bool is_enabled) {
   is_enabled_ = is_enabled;
-  UpdateDelegate();
+  NotifyObserver();
 }
 
-void TestToolbarActionViewController::UpdateDelegate() {
-  if (delegate_) {
-    delegate_->UpdateState();
+void TestToolbarActionViewController::NotifyObserver() {
+  if (observer_) {
+    observer_.Run();
   }
 }

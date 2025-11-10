@@ -12,7 +12,6 @@
 #include "chrome/browser/extensions/extension_view_host.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/extensions/extension_action_view_controller.h"
-#include "chrome/browser/ui/toolbar/toolbar_action_view_delegate.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/views/extensions/extension_action_platform_delegate_views.h"
 #include "chrome/browser/ui/webui/util/image_util.h"
@@ -35,8 +34,7 @@ GURL GetDataUrlForImageModel(ui::ImageModel icon_model,
 
 }  // namespace
 
-class WebUIBrowserExtensionsContainer::ActionInfo
-    : public ToolbarActionViewDelegate {
+class WebUIBrowserExtensionsContainer::ActionInfo {
  public:
   ActionInfo(WebUIBrowserExtensionsContainer& extensions_container,
              Browser& browser,
@@ -44,12 +42,9 @@ class WebUIBrowserExtensionsContainer::ActionInfo
       : extensions_container_(extensions_container),
         browser_(browser),
         controller_(std::move(controller)) {
-    controller_->SetDelegate(this);
-  }
-
-  // ToolbarActionViewDelegate:
-  void UpdateState() override {
-    extensions_container_->NotifyOfOneAction(controller_->GetId());
+    controller_->SetUpdateObserver(base::BindRepeating(
+        &WebUIBrowserExtensionsContainer::NotifyOfOneAction,
+        base::Unretained(extensions_container_), controller_->GetId()));
   }
 
   ui::TrackedElement* GetAnchor() {

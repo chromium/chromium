@@ -19,14 +19,12 @@ namespace extensions {
 class ExtensionViewHost;
 }  // namespace extensions
 
-// An abstract "View" for an ExtensionAction (Action, BrowserAction, or a
-// PageAction). This contains the logic for showing the action's popup and
-// the context menu. This class doesn't subclass View directly, as the
-// implementations for page actions/browser actions are different types of
-// views.
-// All common logic for executing extension actions should go in this class;
-// ToolbarActionViewDelegate classes should only have knowledge relating to
-// the views::View wrapper.
+// Implements Views-specific extension action UI logic, such as showing the
+// action's popup and the context menu.
+//
+// This class doesn't subclass View directly, as the implementations for the
+// action button in the toolbar and one in the extensions menu are different
+// types of views.
 class ExtensionActionPlatformDelegateViews
     : public ExtensionActionPlatformDelegate,
       public ui::AcceleratorTarget,

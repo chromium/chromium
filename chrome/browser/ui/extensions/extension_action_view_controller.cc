@@ -32,7 +32,6 @@
 #include "chrome/browser/ui/extensions/extension_side_panel_utils.h"
 #include "chrome/browser/ui/extensions/icon_with_badge_image_source.h"
 #include "chrome/browser/ui/tabs/tab_list_interface.h"
-#include "chrome/browser/ui/toolbar/toolbar_action_view_delegate.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/sessions/content/session_tab_helper.h"
@@ -180,7 +179,6 @@ ExtensionActionViewController::ExtensionActionViewController(
       browser_(browser),
       profile_(browser->GetProfile()),
       extension_action_(extension_action),
-      view_delegate_(nullptr),
       platform_delegate_(std::move(platform_delegate)),
       icon_factory_(extension_.get(), extension_action, this),
       extension_registry_(extension_registry) {
@@ -202,14 +200,14 @@ std::string ExtensionActionViewController::GetId() const {
   return extension_id_;
 }
 
-void ExtensionActionViewController::SetDelegate(
-    ToolbarActionViewDelegate* delegate) {
-  DCHECK((delegate == nullptr) ^ (view_delegate_ == nullptr));
-  if (delegate) {
-    view_delegate_ = delegate;
+void ExtensionActionViewController::SetUpdateObserver(
+    base::RepeatingClosure observer) {
+  DCHECK(observer.is_null() ^ observer_.is_null());
+  if (observer) {
+    observer_ = std::move(observer);
   } else {
     HidePopup();
-    view_delegate_ = nullptr;
+    observer_.Reset();
   }
 }
 
@@ -449,7 +447,7 @@ void ExtensionActionViewController::TabChangedAt(content::WebContents* contents,
   if (change_type == TabChangeType::kLoadingOnly) {
     return;
   }
-  NotifyUpdateToDelegate();
+  NotifyObserver();
 }
 
 void ExtensionActionViewController::OnTabStripModelChanged(
@@ -459,7 +457,7 @@ void ExtensionActionViewController::OnTabStripModelChanged(
   if (!selection.active_tab_changed()) {
     return;
   }
-  NotifyUpdateToDelegate();
+  NotifyObserver();
 }
 
 void ExtensionActionViewController::OnToolbarActionAdded(
@@ -473,7 +471,7 @@ void ExtensionActionViewController::OnToolbarActionUpdated(
   if (action_id != extension()->id()) {
     return;
   }
-  NotifyUpdateToDelegate();
+  NotifyObserver();
 }
 
 void ExtensionActionViewController::OnToolbarModelInitialized() {}
@@ -534,15 +532,15 @@ content::WebContents* ExtensionActionViewController::GetCurrentWebContents()
   return tab->GetContents();
 }
 
-void ExtensionActionViewController::NotifyUpdateToDelegate() {
-  if (!view_delegate_ || !browser_->GetActiveTabInterface()) {
+void ExtensionActionViewController::NotifyObserver() {
+  if (!observer_ || !browser_->GetActiveTabInterface()) {
     return;
   }
-  view_delegate_->UpdateState();
+  observer_.Run();
 }
 
 void ExtensionActionViewController::OnIconUpdated() {
-  NotifyUpdateToDelegate();
+  NotifyObserver();
 }
 
 extensions::SitePermissionsHelper::SiteInteraction
