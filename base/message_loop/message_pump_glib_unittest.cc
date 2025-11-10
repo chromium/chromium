@@ -8,6 +8,7 @@
 #include <math.h>
 
 #include <algorithm>
+#include <memory>
 #include <string_view>
 #include <vector>
 
@@ -795,7 +796,7 @@ TEST_F(MessagePumpGLibFdWatchTest, DeleteWatcher) {
 // called for a READ_WRITE event, when the watcher calls
 // StopWatchingFileDescriptor in OnFileCanWriteWithoutBlocking callback.
 TEST_F(MessagePumpGLibFdWatchTest, StopWatcher) {
-  std::unique_ptr<MessagePumpGlib> pump(new MessagePumpGlib);
+  auto pump = std::make_unique<MessagePumpGlib>();
   MessagePumpGlib::FdWatchController controller(FROM_HERE);
   StopWatcher watcher(&controller);
   pump->WatchFileDescriptor(pipefds_[1], false,
@@ -809,7 +810,7 @@ TEST_F(MessagePumpGLibFdWatchTest, StopWatcher) {
 TEST_F(MessagePumpGLibFdWatchTest, NestedPumpWatcher) {
   test::SingleThreadTaskEnvironment task_environment(
       test::SingleThreadTaskEnvironment::MainThreadType::UI);
-  std::unique_ptr<MessagePumpGlib> pump(new MessagePumpGlib);
+  auto pump = std::make_unique<MessagePumpGlib>();
   NestedPumpWatcher watcher;
   MessagePumpGlib::FdWatchController controller(FROM_HERE);
   pump->WatchFileDescriptor(pipefds_[1], false, MessagePumpGlib::WATCH_READ,

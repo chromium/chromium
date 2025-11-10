@@ -6,6 +6,8 @@
 
 #include <unistd.h>
 
+#include <memory>
+
 #include "base/logging.h"
 #include "base/message_loop/message_pump_for_io.h"
 #include "base/posix/eintr_wrapper.h"
@@ -84,7 +86,7 @@ class DeleteWatcher : public BaseWatcher {
 };
 
 TEST_F(MessagePumpIOSForIOTest, DeleteWatcher) {
-  std::unique_ptr<MessagePumpIOSForIO> pump(new MessagePumpIOSForIO);
+  auto pump = std::make_unique<MessagePumpIOSForIO>();
   MessagePumpIOSForIO::FdWatchController* watcher =
       new MessagePumpIOSForIO::FdWatchController(FROM_HERE);
   DeleteWatcher delegate(watcher);
@@ -122,7 +124,7 @@ class StopWatcher : public BaseWatcher {
 };
 
 TEST_F(MessagePumpIOSForIOTest, StopWatcher) {
-  std::unique_ptr<MessagePumpIOSForIO> pump(new MessagePumpIOSForIO);
+  auto pump = std::make_unique<MessagePumpIOSForIO>();
   MessagePumpIOSForIO::FdWatchController watcher(FROM_HERE);
   StopWatcher delegate(&watcher, pump.get());
   pump->WatchFileDescriptor(pipefds_[1], false,
@@ -134,7 +136,7 @@ TEST_F(MessagePumpIOSForIOTest, StopWatcher) {
 }
 
 TEST_F(MessagePumpIOSForIOTest, StopWatcherAndWatchSomethingElse) {
-  std::unique_ptr<MessagePumpIOSForIO> pump(new MessagePumpIOSForIO);
+  auto pump = std::make_unique<MessagePumpIOSForIO>();
   MessagePumpIOSForIO::FdWatchController watcher(FROM_HERE);
   StopWatcher delegate(&watcher, pump.get(), alternate_pipefds_[1]);
   pump->WatchFileDescriptor(pipefds_[1], false,

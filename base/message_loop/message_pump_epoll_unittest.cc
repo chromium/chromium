@@ -247,7 +247,7 @@ TEST_F(MessagePumpEpollTest, QuitWatcher) {
   MessagePumpEpoll::FdWatchController controller(FROM_HERE);
   WaitableEvent event(WaitableEvent::ResetPolicy::AUTOMATIC,
                       WaitableEvent::InitialState::NOT_SIGNALED);
-  std::unique_ptr<WaitableEventWatcher> watcher(new WaitableEventWatcher);
+  auto watcher = std::make_unique<WaitableEventWatcher>();
 
   // Tell the pump to watch the pipe.
   pump->WatchFileDescriptor(receiver(), false, MessagePumpEpoll::WATCH_READ,

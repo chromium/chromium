@@ -655,7 +655,7 @@ TEST_F(FeatureListTest, InitFromCommandLine_UseDefault) {
 }
 
 TEST_F(FeatureListTest, InitInstance) {
-  std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
+  auto feature_list = std::make_unique<base::FeatureList>();
   test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatureList(std::move(feature_list));
 
@@ -691,7 +691,7 @@ TEST_F(FeatureListTest, UninitializedInstance_IsEnabledReturnsFalse) {
 }
 
 TEST_F(FeatureListTest, StoreAndRetrieveFeaturesFromSharedMemory) {
-  std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
+  auto feature_list = std::make_unique<base::FeatureList>();
 
   // Create some overrides.
   feature_list->RegisterOverride(kFeatureOffByDefaultName,
@@ -707,7 +707,7 @@ TEST_F(FeatureListTest, StoreAndRetrieveFeaturesFromSharedMemory) {
                                                     "");
   feature_list->AddFeaturesToAllocator(&allocator);
 
-  std::unique_ptr<base::FeatureList> feature_list2(new base::FeatureList);
+  auto feature_list2 = std::make_unique<base::FeatureList>();
 
   // Check that the new feature list is empty.
   EXPECT_FALSE(feature_list2->IsFeatureOverriddenFromCommandLine(
@@ -724,7 +724,7 @@ TEST_F(FeatureListTest, StoreAndRetrieveFeaturesFromSharedMemory) {
 }
 
 TEST_F(FeatureListTest, StoreAndRetrieveAssociatedFeaturesFromSharedMemory) {
-  std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
+  auto feature_list = std::make_unique<base::FeatureList>();
 
   // Create some overrides.
   FieldTrial* trial1 = FieldTrialList::CreateFieldTrial("TrialExample1", "A");
@@ -742,7 +742,7 @@ TEST_F(FeatureListTest, StoreAndRetrieveAssociatedFeaturesFromSharedMemory) {
                                                     "");
   feature_list->AddFeaturesToAllocator(&allocator);
 
-  std::unique_ptr<base::FeatureList> feature_list2(new base::FeatureList);
+  auto feature_list2 = std::make_unique<base::FeatureList>();
   feature_list2->InitFromSharedMemory(&allocator);
   feature_list2->FinalizeInitialization();
 

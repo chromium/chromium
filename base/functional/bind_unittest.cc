@@ -1162,7 +1162,7 @@ TYPED_TEST(BindVariantsTest, ScopedRefptr) {
 }
 
 TYPED_TEST(BindVariantsTest, UniquePtrReceiver) {
-  std::unique_ptr<StrictMock<NoRef>> no_ref(new StrictMock<NoRef>);
+  auto no_ref = std::make_unique<StrictMock<NoRef>>();
   EXPECT_CALL(*no_ref, VoidMethod0()).Times(1);
   TypeParam::Bind(&NoRef::VoidMethod0, std::move(no_ref)).Run();
 }
