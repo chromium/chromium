@@ -1107,9 +1107,6 @@ Document::Document(const DocumentInit& initializer,
     fetcher_ = FrameFetchContext::CreateFetcherForCommittedDocument(
         *frame->Loader().GetDocumentLoader(), *this);
     cookie_jar_ = MakeGarbageCollected<CookieJar>(this);
-    if (IsInMainFrame() && GetPage()->IsPartitionedPopin()) {
-      CountUse(WebFeature::kPartitionedPopin_Opened);
-    }
     is_vertical_scroll_enforced_ =
         RuntimeEnabledFeatures::ExperimentalPoliciesEnabled() &&
         !frame->IsOutermostMainFrame() &&

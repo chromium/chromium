@@ -5638,8 +5638,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5072" label="FencedFrameCanLoadOpaqueURL"/>
   <int value="5073"
       label="V8Performance_Memory_AttributeGetter_NotLockedToSite"/>
-  <int value="5074" label="PartitionedPopin_OpenAttempt"/>
-  <int value="5075" label="PartitionedPopin_Opened"/>
+  <int value="5074" label="OBSOLETE_PartitionedPopin_OpenAttempt"/>
+  <int value="5075" label="OBSOLETE_PartitionedPopin_Opened"/>
   <int value="5076"
       label="OBSOLETE_V8AISummarizer_SharedContext_AttributeGetter"/>
   <int value="5077" label="OBSOLETE_V8AISummarizer_Type_AttributeGetter"/>
@@ -5665,8 +5665,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5093" label="OBSOLETE_V8AIAssistant_Destroy_Method"/>
   <int value="5094" label="OBSOLETE_V8AIAssistant_Prompt_Method"/>
   <int value="5095" label="OBSOLETE_V8AIAssistant_PromptStreaming_Method"/>
-  <int value="5096" label="V8Window_PopinContextTypesSupported_Method"/>
-  <int value="5097" label="V8Window_PopinContextType_Method"/>
+  <int value="5096"
+      label="OBSOLETE_V8Window_PopinContextTypesSupported_Method"/>
+  <int value="5097" label="OBSOLETE_V8Window_PopinContextType_Method"/>
   <int value="5098" label="WebAuthentication_AttestationFormats"/>
   <int value="5099" label="CssDisplayPropertyMultipleValues"/>
   <int value="5100" label="DocumentPolicyExpectNoLinkedResources"/>
