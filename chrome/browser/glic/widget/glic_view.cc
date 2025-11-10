@@ -23,6 +23,7 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_variant.h"
 #include "ui/events/event_observer.h"
 #include "ui/views/event_monitor.h"
 #include "ui/views/layout/fill_layout.h"
@@ -101,19 +102,13 @@ void GlicView::UpdateBackgroundColor() {
   const bool explicit_background =
       base::FeatureList::IsEnabled(features::kGlicExplicitBackgroundColor);
 
-  std::unique_ptr<views::Background> background;
+  std::optional<ui::ColorVariant> background_color;
   if (!explicit_background) {
-    std::optional<SkColor> client_background = GetClientBackgroundColor();
-    if (client_background) {
-      background = views::CreateSolidBackground(*client_background);
-    }
+    background_color = GetClientBackgroundColor();
   }
 
-  if (!background) {
-    background = views::CreateSolidBackground(kColorGlicBackground);
-  }
-
-  SetBackground(std::move(background));
+  SetBackground(views::CreateSolidBackground(
+      background_color.value_or(kColorGlicBackground)));
 
   if (views::Widget* widget = GetWidget(); explicit_background && widget) {
     // Set the native widget background color if needed.
