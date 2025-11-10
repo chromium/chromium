@@ -6,7 +6,9 @@
 
 #include <cstddef>
 
+#include "base/containers/contains.h"
 #include "base/json/json_writer.h"
+#include "base/json/values_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/protobuf_matchers.h"
 #include "build/build_config.h"
@@ -626,6 +628,55 @@ void EventReportValidatorBase::ExpectSecurityInterstitialEventWithReferrers(
       });
 }
 
+void EventReportValidatorBase::ExpectDataControlsSensitiveDataEvent(
+    const std::string& expected_url,
+    const std::string& expected_tab_url,
+    const std::string& expected_source,
+    const std::string& expected_destination,
+    const std::set<std::string>* expected_mimetypes,
+    const std::string& expected_trigger,
+    const data_controls::Verdict::TriggeredRules& expected_triggered_rules,
+    const std::string& expected_result,
+    const std::string& expected_profile_username,
+    const std::string& expected_profile_identifier,
+    int64_t expected_content_size) {
+  EXPECT_CALL(*client_, UploadSecurityEventReport)
+      .WillOnce([this, expected_url, expected_tab_url, expected_source,
+                 expected_destination, expected_mimetypes, expected_trigger,
+                 expected_triggered_rules, expected_result,
+                 expected_profile_username, expected_profile_identifier,
+                 expected_content_size](
+                    bool include_device_info, base::Value::Dict report,
+                    base::OnceCallback<void(policy::CloudPolicyClient::Result)>
+                        callback) {
+        const base::Value::List* event_list = report.FindList(
+            policy::RealtimeReportingJobConfiguration::kEventListKey);
+        ASSERT_TRUE(event_list);
+        // There should only be 1 event per test.
+        ASSERT_EQ(1u, event_list->size());
+        const base::Value::Dict& wrapper = (*event_list)[0].GetDict();
+        const base::Value::Dict* event =
+            wrapper.FindDict(enterprise_connectors::kKeySensitiveDataEvent);
+        ASSERT_TRUE(event);
+
+        ValidateField(event, kKeyURL, expected_url);
+        ValidateField(event, kKeyTabUrl, expected_tab_url);
+        ValidateField(event, kKeySource, expected_source);
+        ValidateField(event, kKeyDestination, expected_destination);
+        ValidateMimeType(event, expected_mimetypes);
+        const base::Value::List* triggered_rules =
+            event->FindList(kKeyTriggeredRuleInfo);
+        ASSERT_TRUE(triggered_rules);
+        ASSERT_EQ(triggered_rules->size(), expected_triggered_rules.size());
+        ValidateField(event, kKeyTrigger, expected_trigger);
+        ValidateField(event, kKeyContentSize, expected_content_size);
+
+        if (!done_closure_.is_null()) {
+          done_closure_.Run();
+        }
+      });
+}
+
 void EventReportValidatorBase::ValidateField(
     const base::Value::Dict* value,
     const std::string& field_key,
@@ -709,6 +760,18 @@ void EventReportValidatorBase::ValidateField(const base::Value::Dict* value,
       << "\nExpected value: " << expected_value;
 }
 
+void EventReportValidatorBase::ValidateField(const base::Value::Dict* value,
+                                             const std::string& field_key,
+                                             int64_t expected_value) {
+  ASSERT_TRUE(base::ValueToInt64(value->Find(field_key)).has_value())
+      << "Mismatch in field " << field_key << "\nNo value was set"
+      << "\nExpected value: " << expected_value;
+  ASSERT_EQ(base::ValueToInt64(value->Find(field_key)).value(), expected_value)
+      << "Mismatch in field " << field_key << "\nActual value: "
+      << base::ValueToInt64(value->Find(field_key)).value()
+      << "\nExpected value: " << expected_value;
+}
+
 void EventReportValidatorBase::ValidateThreatInfo(
     const base::Value::Dict* value,
     const chrome::cros::reporting::proto::TriggeredRuleInfo
@@ -771,6 +834,18 @@ void EventReportValidatorBase::ValidateIdentities(
       }
     }
     EXPECT_TRUE(matched);
+  }
+}
+
+void EventReportValidatorBase::ValidateMimeType(
+    const base::Value::Dict* value,
+    const std::set<std::string>* expected_mimetypes) {
+  const std::string* type = value->FindString(kKeyContentType);
+  if (expected_mimetypes) {
+    EXPECT_TRUE(base::Contains(*expected_mimetypes, *type))
+        << *type << " is not an expected mimetype";
+  } else {
+    EXPECT_EQ(nullptr, type);
   }
 }
 

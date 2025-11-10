@@ -408,42 +408,6 @@ void EventReportValidator::ExpectSensitiveDataEvent(
           });
 }
 
-void EventReportValidator::ExpectDataControlsSensitiveDataEvent(
-    const std::string& expected_url,
-    const std::string& expected_tab_url,
-    const std::string& expected_source,
-    const std::string& expected_destination,
-    const std::set<std::string>* expected_mimetypes,
-    const std::string& expected_trigger,
-    const data_controls::Verdict::TriggeredRules& triggered_rules,
-    const std::string& expected_result,
-    const std::string& expected_profile_username,
-    const std::string& expected_profile_identifier,
-    int64_t expected_content_size) {
-  event_key_ = kKeySensitiveDataEvent;
-  url_ = expected_url;
-  tab_url_ = expected_tab_url;
-  source_ = expected_source;
-  destination_ = expected_destination;
-  data_controls_triggered_rules_ = triggered_rules;
-  mimetypes_ = expected_mimetypes;
-  trigger_ = expected_trigger;
-  content_size_ = expected_content_size;
-  data_controls_result_ = expected_result;
-  username_ = expected_profile_username;
-  profile_identifier_ = expected_profile_identifier;
-  EXPECT_CALL(*client_, UploadSecurityEventReport)
-      .WillOnce(
-          [this](bool include_device_info, base::Value::Dict report,
-                 base::OnceCallback<void(policy::CloudPolicyClient::Result)>
-                     callback) {
-            ValidateReport(&report);
-            if (!done_closure_.is_null()) {
-              done_closure_.Run();
-            }
-          });
-}
-
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 void EventReportValidator::ExpectDataMaskingEvent(
     const std::string& expected_profile_username,

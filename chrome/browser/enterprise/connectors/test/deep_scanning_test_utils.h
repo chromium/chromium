@@ -81,19 +81,6 @@ class EventReportValidator : public EventReportValidatorBase {
       const std::optional<std::string>& expected_content_transfer_method,
       const std::optional<std::u16string>& expected_user_justification);
 
-  void ExpectDataControlsSensitiveDataEvent(
-      const std::string& expected_url,
-      const std::string& expected_tab_url,
-      const std::string& expected_source,
-      const std::string& expected_destination,
-      const std::set<std::string>* expected_mimetypes,
-      const std::string& expected_trigger,
-      const data_controls::Verdict::TriggeredRules& triggered_rules,
-      const std::string& expected_result,
-      const std::string& expected_profile_username,
-      const std::string& expected_profile_identifier,
-      int64_t expected_content_size);
-
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   void ExpectDataMaskingEvent(
       const std::string& expected_profile_username,

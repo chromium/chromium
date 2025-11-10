@@ -149,6 +149,10 @@ source_set("test_support") {
     "//testing/gmock",
     "//url",
   ]
+
+  if (enterprise_data_controls) {
+    deps += [ "//components/enterprise/data_controls/core/browser" ]
+  }
 }
 
 source_set("unit_tests") {
