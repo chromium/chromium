@@ -51,6 +51,17 @@ std::optional<bool> EarlyLoginAuthPolicyConnector::GetRecoveryMandatoryState(
   return std::nullopt;
 }
 
+std::optional<LocalAuthFactorsComplexity>
+EarlyLoginAuthPolicyConnector::GetLocalAuthFactorsComplexity(
+    const AccountId& account) {
+  if (!early_prefs_->HasPref(prefs::kLocalAuthFactorsComplexity)) {
+    return std::nullopt;
+  }
+  int val =
+      early_prefs_->GetValue(prefs::kLocalAuthFactorsComplexity)->GetInt();
+  return static_cast<LocalAuthFactorsComplexity>(val);
+}
+
 bool EarlyLoginAuthPolicyConnector::IsAuthFactorManaged(
     const AccountId& account,
     AshAuthFactor auth_factor) {

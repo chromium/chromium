@@ -78,6 +78,17 @@ std::optional<bool> ProfilePrefsAuthPolicyConnector::GetRecoveryMandatoryState(
   return pref->GetValue()->GetBool();
 }
 
+std::optional<LocalAuthFactorsComplexity>
+ProfilePrefsAuthPolicyConnector::GetLocalAuthFactorsComplexity(
+    const AccountId& account) {
+  const PrefService* pref_service = GetPrefsForUser(account);
+  if (!pref_service->HasPrefPath(prefs::kLocalAuthFactorsComplexity)) {
+    return std::nullopt;
+  }
+  int val = pref_service->GetInteger(prefs::kLocalAuthFactorsComplexity);
+  return static_cast<LocalAuthFactorsComplexity>(val);
+}
+
 bool ProfilePrefsAuthPolicyConnector::IsAuthFactorManaged(
     const AccountId& account,
     AshAuthFactor auth_factor) {

@@ -47,6 +47,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthPolicyConnector {
   virtual std::optional<bool> GetRecoveryMandatoryState(
       const AccountId& account) = 0;
 
+  // Returns the local auth factors complexity policy value.
+  virtual std::optional<LocalAuthFactorsComplexity>
+  GetLocalAuthFactorsComplexity(const AccountId& account) = 0;
+
   virtual bool IsAuthFactorManaged(const AccountId& account,
                                    AshAuthFactor auth_factor) = 0;
   virtual bool IsAuthFactorUserModifiable(const AccountId& account,

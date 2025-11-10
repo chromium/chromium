@@ -20,20 +20,17 @@ component("local_auth_factors") {
 
   public_deps = [
     "//base",
+    "//chromeos/ash/components/osauth/public",
     "//components/prefs",
   ]
 
-  deps = [
-    "//ash/constants",
-  ]
+  deps = [ "//ash/constants" ]
 }
 
 source_set("unit_tests") {
   testonly = true
 
-  sources = [
-    "local_auth_factors_complexity_unittest.cc",
-  ]
+  sources = [ "local_auth_factors_complexity_unittest.cc" ]
 
   deps = [
     ":local_auth_factors",

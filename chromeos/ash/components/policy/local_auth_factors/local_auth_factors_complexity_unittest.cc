@@ -11,6 +11,8 @@
 
 namespace policy::local_auth_factors {
 
+using Complexity = ash::LocalAuthFactorsComplexity;
+
 TEST(LocalAuthFactorsComplexityCheckerTest, PasswordComplexity) {
   const struct TestData {
     std::string test_name;

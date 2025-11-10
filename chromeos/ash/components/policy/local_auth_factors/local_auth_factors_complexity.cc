@@ -15,6 +15,8 @@ namespace policy::local_auth_factors {
 
 namespace {
 
+using Complexity = ash::LocalAuthFactorsComplexity;
+
 // Returns true for inputs like "6789", or "6543", or "0000" (but not for inputs
 // like "8901" - wrap around isn't considered).
 bool ContainsOrderedOrRepeatingSequence(std::string_view pin) {
