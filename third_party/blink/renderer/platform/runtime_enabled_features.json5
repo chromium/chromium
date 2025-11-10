@@ -4454,6 +4454,8 @@
       name: "SecurePaymentConfirmationBrowserBoundKeys",
       status: {
         "Android": "stable",
+        "Mac": "experimental",
+        "Win": "experimental",
         "default": "test",
       },
     },

@@ -4290,7 +4290,11 @@
   },
   {
     "name": "enable-secure-payment-confirmation-browser-bound-key",
-    "owners": ["slobodan@chromium.org", "chrome-payments-eng@google.com"],
+    "owners": [
+      "darwinyang@chromium.org",
+      "slobodan@chromium.org",
+      "chrome-payments-eng@google.com"
+    ],
     "expiry_milestone": 160
   },
   {
