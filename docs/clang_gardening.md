@@ -30,7 +30,10 @@ There are two main sources of information about the state of the build:
    ("dry run CLs"). These are generated every few hours by a Cron job and
    attempt to package the latest version of Clang and Rust. That process can
    fail for many reasons, especially due to failures in the compilers' test
-   suites. If the CLs stop being generated, that also needs to be addressed.
+   suites. The cron job runs on a team member's workstation. If the CLs stop
+   coming and that team member is out, anyone else can run the script; search
+   for [`clang_packaging_cron.sh`](http://cs/clang_packaging_cron.sh) internally.
+   The script essentially just runs [`upload_revision.py`](https://source.chromium.org/chromium/chromium/src/+/main:tools/clang/scripts/upload_revision.py).
 
 Although both of these pull & build the latest version of clang, things may go
 wrong in one place but not the other, so it's important to keep an eye on both.
