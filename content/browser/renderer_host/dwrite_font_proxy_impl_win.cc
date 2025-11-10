@@ -46,6 +46,18 @@ namespace content {
 
 namespace {
 
+// Recorded in Chrome.DWriteFontProxy.InvokedIPC, don't modify or re-order
+// without also changing DWriteFontProxyIPC.
+enum class DWriteFontProxyIPC {
+  kFindFamily = 0,
+  kGetFamilyCount = 1,
+  kGetFamilyNames = 2,
+  kGetFontFileHandles = 3,
+  kMatchUniqueFont = 4,
+  kMapCharacters = 5,
+  kMaxValue = kMapCharacters,
+};
+
 // These are the fonts that Blink tries to load in getLastResortFallbackFont,
 // and will crash if none can be loaded.
 constexpr auto kLastResortFontNames = std::to_array<const wchar_t*>(
@@ -209,6 +221,8 @@ void DWriteFontProxyImpl::FindFamily(const std::u16string& family_name,
                                      FindFamilyCallback callback) {
   InitializeDirectWrite();
   TRACE_EVENT0("dwrite,fonts", "FontProxyHost::OnFindFamily");
+  base::UmaHistogramEnumeration("Chrome.DWriteFontProxy.InvokedIPC",
+                                DWriteFontProxyIPC::kFindFamily);
   UINT32 family_index = UINT32_MAX;
   if (collection_) {
     BOOL exists = FALSE;
@@ -226,6 +240,8 @@ void DWriteFontProxyImpl::FindFamily(const std::u16string& family_name,
 void DWriteFontProxyImpl::GetFamilyCount(GetFamilyCountCallback callback) {
   InitializeDirectWrite();
   TRACE_EVENT0("dwrite,fonts", "FontProxyHost::OnGetFamilyCount");
+  base::UmaHistogramEnumeration("Chrome.DWriteFontProxy.InvokedIPC",
+                                DWriteFontProxyIPC::kGetFamilyCount);
   std::move(callback).Run(collection_ ? collection_->GetFontFamilyCount() : 0);
 }
 
@@ -233,6 +249,8 @@ void DWriteFontProxyImpl::GetFamilyNames(UINT32 family_index,
                                          GetFamilyNamesCallback callback) {
   InitializeDirectWrite();
   TRACE_EVENT0("dwrite,fonts", "FontProxyHost::OnGetFamilyNames");
+  base::UmaHistogramEnumeration("Chrome.DWriteFontProxy.InvokedIPC",
+                                DWriteFontProxyIPC::kGetFamilyNames);
   callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
       std::move(callback), std::vector<blink::mojom::DWriteStringPairPtr>());
   if (!collection_)
@@ -295,6 +313,8 @@ void DWriteFontProxyImpl::GetFontFileHandles(
     GetFontFileHandlesCallback callback) {
   InitializeDirectWrite();
   TRACE_EVENT0("dwrite,fonts", "FontProxyHost::OnGetFontFiles");
+  base::UmaHistogramEnumeration("Chrome.DWriteFontProxy.InvokedIPC",
+                                DWriteFontProxyIPC::kGetFontFileHandles);
   callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
       std::move(callback), std::vector<base::File>());
   if (!collection_) {
@@ -357,6 +377,8 @@ void DWriteFontProxyImpl::MapCharacters(
     const std::u16string& base_family_name,
     MapCharactersCallback callback) {
   InitializeDirectWrite();
+  base::UmaHistogramEnumeration("Chrome.DWriteFontProxy.InvokedIPC",
+                                DWriteFontProxyIPC::kMapCharacters);
   callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
       std::move(callback),
       blink::mojom::MapCharactersResult::New(
@@ -459,6 +481,8 @@ void DWriteFontProxyImpl::MatchUniqueFont(
     const std::u16string& unique_font_name,
     MatchUniqueFontCallback callback) {
   TRACE_EVENT0("dwrite,fonts", "DWriteFontProxyImpl::MatchUniqueFont");
+  base::UmaHistogramEnumeration("Chrome.DWriteFontProxy.InvokedIPC",
+                                DWriteFontProxyIPC::kMatchUniqueFont);
 
   DCHECK(base::FeatureList::IsEnabled(features::kFontSrcLocalMatching));
   callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback),

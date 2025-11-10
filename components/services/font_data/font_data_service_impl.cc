@@ -44,6 +44,16 @@ enum class CreateResult {
   kMaxValue = kFailureSharingNewMemoryRegion,
 };
 
+// Recorded in Chrome.FontDataService.InvokedIPC, don't modify or re-order
+// without also changing FontDataServiceIPC.
+enum class FontDataServiceIPC {
+  kMatchFamilyName = 0,
+  kMatchFamilyNameCharacter = 1,
+  kGetAllFamilyNames = 2,
+  kLegacyMakeTypeface = 3,
+  kMaxValue = kLegacyMakeTypeface,
+};
+
 // Value is arbitrary. The number should be small to conserve memory but large
 // enough to fit a meaningful amount of fonts.
 constexpr int kMemoryMapCacheSize = 128;
@@ -136,6 +146,8 @@ void FontDataServiceImpl::MatchFamilyName(const std::string& family_name,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT("fonts", "FontDataServiceImpl::MatchFamilyName", "family_name",
               family_name);
+  base::UmaHistogramEnumeration("Chrome.FontDataService.InvokedIPC",
+                                FontDataServiceIPC::kMatchFamilyName);
 
   // Call the font manager of the browser process to process the proxied match
   // family request.
@@ -156,6 +168,8 @@ void FontDataServiceImpl::MatchFamilyNameCharacter(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT("fonts", "FontDataServiceImpl::MatchFamilyNameCharacter",
               "family_name", family_name);
+  base::UmaHistogramEnumeration("Chrome.FontDataService.InvokedIPC",
+                                FontDataServiceIPC::kMatchFamilyNameCharacter);
 
   // Call the font manager of the browser process to process the proxied match
   // family request.
@@ -182,6 +196,8 @@ void FontDataServiceImpl::GetAllFamilyNames(
     GetAllFamilyNamesCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT("fonts", "FontDataServiceImpl::GetAllFamilyNames");
+  base::UmaHistogramEnumeration("Chrome.FontDataService.InvokedIPC",
+                                FontDataServiceIPC::kGetAllFamilyNames);
 
   int family_count = font_manager_->countFamilies();
   std::vector<std::string> result;
@@ -200,6 +216,8 @@ void FontDataServiceImpl::LegacyMakeTypeface(
     const std::optional<std::string>& family_name,
     mojom::TypefaceStylePtr style,
     LegacyMakeTypefaceCallback callback) {
+  base::UmaHistogramEnumeration("Chrome.FontDataService.InvokedIPC",
+                                FontDataServiceIPC::kLegacyMakeTypeface);
   SkFontStyle sk_font_style(style->weight, style->width,
                             ConvertToFontStyle(style->slant));
 

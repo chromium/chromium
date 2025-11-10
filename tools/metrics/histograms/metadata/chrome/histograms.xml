@@ -66,6 +66,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Chrome.DWriteFontProxy.InvokedIPC" enum="DWriteFontProxyIPC"
+    expires_after="2026-08-31">
+  <owner>andresrperez@chromium.org</owner>
+  <owner>drott@chromium.org</owner>
+  <owner>etienneb@chromium.org</owner>
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    Records when an IPC is made to DwriteFontProxy. The bucket recorded is the
+    IPC invoked.
+  </summary>
+</histogram>
+
 <histogram name="Chrome.DWriteFontProxy.WinLastError" enum="WinGetLastError"
     expires_after="2026-08-31">
   <owner>andresrperez@chromium.org</owner>
@@ -112,6 +125,19 @@ chromium-metrics-reviews@google.com.
     Records whether the font path references a parent (contains &quot;..&quot;)
     when trying to get a file handle to a font in FontDataService. This would
     prevent the creation of the base::File from succeeding.
+  </summary>
+</histogram>
+
+<histogram name="Chrome.FontDataService.InvokedIPC" enum="FontDataServiceIPC"
+    expires_after="2026-08-31">
+  <owner>andresrperez@chromium.org</owner>
+  <owner>drott@chromium.org</owner>
+  <owner>etienneb@chromium.org</owner>
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    Records when an IPC is made to FontDataService. The bucket recorded is the
+    IPC invoked.
   </summary>
 </histogram>
 
