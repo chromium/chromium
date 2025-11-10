@@ -3030,10 +3030,8 @@ void LineBreaker::HandleAtomicInline(const InlineItem& item,
   }
 
   const LineBreaker* root_breaker = this;
-  if (RuntimeEnabledFeatures::NestedRubyMinMaxFixEnabled()) {
-    while (root_breaker->parent_breaker_) {
-      root_breaker = root_breaker->parent_breaker_;
-    }
+  while (root_breaker->parent_breaker_) {
+    root_breaker = root_breaker->parent_breaker_;
   }
   const LineBreakerMode mode = root_breaker->mode_;
   const bool is_initial_letter_box =
@@ -3138,21 +3136,11 @@ void LineBreaker::ComputeMinMaxContentSizeForBlockChild(
   CHECK(!node_.GetLayoutBox()->NeedsCollectInlines());
   const LayoutUnit inline_margins = item_result->margins.InlineSum();
   const LineBreaker* main_breaker = root_breaker;
-  if (!RuntimeEnabledFeatures::NestedRubyMinMaxFixEnabled()) {
-    main_breaker = parent_breaker_ ? parent_breaker_ : this;
-  }
   if (main_breaker->mode_ == LineBreakerMode::kMinContent) {
     item_result->inline_size = result.sizes.min_size + inline_margins;
-    if (RuntimeEnabledFeatures::NestedRubyMinMaxFixEnabled()) {
-      if (root_breaker->depends_on_block_constraints_out_) {
-        *root_breaker->depends_on_block_constraints_out_ |=
-            result.depends_on_block_constraints;
-      }
-    } else {
-      if (depends_on_block_constraints_out_) {
-        *depends_on_block_constraints_out_ |=
-            result.depends_on_block_constraints;
-      }
+    if (root_breaker->depends_on_block_constraints_out_) {
+      *root_breaker->depends_on_block_constraints_out_ |=
+          result.depends_on_block_constraints;
     }
     if ((size_cache = main_breaker->max_size_cache_)) {
       if (size_cache->empty()) {
