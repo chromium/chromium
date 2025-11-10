@@ -144,6 +144,9 @@ class SafetyCheckNotificationClient
   // scheduling. Returns `true` if scheduling is allowed, `false` otherwise.
   bool CheckAndResetIfSchedulingIsAllowed();
 
+  // Returns the profile for an active foreground Browser, if there is one.
+  ProfileIOS* GetActiveForegroundProfile() const;
+
   // Current state of the Update Chrome check.
   UpdateChromeSafetyCheckState update_chrome_check_state_ =
       UpdateChromeSafetyCheckState::kDefault;
