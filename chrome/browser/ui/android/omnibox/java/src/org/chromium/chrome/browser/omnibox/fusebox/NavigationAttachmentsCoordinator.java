@@ -96,7 +96,7 @@ public class NavigationAttachmentsCoordinator
         var popup = new NavigationAttachmentsPopup(mContext, popupWindow, popupView);
         mViewHolder = new NavigationAttachmentsViewHolder(parent, popup);
 
-        var adapter = new NavigationAttachmentsRecyclerViewAdapter(mModelList);
+        var adapter = new FuseboxAttachmentRecyclerViewAdapter(mModelList);
         mViewHolder.attachmentsView.setAdapter(adapter);
 
         mModel =

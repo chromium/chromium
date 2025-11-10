@@ -15,9 +15,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.R;
 
-/** A RecyclerView for the NavigationAttachments component. */
+/** A RecyclerView for the FuseboxAttachment component. */
 @NullMarked
-public class NavigationAttachmentsRecyclerView extends RecyclerView {
+public class FuseboxAttachmentRecyclerView extends RecyclerView {
     private static class SpacingItemDecoration extends RecyclerView.ItemDecoration {
         private final int mSpacing;
 
@@ -36,7 +36,7 @@ public class NavigationAttachmentsRecyclerView extends RecyclerView {
         }
     }
 
-    public NavigationAttachmentsRecyclerView(Context context, AttributeSet attrs) {
+    public FuseboxAttachmentRecyclerView(Context context, AttributeSet attrs) {
         super(context, attrs);
         setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
         addItemDecoration(new SpacingItemDecoration(context));

@@ -14,9 +14,9 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/** ModelListAdapter for NavigationAttachments component. */
+/** ModelListAdapter for FuseboxAttachment component. */
 @NullMarked
-class NavigationAttachmentsRecyclerViewAdapter extends SimpleRecyclerViewAdapter {
+class FuseboxAttachmentRecyclerViewAdapter extends SimpleRecyclerViewAdapter {
     @IntDef({
         FuseboxAttachmentType.ATTACHMENT_FILE,
         FuseboxAttachmentType.ATTACHMENT_IMAGE,
@@ -29,7 +29,7 @@ class NavigationAttachmentsRecyclerViewAdapter extends SimpleRecyclerViewAdapter
         int ATTACHMENT_TAB = 2;
     }
 
-    NavigationAttachmentsRecyclerViewAdapter(ModelList data) {
+    FuseboxAttachmentRecyclerViewAdapter(ModelList data) {
         super(data);
         registerType(
                 FuseboxAttachmentType.ATTACHMENT_FILE,
