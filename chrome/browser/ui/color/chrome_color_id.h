@@ -371,6 +371,11 @@
   E_CPONLY(kColorOmniboxChipInkDropRipple) \
   E_CPONLY(kColorOmniboxChipOnSystemBlockedActivityIndicatorBackground) \
   E_CPONLY(kColorOmniboxChipOnSystemBlockedActivityIndicatorForeground) \
+  E_CPONLY(kColorOmniboxComposeboxChipBackground) \
+  E_CPONLY(kColorOmniboxComposeboxDivider) \
+  E_CPONLY(kColorOmniboxComposeboxFaviconBackground) \
+  E_CPONLY(kColorOmniboxComposeboxForegroundDisabled) \
+  E_CPONLY(kColorOmniboxComposeboxPrimaryAction) \
   E_CPONLY(kColorOmniboxContextEntrypointHoverBackground) \
   E_CPONLY(kColorOmniboxContextEntrypointText) \
   E_CPONLY(kColorOmniboxIconBackground) \

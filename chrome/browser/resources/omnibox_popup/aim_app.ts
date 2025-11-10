@@ -5,6 +5,7 @@
 import '//resources/cr_components/composebox/composebox.js';
 import '/strings.m.js';
 
+import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
 import {assert} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
@@ -32,6 +33,11 @@ export class OmniboxAimAppElement extends CrLitElement {
   private isDebug_: boolean =
       new URLSearchParams(window.location.search).has('debug');
   private eventTracker_ = new EventTracker();
+
+  constructor() {
+    super();
+    ColorChangeUpdater.forDocument().start();
+  }
 
   override connectedCallback() {
     super.connectedCallback();

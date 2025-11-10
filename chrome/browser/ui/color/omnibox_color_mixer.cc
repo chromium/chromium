@@ -147,6 +147,14 @@ void ApplyCR2023OmniboxExpandedStateColors(ui::ColorMixer& mixer,
   // Context menu hover color.
   mixer[kColorOmniboxContextEntrypointHoverBackground] = {
       ui::kColorSysStateHoverOnSubtle};
+
+  // Composebox-specific colors.
+  mixer[kColorOmniboxComposeboxChipBackground] = {ui::kColorSysSurface3};
+  mixer[kColorOmniboxComposeboxDivider] = {ui::kColorSysDivider};
+  mixer[kColorOmniboxComposeboxFaviconBackground] = {ui::kColorSysSurface};
+  mixer[kColorOmniboxComposeboxForegroundDisabled] = {
+      ui::kColorSysStateDisabled};
+  mixer[kColorOmniboxComposeboxPrimaryAction] = {ui::kColorSysPrimary};
 }
 
 // Apply fallback Omnibox color mappings for CR2023 clients who are not eligible
@@ -439,6 +447,10 @@ void AddOmniboxColorMixer(ui::ColorProvider* provider,
       ui::SetAlpha(kColorOmniboxText, std::ceil(0.10f * 255.0f))};
   mixer[kColorOmniboxIconPressed] = {
       ui::SetAlpha(kColorOmniboxText, std::ceil(0.16f * 255.0f))};
+
+  // Composebox colors.
+  // TODO(b/452367715): Add GM2 colors for omnibox.
+  mixer[kColorOmniboxComposeboxForegroundDisabled] = {kColorOmniboxTextDimmed};
 
   // Override omnibox colors per CR2023 spec.
   ApplyOmniboxCR2023Colors(mixer, key);

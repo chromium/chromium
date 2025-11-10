@@ -5,8 +5,38 @@
 /* #css_wrapper_metadata_start
  * #type=style-lit
  * #scheme=relative
+ * #import=./shared_vars.css.js
  * #css_wrapper_metadata_end */
 
 :host {
-  --composebox-context-menu-entrypoint-button-color: var(--color-sys-primary);
+  --composebox-context-menu-entrypoint-button-color: var(--color-omnibox-composebox-primary-action);
+}
+
+cr-composebox {
+  --cr-composebox-background-color: var(--color-omnibox-results-background);
+  --color-composebox-background: var(--color-omnibox-results-background);
+  --color-composebox-cancel-button: unset; /* Lens only */
+  --color-composebox-cancel-button-light: var(--color-omnibox-composebox-favicon-background);
+  --color-composebox-context-entrypoint-hover-background: var(--color-omnibox-context-entrypoint-hover-background);
+  --color-composebox-context-entrypoint-text-disabled: var(--color-omnibox-composebox-foreground-disabled);
+  --color-composebox-file-carousel-divider: var(--color-omnibox-composebox-divider);
+  --color-composebox-file-chip-background: var(--color-omnibox-composebox-chip-background);
+  --color-composebox-file-chip-favicon-background: var(--color-omnibox-composebox-favicon-background);
+  --color-composebox-file-chip-text: var(--color-omnibox-text);
+  --color-composebox-file-image-overlay: var(--color-omnibox-text);
+  --color-composebox-font: var(--color-omnibox-text);
+  --color-composebox-font-light: var(--color-omnibox-text);
+  --color-composebox-hover: unset; /* Lens only */
+  --color-composebox-input-icon: var(--color-omnibox-results-icon);
+  --color-composebox-lens-button: unset; /* Lens only */
+  --color-composebox-pdf-chip-icon: var(--color-omnibox-text-subtle);
+  --color-composebox-recent-tab-chip-outline: unset; /* Omnibox has no recent tab chip. */
+  --color-composebox-scrim-background: unset; /* No scrim. */
+  --color-composebox-submit-button: var(--color-omnibox-composebox-primary-action);
+  --color-composebox-suggestion-activity: unset; /* No activity suggestion disclaimer. */
+  --color-composebox-type-ahead: var(--color-omnibox-composebox-foreground-disabled);
+  --color-composebox-type-ahead-chip: var(--color-omnibox-composebox-foreground-disabled);
+  --color-composebox-upload-button: var(--omnibox-results-chip-background);
+  --color-composebox-upload-button-disabled: var(--color-omnibox-composebox-foreground-disabled);
+  --composebox-context-menu-entrypoint-button-color: var(--color-omnibox-composebox-primary-action);
 }
