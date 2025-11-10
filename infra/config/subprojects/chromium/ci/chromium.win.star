@@ -412,6 +412,7 @@ ci.builder(
             "x86-64",
             "win10",
             "isolate_profile_data",
+            "retry_only_failed_tests",
         ],
         per_test_modifications = {
             "blink_web_tests": targets.mixin(
@@ -432,7 +433,6 @@ ci.builder(
                 # Only retry the individual failed tests instead of rerunning
                 # entire shards.
                 # crbug.com/1473501
-                retry_only_failed_tests = True,
                 swarming = targets.swarming(
                     # This is for slow test execution that often becomes a
                     # critical path of swarming jobs. crbug.com/868114
@@ -442,12 +442,6 @@ ci.builder(
             "chromedriver_py_tests": targets.mixin(
                 # TODO(crbug.com/40868908): Fix & re-enable.
                 isolate_profile_data = False,
-            ),
-            "content_browsertests": targets.mixin(
-                # Only retry the individual failed tests instead of rerunning
-                # entire shards.
-                # crbug.com/1475852
-                retry_only_failed_tests = True,
             ),
             "interactive_ui_tests": targets.mixin(
                 swarming = targets.swarming(

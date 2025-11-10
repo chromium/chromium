@@ -711,6 +711,7 @@ ci.thin_tester(
         mixins = [
             "win10_nvidia_gtx_1660_stable",
             "puppet_production",
+            "retry_only_failed_tests",
         ],
         per_test_modifications = {
             "pixel_skia_gold_passthrough_test": targets.per_test_modification(
