@@ -46,6 +46,7 @@ public class PageAppMenuFacility<HostPageStationT extends CtaPageStation>
     protected @Nullable Item mNewIncognitoTab;
     protected @Nullable Item mNewIncognitoWindow;
     protected @Nullable Item mAddToGroup;
+    protected @Nullable Item mReaderMode;
     protected Item mNewWindow;
     protected Item mSettings;
     protected Item mPinTab;
@@ -168,5 +169,15 @@ public class PageAppMenuFacility<HostPageStationT extends CtaPageStation>
     /** Select "Settings" from the app menu. */
     public SettingsStation openSettings() {
         return mSettings.scrollToAndSelectTo().arriveAt(createSettingsStation());
+    }
+
+    /** Select "Show Reading Mode" from the app menu. */
+    public WebPageStation enterReaderMode() {
+        return mReaderMode
+                .scrollToAndSelectTo()
+                .arriveAt(
+                        WebPageStation.newBuilder()
+                                .initForLoadingUrlOnSameTab("chrome-distiller://", mHostStation)
+                                .build());
     }
 }

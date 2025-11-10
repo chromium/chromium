@@ -11,11 +11,11 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import static org.chromium.base.test.transit.Triggers.noopTo;
-import static org.chromium.components.embedder_support.util.UrlConstants.DISTILLER_SCHEME;
 
 import android.app.Activity;
 import android.app.PendingIntent;
@@ -47,6 +47,7 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.dom_distiller.ReaderModeManager.EntryPoint;
 import org.chromium.chrome.browser.download.DownloadTestRule;
@@ -59,15 +60,17 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.dom_distiller.ReaderModeConditions.TabBackgroundColorCondition;
 import org.chromium.chrome.test.transit.dom_distiller.ReaderModeConditions.TabFontSizeCondition;
 import org.chromium.chrome.test.transit.dom_distiller.ReaderModePreferencesDialog;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.components.dom_distiller.core.DistilledPagePrefs;
 import org.chromium.components.dom_distiller.core.DomDistillerFeatures;
 import org.chromium.components.dom_distiller.core.DomDistillerService;
-import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageDispatcherProvider;
 import org.chromium.components.messages.MessageIdentifier;
@@ -95,7 +98,11 @@ import java.util.concurrent.atomic.AtomicReference;
 @DisableFeatures(ChromeFeatureList.BROWSER_CONTROLS_IN_VIZ)
 public class ReaderModeTest implements CustomMainActivityStart {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule public DownloadTestRule mDownloadTestRule = new DownloadTestRule(this);
+    public DownloadTestRule mDownloadTestRule = new DownloadTestRule(this);
+
+    @Rule
+    public final FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.wrapTestRule(mDownloadTestRule);
 
     private static final String TEST_PAGE = "/chrome/test/data/dom_distiller/simple_article.html";
     // Suffix added to page titles, string is defined as IDS_DOM_DISTILLER_VIEWER_TITLE_SUFFIX in
@@ -110,6 +117,7 @@ public class ReaderModeTest implements CustomMainActivityStart {
     private String mURL;
 
     @Mock DistilledPagePrefs.Observer mTestObserver;
+    private WebPageStation mPage;
 
     @Override
     public void customMainActivityStart() {
@@ -117,25 +125,25 @@ public class ReaderModeTest implements CustomMainActivityStart {
                 EmbeddedTestServer.createAndStartServer(
                         ApplicationProvider.getApplicationContext());
         mURL = mTestServer.getURL(TEST_PAGE);
-        mDownloadTestRule.startMainActivityOnBlankPage();
+
+        mPage = mActivityTestRule.startOnBlankPage();
     }
 
     @Test
     @MediumTest
-    @DisableFeatures({DomDistillerFeatures.READER_MODE_DISTILL_IN_APP})
+    @DisableFeatures(DomDistillerFeatures.READER_MODE_DISTILL_IN_APP)
     public void testReaderModePromptShownForIncognitoTabs() {
         // Note: For BrApp messages are only used on incognito tabs. Regular tabs use the MTB.
-        mDownloadTestRule.newIncognitoTabFromMenu();
-        mDownloadTestRule.loadUrl(mURL);
+        mPage = mPage.openNewIncognitoTabOrWindowFast().loadWebPageProgrammatically(mURL);
         waitForReaderModeMessage();
     }
 
     @Test
     @MediumTest
-    @DisableFeatures({DomDistillerFeatures.READER_MODE_DISTILL_IN_APP})
+    @DisableFeatures(DomDistillerFeatures.READER_MODE_DISTILL_IN_APP)
     public void testReaderModeInCct() throws TimeoutException {
-        mDownloadTestRule.loadUrl(mURL);
-        Tab originalTab = mDownloadTestRule.getActivityTab();
+        mPage = mPage.loadWebPageProgrammatically(mURL);
+        Tab originalTab = mPage.getTab();
         String innerHtml = getInnerHtml(originalTab);
         assertThat(innerHtml).doesNotContain("article-header");
 
@@ -164,24 +172,18 @@ public class ReaderModeTest implements CustomMainActivityStart {
     @EnableFeatures(DomDistillerFeatures.READER_MODE_DISTILL_IN_APP)
     @DisabledTest(message = "https://crbug.com/436904664")
     public void testReaderModeInRegularTab() throws TimeoutException {
-        mDownloadTestRule.loadUrl(mURL);
+        mPage = mPage.loadWebPageProgrammatically(mURL).openRegularTabAppMenu().enterReaderMode();
 
-        Tab originalTab = mDownloadTestRule.getActivityTab();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    originalTab
-                            .getUserDataHost()
-                            .getUserData(ReaderModeManager.USER_DATA_KEY)
-                            .activateReaderMode(EntryPoint.APP_MENU);
-                });
+        Tab originalTab = mPage.getTab();
         waitForDistillation(PAGE_TITLE, originalTab);
     }
 
     @Test
     @MediumTest
+    @DisableFeatures(DomDistillerFeatures.READER_MODE_DISTILL_IN_APP)
     @DisabledTest(message = "https://crbug.com/423646543")
     public void testReaderModeInCct_Downloaded() throws TimeoutException {
-        mDownloadTestRule.loadUrl(mURL);
+        mPage = mPage.loadWebPageProgrammatically(mURL);
         Tab originalTab = mDownloadTestRule.getActivityTab();
         String innerHtml = getInnerHtml(originalTab);
         assertThat(innerHtml).doesNotContain("article-header");
@@ -207,16 +209,17 @@ public class ReaderModeTest implements CustomMainActivityStart {
     @MediumTest
     @DisableFeatures({DomDistillerFeatures.READER_MODE_DISTILL_IN_APP})
     public void testReaderModeInCct_Incognito() throws TimeoutException {
-        mDownloadTestRule.loadUrl(mURL);
+        mPage = mPage.loadWebPageProgrammatically(mURL);
         openReaderModeInIncognitoCct();
     }
 
     @Test
     @MediumTest
     @DisabledTest(message = "https://crbug.com/1338273")
+    @DisableFeatures(DomDistillerFeatures.READER_MODE_DISTILL_IN_APP)
     public void testCloseAllIncognitoNotification_ClosesCct()
             throws PendingIntent.CanceledException, TimeoutException {
-        mDownloadTestRule.loadUrl(mURL);
+        mPage = mPage.loadWebPageProgrammatically(mURL);
         CustomTabActivity customTabActivity = openReaderModeInIncognitoCct();
 
         // Click on "Close all Incognito tabs" notification.
@@ -230,7 +233,7 @@ public class ReaderModeTest implements CustomMainActivityStart {
         CriteriaHelper.pollUiThread(
                 () -> {
                     Criteria.checkThat(
-                            customTabActivity.getTabModelSelector().getModel(true).getCount(),
+                            TabWindowManagerSingleton.getInstance().getIncognitoTabCount(),
                             Matchers.equalTo(0));
                 });
     }
@@ -296,10 +299,11 @@ public class ReaderModeTest implements CustomMainActivityStart {
 
     @Test
     @MediumTest
+    @DisableFeatures(DomDistillerFeatures.READER_MODE_DISTILL_IN_APP)
     @DisabledTest(message = "https://crbug.com/423967273")
     public void testPreferenceInCct() throws TimeoutException {
-        mDownloadTestRule.loadUrl(mURL);
-        Tab originalTab = mDownloadTestRule.getActivityTab();
+        mPage = mPage.loadWebPageProgrammatically(mURL);
+        Tab originalTab = mPage.getTab();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     originalTab
@@ -318,16 +322,15 @@ public class ReaderModeTest implements CustomMainActivityStart {
 
     @Test
     @MediumTest
+    @EnableFeatures(DomDistillerFeatures.READER_MODE_DISTILL_IN_APP)
     @DisabledTest(message = "https://crbug.com/423967273")
     public void testPreferenceInTab() throws TimeoutException {
-        mDownloadTestRule.loadUrl(
-                DomDistillerUrlUtils.getDistillerViewUrlFromUrl(
-                        DISTILLER_SCHEME, mURL, PAGE_TITLE));
+        mPage = mPage.loadWebPageProgrammatically(mURL).openRegularTabAppMenu().enterReaderMode();
 
-        Tab tab = mDownloadTestRule.getActivityTab();
+        Tab tab = mPage.getTab();
         waitForDistillation(PAGE_TITLE, tab);
 
-        doTestSettingPreferences(mDownloadTestRule.getActivity(), tab);
+        doTestSettingPreferences(mActivityTestRule.getActivity(), tab);
     }
 
     @Test
@@ -420,7 +423,7 @@ public class ReaderModeTest implements CustomMainActivityStart {
 
     private void doTestSettingPreferences(ChromeActivity activity, Tab tab) {
         DistilledPagePrefs prefs = getDistilledPagePrefs();
-        prefs.addObserver(mTestObserver);
+        ThreadUtils.runOnUiThreadBlocking(() -> prefs.addObserver(mTestObserver));
 
         noopTo().waitFor(new TabBackgroundColorCondition(tab, "\"rgb(255, 255, 255)\""));
 
@@ -439,12 +442,24 @@ public class ReaderModeTest implements CustomMainActivityStart {
         verify(mTestObserver, times(3)).onChangeTheme(anyInt());
 
         // Test setting font size
-        noopTo().waitFor(new TabFontSizeCondition(tab, "\"14px\""));
+        String fontSizeDefault = "\"16px\"";
+        String fontSizeMax = "\"32px\"";
+        String fontSizeMin = "\"8px\"";
+
+        // CCT and in-app apply different CSS.
+        if (activity instanceof CustomTabActivity) {
+            fontSizeDefault = "\"14px\"";
+            fontSizeMax = "\"28px\"";
+            fontSizeMin = "\"7px\"";
+        }
+
+        noopTo().waitFor(new TabFontSizeCondition(tab, fontSizeDefault));
         // Max is 200% font size.
-        dialog.setFontSizeSliderToMaxTo().waitFor(new TabFontSizeCondition(tab, "\"28px\""));
+        dialog.setFontSizeSliderToMaxTo().waitFor(new TabFontSizeCondition(tab, fontSizeMax));
+        verify(mTestObserver, atLeastOnce()).onChangeFontScaling(anyFloat());
         // Min is 50% font size.
-        dialog.setFontSizeSliderToMinTo().waitFor(new TabFontSizeCondition(tab, "\"7px\""));
-        verify(mTestObserver, times(2)).onChangeFontScaling(anyFloat());
+        dialog.setFontSizeSliderToMinTo().waitFor(new TabFontSizeCondition(tab, fontSizeMin));
+        verify(mTestObserver, atLeastOnce()).onChangeFontScaling(anyFloat());
 
         // TODO(crbug.com/40125950): change font family as well.
 

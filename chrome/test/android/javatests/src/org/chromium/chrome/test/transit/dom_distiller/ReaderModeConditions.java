@@ -60,7 +60,7 @@ public class ReaderModeConditions {
 
         @Override
         public String buildDescription() {
-            return "Page's background color is " + mExpectedFontSizeString;
+            return "Page's font size is " + mExpectedFontSizeString;
         }
     }
 

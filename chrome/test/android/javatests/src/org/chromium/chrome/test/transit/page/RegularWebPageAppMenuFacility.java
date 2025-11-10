@@ -44,6 +44,7 @@ public class RegularWebPageAppMenuFacility extends PageAppMenuFacility<WebPageSt
         declareMenuItem(items, SHARE_ID);
         declareMenuItem(items, FIND_IN_PAGE_ID);
         declarePossibleStubMenuItem(items, TRANSLATE_ID);
+        mReaderMode = declarePossibleMenuItem(items, READER_MODE_ID);
 
         // At most one of these exist.
         declarePossibleStubMenuItem(items, ADD_TO_HOME_SCREEN_UNIVERSAL_INSTALL_ID);
