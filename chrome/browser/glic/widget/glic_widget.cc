@@ -52,10 +52,6 @@
 #include "chrome/browser/shell_integration_linux.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "ui/wm/core/shadow_types.h"
-#endif
-
 namespace glic {
 namespace {
 
@@ -288,11 +284,7 @@ std::unique_ptr<GlicWidget> GlicWidget::Create(views::WidgetDelegate* delegate,
   params.wayland_app_id = params.wm_class_class + "-glic";
 #endif  // BUILDFLAG(IS_LINUX)
 #if BUILDFLAG(IS_CHROMEOS)
-  // crbug.com/450670079: Shadows on ChromeOS are specified by the Ash WM (at
-  // Chrome level, natively), whereas on Windows and Mac, they are specified by
-  // the Desktop WM (OS level, as a user application).
   params.shadow_type = views::Widget::InitParams::ShadowType::kDrop;
-  params.shadow_elevation = wm::kShadowElevationActiveWindow;
 
   // crbug.com/452137970: Rounded Corners conflict with the shadow backdrop so
   // disable them for now. Since they need some more investigation work/special
