@@ -3484,6 +3484,12 @@ deps = {
       'condition': 'checkout_src_internal',
   },
 
+  'src/chrome/browser/cpu_performance_internal': {
+      'url': Var('chrome_git') + '/chrome/browser/cpu_performance_internal.git' + '@' +
+        '535741498d440ae5518159e23b523553e3279974',
+      'condition': 'checkout_src_internal',
+  },
+
   'src/chrome/browser/enterprise/connectors/internal': {
       'url': Var('chrome_git') + '/chrome/browser/enterprise/connectors/internal.git' + '@' +
         '7fd7c8dd496740724d0024408ae7a96298e34aa2',

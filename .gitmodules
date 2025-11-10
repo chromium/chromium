@@ -640,6 +640,10 @@
 	path = chrome/browser/actor/resources/internal
 	url = https://chrome-internal.googlesource.com/chrome/browser/actor/resources/internal
 	gclient-condition = checkout_src_internal
+[submodule "chrome/browser/cpu_performance_internal"]
+	path = chrome/browser/cpu_performance_internal
+	url = https://chrome-internal.googlesource.com/chrome/browser/cpu_performance_internal
+	gclient-condition = checkout_src_internal
 [submodule "chrome/browser/enterprise/connectors/internal"]
 	path = chrome/browser/enterprise/connectors/internal
 	url = https://chrome-internal.googlesource.com/chrome/browser/enterprise/connectors/internal

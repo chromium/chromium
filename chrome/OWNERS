@@ -67,6 +67,7 @@ per-file chrome_branch_deps.json=chrome-official-brancher@chops-service-accounts
 per-file app/theme/default_100_percent/google_chrome=*
 per-file app/theme/default_200_percent/google_chrome=*
 per-file app/theme/google_chrome=*
+per-file browser/cpu_performance_internal=*
 per-file browser/enterprise/connectors/internal=*
 per-file browser/google/linkdoctor_internal=*
 per-file browser/internal=*
