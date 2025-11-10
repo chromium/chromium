@@ -171,8 +171,9 @@ class EventBasedStatusReportingServiceTest : public testing::Test {
 
   void TearDown() override {
     service_->Shutdown();
-    arc_app_test_.TearDown();
+    arc_app_test_.PreProfileTearDown();
     profile_.reset();
+    arc_app_test_.PostProfileTearDown();
     SystemClockClient::Shutdown();
     chromeos::PowerManagerClient::Shutdown();
 

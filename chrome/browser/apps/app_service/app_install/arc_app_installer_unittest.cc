@@ -23,8 +23,9 @@ class ArcAppInstallerTest : public testing::Test {
   }
 
   void TearDown() override {
-    arc_app_test_.TearDown();
+    arc_app_test_.PreProfileTearDown();
     profile_.reset();
+    arc_app_test_.PostProfileTearDown();
   }
 
  protected:

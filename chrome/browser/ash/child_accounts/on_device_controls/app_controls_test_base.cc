@@ -39,9 +39,9 @@ void AppControlsTestBase::SetUp() {
 }
 
 void AppControlsTestBase::TearDown() {
-  arc_app_test_.TearDown();
-
+  arc_app_test_.PreProfileTearDown();
   ChromeViewsTestBase::TearDown();
+  arc_app_test_.PostProfileTearDown();
 }
 
 std::string AppControlsTestBase::InstallArcApp(const std::string& package_name,

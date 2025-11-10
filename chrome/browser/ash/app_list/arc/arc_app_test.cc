@@ -99,10 +99,16 @@ ArcAppTest::ArcAppTest(UserManagerMode user_manager_mode)
   CreateFakeAppsAndPackages();
 }
 
-ArcAppTest::~ArcAppTest() = default;
+ArcAppTest::~ArcAppTest() {
+  CHECK(!need_pre_profile_teardown_);
+  CHECK(!need_post_profile_teardown_);
+}
 
 void ArcAppTest::PreProfileSetUp() {
+  CHECK(!is_pre_profile_setup_called_);
   is_pre_profile_setup_called_ = true;
+  CHECK(!need_post_profile_teardown_);
+  need_post_profile_teardown_ = true;
 
   arc::SetArcAvailableCommandLineForTesting(
       base::CommandLine::ForCurrentProcess());
@@ -121,6 +127,8 @@ void ArcAppTest::PreProfileSetUp() {
 
   // ChromeBrowserMainPartsAsh::PreMainMessageLoopRun:
   arc_service_manager_ = std::make_unique<arc::ArcServiceManager>();
+  // ConciergeClient must outlive ArcSessionManager.
+  CHECK(ash::ConciergeClient::Get());
   arc_session_manager_ =
       arc::CreateTestArcSessionManager(std::make_unique<arc::ArcSessionRunner>(
           base::BindRepeating(arc::FakeArcSession::Create)));
@@ -130,6 +138,8 @@ void ArcAppTest::PreProfileSetUp() {
 
 void ArcAppTest::PostProfileSetUp(Profile* profile) {
   CHECK(is_pre_profile_setup_called_);
+  CHECK(!need_pre_profile_teardown_);
+  need_pre_profile_teardown_ = true;
 
   DCHECK(!profile_);
   profile_ = profile;
@@ -346,7 +356,10 @@ void ArcAppTest::CreateFakeAppsAndPackages() {
   }
 }
 
-void ArcAppTest::TearDown() {
+void ArcAppTest::PreProfileTearDown() {
+  CHECK(need_pre_profile_teardown_);
+  need_pre_profile_teardown_ = false;
+
   if (compatibility_mode_instance_) {
     compatibility_mode_instance_.reset();
   }
@@ -370,7 +383,16 @@ void ArcAppTest::TearDown() {
   arc::ResetArcAllowedCheckForTesting(profile_);
 
   profile_ = nullptr;
+}
 
+void ArcAppTest::PostProfileTearDown() {
+  CHECK(!need_pre_profile_teardown_);
+  CHECK(need_post_profile_teardown_);
+  need_post_profile_teardown_ = false;
+  is_pre_profile_setup_called_ = false;
+
+  // ConciergeClient must outlive ArcSessionManager.
+  CHECK(ash::ConciergeClient::Get());
   arc_session_manager_.reset();
   if (!persist_service_manager_) {
     arc_service_manager_.reset();
@@ -385,8 +407,6 @@ void ArcAppTest::TearDown() {
     ash::ConciergeClient::Shutdown();
     concierge_client_initialized_ = false;
   }
-
-  is_pre_profile_setup_called_ = false;
 }
 
 void ArcAppTest::StopArcInstance() {

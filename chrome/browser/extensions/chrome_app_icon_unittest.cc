@@ -322,7 +322,9 @@ TEST_F(ChromeAppIconTest, ChromeBadging) {
   arc_app_test.WaitForRemoveAllApps();
   EXPECT_TRUE(AreEqual(reference_icon.image_skia(), image_before_badging));
 
-  arc_app_test.TearDown();
+  arc_app_test.PreProfileTearDown();
+  // TODO(crbug.com/454468678): This should be called after profile is deleted.
+  arc_app_test.PostProfileTearDown();
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS)

@@ -143,9 +143,11 @@ class ArcAppPerformanceTracingTest : public BrowserWithTestWindowTest {
     shell_root_surface_.reset();
 
     tracing_helper_.TearDown();
-    arc_app_test_.TearDown();
+    arc_app_test_.PreProfileTearDown();
 
     BrowserWithTestWindowTest::TearDown();
+
+    arc_app_test_.PostProfileTearDown();
   }
 
   TestingProfile* CreateProfile(const std::string& profile_name) override {

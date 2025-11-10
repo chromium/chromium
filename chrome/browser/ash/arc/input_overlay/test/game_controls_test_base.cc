@@ -78,8 +78,9 @@ void GameControlsTestBase::TearDown() {
 
   arc_test_input_overlay_manager_->Shutdown();
   arc_test_input_overlay_manager_.reset();
-  arc_app_test_.TearDown();
+  arc_app_test_.PreProfileTearDown();
   profile_.reset();
+  arc_app_test_.PostProfileTearDown();
   ChromeAshTestBase::TearDown();
 }
 

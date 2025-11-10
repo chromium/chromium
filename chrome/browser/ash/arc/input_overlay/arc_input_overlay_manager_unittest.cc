@@ -191,8 +191,9 @@ class ArcInputOverlayManagerTest : public ChromeAshTestBase {
   }
 
   void TearDown() override {
-    arc_app_test_.TearDown();
+    arc_app_test_.PreProfileTearDown();
     profile_.reset();
+    arc_app_test_.PostProfileTearDown();
     arc_test_input_overlay_manager_->Shutdown();
     arc_test_input_overlay_manager_.reset();
     ChromeAshTestBase::TearDown();

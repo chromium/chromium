@@ -49,14 +49,25 @@ class ArcAppTest {
 
   virtual ~ArcAppTest();
 
+  // Tests should call the SetUp / TearDown methods in the following order.
+  // 1. PreProfileSetUp
+  // 2. (create a profile)
+  // 3. PostProfileSetUp
+  // 4. PreProfileTearDown
+  // 5. (delete the profile)
+  // 6. PostProfileTearDown
+
   // Perform initialization that's supposed to be done before profile creation.
+  // `PostProfileTearDown` must also be called afterward.
   void PreProfileSetUp();
-
   // Perform initialization that's supposed to be done after profile creation.
-  // `PreProfileSetUp` must be called before this.
+  // `PreProfileSetUp` must be called beforehand and `PreProfileTearDown` must
+  // be called afterward.
   void PostProfileSetUp(Profile* profile);
-
-  void TearDown();
+  // Perform shutdown that's supposed to be done before profile deletion.
+  void PreProfileTearDown();
+  // Perform shutdown that's supposed to be done after profile deletion.
+  void PostProfileTearDown();
 
   // Public methods to modify AppInstance for unit_tests.
   void StopArcInstance();
@@ -186,6 +197,8 @@ class ArcAppTest {
   bool concierge_client_initialized_ = false;
 
   bool is_pre_profile_setup_called_ = false;
+  bool need_pre_profile_teardown_ = false;
+  bool need_post_profile_teardown_ = false;
 };
 
 #endif  // CHROME_BROWSER_ASH_APP_LIST_ARC_ARC_APP_TEST_H_

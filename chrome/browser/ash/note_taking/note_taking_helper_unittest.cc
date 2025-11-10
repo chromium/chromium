@@ -200,9 +200,10 @@ class NoteTakingHelperTest : public BrowserWithTestWindowTest {
       NoteTakingHelper::Shutdown();
       intent_helper_host_.reset();
       file_system_bridge_.reset();
-      arc_app_test_.TearDown();
+      arc_app_test_.PreProfileTearDown();
     }
     BrowserWithTestWindowTest::TearDown();
+    arc_app_test_.PostProfileTearDown();
     SessionManagerClient::Shutdown();
     ash::ProfileHelper::SetProfileToUserForTestingEnabled(false);
   }

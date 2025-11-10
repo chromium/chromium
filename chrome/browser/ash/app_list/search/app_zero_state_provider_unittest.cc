@@ -161,7 +161,9 @@ TEST_F(AppZeroStateProviderTest, DefaultRecommendedAppRanking) {
                 ",OsSettings,Help,Play Store,Camera",
             RunZeroStateSearch());
 
-  arc_app_test().TearDown();
+  arc_app_test().PreProfileTearDown();
+  // TODO(crbug.com/454468678): This should be called after profile is deleted.
+  arc_app_test().PostProfileTearDown();
 }
 
 TEST_F(AppZeroStateProviderTest, FetchUnlaunchedRecommendations) {

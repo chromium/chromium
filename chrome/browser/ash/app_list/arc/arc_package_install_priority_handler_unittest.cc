@@ -32,7 +32,9 @@ class ArcPackageInstallPiroirtyHanlderTest : public testing::Test {
 
   void TearDown() override {
     arc_app_test_->StopArcInstance();
-    arc_app_test_->TearDown();
+    arc_app_test_->PreProfileTearDown();
+    testing_profile_.reset();
+    arc_app_test_->PostProfileTearDown();
   }
 
   ArcAppTest* arc_app_test() { return arc_app_test_.get(); }

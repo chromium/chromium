@@ -159,9 +159,9 @@ class ArcAppInstallEventLogCollectorTest : public testing::Test {
 
   void TearDown() override {
     network_handler_test_helper_.reset();
-    arc_app_test_.TearDown();
-
+    arc_app_test_.PreProfileTearDown();
     profile_.reset();
+    arc_app_test_.PostProfileTearDown();
     chromeos::PowerManagerClient::Shutdown();
   }
 

@@ -48,9 +48,11 @@ void OverviewTracingTestBase::TearDown() {
 
   wm_helper_.reset();
 
-  arc_app_test_.TearDown();
+  arc_app_test_.PreProfileTearDown();
 
   profile_.reset();
+
+  arc_app_test_.PostProfileTearDown();
 
   ChromeAshTestBase::TearDown();
 }

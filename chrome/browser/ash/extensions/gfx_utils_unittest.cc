@@ -47,8 +47,9 @@ class DualBadgeMapTest : public ExtensionServiceTestBase {
   }
 
   void TearDown() override {
-    arc_app_test_.TearDown();
+    arc_app_test_.PreProfileTearDown();
     extensions::ExtensionServiceTestBase::TearDown();
+    arc_app_test_.PostProfileTearDown();
   }
 
   Profile* profile() { return profile_.get(); }

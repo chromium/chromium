@@ -86,12 +86,13 @@ class ArcKeyPermissionsManagerDelegateTest : public testing::Test {
   }
 
   void TearDown() override {
-    arc_app_test_.TearDown();
+    arc_app_test_.PreProfileTearDown();
     if (primary_user_delegate_) {
       ShutDownPrimaryUserDelegate();
     }
     system_delegate_.reset();
     profile_.reset();
+    arc_app_test_.PostProfileTearDown();
   }
 
  protected:

@@ -81,8 +81,9 @@ class WebApkManagerTest : public apps::AppRegistryCache::Observer,
 
   void TearDown() override {
     webapk_manager_.reset();
-    arc_app_test_.TearDown();
+    arc_app_test_.PreProfileTearDown();
     profile_.reset();
+    arc_app_test_.PostProfileTearDown();
   }
 
   void StartWebApkManager() {

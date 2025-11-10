@@ -78,9 +78,9 @@ class ArcUiAvailabilityReporterTest : public testing::Test {
     intent_helper_host_.reset();
     intent_helper_instance_.reset();
     app_instance_.reset();
-    arc_app_test_.TearDown();
+    arc_app_test_.PreProfileTearDown();
     profile_.reset();
-    // arc_service_manager_.reset();
+    arc_app_test_.PostProfileTearDown();
   }
 
   TestingProfile* profile() { return profile_.get(); }

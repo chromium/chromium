@@ -732,10 +732,13 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
     browser_controller_.reset();
     wallpaper_controller_client_.reset();
     if (auto_start_arc_app_test_) {
-      arc_app_test_.TearDown();
+      arc_app_test_.PreProfileTearDown();
     }
     multi_user_window_manager_browser_adaptor_.reset();
     BrowserWithTestWindowTest::TearDown();
+    if (auto_start_arc_app_test_) {
+      arc_app_test_.PostProfileTearDown();
+    }
     ash::ConciergeClient::Shutdown();
     app_list::AppListSyncableServiceFactory::SetUseInTesting(false);
   }
@@ -4757,7 +4760,9 @@ TEST_F(ChromeShelfControllerArcDefaultAppsTest, DISABLED_DefaultApps) {
   EXPECT_TRUE(
       ValidateImageIsFullyLoaded(shelf_controller_->GetItem(shelf_id)->image));
 
-  arc_app_test_.TearDown();
+  arc_app_test_.PreProfileTearDown();
+  // TODO(crbug.com/454468678): This should be called after profile is deleted.
+  arc_app_test_.PostProfileTearDown();
 }
 
 TEST_F(ChromeShelfControllerArcDefaultAppsTest, PlayStoreDeferredLaunch) {
@@ -4788,7 +4793,9 @@ TEST_F(ChromeShelfControllerArcDefaultAppsTest, PlayStoreDeferredLaunch) {
   EXPECT_TRUE(shelf_controller_->GetShelfSpinnerController()->HasApp(
       arc::kPlayStoreAppId));
 
-  arc_app_test_.TearDown();
+  arc_app_test_.PreProfileTearDown();
+  // TODO(crbug.com/454468678): This should be called after profile is deleted.
+  arc_app_test_.PostProfileTearDown();
 }
 
 TEST_F(ChromeShelfControllerArcDefaultAppsTest, PlayStoreLaunchMetric) {
@@ -4846,7 +4853,9 @@ TEST_F(ChromeShelfControllerArcDefaultAppsTest, PlayStoreLaunchMetric) {
   EXPECT_EQ(1, histogram->SnapshotDelta()->TotalCount());
   play_store_window->Close();
 
-  arc_app_test_.TearDown();
+  arc_app_test_.PreProfileTearDown();
+  // TODO(crbug.com/454468678): This should be called after profile is deleted.
+  arc_app_test_.PostProfileTearDown();
 }
 
 TEST_F(ChromeShelfControllerArcDefaultAppsTest, DeferredLaunchMetric) {
@@ -4890,7 +4899,9 @@ TEST_F(ChromeShelfControllerArcDefaultAppsTest, DeferredLaunchMetric) {
   ASSERT_EQ(1, samples->TotalCount());
   play_store_window->Close();
 
-  arc_app_test_.TearDown();
+  arc_app_test_.PreProfileTearDown();
+  // TODO(crbug.com/454468678): This should be called after profile is deleted.
+  arc_app_test_.PostProfileTearDown();
 }
 
 // Tests that the Play Store is not visible in AOSP image and visible in default
@@ -4910,7 +4921,9 @@ TEST_P(ChromeShelfControllerPlayStoreAvailabilityTest, Visible) {
   // If the Play Store available, it is pinned by default.
   EXPECT_EQ(arc::IsPlayStoreAvailable(),
             shelf_controller_->IsAppPinned(arc::kPlayStoreAppId));
-  arc_app_test_.TearDown();
+  arc_app_test_.PreProfileTearDown();
+  // TODO(crbug.com/454468678): This should be called after profile is deleted.
+  arc_app_test_.PostProfileTearDown();
 }
 
 // Checks the case when several app items have the same ordinal position (which

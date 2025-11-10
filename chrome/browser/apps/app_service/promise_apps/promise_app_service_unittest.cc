@@ -66,8 +66,9 @@ class PromiseAppServiceTest : public testing::Test,
   void TearDown() override {
     service_ = nullptr;
     arc_app_test_.StopArcInstance();
-    arc_app_test_.TearDown();
+    arc_app_test_.PreProfileTearDown();
     profile_.reset();
+    arc_app_test_.PostProfileTearDown();
     url_loader_factory_.reset();
   }
 

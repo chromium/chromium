@@ -138,7 +138,10 @@ class AppServiceWrapperTest : public ::testing::Test {
 
   void TearDown() override {
     tested_wrapper().RemoveObserver(&test_listener_);
-    arc_app_test_.TearDown();
+    arc_app_test_.PreProfileTearDown();
+    tested_wrapper_.reset();
+    profile_.reset();
+    arc_app_test_.PostProfileTearDown();
   }
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }

@@ -62,7 +62,9 @@ class ArcSystemStateObservationTest : public testing::Test {
 
   ~ArcSystemStateObservationTest() override {
     observation_.reset();
-    arc_app_test().TearDown();
+    arc_app_test().PreProfileTearDown();
+    profile_.reset();
+    arc_app_test().PostProfileTearDown();
   }
 
   ArcSystemStateObservation* observation() { return observation_.get(); }

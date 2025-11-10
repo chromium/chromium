@@ -147,7 +147,9 @@ TEST_F(AppSearchProviderTest, Basic) {
   result = RunQuery("app2");
   EXPECT_TRUE(result == "Packaged App 2,Fake App 2" ||
               result == "Fake App 2,Packaged App 2");
-  arc_app_test().TearDown();
+  arc_app_test().PreProfileTearDown();
+  // TODO(crbug.com/454468678): This should be called after profile is deleted.
+  arc_app_test().PostProfileTearDown();
 }
 
 TEST_F(AppSearchProviderTest, NonLatinLocale) {
@@ -197,7 +199,9 @@ TEST_F(AppSearchProviderTest, NonLatinLocale) {
   result = RunQuery("апликација 1");
   EXPECT_TRUE(result == "Тестна апликација 1,Лажна апликација 1" ||
               result == "Лажна апликација 1,Тестна апликација 1");
-  arc_app_test().TearDown();
+  arc_app_test().PreProfileTearDown();
+  // TODO(crbug.com/454468678): This should be called after profile is deleted.
+  arc_app_test().PostProfileTearDown();
 
   base::i18n::SetICUDefaultLocale("en");
 }
@@ -271,7 +275,9 @@ TEST_F(AppSearchProviderTest, InstallUninstallArc) {
   // Let uninstall code to clean up.
   base::RunLoop().RunUntilIdle();
 
-  arc_app_test().TearDown();
+  arc_app_test().PreProfileTearDown();
+  // TODO(crbug.com/454468678): This should be called after profile is deleted.
+  arc_app_test().PostProfileTearDown();
 }
 
 TEST_F(AppSearchProviderTest, NoResultsAfterClearingSearch) {
@@ -334,7 +340,9 @@ TEST_F(AppSearchProviderTest, FilterDuplicate) {
 
   InitializeSearchProvider();
   EXPECT_EQ(kGmailExtensionName, RunQuery(kGmailQuery));
-  arc_app_test().TearDown();
+  arc_app_test().PreProfileTearDown();
+  // TODO(crbug.com/454468678): This should be called after profile is deleted.
+  arc_app_test().PostProfileTearDown();
 }
 
 TEST_F(AppSearchProviderTest, WebApp) {
@@ -657,7 +665,9 @@ TEST_P(AppSearchProviderWithArcAppInstallType,
   EXPECT_EQ(std::string(kRankingInternalAppName) + "," +
                 std::string(kRankingNormalAppName),
             RunQuery(kRankingAppQuery));
-  arc_app_test().TearDown();
+  arc_app_test().PreProfileTearDown();
+  // TODO(crbug.com/454468678): This should be called after profile is deleted.
+  arc_app_test().PostProfileTearDown();
 }
 
 INSTANTIATE_TEST_SUITE_P(All, AppSearchProviderOemAppTest, ::testing::Bool());

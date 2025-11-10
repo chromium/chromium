@@ -203,8 +203,11 @@ class ArcAppsPublisherTest : public testing::Test {
   }
 
   void TearDown() override {
+    arc_file_system_bridge_.reset();
     arc_app_test_.StopArcInstance();
-    arc_app_test_.TearDown();
+    arc_app_test_.PreProfileTearDown();
+    profile_.reset();
+    arc_app_test_.PostProfileTearDown();
   }
 
   virtual std::unique_ptr<TestingProfile> MakeProfile() {

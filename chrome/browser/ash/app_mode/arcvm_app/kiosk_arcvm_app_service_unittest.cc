@@ -118,9 +118,10 @@ class KioskArcvmAppServiceTest : public testing::Test {
   }
 
   void TearDown() override {
-    arc_app_test_.TearDown();
+    arc_app_test_.PreProfileTearDown();
     ash_test_helper_.TearDown();
     profile_.reset();
+    arc_app_test_.PostProfileTearDown();
   }
 
   TestingProfile* profile() { return profile_.get(); }

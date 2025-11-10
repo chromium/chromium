@@ -47,8 +47,9 @@ class ArcPlayStoreSearchProviderTest : public AppListTestBase {
 
   void TearDown() override {
     controller_.reset();
-    arc_app_test_.TearDown();
+    arc_app_test_.PreProfileTearDown();
     AppListTestBase::TearDown();
+    arc_app_test_.PostProfileTearDown();
   }
 
  protected:

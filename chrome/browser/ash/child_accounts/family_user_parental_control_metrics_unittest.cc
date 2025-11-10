@@ -268,7 +268,9 @@ TEST_F(FamilyUserParentalControlMetricsTest, AppTimeLimitMetrics) {
       ChildUserService::GetTimeLimitPolicyTypesHistogramNameForTest(),
       /*expected_count=*/2);
 
-  arc_app_test_.TearDown();
+  arc_app_test_.PreProfileTearDown();
+  // TODO(crbug.com/454468678): This should be called after profile is deleted.
+  arc_app_test_.PostProfileTearDown();
 }
 
 }  // namespace ash

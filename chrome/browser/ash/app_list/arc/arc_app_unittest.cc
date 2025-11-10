@@ -523,10 +523,11 @@ class ArcAppModelBuilderTest : public extensions::ExtensionServiceTestBase,
 
   void TearDown() override {
     shelf_controller_.reset();
-    arc_app_test_.TearDown();
+    arc_app_test_.PreProfileTearDown();
     ResetBuilder();
     extensions::ExtensionServiceTestBase::TearDown();
     browser_controller_.reset();
+    arc_app_test_.PostProfileTearDown();
   }
 
   ArcState GetArcState() const { return GetParam(); }
@@ -953,8 +954,11 @@ class ArcAppModelBuilderRecreate : public ArcAppModelBuilderTest {
   }
 
   void StopArc() {
-    arc_app_test()->TearDown();
+    arc_app_test()->PreProfileTearDown();
     RemoveArcApps(profile_.get(), model_updater());
+    // TODO(crbug.com/454468678): This should be called after profile is
+    // deleted.
+    arc_app_test()->PostProfileTearDown();
     ResetBuilder();
   }
 

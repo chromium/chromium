@@ -144,7 +144,12 @@ class WebApkInstallTaskTest : public testing::Test {
         &arc_features_getter_);
   }
 
-  void TearDown() override { arc_app_test_.TearDown(); }
+  void TearDown() override {
+    arc_app_test_.PreProfileTearDown();
+    profile_ = nullptr;
+    profile_manager_->DeleteAllTestingProfiles();
+    arc_app_test_.PostProfileTearDown();
+  }
 
   bool InstallWebApk(std::string app_id) {
     apps::WebApkInstallTask install_task(profile(), app_id);

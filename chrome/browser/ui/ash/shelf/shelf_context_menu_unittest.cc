@@ -250,11 +250,14 @@ class ShelfContextMenuTest : public ChromeAshTestBase {
 
   void TearDown() override {
     shelf_controller_.reset();
-    arc_app_test_.TearDown();
+    arc_app_test_.PreProfileTearDown();
     crostini_helper_.reset();
 
     user_manager_->OnUserProfileWillBeDestroyed(kPrimaryUserId);
     profile_ = nullptr;
+    profile_manager_->DeleteAllTestingProfiles();
+
+    arc_app_test_.PostProfileTearDown();
 
     browser_controller_.reset();
     ChromeAshTestBase::TearDown();

@@ -545,7 +545,9 @@ TEST_F(AppContextMenuTest, ArcMenu) {
   menu = GetContextMenuModel(item.get());
   EXPECT_EQ(nullptr, menu);
 
-  arc_app_test.TearDown();
+  arc_app_test.PreProfileTearDown();
+  // TODO(crbug.com/454468678): This should be called after profile is deleted.
+  arc_app_test.PostProfileTearDown();
 }
 
 TEST_F(AppContextMenuTest, ArcMenuShortcut) {
@@ -614,7 +616,9 @@ TEST_F(AppContextMenuTest, ArcMenuShortcut) {
       EXPECT_EQ(ui::PADDED_SEPARATOR, menu->GetSeparatorTypeAt(index));
   }
 
-  arc_app_test.TearDown();
+  arc_app_test.PreProfileTearDown();
+  // TODO(crbug.com/454468678): This should be called after profile is deleted.
+  arc_app_test.PostProfileTearDown();
 }
 
 TEST_F(AppContextMenuTest, ArcMenuStickyItem) {
@@ -658,7 +662,9 @@ TEST_F(AppContextMenuTest, ArcMenuStickyItem) {
     }
   }
 
-  arc_app_test.TearDown();
+  arc_app_test.PreProfileTearDown();
+  // TODO(crbug.com/454468678): This should be called after profile is deleted.
+  arc_app_test.PostProfileTearDown();
 }
 
 // In suspended state app does not have launch item.
@@ -698,7 +704,9 @@ TEST_F(AppContextMenuTest, ArcMenuSuspendedItem) {
       EXPECT_EQ(ui::PADDED_SEPARATOR, menu->GetSeparatorTypeAt(index));
   }
 
-  arc_app_test.TearDown();
+  arc_app_test.PreProfileTearDown();
+  // TODO(crbug.com/454468678): This should be called after profile is deleted.
+  arc_app_test.PostProfileTearDown();
 }
 
 TEST_F(AppContextMenuTest, CommandIdsMatchEnumsForHistograms) {

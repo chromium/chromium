@@ -885,7 +885,10 @@ class AppManagementPageHandlerArcTest
 
   void TearDown() override {
     arc_app_test_.StopArcInstance();
-    arc_app_test_.TearDown();
+    arc_app_test_.PreProfileTearDown();
+    // TODO(crbug.com/454468678): This should be called after profile is
+    // deleted, but before TaskEnvironment is deleted.
+    arc_app_test_.PostProfileTearDown();
     AppManagementPageHandlerTestBase::TearDown();
   }
 

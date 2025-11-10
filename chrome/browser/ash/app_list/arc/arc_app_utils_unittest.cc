@@ -55,8 +55,8 @@ TEST_F(ArcAppUtilsTest, GetAndroidId) {
   ArcAppTest arc_app_test_;
   arc_app_test_.PreProfileSetUp();
 
-  TestingProfile testing_profile;
-  arc_app_test_.PostProfileSetUp(&testing_profile);
+  auto testing_profile = std::make_unique<TestingProfile>();
+  arc_app_test_.PostProfileSetUp(testing_profile.get());
 
   constexpr int64_t kAndroidIdForTest = 1000;
   arc_app_test_.app_instance()->set_android_id(kAndroidIdForTest);
@@ -64,5 +64,7 @@ TEST_F(ArcAppUtilsTest, GetAndroidId) {
   EXPECT_TRUE(ok);
   EXPECT_EQ(kAndroidIdForTest, android_id);
 
-  arc_app_test_.TearDown();
+  arc_app_test_.PreProfileTearDown();
+  testing_profile.reset();
+  arc_app_test_.PostProfileTearDown();
 }
