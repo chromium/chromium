@@ -213,8 +213,6 @@ class ArcNotificationContentView::EventForwarder : public ui::EventHandler {
     // always gets focus. Tab key events are consumed by the surface, and tab
     // focus traversal gets stuck at Android notification. To prevent it, always
     // pass tab key event to focus manager of content view.
-    // TODO(yawano): include elements inside Android notification in tab focus
-    // traversal rather than skipping them.
     if (owner_->surface_ &&
         owner_->surface_->GetAXTreeId() != ui::AXTreeIDUnknown() &&
         event->IsKeyEvent()) {
@@ -770,11 +768,9 @@ void ArcNotificationContentView::OnPaint(gfx::Canvas* canvas) {
         item_->GetSnapshot().height(), contents_bounds.x(), contents_bounds.y(),
         contents_bounds.width(), contents_bounds.height(), true /* filter */);
   } else {
-    // Draw a clear background otherwise. The height of the view/ surface and
+    // Draw a clear background otherwise. The height of the view surface and
     // animation buffer size are not exactly synced and user may see the blank
     // area out of the surface.
-    // TODO: This can be removed once both ARC and Chrome notifications have
-    // smooth expansion animations.
     canvas->DrawColor(SK_ColorTRANSPARENT);
   }
 }

@@ -90,10 +90,6 @@ class ArcNotificationView : public message_center::MessageView,
   friend class ArcNotificationViewTest;
   friend class arc::ArcAccessibilityHelperBridgeTest;
 
-  // TODO(yoshiki): Mmove this to message_center::MessageView.
-  void UpdateControlButtonsVisibilityWithNotification(
-      const message_center::Notification& notification);
-
   raw_ptr<ArcNotificationItem> item_;
 
   // The view for the custom content. Owned by view hierarchy.
