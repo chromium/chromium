@@ -20,7 +20,6 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/message_loop/message_pump.h"
-#include "base/profiler/sample_metadata.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
 #include "base/task/common/lazy_now.h"
@@ -148,8 +147,7 @@ class BASE_EXPORT ThreadController {
 #endif
 
   // Initializes features for this class. See `base::features::Init()`.
-  static void InitializeFeatures(
-      features::EmitThreadControllerProfilerMetadata emit_profiler_metadata);
+  static void InitializeFeatures();
 
   // Enables TimeKeeper metrics. `thread_name` will be used as a suffix.
   // Setting `wall_time_based_metrics_enabled_for_testing` adds wall-time
@@ -427,8 +425,6 @@ class BASE_EXPORT ThreadController {
       State state_ = kIdle;
       bool is_nested_;
 
-      bool ShouldRecordSampleMetadata();
-
       // Get full suffix for histogram logging purposes. |duration| should equal
       // TimeDelta() when not applicable.
       std::string GetSuffixForHistogram(TimeDelta duration);
@@ -439,9 +435,6 @@ class BASE_EXPORT ThreadController {
       const raw_ref<TimeKeeper> time_keeper_;
       // Must be set shortly before ~RunLevel.
       raw_ptr<LazyNow> exit_lazy_now_ = nullptr;
-
-      SampleMetadata thread_controller_sample_metadata_;
-      size_t thread_controller_active_id_ = 0;
 
       // Toggles to true when used as RunLevel&& input to construct another
       // RunLevel. This RunLevel's destructor will then no-op.

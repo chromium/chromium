@@ -199,14 +199,12 @@ bool IsReducePPMsEnabled() {
   return g_is_reduce_ppms_enabled.load(std::memory_order_relaxed);
 }
 
-void Init(EmitThreadControllerProfilerMetadata
-              emit_thread_controller_profiler_metadata) {
+void Init() {
   g_is_reduce_ppms_enabled.store(FeatureList::IsEnabled(kReducePPMs),
                                  std::memory_order_relaxed);
 
   sequence_manager::internal::SequenceManagerImpl::InitializeFeatures();
-  sequence_manager::internal::ThreadController::InitializeFeatures(
-      emit_thread_controller_profiler_metadata);
+  sequence_manager::internal::ThreadController::InitializeFeatures();
 
   debug::StackTrace::InitializeFeatures();
   FilePath::InitializeFeatures();

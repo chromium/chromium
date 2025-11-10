@@ -973,11 +973,10 @@ void ChromeMainDelegate::CommonEarlyInitialization() {
     hang_watcher_process_type = base::HangWatcher::ProcessType::kUnknownProcess;
   }
 
-  const bool is_canary_dev = IsCanaryDev();
   const bool emit_crashes =
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)
-      is_canary_dev;
+      IsCanaryDev();
 #else
       false;
 #endif
@@ -985,13 +984,7 @@ void ChromeMainDelegate::CommonEarlyInitialization() {
   base::HangWatcher::InitializeOnMainThread(hang_watcher_process_type,
                                             emit_crashes);
 
-  // Force emitting `ThreadController` profiler metadata on Canary and Dev only,
-  // since they are the only channels where the data is used.
-  base::features::Init(
-      is_canary_dev
-          ? base::features::EmitThreadControllerProfilerMetadata::kForce
-          : base::features::EmitThreadControllerProfilerMetadata::
-                kFeatureDependent);
+  base::features::Init();
 }
 
 #if BUILDFLAG(IS_WIN)

@@ -204,10 +204,8 @@ void IOSChromeMainParts::ApplyFeatureList() {
   // initialization is handled in PreMainMessageLoopRun since it posts tasks.
   SetUpFieldTrials(command_line_variation_ids);
 
-  // Initialize //base features that depend on the `FeatureList`. Don't force
-  // emitting profiler metadata since the profiler doesn't run on iOS.
-  base::features::Init(
-      base::features::EmitThreadControllerProfilerMetadata::kFeatureDependent);
+  // Initialize //base features that depend on the `FeatureList`.
+  base::features::Init();
 }
 
 void IOSChromeMainParts::PreCreateThreads() {

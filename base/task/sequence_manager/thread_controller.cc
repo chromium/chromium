@@ -8,11 +8,11 @@
 #include <string_view>
 
 #include "base/check.h"
-#include "base/feature_list.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -23,18 +23,34 @@
 namespace base::sequence_manager::internal {
 
 namespace {
-// Enable sample metadata recording in this class, if it's currently disabled.
-// Note that even if `kThreadControllerSetsProfilerMetadata` is disabled, sample
-// metadata may still be recorded.
-BASE_FEATURE(kThreadControllerSetsProfilerMetadata,
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Thread safe copy to be updated once feature list is available. This
-// defaults to true to make sure that no metadata is lost on clients that
-// need to record. This leads to some overeporting before feature list
-// initialization on other clients but that's still way better than the current
-// situation which is reporting all the time.
-std::atomic<bool> g_thread_controller_sets_profiler_metadata{true};
+// TODO(crbug.com/458682617): Remove this. It is an artifact of a feature which
+// had the unintentional side-effect of adding a memory barrier at the end of
+// each "ThreadController active". Hiding some TSAN failures which need fixing
+// before we can lift this. It is disabled when FeatureList gets initialized (as
+// the feature was), but FeatureList isn't initialized in all test suites...
+std::atomic<bool> g_fortuitous_memory_barrier_on_sleep{
+#if defined(THREAD_SANITIZER)
+    true};
+#else
+    false};
+#endif
+
+void PerformFortuitousMemoryBarrierIfNecessary() {
+  if (g_fortuitous_memory_barrier_on_sleep.load(std::memory_order_relaxed)) {
+    static constinit std::atomic_uint shared_int{0};
+    // This is the minimum requirement (side-effect from the previous
+    // AutoLock) to reproduce crbug.com/458682617 (and mask TSAN failures).
+    // Toggling this to std::memory_order_relaxed exposes the TSAN failures.
+    // Note: We use `fetch_add` because a `store` isn't allowed to have
+    // `acquire` semantics and we need acquire-release semantics to force any
+    // kind of synchronization. We use an atomic variable instead of a full
+    // `std::atomic_thread_fence` as this only aligns threads which pass
+    // through this code path (as AutoLock would) instead of aligning with
+    // other threads and their own unrelated memory barriers.
+    shared_int.fetch_add(1, std::memory_order_acq_rel);
+  }
+}
 
 // ThreadController interval metrics are mostly of interest for intervals that
 // are not trivially short. Under a certain threshold it's unlikely that
@@ -75,18 +91,10 @@ ThreadController::RunLevelTracker::~RunLevelTracker() {
 }
 
 // static
-void ThreadController::InitializeFeatures(
-    features::EmitThreadControllerProfilerMetadata emit_profiler_metadata) {
-  g_thread_controller_sets_profiler_metadata.store(
-      emit_profiler_metadata ==
-              features::EmitThreadControllerProfilerMetadata::kForce ||
-          base::FeatureList::IsEnabled(kThreadControllerSetsProfilerMetadata),
-      std::memory_order_relaxed);
-}
-
-bool ThreadController::RunLevelTracker::RunLevel::ShouldRecordSampleMetadata() {
-  return g_thread_controller_sets_profiler_metadata.load(
-      std::memory_order_relaxed);
+void ThreadController::InitializeFeatures() {
+  // Disable fortuitous barriers whenever FeatureList is initialized to minimize
+  // the surface where this is applied.
+  g_fortuitous_memory_barrier_on_sleep.store(false, std::memory_order_relaxed);
 }
 
 std::string_view ThreadController::RunLevelTracker::RunLevel::GetThreadName() {
@@ -281,10 +289,7 @@ ThreadController::RunLevelTracker::RunLevel::RunLevel(State initial_state,
                                                       bool is_nested,
                                                       TimeKeeper& time_keeper,
                                                       LazyNow& lazy_now)
-    : is_nested_(is_nested),
-      time_keeper_(time_keeper),
-      thread_controller_sample_metadata_("ThreadController active",
-                                         base::SampleMetadataScope::kThread) {
+    : is_nested_(is_nested), time_keeper_(time_keeper) {
   if (is_nested_) {
     // Stop the current kWorkItem phase now, it will resume after the kNested
     // phase ends.
@@ -303,14 +308,10 @@ ThreadController::RunLevelTracker::RunLevel::~RunLevel() {
       // applied on the final pop().
       time_keeper_->RecordEndOfPhase(kNested, *exit_lazy_now_);
 
-      if (ShouldRecordSampleMetadata()) {
-        // Intentionally ordered after UpdateState(kIdle), reinstantiates
-        // thread_controller_sample_metadata_ when yielding back to a parent
-        // RunLevel (which is active by definition as it is currently running
-        // this one).
-        thread_controller_sample_metadata_.Set(
-            static_cast<int64_t>(++thread_controller_active_id_));
-      }
+      // TODO(crbug.com/458682617): Remove this.
+      // This one is surprisingly necessary as a single racy test fails without
+      // (GamepadServiceSimulationTest.SurfaceIdNotFound).
+      PerformFortuitousMemoryBarrierIfNecessary();
     }
   }
 }
@@ -483,16 +484,9 @@ void ThreadController::RunLevelTracker::RunLevel::UpdateState(
                         time_keeper_->MaybeEmitIncomingWakeupFlow(ctx);
                       });
 
-    if (ShouldRecordSampleMetadata()) {
-      // Overriding the annotation from the previous RunLevel is intentional.
-      // Only the top RunLevel is ever updated, which holds the relevant state.
-      thread_controller_sample_metadata_.Set(
-          static_cast<int64_t>(++thread_controller_active_id_));
-    }
+    PerformFortuitousMemoryBarrierIfNecessary();
   } else {
-    if (ShouldRecordSampleMetadata()) {
-      thread_controller_sample_metadata_.Remove();
-    }
+    PerformFortuitousMemoryBarrierIfNecessary();
 
     LogOnIdleMetrics(lazy_now);
 
