@@ -293,6 +293,18 @@
             "description": "Fired when the button is clicked."
           }
         ]
+      },
+      {
+        "id": "Theme",
+        "type": "string",
+        "description": "Theme used by DevTools.",
+        "enum": [{
+          "name": "default",
+          "description": "Default DevTools theme. This is always the light theme."
+        }, {
+          "name": "dark",
+          "description": "Dark theme."
+        }]
       }
     ],
     "properties": {
@@ -398,18 +410,6 @@
             "description": "A function that is called when the resource has been successfully loaded."
           }
         ]
-      },
-      {
-        "id": "Theme",
-        "type": "string",
-        "description": "Theme used by DevTools.",
-        "enum": [{
-          "name": "default",
-          "description": "Default DevTools theme. This is always the light theme."
-        }, {
-          "name": "dark",
-          "description": "Dark theme."
-        }]
       },
       {
         "name": "setThemeChangeHandler",
