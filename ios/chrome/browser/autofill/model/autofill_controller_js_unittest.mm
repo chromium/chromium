@@ -1149,20 +1149,23 @@ TEST_F(AutofillControllerJsTest, InferLabelFromListItem) {
 
 TEST_F(AutofillControllerJsTest, InferLabelFromTableColumnTD) {
   TestInputElementDataEvaluation(
-      @"__gCrWeb.fill.inferLabelFromTableColumn", @"label",
-      GetTestFormInputElementWithLabelFromTableColumnTD(), @"input");
+      @"__gCrWeb.getRegisteredApi('fill_test_api')."
+      @"getFunction('inferLabelFromTableColumn')",
+      @"label", GetTestFormInputElementWithLabelFromTableColumnTD(), @"input");
 }
 
 TEST_F(AutofillControllerJsTest, InferLabelFromTableColumnTH) {
   TestInputElementDataEvaluation(
-      @"__gCrWeb.fill.inferLabelFromTableColumn", @"label",
-      GetTestFormInputElementWithLabelFromTableColumnTH(), @"input");
+      @"__gCrWeb.getRegisteredApi('fill_test_api')."
+      @"getFunction('inferLabelFromTableColumn')",
+      @"label", GetTestFormInputElementWithLabelFromTableColumnTH(), @"input");
 }
 
 TEST_F(AutofillControllerJsTest, InferLabelFromTableColumnNested) {
   TestInputElementDataEvaluation(
-      @"__gCrWeb.fill.inferLabelFromTableColumn", @"label",
-      GetTestFormInputElementWithLabelFromTableNested(), @"input");
+      @"__gCrWeb.getRegisteredApi('fill_test_api')."
+      @"getFunction('inferLabelFromTableColumn')",
+      @"label", GetTestFormInputElementWithLabelFromTableNested(), @"input");
 }
 
 TEST_F(AutofillControllerJsTest, InferLabelFromTableRow) {
