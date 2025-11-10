@@ -401,6 +401,7 @@ test("components_unittests") {
     "//components/wallet/core/browser:unit_tests",
     "//components/web_resource:unit_tests",
     "//components/webauthn/core/browser:unit_tests",
+    "//components/webauthn/core/browser/import:unit_tests",
     "//components/webdata/common:unit_tests",
     "//components/webdata_services:unit_tests",
     "//components/webui/flags:unit_tests",
