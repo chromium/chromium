@@ -18,8 +18,8 @@
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/url_constants.h"
-#include "components/policy/core/browser/url_blocklist_manager.h"
 #include "components/policy/core/browser/url_list/policy_blocklist_service.h"
+#include "components/policy/core/browser/url_list/url_blocklist_manager.h"
 #include "content/public/common/content_features.h"
 #include "extensions/buildflags/buildflags.h"
 

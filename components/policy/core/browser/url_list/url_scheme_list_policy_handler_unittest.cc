@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/policy/core/browser/url_scheme_list_policy_handler.h"
+#include "components/policy/core/browser/url_list/url_scheme_list_policy_handler.h"
 
 #include <memory>
 #include <utility>
@@ -46,15 +46,17 @@ class URLSchemeListPolicyHandlerTest : public testing::Test {
                   POLICY_SOURCE_CLOUD, std::move(value), nullptr);
   }
   bool CheckPolicy(const std::string& key, std::optional<base::Value> value) {
-    if (value)
+    if (value) {
       SetPolicy(key, value.value().Clone());
+    }
     return handler_->CheckPolicySettings(policies_, &errors_);
   }
   void ApplyPolicies() { handler_->ApplyPolicySettings(policies_, &prefs_); }
   base::Value GetPolicyValueWithEntries(size_t len) {
     base::Value::List blocklist;
-    for (size_t i = 0; i < len; ++i)
+    for (size_t i = 0; i < len; ++i) {
       blocklist.Append(kTestUrl);
+    }
     return base::Value(std::move(blocklist));
   }
 
@@ -221,12 +223,14 @@ TEST_F(URLSchemeListPolicyHandlerTest, ValidatePolicyEntry) {
   std::vector<std::string> good{"http://*", "http:*",
                                 "ws://example.org/component.js", "127.0.0.1:1",
                                 "127.0.0.1:65535"};
-  for (const auto& it : good)
+  for (const auto& it : good) {
     EXPECT_TRUE(handler_->ValidatePolicyEntry(&it));
+  }
 
   std::vector<std::string> bad{"wsgi:///rancom,org/", "127.0.0.1:65536"};
-  for (const auto& it : bad)
+  for (const auto& it : bad) {
     EXPECT_FALSE(handler_->ValidatePolicyEntry(&it));
+  }
 }
 
 }  // namespace policy

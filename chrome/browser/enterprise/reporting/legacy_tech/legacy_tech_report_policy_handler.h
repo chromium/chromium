@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_REPORTING_LEGACY_TECH_LEGACY_TECH_REPORT_POLICY_HANDLER_H_
 #define CHROME_BROWSER_ENTERPRISE_REPORTING_LEGACY_TECH_LEGACY_TECH_REPORT_POLICY_HANDLER_H_
 
-#include "components/policy/core/browser/url_scheme_list_policy_handler.h"
+#include "components/policy/core/browser/url_list/url_scheme_list_policy_handler.h"
 
 namespace enterprise_reporting {
 

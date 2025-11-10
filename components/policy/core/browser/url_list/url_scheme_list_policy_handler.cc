@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/policy/core/browser/url_scheme_list_policy_handler.h"
+#include "components/policy/core/browser/url_list/url_scheme_list_policy_handler.h"
 
 #include <memory>
 #include <utility>
@@ -32,13 +32,15 @@ URLSchemeListPolicyHandler::~URLSchemeListPolicyHandler() = default;
 
 bool URLSchemeListPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
                                                      PolicyErrorMap* errors) {
-  if (!TypeCheckingPolicyHandler::CheckPolicySettings(policies, errors))
+  if (!TypeCheckingPolicyHandler::CheckPolicySettings(policies, errors)) {
     return false;
+  }
 
   const base::Value* schemes =
       policies.GetValue(policy_name(), base::Value::Type::LIST);
-  if (!schemes || schemes->GetList().empty())
+  if (!schemes || schemes->GetList().empty()) {
     return true;
+  }
 
   // Filters more than |url_util::kMaxFiltersPerPolicy| are ignored, add a
   // warning message.
@@ -50,8 +52,9 @@ bool URLSchemeListPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
 
   std::vector<std::string> invalid_policies;
   for (const auto& entry : schemes->GetList()) {
-    if (!ValidatePolicyEntry(entry.GetIfString()))
+    if (!ValidatePolicyEntry(entry.GetIfString())) {
       invalid_policies.push_back(entry.GetString());
+    }
   }
 
   if (!invalid_policies.empty()) {
@@ -66,16 +69,18 @@ void URLSchemeListPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
                                                      PrefValueMap* prefs) {
   const base::Value* schemes =
       policies.GetValue(policy_name(), base::Value::Type::LIST);
-  if (!schemes)
+  if (!schemes) {
     return;
+  }
   base::Value::List filtered_schemes;
   for (const auto& entry : schemes->GetList()) {
     if (filtered_schemes.size() >= max_items()) {
       break;
     }
 
-    if (ValidatePolicyEntry(entry.GetIfString()))
+    if (ValidatePolicyEntry(entry.GetIfString())) {
       filtered_schemes.Append(entry.Clone());
+    }
   }
 
   prefs->SetValue(pref_path_, base::Value(std::move(filtered_schemes)));

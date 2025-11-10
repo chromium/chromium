@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/policy/core/browser/url_blocklist_manager.h"
+#include "components/policy/core/browser/url_list/url_blocklist_manager.h"
 
 #include <stdint.h>
 
@@ -85,8 +85,9 @@ class URLBlocklistManagerTest : public testing::Test {
   }
 
   void TearDown() override {
-    if (blocklist_manager_)
+    if (blocklist_manager_) {
       task_environment_.RunUntilIdle();
+    }
     blocklist_manager_.reset();
   }
 

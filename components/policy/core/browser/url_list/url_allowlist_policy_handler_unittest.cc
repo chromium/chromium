@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/policy/core/browser/url_allowlist_policy_handler.h"
+#include "components/policy/core/browser/url_list/url_allowlist_policy_handler.h"
 
 #include <memory>
 #include <utility>
@@ -50,8 +50,9 @@ class URLAllowlistPolicyHandlerTest : public testing::Test {
   }
   base::Value GetURLAllowlistPolicyValueWithEntries(size_t len) {
     base::Value::List allowlist;
-    for (size_t i = 0; i < len; ++i)
+    for (size_t i = 0; i < len; ++i) {
       allowlist.Append(kTestAllowlistValue);
+    }
     return base::Value(std::move(allowlist));
   }
 

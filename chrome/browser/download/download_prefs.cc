@@ -36,7 +36,7 @@
 #include "chrome/common/pref_names.h"
 #include "components/download/public/common/download_features.h"
 #include "components/download/public/common/download_item.h"
-#include "components/policy/core/browser/url_blocklist_manager.h"
+#include "components/policy/core/browser/url_list/url_blocklist_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/buildflags.h"

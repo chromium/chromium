@@ -11,7 +11,7 @@
 #include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/boca/proto/bundle.pb.h"
-#include "components/policy/core/browser/url_blocklist_manager.h"
+#include "components/policy/core/browser/url_list/url_blocklist_manager.h"
 #include "components/sessions/core/session_id.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"

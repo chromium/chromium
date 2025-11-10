@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/policy/core/browser/url_blocklist_policy_handler.h"
+#include "components/policy/core/browser/url_list/url_blocklist_policy_handler.h"
 
 #include <memory>
 #include <utility>
@@ -59,8 +59,9 @@ class URLBlocklistPolicyHandlerTest : public testing::Test {
   }
   base::Value GetURLBlocklistPolicyValueWithEntries(size_t len) {
     base::Value::List blocklist;
-    for (size_t i = 0; i < len; ++i)
+    for (size_t i = 0; i < len; ++i) {
       blocklist.Append(kTestBlocklistValue);
+    }
     return base::Value(std::move(blocklist));
   }
 

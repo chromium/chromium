@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/policy/core/browser/url_blocklist_manager.h"
+#include "components/policy/core/browser/url_list/url_blocklist_manager.h"
 
 #include <stdint.h>
 
@@ -22,7 +22,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"
-#include "components/policy/core/browser/url_blocklist_policy_handler.h"
+#include "components/policy/core/browser/url_list/url_blocklist_policy_handler.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
@@ -75,10 +75,12 @@ constexpr char kIosNtpHost[] = "newtab";
 std::unique_ptr<URLBlocklist> BuildBlocklist(const base::Value::List* block,
                                              const base::Value::List* allow) {
   auto blocklist = std::make_unique<URLBlocklist>();
-  if (block)
+  if (block) {
     blocklist->Block(*block);
-  if (allow)
+  }
+  if (allow) {
     blocklist->Allow(*allow);
+  }
   return blocklist;
 }
 
@@ -86,8 +88,9 @@ const base::Value::List* GetPrefList(const PrefService* pref_service,
                                      std::optional<std::string> pref_path) {
   DCHECK(pref_service);
 
-  if (!pref_path)
+  if (!pref_path) {
     return nullptr;
+  }
 
   DCHECK(!pref_path->empty());
 
@@ -99,8 +102,9 @@ const base::Value::List* GetPrefList(const PrefService* pref_service,
 bool BypassBlocklistWildcardForURL(const GURL& url) {
   const std::string& scheme = url.GetScheme();
   for (const char* bypass_scheme : kBypassBlocklistWildcardForSchemes) {
-    if (scheme == bypass_scheme)
+    if (scheme == bypass_scheme) {
       return true;
+    }
   }
 #if BUILDFLAG(IS_IOS)
   // Compare the chrome scheme and host against the chrome://newtab version of
@@ -299,8 +303,9 @@ URLBlocklistManager::URLBlocklistManager(
       default_blocklist_source_->GetBlocklistSpec();
   const base::Value::List* allow =
       default_blocklist_source_->GetAllowlistSpec();
-  if (block || allow)
+  if (block || allow) {
     SetBlocklist(BuildBlocklist(block, allow));
+  }
 }
 
 URLBlocklistManager::~URLBlocklistManager() {

@@ -8,7 +8,7 @@
 #include "base/callback_list.h"
 #include "base/no_destructor.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/policy/core/browser/url_blocklist_manager.h"
+#include "components/policy/core/browser/url_list/url_blocklist_manager.h"
 
 class GURL;
 class PrefService;

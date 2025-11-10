@@ -9,7 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/policy/core/browser/url_blocklist_manager.h"
+#include "components/policy/core/browser/url_list/url_blocklist_manager.h"
 #include "components/policy/policy_export.h"
 
 // PolicyBlocklistService provides a way for us to access URLBlocklistManager,

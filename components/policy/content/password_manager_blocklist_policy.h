@@ -10,7 +10,7 @@
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/policy/core/browser/url_blocklist_manager.h"
+#include "components/policy/core/browser/url_list/url_blocklist_manager.h"
 
 // PasswordManagerBlocklistPolicy and
 // PasswordManagerBlocklistPolicyFactory provide a way for us to access

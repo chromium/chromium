@@ -36,7 +36,7 @@
 #import "components/policy/core/browser/configuration_policy_handler_list.h"
 #import "components/policy/core/browser/configuration_policy_handler_parameters.h"
 #import "components/policy/core/browser/gen_ai_default_settings_policy_handler.h"
-#import "components/policy/core/browser/url_blocklist_policy_handler.h"
+#import "components/policy/core/browser/url_list/url_blocklist_policy_handler.h"
 #import "components/policy/core/common/policy_pref_names.h"
 #import "components/policy/policy_constants.h"
 #import "components/safe_browsing/core/common/safe_browsing_policy_handler.h"
