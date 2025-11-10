@@ -270,11 +270,7 @@ bool BrowserViewLayoutImpl::ContentsSeparatorInTopContainer() const {
   return false;
 }
 
-gfx::Size BrowserViewLayoutImpl::GetMinimumSize(const views::View* host) const {
-  // This is a simplified version of the same method in
-  // `BrowserViewLayoutImplOld` that assumes a standard browser.
-  const gfx::Size tabstrip_size =
-      views().tab_strip_region_view->GetMinimumSize();
+gfx::Size BrowserViewLayoutImpl::GetMinimumMainAreaSize() const {
   const gfx::Size toolbar_size = views().toolbar->GetMinimumSize();
   const gfx::Size bookmark_bar_size =
       (views().bookmark_bar && views().bookmark_bar->GetVisible())
@@ -289,21 +285,48 @@ gfx::Size BrowserViewLayoutImpl::GetMinimumSize(const views::View* host) const {
           ? views().contents_height_side_panel->GetMinimumSize()
           : gfx::Size();
 
-  const int min_height =
-      tabstrip_size.height() + toolbar_size.height() +
-      bookmark_bar_size.height() + infobar_container_size.height() +
-      std::max({contents_size.height(),
-                contents_height_side_panel_size.height(), 1});
+  const int width = std::max({toolbar_size.width(), bookmark_bar_size.width(),
+                              infobar_container_size.width(),
+                              contents_height_side_panel_size.width() +
+                                  kContentsContainerMinimumWidth});
+  const int height = toolbar_size.height() + bookmark_bar_size.height() +
+                     infobar_container_size.height() +
+                     std::max(contents_size.height(),
+                              contents_height_side_panel_size.height());
+  return gfx::Size(width, height);
+}
 
-  // TODO(https://crbug.com/454583671): This probably needs to be more
-  // sophisticated to handle separators, etc. but it's unwieldy to do it without
-  // better decomposition of the layout.
-  const int min_width =
-      std::max({tabstrip_size.width(), toolbar_size.width(),
-                bookmark_bar_size.width(), infobar_container_size.width(),
-                (kContentsContainerMinimumWidth +
-                 contents_height_side_panel_size.width()),
+gfx::Size BrowserViewLayoutImpl::GetMinimumSize(const views::View* host) const {
+  // This is a simplified version of the same method in
+  // `BrowserViewLayoutImplOld` that assumes a standard browser.
+  const gfx::Size tabstrip_size =
+      views().tab_strip_region_view->GetMinimumSize();
+  const gfx::Size toolbar_height_side_panel_size =
+      views().toolbar_height_side_panel &&
+              views().toolbar_height_side_panel->GetVisible()
+          ? views().toolbar_height_side_panel->GetMinimumSize()
+          : gfx::Size();
+  const gfx::Size main_area_size = GetMinimumMainAreaSize();
+
+  int min_height =
+      tabstrip_size.height() + std::max(toolbar_height_side_panel_size.height(),
+                                        main_area_size.height());
+
+  // This assumes a horizontal tabstrip. There is also a hard minimum on the
+  // width of the browser defined by `kMainBrowserContentsMinimumWidth`.
+  int min_width =
+      std::max({tabstrip_size.width(),
+                toolbar_height_side_panel_size.width() + main_area_size.width(),
                 kMainBrowserContentsMinimumWidth});
+
+  // Maybe adjust for additional padding when toolbar height side panel is
+  // visible.
+  if (!toolbar_height_side_panel_size.IsEmpty()) {
+    const auto padding =
+        GetLayoutConstant(LayoutConstant::TOOLBAR_HEIGHT_SIDE_PANEL_INSET);
+    min_height += 2 * padding;
+    min_width += padding;
+  }
 
   return gfx::Size(min_width, min_height);
 }
@@ -361,10 +384,6 @@ BrowserViewLayoutImpl::CalculateProposedLayout(
   // much.
   const bool has_toolbar_height_side_panel = IsParentedToAndVisible(
       views().toolbar_height_side_panel, views().browser_view);
-  const double toolbar_height_reveal_amount =
-      has_toolbar_height_side_panel
-          ? views().toolbar_height_side_panel->GetAnimationValue()
-          : 0.0;
 
   // Lay out the main area background.
   if (IsParentedTo(views().main_background_region, views().browser_view)) {
@@ -377,16 +396,31 @@ BrowserViewLayoutImpl::CalculateProposedLayout(
   // The insets for main region and its containing views when the
   // toolbar_height_side_panel is visible.
   const int container_inset_padding =
-      GetLayoutConstant(LayoutConstant::TOOLBAR_HEIGHT_SIDE_PANEL_INSET) +
-      views::Separator::kThickness;
+      GetLayoutConstant(LayoutConstant::TOOLBAR_HEIGHT_SIDE_PANEL_INSET);
 
   // Lay out toolbar-height side panel.
+  const double toolbar_height_reveal_amount =
+      has_toolbar_height_side_panel
+          ? views().toolbar_height_side_panel->GetAnimationValue()
+          : 0.0;
   if (IsParentedToAndVisible(views().toolbar_height_side_panel,
                              views().browser_view)) {
-    const int width =
+    // Side panel needs to fit next to the other stuff in the browser, but it
+    // always gets at least its minimum width.
+    int target_width =
         views().toolbar_height_side_panel->GetPreferredSize().width();
-    const int visible_width = base::ClampFloor(
-        width * views().toolbar_height_side_panel->GetAnimationValue());
+    target_width = std::min(
+        target_width,
+        params.visual_client_area.width() -
+            (GetMinimumMainAreaSize().width() + container_inset_padding));
+    target_width =
+        std::max(target_width,
+                 views().toolbar_height_side_panel->GetMinimumSize().width());
+
+    // Not all of the width may be visible on the screen.
+    const int visible_width =
+        base::ClampFloor(target_width * toolbar_height_reveal_amount);
+
     // Add `container_inset_padding` to the top of the toolbar height side panel
     // to separate it from the tab strip. SidePanel draws the top on top of the
     // top content separator and some units of the toolbar by default, which is
@@ -396,7 +430,8 @@ BrowserViewLayoutImpl::CalculateProposedLayout(
         params.visual_client_area.y() +
             base::ClampCeil(
                 params.leading_exclusion.ContentWithPadding().height()));
-    gfx::Rect toolbar_height_bounds(x - (width - visible_width), top, width,
+    gfx::Rect toolbar_height_bounds(x - (target_width - visible_width), top,
+                                    target_width,
                                     params.visual_client_area.bottom() - top);
     x = toolbar_height_bounds.right();
     layout.AddChild(views().toolbar_height_side_panel, toolbar_height_bounds);

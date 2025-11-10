@@ -56,6 +56,10 @@ class BrowserViewLayoutImpl : public BrowserViewLayout {
   // Returns whether the top contents separator should go in the top container.
   bool ContentsSeparatorInTopContainer() const;
 
+  // Returns the minimum size of all toolbar-height content except the toolbar-
+  // height side panel.
+  gfx::Size GetMinimumMainAreaSize() const;
+
   // BrowserViewLayout overrides:
   gfx::Point GetDialogPosition(const gfx::Size& dialog_size) const override;
   gfx::Size GetMaximumDialogSize() const override;
