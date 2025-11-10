@@ -1169,6 +1169,11 @@ std::pair<base::TimeDelta, base::TimeDelta> RendererBlinkPlatformImpl::
 #endif  // BUILDFLAG(IS_ANDROID)
 
 void RendererBlinkPlatformImpl::OnV8HeapLastResortGC() {
+  // In --single-process mode, the RendererMemoryCoordinatorPolicy does not run.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kSingleProcess)) {
+    return;
+  }
   RendererMemoryCoordinatorPolicy::Get().OnV8HeapLastResortGC();
 }
 
