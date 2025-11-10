@@ -605,17 +605,6 @@ void PrefetchMatchResolver::MaybeUnblockForUnmatch(
     PrefetchPotentialCandidateServingResult serving_result) {
   TRACE_EVENT("loading", "PrefetchMatchResolver::MaybeUnblockForUnmatch");
 
-  if (PreloadServingMetricsCapsule::IsFeatureEnabled()) {
-    if (&prefetch_container == prefetch_ahead_of_prerender_for_metrics_.get()) {
-      prefetch_match_metrics_
-          ->prefetch_potential_candidate_serving_result_ahead_of_prerender =
-          serving_result;
-      prefetch_match_metrics_->prefetch_container_metrics_ahead_of_prerender =
-          std::make_unique<PrefetchContainerMetrics>(
-              prefetch_container.GetPrefetchContainerMetrics());
-    }
-  }
-
   UnregisterCandidate(prefetch_container.key(), /*is_served=*/false,
                       serving_result);
 
