@@ -209,14 +209,13 @@ int ListItemOrdinal::CalcValue(const Node& item_node) const {
         base_value += previous.ordinal->Value(*previous.node);
       }
     } else if (o_list_element) {
-      base_value += o_list_element->StartConsideringItemCount();
-      base_value += (is_reversed ? 1 : -1);
+      base_value += o_list_element->InitialCounter();
     }
   } else {
     if (NodeAndOrdinal previous = PreviousListItem(list, &item_node)) {
       base_value = previous.ordinal->Value(*previous.node);
     } else if (o_list_element) {
-      base_value = o_list_element->StartConsideringItemCount();
+      base_value = o_list_element->InitialCounter();
       base_value += (is_reversed ? 1 : -1);
     }
   }
@@ -307,17 +306,79 @@ void ListItemOrdinal::ClearExplicitValue(const Node& item_node) {
   InvalidateAfter(EnclosingList(&item_node), &item_node);
 }
 
-unsigned ListItemOrdinal::ItemCountForOrderedList(
+int ListItemOrdinal::InitialCounterForReversedOrderedList(
     const HTMLOListElement* list_node) {
   DCHECK(list_node);
-
-  unsigned item_count = 0;
-  for (NodeAndOrdinal list_item = NextListItem(list_node); list_item;
-       list_item = NextListItem(list_node, list_item.node)) {
-    item_count++;
+  int initial_counter = 0;
+  if (!RuntimeEnabledFeatures::CSSListCounterAccountingEnabled()) {
+    for (NodeAndOrdinal list_item = NextListItem(list_node); list_item;
+         list_item = NextListItem(list_node, list_item.node)) {
+      initial_counter++;
+    }
+    return initial_counter;
   }
 
-  return item_count;
+  DCHECK(list_node->IsReversed());
+  const AtomicString list_item_identifier("list-item");
+  const Node* current = LayoutTreeBuilderTraversal::FirstChild(*list_node);
+  int last_non_zero_increment_negated = 0;
+  while (current) {
+    if (IsListOwner(*current)) {
+      // We've found a nested, independent list: nothing to do here.
+      current =
+          LayoutTreeBuilderTraversal::NextSkippingChildren(*current, list_node);
+      continue;
+    }
+    if (!current->IsElementNode()) {
+      current = LayoutTreeBuilderTraversal::Next(*current, list_node);
+      continue;
+    }
+
+    // https://github.com/w3c/csswg-drafts/issues/6797
+    //
+    // 1. Let |increment_negated| to el’s counter-increment integer value for
+    // this counter, multiplied by -1.
+    int increment_negated = 0;
+    if (IsListItem(*current)) {
+      // The reversed list has `counter-increment: -1`, so value which
+      // multiplied by -1 is 1.
+      increment_negated = 1;
+    }
+    CounterDirectives directives;
+    if (const ComputedStyle* style = To<Element>(current)->GetComputedStyle()) {
+      directives = style->GetCounterDirectives(list_item_identifier);
+    }
+    if (directives.IsIncrement()) {
+      increment_negated = -directives.IncrementValue();
+    }
+
+    // 2. If |increment_negated| is not zero, set
+    // |last_non_zero_increment_negated| to |increment_negated|.
+    if (increment_negated != 0) {
+      last_non_zero_increment_negated = increment_negated;
+    }
+
+    // 3. If el sets this counter with counter-set, then add that integer
+    // value to |initial_counter| and break this loop.
+    if (directives.IsSet()) {
+      initial_counter += directives.SetValue();
+      break;
+    }
+    if (const ListItemOrdinal* list_item_ordinal = Get(*current)) {
+      if (const std::optional<int> explicit_value =
+              list_item_ordinal->ExplicitValue()) {
+        initial_counter += explicit_value.value();
+        break;
+      }
+    }
+
+    // 4. Add |increment_negated| to |initial_counter|.
+    initial_counter += increment_negated;
+    current = LayoutTreeBuilderTraversal::Next(*current, list_node);
+  }
+  initial_counter += last_non_zero_increment_negated;
+
+  return initial_counter;
 }
 
 void ListItemOrdinal::InvalidateAllItemsForOrderedList(

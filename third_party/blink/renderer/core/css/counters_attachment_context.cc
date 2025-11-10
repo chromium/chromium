@@ -244,8 +244,13 @@ void CountersAttachmentContext::MaybeCreateListItemCounter(
     return;
   }
   if (auto* olist = DynamicTo<HTMLOListElement>(element)) {
-    int value = base::ClampAdd(olist->StartConsideringItemCount(),
-                               olist->IsReversed() ? 1 : -1);
+    int value;
+    if (RuntimeEnabledFeatures::CSSListCounterAccountingEnabled()) {
+      value = base::saturated_cast<int>(olist->InitialCounter());
+    } else {
+      value =
+          base::ClampAdd(olist->InitialCounter(), olist->IsReversed() ? 1 : -1);
+    }
     CreateCounter(*layout_object, list_item_, value);
     return;
   }
