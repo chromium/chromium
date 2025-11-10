@@ -147,6 +147,8 @@ void ActorUiStateManager::OnActorTaskStateChange(
     case ActorTask::State::kCancelled:
     case ActorTask::State::kFinished:
       ui_tab_state = GetCompletedUiTabState();
+      // TODO(crbug.com/458391262) revisit or cleanup implementation here for
+      // m144.
       NotifyActorTaskStopped(task_id, new_task_state, title);
       break;
   }

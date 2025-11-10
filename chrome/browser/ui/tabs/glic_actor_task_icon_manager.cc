@@ -47,6 +47,7 @@ void GlicActorTaskIconManager::RegisterSubscriptions() {
           ->RegisterActorTaskStateChange(base::BindRepeating(
               &GlicActorTaskIconManager::OnActorTaskStateUpdate,
               base::Unretained(this))));
+  // TODO(crbug.com/458391262) revisit or cleanup implementation here for m144.
   callback_subscriptions_.push_back(
       actor::ActorKeyedService::Get(profile_)
           ->GetActorUiStateManager()
@@ -79,6 +80,7 @@ void GlicActorTaskIconManager::OnActorTaskStateUpdate(actor::TaskId task_id) {
   }
 }
 
+// TODO(crbug.com/458391262) revisit or cleanup implementation here for m144.
 void GlicActorTaskIconManager::OnActorTaskStopped(
     actor::TaskId task_id,
     actor::ActorTask::State final_state,
@@ -90,6 +92,7 @@ void GlicActorTaskIconManager::OnActorTaskStopped(
   }
 }
 
+// TODO(crbug.com/458391262) revisit or cleanup implementation here for m144.
 void GlicActorTaskIconManager::ClearStoppedTasks() {
   has_unprocessed_completed_tasks_ = false;
   has_unprocessed_failed_tasks_ = false;
@@ -154,15 +157,29 @@ void GlicActorTaskIconManager::UpdateTaskNudge() {
       });
 
   ActorTaskNudgeState old_state = current_actor_task_nudge_state_;
-  if (!paused_or_yielded_actor_tasks.empty()) {
-    current_actor_task_nudge_state_.text =
-        ActorTaskNudgeState::Text::kNeedsAttention;
-  } else if (has_unprocessed_completed_tasks_) {
-    current_actor_task_nudge_state_.text =
-        ActorTaskNudgeState::Text::kCompleteTasks;
-  } else {
-    // If no tasks needing attention or completed, hide the nudge.
-    current_actor_task_nudge_state_.text = ActorTaskNudgeState::Text::kDefault;
+  if (base::FeatureList::IsEnabled(features::kGlicActorUiNudgeRedesign)) {
+    if (!paused_or_yielded_actor_tasks.empty()) {
+      current_actor_task_nudge_state_.text =
+          ActorTaskNudgeState::Text::kNeedsAttention;
+    } else {
+      // If no tasks needing attention, hide the nudge.
+      current_actor_task_nudge_state_.text =
+          ActorTaskNudgeState::Text::kDefault;
+    }
+  }
+  // TODO(crbug.com/458391262) revisit or cleanup implementation here for m144.
+  else {
+    if (!paused_or_yielded_actor_tasks.empty()) {
+      current_actor_task_nudge_state_.text =
+          ActorTaskNudgeState::Text::kNeedsAttention;
+    } else if (has_unprocessed_completed_tasks_) {
+      current_actor_task_nudge_state_.text =
+          ActorTaskNudgeState::Text::kCompleteTasks;
+    } else {
+      // If no tasks needing attention or completed, hide the nudge.
+      current_actor_task_nudge_state_.text =
+          ActorTaskNudgeState::Text::kDefault;
+    }
   }
 
   if (old_state != current_actor_task_nudge_state_) {
