@@ -23,6 +23,7 @@
 #include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_browsertest_util.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/startup/startup_types.h"
 #include "chrome/browser/ui/tab_contents/chrome_web_contents_view_delegate.h"
@@ -41,6 +42,7 @@
 #include "components/custom_handlers/protocol_handler_registry.h"
 #include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations.h"
 #include "components/privacy_sandbox/privacy_sandbox_attestations/scoped_privacy_sandbox_attestations.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -1187,6 +1189,15 @@ class GlicInteractiveContextMenuTest
     glic::test::InteractiveGlicTest::SetUpOnMainThread();
     ASSERT_TRUE(embedded_https_test_server().Start());
     host_resolver()->AddRule("*", "127.0.0.1");
+    signin::IdentityManager* identity_manager =
+        IdentityManagerFactory::GetForProfile(browser()->profile());
+    signin::MakePrimaryAccountAvailable(identity_manager, "foo@google.com",
+                                        signin::ConsentLevel::kSignin);
+    signin::SetRefreshTokenForPrimaryAccount(identity_manager);
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(::switches::kGlicDev);
   }
 
   bool UseMultiInstance() const { return GetParam(); }
