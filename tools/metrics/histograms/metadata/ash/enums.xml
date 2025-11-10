@@ -591,6 +591,185 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="2" label="Calendar"/>
 </enum>
 
+<enum name="DemoModeApp">
+  <summary>
+    Pre-installed app or other window type available in Chrome OS Demo Mode.
+  </summary>
+  <int value="0" label="Browser"/>
+  <int value="1" label="Other Chrome app"/>
+  <int value="2" label="Other ARC app"/>
+  <int value="3" label="Other window"/>
+  <int value="4" label="Highlights"/>
+  <int value="5" label="Asphalt 8"/>
+  <int value="6" label="Camera"/>
+  <int value="7" label="Files"/>
+  <int value="8" label="Get Help"/>
+  <int value="9" label="Google Keep (Chrome app)"/>
+  <int value="10" label="Google Photos"/>
+  <int value="11" label="Google Sheets (Android app)"/>
+  <int value="12" label="Google Slides (Android app)"/>
+  <int value="13" label="Infinite Painter"/>
+  <int value="14" label="MyScript Nebo"/>
+  <int value="15" label="Play Store"/>
+  <int value="16" label="Squid"/>
+  <int value="17" label="Web Store"/>
+  <int value="18" label="YouTube"/>
+  <int value="19" label="Screensaver"/>
+  <int value="20" label="Asphalt 9"/>
+  <int value="21" label="Stardew Valley"/>
+  <int value="22" label="KineMaster"/>
+  <int value="23" label="Google Keep (Android app)"/>
+  <int value="24" label="AutoCAD"/>
+  <int value="25" label="Pixlr"/>
+  <int value="26" label="Calculator"/>
+  <int value="27" label="Calendar"/>
+  <int value="28" label="Google Docs (Chrome app)"/>
+  <int value="29" label="Google Sheets (Chrome app)"/>
+  <int value="30" label="Google Slides (Chrome app)"/>
+  <int value="31" label="YouTube (PWA)"/>
+  <int value="32" label="Google Docs (PWA)"/>
+  <int value="33" label="Google Meet (PWA)"/>
+  <int value="34" label="Google Sheets (PWA)"/>
+  <int value="35" label="Spotify (PWA)"/>
+  <int value="36" label="BeFunky (PWA)"/>
+  <int value="37" label="Clipchamp (PWA)"/>
+  <int value="38" label="GeForce NOW (PWA)"/>
+  <int value="39" label="Zoom (PWA)"/>
+  <int value="40" label="Sumo (PWA)"/>
+  <int value="41" label="Adobe Spark (PWA)"/>
+  <int value="42" label="Minecraft"/>
+  <int value="43" label="Gemini"/>
+</enum>
+
+<enum name="DemoModeAppLaunchSource">
+  <summary>Source of App Launches in Demo Mode.</summary>
+  <int value="0" label="Shelf"/>
+  <int value="1" label="App List"/>
+  <int value="2" label="Highlights App">
+    Obsolete, Highlights App is renamed to Demo Mode App due to the conversion
+    to SWA.
+  </int>
+  <int value="3" label="Demo Mode App"/>
+  <int value="4" label="App List Search Result"/>
+</enum>
+
+<enum name="DemoModeHighlightsAction">
+  <int value="0" label="Home button click"/>
+  <int value="1" label="Easy button click"/>
+  <int value="2" label="Fast button click"/>
+  <int value="3" label="Powerful button click"/>
+  <int value="4" label="Secure button click"/>
+  <int value="5" label="Display button click"/>
+  <int value="6" label="Keyboard button click"/>
+  <int value="7" label="Graphics button click"/>
+  <int value="8" label="Game button click"/>
+  <int value="9" label="Peripherals button click"/>
+  <int value="10" label="Performance button click"/>
+  <int value="11" label="Apps button click"/>
+  <int value="12" label="ChromeOS button click"/>
+  <int value="13" label="Google AI button click"/>
+  <int value="14" label="Easy To Use button click"/>
+  <int value="15" label="Google Built-in button click"/>
+</enum>
+
+<enum name="DemoModeHighlightsError">
+  <int value="0" label="Attract loop break timestamp is invalid"/>
+  <int value="1" label="Page view duration is invalid"/>
+  <int value="2" label="Details page view duration is invalid"/>
+</enum>
+
+<enum name="DemoModeIdleLogoutWarningEvent">
+  <int value="0" label="Shown"/>
+  <int value="1" label="Canceled"/>
+</enum>
+
+<enum name="DemoModeResourcesRemovalReason">
+  <int value="0" label="Low available disk space"/>
+  <int value="1" label="Device enterprise enrolled"/>
+  <int value="2" label="Regular user activity detected"/>
+</enum>
+
+<enum name="DemoModeResourcesRemovalResult">
+  <int value="0" label="Successfully removed"/>
+  <int value="1" label="Not found on disk (deprecated)"/>
+  <int value="2" label="Removal not allowed (should not be reported)"/>
+  <int value="3" label="Resources already removed (should not be reported)"/>
+  <int value="4" label="Removal failed"/>
+</enum>
+
+<enum name="DemoModeSetupComponentLoadingResult">
+  <summary>
+    The result of each component loading during the demo mode setup process.
+  </summary>
+  <int value="0"
+      label="Both the app and the resources components loading success"/>
+  <int value="1"
+      label="The app component loading success and the resources components
+             loading failure"/>
+  <int value="2"
+      label="The app component loading failure and the resources components
+             loading success"/>
+  <int value="3"
+      label="Both the app and the resources components loading failure"/>
+</enum>
+
+<enum name="DemoModeSetupError">
+  <summary>The failure reason of the demo mode setup process error.</summary>
+  <int value="0"
+      label="Cannot perform offline setup without online FRE check."/>
+  <int value="1" label="Cannot load online component."/>
+  <int value="2" label="Invalid request to DMServer."/>
+  <int value="3" label="Request to DMServer failed, because of network error."/>
+  <int value="4" label="DMServer temporary unavailable."/>
+  <int value="5" label="DMServer returned abnormal response code."/>
+  <int value="6" label="DMServer response cannot be decoded."/>
+  <int value="7" label="Device management not supported for demo account."/>
+  <int value="8" label="DMServer cannot find the device."/>
+  <int value="9" label="Invalid device management token."/>
+  <int value="10" label="Serial number invalid or unknown to DMServer."/>
+  <int value="11" label="Device id conflict."/>
+  <int value="12" label="Not enough licenses or domain expired."/>
+  <int value="13" label="Device was deprovisioned."/>
+  <int value="14" label="Device belongs to different domain (FRE)."/>
+  <int value="15"
+      label="Management request could not be signed by the client."/>
+  <int value="16" label="DMServer could not find policy for the device."/>
+  <int value="17" label="ARC disabled for demo domain."/>
+  <int value="18" label="Cannot determine server-backed state keys."/>
+  <int value="19" label="Failed to fetch robot account auth or refresh token."/>
+  <int value="20" label="Failed to fetch robot account refresh token."/>
+  <int value="21" label="Unsuppored device mode returned by the server."/>
+  <int value="22" label="Could not fetch registration cert."/>
+  <int value="23" label="Could not fetch the policy."/>
+  <int value="24" label="Policy validation failed."/>
+  <int value="25" label="Timeout during locking the device."/>
+  <int value="26" label="Error during locking the device."/>
+  <int value="27" label="Device locked to different domain on mode."/>
+  <int value="28" label="Error while installing online policy."/>
+  <int value="29" label="Could not determine device model or serial number."/>
+  <int value="30" label="Could not store DM token."/>
+  <int value="31" label="Unexpected/fatal error."/>
+  <int value="32" label="Too many requests error."/>
+  <int value="33" label="Success. No error."/>
+</enum>
+
+<enum name="DemoModeSignedInAccountRequestResult">
+  <summary>
+    The result of account cleanup request in demo mode signed in experience.
+  </summary>
+  <int value="0" label="Success"/>
+  <int value="1" label="Malformat Http response"/>
+  <int value="2" label="Missing required credential for login"/>
+  <int value="3" label="Empty Http response"/>
+  <int value="4" label="Network error"/>
+  <int value="5" label="Server side error or out of quota"/>
+  <int value="6" label="Cloud policy not connected"/>
+  <int value="7" label="Empty DM Token"/>
+  <int value="8" label="Empty Client ID"/>
+  <int value="9" label="Out of quota retriable"/>
+  <int value="10" label="Out of quota not retriable"/>
+</enum>
+
 <!-- LINT.IfChange(DeskBarVisibility) -->
 
 <enum name="DeskBarVisibility">
@@ -1347,6 +1526,14 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
 <enum name="GroupNotificationType">
   <int value="0" label="Group Parent"/>
   <int value="1" label="Group Child"/>
+</enum>
+
+<enum name="HapticClickSensitivity">
+  <int value="1" label="1"/>
+  <int value="2" label="2"/>
+  <int value="3" label="3"/>
+  <int value="4" label="4"/>
+  <int value="5" label="5"/>
 </enum>
 
 <enum name="HotseatInAppGesture">
