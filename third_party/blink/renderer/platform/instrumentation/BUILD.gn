@@ -12,6 +12,8 @@ blink_platform_sources("instrumentation") {
     "instance_counters.h",
     "instance_counters_memory_dump_provider.cc",
     "instance_counters_memory_dump_provider.h",
+    "memory_coordinator/memory_consumer_registration.cc",
+    "memory_coordinator/memory_consumer_registration.h",
     "memory_pressure_listener.cc",
     "memory_pressure_listener.h",
     "partition_alloc_memory_dump_provider.cc",
