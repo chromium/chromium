@@ -162,7 +162,6 @@ cr-button:focus-visible {
 }
 
 cr-icon {
-  --iron-icon-fill-color: currentColor;
   width: 20px;
   height: 20px;
   flex-shrink: 0;
