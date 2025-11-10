@@ -54,6 +54,12 @@ DISPLAY_CONFIG=${DISPLAY_RES[wxga]}
 
 FEATURES=
 
+# GLIC specific feature flags.
+GLIC_BASIC_FEATURES=Glic,TabstripComboButton,GlicDevelopmentCookies,\
+ContextualCueing,GlicKeyboardShortcutNewBadge,GlicRollout,GlicFreWarming,\
+GlicWindowDragRegions
+GLIC_SIDE_PANEL_FEATURES=GlicSidePanel,GlicMultiInstance
+
 export XDG_RUNTIME_DIR=${USER_TMP_DIR}/xdg1
 
 # Check if the directory contains chrome binary
@@ -198,6 +204,12 @@ do
       ;;
     --wayland-debug)
       export WAYLAND_DEBUG=1
+      ;;
+    --glic)
+      FEATURES=${FEATURES},${GLIC_BASIC_FEATURES}
+      ;;
+    --glic-side-panel)
+      FEATURES=${FEATURES},${GLIC_BASIC_FEATURES},${GLIC_SIDE_PANEL_FEATURES}
       ;;
     --touch-device-id=*)
       id=${1:18}
