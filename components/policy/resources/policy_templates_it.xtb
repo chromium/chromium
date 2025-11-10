@@ -4790,11 +4790,6 @@ Questa policy è stata utilizzata per disattivare l'upgrade automatico dei conte
 <translation id="4274691295133617461">Se la policy viene impostata su 3, i siti web possono richiedere l'accesso di lettura di file e directory nel file system del sistema operativo host tramite l'API file system. Se la policy viene impostata su 2, l'accesso viene negato.
 
       Se non viene configurata, i siti web possono richiedere l'accesso, ma gli utenti possono modificare l'impostazione.</translation>
-<translation id="4274992013893672009">Se questa policy viene impostata su Attivata, ogni volta che dovrebbe essere visualizzato un avviso in <ph name="CHROME_DEVTOOLS_NAME" /> a causa di controlli <ph name="LOCAL_NETWORK_ACCCESS" /> non riusciti, la richiesta principale verrà bloccata.
-
-Se questa policy viene impostata su Disattivata o se non viene configurata, le richieste di <ph name="LOCAL_NETWORK_ACCESS" /> useranno la gestione predefinita di queste richieste.
-
-Visita la pagina https://wicg.github.io/local-network-access/ per conoscere le limitazioni relative a <ph name="LOCAL_NETWORK_ACCESS" />.</translation>
 <translation id="4275048399551500192">Non mostrare i controlli multimediali per le sessioni <ph name="PRODUCT_NAME" /> avviate da altri dispositivi</translation>
 <translation id="4278656834593750050">Attiva i suoni di ricarica</translation>
 <translation id="4281322231545828290">Abilita la modifica automatica delle password</translation>

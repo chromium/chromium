@@ -3461,6 +3461,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6654224358955673568">Gawing pormal</translation>
 <translation id="6654244995031366386">Glass (May Texture)</translation>
 <translation id="6655085656059574817">Kapag pinanatili mong naka-link ang iyong account, matutulungan ka nitong makapagbayad nang mas mabilis gamit ang <ph name="BNPL_ISSUER_NAME" />, pero puwede mo itong i-unlink sa pamamagitan ng pagpunta sa <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /></translation>
+<translation id="6656935431494847393">May impormasyong tulad ng mga booking ng flight at impormasyon ng sasakyan</translation>
 <translation id="6657585470893396449">Password</translation>
 <translation id="6659246032834639189">Mababa ang presyong ito</translation>
 <translation id="6660413144148052430">lokasyon</translation>
@@ -4675,6 +4676,7 @@ Mga karagdagang detalye:
 <translation id="865255447216708819">Back Print Film</translation>
 <translation id="8654126188050905496">55 x 91 mm</translation>
 <translation id="8660780831677950176">Madalas mong bisitahin sa ngayon</translation>
+<translation id="8661820486298572829">Na-autofill na code</translation>
 <translation id="8662463432865928030">Mga Komersyal na Ari-arian</translation>
 <translation id="8663226718884576429">Buod ng Order, <ph name="TOTAL_LABEL" />, Higit pang Detalye</translation>
 <translation id="8663909737634214500">Optical Disc</translation>
@@ -4756,6 +4758,7 @@ Mga karagdagang detalye:
 <translation id="8781278378794969337">Button na Isalin ang page, i-activate para maisalin ang page na ito gamit ang Google Translate</translation>
 <translation id="8785658048882205566">Mga motorsiklo</translation>
 <translation id="8790007591277257123">&amp;Gawing muli ang pagtanggal</translation>
+<translation id="8790668801880409584">I-save at ilagay ang impormasyon sa paglalakbay</translation>
 <translation id="8792272652220298572">Plastic (Glossy)</translation>
 <translation id="8792621596287649091">Maaari kang mawalan ng access sa iyong account sa <ph name="ORG_NAME" /> o manakawan ng pagkakakilanlan. Inirerekomenda ng Chromium na palitan ang iyong password ngayon.</translation>
 <translation id="8792626944327216835">mikropono</translation>

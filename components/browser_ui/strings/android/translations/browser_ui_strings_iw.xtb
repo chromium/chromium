@@ -218,7 +218,6 @@
 <translation id="3285500645985761267">אישור לאתרים קשורים לראות את הפעילות שלך בקבוצה</translation>
 <translation id="3295019059349372795">פרק 11: עיר הברקת המופלאה של ארץ עוץ</translation>
 <translation id="3295602654194328831">הסתרת פרטים</translation>
-<translation id="3328801116991980348">פרטי אתר</translation>
 <translation id="3333961966071413176">כל אנשי הקשר</translation>
 <translation id="3360338140203645771">למחוק את רמות הזום שנשמרו?</translation>
 <translation id="3362437373201486687">‏מתבצע חיפוש של מכשירי Bluetooth</translation>
@@ -243,6 +242,7 @@
 <translation id="3611658447322220736">אתרים שנסגרו לאחרונה יכולים לסיים שליחה וקבלה של נתונים</translation>
 <translation id="3619294456800709762">אתרים יכולים להפעיל את מצב 'תמונה בתוך תמונה' אוטומטית</translation>
 <translation id="3628308229821498208">הצעות לחיפוש</translation>
+<translation id="363748948745453283">המערכת משתמשת במיקום המשוער</translation>
 <translation id="3641456520301071208">אתרים יכולים לבקש הרשאת גישה למיקומך</translation>
 <translation id="3658847490588580244">גיליון תחתון של דפדפן ברירת המחדל</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{אתר אחד (<ph name="RWS_MEMBERS_COUNT" />) בקבוצת האתרים של <ph name="RWS_OWNER" /> שיש לו הרשאה לראות את הפעילות שלך בקבוצה}one{‫<ph name="RWS_MEMBERS_COUNT" /> אתרים בקבוצת האתרים של <ph name="RWS_OWNER" /> שיש להם הרשאה לראות את הפעילות שלך בקבוצה}two{‫<ph name="RWS_MEMBERS_COUNT" /> אתרים בקבוצת האתרים של <ph name="RWS_OWNER" /> שיש להם הרשאה לראות את הפעילות שלך בקבוצה}other{‫<ph name="RWS_MEMBERS_COUNT" /> אתרים בקבוצת האתרים של <ph name="RWS_OWNER" /> שיש להם הרשאה לראות את הפעילות שלך בקבוצה}}</translation>

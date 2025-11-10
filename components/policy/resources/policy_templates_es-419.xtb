@@ -4897,14 +4897,6 @@ Esta política se usó para inhabilitar la actualización automática de conteni
 <translation id="4274691295133617461">Si estableces la política en 3, los sitios web podrán solicitar acceso de lectura a archivos y directorios en el sistema de archivos del sistema operativo del host a través de la API de File System. Si la estableces en 2, se rechazará el acceso.
 
       Si no la estableces, los sitios web podrán solicitar acceso, pero los usuarios también podrán cambiar esta configuración.</translation>
-<translation id="4274992013893672009">Si habilitas esta política, cada vez que se deba mostrar
-una advertencia en <ph name="CHROME_DEVTOOLS_NAME" /> debido a errores en las verificaciones de <ph name="LOCAL_NETWORK_ACCCESS" />, se
-bloqueará la solicitud principal.
-
-Si la inhabilitas o no la estableces, las solicitudes de <ph name="LOCAL_NETWORK_ACCESS" /> usarán el
-manejo predeterminado de estas solicitudes.
-
-Para conocer las restricciones de <ph name="LOCAL_NETWORK_ACCESS" />, consulta https://wicg.github.io/local-network-access/.</translation>
 <translation id="4275048399551500192">No mostrar los controles multimedia de las sesiones de <ph name="PRODUCT_NAME" /> que iniciaron otros dispositivos</translation>
 <translation id="4278656834593750050">Habilitar sonidos de carga</translation>
 <translation id="4281322231545828290">Habilitar el cambio de contraseña automatizado</translation>

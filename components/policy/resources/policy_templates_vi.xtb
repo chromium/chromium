@@ -4760,14 +4760,6 @@ Chính sách này dùng để tắt tính năng tự động nâng cấp nội d
 <translation id="4274691295133617461">Khi bạn đặt chính sách này thành 3, các trang web có thể yêu cầu quyền đọc các tệp và thư mục trong hệ thống tệp của hệ điều hành máy chủ qua API Hệ thống tệp. Khi bạn đặt chính sách này thành 2, quyền truy cập sẽ bị từ chối.
 
       Khi bạn không đặt chính sách này, các trang web có thể yêu cầu quyền truy cập, nhưng người dùng có thể thay đổi tùy chọn cài đặt này.</translation>
-<translation id="4274992013893672009">Nếu bạn đặt chính sách này thành Enabled (Bật) thì bất cứ khi nào một cảnh báo dự kiến sẽ
-xuất hiện trong <ph name="CHROME_DEVTOOLS_NAME" /> do không kiểm tra được <ph name="LOCAL_NETWORK_ACCCESS" />,
-yêu cầu chính sẽ bị chặn.
-
-Nếu bạn đặt chính sách này thành Disabled (Tắt) hoặc không đặt, các yêu cầu <ph name="LOCAL_NETWORK_ACCESS" /> sẽ sử dụng
-chế độ xử lý mặc định cho các yêu cầu này.
-
-Hãy truy cập vào https://wicg.github.io/local-network-access/ để biết các quy định hạn chế về <ph name="LOCAL_NETWORK_ACCESS" />.</translation>
 <translation id="4275048399551500192">Không hiện bộ điều khiển nội dung nghe nhìn cho các phiên <ph name="PRODUCT_NAME" /> do các thiết bị khác bắt đầu</translation>
 <translation id="4278656834593750050">Bật chuông báo khi sạc</translation>
 <translation id="4281322231545828290">Cho phép sử dụng tính năng tự động thay đổi mật khẩu</translation>

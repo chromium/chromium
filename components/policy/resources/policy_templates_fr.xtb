@@ -4682,11 +4682,6 @@ Cette règle a été utilisée pour désactiver la mise à niveau automatique du
 <translation id="4274691295133617461">Si cette règle est définie sur "3", les sites Web peuvent demander l'accès en lecture aux fichiers et répertoires qui figurent dans le système de fichiers du système d'exploitation hôte via l'API File System. Si cette règle est définie sur "2", l'accès est refusé.
 
       Si cette règle n'est pas configurée, les sites Web peuvent demander l'accès. Toutefois, les utilisateurs peuvent modifier ce paramètre.</translation>
-<translation id="4274992013893672009">Lorsque cette règle est activée, la requête principale est bloquée chaque fois qu'un avertissement est censé s'afficher dans les <ph name="CHROME_DEVTOOLS_NAME" /> en raison de l'échec des vérifications <ph name="LOCAL_NETWORK_ACCCESS" />.
-
-Si cette règle est désactivée ou n'est pas configurée, les requêtes <ph name="LOCAL_NETWORK_ACCESS" /> utiliseront le traitement par défaut.
-
-Pour connaître les restrictions concernant <ph name="LOCAL_NETWORK_ACCESS" />, consultez https://wicg.github.io/local-network-access/.</translation>
 <translation id="4275048399551500192">Ne pas afficher les commandes multimédias pour les sessions <ph name="PRODUCT_NAME" /> lancées par d'autres appareils</translation>
 <translation id="4278656834593750050">Activer les sons de recharge</translation>
 <translation id="4281322231545828290">Activer la modification automatique du mot de passe</translation>

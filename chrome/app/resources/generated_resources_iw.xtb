@@ -615,6 +615,7 @@
 <translation id="1414648216875402825">עדכנת לגרסה לא יציבה של <ph name="PRODUCT_NAME" /> המכילה תכונות שנמצאות בתהליך. ייתכנו קריסות מחשב ובאגים לא צפויים. יש להמשיך בזהירות.</translation>
 <translation id="1415708812149920388">גישת הקריאה אל הלוח נדחתה</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> (מזהה תוסף "<ph name="EXTENSION_ID" />") אסור בסוג ההפעלה הזה.</translation>
+<translation id="141720836055413739">לא ניתן להעלות את הקובץ.  כדאי לנסות פורמט קובץ אחר.</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{הסרת האפליקציה}one{הסרת האפליקציות}two{הסרת האפליקציות}other{הסרת האפליקציות}}</translation>
 <translation id="1417497355604638350">שליחה של נתוני אבחון ונתוני שימוש במכשיר.</translation>
 <translation id="1418552618736477642">התראות ואפליקציות</translation>

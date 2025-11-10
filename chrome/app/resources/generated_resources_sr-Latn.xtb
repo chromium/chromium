@@ -4268,7 +4268,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3898768766145818464">Pustite ili pauzirajte video</translation>
 <translation id="389901847090970821">Izaberite tastaturu</translation>
 <translation id="3899457911440165602">Greška pri brisanju sertifikata</translation>
-<translation id="3900568190483700096">Maksimalni broj fajlova koje možete da otpremite, a koje ćete koristiti uz pitanje je <ph name="FILE_LIMIT" /></translation>
 <translation id="3900966090527141178">Izvezite lozinke</translation>
 <translation id="3903187154317825986">Ugrađena tastatura</translation>
 <translation id="3903696968689283281">Informacije o WiFi Direct vlasnicima:</translation>
@@ -11830,7 +11829,6 @@ To može da obuhvata informacije o instaliranom softveru, fajlovima, pregledaču
 <translation id="9140050311673642960">Zaronite u nešto novo</translation>
 <translation id="9140067245205650184">Koristite nepodržanu oznaku funkcije: <ph name="BAD_FLAG" />. Ugrozićete stabilnost i bezbednost.</translation>
 <translation id="914031120300235526">Otključavanje profila nije uspelo</translation>
-<translation id="9142221601471715336">Otpustite fajlove ovde</translation>
 <translation id="9142637293078737510">Pseudonim za sliku</translation>
 <translation id="9143298529634201539">Želite li da uklonite predlog?</translation>
 <translation id="9143922477019434797">Zaštitite lozinke</translation>

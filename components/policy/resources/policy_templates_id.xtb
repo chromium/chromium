@@ -4909,14 +4909,6 @@ Kebijakan ini digunakan untuk menonaktifkan upgrade otomatis konten campuran di 
 <translation id="4274691295133617461">Jika kebijakan disetel ke 3, situs web akan diizinkan meminta akses baca ke file, dan direktori, di sistem file pada sistem operasi host melalui File System API. Jika kebijakan disetel ke 2, akses akan ditolak.
 
       Jika tidak disetel, situs dapat meminta akses tetapi pengguna dapat mengubah setelan ini.</translation>
-<translation id="4274992013893672009">Jika kebijakan ini disetel ke Aktif, permintaan utama akan diblokir setiap kali peringatan yang seharusnya
-ditampilkan di <ph name="CHROME_DEVTOOLS_NAME" /> muncul karena
-pemeriksaan <ph name="LOCAL_NETWORK_ACCCESS" /> gagal.
-
-Jika kebijakan ini disetel ke Nonaktif atau tidak disetel, permintaan <ph name="LOCAL_NETWORK_ACCESS" /> akan menggunakan
-penanganan default untuk permintaan ini.
-
-Lihat https://wicg.github.io/local-network-access/ untuk melihat batasan <ph name="LOCAL_NETWORK_ACCESS" />.</translation>
 <translation id="4275048399551500192">Jangan tampilkan kontrol media untuk sesi <ph name="PRODUCT_NAME" /> yang dimulai oleh perangkat lain</translation>
 <translation id="4278656834593750050">Mengaktifkan Suara Pengisian Daya</translation>
 <translation id="4281322231545828290">Aktifkan perubahan otomatis sandi</translation>

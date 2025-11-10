@@ -33,6 +33,7 @@
 <translation id="1409338233051621926">I-tap ang Mga App at pagkatapos ay i-tap ang Mga default na app</translation>
 <translation id="1415402041810619267">Naputol ang URL</translation>
 <translation id="1415855080660575082">Hayaang i-share ng Chrome ang iyong mga kamakailang tab gamit ang device mo para makita ang mga ito sa listahan ng app at mga resulta ng paghahanap ng iyong device. Puwede mo itong i-on o i-off sa mga setting ng Chrome.</translation>
+<translation id="1420688843103859429">Mag-navigate pabalik-balik sa pamamagitan ng pag-swipe gamit ang dalawang daliri sa touchpad</translation>
 <translation id="1432650420699700107">Puwedeng hilingin ng mga site na kumonekta sa anumang device sa iyong lokal na network</translation>
 <translation id="1448064542941920355">Bawasan ang pag-zoom</translation>
 <translation id="1464044141348608623">Huwag payagan ang mga site na malaman kung aktibo mong ginagamit ang iyong device</translation>
@@ -218,7 +219,6 @@ Kinokontrol ng Advanced na Proteksyon ang mga setting ng Chrome na ito:
 <translation id="3285500645985761267">Payagan ang mga kaugnay na site na makita ang iyong aktibidad sa grupo</translation>
 <translation id="3295019059349372795">Kabanata 11: The Wonderful Emerald City of Oz</translation>
 <translation id="3295602654194328831">Itago ang Impormasyon</translation>
-<translation id="3328801116991980348">Impormasyon ng site</translation>
 <translation id="3333961966071413176">Lahat ng contact</translation>
 <translation id="3360338140203645771">I-delete ang mga naka-save na level ng pag-zoom?</translation>
 <translation id="3362437373201486687">Nagsa-scan ng mga Bluetooth device</translation>
@@ -433,6 +433,7 @@ Kinokontrol ng Advanced na Proteksyon ang mga setting ng Chrome na ito:
 <translation id="5750869797196646528">Pag-track sa kamay</translation>
 <translation id="5753570386948603678">I-delete sa history</translation>
 <translation id="5771720122942595109">Naka-block ang <ph name="PERMISSION_1" /></translation>
+<translation id="5792627621688759634">Mag-swipe sa mga page gamit ang touchpad</translation>
 <translation id="5801457289562671820">Inirerekomenda ng iyong organisasyon</translation>
 <translation id="5804241973901381774">Mga Pahintulot</translation>
 <translation id="5822675474983796325">Binuksan nang buo ang bottom sheet ng pag-customize ng page ng bagong tab mo</translation>

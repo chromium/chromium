@@ -3461,6 +3461,7 @@
 <translation id="6654224358955673568">رسمی کردن</translation>
 <translation id="6654244995031366386">شیشه (مشجر)</translation>
 <translation id="6655085656059574817">حفظ پیوند حسابتان به پرداخت سریع‌تر با <ph name="BNPL_ISSUER_NAME" /> کمک می‌کند، اما می‌توانید با رفتن به <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" />، پیوند آن را لغو کنید.</translation>
+<translation id="6656935431494847393">شامل اطلاعاتی مثل رزرو پرواز و اطلاعات خودرو می‌شود</translation>
 <translation id="6657585470893396449">گذرواژه</translation>
 <translation id="6659246032834639189">این قیمت پایین است</translation>
 <translation id="6660413144148052430">مکان</translation>
@@ -4675,6 +4676,7 @@
 <translation id="865255447216708819">فیلم چاپ معکوس</translation>
 <translation id="8654126188050905496">۹۱ × ۵۵ میلی‌متر</translation>
 <translation id="8660780831677950176">اغلب در این زمان بازدید می‌کنید</translation>
+<translation id="8661820486298572829">کد تکمیل‌شده به‌طور خودکار</translation>
 <translation id="8662463432865928030">املاک تجاری</translation>
 <translation id="8663226718884576429">خلاصه سفارش، <ph name="TOTAL_LABEL" />، جزئيات بیشتر</translation>
 <translation id="8663909737634214500">لوح نوری</translation>
@@ -4756,6 +4758,7 @@
 <translation id="8781278378794969337">‏دکمه «ترجمه صفحه»؛ برای ترجمه کردن این صفحه بااستفاده از «ترجمه Google»، آن را فعال کنید</translation>
 <translation id="8785658048882205566">موتورسیکلت</translation>
 <translation id="8790007591277257123">&amp;انجام مجدد حذف</translation>
+<translation id="8790668801880409584">ذخیره و پر کردن اطلاعات سفر</translation>
 <translation id="8792272652220298572">پلاستیک (براق)</translation>
 <translation id="8792621596287649091">‏ممکن است دسترسی به حساب <ph name="ORG_NAME" /> را از دست بدهید یا به سرقت هویت دچار شوید. Chromium توصیه می‌کند هم‌اکنون گذرواژه‌تان را تغییر دهید.</translation>
 <translation id="8792626944327216835">میکروفون</translation>

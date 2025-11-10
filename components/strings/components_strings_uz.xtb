@@ -4283,6 +4283,7 @@ Batafsil axborot:
 <translation id="7987087088851949178">Muddatli toʻlov taklif qiladigan hozir olib, keyin toʻlash emitentlari toʻliq hajmda ochildi.</translation>
 <translation id="799149739215780103">Belgilash</translation>
 <translation id="7992044431894087211"><ph name="APPLICATION_TITLE" /> ilovasiga ekranni ulashish davom ettirildi</translation>
+<translation id="799384093520583425">Tashkilotingiz bu sahifada DevTools ishlatishni taqiqlagan</translation>
 <translation id="7995512525968007366">Ko‘rsatilmagan</translation>
 <translation id="7997855386298213183">umumiy varaqlar</translation>
 <translation id="8001912761979890298">Bu server <ph name="DOMAIN" /> veb-trafikni shifrlash uchun Chromium yoki tizim konfiguratsiyasida ishonchli xavfsizlik sertifikatidan foydalanishini tasdiqlay olmadi. Bunda konfiguratsiya xato sozlangan yoki ulanishingizga buzgʻunchi kirishga urinayotgan boʻlishi mumkin. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Sertifikatni ochish<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
@@ -4827,6 +4828,7 @@ Batafsil axborot:
 <translation id="8922013791253848639">Bu saytda har doim reklama ko‘rsatilsin</translation>
 <translation id="8922734931659847428"><ph name="BEGIN_LINK" />Eski texnologiya voqealari<ph name="END_LINK" /> yuz berayotgan sahifalar URL manzillarining cheklangan roʻyxati</translation>
 <translation id="892588693504540538">Yuqori oʻngdan teshik ochish</translation>
+<translation id="8926082624786998759">Bu sahifada DevTools ishlatishga ruxsat berilmagan</translation>
 <translation id="8926389886865778422">Qayta so‘ralmasin</translation>
 <translation id="8926400492587758246">Quyi miqdorda oylik muddatli toʻlov</translation>
 <translation id="8932102934695377596">Soatingiz orqada</translation>

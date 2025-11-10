@@ -4754,14 +4754,6 @@ Chrome Root Store를 공개 신뢰의 소스로 사용하는 내장된
 <translation id="4274691295133617461">이 정책을 3으로 설정하면 웹사이트에서 File System API를 통해 호스트 운영체제의 파일 시스템 내 파일 및 디렉터리에 대한 읽기 액세스 권한을 요청할 수 있습니다. 정책을 2로 설정하면 액세스가 거부됩니다.
 
       정책을 설정하지 않으면 웹사이트에서 액세스 권한을 요청할 수 있지만, 사용자가 이 설정을 변경할 수 있습니다.</translation>
-<translation id="4274992013893672009">정책을 사용 설정하면 <ph name="LOCAL_NETWORK_ACCCESS" /> 검사에 실패하여
-<ph name="CHROME_DEVTOOLS_NAME" />에 경고가 표시되어야 하는 경우
-기본 요청이 대신 차단됩니다.
-
-정책을 사용 중지하거나 설정하지 않으면 <ph name="LOCAL_NETWORK_ACCESS" /> 요청에서 이러한 요청의
-기본 처리를 사용합니다.
-
-<ph name="LOCAL_NETWORK_ACCESS" /> 제한사항에 관한 내용은 링크(https://wicg.github.io/local-network-access/)를 참고하세요.</translation>
 <translation id="4275048399551500192">다른 기기에서 시작한 <ph name="PRODUCT_NAME" /> 세션에 미디어 컨트롤을 표시하지 않음</translation>
 <translation id="4278656834593750050">충전 소리 켜기</translation>
 <translation id="4281322231545828290">자동화된 비밀번호 변경 사용 설정</translation>

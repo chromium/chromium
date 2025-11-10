@@ -4680,11 +4680,6 @@ Zoals wordt vermeld in ons beleid <ph name="SITE_PER_PROCESS_POLICY_NAME" />, zi
 <translation id="4274691295133617461">Als je het beleid instelt op 3, kunnen websites leestoegang vragen tot bestanden en directory's in het bestandssysteem van het besturingssysteem van de host via de File System API. Als je het beleid instelt op 2, wordt toegang geblokkeerd.
 
       Als je het beleid niet instelt, vragen websites om toegang maar kunnen gebruikers deze instelling wijzigen.</translation>
-<translation id="4274992013893672009">Als je dit beleid toepast, wordt het hoofdverzoek geblokkeerd als er een waarschuwing moet worden getoond in <ph name="CHROME_DEVTOOLS_NAME" /> omdat de <ph name="LOCAL_NETWORK_ACCCESS" />-controles mislukken.
-
-Als je dit beleid niet toepast of niet instelt, wordt de standaardafhandeling van deze verzoeken gebruikt voor <ph name="LOCAL_NETWORK_ACCESS" />-verzoeken.
-
-Zie https://wicg.github.io/local-network-access/ voor beperkingen voor <ph name="LOCAL_NETWORK_ACCESS" />.</translation>
 <translation id="4275048399551500192">Mediabediening niet tonen voor <ph name="PRODUCT_NAME" />-sessies die worden gestart door andere apparaten</translation>
 <translation id="4278656834593750050">Oplaadgeluiden aanzetten</translation>
 <translation id="4281322231545828290">Geautomatiseerde wachtwoordwijziging aanzetten</translation>

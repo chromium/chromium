@@ -3461,6 +3461,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6654224358955673568">Resmi dille yaz</translation>
 <translation id="6654244995031366386">Cam (Dokulu)</translation>
 <translation id="6655085656059574817">Hesabınız bağlı olduğunda <ph name="BNPL_ISSUER_NAME" /> ile daha hızlı ödeme yapabilirsiniz, ancak bağlantısını kaldırmak isterseniz <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /> adresine gidebilirsiniz.</translation>
+<translation id="6656935431494847393">Uçuş rezervasyonları ve araç bilgileri gibi bilgiler içerir</translation>
 <translation id="6657585470893396449">Şifre</translation>
 <translation id="6659246032834639189">Bu fiyat düşük</translation>
 <translation id="6660413144148052430">konum</translation>
@@ -4676,6 +4677,7 @@ Ek ayrıntılar:
 <translation id="865255447216708819">Arka Baskı Filmi</translation>
 <translation id="8654126188050905496">55 x 91 mm</translation>
 <translation id="8660780831677950176">Bu saatte sık ziyaret ediyorsunuz</translation>
+<translation id="8661820486298572829">Kod otomatik dolduruldu</translation>
 <translation id="8662463432865928030">Ticari Mülkler</translation>
 <translation id="8663226718884576429">Sipariş Özeti, <ph name="TOTAL_LABEL" />, Daha Fazla Ayrıntı</translation>
 <translation id="8663909737634214500">Optik Disk</translation>
@@ -4757,6 +4759,7 @@ Ek ayrıntılar:
 <translation id="8781278378794969337">Sayfayı çevir düğmesi, bu sayfayı Google Çeviri'yle çevirmek için etkinleştirin</translation>
 <translation id="8785658048882205566">Motosikletler</translation>
 <translation id="8790007591277257123">Silmeyi &amp;yeniden yap</translation>
+<translation id="8790668801880409584">Seyahat bilgilerini kaydedip doldur</translation>
 <translation id="8792272652220298572">Plastik (Parlak)</translation>
 <translation id="8792621596287649091"><ph name="ORG_NAME" /> hesabınıza erişimi kaybedebilir veya kimlik hırsızlığına maruz kalabilirsiniz. Chromium, şifrenizi hemen değiştirmenizi önerir.</translation>
 <translation id="8792626944327216835">mikrofon</translation>

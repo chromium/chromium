@@ -613,6 +613,7 @@ Parollarni istalgan vaqtda <ph name="GOOGLE_PASSWORD_MANAGER" /> orqali tekshiri
 <translation id="1414648216875402825"><ph name="PRODUCT_NAME" />’ning beqaror versiyasiga yangilanmoqdasiz, unda yakunlanmagan xususiyatlar bor. Qotib qolishlar va kamchiliklar uchraydi. Ehtiyotkorlik bilan davom eting.</translation>
 <translation id="1415708812149920388">Klipborddan o‘qishga ruxsat berilmagan</translation>
 <translation id="1415990189994829608">“<ph name="EXTENSION_NAME" />” (identifikatori: <ph name="EXTENSION_ID" />) kengaytmasidan bu turdagi seanslarda foydalanish taqiqlanadi</translation>
+<translation id="141720836055413739">Yuklash imkonsiz.  Boshqa fayl formatini sinang.</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{Ilovani olib tashlash}other{Ilovalarni olib tashlash}}</translation>
 <translation id="1417497355604638350">Diagnostika. va foydalanish statistikasini yuborish</translation>
 <translation id="1418552618736477642">Bildirishnomalar va ilovalar</translation>

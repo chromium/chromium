@@ -3461,6 +3461,7 @@
 <translation id="6654224358955673568">استخدام الأسلوب الرسمي</translation>
 <translation id="6654244995031366386">زجاج (مزخرف)</translation>
 <translation id="6655085656059574817">يساعد إبقاء حسابك مرتبطًا على إجراء عمليات الدفع بسرعة أكبر باستخدام "<ph name="BNPL_ISSUER_NAME" />"، ويمكنك إلغاء ربطه من خلال الانتقال إلى <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /></translation>
+<translation id="6656935431494847393">يتم تضمين معلومات مثل حجوزات الطيران ومعلومات المركبة</translation>
 <translation id="6657585470893396449">كلمة المرور</translation>
 <translation id="6659246032834639189">هذا السعر منخفض</translation>
 <translation id="6660413144148052430">الموقع الجغرافي</translation>
@@ -4678,6 +4679,7 @@
 <translation id="865255447216708819">فيلم الطباعة الخلفية</translation>
 <translation id="8654126188050905496">55 × 91 ملم</translation>
 <translation id="8660780831677950176">تزور هذا الموقع الإلكتروني كثيرًا في الوقت الحالي</translation>
+<translation id="8661820486298572829">الرمز الذي تم ملؤه تلقائيًا</translation>
 <translation id="8662463432865928030">عقارات تجارية</translation>
 <translation id="8663226718884576429">ملخّص الطلب و<ph name="TOTAL_LABEL" /> وتفاصيل إضافية</translation>
 <translation id="8663909737634214500">قرص ضوئي</translation>
@@ -4759,6 +4761,7 @@
 <translation id="8781278378794969337">‏زر ترجمة الصفحة: انقر على هذا الزر لترجمة هذه الصفحة باستخدام "ترجمة Google".</translation>
 <translation id="8785658048882205566">دراجات نارية</translation>
 <translation id="8790007591277257123">إعادة الح&amp;ذف</translation>
+<translation id="8790668801880409584">حفظ معلومات السفر وملؤها</translation>
 <translation id="8792272652220298572">بلاستيك (لامع)</translation>
 <translation id="8792621596287649091">‏قد تفقد إمكانية الوصول إلى حسابك على <ph name="ORG_NAME" /> أو تتعرض لسرقة هويتك. لذا يوصي Chromium بتغيير كلمة مرورك الآن.</translation>
 <translation id="8792626944327216835">الميكروفون</translation>

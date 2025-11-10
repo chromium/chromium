@@ -519,6 +519,7 @@
 <translation id="1823768272150895732">גופן</translation>
 <translation id="1824402189105105503">גליל שמיני</translation>
 <translation id="1826516787628120939">מתבצעת בדיקה</translation>
+<translation id="1829026591231985685">‏המידע נשמר ב-Google Wallet בהגדרות</translation>
 <translation id="1832730227369924598">סנכרון שולחן העבודה הווירטואלי</translation>
 <translation id="1834452765064623979">בניין ותחזוקה</translation>
 <translation id="1838374766361614909">ניקוי חיפוש</translation>
@@ -1885,6 +1886,7 @@
 <translation id="4073797364926776829">הצגת הכרטיס</translation>
 <translation id="4075732493274867456">‏הלקוח והשרת אינם תומכים בגרסה נפוצה של פרוטוקול SSL או בחבילת הצפנה.</translation>
 <translation id="4079302484614802869">‏תצורת ה-Proxy מוגדרת להשתמש בכתובת אתר של סקריפט מסוג ‎.Pac ולא בשרתי Proxy קבועים.</translation>
+<translation id="4080668349181235831">‏כדי לקבל הצעות ולשפר את התכונה הזו, כתובת ה-URL ותוכן הדף המלא של האתר שבו ביקרת יישלחו אל Google. מידע נוסף על <ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" />.</translation>
 <translation id="4080855220442581440">גלילה ושינוי מרחק התצוגה של הכרטיסיות המשותפות</translation>
 <translation id="4082333119419111506">Paper (Preprinted)</translation>
 <translation id="4082393374666368382">הגדרות - ניהול</translation>
@@ -3849,6 +3851,7 @@ Del</translation>
 <translation id="7286908876112207905">אין לך הרשאה להדביק תוכן באתר הזה</translation>
 <translation id="7291578327729322058">הוספת רישיון נהיגה</translation>
 <translation id="7292031607255951991">שם הנמען</translation>
+<translation id="7297228218361240128">‏שמירת מידע ב-Google Wallet מדפים שצפית בהם</translation>
 <translation id="7298195798382681320">מומלצים</translation>
 <translation id="7299471494012161875">ציוד היקפי מחובר של תצוגה</translation>
 <translation id="7299721129597238157">מחק סימניה</translation>
@@ -4246,6 +4249,7 @@ Del</translation>
 <translation id="7916162853251942238">Flexo Base</translation>
 <translation id="791698251820376781">הארגון שלך לא מאפשר לך להיכנס</translation>
 <translation id="7926503317156566022">תעשייה אווירית</translation>
+<translation id="7927046851848613453">‏אפשר לשמור כרטיסים, אירועים ומידע אחר מדפים שצפית בהם – לא רק מטפסים שמילאת. כך ניתן לגשת במהירות לכרטיסים, כמו כרטיסים לאירועים וכרטיסי מועדון לקוחות. הפרטים השמורים שלך יכולים להופיע במכשירים שלך ובכל מוצרי Google.</translation>
 <translation id="7930282586031445870">‏מסך התנאים וההגבלות של "קונים עכשיו, משלמים אחר כך (BNPL)" סגור.</translation>
 <translation id="7932035970207573919">כתובת בעבודה, <ph name="ADDRESS" /></translation>
 <translation id="793209273132572360">לעדכן את הכתובת?</translation>
@@ -4294,6 +4298,7 @@ Del</translation>
 <translation id="7987087088851949178">‏רשימת המנפיקים של האפשרות "קונים עכשיו, משלמים אחר כך (BNPL)" שזמינים כדי לשלם בתשלומים נפתחה במסך מלא.</translation>
 <translation id="799149739215780103">כריכה</translation>
 <translation id="7992044431894087211">שיתוף המסך באמצעות <ph name="APPLICATION_TITLE" /> ממשיך</translation>
+<translation id="799384093520583425">הארגון שלך חסם את השימוש בכלי הפיתוח בדף הזה</translation>
 <translation id="7995512525968007366">לא צוין</translation>
 <translation id="7997855386298213183">כרטיסיות משותפות</translation>
 <translation id="8001912761979890298">‏השרת הזה לא הצליח להוכיח שהוא <ph name="DOMAIN" /> כי הוא משתמש באישור אבטחה שלא נחשב לאמין לפי Chromium או לפי הגדרות המערכת שלך להצפנת תעבורת אינטרנט. יכול להיות שהסיבה לכך היא הגדרה שגויה או שתוקף מיירט את החיבור שלך. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />לצפייה באישור<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
@@ -4836,6 +4841,7 @@ Del</translation>
 <translation id="8922013791253848639">תמיד לאפשר מודעות באתר הזה</translation>
 <translation id="8922734931659847428">‏רשימה חלקית של כתובות URL של דפים עם <ph name="BEGIN_LINK" />אירועי שימוש בטכנולוגיה מדור קודם<ph name="END_LINK" /> שביקרת בהם</translation>
 <translation id="892588693504540538">ניקוב בפינה הימנית העליונה</translation>
+<translation id="8926082624786998759">אין הרשאה לשימוש בכלי הפיתוח בדף הזה</translation>
 <translation id="8926389886865778422">אין לשאול שוב</translation>
 <translation id="8926400492587758246">לשלם בתשלומים עם החזר חודשי נמוך</translation>
 <translation id="8932102934695377596">השעון שלך מאחר</translation>

@@ -4683,11 +4683,6 @@ Mit dieser Richtlinie wurde das automatische Upgrade für gemischte Inhalte unte
 <translation id="4274691295133617461">Wenn die Richtlinie auf "3" gesetzt ist, dürfen Websites um Lesezugriff auf Dateien und Verzeichnisse im Dateisystem des Host-Betriebssystems über die File System API bitten. Ist sie auf "2" gesetzt, wird der Zugriff verweigert.
 
       Wenn sie nicht konfiguriert ist, können Websites den Zugriff erfragen, aber Nutzer können diese Einstellung ändern.</translation>
-<translation id="4274992013893672009">Ist diese Richtlinie aktiviert, wird jedes Mal, wenn in den <ph name="CHROME_DEVTOOLS_NAME" /> eine Warnung aufgrund fehlgeschlagener „<ph name="LOCAL_NETWORK_ACCCESS" />“-Prüfungen angezeigt werden soll, stattdessen die Hauptanfrage blockiert.
-
-Ist diese Richtlinie deaktiviert oder nicht konfiguriert, werden „<ph name="LOCAL_NETWORK_ACCESS" />“-Anfragen gemäß dem standardmäßigen Verarbeitungsprozess für diesen Anfragetyp verarbeitet.
-
-Informationen zu Einschränkungen für den <ph name="LOCAL_NETWORK_ACCESS" /> findest du unter https://wicg.github.io/local-network-access/.</translation>
 <translation id="4275048399551500192">Keine Mediensteuerelemente für <ph name="PRODUCT_NAME" />-Sitzungen anzeigen, die von anderen Geräten gestartet werden</translation>
 <translation id="4278656834593750050">Ladetöne aktivieren</translation>
 <translation id="4281322231545828290">Automatische Passwortänderung aktivieren</translation>

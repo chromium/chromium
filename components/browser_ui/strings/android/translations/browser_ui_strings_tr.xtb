@@ -33,6 +33,7 @@
 <translation id="1409338233051621926">Uygulamalar'a, ardından "Varsayılan uygulamalar"a dokunun</translation>
 <translation id="1415402041810619267">URL kısaltıldı</translation>
 <translation id="1415855080660575082">Chrome'un son sekmelerinizi cihazınızla paylaşmasına izin verdiğinizde bu sekmeleri cihazınızın uygulama listesinde ve arama sonuçlarında görebilirsiniz. Bu özelliği Chrome ayarlarından etkinleştirebilir veya devre dışı bırakabilirsiniz.</translation>
+<translation id="1420688843103859429">Dokunmatik alanda iki parmağınızla kaydırarak ileri ve geri gidin</translation>
 <translation id="1432650420699700107">Siteler, yerel ağınızdaki cihazlara bağlanmak isteyebilir</translation>
 <translation id="1448064542941920355">Yakınlaştırmayı azalt</translation>
 <translation id="1464044141348608623">Cihazımı etkin olarak kullandığımda sitelerin bilmesine izin verme</translation>
@@ -218,7 +219,6 @@ Gelişmiş Koruma, şu Chrome ayarlarını kontrol eder:
 <translation id="3285500645985761267">İlgili sitelerin gruptaki etkinliğimi görmesine izin ver</translation>
 <translation id="3295019059349372795">11. Bölüm: Oz'un Muhteşem Zümrüt Kenti</translation>
 <translation id="3295602654194328831">Bilgileri Gizle</translation>
-<translation id="3328801116991980348">Site bilgileri</translation>
 <translation id="3333961966071413176">Tüm kişiler</translation>
 <translation id="3360338140203645771">Kayıtlı yakınlaştırma seviyeleri silinsin mi?</translation>
 <translation id="3362437373201486687">Bluetooth cihazları taranıyor</translation>
@@ -433,6 +433,7 @@ Gelişmiş Koruma, şu Chrome ayarlarını kontrol eder:
 <translation id="5750869797196646528">El takibi</translation>
 <translation id="5753570386948603678">Geçmişten sil</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> engellendi</translation>
+<translation id="5792627621688759634">Dokunmatik alan kullanarak sayfalar arasında kaydırın</translation>
 <translation id="5801457289562671820">Kuruluşunuz tarafından önerildi</translation>
 <translation id="5804241973901381774">İzinler</translation>
 <translation id="5822675474983796325">Yeni sekme sayfanızı özelleştirin alt sayfası tam ekranda açıldı</translation>

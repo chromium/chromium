@@ -237,6 +237,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="370962675267501463">{COUNT,plural, =0{Hinihiling ng iyong administrator na ilunsad mo ulit ang Chromium para mailapat ang update na ito}=1{Hinihiling ng iyong administrator na ilunsad mo ulit ang Chromium para mailapat ang update na ito. Hindi bubukas ulit ang iyong Incognito window.}one{Hinihiling ng iyong administrator na ilunsad mo ulit ang Chromium para mailapat ang update na ito. Hindi bubukas ulit ang iyong # Incognito window.}other{Hinihiling ng iyong administrator na ilunsad mo ulit ang Chromium para mailapat ang update na ito. Hindi bubukas ulit ang iyong # na Incognito window.}}</translation>
 <translation id="3713809861844741608">Buksan ang link sa bagong &amp;tab ng Chromium</translation>
 <translation id="3728124580182886854">I-link ang Chromium at iba pang serbisyo ng Google para sa pag-personalize at iba pang layunin</translation>
+<translation id="3729187154190517324">Palalimin ang iyong paghahanap sa pamamagitan ng pagdaragdag ng maraming tab, file, at tool gamit ang button na "Magdagdag ng tab at higit pa."</translation>
 <translation id="3788675262216168505">Pamahalaan ang Mga Profile sa Chromium</translation>
 <translation id="3790262771324122253">Alamin kung bakit bina-block ng Chromium ang ilang pag-download</translation>
 <translation id="379589255253486813">Ipapaalam sa iyo ng Chromium kung may anumang nangangailangan ng iyong pagsusuri</translation>
@@ -358,6 +359,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="5286907366254680517">Na-detect</translation>
 <translation id="5294316920224716406">Kapag nagba-browse sa Incognito mode, bibigyan ka ng babala ng Chromium bago nito i-load ang isang site na gumagamit ng hindi secure na koneksyon</translation>
 <translation id="5313228254328109263">Chromium Updater Internal Service</translation>
+<translation id="5346389065299425353">Palalimin ang iyong paghahanap sa pamamagitan ng pagdaragdag ng maraming tab, file, at tool</translation>
 <translation id="5352264705793813212">Nakakita ang Chromium ng ilang rekomendasyon sa kaligtasan para sa pagsusuri mo</translation>
 <translation id="5352361688875342522">Iba pang Profile sa Chromium</translation>
 <translation id="5358375970380395591">Nagsa-sign in ka gamit ang isang pinamamahalaang account at nagbibigay sa administrator nito ng kontrol sa iyong profile sa Chromium. Permanenteng mauugnay ang iyong data sa Chromium, gaya ng iyong apps, mga bookmark, kasaysayan, password, at iba pang mga setting sa <ph name="USER_NAME" />. Matatanggal mo ang data na ito sa Google Accounts Dashboard, ngunit hindi mo maiuugnay ang data na ito sa isa pang account. <ph name="LEARN_MORE" /></translation>

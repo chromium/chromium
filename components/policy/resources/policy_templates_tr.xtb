@@ -4792,13 +4792,6 @@ Bu politika, iOS'te karma içeriklerin otomatik olarak yükseltilmesini devre d�
 <translation id="4274691295133617461">Politika 3 değerine ayarlanırsa web siteleri, File System API üzerinden ana makine işletim sisteminin dosya sistemindeki dosya ve dizinlere okuma erişimi isteyebilir. Politikayı 2 değerine ayarlamak erişimi engeller.
 
       Politikayı ayarlanmadan bırakırsanız web siteleri erişim izni isteyebilir. Kullanıcılar bu ayarı değiştirebilirler.</translation>
-<translation id="4274992013893672009">Bu politika, Etkin değerine ayarlanırsa <ph name="LOCAL_NETWORK_ACCCESS" />
-kontrollerinin başarısız olması nedeniyle <ph name="CHROME_DEVTOOLS_NAME" /> içinde bir uyarı gösterilmesi gerektiğinde bunun yerine
-ana istek engellenir.
-
-Bu politika, Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa <ph name="LOCAL_NETWORK_ACCESS" /> istekleri, bu istekler için varsayılan yöntemle işlenir.
-
-<ph name="LOCAL_NETWORK_ACCESS" /> kısıtlamaları için https://wicg.github.io/local-network-access/ sayfasına bakabilirsiniz.</translation>
 <translation id="4275048399551500192">Diğer cihazlar tarafından başlatılan <ph name="PRODUCT_NAME" /> oturumları için medya kontrollerini gösterme</translation>
 <translation id="4278656834593750050">Şarj Seslerini Etkinleştir</translation>
 <translation id="4281322231545828290">Otomatik şifre değişikliğini etkinleştir</translation>

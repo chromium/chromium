@@ -4558,11 +4558,6 @@ URL パターンは、<ph name="CONTROLLED_FRAME_BLOCKED_FOR_URLS_POLICY_NAME" /
 <translation id="4274691295133617461">このポリシーを 3 に設定した場合、ウェブサイトは、ホスト オペレーティング システムのファイル システム内にあるファイルやディレクトリへの File System API を経由した読み取りアクセスを要求することが許可されます。このポリシーを 2 に設定した場合、アクセスは拒否されます。
 
       このポリシーを未設定のままにした場合、ウェブサイトによるアクセス要求は許可されますが、ユーザーはこの設定を変更できます。</translation>
-<translation id="4274992013893672009">このポリシーを有効に設定した場合、<ph name="LOCAL_NETWORK_ACCCESS" /> チェックの失敗により <ph name="CHROME_DEVTOOLS_NAME" /> に警告が表示されると想定されるケースでは、代わりにメイン リクエストがブロックされます。
-
-このポリシーを無効に設定するか未設定のままにした場合、<ph name="LOCAL_NETWORK_ACCESS" /> リクエストでは、これらのリクエストのデフォルトの処理を使用します。
-
-<ph name="LOCAL_NETWORK_ACCESS" /> の制限については、https://wicg.github.io/local-network-access/ をご覧ください。</translation>
 <translation id="4275048399551500192">他のデバイスによって開始された <ph name="PRODUCT_NAME" /> セッションのメディア コントロールを表示しない</translation>
 <translation id="4278656834593750050">充電時のサウンドを有効にする</translation>
 <translation id="4281322231545828290">自動パスワード変更を有効にする</translation>
