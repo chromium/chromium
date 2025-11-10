@@ -581,6 +581,8 @@ std::unique_ptr<AccessibilityStructureElement> PDFiumPage::GetStructureTree() {
     return nullptr;
   }
 
+  CalculateTextRuns();
+
   auto tree_root = std::make_unique<AccessibilityStructureElement>();
   tree_root->type = PdfTagType::kPart;
   std::set<FPDF_STRUCTELEMENT> visited_elements;

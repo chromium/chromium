@@ -206,11 +206,11 @@ TEST_P(AccessibilityTest, AccessibilityStructureTree) {
       "/S /Document\n"
       "++/S /Part\n"
       "++++/S /Document /Lang (en-US)\n"
-      "++++++/S /Art\n"
-      "++++++/S /BlockQuote\n"
-      "++++++/S /P\n"
-      "++++++/S /H1\n"
-      "++++++/S /H2";
+      "++++++/S /Art AssociatedTextRunLens={ 9 }\n"
+      "++++++/S /BlockQuote AssociatedTextRunLens={ 12 }\n"
+      "++++++/S /P AssociatedTextRunLens={ 11 }\n"
+      "++++++/S /H1 AssociatedTextRunLens={ 10 }\n"
+      "++++++/S /H2 AssociatedTextRunLens={ 8 }";
 
   EXPECT_EQ(kExpectedStructureTree,
             AccessibilityStructureElementToString(*doc_structure));
