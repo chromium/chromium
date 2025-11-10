@@ -312,25 +312,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Cras.StreamRuntime.Output.LaCrOS"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="FieldPredictionSubmissionEvents" separator=".">
-  <suffix name="BasedOnAutocomplete"
-      label="Quality metrics based on autocomplete attributes."/>
-  <suffix name="NoSubmission" label="No observed submission."/>
-  <affected-histogram name="Autofill.FieldPrediction.Heuristic"/>
-  <affected-histogram name="Autofill.FieldPrediction.Overall"/>
-  <affected-histogram name="Autofill.FieldPrediction.Server"/>
-  <affected-histogram
-      name="Autofill.FieldPredictionQuality.Aggregate.Heuristic"/>
-  <affected-histogram name="Autofill.FieldPredictionQuality.Aggregate.Overall"/>
-  <affected-histogram name="Autofill.FieldPredictionQuality.Aggregate.Server"/>
-  <affected-histogram
-      name="Autofill.FieldPredictionQuality.ByFieldType.Heuristic"/>
-  <affected-histogram
-      name="Autofill.FieldPredictionQuality.ByFieldType.Overall"/>
-  <affected-histogram
-      name="Autofill.FieldPredictionQuality.ByFieldType.Server"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="HiddenWhileFlushing" separator=".">
   <suffix name="HiddenWhileFlushing"
       label="Tab hidden while flushing FCP value."/>

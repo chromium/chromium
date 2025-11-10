@@ -459,6 +459,13 @@ chromium-metrics-reviews@google.com.
                Autofill Server"/>
 </variants>
 
+<variants name="AutofillFieldPredictionSubmissionEvent">
+  <variant name=""/>
+  <variant name=".BasedOnAutocomplete"
+      summary="Quality metrics based on autocomplete attributes."/>
+  <variant name=".NoSubmission" summary="No observed submission."/>
+</variants>
+
 <!-- Generated from components/autofill/core/browser/field_types.h.
 Called by update_autofill_enums.py. This is a manual comment.-->
 
@@ -3636,7 +3643,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram
-    name="Autofill.FieldPredictionQuality.Aggregate{AutofillFieldPredictionSource}"
+    name="Autofill.FieldPredictionQuality.Aggregate{AutofillFieldPredictionSource}{AutofillFieldPredictionSubmissionEvent}"
     enum="AutofillFieldPredictionQuality" expires_after="2026-04-26">
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
@@ -3644,15 +3651,12 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     Aggregate Autofill field-type prediction outcomes. See
     https://en.wikipedia.org/wiki/Confusion_matrix for an explanation of the
     values. {AutofillFieldPredictionSource}
+    {AutofillFieldPredictionSubmissionEvent}
   </summary>
-  <token key="AutofillFieldPredictionSource"
-      variants="AutofillFieldPredictionSource">
-    <variant name=""/>
-  </token>
 </histogram>
 
 <histogram
-    name="Autofill.FieldPredictionQuality.ByFieldType{AutofillFieldPredictionSource}"
+    name="Autofill.FieldPredictionQuality.ByFieldType{AutofillFieldPredictionSource}{AutofillFieldPredictionSubmissionEvent}"
     enum="AutofillFieldPredictionQualityByFieldType" expires_after="2026-04-26">
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
@@ -3660,14 +3664,12 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     Autofill field-type prediction outcomes, broken down by field type. See
     https://en.wikipedia.org/wiki/Confusion_matrix for an explanation of the
     values. {AutofillFieldPredictionSource}
+    {AutofillFieldPredictionSubmissionEvent}
   </summary>
-  <token key="AutofillFieldPredictionSource"
-      variants="AutofillFieldPredictionSource">
-    <variant name=""/>
-  </token>
 </histogram>
 
-<histogram name="Autofill.FieldPrediction{AutofillFieldPredictionSource}"
+<histogram
+    name="Autofill.FieldPrediction{AutofillFieldPredictionSource}{AutofillFieldPredictionSubmissionEvent}"
     units="units" expires_after="2026-05-03">
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
@@ -3675,12 +3677,8 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     Predicted and actual form field type. This is a computed sparse histogram
     where the value is ((predicted &lt;&lt; 16)| actual). Predicted and actual
     are taken from the autofill::FieldType enumeration.
-    {AutofillFieldPredictionSource}
+    {AutofillFieldPredictionSource} {AutofillFieldPredictionSubmissionEvent}
   </summary>
-  <token key="AutofillFieldPredictionSource"
-      variants="AutofillFieldPredictionSource">
-    <variant name=""/>
-  </token>
 </histogram>
 
 <histogram
