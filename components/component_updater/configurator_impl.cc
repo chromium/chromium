@@ -165,10 +165,7 @@ update_client::UpdaterStateProvider ConfiguratorImpl::GetUpdaterStateProvider()
 std::optional<bool> ConfiguratorImpl::IsMachineExternallyManaged() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-  // TODO(crbug.com/40836987): For legacy compatibility, this uses
-  // IsEnterpriseDevice() which effectively equates to a domain join check.
-  // Consider whether this should use IsManagedDevice() instead.
-  return base::IsEnterpriseDevice();
+  return base::IsManagedOrEnterpriseDevice();
 #else
   return std::nullopt;
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
