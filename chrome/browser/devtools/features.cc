@@ -108,7 +108,7 @@ const base::FeatureParam<DevToolsFreestylerUserTier>
         &devtools_freestyler_user_tier_options};
 
 // Whether the DevTools AI Code Completion is enabled.
-BASE_FEATURE(kDevToolsAiCodeCompletion, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kDevToolsAiCodeCompletion, base::FEATURE_ENABLED_BY_DEFAULT);
 const base::FeatureParam<std::string> kDevToolsAiCodeCompletionModelId{
     &kDevToolsAiCodeCompletion, "aida_model_id",
     /*default_value=*/""};
