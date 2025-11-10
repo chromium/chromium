@@ -5895,6 +5895,13 @@ are declared in tools/grit/grit_args.gni.
 
       <!-- Extensions strings, which are not used by chrome://extensions. -->
       <if expr="enable_extensions_core">
+        <message name="IDS_EXTENSIONS_WANTS_ACCESS_TO_SITE" desc="The message shown on mouseover when an extension wants to run on a specific site.">
+          Wants access to this site
+        </message>
+        <message name="IDS_EXTENSIONS_HAS_ACCESS_TO_SITE" desc="The message shown on mouseover when an extension currently can run on a specific site.">
+          Has access to this site
+        </message>
+
         <if expr="not use_titlecase">
           <message name="IDS_EXTENSIONS_CONTEXT_MENU_SITE_PERMISSIONS" desc="The label in an extension's context menu for the submenu specifying the extension site permissions (sentence case).">
             Site permissions
@@ -6045,12 +6052,6 @@ are declared in tools/grit/grit_args.gni.
         </if>
       </if>
       <if expr="enable_extensions">
-        <message name="IDS_EXTENSIONS_WANTS_ACCESS_TO_SITE" desc="The message shown on mouseover when an extension wants to run on a specific site.">
-          Wants access to this site
-        </message>
-        <message name="IDS_EXTENSIONS_HAS_ACCESS_TO_SITE" desc="The message shown on mouseover when an extension currently can run on a specific site.">
-          Has access to this site
-        </message>
         <message name="IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON" desc="The text of the request acces button that appears on the toolbar when an extension requests access to the site">
           Allow <ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT">$1<ex>3</ex></ph>?
         </message>
