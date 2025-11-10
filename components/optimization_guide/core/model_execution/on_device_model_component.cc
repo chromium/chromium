@@ -188,6 +188,22 @@ bool OnDeviceBaseModelSpec::operator==(
          selected_performance_hint == other.selected_performance_hint;
 }
 
+OnDeviceModelRegistrationAttributes::OnDeviceModelRegistrationAttributes(
+    std::vector<proto::OnDeviceModelPerformanceHint> supported_hints)
+    : supported_hints(std::move(supported_hints)) {}
+OnDeviceModelRegistrationAttributes::OnDeviceModelRegistrationAttributes(
+    const OnDeviceModelRegistrationAttributes&) = default;
+OnDeviceModelRegistrationAttributes&
+OnDeviceModelRegistrationAttributes::operator=(
+    const OnDeviceModelRegistrationAttributes&) = default;
+OnDeviceModelRegistrationAttributes::OnDeviceModelRegistrationAttributes(
+    OnDeviceModelRegistrationAttributes&&) = default;
+OnDeviceModelRegistrationAttributes&
+OnDeviceModelRegistrationAttributes::operator=(
+    OnDeviceModelRegistrationAttributes&&) = default;
+OnDeviceModelRegistrationAttributes::~OnDeviceModelRegistrationAttributes() =
+    default;
+
 void OnDeviceModelComponentStateManager::UninstallComplete() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   local_state_->ClearPref(model_execution::prefs::localstate::
@@ -320,7 +336,9 @@ void OnDeviceModelComponentStateManager::CompleteUpdateRegistration(
   } else if (!component_installer_registered_ &&
              (criteria.should_install() || criteria.is_already_installing)) {
     component_installer_registered_ = true;
-    delegate_->RegisterInstaller(GetWeakPtr(), criteria.is_already_installing);
+    delegate_->RegisterInstaller(
+        GetWeakPtr(), OnDeviceModelRegistrationAttributes(
+                          performance_classifier_->GetPossibleHints()));
   }
 
   if (criteria.should_install()) {

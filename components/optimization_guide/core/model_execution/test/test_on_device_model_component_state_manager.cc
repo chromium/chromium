@@ -27,7 +27,7 @@ class TestComponentState::DelegateImpl
   // OnDeviceModelComponentStateManager::Delegate.
   void RegisterInstaller(
       base::WeakPtr<OnDeviceModelComponentStateManager> state_manager,
-      bool is_already_installing) override {
+      OnDeviceModelRegistrationAttributes attributes) override {
     if (state_) {
       state_->registered_manager_ = state_manager;
       if (state_->installed_asset_) {

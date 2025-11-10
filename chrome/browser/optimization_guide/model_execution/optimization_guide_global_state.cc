@@ -82,13 +82,13 @@ class OnDeviceModelComponentStateManagerDelegate
 
   void RegisterInstaller(
       base::WeakPtr<OnDeviceModelComponentStateManager> state_manager,
-      bool is_already_installing) override {
+      OnDeviceModelRegistrationAttributes attributes) override {
     if (!g_browser_process) {
       return;
     }
     component_updater::RegisterOptimizationGuideOnDeviceModelComponent(
         g_browser_process->component_updater(), std::move(state_manager),
-        is_already_installing);
+        std::move(attributes));
   }
 
   void Uninstall(base::WeakPtr<OnDeviceModelComponentStateManager>

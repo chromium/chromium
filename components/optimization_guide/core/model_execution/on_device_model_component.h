@@ -108,6 +108,25 @@ struct OnDeviceBaseModelSpec {
   proto::OnDeviceModelPerformanceHint selected_performance_hint;
 };
 
+// The attributes selected when registering an on-device model component.
+struct OnDeviceModelRegistrationAttributes {
+ public:
+  using Hint = optimization_guide::proto::OnDeviceModelPerformanceHint;
+
+  explicit OnDeviceModelRegistrationAttributes(
+      std::vector<Hint> supported_hints);
+  OnDeviceModelRegistrationAttributes(
+      const OnDeviceModelRegistrationAttributes&);
+  OnDeviceModelRegistrationAttributes& operator=(
+      const OnDeviceModelRegistrationAttributes&);
+  OnDeviceModelRegistrationAttributes(OnDeviceModelRegistrationAttributes&&);
+  OnDeviceModelRegistrationAttributes& operator=(
+      OnDeviceModelRegistrationAttributes&&);
+  ~OnDeviceModelRegistrationAttributes();
+  // The performance hints that are supported by this device.
+  std::vector<Hint> supported_hints;
+};
+
 // Manages the state of the on-device component.
 // This object needs to have lifetime equal to the browser process, and outside
 // of tests is created by a static NoDestructor initializer.
@@ -131,7 +150,7 @@ class OnDeviceModelComponentStateManager final : public UsageTracker::Observer {
     // ready to use.
     virtual void RegisterInstaller(
         base::WeakPtr<OnDeviceModelComponentStateManager> state_manager,
-        bool is_already_installing) = 0;
+        OnDeviceModelRegistrationAttributes attributes) = 0;
 
     // Uninstall the component. Calls
     // `OnDeviceModelComponentStateManager::UninstallComplete()` when uninstall
