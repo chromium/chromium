@@ -33,7 +33,10 @@
 #include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "components/permissions/test/mock_permission_request.h"
 #include "components/permissions/test/test_permissions_client.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "components/unified_consent/pref_names.h"
+#include "components/user_prefs/user_prefs.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -89,6 +92,13 @@ class PermissionRequestManagerTest : public content::RenderViewHostTestHarness {
     manager_ = PermissionRequestManager::FromWebContents(web_contents());
     manager_->set_enabled_app_level_notification_permission_for_testing(true);
     prompt_factory_ = std::make_unique<MockPermissionPromptFactory>(manager_);
+
+    // This is needed to make sure prefs initialized in PermissionsUmaUtil
+    // class.
+    user_prefs::UserPrefs::Set(browser_context(), &prefs_);
+    prefs_.registry()->RegisterBooleanPref(
+        unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled,
+        false);
   }
 
   void TearDown() override {
@@ -229,6 +239,7 @@ class PermissionRequestManagerTest : public content::RenderViewHostTestHarness {
   std::unique_ptr<MockPermissionPromptFactory> prompt_factory_;
   TestPermissionsClient client_;
   base::test::ScopedFeatureList feature_list_;
+  TestingPrefServiceSimple prefs_;
 };
 
 ////////////////////////////////////////////////////////////////////////////////

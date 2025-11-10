@@ -1102,6 +1102,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Permissions.PredictionService.NoMSBB.{PermissionType}{Gesture}"
+    enum="PermissionRequestLikelihood" expires_after="2026-09-30">
+  <owner>elklm@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records the prediction service's likelihood prediction for a permission
+    prompt, for users with disabled MSBB. This is recorded when a permission
+    prompt is resolved.
+  </summary>
+  <token key="PermissionType" variants="CpssSupportedTypes"/>
+  <token key="Gesture" variants="PermissionRequestGesture"/>
+</histogram>
+
 <histogram name="Permissions.PredictionService.SignatureModel.Mismatch"
     enum="Boolean" expires_after="2026-04-28">
   <owner>ravjit@chromium.org</owner>
@@ -1158,8 +1172,8 @@ chromium-metrics-reviews@google.com.
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
     Records the grant likelihood of a permission request based on whether a
-    gesture was associated with it. This is recorded by the prediction service
-    for Notifications and Geolocation permissions.
+    gesture was associated with it,for users with enabled MSBB. This is recorded
+    by the prediction service for Notifications and Geolocation permissions.
   </summary>
   <token key="PermissionType" variants="CpssSupportedTypes"/>
   <token key="Gesture" variants="PermissionRequestGesture"/>

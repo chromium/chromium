@@ -35,7 +35,11 @@
 #include "components/permissions/prediction_service/prediction_request_features.h"
 #include "components/permissions/request_type.h"
 #include "components/permissions/resolvers/permission_prompt_options.h"
+#include "components/prefs/pref_service.h"
 #include "components/safety_check/safety_check.h"
+#include "components/unified_consent/pref_names.h"
+#include "components/user_prefs/user_prefs.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "printing/buildflags/buildflags.h"
@@ -1231,8 +1235,20 @@ void PermissionUmaUtil::PermissionPromptResolved(
         gesture_suffix = ".NoGesture";
       }
 
-      std::string histogram_name = base::StrCat(
-          {"Permissions.PredictionService.", permission_type, gesture_suffix});
+      PrefService* prefs =
+          user_prefs::UserPrefs::Get(web_contents->GetBrowserContext());
+      const bool is_msbb_enabled = prefs->GetBoolean(
+          unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled);
+
+      std::string histogram_name;
+      if (is_msbb_enabled) {
+        histogram_name = base::StrCat({"Permissions.PredictionService.",
+                                       permission_type, gesture_suffix});
+      } else {
+        histogram_name = base::StrCat({"Permissions.PredictionService.NoMSBB.",
+                                       permission_type, gesture_suffix});
+      }
+
       base::UmaHistogramEnumeration(
           histogram_name,
           ConvertPredictionGrantLikelihoodToPermissionRequestLikelihood(
