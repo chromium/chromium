@@ -118,8 +118,8 @@ void LoginScreenExtensionsLifetimeManager::OnExtensionLoaded(
 bool LoginScreenExtensionsLifetimeManager::
     ShouldEnableLoginScreenPolicyExtensions() const {
   // Note that extensions are intentionally allowed during the intermediate
-  // transition states between the login screen and the user session, since the
-  // user may still see some pieces of the login screen that rely on these
+  // transition states between the login/lock screen and the user session, since
+  // the user may still see some pieces of the login screen that rely on these
   // extensions.
   return session_manager_->session_state() !=
          session_manager::SessionState::ACTIVE;
