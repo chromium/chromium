@@ -1791,11 +1791,12 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
   content_analysis_run_loop.Run();
 }
 
+// TODO(crbug.com/417992384) re-enable after the experiment is launched.
 IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
-                       BlockLargeFiles) {
+                       DISABLED_BlockLargeFiles) {
   // When the resumable protocol is in use and the `blocked_large_files` setting
   // is off, the final verdict is determined by the server, not by the policy
-  // value. So this specific testcase only applies to multi-part upload.
+  // value. So this specific test case only applies to multi-part upload.
   //
   // TODO(b/341264970): Add test support when setting_param is on.
   if (!setting_param()) {
@@ -1937,11 +1938,12 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
   reporting_run_loop.Run();
 }
 
+// TODO(crbug.com/417992384) re-enable after the experiment is launched.
 IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
-                       BlockLargePages) {
+                       DISABLED_BlockLargePages) {
   // When the resumable protocol is in use and the `blocked_large_files` setting
   // is off, the final verdict is determined by the server, not by the policy
-  // value. So this specific testcase only applies to multi-part upload.
+  // value. So this specific test case only applies to multi-part upload.
   //
   // TODO(b/341264970): Add test support when setting_param is on.
   if (!setting_param()) {

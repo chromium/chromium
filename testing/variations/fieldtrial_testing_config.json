@@ -9943,6 +9943,54 @@
             ]
         }
     ],
+    "EnableNewUploadSizeLimit": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_200MB",
+                    "params": {
+                        "max_file_size_mb": "200"
+                    },
+                    "enable_features": [
+                        "EnableNewUploadSizeLimit"
+                    ]
+                },
+                {
+                    "name": "Enabled_500MB",
+                    "params": {
+                        "max_file_size_mb": "500"
+                    },
+                    "enable_features": [
+                        "EnableNewUploadSizeLimit"
+                    ]
+                },
+                {
+                    "name": "Enabled_1GB",
+                    "params": {
+                        "max_file_size_mb": "1024"
+                    },
+                    "enable_features": [
+                        "EnableNewUploadSizeLimit"
+                    ]
+                },
+                {
+                    "name": "Enabled_2GB",
+                    "params": {
+                        "max_file_size_mb": "2048"
+                    },
+                    "enable_features": [
+                        "EnableNewUploadSizeLimit"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnablePDPMetricsUSDesktopIOS": [
         {
             "platforms": [
