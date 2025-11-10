@@ -152,6 +152,13 @@ void SecureEmbedHost::SetFrameSinkId(const viz::FrameSinkId& frame_sink_id) {
   }
 }
 
+void SecureEmbedHost::UpdateLocalSurfaceIdFromChild(
+    const ::viz::LocalSurfaceId& local_surface_id) {
+  if (secure_embed_) {
+    secure_embed_->UpdateLocalSurfaceIdFromChild(local_surface_id);
+  }
+}
+
 void SecureEmbedHost::FocusInEmbedder(
     content::SecureEmbedConnector::FocusOperation focus_op) {
   if (!secure_embed_) {

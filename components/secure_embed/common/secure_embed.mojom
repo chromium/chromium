@@ -21,6 +21,12 @@ interface SecureEmbed {
   // TODO(secure-embed): Implement allow_paint_holding.
   SetFrameSinkId(viz.mojom.FrameSinkId frame_sink_id);
 
+  // Called when the child frame initiates a LocalSurfaceId update.
+  // This typically happens when an auto-resized child frame has a new
+  // intrinsic size. However, this has also been observed on non-auto-resized
+  // frames (e.g., www.nytimes.com) due to an unclear triggering condition.
+  UpdateLocalSurfaceIdFromChild(viz.mojom.LocalSurfaceId local_surface_id);
+
   RequestFocus(FocusOperation focus_op);
 };
 

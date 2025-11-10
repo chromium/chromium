@@ -35,6 +35,9 @@ class CONTENT_EXPORT SecureEmbedConnector {
    public:
     virtual void SetFrameSinkId(const viz::FrameSinkId& frame_sink_id) = 0;
 
+    virtual void UpdateLocalSurfaceIdFromChild(
+        const viz::LocalSurfaceId& local_surface_id) = 0;
+
     // Requests focus in the embedder document for either the embedding element,
     // or the elements before or after it in the tab order, based on `focus_op`.
     virtual void FocusInEmbedder(FocusOperation focus_op) = 0;

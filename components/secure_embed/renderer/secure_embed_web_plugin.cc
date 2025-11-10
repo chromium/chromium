@@ -280,6 +280,12 @@ void SecureEmbedWebPlugin::SetFrameSinkId(
   SendVisualProperties();
 }
 
+void SecureEmbedWebPlugin::UpdateLocalSurfaceIdFromChild(
+    const ::viz::LocalSurfaceId& local_surface_id) {
+  parent_local_surface_id_allocator_->UpdateFromChild(local_surface_id);
+  SendVisualProperties();
+}
+
 void SecureEmbedWebPlugin::RequestFocus(mojom::FocusOperation focus_op) {
   if (container_) {
     container_->GetElement().Focus();
