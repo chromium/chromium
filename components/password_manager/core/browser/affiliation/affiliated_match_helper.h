@@ -72,6 +72,10 @@ class AffiliatedMatchHelper {
   // purposes of affiliation-based matching.
   static bool IsValidWebCredential(const PasswordFormDigest& form);
 
+  base::WeakPtr<AffiliatedMatchHelper> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   // Called back by AffiliationService to supply the list of facets
   // affiliated with the Android credential in |form|. Injects affiliation and
