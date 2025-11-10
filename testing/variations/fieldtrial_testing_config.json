@@ -24203,7 +24203,7 @@
             ]
         }
     ],
-    "SkipIPCChanelPausingForNonGuests": [
+    "SkipIPCChannelPausingForNonGuestsStudy": [
         {
             "platforms": [
                 "android",
@@ -24215,12 +24215,12 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_20251030",
                     "params": {
                         "internal_webui_only": "false"
                     },
                     "enable_features": [
-                        "SkipIPCChanelPausingForNonGuests"
+                        "SkipIPCChannelPausingForNonGuests"
                     ]
                 }
             ]
@@ -27977,6 +27977,25 @@
                     ],
                     "disable_features": [
                         "ScriptStreamingForNonHTTP"
+                    ]
+                }
+            ]
+        }
+    ],
+    "WebUIReloadButtonStudy": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Control_20251030",
+                    "disable_features": [
+                        "InitialWebUI",
+                        "WebUIReloadButton"
                     ]
                 }
             ]
