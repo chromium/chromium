@@ -116,7 +116,7 @@ bool LineFlexer::ResolveFlexibleLengths() {
         std::isfinite(total_flex_grow_)) {
       extra = free_space_ * item.flex_grow / total_flex_grow_;
     } else if (total_weighted_flex_shrink_ > 0 && mode_ == kShrink &&
-               std::isfinite(total_weighted_flex_shrink_) && item.flex_shrink) {
+               std::isfinite(total_weighted_flex_shrink_)) {
       extra = free_space_ * item.flex_shrink * item.base_content_size /
               total_weighted_flex_shrink_;
     }
