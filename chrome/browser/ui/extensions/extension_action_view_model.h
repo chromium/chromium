@@ -37,8 +37,11 @@ namespace ui {
 class ImageModel;
 }
 
-// The Views controller for an ExtensionAction that is shown on the toolbar
-// (such as a page or browser action).
+// The View Model of an extension action UI component.
+//
+// This class contains platform-agnostic extension action UI logic. It works
+// with platform-specific `ExtensionActionPlatformDelegate` to provide extension
+// action business logic across platforms.
 //
 // This class doesn't own the extension or extension action in question. It is
 // safe to call methods after the extension is uninstalled, but they will return

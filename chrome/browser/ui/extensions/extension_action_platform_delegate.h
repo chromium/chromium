@@ -16,6 +16,15 @@ namespace extensions {
 class ExtensionViewHost;
 }  // namespace extensions
 
+// Implements platform-specific extension action UI logic, such as showing the
+// action's popup and the context menu.
+//
+// An instance of this interface should be passed to the constructor of
+// `ExtensionActionViewModel`. It takes the ownership of the instance, and calls
+// `AttachToModel` in the constructor, and `DetachFromModel` in the destructor.
+//
+// Platform-agnostic extension action UI logic must go into
+// `ExtensionActionViewModel` instead.
 class ExtensionActionPlatformDelegate {
  public:
   virtual ~ExtensionActionPlatformDelegate() = default;

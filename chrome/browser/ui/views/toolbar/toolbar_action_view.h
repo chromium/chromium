@@ -22,10 +22,8 @@ namespace content {
 class WebContents;
 }
 
-////////////////////////////////////////////////////////////////////////////////
-// ToolbarActionView
-// A wrapper around a ToolbarActionViewModel to display a toolbar action
-// action in the browser's toolbar.
+// The View to display an action button in the browser's toolbar using the
+// underlying `ToolbarActionViewModel`.
 class ToolbarActionView : public views::MenuButton,
                           public ExtensionContextMenuController::Observer {
   METADATA_HEADER(ToolbarActionView, views::MenuButton)
