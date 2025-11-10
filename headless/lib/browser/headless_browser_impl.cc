@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "headless/lib/browser/headless_browser_impl.h"
 
 #include <string>
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -262,8 +258,9 @@ bool HeadlessBrowserImpl::ShouldStartDevToolsServer() {
   if (!IsRemoteDebuggingAllowed(local_state_.get())) {
     // Follow content/browser/devtools/devtools_http_handler.cc that reports its
     // remote debugging port on stderr for symmetry.
-    fputs("\nDevTools remote debugging is disallowed by the system admin.\n",
-          stderr);
+    UNSAFE_TODO(fputs(
+        "\nDevTools remote debugging is disallowed by the system admin.\n",
+        stderr));
     fflush(stderr);
     return false;
   }
