@@ -34,6 +34,24 @@ public class StorageCollectionSynchronizer implements Destroyable {
         mNativePtr = 0;
     }
 
+    /**
+     * Uses a StorageRestoreOrchestratorFactory to build and register a StorageRestoreOrchestrator
+     * to receive updates to the TabStripCollection.
+     */
+    public void consumeRestoreOrchestratorFactory(StorageRestoreOrchestratorFactory factory) {
+        StorageCollectionSynchronizerJni.get()
+                .consumeRestoreOrchestratorFactory(mNativePtr, factory);
+    }
+
+    /**
+     * Uses a CollectionStorageObserverFactory to build and register a CollectionStorageObserver to
+     * receive updates to the TabStripCollection.
+     */
+    public void consumeCollectionObserverFactory(CollectionStorageObserverFactory factory) {
+        StorageCollectionSynchronizerJni.get()
+                .consumeCollectionObserverFactory(mNativePtr, factory);
+    }
+
     /** Fully synchronizes the state of the collection and descendants with the storage layer. */
     public void fullSave() {
         assert mNativePtr != 0;
@@ -50,5 +68,13 @@ public class StorageCollectionSynchronizer implements Destroyable {
         void fullSave(long nativeStorageCollectionSynchronizerAndroid);
 
         void destroy(long nativeStorageCollectionSynchronizerAndroid);
+
+        void consumeRestoreOrchestratorFactory(
+                long nativeStorageCollectionSynchronizerAndroid,
+                StorageRestoreOrchestratorFactory factory);
+
+        void consumeCollectionObserverFactory(
+                long nativeStorageCollectionSynchronizerAndroid,
+                CollectionStorageObserverFactory factory);
     }
 }

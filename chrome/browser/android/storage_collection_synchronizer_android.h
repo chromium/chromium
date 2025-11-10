@@ -7,8 +7,6 @@
 
 #include <jni.h>
 
-#include <memory>
-
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab/storage_collection_synchronizer.h"
 #include "chrome/browser/tab/tab_state_storage_service.h"
@@ -30,11 +28,18 @@ class StorageCollectionSynchronizerAndroid {
 
   void FullSave(JNIEnv* env);
 
+  void ConsumeRestoreOrchestratorFactory(
+      JNIEnv* env,
+      const jni_zero::JavaParamRef<jobject>& j_object);
+  void ConsumeCollectionObserverFactory(
+      JNIEnv* env,
+      const jni_zero::JavaParamRef<jobject>& j_object);
+
   // Should only be destroyed through Java object.
   void Destroy(JNIEnv* env);
 
  private:
-  std::unique_ptr<StorageCollectionSynchronizer> tracker_;
+  StorageCollectionSynchronizer synchronizer_;
 };
 
 }  // namespace tabs

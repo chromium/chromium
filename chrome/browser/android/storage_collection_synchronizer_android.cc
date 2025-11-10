@@ -4,10 +4,9 @@
 
 #include "chrome/browser/android/storage_collection_synchronizer_android.h"
 
-#include <jni.h>
-
-#include <memory>
-
+#include "base/memory/ptr_util.h"
+#include "chrome/browser/android/collection_storage_observer_factory_android.h"
+#include "chrome/browser/android/storage_restore_orchestrator_factory_android.h"
 #include "chrome/browser/android/tab_state_storage_service_factory.h"
 #include "components/tabs/public/android/jni_conversion.h"
 #include "third_party/jni_zero/jni_zero.h"
@@ -20,18 +19,29 @@ namespace tabs {
 
 StorageCollectionSynchronizerAndroid::StorageCollectionSynchronizerAndroid(
     Profile* profile,
-    tabs::TabStripCollection* collection) {
-  TabStateStorageService* service =
-      TabStateStorageServiceFactory::GetForProfile(profile);
-  tracker_ =
-      std::make_unique<StorageCollectionSynchronizer>(collection, service);
-}
+    tabs::TabStripCollection* collection)
+    : synchronizer_(collection,
+                    TabStateStorageServiceFactory::GetForProfile(profile)) {}
 
 StorageCollectionSynchronizerAndroid::~StorageCollectionSynchronizerAndroid() =
     default;
 
 void StorageCollectionSynchronizerAndroid::FullSave(JNIEnv* env) {
-  tracker_->FullSave();
+  synchronizer_.FullSave();
+}
+
+void StorageCollectionSynchronizerAndroid::ConsumeRestoreOrchestratorFactory(
+    JNIEnv* env,
+    const jni_zero::JavaParamRef<jobject>& j_object) {
+  synchronizer_.SetCollectionObserver(
+      StorageRestoreOrchestratorFactoryAndroid::Build(env, j_object));
+}
+
+void StorageCollectionSynchronizerAndroid::ConsumeCollectionObserverFactory(
+    JNIEnv* env,
+    const jni_zero::JavaParamRef<jobject>& j_object) {
+  synchronizer_.SetCollectionObserver(
+      CollectionStorageObserverFactoryAndroid::Build(env, j_object));
 }
 
 static jlong JNI_StorageCollectionSynchronizer_Init(
