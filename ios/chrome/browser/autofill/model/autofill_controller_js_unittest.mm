@@ -1128,8 +1128,10 @@ TEST_F(AutofillControllerJsTest, InferLabelFromPreviousLabelOtherIgnored) {
 
 TEST_F(AutofillControllerJsTest, InferLabelFromEnclosingLabelBefore) {
   TestInputElementDataEvaluation(
-      @"__gCrWeb.fill.inferLabelFromEnclosingLabel", @"label",
-      GetTestFormInputElementWithLabelFromEnclosingLabelBefore(), @"input");
+      @"__gCrWeb.getRegisteredApi('fill_test_api')."
+      @"getFunction('inferLabelFromEnclosingLabel')",
+      @"label", GetTestFormInputElementWithLabelFromEnclosingLabelBefore(),
+      @"input");
 }
 
 TEST_F(AutofillControllerJsTest, InferLabelFromPreviousTextBrAndSpan) {

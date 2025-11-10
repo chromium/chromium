@@ -415,8 +415,8 @@ export function inferLabelFromTableRow(element: FormControlElement):
  * @param element An element to examine.
  * @return The label of element.
  */
-gCrWebLegacy.fill.inferLabelFromEnclosingLabel =
-    function(element: FormControlElement): inferenceUtil.InferredLabel|null {
+export function inferLabelFromEnclosingLabel(element: FormControlElement):
+    inferenceUtil.InferredLabel|null {
   if (!element) {
     return null;
   }
@@ -428,7 +428,7 @@ gCrWebLegacy.fill.inferLabelFromEnclosingLabel =
     return buildInferredLabelIfValid(findChildText(node));
   }
   return null;
-};
+}
 
 /**
  * Helper for |InferLabelForElement()| that infers a label, if possible, from
@@ -608,7 +608,7 @@ gCrWebLegacy.fill.inferLabelForElement =
 
     seenTagNames[tagName] = true;
     if (tagName === 'LABEL') {
-      r = gCrWebLegacy.fill.inferLabelFromEnclosingLabel(element);
+      r = inferLabelFromEnclosingLabel(element);
     } else if (tagName === 'DIV') {
       r = gCrWebLegacy.fill.inferLabelFromDivTable(element);
     } else if (tagName === 'TD') {

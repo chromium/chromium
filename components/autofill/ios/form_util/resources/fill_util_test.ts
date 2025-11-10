@@ -26,6 +26,9 @@ fillApi.addFunction(
 fillApi.addFunction('getUniqueID', fillUtil.getUniqueID);
 fillApi.addFunction('hasTagName', inferenceUtil.hasTagName);
 fillApi.addFunction(
+    'inferLabelFromEnclosingLabel',
+    elementInferenceUtil.inferLabelFromEnclosingLabel);
+fillApi.addFunction(
     'inferLabelFromListItem', elementInferenceUtil.inferLabelFromListItem);
 fillApi.addFunction(
     'inferLabelFromPrevious', elementInferenceUtil.inferLabelFromPrevious);
