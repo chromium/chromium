@@ -341,9 +341,6 @@ class CC_EXPORT ScrollEventMetrics : public EventMetrics {
 
   const viz::BeginFrameArgs& begin_frame_args() const { return args_; }
 
-  void set_did_scroll(bool did_scroll) { did_scroll_ = did_scroll; }
-  bool did_scroll() const { return did_scroll_; }
-
  protected:
   ScrollEventMetrics(EventType type,
                      ScrollType scroll_type,
@@ -370,10 +367,6 @@ class CC_EXPORT ScrollEventMetrics : public EventMetrics {
   // These may not match those of CompositorFrameReporter for which the event
   // is eventually displayed.
   viz::BeginFrameArgs args_;
-
-  // The scroll delta may not be actually applied. Event if it is consumed. This
-  // denotes that a scroll did actually occur.
-  bool did_scroll_ = false;
 };
 
 // Reason why Chrome's scroll jank v4 metric marked a scroll update as janky. A
@@ -502,6 +495,9 @@ class CC_EXPORT ScrollUpdateEventMetrics : public ScrollEventMetrics {
     return is_janky_scrolled_frame_;
   }
 
+  void set_did_scroll(bool did_scroll) { did_scroll_ = did_scroll; }
+  bool did_scroll() const { return did_scroll_; }
+
   // Result of the Scroll Jank V4 Metric for a scroll update. See
   // https://docs.google.com/document/d/1AaBvTIf8i-c-WTKkjaL4vyhQMkSdynxo3XEiwpofdeA
   // and the Event.ScrollJank.DelayedFramesPercentage4.FixedWindow histogram's
@@ -616,6 +612,10 @@ class CC_EXPORT ScrollUpdateEventMetrics : public ScrollEventMetrics {
 
   std::optional<bool> is_janky_scrolled_frame_ = std::nullopt;
   std::optional<ScrollJankV4Result> scroll_jank_v4_ = std::nullopt;
+
+  // The scroll delta may not be actually applied. Event if it is consumed. This
+  // denotes that a scroll did actually occur.
+  bool did_scroll_ = false;
 };
 
 class CC_EXPORT PinchEventMetrics : public EventMetrics {

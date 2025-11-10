@@ -72,8 +72,18 @@ std::optional<FrameBounds> GetFrameBounds(
     }
     const viz::BeginFrameArgs& args = scroll_event->begin_frame_args();
     viz::BeginFrameId frame_id = args.frame_id;
-    bool is_damaging =
-        scroll_event->caused_frame_update() && scroll_event->did_scroll();
+    bool is_damaging = [&] {
+      if (!scroll_event->caused_frame_update()) {
+        return false;
+      }
+      ScrollUpdateEventMetrics* scroll_update_event =
+          scroll_event->AsScrollUpdate();
+      if (scroll_update_event == nullptr) {
+        return false;
+      }
+      return scroll_update_event->did_scroll();
+    }();
+
     if (result.has_value()) {
       result->min_id = std::min(result->min_id, frame_id);
       result->max_id = std::max(result->max_id, frame_id);
