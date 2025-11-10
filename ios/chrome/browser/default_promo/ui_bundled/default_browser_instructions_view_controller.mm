@@ -6,6 +6,7 @@
 
 #import "base/check.h"
 #import "base/i18n/rtl.h"
+#import "ios/chrome/browser/default_promo/ui_bundled/features.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
@@ -37,6 +38,14 @@ NSString* const kDefaultBrowserDefaultAppsAnimationDarkmode =
     @"default_browser_default_apps_animation_darkmode";
 NSString* const kDefaultBrowserDefaultAppsAnimationRtlDarkmode =
     @"default_browser_default_apps_animation_rtl_darkmode";
+NSString* const kDefaultBrowserAnimationIpad =
+    @"default_browser_animation_ipad";
+NSString* const kDefaultBrowserAnimationRtlIpad =
+    @"default_browser_animation_rtl_ipad";
+NSString* const kDefaultBrowserAnimationDarkmodeIpad =
+    @"default_browser_animation_darkmode_ipad";
+NSString* const kDefaultBrowserAnimationRtlDarkmodeIpad =
+    @"default_browser_animation_rtl_darkmode_ipad";
 
 // Keys in the lottie assets.
 NSString* const kBrowserAppKeypath = @"IDS_BROWSER_APP";
@@ -78,7 +87,9 @@ NSString* const kDefaultBrowserInstructionsViewAnimationViewId =
 NSString* const kDefaultBrowserInstructionsViewDarkAnimationViewId =
     @"DefaultBrowserInstructionsViewDarkAnimationViewId";
 
-@implementation DefaultBrowserInstructionsViewController
+@implementation DefaultBrowserInstructionsViewController {
+  BOOL _useDefaultAppsDestination;
+}
 
 - (instancetype)initWithDismissButton:(BOOL)hasDismissButton
                        hasCloseButton:(BOOL)hasCloseButton
@@ -90,9 +101,10 @@ NSString* const kDefaultBrowserInstructionsViewDarkAnimationViewId =
                             titleText:(NSString*)titleText {
   if ((self = [super init])) {
     self.actionHandler = actionHandler;
-    useDefaultAppsDestination |= IsDefaultAppsDestinationAvailable() &&
-                                 IsUseDefaultAppsDestinationForPromosEnabled();
-    [self addVideoSection:useDefaultAppsDestination];
+    _useDefaultAppsDestination = useDefaultAppsDestination;
+    _useDefaultAppsDestination |= IsDefaultAppsDestinationAvailable() &&
+                                  IsUseDefaultAppsDestinationForPromosEnabled();
+    [self addVideoSection];
     if (hasCloseButton) {
       [self addNavigationBarAndCloseButton];
     }
@@ -115,34 +127,12 @@ NSString* const kDefaultBrowserInstructionsViewDarkAnimationViewId =
 #pragma mark - Private
 
 // Adds the top part of the view which contains the video animation.
-- (void)addVideoSection:(BOOL)useDefaultAppsDestination {
-  NSString* animationAssetName;
-  NSString* animationAssetNameDarkMode;
-
-  if (useDefaultAppsDestination) {
-    if (base::i18n::IsRTL()) {
-      animationAssetName = kDefaultBrowserDefaultAppsAnimationRtl;
-      animationAssetNameDarkMode =
-          kDefaultBrowserDefaultAppsAnimationRtlDarkmode;
-    } else {
-      animationAssetName = kDefaultBrowserDefaultAppsAnimation;
-      animationAssetNameDarkMode = kDefaultBrowserDefaultAppsAnimationDarkmode;
-    }
-  } else {
-    if (base::i18n::IsRTL()) {
-      animationAssetName = kDefaultBrowserAnimationRtl;
-      animationAssetNameDarkMode = kDefaultBrowserAnimationRtlDarkmode;
-    } else {
-      animationAssetName = kDefaultBrowserAnimation;
-      animationAssetNameDarkMode = kDefaultBrowserAnimationDarkmode;
-    }
-  }
-
-  self.animationViewWrapper = [self createAnimation:animationAssetName];
+- (void)addVideoSection {
+  self.animationViewWrapper = [self createAnimation:[self animationAssetName]];
   self.animationViewWrapper.animationView.accessibilityIdentifier =
       kDefaultBrowserInstructionsViewAnimationViewId;
   self.animationViewWrapperDarkMode =
-      [self createAnimation:animationAssetNameDarkMode];
+      [self createAnimation:[self animationAssetNameDarkmode]];
   self.animationViewWrapperDarkMode.animationView.accessibilityIdentifier =
       kDefaultBrowserInstructionsViewDarkAnimationViewId;
 
@@ -367,6 +357,40 @@ NSString* const kDefaultBrowserInstructionsViewDarkAnimationViewId =
           respondsToSelector:@selector(confirmationAlertDismissAction)]) {
     [self.actionHandler confirmationAlertDismissAction];
   }
+}
+
+- (NSString*)animationAssetName {
+  if (IsDefaultBrowserPromoIpadInstructions() &&
+      [[UIDevice currentDevice] userInterfaceIdiom] ==
+          UIUserInterfaceIdiomPad) {
+    return base::i18n::IsRTL() ? kDefaultBrowserAnimationRtlIpad
+                               : kDefaultBrowserAnimationIpad;
+  }
+
+  if (_useDefaultAppsDestination) {
+    return base::i18n::IsRTL() ? kDefaultBrowserDefaultAppsAnimationRtl
+                               : kDefaultBrowserDefaultAppsAnimation;
+  }
+
+  return base::i18n::IsRTL() ? kDefaultBrowserAnimationRtl
+                             : kDefaultBrowserAnimation;
+}
+
+- (NSString*)animationAssetNameDarkmode {
+  if (IsDefaultBrowserPromoIpadInstructions() &&
+      [[UIDevice currentDevice] userInterfaceIdiom] ==
+          UIUserInterfaceIdiomPad) {
+    return base::i18n::IsRTL() ? kDefaultBrowserAnimationRtlDarkmodeIpad
+                               : kDefaultBrowserAnimationDarkmodeIpad;
+  }
+
+  if (_useDefaultAppsDestination) {
+    return base::i18n::IsRTL() ? kDefaultBrowserDefaultAppsAnimationRtlDarkmode
+                               : kDefaultBrowserDefaultAppsAnimationDarkmode;
+  }
+
+  return base::i18n::IsRTL() ? kDefaultBrowserAnimationRtlDarkmode
+                             : kDefaultBrowserAnimationDarkmode;
 }
 
 @end

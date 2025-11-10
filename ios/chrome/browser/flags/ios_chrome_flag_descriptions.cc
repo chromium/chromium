@@ -420,6 +420,12 @@ const char kDefaultBrowserOffCyclePromoName[] =
 const char kDefaultBrowserOffCyclePromoDescription[] =
     "When enabled, an off-cycle default browser promo will be shown.";
 
+const char kDefaultBrowserPromoIpadInstructionsName[] =
+    "Default Browser Promo iPad Instructions";
+const char kDefaultBrowserPromoIpadInstructionsDescription[] =
+    "When enabled, displays default browser promo instructions specifically "
+    "adapted for iPad.";
+
 const char kDefaultBrowserPromoPropensityModelName[] =
     "Default Browser promo propensity model";
 const char kDefaultBrowserPromoPropensityModelDescription[] =

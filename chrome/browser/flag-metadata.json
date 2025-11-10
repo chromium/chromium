@@ -2280,6 +2280,11 @@
     "expiry_milestone": 143
   },
   {
+    "name": "default-browser-promo-ipad_instructions",
+    "owners": [ "cheickcisse@google.com", "bling-mony-pod@google.com" ],
+    "expiry_milestone": 145
+  },
+  {
     "name": "default-browser-promo-trigger-criteria-experiment",
     "owners": [ "gayane@google.com", "bling-flags@google.com" ],
     "expiry_milestone": 140
