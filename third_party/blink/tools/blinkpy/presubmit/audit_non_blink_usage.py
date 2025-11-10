@@ -2058,8 +2058,9 @@ _CONFIG = [
         # base::RefCounted and base::RefCountedThreadSafe should still be
         # explicitly blocked. blink::RefCounted and blink::ThreadSafeRefCounted
         # should be used instead.
-        # Also, there is a blink-specific version of MemoryConsumerRegistration
-        # that should be used over its base counterpart.
+        # Also, there is a blink-specific version of
+        # MemoryPressureListenerRegistration and MemoryConsumerRegistration that
+        # should be used over their base counterpart.
         'allowed': ['.+'],
         'inclass_allowed': ['.+'],
         'disallowed': [
@@ -2069,6 +2070,10 @@ _CONFIG = [
              'Use blink::MemoryConsumerRegistration'),
             ('base::AsyncMemoryConsumerRegistration',
              'Use blink::MemoryConsumerRegistration'),
+            ('base::MemoryPressureListenerRegistration',
+             'Use blink::MemoryPressureListenerRegistration'),
+            ('base::AsyncMemoryPressureListenerRegistration',
+             'Use blink::MemoryPressureListenerRegistration'),
             # TODO(https://crbug.com/1267866): this warning is shown twice for
             # renderer/platform/ violations.
             _DISALLOW_NON_BLINK_MOJOM,
@@ -2081,6 +2086,15 @@ _CONFIG = [
         'allowed': [
             'base::AsyncMemoryConsumerRegistration',
             'base::MemoryConsumerRegistration',
+        ]
+    },
+    {
+        'paths': [
+            'third_party/blink/renderer/platform/instrumentation/memory_pressure_listener.cc',
+            'third_party/blink/renderer/platform/instrumentation/memory_pressure_listener.h',
+        ],
+        'allowed': [
+            'base::AsyncMemoryPressureListenerRegistration',
         ]
     },
     {

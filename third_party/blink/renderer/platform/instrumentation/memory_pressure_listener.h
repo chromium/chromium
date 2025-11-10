@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_INSTRUMENTATION_MEMORY_PRESSURE_LISTENER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_INSTRUMENTATION_MEMORY_PRESSURE_LISTENER_H_
 
+#include <optional>
+
 #include "base/memory/memory_pressure_listener.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -17,6 +19,26 @@ class PLATFORM_EXPORT MemoryPressureListener : public GarbageCollectedMixin {
   virtual ~MemoryPressureListener() = default;
 
   virtual void OnMemoryPressure(base::MemoryPressureLevel) {}
+};
+
+// A version of base::MemoryPressureListenerRegistration that is compatible with
+// garbage-collected classes, by forcing the user to unregister the listener
+// before the destructor is called. The registration is always done
+// asynchronously, to support --single-process mode.
+// TODO(pmonette): Investigate making this sync whenever possible.
+class PLATFORM_EXPORT MemoryPressureListenerRegistration {
+ public:
+  MemoryPressureListenerRegistration(base::Location,
+                                     base::MemoryPressureListenerTag,
+                                     base::MemoryPressureListener*);
+  ~MemoryPressureListenerRegistration();
+
+  // Cancels the registration. This must be invoked manually whenever the
+  // registration is no longer needed.
+  void Dispose();
+
+ private:
+  std::optional<base::AsyncMemoryPressureListenerRegistration> registration_;
 };
 
 // MemoryPressureListenerRegistry listens to some events which could be
