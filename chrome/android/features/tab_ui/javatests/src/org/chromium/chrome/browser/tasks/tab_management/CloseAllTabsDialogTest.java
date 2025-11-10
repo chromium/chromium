@@ -9,11 +9,11 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
-import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
 
 import static org.chromium.chrome.test.util.ChromeTabUtils.getTabCountOnUiThread;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
@@ -154,7 +154,7 @@ public class CloseAllTabsDialogTest {
 
     private void navigateToCloseAllTabsDialog(TabModelSelector selector) {
         int tabCount = getTabCountOnUiThread(selector.getModel(mIsIncognito));
-        assertThat(tabCount, greaterThanOrEqualTo(1));
+        assertThat(tabCount).isAtLeast(1);
 
         // Open the AppMenu in the Tab Switcher and ensure it shows.
         TabUiTestHelper.enterTabSwitcher(mActivityTestRule.getActivity());

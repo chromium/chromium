@@ -4,11 +4,11 @@
 
 package org.chromium.chrome.browser.hub;
 
-import static org.hamcrest.Matchers.instanceOf;
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
@@ -760,7 +760,7 @@ public class HubLayoutUnitTest {
         startShowing(LayoutType.BROWSING, true);
 
         // Should use empty scene layer when hub layout is shown in XR.
-        assertThat(mHubLayout.getSceneLayer(), instanceOf(SolidColorSceneLayer.class));
+        assertThat(mHubLayout.getSceneLayer()).isInstanceOf(SolidColorSceneLayer.class);
 
         // Should delay animation to allow FSM transitions to complete.
         verify(animatorSet).setStartDelay(HubAnimationConstants.HUB_LAYOUT_XR_FADE_IN_DELAY_MS);
@@ -791,7 +791,7 @@ public class HubLayoutUnitTest {
         startHiding(LayoutType.BROWSING, NEW_TAB_ID);
 
         // Should use empty scene layer similar to show behavior.
-        assertThat(mHubLayout.getSceneLayer(), instanceOf(SolidColorSceneLayer.class));
+        assertThat(mHubLayout.getSceneLayer()).isInstanceOf(SolidColorSceneLayer.class);
         // Should use fade animation instead of pane's animation.
         verify(mTabSwitcherPane, never()).createHideHubLayoutAnimatorProvider(any());
     }
@@ -916,7 +916,7 @@ public class HubLayoutUnitTest {
 
     private void animateCheckingSceneLayerAndLayoutTabs(
             Runnable startAnimationRunnable, @TabId int tabId) {
-        assertThat(mHubLayout.getSceneLayer(), instanceOf(SolidColorSceneLayer.class));
+        assertThat(mHubLayout.getSceneLayer()).isInstanceOf(SolidColorSceneLayer.class);
         LayoutTab[] layoutTabs = mHubLayout.getLayoutTabsToRender();
         assertNull(layoutTabs);
 
@@ -925,7 +925,7 @@ public class HubLayoutUnitTest {
 
         startAnimationRunnable.run();
 
-        assertThat(mHubLayout.getSceneLayer(), instanceOf(StaticTabSceneLayer.class));
+        assertThat(mHubLayout.getSceneLayer()).isInstanceOf(StaticTabSceneLayer.class);
         layoutTabs = mHubLayout.getLayoutTabsToRender();
         assertEquals(1, layoutTabs.length);
         assertEquals(tabId, layoutTabs[0].getId());
@@ -953,7 +953,7 @@ public class HubLayoutUnitTest {
         mHubContainerView.runOnNextLayoutRunnables();
         ShadowLooper.runUiThreadTasks();
 
-        assertThat(mHubLayout.getSceneLayer(), instanceOf(SolidColorSceneLayer.class));
+        assertThat(mHubLayout.getSceneLayer()).isInstanceOf(SolidColorSceneLayer.class);
         layoutTabs = mHubLayout.getLayoutTabsToRender();
         assertNull(layoutTabs);
     }

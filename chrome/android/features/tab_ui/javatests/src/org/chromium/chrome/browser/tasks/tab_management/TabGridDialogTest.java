@@ -28,10 +28,10 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.core.IsEqual.equalTo;
@@ -39,7 +39,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
@@ -2324,17 +2323,11 @@ public class TabGridDialogTest {
                             // Check the position.
                             if (isPortrait) {
                                 assertEquals(side, minMargin);
-                                assertThat(
-                                        top,
-                                        allOf(
-                                                greaterThanOrEqualTo(minMargin),
-                                                lessThanOrEqualTo(maxMargin)));
+                                assertThat(top).isAtLeast(minMargin);
+                                assertThat(top).isAtMost(maxMargin);
                             } else {
-                                assertThat(
-                                        side,
-                                        allOf(
-                                                greaterThanOrEqualTo(minMargin),
-                                                lessThanOrEqualTo(maxMargin)));
+                                assertThat(side).isAtLeast(minMargin);
+                                assertThat(side).isAtMost(maxMargin);
                                 assertEquals(top, minMargin);
                             }
                             // Check the size.

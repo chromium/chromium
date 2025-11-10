@@ -4,10 +4,10 @@
 
 package org.chromium.chrome.browser.safety_hub;
 
-import static org.hamcrest.Matchers.greaterThan;
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
 
 import android.app.Notification;
 
@@ -108,9 +108,8 @@ public class UnsubscribedNotificationsNotificationManagerTest {
                 "Chrome stopped notifications from these sites. You can review and manage.",
                 notificationsAfter.get(0).notification.extras.getString(Notification.EXTRA_TEXT));
 
-        assertThat(
-                notificationsAfter.get(0).notification.when,
-                greaterThan(notifications.get(0).notification.when));
+        assertThat(notificationsAfter.get(0).notification.when)
+                .isGreaterThan(notifications.get(0).notification.when);
 
         UnsubscribedNotificationsNotificationManager.displayNotification(0);
         assertEquals(0, mMockNotificationManager.getNotifications().size());

@@ -4,11 +4,11 @@
 
 package org.chromium.chrome.browser.compositor.layouts.phone;
 
-import static org.hamcrest.Matchers.instanceOf;
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -239,8 +239,9 @@ public class NewTabAnimationLayoutUnitTest {
                 mNewTabAnimationLayout.getViewportMode());
         assertTrue(mNewTabAnimationLayout.handlesTabCreating());
         assertFalse(mNewTabAnimationLayout.handlesTabClosing());
-        assertThat(mNewTabAnimationLayout.getEventFilter(), instanceOf(BlackHoleEventFilter.class));
-        assertThat(mNewTabAnimationLayout.getSceneLayer(), instanceOf(StaticTabSceneLayer.class));
+        assertThat(mNewTabAnimationLayout.getEventFilter())
+                .isInstanceOf(BlackHoleEventFilter.class);
+        assertThat(mNewTabAnimationLayout.getSceneLayer()).isInstanceOf(StaticTabSceneLayer.class);
         assertEquals(LayoutType.SIMPLE_ANIMATION, mNewTabAnimationLayout.getLayoutType());
     }
 

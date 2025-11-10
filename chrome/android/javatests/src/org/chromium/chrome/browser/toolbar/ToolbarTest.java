@@ -10,15 +10,13 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.hamcrest.CoreMatchers.allOf;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
@@ -199,7 +197,7 @@ public class ToolbarTest {
     private void testControlContainerTopMargin(boolean expectBookmarkBar) {
         // Verify bookmark bar (in-)existence.
         final @Nullable var bookmarkBar = mActivity.findViewById(R.id.bookmark_bar);
-        assertThat(bookmarkBar, is(expectBookmarkBar ? notNullValue() : nullValue()));
+        assertThat(bookmarkBar != null).isEqualTo(expectBookmarkBar);
 
         // Verify browser controls manager existence.
         final var browserControlsManager =

@@ -4,12 +4,10 @@
 
 package org.chromium.chrome.browser.tabbed_mode;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -164,7 +162,7 @@ public class TabbedRootUiCoordinatorTest {
         // Verify bookmark bar (in-)existence.
         final var activity = mActivityTestRule.getActivity();
         final @Nullable var bookmarkBar = activity.findViewById(R.id.bookmark_bar);
-        assertThat(bookmarkBar, is(expectBookmarkBar ? notNullValue() : nullValue()));
+        assertThat(bookmarkBar != null).isEqualTo(expectBookmarkBar);
 
         // Verify browser controls manager existence.
         final var browserControlsManager =
