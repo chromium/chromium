@@ -170,9 +170,14 @@ class BookmarkDataTypeProcessor : public syncer::DataTypeProcessor,
   [[nodiscard]] bool HandlePendingClearMetadata(
       const std::string& metadata_str);
 
-  // Processes the metadata and initializes the tracker if the metadata is valid
-  // and there was no previous error.
-  void ProcessMetadataAndMaybeInitTracker(const std::string& metadata_str);
+  // Parses and validates the metadata. Returns the metadata if it is valid and
+  // there was no previous error.
+  std::optional<sync_pb::BookmarkModelMetadata> ParseAndValidateMetadata(
+      const std::string& metadata_str);
+
+  // Initializes the tracker.
+  void InitTracker(sync_pb::BookmarkModelMetadata model_metadata,
+                   const std::string& metadata_str);
 
   // Creates a DictionaryValue for local and remote debugging information about
   // `node` and appends it to `all_nodes`. It does the same for child nodes

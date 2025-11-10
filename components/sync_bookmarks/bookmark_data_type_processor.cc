@@ -391,14 +391,15 @@ bool BookmarkDataTypeProcessor::HandlePreviousErrorState(
   return true;
 }
 
-void BookmarkDataTypeProcessor::ProcessMetadataAndMaybeInitTracker(
+std::optional<sync_pb::BookmarkModelMetadata>
+BookmarkDataTypeProcessor::ParseAndValidateMetadata(
     const std::string& metadata_str) {
+  if (HandlePendingClearMetadata(metadata_str)) {
+    return std::nullopt;
+  }
+
   sync_pb::BookmarkModelMetadata model_metadata;
   model_metadata.ParseFromString(metadata_str);
-
-  if (HandlePendingClearMetadata(metadata_str)) {
-    return;
-  }
 
   MigrateLegacyExceededLimitError(&model_metadata);
   // Ensure that the legacy field is not set, as it should have been migrated.
@@ -406,9 +407,14 @@ void BookmarkDataTypeProcessor::ProcessMetadataAndMaybeInitTracker(
   MaybeResetExceededLimitError(&model_metadata);
 
   if (HandlePreviousErrorState(model_metadata)) {
-    return;
+    return std::nullopt;
   }
+  return model_metadata;
+}
 
+void BookmarkDataTypeProcessor::InitTracker(
+    sync_pb::BookmarkModelMetadata model_metadata,
+    const std::string& metadata_str) {
   bookmark_tracker_ = SyncedBookmarkTracker::CreateFromBookmarkModelAndMetadata(
       bookmark_model_, std::move(model_metadata));
 
@@ -457,7 +463,12 @@ void BookmarkDataTypeProcessor::ModelReadyToSync(
   bookmark_model_ = model;
   schedule_save_closure_ = schedule_save_closure;
 
-  ProcessMetadataAndMaybeInitTracker(metadata_str);
+  std::optional<sync_pb::BookmarkModelMetadata> model_metadata =
+      ParseAndValidateMetadata(metadata_str);
+
+  if (model_metadata) {
+    InitTracker(std::move(*model_metadata), metadata_str);
+  }
 
   // Post a task instead of invoking ConnectIfReady() immediately to avoid
   // sophisticated operations while BookmarkModel is being loaded. In
