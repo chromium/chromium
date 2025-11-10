@@ -109,7 +109,7 @@ class AppInfoDialogViewsTest : public BrowserWithTestWindowTest,
     BrowserWithTestWindowTest::SetUp();
 
 #if BUILDFLAG(IS_CHROMEOS)
-    arc_app_test_->SetUp(extension_environment_.profile());
+    arc_app_test_->PostProfileSetUp(extension_environment_.profile());
 
     shelf_model_ = std::make_unique<ash::ShelfModel>();
     browser_controller_.emplace();

@@ -98,7 +98,7 @@ class KioskArcvmAppServiceTest : public testing::Test {
 
     profile_ = std::make_unique<TestingProfile>();
     profile_->set_profile_name(kAppEmail);
-    arc_app_test_.SetUp(profile_.get());
+    arc_app_test_.PostProfileSetUp(profile_.get());
     app_info_ = arc::mojom::AppInfo::New(kAppName, kAppPackageName,
                                          kAppClassName, /*sticky=*/true);
     arc_policy_bridge_ =

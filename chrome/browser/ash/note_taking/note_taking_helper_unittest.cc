@@ -238,7 +238,7 @@ class NoteTakingHelperTest : public BrowserWithTestWindowTest {
 
     profile()->GetPrefs()->SetBoolean(arc::prefs::kArcEnabled,
                                       flags & ENABLE_PLAY_STORE);
-    arc_app_test_.SetUp(profile());
+    arc_app_test_.PostProfileSetUp(profile());
     // Set up FakeIntentHelperHost to emulate full-duplex IntentHelper
     // connection.
     intent_helper_host_ = std::make_unique<arc::FakeIntentHelperHost>(

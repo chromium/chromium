@@ -424,7 +424,7 @@ TEST_F(ReportGeneratorTest, ReportArcAppInChromeOS) {
   ArcAppTest arc_app_test;
   arc_app_test.PreProfileSetUp();
   TestingProfile primary_profile;
-  arc_app_test.SetUp(&primary_profile);
+  arc_app_test.PostProfileSetUp(&primary_profile);
 
   // Create two Arc applications in primary profile.
   AddArcPackageAndApp(&arc_app_test, kArcAppName1, kArcPackageName1,
@@ -467,7 +467,7 @@ TEST_F(ReportGeneratorTest, ArcPlayStoreDisabled) {
   ArcAppTest arc_app_test;
   arc_app_test.PreProfileSetUp();
   TestingProfile primary_profile;
-  arc_app_test.SetUp(&primary_profile);
+  arc_app_test.PostProfileSetUp(&primary_profile);
 
   // Create two Arc applications in primary profile.
   AddArcPackageAndApp(&arc_app_test, kArcAppName1, kArcPackageName1,

@@ -57,7 +57,7 @@ class PromiseAppServiceTest : public testing::Test,
         url_loader_factory_->GetSafeWeakWrapper());
     profile_ = profile_builder.Build();
 
-    arc_app_test_.SetUp(profile_.get());
+    arc_app_test_.PostProfileSetUp(profile_.get());
     service_ = proxy()->PromiseAppService();
     service_->SetSkipApiKeyCheckForTesting(true);
     service_->SetSkipAlmanacForTesting(false);

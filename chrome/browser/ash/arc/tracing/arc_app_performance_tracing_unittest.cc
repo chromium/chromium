@@ -130,7 +130,7 @@ class ArcAppPerformanceTracingTest : public BrowserWithTestWindowTest {
 
     BrowserWithTestWindowTest::SetUp();
 
-    arc_app_test_.SetUp(profile());
+    arc_app_test_.PostProfileSetUp(profile());
     tracing_helper_.SetUp(profile());
 
     ArcAppPerformanceTracing::SetFocusAppForTesting(

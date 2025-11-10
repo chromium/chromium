@@ -128,7 +128,7 @@ void ArcAppTest::PreProfileSetUp() {
   arc::ArcSessionManager::SetUiEnabledForTesting(false);
 }
 
-void ArcAppTest::SetUp(Profile* profile) {
+void ArcAppTest::PostProfileSetUp(Profile* profile) {
   CHECK(is_pre_profile_setup_called_);
 
   DCHECK(!profile_);

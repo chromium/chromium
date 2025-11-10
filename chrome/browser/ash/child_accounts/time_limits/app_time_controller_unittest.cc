@@ -178,7 +178,7 @@ void AppTimeControllerTest::SetUp() {
   apps::AppServiceProxyFactory::GetForProfile(profile_.get())
       ->OverrideInnerIconLoaderForTesting(&icon_loader_);
 
-  arc_app_test_.SetUp(profile_.get());
+  arc_app_test_.PostProfileSetUp(profile_.get());
   arc_app_test_.app_instance()->set_icon_response_type(
       arc::FakeAppInstance::IconResponseType::ICON_RESPONSE_SKIP);
   task_environment_.RunUntilIdle();

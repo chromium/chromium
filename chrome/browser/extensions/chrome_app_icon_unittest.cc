@@ -286,7 +286,7 @@ TEST_F(ChromeAppIconTest, ChromeBadging) {
   ArcAppTest arc_app_test;
   // TODO(crbug.com/454468678): This should be called before profile is created.
   arc_app_test.PreProfileSetUp();
-  arc_app_test.SetUp(profile());
+  arc_app_test.PostProfileSetUp(profile());
 
   TestAppIcon reference_icon(profile(), kTestAppId,
                              extension_misc::EXTENSION_ICON_MEDIUM);

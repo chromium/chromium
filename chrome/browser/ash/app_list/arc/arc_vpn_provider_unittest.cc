@@ -70,7 +70,7 @@ class ArcVpnProviderTest : public AppListTestBase {
   void SetUp() override {
     arc_app_test_.PreProfileSetUp();
     AppListTestBase::SetUp();
-    arc_app_test_.SetUp(profile());
+    arc_app_test_.PostProfileSetUp(profile());
     ArcVpnProviderManager* arc_vpn_provider_manager =
         ArcVpnProviderManager::Get(profile());
     DCHECK(arc_vpn_provider_manager);

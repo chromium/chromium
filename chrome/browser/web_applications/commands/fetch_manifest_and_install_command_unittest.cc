@@ -108,7 +108,7 @@ class FetchManifestAndInstallCommandTest : public WebAppTest {
     web_contents_manager().SetUrlLoaded(web_contents(), kWebAppUrl);
 
 #if BUILDFLAG(IS_CHROMEOS)
-    arc_app_test_.SetUp(profile());
+    arc_app_test_.PostProfileSetUp(profile());
 
     auto* arc_bridge_service =
         arc_app_test_.arc_service_manager()->arc_bridge_service();

@@ -579,7 +579,7 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
               ->AppRegistryCache()));
 
     if (auto_start_arc_app_test_) {
-      arc_app_test_.SetUp(profile());
+      arc_app_test_.PostProfileSetUp(profile());
     }
 
     // Wait until |extension_system| is signaled as started.
@@ -4701,7 +4701,7 @@ class ChromeShelfControllerPlayStoreAvailabilityTest
 TEST_F(ChromeShelfControllerArcDefaultAppsTest, DISABLED_DefaultApps) {
   // TODO(crbug.com/454468678): This should be called before profile is created.
   arc_app_test_.PreProfileSetUp();
-  arc_app_test_.SetUp(profile());
+  arc_app_test_.PostProfileSetUp(profile());
   InitShelfController();
 
   ArcAppListPrefs* const prefs = arc_app_test_.arc_app_list_prefs();
@@ -4765,7 +4765,7 @@ TEST_F(ChromeShelfControllerArcDefaultAppsTest, PlayStoreDeferredLaunch) {
   extension_registrar_->AddExtension(arc_support_host_.get());
   // TODO(crbug.com/454468678): This should be called before profile is created.
   arc_app_test_.PreProfileSetUp();
-  arc_app_test_.SetUp(profile());
+  arc_app_test_.PostProfileSetUp(profile());
   ArcAppListPrefs* const prefs = arc_app_test_.arc_app_list_prefs();
   EXPECT_TRUE(prefs->IsRegistered(arc::kPlayStoreAppId));
 
@@ -4795,7 +4795,7 @@ TEST_F(ChromeShelfControllerArcDefaultAppsTest, PlayStoreLaunchMetric) {
   extension_registrar_->AddExtension(arc_support_host_.get());
   // TODO(crbug.com/454468678): This should be called before profile is created.
   arc_app_test_.PreProfileSetUp();
-  arc_app_test_.SetUp(profile());
+  arc_app_test_.PostProfileSetUp(profile());
   ArcAppListPrefs* const prefs = arc_app_test_.arc_app_list_prefs();
 
   InitShelfController();
@@ -4853,7 +4853,7 @@ TEST_F(ChromeShelfControllerArcDefaultAppsTest, DeferredLaunchMetric) {
   extension_registrar_->AddExtension(arc_support_host_.get());
   // TODO(crbug.com/454468678): This should be called before profile is created.
   arc_app_test_.PreProfileSetUp();
-  arc_app_test_.SetUp(profile());
+  arc_app_test_.PostProfileSetUp(profile());
 
   InitShelfController();
   EnablePlayStore(true);
@@ -4899,7 +4899,7 @@ TEST_P(ChromeShelfControllerPlayStoreAvailabilityTest, Visible) {
   extension_registrar_->AddExtension(arc_support_host_.get());
   // TODO(crbug.com/454468678): This should be called before profile is created.
   arc_app_test_.PreProfileSetUp();
-  arc_app_test_.SetUp(profile());
+  arc_app_test_.PostProfileSetUp(profile());
 
   InitShelfController();
   StartPrefSyncService(syncer::SyncDataList());

@@ -880,7 +880,7 @@ class AppManagementPageHandlerArcTest
     arc_app_test_.set_initialize_real_intent_helper_bridge(true);
     arc_app_test_.PreProfileSetUp();
     AppManagementPageHandlerTestBase::SetUp();
-    arc_app_test_.SetUp(profile());
+    arc_app_test_.PostProfileSetUp(profile());
   }
 
   void TearDown() override {

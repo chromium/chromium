@@ -34,7 +34,7 @@ void AppControlsTestBase::SetUp() {
       switches::kDisableDefaultApps);
 
   app_service_test_.SetUp(profile_.get());
-  arc_app_test_.SetUp(profile_.get());
+  arc_app_test_.PostProfileSetUp(profile_.get());
   task_environment()->RunUntilIdle();
 }
 

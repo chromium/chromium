@@ -74,7 +74,7 @@ class ArcKeyPermissionsManagerDelegateTest : public testing::Test {
     builder.SetPolicyService(std::move(policy_service_));
     profile_ = builder.Build();
 
-    arc_app_test_.SetUp(profile_.get());
+    arc_app_test_.PostProfileSetUp(profile_.get());
     app_instance_ = std::make_unique<arc::FakeAppInstance>(
         arc_app_test_.arc_app_list_prefs());
 

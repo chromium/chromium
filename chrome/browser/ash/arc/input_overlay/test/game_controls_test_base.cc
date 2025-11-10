@@ -54,7 +54,7 @@ void GameControlsTestBase::SetUp() {
   arc_app_test_.PreProfileSetUp();
 
   profile_ = std::make_unique<TestingProfile>();
-  arc_app_test_.SetUp(profile_.get());
+  arc_app_test_.PostProfileSetUp(profile_.get());
   SimulatedAppInstalled(task_environment(), arc_app_test_, kEnabledPackageName,
                         /*is_gc_opt_out=*/false,
                         /*is_game=*/true);

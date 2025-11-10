@@ -114,7 +114,7 @@ class AppSearchProviderTest : public AppSearchProviderTestBase {
 TEST_F(AppSearchProviderTest, Basic) {
   // TODO(crbug.com/454468678): This should be called before profile is created.
   arc_app_test().PreProfileSetUp();
-  arc_app_test().SetUp(profile());
+  arc_app_test().PostProfileSetUp(profile());
   std::vector<arc::mojom::AppInfoPtr> arc_apps;
   for (int i = 0; i < 2; i++)
     arc_apps.emplace_back(arc_app_test().fake_apps()[i]->Clone());
@@ -155,7 +155,7 @@ TEST_F(AppSearchProviderTest, NonLatinLocale) {
 
   // TODO(crbug.com/454468678): This should be called before profile is created.
   arc_app_test().PreProfileSetUp();
-  arc_app_test().SetUp(profile());
+  arc_app_test().PostProfileSetUp(profile());
 
   const std::string test_app_id_1 = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
   AddExtension(test_app_id_1, "Тестна апликација 1",
@@ -239,7 +239,7 @@ TEST_F(AppSearchProviderTest, UninstallExtension) {
 TEST_F(AppSearchProviderTest, InstallUninstallArc) {
   // TODO(crbug.com/454468678): This should be called before profile is created.
   arc_app_test().PreProfileSetUp();
-  arc_app_test().SetUp(profile());
+  arc_app_test().PostProfileSetUp(profile());
   std::vector<arc::mojom::AppInfoPtr> arc_apps;
   arc_app_test().app_instance()->SendRefreshAppList(arc_apps);
 
@@ -294,7 +294,7 @@ TEST_F(AppSearchProviderTest, NoResultsAfterClearingSearch) {
 TEST_F(AppSearchProviderTest, FilterDuplicate) {
   // TODO(crbug.com/454468678): This should be called before profile is created.
   arc_app_test().PreProfileSetUp();
-  arc_app_test().SetUp(profile());
+  arc_app_test().PostProfileSetUp(profile());
 
   extensions::ExtensionPrefs* extension_prefs =
       extensions::ExtensionPrefs::Get(profile_.get());
@@ -601,7 +601,7 @@ TEST_P(AppSearchProviderWithArcAppInstallType,
   }
   // TODO(crbug.com/454468678): This should be called before profile is created.
   arc_app_test().PreProfileSetUp();
-  arc_app_test().SetUp(profile());
+  arc_app_test().PostProfileSetUp(profile());
 
   ArcAppListPrefs* const prefs = arc_app_test().arc_app_list_prefs();
   ASSERT_TRUE(prefs);

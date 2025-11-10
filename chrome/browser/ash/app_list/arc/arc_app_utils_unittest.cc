@@ -56,7 +56,7 @@ TEST_F(ArcAppUtilsTest, GetAndroidId) {
   arc_app_test_.PreProfileSetUp();
 
   TestingProfile testing_profile;
-  arc_app_test_.SetUp(&testing_profile);
+  arc_app_test_.PostProfileSetUp(&testing_profile);
 
   constexpr int64_t kAndroidIdForTest = 1000;
   arc_app_test_.app_instance()->set_android_id(kAndroidIdForTest);

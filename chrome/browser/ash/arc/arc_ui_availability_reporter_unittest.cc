@@ -66,7 +66,7 @@ class ArcUiAvailabilityReporterTest : public testing::Test {
 
     profile_ = TestingProfile::Builder().Build();
 
-    arc_app_test_.SetUp(profile());
+    arc_app_test_.PostProfileSetUp(profile());
     app_instance_ = std::make_unique<FakeAppInstance>(
         arc_app_test_.arc_app_list_prefs() /* app_host */);
     intent_helper_instance_ = std::make_unique<FakeIntentHelperInstance>();

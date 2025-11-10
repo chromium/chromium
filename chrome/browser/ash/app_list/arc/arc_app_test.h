@@ -53,8 +53,8 @@ class ArcAppTest {
   void PreProfileSetUp();
 
   // Perform initialization that's supposed to be done after profile creation.
-  // This triggers `PreProfileSetUp` if needed.
-  void SetUp(Profile* profile);
+  // `PreProfileSetUp` must be called before this.
+  void PostProfileSetUp(Profile* profile);
 
   void TearDown();
 

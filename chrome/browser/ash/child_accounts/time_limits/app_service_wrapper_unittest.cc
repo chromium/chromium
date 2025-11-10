@@ -123,7 +123,7 @@ class AppServiceWrapperTest : public ::testing::Test {
     web_app::test::AwaitStartWebAppProviderAndSubsystems(profile_.get());
 
     app_service_test_.SetUp(profile_.get());
-    arc_app_test_.SetUp(profile_.get());
+    arc_app_test_.PostProfileSetUp(profile_.get());
     task_environment_.RunUntilIdle();
 
     tested_wrapper().AddObserver(&test_listener_);

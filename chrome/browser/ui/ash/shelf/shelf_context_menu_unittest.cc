@@ -181,7 +181,7 @@ class ShelfContextMenuTest : public ChromeAshTestBase {
     crostini_helper_->ReInitializeAppServiceIntegration();
 
     app_service_test_.SetUp(profile());
-    arc_app_test_.SetUp(profile());
+    arc_app_test_.PostProfileSetUp(profile());
 
     model_ = std::make_unique<ash::ShelfModel>();
     shelf_controller_ =

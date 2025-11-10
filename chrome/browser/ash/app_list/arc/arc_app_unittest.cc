@@ -510,7 +510,7 @@ class ArcAppModelBuilderTest : public extensions::ExtensionServiceTestBase,
 
     OnBeforeArcTestSetup();
 
-    arc_app_test_.SetUp(profile_.get());
+    arc_app_test_.PostProfileSetUp(profile_.get());
 
     web_app::FakeWebAppProvider::Get(profile_.get())->Start();
     CreateBuilder();
@@ -948,7 +948,7 @@ class ArcAppModelBuilderRecreate : public ArcAppModelBuilderTest {
     // TODO(crbug.com/454468678): This should be called before profile is
     // created.
     arc_app_test()->PreProfileSetUp();
-    arc_app_test()->SetUp(profile_.get());
+    arc_app_test()->PostProfileSetUp(profile_.get());
     CreateBuilder();
   }
 

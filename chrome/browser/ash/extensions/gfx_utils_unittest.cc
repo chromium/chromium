@@ -43,7 +43,7 @@ class DualBadgeMapTest : public ExtensionServiceTestBase {
     extensions::ExtensionServiceTestBase::SetUp();
     arc_app_test_.PreProfileSetUp();
     InitializeEmptyExtensionService();
-    arc_app_test_.SetUp(profile_.get());
+    arc_app_test_.PostProfileSetUp(profile_.get());
   }
 
   void TearDown() override {
