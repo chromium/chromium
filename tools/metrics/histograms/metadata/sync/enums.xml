@@ -1409,6 +1409,7 @@ chromium-metrics-reviews@google.com.
   <int value="189"
       label="kAutofillValuableMetadataTransactionCommitFailedOnIncrementalSync"/>
   <int value="190" label="kAutofillValuableMetadataFailedToLoadMetadata"/>
+  <int value="191" label="kDataTypeControllerInFailedState"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/sync/model/model_error.h:Type) -->
