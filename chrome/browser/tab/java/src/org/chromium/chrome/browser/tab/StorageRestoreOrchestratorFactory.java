@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tab;
 
+import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
@@ -13,33 +14,34 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.tabs.TabStripCollection;
 
 /**
- * Java counterpart for the native StorageRestoreOrchestrator. This class facilitates the
- * restoration of a TabStripCollection from storage.
+ * Java Factory for StorageRestoreOrchestrator. This class facilitates the restoration of a
+ * TabStripCollection from storage.
  */
 @NullMarked
 @JNINamespace("tabs")
-public class StorageRestoreOrchestrator {
-    private long mNativePtr;
+public class StorageRestoreOrchestratorFactory {
+    public final Profile profile;
+    public final TabStripCollection collection;
+    public final StorageLoadedData loadedData;
 
-    public StorageRestoreOrchestrator(
+    public StorageRestoreOrchestratorFactory(
             Profile profile, TabStripCollection collection, StorageLoadedData loadedData) {
-        mNativePtr = StorageRestoreOrchestratorJni.get().init(profile, collection, loadedData);
+        this.profile = profile;
+        this.collection = collection;
+        this.loadedData = loadedData;
     }
 
-    /** Destroys the native counterpart of this object. */
-    public void destroy() {
-        assert mNativePtr != 0;
-        StorageRestoreOrchestratorJni.get().destroy(mNativePtr);
-        mNativePtr = 0;
+    @CalledByNative
+    public static long build(StorageRestoreOrchestratorFactory factory) {
+        return StorageRestoreOrchestratorFactoryJni.get()
+                .build(factory.profile, factory.collection, factory.loadedData);
     }
 
     @NativeMethods
     interface Natives {
-        long init(
+        long build(
                 @JniType("Profile*") Profile profile,
                 @JniType("tabs::TabStripCollection*") TabStripCollection collection,
                 @JniType("StorageLoadedDataAndroid*") StorageLoadedData loadedData);
-
-        void destroy(long nativeStorageRestoreOrchestratorAndroid);
     }
 }
