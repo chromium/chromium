@@ -85,10 +85,18 @@ void LineFlexer::FreezeViolations(FlexerState should_freeze) {
 }
 
 bool LineFlexer::ResolveFlexibleLengths() {
-  const double sum_flex_factors =
+  // If the total flex-factors are less than one, we should only distribute
+  // into the free-space limited by this factor. E.g. if we have:
+  //
+  // <div style="display: flex; width: 100px;">
+  //   <div style="flex-grow: 0.5;"></div>
+  // </div>
+  //
+  // The item should grow to 50px, not 100px.
+  const double total_flex_factor =
       (mode_ == kGrow) ? total_flex_grow_ : total_flex_shrink_;
-  if (sum_flex_factors > 0 && sum_flex_factors < 1) {
-    LayoutUnit fractional(initial_free_space_ * sum_flex_factors);
+  if (total_flex_factor > 0.0 && total_flex_factor < 1.0) {
+    LayoutUnit fractional(initial_free_space_ * total_flex_factor);
     if (fractional.Abs() < free_space_.Abs()) {
       free_space_ = fractional;
     }
