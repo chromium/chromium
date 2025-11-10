@@ -12775,15 +12775,14 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_NVS_HttpCache_Only_WithNewAreEquivalent_DevCanary_1008_Desktop",
+                    "name": "Enabled_NVS_HttpCache_And_Omnibox_Prefetch",
                     "enable_features": [
                         "HttpCacheNoVarySearch",
-                        "HttpNoVarySearchDataUseNewAreEquivalent"
+                        "SearchPrefetchWithNoVarySearchDiskCache"
                     ],
                     "disable_features": [
                         "DsePreload2",
-                        "PrefetchPrerenderIntegration",
-                        "SearchPrefetchWithNoVarySearchDiskCache"
+                        "PrefetchPrerenderIntegration"
                     ]
                 }
             ]
