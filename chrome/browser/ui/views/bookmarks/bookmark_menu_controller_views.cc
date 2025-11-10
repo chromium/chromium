@@ -50,6 +50,8 @@ BookmarkMenuController::BookmarkMenuController(
   if (for_drop) {
     run_type |= views::MenuRunner::FOR_DROP;
   }
+
+  run_type |= views::MenuRunner::HAS_MNEMONICS;
   menu_runner_ = std::make_unique<views::MenuRunner>(
       base::WrapUnique<MenuItemView>(menu_delegate_->menu()), run_type);
 }

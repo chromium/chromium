@@ -11,7 +11,9 @@
 #include "chrome/browser/ui/bookmarks/bookmark_bar.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/toolbar/bookmark_sub_menu_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
@@ -356,4 +358,92 @@ IN_PROC_BROWSER_TEST_F(BookmarkBarDragAndDropInteractiveTest,
       NameBarMenuChild(kANodeMenuId, 1u),
       CheckViewProperty(kANodeMenuId, &views::MenuItemView::title, u"a"));
 }
+
+class BookmarkTabGroupMenuImprovementsTest
+    : public BookmarkBarDragAndDropInteractiveTest {
+ public:
+  BookmarkTabGroupMenuImprovementsTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kTabGroupMenuImprovements);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(BookmarkTabGroupMenuImprovementsTest,
+                       OpenAllUsingLeftClickOnFolder) {
+  bookmarks::BookmarkModel* model =
+      BookmarkModelFactory::GetForBrowserContext(browser()->profile());
+  const bookmarks::BookmarkNode* bb_node = model->bookmark_bar_node();
+  const bookmarks::BookmarkNode* folder =
+      model->AddFolder(bb_node, 0, u"folder");
+
+  const std::u16string tab_title = u"bookmark tab title";
+  model->AddNewURL(folder, 0, tab_title, GURL("chrome://dino"));
+  model->AddNewURL(folder, 1, tab_title, GURL("chrome://dino"));
+  const bookmarks::BookmarkNode* nested_folder =
+      model->AddFolder(folder, 2, u"nested folder");
+  model->AddNewURL(folder, 3, tab_title, GURL("chrome://dino"));
+  model->AddNewURL(nested_folder, 0, u"nested_tab", GURL("chrome://dino"));
+
+  static std::string kFolderButtonId = "kFolderButtonId";
+  static std::string kOpenAllButtonId = "kOpenAllButtonId ";
+
+  RunTestSequence(
+      WaitForShow(kBookmarkBarElementId),
+      NameBookmarkButton(kFolderButtonId, folder), PressButton(kFolderButtonId),
+      WaitForBookmarkBarMenuShown(), NameBarMenuChild(kOpenAllButtonId, 0u),
+      SelectMenuItem(kOpenAllButtonId), WaitForHide(kOpenAllButtonId),
+      // Check that we only open tabs for URLS in the first level of the folder.
+      // In particular we don't open a tab for the URL added in the nested
+      // folder.
+      CheckResult([this]() { return browser()->tab_strip_model()->count(); },
+                  4u, "Check model count."));
+}
+
+IN_PROC_BROWSER_TEST_F(BookmarkTabGroupMenuImprovementsTest,
+                       OpenAllAsTabGroupUsingLeftClickOnFolder) {
+  bookmarks::BookmarkModel* const model =
+      BookmarkModelFactory::GetForBrowserContext(browser()->profile());
+  const bookmarks::BookmarkNode* bb_node = model->bookmark_bar_node();
+  const bookmarks::BookmarkNode* folder =
+      model->AddFolder(bb_node, 0, u"folder");
+
+  const std::u16string tab_title = u"bookmark_tab_title";
+
+  model->AddNewURL(folder, 0, tab_title, GURL("chrome://dino"));
+  model->AddNewURL(folder, 1, tab_title, GURL("chrome://dino"));
+  const bookmarks::BookmarkNode* nested_folder =
+      model->AddFolder(folder, 2, u"nested folder");
+  model->AddNewURL(folder, 3, tab_title, GURL("chrome://dino"));
+  model->AddNewURL(nested_folder, 0, tab_title, GURL("chrome://dino"));
+
+  static std::string kFolderButtonId = "kFolderButtonId ";
+  static std::string kOpenAllTabGroupButtonId = "kOpenAllTabGroupButtonId ";
+
+  RunTestSequence(
+      WaitForShow(kBookmarkBarElementId),
+      NameBookmarkButton(kFolderButtonId, folder), PressButton(kFolderButtonId),
+      WaitForBookmarkBarMenuShown(),
+      NameBarMenuChild(kOpenAllTabGroupButtonId, 1u),
+      SelectMenuItem(kOpenAllTabGroupButtonId),
+      WaitForHide(kOpenAllTabGroupButtonId),
+      // Check that we have a tab group
+      CheckResult(
+          [this]() {
+            return browser()
+                ->tab_strip_model()
+                ->group_model()
+                ->ListTabGroups()
+                .size();
+          },
+          1u, "Check tab group count."),
+      // Check that we only open tabs for URLS in the first level of the folder.
+      // In particular we don't open a tab for the URL added in the nested
+      // folder.
+      CheckResult([this]() { return browser()->tab_strip_model()->count(); },
+                  4u, "Check model count."));
+}
+
 }  // namespace
