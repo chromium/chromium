@@ -72,7 +72,6 @@ class CONTENT_EXPORT AttributionResolverImpl : public AttributionResolver {
   bool UpdateReportForSendFailure(AttributionReport::Id report_id,
                                   base::Time new_report_time) override;
   std::optional<base::Time> AdjustOfflineReportTimes() override;
-  std::optional<base::Time> AdjustNavigationRetryReportTimes() override;
   void ClearData(base::Time delete_begin,
                  base::Time delete_end,
                  StoragePartition::StorageKeyMatcherFunction filter,

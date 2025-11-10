@@ -6691,9 +6691,6 @@ data/attribution_reporting/interop/max_event_level_reports_per_source.json
 data/attribution_reporting/interop/max_trigger_state_cardinality.json
 data/attribution_reporting/interop/most_recent_source.json
 data/attribution_reporting/interop/multiple_destinations.json
-data/attribution_reporting/interop/navigation_retry_first_attempt.json
-data/attribution_reporting/interop/navigation_retry_second_attempt.json
-data/attribution_reporting/interop/navigation_retry_third_attempt.json
 data/attribution_reporting/interop/null_aggregatable_report.json
 data/attribution_reporting/interop/os_debug_reports.json
 data/attribution_reporting/interop/parse_failures.json

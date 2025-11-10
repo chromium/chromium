@@ -967,24 +967,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="Conversions.ReportsAdjustedOnNavigationRetryAttempt.{ReportType}"
-    units="reports" expires_after="2025-10-26">
-  <owner>tquintanilla@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    Measures the number of eligible reports adjusted on a successfully committed
-    navigation. A report is eligible for adjustment on navigation when it's at
-    its final retry attempt and the `AttributionReportNavigationBasedRetry`
-    Finch feature is enabled. Recorded once per successful navigation only when
-    at least one report is adjusted.
-  </summary>
-  <token key="ReportType">
-    <variant name="Aggregatable"/>
-    <variant name="Event"/>
-  </token>
-</histogram>
-
 <histogram name="Conversions.ReportsDeletedInDataClearOperation.Aggregatable"
     units="conversions" expires_after="2026-03-02">
   <owner>tquintanilla@chromium.org</owner>
@@ -1242,37 +1224,6 @@ chromium-metrics-reviews@google.com.
     Warning: this histogram was expired from 2024-07-15 to 2024-09-10; data may
     be missing.
   </summary>
-</histogram>
-
-<histogram
-    name="Conversions.TimeFromLastNavigationToDelivery_Failed.{ReportType}"
-    units="ms" expires_after="2026-05-03">
-  <owner>tquintanilla@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    Records the time difference between a report failing to send (including any
-    retries) and the last navigation recorded from the user. Fires on successful
-    report delivery.
-  </summary>
-  <token key="ReportType">
-    <variant name="AggregatableReport"/>
-    <variant name="EventLevelReport"/>
-  </token>
-</histogram>
-
-<histogram
-    name="Conversions.TimeFromLastNavigationToDelivery_Succeeded.{ReportType}"
-    units="ms" expires_after="2026-03-01">
-  <owner>tquintanilla@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    Records the time difference between a report successfully sending and the
-    last navigation recorded from the user. Fires on successful report delivery.
-  </summary>
-  <token key="ReportType">
-    <variant name="AggregatableReport"/>
-    <variant name="EventLevelReport"/>
-  </token>
 </histogram>
 
 <histogram name="Conversions.TimeFromTriggerToReportSentSuccessfully"

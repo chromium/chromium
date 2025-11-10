@@ -112,14 +112,6 @@ class AttributionResolver {
   // report time in storage, if any.
   virtual std::optional<base::Time> AdjustOfflineReportTimes() = 0;
 
-  // Adjusts the report time of reports on their final retry attempt when
-  // a new navigation is successfully committed, according to
-  // `AttributionResolverDelegate::GetOfflineReportDelayConfig()`. A null return
-  // signifies no reports have been updated internally.
-  //
-  // Tied to the `AttributionReportNavigationBasedRetry` feature.
-  virtual std::optional<base::Time> AdjustNavigationRetryReportTimes() = 0;
-
   // Deletes all data in storage for reporting origins matching `filter`,
   // between `delete_begin` and `delete_end` time. More specifically, this:
   // 1. Deletes all sources within the time range. If any report is

@@ -152,8 +152,6 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
 
   void HandleOsRegistration(OsRegistration) override;
 
-  void UpdateLastNavigationTime(base::Time navigation_time) override;
-
  private:
   friend class AttributionManagerImplTest;
 
@@ -290,8 +288,6 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
   // duplicated here to avoid an async call to retrieve them.
   bool debug_mode_ = false;
 
-  std::optional<base::Time> last_navigation_time_;
-
   base::WeakPtrFactory<AttributionManagerImpl> weak_factory_{this};
 };
 
@@ -301,14 +297,9 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
 // Otherwise, the return value must be later than current time.
 // `failed_send_attempts` is guaranteed to be positive.
 //
-// If the `kAttributionReportNavigationBasedRetry` feature is enabled, at the
-// `kAttributionReportNavigationRetryAttempt` send attempt, the report's expiry
-// time will be returned for the navigation-based retry to occur with no issues.
-//
 // Exposed here for testing.
 CONTENT_EXPORT
-std::optional<base::Time> GetReportTimeForRetry(int failed_send_attempts,
-                                                base::Time report_expiry_time);
+std::optional<base::Time> GetReportTimeForRetry(int failed_send_attempts);
 
 }  // namespace content
 

@@ -27,7 +27,6 @@
 #include "base/containers/enum_set.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
-#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -53,7 +52,6 @@
 #include "components/attribution_reporting/destination_set.h"
 #include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/event_trigger_data.h"
-#include "components/attribution_reporting/features.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/privacy_math.h"
 #include "components/attribution_reporting/source_registration.h"
@@ -67,7 +65,6 @@
 #include "content/browser/attribution_reporting/aggregatable_debug_rate_limit_table.h"
 #include "content/browser/attribution_reporting/aggregatable_debug_report.h"
 #include "content/browser/attribution_reporting/aggregatable_named_budget_pair.h"
-#include "content/browser/attribution_reporting/attribution_features.h"
 #include "content/browser/attribution_reporting/attribution_info.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_reporting.pb.h"
@@ -85,7 +82,6 @@
 #include "content/browser/attribution_reporting/stored_source.h"
 #include "content/public/browser/attribution_data_model.h"
 #include "net/base/schemeful_site.h"
-#include "services/network/public/cpp/features.h"
 #include "sql/database.h"
 #include "sql/error_delegate_util.h"
 #include "sql/meta_table.h"
@@ -1607,44 +1603,6 @@ bool AttributionStorageSql::AdjustOfflineReportTimes(
   statement.BindTimeDelta(1, max_delay - min_delay + base::Microseconds(1));
   statement.BindTime(2, now);
   return statement.Run();
-}
-
-base::flat_map<AttributionReport::Type, int>
-AttributionStorageSql::AdjustNavigationRetryReportTimes(
-    base::TimeDelta min_delay,
-    base::TimeDelta max_delay) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  CHECK_GE(min_delay, base::TimeDelta());
-  CHECK_GE(max_delay, base::TimeDelta());
-  CHECK_LE(min_delay, max_delay);
-
-  if (!base::FeatureList::IsEnabled(kAttributionReportNavigationBasedRetry) ||
-      !LazyInit(DbCreationPolicy::kIgnoreIfAbsent)) {
-    return {};
-  }
-
-  base::Time now = base::Time::Now();
-
-  sql::Statement statement(db_.GetCachedStatement(
-      SQL_FROM_HERE, attribution_queries::kSetReportTimeOnNavigationSql));
-  statement.BindTime(0, now + min_delay);
-  statement.BindTimeDelta(1, max_delay - min_delay + base::Microseconds(1));
-  statement.BindInt(
-      2, static_cast<int>(kAttributionReportNavigationRetryAttempt.Get()));
-
-  base::flat_map<AttributionReport::Type, int> report_types;
-  while (statement.Step()) {
-    std::optional<AttributionReport::Type> report_type =
-        DeserializeReportType(statement.ColumnInt(0));
-    if (!report_type) {
-      continue;
-    }
-    auto [it, _] = report_types.try_emplace(*report_type, 0);
-    it->second++;
-  }
-
-  return report_types;
 }
 
 void AttributionStorageSql::ClearDataWithFilter(

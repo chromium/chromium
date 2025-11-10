@@ -15,7 +15,6 @@
 #include <vector>
 
 #include "base/containers/enum_set.h"
-#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
@@ -224,9 +223,6 @@ class CONTENT_EXPORT AttributionStorageSql {
                                   base::Time new_report_time);
   bool AdjustOfflineReportTimes(base::TimeDelta min_delay,
                                 base::TimeDelta max_delay);
-  base::flat_map<AttributionReport::Type, int> AdjustNavigationRetryReportTimes(
-      base::TimeDelta min_delay,
-      base::TimeDelta max_delay);
   void ClearAllDataAllTime(bool delete_rate_limit_data);
   void ClearDataWithFilter(
       base::Time delete_begin,

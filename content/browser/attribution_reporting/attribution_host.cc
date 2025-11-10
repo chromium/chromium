@@ -230,10 +230,6 @@ void AttributionHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
 
   base::Time now = base::Time::Now();
 
-  if (attribution_manager && navigation_handle->GetNetErrorCode() == net::OK) {
-    attribution_manager->UpdateLastNavigationTime(now);
-  }
-
   if (navigation_handle->IsInPrimaryMainFrame()) {
     if (!navigation_handle->IsSameDocument()) {
       if (primary_main_frame_data_.has_value()) {
