@@ -1047,4 +1047,29 @@ TEST_F(ContextHostResolverTest, NetworkBoundResolverCacheInvalidation) {
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
+TEST_F(ContextHostResolverTest, InvalidationInProgress) {
+  const url::SchemeHostPort host(url::kHttpsScheme, "example.com",
+                                 NetworkAwareHostResolverProc::kPort);
+
+  auto context = CreateTestURLRequestContextBuilder()->Build();
+  auto resolve_context = std::make_unique<ResolveContext>(
+      context.get(), false /* enable_caching */);
+  auto resolver = std::make_unique<ContextHostResolver>(
+      manager_.get(), std::move(resolve_context));
+
+  manager_->SetInvalidationInProgressForTesting();
+
+  std::unique_ptr<HostResolver::ResolveHostRequest> request =
+      resolver->CreateRequest(host, NetworkAnonymizationKey(),
+                              NetLogWithSource(), std::nullopt);
+
+  TestCompletionCallback callback;
+  int rv = request->Start(callback.callback());
+  EXPECT_THAT(callback.GetResult(rv),
+              test::IsError(ERR_DNS_CACHE_INVALIDATION_IN_PROGRESS));
+  EXPECT_THAT(request->GetResolveErrorInfo().error,
+              test::IsError(ERR_DNS_CACHE_INVALIDATION_IN_PROGRESS));
+  EXPECT_THAT(request->GetAddressResults(), testing::IsEmpty());
+}
+
 }  // namespace net

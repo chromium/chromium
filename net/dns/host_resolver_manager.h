@@ -283,6 +283,10 @@ class NET_EXPORT HostResolverManager
 
   bool InvalidationInProgress() const { return invalidation_in_progress_; }
 
+  void SetInvalidationInProgressForTesting() {
+    invalidation_in_progress_ = true;
+  }
+
  protected:
   // Callback from HaveOnlyLoopbackAddresses probe.
   void SetHaveOnlyLoopbackAddresses(bool result);
