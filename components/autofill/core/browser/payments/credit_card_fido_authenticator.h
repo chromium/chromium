@@ -50,19 +50,19 @@ class CreditCardFidoAuthenticator
  public:
   // Useful for splitting metrics to correct sub-histograms and knowing which
   // Payments RPC's to send.
-  enum Flow {
+  enum class Flow {
     // No flow is in progress.
-    NONE_FLOW,
+    kNoneFlow,
     // Authentication flow.
-    AUTHENTICATION_FLOW,
+    kAuthenticationFlow,
     // Registration flow, including a challenge to sign.
-    OPT_IN_WITH_CHALLENGE_FLOW,
+    kOptInWithChallengeFlow,
     // Opt-in attempt flow, no challenge to sign.
-    OPT_IN_FETCH_CHALLENGE_FLOW,
+    kOptInFetchChallengeFlow,
     // Opt-out flow.
-    OPT_OUT_FLOW,
+    kOptOutFlow,
     // Authorization of a new card.
-    FOLLOWUP_AFTER_CVC_AUTH_FLOW,
+    kFollowupAfterCvcAuthFlow,
   };
   // The response of FIDO authentication, including necessary information needed
   // by the subclasses.
@@ -261,7 +261,7 @@ class CreditCardFidoAuthenticator
   std::optional<CreditCard> card_;
 
   // The current flow in progress.
-  Flow current_flow_ = NONE_FLOW;
+  Flow current_flow_ = Flow::kNoneFlow;
 
   // Token used for authorizing new cards. Helps tie CVC auth and FIDO calls
   // together in order to support FIDO-only unmasking on future attempts.

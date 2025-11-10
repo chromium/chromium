@@ -81,7 +81,7 @@ void CreditCardFidoAuthenticator::Authenticate(
   authenticator()->Cancel();
 
   if (IsValidRequestOptions(request_options)) {
-    current_flow_ = AUTHENTICATION_FLOW;
+    current_flow_ = Flow::kAuthenticationFlow;
     GetAssertion(ParseRequestOptions(std::move(request_options)));
   } else if (requester_) {
     requester_->OnFIDOAuthenticationComplete(
@@ -99,11 +99,11 @@ void CreditCardFidoAuthenticator::Register(std::string card_authorization_token,
   card_authorization_token_ = card_authorization_token;
   if (!creation_options.empty()) {
     if (IsValidCreationOptions(creation_options)) {
-      current_flow_ = OPT_IN_WITH_CHALLENGE_FLOW;
+      current_flow_ = Flow::kOptInWithChallengeFlow;
       MakeCredential(ParseCreationOptions(std::move(creation_options)));
     }
   } else {
-    current_flow_ = OPT_IN_FETCH_CHALLENGE_FLOW;
+    current_flow_ = Flow::kOptInFetchChallengeFlow;
     OptChange();
   }
 }
@@ -122,8 +122,8 @@ void CreditCardFidoAuthenticator::Authorize(
     // If user is already opted-in, then a new card is trying to be
     // authorized. Otherwise, a user with a credential on file is trying to
     // opt-in.
-    current_flow_ = user_is_opted_in_ ? FOLLOWUP_AFTER_CVC_AUTH_FLOW
-                                      : OPT_IN_WITH_CHALLENGE_FLOW;
+    current_flow_ = user_is_opted_in_ ? Flow::kFollowupAfterCvcAuthFlow
+                                      : Flow::kOptInWithChallengeFlow;
     autofill_metrics::LogWebauthnEnrollmentPromptOffered(/*offered=*/true);
     GetAssertion(ParseRequestOptions(std::move(request_options)));
   } else {
@@ -135,7 +135,7 @@ void CreditCardFidoAuthenticator::OptOut() {
   // Cancel any previous pending WebAuthn requests.
   authenticator()->Cancel();
 
-  current_flow_ = OPT_OUT_FLOW;
+  current_flow_ = Flow::kOptOutFlow;
   card_authorization_token_ = std::string();
   OptChange();
 }
@@ -185,7 +185,7 @@ UserOptInIntention CreditCardFidoAuthenticator::GetUserOptInIntention(
     // denotes that user intended to opt in from settings page. We will opt user
     // in and hide the checkbox in the next checkout flow.
     // For intent to opt in, we also update |user_is_opted_in_| here so that
-    // |current_flow_| can be correctly set to OPT_IN_WITH_CHALLENGE_FLOW when
+    // |current_flow_| can be correctly set to kOptInWithChallengeFlow when
     // calling Authorize() later.
     user_is_opted_in_ = false;
     return UserOptInIntention::kIntentToOptIn;
@@ -211,7 +211,7 @@ UserOptInIntention CreditCardFidoAuthenticator::GetUserOptInIntention(
 void CreditCardFidoAuthenticator::CancelVerification() {
   authenticator()->Cancel();
 
-  current_flow_ = NONE_FLOW;
+  current_flow_ = Flow::kNoneFlow;
   // Full card request may not exist when this function is called. The full card
   // request is created in OnDidGetAssertion() but the flow can be cancelled
   // before than.
@@ -249,14 +249,14 @@ void CreditCardFidoAuthenticator::OnWebauthnOfferDialogUserResponse(
     // If user declined, log user decision. User may have initially accepted the
     // dialog, but then chose to cancel while the challenge was being fetched.
     autofill_metrics::LogWebauthnOptInPromoUserDecision(
-        current_flow_ == OPT_IN_FETCH_CHALLENGE_FLOW
+        current_flow_ == Flow::kOptInFetchChallengeFlow
             ? autofill_metrics::WebauthnOptInPromoUserDecisionMetric::
                   kDeclinedAfterAccepting
             : autofill_metrics::WebauthnOptInPromoUserDecisionMetric::
                   kDeclinedImmediately);
     payments_network_interface_->CancelRequest();
     card_authorization_token_ = std::string();
-    current_flow_ = NONE_FLOW;
+    current_flow_ = Flow::kNoneFlow;
     if (auto* strike_database = GetOrCreateFidoAuthenticationStrikeDatabase()) {
       strike_database->AddStrikes(FidoAuthenticationStrikeDatabase::
                                       kStrikesToAddWhenOptInOfferDeclined);
@@ -309,14 +309,14 @@ void CreditCardFidoAuthenticator::GetAssertion(
   // ready to show the OS level authentication dialog. If dialog is already
   // closed, then the offer was declined during the fetching challenge process,
   // and thus returned early.
-  if (current_flow_ == OPT_IN_WITH_CHALLENGE_FLOW) {
+  if (current_flow_ == Flow::kOptInWithChallengeFlow) {
     if (autofill_client_->GetPaymentsAutofillClient()->CloseWebauthnDialog()) {
       // Now that the dialog has closed and will proceed to a WebAuthn prompt,
       // the user must have accepted the dialog without cancelling.
       autofill_metrics::LogWebauthnOptInPromoUserDecision(
           autofill_metrics::WebauthnOptInPromoUserDecisionMetric::kAccepted);
     } else {
-      current_flow_ = NONE_FLOW;
+      current_flow_ = Flow::kNoneFlow;
       return;
     }
   }
@@ -340,7 +340,7 @@ void CreditCardFidoAuthenticator::MakeCredential(
     autofill_metrics::LogWebauthnOptInPromoUserDecision(
         autofill_metrics::WebauthnOptInPromoUserDecisionMetric::kAccepted);
   } else {
-    current_flow_ = NONE_FLOW;
+    current_flow_ = Flow::kNoneFlow;
     return;
   }
 #endif
@@ -356,16 +356,16 @@ void CreditCardFidoAuthenticator::OptChange(
   request_details.app_locale = payments_data_manager().app_locale();
 
   switch (current_flow_) {
-    case OPT_IN_WITH_CHALLENGE_FLOW:
-    case OPT_IN_FETCH_CHALLENGE_FLOW:
+    case Flow::kOptInWithChallengeFlow:
+    case Flow::kOptInFetchChallengeFlow:
       request_details.reason =
           payments::OptChangeRequestDetails::Reason::kEnableFidoAuth;
       break;
-    case OPT_OUT_FLOW:
+    case Flow::kOptOutFlow:
       request_details.reason =
           payments::OptChangeRequestDetails::Reason::kDisableFidoAuth;
       break;
-    case FOLLOWUP_AFTER_CVC_AUTH_FLOW:
+    case Flow::kFollowupAfterCvcAuthFlow:
       request_details.reason =
           payments::OptChangeRequestDetails::Reason::kAddCardForFidoAuth;
       break;
@@ -404,7 +404,7 @@ void CreditCardFidoAuthenticator::OptChange(
                      weak_ptr_factory_.GetWeakPtr()));
 
   // Logging call if user was attempting to change their opt-in state.
-  if (current_flow_ != FOLLOWUP_AFTER_CVC_AUTH_FLOW) {
+  if (current_flow_ != Flow::kFollowupAfterCvcAuthFlow) {
     autofill_metrics::LogWebauthnOptChangeCalled(opt_change_metric);
   }
 }
@@ -432,7 +432,7 @@ void CreditCardFidoAuthenticator::OnDidMakeCredential(
   if (status != blink::mojom::AuthenticatorStatus::SUCCESS) {
     // Treat failure to perform user verification as a strong signal not to
     // offer opt-in in the future.
-    if (current_flow_ == OPT_IN_WITH_CHALLENGE_FLOW) {
+    if (current_flow_ == Flow::kOptInWithChallengeFlow) {
       if (auto* strike_database =
               GetOrCreateFidoAuthenticationStrikeDatabase()) {
         strike_database->AddStrikes(
@@ -443,7 +443,7 @@ void CreditCardFidoAuthenticator::OnDidMakeCredential(
       UpdateUserPref();
     }
 
-    current_flow_ = NONE_FLOW;
+    current_flow_ = Flow::kNoneFlow;
     return;
   }
 
@@ -453,10 +453,10 @@ void CreditCardFidoAuthenticator::OnDidMakeCredential(
 void CreditCardFidoAuthenticator::OnDidGetOptChangeResult(
     payments::PaymentsAutofillClient::PaymentsRpcResult result,
     payments::OptChangeResponseDetails& response) {
-  DCHECK(current_flow_ == OPT_IN_FETCH_CHALLENGE_FLOW ||
-         current_flow_ == OPT_OUT_FLOW ||
-         current_flow_ == OPT_IN_WITH_CHALLENGE_FLOW ||
-         current_flow_ == FOLLOWUP_AFTER_CVC_AUTH_FLOW);
+  DCHECK(current_flow_ == Flow::kOptInFetchChallengeFlow ||
+         current_flow_ == Flow::kOptOutFlow ||
+         current_flow_ == Flow::kOptInWithChallengeFlow ||
+         current_flow_ == Flow::kFollowupAfterCvcAuthFlow);
 
   // Update user preference to keep in sync with server.
   user_is_opted_in_ = response.user_is_opted_in.value_or(user_is_opted_in_);
@@ -465,25 +465,26 @@ void CreditCardFidoAuthenticator::OnDidGetOptChangeResult(
   // preference yet. Otherwise the toggle will be visibly turned off, which may
   // seem confusing.
   bool is_settings_page = card_authorization_token_.empty();
-  if (!is_settings_page || current_flow_ != OPT_IN_FETCH_CHALLENGE_FLOW)
+  if (!is_settings_page || current_flow_ != Flow::kOptInFetchChallengeFlow) {
     UpdateUserPref();
+  }
 
   // End the flow if the server responded with an error.
   if (result != payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess) {
 #if !BUILDFLAG(IS_ANDROID)
-    if (current_flow_ == OPT_IN_FETCH_CHALLENGE_FLOW) {
+    if (current_flow_ == Flow::kOptInFetchChallengeFlow) {
       autofill_client_->GetPaymentsAutofillClient()
           ->UpdateWebauthnOfferDialogWithError();
     }
 #endif
-    current_flow_ = NONE_FLOW;
+    current_flow_ = Flow::kNoneFlow;
     return;
   }
 
   // If response contains |creation_options| or |request_options| and the last
   // opt-in attempt did not include a challenge, then invoke WebAuthn
   // registration/verification prompt. Otherwise end the flow.
-  if (current_flow_ == OPT_IN_FETCH_CHALLENGE_FLOW) {
+  if (current_flow_ == Flow::kOptInFetchChallengeFlow) {
     if (response.fido_creation_options.has_value()) {
       Register(card_authorization_token_,
                std::move(response.fido_creation_options.value()));
@@ -492,7 +493,7 @@ void CreditCardFidoAuthenticator::OnDidGetOptChangeResult(
                 std::move(response.fido_request_options.value()));
     }
   } else {
-    current_flow_ = NONE_FLOW;
+    current_flow_ = Flow::kNoneFlow;
   }
 }
 
@@ -500,8 +501,8 @@ void CreditCardFidoAuthenticator::OnFullCardRequestSucceeded(
     const payments::FullCardRequest& full_card_request,
     const CreditCard& card,
     const std::u16string& cvc) {
-  DCHECK_EQ(AUTHENTICATION_FLOW, current_flow_);
-  current_flow_ = NONE_FLOW;
+  DCHECK_EQ(Flow::kAuthenticationFlow, current_flow_);
+  current_flow_ = Flow::kNoneFlow;
 
   if (!requester_)
     return;
@@ -513,8 +514,8 @@ void CreditCardFidoAuthenticator::OnFullCardRequestSucceeded(
 void CreditCardFidoAuthenticator::OnFullCardRequestFailed(
     CreditCard::RecordType card_type,
     payments::FullCardRequest::FailureType failure_type) {
-  DCHECK_EQ(AUTHENTICATION_FLOW, current_flow_);
-  current_flow_ = NONE_FLOW;
+  DCHECK_EQ(Flow::kAuthenticationFlow, current_flow_);
+  current_flow_ = Flow::kNoneFlow;
 
   if (!requester_)
     return;
@@ -690,13 +691,13 @@ void CreditCardFidoAuthenticator::LogWebauthnResult(
     blink::mojom::AuthenticatorStatus status) {
   autofill_metrics::WebauthnFlowEvent event;
   switch (current_flow_) {
-    case AUTHENTICATION_FLOW:
+    case Flow::kAuthenticationFlow:
       event = autofill_metrics::WebauthnFlowEvent::kImmediateAuthentication;
       break;
-    case FOLLOWUP_AFTER_CVC_AUTH_FLOW:
+    case Flow::kFollowupAfterCvcAuthFlow:
       event = autofill_metrics::WebauthnFlowEvent::kAuthenticationAfterCvc;
       break;
-    case OPT_IN_WITH_CHALLENGE_FLOW:
+    case Flow::kOptInWithChallengeFlow:
       event = card_authorization_token_.empty()
                   ? autofill_metrics::WebauthnFlowEvent::kSettingsPageOptIn
                   : autofill_metrics::WebauthnFlowEvent::kCheckoutOptIn;
@@ -730,7 +731,7 @@ void CreditCardFidoAuthenticator::UpdateUserPref() {
 void CreditCardFidoAuthenticator::HandleGetAssertionSuccess(
     blink::mojom::GetAssertionAuthenticatorResponsePtr assertion_response) {
   switch (current_flow_) {
-    case AUTHENTICATION_FLOW: {
+    case Flow::kAuthenticationFlow: {
       base::Value::Dict response =
           ParseAssertionResponse(std::move(assertion_response));
       full_card_request_ =
@@ -749,28 +750,25 @@ void CreditCardFidoAuthenticator::HandleGetAssertionSuccess(
       // Return here to skip the OptChange call.
       return;
     }
-
-    case FOLLOWUP_AFTER_CVC_AUTH_FLOW: {
+    case Flow::kFollowupAfterCvcAuthFlow: {
       // The user-facing portion of the authorization is complete, which should
       // be reported so that the form can be filled.
       if (requester_)
         requester_->OnFidoAuthorizationComplete(/*did_succeed=*/true);
       break;
     }
-
-    case OPT_IN_WITH_CHALLENGE_FLOW: {
+    case Flow::kOptInWithChallengeFlow: {
 #if BUILDFLAG(IS_ANDROID)
-      // For Android, opt-in flow (OPT_IN_WITH_CHALLENGE_FLOW) also delays form
+      // For Android, opt-in flow (kOptInWithChallengeFlow) also delays form
       // filling.
       if (requester_)
         requester_->OnFidoAuthorizationComplete(/*did_succeed=*/true);
 #endif
       break;
     }
-
-    case NONE_FLOW:
-    case OPT_IN_FETCH_CHALLENGE_FLOW:
-    case OPT_OUT_FLOW: {
+    case Flow::kNoneFlow:
+    case Flow::kOptInFetchChallengeFlow:
+    case Flow::kOptOutFlow: {
       NOTREACHED();
     }
   }
@@ -783,7 +781,7 @@ void CreditCardFidoAuthenticator::HandleGetAssertionSuccess(
 
 void CreditCardFidoAuthenticator::HandleGetAssertionFailure() {
   switch (current_flow_) {
-    case AUTHENTICATION_FLOW: {
+    case Flow::kAuthenticationFlow: {
       // End the flow if there was an authentication error.
       if (requester_) {
         requester_->OnFIDOAuthenticationComplete(
@@ -791,14 +789,12 @@ void CreditCardFidoAuthenticator::HandleGetAssertionFailure() {
       }
       break;
     }
-
-    case FOLLOWUP_AFTER_CVC_AUTH_FLOW: {
+    case Flow::kFollowupAfterCvcAuthFlow: {
       if (requester_)
         requester_->OnFidoAuthorizationComplete(/*did_succeed=*/false);
       break;
     }
-
-    case OPT_IN_WITH_CHALLENGE_FLOW: {
+    case Flow::kOptInWithChallengeFlow: {
       // Treat failure to perform user verification as a strong signal not to
       // offer opt-in in the future.
 #if BUILDFLAG(IS_ANDROID)
@@ -819,13 +815,13 @@ void CreditCardFidoAuthenticator::HandleGetAssertionFailure() {
       break;
     }
 
-    case NONE_FLOW:
-    case OPT_IN_FETCH_CHALLENGE_FLOW:
-    case OPT_OUT_FLOW: {
+    case Flow::kNoneFlow:
+    case Flow::kOptInFetchChallengeFlow:
+    case Flow::kOptOutFlow: {
       NOTREACHED();
     }
   }
-  current_flow_ = NONE_FLOW;
+  current_flow_ = Flow::kNoneFlow;
 }
 
 webauthn::InternalAuthenticator* CreditCardFidoAuthenticator::authenticator() {
