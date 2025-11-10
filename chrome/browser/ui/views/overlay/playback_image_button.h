@@ -26,10 +26,6 @@ class PlaybackImageButton : public OverlayWindowImageButton {
   void SetPlaybackState(
       const VideoOverlayWindowViews::PlaybackState playback_state);
 
- protected:
-  // Overridden from views::View.
-  void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
-
  private:
   void UpdateImageAndText();
   void UpdatePosition();

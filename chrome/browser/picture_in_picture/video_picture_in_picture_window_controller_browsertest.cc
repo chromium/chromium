@@ -271,21 +271,11 @@ class VideoPictureInPictureWindowControllerBrowserTest
   }
 
   SimpleOverlayWindowImageButton* GetNextSlideButton() {
-    // For the updated controls, there's only one shared next button.
-    if (base::FeatureList::IsEnabled(
-            media::kVideoPictureInPictureControlsUpdate2024)) {
-      return GetOverlayWindow()->next_track_controls_view_for_testing();
-    }
-    return GetOverlayWindow()->next_slide_controls_view_for_testing();
+    return GetOverlayWindow()->next_track_controls_view_for_testing();
   }
 
   SimpleOverlayWindowImageButton* GetPreviousSlideButton() {
-    // For the updated controls, there's only one shared previous button.
-    if (base::FeatureList::IsEnabled(
-            media::kVideoPictureInPictureControlsUpdate2024)) {
-      return GetOverlayWindow()->previous_track_controls_view_for_testing();
-    }
-    return GetOverlayWindow()->previous_slide_controls_view_for_testing();
+    return GetOverlayWindow()->previous_track_controls_view_for_testing();
   }
 
   void LoadTabAndEnterPictureInPicture(Browser* browser,
@@ -1491,16 +1481,10 @@ IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
   resize_button_position =
       GetOverlayWindow()->resize_handle_position_for_testing();
 
-  if (base::FeatureList::IsEnabled(
-          media::kVideoPictureInPictureControlsUpdate2024)) {
-    // For the updated UI, the close button should not move.
-    EXPECT_LT(center.x(), close_button_position.x());
-    EXPECT_GT(center.y(), close_button_position.y());
-  } else {
-    // The close button should be in the top left corner.
-    EXPECT_GT(center.x(), close_button_position.x());
-    EXPECT_GT(center.y(), close_button_position.y());
-  }
+  // For the updated UI, the close button should not move.
+  EXPECT_LT(center.x(), close_button_position.x());
+  EXPECT_GT(center.y(), close_button_position.y());
+
   // The resize button should be in the top right corner.
   EXPECT_LT(center.x(), resize_button_position.x());
   EXPECT_GT(center.y(), resize_button_position.y());
@@ -1759,15 +1743,11 @@ class MediaSessionVideoPictureInPictureWindowControllerBrowserTest
 
 // Tests that a Skip Ad button is displayed in the Picture-in-Picture window
 // when Media Session Action "skipad" is handled by the website.
+// TODO(https://crbug.com/459517293): Re-enable once we've implemented a skip ad
+// button for the new UI.
 IN_PROC_BROWSER_TEST_F(
     MediaSessionVideoPictureInPictureWindowControllerBrowserTest,
-    SkipAdButtonVisibility) {
-  // Skip for the updated UI, as it does not yet implement a skip ad button.
-  if (base::FeatureList::IsEnabled(
-          media::kVideoPictureInPictureControlsUpdate2024)) {
-    return;
-  }
-
+    DISABLED_SkipAdButtonVisibility) {
   LoadTabAndEnterPictureInPicture(
       browser(), base::FilePath(kPictureInPictureWindowSizePage));
   ASSERT_NE(GetOverlayWindow(), nullptr);
@@ -1961,15 +1941,11 @@ IN_PROC_BROWSER_TEST_F(
 
 // Tests that clicking the Skip Ad button in the Picture-in-Picture window
 // calls the Media Session Action "skipad" handler function.
+// TODO(https://crbug.com/459517293): Re-enable once we've implemented a skip ad
+// button for the new UI.
 IN_PROC_BROWSER_TEST_F(
     MediaSessionVideoPictureInPictureWindowControllerBrowserTest,
-    SkipAdHandlerCalled) {
-  // Skip for the updated UI, as it does not yet implement a skip ad button.
-  if (base::FeatureList::IsEnabled(
-          media::kVideoPictureInPictureControlsUpdate2024)) {
-    return;
-  }
-
+    DISABLED_SkipAdHandlerCalled) {
   LoadTabAndEnterPictureInPicture(
       browser(), base::FilePath(kPictureInPictureWindowSizePage));
   content::WebContents* active_web_contents =
@@ -2366,22 +2342,8 @@ IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
   EXPECT_FALSE(IsTrustedForMediaPlayback());
 }
 
-class VideoPictureInPictureWindowControllerWith2024UIBrowserTest
-    : public VideoPictureInPictureWindowControllerBrowserTest {
- public:
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        media::kVideoPictureInPictureControlsUpdate2024);
-    VideoPictureInPictureWindowControllerBrowserTest::SetUp();
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(
-    VideoPictureInPictureWindowControllerWith2024UIBrowserTest,
-    TitleVisibility) {
+IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
+                       TitleVisibility) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
       embedded_test_server()->GetURL(
@@ -2401,9 +2363,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(GetOverlayWindow()->AreTitleAndScrimVisibleForTesting());
 }
 
-IN_PROC_BROWSER_TEST_F(
-    VideoPictureInPictureWindowControllerWith2024UIBrowserTest,
-    TitleVisibility_TrustedSite_HidesAfterTimer) {
+IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
+                       TitleVisibility_TrustedSite_HidesAfterTimer) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
       embedded_test_server()->GetURL(
@@ -2433,9 +2394,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(GetOverlayWindow()->AreTitleAndScrimVisibleForTesting());
 }
 
-IN_PROC_BROWSER_TEST_F(
-    VideoPictureInPictureWindowControllerWith2024UIBrowserTest,
-    TitleVisibility_UntrustedSite_DoesNotHideAfterTimer) {
+IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
+                       TitleVisibility_UntrustedSite_DoesNotHideAfterTimer) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
       embedded_test_server()->GetURL(
@@ -2471,7 +2431,7 @@ struct InteractionTestParam {
 };
 
 class VideoPictureInPictureWindowControllerInteractionBrowserTest
-    : public VideoPictureInPictureWindowControllerWith2024UIBrowserTest,
+    : public VideoPictureInPictureWindowControllerBrowserTest,
       public testing::WithParamInterface<InteractionTestParam> {
  protected:
   void SimulateInteraction(ui::EventType event_type) {

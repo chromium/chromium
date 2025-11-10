@@ -792,17 +792,7 @@ TEST_F(VideoOverlayWindowViewsTest, UntucksWhenReshownIfNecessary) {
   EXPECT_EQ(overlay_window().GetWindowBoundsInScreen().x(), 400);
 }
 
-class VideoOverlayWindowViewsWith2024UITest
-    : public VideoOverlayWindowViewsTest {
- public:
-  void SetUp() override {
-    AddEnabledFeature(media::kVideoPictureInPictureControlsUpdate2024);
-    VideoOverlayWindowViewsTest::SetUp();
-  }
-};
-
-TEST_F(VideoOverlayWindowViewsWith2024UITest,
-       MinimizeButtonClosesWithoutPausing) {
+TEST_F(VideoOverlayWindowViewsTest, MinimizeButtonClosesWithoutPausing) {
   views::test::ButtonTestApi minimize_button_clicker(
       overlay_window().minimize_button_for_testing());
   ui::MouseEvent dummy_event(ui::EventType::kMousePressed, gfx::Point(0, 0),
@@ -818,7 +808,7 @@ TEST_F(VideoOverlayWindowViewsWith2024UITest,
   testing::Mock::VerifyAndClearExpectations(&pip_window_controller());
 }
 
-TEST_F(VideoOverlayWindowViewsWith2024UITest, ShowsBackToTabImageButton) {
+TEST_F(VideoOverlayWindowViewsTest, ShowsBackToTabImageButton) {
   overlay_window().ForceControlsVisibleForTesting(true);
   OverlayWindowBackToTabButton* back_to_tab_image_button =
       overlay_window().back_to_tab_button_for_testing();
@@ -835,7 +825,7 @@ TEST_F(VideoOverlayWindowViewsWith2024UITest, ShowsBackToTabImageButton) {
   testing::Mock::VerifyAndClearExpectations(&pip_window_controller());
 }
 
-TEST_F(VideoOverlayWindowViewsWith2024UITest, ProgressBarSeeksVideo) {
+TEST_F(VideoOverlayWindowViewsTest, ProgressBarSeeksVideo) {
   overlay_window().ShowInactive();
   overlay_window().SetPlayPauseButtonVisibility(true);
   overlay_window().ForceControlsVisibleForTesting(true);
@@ -889,7 +879,7 @@ TEST_F(VideoOverlayWindowViewsWith2024UITest, ProgressBarSeeksVideo) {
   EXPECT_TRUE(forward_10_seconds_button->IsDrawn());
 }
 
-TEST_F(VideoOverlayWindowViewsWith2024UITest, TimestampDisplaysCurrentTime) {
+TEST_F(VideoOverlayWindowViewsTest, TimestampDisplaysCurrentTime) {
   overlay_window().ForceControlsVisibleForTesting(true);
   media_session::MediaPosition media_position(/*playback_rate=*/0,
                                               /*duration=*/base::Seconds(100),
@@ -903,8 +893,7 @@ TEST_F(VideoOverlayWindowViewsWith2024UITest, TimestampDisplaysCurrentTime) {
   EXPECT_EQ(u"0:42 / 1:40", timestamp->GetText());
 }
 
-TEST_F(VideoOverlayWindowViewsWith2024UITest,
-       ReplayAndForward10SecondsSeekVideo) {
+TEST_F(VideoOverlayWindowViewsTest, ReplayAndForward10SecondsSeekVideo) {
   overlay_window().ForceControlsVisibleForTesting(true);
   media_session::MediaPosition media_position(/*playback_rate=*/0,
                                               /*duration=*/base::Seconds(100),
@@ -962,7 +951,7 @@ TEST_F(VideoOverlayWindowViewsWith2024UITest,
   testing::Mock::VerifyAndClearExpectations(&pip_window_controller());
 }
 
-TEST_F(VideoOverlayWindowViewsWith2024UITest,
+TEST_F(VideoOverlayWindowViewsTest,
        ReplayAndForward10SecondsSeekVideo_GestureTap) {
   overlay_window().ShowInactive();
   overlay_window().SetPlayPauseButtonVisibility(true);
@@ -1020,7 +1009,7 @@ TEST_F(VideoOverlayWindowViewsWith2024UITest,
   testing::Mock::VerifyAndClearExpectations(&pip_window_controller());
 }
 
-TEST_F(VideoOverlayWindowViewsWith2024UITest, DisplaysFavicon) {
+TEST_F(VideoOverlayWindowViewsTest, DisplaysFavicon) {
   overlay_window().ForceControlsVisibleForTesting(true);
   views::ImageView* favicon_view = overlay_window().favicon_view_for_testing();
   ASSERT_NE(nullptr, favicon_view);
@@ -1064,7 +1053,7 @@ TEST_F(VideoOverlayWindowViewsWith2024UITest, DisplaysFavicon) {
   }
 }
 
-TEST_F(VideoOverlayWindowViewsWith2024UITest, DisplaysOrigin) {
+TEST_F(VideoOverlayWindowViewsTest, DisplaysOrigin) {
   overlay_window().ForceControlsVisibleForTesting(true);
   views::Label* origin = overlay_window().origin_for_testing();
   ASSERT_NE(nullptr, origin);
@@ -1074,7 +1063,7 @@ TEST_F(VideoOverlayWindowViewsWith2024UITest, DisplaysOrigin) {
   EXPECT_EQ(origin->GetText(), u"google.com");
 }
 
-TEST_F(VideoOverlayWindowViewsWith2024UITest,
+TEST_F(VideoOverlayWindowViewsTest,
        ControlsNeverHideWhileProgressBarIsDragged) {
   overlay_window().ShowInactive();
   overlay_window().SetPlayPauseButtonVisibility(true);
@@ -1114,7 +1103,7 @@ TEST_F(VideoOverlayWindowViewsWith2024UITest,
   EXPECT_TRUE(overlay_window().GetControlsContainerView()->IsDrawn());
 }
 
-TEST_F(VideoOverlayWindowViewsWith2024UITest, LiveStatusShownForLiveVideos) {
+TEST_F(VideoOverlayWindowViewsTest, LiveStatusShownForLiveVideos) {
   overlay_window().ForceControlsVisibleForTesting(true);
   views::Label* timestamp = overlay_window().timestamp_for_testing();
   views::Label* live_status = overlay_window().live_status_for_testing();
@@ -1148,7 +1137,7 @@ TEST_F(VideoOverlayWindowViewsWith2024UITest, LiveStatusShownForLiveVideos) {
   EXPECT_TRUE(timestamp->GetVisible());
 }
 
-TEST_F(VideoOverlayWindowViewsWith2024UITest, NextAndPreviousShareVisibility) {
+TEST_F(VideoOverlayWindowViewsTest, NextAndPreviousShareVisibility) {
   overlay_window().ForceControlsVisibleForTesting(true);
   SimpleOverlayWindowImageButton* next_button =
       overlay_window().next_track_controls_view_for_testing();
@@ -1209,7 +1198,7 @@ TEST_F(VideoOverlayWindowViewsWith2024UITest, NextAndPreviousShareVisibility) {
   EXPECT_FALSE(prev_button->GetVisible());
 }
 
-TEST_F(VideoOverlayWindowViewsWith2024UITest,
+TEST_F(VideoOverlayWindowViewsTest,
        FastForwardAndRewindAreHiddenForLiveVideos) {
   overlay_window().ForceControlsVisibleForTesting(true);
   SimpleOverlayWindowImageButton* replay_10_seconds_button =
@@ -1230,7 +1219,7 @@ TEST_F(VideoOverlayWindowViewsWith2024UITest,
   EXPECT_FALSE(forward_10_seconds_button->GetVisible());
 }
 
-TEST_F(VideoOverlayWindowViewsWith2024UITest, VideoConferencingUI) {
+TEST_F(VideoOverlayWindowViewsTest, VideoConferencingUI) {
   overlay_window().ForceControlsVisibleForTesting(true);
   ToggleCameraButton* toggle_camera_button =
       overlay_window().toggle_camera_button_for_testing();
@@ -1281,7 +1270,7 @@ TEST_F(VideoOverlayWindowViewsWith2024UITest, VideoConferencingUI) {
   EXPECT_TRUE(progress_view->IsDrawn());
 }
 
-TEST_F(VideoOverlayWindowViewsWith2024UITest, LiveCaption) {
+TEST_F(VideoOverlayWindowViewsTest, LiveCaption) {
   overlay_window().ForceControlsVisibleForTesting(true);
   profile().GetPrefs()->SetBoolean(prefs::kLiveCaptionEnabled, false);
   OverlayWindowLiveCaptionButton* live_caption_button =
@@ -1354,7 +1343,7 @@ TEST_F(VideoOverlayWindowViewsWith2024UITest, LiveCaption) {
   profile().GetPrefs()->SetBoolean(prefs::kLiveCaptionEnabled, false);
 }
 
-TEST_F(VideoOverlayWindowViewsWith2024UITest, LiveCaption_MouseClickOutside) {
+TEST_F(VideoOverlayWindowViewsTest, LiveCaption_MouseClickOutside) {
   overlay_window().ForceControlsVisibleForTesting(true);
   OverlayWindowLiveCaptionButton* live_caption_button =
       overlay_window().live_caption_button_for_testing();
@@ -1389,7 +1378,7 @@ TEST_F(VideoOverlayWindowViewsWith2024UITest, LiveCaption_MouseClickOutside) {
   EXPECT_FALSE(live_caption_dialog->IsDrawn());
 }
 
-TEST_F(VideoOverlayWindowViewsWith2024UITest, LiveCaption_GestureTapOutside) {
+TEST_F(VideoOverlayWindowViewsTest, LiveCaption_GestureTapOutside) {
   overlay_window().ForceControlsVisibleForTesting(true);
   OverlayWindowLiveCaptionButton* live_caption_button =
       overlay_window().live_caption_button_for_testing();
@@ -1424,7 +1413,7 @@ TEST_F(VideoOverlayWindowViewsWith2024UITest, LiveCaption_GestureTapOutside) {
   EXPECT_FALSE(live_caption_dialog->IsDrawn());
 }
 
-TEST_F(VideoOverlayWindowViewsWith2024UITest, LiveCaption_GestureTap) {
+TEST_F(VideoOverlayWindowViewsTest, LiveCaption_GestureTap) {
   overlay_window().ShowInactive();
   overlay_window().SetPlayPauseButtonVisibility(true);
   overlay_window().ForceControlsVisibleForTesting(true);
@@ -1480,7 +1469,7 @@ TEST_F(VideoOverlayWindowViewsWith2024UITest, LiveCaption_GestureTap) {
   profile().GetPrefs()->SetBoolean(prefs::kLiveTranslateEnabled, false);
 }
 
-TEST_F(VideoOverlayWindowViewsWith2024UITest, InitialTitleAndScrimVisibility) {
+TEST_F(VideoOverlayWindowViewsTest, InitialTitleAndScrimVisibility) {
   overlay_window().ForceControlsVisibleForTesting(false);
   overlay_window().ShowInactive();
   WaitForLayout();
@@ -1493,7 +1482,7 @@ TEST_F(VideoOverlayWindowViewsWith2024UITest, InitialTitleAndScrimVisibility) {
   EXPECT_TRUE(overlay_window().AreTitleAndScrimVisibleForTesting());
 }
 
-TEST_F(VideoOverlayWindowViewsWith2024UITest, TitleAndScrimHideAfterTimer) {
+TEST_F(VideoOverlayWindowViewsTest, TitleAndScrimHideAfterTimer) {
   overlay_window().ShowInactive();
   WaitForLayout();
 
@@ -1510,7 +1499,7 @@ TEST_F(VideoOverlayWindowViewsWith2024UITest, TitleAndScrimHideAfterTimer) {
   EXPECT_FALSE(overlay_window().AreControlsVisible());
 }
 
-TEST_F(VideoOverlayWindowViewsWith2024UITest, MouseHoverShowsAllControls) {
+TEST_F(VideoOverlayWindowViewsTest, MouseHoverShowsAllControls) {
   overlay_window().ShowInactive();
   WaitForLayout();
 
@@ -1532,7 +1521,7 @@ TEST_F(VideoOverlayWindowViewsWith2024UITest, MouseHoverShowsAllControls) {
   EXPECT_TRUE(overlay_window().AreControlsVisible());
 }
 
-TEST_F(VideoOverlayWindowViewsWith2024UITest, TopControlsAreAlwaysOnTheRight) {
+TEST_F(VideoOverlayWindowViewsTest, TopControlsAreAlwaysOnTheRight) {
   const gfx::Rect work_area(0, 0, 4000, 4000);
   SetDisplayWorkArea(work_area);
   overlay_window().ShowInactive();

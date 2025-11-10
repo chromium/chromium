@@ -9800,12 +9800,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop,
      FEATURE_VALUE_TYPE(media::kAutoPictureInPictureForVideoPlayback)},
 
-    {"video-picture-in-picture-controls-update-2024",
-     flag_descriptions::kVideoPictureInPictureControlsUpdate2024Name,
-     flag_descriptions::kVideoPictureInPictureControlsUpdate2024Description,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(media::kVideoPictureInPictureControlsUpdate2024)},
-
     {"document-picture-in-picture-animate-resize",
      flag_descriptions::kDocumentPictureInPictureAnimateResizeName,
      flag_descriptions::kDocumentPictureInPictureAnimateResizeDescription,

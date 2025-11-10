@@ -28,52 +28,29 @@ constexpr int kPlaybackButtonIconSize = 24;
 
 PlaybackImageButton::PlaybackImageButton(PressedCallback callback)
     : OverlayWindowImageButton(std::move(callback)) {
-  // For the 2024 updated UI, we're in charge of our own size, and the icons
-  // never change.
-  if (base::FeatureList::IsEnabled(
-          media::kVideoPictureInPictureControlsUpdate2024)) {
-    SetSize(gfx::Size(kCenterButtonSize, kCenterButtonSize));
+  SetSize(gfx::Size(kCenterButtonSize, kCenterButtonSize));
 
-    // We use a solid background color in the 2024 updated UI, and that ends up
-    // sitting above the ink drop layer, so we need to force the ink drop layer
-    // higher here.
-    views::InkDrop::Get(this)->SetLayerRegion(views::LayerRegion::kAbove);
+  // We use a solid background color in the UI, and that ends up sitting above
+  // the ink drop layer, so we need to force the ink drop layer higher here.
+  views::InkDrop::Get(this)->SetLayerRegion(views::LayerRegion::kAbove);
 
-    play_image_ = ui::ImageModel::FromVectorIcon(
-        vector_icons::kPlayArrowIcon, ui::kColorSysOnSecondaryContainer,
-        kPlaybackButtonIconSize);
-    pause_image_ = ui::ImageModel::FromVectorIcon(vector_icons::kPauseIcon,
-                                                  kColorPipWindowForeground,
-                                                  kPlaybackButtonIconSize);
-    replay_image_ = ui::ImageModel::FromVectorIcon(vector_icons::kReplayIcon,
-                                                   kColorPipWindowForeground,
-                                                   kPlaybackButtonIconSize);
+  play_image_ = ui::ImageModel::FromVectorIcon(
+      vector_icons::kPlayArrowIcon, ui::kColorSysOnSecondaryContainer,
+      kPlaybackButtonIconSize);
+  pause_image_ = ui::ImageModel::FromVectorIcon(vector_icons::kPauseIcon,
+                                                kColorPipWindowForeground,
+                                                kPlaybackButtonIconSize);
+  replay_image_ = ui::ImageModel::FromVectorIcon(vector_icons::kReplayIcon,
+                                                 kColorPipWindowForeground,
+                                                 kPlaybackButtonIconSize);
 
-    UpdateImageAndText();
-  }
+  UpdateImageAndText();
 
   // Accessibility.
   const std::u16string playback_accessible_button_label(
       l10n_util::GetStringUTF16(
           IDS_PICTURE_IN_PICTURE_PLAY_PAUSE_CONTROL_ACCESSIBLE_TEXT));
   GetViewAccessibility().SetName(playback_accessible_button_label);
-}
-
-void PlaybackImageButton::OnBoundsChanged(const gfx::Rect& rect) {
-  if (base::FeatureList::IsEnabled(
-          media::kVideoPictureInPictureControlsUpdate2024)) {
-    return;
-  }
-
-  int icon_size = std::max(0, width() - (2 * kPipWindowIconPadding));
-  play_image_ = ui::ImageModel::FromVectorIcon(
-      vector_icons::kPlayArrowIcon, kColorPipWindowForeground, icon_size);
-  pause_image_ = ui::ImageModel::FromVectorIcon(
-      vector_icons::kPauseIcon, kColorPipWindowForeground, icon_size);
-  replay_image_ = ui::ImageModel::FromVectorIcon(
-      vector_icons::kReplayIcon, kColorPipWindowForeground, icon_size);
-
-  UpdateImageAndText();
 }
 
 void PlaybackImageButton::SetPlaybackState(
@@ -121,20 +98,11 @@ void PlaybackImageButton::UpdateImageAndText() {
 }
 
 void PlaybackImageButton::SetPlayButtonBackground() {
-  if (!base::FeatureList::IsEnabled(
-          media::kVideoPictureInPictureControlsUpdate2024)) {
-    return;
-  }
   SetBackground(views::CreateRoundedRectBackground(
       ui::kColorSysSecondaryContainer, kCenterButtonSize / 2));
 }
 
 void PlaybackImageButton::SetPauseButtonBackground() {
-  if (!base::FeatureList::IsEnabled(
-          media::kVideoPictureInPictureControlsUpdate2024)) {
-    return;
-  }
-
   SetBackground(views::CreateRoundedRectBackground(
       SkColorSetARGB(0x33, 0xFF, 0xFF, 0xFF), kCenterButtonSize / 2));
 }

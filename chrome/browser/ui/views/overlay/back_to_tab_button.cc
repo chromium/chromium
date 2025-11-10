@@ -40,8 +40,6 @@ OverlayWindowBackToTabButton::OverlayWindowBackToTabButton(
 }
 
 void OverlayWindowBackToTabButton::SetPosition(const gfx::Size& size) {
-  CHECK(Use2024UI());
-
   views::ImageButton::SetPosition(gfx::Point(
       size.width() - kBackToTabButtonSize - kBackToTabButtonHorizontalMargin,
       kBackToTabButtonVerticalMargin));

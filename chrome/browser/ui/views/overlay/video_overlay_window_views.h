@@ -187,8 +187,6 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
   gfx::Rect GetToggleMicrophoneButtonBounds();
   gfx::Rect GetToggleCameraButtonBounds();
   gfx::Rect GetHangUpButtonBounds();
-  gfx::Rect GetPreviousSlideControlsBounds();
-  gfx::Rect GetNextSlideControlsBounds();
   gfx::Rect GetProgressViewBounds();
   gfx::Rect GetLiveCaptionButtonBounds();
   gfx::Rect GetLiveCaptionDialogBounds();
@@ -203,9 +201,6 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
   ToggleMicrophoneButton* toggle_microphone_button_for_testing() const;
   ToggleCameraButton* toggle_camera_button_for_testing() const;
   HangUpButton* hang_up_button_for_testing() const;
-  SimpleOverlayWindowImageButton* next_slide_controls_view_for_testing() const;
-  SimpleOverlayWindowImageButton* previous_slide_controls_view_for_testing()
-      const;
   global_media_controls::MediaProgressView* progress_view_for_testing() const;
   views::Label* timestamp_for_testing() const;
   views::Label* live_status_for_testing() const;
@@ -479,9 +474,6 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
   raw_ptr<ToggleMicrophoneButton> toggle_microphone_button_ = nullptr;
   raw_ptr<ToggleCameraButton> toggle_camera_button_ = nullptr;
   raw_ptr<HangUpButton> hang_up_button_ = nullptr;
-  raw_ptr<SimpleOverlayWindowImageButton> previous_slide_controls_view_ =
-      nullptr;
-  raw_ptr<SimpleOverlayWindowImageButton> next_slide_controls_view_ = nullptr;
   raw_ptr<global_media_controls::MediaProgressView> progress_view_ = nullptr;
   raw_ptr<views::Label> timestamp_ = nullptr;
   raw_ptr<views::Label> live_status_ = nullptr;

@@ -4420,12 +4420,6 @@ inline constexpr char kVerifyQWACsDescription[] =
     "Enables verification of qualified certificates for website authentication "
     "as described in ETSI TS 119 411-5 V2.1.1 (2025-02).";
 
-inline constexpr char kVideoPictureInPictureControlsUpdate2024Name[] =
-    "Video picture-in-picture controls update 2024";
-inline constexpr char kVideoPictureInPictureControlsUpdate2024Description[] =
-    "Displays an updated UI for video picture-in-picture controls from its 2024"
-    "UI update";
-
 inline constexpr char kVidsAppPreinstallName[] = "Vids app preinstall";
 inline constexpr char kVidsAppPreinstallDescription[] =
     "Preinstalls the Vids app on ChromeOS.";

@@ -40,8 +40,6 @@ OverlayWindowMinimizeButton::OverlayWindowMinimizeButton(
 }
 
 void OverlayWindowMinimizeButton::SetPosition(const gfx::Size& size) {
-  CHECK(Use2024UI());
-
   views::ImageButton::SetPosition(gfx::Point(
       size.width() - kMinimizeButtonSize - kMinimizeButtonHorizontalMargin,
       kMinimizeButtonVerticalMargin));

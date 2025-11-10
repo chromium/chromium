@@ -23,10 +23,6 @@ class OverlayWindowImageButton : public views::ImageButton {
   // views::View:
   ui::Cursor GetCursor(const ui::MouseEvent& event) override;
   void OnThemeChanged() override;
-
-  // True if the `media::kVideoPictureInPictureControlsUpdate2024` feature is
-  // enabled, false otherwise.
-  bool Use2024UI() const;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OVERLAY_OVERLAY_WINDOW_IMAGE_BUTTON_H_

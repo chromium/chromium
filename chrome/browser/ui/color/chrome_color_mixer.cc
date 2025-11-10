@@ -342,13 +342,10 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorPipWindowBackToTabButtonBackground] = {
       SkColorSetA(SK_ColorBLACK, 0x60)};
   mixer[kColorPipWindowBackground] = {SK_ColorBLACK};
-  mixer[kColorPipWindowControlsBackground] = {
-      SkColorSetA(gfx::kGoogleGrey900, 0xC1)};
   mixer[kColorPipWindowTopBarBackground] = {gfx::kGoogleGrey900};
   mixer[kColorPipWindowForeground] =
       ui::GetColorWithMaxContrast(kColorPipWindowBackground);
   mixer[kColorPipWindowForegroundInactive] = {gfx::kGoogleGrey500};
-  mixer[kColorPipWindowHangUpButtonForeground] = {gfx::kGoogleRed300};
   mixer[kColorPipWindowScrimFull] = {SkColorSetA(SK_ColorBLACK, 0x66)};
   mixer[kColorPipWindowScrimTopGradientStart] = {
       SkColorSetA(SK_ColorBLACK, 0xCD)};
