@@ -2331,9 +2331,16 @@ IN_PROC_BROWSER_TEST_F(
 #endif
 }
 
+// TODO(crbug.com/458526513): Flaky on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_MaximizeAndRestoreWindowWithApi \
+  DISABLED_MaximizeAndRestoreWindowWithApi
+#else
+#define MAYBE_MaximizeAndRestoreWindowWithApi MaximizeAndRestoreWindowWithApi
+#endif
 IN_PROC_BROWSER_TEST_F(
     WebAppFrameToolbarBrowserTest_AdditionalWindowingControls,
-    MaximizeAndRestoreWindowWithApi) {
+    MAYBE_MaximizeAndRestoreWindowWithApi) {
   InstallAndLaunchWebApp();
   helper()->GrantWindowManagementPermission();
   auto* web_contents = helper()->browser_view()->GetActiveWebContents();
