@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ash/webui/diagnostics_ui/backend/input/input_data_provider.h"
 
 #include <cstdint>
@@ -29,6 +24,7 @@
 #include "ash/webui/diagnostics_ui/mojom/input_data_provider.mojom.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -737,7 +733,8 @@ class InputDataProviderTest : public AshTestBase {
     size_t i;
 
     i = 0;
-    for (auto* iter = list.begin(); iter != list.end(); iter++, i++) {
+    for (auto* iter = list.begin(); iter != list.end();
+         UNSAFE_TODO(iter++), i++) {
       (*provider_->watchers_)[id]->PostKeyEvent(iter->down, iter->key.key_code,
                                                 iter->key.at_scan_code);
     }
@@ -746,7 +743,8 @@ class InputDataProviderTest : public AshTestBase {
     ASSERT_EQ(std::size(list), fake_observer->events_.size());
 
     i = 0;
-    for (auto* iter = list.begin(); iter != list.end(); iter++, i++) {
+    for (auto* iter = list.begin(); iter != list.end();
+         UNSAFE_TODO(iter++), i++) {
       EXPECT_EQ(
           *fake_observer->events_[i].second,
           mojom::KeyEvent(/*id=*/id,
