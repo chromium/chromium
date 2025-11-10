@@ -78,12 +78,6 @@ class CONTENT_EXPORT PluginList {
                           std::vector<std::string>* actual_mime_types);
 
  private:
-  enum LoadingState {
-    LOADING_STATE_NEEDS_REFRESH,
-    LOADING_STATE_REFRESHING,
-    LOADING_STATE_UP_TO_DATE,
-  };
-
   friend class PluginListTest;
   friend struct base::LazyInstanceTraitsBase<PluginList>;
 
@@ -92,19 +86,6 @@ class CONTENT_EXPORT PluginList {
 
   // The following functions are used to support probing for WebPluginInfo
   // using a different instance of this class.
-
-  // Computes a list of all plugins to potentially load from all sources.
-  void GetPluginPathsToLoad(std::vector<base::FilePath>* plugin_paths);
-
-  // Signals that plugin loading will start. This method should be called before
-  // loading plugins with a different instance of this class. Returns false if
-  // the plugin list is up to date.
-  // When loading has finished, SetPlugins() should be called with the list of
-  // plugins.
-  bool PrepareForPluginLoading();
-
-  // Clears the internal list of Plugins and copies them from the vector.
-  void SetPlugins(const std::vector<WebPluginInfo>& plugins);
 
   // Load all plugins from the default plugins directory.
   void LoadPlugins();
@@ -117,20 +98,12 @@ class CONTENT_EXPORT PluginList {
   // Returns false if the library couldn't be found, or if it's not a plugin.
   bool ReadPluginInfo(const base::FilePath& filename, WebPluginInfo* info);
 
-  // Load a specific plugin with full path. Return true iff loading the plugin
-  // was successful.
-  bool LoadPluginIntoPluginList(const base::FilePath& filename,
-                                std::vector<WebPluginInfo>* plugins,
-                                WebPluginInfo* plugin_info);
-
   //
   // Internals
   //
 
-  // States whether we will load the plugin list the next time we try to access
-  // it, whether we are currently in the process of loading it, or whether we
-  // consider it up to date.
-  LoadingState loading_state_ = LOADING_STATE_NEEDS_REFRESH;
+  // States whether the plugin list is stale or not.
+  bool list_is_stale_ = true;
 
   // Extra plugin paths that we want to search when loading.
   std::vector<base::FilePath> extra_plugin_paths_;

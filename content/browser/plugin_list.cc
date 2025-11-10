@@ -76,7 +76,7 @@ PluginList* PluginList::Singleton() {
 
 void PluginList::RefreshPlugins() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  loading_state_ = LOADING_STATE_NEEDS_REFRESH;
+  list_is_stale_ = true;
 }
 
 void PluginList::RegisterInternalPlugin(const WebPluginInfo& info,
@@ -130,74 +130,41 @@ PluginList::PluginList() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 }
 
-bool PluginList::PrepareForPluginLoading() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  if (loading_state_ == LOADING_STATE_UP_TO_DATE)
-    return false;
-
-  loading_state_ = LOADING_STATE_REFRESHING;
-  return true;
-}
-
 void PluginList::LoadPlugins() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (!PrepareForPluginLoading())
+  if (!list_is_stale_) {
     return;
+  }
 
-  std::vector<WebPluginInfo> new_plugins;
   std::vector<base::FilePath> plugin_paths;
-  GetPluginPathsToLoad(&plugin_paths);
+  for (const base::FilePath& path : extra_plugin_paths_) {
+    if (base::Contains(plugin_paths, path)) {
+      continue;
+    }
+    plugin_paths.push_back(path);
+  }
 
+  plugins_list_.clear();
   for (const base::FilePath& path : plugin_paths) {
     WebPluginInfo plugin_info;
-    LoadPluginIntoPluginList(path, &new_plugins, &plugin_info);
-  }
-
-  SetPlugins(new_plugins);
-}
-
-bool PluginList::LoadPluginIntoPluginList(const base::FilePath& path,
-                                          std::vector<WebPluginInfo>* plugins,
-                                          WebPluginInfo* plugin_info) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  if (!ReadPluginInfo(path, plugin_info))
-    return false;
-
-  // TODO(piman): Do we still need this after NPAPI removal?
-  for (const content::WebPluginMimeType& mime_type : plugin_info->mime_types) {
-    // TODO: don't load global handlers for now.
-    // WebKit hands to the Plugin before it tries
-    // to handle mimeTypes on its own.
-    if (mime_type.mime_type == "*")
-      return false;
-  }
-  plugins->push_back(*plugin_info);
-  return true;
-}
-
-void PluginList::GetPluginPathsToLoad(
-    std::vector<base::FilePath>* plugin_paths) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  for (const base::FilePath& path : extra_plugin_paths_) {
-    if (base::Contains(*plugin_paths, path))
+    if (!ReadPluginInfo(path, &plugin_info)) {
       continue;
-    plugin_paths->push_back(path);
+    }
+
+    // TODO(thestig): Do we still need this after NPAPI removal?
+    for (const content::WebPluginMimeType& mime_type : plugin_info.mime_types) {
+      // TODO: don't load global handlers for now.
+      // WebKit hands to the Plugin before it tries
+      // to handle mimeTypes on its own.
+      if (mime_type.mime_type == "*") {
+        continue;
+      }
+    }
+    plugins_list_.push_back(plugin_info);
   }
-}
 
-void PluginList::SetPlugins(const std::vector<WebPluginInfo>& plugins) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  // If we haven't been invalidated in the mean time, mark the plugin list as
-  // up to date.
-  if (loading_state_ != LOADING_STATE_NEEDS_REFRESH)
-    loading_state_ = LOADING_STATE_UP_TO_DATE;
-
-  plugins_list_ = plugins;
+  list_is_stale_ = false;
 }
 
 void PluginList::GetPlugins(std::vector<WebPluginInfo>* plugins) {
@@ -209,8 +176,7 @@ void PluginList::GetPlugins(std::vector<WebPluginInfo>* plugins) {
 bool PluginList::GetPluginsNoRefresh(std::vector<WebPluginInfo>* plugins) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   plugins->insert(plugins->end(), plugins_list_.begin(), plugins_list_.end());
-
-  return loading_state_ == LOADING_STATE_UP_TO_DATE;
+  return !list_is_stale_;
 }
 
 bool PluginList::GetPluginInfoArray(
@@ -223,7 +189,7 @@ bool PluginList::GetPluginInfoArray(
   DCHECK(mime_type == base::ToLowerASCII(mime_type));
   DCHECK(info);
 
-  bool is_stale = loading_state_ != LOADING_STATE_UP_TO_DATE;
+  bool is_stale = list_is_stale_;
   info->clear();
   if (actual_mime_types)
     actual_mime_types->clear();
