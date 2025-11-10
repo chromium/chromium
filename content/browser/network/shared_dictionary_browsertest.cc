@@ -21,6 +21,7 @@
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/clear_site_data_utils.h"
@@ -987,6 +988,30 @@ class SharedDictionaryBrowserTest
   std::unique_ptr<net::EmbeddedTestServer> cross_origin_server_;
 };
 
+bool WaitUntilHasPreloadSharedDictionaryInfo(
+    network::mojom::NetworkContext* context,
+    bool expected_value) {
+  static constexpr auto kMaximumWaitTime = base::Seconds(3);
+  static constexpr auto kPollInterval = base::Milliseconds(10);
+  base::ElapsedTimer elapsed_timer;
+
+  while (true) {
+    base::test::TestFuture<bool> result_future;
+    context->HasPreloadedSharedDictionaryInfoForTesting(
+        result_future.GetCallback());
+    if (result_future.Get() == expected_value) {
+      return true;
+    }
+    if (elapsed_timer.Elapsed() > kMaximumWaitTime) {
+      return false;
+    }
+    base::OneShotTimer one_shot_timer;
+    base::test::TestFuture<void> timer_future;
+    one_shot_timer.Start(FROM_HERE, kPollInterval, timer_future.GetCallback());
+    timer_future.Get();
+  }
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          SharedDictionaryBrowserTest,
                          testing::Values(BrowserType::kNormal,
@@ -1927,7 +1952,9 @@ IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest,
       preloaded_shared_dictionaries_handle.InitWithNewPipeAndPassReceiver());
   EXPECT_TRUE(HasPreloadedSharedDictionaryInfo());
   SendMemoryPressureToNetworkService();
-  EXPECT_FALSE(HasPreloadedSharedDictionaryInfo());
+  FlushNetworkServiceInstanceForTesting();
+  EXPECT_TRUE(WaitUntilHasPreloadSharedDictionaryInfo(GetTargetNetworkContext(),
+                                                      false));
 }
 
 }  // namespace
