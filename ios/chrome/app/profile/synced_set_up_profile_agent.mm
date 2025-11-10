@@ -28,6 +28,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/sync/model/prefs/cross_device_pref_tracker/cross_device_pref_tracker_factory.h"
 #import "ios/chrome/browser/sync/model/prefs/cross_device_pref_tracker/cross_device_pref_tracker_observer_bridge.h"
+#import "ios/chrome/browser/synced_set_up/public/synced_set_up_metrics.h"
 #import "ios/chrome/browser/synced_set_up/utils/utils.h"
 
 @interface SyncedSetUpProfileAgent () <CrossDevicePrefTrackerObserver>
@@ -63,7 +64,8 @@
       // Try triggering when a scene becomes active, but only if it hasn't been
       // handled in this activation cycle.
       if (!_activationAlreadyHandled) {
-        [self maybeTriggerSyncedSetUp];
+        [self maybeTriggerSyncedSetUpWithSource:SyncedSetUpTriggerSource::
+                                                    kSceneActivation];
       }
       break;
   }
@@ -78,7 +80,8 @@
     [self setUpObserverBridge];
 
     if (!_activationAlreadyHandled) {
-      [self maybeTriggerSyncedSetUp];
+      [self maybeTriggerSyncedSetUpWithSource:SyncedSetUpTriggerSource::
+                                                  kSceneActivation];
     }
   }
 }
@@ -91,14 +94,15 @@
            remoteDeviceInfo:(const syncer::DeviceInfo&)remoteDeviceInfo {
   // This trigger should happen independently of foreground activation cycles,
   // so do not check `_activationAlreadyHandled` here.
-  [self maybeTriggerSyncedSetUp];
+  [self maybeTriggerSyncedSetUpWithSource:SyncedSetUpTriggerSource::
+                                              kRemotePrefChange];
 }
 
 #pragma mark - Private
 
 // Evaluates all preconditions and triggers the Synced Set Up flow if
 // applicable.
-- (void)maybeTriggerSyncedSetUp {
+- (void)maybeTriggerSyncedSetUpWithSource:(SyncedSetUpTriggerSource)source {
   CHECK(IsSyncedSetUpEnabled());
 
   // This agent must not initiate the Synced Set Up flow during First Run.
@@ -119,6 +123,7 @@
       HandlerForProtocol(dispatcher, SyncedSetUpCommands);
 
   if (handler) {
+    LogSyncedSetUpTriggerSource(source);
     [handler showSyncedSetUpWithDismissalCompletion:nil];
     _activationAlreadyHandled = YES;
   }

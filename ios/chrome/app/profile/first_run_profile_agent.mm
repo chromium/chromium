@@ -39,6 +39,7 @@
 #import "ios/chrome/browser/shared/public/commands/tab_grid_toolbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/signin_util.h"
+#import "ios/chrome/browser/synced_set_up/public/synced_set_up_metrics.h"
 
 namespace first_run {
 
@@ -456,6 +457,8 @@ const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
 
 // Starts the Synced Set Up screen.
 - (void)showSyncedSetUp {
+  LogSyncedSetUpTriggerSource(SyncedSetUpTriggerSource::kPostFirstRun);
+
   __weak __typeof(self) weakSelf = self;
 
   id<SyncedSetUpCommands> syncedSetUpCommandsHandler =

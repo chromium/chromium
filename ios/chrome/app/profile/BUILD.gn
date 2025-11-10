@@ -222,6 +222,7 @@ source_set("first_run_profile_agent") {
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:signin_util",
+    "//ios/chrome/browser/synced_set_up/public",
   ]
 }
 
@@ -365,6 +366,7 @@ source_set("synced_set_up_profile_agent") {
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/sync/model/prefs/cross_device_pref_tracker:cross_device_pref_tracker_factory",
     "//ios/chrome/browser/sync/model/prefs/cross_device_pref_tracker:observer_bridge",
+    "//ios/chrome/browser/synced_set_up/public",
     "//ios/chrome/browser/synced_set_up/utils",
   ]
 }
