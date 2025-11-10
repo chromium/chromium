@@ -71,6 +71,7 @@ class GlicUserStatusBrowserTest : public InProcessBrowserTest {
         {{features::kGlic, {}},
          {features::kTabstripComboButton, {}},
          {features::kGlicRollout, {}},
+         {features::kGlicShareImage, {}},
          {features::kGlicUserStatusCheck,
           {{features::kGlicUserStatusRequestDelay.name, "200ms"},
            {features::kGlicUserStatusRequestDelayJitter.name, "0"}}}},
@@ -140,7 +141,8 @@ class GlicUserStatusBrowserTest : public InProcessBrowserTest {
         }));
   }
   // Simulates user signing in and getting a refresh token.
-  void SimulatePrimaryAccountChangedSignIn(TestAccount* account) {
+  void SimulatePrimaryAccountChangedSignIn(TestAccount* account,
+                                           bool fetch_account_info = true) {
     identity_test_env_->SetAutomaticIssueOfAccessTokens(true);
 
     AccountInfo account_info = identity_test_env_->MakePrimaryAccountAvailable(
@@ -152,7 +154,9 @@ class GlicUserStatusBrowserTest : public InProcessBrowserTest {
         !account->host_domain.empty());
     identity_test_env_->UpdateAccountInfoForAccount(account_info);
 
-    SimulateSuccessfulFetchOfAccountInfo(account, &account_info);
+    if (fetch_account_info) {
+      SimulateSuccessfulFetchOfAccountInfo(account, &account_info);
+    }
   }
 
   void SimulateSuccessfulFetchOfAccountInfo(const TestAccount* test_account,
@@ -213,6 +217,9 @@ class GlicUserStatusBrowserTest : public InProcessBrowserTest {
   }
 
   bool IsGlicEnabled() { return GlicEnabling::IsEnabledForProfile(profile()); }
+  bool IsShareImageEnabled() {
+    return GlicEnabling::IsShareImageEnabledForProfile(profile());
+  }
 
   Profile* profile() { return browser()->profile(); }
 
@@ -239,6 +246,8 @@ IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest, EnterpriseSignInEnabled) {
 
   SetGlicUserStatusUrlForTest();
 
+  EXPECT_FALSE(IsShareImageEnabled());
+
   SimulatePrimaryAccountChangedSignIn(&enterpriseAccount);
 
   // Verify Prefs
@@ -253,6 +262,7 @@ IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest, EnterpriseSignInEnabled) {
 
   // Verify GlicEnabling status (assuming other criteria met)
   EXPECT_TRUE(IsGlicEnabled());
+  EXPECT_FALSE(IsShareImageEnabled());
 }
 
 IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest,
@@ -701,6 +711,8 @@ IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest, NonEnterpriseSignIn) {
 
   SetGlicUserStatusUrlForTest();
 
+  EXPECT_FALSE(IsShareImageEnabled());
+
   SimulatePrimaryAccountChangedSignIn(&nonEnterpriseAccount);
 
   // wait for a while.
@@ -713,6 +725,17 @@ IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest, NonEnterpriseSignIn) {
   ASSERT_FALSE(GetCachedStatusDict().has_value());
 
   ASSERT_TRUE(IsGlicEnabled());
+  EXPECT_TRUE(IsShareImageEnabled());
+}
+
+IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest,
+                       NonEnterpriseSignInBeforeAccountInfoFetch) {
+  const bool fetch_account_info = false;
+  SimulatePrimaryAccountChangedSignIn(&nonEnterpriseAccount,
+                                      fetch_account_info);
+  // Ensure that we return false if we have not yet successfully fetched account
+  // information.
+  EXPECT_FALSE(IsShareImageEnabled());
 }
 
 IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest, EnterpriseDataProtection) {

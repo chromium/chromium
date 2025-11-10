@@ -96,6 +96,10 @@ class GlicEnabling : public signin::IdentityManager::Observer {
   // * The profile has completed the first run experience
   static bool ShouldShowSettingsPage(Profile* profile);
 
+  // Returns true if glic is enabled for the profile, the feature is enabled,
+  // and the account is non-enterprise (or for glic dev).
+  static bool IsShareImageEnabledForProfile(Profile* profile);
+
   struct ProfileEnablement {
     // These conditions are checked first and may prevent following checks from
     // occurring.

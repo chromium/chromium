@@ -10,6 +10,7 @@
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_user_status_code.h"
 #include "chrome/browser/glic/glic_user_status_fetcher.h"
+#include "chrome/browser/glic/host/auth_controller.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -180,6 +181,45 @@ bool GlicEnabling::ShouldShowSettingsPage(Profile* profile) {
 void GlicEnabling::OnGlicSettingsPolicyChanged() {
   // Update the overall enabled status as the policy has changed.
   UpdateEnabledStatus();
+}
+
+bool GlicEnabling::IsShareImageEnabledForProfile(Profile* profile) {
+  if (!IsEnabledForProfile(profile) ||
+      !base::FeatureList::IsEnabled(features::kGlicShareImage)) {
+    return false;
+  }
+  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
+  if (!identity_manager) {
+    return false;
+  }
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(::switches::kGlicDev) &&
+      IsPrimaryAccountGoogleInternal(*identity_manager)) {
+    return true;
+  }
+
+  // Should only have a cached value for enterprise accounts.
+  if (base::FeatureList::IsEnabled(features::kGlicUserStatusCheck) &&
+      GlicUserStatusFetcher::GetCachedUserStatus(profile).has_value()) {
+    return false;
+  }
+
+  auto account_managed_status_finder = signin::AccountManagedStatusFinder(
+      identity_manager,
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin),
+      base::DoNothing());
+
+  switch (account_managed_status_finder.GetOutcome()) {
+    case signin::AccountManagedStatusFinderOutcome::kConsumerGmail:
+    case signin::AccountManagedStatusFinderOutcome::kConsumerWellKnown:
+    case signin::AccountManagedStatusFinderOutcome::kConsumerNotWellKnown:
+      return true;
+    case signin::AccountManagedStatusFinderOutcome::kPending:
+    case signin::AccountManagedStatusFinderOutcome::kEnterpriseGoogleDotCom:
+    case signin::AccountManagedStatusFinderOutcome::kEnterprise:
+    case signin::AccountManagedStatusFinderOutcome::kError:
+    case signin::AccountManagedStatusFinderOutcome::kTimeout:
+      return false;
+  }
 }
 
 GlicEnabling::GlicEnabling(Profile* profile,
