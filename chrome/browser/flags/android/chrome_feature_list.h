@@ -303,27 +303,28 @@ BASE_DECLARE_FEATURE(kWebOtpCrossDeviceSimpleString);
 // clang-format on
 
 // For FeatureParam, Alphabetical:
-constexpr base::FeatureParam<int> kAppIntegrationMaxDonationCountParam(
+inline constexpr base::FeatureParam<int> kAppIntegrationMaxDonationCountParam(
     &kAndroidAppIntegrationMultiDataSource,
     "max_donation_count",
     100);
 
-constexpr base::FeatureParam<int> kAppIntegrationCCTVisitDurationLimitSecParam(
-    &kAndroidAppIntegrationMultiDataSource,
-    "cct_visit_duration_limit_sec",
-    3);
+inline constexpr base::FeatureParam<int>
+    kAppIntegrationCCTVisitDurationLimitSecParam(
+        &kAndroidAppIntegrationMultiDataSource,
+        "cct_visit_duration_limit_sec",
+        3);
 
-constexpr base::FeatureParam<int> kAuxiliarySearchMaxBookmarksCountParam(
+inline constexpr base::FeatureParam<int> kAuxiliarySearchMaxBookmarksCountParam(
     &kAuxiliarySearchDonation,
     "auxiliary_search_max_donation_bookmark",
     100);
 
-constexpr base::FeatureParam<size_t> kAuxiliarySearchMaxTabsCountParam(
+inline constexpr base::FeatureParam<size_t> kAuxiliarySearchMaxTabsCountParam(
     &kAuxiliarySearchDonation,
     "auxiliary_search_max_donation_tab",
     100);
 
-constexpr base::FeatureParam<bool> kCCTNavigationalPrefetchHoldback(
+inline constexpr base::FeatureParam<bool> kCCTNavigationalPrefetchHoldback(
     &kCCTNavigationalPrefetch,
     "holdback",
     false);
@@ -331,43 +332,44 @@ constexpr base::FeatureParam<bool> kCCTNavigationalPrefetchHoldback(
 // If it does not support PERCEPTIBLE importance (e.g. Android Q- does not
 // support not-perceptible binding), protected tabs have MODERATE importance as
 // fallback.
-constexpr base::FeatureParam<bool> kFallbackToModerateParam(
+inline constexpr base::FeatureParam<bool> kFallbackToModerateParam(
     &kProtectedTabsAndroid,
     "fallback_to_moderate",
     /*default_value=*/false);
 
-constexpr base::FeatureParam<int>
+inline constexpr base::FeatureParam<int>
     kReadAloudAudioOverviewsSpeedAdditionPercentage(
         &kReadAloudAudioOverviews,
         "read_aloud_audio_overviews_speed_addition_percentage",
         /* default_value=*/20);
 
-constexpr base::FeatureParam<bool> kShouldConsiderLanguageInOverviewReadability(
-    &kReadAloudAudioOverviews,
-    "read_aloud_audio_overviews_should_consider_language_in_overview_"
-    "readability",
-    /* default_value=*/false);
+inline constexpr base::FeatureParam<bool>
+    kShouldConsiderLanguageInOverviewReadability(
+        &kReadAloudAudioOverviews,
+        "read_aloud_audio_overviews_should_consider_language_in_overview_"
+        "readability",
+        /* default_value=*/false);
 
-constexpr base::FeatureParam<int>
+inline constexpr base::FeatureParam<int>
     kReadAloudAudioReadabilityDelayMsAfterPageLoad(
         &kReadAloud,
         "read_aloud_readability_delay_ms_after_page_load",
         /* default_value=*/3000);
 
-constexpr base::FeatureParam<std::string> kQuickDeleteAndroidSurveyTriggerId(
-    &kQuickDeleteAndroidSurvey,
-    "trigger_id",
-    /*default_value=*/"");
+inline constexpr base::FeatureParam<std::string>
+    kQuickDeleteAndroidSurveyTriggerId(&kQuickDeleteAndroidSurvey,
+                                       "trigger_id",
+                                       /*default_value=*/"");
 
-constexpr base::FeatureParam<bool> kTouchToSearchCalloutIph(
+inline constexpr base::FeatureParam<bool> kTouchToSearchCalloutIph(
     &kTouchToSearchCallout,
     "iph",
     /*default_value=*/false);
 
-constexpr base::FeatureParam<bool> kTouchToSearchCalloutSnippetAsSubtitle(
-    &kTouchToSearchCallout,
-    "snippet_as_subtitle",
-    /*default_value=*/false);
+inline constexpr base::FeatureParam<bool>
+    kTouchToSearchCalloutSnippetAsSubtitle(&kTouchToSearchCallout,
+                                           "snippet_as_subtitle",
+                                           /*default_value=*/false);
 
 }  // namespace chrome::android
 
