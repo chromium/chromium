@@ -2201,6 +2201,14 @@ NavigationRequest::~NavigationRequest() {
   TRACE_EVENT_END("navigation",
                   /* NavigationRequest */ perfetto::Track(navigation_id_));
 
+  // If navigation has started but not finished, mark it as aborted for
+  // Navigation callbacks.
+  if (base::FeatureList::IsEnabled(
+          features::kAbortNavigationsFromTabClosures) &&
+      state_ < DID_COMMIT && net_error_ == net::OK) {
+    net_error_ = net::ERR_ABORTED;
+  }
+
   // IMPORTANT NOTE: DO NOT return early from the destructor before this line.
   // Otherwise, a queued navigation might get stuck in a queueing state forever.
   // This navigation has finished. See if there is another NavigationRequest

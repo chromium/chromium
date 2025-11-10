@@ -156,6 +156,8 @@ public abstract class ChromeFeatureList {
     // Feature names.
     // LINT.IfChange(FeaturesExposedToJava)
     // keep-sorted start group_prefixes=["public static final String"]
+    public static final String ABORT_NAVIGATIONS_FROM_TAB_CLOSURES =
+            "AbortNavigationsFromTabClosures";
     public static final String ACCESSIBILITY_MAGNIFICATION_FOLLOWS_INPUT_FOCUS =
             "AccessibilityMagnificationFollowsInputFocus";
     public static final String ACCOUNT_FOR_SUPPRESSED_KEYBOARD_INSETS =

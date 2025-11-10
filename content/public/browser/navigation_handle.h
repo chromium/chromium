@@ -303,8 +303,9 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
 
   // Navigation control flow --------------------------------------------------
 
-  // The net error code if an error happened prior to commit. Otherwise it will
-  // be net::OK.
+  // The net error code if an error happened prior to commit, or the navigation
+  // was aborted by the embedder (eg. tab closure, killed renderer). Otherwise
+  // it will be net::OK.
   virtual net::Error GetNetErrorCode() = 0;
 
   // The details why `net::Error` was emitted.

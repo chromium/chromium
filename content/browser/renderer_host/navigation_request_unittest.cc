@@ -19,10 +19,12 @@
 #include "content/public/browser/origin_trials_controller_delegate.h"
 #include "content/public/browser/process_selection_user_data.h"
 #include "content/public/browser/ssl_status.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
+#include "content/public/test/mock_web_contents_observer.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_navigation_throttle.h"
 #include "content/test/fenced_frame_test_utils.h"
@@ -1004,6 +1006,39 @@ TEST_F(NavigationRequestTest, SanitizeRedirectsForCommit) {
   EXPECT_EQ(GURL("https://a.com"), commit_params->redirects[0]);
   EXPECT_EQ(GURL("https://b.com"), commit_params->redirects[1]);
   EXPECT_EQ(GURL("https://c.com"), commit_params->redirects[2]);
+}
+
+TEST_F(NavigationRequestTest, AbortsDeletedNavigationInProgress) {
+  const GURL kUrl1 = GURL("http://a.com");
+  std::unique_ptr<NavigationSimulator> navigation =
+      NavigationSimulatorImpl::CreateRendererInitiated(kUrl1, main_rfh());
+  navigation->Start();
+
+  testing::NiceMock<MockWebContentsObserver> failed_observer(web_contents());
+  EXPECT_CALL(failed_observer, DidFinishNavigation(testing::_))
+      .WillOnce([](NavigationHandle* navigation_handle) {
+        EXPECT_EQ(navigation_handle->GetNetErrorCode(),
+                  net::Error::ERR_ABORTED);
+      });
+  DeleteContents();
+}
+
+TEST_F(NavigationRequestTest, AbortsDeletedNavigationInProgressWithRedirect) {
+  const GURL kUrl1 = GURL("http://a.com");
+  const GURL kUrl2 = GURL("http://b.com");
+
+  std::unique_ptr<NavigationSimulator> navigation =
+      NavigationSimulatorImpl::CreateRendererInitiated(kUrl1, main_rfh());
+  navigation->Start();
+  navigation->Redirect(kUrl2);
+
+  testing::NiceMock<MockWebContentsObserver> failed_observer(web_contents());
+  EXPECT_CALL(failed_observer, DidFinishNavigation(testing::_))
+      .WillOnce([](NavigationHandle* navigation_handle) {
+        EXPECT_EQ(navigation_handle->GetNetErrorCode(),
+                  net::Error::ERR_ABORTED);
+      });
+  DeleteContents();
 }
 
 // Test that the required CSP of every frame is computed/inherited correctly and

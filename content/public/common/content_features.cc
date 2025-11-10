@@ -19,6 +19,11 @@ namespace features {
 
 // All features in alphabetical order.
 
+// Marks navigations as aborted when the NavigationHandle is destroyed mid
+// navigation, likely due to a tab closure. This is a kill switch.
+BASE_FEATURE(kAbortNavigationsFromTabClosures,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Kill switch to guard additional security checks performed by the browser
 // process on opaque origins, such as when verifying source origins for
 // postMessage. See https://crbug.com/40109437.

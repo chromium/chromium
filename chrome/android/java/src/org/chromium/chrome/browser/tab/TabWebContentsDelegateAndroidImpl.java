@@ -261,6 +261,11 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
 
     @Override
     public void loadingStateChanged(boolean shouldShowLoadingUi) {
+        // Destroying a tab destroys the WebContents, which can call this function. Due to
+        // circular dependencies and this function observing the WebContents, not the Tab, there's
+        // no correct destruction ordering, so check if the Tab is being destroyed, and if so, don't
+        // try to use it.
+        if (mTab.isDestroyed()) return;
         boolean isLoading = mTab.getWebContents() != null && mTab.getWebContents().isLoading();
         if (isLoading) {
             mTab.onLoadStarted(shouldShowLoadingUi);

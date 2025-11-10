@@ -154,6 +154,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &download::features::kEnableSavePackageForOffTheRecord,
     &download::features::kSmartSuggestionForLargeDownloads,
     &feature_engagement::kIPHTabSwitcherButtonFeature,
+    &features::kAbortNavigationsFromTabClosures,
     &features::kAccessibilityMagnificationFollowsInputFocus,
     &features::kAndroidAnimatedProgressBarInBrowser,
     &features::kAndroidAnimatedProgressBarInViz,

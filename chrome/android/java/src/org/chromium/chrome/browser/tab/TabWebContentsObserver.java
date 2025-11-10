@@ -173,6 +173,10 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
 
         @Override
         public void primaryMainFrameRenderProcessGone(@TerminationStatus int terminationStatus) {
+            // If the renderer process was destroyed due to the tab being destroyed, don't try to
+            // handle this or treat it as a tab crash.
+            if (mTab.isDestroyed()) return;
+
             Log.i(
                     TAG,
                     "primaryMainFrameRenderProcessGone() for tab id: "

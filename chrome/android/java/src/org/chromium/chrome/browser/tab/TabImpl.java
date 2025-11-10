@@ -1271,12 +1271,18 @@ class TabImpl implements Tab {
         updateTitle();
 
         for (TabObserver observer : mObservers) observer.onDestroyed(this);
-        mObservers.clear();
+        boolean abortNavigationsFromTabClosures =
+                ChromeFeatureList.isEnabled(ChromeFeatureList.ABORT_NAVIGATIONS_FROM_TAB_CLOSURES);
+        if (abortNavigationsFromTabClosures) {
+            mUserDataHost.destroy();
+            destroyWebContents(true);
+        }
 
-        mUserDataHost.destroy();
+        mObservers.clear();
+        if (!abortNavigationsFromTabClosures) mUserDataHost.destroy();
         mTabViewManager.destroy();
         hideNativePage(false, null);
-        destroyWebContents(true);
+        if (!abortNavigationsFromTabClosures) destroyWebContents(true);
         if (mWebContentsState != null) {
             mWebContentsState.destroy();
             mWebContentsState = null;
