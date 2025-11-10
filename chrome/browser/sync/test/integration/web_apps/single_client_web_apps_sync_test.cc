@@ -70,7 +70,7 @@ class SingleClientWebAppsSyncTest
       public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
   SingleClientWebAppsSyncTest() : WebAppsSyncTestBase(SINGLE_CLIENT) {
-    if (GetParam() == SyncTest::SetupSyncMode::kSyncTransportOnly) {
+    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
       scoped_feature_list_.InitAndEnableFeature(
           syncer::kReplaceSyncPromosWithSignInPromos);
     }
