@@ -16,6 +16,10 @@ static constexpr char kSyncedSetUpTriggerSource[] =
 static constexpr char kSyncedSetUpSnackbarInteraction[] =
     "IOS.SyncedSetUp.Snackbar.Interaction";
 
+// UMA histogram name for recording the number of applied remote prefs.
+static constexpr char kSyncedSetUpRemoteAppliedPrefCount[] =
+    "IOS.SyncedSetUp.RemoteAppliedPrefCount";
+
 }  // namespace
 
 void LogSyncedSetUpTriggerSource(SyncedSetUpTriggerSource source) {
@@ -24,4 +28,10 @@ void LogSyncedSetUpTriggerSource(SyncedSetUpTriggerSource source) {
 
 void LogSyncedSetUpSnackbarInteraction(SyncedSetUpSnackbarInteraction event) {
   base::UmaHistogramEnumeration(kSyncedSetUpSnackbarInteraction, event);
+}
+
+void LogSyncedSetUpRemoteAppliedPrefCount(int count) {
+  // Uses `Counts100` as the number of applied prefs for the Synced Set Up
+  // feature is small (< 10).
+  base::UmaHistogramCounts100(kSyncedSetUpRemoteAppliedPrefCount, count);
 }
