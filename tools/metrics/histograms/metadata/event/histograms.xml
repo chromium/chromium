@@ -276,11 +276,12 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Event.Latency.OS2.{EventType}" units="ms"
+<histogram name="Event.Latency.OS2{EventType}" units="ms"
     expires_after="2026-05-03">
   <owner>flackr@chromium.org</owner>
   <owner>joenotcharles@google.com</owner>
   <owner>input-dev@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Time between input event received by OS and sent to Chrome, recorded for
     each event when it is received by Chrome. Replaced Event.Latency.OS which
@@ -297,12 +298,13 @@ chromium-metrics-reviews@google.com.
     tick), hence a -16ms shift is expected in the distribution.
   </summary>
   <token key="EventType">
-    <variant name="KEY_PRESSED"/>
-    <variant name="MOUSE_PRESSED"/>
-    <variant name="MOUSE_WHEEL"/>
-    <variant name="TOUCH_MOVED"/>
-    <variant name="TOUCH_PRESSED"/>
-    <variant name="TOUCH_RELEASED"/>
+    <variant name=""/>
+    <variant name=".KEY_PRESSED"/>
+    <variant name=".MOUSE_PRESSED"/>
+    <variant name=".MOUSE_WHEEL"/>
+    <variant name=".TOUCH_MOVED"/>
+    <variant name=".TOUCH_PRESSED"/>
+    <variant name=".TOUCH_RELEASED"/>
   </token>
 </histogram>
 
