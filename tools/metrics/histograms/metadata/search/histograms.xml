@@ -64,9 +64,20 @@ chromium-metrics-reviews@google.com.
   <variant name="ThirdPartyLauncher" summary="Third party launcher app"/>
 </variants>
 
+<variants name="SearchEnginePromoDeviceAndOrdering">
+  <variant name=""/>
+  <variant name=".First.ExistingDevice"/>
+  <variant name=".First.NewDevice"/>
+  <variant name=".Second.ExistingDevice"/>
+  <variant name=".Second.NewDevice"/>
+  <variant name=".Third.ExistingDevice"/>
+  <variant name=".Third.NewDevice"/>
+</variants>
+
 <variants name="SearchEnginePromoDeviceType">
-  <variant name=".ExistingDevice" summary=""/>
-  <variant name=".NewDevice" summary=""/>
+  <variant name=""/>
+  <variant name=".ExistingDevice"/>
+  <variant name=".NewDevice"/>
 </variants>
 
 <variants name="TileUiSurface">
@@ -1608,7 +1619,7 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
 </histogram>
 
 <histogram
-    name="Search.SearchEngineListedInPromoDialog{SearchEnginePromoDeviceType}"
+    name="Search.SearchEngineListedInPromoDialog{SearchEnginePromoDeviceAndOrdering}"
     enum="OmniboxSearchEngineType" expires_after="2026-08-19">
   <owner>yusufo@chromium.org</owner>
   <owner>dgn@chromium.org</owner>
@@ -1619,12 +1630,8 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
     introduced.
 
     Warning: this histogram was expired from M81 to M124; data may be missing.
-    {SearchEnginePromoDeviceType}
+    {SearchEnginePromoDeviceAndOrdering}
   </summary>
-  <token key="SearchEnginePromoDeviceType"
-      variants="SearchEnginePromoDeviceType">
-    <variant name=""/>
-  </token>
 </histogram>
 
 <histogram
@@ -1641,10 +1648,6 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
     Warning: this histogram was expired from M81 to M124; data may be missing.
     {SearchEnginePromoDeviceType}
   </summary>
-  <token key="SearchEnginePromoDeviceType"
-      variants="SearchEnginePromoDeviceType">
-    <variant name=""/>
-  </token>
 </histogram>
 
 <histogram name="Search.SearchPolicyConflict.HasConflictWith.{ConflictType}"

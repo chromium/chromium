@@ -939,16 +939,6 @@ chromium-metrics-reviews@google.com.
       name="Net.QuicSession.ConnectRandomPortRequiringConfirmation"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="SearchEnginePromoOrdering" separator="."
-    ordering="prefix,2">
-  <suffix name="First" label=""/>
-  <suffix name="Second" label=""/>
-  <suffix name="Third" label=""/>
-  <affected-histogram
-      name="Search.SearchEngineListedInPromoDialog.ExistingDevice"/>
-  <affected-histogram name="Search.SearchEngineListedInPromoDialog.NewDevice"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="SecurityInterstitialSSLType" separator="."
     ordering="prefix">
   <suffix name="bad_clock" label=""/>
