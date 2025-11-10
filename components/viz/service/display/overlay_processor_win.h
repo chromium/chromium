@@ -30,6 +30,10 @@ class OverlayCandidateFactory;
 class VIZ_SERVICE_EXPORT OverlayProcessorWin
     : public OverlayProcessorInterface {
  public:
+  // TODO(crbug.com/444264038): Delete this declaration when the RPDQ refactor
+  // is finished. Need to avoid hiding the base class' overload.
+  using OverlayProcessorInterface::ProcessForOverlays;
+
   OverlayProcessorWin(
       OutputSurface::DCSupportLevel dc_support_level,
       bool disable_direct_composition_letterbox_video_optimization,

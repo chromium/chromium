@@ -225,6 +225,23 @@ OverlayCandidate OverlayProcessorInterface::ProcessOutputSurfaceAsOverlay(
   return overlay_plane;
 }
 
+void OverlayProcessorInterface::ProcessForOverlays(
+    DisplayResourceProvider* resource_provider,
+    AggregatedRenderPassList* render_passes,
+    const SkM44& output_color_matrix,
+    SurfaceDamageRectList surface_damage_rect_list,
+    std::optional<OverlayCandidate>& primary_plane,
+    CandidateList* overlay_candidates,
+    gfx::Rect* damage_rect,
+    std::vector<gfx::Rect>* content_bounds) {
+  // By default, call the other overload with empty filter maps.
+  ProcessForOverlays(resource_provider, render_passes, output_color_matrix,
+                     /*render_pass_filters=*/{},
+                     /*render_pass_backdrop_filters=*/{},
+                     surface_damage_rect_list, primary_plane,
+                     overlay_candidates, damage_rect, content_bounds);
+}
+
 void OverlayProcessorInterface::ScheduleOverlays(
     DisplayResourceProvider* display_resource_provider) {}
 

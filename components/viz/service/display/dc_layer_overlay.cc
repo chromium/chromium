@@ -1144,6 +1144,18 @@ void DCLayerOverlayProcessor::Process(
   }
 }
 
+void DCLayerOverlayProcessor::Process(
+    const DisplayResourceProvider* resource_provider,
+    const SurfaceDamageRectList& surface_damage_rect_list_in_root_space,
+    bool is_page_fullscreen_mode,
+    RenderPassOverlayDataMap& render_pass_overlay_data_map) {
+  // By default, call the other overload with empty filter maps.
+  Process(resource_provider, /*render_pass_filters=*/{},
+          /*render_pass_backdrop_filters=*/{},
+          surface_damage_rect_list_in_root_space, is_page_fullscreen_mode,
+          render_pass_overlay_data_map);
+}
+
 bool DCLayerOverlayProcessor::ShouldSkipOverlay(
     AggregatedRenderPass* render_pass) const {
   QuadList* quad_list = &render_pass->quad_list;

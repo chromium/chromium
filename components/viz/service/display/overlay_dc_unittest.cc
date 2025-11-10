@@ -398,6 +398,8 @@ class DCLayerOverlayProcessorTest : public OverlayProcessorTestBase {
     OverlayProcessorTestBase::TearDown();
   }
 
+  // TODO(crbug.com/444264038): Merge this overload with one without filter data
+  // when the RPDQ refactor is finished so that it does not need filter data.
   DCLayerOverlayProcessor::RenderPassOverlayData ProcessRootPassForOverlays(
       const AggregatedRenderPassList* render_passes,
       const OverlayProcessorInterface::FilterOperationsMap& render_pass_filters,
@@ -427,6 +429,15 @@ class DCLayerOverlayProcessorTest : public OverlayProcessorTestBase {
                       std::ranges::greater(), &OverlayCandidate::plane_z_order);
 
     return std::move(root_render_pass_overlay_data);
+  }
+
+  DCLayerOverlayProcessor::RenderPassOverlayData ProcessRootPassForOverlays(
+      const AggregatedRenderPassList* render_passes,
+      SurfaceDamageRectList surface_damage_rect_list_in_root_space) {
+    return ProcessRootPassForOverlays(
+        render_passes, OverlayProcessorInterface::FilterOperationsMap(),
+        OverlayProcessorInterface::FilterOperationsMap(),
+        surface_damage_rect_list_in_root_space);
   }
 
   void TestRenderPassRootTransform(bool is_overlay);
@@ -497,15 +508,10 @@ TEST_F(DCLayerOverlayProcessorTest, DisableVideoOverlayIfMovingWorkaround) {
             pass.get(), gfx::Rect(0, 0, 10, 10) + video_rect_offset,
             color_space, hdr_metadata, format);
 
-        OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-        OverlayProcessorInterface::FilterOperationsMap
-            render_pass_backdrop_filters;
-
         AggregatedRenderPassList pass_list;
         pass_list.push_back(std::move(pass));
 
-        auto overlay_data = ProcessRootPassForOverlays(
-            &pass_list, render_pass_filters, render_pass_backdrop_filters, {});
+        auto overlay_data = ProcessRootPassForOverlays(&pass_list, {});
 
         return std::move(overlay_data.promoted_overlays);
       };
@@ -605,8 +611,6 @@ TEST_F(DCLayerOverlayProcessorTest, Occluded) {
     second_video_quad->rect.set_origin(gfx::Point(2, 2));
     second_video_quad->visible_rect.set_origin(gfx::Point(2, 2));
 
-    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
     pass->damage_rect = gfx::Rect(1, 1, 10, 10);
     AggregatedRenderPassList pass_list;
     pass_list.push_back(std::move(pass));
@@ -614,8 +618,7 @@ TEST_F(DCLayerOverlayProcessorTest, Occluded) {
         gfx::Rect(1, 1, 10, 10), gfx::Rect(0, 0, 0, 0), gfx::Rect(0, 0, 0, 0)};
 
     auto overlay_data = ProcessRootPassForOverlays(
-        &pass_list, render_pass_filters, render_pass_backdrop_filters,
-        std::move(surface_damage_rect_list));
+        &pass_list, std::move(surface_damage_rect_list));
 
     EXPECT_EQ(2U, overlay_data.promoted_overlays.size());
     EXPECT_EQ(-1, overlay_data.promoted_overlays.front().plane_z_order);
@@ -652,8 +655,6 @@ TEST_F(DCLayerOverlayProcessorTest, Occluded) {
     second_video_quad->rect.set_origin(gfx::Point(2, 2));
     second_video_quad->visible_rect.set_origin(gfx::Point(2, 2));
 
-    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
     pass->damage_rect = gfx::Rect(1, 1, 10, 10);
     AggregatedRenderPassList pass_list;
     pass_list.push_back(std::move(pass));
@@ -661,8 +662,7 @@ TEST_F(DCLayerOverlayProcessorTest, Occluded) {
         gfx::Rect(1, 1, 10, 10), gfx::Rect(0, 0, 0, 0), gfx::Rect(0, 0, 0, 0)};
 
     auto overlay_data = ProcessRootPassForOverlays(
-        &pass_list, render_pass_filters, render_pass_backdrop_filters,
-        std::move(surface_damage_rect_list));
+        &pass_list, std::move(surface_damage_rect_list));
 
     EXPECT_EQ(2U, overlay_data.promoted_overlays.size());
     EXPECT_EQ(-1, overlay_data.promoted_overlays.front().plane_z_order);
@@ -699,8 +699,6 @@ TEST_F(DCLayerOverlayProcessorTest, DamageRectWithoutVideoDamage) {
         child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
         gfx::Rect(0, 0, 200, 200));
 
-    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
     // Damage rect fully outside video quad
     pass->damage_rect = gfx::Rect(210, 210, 20, 20);
     AggregatedRenderPassList pass_list;
@@ -709,8 +707,7 @@ TEST_F(DCLayerOverlayProcessorTest, DamageRectWithoutVideoDamage) {
         gfx::Rect(210, 210, 20, 20), gfx::Rect(0, 0, 0, 0)};
 
     auto overlay_data = ProcessRootPassForOverlays(
-        &pass_list, render_pass_filters, render_pass_backdrop_filters,
-        std::move(surface_damage_rect_list));
+        &pass_list, std::move(surface_damage_rect_list));
     EXPECT_EQ(1U, overlay_data.promoted_overlays.size());
     EXPECT_EQ(-1, overlay_data.promoted_overlays.back().plane_z_order);
     // All rects must be redrawn at the first frame.
@@ -738,8 +735,6 @@ TEST_F(DCLayerOverlayProcessorTest, DamageRectWithoutVideoDamage) {
         child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
         gfx::Rect(0, 0, 200, 200));
 
-    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
     // Damage rect fully outside video quad
     pass->damage_rect = gfx::Rect(210, 210, 20, 20);
     AggregatedRenderPassList pass_list;
@@ -748,8 +743,7 @@ TEST_F(DCLayerOverlayProcessorTest, DamageRectWithoutVideoDamage) {
         gfx::Rect(210, 210, 20, 20), gfx::Rect(0, 0, 0, 0)};
 
     auto overlay_data = ProcessRootPassForOverlays(
-        &pass_list, render_pass_filters, render_pass_backdrop_filters,
-        std::move(surface_damage_rect_list));
+        &pass_list, std::move(surface_damage_rect_list));
     EXPECT_EQ(1U, overlay_data.promoted_overlays.size());
     EXPECT_EQ(-1, overlay_data.promoted_overlays.back().plane_z_order);
     // Only the non-overlay damaged rect need to be drawn by the gl compositor
@@ -768,16 +762,13 @@ TEST_F(DCLayerOverlayProcessorTest, DamageRect) {
         resource_provider_.get(), child_resource_provider_.get(),
         child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
 
-    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
     pass->damage_rect = gfx::Rect(1, 1, 10, 10);
     AggregatedRenderPassList pass_list;
     pass_list.push_back(std::move(pass));
     SurfaceDamageRectList surface_damage_rect_list = {gfx::Rect(1, 1, 10, 10)};
 
     auto overlay_data = ProcessRootPassForOverlays(
-        &pass_list, render_pass_filters, render_pass_backdrop_filters,
-        std::move(surface_damage_rect_list));
+        &pass_list, std::move(surface_damage_rect_list));
     EXPECT_EQ(1U, overlay_data.promoted_overlays.size());
     EXPECT_EQ(1, overlay_data.promoted_overlays.back().plane_z_order);
     // Damage rect should be unchanged on initial frame because of resize, but
@@ -813,8 +804,6 @@ TEST_F(DCLayerOverlayProcessorTest, ClipRect) {
     // Clipped rect shouldn't be overlapped by clipped opaque quad rect.
     shared_state->clip_rect = gfx::Rect(0, 0, 100, 3);
 
-    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
     pass->damage_rect = gfx::Rect(1, 1, 10, 10);
     AggregatedRenderPassList pass_list;
     pass_list.push_back(std::move(pass));
@@ -822,8 +811,7 @@ TEST_F(DCLayerOverlayProcessorTest, ClipRect) {
                                                       gfx::Rect(1, 1, 10, 2)};
 
     auto overlay_data = ProcessRootPassForOverlays(
-        &pass_list, render_pass_filters, render_pass_backdrop_filters,
-        std::move(surface_damage_rect_list));
+        &pass_list, std::move(surface_damage_rect_list));
     EXPECT_EQ(1U, overlay_data.promoted_overlays.size());
     // Because of clip rects the overlay isn't occluded and shouldn't be an
     // underlay.
@@ -851,16 +839,13 @@ TEST_F(DCLayerOverlayProcessorTest, TransparentOnTop) {
         child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
     pass->shared_quad_state_list.back()->opacity = 0.5f;
 
-    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
     pass->damage_rect = gfx::Rect(1, 1, 10, 10);
     AggregatedRenderPassList pass_list;
     pass_list.push_back(std::move(pass));
     SurfaceDamageRectList surface_damage_rect_list = {gfx::Rect(1, 1, 10, 10)};
 
     auto overlay_data = ProcessRootPassForOverlays(
-        &pass_list, render_pass_filters, render_pass_backdrop_filters,
-        std::move(surface_damage_rect_list));
+        &pass_list, std::move(surface_damage_rect_list));
     EXPECT_EQ(1U, overlay_data.promoted_overlays.size());
     EXPECT_EQ(1, overlay_data.promoted_overlays.back().plane_z_order);
     // Quad isn't opaque, so underlying damage must remain the same.
@@ -884,8 +869,6 @@ TEST_F(DCLayerOverlayProcessorTest, UnderlayDamageRectWithQuadOnTopUnchanged) {
         resource_provider_.get(), child_resource_provider_.get(),
         child_provider_.get(), shared_state, pass.get());
 
-    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
     pass->damage_rect = kOverlayRect;
     AggregatedRenderPassList pass_list;
     pass_list.push_back(std::move(pass));
@@ -899,8 +882,7 @@ TEST_F(DCLayerOverlayProcessorTest, UnderlayDamageRectWithQuadOnTopUnchanged) {
     }
 
     auto overlay_data = ProcessRootPassForOverlays(
-        &pass_list, render_pass_filters, render_pass_backdrop_filters,
-        std::move(surface_damage_rect_list));
+        &pass_list, std::move(surface_damage_rect_list));
     EXPECT_EQ(1U, overlay_data.promoted_overlays.size());
     EXPECT_EQ(-1, overlay_data.promoted_overlays.back().plane_z_order);
     // Damage rect should be unchanged on initial frame, but should be reduced
@@ -931,8 +913,6 @@ TEST_F(DCLayerOverlayProcessorTest, RoundedCorners) {
     pass->shared_quad_state_list.back()->mask_filter_info =
         gfx::MaskFilterInfo(gfx::RRectF(gfx::RectF(0.f, 0.f, 20.f, 30.f), 5.f));
 
-    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
     pass->damage_rect = gfx::Rect(0, 0, 256, 256);
     AggregatedRenderPassList pass_list;
     pass_list.push_back(std::move(pass));
@@ -940,8 +920,7 @@ TEST_F(DCLayerOverlayProcessorTest, RoundedCorners) {
         gfx::Rect(0, 0, 256, 256)};
 
     auto overlay_data = ProcessRootPassForOverlays(
-        &pass_list, render_pass_filters, render_pass_backdrop_filters,
-        std::move(surface_damage_rect_list));
+        &pass_list, std::move(surface_damage_rect_list));
 
     auto* root_pass = pass_list.back().get();
     auto* replaced_quad = root_pass->quad_list.back();
@@ -984,8 +963,6 @@ TEST_F(DCLayerOverlayProcessorTest, RoundedCorners) {
     pass->shared_quad_state_list.back()->mask_filter_info =
         gfx::MaskFilterInfo(gfx::RRectF(gfx::RectF(0.f, 0.f, 20.f, 30.f), 5.f));
 
-    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
     pass->damage_rect = gfx::Rect(0, 0, 256, 256);
     AggregatedRenderPassList pass_list;
     pass_list.push_back(std::move(pass));
@@ -993,8 +970,7 @@ TEST_F(DCLayerOverlayProcessorTest, RoundedCorners) {
         gfx::Rect(0, 0, 32, 32), gfx::Rect(0, 0, 256, 256)};
 
     auto overlay_data = ProcessRootPassForOverlays(
-        &pass_list, render_pass_filters, render_pass_backdrop_filters,
-        std::move(surface_damage_rect_list));
+        &pass_list, std::move(surface_damage_rect_list));
 
     auto* root_pass = pass_list.back().get();
     auto* replaced_quad = root_pass->quad_list.back();
@@ -1037,8 +1013,6 @@ TEST_F(DCLayerOverlayProcessorTest, RoundedCorners) {
     pass->shared_quad_state_list.back()->mask_filter_info =
         gfx::MaskFilterInfo(gfx::RRectF(gfx::RectF(0.f, 0.f, 20.f, 30.f), 5.f));
 
-    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
     pass->damage_rect = gfx::Rect(0, 0, 256, 256);
     AggregatedRenderPassList pass_list;
     pass_list.push_back(std::move(pass));
@@ -1046,8 +1020,7 @@ TEST_F(DCLayerOverlayProcessorTest, RoundedCorners) {
         gfx::Rect(0, 0, 256, 256)};
 
     auto overlay_data = ProcessRootPassForOverlays(
-        &pass_list, render_pass_filters, render_pass_backdrop_filters,
-        std::move(surface_damage_rect_list));
+        &pass_list, std::move(surface_damage_rect_list));
 
     auto* root_pass = pass_list.back().get();
     auto* replaced_quad = root_pass->quad_list.back();
@@ -1098,8 +1071,6 @@ TEST_F(DCLayerOverlayProcessorTest, MultipleYUVOverlays) {
         gfx::Rect(100, 100, 120, 120));
     pass->shared_quad_state_list.back()->overlay_damage_index = 2;
 
-    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
     pass->damage_rect = gfx::Rect(0, 0, 220, 220);
     AggregatedRenderPassList pass_list;
     pass_list.push_back(std::move(pass));
@@ -1109,8 +1080,7 @@ TEST_F(DCLayerOverlayProcessorTest, MultipleYUVOverlays) {
     surface_damage_rect_list.push_back(second_video_quad->rect);
 
     auto overlay_data = ProcessRootPassForOverlays(
-        &pass_list, render_pass_filters, render_pass_backdrop_filters,
-        std::move(surface_damage_rect_list));
+        &pass_list, std::move(surface_damage_rect_list));
 
     // Skip overlay.
     EXPECT_EQ(0U, overlay_data.promoted_overlays.size());
@@ -1283,8 +1253,6 @@ TEST_F(DCLayerOverlayProcessorTest, VideoCapture) {
         gfx::Rect(0, 0, 256, 256));
     pass->shared_quad_state_list.back()->overlay_damage_index = 1;
 
-    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
     pass->damage_rect = gfx::Rect(0, 0, 256, 256);
     AggregatedRenderPassList pass_list;
     pass_list.push_back(std::move(pass));
@@ -1292,8 +1260,7 @@ TEST_F(DCLayerOverlayProcessorTest, VideoCapture) {
         gfx::Rect(0, 0, 32, 32), gfx::Rect(0, 0, 256, 256)};
     // No video capture in this frame.
     auto overlay_data = ProcessRootPassForOverlays(
-        &pass_list, render_pass_filters, render_pass_backdrop_filters,
-        std::move(surface_damage_rect_list));
+        &pass_list, std::move(surface_damage_rect_list));
 
     // Use overlay for the video quad.
     EXPECT_EQ(1U, overlay_data.promoted_overlays.size());
@@ -1315,8 +1282,6 @@ TEST_F(DCLayerOverlayProcessorTest, VideoCapture) {
         gfx::Rect(0, 0, 256, 256));
     pass->shared_quad_state_list.back()->overlay_damage_index = 0;
 
-    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
     pass->damage_rect = gfx::Rect(0, 0, 256, 256);
     AggregatedRenderPassList pass_list;
     pass_list.push_back(std::move(pass));
@@ -1326,8 +1291,7 @@ TEST_F(DCLayerOverlayProcessorTest, VideoCapture) {
     // Now video capture is enabled.
     pass_list.back()->video_capture_enabled = true;
     auto overlay_data = ProcessRootPassForOverlays(
-        &pass_list, render_pass_filters, render_pass_backdrop_filters,
-        std::move(surface_damage_rect_list));
+        &pass_list, std::move(surface_damage_rect_list));
 
     // Should not use overlay for the video when video capture is on.
     EXPECT_EQ(0U, overlay_data.promoted_overlays.size());
@@ -1364,12 +1328,9 @@ TEST_F(DCLayerOverlayProcessorTest, VideoCaptureOnRootPassWithProtectedQuad) {
   AggregatedRenderPassList pass_list;
   pass_list.push_back(std::move(pass));
 
-  OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-  OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
   SurfaceDamageRectList surface_damage_rect_list = {gfx::Rect(0, 0, 256, 256)};
   auto overlay_data = ProcessRootPassForOverlays(
-      &pass_list, render_pass_filters, render_pass_backdrop_filters,
-      std::move(surface_damage_rect_list));
+      &pass_list, std::move(surface_damage_rect_list));
 
   // Expect the protected video is promoted to overlay.
   EXPECT_EQ(1U, overlay_data.promoted_overlays.size());
@@ -1423,14 +1384,11 @@ TEST_F(DCLayerOverlayProcessorTest, VideoCaptureOnIsolatedRenderPass) {
     pass_list.push_back(std::move(root_pass));
   }
 
-  OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-  OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
 
   SurfaceDamageRectList surface_damage_rect_list = {gfx::Rect(0, 0, 256, 256)};
 
   auto overlay_data = ProcessRootPassForOverlays(
-      &pass_list, render_pass_filters, render_pass_backdrop_filters,
-      std::move(surface_damage_rect_list));
+      &pass_list, std::move(surface_damage_rect_list));
 
   EXPECT_EQ(1U, overlay_data.promoted_overlays.size());
 }
@@ -1482,16 +1440,13 @@ void DCLayerOverlayProcessorTest::TestRenderPassRootTransform(bool is_overlay) {
         child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
         gfx::Rect(kVideoRect));
 
-    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
     pass->damage_rect = kOutputRect;
     AggregatedRenderPassList pass_list;
     pass_list.push_back(std::move(pass));
     SurfaceDamageRectList surface_damage_rect_list = kSurfaceDamageRectList;
 
     auto overlay_data = ProcessRootPassForOverlays(
-        &pass_list, render_pass_filters, render_pass_backdrop_filters,
-        std::move(surface_damage_rect_list));
+        &pass_list, std::move(surface_damage_rect_list));
     LOG(INFO) << "frame " << frame
               << " damage rect: " << overlay_data.damage_rect.ToString();
 
@@ -1535,8 +1490,6 @@ TEST_F(DCLayerOverlayProcessorTest, MultipleRenderPassesOneOverlay) {
     DCLayerOverlayProcessor::RenderPassOverlayDataMap
         render_pass_overlay_data_map;
 
-    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
     SurfaceDamageRectList surface_damage_rect_list;
 
     // Create 3 render passes, with only one containing an overlay candidate.
@@ -1575,8 +1528,7 @@ TEST_F(DCLayerOverlayProcessorTest, MultipleRenderPassesOneOverlay) {
     surface_damage_rect_list.emplace_back(0, 0, 256, 256);
 
     dc_layer_overlay_processor_->Process(
-        resource_provider_.get(), render_pass_filters,
-        render_pass_backdrop_filters, std::move(surface_damage_rect_list),
+        resource_provider_.get(), std::move(surface_damage_rect_list),
         /*is_page_fullscreen_mode=*/false, render_pass_overlay_data_map);
 
     for (auto& [render_pass, overlay_data] : render_pass_overlay_data_map) {
@@ -1639,8 +1591,6 @@ TEST_F(DCLayerOverlayProcessorTest,
     DCLayerOverlayProcessor::RenderPassOverlayDataMap
         render_pass_overlay_data_map;
 
-    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
     SurfaceDamageRectList surface_damage_rect_list;
 
     // Create 3 render passes that all have a video overlay candidate. Start
@@ -1672,8 +1622,7 @@ TEST_F(DCLayerOverlayProcessorTest,
     surface_damage_rect_list.emplace_back(0, 0, 256, 256);
 
     dc_layer_overlay_processor_->Process(
-        resource_provider_.get(), render_pass_filters,
-        render_pass_backdrop_filters, std::move(surface_damage_rect_list),
+        resource_provider_.get(), std::move(surface_damage_rect_list),
         /*is_page_fullscreen_mode=*/false, render_pass_overlay_data_map);
 
     // Verify that the previous frame states contain only 3 render passes and
@@ -1735,8 +1684,6 @@ TEST_F(DCLayerOverlayProcessorTest, MultipleYUVOverlaysIntersected) {
                        pass->shared_quad_state_list.back(), pass.get(),
                        gfx::Rect(0, 0, 256, 256), SkColors::kWhite);
 
-    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
     pass->damage_rect = gfx::Rect(0, 0, 220, 220);
     AggregatedRenderPassList pass_list;
     pass_list.push_back(std::move(pass));
@@ -1747,8 +1694,7 @@ TEST_F(DCLayerOverlayProcessorTest, MultipleYUVOverlaysIntersected) {
     surface_damage_rect_list.push_back(gfx::Rect(0, 0, 256, 256));
 
     auto overlay_data = ProcessRootPassForOverlays(
-        &pass_list, render_pass_filters, render_pass_backdrop_filters,
-        std::move(surface_damage_rect_list));
+        &pass_list, std::move(surface_damage_rect_list));
 
     int overlay_cnt = 0;
     for (auto& dc : overlay_data.promoted_overlays) {
@@ -1795,16 +1741,13 @@ TEST_F(DCLayerOverlayProcessorTest, HDR10VideoOverlay) {
         gfx::ColorSpace::CreateHDR10(), valid_hdr_metadata,
         MultiPlaneFormat::kP010);
 
-    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
     pass->damage_rect = gfx::Rect(0, 0, 220, 220);
     AggregatedRenderPassList pass_list;
     pass_list.push_back(std::move(pass));
     SurfaceDamageRectList surface_damage_rect_list;
 
     auto overlay_data = ProcessRootPassForOverlays(
-        &pass_list, render_pass_filters, render_pass_backdrop_filters,
-        std::move(surface_damage_rect_list));
+        &pass_list, std::move(surface_damage_rect_list));
 
     // Should promote overlay.
     EXPECT_EQ(1U, overlay_data.promoted_overlays.size());
@@ -1822,16 +1765,13 @@ TEST_F(DCLayerOverlayProcessorTest, HDR10VideoOverlay) {
         gfx::ColorSpace::CreateHDR10(), valid_hdr_metadata,
         MultiPlaneFormat::kNV12);
 
-    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
     pass->damage_rect = gfx::Rect(0, 0, 220, 220);
     AggregatedRenderPassList pass_list;
     pass_list.push_back(std::move(pass));
     SurfaceDamageRectList surface_damage_rect_list;
 
     auto overlay_data = ProcessRootPassForOverlays(
-        &pass_list, render_pass_filters, render_pass_backdrop_filters,
-        std::move(surface_damage_rect_list));
+        &pass_list, std::move(surface_damage_rect_list));
 
     // Should skip overlay.
     EXPECT_EQ(0U, overlay_data.promoted_overlays.size());
@@ -1849,16 +1789,13 @@ TEST_F(DCLayerOverlayProcessorTest, HDR10VideoOverlay) {
         gfx::ColorSpace::CreateHDR10(), gfx::HDRMetadata(),
         MultiPlaneFormat::kP010);
 
-    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
     pass->damage_rect = gfx::Rect(0, 0, 220, 220);
     AggregatedRenderPassList pass_list;
     pass_list.push_back(std::move(pass));
     SurfaceDamageRectList surface_damage_rect_list;
 
     auto overlay_data = ProcessRootPassForOverlays(
-        &pass_list, render_pass_filters, render_pass_backdrop_filters,
-        std::move(surface_damage_rect_list));
+        &pass_list, std::move(surface_damage_rect_list));
 
     // Should promote overlay as we allow HDR 10 overlays with BT.2020 and
     // transfer function PQ without hdr_metadata.
@@ -1880,16 +1817,13 @@ TEST_F(DCLayerOverlayProcessorTest, HDR10VideoOverlay) {
         gfx::ColorSpace::CreateHDR10(), cta_861_3_hdr_metadata,
         MultiPlaneFormat::kP010);
 
-    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
     pass->damage_rect = gfx::Rect(0, 0, 220, 220);
     AggregatedRenderPassList pass_list;
     pass_list.push_back(std::move(pass));
     SurfaceDamageRectList surface_damage_rect_list;
 
     auto overlay_data = ProcessRootPassForOverlays(
-        &pass_list, render_pass_filters, render_pass_backdrop_filters,
-        std::move(surface_damage_rect_list));
+        &pass_list, std::move(surface_damage_rect_list));
 
     // Should promote overlay.
     EXPECT_EQ(1U, overlay_data.promoted_overlays.size());
@@ -1911,16 +1845,13 @@ TEST_F(DCLayerOverlayProcessorTest, HDR10VideoOverlay) {
         gfx::ColorSpace::CreateHDR10(), smpte_st_2086_hdr_metadata,
         MultiPlaneFormat::kP010);
 
-    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
     pass->damage_rect = gfx::Rect(0, 0, 220, 220);
     AggregatedRenderPassList pass_list;
     pass_list.push_back(std::move(pass));
     SurfaceDamageRectList surface_damage_rect_list;
 
     auto overlay_data = ProcessRootPassForOverlays(
-        &pass_list, render_pass_filters, render_pass_backdrop_filters,
-        std::move(surface_damage_rect_list));
+        &pass_list, std::move(surface_damage_rect_list));
 
     // Should promote overlay.
     EXPECT_EQ(1U, overlay_data.promoted_overlays.size());
@@ -1939,16 +1870,13 @@ TEST_F(DCLayerOverlayProcessorTest, HDR10VideoOverlay) {
         gfx::ColorSpace::CreateHLG(), valid_hdr_metadata,
         MultiPlaneFormat::kP010);
 
-    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
     pass->damage_rect = gfx::Rect(0, 0, 220, 220);
     AggregatedRenderPassList pass_list;
     pass_list.push_back(std::move(pass));
     SurfaceDamageRectList surface_damage_rect_list;
 
     auto overlay_data = ProcessRootPassForOverlays(
-        &pass_list, render_pass_filters, render_pass_backdrop_filters,
-        std::move(surface_damage_rect_list));
+        &pass_list, std::move(surface_damage_rect_list));
 
     // Should skip overlay.
     EXPECT_EQ(0U, overlay_data.promoted_overlays.size());
@@ -1969,16 +1897,13 @@ TEST_F(DCLayerOverlayProcessorTest, HDR10VideoOverlay) {
         gfx::ColorSpace::CreateHDR10(), valid_hdr_metadata,
         MultiPlaneFormat::kP010);
 
-    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
     pass->damage_rect = gfx::Rect(0, 0, 220, 220);
     AggregatedRenderPassList pass_list;
     pass_list.push_back(std::move(pass));
     SurfaceDamageRectList surface_damage_rect_list;
 
     auto overlay_data = ProcessRootPassForOverlays(
-        &pass_list, render_pass_filters, render_pass_backdrop_filters,
-        std::move(surface_damage_rect_list));
+        &pass_list, std::move(surface_damage_rect_list));
 
     // Should skip overlay.
     EXPECT_EQ(0U, overlay_data.promoted_overlays.size());
@@ -2003,16 +1928,13 @@ TEST_F(DCLayerOverlayProcessorTest, HDR10VideoOverlay) {
         gfx::ColorSpace::CreateHDR10(), valid_hdr_metadata,
         MultiPlaneFormat::kP010);
 
-    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
     pass->damage_rect = gfx::Rect(0, 0, 220, 220);
     AggregatedRenderPassList pass_list;
     pass_list.push_back(std::move(pass));
     SurfaceDamageRectList surface_damage_rect_list;
 
     auto overlay_data = ProcessRootPassForOverlays(
-        &pass_list, render_pass_filters, render_pass_backdrop_filters,
-        std::move(surface_damage_rect_list));
+        &pass_list, std::move(surface_damage_rect_list));
 
     // Should skip overlay.
     EXPECT_EQ(0U, overlay_data.promoted_overlays.size());
@@ -2036,16 +1958,13 @@ TEST_F(DCLayerOverlayProcessorTest, HDR10VideoOverlay) {
         gfx::ColorSpace::CreateHDR10(), valid_hdr_metadata,
         MultiPlaneFormat::kP010);
 
-    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
     pass->damage_rect = gfx::Rect(0, 0, 220, 220);
     AggregatedRenderPassList pass_list;
     pass_list.push_back(std::move(pass));
     SurfaceDamageRectList surface_damage_rect_list;
 
     auto overlay_data = ProcessRootPassForOverlays(
-        &pass_list, render_pass_filters, render_pass_backdrop_filters,
-        std::move(surface_damage_rect_list));
+        &pass_list, std::move(surface_damage_rect_list));
 
     // Should skip overlay.
     EXPECT_EQ(0U, overlay_data.promoted_overlays.size());
@@ -2083,16 +2002,13 @@ TEST_F(DCLayerOverlayProcessorTest, HDR10VideoOverlay) {
         gfx::ColorSpace::CreateHDR10(), valid_hdr_metadata,
         MultiPlaneFormat::kP010);
 
-    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
     pass->damage_rect = gfx::Rect(0, 0, 220, 220);
     AggregatedRenderPassList pass_list;
     pass_list.push_back(std::move(pass));
     SurfaceDamageRectList surface_damage_rect_list;
 
     auto overlay_data = ProcessRootPassForOverlays(
-        &pass_list, render_pass_filters, render_pass_backdrop_filters,
-        std::move(surface_damage_rect_list));
+        &pass_list, std::move(surface_damage_rect_list));
 
     // Should not promote overlay.
     EXPECT_EQ(0U, overlay_data.promoted_overlays.size());
@@ -2130,16 +2046,13 @@ TEST_F(DCLayerOverlayProcessorTest, HDR10VideoOverlay) {
         gfx::ColorSpace::CreateHDR10(), valid_hdr_metadata,
         MultiPlaneFormat::kP010, quad_rect);
 
-    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
     pass->damage_rect = gfx::Rect(0, 0, 220, 220);
     AggregatedRenderPassList pass_list;
     pass_list.push_back(std::move(pass));
     SurfaceDamageRectList surface_damage_rect_list;
 
     auto overlay_data = ProcessRootPassForOverlays(
-        &pass_list, render_pass_filters, render_pass_backdrop_filters,
-        std::move(surface_damage_rect_list));
+        &pass_list, std::move(surface_damage_rect_list));
 
     // Should not promote overlay.
     EXPECT_EQ(0U, overlay_data.promoted_overlays.size());
@@ -2164,16 +2077,13 @@ TEST_F(DCLayerOverlayProcessorTest, HDR10VideoOverlay) {
         gfx::ColorSpace::CreateHDR10(), valid_hdr_metadata,
         MultiPlaneFormat::kP010, quad_rect);
 
-    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
     pass->damage_rect = gfx::Rect(0, 0, 220, 220);
     AggregatedRenderPassList pass_list;
     pass_list.push_back(std::move(pass));
     SurfaceDamageRectList surface_damage_rect_list;
 
     auto overlay_data = ProcessRootPassForOverlays(
-        &pass_list, render_pass_filters, render_pass_backdrop_filters,
-        std::move(surface_damage_rect_list));
+        &pass_list, std::move(surface_damage_rect_list));
 
     // Should not promote overlay.
     EXPECT_EQ(0U, overlay_data.promoted_overlays.size());
@@ -2198,16 +2108,13 @@ TEST_F(DCLayerOverlayProcessorTest, HDR10VideoOverlay) {
         gfx::ColorSpace::CreateHDR10(), valid_hdr_metadata,
         MultiPlaneFormat::kP010, quad_rect);
 
-    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
     pass->damage_rect = gfx::Rect(0, 0, 220, 220);
     AggregatedRenderPassList pass_list;
     pass_list.push_back(std::move(pass));
     SurfaceDamageRectList surface_damage_rect_list;
 
     auto overlay_data = ProcessRootPassForOverlays(
-        &pass_list, render_pass_filters, render_pass_backdrop_filters,
-        std::move(surface_damage_rect_list));
+        &pass_list, std::move(surface_damage_rect_list));
 
     // Should promote overlay.
     EXPECT_EQ(1U, overlay_data.promoted_overlays.size());
@@ -2232,16 +2139,13 @@ TEST_F(DCLayerOverlayProcessorTest, HDR10VideoOverlay) {
         gfx::ColorSpace::CreateHDR10(), valid_hdr_metadata,
         MultiPlaneFormat::kP010, quad_rect);
 
-    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
     pass->damage_rect = gfx::Rect(0, 0, 220, 220);
     AggregatedRenderPassList pass_list;
     pass_list.push_back(std::move(pass));
     SurfaceDamageRectList surface_damage_rect_list;
 
     auto overlay_data = ProcessRootPassForOverlays(
-        &pass_list, render_pass_filters, render_pass_backdrop_filters,
-        std::move(surface_damage_rect_list));
+        &pass_list, std::move(surface_damage_rect_list));
 
     // Should promote overlay.
     EXPECT_EQ(1U, overlay_data.promoted_overlays.size());
@@ -2266,16 +2170,13 @@ TEST_F(DCLayerOverlayProcessorTest, HDR10VideoOverlay) {
         gfx::ColorSpace::CreateHDR10(), valid_hdr_metadata,
         MultiPlaneFormat::kP010, quad_rect);
 
-    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
     pass->damage_rect = gfx::Rect(0, 0, 256, 256);
     AggregatedRenderPassList pass_list;
     pass_list.push_back(std::move(pass));
     SurfaceDamageRectList surface_damage_rect_list;
 
     auto overlay_data = ProcessRootPassForOverlays(
-        &pass_list, render_pass_filters, render_pass_backdrop_filters,
-        std::move(surface_damage_rect_list));
+        &pass_list, std::move(surface_damage_rect_list));
 
     // Should promote overlay.
     EXPECT_EQ(1U, overlay_data.promoted_overlays.size());
@@ -2296,12 +2197,9 @@ TEST_F(DCLayerOverlayProcessorTest, LowLatencyTexture) {
   AggregatedRenderPassList pass_list;
   pass_list.push_back(std::move(pass));
 
-  OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-  OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
   SurfaceDamageRectList surface_damage_rect_list;
   auto overlay_data = ProcessRootPassForOverlays(
-      &pass_list, render_pass_filters, render_pass_backdrop_filters,
-      std::move(surface_damage_rect_list));
+      &pass_list, std::move(surface_damage_rect_list));
 
   // Should promote overlay.
   EXPECT_EQ(1U, overlay_data.promoted_overlays.size());
@@ -2338,12 +2236,9 @@ TEST_F(DCLayerOverlayProcessorTest, DoesNotPromoteNonVideoOrLowLatencyTexture) {
   AggregatedRenderPassList pass_list;
   pass_list.push_back(std::move(pass));
 
-  OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-  OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
   SurfaceDamageRectList surface_damage_rect_list;
   auto overlay_data = ProcessRootPassForOverlays(
-      &pass_list, render_pass_filters, render_pass_backdrop_filters,
-      std::move(surface_damage_rect_list));
+      &pass_list, std::move(surface_damage_rect_list));
 
   EXPECT_THAT(overlay_data.promoted_overlays,
               testing::UnorderedElementsAreArray({
@@ -2760,9 +2655,6 @@ class OverlayProcessorWinSurfacePlaneTest
 
   void ProcessForOverlays(
       AggregatedRenderPassList* render_passes,
-      const OverlayProcessorInterface::FilterOperationsMap& render_pass_filters,
-      const OverlayProcessorInterface::FilterOperationsMap&
-          render_pass_backdrop_filters,
       SurfaceDamageRectList surface_damage_rect_list_in_root_space,
       OverlayCandidateList* candidates) {
     // Wraps the root pass of |pass_list| in a RPDQ to simulate the
@@ -2867,8 +2759,7 @@ class OverlayProcessorWinSurfacePlaneTest
     output_surface_plane_ =
         GetDefaultPrimaryPlane(render_passes->back()->output_rect.size());
     overlay_processor_->ProcessForOverlays(
-        resource_provider_.get(), render_passes, SkM44(), render_pass_filters,
-        render_pass_backdrop_filters,
+        resource_provider_.get(), render_passes, SkM44(),
         std::move(surface_damage_rect_list_in_root_space),
         output_surface_plane_, candidates, &damage_rect_, &content_bounds_);
   }
@@ -2890,11 +2781,7 @@ TEST_P(OverlayProcessorWinSurfacePlaneTest, PromoteOverlayFromSurface) {
   damage_rect_ = pass_list.back()->output_rect;
 
   OverlayCandidateList dc_layer_list;
-  OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-  OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
-  ProcessForOverlays(&pass_list, render_pass_filters,
-                     render_pass_backdrop_filters, SurfaceDamageRectList(),
-                     &dc_layer_list);
+  ProcessForOverlays(&pass_list, SurfaceDamageRectList(), &dc_layer_list);
 
   EXPECT_TRUE(pass_list.back()->needs_synchronous_dcomp_commit);
   if (GetParam() == SurfaceTestMode::SimulatePartiallyDelegated) {
@@ -2923,11 +2810,7 @@ TEST_P(OverlayProcessorWinSurfacePlaneTest, ForceSwapChainForCapture) {
     damage_rect_ = pass_list.back()->output_rect;
 
     OverlayCandidateList dc_layer_list;
-    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
-    ProcessForOverlays(&pass_list, render_pass_filters,
-                       render_pass_backdrop_filters, SurfaceDamageRectList(),
-                       &dc_layer_list);
+    ProcessForOverlays(&pass_list, SurfaceDamageRectList(), &dc_layer_list);
 
     EXPECT_TRUE(pass_list.back()->needs_synchronous_dcomp_commit);
   }
@@ -2945,11 +2828,7 @@ TEST_P(OverlayProcessorWinSurfacePlaneTest, ForceSwapChainForCapture) {
     damage_rect_ = pass_list.back()->output_rect;
 
     OverlayCandidateList dc_layer_list;
-    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
-    ProcessForOverlays(&pass_list, render_pass_filters,
-                       render_pass_backdrop_filters, SurfaceDamageRectList(),
-                       &dc_layer_list);
+    ProcessForOverlays(&pass_list, SurfaceDamageRectList(), &dc_layer_list);
 
     EXPECT_FALSE(pass_list.back()->needs_synchronous_dcomp_commit);
   }
@@ -2973,8 +2852,6 @@ TEST_P(OverlayProcessorWinSurfacePlaneTest, UseDCompSurfaceWithVideo) {
     pass_list.push_back(std::move(pass));
 
     OverlayCandidateList dc_layer_list;
-    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
     SurfaceDamageRectList surface_damage_rect_list;
     damage_rect_ = gfx::Rect(1, 1, 10, 10);
 
@@ -2982,9 +2859,7 @@ TEST_P(OverlayProcessorWinSurfacePlaneTest, UseDCompSurfaceWithVideo) {
     const gfx::Rect expected_damage =
         (i == 0) ? pass_list.back()->output_rect : gfx::Rect();
 
-    ProcessForOverlays(&pass_list, render_pass_filters,
-                       render_pass_backdrop_filters, SurfaceDamageRectList(),
-                       &dc_layer_list);
+    ProcessForOverlays(&pass_list, SurfaceDamageRectList(), &dc_layer_list);
 
     EXPECT_TRUE(pass_list.back()->needs_synchronous_dcomp_commit);
     EXPECT_TRUE(pass_list.back()->has_transparent_background);
@@ -3020,8 +2895,6 @@ TEST_P(OverlayProcessorWinSurfacePlaneTest, UseDCompSurfaceWithVideo) {
                  damage_rect_, damage_rect_, SkColors::kRed, false);
 
     OverlayCandidateList dc_layer_list;
-    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
 
     AggregatedRenderPassList pass_list;
     pass_list.push_back(std::move(pass));
@@ -3038,9 +2911,7 @@ TEST_P(OverlayProcessorWinSurfacePlaneTest, UseDCompSurfaceWithVideo) {
 
     const bool in_dc_layer_hysteresis = i + 1 < 60;
 
-    ProcessForOverlays(&pass_list, render_pass_filters,
-                       render_pass_backdrop_filters, SurfaceDamageRectList(),
-                       &dc_layer_list);
+    ProcessForOverlays(&pass_list, SurfaceDamageRectList(), &dc_layer_list);
 
     EXPECT_EQ(pass_list.back()->needs_synchronous_dcomp_commit,
               in_dc_layer_hysteresis);
@@ -3074,17 +2945,13 @@ TEST_P(OverlayProcessorWinSurfacePlaneTest, FrameHasDelegatedInk) {
   {
     auto pass = CreateRenderPass();
     OverlayCandidateList dc_layer_list;
-    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
     damage_rect_ = gfx::Rect(1, 1, 10, 10);
     AggregatedRenderPassList pass_list;
     pass_list.push_back(std::move(pass));
     SurfaceDamageRectList surface_damage_rect_list = {gfx::Rect(1, 1, 10, 10)};
 
     EXPECT_FALSE(pass_list[0]->needs_synchronous_dcomp_commit);
-    ProcessForOverlays(&pass_list, render_pass_filters,
-                       render_pass_backdrop_filters, SurfaceDamageRectList(),
-                       &dc_layer_list);
+    ProcessForOverlays(&pass_list, SurfaceDamageRectList(), &dc_layer_list);
     EXPECT_FALSE(pass_list[0]->needs_synchronous_dcomp_commit);
   }
 
@@ -3093,17 +2960,13 @@ TEST_P(OverlayProcessorWinSurfacePlaneTest, FrameHasDelegatedInk) {
   overlay_processor_->SetFrameHasDelegatedInk();
   auto pass = CreateRenderPass();
   OverlayCandidateList dc_layer_list;
-  OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-  OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
   damage_rect_ = gfx::Rect(1, 1, 10, 10);
   AggregatedRenderPassList pass_list;
   pass_list.push_back(std::move(pass));
   SurfaceDamageRectList surface_damage_rect_list = {gfx::Rect(1, 1, 10, 10)};
 
   EXPECT_FALSE(pass_list[0]->needs_synchronous_dcomp_commit);
-  ProcessForOverlays(&pass_list, render_pass_filters,
-                     render_pass_backdrop_filters, SurfaceDamageRectList(),
-                     &dc_layer_list);
+  ProcessForOverlays(&pass_list, SurfaceDamageRectList(), &dc_layer_list);
   // Make sure |frame_has_delegated_ink_| has been set to false.
   EXPECT_FALSE(
       overlay_processor_->frame_has_forced_dcomp_surface_for_testing());
@@ -3121,17 +2984,13 @@ TEST_P(OverlayProcessorWinSurfacePlaneTest, DelegatedInkSurfaceHysteresis) {
   for (int frame = 1; frame <= 61; frame++) {
     auto pass = CreateRenderPass();
     OverlayCandidateList dc_layer_list;
-    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
     damage_rect_ = gfx::Rect(1, 1, 10, 10);
     AggregatedRenderPassList pass_list;
     pass_list.push_back(std::move(pass));
     SurfaceDamageRectList surface_damage_rect_list = {gfx::Rect(1, 1, 10, 10)};
 
     EXPECT_FALSE(pass_list[0]->needs_synchronous_dcomp_commit);
-    ProcessForOverlays(&pass_list, render_pass_filters,
-                       render_pass_backdrop_filters, SurfaceDamageRectList(),
-                       &dc_layer_list);
+    ProcessForOverlays(&pass_list, SurfaceDamageRectList(), &dc_layer_list);
     // Make sure |frame_has_delegated_ink_| has been set to false.
     EXPECT_FALSE(
         overlay_processor_->frame_has_forced_dcomp_surface_for_testing());
@@ -3186,11 +3045,7 @@ TEST_P(OverlayProcessorWinSurfacePlaneFullScreenTest,
   damage_rect_ = pass_list.back()->output_rect;
 
   OverlayCandidateList overlays;
-  OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-  OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
-  ProcessForOverlays(&pass_list, render_pass_filters,
-                     render_pass_backdrop_filters, SurfaceDamageRectList(),
-                     &overlays);
+  ProcessForOverlays(&pass_list, SurfaceDamageRectList(), &overlays);
 
   EXPECT_THAT(overlays, CandidatesAreSortedAndElementsAre({
                             test::OverlayIsFullScreen(),
@@ -3220,11 +3075,7 @@ TEST_P(OverlayProcessorWinSurfacePlaneFullScreenTest,
   damage_rect_ = pass_list.back()->output_rect;
 
   OverlayCandidateList overlays;
-  OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-  OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
-  ProcessForOverlays(&pass_list, render_pass_filters,
-                     render_pass_backdrop_filters, SurfaceDamageRectList(),
-                     &overlays);
+  ProcessForOverlays(&pass_list, SurfaceDamageRectList(), &overlays);
 
   EXPECT_THAT(overlays, testing::ElementsAreArray({
                             test::OverlayIsFullScreen(),
