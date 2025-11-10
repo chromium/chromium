@@ -20,43 +20,28 @@
 #include "content/public/test/browser_test.h"
 #include "ui/accessibility/accessibility_features.h"
 
-class ReadAnythingControllerBrowserTest
-    : public InProcessBrowserTest,
-      public ::testing::WithParamInterface<bool> {
+class ReadAnythingControllerBrowserTest : public InProcessBrowserTest {
  public:
-  ReadAnythingControllerBrowserTest()
-      : is_immersive_read_anything_enabled_(GetParam()) {}
+  ReadAnythingControllerBrowserTest() = default;
 
   void SetUp() override {
-    if (is_immersive_read_anything_enabled_) {
-      scoped_feature_list_.InitWithFeatures({features::kImmersiveReadAnything},
-                                            {});
-    } else {
-      scoped_feature_list_.InitWithFeatures({},
-                                            {features::kImmersiveReadAnything});
-    }
+    scoped_feature_list_.InitWithFeatures({features::kImmersiveReadAnything},
+                                          {});
     InProcessBrowserTest::SetUp();
   }
-
- protected:
-  const bool is_immersive_read_anything_enabled_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_P(ReadAnythingControllerBrowserTest,
+IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
                        ShowSidePanelFromAppMenu) {
   tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
   ASSERT_TRUE(tab);
 
   auto* controller = ReadAnythingController::From(tab);
 
-  if (is_immersive_read_anything_enabled_) {
-    ASSERT_TRUE(controller);
-  } else {
-    ASSERT_FALSE(controller);
-  }
+  ASSERT_TRUE(controller);
 
   auto* side_panel_ui = browser()->GetFeatures().side_panel_ui();
   ASSERT_FALSE(side_panel_ui->IsSidePanelEntryShowing(
@@ -70,18 +55,14 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingControllerBrowserTest,
   }));
 }
 
-IN_PROC_BROWSER_TEST_P(ReadAnythingControllerBrowserTest,
+IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
                        ShowSidePanelFromContextMenu) {
   tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
   ASSERT_TRUE(tab);
 
   auto* controller = ReadAnythingController::From(tab);
 
-  if (is_immersive_read_anything_enabled_) {
-    ASSERT_TRUE(controller);
-  } else {
-    ASSERT_FALSE(controller);
-  }
+  ASSERT_TRUE(controller);
 
   auto* side_panel_ui = browser()->GetFeatures().side_panel_ui();
   ASSERT_FALSE(side_panel_ui->IsSidePanelEntryShowing(
@@ -99,18 +80,14 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingControllerBrowserTest,
   }));
 }
 
-IN_PROC_BROWSER_TEST_P(ReadAnythingControllerBrowserTest,
+IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
                        ToggleSidePanelViaActionItem) {
   tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
   ASSERT_TRUE(tab);
 
   auto* controller = ReadAnythingController::From(tab);
 
-  if (is_immersive_read_anything_enabled_) {
-    ASSERT_TRUE(controller);
-  } else {
-    ASSERT_FALSE(controller);
-  }
+  ASSERT_TRUE(controller);
 
   auto& action_manager = actions::ActionManager::Get();
   auto* const read_anything_action =
@@ -154,43 +131,28 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingControllerBrowserTest,
   }));
 }
 
-IN_PROC_BROWSER_TEST_P(ReadAnythingControllerBrowserTest,
+IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
                        GetPresentationState_InitialState) {
   tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
   ASSERT_TRUE(tab);
   auto* controller = ReadAnythingController::From(tab);
+  ASSERT_TRUE(controller);
 
-  if (is_immersive_read_anything_enabled_) {
-    ASSERT_TRUE(controller);
-
-    EXPECT_EQ(controller->GetPresentationState(),
-              ReadAnythingController::PresentationState::kInactive);
-  } else {
-    ASSERT_FALSE(controller);
-  }
+  EXPECT_EQ(controller->GetPresentationState(),
+            ReadAnythingController::PresentationState::kInactive);
 }
 
-IN_PROC_BROWSER_TEST_P(ReadAnythingControllerBrowserTest,
+IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
                        GetPresentationState_SidePanelState) {
   tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
   ASSERT_TRUE(tab);
   auto* controller = ReadAnythingController::From(tab);
+  ASSERT_TRUE(controller);
 
-  if (is_immersive_read_anything_enabled_) {
-    ASSERT_TRUE(controller);
+  controller->ShowUI(SidePanelOpenTrigger::kAppMenu);
 
-    controller->ShowUI(SidePanelOpenTrigger::kAppMenu);
-
-    ASSERT_TRUE(base::test::RunUntil([&]() {
-      return controller->GetPresentationState() ==
-             ReadAnythingController::PresentationState::kInSidePanel;
-    }));
-
-  } else {
-    ASSERT_FALSE(controller);
-  }
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return controller->GetPresentationState() ==
+           ReadAnythingController::PresentationState::kInSidePanel;
+  }));
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         ReadAnythingControllerBrowserTest,
-                         ::testing::Bool());

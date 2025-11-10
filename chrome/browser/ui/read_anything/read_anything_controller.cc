@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/accessibility/accessibility_features.h"
 
 DEFINE_USER_DATA(ReadAnythingController);
 
@@ -20,7 +21,11 @@ ReadAnythingController* ReadAnythingController::From(tabs::TabInterface* tab) {
 
 ReadAnythingController::ReadAnythingController(tabs::TabInterface* tab)
     : tab_(tab),
-      scoped_unowned_user_data_(tab->GetUnownedUserDataHost(), *this) {}
+      scoped_unowned_user_data_(tab->GetUnownedUserDataHost(), *this) {
+  // This controller should only be instantiated if
+  // IsImmersiveReadAnythingEnabled is enabled
+  CHECK(features::IsImmersiveReadAnythingEnabled());
+}
 
 ReadAnythingController::~ReadAnythingController() = default;
 
