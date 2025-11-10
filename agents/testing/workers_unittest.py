@@ -297,9 +297,13 @@ class ParseTestLogResultsTest(unittest.TestCase):
 
     def test_empty_json(self):
         self.assertEqual(workers._parse_test_log_results(None), '')
-        self.assertEqual(
-            workers._parse_test_log_results({}),
-            'Input prompt: None\nResponse: None\nAssertion results:\n')
+        self.assertEqual(workers._parse_test_log_results({}),
+                         'No results found in promptfoo output.')
+
+    def test_empty_results_list(self):
+        json_data = {'results': {'results': []}}
+        self.assertEqual(workers._parse_test_log_results(json_data),
+                         'No results found in promptfoo output.')
 
     def test_missing_keys(self):
         json_data = {'results': {'results': [{}]}}
