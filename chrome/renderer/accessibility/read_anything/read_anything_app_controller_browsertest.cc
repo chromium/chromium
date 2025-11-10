@@ -2850,41 +2850,6 @@ TEST_F(ReadAnythingAppControllerTest,
   MoveToNextAndAssertEmpty();
 }
 
-TEST_F(ReadAnythingAppControllerTest,
-       GetCurrentText_SentenceSplitAcrossParagraphsWithoutParagraphRoles) {
-  std::u16string header_text = u"Header Text\n";
-  std::u16string paragraph_text1 = u"Paragraph one.\n";
-  std::u16string paragraph_text2 = u"Paragraph two.";
-
-  static constexpr ui::AXNodeID kHeaderId = 2;
-  static constexpr ui::AXNodeID kParagraphId1 = 3;
-  static constexpr ui::AXNodeID kParagraphId2 = 4;
-  ui::AXNodeData header_node = test::TextNode(kHeaderId, header_text);
-  ui::AXNodeData paragraph_node1 =
-      test::TextNode(kParagraphId1, paragraph_text1);
-  ui::AXNodeData paragraph_node2 =
-      test::TextNode(kParagraphId2, paragraph_text2);
-
-  SendUpdateAndDistillNodes({std::move(header_node), std::move(paragraph_node1),
-                             std::move(paragraph_node2)});
-
-  // The header is returned alone.
-  std::vector<ReadAloudTextSegment> next_segments = GetCurrentTextSegments();
-
-  ExpectNodesMapToEntireText(next_segments, {kHeaderId}, {header_text});
-
-  // Paragraph 1 is returned alone.
-  next_segments = MoveToNextGranularityAndGetSegments();
-  ExpectNodesMapToEntireText(next_segments, {kParagraphId1}, {paragraph_text1});
-
-  // Paragraph 2 is returned alone.
-  next_segments = MoveToNextGranularityAndGetSegments();
-  ExpectNodesMapToEntireText(next_segments, {kParagraphId2}, {paragraph_text2});
-
-  // Nodes are empty at the end of the new tree.
-  MoveToNextAndAssertEmpty();
-}
-
 TEST_F(ReadAnythingAppControllerTest, GetCurrentText_EmptyTree) {
   // If InitAXPosition hasn't been called, GetCurrentText should return nothing.
   EXPECT_THAT(GetCurrentTextSegments(), IsEmpty());
@@ -3164,6 +3129,41 @@ TEST_F(ReadAnythingAppControllerV8SegmentationTest,
   // Move to the next segment.
   next_segments = MoveToNextGranularityAndGetSegments();
   ExpectNodesMapToEntireText(next_segments, {kId2}, {sentence2});
+
+  // Nodes are empty at the end of the new tree.
+  MoveToNextAndAssertEmpty();
+}
+
+TEST_F(ReadAnythingAppControllerV8SegmentationTest,
+       GetCurrentText_SentenceSplitAcrossParagraphsWithoutParagraphRoles) {
+  std::u16string header_text = u"Header Text\n";
+  std::u16string paragraph_text1 = u"Paragraph one.\n";
+  std::u16string paragraph_text2 = u"Paragraph two.";
+
+  static constexpr ui::AXNodeID kHeaderId = 2;
+  static constexpr ui::AXNodeID kParagraphId1 = 3;
+  static constexpr ui::AXNodeID kParagraphId2 = 4;
+  ui::AXNodeData header_node = test::TextNode(kHeaderId, header_text);
+  ui::AXNodeData paragraph_node1 =
+      test::TextNode(kParagraphId1, paragraph_text1);
+  ui::AXNodeData paragraph_node2 =
+      test::TextNode(kParagraphId2, paragraph_text2);
+
+  SendUpdateAndDistillNodes({std::move(header_node), std::move(paragraph_node1),
+                             std::move(paragraph_node2)});
+
+  // The header is returned alone.
+  std::vector<ReadAloudTextSegment> next_segments = GetCurrentTextSegments();
+
+  ExpectNodesMapToEntireText(next_segments, {kHeaderId}, {header_text});
+
+  // Paragraph 1 is returned alone.
+  next_segments = MoveToNextGranularityAndGetSegments();
+  ExpectNodesMapToEntireText(next_segments, {kParagraphId1}, {paragraph_text1});
+
+  // Paragraph 2 is returned alone.
+  next_segments = MoveToNextGranularityAndGetSegments();
+  ExpectNodesMapToEntireText(next_segments, {kParagraphId2}, {paragraph_text2});
 
   // Nodes are empty at the end of the new tree.
   MoveToNextAndAssertEmpty();

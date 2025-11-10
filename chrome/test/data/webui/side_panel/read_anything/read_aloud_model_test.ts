@@ -1020,4 +1020,40 @@ suite('ReadAloudModel', () => {
     assertEquals(
         '2. turtle doves', getReadAloudModel().getCurrentTextContent().trim());
   });
+
+  test(
+      'getCurrentText when sentence split across paragraph without paragraph tags',
+      async () => {
+        const paragraph1 = document.createElement('b');
+        paragraph1.textContent = 'You\'d never get away\n';
+
+        const paragraph2 = document.createElement('b');
+        paragraph2.textContent = 'with all this in a play\n';
+
+        const paragraph3 = document.createElement('b');
+        paragraph3.textContent = ', but if it\'s loudly sung...';
+
+        document.body.appendChild(paragraph1);
+        document.body.appendChild(paragraph2);
+        document.body.appendChild(paragraph3);
+
+        await microtasksFinished();
+        getReadAloudModel().init(ReadAloudNode.create(document.body)!);
+        assertEquals(
+            paragraph1.textContent.trim(),
+            getReadAloudModel().getCurrentTextContent().trim());
+
+        getReadAloudModel().moveSpeechForward();
+        assertEquals(
+            paragraph2.textContent.trim(),
+            getReadAloudModel().getCurrentTextContent().trim());
+
+        getReadAloudModel().moveSpeechForward();
+        assertEquals(
+            paragraph3.textContent.trim(),
+            getReadAloudModel().getCurrentTextContent().trim());
+
+        getReadAloudModel().moveSpeechForward();
+        assertTextEmpty();
+      });
 });
