@@ -260,21 +260,6 @@ class PageContentProtoProviderBrowserTest : public content::ContentBrowserTest {
     return ContentRootNodeForFrameActionableMode(page_content().root_node());
   }
 
-  // TODO: b/450618828 - Consider replacing this with an explicit hook to know
-  // when a popup is opened.
-  void WaitForPopup() {
-    while (true) {
-      LoadData();
-      if (page_content().has_popup_window()) {
-        break;
-      }
-      base::RunLoop run_loop;
-      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-          FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
-      run_loop.Run();
-    }
-  }
-
  private:
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
   std::optional<proto::AnnotatedPageContent> page_content_;
@@ -1249,15 +1234,17 @@ IN_PROC_BROWSER_TEST_P(PageContentProtoProviderBrowserTestMultiProcess,
   content::RenderFrameHost* iframe =
       content::ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
 
+  content::ShowPopupWidgetWaiter new_popup_waiter(web_contents(), iframe);
+
   // showPicker() is not allowed from cross-origin iframe for security reasons,
   // therefore simulating a user click.
   SimulateMouseClickAt(
       iframe->GetRenderWidgetHost(),
       GetCenterCoordinatesOfElementWithId(iframe, "select_input"));
-
-  WaitForPopup();
+  new_popup_waiter.Wait();
 
   LoadData(GetActionableAIPageContentOptions());
+  ASSERT_TRUE(page_content().has_popup_window());
 
   const auto& popup_window = page_content().popup_window();
 
@@ -1352,12 +1339,14 @@ IN_PROC_BROWSER_TEST_F(ScaledPageContentProtoProviderBrowserTest,
                        SelectInMainFrame) {
   LoadPage(https_server()->GetURL("/open_popup.html"));
 
+  content::ShowPopupWidgetWaiter new_popup_waiter(
+      web_contents(), web_contents()->GetPrimaryMainFrame());
   ASSERT_TRUE(content::ExecJs(
       web_contents(), "document.getElementById('select_input').showPicker();"));
-
-  WaitForPopup();
+  new_popup_waiter.Wait();
 
   LoadData(GetActionableAIPageContentOptions());
+  ASSERT_TRUE(page_content().has_popup_window());
 
   const auto& select_node = ActionableContentRootNode().children_nodes()[0];
   EXPECT_EQ(select_node.content_attributes().attribute_type(),
@@ -1989,12 +1978,14 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderPopupBrowserTest,
                        SelectInMainFrame) {
   LoadPage(https_server()->GetURL("/open_popup.html"));
 
+  content::ShowPopupWidgetWaiter new_popup_waiter(
+      web_contents(), web_contents()->GetPrimaryMainFrame());
   ASSERT_TRUE(content::ExecJs(
       web_contents(), "document.getElementById('select_input').showPicker();"));
-
-  WaitForPopup();
+  new_popup_waiter.Wait();
 
   LoadData(GetActionableAIPageContentOptions());
+  ASSERT_TRUE(page_content().has_popup_window());
 
   const auto& popup_window = page_content().popup_window();
   EXPECT_EQ(popup_window.opener_document_id().serialized_token(),
@@ -2049,12 +2040,14 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderPopupBrowserTest,
 
   content::RenderFrameHost* iframe =
       content::ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
+
+  content::ShowPopupWidgetWaiter new_popup_waiter(web_contents(), iframe);
   ASSERT_TRUE(content::ExecJs(
       iframe, "document.getElementById('select_input').showPicker();"));
-
-  WaitForPopup();
+  new_popup_waiter.Wait();
 
   LoadData(GetActionableAIPageContentOptions());
+  ASSERT_TRUE(page_content().has_popup_window());
 
   const auto& popup_window = page_content().popup_window();
 
@@ -2116,15 +2109,17 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderPopupBrowserTest,
   content::RenderFrameHost* iframe =
       content::ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
 
+  content::ShowPopupWidgetWaiter new_popup_waiter(web_contents(), iframe);
+
   // showPicker() is not allowed from cross-origin iframe for security reasons,
   // therefore simulating a user click.
   SimulateMouseClickAt(
       iframe->GetRenderWidgetHost(),
       GetCenterCoordinatesOfElementWithId(iframe, "select_input"));
-
-  WaitForPopup();
+  new_popup_waiter.Wait();
 
   LoadData(GetActionableAIPageContentOptions());
+  ASSERT_TRUE(page_content().has_popup_window());
 
   const auto& popup_window = page_content().popup_window();
 
@@ -2171,10 +2166,14 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderPopupBrowserTest,
 IN_PROC_BROWSER_TEST_F(PageContentProtoProviderPopupBrowserTest, ColorPicker) {
   LoadPage(https_server()->GetURL("/open_popup.html"), nullptr);
 
+  content::ShowPopupWidgetWaiter new_popup_waiter(
+      web_contents(), web_contents()->GetPrimaryMainFrame());
   ASSERT_TRUE(content::ExecJs(
       web_contents(), "document.getElementById('color_input').click();"));
+  new_popup_waiter.Wait();
 
-  WaitForPopup();
+  LoadData();
+  ASSERT_TRUE(page_content().has_popup_window());
 
   const auto& popup_window = page_content().popup_window();
   EXPECT_EQ(popup_window.opener_document_id().serialized_token(),
