@@ -2558,18 +2558,6 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Re-registration unsuccessful"/>
 </enum>
 
-<enum name="EnterpriseUserSessionLogins">
-  <summary>
-    Types of sign-in events as defined in
-    chrome/browser/ash/login/enterprise_user_session_metrics.h
-  </summary>
-  <int value="0" label="Regular user"/>
-  <int value="1" label="Manual public session"/>
-  <int value="2" label="Automatic public session"/>
-  <int value="3" label="Manual kiosk session"/>
-  <int value="4" label="Automatic kiosk session"/>
-</enum>
-
 <enum name="IdleTimeoutCase">
   <int value="0" label="Foreground"/>
   <int value="1" label="Background"/>

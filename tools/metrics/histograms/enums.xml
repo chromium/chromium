@@ -3669,13 +3669,6 @@ shown properly on the user-facing crash UI.
   <int value="1" label="Portrait"/>
 </enum>
 
-<enum name="DeviceOrientationSensorTypeAndroid">
-  <int value="0" label="Not Available"/>
-  <int value="1" label="ROTATION_VECTOR"/>
-  <int value="2" label="ACCELEROMETER + MAGNETIC_FIELD"/>
-  <int value="3" label="GAME_ROTATION_VECTOR"/>
-</enum>
-
 <enum name="DevicePoliciesState">
   <int value="0" label="Consumer owned good key and policy"/>
   <int value="1" label="Consumer owned malformed key, good policy"/>

@@ -279,52 +279,6 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
 
 <!-- LINT.ThenChange(//chromeos/ash/components/boca/babelorca/tachyon_streaming_client.h:StreamEndReason) -->
 
-<enum name="BackGestureEndScenarioType">
-  <int value="0" label="Swiped back on non-snapped window and aborted"/>
-  <int value="1" label="Swiped back on non-snapped window and went back"/>
-  <int value="2" label="Swiped back on non-snapped window and minimized"/>
-  <int value="3" label="Swiped back on left snapped window and aborted"/>
-  <int value="4" label="Swiped back on left snapped window and went back"/>
-  <int value="5" label="Swiped back on left snapped window and minimized"/>
-  <int value="6" label="Swiped back on right snapped window and aborted"/>
-  <int value="7" label="Swiped back on right snapped window and went back"/>
-  <int value="8" label="Swiped back on right snapped window and minimized"/>
-  <int value="9" label="Swiped back on top snapped window and aborted"/>
-  <int value="10" label="Swiped back on top snapped window and went back"/>
-  <int value="11" label="Swiped back on top snapped window and minimized"/>
-  <int value="12" label="Swiped back on bottom snapped window and aborted"/>
-  <int value="13" label="Swiped back on bottom snapped window and went back"/>
-  <int value="14" label="Swiped back on bottom snapped window and minimized"/>
-  <int value="15" label="Swiped back in overview and aborted"/>
-  <int value="16" label="Swiped back in overview and went back"/>
-  <int value="17"
-      label="Swiped back to exit the underneath window's fullscreen mode"/>
-  <int value="18"
-      label="Swiped back to show the shelf and hotseat when an ARC app is in
-             fullscreen mode"/>
-</enum>
-
-<enum name="BackGestureStartScenarioType">
-  <int value="0" label="Swiping back on non-snapped window"/>
-  <int value="1" label="Swiping back on left snapped window"/>
-  <int value="2" label="Swiping back on right snapped window"/>
-  <int value="3" label="Swiping back on top snapped window"/>
-  <int value="4" label="Swiping back on bottom snapped window"/>
-  <int value="5" label="Swiping back in overview"/>
-  <int value="6" label="Swiping back in left overview"/>
-  <int value="7" label="Swiping back in right overview"/>
-  <int value="8" label="Swiping back in top overview"/>
-  <int value="9" label="Swiping back in bottom overview"/>
-</enum>
-
-<enum name="BackGestureUnderneathWindowType">
-  <int value="0" label="Swiping back on Chrome Browser"/>
-  <int value="1" label="Swiping back on ChromeOS App"/>
-  <int value="2" label="Swiping back on Arc App"/>
-  <int value="3" label="Swiping back in Overview"/>
-  <int value="4" label="Swiping back on others app"/>
-</enum>
-
 <enum name="BackgroundBlurState">
   <int value="0" label="Off"/>
   <int value="1" label="Lowest"/>
@@ -2151,12 +2105,6 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
 </enum>
 
 <!-- LINT.ThenChange(//ash/scanner/scanner_metrics.h:ScannerFeatureUserState) -->
-
-<enum name="ScreenRotationAcceleratorAction">
-  <int value="0" label="CancelledDialog"/>
-  <int value="1" label="AcceptedDialog"/>
-  <int value="2" label="AlreadyAcceptedDialog"/>
-</enum>
 
 <enum name="ScreenshotOnShutdownStatus">
   <int value="0" label="Succeeded"/>

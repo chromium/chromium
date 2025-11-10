@@ -1573,22 +1573,6 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Mark as legitimate"/>
 </enum>
 
-<enum name="PasswordRequirementsFetcherResult">
-  <int value="0" label="Found no spec for current origin"/>
-  <int value="1" label="Found a spec for current origin"/>
-  <int value="2" label="Invalid origin">
-    The origin is an IP address, not HTTP/HTTPS, or not a valid URL.
-  </int>
-  <int value="3" label="Failed to fetch requirements file">
-    Server responded with an empty document or an error code.
-  </int>
-  <int value="4" label="Timeout">Server timed out.</int>
-  <int value="5" label="Failed to parse response">
-    Server responded with a document but it could not be parsed.
-  </int>
-  <int value="6" label="No URL Loader">No URL loader configured.</int>
-</enum>
-
 <enum name="PasswordReusePasswordFieldDetected">
   <int value="0" label="No password field"/>
   <int value="1" label="Has password field"/>
