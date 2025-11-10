@@ -34,9 +34,12 @@
 // ID of the field that currently has focus.
 @property(nonatomic) autofill::FieldRendererId currentFieldId;
 
-// Replace the keyboard accessory view with one showing the passed suggestions.
-// And form navigation buttons on iPhone (iPad already includes those).
+// Shows suggestions in the keyboard accessory view with an expand button.
+// If the array is empty, manual fill buttons are shown instead.
 - (void)showAccessorySuggestions:(NSArray<FormSuggestion*>*)suggestions;
+
+// Shows just form navigation buttons. Existing suggestions are cleared.
+- (void)showNavigationButtons;
 
 // Invoked after the user taps the "manual fill" button.
 - (void)manualFillButtonPressed:(UIButton*)button;

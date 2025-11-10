@@ -45,6 +45,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/public/commands/security_alert_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/elements/form_input_accessory_view.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_event.h"
@@ -56,6 +57,7 @@
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
+#import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 using base::UmaHistogramEnumeration;
@@ -450,20 +452,24 @@ bool IsStateless() {
     return;
   }
 
+  BOOL isDefaultViewEnabled =
+      IsIOSKeyboardAccessoryDefaultViewEnabled() &&
+      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE;
+  BOOL isSelectOne = params.field_type == "select-one";
+
   // Return early and reset if element is a picker.
-  if (params.field_type == "select-one") {
+  if (isSelectOne && !isDefaultViewEnabled) {
     [self reset];
     return;
   }
 
   self.validActivityForAccessoryView = YES;
-  NSString* frameID;
-  if (frame) {
-    frameID = base::SysUTF8ToNSString(frame->GetFrameId());
-  }
-  DCHECK(frameID.length);
+  [self setLastFocusFormActivityWebFrameID:frame];
 
-  [self.formNavigationHandler setLastFocusFormActivityWebFrameID:frameID];
+  if (isSelectOne && isDefaultViewEnabled) {
+    [self.consumer showNavigationButtons];
+    return;
+  }
 
   // Don't look for suggestions in the next events.
   if (params.type == "blur" || params.type == "change" ||
@@ -816,6 +822,13 @@ bool IsStateless() {
                                                        .featureForIPH];
   }
   [self.currentProvider didSelectSuggestion:formSuggestion atIndex:index];
+}
+
+// Sets the last focused form activity web frame ID with the given `frame`.
+- (void)setLastFocusFormActivityWebFrameID:(web::WebFrame*)frame {
+  NSString* frameID =
+      frame ? base::SysUTF8ToNSString(frame->GetFrameId()) : nil;
+  [self.formNavigationHandler setLastFocusFormActivityWebFrameID:frameID];
 }
 
 #pragma mark - Boolean Observer

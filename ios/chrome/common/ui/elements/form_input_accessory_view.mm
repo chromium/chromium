@@ -280,6 +280,11 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
   }
   _currentGroup = group;
 
+  BOOL hideNavigationButtons =
+      group != FormInputAccessoryViewSubitemGroup::kNavigationButtons;
+  self.previousButton.hidden = hideNavigationButtons;
+  self.nextButton.hidden = hideNavigationButtons;
+
   BOOL hideManualFillByCategoryButtons =
       (group != FormInputAccessoryViewSubitemGroup::kManualFillButtons);
   self.passwordManualFillButton.hidden = hideManualFillByCategoryButtons;
@@ -678,9 +683,18 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
       _closeButton.hidden = YES;
     }
 
+    UIButton* previousButton = [self createPreviousButtonWithText:textData];
+    previousButton.hidden = YES;
+    self.previousButton = previousButton;
+
+    UIButton* nextButton = [self createNextButtonWithText:textData];
+    nextButton.hidden = YES;
+    self.nextButton = nextButton;
+
     navigationView = [[UIStackView alloc] initWithArrangedSubviews:@[
-      passwordManualFillButton, creditCardManualFillButton,
-      addressManualFillButton, manualFillButton, _closeButton
+      previousButton, nextButton, passwordManualFillButton,
+      creditCardManualFillButton, addressManualFillButton, manualFillButton,
+      _closeButton
     ]];
   } else {
     UIButton* previousButton = [self createPreviousButtonWithText:textData];

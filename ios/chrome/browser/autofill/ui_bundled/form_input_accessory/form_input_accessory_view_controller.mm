@@ -218,30 +218,13 @@ void LogManualFallbackEntryThroughExpandIcon(ManualFillDataType data_type,
       showGroup:hasSingleManualFillButton
                     ? FormInputAccessoryViewSubitemGroup::kExpandButton
                     : FormInputAccessoryViewSubitemGroup::kManualFillButtons];
+  [self updateFormSuggestionView:suggestions];
+}
 
-  [self createFormSuggestionViewIfNeeded];
-  [self forceUserInterfaceStyle];
-
-  __weak __typeof(self) weakSelf = self;
-  auto completion = ^(BOOL finished) {
-    // Disable the scroll hint once it's been shown once.
-    if (finished) {
-      weakSelf.showScrollHint = NO;
-    }
-  };
-  [self.formSuggestionView
-          updateSuggestions:suggestions
-             showScrollHint:self.showScrollHint
-      accessoryTrailingView:self.formInputAccessoryView.trailingView
-                 completion:completion];
-  // Check if the view is in the current hierarchy before performing the layout.
-  if (self.formInputAccessoryView.window) {
-    [self.formInputAccessoryView layoutIfNeeded];
-    self.formSuggestionViewMask.frame = self.formSuggestionContainerView.bounds;
-  }
-  self.brandingViewController.keyboardAccessoryVisible =
-      self.formAccessoryVisible;
-  [self announceVoiceOverMessageIfNeeded:[suggestions count]];
+- (void)showNavigationButtons {
+  [self.formInputAccessoryView
+      showGroup:FormInputAccessoryViewSubitemGroup::kNavigationButtons];
+  [self updateFormSuggestionView:@[]];
 }
 
 - (void)manualFillButtonPressed:(UIButton*)button {
@@ -430,6 +413,11 @@ UIImage* GetManualFillSymbol() {
               isTabletFormFactor:isTabletFormFactor];
   [formInputAccessoryView setIsCompact:[self isCompact]];
 
+  if (IsIOSKeyboardAccessoryDefaultViewEnabled() && !isTabletFormFactor) {
+    [formInputAccessoryView
+        showGroup:FormInputAccessoryViewSubitemGroup::kNavigationButtons];
+  }
+
   formInputAccessoryView.accessibilityViewIsModal = !isTabletFormFactor;
 
   self.brandingViewController.keyboardAccessoryVisible =
@@ -444,6 +432,33 @@ UIImage* GetManualFillSymbol() {
       addGestureRecognizer:self.formInputAccessoryTapRecognizer];
 
   self.formInputAccessoryView = formInputAccessoryView;
+}
+
+// Populates `formSuggestionView` with the given suggestions.
+- (void)updateFormSuggestionView:(NSArray<FormSuggestion*>*)suggestions {
+  [self createFormSuggestionViewIfNeeded];
+  [self forceUserInterfaceStyle];
+
+  __weak __typeof(self) weakSelf = self;
+  auto completion = ^(BOOL finished) {
+    // Disable the scroll hint once it's been shown once.
+    if (finished) {
+      weakSelf.showScrollHint = NO;
+    }
+  };
+  [self.formSuggestionView
+          updateSuggestions:suggestions
+             showScrollHint:self.showScrollHint
+      accessoryTrailingView:self.formInputAccessoryView.trailingView
+                 completion:completion];
+  // Check if the view is in the current hierarchy before performing the layout.
+  if (self.formInputAccessoryView.window) {
+    [self.formInputAccessoryView layoutIfNeeded];
+    self.formSuggestionViewMask.frame = self.formSuggestionContainerView.bounds;
+  }
+  self.brandingViewController.keyboardAccessoryVisible =
+      self.formAccessoryVisible;
+  [self announceVoiceOverMessageIfNeeded:[suggestions count]];
 }
 
 // Creates formSuggestionView if not done yet.
