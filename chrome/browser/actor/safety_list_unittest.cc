@@ -187,6 +187,83 @@ TEST(SafetyListTest, ParseJsonList) {
   }
 }
 
+TEST(SafetyListTest, ContainsUrlPairWithWildcardSource) {
+  const struct {
+    const std::string desc;
+    const ContentSettingsPattern source_pattern;
+    const ContentSettingsPattern destination_pattern;
+    const char* from_url;
+    const char* to_url;
+    bool expected;
+  } kTestCases[] = {
+      {
+          "wildcard_source_match_different_origin",
+          ContentSettingsPattern::FromString("*"),
+          ContentSettingsPattern::FromString("blocked.com"),
+          "https://a.com",
+          "https://blocked.com",
+          true,
+      },
+      {
+          "wildcard_source_match_same_origin",
+          ContentSettingsPattern::FromString("*"),
+          ContentSettingsPattern::FromString("blocked.com"),
+          "https://blocked.com",
+          "https://blocked.com",
+          true,
+      },
+      {
+          "domain_wildcard_source_match_different_origin",
+          ContentSettingsPattern::FromString("[*.]a.com"),
+          ContentSettingsPattern::FromString("blocked.com"),
+          "https://sub.a.com",
+          "https://blocked.com",
+          true,
+      },
+      {
+          "domain_wildcard_source_match_same_origin",
+          ContentSettingsPattern::FromString("[*.]a.com"),
+          ContentSettingsPattern::FromString("blocked.com"),
+          "https://blocked.com",
+          "https://blocked.com",
+          false,
+      },
+      {
+          "specific_source_no_match_different_origin",
+          ContentSettingsPattern::FromString("a.com"),
+          ContentSettingsPattern::FromString("blocked.com"),
+          "https://a.com",
+          "https://blocked.com",
+          false,
+      },
+      {
+          "specific_source_no_match_same_origin",
+          ContentSettingsPattern::FromString("blocked.com"),
+          ContentSettingsPattern::FromString("blocked.com"),
+          "https://blocked.com",
+          "https://blocked.com",
+          false,
+      },
+      {
+          "wildcard_source_different_destination_no_match",
+          ContentSettingsPattern::FromString("*"),
+          ContentSettingsPattern::FromString("blocked.com"),
+          "https://a.com",
+          "https://allowed.com",
+          false,
+      },
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SafetyList::Patterns list;
+    list.push_back({test_case.source_pattern, test_case.destination_pattern});
+    SCOPED_TRACE(test_case.desc);
+    EXPECT_EQ(test_case.expected,
+              SafetyList(list).ContainsUrlPairWithWildcardSource(
+                  GURL(test_case.from_url), GURL(test_case.to_url)));
+  }
+}
+
 }  // namespace
 
 }  // namespace actor

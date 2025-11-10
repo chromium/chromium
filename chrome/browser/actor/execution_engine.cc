@@ -275,12 +275,25 @@ void ExecutionEngine::LogNavigationGating(
 ExecutionEngine::GatingDecision ExecutionEngine::DetermineGatingDecision(
     const GURL& source_url,
     const GURL& destination_url) const {
-  if (url::IsSameOriginWith(source_url, destination_url)) {
-    return GatingDecision::kAllowSameOrigin;
-  }
-
+  url::Origin destination_origin = url::Origin::Create(destination_url);
   const SafetyListManager& safety_list_manager =
       *SafetyListManager::GetInstance();
+
+  if (url::IsSameOriginWith(source_url, destination_url)) {
+    // The static blocklist can still block same-origin navigations. A wildcard
+    // source entry like `[*, foo.com]` will block a `foo.com -> foo.com`
+    // navigation. The reasoning is that a URL globally blocked as a
+    // destination should not be reachable from anywhere, including itself.
+    // Conversely, a source-specific entry like `[foo.com, *]` will *not* block
+    // a `foo.com -> foo.com` navigation. This is because a global block on
+    // navigations *from* a URL is intended to prevent leaving that origin, not
+    // moving within it.
+    return safety_list_manager.get_blocked_list()
+                   .ContainsUrlPairWithWildcardSource(source_url,
+                                                      destination_url)
+               ? GatingDecision::kBlockByStaticList
+               : GatingDecision::kAllowSameOrigin;
+  }
 
   if (safety_list_manager.get_blocked_list().ContainsUrlPair(source_url,
                                                              destination_url)) {

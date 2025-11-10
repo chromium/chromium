@@ -627,7 +627,7 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
   SafetyListManager::GetInstance()->ParseSafetyLists(R"json(
   {
     "navigation_blocked": [
-      { "from": "[*.]example.com", "to": "[*.]example.com" }
+      { "from": "example.com", "to": "[*.]example.com" }
     ]
   }
 )json");
@@ -646,6 +646,36 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
   histogram_tester_for_init_.ExpectUniqueSample(
       "Actor.NavigationGating.GatingDecision",
       ExecutionEngine::GatingDecision::kAllowSameOrigin, 1);
+}
+
+IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
+                       SameOriginNavigationBlockedByWildcardSource) {
+  const GURL start_url =
+      embedded_https_test_server().GetURL("example.com", "/actor/link.html");
+  SafetyListManager::GetInstance()->ParseSafetyLists(R"json(
+  {
+    "navigation_blocked": [
+      { "from": "*", "to": "[*.]example.com" }
+    ]
+  }
+)json");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
+  OpenGlicAndCreateTask();
+
+  RunTestSequence(CreateMockWebClientRequest(
+      content::JsReplace(kHandleNavigationConfirmationTempl, false)));
+
+  EXPECT_TRUE(content::ExecJs(web_contents(),
+                              content::JsReplace("setLink($1);", start_url)));
+  ClickTarget("#link", mojom::ActionResultCode::kTriggeredNavigationBlocked);
+
+  // The navigation should be blocked by the static blocklist due to the
+  // wildcard source pattern matching the destination.
+  histogram_tester_for_init_.ExpectUniqueSample(
+      "Actor.NavigationGating.GatingDecision",
+      ExecutionEngine::GatingDecision::kBlockByStaticList, 1);
+  histogram_tester_for_init_.ExpectBucketCount(
+      "Actor.NavigationGating.AppliedGate", true, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
