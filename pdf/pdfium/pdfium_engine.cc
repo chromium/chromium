@@ -94,6 +94,7 @@
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/vector2d.h"
@@ -1222,16 +1223,30 @@ void PDFiumEngine::SetCaretBrowsingEnabled(bool enabled) {
     return;
   }
 
-  if (!caret_) {
-    if (!enabled) {
-      return;
+  if (!enabled) {
+    if (caret_) {
+      caret_->SetEnabled(false);
     }
-    // TODO(crbug.com/427242881): Determine the starting position of the caret.
-    caret_ = std::make_unique<PdfCaret>(this, PageCharacterIndex(0, 0));
+    return;
+  }
+
+  if (!caret_) {
+    caret_ = std::make_unique<PdfCaret>(this);
   }
 
   // TODO(crbug.com/427778119): Set caret blink interval.
-  caret_->SetEnabled(enabled);
+  caret_->SetEnabled(true);
+
+  // Move the caret to the first visible text run. If there is no visible text,
+  // leave the caret at its original position.
+  for (auto page_index : visible_pages_) {
+    std::optional<AccessibilityTextRunInfo> text_run =
+        GetFirstVisibleTextRun(page_index);
+    if (text_run.has_value()) {
+      caret_->SetCharAndDraw({page_index, text_run->start_index});
+      break;
+    }
+  }
 }
 
 void PDFiumEngine::ContinueFind(bool case_sensitive) {
@@ -4927,6 +4942,28 @@ void PDFiumEngine::MaybeRequestPendingThumbnail(int page_index) {
   RequestThumbnail(page_index, pending_thumbnail.device_pixel_ratio,
                    std::move(pending_thumbnail.send_callback));
   pending_thumbnails_.erase(it);
+}
+
+std::optional<AccessibilityTextRunInfo> PDFiumEngine::GetFirstVisibleTextRun(
+    uint32_t page_index) const {
+  gfx::Rect visible_rect = GetVisibleRect();
+  if (visible_rect.IsEmpty()) {
+    // PDF has not finished loading yet.
+    return std::nullopt;
+  }
+
+  CHECK(PageIndexInBounds(page_index));
+  PDFiumPage* page = pages_[page_index].get();
+  for (const AccessibilityTextRunInfo& text_run : page->GetTextRunInfo()) {
+    PDFiumRange range(page, text_run.start_index, /*char_count=*/1);
+    // Use zoom of 1.0 since `visible_rect` is without zoom.
+    const std::vector<gfx::Rect>& rects =
+        range.GetScreenRects(gfx::Point(), 1.0, GetCurrentOrientation());
+    if (visible_rect.Contains(gfx::UnionRects(rects))) {
+      return text_run;
+    }
+  }
+  return std::nullopt;
 }
 
 #if BUILDFLAG(ENABLE_PDF_INK2)

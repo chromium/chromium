@@ -162,7 +162,8 @@ class PdfCaretTest : public testing::Test {
   }
 
   void InitializeCaretAtChar(const PageCharacterIndex& index) {
-    caret_ = std::make_unique<PdfCaret>(&client_, index);
+    caret_ = std::make_unique<PdfCaret>(&client_);
+    caret_->SetChar(index);
   }
 
   void InitializeVisibleCaretAtChar(const PageCharacterIndex& index) {

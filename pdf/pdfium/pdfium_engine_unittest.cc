@@ -3078,6 +3078,62 @@ TEST_P(PDFiumEngineCaretTest, SetCaretBrowsingEnabled) {
                                               "hello_world_caret.png");
 }
 
+TEST_P(PDFiumEngineCaretTest,
+       SetCaretBrowsingEnabledSetsCaretAtFirstVisibleTextRun) {
+  PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("link_annots.pdf"));
+  ASSERT_TRUE(engine);
+
+  // Starts at first text run.
+  DrawCaretAndCompareWithPlatformExpectations(
+      *engine, /*page_index=*/0, "link_annots_visible_text_run_0.png");
+
+  // Scroll so that text on page 0 and page 1 are visible.
+  constexpr gfx::Size kPluginSizeWithPage0AndPage1{617, 900};
+  engine->PluginSizeUpdated(kPluginSizeWithPage0AndPage1);
+  engine->ScrolledToYPosition(400);
+
+  DrawCaretAndExpectBlank(*engine, /*page_index=*/0, {612, 659});
+  DrawCaretAndExpectBlank(*engine, /*page_index=*/1, {612, 227});
+
+  engine->SetCaretBrowsingEnabled(false);
+  engine->SetCaretBrowsingEnabled(true);
+
+  DrawCaretAndCompareWithPlatformExpectations(
+      *engine, /*page_index=*/0, "link_annots_visible_text_run_1.png");
+  DrawCaretAndExpectBlank(*engine, /*page_index=*/1, {612, 227});
+
+  // Scroll so both pages are visible, but only text on page 1 is visible.
+  engine->ScrolledToYPosition(800);
+
+  engine->SetCaretBrowsingEnabled(false);
+  engine->SetCaretBrowsingEnabled(true);
+
+  constexpr gfx::Size kPage0ExpectedVisiblePageSize{612, 259};
+  DrawCaretAndExpectBlank(*engine, /*page_index=*/0,
+                          kPage0ExpectedVisiblePageSize);
+  DrawCaretAndCompareWithPlatformExpectations(
+      *engine, /*page_index=*/1, "link_annots_visible_text_run_2.png");
+
+  // Shrink the plugin's size so that no text is visible.
+  engine->PluginSizeUpdated({617, 300});
+
+  engine->SetCaretBrowsingEnabled(false);
+  engine->SetCaretBrowsingEnabled(true);
+
+  DrawCaretAndExpectBlank(*engine, /*page_index=*/0,
+                          kPage0ExpectedVisiblePageSize);
+  DrawCaretAndExpectBlank(*engine, /*page_index=*/1, {612, 27});
+
+  // Go back to the previous plugin size. The caret should still be at the
+  // previous position.
+  engine->PluginSizeUpdated(kPluginSizeWithPage0AndPage1);
+
+  DrawCaretAndExpectBlank(*engine, /*page_index=*/0,
+                          kPage0ExpectedVisiblePageSize);
+  DrawCaretAndCompareWithPlatformExpectations(
+      *engine, /*page_index=*/1, "link_annots_visible_text_run_2.png");
+}
+
 TEST_P(PDFiumEngineCaretTest, UpdateFocus) {
   PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("hello_world2.pdf"));
   ASSERT_TRUE(engine);

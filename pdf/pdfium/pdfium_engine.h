@@ -599,7 +599,9 @@ class PDFiumEngine : public DocumentLoader::Client,
                          AddSearchResultCallback add_result_callback);
 
   // Sets whether caret browsing is enabled or not. Initializes `caret_` if it
-  // is the first time enabling caret browsing mode. Virtual to support testing.
+  // is the first time enabling caret browsing mode. If `enabled` is true, then
+  // moves the caret to the start of the first visible text run. If there is no
+  // visible text, the caret will not move. Virtual to support testing.
   virtual void SetCaretBrowsingEnabled(bool enabled);
 
  private:
@@ -1086,6 +1088,13 @@ class PDFiumEngine : public DocumentLoader::Client,
   // Checks whether a given `page_index` exists in `pending_thumbnails_`. If so,
   // requests the thumbnail for that page.
   void MaybeRequestPendingThumbnail(int page_index);
+
+  // Returns the first text run that is visible on the page at `page_index`.
+  // Otherwise, returns std::nullopt if the PDF has not loaded yet or there is
+  // no visible text on the page. `page_index` must be valid, otherwise a crash
+  // occurs.
+  std::optional<AccessibilityTextRunInfo> GetFirstVisibleTextRun(
+      uint32_t page_index) const;
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   // Called if OCR service gets disconnected.

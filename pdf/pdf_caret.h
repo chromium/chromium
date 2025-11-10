@@ -41,8 +41,7 @@ class PdfCaret {
   static constexpr base::TimeDelta kDefaultBlinkInterval =
       base::Milliseconds(500);
 
-  // PdfCaret should only be instantiated on a text page with chars.
-  PdfCaret(PdfCaretClient* client, const PageCharacterIndex& index);
+  explicit PdfCaret(PdfCaretClient* client);
   PdfCaret(const PdfCaret&) = delete;
   PdfCaret& operator=(const PdfCaret&) = delete;
   ~PdfCaret();

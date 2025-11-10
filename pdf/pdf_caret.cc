@@ -66,10 +66,7 @@ void TransformCaretScreenRectWithRotatedTextDirection(
 
 }  // namespace
 
-PdfCaret::PdfCaret(PdfCaretClient* client, const PageCharacterIndex& index)
-    : client_(client) {
-  SetChar(index);
-}
+PdfCaret::PdfCaret(PdfCaretClient* client) : client_(client) {}
 
 PdfCaret::~PdfCaret() = default;
 
