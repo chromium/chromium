@@ -118,7 +118,8 @@ bool OmniboxPopupWebUIBaseContent::HandleKeyboardEvent(
       event.windows_key_code == ui::VKEY_ESCAPE) {
     return controller_->edit_model()->OnEscapeKeyPressed();
   }
-  return false;
+  return unhandled_keyboard_event_handler_.HandleKeyboardEvent(
+      event, GetFocusManager());
 }
 
 void OmniboxPopupWebUIBaseContent::SetContentURL(std::string_view url) {
