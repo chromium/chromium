@@ -24,6 +24,7 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
 #include "base/metrics/field_trial.h"
@@ -2069,8 +2070,8 @@ std::optional<FormData> ExtractFormDataWithFieldsAndFrames(
     const WebFormElement& form_element,
     const FieldDataManager& field_data_manager,
     ButtonTitlesCache* button_titles_cache) {
-  CHECK(!form_element || form_element.GetDocument() == document,
-        base::NotFatalUntil::M147);
+  LOG_IF(ERROR, form_element && form_element.GetDocument() != document)
+      << "<form> belongs to a different document";
 
   if (form_element && !IsAccessible(form_element)) {
     return std::nullopt;
@@ -2505,6 +2506,7 @@ FindFormAndFieldForFormControlElement(
   WebFormElement assoc_form_element = element.Form();  // nocheck
 
   // clang-format off
+  SCOPED_CRASH_KEY_BOOL("Autofill", "invariant", base::Contains(GetOwnedFormControls(element.GetDocument(), element.GetOwningFormForAutofill()), element));
   SCOPED_CRASH_KEY_STRING256("Autofill", "url", url.spec());
   SCOPED_CRASH_KEY_BOOL("Autofill", "ExtractFormData_succeeded", extract_form_data_succeeded);
   SCOPED_CRASH_KEY_NUMBER("Autofill", "extracted_form_size", form->fields().size());
@@ -2533,11 +2535,7 @@ FindFormAndFieldForFormControlElement(
   SCOPED_CRASH_KEYS_FOR_FORM(owng, owning_form);
 #undef FORM_CRASH_KEYS
   // clang-format on
-  CHECK(base::Contains(GetOwnedFormControls(element.GetDocument(),
-                                            element.GetOwningFormForAutofill()),
-                       element),
-        base::NotFatalUntil::M147);
-  NOTREACHED(base::NotFatalUntil::M147);
+  base::debug::DumpWithoutCrashing();
   return std::nullopt;
 }
 
