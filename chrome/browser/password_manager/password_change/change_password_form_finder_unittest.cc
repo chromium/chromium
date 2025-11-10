@@ -552,3 +552,48 @@ TEST_F(ChangePasswordFormFinderTest, DurationRecordedOnDestruction) {
                       .open_form()
                       .request_latency_ms());
 }
+
+TEST_F(ChangePasswordFormFinderTest, FailsWhenPageTypeIsNotSettingsPage) {
+  base::test::TestFuture<password_manager::PasswordFormManager*>
+      completion_callback;
+  base::MockCallback<
+      base::OnceCallback<void(optimization_guide::OnAIPageContentDone)>>
+      capture_annotated_page_content;
+  ModelQualityLogsUploader logs_uploader(web_contents(), GURL());
+  auto form_finder = std::make_unique<ChangePasswordFormFinder>(
+      pass_key(), web_contents(), client(), &logs_uploader,
+      completion_callback.GetCallback(), capture_annotated_page_content.Get());
+  auto form_manager = CreateFormManager();
+
+  ASSERT_TRUE(form_finder->form_waiter());
+  static_cast<content::WebContentsObserver*>(form_finder->form_waiter())
+      ->DidStopLoading();
+  ASSERT_FALSE(form_finder->click_helper());
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(*optimization_service(), ExecuteModel)
+      .WillOnce(WithArg<3>([&run_loop](auto callback) {
+        optimization_guide::proto::PasswordChangeResponse response;
+        response.mutable_open_form_data()->set_dom_node_id_to_click(1);
+        response.mutable_open_form_data()->set_page_type(
+            ::optimization_guide::proto::OpenFormResponseData_PageType::
+                OpenFormResponseData_PageType_LOG_IN_PAGE);
+
+        auto result = optimization_guide::OptimizationGuideModelExecutionResult(
+            optimization_guide::AnyWrapProto(response),
+            /*execution_info=*/nullptr);
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE,
+            base::BindOnce(std::move(callback).Then(run_loop.QuitClosure()),
+                           std::move(result),
+                           /*log_entry=*/nullptr));
+      }));
+  EXPECT_CALL(capture_annotated_page_content, Run)
+      .WillOnce(base::test::RunOnceCallback<0>(
+          optimization_guide::AIPageContentResult()));
+  run_loop.Run();
+  CheckOpenFormStatus(
+      logs_uploader.GetFinalLog(),
+      QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_UNEXPECTED_STATE);
+}

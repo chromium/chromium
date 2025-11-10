@@ -26,6 +26,7 @@
 namespace {
 
 using Logger = password_manager::BrowserSavePasswordProgressLogger;
+using PageType = optimization_guide::proto::OpenFormResponseData::PageType;
 
 constexpr optimization_guide::proto::PasswordChangeRequest::FlowStep
     kOpenFormFlowStep = optimization_guide::proto::PasswordChangeRequest::
@@ -200,7 +201,9 @@ void ChangePasswordFormFinder::OnExecutionResponseCallback(
                       response.value().open_form_data().page_type());
   }
   int dom_node_id = response.value().open_form_data().dom_node_id_to_click();
-  if (!dom_node_id) {
+  PageType page_type = response.value().open_form_data().page_type();
+  if (!dom_node_id ||
+      page_type != PageType::OpenFormResponseData_PageType_SETTINGS_PAGE) {
     std::move(callback_).Run(nullptr);
     return;
   }
