@@ -63,7 +63,7 @@ inline constexpr auto kKnownEPs = base::MakeFixedFlatMap<base::cstring_view,
                 {
                     .Major = 1,
                     .Minor = 8,
-                    .Build = 18,
+                    .Build = 15,
                     .Revision = 0,
                 },
             .vendor_id = 0x8086,
