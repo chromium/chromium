@@ -224,7 +224,9 @@ export class Runner implements ImageSpriteProvider, GameStateProvider,
   static initializeInstance(outerContainerId: string, config?: Config): Runner {
     assert(runnerInstance === null);
     runnerInstance = new Runner(outerContainerId, config);
-    runnerInstance.loadImages();
+    if (!runnerInstance.isDisabled) {
+      runnerInstance.loadImages();
+    }
 
     return runnerInstance;
   }
