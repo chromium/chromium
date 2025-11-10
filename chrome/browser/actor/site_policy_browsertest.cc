@@ -97,14 +97,15 @@ class ActorSitePolicyBrowserTest : public InProcessBrowserTest {
   void CheckUrl(const GURL& url, bool expected_allowed) {
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
-    base::test::TestFuture<bool> allowed;
+    base::test::TestFuture<MayActOnUrlBlockReason> allowed;
     auto* actor_service = ActorKeyedService::Get(browser()->profile());
     MayActOnTab(*browser()->tab_strip_model()->GetActiveTab(),
                 actor_service->GetJournal(), TaskId(),
                 absl::flat_hash_set<url::Origin>(), allowed.GetCallback());
     // The result should not be provided synchronously.
     EXPECT_FALSE(allowed.IsReady());
-    EXPECT_EQ(expected_allowed, allowed.Get());
+    EXPECT_EQ(expected_allowed,
+              allowed.Get() == MayActOnUrlBlockReason::kAllowed);
   }
 
  private:
@@ -171,12 +172,12 @@ IN_PROC_BROWSER_TEST_F(ActorSitePolicyMissingBlocklistBrowserTest, FailOpen) {
       embedded_https_test_server().GetURL("bar.com", "/title1.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
-  base::test::TestFuture<bool> allowed;
+  base::test::TestFuture<MayActOnUrlBlockReason> allowed;
   auto* actor_service = ActorKeyedService::Get(browser()->profile());
   MayActOnTab(*browser()->tab_strip_model()->GetActiveTab(),
               actor_service->GetJournal(), TaskId(),
               absl::flat_hash_set<url::Origin>(), allowed.GetCallback());
-  EXPECT_TRUE(allowed.Get());
+  EXPECT_TRUE(allowed.Get() == MayActOnUrlBlockReason::kAllowed);
 }
 
 class ActorSitePolicySafeBrowsingBrowserTest

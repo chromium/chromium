@@ -124,15 +124,16 @@ void ActorPolicyChecker::MayActOnTab(
     AggregatedJournal& journal,
     TaskId task_id,
     const absl::flat_hash_set<url::Origin>& allowed_origins,
-    DecisionCallback callback) {
-  if (!can_act_on_web_) {
+    DecisionCallbackWithReason callback) {
+  if (!can_act_on_web()) {
     journal.Log(tab.GetContents()->GetLastCommittedURL(), task_id,
                 "MayActOnTab",
                 JournalDetailsBuilder()
                     .AddError("Actuation capability disabled")
                     .Build());
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), /*decision=*/false));
+        FROM_HERE, base::BindOnce(std::move(callback),
+                                  MayActOnUrlBlockReason::kActuactionDisabled));
     return;
   }
   ::actor::MayActOnTab(tab, journal, task_id, allowed_origins,
