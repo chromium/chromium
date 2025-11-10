@@ -73,7 +73,7 @@ class CreditCardFidoAuthenticator
     // nullptr if authentication failed.
     raw_ptr<const CreditCard> card = nullptr;
     // The CVC of the fetched credit card. Can be empty string.
-    std::u16string cvc = std::u16string();
+    std::u16string cvc;
     // The type of the failure of the full card request.
     payments::FullCardRequest::FailureType failure_type =
         payments::FullCardRequest::UNKNOWN;
@@ -216,11 +216,11 @@ class CreditCardFidoAuthenticator
 
   // Converts |request_options| from JSON to mojom pointer.
   blink::mojom::PublicKeyCredentialRequestOptionsPtr ParseRequestOptions(
-      const base::Value::Dict& request_options);
+      base::Value::Dict request_options);
 
   // Converts |creation_options| from JSON to mojom pointer.
   blink::mojom::PublicKeyCredentialCreationOptionsPtr ParseCreationOptions(
-      const base::Value::Dict& creation_options);
+      base::Value::Dict creation_options);
 
   // Helper function to parse |key_info| sub-dictionary found in
   // |request_options| and |creation_options|.
