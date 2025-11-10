@@ -24,6 +24,8 @@ std::string_view ToString(ActorTask::StoppedReason stopped_reason) {
       return "ChromeFailure";
     case ActorTask::StoppedReason::kTabDetached:
       return "TabDetached";
+    case ActorTask::StoppedReason::kShutdown:
+      return "Shutdown";
   }
   NOTREACHED();
 }

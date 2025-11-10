@@ -60,6 +60,16 @@ class GlicActorTaskIconManagerTest : public testing::Test {
         profile_.get(), actor_service_.get(), *window_controller_.get());
   }
 
+  void TearDown() override {
+    manager_.reset();
+    host_.reset();
+    window_controller_.reset();
+    actor_service_->Shutdown();
+    actor_service_.reset();
+    profile_.reset();
+    testing::Test::TearDown();
+  }
+
   ActorKeyedServiceFake* actor_service() { return actor_service_.get(); }
 
   GlicActorTaskIconManager* manager() { return manager_.get(); }

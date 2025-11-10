@@ -74,6 +74,12 @@ ActorKeyedService::ActorKeyedService(Profile* profile) : profile_(profile) {
 
 ActorKeyedService::~ActorKeyedService() = default;
 
+void ActorKeyedService::Shutdown() {
+  // Ensure all tasks are stopped here so we don't cause them to stop in the
+  // dtor.
+  StopAllTasks(ActorTask::StoppedReason::kShutdown);
+}
+
 // static
 ActorKeyedService* ActorKeyedService::Get(content::BrowserContext* context) {
   return ActorKeyedServiceFactory::GetActorKeyedService(context);
@@ -259,7 +265,7 @@ void ActorKeyedService::NotifyTaskStateChanged(const ActorTask& task) {
 
 void ActorKeyedService::OnActOnWebCapabilityChanged(bool can_act_on_web) {
   if (!can_act_on_web) {
-    FailAllTasks();
+    StopAllTasks(ActorTask::StoppedReason::kChromeFailure);
   }
   act_on_web_capability_changed_callback_list_.Notify(can_act_on_web);
 }
@@ -406,12 +412,12 @@ void ActorKeyedService::OnActionsFinished(
                           index_of_failed_action, std::move(action_results)));
 }
 
-void ActorKeyedService::FailAllTasks() {
+void ActorKeyedService::StopAllTasks(ActorTask::StoppedReason stop_reason) {
   std::vector<TaskId> tasks_to_stop =
       FindTaskIdsInActive([](const ActorTask& task) { return true; });
-  GetJournal().Log(GURL(), TaskId(), "ActorKeyedService::FailAllTasks", {});
+  GetJournal().Log(GURL(), TaskId(), "ActorKeyedService::StopAllTasks", {});
   for (const auto& task_id : tasks_to_stop) {
-    StopTask(task_id, ActorTask::StoppedReason::kChromeFailure);
+    StopTask(task_id, stop_reason);
   }
 }
 

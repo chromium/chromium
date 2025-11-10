@@ -126,7 +126,11 @@ ActorTask::ActorTask(Profile* profile,
       delegate_(std::move(delegate)),
       ui_weak_ptr_factory_(ui_event_dispatcher_.get()) {}
 
-ActorTask::~ActorTask() = default;
+ActorTask::~ActorTask() {
+  // The owner of the ActorTasks (ActorKeyedService) should have stopped all
+  // tasks already.
+  CHECK(IsCompleted());
+}
 
 void ActorTask::SetId(base::PassKey<ActorKeyedService>, TaskId id) {
   id_ = id;
@@ -302,6 +306,7 @@ void ActorTask::Stop(StoppedReason stop_reason) {
   switch (stop_reason) {
     case StoppedReason::kStoppedByUser:
     case StoppedReason::kTabDetached:
+    case StoppedReason::kShutdown:
       final_state = State::kCancelled;
       break;
     case StoppedReason::kTaskComplete:

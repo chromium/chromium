@@ -158,7 +158,13 @@ class ActorUiTabControllerTest : public testing::Test {
   }
 
   void TearDown() override {
+    border_view_controller_.reset();
+    actor_ui_tab_controller_factory_ = nullptr;
+    actor_ui_tab_controller_.reset();
     window_controller_.reset();
+    immersive_mode_controller_.reset();
+    actor_keyed_service_->Shutdown();
+    actor_keyed_service_.reset();
     testing::Test::TearDown();
   }
 

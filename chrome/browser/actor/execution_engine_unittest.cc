@@ -238,8 +238,13 @@ class ExecutionEngineTest : public ChromeRenderViewHostTestHarness {
   }
 
   void TearDown() override {
+    testing::Mock::VerifyAndClearExpectations(mock_ui_event_dispatcher_);
+    testing::Mock::VerifyAndClearExpectations(task_mock_ui_event_dispatcher_);
     mock_ui_event_dispatcher_ = nullptr;
     task_mock_ui_event_dispatcher_ = nullptr;
+    if (!task_->IsCompleted()) {
+      task_->Stop(kTabDetached);
+    }
     task_.reset();
     ClearTabInterface();
 
@@ -425,9 +430,6 @@ TEST_F(ExecutionEngineTest, CrossOriginNavigationBeforeAction) {
   fake_chrome_render_frame.OverrideBinder(main_rfh());
 
   ActResultFuture result;
-  auto execution_engine = std::make_unique<ExecutionEngine>(profile());
-  ActorTask task(profile(), std::move(execution_engine),
-                 ui::NewMockUiEventDispatcher());
   std::unique_ptr<ToolRequest> action =
       MakeClickCallback(kFakeContentNodeId).Run();
   task_->Act(ToRequestList(std::move(action)), result.GetCallback());
@@ -873,7 +875,8 @@ INSTANTIATE_TEST_SUITE_P(
                     std::make_tuple(kTaskComplete, "Completed"),
                     std::make_tuple(kModelError, "ModelError"),
                     std::make_tuple(kChromeFailure, "ChromeFailure"),
-                    std::make_tuple(kTabDetached, "TabDetached")));
+                    std::make_tuple(kTabDetached, "TabDetached"),
+                    std::make_tuple(kShutdown, "Shutdown")));
 
 }  // namespace
 
