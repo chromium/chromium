@@ -650,24 +650,40 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_DefaultDevicePref_False",
+                    "name": "Enabled",
                     "params": {
                         "show_bookmark_bar": "false"
                     },
                     "enable_features": [
                         "AndroidAppearanceSettings",
                         "AndroidBookmarkBar",
+                        "IPH_BookmarksBar",
                         "TopControlsRefactor"
                     ]
                 },
                 {
-                    "name": "Enabled_DefaultDevicePref_True",
+                    "name": "Enabled_DefaultVisible",
                     "params": {
                         "show_bookmark_bar": "true"
                     },
                     "enable_features": [
                         "AndroidAppearanceSettings",
                         "AndroidBookmarkBar",
+                        "IPH_BookmarksBar",
+                        "TopControlsRefactor"
+                    ]
+                },
+                {
+                    "name": "Enabled_IPHTrackingOnly",
+                    "params": {
+                        "event_trigger": "name:bookmark_bar_iph_triggered_tracking_only;comparator:any;window:0;storage:360",
+                        "show_bookmark_bar": "false",
+                        "tracking_only": "true"
+                    },
+                    "enable_features": [
+                        "AndroidAppearanceSettings",
+                        "AndroidBookmarkBar",
+                        "IPH_BookmarksBar",
                         "TopControlsRefactor"
                     ]
                 }
