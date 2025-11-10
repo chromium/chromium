@@ -26,6 +26,10 @@ std::string_view ToString(ActorTask::StoppedReason stopped_reason) {
       return "TabDetached";
     case ActorTask::StoppedReason::kShutdown:
       return "Shutdown";
+    case ActorTask::StoppedReason::kUserStartedNewChat:
+      return "NewChat";
+    case ActorTask::StoppedReason::kUserLoadedPreviousChat:
+      return "PreviousChat";
   }
   NOTREACHED();
 }

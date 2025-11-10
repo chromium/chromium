@@ -187,14 +187,20 @@ void GlicActorTaskManager::StopActorTask(
 
   actor::ActorTask::StoppedReason reason;
   switch (stop_reason) {
-    case glic::mojom::ActorTaskStopReason::kStoppedByUser:
-      reason = actor::ActorTask::StoppedReason::kStoppedByUser;
-      break;
     case glic::mojom::ActorTaskStopReason::kTaskComplete:
       reason = actor::ActorTask::StoppedReason::kTaskComplete;
       break;
+    case glic::mojom::ActorTaskStopReason::kStoppedByUser:
+      reason = actor::ActorTask::StoppedReason::kStoppedByUser;
+      break;
     case glic::mojom::ActorTaskStopReason::kModelError:
       reason = actor::ActorTask::StoppedReason::kModelError;
+      break;
+    case glic::mojom::ActorTaskStopReason::kUserStartedNewChat:
+      reason = actor::ActorTask::StoppedReason::kUserStartedNewChat;
+      break;
+    case glic::mojom::ActorTaskStopReason::kUserLoadedPreviousChat:
+      reason = actor::ActorTask::StoppedReason::kUserLoadedPreviousChat;
       break;
   }
 

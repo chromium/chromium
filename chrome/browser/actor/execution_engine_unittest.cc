@@ -876,7 +876,9 @@ INSTANTIATE_TEST_SUITE_P(
                     std::make_tuple(kModelError, "ModelError"),
                     std::make_tuple(kChromeFailure, "ChromeFailure"),
                     std::make_tuple(kTabDetached, "TabDetached"),
-                    std::make_tuple(kShutdown, "Shutdown")));
+                    std::make_tuple(kShutdown, "Shutdown"),
+                    std::make_tuple(kUserStartedNewChat, "NewChat"),
+                    std::make_tuple(kUserLoadedPreviousChat, "PreviousChat")));
 
 }  // namespace
 

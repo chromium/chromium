@@ -46,6 +46,8 @@ chromium-metrics-reviews@google.com.
       summary="Some error in chrome caused the task to stop."/>
   <variant name="Completed" summary="Completed."/>
   <variant name="ModelError" summary="Model error."/>
+  <variant name="NewChat" summary="User selected a new chat."/>
+  <variant name="PreviousChat" summary="User selected a previous chat."/>
   <variant name="Shutdown" summary="Chrome was being shut down."/>
   <variant name="TabDetached" summary="The acting tab was closed."/>
 </variants>

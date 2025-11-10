@@ -209,6 +209,7 @@ enum ActorTaskPauseReason {
 };
 
 // @generate glic_api
+// Next version: 3
 // The reason/source of why an actor task was stopped.
 [Stable, Extensible]
 enum ActorTaskStopReason {
@@ -218,6 +219,10 @@ enum ActorTaskStopReason {
   kStoppedByUser = 1,
   // Actor task was stopped because the model reported a failure.
   [MinVersion=1] kModelError = 2,
+  // Actor task was stopped by choosing a new conversation.
+  [MinVersion=2] kUserStartedNewChat = 3,
+  // Actor task was stopped by choosing a previous conversation.
+  [MinVersion=2] kUserLoadedPreviousChat = 4,
 };
 
 // @generate glic_api
