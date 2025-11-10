@@ -75,6 +75,10 @@ NSArray<NSString*>* ArgumentsFromConfiguration(
 
   NSMutableArray<NSString*>* arguments = [[NSMutableArray alloc] init];
 
+  // TODO: (crbug.com/459494522): Remove this once the problem has been
+  // verified.
+  [arguments addObject:@"--collections-base-url="];
+
   if (configuration.iph_feature_enabled.has_value()) {
     std::string iph_enable_argument = base::StringPrintf(
         "--enable-iph=%s", configuration.iph_feature_enabled.value().c_str());
