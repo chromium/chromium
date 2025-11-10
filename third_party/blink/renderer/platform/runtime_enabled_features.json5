@@ -760,7 +760,7 @@
     {
       // https://chromestatus.com/feature/4830298126417920
       name: "BlobBytes",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "BlockingFocusWithoutUserActivation",
