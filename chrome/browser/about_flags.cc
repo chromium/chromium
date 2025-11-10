@@ -11530,10 +11530,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     "ContextualCueingEnabledOptions")},
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
-    {"partitioned-popins", flag_descriptions::kPartitionedPopinsName,
-     flag_descriptions::kPartitionedPopinsDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(blink::features::kPartitionedPopins)},
-
 #if !BUILDFLAG(IS_ANDROID)
     {"separate-local-and-account-search-engines",
      flag_descriptions::kSeparateLocalAndAccountSearchEnginesName,

@@ -3375,10 +3375,6 @@ inline constexpr char kPartitionVisitedLinkDatabaseWithSelfLinksDescription[] =
     "any top-level site and frame origin, if they are displayed in a top-level "
     "frame or same-origin subframe.";
 
-inline constexpr char kPartitionedPopinsName[] = "Partitioned Popins";
-inline constexpr char kPartitionedPopinsDescription[] =
-    "Allows Partitioned Popins to be opened.";
-
 inline constexpr char kPasskeyUnlockErrorUiName[] = "Passkey Unlock Error UI";
 inline constexpr char kPasskeyUnlockErrorUiDescription[] =
     "Enables showing the passkey unlock error UI to passkey users in case when "

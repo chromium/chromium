@@ -8057,11 +8057,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "partitioned-popins",
-    "owners": [ "arichiv@chromium.org", "johannhof@chromium.org", "sandormajor@chromium.org" ],
-    "expiry_milestone": 138
-  },
-  {
     "name": "passkey-unlock-error-ui",
     "owners": ["ylahodiuk@google.com", "izuzic@google.com", "anki-team@google.com"],
     "expiry_milestone": 150
