@@ -123,7 +123,7 @@ class MockNotificationTelemetryStore
                                     const std::vector<GURL>& requested_urls,
                                     SuccessCallback success_callback) override {
     add_service_worker_push_behavior_called_ = true;
-    requested_urls_count_ = requested_urls.size();
+    requested_urls_ = requested_urls;
     entries_.push_back(
         MakeServiceWorkerPushBehavior(script_url, requested_urls));
     std::move(success_callback).Run(true);
@@ -147,7 +147,8 @@ class MockNotificationTelemetryStore
   bool add_service_worker_push_behavior_called() {
     return add_service_worker_push_behavior_called_;
   }
-  int requested_urls_count() { return requested_urls_count_; }
+
+  std::vector<GURL> requested_urls() { return requested_urls_; }
 
   std::vector<CSBRR::ServiceWorkerBehavior> GetEntries() { return entries_; }
   void SetEntries(std::vector<CSBRR::ServiceWorkerBehavior> entries) {
@@ -158,7 +159,7 @@ class MockNotificationTelemetryStore
   bool get_service_worker_behaviors_called_ = false;
   bool add_service_worker_registration_behavior_called_ = false;
   bool add_service_worker_push_behavior_called_ = false;
-  int requested_urls_count_ = 0;
+  std::vector<GURL> requested_urls_;
   std::vector<CSBRR::ServiceWorkerBehavior> entries_;
 };
 }  // namespace
@@ -447,8 +448,10 @@ TEST_P(NotificationTelemetryServiceTest,
 }
 
 TEST_P(NotificationTelemetryServiceTest, OnPushEventFinished) {
-  std::vector<GURL> requested_urls = {GURL("http://dest.com"),
-                                      GURL("http://dest.com")};
+  std::vector<GURL> requested_urls = {
+      GURL("http://dest.com?a=1&b=2"), GURL("http://dest.com?a=1&b=2"),
+      GURL("http://dest.com"),         GURL("http://dest.com"),
+      GURL("invalidurl.ini"),          GURL("")};
   notification_telemetry_service()->OnPushEventFinished(
       GURL("http://scope.com"), requested_urls);
   EXPECT_TRUE(base::test::RunUntil([&]() {
@@ -457,8 +460,11 @@ TEST_P(NotificationTelemetryServiceTest, OnPushEventFinished) {
 
   ASSERT_TRUE(GetNotificationTelemetryStore()
                   ->add_service_worker_push_behavior_called());
-  // Duplicate requested URLs should be deduped.
-  EXPECT_EQ(1, GetNotificationTelemetryStore()->requested_urls_count());
+  // Duplicate requested URLs should be deduped and normalized.
+  // Invalid requested URLs should be ignored.
+  EXPECT_THAT(GetNotificationTelemetryStore()->requested_urls(),
+              testing::UnorderedElementsAreArray(
+                  {GURL("http://dest.com?a&b"), GURL("http://dest.com")}));
 }
 
 // TODO(crbug.com/434325703): Deflake.

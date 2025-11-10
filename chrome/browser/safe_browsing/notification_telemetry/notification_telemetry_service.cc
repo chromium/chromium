@@ -198,7 +198,39 @@ void NotificationTelemetryService::OnAddServiceWorkerBehavior(bool success) {
     empty_db_found_count_ = 0;
   }
 }
+std::vector<GURL> NotificationTelemetryService::NormalizeURLs(
+    std::vector<GURL> urls) {
+  std::vector<GURL> normalized_urls;
+  normalized_urls.reserve(urls.size());
 
+  for (const auto& url : urls) {
+    if (!url.is_valid()) {
+      // Skip invalid URLs.
+      continue;
+    }
+    if (!url.has_query()) {
+      // No query, add as is.
+      normalized_urls.push_back(url);
+      continue;
+    }
+    std::string new_query;
+    net::QueryIterator query_iterator(url);
+
+    while (!query_iterator.IsAtEnd()) {
+      if (!new_query.empty()) {
+        new_query += "&";
+      }
+      // Append only the key, strip the value.
+      new_query += query_iterator.GetKey();
+      query_iterator.Advance();
+    }
+
+    GURL::Replacements replacements;
+    replacements.SetQueryStr(new_query);
+    normalized_urls.push_back(url.ReplaceComponents(replacements));
+  }
+  return normalized_urls;
+}
 void NotificationTelemetryService::OnPushEventFinished(
     const GURL& script_url,
     const std::optional<std::vector<GURL>>& requested_urls) {
@@ -208,9 +240,11 @@ void NotificationTelemetryService::OnPushEventFinished(
   if (!base::FeatureList::IsEnabled(safe_browsing::kNotificationTelemetrySwb)) {
     return;
   }
+  std::vector<GURL> normalized_requested_urls =
+      NormalizeURLs(requested_urls.value());
   // Remove duplicate URLs.
-  base::flat_set<GURL> requested_urls_set(requested_urls.value().begin(),
-                                          requested_urls.value().end());
+  base::flat_set<GURL> requested_urls_set(normalized_requested_urls.begin(),
+                                          normalized_requested_urls.end());
   // Store the network request.
   if (telemetry_store_) {
     telemetry_store_->AddServiceWorkerPushBehavior(

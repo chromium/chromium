@@ -146,6 +146,11 @@ class NotificationTelemetryService
   void DedupeRequestedURLs(
       CSBRR::ServiceWorkerBehavior* service_worker_behavior);
 
+  // Normalizes URLs by stripping any query param values. Since query param
+  // values aren't important aspects of the URL, removing them reduces noise
+  // and storage usage.
+  std::vector<GURL> NormalizeURLs(std::vector<GURL> urls);
+
   // Stored service worker info whose size is based on
   // `kNotificationTelemetryServiceWorkerInfoMaxCount`
   std::vector<ServiceWorkerTelemetryInfo> service_worker_infos_;
