@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -57,6 +58,8 @@ using ::testing::Pair;
 using ::testing::Pointee;
 using ::testing::Return;
 using ::testing::UnorderedElementsAre;
+
+#include "components/password_manager/core/browser/mock_password_manager.h"
 
 namespace password_manager {
 
@@ -111,9 +114,7 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
 
   explicit MockPasswordManagerClient(PasswordStoreInterface* profile_store,
                                      PasswordStoreInterface* account_store)
-      : profile_store_(profile_store),
-        account_store_(account_store),
-        password_manager_(this) {
+      : profile_store_(profile_store), account_store_(account_store) {
     prefs_ = std::make_unique<TestingPrefServiceSimple>();
     prefs_->registry()->RegisterBooleanPref(
         prefs::kWasAutoSignInFirstRunExperienceShown, true);
@@ -151,9 +152,11 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
 
   PrefService* GetLocalStatePrefs() const override { return prefs_.get(); }
 
-  const PasswordManager* GetPasswordManager() const override {
+  const PasswordManagerInterface* GetPasswordManager() const override {
     return &password_manager_;
   }
+
+  MockPasswordManager* GetMockPasswordManager() { return &password_manager_; }
 
   url::Origin GetLastCommittedOrigin() const override {
     return url::Origin::Create(last_committed_url_);
@@ -198,7 +201,7 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
   std::unique_ptr<TestingPrefServiceSimple> prefs_;
   raw_ptr<PasswordStoreInterface, DanglingUntriaged> profile_store_;
   raw_ptr<PasswordStoreInterface, DanglingUntriaged> account_store_;
-  PasswordManager password_manager_;
+  NiceMock<MockPasswordManager> password_manager_;
   GURL last_committed_url_{kTestWebOrigin};
   bool auto_sign_in_enabled_ = true;
 };
@@ -1866,5 +1869,160 @@ TEST_P(CredentialManagerImplTest, StorePasswordCredentialStartsLeakDetection) {
 }
 
 INSTANTIATE_TEST_SUITE_P(All, CredentialManagerImplTest, testing::Bool());
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+class CredentialManagerImplTestWithActorLoginPermissions
+    : public CredentialManagerImplTest {
+ public:
+  CredentialManagerImplTestWithActorLoginPermissions() {
+    if (GetParam()) {
+      feature_list_.InitAndEnableFeature(
+          features::kEnableActorLoginPermissions);
+    } else {
+      feature_list_.InitAndDisableFeature(
+          features::kEnableActorLoginPermissions);
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_P(CredentialManagerImplTestWithActorLoginPermissions,
+       StoreWithActorLoginPermission) {
+  PasswordForm submitted_form = form_;
+  submitted_form.actor_login_approved = true;
+  EXPECT_CALL(*client_->GetMockPasswordManager(), GetSubmittedCredentials)
+      .WillOnce(Return(submitted_form));
+
+  auto info = PasswordFormToCredentialInfo(form_);
+  std::unique_ptr<PasswordFormManagerForUI> pending_manager;
+  EXPECT_CALL(*client_, PromptUserToSaveOrUpdatePassword)
+      .WillOnce(MoveArgAndReturn<0>(&pending_manager, true));
+  EXPECT_CALL(*client_, NotifyStorePasswordCalled);
+
+  CallStore(info, base::DoNothing());
+
+  // Allow the PasswordFormManager to talk to the password store, determine
+  // that the form is new, and set it as pending.
+  RunAllPendingTasks();
+
+  ASSERT_TRUE(pending_manager);
+  EXPECT_EQ(pending_manager->GetPendingCredentials().actor_login_approved,
+            GetParam());
+}
+
+TEST_P(CredentialManagerImplTestWithActorLoginPermissions,
+       MultipleStoreWithActorLoginPermission) {
+  std::optional<PasswordForm> submitted_form = form_;
+  submitted_form->actor_login_approved = true;
+  EXPECT_CALL(*client_->GetMockPasswordManager(), GetSubmittedCredentials)
+      .WillRepeatedly(Return(submitted_form));
+
+  auto info = PasswordFormToCredentialInfo(form_);
+  std::unique_ptr<PasswordFormManagerForUI> pending_manager;
+  EXPECT_CALL(*client_, PromptUserToSaveOrUpdatePassword)
+      .WillOnce(MoveArgAndReturn<0>(&pending_manager, true));
+  EXPECT_CALL(*client_, NotifyStorePasswordCalled)
+      .Times(3)
+      .WillRepeatedly([&submitted_form]() { submitted_form = std::nullopt; });
+
+  CallStore(info, base::DoNothing());
+  CallStore(info, base::DoNothing());
+  CallStore(info, base::DoNothing());
+
+  // Allow the PasswordFormManager to talk to the password store, determine
+  // that the form is new, and set it as pending.
+  RunAllPendingTasks();
+
+  ASSERT_TRUE(pending_manager);
+  EXPECT_EQ(pending_manager->GetPendingCredentials().actor_login_approved,
+            GetParam());
+}
+
+TEST_P(CredentialManagerImplTestWithActorLoginPermissions,
+       MultipleStoreWithActorLoginPermission_CredentialHasDifferentUsername) {
+  PasswordForm second_from = form_;
+  second_from.username_value = u"different_username";
+  std::optional<PasswordForm> submitted_form = form_;
+  submitted_form->actor_login_approved = true;
+  EXPECT_CALL(*client_->GetMockPasswordManager(), GetSubmittedCredentials)
+      .WillRepeatedly(Return(submitted_form));
+
+  std::unique_ptr<PasswordFormManagerForUI> pending_manager;
+  EXPECT_CALL(*client_, PromptUserToSaveOrUpdatePassword)
+      .WillOnce(MoveArgAndReturn<0>(&pending_manager, true));
+  EXPECT_CALL(*client_, NotifyStorePasswordCalled)
+      .Times(2)
+      .WillRepeatedly([&submitted_form]() { submitted_form = std::nullopt; });
+
+  CallStore(PasswordFormToCredentialInfo(form_), base::DoNothing());
+  CallStore(PasswordFormToCredentialInfo(second_from), base::DoNothing());
+
+  // Allow the PasswordFormManager to talk to the password store, determine
+  // that the form is new, and set it as pending.
+  RunAllPendingTasks();
+
+  ASSERT_TRUE(pending_manager);
+  EXPECT_FALSE(pending_manager->GetPendingCredentials().actor_login_approved);
+}
+
+TEST_P(CredentialManagerImplTestWithActorLoginPermissions,
+       MultipleStoreWithActorLoginPermission_CredentialHasDifferentPassword) {
+  PasswordForm second_from = form_;
+  second_from.password_value = u"different_password";
+  std::optional<PasswordForm> submitted_form = form_;
+  submitted_form->actor_login_approved = true;
+  EXPECT_CALL(*client_->GetMockPasswordManager(), GetSubmittedCredentials)
+      .WillRepeatedly(Return(submitted_form));
+
+  std::unique_ptr<PasswordFormManagerForUI> pending_manager;
+  EXPECT_CALL(*client_, PromptUserToSaveOrUpdatePassword)
+      .WillOnce(MoveArgAndReturn<0>(&pending_manager, true));
+  EXPECT_CALL(*client_, NotifyStorePasswordCalled)
+      .Times(2)
+      .WillRepeatedly([&submitted_form]() { submitted_form = std::nullopt; });
+
+  CallStore(PasswordFormToCredentialInfo(form_), base::DoNothing());
+  CallStore(PasswordFormToCredentialInfo(second_from), base::DoNothing());
+
+  // Allow the PasswordFormManager to talk to the password store, determine
+  // that the form is new, and set it as pending.
+  RunAllPendingTasks();
+
+  ASSERT_TRUE(pending_manager);
+  EXPECT_FALSE(pending_manager->GetPendingCredentials().actor_login_approved);
+}
+
+TEST_P(CredentialManagerImplTestWithActorLoginPermissions,
+       MultipleStoreWithActorLoginPermission_SecondCallOnDifferentOrigin) {
+  std::optional<PasswordForm> submitted_form = form_;
+  submitted_form->actor_login_approved = true;
+  EXPECT_CALL(*client_->GetMockPasswordManager(), GetSubmittedCredentials)
+      .WillRepeatedly(Return(submitted_form));
+
+  std::unique_ptr<PasswordFormManagerForUI> pending_manager;
+  EXPECT_CALL(*client_, PromptUserToSaveOrUpdatePassword)
+      .WillOnce(MoveArgAndReturn<0>(&pending_manager, true));
+  EXPECT_CALL(*client_, NotifyStorePasswordCalled)
+      .Times(2)
+      .WillRepeatedly([&submitted_form]() { submitted_form = std::nullopt; });
+
+  CallStore(PasswordFormToCredentialInfo(form_), base::DoNothing());
+  client_->set_last_committed_url(GURL("different.com"));
+  CallStore(PasswordFormToCredentialInfo(form_), base::DoNothing());
+
+  // Allow the PasswordFormManager to talk to the password store, determine
+  // that the form is new, and set it as pending.
+  RunAllPendingTasks();
+
+  ASSERT_TRUE(pending_manager);
+  EXPECT_FALSE(pending_manager->GetPendingCredentials().actor_login_approved);
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         CredentialManagerImplTestWithActorLoginPermissions,
+                         testing::Bool());
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 }  // namespace password_manager

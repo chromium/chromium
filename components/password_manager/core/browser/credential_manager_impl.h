@@ -100,6 +100,11 @@ class CredentialManagerImpl
 
   // Helper for making the requests on leak detection.
   LeakDetectionDelegate leak_delegate_;
+
+  // Last form that Password Manager considers submitted. Set in
+  // `Store` (if it was available) and reset in `OnProvisionalSaveComplete`.
+  // Only used on desktop.
+  std::optional<PasswordForm> last_submitted_form_;
 };
 
 }  // namespace password_manager
