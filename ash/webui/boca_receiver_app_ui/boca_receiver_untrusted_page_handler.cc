@@ -21,6 +21,7 @@
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "chromeos/ash/components/boca/boca_request.h"
 #include "chromeos/ash/components/boca/invalidations/fcm_handler.h"
 #include "chromeos/ash/components/boca/invalidations/invalidation_service_impl.h"
@@ -78,7 +79,9 @@ std::unique_ptr<boca::BocaRequest::Delegate> CreateRegistrationRequestSender(
 BocaReceiverUntrustedPageHandler::BocaReceiverUntrustedPageHandler(
     mojo::PendingRemote<mojom::UntrustedPage> page,
     ReceiverHandlerDelegate* delegate)
-    : page_(std::move(page)), delegate_(delegate) {
+    : page_(std::move(page)),
+      delegate_(delegate),
+      remoting_client_(delegate->CreateRemotingClientManager()) {
   if (!delegate_->IsAppEnabled(kChromeBocaReceiverURL)) {
     page_->OnInitReceiverError();
     return;
@@ -307,7 +310,6 @@ void BocaReceiverUntrustedPageHandler::MaybeStartConnection(
   std::string connection_code = connection_info_->connection_details()
                                     .connection_code()
                                     .connection_code();
-  remoting_client_ = delegate_->CreateRemotingClientManager();
   remoting_client_->StartCrdClient(
       std::move(connection_code),
       base::BindOnce(&BocaReceiverUntrustedPageHandler::OnCrdSessionEnded,
@@ -329,13 +331,8 @@ void BocaReceiverUntrustedPageHandler::MaybeEndConnection(
   }
   if (connection_info_->receiver_connection_state() == ::boca::CONNECTED ||
       connection_info_->receiver_connection_state() == ::boca::CONNECTING) {
-    CHECK(remoting_client_);
     page_->OnConnectionClosed(reason);
-    auto* remoting_client_ptr = remoting_client_.get();
-    remoting_client_ptr->StopCrdClient(
-        base::BindOnce([](std::unique_ptr<boca::SpotlightRemotingClientManager>
-                              remoting_client) { remoting_client.reset(); },
-                       std::move(remoting_client_)));
+    remoting_client_->StopCrdClient(base::DoNothing());
   }
   auto connection_state = reason == mojom::ConnectionClosedReason::kError
                               ? ::boca::ReceiverConnectionState::ERROR

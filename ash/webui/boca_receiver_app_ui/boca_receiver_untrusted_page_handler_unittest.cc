@@ -244,12 +244,18 @@ class BocaReceiverUntrustedPageHandlerTest : public testing::Test {
     });
     url_loader_factory_.AddResponse(register_url_.spec(),
                                     R"({"receiverId": "AB12"})");
+    auto mock_remoting_client =
+        std::make_unique<NiceMock<MockSpotlightRemotingClientManager>>();
+    remoting_client_ = mock_remoting_client.get();
+    ON_CALL(handler_delegate_, CreateRemotingClientManager)
+        .WillByDefault(Return(ByMove(std::move(mock_remoting_client))));
   }
 
   void TearDown() override {
     EXPECT_CALL(fcm_handler_, RemoveListener(handler_.get())).Times(1);
     EXPECT_CALL(fcm_handler_, RemoveTokenObserver(handler_.get())).Times(1);
     fcm_token_observer_ = nullptr;
+    remoting_client_ = nullptr;
     handler_.reset();
   }
 
@@ -300,6 +306,7 @@ class BocaReceiverUntrustedPageHandlerTest : public testing::Test {
   network::TestURLLoaderFactory url_loader_factory_;
   NiceMock<MockReceiverHandlerDelegate> handler_delegate_;
   NiceMock<MockUntrustedPage> page_;
+  raw_ptr<NiceMock<MockSpotlightRemotingClientManager>> remoting_client_;
   const GURL register_url_ =
       GURL(boca::GetSchoolToolsUrl()).Resolve(RegisterReceiverRequest::kUrl);
   const GURL get_connection_url_ =
@@ -397,6 +404,8 @@ TEST_F(BocaReceiverUntrustedPageHandlerTest, StartRequestedNoCodeThenWithCode) {
       CreateConnectionInfo(kConnectionId, kStartRequested, "");
 
   EXPECT_CALL(page_, OnConnecting).Times(0);
+  ASSERT_THAT(remoting_client_, NotNull());
+  EXPECT_CALL(*remoting_client_, StartCrdClient).Times(0);
   url_loader_factory_.WaitForRequest(get_connection_url_);
   url_loader_factory_.SimulateResponseForPendingRequest(
       get_connection_url_.spec(), connection_info_no_code);
@@ -412,13 +421,9 @@ TEST_F(BocaReceiverUntrustedPageHandlerTest, StartRequestedNoCodeThenWithCode) {
         connecting_future.GetCallback().Run(std::move(initiator),
                                             std::move(presenter));
       });
-  auto remoting_client =
-      std::make_unique<NiceMock<MockSpotlightRemotingClientManager>>();
-  EXPECT_CALL(*remoting_client,
+  EXPECT_CALL(*remoting_client_,
               StartCrdClient(std::string(kConnectionCode), _, _, _, _))
       .Times(1);
-  EXPECT_CALL(handler_delegate_, CreateRemotingClientManager)
-      .WillOnce(Return(ByMove(std::move(remoting_client))));
   listener->OnInvalidationReceived("payload");
   auto [initiator, presenter] = connecting_future.Take();
   ASSERT_FALSE(initiator.is_null());
@@ -441,13 +446,9 @@ TEST_F(BocaReceiverUntrustedPageHandlerTest,
         connecting_future.GetCallback().Run(std::move(initiator),
                                             std::move(presenter));
       });
-  auto remoting_client =
-      std::make_unique<NiceMock<MockSpotlightRemotingClientManager>>();
-  EXPECT_CALL(*remoting_client,
+  EXPECT_CALL(*remoting_client_,
               StartCrdClient(std::string(kConnectionCode), _, _, _, _))
       .Times(1);
-  EXPECT_CALL(handler_delegate_, CreateRemotingClientManager)
-      .WillOnce(Return(ByMove(std::move(remoting_client))));
   handler_ = std::make_unique<BocaReceiverUntrustedPageHandler>(
       page_.BindAndGetRemote(), &handler_delegate_);
 
@@ -462,16 +463,12 @@ TEST_F(BocaReceiverUntrustedPageHandlerTest, FrameReceived) {
                                   CreateConnectionInfo(kConnectionId));
   base::RepeatingCallback<void(SkBitmap, std::unique_ptr<webrtc::DesktopFrame>)>
       frame_received_cb;
-  auto remoting_client =
-      std::make_unique<NiceMock<MockSpotlightRemotingClientManager>>();
-  EXPECT_CALL(*remoting_client,
+  EXPECT_CALL(*remoting_client_,
               StartCrdClient(std::string(kConnectionCode), _, _, _, _))
       .WillOnce([&frame_received_cb](auto, auto, auto frame_received_cb_param,
                                      auto, auto) {
         frame_received_cb = std::move(frame_received_cb_param);
       });
-  EXPECT_CALL(handler_delegate_, CreateRemotingClientManager)
-      .WillOnce(Return(ByMove(std::move(remoting_client))));
   handler_ = std::make_unique<BocaReceiverUntrustedPageHandler>(
       page_.BindAndGetRemote(), &handler_delegate_);
 
@@ -609,17 +606,13 @@ TEST_F(BocaReceiverUntrustedPageHandlerTest, CrdSessionEnded) {
   url_loader_factory_.AddResponse(get_connection_url_.spec(),
                                   CreateConnectionInfo(kConnectionId));
   base::OnceClosure session_ended_cb;
-  auto remoting_client =
-      std::make_unique<NiceMock<MockSpotlightRemotingClientManager>>();
-  EXPECT_CALL(*remoting_client,
+  EXPECT_CALL(*remoting_client_,
               StartCrdClient(std::string(kConnectionCode), _, _, _, _))
       .WillOnce([&session_ended_cb](auto,
                                     base::OnceClosure session_ended_cb_param,
                                     auto, auto, auto) {
         session_ended_cb = std::move(session_ended_cb_param);
       });
-  EXPECT_CALL(handler_delegate_, CreateRemotingClientManager)
-      .WillOnce(Return(ByMove(std::move(remoting_client))));
   handler_ = std::make_unique<BocaReceiverUntrustedPageHandler>(
       page_.BindAndGetRemote(), &handler_delegate_);
 
@@ -647,12 +640,7 @@ TEST_F(BocaReceiverUntrustedPageHandlerTest,
        StartRequestedWithDifferentConnectionId) {
   url_loader_factory_.AddResponse(get_connection_url_.spec(),
                                   CreateConnectionInfo(kConnectionId));
-  auto remoting_client_first =
-      std::make_unique<NiceMock<MockSpotlightRemotingClientManager>>();
-  auto* remoting_client_first_ptr = remoting_client_first.get();
-  EXPECT_CALL(*remoting_client_first_ptr, StartCrdClient).Times(1);
-  EXPECT_CALL(handler_delegate_, CreateRemotingClientManager)
-      .WillOnce(Return(ByMove(std::move(remoting_client_first))));
+  EXPECT_CALL(*remoting_client_, StartCrdClient).Times(1);
   boca::InvalidationsListener* listener = nullptr;
   EXPECT_CALL(fcm_handler_, AddListener)
       .WillOnce([&listener](boca::InvalidationsListener* listener_param) {
@@ -682,12 +670,8 @@ TEST_F(BocaReceiverUntrustedPageHandlerTest,
           [&connection_closed_future](mojom::ConnectionClosedReason reason) {
             connection_closed_future.GetCallback().Run(reason);
           });
-  EXPECT_CALL(*remoting_client_first_ptr, StopCrdClient).Times(1);
-  auto remoting_client_second =
-      std::make_unique<NiceMock<MockSpotlightRemotingClientManager>>();
-  EXPECT_CALL(*remoting_client_second, StartCrdClient).Times(1);
-  EXPECT_CALL(handler_delegate_, CreateRemotingClientManager)
-      .WillOnce(Return(ByMove(std::move(remoting_client_second))));
+  EXPECT_CALL(*remoting_client_, StopCrdClient).Times(1);
+  EXPECT_CALL(*remoting_client_, StartCrdClient).Times(1);
 
   listener->OnInvalidationReceived("payload");
 
@@ -717,6 +701,7 @@ TEST_F(BocaReceiverUntrustedPageHandlerTest, StopRequestedBeforeConnecting) {
       CreateConnectionInfo(kConnectionId, "STOP_REQUESTED"));
 
   EXPECT_CALL(page_, OnConnectionClosed).Times(0);
+  EXPECT_CALL(*remoting_client_, StopCrdClient).Times(0);
 
   listener->OnInvalidationReceived("payload");
   EXPECT_EQ(GetRequestBody(update_connection_url_), kDisconnectedPair);
@@ -726,12 +711,7 @@ TEST_F(BocaReceiverUntrustedPageHandlerTest, StopRequestedAfterConnecting) {
   // Establish a connection first.
   url_loader_factory_.AddResponse(get_connection_url_.spec(),
                                   CreateConnectionInfo(kConnectionId));
-  auto remoting_client =
-      std::make_unique<NiceMock<MockSpotlightRemotingClientManager>>();
-  auto* remoting_client_ptr = remoting_client.get();
-  EXPECT_CALL(*remoting_client, StartCrdClient).Times(1);
-  EXPECT_CALL(handler_delegate_, CreateRemotingClientManager)
-      .WillOnce(Return(ByMove(std::move(remoting_client))));
+  EXPECT_CALL(*remoting_client_, StartCrdClient).Times(1);
   boca::InvalidationsListener* listener = nullptr;
   EXPECT_CALL(fcm_handler_, AddListener)
       .WillOnce([&listener](boca::InvalidationsListener* listener_param) {
@@ -756,7 +736,7 @@ TEST_F(BocaReceiverUntrustedPageHandlerTest, StopRequestedAfterConnecting) {
           [&connection_closed_future](mojom::ConnectionClosedReason reason) {
             connection_closed_future.GetCallback().Run(reason);
           });
-  EXPECT_CALL(*remoting_client_ptr, StopCrdClient).Times(1);
+  EXPECT_CALL(*remoting_client_, StopCrdClient).Times(1);
 
   listener->OnInvalidationReceived("payload");
 
@@ -769,12 +749,7 @@ TEST_F(BocaReceiverUntrustedPageHandlerTest, StopRequestedDifferentConnection) {
   // Establish a connection first.
   url_loader_factory_.AddResponse(get_connection_url_.spec(),
                                   CreateConnectionInfo(kConnectionId));
-  auto remoting_client =
-      std::make_unique<NiceMock<MockSpotlightRemotingClientManager>>();
-  auto* remoting_client_ptr = remoting_client.get();
-  EXPECT_CALL(*remoting_client, StartCrdClient).Times(1);
-  EXPECT_CALL(handler_delegate_, CreateRemotingClientManager)
-      .WillOnce(Return(ByMove(std::move(remoting_client))));
+  EXPECT_CALL(*remoting_client_, StartCrdClient).Times(1);
   boca::InvalidationsListener* listener = nullptr;
   EXPECT_CALL(fcm_handler_, AddListener)
       .WillOnce([&listener](boca::InvalidationsListener* listener_param) {
@@ -800,7 +775,7 @@ TEST_F(BocaReceiverUntrustedPageHandlerTest, StopRequestedDifferentConnection) {
       CreateConnectionInfo(kOldConnectionId, "STOP_REQUESTED"));
 
   EXPECT_CALL(page_, OnConnectionClosed).Times(0);
-  EXPECT_CALL(*remoting_client_ptr, StopCrdClient).Times(0);
+  EXPECT_CALL(*remoting_client_, StopCrdClient).Times(0);
 
   listener->OnInvalidationReceived("payload");
 
@@ -1016,6 +991,7 @@ TEST_P(BocaReceiverUntrustedPageHandlerNoActiveConnectionTest,
       CreateConnectionInfo(kConnectionId, connection_state));
 
   EXPECT_CALL(page_, OnConnectionClosed).Times(0);
+  EXPECT_CALL(*remoting_client_, StopCrdClient).Times(0);
 
   listener->OnInvalidationReceived("payload");
   EXPECT_EQ(GetRequestBody(update_connection_url_), kDisconnectedPair);
@@ -1043,17 +1019,12 @@ TEST_P(BocaReceiverUntrustedPageHandlerCrdStateTest,
   url_loader_factory_.AddResponse(get_connection_url_.spec(),
                                   CreateConnectionInfo(kConnectionId));
   boca::SpotlightCrdStateUpdatedCallback state_updated_cb;
-  auto remoting_client =
-      std::make_unique<NiceMock<MockSpotlightRemotingClientManager>>();
-  auto* remoting_client_ptr = remoting_client.get();
-  EXPECT_CALL(*remoting_client,
+  EXPECT_CALL(*remoting_client_,
               StartCrdClient(std::string(kConnectionCode), _, _, _, _))
       .WillOnce([&state_updated_cb](auto, auto, auto, auto,
                                     auto state_updated_cb_param) {
         state_updated_cb = std::move(state_updated_cb_param);
       });
-  EXPECT_CALL(handler_delegate_, CreateRemotingClientManager)
-      .WillOnce(Return(ByMove(std::move(remoting_client))));
   handler_ = std::make_unique<BocaReceiverUntrustedPageHandler>(
       page_.BindAndGetRemote(), &handler_delegate_);
 
@@ -1070,7 +1041,7 @@ TEST_P(BocaReceiverUntrustedPageHandlerCrdStateTest,
           [&connection_closed_future](mojom::ConnectionClosedReason reason) {
             connection_closed_future.GetCallback().Run(reason);
           });
-  EXPECT_CALL(*remoting_client_ptr, StopCrdClient).Times(1);
+  EXPECT_CALL(*remoting_client_, StopCrdClient).Times(1);
   state_updated_cb.Run(GetParam().state);
 
   EXPECT_EQ(connection_closed_future.Get(), GetParam().expected_reason);
