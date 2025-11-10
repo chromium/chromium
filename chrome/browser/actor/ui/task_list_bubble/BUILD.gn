@@ -29,17 +29,41 @@ source_set("controller") {
   deps = [
     "//base",
     "//chrome/browser/ui/browser_window",
+    "//chrome/common",
+    "//chrome/common:chrome_features",
+    "//components/tabs:public",
     "//ui/base/unowned_user_data",
     "//ui/views",
   ]
+  if (enable_glic) {
+    deps += [
+      "//chrome/browser/glic",
+      "//chrome/browser/glic:mojo_bindings",
+      "//chrome/browser/ui/tabs:glic",
+    ]
+  }
 }
 
 source_set("controller_impl") {
   sources = [ "actor_task_list_bubble_controller.cc" ]
   deps = [
     ":controller",
+    ":ui",
     "//base",
+    "//chrome/browser/actor",
+    "//chrome/browser/actor/resources:grit",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//ui/base",
+    "//ui/views",
   ]
+  if (enable_glic) {
+    deps += [
+      "//chrome/browser/glic",
+      "//chrome/browser/glic:mojo_bindings",
+      "//chrome/browser/ui/tabs:glic",
+    ]
+  }
 }
 
 source_set("unit_tests") {
@@ -52,4 +76,29 @@ source_set("unit_tests") {
     "//chrome/test:test_support",
     "//testing/gtest",
   ]
+}
+
+source_set("interactive_ui_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "actor_task_list_bubble_interactive_uitest.cc" ]
+  deps = [
+    ":controller",
+    ":ui",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/actor",
+    "//chrome/browser/actor/ui",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/test:test_support",
+    "//testing/gtest",
+    "//ui/base/interaction:test_support",
+    "//ui/events:test_support",
+  ]
+  if (enable_glic) {
+    deps += [
+      "//chrome/browser/glic/test_support",
+      "//chrome/browser/ui/tabs:glic",
+    ]
+  }
 }

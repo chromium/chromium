@@ -4675,6 +4675,7 @@ static_library("ui") {
       "//base",
       "//chrome/browser:main_extra_parts",
       "//chrome/browser/actor/resources:browser_resources",
+      "//chrome/browser/actor/ui/task_list_bubble:controller",
       "//chrome/browser/apps:icon_standardizer",
       "//chrome/browser/infobars",
       "//chrome/browser/profiles/keep_alive",

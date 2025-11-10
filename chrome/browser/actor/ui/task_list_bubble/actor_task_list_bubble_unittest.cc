@@ -35,7 +35,7 @@ class ActorTaskListBubbleTest : public ChromeViewsTestBase {
   }
 
  protected:
-  views::BubbleDialogModelHost* CreateBubbleView(
+  views::Widget* CreateBubbleView(
       std::vector<ActorTaskListBubbleRowButtonParams> param_list) {
     return ActorTaskListBubble::ShowBubble(anchor_widget_->GetContentsView(),
                                            std::move(param_list));
@@ -46,14 +46,16 @@ class ActorTaskListBubbleTest : public ChromeViewsTestBase {
     return ActorTaskListBubbleRowButtonParams(
         {.title = title_text,
          .subtitle = u"Needs attention",
-         .last_actuated_tab_callback = views::Button::PressedCallback()});
+         .on_click_callback = views::Button::PressedCallback()});
   }
 
   views::View* GetContentViewInActorTaskListBubble(
-      views::BubbleDialogModelHost* actor_task_list_bubble) {
+      views::Widget* actor_task_list_bubble) {
     const ui::ElementContext context =
         views::ElementTrackerViews::GetContextForView(
-            actor_task_list_bubble->GetAnchorView());
+            actor_task_list_bubble->widget_delegate()
+                ->AsBubbleDialogDelegate()
+                ->GetAnchorView());
     return views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
         kActorTaskListBubbleView, context);
   }
@@ -66,10 +68,10 @@ TEST_F(ActorTaskListBubbleTest, CreateAndShowBubbleWithTasks) {
   std::vector<ActorTaskListBubbleRowButtonParams> param_list;
   param_list.push_back(CreateRowButtonParamsWithTitle(u"Test task"));
   param_list.push_back(CreateRowButtonParamsWithTitle(u"Test task 2"));
-  views::BubbleDialogModelHost* actor_task_list_bubble =
+  views::Widget* actor_task_list_bubble =
       CreateBubbleView(std::move(param_list));
 
-  EXPECT_TRUE(actor_task_list_bubble->GetWidget()->IsVisible());
+  EXPECT_TRUE(actor_task_list_bubble->IsVisible());
 
   views::View* content_view =
       GetContentViewInActorTaskListBubble(std::move(actor_task_list_bubble));

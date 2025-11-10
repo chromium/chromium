@@ -57,6 +57,11 @@ struct ActorTaskNudgeState {
   }
 };
 
+struct ActorTaskListBubbleRowState {
+  actor::TaskId task_id;
+  std::string title;
+};
+
 class GlicActorTaskIconManager : public KeyedService {
  public:
   GlicActorTaskIconManager(Profile* profile,
@@ -83,6 +88,9 @@ class GlicActorTaskIconManager : public KeyedService {
   // Determines the state the task nudge should be in.
   void UpdateTaskNudge();
 
+  // Determines the state of a task to show in the task list bubble.
+  void UpdateTaskListBubble(actor::TaskId task_id);
+
   // TODO(crbug.com/431015299): Clean up after redesign is launched.
   // Register for this callback to get task icon state change notifications.
   using TaskIconStateChangeCallback = base::RepeatingCallback<void(
@@ -102,8 +110,14 @@ class GlicActorTaskIconManager : public KeyedService {
   ActorTaskNudgeState GetCurrentActorTaskNudgeState() const;
 
   raw_ptr<tabs::TabInterface> GetLastUpdatedTab();
+  raw_ptr<tabs::TabInterface> GetLastUpdatedTabForTaskId(actor::TaskId task_id);
 
   void ClearStoppedTasks();
+
+  std::map<actor::TaskId, ActorTaskListBubbleRowState>
+  GetActorTaskListBubbleRows() const {
+    return actor_task_list_bubble_rows_;
+  }
 
   // KeyedService:
   void Shutdown() override;
@@ -141,6 +155,10 @@ class GlicActorTaskIconManager : public KeyedService {
   bool has_unprocessed_completed_tasks_ = false;
   // Whether there is an unprocessed failed task.
   bool has_unprocessed_failed_tasks_ = false;
+
+  // Map of tasks needing notifications.
+  std::map<actor::TaskId, ActorTaskListBubbleRowState>
+      actor_task_list_bubble_rows_;
 };
 
 }  // namespace tabs

@@ -703,6 +703,12 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
       if (features::kGlicActorUiTaskIcon.Get() &&
           browser_->GetProfile()->IsRegularProfile()) {
         if (base::FeatureList::IsEnabled(features::kGlicActorUiNudgeRedesign)) {
+          // Will be referenced in GlicActorNudgeController and thus needs to be
+          // instantiated first.
+          actor_task_list_bubble_controller_ =
+              GetUserDataFactory()
+                  .CreateInstance<ActorTaskListBubbleController>(*browser_,
+                                                                 browser_);
           // Includes browser twice to enable injecting for testing.
           glic_actor_nudge_controller_ =
               GetUserDataFactory()
@@ -711,10 +717,6 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
                       BrowserElementsViews::From(browser_view->browser())
                           ->GetViewAs<TabStripActionContainer>(
                               kTabStripActionContainerElementId));
-          actor_task_list_bubble_controller_ =
-              GetUserDataFactory()
-                  .CreateInstance<ActorTaskListBubbleController>(*browser_,
-                                                                 browser_);
         } else {
           glic_actor_task_icon_controller_ =
               GetUserDataFactory()
