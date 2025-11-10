@@ -2512,6 +2512,7 @@ if (!is_android) {
       "//chrome/browser/translate",
       "//chrome/browser/ui:browser_element_identifiers",
       "//chrome/browser/ui:browser_navigator_params_headers",
+      "//chrome/browser/ui:browser_tests",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/apps",
       "//chrome/browser/ui/autofill:browser_tests",

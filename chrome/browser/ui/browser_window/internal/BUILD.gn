@@ -37,6 +37,7 @@ source_set("internal") {
       "create_browser_window_non_android.cc",
       "desktop_browser_window_capabilities.cc",
       "embedder_browser_window_features.cc",
+      "profile_browser_collection.cc",
     ]
     public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 

@@ -5625,6 +5625,22 @@ if (!is_android) {
       "//chrome/browser/ui/tabs:tab_strip",
     ]
   }
+
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "browser_manager_service_browsertest.cc" ]
+    deps = [
+      "//base",
+      "//chrome/browser",
+      "//chrome/browser/ui",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//content/test:test_support",
+      "//testing/gmock",
+    ]
+  }
 }
 
 # In GYP this is part of test_support_common.
