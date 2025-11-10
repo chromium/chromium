@@ -351,15 +351,12 @@ try_.builder(
             "ci/win-arm64-rel",
             "release_try_builder",
             "no_resource_allowlisting",
-            "use_clang_coverage",
-            "partial_code_coverage_instrumentation",
             "enable_dangling_raw_ptr_feature_flag",
         ],
     ),
     builderless = True,
     os = os.WINDOWS_10,
     contact_team_email = "chrome-desktop-engprod@google.com",
-    coverage_test_types = ["unit", "overall"],
     main_list_view = "try",
     # The size of the testing pool is limited.
     max_concurrent_builds = 4,
@@ -373,7 +370,6 @@ try_.builder(
             "sandbox/policy/win/.+",
         ],
     ),
-    use_clang_coverage = True,
 )
 
 try_.builder(

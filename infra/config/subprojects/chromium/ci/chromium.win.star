@@ -719,6 +719,11 @@ ci.thin_tester(
             "components_browsertests_no_field_trial": targets.remove(
                 reason = "Disabled on similar Windows testers due to crbug/40630866.",
             ),
+            "interactive_ui_tests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 6,
+                ),
+            ),
             "interactive_ui_tests_no_field_trial": targets.remove(
                 reason = "Disabled on similar Windows testers due to crbug/40630866.",
             ),
