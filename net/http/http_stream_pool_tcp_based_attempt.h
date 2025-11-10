@@ -56,9 +56,9 @@ class HttpStreamPool::TcpBasedAttempt : public TlsStreamAttempt::Delegate {
 
   // TlsStreamAttempt::Delegate implementation:
   void OnTcpHandshakeComplete() override;
-  int WaitForServiceEndpointReady(CompletionOnceCallback callback) override;
+  int WaitForTlsHandshakeReady(CompletionOnceCallback callback) override;
   base::expected<ServiceEndpoint, TlsStreamAttempt::GetServiceEndpointError>
-  GetServiceEndpoint() override;
+  GetServiceEndpointForTlsHandshake() override;
 
   bool IsWaitingForServiceEndpointReady() const {
     return !service_endpoint_waiting_callback_.is_null();

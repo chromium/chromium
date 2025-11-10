@@ -113,7 +113,7 @@ class TlsStreamAttemptHelper : public TlsStreamAttempt::Delegate {
 
   void OnTcpHandshakeComplete() override {}
 
-  int WaitForServiceEndpointReady(CompletionOnceCallback callback) override {
+  int WaitForTlsHandshakeReady(CompletionOnceCallback callback) override {
     if (service_endpoint_result_.has_value()) {
       return OK;
     }
@@ -123,7 +123,7 @@ class TlsStreamAttemptHelper : public TlsStreamAttempt::Delegate {
     return ERR_IO_PENDING;
   }
 
-  ServiceEndpointResult GetServiceEndpoint() override {
+  ServiceEndpointResult GetServiceEndpointForTlsHandshake() override {
     return *service_endpoint_result_;
   }
 

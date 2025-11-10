@@ -169,10 +169,10 @@ int TlsStreamAttempt::DoTcpAttemptComplete(int rv) {
     return OK;
   }
 
-  int wait_result = delegate_->WaitForServiceEndpointReady(base::BindOnce(
+  int wait_result = delegate_->WaitForTlsHandshakeReady(base::BindOnce(
       &TlsStreamAttempt::OnIOComplete, weak_ptr_factory_.GetWeakPtr()));
   if (wait_result == ERR_IO_PENDING) {
-    TRACE_EVENT_INSTANT("net.stream", "WaitForServiceEndpointReady", track());
+    TRACE_EVENT_INSTANT("net.stream", "WaitForTlsHandshakeReady", track());
   }
   return wait_result;
 }
@@ -188,7 +188,7 @@ int TlsStreamAttempt::DoTlsAttempt(int rv) {
   std::unique_ptr<StreamSocket> nested_socket =
       nested_attempt_->ReleaseStreamSocket();
   if (!ssl_config_) {
-    auto endpoint = delegate_->GetServiceEndpoint();
+    auto endpoint = delegate_->GetServiceEndpointForTlsHandshake();
     if (!endpoint.has_value()) {
       CHECK_EQ(endpoint.error(), GetServiceEndpointError::kAbort);
       return ERR_ABORTED;

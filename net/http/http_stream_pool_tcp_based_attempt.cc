@@ -214,7 +214,7 @@ void HttpStreamPool::TcpBasedAttempt::SetCancelReason(
   }
 }
 
-int HttpStreamPool::TcpBasedAttempt::WaitForServiceEndpointReady(
+int HttpStreamPool::TcpBasedAttempt::WaitForTlsHandshakeReady(
     CompletionOnceCallback callback) {
   if (manager_->service_endpoint_request()->EndpointsCryptoReady()) {
     return OK;
@@ -226,7 +226,7 @@ int HttpStreamPool::TcpBasedAttempt::WaitForServiceEndpointReady(
 }
 
 base::expected<ServiceEndpoint, TlsStreamAttempt::GetServiceEndpointError>
-HttpStreamPool::TcpBasedAttempt::GetServiceEndpoint() {
+HttpStreamPool::TcpBasedAttempt::GetServiceEndpointForTlsHandshake() {
   auto result = manager_->GetServiceEndpoint(ip_endpoint());
   if (!result.has_value()) {
     is_aborted_ = true;

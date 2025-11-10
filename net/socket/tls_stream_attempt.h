@@ -56,17 +56,16 @@ class NET_EXPORT_PRIVATE TlsStreamAttempt final : public StreamAttempt {
     // Called when TCP handshake completes.
     virtual void OnTcpHandshakeComplete() = 0;
 
-    // Returns `OK` and ignores `callback` when a ServiceEndpoint is immediately
-    // available. Otherwise, returns `ERR_IO_PENDING` when `this` can't provide
-    // a ServiceEndpoint immediately. `callback` is invoked when a SSLConfig is
-    // ready.
-    virtual int WaitForServiceEndpointReady(
-        CompletionOnceCallback callback) = 0;
+    // Returns `OK` and ignores `callback` when the attempt can start TLS
+    // handshake immediately. Otherwise, returns `ERR_IO_PENDING` when `this`
+    // can't provide a ServiceEndpoint for TLS handshake immediately. `callback`
+    // is invoked when a ServiceEndpoint is ready.
+    virtual int WaitForTlsHandshakeReady(CompletionOnceCallback callback) = 0;
 
-    // Returns a ServiceEndpoint. Should be called only after
-    // WaitForServiceEndpointReady() returns `OK` or the callback is invoked.
+    // Returns a ServiceEndpoint for TLS handshake. Should be called only after
+    // WaitForTlsHandshakeReady() returns `OK` or the callback is invoked.
     virtual base::expected<ServiceEndpoint, GetServiceEndpointError>
-    GetServiceEndpoint() = 0;
+    GetServiceEndpointForTlsHandshake() = 0;
   };
 
   // `params` must outlive `this`. `base_ssl_config` contains the base SSL
