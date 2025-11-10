@@ -39,6 +39,7 @@ export class ZeroStatePromoAppElement extends CrLitElement {
       showPlainLinksUi_: {type: Boolean},
       showChipsV1_: {type: Boolean},
       showChipsV2_: {type: Boolean},
+      showChipsV3_: {type: Boolean},
     };
   }
 
@@ -55,6 +56,9 @@ export class ZeroStatePromoAppElement extends CrLitElement {
 
   protected accessor showChipsV2_: boolean =
       loadTimeData.getBoolean('showChipsUiV2');
+
+  protected accessor showChipsV3_: boolean =
+      loadTimeData.getBoolean('showChipsUiV3');
 
   protected onChromeWebStoreButtonClick_() {
     this.apiProxy_.launchWebStoreLink(WebStoreLinkClicked.kDiscoverExtension);

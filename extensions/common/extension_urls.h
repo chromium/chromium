@@ -53,6 +53,8 @@ extern const char kCustomUiChipIphV1UtmSource[];
 // version 2.
 extern const char kCustomUiChipIphV2UtmSource[];
 // From the Extensions Zero State Promo, custom UI IPH, text link variant.
+extern const char kCustomUiChipIphV3UtmSource[];
+// From the Extensions Zero State Promo, custom UI IPH, text link variant.
 extern const char kCustomUiPlainLinkIphUtmSource[];
 // From the New Tab Page browser feature promo, single-promo variant.
 extern const char kNtpPromo1pUtmSource[];
