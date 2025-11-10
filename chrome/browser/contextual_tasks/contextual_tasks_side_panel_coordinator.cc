@@ -129,15 +129,13 @@ void ContextualTasksSidePanelCoordinator::Show() {
     return;
   }
 
-  browser_window_->GetFeatures().side_panel_ui()->Show(
-      SidePanelEntry::Key(SidePanelEntry::Id::kContextualTasks));
+  Unhide();
   UpdateOpenStateForCurrentTask(/*is_open=*/true);
 }
 
 void ContextualTasksSidePanelCoordinator::Close() {
   UpdateOpenStateForCurrentTask(/*is_open=*/false);
-  browser_window_->GetFeatures().side_panel_ui()->Close(
-      SidePanelEntry::PanelType::kToolbar);
+  Hide();
 }
 
 bool ContextualTasksSidePanelCoordinator::IsSidePanelOpen() {
@@ -185,7 +183,7 @@ void ContextualTasksSidePanelCoordinator::UpdateSidePanelVisibility() {
   // If no open state found and side panel is open, close it.
   if (!task) {
     if (IsSidePanelOpenForContextualTask()) {
-      Close();
+      Hide();
     }
     return;
   }
@@ -198,13 +196,13 @@ void ContextualTasksSidePanelCoordinator::UpdateSidePanelVisibility() {
 
   // If state is open and the side panel is closed, open the side panel.
   if (is_open && !IsSidePanelOpenForContextualTask()) {
-    Show();
+    Unhide();
     return;
   }
 
   // If state is closed and the side panel is open, close the side panel.
   if (!is_open && IsSidePanelOpenForContextualTask()) {
-    Close();
+    Hide();
     return;
   }
 }
@@ -270,6 +268,16 @@ content::WebContents* ContextualTasksSidePanelCoordinator::
   }
 
   return task_id_to_web_contents_cache_.at(task_id)->web_contents.get();
+}
+
+void ContextualTasksSidePanelCoordinator::Hide() {
+  browser_window_->GetFeatures().side_panel_ui()->Close(
+      SidePanelEntry::PanelType::kToolbar);
+}
+
+void ContextualTasksSidePanelCoordinator::Unhide() {
+  browser_window_->GetFeatures().side_panel_ui()->Show(
+      SidePanelEntry::Key(SidePanelEntry::Id::kContextualTasks));
 }
 
 }  // namespace contextual_tasks

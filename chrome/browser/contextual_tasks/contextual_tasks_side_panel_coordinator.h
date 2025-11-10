@@ -107,6 +107,10 @@ class ContextualTasksSidePanelCoordinator {
   // associated with the current tab.
   content::WebContents* MaybeGetOrCreateSidePanelWebContentsForActiveTab();
 
+  // Hide/Unhide the side panel and don't update any task associated with it.
+  void Hide();
+  void Unhide();
+
   // Browser window of the current side panel.
   const raw_ptr<BrowserWindowInterface> browser_window_ = nullptr;
 
