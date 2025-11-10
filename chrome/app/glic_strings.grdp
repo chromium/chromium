@@ -226,7 +226,7 @@
     You can easily ask Gemini questions about the tabs you’re sharing as you browse
   </message>
   <message name="IDS_SETTINGS_GLIC_PERMISSIONS_DEFAULT_TAB_ACCESS_CONSIDER_1" desc="First point in 'things to consider' column of the 'default tab access' expands">
-    When tabs are shared, their page contents and URLs are sent to Google
+    When tabs are shared, their page contents, media and URLs are sent to Google
   </message>
   <message name="IDS_SETTINGS_GLIC_PERMISSIONS_DEFAULT_TAB_ACCESS_CONSIDER_2" desc="Second point in 'things to consider' column of the 'default tab access' expands">
     Conversations about shared tabs may be seen by human reviewers to improve Gemini
