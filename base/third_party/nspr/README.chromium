@@ -1,10 +1,21 @@
 Name: Netscape Portable Runtime (NSPR)
 URL: https://hg.mozilla.org/projects/nspr
-Version: 4.8
-Revision: dd5b9aa4631b350ba58e2e83106724808fd9a97f
+Version: 4.38
+Revision: 488a7a069c8d7405696fd8171ec8fc369834158b
 Update Mechanism: Manual
-License: MPL-1.1
+License: MPL-2.0
 License File: LICENSE
 Security Critical: yes
 Shipped: yes
-CPEPrefix: cpe:2.3:a:mozilla:netscape_portable_runtime:4.8:*:*:*:*:*:*:*
+CPEPrefix: cpe:2.3:a:mozilla:netscape_portable_runtime:4.38:*:*:*:*:*:*:*
+
+Description:
+Provides the PR_ParseTimeString() function.
+
+Local Modifications:
+Extended PR_ParseTimeString() to accept some ISO 8601 formats, including
+fractional seconds. See https://codereview.chromium.org/266193002.
+
+Fixed a bug introduced in Hg changeset 4732:85977b5eba80. An "else"
+after an "else if" block that ends in a break statement was incorrectly
+removed. See https://bugzilla.mozilla.org/show_bug.cgi?id=1999105.
