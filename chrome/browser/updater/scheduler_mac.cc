@@ -16,6 +16,7 @@ namespace updater {
 
 void DoPeriodicTasks(base::OnceClosure callback) {
   EnsureUpdater(
+      base::TaskPriority::BEST_EFFORT,
       base::BindOnce(&ShowUpdaterPromotionInfoBar),
       base::BindOnce(
           [](base::OnceClosure callback) {

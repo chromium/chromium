@@ -5,6 +5,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/task/task_traits.h"
 #include "chrome/browser/updater/browser_updater_client_util.h"
 #include "chrome/updater/updater_scope.h"
 #include "components/version_info/version_info.h"
@@ -17,7 +18,9 @@ updater::UpdaterScope GetBrowserUpdaterScope() {
   return updater::UpdaterScope::kUser;
 }
 
-void EnsureUpdater(base::OnceClosure prompt, base::OnceClosure complete) {
+void EnsureUpdater(base::TaskPriority /*priority*/,
+                   base::OnceClosure /*prompt*/,
+                   base::OnceClosure complete) {
   std::move(complete).Run();
 }
 

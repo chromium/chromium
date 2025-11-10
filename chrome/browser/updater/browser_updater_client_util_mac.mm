@@ -161,11 +161,11 @@ void RegisterBrowser(base::OnceClosure complete) {
 }
 
 // Only works in kUser scope.
-void InstallUpdaterAndRegisterBrowser(base::OnceClosure complete) {
+void InstallUpdaterAndRegisterBrowser(base::TaskPriority priority,
+                                      base::OnceClosure complete) {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
-      {base::MayBlock(), base::WithBaseSyncPrimitives(),
-       base::TaskPriority::BEST_EFFORT,
+      {base::MayBlock(), base::WithBaseSyncPrimitives(), priority,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
       base::BindOnce([]() {
         // The updater executable should be in
@@ -239,25 +239,27 @@ updater::UpdaterScope GetBrowserUpdaterScope() {
              : updater::UpdaterScope::kUser;
 }
 
-void EnsureUpdater(base::OnceClosure prompt, base::OnceClosure complete) {
+void EnsureUpdater(base::TaskPriority priority,
+                   base::OnceClosure prompt,
+                   base::OnceClosure complete) {
   base::ThreadPool::PostTask(FROM_HERE,
-                             {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+                             {base::MayBlock(), priority,
                               base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
                              base::BindOnce(&SetActive));
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
-      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+      {base::MayBlock(), priority,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
       base::BindOnce(&GetBrowserUpdaterScope),
       base::BindOnce(
-          [](base::OnceClosure prompt, base::OnceClosure complete,
-             updater::UpdaterScope scope) {
+          [](base::TaskPriority priority, base::OnceClosure prompt,
+             base::OnceClosure complete, updater::UpdaterScope scope) {
             scoped_refptr<BrowserUpdaterClient> client =
                 BrowserUpdaterClient::Create(scope);
             client->IsBrowserRegistered(base::BindOnce(
                 [](scoped_refptr<BrowserUpdaterClient> client,
-                   base::OnceClosure prompt, base::OnceClosure complete,
-                   bool registered) {
+                   base::TaskPriority priority, base::OnceClosure prompt,
+                   base::OnceClosure complete, bool registered) {
                   if (registered) {
                     std::move(complete).Run();
                     return;
@@ -267,6 +269,7 @@ void EnsureUpdater(base::OnceClosure prompt, base::OnceClosure complete) {
                       base::BindOnce(&ShouldPromoteUpdater),
                       base::BindOnce(
                           [](scoped_refptr<BrowserUpdaterClient> client,
+                             base::TaskPriority priority,
                              base::OnceClosure prompt,
                              base::OnceClosure complete, bool promote) {
                             if (promote) {
@@ -277,22 +280,24 @@ void EnsureUpdater(base::OnceClosure prompt, base::OnceClosure complete) {
                             }
                             // Check whether an updater exists.
                             client->GetUpdaterVersion(base::BindOnce(
-                                [](base::OnceClosure complete,
+                                [](base::TaskPriority priority,
+                                   base::OnceClosure complete,
                                    const base::Version& version) {
                                   if (!version.IsValid()) {
                                     InstallUpdaterAndRegisterBrowser(
-                                        std::move(complete));
+                                        priority, std::move(complete));
                                   } else {
                                     RegisterBrowser(std::move(complete));
                                   }
                                 },
-                                std::move(complete)));
+                                priority, std::move(complete)));
                           },
-                          client, std::move(prompt), std::move(complete)));
+                          client, priority, std::move(prompt),
+                          std::move(complete)));
                 },
-                client, std::move(prompt), std::move(complete)));
+                client, priority, std::move(prompt), std::move(complete)));
           },
-          std::move(prompt), std::move(complete)));
+          priority, std::move(prompt), std::move(complete)));
 }
 
 void SetupSystemUpdater() {
