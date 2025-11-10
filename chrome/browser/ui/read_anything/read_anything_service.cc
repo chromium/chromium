@@ -12,8 +12,8 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/read_anything/read_anything_service_factory.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_key.h"
@@ -56,8 +56,10 @@ ReadAnythingService::ReadAnythingService(Profile* profile) : profile_(profile) {
             &ReadAnythingService::OnLocalSidePanelSwitchDelayTimeout,
             weak_ptr_factory_.GetWeakPtr()));
   }
-  if (features::IsDataCollectionModeForScreen2xEnabled()) {
-    browser_list_observer_.Observe(BrowserList::GetInstance());
+  if (features::IsDataCollectionModeForScreen2xEnabled() &&
+      profile_->AllowsBrowserWindows()) {
+    browser_collection_observer_.Observe(
+        ProfileBrowserCollection::GetForProfile(profile_));
   }
 }
 
@@ -166,9 +168,8 @@ void ReadAnythingService::OnLocalSidePanelSwitchDelayTimeout() {
   RemoveGDocsHelperExtension();
 }
 
-void ReadAnythingService::OnBrowserSetLastActive(Browser* browser) {
-  if (!features::IsDataCollectionModeForScreen2xEnabled() ||
-      browser->profile() != profile_) {
+void ReadAnythingService::OnBrowserActivated(BrowserWindowInterface* browser) {
+  if (!features::IsDataCollectionModeForScreen2xEnabled()) {
     return;
   }
 
