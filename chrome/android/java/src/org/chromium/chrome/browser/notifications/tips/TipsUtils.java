@@ -203,7 +203,12 @@ public class TipsUtils {
         return controlsPosition == ControlsPosition.BOTTOM;
     }
 
-    private static void areTipsNotificationsEnabled(Callback<Boolean> callback) {
+    /**
+     * Check if both app-level and tips notifications are enabled.
+     *
+     * @param callback Callback to return the result.
+     */
+    public static void areTipsNotificationsEnabled(Callback<Boolean> callback) {
         if (!NotificationProxyUtils.areNotificationsEnabled()) {
             callback.onResult(false);
             return;

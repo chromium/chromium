@@ -117,6 +117,7 @@ import org.chromium.chrome.browser.notifications.permissions.NotificationPermiss
 import org.chromium.chrome.browser.notifications.permissions.NotificationPermissionRationaleBottomSheet;
 import org.chromium.chrome.browser.notifications.permissions.NotificationPermissionRationaleDialogController;
 import org.chromium.chrome.browser.notifications.tips.TipsOptInCoordinator;
+import org.chromium.chrome.browser.notifications.tips.TipsUtils;
 import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
 import org.chromium.chrome.browser.ntp.NewTabPageUtils;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
@@ -1330,8 +1331,14 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         .readBoolean(
                                 ChromePreferenceKeys.TIPS_NOTIFICATIONS_OPT_IN_PROMO_SHOWN, false)
                 && timeSinceLastBackgroundedMs > TimeUnit.HOURS.toMillis(3)) {
-            mTipsOptInCoordinator = new TipsOptInCoordinator(mActivity, getBottomSheetController());
-            mTipsOptInCoordinator.showBottomSheet();
+            TipsUtils.areTipsNotificationsEnabled(
+                    (enabled) -> {
+                        if (!enabled) {
+                            mTipsOptInCoordinator =
+                                    new TipsOptInCoordinator(mActivity, getBottomSheetController());
+                            mTipsOptInCoordinator.showBottomSheet();
+                        }
+                    });
         }
     }
 
