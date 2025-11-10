@@ -3174,7 +3174,7 @@ IN_PROC_BROWSER_TEST_F(
           IsUrlBookmark(kMapsTitle, kMapsUrl)));
 
   // Sign in again, and enable sync in transport mode only.
-  ASSERT_TRUE(SetupSyncWithMode(kSyncTransportOnly));
+  ASSERT_TRUE(SetupSyncWithMode(SetupSyncMode::kSyncTransportOnly));
   GetSyncService(kSingleProfileIndex)
       ->GetUserSettings()
       ->SetSelectedType(syncer::UserSelectableType::kBookmarks, true);

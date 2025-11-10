@@ -481,7 +481,7 @@ syncer::UserSelectableTypeSet SyncTest::GetRegisteredSelectableTypes(
 }
 
 SyncTest::SetupSyncMode SyncTest::GetSetupSyncMode() const {
-  return kSyncTheFeature;
+  return SetupSyncMode::kSyncTheFeature;
 }
 
 std::vector<raw_ptr<SyncServiceImpl, VectorExperimental>>
@@ -651,7 +651,7 @@ bool SyncTest::SetupSyncInternal(SetupSyncMode setup_mode,
     SyncServiceImplHarness* client = GetClient(client_index);
     DVLOG(1) << "Setting up " << client_index << " client";
 
-    if (setup_mode == kSyncTransportOnly) {
+    if (setup_mode == SetupSyncMode::kSyncTransportOnly) {
       if (!client->SignInPrimaryAccount(account) ||
           !client->AwaitEngineInitialization()) {
         ADD_FAILURE() << "SetupSync() failed.";
@@ -687,7 +687,7 @@ bool SyncTest::SetupSyncInternal(SetupSyncMode setup_mode,
       case NO_WAITING:
         break;
       case WAIT_FOR_SYNC_SETUP_TO_COMPLETE:
-        if (setup_mode == kSyncTransportOnly) {
+        if (setup_mode == SetupSyncMode::kSyncTransportOnly) {
           if (!client->AwaitSyncTransportActive()) {
             ADD_FAILURE() << "AwaitSyncTransportActive() failed";
             return false;
@@ -704,7 +704,7 @@ bool SyncTest::SetupSyncInternal(SetupSyncMode setup_mode,
         }
         break;
       case WAIT_FOR_COMMITS_TO_COMPLETE:
-        if (setup_mode == kSyncTransportOnly) {
+        if (setup_mode == SetupSyncMode::kSyncTransportOnly) {
           if (!client->AwaitSyncTransportActive()) {
             ADD_FAILURE() << "AwaitSyncTransportActive() failed";
             return false;

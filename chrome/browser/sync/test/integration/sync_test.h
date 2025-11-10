@@ -132,7 +132,7 @@ class SyncTest : public PlatformBrowserTest,
   };
 
   // Modes when setting up sync.
-  enum SetupSyncMode {
+  enum class SetupSyncMode {
     kSyncTransportOnly,
     kSyncTheFeature,
   };
