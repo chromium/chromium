@@ -138,7 +138,7 @@
                 "try_builder": "linux-rel"
             },
             "browser_tests": {
-                "shards": 46,
+                "shards": 50,
                 "try_builder": "linux-rel"
             },
             "components_unittests": {
@@ -154,7 +154,7 @@
                 "try_builder": "linux-rel"
             },
             "interactive_ui_tests": {
-                "shards": 14,
+                "shards": 16,
                 "try_builder": "linux-rel"
             },
             "not_site_per_process_blink_wpt_tests": {
@@ -204,7 +204,7 @@
                 "try_builder": "linux_chromium_tsan_rel_ng"
             },
             "content_unittests": {
-                "shards": 2,
+                "shards": 3,
                 "try_builder": "linux_chromium_tsan_rel_ng"
             },
             "interactive_ui_tests": {
