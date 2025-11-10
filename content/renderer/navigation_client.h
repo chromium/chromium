@@ -116,11 +116,24 @@ class NavigationClient : mojom::NavigationClient {
   // ended, so notify the browser about it.
   void NotifyNavigationCancellationWindowEnded();
 
+  // Change the `render_frame_` associated with this client to the RenderFrame
+  // indicated by `commit_target_frame_token`. This can only happen if a
+  // RenderFrame<>RenderFrame swap navigation is committing, but it reuses the
+  // previous RenderFrame's NavigationClient to preserve navigation cancellation
+  // behavior.
+  // See `NavigationRequest::ReuseRequestNavigationClientForCommitIfNeeded()`
+  // for more details.
+  void MoveOwnershipToCommitTargetIfNeeded(
+      std::optional<blink::LocalFrameToken> commit_target_frame_token);
+
   mojo::AssociatedReceiver<mojom::NavigationClient> navigation_client_receiver_{
       this};
   mojo::Remote<mojom::NavigationRendererCancellationListener>
       renderer_cancellation_listener_remote_;
+
+  // Note that this might change due to `MoveOwnershipToCommitTargetIfNeeded()`.
   raw_ptr<RenderFrameImpl, DanglingUntriaged> render_frame_;
+
   // See NavigationState::was_initiated_in_this_frame for details.
   bool was_initiated_in_this_frame_ = false;
 

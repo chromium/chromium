@@ -56,6 +56,7 @@
 #include "content/renderer/local_resource_url_loader_factory.h"
 #include "content/renderer/media/media_factory.h"
 #include "ipc/platform_file_for_transit.h"
+#include "content/renderer/navigation_client.h"
 #include "media/base/routing_token_callback.h"
 #include "media/base/speech_recognition_client.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -787,6 +788,14 @@ class CONTENT_EXPORT RenderFrameImpl
       DidCompleteResponseCallback callback) override;
   void SetDidCancelResponseCallback(
       DidCancelResponseCallback callback) override;
+
+  std::unique_ptr<NavigationClient> TakeNavigationClient() {
+    return std::move(navigation_client_impl_);
+  }
+
+  void set_navigation_client_impl(std::unique_ptr<NavigationClient> client) {
+    navigation_client_impl_ = std::move(client);
+  }
 
  protected:
   explicit RenderFrameImpl(CreateParams params);

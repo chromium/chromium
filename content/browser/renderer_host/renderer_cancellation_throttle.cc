@@ -64,6 +64,11 @@ RendererCancellationThrottle::WillCommitWithoutUrlLoader() {
 
 NavigationThrottle::ThrottleCheckResult
 RendererCancellationThrottle::WaitForRendererCancellationIfNeeded() {
+  if (base::FeatureList::IsEnabled(
+          features::kSkipRendererCancellationThrottle)) {
+    return NavigationThrottle::PROCEED;
+  }
+
   NavigationRequest* request = NavigationRequest::From(navigation_handle());
   DCHECK(request);
   if (request->renderer_cancellation_window_ended()) {

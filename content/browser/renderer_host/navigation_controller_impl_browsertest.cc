@@ -21828,11 +21828,14 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTestNoServer,
                 ->GetDeferringThrottles()
                 .size(),
             1u);
-  EXPECT_STREQ("RendererCancellationThrottle",
-               (*request->GetNavigationThrottleRegistryForTesting()
-                     ->GetDeferringThrottles()
-                     .begin())
-                   ->GetNameForLogging());
+  if (!base::FeatureList::IsEnabled(
+          features::kSkipRendererCancellationThrottle)) {
+    EXPECT_STREQ("RendererCancellationThrottle",
+                 (*request->GetNavigationThrottleRegistryForTesting()
+                       ->GetDeferringThrottles()
+                       .begin())
+                     ->GetNameForLogging());
+  }
   EXPECT_EQ(request->state(), NavigationRequest::WILL_PROCESS_RESPONSE);
 
   // Unblock the JS task in the renderer by sending the response for the sync
@@ -21844,11 +21847,16 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTestNoServer,
   // The navigation commits successfully, without hitting timeout.
   ASSERT_TRUE(nav_manager.WaitForNavigationFinished());
   EXPECT_TRUE(nav_manager.was_successful());
-  histogram_tester.ExpectUniqueSample(
-      "Navigation.RendererCancellationThrottle.NavigationCancelled", false, 1);
-  histogram_tester.ExpectUniqueSample(
-      "Navigation.RendererCancellationThrottle.NotCancelled.TimeoutIsHit",
-      false, 1);
+
+  if (!base::FeatureList::IsEnabled(
+          features::kSkipRendererCancellationThrottle)) {
+    histogram_tester.ExpectUniqueSample(
+        "Navigation.RendererCancellationThrottle.NavigationCancelled", false,
+        1);
+    histogram_tester.ExpectUniqueSample(
+        "Navigation.RendererCancellationThrottle.NotCancelled.TimeoutIsHit",
+        false, 1);
+  }
 }
 
 // Tests that renderer-initiated navigation cancellation from the same JS task
@@ -21907,11 +21915,14 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTestNoServer,
                 ->GetDeferringThrottles()
                 .size(),
             1u);
-  EXPECT_STREQ("RendererCancellationThrottle",
-               (*request->GetNavigationThrottleRegistryForTesting()
-                     ->GetDeferringThrottles()
-                     .begin())
-                   ->GetNameForLogging());
+  if (!base::FeatureList::IsEnabled(
+          features::kSkipRendererCancellationThrottle)) {
+    EXPECT_STREQ("RendererCancellationThrottle",
+                 (*request->GetNavigationThrottleRegistryForTesting()
+                       ->GetDeferringThrottles()
+                       .begin())
+                     ->GetNameForLogging());
+  }
   EXPECT_EQ(request->state(), NavigationRequest::WILL_PROCESS_RESPONSE);
 
   // Unblock the JS task in the renderer by sending the response for the sync
@@ -21926,8 +21937,11 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTestNoServer,
   EXPECT_FALSE(nav_manager.was_successful());
   EXPECT_EQ(child_url, child->current_url());
   EXPECT_EQ(true, EvalJs(child, "fetch_success"));
-  histogram_tester.ExpectUniqueSample(
-      "Navigation.RendererCancellationThrottle.NavigationCancelled", true, 1);
+  if (!base::FeatureList::IsEnabled(
+          features::kSkipRendererCancellationThrottle)) {
+    histogram_tester.ExpectUniqueSample(
+        "Navigation.RendererCancellationThrottle.NavigationCancelled", true, 1);
+  }
 }
 
 // Tests that the crash of the renderer that created a navigation will cancel
@@ -21984,11 +21998,15 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTestNoServer,
                 ->GetDeferringThrottles()
                 .size(),
             1u);
-  EXPECT_STREQ("RendererCancellationThrottle",
-               (*request->GetNavigationThrottleRegistryForTesting()
-                     ->GetDeferringThrottles()
-                     .begin())
-                   ->GetNameForLogging());
+
+  if (!base::FeatureList::IsEnabled(
+          features::kSkipRendererCancellationThrottle)) {
+    EXPECT_STREQ("RendererCancellationThrottle",
+                 (*request->GetNavigationThrottleRegistryForTesting()
+                       ->GetDeferringThrottles()
+                       .begin())
+                     ->GetNameForLogging());
+  }
   EXPECT_EQ(request->state(), NavigationRequest::WILL_PROCESS_RESPONSE);
 
   // Kill the renderer process that started the navigation.
@@ -22006,8 +22024,12 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTestNoServer,
   // the child frame will be gone because the main frame's process crashed.
   if (AreAllSitesIsolatedForTesting())
     EXPECT_EQ(GURL(), child->current_url());
-  histogram_tester.ExpectUniqueSample(
-      "Navigation.RendererCancellationThrottle.NavigationCancelled", true, 1);
+
+  if (!base::FeatureList::IsEnabled(
+          features::kSkipRendererCancellationThrottle)) {
+    histogram_tester.ExpectUniqueSample(
+        "Navigation.RendererCancellationThrottle.NavigationCancelled", true, 1);
+  }
 }
 
 class RendererCancellationThrottleImprovementsTest
@@ -22018,7 +22040,7 @@ class RendererCancellationThrottleImprovementsTest
     feature_list_.InitWithFeaturesAndParameters(
         {{features::kRendererCancellationThrottleImprovements,
           {{"timeout", "100ms"}}}},
-        {});
+        {features::kSkipRendererCancellationThrottle});
   }
 
  private:
