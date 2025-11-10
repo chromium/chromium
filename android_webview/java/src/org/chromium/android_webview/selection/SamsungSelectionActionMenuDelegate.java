@@ -129,7 +129,8 @@ public class SamsungSelectionActionMenuDelegate extends AutofillSelectionActionM
             additionalItems.add(
                     new SelectionMenuItem.Builder(
                                     org.chromium.android_webview.R.string.actionbar_manage_apps)
-                            .setId(Menu.NONE)
+                            .setId(R.id.select_action_menu_manage_apps)
+                            .setGroupId(org.chromium.content.R.id.select_action_menu_delegate_items)
                             .setIcon(null)
                             .setOrderAndCategory(
                                     Menu.CATEGORY_SECONDARY,
