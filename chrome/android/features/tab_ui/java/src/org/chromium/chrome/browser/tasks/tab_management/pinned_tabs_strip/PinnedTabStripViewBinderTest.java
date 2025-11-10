@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tasks.tab_management.pinned_tabs_strip;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -47,6 +48,8 @@ public class PinnedTabStripViewBinderTest {
                 .thenReturn(mViewPropertyAnimator);
         when(mViewPropertyAnimator.withEndAction(any(Runnable.class)))
                 .thenReturn(mViewPropertyAnimator);
+        when(mViewPropertyAnimator.withStartAction(any(Runnable.class)))
+                .thenReturn(mViewPropertyAnimator);
 
         mPropertyModel =
                 new PropertyModel.Builder(PinnedTabStripProperties.ALL_KEYS)
@@ -74,8 +77,9 @@ public class PinnedTabStripViewBinderTest {
     @Test
     public void testSetIsVisible_staysVisible() {
         when(mRecyclerView.getVisibility()).thenReturn(View.VISIBLE);
+        clearInvocations(mViewPropertyAnimator);
         mPropertyModel.set(PinnedTabStripProperties.IS_VISIBLE, true);
-        verify(mViewPropertyAnimator).withEndAction(null);
+        verify(mViewPropertyAnimator).withEndAction(any(Runnable.class));
     }
 
     @Test
