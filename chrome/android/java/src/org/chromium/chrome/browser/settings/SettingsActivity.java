@@ -21,6 +21,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
@@ -468,29 +469,40 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         fragment.requireContext()
                 .getTheme()
                 .applyStyle(R.style.ThemeOverlay_Chromium_Settings_Containment, true);
-        // Posting this runnable ensures the RecyclerView has completed its layout pass before
-        // updating backgrounds.
-        fragment.getListView()
-                .post(
-                        () -> {
-                            ContainmentItemController controller =
-                                    new ContainmentItemController(SettingsActivity.this);
-                            ContainmentItemDecoration itemDecoration =
-                                    mItemDecorations.get(fragment);
-                            if (itemDecoration == null) {
-                                itemDecoration = new ContainmentItemDecoration(controller);
-                                mItemDecorations.put(fragment, itemDecoration);
-                                fragment.getListView().addItemDecoration(itemDecoration);
-                            }
-                            itemDecoration.updatePreferenceStyles(
-                                    controller.generatePreferenceStyles(
-                                            SettingsUtils.getVisiblePreferences(
-                                                    fragment.getPreferenceScreen())));
-                            fragment.getListView().invalidateItemDecorations();
 
-                            // Force a re-inflation of all views to ensure they pick up the new
-                            // theme.
-                            reInflateViews(fragment);
+        final var recyclerView = fragment.getListView();
+        if (recyclerView == null) return;
+
+        recyclerView
+                .getViewTreeObserver()
+                .addOnGlobalLayoutListener(
+                        new ViewTreeObserver.OnGlobalLayoutListener() {
+                            @Override
+                            public void onGlobalLayout() {
+                                // Remove the listener immediately to ensure it only runs once.
+                                recyclerView
+                                        .getViewTreeObserver()
+                                        .removeOnGlobalLayoutListener(this);
+
+                                ContainmentItemController controller =
+                                        new ContainmentItemController(SettingsActivity.this);
+                                ContainmentItemDecoration itemDecoration =
+                                        mItemDecorations.get(fragment);
+                                if (itemDecoration == null) {
+                                    itemDecoration = new ContainmentItemDecoration(controller);
+                                    mItemDecorations.put(fragment, itemDecoration);
+                                    recyclerView.addItemDecoration(itemDecoration);
+                                }
+                                itemDecoration.updatePreferenceStyles(
+                                        controller.generatePreferenceStyles(
+                                                SettingsUtils.getVisiblePreferences(
+                                                        fragment.getPreferenceScreen())));
+                                recyclerView.invalidateItemDecorations();
+
+                                // Force a re-inflation of all views to ensure they pick up the new
+                                // theme.
+                                reInflateViews(fragment);
+                            }
                         });
     }
 
