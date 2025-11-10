@@ -249,14 +249,14 @@ public class StripLayoutHelperManagerTest {
         when(mDesktopWindowStateManager.getAppHeaderState()).thenReturn(new AppHeaderState());
         assertEquals(
                 "Initial strip background color is incorrect.",
-                SemanticColorUtils.getColorSurfaceContainerHigh(mActivity),
+                SemanticColorUtils.getColorSurfaceContainerHighest(mActivity),
                 mStripLayoutHelperManager.getBackgroundColor());
         // Assume the current activity lost focus.
         mStripLayoutHelperManager.onTopResumedActivityChanged(false);
         assertEquals(
                 "Strip background color should not be updated when activity focus state changes"
                         + " while not in desktop window.",
-                SemanticColorUtils.getColorSurfaceContainerHigh(mActivity),
+                SemanticColorUtils.getColorSurfaceContainerHighest(mActivity),
                 mStripLayoutHelperManager.getBackgroundColor());
     }
 
@@ -288,7 +288,7 @@ public class StripLayoutHelperManagerTest {
         var appHeaderState = Mockito.mock(AppHeaderState.class);
         doReturn(true).when(appHeaderState).isInDesktopWindow();
         when(mDesktopWindowStateManager.getAppHeaderState()).thenReturn(appHeaderState);
-        @ColorInt int focusedColor = SemanticColorUtils.getColorSurfaceContainerHigh(mActivity);
+        @ColorInt int focusedColor = SemanticColorUtils.getColorSurfaceContainerHighest(mActivity);
         @ColorInt
         int unfocusedColor =
                 isNightMode
@@ -357,7 +357,7 @@ public class StripLayoutHelperManagerTest {
         // Default state
         assertEquals(
                 "Initial strip background color is incorrect.",
-                SemanticColorUtils.getColorSurfaceContainerHigh(mActivity),
+                SemanticColorUtils.getColorSurfaceContainerHighest(mActivity),
                 mStripLayoutHelperManager.getBackgroundColor());
 
         // Incognito

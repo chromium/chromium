@@ -67,7 +67,7 @@ public class TabUiThemeUtil {
         if (isIncognito) {
             return ContextCompat.getColor(context, R.color.tab_strip_tablet_bg_incognito);
         }
-        return SemanticColorUtils.getColorSurfaceContainerHigh(context);
+        return SemanticColorUtils.getColorSurfaceContainerHighest(context);
     }
 
     private static @ColorInt int getTabStripBackgroundColorUnfocused(
