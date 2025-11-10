@@ -63,6 +63,7 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
             @add-tab-context="${this.addTabContext_}"
             @deep-search-click="${this.onDeepSearchClick_}"
             @create-image-click="${this.onCreateImageClick_}"
+            @delete-tab-context="${this.onDeleteFile_}"
             .inCreateImageMode="${this.inCreateImageMode_}"
             .hasImageFiles="${this.hasImageFiles()}"
             .disabledTabIds="${this.addedTabsIds_}"

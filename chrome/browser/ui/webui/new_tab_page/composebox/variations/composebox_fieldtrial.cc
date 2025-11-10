@@ -281,6 +281,11 @@ const base::FeatureParam<int> kContextMenuMaxTabSuggestions(
     "ContextMenuMaxTabSuggestions",
     5);
 
+const base::FeatureParam<bool> kContextMenuEnableMultiTabSelection(
+    &kNtpComposebox,
+    "ContextMenuEnableMultiTabSelection",
+    false);
+
 const base::FeatureParam<int> kMaxNumFiles(&kNtpComposebox, "MaxNumFiles", 1);
 
 const base::FeatureParam<bool> kEnableDragAndDrop(&kNtpComposebox,

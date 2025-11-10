@@ -1674,6 +1674,7 @@ const FeatureEntry::FeatureParam kComposeboxNext[] = {
     {"ShowRecentTabChip", "true"},
     {"CloseComposeboxByEscape", "false"},
     {"CloseComposeboxByClickOutside", "false"},
+    {"ContextMenuEnableMultiTabSelection", "true"},
 };
 const FeatureEntry::FeatureParam kComposeboxNextSingleContext[] = {
     {"MaxNumFiles", "1"},

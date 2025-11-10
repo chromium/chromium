@@ -53,6 +53,8 @@ extern const base::FeatureParam<bool> kShowRecentTabChip;
 extern const base::FeatureParam<bool> kShowContextMenuTabPreviews;
 // The maximum number of tab suggestions to show in the composebox context menu.
 extern const base::FeatureParam<int> kContextMenuMaxTabSuggestions;
+// Whether to enable multi-tab selection in the context menu.
+extern const base::FeatureParam<bool> kContextMenuEnableMultiTabSelection;
 
 // The maximum number of file attachments to upload.
 extern const base::FeatureParam<int> kMaxNumFiles;

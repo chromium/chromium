@@ -129,6 +129,7 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
   source->AddBoolean("steadyComposeboxShowVoiceSearch", false);
   source->AddBoolean("expandedComposeboxShowVoiceSearch", false);
   source->AddBoolean("composeboxShowContextMenuTabPreviews", false);
+  source->AddBoolean("composeboxContextMenuEnableMultiTabSelection", false);
 }
 
 ContextualTasksUI::~ContextualTasksUI() = default;

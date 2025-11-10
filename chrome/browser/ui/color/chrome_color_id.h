@@ -264,6 +264,7 @@
   E_CPONLY(kColorComposeboxScrimBackground) \
   E_CPONLY(kColorComposeboxSubmitButton) \
   E_CPONLY(kColorComposeboxSuggestionActivity) \
+  E_CPONLY(kColorComposeboxTabSelectorButtonSelected) \
   E_CPONLY(kColorComposeboxTypeAhead) \
   E_CPONLY(kColorComposeboxTypeAheadChip) \
   E_CPONLY(kColorComposeboxUploadButton) \

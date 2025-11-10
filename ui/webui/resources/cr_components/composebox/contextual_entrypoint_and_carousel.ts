@@ -18,6 +18,7 @@ import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
 import type {ComposeboxFile} from './common.js';
 import {FileUploadErrorType, FileUploadStatus} from './composebox_query.mojom-webui.js';
+import type {ContextMenuEntrypointElement} from './context_menu_entrypoint.js';
 import {getCss} from './contextual_entrypoint_and_carousel.css.js';
 import {getHtml} from './contextual_entrypoint_and_carousel.html.js';
 import type {ComposeboxFileCarouselElement} from './file_carousel.js';
@@ -35,6 +36,7 @@ export interface ContextualEntrypointAndCarouselElement {
   $: {
     fileInput: HTMLInputElement,
     fileUploadButton: CrIconButtonElement,
+    contextEntrypoint: ContextMenuEntrypointElement,
     carousel: ComposeboxFileCarouselElement,
     imageInput: HTMLInputElement,
     imageUploadButton: CrIconButtonElement,
@@ -147,7 +149,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
   protected accessor contextMenuEnabled_: boolean =
       loadTimeData.getBoolean('composeboxShowContextMenu');
   protected accessor files_: Map<UnguessableToken, ComposeboxFile> = new Map();
-  protected accessor addedTabsIds_: Set<number> = new Set();
+  protected accessor addedTabsIds_: Map<number, UnguessableToken> = new Map();
   protected accessor imageFileTypes_: string =
       loadTimeData.getString('composeboxImageFileTypes');
   protected accessor inputsDisabled_: boolean = false;
@@ -219,6 +221,16 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
     }
   }
 
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    // The position of the contextual entrypoint might change in the tall modes,
+    // so the context menu needs to be repositioned accordingly.
+    if (this.searchboxLayoutMode !== 'Compact' && this.contextMenuEnabled_)  {
+      this.$.contextEntrypoint.repositionMenu();
+    }
+  }
+
   private computeRecentTabInContext_(): boolean {
     const recentTab = this.tabSuggestions?.[0];
     if (!recentTab) {
@@ -274,8 +286,8 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
            FileUploadStatus.kUploadExpired].includes(status)) {
         this.files_.delete(token);
         if (file.tabId) {
-          this.addedTabsIds_ = new Set([...this.addedTabsIds_].filter(
-            (id) => id !== file!.tabId));
+          this.addedTabsIds_ = new Map([...this.addedTabsIds_.entries()].filter(
+            ([id, _]) => id !== file!.tabId));
         }
 
         switch (status) {
@@ -312,8 +324,9 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
     }
 
     this.files_ = new Map(undeletableFiles.map(file => [file.uuid, file]));
-    this.addedTabsIds_ = new Set(
-        undeletableFiles.filter(file => file.tabId).map(file => file.tabId!));
+    this.addedTabsIds_ = new Map(
+        undeletableFiles.filter(file => file.tabId)
+            .map(file => [file.tabId!, file.uuid]));
   }
 
   resetModes() {
@@ -361,8 +374,8 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
 
     const file = this.files_.get(e.detail.uuid);
     if (file?.tabId) {
-      this.addedTabsIds_ = new Set([...this.addedTabsIds_].filter(
-          (id) => id !== file.tabId));
+      this.addedTabsIds_ = new Map([...this.addedTabsIds_.entries()].filter(
+            ([id, _]) => id !== file.tabId));
     }
 
     this.files_ = new Map([...this.files_.entries()].filter(
@@ -441,7 +454,8 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
       url: e.detail.url,
       onContextAdded: (file: ComposeboxFile) => {
         this.files_ = new Map([...this.files_.entries(), [file.uuid, file]]);
-        this.addedTabsIds_ = new Set([...this.addedTabsIds_, e.detail.id]);
+        this.addedTabsIds_ = new Map(
+            [...this.addedTabsIds_.entries(), [e.detail.id, file.uuid]]);
       },
     });
   }

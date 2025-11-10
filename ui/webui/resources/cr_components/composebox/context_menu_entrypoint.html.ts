@@ -37,10 +37,19 @@ export function getHtml(this: ContextMenuEntrypointElement) {
               aria-label="${this.i18n('addTab')}, ${tab.title}"
               ?disabled="${this.isTabDisabled_(tab)}"
               @pointerenter="${this.onTabPointerenter_}"
-              @click="${this.addTabContext_}">
+              @click="${this.onTabClick_}">
             <cr-composebox-tab-favicon .url="${tab.url.url}">
             </cr-composebox-tab-favicon>
             <span class="tab-title">${tab.title}</span>
+            ${this.enableMultiTabSelection_ ? html`
+              ${this.disabledTabIds.has(tab.tabId) ? html`
+                <cr-icon class="multi-tab-icon"
+                    icon="cr:check" id="multi-tab-check"></cr-icon>
+              ` : html`
+                <cr-icon class="multi-tab-icon"
+                    icon="cr:add" id="multi-tab-add"></cr-icon>
+              `}
+            ` : ''}
           </button>
           ${this.shouldShowTabPreview_() ? html`
             <img class="tab-preview" .src="${this.tabPreviewUrl_}">
