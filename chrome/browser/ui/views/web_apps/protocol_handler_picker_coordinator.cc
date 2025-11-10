@@ -38,14 +38,10 @@ namespace {
 constexpr int kIconSizeInDip = 32;
 
 void MaybeCloseTabAsync(tabs::TabInterface& tab) {
-  TabStripModel* tab_strip_model =
-      tab.GetBrowserWindowInterface()->GetTabStripModel();
   // If there's more than one tab in the browser corresponding to the current
   // tab and the current tab still in the initial navigation state, it's
   // expected to be closed.
-  if (tab_strip_model->GetIndexOfTab(&tab) != TabStripModel::kNoTab &&
-      tab_strip_model->count() > 1 &&
-      tab.GetContents()->GetController().IsInitialNavigation()) {
+  if (tab.GetContents()->GetController().IsInitialNavigation()) {
     base::UmaHistogramBoolean("WebApp.ProtocolHandlerPicker.TabClosed", true);
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
