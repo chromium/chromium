@@ -597,4 +597,16 @@ void GlicInstanceCoordinatorImpl::OnMemoryPressure(
   }
 }
 
+std::string GlicInstanceCoordinatorImpl::DescribeForTesting() {
+  std::stringstream ss;
+  for (auto& inst : instances_) {
+    ss << inst.second->DescribeForTesting();  // IN-TEST
+  }
+  if (warmed_instance_) {
+    ss << "(Warming instance) "
+       << warmed_instance_->DescribeForTesting();  // IN-TEST
+  }
+  return ss.str();
+}
+
 }  // namespace glic

@@ -1364,6 +1364,7 @@ export class GlicApiHost implements PostMessageRequestHandler {
   private panelOpenState = PanelOpenState.CLOSED;
   private instanceIsActive = true;
   private hasShownDebuggerAttachedWarning = false;
+  private loggingEnabled = loadTimeData.getBoolean('loggingEnabled');
   detailedWebClientState = DetailedWebClientState.BOOTSTRAP_PENDING;
   // Present while the client is monitoring pin candidates.
   pinCandidatesObserver?: PinCandidatesObserverImpl;
@@ -1374,11 +1375,10 @@ export class GlicApiHost implements PostMessageRequestHandler {
       private embeddedOrigin: string, embedder: ApiHostEmbedder) {
     this.postMessageReceiver = new PostMessageRequestReceiver(
         embeddedOrigin, this.senderId, windowProxy, this, 'glic_api_host');
-    this.postMessageReceiver.setLoggingEnabled(
-        loadTimeData.getBoolean('loggingEnabled'));
+    this.postMessageReceiver.setLoggingEnabled(this.loggingEnabled);
     const ungatedSender = new PostMessageRequestSender(
         windowProxy, embeddedOrigin, this.senderId, 'glic_api_host');
-    ungatedSender.setLoggingEnabled(loadTimeData.getBoolean('loggingEnabled'));
+    ungatedSender.setLoggingEnabled(this.loggingEnabled);
     this.sender = new GatedSender(ungatedSender);
     this.handler = new WebClientHandlerRemote();
     this.handler.onConnectionError.addListener(() => {
@@ -1677,6 +1677,9 @@ export class GlicApiHost implements PostMessageRequestHandler {
         const friendlyName =
             type.replaceAll(/^glicBrowser|^glicWebClient/g, '');
         throw new Error(`${friendlyName} not allowed while backgrounded`);
+      }
+      if (this.loggingEnabled) {
+        console.warn(`Using background request behavior for ${type}`);
       }
       if (Object.hasOwn(backgroundResponse, 'does')) {
         response = await (backgroundResponse as HostBackgroundResponseDoes<any>)

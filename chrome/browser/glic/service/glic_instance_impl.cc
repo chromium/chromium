@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+#include <sstream>
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -1032,6 +1033,19 @@ bool GlicInstanceImpl::HasFocus() {
     return rwhv->HasFocus();
   }
   return false;
+}
+
+std::string GlicInstanceImpl::DescribeForTesting() {
+  std::stringstream ss;
+  ss << "GlicInstance[" << id_ << "]:\n";
+  for (const auto& entry : embedders_) {
+    ss << "  Embedder ["
+       << DescribeEmbedderKeyForTesting(entry.first)            // IN-TEST
+       << "]: " << entry.second.embedder->DescribeForTesting()  // IN-TEST
+       << '\n';
+  }
+
+  return ss.str();
 }
 
 }  // namespace glic

@@ -5,6 +5,7 @@
 #include "chrome/browser/glic/widget/glic_side_panel_ui.h"
 
 #include "base/notimplemented.h"
+#include "base/strings/string_number_conversions.h"
 #include "chrome/browser/glic/public/glic_instance.h"
 #include "chrome/browser/glic/service/glic_instance_metrics.h"
 #include "chrome/browser/glic/service/glic_ui_embedder.h"
@@ -280,6 +281,11 @@ GlicSidePanelCoordinator* GlicSidePanelUi::GetGlicSidePanelCoordinator() const {
     return nullptr;
   }
   return tab_->GetTabFeatures()->glic_side_panel_coordinator();
+}
+
+std::string GlicSidePanelUi::DescribeForTesting() {
+  return base::StrCat({"SidePanelUi for tab ",
+                       base::NumberToString(tab_->GetHandle().raw_value())});
 }
 
 }  // namespace glic

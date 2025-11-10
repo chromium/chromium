@@ -52,6 +52,7 @@ class GlicSidePanelUi : public GlicUiEmbedder,
   void Focus() override;
   mojom::PanelState GetPanelState() const override;
   gfx::Size GetPanelSize() override;
+  std::string DescribeForTesting() override;
 
   // Host::EmbedderDelegate:
   void Resize(const gfx::Size& size,

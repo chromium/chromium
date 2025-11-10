@@ -152,4 +152,10 @@ bool GlicInactiveSidePanelUi::HasFocus() {
   return false;
 }
 
+std::string GlicInactiveSidePanelUi::DescribeForTesting() {
+  return base::StrCat(
+      {"Inactive SidePanel for tab ",
+       base::NumberToString(tab_ ? tab_->GetHandle().raw_value() : -1)});
+}
+
 }  // namespace glic

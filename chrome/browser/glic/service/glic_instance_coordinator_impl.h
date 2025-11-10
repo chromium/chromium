@@ -143,6 +143,7 @@ class GlicInstanceCoordinatorImpl
   GlicInstanceImpl* GetWarmedInstanceForTesting() {
     return warmed_instance_.get();
   }
+  std::string DescribeForTesting();
 
  private:
   void OnTabCreated(tabs::TabInterface& old_tab, tabs::TabInterface& new_tab);
