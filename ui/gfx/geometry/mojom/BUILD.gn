@@ -85,19 +85,13 @@ mojom("mojom") {
   generate_legacy_js_bindings = true
 }
 
-mojom("test_interfaces") {
-  sources = [ "geometry_traits_test_service.mojom" ]
-
-  public_deps = [ ":mojom" ]
-}
-
 source_set("unit_test") {
   testonly = true
 
   sources = [ "geometry_mojom_traits_unittest.cc" ]
 
   deps = [
-    ":test_interfaces",
+    ":mojom",
     "//base",
     "//base/test:test_support",
     "//mojo/public/cpp/bindings",
