@@ -56,6 +56,9 @@
 namespace exo {
 namespace {
 
+BASE_FEATURE(kExoAlwaysUseColorSpaceFromShardImage,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // The amount of time before we wait for release queries using
 // GetQueryObjectuivEXT(GL_QUERY_RESULT_EXT).
 const int kWaitForReleaseDelayMs = 500;
@@ -586,13 +589,18 @@ std::optional<viz::TransferableResource> Buffer::ProduceTransferableResource(
     return std::nullopt;
   }
 
+  // Invalid color spaces cause issues when used by the buffer. In these cases
+  // revert to using SRGB as before.
+  gfx::ColorSpace valid_color_space =
+      color_space.IsValid() ? color_space : gfx::ColorSpace::CreateSRGB();
+
   // Create a new image texture for |gpu_memory_buffer_handle_| if one doesn't
   // already exist. The contents of this buffer are copied to |texture| using a
   // call to CopyTexImage.
   if (!contents_texture_) {
     contents_texture_ = std::make_unique<Texture>(
         context_provider, &gpu_memory_buffer_handle_, format_, size_,
-        color_space, query_type_, wait_for_release_delay_,
+        valid_color_space, query_type_, wait_for_release_delay_,
         is_overlay_candidate_);
   }
   Texture* contents_texture = contents_texture_.get();
@@ -629,6 +637,11 @@ std::optional<viz::TransferableResource> Buffer::ProduceTransferableResource(
   }
 #endif  // BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
 
+  viz::TransferableResource::MetadataOverride overrides;
+  if (!base::FeatureList::IsEnabled(kExoAlwaysUseColorSpaceFromShardImage)) {
+    overrides.color_space = color_space;
+  }
+
   // Zero-copy means using the contents texture directly.
   if (use_zero_copy_) {
     // This binds the latest contents of this buffer to |contents_texture|.
@@ -641,13 +654,11 @@ std::optional<viz::TransferableResource> Buffer::ProduceTransferableResource(
       contents_texture->UpdateSharedImage(std::move(acquire_fence));
     }
 
+    overrides.is_overlay_candidate = is_overlay_candidate_;
     auto resource = viz::TransferableResource::Make(
         contents_texture_->shared_image(),
         viz::TransferableResource::ResourceSource::kExoBuffer,
-        contents_texture->sync_token(),
-        {
-            .is_overlay_candidate = is_overlay_candidate_,
-        });
+        contents_texture->sync_token(), overrides);
 
     // The contents texture will be released when no longer used by the
     // compositor.
@@ -664,8 +675,8 @@ std::optional<viz::TransferableResource> Buffer::ProduceTransferableResource(
 
   // Create a mailbox texture that we copy the buffer contents to.
   if (!texture_) {
-    texture_ =
-        std::make_unique<Texture>(context_provider, GetSize(), color_space);
+    texture_ = std::make_unique<Texture>(context_provider, GetSize(),
+                                         valid_color_space);
   }
   Texture* texture = texture_.get();
 
@@ -681,7 +692,7 @@ std::optional<viz::TransferableResource> Buffer::ProduceTransferableResource(
   auto resource = viz::TransferableResource::Make(
       texture->shared_image(),
       viz::TransferableResource::ResourceSource::kExoBuffer,
-      texture_->sync_token());
+      texture_->sync_token(), overrides);
 
   // The mailbox texture will be released when no longer used by the
   // compositor.

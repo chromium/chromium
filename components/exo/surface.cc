@@ -86,9 +86,6 @@ BASE_FEATURE(kDisableNonYUVOverlaysFromExo, base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {
 
-BASE_FEATURE(kExoAlwaysUseColorSpaceFromShardImage,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // A property key containing the surface that is associated with
 // window. If unset, no surface is associated with window.
 DEFINE_UI_CLASS_PROPERTY_KEY(Surface*, kSurfaceKey, nullptr)
@@ -1492,11 +1489,6 @@ void Surface::UpdateResource(FrameSinkResourceManager* resource_manager) {
   needs_update_resource_ = false;
   if (state_.buffer.has_value() && state_.buffer->buffer()) {
     gfx::ColorSpace buffer_color_space = state_.basic_state.color_space;
-    // Invalid color spaces cause issues went sent to the buffer. In these cases
-    // revert to passing SRGB as before.
-    if (!buffer_color_space.IsValid()) {
-      buffer_color_space = gfx::ColorSpace::CreateSRGB();
-    }
 
     current_resource_ = state_.buffer->buffer()->ProduceTransferableResource(
         resource_manager, std::move(state_.acquire_fence),
@@ -1507,11 +1499,6 @@ void Surface::UpdateResource(FrameSinkResourceManager* resource_manager) {
     if (current_resource_) {
       current_resource_has_alpha_ =
           state_.buffer->buffer()->GetFormat().HasAlpha();
-
-      if (!base::FeatureList::IsEnabled(
-              kExoAlwaysUseColorSpaceFromShardImage)) {
-        current_resource_->color_space = state_.basic_state.color_space;
-      }
     } else {
       SkColor4f color = state_.buffer->buffer()->GetColor();
       current_resource_has_alpha_ = !color.isOpaque();
