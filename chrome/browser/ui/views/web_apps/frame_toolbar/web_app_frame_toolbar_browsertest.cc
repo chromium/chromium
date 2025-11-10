@@ -2370,9 +2370,17 @@ IN_PROC_BROWSER_TEST_F(
   }));
 }
 
+// TODO(crbug.com/459532445): Flaky on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_FullscreenAndRestoreWindowWithApi \
+  DISABLED_FullscreenAndRestoreWindowWithApi
+#else
+#define MAYBE_FullscreenAndRestoreWindowWithApi \
+  FullscreenAndRestoreWindowWithApi
+#endif
 IN_PROC_BROWSER_TEST_F(
     WebAppFrameToolbarBrowserTest_AdditionalWindowingControls,
-    FullscreenAndRestoreWindowWithApi) {
+    MAYBE_FullscreenAndRestoreWindowWithApi) {
   InstallAndLaunchWebApp();
   helper()->GrantWindowManagementPermission();
   auto* web_contents = helper()->browser_view()->GetActiveWebContents();
