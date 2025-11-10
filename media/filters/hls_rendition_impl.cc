@@ -448,13 +448,15 @@ void HlsRenditionImpl::FetchNext(base::OnceClosure cb,
   scoped_refptr<hls::MediaSegment> segment;
   base::TimeDelta segment_start;
   base::TimeDelta segment_end;
-  std::tie(segment, segment_start, segment_end) = segments_->GetNextSegment();
+  bool needs_init = false;
+  std::tie(segment, segment_start, segment_end, needs_init) =
+      segments_->GetNextSegment();
 
   // If this segment has a different init segment than the segment before it,
   // we need to include the init segment before we fetch. Alternatively, if
   // we've seeked somewhere and flushed old data, we'll need the init segment
   // again.
-  bool include_init = requires_init_segment_ || segment->HasNewInitSegment();
+  bool include_init = requires_init_segment_ || needs_init;
 
   TRACE_EVENT_BEGIN("media", "HLS::FetchSegment",
                     perfetto::Track::FromPointer(this), "start", segment_start,

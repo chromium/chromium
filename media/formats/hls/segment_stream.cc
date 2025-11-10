@@ -65,11 +65,23 @@ SegmentStream::SegmentStream(scoped_refptr<MediaPlaylist> playlist,
 SegmentInfo SegmentStream::GetNextSegment() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!segments_.empty());
+  bool needs_init_segment = false;
   auto segment = std::move(segments_.front());
   segments_.pop();
+
+  if (auto init_segment = segment->GetInitializationSegment()) {
+    if (segment->HasNewInitSegment()) {
+      previous_segment_init_segment_ = init_segment->GetUri();
+      needs_init_segment = true;
+    } else if (previous_segment_init_segment_ != init_segment->GetUri()) {
+      previous_segment_init_segment_ = init_segment->GetUri();
+      needs_init_segment = true;
+    }
+  }
   base::TimeDelta previous_segment_start = next_segment_start_;
   next_segment_start_ += segment->GetDuration();
-  return std::make_tuple(segment, previous_segment_start, next_segment_start_);
+  return std::make_tuple(segment, previous_segment_start, next_segment_start_,
+                         needs_init_segment);
 }
 
 bool SegmentStream::Seek(base::TimeDelta seek_time) {
