@@ -251,6 +251,7 @@ public class PwaRestoreBottomSheetIntegrationTest {
     @Test
     @SmallTest
     @Feature({"PwaRestore"})
+    @DisabledTest(message = "https://crbug.com/458961306")
     public void testButtonsInitiallyDisabled() throws Exception {
         // Ensure the promo dialog shows.
         setAppsAvailableAndPromoStage(true, DisplayStage.SHOW_PROMO);
