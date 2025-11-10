@@ -371,6 +371,8 @@ export class StatsRatesCalculator {
             'retransmittedBytesSent', 'timestamp',
             CalculatorModifier.kBytesToBits),
         packetsSent: new RateCalculator('packetsSent', 'timestamp'),
+        packetsSentWithEct1:
+            new RateCalculator('packetsSentWithEct1', 'timestamp'),
         retransmittedPacketsSent:
             new RateCalculator('retransmittedPacketsSent', 'timestamp'),
         totalPacketSendDelay: new RateCalculator(
@@ -405,6 +407,14 @@ export class StatsRatesCalculator {
             'fecBytesReceived', 'timestamp',
             CalculatorModifier.kBytesToBits),
         packetsReceived: new RateCalculator('packetsReceived', 'timestamp'),
+        packetsReceivedWithEct1:
+          new RateCalculator('packetsReceivedWithEct1', 'timestamp'),
+        packetsReceivedWithCe:
+          new RateCalculator('packetsReceivedWithCe', 'timestamp'),
+        packetsReportedAsLost:
+          new RateCalculator('packetsReportedAsLost', 'timestamp'),
+        packetsReportedAsLostButRecovered:
+          new RateCalculator('packetsReportedAsLostButRecovered', 'timestamp'),
         packetsDiscarded: new RateCalculator('packetsDiscarded', 'timestamp'),
         retransmittedPacketsReceived:
           new RateCalculator('retransmittedPacketsReceived', 'timestamp'),
@@ -486,6 +496,10 @@ export class StatsRatesCalculator {
             'packetsSent', 'timestamp'),
         packetsReceived: new RateCalculator(
             'packetsReceived', 'timestamp'),
+        ccfbMessagesSent: new RateCalculator(
+            'ccfbMessagesSent', 'timestamp'),
+        ccfbMessagesReceived: new RateCalculator(
+            'ccfbMessagesReceived', 'timestamp'),
       },
       'candidate-pair': {
         bytesSent: new RateCalculator(
