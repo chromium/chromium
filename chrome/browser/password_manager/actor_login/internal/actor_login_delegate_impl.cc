@@ -14,6 +14,8 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/types/expected.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/common/buildflags.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_types.h"
 #include "components/password_manager/core/browser/actor_login/internal/actor_login_credential_filler.h"
@@ -26,6 +28,11 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents_user_data.h"
+
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#endif  // BUILDFLAG(ENABLE_GLIC)
 
 using password_manager::ContentPasswordManagerDriver;
 using password_manager::PasswordManagerDriver;
@@ -147,21 +154,52 @@ void ActorLoginDelegateImpl::AttemptLogin(
 
   credential_filler_ = std::make_unique<ActorLoginCredentialFiller>(
       origin, credential, should_store_permission, client_,
+      base::BindRepeating(&ActorLoginDelegateImpl::IsTaskInFocus,
+                          base::Unretained(this)),
       base::BindPostTaskToCurrentDefault(
           base::BindOnce(&ActorLoginDelegateImpl::OnAttemptLoginCompleted,
                          weak_ptr_factory_.GetWeakPtr())));
-  credential_filler_->AttemptLogin(
-      password_manager,
-      // This `WebContents` comes from the `TabInterface` that
-      // `ActorLoginService` is invoked with, so we know the `WebContents` is
-      // attached to a tab.
-      *tabs::TabInterface::GetFromContents(&GetWebContents()));
+  credential_filler_->AttemptLogin(password_manager);
 }
 
 void ActorLoginDelegateImpl::WebContentsDestroyed() {
   get_credentials_helper_.reset();
   credential_filler_.reset();
   client_ = nullptr;
+}
+
+bool ActorLoginDelegateImpl::IsTaskInFocus() {
+  // This `WebContents` comes from the `TabInterface` that
+  // `ActorLoginService` is invoked with, so we know the `WebContents` is
+  // attached to a tab.
+  tabs::TabInterface* tab_interface =
+      tabs::TabInterface::GetFromContents(web_contents());
+  BrowserWindowInterface* browser_window =
+      tab_interface->GetBrowserWindowInterface();
+  if (!browser_window->IsActive()) {
+    return false;
+  }
+  if (tab_interface->IsActivated()) {
+    return true;
+  }
+#if BUILDFLAG(ENABLE_GLIC)
+  glic::GlicKeyedService* glic_service =
+      glic::GlicKeyedService::Get(web_contents()->GetBrowserContext());
+  CHECK(glic_service);
+
+  glic::GlicInstance* current_tab_instance =
+      glic_service->GetInstanceForTab(tab_interface);
+  glic::GlicInstance* active_tab_instance =
+      glic_service->GetInstanceForActiveTab(
+          tab_interface->GetBrowserWindowInterface());
+  if (current_tab_instance != active_tab_instance) {
+    return false;
+  }
+
+  return current_tab_instance->IsShowing();
+#else
+  NOTREACHED();
+#endif
 }
 
 void ActorLoginDelegateImpl::OnGetCredentialsCompleted(
