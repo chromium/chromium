@@ -248,13 +248,13 @@ enum class AccessPoint : int {
   // Signin button from the profile menu that is labelled as a "Signin" button,
   // but is followed by a Sync confirmation screen as a promo.
   kAvatarBubbleSignInWithSyncPromo = 66,
-  // Signin using the account menu.
-  kAccountMenu = 67,
+  // Signin as part of switching accounts via the account menu.
+  kAccountMenuSwitchAccount = 67,
   // Signin via Product Specifications.
   kProductSpecifications = 68,
   // The user is signed-back into their previous account after failing to switch
   // to a new one.
-  kAccountMenuFailedSwitch = 69,
+  kAccountMenuSwitchAccountFailed = 69,
   // The user signs in from a sign in promo after an address save.
   kAddressBubble = 70,
   // A message notification displayed on CCTs embedded in 1P apps when there is

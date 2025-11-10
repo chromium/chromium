@@ -207,9 +207,9 @@ class SigninMetricsTest : public ::testing::Test {
         return "WebAuthnModalDialog";
       case AccessPoint::kAvatarBubbleSignInWithSyncPromo:
         return "AvatarBubbleSigninWithSyncPromo";
-      case AccessPoint::kAccountMenu:
+      case AccessPoint::kAccountMenuSwitchAccount:
         return "AccountMenu";
-      case AccessPoint::kAccountMenuFailedSwitch:
+      case AccessPoint::kAccountMenuSwitchAccountFailed:
         return "AccountMenuFailedSwitch";
       case AccessPoint::kProductSpecifications:
         return "ProductSpecifications";

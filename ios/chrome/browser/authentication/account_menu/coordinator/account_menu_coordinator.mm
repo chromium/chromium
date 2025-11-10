@@ -338,7 +338,7 @@ void maybeShowSettingsIPH(Browser* browser) {
 
 - (void)didTapAddAccount {
   auto style = SigninContextStyle::kDefault;
-  auto accessPoint = signin_metrics::AccessPoint::kAccountMenu;
+  auto accessPoint = signin_metrics::AccessPoint::kAccountMenuSwitchAccount;
   if (_addAccountSigninCoordinator.viewWillPersist) {
     return;
   }
@@ -384,7 +384,8 @@ void maybeShowSettingsIPH(Browser* browser) {
   AuthenticationFlow* authenticationFlow = [[AuthenticationFlow alloc]
                initWithBrowser:self.browser
                       identity:identity
-                   accessPoint:signin_metrics::AccessPoint::kAccountMenu
+                   accessPoint:signin_metrics::AccessPoint::
+                                   kAccountMenuSwitchAccount
           precedingHistorySync:NO
              postSignInActions:
                  {PostSignInAction::kShowIdentityConfirmationSnackbar}
@@ -522,7 +523,7 @@ void maybeShowSettingsIPH(Browser* browser) {
   }
   [_addAccountSigninCoordinator stop];
   signin_metrics::AccessPoint accessPoint =
-      signin_metrics::AccessPoint::kAccountMenu;
+      signin_metrics::AccessPoint::kAccountMenuSwitchAccount;
   signin_metrics::PromoAction promoAction =
       signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO;
   SigninContextStyle style = SigninContextStyle::kDefault;

@@ -103,7 +103,7 @@ IN_PROC_BROWSER_TEST_P(HistorySyncOptinScreenFromPromoEntryPointInteractiveTest,
       Do([&]() {
         signin_ui_util::EnableSyncFromSingleAccountPromo(
             browser()->profile(), AccountInfo(),
-            signin_metrics::AccessPoint::kAccountMenu);
+            signin_metrics::AccessPoint::kAccountMenuSwitchAccount);
       }),
       Do([&]() {
         content::WebContents* active_contents =
@@ -150,11 +150,11 @@ IN_PROC_BROWSER_TEST_P(HistorySyncOptinScreenFromPromoEntryPointInteractiveTest,
       0);
   histogram_tester_.ExpectBucketCount(
       "Signin.HistorySyncOptIn.Started",
-      /*sample=*/signin_metrics::AccessPoint::kAccountMenu,
+      /*sample=*/signin_metrics::AccessPoint::kAccountMenuSwitchAccount,
       /*expected_count=*/1);
   histogram_tester_.ExpectBucketCount(
       "Signin.HistorySyncOptIn.Completed",
-      /*sample=*/signin_metrics::AccessPoint::kAccountMenu,
+      /*sample=*/signin_metrics::AccessPoint::kAccountMenuSwitchAccount,
       /*expected_count=*/1);
 }
 
@@ -175,7 +175,7 @@ IN_PROC_BROWSER_TEST_P(HistorySyncOptinScreenFromPromoEntryPointInteractiveTest,
         signin_ui_util::EnableSyncFromSingleAccountPromo(
             browser()->profile(),
             /*account=*/account_info,
-            signin_metrics::AccessPoint::kAccountMenu);
+            signin_metrics::AccessPoint::kAccountMenuSwitchAccount);
       }),
       // The user is already signed-in, the history sync optin dialog should
       // open.
@@ -210,11 +210,11 @@ IN_PROC_BROWSER_TEST_P(HistorySyncOptinScreenFromPromoEntryPointInteractiveTest,
       0);
   histogram_tester_.ExpectBucketCount(
       "Signin.HistorySyncOptIn.Started",
-      /*sample=*/signin_metrics::AccessPoint::kAccountMenu,
+      /*sample=*/signin_metrics::AccessPoint::kAccountMenuSwitchAccount,
       /*expected_count=*/1);
   histogram_tester_.ExpectBucketCount(
       "Signin.HistorySyncOptIn.Completed",
-      /*sample=*/signin_metrics::AccessPoint::kAccountMenu,
+      /*sample=*/signin_metrics::AccessPoint::kAccountMenuSwitchAccount,
       /*expected_count=*/1);
   histogram_tester_.ExpectUniqueSample(
       "Signin.SyncButtons.Shown",
@@ -250,7 +250,7 @@ IN_PROC_BROWSER_TEST_P(
         signin_ui_util::EnableSyncFromSingleAccountPromo(
             browser()->profile(),
             /*account=*/account_info,
-            signin_metrics::AccessPoint::kAccountMenu);
+            signin_metrics::AccessPoint::kAccountMenuSwitchAccount);
       }),
       // The user is already signed-in, the history sync optin dialog should
       // open.
@@ -290,11 +290,11 @@ IN_PROC_BROWSER_TEST_P(
       0);
   histogram_tester_.ExpectBucketCount(
       "Signin.HistorySyncOptIn.Started",
-      /*sample=*/signin_metrics::AccessPoint::kAccountMenu,
+      /*sample=*/signin_metrics::AccessPoint::kAccountMenuSwitchAccount,
       /*expected_count=*/1);
   histogram_tester_.ExpectBucketCount(
       "Signin.HistorySyncOptIn.Completed",
-      /*sample=*/signin_metrics::AccessPoint::kAccountMenu,
+      /*sample=*/signin_metrics::AccessPoint::kAccountMenuSwitchAccount,
       /*expected_count=*/1);
   histogram_tester_.ExpectUniqueSample(
       "Signin.SyncButtons.Shown",
@@ -329,7 +329,7 @@ IN_PROC_BROWSER_TEST_P(HistorySyncOptinScreenFromPromoEntryPointInteractiveTest,
         signin_ui_util::EnableSyncFromSingleAccountPromo(
             browser()->profile(),
             /*account=*/account_info,
-            signin_metrics::AccessPoint::kAccountMenu);
+            signin_metrics::AccessPoint::kAccountMenuSwitchAccount);
       }),
       // The user is already signed-in, the history sync optin dialog should
       // open.
@@ -363,11 +363,11 @@ IN_PROC_BROWSER_TEST_P(HistorySyncOptinScreenFromPromoEntryPointInteractiveTest,
       0);
   histogram_tester_.ExpectBucketCount(
       "Signin.HistorySyncOptIn.Started",
-      /*sample=*/signin_metrics::AccessPoint::kAccountMenu,
+      /*sample=*/signin_metrics::AccessPoint::kAccountMenuSwitchAccount,
       /*expected_count=*/1);
   histogram_tester_.ExpectBucketCount(
       "Signin.HistorySyncOptIn.Declined",
-      /*sample=*/signin_metrics::AccessPoint::kAccountMenu,
+      /*sample=*/signin_metrics::AccessPoint::kAccountMenuSwitchAccount,
       /*expected_count=*/1);
 }
 
@@ -388,7 +388,7 @@ IN_PROC_BROWSER_TEST_P(HistorySyncOptinScreenFromPromoEntryPointInteractiveTest,
         signin_ui_util::EnableSyncFromSingleAccountPromo(
             browser()->profile(),
             /*account=*/account_info,
-            signin_metrics::AccessPoint::kAccountMenu);
+            signin_metrics::AccessPoint::kAccountMenuSwitchAccount);
       }),
       // The user is already signed-in, the history sync optin dialog should
       // open.
@@ -420,11 +420,11 @@ IN_PROC_BROWSER_TEST_P(HistorySyncOptinScreenFromPromoEntryPointInteractiveTest,
       0);
   histogram_tester_.ExpectBucketCount(
       "Signin.HistorySyncOptIn.Started",
-      /*sample=*/signin_metrics::AccessPoint::kAccountMenu,
+      /*sample=*/signin_metrics::AccessPoint::kAccountMenuSwitchAccount,
       /*expected_count=*/1);
   histogram_tester_.ExpectBucketCount(
       "Signin.HistorySyncOptIn.Aborted",
-      /*sample=*/signin_metrics::AccessPoint::kAccountMenu,
+      /*sample=*/signin_metrics::AccessPoint::kAccountMenuSwitchAccount,
       /*expected_count=*/1);
 }
 
@@ -463,7 +463,7 @@ IN_PROC_BROWSER_TEST_P(HistorySyncOptinScreenFromPromoEntryPointInteractiveTest,
         signin_ui_util::EnableSyncFromSingleAccountPromo(
             browser()->profile(),
             /*account=*/account_info,
-            signin_metrics::AccessPoint::kAccountMenu);
+            signin_metrics::AccessPoint::kAccountMenuSwitchAccount);
       }),
       WaitForState(kHistorySyncOptInAlreadyOptedInHistogramState, 1),
       StopObservingState(kHistorySyncOptInAlreadyOptedInHistogramState),
@@ -485,7 +485,7 @@ IN_PROC_BROWSER_TEST_P(HistorySyncOptinScreenFromPromoEntryPointInteractiveTest,
                                      /*expected_count=*/0);
   histogram_tester_.ExpectBucketCount(
       "Signin.HistorySyncOptIn.AlreadyOptedIn",
-      /*sample=*/signin_metrics::AccessPoint::kAccountMenu,
+      /*sample=*/signin_metrics::AccessPoint::kAccountMenuSwitchAccount,
       /*expected_count=*/1);
 }
 

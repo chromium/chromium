@@ -609,7 +609,7 @@ void RecordSigninUserActionForAccessPoint(AccessPoint access_point) {
       base::RecordAction(base::UserMetricsAction(
           "Signin_Signin_FromAvatarBubbleSigninWithSyncPromo"));
       break;
-    case AccessPoint::kAccountMenu:
+    case AccessPoint::kAccountMenuSwitchAccount:
       base::RecordAction(
           base::UserMetricsAction("Signin_Signin_FromAccountMenu"));
       break;
@@ -617,7 +617,7 @@ void RecordSigninUserActionForAccessPoint(AccessPoint access_point) {
       base::RecordAction(
           base::UserMetricsAction("Signin_Signin_FromProductSpecifications"));
       break;
-    case AccessPoint::kAccountMenuFailedSwitch:
+    case AccessPoint::kAccountMenuSwitchAccountFailed:
       base::RecordAction(
           base::UserMetricsAction("Signin_Signin_FromAccountMenuFailedSwitch"));
       break;
@@ -833,8 +833,8 @@ void RecordSigninImpressionUserActionForAccessPoint(AccessPoint access_point) {
     case AccessPoint::kOidcRedirectionInterception:
     case AccessPoint::kWebauthnModalDialog:
     case AccessPoint::kAvatarBubbleSignInWithSyncPromo:
-    case AccessPoint::kAccountMenu:
-    case AccessPoint::kAccountMenuFailedSwitch:
+    case AccessPoint::kAccountMenuSwitchAccount:
+    case AccessPoint::kAccountMenuSwitchAccountFailed:
     case AccessPoint::kCctAccountMismatchNotification:
     case AccessPoint::kDriveFilePickerIos:
     case AccessPoint::kCollaborationShareTabGroup:

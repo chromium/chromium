@@ -928,9 +928,9 @@ chromium-metrics-reviews@google.com.
   <int value="64" label="OIDC auth redirect URI interception"/>
   <int value="65" label="WebAuthn modal dialog"/>
   <int value="66" label="Avatar bubble sign in with sync promo"/>
-  <int value="67" label="Account menu"/>
+  <int value="67" label="Account menu: Switch account"/>
   <int value="68" label="Product Specifications"/>
-  <int value="69" label="Account menu failed switch"/>
+  <int value="69" label="Account menu: Switch account failed"/>
   <int value="70" label="Address bubble"/>
   <int value="71" label="CCT account mismatch notification"/>
   <int value="72" label="Drive file picker (iOS only)"/>

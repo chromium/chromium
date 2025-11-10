@@ -43315,7 +43315,7 @@ should be able to be added at any place in this file.
   <owner>chrome-signin-team@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::kAccountMenu.
+    signin_metrics::AccessPoint::kAccountMenuSwitchAccount.
   </description>
 </action>
 
@@ -43324,7 +43324,7 @@ should be able to be added at any place in this file.
   <owner>chrome-signin-team@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::kAccountMenuFailedSwitch.
+    signin_metrics::AccessPoint::kAccountMenuSwitchAccountFailed.
   </description>
 </action>
 

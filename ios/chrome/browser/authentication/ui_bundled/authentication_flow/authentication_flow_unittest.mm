@@ -536,12 +536,14 @@ TEST_P(AuthenticationFlowTest,
 // when signing in from the Account Menu.
 TEST_P(AuthenticationFlowTest, TestShowManagedConfirmationOnlyOnce) {
   // First signin, show the dialog.
-  SignIn(managed_identity1_, signin_metrics::AccessPoint::kAccountMenu);
+  SignIn(managed_identity1_,
+         signin_metrics::AccessPoint::kAccountMenuSwitchAccount);
   EXPECT_EQ(1, managed_confirmation_dialog_shown_count_);
 
   // Second signin from the account menu, don't show the dialog.
   SignOutPersonalProfile();
-  SignIn(managed_identity1_, signin_metrics::AccessPoint::kAccountMenu,
+  SignIn(managed_identity1_,
+         signin_metrics::AccessPoint::kAccountMenuSwitchAccount,
          /*adds_history_screen_post_profile_switch=*/false);
   EXPECT_EQ(1, managed_confirmation_dialog_shown_count_);
 
@@ -553,7 +555,8 @@ TEST_P(AuthenticationFlowTest, TestShowManagedConfirmationOnlyOnce) {
 
   // Signin with a different account, show the dialog again.
   SignOutPersonalProfile();
-  SignIn(managed_identity2_, signin_metrics::AccessPoint::kAccountMenu);
+  SignIn(managed_identity2_,
+         signin_metrics::AccessPoint::kAccountMenuSwitchAccount);
   EXPECT_EQ(2, managed_confirmation_dialog_shown_count_);
 }
 

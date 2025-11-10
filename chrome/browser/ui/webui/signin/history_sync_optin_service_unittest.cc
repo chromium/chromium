@@ -279,7 +279,7 @@ TEST_P(HistorySyncOptinServiceTest, StartFlow) {
       .Times(1);
   bool flow_started = service_->StartHistorySyncOptinFlow(
       account_info, std::move(delegate),
-      signin_metrics::AccessPoint::kAccountMenu);
+      signin_metrics::AccessPoint::kAccountMenuSwitchAccount);
   EXPECT_TRUE(flow_started);
   if (!IsManagedAccountInfoAvailableInAdvance()) {
     UpdateAccountManagementInfo(account_info, identity_test_env_adaptor_.get());
@@ -310,7 +310,7 @@ TEST_P(HistorySyncOptinServiceTest, AbortFlowIfOneInProgress) {
   // Start the first flow.
   bool flow_started = service_->StartHistorySyncOptinFlow(
       account_info, std::move(delegate),
-      signin_metrics::AccessPoint::kAccountMenu);
+      signin_metrics::AccessPoint::kAccountMenuSwitchAccount);
   EXPECT_TRUE(flow_started);
   if (!IsManagedAccountInfoAvailableInAdvance()) {
     UpdateAccountManagementInfo(account_info, identity_test_env_adaptor_.get());
@@ -337,7 +337,7 @@ TEST_P(HistorySyncOptinServiceTest, AbortFlowIfOneInProgress) {
       .Times(1);
   flow_started = service_->StartHistorySyncOptinFlow(
       account_info, std::move(second_delegate),
-      signin_metrics::AccessPoint::kAccountMenu);
+      signin_metrics::AccessPoint::kAccountMenuSwitchAccount);
   EXPECT_TRUE(flow_started);
 }
 
@@ -441,7 +441,7 @@ TEST_P(HistorySyncOptinServiceTest,
   // Start the history sync opt-in flow with the managed account.
   bool flow_started = service_->StartHistorySyncOptinFlow(
       original_managed_account_info, std::move(original_delegate),
-      signin_metrics::AccessPoint::kAccountMenu);
+      signin_metrics::AccessPoint::kAccountMenuSwitchAccount);
   EXPECT_TRUE(flow_started);
 
   if (!IsManagedAccountInfoAvailableInAdvance()) {
@@ -455,7 +455,7 @@ TEST_P(HistorySyncOptinServiceTest,
 
   histogram_tester.ExpectUniqueSample(
       "Signin.HistorySyncOptIn.Started",
-      /*sample=*/signin_metrics::AccessPoint::kAccountMenu,
+      /*sample=*/signin_metrics::AccessPoint::kAccountMenuSwitchAccount,
       /*expected_bucket_count=*/1);
 }
 
@@ -505,7 +505,7 @@ TEST_P(HistorySyncOptinServiceTest,
   // Start the history sync opt-in flow with the managed account.
   bool flow_started = service_->StartHistorySyncOptinFlow(
       managed_account_info, std::move(delegate),
-      signin_metrics::AccessPoint::kAccountMenu);
+      signin_metrics::AccessPoint::kAccountMenuSwitchAccount);
   EXPECT_TRUE(flow_started);
 
   if (!IsManagedAccountInfoAvailableInAdvance()) {
@@ -519,7 +519,7 @@ TEST_P(HistorySyncOptinServiceTest,
 
   histogram_tester.ExpectUniqueSample(
       "Signin.HistorySyncOptIn.Started",
-      /*sample=*/signin_metrics::AccessPoint::kAccountMenu,
+      /*sample=*/signin_metrics::AccessPoint::kAccountMenuSwitchAccount,
       /*expected_bucket_count=*/1);
 }
 
@@ -559,7 +559,7 @@ TEST_P(HistorySyncOptinServiceTest,
   // Start the history sync opt-in flow with the managed account.
   bool flow_started = service_->StartHistorySyncOptinFlow(
       original_managed_account_info, std::move(delegate),
-      signin_metrics::AccessPoint::kAccountMenu);
+      signin_metrics::AccessPoint::kAccountMenuSwitchAccount);
   EXPECT_TRUE(flow_started);
   if (!IsManagedAccountInfoAvailableInAdvance()) {
     UpdateAccountManagementInfo(original_managed_account_info,
@@ -569,7 +569,7 @@ TEST_P(HistorySyncOptinServiceTest,
 
   histogram_tester.ExpectUniqueSample(
       "Signin.HistorySyncOptIn.Started",
-      /*sample=*/signin_metrics::AccessPoint::kAccountMenu,
+      /*sample=*/signin_metrics::AccessPoint::kAccountMenuSwitchAccount,
       /*expected_bucket_count=*/1);
 }
 
@@ -596,7 +596,7 @@ TEST_P(HistorySyncOptinServiceTest,
 
   service_->StartHistorySyncOptinFlow(
       account_info, std::move(delegate),
-      signin_metrics::AccessPoint::kAccountMenu);
+      signin_metrics::AccessPoint::kAccountMenuSwitchAccount);
   if (!IsManagedAccountInfoAvailableInAdvance()) {
     UpdateAccountManagementInfo(account_info, identity_test_env_adaptor_.get());
   }
@@ -673,7 +673,7 @@ TEST_P(HistorySyncOptinServiceTest,
   bool flow_started = history_sync_optin_service->StartHistorySyncOptinFlow(
       other_account_info,
       std::make_unique<MockHistorySyncOptinHelperDelegate>(),
-      signin_metrics::AccessPoint::kAccountMenu);
+      signin_metrics::AccessPoint::kAccountMenuSwitchAccount);
   EXPECT_TRUE(flow_started);
 
   if (!IsManagedAccountInfoAvailableInAdvance()) {
@@ -687,7 +687,7 @@ TEST_P(HistorySyncOptinServiceTest,
 
   histogram_tester.ExpectUniqueSample(
       "Signin.HistorySyncOptIn.Aborted",
-      /*sample=*/signin_metrics::AccessPoint::kAccountMenu,
+      /*sample=*/signin_metrics::AccessPoint::kAccountMenuSwitchAccount,
       /*expected_bucket_count=*/1);
   histogram_tester.ExpectUniqueSample(
       "Signin.ManagedUserProfileCreationConflict", true, 1);
