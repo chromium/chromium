@@ -12,8 +12,16 @@ namespace {
 static constexpr char kSyncedSetUpTriggerSource[] =
     "IOS.SyncedSetUp.TriggerSource";
 
+// UMA histogram name for recording the `SyncedSetUpSnackbarInteraction`.
+static constexpr char kSyncedSetUpSnackbarInteraction[] =
+    "IOS.SyncedSetUp.Snackbar.Interaction";
+
 }  // namespace
 
 void LogSyncedSetUpTriggerSource(SyncedSetUpTriggerSource source) {
   base::UmaHistogramEnumeration(kSyncedSetUpTriggerSource, source);
+}
+
+void LogSyncedSetUpSnackbarInteraction(SyncedSetUpSnackbarInteraction event) {
+  base::UmaHistogramEnumeration(kSyncedSetUpSnackbarInteraction, event);
 }
