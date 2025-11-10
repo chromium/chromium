@@ -144,7 +144,7 @@ void TabCaptureAccessHandler::HandleRequest(
   if (!can_show_web_contents.Run(target_web_contents)) {
     std::move(callback).Run(
         blink::mojom::StreamDevicesSet(),
-        blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED,
+        blink::mojom::MediaStreamRequestResult::CAPTURE_NOT_ALLOWED_BY_POLICY,
         /*ui=*/nullptr);
     return;
   }

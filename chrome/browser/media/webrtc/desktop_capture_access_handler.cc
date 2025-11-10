@@ -363,7 +363,7 @@ void DesktopCaptureAccessHandler::HandleRequest(
   if (allowed_capture_level == AllowedScreenCaptureLevel::kDisallowed) {
     std::move(pending_request->callback)
         .Run(blink::mojom::StreamDevicesSet(),
-             MediaStreamRequestResult::PERMISSION_DENIED,
+             MediaStreamRequestResult::CAPTURE_NOT_ALLOWED_BY_POLICY,
              /*ui=*/nullptr);
     return;
   }
@@ -380,7 +380,7 @@ void DesktopCaptureAccessHandler::HandleRequest(
     if (allowed_capture_level < AllowedScreenCaptureLevel::kDesktop) {
       std::move(pending_request->callback)
           .Run(blink::mojom::StreamDevicesSet(),
-               MediaStreamRequestResult::PERMISSION_DENIED,
+               MediaStreamRequestResult::CAPTURE_NOT_ALLOWED_BY_POLICY,
                /*ui=*/nullptr);
       return;
     }
@@ -436,7 +436,7 @@ void DesktopCaptureAccessHandler::HandleRequest(
   if (!IsMediaTypeAllowed(allowed_capture_level, media_id.type)) {
     std::move(pending_request->callback)
         .Run(blink::mojom::StreamDevicesSet(),
-             MediaStreamRequestResult::PERMISSION_DENIED,
+             MediaStreamRequestResult::CAPTURE_NOT_ALLOWED_BY_POLICY,
              /*ui=*/nullptr);
     return;
   }

@@ -152,6 +152,8 @@ const char* MediaStreamRequestResultToString(MediaStreamRequestResult value) {
       return "AUDIO_DEVICE_SOCKET_ERROR";
     case MediaStreamRequestResult::NO_TRANSIENT_ACTIVATION:
       return "NO_TRANSIENT_ACTIVATION";
+    case MediaStreamRequestResult::CAPTURE_NOT_ALLOWED_BY_POLICY:
+      return "CAPTURE_NOT_ALLOWED_BY_POLICY";
     case MediaStreamRequestResult::NUM_MEDIA_REQUEST_RESULTS:
       break;
   }
@@ -308,6 +310,7 @@ String ErrorCodeToString(MediaStreamRequestResult result) {
     case MediaStreamRequestResult::OK:
       return "OK";
     case MediaStreamRequestResult::PERMISSION_DENIED:
+    case MediaStreamRequestResult::CAPTURE_NOT_ALLOWED_BY_POLICY:
       return "Permission denied";
     case MediaStreamRequestResult::PERMISSION_DISMISSED:
       return "Permission dismissed";

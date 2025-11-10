@@ -286,9 +286,9 @@ const char* RequestResultToString(
     case blink::mojom::MediaStreamRequestResult::INVALID_SECURITY_ORIGIN:
       return "INVALID_SECURITY_ORIGIN";
     case blink::mojom::MediaStreamRequestResult::TAB_CAPTURE_FAILURE:
-      return "INVALID_STATE";
-    case blink::mojom::MediaStreamRequestResult::SCREEN_CAPTURE_FAILURE:
       return "TAB_CAPTURE_FAILURE";
+    case blink::mojom::MediaStreamRequestResult::SCREEN_CAPTURE_FAILURE:
+      return "SCREEN_CAPTURE_FAILURE";
     case blink::mojom::MediaStreamRequestResult::CAPTURE_FAILURE:
       return "CAPTURE_FAILURE";
     case blink::mojom::MediaStreamRequestResult::CONSTRAINT_NOT_SATISFIED:
@@ -317,6 +317,8 @@ const char* RequestResultToString(
       return "AUDIO_DEVICE_SOCKET_ERROR";
     case blink::mojom::MediaStreamRequestResult::NO_TRANSIENT_ACTIVATION:
       return "NO_TRANSIENT_ACTIVATION";
+    case blink::mojom::MediaStreamRequestResult::CAPTURE_NOT_ALLOWED_BY_POLICY:
+      return "CAPTURE_NOT_ALLOWED_BY_POLICY";
     case blink::mojom::MediaStreamRequestResult::NUM_MEDIA_REQUEST_RESULTS:
       break;  // Not a valid enum value.
   }

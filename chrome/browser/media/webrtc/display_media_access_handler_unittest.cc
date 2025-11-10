@@ -917,8 +917,9 @@ TEST_F(DisplayMediaAccessHandlerTest,
 #endif
   EXPECT_FALSE(test_flags_[1].picker_created);
   EXPECT_FALSE(test_flags_[1].picker_deleted);
-  EXPECT_EQ(blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED,
-            results[1]);
+  EXPECT_EQ(
+      blink::mojom::MediaStreamRequestResult::CAPTURE_NOT_ALLOWED_BY_POLICY,
+      results[1]);
 }
 
 TEST_F(DisplayMediaAccessHandlerTest,

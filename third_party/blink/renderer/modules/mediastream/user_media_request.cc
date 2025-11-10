@@ -943,6 +943,7 @@ void UserMediaRequest::Fail(Result error, const String& message) {
     case Result::NO_TRANSIENT_ACTIVATION:
       // TODO(crbug.com/453600255): Use `result_enum` kInvalidStateError for
       // NO_TRANSIENT_ACTIVATION once all new enum values are added.
+    case Result::CAPTURE_NOT_ALLOWED_BY_POLICY:
     case Result::KILL_SWITCH_ON:
       exception_code = DOMExceptionCode::kNotAllowedError;
       result_enum = UserMediaRequestResult::kNotAllowedError;
