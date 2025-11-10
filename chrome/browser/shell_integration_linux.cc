@@ -76,6 +76,7 @@ const char kXdgSettings[] = "xdg-settings";
 const char kXdgSettingsDefaultBrowser[] = "default-web-browser";
 const char kXdgSettingsDefaultSchemeHandler[] = "default-url-scheme-handler";
 
+#if defined(USE_GLIB)
 struct GKeyFileDataDeleter {
   void operator()(gchar* data) { g_free(data); }
 };
@@ -97,6 +98,7 @@ std::string GetFileContents(GKeyFile* key_file) {
   }
   return std::string(data_view);
 }
+#endif
 
 // Utility function to get the path to the version of a script shipped with
 // Chrome. |script| gives the name of the script. |chrome_version| returns the
