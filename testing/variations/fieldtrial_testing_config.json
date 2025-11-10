@@ -9638,7 +9638,7 @@
                     "name": "Enabled",
                     "enable_features": [
                         "EnableBestEffortTaskInhibitingPolicy",
-                        "ScopedBestEffortExecutionFenceOnUIThread"
+                        "ScopedBestEffortExecutionFenceForTaskQueue"
                     ]
                 }
             ]
