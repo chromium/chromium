@@ -60,35 +60,71 @@ to have Visual Studio with C++ support installed.
 
 ## Using a custom clang binary
 
-Set `clang_base_path` in your args.gn to the llvm build directory containing
-`bin/clang` (i.e. the directory you ran cmake). This must be an absolute
-path. You also need to disable chromium's clang plugin.
+There are three main ways of using a custom clang (or lld, etc.) binary for the
+build.
 
-Here's an example that also disables debug info and enables the component build
-(both not strictly necessary, but they will speed up your build):
+1. **Point the Chromium build to your custom clang.**
 
-```
-clang_base_path = getenv("HOME") + "/src/llvm-build"
-clang_use_chrome_plugins = false
-is_debug = false
-symbol_level = 1
-is_component_build = true
-```
+   Set `clang_base_path` in your args.gn to the llvm build directory
+   containing `bin/clang` (i.e. the directory you ran cmake). This must be an
+   absolute path. You also need to disable chromium's clang plugins.
 
-On Windows, for `clang_base_path` use something like this instead:
+   Here's an example that also disables debug info and enables the component
+   build (both not strictly necessary, but they will speed up your build):
 
-```
-clang_base_path = "c:/src/llvm-build"
-```
+   ```
+   clang_base_path = getenv("HOME") + "/src/llvm-build"
+   clang_use_chrome_plugins = false
+   is_debug = false
+   symbol_level = 1
+   is_component_build = true
+   ```
 
-You can then look in `out/gn/toolchain.ninja` and check that the `rule cc` and
-`rule cxx` commands run your clang binary.  If things look good, run `ninja
--C out/gn` to build.
+   On Windows, for `clang_base_path` use something like this instead:
 
-Chromium tries to be buildable with its currently pinned clang, and with clang
-trunk. Set `llvm_force_head_revision = true` in your args.gn if the clang you're
-trying to build with is closer to clang trunk than to Chromium's pinned clang
-(which `tools/clang/scripts/update.py --print-revision` prints).
+   ```
+   clang_base_path = "c:/src/llvm-build"
+   ```
+
+   You can then look in `out/gn/toolchain.ninja` and check that the `rule cc` and
+   `rule cxx` commands run your clang binary.  If things look good, run `ninja
+   -C out/gn` to build.
+
+   Chromium tries to be buildable with its currently pinned clang, and with clang
+   trunk. Set `llvm_force_head_revision = true` in your args.gn if the clang you're
+   trying to build with is closer to clang trunk than to Chromium's pinned clang
+   (which `tools/clang/scripts/update.py --print-revision` prints).
+
+2. **Bring your custom clang into the Chromium tree.**
+
+   Chromium's clang binary lives at
+   `third_party/llvm-build/Release+Asserts/bin/clang` (or `clang-cl.exe` on
+   Windows). You can just copy your custom binary over that. Maybe a
+   symlink works too.
+
+   Unless your Clang includes support for Chromium's plugins, you'll still
+   need to set `clang_use_chrome_plugins=false`.
+
+   To get back to a default state when you're done, you can delete
+   `third_party/llvm-build/` and re-sync.
+
+3. **Rebuild Chromium's clang using `tools/clang/scripts/build.py`.**
+
+   The binaries under `third_party/llvm-build/` are produced by `build.py`,
+   using source code under `third_party/llvm/`. You can run the script to
+   build it yourself, with modifications.
+
+   For example, you can check out a specific revision under `third_party/llvm`,
+   apply any local modifications, and build with `build.py --skip-checkout` to
+   build a toolchain without overwriting your changes.
+
+If you have access to remote execution (RBE), you can use that also with a
+locally built clang binary -- as long as you're on Linux and the binary is
+located inside the Chromium source tree (methods 2 and 3 above). Just set
+`use_remoteexec=true` in your `gn` args.
+
+See [crbug.com/451733085](https://crbug.com/451733085#comment7) for an example
+of using the third approach to bisect over LLVM.
 
 ## Related documents
 
