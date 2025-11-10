@@ -99,8 +99,9 @@ void TextFormattingMetricsRecorder::StartTimer(TextFormattingMetric metric) {
 }
 
 void TextFormattingMetricsRecorder::StopTimer(TextFormattingMetric metric) {
-  CHECK(timers_.contains(metric));
-  auto& [timer, duration] = timers_.at(metric);
+  auto it = timers_.find(metric);
+  CHECK(it != timers_.end());
+  auto& [timer, duration] = it->second;
   duration = timer.Elapsed();
 }
 
