@@ -61,9 +61,15 @@ ClientTagBasedRemoteUpdateHandler::ProcessIncrementalUpdate(
   EntityChangeList entity_changes;
 
   metadata_changes->UpdateDataTypeState(data_type_state);
+
+  // Bridges that are full updates only must not reupload entities after changed
+  // encryption requirements. This should not happen normally but this depends
+  // on the persisted data type state on the disk, and it could have some
+  // `encryption_key_name` set (e.g. due to a past bug).
   const bool got_new_encryption_requirements =
+      bridge_->SupportsIncrementalUpdates() &&
       entity_tracker_->data_type_state().encryption_key_name() !=
-      data_type_state.encryption_key_name();
+          data_type_state.encryption_key_name();
   entity_tracker_->set_data_type_state(data_type_state);
 
   // If new encryption requirements come from the server, the entities that are
@@ -142,6 +148,10 @@ ClientTagBasedRemoteUpdateHandler::ProcessIncrementalUpdate(
   }
 
   if (got_new_encryption_requirements) {
+    // Full update data types are download-only and must not have unsynced
+    // entities.
+    CHECK(bridge_->SupportsIncrementalUpdates());
+
     // TODO(pavely): Currently we recommit all entities. We should instead
     // recommit only the ones whose encryption key doesn't match the one in
     // DataTypeState. Work is tracked in http://crbug.com/727874.
@@ -151,6 +161,13 @@ ClientTagBasedRemoteUpdateHandler::ProcessIncrementalUpdate(
       metadata_changes->UpdateMetadata(entity->storage_key(),
                                        entity->metadata());
     }
+  }
+
+  if (!bridge_->SupportsIncrementalUpdates()) {
+    // An additional CHECK that no entities are left unsynced for download-only
+    // data types.
+    // TODO(crbug.com/455150916): make it CHECK once fixed.
+    DUMP_WILL_BE_CHECK_EQ(entity_tracker_->GetUnsyncedDataCount(), 0u);
   }
 
   // Inform the bridge of the new or updated data.
@@ -254,8 +271,9 @@ ProcessorEntity* ClientTagBasedRemoteUpdateHandler::ProcessUpdate(
 
   // If the received entity has out of date encryption, we schedule another
   // commit to fix it. Tombstones aren't encrypted and hence shouldn't be
-  // checked.
-  if (!update_is_tombstone &&
+  // checked. Full update data types are download-only and must not have
+  // unsynced entities.
+  if (!update_is_tombstone && bridge_->SupportsIncrementalUpdates() &&
       entity_tracker_->data_type_state().encryption_key_name() !=
           update_encryption_key_name) {
     DVLOG(2) << DataTypeToDebugString(type_)

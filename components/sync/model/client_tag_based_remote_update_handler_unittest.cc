@@ -837,6 +837,43 @@ TEST_F(ClientTagBasedRemoteUpdateHandlerForSharedTest,
               EqualsProto(new_unique_position));
 }
 
+class ClientTagBasedRemoteUpdateHandlerForNonIncrementalTest
+    : public ClientTagBasedRemoteUpdateHandlerTest {
+ public:
+  void SetUp() override {
+    ClientTagBasedRemoteUpdateHandlerTest::SetUp();
+    bridge()->SetSupportsIncrementalUpdates(false);
+  }
+};
+
+TEST_F(ClientTagBasedRemoteUpdateHandlerForNonIncrementalTest,
+       ShouldNotReuploadEntitesOnReencryption) {
+  sync_pb::DataTypeState data_type_state = GenerateDataTypeState();
+  data_type_state.set_encryption_key_name("encryption_key_name");
+
+  sync_pb::GarbageCollectionDirective gc_directive;
+  gc_directive.set_version_watermark(1);
+
+  // Simulate a full remote update with enabled encryption.
+  ProcessSingleUpdate(data_type_state, GeneratePrefUpdate(kKey1, kValue1),
+                      gc_directive);
+  ASSERT_EQ(1U, ProcessorEntityCount());
+  ASSERT_EQ(0U, entity_tracker()->GetUnsyncedDataCount());
+
+  // Simulate a full remote update with disabled encryption (e.g. if encryption
+  // was disabled for the data type). One is an update, the other is a creation.
+  data_type_state.set_encryption_key_name("");
+  UpdateResponseDataList updates;
+  updates.push_back(GeneratePrefUpdate(kKey1, kValue1));
+  updates.push_back(GeneratePrefUpdate(kKey2, kValue2));
+  remote_update_handler()->ProcessIncrementalUpdate(
+      data_type_state, std::move(updates), gc_directive);
+  ASSERT_EQ(2U, ProcessorEntityCount());
+
+  // Both entities should not be unsynced (i.e. re-uploaded).
+  EXPECT_EQ(0U, entity_tracker()->GetUnsyncedDataCount());
+}
+
 }  // namespace
 
 }  // namespace syncer

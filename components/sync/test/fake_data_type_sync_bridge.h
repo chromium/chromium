@@ -122,6 +122,7 @@ class FakeDataTypeSyncBridge : public DataTypeSyncBridge {
   bool SupportsGetClientTag() const override;
   bool SupportsGetStorageKey() const override;
   bool SupportsUniquePositions() const override;
+  bool SupportsIncrementalUpdates() const override;
   sync_pb::UniquePosition GetUniquePosition(
       const sync_pb::EntitySpecifics& specifics) const override;
   ConflictResolution ResolveConflict(
@@ -176,6 +177,9 @@ class FakeDataTypeSyncBridge : public DataTypeSyncBridge {
   // Enables unique position support. The `callback` is used to extract unique
   // position from specifics.
   void EnableUniquePositionSupport(ExtractUniquePositionCallback callback);
+
+  // Sets whether the bridge supports incremental updates.
+  void SetSupportsIncrementalUpdates(bool supports_incremental_updates);
 
   // Storage keys for the entities with deleted collaboration membership.
   const absl::flat_hash_set<std::string>&
@@ -241,6 +245,8 @@ class FakeDataTypeSyncBridge : public DataTypeSyncBridge {
       deleted_collaboration_membership_storage_keys_;
 
   ExtractUniquePositionCallback extract_unique_positions_callback_;
+
+  bool supports_incremental_updates_ = true;
 };
 
 }  // namespace syncer

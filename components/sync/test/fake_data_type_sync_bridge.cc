@@ -369,6 +369,10 @@ bool FakeDataTypeSyncBridge::SupportsUniquePositions() const {
   return !extract_unique_positions_callback_.is_null();
 }
 
+bool FakeDataTypeSyncBridge::SupportsIncrementalUpdates() const {
+  return supports_incremental_updates_;
+}
+
 sync_pb::UniquePosition FakeDataTypeSyncBridge::GetUniquePosition(
     const sync_pb::EntitySpecifics& specifics) const {
   return extract_unique_positions_callback_.Run(specifics);
@@ -458,6 +462,11 @@ void FakeDataTypeSyncBridge::TreatRemoteUpdateAsInvalid(
 void FakeDataTypeSyncBridge::EnableUniquePositionSupport(
     ExtractUniquePositionCallback callback) {
   extract_unique_positions_callback_ = std::move(callback);
+}
+
+void FakeDataTypeSyncBridge::SetSupportsIncrementalUpdates(
+    bool supports_incremental_updates) {
+  supports_incremental_updates_ = supports_incremental_updates;
 }
 
 }  // namespace syncer
