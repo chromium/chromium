@@ -151,6 +151,15 @@ class BookmarkDataTypeProcessor : public syncer::DataTypeProcessor,
   // bookmarks in the model depending on the selected behavior.
   void TriggerWipeModelUponSyncDisabledBehavior();
 
+  // Migrates the legacy `last_initial_merge_remote_updates_exceeded_limit` bool
+  // to the timestamp representation.
+  void MigrateLegacyExceededLimitError(
+      sync_pb::BookmarkModelMetadata* model_metadata);
+
+  // Resets the error for exceeding bookmark limit if enough time has passed.
+  void MaybeResetExceededLimitError(
+      sync_pb::BookmarkModelMetadata* model_metadata);
+
   // Handles the error state from the given `model_metadata` if a previous sync
   // cycle reported an error. Returns true if there was an error to be handled.
   [[nodiscard]] bool HandlePreviousErrorState(

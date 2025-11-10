@@ -370,7 +370,8 @@ class BookmarkDataTypeProcessorTest : public testing::Test {
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
  private:
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   NiceMock<base::MockCallback<base::RepeatingClosure>> schedule_save_closure_;
   NiceMock<base::MockRepeatingCallback<void(const syncer::ModelError&)>>
       error_handler_;
@@ -730,6 +731,170 @@ TEST_F(BookmarkDataTypeProcessorTest, ShouldDecodeEncodedSyncMetadata) {
   EXPECT_TRUE(new_processor.IsTrackingMetadata());
 }
 
+// Test suite with kSyncResetBookmarksInitialMergeLimitExceededError enabled.
+class BookmarkDataTypeProcessorWithResetErrorFeatureEnabledTest
+    : public BookmarkDataTypeProcessorTest {
+ private:
+  base::test::ScopedFeatureList features_{
+      syncer::kSyncResetBookmarksInitialMergeLimitExceededError};
+};
+
+// Test suite with kSyncResetBookmarksInitialMergeLimitExceededError disabled.
+class BookmarkDataTypeProcessorWithResetErrorFeatureDisabledTest
+    : public BookmarkDataTypeProcessorTest {
+ public:
+  BookmarkDataTypeProcessorWithResetErrorFeatureDisabledTest() {
+    features_.InitAndDisableFeature(
+        syncer::kSyncResetBookmarksInitialMergeLimitExceededError);
+  }
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+TEST_F(BookmarkDataTypeProcessorWithResetErrorFeatureDisabledTest,
+       ShouldNotResetExceededLimitErrorWithTimestamp) {
+  sync_pb::BookmarkModelMetadata model_metadata =
+      CreateMetadataForPermanentNodes(bookmark_model());
+  model_metadata
+      .set_initial_merge_remote_updates_exceeded_limit_timestamp_windows_epoch_micros(
+          (base::Time::Now() - base::Days(31))
+              .ToDeltaSinceWindowsEpoch()
+              .InMicroseconds());
+
+  EXPECT_CALL(*schedule_save_closure(), Run()).Times(0);
+  processor()->ModelReadyToSync(model_metadata.SerializeAsString(),
+                                schedule_save_closure()->Get(),
+                                bookmark_model());
+
+  EXPECT_FALSE(processor()->GetTrackerForTest());
+  std::string new_metadata_str = processor()->EncodeSyncMetadata();
+  sync_pb::BookmarkModelMetadata new_model_metadata;
+  new_model_metadata.ParseFromString(new_metadata_str);
+  EXPECT_FALSE(
+      new_model_metadata.last_initial_merge_remote_updates_exceeded_limit());
+  EXPECT_TRUE(
+      new_model_metadata
+          .has_initial_merge_remote_updates_exceeded_limit_timestamp_windows_epoch_micros());
+}
+
+TEST_F(BookmarkDataTypeProcessorWithResetErrorFeatureEnabledTest,
+       ShouldSetTimestampForExceededLimitErrorForMigratingUsers) {
+  sync_pb::BookmarkModelMetadata model_metadata =
+      CreateMetadataForPermanentNodes(bookmark_model());
+  model_metadata.set_last_initial_merge_remote_updates_exceeded_limit(true);
+  // Note: The timestamp field is not set, to simulate migrating users.
+
+  EXPECT_CALL(*schedule_save_closure(), Run());
+  processor()->ModelReadyToSync(model_metadata.SerializeAsString(),
+                                schedule_save_closure()->Get(),
+                                bookmark_model());
+
+  // The error is not reset right away, so no tracker.
+  EXPECT_FALSE(processor()->GetTrackerForTest());
+  std::string new_metadata_str = processor()->EncodeSyncMetadata();
+  sync_pb::BookmarkModelMetadata new_model_metadata;
+  new_model_metadata.ParseFromString(new_metadata_str);
+  EXPECT_TRUE(
+      new_model_metadata
+          .has_initial_merge_remote_updates_exceeded_limit_timestamp_windows_epoch_micros());
+
+  // The new timestamp should be between 23 and 30 days ago.
+  const base::Time limit_set_time =
+      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(
+          new_model_metadata
+              .initial_merge_remote_updates_exceeded_limit_timestamp_windows_epoch_micros()));
+
+  EXPECT_FALSE(limit_set_time.is_null());
+  EXPECT_FALSE(new_model_metadata
+                   .has_last_initial_merge_remote_updates_exceeded_limit());
+  const base::TimeDelta time_since_limit_set =
+      base::Time::Now() - limit_set_time;
+  EXPECT_GE(time_since_limit_set, base::Days(23));
+  EXPECT_LE(time_since_limit_set, base::Days(30));
+}
+
+TEST_F(BookmarkDataTypeProcessorWithResetErrorFeatureEnabledTest,
+       ShouldResetExceededLimitErrorAfter30Days) {
+  sync_pb::BookmarkModelMetadata model_metadata =
+      CreateMetadataForPermanentNodes(bookmark_model());
+  model_metadata
+      .set_initial_merge_remote_updates_exceeded_limit_timestamp_windows_epoch_micros(
+          (base::Time::Now() - base::Days(31))
+              .ToDeltaSinceWindowsEpoch()
+              .InMicroseconds());
+
+  EXPECT_CALL(*schedule_save_closure(), Run());
+  processor()->ModelReadyToSync(model_metadata.SerializeAsString(),
+                                schedule_save_closure()->Get(),
+                                bookmark_model());
+
+  // After resetting the error, the metadata should be valid for creating a
+  // tracker.
+  EXPECT_TRUE(processor()->GetTrackerForTest());
+  std::string new_metadata_str = processor()->EncodeSyncMetadata();
+  sync_pb::BookmarkModelMetadata new_model_metadata;
+  new_model_metadata.ParseFromString(new_metadata_str);
+  EXPECT_FALSE(new_model_metadata
+                   .has_last_initial_merge_remote_updates_exceeded_limit());
+  EXPECT_FALSE(
+      new_model_metadata
+          .has_initial_merge_remote_updates_exceeded_limit_timestamp_windows_epoch_micros());
+}
+
+TEST_F(BookmarkDataTypeProcessorWithResetErrorFeatureEnabledTest,
+       ShouldNotResetExceededLimitErrorWithin30Days) {
+  sync_pb::BookmarkModelMetadata model_metadata =
+      CreateMetadataForPermanentNodes(bookmark_model());
+  model_metadata
+      .set_initial_merge_remote_updates_exceeded_limit_timestamp_windows_epoch_micros(
+          (base::Time::Now() - base::Days(29))
+              .ToDeltaSinceWindowsEpoch()
+              .InMicroseconds());
+
+  EXPECT_CALL(*schedule_save_closure(), Run()).Times(0);
+  processor()->ModelReadyToSync(model_metadata.SerializeAsString(),
+                                schedule_save_closure()->Get(),
+                                bookmark_model());
+
+  EXPECT_FALSE(processor()->GetTrackerForTest());
+  std::string new_metadata_str = processor()->EncodeSyncMetadata();
+  sync_pb::BookmarkModelMetadata new_model_metadata;
+  new_model_metadata.ParseFromString(new_metadata_str);
+  EXPECT_TRUE(
+      new_model_metadata
+          .has_initial_merge_remote_updates_exceeded_limit_timestamp_windows_epoch_micros());
+}
+
+TEST_F(BookmarkDataTypeProcessorTest,
+       ShouldReportErrorWhenExceededLimitTimestampIsSet) {
+  sync_pb::BookmarkModelMetadata model_metadata;
+  model_metadata.mutable_data_type_state()->set_initial_sync_state(
+      sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+  model_metadata
+      .set_initial_merge_remote_updates_exceeded_limit_timestamp_windows_epoch_micros(
+          base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
+
+  processor()->ModelReadyToSync(model_metadata.SerializeAsString(),
+                                schedule_save_closure()->Get(),
+                                bookmark_model());
+
+  // The tracker should not be created because of the error.
+  EXPECT_FALSE(processor()->GetTrackerForTest());
+
+  // Now simulate sync starting.
+  EXPECT_CALL(*error_handler(),
+              Run(testing::Property(
+                  &syncer::ModelError::type,
+                  syncer::ModelError::Type::
+                      kBookmarksRemoteCountExceededLimitLastInitialMerge)));
+
+  SimulateOnSyncStartingNoWait();
+
+  // The tracker should still not exist.
+  EXPECT_FALSE(processor()->GetTrackerForTest());
+}
+
 TEST_F(BookmarkDataTypeProcessorTest, ShouldDecodeEmptyMetadata) {
   // No save should be scheduled.
   EXPECT_CALL(*schedule_save_closure(), Run()).Times(0);
@@ -765,8 +930,7 @@ TEST_F(BookmarkDataTypeProcessorTest,
   EXPECT_FALSE(new_processor.IsTrackingMetadata());
 }
 
-TEST_F(BookmarkDataTypeProcessorTest,
-       ShouldIgnoreMetadataNotMatchingTheModel) {
+TEST_F(BookmarkDataTypeProcessorTest, ShouldIgnoreMetadataNotMatchingTheModel) {
   sync_pb::BookmarkModelMetadata model_metadata;
   model_metadata.mutable_data_type_state()->set_initial_sync_state(
       sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
@@ -794,8 +958,7 @@ TEST_F(BookmarkDataTypeProcessorTest,
   EXPECT_FALSE(new_processor.IsTrackingMetadata());
 }
 
-TEST_F(BookmarkDataTypeProcessorTest,
-       ShouldIgnoreMetadataIfCacheGuidMismatch) {
+TEST_F(BookmarkDataTypeProcessorTest, ShouldIgnoreMetadataIfCacheGuidMismatch) {
   SimulateModelReadyToSyncWithInitialSyncDone();
   ASSERT_TRUE(processor()->IsTrackingMetadata());
   SimulateOnSyncStarting("unexpected_cache_guid");

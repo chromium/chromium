@@ -56,6 +56,9 @@ BASE_FEATURE(kSyncAutofillWalletCredentialData,
 
 BASE_FEATURE(kSyncBookmarksLimit, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSyncResetBookmarksInitialMergeLimitExceededError,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kSyncEnableContactInfoDataTypeForCustomPassphraseUsers,
 #if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
              base::FEATURE_ENABLED_BY_DEFAULT

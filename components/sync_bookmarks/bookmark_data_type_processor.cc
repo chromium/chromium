@@ -323,32 +323,71 @@ std::string BookmarkDataTypeProcessor::EncodeSyncMetadata() const {
   return metadata_str;
 }
 
+void BookmarkDataTypeProcessor::MigrateLegacyExceededLimitError(
+    sync_pb::BookmarkModelMetadata* model_metadata) {
+  if (!model_metadata->last_initial_merge_remote_updates_exceeded_limit() ||
+      model_metadata
+          ->has_initial_merge_remote_updates_exceeded_limit_timestamp_windows_epoch_micros()) {
+    model_metadata->clear_last_initial_merge_remote_updates_exceeded_limit();
+    return;
+  }
+
+  // For legacy clients, set a random timestamp from 23-30 days ago to
+  // represent the error state. This is to preserve the error across restarts.
+  // This will also be used to decide whether to reset the error.
+  const base::Time limit_set_time =
+      base::Time::Now() - kInitialMergeRemoteUpdatesExceededLimitErrorTtl +
+      base::RandTimeDeltaUpTo(
+          kInitialMergeRemoteUpdatesExceededLimitErrorTtlJitter);
+  model_metadata
+      ->set_initial_merge_remote_updates_exceeded_limit_timestamp_windows_epoch_micros(
+          limit_set_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
+  // Clear the legacy field as it is no longer needed.
+  model_metadata->clear_last_initial_merge_remote_updates_exceeded_limit();
+  schedule_save_closure_.Run();
+}
+
+void BookmarkDataTypeProcessor::MaybeResetExceededLimitError(
+    sync_pb::BookmarkModelMetadata* model_metadata) {
+  if (!base::FeatureList::IsEnabled(
+          syncer::kSyncResetBookmarksInitialMergeLimitExceededError)) {
+    return;
+  }
+  if (!model_metadata
+           ->has_initial_merge_remote_updates_exceeded_limit_timestamp_windows_epoch_micros()) {
+    return;
+  }
+
+  const base::Time limit_set_time =
+      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(
+          model_metadata
+              ->initial_merge_remote_updates_exceeded_limit_timestamp_windows_epoch_micros()));
+
+  // For users who have a timestamp, reset the error
+  // after 30 days to give users a chance to recover.
+  if (base::Time::Now() - limit_set_time >
+      kInitialMergeRemoteUpdatesExceededLimitErrorTtl) {
+    model_metadata->clear_last_initial_merge_remote_updates_exceeded_limit();
+    model_metadata
+        ->clear_initial_merge_remote_updates_exceeded_limit_timestamp_windows_epoch_micros();
+    schedule_save_closure_.Run();
+  }
+}
+
 bool BookmarkDataTypeProcessor::HandlePreviousErrorState(
     const sync_pb::BookmarkModelMetadata& model_metadata) {
-  if (!model_metadata.last_initial_merge_remote_updates_exceeded_limit() &&
-      !model_metadata
+  if (!model_metadata
            .has_initial_merge_remote_updates_exceeded_limit_timestamp_windows_epoch_micros()) {
     return false;
   }
   // Report error if remote updates fetched last time during initial merge
   // exceeded limit. Note that here we are only setting
-  // `last_initial_merge_remote_updates_exceeded_limit_`, the
+  // `last_initial_merge_remote_updates_exceeded_limit_timestamp_`, the
   // actual error would be reported in ConnectIfReady().
-  if (model_metadata
-          .has_initial_merge_remote_updates_exceeded_limit_timestamp_windows_epoch_micros()) {
-    initial_merge_remote_updates_exceeded_limit_timestamp_ =
-        base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(
-            model_metadata
-                .initial_merge_remote_updates_exceeded_limit_timestamp_windows_epoch_micros()));
-  } else {
-    // For legacy clients, set a random timestamp from 23-30 days ago to
-    // represent the error state. This is to preserve the error across restarts.
-    initial_merge_remote_updates_exceeded_limit_timestamp_ =
-        base::Time::Now() - (kInitialMergeRemoteUpdatesExceededLimitErrorTtl -
-                           base::RandTimeDeltaUpTo(
-                               kInitialMergeRemoteUpdatesExceededLimitErrorTtlJitter));
-    schedule_save_closure_.Run();
-  }
+  initial_merge_remote_updates_exceeded_limit_timestamp_ =
+      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(
+          model_metadata
+              .initial_merge_remote_updates_exceeded_limit_timestamp_windows_epoch_micros()));
   return true;
 }
 
@@ -360,6 +399,11 @@ void BookmarkDataTypeProcessor::ProcessMetadataAndMaybeInitTracker(
   if (HandlePendingClearMetadata(metadata_str)) {
     return;
   }
+
+  MigrateLegacyExceededLimitError(&model_metadata);
+  // Ensure that the legacy field is not set, as it should have been migrated.
+  CHECK(!model_metadata.last_initial_merge_remote_updates_exceeded_limit());
+  MaybeResetExceededLimitError(&model_metadata);
 
   if (HandlePreviousErrorState(model_metadata)) {
     return;
