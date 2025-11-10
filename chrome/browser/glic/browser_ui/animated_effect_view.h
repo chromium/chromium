@@ -8,7 +8,6 @@
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "cc/paint/paint_shader.h"
-#include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "content/public/browser/gpu_data_manager_observer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/compositor/compositor_animation_observer.h"
@@ -51,6 +50,18 @@ class AnimatedEffectView : public views::View,
 
   bool IsShowing() const;
 
+  // Called to start showing the view.
+  void Show();
+
+  // Called to stop showing the view.
+  void StopShowing();
+
+  // Only valid to call after the animation has started.
+  void ResetAnimationCycle();
+
+  // Sets the necessary bits to start ramping down the opacity once it's called.
+  void StartRampingDown();
+
   // Note: We should avoid adding test-only code in production as it is an
   // anti-pattern. There is a planned effort to remove this code and migrate
   // to unittests + pixel tests. See https://crbug.com/412335211
@@ -85,17 +96,8 @@ class AnimatedEffectView : public views::View,
   // Computes the bounds for the effect and draws to `canvas`.
   virtual void DrawEffect(gfx::Canvas* canvas, const cc::PaintFlags& flags) = 0;
 
-  void Show();
-  void StopShowing();
-
-  // Only valid to call after the animation has started.
-  void ResetAnimationCycle();
-
   // A value from 0 to 1 indicating the opacity of the effect.
   float GetOpacity(base::TimeTicks timestamp);
-
-  // Sets the necessary bits to start ramping down the opacity once it's called.
-  void StartRampingDown();
 
   // Returns the effect evolution time; wraps after an hour.
   float GetEffectTime() const;
@@ -110,8 +112,6 @@ class AnimatedEffectView : public views::View,
   base::TimeTicks GetCreationTime() const;
 
   bool ForceSimplifiedShader() const;
-
-  GlicKeyedService* GetGlicService() const;
 
   void UpdateShader();
 

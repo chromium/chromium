@@ -23,6 +23,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "ui/views/view_observer.h"
 
+class Browser;
 class ContentsWebView;
 
 namespace content {
@@ -35,17 +36,21 @@ class ContextSharingBorderView;
 
 class ContextSharingBorderViewController : public views::ViewObserver {
  public:
-  explicit ContextSharingBorderViewController(
-      ContextSharingBorderView* border_view,
-      ContentsWebView* contents_web_view);
+  ContextSharingBorderViewController();
   ContextSharingBorderViewController(
       const ContextSharingBorderViewController&) = delete;
   ContextSharingBorderViewController& operator=(
       const ContextSharingBorderViewController&) = delete;
   ~ContextSharingBorderViewController() override;
 
-  ContentsWebView* contents_web_view() { return contents_web_view_; }
+  // Initialization. Starts observing the state of the browser.
+  void Initialize(ContextSharingBorderView* border_view,
+                  ContentsWebView* contents_web_view,
+                  Browser* browser);
 
+  ContentsWebView* contents_web_view();
+
+ private:
   // Called when the focused tab changes with the focused tab data object.
   void OnFocusedTabChanged(const FocusedTabData& focused_tab_data);
 
@@ -58,7 +63,6 @@ class ContextSharingBorderViewController : public views::ViewObserver {
   // ViewObserver:
   void OnViewIsDeleting(views::View* observed_view) override;
 
- private:
   // Updates the BorderView UI effect given the current state of the focused tab
   // and context access indicator flag.
   enum class UpdateBorderReason {
@@ -92,12 +96,16 @@ class ContextSharingBorderViewController : public views::ViewObserver {
 
   std::string UpdateReasonsToString() const;
 
-  // Back pointer to the owner. Guaranteed to outlive `this`.
+  // Back pointer to the owner. Set after Initialize(). Guaranteed to outlive
+  // `this`.
   raw_ptr<ContextSharingBorderView> border_view_;
 
   // Pointer to the associated contents web view and associated view
-  // observation for view deletion.
+  // observation for view deletion. Set after Initialize().
   raw_ptr<ContentsWebView> contents_web_view_;
+
+  // The Glic keyed service. Set after Initialize().
+  raw_ptr<GlicKeyedService> glic_service_;
   base::ScopedObservation<views::View, views::ViewObserver>
       contents_web_view_observation_{this};
 

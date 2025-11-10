@@ -9,9 +9,6 @@
 #include "base/debug/crash_logging.h"
 #include "chrome/browser/actor/ui/actor_border_view_controller.h"
 #include "chrome/browser/glic/browser_ui/context_sharing_border_view_controller.h"
-#include "chrome/browser/glic/public/glic_keyed_service.h"
-#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
-#include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -85,20 +82,11 @@ ContextSharingBorderView::ContextSharingBorderView(
     ContentsWebView* contents_web_view,
     std::unique_ptr<Tester> tester)
     : AnimatedEffectView(browser, std::move(tester)),
-      updater_(std::make_unique<ContextSharingBorderViewController>(
-          this,
-          contents_web_view)) {
-  auto* glic_service =
-      GlicKeyedServiceFactory::GetGlicKeyedService(browser->GetProfile());
-  // Post-initialization updates. Don't do the update in the updater's ctor
+      controller_(std::make_unique<ContextSharingBorderViewController>()) {
+  // Post-initialization updates. Don't do the update in the controller's ctor
   // because at that time BorderView isn't fully initialized, which can lead to
   // undefined behavior.
-  //
-  // Fetch the latest context access indicator status from service. We can't
-  // assume the WebApp always updates the status on the service (thus the new
-  // subscribers not getting the latest value).
-  updater_->OnIndicatorStatusChanged(
-      glic_service->is_context_access_indicator_enabled());
+  controller_->Initialize(this, contents_web_view, browser);
 }
 
 ContextSharingBorderView::~ContextSharingBorderView() = default;
@@ -115,7 +103,7 @@ void ContextSharingBorderView::PopulateShaderUniforms(
   // need the special treatment.
   gfx::Insets uniform_insets =
       GetContentsBorderInsets(browser_->GetBrowserView(),
-                              updater_->contents_web_view()->web_contents());
+                              controller_->contents_web_view()->web_contents());
   // Check the contents's border widget insets is uniform.
   CHECK_EQ(uniform_insets.left(), uniform_insets.top());
   CHECK_EQ(uniform_insets.left(), uniform_insets.right());
@@ -157,9 +145,9 @@ void ContextSharingBorderView::DrawSimplifiedEffect(gfx::Canvas* canvas) const {
   // floor ensures that the anti-aliased border properly hugs the edge of the
   // container).
   bounds.Inset(std::floor(kBorderWidth * 0.5f));
-  auto content_border_insets = gfx::InsetsF(
-      GetContentsBorderInsets(browser_->GetBrowserView(),
-                              updater_->contents_web_view()->web_contents()));
+  auto content_border_insets = gfx::InsetsF(GetContentsBorderInsets(
+      browser_->GetBrowserView(),
+      controller_->contents_web_view()->web_contents()));
   bounds.Inset(content_border_insets);
 
   cc::PaintFlags border_flags;
@@ -196,7 +184,7 @@ void ContextSharingBorderView::DrawEffect(gfx::Canvas* canvas,
   auto bounds = GetLocalBounds();
   gfx::Insets uniform_insets =
       GetContentsBorderInsets(browser_->GetBrowserView(),
-                              updater_->contents_web_view()->web_contents());
+                              controller_->contents_web_view()->web_contents());
   bounds.Inset(uniform_insets);
 
   // TODO(liuwilliam): This will create a hard clip at the boundary. Figure out

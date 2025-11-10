@@ -8,6 +8,7 @@
 #include "base/scoped_observation.h"
 #include "cc/paint/paint_shader.h"
 #include "chrome/browser/glic/browser_ui/animated_effect_view.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/gpu_data_manager_observer.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -25,7 +26,6 @@ class Canvas;
 
 namespace glic {
 
-class GlicKeyedService;
 class TabUnderlineViewController;
 
 // The following logic makes many references to "pinned" tabs. All of these
@@ -64,6 +64,10 @@ class TabUnderlineView : public AnimatedEffectView {
   TabUnderlineView& operator=(const TabUnderlineView&) = delete;
   ~TabUnderlineView() override;
 
+  // Returns the TabInterface corresponding to `underline_view_`, if it is
+  // valid.
+  base::WeakPtr<tabs::TabInterface> GetTabInterface();
+
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kGlicTabUnderlineElementId);
 
  protected:
@@ -73,8 +77,6 @@ class TabUnderlineView : public AnimatedEffectView {
                             std::unique_ptr<Tester> tester);
 
  private:
-  friend class TabUnderlineViewController;
-
   // `AnimatedEffectView`:
   bool IsCycleDone(base::TimeTicks timestamp) override;
   base::TimeDelta GetTotalDuration() const override;
@@ -87,9 +89,9 @@ class TabUnderlineView : public AnimatedEffectView {
 
   int ComputeWidth();
 
-  // A utility class that subscribes to `GlicKeyedService` for various browser
+  // The controller responsible for notifying the view about various browser
   // UI status changes that affect showing and animating of the tab underlines.
-  const std::unique_ptr<TabUnderlineViewController> updater_;
+  const std::unique_ptr<TabUnderlineViewController> controller_;
 
   raw_ptr<Tab> tab_ = nullptr;
 };

@@ -7,9 +7,6 @@
 #include "base/debug/crash_logging.h"
 #include "cc/paint/paint_flags.h"
 #include "chrome/browser/glic/browser_ui/tab_underline_view_controller.h"
-#include "chrome/browser/glic/public/glic_keyed_service.h"
-#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
-#include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -63,23 +60,21 @@ TabUnderlineView::TabUnderlineView(Browser* browser,
                                    Tab* tab,
                                    std::unique_ptr<Tester> tester)
     : AnimatedEffectView(browser, std::move(tester)),
-      updater_(std::make_unique<TabUnderlineViewController>(browser, this)),
+      controller_(std::make_unique<TabUnderlineViewController>()),
       tab_(tab) {
   SetProperty(views::kElementIdentifierKey, kGlicTabUnderlineElementId);
-  auto* glic_service =
-      GlicKeyedServiceFactory::GetGlicKeyedService(browser->GetProfile());
-  // Post-initialization updates. Don't do the update in the updater's ctor
+
+  // Post-initialization updates. Don't do the update in the controller's ctor
   // because at that time TabUnderlineView isn't fully initialized, which
   // can lead to undefined behavior.
-  //
-  // Fetch the latest context access indicator status from service. We can't
-  // assume the WebApp always updates the status on the service (thus the new
-  // subscribers not getting the latest value).
-  updater_->OnIndicatorStatusChanged(
-      glic_service->is_context_access_indicator_enabled());
+  controller_->Initialize(this, browser);
 }
 
 TabUnderlineView::~TabUnderlineView() = default;
+
+base::WeakPtr<tabs::TabInterface> TabUnderlineView::GetTabInterface() {
+  return tab_ ? tab_->data().tab_interface : nullptr;
+}
 
 bool TabUnderlineView::IsCycleDone(base::TimeTicks timestamp) {
   return progress_ == 1.f;
