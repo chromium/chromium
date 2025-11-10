@@ -38,6 +38,7 @@ class ResultDBReporter:
             tags = [(name.replace('.', '_').lower(), str(value))
                     for name, value in metrics.iterate_over_nested_metrics(
                         iteration_result.metrics)]
+            tags.extend([('tag', tag) for tag in test_result.config.tags])
 
             self._result_sink_client.Post(
                 test_id=str(posix_path),
