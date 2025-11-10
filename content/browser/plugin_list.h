@@ -90,23 +90,12 @@ class CONTENT_EXPORT PluginList {
   // Load all plugins from the default plugins directory.
   void LoadPlugins();
 
-  // Removes |plugin_path| from the list of extra plugin paths.
-  void RemoveExtraPluginPath(const base::FilePath& plugin_path);
-
-  // Creates a WebPluginInfo structure given a plugin's path.  On success
-  // returns true, with the information being put into "info".
-  // Returns false if the library couldn't be found, or if it's not a plugin.
-  bool ReadPluginInfo(const base::FilePath& filename, WebPluginInfo* info);
-
   //
   // Internals
   //
 
   // States whether the plugin list is stale or not.
   bool list_is_stale_ = true;
-
-  // Extra plugin paths that we want to search when loading.
-  std::vector<base::FilePath> extra_plugin_paths_;
 
   // Holds information about internal plugins.
   std::vector<WebPluginInfo> internal_plugins_;

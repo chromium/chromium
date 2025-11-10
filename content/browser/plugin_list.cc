@@ -83,13 +83,12 @@ void PluginList::RegisterInternalPlugin(const WebPluginInfo& info,
                                         bool add_at_beginning) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  internal_plugins_.push_back(info);
   if (add_at_beginning) {
     // Newer registrations go earlier in the list so they can override the MIME
     // types of older registrations.
-    extra_plugin_paths_.insert(extra_plugin_paths_.begin(), info.path);
+    internal_plugins_.insert(internal_plugins_.begin(), info);
   } else {
-    extra_plugin_paths_.push_back(info.path);
+    internal_plugins_.push_back(info);
   }
 }
 
@@ -105,25 +104,11 @@ void PluginList::UnregisterInternalPlugin(const base::FilePath& path) {
     }
   }
   DCHECK(found);
-  RemoveExtraPluginPath(path);
 }
 
 std::vector<WebPluginInfo> PluginList::GetInternalPluginsForTesting() const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return internal_plugins_;
-}
-
-bool PluginList::ReadPluginInfo(const base::FilePath& filename,
-                                WebPluginInfo* info) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  for (const auto& plugin : internal_plugins_) {
-    if (filename == plugin.path) {
-      *info = plugin;
-      return true;
-    }
-  }
-  return false;
 }
 
 PluginList::PluginList() {
@@ -137,20 +122,13 @@ void PluginList::LoadPlugins() {
     return;
   }
 
-  std::vector<base::FilePath> plugin_paths;
-  for (const base::FilePath& path : extra_plugin_paths_) {
-    if (base::Contains(plugin_paths, path)) {
-      continue;
-    }
-    plugin_paths.push_back(path);
-  }
-
+  std::vector<base::FilePath> seen_plugin_paths;
   plugins_list_.clear();
-  for (const base::FilePath& path : plugin_paths) {
-    WebPluginInfo plugin_info;
-    if (!ReadPluginInfo(path, &plugin_info)) {
+  for (const WebPluginInfo& plugin_info : internal_plugins_) {
+    if (base::Contains(seen_plugin_paths, plugin_info.path)) {
       continue;
     }
+    seen_plugin_paths.push_back(plugin_info.path);
 
     // TODO(thestig): Do we still need this after NPAPI removal?
     for (const content::WebPluginMimeType& mime_type : plugin_info.mime_types) {
@@ -233,14 +211,6 @@ bool PluginList::GetPluginInfoArray(
     }
   }
   return is_stale;
-}
-
-void PluginList::RemoveExtraPluginPath(const base::FilePath& plugin_path) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  std::vector<base::FilePath>::iterator it =
-      std::ranges::find(extra_plugin_paths_, plugin_path);
-  if (it != extra_plugin_paths_.end())
-    extra_plugin_paths_.erase(it);
 }
 
 PluginList::~PluginList() = default;
