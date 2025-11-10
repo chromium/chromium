@@ -31,6 +31,9 @@ BASE_FEATURE(kBrowserSignalsReportingEnabled,
 BASE_FEATURE(kSystemSignalCollectionImprovementEnabled,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables the collection of policies in a Chrome Profile signals report.
+BASE_FEATURE(kPolicyDataCollectionEnabled, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether a signals-only profile report will be triggered when a valid
 // cookie change is observed.
 constexpr base::FeatureParam<bool> kTriggerOnCookieChange{
@@ -58,6 +61,10 @@ bool IsDetectedAgentSignalCollectionEnabled() {
 bool IsSystemSignalCollectionImprovementEnabled() {
   return base::FeatureList::IsEnabled(
       kSystemSignalCollectionImprovementEnabled);
+}
+
+bool IsPolicyDataCollectionEnabled() {
+  return base::FeatureList::IsEnabled(kPolicyDataCollectionEnabled);
 }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
