@@ -24,11 +24,14 @@
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "chrome/updater/constants.h"
+#include "chrome/updater/update_service.h"
 #include "chrome/updater/updater_scope.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -52,6 +55,57 @@ base::Lock& GetLoggingLock() {
 base::File& GetLogFile() {
   static base::NoDestructor<base::File> file;
   return *file;
+}
+
+std::string UninstallPingReasonToString(UninstallPingReason reason) {
+  switch (reason) {
+    case UninstallPingReason::kUninstalled:
+      return "UNINSTALLED";
+    case UninstallPingReason::kUserNotAnOwner:
+      return "USER_NOT_AN_OWNER";
+    case UninstallPingReason::kNoAppsRemain:
+      return "NO_APPS_REMAIN";
+    case UninstallPingReason::kNeverHadApps:
+      return "NEVER_HAD_APPS";
+  }
+}
+
+std::string PriorityToString(UpdateService::Priority priority) {
+  switch (priority) {
+    case UpdateService::Priority::kUnknown:
+      return "UNKNOWN";
+    case UpdateService::Priority::kBackground:
+      return "BACKGROUND";
+    case UpdateService::Priority::kForeground:
+      return "FOREGROUND";
+  }
+}
+
+std::string UpdateStateToString(UpdateService::UpdateState::State state) {
+  switch (state) {
+    case UpdateService::UpdateState::State::kUnknown:
+      return "UNKOWN";
+    case UpdateService::UpdateState::State::kNotStarted:
+      return "NOT_STARTED";
+    case UpdateService::UpdateState::State::kCheckingForUpdates:
+      return "CHECKING_FOR_UPDATES";
+    case UpdateService::UpdateState::State::kUpdateAvailable:
+      return "UPDATE_AVAILABLE";
+    case UpdateService::UpdateState::State::kDownloading:
+      return "DOWNLOADING";
+    case UpdateService::UpdateState::State::kInstalling:
+      return "INSTALLING";
+    case UpdateService::UpdateState::State::kUpdated:
+      return "UPDATED";
+    case UpdateService::UpdateState::State::kNoUpdate:
+      return "NO_UPDATE";
+    case UpdateService::UpdateState::State::kUpdateError:
+      return "UPDATE_ERROR";
+    case UpdateService::UpdateState::State::kDecompressing:
+      return "DECOMPRESSING";
+    case UpdateService::UpdateState::State::kPatching:
+      return "PATCHING";
+  }
 }
 
 void SetWorldReadablePermissions(const base::FilePath& path) {
@@ -204,6 +258,452 @@ std::optional<base::Value::Dict> InstallEndEvent::BuildInternal(
   event.Set("bound", "END");
   if (version_) {
     event.Set("version", *version_);
+  }
+  return event;
+}
+
+UninstallStartEvent::UninstallStartEvent() = default;
+UninstallStartEvent::~UninstallStartEvent() = default;
+
+UninstallStartEvent& UninstallStartEvent::SetAppId(const std::string& app_id) {
+  app_id_ = app_id;
+  return *this;
+}
+
+UninstallStartEvent& UninstallStartEvent::SetVersion(
+    const std::string& version) {
+  version_ = version;
+  return *this;
+}
+
+UninstallStartEvent& UninstallStartEvent::SetReason(
+    UninstallPingReason reason) {
+  reason_ = reason;
+  return *this;
+}
+
+std::optional<base::Value::Dict> UninstallStartEvent::BuildInternal(
+    base::Value::Dict event) const {
+  if (app_id_.empty()) {
+    VLOG(1) << "Failed to build UninstallStartEvent, app_id is empty";
+    return std::nullopt;
+  }
+  if (version_.empty()) {
+    VLOG(1) << "Failed to build UninstallStartEvent, version is empty";
+    return std::nullopt;
+  }
+  if (!reason_) {
+    VLOG(1) << "Failed to build UninstallStartEvent, reason is empty";
+    return std::nullopt;
+  }
+  event.Set("eventType", "UNINSTALL");
+  event.Set("bound", "START");
+  event.Set("appId", app_id_);
+  event.Set("version", version_);
+  event.Set("reason", UninstallPingReasonToString(*reason_));
+  return event;
+}
+
+UninstallEndEvent::UninstallEndEvent() = default;
+UninstallEndEvent::~UninstallEndEvent() = default;
+
+std::optional<base::Value::Dict> UninstallEndEvent::BuildInternal(
+    base::Value::Dict event) const {
+  event.Set("eventType", "UNINSTALL");
+  event.Set("bound", "END");
+  return event;
+}
+
+QualifyStartEvent::QualifyStartEvent() = default;
+QualifyStartEvent::~QualifyStartEvent() = default;
+
+std::optional<base::Value::Dict> QualifyStartEvent::BuildInternal(
+    base::Value::Dict event) const {
+  event.Set("eventType", "QUALIFY");
+  event.Set("bound", "START");
+  return event;
+}
+
+QualifyEndEvent::QualifyEndEvent() = default;
+QualifyEndEvent::~QualifyEndEvent() = default;
+
+QualifyEndEvent& QualifyEndEvent::SetQualified(bool qualified) {
+  qualified_ = qualified;
+  return *this;
+}
+
+std::optional<base::Value::Dict> QualifyEndEvent::BuildInternal(
+    base::Value::Dict event) const {
+  event.Set("eventType", "QUALIFY");
+  event.Set("bound", "END");
+  event.Set("qualified", qualified_);
+  return event;
+}
+
+ActivateStartEvent::ActivateStartEvent() = default;
+ActivateStartEvent::~ActivateStartEvent() = default;
+
+std::optional<base::Value::Dict> ActivateStartEvent::BuildInternal(
+    base::Value::Dict event) const {
+  event.Set("eventType", "ACTIVATE");
+  event.Set("bound", "START");
+  return event;
+}
+
+ActivateEndEvent::ActivateEndEvent() = default;
+ActivateEndEvent::~ActivateEndEvent() = default;
+
+ActivateEndEvent& ActivateEndEvent::SetActivated(bool activated) {
+  activated_ = activated;
+  return *this;
+}
+
+std::optional<base::Value::Dict> ActivateEndEvent::BuildInternal(
+    base::Value::Dict event) const {
+  event.Set("eventType", "ACTIVATE");
+  event.Set("bound", "END");
+  event.Set("activated", activated_);
+  return event;
+}
+
+PersistedDataEvent::RegisteredApp::RegisteredApp() = default;
+PersistedDataEvent::RegisteredApp::RegisteredApp(const RegisteredApp&) =
+    default;
+PersistedDataEvent::RegisteredApp& PersistedDataEvent::RegisteredApp::operator=(
+    const RegisteredApp&) = default;
+PersistedDataEvent::RegisteredApp::~RegisteredApp() = default;
+
+PersistedDataEvent::PersistedDataEvent() = default;
+PersistedDataEvent::~PersistedDataEvent() = default;
+
+PersistedDataEvent& PersistedDataEvent::SetEulaRequired(bool eula_required) {
+  eula_required_ = eula_required;
+  return *this;
+}
+
+PersistedDataEvent& PersistedDataEvent::SetLastChecked(
+    const base::Time& last_checked) {
+  last_checked_ = last_checked;
+  return *this;
+}
+
+PersistedDataEvent& PersistedDataEvent::SetLastStarted(
+    const base::Time& last_started) {
+  last_started_ = last_started;
+  return *this;
+}
+
+PersistedDataEvent& PersistedDataEvent::AddRegisteredApp(
+    const RegisteredApp& registered_app) {
+  registered_apps_.push_back(registered_app);
+  return *this;
+}
+
+std::optional<base::Value::Dict> PersistedDataEvent::BuildInternal(
+    base::Value::Dict event) const {
+  event.Set("eventType", "PERSISTED_DATA");
+  event.Set("bound", "INSTANT");
+  event.Set("eulaRequired", eula_required_);
+  if (last_checked_) {
+    event.Set("lastChecked", base::TimeToValue(*last_checked_));
+  }
+  if (last_started_) {
+    event.Set("lastStarted", base::TimeToValue(*last_started_));
+  }
+  if (!registered_apps_.empty()) {
+    base::Value::List apps;
+    for (const auto& app : registered_apps_) {
+      base::Value::Dict app_dict;
+      app_dict.Set("appId", app.app_id);
+      app_dict.Set("version", app.version);
+      if (app.cohort) {
+        app_dict.Set("cohort", *app.cohort);
+      }
+      if (app.brand_code) {
+        app_dict.Set("brandCode", *app.brand_code);
+      }
+      apps.Append(std::move(app_dict));
+    }
+    event.Set("registeredApps", std::move(apps));
+  }
+  return event;
+}
+
+OmahaRequestStartEvent::OmahaRequestStartEvent() = default;
+OmahaRequestStartEvent::~OmahaRequestStartEvent() = default;
+
+OmahaRequestStartEvent& OmahaRequestStartEvent::SetRequest(
+    const std::string& request) {
+  request_ = request;
+  return *this;
+}
+
+std::optional<base::Value::Dict> OmahaRequestStartEvent::BuildInternal(
+    base::Value::Dict event) const {
+  if (request_.empty()) {
+    VLOG(1) << "Failed to build OmahaRequestStartEvent, request is empty";
+    return std::nullopt;
+  }
+  event.Set("eventType", "OMAHA_REQUEST");
+  event.Set("bound", "START");
+  event.Set("request", request_);
+  return event;
+}
+
+OmahaRequestEndEvent::OmahaRequestEndEvent() = default;
+OmahaRequestEndEvent::~OmahaRequestEndEvent() = default;
+
+OmahaRequestEndEvent& OmahaRequestEndEvent::SetResponse(
+    const std::string& response) {
+  response_ = response;
+  return *this;
+}
+
+std::optional<base::Value::Dict> OmahaRequestEndEvent::BuildInternal(
+    base::Value::Dict event) const {
+  if (response_.empty()) {
+    VLOG(1) << "Failed to build OmahaRequestEndEvent, response is empty";
+    return std::nullopt;
+  }
+  event.Set("eventType", "OMAHA_REQUEST");
+  event.Set("bound", "END");
+  event.Set("response", response_);
+  return event;
+}
+
+UpdateStartEvent::UpdateStartEvent() = default;
+UpdateStartEvent::~UpdateStartEvent() = default;
+
+UpdateStartEvent& UpdateStartEvent::SetAppId(const std::string& app_id) {
+  app_id_ = app_id;
+  return *this;
+}
+
+UpdateStartEvent& UpdateStartEvent::SetConnectionMetered(
+    bool connection_metered) {
+  connection_metered_ = connection_metered;
+  return *this;
+}
+
+UpdateStartEvent& UpdateStartEvent::SetPriority(
+    UpdateService::Priority priority) {
+  priority_ = priority;
+  return *this;
+}
+
+UpdateStartEvent& UpdateStartEvent::SetInstallSource(
+    const std::string& install_source) {
+  install_source_ = install_source;
+  return *this;
+}
+
+std::optional<base::Value::Dict> UpdateStartEvent::BuildInternal(
+    base::Value::Dict event) const {
+  event.Set("eventType", "UPDATE");
+  event.Set("bound", "START");
+  if (app_id_) {
+    event.Set("appId", *app_id_);
+  }
+  if (connection_metered_) {
+    event.Set("connectionMetered", *connection_metered_);
+  }
+  if (priority_) {
+    event.Set("priority", PriorityToString(*priority_));
+  }
+  if (install_source_) {
+    event.Set("installSource", *install_source_);
+  }
+  return event;
+}
+
+UpdateEndEvent::UpdateEndEvent() = default;
+UpdateEndEvent::~UpdateEndEvent() = default;
+
+UpdateEndEvent& UpdateEndEvent::SetOutcome(
+    UpdateService::UpdateState::State outcome) {
+  outcome_ = outcome;
+  return *this;
+}
+
+UpdateEndEvent& UpdateEndEvent::SetVersion(const std::string& version) {
+  version_ = version;
+  return *this;
+}
+
+std::optional<base::Value::Dict> UpdateEndEvent::BuildInternal(
+    base::Value::Dict event) const {
+  event.Set("eventType", "UPDATE");
+  event.Set("bound", "END");
+  if (outcome_) {
+    event.Set("outcome", UpdateStateToString(*outcome_));
+  }
+  if (version_) {
+    event.Set("version", *version_);
+  }
+  return event;
+}
+
+UpdaterProcessStartEvent::UpdaterProcessStartEvent() = default;
+UpdaterProcessStartEvent::~UpdaterProcessStartEvent() = default;
+
+UpdaterProcessStartEvent& UpdaterProcessStartEvent::SetCommandLine(
+    const std::string& command_line) {
+  command_line_ = command_line;
+  return *this;
+}
+
+UpdaterProcessStartEvent& UpdaterProcessStartEvent::SetTimestamp(
+    const base::Time& timestamp) {
+  timestamp_ = timestamp;
+  return *this;
+}
+
+UpdaterProcessStartEvent& UpdaterProcessStartEvent::SetUpdaterVersion(
+    const std::string& updater_version) {
+  updater_version_ = updater_version;
+  return *this;
+}
+
+UpdaterProcessStartEvent& UpdaterProcessStartEvent::SetScope(
+    UpdaterScope scope) {
+  scope_ = scope;
+  return *this;
+}
+
+UpdaterProcessStartEvent& UpdaterProcessStartEvent::SetOsPlatform(
+    const std::string& os_platform) {
+  os_platform_ = os_platform;
+  return *this;
+}
+
+UpdaterProcessStartEvent& UpdaterProcessStartEvent::SetOsVersion(
+    const std::string& os_version) {
+  os_version_ = os_version;
+  return *this;
+}
+
+UpdaterProcessStartEvent& UpdaterProcessStartEvent::SetOsArchitecture(
+    const std::string& os_architecture) {
+  os_architecture_ = os_architecture;
+  return *this;
+}
+
+UpdaterProcessStartEvent& UpdaterProcessStartEvent::SetUpdaterArchitecture(
+    const std::string& updater_architecture) {
+  updater_architecture_ = updater_architecture;
+  return *this;
+}
+
+UpdaterProcessStartEvent& UpdaterProcessStartEvent::SetParentPid(
+    int parent_pid) {
+  parent_pid_ = parent_pid;
+  return *this;
+}
+
+std::optional<base::Value::Dict> UpdaterProcessStartEvent::BuildInternal(
+    base::Value::Dict event) const {
+  event.Set("eventType", "UPDATER_PROCESS");
+  event.Set("bound", "START");
+  if (command_line_) {
+    event.Set("commandLine", *command_line_);
+  }
+  if (timestamp_) {
+    event.Set("timestamp", base::TimeToValue(*timestamp_));
+  }
+  if (updater_version_) {
+    event.Set("updaterVersion", *updater_version_);
+  }
+  if (scope_) {
+    event.Set("scope", base::ToUpperASCII(UpdaterScopeToString(*scope_)));
+  }
+  if (os_platform_) {
+    event.Set("osPlatform", *os_platform_);
+  }
+  if (os_version_) {
+    event.Set("osVersion", *os_version_);
+  }
+  if (os_architecture_) {
+    event.Set("osArchitecture", *os_architecture_);
+  }
+  if (updater_architecture_) {
+    event.Set("updaterArchitecture", *updater_architecture_);
+  }
+  if (parent_pid_) {
+    event.Set("parentPid", *parent_pid_);
+  }
+  return event;
+}
+
+UpdaterProcessEndEvent::UpdaterProcessEndEvent() = default;
+UpdaterProcessEndEvent::~UpdaterProcessEndEvent() = default;
+
+UpdaterProcessEndEvent& UpdaterProcessEndEvent::SetExitCode(int exit_code) {
+  exit_code_ = exit_code;
+  return *this;
+}
+
+std::optional<base::Value::Dict> UpdaterProcessEndEvent::BuildInternal(
+    base::Value::Dict event) const {
+  event.Set("eventType", "UPDATER_PROCESS");
+  event.Set("bound", "END");
+  if (exit_code_) {
+    event.Set("exitCode", *exit_code_);
+  }
+  return event;
+}
+
+AppCommandStartEvent::AppCommandStartEvent() = default;
+AppCommandStartEvent::~AppCommandStartEvent() = default;
+
+AppCommandStartEvent& AppCommandStartEvent::SetAppId(
+    const std::string& app_id) {
+  app_id_ = app_id;
+  return *this;
+}
+
+AppCommandStartEvent& AppCommandStartEvent::SetCommandLine(
+    const std::string& command_line) {
+  command_line_ = command_line;
+  return *this;
+}
+
+std::optional<base::Value::Dict> AppCommandStartEvent::BuildInternal(
+    base::Value::Dict event) const {
+  if (app_id_.empty()) {
+    VLOG(1) << "Failed to build AppCommandStartEvent, app_id is empty";
+    return std::nullopt;
+  }
+  event.Set("eventType", "APP_COMMAND");
+  event.Set("bound", "START");
+  event.Set("appId", app_id_);
+  if (command_line_) {
+    event.Set("commandLine", *command_line_);
+  }
+  return event;
+}
+
+AppCommandEndEvent::AppCommandEndEvent() = default;
+AppCommandEndEvent::~AppCommandEndEvent() = default;
+
+AppCommandEndEvent& AppCommandEndEvent::SetExitCode(int exit_code) {
+  exit_code_ = exit_code;
+  return *this;
+}
+
+AppCommandEndEvent& AppCommandEndEvent::SetOutput(const std::string& output) {
+  output_ = output;
+  return *this;
+}
+
+std::optional<base::Value::Dict> AppCommandEndEvent::BuildInternal(
+    base::Value::Dict event) const {
+  event.Set("eventType", "APP_COMMAND");
+  event.Set("bound", "END");
+  if (exit_code_) {
+    event.Set("exitCode", *exit_code_);
+  }
+  if (output_) {
+    event.Set("output", *output_);
   }
   return event;
 }

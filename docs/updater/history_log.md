@@ -124,8 +124,9 @@ The schema defines the following event types:
     * `priority` (string): Enum: `"BACKGROUND"`, `"FOREGROUND"`.
     * `installSource` (string): The source triggering the installation/update.
   * `END`:
-    * `outcome` (string): The result of the update operation. Enum: `"ERROR"`,
-      `"UP_TO_DATE"`, `"UPDATED"`.
+    * `outcome` (string): The result of the update operation. Enum: possible
+      values are the upper snake case UpdaterState::State enum labels defined in
+      UpdateService. Includes `"UPDATED"`, `"NO_UPDATE"`, and `"UPDATE_ERROR"`.
     * `version` (string): The version of the application which the updater tried
       to update to.
 

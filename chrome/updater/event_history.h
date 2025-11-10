@@ -16,6 +16,9 @@
 #include "base/process/process.h"
 #include "base/system/sys_info.h"
 #include "base/values.h"
+#include "chrome/updater/constants.h"
+#include "chrome/updater/update_service.h"
+#include "chrome/updater/updater_scope.h"
 
 // This API provides mechanisms to work with updater events, which are recorded
 // in the history log. The API implements the schema defined in
@@ -168,6 +171,259 @@ class InstallEndEvent : public HistoryEventBuilder<InstallEndEvent> {
       base::Value::Dict event) const override;
 
   std::optional<std::string> version_;
+};
+
+class UninstallStartEvent : public HistoryEventBuilder<UninstallStartEvent> {
+ public:
+  UninstallStartEvent();
+  ~UninstallStartEvent() override;
+
+  UninstallStartEvent& SetAppId(const std::string& app_id);
+  UninstallStartEvent& SetVersion(const std::string& version);
+  UninstallStartEvent& SetReason(UninstallPingReason reason);
+
+ private:
+  std::optional<base::Value::Dict> BuildInternal(
+      base::Value::Dict event) const override;
+
+  std::string app_id_;
+  std::string version_;
+  std::optional<UninstallPingReason> reason_;
+};
+
+class UninstallEndEvent : public HistoryEventBuilder<UninstallEndEvent> {
+ public:
+  UninstallEndEvent();
+  ~UninstallEndEvent() override;
+
+ private:
+  std::optional<base::Value::Dict> BuildInternal(
+      base::Value::Dict event) const override;
+};
+
+class QualifyStartEvent : public HistoryEventBuilder<QualifyStartEvent> {
+ public:
+  QualifyStartEvent();
+  ~QualifyStartEvent() override;
+
+ private:
+  std::optional<base::Value::Dict> BuildInternal(
+      base::Value::Dict event) const override;
+};
+
+class QualifyEndEvent : public HistoryEventBuilder<QualifyEndEvent> {
+ public:
+  QualifyEndEvent();
+  ~QualifyEndEvent() override;
+
+  QualifyEndEvent& SetQualified(bool qualified);
+
+ private:
+  std::optional<base::Value::Dict> BuildInternal(
+      base::Value::Dict event) const override;
+
+  bool qualified_ = false;
+};
+
+class ActivateStartEvent : public HistoryEventBuilder<ActivateStartEvent> {
+ public:
+  ActivateStartEvent();
+  ~ActivateStartEvent() override;
+
+ private:
+  std::optional<base::Value::Dict> BuildInternal(
+      base::Value::Dict event) const override;
+};
+
+class ActivateEndEvent : public HistoryEventBuilder<ActivateEndEvent> {
+ public:
+  ActivateEndEvent();
+  ~ActivateEndEvent() override;
+
+  ActivateEndEvent& SetActivated(bool activated);
+
+ private:
+  std::optional<base::Value::Dict> BuildInternal(
+      base::Value::Dict event) const override;
+
+  bool activated_ = false;
+};
+
+class PersistedDataEvent : public HistoryEventBuilder<PersistedDataEvent> {
+ public:
+  struct RegisteredApp {
+    RegisteredApp();
+    RegisteredApp(const RegisteredApp&);
+    RegisteredApp& operator=(const RegisteredApp&);
+    ~RegisteredApp();
+    std::string app_id;
+    std::string version;
+    std::optional<std::string> cohort;
+    std::optional<std::string> brand_code;
+  };
+
+  PersistedDataEvent();
+  ~PersistedDataEvent() override;
+
+  PersistedDataEvent& SetEulaRequired(bool eula_required);
+  PersistedDataEvent& SetLastChecked(const base::Time& last_checked);
+  PersistedDataEvent& SetLastStarted(const base::Time& last_started);
+  PersistedDataEvent& AddRegisteredApp(const RegisteredApp& registered_app);
+
+ private:
+  std::optional<base::Value::Dict> BuildInternal(
+      base::Value::Dict event) const override;
+
+  bool eula_required_ = false;
+  std::optional<base::Time> last_checked_;
+  std::optional<base::Time> last_started_;
+  std::vector<RegisteredApp> registered_apps_;
+};
+
+class OmahaRequestStartEvent
+    : public HistoryEventBuilder<OmahaRequestStartEvent> {
+ public:
+  OmahaRequestStartEvent();
+  ~OmahaRequestStartEvent() override;
+
+  OmahaRequestStartEvent& SetRequest(const std::string& request);
+
+ private:
+  std::optional<base::Value::Dict> BuildInternal(
+      base::Value::Dict event) const override;
+
+  std::string request_;
+};
+
+class OmahaRequestEndEvent : public HistoryEventBuilder<OmahaRequestEndEvent> {
+ public:
+  OmahaRequestEndEvent();
+  ~OmahaRequestEndEvent() override;
+
+  OmahaRequestEndEvent& SetResponse(const std::string& response);
+
+ private:
+  std::optional<base::Value::Dict> BuildInternal(
+      base::Value::Dict event) const override;
+
+  std::string response_;
+};
+
+class UpdateStartEvent : public HistoryEventBuilder<UpdateStartEvent> {
+ public:
+  UpdateStartEvent();
+  ~UpdateStartEvent() override;
+
+  UpdateStartEvent& SetAppId(const std::string& app_id);
+  UpdateStartEvent& SetConnectionMetered(bool connection_metered);
+  UpdateStartEvent& SetPriority(UpdateService::Priority priority);
+  UpdateStartEvent& SetInstallSource(const std::string& install_source);
+
+ private:
+  std::optional<base::Value::Dict> BuildInternal(
+      base::Value::Dict event) const override;
+
+  std::optional<std::string> app_id_;
+  std::optional<bool> connection_metered_;
+  std::optional<UpdateService::Priority> priority_;
+  std::optional<std::string> install_source_;
+};
+
+class UpdateEndEvent : public HistoryEventBuilder<UpdateEndEvent> {
+ public:
+  UpdateEndEvent();
+  ~UpdateEndEvent() override;
+
+  UpdateEndEvent& SetOutcome(UpdateService::UpdateState::State outcome);
+  UpdateEndEvent& SetVersion(const std::string& version);
+
+ private:
+  std::optional<base::Value::Dict> BuildInternal(
+      base::Value::Dict event) const override;
+
+  std::optional<UpdateService::UpdateState::State> outcome_;
+  std::optional<std::string> version_;
+};
+
+class UpdaterProcessStartEvent
+    : public HistoryEventBuilder<UpdaterProcessStartEvent> {
+ public:
+  UpdaterProcessStartEvent();
+  ~UpdaterProcessStartEvent() override;
+
+  UpdaterProcessStartEvent& SetCommandLine(const std::string& command_line);
+  UpdaterProcessStartEvent& SetTimestamp(const base::Time& timestamp);
+  UpdaterProcessStartEvent& SetUpdaterVersion(
+      const std::string& updater_version);
+  UpdaterProcessStartEvent& SetScope(UpdaterScope scope);
+  UpdaterProcessStartEvent& SetOsPlatform(const std::string& os_platform);
+  UpdaterProcessStartEvent& SetOsVersion(const std::string& os_version);
+  UpdaterProcessStartEvent& SetOsArchitecture(
+      const std::string& os_architecture);
+  UpdaterProcessStartEvent& SetUpdaterArchitecture(
+      const std::string& updater_architecture);
+  UpdaterProcessStartEvent& SetParentPid(int parent_pid);
+
+ private:
+  std::optional<base::Value::Dict> BuildInternal(
+      base::Value::Dict event) const override;
+
+  std::optional<std::string> command_line_;
+  std::optional<base::Time> timestamp_;
+  std::optional<std::string> updater_version_;
+  std::optional<UpdaterScope> scope_;
+  std::optional<std::string> os_platform_;
+  std::optional<std::string> os_version_;
+  std::optional<std::string> os_architecture_;
+  std::optional<std::string> updater_architecture_;
+  std::optional<int> parent_pid_;
+};
+
+class UpdaterProcessEndEvent
+    : public HistoryEventBuilder<UpdaterProcessEndEvent> {
+ public:
+  UpdaterProcessEndEvent();
+  ~UpdaterProcessEndEvent() override;
+
+  UpdaterProcessEndEvent& SetExitCode(int exit_code);
+
+ private:
+  std::optional<base::Value::Dict> BuildInternal(
+      base::Value::Dict event) const override;
+
+  std::optional<int> exit_code_;
+};
+
+class AppCommandStartEvent : public HistoryEventBuilder<AppCommandStartEvent> {
+ public:
+  AppCommandStartEvent();
+  ~AppCommandStartEvent() override;
+
+  AppCommandStartEvent& SetAppId(const std::string& app_id);
+  AppCommandStartEvent& SetCommandLine(const std::string& command_line);
+
+ private:
+  std::optional<base::Value::Dict> BuildInternal(
+      base::Value::Dict event) const override;
+
+  std::string app_id_;
+  std::optional<std::string> command_line_;
+};
+
+class AppCommandEndEvent : public HistoryEventBuilder<AppCommandEndEvent> {
+ public:
+  AppCommandEndEvent();
+  ~AppCommandEndEvent() override;
+
+  AppCommandEndEvent& SetExitCode(int exit_code);
+  AppCommandEndEvent& SetOutput(const std::string& output);
+
+ private:
+  std::optional<base::Value::Dict> BuildInternal(
+      base::Value::Dict event) const override;
+
+  std::optional<int> exit_code_;
+  std::optional<std::string> output_;
 };
 
 }  // namespace updater
