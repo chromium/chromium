@@ -12968,6 +12968,21 @@
             ]
         }
     ],
+    "IOSAutofillPaymentsSheetV3": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillPaymentsSheetV3"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSAutofillRefillForForms": [
         {
             "platforms": [
