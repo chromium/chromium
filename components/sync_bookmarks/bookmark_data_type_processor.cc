@@ -13,8 +13,10 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/rand_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -48,6 +50,18 @@
 namespace sync_bookmarks {
 
 namespace {
+
+// Expiration period for the error state when the initial download of remote
+// bookmarks exceeds the limit. After this period, a new attempt to download all
+// bookmarks is made.
+constexpr base::TimeDelta kInitialMergeRemoteUpdatesExceededLimitErrorTtl =
+    base::Days(30);
+
+// Jitter to be subtracted from `kInitialMergeRemoteUpdatesExceededLimitErrorTtl`
+// to add randomness and avoid that all clients attempt to redownload bookmarks
+// at the same time.
+constexpr base::TimeDelta
+    kInitialMergeRemoteUpdatesExceededLimitErrorTtlJitter = base::Days(7);
 
 class ScopedRemoteUpdateBookmarks {
  public:
@@ -166,8 +180,8 @@ void BookmarkDataTypeProcessor::GetLocalChanges(
     GetLocalChangesCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Processor should never connect if
-  // `last_initial_merge_remote_updates_exceeded_limit_` is set.
-  DCHECK(!last_initial_merge_remote_updates_exceeded_limit_);
+  // `initial_merge_remote_updates_exceeded_limit_timestamp_` is set.
+  DCHECK(!initial_merge_remote_updates_exceeded_limit_timestamp_);
   BookmarkLocalChangesBuilder builder(bookmark_tracker_.get(), bookmark_model_);
   std::move(callback).Run(builder.BuildCommitRequests(max_entries));
 }
@@ -207,8 +221,8 @@ void BookmarkDataTypeProcessor::OnUpdateReceived(
   DCHECK(syncer::IsInitialSyncDone(data_type_state.initial_sync_state()));
   DCHECK(start_callback_.is_null());
   // Processor should never connect if
-  // `last_initial_merge_remote_updates_exceeded_limit_` is set.
-  DCHECK(!last_initial_merge_remote_updates_exceeded_limit_);
+  // `initial_merge_remote_updates_exceeded_limit_timestamp_` is set.
+  DCHECK(!initial_merge_remote_updates_exceeded_limit_timestamp_);
 
   // TODO(crbug.com/40860698): validate incoming updates, e.g. `gc_directive`
   // must be empty for Bookmarks.
@@ -284,21 +298,26 @@ bool BookmarkDataTypeProcessor::IsConnectedForTest() const {
 std::string BookmarkDataTypeProcessor::EncodeSyncMetadata() const {
   std::string metadata_str;
   if (bookmark_tracker_) {
-    // `last_initial_merge_remote_updates_exceeded_limit_` is only set in error
-    // cases where the tracker would not be initialized.
-    DCHECK(!last_initial_merge_remote_updates_exceeded_limit_);
+    // `initial_merge_remote_updates_exceeded_limit_timestamp_` is only set
+    // in error cases where the tracker would not be initialized.
+    DCHECK(!initial_merge_remote_updates_exceeded_limit_timestamp_);
 
     sync_pb::BookmarkModelMetadata model_metadata =
         bookmark_tracker_->BuildBookmarkModelMetadata();
     // Ensure that BuildBookmarkModelMetadata() never populates this field.
     DCHECK(
         !model_metadata.has_last_initial_merge_remote_updates_exceeded_limit());
+    DCHECK(!model_metadata
+                .has_initial_merge_remote_updates_exceeded_limit_timestamp_windows_epoch_micros());
     model_metadata.SerializeToString(&metadata_str);
-  } else if (last_initial_merge_remote_updates_exceeded_limit_) {
+  } else if (initial_merge_remote_updates_exceeded_limit_timestamp_) {
     sync_pb::BookmarkModelMetadata model_metadata;
-    // Setting the field only when true guarantees that the empty-string case
-    // is interpreted as no-metadata-to-clear.
-    model_metadata.set_last_initial_merge_remote_updates_exceeded_limit(true);
+
+    model_metadata
+        .set_initial_merge_remote_updates_exceeded_limit_timestamp_windows_epoch_micros(
+            initial_merge_remote_updates_exceeded_limit_timestamp_
+                ->ToDeltaSinceWindowsEpoch()
+                .InMicroseconds());
     model_metadata.SerializeToString(&metadata_str);
   }
   return metadata_str;
@@ -306,14 +325,30 @@ std::string BookmarkDataTypeProcessor::EncodeSyncMetadata() const {
 
 bool BookmarkDataTypeProcessor::HandlePreviousErrorState(
     const sync_pb::BookmarkModelMetadata& model_metadata) {
-  if (!model_metadata.last_initial_merge_remote_updates_exceeded_limit()) {
+  if (!model_metadata.last_initial_merge_remote_updates_exceeded_limit() &&
+      !model_metadata
+           .has_initial_merge_remote_updates_exceeded_limit_timestamp_windows_epoch_micros()) {
     return false;
   }
   // Report error if remote updates fetched last time during initial merge
   // exceeded limit. Note that here we are only setting
   // `last_initial_merge_remote_updates_exceeded_limit_`, the
   // actual error would be reported in ConnectIfReady().
-  last_initial_merge_remote_updates_exceeded_limit_ = true;
+  if (model_metadata
+          .has_initial_merge_remote_updates_exceeded_limit_timestamp_windows_epoch_micros()) {
+    initial_merge_remote_updates_exceeded_limit_timestamp_ =
+        base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(
+            model_metadata
+                .initial_merge_remote_updates_exceeded_limit_timestamp_windows_epoch_micros()));
+  } else {
+    // For legacy clients, set a random timestamp from 23-30 days ago to
+    // represent the error state. This is to preserve the error across restarts.
+    initial_merge_remote_updates_exceeded_limit_timestamp_ =
+        base::Time::Now() - (kInitialMergeRemoteUpdatesExceededLimitErrorTtl -
+                           base::RandTimeDeltaUpTo(
+                               kInitialMergeRemoteUpdatesExceededLimitErrorTtlJitter));
+    schedule_save_closure_.Run();
+  }
   return true;
 }
 
@@ -445,9 +480,9 @@ void BookmarkDataTypeProcessor::ConnectIfReady() {
 
   // Report error if remote updates fetched last time during initial merge
   // exceeded limit.
-  if (last_initial_merge_remote_updates_exceeded_limit_) {
-    // `last_initial_merge_remote_updates_exceeded_limit_` is only set in error
-    // case and thus tracker should be empty.
+  if (initial_merge_remote_updates_exceeded_limit_timestamp_) {
+    // `initial_merge_remote_updates_exceeded_limit_timestamp_` is only set
+    // in error case and thus tracker should be empty.
     DCHECK(!bookmark_tracker_);
     start_callback_.Reset();
     activation_request_.error_handler.Run(syncer::ModelError(
@@ -556,7 +591,7 @@ void BookmarkDataTypeProcessor::OnSyncStopping(
       if (bookmark_tracker_) {
         StopTrackingMetadataAndResetTracker();
       }
-      last_initial_merge_remote_updates_exceeded_limit_ = false;
+      initial_merge_remote_updates_exceeded_limit_timestamp_.reset();
       schedule_save_closure_.Run();
       break;
     }
@@ -613,7 +648,7 @@ void BookmarkDataTypeProcessor::OnInitialUpdateReceived(
   // very unlikely that there will be many updates downloaded.
   if (DoesCountExceedBookmarksSyncLimit(updates.size(), /*offset=*/1)) {
     DisconnectSync();
-    last_initial_merge_remote_updates_exceeded_limit_ = true;
+    initial_merge_remote_updates_exceeded_limit_timestamp_ = base::Time::Now();
     activation_request_.error_handler.Run(syncer::ModelError(
         FROM_HERE, syncer::ModelError::Type::
                        kBookmarksRemoteCountExceededLimitInitialMerge));
@@ -827,10 +862,10 @@ void BookmarkDataTypeProcessor::ClearMetadataIfStopped() {
     StopTrackingMetadataAndResetTracker();
     // Schedule save empty metadata.
     schedule_save_closure_.Run();
-  } else if (last_initial_merge_remote_updates_exceeded_limit_) {
+  } else if (initial_merge_remote_updates_exceeded_limit_timestamp_) {
     LogClearMetadataWhileStoppedHistogram(syncer::BOOKMARKS,
                                           /*is_delayed_call=*/false);
-    last_initial_merge_remote_updates_exceeded_limit_ = false;
+    initial_merge_remote_updates_exceeded_limit_timestamp_.reset();
     // Schedule save empty metadata.
     schedule_save_closure_.Run();
   }

@@ -217,13 +217,13 @@ class BookmarkDataTypeProcessor : public syncer::DataTypeProcessor,
   // bookmark-loading process.
   std::unique_ptr<SyncedBookmarkTracker> bookmark_tracker_;
 
-  // Maintains whether the count of remote updates downloaded on the latest
-  // initial merge exceeded the limit. Note that this is set only when limit is
-  // active, i.e. the feature is enabled. Also note that this would only be
-  // relevant where bookmark_tracker is null, since this can be set only in an
-  // error case and in an error case, we clear the tracker(or it remains
-  // uninitialized).
-  bool last_initial_merge_remote_updates_exceeded_limit_ = false;
+  // Stores the timestamp when the number of remote updates downloaded during
+  // the latest initial merge exceeded the configured limit. This can be populated
+  // from a proto for modern clients, or populated with a recent timestamp for
+  // legacy clients (who only stored a boolean). If this is set,
+  // `bookmark_tracker_` is not initialized and an error is reported instead.
+  std::optional<base::Time>
+      initial_merge_remote_updates_exceeded_limit_timestamp_;
 
   // UUID string that identifies the sync client and is received from the sync
   // engine.

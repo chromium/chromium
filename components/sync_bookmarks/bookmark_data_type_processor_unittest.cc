@@ -52,6 +52,7 @@ using testing::IsNull;
 using testing::NiceMock;
 using testing::NotNull;
 using testing::Pointer;
+using testing::Property;
 using testing::SizeIs;
 using testing::UnorderedElementsAre;
 
@@ -470,6 +471,42 @@ TEST_F(BookmarkDataTypeProcessorTest,
   histogram_tester.ExpectTotalCount(
       kPersistentDataTypeConfigurationTimeMetricName,
       /*count=*/0);
+}
+
+TEST_F(BookmarkDataTypeProcessorTest,
+       ShouldReportErrorForLegacyClientsWhenExceedingLimitInInitialSync) {
+  sync_pb::BookmarkModelMetadata model_metadata;
+  model_metadata.set_last_initial_merge_remote_updates_exceeded_limit(true);
+
+  processor()->ModelReadyToSync(model_metadata.SerializeAsString(),
+                                schedule_save_closure()->Get(),
+                                bookmark_model());
+  EXPECT_FALSE(processor()->IsTrackingMetadata());
+
+  // The processor should have stored the error state and be ready to report it
+  // upon OnSyncStarting().
+  sync_pb::BookmarkModelMetadata new_model_metadata;
+  new_model_metadata.ParseFromString(processor()->EncodeSyncMetadata());
+  EXPECT_FALSE(
+      new_model_metadata.has_last_initial_merge_remote_updates_exceeded_limit());
+  EXPECT_TRUE(
+      new_model_metadata
+          .has_initial_merge_remote_updates_exceeded_limit_timestamp_windows_epoch_micros());
+  const base::Time timestamp = base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(
+      new_model_metadata
+          .initial_merge_remote_updates_exceeded_limit_timestamp_windows_epoch_micros()));
+  const base::Time now = base::Time::Now();
+  EXPECT_LE(now - base::Days(30), timestamp);
+  EXPECT_LE(timestamp, now - base::Days(23));
+
+  EXPECT_CALL(*error_handler(),
+              Run(Property(
+                  &syncer::ModelError::type,
+                  Eq(syncer::ModelError::Type::
+                         kBookmarksRemoteCountExceededLimitLastInitialMerge))));
+  SimulateOnSyncStartingNoWait();
+  EXPECT_FALSE(processor()->IsTrackingMetadata());
+  EXPECT_FALSE(processor()->IsConnectedForTest());
 }
 
 TEST_F(BookmarkDataTypeProcessorTest,
@@ -1478,7 +1515,8 @@ TEST_F(BookmarkDataTypeProcessorTest,
   ASSERT_FALSE(metadata_str.empty());
   ASSERT_TRUE(model_metadata.ParseFromString(metadata_str));
   EXPECT_TRUE(
-      model_metadata.last_initial_merge_remote_updates_exceeded_limit());
+      model_metadata
+          .has_initial_merge_remote_updates_exceeded_limit_timestamp_windows_epoch_micros());
 }
 
 TEST_F(BookmarkDataTypeProcessorTest,
@@ -1535,7 +1573,8 @@ TEST_F(BookmarkDataTypeProcessorTest,
   ASSERT_FALSE(metadata_str.empty());
   ASSERT_TRUE(model_metadata.ParseFromString(metadata_str));
   ASSERT_TRUE(
-      model_metadata.last_initial_merge_remote_updates_exceeded_limit());
+      model_metadata
+          .has_initial_merge_remote_updates_exceeded_limit_timestamp_windows_epoch_micros());
 
   ResetDataTypeProcessor();
   // Expect failure.
@@ -1553,7 +1592,8 @@ TEST_F(BookmarkDataTypeProcessorTest,
   ASSERT_FALSE(metadata_str.empty());
   ASSERT_TRUE(model_metadata.ParseFromString(metadata_str));
   EXPECT_TRUE(
-      model_metadata.last_initial_merge_remote_updates_exceeded_limit());
+      model_metadata
+          .has_initial_merge_remote_updates_exceeded_limit_timestamp_windows_epoch_micros());
 }
 
 TEST_F(BookmarkDataTypeProcessorTest,
@@ -1609,7 +1649,8 @@ TEST_F(BookmarkDataTypeProcessorTest,
   ASSERT_FALSE(metadata_str.empty());
   ASSERT_TRUE(model_metadata.ParseFromString(metadata_str));
   ASSERT_TRUE(
-      model_metadata.last_initial_merge_remote_updates_exceeded_limit());
+      model_metadata
+          .has_initial_merge_remote_updates_exceeded_limit_timestamp_windows_epoch_micros());
 
   // Simulate browser restart.
   ResetDataTypeProcessor();
@@ -1627,7 +1668,8 @@ TEST_F(BookmarkDataTypeProcessorTest,
   ASSERT_FALSE(metadata_str.empty());
   ASSERT_TRUE(model_metadata.ParseFromString(metadata_str));
   ASSERT_TRUE(
-      model_metadata.last_initial_merge_remote_updates_exceeded_limit());
+      model_metadata
+          .has_initial_merge_remote_updates_exceeded_limit_timestamp_windows_epoch_micros());
 
   // Simulate browser restart again.
   ResetDataTypeProcessor();
@@ -1645,7 +1687,8 @@ TEST_F(BookmarkDataTypeProcessorTest,
   ASSERT_FALSE(metadata_str.empty());
   ASSERT_TRUE(model_metadata.ParseFromString(metadata_str));
   EXPECT_TRUE(
-      model_metadata.last_initial_merge_remote_updates_exceeded_limit());
+      model_metadata
+          .has_initial_merge_remote_updates_exceeded_limit_timestamp_windows_epoch_micros());
 }
 
 TEST_F(BookmarkDataTypeProcessorTest, ShouldClearMetadataIfStopped) {
