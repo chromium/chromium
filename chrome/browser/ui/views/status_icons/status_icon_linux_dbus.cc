@@ -27,6 +27,8 @@
 #include "components/dbus/properties/success_barrier_callback.h"
 #include "components/dbus/thread_linux/dbus_thread_linux.h"
 #include "components/dbus/utils/call_method.h"
+#include "components/dbus/utils/bind_weak_ptr_for_export_method.h"
+#include "components/dbus/utils/export_method.h"
 #include "components/dbus/utils/signature.h"
 #include "components/dbus/utils/variant.h"
 #include "content/public/browser/browser_thread.h"
@@ -348,33 +350,40 @@ void StatusIconLinuxDbus::OnHostRegisteredResponse(
 
   service_id_ = NextServiceId();
 
-  static constexpr struct {
-    const char* name;
-    void (StatusIconLinuxDbus::*callback)(dbus::MethodCall*,
-                                          dbus::ExportedObject::ResponseSender);
-  } methods[4] = {
-      {kMethodActivate, &StatusIconLinuxDbus::OnActivate},
-      {kMethodContextMenu, &StatusIconLinuxDbus::OnContextMenu},
-      {kMethodScroll, &StatusIconLinuxDbus::OnScroll},
-      {kMethodSecondaryActivate, &StatusIconLinuxDbus::OnSecondaryActivate},
-  };
-
-  // The barrier requires std::size(methods) + 2 calls.  std::size(methods)
-  // for each method exported, 1 for |properties_| initialization, and 1 for
-  // |menu_| initialization.
-  barrier_ =
-      SuccessBarrierCallback(std::size(methods) + 2,
-                             base::BindOnce(&StatusIconLinuxDbus::OnInitialized,
-                                            weak_factory_.GetWeakPtr()));
+  // The barrier requires 4 calls (1 for each method exported) + 1 call for
+  // `properties_` initialization + 1 call for `menu_` initialization = 6 calls
+  // total.
+  barrier_ = SuccessBarrierCallback(
+      6, base::BindOnce(&StatusIconLinuxDbus::OnInitialized,
+                        weak_factory_.GetWeakPtr()));
 
   item_ = bus_->GetExportedObject(dbus::ObjectPath(kPathStatusNotifierItem));
-  for (const auto& method : methods) {
-    item_->ExportMethod(
-        kInterfaceStatusNotifierItem, method.name,
-        base::BindRepeating(method.callback, weak_factory_.GetWeakPtr()),
-        base::BindOnce(&StatusIconLinuxDbus::OnExported,
-                       weak_factory_.GetWeakPtr()));
-  }
+
+  dbus_utils::ExportMethod<"ii", "">(
+      item_, kInterfaceStatusNotifierItem, kMethodActivate,
+      dbus_utils::BindWeakPtrForExportMethod(&StatusIconLinuxDbus::OnActivate,
+                                             weak_factory_.GetWeakPtr()),
+      base::BindOnce(&StatusIconLinuxDbus::OnExported,
+                     weak_factory_.GetWeakPtr()));
+  dbus_utils::ExportMethod<"ii", "">(
+      item_, kInterfaceStatusNotifierItem, kMethodContextMenu,
+      dbus_utils::BindWeakPtrForExportMethod(&StatusIconLinuxDbus::OnContextMenu,
+                                             weak_factory_.GetWeakPtr()),
+      base::BindOnce(&StatusIconLinuxDbus::OnExported,
+                     weak_factory_.GetWeakPtr()));
+  dbus_utils::ExportMethod<"is", "">(
+      item_, kInterfaceStatusNotifierItem, kMethodScroll,
+      dbus_utils::BindWeakPtrForExportMethod(&StatusIconLinuxDbus::OnScroll,
+                                             weak_factory_.GetWeakPtr()),
+      base::BindOnce(&StatusIconLinuxDbus::OnExported,
+                     weak_factory_.GetWeakPtr()));
+  dbus_utils::ExportMethod<"ii", "">(
+      item_, kInterfaceStatusNotifierItem, kMethodSecondaryActivate,
+      dbus_utils::BindWeakPtrForExportMethod(
+          &StatusIconLinuxDbus::OnSecondaryActivate,
+          weak_factory_.GetWeakPtr()),
+      base::BindOnce(&StatusIconLinuxDbus::OnExported,
+                     weak_factory_.GetWeakPtr()));
 
   menu_ = std::make_unique<DbusMenu>(
       bus_->GetExportedObject(dbus::ObjectPath(kPathDbusMenu)), barrier_);
@@ -463,26 +472,16 @@ void StatusIconLinuxDbus::OnNameOwnerChangedReceived(
   }
 }
 
-void StatusIconLinuxDbus::OnActivate(
-    dbus::MethodCall* method_call,
-    dbus::ExportedObject::ResponseSender sender) {
+dbus_utils::ExportMethodResult<> StatusIconLinuxDbus::OnActivate(int32_t x,
+                                                                 int32_t y) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   delegate_->OnClick();
-  std::move(sender).Run(dbus::Response::FromMethodCall(method_call));
+  return std::make_tuple();
 }
 
-void StatusIconLinuxDbus::OnContextMenu(
-    dbus::MethodCall* method_call,
-    dbus::ExportedObject::ResponseSender sender) {
+dbus_utils::ExportMethodResult<> StatusIconLinuxDbus::OnContextMenu(int32_t x,
+                                                                    int32_t y) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  dbus::MessageReader reader(method_call);
-  int32_t x;
-  int32_t y;
-  if (!reader.PopInt32(&x) || !reader.PopInt32(&y)) {
-    std::move(sender).Run(nullptr);
-    return;
-  }
-
   if (!menu_runner_) {
     menu_runner_ = std::make_unique<views::MenuRunner>(
         concat_menu_.get(), views::MenuRunner::HAS_MNEMONICS |
@@ -492,26 +491,26 @@ void StatusIconLinuxDbus::OnContextMenu(
   menu_runner_->RunMenuAt(
       nullptr, nullptr, gfx::Rect(gfx::Point(x, y), gfx::Size()),
       views::MenuAnchorPosition::kTopRight, ui::mojom::MenuSourceType::kMouse);
-  std::move(sender).Run(dbus::Response::FromMethodCall(method_call));
+  return std::make_tuple();
 }
 
-void StatusIconLinuxDbus::OnScroll(
-    dbus::MethodCall* method_call,
-    dbus::ExportedObject::ResponseSender sender) {
+dbus_utils::ExportMethodResult<> StatusIconLinuxDbus::OnScroll(
+    int32_t delta,
+    std::string orientation) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   // Ignore scroll events.
-  std::move(sender).Run(dbus::Response::FromMethodCall(method_call));
+  return std::make_tuple();
 }
 
-void StatusIconLinuxDbus::OnSecondaryActivate(
-    dbus::MethodCall* method_call,
-    dbus::ExportedObject::ResponseSender sender) {
+dbus_utils::ExportMethodResult<> StatusIconLinuxDbus::OnSecondaryActivate(
+    int32_t x,
+    int32_t y) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   // gnome-shell-extension-appindicator requires a double-click to activate
   // which is non-obvious, so allow middle-click to activate which is slightly
   // more obvious.
   delegate_->OnClick();
-  std::move(sender).Run(dbus::Response::FromMethodCall(method_call));
+  return std::make_tuple();
 }
 
 void StatusIconLinuxDbus::UpdateMenuImpl(ui::MenuModel* model,
