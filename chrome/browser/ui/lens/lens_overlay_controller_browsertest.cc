@@ -9539,7 +9539,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerReinvocationBrowserTest,
 
 // TODO(crbug.com/458942668): The test is flaky.
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerReinvocationBrowserTest,
-                       DIABLED_FollowUpRegionSearchDoesNotLoadInSidePanel) {
+                       DISABLED_FollowUpRegionSearchDoesNotLoadInSidePanel) {
   WaitForPaint();
   auto* controller = GetLensOverlayController();
   ASSERT_EQ(controller->state(), State::kOff);
