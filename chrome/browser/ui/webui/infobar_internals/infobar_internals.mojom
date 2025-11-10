@@ -7,6 +7,7 @@ module infobar_internals.mojom;
 // Types for every infobar that can be triggered from the internals page.
 enum InfoBarType {
   kInstallerDownloader,
+  kSessionRestore,
 };
 
 // Metadata describing an individual infobar that can be triggered.

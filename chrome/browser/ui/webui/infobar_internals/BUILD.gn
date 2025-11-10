@@ -40,7 +40,9 @@ source_set("impl") {
     ":mojo_bindings",
     "//chrome/browser:browser_process",
     "//chrome/browser:global_features",
+    "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/infobar_internals:resources",
+    "//chrome/browser/ui/browser_window",
     "//content/public/browser",
   ]
 
@@ -49,5 +51,8 @@ source_set("impl") {
       "//chrome/browser/win/installer_downloader:controller",
       "//chrome/browser/win/installer_downloader:prefs",
     ]
+  }
+  if (is_win || is_mac || is_linux) {
+    deps += [ "//chrome/browser/ui/views/session_restore_infobar" ]
   }
 }
