@@ -58,6 +58,7 @@ CGFloat const kSheetCornerRadius = 30;
 @interface HomeCustomizationCoordinator () <
     UISheetPresentationControllerDelegate,
     HomeCustomizationBackgroundPickerPresentationDelegate,
+    HomeCustomizationMainViewControllerDelegate,
     HomeCustomizationSearchEngineLogoMediatorProvider> {
   // Displays the background picker action sheet.
   HomeCustomizationBackgroundPickerActionSheetCoordinator*
@@ -300,6 +301,7 @@ CGFloat const kSheetCornerRadius = 30;
           [[HomeCustomizationMainViewController alloc] init];
       self.mainViewController.snackbarCommandHandler = HandlerForProtocol(
           self.browser->GetCommandDispatcher(), SnackbarCommands);
+      self.mainViewController.delegate = self;
       self.mainViewController.backgroundPickerPresentationDelegate = self;
       self.mainViewController.mutator = _mediator;
       self.mainViewController.customizationMutator =
@@ -374,7 +376,7 @@ CGFloat const kSheetCornerRadius = 30;
   presentationController.selectedDetentIdentifier =
       kBottomSheetDetentIdentifier;
   presentationController.largestUndimmedDetentIdentifier =
-      presentationController.detents.lastObject.identifier;
+      [self currentLargestUndimmedDetentIdentifier];
 
   return navigationController;
 }
@@ -418,6 +420,17 @@ CGFloat const kSheetCornerRadius = 30;
   return (height < kInitialDetentHeight)
              ? UISheetPresentationControllerDetentInactive
              : height;
+}
+
+// Returns the identifier of the detent that should currently be the largest
+// undimmed detent. This is required because if the largest undimmed detent
+// currently has an inactive height, UIKit dims everything. So when that detent
+// is inactive, the largest undimmed detent must change.
+- (NSString*)currentLargestUndimmedDetentIdentifier {
+  return ([self detentHeightForMainViewControllerExpanded] ==
+          UISheetPresentationControllerDetentInactive)
+             ? kBottomSheetDetentIdentifier
+             : kBottomSheetExpandedDetentIdentifier;
 }
 
 // Called when the user taps on the dim view to dismiss the presented half
@@ -488,6 +501,17 @@ CGFloat const kSheetCornerRadius = 30;
   }
 
   return searchEngineLogoMediator;
+}
+
+#pragma mark - HomeCustomizationMainViewControllerDelegate
+
+- (void)viewContentHeightChangedInHomeCustomizationViewController:
+    (HomeCustomizationMainViewController*)viewController {
+  [viewController.sheetPresentationController invalidateDetents];
+  // Make sure to update the largest undimmed detent identifier because the old
+  // largest could have changed activation state.
+  viewController.sheetPresentationController.largestUndimmedDetentIdentifier =
+      [self currentLargestUndimmedDetentIdentifier];
 }
 
 @end

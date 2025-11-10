@@ -167,7 +167,8 @@
 
   if (_lastSeenViewContentHeight != self.viewContentHeight) {
     _lastSeenViewContentHeight = self.viewContentHeight;
-    [self.sheetPresentationController invalidateDetents];
+    [self.delegate
+        viewContentHeightChangedInHomeCustomizationViewController:self];
   }
 }
 

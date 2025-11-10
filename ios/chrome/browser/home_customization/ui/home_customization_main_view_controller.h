@@ -19,6 +19,16 @@
 @protocol HomeCustomizationSearchEngineLogoMediatorProvider;
 @protocol SnackbarCommands;
 
+@class HomeCustomizationMainViewController;
+
+@protocol HomeCustomizationMainViewControllerDelegate
+
+// Alerts the delegate that the view controller's content height has changed.
+- (void)viewContentHeightChangedInHomeCustomizationViewController:
+    (HomeCustomizationMainViewController*)viewController;
+
+@end
+
 // Procedural block that will be used to handle the retry action in the
 // snackbar.
 typedef void (^ProceduralBlock)(void);
@@ -37,7 +47,8 @@ typedef void (^ProceduralBlock)(void);
     customizationMutator;
 
 // Delegate for communicating with the coordinator.
-@property(nonatomic, weak) id<HomeCustomizationDelegate> delegate;
+@property(nonatomic, weak) id<HomeCustomizationMainViewControllerDelegate>
+    delegate;
 
 // Delegate for background picker actions.
 @property(nonatomic, weak)
