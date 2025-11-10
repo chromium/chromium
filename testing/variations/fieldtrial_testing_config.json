@@ -18480,7 +18480,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "EnabledConservative",
                     "params": {
                         "MacCriticalDiskSpacePressureThresholdMB": "250"
                     },
@@ -18491,6 +18491,7 @@
                         "AvoidCloneArgsOnExtensionFunctionDispatch",
                         "AvoidUnnecessaryGetMinimizeButtonOffset",
                         "AvoidUnnecessaryShouldRenderRichAnimation",
+                        "CompressParkableStrings",
                         "FastPathNoRaster",
                         "GCOnArrayBufferAllocationFailure",
                         "MacAllowBackgroundingRenderProcesses",
