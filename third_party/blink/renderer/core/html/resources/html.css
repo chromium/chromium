@@ -2008,7 +2008,6 @@ dialog:where(:modal) {
      * if underlying performance issues with lh units are fixed. */
     min-block-size: -internal-auto-base(0, 1lh);
     /* Go to the edge of the viewport, and add scrollbars if needed. */
-    max-block-size: -webkit-fill-available; /* Can be removed when stretch ships */
     max-block-size: stretch;
     overflow: auto;
     /* Below and span-right, by default. */
@@ -2035,7 +2034,6 @@ dialog:where(:modal) {
      * if underlying performance issues with lh units are fixed. */
     min-block-size: -internal-auto-base(0, 1lh);
     /* Go to the edge of the viewport, and add scrollbars if needed. */
-    max-block-size: -webkit-fill-available;
     max-block-size: stretch;
     overflow: auto;
     /* Below and span-right, by default. */
