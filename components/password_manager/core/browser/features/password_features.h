@@ -227,6 +227,10 @@ BASE_DECLARE_FEATURE(kImprovedPasswordChangeService);
 // feature flag) in a user-visible background tab.
 BASE_DECLARE_FEATURE(kRunPasswordChangeInBackgroundTab);
 
+// Removes country and language restrictions for password change. This allows to
+// control locale/country server side.
+BASE_DECLARE_FEATURE(kReduceRequirementsForPasswordChange);
+
 #if BUILDFLAG(IS_ANDROID)
 // The feature flag for reloading passwords when the trusted vault encryption
 // state changes.

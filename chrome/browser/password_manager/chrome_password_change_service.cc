@@ -321,7 +321,9 @@ PasswordChangeAvailability ChromePasswordChangeService::GetPerSiteAvailability(
   }
 
   if (page_language != autofill::LanguageCode("en") &&
-      page_language != autofill::LanguageCode("en-US")) {
+      page_language != autofill::LanguageCode("en-US") &&
+      !base::FeatureList::IsEnabled(
+          password_manager::features::kReduceRequirementsForPasswordChange)) {
     if (logger) {
       logger->LogMessage(Logger::STRING_PASSWORD_CHANGE_UNSUPPORTED_LANGUAGE);
     }
@@ -329,7 +331,9 @@ PasswordChangeAvailability ChromePasswordChangeService::GetPerSiteAvailability(
   }
 
   const std::string country_code = GetVariationConfigCountryCode();
-  if (country_code != "us") {
+  if (country_code != "us" &&
+      !base::FeatureList::IsEnabled(
+          password_manager::features::kReduceRequirementsForPasswordChange)) {
     if (logger) {
       logger->LogMessage(Logger::STRING_PASSWORD_CHANGE_UNSUPPORTED_COUNTRY);
     }
