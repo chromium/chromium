@@ -95,7 +95,7 @@ void PrefetchMatchResolver::FindPrefetch(
     base::WeakPtr<PrefetchServingPageMetricsContainer>
         serving_page_metrics_container,
     Callback callback) {
-  TRACE_EVENT0("loading", "PrefetchMatchResolver::FindPrefetch");
+  TRACE_EVENT("loading", "PrefetchMatchResolver::FindPrefetch");
 
   auto* frame_tree_node = FrameTreeNode::GloballyFindByID(frame_tree_node_id);
   if (!frame_tree_node) {
@@ -552,7 +552,7 @@ void PrefetchMatchResolver::OnTimeout(PrefetchKey prefetch_key) {
 }
 
 void PrefetchMatchResolver::UnblockForMatch(const PrefetchKey& prefetch_key) {
-  TRACE_EVENT0("loading", "PrefetchMatchResolver::UnblockForMatch");
+  TRACE_EVENT("loading", "PrefetchMatchResolver::UnblockForMatch");
 
   // By #prefetch-key-availability
   auto it = candidates_.find(prefetch_key);
@@ -603,7 +603,7 @@ void PrefetchMatchResolver::UnblockForMatch(const PrefetchKey& prefetch_key) {
 }
 
 void PrefetchMatchResolver::UnblockForNoCandidates() {
-  TRACE_EVENT0("loading", "PrefetchMatchResolver::UnblockForNoCandidates");
+  TRACE_EVENT("loading", "PrefetchMatchResolver::UnblockForNoCandidates");
 
   if (prefetch_service_ && expected_service_worker_state_ ==
                                PrefetchServiceWorkerState::kDisallowed) {

@@ -83,7 +83,7 @@ void PrefetchURLLoaderInterceptor::MaybeCreateLoader(
     BrowserContext* browser_context,
     NavigationLoaderInterceptor::LoaderCallback callback,
     NavigationLoaderInterceptor::FallbackCallback fallback_callback) {
-  TRACE_EVENT0("loading", "PrefetchURLLoaderInterceptor::MaybeCreateLoader");
+  TRACE_EVENT("loading", "PrefetchURLLoaderInterceptor::MaybeCreateLoader");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   CHECK(!loader_callback_);
@@ -181,7 +181,7 @@ void PrefetchURLLoaderInterceptor::GetPrefetch(
     const GURL& url,
     base::OnceCallback<void(PrefetchServingHandle)> get_prefetch_callback)
     const {
-  TRACE_EVENT0("loading", "PrefetchURLLoaderInterceptor::GetPrefetch");
+  TRACE_EVENT("loading", "PrefetchURLLoaderInterceptor::GetPrefetch");
   PrefetchService* prefetch_service =
       PrefetchService::GetFromFrameTreeNodeId(frame_tree_node_id_);
   if (!prefetch_service) {
@@ -209,8 +209,7 @@ void PrefetchURLLoaderInterceptor::OnGetPrefetchComplete(
     const GURL& url,
     const std::optional<url::Origin>& top_frame_origin,
     PrefetchServingHandle serving_handle) {
-  TRACE_EVENT0("loading",
-               "PrefetchURLLoaderInterceptor::OnGetPrefetchComplete");
+  TRACE_EVENT("loading", "PrefetchURLLoaderInterceptor::OnGetPrefetchComplete");
   PrefetchRequestHandler request_handler;
   base::WeakPtr<ServiceWorkerClient> client_for_prefetch;
   if (serving_handle) {

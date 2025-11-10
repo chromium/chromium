@@ -559,7 +559,7 @@ PrerenderHost::~PrerenderHost() {
 // no-state-prefetch implementation. See PrerenderContents::StartPrerendering()
 // for example.
 bool PrerenderHost::StartPrerendering() {
-  TRACE_EVENT0("navigation", "PrerenderHost::StartPrerendering");
+  TRACE_EVENT("navigation", "PrerenderHost::StartPrerendering");
 
   // Since prerender started we mark it as eligible and set it to running.
   SetTriggeringOutcome(PreloadingTriggeringOutcome::kRunning);
@@ -783,8 +783,8 @@ void PrerenderHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
 
 std::unique_ptr<StoredPage> PrerenderHost::Activate(
     NavigationRequest& navigation_request) {
-  TRACE_EVENT1("navigation", "PrerenderHost::Activate", "navigation_request",
-               &navigation_request);
+  TRACE_EVENT("navigation", "PrerenderHost::Activate", "navigation_request",
+              &navigation_request);
 
   CHECK(is_ready_for_activation_);
   is_ready_for_activation_ = false;
