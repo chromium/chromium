@@ -510,6 +510,17 @@ std::string GetInitStatusHistogramName(VideoCodecProfile profile) {
       {kInitStatusHistogramPrefix,
        GetCodecNameForUMA(VideoCodecProfileToVideoCodec(profile))});
 }
+
+bool ShouldUseSurfaceInput() {
+  if (__builtin_available(android 35, *)) {
+    // Limit surface input to Android 15+ (API Level: 35), because we see issues
+    // on older devices.
+    if (base::FeatureList::IsEnabled(media::kEnableSurfaceInputForAndroidVEA)) {
+      return true;
+    }
+  }
+  return false;
+}
 }  // namespace
 
 NdkVideoEncodeAccelerator::PendingEncode::PendingEncode(
@@ -528,8 +539,7 @@ NdkVideoEncodeAccelerator::NdkVideoEncodeAccelerator(
       // We just need an arbitrary non-zero value for the first timestamp
       // due to issues with EGL surface path.
       next_timestamp_(base::TimeTicks::Now().since_origin()),
-      use_surface_as_input_(base::FeatureList::IsEnabled(
-          media::kEnableSurfaceInputForAndroidVEA)) {}
+      use_surface_as_input_(ShouldUseSurfaceInput()) {}
 
 NdkVideoEncodeAccelerator::~NdkVideoEncodeAccelerator() {
   // It's supposed to be cleared by Destroy(), it basically checks
