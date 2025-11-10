@@ -4686,7 +4686,7 @@
     },
     {
       name: "SideRelativeBackgroundPosition",
-      status: "experimental",
+      status: "stable",
       public: true,
     },
     {
