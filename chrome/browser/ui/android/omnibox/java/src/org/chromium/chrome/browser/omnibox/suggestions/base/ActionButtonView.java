@@ -10,6 +10,8 @@ import android.view.View;
 
 import androidx.appcompat.widget.AppCompatImageView;
 
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 
 /**
@@ -63,7 +65,16 @@ public class ActionButtonView extends AppCompatImageView {
         if (!mShowOnlyOnFocus) {
             return;
         }
-        setVisibility(mParentHovered || mHovered || mParentSelected ? View.VISIBLE : View.GONE);
+        // Use post to decouple the input event stream from the view hierarchy state update in order
+        // to work around the timing problem that causes the system not to dispatch the touch event.
+        PostTask.postTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    setVisibility(
+                            mParentHovered || mHovered || mParentSelected
+                                    ? View.VISIBLE
+                                    : View.GONE);
+                });
     }
 
     @Override
