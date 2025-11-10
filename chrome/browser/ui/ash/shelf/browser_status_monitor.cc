@@ -34,15 +34,14 @@ namespace {
 
 // Checks if a given browser is running a windowed app. It will return true for
 // web apps, hosted apps, and packaged V1 apps.
-bool IsAppBrowser(const BrowserWindowInterface* browser) {
-  const BrowserWindowInterface::Type browser_type = browser->GetType();
-  if (browser_type != BrowserWindowInterface::TYPE_APP &&
-      browser_type != BrowserWindowInterface::TYPE_APP_POPUP) {
+bool IsAppBrowser(const ash::BrowserDelegate* browser) {
+  const ash::BrowserType browser_type = browser->GetType();
+  if (browser_type != ash::BrowserType::kApp &&
+      browser_type != ash::BrowserType::kAppPopup) {
     return false;
   }
-  return !web_app::GetAppIdFromApplicationName(
-              browser->GetBrowserForMigrationOnly()->app_name())
-              .empty();
+
+  return browser->GetAppId().has_value();
 }
 
 BrowserWindowInterface* GetBrowserWithTabStripModel(
@@ -213,7 +212,7 @@ void BrowserStatusMonitor::OnBrowserCreated(
   DCHECK(insert_result.second);
 #endif
 
-  if (IsAppBrowser(browser) &&
+  if (IsAppBrowser(browser_delegate) &&
       multi_user_util::IsProfileFromActiveUser(browser->profile())) {
     AddAppBrowserToShelf(browser);
   }
@@ -230,7 +229,7 @@ void BrowserStatusMonitor::OnBrowserClosed(
   DCHECK_EQ(num_removed, 1U);
 #endif
 
-  if (IsAppBrowser(browser) &&
+  if (IsAppBrowser(browser_delegate) &&
       multi_user_util::IsProfileFromActiveUser(browser->profile())) {
     RemoveAppBrowserFromShelf(browser);
   }
@@ -317,7 +316,8 @@ void BrowserStatusMonitor::OnTabStripModelChanged(
 
 void BrowserStatusMonitor::AddAppBrowserToShelf(
     BrowserWindowInterface* browser) {
-  DCHECK(IsAppBrowser(browser));
+  DCHECK(IsAppBrowser(
+      ash::BrowserController::GetInstance()->GetDelegate(browser)));
   DCHECK(initialized_);
 
   const std::string app_id = web_app::GetAppIdFromApplicationName(
@@ -334,7 +334,8 @@ void BrowserStatusMonitor::AddAppBrowserToShelf(
 
 void BrowserStatusMonitor::RemoveAppBrowserFromShelf(
     BrowserWindowInterface* browser) {
-  DCHECK(IsAppBrowser(browser));
+  DCHECK(IsAppBrowser(
+      ash::BrowserController::GetInstance()->GetDelegate(browser)));
   DCHECK(initialized_);
 
   auto iter = browser_to_app_id_map_.find(browser);

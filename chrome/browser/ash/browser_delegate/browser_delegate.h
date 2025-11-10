@@ -75,7 +75,7 @@ class BrowserDelegate {
   // closed.
   virtual aura::Window* GetNativeWindow() const = 0;
 
-  // Returns the browser application id, if applicable.
+  // Returns the non-empty browser application id, if applicable.
   virtual std::optional<webapps::AppId> GetAppId() const = 0;
 
   // Returns whether the browser is a web app window/pop-up.
