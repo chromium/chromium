@@ -49,6 +49,8 @@ public class ContainmentItemController {
     private final int mDefaultContainerVerticalMargin;
     private final int mDefaultMargin;
     private final int mSectionBottomAdditionalMargin;
+    private final int mDefaultPadding;
+    private final int mMultiLineVerticalPadding;
     private final int mDefaultBackgroundColor;
     static final int TRANSPARENT_BACKGROUND_COLOR = Color.TRANSPARENT;
 
@@ -71,6 +73,11 @@ public class ContainmentItemController {
         mSectionBottomAdditionalMargin =
                 context.getResources()
                         .getDimensionPixelSize(R.dimen.settings_section_bottom_margin);
+        mDefaultPadding =
+                context.getResources().getDimensionPixelSize(R.dimen.settings_item_default_padding);
+        mMultiLineVerticalPadding =
+                context.getResources()
+                        .getDimensionPixelSize(R.dimen.settings_item_vertical_padding_multi_line);
         mDefaultBackgroundColor = getSettingsContainerBackgroundColor(context);
     }
 
@@ -114,6 +121,7 @@ public class ContainmentItemController {
     private @NonNull ContainerStyle getPreferenceStyleForPosition(
             ArrayList<Preference> visiblePreferences, int position) {
         Preference currentPref = visiblePreferences.get(position);
+        boolean isSingleLine = currentPref.getSummary() == null;
 
         if (isCustomStyledPreference(currentPref)) {
             if (currentPref instanceof PreferenceCategory) {
@@ -123,7 +131,7 @@ public class ContainmentItemController {
                         .setBackgroundColor(TRANSPARENT_BACKGROUND_COLOR)
                         .build();
             }
-            return getStyleForCustomContainer((ContainmentItem) currentPref);
+            return getStyleForCustomContainer((ContainmentItem) currentPref, isSingleLine);
         }
 
         // For standard items, styling is determined by their position within a section.
@@ -137,7 +145,7 @@ public class ContainmentItemController {
         boolean isTop = (prefAbove == null) || isCustomStyledPreference(prefAbove);
         boolean isBottom = (prefBelow == null) || isCustomStyledPreference(prefBelow);
 
-        return createBuilderWithDefaultStyle(isTop, isBottom);
+        return createBuilderWithDefaultStyle(isTop, isBottom, isSingleLine);
     }
 
     /**
@@ -165,7 +173,7 @@ public class ContainmentItemController {
         View view = views.get(position);
 
         if (isCustomStyledView(view)) {
-            return getStyleForCustomContainer((ContainmentItem) view);
+            return getStyleForCustomContainer((ContainmentItem) view, /* isSingleLine= */ true);
         }
 
         // For standard items, styling is determined by their position within a section.
@@ -173,7 +181,7 @@ public class ContainmentItemController {
         boolean isTop = position == 0 || isCustomStyledView(views.get(position - 1));
         boolean isBottom =
                 position == views.size() - 1 || isCustomStyledView(views.get(position + 1));
-        return createBuilderWithDefaultStyle(isTop, isBottom);
+        return createBuilderWithDefaultStyle(isTop, isBottom, /* isSingleLine= */ false);
     }
 
     /**
@@ -196,9 +204,11 @@ public class ContainmentItemController {
      * provided.
      *
      * @param container The container to generate a style for.
+     * @param isSingleLine Whether the item is single line.
      * @return The {@link ContainerStyle} for the container.
      */
-    private ContainerStyle getStyleForCustomContainer(ContainmentItem container) {
+    private ContainerStyle getStyleForCustomContainer(
+            ContainmentItem container, boolean isSingleLine) {
         if (container.getCustomBackgroundStyle() == BackgroundStyle.CARD) {
             int topMargin = container.getCustomTopMargin();
             if (topMargin == DEFAULT_MARGIN) topMargin = mDefaultContainerVerticalMargin;
@@ -221,6 +231,8 @@ public class ContainmentItemController {
                     .setBottomRadius(mDefaultRadius)
                     .setTopMargin(topMargin)
                     .setBottomMargin(bottomMargin)
+                    .setHorizontalPadding(mDefaultPadding)
+                    .setVerticalPadding(isSingleLine ? mDefaultPadding : mMultiLineVerticalPadding)
                     .setHorizontalMargin(horizontalMargin)
                     .setBackgroundColor(backgroundColor)
                     .build();
@@ -235,12 +247,15 @@ public class ContainmentItemController {
      *
      * @param isTop Whether the item is at the top of a section.
      * @param isBottom Whether the item is at the bottom of a section.
+     * @param isSingleLine Whether the item is single line.
      * @return The {@link ContainerStyle} for the item.
      */
-    private ContainerStyle createBuilderWithDefaultStyle(boolean isTop, boolean isBottom) {
+    private ContainerStyle createBuilderWithDefaultStyle(
+            boolean isTop, boolean isBottom, boolean isSingleLine) {
         float topRadius = mDefaultRadius;
         float bottomRadius = mDefaultRadius;
         int bottomMargin = mDefaultContainerVerticalMargin;
+        int verticalPadding = isSingleLine ? mDefaultPadding : mMultiLineVerticalPadding;
 
         if (isTop && isBottom) { // Standalone
             // Standalone items have an additional bottom margin
@@ -262,6 +277,8 @@ public class ContainmentItemController {
                 .setTopMargin(mDefaultContainerVerticalMargin)
                 .setBottomMargin(bottomMargin)
                 .setHorizontalMargin(mDefaultMargin)
+                .setHorizontalPadding(mDefaultPadding)
+                .setVerticalPadding(verticalPadding)
                 .setBackgroundColor(mDefaultBackgroundColor)
                 .build();
     }

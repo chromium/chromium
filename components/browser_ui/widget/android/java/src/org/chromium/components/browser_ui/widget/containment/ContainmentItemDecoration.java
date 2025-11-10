@@ -82,6 +82,7 @@ public class ContainmentItemDecoration extends RecyclerView.ItemDecoration {
             if (position == RecyclerView.NO_POSITION || position >= mPreferenceStyles.size()) {
                 continue;
             }
+            ContainmentViewStyler.applyPadding(childView, mPreferenceStyles.get(position));
             ContainmentViewStyler.applyBackgroundStyle(childView, mPreferenceStyles.get(position));
             ContainmentViewStyler.styleChildViews(childView, mStylingController);
         }

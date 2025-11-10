@@ -167,7 +167,7 @@ public class AddressBarPreference extends ContainedRadioButtonGroupPreference
             int verticalPadding =
                     getContext()
                             .getResources()
-                            .getDimensionPixelSize(R.dimen.settings_item_vertical_padding);
+                            .getDimensionPixelSize(R.dimen.settings_item_default_padding);
             mTopButton.setPadding(
                     mTopButton.getPaddingLeft(),
                     verticalPadding,
