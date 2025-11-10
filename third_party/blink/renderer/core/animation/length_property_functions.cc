@@ -363,36 +363,36 @@ bool LengthPropertyFunctions::GetLength(const CSSProperty& property,
         success = true;
       }
       break;
-    case CSSPropertyID::kColumnRuleEdgeEndOutset:
-      result = style.ColumnRuleEdgeEndOutset();
+    case CSSPropertyID::kColumnRuleEdgeEndInset:
+      result = style.ColumnRuleEdgeEndInset();
       success = true;
       break;
-    case CSSPropertyID::kRowRuleEdgeEndOutset:
-      result = style.RowRuleEdgeEndOutset();
+    case CSSPropertyID::kRowRuleEdgeEndInset:
+      result = style.RowRuleEdgeEndInset();
       success = true;
       break;
-    case CSSPropertyID::kColumnRuleEdgeStartOutset:
-      result = style.ColumnRuleEdgeStartOutset();
+    case CSSPropertyID::kColumnRuleEdgeStartInset:
+      result = style.ColumnRuleEdgeStartInset();
       success = true;
       break;
-    case CSSPropertyID::kRowRuleEdgeStartOutset:
-      result = style.RowRuleEdgeStartOutset();
+    case CSSPropertyID::kRowRuleEdgeStartInset:
+      result = style.RowRuleEdgeStartInset();
       success = true;
       break;
-    case CSSPropertyID::kColumnRuleInteriorEndOutset:
-      result = style.ColumnRuleInteriorEndOutset();
+    case CSSPropertyID::kColumnRuleInteriorEndInset:
+      result = style.ColumnRuleInteriorEndInset();
       success = true;
       break;
-    case CSSPropertyID::kRowRuleInteriorEndOutset:
-      result = style.RowRuleInteriorEndOutset();
+    case CSSPropertyID::kRowRuleInteriorEndInset:
+      result = style.RowRuleInteriorEndInset();
       success = true;
       break;
-    case CSSPropertyID::kColumnRuleInteriorStartOutset:
-      result = style.ColumnRuleInteriorStartOutset();
+    case CSSPropertyID::kColumnRuleInteriorStartInset:
+      result = style.ColumnRuleInteriorStartInset();
       success = true;
       break;
-    case CSSPropertyID::kRowRuleInteriorStartOutset:
-      result = style.RowRuleInteriorStartOutset();
+    case CSSPropertyID::kRowRuleInteriorStartInset:
+      result = style.RowRuleInteriorStartInset();
       success = true;
       break;
     case CSSPropertyID::kColumnRuleWidth:

@@ -351,7 +351,7 @@ class CORE_EXPORT ComputedStyleUtils {
                                                   const LayoutObject*,
                                                   bool allow_visited_style,
                                                   CSSValuePhase value_phase);
-  static CSSValueList* ValuesForGapDecorationRuleOutsetShorthand(
+  static CSSValueList* ValuesForGapDecorationRuleInsetShorthand(
       const StylePropertyShorthand&,
       const ComputedStyle&,
       const LayoutObject*,
@@ -392,7 +392,7 @@ class CORE_EXPORT ComputedStyleUtils {
       bool allow_visited_style,
       CSSValuePhase value_phase);
 
-  static const CSSValue* ValuesForBidirectionalGapRuleOutsetShorthand(
+  static const CSSValue* ValuesForBidirectionalGapRuleInsetShorthand(
       const StylePropertyShorthand&,
       const ComputedStyle&,
       const LayoutObject*,

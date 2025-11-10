@@ -589,13 +589,13 @@ String StylePropertySerializer::SerializeShorthand(
     case CSSPropertyID::kRowRule:
       return GetShorthandValueForGapDecorationsRule(
           rowRuleShorthand(), CSSGapDecorationPropertyDirection::kRow);
-    case CSSPropertyID::kColumnRuleOutset:
-      return GetShorthandValueForGapDecorationsRuleOutset(
-          columnRuleOutsetShorthand(),
+    case CSSPropertyID::kColumnRuleInset:
+      return GetShorthandValueForGapDecorationsRuleInset(
+          columnRuleInsetShorthand(),
           CSSGapDecorationPropertyDirection::kColumn);
-    case CSSPropertyID::kRowRuleOutset:
-      return GetShorthandValueForGapDecorationsRuleOutset(
-          rowRuleOutsetShorthand(), CSSGapDecorationPropertyDirection::kRow);
+    case CSSPropertyID::kRowRuleInset:
+      return GetShorthandValueForGapDecorationsRuleInset(
+          rowRuleInsetShorthand(), CSSGapDecorationPropertyDirection::kRow);
     case CSSPropertyID::kColumns:
       return GetShorthandValueForColumns(columnsShorthand());
     case CSSPropertyID::kContainIntrinsicSize:
@@ -679,9 +679,9 @@ String StylePropertySerializer::SerializeShorthand(
       return GetShorthandValueForBidirectionalGapRules(ruleBreakShorthand());
     case CSSPropertyID::kRuleColor:
       return GetShorthandValueForBidirectionalGapRules(ruleColorShorthand());
-    case CSSPropertyID::kRuleOutset:
-      return GetShorthandValueForBidirectionalGapRuleOutset(
-          ruleOutsetShorthand());
+    case CSSPropertyID::kRuleInset:
+      return GetShorthandValueForBidirectionalGapRuleInset(
+          ruleInsetShorthand());
     case CSSPropertyID::kRuleStyle:
       return GetShorthandValueForBidirectionalGapRules(ruleStyleShorthand());
     case CSSPropertyID::kRuleWidth:
@@ -1920,52 +1920,52 @@ String StylePropertySerializer::GetShorthandValueForRule(
       column_rule_shorthand, CSSGapDecorationPropertyDirection::kColumn);
 }
 
-String StylePropertySerializer::GetShorthandValueForBidirectionalGapRuleOutset(
+String StylePropertySerializer::GetShorthandValueForBidirectionalGapRuleInset(
     const StylePropertyShorthand& shorthand) const {
   CHECK_EQ(shorthand.length(), 8u);
 
   StringBuilder result;
-  const CSSValue* column_rule_edge_start_outset_value =
+  const CSSValue* column_rule_edge_start_inset_value =
       property_set_.GetPropertyCSSValue(*shorthand.properties()[0]);
-  const CSSValue* column_rule_edge_end_outset_value =
+  const CSSValue* column_rule_edge_end_inset_value =
       property_set_.GetPropertyCSSValue(*shorthand.properties()[1]);
-  const CSSValue* column_rule_interior_start_outset_value =
+  const CSSValue* column_rule_interior_start_inset_value =
       property_set_.GetPropertyCSSValue(*shorthand.properties()[2]);
-  const CSSValue* column_rule_interior_end_outset_value =
+  const CSSValue* column_rule_interior_end_inset_value =
       property_set_.GetPropertyCSSValue(*shorthand.properties()[3]);
-  const CSSValue* row_rule_edge_start_outset_value =
+  const CSSValue* row_rule_edge_start_inset_value =
       property_set_.GetPropertyCSSValue(*shorthand.properties()[4]);
-  const CSSValue* row_rule_edge_end_outset_value =
+  const CSSValue* row_rule_edge_end_inset_value =
       property_set_.GetPropertyCSSValue(*shorthand.properties()[5]);
-  const CSSValue* row_rule_interior_start_outset_value =
+  const CSSValue* row_rule_interior_start_inset_value =
       property_set_.GetPropertyCSSValue(*shorthand.properties()[6]);
-  const CSSValue* row_rule_interior_end_outset_value =
+  const CSSValue* row_rule_interior_end_inset_value =
       property_set_.GetPropertyCSSValue(*shorthand.properties()[7]);
 
-  // The `rule-outset` shorthand is bi-directional, so the values should be
+  // The `rule-inset` shorthand is bi-directional, so the values should be
   // equivalent.
   //
   // https://drafts.csswg.org/css-gaps-1/#outset
-  if (!base::ValuesEquivalent(column_rule_edge_start_outset_value,
-                              row_rule_edge_start_outset_value) ||
-      !base::ValuesEquivalent(column_rule_edge_end_outset_value,
-                              row_rule_edge_end_outset_value) ||
-      !base::ValuesEquivalent(column_rule_interior_start_outset_value,
-                              row_rule_interior_start_outset_value) ||
-      !base::ValuesEquivalent(column_rule_interior_end_outset_value,
-                              row_rule_interior_end_outset_value)) {
+  if (!base::ValuesEquivalent(column_rule_edge_start_inset_value,
+                              row_rule_edge_start_inset_value) ||
+      !base::ValuesEquivalent(column_rule_edge_end_inset_value,
+                              row_rule_edge_end_inset_value) ||
+      !base::ValuesEquivalent(column_rule_interior_start_inset_value,
+                              row_rule_interior_start_inset_value) ||
+      !base::ValuesEquivalent(column_rule_interior_end_inset_value,
+                              row_rule_interior_end_inset_value)) {
     return String();
   }
-  if (!column_rule_edge_start_outset_value->IsInitialValue()) {
-    result.Append(column_rule_edge_start_outset_value->CssText());
+  if (!column_rule_edge_start_inset_value->IsInitialValue()) {
+    result.Append(column_rule_edge_start_inset_value->CssText());
     result.Append(' ');
-    result.Append(column_rule_edge_end_outset_value->CssText());
+    result.Append(column_rule_edge_end_inset_value->CssText());
     result.Append(' ');
     result.Append('/');
     result.Append(' ');
-    result.Append(column_rule_interior_start_outset_value->CssText());
+    result.Append(column_rule_interior_start_inset_value->CssText());
     result.Append(' ');
-    result.Append(column_rule_interior_end_outset_value->CssText());
+    result.Append(column_rule_interior_end_inset_value->CssText());
   }
 
   return result.ReleaseString();
@@ -2206,47 +2206,47 @@ String StylePropertySerializer::GetShorthandValueForGapDecorationsRule(
   return result.ReleaseString();
 }
 
-String StylePropertySerializer::GetShorthandValueForGapDecorationsRuleOutset(
+String StylePropertySerializer::GetShorthandValueForGapDecorationsRuleInset(
     const StylePropertyShorthand& shorthand,
     CSSGapDecorationPropertyDirection direction) const {
   CHECK(RuntimeEnabledFeatures::CSSGapDecorationEnabled());
   CHECK_EQ(shorthand.length(), 4u);
   CHECK(shorthand.properties()[0]->IDEquals(
       CSSGapDecorationUtils::GetLonghandProperty(
-          direction, CSSGapDecorationPropertyType::kEdgeStartOutset)));
+          direction, CSSGapDecorationPropertyType::kEdgeStartInset)));
   CHECK(shorthand.properties()[1]->IDEquals(
       CSSGapDecorationUtils::GetLonghandProperty(
-          direction, CSSGapDecorationPropertyType::kEdgeEndOutset)));
+          direction, CSSGapDecorationPropertyType::kEdgeEndInset)));
   CHECK(shorthand.properties()[2]->IDEquals(
       CSSGapDecorationUtils::GetLonghandProperty(
-          direction, CSSGapDecorationPropertyType::kInteriorStartOutset)));
+          direction, CSSGapDecorationPropertyType::kInteriorStartInset)));
   CHECK(shorthand.properties()[3]->IDEquals(
       CSSGapDecorationUtils::GetLonghandProperty(
-          direction, CSSGapDecorationPropertyType::kInteriorEndOutset)));
+          direction, CSSGapDecorationPropertyType::kInteriorEndInset)));
 
-  const CSSValue* rule_edge_start_outset_value =
+  const CSSValue* rule_edge_start_inset_value =
       property_set_.GetPropertyCSSValue(*shorthand.properties()[0]);
-  const CSSValue* rule_edge_end_outset_value =
+  const CSSValue* rule_edge_end_inset_value =
       property_set_.GetPropertyCSSValue(*shorthand.properties()[1]);
-  const CSSValue* rule_interior_start_outset_value =
+  const CSSValue* rule_interior_start_inset_value =
       property_set_.GetPropertyCSSValue(*shorthand.properties()[2]);
-  const CSSValue* rule_interior_end_outset_value =
+  const CSSValue* rule_interior_end_inset_value =
       property_set_.GetPropertyCSSValue(*shorthand.properties()[3]);
 
   // All values must be specified.
-  CHECK(rule_edge_start_outset_value && rule_edge_end_outset_value &&
-        rule_interior_start_outset_value && rule_interior_end_outset_value);
+  CHECK(rule_edge_start_inset_value && rule_edge_end_inset_value &&
+        rule_interior_start_inset_value && rule_interior_end_inset_value);
 
   StringBuilder result;
-  result.Append(rule_edge_start_outset_value->CssText());
+  result.Append(rule_edge_start_inset_value->CssText());
   result.Append(' ');
-  result.Append(rule_edge_end_outset_value->CssText());
+  result.Append(rule_edge_end_inset_value->CssText());
   result.Append(' ');
   result.Append('/');
   result.Append(' ');
-  result.Append(rule_interior_start_outset_value->CssText());
+  result.Append(rule_interior_start_inset_value->CssText());
   result.Append(' ');
-  result.Append(rule_interior_end_outset_value->CssText());
+  result.Append(rule_interior_end_inset_value->CssText());
 
   return result.ReleaseString();
 }

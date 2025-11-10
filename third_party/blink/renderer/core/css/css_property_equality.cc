@@ -826,23 +826,23 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
       return a.ColumnRuleBreak() == b.ColumnRuleBreak();
     case CSSPropertyID::kRowRuleBreak:
       return a.RowRuleBreak() == b.RowRuleBreak();
-    case CSSPropertyID::kColumnRuleEdgeEndOutset:
-      return a.ColumnRuleEdgeEndOutset() == b.ColumnRuleEdgeEndOutset();
-    case CSSPropertyID::kRowRuleEdgeEndOutset:
-      return a.RowRuleEdgeEndOutset() == b.RowRuleEdgeEndOutset();
-    case CSSPropertyID::kColumnRuleEdgeStartOutset:
-      return a.ColumnRuleEdgeStartOutset() == b.ColumnRuleEdgeStartOutset();
-    case CSSPropertyID::kRowRuleEdgeStartOutset:
-      return a.RowRuleEdgeStartOutset() == b.RowRuleEdgeStartOutset();
-    case CSSPropertyID::kColumnRuleInteriorEndOutset:
-      return a.ColumnRuleInteriorEndOutset() == b.ColumnRuleInteriorEndOutset();
-    case CSSPropertyID::kRowRuleInteriorEndOutset:
-      return a.RowRuleInteriorEndOutset() == b.RowRuleInteriorEndOutset();
-    case CSSPropertyID::kColumnRuleInteriorStartOutset:
-      return a.ColumnRuleInteriorStartOutset() ==
-             b.ColumnRuleInteriorStartOutset();
-    case CSSPropertyID::kRowRuleInteriorStartOutset:
-      return a.RowRuleInteriorStartOutset() == b.RowRuleInteriorStartOutset();
+    case CSSPropertyID::kColumnRuleEdgeEndInset:
+      return a.ColumnRuleEdgeEndInset() == b.ColumnRuleEdgeEndInset();
+    case CSSPropertyID::kRowRuleEdgeEndInset:
+      return a.RowRuleEdgeEndInset() == b.RowRuleEdgeEndInset();
+    case CSSPropertyID::kColumnRuleEdgeStartInset:
+      return a.ColumnRuleEdgeStartInset() == b.ColumnRuleEdgeStartInset();
+    case CSSPropertyID::kRowRuleEdgeStartInset:
+      return a.RowRuleEdgeStartInset() == b.RowRuleEdgeStartInset();
+    case CSSPropertyID::kColumnRuleInteriorEndInset:
+      return a.ColumnRuleInteriorEndInset() == b.ColumnRuleInteriorEndInset();
+    case CSSPropertyID::kRowRuleInteriorEndInset:
+      return a.RowRuleInteriorEndInset() == b.RowRuleInteriorEndInset();
+    case CSSPropertyID::kColumnRuleInteriorStartInset:
+      return a.ColumnRuleInteriorStartInset() ==
+             b.ColumnRuleInteriorStartInset();
+    case CSSPropertyID::kRowRuleInteriorStartInset:
+      return a.RowRuleInteriorStartInset() == b.RowRuleInteriorStartInset();
     case CSSPropertyID::kColumnRuleColor:
       return a.ColumnRuleColor() == b.ColumnRuleColor() &&
              a.InternalVisitedColumnRuleColor() ==
@@ -1292,7 +1292,7 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kBorderTop:
     case CSSPropertyID::kBorderWidth:
     case CSSPropertyID::kColumnRule:
-    case CSSPropertyID::kColumnRuleOutset:
+    case CSSPropertyID::kColumnRuleInset:
     case CSSPropertyID::kColumns:
     case CSSPropertyID::kContainIntrinsicSize:
     case CSSPropertyID::kContainer:
@@ -1339,11 +1339,11 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kPlaceSelf:
     case CSSPropertyID::kPositionTry:
     case CSSPropertyID::kRowRule:
-    case CSSPropertyID::kRowRuleOutset:
+    case CSSPropertyID::kRowRuleInset:
     case CSSPropertyID::kRule:
     case CSSPropertyID::kRuleBreak:
     case CSSPropertyID::kRuleColor:
-    case CSSPropertyID::kRuleOutset:
+    case CSSPropertyID::kRuleInset:
     case CSSPropertyID::kRuleWidth:
     case CSSPropertyID::kRuleStyle:
     case CSSPropertyID::kScrollMargin:

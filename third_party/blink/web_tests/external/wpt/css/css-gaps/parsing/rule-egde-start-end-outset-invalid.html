@@ -13,7 +13,7 @@
   <div id="target"></div>
   <script>
     // TODO(javiercon): Add shorthand support and test here.
-    const properties = ['column-rule-edge-start-outset', 'row-rule-edge-start-outset', 'column-rule-edge-end-outset', 'row-rule-edge-end-outset'];
+    const properties = ['column-rule-edge-start-inset', 'row-rule-edge-start-inset', 'column-rule-edge-end-inset', 'row-rule-edge-end-inset'];
     for (const property of properties) {
       test_invalid_value(property, 'auto');
       test_invalid_value(property, 'none');

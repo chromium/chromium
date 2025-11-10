@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>CSS Gaps: parsing rule-outset shorthands with valid values</title>
+  <title>CSS Gaps: parsing rule-inset shorthands with valid values</title>
   <link rel="author" title="Sam Davis Omekara Jr." href="mailto:samomekarajr@microsoft.com">
   <link rel="help" href="https://drafts.csswg.org/css-gaps-1/#outset">
   <script src="/resources/testharness.js"></script>
@@ -12,7 +12,7 @@
 <body>
   <div id="target"></div>
   <script>
-    const properties = ['column-rule-outset', 'row-rule-outset', 'rule-outset'];
+    const properties = ['column-rule-inset', 'row-rule-inset', 'rule-inset'];
     for (const property of properties) {
       test_valid_value(property, '0', '0px 0px / 0px 0px');
       test_valid_value(property, '-20px', '-20px -20px / -20px -20px');

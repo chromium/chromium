@@ -8098,8 +8098,8 @@ Called by update_use_counter_css.py.-->
   <int value="837" label="corner-end-start-shape"/>
   <int value="838" label="corner-end-end-shape"/>
   <int value="839" label="reading-order"/>
-  <int value="840" label="column-rule-outset"/>
-  <int value="841" label="row-rule-outset"/>
+  <int value="840" label="column-rule-inset"/>
+  <int value="841" label="row-rule-inset"/>
   <int value="842" label="corner-shape"/>
   <int value="843" label="scroll-target-group"/>
   <int value="844" label="row-rule-style"/>
@@ -8146,17 +8146,17 @@ Called by update_use_counter_css.py.-->
   <int value="885" label="font-language-override"/>
   <int value="886" label="ruby-overhang"/>
   <int value="887" label="rule-break"/>
-  <int value="888" label="rule-outset"/>
+  <int value="888" label="rule-inset"/>
   <int value="889" label="column-rule-visibility-items"/>
   <int value="890" label="row-rule-visibility-items"/>
-  <int value="891" label="column-rule-edge-start-outset"/>
-  <int value="892" label="column-rule-edge-end-outset"/>
-  <int value="893" label="column-rule-interior-start-outset"/>
-  <int value="894" label="column-rule-interior-end-outset"/>
-  <int value="895" label="row-rule-edge-start-outset"/>
-  <int value="896" label="row-rule-edge-end-outset"/>
-  <int value="897" label="row-rule-interior-start-outset"/>
-  <int value="898" label="row-rule-interior-end-outset"/>
+  <int value="891" label="column-rule-edge-start-inset"/>
+  <int value="892" label="column-rule-edge-end-inset"/>
+  <int value="893" label="column-rule-interior-start-inset"/>
+  <int value="894" label="column-rule-interior-end-inset"/>
+  <int value="895" label="row-rule-edge-start-inset"/>
+  <int value="896" label="row-rule-edge-end-inset"/>
+  <int value="897" label="row-rule-interior-start-inset"/>
+  <int value="898" label="row-rule-interior-end-inset"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/css_property_id.mojom:CSSSampleId) -->

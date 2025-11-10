@@ -33,22 +33,22 @@ CSSPropertyID CSSGapDecorationUtils::GetLonghandProperty(
       return direction == CSSGapDecorationPropertyDirection::kRow
                  ? CSSPropertyID::kRowRuleColor
                  : CSSPropertyID::kColumnRuleColor;
-    case CSSGapDecorationPropertyType::kEdgeEndOutset:
+    case CSSGapDecorationPropertyType::kEdgeEndInset:
       return direction == CSSGapDecorationPropertyDirection::kRow
-                 ? CSSPropertyID::kRowRuleEdgeEndOutset
-                 : CSSPropertyID::kColumnRuleEdgeEndOutset;
-    case CSSGapDecorationPropertyType::kEdgeStartOutset:
+                 ? CSSPropertyID::kRowRuleEdgeEndInset
+                 : CSSPropertyID::kColumnRuleEdgeEndInset;
+    case CSSGapDecorationPropertyType::kEdgeStartInset:
       return direction == CSSGapDecorationPropertyDirection::kRow
-                 ? CSSPropertyID::kRowRuleEdgeStartOutset
-                 : CSSPropertyID::kColumnRuleEdgeStartOutset;
-    case CSSGapDecorationPropertyType::kInteriorStartOutset:
+                 ? CSSPropertyID::kRowRuleEdgeStartInset
+                 : CSSPropertyID::kColumnRuleEdgeStartInset;
+    case CSSGapDecorationPropertyType::kInteriorStartInset:
       return direction == CSSGapDecorationPropertyDirection::kRow
-                 ? CSSPropertyID::kRowRuleInteriorStartOutset
-                 : CSSPropertyID::kColumnRuleInteriorStartOutset;
-    case CSSGapDecorationPropertyType::kInteriorEndOutset:
+                 ? CSSPropertyID::kRowRuleInteriorStartInset
+                 : CSSPropertyID::kColumnRuleInteriorStartInset;
+    case CSSGapDecorationPropertyType::kInteriorEndInset:
       return direction == CSSGapDecorationPropertyDirection::kRow
-                 ? CSSPropertyID::kRowRuleInteriorEndOutset
-                 : CSSPropertyID::kColumnRuleInteriorEndOutset;
+                 ? CSSPropertyID::kRowRuleInteriorEndInset
+                 : CSSPropertyID::kColumnRuleInteriorEndInset;
   }
 }
 

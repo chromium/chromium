@@ -581,14 +581,14 @@ CSSValue* ParseMasonryTemplateAreasValue(const String& masonry_template_areas,
 
 CSSValue* ConsumeItemTolerance(CSSParserTokenStream&, const CSSParserContext&);
 
-bool ConsumeGapDecorationsRuleOutsetShorthand(
+bool ConsumeGapDecorationsRuleInsetShorthand(
     bool important,
     const CSSParserContext& context,
     CSSParserTokenStream& stream,
-    CSSValue*& rule_edge_start_outset,
-    CSSValue*& rule_edge_end_outset,
-    CSSValue*& rule_interior_start_outset,
-    CSSValue*& rule_interior_end_outset);
+    CSSValue*& rule_edge_start_inset,
+    CSSValue*& rule_edge_end_inset,
+    CSSValue*& rule_interior_start_inset,
+    CSSValue*& rule_interior_end_inset);
 
 bool ConsumeGapDecorationsRuleShorthand(bool important,
                                         const CSSParserContext& context,

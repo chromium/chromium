@@ -4017,7 +4017,7 @@ CSSValueList* ComputedStyleUtils::ValuesForShorthandProperty(
   return list;
 }
 
-CSSValueList* ComputedStyleUtils::ValuesForGapDecorationRuleOutsetShorthand(
+CSSValueList* ComputedStyleUtils::ValuesForGapDecorationRuleInsetShorthand(
     const StylePropertyShorthand& shorthand,
     const ComputedStyle& style,
     const LayoutObject* layout_object,
@@ -4027,33 +4027,33 @@ CSSValueList* ComputedStyleUtils::ValuesForGapDecorationRuleOutsetShorthand(
   CHECK_EQ(shorthand.length(), 4u);
   CHECK(shorthand.properties()[0]->IDEquals(
       CSSGapDecorationUtils::GetLonghandProperty(
-          direction, CSSGapDecorationPropertyType::kEdgeStartOutset)));
+          direction, CSSGapDecorationPropertyType::kEdgeStartInset)));
   CHECK(shorthand.properties()[1]->IDEquals(
       CSSGapDecorationUtils::GetLonghandProperty(
-          direction, CSSGapDecorationPropertyType::kEdgeEndOutset)));
+          direction, CSSGapDecorationPropertyType::kEdgeEndInset)));
   CHECK(shorthand.properties()[2]->IDEquals(
       CSSGapDecorationUtils::GetLonghandProperty(
-          direction, CSSGapDecorationPropertyType::kInteriorStartOutset)));
+          direction, CSSGapDecorationPropertyType::kInteriorStartInset)));
   CHECK(shorthand.properties()[3]->IDEquals(
       CSSGapDecorationUtils::GetLonghandProperty(
-          direction, CSSGapDecorationPropertyType::kInteriorEndOutset)));
+          direction, CSSGapDecorationPropertyType::kInteriorEndInset)));
 
-  const CSSValue* rule_edge_start_outset_value =
+  const CSSValue* rule_edge_start_inset_value =
       shorthand.properties()[0]->CSSValueFromComputedStyle(
           style, layout_object, allow_visited_style, value_phase);
-  const CSSValue* rule_edge_end_outset_value =
+  const CSSValue* rule_edge_end_inset_value =
       shorthand.properties()[1]->CSSValueFromComputedStyle(
           style, layout_object, allow_visited_style, value_phase);
-  const CSSValue* rule_interior_start_outset_value =
+  const CSSValue* rule_interior_start_inset_value =
       shorthand.properties()[2]->CSSValueFromComputedStyle(
           style, layout_object, allow_visited_style, value_phase);
-  const CSSValue* rule_interior_end_outset_value =
+  const CSSValue* rule_interior_end_inset_value =
       shorthand.properties()[3]->CSSValueFromComputedStyle(
           style, layout_object, allow_visited_style, value_phase);
 
   // All 4 properties must be specified.
-  if (!rule_edge_start_outset_value || !rule_edge_end_outset_value ||
-      !rule_interior_start_outset_value || !rule_interior_end_outset_value) {
+  if (!rule_edge_start_inset_value || !rule_edge_end_inset_value ||
+      !rule_interior_start_inset_value || !rule_interior_end_inset_value) {
     return nullptr;
   }
 
@@ -4061,11 +4061,11 @@ CSSValueList* ComputedStyleUtils::ValuesForGapDecorationRuleOutsetShorthand(
   CSSValueList* interior_values_list = CSSValueList::CreateSpaceSeparated();
   CSSValueList* full_list = CSSValueList::CreateSlashSeparated();
 
-  edge_values_list->Append(*rule_edge_start_outset_value);
-  edge_values_list->Append(*rule_edge_end_outset_value);
+  edge_values_list->Append(*rule_edge_start_inset_value);
+  edge_values_list->Append(*rule_edge_end_inset_value);
 
-  interior_values_list->Append(*rule_interior_start_outset_value);
-  interior_values_list->Append(*rule_interior_end_outset_value);
+  interior_values_list->Append(*rule_interior_start_inset_value);
+  interior_values_list->Append(*rule_interior_end_inset_value);
 
   full_list->Append(*edge_values_list);
   full_list->Append(*interior_values_list);
@@ -4404,8 +4404,7 @@ CSSValueList* ComputedStyleUtils::ValuesForGridTemplateShorthand(
       template_area_values);
 }
 
-const CSSValue*
-ComputedStyleUtils::ValuesForBidirectionalGapRuleOutsetShorthand(
+const CSSValue* ComputedStyleUtils::ValuesForBidirectionalGapRuleInsetShorthand(
     const StylePropertyShorthand& shorthand,
     const ComputedStyle& style,
     const LayoutObject* layout_object,
@@ -4437,7 +4436,7 @@ ComputedStyleUtils::ValuesForBidirectionalGapRuleOutsetShorthand(
       shorthand.properties()[7]->CSSValueFromComputedStyle(
           style, layout_object, allow_visited_style, value_phase);
 
-  // The `rule-outset` shorthand is bi-directional, so the values should be
+  // The `rule-inset` shorthand is bi-directional, so the values should be
   // equivalent.
   //
   // https://drafts.csswg.org/css-gaps-1/#outset

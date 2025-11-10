@@ -147,10 +147,10 @@ All changes to this list should go through Blink's feature review process: http:
     column-height
     column-rule-break
     column-rule-color
-    column-rule-edge-end-outset
-    column-rule-edge-start-outset
-    column-rule-interior-end-outset
-    column-rule-interior-start-outset
+    column-rule-edge-end-inset
+    column-rule-edge-start-inset
+    column-rule-interior-end-inset
+    column-rule-interior-start-inset
     column-rule-style
     column-rule-visibility-items
     column-rule-width
@@ -357,10 +357,10 @@ All changes to this list should go through Blink's feature review process: http:
     row-gap
     row-rule-break
     row-rule-color
-    row-rule-edge-end-outset
-    row-rule-edge-start-outset
-    row-rule-interior-end-outset
-    row-rule-interior-start-outset
+    row-rule-edge-end-inset
+    row-rule-edge-start-inset
+    row-rule-interior-end-inset
+    row-rule-interior-start-inset
     row-rule-style
     row-rule-visibility-items
     row-rule-width
@@ -655,11 +655,11 @@ All changes to this list should go through Blink's feature review process: http:
         column-rule-color
         column-rule-style
         column-rule-width
-    column-rule-outset
-        column-rule-edge-end-outset
-        column-rule-edge-start-outset
-        column-rule-interior-end-outset
-        column-rule-interior-start-outset
+    column-rule-inset
+        column-rule-edge-end-inset
+        column-rule-edge-start-inset
+        column-rule-interior-end-inset
+        column-rule-interior-start-inset
     columns
         column-count
         column-height
@@ -880,11 +880,11 @@ All changes to this list should go through Blink's feature review process: http:
         row-rule-color
         row-rule-style
         row-rule-width
-    row-rule-outset
-        row-rule-edge-end-outset
-        row-rule-edge-start-outset
-        row-rule-interior-end-outset
-        row-rule-interior-start-outset
+    row-rule-inset
+        row-rule-edge-end-inset
+        row-rule-edge-start-inset
+        row-rule-interior-end-inset
+        row-rule-interior-start-inset
     rule
         column-rule-color
         column-rule-style
@@ -898,15 +898,15 @@ All changes to this list should go through Blink's feature review process: http:
     rule-color
         column-rule-color
         row-rule-color
-    rule-outset
-        column-rule-edge-end-outset
-        column-rule-edge-start-outset
-        column-rule-interior-end-outset
-        column-rule-interior-start-outset
-        row-rule-edge-end-outset
-        row-rule-edge-start-outset
-        row-rule-interior-end-outset
-        row-rule-interior-start-outset
+    rule-inset
+        column-rule-edge-end-inset
+        column-rule-edge-start-inset
+        column-rule-interior-end-inset
+        column-rule-interior-start-inset
+        row-rule-edge-end-inset
+        row-rule-edge-start-inset
+        row-rule-interior-end-inset
+        row-rule-interior-start-inset
     rule-style
         column-rule-style
         row-rule-style

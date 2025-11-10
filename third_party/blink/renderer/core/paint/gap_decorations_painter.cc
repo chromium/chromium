@@ -236,19 +236,19 @@ void GapDecorationsPainter::Paint(GridTrackSizingDirection track_direction,
       // Outset values are used to offset the end points of gap decorations.
       // Percentage values are resolved against the crossing gap width of the
       // intersection point.
-      // https://drafts.csswg.org/css-gaps-1/#propdef-column-rule-outset
-      LayoutUnit start_outset = gap_geometry.ComputeStartOutset(
-            style, gap_index, start, intersections, is_column_gap, is_main,
-            start_width);
-      LayoutUnit end_outset =
-            gap_geometry.ComputeEndOutset(style, gap_index, end, intersections,
-                                          is_column_gap, is_main, end_width);
+      // https://drafts.csswg.org/css-gaps-1/#propdef-column-rule-inset
+      LayoutUnit start_inset =
+          gap_geometry.ComputeStartInset(style, gap_index, start, intersections,
+                                         is_column_gap, is_main, start_width);
+      LayoutUnit end_inset =
+          gap_geometry.ComputeEndInset(style, gap_index, end, intersections,
+                                       is_column_gap, is_main, end_width);
       // Compute the gap decorations offset as half of the `crossing_gap_width`
       // minus the outset.
       // https://drafts.csswg.org/css-gaps-1/#compute-the-offset
       const LayoutUnit decoration_start_offset =
-          (start_width / 2) - start_outset;
-      const LayoutUnit decoration_end_offset = (end_width / 2) - end_outset;
+          (start_width / 2) - start_inset;
+      const LayoutUnit decoration_end_offset = (end_width / 2) - end_inset;
 
       // Compute the primary axis values using the gap offsets.
       const LayoutUnit primary_start = center - (rule_thickness / 2);

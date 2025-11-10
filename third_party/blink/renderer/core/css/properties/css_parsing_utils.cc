@@ -5483,10 +5483,10 @@ CSSValue* ConsumeGapDecorationPropertyValue(
         return ConsumeIdent(stream);
       }
       return nullptr;
-    case CSSGapDecorationPropertyType::kEdgeEndOutset:
-    case CSSGapDecorationPropertyType::kEdgeStartOutset:
-    case CSSGapDecorationPropertyType::kInteriorEndOutset:
-    case CSSGapDecorationPropertyType::kInteriorStartOutset:
+    case CSSGapDecorationPropertyType::kEdgeEndInset:
+    case CSSGapDecorationPropertyType::kEdgeStartInset:
+    case CSSGapDecorationPropertyType::kInteriorEndInset:
+    case CSSGapDecorationPropertyType::kInteriorStartInset:
       return nullptr;
   }
 }
@@ -7341,23 +7341,23 @@ bool ConsumeGapDecorationsShorthandRepeatFunction(
   return true;
 }
 
-// Consuming the `rule-outset`, `column-rule-outset`, `row-rule-outset`
+// Consuming the `rule-inset`, `column-rule-inset`, `row-rule-inset`
 // shorthands with syntax <length-percentage> <length-percentage>?
 // [ / <length-percentage> <length-percentage>?]?
-bool ConsumeGapDecorationsRuleOutsetShorthand(
+bool ConsumeGapDecorationsRuleInsetShorthand(
     bool important,
     const CSSParserContext& context,
     CSSParserTokenStream& stream,
-    CSSValue*& rule_edge_start_outset,
-    CSSValue*& rule_edge_end_outset,
-    CSSValue*& rule_interior_start_outset,
-    CSSValue*& rule_interior_end_outset) {
+    CSSValue*& rule_edge_start_inset,
+    CSSValue*& rule_edge_end_inset,
+    CSSValue*& rule_interior_start_inset,
+    CSSValue*& rule_interior_end_inset) {
   CHECK(RuntimeEnabledFeatures::CSSGapDecorationEnabled());
 
-  rule_edge_start_outset = nullptr;
-  rule_edge_end_outset = nullptr;
-  rule_interior_start_outset = nullptr;
-  rule_interior_end_outset = nullptr;
+  rule_edge_start_inset = nullptr;
+  rule_edge_end_inset = nullptr;
+  rule_interior_start_inset = nullptr;
+  rule_interior_end_inset = nullptr;
 
   wtf_size_t edge_count = 0;
   wtf_size_t interior_count = 0;
@@ -7385,9 +7385,9 @@ bool ConsumeGapDecorationsRuleOutsetShorthand(
         return false;
       }
       if (edge_count == 0) {
-        rule_edge_start_outset = value;
+        rule_edge_start_inset = value;
       } else {
-        rule_edge_end_outset = value;
+        rule_edge_end_inset = value;
       }
       ++edge_count;
     } else {
@@ -7395,9 +7395,9 @@ bool ConsumeGapDecorationsRuleOutsetShorthand(
         return false;
       }
       if (interior_count == 0) {
-        rule_interior_start_outset = value;
+        rule_interior_start_inset = value;
       } else {
-        rule_interior_end_outset = value;
+        rule_interior_end_inset = value;
       }
       ++interior_count;
     }
@@ -7415,16 +7415,16 @@ bool ConsumeGapDecorationsRuleOutsetShorthand(
 
   // Expand shorthands per grammar:
   // <len-perc> <len-perc>? [ / <len-perc> <len-perc>? ]?
-  if (!rule_edge_end_outset) {
-    rule_edge_end_outset = rule_edge_start_outset;
+  if (!rule_edge_end_inset) {
+    rule_edge_end_inset = rule_edge_start_inset;
   }
 
   if (!consumed_slash) {
-    rule_interior_start_outset = rule_edge_start_outset;
-    rule_interior_end_outset = rule_edge_end_outset;
+    rule_interior_start_inset = rule_edge_start_inset;
+    rule_interior_end_inset = rule_edge_end_inset;
   } else {
-    if (!rule_interior_end_outset) {
-      rule_interior_end_outset = rule_interior_start_outset;
+    if (!rule_interior_end_inset) {
+      rule_interior_end_inset = rule_interior_start_inset;
     }
   }
 
