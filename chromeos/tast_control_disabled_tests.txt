@@ -48,6 +48,7 @@ tast.security.SELinuxFilesDataDir.arcvm_user@trogdor
 
 # b/384060114
 tast.inputs.InputMethodShelfInputs@reven-vmtest
+tast.inputs.InputMethodShelfInputs@betty
 tast.inputs.VirtualKeyboardHandwriting.docked@reven-vmtest
 tast.inputs.VirtualKeyboardHandwriting.floating@reven-vmtest
 
