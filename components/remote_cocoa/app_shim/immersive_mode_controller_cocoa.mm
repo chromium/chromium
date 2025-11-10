@@ -26,6 +26,17 @@ inline bool IsPermanentThinControllerEnabled() {
   return base::mac::MacOSMajorVersion() >= 13;
 }
 
+void CloseNSPopovers(NSWindow* parent_window) {
+  // Close any NSPopover that may be open.
+  Class popover_class = NSClassFromString(@"_NSPopoverWindow");
+  CHECK(popover_class);
+  for (NSWindow* child in [parent_window.childWindows copy]) {
+    if ([child isKindOfClass:popover_class]) {
+      [child close];
+    }
+  }
+}
+
 }  // namespace
 
 // A stub NSWindowDelegate class that will be used to map the AppKit controlled
@@ -239,6 +250,13 @@ ImmersiveModeControllerCocoa::~ImmersiveModeControllerCocoa() {
 }
 
 void ImmersiveModeControllerCocoa::Init() {
+  // AppKit has a nullptr dereference bug that manifests as a crash when
+  // entering immersive fullscreen with a popover visible. This bug seems to
+  // have been fixed in macOS 26. See crbug.com/450581735.
+  if (base::mac::MacOSMajorVersion() < 26) {
+    CloseNSPopovers(browser_window_);
+  }
+
   DCHECK(!initialized_);
   initialized_ = true;
   [browser_window_ addTitlebarAccessoryViewController:
