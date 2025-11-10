@@ -14,9 +14,12 @@
 namespace password_manager {
 class PasswordManagerClient;
 class PasswordManagerInterface;
+class PasswordFormManager;
 }
 
 namespace actor_login {
+
+class ActorLoginFormFinder;
 
 // Helper class to get credentials for the Actor Login feature.
 class ActorLoginGetCredentialsHelper
@@ -36,6 +39,9 @@ class ActorLoginGetCredentialsHelper
   ~ActorLoginGetCredentialsHelper() override;
 
  private:
+  void OnEligibleLoginFormManagersRetrieved(
+      std::vector<password_manager::PasswordFormManager*> eligible_managers);
+
   // password_manager::FormFetcher::Consumer:
   void OnFetchCompleted() override;
 
@@ -44,6 +50,12 @@ class ActorLoginGetCredentialsHelper
   raw_ptr<password_manager::PasswordManagerInterface> password_manager_ =
       nullptr;
 
+  // Safe to access from everywhere apart from the destructor.
+  raw_ptr<password_manager::PasswordManagerClient> client_ = nullptr;
+
+  // Helper object for finding login forms.
+  std::unique_ptr<ActorLoginFormFinder> login_form_finder_;
+
   std::unique_ptr<password_manager::FormFetcher> owned_form_fetcher_;
   // The form fetcher from which credentials will be retrieved. If a
   // `PasswordFormManager` for a sign-in form already exists, this will be a
@@ -51,6 +63,7 @@ class ActorLoginGetCredentialsHelper
   // `FormFetcher` via `owned_form_fetcher_`.
   raw_ptr<password_manager::FormFetcher> form_fetcher_ = nullptr;
   bool immediately_available_to_login_ = false;
+  base::WeakPtrFactory<ActorLoginGetCredentialsHelper> weak_ptr_factory_{this};
 };
 
 }  // namespace actor_login

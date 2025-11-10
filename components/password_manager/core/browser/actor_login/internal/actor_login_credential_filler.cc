@@ -109,6 +109,7 @@ ActorLoginCredentialFiller::~ActorLoginCredentialFiller() = default;
 void ActorLoginCredentialFiller::AttemptLogin(
     password_manager::PasswordManagerInterface* password_manager,
     const tabs::TabInterface& tab) {
+  tab_ = &tab;
   CHECK(client_);
   CHECK(password_manager);
 
@@ -139,11 +140,33 @@ void ActorLoginCredentialFiller::AttemptLogin(
 
   CHECK(network::IsOriginPotentiallyTrustworthy(origin_));
 
-  PasswordFormCache* form_cache = password_manager->GetPasswordFormCache();
-  CHECK(form_cache);
+  FetchEligibleForms(
+      base::BindOnce(&ActorLoginCredentialFiller::ProcessRetrievedForms,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
 
-  PasswordFormManager* signin_form_manager =
-      login_form_finder_->GetSigninFormManager(origin_);
+void ActorLoginCredentialFiller::FetchEligibleForms(
+    base::OnceCallback<
+        void(std::vector<password_manager::PasswordFormManager*>)>
+        on_forms_retrieved_cb) {
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kActorLoginFieldVisibilityCheck)) {
+    login_form_finder_->GetEligibleLoginFormManagersAsync(
+        origin_, std::move(on_forms_retrieved_cb));
+  } else {
+    std::move(on_forms_retrieved_cb)
+        .Run(login_form_finder_->GetEligibleLoginFormManagers(origin_));
+  }
+}
+
+void ActorLoginCredentialFiller::ProcessRetrievedForms(
+    std::vector<password_manager::PasswordFormManager*> eligible_managers) {
+  std::unique_ptr<BrowserSavePasswordProgressLogger> logger =
+      GetLogger(client_);
+
+  password_manager::PasswordFormManager* signin_form_manager =
+      ActorLoginFormFinder::GetSigninFormManager(eligible_managers);
+
   if (!signin_form_manager) {
     LogStatus(logger.get(), Logger::STRING_ACTOR_LOGIN_NO_SIGNIN_FORM);
     std::move(callback_).Run(LoginStatusResult::kErrorNoSigninForm);
@@ -161,42 +184,80 @@ void ActorLoginCredentialFiller::AttemptLogin(
 
   device_authenticator_ = client_->GetDeviceAuthenticator();
 
-  base::WeakPtr<PasswordManagerDriver> driver =
-      signin_form_manager->GetDriver()->AsWeakPtr();
-  autofill::FormRendererId form_renderer_id =
-      signin_form_manager->GetParsedObservedForm()->form_data.renderer_id();
-
-  base::OnceClosure fill_cb = base::DoNothing();
   if (base::FeatureList::IsEnabled(
           password_manager::features::kActorLoginFillingHeuristics)) {
-    fill_cb = base::BindOnce(
-        &ActorLoginCredentialFiller::FillAllEligibleFields,
-        weak_ptr_factory_.GetWeakPtr(), *stored_credential,
-        // If there is a login form in the primary main frame, don't fill
-        // iframes as we prefer forms from the primary main frame.
-        signin_form_manager->GetDriver()->IsInPrimaryMainFrame());
+    MaybeReauthAndFillAllEligibleFields(std::move(eligible_managers),
+                                        *stored_credential);
   } else {
-    if (should_store_permission_) {
-      signin_form_manager->SetShouldStoreActorLoginPermission();
-    }
-    fill_cb = base::BindOnce(
-        &ActorLoginCredentialFiller::FillForm, weak_ptr_factory_.GetWeakPtr(),
-        driver, form_renderer_id, stored_credential->username_value,
-        stored_credential->password_value);
+    MaybeReauthAndFillForm(signin_form_manager, *stored_credential);
+  }
+}
+
+void ActorLoginCredentialFiller::MaybeReauthAndFillAllEligibleFields(
+    std::vector<password_manager::PasswordFormManager*> eligible_managers,
+    const password_manager::PasswordForm& stored_credential) {
+  // If there is a login form in the primary main frame, don't fill
+  // iframes as we prefer forms from the primary main frame.
+  bool is_primary_main_frame =
+      ActorLoginFormFinder::GetSigninFormManager(eligible_managers)
+          ->GetDriver()
+          ->IsInPrimaryMainFrame();
+
+  // TODO(crbug.com/458711310): Avoid re-calling this method after fetching
+  // forms if re-authentication occurs before filling.
+  if (client_->IsReauthBeforeFillingRequired(device_authenticator_.get())) {
+    base::OnceCallback<void(
+        std::vector<password_manager::PasswordFormManager*>)>
+        fill_all_fields_cb =
+            base::BindOnce(&ActorLoginCredentialFiller::FillAllEligibleFields,
+                           weak_ptr_factory_.GetWeakPtr(), stored_credential,
+                           is_primary_main_frame);
+
+    AttemptReauth(base::BindOnce(
+        &ActorLoginCredentialFiller::FetchEligibleForms,
+        weak_ptr_factory_.GetWeakPtr(), std::move(fill_all_fields_cb)));
+    return;
+  }
+
+  FillAllEligibleFields(stored_credential, is_primary_main_frame,
+                        std::move(eligible_managers));
+}
+
+void ActorLoginCredentialFiller::MaybeReauthAndFillForm(
+    password_manager::PasswordFormManager* signin_form_manager,
+    const password_manager::PasswordForm& stored_credential) {
+  if (should_store_permission_) {
+    signin_form_manager->SetShouldStoreActorLoginPermission();
   }
 
   if (client_->IsReauthBeforeFillingRequired(device_authenticator_.get())) {
-    LogStatus(logger.get(), Logger::STRING_ACTOR_LOGIN_WAITING_FOR_REAUTH);
-    if (base::FeatureList::IsEnabled(
-            password_manager::features::kActorLoginReauthTaskRefocus) &&
-        !tab.IsActivated()) {
-      std::move(callback_).Run(LoginStatusResult::kErrorDeviceReauthRequired);
-    } else {
-      ReauthenticateAndFill(std::move(fill_cb));
-    }
-  } else {
-    std::move(fill_cb).Run();
+    AttemptReauth(base::BindOnce(
+        &ActorLoginCredentialFiller::FillForm, weak_ptr_factory_.GetWeakPtr(),
+        signin_form_manager->GetDriver()->AsWeakPtr(),
+        signin_form_manager->GetParsedObservedForm()->form_data.renderer_id(),
+        stored_credential.username_value, stored_credential.password_value));
+    return;
   }
+
+  FillForm(
+      signin_form_manager->GetDriver()->AsWeakPtr(),
+      signin_form_manager->GetParsedObservedForm()->form_data.renderer_id(),
+      stored_credential.username_value, stored_credential.password_value);
+}
+
+void ActorLoginCredentialFiller::AttemptReauth(base::OnceClosure on_reauth_cb) {
+  std::unique_ptr<BrowserSavePasswordProgressLogger> logger =
+      GetLogger(client_);
+  LogStatus(logger.get(), Logger::STRING_ACTOR_LOGIN_WAITING_FOR_REAUTH);
+
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kActorLoginReauthTaskRefocus) &&
+      !tab_->IsActivated()) {
+    std::move(callback_).Run(LoginStatusResult::kErrorDeviceReauthRequired);
+    return;
+  }
+
+  ReauthenticateAndFill(std::move(on_reauth_cb));
 }
 
 const PasswordForm* ActorLoginCredentialFiller::GetMatchingStoredCredential(
@@ -283,18 +344,18 @@ void ActorLoginCredentialFiller::FillForm(
 }
 
 void ActorLoginCredentialFiller::FillAllEligibleFields(
-    const PasswordForm& stored_credential,
-    bool should_skip_iframes) {
+    const password_manager::PasswordForm& stored_credential,
+    bool should_skip_iframes,
+    std::vector<password_manager::PasswordFormManager*> eligible_managers) {
   base::ConcurrentClosures concurrent_filling;
-  std::vector<PasswordFormManager*> eligible_forms =
-      login_form_finder_->GetEligibleLoginFormManagers(origin_);
   if (should_skip_iframes) {
-    std::erase_if(eligible_forms, [](const PasswordFormManager* form_manager) {
-      return !form_manager->GetDriver()->IsInPrimaryMainFrame();
-    });
+    std::erase_if(eligible_managers,
+                  [](const PasswordFormManager* form_manager) {
+                    return !form_manager->GetDriver()->IsInPrimaryMainFrame();
+                  });
   }
 
-  for (PasswordFormManager* manager : eligible_forms) {
+  for (PasswordFormManager* manager : eligible_managers) {
     bool stored_credential_belongs_to_manager = std::ranges::any_of(
         manager->GetBestMatches().begin(), manager->GetBestMatches().end(),
         [&stored_credential](const PasswordForm& best_match) {

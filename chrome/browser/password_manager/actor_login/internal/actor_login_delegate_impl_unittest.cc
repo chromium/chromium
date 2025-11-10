@@ -192,7 +192,7 @@ class ActorLoginDelegateImplTest : public ChromeRenderViewHostTestHarness {
 TEST_F(ActorLoginDelegateImplTest, GetCredentialsSuccess_FeatureOn) {
   base::test::ScopedFeatureList scoped_feature_list(
       password_manager::features::kActorLogin);
-  SetUpGetCredentialsDeps();
+  SetUpActorCredentialFillerDeps();
   EXPECT_CALL(mock_form_cache_, GetFormManagers()).Times(1);
 
   base::test::TestFuture<CredentialsOrError> future;
@@ -216,7 +216,7 @@ TEST_F(ActorLoginDelegateImplTest, GetCredentials_FeatureOff) {
 TEST_F(ActorLoginDelegateImplTest, GetCredentialsServiceBusy) {
   base::test::ScopedFeatureList scoped_feature_list(
       password_manager::features::kActorLogin);
-  SetUpGetCredentialsDeps();
+  SetUpActorCredentialFillerDeps();
   EXPECT_CALL(mock_form_cache_, GetFormManagers()).Times(1);
 
   // Start the first request.
