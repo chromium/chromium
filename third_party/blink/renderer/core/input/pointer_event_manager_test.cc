@@ -620,6 +620,7 @@ class PanActionTrackingWebFrameWidget
 class PanActionPointerEventTest : public PointerEventManagerTest {
  public:
   PanActionPointerEventTest() = default;
+  static constexpr int kStylusHandwritingRadius = 30;
 
   frame_test_helpers::TestWebFrameWidget* CreateWebFrameWidget(
       base::PassKey<WebLocalFrame> pass_key,
@@ -638,11 +639,17 @@ class PanActionPointerEventTest : public PointerEventManagerTest {
       bool is_for_child_local_root,
       bool is_for_nested_main_frame,
       bool is_for_scalable_page) override {
-    return MakeGarbageCollected<PanActionTrackingWebFrameWidget>(
-        pass_key, std::move(frame_widget_host), std::move(frame_widget),
-        std::move(widget_host), std::move(widget), std::move(task_runner),
-        frame_sink_id, hidden, never_composited, is_for_child_local_root,
-        is_for_nested_main_frame, is_for_scalable_page);
+    auto* web_frame_widget =
+        MakeGarbageCollected<PanActionTrackingWebFrameWidget>(
+            pass_key, std::move(frame_widget_host), std::move(frame_widget),
+            std::move(widget_host), std::move(widget), std::move(task_runner),
+            frame_sink_id, hidden, never_composited, is_for_child_local_root,
+            is_for_nested_main_frame, is_for_scalable_page);
+    display::ScreenInfo screen_info;
+    screen_info.device_scale_factor = 1.f;
+    screen_info.handwriting_radius = kStylusHandwritingRadius;
+    web_frame_widget->SetInitialScreenInfo(screen_info);
+    return web_frame_widget;
   }
 
  protected:
@@ -736,25 +743,20 @@ TEST_F(PanActionPointerEventTest, PanActionAdjustedForStylus) {
     <input type=text style='width: 100px; height: 100px;'>
   )HTML");
 
-  const gfx::PointF point(120, 120);
   PanActionTrackingWebFrameWidget* widget = GetWidget();
 
-  // Expect pan action to result in a scroll.
+  // Expect pan action to result in a stroke.
   ASSERT_EQ(widget->LastPanAction(), PanAction::kNone);
-  GetEventHandler().GetPointerEventManagerForTesting()->SetHandwritingRadius(
-      20);
-  GetEventHandler().HandleMouseMoveEvent(
-      CreateTestMouseMoveEvent(WebPointerProperties::PointerType::kPen, point),
-      Vector<WebMouseEvent>(), Vector<WebMouseEvent>());
-  test::RunPendingTasks();
-  ASSERT_EQ(widget->LastPanAction(), PanAction::kScroll);
+  ASSERT_EQ(GetDocument()
+                .GetPage()
+                ->GetChromeClient()
+                .GetScreenInfo(*(GetDocument().GetFrame()))
+                .handwriting_radius,
+            kStylusHandwritingRadius);
 
-  // Expect pan action to be considered as writable due to a positive proximity
-  // hit test.
-  GetEventHandler().GetPointerEventManagerForTesting()->SetHandwritingRadius(
-      30);
   GetEventHandler().HandleMouseMoveEvent(
-      CreateTestMouseMoveEvent(WebPointerProperties::PointerType::kPen, point),
+      CreateTestMouseMoveEvent(WebPointerProperties::PointerType::kPen,
+                               gfx::PointF(120, 120)),
       Vector<WebMouseEvent>(), Vector<WebMouseEvent>());
   test::RunPendingTasks();
   ASSERT_EQ(widget->LastPanAction(), PanAction::kStylusWritable);

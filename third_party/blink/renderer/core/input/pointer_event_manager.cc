@@ -419,8 +419,7 @@ bool PointerEventManager::ShouldAdjustStylusPointerEvent(
 }
 
 void PointerEventManager::SetHandwritingRadius(int handwriting_radius) {
-  if ((handwriting_radius_.value_or(0) != handwriting_radius) &&
-      handwriting_radius > 0) {
+  if (handwriting_radius_.value_or(0) != handwriting_radius) {
     // TODO(crbug.com/455656777): On the cc side, we calculate the TouchAction
     // based on kStylusWritingHitTestRadius. It needs to use
     // handwriting_radius_. This is currently WIP.
