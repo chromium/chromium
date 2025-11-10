@@ -133,7 +133,7 @@ export function getHtml(this: ComposeboxElement) {
   </div>
   <cr-composebox-voice-search id="voiceSearch"
       @on-voice-search-cancel="${this.onVoiceSearchClose_}"
-      @on-voice-search-final-result="${this.onVoiceSearchSubmit_}">
+      @on-voice-search-final-result="${this.onVoiceSearchFinalResult_}">
   </cr-composebox-voice-search>
   ${this.shouldShowSuggestionActivityLink_() ? html`
     <div id="suggestionActivity">

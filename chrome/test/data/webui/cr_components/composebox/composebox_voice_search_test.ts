@@ -8,6 +8,7 @@ import 'chrome://resources/cr_components/composebox/composebox.js';
 import type {ComposeboxElement} from 'chrome://resources/cr_components/composebox/composebox.js';
 import {PageCallbackRouter, PageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
 import {ComposeboxProxyImpl} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
+import {WindowProxy} from 'chrome://resources/cr_components/composebox/window_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -35,6 +36,7 @@ class MockSpeechRecognition {
   }
   abort() {
     this.voiceSearchInProgress = false;
+    this.onend!();
   }
 }
 
@@ -59,7 +61,7 @@ suite('Composebox voice search', () => {
   let composeboxElement: ComposeboxElement;
   let handler: TestMock<PageHandlerRemote>;
   let searchboxHandler: TestMock<SearchboxPageHandlerRemote>;
-  // let searchboxCallbackRouterRemote: SearchboxPageRemote;
+  let windowProxy: TestMock<WindowProxy>;
 
   suiteSetup(() => {
     loadTimeData.overrideValues({
@@ -82,6 +84,9 @@ suite('Composebox voice search', () => {
         SearchboxPageHandlerRemote,
         mock => ComposeboxProxyImpl.getInstance().searchboxHandler = mock);
     searchboxHandler.setResultFor('getRecentTabs', Promise.resolve({tabs: []}));
+
+    windowProxy = installMock(WindowProxy);
+    windowProxy.setResultFor('setTimeout', 0);
 
     composeboxElement = document.createElement('cr-composebox');
     document.body.appendChild(composeboxElement);
@@ -164,21 +169,108 @@ suite('Composebox voice search', () => {
     assertEquals('hellogoodbye', voiceSearchInput.value);
   });
 
-  test('on end submits a query', async () => {
+  test('on result submits a query if marked as final', async () => {
+    const result = createResults(2);
+    Object.assign(result.results[0]!, {isFinal: true});
+    Object.assign(result.results[0]![0]!, {transcript: 'hello world'});
+
+    // Act.
+    mockSpeechRecognition.onresult!(result);
+    await microtasksFinished();
+
+    const voiceSearchInput = composeboxElement.$.voiceSearch.$.input;
+
+    // The composebox should navigate with the text after `onEnd` is called.
+    assertEquals('hello world', voiceSearchInput.value);
+    assertEquals(searchboxHandler.getCallCount('openAutocompleteMatch'), 0);
+    assertEquals(searchboxHandler.getCallCount('submitQuery'), 1);
+  });
+
+  test('idle timer exits voice search if no final result', async () => {
+    const voiceSearchButton = getVoiceSearchButton(composeboxElement);
+    voiceSearchButton!.click();
+    await microtasksFinished();
+
+    assertTrue(mockSpeechRecognition.voiceSearchInProgress);
+
+    const [callback] = await windowProxy.whenCalled('setTimeout');
+    callback();
+    await microtasksFinished();
+
+    // Assert.
+    assertFalse(mockSpeechRecognition.voiceSearchInProgress);
+    assertEquals(searchboxHandler.getCallCount('submitQuery'), 0);
+    assertStyle(composeboxElement.$.composebox, 'display', 'flex');
+    assertStyle(composeboxElement.$.voiceSearch, 'display', 'none');
+  });
+
+  test('idle timer submits voice search if final result exists', async () => {
+    const voiceSearchButton = getVoiceSearchButton(composeboxElement);
+    voiceSearchButton!.click();
+    await microtasksFinished();
+
+    assertTrue(mockSpeechRecognition.voiceSearchInProgress);
+
     const result = createResults(2);
     Object.assign(result.results[0]![0]!, {transcript: 'hello'});
     Object.assign(result.results[1]![0]!, {transcript: 'world'});
 
     // Act.
     mockSpeechRecognition.onresult!(result);
-    mockSpeechRecognition.onend!();
+
+    const [callback] = await windowProxy.whenCalled('setTimeout');
+    callback();
     await microtasksFinished();
 
-    const voiceSearchInput = composeboxElement.$.voiceSearch.$.input;
-
-    // The composebox should navigate with the text after `onEnd` is called.
-    assertEquals('helloworld', voiceSearchInput.value);
-    assertEquals(searchboxHandler.getCallCount('openAutocompleteMatch'), 0);
+    // Assert.
     assertEquals(searchboxHandler.getCallCount('submitQuery'), 1);
   });
+
+  test('idle timeout with no final result does not submit query', async () => {
+    const voiceSearchButton = getVoiceSearchButton(composeboxElement);
+    voiceSearchButton!.click();
+    await microtasksFinished();
+
+    assertTrue(mockSpeechRecognition.voiceSearchInProgress);
+
+    const result = createResults(2);
+    Object.assign(result.results[0]![0]!, {confidence: 0, transcript: 'hello'});
+    Object.assign(result.results[1]![0]!, {confidence: 0, transcript: 'world'});
+
+    // Act.
+    mockSpeechRecognition.onresult!(result);
+
+    const [callback] = await windowProxy.whenCalled('setTimeout');
+    callback();
+    await microtasksFinished();
+
+    // Assert.
+    assertEquals(searchboxHandler.getCallCount('submitQuery'), 0);
+  });
+
+
+  test(
+      'on end exits voice search if no final result is available', async () => {
+        const voiceSearchButton = getVoiceSearchButton(composeboxElement);
+        voiceSearchButton!.click();
+        await microtasksFinished();
+
+        assertTrue(mockSpeechRecognition.voiceSearchInProgress);
+
+        const result = createResults(2);
+        Object.assign(
+            result.results[0]![0]!, {confidence: 0, transcript: 'hello'});
+        Object.assign(
+            result.results[1]![0]!, {confidence: 0, transcript: 'world'});
+
+        // Act.
+        mockSpeechRecognition.onresult!(result);
+        mockSpeechRecognition.onend!();
+        await microtasksFinished();
+
+        // Assert.
+        assertEquals(searchboxHandler.getCallCount('submitQuery'), 0);
+        assertStyle(composeboxElement.$.composebox, 'display', 'flex');
+        assertStyle(composeboxElement.$.voiceSearch, 'display', 'none');
+      });
 });

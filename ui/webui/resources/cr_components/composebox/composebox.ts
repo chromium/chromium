@@ -218,7 +218,6 @@ export class ComposeboxElement extends I18nMixinLit
       loadTimeData.getBoolean('composeboxCloseByEscape');
   private dragAndDropEnabled_: boolean =
       loadTimeData.getBoolean('dragAndDropEnabled');
-  // TODO(crbug.com/455878144): Rely on voice controller state enum.
   protected accessor inVoiceSearchMode_: boolean = false;
   private selectedMatch_: AutocompleteMatch|null = null;
 
@@ -592,7 +591,7 @@ export class ComposeboxElement extends I18nMixinLit
     e.detail.onPreviewFetched(previewDataUrl || '');
   }
 
-  protected onVoiceSearchSubmit_(e: CustomEvent<string>) {
+  protected onVoiceSearchFinalResult_(e: CustomEvent<string>) {
     this.searchboxHandler_.submitQuery(
         e.detail, /*mouse_button=*/ 0, /*alt_key=*/ false,
         /*ctrl_key=*/ false, /*meta_key=*/ false, /*shift_key=*/ false);
