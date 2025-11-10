@@ -66,7 +66,7 @@ class ExtensionActionPlatformDelegateViews
   void OnPopupClosed();
 
   // ExtensionActionPlatformDelegate:
-  void AttachToModel(ExtensionActionViewModel* controller) override;
+  void AttachToModel(ExtensionActionViewModel* model) override;
   void DetachFromModel() override;
   void RegisterCommand() override;
   void UnregisterCommand() override;
@@ -94,7 +94,7 @@ class ExtensionActionPlatformDelegateViews
   const raw_ptr<ExtensionsContainerViews> extensions_container_;
 
   // The platform-agnostic view model.
-  raw_ptr<ExtensionActionViewModel> controller_{nullptr};
+  raw_ptr<ExtensionActionViewModel> model_{nullptr};
 
   // The extension popup's host if the popup is visible; null otherwise.
   raw_ptr<extensions::ExtensionViewHost> popup_host_;

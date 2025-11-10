@@ -38,13 +38,13 @@ class WebUIBrowserExtensionsContainer::ActionInfo {
  public:
   ActionInfo(WebUIBrowserExtensionsContainer& extensions_container,
              Browser& browser,
-             std::unique_ptr<ExtensionActionViewModel> controller)
+             std::unique_ptr<ExtensionActionViewModel> model)
       : extensions_container_(extensions_container),
         browser_(browser),
-        controller_(std::move(controller)) {
-    controller_->SetUpdateObserver(base::BindRepeating(
+        model_(std::move(model)) {
+    model_->SetUpdateObserver(base::BindRepeating(
         &WebUIBrowserExtensionsContainer::NotifyOfOneAction,
-        base::Unretained(extensions_container_), controller_->GetId()));
+        base::Unretained(extensions_container_), model_->GetId()));
   }
 
   ui::TrackedElement* GetAnchor() {
@@ -53,24 +53,24 @@ class WebUIBrowserExtensionsContainer::ActionInfo {
     return extensions_container_->window_->GetExtensionsMenuButtonAnchor();
   }
 
-  ExtensionActionViewModel* controller() { return controller_.get(); }
+  ExtensionActionViewModel* model() { return model_.get(); }
 
   extensions_bar::mojom::ExtensionActionInfoPtr ToMojo(
       WebUIBrowserWindow& window) const {
     content::WebContents* web_contents =
         browser_->tab_strip_model()->GetActiveWebContents();
     auto result = extensions_bar::mojom::ExtensionActionInfo::New();
-    result->id = controller_->GetId();
+    result->id = model_->GetId();
     result->accessible_name =
-        base::UTF16ToUTF8(controller_->GetAccessibleName(web_contents));
-    result->tooltip = base::UTF16ToUTF8(controller_->GetTooltip(web_contents));
+        base::UTF16ToUTF8(model_->GetAccessibleName(web_contents));
+    result->tooltip = base::UTF16ToUTF8(model_->GetTooltip(web_contents));
     result->is_visible =
         extensions_container_->IsActionVisibleOnToolbar(result->id);
 
     if (result->is_visible) {
       ui::ImageModel icon_model =
-          controller_->GetIcon(web_contents, gfx::Size(20, 20));
-      if (!controller_->IsEnabled(web_contents)) {
+          model_->GetIcon(web_contents, gfx::Size(20, 20));
+      if (!model_->IsEnabled(web_contents)) {
         icon_model = ui::GetDefaultDisabledIconFromImageModel(
             icon_model, window.GetColorProvider());
       }
@@ -84,7 +84,7 @@ class WebUIBrowserExtensionsContainer::ActionInfo {
  private:
   const raw_ref<WebUIBrowserExtensionsContainer> extensions_container_;
   const raw_ref<Browser> browser_;
-  std::unique_ptr<ExtensionActionViewModel> controller_;
+  std::unique_ptr<ExtensionActionViewModel> model_;
 };
 
 // This is based on ExtensionContextMenuController.
@@ -96,7 +96,7 @@ class WebUIBrowserExtensionsContainer::ContextMenu {
     auto it = extensions_container.actions_.find(action_id);
     CHECK(it != extensions_container.actions_.end());
 
-    ui::MenuModel* model = it->second->controller()->GetContextMenu(
+    ui::MenuModel* model = it->second->model()->GetContextMenu(
         extensions::ExtensionContextMenuModel::ContextMenuSource::
             kToolbarAction);
 
@@ -172,14 +172,14 @@ WebUIBrowserExtensionsContainer::WebUIBrowserExtensionsContainer(
 
 WebUIBrowserExtensionsContainer::~WebUIBrowserExtensionsContainer() {
   for (const auto& [_, action] : actions_) {
-    action->controller()->UnregisterCommand();
+    action->model()->UnregisterCommand();
   }
 }
 
 ToolbarActionViewModel* WebUIBrowserExtensionsContainer::GetActionForId(
     const std::string& action_id) {
   auto it = actions_.find(action_id);
-  return it != actions_.end() ? it->second->controller() : nullptr;
+  return it != actions_.end() ? it->second->model() : nullptr;
 }
 
 std::optional<extensions::ExtensionId>
@@ -309,7 +309,7 @@ void WebUIBrowserExtensionsContainer::OnToolbarActionRemoved(
   if (context_menu_ && context_menu_->action_id() == id) {
     context_menu_.reset();
   }
-  actions_[id]->controller()->UnregisterCommand();
+  actions_[id]->model()->UnregisterCommand();
   actions_.erase(id);
   if (page_) {
     page_->ActionRemoved(id);
@@ -380,7 +380,7 @@ void WebUIBrowserExtensionsContainer::NotifyActionPoppedOut(
 void WebUIBrowserExtensionsContainer::ExecuteUserAction(const std::string& id) {
   auto it = actions_.find(id);
   CHECK(it != actions_.end());
-  it->second->controller()->ExecuteUserAction(
+  it->second->model()->ExecuteUserAction(
       ToolbarActionViewModel::InvocationSource::kToolbarButton);
 }
 
@@ -418,6 +418,6 @@ void WebUIBrowserExtensionsContainer::CreateActionForId(
           action_id, &browser_.get(),
           std::make_unique<ExtensionActionPlatformDelegateViews>(
               &browser_.get(), this)));
-  action_info->controller()->RegisterCommand();
+  action_info->model()->RegisterCommand();
   actions_[action_id] = std::move(action_info);
 }

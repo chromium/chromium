@@ -628,9 +628,9 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPITest,
   ExtensionsContainer* extensions_container =
       browser()->window()->GetExtensionsContainer();
   ASSERT_TRUE(extensions_container);
-  ToolbarActionViewModel* action_controller =
+  ToolbarActionViewModel* model =
       extensions_container->GetActionForId(extension->id());
-  ASSERT_TRUE(action_controller);
+  ASSERT_TRUE(model);
 
   ExtensionAction* action = GetExtensionAction(*extension);
   ASSERT_TRUE(action);
@@ -640,7 +640,7 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPITest,
   EXPECT_TRUE(action->HasPopup(tab_id));
 
   ResultCatcher result_catcher;
-  action_controller->ExecuteUserAction(
+  model->ExecuteUserAction(
       ToolbarActionViewModel::InvocationSource::kToolbarButton);
   EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
 
@@ -668,7 +668,7 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPITest,
   EXPECT_EQ(0u, frames.size());
 
   // Open the popup again.
-  action_controller->ExecuteUserAction(
+  model->ExecuteUserAction(
       ToolbarActionViewModel::InvocationSource::kToolbarButton);
   EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
 

@@ -24,11 +24,11 @@
 #include "ui/views/view_class_properties.h"
 
 ExtensionContextMenuController::ExtensionContextMenuController(
-    ToolbarActionViewModel* controller,
+    ToolbarActionViewModel* action_model,
     Observer* observer,
     extensions::ExtensionContextMenuModel::ContextMenuSource
         context_menu_source)
-    : controller_(controller),
+    : action_model_(action_model),
       observer_(observer),
       context_menu_source_(context_menu_source) {}
 
@@ -38,10 +38,11 @@ void ExtensionContextMenuController::ShowContextMenuForViewImpl(
     views::View* source,
     const gfx::Point& point,
     ui::mojom::MenuSourceType source_type) {
-  ui::MenuModel* model = controller_->GetContextMenu(context_menu_source_);
+  ui::MenuModel* menu_model =
+      action_model_->GetContextMenu(context_menu_source_);
 
   // It's possible the action doesn't have a context menu.
-  if (!model) {
+  if (!menu_model) {
     return;
   }
 
@@ -54,8 +55,9 @@ void ExtensionContextMenuController::ShowContextMenuForViewImpl(
   // menu. Any action that would lead to the deletion of |this| first triggers
   // the closing of the menu through lost capture.
   menu_adapter_ = std::make_unique<views::MenuModelAdapter>(
-      model, base::BindRepeating(&ExtensionContextMenuController::OnMenuClosed,
-                                 base::Unretained(this)));
+      menu_model,
+      base::BindRepeating(&ExtensionContextMenuController::OnMenuClosed,
+                          base::Unretained(this)));
 
   std::unique_ptr<views::MenuItemView> menu = menu_adapter_->CreateMenu();
   menu_runner_ =

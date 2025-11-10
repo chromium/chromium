@@ -632,12 +632,12 @@ void ExtensionsMenuViewPlatformDelegateViews::UpdateSitePermissionsPage(
   const GURL& url = web_contents->GetLastCommittedURL();
   const int icon_size = ChromeLayoutProvider::Get()->GetDistanceMetric(
       DISTANCE_EXTENSIONS_MENU_EXTENSION_ICON_SIZE);
-  ToolbarActionViewModel* action_controller =
+  ToolbarActionViewModel* view_model =
       extensions_container_->GetActionForId(extension_id);
 
-  std::u16string extension_name = action_controller->GetActionName();
+  std::u16string extension_name = view_model->GetActionName();
   ui::ImageModel extension_icon =
-      action_controller->GetIcon(web_contents, gfx::Size(icon_size, icon_size));
+      view_model->GetIcon(web_contents, gfx::Size(icon_size, icon_size));
   std::u16string current_site =
       extensions::ui_util::GetFormattedHostForDisplay(*web_contents);
   PermissionsManager::UserSiteAccess user_site_access =
@@ -689,17 +689,17 @@ void ExtensionsMenuViewPlatformDelegateViews::InsertMenuItemMainPage(
     ExtensionsMenuMainPageView* main_page,
     const extensions::ExtensionId& extension_id,
     int index) {
-  std::unique_ptr<ExtensionActionViewModel> action_controller =
+  std::unique_ptr<ExtensionActionViewModel> model =
       ExtensionActionViewModel::Create(
           extension_id, browser_,
           std::make_unique<ExtensionActionPlatformDelegateViews>(
               browser_, extensions_container_));
 
   ExtensionsMenuViewModel::MenuItemInfo menu_item =
-      menu_model_->GetMenuItemInfo(action_controller.get());
+      menu_model_->GetMenuItemInfo(model.get());
 
-  main_page->CreateAndInsertMenuItem(std::move(action_controller), extension_id,
-                                     menu_item, index);
+  main_page->CreateAndInsertMenuItem(std::move(model), extension_id, menu_item,
+                                     index);
 }
 
 void ExtensionsMenuViewPlatformDelegateViews::
@@ -708,13 +708,13 @@ void ExtensionsMenuViewPlatformDelegateViews::
         const extensions::ExtensionId& extension_id,
         int index,
         content::WebContents* web_contents) {
-  ToolbarActionViewModel* action_controller =
+  ToolbarActionViewModel* view_model =
       extensions_container_->GetActionForId(extension_id);
-  std::u16string name = action_controller->GetActionName();
+  std::u16string name = view_model->GetActionName();
   const int icon_size = ChromeLayoutProvider::Get()->GetDistanceMetric(
       DISTANCE_EXTENSIONS_MENU_EXTENSION_ICON_SIZE);
   ui::ImageModel icon =
-      action_controller->GetIcon(web_contents, gfx::Size(icon_size, icon_size));
+      view_model->GetIcon(web_contents, gfx::Size(icon_size, icon_size));
 
   main_page->AddOrUpdateExtensionRequestingAccess(extension_id, name, icon,
                                                   index);

@@ -23,13 +23,13 @@
 #include "ui/views/controls/button/button.h"
 
 ExtensionsMenuButton::ExtensionsMenuButton(Browser* browser,
-                                           ToolbarActionViewModel* controller)
+                                           ToolbarActionViewModel* model)
     : HoverButton(base::BindRepeating(&ExtensionsMenuButton::ButtonPressed,
                                       base::Unretained(this)),
                   std::u16string()),
       browser_(browser),
-      controller_(controller) {
-  controller_->SetUpdateObserver(base::BindRepeating(
+      model_(model) {
+  model_->SetUpdateObserver(base::BindRepeating(
       &ExtensionsMenuButton::UpdateState, base::Unretained(this)));
 }
 
@@ -53,12 +53,12 @@ void ExtensionsMenuButton::UpdateState() {
   const int icon_size =
       provider->GetDistanceMetric(DISTANCE_EXTENSIONS_MENU_EXTENSION_ICON_SIZE);
   SetImageModel(Button::STATE_NORMAL,
-                controller_->GetIcon(GetCurrentWebContents(),
-                                     gfx::Size(icon_size, icon_size)));
+                model_->GetIcon(GetCurrentWebContents(),
+                                gfx::Size(icon_size, icon_size)));
 
-  SetText(controller_->GetActionName());
-  SetTooltipText(controller_->GetTooltip(GetCurrentWebContents()));
-  SetEnabled(controller_->IsEnabled(GetCurrentWebContents()));
+  SetText(model_->GetActionName());
+  SetTooltipText(model_->GetTooltip(GetCurrentWebContents()));
+  SetEnabled(model_->IsEnabled(GetCurrentWebContents()));
 
   if (base::FeatureList::IsEnabled(
           extensions_features::kExtensionsMenuAccessControl)) {
@@ -83,7 +83,7 @@ content::WebContents* ExtensionsMenuButton::GetCurrentWebContents() const {
 void ExtensionsMenuButton::ButtonPressed() {
   base::RecordAction(
       base::UserMetricsAction("Extensions.Toolbar.ExtensionActivatedFromMenu"));
-  controller_->ExecuteUserAction(
+  model_->ExecuteUserAction(
       ToolbarActionViewModel::InvocationSource::kMenuEntry);
 }
 

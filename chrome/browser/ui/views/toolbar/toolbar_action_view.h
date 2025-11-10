@@ -67,8 +67,7 @@ class ToolbarActionView : public views::MenuButton,
     ~Delegate() override = default;
   };
 
-  ToolbarActionView(ToolbarActionViewModel* view_controller,
-                    Delegate* delegate);
+  ToolbarActionView(ToolbarActionViewModel* view_model, Delegate* delegate);
   ToolbarActionView(const ToolbarActionView&) = delete;
   ToolbarActionView& operator=(const ToolbarActionView&) = delete;
   ~ToolbarActionView() override;
@@ -105,7 +104,7 @@ class ToolbarActionView : public views::MenuButton,
   void OnMouseMoved(const ui::MouseEvent& event) override;
   void OnMouseEntered(const ui::MouseEvent& event) override;
 
-  ToolbarActionViewModel* view_model() { return view_controller_; }
+  ToolbarActionViewModel* view_model() { return view_model_; }
 
   // Returns button icon so it can be accessed during tests.
   gfx::ImageSkia GetIconForTest();
@@ -138,8 +137,8 @@ class ToolbarActionView : public views::MenuButton,
   // A lock to keep the MenuButton pressed when a menu or popup is visible.
   std::unique_ptr<views::MenuButtonController::PressedLock> pressed_lock_;
 
-  // The controller for this toolbar action view.
-  raw_ptr<ToolbarActionViewModel> view_controller_;
+  // The view model for this toolbar action view.
+  raw_ptr<ToolbarActionViewModel> view_model_;
 
   // Delegate that usually represents a container for ToolbarActionView.
   raw_ptr<Delegate> delegate_;

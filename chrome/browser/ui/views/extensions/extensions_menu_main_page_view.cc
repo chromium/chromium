@@ -207,14 +207,14 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
 ExtensionsMenuMainPageView::~ExtensionsMenuMainPageView() = default;
 
 void ExtensionsMenuMainPageView::CreateAndInsertMenuItem(
-    std::unique_ptr<ExtensionActionViewModel> action_controller,
+    std::unique_ptr<ExtensionActionViewModel> model,
     extensions::ExtensionId extension_id,
     ExtensionsMenuViewModel::MenuItemInfo menu_item,
     int index) {
   // base::Unretained() below is safe because `menu_handler_` lifetime is
   // tied to this view lifetime by the extensions menu coordinator.
   auto item = std::make_unique<ExtensionMenuItemView>(
-      browser_, menu_item.is_enterprise, std::move(action_controller),
+      browser_, menu_item.is_enterprise, std::move(model),
       base::BindRepeating(&ExtensionsMenuHandler::OnExtensionToggleSelected,
                           base::Unretained(menu_handler_), extension_id),
       base::BindRepeating(&ExtensionsMenuHandler::OpenSitePermissionsPage,

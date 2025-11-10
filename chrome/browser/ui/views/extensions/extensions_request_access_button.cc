@@ -179,9 +179,9 @@ void ExtensionsRequestAccessButton::UpdateTooltipText() {
       IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON_TOOLTIP_MULTIPLE_EXTENSIONS,
       extensions::ui_util::GetFormattedHostForDisplay(*active_contents)));
   for (const auto& extension_id : extension_ids_) {
-    ToolbarActionViewModel* action =
+    ToolbarActionViewModel* view_model =
         extensions_container_->GetActionForId(extension_id);
-    tooltip_parts.push_back(action->GetActionName());
+    tooltip_parts.push_back(view_model->GetActionName());
   }
   SetTooltipText(base::JoinString(tooltip_parts, u"\n"));
 }

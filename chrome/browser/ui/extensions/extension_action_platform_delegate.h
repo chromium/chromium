@@ -21,11 +21,11 @@ class ExtensionActionPlatformDelegate {
   virtual ~ExtensionActionPlatformDelegate() = default;
 
   // Attaches the delegate to an ExtensionActionViewModel. It is called
-  // by the controller on its constructor.
-  virtual void AttachToModel(ExtensionActionViewModel* controller) = 0;
+  // by the model on its constructor.
+  virtual void AttachToModel(ExtensionActionViewModel* model) = 0;
 
   // Detaches the delegate from an ExtensionActionViewModel. It is called
-  // by the controller on its destructor.
+  // by the model on its destructor.
   virtual void DetachFromModel() = 0;
 
   // The following are forwarded from ToolbarActionViewModel. See that

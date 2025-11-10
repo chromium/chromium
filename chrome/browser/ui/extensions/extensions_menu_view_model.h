@@ -101,8 +101,8 @@ class ExtensionsMenuViewModel : public extensions::PermissionsManager::Observer,
   // Reloads the current web contents.
   void ReloadWebContents();
 
-  // Returns the menu item info for extension with `action_controller`.
-  MenuItemInfo GetMenuItemInfo(ToolbarActionViewModel* action_controller);
+  // Returns the menu item info for extension with `model`.
+  MenuItemInfo GetMenuItemInfo(ToolbarActionViewModel* model);
 
   // PermissionsManager::Observer:
   void OnHostAccessRequestAdded(const extensions::ExtensionId& extension_id,

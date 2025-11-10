@@ -34,7 +34,7 @@ class ExtensionContextMenuController : public views::ContextMenuController {
   };
 
   ExtensionContextMenuController(
-      ToolbarActionViewModel* controller,
+      ToolbarActionViewModel* action_model,
       Observer* observer,
       extensions::ExtensionContextMenuModel::ContextMenuSource
           context_menu_source);
@@ -65,7 +65,7 @@ class ExtensionContextMenuController : public views::ContextMenuController {
   std::unique_ptr<views::MenuRunner> menu_runner_;
 
   // This controller contains the data for the extension's context menu.
-  const raw_ptr<ToolbarActionViewModel> controller_;
+  const raw_ptr<ToolbarActionViewModel> action_model_;
 
   // The observer to notify when the context menu opens/closes.
   const raw_ptr<Observer> observer_;

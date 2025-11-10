@@ -307,7 +307,7 @@ void ExtensionsMenuView::SortMenuItemsByName() {
 
 void ExtensionsMenuView::CreateAndInsertNewItem(
     const ToolbarActionsModel::ActionId& id) {
-  std::unique_ptr<ExtensionActionViewModel> controller =
+  std::unique_ptr<ExtensionActionViewModel> model =
       ExtensionActionViewModel::Create(
           id, browser_,
           std::make_unique<ExtensionActionPlatformDelegateViews>(
@@ -316,7 +316,7 @@ void ExtensionsMenuView::CreateAndInsertNewItem(
   // The bare `new` is safe here, because InsertMenuItem is guaranteed to
   // be added to the view hierarchy, which takes ownership.
   auto* item = new ExtensionMenuItemView(
-      browser_, std::move(controller),
+      browser_, std::move(model),
       ToolbarActionsModel::CanShowActionsInToolbar(*browser_));
   extensions_menu_items_.insert(item);
   InsertMenuItem(item);

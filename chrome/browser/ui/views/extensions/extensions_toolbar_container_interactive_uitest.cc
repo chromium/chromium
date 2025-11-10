@@ -376,24 +376,24 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarContainerUITest,
       ui_test_utils::GetCenterInScreenCoordinates(action_view)));
   EXPECT_TRUE(ui_controls::SendMouseClick(ui_controls::LEFT));
   EXPECT_TRUE(listener.WaitUntilSatisfied());
-  ToolbarActionViewModel* const view_controller =
+  ToolbarActionViewModel* const view_model =
       container->GetActionForId(extension->id());
-  EXPECT_TRUE(view_controller->IsShowingPopup());
-  EXPECT_EQ(view_controller, container->popup_owner_for_testing());
+  EXPECT_TRUE(view_model->IsShowingPopup());
+  EXPECT_EQ(view_model, container->popup_owner_for_testing());
 
   extensions::ExtensionHostTestHelper host_helper(profile(), extension->id());
   EXPECT_TRUE(
       ui_test_utils::SendMouseEventsSync(ui_controls::LEFT, ui_controls::DOWN));
   host_helper.WaitForHostDestroyed();
 
-  EXPECT_FALSE(view_controller->IsShowingPopup());
+  EXPECT_FALSE(view_model->IsShowingPopup());
   EXPECT_EQ(nullptr, container->popup_owner_for_testing());
 
   // Releasing the mouse shouldn't result in the popup being shown again.
   EXPECT_TRUE(
       ui_test_utils::SendMouseEventsSync(ui_controls::LEFT, ui_controls::UP));
   base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(view_controller->IsShowingPopup());
+  EXPECT_FALSE(view_model->IsShowingPopup());
   EXPECT_EQ(nullptr, container->popup_owner_for_testing());
 }
 
@@ -596,9 +596,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarContainerUITest,
 
   // Execute the action, which results in the extension sliding out while we
   // get ready to show the popup.
-  ToolbarActionViewModel* const view_controller =
+  ToolbarActionViewModel* const view_model =
       container->GetActionForId(extension->id());
-  view_controller->ExecuteUserAction(
+  view_model->ExecuteUserAction(
       ToolbarActionViewModel::InvocationSource::kMenuEntry);
 
   // Unload the extension (before the popup is ready). This results in the
@@ -712,11 +712,11 @@ class ExtensionsToolbarRuntimeHostPermissionsBrowserTest
   const extensions::Extension* extension() const { return extension_.get(); }
 
   extensions::ExtensionContextMenuModel* GetExtensionContextMenu() {
-    ToolbarActionViewModel* const controller =
+    ToolbarActionViewModel* const model =
         GetExtensionsToolbarContainer()->GetActionForId(extension_->id());
     return static_cast<extensions::ExtensionContextMenuModel*>(
-        controller->GetContextMenu(extensions::ExtensionContextMenuModel::
-                                       ContextMenuSource::kToolbarAction));
+        model->GetContextMenu(extensions::ExtensionContextMenuModel::
+                                  ContextMenuSource::kToolbarAction));
   }
 
   std::u16string GetActionTooltip() {
@@ -1322,9 +1322,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarContainerFeatureUITest,
 
   // Trigger the extension B action.
   ExtensionTestMessageListener listener("popup opened");
-  ToolbarActionViewModel* const view_controller =
+  ToolbarActionViewModel* const view_model =
       GetExtensionsToolbarContainer()->GetActionForId(extensionB->id());
-  view_controller->ExecuteUserAction(
+  view_model->ExecuteUserAction(
       ToolbarActionViewModel::InvocationSource::kMenuEntry);
   EXPECT_TRUE(listener.WaitUntilSatisfied());
 

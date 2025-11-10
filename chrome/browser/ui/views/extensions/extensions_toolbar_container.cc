@@ -265,7 +265,7 @@ void ExtensionsToolbarContainer::RemoveAction(
       std::ranges::find(actions_, action_id, &ToolbarActionViewModel::GetId);
   CHECK(iter != actions_.end());
   // Ensure the action outlives the UI element to perform any cleanup.
-  std::unique_ptr<ToolbarActionViewModel> controller = std::move(*iter);
+  std::unique_ptr<ToolbarActionViewModel> model = std::move(*iter);
   actions_.erase(iter);
 
   // Undo the popout, if necessary. Actions expect to not be popped out while

@@ -490,7 +490,7 @@ void ExtensionsMenuViewModel::ReloadWebContents() {
 }
 
 ExtensionsMenuViewModel::MenuItemInfo ExtensionsMenuViewModel::GetMenuItemInfo(
-    ToolbarActionViewModel* action_controller) {
+    ToolbarActionViewModel* action_model) {
   Profile* profile = browser_->GetProfile();
   // TODO(crbug.com/456285449): If there is an action controller, then the
   // extension should be enabled. We should retrieve the extension from the
@@ -500,7 +500,7 @@ ExtensionsMenuViewModel::MenuItemInfo ExtensionsMenuViewModel::GetMenuItemInfo(
   // view controller.
   auto* registry = extensions::ExtensionRegistry::Get(profile);
   scoped_refptr<const extensions::Extension> extension =
-      registry->enabled_extensions().GetByID(action_controller->GetId());
+      registry->enabled_extensions().GetByID(action_model->GetId());
   CHECK(extension);
   content::WebContents* web_contents = GetActiveWebContents();
 

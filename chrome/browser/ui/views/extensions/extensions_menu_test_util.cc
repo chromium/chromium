@@ -78,10 +78,10 @@ bool ExtensionsMenuTestUtil::HasAction(const extensions::ExtensionId& id) {
 }
 
 void ExtensionsMenuTestUtil::InspectPopup(const extensions::ExtensionId& id) {
-  auto* view_controller = static_cast<ExtensionActionViewModel*>(
+  auto* view_model = static_cast<ExtensionActionViewModel*>(
       extensions_container_->GetActionForId(id));
-  DCHECK(view_controller);
-  view_controller->InspectPopup();
+  DCHECK(view_model);
+  view_model->InspectPopup();
 }
 
 gfx::Image ExtensionsMenuTestUtil::GetIcon(const extensions::ExtensionId& id) {

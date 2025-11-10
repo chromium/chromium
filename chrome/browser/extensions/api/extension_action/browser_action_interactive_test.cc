@@ -994,18 +994,18 @@ class NavigatingExtensionPopupInteractiveTest
     ASSERT_FALSE(HasFailure());
 
     // Verify extension's action exists.
-    ToolbarActionViewModel* action_controller =
+    ToolbarActionViewModel* model =
         extensions_container()->GetActionForId(popup_extension().id());
-    ASSERT_TRUE(action_controller);
+    ASSERT_TRUE(model);
 
     // Trigger the extension's popup by executing its action.
     content::CreateAndLoadWebContentsObserver popup_observer;
-    action_controller->ExecuteUserAction(
+    model->ExecuteUserAction(
         ToolbarActionViewModel::InvocationSource::kToolbarButton);
     content::WebContents* popup = popup_observer.Wait();
 
     // Verify popup is visible.
-    ASSERT_TRUE(action_controller->GetPopupNativeView());
+    ASSERT_TRUE(model->GetPopupNativeView());
 
     GURL popup_url = popup_extension().GetResourceURL("popup.html");
     EXPECT_EQ(popup_url, popup->GetLastCommittedURL());
@@ -1048,7 +1048,7 @@ class NavigatingExtensionPopupInteractiveTest
 
       extensions_container()->HideActivePopup();
       ASSERT_FALSE(extensions_container()->popup_owner_for_testing());
-      ASSERT_FALSE(action_controller->GetPopupNativeView());
+      ASSERT_FALSE(model->GetPopupNativeView());
     }
 
     // Make sure that the web navigation did not succeed somewhere outside of
