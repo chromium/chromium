@@ -7,5 +7,11 @@ source_set("public") {
     "synced_set_up_metrics.h",
     "synced_set_up_metrics.mm",
   ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//components/commerce/core:pref_names",
+    "//components/ntp_tiles:pref_names",
+    "//components/omnibox/browser:pref_names",
+    "//components/safety_check:pref_names",
+  ]
 }

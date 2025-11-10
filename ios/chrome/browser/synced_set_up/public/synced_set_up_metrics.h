@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_SYNCED_SET_UP_PUBLIC_SYNCED_SET_UP_METRICS_H_
 #define IOS_CHROME_BROWSER_SYNCED_SET_UP_PUBLIC_SYNCED_SET_UP_METRICS_H_
 
+#import <string_view>
+
 // The event that triggered the Synced Set Up flow.
 //
 // These values are persisted to logs. Entries should not be renumbered and
@@ -77,5 +79,27 @@ void LogSyncedSetUpSnackbarInteraction(SyncedSetUpSnackbarInteraction event);
 // Logs the number of remote prefs applied to the local device in a single
 // batch.
 void LogSyncedSetUpRemoteAppliedPrefCount(int count);
+
+// Select prefs used by the Synced Set Up flow.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(SyncedSetUpAppliedPref)
+enum class SyncedSetUpAppliedPref {
+  kOmniboxPosition = 0,
+  kMagicStackHomeModule = 1,
+  kMostVisitedHomeModule = 2,
+  kPriceTrackingHomeModule = 3,
+  kSafetyCheckHomeModule = 4,
+  kTabResumptionHomeModule = 5,
+  kTipsHomeModule = 6,
+  kUnknown = 7,
+  kMaxValue = kUnknown,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/ios/enums.xml:SyncedSetUpAppliedPref)
+
+// Logs that a specific pref was applied.
+void LogSyncedSetUpPrefApplied(std::string_view pref_name);
 
 #endif  // IOS_CHROME_BROWSER_SYNCED_SET_UP_PUBLIC_SYNCED_SET_UP_METRICS_H_
