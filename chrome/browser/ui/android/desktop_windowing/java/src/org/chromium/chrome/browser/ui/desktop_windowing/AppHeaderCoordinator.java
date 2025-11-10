@@ -8,7 +8,6 @@ import static android.view.WindowInsetsController.APPEARANCE_LIGHT_CAPTION_BARS;
 import static android.view.WindowInsetsController.APPEARANCE_TRANSPARENT_CAPTION_BAR_BACKGROUND;
 
 import static org.chromium.build.NullUtil.assertNonNull;
-import static org.chromium.build.NullUtil.assumeNonNull;
 
 import static java.lang.Boolean.FALSE;
 
@@ -40,12 +39,10 @@ import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils.Windowing
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
-import org.chromium.ui.display.DisplayUtil;
 import org.chromium.ui.edge_to_edge.EdgeToEdgeStateProvider;
 import org.chromium.ui.insets.CaptionBarInsetsRectProvider;
 import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.insets.InsetObserver.WindowInsetsConsumer;
-import org.chromium.ui.insets.InsetsRectProvider;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.ui.util.TokenHolder;
 
@@ -70,7 +67,7 @@ public class AppHeaderCoordinator
 
     private static @Nullable CaptionBarInsetsRectProvider sInsetsRectProviderForTesting;
 
-    private @Nullable Activity mActivity;
+    private final Activity mActivity;
     private final View mRootView;
     private final BrowserStateBrowserControlsVisibilityDelegate mBrowserControlsVisibilityDelegate;
     private final InsetObserver mInsetObserver;
@@ -160,7 +157,6 @@ public class AppHeaderCoordinator
     /** Destroy the instances and remove all the dependencies. */
     @Override
     public void destroy() {
-        mActivity = null;
         mCaptionBarRectProvider.destroy();
         mInsetObserver.removeInsetsConsumer(this);
         mObservers.clear();
@@ -217,11 +213,15 @@ public class AppHeaderCoordinator
     /* Returns true if app header is customized. */
     private boolean onInsetsRectsUpdated(Rect widestUnoccludedRect) {
         // mActivity is only set to null in destroy().
-        boolean isOnExternalDisplay =
-                !DisplayUtil.isContextInDefaultDisplay(assumeNonNull(mActivity));
-        mHeuristicResult =
-                checkIsInDesktopWindow(
-                        mCaptionBarRectProvider, mHeuristicResult, isOnExternalDisplay);
+        @DesktopWindowHeuristicResult
+        int newResult = AppHeaderUtils.checkIsInDesktopWindow(mCaptionBarRectProvider, mActivity);
+        if (newResult != mHeuristicResult) {
+            Log.i(TAG, "Recording desktop windowing heuristic result: " + newResult);
+            // Only record histogram when heuristics result has changed.
+            AppHeaderUtils.recordDesktopWindowHeuristicResult(newResult);
+            mHeuristicResult = newResult;
+        }
+
         var isInDesktopWindow = mHeuristicResult == DesktopWindowHeuristicResult.IN_DESKTOP_WINDOW;
 
         // Avoid determining the mode when there are no window insets, which may be the case in the
@@ -285,51 +285,6 @@ public class AppHeaderCoordinator
         }
 
         return isInDesktopWindow;
-    }
-
-    /**
-     * Check if the desktop windowing mode is enabled by checking all the criteria:
-     *
-     * <ol type=1>
-     *   <li>Caption bar has insets.top > 0;
-     *   <li>Widest unoccluded rect in caption bar has space available to draw the tab strip;
-     *   <li>Widest unoccluded rect in captionBar insets is connected to the bottom;
-     *   <li>Header customization is not disallowed;
-     * </ol>
-     *
-     * This method is marked as static, in order to ensure it does not change / read any state from
-     * an AppHeaderCoordinator instance, especially the cached {@link AppHeaderState}.
-     */
-    private static @DesktopWindowHeuristicResult int checkIsInDesktopWindow(
-            InsetsRectProvider insetsRectProvider,
-            @DesktopWindowHeuristicResult int currentResult,
-            boolean isOnExternalDisplay) {
-        @DesktopWindowHeuristicResult int newResult;
-
-        Insets captionBarInset = insetsRectProvider.getCachedInset();
-        boolean allowHeaderCustomization =
-                AppHeaderUtils.shouldAllowHeaderCustomizationOnNonDefaultDisplay()
-                        || !isOnExternalDisplay;
-
-        if (insetsRectProvider.getWidestUnoccludedRect().isEmpty()) {
-            newResult = DesktopWindowHeuristicResult.WIDEST_UNOCCLUDED_RECT_EMPTY;
-        } else if (captionBarInset.top == 0) {
-            newResult = DesktopWindowHeuristicResult.CAPTION_BAR_TOP_INSETS_ABSENT;
-        } else if (insetsRectProvider.getWidestUnoccludedRect().bottom != captionBarInset.top) {
-            newResult = DesktopWindowHeuristicResult.CAPTION_BAR_BOUNDING_RECT_INVALID_HEIGHT;
-        } else if (!allowHeaderCustomization) {
-            newResult = DesktopWindowHeuristicResult.DISALLOWED_ON_EXTERNAL_DISPLAY;
-        } else if (insetsRectProvider.isUnoccludedRegionComplex()) {
-            newResult = DesktopWindowHeuristicResult.COMPLEX_UNOCCLUDED_REGION;
-        } else {
-            newResult = DesktopWindowHeuristicResult.IN_DESKTOP_WINDOW;
-        }
-        if (newResult != currentResult) {
-            Log.i(TAG, "Recording desktop windowing heuristic result: " + newResult);
-            // Only record histogram when heuristics result has changed.
-            AppHeaderUtils.recordDesktopWindowHeuristicResult(newResult);
-        }
-        return newResult;
     }
 
     private void updateCaptionBarBackground(boolean isTransparent) {

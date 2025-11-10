@@ -8,6 +8,7 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/ui/desktop_windowing/AppHeaderCoordinator.java",
     "java/src/org/chromium/chrome/browser/ui/desktop_windowing/AppHeaderUtils.java",
+    "java/src/org/chromium/chrome/browser/ui/desktop_windowing/BasicAppHeaderStateProvider.java",
   ]
   deps = [
     "//base:base_java",
@@ -27,7 +28,9 @@ android_library("java") {
 robolectric_library("junit") {
   sources = [
     "java/src/org/chromium/chrome/browser/ui/desktop_windowing/AppHeaderCoordinatorUnitTest.java",
+    "java/src/org/chromium/chrome/browser/ui/desktop_windowing/AppHeaderTestUtils.java",
     "java/src/org/chromium/chrome/browser/ui/desktop_windowing/AppHeaderUtilsUnitTest.java",
+    "java/src/org/chromium/chrome/browser/ui/desktop_windowing/BasicAppHeaderStateProviderTest.java",
   ]
 
   deps = [

@@ -7,11 +7,13 @@ package org.chromium.chrome.browser.ui.desktop_windowing;
 import static android.os.Build.VERSION.SDK_INT;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.text.format.DateUtils;
 
 import androidx.annotation.IntDef;
+import androidx.core.graphics.Insets;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.TimeUtils;
@@ -24,6 +26,8 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher.Activit
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
+import org.chromium.ui.display.DisplayUtil;
+import org.chromium.ui.insets.InsetsRectProvider;
 
 import java.util.HashSet;
 import java.util.Locale;
@@ -226,6 +230,44 @@ public class AppHeaderUtils {
         } else if (prevCount == 1 && newCount == 0) {
             startOrStopClockForWindowingMode(mode, /* startClock= */ false);
         }
+    }
+
+    /**
+     * Check if the desktop windowing mode is enabled by checking all the criteria:
+     *
+     * <ol type=1>
+     *   <li>Caption bar has insets.top > 0;
+     *   <li>Widest unoccluded rect in caption bar has space available to draw the tab strip;
+     *   <li>Widest unoccluded rect in captionBar insets is connected to the bottom;
+     *   <li>Header customization is not disallowed;
+     *   <li>Unoccluded space in the caption bar is complex;
+     * </ol>
+     */
+    static @DesktopWindowHeuristicResult int checkIsInDesktopWindow(
+            InsetsRectProvider insetsRectProvider, Context context) {
+        @DesktopWindowHeuristicResult int newResult;
+
+        boolean isOnExternalDisplay = !DisplayUtil.isContextInDefaultDisplay(context);
+
+        Insets captionBarInset = insetsRectProvider.getCachedInset();
+        boolean allowHeaderCustomization =
+                AppHeaderUtils.shouldAllowHeaderCustomizationOnNonDefaultDisplay()
+                        || !isOnExternalDisplay;
+
+        if (insetsRectProvider.getWidestUnoccludedRect().isEmpty()) {
+            newResult = DesktopWindowHeuristicResult.WIDEST_UNOCCLUDED_RECT_EMPTY;
+        } else if (captionBarInset.top == 0) {
+            newResult = DesktopWindowHeuristicResult.CAPTION_BAR_TOP_INSETS_ABSENT;
+        } else if (insetsRectProvider.getWidestUnoccludedRect().bottom != captionBarInset.top) {
+            newResult = DesktopWindowHeuristicResult.CAPTION_BAR_BOUNDING_RECT_INVALID_HEIGHT;
+        } else if (!allowHeaderCustomization) {
+            newResult = DesktopWindowHeuristicResult.DISALLOWED_ON_EXTERNAL_DISPLAY;
+        } else if (insetsRectProvider.isUnoccludedRegionComplex()) {
+            newResult = DesktopWindowHeuristicResult.COMPLEX_UNOCCLUDED_REGION;
+        } else {
+            newResult = DesktopWindowHeuristicResult.IN_DESKTOP_WINDOW;
+        }
+        return newResult;
     }
 
     private static void startOrStopClockForWindowingMode(int mode, boolean startClock) {

@@ -13,9 +13,12 @@ import org.chromium.build.annotations.Nullable;
 
 import java.util.List;
 
-/** Interface to observe and retrieve desktop windowing mode state and updates. */
+/**
+ * Interface to observe and retrieve desktop windowing mode state and app header customization
+ * terminology.
+ */
 @NullMarked
-public interface DesktopWindowStateManager {
+public interface DesktopWindowStateManager extends AppHeaderStateProvider {
 
     interface AppHeaderObserver {
 
@@ -56,6 +59,7 @@ public interface DesktopWindowStateManager {
     /**
      * @return The window's {@link AppHeaderState} information.
      */
+    @Override
     @Nullable AppHeaderState getAppHeaderState();
 
     /**
