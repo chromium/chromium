@@ -38,9 +38,6 @@ namespace webauthn::passkey_model_utils {
 
 namespace {
 
-// The byte length of the WebauthnCredentialSpecifics `sync_id` field.
-constexpr size_t kSyncIdLength = 16u;
-
 // The byte length of the WebauthnCredentialSpecifics `credential_id` field.
 constexpr size_t kCredentialIdLength = 16u;
 

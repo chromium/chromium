@@ -26,9 +26,6 @@
 
 namespace {
 
-// The byte length of the WebauthnCredentialSpecifics `sync_id` field.
-constexpr size_t kSyncIdLength = 16u;
-
 std::string DataToString(NSData* data) {
   return std::string(static_cast<const char*>(data.bytes), data.length);
 }
@@ -162,7 +159,8 @@ std::string DataToString(NSData* data) {
     webauthn::passkey_model_utils::EncryptWebauthnCredentialSpecificsData(
         securityDomainSecret, encrypted, &specifics);
 
-    specifics.set_sync_id(base::RandBytesAsString(kSyncIdLength));
+    specifics.set_sync_id(
+        base::RandBytesAsString(webauthn::passkey_model_utils::kSyncIdLength));
     specifics.set_credential_id(DataToString(passkey.credentialId));
     specifics.set_user_id(DataToString(passkey.userId));
     specifics.set_rp_id(base::SysNSStringToUTF8(passkey.rpId));

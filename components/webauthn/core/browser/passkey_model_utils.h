@@ -22,6 +22,9 @@ class WebauthnCredentialSpecifics_Encrypted;
 
 namespace webauthn::passkey_model_utils {
 
+// The byte length of the WebauthnCredentialSpecifics `sync_id` field.
+inline constexpr size_t kSyncIdLength = 16u;
+
 // Extension output data for passkey creation and assertion.
 struct ExtensionOutputData {
   ExtensionOutputData();
