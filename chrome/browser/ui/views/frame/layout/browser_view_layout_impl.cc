@@ -332,7 +332,7 @@ gfx::Size BrowserViewLayoutImpl::GetMinimumSize(const views::View* host) const {
 }
 
 int BrowserViewLayoutImpl::GetMinWebContentsWidthForTesting() const {
-  return kMainBrowserContentsMinimumWidth;
+  return kContentsContainerMinimumWidth;
 }
 
 BrowserViewLayoutImpl::ProposedLayout

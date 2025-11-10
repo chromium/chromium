@@ -300,17 +300,6 @@ class SidePanelCoordinatorTest : public InProcessBrowserTest {
     return SidePanelRegistry::From(browser());
   }
 
-  int MaybeAdjustWidthForNewLayout(int expected_width) {
-    if (!base::FeatureList::IsEnabled(features::kTabbedBrowserUseNewLayout)) {
-      return expected_width;
-    }
-    // In the new layout, the contents pane cannot shrink beyond a certain size.
-    return std::min(expected_width,
-                    browser()->GetBrowserView().width() -
-                        (BrowserViewLayout::kMainBrowserContentsMinimumWidth +
-                         views::Separator::kThickness));
-  }
-
   std::vector<raw_ptr<SidePanelRegistry, DanglingUntriaged>>
       contextual_registries_;
 };
@@ -475,15 +464,11 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest, ChangeSidePanelWidth) {
 
   // Verify the side panel width is capped at two thirds of the browser width.
   EXPECT_EQ(browser()->GetBrowserView().contents_height_side_panel()->width(),
-            MaybeAdjustWidthForNewLayout(two_thirds_browser_width));
+            two_thirds_browser_width);
 }
 
 IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
                        ReadAnythingSidePanelWidthNotCappedAtTwoThirds) {
-  if (base::FeatureList::IsEnabled(features::kTabbedBrowserUseNewLayout)) {
-    GTEST_SKIP();
-  }
-
   Init();
   // Set side panel to left-aligned so positive resize increments mean an
   // increase in side panel width.
@@ -634,8 +619,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest, ChangeSidePanelWidthMaxMin) {
       browser()->GetBrowserView().GetLocalBounds().width();
   const int two_thirds_browser_width = browser_width * 2 / 3;
   const int expected_width =
-      std::max(MaybeAdjustWidthForNewLayout(two_thirds_browser_width),
-               side_panel->GetMinimumSize().width());
+      std::max(two_thirds_browser_width, side_panel->GetMinimumSize().width());
   EXPECT_EQ(expected_width, side_panel->width());
 
   // the web contents width will either be it's min width or 1/3 the browser
@@ -707,7 +691,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest, ChangeSidePanelWidthRTL) {
   views::test::RunScheduledLayout(&browser()->GetBrowserView());
   EXPECT_EQ(side_panel->width(), starting_width);
 
-  const int increment = 50;
+  const int increment = 20;
   side_panel->OnResize(increment, true);
   views::test::RunScheduledLayout(&browser()->GetBrowserView());
   EXPECT_EQ(side_panel->width(), starting_width - increment);
@@ -720,8 +704,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest, ChangeSidePanelWidthRTL) {
 
   side_panel->OnResize(increment, true);
   views::test::RunScheduledLayout(&browser()->GetBrowserView());
-  EXPECT_EQ(side_panel->width(),
-            MaybeAdjustWidthForNewLayout(starting_width + increment));
+  EXPECT_EQ(side_panel->width(), starting_width + increment);
 }
 
 IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
@@ -1837,7 +1820,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
   ASSERT_TRUE(bookmarks_entry);
 
   const int kTestDefaultContentWidth = 450;
-  const int kUserPreferredWidth = 550;
+  const int kUserPreferredWidth = 510;
   bookmarks_entry->SetDefaultContentWidthForTesting(kTestDefaultContentWidth);
 
   // Set a user preference for bookmarks.
@@ -1852,8 +1835,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
   // Verify the side panel uses the users preferred width even if the custom
   // width is set.
   EXPECT_TRUE(side_panel->GetVisible());
-  EXPECT_EQ(side_panel->width(),
-            MaybeAdjustWidthForNewLayout(kUserPreferredWidth));
+  EXPECT_EQ(side_panel->width(), kUserPreferredWidth);
 }
 
 IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
