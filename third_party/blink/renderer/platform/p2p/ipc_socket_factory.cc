@@ -621,7 +621,7 @@ void IpcPacketSocket::OnOpen(const net::IPEndPoint& local_address,
       DoSetOption(static_cast<network::P2PSocketOption>(i), options_[i]);
   }
 
-  SignalAddressReady(this, local_address_);
+  NotifyAddressReady(this, local_address_);
   if (IsTcpClientSocket(type_)) {
     // If remote address is unresolved, set resolved remote IP address received
     // in the callback. This address will be used while sending the packets
@@ -640,7 +640,7 @@ void IpcPacketSocket::OnOpen(const net::IPEndPoint& local_address,
 
     // SignalConnect after updating the |remote_address_| so that the listener
     // can get the resolved remote address.
-    SignalConnect(this);
+    NotifyConnect(this);
   }
 }
 
@@ -663,7 +663,7 @@ void IpcPacketSocket::OnSendComplete(
   in_flight_packet_records_.pop_front();
   TraceSendThrottlingState();
 
-  SignalSentPacket(this, webrtc::SentPacketInfo(send_metrics.rtc_packet_id,
+  NotifySentPacket(this, webrtc::SentPacketInfo(send_metrics.rtc_packet_id,
                                                 send_metrics.send_time_ms));
 
   if (writable_signal_expected_ &&
@@ -673,7 +673,7 @@ void IpcPacketSocket::OnSendComplete(
         static_cast<int>(in_flight_packet_records_.size())));
 
     writable_signal_expected_ = false;
-    SignalReadyToSend(this);
+    NotifyReadyToSend(this);
   }
 }
 
@@ -683,7 +683,7 @@ void IpcPacketSocket::OnError() {
   state_ = kIsError;
   error_ = ECONNABORTED;
   if (!was_closed) {
-    SignalClose(this, 0);
+    NotifyClosed(0);
   }
 }
 
