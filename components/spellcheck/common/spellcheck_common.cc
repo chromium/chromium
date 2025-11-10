@@ -58,6 +58,7 @@ static constexpr LanguageRegion kSupportedSpellCheckerLanguages[] = {
     {"fo", "fo-FO"},
     {"fr", "fr-FR"},
     {"fr-FR", "fr-FR"},
+    {"gl", "gl"},
     {"he", "he-IL"},
     {"hi", "hi-IN"},
     {"hr", "hr-HR"},
@@ -150,6 +151,9 @@ base::FilePath GetVersionedFileName(std::string_view input_language,
 
       // March 2022: Update uk-UA dictionary from upstream.
       {"uk-UA", "-5-0"},
+
+      // Nov 2025: Initial check-in of Galician
+      {"gl", "-1-0"},
   };
 
   // Generate the bdict file name using default version string or special

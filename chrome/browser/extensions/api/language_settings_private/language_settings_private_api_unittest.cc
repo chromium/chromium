@@ -309,7 +309,7 @@ void LanguageSettingsPrivateApiTest::RunGetLanguageListTest() {
       {"de", "de-DE", false, true},
       {"es-MX", "", true, true},
       {"fa", "", false, true},
-      {"gl", "", true, false},
+      {"gl", "", true, true},
       {"zu", "", false, false},
       // Finnish with Filipino language pack (string in string).
       {"fi", "fil", true, false},
