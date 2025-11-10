@@ -66,8 +66,6 @@ public class AwScrollOffsetManager {
         void invalidate();
 
         void cancelFling();
-
-        int getBottomViewportInset();
     }
 
     private final Delegate mDelegate;
@@ -112,7 +110,7 @@ public class AwScrollOffsetManager {
     }
 
     public int computeVerticalScrollRange() {
-        return mContainerViewHeight - mDelegate.getBottomViewportInset() + mMaxVerticalScrollOffset;
+        return mContainerViewHeight + mMaxVerticalScrollOffset;
     }
 
     public int computeMaximumVerticalScrollOffset() {
