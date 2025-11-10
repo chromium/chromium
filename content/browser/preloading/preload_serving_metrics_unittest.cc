@@ -34,6 +34,10 @@ base::TimeTicks Millis(int ms) {
   return base::TimeTicks::UnixEpoch() + base::Milliseconds(ms);
 }
 
+// Scenario:
+//
+// - Navigation A started.
+// - A committed.
 TEST(PreloadServingMetricsTest, NavigationWithoutPreload) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
@@ -208,6 +212,14 @@ TEST(PreloadServingMetricsTest, NavigationWithoutPreload) {
       0);
 }
 
+// Scenario:
+//
+// - Prefetch A is triggered.
+// - Navigation B started.
+//   - B is blocked by A.
+// - A succeeded.
+//   - It unblocks B.
+// - B committed.
 TEST(PreloadServingMetricsTest, NavigationWithPrefetch) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
@@ -233,11 +245,11 @@ TEST(PreloadServingMetricsTest, NavigationWithPrefetch) {
   log->prefetch_match_metrics_list[0]
       ->prefetch_container_metrics->time_added_to_prefetch_service = Millis(10);
   log->prefetch_match_metrics_list[0]
-      ->prefetch_container_metrics->time_initial_eligibility_got = Millis(200);
+      ->prefetch_container_metrics->time_initial_eligibility_got = Millis(20);
   log->prefetch_match_metrics_list[0]
-      ->prefetch_container_metrics->time_prefetch_started = Millis(3000);
+      ->prefetch_container_metrics->time_prefetch_started = Millis(30);
   log->prefetch_match_metrics_list[0]
-      ->prefetch_container_metrics->time_url_request_started = Millis(40000);
+      ->prefetch_container_metrics->time_url_request_started = Millis(40);
   log->prefetch_match_metrics_list[0]
       ->prefetch_container_metrics->time_header_determined_successfully =
       Millis(500000);
@@ -408,6 +420,17 @@ TEST(PreloadServingMetricsTest, NavigationWithPrefetch) {
       0);
 }
 
+// Scenario:
+//
+// - Prefetch A is triggered.
+// - Prerender B is triggered.
+//   - B is blocked by A.
+// - Navigation C started.
+//   - C is blocked by B.
+// - A succeeded.
+//   - It unblocks B.
+// - B committed.
+// - C commmtted.
 TEST(PreloadServingMetricsTest,
      NavigationWithPrerenderWithPrefetchAheadOfPrerender) {
   base::test::ScopedFeatureList feature_list;
@@ -614,6 +637,18 @@ TEST(PreloadServingMetricsTest,
       base::Milliseconds(334), 1);
 }
 
+// Scenario:
+//
+// - Prefetch A is triggered.
+// - Prerender B is triggered.
+//   - B is blocked by A.
+// - Navigation C started.
+//   - C is blocked by B.
+// - A failed. (Timeout of `PrefetchStreamingURLLoader`)
+//   - It unblocks B.
+//   - B failed due to the prefetch failure.
+// - C passes prefech matching, not blocked by A as it has been failed.
+// - C falls back to network.
 TEST(PreloadServingMetricsTest,
      PrefetchTriggeredPrerenderTriggeredNavigationStartedPrefetchFailed) {
   base::test::ScopedFeatureList feature_list;
@@ -632,7 +667,7 @@ TEST(PreloadServingMetricsTest,
   auto log_prerender =
       MakeSkeletonPreloadServingMetrics({.n_prefetch_match_metrics = 1});
   log_prerender->prefetch_match_metrics_list[0]->time_match_start = Millis(42);
-  log_prerender->prefetch_match_metrics_list[0]->time_match_end = Millis(57);
+  log_prerender->prefetch_match_metrics_list[0]->time_match_end = Millis(1057);
   log_prerender->prefetch_match_metrics_list[0]->n_initial_candidates = 1;
   log_prerender->prefetch_match_metrics_list[0]
       ->n_initial_candidates_block_until_head = 1;
@@ -640,7 +675,7 @@ TEST(PreloadServingMetricsTest,
       nullptr;
   log_prerender->prefetch_match_metrics_list[0]
       ->prefetch_potential_candidate_serving_result_ahead_of_prerender =
-      PrefetchPotentialCandidateServingResult::kNotServedBlockUntilHeadTimeout;
+      PrefetchPotentialCandidateServingResult::kNotServedLoadFailed;
   log_prerender->prefetch_match_metrics_list[0]
       ->prefetch_container_metrics_ahead_of_prerender =
       std::make_unique<PrefetchContainerMetrics>();
@@ -649,13 +684,13 @@ TEST(PreloadServingMetricsTest,
       ->time_added_to_prefetch_service = Millis(10);
   log_prerender->prefetch_match_metrics_list[0]
       ->prefetch_container_metrics_ahead_of_prerender
-      ->time_initial_eligibility_got = Millis(200);
+      ->time_initial_eligibility_got = Millis(20);
   log_prerender->prefetch_match_metrics_list[0]
       ->prefetch_container_metrics_ahead_of_prerender->time_prefetch_started =
-      Millis(3000);
+      Millis(300);
   log_prerender->prefetch_match_metrics_list[0]
       ->prefetch_container_metrics_ahead_of_prerender
-      ->time_url_request_started = Millis(40000);
+      ->time_url_request_started = Millis(400);
   log_prerender->prefetch_match_metrics_list[0]
       ->prefetch_container_metrics_ahead_of_prerender
       ->time_header_determined_successfully = std::nullopt;
@@ -664,9 +699,9 @@ TEST(PreloadServingMetricsTest,
       ->time_prefetch_completed_successfully = std::nullopt;
   log_prerender->prerender_initial_preload_serving_metrics = nullptr;
   auto log = MakeSkeletonPreloadServingMetrics({.n_prefetch_match_metrics = 1});
-  log->prefetch_match_metrics_list[0]->time_match_start = Millis(57);
-  log->prefetch_match_metrics_list[0]->time_match_end = Millis(57);
-  log->prefetch_match_metrics_list[0]->n_initial_candidates = 1;
+  log->prefetch_match_metrics_list[0]->time_match_start = Millis(1157);
+  log->prefetch_match_metrics_list[0]->time_match_end = Millis(1157);
+  log->prefetch_match_metrics_list[0]->n_initial_candidates = 0;
   log->prefetch_match_metrics_list[0]->n_initial_candidates_block_until_head =
       0;
   log->prefetch_match_metrics_list[0]->prefetch_container_metrics = nullptr;
@@ -679,7 +714,7 @@ TEST(PreloadServingMetricsTest,
 
   log_prerender->RecordMetricsForPrerenderInitialNavigationFailed();
   log->RecordMetricsForNonPrerenderNavigationCommitted();
-  log->RecordFirstContentfulPaint(base::Milliseconds(334));
+  log->RecordFirstContentfulPaint(base::Milliseconds(2157));
 
   histogram_tester.ExpectUniqueSample(
       "PreloadServingMetrics.ForNavigationCommitted.PrefetchMatchMetrics.Count",
@@ -687,32 +722,32 @@ TEST(PreloadServingMetricsTest,
   histogram_tester.ExpectUniqueSample(
       "PreloadServingMetrics.ForNavigationCommitted.PrefetchMatchMetrics."
       "IsPotentialMatch",
-      true, 1);
-  histogram_tester.ExpectUniqueSample(
+      false, 1);
+  histogram_tester.ExpectTotalCount(
       "PreloadServingMetrics.ForNavigationCommitted.PrefetchMatchMetrics."
       "PotentialMatchThen.NumberOfInitialCandidates",
-      1, 1);
-  histogram_tester.ExpectUniqueSample(
+      0);
+  histogram_tester.ExpectTotalCount(
       "PreloadServingMetrics.ForNavigationCommitted.PrefetchMatchMetrics."
       "PotentialMatchThen.NumberOfInitialCandidatesBlockUntilHead",
-      0, 1);
+      0);
   histogram_tester.ExpectTotalCount(
       "PreloadServingMetrics.ForNavigationCommitted.PreloadServingMetrics."
       "ForNavigationCommitted.PrefetchMatchMetrics.PotentialMatchThen."
       "IsActualMatch",
       0);
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester.ExpectTotalCount(
       "PreloadServingMetrics.ForNavigationCommitted.PrefetchMatchMetrics."
       "PotentialMatchThen.MatchDuration",
-      0, 1);
+      0);
   histogram_tester.ExpectTotalCount(
       "PreloadServingMetrics.ForNavigationCommitted.PrefetchMatchMetrics."
       "PotentialMatchThen.MatchDuration.ForActualMatch",
       0);
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester.ExpectTotalCount(
       "PreloadServingMetrics.ForNavigationCommitted.PrefetchMatchMetrics."
       "PotentialMatchThen.MatchDuration.ForNotActualMatch",
-      0, 1);
+      0);
   histogram_tester.ExpectTotalCount(
       "PreloadServingMetrics.ForNavigationCommitted.PrefetchMatchMetrics."
       "ActualMatchThen.TimeFromPrefetchContainerAddedToMatchStart",
@@ -798,7 +833,7 @@ TEST(PreloadServingMetricsTest,
   histogram_tester.ExpectUniqueTimeSample(
       "PreloadServingMetrics.ForPrerenderInitialNavigationFailed."
       "PrefetchMatchMetrics.PotentialMatchThen.MatchDuration",
-      Millis(57) - Millis(42), 1);
+      Millis(1057) - Millis(42), 1);
   histogram_tester.ExpectTotalCount(
       "PreloadServingMetrics.ForPrerenderInitialNavigationFailed."
       "PrefetchMatchMetrics.PotentialMatchThen.MatchDuration.ForActualMatch",
@@ -806,7 +841,7 @@ TEST(PreloadServingMetricsTest,
   histogram_tester.ExpectUniqueTimeSample(
       "PreloadServingMetrics.ForPrerenderInitialNavigationFailed."
       "PrefetchMatchMetrics.PotentialMatchThen.MatchDuration.ForNotActualMatch",
-      Millis(57) - Millis(42), 1);
+      Millis(1057) - Millis(42), 1);
   histogram_tester.ExpectTotalCount(
       "PreloadServingMetrics.ForPrerenderInitialNavigationFailed."
       "PrefetchMatchMetrics.ActualMatchThen."
@@ -820,8 +855,7 @@ TEST(PreloadServingMetricsTest,
       "PreloadServingMetrics.ForPrerenderInitialNavigationFailed."
       "PrefetchMatchMetrics.PotentialMatchThen.WithAheadOfPrerender."
       "PotentialCandidateServingResult",
-      PrefetchPotentialCandidateServingResult::kNotServedBlockUntilHeadTimeout,
-      1);
+      PrefetchPotentialCandidateServingResult::kNotServedLoadFailed, 1);
 
   histogram_tester.ExpectTotalCount(
       "PreloadServingMetrics.ForPrerenderInitialNavigationFailed."
@@ -880,7 +914,7 @@ TEST(PreloadServingMetricsTest,
   histogram_tester.ExpectUniqueTimeSample(
       "PreloadServingMetrics.PageLoad.Clients.PaintTiming."
       "NavigationToFirstContentfulPaint.WithoutPreload",
-      base::Milliseconds(334), 1);
+      base::Milliseconds(2157), 1);
   histogram_tester.ExpectTotalCount(
       "PreloadServingMetrics.PageLoad.Clients.PaintTiming."
       "NavigationToFirstContentfulPaint.WithPrefetch",
@@ -891,6 +925,9 @@ TEST(PreloadServingMetricsTest,
       0);
 }
 
+// Variant of PrefetchTriggeredPrerenderTriggeredNavigationStartedPrefetchFailed
+//
+// Prefetch matching took greater than or equal to 10000ms.
 TEST(
     PreloadServingMetricsTest,
     PrefetchTriggeredPrerenderTriggeredNavigationStartedPrefetchFailedDurationGe10000) {
@@ -918,7 +955,7 @@ TEST(
       nullptr;
   log_prerender->prefetch_match_metrics_list[0]
       ->prefetch_potential_candidate_serving_result_ahead_of_prerender =
-      PrefetchPotentialCandidateServingResult::kNotServedBlockUntilHeadTimeout;
+      PrefetchPotentialCandidateServingResult::kNotServedLoadFailed;
   log_prerender->prefetch_match_metrics_list[0]
       ->prefetch_container_metrics_ahead_of_prerender =
       std::make_unique<PrefetchContainerMetrics>();
@@ -942,9 +979,9 @@ TEST(
       ->time_prefetch_completed_successfully = std::nullopt;
   log_prerender->prerender_initial_preload_serving_metrics = nullptr;
   auto log = MakeSkeletonPreloadServingMetrics({.n_prefetch_match_metrics = 1});
-  log->prefetch_match_metrics_list[0]->time_match_start = Millis(57);
-  log->prefetch_match_metrics_list[0]->time_match_end = Millis(57);
-  log->prefetch_match_metrics_list[0]->n_initial_candidates = 1;
+  log->prefetch_match_metrics_list[0]->time_match_start = Millis(10157);
+  log->prefetch_match_metrics_list[0]->time_match_end = Millis(10157);
+  log->prefetch_match_metrics_list[0]->n_initial_candidates = 0;
   log->prefetch_match_metrics_list[0]->n_initial_candidates_block_until_head =
       0;
   log->prefetch_match_metrics_list[0]->prefetch_container_metrics = nullptr;
@@ -957,7 +994,7 @@ TEST(
 
   log_prerender->RecordMetricsForPrerenderInitialNavigationFailed();
   log->RecordMetricsForNonPrerenderNavigationCommitted();
-  log->RecordFirstContentfulPaint(base::Milliseconds(334));
+  log->RecordFirstContentfulPaint(base::Milliseconds(10334));
 
   histogram_tester.ExpectUniqueSample(
       "PreloadServingMetrics.ForNavigationCommitted.PrefetchMatchMetrics.Count",
@@ -965,32 +1002,32 @@ TEST(
   histogram_tester.ExpectUniqueSample(
       "PreloadServingMetrics.ForNavigationCommitted.PrefetchMatchMetrics."
       "IsPotentialMatch",
-      true, 1);
-  histogram_tester.ExpectUniqueSample(
+      false, 1);
+  histogram_tester.ExpectTotalCount(
       "PreloadServingMetrics.ForNavigationCommitted.PrefetchMatchMetrics."
       "PotentialMatchThen.NumberOfInitialCandidates",
-      1, 1);
-  histogram_tester.ExpectUniqueSample(
+      0);
+  histogram_tester.ExpectTotalCount(
       "PreloadServingMetrics.ForNavigationCommitted.PrefetchMatchMetrics."
       "PotentialMatchThen.NumberOfInitialCandidatesBlockUntilHead",
-      0, 1);
+      0);
   histogram_tester.ExpectTotalCount(
       "PreloadServingMetrics.ForNavigationCommitted.PreloadServingMetrics."
       "ForNavigationCommitted.PrefetchMatchMetrics.PotentialMatchThen."
       "IsActualMatch",
       0);
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester.ExpectTotalCount(
       "PreloadServingMetrics.ForNavigationCommitted.PrefetchMatchMetrics."
       "PotentialMatchThen.MatchDuration",
-      0, 1);
+      0);
   histogram_tester.ExpectTotalCount(
       "PreloadServingMetrics.ForNavigationCommitted.PrefetchMatchMetrics."
       "PotentialMatchThen.MatchDuration.ForActualMatch",
       0);
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester.ExpectTotalCount(
       "PreloadServingMetrics.ForNavigationCommitted.PrefetchMatchMetrics."
       "PotentialMatchThen.MatchDuration.ForNotActualMatch",
-      0, 1);
+      0);
   histogram_tester.ExpectTotalCount(
       "PreloadServingMetrics.ForNavigationCommitted.PrefetchMatchMetrics."
       "ActualMatchThen.TimeFromPrefetchContainerAddedToMatchStart",
@@ -1098,8 +1135,7 @@ TEST(
       "PreloadServingMetrics.ForPrerenderInitialNavigationFailed."
       "PrefetchMatchMetrics.PotentialMatchThen.WithAheadOfPrerender."
       "PotentialCandidateServingResult",
-      PrefetchPotentialCandidateServingResult::kNotServedBlockUntilHeadTimeout,
-      1);
+      PrefetchPotentialCandidateServingResult::kNotServedLoadFailed, 1);
 
   histogram_tester.ExpectUniqueSample(
       "PreloadServingMetrics.ForPrerenderInitialNavigationFailed."
@@ -1153,13 +1189,12 @@ TEST(
       "PreloadServingMetrics.ForPrerenderInitialNavigationFailed."
       "WithMatchDurationGe10000.PrefetchMatchMetrics.PotentialMatchThen."
       "WithAheadOfPrerender.PotentialCandidateServingResult",
-      PrefetchPotentialCandidateServingResult::kNotServedBlockUntilHeadTimeout,
-      1);
+      PrefetchPotentialCandidateServingResult::kNotServedLoadFailed, 1);
 
   histogram_tester.ExpectUniqueTimeSample(
       "PreloadServingMetrics.PageLoad.Clients.PaintTiming."
       "NavigationToFirstContentfulPaint.WithoutPreload",
-      base::Milliseconds(334), 1);
+      base::Milliseconds(10334), 1);
   histogram_tester.ExpectTotalCount(
       "PreloadServingMetrics.PageLoad.Clients.PaintTiming."
       "NavigationToFirstContentfulPaint.WithPrefetch",
