@@ -387,6 +387,17 @@ void OnListFamilyMembersResponse(
   }
 }
 
+// Records a SigninFullscreenPromoEvents UMA histogram.
+void RecordIfNeededSigninFullscreenPromoEvent(
+    SigninFullscreenPromoEvents event,
+    signin_metrics::AccessPoint accessPoint) {
+  if (accessPoint != signin_metrics::AccessPoint::kFullscreenSigninPromo) {
+    return;
+  }
+  base::UmaHistogramEnumeration("IOS.SignInpromo.Fullscreen.PromoEvents",
+                                event);
+}
+
 }  // namespace
 
 // TODO(crbug.com/429355979): Order and group methods by interface.
@@ -4063,6 +4074,9 @@ using UserFeedbackDataCallback =
           self.signinCoordinator.browser->GetCommandDispatcher(),
           PolicyChangeCommands);
       [handler showForceSignedOutPrompt];
+      RecordIfNeededSigninFullscreenPromoEvent(
+          SigninFullscreenPromoEvents::kPromoCanceledByPolicy,
+          self.signinCoordinator.accessPoint);
       return;
     }
     case AuthenticationService::ServiceStatus::SigninForcedByPolicy:
@@ -4086,6 +4100,9 @@ using UserFeedbackDataCallback =
       completion(SigninCoordinatorResultInterrupted, nil);
     }
     self.signinCoordinator = nil;
+    RecordIfNeededSigninFullscreenPromoEvent(
+        SigninFullscreenPromoEvents::kPromoCanceledByUIBlocked,
+        self.signinCoordinator.accessPoint);
     return;
   }
 
@@ -4096,6 +4113,11 @@ using UserFeedbackDataCallback =
                                    identity:identity
                                  completion:completion];
       };
+
+  // Log that the fullscreen sign-in promo UI has started.
+  RecordIfNeededSigninFullscreenPromoEvent(
+      SigninFullscreenPromoEvents::kPromoUIStarted,
+      self.signinCoordinator.accessPoint);
 
   [self.signinCoordinator start];
 }

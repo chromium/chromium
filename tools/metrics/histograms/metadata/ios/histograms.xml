@@ -6232,6 +6232,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.SignInpromo.Fullscreen.PromoEvents"
+    enum="IOSSigninFullscreenPromoEvents" expires_after="2026-03-22">
+  <owner>cheickcisse@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    Tracks the progression of the fullscreen sign-in promotion on iOS, from
+    being triggered by the Promo Manager to the promo UI being shown. This helps
+    identify potential drop-offs in the promo presentation flow.
+  </summary>
+</histogram>
+
 <histogram name="IOS.SignInPromo.NonModal.Bookmark"
     enum="NonModalSignInPromoAction" expires_after="2026-04-28">
   <owner>kanouche@google.com</owner>
