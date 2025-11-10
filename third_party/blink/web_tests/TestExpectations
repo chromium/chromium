@@ -3206,8 +3206,6 @@ crbug.com/448461186 virtual/html-anchor-attribute-disabled/external/wpt/html/sem
 crbug.com/443965740 [ Mac14 ] external/wpt/html/cross-origin-opener-policy/iframe-popup-same-origin-allow-popups-to-same-origin.https.html?9-last [ Crash Pass ]
 crbug.com/443965740 [ Mac15 ] external/wpt/html/cross-origin-opener-policy/iframe-popup-same-origin-allow-popups-to-same-origin.https.html?9-last [ Crash Pass ]
 crbug.com/443762762 [ Mac12 ] external/wpt/html/cross-origin-opener-policy/iframe-popup-unsafe-none-to-unsafe-none.https.html?3-4 [ Crash ]
-crbug.com/443773848 [ Win11-arm64 ] external/wpt/partitioned-popins/partitioned-popins.partitions.tentative.https.window.html?include=variant-4-test [ Failure Pass Timeout ]
-external/wpt/partitioned-popins/partitioned-popins.partitions.tentative.https.window.html?include=variant-6-test [ Failure Pass ]
 crbug.com/443773822 external/wpt/webdriver/tests/classic/element_clear/scroll_into_view.py [ Failure ]
 crbug.com/443773822 external/wpt/webdriver/tests/classic/element_click/scroll_into_view.py [ Failure ]
 crbug.com/443773822 external/wpt/webdriver/tests/classic/element_send_keys/scroll_into_view.py [ Failure ]
@@ -3542,10 +3540,6 @@ crbug.com/429011229 [ Mac14 ] external/wpt/signed-exchange/reporting/sxg-reporti
 crbug.com/429011229 [ Win11-arm64 ] external/wpt/signed-exchange/reporting/sxg-reporting-navigation-ok-origin-referrer.tentative.html [ Crash ]
 crbug.com/429115403 [ Win11-arm64 ] virtual/dbsc-enabled/external/wpt/device-bound-session-credentials/credentials-matching.https.html [ Crash ]
 crbug.com/429115403 [ Win11-arm64 ] virtual/dbsc-enabled/external/wpt/device-bound-session-credentials/debug-header.https.html [ Crash ]
-crbug.com/429011229 [ Mac14 ] virtual/partitioned-popins-disabled/external/wpt/partitioned-popins/partitioned-popins.cookies-allowed.tentative.sub.https.window.html [ Crash ]
-crbug.com/429011229 [ Win11-arm64 ] virtual/partitioned-popins-disabled/external/wpt/partitioned-popins/partitioned-popins.cookies-allowed.tentative.sub.https.window.html [ Crash ]
-crbug.com/429011229 [ Mac14 ] virtual/partitioned-popins-disabled/external/wpt/partitioned-popins/partitioned-popins.cookies-blocked.tentative.sub.https.window.html [ Timeout ]
-crbug.com/429011229 [ Win11-arm64 ] virtual/partitioned-popins-disabled/external/wpt/partitioned-popins/partitioned-popins.cookies-blocked.tentative.sub.https.window.html [ Timeout ]
 crbug.com/429011229 [ Mac14 ] virtual/split-http-cache/external/wpt/signed-exchange/reporting/sxg-reporting-prefetch-invalid_integrity_header.tentative.html [ Timeout ]
 crbug.com/429011229 [ Mac14 ] virtual/split-http-cache/external/wpt/signed-exchange/reporting/sxg-reporting-prefetch-ok.tentative.html [ Crash ]
 crbug.com/429011229 [ Win11-arm64 ] virtual/split-http-cache/external/wpt/signed-exchange/reporting/sxg-reporting-prefetch-ok.tentative.html [ Crash ]
@@ -9596,7 +9590,6 @@ crbug.com/418173365 [ Win ] virtual/webnn-service-on-cpu/external/wpt/webnn/conf
 # tries to bind mojo endpoints. All of the tests below are temporarially running
 # in a virtual test suite `force-allow-storage-access` to ensure none go stale
 # while we wait on the less temporary fixes in the tasks linked above.
-crbug.com/415223384 external/wpt/partitioned-popins/partitioned-popins.localStorage.tentative.sub.https.window.html [ Crash Failure Pass Timeout ]
 crbug.com/415223384 external/wpt/storage-access-api/storage-access-beyond-cookies.BlobURLDedicatedWorker.sub.https.tentative.window.html [ Crash Failure Pass Timeout ]
 crbug.com/415223384 external/wpt/storage-access-api/storage-access-beyond-cookies.BlobURLSharedWorker.sub.https.tentative.window.html [ Crash Failure Pass Timeout ]
 crbug.com/415223384 external/wpt/storage-access-api/storage-access-beyond-cookies.BroadcastChannel.sub.https.window.html [ Crash Failure Pass Timeout ]

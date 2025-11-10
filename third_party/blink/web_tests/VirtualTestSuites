@@ -1388,7 +1388,6 @@
       "Win"
     ],
     "bases": [
-      "external/wpt/partitioned-popins/partitioned-popins.localStorage.tentative.sub.https.window.html",
       "external/wpt/storage-access-api/storage-access-beyond-cookies.BlobURLDedicatedWorker.sub.https.tentative.window.html",
       "external/wpt/storage-access-api/storage-access-beyond-cookies.BlobURLSharedWorker.sub.https.tentative.window.html",
       "external/wpt/storage-access-api/storage-access-beyond-cookies.BroadcastChannel.sub.https.window.html",
@@ -2479,25 +2478,6 @@
       "--enable-features=InterestGroupStorage,AdInterestGroupAPI,Parakeet"
     ],
     "expires": "Jul 1, 2023"
-  },
-  {
-    "prefix": "partitioned-popins-disabled",
-    "platforms": [
-      "Linux",
-      "Mac",
-      "Win"
-    ],
-    "bases": [
-      "external/wpt/partitioned-popins/"
-    ],
-    "args": [
-      "--disable-blink-features=PartitionedPopins"
-    ],
-    "owners": [
-      "arichiv@chromium.org",
-      "johannhof@chromium.org"
-    ],
-    "expires": "Mar 1, 2026"
   },
   {
     "prefix": "permission-element",
