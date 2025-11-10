@@ -46,8 +46,8 @@ class LineFlexer {
   double total_flex_shrink_ = 0.0;
   double total_weighted_flex_shrink_ = 0.0;
 
-  LayoutUnit remaining_free_space_;
   LayoutUnit initial_free_space_;
+  LayoutUnit free_space_;
 };
 
 }  // namespace blink

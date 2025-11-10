@@ -17,6 +17,9 @@ LineFlexer::LineFlexer(base::span<FlexItem> line_items,
                                                               : kShrink) {
   LayoutUnit used_space;
   for (auto& item : line_items_) {
+    // Set all items to their hypothetical size initially.
+    item.flexed_content_size = item.hypothetical_content_size;
+
     // Per https://drafts.csswg.org/css-flexbox/#resolve-flexible-lengths
     // step 3, freeze any item with:
     //  - A flex-factor of 0.
@@ -28,7 +31,6 @@ LineFlexer::LineFlexer(base::span<FlexItem> line_items,
          item.base_content_size > item.hypothetical_content_size) ||
         (mode_ == kShrink &&
          item.base_content_size < item.hypothetical_content_size)) {
-      item.flexed_content_size = item.hypothetical_content_size;
       item.state = FlexerState::kFrozen;
       used_space += item.FlexedMarginBoxSize() + gap_between_items_;
       continue;
@@ -41,8 +43,8 @@ LineFlexer::LineFlexer(base::span<FlexItem> line_items,
   }
   used_space -= gap_between_items_;
 
-  remaining_free_space_ = main_axis_inner_size_ - used_space;
-  initial_free_space_ = remaining_free_space_;
+  initial_free_space_ = main_axis_inner_size_ - used_space;
+  free_space_ = initial_free_space_;
 }
 
 void LineFlexer::FreezeViolations(FlexerState should_freeze) {
@@ -69,6 +71,9 @@ void LineFlexer::FreezeViolations(FlexerState should_freeze) {
       continue;
     }
 
+    // Reset the flexed_content_size to its initial state.
+    item.flexed_content_size = item.hypothetical_content_size;
+
     total_flex_grow_ += item.flex_grow;
     total_flex_shrink_ += item.flex_shrink;
     total_weighted_flex_shrink_ += item.flex_shrink * item.base_content_size;
@@ -76,7 +81,7 @@ void LineFlexer::FreezeViolations(FlexerState should_freeze) {
   }
   used_space -= gap_between_items_;
 
-  remaining_free_space_ = main_axis_inner_size_ - used_space;
+  free_space_ = main_axis_inner_size_ - used_space;
 }
 
 bool LineFlexer::ResolveFlexibleLengths() {
@@ -84,8 +89,19 @@ bool LineFlexer::ResolveFlexibleLengths() {
       (mode_ == kGrow) ? total_flex_grow_ : total_flex_shrink_;
   if (sum_flex_factors > 0 && sum_flex_factors < 1) {
     LayoutUnit fractional(initial_free_space_ * sum_flex_factors);
-    if (fractional.Abs() < remaining_free_space_.Abs()) {
-      remaining_free_space_ = fractional;
+    if (fractional.Abs() < free_space_.Abs()) {
+      free_space_ = fractional;
+    }
+  }
+
+  // We can early exit if there isn't any free-space to distribute.
+  if (mode_ == kGrow) {
+    if (free_space_ <= LayoutUnit()) {
+      return false;
+    }
+  } else {
+    if (free_space_ >= LayoutUnit()) {
+      return false;
     }
   }
 
@@ -95,27 +111,26 @@ bool LineFlexer::ResolveFlexibleLengths() {
       continue;
     }
 
-    LayoutUnit child_size = item.base_content_size;
-    double extra_space = 0;
-    if (remaining_free_space_ > 0 && total_flex_grow_ > 0 && mode_ == kGrow &&
+    double extra = 0;
+    if (total_flex_grow_ > 0 && mode_ == kGrow &&
         std::isfinite(total_flex_grow_)) {
-      extra_space = remaining_free_space_ * item.flex_grow / total_flex_grow_;
-    } else if (remaining_free_space_ < 0 && total_weighted_flex_shrink_ > 0 &&
-               mode_ == kShrink && std::isfinite(total_weighted_flex_shrink_) &&
-               item.flex_shrink) {
-      extra_space = remaining_free_space_ * item.flex_shrink *
-                    item.base_content_size / total_weighted_flex_shrink_;
+      extra = free_space_ * item.flex_grow / total_flex_grow_;
+    } else if (total_weighted_flex_shrink_ > 0 && mode_ == kShrink &&
+               std::isfinite(total_weighted_flex_shrink_) && item.flex_shrink) {
+      extra = free_space_ * item.flex_shrink * item.base_content_size /
+              total_weighted_flex_shrink_;
     }
-    if (std::isfinite(extra_space)) {
-      child_size += LayoutUnit::FromFloatRound(extra_space);
-    }
+    const LayoutUnit item_size =
+        item.base_content_size + (std::isfinite(extra)
+                                      ? LayoutUnit::FromDoubleRound(extra)
+                                      : LayoutUnit());
 
-    const LayoutUnit adjusted_child_size =
-        item.main_axis_min_max_sizes.ClampSizeToMinAndMax(child_size);
-    DCHECK_GE(adjusted_child_size, LayoutUnit());
-    item.flexed_content_size = adjusted_child_size;
+    const LayoutUnit adjusted_item_size =
+        item.main_axis_min_max_sizes.ClampSizeToMinAndMax(item_size);
+    DCHECK_GE(adjusted_item_size, LayoutUnit());
+    item.flexed_content_size = adjusted_item_size;
 
-    const LayoutUnit violation = adjusted_child_size - child_size;
+    const LayoutUnit violation = adjusted_item_size - item_size;
     if (violation > LayoutUnit()) {
       item.state = FlexerState::kMinViolation;
     } else if (violation < LayoutUnit()) {
