@@ -189,6 +189,7 @@ chromium-metrics-reviews@google.com.
     units="microseconds" expires_after="2026-03-15">
   <owner>khaslett@chromium.org</owner>
   <owner>kylechar@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Time spent processing quads to see which can be replaced with overlays. This
     is logged once per frame, when a frame should be drawn. Only reported for
@@ -291,6 +292,7 @@ chromium-metrics-reviews@google.com.
   <owner>boliu@chromium.org</owner>
   <owner>kraskevich@google.com</owner>
   <owner>vasilyt@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     This is logged once for every ADPF performance hint report, which is
     generally once every frame on Android device that supports ADPF and ADPF is
@@ -349,6 +351,7 @@ chromium-metrics-reviews@google.com.
     units="microseconds" expires_after="2025-05-13">
   <owner>berlu@chromium.org</owner>
   <owner>chromeos-gfx-compositor@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     This is logged once per n frames, when the frame is drawn and feature is
     enabled. The amount of time spent collecting information relevant to all
@@ -383,6 +386,7 @@ chromium-metrics-reviews@google.com.
     units="microseconds" expires_after="2026-03-22">
   <owner>yiyix@chromium.org</owner>
   <owner>chromeos-gfx@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Time spent to remove invisible quads from the quad_list in CompositorFrame.
 
@@ -411,6 +415,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2026-03-22">
   <owner>jonross@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     This is logged once per frame, if the output surface provides timing
     information. It measures the time from the display compositor starting a
@@ -439,6 +444,7 @@ chromium-metrics-reviews@google.com.
   <owner>fangzhoug@chromium.org</owner>
   <owner>petermcneeley@chromium.org</owner>
   <owner>chromeos-gfx-compositor@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Logged zero or more times per frame, the time spent checking if a page flip
     is succeeded or failed on DRM thread. Only reported for platforms supporting
@@ -620,6 +626,7 @@ chromium-metrics-reviews@google.com.
     units="microseconds" expires_after="2024-10-20">
   <owner>vasilyt@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     This is logged once per frame, if the output surface provides timing
     information. It measures delta between the time when display compositor draw
@@ -634,6 +641,7 @@ chromium-metrics-reviews@google.com.
     units="microseconds" expires_after="2026-03-08">
   <owner>vasilyt@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     This is logged once per frame if the output surface provides timing
     information. It measures delta between the time when display compositor
@@ -649,6 +657,7 @@ chromium-metrics-reviews@google.com.
     units="microseconds" expires_after="2026-03-08">
   <owner>vasilyt@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     This is logged once per frame if the output surface provides timing
     information. It measures delta between the time when display compositor
@@ -759,6 +768,7 @@ chromium-metrics-reviews@google.com.
     units="microseconds" expires_after="2026-10-05">
   <owner>kylechar@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Time spent aggregating compositor frames from different surfaces in
     microseconds. This is logged once per frame.
@@ -881,6 +891,7 @@ chromium-metrics-reviews@google.com.
     units="microseconds" expires_after="2026-05-03">
   <owner>jonross@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Reports the overhead of IPC's and thread hops during the production of a
     single frame. Measures {LatencyType}
@@ -914,6 +925,7 @@ chromium-metrics-reviews@google.com.
     units="microseconds" expires_after="2026-04-26">
   <owner>jonross@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Tracks the duration of various stages in the pipeline as a single frame goes
     through the various stages in the compositor.

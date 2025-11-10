@@ -31,6 +31,7 @@ chromium-metrics-reviews@google.com.
     units="microseconds" expires_after="2023-09-10">
   <owner>khushalsagar@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Time spent completing all work for a compositor rasterization task. This
     includes the time in the renderer process for sending GL or paint commands
@@ -127,6 +128,7 @@ chromium-metrics-reviews@google.com.
   <owner>cblume@chromium.org</owner>
   <owner>vmpstr@chromium.org</owner>
   <owner>sashamcintosh@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     This metric records the duration of an image decode for the raster path in
     the compositor. It is recorded every time we decode an image. It is suffixed
@@ -206,6 +208,7 @@ chromium-metrics-reviews@google.com.
     units="microseconds" expires_after="2026-04-12">
   <owner>khushalsagar@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Time spent completing all work for a compositor rasterization task. This
     includes the time in the renderer process for sending GL or paint commands

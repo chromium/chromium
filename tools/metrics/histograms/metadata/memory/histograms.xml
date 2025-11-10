@@ -1478,6 +1478,7 @@ chromium-metrics-reviews@google.com.
   <owner>erikchen@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
   <owner>lizeb@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     The gpu process's memory usage reported by the memory instrumentation
     service in bytes.
@@ -1492,6 +1493,7 @@ chromium-metrics-reviews@google.com.
   <owner>erikchen@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
   <owner>lizeb@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     The gpu process's memory usage reported by the memory instrumentation
     service in KB.
@@ -1508,6 +1510,7 @@ chromium-metrics-reviews@google.com.
   <owner>erikchen@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
   <owner>lizeb@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     The gpu process's memory usage reported by the memory instrumentation
     service in bytes.
@@ -1522,6 +1525,7 @@ chromium-metrics-reviews@google.com.
   <owner>erikchen@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
   <owner>lizeb@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     The gpu process's memory usage reported by the memory instrumentation
     service in MB.
