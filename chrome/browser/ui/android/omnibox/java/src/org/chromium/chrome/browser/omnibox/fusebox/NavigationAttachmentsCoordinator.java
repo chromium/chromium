@@ -234,6 +234,7 @@ public class NavigationAttachmentsCoordinator
      * @param isWrapping true if text is wrapping (should show expanded UI), false for compact UI
      */
     public void onFuseboxTextWrappingChanged(boolean isWrapping) {
+        if (mMediator == null) return;
         mModel.set(NavigationAttachmentsProperties.COMPACT_UI, !isWrapping);
     }
 
