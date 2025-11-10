@@ -917,6 +917,14 @@ export class AppElement extends AppElementBase {
     this.showVoiceSearchOverlay_ = false;
   }
 
+  protected onActionChipClick_(e: CustomEvent<{
+    searchboxText: string,
+    contextFiles: ComposeboxFile[],
+    mode: ComposeboxMode,
+  }>) {
+    this.openComposebox_(e);
+  }
+
   /**
    * Handles <CTRL> + <SHIFT> + <.> (also <CMD> + <SHIFT> + <.> on mac) to open
    * voice search.
