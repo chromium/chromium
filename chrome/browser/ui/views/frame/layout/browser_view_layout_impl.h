@@ -53,6 +53,10 @@ class BrowserViewLayoutImpl : public BrowserViewLayout {
   // separately.
   void MaybeLayoutTopContainerOverlay(const BrowserLayoutParams& params);
 
+  // Applies additional clipping and other visual adjustments required to avoid
+  // rendering bugs.
+  void DoPostLayoutVisualAdjustments();
+
   // Returns whether the top contents separator should go in the top container.
   bool ContentsSeparatorInTopContainer() const;
 

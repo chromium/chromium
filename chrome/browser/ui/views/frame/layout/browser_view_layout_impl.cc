@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/views/infobars/infobar_container_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/flex_layout_types.h"
@@ -199,8 +200,8 @@ void BrowserViewLayoutImpl::Layout(views::View* host) {
       host, [this](views::View* view, bool visible) {
         SetViewVisibility(view, visible);
       });
-
   MaybeLayoutTopContainerOverlay(params);
+  DoPostLayoutVisualAdjustments();
 }
 
 void BrowserViewLayoutImpl::MaybeLayoutTopContainerOverlay(
@@ -233,6 +234,36 @@ void BrowserViewLayoutImpl::MaybeLayoutTopContainerOverlay(
                    [this](views::View* view, bool visible) {
                      SetViewVisibility(view, visible);
                    });
+}
+
+void BrowserViewLayoutImpl::DoPostLayoutVisualAdjustments() {
+  // The normal clipping created by `View::Paint()` may not cover the bottom of
+  // the TopContainerView at certain scale factor because both of the position
+  // and the height might be rounded down. This function sets the clip path that
+  // enlarges the height at 2 DPs to compensate this error (both origin and
+  // size) that the canvas can cover the entire TopContainerView.  See
+  // crbug.com/390669712 for more details.
+  //
+  // TODO(crbug.com/41344902): Remove this hack once the pixel canvas is enabled
+  // on all aura platforms.  Note that macOS supports integer scale only, so
+  // this isn't necessary on macOS.
+
+  if (features::IsPixelCanvasRecordingEnabled()) {
+    return;
+  }
+
+  const auto apply_bottom_paint_allowance = [](views::View* view) {
+    constexpr int kBottomPaintAllowance = 2;
+    view->SetClipPath(SkPath::Rect(
+        SkRect::MakeWH(view->width(), view->height() + kBottomPaintAllowance)));
+  };
+
+  // Here are the views which require adjustment (add/remove as necessary).
+  apply_bottom_paint_allowance(views().toolbar);
+  if (views().bookmark_bar && views().bookmark_bar->GetVisible()) {
+    apply_bottom_paint_allowance(views().bookmark_bar);
+  }
+  apply_bottom_paint_allowance(views().top_container);
 }
 
 bool BrowserViewLayoutImpl::ContentsSeparatorInTopContainer() const {
