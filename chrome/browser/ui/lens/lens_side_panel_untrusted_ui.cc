@@ -170,8 +170,12 @@ LensSidePanelUntrustedUI::LensSidePanelUntrustedUI(content::WebUI* web_ui)
   html_source->AddString("composeboxAttachmentFileTypes", "");
   html_source->AddInteger("composeboxFileMaxSize", 0);
   html_source->AddInteger("composeboxFileMaxCount", 0);
-  // Disable typed suggest.
-  html_source->AddBoolean("composeboxShowTypedSuggest", false);
+  // Typed suggest is only enabled for multimodal suggestions.
+  html_source->AddBoolean(
+      "composeboxShowTypedSuggest",
+      lens::features::GetLensAimSuggestionsType() ==
+          lens::features::LensAimSuggestionsType::kMultimodal);
+  html_source->AddBoolean("composeboxShowTypedSuggestWithContext", true);
   // Enable ZPS if suggestions are enabled.
   html_source->AddBoolean("composeboxShowZps",
                           lens::features::GetAimSuggestionsEnabled());
