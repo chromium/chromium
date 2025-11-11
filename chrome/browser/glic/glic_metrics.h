@@ -348,9 +348,6 @@ class GlicMetrics {
   // Called when an attempt to share an image with glic completes.
   void OnShareImageComplete(ShareImageResult result);
 
-  // Called when a tab is activated via the glic page.
-  void OnActivateTabFromInstance(tabs::TabInterface* tab);
-
   // Logs an error that occurred while trying to get context from the focused
   // tab.
   void LogGetContextFromFocusedTabError(GlicGetContextFromTabError error);

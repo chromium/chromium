@@ -10,7 +10,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/time/time.h"
-#include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/background/glic/glic_launcher_configuration.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/fre/glic_fre_controller.h"
@@ -25,7 +24,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/common/actor/task_id.h"
 #include "chrome/common/chrome_features.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/render_frame_host.h"
@@ -764,16 +762,6 @@ void GlicMetrics::LogGetContextForActorFromTabError(
   base::UmaHistogramEnumeration(
       base::StrCat({"Glic.Api.GetContextForActorFromTab.Error.", mode_string}),
       error);
-}
-
-void GlicMetrics::OnActivateTabFromInstance(tabs::TabInterface* tab) {
-  actor::TaskId task_id =
-      actor::ActorKeyedService::Get(profile_)->GetTaskFromTab(*tab);
-  // Record user action if the tab is associated with an ActorTask.
-  if (!task_id.is_null()) {
-    base::RecordAction(
-        base::UserMetricsAction("Glic.Instance.TaskTabForegrounded"));
-  }
 }
 
 void GlicMetrics::SetControllers(
