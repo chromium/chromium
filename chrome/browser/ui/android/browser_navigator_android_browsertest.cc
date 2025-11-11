@@ -79,6 +79,19 @@ class NavigateAndroidBrowserTest : public AndroidBrowserTest {
     return url;
   }
 
+  BrowserWindowInterface* CreateIncognitoBrowserWindow() {
+    Profile* incognito_profile =
+        GetProfile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+    BrowserWindowCreateParams create_params(BrowserWindowInterface::TYPE_NORMAL,
+                                            *incognito_profile, false);
+    base::test::TestFuture<BrowserWindowInterface*> future;
+    CreateBrowserWindow(std::move(create_params), future.GetCallback());
+    BrowserWindowInterface* incognito_window = future.Get();
+    EXPECT_TRUE(incognito_window);
+    EXPECT_TRUE(incognito_window->GetProfile()->IsOffTheRecord());
+    return incognito_window;
+  }
+
   raw_ptr<BrowserWindowInterface> browser_window_;
   raw_ptr<TabListInterface> tab_list_;
   raw_ptr<content::WebContents> web_contents_;
@@ -360,15 +373,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest,
                        Disposition_OffTheRecord_FromIncognitoProfile) {
   // Create a new incognito window.
-  Profile* incognito_profile =
-      GetProfile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
-  BrowserWindowCreateParams create_params(BrowserWindowInterface::TYPE_NORMAL,
-                                          *incognito_profile, false);
-  base::test::TestFuture<BrowserWindowInterface*> future;
-  CreateBrowserWindow(std::move(create_params), future.GetCallback());
-  BrowserWindowInterface* incognito_window = future.Get();
-  ASSERT_TRUE(incognito_window);
-  ASSERT_TRUE(incognito_window->GetProfile()->IsOffTheRecord());
+  BrowserWindowInterface* incognito_window = CreateIncognitoBrowserWindow();
   TabListInterface* incognito_tab_list =
       TabListInterface::From(incognito_window);
   ASSERT_EQ(1, incognito_tab_list->GetTabCount());
@@ -379,6 +384,82 @@ IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest,
   params.disposition = WindowOpenDisposition::OFF_THE_RECORD;
 
   base::WeakPtr<content::NavigationHandle> handle = Navigate(&params);
+  ASSERT_TRUE(handle);
+  ASSERT_TRUE(handle->GetWebContents());
+
+  // Observe the navigation in the new tab's WebContents.
+  content::TestNavigationObserver navigation_observer(handle->GetWebContents());
+  navigation_observer.Wait();
+
+  // Verify a new tab was created in the incognito window and the navigation
+  // occurred in it.
+  EXPECT_EQ(2, incognito_tab_list->GetTabCount());
+  tabs::TabInterface* new_tab = incognito_tab_list->GetTab(1);
+  ASSERT_TRUE(new_tab);
+  EXPECT_EQ(url, new_tab->GetContents()->GetLastCommittedURL());
+
+  // Verify the new tab is now the active one.
+  EXPECT_EQ(1, incognito_tab_list->GetActiveIndex());
+  EXPECT_EQ(new_tab, incognito_tab_list->GetActiveTab());
+}
+
+IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest,
+                       Async_Disposition_OffTheRecord_FromRegularProfile) {
+  const GURL url1 = StartAtURL("/title1.html");
+  ASSERT_EQ(1u, GetAllBrowserWindowInterfaces().size());
+  ASSERT_FALSE(browser_window_->GetProfile()->IsOffTheRecord());
+
+  // Prepare and execute an OFF_THE_RECORD navigation.
+  const GURL url2 = embedded_test_server()->GetURL("/title2.html");
+  NavigateParams params(browser_window_, url2, ui::PAGE_TRANSITION_LINK);
+  params.disposition = WindowOpenDisposition::OFF_THE_RECORD;
+
+  base::test::TestFuture<base::WeakPtr<content::NavigationHandle>> future;
+  Navigate(&params, future.GetCallback());
+  base::WeakPtr<content::NavigationHandle> handle = future.Get();
+  ASSERT_TRUE(handle);
+  ASSERT_TRUE(handle->GetWebContents());
+
+  // Observe the navigation in the new tab's WebContents.
+  content::TestNavigationObserver navigation_observer(handle->GetWebContents());
+  navigation_observer.Wait();
+
+  // Verify a new incognito window was created and the navigation occurred in
+  // it.
+  std::vector<BrowserWindowInterface*> windows =
+      GetAllBrowserWindowInterfaces();
+  ASSERT_EQ(2u, windows.size());
+  BrowserWindowInterface* new_window =
+      windows[0] == browser_window_ ? windows[1] : windows[0];
+  EXPECT_TRUE(new_window->GetProfile()->IsOffTheRecord());
+  TabListInterface* new_tab_list = TabListInterface::From(new_window);
+  EXPECT_EQ(1, new_tab_list->GetTabCount());
+  tabs::TabInterface* new_tab = new_tab_list->GetTab(0);
+  ASSERT_TRUE(new_tab);
+  EXPECT_EQ(url2, new_tab->GetContents()->GetLastCommittedURL());
+
+  // Verify the original window is unchanged.
+  EXPECT_EQ(1, tab_list_->GetTabCount());
+  EXPECT_EQ(url1, web_contents_->GetLastCommittedURL());
+}
+
+IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest,
+                       Async_Disposition_OffTheRecord_FromIncognitoProfile) {
+  // Create a new incognito window.
+  BrowserWindowInterface* incognito_window = CreateIncognitoBrowserWindow();
+  TabListInterface* incognito_tab_list =
+      TabListInterface::From(incognito_window);
+  ASSERT_EQ(1, incognito_tab_list->GetTabCount());
+
+  // Prepare and execute an OFF_THE_RECORD navigation from the incognito window.
+  const GURL url = embedded_test_server()->GetURL("/title1.html");
+  NavigateParams params(incognito_window, url, ui::PAGE_TRANSITION_LINK);
+  params.disposition = WindowOpenDisposition::OFF_THE_RECORD;
+
+  base::test::TestFuture<base::WeakPtr<content::NavigationHandle>>
+      navigate_future;
+  Navigate(&params, navigate_future.GetCallback());
+  base::WeakPtr<content::NavigationHandle> handle = navigate_future.Get();
   ASSERT_TRUE(handle);
   ASSERT_TRUE(handle->GetWebContents());
 

@@ -51,10 +51,15 @@ bool ValidNavigateParams(NavigateParams* params) {
 void GetOrCreateBrowserWindowForDisposition(
     NavigateParams* params,
     base::OnceCallback<void(BrowserWindowInterface*)> callback) {
+  raw_ptr<Profile> profile = params->initiating_profile;
   switch (params->disposition) {
+    case WindowOpenDisposition::OFF_THE_RECORD:
+      // The existing profile was already checked and is not OTR
+      // so we get an OTR profile and create a new window.
+      profile = profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+      [[fallthrough]];
     case WindowOpenDisposition::NEW_WINDOW: {
-      BrowserWindowCreateParams create_params(*params->initiating_profile,
-                                              params->user_gesture);
+      BrowserWindowCreateParams create_params(*profile, params->user_gesture);
       CreateBrowserWindow(std::move(create_params), std::move(callback));
       break;
     }
