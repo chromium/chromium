@@ -232,6 +232,10 @@ IN_PROC_BROWSER_TEST_P(SingleClientStandaloneTransportSyncTest,
     expected_types.Put(syncer::PRIORITY_PREFERENCES);
   }
 
+  if (base::FeatureList::IsEnabled(syncer::kSyncAccountSettings)) {
+    expected_types.Put(syncer::ACCOUNT_SETTING);
+  }
+
   EXPECT_THAT(GetSyncService(0)->GetActiveDataTypes(),
               ContainerEq(expected_types));
 #else
@@ -416,6 +420,10 @@ IN_PROC_BROWSER_TEST_P(SingleClientStandaloneTransportSyncTest,
                                      syncer::SEND_TAB_TO_SELF,
                                      syncer::SECURITY_EVENTS,
                                      syncer::SHARING_MESSAGE};
+
+  if (base::FeatureList::IsEnabled(syncer::kSyncAccountSettings)) {
+    expected_types.Put(syncer::ACCOUNT_SETTING);
+  }
 
   EXPECT_THAT(GetSyncService(0)->GetActiveDataTypes(),
               ContainerEq(expected_types));

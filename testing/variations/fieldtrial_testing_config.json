@@ -2306,6 +2306,34 @@
             ]
         }
     ],
+    "AutofillAiM3PublicPasses": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillAiDedupeEntities",
+                        "AutofillAiFillingSurvey",
+                        "AutofillAiSavePromptSurvey",
+                        "AutofillAiVoteForFormatStringsForFlightNumbers",
+                        "AutofillAiWalletFlightReservation",
+                        "AutofillAiWalletVehicleRegistration",
+                        "IPH_AutofillAiValuables",
+                        "SyncAccountSettings",
+                        "SyncAutofillValuableMetadata",
+                        "SyncWalletFlightReservations",
+                        "SyncWalletVehicleRegistrations"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillAllowFillingModifiedInitialValues": [
         {
             "platforms": [
