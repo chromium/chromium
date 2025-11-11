@@ -9881,43 +9881,6 @@ void RenderFrameHostImpl::CreateNewWindow(
   TRACE_EVENT2("navigation", "RenderFrameHostImpl::CreateNewWindow",
                "render_frame_host", this, "url", params->target_url);
 
-  // These checks ensure malformed partitioned popins cannot be created.
-  // Most of these checks should already have been done by the renderer.
-  // See https://explainers-by-googlers.github.io/partitioned-popins/
-  if (params->features && params->features->is_partitioned_popin) {
-    if (!base::FeatureList::IsEnabled(blink::features::kPartitionedPopins)) {
-      frame_host_associated_receiver_.ReportBadMessage(
-          "Partitioned popins not permitted.");
-      return;
-    }
-    if (ShouldPartitionAsPopin()) {
-      frame_host_associated_receiver_.ReportBadMessage(
-          "Partitioned popins cannot open their own popin.");
-      return;
-    }
-    if (!GetLastCommittedURL().SchemeIs(url::kHttpsScheme)) {
-      frame_host_associated_receiver_.ReportBadMessage(
-          "Partitioned popins must be opened from https URLs.");
-      return;
-    }
-    if (!params->target_url.SchemeIs(url::kHttpsScheme)) {
-      frame_host_associated_receiver_.ReportBadMessage(
-          "Partitioned popins can only open https URLs.");
-      return;
-    }
-    if (delegate()->GetOpenedPartitionedPopin()) {
-      // Each window can have at most one partitioned popin. Unlike the other
-      // errors above, this one is handled by the browser process only as the
-      // renderer does not know if there is an open popin.
-      // See https://explainers-by-googlers.github.io/partitioned-popins/
-      AddMessageToConsole(
-          blink::mojom::ConsoleMessageLevel::kError,
-          "Only one partitioned popin can be active at a time.");
-      std::move(callback).Run(mojom::CreateNewWindowStatus::kBlocked, nullptr);
-      return;
-    }
-  }
-
   // Only top-most frames can open picture-in-picture windows.
   if (params->disposition == WindowOpenDisposition::NEW_PICTURE_IN_PICTURE &&
       !IsOutermostMainFrame()) {
@@ -10103,16 +10066,6 @@ void RenderFrameHostImpl::CreateNewWindow(
   bool wait_for_debugger =
       devtools_instrumentation::ShouldWaitForDebuggerInWindowOpen();
 
-  // We must send access information relative to the popin opener in order for
-  // the renderer to properly conduct checks.
-  // See https://explainers-by-googlers.github.io/partitioned-popins/
-  blink::mojom::PartitionedPopinParamsPtr partitioned_popin_params = nullptr;
-  if (new_main_rfh->ShouldPartitionAsPopin()) {
-    partitioned_popin_params = new_main_rfh->delegate()
-                                   ->GetPartitionedPopinOpenerProperties()
-                                   .AsMojom();
-  }
-
   // NOTE: if the call to ShowCreatedWindow() below returns nullptr, then
   // new_frame_tree, new_main_rfh, and new_main_rwh will all have been destroyed
   // and point to freed memory! To preserve legacy behavior, we still need to
@@ -10132,7 +10085,7 @@ void RenderFrameHostImpl::CreateNewWindow(
       new_main_rfh->policy_container_host()->CreatePolicyContainerForBlink(),
       new_main_rfh->GetSiteInstance()->browsing_instance_token(),
       delegate_->GetColorProviderColorMaps(),
-      std::move(partitioned_popin_params), /*widget_screen_rect=*/std::nullopt,
+      /*widget_screen_rect=*/std::nullopt,
       /*window_screen_rect=*/std::nullopt);
 
   new_main_rfh->render_view_host()->RenderViewCreated(new_main_rfh);

@@ -28,7 +28,6 @@
 #include "third_party/blink/public/common/page/color_provider_color_maps.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/page/page.mojom-blink.h"
-#include "third_party/blink/public/mojom/partitioned_popins/partitioned_popin_params.mojom.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
@@ -212,7 +211,6 @@ Page* Page::CreateNonOrdinary(
       base::PassKey<Page>(), chrome_client, agent_group_scheduler,
       /*browsing_context_group_token=*/base::UnguessableToken::Create(),
       color_provider_colors,
-      /*partitioned_popin_params=*/nullptr,
       /*is_ordinary=*/false);
 }
 
@@ -221,12 +219,10 @@ Page* Page::CreateOrdinary(
     Page* opener,
     AgentGroupScheduler& agent_group_scheduler,
     const base::UnguessableToken& browsing_context_group_token,
-    const ColorProviderColorMaps* color_provider_colors,
-    blink::mojom::PartitionedPopinParamsPtr partitioned_popin_params) {
+    const ColorProviderColorMaps* color_provider_colors) {
   Page* page = MakeGarbageCollected<Page>(
       base::PassKey<Page>(), chrome_client, agent_group_scheduler,
       browsing_context_group_token, color_provider_colors,
-      std::move(partitioned_popin_params),
       /*is_ordinary=*/true);
   page->opener_ = opener;
 
@@ -251,7 +247,6 @@ Page::Page(base::PassKey<Page>,
            AgentGroupScheduler& agent_group_scheduler,
            const base::UnguessableToken& browsing_context_group_token,
            const ColorProviderColorMaps* color_provider_colors,
-           blink::mojom::PartitionedPopinParamsPtr partitioned_popin_params,
            bool is_ordinary)
     : SettingsDelegate(std::make_unique<Settings>()),
       main_frame_(nullptr),
@@ -296,12 +291,6 @@ Page::Page(base::PassKey<Page>,
           MakeGarbageCollected<
               v8_compile_hints::V8CrowdsourcedCompileHintsConsumer>()),
       browsing_context_group_token_(browsing_context_group_token) {
-  if (partitioned_popin_params) {
-    partitioned_popin_opener_properties_ = PartitionedPopinOpenerProperties(
-        SecurityOrigin::CreateFromUrlOrigin(
-            partitioned_popin_params->opener_top_frame_origin),
-        partitioned_popin_params->opener_site_for_cookies);
-  }
   DCHECK(!AllPages().Contains(this));
   AllPages().insert(this);
 

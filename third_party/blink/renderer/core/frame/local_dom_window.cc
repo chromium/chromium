@@ -2340,36 +2340,6 @@ DOMWindow* LocalDOMWindow::open(v8::Isolate* isolate,
   WebWindowFeatures window_features =
       GetWindowFeaturesFromString(features, entered_window);
 
-  if (window_features.is_partitioned_popin) {
-    if (!IsFeatureEnabled(
-            network::mojom::PermissionsPolicyFeature::kPartitionedPopins,
-            ReportOptions::kReportOnFailure)) {
-      exception_state.ThrowSecurityError(
-          "Permissions-Policy: `popin` access denied.",
-          "Permissions-Policy: `popin` access denied.");
-      return nullptr;
-    }
-    if (entered_window->GetFrame()->GetPage()->IsPartitionedPopin()) {
-      exception_state.ThrowSecurityError(
-          "Partitioned popins cannot open their own popin.",
-          "Partitioned popins cannot open their own popin.");
-      return nullptr;
-    }
-    if (entered_window->Url().Protocol() != g_https_atom) {
-      exception_state.ThrowSecurityError(
-          "Partitioned popins must be opened from https URLs.",
-          "Partitioned popins must be opened from https URLs.");
-      return nullptr;
-    }
-    // We prevent redirections via PartitionedPopinsNavigationThrottle.
-    if (completed_url.Protocol() != g_https_atom) {
-      exception_state.ThrowSecurityError(
-          "Partitioned popins can only open https URLs.",
-          "Partitioned popins can only open https URLs.");
-      return nullptr;
-    }
-  }
-
   // In fenced frames, we should always use `noopener`.
   if (GetFrame()->IsInFencedFrameTree()) {
     window_features.noopener = true;

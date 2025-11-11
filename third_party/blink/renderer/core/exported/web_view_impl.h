@@ -52,7 +52,6 @@
 #include "third_party/blink/public/mojom/page/page.mojom-blink.h"
 #include "third_party/blink/public/mojom/page/page_visibility_state.mojom-blink.h"
 #include "third_party/blink/public/mojom/page/prerender_page_param.mojom-forward.h"
-#include "third_party/blink/public/mojom/partitioned_popins/partitioned_popin_params.mojom-forward.h"
 #include "third_party/blink/public/mojom/renderer_preference_watcher.mojom-blink.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/platform/web_input_event_result.h"
@@ -131,7 +130,6 @@ class CORE_EXPORT WebViewImpl final : public WebView,
       std::optional<SkColor> page_base_background_color,
       const base::UnguessableToken& browsing_context_group_token,
       const ColorProviderColorMaps* color_provider_colors,
-      blink::mojom::PartitionedPopinParamsPtr partitioned_popin_params,
       int32_t history_index,
       int32_t history_length);
 
@@ -726,7 +724,6 @@ class CORE_EXPORT WebViewImpl final : public WebView,
       std::optional<SkColor> page_base_background_color,
       const base::UnguessableToken& browsing_context_group_token,
       const ColorProviderColorMaps* color_provider_colors,
-      blink::mojom::PartitionedPopinParamsPtr partitioned_popin_params,
       int32_t history_index,
       int32_t history_length);
   ~WebViewImpl() override;

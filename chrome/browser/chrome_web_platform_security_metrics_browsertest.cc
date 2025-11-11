@@ -77,11 +77,10 @@ class ChromeWebPlatformSecurityMetricsBrowserTest : public policy::PolicyTest {
     LoadIFrameInWebContents(web_contents(), url);
   }
 
-  content::WebContents* OpenPopup(const GURL& url, bool is_popin = false) {
+  content::WebContents* OpenPopup(const GURL& url) {
     content::WebContentsAddedObserver new_tab_observer;
-    EXPECT_TRUE(content::ExecJs(
-        web_contents(), "window.open('" + url.spec() + "', '_blank', '" +
-                            (is_popin ? "popin" : "popup") + "')"));
+    EXPECT_TRUE(content::ExecJs(web_contents(), "window.open('" + url.spec() +
+                                                    "', '_blank', 'popup')"));
     content::WebContents* web_contents = new_tab_observer.GetWebContents();
     EXPECT_TRUE(content::WaitForLoadStop(web_contents));
     return web_contents;
@@ -146,8 +145,6 @@ class ChromeWebPlatformSecurityMetricsBrowserTest : public policy::PolicyTest {
         network::features::kCrossOriginOpenerPolicy,
         // SharedArrayBuffer is needed for these tests.
         features::kSharedArrayBuffer,
-        // Some PNA worker feature relies on this.
-        blink::features::kPartitionedPopins,
     };
   }
 
@@ -2128,154 +2125,6 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
                                            1 /*HasBeenActive*/);
       test_ukm_recorder->ExpectEntryMetric(entry, "StorageKeyComparison",
                                            3 /*CrossKey*/);
-    }
-  }
-}
-
-IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
-                       WindowProxyAccessFromOtherPartitionedPopin) {
-  GURL url = https_server().GetURL("a.com",
-                                   "/partitioned_popins/wildcard_policy.html");
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
-
-  struct TestCase {
-    const char* name;
-    const char* property;
-    WebFeature property_access;
-    WebFeature property_access_from_other_page;
-    blink::mojom::WindowProxyAccessType access_type;
-  } cases[] = {
-      {
-          "blur",
-          "try { window.opener.blur(); } catch (_) {}",
-          WebFeature::kWindowProxyCrossOriginAccessBlur,
-          WebFeature::kWindowProxyCrossOriginAccessFromOtherPageBlur,
-          blink::mojom::WindowProxyAccessType::kBlur,
-      },
-      {
-          "closed",
-          "try { window.opener.closed; } catch (_) {}",
-          WebFeature::kWindowProxyCrossOriginAccessClosed,
-          WebFeature::kWindowProxyCrossOriginAccessFromOtherPageClosed,
-          blink::mojom::WindowProxyAccessType::kClosed,
-      },
-      {
-          "focus",
-          "try { window.opener.focus(); } catch (_) {}",
-          WebFeature::kWindowProxyCrossOriginAccessFocus,
-          WebFeature::kWindowProxyCrossOriginAccessFromOtherPageFocus,
-          blink::mojom::WindowProxyAccessType::kFocus,
-      },
-      {
-          "frames",
-          "try { window.opener.frames; } catch (_) {}",
-          WebFeature::kWindowProxyCrossOriginAccessFrames,
-          WebFeature::kWindowProxyCrossOriginAccessFromOtherPageFrames,
-          blink::mojom::WindowProxyAccessType::kFrames,
-      },
-      {
-          "length",
-          "try { window.opener.length; } catch (_) {}",
-          WebFeature::kWindowProxyCrossOriginAccessLength,
-          WebFeature::kWindowProxyCrossOriginAccessFromOtherPageLength,
-          blink::mojom::WindowProxyAccessType::kLength,
-      },
-      {
-          "location get",
-          "try { window.opener.location; } catch (_) {}",
-          WebFeature::kWindowProxyCrossOriginAccessLocation,
-          WebFeature::kWindowProxyCrossOriginAccessFromOtherPageLocation,
-          blink::mojom::WindowProxyAccessType::kLocation,
-      },
-      {
-          "opener get",
-          "try { window.opener.opener; } catch (_) {}",
-          WebFeature::kWindowProxyCrossOriginAccessOpener,
-          WebFeature::kWindowProxyCrossOriginAccessFromOtherPageOpener,
-          blink::mojom::WindowProxyAccessType::kOpener,
-      },
-      {
-          "parent",
-          "try { window.opener.parent; } catch (_) {}",
-          WebFeature::kWindowProxyCrossOriginAccessParent,
-          WebFeature::kWindowProxyCrossOriginAccessFromOtherPageParent,
-          blink::mojom::WindowProxyAccessType::kParent,
-      },
-      {
-          "postMessage",
-          "try { window.opener.postMessage('','*'); } catch (_) {}",
-          WebFeature::kWindowProxyCrossOriginAccessPostMessage,
-          WebFeature::kWindowProxyCrossOriginAccessFromOtherPagePostMessage,
-          blink::mojom::WindowProxyAccessType::kPostMessage,
-      },
-      {
-          "self",
-          "try { window.opener.self; } catch (_) {}",
-          WebFeature::kWindowProxyCrossOriginAccessSelf,
-          WebFeature::kWindowProxyCrossOriginAccessFromOtherPageSelf,
-          blink::mojom::WindowProxyAccessType::kSelf,
-      },
-      {
-          "top",
-          "try { window.opener.top; } catch (_) {}",
-          WebFeature::kWindowProxyCrossOriginAccessTop,
-          WebFeature::kWindowProxyCrossOriginAccessFromOtherPageTop,
-          blink::mojom::WindowProxyAccessType::kTop,
-      }};
-
-  // Check that same-origin access does not register use counters.
-  content::WebContents* same_origin_popin = OpenPopup(url, /*is_popin=*/true);
-  for (auto test : cases) {
-    SCOPED_TRACE(test.name);
-    std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder =
-        std::make_unique<ukm::TestAutoSetUkmRecorder>();
-    EXPECT_TRUE(content::ExecJs(same_origin_popin, test.property));
-    CheckCounter(test.property_access, 0);
-    CheckCounter(test.property_access_from_other_page, 0);
-    const auto& entries =
-        test_ukm_recorder->GetEntriesByName("WindowProxyUsage");
-    ASSERT_EQ(entries.size(), 0u);
-  }
-
-  // Check that cross-origin access does register use counters.
-  BrowserWindow::FindBrowserWindowWithWebContents(same_origin_popin)->Close();
-  GURL cross_origin_url = https_server().GetURL(
-      "b.test", "/partitioned_popins/wildcard_policy.html");
-  content::WebContents* cross_origin_popin =
-      OpenPopup(cross_origin_url, /*is_popin=*/true);
-  for (auto test : cases) {
-    SCOPED_TRACE(test.name);
-    bool is_closed =
-        test.access_type == blink::mojom::WindowProxyAccessType::kClosed;
-    bool is_post_message =
-        test.access_type == blink::mojom::WindowProxyAccessType::kPostMessage;
-    std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder =
-        std::make_unique<ukm::TestAutoSetUkmRecorder>();
-    EXPECT_TRUE(content::ExecJs(cross_origin_popin, test.property));
-    CheckCounter(test.property_access, is_closed || is_post_message ? 1 : 0);
-    CheckCounter(test.property_access_from_other_page,
-                 is_closed || is_post_message ? 1 : 0);
-    auto entries = test_ukm_recorder->GetEntriesByName("WindowProxyUsage");
-    ASSERT_EQ(entries.size(), is_post_message || is_closed ? 1u : 0u);
-    if (is_closed || is_post_message) {
-      auto entry = entries.back();
-      test_ukm_recorder->ExpectEntryMetric(entry, "AccessType",
-                                           (int)test.access_type);
-      test_ukm_recorder->ExpectEntryMetric(entry, "IsSamePage", 0);
-      test_ukm_recorder->ExpectEntryMetric(entry, "LocalFrameContext",
-                                           0 /*TopFrame*/);
-      test_ukm_recorder->ExpectEntryMetric(entry, "LocalPageContext",
-                                           2 /*PartitionedPopin*/);
-      test_ukm_recorder->ExpectEntryMetric(entry, "LocalUserActivationState",
-                                           0 /*IsActive*/);
-      test_ukm_recorder->ExpectEntryMetric(entry, "RemoteFrameContext",
-                                           0 /*TopFrame*/);
-      test_ukm_recorder->ExpectEntryMetric(entry, "RemotePageContext",
-                                           0 /*Window*/);
-      test_ukm_recorder->ExpectEntryMetric(entry, "RemoteUserActivationState",
-                                           1 /*HasBeenActive*/);
-      test_ukm_recorder->ExpectEntryMetric(entry, "StorageKeyComparison",
-                                           1 /*SameTopSiteCrossOrigin*/);
     }
   }
 }

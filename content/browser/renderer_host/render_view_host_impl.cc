@@ -611,17 +611,6 @@ bool RenderViewHostImpl::CreateRenderView(
   params->blink_page_broadcast =
       page_broadcast_.BindNewEndpointAndPassReceiver();
 
-  // We must send access information relative to the popin opener in order for
-  // the renderer to properly conduct checks.
-  // See https://explainers-by-googlers.github.io/partitioned-popins/
-  if (frame_tree_->GetMainFrame()->ShouldPartitionAsPopin()) {
-    params->partitioned_popin_params =
-        frame_tree_->GetMainFrame()
-            ->delegate()
-            ->GetPartitionedPopinOpenerProperties()
-            .AsMojom();
-  }
-
   if (base::FeatureList::IsEnabled(features::kSetHistoryInfoOnViewCreation)) {
     params->history_index =
         frame_tree()->controller().GetLastCommittedEntryIndex();

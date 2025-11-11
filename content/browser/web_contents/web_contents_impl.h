@@ -2201,14 +2201,6 @@ class CONTENT_EXPORT WebContentsImpl
   // WarmUp a spare render process for future navigations.
   void WarmUpAndroidSpareRenderer();
 
-  // If the new window will be a partitioned popin, we need to validate the
-  // settings and set the opener.
-  // See https://explainers-by-googlers.github.io/partitioned-popins/
-  void SetPartitionedPopinOpenerOnNewWindowIfNeeded(
-      WebContentsImpl* new_window,
-      const mojom::CreateNewWindowParams& params,
-      RenderFrameHostImpl* opener);
-
   // Creates a new ForwardingAudioStreamFactory.
   std::unique_ptr<ForwardingAudioStreamFactory> CreateAudioStreamFactory();
 

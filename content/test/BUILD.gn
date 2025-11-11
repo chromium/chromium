@@ -1790,7 +1790,6 @@ test("content_browsertests") {
     "../browser/vibration_browsertest.cc",
     "../browser/web_contents/file_chooser_impl_browsertest.cc",
     "../browser/web_contents/opened_by_dom_browsertest.cc",
-    "../browser/web_contents/partitioned_popins_controller_browsertest.cc",
     "../browser/web_contents/web_contents_impl_browsertest.cc",
     "../browser/web_contents/web_contents_observer_browsertest.cc",
     "../browser/web_package/signed_exchange_request_handler_browsertest.cc",

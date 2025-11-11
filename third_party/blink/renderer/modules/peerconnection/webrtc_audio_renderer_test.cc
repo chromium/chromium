@@ -26,7 +26,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/page/prerender_page_param.mojom.h"
-#include "third_party/blink/public/mojom/partitioned_popins/partitioned_popin_params.mojom.h"
 #include "third_party/blink/public/platform/audio/web_audio_device_source_type.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
@@ -241,7 +240,6 @@ class WebRtcAudioRendererTest : public testing::Test {
             /*page_base_background_color=*/std::nullopt,
             /*browsing_context_group_token=*/base::UnguessableToken::Create(),
             /*color_provider_colors=*/nullptr,
-            /*partitioned_popin_params=*/nullptr,
             /*history_index=*/-1,
             /*history_length=*/0)),
         web_local_frame_(blink::WebLocalFrame::CreateMainFrame(

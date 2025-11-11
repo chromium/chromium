@@ -5341,8 +5341,6 @@ FrameTree* WebContentsImpl::CreateNewWindow(
     }
     web_contents_impl->is_popup_ =
         params.disposition == WindowOpenDisposition::NEW_POPUP;
-    SetPartitionedPopinOpenerOnNewWindowIfNeeded(web_contents_impl, params,
-                                                 opener);
     return &web_contents_impl->GetPrimaryFrameTree();
   }
 
@@ -5443,8 +5441,6 @@ FrameTree* WebContentsImpl::CreateNewWindow(
   auto* new_contents_impl = new_contents.get();
   new_contents_impl->is_popup_ =
       params.disposition == WindowOpenDisposition::NEW_POPUP;
-  SetPartitionedPopinOpenerOnNewWindowIfNeeded(new_contents_impl, params,
-                                               opener);
 
   // Sets the newly created WebContents WindowOpenDisposition.
   new_contents_impl->original_window_open_disposition_ = params.disposition;
@@ -12393,31 +12389,6 @@ void WebContentsImpl::WarmUpAndroidSpareRenderer() {
     SpareRenderProcessHostManagerImpl::Get().WarmupSpare(GetBrowserContext(),
                                                          timeout);
   }
-}
-
-void WebContentsImpl::SetPartitionedPopinOpenerOnNewWindowIfNeeded(
-    WebContentsImpl* new_window,
-    const mojom::CreateNewWindowParams& params,
-    RenderFrameHostImpl* opener) {
-  // We should not take action if the feature is disabled.
-  if (!base::FeatureList::IsEnabled(blink::features::kPartitionedPopins)) {
-    return;
-  }
-
-  // All popins should be counted as popups to ensure proper UX treatment.
-  if (!params.features->is_partitioned_popin || !new_window->is_popup_) {
-    return;
-  }
-
-  PartitionedPopinsController::CreateForWebContents(
-      static_cast<WebContentsImpl*>(opener->delegate()));
-  new_window->partitioned_popin_opener_ = opener->GetWeakPtr();
-  new_window->partitioned_popin_opener_properties_ =
-      PartitionedPopinOpenerProperties(
-          opener->GetMainFrame()->GetLastCommittedOrigin(),
-          opener->ComputeSiteForCookies(),
-          opener->GetStorageKey().ancestor_chain_bit());
-  opened_partitioned_popin_ = new_window->GetWeakPtr();
 }
 
 }  // namespace content

@@ -64,7 +64,6 @@
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom.h"
 #include "third_party/blink/public/mojom/page/prerender_page_param.mojom.h"
 #include "third_party/blink/public/mojom/page/widget.mojom.h"
-#include "third_party/blink/public/mojom/partitioned_popins/partitioned_popin_params.mojom.h"
 #include "third_party/blink/public/mojom/widget/platform_widget.mojom.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
@@ -673,7 +672,6 @@ class HeaderAndFooterContext {
         /*page_base_background_color=*/std::nullopt,
         /*browsing_context_group_token=*/base::UnguessableToken::Create(),
         /*color_provider_colors=*/nullptr,
-        /*partitioned_popin_params=*/nullptr,
         /*history_index=*/-1,
         /*history_length=*/0);
     view->GetSettings()->SetJavaScriptEnabled(true);
@@ -967,7 +965,6 @@ void PrepareFrameAndViewForPrint::CopySelection(
       /*page_base_background_color=*/std::nullopt,
       /*browsing_context_group_token=*/base::UnguessableToken::Create(),
       /*color_provider_colors=*/nullptr,
-      /*partitioned_popin_params=*/nullptr,
       /*history_index=*/-1,
       /*history_length=*/0);
   blink::WebView::ApplyWebPreferences(prefs, web_view);
