@@ -48,6 +48,12 @@ class WebRequestRulesRegistry;
 class WebRequestEventDetails;
 struct WebRequestInfo;
 
+inline constexpr int kWebRequestFilterValidSchemes =
+    URLPattern::SCHEME_HTTP | URLPattern::SCHEME_HTTPS |
+    URLPattern::SCHEME_FTP | URLPattern::SCHEME_FILE |
+    URLPattern::SCHEME_EXTENSION | URLPattern::SCHEME_WS |
+    URLPattern::SCHEME_WSS | URLPattern::SCHEME_UUID_IN_PACKAGE;
+
 class WebRequestEventRouter : public KeyedService {
  public:
   explicit WebRequestEventRouter(content::BrowserContext* browser_context);
@@ -95,6 +101,9 @@ class WebRequestEventRouter : public KeyedService {
     // an error message is provided, otherwise the error is internal (and
     // unexpected).
     bool InitFromValue(const base::Value::Dict& value, std::string* error);
+
+    // Serializes the filter to a dictionary value suitable for persistence.
+    base::Value::Dict ToValue() const;
 
     extensions::URLPatternSet urls;
     std::vector<WebRequestResourceType> types;

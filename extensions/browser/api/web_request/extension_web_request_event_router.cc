@@ -98,6 +98,11 @@ constexpr size_t kWebRequestEventPrefixLen =
 constexpr size_t kWebViewEventPrefixLen =
     std::char_traits<char>::length(kWebViewEventPrefix);
 
+constexpr char kRequestFilterUrlsKey[] = "urls";
+constexpr char kRequestFilterTypesKey[] = "types";
+constexpr char kRequestFilterTabIdKey[] = "tabId";
+constexpr char kRequestFilterWindowIdKey[] = "windowId";
+
 // List of all the webRequest events. Note: this doesn't include
 // "onActionIgnored" which is not related to a request's lifecycle and is
 // handled as a normal event (as opposed to a WebRequestEvent at the bindings
@@ -759,19 +764,16 @@ base::Value::Dict SummarizeResponseDelta(
 bool WebRequestEventRouter::RequestFilter::InitFromValue(
     const base::Value::Dict& value,
     std::string* error) {
-  if (!value.Find("urls")) {
+  if (!value.Find(kRequestFilterUrlsKey)) {
     return false;
   }
 
   for (const auto dict_item : value) {
-    if (dict_item.first == "urls" && dict_item.second.is_list()) {
+    if (dict_item.first == kRequestFilterUrlsKey &&
+        dict_item.second.is_list()) {
       for (const auto& item : dict_item.second.GetList()) {
         std::string url;
-        URLPattern pattern(URLPattern::SCHEME_HTTP | URLPattern::SCHEME_HTTPS |
-                           URLPattern::SCHEME_FTP | URLPattern::SCHEME_FILE |
-                           URLPattern::SCHEME_EXTENSION |
-                           URLPattern::SCHEME_WS | URLPattern::SCHEME_WSS |
-                           URLPattern::SCHEME_UUID_IN_PACKAGE);
+        URLPattern pattern(kWebRequestFilterValidSchemes);
         if (item.is_string()) {
           url = item.GetString();
         }
@@ -786,7 +788,8 @@ bool WebRequestEventRouter::RequestFilter::InitFromValue(
         }
         urls.AddPattern(pattern);
       }
-    } else if (dict_item.first == "types" && dict_item.second.is_list()) {
+    } else if (dict_item.first == kRequestFilterTypesKey &&
+               dict_item.second.is_list()) {
       for (const auto& type : dict_item.second.GetList()) {
         std::string type_str;
         if (type.is_string()) {
@@ -798,15 +801,44 @@ bool WebRequestEventRouter::RequestFilter::InitFromValue(
           return false;
         }
       }
-    } else if (dict_item.first == "tabId" && dict_item.second.is_int()) {
+    } else if (dict_item.first == kRequestFilterTabIdKey &&
+               dict_item.second.is_int()) {
       tab_id = dict_item.second.GetInt();
-    } else if (dict_item.first == "windowId" && dict_item.second.is_int()) {
+    } else if (dict_item.first == kRequestFilterWindowIdKey &&
+               dict_item.second.is_int()) {
       window_id = dict_item.second.GetInt();
     } else {
       return false;
     }
   }
   return true;
+}
+
+base::Value::Dict WebRequestEventRouter::RequestFilter::ToValue() const {
+  base::Value::Dict dict;
+
+  base::Value::List urls_list;
+  for (const auto& pattern : urls.patterns()) {
+    urls_list.Append(pattern.GetAsString());
+  }
+  dict.Set(kRequestFilterUrlsKey, std::move(urls_list));
+
+  if (!types.empty()) {
+    base::Value::List types_list;
+    for (WebRequestResourceType type : types) {
+      types_list.Append(WebRequestResourceTypeToString(type));
+    }
+    dict.Set(kRequestFilterTypesKey, std::move(types_list));
+  }
+
+  if (tab_id != extension_misc::kUnknownTabId) {
+    dict.Set(kRequestFilterTabIdKey, tab_id);
+  }
+  if (window_id != extension_misc::kUnknownWindowId) {
+    dict.Set(kRequestFilterWindowIdKey, window_id);
+  }
+
+  return dict;
 }
 
 WebRequestEventRouter::EventResponse::EventResponse(
