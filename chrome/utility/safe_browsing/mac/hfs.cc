@@ -432,6 +432,10 @@ bool HFSForkReadStream::Read(base::span<uint8_t> buf, size_t* bytes_read) {
         DLOG(ERROR) << "Failed to seek to block " << extent.startBlock;
         return false;
       }
+      if (extent_size.ValueOrDie() > current_extent_data_.max_size()) {
+        DLOG(ERROR) << "Extent size too large";
+        return false;
+      }
       current_extent_data_.resize(extent_size.ValueOrDie());
       if (!hfs_->stream()->ReadExact(current_extent_data_)) {
         DLOG(ERROR) << "Failed to read extent";
