@@ -15,7 +15,7 @@ LineFlexer::LineFlexer(base::span<FlexItem> line_items,
       gap_between_items_(gap_between_items),
       mode_(sum_hypothetical_main_size < main_axis_inner_size ? kGrow
                                                               : kShrink) {
-  LayoutUnit used_space;
+  free_space_ = main_axis_inner_size_;
   for (auto& item : line_items_) {
     // Set all items to their hypothetical size initially.
     item.flexed_content_size = item.hypothetical_content_size;
@@ -32,19 +32,18 @@ LineFlexer::LineFlexer(base::span<FlexItem> line_items,
         (mode_ == kShrink &&
          item.base_content_size < item.hypothetical_content_size)) {
       item.state = FlexerState::kFrozen;
-      used_space += item.FlexedMarginBoxSize() + gap_between_items_;
+      free_space_ -= item.FlexedMarginBoxSize() + gap_between_items_;
       continue;
     }
 
     total_flex_grow_ += item.flex_grow;
     total_flex_shrink_ += item.flex_shrink;
     total_weighted_flex_shrink_ += item.flex_shrink * item.base_content_size;
-    used_space += item.FlexBaseMarginBoxSize() + gap_between_items_;
+    free_space_ -= item.FlexBaseMarginBoxSize() + gap_between_items_;
   }
-  used_space -= gap_between_items_;
+  free_space_ += gap_between_items_;
 
-  initial_free_space_ = main_axis_inner_size_ - used_space;
-  free_space_ = initial_free_space_;
+  initial_free_space_ = free_space_;
 }
 
 void LineFlexer::FreezeViolations(FlexerState should_freeze) {
@@ -57,7 +56,7 @@ void LineFlexer::FreezeViolations(FlexerState should_freeze) {
   total_flex_shrink_ = 0.0;
   total_weighted_flex_shrink_ = 0.0;
 
-  LayoutUnit used_space;
+  free_space_ = main_axis_inner_size_;
   for (auto& item : line_items_) {
     // Determine if we should freeze this item.
     item.state =
@@ -67,7 +66,7 @@ void LineFlexer::FreezeViolations(FlexerState should_freeze) {
 
     // If this item is frozen don't add to the flex-factor sums.
     if (item.state == FlexerState::kFrozen) {
-      used_space += item.FlexedMarginBoxSize() + gap_between_items_;
+      free_space_ -= item.FlexedMarginBoxSize() + gap_between_items_;
       continue;
     }
 
@@ -77,11 +76,9 @@ void LineFlexer::FreezeViolations(FlexerState should_freeze) {
     total_flex_grow_ += item.flex_grow;
     total_flex_shrink_ += item.flex_shrink;
     total_weighted_flex_shrink_ += item.flex_shrink * item.base_content_size;
-    used_space += item.FlexBaseMarginBoxSize() + gap_between_items_;
+    free_space_ -= item.FlexBaseMarginBoxSize() + gap_between_items_;
   }
-  used_space -= gap_between_items_;
-
-  free_space_ = main_axis_inner_size_ - used_space;
+  free_space_ += gap_between_items_;
 }
 
 bool LineFlexer::ResolveFlexibleLengths() {
