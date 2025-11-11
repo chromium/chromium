@@ -141,8 +141,13 @@ size_t HidChooserController::NumOptions() const {
 std::u16string HidChooserController::GetOption(size_t index) const {
   DCHECK_LT(index, items_.size());
   DCHECK(base::Contains(device_map_, items_[index]));
-  const auto& device = *device_map_.find(items_[index])->second.front();
-  return HidChooserContext::DisplayNameFromDeviceInfo(device);
+  const auto& devices = device_map_.find(items_[index])->second;
+  auto device = std::ranges::find_if(
+      devices, [](const auto& d) { return !d->product_name.empty(); });
+  if (device == devices.end()) {
+    device = devices.begin();
+  }
+  return HidChooserContext::DisplayNameFromDeviceInfo(**device);
 }
 
 bool HidChooserController::IsPaired(size_t index) const {

@@ -1257,6 +1257,36 @@ TEST_P(HidChooserControllerFidoTest, FidoDeviceShownWithPrivilegedOrigin) {
   EXPECT_EQ(1u, collection->output_reports.size());
 }
 
+TEST_F(HidChooserControllerTest, FlakyDeviceName) {
+  base::RunLoop device_added_loop1;
+  base::RunLoop device_added_loop2;
+  base::RunLoop device_added_loop3;
+  EXPECT_CALL(device_observer(), OnDeviceAdded(_))
+      .WillOnce(RunClosure(device_added_loop1.QuitClosure()))
+      .WillOnce(RunClosure(device_added_loop2.QuitClosure()))
+      .WillOnce(RunClosure(device_added_loop3.QuitClosure()));
+
+  base::RunLoop options_initialized_loop;
+  EXPECT_CALL(view(), OnOptionsInitialized())
+      .WillOnce(RunClosure(options_initialized_loop.QuitClosure()));
+
+  // Connect a device with an empty product name string.
+  CreateAndAddFakeHidDevice(kTestPhysicalDeviceIds[0], 1, 1, "", "001");
+  device_added_loop1.Run();
+
+  CreateAndAddFakeHidDevice(kTestPhysicalDeviceIds[0], 1, 1, "a", "001");
+  device_added_loop2.Run();
+
+  CreateAndAddFakeHidDevice(kTestPhysicalDeviceIds[0], 1, 1, "", "001");
+  device_added_loop3.Run();
+
+  auto hid_chooser_controller = CreateHidChooserController({});
+  options_initialized_loop.Run();
+
+  EXPECT_EQ(1u, hid_chooser_controller->NumOptions());
+  EXPECT_EQ(u"a", hid_chooser_controller->GetOption(0));
+}
+
 INSTANTIATE_TEST_SUITE_P(HidChooserControllerFidoTests,
                          HidChooserControllerFidoTest,
                          testing::Values(false, true));
