@@ -111,6 +111,8 @@ class GlobalAcceleratorListenerLinux : public GlobalAcceleratorListener {
 
   void CloseSession();
 
+  bool HasGlobalShortcuts() const;
+
   // DBus components.
   scoped_refptr<dbus::Bus> bus_;
   raw_ptr<dbus::ObjectProxy> global_shortcuts_proxy_ = nullptr;

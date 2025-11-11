@@ -4,6 +4,7 @@
 
 #include "ui/base/accelerators/global_accelerator_listener/global_accelerator_listener_linux.h"
 
+#include <algorithm>
 #include <set>
 #include <string>
 #include <utility>
@@ -94,7 +95,7 @@ void GlobalAcceleratorListenerLinux::OnServiceStarted(
       base::BindOnce(&GlobalAcceleratorListenerLinux::OnSignalConnected,
                      weak_ptr_factory_.GetWeakPtr()));
 
-  if (!bound_commands_.empty()) {
+  if (HasGlobalShortcuts()) {
     CreateSession();
   }
 }
@@ -148,15 +149,11 @@ void GlobalAcceleratorListenerLinux::OnCommandsChanged(
       GetShortcutPrefix(accelerator_group_id, profile_id);
   for (const auto& [_, command] : commands) {
     std::string id = prefix + "-" + command.command_name();
-    if (bound_commands_.find(id) == bound_commands_.end()) {
-      bound_commands_[id] = {command, accelerator_group_id, observer};
-    }
+    bound_commands_[id] = {command, accelerator_group_id, observer};
   }
 
   // Only proceed if there is at least one global command.
-  if (std::none_of(
-          bound_commands_.begin(), bound_commands_.end(),
-          [](const auto& pair) { return pair.second.command.global(); })) {
+  if (!HasGlobalShortcuts()) {
     return;
   }
 
@@ -333,6 +330,12 @@ void GlobalAcceleratorListenerLinux::OnSignalConnected(
     LOG(ERROR) << "Failed to connect to signal: " << interface_name << "."
                << signal_name;
   }
+}
+
+bool GlobalAcceleratorListenerLinux::HasGlobalShortcuts() const {
+  return std::ranges::any_of(bound_commands_, [](const auto& pair) {
+    return pair.second.command.global();
+  });
 }
 
 }  // namespace ui
