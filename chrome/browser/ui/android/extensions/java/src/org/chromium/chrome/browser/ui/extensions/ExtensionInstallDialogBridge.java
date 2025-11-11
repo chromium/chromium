@@ -12,6 +12,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.LinearLayout;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -26,52 +27,17 @@ import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.widget.TextViewWithLeading;
 
 /** A JNI bridge to interact with the extension install dialog. */
 @JNINamespace("extensions")
 @NullMarked
-public class ExtensionInstallDialogBridge {
+public class ExtensionInstallDialogBridge implements ModalDialogProperties.Controller {
     private final long mNativeExtensionInstallDialogView;
     private final ModalDialogManager mModalDialogManager;
     private final Context mContext;
+    private final PropertyModel.Builder mPropertyModelBuilder;
     private @Nullable PropertyModel mDialogModel;
-
-    private static final String TAG = "ExtensionInstallDialogBridge";
-
-    private final ModalDialogProperties.Controller mModalDialogController =
-            new ModalDialogProperties.Controller() {
-                @Override
-                public void onClick(PropertyModel model, int buttonType) {
-                    ModalDialogManager modalDialogManager = assumeNonNull(mModalDialogManager);
-                    if (buttonType == ModalDialogProperties.ButtonType.POSITIVE) {
-                        modalDialogManager.dismissDialog(
-                                model, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
-                    } else {
-                        modalDialogManager.dismissDialog(
-                                model, DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
-                    }
-                }
-
-                @Override
-                public void onDismiss(PropertyModel model, int dismissalCause) {
-                    switch (dismissalCause) {
-                        case DialogDismissalCause.POSITIVE_BUTTON_CLICKED:
-                            ExtensionInstallDialogBridgeJni.get()
-                                    .onDialogAccepted(mNativeExtensionInstallDialogView);
-                            break;
-                        case DialogDismissalCause.NEGATIVE_BUTTON_CLICKED:
-                            ExtensionInstallDialogBridgeJni.get()
-                                    .onDialogCanceled(mNativeExtensionInstallDialogView);
-                            break;
-                        default:
-                            ExtensionInstallDialogBridgeJni.get()
-                                    .onDialogDismissed(mNativeExtensionInstallDialogView);
-                            break;
-                    }
-                    ExtensionInstallDialogBridgeJni.get()
-                            .destroy(mNativeExtensionInstallDialogView);
-                }
-            };
 
     @VisibleForTesting
     public ExtensionInstallDialogBridge(
@@ -81,6 +47,9 @@ public class ExtensionInstallDialogBridge {
         this.mNativeExtensionInstallDialogView = nativeExtensionInstallDialogView;
         this.mModalDialogManager = modalDialogManager;
         this.mContext = context;
+        this.mPropertyModelBuilder =
+                new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
+                        .with(ModalDialogProperties.CONTROLLER, this);
     }
 
     /**
@@ -102,28 +71,94 @@ public class ExtensionInstallDialogBridge {
     }
 
     /**
-     * Shows the extension install dialog.
+     * Adds title and buttons to the dialog's property model.
      *
+     * @param title Text for the title.
+     * @param iconBitmap Icon for the title.
      * @param acceptButtonLabel Label for the positive button which acts as the accept button.
      * @param cancelButtonLabel Label for the negative button which acts as the cancel button.
      */
     @CalledByNative
-    public void showDialog(
+    public void withTitleAndButtons(
             String title, Bitmap iconBitmap, String acceptButtonLabel, String cancelButtonLabel) {
-        View extensionInstallDialogContentView =
-                LayoutInflater.from(mContext).inflate(R.layout.extension_install_dialog, null);
         Drawable iconDrawable = new BitmapDrawable(mContext.getResources(), iconBitmap);
+        mPropertyModelBuilder
+                .with(ModalDialogProperties.TITLE, title)
+                .with(ModalDialogProperties.TITLE_ICON, iconDrawable)
+                .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, acceptButtonLabel)
+                .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, cancelButtonLabel);
+    }
 
-        PropertyModel.Builder builder =
-                new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
-                        .with(ModalDialogProperties.CONTROLLER, mModalDialogController)
-                        .with(ModalDialogProperties.TITLE, title)
-                        .with(ModalDialogProperties.TITLE_ICON, iconDrawable)
-                        .with(ModalDialogProperties.CUSTOM_VIEW, extensionInstallDialogContentView)
-                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, acceptButtonLabel)
-                        .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, cancelButtonLabel);
-        mDialogModel = builder.build();
+    /**
+     * Adds the permissions view container to the dialog's property model.
+     *
+     * @param heading Text for the permissions heading.
+     * @param permissionsText List of permissions information.
+     * @param permissionsDetails List of permissions details, which may be empty.
+     */
+    @CalledByNative
+    public void withPermissions(
+            String heading, String[] permissionsText, String[] permissionsDetails) {
+        View contentView =
+                LayoutInflater.from(mContext).inflate(R.layout.extension_install_dialog, null);
+        LinearLayout permissionsContainer = contentView.findViewById(R.id.permissions_container);
+
+        TextViewWithLeading headingView =
+                permissionsContainer.findViewById(R.id.permissions_heading);
+        headingView.setText(heading);
+
+        LayoutInflater inflater = LayoutInflater.from(mContext);
+        for (String permissionText : permissionsText) {
+            TextViewWithLeading permissionTextView =
+                    (TextViewWithLeading)
+                            inflater.inflate(
+                                    R.layout.modal_dialog_paragraph_view,
+                                    permissionsContainer,
+                                    false);
+            permissionTextView.setText(permissionText);
+            permissionsContainer.addView(permissionTextView);
+            // TODO(crbug.com/424010795): Add permissionsDetails as a collapsible view, if existent.
+        }
+
+        mPropertyModelBuilder
+                .with(ModalDialogProperties.CUSTOM_VIEW, contentView)
+                .with(ModalDialogProperties.WRAP_CUSTOM_VIEW_IN_SCROLLABLE, true);
+    }
+
+    /** Shows the extension install dialog. */
+    @CalledByNative
+    public void showDialog() {
+        mDialogModel = mPropertyModelBuilder.build();
         mModalDialogManager.showDialog(mDialogModel, ModalDialogManager.ModalDialogType.TAB);
+    }
+
+    @Override
+    public void onClick(PropertyModel model, int buttonType) {
+        ModalDialogManager modalDialogManager = assumeNonNull(mModalDialogManager);
+        if (buttonType == ModalDialogProperties.ButtonType.POSITIVE) {
+            modalDialogManager.dismissDialog(model, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
+        } else {
+            modalDialogManager.dismissDialog(model, DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
+        }
+    }
+
+    @Override
+    public void onDismiss(PropertyModel model, int dismissalCause) {
+        switch (dismissalCause) {
+            case DialogDismissalCause.POSITIVE_BUTTON_CLICKED:
+                ExtensionInstallDialogBridgeJni.get()
+                        .onDialogAccepted(mNativeExtensionInstallDialogView);
+                break;
+            case DialogDismissalCause.NEGATIVE_BUTTON_CLICKED:
+                ExtensionInstallDialogBridgeJni.get()
+                        .onDialogCanceled(mNativeExtensionInstallDialogView);
+                break;
+            default:
+                ExtensionInstallDialogBridgeJni.get()
+                        .onDialogDismissed(mNativeExtensionInstallDialogView);
+                break;
+        }
+        ExtensionInstallDialogBridgeJni.get().destroy(mNativeExtensionInstallDialogView);
     }
 
     @NativeMethods

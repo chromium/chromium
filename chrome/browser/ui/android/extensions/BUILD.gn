@@ -34,6 +34,7 @@ android_library("java") {
     deps += [
       ":java_resources",
       "//chrome/browser/flags:java",
+      "//components/browser_ui/modaldialog/android:java",
       "//components/browser_ui/settings/android:java",
       "//components/browser_ui/site_settings/android:java",
       "//content/public/android:content_full_java",
@@ -160,6 +161,7 @@ android_resources("java_resources") {
     "//chrome/app:java_strings_grd",
     "//chrome/browser/ui/android/strings:ui_strings_grd",
     "//chrome/browser/ui/android/theme:java_resources",
+    "//components/browser_ui/modaldialog/android:java_resources",
     "//components/browser_ui/styles/android:java_resources",
   ]
 }

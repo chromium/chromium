@@ -32,8 +32,13 @@ class ExtensionInstallDialogViewAndroid {
   void Destroy(JNIEnv* env);
 
  private:
+  // Builds java PropertyModel from `prompt_`.
+  void BuildPropertyModel();
+
   std::unique_ptr<ExtensionInstallPrompt::Prompt> prompt_;
   ExtensionInstallPrompt::DoneCallback done_callback_;
+
+  base::android::ScopedJavaGlobalRef<jobject> java_object_;
 };
 
 }  // namespace extensions
