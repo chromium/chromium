@@ -248,7 +248,7 @@ void ActorTask::SetState(State new_state) {
 
 void ActorTask::Act(std::vector<std::unique_ptr<ToolRequest>>&& actions,
                     ActCallback callback) {
-  if (state_ == State::kPausedByActor) {
+  if (IsUnderUserControl()) {
     std::move(callback).Run(MakeResult(mojom::ActionResultCode::kTaskPaused),
                             std::nullopt, {});
     return;
