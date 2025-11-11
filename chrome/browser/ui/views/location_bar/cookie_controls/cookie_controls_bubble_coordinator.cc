@@ -74,18 +74,10 @@ void CookieControlsBubbleCoordinator::ShowBubble(
 
   views::Widget* const widget =
       views::BubbleDialogDelegateView::CreateBubble(std::move(bubble_view));
-  view_controller_->SetIsReloadingState(false);
   controller->Update(web_contents);
   widget->Show();
 
   action_item_->SetIsShowingBubble(true);
-}
-
-bool CookieControlsBubbleCoordinator::IsReloadingState() const {
-  if (!view_controller_) {
-    return false;
-  }
-  return view_controller_->IsReloadingState();
 }
 
 CookieControlsBubbleViewImpl* CookieControlsBubbleCoordinator::GetBubble()

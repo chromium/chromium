@@ -60,8 +60,6 @@ const char kUMABubbleSendFeedback[] = "CookieControls.Bubble.SendFeedback";
 const char kUMABubbleReloadingShown[] = "CookieControls.Bubble.ReloadingShown";
 const char kUMABubbleReloadingTimeout[] =
     "CookieControls.Bubble.ReloadingTimeout";
-const char kUMATrackingProtectionsBubbleReloadingTimeout[] =
-    "TrackingProtections.Bubble.ReloadingTimeout";
 }  // namespace
 
 class CookieControlsInteractiveTestBase : public InteractiveFeaturePromoTest {
@@ -548,9 +546,6 @@ IN_PROC_BROWSER_TEST_F(CookieControlsUiTest, ReloadViewTimeout) {
   EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleAllowThirdPartyCookies), 1);
   EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleBlockThirdPartyCookies), 0);
   EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleReloadingTimeout), 1);
-  EXPECT_EQ(user_actions_.GetActionCount(
-                kUMATrackingProtectionsBubbleReloadingTimeout),
-            0);
   EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleReloadingShown), 1);
 }
 

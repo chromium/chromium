@@ -33,11 +33,6 @@ namespace privacy_sandbox {
 
 class TrackingProtectionSettingsObserver;
 
-inline bool IsTrackingProtectionsUi(CookieControlsState controls_state) {
-  return controls_state == CookieControlsState::kActiveTp ||
-         controls_state == CookieControlsState::kPausedTp;
-}
-
 // Attempts to set prefs in order to roll back Mode B.
 void MaybeSetRollbackPrefsModeB(syncer::SyncService* sync_service,
                                 PrefService* prefs);

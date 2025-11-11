@@ -142,8 +142,7 @@ bool CookieControlsBubbleViewImpl::OnCloseRequested(
 
   // Ignore focus loss while the reloading view is visible. The reloading view
   // will automatically close when the page has loaded.
-  if (GetReloadingView()->GetVisible() ||
-      GetContentView()->GetTrackingProtectionsButton()->GetSpinnerVisible()) {
+  if (GetReloadingView()->GetVisible()) {
     // Always close the bubble if a JS dialog is being shown.
     if (auto* app_modal_queue =
             javascript_dialogs::AppModalDialogQueue::GetInstance();

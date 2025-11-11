@@ -29,21 +29,6 @@
 
 namespace {
 
-std::u16string TpPausedLabel() {
-  return l10n_util::GetStringUTF16(
-      IDS_TRACKING_PROTECTIONS_PAGE_ACTION_PROTECTIONS_PAUSED_LABEL);
-}
-
-std::u16string TpResumedLabel() {
-  return l10n_util::GetStringUTF16(
-      IDS_TRACKING_PROTECTIONS_PAGE_ACTION_PROTECTIONS_RESUMED_LABEL);
-}
-
-std::u16string TpEnabledLabel() {
-  return l10n_util::GetStringUTF16(
-      IDS_TRACKING_PROTECTIONS_PAGE_ACTION_PROTECTIONS_ENABLED_LABEL);
-}
-
 std::u16string AllowedLabel() {
   return l10n_util::GetStringUTF16(
       IDS_COOKIE_CONTROLS_PAGE_ACTION_COOKIES_ALLOWED_LABEL);
@@ -63,10 +48,6 @@ const char kUMABubbleOpenedBlocked[] =
     "CookieControls.Bubble.CookiesBlocked.Opened";
 const char kUMABubbleOpenedAllowed[] =
     "CookieControls.Bubble.CookiesAllowed.Opened";
-const char kUMABubbleOpenedProtectionsPaused[] =
-    "TrackingProtections.Bubble.ProtectionsPaused.Opened";
-const char kUMABubbleOpenedProtectionsActive[] =
-    "TrackingProtections.Bubble.ProtectionsActive.Opened";
 
 // A fake CookieControlsBubbleCoordinator that has a no-op ShowBubble().
 class FakeCookieControlsBubbleCoordinator
@@ -219,53 +200,6 @@ TEST_P(CookieControlsIconViewUnitTest,
   EXPECT_TRUE(LabelShown());
   EXPECT_EQ(TooltipText(), BlockedLabel());
   EXPECT_EQ(LabelText(), BlockedLabel());
-}
-
-TEST_P(CookieControlsIconViewUnitTest,
-       IconAnimatesOnPageReloadWithChangedTpSettings) {
-  // Default state when tracking protections are active.
-  view_->OnCookieControlsIconStatusChanged(
-      /*icon_visible=*/true, CookieControlsState::kActiveTp, GetParam(),
-      /*should_highlight=*/false);
-  FlushEvents();
-  ExecuteIcon();
-  EXPECT_TRUE(Visible());
-  EXPECT_FALSE(LabelShown());
-  EXPECT_EQ(TooltipText(), TpEnabledLabel());
-  EXPECT_EQ(LabelText(), TpEnabledLabel());
-  EXPECT_EQ(user_actions_.GetActionCount(kUMAIconShown), 1);
-  EXPECT_EQ(user_actions_.GetActionCount(kUMAIconOpened), 1);
-  EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleOpenedProtectionsActive), 1);
-
-  // When tracking protections are paused, the label is shown and updated.
-  view_->OnCookieControlsIconStatusChanged(
-      /*icon_visible=*/true, CookieControlsState::kPausedTp, GetParam(),
-      /*should_highlight=*/false);
-  FlushEvents();
-  ExecuteIcon();
-  view_->OnFinishedPageReloadWithChangedSettings();
-  EXPECT_TRUE(Visible());
-  EXPECT_TRUE(LabelShown());
-  EXPECT_EQ(TooltipText(), TpPausedLabel());
-  EXPECT_EQ(LabelText(), TpPausedLabel());
-  EXPECT_EQ(user_actions_.GetActionCount(kUMAIconShown), 2);
-  EXPECT_EQ(user_actions_.GetActionCount(kUMAIconOpened), 2);
-  EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleOpenedProtectionsPaused), 1);
-
-  // When tracking protections are resumed, the label is shown and updated.
-  view_->OnCookieControlsIconStatusChanged(
-      /*icon_visible=*/true, CookieControlsState::kActiveTp, GetParam(),
-      /*should_highlight=*/false);
-  FlushEvents();
-  ExecuteIcon();
-  view_->OnFinishedPageReloadWithChangedSettings();
-  EXPECT_TRUE(Visible());
-  EXPECT_TRUE(LabelShown());
-  EXPECT_EQ(TooltipText(), TpResumedLabel());
-  EXPECT_EQ(LabelText(), TpResumedLabel());
-  EXPECT_EQ(user_actions_.GetActionCount(kUMAIconShown), 3);
-  EXPECT_EQ(user_actions_.GetActionCount(kUMAIconOpened), 3);
-  EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleOpenedProtectionsActive), 2);
 }
 
 TEST_P(CookieControlsIconViewUnitTest,

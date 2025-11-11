@@ -48,28 +48,12 @@ void RecordOpenedAction(bool icon_visible, CookieControlsState controls_state) {
   if (!icon_visible) {
     base::RecordAction(
         base::UserMetricsAction("CookieControls.Bubble.UnknownState.Opened"));
-  }
-
-  switch (controls_state) {
-    case CookieControlsState::kBlocked3pc:
-      base::RecordAction(base::UserMetricsAction(
-          "CookieControls.Bubble.CookiesBlocked.Opened"));
-      break;
-    case CookieControlsState::kAllowed3pc:
-      base::RecordAction(base::UserMetricsAction(
-          "CookieControls.Bubble.CookiesAllowed.Opened"));
-      break;
-    case CookieControlsState::kActiveTp:
-      base::RecordAction(base::UserMetricsAction(
-          "TrackingProtections.Bubble.ProtectionsActive.Opened"));
-      break;
-    case CookieControlsState::kPausedTp:
-      base::RecordAction(base::UserMetricsAction(
-          "TrackingProtections.Bubble.ProtectionsPaused.Opened"));
-      break;
-    case CookieControlsState::kHidden:
-      // Handled as part of `icon_visible` check above.
-      NOTREACHED();
+  } else if (controls_state == CookieControlsState::kBlocked3pc) {
+    base::RecordAction(
+        base::UserMetricsAction("CookieControls.Bubble.CookiesBlocked.Opened"));
+  } else {
+    base::RecordAction(
+        base::UserMetricsAction("CookieControls.Bubble.CookiesAllowed.Opened"));
   }
 }
 }  // namespace
@@ -182,24 +166,13 @@ bool CookieControlsIconView::IsManagedIPHActive() const {
              feature_engagement::kIPHCookieControlsFeature);
 }
 
-int CookieControlsIconView::GetLabelForState(
-    bool user_changed_state = false) const {
-  switch (controls_state_) {
-    case CookieControlsState::kActiveTp:
-      // If the label is displayed then the user must have changed their TP
-      // setting, so preserve the "resumed" label.
-      return user_changed_state || ShouldShowLabel()
-                 ? IDS_TRACKING_PROTECTIONS_PAGE_ACTION_PROTECTIONS_RESUMED_LABEL
-                 : IDS_TRACKING_PROTECTIONS_PAGE_ACTION_PROTECTIONS_ENABLED_LABEL;
-    case CookieControlsState::kPausedTp:
-      return IDS_TRACKING_PROTECTIONS_PAGE_ACTION_PROTECTIONS_PAUSED_LABEL;
-    case CookieControlsState::kAllowed3pc:
-      return IDS_COOKIE_CONTROLS_PAGE_ACTION_COOKIES_ALLOWED_LABEL;
-    default:
-      return blocking_status_ == CookieBlocking3pcdStatus::kLimited
-                 ? IDS_COOKIE_CONTROLS_PAGE_ACTION_COOKIES_LIMITED_LABEL
-                 : IDS_COOKIE_CONTROLS_PAGE_ACTION_COOKIES_BLOCKED_LABEL;
+int CookieControlsIconView::GetLabelForState() const {
+  if (controls_state_ == CookieControlsState::kAllowed3pc) {
+    return IDS_COOKIE_CONTROLS_PAGE_ACTION_COOKIES_ALLOWED_LABEL;
   }
+  return blocking_status_ == CookieBlocking3pcdStatus::kLimited
+             ? IDS_COOKIE_CONTROLS_PAGE_ACTION_COOKIES_LIMITED_LABEL
+             : IDS_COOKIE_CONTROLS_PAGE_ACTION_COOKIES_BLOCKED_LABEL;
 }
 
 void CookieControlsIconView::SetLabelForState() {
@@ -223,11 +196,6 @@ void CookieControlsIconView::OnCookieControlsIconStatusChanged(
     CookieControlsState controls_state,
     CookieBlocking3pcdStatus blocking_status,
     bool should_highlight) {
-  // In the ACT reloading UI leave the icon fixed so it matches the bubble text.
-  if (bubble_coordinator_->IsReloadingState()) {
-    return;
-  }
-
   // Always respect a change to the visibility of the icon, as this may happen
   // regardless of the controls state (e.g. the omnibox having or losing focus).
   icon_visible_ = icon_visible;
@@ -302,7 +270,7 @@ void CookieControlsIconView::OnFinishedPageReloadWithChangedSettings() {
     GetViewAccessibility().SetDescription(u"");
     // Animate the icon to provide a visual confirmation to the user that their
     // protection status on the site has changed.
-    AnimateIn(GetLabelForState(/*user_changed_state=*/true));
+    AnimateIn(GetLabelForState());
     UpdateTooltipText();
   }
 }
@@ -361,8 +329,7 @@ views::BubbleDialogDelegate* CookieControlsIconView::GetBubble() const {
 }
 
 const gfx::VectorIcon& CookieControlsIconView::GetVectorIcon() const {
-  return controls_state_ == CookieControlsState::kBlocked3pc ||
-                 controls_state_ == CookieControlsState::kActiveTp
+  return controls_state_ == CookieControlsState::kBlocked3pc
              ? views::kEyeCrossedRefreshIcon
              : views::kEyeRefreshIcon;
 }

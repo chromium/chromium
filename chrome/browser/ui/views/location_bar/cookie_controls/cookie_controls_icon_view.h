@@ -76,9 +76,7 @@ class CookieControlsIconView : public PageActionIconView,
   void MaybeAnimateIcon();
   void UpdateIcon();
 
-  // Returns label to use for the icon. If `controls_state_` has changed due to
-  // user interaction, `user_changed_state` will be true.
-  int GetLabelForState(bool user_changed_state) const;
+  int GetLabelForState() const;
   void SetLabelForState();
 
   bool icon_visible_ = false;

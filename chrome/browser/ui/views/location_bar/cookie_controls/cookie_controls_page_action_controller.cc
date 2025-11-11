@@ -38,28 +38,12 @@ void RecordOpenedAction(bool icon_visible, CookieControlsState controls_state) {
   if (!icon_visible) {
     base::RecordAction(
         base::UserMetricsAction("CookieControls.Bubble.UnknownState.Opened"));
-  }
-
-  switch (controls_state) {
-    case CookieControlsState::kBlocked3pc:
-      base::RecordAction(base::UserMetricsAction(
-          "CookieControls.Bubble.CookiesBlocked.Opened"));
-      break;
-    case CookieControlsState::kAllowed3pc:
-      base::RecordAction(base::UserMetricsAction(
-          "CookieControls.Bubble.CookiesAllowed.Opened"));
-      break;
-    case CookieControlsState::kActiveTp:
-      base::RecordAction(base::UserMetricsAction(
-          "TrackingProtections.Bubble.ProtectionsActive.Opened"));
-      break;
-    case CookieControlsState::kPausedTp:
-      base::RecordAction(base::UserMetricsAction(
-          "TrackingProtections.Bubble.ProtectionsPaused.Opened"));
-      break;
-    case CookieControlsState::kHidden:
-      // Handled as part of `icon_visible` check above.
-      DUMP_WILL_BE_NOTREACHED();
+  } else if (controls_state == CookieControlsState::kBlocked3pc) {
+    base::RecordAction(
+        base::UserMetricsAction("CookieControls.Bubble.CookiesBlocked.Opened"));
+  } else {
+    base::RecordAction(
+        base::UserMetricsAction("CookieControls.Bubble.CookiesAllowed.Opened"));
   }
 }
 
@@ -71,10 +55,6 @@ class BubbleDelegateImpl
   BubbleDelegateImpl(const BubbleDelegateImpl&) = delete;
   BubbleDelegateImpl& operator=(const BubbleDelegateImpl&) = delete;
   ~BubbleDelegateImpl() override = default;
-
-  bool IsReloading() override {
-    return GetBubbleCoordinator().IsReloadingState();
-  }
 
   bool HasBubble() override { return GetBubbleCoordinator().GetBubble(); }
 
@@ -106,27 +86,17 @@ class BubbleDelegateImpl
 };
 
 int GetLabelForStatus(CookieControlsState controls_state,
-                      CookieBlocking3pcdStatus blocking_status,
-                      bool from_page_reload) {
-  switch (controls_state) {
-    case CookieControlsState::kActiveTp:
-      return from_page_reload
-                 ? IDS_TRACKING_PROTECTIONS_PAGE_ACTION_PROTECTIONS_RESUMED_LABEL
-                 : IDS_TRACKING_PROTECTIONS_PAGE_ACTION_PROTECTIONS_ENABLED_LABEL;
-    case CookieControlsState::kPausedTp:
-      return IDS_TRACKING_PROTECTIONS_PAGE_ACTION_PROTECTIONS_PAUSED_LABEL;
-    case CookieControlsState::kAllowed3pc:
-      return IDS_COOKIE_CONTROLS_PAGE_ACTION_COOKIES_ALLOWED_LABEL;
-    default:
-      return blocking_status == CookieBlocking3pcdStatus::kLimited
-                 ? IDS_COOKIE_CONTROLS_PAGE_ACTION_COOKIES_LIMITED_LABEL
-                 : IDS_COOKIE_CONTROLS_PAGE_ACTION_COOKIES_BLOCKED_LABEL;
+                      CookieBlocking3pcdStatus blocking_status) {
+  if (controls_state == CookieControlsState::kAllowed3pc) {
+    return IDS_COOKIE_CONTROLS_PAGE_ACTION_COOKIES_ALLOWED_LABEL;
   }
+  return blocking_status == CookieBlocking3pcdStatus::kLimited
+             ? IDS_COOKIE_CONTROLS_PAGE_ACTION_COOKIES_LIMITED_LABEL
+             : IDS_COOKIE_CONTROLS_PAGE_ACTION_COOKIES_BLOCKED_LABEL;
 }
 
 const gfx::VectorIcon& GetVectorIcon(CookieControlsState controls_state) {
-  return controls_state == CookieControlsState::kBlocked3pc ||
-                 controls_state == CookieControlsState::kActiveTp
+  return controls_state == CookieControlsState::kBlocked3pc
              ? views::kEyeCrossedRefreshIcon
              : views::kEyeRefreshIcon;
 }
@@ -227,10 +197,6 @@ void CookieControlsPageActionController::OnCookieControlsIconStatusChanged(
     CookieControlsState controls_state,
     CookieBlocking3pcdStatus blocking_status,
     bool should_highlight) {
-  if (bubble_delegate_->IsReloading()) {
-    return;
-  }
-
   const bool controls_state_changed =
       controls_state != icon_status_.controls_state;
   const bool should_update_icon =
@@ -253,7 +219,7 @@ void CookieControlsPageActionController::OnCookieControlsIconStatusChanged(
       kActionShowCookieControls, ui::ImageModel::FromVectorIcon(GetVectorIcon(
                                      icon_status_.controls_state)));
 
-  const std::u16string label = GetLabelForState(/*from_page_reload=*/false);
+  const std::u16string label = GetLabelForState();
   page_action_controller_->OverrideTooltip(kActionShowCookieControls, label);
   if (controls_state_changed) {
     page_action_controller_->OverrideText(kActionShowCookieControls, label);
@@ -285,7 +251,7 @@ void CookieControlsPageActionController::OnCookieControlsIconStatusChanged(
 void CookieControlsPageActionController::
     OnFinishedPageReloadWithChangedSettings() {
   if (ShouldShowIcon()) {
-    const std::u16string label = GetLabelForState(/*from_page_reload=*/true);
+    const std::u16string label = GetLabelForState();
     page_action_controller_->OverrideText(kActionShowCookieControls, label);
     page_action_controller_->OverrideTooltip(kActionShowCookieControls, label);
     // Animate the label to provide a visual confirmation to the user that
@@ -315,11 +281,9 @@ void CookieControlsPageActionController::UpdateIconVisibility() {
   page_action_controller_->Show(kActionShowCookieControls);
 }
 
-std::u16string CookieControlsPageActionController::GetLabelForState(
-    bool from_page_reload) const {
-  return l10n_util::GetStringUTF16(
-      GetLabelForStatus(icon_status_.controls_state,
-                        icon_status_.blocking_status, from_page_reload));
+std::u16string CookieControlsPageActionController::GetLabelForState() const {
+  return l10n_util::GetStringUTF16(GetLabelForStatus(
+      icon_status_.controls_state, icon_status_.blocking_status));
 }
 
 bool CookieControlsPageActionController::IsManagedIPHActive() const {

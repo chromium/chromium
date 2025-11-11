@@ -43,7 +43,6 @@ class CookieControlsPageActionController
   class BubbleDelegate {
    public:
     virtual ~BubbleDelegate() = default;
-    virtual bool IsReloading() = 0;
     virtual bool HasBubble() = 0;
     virtual void ShowBubble(
         ToolbarButtonProvider* toolbar_button_provider,
@@ -99,7 +98,7 @@ class CookieControlsPageActionController
   // Updates the icon's visibility.
   void UpdateIconVisibility();
 
-  std::u16string GetLabelForState(bool from_page_reload) const;
+  std::u16string GetLabelForState() const;
   bool ShouldShowIcon() const;
   bool IsManagedIPHActive() const;
   void OnShowPromoResult(user_education::FeaturePromoResult result);

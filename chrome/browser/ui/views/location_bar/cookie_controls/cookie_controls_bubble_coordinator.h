@@ -51,8 +51,6 @@ class CookieControlsBubbleCoordinator : public views::ViewObserver {
   base::CallbackListSubscription RegisterBubbleClosingCallback(
       base::RepeatingClosure callback);
 
-  bool IsReloadingState() const;
-
   CookieControlsBubbleViewController* GetViewControllerForTesting();
   void SetDisplayNameForTesting(const std::u16string& name);
 

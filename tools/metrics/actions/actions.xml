@@ -49529,12 +49529,14 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="TrackingProtections.Bubble.PausedProtections">
+  <obsolete>Deprecated 11/2025 because the project was discontinued.</obsolete>
   <owner>michelleabreo@google.com</owner>
   <owner>koilos@google.com</owner>
   <description>Protections are paused via user bypass.</description>
 </action>
 
 <action name="TrackingProtections.Bubble.ProtectionsActive.Opened">
+  <obsolete>Deprecated 11/2025 because the project was discontinued.</obsolete>
   <owner>michelleabreo@google.com</owner>
   <owner>koilos@google.com</owner>
   <description>
@@ -49543,6 +49545,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="TrackingProtections.Bubble.ProtectionsPaused.Opened">
+  <obsolete>Deprecated 11/2025 because the project was discontinued.</obsolete>
   <owner>michelleabreo@google.com</owner>
   <owner>koilos@google.com</owner>
   <description>
@@ -49551,12 +49554,14 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="TrackingProtections.Bubble.ReenabledProtections">
+  <obsolete>Deprecated 11/2025 because the project was discontinued.</obsolete>
   <owner>michelleabreo@google.com</owner>
   <owner>koilos@google.com</owner>
   <description>Protections are reenabled via user bypass.</description>
 </action>
 
 <action name="TrackingProtections.Bubble.ReloadingTimeout">
+  <obsolete>Deprecated 11/2025 because the project was discontinued.</obsolete>
   <owner>michelleabreo@google.com</owner>
   <owner>koilos@google.com</owner>
   <description>
@@ -49565,6 +49570,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="TrackingProtections.Bubble.SendFeedback">
+  <obsolete>Deprecated 11/2025 because the project was discontinued.</obsolete>
   <owner>michelleabreo@google.com</owner>
   <owner>koilos@google.com</owner>
   <description>

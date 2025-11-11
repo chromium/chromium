@@ -50,21 +50,6 @@ std::u16string SiteNotWorkingLabel() {
       IDS_TRACKING_PROTECTION_PAGE_ACTION_SITE_NOT_WORKING_LABEL);
 }
 
-std::u16string TrackingProtectionPausedLabel() {
-  return l10n_util::GetStringUTF16(
-      IDS_TRACKING_PROTECTIONS_PAGE_ACTION_PROTECTIONS_PAUSED_LABEL);
-}
-
-std::u16string TrackingProtectionResumedLabel() {
-  return l10n_util::GetStringUTF16(
-      IDS_TRACKING_PROTECTIONS_PAGE_ACTION_PROTECTIONS_RESUMED_LABEL);
-}
-
-std::u16string TrackingProtectionEnabledLabel() {
-  return l10n_util::GetStringUTF16(
-      IDS_TRACKING_PROTECTIONS_PAGE_ACTION_PROTECTIONS_ENABLED_LABEL);
-}
-
 class FakePageActionController : public page_actions::MockPageActionController {
  public:
   FakePageActionController() = default;
@@ -94,7 +79,6 @@ class FakeBubbleDelegate
   FakeBubbleDelegate() = default;
   ~FakeBubbleDelegate() override = default;
 
-  MOCK_METHOD(bool, IsReloading, (), (override));
   MOCK_METHOD(bool, HasBubble, (), (override));
   MOCK_METHOD(void,
               ShowBubble,
@@ -149,7 +133,6 @@ class CookieControlsPageActionControllerTestBase : public testing::Test {
               .Run(user_education::FeaturePromoResult::Success());
         });
 
-    ON_CALL(*fake_bubble_delegate_, IsReloading()).WillByDefault(Return(false));
     ON_CALL(*fake_bubble_delegate_, HasBubble()).WillByDefault(Return(false));
 
     cookie_controls_page_action_controller_ =
@@ -235,7 +218,6 @@ INSTANTIATE_TEST_SUITE_P(All,
 // the status says it should be hidden.
 TEST_P(CookieControlsPageActionControllerTest, IconVisibleWhenBubbleShowing) {
   EXPECT_CALL(*fake_bubble_delegate(), HasBubble()).WillOnce(Return(true));
-  // isReloading() is not checked if hasBubble() is true in this path.
 
   // The icon should be forced to show because the bubble is visible.
   EXPECT_CALL(page_action_controller(), Hide(kActionShowCookieControls))
@@ -264,22 +246,6 @@ TEST_P(CookieControlsPageActionControllerTest, ChipNotShownWhenBubbleShowing) {
       .Times(1);
 
   // Call with should_highlight=true, which should be ignored for the chip.
-  controller().OnCookieControlsIconStatusChanged(
-      /*icon_visible=*/true, CookieControlsState::kBlocked3pc, GetParam(),
-      /*should_highlight=*/true);
-}
-
-// Verifies that if the bubble is in the "reloading" state, status
-// updates are ignored.
-TEST_P(CookieControlsPageActionControllerTest,
-       StatusChangedIgnoredWhenReloading) {
-  EXPECT_CALL(*fake_bubble_delegate(), IsReloading()).WillOnce(Return(true));
-
-  // No calls to the page action controller are expected.
-  EXPECT_CALL(page_action_controller(), Show(_)).Times(0);
-  EXPECT_CALL(page_action_controller(), Hide(_)).Times(0);
-  EXPECT_CALL(page_action_controller(), ShowSuggestionChip(_, _)).Times(0);
-
   controller().OnCookieControlsIconStatusChanged(
       /*icon_visible=*/true, CookieControlsState::kBlocked3pc, GetParam(),
       /*should_highlight=*/true);
@@ -406,62 +372,6 @@ TEST_P(CookieControlsPageActionControllerTest,
   EXPECT_EQ(page_action_controller().last_text(), BlockedLabel());
 }
 
-TEST_P(CookieControlsPageActionControllerTest,
-       IconAnimatesOnPageReloadWithChangedTpSettings) {
-  // Default state when tracking protections are active.
-  EXPECT_CALL(page_action_controller(), Show(kActionShowCookieControls));
-  EXPECT_CALL(page_action_controller(), ShowSuggestionChip(_, _)).Times(0);
-  EXPECT_CALL(page_action_controller(),
-              OverrideTooltip(kActionShowCookieControls,
-                              TrackingProtectionEnabledLabel()));
-  controller().OnCookieControlsIconStatusChanged(
-      /*icon_visible=*/true, CookieControlsState::kActiveTp, GetParam(),
-      /*should_highlight=*/false);
-  // The icon is visible, but not animating, and has the correct tooltip.
-  testing::Mock::VerifyAndClearExpectations(&page_action_controller());
-
-  // When tracking protections are paused, the label is shown and updated.
-  controller().OnCookieControlsIconStatusChanged(
-      /*icon_visible=*/true, CookieControlsState::kPausedTp, GetParam(),
-      /*should_highlight=*/false);
-  EXPECT_CALL(page_action_controller(),
-              ShowSuggestionChip(kActionShowCookieControls, _));
-  EXPECT_CALL(page_action_controller(),
-              OverrideTooltip(kActionShowCookieControls,
-                              TrackingProtectionPausedLabel()));
-  controller().OnFinishedPageReloadWithChangedSettings();
-  EXPECT_EQ(page_action_controller().last_text(),
-            TrackingProtectionPausedLabel());
-  testing::Mock::VerifyAndClearExpectations(&page_action_controller());
-
-  // When tracking protections are resumed, the label is shown and updated.
-  controller().OnCookieControlsIconStatusChanged(
-      /*icon_visible=*/true, CookieControlsState::kActiveTp, GetParam(),
-      /*should_highlight=*/false);
-
-  EXPECT_CALL(page_action_controller(),
-              ShowSuggestionChip(kActionShowCookieControls, _));
-  EXPECT_CALL(page_action_controller(),
-              OverrideTooltip(kActionShowCookieControls,
-                              TrackingProtectionResumedLabel()));
-  controller().OnFinishedPageReloadWithChangedSettings();
-  EXPECT_EQ(page_action_controller().last_text(),
-            TrackingProtectionResumedLabel());
-}
-
-TEST_P(CookieControlsPageActionControllerTest, MaybeShowIPH) {
-  EXPECT_CALL(user_education(),
-              MaybeShowFeaturePromo(testing::Truly(
-                  [](const user_education::FeaturePromoParams& params) {
-                    return params.feature ==
-                           feature_engagement::kIPHCookieControlsFeature;
-                  })));
-  controller().OnCookieControlsIconStatusChanged(
-      /*icon_visible=*/true, CookieControlsState::kBlocked3pc,
-      CookieBlocking3pcdStatus::kNotIn3pcd,
-      /*should_highlight=*/true);
-}
-
 TEST_P(CookieControlsPageActionControllerTest, ShowChipOnIPHFailure) {
   EXPECT_CALL(user_education(), MaybeShowFeaturePromo)
       .WillOnce([](user_education::FeaturePromoParams params) {
@@ -568,12 +478,7 @@ INSTANTIATE_TEST_SUITE_P(
         ActionTestParams{CookieControlsState::kBlocked3pc,
                          "CookieControls.Bubble.CookiesBlocked.Opened"},
         ActionTestParams{CookieControlsState::kAllowed3pc,
-                         "CookieControls.Bubble.CookiesAllowed.Opened"},
-        ActionTestParams{CookieControlsState::kActiveTp,
-                         "TrackingProtections.Bubble.ProtectionsActive.Opened"},
-        ActionTestParams{
-            CookieControlsState::kPausedTp,
-            "TrackingProtections.Bubble.ProtectionsPaused.Opened"}));
+                         "CookieControls.Bubble.CookiesAllowed.Opened"}));
 
 TEST_P(CookieControlsPageActionControllerActionTest, ExecuteAction) {
   // Setup controller so that the icon is visible.
