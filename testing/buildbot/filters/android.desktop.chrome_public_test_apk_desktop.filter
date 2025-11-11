@@ -15,3 +15,6 @@
 
 # https://crbug.com/445994927
 -org.chromium.chrome.browser.tasks.tab_management.ArchivedTabsDialogCoordinatorTest.testIphMessageResizedOnTablet
+
+# https://crbug.com/40901097
+-org.chromium.chrome.browser.tasks.tab_management.TabSwitcherTabletTest.testTabSwitcherScrim

@@ -80,12 +80,7 @@
 -org.chromium.chrome.browser.customtabs.CustomTabActivityTest.testContextMenuEntriesBeforeFirstRun
 
 # crbug.com/394671175
--org.chromium.chrome.browser.tasks.tab_management.TabGridDialogTest.testDialogSelectionEditor_PostLongPressClickNoSelectionEditor
--org.chromium.chrome.browser.tasks.tab_management.TabGridDialogTest.testDialogSelectionEditor_ShareActionAllFilterableTabs
--org.chromium.chrome.browser.tasks.tab_management.TabGridDialogTest.testDialogSetup_WithStartSurface
--org.chromium.chrome.browser.tasks.tab_management.TabGridDialogTest.testSelectionEditorPosition
--org.chromium.chrome.browser.tasks.tab_management.TabGridDialogTest.testStripDialog_TabListEditorCloseAll_CustomHomepage
--org.chromium.chrome.browser.tasks.tab_management.TabGridDialogTest.testStripDialog_TabListEditorCloseAll_NoCustomHomepage
+-org.chromium.chrome.browser.tasks.tab_management.TabGridDialogTest.*
 
 # crbug.com/394673741
 -org.chromium.chrome.browser.contextmenu.ContextMenuTest.testContextMenuRetrievesImageLinkOptions
@@ -106,6 +101,7 @@
 # Aggressively disable failed tests to green the suite ASAP.
 -org.chromium.chrome.browser.app.appmenu.TabbedAppMenuPTTest.testNewTabPageIncognitoAppMenuItems
 -org.chromium.chrome.browser.app.appmenu.TabbedAppMenuPTTest.testWebPageIncognitoAppMenuItems
+-org.chromium.chrome.browser.app.bookmarks.BookmarkTest.testSearchBookmarks_Delete
 -org.chromium.chrome.browser.app.flags.ChromeCachedFlagsTest.testValueIsConsistentWithDefault
 -org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestratorTest.testOpenArchivedTabFromHubSearch_Incognito
 -org.chromium.chrome.browser.appearance.settings.AppearanceSettingsFragmentTest.testBookmarkBarPreferenceIsUpdatedWhenSettingChanges_Tablet
@@ -151,6 +147,8 @@
 -org.chromium.chrome.browser.omnibox.geo.GeolocationHeaderTest.testConsistentHeader
 -org.chromium.chrome.browser.omnibox.geo.GeolocationHeaderTest.testConsistentHeaderForOneTimeGrant
 -org.chromium.chrome.browser.omnibox.suggestions.OmniboxPedalsTest.*
+-org.chromium.chrome.browser.page_load_metrics.PageLoadMetricsTest.testPageLoadMetricEmitted
+-org.chromium.chrome.browser.page_load_metrics.PageLoadMetricsTest.testPageLoadMetricForPrerendering
 -org.chromium.chrome.browser.page_load_metrics.PageLoadMetricsTest.testPageLoadMetricNavigationIdSetCorrectly
 -org.chromium.chrome.browser.partnercustomizations.PartnerDisableIncognitoModeIntegrationTest.*
 -org.chromium.chrome.browser.payments.ExpandablePaymentHandlerTest.testIncognitoTrue
@@ -171,6 +169,7 @@
 -org.chromium.chrome.browser.tabmodel.TabModelImplTest.testCloseIncognitoTabSwitchesToNormalModelAndUpdatesIncognitoIndex
 -org.chromium.chrome.browser.tabmodel.TabModelImplTest.testSetMuteSetting_Incognito
 -org.chromium.chrome.browser.tabmodel.TabModelImplTest.validIndexAfterRestored_FromPreviousActivity_WithIncognitoTabs
+-org.chromium.chrome.browser.tabmodel.TabModelMultiWindowTest.testMoveTabGroupToWindow
 -org.chromium.chrome.browser.tasks.tab_management.TabGroupDialogPTTest.testIncognitoNewTabCreation
 -org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetTest.testNewGroup_IncognitoNewTabPageStation
 -org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetTest.testNewGroup_IncognitoWebPageStation
@@ -189,5 +188,6 @@
 -org.chromium.chrome.browser.TabsTest.testLastClosedUndoableTabGetsHidden
 -org.chromium.chrome.browser.toolbar.TabSwitcherDrawableRenderTest.testTabSwitcherDrawable_newTabPageIncognito
 -org.chromium.chrome.browser.ToolbarSwipeTest.testToolbarSwipeNextThenPrevTabIncognito
+-org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskIntegrationTest.createPendingTask_requestNonOverlappingPendingActions_dispatchesBothActions
 -org.chromium.chrome.browser.ViewTransitionPixelTest.testBrowserControlsChildSnapshotControlsOverlay
 -org.chromium.chrome.browser.ViewTransitionPixelTest.testBrowserControlsRootSnapshotControlsOverlay

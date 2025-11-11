@@ -506,9 +506,6 @@ targets.bundle(
             swarming = targets.swarming(
                 shards = 30,
             ),
-            # TODO(crbug.com/444482498): Remove the experiment after the suite
-            # is green.
-            experiment_percentage = 100,
         ),
         "chrome_public_test_apk_desktop": targets.mixin(
             args = [
