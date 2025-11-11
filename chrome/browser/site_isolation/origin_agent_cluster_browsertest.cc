@@ -12,7 +12,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/network_session_configurator/common/network_switches.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
 #include "components/variations/active_field_trials.h"
 #include "content/public/browser/site_isolation_policy.h"
@@ -119,7 +118,6 @@ class OriginAgentClusterBrowserTest : public InProcessBrowserTest {
                             base::Unretained(this)));
     ASSERT_TRUE(https_server()->Start());
 
-    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
     std::string origin_list =
         https_server()->GetURL("isolated.foo.com", "/").spec();
     command_line->AppendSwitchASCII(switches::kIsolateOrigins, origin_list);
@@ -134,12 +132,13 @@ class OriginAgentClusterBrowserTest : public InProcessBrowserTest {
     ASSERT_TRUE(https_server()->ShutdownAndWaitUntilComplete());
   }
 
-  net::EmbeddedTestServer* https_server() { return &https_server_; }
+  net::EmbeddedTestServer* https_server() {
+    return &embedded_https_test_server();
+  }
 
  protected:
   explicit OriginAgentClusterBrowserTest(bool enable_oac)
-      : https_server_(net::EmbeddedTestServer::TYPE_HTTPS),
-        enable_origin_agent_cluster_(enable_oac) {
+      : enable_origin_agent_cluster_(enable_oac) {
     // To keep the tests easier to reason about, turn off both the spare
     // renderer process and process reuse for subframes in different
     // BrowsingInstances.
@@ -182,7 +181,6 @@ class OriginAgentClusterBrowserTest : public InProcessBrowserTest {
   // existing tests run with the prewarm feature enabled.
   test::ScopedPrewarmFeatureList scoped_prewarm_feature_list_{
       test::ScopedPrewarmFeatureList::PrewarmState::kDisabled};
-  net::EmbeddedTestServer https_server_;
   base::test::ScopedFeatureList feature_list_;
   bool enable_origin_agent_cluster_;
 };
