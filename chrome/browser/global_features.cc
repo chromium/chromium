@@ -42,6 +42,10 @@
 #include "chrome/browser/win/installer_downloader/installer_downloader_infobar_delegate.h"
 #endif
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 namespace {
 
 // This is the generic entry point for test code to stub out browser
@@ -114,6 +118,10 @@ void GlobalFeatures::Init() {
         safe_browsing::ApplicationAdvancedProtectionStatusDetector>(
         g_browser_process->profile_manager());
   }
+
+#if !BUILDFLAG(IS_ANDROID)
+  global_browser_collection_ = std::make_unique<GlobalBrowserCollection>();
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 void GlobalFeatures::Shutdown() {

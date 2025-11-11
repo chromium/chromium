@@ -7,9 +7,12 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 
 BrowserManagerService::BrowserManagerService(Profile* profile)
-    : profile_(profile) {}
+    : profile_(profile) {
+  AddObserver(GlobalBrowserCollection::GetInstance());
+}
 
 BrowserManagerService::~BrowserManagerService() = default;
 

@@ -46,6 +46,10 @@ namespace safe_browsing {
 class ApplicationAdvancedProtectionStatusDetector;
 }  // namespace safe_browsing
 
+#if !BUILDFLAG(IS_ANDROID)
+class GlobalBrowserCollection;
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 // This class owns the core controllers for features that are globally
 // scoped on desktop and Android. It can be subclassed by tests to perform
 // dependency injection.
@@ -120,6 +124,12 @@ class GlobalFeatures {
     return application_advanced_protection_status_detector_.get();
   }
 
+#if !BUILDFLAG(IS_ANDROID)
+  GlobalBrowserCollection* global_browser_collection() {
+    return global_browser_collection_.get();
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
+
  protected:
   GlobalFeatures();
 
@@ -165,6 +175,10 @@ class GlobalFeatures {
 
   std::unique_ptr<safe_browsing::ApplicationAdvancedProtectionStatusDetector>
       application_advanced_protection_status_detector_;
+
+#if !BUILDFLAG(IS_ANDROID)
+  std::unique_ptr<GlobalBrowserCollection> global_browser_collection_;
+#endif  // !BUILDFLAG(IS_ANDROID)
 };
 
 #endif  // CHROME_BROWSER_GLOBAL_FEATURES_H_

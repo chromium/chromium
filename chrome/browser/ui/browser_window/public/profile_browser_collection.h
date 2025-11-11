@@ -12,6 +12,9 @@ class Profile;
 
 // ProfileBrowserCollection notifies its subscribed observers of all browser
 // create, close, activate, and deactivate events for the associated profile.
+//
+// If you only need to observe a single browser, use the callback registrations
+// exposed on BrowserWindowInterface instead.
 class ProfileBrowserCollection {
  public:
   static ProfileBrowserCollection* GetForProfile(Profile* profile);
