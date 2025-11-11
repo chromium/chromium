@@ -5,6 +5,7 @@
 #include "components/exo/wayland/clients/globals.h"
 
 #include <algorithm>
+#include <string_view>
 
 #include "base/compiler_specific.h"
 #include "base/logging.h"
@@ -34,7 +35,7 @@ void RegistryHandler(void* data,
   }
 
 #define BIND(interface_type, global_member)                        \
-  if (UNSAFE_TODO(strcmp(interface, #interface_type)) == 0) {      \
+  if (std::string_view(interface) == #interface_type) {            \
     globals->global_member.reset(                                  \
         static_cast<interface_type*>(wl_registry_bind(             \
             registry, id, &interface_type##_interface,             \
@@ -45,7 +46,7 @@ void RegistryHandler(void* data,
   }
 
 #define BIND_VECTOR(interface_type, global_member)                 \
-  if (UNSAFE_TODO(strcmp(interface, #interface_type)) == 0) {      \
+  if (std::string_view(interface) == #interface_type) {            \
     globals->global_member.emplace_back(                           \
         static_cast<interface_type*>(wl_registry_bind(             \
             registry, id, &interface_type##_interface,             \
