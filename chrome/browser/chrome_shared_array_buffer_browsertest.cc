@@ -9,7 +9,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "components/network_session_configurator/common/network_switches.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
@@ -81,11 +80,6 @@ class ChromeSharedArrayBufferBrowserTest : public PolicyTest {
     ASSERT_TRUE(embedded_test_server()->Start());
 
     ASSERT_FALSE(base::FeatureList::IsEnabled(features::kSharedArrayBuffer));
-  }
-
-  void SetUpCommandLine(base::CommandLine* command_line) final {
-    PolicyTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
   }
 
   base::test::ScopedFeatureList feature_list_;

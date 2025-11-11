@@ -39,7 +39,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/profile_destruction_waiter.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/network_session_configurator/common/network_switches.h"
 #include "components/prefs/pref_service.h"
 #include "components/site_isolation/features.h"
 #include "components/site_isolation/pref_names.h"
@@ -1511,6 +1510,7 @@ class SignInIsolationBrowserTest : public ChromeNavigationBrowserTest {
 
   void SetUp() override {
     https_server_.ServeFilesFromSourceDirectory("chrome/test/data");
+    https_server_.SetCertHostnames({"accounts.google.com"});
     ASSERT_TRUE(https_server_.InitializeAndListen());
     ChromeNavigationBrowserTest::SetUp();
   }
@@ -1521,11 +1521,6 @@ class SignInIsolationBrowserTest : public ChromeNavigationBrowserTest {
     command_line->AppendSwitchASCII(
         ::switches::kGaiaUrl,
         https_server()->GetURL("accounts.google.com", "/").spec());
-
-    // Ignore cert errors so that the sign-in URL can be loaded from a site
-    // other than localhost (the EmbeddedTestServer serves a certificate that
-    // is valid for localhost).
-    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
 
     ChromeNavigationBrowserTest::SetUpCommandLine(command_line);
   }
@@ -1582,15 +1577,14 @@ class WebstoreIsolationBrowserTest : public ChromeNavigationBrowserTest {
     // /webstore/ directory, which the Webstore hosted app expects for the URL
     // it is associated with.
     https_server_.ServeFilesFromSourceDirectory("chrome/test/data/extensions");
+    https_server_.SetCertHostnames({"google.com", "chrome.google.com",
+                                    "chromewebstore.google.com", "foo.com",
+                                    "chrome.foo.com"});
     ASSERT_TRUE(https_server_.InitializeAndListen());
     ChromeNavigationBrowserTest::SetUp();
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    // Ignore cert errors so that the webstore URL can be loaded from a site
-    // other than localhost (the EmbeddedTestServer serves a certificate that
-    // is valid for localhost).
-    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
     // Add a host resolver rule to map all outgoing requests to the test server.
     // This allows us to use "real" hostnames and standard ports in URLs (i.e.,
     // without having to inject the port number into all URLs). This is
@@ -2793,13 +2787,13 @@ class SiteIsolationForOAuthSitesBrowserTest
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ChromeNavigationBrowserTest::SetUpCommandLine(command_line);
-
-    // Allow HTTPS server to be used on sites other than localhost.
-    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
   }
 
   void SetUp() override {
     https_server_.ServeFilesFromSourceDirectory("chrome/test/data");
+    https_server_.SetCertHostnames({"oauthclient.com", "*.oauthclient.com",
+                                    "oauthprovider.com",
+                                    "*.oauthprovider.com"});
     ASSERT_TRUE(https_server_.InitializeAndListen());
     ChromeNavigationBrowserTest::SetUp();
   }
@@ -3002,15 +2996,11 @@ class SiteIsolationForCOOPBrowserTest : public ChromeNavigationBrowserTest {
   }
 
  protected:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    ChromeNavigationBrowserTest::SetUpCommandLine(command_line);
-
-    // Allow HTTPS server to be used on sites other than localhost.
-    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
-  }
-
   void SetUp() override {
     https_server_.AddDefaultHandlers(GetChromeTestDataDir());
+    https_server_.SetCertHostnames({"saved.com", "saved2.com", "foo.com",
+                                    "coop1.com", "coop2.com", "coop3.com",
+                                    "coop4.com"});
     ASSERT_TRUE(https_server_.InitializeAndListen());
     ChromeNavigationBrowserTest::SetUp();
   }

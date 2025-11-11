@@ -14,7 +14,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
-#include "components/network_session_configurator/common/network_switches.h"
 #include "components/policy/policy_constants.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/web_contents.h"
@@ -175,7 +174,18 @@ class ChromeWebPlatformSecurityMetricsBrowserTest : public policy::PolicyTest {
     https_server_.ServeFilesFromSourceDirectory("content/test/data");
     http_server_.ServeFilesFromSourceDirectory("content/test/data");
 
-    https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
+    https_server_.SetCertHostnames({
+        "a.com",
+        "*.a.com",
+        "b.com",
+        "c.com",
+        "a.test",
+        "*.a.test",
+        "b.test",
+        "c.test",
+        // For PrivateNetworkAccess tests.
+        "b.local",
+    });
     ASSERT_TRUE(https_server_.Start());
     ASSERT_TRUE(http_server_.Start());
     EXPECT_TRUE(content::NavigateToURL(web_contents(), GURL("about:blank")));
@@ -183,8 +193,6 @@ class ChromeWebPlatformSecurityMetricsBrowserTest : public policy::PolicyTest {
 
  private:
   void SetUpCommandLine(base::CommandLine* command_line) final {
-    // For https_server()
-    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
     // Clear default from InProcessBrowserTest as test doesn't want 127.0.0.1 in
     // the public address space
     command_line->AppendSwitchASCII(network::switches::kIpAddressSpaceOverrides,
