@@ -38,6 +38,9 @@ import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.ui.widget.ViewRectProvider;
 import org.chromium.url.GURL;
 
+import java.util.Collections;
+import java.util.List;
+
 /** Coordinator for the Navigation Attachments component. */
 @NullMarked
 public class NavigationAttachmentsCoordinator
@@ -236,6 +239,16 @@ public class NavigationAttachmentsCoordinator
     public void onFuseboxTextWrappingChanged(boolean isWrapping) {
         if (mMediator == null) return;
         mModel.set(NavigationAttachmentsProperties.COMPACT_UI, !isWrapping);
+    }
+
+    /**
+     * @return List of attachment tokens, empty if no attachments or mediator unavailable.
+     */
+    public List<String> getAttachmentTokens() {
+        if (mMediator == null) {
+            return Collections.emptyList();
+        }
+        return mMediator.getAttachmentTokens();
     }
 
     /**

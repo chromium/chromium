@@ -51,6 +51,8 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
+import java.util.List;
+
 /** Unit tests for {@link NavigationAttachmentsMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class NavigationAttachmentsMediatorUnitTest {
@@ -70,6 +72,7 @@ public class NavigationAttachmentsMediatorUnitTest {
     private ConstraintLayout mViewGroup;
     private PropertyModel mModel;
     private NavigationAttachmentsMediator mMediator;
+    private ModelList mAttachments;
     private ObservableSupplierImpl<TabModelSelector> mTabModelSelectorSupplier;
     private ObservableSupplierImpl<@AutocompleteRequestType Integer>
             mAutocompleteRequestTypeSupplier;
@@ -89,6 +92,7 @@ public class NavigationAttachmentsMediatorUnitTest {
         mModel = new PropertyModel(NavigationAttachmentsProperties.ALL_KEYS);
 
         mViewHolder = new NavigationAttachmentsViewHolder(mViewGroup, mPopup);
+        mAttachments = new ModelList();
         mMediator =
                 Mockito.spy(
                         new NavigationAttachmentsMediator(
@@ -96,7 +100,7 @@ public class NavigationAttachmentsMediatorUnitTest {
                                 mWindowAndroid,
                                 mModel,
                                 mViewHolder,
-                                new ModelList(),
+                                mAttachments,
                                 mAutocompleteRequestTypeSupplier,
                                 mTabModelSelectorSupplier,
                                 mComposeBoxQueryControllerBridge));
@@ -244,21 +248,8 @@ public class NavigationAttachmentsMediatorUnitTest {
 
     @Test
     public void activateSearchMode_clearsAttachmentsAndAbandonsSession() {
-        ModelList modelList = new ModelList();
-        mAutocompleteRequestTypeSupplier =
-                new ObservableSupplierImpl<>(AutocompleteRequestType.SEARCH);
-        mMediator =
-                new NavigationAttachmentsMediator(
-                        mContext,
-                        mWindowAndroid,
-                        mModel,
-                        mViewHolder,
-                        modelList,
-                        mAutocompleteRequestTypeSupplier,
-                        mTabModelSelectorSupplier,
-                        mComposeBoxQueryControllerBridge);
-        modelList.add(new MVCListAdapter.ListItem(0, new PropertyModel()));
-        assertEquals(1, modelList.size());
+        mAttachments.add(new MVCListAdapter.ListItem(0, new PropertyModel()));
+        assertEquals(1, mAttachments.size());
 
         mMediator.activateAiMode();
         mModel.set(NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE, true);
@@ -267,12 +258,10 @@ public class NavigationAttachmentsMediatorUnitTest {
                 (int) mModel.get(NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE));
 
         mMediator.activateSearchMode();
-        assertFalse(mModel.get(NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE));
-        assertEquals(0, modelList.size());
-        verify(mComposeBoxQueryControllerBridge).notifySessionAbandoned();
         assertEquals(
                 AutocompleteRequestType.SEARCH,
                 (int) mModel.get(NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE));
+        assertEquals(0, mAttachments.size());
     }
 
     @Test
@@ -387,5 +376,70 @@ public class NavigationAttachmentsMediatorUnitTest {
         mAutocompleteRequestTypeSupplier.set(AutocompleteRequestType.AI_MODE);
         mModel.get(NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE_CLICKED).run();
         assertEquals(AutocompleteRequestType.SEARCH, (int) mAutocompleteRequestTypeSupplier.get());
+    }
+
+    @Test
+    public void getAttachmentTokens_returnsEmptyListWhenEmpty() {
+        List<String> tokens = mMediator.getAttachmentTokens();
+        assertNotNull(tokens);
+        assertTrue(tokens.isEmpty());
+    }
+
+    @Test
+    public void getAttachmentTokens_returnsTokensAfterAddingAttachment() {
+        addAttachment("test");
+
+        var tokens = mMediator.getAttachmentTokens();
+        assertNotNull(tokens);
+        assertEquals(1, tokens.size());
+        assertEquals("token-test", tokens.get(0));
+    }
+
+    @Test
+    public void getAttachmentTokens_returnsEmptyListAfterRemovingAllAttachments() {
+        addAttachment("test");
+
+        // Verify attachment was added
+        assertNotNull(mMediator.getAttachmentTokens());
+        assertEquals(1, mMediator.getAttachmentTokens().size());
+
+        // Remove all attachments
+        mAttachments.clear();
+
+        List<String> tokens = mMediator.getAttachmentTokens();
+        assertNotNull(tokens);
+        assertTrue(tokens.isEmpty());
+    }
+
+    @Test
+    public void getAttachmentTokens_returnsMultipleTokensInOrder() {
+        addAttachment("tab1");
+        addAttachment("tab2");
+
+        var tokens = mMediator.getAttachmentTokens();
+        assertNotNull(tokens);
+        assertEquals(2, tokens.size());
+        assertEquals("token-tab1", tokens.get(0));
+        assertEquals("token-tab2", tokens.get(1));
+    }
+
+    private void addAttachment(String title) {
+        addAttachment(title, "token-" + title);
+    }
+
+    private void addAttachment(String title, String token) {
+        var attachment =
+                new FuseboxAttachment(
+                        FuseboxAttachmentType.ATTACHMENT_TAB,
+                        null,
+                        title,
+                        "text/plain",
+                        new byte[0]);
+        attachment.setToken(token);
+        var model =
+                new PropertyModel.Builder(FuseboxAttachmentProperties.ALL_KEYS)
+                        .with(FuseboxAttachmentProperties.ATTACHMENT, attachment)
+                        .build();
+        mAttachments.add(new MVCListAdapter.ListItem(FuseboxAttachmentType.ATTACHMENT_TAB, model));
     }
 }

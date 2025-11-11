@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.omnibox.fusebox;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import android.graphics.drawable.Drawable;
 
 import org.chromium.build.annotations.NullMarked;
@@ -18,6 +20,7 @@ public final class FuseboxAttachment {
     public final String title;
     public final String mimeType;
     public final byte[] data;
+    private @Nullable String mToken;
 
     public FuseboxAttachment(
             @FuseboxAttachmentType int itemType,
@@ -30,5 +33,16 @@ public final class FuseboxAttachment {
         this.title = title;
         this.mimeType = mimeType;
         this.data = data;
+        mToken = null;
+    }
+
+    /** Sets the token for this attachment. */
+    /* package */ void setToken(String token) {
+        mToken = token;
+    }
+
+    /** Gets the token for this attachment. */
+    /* package */ String getToken() {
+        return assertNonNull(mToken);
     }
 }

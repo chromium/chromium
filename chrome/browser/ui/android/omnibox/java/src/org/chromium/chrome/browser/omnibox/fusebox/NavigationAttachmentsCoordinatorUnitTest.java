@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doReturn;
@@ -246,5 +247,44 @@ public class NavigationAttachmentsCoordinatorUnitTest {
         assertEquals(
                 AutocompleteRequestType.AI_MODE,
                 (long) mCoordinator.getAutocompleteRequestTypeSupplier().get());
+    }
+
+    @Test
+    public void getAttachmentTokens_returnsEmptyListWhenMediatorNotSet() {
+        List<String> tokens = mCoordinator.getAttachmentTokens();
+        assertNotNull(tokens);
+        assertTrue(tokens.isEmpty());
+    }
+
+    @Test
+    @EnableFeatures({OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT})
+    public void getAttachmentTokens_returnsEmptyListWhenMediatorHasNoAttachments() {
+        doReturn(/* nativeInstance= */ 1L).when(mControllerMock).init(any(Profile.class));
+        mProfileSupplier.set(mProfile);
+        ShadowLooper.idleMainLooper();
+
+        List<String> tokens = mCoordinator.getAttachmentTokens();
+        assertNotNull(tokens);
+        assertTrue(tokens.isEmpty());
+    }
+
+    @Test
+    @EnableFeatures({OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT})
+    public void getAttachmentTokens_returnsTokensWhenMediatorHasAttachments() {
+        doReturn(/* nativeInstance= */ 1L).when(mControllerMock).init(any(Profile.class));
+        mProfileSupplier.set(mProfile);
+        ShadowLooper.idleMainLooper();
+
+        // Mock mediator with attachment tokens
+        var mockMediator = Mockito.mock(NavigationAttachmentsMediator.class);
+        var testTokens = java.util.Arrays.asList("token1", "token2");
+        doReturn(testTokens).when(mockMediator).getAttachmentTokens();
+        mCoordinator.setMediatorForTesting(mockMediator);
+
+        var tokens = mCoordinator.getAttachmentTokens();
+        assertNotNull(tokens);
+        assertEquals(2, tokens.size());
+        assertEquals("token1", tokens.get(0));
+        assertEquals("token2", tokens.get(1));
     }
 }

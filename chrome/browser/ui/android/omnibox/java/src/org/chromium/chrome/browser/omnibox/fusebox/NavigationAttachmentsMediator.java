@@ -51,6 +51,7 @@ import org.chromium.url.GURL;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /** Mediator for the Navigation Attachments component. */
@@ -291,7 +292,7 @@ class NavigationAttachmentsMediator {
 
     private void addTabAttachment(Tab tab, @Nullable String token) {
         if (TextUtils.isEmpty(token)) return;
-        FuseboxAttachment attachment =
+        var attachment =
                 new FuseboxAttachment(
                         FuseboxAttachmentType.ATTACHMENT_TAB,
                         new BitmapDrawable(
@@ -300,7 +301,8 @@ class NavigationAttachmentsMediator {
                         tab.getTitle(),
                         /* mimeType= */ "",
                         /* data= */ new byte[] {});
-        addAttachment(attachment, token);
+        attachment.setToken(token);
+        addAttachment(attachment);
     }
 
     @VisibleForTesting
@@ -372,7 +374,7 @@ class NavigationAttachmentsMediator {
                     ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                     bitmap.compress(CompressFormat.PNG, 100, byteArrayOutputStream);
                     byte[] dataBytes = byteArrayOutputStream.toByteArray();
-                    FuseboxAttachment attachment =
+                    var attachment =
                             new FuseboxAttachment(
                                     FuseboxAttachmentType.ATTACHMENT_IMAGE,
                                     new BitmapDrawable(mContext.getResources(), bitmap),
@@ -466,7 +468,7 @@ class NavigationAttachmentsMediator {
                 Bitmap bitmap = BitmapFactory.decodeByteArray(pngBytes, 0, pngBytes.length);
                 if (bitmap == null) return;
 
-                FuseboxAttachment attachment =
+                var attachment =
                         new FuseboxAttachment(
                                 FuseboxAttachmentType.ATTACHMENT_IMAGE,
                                 new BitmapDrawable(mContext.getResources(), bitmap),
@@ -489,15 +491,16 @@ class NavigationAttachmentsMediator {
     /**
      * Add an attachment to the navigation attachments toolbar.
      *
-     * @param attachment The attachment to add.
+     * @param attachmentDetails The details of the attachment to add.
      */
     /* package */ void uploadAndAddAttachment(FuseboxAttachment attachment) {
         String token = uploadAttachment(attachment);
         if (TextUtils.isEmpty(token)) return;
-        addAttachment(attachment, token);
+        attachment.setToken(token);
+        addAttachment(attachment);
     }
 
-    private void addAttachment(FuseboxAttachment attachment, String token) {
+    private void addAttachment(FuseboxAttachment attachment) {
         activateAiMode();
 
         PropertyModel model =
@@ -506,7 +509,9 @@ class NavigationAttachmentsMediator {
                         .build();
 
         var listItem = new MVCListAdapter.ListItem(attachment.itemType, model);
-        model.set(FuseboxAttachmentProperties.ON_REMOVE, () -> removeAttachment(listItem, token));
+        model.set(
+                FuseboxAttachmentProperties.ON_REMOVE,
+                () -> removeAttachment(listItem, attachment.getToken()));
         mModelList.add(listItem);
     }
 
@@ -539,5 +544,19 @@ class NavigationAttachmentsMediator {
             if (u != null) out.add(u);
         }
         return out;
+    }
+
+    /**
+     * @return List of attachment tokens, empty if no attachments.
+     */
+    public List<String> getAttachmentTokens() {
+        if (mModelList.size() == 0) return Collections.emptyList();
+        List<String> tokens = new ArrayList<>();
+        for (int i = 0; i < mModelList.size(); i++) {
+            PropertyModel model = mModelList.get(i).model;
+            var attachment = model.get(FuseboxAttachmentProperties.ATTACHMENT);
+            tokens.add(attachment.getToken());
+        }
+        return tokens;
     }
 }

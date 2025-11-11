@@ -75,6 +75,7 @@ public class FuseboxAttachmentViewBinderUnitTest {
                         "Test",
                         "text/plain",
                         new byte[0]);
+        attachment.setToken("test-token");
         mModel.set(FuseboxAttachmentProperties.ATTACHMENT, attachment);
         ImageView imageView = mView.findViewById(R.id.attachment_thumbnail);
         assertEquals(mDrawable, imageView.getDrawable());
@@ -89,6 +90,7 @@ public class FuseboxAttachmentViewBinderUnitTest {
                         "",
                         "text/plain",
                         new byte[0]);
+        attachment.setToken("test-token");
         mModel.set(FuseboxAttachmentProperties.ATTACHMENT, attachment);
         TextView textView = mView.findViewById(R.id.attachment_title);
         assertEquals(View.GONE, textView.getVisibility());
@@ -103,6 +105,7 @@ public class FuseboxAttachmentViewBinderUnitTest {
                         "My Attachment",
                         "text/plain",
                         new byte[0]);
+        attachment.setToken("test-token");
         mModel.set(FuseboxAttachmentProperties.ATTACHMENT, attachment);
         TextView textView = mView.findViewById(R.id.attachment_title);
         assertEquals("My Attachment", textView.getText());
@@ -117,6 +120,7 @@ public class FuseboxAttachmentViewBinderUnitTest {
                         "My Title",
                         "text/plain",
                         new byte[0]);
+        attachment.setToken("test-token");
         mModel.set(FuseboxAttachmentProperties.ATTACHMENT, attachment);
 
         TextView title = mView.findViewById(R.id.attachment_title);
@@ -132,6 +136,7 @@ public class FuseboxAttachmentViewBinderUnitTest {
                         "Test",
                         "text/plain",
                         new byte[0]);
+        attachment.setToken("test-token");
         mModel.set(FuseboxAttachmentProperties.ATTACHMENT, attachment);
         ImageView imageView = mView.findViewById(R.id.attachment_thumbnail);
         // Should have fallback drawable, not null
