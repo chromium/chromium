@@ -13,11 +13,10 @@ use semver::Version;
 use serde::Deserialize;
 use serde::Serialize;
 use std::collections::HashMap;
-use std::fmt::Display;
 use std::path::{Path, PathBuf};
 use std::sync::LazyLock;
 use strum::IntoEnumIterator;
-use strum_macros::EnumIter;
+use strum_macros::{Display, EnumIter};
 
 #[derive(Clone, Debug, Serialize)]
 pub struct ReadmeFile {
@@ -207,53 +206,43 @@ fn readme_file_from_package<'a>(
 /// REVIEW REQUIREMENT: When adding a new `LicenseKind`, please consult
 /// `readme.rs-third-party-license-review.md`.
 #[allow(clippy::upper_case_acronyms)]
-#[derive(Debug, Eq, Hash, PartialEq, Clone, Copy, EnumIter)]
+#[derive(Debug, Eq, Hash, PartialEq, Clone, Copy, Display, EnumIter)]
 enum LicenseKind {
     /// https://spdx.org/licenses/Apache-2.0.html
+    #[strum(serialize = "Apache-2.0")]
     Apache2,
 
     /// https://spdx.org/licenses/BSD-3-Clause.html
+    #[strum(serialize = "BSD-3-Clause")]
     BSD3,
 
     /// https://spdx.org/licenses/MIT.html
+    #[strum(serialize = "MIT")]
     MIT,
 
     /// https://spdx.org/licenses/MPL-2.0.html
+    #[strum(serialize = "MPL-2.0")]
     MPL2,
 
     /// https://spdx.org/licenses/ISC.html
+    #[strum(serialize = "ISC")]
     ISC,
 
     /// https://spdx.org/licenses/Zlib.html
+    #[strum(serialize = "Zlib")]
     Zlib,
 
     /// https://spdx.org/licenses/Unicode-3.0.html
+    #[strum(serialize = "Unicode-3.0")]
     Unicode3,
 
     /// https://spdx.org/licenses/NCSA.html
+    #[strum(serialize = "NCSA")]
     NCSA,
 
     /// https://spdx.org/licenses/BSL-1.0.html
+    #[strum(serialize = "BSL-1.0")]
     BSL,
-}
-
-impl Display for LicenseKind {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        // NOTE: The strings used below should match the SPDX "Short identifier"
-        // which can be found on the https://spdx.org website.  (e.g. see
-        // https://spdx.org/licenses/Apache-2.0.html).
-        match self {
-            LicenseKind::Apache2 => write!(f, "Apache-2.0"),
-            LicenseKind::BSD3 => write!(f, "BSD-3-Clause"),
-            LicenseKind::MIT => write!(f, "MIT"),
-            LicenseKind::MPL2 => write!(f, "MPL-2.0"),
-            LicenseKind::ISC => write!(f, "ISC"),
-            LicenseKind::NCSA => write!(f, "NCSA"),
-            LicenseKind::Zlib => write!(f, "Zlib"),
-            LicenseKind::Unicode3 => write!(f, "Unicode-3.0"),
-            LicenseKind::BSL => write!(f, "BSL-1.0"),
-        }
-    }
 }
 
 /// LICENSE_STRING_TO_LICENSE_KIND, converts licenses from the format they are
