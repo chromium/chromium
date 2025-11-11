@@ -400,8 +400,8 @@ class ChromiumDepGraph {
         Set<String> testIds = [] as Set
         Set<String> androidTestIds = [] as Set
         Set<String> buildIds = [] as Set
-        Set<String> autorolledIds = [] as Set
         Set<String> supportsIds = [] as Set
+        Set<String> autorolledIds = [] as Set
         resolvedDeps.each { key, values ->
             if (key.startsWith('compile')) {
                 compileIds.addAll(values);
@@ -423,8 +423,13 @@ class ChromiumDepGraph {
 
         dependencies.each { id, dep ->
             dep.visible = topLevelIds.contains(id)
-            dep.isRobolectric = anyContains(id, testIds)
-            dep.testOnly = anyContains(id, androidTestIds, testIds)
+            // These lists of ids contain all transitive deps of a target of this type. So, for
+            // robolectric and testonly, we only want ids that match, but aren't also matched by
+            // another group that would prevent it from being robolectric or testonly.
+            dep.isRobolectric = anyContains(id, testIds) &&
+                                !anyContains(id, compileIds, androidTestIds, buildIds, supportsIds)
+            dep.testOnly = anyContains(id, androidTestIds, testIds) &&
+                           !anyContains(id, compileIds, buildIds, supportsIds)
             dep.supportsAndroid = anyContains(id, compileIds, androidTestIds, supportsIds)
             dep.requiresAndroid = dep.supportsAndroid && !anyContains(id, buildIds, supportsIds)
             dep.usedInBuild = anyContains(id, buildIds)
