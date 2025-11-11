@@ -73,6 +73,14 @@ class NavigationAttachmentsViewBinder {
         } else if (propertyKey == NavigationAttachmentsProperties.POPUP_CLIPBOARD_CLICKED) {
             view.popup.mClipboardButton.setOnClickListener(
                     v -> model.get(NavigationAttachmentsProperties.POPUP_CLIPBOARD_CLICKED).run());
+        } else if (propertyKey
+                == NavigationAttachmentsProperties.POPUP_CREATE_IMAGE_BUTTON_VISIBLE) {
+            // TODO(https://crbug.com/457465693): Set create image tool visibility.
+        } else if (propertyKey == NavigationAttachmentsProperties.POPUP_FILE_BUTTON_VISIBLE) {
+            view.popup.mFileButton.setVisibility(
+                    model.get(NavigationAttachmentsProperties.POPUP_FILE_BUTTON_VISIBLE)
+                            ? View.VISIBLE
+                            : View.GONE);
         } else if (propertyKey == NavigationAttachmentsProperties.POPUP_FILE_CLICKED) {
             view.popup.mFileButton.setOnClickListener(
                     v -> model.get(NavigationAttachmentsProperties.POPUP_FILE_CLICKED).run());

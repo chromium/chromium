@@ -286,6 +286,15 @@ public class NavigationAttachmentsViewBinderUnitTest {
     }
 
     @Test
+    public void fileButtonVisibility_setsVisibility() {
+        mModel.set(NavigationAttachmentsProperties.POPUP_FILE_BUTTON_VISIBLE, true);
+        assertEquals(View.VISIBLE, mPopup.mFileButton.getVisibility());
+
+        mModel.set(NavigationAttachmentsProperties.POPUP_FILE_BUTTON_VISIBLE, false);
+        assertEquals(View.GONE, mPopup.mFileButton.getVisibility());
+    }
+
+    @Test
     public void addCurrentTabButton() {
         mModel.set(NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_VISIBLE, false);
         assertEquals(View.GONE, mPopup.mAddCurrentTab.getVisibility());

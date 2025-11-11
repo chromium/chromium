@@ -93,6 +93,16 @@ public class ComposeBoxQueryControllerBridge {
         ComposeBoxQueryControllerBridgeJni.get().removeAttachment(mNativeInstance, token);
     }
 
+    /** Returns whether the user is eligible for PDF uploads. */
+    boolean isPdfUploadEligible() {
+        return ComposeBoxQueryControllerBridgeJni.get().isPdfUploadEligible(mNativeInstance);
+    }
+
+    /** Returns whether the user is eligible for creating images. */
+    boolean isCreateImagesEligible() {
+        return ComposeBoxQueryControllerBridgeJni.get().isCreateImagesEligible(mNativeInstance);
+    }
+
     @NativeMethods
     public interface Natives {
         long init(@JniType("Profile*") Profile profile);
@@ -126,5 +136,11 @@ public class ComposeBoxQueryControllerBridge {
 
         @NativeClassQualifiedName("ComposeboxQueryControllerBridge")
         void removeAttachment(long nativeInstance, @JniType("std::string") String token);
+
+        @NativeClassQualifiedName("ComposeboxQueryControllerBridge")
+        boolean isPdfUploadEligible(long nativeInstance);
+
+        @NativeClassQualifiedName("ComposeboxQueryControllerBridge")
+        boolean isCreateImagesEligible(long nativeInstance);
     }
 }

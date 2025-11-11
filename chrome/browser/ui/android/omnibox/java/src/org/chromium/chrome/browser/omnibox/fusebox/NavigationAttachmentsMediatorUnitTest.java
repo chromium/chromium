@@ -104,6 +104,20 @@ public class NavigationAttachmentsMediatorUnitTest {
         OmniboxResourceProvider.setTabFaviconFactory((any) -> mBitmap);
     }
 
+    /* Useful for testing logic in the mediator's constructor. */
+    private void recreateMediator() {
+        mMediator =
+                new NavigationAttachmentsMediator(
+                        mContext,
+                        mWindowAndroid,
+                        mModel,
+                        mViewHolder,
+                        new ModelList(),
+                        mAutocompleteRequestTypeSupplier,
+                        mTabModelSelectorSupplier,
+                        mComposeBoxQueryControllerBridge);
+    }
+
     @Test
     public void initialState_toolbarIsHidden() {
         assertFalse(mModel.get(NavigationAttachmentsProperties.ATTACHMENTS_TOOLBAR_VISIBLE));
@@ -338,6 +352,34 @@ public class NavigationAttachmentsMediatorUnitTest {
         doReturn(false).when(mClipboard).hasImage();
         mMediator.onToggleAttachmentsPopup();
         assertFalse(mModel.get(NavigationAttachmentsProperties.POPUP_CLIPBOARD_BUTTON_VISIBLE));
+    }
+
+    @Test
+    public void onToggleAttachmentsPopup_pdfUploadEligible_showsFileButton() {
+        doReturn(true).when(mComposeBoxQueryControllerBridge).isPdfUploadEligible();
+        recreateMediator();
+        assertTrue(mModel.get(NavigationAttachmentsProperties.POPUP_FILE_BUTTON_VISIBLE));
+    }
+
+    @Test
+    public void onToggleAttachmentsPopup_pdfUploadNotEligible_hidesFileButton() {
+        doReturn(false).when(mComposeBoxQueryControllerBridge).isPdfUploadEligible();
+        recreateMediator();
+        assertFalse(mModel.get(NavigationAttachmentsProperties.POPUP_FILE_BUTTON_VISIBLE));
+    }
+
+    @Test
+    public void onToggleAttachmentsPopup_createImagesEligible_showsCreateImageButton() {
+        doReturn(true).when(mComposeBoxQueryControllerBridge).isCreateImagesEligible();
+        recreateMediator();
+        assertTrue(mModel.get(NavigationAttachmentsProperties.POPUP_CREATE_IMAGE_BUTTON_VISIBLE));
+    }
+
+    @Test
+    public void onToggleAttachmentsPopup_createImagesNotEligible_hidesCreateImageButton() {
+        doReturn(false).when(mComposeBoxQueryControllerBridge).isCreateImagesEligible();
+        recreateMediator();
+        assertFalse(mModel.get(NavigationAttachmentsProperties.POPUP_CREATE_IMAGE_BUTTON_VISIBLE));
     }
 
     @Test

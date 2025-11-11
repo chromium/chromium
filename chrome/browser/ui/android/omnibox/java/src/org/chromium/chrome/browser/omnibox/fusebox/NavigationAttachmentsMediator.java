@@ -114,6 +114,13 @@ class NavigationAttachmentsMediator {
         mModel.set(
                 NavigationAttachmentsProperties.POPUP_TAB_PICKER_CLICKED, this::onTabPickerClicked);
 
+        mModel.set(
+                NavigationAttachmentsProperties.POPUP_FILE_BUTTON_VISIBLE,
+                mComposeBoxQueryControllerBridge.isPdfUploadEligible());
+        mModel.set(
+                NavigationAttachmentsProperties.POPUP_CREATE_IMAGE_BUTTON_VISIBLE,
+                mComposeBoxQueryControllerBridge.isCreateImagesEligible());
+
         mModelList.addObserver(
                 new ListObservable.ListObserver<>() {
                     @Override

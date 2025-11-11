@@ -83,6 +83,14 @@ class NavigationAttachmentsProperties {
     public static final WritableObjectPropertyKey<Runnable> POPUP_CLIPBOARD_CLICKED =
             new WritableObjectPropertyKey<>();
 
+    /** Whether the create image button in the popup is visible. */
+    public static final WritableBooleanPropertyKey POPUP_CREATE_IMAGE_BUTTON_VISIBLE =
+            new WritableBooleanPropertyKey();
+
+    /** Whether the File button in the popup is visible. */
+    public static final WritableBooleanPropertyKey POPUP_FILE_BUTTON_VISIBLE =
+            new WritableBooleanPropertyKey();
+
     /** Action to perform when the user clicks the File button in the popup. */
     public static final WritableObjectPropertyKey<Runnable> POPUP_FILE_CLICKED =
             new WritableObjectPropertyKey<>();
@@ -121,7 +129,9 @@ class NavigationAttachmentsProperties {
         POPUP_CAMERA_CLICKED,
         POPUP_CLIPBOARD_BUTTON_VISIBLE,
         POPUP_CLIPBOARD_CLICKED,
+        POPUP_CREATE_IMAGE_BUTTON_VISIBLE,
         POPUP_FILE_CLICKED,
+        POPUP_FILE_BUTTON_VISIBLE,
         POPUP_GALLERY_CLICKED,
         POPUP_TAB_PICKER_CLICKED,
         RECENT_TABS_HEADER_VISIBLE,

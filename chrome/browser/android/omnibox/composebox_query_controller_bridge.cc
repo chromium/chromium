@@ -199,6 +199,18 @@ void ComposeboxQueryControllerBridge::RemoveAttachment(
   }
 }
 
+bool ComposeboxQueryControllerBridge::IsPdfUploadEligible(JNIEnv* env) {
+  AimEligibilityService* aim_service =
+      AimEligibilityServiceFactory::GetForProfile(profile_);
+  return aim_service && aim_service->IsPdfUploadEligible();
+}
+
+bool ComposeboxQueryControllerBridge::IsCreateImagesEligible(JNIEnv* env) {
+  AimEligibilityService* aim_service =
+      AimEligibilityServiceFactory::GetForProfile(profile_);
+  return aim_service && aim_service->IsCreateImagesEligible();
+}
+
 void ComposeboxQueryControllerBridge::OnFileUploadStatusChanged(
     const base::UnguessableToken& file_token,
     lens::MimeType mime_type,
