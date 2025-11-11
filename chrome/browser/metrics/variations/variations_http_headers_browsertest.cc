@@ -44,7 +44,6 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
-#include "components/network_session_configurator/common/network_switches.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/prefs/pref_service.h"
@@ -211,6 +210,8 @@ class VariationsHttpHeadersBrowserTest
   }
 
   void SetUp() override {
+    server()->SetCertHostnames(
+        {"www.google.com", "www.example.com", "test.com"});
     ASSERT_TRUE(server()->InitializeAndListen());
     InProcessBrowserTest::SetUp();
   }
@@ -232,10 +233,6 @@ class VariationsHttpHeadersBrowserTest
                             base::Unretained(this)));
 
     server()->StartAcceptingConnections();
-  }
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(::switches::kIgnoreCertificateErrors);
   }
 
   const net::EmbeddedTestServer* server() const { return &https_server_; }
