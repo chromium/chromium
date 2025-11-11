@@ -810,23 +810,45 @@ TEST_F(BrowsingHistoryServiceTest, RemoveVisitsMetric) {
 TEST_F(BrowsingHistoryServiceTest, ActorVisitPropagated) {
   AddHistory({
       {kUrl1, 1, kRemote},
-      {kUrl2, 2, kRemote},
-      {kUrl2, 3, kLocal, "", VisitSource::SOURCE_ACTOR},
-      {kUrl3, 4, kLocal, "", VisitSource::SOURCE_ACTOR},
-      {kUrl3, 5, kLocal},
+      {kUrl2, 2, kLocal, "", VisitSource::SOURCE_ACTOR},
   });
 
   VerifyQueryResult(
       /*reached_beginning*/ true, /*has_synced_results*/ true,
-      {{kUrl3, 5, kLocal, "",
-        VisitSource::SOURCE_BROWSED},  // Duplicate visits take the latest visit
-                                       // values.
-       {kUrl2, 3, kBoth, "",
-        VisitSource::SOURCE_ACTOR},  // Duplicate visits take the latest visit
-                                     // values.
-       {kUrl1, 1, kRemote}},
+      {{kUrl2, 2, kLocal, "", VisitSource::SOURCE_ACTOR}, {kUrl1, 1, kRemote}},
       QueryHistory());
 }
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+TEST_F(BrowsingHistoryServiceTest, ActorVisitDeduplication) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kBrowsingHistoryActorIntegrationM2);
+
+  AddHistory({
+      {kUrl1, 1, kRemote},
+      {kUrl1, 2, kLocal},
+      {kUrl1, 3, kLocal, "", VisitSource::SOURCE_ACTOR},
+      {kUrl2, 4, kLocal, "", VisitSource::SOURCE_ACTOR},
+      {kUrl2, 5, kLocal, "", VisitSource::SOURCE_ACTOR},
+  });
+
+  QueryOptions options;
+  options.include_actor_visits = true;
+  // Disable backend de-duplication to properly test the client-side
+  // de-duplication.
+  options.duplicate_policy = QueryOptions::KEEP_ALL_DUPLICATES;
+
+  VerifyQueryResult(
+      /*reached_beginning*/ true, /*has_synced_results*/ true,
+      {{kUrl2, 5, kLocal, "",
+        VisitSource::SOURCE_ACTOR},  // Duplicate actor visits take the latest
+                                     // visit values.
+       {kUrl1, 3, kLocal, "", VisitSource::SOURCE_ACTOR},
+       {kUrl1, 2, kBoth}},  // Actor visits are not duplicated with non-actor
+                            // visits.
+      QueryHistory(options));
+}
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 }  // namespace
 

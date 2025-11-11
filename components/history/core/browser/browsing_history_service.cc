@@ -24,6 +24,7 @@
 #include "base/types/optional_ref.h"
 #include "base/values.h"
 #include "components/history/core/browser/browsing_history_driver.h"
+#include "components/history/core/browser/features.h"
 #include "components/history/core/browser/history_backend.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/keyed_service/core/service_access_type.h"
@@ -523,19 +524,33 @@ void BrowsingHistoryService::MergeDuplicateResults(
   std::vector<HistoryEntry> deduped;
   deduped.reserve(sorted.size());
 
-  // Maps a URL to the most recent entry on a particular day.
-  std::map<GURL, HistoryEntry*> current_day_entries;
+  // Maps a URL to the most recent entry on a particular day for
+  // non-actor-initiated visits.
+  std::map<GURL, HistoryEntry*> non_actor_current_day_entries;
+  // Same as above, but for actor-initiated visits.
+  std::map<GURL, HistoryEntry*> actor_current_day_entries;
 
-  // Keeps track of the day that `current_day_entries` is holding entries for
-  // in order to handle removing per-day duplicates.
+  // Keeps track of the day that `*_current_day_entries` is holding
+  // entries for in order to handle removing per-day duplicates.
   base::Time current_day_midnight;
 
   for (HistoryEntry& entry : sorted) {
     // Reset the list of found URLs when a visit from a new day is encountered.
     if (current_day_midnight != entry.time.LocalMidnight()) {
-      current_day_entries.clear();
+      non_actor_current_day_entries.clear();
+      actor_current_day_entries.clear();
       current_day_midnight = entry.time.LocalMidnight();
     }
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+    auto& current_day_entries =
+        base::FeatureList::IsEnabled(kBrowsingHistoryActorIntegrationM2) &&
+                entry.is_actor_visit
+            ? actor_current_day_entries
+            : non_actor_current_day_entries;
+#else   // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+    auto& current_day_entries = non_actor_current_day_entries;
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
     // Keep this visit if it's the first visit to this URL on the current day.
     if (current_day_entries.count(entry.url) == 0) {
