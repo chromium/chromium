@@ -224,6 +224,8 @@ void HandoffButtonController::UpdateState(const HandoffButtonState& state,
 
   std::u16string text;
   ImageModel icon;
+  // TODO(crbug.com/454932877): Clean up kClient state changes if button removal
+  // for kClient state is finalized.
   switch (state.controller) {
     case kActor:
       text = l10n_util::GetStringUTF16(IDS_TAKE_OVER_TASK_LABEL);

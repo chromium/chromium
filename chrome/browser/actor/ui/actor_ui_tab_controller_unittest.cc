@@ -71,10 +71,12 @@ class ActorUiTabControllerTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kGlicActorUi,
-        {{features::kGlicActorUiHandoffButtonName, "true"},
-         {features::kGlicActorUiOverlayName, "true"}});
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kGlicHandoffButtonHiddenClientControl, {}},
+         {features::kGlicActorUi,
+          {{features::kGlicActorUiHandoffButtonName, "true"},
+           {features::kGlicActorUiOverlayName, "true"}}}},
+        {});
     profile_ = TestingProfile::Builder().Build();
 
     ON_CALL(mock_tab_, GetBrowserWindowInterface())
@@ -255,13 +257,34 @@ TEST_F(ActorUiTabControllerTest,
   tab_controller()->OnUiTabStateChange(ui_tab_state, base::DoNothing());
 }
 
-TEST_F(ActorUiTabControllerTest,
-       UpdateButtonVisibility_ButtonStaysVisibleWhenClientIsInControl) {
+TEST_F(
+    ActorUiTabControllerTest,
+    UpdateButtonVisibility_ButtonStaysVisibleWhenClientIsInControlAndFeatureDisabled) {
+  base::test::ScopedFeatureList local_list;
+  local_list.InitAndDisableFeature(
+      features::kGlicHandoffButtonHiddenClientControl);
+
   EXPECT_CALL(*tab_controller_factory()->handoff_button_controller(),
               UpdateState(_, /*is_visible=*/true, _));
 
   HandoffButtonState client_control_state(
       true, HandoffButtonState::ControlOwnership::kClient);
+  UiTabState new_ui_tab_state(ActorOverlayState(), client_control_state);
+  tab_controller()->OnUiTabStateChange(new_ui_tab_state, base::DoNothing());
+}
+
+TEST_F(ActorUiTabControllerTest,
+       UpdateButtonVisibility_ButtonHidesWhenClientIsInControl) {
+  HandoffButtonState prev_client_control_state(
+      false, HandoffButtonState::ControlOwnership::kActor);
+  UiTabState prev_ui_tab_state(ActorOverlayState(), prev_client_control_state);
+  tab_controller()->OnUiTabStateChange(prev_ui_tab_state, base::DoNothing());
+  HandoffButtonState client_control_state(
+      false, HandoffButtonState::ControlOwnership::kClient);
+
+  EXPECT_CALL(*tab_controller_factory()->handoff_button_controller(),
+              UpdateState(client_control_state, /*is_visible=*/false, _));
+
   UiTabState new_ui_tab_state(ActorOverlayState(), client_control_state);
   tab_controller()->OnUiTabStateChange(new_ui_tab_state, base::DoNothing());
 }

@@ -49,7 +49,8 @@ class ActorUiStateManagerTest : public testing::Test {
   // testing::Test:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kGlicActorUi},
+        /*enabled_features=*/{features::kGlicActorUi,
+                              features::kGlicHandoffButtonHiddenClientControl},
         /*disabled_features=*/{});
     profile_ = TestingProfile::Builder()
                    .AddTestingFactory(
@@ -228,14 +229,14 @@ const auto kActorTaskTestValues = std::vector<
     {ActorTask::State::kPausedByActor,
      UiTabState{
          .actor_overlay = {.is_active = false, .border_glow_visible = false},
-         .handoff_button = {.is_active = true, .controller = kClient},
+         .handoff_button = {.is_active = false, .controller = kClient},
          .tab_indicator_visible = false,
          .border_glow_visible = false,
      }},
     {ActorTask::State::kPausedByUser,
      UiTabState{
          .actor_overlay = {.is_active = false, .border_glow_visible = false},
-         .handoff_button = {.is_active = true, .controller = kClient},
+         .handoff_button = {.is_active = false, .controller = kClient},
          .tab_indicator_visible = false,
          .border_glow_visible = false,
      }},
