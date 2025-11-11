@@ -27,12 +27,16 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
         <cr-composebox-tool-chip
             icon="composebox:deepSearch"
             label="${this.i18n('deepSearch')}"
+            remove-chip-aria-label="${
+      this.i18n('removeToolChipAriaLabel', this.i18n('deepSearch'))}"
             ?visible="${this.inDeepSearchMode_}"
             @click="${this.onDeepSearchClick_}">
         </cr-composebox-tool-chip>
         <cr-composebox-tool-chip
             icon="composebox:nanoBanana"
             label="${this.i18n('createImages')}"
+            remove-chip-aria-label="${
+      this.i18n('removeToolChipAriaLabel', this.i18n('createImages'))}"
             ?visible="${this.inCreateImageMode_}"
             @click="${this.onCreateImageClick_}">
         </cr-composebox-tool-chip>
