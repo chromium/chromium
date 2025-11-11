@@ -416,6 +416,53 @@ suite('ExpandableTiles', () => {
     assertHiddenTileLength(1);
   });
 
+  test('clicking show less with max tiles correctly collapses UI', async () => {
+    // This test reproduces a bug where having max tiles (10) would cause the
+    // "Show less" button to appear on a new row, and clicking it would fail
+    // to collapse the layout correctly, leaving a blank second row.
+    await setUpTest({reflowOnOverflow: true, expandableTilesEnabled: true});
+    await addTiles(MAX_TILES_FOR_CUSTOM_LINKS);  // 10 tiles.
+
+    const showMoreButton = getShowMoreButton();
+    assertTrue(isVisible(showMoreButton));
+
+    // Click "Show more" to expand.
+    showMoreButton!.click();
+    await microtasksFinished();
+
+    // Verify the expanded layout. With 10 tiles and a "Show less" button,
+    // we expect 3 rows on a wide screen (5 columns).
+    const showLessButton = getShowLessButton();
+    assertTrue(isVisible(showLessButton));
+    assertHiddenTileLength(0);
+    const expandedItems =
+        queryAll<HTMLElement>('.tile:not([hidden]), #showLess');
+    assertEquals(MAX_TILES_FOR_CUSTOM_LINKS + 1, expandedItems.length);
+    const firstRowTop = expandedItems[0]!.offsetTop;
+    const secondRowTop = expandedItems[5]!.offsetTop;
+    const thirdRowTop = expandedItems[10]!.offsetTop;
+    assertNotEquals(firstRowTop, secondRowTop);
+    assertNotEquals(secondRowTop, thirdRowTop);
+    const expandedHeight = mostVisited.$.container.offsetHeight;
+
+    // Click "Show less" to collapse.
+    showLessButton!.click();
+    await microtasksFinished();
+
+    // Verify the collapsed layout. We should have 2 rows with 6 tiles and
+    // the "Show more" button.
+    assertTrue(isVisible(getShowMoreButton()));
+    // There are 10 tiles total. When collapsed, 6 are visible. 4 are hidden.
+    assertHiddenTileLength(4);
+    const collapsedItems =
+        queryAll<HTMLElement>('.tile:not([hidden]), #showMore');
+    assertEquals(MAX_TILES_BEFORE_SHOW_MORE + 1 + 1, collapsedItems.length);
+    const collapsedHeight = mostVisited.$.container.offsetHeight;
+    assertNotEquals(
+        expandedHeight, collapsedHeight,
+        'Collapsed layout should be shorter than expanded layout');
+  });
+
   test(
       'show more and show less buttons do not move during drag and drop',
       async () => {
