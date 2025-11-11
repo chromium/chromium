@@ -156,6 +156,12 @@ class EmbedderContextData
                               base::Unretained(this)));
     }
     browser_tracker_->SetBrowserWindowInterface(browser_window_interface);
+
+    // Setting browser window interface to nullptr removes the tracker
+    // after calling the listeners.
+    if (!browser_window_interface) {
+      browser_tracker_.reset();
+    }
   }
 
   void SetTabInterface(tabs::TabInterface* tab_interface) {
@@ -171,6 +177,12 @@ class EmbedderContextData
                               base::Unretained(this)));
     }
     tab_tracker_->SetTabInterface(tab_interface);
+
+    // Setting tab interface to nullptr removes the tracker after
+    // calling the listeners.
+    if (!tab_interface) {
+      tab_tracker_.reset();
+    }
   }
 
   BrowserWindowInterface* GetBrowserWindowInterface() {

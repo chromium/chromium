@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_scope.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
+#include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/sessions/content/session_tab_helper.h"
@@ -36,14 +37,26 @@ namespace {
 inline constexpr int kSidePanelPreferredDefaultWidth = 440;
 
 std::unique_ptr<content::WebContents> CreateWebContents(
-    content::BrowserContext* context) {
-  content::WebContents::CreateParams create_params(context);
+    BrowserWindowInterface* browser_window) {
+  content::WebContents::CreateParams create_params(
+      browser_window->GetProfile());
   std::unique_ptr<content::WebContents> web_contents =
       content::WebContents::Create(create_params);
   web_contents->GetController().LoadURL(
       GURL(chrome::kChromeUIContextualTasksURL), content::Referrer(),
       ui::PAGE_TRANSITION_AUTO_TOPLEVEL, std::string());
+  webui::SetBrowserWindowInterface(web_contents.get(), browser_window);
   return web_contents;
+}
+
+// Take a detached web contents and unset the embedder context data.
+// Detached web contents will no longer have a TabInterface, but the
+// embedder context data will still maintain a tab tracker that needs to
+// be unset.
+void SetBrowserWindowInterface(content::WebContents* web_contents,
+                               BrowserWindowInterface* browser_window) {
+  webui::SetTabInterface(web_contents, nullptr);
+  webui::SetBrowserWindowInterface(web_contents, browser_window);
 }
 
 }  // namespace
@@ -153,6 +166,7 @@ bool ContextualTasksSidePanelCoordinator::IsSidePanelOpenForContextualTask() {
 void ContextualTasksSidePanelCoordinator::TransferWebContentsFromTab(
     const base::Uuid& task_id,
     std::unique_ptr<content::WebContents> web_contents) {
+  SetBrowserWindowInterface(web_contents.get(), browser_window_);
   task_id_to_web_contents_cache_.emplace(
       task_id, std::make_unique<WebContentsCacheItem>(std::move(web_contents),
                                                       /*is_open=*/true));
@@ -263,7 +277,7 @@ content::WebContents* ContextualTasksSidePanelCoordinator::
   if (!base::Contains(task_id_to_web_contents_cache_, task_id)) {
     task_id_to_web_contents_cache_.emplace(
         task_id, std::make_unique<WebContentsCacheItem>(
-                     CreateWebContents(browser_window_->GetProfile()),
+                     CreateWebContents(browser_window_),
                      /*is_open=*/true));
   }
 

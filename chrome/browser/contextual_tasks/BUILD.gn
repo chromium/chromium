@@ -138,6 +138,7 @@ if (!is_android) {
       "//chrome/browser/ui/omnibox",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/webui",
+      "//chrome/browser/ui/webui:webui_util",
       "//components/contextual_tasks/public:feature_list",
       "//components/keyed_service/core",
       "//components/omnibox/browser:mojo_bindings",

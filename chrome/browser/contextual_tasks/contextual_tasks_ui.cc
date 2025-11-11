@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/webui/searchbox/searchbox_handler.h"
+#include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/contextual_tasks_resources.h"
@@ -166,7 +167,7 @@ void ContextualTasksUI::SetThreadTitle(std::optional<std::string> title) {
 }
 
 void ContextualTasksUI::CloseSidePanel() {
-  BrowserWindowInterface* browser = FromWebContents(web_ui()->GetWebContents());
+  auto* browser = webui::GetBrowserWindowInterface(web_ui()->GetWebContents());
   auto* coordinator =
       contextual_tasks::ContextualTasksSidePanelCoordinator::From(browser);
   CHECK(coordinator);
