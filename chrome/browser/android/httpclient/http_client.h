@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <map>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -57,7 +58,7 @@ class HttpClient {
  private:
   void OnSimpleLoaderComplete(ResponseCallback response_callback,
                               network::SimpleURLLoader* simple_loader,
-                              std::unique_ptr<std::string> response);
+                              std::optional<std::string> response);
   void ReleaseUrlLoader(network::SimpleURLLoader* simple_loader);
 
   std::set<std::unique_ptr<network::SimpleURLLoader>, base::UniquePtrComparator>

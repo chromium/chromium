@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -79,7 +80,7 @@ class IntranetRedirectDetector
 
   // Invoked from SimpleURLLoader after download is complete.
   void OnSimpleLoaderComplete(network::SimpleURLLoader* source,
-                              std::unique_ptr<std::string> response_body);
+                              std::optional<std::string> response_body);
 
   // NetworkConnectionTracker::NetworkConnectionObserver
   void OnConnectionChanged(network::mojom::ConnectionType type) override;

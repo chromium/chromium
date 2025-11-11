@@ -5,6 +5,8 @@
 #include "chrome/browser/fast_checkout/fast_checkout_capabilities_fetcher_impl.h"
 
 #include <memory>
+#include <optional>
+#include <string>
 
 #include "base/metrics/histogram_functions.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -108,7 +110,7 @@ bool FastCheckoutCapabilitiesFetcherImpl::IsCacheStale() const {
 
 void FastCheckoutCapabilitiesFetcherImpl::OnFetchComplete(
     base::TimeTicks start_time,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   base::UmaHistogramTimes(kUmaKeyResponseTime,
                           base::TimeTicks::Now() - start_time);
 

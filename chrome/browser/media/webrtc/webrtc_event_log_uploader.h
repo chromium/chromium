@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_MEDIA_WEBRTC_WEBRTC_EVENT_LOG_UPLOADER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/files/file_path.h"
@@ -111,7 +112,7 @@ class WebRtcEventLogUploaderImpl : public WebRtcEventLogUploader {
   // Callback invoked when the file upload has finished.
   // If the |url_loader_| instance it was bound to is deleted before
   // its invocation, the callback will not be called.
-  void OnURLLoadComplete(std::unique_ptr<std::string> response_body);
+  void OnURLLoadComplete(std::optional<std::string> response_body);
 
   // Cleanup and posting of the result callback.
   void ReportResult(bool upload_successful, bool delete_history_file = false);

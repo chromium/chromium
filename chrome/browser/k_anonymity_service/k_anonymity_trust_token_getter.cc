@@ -4,6 +4,8 @@
 
 #include "chrome/browser/k_anonymity_service/k_anonymity_trust_token_getter.h"
 
+#include <optional>
+#include <string>
 #include <string_view>
 
 #include "base/json/json_writer.h"
@@ -218,7 +220,7 @@ void KAnonymityTrustTokenGetter::FetchNonUniqueUserId() {
 }
 
 void KAnonymityTrustTokenGetter::OnFetchedNonUniqueUserId(
-    std::unique_ptr<std::string> response) {
+    std::optional<std::string> response) {
   url_loader_.reset();
   if (!response) {
     RecordTrustTokenGetterAction(
@@ -287,7 +289,7 @@ void KAnonymityTrustTokenGetter::FetchTrustTokenKeyCommitment(
 
 void KAnonymityTrustTokenGetter::OnFetchedTrustTokenKeyCommitment(
     int non_unique_user_id,
-    std::unique_ptr<std::string> response) {
+    std::optional<std::string> response) {
   if (url_loader_->NetError() != net::OK) {
     url_loader_.reset();
     RecordTrustTokenGetterAction(

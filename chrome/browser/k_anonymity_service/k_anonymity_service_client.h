@@ -116,7 +116,7 @@ class KAnonymityServiceClient : public content::KAnonymityServiceDelegate,
   // the OHTTP key for the JoinSet endpoint. The key is cached and then
   // JoinSetCheckTrustTokens is called to continue processing the current
   // request.
-  void OnGotJoinSetOHTTPKey(std::unique_ptr<std::string> response);
+  void OnGotJoinSetOHTTPKey(std::optional<std::string> response);
 
   // Calls the token_getter_ to ensure there is a trust token for the request.
   void JoinSetCheckTrustTokens(OHTTPKeyAndExpiration ohttp_key);
@@ -154,7 +154,7 @@ class KAnonymityServiceClient : public content::KAnonymityServiceDelegate,
   // Asynchronous response containing the OHTTP key for the QuerySet endpoint.
   // The key is cached and then QuerySetsSendRequests is called to continue
   // processing the current request.
-  void OnGotQuerySetOHTTPKey(std::unique_ptr<std::string> response);
+  void OnGotQuerySetOHTTPKey(std::optional<std::string> response);
   // Handles failures in fetching the OHTTP key. Schedules callbacks indicating
   // failure for all requests on the query_queue_.
   void FailFetchingQueryOHTTPKey();

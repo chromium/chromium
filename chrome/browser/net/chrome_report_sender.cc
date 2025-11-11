@@ -4,6 +4,9 @@
 
 #include "chrome/browser/net/chrome_report_sender.h"
 
+#include <optional>
+#include <string>
+
 #include "base/functional/bind.h"
 #include "net/base/load_flags.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -52,7 +55,7 @@ class SimpleURLLoaderOwner {
     OnDone(&response_head, net::OK);
   }
 
-  void OnURLLoaderComplete(std::unique_ptr<std::string> response_body) {
+  void OnURLLoaderComplete(std::optional<std::string> response_body) {
     OnDone(loader_->ResponseInfo(), loader_->NetError());
   }
 

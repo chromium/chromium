@@ -196,7 +196,7 @@ void DetachedResourceRequest::OnRedirectCallback(
 }
 
 void DetachedResourceRequest::OnResponseCallback(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   int net_error = url_loader_->NetError();
   net_error = std::abs(net_error);

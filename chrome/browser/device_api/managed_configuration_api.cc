@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
@@ -88,7 +89,7 @@ class ManagedConfigurationAPI::ManagedConfigurationDownloader {
       const ManagedConfigurationDownloader&) = delete;
 
   void Fetch(const std::string& data_url,
-             base::OnceCallback<void(std::unique_ptr<std::string>)> callback) {
+             base::OnceCallback<void(std::optional<std::string>)> callback) {
     // URLLoaders should be created at UI thread.
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     auto resource_request = std::make_unique<network::ResourceRequest>();
@@ -291,7 +292,7 @@ void ManagedConfigurationAPI::UpdateStoredDataForOrigin(
 
 void ManagedConfigurationAPI::DecodeData(const url::Origin& origin,
                                          const std::string& url_hash,
-                                         std::unique_ptr<std::string> data) {
+                                         std::optional<std::string> data) {
   downloaders_[origin].reset();
   if (!data) {
     return;

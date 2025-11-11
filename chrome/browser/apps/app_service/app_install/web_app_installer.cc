@@ -5,6 +5,8 @@
 #include "chrome/browser/apps/app_service/app_install/web_app_installer.h"
 
 #include <memory>
+#include <optional>
+#include <string>
 #include <variant>
 
 #include "base/barrier_callback.h"
@@ -143,7 +145,7 @@ void WebAppInstaller::OnManifestRetrieved(
     AppInstallData data,
     WebAppInstalledCallback callback,
     std::unique_ptr<network::SimpleURLLoader> url_loader,
-    std::unique_ptr<std::string> response) {
+    std::optional<std::string> response) {
   if (url_loader->NetError() != net::OK) {
     LOG(ERROR) << "Downloading manifest failed for " << data.name
                << " with error code: " << GetResponseCode(url_loader.get());

@@ -5,6 +5,7 @@
 #include "chrome/browser/nearby_sharing/tachyon_ice_config_fetcher.h"
 
 #include <optional>
+#include <string>
 
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
@@ -291,11 +292,12 @@ void TachyonIceConfigFetcher::OnIceServersResponse(
     ::sharing::mojom::IceConfigFetcher::GetIceServersCallback callback,
     const std::string& request_id,
     std::unique_ptr<network::SimpleURLLoader> url_loader,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   std::vector<::sharing::mojom::IceServerPtr> ice_servers;
 
-  if (IsLoaderSuccessful(url_loader.get(), request_id) && response_body)
+  if (IsLoaderSuccessful(url_loader.get(), request_id) && response_body) {
     ice_servers = ParseIceServersResponse(*response_body, request_id);
+  }
 
   sharing::LogWebRtcIceConfigFetched(ice_servers.size());
 

@@ -145,11 +145,12 @@ std::vector<::sharing::mojom::IceServerPtr> ParseIceConfigJson(
 void OnIceServersResponse(
     ::sharing::mojom::IceConfigFetcher::GetIceServersCallback callback,
     std::unique_ptr<network::SimpleURLLoader> url_loader,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   std::vector<::sharing::mojom::IceServerPtr> ice_servers;
 
-  if (IsLoaderSuccessful(url_loader.get()) && response_body)
-    ice_servers = ParseIceConfigJson(*response_body);
+  if (IsLoaderSuccessful(url_loader.get()) && response_body) {
+    ice_servers = ParseIceConfigJson(*std::move(response_body));
+  }
 
   sharing::LogWebRtcIceConfigFetched(ice_servers.size());
 

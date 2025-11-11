@@ -186,7 +186,7 @@ class ChromeJsErrorReportProcessor : public JsErrorReportProcessor {
   void OnRequestComplete(std::unique_ptr<network::SimpleURLLoader> url_loader,
                          base::ScopedClosureRunner callback_runner,
                          base::Time report_time,
-                         std::unique_ptr<std::string> response_body);
+                         std::optional<std::string> response_body);
 
 #endif
 

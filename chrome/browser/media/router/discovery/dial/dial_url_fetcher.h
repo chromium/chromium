@@ -93,7 +93,7 @@ class DialURLFetcher {
   virtual void StartDownload();
 
   // Processes the response and invokes the success or error callback.
-  void ProcessResponse(std::unique_ptr<std::string> response);
+  void ProcessResponse(std::optional<std::string> response);
 
   // Invokes the error callback due to redirect, and aborts the request.
   void ReportRedirectError(const GURL& url_before_redirect,

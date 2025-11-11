@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_DEVICE_API_MANAGED_CONFIGURATION_API_H_
 
 #include <optional>
+#include <string>
 
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
@@ -78,7 +79,7 @@ class ManagedConfigurationAPI : public KeyedService {
   // a callback.
   void DecodeData(const url::Origin& origin,
                   const std::string& url_hash,
-                  std::unique_ptr<std::string> data);
+                  std::optional<std::string> data);
   void ProcessDecodedConfiguration(
       const url::Origin& origin,
       const std::string& url_hash,

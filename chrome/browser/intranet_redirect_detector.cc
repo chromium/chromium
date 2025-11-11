@@ -6,6 +6,8 @@
 
 #include <stddef.h>
 
+#include <optional>
+#include <string>
 #include <utility>
 
 #include "base/command_line.h"
@@ -179,7 +181,7 @@ void IntranetRedirectDetector::FinishSleep() {
 
 void IntranetRedirectDetector::OnSimpleLoaderComplete(
     network::SimpleURLLoader* source,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   // Delete the loader on this function's exit.
   auto it = simple_loaders_.find(source);
   CHECK(it != simple_loaders_.end());

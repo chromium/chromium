@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <sstream>
+#include <string>
 
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
@@ -146,7 +147,7 @@ void SendMessageExpress::OnSendMessageResponse(
     const std::string& request_id,
     std::unique_ptr<network::SimpleURLLoader> url_loader,
     SuccessCallback callback,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   ash::nearby::NearbyHttpStatus http_status(url_loader->NetError(),
                                             url_loader->ResponseInfo());
   bool success =

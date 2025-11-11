@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
@@ -68,7 +69,7 @@ class WebAppInstaller {
                            AppInstallData data,
                            WebAppInstalledCallback callback,
                            std::unique_ptr<network::SimpleURLLoader> url_loader,
-                           std::unique_ptr<std::string> response);
+                           std::optional<std::string> response);
 
   void OnAppInstalled(AppInstallSurface surface,
                       WebAppInstalledCallback callback,

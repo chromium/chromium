@@ -9,6 +9,7 @@
 
 #include "chrome/browser/android/httpclient/http_client.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -116,7 +117,7 @@ void HttpClient::ReleaseUrlLoader(network::SimpleURLLoader* simple_loader) {
 void HttpClient::OnSimpleLoaderComplete(
     HttpClient::ResponseCallback response_callback,
     network::SimpleURLLoader* simple_loader,
-    std::unique_ptr<std::string> response) {
+    std::optional<std::string> response) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   int32_t response_code = 0;
   int32_t net_error_code = simple_loader->NetError();
@@ -143,9 +144,7 @@ void HttpClient::OnSimpleLoaderComplete(
   // We'll not populate the response body in that case.
   std::vector<uint8_t> response_body;
   if (response) {
-    const uint8_t* begin = reinterpret_cast<const uint8_t*>(response->data());
-    const uint8_t* end = begin + response->size();
-    response_body.assign(begin, end);
+    response_body = std::vector<uint8_t>(response->begin(), response->end());
   }
 
   ReleaseUrlLoader(simple_loader);
