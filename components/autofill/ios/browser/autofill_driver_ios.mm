@@ -313,8 +313,8 @@ void AutofillDriverIOS::ApplyFieldAction(
   }
 }
 
-void AutofillDriverIOS::ExtractFormWithField(
-    FieldGlobalId field_id,
+void AutofillDriverIOS::ExtractForm(
+    FormGlobalId form_id,
     base::OnceCallback<void(AutofillDriver*, const std::optional<FormData>&)>
         final_handler) {
   if (!web_frame()) {
@@ -326,12 +326,12 @@ void AutofillDriverIOS::ExtractFormWithField(
     // TODO(crbug.com/455870070): Introduce a `fetchForm` method in the agent
     // that would extract a single form only given the renderer id and replace
     // the call to `fetchFormsFiltered()` with it.
-    router_->ExtractFormWithField(
+    router_->ExtractForm(
         [](autofill::AutofillDriver& request_target,
-           FieldRendererId field_renderer_id,
+           FormRendererId form_renderer_id,
            AutofillDriverRouter::RendererFormHandler renderer_form_handler) {
           auto completion_handler = base::BindOnce(
-              [&](FieldRendererId field_renderer_id,
+              [&](FormRendererId form_renderer_id,
                   AutofillDriverRouter::RendererFormHandler
                       renderer_form_handler,
                   std::optional<std::vector<FormData>> forms) {
@@ -339,16 +339,13 @@ void AutofillDriverIOS::ExtractFormWithField(
                   std::move(renderer_form_handler).Run(std::nullopt);
                   return;
                 }
-                auto it =
-                    std::ranges::find_if(*forms, [&](const FormData& form) {
-                      return base::Contains(form.fields(), field_renderer_id,
-                                            &FormFieldData::renderer_id);
-                    });
+                auto it = std::ranges::find(*forms, form_renderer_id,
+                                            &FormData::renderer_id);
                 std::move(renderer_form_handler)
                     .Run(it == forms->end() ? std::nullopt
                                             : std::optional(std::move(*it)));
               },
-              field_renderer_id, std::move(renderer_form_handler));
+              form_renderer_id, std::move(renderer_form_handler));
 
           auto& source = static_cast<AutofillDriverIOS&>(request_target);
           [source.bridge_ fetchFormsFiltered:NO
@@ -356,7 +353,7 @@ void AutofillDriverIOS::ExtractFormWithField(
                                      inFrame:source.web_frame()
                            completionHandler:std::move(completion_handler)];
         },
-        field_id, WithNewVersion(std::move(final_handler)));
+        form_id, WithNewVersion(std::move(final_handler)));
   } else {
     std::move(final_handler).Run(nullptr, std::nullopt);
   }

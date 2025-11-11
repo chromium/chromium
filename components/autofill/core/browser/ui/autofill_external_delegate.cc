@@ -804,7 +804,8 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       if (AutofillComposeDelegate* delegate =
               manager_->client().GetComposeDelegate()) {
         delegate->OpenCompose(
-            manager_->driver(), query_field_.global_id(),
+            manager_->driver(), query_field_.renderer_form_id(),
+            query_field_.global_id(),
             AutofillComposeDelegate::UiEntryPoint::kAutofillPopup);
       }
       break;

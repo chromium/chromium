@@ -184,8 +184,8 @@ class FakeAutofillAgent : public mojom::AutofillAgent {
               (base::OnceCallback<void(bool)>),
               (override));
   MOCK_METHOD(void,
-              ExtractFormWithField,
-              (FieldRendererId,
+              ExtractForm,
+              (FormRendererId,
                base::OnceCallback<void(const std::optional<FormData>&)>),
               (override));
   MOCK_METHOD(void,
@@ -838,29 +838,27 @@ TEST_F(ContentAutofillDriverTest, TriggerFormExtractionInAllFrames) {
 }
 
 TEST_F(ContentAutofillDriverWithMultiFrameCreditCardForm,
-       ExtractFormWithField_NotFound) {
+       ExtractForm_NotFound) {
   using RendererResponseHandler =
       base::OnceCallback<void(const std::optional<FormData>&)>;
   using BrowserResponseHandler = AutofillDriver::BrowserFormHandler;
-  EXPECT_CALL(agent(), ExtractFormWithField)
+  EXPECT_CALL(agent(), ExtractForm)
       .WillRepeatedly(
-          [](FieldRendererId field_id, RendererResponseHandler callback) {
+          [](FormRendererId form_id, RendererResponseHandler callback) {
             std::move(callback).Run(std::nullopt);
           });
   base::MockCallback<BrowserResponseHandler> cb;
   EXPECT_CALL(cb, Run(IsNull(), Eq(std::nullopt)));
-  driver().browser_events().ExtractFormWithField(test::MakeFieldGlobalId(),
-                                                 cb.Get());
+  driver().browser_events().ExtractForm(test::MakeFormGlobalId(), cb.Get());
 }
 
-TEST_F(ContentAutofillDriverWithMultiFrameCreditCardForm,
-       ExtractFormWithField_Found) {
+TEST_F(ContentAutofillDriverWithMultiFrameCreditCardForm, ExtractForm_Found) {
   using RendererResponseHandler =
       base::OnceCallback<void(const std::optional<FormData>&)>;
   using BrowserResponseHandler = AutofillDriver::BrowserFormHandler;
-  EXPECT_CALL(agent(rfh(kNumber)), ExtractFormWithField)
+  EXPECT_CALL(agent(rfh(kNumber)), ExtractForm)
       .WillRepeatedly(
-          [this](FieldRendererId field_id, RendererResponseHandler callback) {
+          [this](FormRendererId form_id, RendererResponseHandler callback) {
             std::move(callback).Run(form(kNumber));
           });
   base::MockCallback<BrowserResponseHandler> cb;
@@ -877,9 +875,7 @@ TEST_F(ContentAutofillDriverWithMultiFrameCreditCardForm,
                                &FormFieldData::global_id, field_id(kExp)),
                       Property("FormFieldData::global_id",
                                &FormFieldData::global_id, field_id(kCvc)))))));
-  driver(main_frame())
-      .browser_events()
-      .ExtractFormWithField(field_id(kNumber), cb.Get());
+  driver(main_frame()).browser_events().ExtractForm(form_id(kNumber), cb.Get());
   task_environment()->RunUntilIdle();
 }
 

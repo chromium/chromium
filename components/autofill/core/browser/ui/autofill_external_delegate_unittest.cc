@@ -2354,7 +2354,8 @@ TEST_F(AutofillExternalDelegateTest, ExternalDelegateOpensComposeAndFills) {
   // Simulate accepting a Compose suggestion.
   EXPECT_CALL(
       compose_delegate,
-      OpenCompose(_, queried_field().global_id(),
+      OpenCompose(_, queried_field().renderer_form_id(),
+                  queried_field().global_id(),
                   AutofillComposeDelegate::UiEntryPoint::kAutofillPopup));
   EXPECT_CALL(
       autofill_client(),

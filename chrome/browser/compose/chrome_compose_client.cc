@@ -961,7 +961,8 @@ void ChromeComposeClient::OnWebContentsFocused(
       if (auto* driver = autofill::ContentAutofillDriver::GetForRenderFrameHost(
               top_level_frame)) {
         GetManager().OpenCompose(
-            *driver, active_compose_ids_.value().first,
+            *driver, active_compose_ids_.value().second,
+            active_compose_ids_.value().first,
             compose::ComposeManagerImpl::UiEntryPoint::kContextMenu);
       }
     }

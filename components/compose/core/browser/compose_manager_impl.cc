@@ -64,14 +64,15 @@ ComposeManagerImpl::ComposeManagerImpl(ComposeClient* client)
 ComposeManagerImpl::~ComposeManagerImpl() = default;
 
 void ComposeManagerImpl::OpenCompose(AutofillDriver& driver,
+                                     FormGlobalId form_id,
                                      FieldGlobalId field_id,
                                      UiEntryPoint entry_point) {
   if (entry_point == UiEntryPoint::kContextMenu) {
     client_->GetPageUkmTracker()->MenuItemClicked();
     LogComposeContextMenuCtr(ComposeContextMenuCtrEvent::kMenuItemClicked);
   }
-  driver.ExtractFormWithField(
-      field_id,
+  driver.ExtractForm(
+      form_id,
       base::BindOnce(&ComposeManagerImpl::OpenComposeWithUpdatedSelection,
                      weak_ptr_factory_.GetWeakPtr(), field_id, entry_point));
 }
@@ -104,9 +105,9 @@ void ComposeManagerImpl::OpenComposeWithUpdatedSelection(
                              autofill::mojom::ActionPersistence::kFill,
                              field_id, u"");
 
-    // Calling `driver->ExtractFormWithField()` here does not always pick up the
-    // newly selected text when the form is in an IFRAME. Instead, just edit
-    // form data manually to reflect the newly selected text.
+    // Calling `driver->ExtractForm()` here does not always pick up the newly
+    // selected text when the form is in an IFRAME. Instead, just edit form data
+    // manually to reflect the newly selected text.
     std::optional<autofill::FormData> updated_form_data = form_data;
     std::vector<autofill::FormFieldData> fields =
         updated_form_data->ExtractFields();

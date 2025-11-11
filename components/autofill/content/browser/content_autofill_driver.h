@@ -224,8 +224,8 @@ class ContentAutofillDriver : public AutofillDriver,
   void DispatchEmailVerifiedEvent(
       FieldGlobalId field_id,
       const std::string& presentation_token) override;
-  void ExtractFormWithField(FieldGlobalId field_id,
-                            BrowserFormHandler final_handler) override;
+  void ExtractForm(FormGlobalId form,
+                   BrowserFormHandler final_handler) override;
   void RendererShouldAcceptDataListSuggestion(
       const FieldGlobalId& field_id,
       const std::u16string& value) override;

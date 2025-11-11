@@ -171,10 +171,9 @@ class AutofillAgent : public content::RenderFrameObserver,
                         mojom::ActionPersistence action_persistence,
                         FieldRendererId field_id,
                         const std::u16string& value) override;
-  void ExtractFormWithField(
-      FieldRendererId field_id,
-      base::OnceCallback<void(const std::optional<FormData>&)> callback)
-      override;
+  void ExtractForm(FormRendererId form,
+                   base::OnceCallback<void(const std::optional<FormData>&)>
+                       callback) override;
   void ExtractLabeledTextNodeValue(
       const std::u16string& value_regex,
       const std::u16string& label_regex,

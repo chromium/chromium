@@ -194,8 +194,8 @@ class AutofillDriverIOSTest : public web::WebTest {
   raw_ptr<AutofillDriverIOS> iframe_driver_ = nullptr;
 };
 
-// Test when ExtractFormWithField() is called and where the form is found.
-TEST_F(AutofillDriverIOSTest, ExtractFormWithField_FormFound) {
+// Test when ExtractForm() is called and where the form is found.
+TEST_F(AutofillDriverIOSTest, ExtractForm_FormFound) {
   FormData iframe_form = MakeForm(/*main_frame=*/false);
   FormData main_frame_form = MakeForm(/*main_frame=*/true);
 
@@ -236,19 +236,21 @@ TEST_F(AutofillDriverIOSTest, ExtractFormWithField_FormFound) {
                                                   u"Iframe field extracted"),
                                          Property(&FormFieldData::value,
                                                   u"Main frame field")))))));
-  main_frame_driver()->ExtractFormWithField(iframe_form.fields()[0].global_id(),
-                                            final_callback.Get());
+  main_frame_driver()->ExtractForm(iframe_form.global_id(),
+                                   final_callback.Get());
 }
 
 // Test the case where the bridge returns forms, but not the one we want.
-TEST_F(AutofillDriverIOSTest, ExtractFormWithField_FormNotFound) {
-  FieldGlobalId field_id{main_frame_driver()->GetFrameToken(),
-                         test::MakeFieldRendererId()};
+TEST_F(AutofillDriverIOSTest, ExtractForm_FormNotFound) {
+  FormGlobalId form_id{main_frame_driver()->GetFrameToken(),
+                       test::MakeFormRendererId()};
   FormData form_not_to_find = MakeForm(/*main_frame=*/true);
 
-  // Setup the forms that the bridge should return upon calling
-  // fetchFormsFiltered().
   std::vector<FormData> bridge_result = {form_not_to_find};
+
+  // Setup the forms that the bridge should return upon calling
+  // fetchFormsFiltered(). This should be the form created above with
+  // `other_form_id`.
   [bridge() setForms:(bridge_result)];
 
   // Notify the driver of seeing this form so that the router can register it
@@ -261,7 +263,7 @@ TEST_F(AutofillDriverIOSTest, ExtractFormWithField_FormNotFound) {
       base::OnceCallback<void(AutofillDriver*, const std::optional<FormData>&)>>
       final_callback;
   EXPECT_CALL(final_callback, Run(nullptr, Eq(std::nullopt)));
-  main_frame_driver()->ExtractFormWithField(field_id, final_callback.Get());
+  main_frame_driver()->ExtractForm(form_id, final_callback.Get());
 }
 
 }  // namespace

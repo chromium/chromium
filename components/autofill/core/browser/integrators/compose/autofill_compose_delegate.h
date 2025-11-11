@@ -43,6 +43,7 @@ class AutofillComposeDelegate {
   // Opens the Compose UI from the `ui_entry_point` given the 'driver',
   // 'form_id', and 'field_id'.
   virtual void OpenCompose(AutofillDriver& driver,
+                           FormGlobalId form_id,
                            FieldGlobalId field_id,
                            UiEntryPoint ui_entry_point) = 0;
 

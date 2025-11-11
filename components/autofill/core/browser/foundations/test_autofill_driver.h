@@ -97,8 +97,8 @@ class TestAutofillDriverTemplate : public T {
   void TriggerFormExtractionInAllFrames(
       base::OnceCallback<void(bool)> form_extraction_finished_callback)
       override {}
-  void ExtractFormWithField(
-      FieldGlobalId field_id,
+  void ExtractForm(
+      FormGlobalId form,
       AutofillDriver::BrowserFormHandler response_handler) override {}
   void GetFourDigitCombinationsFromDom(
       base::OnceCallback<void(const std::vector<std::string>&)>

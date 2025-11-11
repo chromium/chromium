@@ -502,11 +502,11 @@ void AutofillDriverRouter::ApplyFieldAction(
   }
 }
 
-void AutofillDriverRouter::ExtractFormWithField(
-    RoutedCallback<FieldRendererId, RendererFormHandler> callback,
-    FieldGlobalId field_id,
+void AutofillDriverRouter::ExtractForm(
+    RoutedCallback<FormRendererId, RendererFormHandler> callback,
+    FormGlobalId form_id,
     BrowserFormHandler browser_form_handler) {
-  if (auto* target = DriverOfFrame(field_id.frame_token)) {
+  if (auto* target = DriverOfFrame(form_id.frame_token)) {
     // `renderer_form_handler` converts a received renderer `form` into a
     // browser form and passes that to `browser_form_handler`.
     // Binding `*this` and `*target` is safe because
@@ -529,7 +529,7 @@ void AutofillDriverRouter::ExtractFormWithField(
           std::move(browser_form_handler).Run(response_target, browser_form);
         },
         raw_ref(*this), raw_ref(*target), std::move(browser_form_handler));
-    callback(*target, field_id.renderer_id, std::move(renderer_form_handler));
+    callback(*target, form_id.renderer_id, std::move(renderer_form_handler));
   } else {
     std::move(browser_form_handler).Run(nullptr, std::nullopt);
   }
