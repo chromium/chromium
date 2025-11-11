@@ -44,21 +44,30 @@ BASE_FEATURE(kAutofillAddressSuggestionsOnTyping,
 
 // This parameter enables updating the minimum number of characters a user needs
 // to type to maybe see an Autofill on typing suggestion.
-const base::FeatureParam<int> kAutofillOnTypingMinNumberCharactersToMatch{
-    &kAutofillAddressSuggestionsOnTyping, "min_number_characters_to_match", 3};
+BASE_FEATURE_PARAM(int,
+                   kAutofillOnTypingMinNumberCharactersToMatch,
+                   &kAutofillAddressSuggestionsOnTyping,
+                   "min_number_characters_to_match",
+                   3);
 
 // This parameter enables updating the maximum number of characters typed until
 // Autofill on typing suggestions are no longer displayed.
-const base::FeatureParam<int> kAutofillOnTypingMaxNumberCharactersToMatch{
-    &kAutofillAddressSuggestionsOnTyping, "max_number_characters_to_match", 10};
+BASE_FEATURE_PARAM(int,
+                   kAutofillOnTypingMaxNumberCharactersToMatch,
+                   &kAutofillAddressSuggestionsOnTyping,
+                   "max_number_characters_to_match",
+                   10);
 
 // This parameter enables updating the required number of characters that need
 // to be missing between the typed data and the profile data. This makes sure
 // the value offered by the feature is higher, by for example not displaying a
 // suggestion to fill "Tomas" when the user typed "Tom", since at this point
 // users are more likely to simply finish typing.
-const base::FeatureParam<int> kAutofillOnTypingMinMissingCharactersNumber{
-    &kAutofillAddressSuggestionsOnTyping, "min_missing_characters_number", 5};
+BASE_FEATURE_PARAM(int,
+                   kAutofillOnTypingMinMissingCharactersNumber,
+                   &kAutofillAddressSuggestionsOnTyping,
+                   "min_missing_characters_number",
+                   5);
 
 // This parameter enables updating the field types offered in Autofill on typing
 // suggestions. Field types are defined as enums, so this parameter should be a
@@ -66,8 +75,11 @@ const base::FeatureParam<int> kAutofillOnTypingMinMissingCharactersNumber{
 // cannot be parsed or some value is out of bound of the field types enum, the
 // param is ignored. When this param is an empty string (default value), a
 // default list of field types is used.
-const base::FeatureParam<std::string> kAutofillOnTypingFieldTypes{
-    &kAutofillAddressSuggestionsOnTyping, "field_types", ""};
+BASE_FEATURE_PARAM(std::string,
+                   kAutofillOnTypingFieldTypes,
+                   &kAutofillAddressSuggestionsOnTyping,
+                   "field_types",
+                   "");
 
 // Feature flag to controls whether Autofill on typing suggestions will have a
 // strike database.
@@ -137,16 +149,18 @@ BASE_FEATURE(kAutofillAiFillingSurvey, base::FEATURE_DISABLED_BY_DEFAULT);
 // When enabled, a HaTS survey is shown after the save prompt for a walletable
 // entity was interacted with.
 BASE_FEATURE(kAutofillAiSavePromptSurvey, base::FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<std::string>
-    kAutofillAiSavePromptSurveyAcceptedTriggerId{
-        &kAutofillAiSavePromptSurvey,
-        "autofill_ai_walletable_entity_save_prompt_survey_accepted_trigger_id",
-        ""};
-const base::FeatureParam<std::string>
-    kAutofillAiSavePromptSurveyDeclinedTriggerId{
-        &kAutofillAiSavePromptSurvey,
-        "autofill_ai_walletable_entity_save_prompt_survey_declined_trigger_id",
-        ""};
+BASE_FEATURE_PARAM(
+    std::string,
+    kAutofillAiSavePromptSurveyAcceptedTriggerId,
+    &kAutofillAiSavePromptSurvey,
+    "autofill_ai_walletable_entity_save_prompt_survey_accepted_trigger_id",
+    "");
+BASE_FEATURE_PARAM(
+    std::string,
+    kAutofillAiSavePromptSurveyDeclinedTriggerId,
+    &kAutofillAiSavePromptSurvey,
+    "autofill_ai_walletable_entity_save_prompt_survey_declined_trigger_id",
+    "");
 
 // If enabled, no GeoIp requirements are imposed for AutofillAi.
 // Note that this feature can be modified as follows (all assuming that
@@ -164,11 +178,16 @@ const base::FeatureParam<std::string>
 // `GeoIpCountryCode`.)
 BASE_FEATURE(kAutofillAiIgnoreGeoIp, base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::FeatureParam<std::string> kAutofillAiIgnoreGeoIpAllowlist{
-    &kAutofillAiIgnoreGeoIp, "autofill_ai_geo_ip_allowlist", ""};
-
-const base::FeatureParam<std::string> kAutofillAiIgnoreGeoIpBlocklist{
-    &kAutofillAiIgnoreGeoIp, "autofill_ai_geo_ip_blocklist", ""};
+BASE_FEATURE_PARAM(std::string,
+                   kAutofillAiIgnoreGeoIpAllowlist,
+                   &kAutofillAiIgnoreGeoIp,
+                   "autofill_ai_geo_ip_allowlist",
+                   "");
+BASE_FEATURE_PARAM(std::string,
+                   kAutofillAiIgnoreGeoIpBlocklist,
+                   &kAutofillAiIgnoreGeoIp,
+                   "autofill_ai_geo_ip_blocklist",
+                   "");
 
 // If enabled, no locale requirements are imposed for AutofillAi.
 BASE_FEATURE(kAutofillAiIgnoreLocale, base::FEATURE_ENABLED_BY_DEFAULT);
@@ -218,32 +237,48 @@ BASE_FEATURE(kAutofillAiWalletVehicleRegistration,
 // the local cache. NOTE: It is advisable to choose a value that is at least as
 // large as the cache duration for Autofill server responses to limit cases in
 // which the model is run multiple times for the same form.
-const base::FeatureParam<base::TimeDelta> kAutofillAiServerModelCacheAge{
-    &kAutofillAiServerModel, "autofill_ai_model_cache_age", base::Days(7)};
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kAutofillAiServerModelCacheAge,
+                   &kAutofillAiServerModel,
+                   "autofill_ai_model_cache_age",
+                   base::Days(7));
 
 // The maximum size of the AutofillAI server model cache.
-const base::FeatureParam<int> kAutofillAiServerModelCacheSize{
-    &kAutofillAiServerModel, "autofill_ai_model_cache_size", 100};
+BASE_FEATURE_PARAM(int,
+                   kAutofillAiServerModelCacheSize,
+                   &kAutofillAiServerModel,
+                   "autofill_ai_model_cache_size",
+                   100);
 
 // The timeout for running the AutofillAI server model.
-const base::FeatureParam<base::TimeDelta>
-    kAutofillAiServerModelExecutionTimeout{
-        &kAutofillAiServerModel, "autofill_ai_model_execution_timeout",
-        base::Seconds(60)};
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kAutofillAiServerModelExecutionTimeout,
+                   &kAutofillAiServerModel,
+                   "autofill_ai_model_execution_timeout",
+                   base::Seconds(60));
 
 // Whether AnnotatedPageContent is included in the request to the AutofillAI
 // model.
-const base::FeatureParam<bool> kAutofillAiServerModelSendPageContent{
-    &kAutofillAiServerModel, "autofill_ai_model_send_apc", true};
+BASE_FEATURE_PARAM(bool,
+                   kAutofillAiServerModelSendPageContent,
+                   &kAutofillAiServerModel,
+                   "autofill_ai_model_send_apc",
+                   true);
 
 // Whether the page's full URL is included in the data sent to the model.
-const base::FeatureParam<bool> kAutofillAiServerModelSendPageUrl{
-    &kAutofillAiServerModel, "autofill_ai_model_send_page_url", false};
+BASE_FEATURE_PARAM(bool,
+                   kAutofillAiServerModelSendPageUrl,
+                   &kAutofillAiServerModel,
+                   "autofill_ai_model_send_page_url",
+                   false);
 
 // Whether the user may use the locally cached results from the server model
 // to provide AutofillAI predictions for filling and importing.
-const base::FeatureParam<bool> kAutofillAiServerModelUseCacheResults{
-    &kAutofillAiServerModel, "autofill_ai_model_use_cache_results", false};
+BASE_FEATURE_PARAM(bool,
+                   kAutofillAiServerModelUseCacheResults,
+                   &kAutofillAiServerModel,
+                   "autofill_ai_model_use_cache_results",
+                   false);
 
 // If enabled, votes for prefix and suffix lengths of identification number
 // fields are uploaded. For example, if there's a passport with number CX1235987
@@ -266,9 +301,11 @@ BASE_FEATURE(kAutofillAiWithDataSchema,
 // This parameter enables adding an experiment id to requests to the Autofill
 // to enable Autofill AI predictions. The experiment id is not used for other
 // backends.
-const base::FeatureParam<int> kAutofillAiWithDataSchemaServerExperimentId{
-    &kAutofillAiWithDataSchema, "autofill_ai_server_experiment_id",
-    IS_AUTOFILL_AI_PLATFORM ? 3314871 : 0};
+BASE_FEATURE_PARAM(int,
+                   kAutofillAiWithDataSchemaServerExperimentId,
+                   &kAutofillAiWithDataSchema,
+                   "autofill_ai_server_experiment_id",
+                   IS_AUTOFILL_AI_PLATFORM ? 3314871 : 0);
 
 // Guards the refactoring to allow showing Autofill and Password suggestions in
 // the same surface instead of being mutually exclusive.
@@ -411,14 +448,19 @@ BASE_FEATURE(kAutofillEnableSupportForNameAndEmail,
 
 // The number of times after which, a never accepted `kAccountNameEmail`
 // suggestion will result in the `kAccountNameEmail` profile being deleted.
-const base::FeatureParam<int> kAutofillNameAndEmailProfileNotSelectedThreshold{
-    &kAutofillEnableSupportForNameAndEmail, "rejection_threshold", 10};
+BASE_FEATURE_PARAM(int,
+                   kAutofillNameAndEmailProfileNotSelectedThreshold,
+                   &kAutofillEnableSupportForNameAndEmail,
+                   "rejection_threshold",
+                   10);
 
 // The pattern used to remove nicknames from the account full name before
 // creating the kAccountNameEmail profile.
-const base::FeatureParam<std::string> kAutofillNameAndEmailProfileNicknameRegex{
-    &kAutofillEnableSupportForNameAndEmail, "nickname_regex",
-    R"(\s+\([^)]*\)|\s+\"[^\"]*\")"};
+BASE_FEATURE_PARAM(std::string,
+                   kAutofillNameAndEmailProfileNicknameRegex,
+                   &kAutofillEnableSupportForNameAndEmail,
+                   "nickname_regex",
+                   R"(\s+\([^)]*\)|\s+\"[^\"]*\")");
 
 // When enabled, the autofill suggestion labels are more descriptive and
 // relevant.
@@ -427,18 +469,21 @@ BASE_FEATURE(kAutofillImprovedLabels, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls whether main text should also be improved or not.
 // TODO(crbug.com/380273791): Clean up when launched.
-const base::FeatureParam<bool>
-    kAutofillImprovedLabelsParamWithoutMainTextChangesParam{
-        &kAutofillImprovedLabels,
-        "autofill_improved_labels_without_main_text_changes", false};
+BASE_FEATURE_PARAM(bool,
+                   kAutofillImprovedLabelsParamWithoutMainTextChangesParam,
+                   &kAutofillImprovedLabels,
+                   "autofill_improved_labels_without_main_text_changes",
+                   false);
 
 // Controls whether differentiating labels should be shown before or after the
 // improved labels.
 // TODO(crbug.com/380273791): Clean up when launched.
-const base::FeatureParam<bool>
-    kAutofillImprovedLabelsParamWithDifferentiatingLabelsInFrontParam{
-        &kAutofillImprovedLabels,
-        "autofill_improved_labels_with_differentiating_labels_in_front", false};
+BASE_FEATURE_PARAM(
+    bool,
+    kAutofillImprovedLabelsParamWithDifferentiatingLabelsInFrontParam,
+    &kAutofillImprovedLabels,
+    "autofill_improved_labels_with_differentiating_labels_in_front",
+    false);
 
 // If enabled, the new suggestion generation logic is used.
 // TODO(crbug.com/409962888): Remove once launched.
@@ -616,43 +661,67 @@ BASE_FEATURE(kAutofillEnableAblationStudy, base::FEATURE_DISABLED_BY_DEFAULT);
 // The following parameters are only effective if the study is enabled.
 // If "enabled_for_addresses" is true this means that the ablation study is
 // enabled for addresses meaning that autofill may be disabled on some forms.
-const base::FeatureParam<bool> kAutofillAblationStudyEnabledForAddressesParam{
-    &kAutofillEnableAblationStudy, "enabled_for_addresses", false};
-const base::FeatureParam<bool> kAutofillAblationStudyEnabledForPaymentsParam{
-    &kAutofillEnableAblationStudy, "enabled_for_payments", false};
+BASE_FEATURE_PARAM(bool,
+                   kAutofillAblationStudyEnabledForAddressesParam,
+                   &kAutofillEnableAblationStudy,
+                   "enabled_for_addresses",
+                   false);
+BASE_FEATURE_PARAM(bool,
+                   kAutofillAblationStudyEnabledForPaymentsParam,
+                   &kAutofillEnableAblationStudy,
+                   "enabled_for_payments",
+                   false);
 // The ratio of ablation_weight_per_mille / 1000 determines the chance of
 // autofill being disabled on a given combination of site * time_window * client
 // session. E.g. an ablation_weight_per_mille = 10 means that there is a 1%
 // ablation chance.
-const base::FeatureParam<int> kAutofillAblationStudyAblationWeightPerMilleParam{
-    &kAutofillEnableAblationStudy, "ablation_weight_per_mille", 0};
+BASE_FEATURE_PARAM(int,
+                   kAutofillAblationStudyAblationWeightPerMilleParam,
+                   &kAutofillEnableAblationStudy,
+                   "ablation_weight_per_mille",
+                   0);
 // If not 0, the kAutofillAblationStudyAblationWeightPerMilleListXParam
 // specify the ablation chances for sites that are on the respective list X.
 // These parameters are different from
 // kAutofillAblationStudyAblationWeightPerMilleParam which applies to all
 // domains.
-const base::FeatureParam<int>
-    kAutofillAblationStudyAblationWeightPerMilleList1Param{
-        &kAutofillEnableAblationStudy, "ablation_weight_per_mille_param1", 0};
-const base::FeatureParam<int>
-    kAutofillAblationStudyAblationWeightPerMilleList2Param{
-        &kAutofillEnableAblationStudy, "ablation_weight_per_mille_param2", 0};
-const base::FeatureParam<int>
-    kAutofillAblationStudyAblationWeightPerMilleList3Param{
-        &kAutofillEnableAblationStudy, "ablation_weight_per_mille_param3", 0};
-const base::FeatureParam<int>
-    kAutofillAblationStudyAblationWeightPerMilleList4Param{
-        &kAutofillEnableAblationStudy, "ablation_weight_per_mille_param4", 0};
-const base::FeatureParam<int>
-    kAutofillAblationStudyAblationWeightPerMilleList5Param{
-        &kAutofillEnableAblationStudy, "ablation_weight_per_mille_param5", 0};
-const base::FeatureParam<int>
-    kAutofillAblationStudyAblationWeightPerMilleList6Param{
-        &kAutofillEnableAblationStudy, "ablation_weight_per_mille_param6", 0};
+BASE_FEATURE_PARAM(int,
+                   kAutofillAblationStudyAblationWeightPerMilleList1Param,
+                   &kAutofillEnableAblationStudy,
+                   "ablation_weight_per_mille_param1",
+                   0);
+BASE_FEATURE_PARAM(int,
+                   kAutofillAblationStudyAblationWeightPerMilleList2Param,
+                   &kAutofillEnableAblationStudy,
+                   "ablation_weight_per_mille_param2",
+                   0);
+BASE_FEATURE_PARAM(int,
+                   kAutofillAblationStudyAblationWeightPerMilleList3Param,
+                   &kAutofillEnableAblationStudy,
+                   "ablation_weight_per_mille_param3",
+                   0);
+BASE_FEATURE_PARAM(int,
+                   kAutofillAblationStudyAblationWeightPerMilleList4Param,
+                   &kAutofillEnableAblationStudy,
+                   "ablation_weight_per_mille_param4",
+                   0);
+BASE_FEATURE_PARAM(int,
+                   kAutofillAblationStudyAblationWeightPerMilleList5Param,
+                   &kAutofillEnableAblationStudy,
+                   "ablation_weight_per_mille_param5",
+                   0);
+BASE_FEATURE_PARAM(int,
+                   kAutofillAblationStudyAblationWeightPerMilleList6Param,
+                   &kAutofillEnableAblationStudy,
+                   "ablation_weight_per_mille_param6",
+                   0);
 // If true, the ablation study runs as an A/A study (no behavioral changes) but
 // clients are assigned to the respective groups.
-const base::FeatureParam<bool> kAutofillAblationStudyIsDryRun{
-    &kAutofillEnableAblationStudy, "ablation_study_is_dry_run", false};
+BASE_FEATURE_PARAM(bool,
+                   kAutofillAblationStudyIsDryRun,
+                   &kAutofillEnableAblationStudy,
+                   "ablation_study_is_dry_run",
+                   false);
 // Improves the selection of phone country codes by also considering address
 // country codes / names.
 // See GetStreetAddressForInput() in field_filling_address_util.cc for a details
@@ -665,8 +734,11 @@ BASE_FEATURE(kAutofillEnableFillingPhoneCountryCodesByAddressCountryCodes,
 // i.e. its shadow becomes more emphasized, position is also updated.
 // TODO(crbug.com/40235454): Remove once the experiment is over.
 BASE_FEATURE(kAutofillMoreProminentPopup, base::FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<int> kAutofillMoreProminentPopupMaxOffsetToCenterParam{
-    &kAutofillMoreProminentPopup, "max_offset_to_center_px", 92};
+BASE_FEATURE_PARAM(int,
+                   kAutofillMoreProminentPopupMaxOffsetToCenterParam,
+                   &kAutofillMoreProminentPopup,
+                   "max_offset_to_center_px",
+                   92);
 
 // TODO(crbug.com/346507576): Remove once the experiment is over.
 // When enabled, makes autocomplete label sensitive.
@@ -676,10 +748,11 @@ BASE_FEATURE(kAutofillLabelSensitiveAutocomplete,
 // If the migration generation received from the Finch server is greater than
 // the stored browser parameter, re-migrate AutocompleteTableLabelSensitive data
 // from the old AutocompleteTable.
-const base::FeatureParam<int>
-    kAutofillLabelSensitiveAutocompleteMigrationGeneration{
-        &kAutofillLabelSensitiveAutocomplete,
-        "autocomplete_label_sensitive_migration_generation", 0};
+BASE_FEATURE_PARAM(int,
+                   kAutofillLabelSensitiveAutocompleteMigrationGeneration,
+                   &kAutofillLabelSensitiveAutocomplete,
+                   "autocomplete_label_sensitive_migration_generation",
+                   0);
 
 // Enable the feature by default, and set the enabled percentage as a feature
 // param. We are logging information of field types, autofill status and
@@ -688,8 +761,11 @@ const base::FeatureParam<int>
 // https://docs.google.com/document/d/1ZH0JbL6bES3cD4KqZWsGR6n8I-rhnkx6no6nQOgYq5w/.
 BASE_FEATURE(kAutofillLogUKMEventsWithSamplingOnSession,
              base::FEATURE_ENABLED_BY_DEFAULT);
-const base::FeatureParam<int> kAutofillLogUKMEventsWithSamplingOnSessionRate{
-    &kAutofillLogUKMEventsWithSamplingOnSession, "sampling_rate", 10};
+BASE_FEATURE_PARAM(int,
+                   kAutofillLogUKMEventsWithSamplingOnSessionRate,
+                   &kAutofillLogUKMEventsWithSamplingOnSession,
+                   "sampling_rate",
+                   10);
 
 // Controls whether user tap on an element is needed to show autofill
 // suggestions. If enabled, this flag would disable android autofill suggestions
@@ -709,21 +785,38 @@ BASE_FEATURE(kAutofillAndroidDisableSuggestionsOnJSFocus,
 // kAutofillEnableCacheForRegexMatchingCacheSizeParam.
 BASE_FEATURE(kAutofillEnableCacheForRegexMatching,
              base::FEATURE_ENABLED_BY_DEFAULT);
-const base::FeatureParam<int>
-    kAutofillEnableCacheForRegexMatchingCacheSizeParam{
-        &kAutofillEnableCacheForRegexMatching, "cache_size", 1000};
+BASE_FEATURE_PARAM(int,
+                   kAutofillEnableCacheForRegexMatchingCacheSizeParam,
+                   &kAutofillEnableCacheForRegexMatching,
+                   "cache_size",
+                   1000);
 
 BASE_FEATURE(kAutofillUKMExperimentalFields, base::FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<std::string> kAutofillUKMExperimentalFieldsBucket0{
-    &kAutofillUKMExperimentalFields, "autofill_experimental_regex_bucket0", ""};
-const base::FeatureParam<std::string> kAutofillUKMExperimentalFieldsBucket1{
-    &kAutofillUKMExperimentalFields, "autofill_experimental_regex_bucket1", ""};
-const base::FeatureParam<std::string> kAutofillUKMExperimentalFieldsBucket2{
-    &kAutofillUKMExperimentalFields, "autofill_experimental_regex_bucket2", ""};
-const base::FeatureParam<std::string> kAutofillUKMExperimentalFieldsBucket3{
-    &kAutofillUKMExperimentalFields, "autofill_experimental_regex_bucket3", ""};
-const base::FeatureParam<std::string> kAutofillUKMExperimentalFieldsBucket4{
-    &kAutofillUKMExperimentalFields, "autofill_experimental_regex_bucket4", ""};
+BASE_FEATURE_PARAM(std::string,
+                   kAutofillUKMExperimentalFieldsBucket0,
+                   &kAutofillUKMExperimentalFields,
+                   "autofill_experimental_regex_bucket0",
+                   "");
+BASE_FEATURE_PARAM(std::string,
+                   kAutofillUKMExperimentalFieldsBucket1,
+                   &kAutofillUKMExperimentalFields,
+                   "autofill_experimental_regex_bucket1",
+                   "");
+BASE_FEATURE_PARAM(std::string,
+                   kAutofillUKMExperimentalFieldsBucket2,
+                   &kAutofillUKMExperimentalFields,
+                   "autofill_experimental_regex_bucket2",
+                   "");
+BASE_FEATURE_PARAM(std::string,
+                   kAutofillUKMExperimentalFieldsBucket3,
+                   &kAutofillUKMExperimentalFields,
+                   "autofill_experimental_regex_bucket3",
+                   "");
+BASE_FEATURE_PARAM(std::string,
+                   kAutofillUKMExperimentalFieldsBucket4,
+                   &kAutofillUKMExperimentalFields,
+                   "autofill_experimental_regex_bucket4",
+                   "");
 
 // When enabled, Greek regexes are used for parsing in branded builds.
 BASE_FEATURE(kAutofillGreekRegexes, base::FEATURE_ENABLED_BY_DEFAULT);
@@ -764,37 +857,44 @@ BASE_FEATURE(kFieldClassificationModelCaching,
 
 // When enabled, a HaTS survey is shown after the successful first time creation
 // flow.
+// TODO: crbug.com/348139343 - Move back to components/plus_addresses.
 BASE_FEATURE(kPlusAddressAcceptedFirstTimeCreateSurvey,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When enabled, a HaTS survey is shown after the declined the first plus
 // address creation flow.
+// TODO: crbug.com/348139343 - Move back to components/plus_addresses.
 BASE_FEATURE(kPlusAddressDeclinedFirstTimeCreateSurvey,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When enabled, a HaTS survey is shown after the user fills a plus address
 // after triggering autofill manually.
+// TODO: crbug.com/348139343 - Move back to components/plus_addresses.
 BASE_FEATURE(kPlusAddressFilledPlusAddressViaManualFallbackSurvey,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When enabled, a HaTS survey is shown after the user creates a 3rd+ plus
 // address.
+// TODO: crbug.com/348139343 - Move back to components/plus_addresses.
 BASE_FEATURE(kPlusAddressUserCreatedMultiplePlusAddressesSurvey,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When enabled, a HaTS survey is shown after the user creates a plus address
 // triggering the popup via the Chrome context menu on Desktop or via the
 // Keyboard Accessory on Android.
+// TODO: crbug.com/348139343 - Move back to components/plus_addresses.
 BASE_FEATURE(kPlusAddressUserCreatedPlusAddressViaManualFallbackSurvey,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When enabled, a HaTS survey is shown after the user chooses to fill an email
 // when a plus address suggestion is also offered in the Autofill popup.
+// TODO: crbug.com/348139343 - Move back to components/plus_addresses.
 BASE_FEATURE(kPlusAddressUserDidChooseEmailOverPlusAddressSurvey,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When enabled, a HaTS survey is shown after the user chooses to fill a plus
 // address when an email suggestion is also offered in the Autofill popup.
+// TODO: crbug.com/348139343 - Move back to components/plus_addresses.
 BASE_FEATURE(kPlusAddressUserDidChoosePlusAddressOverEmailSurvey,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -888,14 +988,18 @@ BASE_FEATURE(kAutofillSkipDeduplicationRequirements,
 BASE_FEATURE(kAutofillCapturedSiteTestsMetricsScraper,
              base::FEATURE_DISABLED_BY_DEFAULT);
 // Name of the directory to write the results into.
-const base::FeatureParam<std::string>
-    kAutofillCapturedSiteTestsMetricsScraperOutputDir{
-        &kAutofillCapturedSiteTestsMetricsScraper, "output_dir", "/tmp/"};
+BASE_FEATURE_PARAM(std::string,
+                   kAutofillCapturedSiteTestsMetricsScraperOutputDir,
+                   &kAutofillCapturedSiteTestsMetricsScraper,
+                   "output_dir",
+                   "/tmp/");
 // A regex matching the histogram names that should be dumped. If not specified,
 // the metrics of all histograms dumped.
-const base::FeatureParam<std::string>
-    kAutofillCapturedSiteTestsMetricsScraperHistogramRegex{
-        &kAutofillCapturedSiteTestsMetricsScraper, "histogram_regex", ""};
+BASE_FEATURE_PARAM(std::string,
+                   kAutofillCapturedSiteTestsMetricsScraperHistogramRegex,
+                   &kAutofillCapturedSiteTestsMetricsScraper,
+                   "histogram_regex",
+                   "");
 
 // If enabled, Captured Site Tests will use 'AutofillFlow' utility to trigger
 // the autofill action. This feature is for testing purposes and is not supposed
@@ -939,13 +1043,19 @@ BASE_FEATURE(kAutofillOverridePredictions, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // The override specification in string form.
 // See `OverrideFormat::kSpec` for details.
-const base::FeatureParam<std::string> kAutofillOverridePredictionsSpecification{
-    &kAutofillOverridePredictions, "spec", ""};
+BASE_FEATURE_PARAM(std::string,
+                   kAutofillOverridePredictionsSpecification,
+                   &kAutofillOverridePredictions,
+                   "spec",
+                   "");
 
 // The override specification in Base64-encoded JSON.
 // See `OverrideFormat::kJson` for details.
-const base::FeatureParam<std::string> kAutofillOverridePredictionsJson{
-    &kAutofillOverridePredictions, "json", ""};
+BASE_FEATURE_PARAM(std::string,
+                   kAutofillOverridePredictionsJson,
+                   &kAutofillOverridePredictions,
+                   "json",
+                   "");
 
 // Enables or Disables (mostly for hermetic testing) autofill server
 // communication. The URL of the autofill server can further be controlled via
@@ -965,15 +1075,21 @@ BASE_FEATURE(kAutofillShowTypePredictions, base::FEATURE_DISABLED_BY_DEFAULT);
 // In this version more information is attached to the respective DOM element,
 // such as aria labels and descriptions and select element options values and
 // texts.
-const base::FeatureParam<bool> kAutofillShowTypePredictionsVerboseParam{
-    &kAutofillShowTypePredictions, "verbose", false};
+BASE_FEATURE_PARAM(bool,
+                   kAutofillShowTypePredictionsVerboseParam,
+                   &kAutofillShowTypePredictions,
+                   "verbose",
+                   false);
 
 // This variation controls whether the autofill information of the element
 // is shown as 'title' of the form field elements. If this parameter is on,
 // the title attribute will be overwritten with autofill information.
 // By default this is disabled to avoid data collection corruption.
-const base::FeatureParam<bool> kAutofillShowTypePredictionsAsTitleParam{
-    &kAutofillShowTypePredictions, "as-title", false};
+BASE_FEATURE_PARAM(bool,
+                   kAutofillShowTypePredictionsAsTitleParam,
+                   &kAutofillShowTypePredictions,
+                   "as-title",
+                   false);
 
 // If enabled, ensures that the "autofill-information" attribute only contains a
 // single FieldType in "overall type: <FieldTypes>". For example,
