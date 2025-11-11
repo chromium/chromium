@@ -100,6 +100,7 @@ class ActorTask {
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/actor/histograms.xml:ActorTaskState)
 
+  // LINT.IfChange(StoppedReason)
   // The reason a task was stopped.
   enum class StoppedReason {
     kStoppedByUser = 0,
@@ -109,6 +110,7 @@ class ActorTask {
     kTabDetached = 4,
     kMaxValue = kTabDetached,
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/actor/histograms.xml:StoppedReason)
 
   State GetState() const;
   void SetState(State new_state);
@@ -295,6 +297,9 @@ class ActorTask {
   size_t total_number_of_actions_ = 0;
   // Number of interruptions
   size_t total_number_of_interruptions_ = 0;
+
+  // Once a task is stopped what the reason was.
+  std::optional<StoppedReason> stopped_reason_;
 
   // Delegate for task-related events.
   base::WeakPtr<ActorTaskDelegate> delegate_;
