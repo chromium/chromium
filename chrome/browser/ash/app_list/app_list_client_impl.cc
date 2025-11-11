@@ -60,6 +60,8 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/scalable_iph/scalable_iph.h"
+#include "chromeos/ash/components/scalable_iph/scalable_iph_factory.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_browser_delegate.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
@@ -376,6 +378,12 @@ void AppListClientImpl::ActivateItem(int profile_id,
   }
 
   CHECK_EQ(requested_model_updater, current_model_updater_);
+  scalable_iph::ScalableIph* scalable_iph =
+      ScalableIphFactory::GetForBrowserContext(profile_);
+  if (scalable_iph) {
+    // `ScalableIph` is not available for some profiles.
+    scalable_iph->MaybeRecordAppListItemActivation(id);
+  }
 
   MaybeRecordLauncherAction(launched_from);
   MaybeRecordActivatedItemVisibility(id, launched_from, is_above_the_fold);

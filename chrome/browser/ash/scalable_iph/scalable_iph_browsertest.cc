@@ -1044,6 +1044,17 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestNoTestingConfig, AppListShown) {
   ash::AppListTestApi().ShowBubbleAppListAndWait();
 }
 
+IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTest, OpenPersonalizationApp) {
+  // There may be or may not be other unlock event.
+  EXPECT_CALL(*mock_tracker(), NotifyEvent).Times(testing::AnyNumber());
+
+  EXPECT_CALL(*mock_tracker(),
+              NotifyEvent(scalable_iph::kEventNameOpenPersonalizationApp));
+
+  ash::LaunchSystemWebAppAsync(browser()->profile(),
+                               ash::SystemWebAppType::PERSONALIZATION);
+}
+
 // TODO(b/301006258): Migrate to use observer pattern, then enable the test.
 IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTest, DISABLED_PrintJobCreated) {
   EXPECT_CALL(*mock_tracker(),
@@ -1059,6 +1070,18 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTest, DISABLED_PrintJobCreated) {
       ::printing::PrintJob::Source::kPrintPreview, /*source_id=*/"",
       ash::printing::proto::PrintSettings());
   print_job_manager_waiter.Wait();
+}
+
+IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestGame, GameWindowOpened) {
+  // There may be or may not be other unlock event.
+  EXPECT_CALL(*mock_tracker(), NotifyEvent).Times(testing::AnyNumber());
+
+  EXPECT_CALL(*mock_tracker(),
+              NotifyEvent(scalable_iph::kEventNameGameWindowOpened));
+
+  std::unique_ptr<aura::Window> window = CreateAuraWindow(kTestGameWindowTitle);
+  window->SetProperty(ash::kAppIDKey,
+                      std::string(extension_misc::kGeForceNowAppId));
 }
 
 IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestGameMultiUser,

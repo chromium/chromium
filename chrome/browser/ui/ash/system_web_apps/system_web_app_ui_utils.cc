@@ -36,6 +36,8 @@
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/scalable_iph/scalable_iph.h"
+#include "chromeos/ash/components/scalable_iph/scalable_iph_factory.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/user_manager/user.h"
 #include "content/public/browser/web_contents.h"
@@ -200,6 +202,16 @@ void LaunchSystemWebAppAsync(Profile* profile,
 
     // Early return if we can't find a profile to launch.
     return;
+  }
+
+  if (type == SystemWebAppType::PERSONALIZATION &&
+      profile_for_launch == profile) {
+    scalable_iph::ScalableIph* scalable_iph =
+        ScalableIphFactory::GetForBrowserContext(profile_for_launch);
+    if (scalable_iph) {
+      scalable_iph->RecordEvent(
+          scalable_iph::ScalableIph::Event::kOpenPersonalizationApp);
+    }
   }
 
   SystemWebAppManager* manager = SystemWebAppManager::Get(profile_for_launch);

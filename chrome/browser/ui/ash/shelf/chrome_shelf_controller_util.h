@@ -68,4 +68,10 @@ void UnpinAppWithIDFromShelf(const std::string& app_id);
 apps::LaunchSource ShelfLaunchSourceToAppsLaunchSource(
     ash::ShelfLaunchSource source);
 
+// Records an app launch from shelf event in `ScalableIph`. Note that
+// `ScalableIph` records events for a subset of app ids.
+void MaybeRecordAppLaunchForScalableIph(const std::string& app_id,
+                                        Profile* profile,
+                                        ash::ShelfLaunchSource source);
+
 #endif  // CHROME_BROWSER_UI_ASH_SHELF_CHROME_SHELF_CONTROLLER_UTIL_H_
