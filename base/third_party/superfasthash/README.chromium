@@ -3,7 +3,7 @@ Short Name: SuperFastHash
 URL: http://www.azillionmonkeys.com/qed/hash.html
 Version: N/A
 Date: 2012-02-21
-Update Mechanism: Manual
+Update Mechanism: Static (https://crbug.com/459566936)
 License: BSD-3-Clause
 License File: LICENSE
 Security Critical: yes
