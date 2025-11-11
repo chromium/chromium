@@ -2319,8 +2319,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "AutofillAiDedupeEntities",
-                        "AutofillAiFillingSurvey",
-                        "AutofillAiSavePromptSurvey",
                         "AutofillAiVoteForFormatStringsForFlightNumbers",
                         "AutofillAiWalletFlightReservation",
                         "AutofillAiWalletVehicleRegistration",
