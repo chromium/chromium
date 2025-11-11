@@ -144,6 +144,9 @@ public class KeyboardAccessoryControllerTest {
         when(mMockFillingProductBridgeJni.getFillingProductFromSuggestionType(
                         SuggestionType.IBAN_ENTRY))
                 .thenReturn(FillingProduct.IBAN);
+        when(mMockFillingProductBridgeJni.getFillingProductFromSuggestionType(
+                        SuggestionType.LOYALTY_CARD_ENTRY))
+                .thenReturn(FillingProduct.LOYALTY_CARD);
 
         mCoordinator =
                 new KeyboardAccessoryCoordinator(

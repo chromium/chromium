@@ -28,7 +28,6 @@ import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.components.autofill.FillingProduct;
 import org.chromium.components.autofill.FillingProductBridge;
 import org.chromium.components.autofill.RecordType;
-import org.chromium.components.autofill.SuggestionType;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -120,7 +119,8 @@ class KeyboardAccessoryProperties {
             Type.TAB_LAYOUT,
             Type.ACTION_CHIP,
             Type.DISMISS_CHIP,
-            Type.GROUP
+            Type.GROUP,
+            Type.PAYMENTS_SUGGESTION
         })
         @Retention(RetentionPolicy.SOURCE)
         @interface Type {
@@ -132,6 +132,7 @@ class KeyboardAccessoryProperties {
             int ACTION_CHIP = 5;
             int DISMISS_CHIP = 6;
             int GROUP = 7;
+            int PAYMENTS_SUGGESTION = 8;
         }
 
         private final @Type int mType;
@@ -296,23 +297,34 @@ class KeyboardAccessoryProperties {
         @VisibleForTesting
         public static @Type int getBarItemType(AutofillSuggestion suggestion, Profile profile) {
             AutofillProfilePayload payload = suggestion.getAutofillProfilePayload();
-            if (FillingProductBridge.getFillingProductFromSuggestionType(
-                                    suggestion.getSuggestionType())
-                            == FillingProduct.ADDRESS
-                    && payload != null) {
-                PersonalDataManager personalDataManager =
-                        PersonalDataManagerFactory.getForProfile(profile);
-                AutofillProfile autofillProfile = personalDataManager.getProfile(payload.getGuid());
-                if (autofillProfile != null) {
-                    @RecordType int type = autofillProfile.getRecordType();
-                    if (type == RecordType.ACCOUNT_HOME || type == RecordType.ACCOUNT_WORK) {
-                        return Type.HOME_AND_WORK_SUGGESTION;
+            switch (FillingProductBridge.getFillingProductFromSuggestionType(
+                    suggestion.getSuggestionType())) {
+                case FillingProduct.ADDRESS:
+                    {
+                        if (payload != null) {
+                            PersonalDataManager personalDataManager =
+                                    PersonalDataManagerFactory.getForProfile(profile);
+                            AutofillProfile autofillProfile =
+                                    personalDataManager.getProfile(payload.getGuid());
+                            if (autofillProfile != null) {
+                                @RecordType int type = autofillProfile.getRecordType();
+                                if (type == RecordType.ACCOUNT_HOME
+                                        || type == RecordType.ACCOUNT_WORK) {
+                                    return Type.HOME_AND_WORK_SUGGESTION;
+                                }
+                            }
+                        }
                     }
-                }
+                    break;
+                case FillingProduct.CREDIT_CARD:
+                case FillingProduct.IBAN:
+                    return Type.PAYMENTS_SUGGESTION;
+                case FillingProduct.LOYALTY_CARD:
+                    return Type.LOYALTY_CARD_SUGGESTION;
+                default:
+                    return Type.SUGGESTION;
             }
-            return suggestion.getSuggestionType() == SuggestionType.LOYALTY_CARD_ENTRY
-                    ? Type.LOYALTY_CARD_SUGGESTION
-                    : Type.SUGGESTION;
+            return Type.SUGGESTION;
         }
     }
 

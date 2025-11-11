@@ -33,8 +33,10 @@ found in the LICENSE file.
     <dimen name="keyboard_accessory_suggestion_padding">16dp</dimen>
     <dimen name="keyboard_accessory_chip_start_padding_redesign">6dp</dimen>
     <dimen name="keyboard_accessory_chip_increased_start_padding_redesign">8dp</dimen>
+    <dimen name="keyboard_accessory_chip_payments_start_padding_redesign">12dp</dimen>
     <dimen name="keyboard_accessory_chip_end_padding_redesign">12dp</dimen>
     <dimen name="keyboard_accessory_text_start_padding_redesign">6dp</dimen>
+    <dimen name="keyboard_accessory_payments_text_start_padding_redesign">10dp</dimen>
     <dimen name="keyboard_accessory_suggestion_offset">12dp</dimen>
     <dimen name="keyboard_accessory_suggestion_height">48dp</dimen>
     <dimen name="keyboard_accessory_scroll_shadow_width">80dp</dimen>

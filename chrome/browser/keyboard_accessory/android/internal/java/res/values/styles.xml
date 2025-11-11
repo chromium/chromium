@@ -101,6 +101,14 @@ found in the LICENSE file.
         <item name="iconHeight">@dimen/keyboard_accessory_suggestion_icon_size</item>
         <item name="chipStartPadding">@dimen/keyboard_accessory_chip_increased_start_padding_redesign</item>
     </style>
+    <style name="KeyboardAccessoryPaymentsTwoLineChip" parent="KeyboardAccessoryTwoLineChip">
+        <item name="chipStartPadding">@dimen/keyboard_accessory_chip_payments_start_padding_redesign</item>
+        <item name="primaryTextStartPadding">@dimen/keyboard_accessory_payments_text_start_padding_redesign</item>
+    </style>
+    <style name="KeyboardAccessoryPaymentsLargeTwoLineChip" parent="KeyboardAccessoryLargeTwoLineChip">
+        <item name="chipStartPadding">@dimen/keyboard_accessory_chip_payments_start_padding_redesign</item>
+        <item name="primaryTextStartPadding">@dimen/keyboard_accessory_payments_text_start_padding_redesign</item>
+    </style>
     <style name="KeyboardAccessoryTwoLineActionButton" parent="FilledButton.Tonal.ButtonStyle">
         <item name="android:gravity">center</item>
         <item name="android:minWidth">0dp</item>

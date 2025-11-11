@@ -81,6 +81,7 @@ class KeyboardAccessoryViewBinder {
             case BarItem.Type.SUGGESTION:
             case BarItem.Type.LOYALTY_CARD_SUGGESTION:
             case BarItem.Type.HOME_AND_WORK_SUGGESTION:
+            case BarItem.Type.PAYMENTS_SUGGESTION:
                 return new BarItemChipViewHolder(
                         parent,
                         keyboarAccessory,
@@ -306,6 +307,10 @@ class KeyboardAccessoryViewBinder {
                         return useLargeChips(context)
                                 ? R.style.KeyboardAccessoryHomeAndWorkLargeTwoLineChip
                                 : R.style.KeyboardAccessoryHomeAndWorkTwoLineChip;
+                    case BarItem.Type.PAYMENTS_SUGGESTION:
+                        return useLargeChips(context)
+                                ? R.style.KeyboardAccessoryPaymentsLargeTwoLineChip
+                                : R.style.KeyboardAccessoryPaymentsTwoLineChip;
                     case BarItem.Type.SUGGESTION:
                         return useLargeChips(context)
                                 ? R.style.KeyboardAccessoryLargeTwoLineChip
@@ -330,6 +335,7 @@ class KeyboardAccessoryViewBinder {
                             ? R.style.KeyboardAccessoryHomeAndWorkLargeChip
                             : R.style.KeyboardAccessoryHomeAndWorkChip;
                 case BarItem.Type.SUGGESTION:
+                case BarItem.Type.PAYMENTS_SUGGESTION:
                     return useLargeChips(context)
                             ? R.style.KeyboardAccessoryLargeChip
                             : R.style.KeyboardAccessoryChip;
