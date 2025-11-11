@@ -334,7 +334,7 @@ public class WebFeedMainMenuItem extends FrameLayout {
             OnClickListener onClickListener) {
         TextView chipTextView = chipView.getPrimaryTextView();
         chipTextView.setText(chipText);
-        chipView.setIcon(chipIconRes, /* tintWithTextColor= */ true);
+        chipView.setIconWithTint(chipIconRes, /* tintWithTextColor= */ true);
         chipView.setOnClickListener(onClickListener);
         chipView.setEnabled(!mTab.isShowingErrorPage());
         chipView.setVisibility(View.VISIBLE);
