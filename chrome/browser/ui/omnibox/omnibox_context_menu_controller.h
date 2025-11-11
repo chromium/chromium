@@ -11,6 +11,10 @@
 class BrowserWindowInterface;
 class GURL;
 
+namespace ui {
+class ImageModel;
+}  // namespace ui
+
 // OmniboxContextMenuController creates and manages state for the context menu
 // shown for the omnibox.
 class OmniboxContextMenuController : public ui::SimpleMenuModel::Delegate {
@@ -30,15 +34,18 @@ class OmniboxContextMenuController : public ui::SimpleMenuModel::Delegate {
 
  private:
   void BuildMenu();
-
   // Adds a IDC_* style command to the menu with a string16.
   void AddItem(int id, const std::u16string str);
-  // Adds a IDC_* style command to the menu with a localized string.
-  void AddItem(int id, int localization_id);
+  // Adds a IDC_* style command to the menu with a localized string and icon.
+  void AddItemWithStringIdAndIcon(int id,
+                                  int localization_id,
+                                  const ui::ImageModel& icon);
   // Adds a separator to the menu.
   void AddSeparator();
   // Adds recent tabs as items to the menu.
   void AddRecentTabItems();
+  // Adds the static items with icons.
+  void AddStaticItems();
   // Adds a title with a localized string to the menu.
   void AddTitleWithStringId(int localization_id);
 
