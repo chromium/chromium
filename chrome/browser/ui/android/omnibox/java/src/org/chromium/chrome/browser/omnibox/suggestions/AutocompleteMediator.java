@@ -583,7 +583,8 @@ class AutocompleteMediator
                                 url,
                                 mLastActionUpTimestamp,
                                 /* openInNewTab= */ false,
-                                true);
+                                /* openInNewWindow= */ false,
+                                /* shouldUpdateSuggestionUrl= */ true);
 
         // Note: Action will be reset when load is initiated.
         if (mAutocomplete != null) {
@@ -959,8 +960,15 @@ class AutocompleteMediator
      * @param eventTime The timestamp the load was triggered by the user.
      * @param openInNewTab Whether the URL will be loaded in a new tab. If {@code true}, the URL
      *     will be loaded in a new tab. If {@code false}, The URL will be loaded in the current tab.
+     * @param openInNewWindow Whether the URL will be loaded in a new window. If {@code true}, the
+     *     URL will be loaded in a new window. If {@code false}, The URL will be loaded in the
+     *     current window.
      */
-    void loadTypedOmniboxText(long eventTime, boolean openInNewTab) {
+    void loadTypedOmniboxText(long eventTime, boolean openInNewTab, boolean openInNewWindow) {
+        assert !openInNewTab || !openInNewWindow
+                : "Unable to determine if the URL should be loaded in a new tab in the current"
+                        + " window or in a new window.";
+
         final String urlText = mUrlBarEditingTextProvider.getTextWithAutocomplete();
         cancelAutocompleteRequests();
 
@@ -981,14 +989,16 @@ class AutocompleteMediator
                     mNavigationAttachmentsCoordinator.getAimUrl(urlText),
                     eventTime,
                     /* openInNewTab= */ false,
+                    openInNewWindow,
                     /* shouldUpdateSuggestionUrl= */ false);
             return;
         }
 
         if (mAutocomplete != null) {
-            findMatchAndLoadUrl(urlText, eventTime, openInNewTab);
+            findMatchAndLoadUrl(urlText, eventTime, openInNewTab, openInNewWindow);
         } else {
-            mDeferredLoadAction = () -> findMatchAndLoadUrl(urlText, eventTime, openInNewTab);
+            mDeferredLoadAction =
+                    () -> findMatchAndLoadUrl(urlText, eventTime, openInNewTab, openInNewWindow);
         }
     }
 
@@ -999,13 +1009,23 @@ class AutocompleteMediator
      * @param inputStart The timestamp the load was triggered by the user.
      * @param openInNewTab Whether the URL will be loaded in a new tab. If {@code true}, the URL
      *     will be loaded in a new tab. If {@code false}, The URL will be loaded in the current tab.
+     * @param openInNewWindow Whether the URL will be loaded in a new window. If {@code true}, the
+     *     URL will be loaded in a new window. If {@code false}, The URL will be loaded in the
+     *     current window.
      */
-    private void findMatchAndLoadUrl(String urlText, long inputStart, boolean openInNewTab) {
+    private void findMatchAndLoadUrl(
+            String urlText, long inputStart, boolean openInNewTab, boolean openInNewWindow) {
         AutocompleteMatch suggestionMatch = getSuggestionMatchForUrlText(urlText);
 
         if (suggestionMatch == null) return;
         loadUrlForOmniboxMatch(
-                0, suggestionMatch, suggestionMatch.getUrl(), inputStart, openInNewTab, true);
+                0,
+                suggestionMatch,
+                suggestionMatch.getUrl(),
+                inputStart,
+                openInNewTab,
+                openInNewWindow,
+                /* shouldUpdateSuggestionUrl= */ true);
     }
 
     private @Nullable AutocompleteMatch getSuggestionMatchForUrlText(String urlText) {
@@ -1035,6 +1055,9 @@ class AutocompleteMediator
      * @param openInNewTab Whether the suggestion will be loaded in a new tab. If {@code true}, the
      *     suggestion will be loaded in a new tab. If {@code false}, the suggestion will be loaded
      *     in the current tab.
+     * @param openInNewWindow Whether the URL will be loaded in a new window. If {@code true}, the
+     *     URL will be loaded in a new window. If {@code false}, The URL will be loaded in the
+     *     current window.
      * @param shouldUpdateSuggestionUrl Whether the suggestion url should be updated with additional
      *     query formulation stats param.
      */
@@ -1044,6 +1067,7 @@ class AutocompleteMediator
             GURL url,
             long inputStart,
             boolean openInNewTab,
+            boolean openInNewWindow,
             boolean shouldUpdateSuggestionUrl) {
         try (TraceEvent e = TraceEvent.scoped("AutocompleteMediator.loadUrlFromOmniboxMatch")) {
             OmniboxMetrics.recordFocusToOpenTime(System.currentTimeMillis() - mUrlFocusTime);
@@ -1099,6 +1123,7 @@ class AutocompleteMediator
                             .setInputStartTimestamp(inputStart)
                             .setPostData(suggestion.getPostData())
                             .setOpenInNewTab(openInNewTab)
+                            .setOpenInNewWindow(openInNewWindow)
                             .setExtraHeaders(suggestion.getExtraHeaders())
                             .setAutocompleteLoadCallback(autocompleteLoadCallback)
                             .build());
@@ -1364,8 +1389,9 @@ class AutocompleteMediator
     /** Cancel any pending autocomplete actions. */
     private void cancelAutocompleteRequests() {
         stopMeasuringSuggestionRequestToUiModelTime();
-        if (mCurrentAutocompleteRequest != null)
+        if (mCurrentAutocompleteRequest != null) {
             mHandler.removeCallbacks(mCurrentAutocompleteRequest);
+        }
         mCurrentAutocompleteRequest = null;
     }
 

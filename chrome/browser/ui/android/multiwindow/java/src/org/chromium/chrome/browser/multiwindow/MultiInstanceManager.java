@@ -268,13 +268,14 @@ public abstract class MultiInstanceManager {
     }
 
     /**
-     * If there's only one window currently, opens the {@param loadUrlParams} in a new window.
-     * Otherwise, opens a dialog to select which window to move the {@param loadUrlParams} to.
+     * Opens a URL in another existing window or a new window.
      *
      * @param loadUrlParams The url to open.
      * @param parentTabId The ID of the parent tab.
+     * @param preferNew Whether we should prioritize launching the tab in a new window.
      */
-    public void openUrlInSelectedWindow(LoadUrlParams loadUrlParams, int parentTabId) {
+    public void openUrlInSelectedWindow(
+            LoadUrlParams loadUrlParams, int parentTabId, boolean preferNew) {
         // not implemented
     }
 

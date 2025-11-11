@@ -90,7 +90,7 @@ public class NativePageNavigationDelegateImpl implements NativePageNavigationDel
                                         PersistedInstanceType.ACTIVE)
                                 > 1) {
                     mMultiInstanceManager.openUrlInSelectedWindow(
-                            loadUrlParams, mHost.getParentId());
+                            loadUrlParams, mHost.getParentId(), /* preferNew= */ false);
                 } else {
                     openUrlInNewWindow(loadUrlParams);
                 }
@@ -123,7 +123,8 @@ public class NativePageNavigationDelegateImpl implements NativePageNavigationDel
                 mActivity,
                 mHost.getParentId(),
                 MultiWindowUtils.getForegroundWindowActivity(mActivity),
-                NewWindowAppSource.OTHER);
+                NewWindowAppSource.OTHER,
+                /* preferNew= */ false);
     }
 
     private Tab openUrlInNewTab(LoadUrlParams loadUrlParams, int windowOpenDisposition) {

@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.merchant_viewer.MerchantTrustSignalsCoordinator;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.omnibox.LocationBarMediator.OmniboxUma;
 import org.chromium.chrome.browser.omnibox.fusebox.NavigationAttachmentsCoordinator;
 import org.chromium.chrome.browser.omnibox.geo.GeolocationHeader;
@@ -212,7 +213,8 @@ public class LocationBarCoordinator
             @Nullable BrowserControlsStateProvider browserControlsStateProvider,
             boolean isToolbarPositionCustomizationEnabled,
             @Nullable PageZoomManager pageZoomManager,
-            Function<Tab, @Nullable Bitmap> tabFaviconFunction) {
+            Function<Tab, @Nullable Bitmap> tabFaviconFunction,
+            @Nullable MultiInstanceManager multiInstanceManager) {
         mLocationBarLayout = (LocationBarLayout) locationBarLayout;
         mWindowAndroid = windowAndroid;
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
@@ -288,7 +290,8 @@ public class LocationBarCoordinator
                         browserControlsStateProvider,
                         modalDialogManagerSupplier,
                         autocompleteRequestTypeSupplier,
-                        mPageZoomIndicatorCoordinator);
+                        mPageZoomIndicatorCoordinator,
+                        multiInstanceManager);
         if (backPressManager != null) {
             backPressManager.addHandler(mLocationBarMediator, BackPressHandler.Type.LOCATION_BAR);
         }

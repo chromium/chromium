@@ -79,7 +79,8 @@ public class RedirectTabCreator extends ChromeTabCreator {
                 mActivity,
                 Tab.INVALID_TAB_ID,
                 otherActivity,
-                NewWindowAppSource.OTHER);
+                NewWindowAppSource.OTHER,
+                /* preferNew= */ false);
         return null;
     }
 }

@@ -367,9 +367,10 @@ public class AutocompleteCoordinator
                 return true;
             }
 
+            boolean openInNewTab = event.isAltPressed();
+            boolean openInNewWindow = !openInNewTab && event.isShiftPressed();
             if (mParent.getVisibility() == View.VISIBLE) {
-                mMediator.loadTypedOmniboxText(
-                        event.getEventTime(), /* openInNewTab= */ event.isAltPressed());
+                mMediator.loadTypedOmniboxText(event.getEventTime(), openInNewTab, openInNewWindow);
                 return true;
             }
 

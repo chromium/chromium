@@ -1251,7 +1251,8 @@ public class ToolbarManager
                             ToolbarPositionController.isToolbarPositionCustomizationEnabled(
                                     mActivity, mIsCustomTab),
                             pageZoomManager,
-                            TabFavicon::getBitmap);
+                            TabFavicon::getBitmap,
+                            multiInstanceManager);
             mToolbarLayout.setLocationBarCoordinator(locationBarCoordinator);
             mToolbarLayout.setBrowserControlsVisibilityDelegate(mControlsVisibilityDelegate);
             mToolbarLayout.setBrowserControlsStateProvider(mBrowserControlsSizer);

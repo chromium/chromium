@@ -307,9 +307,9 @@ public class MultiInstanceManagerApi31Test {
         LoadUrlParams urlParams = new LoadUrlParams(new GURL("about:blank"));
 
         ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mMultiInstanceManager.openUrlInSelectedWindow(urlParams, /* parentTabId= */ 1);
-                });
+                () ->
+                        mMultiInstanceManager.openUrlInSelectedWindow(
+                                urlParams, /* parentTabId= */ 1, /* preferNew= */ false));
         assertTrue("Target selector dialog should be visible", mModalDialogManager.isShowing());
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -330,7 +330,7 @@ public class MultiInstanceManagerApi31Test {
                         Stage.RESUMED,
                         () ->
                                 mMultiInstanceManager.openUrlInSelectedWindow(
-                                        urlParams, /* parentTabId= */ 1));
+                                        urlParams, /* parentTabId= */ 1, /* preferNew= */ false));
         assertFalse(
                 "Target selector dialog should not be visible", mModalDialogManager.isShowing());
 
@@ -340,6 +340,78 @@ public class MultiInstanceManagerApi31Test {
                 () -> {
                     mMultiInstanceManager.closeInstance(
                             newWindow.getWindowIdForTesting(), newWindow.getTaskId());
+                });
+    }
+
+    @Test
+    @SmallTest
+    public void openUrlInSelectedWindow_openInNewWindow_preferNew() {
+        LoadUrlParams urlParams = new LoadUrlParams(new GURL("about:blank"));
+        ChromeTabbedActivity firstActivity = mActivityTestRule.getActivity();
+        ChromeTabbedActivity[] otherActivities =
+                createNewWindows(firstActivity, /* numWindows= */ 2);
+        verifyInstanceState(/* expectedActiveInstances= */ 3, /* expectedTotalInstances= */ 3);
+
+        ChromeTabbedActivity newWindow =
+                ApplicationTestUtils.waitForActivityWithClass(
+                        ChromeTabbedActivity.class,
+                        Stage.RESUMED,
+                        () ->
+                                mMultiInstanceManager.openUrlInSelectedWindow(
+                                        urlParams, /* parentTabId= */ 1, /* preferNew= */ true));
+        assertFalse(
+                "Target selector dialog should not be visible", mModalDialogManager.isShowing());
+
+        // A new instance should be created because of the new window opened.
+        verifyInstanceState(/* expectedActiveInstances= */ 4, /* expectedTotalInstances= */ 4);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mMultiInstanceManager.closeInstance(
+                            otherActivities[0].getWindowIdForTesting(),
+                            otherActivities[0].getTaskId());
+                    mMultiInstanceManager.closeInstance(
+                            otherActivities[1].getWindowIdForTesting(),
+                            otherActivities[1].getTaskId());
+                    mMultiInstanceManager.closeInstance(
+                            newWindow.getWindowIdForTesting(), newWindow.getTaskId());
+                });
+    }
+
+    @Test
+    @SmallTest
+    public void openUrlInSelectedWindow_openInNewWindow_reachInstanceLimit() {
+        MultiWindowUtils.setMaxInstancesForTesting(5);
+        ChromeTabbedActivity firstActivity = mActivityTestRule.getActivity();
+        ChromeTabbedActivity[] otherActivities =
+                createNewWindows(firstActivity, /* numWindows= */ 4);
+        verifyInstanceState(/* expectedActiveInstances= */ 5, /* expectedTotalInstances= */ 5);
+
+        LoadUrlParams urlParams = new LoadUrlParams(new GURL("about:blank"));
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        mMultiInstanceManager.openUrlInSelectedWindow(
+                                urlParams, /* parentTabId= */ 1, /* preferNew= */ true));
+        assertFalse(
+                "Target selector dialog should not be visible", mModalDialogManager.isShowing());
+
+        // Instance creation limit message should be shown and new instance should not be created.
+        mActivityTestRule.waitForActivityCompletelyLoaded();
+        verifyInstanceState(/* expectedActiveInstances= */ 5, /* expectedTotalInstances= */ 5);
+        waitForInstanceCreationLimitMessage();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mMultiInstanceManager.closeInstance(
+                            otherActivities[0].getWindowIdForTesting(),
+                            otherActivities[0].getTaskId());
+                    mMultiInstanceManager.closeInstance(
+                            otherActivities[1].getWindowIdForTesting(),
+                            otherActivities[1].getTaskId());
+                    mMultiInstanceManager.closeInstance(
+                            otherActivities[2].getWindowIdForTesting(),
+                            otherActivities[2].getTaskId());
+                    mMultiInstanceManager.closeInstance(
+                            otherActivities[3].getWindowIdForTesting(),
+                            otherActivities[3].getTaskId());
                 });
     }
 
@@ -406,6 +478,24 @@ public class MultiInstanceManagerApi31Test {
                                     messageDispatcher,
                                     MessageIdentifier
                                             .MULTI_INSTANCE_RESTORATION_ON_DOWNGRADED_LIMIT);
+                    return !messages.isEmpty();
+                });
+    }
+
+    private void waitForInstanceCreationLimitMessage() {
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    MessageDispatcher messageDispatcher =
+                            ThreadUtils.runOnUiThreadBlocking(
+                                    () ->
+                                            MessageDispatcherProvider.from(
+                                                    mActivityTestRule
+                                                            .getActivity()
+                                                            .getWindowAndroid()));
+                    List<MessageStateHandler> messages =
+                            MessagesTestHelper.getEnqueuedMessages(
+                                    messageDispatcher,
+                                    MessageIdentifier.MULTI_INSTANCE_CREATION_LIMIT);
                     return !messages.isEmpty();
                 });
     }

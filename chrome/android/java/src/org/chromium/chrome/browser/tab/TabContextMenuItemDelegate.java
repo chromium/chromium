@@ -288,7 +288,8 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
             loadUrlParams.setReferrer(referrer);
         }
         if (IncognitoUtils.shouldOpenIncognitoAsWindow() && mMultiInstanceManager != null) {
-            mMultiInstanceManager.openUrlInSelectedWindow(loadUrlParams, mTab.getParentId());
+            mMultiInstanceManager.openUrlInSelectedWindow(
+                    loadUrlParams, mTab.getParentId(), /* preferNew= */ false);
         } else {
             openInAnotherWindow(url, referrer, isIncognito);
         }
@@ -322,7 +323,8 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
                 activity,
                 mTab.getParentId(),
                 otherWindowActivity,
-                NewWindowAppSource.MENU);
+                NewWindowAppSource.MENU,
+                /* preferNew= */ false);
     }
 
     /**

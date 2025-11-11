@@ -18,6 +18,7 @@ public class OmniboxLoadUrlParams {
     public final @PageTransition int transitionType;
     public final long inputStartTimestamp;
     public final boolean openInNewTab;
+    public final boolean openInNewWindow;
     public final byte @Nullable [] postData;
     public final Map<String, String> extraHeaders;
     public final @Nullable AutocompleteLoadCallback callback;
@@ -27,6 +28,7 @@ public class OmniboxLoadUrlParams {
             @PageTransition int transitionType,
             long inputStartTimestamp,
             boolean openInNewTab,
+            boolean openInNewWindow,
             byte @Nullable [] postData,
             Map<String, String> extraHeaders,
             @Nullable AutocompleteLoadCallback callback) {
@@ -34,6 +36,7 @@ public class OmniboxLoadUrlParams {
         this.transitionType = transitionType;
         this.inputStartTimestamp = inputStartTimestamp;
         this.openInNewTab = openInNewTab;
+        this.openInNewWindow = openInNewWindow;
         this.postData = postData;
         this.extraHeaders = extraHeaders;
         this.callback = callback;
@@ -45,6 +48,7 @@ public class OmniboxLoadUrlParams {
         public @PageTransition int transitionType;
         public long inputStartTimestamp;
         public boolean openInNewTab;
+        public boolean openInNewWindow;
         public byte @Nullable [] postData;
         public Map<String, String> extraHeaders = Map.of();
         public @Nullable AutocompleteLoadCallback callback;
@@ -68,12 +72,22 @@ public class OmniboxLoadUrlParams {
         }
 
         /**
-         * Set Whether the URL will be loaded in a new tab..
+         * Set Whether the URL will be loaded in a new tab.
          *
-         * @param openInNewTab Whether the URL will be loaded in a new tab..
+         * @param openInNewTab Whether the URL will be loaded in a new tab.
          */
         public Builder setOpenInNewTab(boolean openInNewTab) {
             this.openInNewTab = openInNewTab;
+            return this;
+        }
+
+        /**
+         * Set Whether the URL will be loaded in a new window.
+         *
+         * @param openInNewTab Whether the URL will be loaded in a new window.
+         */
+        public Builder setOpenInNewWindow(boolean openInNewWindow) {
+            this.openInNewWindow = openInNewWindow;
             return this;
         }
 
@@ -114,6 +128,7 @@ public class OmniboxLoadUrlParams {
                     transitionType,
                     inputStartTimestamp,
                     openInNewTab,
+                    openInNewWindow,
                     postData,
                     extraHeaders,
                     callback);

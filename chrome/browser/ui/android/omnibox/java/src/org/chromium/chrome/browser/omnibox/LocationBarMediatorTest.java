@@ -73,6 +73,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.toolbar.ToolbarWidthConsumer;
 import org.chromium.chrome.browser.lens.LensController;
 import org.chromium.chrome.browser.locale.LocaleManager;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.omnibox.UrlBarCoordinator.SelectionState;
 import org.chromium.chrome.browser.omnibox.geo.GeolocationHeader;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
@@ -189,6 +190,7 @@ public class LocationBarMediatorTest {
     @Mock private WebContents mWebContents;
     @Mock private ObservableSupplierImpl<TabModelSelector> mTabModelSelectorSupplier;
     @Mock private TabModelSelector mTabModelSelector;
+    @Mock private MultiInstanceManager mMultiInstanceManager;
     @Mock private AutocompleteCoordinator mAutocompleteCoordinator;
     @Mock private UrlBarCoordinator mUrlCoordinator;
     @Mock private StatusCoordinator mStatusCoordinator;
@@ -296,7 +298,8 @@ public class LocationBarMediatorTest {
                         mBrowserControlsStateProvider,
                         () -> mModalDialogManager,
                         mAutocompleteRequestTypeSupplier,
-                        mPageZoomIndicatorCoordinator);
+                        mPageZoomIndicatorCoordinator,
+                        mMultiInstanceManager);
         mMediator.setCoordinators(mUrlCoordinator, mAutocompleteCoordinator, mStatusCoordinator);
         mMediator.setAddToHomescreenCoordinatorForTesting(mAddToHomescreenCoordinator);
         ObjectAnimatorShadow.setUrlAnimator(mUrlAnimator);
@@ -333,7 +336,8 @@ public class LocationBarMediatorTest {
                         mBrowserControlsStateProvider,
                         () -> mModalDialogManager,
                         new ObservableSupplierImpl<>(AutocompleteRequestType.SEARCH),
-                        mPageZoomIndicatorCoordinator);
+                        mPageZoomIndicatorCoordinator,
+                        mMultiInstanceManager);
         tabletMediator.setCoordinators(
                 mUrlCoordinator, mAutocompleteCoordinator, mStatusCoordinator);
         updateTabletWidthConsumers(tabletMediator);
@@ -631,6 +635,25 @@ public class LocationBarMediatorTest {
                         eq(TabLaunchType.FROM_OMNIBOX),
                         eq(mTab),
                         eq(false));
+        assertEquals(TEST_URL, mLoadUrlParamsCaptor.getValue().getUrl());
+        assertEquals(
+                PageTransition.TYPED | PageTransition.FROM_ADDRESS_BAR,
+                mLoadUrlParamsCaptor.getValue().getTransitionType());
+    }
+
+    @Test
+    public void testLoadUrl_openInNewWindow() {
+        mMediator.onFinishNativeInitialization();
+
+        doReturn(mTab).when(mLocationBarDataProvider).getTab();
+        doReturn(false).when(mTab).isIncognito();
+        mMediator.loadUrl(
+                new OmniboxLoadUrlParams.Builder(TEST_URL, PageTransition.TYPED)
+                        .setOpenInNewWindow(true)
+                        .build());
+
+        verify(mMultiInstanceManager)
+                .openUrlInSelectedWindow(mLoadUrlParamsCaptor.capture(), anyInt(), eq(true));
         assertEquals(TEST_URL, mLoadUrlParamsCaptor.getValue().getUrl());
         assertEquals(
                 PageTransition.TYPED | PageTransition.FROM_ADDRESS_BAR,
@@ -1127,7 +1150,8 @@ public class LocationBarMediatorTest {
                         mBrowserControlsStateProvider,
                         () -> mModalDialogManager,
                         new ObservableSupplierImpl<>(AutocompleteRequestType.SEARCH),
-                        mPageZoomIndicatorCoordinator);
+                        mPageZoomIndicatorCoordinator,
+                        mMultiInstanceManager);
         mMediator.setCoordinators(mUrlCoordinator, mAutocompleteCoordinator, mStatusCoordinator);
         int primeCount = sGeoHeaderPrimeCount;
         mMediator.addUrlFocusChangeListener(mUrlCoordinator);

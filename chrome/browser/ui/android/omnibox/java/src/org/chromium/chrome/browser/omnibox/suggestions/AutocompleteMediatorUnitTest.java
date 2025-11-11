@@ -1645,7 +1645,8 @@ public class AutocompleteMediatorUnitTest {
         mSuggestionsList.add(0, defaultMatch);
         mMediator.onSuggestionsReceived(AutocompleteResult.fromCache(mSuggestionsList, null), true);
 
-        mMediator.loadTypedOmniboxText(123L, false);
+        mMediator.loadTypedOmniboxText(
+                123L, /* openInNewTab= */ false, /* openInNewWindow= */ false);
 
         verify(mAutocompleteDelegate).loadUrl(mOmniboxLoadUrlParamsCaptor.capture());
         assertEquals(mOmniboxLoadUrlParamsCaptor.getValue().url, url.getSpec());

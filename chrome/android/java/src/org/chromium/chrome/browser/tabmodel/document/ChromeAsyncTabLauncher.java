@@ -60,22 +60,34 @@ public class ChromeAsyncTabLauncher implements AsyncTabLauncher {
     }
 
     /**
-     * Creates a tab in the "other" window in multi-window mode. This will only work if
-     * MultiWindowUtils#isOpenInOtherWindowSupported() is true for the given activity.
+     * Creates a tab in another window in multi-window mode. This will only work if {@link
+     * MultiWindowUtils#isOpenInOtherWindowSupported(Activity)} is true for the given activity.
+     *
+     * <p>The window in which the tab will be opened will depend on the following criteria:
+     *
+     * <ul>
+     *   <li>If {@code otherActivity} is non-null, the tab will be opened in this window.
+     *   <li>If {@code preferNew} is true, the tab will be attempted to be opened in a brand new
+     *       window. At instance limit, this action will fail to open the tab.
+     *   <li>If {@code preferNew} is false, the tab will be opened in a new activity created for a
+     *       restored inactive instance. At instance limit, this action will fail to open the tab.
+     * </ul>
      *
      * @param loadUrlParams Parameters specifying the URL to load and other navigation details.
-     * @param activity The current {@link Activity}
+     * @param activity The current {@link Activity}.
      * @param parentId The ID of the parent tab, or {@link Tab#INVALID_TAB_ID}.
      * @param otherActivity The activity to create a new tab in. This is non-null when we have a
      *     visible activity running adjacently.
-     * @param entryPoint The entry point of the new window used for metrics.
+     * @param newWindowSource The source of new window creation used for metrics.
+     * @param preferNew Whether we should attempt to launch the tab in a brand new window.
      */
     public void launchTabInOtherWindow(
             LoadUrlParams loadUrlParams,
             Activity activity,
             int parentId,
             @Nullable Activity otherActivity,
-            @NewWindowAppSource int entryPoint) {
+            @NewWindowAppSource int newWindowSource,
+            boolean preferNew) {
         Intent intent =
                 createNewTabIntent(
                         new AsyncTabCreationParams(loadUrlParams),
@@ -97,6 +109,7 @@ public class ChromeAsyncTabLauncher implements AsyncTabLauncher {
                 ((ChromeTabbedActivity) otherActivity).onNewIntent(intent);
                 return;
             }
+            if (preferNew) intent.putExtra(IntentHandler.EXTRA_PREFER_NEW, true);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
         }
@@ -108,7 +121,7 @@ public class ChromeAsyncTabLauncher implements AsyncTabLauncher {
         activity.startActivity(intent);
         RecordHistogram.recordEnumeratedHistogram(
                 MultiInstanceManager.NEW_WINDOW_APP_SOURCE_HISTOGRAM,
-                entryPoint,
+                newWindowSource,
                 NewWindowAppSource.NUM_ENTRIES);
     }
 
