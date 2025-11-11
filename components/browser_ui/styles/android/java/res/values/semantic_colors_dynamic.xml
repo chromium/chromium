@@ -47,6 +47,7 @@ found in the LICENSE file.
     <macro name="progress_bar_bg_color" tools:ignore="UnusedResources">?attr/colorSurfaceContainerHighest</macro>
 
     <macro name="settings_bg_color">?attr/colorSurfaceContainerHigh</macro>
+    <macro name="settings_container_background_color">?attr/colorSurfaceBright</macro>
 
     <macro name="sheet_bg_color" tools:ignore="UnusedResources">?attr/colorSurface</macro>
     <macro name="sheet_container_bg_color" tools:ignore="UnusedResources">?attr/colorSurfaceContainer</macro>

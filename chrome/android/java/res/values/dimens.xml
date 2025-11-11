@@ -346,6 +346,7 @@ found in the LICENSE file.
     <dimen name="overflow_menu_update_padding">12dp</dimen>
 
     <!-- Settings dimensions -->
+    <dimen name="settings_single_column_layout_margin">16dp</dimen>
     <dimen name="settings_wide_display_min_padding">16dp</dimen>
     <dimen name="settings_min_multi_column_screen_width">840dp</dimen>
     <dimen name="settings_narrow_header_width">360dp</dimen>

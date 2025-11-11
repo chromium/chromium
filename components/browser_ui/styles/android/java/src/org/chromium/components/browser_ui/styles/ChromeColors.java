@@ -182,12 +182,13 @@ public class ChromeColors {
     }
 
     /**
-     * Returns the background color for settings containers.
+     * Returns the background color for settings containers. TODO(crbug.com/452839781): This is
+     * going to be merged into SemanticColorUtils.getSettingsContainerBackgroundColor.
      *
      * @param context The {@link Context} used to retrieve the color.
      * @return The {@link ColorInt} for the settings container background.
      */
     public static @ColorInt int getSettingsContainerBackgroundColor(Context context) {
-        return SemanticColorUtils.getColorSurfaceBright(context);
+        return SemanticColorUtils.getSettingsContainerBackgroundColor(context);
     }
 }
