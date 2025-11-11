@@ -30,6 +30,7 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.CheckBoxWithDescription;
+import org.chromium.components.embedder_support.util.ExtensionUrlUtil;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.text.EmptyTextWatcher;
 
@@ -246,7 +247,7 @@ public class AddExceptionPreference extends Preference
         if (pattern.length() == 0) {
             return true;
         }
-        if (pattern.contains(":") && !isColonAllowed(type)) {
+        if (pattern.contains(":") && !isColonAllowed(pattern, type)) {
             return false;
         }
         if (pattern.contains(" ") || pattern.startsWith(".")) {
@@ -255,7 +256,8 @@ public class AddExceptionPreference extends Preference
         return WebsitePreferenceBridgeJni.get().isContentSettingsPatternValid(pattern);
     }
 
-    private static boolean isColonAllowed(int type) {
-        return type == SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE;
+    private static boolean isColonAllowed(String pattern, int type) {
+        return ExtensionUrlUtil.isExtensionUrl(pattern)
+                || type == SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE;
     }
 }
