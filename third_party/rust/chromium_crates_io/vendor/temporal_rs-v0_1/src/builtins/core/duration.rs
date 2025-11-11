@@ -389,9 +389,13 @@ impl Duration {
             hours,
             minutes,
             seconds,
-            milliseconds,
-            microseconds,
-            nanoseconds,
+
+            // https://github.com/boa-dev/temporal/issues/613
+            // With float64_representable_durations enabled, force all smaller units
+            // to be in the float64-representable range.
+            milliseconds: milliseconds as f64 as u64,
+            microseconds: microseconds as f64 as u128,
+            nanoseconds: nanoseconds as f64 as u128,
         }
     }
 

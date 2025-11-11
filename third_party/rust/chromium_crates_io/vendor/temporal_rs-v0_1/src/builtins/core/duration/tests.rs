@@ -404,23 +404,40 @@ fn test_duration_compare() {
         )
     }
 }
-/*
-TODO: Uncomment
 
-The below test should fail, but currently doesn't. This has to do with weird
-floating point math in IsValidDuration Step 6-8 that defers to C++ std::remquo
-
-Needs further clarification.
+const MAX_SAFE_INT: i64 = 9_007_199_254_740_991;
 
 #[test]
 fn duration_round_out_of_range_norm_conversion() {
-    const MAX_SAFE_INT: i64 = 9_007_199_254_740_991;
     let duration = Duration::new(0, 0, 0, 0, 0, 0, MAX_SAFE_INT, 0, 0, 999_999_999).unwrap();
-    let err = duration.round_with_provider( RoundingOptions {
-        largest_unit: Some(Unit::Nanosecond),
-        increment: Some(RoundingIncrement::ONE),
-        ..Default::default()
-    }, None, &NeverProvider::default());
+    let err = duration.round_with_provider(
+        RoundingOptions {
+            largest_unit: Some(Unit::Nanosecond),
+            increment: Some(RoundingIncrement::ONE),
+            ..Default::default()
+        },
+        None,
+        &NeverProvider::default(),
+    );
     assert!(err.is_err())
 }
-*/
+
+#[test]
+#[cfg_attr(not(feature = "float64_representable_durations"), should_panic)]
+fn duration_float64_representable() {
+    // built-ins/Temporal/Duration/prototype/add/float64-representable-integer
+    let duration = Duration::new(0, 0, 0, 0, 0, 0, 0, 0, MAX_SAFE_INT as i128, 0).unwrap();
+    let duration2 = Duration::new(0, 0, 0, 0, 0, 0, 0, 0, MAX_SAFE_INT as i128 - 1, 0).unwrap();
+    let added = duration.add(&duration2).unwrap();
+    assert_eq!(added.microseconds, 18014398509481980);
+    assert_eq!(
+        added.as_temporal_string(Default::default()).unwrap(),
+        "PT18014398509.48198S"
+    );
+    let one_ms = Duration::new(0, 0, 0, 0, 0, 0, 0, 0, 1, 0).unwrap();
+    let added_plus_one = added.add(&one_ms).unwrap();
+    assert_eq!(
+        added, added_plus_one,
+        "Should not internally use a more accurate representation when adding"
+    );
+}
