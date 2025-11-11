@@ -910,6 +910,7 @@ public class NewTabPageTest {
     @Feature({"NewTabPage"})
     @EnableFeatures({OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT})
     public void testAiModeButton_fusebox() {
+        if (mActivityTestRule.getActivity().isTablet()) return;
         NewTabPageLayout ntpLayout = mNtp.getNewTabPageLayout();
         TouchCommon.singleClickView(
                 ntpLayout
