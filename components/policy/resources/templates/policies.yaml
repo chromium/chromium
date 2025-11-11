@@ -1410,6 +1410,7 @@ policies:
   1409: IdleDetectionBlockedForUrls
   1410: GeolocationAllowedForUrls
   1411: GeolocationBlockedForUrls
+  1412: PdfXfaFormsEnabled
 
 atomic_groups:
   1: Homepage

@@ -2332,6 +2332,7 @@ chromium-metrics-reviews@google.com.
   <int value="1409" label="IdleDetectionBlockedForUrls"/>
   <int value="1410" label="GeolocationAllowedForUrls"/>
   <int value="1411" label="GeolocationBlockedForUrls"/>
+  <int value="1412" label="PdfXfaFormsEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">
