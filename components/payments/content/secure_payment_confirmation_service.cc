@@ -140,6 +140,7 @@ void SecurePaymentConfirmationService::StorePaymentCredential(
 void SecurePaymentConfirmationService::MakePaymentCredential(
     blink::mojom::PublicKeyCredentialCreationOptionsPtr options,
     MakePaymentCredentialCallback callback) {
+#if !BUILDFLAG(IS_IOS)
   std::string relying_party_id;
   std::optional<PasskeyBrowserBinder::UnboundKey> browser_bound_key;
   if (options &&
@@ -185,6 +186,7 @@ void SecurePaymentConfirmationService::MakePaymentCredential(
           &SecurePaymentConfirmationService::OnAuthenticatorMakeCredential,
           weak_ptr_factory_.GetWeakPtr(), std::move(callback),
           std::move(relying_party_id), std::move(browser_bound_key)));
+#endif  // !BUILDFLAG(IS_IOS)
 }
 
 void SecurePaymentConfirmationService::SetPasskeyBrowserBinderForTesting(

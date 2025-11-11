@@ -773,6 +773,7 @@ TEST_F(SecurePaymentConfirmationAppFactoryPaymentEntitiesLogosTest,
                               kPaymentEntity2LogoUrl)));
 }
 
+#if !BUILDFLAG(IS_IOS)
 class SecurePaymentConfirmationAppFactoryBrowserBoundKeysTest
     : public SecurePaymentConfirmationAppFactoryTest {
  protected:
@@ -834,6 +835,7 @@ TEST_F(SecurePaymentConfirmationAppFactoryBrowserBoundKeysTest,
   EXPECT_EQ(mock_service_.get(),
             passkey_browser_binder->GetWebDataServiceForTesting());
 }
+#endif  // !BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_ANDROID)
 class SecurePaymentConfirmationAppFactoryFallbackTest

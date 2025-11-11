@@ -4465,6 +4465,7 @@
         "Android": "stable",
         "Mac": "experimental",
         "Win": "experimental",
+        "iOS": "",
         "default": "test",
       },
     },
