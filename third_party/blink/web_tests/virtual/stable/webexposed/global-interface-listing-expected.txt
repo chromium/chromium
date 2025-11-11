@@ -5133,6 +5133,7 @@ interface IdentityCredential : Credential
 interface IdentityCredentialError : DOMException
     attribute @@toStringTag
     getter code
+    getter error
     getter url
     method constructor
 interface IdentityProvider

@@ -2487,7 +2487,7 @@ TEST_F(IdpNetworkRequestManagerTest, IdAssertionRequestErrorWithProperField) {
   std::tie(fetch_status, token_result) = SendTokenRequestAndWaitForResponse(
       "account", "request", net::HTTP_OK, "application/json", R"({
         "error": {
-          "code": "invalid_request",
+          "error": "invalid_request",
           "url": "https://idp.test/error"
         }
       })");
@@ -2510,7 +2510,7 @@ TEST_F(IdpNetworkRequestManagerTest, IdAssertionRequestErrorWithRelativePath) {
   std::tie(fetch_status, token_result) = SendTokenRequestAndWaitForResponse(
       "account", "request", net::HTTP_OK, "application/json", R"({
         "error": {
-          "code": "invalid_request",
+          "error": "invalid_request",
           "url": "/error"
         }
       })");
@@ -2533,7 +2533,7 @@ TEST_F(IdpNetworkRequestManagerTest, IdAssertionRequestErrorWithCrossSiteUrl) {
   std::tie(fetch_status, token_result) = SendTokenRequestAndWaitForResponse(
       "account", "request", net::HTTP_OK, "application/json", R"({
         "error": {
-          "code": "invalid_request",
+          "error": "invalid_request",
           "url": "https://cross-site-idp.test/error"
         }
       })");
@@ -2557,7 +2557,7 @@ TEST_F(IdpNetworkRequestManagerTest,
   std::tie(fetch_status, token_result) = SendTokenRequestAndWaitForResponse(
       "account", "request", net::HTTP_OK, "application/json", R"({
         "error": {
-          "code": "invalid_request",
+          "error": "invalid_request",
           "url": "https://cross-origin.idp.test/error"
         }
       })");
@@ -2581,7 +2581,7 @@ TEST_F(IdpNetworkRequestManagerTest,
   std::tie(fetch_status, token_result) = SendTokenRequestAndWaitForResponse(
       "account", "request", net::HTTP_OK, "application/json", R"({
         "error": {
-          "code": "invalid_request",
+          "error": "invalid_request",
           "url": "http://idp.test/error"
         }
       })");
@@ -2604,7 +2604,7 @@ TEST_F(IdpNetworkRequestManagerTest, IdAssertionRequestErrorWithEmptyUrl) {
   std::tie(fetch_status, token_result) = SendTokenRequestAndWaitForResponse(
       "account", "request", net::HTTP_OK, "application/json", R"({
         "error": {
-          "code": "invalid_request",
+          "error": "invalid_request",
           "url": ""
         }
       })");
@@ -2651,7 +2651,7 @@ TEST_F(IdpNetworkRequestManagerTest, IdAssertionRequestErrorWithLocalHostUrl) {
     std::tie(fetch_status, token_result) = SendTokenRequestAndWaitForResponse(
         "account", "request", net::HTTP_OK, "application/json", R"({
         "error": {
-          "code": "invalid_request",
+          "error": "invalid_request",
           "url": "http://localhost/error"
         }
       })",
@@ -2731,7 +2731,7 @@ TEST_F(IdpNetworkRequestManagerTest, IdAssertionResponseWithErrorAndHttpError) {
       "account", "request", net::HTTP_SERVICE_UNAVAILABLE, "application/json",
       R"({
         "error": {
-          "code": "temporarily_unavailable",
+          "error": "temporarily_unavailable",
           "url": "https://idp.test/error"
         }
       })");

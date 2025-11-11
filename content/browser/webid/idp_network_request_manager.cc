@@ -822,9 +822,14 @@ void OnTokenRequestParsed(
       GetTokenResponseType(token_value, continue_on, response_error);
 
   if (response_error) {
-    const char* key =
-        webid::IsErrorAttributeEnabled() ? kErrorKey : kErrorCodeKey;
-    std::string error_code = ExtractString(*response_error, key);
+    std::string error_code;
+    if (webid::IsErrorAttributeEnabled()) {
+      error_code = ExtractString(*response_error, kErrorKey);
+    }
+    if (error_code.empty()) {
+      error_code = ExtractString(*response_error, kErrorCodeKey);
+    }
+
     const std::string* url = response_error->FindString(kErrorUrlKey);
     GURL error_url;
     std::optional<ErrorUrlType> error_url_type;

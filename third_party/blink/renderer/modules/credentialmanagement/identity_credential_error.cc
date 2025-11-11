@@ -38,16 +38,6 @@ IdentityCredentialError::IdentityCredentialError(const String& message,
       url_(url) {}
 
 String IdentityCredentialError::code(ExceptionState& exception_state) const {
-  if (RuntimeEnabledFeatures::FedCmErrorAttributeEnabled()) {
-    // Throw an exception when feature flag is enabled
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kNotSupportedError,
-        "The 'code' attribute is deprecated and disabled when "
-        "FedCmErrorAttribute feature is enabled. Use 'error' attribute "
-        "instead.");
-    return String();
-  }
-
   // Add console warning when code attribute is accessed
   if (ScriptState* script_state =
           ScriptState::ForCurrentRealm(exception_state.GetIsolate())) {
