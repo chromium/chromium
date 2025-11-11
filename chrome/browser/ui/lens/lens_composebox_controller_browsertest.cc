@@ -1019,11 +1019,13 @@ IN_PROC_BROWSER_TEST_F(LensComposeboxControllerBrowserTest,
       /*meta_key=*/false,
       /*shift_key=*/false);
 
-  // Verify the new message.
+  // Verify the new message has no image crop in the vsint data.
   submit_query = test_side_panel_coordinator->last_sent_client_message_to_aim_
                      .submit_query();
   lens_image_query_data = submit_query.payload().lens_image_query_data(0);
-  ASSERT_FALSE(lens_image_query_data.has_visual_search_interaction_data());
+  EXPECT_TRUE(lens_image_query_data.has_visual_search_interaction_data());
+  EXPECT_FALSE(
+      lens_image_query_data.visual_search_interaction_data().has_zoomed_crop());
 }
 
 // TODO(https://crbug.com/458809311): Re-enable this test.
