@@ -4804,7 +4804,7 @@ auto GraphBuilderTflite::SerializeGemm(const mojom::Gemm& gemm)
   // `output_channels` dimensions.
   // https://source.chromium.org/chromium/chromium/src/+/main:third_party/tflite/src/tensorflow/lite/kernels/fully_connected.cc;drc=7930f629a820b2233128fb591789f4d8a41be8d9;l=425
   bool is_emulated_c_expression = false;
-  if (gemm.c_operand_id) {
+  if (gemm.c_operand_id && gemm.beta != 0.0f) {
     const std::vector<uint32_t>& output_shape =
         GetOperand(gemm.output_operand_id).descriptor.shape();
     CHECK_EQ(output_shape.size(), 2u);
