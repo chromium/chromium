@@ -15,6 +15,7 @@
 
 #include "base/files/file_util.h"
 #include "base/json/json_string_value_serializer.h"
+#include "base/json/values_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/process/launch.h"
 #include "base/strings/stringprintf.h"
@@ -611,82 +612,138 @@ TEST_F(PolicyServiceTest, MultiplePolicyManagers) {
                 enterprise_companion::kCompanionAppId));
   EXPECT_EQ(
       policy_service->GetAllPolicies(),
-      base::Value(
-          base::Value::Dict()
-              .Set("CloudPolicyOverridesPlatformPolicy",
-                   base::Value::Dict()
-                       .Set("value", false)
-                       .Set("source", "group_policy"))
-              .Set("LastCheckPeriod", base::Value::Dict()
-                                          .Set("value", 270)
-                                          .Set("source", "Default"))
-              .Set("UpdatesSuppressed", base::Value::Dict()
-                                            .Set("StartHour", 5)
-                                            .Set("StartMinute", 10)
-                                            .Set("Duration", 30)
-                                            .Set("source", "group_policy"))
-              .Set("DownloadPreference", base::Value::Dict()
-                                             .Set("value", "cacheable")
-                                             .Set("source", "imaginary"))
-              .Set("PackageCacheSizeLimit", base::Value::Dict()
-                                                .Set("value", 1000)
-                                                .Set("source", "group_policy"))
-              .Set("PackageCacheExpires",
-                   base::Value::Dict()
-                       .Set("value", 60)
-                       .Set("source", "device_management"))
-              .Set("ProxyMode", base::Value::Dict()
-                                    .Set("value", "direct")
-                                    .Set("source", "imaginary"))
-              .Set("ProxyPacURL",
-                   base::Value::Dict()
-                       .Set("value", "url://proxyurl")
-                       .Set("source", "imaginary"))
-              .Set("ProxyServer",
-                   base::Value::Dict()
-                       .Set("value", "test-server")
-                       .Set("source", "imaginary"))
-              .Set("app1",
-                   base::Value::Dict()
-                       .Set("Install", base::Value::Dict()
-                                           .Set("value", 0)
-                                           .Set("source", "group_policy"))
-                       .Set("Update", base::Value::Dict()
-                                          .Set("value", 3)
-                                          .Set("source", "device_management"))
-                       .Set("RollbackToTargetVersionAllowed",
-                            base::Value::Dict()
-                                .Set("value", false)
-                                .Set("source", "Default"))
-                       .Set("TargetChannel", base::Value::Dict()
-                                                 .Set("value", "channel_gp")
-                                                 .Set("source", "group_policy"))
-                       .Set("TargetVersionPrefix",
-                            base::Value::Dict()
-                                .Set("value", "103.3.")
-                                .Set("source", "imaginary"))
-                       .Set("RollbackToTargetVersionAllowed",
-                            base::Value::Dict()
-                                .Set("value", false)
-                                .Set("source", "Default")))
-              .Set("app2",
-                   base::Value::Dict()
-                       .Set("Install", base::Value::Dict()
-                                           .Set("value", 2)
-                                           .Set("source", "imaginary"))
-                       .Set("Update", base::Value::Dict()
-                                          .Set("value", 1)
-                                          .Set("source", "group_policy"))
-                       .Set("RollbackToTargetVersionAllowed",
-                            base::Value::Dict()
-                                .Set("value", false)
-                                .Set("source", "Default"))
-                       .Set("RollbackToTargetVersionAllowed",
-                            base::Value::Dict()
-                                .Set("value", false)
-                                .Set("source", "Default")))
-              .Set(enterprise_companion::kCompanionAppId,
-                   base::Value::Dict())));
+      base::Value::Dict()
+          .Set(
+              "policiesByName",
+              base::Value::Dict()
+                  .Set("CloudPolicyOverridesPlatformPolicy",
+                       base::Value::Dict()
+                           .Set("valuesBySource",
+                                base::Value::Dict().Set("group_policy", false))
+                           .Set("prevailingSource", "group_policy"))
+                  .Set("LastCheckPeriod",
+                       base::Value::Dict()
+                           .Set("valuesBySource",
+                                base::Value::Dict().Set(
+                                    "Default",
+                                    base::TimeDeltaToValue(base::Minutes(270))))
+                           .Set("prevailingSource", "Default"))
+                  .Set("UpdatesSuppressed",
+                       base::Value::Dict()
+                           .Set("valuesBySource",
+                                base::Value::Dict()
+                                    .Set("group_policy",
+                                         base::Value::Dict()
+                                             .Set("StartHour", 5)
+                                             .Set("StartMinute", 10)
+                                             .Set("Duration", 30))
+                                    .Set("imaginary", base::Value::Dict()
+                                                          .Set("StartHour", 1)
+                                                          .Set("StartMinute", 1)
+                                                          .Set("Duration", 20))
+                                    .Set("device_management",
+                                         base::Value::Dict()
+                                             .Set("StartHour", 5)
+                                             .Set("StartMinute", 10)
+                                             .Set("Duration", 30)))
+                           .Set("prevailingSource", "group_policy"))
+                  .Set("DownloadPreference",
+                       base::Value::Dict()
+                           .Set("valuesBySource", base::Value::Dict().Set(
+                                                      "imaginary", "cacheable"))
+                           .Set("prevailingSource", "imaginary"))
+                  .Set("PackageCacheSizeLimit",
+                       base::Value::Dict()
+                           .Set("valuesBySource",
+                                base::Value::Dict().Set("group_policy", 1000))
+                           .Set("prevailingSource", "group_policy"))
+                  .Set("PackageCacheExpires",
+                       base::Value::Dict()
+                           .Set("valuesBySource", base::Value::Dict().Set(
+                                                      "device_management", 60))
+                           .Set("prevailingSource", "device_management"))
+                  .Set("ProxyMode",
+                       base::Value::Dict()
+                           .Set("valuesBySource",
+                                base::Value::Dict().Set("imaginary", "direct"))
+                           .Set("prevailingSource", "imaginary"))
+                  .Set("ProxyPacURL",
+                       base::Value::Dict()
+                           .Set("valuesBySource",
+                                base::Value::Dict().Set("imaginary",
+                                                        "url://proxyurl"))
+                           .Set("prevailingSource", "imaginary"))
+                  .Set("ProxyServer",
+                       base::Value::Dict()
+                           .Set("valuesBySource",
+                                base::Value::Dict().Set("imaginary",
+                                                        "test-server"))
+                           .Set("prevailingSource", "imaginary")))
+          .Set("policiesByAppId",
+               base::Value::Dict()
+                   .Set("app1",
+                        base::Value::Dict()
+                            .Set("Install",
+                                 base::Value::Dict()
+                                     .Set("valuesBySource",
+                                          base::Value::Dict()
+                                              .Set("group_policy", 0)
+                                              .Set("device_management", 1)
+                                              .Set("Default", 1))
+                                     .Set("prevailingSource", "group_policy"))
+                            .Set("Update",
+                                 base::Value::Dict()
+                                     .Set("valuesBySource",
+                                          base::Value::Dict()
+                                              .Set("device_management", 3)
+                                              .Set("imaginary", 2)
+                                              .Set("Default", 1))
+                                     .Set("prevailingSource",
+                                          "device_management"))
+                            .Set("TargetChannel",
+                                 base::Value::Dict()
+                                     .Set("valuesBySource",
+                                          base::Value::Dict()
+                                              .Set("group_policy", "channel_gp")
+                                              .Set("device_management",
+                                                   "channel_dm")
+                                              .Set("imaginary",
+                                                   "channel_imaginary"))
+                                     .Set("prevailingSource", "group_policy"))
+                            .Set("TargetVersionPrefix",
+                                 base::Value::Dict()
+                                     .Set("valuesBySource",
+                                          base::Value::Dict().Set("imaginary",
+                                                                  "103.3."))
+                                     .Set("prevailingSource", "imaginary"))
+                            .Set("RollbackToTargetVersionAllowed",
+                                 base::Value::Dict()
+                                     .Set("valuesBySource",
+                                          base::Value::Dict().Set("Default",
+                                                                  false))
+                                     .Set("prevailingSource", "Default")))
+                   .Set("app2",
+                        base::Value::Dict()
+                            .Set("Install",
+                                 base::Value::Dict()
+                                     .Set("valuesBySource",
+                                          base::Value::Dict()
+                                              .Set("imaginary", 2)
+                                              .Set("Default", 1))
+                                     .Set("prevailingSource", "imaginary"))
+                            .Set("Update",
+                                 base::Value::Dict()
+                                     .Set("valuesBySource",
+                                          base::Value::Dict()
+                                              .Set("group_policy", 1)
+                                              .Set("Default", 1))
+                                     .Set("prevailingSource", "group_policy"))
+                            .Set("RollbackToTargetVersionAllowed",
+                                 base::Value::Dict()
+                                     .Set("valuesBySource",
+                                          base::Value::Dict().Set("Default",
+                                                                  false))
+                                     .Set("prevailingSource", "Default")))));
 }
 
 TEST_F(PolicyServiceTest, MultiplePolicyManagers_WithUnmanagedOnes) {

@@ -471,6 +471,37 @@ std::optional<base::Value::Dict> OmahaRequestEndEvent::BuildInternal(
   return event;
 }
 
+LoadPolicyStartEvent::LoadPolicyStartEvent() = default;
+LoadPolicyStartEvent::~LoadPolicyStartEvent() = default;
+
+std::optional<base::Value::Dict> LoadPolicyStartEvent::BuildInternal(
+    base::Value::Dict event) const {
+  event.Set("eventType", "LOAD_POLICY");
+  event.Set("bound", "START");
+  return event;
+}
+
+LoadPolicyEndEvent::LoadPolicyEndEvent() = default;
+LoadPolicyEndEvent::~LoadPolicyEndEvent() = default;
+
+LoadPolicyEndEvent& LoadPolicyEndEvent::SetPolicySet(
+    const base::Value::Dict& policy_set) {
+  policy_set_ = policy_set.Clone();
+  return *this;
+}
+
+std::optional<base::Value::Dict> LoadPolicyEndEvent::BuildInternal(
+    base::Value::Dict event) const {
+  if (policy_set_.empty()) {
+    VLOG(1) << "Failed to build LoadPolicyEvent, policy_set is empty";
+    return std::nullopt;
+  }
+  event.Set("eventType", "LOAD_POLICY");
+  event.Set("bound", "END");
+  event.Set("policySet", policy_set_.Clone());
+  return event;
+}
+
 UpdateStartEvent::UpdateStartEvent() = default;
 UpdateStartEvent::~UpdateStartEvent() = default;
 

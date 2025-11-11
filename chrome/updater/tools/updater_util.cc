@@ -369,9 +369,8 @@ bool OutputInJSONFormat() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(kJSONFormatSwitch);
 }
 
-std::string ValueToJSONString(const base::Value& value) {
-  std::string value_string;
-  return base::JSONWriter::Write(value, &value_string) ? value_string : "";
+std::string DictToJSONString(const base::Value::Dict& dict) {
+  return base::WriteJson(dict).value_or("");
 }
 
 void OnAppStateChanged(const UpdateService::UpdateState& update_state) {
@@ -529,8 +528,7 @@ void UpdaterUtilApp::ListApps() {
             apps.Set(app.app_id,
                      base::Value::Dict().Set("version", app.version));
           }
-          std::cout << ValueToJSONString(base::Value(std::move(apps)))
-                    << std::endl;
+          std::cout << DictToJSONString(std::move(apps)) << std::endl;
         } else {
           std::cout << "Registered apps : {" << std::endl;
           for (updater::UpdateService::AppState app : states) {
@@ -606,8 +604,7 @@ void UpdaterUtilApp::DoListUpdate(scoped_refptr<AppState> app_state) {
                         base::Value::Dict()
                             .Set("CurrentVersion", app_state->current_version())
                             .Set("NextVersion", app_state->next_version()));
-                std::cout << ValueToJSONString(base::Value(std::move(app)))
-                          << std::endl;
+                std::cout << DictToJSONString(std::move(app)) << std::endl;
               } else {
                 std::cout << Quoted(app_state->app_id()) << " : {" << std::endl
                           << "\tCurrent Version = "
@@ -666,7 +663,7 @@ void UpdaterUtilApp::ListPolicies() {
             CreateGlobalPrefs(Scope()), CreateDefaultExternalConstants(),
             Scope());
         if (OutputInJSONFormat()) {
-          std::cout << ValueToJSONString(
+          std::cout << DictToJSONString(
                            configurator->GetPolicyService()->GetAllPolicies())
                     << std::endl;
         } else {

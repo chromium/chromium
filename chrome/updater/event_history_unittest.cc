@@ -451,6 +451,44 @@ TEST_F(EventHistoryTest,
             std::nullopt);
 }
 
+TEST_F(EventHistoryTest, LoadPolicyStartEventToDict) {
+  std::optional<base::Value::Dict> event =
+      LoadPolicyStartEvent().SetEventId("test-event-id").Build();
+  EXPECT_THAT(*event, DictHasFields(ExpectedFields({
+                          {"eventType", ValueIs("LOAD_POLICY")},
+                          {"bound", ValueIs("START")},
+                          {"eventId", ValueIs("test-event-id")},
+                          {"deviceUptime", IsPositiveTimeDeltaValue()},
+                          {"pid", ValueIs(GetCurrentPid())},
+                          {"processToken", ValueIs(GetProcessToken())},
+                      })));
+}
+
+TEST_F(EventHistoryTest, LoadPolicyEndEventToDict) {
+  const base::Value::Dict fake_policy_set =
+      base::Value::Dict().Set("stub_policy_set", true);
+  std::optional<base::Value::Dict> event = LoadPolicyEndEvent()
+                                               .SetEventId("test-event-id")
+                                               .SetPolicySet(fake_policy_set)
+                                               .Build();
+  ASSERT_TRUE(event);
+  EXPECT_THAT(*event, DictHasFields(ExpectedFields({
+                          {"eventType", ValueIs("LOAD_POLICY")},
+                          {"bound", ValueIs("END")},
+                          {"eventId", ValueIs("test-event-id")},
+                          {"deviceUptime", IsPositiveTimeDeltaValue()},
+                          {"pid", ValueIs(GetCurrentPid())},
+                          {"processToken", ValueIs(GetProcessToken())},
+                          {"policySet", Eq(std::cref(fake_policy_set))},
+                      })));
+}
+
+TEST_F(EventHistoryTest,
+       LoadPolicyEndEventBuilderReturnsNulloptOnMissingPolicySet) {
+  EXPECT_EQ(LoadPolicyEndEvent().SetEventId("test-event-id").Build(),
+            std::nullopt);
+}
+
 TEST_F(EventHistoryTest, UpdateStartEventToDict) {
   std::optional<base::Value::Dict> event =
       UpdateStartEvent()

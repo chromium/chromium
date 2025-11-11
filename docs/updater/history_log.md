@@ -183,3 +183,6 @@ The schema defines the following event types:
     * `prevailingSource` (string, required): A indicating which key within
       `valuesBySource` contains the authoritative value used by the updater
       (e.g., `platform`).
+  * `policiesByAppId` (object, required): An object mapping application
+    identifiers to per-app policy sets. Each value in this map is an object with
+    the same structure as `policiesByName`, as defined above.
