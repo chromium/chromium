@@ -153,15 +153,19 @@ void DwaService::Purge() {
 
 void DwaService::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
-  auto cwt = fcp::confidential_compute::OkpCwt::Decode(encryption_public_key_);
-  if (cwt.ok() && IsValidCwt(*cwt)) {
-    // Call the observer with the current public key if it is valid.
-    observer->OnEncryptionPublicKeyChanged(*cwt);
-  }
 }
 
 void DwaService::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
+}
+
+std::optional<fcp::confidential_compute::OkpCwt>
+DwaService::GetEncryptionPublicKey() {
+  auto cwt = fcp::confidential_compute::OkpCwt::Decode(encryption_public_key_);
+  if (!cwt.ok() || !IsValidCwt(*cwt)) {
+    return std::nullopt;
+  }
+  return *cwt;
 }
 
 void DwaService::RefreshEncryptionPublicKey() {

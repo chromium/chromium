@@ -8,6 +8,7 @@ build_webui_tests("build") {
   files = [
     "field_trials_test.ts",
     "no_logs_test.ts",
+    "private_metrics_test.ts",
     "utils.ts",
     "with_log_test.ts",
   ]

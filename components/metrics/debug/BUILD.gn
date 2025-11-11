@@ -13,6 +13,7 @@ build_webui("build") {
   web_component_files = [
     "app.ts",
     "field_trials.ts",
+    "private_metrics.ts",
   ]
   ts_files = [
     "browser_proxy.ts",

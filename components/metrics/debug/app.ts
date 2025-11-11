@@ -5,6 +5,7 @@
 import '/strings.m.js';
 import 'chrome://resources/cr_elements/cr_tab_box/cr_tab_box.js';
 import './field_trials.js';
+import './private_metrics.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
 import {addWebUiListener} from 'chrome://resources/js/cr.js';
@@ -127,6 +128,7 @@ export class MetricsInternalsAppElement extends CustomElement {
       '#uma',
       '#variations',
       '#field-trials',
+      '#private-metrics',
     ];
 
     const tabBox = this.shadowRoot!.querySelector('cr-tab-box')!;

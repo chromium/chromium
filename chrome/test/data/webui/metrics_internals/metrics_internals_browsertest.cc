@@ -90,3 +90,7 @@ IN_PROC_BROWSER_TEST_F(MetricsInternalsUIBrowserTestWithLog, All) {
 IN_PROC_BROWSER_TEST_F(MetricsInternalsUIBrowserTest, FieldTrials) {
   RunTest("metrics_internals/field_trials_test.js", "mocha.run()");
 }
+
+IN_PROC_BROWSER_TEST_F(MetricsInternalsUIBrowserTest, PrivateMetrics) {
+  RunTest("metrics_internals/private_metrics_test.js", "mocha.run()");
+}

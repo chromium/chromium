@@ -4,6 +4,8 @@
 
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
 
+import type {CwtKeyInfo} from './private_metrics.js';
+
 /**
  * @fileoverview A helper object used by the chrome://metrics-internals page to
  * interact with the browser.
@@ -137,6 +139,11 @@ export interface MetricsInternalsBrowserProxy {
   lookupTrialOrGroupName(name: string): Promise<HashNameMap>;
 
   /**
+   * Fetches the encryption public key.
+   */
+  fetchEncryptionPublicKey(): Promise<CwtKeyInfo>;
+
+  /**
    * Restarts the browser.
    */
   restart(): Promise<void>;
@@ -173,6 +180,10 @@ export class MetricsInternalsBrowserProxyImpl implements
 
   lookupTrialOrGroupName(name: string): Promise<HashNameMap> {
     return sendWithPromise('lookupTrialOrGroupName', name);
+  }
+
+  fetchEncryptionPublicKey(): Promise<CwtKeyInfo> {
+    return sendWithPromise('fetchEncryptionPublicKey');
   }
 
   restart(): Promise<void> {

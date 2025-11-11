@@ -59,12 +59,14 @@ class DwaService {
   void Purge();
 
   // Adds an observer to be notified of changes to the encryption public key.
-  // Adding an observer will also dispatch the current key to the observer so
-  // the initial state can be determined.
   void AddObserver(Observer* observer);
 
   // Removes an observer to be notified of changes to the encryption public key.
   void RemoveObserver(Observer* observer);
+
+  // Gets the decoded encryption public key being used to encrypt private metric
+  // reports. If the key is invalid or not available, returns an empty optional.
+  std::optional<fcp::confidential_compute::OkpCwt> GetEncryptionPublicKey();
 
   // Refresh the public key used to encrypt private metric reports.
   void RefreshEncryptionPublicKey();
