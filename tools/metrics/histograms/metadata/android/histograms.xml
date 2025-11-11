@@ -8671,6 +8671,7 @@ chromium-metrics-reviews@google.com.
     units="ms" expires_after="2025-12-31">
   <owner>colibie@google.com</owner>
   <owner>src/android_webview/OWNERS</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     The wall clock time it takes to start up Chromium. This is different from
     (&quot;Android.WebView.Startup.CreationTime.StartChromiumLocked&quot;)
@@ -8702,6 +8703,7 @@ chromium-metrics-reviews@google.com.
   <owner>abhijithnair@chromium.org</owner>
   <owner>torne@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     The total time to add WebView assets to AssetManager. Reported on S+.
 
@@ -8717,6 +8719,7 @@ chromium-metrics-reviews@google.com.
   <owner>abhijithnair@chromium.org</owner>
   <owner>torne@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     The total time to create the WebView APK context. Reported on S+.
 
@@ -8732,6 +8735,7 @@ chromium-metrics-reviews@google.com.
     units="ms" expires_after="2026-04-05">
   <owner>torne@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     How long it takes to initialize the first WebViewChromium instance in the
     case where we have already finished the process-global browser startup:
@@ -8750,6 +8754,7 @@ chromium-metrics-reviews@google.com.
     units="ms" expires_after="2026-05-03">
   <owner>torne@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     How long it takes to initialize the first WebViewChromium instance in the
     case where we had to also do the process-global browser startup:
@@ -8767,6 +8772,7 @@ chromium-metrics-reviews@google.com.
   <owner>abhijithnair@chromium.org</owner>
   <owner>torne@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     The total time to create the WebView ClassLoader. Reported on S+.
 
@@ -8783,6 +8789,7 @@ chromium-metrics-reviews@google.com.
   <owner>abhijithnair@chromium.org</owner>
   <owner>torne@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     The total time taken by `getWebViewProviderClass` method
     (https://cs.android.com/android/platform/superproject/main/+/main:frameworks/base/core/java/android/webkit/WebViewFactory.java;l=270;drc=61197364367c9e404c7da6900658f1b16c42d0da)
@@ -8817,6 +8824,7 @@ chromium-metrics-reviews@google.com.
   <owner>abhijithnair@chromium.org</owner>
   <owner>torne@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     The total time to load the WebView native library for the first time.
     Reported on S+. This also includes the time taken for processing relocations
@@ -8833,6 +8841,7 @@ chromium-metrics-reviews@google.com.
     units="ms" expires_after="2026-04-05">
   <owner>torne@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     How long it takes to initialize a subsequent WebViewChromium instance. This
     will be recorded once for each instance created, other than the first to be
@@ -8848,6 +8857,7 @@ chromium-metrics-reviews@google.com.
     units="ms" expires_after="2026-05-03">
   <owner>torne@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     How long it takes to run WebViewChromiumFactoryProvider.initialize(). This
     does not count the time spent beforehand in WebViewFactory in the Android
@@ -8871,6 +8881,7 @@ chromium-metrics-reviews@google.com.
     units="ms" expires_after="2026-05-03">
   <owner>torne@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     How long it takes to initialize a WebViewChromium instance in the case where
     we had to also do the process-global browser startup:
@@ -8896,6 +8907,7 @@ chromium-metrics-reviews@google.com.
     units="ms" expires_after="2026-05-03">
   <owner>torne@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     How long it takes to initialize a WebViewChromium instance in the case where
     we have already finished the process-global browser startup:
@@ -8953,6 +8965,7 @@ chromium-metrics-reviews@google.com.
     units="ms" expires_after="2026-05-03">
   <owner>torne@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     The total time to initialize WebViewChromiumFactoryProvider. Reported on S+.
 
@@ -8966,6 +8979,7 @@ chromium-metrics-reviews@google.com.
     units="ms" expires_after="2025-12-31">
   <owner>torne@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Records how long it took to wait for the UI thread before running
     startChromium. Only recorded if startChromium was posted as a task.
