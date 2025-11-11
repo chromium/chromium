@@ -54,9 +54,16 @@ void ContextualSearchSessionHandle::NotifySessionAbandoned() {
 
 std::optional<lens::proto::LensOverlaySuggestInputs>
 ContextualSearchSessionHandle::GetSuggestInputs() const {
-  if (auto* controller = GetController()) {
-    return controller->suggest_inputs();
+  auto* controller = GetController();
+  if (!controller) {
+    return std::nullopt;
   }
+
+  const auto& suggest_inputs = controller->suggest_inputs();
+  if (suggest_inputs.has_encoded_request_id()) {
+    return suggest_inputs;
+  }
+
   return std::nullopt;
 }
 
