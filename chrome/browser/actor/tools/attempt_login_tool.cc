@@ -343,8 +343,9 @@ void AttemptLoginTool::OnAttemptLogin(
     return;
   }
 
+  mojom::ActionResultCode code = LoginResultToActorResult(login_status.value());
   PostResponseTask(std::move(invoke_callback_),
-                   MakeResult(LoginResultToActorResult(login_status.value())));
+                   IsOk(code) ? MakeOkResult() : MakeResult(code));
 }
 
 std::string AttemptLoginTool::DebugString() const {

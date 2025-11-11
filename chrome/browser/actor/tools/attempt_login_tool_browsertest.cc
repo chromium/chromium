@@ -14,6 +14,7 @@
 #include "chrome/browser/actor/tools/tools_test_util.h"
 #include "chrome/browser/password_manager/actor_login/actor_login_service.h"
 #include "chrome/common/actor.mojom.h"
+#include "chrome/common/actor/action_result.h"
 #include "components/favicon/core/test/mock_favicon_service.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "content/public/test/browser_test.h"
@@ -144,6 +145,7 @@ IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest, Basic) {
   ActResultFuture result;
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectOkResult(result);
+  EXPECT_TRUE(RequiresPageStabilization(*result.Get<2>().back().result));
 
   const auto& last_credential_used =
       mock_login_service().last_credential_used();
@@ -280,6 +282,7 @@ IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest, OnlyUsernameFilled) {
   ActResultFuture result;
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectOkResult(result);
+  EXPECT_TRUE(RequiresPageStabilization(*result.Get<2>().back().result));
 }
 
 IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest, OnlyPasswordFilled) {
@@ -297,6 +300,7 @@ IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest, OnlyPasswordFilled) {
   ActResultFuture result;
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectOkResult(result);
+  EXPECT_TRUE(RequiresPageStabilization(*result.Get<2>().back().result));
 }
 
 IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest, NoSigninForm) {
