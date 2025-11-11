@@ -21,8 +21,10 @@
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
+#include "chrome/browser/ui/contextual_search/searchbox_context_data.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
@@ -36,6 +38,7 @@
 #include "components/favicon_base/favicon_types.h"
 #include "components/lens/contextual_input.h"
 #include "components/lens/tab_contextualization_controller.h"
+#include "components/omnibox/browser/searchbox.mojom.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "ui/base/models/image_model.h"
@@ -295,8 +298,37 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
                                              /*is_image=*/false,
                                              query_controller_, edit_model_);
         break;
+      case IDC_OMNIBOX_CONTEXT_DEEP_RESEARCH:
+        UpdateSearchboxContextToolMode(searchbox::mojom::ToolMode::kDeepSearch);
+        edit_model_->OpenAiMode(/*via_keyboard=*/false);
+        break;
+      case IDC_OMNIBOX_CONTEXT_CREATE_IMAGES:
+        UpdateSearchboxContextToolMode(
+            searchbox::mojom::ToolMode::kCreateImage);
+        edit_model_->OpenAiMode(/*via_keyboard=*/false);
+        break;
       default:
         NOTREACHED();
     }
   }
+}
+
+void OmniboxContextMenuController::UpdateSearchboxContextToolMode(
+    searchbox::mojom::ToolMode tool_mode) {
+  auto* browser_window_interface =
+      webui::GetBrowserWindowInterface(web_contents_.get());
+  if (!browser_window_interface) {
+    return;
+  }
+  SearchboxContextData* searchbox_context_data =
+      browser_window_interface->GetFeatures().searchbox_context_data();
+  if (!searchbox_context_data) {
+    return;
+  }
+  auto context = searchbox_context_data->TakePendingContext();
+  if (!context) {
+    context = std::make_unique<SearchboxContextData::Context>();
+  }
+  context->mode = tool_mode;
+  searchbox_context_data->SetPendingContext(std::move(context));
 }
