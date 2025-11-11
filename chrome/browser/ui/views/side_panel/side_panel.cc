@@ -76,7 +76,10 @@ gfx::Insets GetBorderInsets() {
                            border_thickness, border_thickness);
 }
 
-constexpr base::TimeDelta kAnimationDurationMs = base::Milliseconds(450);
+constexpr base::TimeDelta kContentsHeightSidePanelAnimationDuration =
+    base::Milliseconds(450);
+constexpr base::TimeDelta kToolbarHeightSidePanelAnimationDuration =
+    base::Milliseconds(350);
 
 // This border paints the toolbar color around the side panel content and draws
 // a roundrect viewport around the side panel content. The border can have
@@ -376,8 +379,13 @@ SidePanel::SidePanel(BrowserView* browser_view,
       base::BindRepeating(&BrowserView::UpdateSidePanelHorizontalAlignment,
                           base::Unretained(browser_view)));
 
-  animation_.SetTweenType(gfx::Tween::Type::EASE_IN_OUT_EMPHASIZED);
-  animation_.SetSlideDuration(kAnimationDurationMs);
+  if (type_ == SidePanelEntry::PanelType::kContent) {
+    animation_.SetTweenType(gfx::Tween::Type::EASE_IN_OUT_EMPHASIZED);
+    animation_.SetSlideDuration(kContentsHeightSidePanelAnimationDuration);
+  } else {
+    animation_.SetTweenType(gfx::Tween::Type::ACCEL_45_DECEL_88);
+    animation_.SetSlideDuration(kToolbarHeightSidePanelAnimationDuration);
+  }
 
   SetVisible(false);
   SetLayoutManager(std::make_unique<views::FillLayout>());

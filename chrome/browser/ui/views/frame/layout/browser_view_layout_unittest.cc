@@ -184,8 +184,8 @@ class BrowserViewLayoutTest : public ChromeViewsTestBase {
         &browser_window_interface_);
     main_background_region_ =
         browser_view_->AddChildView(CreateFixedSizeView(kDefaultViewSize));
-    shadow_overlay_ = main_background_region_->AddChildView(
-        CreateFixedSizeView(kDefaultViewSize));
+    shadow_overlay_ =
+        browser_view_->AddChildView(CreateFixedSizeView(kDefaultViewSize));
 
     top_container_ = browser_view_->AddChildView(
         CreateFixedSizeView(gfx::Size(kBaseWidth, 60)));
