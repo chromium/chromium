@@ -585,6 +585,20 @@ const CGFloat kUnreadIndicatorViewHeight = 6.0;
 
 - (void)setEntrypointConfig:(ContextualPanelItemConfiguration*)config {
   if (IsAskGeminiChipEnabled()) {
+    LocationBarBadgeType badgeType;
+    switch (config->item_type) {
+      case ContextualPanelItemType::SamplePanelItem:
+        badgeType = LocationBarBadgeType::kContextualPanelEntryPointSample;
+        break;
+      case ContextualPanelItemType::PriceInsightsItem:
+        badgeType = LocationBarBadgeType::kPriceInsights;
+        break;
+      case ContextualPanelItemType::ReaderModeItem:
+        badgeType = LocationBarBadgeType::kReaderMode;
+        break;
+    }
+
+    RecordLocationBarBadgeUpdate(badgeType);
     // TODO(crbug.com/448422022): Store Contextual Panel Entrypoint badges
     // instead of preventing them.
     if (_locationBarBadgeShouldBeVisible) {
@@ -608,19 +622,6 @@ const CGFloat kUnreadIndicatorViewHeight = 6.0;
         image = CustomSymbolWithPointSize(
             base::SysUTF8ToNSString(config->entrypoint_image_name),
             symbolPointSize);
-        break;
-    }
-
-    LocationBarBadgeType badgeType;
-    switch (config->item_type) {
-      case ContextualPanelItemType::SamplePanelItem:
-        badgeType = LocationBarBadgeType::kContextualPanelEntryPointSample;
-        break;
-      case ContextualPanelItemType::PriceInsightsItem:
-        badgeType = LocationBarBadgeType::kPriceInsights;
-        break;
-      case ContextualPanelItemType::ReaderModeItem:
-        badgeType = LocationBarBadgeType::kReaderMode;
         break;
     }
 

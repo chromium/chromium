@@ -161,7 +161,10 @@ source_set("metrics") {
     "location_bar_metrics.h",
     "location_bar_metrics.mm",
   ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/location_bar/badge/model",
+  ]
 }
 
 source_set("protocols") {

@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/location_bar/badge/model/badge_type.h"
 #import "ios/chrome/browser/location_bar/badge/model/location_bar_badge_configuration.h"
 #import "ios/chrome/browser/location_bar/badge/ui/location_bar_badge_consumer.h"
+#import "ios/chrome/browser/location_bar/ui_bundled/location_bar_metrics.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
@@ -123,6 +124,7 @@ const int kTransitionTimeInSeconds = 2;
 #pragma mark - LocationBarBadgeCommands
 
 - (void)updateBadgeConfig:(LocationBarBadgeConfiguration*)config {
+  RecordLocationBarBadgeUpdate(config.badgeType);
   // If another badge update is sent while an initial badge is still displayed,
   // ignore the update.
   if (![self shouldShowBadge:config.badgeType] ||
@@ -278,6 +280,7 @@ const int kTransitionTimeInSeconds = 2;
     default:
       break;
   }
+  RecordLocationBarBadgeShown(badgeType);
 }
 
 // Whether to show Gemini contextual chip. Checks if the page is eligible for

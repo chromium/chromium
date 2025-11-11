@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_LOCATION_BAR_UI_BUNDLED_LOCATION_BAR_METRICS_H_
 #define IOS_CHROME_BROWSER_LOCATION_BAR_UI_BUNDLED_LOCATION_BAR_METRICS_H_
 
+enum class LocationBarBadgeType;
+
 // Designates the leading icon type in the location bar.
 //
 // These values are persisted to logs. Entries should not be renumbered and
@@ -21,10 +23,19 @@ enum class IOSLocationBarLeadingIconType {
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:IOSLocationBarLeadingIconType)
 
+// Add enum here
+
 /// Records lens overlay entrypoint available.
 void RecordLensEntrypointAvailable();
 
 /// Records lens overlay entrypoint hidden due to `visible_icon`.
 void RecordLensEntrypointHidden(IOSLocationBarLeadingIconType visible_icon);
+
+// Records badge updates that get sent to Location Bar Badge. Does not correlate
+// with what badge is shown to a user.
+void RecordLocationBarBadgeUpdate(LocationBarBadgeType badge_type);
+
+// Records badges that get shown to a user from Location Bar Badge.
+void RecordLocationBarBadgeShown(LocationBarBadgeType badge_type);
 
 #endif  // IOS_CHROME_BROWSER_LOCATION_BAR_UI_BUNDLED_LOCATION_BAR_METRICS_H_

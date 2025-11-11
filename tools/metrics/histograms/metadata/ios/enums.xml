@@ -727,6 +727,27 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="External action opened in Chrome"/>
 </enum>
 
+<!-- LINT.IfChange(IOSLocationBarBadgeType) -->
+
+<enum name="IOSLocationBarBadgeType">
+  <int value="0" label="None"/>
+  <int value="1" label="PasswordSave"/>
+  <int value="2" label="PasswordUpdate"/>
+  <int value="3" label="Incognito"/>
+  <int value="4" label="Overflow"/>
+  <int value="5" label="SaveCard"/>
+  <int value="6" label="Translate"/>
+  <int value="7" label="SaveAddressProfile"/>
+  <int value="8" label="PermissionsCamera"/>
+  <int value="9" label="PermissionsMicrophone"/>
+  <int value="10" label="ContextualPanelEntryPointSample"/>
+  <int value="11" label="PriceInsights"/>
+  <int value="12" label="ReaderMode"/>
+  <int value="13" label="GeminiContextualCueChip"/>
+</enum>
+
+<!-- LINT.ThenChange(//ios/chrome/browser/location_bar/badge/model/badge_type.h:LocationBarBadgeType) -->
+
 <!-- LINT.IfChange(IOSLocationBarLeadingIconType) -->
 
 <enum name="IOSLocationBarLeadingIconType">

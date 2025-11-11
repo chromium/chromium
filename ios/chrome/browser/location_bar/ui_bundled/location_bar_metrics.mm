@@ -7,6 +7,7 @@
 #import <UIKit/UIKit.h>
 
 #import "base/metrics/histogram_functions.h"
+#import "ios/chrome/browser/location_bar/badge/model/badge_type.h"
 
 void RecordLensEntrypointAvailable() {
   base::UmaHistogramBoolean("IOS.LocationBar.LensOverlayEntrypointAvailable",
@@ -16,4 +17,12 @@ void RecordLensEntrypointAvailable() {
 void RecordLensEntrypointHidden(IOSLocationBarLeadingIconType visible_icon) {
   base::UmaHistogramEnumeration("IOS.LocationBar.LensOverlayEntrypointHidden",
                                 visible_icon);
+}
+
+void RecordLocationBarBadgeUpdate(LocationBarBadgeType badge_type) {
+  base::UmaHistogramEnumeration("IOS.LocationBar.BadgeUpdate", badge_type);
+}
+
+void RecordLocationBarBadgeShown(LocationBarBadgeType badge_type) {
+  base::UmaHistogramEnumeration("IOS.LocationBar.BadgeShown", badge_type);
 }

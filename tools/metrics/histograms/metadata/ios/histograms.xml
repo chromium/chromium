@@ -3030,6 +3030,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.LocationBar.Badge{State}" enum="IOSLocationBarBadgeType"
+    expires_after="2026-03-15">
+  <owner>joemerramos@google.com</owner>
+  <owner>bling-alchemy@google.com</owner>
+  <summary>
+    Records the badge type when a badge {State} is received in the location bar.
+  </summary>
+  <token key="State">
+    <variant name="Shown" summary="is being shown to a user."/>
+    <variant name="Update"
+        summary="is being received. Does not correlate with a badge being
+                 shown to a user."/>
+  </token>
+</histogram>
+
 <histogram name="IOS.LocationBar.LensOverlayEntrypointAvailable" enum="Boolean"
     expires_after="2026-03-15">
   <owner>christianxu@chromium.org</owner>
