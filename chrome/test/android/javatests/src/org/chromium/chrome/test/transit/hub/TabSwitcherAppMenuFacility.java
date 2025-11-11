@@ -117,9 +117,18 @@ public class TabSwitcherAppMenuFacility<HostStationT extends TabSwitcherStation>
         return mNewTab.scrollToAndSelectTo().arriveAt(createNewTabPageStation());
     }
 
-    /** Select "New Incognito tab" from the app menu. */
-    public IncognitoNewTabPageStation openNewIncognitoTab() {
-        return mNewIncognitoTab.scrollToAndSelectTo().arriveAt(createNewIncognitoTabPageStation());
+    /** Select "New Incognito tab" or "New Incognito Window" from the app menu. */
+    public IncognitoNewTabPageStation openNewIncognitoTabOrWindow() {
+        if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
+            return mNewIncognitoWindow
+                    .scrollToAndSelectTo()
+                    .inNewTask()
+                    .arriveAt(createNewIncognitoWindowStation());
+        } else {
+            return mNewIncognitoTab
+                    .scrollToAndSelectTo()
+                    .arriveAt(createNewIncognitoTabPageStation());
+        }
     }
 
     /** Select "New tab group" from the app menu. */

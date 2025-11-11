@@ -23,6 +23,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.hub.HubToolbarView;
 import org.chromium.chrome.browser.hub.PaneId;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.ChromeActivityTabModelBoundStation;
@@ -40,6 +41,7 @@ public abstract class HubBaseStation
     public final ViewElement<TabLayout> paneSwitcherElement;
     public final @Nullable ViewElement<View> regularTabsButtonElement;
     public final @Nullable ViewElement<View> incognitoTabsButtonElement;
+    protected final boolean mIsStandaloneIncognitoWindow;
     protected final boolean mIncognitoTabsExist;
     protected final boolean mRegularTabsExist;
 
@@ -60,15 +62,22 @@ public abstract class HubBaseStation
                         ? declareView(toolbarElement.descendant(withId(R.id.menu_button)))
                         : null;
 
+        mIsStandaloneIncognitoWindow = IncognitoUtils.shouldOpenIncognitoAsWindow() && isIncognito;
         paneSwitcherElement =
-                declareView(toolbarElement.descendant(TabLayout.class, withId(R.id.pane_switcher)));
+                mIsStandaloneIncognitoWindow
+                        ? null
+                        : declareView(
+                                toolbarElement.descendant(
+                                        TabLayout.class, withId(R.id.pane_switcher)));
 
         // TODO(crbug.com/386819654): Add a member of type ViewElement representing tab group pane
         // The non-regular toggle tab button contentDescription is a substring found in the string:
         // R.string.accessibility_tab_switcher_standard_stack.
         regularTabsButtonElement =
-                declareView(withContentDescription(containsString("standard tab")));
-        if (mIncognitoTabsExist) {
+                mIsStandaloneIncognitoWindow
+                        ? null
+                        : declareView(withContentDescription(containsString("standard tab")));
+        if (mIncognitoTabsExist && !mIsStandaloneIncognitoWindow) {
             incognitoTabsButtonElement =
                     declareView(
                             withContentDescription(

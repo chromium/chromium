@@ -23,9 +23,11 @@ public class IncognitoTabSwitcherStation extends TabSwitcherStation {
     public IncognitoTabSwitcherStation(boolean regularTabsExist, boolean incognitoTabsExist) {
         super(/* isIncognito= */ true, regularTabsExist, incognitoTabsExist);
 
-        assert incognitoTabsButtonElement != null;
-        declareEnterCondition(
-                new ViewElementMatchesCondition(incognitoTabsButtonElement, isSelected()));
+        if (!mIsStandaloneIncognitoWindow) {
+            assert incognitoTabsButtonElement != null;
+            declareEnterCondition(
+                    new ViewElementMatchesCondition(incognitoTabsButtonElement, isSelected()));
+        }
 
         recyclerViewElement =
                 declareView(
