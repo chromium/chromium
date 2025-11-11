@@ -2,25 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {Uuid} from '//resources/mojo/mojo/public/mojom/base/uuid.mojom-webui.js';
-import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
-
 import {PageCallbackRouter, PageHandlerFactory, PageHandlerRemote} from './contextual_tasks.mojom-webui.js';
+import type {PageHandlerInterface} from './contextual_tasks.mojom-webui.js';
 
 let instance: BrowserProxy|null = null;
 
 export interface BrowserProxy {
-  getCallbackRouter(): PageCallbackRouter;
-  getThreadUrl(): Promise<{url: Url}>;
-  getUrlForTask(uuid: Uuid): Promise<{url: Url}>;
-  setTaskId(uuid: Uuid): void;
-  setThreadTitle(title: string): void;
-  closeSidePanel(): void;
+  callbackRouter: PageCallbackRouter;
+  handler: PageHandlerInterface;
 }
 
 export class BrowserProxyImpl implements BrowserProxy {
   callbackRouter: PageCallbackRouter;
-  handler: PageHandlerRemote;
+  handler: PageHandlerInterface;
 
   constructor() {
     this.callbackRouter = new PageCallbackRouter();
@@ -29,31 +23,7 @@ export class BrowserProxyImpl implements BrowserProxy {
     const factory = PageHandlerFactory.getRemote();
     factory.createPageHandler(
         this.callbackRouter.$.bindNewPipeAndPassRemote(),
-        this.handler.$.bindNewPipeAndPassReceiver());
-  }
-
-  getCallbackRouter() {
-    return this.callbackRouter;
-  }
-
-  getThreadUrl() {
-    return this.handler.getThreadUrl();
-  }
-
-  getUrlForTask(uuid: Uuid) {
-    return this.handler.getUrlForTask(uuid);
-  }
-
-  setTaskId(uuid: Uuid) {
-    this.handler.setTaskId(uuid);
-  }
-
-  setThreadTitle(title: string) {
-    this.handler.setThreadTitle(title);
-  }
-
-  closeSidePanel() {
-    this.handler.closeSidePanel();
+        (this.handler as PageHandlerRemote).$.bindNewPipeAndPassReceiver());
   }
 
   static getInstance(): BrowserProxy {

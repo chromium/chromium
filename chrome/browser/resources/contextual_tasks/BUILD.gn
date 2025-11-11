@@ -28,6 +28,9 @@ build_webui("build") {
       [ "//chrome/browser/contextual_tasks:mojo_bindings_ts__generator" ]
   mojo_files = [ "$root_gen_dir/chrome/browser/contextual_tasks/contextual_tasks.mojom-webui.ts" ]
 
+  # Needed for browser_tests
+  ts_composite = true
+
   ts_definitions = [
     "//tools/typescript/definitions/chrome_event.d.ts",
     "//tools/typescript/definitions/webview_tag.d.ts",

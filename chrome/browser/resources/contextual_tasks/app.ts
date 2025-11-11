@@ -47,14 +47,15 @@ export class ContextualTasksAppElement extends CrLitElement {
     const params = new URLSearchParams(window.location.search);
     const taskUuid = params.get('task');
     if (taskUuid) {
-      const {url} = await this.browserProxy_.getUrlForTask({value: taskUuid});
-      this.browserProxy_.setTaskId({value: taskUuid});
+      const {url} =
+          await this.browserProxy_.handler.getUrlForTask({value: taskUuid});
+      this.browserProxy_.handler.setTaskId({value: taskUuid});
 
       const aiPageParams = new URLSearchParams(new URL(url.url).search);
-      this.browserProxy_.setThreadTitle(aiPageParams.get('q') || '');
+      this.browserProxy_.handler.setThreadTitle(aiPageParams.get('q') || '');
       this.threadUrl_ = url.url;
     } else {
-      const {url} = await this.browserProxy_.getThreadUrl();
+      const {url} = await this.browserProxy_.handler.getThreadUrl();
       this.threadUrl_ = url.url;
     }
   }

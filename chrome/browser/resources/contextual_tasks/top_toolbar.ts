@@ -29,7 +29,7 @@ export class TopToolbarElement extends CrLitElement {
   }
 
   protected onCloseButtonClick_() {
-    this.browserProxy_.closeSidePanel();
+    this.browserProxy_.handler.closeSidePanel();
   }
 }
 
