@@ -86,6 +86,7 @@ source_set("unit_tests") {
   deps = [
     ":model",
     "//base/test:test_support",
+    "//ios/chrome/browser/saved_tab_groups/model",
     "//ios/chrome/browser/shared/coordinator/scene/test",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser/test:test_support",

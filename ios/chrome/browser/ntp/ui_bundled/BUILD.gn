@@ -396,6 +396,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/ntp/ui_bundled/incognito",
     "//ios/chrome/browser/regional_capabilities/model",
     "//ios/chrome/browser/safety_check/model:factory",
+    "//ios/chrome/browser/saved_tab_groups/model",
     "//ios/chrome/browser/search_engines/model:template_url_service_factory",
     "//ios/chrome/browser/segmentation_platform/model",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",

@@ -161,6 +161,7 @@ source_set("unit_tests") {
     "//components/prefs:test_support",
     "//components/sync_preferences",
     "//components/sync_preferences:test_support",
+    "//ios/chrome/browser/saved_tab_groups/model",
     "//ios/chrome/browser/sessions/model",
     "//ios/chrome/browser/sessions/model:fake",
     "//ios/chrome/browser/sessions/model:session_restoration_service_factory",
