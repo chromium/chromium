@@ -54,7 +54,9 @@ if there is evidence of active exploitation.
 
 Example bugs:
 
-* Memory corruption in the browser process ([319125](https://crbug.com/319125#c10)).
+* Memory corruption in the browser process
+  ([319125](https://crbug.com/319125#c10)) which is directly or indirectly
+  reachable from web content.
 * Memory corruption in an unsandboxed GPU process when it is reachable directly from web
   content without compromising the renderer.
   ([1420130](https://crbug.com/1420130), [1427865](https://crbug.com/1427865)).
