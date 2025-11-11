@@ -281,6 +281,8 @@ class NET_EXPORT HostResolverManager
                       handles::NetworkHandle target_network,
                       NetLog* net_log);
 
+  bool InvalidationInProgress() const { return invalidation_in_progress_; }
+
  protected:
   // Callback from HaveOnlyLoopbackAddresses probe.
   void SetHaveOnlyLoopbackAddresses(bool result);
@@ -598,6 +600,8 @@ class NET_EXPORT HostResolverManager
                      true /* check_empty */,
                      false /* allow_reentrancy */>
       registered_contexts_;
+
+  // True while invalidating caches.
   bool invalidation_in_progress_ = false;
 
   // An experimental flag for features::kUseDnsHttpsSvcb.

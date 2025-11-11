@@ -77,6 +77,11 @@ ContextHostResolver::CreateRequest(
     return HostResolver::CreateFailingRequest(ERR_CONTEXT_SHUT_DOWN);
   }
 
+  if (manager_->InvalidationInProgress()) {
+    return HostResolver::CreateFailingRequest(
+        ERR_DNS_CACHE_INVALIDATION_IN_PROGRESS);
+  }
+
   CHECK(resolve_context_);
 
   return manager_->CreateRequest(
