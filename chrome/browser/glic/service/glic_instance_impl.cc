@@ -48,6 +48,9 @@
 
 namespace glic {
 
+BASE_FEATURE(kGlicBindOnlyForDaisyChainingFromFloatingUi,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 namespace {
 EmbedderKey CreateSidePanelEmbedderKey(tabs::TabInterface* tab) {
   CHECK(tab);
@@ -384,11 +387,23 @@ tabs::TabInterface* GlicInstanceImpl::CreateTab(
     return nullptr;
   }
 
-  SidePanelShowOptions side_panel_options{*created_tab};
-  side_panel_options.suppress_opening_animation = true;
-  auto show_options = ShowOptions{side_panel_options};
-  show_options.focus_on_show = created_tab->IsActivated() || embedder_has_focus;
-  Show(show_options);
+  // If the floating UI is active and the feature flag is enabled, we only bind
+  // the tab instead of showing it to avoid closing the floating UI.
+  if (base::FeatureList::IsEnabled(
+          kGlicBindOnlyForDaisyChainingFromFloatingUi) &&
+      IsDetached()) {
+    BindTab(created_tab);
+    if (embedder_has_focus) {
+      GetActiveEmbedder()->Focus();
+    }
+  } else {
+    SidePanelShowOptions side_panel_options{*created_tab};
+    side_panel_options.suppress_opening_animation = true;
+    auto show_options = ShowOptions{side_panel_options};
+    show_options.focus_on_show =
+        created_tab->IsActivated() || embedder_has_focus;
+    Show(show_options);
+  }
   instance_metrics_.OnDaisyChain(DaisyChainSource::kGlicContents,
                                  /*success=*/true, created_tab);
   return nullptr;
