@@ -4,8 +4,8 @@ $ typed-derive fn-parser --help
 Usage: typed-derive fn-parser [OPTIONS]
 
 Options:
-  -D <KEY=VALUE>      Hand-written parser for tuples
-  -h, --help          Print help
+  -D <KEY=VALUE>  Hand-written parser for tuples
+  -h, --help      Print help
 
 ```
 

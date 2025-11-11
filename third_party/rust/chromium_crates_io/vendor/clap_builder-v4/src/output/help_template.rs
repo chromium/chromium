@@ -479,20 +479,18 @@ impl HelpTemplate<'_, '_> {
             // args alignment
             should_show_arg(self.use_long, arg)
         }) {
-            if longest_filter(arg) {
-                let width = display_width(&arg.to_string());
-                let actual_width = if arg.is_positional() {
-                    width
-                } else {
-                    width + SHORT_SIZE
-                };
-                longest = longest.max(actual_width);
-                debug!(
-                    "HelpTemplate::write_args: arg={:?} longest={}",
-                    arg.get_id(),
-                    longest
-                );
-            }
+            let width = display_width(&arg.to_string());
+            let actual_width = if arg.get_long().is_some() {
+                width + SHORT_SIZE
+            } else {
+                width
+            };
+            longest = longest.max(actual_width);
+            debug!(
+                "HelpTemplate::write_args: arg={:?} longest={}",
+                arg.get_id(),
+                longest
+            );
 
             let key = (sort_key)(arg);
             ord_v.insert(key, arg);
@@ -1142,10 +1140,6 @@ fn should_show_arg(use_long: bool, arg: &Arg) -> bool {
 
 fn should_show_subcommand(subcommand: &Command) -> bool {
     !subcommand.is_hide_set()
-}
-
-fn longest_filter(arg: &Arg) -> bool {
-    arg.is_takes_value_set() || arg.get_long().is_some() || arg.get_short().is_none()
 }
 
 #[cfg(test)]
