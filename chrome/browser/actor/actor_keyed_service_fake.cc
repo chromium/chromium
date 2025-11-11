@@ -32,15 +32,18 @@ TaskId ActorKeyedServiceFake::CreateTaskForTesting() {
 
   for (auto& mock : {mock_ui_dispatcher, mock_task_ui_dispatcher}) {
     ON_CALL(*mock, OnPreTool(_, _))
-        .WillByDefault(UiEventDispatcherCallback<ToolRequest>(
-            base::BindRepeating(MakeOkResult)));
+        .WillByDefault(
+            UiEventDispatcherCallback<ToolRequest>(base::BindRepeating(
+                MakeOkResult, /*requires_page_stabilization=*/true)));
     ON_CALL(*mock, OnPostTool(_, _))
-        .WillByDefault(UiEventDispatcherCallback<ToolRequest>(
-            base::BindRepeating(MakeOkResult)));
+        .WillByDefault(
+            UiEventDispatcherCallback<ToolRequest>(base::BindRepeating(
+                MakeOkResult, /*requires_page_stabilization=*/true)));
     ON_CALL(*mock, OnActorTaskAsyncChange(_, _))
         .WillByDefault(UiEventDispatcherCallback<
                        ui::UiEventDispatcher::ActorTaskAsyncChange>(
-            base::BindRepeating(MakeOkResult)));
+            base::BindRepeating(MakeOkResult,
+                                /*requires_page_stabilization=*/true)));
   }
   auto execution_engine = ExecutionEngine::CreateForTesting(
       GetProfile(), std::move(ui_event_dispatcher));
