@@ -59,7 +59,6 @@ CollaborationServiceFactory::BuildServiceInstanceForBrowserContext(
   }
 
   Profile* profile = Profile::FromBrowserContext(context);
-
   auto* tab_group_sync_service =
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile);
   auto* data_sharing_service =

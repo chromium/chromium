@@ -7,6 +7,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -20,6 +21,7 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "components/account_id/account_id.h"
+#include "components/data_sharing/public/features.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_service.h"
 #include "components/metrics/metrics_state_manager.h"
@@ -56,7 +58,11 @@ constexpr char kProfileName[] = "user@gmail.com";
 
 class PerSessionSettingsUserActionTrackerTest : public testing::Test {
  protected:
-  PerSessionSettingsUserActionTrackerTest() = default;
+  PerSessionSettingsUserActionTrackerTest() {
+    // TODO(b/459534622) : Remove the DataSharingJoinOnly flag from the disable list.
+    scoped_feature_list_.InitAndDisableFeature(
+        data_sharing::features::kDataSharingJoinOnly);
+  }
   ~PerSessionSettingsUserActionTrackerTest() override = default;
 
   void SetUp() override {
@@ -138,6 +144,7 @@ class PerSessionSettingsUserActionTrackerTest : public testing::Test {
   std::unique_ptr<PerSessionSettingsUserActionTracker> tracker_;
   std::unique_ptr<OsSettingsMetricsProvider> tracker_metrics_provider_;
   metrics::ChromeUserMetricsExtension uma_proto_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 
   // MetricsService.
   std::unique_ptr<TestingPrefServiceSimple> local_state_;

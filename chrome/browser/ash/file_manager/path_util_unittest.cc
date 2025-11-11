@@ -18,6 +18,7 @@
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_running_on_chromeos.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_util.h"
@@ -60,6 +61,7 @@
 #include "chromeos/ash/experiences/arc/test/connection_holder_util.h"
 #include "chromeos/ash/experiences/arc/test/fake_file_system_instance.h"
 #include "components/account_id/account_id.h"
+#include "components/data_sharing/public/features.h"
 #include "components/drive/drive_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -81,7 +83,11 @@ using storage::FileSystemURL;
 
 class FileManagerPathUtilTest : public testing::Test {
  public:
-  FileManagerPathUtilTest() = default;
+  FileManagerPathUtilTest() {
+    // TODO(b/459532006) : Remove the DataSharingJoinOnly flag from the disable list.
+    scoped_feature_list_.InitAndDisableFeature(
+        data_sharing::features::kDataSharingJoinOnly);
+  }
 
   FileManagerPathUtilTest(const FileManagerPathUtilTest&) = delete;
   FileManagerPathUtilTest& operator=(const FileManagerPathUtilTest&) = delete;
@@ -110,6 +116,7 @@ class FileManagerPathUtilTest : public testing::Test {
   }
 
  protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
 
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>

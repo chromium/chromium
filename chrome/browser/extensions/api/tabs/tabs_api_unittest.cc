@@ -32,6 +32,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/test_browser_window.h"
+#include "components/data_sharing/public/features.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
@@ -112,7 +113,11 @@ class TabsApiUnitTest : public ExtensionServiceTestBase {
   TabsApiUnitTest()
       : ExtensionServiceTestBase(
             std::make_unique<content::BrowserTaskEnvironment>(
-                base::test::TaskEnvironment::MainThreadType::UI)) {}
+                base::test::TaskEnvironment::MainThreadType::UI)) {
+    // TODO(b/459533932) : Remove the DataSharingJoinOnly flag from the disable list.
+    scoped_feature_list_.InitAndDisableFeature(
+        data_sharing::features::kDataSharingJoinOnly);
+  }
   ~TabsApiUnitTest() override = default;
 
   Browser* browser() { return browser_.get(); }
@@ -143,6 +148,8 @@ class TabsApiUnitTest : public ExtensionServiceTestBase {
   // The browser (and accompanying window).
   raw_ptr<TestBrowserWindow> browser_window_;
   std::unique_ptr<Browser> browser_;
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 
 #if BUILDFLAG(IS_CHROMEOS)
   ash::AshTestHelper test_helper_;

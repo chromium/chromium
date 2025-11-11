@@ -33,6 +33,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/data_sharing/public/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -216,8 +217,10 @@ class IncidentReportingServiceTest : public testing::Test {
   }
 
   void CreateIncidentReportingService() {
-    scoped_feature_list_.InitAndEnableFeature(
-        safe_browsing::kIncidentReportingEnableUpload);
+    // TODO(b/459532128) : Remove the DataSharingJoinOnly flag from the disable list.
+    scoped_feature_list_.InitWithFeatures(
+        {safe_browsing::kIncidentReportingEnableUpload},
+        {data_sharing::features::kDataSharingJoinOnly});
 
     instance_ = std::make_unique<TestIncidentReportingService>(
         base::SingleThreadTaskRunner::GetCurrentDefault(),

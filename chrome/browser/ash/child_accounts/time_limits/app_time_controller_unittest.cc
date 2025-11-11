@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/strcat.h"
@@ -160,6 +161,10 @@ class AppTimeControllerTest : public testing::Test {
 };
 
 void AppTimeControllerTest::SetUp() {
+  // Fix the environment by specifying a device type.
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII("form-factor",
+                                                            "CHROMEBOOK");
+
   SystemClockClient::InitializeFake();
 
   // The tests are going to start at local midnight on January 1.
