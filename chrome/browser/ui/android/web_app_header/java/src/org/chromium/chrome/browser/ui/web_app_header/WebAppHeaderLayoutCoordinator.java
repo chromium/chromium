@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.ui.web_app_header;
 
 import android.app.Activity;
+import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Rect;
 import android.os.Build;
@@ -38,6 +39,7 @@ import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonState;
 import org.chromium.chrome.browser.toolbar.reload_button.ReloadButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.top.NavigationPopup;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.web_app_header.R;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
@@ -65,7 +67,8 @@ import java.util.function.Supplier;
 public class WebAppHeaderLayoutCoordinator
         implements DesktopWindowStateManager.AppHeaderObserver,
                 WebAppHeaderDelegate,
-                BrowserControlsStateProvider.Observer {
+                BrowserControlsStateProvider.Observer,
+                ThemeColorProvider.TintObserver {
 
     private int mHeaderControlButtonWidthDp;
     private int mHeaderButtonPaddingDp;
@@ -246,6 +249,12 @@ public class WebAppHeaderLayoutCoordinator
                     syncToggleButtonView();
                 });
         mToggleButtonView.setForegroundTintList(mThemeColorProvider.getTint());
+
+        final ColorStateList iconColorList =
+                mThemeColorProvider.getActivityFocusTint() == null
+                        ? mToggleButtonView.getImageTintList()
+                        : mThemeColorProvider.getActivityFocusTint();
+        mToggleButtonView.setImageTintList(iconColorList);
     }
 
     private void syncToggleButtonView() {
@@ -268,6 +277,16 @@ public class WebAppHeaderLayoutCoordinator
                         : mView.getContext()
                                 .getString(
                                         R.string.web_app_enable_window_controls_overlay_tooltip));
+    }
+
+    @Override
+    public void onTintChanged(
+            @Nullable ColorStateList tint,
+            @Nullable ColorStateList activityFocusTint,
+            @BrandedColorScheme int brandedColorScheme) {
+        if (mToggleButtonView != null) {
+            mToggleButtonView.setImageTintList(activityFocusTint);
+        }
     }
 
     private void initMinUiControls() {
@@ -458,6 +477,12 @@ public class WebAppHeaderLayoutCoordinator
     @VisibleForTesting
     int getHeaderButtonPaddingDp() {
         return mHeaderButtonPaddingDp;
+    }
+
+    @VisibleForTesting
+    @Nullable ColorStateList getToggleButtonImageTintList() {
+        assert mToggleButtonView != null;
+        return mToggleButtonView.getImageTintList();
     }
 
     private void onButtonBottomInsetChanged(int bottomInset) {

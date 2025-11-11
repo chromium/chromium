@@ -11,11 +11,13 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
 
 import android.app.Activity;
+import android.content.res.ColorStateList;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.Looper;
@@ -55,6 +57,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.top.NavigationPopup;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.web_app_header.R;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
@@ -690,5 +693,20 @@ public class WebAppHeaderLayoutCoordinatorTest {
     @Test
     public void testDisplayModePiPUMA() {
         testDisplayModeUMA(DisplayMode.PICTURE_IN_PICTURE);
+    }
+
+    @Test
+    public void testWindowControlsOverlayToggleButtonColor() {
+        setupDesktopWindowing(/* isInDesktopWindow= */ true);
+        setupDisplayMode(DisplayMode.WINDOW_CONTROLS_OVERLAY);
+        setupTab(/* isLoading= */ false, /* canGoBack= */ false);
+        createCoordinator();
+
+        var tint = mock(ColorStateList.class);
+        mCoordinator.onTintChanged(tint, tint, BrandedColorScheme.APP_DEFAULT);
+        assertEquals(
+                "Tint change should be propagated to the toggle button",
+                mCoordinator.getToggleButtonImageTintList(),
+                tint);
     }
 }
