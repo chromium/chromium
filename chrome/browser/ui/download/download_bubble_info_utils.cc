@@ -48,8 +48,6 @@ IconAndColor IconAndColorForInterrupted(const DownloadUIModel& model) {
     case download::DOWNLOAD_DANGER_TYPE_BLOCKED_SCAN_FAILED:
       return IconAndColor{&views::kInfoChromeRefreshIcon,
                           kColorDownloadItemIconDangerous};
-    // TODO(alshawwa): handle FORCE_SAVE_TO_GDRIVE case. Currently defaults to
-    // SENSITIVE_CONTENT_BLOCK behaviour
     case download::DOWNLOAD_DANGER_TYPE_FORCE_SAVE_TO_GDRIVE:
     case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK: {
 #if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)

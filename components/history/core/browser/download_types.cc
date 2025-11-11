@@ -7,6 +7,7 @@
 #include <ostream>
 
 #include "base/check_op.h"
+#include "base/logging.h"
 #include "base/notreached.h"
 #include "components/history/core/browser/download_constants.h"
 
@@ -76,6 +77,7 @@ DownloadDangerType IntToDownloadDangerType(int danger_type) {
     case DownloadDangerType::PROMPT_FOR_LOCAL_PASSWORD_SCANNING:
     case DownloadDangerType::ASYNC_LOCAL_PASSWORD_SCANNING:
     case DownloadDangerType::BLOCKED_SCAN_FAILED:
+    case DownloadDangerType::FORCED_SAVE_TO_GDRIVE:
       return static_cast<DownloadDangerType>(danger_type);
 
     case DownloadDangerType::INVALID:
@@ -147,6 +149,8 @@ std::ostream& operator<<(std::ostream& stream, DownloadDangerType danger_type) {
              << "history::DownloadDangerType::ASYNC_LOCAL_PASSWORD_SCANNING";
     case DownloadDangerType::BLOCKED_SCAN_FAILED:
       return stream << "history::DownloadDangerType::BLOCKED_SCAN_FAILED";
+    case DownloadDangerType::FORCED_SAVE_TO_GDRIVE:
+      return stream << "history::DownloadDangerType::FORCED_SAVE_TO_GDRIVE";
   }
   NOTREACHED();
 }

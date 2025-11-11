@@ -323,9 +323,9 @@ std::u16string DownloadUIModel::GetWarningText(const std::u16string& filename,
     case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING:
       return l10n_util::GetStringUTF16(
           IDS_PROMPT_DOWNLOAD_SENSITIVE_CONTENT_WARNING);
-    // TODO(alshawwa): handle FORCE_SAVE_TO_GDRIVE case. Currently defaults to
-    // SENSITIVE_CONTENT_BLOCK behaviour
     case download::DOWNLOAD_DANGER_TYPE_FORCE_SAVE_TO_GDRIVE:
+      return l10n_util::GetStringUTF16(
+          IDS_PROMPT_DOWNLOAD_FORCED_SAVE_TO_GDRIVE);
     case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK:
       return l10n_util::GetStringUTF16(
           IDS_PROMPT_DOWNLOAD_SENSITIVE_CONTENT_BLOCKED);
@@ -922,9 +922,9 @@ DownloadUIModel::BubbleStatusTextBuilder::GetBubbleWarningStatusText() const {
       // "Sensitive content"
       return l10n_util::GetStringUTF16(
           IDS_DOWNLOAD_BUBBLE_STATUS_SENSITIVE_CONTENT);
-    // TODO(alshawwa): handle FORCE_SAVE_TO_GDRIVE case, currently defaults to
-    // SENSITIVE_CONTENT_BLOCK behaviour
     case download::DOWNLOAD_DANGER_TYPE_FORCE_SAVE_TO_GDRIVE:
+      // "Local download blocked"
+      return l10n_util::GetStringUTF16(IDS_POLICY_ACTION_FORCED_SAVE_TO_GDRIVE);
     case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK:
       // "Blocked by your organization"
       return l10n_util::GetStringUTF16(

@@ -177,8 +177,6 @@ void DownloadBubbleSecurityViewInfo::PopulateForInterrupted(
       warning_summary_ = l10n_util::GetStringUTF16(
           IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_TOO_BIG);
       return;
-    // TODO(alshawwa): handle FORCE_SAVE_TO_GDRIVE case, currently defaults to
-    // SENSITIVE_CONTENT_BLOCK behaviour
     case download::DOWNLOAD_DANGER_TYPE_FORCE_SAVE_TO_GDRIVE:
     case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK: {
 #if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)

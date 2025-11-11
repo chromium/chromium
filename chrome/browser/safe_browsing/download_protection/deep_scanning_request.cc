@@ -675,9 +675,6 @@ void DeepScanningRequest::OnEnterpriseScanComplete(
     download_result = DownloadCheckResult::BLOCKED_SCAN_FAILED;
   }
 
-  // TODO(alshawwa): add logic to handle
-  // DownloadCheckResult::FORCE_SAVE_TO_GDRIVE
-
   LogDeepScanResult(download_result, trigger_,
                     metadata_->IsTopLevelEncryptedArchive());
 
