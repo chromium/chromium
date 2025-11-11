@@ -39,6 +39,39 @@ class ContextualTasksUiServiceInteractiveUiTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+class TabStripModelObserverImpl : public TabStripModelObserver {
+ public:
+  explicit TabStripModelObserverImpl(
+      ContextualTasksContextController* controller,
+      const base::Uuid& task_id)
+      : controller_(controller), task_id_(task_id) {}
+
+  void OnTabStripModelChanged(
+      TabStripModel* tab_strip_model,
+      const TabStripModelChange& change,
+      const TabStripSelectionChange& selection) override {
+    if (change.type() == TabStripModelChange::kInserted) {
+      for (const auto& contents : change.GetInsert()->contents) {
+        SessionID session_id =
+            sessions::SessionTabHelper::IdForTab(contents.contents);
+        std::optional<ContextualTask> task =
+            controller_->GetContextualTaskForTab(session_id);
+        if (task.has_value()) {
+          EXPECT_EQ(task->GetTaskId(), task_id_);
+          was_inserted_ = true;
+        }
+      }
+    }
+  }
+
+  bool was_inserted() const { return was_inserted_; }
+
+ private:
+  raw_ptr<ContextualTasksContextController> controller_;
+  base::Uuid task_id_;
+  bool was_inserted_ = false;
+};
+
 IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceInteractiveUiTest,
                        OnThreadLinkClicked_CreatesNewTabAndAssociates) {
   // Add a new tab.
@@ -59,6 +92,10 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceInteractiveUiTest,
       sessions::SessionTabHelper::IdForTab(
           browser()->tab_strip_model()->GetWebContentsAt(0)));
 
+  TabStripModelObserverImpl observer(contextual_tasks_controller,
+                                     task1.GetTaskId());
+  browser()->tab_strip_model()->AddObserver(&observer);
+
   ContextualTasksSidePanelCoordinator* coordinator =
       ContextualTasksSidePanelCoordinator::From(browser());
   RunTestSequence(
@@ -77,21 +114,12 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceInteractiveUiTest,
 
         // Call the OnThreadLinkClicked() method.
         const GURL clicked_url("https://google.com/");
-        service->OnThreadLinkClicked(clicked_url, task1.GetTaskId(), nullptr);
+        service->OnThreadLinkClicked(clicked_url, task1.GetTaskId(), nullptr,
+                                     browser()->GetWeakPtr());
 
-        content::WebContents* new_content =
-            browser()->tab_strip_model()->GetWebContentsAt(2);
-        SessionID new_session_Id =
-            sessions::SessionTabHelper::IdForTab(new_content);
-
-        // Verify that the captured SessionID is valid and matches the new tab.
-        EXPECT_TRUE(new_session_Id.is_valid());
-        std::optional<ContextualTask> associated_task =
-            contextual_tasks_controller->GetContextualTaskForTab(
-                new_session_Id);
-        EXPECT_TRUE(associated_task);
-        EXPECT_EQ(associated_task->GetTaskId(), task1.GetTaskId());
+        EXPECT_TRUE(observer.was_inserted());
       }));
+  browser()->tab_strip_model()->RemoveObserver(&observer);
 }
 IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceInteractiveUiTest,
                        OnTaskChangedInPanel_ActivatesMostRecentTab) {

@@ -55,7 +55,8 @@ class MockUiServiceForUrlIntercept : public ContextualTasksUiService {
               OnThreadLinkClicked,
               (const GURL& url,
                base::Uuid task_id,
-               base::WeakPtr<tabs::TabInterface> tab),
+               base::WeakPtr<tabs::TabInterface> tab,
+               base::WeakPtr<BrowserWindowInterface> browser),
               (override));
 };
 
@@ -104,7 +105,7 @@ TEST_F(ContextualTasksUiServiceTest, LinkFromWebUiIntercepted) {
   content::WebContentsTester::For(web_contents.get())
       ->SetLastCommittedURL(host_web_content_url);
 
-  EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(navigated_url, _, _))
+  EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(navigated_url, _, _, _))
       .Times(1);
   EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
       .Times(0);
@@ -122,7 +123,7 @@ TEST_F(ContextualTasksUiServiceTest, BrowserUiNavigationFromWebUiIgnored) {
   content::WebContentsTester::For(web_contents.get())
       ->SetLastCommittedURL(host_web_content_url);
 
-  EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _, _)).Times(0);
+  EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _, _, _)).Times(0);
   EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
       .Times(0);
 
@@ -142,7 +143,7 @@ TEST_F(ContextualTasksUiServiceTest, NormalLinkNotIntercepted) {
   content::WebContentsTester::For(web_contents.get())
       ->SetLastCommittedURL(GURL("https://example.com/foo"));
 
-  EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _, _)).Times(0);
+  EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _, _, _)).Times(0);
   EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
       .Times(0);
   EXPECT_FALSE(service_for_nav_->HandleNavigation(GURL(kTestUrl),
@@ -157,7 +158,7 @@ TEST_F(ContextualTasksUiServiceTest, AiHostNotIntercepted_BadPath) {
   content::WebContentsTester::For(web_contents.get())
       ->SetLastCommittedURL(GURL("https://google.com/maps?udm=50"));
 
-  EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _, _)).Times(0);
+  EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _, _, _)).Times(0);
   EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
       .Times(0);
   EXPECT_FALSE(service_for_nav_->HandleNavigation(
@@ -174,7 +175,7 @@ TEST_F(ContextualTasksUiServiceTest, AiPageIntercepted_FromTab) {
   content::WebContentsTester::For(web_contents.get())
       ->SetLastCommittedURL(tab_url);
 
-  EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _, _)).Times(0);
+  EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _, _, _)).Times(0);
   EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(ai_url, _, _))
       .Times(1);
   EXPECT_TRUE(service_for_nav_->HandleNavigation(
@@ -189,7 +190,7 @@ TEST_F(ContextualTasksUiServiceTest, AiPageIntercepted_FromOmnibox) {
   content::WebContentsTester::For(web_contents.get())
       ->SetLastCommittedURL(GURL());
 
-  EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _, _)).Times(0);
+  EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _, _, _)).Times(0);
   EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(ai_url, _, _))
       .Times(1);
   EXPECT_TRUE(service_for_nav_->HandleNavigation(
@@ -205,7 +206,7 @@ TEST_F(ContextualTasksUiServiceTest, AiPageNotIntercepted) {
   content::WebContentsTester::For(web_contents.get())
       ->SetLastCommittedURL(webui_url);
 
-  EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _, _)).Times(0);
+  EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _, _, _)).Times(0);
   EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
       .Times(0);
   EXPECT_FALSE(service_for_nav_->HandleNavigation(

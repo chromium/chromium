@@ -54,9 +54,11 @@ class ContextualTasksUiService : public KeyedService {
 
   // A notification to this service that a link in the AI thread was clicked by
   // the user. This will open a tab and associate it with the visible thread.
-  virtual void OnThreadLinkClicked(const GURL& url,
-                                   base::Uuid task_id,
-                                   base::WeakPtr<tabs::TabInterface> tab);
+  virtual void OnThreadLinkClicked(
+      const GURL& url,
+      base::Uuid task_id,
+      base::WeakPtr<tabs::TabInterface> tab,
+      base::WeakPtr<BrowserWindowInterface> browser);
 
   // A notification that a navigation is occurring. This method gives the
   // service the opportunity to prevent the navigation from happening in order

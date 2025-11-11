@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/contextual_tasks/public/contextual_task.h"
 #include "components/contextual_tasks/public/features.h"
@@ -129,44 +130,42 @@ void ContextualTasksUiService::OnNavigationToAiPageIntercepted(
 void ContextualTasksUiService::OnThreadLinkClicked(
     const GURL& url,
     base::Uuid task_id,
-    base::WeakPtr<tabs::TabInterface> tab) {
-  // If the source contents is the panel, open the AI page in a new foreground
-  // tab.
-  // TODO(crbug.com/458139141): Split this API so we can assume `tab` non-null.
-  if (!tab) {
-    NavigateParams params(profile_, url, ui::PAGE_TRANSITION_LINK);
-
-    // TODO(crbug.com/453025914): Consider moving the newly created tab next to
-    //    the tab that is responsible for creating it if the AI page is in tab
-    //    mode.
-    Navigate(&params);
-
-    // Associate the new tab's WebContents to the task.
-    // TODO(crbug.com/449161768): this could happen before the tab is created.
-    // We might need to create the tab in the background and attach it later, or
-    // we need to observe the WebContents lifecycle here.
-    content::WebContents* new_tab_web_contents =
-        params.navigated_or_inserted_contents;
-    if (new_tab_web_contents && task_id.is_valid()) {
-      AssociateWebContentsToTask(new_tab_web_contents, task_id);
-    }
+    base::WeakPtr<tabs::TabInterface> tab,
+    base::WeakPtr<BrowserWindowInterface> browser) {
+  if (!browser) {
     return;
   }
 
-  BrowserWindowInterface* browser_window_interface =
-      tab->GetBrowserWindowInterface();
-  TabStripModel* tab_strip_model = browser_window_interface->GetTabStripModel();
-
-  // Get the index of the web contents.
-  const int current_index = tab_strip_model->GetIndexOfTab(tab.get());
-
-  // Open the linked page in a tab directly after this one.
+  TabStripModel* tab_strip_model = browser->GetTabStripModel();
   std::unique_ptr<content::WebContents> new_contents =
       content::WebContents::Create(
           content::WebContents::CreateParams(profile_));
   content::WebContents* new_contents_ptr = new_contents.get();
   new_contents->GetController().LoadURLWithParams(
       content::NavigationController::LoadURLParams(url));
+
+  // If the source contents is the panel, open the AI page in a new foreground
+  // tab.
+  // TODO(crbug.com/458139141): Split this API so we can assume `tab` non-null.
+  if (!tab) {
+    // Creates the Tab so session ID is created for the WebContents.
+    auto tab_to_insert = std::make_unique<tabs::TabModel>(
+        std::move(new_contents), tab_strip_model);
+    if (task_id.is_valid()) {
+      AssociateWebContentsToTask(new_contents_ptr, task_id);
+    }
+
+    // Insert the WebContents after the current active tab.
+    int active_tab_index = tab_strip_model->active_index();
+    tab_strip_model->AddTab(std::move(tab_to_insert), active_tab_index + 1,
+                            ui::PAGE_TRANSITION_LINK, AddTabTypes::ADD_ACTIVE);
+    return;
+  }
+
+  // Get the index of the web contents.
+  const int current_index = tab_strip_model->GetIndexOfTab(tab.get());
+
+  // Open the linked page in a tab directly after this one.
   tab_strip_model->InsertWebContentsAt(
       current_index + 1, std::move(new_contents), AddTabTypes::ADD_ACTIVE);
 
@@ -175,11 +174,10 @@ void ContextualTasksUiService::OnThreadLinkClicked(
       tab_strip_model->DetachWebContentsAtForInsertion(current_index);
 
   CHECK(new_contents_ptr == tab_strip_model->GetActiveWebContents());
-  SessionID session_id = SessionTabHelper::IdForTab(new_contents_ptr);
-  context_controller_->AssociateTabWithTask(task_id, session_id);
+  AssociateWebContentsToTask(new_contents_ptr, task_id);
 
   // Transfer the contextual task contents into the side panel cache.
-  ContextualTasksSidePanelCoordinator::From(browser_window_interface)
+  ContextualTasksSidePanelCoordinator::From(browser.get())
       ->TransferWebContentsFromTab(task_id,
                                    std::move(contextual_task_contents));
 
@@ -187,7 +185,7 @@ void ContextualTasksUiService::OnThreadLinkClicked(
   // TODO: This currently should be passed the bounds of the
   // contents_container_view from BrowserView, though the view is not accessible
   // from here. This API could be changed to simply accept the web_contents.
-  ContextualTasksSidePanelCoordinator::From(browser_window_interface)->Show();
+  ContextualTasksSidePanelCoordinator::From(browser.get())->Show();
 }
 
 bool ContextualTasksUiService::HandleNavigation(
@@ -206,8 +204,14 @@ bool ContextualTasksUiService::HandleNavigation(
   // Try to get the active tab if there is one. This will be null if the link is
   // originating from the side panel.
   tabs::TabInterface* tab = nullptr;
+  BrowserWindowInterface* browser = nullptr;
   if (source_contents) {
     tab = tabs::TabInterface::MaybeGetFromContents(source_contents);
+    BrowserWindow* window =
+        BrowserWindow::FindBrowserWindowWithWebContents(source_contents);
+    if (window) {
+      browser = window->AsBrowserView()->browser();
+    }
   }
 
   // Intercept any navigation where the wrapping WebContents is the WebUI host
@@ -234,7 +238,8 @@ bool ContextualTasksUiService::HandleNavigation(
         FROM_HERE,
         base::BindOnce(&ContextualTasksUiService::OnThreadLinkClicked,
                        weak_ptr_factory_.GetWeakPtr(), navigation_url, task_id,
-                       tab ? tab->GetWeakPtr() : nullptr));
+                       tab ? tab->GetWeakPtr() : nullptr,
+                       browser ? browser->GetWeakPtr() : nullptr));
     return true;
   }
 
