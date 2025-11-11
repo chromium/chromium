@@ -56,6 +56,9 @@ BASE_DECLARE_FEATURE(kGlicEnableAutoLoginDialogs);
 // Kill switch for selecting previously selected credentials.
 BASE_DECLARE_FEATURE(kGlicEnableAutoLoginPersistedPermissions);
 
+// Kill switch for skipping waiting for visual state update on new tabs.
+BASE_DECLARE_FEATURE(kGlicSkipAwaitVisualStateForNewTabs);
+
 // Enables the Paint Preview backend for taking screenshots.
 BASE_DECLARE_FEATURE(kGlicTabScreenshotPaintPreviewBackend);
 
