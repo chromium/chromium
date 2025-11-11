@@ -986,6 +986,10 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     # Populate test_id_prefix.
     gn_entry = self.gn_isolate_map[result['test']]
     result['test_id_prefix'] = 'ninja:%s/' % gn_entry['label']
+    result['module_name'] = gn_entry['label']
+    module_scheme = gn_entry.get('module_scheme', None)
+    if module_scheme:
+      result['module_scheme'] = module_scheme
 
     args = result.get('args', [])
     # Use test_name here instead of test['name'] because test['name'] will be
@@ -1159,6 +1163,11 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
               (isolate_name, label))
 
           test['test_id_prefix'] = 'ninja:%s/' % label
+          test['module_name'] = label
+          module_scheme = gn_entry.get('module_scheme', None)
+          if module_scheme:
+            test['module_scheme'] = module_scheme
+
         else:  # pragma: no cover
           # Some tests do not have an entry gn_isolate_map.pyl, such as
           # telemetry tests.

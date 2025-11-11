@@ -16,6 +16,7 @@
           ],
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
+        "module_name": "//:chrome_wpt_tests",
         "name": "chrome_wpt_tests",
         "resultdb": {
           "enable": true,
@@ -50,6 +51,7 @@
           ],
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
+        "module_name": "//:chrome_wpt_tests",
         "name": "chrome_wpt_tests",
         "resultdb": {
           "enable": true,
@@ -84,6 +86,7 @@
           ],
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
+        "module_name": "//:chrome_wpt_tests",
         "name": "chrome_wpt_tests",
         "resultdb": {
           "enable": true,
@@ -118,6 +121,7 @@
           ],
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
+        "module_name": "//:chrome_wpt_tests",
         "name": "chrome_wpt_tests",
         "resultdb": {
           "enable": true,
@@ -151,6 +155,7 @@
           ],
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
+        "module_name": "//:chrome_wpt_tests",
         "name": "chrome_wpt_tests",
         "resultdb": {
           "enable": true,

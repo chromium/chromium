@@ -1702,6 +1702,17 @@ GN_ISOLATE_MAP="""\
   'foo_test': {
     'label': '//chrome/test:foo_test',
     'type': 'windowed_test_launcher',
+    'module_name': '//chrome/test:foo_test',
+  }
+}
+"""
+
+GN_ISOLATE_MAP_MODULE_SCHEME = """\
+{
+  'foo_test': {
+    'label': '//chrome/test:foo_test',
+    'type': 'windowed_test_launcher',
+    'module_scheme': 'gtest',
   }
 }
 """
@@ -1711,6 +1722,7 @@ GPU_TELEMETRY_GN_ISOLATE_MAP="""\
   'telemetry_gpu_integration_test': {
     'label': '//chrome/test:telemetry_gpu_integration_test',
     'type': 'script',
+    'module_name': '//chrome/test:telemetry_gpu_integration_test',
       }
 }
 """
@@ -1720,6 +1732,7 @@ GPU_TELEMETRY_GN_ISOLATE_MAP_ANDROID = """\
   'telemetry_gpu_integration_test_android_chrome': {
     'label': '//chrome/test:telemetry_gpu_integration_test_android_chrome',
     'type': 'script',
+    'module_name': '//chrome/test:telemetry_gpu_integration_test_android_chrome',
       }
 }
 """
@@ -1729,6 +1742,7 @@ GPU_TELEMETRY_GN_ISOLATE_MAP_ANDROID_WEBVIEW = """\
   'telemetry_gpu_integration_test_android_webview': {
     'label': '//chrome/test:telemetry_gpu_integration_test_android_webview',
     'type': 'script',
+    'module_name': '//chrome/test:telemetry_gpu_integration_test_android_webview',
       }
 }
 """
@@ -1738,6 +1752,7 @@ GPU_TELEMETRY_GN_ISOLATE_MAP_FUCHSIA = """\
   'telemetry_gpu_integration_test_fuchsia': {
     'label': '//chrome/test:telemetry_gpu_integration_test_fuchsia',
     'type': 'script',
+    'module_name': '//chrome/test:telemetry_gpu_integration_test_fuchsia',
       }
 }
 """
@@ -1747,6 +1762,18 @@ GPU_TELEMETRY_GN_ISOLATE_MAP_CAST_STREAMING = """\
   'telemetry_gpu_integration_test_fuchsia': {
     'label': '//chrome/test:telemetry_gpu_integration_test_fuchsia',
     'type': 'script',
+    'module_name': '//chrome/test:telemetry_gpu_integration_test_fuchsia',
+      }
+}
+"""
+
+GPU_TELEMETRY_GN_ISOLATE_MAP_MODULE_SCHEME = """\
+{
+  'telemetry_gpu_integration_test': {
+    'label': '//chrome/test:telemetry_gpu_integration_test',
+    'type': 'script',
+    'module_name': '//chrome/test:telemetry_gpu_integration_test',
+    'module_scheme': 'single',
       }
 }
 """
@@ -1756,6 +1783,7 @@ GN_ISOLATE_MAP_KEY_LABEL_MISMATCH="""\
   'foo_test': {
     'label': '//chrome/test:foo_test_tmp',
     'type': 'windowed_test_launcher',
+    'module_scheme': '//chrome/test:foo_test_tmp',
   }
 }
 """
@@ -1765,6 +1793,7 @@ GN_ISOLATE_MAP_USING_IMPLICIT_NAME="""\
   'foo_test': {
     'label': '//chrome/foo_test',
     'type': 'windowed_test_launcher',
+    'module_scheme': '//chrome/foo_test',
   }
 }
 """
@@ -1931,6 +1960,15 @@ class UnitTest(TestCase):
         'Malformed.*//chrome/foo_test.*for key.*'
         'foo_test.*'):
       fbb.check_input_file_consistency(verbose=True)
+    self.assertFalse(fbb.printed_lines)
+
+  def test_gn_isolate_map_with_module_scheme(self):
+    fbb = FakeBBGen(self.args,
+                    FOO_GTESTS_WATERFALL,
+                    FOO_TEST_SUITE,
+                    LUCI_MILO_CFG,
+                    gn_isolate_map=GN_ISOLATE_MAP_MODULE_SCHEME)
+    fbb.check_output_file_consistency(verbose=True)
     self.assertFalse(fbb.printed_lines)
 
   def test_noop_exception_does_nothing(self):
@@ -2139,6 +2177,16 @@ class UnitTest(TestCase):
                     LUCI_MILO_CFG,
                     exceptions=NO_BAR_TEST_EXCEPTIONS,
                     gn_isolate_map=GPU_TELEMETRY_GN_ISOLATE_MAP)
+    fbb.check_output_file_consistency(verbose=True)
+    self.assertFalse(fbb.printed_lines)
+
+  def test_gpu_telemetry_tests_module_scheme(self):
+    fbb = FakeBBGen(self.args,
+                    FOO_GPU_TELEMETRY_TEST_WATERFALL,
+                    COMPOSITION_SUITE_WITH_TELEMETRY_TEST,
+                    LUCI_MILO_CFG,
+                    exceptions=NO_BAR_TEST_EXCEPTIONS,
+                    gn_isolate_map=GPU_TELEMETRY_GN_ISOLATE_MAP_MODULE_SCHEME)
     fbb.check_output_file_consistency(verbose=True)
     self.assertFalse(fbb.printed_lines)
 

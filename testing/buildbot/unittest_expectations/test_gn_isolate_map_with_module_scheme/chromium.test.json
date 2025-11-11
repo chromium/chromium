@@ -8,30 +8,15 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//chrome/test:foo_test",
+        "module_scheme": "gtest",
         "name": "foo_test",
         "swarming": {
           "dimensions": {
+            "integrity": "high",
             "kvm": "1",
             "os": "Linux"
-          }
-        },
-        "test": "foo_test",
-        "test_id_prefix": "ninja://chrome/test:foo_test/"
-      },
-      {
-        "args": [
-          "--variation"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "module_name": "//chrome/test:foo_test",
-        "name": "variation_test",
-        "swarming": {
-          "dimensions": {
-            "kvm": "1",
-            "os": "Linux"
-          }
+          },
+          "expiration": 120
         },
         "test": "foo_test",
         "test_id_prefix": "ninja://chrome/test:foo_test/"

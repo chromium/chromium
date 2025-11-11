@@ -16,6 +16,7 @@
           ],
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
+        "module_name": "//components/optimization_guide/internal/testing:chrome_ai_wpt_tests",
         "name": "chrome_ai_wpt_tests",
         "resultdb": {
           "enable": true,
@@ -50,6 +51,7 @@
           ],
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
+        "module_name": "//components/optimization_guide/internal/testing:chrome_ai_wpt_tests",
         "name": "chrome_ai_wpt_tests",
         "resultdb": {
           "enable": true,
@@ -80,6 +82,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal/testing:model_validation_tests_light",
         "name": "model_validation_tests_light Beta Channel",
         "resultdb": {
           "enable": true,
@@ -107,6 +110,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal/testing:model_validation_tests_light",
         "name": "model_validation_tests_light Dev Channel",
         "resultdb": {
           "enable": true,
@@ -134,6 +138,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal/testing:model_validation_tests_light",
         "name": "model_validation_tests_light Stable Channel",
         "resultdb": {
           "enable": true,
@@ -160,6 +165,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal/testing:ondevice_stability_tests_light",
         "name": "ondevice_stability_tests_light Beta Channel",
         "resultdb": {
           "enable": true,
@@ -186,6 +192,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal/testing:ondevice_stability_tests_light",
         "name": "ondevice_stability_tests_light Dev Channel",
         "resultdb": {
           "enable": true,
@@ -212,6 +219,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal/testing:ondevice_stability_tests_light",
         "name": "ondevice_stability_tests_light Stable Channel",
         "resultdb": {
           "enable": true,
@@ -242,6 +250,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal/testing:model_validation_tests_light",
         "name": "model_validation_tests_light Beta Channel",
         "resultdb": {
           "enable": true,
@@ -267,6 +276,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal/testing:model_validation_tests_light",
         "name": "model_validation_tests_light Dev Channel",
         "resultdb": {
           "enable": true,
@@ -292,6 +302,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal/testing:model_validation_tests_light",
         "name": "model_validation_tests_light Stable Channel",
         "resultdb": {
           "enable": true,
@@ -316,6 +327,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal/testing:ondevice_stability_tests_light",
         "name": "ondevice_stability_tests_light Beta Channel",
         "resultdb": {
           "enable": true,
@@ -340,6 +352,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal/testing:ondevice_stability_tests_light",
         "name": "ondevice_stability_tests_light Dev Channel",
         "resultdb": {
           "enable": true,
@@ -364,6 +377,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal/testing:ondevice_stability_tests_light",
         "name": "ondevice_stability_tests_light Stable Channel",
         "resultdb": {
           "enable": true,
@@ -393,6 +407,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal/testing:model_validation_tests_light",
         "name": "model_validation_tests_light Beta Channel",
         "resultdb": {
           "enable": true,
@@ -418,6 +433,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal/testing:model_validation_tests_light",
         "name": "model_validation_tests_light Dev Channel",
         "resultdb": {
           "enable": true,
@@ -443,6 +459,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal/testing:model_validation_tests_light",
         "name": "model_validation_tests_light Stable Channel",
         "resultdb": {
           "enable": true,
@@ -467,6 +484,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal/testing:ondevice_stability_tests_light",
         "name": "ondevice_stability_tests_light Beta Channel",
         "resultdb": {
           "enable": true,
@@ -491,6 +509,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal/testing:ondevice_stability_tests_light",
         "name": "ondevice_stability_tests_light Dev Channel",
         "resultdb": {
           "enable": true,
@@ -515,6 +534,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal/testing:ondevice_stability_tests_light",
         "name": "ondevice_stability_tests_light Stable Channel",
         "resultdb": {
           "enable": true,
@@ -544,6 +564,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal/testing:model_validation_tests_light",
         "name": "model_validation_tests_light Beta Channel",
         "resultdb": {
           "enable": true,
@@ -571,6 +592,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal/testing:model_validation_tests_light",
         "name": "model_validation_tests_light Dev Channel",
         "resultdb": {
           "enable": true,
@@ -598,6 +620,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal/testing:model_validation_tests_light",
         "name": "model_validation_tests_light Stable Channel",
         "resultdb": {
           "enable": true,
@@ -624,6 +647,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal/testing:ondevice_stability_tests_light",
         "name": "ondevice_stability_tests_light Beta Channel",
         "resultdb": {
           "enable": true,
@@ -650,6 +674,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal/testing:ondevice_stability_tests_light",
         "name": "ondevice_stability_tests_light Dev Channel",
         "resultdb": {
           "enable": true,
@@ -676,6 +701,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal/testing:ondevice_stability_tests_light",
         "name": "ondevice_stability_tests_light Stable Channel",
         "resultdb": {
           "enable": true,
@@ -707,6 +733,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal/testing:model_validation_tests_light",
         "name": "model_validation_tests_light Beta Channel",
         "resultdb": {
           "enable": true,
@@ -732,6 +759,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal/testing:model_validation_tests_light",
         "name": "model_validation_tests_light Dev Channel",
         "resultdb": {
           "enable": true,
@@ -757,6 +785,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal/testing:model_validation_tests_light",
         "name": "model_validation_tests_light Stable Channel",
         "resultdb": {
           "enable": true,
@@ -781,6 +810,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal/testing:ondevice_stability_tests_light",
         "name": "ondevice_stability_tests_light Beta Channel",
         "resultdb": {
           "enable": true,
@@ -805,6 +835,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal/testing:ondevice_stability_tests_light",
         "name": "ondevice_stability_tests_light Dev Channel",
         "resultdb": {
           "enable": true,
@@ -829,6 +860,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal/testing:ondevice_stability_tests_light",
         "name": "ondevice_stability_tests_light Stable Channel",
         "resultdb": {
           "enable": true,
@@ -858,6 +890,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal/testing:model_validation_tests_light",
         "name": "model_validation_tests_light Beta Channel",
         "resultdb": {
           "enable": true,
@@ -883,6 +916,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal/testing:model_validation_tests_light",
         "name": "model_validation_tests_light Dev Channel",
         "resultdb": {
           "enable": true,
@@ -908,6 +942,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal/testing:model_validation_tests_light",
         "name": "model_validation_tests_light Stable Channel",
         "resultdb": {
           "enable": true,
@@ -932,6 +967,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal/testing:ondevice_stability_tests_light",
         "name": "ondevice_stability_tests_light Beta Channel",
         "resultdb": {
           "enable": true,
@@ -956,6 +992,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal/testing:ondevice_stability_tests_light",
         "name": "ondevice_stability_tests_light Dev Channel",
         "resultdb": {
           "enable": true,
@@ -980,6 +1017,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal/testing:ondevice_stability_tests_light",
         "name": "ondevice_stability_tests_light Stable Channel",
         "resultdb": {
           "enable": true,
@@ -1011,6 +1049,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//chrome/test:browser_tests",
         "name": "optimization_guide_browser_tests",
         "swarming": {
           "dimensions": {
@@ -1039,6 +1078,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal:optimization_guide_gpu_unittests",
         "name": "optimization_guide_gpu_unittests iPhone 13",
         "swarming": {
           "cipd_packages": [
@@ -1078,6 +1118,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal:optimization_guide_unittests",
         "name": "optimization_guide_unittests iPhone 13",
         "swarming": {
           "cipd_packages": [
@@ -1126,6 +1167,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal:optimization_guide_gpu_unittests",
         "name": "optimization_guide_gpu_unittests iPhone 14 18.2",
         "swarming": {
           "cipd_packages": [
@@ -1171,6 +1213,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal:optimization_guide_unittests",
         "name": "optimization_guide_unittests iPhone 14 18.2",
         "swarming": {
           "cipd_packages": [
@@ -1215,6 +1258,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal:chrome_ml_unittests",
         "name": "chrome_ml_unittests",
         "swarming": {
           "dimensions": {
@@ -1236,6 +1280,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal:optimization_guide_gpu_unittests",
         "name": "optimization_guide_gpu_unittests NVIDIA GeForce GTX 1660",
         "swarming": {
           "dimensions": {
@@ -1260,6 +1305,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//services:services_unittests",
         "name": "optimization_guide_services_unittests NVIDIA GeForce GTX 1660",
         "swarming": {
           "dimensions": {
@@ -1281,6 +1327,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal:optimization_guide_unittests",
         "name": "optimization_guide_unittests",
         "swarming": {
           "dimensions": {
@@ -1308,6 +1355,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal/testing:model_validation_tests",
         "name": "model_validation_tests",
         "resultdb": {
           "enable": true,
@@ -1333,6 +1381,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal/testing:model_validation_tests_light",
         "name": "model_validation_tests_light",
         "resultdb": {
           "enable": true,
@@ -1358,6 +1407,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal/testing:ondevice_model_benchmark_tests",
         "name": "ondevice_model_benchmark_tests_cpu_no_submodel",
         "resultdb": {
           "enable": true,
@@ -1383,6 +1433,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal/testing:ondevice_model_benchmark_tests",
         "name": "ondevice_model_benchmark_tests_gpu_no_submodel",
         "resultdb": {
           "enable": true,
@@ -1409,6 +1460,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal/testing:ondevice_model_benchmark_tests",
         "name": "ondevice_model_benchmark_tests_gpu_submodel",
         "resultdb": {
           "enable": true,
@@ -1437,6 +1489,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal/testing:ondevice_stability_tests",
         "name": "ondevice_stability_tests NVIDIA GeForce GTX 1660",
         "resultdb": {
           "enable": true,
@@ -1462,6 +1515,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal/testing:ondevice_stability_tests_light",
         "name": "ondevice_stability_tests_light NVIDIA GeForce GTX 1660",
         "resultdb": {
           "enable": true,
@@ -1487,6 +1541,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal/testing:opt_target_coverage_test",
         "name": "opt_target_coverage_test",
         "resultdb": {
           "enable": true,
@@ -1515,6 +1570,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal:chrome_ml_unittests",
         "name": "chrome_ml_unittests",
         "swarming": {
           "dimensions": {
@@ -1534,6 +1590,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal:optimization_guide_gpu_unittests",
         "name": "optimization_guide_gpu_unittests",
         "swarming": {
           "dimensions": {
@@ -1555,6 +1612,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//services:services_unittests",
         "name": "optimization_guide_services_unittests",
         "swarming": {
           "dimensions": {
@@ -1571,6 +1629,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal:optimization_guide_unittests",
         "name": "optimization_guide_unittests",
         "swarming": {
           "dimensions": {
@@ -1596,6 +1655,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal/testing:model_validation_tests",
         "name": "model_validation_tests",
         "resultdb": {
           "enable": true,
@@ -1619,6 +1679,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal/testing:model_validation_tests_light",
         "name": "model_validation_tests_light",
         "resultdb": {
           "enable": true,
@@ -1643,6 +1704,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal/testing:ondevice_model_benchmark_tests",
         "name": "ondevice_model_benchmark_tests_cpu_no_submodel",
         "resultdb": {
           "enable": true,
@@ -1667,6 +1729,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal/testing:ondevice_model_benchmark_tests",
         "name": "ondevice_model_benchmark_tests_gpu_no_submodel",
         "resultdb": {
           "enable": true,
@@ -1692,6 +1755,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal/testing:ondevice_model_benchmark_tests",
         "name": "ondevice_model_benchmark_tests_gpu_submodel",
         "resultdb": {
           "enable": true,
@@ -1718,6 +1782,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal/testing:ondevice_stability_tests",
         "name": "ondevice_stability_tests",
         "resultdb": {
           "enable": true,
@@ -1738,6 +1803,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal/testing:ondevice_stability_tests_light",
         "name": "ondevice_stability_tests_light",
         "resultdb": {
           "enable": true,
@@ -1765,6 +1831,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal:chrome_ml_unittests",
         "name": "chrome_ml_unittests",
         "swarming": {
           "dimensions": {
@@ -1784,6 +1851,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal:optimization_guide_gpu_unittests",
         "name": "optimization_guide_gpu_unittests",
         "swarming": {
           "dimensions": {
@@ -1805,6 +1873,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//services:services_unittests",
         "name": "optimization_guide_services_unittests",
         "swarming": {
           "dimensions": {
@@ -1821,6 +1890,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal:optimization_guide_unittests",
         "name": "optimization_guide_unittests",
         "swarming": {
           "dimensions": {
@@ -1846,6 +1916,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal/testing:model_validation_tests",
         "name": "model_validation_tests",
         "resultdb": {
           "enable": true,
@@ -1869,6 +1940,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal/testing:model_validation_tests_light",
         "name": "model_validation_tests_light",
         "resultdb": {
           "enable": true,
@@ -1893,6 +1965,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal/testing:ondevice_model_benchmark_tests",
         "name": "ondevice_model_benchmark_tests_cpu_no_submodel",
         "resultdb": {
           "enable": true,
@@ -1917,6 +1990,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal/testing:ondevice_model_benchmark_tests",
         "name": "ondevice_model_benchmark_tests_gpu_no_submodel",
         "resultdb": {
           "enable": true,
@@ -1942,6 +2016,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal/testing:ondevice_model_benchmark_tests",
         "name": "ondevice_model_benchmark_tests_gpu_submodel",
         "resultdb": {
           "enable": true,
@@ -1968,6 +2043,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal/testing:ondevice_stability_tests",
         "name": "ondevice_stability_tests",
         "resultdb": {
           "enable": true,
@@ -1988,6 +2064,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal/testing:ondevice_stability_tests_light",
         "name": "ondevice_stability_tests_light",
         "resultdb": {
           "enable": true,
@@ -2015,6 +2092,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal:chrome_ml_unittests",
         "name": "chrome_ml_unittests",
         "swarming": {
           "dimensions": {
@@ -2036,6 +2114,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal:optimization_guide_gpu_unittests",
         "name": "optimization_guide_gpu_unittests",
         "swarming": {
           "dimensions": {
@@ -2059,6 +2138,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//services:services_unittests",
         "name": "optimization_guide_services_unittests",
         "swarming": {
           "dimensions": {
@@ -2077,6 +2157,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal:optimization_guide_unittests",
         "name": "optimization_guide_unittests",
         "swarming": {
           "dimensions": {
@@ -2104,6 +2185,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal/testing:model_validation_tests",
         "name": "model_validation_tests",
         "resultdb": {
           "enable": true,
@@ -2129,6 +2211,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal/testing:model_validation_tests_light",
         "name": "model_validation_tests_light",
         "resultdb": {
           "enable": true,
@@ -2157,6 +2240,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal/testing:ondevice_stability_tests",
         "name": "ondevice_stability_tests",
         "resultdb": {
           "enable": true,
@@ -2179,6 +2263,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal/testing:ondevice_stability_tests_light",
         "name": "ondevice_stability_tests_light",
         "resultdb": {
           "enable": true,
@@ -2208,6 +2293,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal:chrome_ml_unittests",
         "name": "chrome_ml_unittests",
         "swarming": {
           "dimensions": {
@@ -2227,6 +2313,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal:optimization_guide_gpu_unittests",
         "name": "optimization_guide_gpu_unittests AMD Radeon RX 5500 XT",
         "swarming": {
           "dimensions": {
@@ -2247,6 +2334,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal:optimization_guide_gpu_unittests",
         "name": "optimization_guide_gpu_unittests Intel UHD 630 or 770",
         "swarming": {
           "dimensions": {
@@ -2267,6 +2355,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal:optimization_guide_gpu_unittests",
         "name": "optimization_guide_gpu_unittests NVIDIA GeForce GTX 1660",
         "swarming": {
           "dimensions": {
@@ -2289,6 +2378,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//services:services_unittests",
         "name": "optimization_guide_services_unittests AMD Radeon RX 5500 XT",
         "swarming": {
           "dimensions": {
@@ -2311,6 +2401,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//services:services_unittests",
         "name": "optimization_guide_services_unittests Intel UHD 630 or 770",
         "swarming": {
           "dimensions": {
@@ -2333,6 +2424,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//services:services_unittests",
         "name": "optimization_guide_services_unittests NVIDIA GeForce GTX 1660",
         "swarming": {
           "dimensions": {
@@ -2350,6 +2442,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal:optimization_guide_unittests",
         "name": "optimization_guide_unittests",
         "swarming": {
           "dimensions": {
@@ -2375,6 +2468,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal/testing:model_validation_tests",
         "name": "model_validation_tests",
         "resultdb": {
           "enable": true,
@@ -2398,6 +2492,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal/testing:model_validation_tests_light",
         "name": "model_validation_tests_light",
         "resultdb": {
           "enable": true,
@@ -2425,6 +2520,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal/testing:ondevice_stability_tests",
         "name": "ondevice_stability_tests AMD Radeon RX 5500 XT",
         "resultdb": {
           "enable": true,
@@ -2453,6 +2549,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal/testing:ondevice_stability_tests",
         "name": "ondevice_stability_tests NVIDIA GeForce GTX 1660",
         "resultdb": {
           "enable": true,
@@ -2474,6 +2571,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal/testing:ondevice_stability_tests_light",
         "name": "ondevice_stability_tests_light AMD Radeon RX 5500 XT",
         "resultdb": {
           "enable": true,
@@ -2495,6 +2593,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal/testing:ondevice_stability_tests_light",
         "name": "ondevice_stability_tests_light NVIDIA GeForce GTX 1660",
         "resultdb": {
           "enable": true,
@@ -2523,6 +2622,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal:chrome_ml_unittests",
         "name": "chrome_ml_unittests",
         "swarming": {
           "dimensions": {
@@ -2542,6 +2642,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal:optimization_guide_gpu_unittests",
         "name": "optimization_guide_gpu_unittests AMD Radeon RX 5500 XT",
         "swarming": {
           "dimensions": {
@@ -2562,6 +2663,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal:optimization_guide_gpu_unittests",
         "name": "optimization_guide_gpu_unittests Intel UHD 630 or 770",
         "swarming": {
           "dimensions": {
@@ -2582,6 +2684,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal:optimization_guide_gpu_unittests",
         "name": "optimization_guide_gpu_unittests NVIDIA GeForce GTX 1660",
         "swarming": {
           "dimensions": {
@@ -2604,6 +2707,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//services:services_unittests",
         "name": "optimization_guide_services_unittests AMD Radeon RX 5500 XT",
         "swarming": {
           "dimensions": {
@@ -2626,6 +2730,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//services:services_unittests",
         "name": "optimization_guide_services_unittests Intel UHD 630 or 770",
         "swarming": {
           "dimensions": {
@@ -2648,6 +2753,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//services:services_unittests",
         "name": "optimization_guide_services_unittests NVIDIA GeForce GTX 1660",
         "swarming": {
           "dimensions": {
@@ -2665,6 +2771,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal:optimization_guide_unittests",
         "name": "optimization_guide_unittests",
         "swarming": {
           "dimensions": {
@@ -2690,6 +2797,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal/testing:model_validation_tests",
         "name": "model_validation_tests",
         "resultdb": {
           "enable": true,
@@ -2713,6 +2821,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal/testing:model_validation_tests_light",
         "name": "model_validation_tests_light",
         "resultdb": {
           "enable": true,
@@ -2737,6 +2846,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal/testing:ondevice_model_benchmark_tests",
         "name": "ondevice_model_benchmark_tests_cpu_no_submodel",
         "resultdb": {
           "enable": true,
@@ -2761,6 +2871,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal/testing:ondevice_model_benchmark_tests",
         "name": "ondevice_model_benchmark_tests_gpu_no_submodel",
         "resultdb": {
           "enable": true,
@@ -2786,6 +2897,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal/testing:ondevice_model_benchmark_tests",
         "name": "ondevice_model_benchmark_tests_gpu_submodel",
         "resultdb": {
           "enable": true,
@@ -2812,6 +2924,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal/testing:ondevice_stability_tests",
         "name": "ondevice_stability_tests AMD Radeon RX 5500 XT",
         "resultdb": {
           "enable": true,
@@ -2839,6 +2952,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal/testing:ondevice_stability_tests",
         "name": "ondevice_stability_tests Intel UHD 630 or 770",
         "resultdb": {
           "enable": true,
@@ -2866,6 +2980,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal/testing:ondevice_stability_tests",
         "name": "ondevice_stability_tests NVIDIA GeForce GTX 1660",
         "resultdb": {
           "enable": true,
@@ -2887,6 +3002,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal/testing:ondevice_stability_tests_light",
         "name": "ondevice_stability_tests_light AMD Radeon RX 5500 XT",
         "resultdb": {
           "enable": true,
@@ -2908,6 +3024,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal/testing:ondevice_stability_tests_light",
         "name": "ondevice_stability_tests_light Intel UHD 630 or 770",
         "resultdb": {
           "enable": true,
@@ -2929,6 +3046,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal/testing:ondevice_stability_tests_light",
         "name": "ondevice_stability_tests_light NVIDIA GeForce GTX 1660",
         "resultdb": {
           "enable": true,
@@ -2958,6 +3076,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal:optimization_guide_gpu_unittests",
         "name": "optimization_guide_gpu_unittests",
         "swarming": {
           "dimensions": {
@@ -2980,6 +3099,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//services:services_unittests",
         "name": "optimization_guide_services_unittests",
         "swarming": {
           "dimensions": {
@@ -3009,6 +3129,7 @@
           ],
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
+        "module_name": "//:blink_wpt_tests",
         "name": "blink_wpt_tests",
         "resultdb": {
           "enable": true,
@@ -3037,6 +3158,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal:optimization_guide_gpu_unittests",
         "name": "optimization_guide_gpu_unittests",
         "swarming": {
           "dimensions": {
@@ -3058,6 +3180,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//services:services_unittests",
         "name": "optimization_guide_services_unittests",
         "swarming": {
           "dimensions": {

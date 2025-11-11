@@ -21,6 +21,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//chrome/test:telemetry_gpu_integration_test",
         "name": "swarming_test a_variant",
         "swarming": {
           "dimensions": {
@@ -51,6 +52,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//chrome/test:telemetry_gpu_integration_test",
         "name": "swarming_test b_variant",
         "swarming": {
           "dimensions": {
