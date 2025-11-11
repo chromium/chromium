@@ -24,7 +24,6 @@ import android.text.TextUtils;
 
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
-import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -68,7 +67,6 @@ class NavigationAttachmentsMediator {
     private final NavigationAttachmentsPopup mPopup;
     private final ModelList mModelList;
     private final ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
-    private final Drawable mFallbackDrawable;
     private final ObservableSupplierImpl<@AutocompleteRequestType Integer>
             mAutocompleteRequestTypeSupplier;
     private final ComposeBoxQueryControllerBridge mComposeBoxQueryControllerBridge;
@@ -91,8 +89,6 @@ class NavigationAttachmentsMediator {
         mPopup = viewHolder.popup;
         mModelList = modelList;
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
-        mFallbackDrawable =
-                AppCompatResources.getDrawable(mContext, R.drawable.ic_attach_file_24dp);
         mAutocompleteRequestTypeSupplier = autocompleteRequestTypeSupplier;
         mComposeBoxQueryControllerBridge = composeBoxQueryControllerBridge;
         mPopupItemIconSizePx =
@@ -499,12 +495,7 @@ class NavigationAttachmentsMediator {
 
         PropertyModel model =
                 new PropertyModel.Builder(FuseboxAttachmentProperties.ALL_KEYS)
-                        .with(
-                                FuseboxAttachmentProperties.THUMBNAIL,
-                                attachment.thumbnail != null
-                                        ? attachment.thumbnail
-                                        : mFallbackDrawable)
-                        .with(FuseboxAttachmentProperties.TITLE, attachment.title)
+                        .with(FuseboxAttachmentProperties.ATTACHMENT, attachment)
                         .build();
 
         var listItem = new MVCListAdapter.ListItem(attachment.itemType, model);

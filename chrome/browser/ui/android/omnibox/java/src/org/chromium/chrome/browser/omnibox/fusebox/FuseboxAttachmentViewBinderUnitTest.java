@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.omnibox.fusebox;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import android.app.Activity;
 import android.graphics.drawable.Drawable;
@@ -26,6 +27,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentRecyclerViewAdapter.FuseboxAttachmentType;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -66,30 +68,74 @@ public class FuseboxAttachmentViewBinderUnitTest {
 
     @Test
     public void testSetThumbnail() {
-        mModel.set(FuseboxAttachmentProperties.THUMBNAIL, mDrawable);
+        FuseboxAttachment attachment =
+                new FuseboxAttachment(
+                        FuseboxAttachmentType.ATTACHMENT_FILE,
+                        mDrawable,
+                        "Test",
+                        "text/plain",
+                        new byte[0]);
+        mModel.set(FuseboxAttachmentProperties.ATTACHMENT, attachment);
         ImageView imageView = mView.findViewById(R.id.attachment_thumbnail);
         assertEquals(mDrawable, imageView.getDrawable());
     }
 
     @Test
     public void testSetTitle_emptyString() {
-        mModel.set(FuseboxAttachmentProperties.TITLE, "");
+        FuseboxAttachment attachment =
+                new FuseboxAttachment(
+                        FuseboxAttachmentType.ATTACHMENT_FILE,
+                        mDrawable,
+                        "",
+                        "text/plain",
+                        new byte[0]);
+        mModel.set(FuseboxAttachmentProperties.ATTACHMENT, attachment);
         TextView textView = mView.findViewById(R.id.attachment_title);
         assertEquals(View.GONE, textView.getVisibility());
     }
 
     @Test
     public void testSetTitle() {
-        mModel.set(FuseboxAttachmentProperties.TITLE, "My Attachment");
+        FuseboxAttachment attachment =
+                new FuseboxAttachment(
+                        FuseboxAttachmentType.ATTACHMENT_FILE,
+                        mDrawable,
+                        "My Attachment",
+                        "text/plain",
+                        new byte[0]);
+        mModel.set(FuseboxAttachmentProperties.ATTACHMENT, attachment);
         TextView textView = mView.findViewById(R.id.attachment_title);
         assertEquals("My Attachment", textView.getText());
     }
 
     @Test
     public void testSetDescription_withTitle() {
-        mModel.set(FuseboxAttachmentProperties.TITLE, "My Title");
+        FuseboxAttachment attachment =
+                new FuseboxAttachment(
+                        FuseboxAttachmentType.ATTACHMENT_FILE,
+                        mDrawable,
+                        "My Title",
+                        "text/plain",
+                        new byte[0]);
+        mModel.set(FuseboxAttachmentProperties.ATTACHMENT, attachment);
 
         TextView title = mView.findViewById(R.id.attachment_title);
         assertEquals("My Title", title.getText());
+    }
+
+    @Test
+    public void testSetThumbnail_fallbackWhenNull() {
+        FuseboxAttachment attachment =
+                new FuseboxAttachment(
+                        FuseboxAttachmentType.ATTACHMENT_FILE,
+                        null, // null thumbnail should trigger fallback
+                        "Test",
+                        "text/plain",
+                        new byte[0]);
+        mModel.set(FuseboxAttachmentProperties.ATTACHMENT, attachment);
+        ImageView imageView = mView.findViewById(R.id.attachment_thumbnail);
+        // Should have fallback drawable, not null
+        assertNotNull(
+                "Fallback drawable should be set when thumbnail is null", imageView.getDrawable());
     }
 }

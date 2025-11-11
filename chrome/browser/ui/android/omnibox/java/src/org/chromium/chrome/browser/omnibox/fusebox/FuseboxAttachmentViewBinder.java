@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -21,11 +22,16 @@ class FuseboxAttachmentViewBinder {
      * @see PropertyModelChangeProcessor.ViewBinder#bind(Object, Object, Object)
      */
     public static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
-        if (propertyKey == FuseboxAttachmentProperties.THUMBNAIL) {
+        if (propertyKey == FuseboxAttachmentProperties.ATTACHMENT) {
+            FuseboxAttachment attachment = model.get(FuseboxAttachmentProperties.ATTACHMENT);
+            assert attachment != null : "FuseboxAttachment cannot be null";
             ImageView imageView = view.findViewById(R.id.attachment_thumbnail);
-            imageView.setImageDrawable(model.get(FuseboxAttachmentProperties.THUMBNAIL));
-        } else if (propertyKey == FuseboxAttachmentProperties.TITLE) {
-            applyTitleAndDescriptionIfPresent(model, view);
+            imageView.setImageDrawable(
+                    attachment.thumbnail != null
+                            ? attachment.thumbnail
+                            : OmniboxResourceProvider.getDrawable(
+                                    view.getContext(), R.drawable.ic_attach_file_24dp));
+            applyTitleAndDescriptionIfPresent(attachment, view);
         } else if (propertyKey == FuseboxAttachmentProperties.ON_REMOVE) {
             view.findViewById(R.id.attachment_remove_button)
                     .setOnClickListener(
@@ -33,17 +39,16 @@ class FuseboxAttachmentViewBinder {
         }
     }
 
-    private static void applyTitleAndDescriptionIfPresent(PropertyModel model, View view) {
-        CharSequence title = model.get(FuseboxAttachmentProperties.TITLE);
+    private static void applyTitleAndDescriptionIfPresent(FuseboxAttachment attachment, View view) {
         TextView titleView = view.findViewById(R.id.attachment_title);
 
         if (titleView == null) return;
 
-        if (TextUtils.isEmpty(title)) {
+        if (TextUtils.isEmpty(attachment.title)) {
             titleView.setVisibility(View.GONE);
         } else {
             titleView.setVisibility(View.VISIBLE);
-            titleView.setText(title);
+            titleView.setText(attachment.title);
         }
     }
 }
