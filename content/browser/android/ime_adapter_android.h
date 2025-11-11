@@ -117,7 +117,7 @@ class CONTENT_EXPORT ImeAdapterAndroid : public RenderWidgetHostConnector {
       const gfx::Rect& caret_bounds);
 
   bool InsertMediaFromURL(JNIEnv* env,
-                          const base::android::JavaParamRef<jobject>& obj,
+
                           const base::android::JavaParamRef<jstring>& url);
 
   base::android::ScopedJavaLocalRef<jobject> java_ime_adapter_for_testing(

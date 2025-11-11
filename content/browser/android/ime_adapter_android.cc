@@ -402,7 +402,6 @@ void ImeAdapterAndroid::FinishComposingText(JNIEnv* env) {
 
 bool ImeAdapterAndroid::InsertMediaFromURL(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj,
     const base::android::JavaParamRef<jstring>& url) {
   auto* input_handler = GetFocusedFrameWidgetInputHandler();
   if (!input_handler) {
