@@ -184,6 +184,11 @@ bool SelectFileDialogLinuxPortal::IsPortalAvailable() {
   return g_service_availability == ServiceAvailability::kAvailable;
 }
 
+void SelectFileDialogLinuxPortal::ListenerDestroyed() {
+  weak_factory_.InvalidateWeakPtrs();
+  SelectFileDialogLinux::ListenerDestroyed();
+}
+
 bool SelectFileDialogLinuxPortal::IsRunning(
     gfx::NativeWindow parent_window) const {
   return parent_window && host_ && host_.get() == parent_window->GetHost();
@@ -474,7 +479,7 @@ void SelectFileDialogLinuxPortal::MakeFileChooserRequest(
   invoker_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&SelectFileDialogLinuxPortal::DialogCreatedOnInvoker,
-                     this));
+                     weak_factory_.GetWeakPtr()));
 }
 
 void SelectFileDialogLinuxPortal::OnFileChooserResponse(
@@ -523,15 +528,17 @@ void SelectFileDialogLinuxPortal::CompleteOpen(
   dbus_thread_linux::GetSharedSessionBus()->AssertOnOriginThread();
   invoker_task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(&SelectFileDialogLinuxPortal::CompleteOpenOnInvoker, this,
-                     std::move(paths), std::move(current_filter)));
+      base::BindOnce(&SelectFileDialogLinuxPortal::CompleteOpenOnInvoker,
+                     weak_factory_.GetWeakPtr(), std::move(paths),
+                     std::move(current_filter)));
 }
 
 void SelectFileDialogLinuxPortal::CancelOpen() {
   dbus_thread_linux::GetSharedSessionBus()->AssertOnOriginThread();
   invoker_task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(&SelectFileDialogLinuxPortal::CancelOpenOnInvoker, this));
+      base::BindOnce(&SelectFileDialogLinuxPortal::CancelOpenOnInvoker,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void SelectFileDialogLinuxPortal::DialogCreatedOnInvoker() {

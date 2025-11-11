@@ -361,6 +361,8 @@ class BookmarkManagerPrivateIOFunction : public BookmarksFunction,
  protected:
   ~BookmarkManagerPrivateIOFunction() override;
 
+  void CleanupFileDialog();
+
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
 };
 

@@ -809,6 +809,10 @@ BookmarkManagerPrivateIOFunction::~BookmarkManagerPrivateIOFunction() {
     select_file_dialog_->ListenerDestroyed();
 }
 
+void BookmarkManagerPrivateIOFunction::FileSelectionCanceled() {
+  CleanupFileDialog();
+}
+
 void BookmarkManagerPrivateIOFunction::ShowSelectFileDialog(
     ui::SelectFileDialog::Type type,
     const base::FilePath& default_path) {
@@ -843,9 +847,12 @@ void BookmarkManagerPrivateIOFunction::ShowSelectFileDialog(
                                   base::FilePath::StringType(), owning_window);
 }
 
-void BookmarkManagerPrivateIOFunction::FileSelectionCanceled() {
+void BookmarkManagerPrivateIOFunction::CleanupFileDialog() {
+  if (select_file_dialog_) {
+    select_file_dialog_->ListenerDestroyed();
+  }
   select_file_dialog_.reset();
-  Release();  // Balanced in BookmarkManagerPrivateIOFunction::SelectFile()
+  Release();  // Balanced in ShowSelectFileDialog().
 }
 
 ExtensionFunction::ResponseValue
@@ -875,8 +882,7 @@ void BookmarkManagerPrivateImportFunction::FileSelected(
 
   importer::LogImporterUseToMetrics("BookmarksAPI",
                                     user_data_importer::TYPE_BOOKMARKS_FILE);
-  select_file_dialog_.reset();
-  Release();  // Balanced in BookmarkManagerPrivateIOFunction::SelectFile()
+  CleanupFileDialog();
 }
 
 ExtensionFunction::ResponseValue
@@ -904,8 +910,7 @@ void BookmarkManagerPrivateExportFunction::FileSelected(
     int index) {
   bookmark_html_writer::WriteBookmarks(GetProfile(), file.path(),
                                        base::DoNothing());
-  select_file_dialog_.reset();
-  Release();  // Balanced in BookmarkManagerPrivateIOFunction::SelectFile()
+  CleanupFileDialog();
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(BookmarkManagerPrivateDragEventRouter);
