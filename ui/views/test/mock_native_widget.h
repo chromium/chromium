@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/color/color_provider_key.h"

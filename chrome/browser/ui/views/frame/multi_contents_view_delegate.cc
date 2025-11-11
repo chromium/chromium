@@ -15,6 +15,7 @@
 #include "components/tabs/public/split_tab_data.h"
 #include "components/tabs/public/split_tab_visual_data.h"
 #include "content/public/common/url_constants.h"
+#include "ui/base/dragdrop/os_exchange_data.h"
 #include "url/url_constants.h"
 
 MultiContentsViewDelegateImpl::MultiContentsViewDelegateImpl(Browser& browser)
