@@ -141,6 +141,7 @@ class NewTabPageHandler
   void SetModulesOrder(const std::vector<std::string>& module_ids) override;
   void GetModulesOrder(GetModulesOrderCallback callback) override;
   void UpdateModulesLoadable() override;
+  void UpdateActionChipsVisibility() override;
   void MaybeShowFeaturePromo(
       new_tab_page::mojom::IphFeature iph_feature) override;
   void OnAppRendered(double time) override;
@@ -207,6 +208,7 @@ class NewTabPageHandler
                         std::unique_ptr<std::string> body);
 
   ntp_tiles::TileType GetTileType() const;
+  bool IsActionChipsVisible() const;
   bool IsShortcutsVisible() const;
   void MaybeLaunchInteractionSurvey(std::string_view interaction,
                                     const std::string& module_id,

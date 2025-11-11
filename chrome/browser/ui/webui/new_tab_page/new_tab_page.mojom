@@ -253,6 +253,8 @@ interface PageHandler {
   GetModulesOrder() => (array<string> module_ids);
   // Triggers a call to |SetModulesLoadable|.
   UpdateModulesLoadable();
+  // Updates the visibility of the action chips in the NTP on any pref changes.
+  UpdateActionChipsVisibility();
   // Triggers a call to |FooterVisibilityUpdated|.
   UpdateFooterVisibility();
   // Attempts to trigger the specified in product help promo.
@@ -305,6 +307,8 @@ interface Page {
   // Allows modules to load on NTP when the UI has postponed module loading for
   // some reason.
   SetModulesLoadable();
+  // Sets the action chips visibility.
+  SetActionChipsVisibility(bool visible);
   // Sets NTP homepage promo.
   SetPromo(Promo? promo);
   // Shows a toast with information about Chrome Webstore themes.

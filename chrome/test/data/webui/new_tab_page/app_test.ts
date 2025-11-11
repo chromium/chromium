@@ -1934,21 +1934,52 @@ suite('NewTabPageAppTest', () => {
       loadTimeData.overrideValues({
         ntpNextFeaturesEnabled: true,
         ntpRealboxNextEnabled: true,
+        actionChipsEnabled: true,
       });
     });
+
+    // Testing Action Chips visibility on initial flag load values.
     [true, false].forEach(
-        (ntpNextFeaturesEnabled) =>
-            suite(`actionChips rendered ${ntpNextFeaturesEnabled}`, () => {
-              suiteSetup(() => {
-                loadTimeData.overrideValues({ntpNextFeaturesEnabled});
-              });
+        (actionChipsEnabled) => [true, false].forEach(
+            (ntpNextFeaturesEnabled) => suite(
+                'Action Chips settings rendered with actionChipsEnabled: ' +
+                    actionChipsEnabled +
+                    ' and ntpNextFeaturesEnabled: ' + ntpNextFeaturesEnabled,
+                () => {
+                  // Arrange.
+                  const expectedVisibility =
+                      ntpNextFeaturesEnabled && actionChipsEnabled;
+                  suiteSetup(() => {
+                    loadTimeData.overrideValues({
+                      ntpNextFeaturesEnabled,
+                      actionChipsEnabled,
+                    });
+                  });
 
-              test('Show iframe when appropriate', () => {
-                const chips = $$<HTMLElement>(app, 'ntp-action-chips');
+                  // Assert.
+                  test('Show iframe when appropriate', () => {
+                    const chips = $$<HTMLElement>(app, 'ntp-action-chips');
+                    assertEquals(!!chips, expectedVisibility);
+                  });
+                })));
 
-                assertEquals(!!chips, ntpNextFeaturesEnabled);
-              });
+    // Testing Action Chips visibility on changing visibility prefs.
+    [true, false].forEach(
+        (isActionChipsVisible) => test(
+            'Action chips are rendered/hidden on changing visibility to ' +
+                isActionChipsVisible,
+            async () => {
+              // Act.
+              callbackRouterRemote.setActionChipsVisibility(
+                  isActionChipsVisible);
+              await callbackRouterRemote.$.flushForTesting();
+              await microtasksFinished();
+
+              // Assert.
+              const chips = $$(app, 'ntp-action-chips')!;
+              assertEquals(!!chips, isActionChipsVisible);
             }));
+
     test(
         'Nano Banana chip click opens composebox create image mode',
         async () => {

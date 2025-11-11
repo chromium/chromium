@@ -575,6 +575,11 @@ NewTabPageHandler::NewTabPageHandler(
       prefs::kSeedColorChangeCount,
       base::BindRepeating(&NewTabPageHandler::MaybeShowWebstoreToast,
                           base::Unretained(this)));
+
+  pref_change_registrar_.Add(
+      prefs::kNtpToolChipsVisible,
+      base::BindRepeating(&NewTabPageHandler::UpdateActionChipsVisibility,
+                          base::Unretained(this)));
 }
 
 NewTabPageHandler::~NewTabPageHandler() {
@@ -836,6 +841,10 @@ void NewTabPageHandler::UpdateModulesLoadable() {
   if (!microsoft_auth_service_ || SyncMicrosoftModulesWithAuth()) {
     page_->SetModulesLoadable();
   }
+}
+
+void NewTabPageHandler::UpdateActionChipsVisibility() {
+  page_->SetActionChipsVisibility(IsActionChipsVisible());
 }
 
 void NewTabPageHandler::UpdateFooterVisibility() {
@@ -1297,6 +1306,10 @@ ntp_tiles::TileType NewTabPageHandler::GetTileType() const {
   return profile_->GetPrefs()->GetBoolean(ntp_prefs::kNtpCustomLinksVisible)
              ? ntp_tiles::TileType::kCustomLinks
              : ntp_tiles::TileType::kTopSites;
+}
+
+bool NewTabPageHandler::IsActionChipsVisible() const {
+  return profile_->GetPrefs()->GetBoolean(prefs::kNtpToolChipsVisible);
 }
 
 bool NewTabPageHandler::IsShortcutsVisible() const {
