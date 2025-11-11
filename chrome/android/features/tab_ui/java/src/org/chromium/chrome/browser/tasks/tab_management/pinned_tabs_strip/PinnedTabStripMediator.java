@@ -329,6 +329,7 @@ public class PinnedTabStripMediator {
                         .getDimensionPixelSize(R.dimen.pinned_tab_strip_item_width_delta);
         mTabListItemCurrentWidth = cardSize.getWidth() - delta;
         onPinnedTabStripItemWidthChanged();
+        updatePinnedTabsBar();
     }
 
     private void resizePinnedTabCards() {

@@ -306,6 +306,33 @@ public class PinnedTabStripMediatorTest {
     }
 
     @Test
+    public void testOnCardSizeChanged_SpanCountChange_UpdatesPinnedTabs() {
+        // Add pinned tabs to the main model.
+        for (int i = 0; i < 5; i++) {
+            mTabListModel.add(createTabListItem(i, true));
+        }
+        mTabListModel.add(createTabListItem(5, false));
+
+        // Set initial state: first visible is item 2.
+        // This means tabs 0 and 1 are pinned and scrolled off.
+        when(mLayoutManager.findFirstVisibleItemPosition()).thenReturn(2);
+        mMediator.onScrolled();
+        assertEquals(2, mPinnedTabsModelList.size());
+
+        // Simulate screen size change, span count changes. Let's assume with a larger screen or
+        // smaller cards, more items are visible on screen at once. If the user has scrolled to the
+        // same position, the first visible item index might be higher.
+        when(mLayoutManager.findFirstVisibleItemPosition()).thenReturn(3);
+        mTabListItemSizeChangedObserver.onSizeChanged(3, new Size(200, 0));
+
+        // Verify pinned tabs bar is updated. Now tabs 0, 1, 2 are pinned and scrolled off.
+        assertEquals(3, mPinnedTabsModelList.size());
+        assertEquals(0, mPinnedTabsModelList.get(0).model.get(TabProperties.TAB_ID));
+        assertEquals(1, mPinnedTabsModelList.get(1).model.get(TabProperties.TAB_ID));
+        assertEquals(2, mPinnedTabsModelList.get(2).model.get(TabProperties.TAB_ID));
+    }
+
+    @Test
     public void testResizePinnedTabCards_VaryingFirstVisiblePosition() {
         // Set an initial size and span count.
         final int cardWidth = 400;
