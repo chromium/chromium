@@ -25,3 +25,9 @@ feature kGlicAppendModelQualityClientId {
   const string name = "GlicAppendModelQualityClientId";
   const bool default_state = false;
 };
+
+// Allows actor code to activate a tab.
+feature kGlicActivateTabApi {
+  const string name = "GlicActivateTabApi";
+  const bool default_state = true;
+};
