@@ -8,6 +8,7 @@ import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
@@ -33,8 +34,8 @@ class NavigationAttachmentsProperties {
             new WritableBooleanPropertyKey();
 
     /** Tracks the {@link AutocompleteRequestType}. */
-    public static final WritableObjectPropertyKey<Integer> AUTOCOMPLETE_REQUEST_TYPE =
-            new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<@AutocompleteRequestType Integer>
+            AUTOCOMPLETE_REQUEST_TYPE = new WritableObjectPropertyKey<>();
 
     /** Whether the navigation type toggle is changeable. */
     public static final WritableBooleanPropertyKey AUTOCOMPLETE_REQUEST_TYPE_CHANGEABLE =
