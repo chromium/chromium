@@ -477,6 +477,10 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                                 modalDialogManager,
                                 onTabGroupCreation);
 
+                mContainerViewModel.set(
+                        TabListContainerProperties.IS_PINNED_TAB_STRIP_ANIMATING_SUPPLIER,
+                        mPinnedTabsCoordinator.getIsVisibilityAnimationRunningSupplier());
+
                 TabListRecyclerView pinnedTabStripRecyclerView =
                         mPinnedTabsCoordinator.getPinnedTabsRecyclerView();
 
@@ -535,7 +539,9 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
             mTabGroupModelFilterSupplier.get().getTabModel().addObserver(mTabModelObserver);
             mContainerViewChangeProcessor =
                     PropertyModelChangeProcessor.create(
-                            containerViewModel, recyclerView, TabListContainerViewBinder::bind);
+                            containerViewModel,
+                            new TabListContainerViewBinder.ViewHolder(recyclerView, mPaneHairline),
+                            TabListContainerViewBinder::bind);
 
             mEdgeToEdgePadAdjuster =
                     new EdgeToEdgePadAdjuster() {
@@ -1162,10 +1168,10 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
         return mTabGroupModelFilterSupplier.get().getTabModel().getPinnedTabsCount() > 0;
     }
 
-    // TODO(crbug.com/455919135): Move view manipulation to View binder with relevant property.
     private void setHairlineVisibility(boolean isYOffsetNonZero) {
         if (mPaneHairline != null) {
-            mPaneHairline.setVisibility(isYOffsetNonZero ? View.VISIBLE : View.GONE);
+            mContainerViewModel.set(
+                    TabListContainerProperties.IS_NON_ZERO_Y_OFFSET, isYOffsetNonZero);
         }
     }
 }

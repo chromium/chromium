@@ -81,6 +81,12 @@ class TabListContainerProperties {
     public static final PropertyModel.WritableBooleanPropertyKey IS_TABLET_OR_LANDSCAPE =
             new PropertyModel.WritableBooleanPropertyKey();
 
+    public static final PropertyModel.WritableBooleanPropertyKey IS_NON_ZERO_Y_OFFSET =
+            new PropertyModel.WritableBooleanPropertyKey();
+
+    public static final WritableObjectPropertyKey<ObservableSupplier<Boolean>>
+            IS_PINNED_TAB_STRIP_ANIMATING_SUPPLIER = new WritableObjectPropertyKey<>();
+
     /** Keys for {@link TabSwitcherPaneCoordinator}. */
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
@@ -98,5 +104,7 @@ class TabListContainerProperties {
                 PAGE_KEY_LISTENER,
                 SUPPRESS_ACCESSIBILITY,
                 IS_TABLET_OR_LANDSCAPE,
+                IS_NON_ZERO_Y_OFFSET,
+                IS_PINNED_TAB_STRIP_ANIMATING_SUPPLIER
             };
 }
