@@ -86,7 +86,8 @@ public class MockNavigationController implements NavigationController {
     }
 
     @Override
-    public void setUseDesktopUserAgent(boolean override, boolean reloadOnChange) {}
+    public void setUseDesktopUserAgent(
+            boolean override, boolean reloadOnChange, boolean skipOnInitialNavigation) {}
 
     @Override
     public NavigationEntry getEntryAtIndex(int index) {

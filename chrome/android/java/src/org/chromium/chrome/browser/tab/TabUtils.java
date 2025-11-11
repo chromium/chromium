@@ -113,7 +113,8 @@ public class TabUtils {
         final boolean reloadOnChange = !tab.isNativePage();
         assumeNonNull(tab.getWebContents())
                 .getNavigationController()
-                .setUseDesktopUserAgent(switchToDesktop, reloadOnChange);
+                .setUseDesktopUserAgent(
+                        switchToDesktop, reloadOnChange, /* skipOnInitialNavigation= */ true);
     }
 
     /**

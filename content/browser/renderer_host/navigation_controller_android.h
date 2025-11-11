@@ -85,7 +85,8 @@ class CONTENT_EXPORT NavigationControllerAndroid {
   bool GetUseDesktopUserAgent(JNIEnv* env);
   void SetUseDesktopUserAgent(JNIEnv* env,
                               jboolean state,
-                              jboolean reload_on_state_change);
+                              jboolean reload_on_state_change,
+                              jboolean skip_on_initial_navigation);
   base::android::ScopedJavaLocalRef<jobject> GetEntryAtIndex(JNIEnv* env,
                                                              int index);
   base::android::ScopedJavaLocalRef<jobject> GetVisibleEntry(JNIEnv* env);
@@ -117,7 +118,8 @@ class CONTENT_EXPORT NavigationControllerAndroid {
 
  private:
   void SetUseDesktopUserAgentInternal(bool enabled,
-                                      bool reload_on_state_change);
+                                      bool reload_on_state_change,
+                                      bool skip_on_initial_navigation);
 
   raw_ptr<NavigationControllerImpl> navigation_controller_;
   base::android::ScopedJavaGlobalRef<jobject> obj_;

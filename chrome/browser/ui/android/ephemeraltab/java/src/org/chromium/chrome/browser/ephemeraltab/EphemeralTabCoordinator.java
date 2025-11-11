@@ -13,6 +13,7 @@ import android.view.View;
 import org.chromium.base.Callback;
 import org.chromium.base.SysUtils;
 import org.chromium.base.version_info.VersionInfo;
+import org.chromium.blink_public.common.BlinkFeatures;
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
@@ -34,6 +35,7 @@ import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.UiUtils;
@@ -228,7 +230,18 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
                 mContentView,
                 mWindow,
                 WebContents.createDefaultInternalsHolder());
+        // Set UA override in renderer preferences.
         ContentUtils.setUserAgentOverride(mWebContents, /* overrideInNewTabs= */ false);
+        // Set UA override in WebContents preferences.
+        // TODO(crbug.com/440013184) : Call RequestDesktopUtils.shouldOverrideDesktopSite() instead.
+        boolean shouldUseDesktopUserAgent =
+                ContentFeatureMap.isEnabled(BlinkFeatures.ANDROID_DESKTOP_WEB_PREFS_LARGE_DISPLAYS);
+        mWebContents
+                .getNavigationController()
+                .setUseDesktopUserAgent(
+                        shouldUseDesktopUserAgent,
+                        /* reloadOnChange= */ false,
+                        /* skipOnInitialNavigation= */ false);
     }
 
     private void destroyWebContents() {

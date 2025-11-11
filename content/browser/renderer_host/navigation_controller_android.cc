@@ -385,7 +385,8 @@ bool NavigationControllerAndroid::GetUseDesktopUserAgent(JNIEnv* env) {
 void NavigationControllerAndroid::SetUseDesktopUserAgent(
     JNIEnv* env,
     jboolean enabled,
-    jboolean reload_on_state_change) {
+    jboolean reload_on_state_change,
+    jboolean skip_on_initial_navigation) {
   SCOPED_CRASH_KEY_BOOL("nav_reentrancy_caller2", "SetUA_enabled",
                         (bool)enabled);
   if (GetUseDesktopUserAgent(env) == enabled) {
@@ -406,15 +407,18 @@ void NavigationControllerAndroid::SetUseDesktopUserAgent(
         FROM_HERE,
         base::BindOnce(
             &NavigationControllerAndroid::SetUseDesktopUserAgentInternal,
-            weak_factory_.GetWeakPtr(), enabled, reload_on_state_change));
+            weak_factory_.GetWeakPtr(), enabled, reload_on_state_change,
+            skip_on_initial_navigation));
   } else {
-    SetUseDesktopUserAgentInternal(enabled, reload_on_state_change);
+    SetUseDesktopUserAgentInternal(enabled, reload_on_state_change,
+                                   skip_on_initial_navigation);
   }
 }
 
 void NavigationControllerAndroid::SetUseDesktopUserAgentInternal(
     bool enabled,
-    bool reload_on_state_change) {
+    bool reload_on_state_change,
+    bool skip_on_initial_navigation) {
   // Make sure the navigation entry actually exists.
   NavigationEntry* entry = navigation_controller_->GetLastCommittedEntry();
   // TODO(crbug.com/40063008): Early return for initial NavigationEntries as a
@@ -426,7 +430,7 @@ void NavigationControllerAndroid::SetUseDesktopUserAgentInternal(
   // reloading initial NavigationEntries entirely. This is a short-term fix,
   // while we work on a long-term fix to no longer mistakenly mark the unrelated
   // pending NavigationEntry as the initial NavigationEntry.
-  if (!entry || entry->IsInitialEntry()) {
+  if (!entry || (skip_on_initial_navigation && entry->IsInitialEntry())) {
     return;
   }
 
@@ -482,7 +486,6 @@ jint NavigationControllerAndroid::GetLastCommittedEntryIndex(JNIEnv* env) {
 jboolean NavigationControllerAndroid::CanViewSource(JNIEnv* env) {
   return navigation_controller_->CanViewSource();
 }
-
 jboolean NavigationControllerAndroid::RemoveEntryAtIndex(JNIEnv* env,
                                                          jint index) {
   return navigation_controller_->RemoveEntryAtIndex(index);

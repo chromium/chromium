@@ -192,17 +192,17 @@ public class TabUtilsUnitTest {
     public void testSwitchUserAgent() {
         // Test non-native tab.
         TabUtils.switchUserAgent(mTab, false);
-        verify(mNavigationController).setUseDesktopUserAgent(false, true);
+        verify(mNavigationController).setUseDesktopUserAgent(false, true, true);
 
         TabUtils.switchUserAgent(mTab, true);
-        verify(mNavigationController).setUseDesktopUserAgent(true, true);
+        verify(mNavigationController).setUseDesktopUserAgent(true, true, true);
 
         // Test native tab.
         TabUtils.switchUserAgent(mTabNative, false);
-        verify(mNavigationController).setUseDesktopUserAgent(false, false);
+        verify(mNavigationController).setUseDesktopUserAgent(false, false, true);
 
         TabUtils.switchUserAgent(mTabNative, true);
-        verify(mNavigationController).setUseDesktopUserAgent(true, false);
+        verify(mNavigationController).setUseDesktopUserAgent(true, false, true);
     }
 
     @Test
