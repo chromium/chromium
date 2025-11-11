@@ -3222,7 +3222,10 @@ suite('NewTabPageRealboxTest', () => {
       await microtasksFinished();
 
       assertTrue(pasteEvent.defaultPrevented);
-      assertNull(errorMessage);
+      assertEquals(
+      loadTimeData.getString('maxFilesReachedError'),
+      errorMessage,
+      );
       assertFalse((realbox.$.context as any).showFileCarousel_);
       assertFalse((realbox as any).pastedInInput_);
     });

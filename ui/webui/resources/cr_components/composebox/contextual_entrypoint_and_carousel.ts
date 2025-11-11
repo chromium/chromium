@@ -385,8 +385,9 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
       return;
     }
     if ((this.files_.size + files.length) > this.maxFileCount_) {
-      // TODO(crbug.com/456502536): Add error message to include the max file
-      // count.
+      this.fire('on-file-validation-error', {
+        errorMessage: this.i18n('maxFilesReachedError'),
+      });
       this.recordFileValidationMetric_(
           ComposeboxFileValidationError.TOO_MANY_FILES);
       return;

@@ -1937,6 +1937,8 @@ suite('NewTabPageComposeboxTest', () => {
       cancelable: true,
       composed: true,
     });
+    const errorEventPromise =
+        eventToPromise('on-file-validation-error', composeboxElement.$.context);
 
     // Act.
     composeboxElement.$.input.dispatchEvent(pasteEvent);
@@ -1955,6 +1957,12 @@ suite('NewTabPageComposeboxTest', () => {
 
     // Check that the paste event was prevented.
     assertTrue(pasteEvent.defaultPrevented);
+
+    // Check whether the right error would show up.
+    const errorEvent = await errorEventPromise;
+    assertEquals(
+        loadTimeData.getString('maxFilesReachedError'),
+        errorEvent.detail.errorMessage);
   });
 
   test('pasting unsupported files fires validation error', async () => {
