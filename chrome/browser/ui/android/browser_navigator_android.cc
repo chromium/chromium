@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_navigator_params_utils.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/tabs/tab_list_interface.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
@@ -42,8 +43,27 @@ bool ValidNavigateParams(NavigateParams* params) {
 void GetOrCreateBrowserWindowForDisposition(
     NavigateParams* params,
     base::OnceCallback<void(BrowserWindowInterface*)> callback) {
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), params->browser));
+  switch (params->disposition) {
+    case WindowOpenDisposition::NEW_WINDOW: {
+      BrowserWindowCreateParams create_params(*params->initiating_profile,
+                                              params->user_gesture);
+      CreateBrowserWindow(std::move(create_params), std::move(callback));
+      break;
+    }
+    case WindowOpenDisposition::NEW_BACKGROUND_TAB:
+      [[fallthrough]];
+    case WindowOpenDisposition::NEW_FOREGROUND_TAB:
+      [[fallthrough]];
+    case WindowOpenDisposition::CURRENT_TAB: {
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(std::move(callback), params->browser));
+      break;
+    }
+    default:
+      NOTIMPLEMENTED();
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(std::move(callback), nullptr));
+  }
 }
 
 // Helper to create/locate tabs.
@@ -89,14 +109,18 @@ raw_ptr<tabs::TabInterface> GetOrCreateTabForDisposition(
       params->source_contents = new_tab->GetContents();
       return new_tab;
     }
-    case WindowOpenDisposition::CURRENT_TAB: {
-      // If no source WebContents was specified, use the active one.
-      if (!params->source_contents) {
-        raw_ptr<tabs::TabInterface> active_tab = tab_list->GetActiveTab();
-        params->source_contents = active_tab->GetContents();
-        return active_tab;
+    case WindowOpenDisposition::CURRENT_TAB:
+      if (params->source_contents) {
+        return tabs::TabInterface::GetFromContents(params->source_contents);
       }
-      return tabs::TabInterface::GetFromContents(params->source_contents);
+      // Otherwise use the active tab.
+      [[fallthrough]];
+    case WindowOpenDisposition::NEW_WINDOW: {
+      // A new tab is already created when the new window is created on Android.
+      // Just get the active tab.
+      raw_ptr<tabs::TabInterface> active_tab = tab_list->GetActiveTab();
+      params->source_contents = active_tab->GetContents();
+      return active_tab;
     }
     default:
       NOTIMPLEMENTED();

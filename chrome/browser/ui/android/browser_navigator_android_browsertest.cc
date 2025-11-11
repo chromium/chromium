@@ -18,6 +18,15 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
 class NavigateAndroidBrowserTest : public AndroidBrowserTest {
+  void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
+    AndroidBrowserTest::SetUpDefaultCommandLine(command_line);
+
+    // Disable the first-run experience (FRE) so that when a function under
+    // test launches an Intent for ChromeTabbedActivity, ChromeTabbedActivity
+    // will be shown instead of FirstRunActivity.
+    command_line->AppendSwitch("disable-fre");
+  }
+
  public:
   void SetUpOnMainThread() override {
     AndroidBrowserTest::SetUpOnMainThread();
@@ -264,4 +273,41 @@ IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest,
   EXPECT_FALSE(handle);
   EXPECT_EQ(url1, web_contents_->GetLastCommittedURL());
   EXPECT_EQ(1, tab_list_->GetTabCount());
+}
+
+IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest,
+                       Async_Disposition_NewWindow) {
+  const GURL url1 = StartAtURL("/title1.html");
+  ASSERT_EQ(1u, GetAllBrowserWindowInterfaces().size());
+
+  // Prepare and execute a NEW_WINDOW navigation.
+  const GURL url2 = embedded_test_server()->GetURL("/title2.html");
+  NavigateParams params(browser_window_, url2, ui::PAGE_TRANSITION_LINK);
+  params.disposition = WindowOpenDisposition::NEW_WINDOW;
+
+  base::test::TestFuture<base::WeakPtr<content::NavigationHandle>> future;
+  Navigate(&params, future.GetCallback());
+  base::WeakPtr<content::NavigationHandle> handle = future.Get();
+  ASSERT_TRUE(handle);
+  ASSERT_TRUE(handle->GetWebContents());
+
+  // Observe the navigation in the new tab's WebContents.
+  content::TestNavigationObserver navigation_observer(handle->GetWebContents());
+  navigation_observer.Wait();
+
+  // Verify a new window was created and the navigation occurred in it.
+  std::vector<BrowserWindowInterface*> windows =
+      GetAllBrowserWindowInterfaces();
+  ASSERT_EQ(2u, windows.size());
+  BrowserWindowInterface* new_window =
+      windows[0] == browser_window_ ? windows[1] : windows[0];
+  TabListInterface* new_tab_list = TabListInterface::From(new_window);
+  EXPECT_EQ(1, new_tab_list->GetTabCount());
+  tabs::TabInterface* new_tab = new_tab_list->GetTab(0);
+  ASSERT_TRUE(new_tab);
+  EXPECT_EQ(url2, new_tab->GetContents()->GetLastCommittedURL());
+
+  // Verify the original window is unchanged.
+  EXPECT_EQ(1, tab_list_->GetTabCount());
+  EXPECT_EQ(url1, web_contents_->GetLastCommittedURL());
 }

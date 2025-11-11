@@ -682,7 +682,10 @@ static_library("ui") {
     # Desktop-Android-only dependencies.
     if (is_desktop_android) {
       sources += [ "//chrome/browser/ui/android/browser_navigator_android.cc" ]
-      deps += [ "//chrome/browser/ui/android/extensions/windowing/internal" ]
+      deps += [
+        "//chrome/browser/ui/android/extensions/windowing/internal",
+        "//chrome/browser/ui/browser_window:create_browser_window",
+      ]
     }
   }
 
