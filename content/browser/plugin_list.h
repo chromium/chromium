@@ -59,20 +59,17 @@ class CONTENT_EXPORT PluginList {
   // Returns the list of plugins without loading them.
   const std::vector<WebPluginInfo>& GetPluginsForTesting() const;
 
-  // Returns a list in |info| containing plugins that are found for
+  // Returns a list in `info` containing plugins that are found for
   // the given url and mime type (including disabled plugins, for
-  // which |info->enabled| is false).  The mime type which corresponds
-  // to the URL is optionally returned back in |actual_mime_types| (if
+  // which `info->enabled` is false).  The mime type which corresponds
+  // to the URL is optionally returned back in `actual_mime_types` (if
   // it is non-NULL), one for each of the plugin info objects found.
-  // The |allow_wildcard| parameter controls whether this function
-  // returns plugins which support wildcard mime types (* as the mime
-  // type).  The |info| parameter is required to be non-NULL.  The
-  // list is in order of "most desirable" to "least desirable".
+  // The `info` parameter is required to be non-NULL.
+  // The list is in order of "most desirable" to "least desirable".
   // This will load the plugin list if necessary.
   // The return value indicates whether the plugin list was stale.
   bool GetPluginInfoArray(const GURL& url,
                           const std::string& mime_type,
-                          bool allow_wildcard,
                           std::vector<WebPluginInfo>* info,
                           std::vector<std::string>* actual_mime_types);
 

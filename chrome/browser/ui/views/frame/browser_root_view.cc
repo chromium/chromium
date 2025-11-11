@@ -136,10 +136,9 @@ void FilterURLsForDropability(
 #if BUILDFLAG(ENABLE_PLUGINS)
     content::WebPluginInfo plugin;
     supported =
-        supported ||
-        content::PluginService::GetInstance()->GetPluginInfo(
-            browser_context, url, mime_type, /*allow_wildcard=*/false,
-            /*is_stale=*/nullptr, &plugin, /*actual_mime_type=*/nullptr);
+        supported || content::PluginService::GetInstance()->GetPluginInfo(
+                         browser_context, url, mime_type, /*is_stale=*/nullptr,
+                         &plugin, /*actual_mime_type=*/nullptr);
 #endif
 
     if (supported) {

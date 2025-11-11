@@ -290,11 +290,10 @@ bool PluginInfoHostImpl::Context::FindEnabledPlugin(
     std::unique_ptr<PluginMetadata>* plugin_metadata) const {
   *status = chrome::mojom::PluginStatus::kAllowed;
 
-  bool allow_wildcard = true;
   std::vector<WebPluginInfo> matching_plugins;
   std::vector<std::string> mime_types;
   PluginService::GetInstance()->GetPluginInfoArray(
-      url, mime_type, allow_wildcard, &matching_plugins, &mime_types);
+      url, mime_type, &matching_plugins, &mime_types);
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   std::erase_if(matching_plugins, [&](const WebPluginInfo& info) {
     return info.path.value() == ChromeContentClient::kNotPresent;

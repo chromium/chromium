@@ -1535,8 +1535,8 @@ void NavigationURLLoaderImpl::CheckPluginAndContinueOnReceiveResponse(
   bool stale;
   WebPluginInfo plugin;
   bool has_plugin = PluginService::GetInstance()->GetPluginInfo(
-      browser_context_, resource_request_->url, head->mime_type,
-      /*allow_wildcard=*/false, &stale, &plugin, nullptr);
+      browser_context_, resource_request_->url, head->mime_type, &stale,
+      &plugin, nullptr);
 
   if (stale) {
     // Refresh the plugins asynchronously.

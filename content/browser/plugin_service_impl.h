@@ -38,13 +38,11 @@ class CONTENT_EXPORT PluginServiceImpl : public PluginService {
   void Init() override;
   bool GetPluginInfoArray(const GURL& url,
                           const std::string& mime_type,
-                          bool allow_wildcard,
                           std::vector<WebPluginInfo>* info,
                           std::vector<std::string>* actual_mime_types) override;
   bool GetPluginInfo(content::BrowserContext* browser_context,
                      const GURL& url,
                      const std::string& mime_type,
-                     bool allow_wildcard,
                      bool* is_stale,
                      WebPluginInfo* info,
                      std::string* actual_mime_type) override;

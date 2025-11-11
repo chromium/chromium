@@ -57,7 +57,6 @@ class CONTENT_EXPORT PluginService {
   virtual bool GetPluginInfoArray(
       const GURL& url,
       const std::string& mime_type,
-      bool allow_wildcard,
       std::vector<WebPluginInfo>* info,
       std::vector<std::string>* actual_mime_types) = 0;
 
@@ -67,7 +66,6 @@ class CONTENT_EXPORT PluginService {
   virtual bool GetPluginInfo(content::BrowserContext* browser_context,
                              const GURL& url,
                              const std::string& mime_type,
-                             bool allow_wildcard,
                              bool* is_stale,
                              WebPluginInfo* info,
                              std::string* actual_mime_type) = 0;

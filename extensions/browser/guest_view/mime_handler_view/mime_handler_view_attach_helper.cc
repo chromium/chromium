@@ -64,7 +64,7 @@ SkColor GetBackgroundColorStringForMimeType(const GURL& url,
   std::vector<content::WebPluginInfo> web_plugin_info_array;
   std::vector<std::string> unused_actual_mime_types;
   content::PluginService::GetInstance()->GetPluginInfoArray(
-      url, mime_type, true, &web_plugin_info_array, &unused_actual_mime_types);
+      url, mime_type, &web_plugin_info_array, &unused_actual_mime_types);
   if (!web_plugin_info_array.empty()) {
     return web_plugin_info_array.front().background_color;
   }

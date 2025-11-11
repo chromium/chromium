@@ -803,8 +803,8 @@ void IsHandledBySafePlugin(content::BrowserContext* browser_context,
   content::PluginService* plugin_service =
       content::PluginService::GetInstance();
   bool plugin_found =
-      plugin_service->GetPluginInfo(browser_context, url, mime_type, false,
-                                    &is_stale, &plugin_info, &actual_mime_type);
+      plugin_service->GetPluginInfo(browser_context, url, mime_type, &is_stale,
+                                    &plugin_info, &actual_mime_type);
   if (is_stale && stale_plugin_action == RETRY_IF_STALE_PLUGIN_LIST) {
     // The GetPlugins call causes the plugin list to be refreshed. Once that's
     // done we can retry the GetPluginInfo call. We break out of this cycle
@@ -836,12 +836,12 @@ bool IsHandledBySafePluginSynchronous(content::BrowserContext* browser_context,
   content::PluginService* plugin_service =
       content::PluginService::GetInstance();
   bool plugin_found =
-      plugin_service->GetPluginInfo(browser_context, url, mime_type, false,
-                                    &is_stale, &plugin_info, &actual_mime_type);
+      plugin_service->GetPluginInfo(browser_context, url, mime_type, &is_stale,
+                                    &plugin_info, &actual_mime_type);
   if (is_stale) {
     plugin_service->GetPluginsSynchronous();
     plugin_found = plugin_service->GetPluginInfo(
-        browser_context, url, mime_type, false, &is_stale, &plugin_info,
+        browser_context, url, mime_type, &is_stale, &plugin_info,
         &actual_mime_type);
   }
   // In practice, we assume that retrying once is enough.

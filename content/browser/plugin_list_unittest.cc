@@ -99,8 +99,7 @@ TEST_F(PluginListTest, GetPluginInfoArray) {
 
   // The PluginList starts out in a stale state.
   is_stale = plugin_list_->GetPluginInfoArray(
-      target_url, "application/octet-stream",
-      /*allow_wildcard=*/false, &plugins, &actual_mime_types);
+      target_url, "application/octet-stream", &plugins, &actual_mime_types);
   EXPECT_TRUE(is_stale);
   EXPECT_EQ(0u, plugins.size());
   EXPECT_EQ(0u, actual_mime_types.size());
@@ -113,8 +112,7 @@ TEST_F(PluginListTest, GetPluginInfoArray) {
   // GetPluginInfoArray should not match |foo_plugin_| because the MIME type is
   // application/octet-stream.
   is_stale = plugin_list_->GetPluginInfoArray(
-      target_url, "application/octet-stream",
-      /*allow_wildcard=*/false, &plugins, &actual_mime_types);
+      target_url, "application/octet-stream", &plugins, &actual_mime_types);
   EXPECT_FALSE(is_stale);
   EXPECT_EQ(0u, plugins.size());
   EXPECT_EQ(0u, actual_mime_types.size());
@@ -123,7 +121,6 @@ TEST_F(PluginListTest, GetPluginInfoArray) {
   plugins.clear();
   actual_mime_types.clear();
   is_stale = plugin_list_->GetPluginInfoArray(target_url, kFooMimeType,
-                                              /*allow_wildcard=*/false,
                                               &plugins, &actual_mime_types);
   EXPECT_FALSE(is_stale);
   EXPECT_EQ(1u, plugins.size());
@@ -135,7 +132,6 @@ TEST_F(PluginListTest, GetPluginInfoArray) {
   plugins.clear();
   actual_mime_types.clear();
   is_stale = plugin_list_->GetPluginInfoArray(target_url, "",
-                                              /*allow_wildcard=*/false,
                                               &plugins, &actual_mime_types);
   EXPECT_FALSE(is_stale);
   EXPECT_EQ(1u, plugins.size());

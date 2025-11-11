@@ -64,8 +64,7 @@ bool IsPDFPluginEnabled(content::NavigationHandle* navigation_handle,
   content::WebPluginInfo plugin_info;
   return content::PluginService::GetInstance()->GetPluginInfo(
       navigation_handle->GetWebContents()->GetBrowserContext(),
-      navigation_handle->GetURL(), pdf::kPDFMimeType,
-      false /* allow_wildcard */, is_stale, &plugin_info,
+      navigation_handle->GetURL(), pdf::kPDFMimeType, is_stale, &plugin_info,
       nullptr /* actual_mime_type */);
 }
 #endif

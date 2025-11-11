@@ -10,6 +10,7 @@
 #include <string_view>
 
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/lazy_instance.h"
@@ -32,17 +33,14 @@ base::LazyInstance<PluginList>::DestructorAtExit g_singleton =
 
 // Returns true if the plugin supports |mime_type|. |mime_type| should be all
 // lower case.
-bool SupportsType(const WebPluginInfo& plugin,
-                  const std::string& mime_type,
-                  bool allow_wildcard) {
+bool SupportsType(const WebPluginInfo& plugin, const std::string& mime_type) {
   // Webkit will ask for a plugin to handle empty mime types.
   if (mime_type.empty())
     return false;
 
   for (const WebPluginMimeType& mime_info : plugin.mime_types) {
     if (net::MatchesMimeType(mime_info.mime_type, mime_type)) {
-      if (allow_wildcard || mime_info.mime_type != "*")
-        return true;
+      return true;
     }
   }
   return false;
@@ -130,14 +128,10 @@ void PluginList::LoadPlugins() {
     }
     seen_plugin_paths.push_back(plugin_info.path);
 
-    // TODO(thestig): Do we still need this after NPAPI removal?
     for (const content::WebPluginMimeType& mime_type : plugin_info.mime_types) {
-      // TODO: don't load global handlers for now.
-      // WebKit hands to the Plugin before it tries
-      // to handle mimeTypes on its own.
-      if (mime_type.mime_type == "*") {
-        continue;
-      }
+      // These should only be set by internal extensions. Sanity check there are
+      // no global handlers.
+      CHECK_NE(mime_type.mime_type, "*");
     }
     plugins_list_.push_back(plugin_info);
   }
@@ -159,7 +153,6 @@ const std::vector<WebPluginInfo>& PluginList::GetPluginsForTesting() const {
 bool PluginList::GetPluginInfoArray(
     const GURL& url,
     const std::string& mime_type,
-    bool allow_wildcard,
     std::vector<WebPluginInfo>* info,
     std::vector<std::string>* actual_mime_types) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -168,19 +161,21 @@ bool PluginList::GetPluginInfoArray(
 
   bool is_stale = list_is_stale_;
   info->clear();
-  if (actual_mime_types)
+  if (actual_mime_types) {
     actual_mime_types->clear();
+  }
 
   std::set<base::FilePath> visited_plugins;
 
   // Add in plugins by mime type.
   for (const WebPluginInfo& plugin : plugins_list_) {
-    if (SupportsType(plugin, mime_type, allow_wildcard)) {
+    if (SupportsType(plugin, mime_type)) {
       const base::FilePath& path = plugin.path;
       if (visited_plugins.insert(path).second) {
         info->push_back(plugin);
-        if (actual_mime_types)
+        if (actual_mime_types) {
           actual_mime_types->push_back(mime_type);
+        }
       }
     }
   }
@@ -193,8 +188,9 @@ bool PluginList::GetPluginInfoArray(
   // as when the user doesn't have the Flash plugin enabled.
   std::string path = url.GetPath();
   std::string::size_type last_dot = path.rfind('.');
-  if (last_dot == std::string::npos || !mime_type.empty())
+  if (last_dot == std::string::npos || !mime_type.empty()) {
     return is_stale;
+  }
 
   std::string extension =
       base::ToLowerASCII(std::string_view(path).substr(last_dot + 1));
@@ -204,8 +200,9 @@ bool PluginList::GetPluginInfoArray(
       base::FilePath plugin_path = plugin.path;
       if (visited_plugins.insert(plugin_path).second) {
         info->push_back(plugin);
-        if (actual_mime_types)
+        if (actual_mime_types) {
           actual_mime_types->push_back(actual_mime_type);
+        }
       }
     }
   }
