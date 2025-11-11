@@ -5,7 +5,7 @@
 import 'chrome://new-tab-page/lazy_load.js';
 
 import {ActionChipsHandlerRemote, ChipType} from 'chrome://new-tab-page/action_chips.mojom-webui.js';
-import type {ActionChip, TabInfo} from 'chrome://new-tab-page/action_chips.mojom-webui.js';
+import type {ActionChip} from 'chrome://new-tab-page/action_chips.mojom-webui.js';
 import {ActionChipsApiProxyImpl, ActionChipsType} from 'chrome://new-tab-page/lazy_load.js';
 import type {ActionChipsElement} from 'chrome://new-tab-page/lazy_load.js';
 import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -21,35 +21,34 @@ suite('NewTabPageActionChipsTest', () => {
   let handler: TestMock<ActionChipsHandlerRemote>;
 
   interface InitializeChipsOptions {
-    tab: TabInfo|null;
     actionChips: ActionChip[];
   }
 
   async function initializeChips(
       providedOptions: Partial<InitializeChipsOptions>): Promise<void> {
     const defaultOptions: InitializeChipsOptions = {
-      tab: null,
       actionChips: [
         {
           type: ChipType.kRecentTab,
           title: 'Example Tab',
           suggestion: 'Ask about this tab',
+          tab: null,
         },
         {
           type: ChipType.kImage,
           title: 'Nano Banana',
           suggestion: 'Create an image of a nano banana',
+          tab: null,
         },
         {
           type: ChipType.kDeepSearch,
           title: 'Deep Search',
           suggestion: 'Search for something deep',
+          tab: null,
         },
       ],
     };
     const options = {...defaultOptions, ...providedOptions};
-    handler.setResultFor(
-        'getMostRecentTab', Promise.resolve({tab: options.tab}));
     handler.setResultFor(
         'getActionChips', Promise.resolve({actionChips: options.actionChips}));
 
@@ -58,7 +57,6 @@ suite('NewTabPageActionChipsTest', () => {
     document.body.append(chips);
     await Promise.all([
       handler.whenCalled('getActionChips'),
-      handler.whenCalled('getMostRecentTab'),
     ]);
   }
 
@@ -144,36 +142,6 @@ suite('NewTabPageActionChipsTest', () => {
           1,
           metrics.count(
               'NewTabPage.ActionChips.Click', ActionChipsType.DEEP_SEARCH));
-    });
-  });
-
-  // Suite for "Most Recent Tab" functionality
-  suite('MostRecentTab', () => {
-    test('Handler is called on load', async () => {
-      await initializeChips({});
-
-      assertTrue(!!chips);
-      assertEquals(1, handler.getCallCount('getMostRecentTab'));
-    });
-
-    test('No tab info when no recent tab is returned', async () => {
-      await initializeChips({});
-
-      assertEquals(1, handler.getCallCount('getMostRecentTab'));
-      assertEquals(null, chips.mostRecentTab);
-    });
-
-  test('Most recent tab info is found on return', async () => {
-    const fakeTab: TabInfo = {
-      tabId: 1,
-      title: 'Test Title',
-      url: {url: 'https://example.com/test'},
-      lastActiveTime: {internalValue: BigInt(12345)},
-    };
-    await initializeChips({tab: fakeTab});
-
-      assertEquals(1, handler.getCallCount('getMostRecentTab'));
-      assertDeepEquals(fakeTab, chips.mostRecentTab);
     });
   });
 

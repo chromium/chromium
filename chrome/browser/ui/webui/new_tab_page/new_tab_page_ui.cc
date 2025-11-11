@@ -60,6 +60,7 @@
 #include "chrome/browser/ui/webui/customize_buttons/customize_buttons_handler.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips_handler.h"
+#include "chrome/browser/ui/webui/new_tab_page/action_chips/tab_id_generator.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/composebox_handler.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/aim_entrypoint_fieldtrial.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
@@ -1195,7 +1196,7 @@ void NewTabPageUI::CreateNtpPromoHandler(
 void NewTabPageUI::CreateActionChipsHandler(
     mojo::PendingReceiver<action_chips::mojom::ActionChipsHandler> handler) {
   action_chips_handler_ = std::make_unique<ActionChipsHandler>(
-      std::move(handler), profile_, web_ui());
+      std::move(handler), profile_, web_ui(), TabIdGeneratorImpl::Get());
 }
 
 // OnColorProviderChanged can be called during the destruction process and
