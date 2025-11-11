@@ -8,9 +8,10 @@ import * as fillConstants from '//components/autofill/ios/form_util/resources/fi
 import {inferLabelForElement, inferLabelFromNext} from '//components/autofill/ios/form_util/resources/fill_element_inference.js';
 import * as inferenceUtil from '//components/autofill/ios/form_util/resources/fill_element_inference_util.js';
 import * as fillUtil from '//components/autofill/ios/form_util/resources/fill_util.js';
+import {getFrameUrlOrOrigin} from '//components/autofill/ios/form_util/resources/fill_web_form.js';
 import {isFormControlElement} from '//components/autofill/ios/form_util/resources/form_utils.js';
 import {gCrWeb, gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
-import {isTextField, removeQueryAndReferenceFromURL} from '//ios/web/public/js_messaging/resources/utils.js';
+import {isTextField} from '//ios/web/public/js_messaging/resources/utils.js';
 
 // This file provides methods used to fill forms in JavaScript.
 
@@ -368,21 +369,6 @@ function getChildFrameRemoteToken(frame: HTMLIFrameElement|null): string|null {
   return gCrWebLegacy.remoteFrameRegistration?.registerChildFrame(frame) ??
       frame.getAttribute(fillConstants.CHILD_FRAME_REMOTE_TOKEN_ATTRIBUTE);
 }
-
-// Returns the URL for the frame to be set in the FormData.
-function getFrameUrlOrOrigin(frame: Window): string {
-  if ((frame === frame.top) ||
-      ((frame.location.href !== 'about:blank') &&
-       (frame.location.href !== 'about:srcdoc'))) {
-    // If the full URL is available, use it.
-    return removeQueryAndReferenceFromURL(frame.location.href);
-  } else {
-    // Iframes might have empty own URLs, and they do not have access to the
-    // parent frame URL, only to the origin. Use it as the only available data.
-    return frame.origin;
-  }
-}
-
 
 /**
  * Fills |form| with the form data object corresponding to the
