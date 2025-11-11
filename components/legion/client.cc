@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/strcat.h"
@@ -91,6 +92,9 @@ std::unique_ptr<Client> Client::CreateWithUrl(
     const GURL& url,
     network::mojom::NetworkContext* network_context,
     proto::FeatureName feature_name) {
+  if (!base::FeatureList::IsEnabled(kLegion)) {
+    return nullptr;
+  }
   // Create dependencies for SecureChannelImpl.
   auto transport = std::make_unique<WebSocketClient>(
       url, base::BindRepeating(
