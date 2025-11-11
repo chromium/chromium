@@ -66,6 +66,9 @@ defaults.set(
     auto_builder_dimension = False,
     build_numbers = True,
     execution_timeout = 8 * time.hour,
+    experiments = {
+        "chromium_tests.resultdb_module": 100,
+    },
     service_account = "findit-builder@chops-service-accounts.iam.gserviceaccount.com",
 )
 
