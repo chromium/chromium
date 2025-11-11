@@ -36,10 +36,10 @@ void CollectionStorageObserver::OnChildrenRemoved(
     if (std::holds_alternative<TabCollection::Handle>(handle)) {
       const TabCollection* collection =
           std::get<TabCollection::Handle>(handle).Get();
-      service_->Remove(collection);
+      service_->Remove(collection, position.parent_handle.Get());
     } else {
       const TabInterface* tab = std::get<TabHandle>(handle).Get();
-      service_->Remove(tab);
+      service_->Remove(tab, position.parent_handle.Get());
     }
   }
 }

@@ -138,15 +138,16 @@ void TabStateStorageService::SavePayload(const TabCollection* collection) {
   tab_backend_->Update(builder.Build());
 }
 
-void TabStateStorageService::Remove(const TabInterface* tab) {
-  RemoveNodeSequence(GetStorageId(tab), tab->GetParentCollection(), this,
-                     packager_.get(), tab_backend_.get());
+void TabStateStorageService::Remove(const TabInterface* tab,
+                                    const TabCollection* prev_parent) {
+  RemoveNodeSequence(GetStorageId(tab), prev_parent, this, packager_.get(),
+                     tab_backend_.get());
 }
 
-void TabStateStorageService::Remove(const TabCollection* collection) {
-  RemoveNodeSequence(GetStorageId(collection),
-                     collection->GetParentCollection(), this, packager_.get(),
-                     tab_backend_.get());
+void TabStateStorageService::Remove(const TabCollection* collection,
+                                    const TabCollection* prev_parent) {
+  RemoveNodeSequence(GetStorageId(collection), prev_parent, this,
+                     packager_.get(), tab_backend_.get());
 }
 
 void TabStateStorageService::Move(const TabInterface* tab,

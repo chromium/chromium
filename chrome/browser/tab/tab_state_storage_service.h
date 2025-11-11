@@ -67,8 +67,9 @@ class TabStateStorageService : public KeyedService,
   void Move(const TabInterface* tab, const TabCollection* prev_parent);
   void Move(const TabCollection* collection, const TabCollection* prev_parent);
 
-  void Remove(const TabInterface* tab);
-  void Remove(const TabCollection* collection);
+  void Remove(const TabInterface* tab, const TabCollection* prev_parent);
+  void Remove(const TabCollection* collection,
+              const TabCollection* prev_parent);
 
   void LoadAllNodes(LoadDataCallback callback);
 
