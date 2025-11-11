@@ -12664,26 +12664,6 @@
             ]
         }
     ],
-    "HstsTopLevelNavigationsOnly": [
-        {
-            "platforms": [
-                "android_webview",
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "HstsTopLevelNavigationsOnly"
-                    ]
-                }
-            ]
-        }
-    ],
     "HttpCacheNoVarySearch": [
         {
             "platforms": [
