@@ -128,6 +128,7 @@ struct FlexItem {
   const bool is_horizontal_flow;
 
   // Fields mutated within the line-flexer.
+  double free_space_fraction = 0.0;
   FlexerState state = FlexerState::kNone;
   LayoutUnit flexed_content_size;
 };

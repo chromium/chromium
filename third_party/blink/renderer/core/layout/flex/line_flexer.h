@@ -42,9 +42,7 @@ class LineFlexer {
   const LayoutUnit gap_between_items_;
   const FlexerMode mode_;
 
-  double total_flex_grow_ = 0.0;
-  double total_flex_shrink_ = 0.0;
-  double total_weighted_flex_shrink_ = 0.0;
+  double total_flex_factor_ = 0.0;
 
   LayoutUnit initial_free_space_;
   LayoutUnit free_space_;

@@ -122,14 +122,14 @@ body {
 
 <!-- Test some overflow cases. -->
 <div class="flexbox">
-  <div data-expected-width="600" style="flex: 0 100000000000000000000000000000000000000 600px;"></div>
-  <div data-expected-width="600" style="flex: 0 100000000000000000000000000000000000000 600px;"></div>
+  <div data-expected-width="300" style="flex: 0 100000000000000000000000000000000000000 600px;"></div>
+  <div data-expected-width="300" style="flex: 0 100000000000000000000000000000000000000 600px;"></div>
 </div>
 
 <div class="flexbox">
   <div data-expected-width="600" style="flex: 100000000000000000000000000000000000000 0 600px;"></div>
-  <div data-expected-width="600" style="flex: 0 100000000000000000000000000000000000000 600px;"></div>
-  <div data-expected-width="33554428" style="flex: 1 1 100000000000000000000000000000000000000px;"></div>
+  <div data-expected-width="0" style="flex: 0 100000000000000000000000000000000000000 600px;"></div>
+  <div data-expected-width="0" style="flex: 1 1 100000000000000000000000000000000000000px;"></div>
 </div>
 
 <!-- Test flexitem borders. -->
