@@ -140,6 +140,14 @@ class CreditCardOtpAuthenticator : public OtpUnmaskDelegate {
   // response's callback function is |OnDidGetRealPan()|.
   void SendUnmaskCardRequest();
 
+  payments::PaymentsAutofillClient& GetPaymentsAutofillClient() {
+    return *autofill_client_->GetPaymentsAutofillClient();
+  }
+
+  payments::PaymentsNetworkInterface& GetPaymentsNetworkInterface() {
+    return *GetPaymentsAutofillClient().GetPaymentsNetworkInterface();
+  }
+
   // Card being unmasked.
   CreditCard card_;
 
