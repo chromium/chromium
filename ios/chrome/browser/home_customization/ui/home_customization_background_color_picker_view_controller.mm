@@ -328,8 +328,21 @@ UIColor* DynamicNamedColor(NSString* lightName, NSString* darkName) {
     UICollectionReusableView* footerView = [self footerView];
 
     if (visible) {
-      // Show the color slider and animate the footer if the custom color cell
-      // is selected.
+      // First scroll to the custom color slider, show the color slider and
+      // animate the footer if the custom color cell is selected.
+      NSIndexPath* indexPath = [NSIndexPath indexPathForItem:0 inSection:0];
+
+      // We use UICollectionViewLayoutAttributes instead of the footer view
+      // itself because the footer may not yet exist when it's offscreen. Layout
+      // attributes are always available, allowing us to determine the footer's
+      // position even before the footer is created.
+      UICollectionViewLayoutAttributes* footerAttributes =
+          [_collectionView.collectionViewLayout
+              layoutAttributesForSupplementaryViewOfKind:
+                  UICollectionElementKindSectionFooter
+                                             atIndexPath:indexPath];
+
+      [_collectionView scrollRectToVisible:footerAttributes.frame animated:YES];
       footerView.hidden = NO;
       footerView.transform =
           CGAffineTransformMakeTranslation(0, footerView.bounds.size.height);
