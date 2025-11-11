@@ -1177,11 +1177,6 @@ public class StripLayoutHelperManager
         }
     }
 
-    @Override
-    public boolean shouldHideAndroidBrowserControls() {
-        return false;
-    }
-
     /** Allow / disallow system gestures on touchable areas on the strip. */
     private void updateTouchableAreas() {
         if (!mIsHeaderCustomizationSupported) return;
@@ -1626,16 +1621,6 @@ public class StripLayoutHelperManager
             updateTouchableAreas();
         }
         return animationFinished;
-    }
-
-    @Override
-    public boolean onBackPressed() {
-        return false;
-    }
-
-    @Override
-    public boolean handlesTabCreating() {
-        return false;
     }
 
     private void tabModelSwitched(boolean incognito) {

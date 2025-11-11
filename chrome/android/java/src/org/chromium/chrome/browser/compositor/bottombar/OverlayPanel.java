@@ -35,7 +35,6 @@ import org.chromium.chrome.browser.compositor.layouts.eventfilter.MotionEventHan
 import org.chromium.chrome.browser.compositor.layouts.eventfilter.OverlayPanelEventFilter;
 import org.chromium.chrome.browser.layouts.EventFilter;
 import org.chromium.chrome.browser.layouts.SceneOverlay;
-import org.chromium.chrome.browser.layouts.components.VirtualView;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneOverlayLayer;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -52,7 +51,6 @@ import org.chromium.ui.resources.ResourceManager;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.List;
 import java.util.function.Supplier;
 
 /** Controls the Overlay Panel. */
@@ -1028,11 +1026,6 @@ public class OverlayPanel extends OverlayPanelAnimation
         panelContent.setContentViewSize(
                 getContentViewWidthPx(), getContentViewHeightPx(), isFullWidthSizePanel());
         panelContent.resizePanelContentView();
-    }
-
-    @Override
-    public void getVirtualViews(List<VirtualView> views) {
-        // TODO(mdjones): Add views for accessibility.
     }
 
     @Override
