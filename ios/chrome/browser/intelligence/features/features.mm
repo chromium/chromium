@@ -137,7 +137,7 @@ bool IsBWGPreciseLocationEnabled() {
   return base::FeatureList::IsEnabled(kBWGPreciseLocation);
 }
 
-BASE_FEATURE(kPageContextAnchorTags, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kPageContextAnchorTags, base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsPageContextAnchorTagsEnabled() {
   return base::FeatureList::IsEnabled(kPageContextAnchorTags);
