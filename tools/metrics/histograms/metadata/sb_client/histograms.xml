@@ -266,7 +266,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SBClientDownload.ServerRequestsDeepScanningPrompt{Encryption}"
-    enum="BooleanRequested" expires_after="2025-11-16">
+    enum="BooleanRequested" expires_after="2026-11-16">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
