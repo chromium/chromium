@@ -294,7 +294,6 @@ class TestLocationBar : public LocationBar {
     return {};
   }
   void OnChanged() override {}
-  void OnPopupVisibilityChanged() override {}
   void UpdateWithoutTabRestore() override {
     // This is a minimal amount of what LocationBarView does. Not all tests
     // set |omnibox_view_|.

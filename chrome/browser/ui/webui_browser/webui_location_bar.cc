@@ -76,10 +76,6 @@ void WebUILocationBar::OnChanged() {
   NOTIMPLEMENTED();
 }
 
-void WebUILocationBar::OnPopupVisibilityChanged() {
-  NOTIMPLEMENTED();
-}
-
 void WebUILocationBar::UpdateWithoutTabRestore() {
   NOTIMPLEMENTED();
 }

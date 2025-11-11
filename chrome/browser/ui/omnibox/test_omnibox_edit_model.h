@@ -20,7 +20,6 @@ class TestOmniboxEditModel : public OmniboxEditModel {
   TestOmniboxEditModel& operator=(const TestOmniboxEditModel&) = delete;
 
   // OmniboxEditModel:
-  bool PopupIsOpen() const override;
   AutocompleteMatch CurrentMatchAndAlternateNavUrl(
       GURL* alternate_nav_url) const override;
   void OnPopupDataChanged(const std::u16string& temporary_text,
@@ -50,8 +49,6 @@ class TestOmniboxEditModel : public OmniboxEditModel {
   const SkBitmap* GetPopupRichSuggestionBitmapForKeyword(
       const std::u16string& keyword) const;
 
-  void SetPopupIsOpen(bool open);
-
   void SetCurrentMatchForTest(const AutocompleteMatch& match);
 
   bool HasTemporaryText() { return has_temporary_text_; }
@@ -64,7 +61,6 @@ class TestOmniboxEditModel : public OmniboxEditModel {
   const PrefService* GetPrefService() const override;
 
  private:
-  bool popup_is_open_;
   std::unique_ptr<AutocompleteMatch> override_current_match_;
 
   // Contains the most recent text passed by the popup model to the edit model.

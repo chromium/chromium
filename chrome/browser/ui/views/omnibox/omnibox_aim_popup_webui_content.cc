@@ -8,6 +8,7 @@
 
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
+#include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_context_menu.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter.h"
@@ -31,9 +32,9 @@ OmniboxAimPopupWebUIContent::OmniboxAimPopupWebUIContent(
 OmniboxAimPopupWebUIContent::~OmniboxAimPopupWebUIContent() = default;
 
 void OmniboxAimPopupWebUIContent::CloseUI() {
-  // Update the model. LocationBarView which owns the parent widget is observing
-  // OmniboxEditModel and is responsible for closing the widget.
-  controller()->edit_model()->SetInAiMode(false);
+  // Update the popup state manager that the aim popup is closing.
+  // LocationBarView is subscribed to state changes and will close the widget.
+  controller()->popup_state_manager()->SetPopupState(OmniboxPopupState::kNone);
 }
 
 BEGIN_METADATA(OmniboxAimPopupWebUIContent)

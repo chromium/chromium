@@ -9,9 +9,11 @@
 #include <optional>
 
 #include "base/compiler_specific.h"
+#include "base/functional/callback.h"
 #include "base/memory/safety_checks.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
+#include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/search_engines/template_url_starter_pack_data.h"
@@ -84,6 +86,23 @@ class OmniboxController : public AutocompleteController::Observer {
   // when the starter pack expansion feature is enabled.
   bool IsSuggestionHidden(const AutocompleteMatch& match) const;
 
+  // Returns whether any popup is currently open.
+  bool IsPopupOpen() const;
+
+  // Sets a callback to validate popup state is in sync with widget visibility.
+  // TODO(crbug.com/40251974): Remove this once state manager is proven
+  //  reliable.
+  void SetPopupStateValidationCallback(
+      base::RepeatingCallback<void(OmniboxPopupState)> callback);
+
+  OmniboxPopupStateManager* popup_state_manager() {
+    return popup_state_manager_.get();
+  }
+
+  const OmniboxPopupStateManager* popup_state_manager() const {
+    return popup_state_manager_.get();
+  }
+
  private:
   // Stores the bitmap, using `icon_url` as the key in
   // `edit_model_->icon_bitmaps_` if provided, or `result_index` in
@@ -102,6 +121,13 @@ class OmniboxController : public AutocompleteController::Observer {
   // docs/dangling_ptr_guide.md) the `edit_model_` field needs to be declared
   // *after* the `autocomplete_controller_` field.
   std::unique_ptr<OmniboxEditModel> edit_model_;
+
+  // Manages the visibility state of omnibox popups, i.e., None, Classic, AIM.
+  std::unique_ptr<OmniboxPopupStateManager> popup_state_manager_;
+
+  // Callback to validate popup state is in sync with widget visibility.
+  base::RepeatingCallback<void(OmniboxPopupState)>
+      popup_state_validation_callback_;
 
   base::WeakPtrFactory<OmniboxController> weak_ptr_factory_{this};
 };

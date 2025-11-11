@@ -38,7 +38,6 @@ class OmniboxPopupViewWebUI : public OmniboxPopupView,
   raw_ptr<OmniboxPopupPresenterBase> presenter() { return presenter_.get(); }
 
   // OmniboxPopupView:
-  bool IsOpen() const override;
   void InvalidateLine(size_t line) override;
   void UpdatePopupAppearance() override;
   void ProvideButtonFocusHint(size_t line) override;
@@ -51,13 +50,15 @@ class OmniboxPopupViewWebUI : public OmniboxPopupView,
                           OmniboxPopupSelection selection) override {}
   void OnMatchIconUpdated(size_t index) override {}
   void OnContentsChanged() override;
-  void OnAiModeChanged(bool ai_mode) override {}
 
  protected:
   friend class OmniboxPopupViewWebUITest;
   friend class OmniboxWebUiInteractiveTest;
   FRIEND_TEST_ALL_PREFIXES(OmniboxPopupViewWebUITest,
                            PopupLoadsAndAcceptsCalls);
+
+  // OmniboxPopupView:
+  bool IsOpen() const override;
 
  private:
   // Time when this instance was constructed, or null after use for histogram.

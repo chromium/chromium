@@ -99,9 +99,6 @@ class LocationBar {
   // status of any keyword- or hint-related state.
   virtual void OnChanged() = 0;
 
-  // Called when the omnibox popup is shown or hidden.
-  virtual void OnPopupVisibilityChanged() = 0;
-
   // Called when the edit should update itself without restoring any tab state.
   virtual void UpdateWithoutTabRestore() = 0;
 

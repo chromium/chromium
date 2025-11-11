@@ -22,6 +22,10 @@ class OmniboxPopupAimPresenter : public OmniboxPopupPresenterBase {
   OmniboxPopupAimPresenter(const OmniboxPopupAimPresenter&) = delete;
   OmniboxPopupAimPresenter& operator=(const OmniboxPopupAimPresenter&) = delete;
   ~OmniboxPopupAimPresenter() override;
+
+ protected:
+  // OmniboxPopupPresenterBase overrides:
+  void WidgetDestroyed() override;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_AIM_PRESENTER_H_

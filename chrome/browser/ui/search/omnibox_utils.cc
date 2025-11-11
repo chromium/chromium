@@ -70,10 +70,11 @@ void FocusOmnibox(bool focus, content::WebContents* web_contents) {
   if (!omnibox_view) {
     return;
   }
-  auto* edit_model = GetOmniboxEditModel(web_contents);
-  if (!edit_model) {
+  auto* controller = GetOmniboxController(web_contents);
+  if (!controller) {
     return;
   }
+  auto* edit_model = controller->edit_model();
 
   if (focus) {
     // This is an invisible focus to support "fakebox" implementations on NTPs
@@ -92,7 +93,7 @@ void FocusOmnibox(bool focus, content::WebContents* web_contents) {
     // Remove focus only if the popup is closed. This will prevent someone
     // from changing the omnibox value and closing the popup without user
     // interaction.
-    if (!edit_model->PopupIsOpen()) {
+    if (!controller->IsPopupOpen()) {
       web_contents->Focus();
     }
   }

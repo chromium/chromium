@@ -54,6 +54,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
+#include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_view.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
@@ -241,7 +242,7 @@ LocationBarView::LocationBarView(Browser* browser,
           // Show focus ring when the Omnibox is visibly focused and the popup
           // is closed.
           return v->GetOmniboxController()->edit_model()->is_caret_visible() &&
-                 !v->GetOmniboxPopupView()->IsOpen();
+                 !v->GetOmniboxController()->IsPopupOpen();
         }));
     views::FocusRing::Get(this)->SetOutsetFocusRingDisabled(true);
     views::InstallPillHighlightPathGenerator(this);
@@ -267,7 +268,7 @@ LocationBarView::~LocationBarView() {
   // view. Then explicitly delete the omnibox view to ensure it (a child view)
   // is destroyed before the omnibox controller (a member variable), since it
   // holds a raw_ptr to the omnibox controller.
-  popup_view_opened_subscription_ = base::CallbackListSubscription();
+  popup_state_changed_subscription_ = base::CallbackListSubscription();
   omnibox_popup_view_.reset();
   RemoveChildViewT(omnibox_view_.ExtractAsDangling());
 }
@@ -340,8 +341,6 @@ void LocationBarView::Init() {
   if (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxAimPopup)) {
     omnibox_popup_aim_presenter_ = std::make_unique<OmniboxPopupAimPresenter>(
         this, omnibox_controller_.get());
-    // Add observer so that we know when to show/hide the AIM popup.
-    omnibox_controller_->edit_model()->AddObserver(this);
   }
 
   const bool web_ui_popup_dropdown_only =
@@ -363,9 +362,16 @@ void LocationBarView::Init() {
     omnibox_popup_file_selector_ = std::make_unique<OmniboxPopupFileSelector>();
   }
 
-  popup_view_opened_subscription_ =
-      omnibox_popup_view_->AddOpenListener(base::BindRepeating(
-          &LocationBarView::OnPopupOpened, base::Unretained(this)));
+  // Subscribe to popup state changes to coordinate popup visibility across
+  // classic and AIM popups.
+  popup_state_changed_subscription_ =
+      omnibox_controller_->popup_state_manager()->AddPopupStateChangedCallback(
+          base::BindRepeating(&LocationBarView::OnPopupStateChanged,
+                              base::Unretained(this)));
+#if DCHECK_IS_ON()
+  omnibox_controller_->SetPopupStateValidationCallback(base::BindRepeating(
+      &LocationBarView::ValidatePopupState, base::Unretained(this)));
+#endif  // DCHECK_IS_ON()
 
   // LocationBarView directs mouse button events from
   // |omnibox_additional_text_view_| to |omnibox_view_| so that e.g., clicking
@@ -592,16 +598,6 @@ bool LocationBarView::IsInitialized() const {
   return is_initialized_;
 }
 
-void LocationBarView::OnPopupOpened() {
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  // It's not great for promos to overlap the omnibox if the user opens the
-  // drop-down after showing the promo. This especially causes issues on Mac and
-  // Linux due to z-order/rendering issues, see crbug.com/1225046 and
-  // crbug.com/332769403 for examples.
-  BrowserHelpBubble::MaybeCloseOverlappingHelpBubbles(this);
-#endif
-}
-
 int LocationBarView::GetBorderRadius() const {
   return ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
       views::Emphasis::kMaximum, size());
@@ -826,7 +822,7 @@ void LocationBarView::Layout(PassKey) {
   //  - The popup is open.
   //  - The location icon view does *not* display a label.
   //  - The selected keyword view is *not* visible.
-  const bool should_indent = (GetOmniboxPopupView()->IsOpen() ||
+  const bool should_indent = (omnibox_controller_->IsPopupOpen() ||
                               omnibox_feature_configs::AdjustOmniboxIndent()
                                   .Get()
                                   .indent_input_when_popup_closed) &&
@@ -1128,8 +1124,7 @@ void LocationBarView::Update(WebContents* contents) {
   RefreshContentSettingViews();
   RefreshPageActionIconViews();
   location_icon_view_->Update(
-      /*suppress_animations=*/contents,
-      GetOmniboxController()->edit_model()->PopupIsOpen());
+      /*suppress_animations=*/contents, GetOmniboxController()->IsPopupOpen());
 
   if (intent_chip_) {
     intent_chip_->Update();
@@ -1263,7 +1258,7 @@ bool LocationBarView::ShouldHidePageActionIcons() const {
 
   // Also hide them if the popup is open for any other reason, e.g. ZeroSuggest.
   // The page action icons are not relevant to the displayed suggestions.
-  return GetOmniboxController()->edit_model()->PopupIsOpen();
+  return GetOmniboxController()->IsPopupOpen();
 }
 
 bool LocationBarView::ShouldHidePageActionIcon(
@@ -1605,15 +1600,6 @@ bool LocationBarView::ShouldShowKeywordBubble() const {
   return GetOmniboxController()->edit_model()->is_keyword_selected();
 }
 
-OmniboxPopupView* LocationBarView::GetOmniboxPopupView() {
-  return const_cast<OmniboxPopupView*>(
-      std::as_const(*this).GetOmniboxPopupView());
-}
-
-const OmniboxPopupView* LocationBarView::GetOmniboxPopupView() const {
-  return omnibox_popup_view_.get();
-}
-
 void LocationBarView::OnPageInfoBubbleClosed(
     views::Widget::ClosedReason closed_reason,
     bool reload_prompt) {
@@ -1688,9 +1674,8 @@ bool LocationBarView::GetNeedsNotificationWhenVisibleBoundsChange() const {
 }
 
 void LocationBarView::OnVisibleBoundsChanged() {
-  OmniboxPopupView* popup = GetOmniboxPopupView();
-  if (popup->IsOpen()) {
-    popup->UpdatePopupAppearance();
+  if (GetOmniboxController()->IsPopupOpen()) {
+    omnibox_popup_view_->UpdatePopupAppearance();
   }
 }
 
@@ -1773,14 +1758,118 @@ bool LocationBarView::CanStartDragForView(View* sender,
   return true;
 }
 
-// OmniboxEditModel::Observer:
-void LocationBarView::OnAiModeChanged(bool ai_mode) {
-  if (ai_mode) {
-    omnibox_popup_aim_presenter_->Show();
+void LocationBarView::OnPopupStateChanged(OmniboxPopupState old_state,
+                                          OmniboxPopupState new_state) {
+  CHECK_NE(old_state, new_state);
+
+  // Set the transition flag used to skip popup state validation during
+  // asynchronous widget hide/show transitions. Clear the flag after a delay.
+  in_popup_state_transition_ = true;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&LocationBarView::ClearInPopupStateTransition,
+                     weak_factory_.GetWeakPtr()),
+      base::Milliseconds(100));
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  if (new_state != OmniboxPopupState::kNone) {
+    // Close any overlapping user education bubbles when any popup opens.
+    // It's not great for promos to overlap the omnibox if the user opens the
+    // drop-down after showing the promo. This especially causes issues on Mac
+    // and Linux due to z-order/rendering issues, see crbug.com/1225046 and
+    // crbug.com/332769403 for examples.
+    BrowserHelpBubble::MaybeCloseOverlappingHelpBubbles(this);
+  }
+#endif
+
+  // Hide the old popup.
+  switch (old_state) {
+    case OmniboxPopupState::kClassic:
+      // Normally, the classic popup hides itself in `UpdatePopupAppearance()`
+      // before updating the popup state. However, explicitly hide the classic
+      // popup for scenario of transitioning from the classic to the aim popup.
+      if (omnibox_popup_view_->IsOpen()) {
+        omnibox_popup_view_->UpdatePopupAppearance();
+      }
+      break;
+    case OmniboxPopupState::kAim:
+      if (omnibox_popup_aim_presenter_) {
+        omnibox_popup_aim_presenter_->Hide();
+      }
+      break;
+    case OmniboxPopupState::kNone:
+      break;
+  }
+
+  // Show the new popup.
+  switch (new_state) {
+    case OmniboxPopupState::kClassic:
+      // The classic popup shows itself in `UpdatePopupAppearance()` before
+      // updating the popup state.
+      break;
+    case OmniboxPopupState::kAim:
+      if (omnibox_popup_aim_presenter_) {
+        omnibox_popup_aim_presenter_->Show();
+      }
+      break;
+    case OmniboxPopupState::kNone:
+      break;
+  }
+
+  // Perform UI updates that apply to any popup state change.
+  RefreshBackground();
+  UpdateWithoutTabRestore();
+
+  // Update the focus ring visibility.
+  if (views::FocusRing::Get(this)) {
+    views::FocusRing::Get(this)->SchedulePaint();
+  }
+
+  // Notify accessibility that the popup controls changed.
+  omnibox_view_->NotifyAccessibilityEventDeprecated(
+      ax::mojom::Event::kControlsChanged, true);
+}
+
+void LocationBarView::ValidatePopupState(OmniboxPopupState state) {
+  if (in_popup_state_transition_) {
     return;
   }
 
-  omnibox_popup_aim_presenter_->Hide();
+  // Skip validation if the browser window widget is closing or not visible.
+  // During shutdown, the widget is hidden which can trigger omnibox view blur
+  // and autocomplete stop before child popup widgets are destroyed and the
+  // popup state manager is updated. This leads to a race condition where
+  // popup_state=kClassic but the popup widget is already destroyed.
+  // Note: GetWidget() returns the BrowserView's widget, not the popup widget.
+  if (views::Widget* widget = GetWidget(); !widget || !widget->IsVisible()) {
+    return;
+  }
+
+  const bool classic_is_open = omnibox_popup_view_->IsOpen();
+  const bool aim_is_shown =
+      omnibox_popup_aim_presenter_ && omnibox_popup_aim_presenter_->IsShown();
+
+  switch (state) {
+    case OmniboxPopupState::kNone:
+      DCHECK(!classic_is_open && !aim_is_shown)
+          << "Widget state mismatch in kNone: classic=" << classic_is_open
+          << " aim=" << aim_is_shown;
+      break;
+    case OmniboxPopupState::kClassic:
+      DCHECK(classic_is_open && !aim_is_shown)
+          << "Widget state mismatch in kClassic: classic=" << classic_is_open
+          << " aim=" << aim_is_shown;
+      break;
+    case OmniboxPopupState::kAim:
+      DCHECK(!classic_is_open && aim_is_shown)
+          << "Widget state mismatch in kAim: classic=" << classic_is_open
+          << " aim=" << aim_is_shown;
+      break;
+  }
+}
+
+void LocationBarView::ClearInPopupStateTransition() {
+  in_popup_state_transition_ = false;
 }
 
 void LocationBarView::AnimationProgressed(const gfx::Animation* animation) {
@@ -1807,8 +1896,7 @@ void LocationBarView::OnChanged() {
   // Ensure that background colors get updated on tab-switch.
   RefreshBackground();
   location_icon_view_->Update(
-      /*suppress_animations=*/false,
-      GetOmniboxController()->edit_model()->PopupIsOpen());
+      /*suppress_animations=*/false, GetOmniboxController()->IsPopupOpen());
   clear_all_button_->SetVisible(
       omnibox_view_ &&
       GetOmniboxController()->edit_model()->user_input_in_progress() &&
@@ -1822,24 +1910,6 @@ void LocationBarView::OnChanged() {
   // user text has been entered into the omnibox, so refresh the icon on
   // changes.
   RefreshAiModePageActionIconView();
-}
-
-void LocationBarView::OnPopupVisibilityChanged() {
-  RefreshBackground();
-
-  // The location icon may change when the popup visibility changes.
-  // The page action icons and content setting images may be hidden now.
-  // This will also schedule a paint and re-layout.
-  UpdateWithoutTabRestore();
-
-  // The focus ring may be hidden or shown when the popup visibility changes.
-  if (views::FocusRing::Get(this)) {
-    views::FocusRing::Get(this)->SchedulePaint();
-  }
-
-  // We indent the textfield when the popup is open to align to suggestions.
-  omnibox_view_->NotifyAccessibilityEventDeprecated(
-      ax::mojom::Event::kControlsChanged, true);
 }
 
 const LocationBarModel* LocationBarView::GetLocationBarModel() const {
@@ -1898,8 +1968,7 @@ void LocationBarView::OnTouchUiChanged() {
   }
   page_action_icon_controller_->SetFontList(font_list);
   location_icon_view_->Update(
-      /*suppress_animations=*/false,
-      GetOmniboxController()->edit_model()->PopupIsOpen());
+      /*suppress_animations=*/false, GetOmniboxController()->IsPopupOpen());
   PreferredSizeChanged();
 }
 
@@ -1920,7 +1989,7 @@ void LocationBarView::OnLocationIconPressed(const ui::MouseEvent& event) {
   if (browser_ &&
       GetOmniboxController()->edit_model()->ShouldShowAddContextButton()) {
     auto omnibox_popup_view_webui =
-        GetOmniboxPopupView()->GetOmniboxPopupViewWebUI();
+        omnibox_popup_view_->GetOmniboxPopupViewWebUI();
     if (!omnibox_popup_view_webui) {
       return;
     }

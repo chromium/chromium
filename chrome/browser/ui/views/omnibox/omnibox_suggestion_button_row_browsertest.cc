@@ -123,15 +123,14 @@ class OmniboxSuggestionButtonRowBrowserTest : public DialogBrowserTest {
         ->GetOmniboxController()
         ->edit_model()
         ->OnPopupResultChanged();
-    EXPECT_TRUE(
-        GetLocationBar()->GetOmniboxController()->edit_model()->PopupIsOpen());
+    EXPECT_TRUE(GetLocationBar()->GetOmniboxController()->IsPopupOpen());
   }
 
   bool VerifyUi() override {
     OmniboxPopupView* popup_view =
         BrowserView::GetBrowserViewForBrowser(browser())
             ->GetLocationBarView()
-            ->GetOmniboxPopupView();
+            ->GetOmniboxPopupViewForTesting();
     OmniboxEditModel* model =
         GetLocationBar()->GetOmniboxController()->edit_model();
 

@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
+#include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
@@ -67,15 +68,34 @@ bool OmniboxPopupViewWebUI::IsOpen() const {
 void OmniboxPopupViewWebUI::InvalidateLine(size_t line) {}
 
 void OmniboxPopupViewWebUI::UpdatePopupAppearance() {
-  if (controller()->edit_model()->PopupInAiMode() ||
-      controller()->autocomplete_controller()->result().empty() ||
-      omnibox_view_->IsImeShowingPopup()) {
+  const bool should_be_visible =
+      controller()->popup_state_manager()->popup_state() !=
+          OmniboxPopupState::kAim &&
+      !controller()->autocomplete_controller()->result().empty() &&
+      !omnibox_view_->IsImeShowingPopup();
+
+  if (!should_be_visible) {
     presenter_->Hide();
+    // Update the popup state manager that the classic popup is closing.
+    // Do this AFTER widget operations. LocationBarView is subscribed to state
+    // changes and attempts to call `UpdatePopupAppearance()` again if the
+    // widget is open.
+    // Only update the state if it's currently kClassic. If it's already
+    // transitioning to another state (e.g., kAim), don't override it.
+    if (controller()->popup_state_manager()->popup_state() ==
+        OmniboxPopupState::kClassic) {
+      controller()->popup_state_manager()->SetPopupState(
+          OmniboxPopupState::kNone);
+    }
   } else {
-    const bool was_visible = presenter_->IsShown();
+    const bool was_visible = IsOpen();
+
     presenter_->Show();
+    // Update the popup state manager that the classic popup is opening.
+    controller()->popup_state_manager()->SetPopupState(
+        OmniboxPopupState::kClassic);
+
     if (!was_visible) {
-      NotifyOpenListeners();
       if (!construction_time_.is_null()) {
         const base::TimeDelta delta =
             base::TimeTicks::Now() - construction_time_;

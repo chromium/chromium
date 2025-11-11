@@ -15,10 +15,7 @@
 
 #include <string_view>
 
-#include "base/callback_list.h"
-#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
-#include "components/omnibox/browser/omnibox_popup_selection.h"
 
 class OmniboxController;
 class OmniboxPopupViewWebUI;
@@ -60,25 +57,16 @@ class OmniboxPopupView {
   virtual std::u16string_view GetAccessibleButtonTextForResult(
       size_t line) const;
 
-  // Adds a callback that will be called when the popup window becomes visible.
-  base::CallbackListSubscription AddOpenListener(
-      base::RepeatingClosure callback);
-
   virtual raw_ptr<OmniboxPopupViewWebUI> GetOmniboxPopupViewWebUI() = 0;
 
  protected:
   friend class OmniboxResultView;
   friend class OmniboxSuggestionButtonRowView;
 
-  // Call when the popup will appear to notify listeners.
-  void NotifyOpenListeners();
-
   virtual OmniboxController* controller();
   virtual const OmniboxController* controller() const;
 
  private:
-  base::RepeatingClosureList on_popup_callbacks_;
-
   // Owned by the LocationBarView that owns this. Outlives this.
   const raw_ptr<OmniboxController> controller_;
 };

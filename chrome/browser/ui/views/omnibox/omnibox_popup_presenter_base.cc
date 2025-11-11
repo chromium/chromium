@@ -130,8 +130,6 @@ void OmniboxPopupPresenterBase::EnsureWidgetCreated() {
   GetResultsFrame()->SetCutoutVisibility(ShouldShowLocationBarCutout());
 }
 
-void OmniboxPopupPresenterBase::WidgetDestroyed() {}
-
 bool OmniboxPopupPresenterBase::ShouldShowLocationBarCutout() const {
   return false;
 }

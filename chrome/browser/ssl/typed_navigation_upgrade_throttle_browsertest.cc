@@ -395,11 +395,9 @@ class TypedNavigationUpgradeThrottleBrowserTest
   // Regression check for crbug.com/1184872: The first autocomplete result
   // should be the same as the typed text, without a scheme.
   void CheckPopupText(const std::string& text) {
-    ASSERT_TRUE(
-        GetLocationBar()->GetOmniboxController()->edit_model()->PopupIsOpen());
+    ASSERT_TRUE(GetLocationBar()->GetOmniboxController()->IsPopupOpen());
     WaitForAutocompleteControllerDone();
-    ASSERT_TRUE(
-        GetLocationBar()->GetOmniboxController()->edit_model()->PopupIsOpen());
+    ASSERT_TRUE(GetLocationBar()->GetOmniboxController()->IsPopupOpen());
     EXPECT_EQ(base::UTF8ToUTF16(text), GetLocationBar()
                                            ->GetOmniboxController()
                                            ->autocomplete_controller()

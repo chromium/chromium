@@ -55,7 +55,7 @@ bool OmniboxView::IsEditingOrEmpty() const {
          GetOmniboxTextLength() == 0 ||
          (OmniboxFieldTrial::IsOnFocusZeroSuggestEnabledInContext(
               controller()->edit_model()->GetPageClassification()) &&
-          controller()->edit_model()->PopupIsOpen());
+          controller()->IsPopupOpen());
 }
 
 #if !BUILDFLAG(IS_ANDROID)

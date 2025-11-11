@@ -30,6 +30,7 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
+#include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_view.h"
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "components/bookmarks/browser/bookmark_model.h"
@@ -365,7 +366,8 @@ bool OmniboxEditModel::ResetDisplayTexts() {
   // URL" (which sounds as if it might be persistent) from seeing just that URL
   // forever afterwards.
   return (GetPermanentDisplayText() != old_display_text) &&
-         (!has_focus() || (!user_input_in_progress_ && !PopupIsOpen()));
+         (!has_focus() ||
+          (!user_input_in_progress_ && !controller_->IsPopupOpen()));
 }
 
 std::u16string OmniboxEditModel::GetPermanentDisplayText() const {
@@ -450,15 +452,16 @@ void OmniboxEditModel::AdjustTextForCopy(int sel_min,
       /*has_user_modified_text=*/user_input_in_progress_ ||
           (*text != display_text_ && *text != url_for_editing_),
       is_keyword_selected(),
-      PopupIsOpen() ? std::optional<AutocompleteMatch>(CurrentMatch())
-                    : std::nullopt,
+      controller_->IsPopupOpen()
+          ? std::optional<AutocompleteMatch>(CurrentMatch())
+          : std::nullopt,
       controller_->client(), url_from_text, write_url);
 }
 
 bool OmniboxEditModel::ShouldShowCurrentPageIcon() const {
   // If the popup is open, don't show the current page's icon. The caller is
   // instead expected to show the current match's icon.
-  if (PopupIsOpen()) {
+  if (controller_->IsPopupOpen()) {
     return false;
   }
 
@@ -500,7 +503,7 @@ bool OmniboxEditModel::ShouldShowAddContextButton() const {
   return base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxAimPopup) &&
          omnibox::kWebUIOmniboxAimPopupAddContextButtonVariantParam.Get() ==
              omnibox::AddContextButtonVariant::kInline &&
-         PopupIsOpen();
+         controller_->IsPopupOpen();
 }
 
 ui::ImageModel OmniboxEditModel::GetAddContextIcon(int image_size) const {
@@ -751,15 +754,6 @@ void OmniboxEditModel::EnterKeywordModeForDefaultSearchProvider(
                    u"");
 }
 
-void OmniboxEditModel::SetInAiMode(bool ai_mode) {
-  if (in_ai_mode_ == ai_mode) {
-    return;
-  }
-  in_ai_mode_ = ai_mode;
-  observers_.Notify(&Observer::OnContentsChanged);
-  observers_.Notify(&Observer::OnAiModeChanged, in_ai_mode_);
-}
-
 void OmniboxEditModel::OpenAiMode(bool via_keyboard) {
   std::u16string query_text =
       AutocompleteMatch::IsSearchType(current_match_.type)
@@ -769,7 +763,7 @@ void OmniboxEditModel::OpenAiMode(bool via_keyboard) {
 
   if (query_text.empty() &&
       base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxAimPopup)) {
-    SetInAiMode(true);
+    controller_->popup_state_manager()->SetPopupState(OmniboxPopupState::kAim);
     return;
   }
 
@@ -778,10 +772,6 @@ void OmniboxEditModel::OpenAiMode(bool via_keyboard) {
                    omnibox::DESKTOP_CHROME_OMNIBOX_KEYWORD_ENTRY_POINT,
                    /*query_start_time=*/base::Time::Now(), query_text);
   controller_->client()->OpenUrl(ai_mode_url);
-}
-
-bool OmniboxEditModel::PopupInAiMode() const {
-  return in_ai_mode_;
 }
 
 void OmniboxEditModel::OpenSelection(OmniboxPopupSelection selection,
@@ -860,7 +850,7 @@ bool OmniboxEditModel::AcceptKeyword(
   }
   user_text_ = MaybeStripKeyword(user_text_);
 
-  if (PopupIsOpen()) {
+  if (controller_->IsPopupOpen()) {
     OmniboxPopupSelection selection = GetPopupSelection();
     selection.state = OmniboxPopupSelection::KEYWORD_MODE;
     SetPopupSelection(selection);
@@ -1064,7 +1054,7 @@ void OmniboxEditModel::StartZeroSuggestRequest(
   // Early exit if a query is already in progress or the popup is already open.
   // This is what allows this method to be called multiple times in multiple
   // code locations without harm.
-  if (!autocomplete_controller()->done() || PopupIsOpen()) {
+  if (!autocomplete_controller()->done() || controller_->IsPopupOpen()) {
     return;
   }
 
@@ -1158,7 +1148,7 @@ bool OmniboxEditModel::OnEscapeKeyPressed() {
   }
 
   // Close the popup if it's open.
-  if (PopupIsOpen()) {
+  if (controller_->IsPopupOpen()) {
     base::UmaHistogramEnumeration(kOmniboxEscapeHistogramName,
                                   OmniboxEscapeAction::kClosePopup);
     if (view_) {
@@ -1564,14 +1554,14 @@ void OmniboxEditModel::GetInfoForCurrentText(AutocompleteMatch* match,
   // If there's a query in progress or the popup is open, pick out the default
   // match or selected match, if there is one.
   bool found_match_for_text = false;
-  if (!autocomplete_controller()->done() || PopupIsOpen()) {
+  if (!autocomplete_controller()->done() || controller_->IsPopupOpen()) {
     if (!autocomplete_controller()->done() &&
         autocomplete_controller()->result().default_match()) {
       // The user cannot have manually selected a match, or the query would have
       // stopped. So the default match must be the desired selection.
       *match = *autocomplete_controller()->result().default_match();
       found_match_for_text = true;
-    } else if (PopupIsOpen() &&
+    } else if (controller_->IsPopupOpen() &&
                GetPopupSelection().line != OmniboxPopupSelection::kNoMatch) {
       const OmniboxPopupSelection selection = GetPopupSelection();
       *match = autocomplete_controller()->result().match_at(selection.line);
@@ -1766,10 +1756,6 @@ std::u16string OmniboxEditModel::GetSuggestionGroupHeaderText(
     return force_hide_row_header ? u"" : header_text;
   }
   return u"";
-}
-
-bool OmniboxEditModel::PopupIsOpen() const {
-  return popup_view_ && popup_view_->IsOpen();
 }
 
 void OmniboxEditModel::ResetPopupToInitialState() {
@@ -2212,7 +2198,7 @@ AutocompleteController* OmniboxEditModel::autocomplete_controller() const {
 }
 
 bool OmniboxEditModel::MaybeStartQueryForPopup() {
-  if (PopupIsOpen() || !autocomplete_controller()->done()) {
+  if (controller_->IsPopupOpen() || !autocomplete_controller()->done()) {
     return false;
   }
 
@@ -2241,7 +2227,7 @@ void OmniboxEditModel::StepPopupSelection(
 
   // The popup could be working on a query but is not open. In that case, force
   // it to open immediately.
-  if (MaybeStartQueryForPopup() || !PopupIsOpen()) {
+  if (MaybeStartQueryForPopup() || !controller_->IsPopupOpen()) {
     return;
   }
 
@@ -2482,7 +2468,7 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
   // metrics_log.cc.  They also don't necessarily make sense if the omnibox
   // dropdown is closed or the user used paste-and-go.  (In most
   // cases when this happens, the user never modified the omnibox.)
-  const bool popup_open = PopupIsOpen();
+  const bool popup_open = controller_->IsPopupOpen();
   const base::TimeDelta default_time_delta = base::Milliseconds(-1);
   if (input_.IsZeroSuggest() || !pasted_text.empty()) {
     elapsed_time_since_user_first_modified_omnibox = default_time_delta;
@@ -2837,7 +2823,7 @@ void OmniboxEditModel::SetFocusState(OmniboxFocusState state,
 
 void OmniboxEditModel::OnFaviconFetched(const GURL& page_url,
                                         const gfx::Image& icon) const {
-  if (icon.IsEmpty() || !PopupIsOpen()) {
+  if (icon.IsEmpty() || !controller_->IsPopupOpen()) {
     return;
   }
 

@@ -13,14 +13,9 @@ TestOmniboxEditModel::TestOmniboxEditModel(
     OmniboxController* omnibox_controller,
     PrefService* pref_service)
     : OmniboxEditModel(omnibox_controller),
-      popup_is_open_(false),
       pref_service_(pref_service) {}
 
 TestOmniboxEditModel::~TestOmniboxEditModel() = default;
-
-bool TestOmniboxEditModel::PopupIsOpen() const {
-  return popup_is_open_;
-}
 
 AutocompleteMatch TestOmniboxEditModel::CurrentMatchAndAlternateNavUrl(
     GURL* alternate_nav_url) const {
@@ -52,10 +47,6 @@ const SkBitmap* TestOmniboxEditModel::GetPopupRichSuggestionBitmapForKeyword(
   return it == result.end()
              ? nullptr
              : GetPopupRichSuggestionBitmap(std::distance(result.begin(), it));
-}
-
-void TestOmniboxEditModel::SetPopupIsOpen(bool open) {
-  popup_is_open_ = open;
 }
 
 void TestOmniboxEditModel::SetCurrentMatchForTest(

@@ -89,8 +89,6 @@ class OmniboxEditModel {
     // opened, or closed.
     virtual void OnContentsChanged() = 0;
 
-    virtual void OnAiModeChanged(bool ai_mode) = 0;
-
     ~Observer() override = default;
   };
 
@@ -245,9 +243,6 @@ class OmniboxEditModel {
   void ClassifyString(const std::u16string& text,
                       AutocompleteMatch* match,
                       GURL* alternate_nav_url) const;
-
-  // Updates in_ai_mode_ and notifies observers.
-  void SetInAiMode(bool ai_mode);
 
   // Navigates to AI Mode, with the contents of the currently selected match, if
   // any.
@@ -461,9 +456,6 @@ class OmniboxEditModel {
   // in the Omnibox/Realbox popup.
   std::u16string GetSuggestionGroupHeaderText(
       const std::optional<omnibox::GroupId>& suggestion_group_id) const;
-
-  // Returns true if the popup exists and is open. Virtual for testing.
-  virtual bool PopupIsOpen() const;
 
   // Called when the user hits escape after arrowing around the popup.  This
   // will reset the popup to the initial state.
@@ -838,10 +830,6 @@ class OmniboxEditModel {
   // allow this when CreatedKeywordSearchByInsertingSpaceInMiddle() is true.
   // This has no effect if we're already in keyword mode.
   bool allow_exact_keyword_match_ = false;
-
-  // Indicates that the UI is in AI-Mode. The omnibox popup completely covers
-  // the location bar and shows the AI compose plate in a WebUI.
-  bool in_ai_mode_ = false;
 
   // The input that was sent to the AutocompleteController. Since no
   // autocomplete query is started after a tab switch, it is possible for this

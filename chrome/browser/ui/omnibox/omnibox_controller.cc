@@ -15,6 +15,7 @@
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
+#include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_view.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"
 #include "components/omnibox/browser/autocomplete_controller_config.h"
@@ -34,7 +35,8 @@ OmniboxController::OmniboxController(
     std::optional<base::TimeDelta> autocomplete_stop_timer_duration)
     : client_(std::move(client)),
       edit_model_(std::make_unique<OmniboxEditModel>(
-          /*omnibox_controller=*/this)) {
+          /*omnibox_controller=*/this)),
+      popup_state_manager_(std::make_unique<OmniboxPopupStateManager>()) {
   AutocompleteControllerConfig autocomplete_controller_config{
       .provider_types = AutocompleteClassifier::DefaultOmniboxProviders()};
   if (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxPopup)) {
@@ -111,7 +113,7 @@ void OmniboxController::OnResultChanged(AutocompleteController* controller,
                                         bool default_match_changed) {
   TRACE_EVENT0("omnibox", "OmniboxController::OnResultChanged");
   DCHECK(controller == autocomplete_controller_.get());
-  const bool popup_was_open = edit_model_->PopupIsOpen();
+  const bool popup_was_open = IsPopupOpen();
   if (default_match_changed) {
     // The default match has changed, we need to let the OmniboxEditModel know
     // about new inline autocomplete text (blue highlight).
@@ -128,7 +130,7 @@ void OmniboxController::OnResultChanged(AutocompleteController* controller,
     edit_model_->OnPopupResultChanged();
   }
 
-  const bool popup_is_open = edit_model_->PopupIsOpen();
+  const bool popup_is_open = IsPopupOpen();
   if (popup_was_open != popup_is_open) {
     client_->OnPopupVisibilityChanged(popup_is_open);
   }
@@ -159,7 +161,7 @@ void OmniboxController::OnResultChanged(AutocompleteController* controller,
 
 void OmniboxController::ClearPopupKeywordMode() const {
   TRACE_EVENT0("omnibox", "OmniboxController::ClearPopupKeywordMode");
-  if (edit_model_->PopupIsOpen()) {
+  if (IsPopupOpen()) {
     OmniboxPopupSelection selection = edit_model_->GetPopupSelection();
     if (selection.state == OmniboxPopupSelection::KEYWORD_MODE) {
       selection.state = OmniboxPopupSelection::NORMAL;
@@ -171,6 +173,19 @@ void OmniboxController::ClearPopupKeywordMode() const {
 bool OmniboxController::IsSuggestionHidden(
     const AutocompleteMatch& match) const {
   return match.ShouldHideBasedOnStarterPack(client_->GetTemplateURLService());
+}
+
+bool OmniboxController::IsPopupOpen() const {
+  OmniboxPopupState state = popup_state_manager_->popup_state();
+  if (popup_state_validation_callback_) {
+    popup_state_validation_callback_.Run(state);
+  }
+  return state != OmniboxPopupState::kNone;
+}
+
+void OmniboxController::SetPopupStateValidationCallback(
+    base::RepeatingCallback<void(OmniboxPopupState)> callback) {
+  popup_state_validation_callback_ = std::move(callback);
 }
 
 void OmniboxController::SetRichSuggestionBitmap(int result_index,
