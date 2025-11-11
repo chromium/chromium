@@ -1926,6 +1926,12 @@ inline constexpr char kEnablePrintingMarginsAndScaleDescription[] =
     "Allows extensions to specify margins and scale in chrome.printing API "
     "based on supported values provided by the printer.";
 
+inline constexpr char kAlignPdfDefaultPrintSettingsWithHTMLName[] =
+    "Align PDF default print settings with HTML";
+inline constexpr char kAlignPdfDefaultPrintSettingsWithHTMLDescription[] =
+    "Align the default print settings for PDFs with those for HTML, "
+    "including scaling and centering.";
+
 inline constexpr char kBoundaryEventDispatchTracksNodeRemovalName[] =
     "Boundary Event Dispatch Tracks Node Removal";
 inline constexpr char kBoundaryEventDispatchTracksNodeRemovalDescription[] =

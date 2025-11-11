@@ -125,6 +125,11 @@
     "expiry_milestone": 145
   },
   {
+    "name": "align-pdf-default-print-settings-with-html",
+    "owners": [ "thestig@chromium.org", "cathiechen@igalia.com" ],
+    "expiry_milestone": 147
+  },
+  {
     "name": "align-wakeups",
     "owners": [
       "etiennep@google.com", "fdoray@google.com"

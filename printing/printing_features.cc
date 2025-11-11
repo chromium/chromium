@@ -22,6 +22,10 @@ BASE_FEATURE(kAddPrinterViaPrintscanmgr, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kApiPrintingMarginsAndScale, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+// Align PDF default print settings (scale&center) with HTML.
+BASE_FEATURE(kAlignPdfDefaultPrintSettingsWithHTML,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_LINUX)
 // Use the CUPS IPP printing backend instead of the original CUPS backend that
 // calls the deprecated PPD API.

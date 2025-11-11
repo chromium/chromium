@@ -13704,6 +13704,8 @@ from previous Chrome versions.
   <int value="-149667706" label="CameraAppDigitalZoom:enabled"/>
   <int value="-149365748" label="CbdTimeframeRequired:enabled"/>
   <int value="-149260874" label="StorageAccessHeaders:disabled"/>
+  <int value="-148843521"
+      label="AlignPdfDefaultPrintSettingsWithHTML:disabled"/>
   <int value="-148627978" label="GlanceablesV2CalendarView:enabled"/>
   <int value="-148356419" label="PdfViewerPresentationMode:disabled"/>
   <int value="-147955528" label="BottomBrowserControlsRefactor:enabled"/>
@@ -17079,6 +17081,7 @@ from previous Chrome versions.
       label="AllowDownloadResumptionWithoutStrongValidators:enabled"/>
   <int value="1045152062" label="SecurePaymentConfirmationBrowser:enabled"/>
   <int value="1045179357" label="NtpRealboxLensSearch:disabled"/>
+  <int value="1045199610" label="AlignPdfDefaultPrintSettingsWithHTML:enabled"/>
   <int value="1046157767" label="Glic:disabled"/>
   <int value="1046878091" label="PasswordForceSaving:enabled"/>
   <int value="1046981538" label="OfflinePagesShowAlternateDinoPage:disabled"/>
