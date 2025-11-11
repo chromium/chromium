@@ -31,6 +31,12 @@ class OmniboxContextMenuControllerBrowserTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerBrowserTest,
                        AddRecentTabsToMenu) {
+  OmniboxContextMenuController base_controller(browser());
+  ui::SimpleMenuModel* model = base_controller.menu_model();
+
+  // The 1 separator and 4 static items.
+  EXPECT_EQ(5u, model->GetItemCount());
+
   // Navigate the initial tab and add a new one to have exactly two tabs.
   GURL url1(embedded_test_server()->GetURL("/title1.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url1));
@@ -39,8 +45,9 @@ IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerBrowserTest,
   ASSERT_TRUE(AddTabAtIndex(1, url2, ui::PAGE_TRANSITION_TYPED));
 
   OmniboxContextMenuController controller(browser());
-  ui::SimpleMenuModel* model = controller.menu_model();
+  model = controller.menu_model();
 
-  // The model should have two items, one for each tab.
-  EXPECT_EQ(2u, model->GetItemCount());
+  // The model should have 9 items, one for each tab,
+  // and 1 header, 2 separators and 4 static items.
+  EXPECT_EQ(9u, model->GetItemCount());
 }

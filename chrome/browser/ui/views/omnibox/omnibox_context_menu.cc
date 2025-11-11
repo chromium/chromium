@@ -14,6 +14,7 @@
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_model_adapter.h"
 #include "ui/views/controls/menu/menu_runner.h"
+#include "ui/views/controls/menu/submenu_view.h"
 
 OmniboxContextMenu::OmniboxContextMenu(
     views::Widget* parent_widget,
@@ -45,4 +46,28 @@ void OmniboxContextMenu::RunMenuAt(const gfx::Point& point,
 
 void OmniboxContextMenu::ExecuteCommand(int command_id, int event_flags) {
   controller_->ExecuteCommand(command_id, event_flags);
+}
+
+// Needed so that titles display correctly.
+const gfx::FontList* OmniboxContextMenu::GetLabelFontList(
+    int command_id) const {
+  ui::MenuModel* model = controller_->menu_model();
+  size_t index = 0;
+  ui::MenuModel::GetModelAndIndexForCommandId(command_id, &model, &index);
+  return model->GetLabelFontListAt(index);
+}
+
+std::optional<SkColor> OmniboxContextMenu::GetLabelColor(int command_id) const {
+  // Use STYLE_PRIMARY for title item. This aligns with 3-dot menu title style.
+  return command_id == ui::MenuModel::kTitleId
+             ? std::make_optional(
+                   menu_->GetSubmenu()->GetColorProvider()->GetColor(
+                       views::TypographyProvider::Get().GetColorId(
+                           views::style::CONTEXT_MENU,
+                           views::style::STYLE_PRIMARY)))
+             : std::nullopt;
+}
+
+bool OmniboxContextMenu::IsCommandEnabled(int command_id) const {
+  return command_id != ui::MenuModel::kTitleId;
 }

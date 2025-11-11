@@ -9,6 +9,7 @@
 #include "ui/menus/simple_menu_model.h"
 
 class BrowserWindowInterface;
+class GURL;
 
 // OmniboxContextMenuController creates and manages state for the context menu
 // shown for the omnibox.
@@ -38,6 +39,10 @@ class OmniboxContextMenuController : public ui::SimpleMenuModel::Delegate {
   void AddSeparator();
   // Adds recent tabs as items to the menu.
   void AddRecentTabItems();
+  // Adds a title with a localized string to the menu.
+  void AddTitleWithStringId(int localization_id);
+
+  bool IsValidTab(GURL url);
 
   std::unique_ptr<ui::SimpleMenuModel> menu_model_;
   raw_ptr<BrowserWindowInterface> browser_window_interface_;
