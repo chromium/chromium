@@ -746,7 +746,7 @@ void CreditCardFidoAuthenticator::HandleGetAssertionSuccess(
       full_card_request_->GetFullCardViaFIDO(
           *card_, payments::PaymentsAutofillClient::UnmaskCardReason::kAutofill,
           weak_ptr_factory_.GetWeakPtr(), std::move(response),
-          last_committed_primary_main_frame_origin, context_token_);
+          std::move(last_committed_primary_main_frame_origin), context_token_);
       // Return here to skip the OptChange call.
       return;
     }
