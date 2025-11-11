@@ -338,8 +338,6 @@ BASE_DECLARE_FEATURE(kThreeButtonPasswordSaveDialog);
 // of the browser.
 BASE_DECLARE_FEATURE(kToolbarHeightSidePanel);
 
-bool IsToolbarPinningEnabled();
-
 BASE_DECLARE_FEATURE(kEnterpriseProfileBadgingForMenu);
 BASE_DECLARE_FEATURE(kEnterpriseBadgingForNtpFooter);
 BASE_DECLARE_FEATURE(kNTPFooterBadgingPolicies);
