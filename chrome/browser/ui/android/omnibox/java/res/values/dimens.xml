@@ -169,6 +169,8 @@ found in the LICENSE file.
     </item>
 
     <!-- Fusebox bar -->
+    <dimen name="fusebox_glif_stroke_width">2dp</dimen>
+    <dimen name="fusebox_glif_blur_stroke_width">7dp</dimen>
     <dimen name="fusebox_popup_width">250dp</dimen>
     <dimen name="fusebox_popup_item_icon_size">24dp</dimen>
     <dimen name="fusebox_button_size">56dp</dimen>
