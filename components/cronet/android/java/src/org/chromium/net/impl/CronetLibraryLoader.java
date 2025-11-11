@@ -24,6 +24,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.ScopedSysTraceEvent;
+import org.chromium.build.BuildConfig;
 import org.chromium.net.NetLogCaptureMode;
 import org.chromium.net.NetworkChangeNotifier;
 import org.chromium.net.RegistrationPolicyAlwaysRegister;
@@ -41,7 +42,9 @@ public class CronetLibraryLoader {
     @GuardedBy("sLoadLock")
     private static boolean sInitialized;
 
-    private static final String LIBRARY_NAME = "cronet." + ImplVersion.getCronetVersion();
+    private static final String LIBRARY_NAME =
+            (BuildConfig.CRONET_FOR_AOSP_BUILD ? "mainlinecronet." : "cronet.")
+                    + ImplVersion.getCronetVersion();
     private static final String TESTING_LIBRARY_NAME = LIBRARY_NAME + "_for_testing";
     private static boolean sSwitchToTestLibrary;
     @VisibleForTesting public static final String TAG = CronetLibraryLoader.class.getSimpleName();
