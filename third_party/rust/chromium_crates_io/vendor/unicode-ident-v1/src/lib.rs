@@ -13,8 +13,8 @@
 //!
 //! This crate is a better optimized implementation of the older `unicode-xid`
 //! crate. This crate uses less static storage, and is able to classify both
-//! ASCII and non-ASCII codepoints with better performance, 2&ndash;6&times;
-//! faster than `unicode-xid`.
+//! ASCII and non-ASCII codepoints with better performance, 6&times; faster than
+//! `unicode-xid`.
 //!
 //! <br>
 //!
@@ -242,7 +242,7 @@
 //! this data structure is straight-line code with no need for branching.
 
 #![no_std]
-#![doc(html_root_url = "https://docs.rs/unicode-ident/1.0.20")]
+#![doc(html_root_url = "https://docs.rs/unicode-ident/1.0.22")]
 #![allow(
     clippy::doc_markdown,
     clippy::must_use_candidate,
@@ -252,6 +252,7 @@
 #[rustfmt::skip]
 mod tables;
 
+pub use crate::tables::UNICODE_VERSION;
 use crate::tables::{ASCII_CONTINUE, ASCII_START, CHUNK, LEAF, TRIE_CONTINUE, TRIE_START};
 
 static ZERO: u8 = 0;

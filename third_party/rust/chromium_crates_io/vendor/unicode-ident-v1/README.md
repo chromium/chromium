@@ -13,7 +13,7 @@ Implementation of [Unicode Standard Annex #31][tr31] for determining which
 
 This crate is a better optimized implementation of the older `unicode-xid`
 crate. This crate uses less static storage, and is able to classify both ASCII
-and non-ASCII codepoints with better performance, 2&ndash;6&times; faster than
+and non-ASCII codepoints with better performance, 6&times; faster than
 `unicode-xid`.
 
 <br>

@@ -9,6 +9,8 @@ pub(crate) struct Align8<T>(pub(crate) T);
 #[repr(C, align(64))]
 pub(crate) struct Align64<T>(pub(crate) T);
 
+pub const UNICODE_VERSION: (u8, u8, u8) = (17, 0, 0);
+
 pub(crate) const ASCII_START: u128 = 0x7fffffe07fffffe0000000000000000;
 pub(crate) const ASCII_CONTINUE: u128 = 0x7fffffe87fffffe03ff000000000000;
 
