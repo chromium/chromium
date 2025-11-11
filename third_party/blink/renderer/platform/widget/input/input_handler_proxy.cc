@@ -421,8 +421,11 @@ void InputHandlerProxy::HandleInputEventWithLatencyInfo(
                .Get() &&
            gesture_event.data.scroll_update.delta_x == 0 &&
            gesture_event.data.scroll_update.delta_y == 0);
+      if (should_filter_out_event) {
+        return;
+      }
 
-      if (scroll_predictor_ && !should_filter_out_event) {
+      if (scroll_predictor_) {
         std::unique_ptr<EventWithCallback> event_to_dispatch =
             scroll_predictor_->ResampleScrollEvents(
                 std::move(event_with_callback),

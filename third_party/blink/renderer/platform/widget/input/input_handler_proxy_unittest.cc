@@ -1379,7 +1379,7 @@ TEST_P(InputHandlerProxyEventQueueTest, AckTouchActionNonBlockingForFling) {
 
 // Verifies that when the `filter_out_empty_updates` parameter for the
 // SendEmptyGestureScrollUpdate feature is set to true, empty
-// GestureScrollUpdates are not passed to the resampling code.
+// GestureScrollUpdates are discarded on the renderer side.
 TEST_P(InputHandlerProxyEventQueueTest, FilterOutEmptyUpdates) {
   base::test::ScopedFeatureList feature_list;
   std::vector<base::test::FeatureRefAndParams> enabled_features;
@@ -1414,13 +1414,12 @@ TEST_P(InputHandlerProxyEventQueueTest, FilterOutEmptyUpdates) {
       RecordScrollBegin(_, cc::ScrollBeginThreadState::kScrollingOnCompositor))
       .Times(1);
 
-  EXPECT_CALL(mock_input_handler_, ScrollUpdate(_, _)).Times(3);
+  EXPECT_CALL(mock_input_handler_, ScrollUpdate(_, _)).Times(2);
 
   HandleGestureEvent(WebInputEvent::Type::kGestureScrollBegin);
   DeliverInputForBeginFrame();
 
-  // The first (empty) scroll update will be dispatched immediately and not sent
-  // to predictor.
+  // The first (empty) scroll update will be discarded on the renderer side.
   HandleGestureEvent(WebInputEvent::Type::kGestureScrollUpdate, 0);
   DeliverInputForBeginFrame();
   auto result = GestureScrollEventPredictionAvailable();
