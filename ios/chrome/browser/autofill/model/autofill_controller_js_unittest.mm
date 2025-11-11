@@ -1186,8 +1186,8 @@ TEST_F(AutofillControllerJsTest, InferLabelFromDivTable) {
 
 TEST_F(AutofillControllerJsTest, InferLabelFromDefinitionList) {
   TestInputElementDataEvaluation(
-      @"__gCrWeb.fill.inferLabelFromDefinitionList", @"label",
-      GetTestFormInputElementWithLabelFromDefinitionList(), @"input");
+      @"__gCrWeb.getRegisteredApi('fill_test_api').getFunction('inferLabelFromDefinitionList')",
+      @"label", GetTestFormInputElementWithLabelFromDefinitionList(), @"input");
 }
 
 TEST_F(AutofillControllerJsTest, InferLabelForElement) {

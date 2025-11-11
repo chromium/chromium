@@ -530,8 +530,9 @@ export function inferLabelFromDivTable(element: FormControlElement):
  * @param element An element to examine.
  * @return The label of element.
  */
-gCrWebLegacy.fill.inferLabelFromDefinitionList =
-    function(element: FormControlElement): inferenceUtil.InferredLabel|null {
+
+export function inferLabelFromDefinitionList(element: FormControlElement):
+    inferenceUtil.InferredLabel|null {
   if (!element) {
     return null;
   }
@@ -557,7 +558,7 @@ gCrWebLegacy.fill.inferLabelFromDefinitionList =
   }
 
   return buildInferredLabelIfValid(findChildText(previous));
-};
+}
 
 /**
  * Infers corresponding label for |element| from surrounding context in the DOM,
@@ -618,7 +619,7 @@ gCrWebLegacy.fill.inferLabelForElement =
         r = inferLabelFromTableRow(element);
       }
     } else if (tagName === 'DD') {
-      r = gCrWebLegacy.fill.inferLabelFromDefinitionList(element);
+      r = inferLabelFromDefinitionList(element);
     } else if (tagName === 'LI') {
       r = inferLabelFromListItem(element);
     } else if (tagName === 'FIELDSET') {

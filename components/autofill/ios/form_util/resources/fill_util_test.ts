@@ -26,6 +26,9 @@ fillApi.addFunction(
 fillApi.addFunction('getUniqueID', fillUtil.getUniqueID);
 fillApi.addFunction('hasTagName', inferenceUtil.hasTagName);
 fillApi.addFunction(
+    'inferLabelFromDefinitionList',
+    elementInferenceUtil.inferLabelFromDefinitionList);
+fillApi.addFunction(
     'inferLabelFromDivTable', elementInferenceUtil.inferLabelFromDivTable);
 fillApi.addFunction(
     'inferLabelFromEnclosingLabel',
