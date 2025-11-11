@@ -9875,3 +9875,6 @@ crbug.com/457924681 [ Linux ] external/wpt/css/css-anchor-position/anchored-tran
 # Gardener 2025-11-10
 crbug.com/444447168 [ Mac14-arm64 ] virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/dequantizeLinear.https.any.html?cpu [ Failure ]
 crbug.com/444447168 [ Mac15-arm64 ] virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/dequantizeLinear.https.any.html?cpu [ Failure ]
+
+# Gardener 2025-11-11
+crbug.com/40516274 [ Mac ] virtual/gpu-rasterization/images/color-profile-reflection.html [ Failure Pass Timeout ]
