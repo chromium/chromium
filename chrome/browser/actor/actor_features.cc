@@ -61,6 +61,11 @@ BASE_FEATURE_PARAM(bool,
                    &kGlicCrossOriginNavigationGating,
                    "prompt_user_for_navigation_to_new_origins",
                    false);
+BASE_FEATURE_PARAM(bool,
+                   kGlicNavigationGatingUseSiteNotOrigin,
+                   &kGlicCrossOriginNavigationGating,
+                   "gate_on_site_not_origin",
+                   false);
 
 BASE_FEATURE(kGlicEnableAutoLoginDialogs, base::FEATURE_ENABLED_BY_DEFAULT);
 

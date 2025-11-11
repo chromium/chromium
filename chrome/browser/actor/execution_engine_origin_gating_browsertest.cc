@@ -1103,4 +1103,144 @@ INSTANTIATE_TEST_SUITE_P(All,
                            NOTREACHED();
                          });
 
+class ExecutionEngineSiteGatingBrowserTest
+    : public ExecutionEngineOriginGatingBrowserTestBase,
+      public testing::WithParamInterface<bool> {
+ public:
+  ExecutionEngineSiteGatingBrowserTest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {
+            {kGlicCrossOriginNavigationGating,
+             {{
+                 {"gate_on_site_not_origin",
+                  should_gate_by_site() ? "true" : "false"},
+             }}},
+        },
+        /*disabled_features=*/{});
+  }
+  ~ExecutionEngineSiteGatingBrowserTest() override = default;
+
+  bool should_gate_by_site() { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(ExecutionEngineSiteGatingBrowserTest,
+                       ConfirmNavigationToNewSite_Denied) {
+  const GURL start_url =
+      embedded_https_test_server().GetURL("example.com", "/actor/link.html");
+  const GURL same_site = embedded_https_test_server().GetURL(
+      "other.example.com", "/actor/link.html");
+  const GURL cross_site =
+      embedded_https_test_server().GetURL("foo.com", "/actor/blank.html");
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
+  OpenGlicAndCreateTask();
+
+  RunTestSequence(CreateMockWebClientRequest(
+      content::JsReplace(kHandleNavigationConfirmationTempl, false)));
+
+  // Same origin should never trigger gating
+  ASSERT_TRUE(content::ExecJs(web_contents(),
+                              content::JsReplace("setLink($1);", start_url)));
+  ClickTarget("#link", mojom::ActionResultCode::kOk);
+
+  // Cross origin but same site should only trigger when we're gating on origin
+  ASSERT_TRUE(content::ExecJs(web_contents(),
+                              content::JsReplace("setLink($1);", same_site)));
+  ClickTarget("#link",
+              should_gate_by_site()
+                  ? mojom::ActionResultCode::kOk
+                  : mojom::ActionResultCode::kTriggeredNavigationBlocked);
+
+  // Cross site will always trigger gating
+  ASSERT_TRUE(content::ExecJs(web_contents(),
+                              content::JsReplace("setLink($1);", cross_site)));
+  ClickTarget("#link", mojom::ActionResultCode::kTriggeredNavigationBlocked);
+
+  // Should log that permission was *denied* once.
+  histogram_tester_for_init_.ExpectBucketCount(
+      "Actor.NavigationGating.PermissionGranted", false,
+      should_gate_by_site() ? 1 : 2);
+}
+
+IN_PROC_BROWSER_TEST_P(ExecutionEngineSiteGatingBrowserTest,
+                       ConfirmListAlwaysUsesOrigin) {
+  if (!should_gate_by_site()) {
+    GTEST_SKIP() << "Confirmlist already tested in "
+                    "ExecutionEngineOriginGatingBrowserTest.";
+  }
+  const GURL start_url =
+      embedded_https_test_server().GetURL("example.com", "/actor/link.html");
+  const GURL confirmlist_url = embedded_https_test_server().GetURL(
+      "blocked.example.com", "/actor/blank.html");
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
+  OpenGlicAndCreateTask();
+
+  RunTestSequence(CreateMockWebClientRequest(
+      content::JsReplace(kHandleUserConfirmationDialogTempl, false)));
+
+  ASSERT_TRUE(content::ExecJs(
+      web_contents(), content::JsReplace("setLink($1);", confirmlist_url)));
+  ClickTarget("#link", mojom::ActionResultCode::kTriggeredNavigationBlocked);
+  VerifyUserConfirmationDialogRequest(base::Value::Dict().Set(
+      "navigationOrigin",
+      url::Origin::Create(confirmlist_url).GetDebugString()));
+
+  // Should log that permission was *denied* once.
+  histogram_tester_for_init_.ExpectBucketCount(
+      "Actor.NavigationGating.PermissionGranted", false, 1);
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), start_url);
+}
+
+IN_PROC_BROWSER_TEST_P(ExecutionEngineSiteGatingBrowserTest, PerTaskAllowlist) {
+  const GURL start_url =
+      embedded_https_test_server().GetURL("example.com", "/actor/blank.html");
+  const GURL other_url =
+      embedded_https_test_server().GetURL("foo.com", "/actor/blank.html");
+  const GURL other_url_same_site =
+      embedded_https_test_server().GetURL("other.foo.com", "/actor/blank.html");
+  const GURL cross_site_url_with_link = embedded_https_test_server().GetURL(
+      "bar.com", base::StrCat({"/actor/link_full_page.html?href=",
+                               EncodeURI(other_url_same_site.spec())}));
+
+  // Start on example.com.
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
+  OpenGlicAndCreateTask();
+
+  RunTestSequence(CreateMockWebClientRequest(
+      content::JsReplace(kHandleNavigationConfirmationTempl, false)));
+
+  // Navigate to foo.com.
+  std::unique_ptr<ToolRequest> navigate_x_origin =
+      MakeNavigateRequest(*active_tab(), other_url.spec());
+  // Navigate to bar.com page with a link to other.foo.com.
+  std::unique_ptr<ToolRequest> navigate_to_link_page =
+      MakeNavigateRequest(*active_tab(), cross_site_url_with_link.spec());
+  // Clicks on full-page link to other.foo.com.
+  std::unique_ptr<ToolRequest> click_link =
+      MakeClickRequest(*active_tab(), gfx::Point(1, 1));
+
+  ActResultFuture result;
+  actor_task().Act(
+      ToRequestList(navigate_x_origin, navigate_to_link_page, click_link),
+      result.GetCallback());
+  if (should_gate_by_site()) {
+    ExpectOkResult(result);
+  } else {
+    ExpectErrorResult(result,
+                      mojom::ActionResultCode::kTriggeredNavigationBlocked);
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ExecutionEngineSiteGatingBrowserTest,
+                         testing::Bool(),
+                         [](auto& info) {
+                           return info.param ? "GateBySite" : "GateByOrigin";
+                         });
+
 }  // namespace actor
