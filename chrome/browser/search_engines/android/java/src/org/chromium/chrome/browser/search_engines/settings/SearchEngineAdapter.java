@@ -76,32 +76,33 @@ public class SearchEngineAdapter extends BaseAdapter
             NetworkTrafficAnnotationTag.createComplete(
                     "search_engine_adapter",
                     """
-            semantics {
-                sender: 'SearchEngineAdapter'
-                description: 'Sends a request to a Google server to retrieve the favicon bitmap.'
-                trigger:
-                    'A request is sent when the user opens search engine settings and Chrome does '
-                    'not have a favicon.'
-                data: 'Search engine URL and desired icon size.'
-                destination: GOOGLE_OWNED_SERVICE
-                internal {
-                    contacts {
-                        email: 'chrome-signin-team@google.com'
+                    semantics {
+                        sender: 'SearchEngineAdapter'
+                        description: 'Sends a request to a Google server to retrieve the favicon bitmap.'
+                        trigger:
+                            'A request is sent when the user opens search engine settings and Chrome does '
+                            'not have a favicon.'
+                        data: 'Search engine URL and desired icon size.'
+                        destination: GOOGLE_OWNED_SERVICE
+                        internal {
+                            contacts {
+                                email: 'chrome-signin-team@google.com'
+                            }
+                            contacts {
+                                email: 'triploblastic@google.com'
+                            }
+                        }
+                        user_data {
+                            type: NONE
+                        }
+                        last_reviewed: '2023-12-04'
                     }
-                    contacts {
-                        email: 'triploblastic@google.com'
-                    }
-                }
-                user_data {
-                    type: NONE
-                }
-                last_reviewed: '2023-12-04'
-            }
-            policy {
-                cookies_allowed: NO
-                policy_exception_justification: 'Not implemented.'
-                setting: 'This feature cannot be disabled by settings.'
-            }""");
+                    policy {
+                        cookies_allowed: NO
+                        policy_exception_justification: 'Not implemented.'
+                        setting: 'This feature cannot be disabled by settings.'
+                    }\
+                    """);
 
     /**
      * Type for source of search engine. This is needed because if a custom search engine is set as
