@@ -150,6 +150,8 @@ android_library("chrome_java_transit") {
     "javatests/src/org/chromium/chrome/test/transit/Journeys.java",
     "javatests/src/org/chromium/chrome/test/transit/ReusedCtaTransitTestRule.java",
     "javatests/src/org/chromium/chrome/test/transit/SoftKeyboardFacility.java",
+    "javatests/src/org/chromium/chrome/test/transit/bookmarks/BookmarksPhoneStation.java",
+    "javatests/src/org/chromium/chrome/test/transit/bookmarks/BookmarksTabletStation.java",
     "javatests/src/org/chromium/chrome/test/transit/context_menu/ContextMenuFacility.java",
     "javatests/src/org/chromium/chrome/test/transit/context_menu/LinkContextMenuFacility.java",
     "javatests/src/org/chromium/chrome/test/transit/dom_distiller/ReaderModeConditions.java",

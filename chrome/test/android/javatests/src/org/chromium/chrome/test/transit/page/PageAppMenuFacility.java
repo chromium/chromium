@@ -15,12 +15,15 @@ import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.tabbed_mode.TabbedAppMenuPropertiesDelegate;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.test.transit.CtaAppMenuFacility;
+import org.chromium.chrome.test.transit.bookmarks.BookmarksPhoneStation;
+import org.chromium.chrome.test.transit.bookmarks.BookmarksTabletStation;
 import org.chromium.chrome.test.transit.hub.TabGroupListBottomSheetFacility;
 import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageAppMenuFacility;
 import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageAppMenuFacility;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.settings.SettingsStation;
+import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.ArrayList;
 import java.util.Set;
@@ -48,6 +51,7 @@ public class PageAppMenuFacility<HostPageStationT extends CtaPageStation>
     protected @Nullable Item mAddToGroup;
     protected @Nullable Item mReaderMode;
     protected Item mNewWindow;
+    protected Item mBookmarks;
     protected Item mSettings;
     protected Item mPinTab;
     protected Item mUnpinTab;
@@ -164,6 +168,20 @@ public class PageAppMenuFacility<HostPageStationT extends CtaPageStation>
                         .getRootUiCoordinatorForTesting()
                         .getAppMenuCoordinatorForTesting()
                         .getAppMenuPropertiesDelegate();
+    }
+
+    /** Select "Bookmarks" from the app menu in tablets. */
+    public BookmarksTabletStation openBookmarksTablet() {
+        assert DeviceFormFactor.isNonMultiDisplayContextOnTablet(mHostStation.getActivity());
+        return mBookmarks
+                .scrollToAndSelectTo()
+                .arriveAt(BookmarksTabletStation.newBuilder().initOpeningNewTab().build());
+    }
+
+    /** Select "Bookmarks" from the app menu in phones. */
+    public BookmarksPhoneStation openBookmarksPhone() {
+        assert !DeviceFormFactor.isNonMultiDisplayContextOnTablet(mHostStation.getActivity());
+        return mBookmarks.scrollToAndSelectTo().arriveAt(new BookmarksPhoneStation());
     }
 
     /** Select "Settings" from the app menu. */

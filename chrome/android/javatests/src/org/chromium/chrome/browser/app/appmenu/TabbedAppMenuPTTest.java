@@ -19,6 +19,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
@@ -27,6 +28,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.ChromeTriggers;
+import org.chromium.chrome.test.transit.bookmarks.BookmarksPhoneStation;
 import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
 import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageAppMenuFacility;
 import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
@@ -38,6 +40,7 @@ import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.transit.settings.SettingsStation;
 import org.chromium.chrome.test.transit.testhtmls.NavigatePageStations;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
+import org.chromium.ui.base.DeviceFormFactor;
 
 import java.io.IOException;
 
@@ -82,6 +85,29 @@ public class TabbedAppMenuPTTest {
         } else {
             assertEquals(1, mCtaTestRule.tabsCount(/* incognito= */ true));
         }
+    }
+
+    /** Tests that "Bookmarks" opens the Bookmarks page. */
+    @Test
+    @LargeTest
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
+    public void testOpenBookmarksTablet() {
+        WebPageStation pageStation = mCtaTestRule.startOnBlankPage();
+
+        pageStation.openRegularTabAppMenu().openBookmarksTablet();
+    }
+
+    /** Tests that "Bookmarks" opens the Bookmarks page. */
+    @Test
+    @LargeTest
+    @Restriction(DeviceFormFactor.PHONE)
+    public void testOpenBookmarksPhone() {
+        WebPageStation pageStation = mCtaTestRule.startOnBlankPage();
+
+        BookmarksPhoneStation bookmarks = pageStation.openRegularTabAppMenu().openBookmarksPhone();
+
+        // Exit bookmarks for the initial state rule to be able to reset state.
+        bookmarks.pressBackTo().arriveAt(WebPageStation.newBuilder().initFrom(pageStation).build());
     }
 
     /** Tests that "Settings" opens the SettingsActivity. */

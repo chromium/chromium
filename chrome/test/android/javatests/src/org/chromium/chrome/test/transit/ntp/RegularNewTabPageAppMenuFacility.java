@@ -41,7 +41,7 @@ public class RegularNewTabPageAppMenuFacility
         mQuickDelete = declareMenuItem(items, DELETE_BROWSING_DATA_ID);
 
         declareMenuItem(items, DOWNLOADS_ID);
-        declareMenuItem(items, BOOKMARKS_ID);
+        mBookmarks = declareMenuItem(items, BOOKMARKS_ID);
         declareMenuItem(items, RECENT_TABS_ID);
 
         mSettings = declareMenuItem(items, SETTINGS_ID);
