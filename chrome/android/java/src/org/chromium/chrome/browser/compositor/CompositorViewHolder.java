@@ -1942,7 +1942,7 @@ public class CompositorViewHolder extends FrameLayout
             }
             VirtualView view = mVirtualViews.get(virtualViewId);
 
-            event.setContentDescription(view.getAccessibilityDescription());
+            event.setContentDescription(getAccessibilityDescription(view));
             event.setClassName(CompositorViewHolder.class.getName());
         }
 
@@ -1960,7 +1960,7 @@ public class CompositorViewHolder extends FrameLayout
             view.getTouchTarget(mTouchTarget);
 
             node.setBoundsInParent(rectToPx(mTouchTarget));
-            node.setContentDescription(view.getAccessibilityDescription());
+            node.setContentDescription(getAccessibilityDescription(view));
             if (view.hasClickAction()) {
                 node.addAction(AccessibilityNodeInfoCompat.ACTION_CLICK);
             }
@@ -1968,6 +1968,20 @@ public class CompositorViewHolder extends FrameLayout
             if (view.hasLongClickAction()) {
                 node.addAction(AccessibilityNodeInfoCompat.ACTION_LONG_CLICK);
             }
+        }
+
+        private String getAccessibilityDescription(VirtualView view) {
+            String accessibilityDescription = view.getAccessibilityDescription();
+            // TODO(crbug.com/456622040): Prevent this from being null. It's unclear when that might
+            //  be the case, so add an assert and fallback logic to prevent crashes in the meantime.
+            if (accessibilityDescription == null) {
+                assert false
+                        : String.format(
+                                "VirtualView of type %s unexpectedly had a null a11y description.",
+                                view.getClass().getName());
+                return PLACE_HOLDER_STRING;
+            }
+            return accessibilityDescription;
         }
 
         private Rect rectToPx(RectF rect) {
