@@ -379,6 +379,7 @@ source_set("test_support") {
 
   deps = [
     "//base/test:test_support",
+    "//components/account_id:test_support",
     "//ui/gfx:test_support",
   ]
 

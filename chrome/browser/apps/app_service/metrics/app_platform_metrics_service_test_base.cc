@@ -14,11 +14,13 @@
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics_service.h"
 #include "chrome/browser/apps/app_service/publishers/app_publisher.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/login/users/scoped_account_id_annotator.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/trusted_vault/trusted_vault_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/dbus/power/power_manager_client.h"
+#include "components/account_id/account_id_literal.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/instance.h"
@@ -26,6 +28,7 @@
 #include "components/sync/test/test_sync_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "components/user_manager/fake_user_manager_delegate.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/test_helper.h"
 #include "content/public/browser/browser_context.h"
@@ -35,11 +38,25 @@ namespace apps {
 namespace {
 
 constexpr char kStartTime[] = "1 Jan 2021 21:00";
-constexpr char kTestUserEmail[] = "user@test.com";
+constexpr auto kTestUser =
+    AccountId::Literal::FromUserEmailGaiaId("user@test.com",
+                                            GaiaId::Literal("1234567890"));
 
 std::unique_ptr<KeyedService> TestingSyncFactoryFunction(
     content::BrowserContext* context) {
   return std::make_unique<syncer::TestSyncService>();
+}
+
+user_manager::ScopedUserManager CreateUserManager() {
+  return user_manager::ScopedUserManager(
+      std::make_unique<user_manager::UserManagerImpl>(
+          std::make_unique<user_manager::FakeUserManagerDelegate>(),
+          TestingBrowserProcess::GetGlobal()->GetTestingLocalState()));
+}
+
+std::unique_ptr<TestingProfileManager> CreateTestingProfileManager() {
+  return std::make_unique<TestingProfileManager>(
+      TestingBrowserProcess::GetGlobal());
 }
 
 }  // namespace
@@ -86,14 +103,17 @@ void AddApp(AppServiceProxy* proxy, TestApp app) {
   proxy->OnApps(std::move(deltas), app.app_type, app.should_notify_initialized);
 }
 
-AppPlatformMetricsServiceTestBase::AppPlatformMetricsServiceTestBase() =
-    default;
+AppPlatformMetricsServiceTestBase::AppPlatformMetricsServiceTestBase()
+    : user_manager_(CreateUserManager()),
+      profile_manager_(CreateTestingProfileManager()) {}
 
 AppPlatformMetricsServiceTestBase::~AppPlatformMetricsServiceTestBase() =
     default;
 
 void AppPlatformMetricsServiceTestBase::SetUp() {
-  AddRegularUser(kTestUserEmail);
+  ASSERT_TRUE(profile_manager_->SetUp());
+
+  AddRegularUser(kTestUser);
   test_ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
 
   base::Time start_time;
@@ -115,14 +135,19 @@ void AppPlatformMetricsServiceTestBase::SetUp() {
   app_platform_metrics_service_ =
       std::make_unique<AppPlatformMetricsService>(profile());
 
-  app_platform_metrics_service_->Start(
-      AppServiceProxyFactory::GetForProfile(profile())->AppRegistryCache(),
-      AppServiceProxyFactory::GetForProfile(profile())->InstanceRegistry(),
-      AppServiceProxyFactory::GetForProfile(profile())
-          ->AppCapabilityAccessCache());
+  if (start_app_platform_metrics_service_on_init_) {
+    app_platform_metrics_service_->Start(
+        AppServiceProxyFactory::GetForProfile(profile())->AppRegistryCache(),
+        AppServiceProxyFactory::GetForProfile(profile())->InstanceRegistry(),
+        AppServiceProxyFactory::GetForProfile(profile())
+            ->AppCapabilityAccessCache());
+  }
 }
 
 void AppPlatformMetricsServiceTestBase::TearDown() {
+  user_manager_->Get()->OnUserProfileWillBeDestroyed(kTestUser);
+  testing_profile_ = nullptr;
+  sync_service_ = nullptr;
   app_platform_metrics_service_.reset();
   ::chromeos::PowerManagerClient::Shutdown();
 }
@@ -207,25 +232,29 @@ int AppPlatformMetricsServiceTestBase::GetDayIdPref() {
   return GetPrefService()->GetInteger(kAppPlatformMetricsDayId);
 }
 
+TestingProfile::TestingFactories
+AppPlatformMetricsServiceTestBase::GetTestingFactories() {
+  return {
+      TestingProfile::TestingFactory{
+          TrustedVaultServiceFactory::GetInstance(),
+          TrustedVaultServiceFactory::GetDefaultFactory()},
+      TestingProfile::TestingFactory{SyncServiceFactory::GetInstance(),
+                                     SyncServiceFactory::GetDefaultFactory()}};
+}
+
 void AppPlatformMetricsServiceTestBase::AddRegularUser(
-    const std::string& email) {
-  fake_user_manager_ = new ash::FakeChromeUserManager();
-  scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-      base::WrapUnique(fake_user_manager_.get()));
-  AccountId account_id = AccountId::FromUserEmail(email);
-  const user_manager::User* user = fake_user_manager_->AddUser(account_id);
-  fake_user_manager_->UserLoggedIn(
+    const AccountId::Literal& account_id) {
+  CHECK(user_manager::TestHelper(user_manager_->Get())
+            .AddRegularUser(account_id));
+  user_manager_->Get()->UserLoggedIn(
       account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id));
-  fake_user_manager_->SimulateUserProfileLoad(account_id);
+  ash::ScopedAccountIdAnnotator annotator(profile_manager_->profile_manager(),
+                                          account_id);
+  testing_profile_ = profile_manager_->CreateTestingProfile(
+      std::string(account_id.GetUserEmail()), GetTestingFactories());
 
-  TestingProfile::Builder builder;
-  builder.AddTestingFactory(TrustedVaultServiceFactory::GetInstance(),
-                            TrustedVaultServiceFactory::GetDefaultFactory());
-  builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                            SyncServiceFactory::GetDefaultFactory());
-  testing_profile_ = builder.Build();
-
-  ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(user, profile());
+  user_manager_->Get()->OnUserProfileCreated(account_id,
+                                             testing_profile_->GetPrefs());
 
   sync_service_ = static_cast<syncer::TestSyncService*>(
       SyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(

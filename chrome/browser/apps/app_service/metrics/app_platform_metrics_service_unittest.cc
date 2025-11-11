@@ -2768,11 +2768,6 @@ TEST_F(AppDiscoveryMetricsTest, AppActivityMetricsRecordedForTwoInstances) {
 class AppPlatformMetricsServiceObserverTest
     : public AppPlatformMetricsServiceTestBase {
  protected:
-  void SetUp() override {
-    // Set up test user.
-    AddRegularUser("test@test.com");
-  }
-
   MockObserver* observer() { return &observer_; }
 
  private:
