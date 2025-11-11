@@ -85,8 +85,9 @@ public class LanguageSettingsTest {
                 .perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
 
         // Back to "Language" screen.
-        Assert.assertEquals(mActivity.getString(R.string.language_settings), mActivity.getTitle());
         acceptLanguageList = mActivity.findViewById(R.id.language_list);
+        RecyclerViewTestUtils.waitForStableRecyclerView(acceptLanguageList);
+        Assert.assertEquals(mActivity.getString(R.string.language_settings), mActivity.getTitle());
         Assert.assertEquals(
                 "Failed to add a new language.",
                 originalAcceptLanguageCount + 1,
@@ -97,6 +98,7 @@ public class LanguageSettingsTest {
     @SmallTest
     @DisableIf.Build(sdk_equals = Build.VERSION_CODES.Q, message = "crbug.com/40711481")
     public void testRemoveLanguage() {
+        onView(withId(R.id.language_list)).check(matches(isDisplayed()));
         RecyclerView acceptLanguageList = mActivity.findViewById(R.id.language_list);
         int originalAcceptLanguageCount = acceptLanguageList.getChildCount();
 
@@ -127,24 +129,17 @@ public class LanguageSettingsTest {
             sdk_is_less_than = Build.VERSION_CODES.S,
             message = "Flaky in Q and R, crbug.com/40190787")
     public void testToggleOfferToTranslate() {
-        RecyclerView acceptLanguageList = mActivity.findViewById(R.id.language_list);
-        int originalAcceptLanguageCount = acceptLanguageList.getChildCount();
-
-        // Enter "Add language" screen.
         addLanguage();
 
-        Assert.assertEquals(mActivity.getString(R.string.language_settings), mActivity.getTitle());
-        acceptLanguageList = mActivity.findViewById(R.id.language_list);
-        Assert.assertEquals(
-                "Failed to add a new language.",
-                originalAcceptLanguageCount + 1,
-                acceptLanguageList.getChildCount());
+        // The view is recreated so take it once again.
+        RecyclerView acceptLanguageList = mActivity.findViewById(R.id.language_list);
+        int originalAcceptLanguageCount = acceptLanguageList.getChildCount();
         View newLangView =
-                acceptLanguageList.findViewHolderForAdapterPosition(originalAcceptLanguageCount)
+                acceptLanguageList.findViewHolderForAdapterPosition(originalAcceptLanguageCount - 1)
                         .itemView;
         LanguageItem languageItem =
                 ((LanguageListBaseAdapter) acceptLanguageList.getAdapter())
-                        .getItemByPosition(originalAcceptLanguageCount);
+                        .getItemByPosition(originalAcceptLanguageCount - 1);
 
         // Turn on "offer to translate".
         ThreadUtils.runOnUiThreadBlocking(
@@ -229,6 +224,7 @@ public class LanguageSettingsTest {
     @Test
     @SmallTest
     public void testEnabledAndDisableOfferToTranslate() {
+        onView(withId(R.id.language_list)).check(matches(isDisplayed()));
         RecyclerView acceptLanguageList = mActivity.findViewById(R.id.language_list);
         View langView = acceptLanguageList.findViewHolderForAdapterPosition(0).itemView;
         ListMenuButton moreButton = langView.findViewById(R.id.more);
