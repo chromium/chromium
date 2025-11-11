@@ -128,6 +128,7 @@ public class MiniOriginBarController implements Observer {
     // The final horizontal position of the location bar when the mini origin bar is in its
     // fully-minimized state.
     private float mFinalLocationBarX;
+    private boolean mShowingMiniOriginBar;
 
     /**
      * @param locationBar LocationBar instance used to change the presentation of e.g. the UrlBar
@@ -170,6 +171,8 @@ public class MiniOriginBarController implements Observer {
                         keyboardVisibilityDelegate,
                         (ViewGroup) mLocationBar.getContainerView(),
                         controlContainerTranslationSupplier,
+                        suppressToolbarSceneLayerSupplier,
+                        () -> mShowingMiniOriginBar,
                         () -> updateMiniOriginBarState(MiniOriginEvent.KEYBOARD_ANIMATION_PREPARED),
                         (isCancellation) ->
                                 updateMiniOriginBarState(
@@ -273,6 +276,7 @@ public class MiniOriginBarController implements Observer {
     }
 
     private void showMiniOriginBar() {
+        mShowingMiniOriginBar = true;
         mLocationBar.setShowOriginOnly(true);
         mLocationBar.setUrlBarUsesSmallText(true);
         mLocationBar.setShowStatusIconForSecureOrigins(false);
@@ -308,6 +312,7 @@ public class MiniOriginBarController implements Observer {
     }
 
     private void hideMiniOriginBar() {
+        mShowingMiniOriginBar = false;
         setMinimizationProgress(0.0f);
         mLocationBar.setShowOriginOnly(false);
         mLocationBar.setShowStatusIconForSecureOrigins(true);
@@ -468,6 +473,8 @@ public class MiniOriginBarController implements Observer {
         private final KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
         private final ViewGroup mContainerView;
         private final ObservableSupplierImpl<Integer> mTranslationSupplier;
+        private final ObservableSupplierImpl<Boolean> mSuppressToolbarSceneLayerSupplier;
+        private final BooleanSupplier mShowingMiniOriginBar;
         private final Runnable mOnAnimationPreparedSignal;
         private final Callback<Boolean> mAnimationEndedSignal;
         private final Callback<Float> mAnimationProgressSignal;
@@ -484,6 +491,8 @@ public class MiniOriginBarController implements Observer {
                 KeyboardVisibilityDelegate keyboardVisibilityDelegate,
                 ViewGroup containerView,
                 ObservableSupplierImpl<Integer> translationSupplier,
+                ObservableSupplierImpl<Boolean> suppressToolbarSceneLayerSupplier,
+                BooleanSupplier showingMiniOriginBar,
                 Runnable animationPreparedSignal,
                 Callback<Boolean> animationEndedSignal,
                 Callback<Float> animationProgressSignal,
@@ -493,6 +502,8 @@ public class MiniOriginBarController implements Observer {
             mKeyboardVisibilityDelegate = keyboardVisibilityDelegate;
             mContainerView = containerView;
             mTranslationSupplier = translationSupplier;
+            mSuppressToolbarSceneLayerSupplier = suppressToolbarSceneLayerSupplier;
+            mShowingMiniOriginBar = showingMiniOriginBar;
             mOnAnimationPreparedSignal = animationPreparedSignal;
             mAnimationEndedSignal = animationEndedSignal;
             mAnimationProgressSignal = animationProgressSignal;
@@ -564,6 +575,8 @@ public class MiniOriginBarController implements Observer {
             }
 
             mTranslationSupplier.set(translation);
+            mSuppressToolbarSceneLayerSupplier.set(
+                    translation != 0 || mShowingMiniOriginBar.getAsBoolean());
 
             float interpolatedFraction = mAnimation.getInterpolatedFraction();
             mIsCancelledPredictiveBack =
@@ -586,6 +599,7 @@ public class MiniOriginBarController implements Observer {
             ViewUtils.setAncestorsShouldClipChildren(mContainerView, true, ViewGroup.NO_ID);
             ViewUtils.setAncestorsShouldClipToPadding(mContainerView, true, ViewGroup.NO_ID);
             mTranslationSupplier.set(0);
+            mSuppressToolbarSceneLayerSupplier.set(mShowingMiniOriginBar.getAsBoolean());
 
             mAnimationEndedSignal.onResult(mIsCancelledPredictiveBack);
             mIsCancelledPredictiveBack = false;

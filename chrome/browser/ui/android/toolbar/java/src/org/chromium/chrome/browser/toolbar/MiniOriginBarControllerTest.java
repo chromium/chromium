@@ -641,6 +641,10 @@ public class MiniOriginBarControllerTest {
         secondImeAnimation.setFraction(0.5f);
         animationListener.onProgress(insets, Collections.singletonList(secondImeAnimation));
         assertEquals(-currentKeyboardHeight, (int) mControlContainerTranslationSupplier.get());
+        assertTrue(mSuppressToolbarSceneLayerSupplier.get());
+
+        animationListener.onEnd(secondImeAnimation);
+        assertFalse(mSuppressToolbarSceneLayerSupplier.get());
     }
 
     @Test
