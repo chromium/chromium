@@ -16,9 +16,9 @@
 #include "content/browser/indexed_db/instance/bucket_context.h"
 #include "content/browser/indexed_db/status.h"
 #include "content/common/content_export.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 
 namespace content::indexed_db {
-class FactoryClient;
 class Connection;
 class Database;
 struct PendingConnection;
@@ -34,8 +34,9 @@ class CONTENT_EXPORT ConnectionCoordinator {
 
   void ScheduleOpenConnection(std::unique_ptr<PendingConnection> connection);
 
-  void ScheduleDeleteDatabase(std::unique_ptr<FactoryClient> factory_client,
-                              base::OnceClosure on_deletion_complete);
+  void ScheduleDeleteDatabase(
+      mojo::AssociatedRemote<blink::mojom::IDBFactoryClient> factory_client,
+      base::OnceClosure on_deletion_complete);
 
   // Call this method to prune any tasks that don't want to be run during
   // force close. Returns any error caused by rolling back changes.

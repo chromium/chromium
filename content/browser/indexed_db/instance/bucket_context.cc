@@ -544,7 +544,7 @@ void BucketContext::GetDatabaseInfo(GetDatabaseInfoCallback callback) {
 
 void BucketContext::Open(
     mojo::PendingAssociatedRemote<blink::mojom::IDBFactoryClient>
-        factory_client,
+        pending_factory_client,
     mojo::PendingAssociatedRemote<blink::mojom::IDBDatabaseCallbacks>
         database_callbacks_remote,
     const std::u16string& name,
@@ -557,6 +557,8 @@ void BucketContext::Open(
   TRACE_EVENT0("IndexedDB", "BucketContext::Open");
   // TODO(dgrogan): Don't let a non-existing database be opened (and therefore
   // created) if this origin is already over quota.
+  mojo::AssociatedRemote<blink::mojom::IDBFactoryClient> factory_client(
+      std::move(pending_factory_client));
 
   bool was_cold_open = !backing_store_;
   IndexedDBDataLossInfo data_loss_info;
@@ -567,7 +569,7 @@ void BucketContext::Open(
         InitBackingStore(/*create_if_missing=*/true);
     LogStatus(s, "IndexedDB.BackingStore.CreateIfMissing", in_memory());
     if (!s.ok()) {
-      FactoryClient(std::move(factory_client)).OnError(error);
+      std::move(factory_client)->Error(error.code(), error.message());
       if (s.IsCorruption()) {
         HandleBackingStoreCorruption(base::UTF16ToUTF8(error.message()));
       }
@@ -576,7 +578,7 @@ void BucketContext::Open(
   }
 
   auto connection = std::make_unique<PendingConnection>(
-      std::make_unique<FactoryClient>(std::move(factory_client)),
+      std::move(factory_client),
       std::make_unique<DatabaseCallbacks>(std::move(database_callbacks_remote)),
       transaction_id, version, std::move(transaction_receiver));
   connection->was_cold_open = was_cold_open;
@@ -614,9 +616,9 @@ void BucketContext::Open(
     // pruned and errors reported: see `ShouldPruneForForceClose()`. So do that
     // here too.
     if (!database_ptr->IsAcceptingConnections()) {
-      connection->factory_client->OnError(
-          DatabaseError(blink::mojom::IDBException::kAbortError,
-                        "The connection was closed."));
+      std::move(connection->factory_client)
+          ->Error(blink::mojom::IDBException::kAbortError,
+                  u"The connection was closed.");
       connection->database_callbacks->OnForcedClose();
       return;
     }
@@ -627,7 +629,7 @@ void BucketContext::Open(
 
 void BucketContext::DeleteDatabase(
     mojo::PendingAssociatedRemote<blink::mojom::IDBFactoryClient>
-        factory_client,
+        pending_factory_client,
     const std::u16string& name,
     bool force_close) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -636,6 +638,9 @@ void BucketContext::DeleteDatabase(
   auto on_deletion_complete =
       base::BindOnce(delegate().on_files_written, /*flushed=*/true);
 
+  mojo::AssociatedRemote<blink::mojom::IDBFactoryClient> factory_client(
+      std::move(pending_factory_client));
+
   // First, check the databases that are already represented by
   // `Database` objects. If one exists, schedule it to be deleted and
   // we're done.
@@ -643,9 +648,8 @@ void BucketContext::DeleteDatabase(
   if (it != databases_.end()) {
     CHECK(backing_store_);
     base::WeakPtr<Database> database = it->second->AsWeakPtr();
-    database->ScheduleDeleteDatabase(
-        std::make_unique<FactoryClient>(std::move(factory_client)),
-        std::move(on_deletion_complete));
+    database->ScheduleDeleteDatabase(std::move(factory_client),
+                                     std::move(on_deletion_complete));
     if (force_close) {
       Status status = database->ForceCloseAndRunTasks(force_close_message);
       if (!status.ok()) {
@@ -666,12 +670,11 @@ void BucketContext::DeleteDatabase(
         /*create_if_missing=*/false);
     if (!s.ok()) {
       if (s.IsNotFound()) {
-        FactoryClient(std::move(factory_client))
-            .OnDeleteSuccess(/*old_version=*/0);
+        std::move(factory_client)->DeleteSuccess(/*old_version=*/0);
         return;
       }
 
-      FactoryClient(std::move(factory_client)).OnError(error);
+      std::move(factory_client)->Error(error.code(), error.message());
       if (s.IsCorruption()) {
         HandleBackingStoreCorruption(base::UTF16ToUTF8(error.message()));
       }
@@ -683,9 +686,9 @@ void BucketContext::DeleteDatabase(
   if (!exists.has_value()) {
     std::string error_message =
         "Internal error opening backing store for indexedDB.deleteDatabase.";
-    DatabaseError error(blink::mojom::IDBException::kUnknownError,
-                        error_message);
-    FactoryClient(std::move(factory_client)).OnError(error);
+    std::move(factory_client)
+        ->Error(blink::mojom::IDBException::kUnknownError,
+                base::ASCIIToUTF16(error_message));
     if (exists.error().IsCorruption()) {
       HandleBackingStoreCorruption(error_message);
     }
@@ -693,16 +696,15 @@ void BucketContext::DeleteDatabase(
   }
 
   if (!*exists) {
-    FactoryClient(std::move(factory_client)).OnDeleteSuccess(/*old_version=*/0);
+    std::move(factory_client)->DeleteSuccess(/*old_version=*/0);
     return;
   }
 
   // If it exists but does not already have an `Database` object,
   // create it and initiate deletion.
   Database* database_ptr = CreateAndAddDatabase(name);
-  database_ptr->ScheduleDeleteDatabase(
-      std::make_unique<FactoryClient>(std::move(factory_client)),
-      std::move(on_deletion_complete));
+  database_ptr->ScheduleDeleteDatabase(std::move(factory_client),
+                                       std::move(on_deletion_complete));
   if (force_close) {
     Status status = database_ptr->ForceCloseAndRunTasks(force_close_message);
     if (!status.ok()) {

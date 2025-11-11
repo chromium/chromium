@@ -10,7 +10,6 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "content/browser/indexed_db/instance/database_callbacks.h"
-#include "content/browser/indexed_db/instance/factory_client.h"
 
 namespace content::indexed_db {
 
@@ -46,7 +45,7 @@ void DecrementNumPendingConnections() {
 }  // namespace
 
 PendingConnection::PendingConnection(
-    std::unique_ptr<FactoryClient> factory_client,
+    mojo::AssociatedRemote<blink::mojom::IDBFactoryClient> factory_client,
     std::unique_ptr<DatabaseCallbacks> database_callbacks,
     int64_t transaction_id,
     int64_t version,

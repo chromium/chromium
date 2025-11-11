@@ -26,7 +26,6 @@
 #include "content/browser/indexed_db/indexed_db_value.h"
 #include "content/browser/indexed_db/instance/backing_store.h"
 #include "content/browser/indexed_db/instance/connection_coordinator.h"
-#include "content/browser/indexed_db/instance/factory_client.h"
 #include "content/browser/indexed_db/instance/pending_connection.h"
 #include "content/browser/indexed_db/list_set.h"
 #include "content/common/content_export.h"
@@ -104,8 +103,9 @@ class CONTENT_EXPORT Database {
 
   void ScheduleOpenConnection(std::unique_ptr<PendingConnection> connection);
 
-  void ScheduleDeleteDatabase(std::unique_ptr<FactoryClient> factory_client,
-                              base::OnceClosure on_deletion_complete);
+  void ScheduleDeleteDatabase(
+      mojo::AssociatedRemote<blink::mojom::IDBFactoryClient> factory_client,
+      base::OnceClosure on_deletion_complete);
 
   // Number of connections that have progressed passed initial open call.
   size_t ConnectionCount() const { return connections_.size(); }

@@ -47,7 +47,6 @@
 #include "content/browser/indexed_db/instance/connection.h"
 #include "content/browser/indexed_db/instance/cursor.h"
 #include "content/browser/indexed_db/instance/database_callbacks.h"
-#include "content/browser/indexed_db/instance/factory_client.h"
 #include "content/browser/indexed_db/instance/index_writer.h"
 #include "content/browser/indexed_db/instance/pending_connection.h"
 #include "content/browser/indexed_db/instance/transaction.h"
@@ -445,7 +444,7 @@ void Database::ScheduleOpenConnection(
 }
 
 void Database::ScheduleDeleteDatabase(
-    std::unique_ptr<FactoryClient> factory_client,
+    mojo::AssociatedRemote<blink::mojom::IDBFactoryClient> factory_client,
     base::OnceClosure on_deletion_complete) {
   connection_coordinator_.ScheduleDeleteDatabase(
       std::move(factory_client), std::move(on_deletion_complete));

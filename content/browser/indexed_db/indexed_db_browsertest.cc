@@ -1436,6 +1436,12 @@ IN_PROC_BROWSER_TEST_F(IndexedDBLevelDBOnlyTest, LargeValueReadBlobMissing) {
   histogram_tester.ExpectTotalCount("IndexedDB.WrappedBlobLoadTime", 1);
 }
 
+IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTest, GetAllChunking) {
+  GURL test_url = GetTestUrl("indexeddb", "get_all_chunking.html");
+  SimpleTest(GURL(absl::StrFormat("%s?chunk_size=%i", test_url.spec(),
+                                  blink::mojom::kIDBGetAllChunkSize)));
+}
+
 // Large values are NOT wrapped when using SQLite, but are wrapped when using
 // LevelDB.
 IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTest, LargeValueIsWrapped) {
