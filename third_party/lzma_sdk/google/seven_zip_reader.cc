@@ -430,6 +430,11 @@ bool SevenZipReaderImpl::AreHeadersEncrypted(base::File archive_file,
       return false;
     }
 
+    if (int64_t file_size = archive_file.GetLength();
+        file_size < 0 || header_size_or > file_size) {
+      return false;
+    }
+
     header = base::HeapArray<Byte>::WithSize(*header_size_or);
     header_offset = *header_offset_or;
     if (!archive_file.ReadAndCheck(k7zStartHeaderSize + header_offset,
