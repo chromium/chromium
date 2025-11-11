@@ -6,6 +6,7 @@
 
 #include "base/check_op.h"
 #include "base/notreached.h"
+#include "content/browser/preloading/prefetch/prefetch_container.h"
 
 namespace content {
 

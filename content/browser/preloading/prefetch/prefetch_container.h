@@ -63,6 +63,79 @@ struct PrefetchResponseSizes {
   int64_t decoded_body_length;
 };
 
+// The state enum of the current prefetch, to replace `PrefetchStatus`.
+// https://crbug.com/1494771
+// Design doc for PrefetchContainer state transitions:
+// https://docs.google.com/document/d/1dK4mAVoRrgTVTGdewthI_hA8AHirgXW8k6BmpK9gnBE/edit?usp=sharing
+//
+// Note that this is decoupled from `PrefetchContainer` to allow forward
+// declaration to prevent circular include.
+enum class PrefetchContainerLoadState {
+  // --- Phase 1. [Initial state]
+  kNotStarted,
+
+  // --- Phase 2. The eligibility check for the initial request has completed
+  // and `PreloadingAttempt::SetEligibility()` has been called.
+
+  // Found eligible.
+  kEligible,
+
+  // [Final state] Found ineligible. `redirect_chain_[0].eligibility_`
+  // contains the reason for being ineligible.
+  kFailedIneligible,
+
+  // --- Phase 3. PrefetchService::StartSinglePrefetch() has been called and
+  // the holdback check has completed.
+
+  // Not heldback:
+  //
+  // On these states, refer to `PrefetchResponseReader`s for detailed
+  // prefetching state and servability.
+  //
+  // - `kStarted`: Prefetch is started.
+  // - `kDeterminedHead` or `kFailedDeterminedHead`:
+  //   `PrefetchContainer::OnDeterminedHead()` is called.
+  //   `Observer::OnDeterminedHead()` is called after transitioning to this
+  //   state. They will eventually transition to `kCompleted` or `kFailed`,
+  //   respectively (except for the cases where no state transitions occur,
+  //   which should be fixed by https://crbug.com/400761083).
+  //   TODO(https://crbug.com/400761083): Probably we should make these
+  //   `PrefetchContainer::LoadState`s directly correspond to
+  //   `PrefetchResponseReader::LoadState`s. One scenario where currently
+  //   these two `LoadState`s temporarily mismatch is: when
+  //   `PrefetchResponseReader::LoadState` transitions directly from
+  //   `kStarted` to `kFailed`, `PrefetchContainer::LoadState` transitions to
+  //   `kFailedDeterminedHead` and then immediately to `kFailed`, in order to
+  //   align `PrefetchContainer::LoadState` and
+  //   `PrefetchContainer::Observer` calls. Revisit this later.
+  // - [Final state] `kCompleted` or `kFailed`:
+  //   `PrefetchContainer::OnPrefetchComplete()` is called, and its
+  //   `PrefetchResponseReader::LoadState` is `kCompleted` or `kFailed`,
+  //   respectively.
+  //   `Observer::OnPrefetchCompletedOrFailed()` is called after transitioning
+  //   to this state.
+  //
+  // TODO(https://crbug.com/432518638): Make more strict association with
+  // `PrefetchContainer::LoadState` and `PrefetchResponseReader::LoadState`
+  // and verify it by adding CHECK()s.
+  //
+  // Also, refer to `request().attempt()` for triggering outcome and failure
+  // reasons for metrics.
+  // `PreloadingAttempt::SetFailureReason()` can be only called on this state.
+  // Note that these states of `request().attempt()` don't directly affect
+  // `PrefetchResponseReader`'s servability.
+  // (e.g. `PrefetchResponseReader::GetServableState()` can be still
+  // `kServable` even if `request().attempt()` has a failure).
+  kStarted,
+  kDeterminedHead,
+  kFailedDeterminedHead,
+  kCompleted,
+  kFailed,
+
+  // [Final state] Heldback due to `PreloadingAttempt::ShouldHoldback()`.
+  kFailedHeldback,
+};
+
 // This class contains the state for a request to prefetch a specific URL.
 //
 // A `PrefetchContainer` can have multiple
@@ -204,75 +277,7 @@ class CONTENT_EXPORT PrefetchContainer {
   bool HasPrefetchStatus() const { return prefetch_status_.has_value(); }
   PrefetchStatus GetPrefetchStatus() const;
 
-  // The state enum of the current prefetch, to replace `PrefetchStatus`.
-  // https://crbug.com/1494771
-  // Design doc for PrefetchContainer state transitions:
-  // https://docs.google.com/document/d/1dK4mAVoRrgTVTGdewthI_hA8AHirgXW8k6BmpK9gnBE/edit?usp=sharing
-  enum class LoadState {
-    // --- Phase 1. [Initial state]
-    kNotStarted,
-
-    // --- Phase 2. The eligibility check for the initial request has completed
-    // and `PreloadingAttempt::SetEligibility()` has been called.
-
-    // Found eligible.
-    kEligible,
-
-    // [Final state] Found ineligible. `redirect_chain_[0].eligibility_`
-    // contains the reason for being ineligible.
-    kFailedIneligible,
-
-    // --- Phase 3. PrefetchService::StartSinglePrefetch() has been called and
-    // the holdback check has completed.
-
-    // Not heldback:
-    //
-    // On these states, refer to `PrefetchResponseReader`s for detailed
-    // prefetching state and servability.
-    //
-    // - `kStarted`: Prefetch is started.
-    // - `kDeterminedHead` or `kFailedDeterminedHead`:
-    //   `PrefetchContainer::OnDeterminedHead()` is called.
-    //   `Observer::OnDeterminedHead()` is called after transitioning to this
-    //   state. They will eventually transition to `kCompleted` or `kFailed`,
-    //   respectively (except for the cases where no state transitions occur,
-    //   which should be fixed by https://crbug.com/400761083).
-    //   TODO(https://crbug.com/400761083): Probably we should make these
-    //   `PrefetchContainer::LoadState`s directly correspond to
-    //   `PrefetchResponseReader::LoadState`s. One scenario where currently
-    //   these two `LoadState`s temporarily mismatch is: when
-    //   `PrefetchResponseReader::LoadState` transitions directly from
-    //   `kStarted` to `kFailed`, `PrefetchContainer::LoadState` transitions to
-    //   `kFailedDeterminedHead` and then immediately to `kFailed`, in order to
-    //   align `PrefetchContainer::LoadState` and
-    //   `PrefetchContainer::Observer` calls. Revisit this later.
-    // - [Final state] `kCompleted` or `kFailed`:
-    //   `PrefetchContainer::OnPrefetchComplete()` is called, and its
-    //   `PrefetchResponseReader::LoadState` is `kCompleted` or `kFailed`,
-    //   respectively.
-    //   `Observer::OnPrefetchCompletedOrFailed()` is called after transitioning
-    //   to this state.
-    //
-    // TODO(https://crbug.com/432518638): Make more strict association with
-    // `PrefetchContainer::LoadState` and `PrefetchResponseReader::LoadState`
-    // and verify it by adding CHECK()s.
-    //
-    // Also, refer to `request().attempt()` for triggering outcome and failure
-    // reasons for metrics.
-    // `PreloadingAttempt::SetFailureReason()` can be only called on this state.
-    // Note that these states of `request().attempt()` don't directly affect
-    // `PrefetchResponseReader`'s servability.
-    // (e.g. `PrefetchResponseReader::GetServableState()` can be still
-    // `kServable` even if `request().attempt()` has a failure).
-    kStarted,
-    kDeterminedHead,
-    kFailedDeterminedHead,
-    kCompleted,
-    kFailed,
-
-    // [Final state] Heldback due to `PreloadingAttempt::ShouldHoldback()`.
-    kFailedHeldback,
-  };
+  using LoadState = PrefetchContainerLoadState;
   void SetLoadState(LoadState prefetch_status);
   LoadState GetLoadState() const;
 
