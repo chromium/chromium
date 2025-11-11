@@ -223,8 +223,6 @@ body.has-pan-support.has-tilt-support.has-zoom-support #ptz-panel-container {
   width: 192px;
 }
 
-/* TODO(b/172881094): Polish active visual look of clipped button. */
-
 body.has-pan-support.has-tilt-support.has-zoom-support :is(#tilt-down, #tilt-up, #pan-left, #pan-right) {
   height: 100%;
   width: 100%;
