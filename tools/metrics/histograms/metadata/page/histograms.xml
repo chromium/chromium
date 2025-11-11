@@ -3692,7 +3692,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.Experimental.PageVisitFinalStatus"
-    enum="PageVisitFinalStatus" expires_after="2025-12-22">
+    enum="PageVisitFinalStatus" expires_after="2026-12-22">
   <owner>sullivan@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
