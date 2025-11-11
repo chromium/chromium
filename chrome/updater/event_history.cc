@@ -139,6 +139,18 @@ void SetWorldReadablePermissions(const base::FilePath& path) {
 
 }  // namespace
 
+void InitHistoryLogging(UpdaterScope updater_scope) {
+  constexpr int kMaxFileSizeBytes = 1024 * 1024;  // 1 MiB.
+  std::optional<base::FilePath> log_dir = GetInstallDirectory(updater_scope);
+  VLOG_IF(1, !log_dir) << "Failed to get history event log file path. "
+                          "History event logging will be disabled.";
+  if (log_dir) {
+    InitHistoryLogging(
+        log_dir->Append(FILE_PATH_LITERAL("updater_history.jsonl")),
+        kMaxFileSizeBytes);
+  }
+}
+
 void InitHistoryLogging(const base::FilePath& path,
                         size_t max_file_size_bytes) {
   base::AutoLock lock(GetLoggingLock());
@@ -210,9 +222,9 @@ void WriteHistoryEvent(const base::Value::Dict& event) {
     return;
   }
 
-  const std::string* event_id = event.FindString("eventId");
+  const std::string* event_type = event.FindString("eventType");
   const std::string* bound = event.FindString("bound");
-  VLOG(2) << "Emitted a " << (event_id ? *event_id : "(unknown)") << " "
+  VLOG(2) << "Emitted a " << (event_type ? *event_type : "(unknown)") << " "
           << (bound ? *bound : "INSTANT") << " event to the history log";
 }
 

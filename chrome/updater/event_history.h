@@ -59,6 +59,9 @@ namespace updater {
 // if it exists.
 void InitHistoryLogging(const base::FilePath& path, size_t max_file_size_bytes);
 
+// Alias for the above using defaults for the updater.
+void InitHistoryLogging(UpdaterScope updater_scope);
+
 // Generates an event ID unique to this process. An ID is required for all
 // events. The same ID may be used in multiple events, e.g. to link START and
 // END records.

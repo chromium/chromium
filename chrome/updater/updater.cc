@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <iterator>
+#include <optional>
 
 #include "base/at_exit.h"
 #include "base/check.h"
@@ -22,6 +23,7 @@
 #include "base/task/single_thread_task_executor.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/platform_thread.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/updater/app/app.h"
 #include "chrome/updater/app/app_install.h"
@@ -40,6 +42,7 @@
 #include "chrome/updater/constants.h"
 #include "chrome/updater/crash_client.h"
 #include "chrome/updater/crash_reporter.h"
+#include "chrome/updater/event_history.h"
 #include "chrome/updater/ipc/ipc_support.h"
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_scope.h"
@@ -56,6 +59,7 @@
 
 #include "base/cpu.h"
 #include "base/debug/alias.h"
+#include "base/strings/sys_string_conversions.h"
 #include "base/strings/to_string.h"
 #include "base/win/process_startup_helper.h"
 #include "base/win/scoped_com_initializer.h"
@@ -421,18 +425,41 @@ int UpdaterMain(int argc, const char* const* argv) {
   EnableLoggingByDefault();
   const UpdaterScope updater_scope = GetUpdaterScope();
   InitLogging(updater_scope);
+  InitHistoryLogging(updater_scope);
+  const base::ProcessId parent_pid =
+      base::GetParentProcessId(base::GetCurrentProcessHandle());
   VLOG(1) << "Version: " << kUpdaterVersion << ", " << BuildFlavor() << ", "
           << base::SysInfo::ProcessCPUArchitecture()
           << ", command line: " << GetCommandLineString();
   VLOG(1) << "OS version: " << OperatingSystemVersion()
           << ", System uptime (seconds): "
-          << base::SysInfo::Uptime().InSeconds() << ", parent pid: "
-          << base::GetParentProcessId(base::GetCurrentProcessHandle());
+          << base::SysInfo::Uptime().InSeconds()
+          << ", parent pid: " << parent_pid;
 #if BUILDFLAG(IS_WIN)
   EnsureEnoughMemory();
   RecordCpuFeaturesForCrash();  // TODO(crbug.com/441591130): remove when fixed.
-#endif  // IS_WIN
+#endif                          // IS_WIN
+
+  const std::string event_id = GenerateEventId();
+#if BUILDFLAG(IS_WIN)
+  const std::string command_line_string =
+      base::SysWideToUTF8(GetCommandLineString());
+#else
+  const std::string command_line_string = GetCommandLineString();
+#endif
+  UpdaterProcessStartEvent()
+      .SetEventId(event_id)
+      .SetCommandLine(command_line_string)
+      .SetTimestamp(base::Time::Now())
+      .SetUpdaterVersion(kUpdaterVersion)
+      .SetScope(updater_scope)
+      .SetOsPlatform(base::SysInfo::OperatingSystemName())
+      .SetOsArchitecture(base::SysInfo::OperatingSystemArchitecture())
+      .SetUpdaterArchitecture(base::SysInfo::ProcessCPUArchitecture())
+      .SetParentPid(parent_pid)
+      .Write();
   const int exit_code = HandleUpdaterCommands(updater_scope, command_line);
+  UpdaterProcessEndEvent().SetEventId(event_id).SetExitCode(exit_code).Write();
   VLOG(1) << __func__ << " (--" << GetUpdaterCommand(command_line) << ")"
           << " returned " << exit_code << ".";
 
