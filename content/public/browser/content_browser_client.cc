@@ -945,6 +945,10 @@ base::FilePath ContentBrowserClient::GetGraphiteDawnDiskCacheDirectory() {
   return base::FilePath();
 }
 
+base::FilePath ContentBrowserClient::GetGPUPersistentCacheDirectory() {
+  return base::FilePath();
+}
+
 base::FilePath ContentBrowserClient::GetNetLogDefaultDirectory() {
   return base::FilePath();
 }

@@ -555,6 +555,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   base::FilePath GetShaderDiskCacheDirectory() override;
   base::FilePath GetGrShaderDiskCacheDirectory() override;
   base::FilePath GetGraphiteDawnDiskCacheDirectory() override;
+  base::FilePath GetGPUPersistentCacheDirectory() override;
   base::FilePath GetNetLogDefaultDirectory() override;
   base::FilePath GetFirstPartySetsDirectory() override;
   std::optional<base::FilePath> GetLocalTracesDirectory() override;

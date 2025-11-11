@@ -544,15 +544,14 @@ void InitGpuPersistentCacheFileFactoryOnce() {
   if (features::kSkiaGraphiteDawnUsePersistentCache.Get() &&
       !viz::PersistentCacheSandboxedFileFactory::GetInstance()) {
     base::FilePath cache_root_dir =
-        GetContentClient()->browser()->GetShaderDiskCacheDirectory();
+        GetContentClient()->browser()->GetGPUPersistentCacheDirectory();
     if (cache_root_dir.empty()) {
-      // GetShaderDiskCacheDirectory() can return empty string in tests.
+      // GetGPUPersistentCacheDirectory() can return empty string in tests.
       // Disable caching in this case since PersistentCacheSandboxedFileFactory
       // doesn't support relative paths.
       return;
     }
-    viz::PersistentCacheSandboxedFileFactory::CreateInstance(
-        cache_root_dir.AppendASCII("PersistentCache"));
+    viz::PersistentCacheSandboxedFileFactory::CreateInstance(cache_root_dir);
   }
 #endif
 }
