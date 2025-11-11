@@ -83,7 +83,9 @@ void PrefetchURLLoaderInterceptor::MaybeCreateLoader(
     BrowserContext* browser_context,
     NavigationLoaderInterceptor::LoaderCallback callback,
     NavigationLoaderInterceptor::FallbackCallback fallback_callback) {
-  TRACE_EVENT("loading", "PrefetchURLLoaderInterceptor::MaybeCreateLoader");
+  TRACE_EVENT_BEGIN("loading",
+                    "PrefetchURLLoaderInterceptor::MaybeCreateLoader",
+                    perfetto::Flow::FromPointer(this));
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   CHECK(!loader_callback_);
@@ -96,6 +98,7 @@ void PrefetchURLLoaderInterceptor::MaybeCreateLoader(
   if (tentative_resource_request.method !=
       net::HttpRequestHeaders::kGetMethod) {
     redirect_serving_handle_ = PrefetchServingHandle();
+    TRACE_EVENT_END("loading");
     std::move(loader_callback_).Run(std::nullopt);
     return;
   }
@@ -114,6 +117,7 @@ void PrefetchURLLoaderInterceptor::MaybeCreateLoader(
       expected_service_worker_state_ ==
           PrefetchServiceWorkerState::kControlled) {
     redirect_serving_handle_ = PrefetchServingHandle();
+    TRACE_EVENT_END("loading");
     std::move(loader_callback_).Run(std::nullopt);
     return;
   }
@@ -133,6 +137,7 @@ void PrefetchURLLoaderInterceptor::MaybeCreateLoader(
           /*is_unblock_for_cookies_changed_triggered_by_this_prefetch_container*/
           std::nullopt);
     } else {
+      TRACE_EVENT_END("loading");
       OnGotPrefetchToServe(
           frame_tree_node_id_, tentative_resource_request.url,
           base::BindOnce(&PrefetchURLLoaderInterceptor::OnGetPrefetchComplete,
@@ -163,10 +168,12 @@ void PrefetchURLLoaderInterceptor::MaybeCreateLoader(
     // the right partition, or at minimum to use it from that partition if they
     // happen to be the same, i.e., the URL remains within the same site as the
     // top-level document).
+    TRACE_EVENT_END("loading");
     std::move(loader_callback_).Run(std::nullopt);
     return;
   }
 
+  TRACE_EVENT_END("loading");
   GetPrefetch(
       tentative_resource_request.url,
       base::BindOnce(&PrefetchURLLoaderInterceptor::OnGetPrefetchComplete,
@@ -181,10 +188,14 @@ void PrefetchURLLoaderInterceptor::GetPrefetch(
     const GURL& url,
     base::OnceCallback<void(PrefetchServingHandle)> get_prefetch_callback)
     const {
-  TRACE_EVENT("loading", "PrefetchURLLoaderInterceptor::GetPrefetch");
+  TRACE_EVENT_BEGIN("loading", "PrefetchURLLoaderInterceptor::GetPrefetch",
+                    perfetto::Flow::FromPointer(
+                        const_cast<PrefetchURLLoaderInterceptor*>(this)));
+
   PrefetchService* prefetch_service =
       PrefetchService::GetFromFrameTreeNodeId(frame_tree_node_id_);
   if (!prefetch_service) {
+    TRACE_EVENT_END("loading");
     std::move(get_prefetch_callback).Run({});
     return;
   }
@@ -199,17 +210,23 @@ void PrefetchURLLoaderInterceptor::GetPrefetch(
   auto callback = base::BindOnce(&OnGotPrefetchToServe, frame_tree_node_id_,
                                  url, std::move(get_prefetch_callback));
   auto key = PrefetchKey(initiator_document_token_, url);
+  TRACE_EVENT_END("loading");
   PrefetchMatchResolver::FindPrefetch(
       frame_tree_node_id_, *prefetch_service, std::move(key),
       expected_service_worker_state_, serving_page_metrics_container_,
-      std::move(callback));
+      std::move(callback),
+      perfetto::Flow::FromPointer(
+          const_cast<PrefetchURLLoaderInterceptor*>(this)));
 }
 
 void PrefetchURLLoaderInterceptor::OnGetPrefetchComplete(
     const GURL& url,
     const std::optional<url::Origin>& top_frame_origin,
     PrefetchServingHandle serving_handle) {
-  TRACE_EVENT("loading", "PrefetchURLLoaderInterceptor::OnGetPrefetchComplete");
+  TRACE_EVENT_BEGIN("loading",
+                    "PrefetchURLLoaderInterceptor::OnGetPrefetchComplete",
+                    perfetto::Flow::FromPointer(this));
+
   PrefetchRequestHandler request_handler;
   base::WeakPtr<ServiceWorkerClient> client_for_prefetch;
   if (serving_handle) {
@@ -249,6 +266,7 @@ void PrefetchURLLoaderInterceptor::OnGetPrefetchComplete(
     if (GetPrefetchCompleteCallbackForTesting()) {
       GetPrefetchCompleteCallbackForTesting().Run(nullptr);  // IN-TEST
     }
+    TRACE_EVENT_END("loading");
     std::move(loader_callback_).Run(std::nullopt);
     return;
   }
@@ -287,6 +305,7 @@ void PrefetchURLLoaderInterceptor::OnGetPrefetchComplete(
   // TODO (https://crbug.com/1369766): Investigate if
   // `HeaderClientOption::kAllowed` should be used for `TerminalParams`, and
   // then how to utilize it.
+  TRACE_EVENT_END("loading");
   std::move(loader_callback_)
       .Run(NavigationLoaderInterceptor::Result(
           url_loader_factory::Create(

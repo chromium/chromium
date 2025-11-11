@@ -156,7 +156,8 @@ class CONTENT_EXPORT PrefetchMatchResolver final
       PrefetchServiceWorkerState expected_service_worker_state,
       base::WeakPtr<PrefetchServingPageMetricsContainer>
           serving_page_metrics_container,
-      Callback callback);
+      Callback callback,
+      perfetto::Flow flow);
   static void FindPrefetchForTesting(
       PrefetchService& prefetch_service,
       PrefetchKey navigated_key,
@@ -186,7 +187,8 @@ class CONTENT_EXPORT PrefetchMatchResolver final
       base::WeakPtr<PrerenderHost> prerender_host,
       base::WeakPtr<PrefetchServingPageMetricsContainer>
           serving_page_metrics_container,
-      Callback callback);
+      Callback callback,
+      perfetto::Flow flow);
 
   explicit PrefetchMatchResolver(
       base::WeakPtr<NavigationRequest> navigation_request,
@@ -195,7 +197,8 @@ class CONTENT_EXPORT PrefetchMatchResolver final
       PrefetchServiceWorkerState expected_service_worker_state,
       bool is_nav_prerender,
       base::WeakPtr<PrerenderHost> prerender_host,
-      Callback callback);
+      Callback callback,
+      perfetto::Flow flow);
 
   // Returns blocked duration. Returns null iff it's not blocked yet.
   std::optional<base::TimeDelta> GetBlockedDuration() const;
@@ -273,6 +276,7 @@ class CONTENT_EXPORT PrefetchMatchResolver final
   const PrefetchServiceWorkerState expected_service_worker_state_;
   // Callback that is called at the match end.
   Callback callback_;
+  perfetto::Flow flow_;
   // Is the `NavigationHandle` for initial navigation of prerender or not.
   const bool is_nav_prerender_;
   // And its `PrerenderHost`.
