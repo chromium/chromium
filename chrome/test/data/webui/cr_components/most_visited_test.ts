@@ -45,6 +45,10 @@ function getShowMoreButton(): CrButtonElement|null {
   return $$<CrButtonElement>(mostVisited, '#showMore');
 }
 
+function getShowLessButton(): CrButtonElement|null {
+  return $$<CrButtonElement>(mostVisited, '#showLess');
+}
+
 function assertTileLength(length: number) {
   assertEquals(length, queryTiles().length);
 }
@@ -161,14 +165,14 @@ function leaveUrlInput() {
 interface SetUpTestOptions {
   singleRow: boolean;
   reflowOnOverflow: boolean;
-  enableShowMoreButton: boolean;
+  expandableTilesEnabled: boolean;
 }
 
 function setUpTest(providedOptions: Partial<SetUpTestOptions> = {}) {
   const defaultOptions = {
     singleRow: false,
     reflowOnOverflow: false,
-    enableShowMoreButton: false,
+    expandableTilesEnabled: false,
   };
   const options = {...defaultOptions, ...providedOptions};
   document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -179,8 +183,8 @@ function setUpTest(providedOptions: Partial<SetUpTestOptions> = {}) {
   mostVisited = new MostVisitedElement();
   mostVisited.singleRow = options.singleRow;
   mostVisited.reflowOnOverflow = options.reflowOnOverflow;
-  if (options.enableShowMoreButton) {
-    mostVisited.setAttribute('enable-show-more-button', '');
+  if (options.expandableTilesEnabled) {
+    mostVisited.setAttribute('expandable-tiles-enabled', '');
   }
   document.body.appendChild(mostVisited);
   assertEquals(1, handler.getCallCount('updateMostVisitedInfo'));
@@ -282,7 +286,7 @@ suite('ShowAddButton', () => {
       });
 });
 
-suite('ShowMoreButton', () => {
+suite('ExpandableTiles', () => {
   suiteSetup(() => {
     loadTimeData.overrideValues({
       maxTilesBeforeShowMore: MAX_TILES_BEFORE_SHOW_MORE,
@@ -290,37 +294,99 @@ suite('ShowMoreButton', () => {
   });
 
   test('Show more button is shown with 6 or more tiles', async () => {
-    await setUpTest({reflowOnOverflow: true, enableShowMoreButton: true});
+    await setUpTest({reflowOnOverflow: true, expandableTilesEnabled: true});
     await addTiles(MAX_TILES_BEFORE_SHOW_MORE + 1);
     assertTrue(isVisible(getShowMoreButton()));
     assertAddShortcutHidden();
     assertHiddenTileLength(0);
   });
 
-  test('Show more button is hidden with 5 or fewer tiles', async () => {
-    await setUpTest({reflowOnOverflow: true, enableShowMoreButton: true});
-    await addTiles(MAX_TILES_BEFORE_SHOW_MORE);
-    assertFalse(isVisible(getShowMoreButton()));
-    assertAddShortcutShown();
-  });
+  test(
+      'Show more and show less buttons are hidden with 5 or fewer tiles',
+      async () => {
+        await setUpTest({reflowOnOverflow: true, expandableTilesEnabled: true});
+        await addTiles(MAX_TILES_BEFORE_SHOW_MORE);
+        assertFalse(isVisible(getShowMoreButton()));
+        assertFalse(isVisible(getShowLessButton()));
+        assertAddShortcutShown();
+      });
 
   test(
-      'Clicking the show more button shows all tiles and hides the button',
+      'When the number of tiles is 6, toggle between show more and show less',
       async () => {
-        await setUpTest({reflowOnOverflow: true, enableShowMoreButton: true});
-        await addTiles(MAX_TILES_BEFORE_SHOW_MORE + 2);  // 7 tiles.
+        await setUpTest({reflowOnOverflow: true, expandableTilesEnabled: true});
+        await addTiles(MAX_TILES_BEFORE_SHOW_MORE + 1);
         const showMoreButton = getShowMoreButton();
         assertTrue(isVisible(showMoreButton));
         assertAddShortcutHidden();
-        assertHiddenTileLength(1);  // 7 tiles, 6 visible, so 1 hidden.
+        assertHiddenTileLength(0);
 
+        // Click "Show more", expect "Show less" and "Add shortcut" to be shown.
         showMoreButton!.click();
         await microtasksFinished();
 
         assertFalse(isVisible(getShowMoreButton()));
+        assertTrue(isVisible(getShowLessButton()));
         assertAddShortcutShown();
         assertHiddenTileLength(0);
+
+        // Click "Show less", "Show more" shown and "Add shortcut" hidden
+        const ShowLessButton = getShowLessButton();
+        ShowLessButton!.click();
+        await microtasksFinished();
+
+        assertTrue(isVisible(getShowMoreButton()));
+        assertFalse(isVisible(getShowLessButton()));
+        assertAddShortcutHidden();
+        assertHiddenTileLength(0);
       });
+
+  test('clicking show more shows all tiles and show less button', async () => {
+    await setUpTest({reflowOnOverflow: true, expandableTilesEnabled: true});
+    await addTiles(MAX_TILES_BEFORE_SHOW_MORE + 2);  // 7 tiles.
+    const showMoreButton = getShowMoreButton();
+    assertTrue(isVisible(showMoreButton));
+    assertAddShortcutHidden();
+    assertHiddenTileLength(1);  // 7 tiles, 6 visible, so 1 hidden.
+
+    showMoreButton!.click();
+    await microtasksFinished();
+
+    assertFalse(isVisible(getShowMoreButton()));
+    assertTrue(isVisible(getShowLessButton()));
+    assertAddShortcutShown();
+    assertHiddenTileLength(0);
+  });
+
+  test('clicking show less hides tiles and show more button', async () => {
+    await setUpTest({reflowOnOverflow: true, expandableTilesEnabled: true});
+    await addTiles(MAX_TILES_BEFORE_SHOW_MORE + 2);  // 7 tiles.
+    const showMoreButton = getShowMoreButton();
+    const showLessButton = getShowLessButton();
+
+    assertTrue(isVisible(showMoreButton));
+    assertFalse(isVisible(showLessButton));
+    assertAddShortcutHidden();
+    assertHiddenTileLength(1);
+
+    // Click "Show more".
+    showMoreButton!.click();
+    await microtasksFinished();
+
+    assertFalse(isVisible(showMoreButton));
+    assertTrue(isVisible(showLessButton));
+    assertAddShortcutShown();
+    assertHiddenTileLength(0);
+
+    // Click "Show less".
+    showLessButton!.click();
+    await microtasksFinished();
+
+    assertTrue(isVisible(showMoreButton));
+    assertFalse(isVisible(showLessButton));
+    assertAddShortcutHidden();
+    assertHiddenTileLength(1);
+  });
 });
 
 function createLayoutsSuite(singleRow: boolean, reflowOnOverflow: boolean) {

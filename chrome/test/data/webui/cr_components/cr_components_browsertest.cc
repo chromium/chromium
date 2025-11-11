@@ -193,9 +193,9 @@ IN_PROC_BROWSER_TEST_F(CrComponentsMostVisitedTest, ShowAddButton) {
           "runMochaSuite('ShowAddButton');");
 }
 
-IN_PROC_BROWSER_TEST_F(CrComponentsMostVisitedTest, ShowMoreButton) {
+IN_PROC_BROWSER_TEST_F(CrComponentsMostVisitedTest, ExpandableTiles) {
   RunTest("cr_components/most_visited_test.js",
-          "runMochaSuite('ShowMoreButton');");
+          "runMochaSuite('ExpandableTiles');");
 }
 
 typedef WebUIMochaBrowserTest CrComponentsThemeColorPickerTest;

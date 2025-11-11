@@ -29,7 +29,10 @@ build_webui("build") {
   ]
   css_files = [ "most_visited.css" ]
 
-  static_files = [ "expand_content.svg" ]
+  static_files = [
+    "expand_content.svg",
+    "collapse_content.svg",
+  ]
 
   mojo_files_deps = [
     ":mojom_ts__generator",
