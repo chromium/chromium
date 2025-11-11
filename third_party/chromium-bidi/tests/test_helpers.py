@@ -93,7 +93,9 @@ async def execute_command(websocket, command: dict, timeout: int = 5) -> dict:
     )
     try:
         result = await wait_for_command(websocket, command["id"], timeout)
-        logger.info(f"Command {command['id']} finished with {result}")
+        logger.info(f"Command {command['id']} finished.")
+        # Result can be long, so log it only on-demand.
+        logger.debug(f"Result: {result}")
         return result
     except Exception as e:
         logger.info(f"Command {command['id']} failed with {type(e)}, {e}")

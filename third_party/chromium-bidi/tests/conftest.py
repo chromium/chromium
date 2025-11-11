@@ -121,7 +121,15 @@ async def capabilities(request):
 
 
 @pytest_asyncio.fixture
-async def websocket(test_headless_mode, capabilities, request):
+async def current_test_name(request):
+    if request and request.node and request.node.name:
+        # Add test name to ease log analyse.
+        return request.node.name
+    return "::NO_TEST"
+
+
+@pytest_asyncio.fixture
+async def websocket(test_headless_mode, capabilities, current_test_name):
     """Connects to endpoint, creates a session and returns a websocket connection."""
     async def create_session(connection):
         """
@@ -144,12 +152,10 @@ async def websocket(test_headless_mode, capabilities, request):
                     "--disable-background-timer-throttling",
                     "--disable-backgrounding-occluded-windows",
                 ]
-            }
-        }
-
-        if request and request.node and request.node.name:
+            },
             # Add test name to ease log analyse.
-            default_capabilities["goog:pytest_name"] = request.node.name
+            "goog:pytest_name": current_test_name
+        }
 
         maybe_browser_bin = os.getenv("BROWSER_BIN")
         if maybe_browser_bin:

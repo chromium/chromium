@@ -194,6 +194,9 @@ if (HEADLESS === 'false' && !argv.k) {
 if (argv.k) {
   e2eArgs.push('-k', argv.k);
 }
+if (argv.s) {
+  e2eArgs.push('-s');
+}
 
 const e2eProcess = child_process.spawn('pipenv', e2eArgs, {
   stdio: ['inherit', 'pipe', 'pipe'],

@@ -1,0 +1,66 @@
+# Copyright 2025 Google LLC.
+# Copyright (c) Microsoft Corporation.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import time
+from pathlib import Path
+
+import pytest
+from test_helpers import execute_command, goto_url
+
+REPEAT_TIMES = 5
+
+
+async def capture_screenshot(websocket, context_id):
+    await execute_command(
+        websocket, {
+            "method": "browsingContext.captureScreenshot",
+            "params": {
+                "origin": "document",
+                "context": context_id
+            }
+        })
+
+
+@pytest.mark.timeout(60)
+@pytest.mark.asyncio
+async def test_performance_screenshot(websocket, context_id,
+                                      current_test_name):
+    await execute_command(
+        websocket, {
+            "method": "browsingContext.setViewport",
+            "params": {
+                "context": context_id,
+                "viewport": {
+                    "width": 800,
+                    "height": 600,
+                },
+                "devicePixelRatio": None
+            }
+        })
+
+    await goto_url(
+        websocket, context_id,
+        f'file://{Path(__file__).parent.resolve()}/resources/long_page.html')
+
+    # Pre-warm.
+    await capture_screenshot(websocket, context_id)
+
+    start_time = time.time()
+    for i in range(REPEAT_TIMES):
+        await capture_screenshot(websocket, context_id)
+
+    average_time = (time.time() - start_time) / REPEAT_TIMES
+
+    print(f"PERF_METRIC:{current_test_name}:{average_time * 1000}")

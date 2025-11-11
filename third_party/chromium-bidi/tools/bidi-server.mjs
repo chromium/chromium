@@ -69,6 +69,10 @@ export function parseCommandLineArgs() {
       describe: 'Provide a test name to filter by',
       type: 'string',
     })
+    .option('s', {
+      describe: 'Preserve output of passing tests',
+      type: 'boolean',
+    })
     .option('repeat-times', {
       describe: 'If set, will repeat each test this many times',
       type: 'number',
