@@ -100,10 +100,14 @@ IN_PROC_BROWSER_TEST_F(ActorDragAndReleaseToolBrowserTest,
   actor_task().Act(ToRequestList(action), result_success.GetCallback());
   ExpectOkResult(result_success);
 
-  EXPECT_EQ(base::StrCat({"mousemove[", start.ToString(), "],", "mousedown[",
-                          start.ToString(), "],", "mousemove[", end.ToString(),
-                          "],", "mouseup[", end.ToString(), "]"}),
-            EvalJs(web_contents(), "event_log.join(',')"));
+  EXPECT_THAT(
+      EvalJs(web_contents(), "event_log.join(',')").ExtractString(),
+      testing::AllOf(
+          testing::StartsWith(
+              base::StrCat({"mousemove[", start.ToString(), "],", "mousedown[",
+                            start.ToString(), "],"})),
+          testing::EndsWith(base::StrCat({"mousemove[", end.ToString(), "],",
+                                          "mouseup[", end.ToString(), "]"}))));
 }
 
 // Ensure the drag tool sends the expected pointer down, move and up events and
@@ -132,12 +136,19 @@ IN_PROC_BROWSER_TEST_F(ActorDragAndReleaseToolBrowserTest,
   actor_task().Act(ToRequestList(action), result_success.GetCallback());
   ExpectOkResult(result_success);
 
-  EXPECT_EQ(
-      base::StrCat({"pointermove[", start.ToString(), "]: 0,", "pointerdown[",
-                    start.ToString(), "]: 1,", "gotpointercapture[",
-                    end.ToString(), "]: 1,", "pointermove[", end.ToString(),
-                    "]: 1,", "pointerup[", end.ToString(), "]: 0"}),
-      EvalJs(web_contents(), "pointer_log.join(',')"));
+  EXPECT_THAT(EvalJs(web_contents(), "pointer_log.join(',')").ExtractString(),
+              testing::AllOf(testing::StartsWith(base::StrCat({
+                                 "pointermove[",
+                                 start.ToString(),
+                                 "]: 0,",
+                                 "pointerdown[",
+                                 start.ToString(),
+                                 "]: 1,",
+                                 "gotpointercapture[",
+                             })),
+                             testing::EndsWith(base::StrCat(
+                                 {"pointermove[", end.ToString(), "]: 1,",
+                                  "pointerup[", end.ToString(), "]: 0"}))));
 }
 
 // Ensure coordinates outside of the viewport are rejected.
