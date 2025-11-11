@@ -601,6 +601,79 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="ParseFailedInvalidJson"/>
 </enum>
 
+<!-- LINT.IfChange(WebAppProtoParseResult) -->
+
+<enum name="WebAppProtoParseResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="NoSyncData"/>
+  <int value="2" label="NoStartUrlInSyncData"/>
+  <int value="3" label="InvalidStartUrl"/>
+  <int value="4" label="NoScope"/>
+  <int value="5" label="InvalidScope"/>
+  <int value="6" label="InvalidScopeWithRef"/>
+  <int value="7" label="InvalidScopeWithQuery"/>
+  <int value="8" label="NoRelativeManifestId"/>
+  <int value="9" label="InvalidManifestId"/>
+  <int value="10" label="NoUserDisplayModeInSync"/>
+  <int value="11" label="MissingUserDisplayModeForCurrentPlatform"/>
+  <int value="12" label="NoSources"/>
+  <int value="13" label="NoSourcesAndNotUninstalling"/>
+  <int value="14" label="NoName"/>
+  <int value="15" label="NoInstallState"/>
+  <int value="16" label="InvalidInstallState"/>
+  <int value="17" label="MissingChromeOsData"/>
+  <int value="18" label="HasChromeOsDataOnNonChromeOs"/>
+  <int value="19" label="NoManifestIcons"/>
+  <int value="20" label="InvalidFileHandlerNoActionOrLaunchType"/>
+  <int value="21" label="InvalidFileHandlerAction"/>
+  <int value="22" label="InvalidFileHandlerAcceptEntry"/>
+  <int value="23" label="InvalidIconsInFileHandler"/>
+  <int value="24" label="InvalidShareTarget"/>
+  <int value="25" label="InvalidShareTargetAction"/>
+  <int value="26" label="InvalidShareTargetFile"/>
+  <int value="27" label="InvalidShortcutsMenuItemInfo"/>
+  <int value="28" label="MoreDownloadedShortcutIconsThanInfos"/>
+  <int value="29" label="EmptyAdditionalSearchTerm"/>
+  <int value="30" label="InvalidProtocolHandler"/>
+  <int value="31" label="InvalidProtocolHandlerUrl"/>
+  <int value="32" label="EmptyAllowedLaunchProtocol"/>
+  <int value="33" label="EmptyDisallowedLaunchProtocol"/>
+  <int value="34" label="InvalidScopeExtension"/>
+  <int value="35" label="OpaqueScopeExtensionOrigin"/>
+  <int value="36" label="EmptyScopeExtensionOrigin"/>
+  <int value="37" label="InvalidScopeExtensionScope"/>
+  <int value="38" label="OpaqueValidatedScopeExtension"/>
+  <int value="39" label="EmptyValidatedScopeExtensionOrigin"/>
+  <int value="40" label="InvalidScopeExtensionValidated"/>
+  <int value="41" label="ScopeExtensionOriginMismatchWithScope"/>
+  <int value="42" label="InvalidManifestUrl"/>
+  <int value="43" label="InvalidInstallUrl"/>
+  <int value="44" label="EmptyPolicyId"/>
+  <int value="45" label="InvalidIsolationDataVersion"/>
+  <int value="46" label="InvalidIsolationDataLocation"/>
+  <int value="47" label="InvalidPendingUpdateInfoLocation"/>
+  <int value="48" label="DevModeMismatchInIsolationData"/>
+  <int value="49" label="InvalidPendingUpdateInfoVersion"/>
+  <int value="50" label="InvalidPendingUpdateIntegrityBlockData"/>
+  <int value="51" label="InvalidIntegrityBlockData"/>
+  <int value="52" label="InvalidUpdateManifestUrlIwa"/>
+  <int value="53" label="InvalidUpdateChannel"/>
+  <int value="54" label="InvalidGeneratedIconFix"/>
+  <int value="55" label="EmptyPendingUpdateInfo"/>
+  <int value="56" label="MismatchedPendingUpdateInfoIcons"/>
+  <int value="57" label="MissingDownloadedIconsForPendingUpdate"/>
+  <int value="58" label="InvalidPendingUpdateManifestIcons"/>
+  <int value="59" label="InvalidPendingUpdateTrustedIcons"/>
+  <int value="60" label="InvalidDownloadedManifestIconForPendingUpdate"/>
+  <int value="61" label="InvalidDownloadedTrustedIconForPendingUpdate"/>
+  <int value="62" label="MissingWasIgnoredForPendingUpdate"/>
+  <int value="63" label="InvalidParsedTrustedIcons"/>
+  <int value="64" label="InvalidBorderlessUrlPatterns"/>
+  <int value="65" label="InvalidInstalledBy"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/web_applications/web_app_database_serialization.h:ProtoParseResult) -->
+
 <enum name="WebAppStorageKeyParseResult">
   <int value="0" label="Success"/>
   <int value="1" label="No Start URL"/>
