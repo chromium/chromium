@@ -353,6 +353,8 @@ blink_core_sources_html = [
   "html_menu_item_element.h",
   "html_menu_list_element.cc",
   "html_menu_list_element.h",
+  "html_menu_owner_element.cc",
+  "html_menu_owner_element.h",
   "html_meta_element.cc",
   "html_meta_element.h",
   "html_meter_element.cc",

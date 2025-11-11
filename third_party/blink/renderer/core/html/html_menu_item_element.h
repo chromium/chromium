@@ -11,8 +11,8 @@
 namespace blink {
 
 class HTMLFieldSetElement;
-class HTMLMenuBarElement;
 class HTMLMenuListElement;
+class HTMLMenuOwnerElement;
 
 class CORE_EXPORT HTMLMenuItemElement final : public HTMLElement {
   DEFINE_WRAPPERTYPEINFO();
@@ -32,8 +32,7 @@ class CORE_EXPORT HTMLMenuItemElement final : public HTMLElement {
   bool setChecked(bool);
   bool ShouldAppearChecked() const;
 
-  HTMLMenuBarElement* OwnerMenuBarElement() const;
-  HTMLMenuListElement* OwnerMenuListElement() const;
+  HTMLMenuOwnerElement* OwningMenuElement() const;
 
   bool CanBeCommandInvoker() const override;
 
@@ -63,20 +62,18 @@ class CORE_EXPORT HTMLMenuItemElement final : public HTMLElement {
   // containing this menuitem, and then walks the tree of command invokers up
   // to find any nested containing menulist's. It then closes the outermost
   // such menulist, which (via popover close behavior) closes the tree.
-  HTMLMenuListElement* CloseOutermostContainingMenuList(
-      Element** invoker = nullptr);
+  Element* CloseOutermostContainingMenuList();
   void ActivateMenuItem();
   bool HandleMenuPointerEvents(Event&);
   void HandleMenuKeyboardEvents(Event&);
+  bool HasOwnerMenuList() const;
 
-  // Traverse ancestors to find the nearest menubar or menulist ancestor.
-  void ResetNearestAncestorMenuBarOrMenuList();
-  // Traverse ancestors to find the nearest fieldset ancestor.
-  void ResetNearestAncestorFieldSet();
+  // Traverse ancestors to find the nearest menubars, menulists, and fieldsets,
+  // and cache them.
+  void ResetAncestorElementCache();
 
-  Member<HTMLMenuBarElement> nearest_ancestor_menu_bar_;
-  Member<HTMLMenuListElement> nearest_ancestor_menu_list_;
-  // Could be null forever; it is only used to allow `this` to be checkable, if
+  Member<HTMLMenuOwnerElement> owning_menu_element_;
+  // Could be null: only used to allow `this` to be checkable, if
   // `this` is immediately nested inside a `<fieldset checkable>`.
   Member<HTMLFieldSetElement> nearest_ancestor_field_set_;
 

@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_field_set_element.h"
 #include "third_party/blink/renderer/core/html/html_menu_bar_element.h"
 #include "third_party/blink/renderer/core/html/html_menu_list_element.h"
+#include "third_party/blink/renderer/core/html/menu_item_list.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/keywords.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -29,8 +30,7 @@ HTMLMenuItemElement::HTMLMenuItemElement(Document& document)
 HTMLMenuItemElement::~HTMLMenuItemElement() = default;
 
 void HTMLMenuItemElement::Trace(Visitor* visitor) const {
-  visitor->Trace(nearest_ancestor_menu_bar_);
-  visitor->Trace(nearest_ancestor_menu_list_);
+  visitor->Trace(owning_menu_element_);
   visitor->Trace(nearest_ancestor_field_set_);
   HTMLElement::Trace(visitor);
 }
@@ -58,8 +58,13 @@ void HTMLMenuItemElement::ParseAttribute(
   }
 }
 
+bool HTMLMenuItemElement::HasOwnerMenuList() const {
+  return owning_menu_element_ &&
+         IsA<HTMLMenuListElement>(*owning_menu_element_);
+}
+
 bool HTMLMenuItemElement::IsCheckable() const {
-  return nearest_ancestor_menu_list_ && nearest_ancestor_field_set_ &&
+  return HasOwnerMenuList() && nearest_ancestor_field_set_ &&
          nearest_ancestor_field_set_->FastGetAttribute(
              html_names::kCheckableAttr);
 }
@@ -92,7 +97,7 @@ bool HTMLMenuItemElement::IsKeyboardFocusableSlow(
 
 int HTMLMenuItemElement::DefaultTabIndex() const {
   // Menuitems in menulist should be traversed using arrow keys and not tabbing.
-  if (nearest_ancestor_menu_list_) {
+  if (HasOwnerMenuList()) {
     return -1;
   }
   return 0;
@@ -176,12 +181,9 @@ void HTMLMenuItemElement::ActivateMenuItem() {
   }
 }
 
-HTMLMenuListElement* HTMLMenuItemElement::CloseOutermostContainingMenuList(
-    Element** invoker) {
-  HTMLMenuListElement* containing_menulist = OwnerMenuListElement();
-  if (invoker) {
-    *invoker = nullptr;
-  }
+Element* HTMLMenuItemElement::CloseOutermostContainingMenuList() {
+  HTMLMenuListElement* containing_menulist =
+      DynamicTo<HTMLMenuListElement>(owning_menu_element_.Get());
   if (!containing_menulist) {
     // This <menuitem> isn't inside a <menulist>.
     return nullptr;
@@ -200,10 +202,7 @@ HTMLMenuListElement* HTMLMenuItemElement::CloseOutermostContainingMenuList(
       upstream_invoker, HidePopoverFocusBehavior::kNone,
       HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions,
       /*exception_state=*/nullptr);
-  if (invoker) {
-    *invoker = upstream_invoker;
-  }
-  return containing_menulist;
+  return upstream_invoker;
 }
 
 void HTMLMenuItemElement::HandleMenuKeyboardEvents(Event& event) {
@@ -211,13 +210,8 @@ void HTMLMenuItemElement::HandleMenuKeyboardEvents(Event& event) {
   if (!keyboard_event || event.type() != event_type_names::kKeydown) {
     return;
   }
-
-  // TODO(crbug.com/425708944): This is the same ignore list as option event
-  // handling and can be consolidated together.
-  int tab_ignore_modifiers = WebInputEvent::kControlKey |
-                             WebInputEvent::kAltKey | WebInputEvent::kMetaKey;
-  int ignore_modifiers = WebInputEvent::kShiftKey | tab_ignore_modifiers;
-  if (keyboard_event->GetModifiers() & ignore_modifiers) {
+  // If any key modifiers are pressed, don't do anything.
+  if (keyboard_event->GetModifiers() & WebInputEvent::kKeyModifiers) {
     return;
   }
 
@@ -229,12 +223,17 @@ void HTMLMenuItemElement::HandleMenuKeyboardEvents(Event& event) {
     return;
   }
 
-  if (auto* menulist = OwnerMenuListElement()) {
-    MenuItemList menuitems = menulist->GetItemList();
-    // Nothing below can do anything, if the list is empty.
-    if (menuitems.Empty()) {
-      return;
-    }
+  // Nothing else below does anything if we're not inside an owner menu that has
+  // at least one menu item.
+  if (!owning_menu_element_) {
+    return;
+  }
+  MenuItemList menuitems = owning_menu_element_->ItemList();
+  if (menuitems.Empty()) {
+    return;
+  }
+
+  if (IsA<HTMLMenuListElement>(*owning_menu_element_)) {
     if (key == keywords::kArrowUp) {
       if (auto* previous = menuitems.PreviousFocusableMenuItem(*this)) {
         previous->Focus(focus_params);
@@ -269,7 +268,7 @@ void HTMLMenuItemElement::HandleMenuKeyboardEvents(Event& event) {
         if (!invoked_menulist->popoverOpen()) {
           invoked_menulist->InvokePopover(*this);
         }
-        MenuItemList invoked_menuitems = invoked_menulist->GetItemList();
+        MenuItemList invoked_menuitems = invoked_menulist->ItemList();
         if (auto* first = invoked_menuitems.NextFocusableMenuItem(
                 *invoked_menuitems.begin(), /*inclusive=*/true)) {
           first->Focus(focus_params);
@@ -280,22 +279,17 @@ void HTMLMenuItemElement::HandleMenuKeyboardEvents(Event& event) {
         // Else, this menuitem does not invoke a menulist and we close all
         // ancestor menulists. Loop to find the invoker of the lowest layer
         // menulist ancestor.
-        Element* invoker;
-        CloseOutermostContainingMenuList(&invoker);
-        if (invoker) {
-          // If ancestor menulist is invoked from a menubar, focus on next
-          // menuitem within the menubar.
-          if (HTMLMenuItemElement* invoker_menuitem =
-                  DynamicTo<HTMLMenuItemElement>(invoker)) {
-            if (auto* ancestor_menubar =
-                    invoker_menuitem->OwnerMenuBarElement()) {
-              MenuItemList ancestor_menuitems = ancestor_menubar->GetItemList();
-              if (auto* next = ancestor_menuitems.NextFocusableMenuItem(
-                      *invoker_menuitem)) {
-                next->Focus(focus_params);
-                event.SetDefaultHandled();
-                return;
-              }
+        auto* invoker = CloseOutermostContainingMenuList();
+        // If ancestor menulist is invoked from a menubar, focus on next
+        // menuitem within the menubar.
+        if (auto* invoker_menuitem = DynamicTo<HTMLMenuItemElement>(invoker)) {
+          if (auto* ancestor_menubar = invoker_menuitem->OwningMenuElement()) {
+            MenuItemList ancestor_menuitems = ancestor_menubar->ItemList();
+            if (auto* next = ancestor_menuitems.NextFocusableMenuItem(
+                    *invoker_menuitem)) {
+              next->Focus(focus_params);
+              event.SetDefaultHandled();
+              return;
             }
           }
           // Else, focus on the invoker (it can be a menuitem or a button).
@@ -308,21 +302,22 @@ void HTMLMenuItemElement::HandleMenuKeyboardEvents(Event& event) {
     } else if (key == keywords::kArrowLeft) {
       // If this is itself in a menulist, then arrow left should close the
       // current menulist.
-      Element* invoker = menulist->GetPopoverData()->invoker();
-      bool can_hide = menulist->IsPopoverReady(
+      Element* invoker = owning_menu_element_->GetPopoverData()->invoker();
+      bool can_hide = owning_menu_element_->IsPopoverReady(
           PopoverTriggerAction::kHide,
           /*exception_state=*/nullptr,
           /*include_event_handler_text=*/false, &GetDocument());
       if (can_hide) {
-        menulist->HidePopoverInternal(
+        owning_menu_element_->HidePopoverInternal(
             invoker, HidePopoverFocusBehavior::kNone,
             HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions,
             /*exception_state=*/nullptr);
       }
       if (auto* invoker_menuitem = DynamicTo<HTMLMenuItemElement>(invoker)) {
-        if (auto* invoker_menubar = invoker_menuitem->OwnerMenuBarElement()) {
+        if (auto* invoker_menubar = DynamicTo<HTMLMenuBarElement>(
+                invoker_menuitem->OwningMenuElement())) {
           // Focus on previous if it is in menubar.
-          MenuItemList invoker_menuitems = invoker_menubar->GetItemList();
+          MenuItemList invoker_menuitems = invoker_menubar->ItemList();
           if (auto* previous = invoker_menuitems.PreviousFocusableMenuItem(
                   *invoker_menuitem)) {
             previous->Focus(focus_params);
@@ -339,12 +334,8 @@ void HTMLMenuItemElement::HandleMenuKeyboardEvents(Event& event) {
     }
     // TODO(crbug.com/425682464): implement scrolling to visible menuitem,
     // for kPageDown/kPageUp.
-  } else if (auto* menubar = OwnerMenuBarElement()) {
-    MenuItemList menuitems = menubar->GetItemList();
-    // Nothing below can do anything, if the list is empty.
-    if (menuitems.Empty()) {
-      return;
-    }
+  } else {
+    CHECK(IsA<HTMLMenuBarElement>(*owning_menu_element_));
     if (key == keywords::kArrowLeft) {
       if (auto* previous = menuitems.PreviousFocusableMenuItem(*this)) {
         previous->Focus(focus_params);
@@ -378,7 +369,7 @@ void HTMLMenuItemElement::HandleMenuKeyboardEvents(Event& event) {
         if (!invoked_menulist->popoverOpen()) {
           invoked_menulist->InvokePopover(*this);
         }
-        MenuItemList invoked_menuitems = invoked_menulist->GetItemList();
+        MenuItemList invoked_menuitems = invoked_menulist->ItemList();
         if (key == keywords::kArrowDown) {
           if (auto* first = invoked_menuitems.NextFocusableMenuItem(
                   *invoked_menuitems.begin(), /*inclusive=*/true)) {
@@ -475,38 +466,25 @@ void HTMLMenuItemElement::DefaultEventHandler(Event& event) {
   HTMLElement::DefaultEventHandler(event);
 }
 
-HTMLMenuBarElement* HTMLMenuItemElement::OwnerMenuBarElement() const {
-  return nearest_ancestor_menu_bar_;
+HTMLMenuOwnerElement* HTMLMenuItemElement::OwningMenuElement() const {
+  return owning_menu_element_;
 }
 
-HTMLMenuListElement* HTMLMenuItemElement::OwnerMenuListElement() const {
-  return nearest_ancestor_menu_list_;
-}
-
-void HTMLMenuItemElement::ResetNearestAncestorMenuBarOrMenuList() {
-  nearest_ancestor_menu_bar_ = nullptr;
-  nearest_ancestor_menu_list_ = nullptr;
+void HTMLMenuItemElement::ResetAncestorElementCache() {
+  owning_menu_element_ = nullptr;
+  nearest_ancestor_field_set_ = nullptr;
   for (Node& ancestor : NodeTraversal::AncestorsOf(*this)) {
-    if (auto* menu_bar = DynamicTo<HTMLMenuBarElement>(ancestor)) {
-      nearest_ancestor_menu_bar_ = menu_bar;
-      break;
-    } else if (auto* menu_list = DynamicTo<HTMLMenuListElement>(ancestor)) {
-      nearest_ancestor_menu_list_ = menu_list;
+    if (auto* owning_menu = DynamicTo<HTMLMenuOwnerElement>(ancestor)) {
+      owning_menu_element_ = owning_menu;
       break;
     }
   }
-}
-
-void HTMLMenuItemElement::ResetNearestAncestorFieldSet() {
-  nearest_ancestor_field_set_ = nullptr;
   // TODO(https://crbug.com/406566432): See if we want to allow ancestor field
   // sets higher up than just the immediate parent.
-  HTMLFieldSetElement* field_set = DynamicTo<HTMLFieldSetElement>(parentNode());
-  if (!field_set) {
-    return;
+  if (HTMLFieldSetElement* field_set =
+          DynamicTo<HTMLFieldSetElement>(parentNode())) {
+    nearest_ancestor_field_set_ = field_set;
   }
-
-  nearest_ancestor_field_set_ = field_set;
 }
 
 Node::InsertionNotificationRequest HTMLMenuItemElement::InsertedInto(
@@ -514,8 +492,7 @@ Node::InsertionNotificationRequest HTMLMenuItemElement::InsertedInto(
   auto return_value = HTMLElement::InsertedInto(insertion_point);
 
   // Run various ancestor/state resets.
-  ResetNearestAncestorMenuBarOrMenuList();
-  ResetNearestAncestorFieldSet();
+  ResetAncestorElementCache();
   return return_value;
 }
 
@@ -523,8 +500,7 @@ void HTMLMenuItemElement::RemovedFrom(ContainerNode& insertion_point) {
   HTMLElement::RemovedFrom(insertion_point);
 
   // Run various ancestor/state resets.
-  ResetNearestAncestorMenuBarOrMenuList();
-  ResetNearestAncestorFieldSet();
+  ResetAncestorElementCache();
   return;
 }
 

@@ -11,18 +11,10 @@
 namespace blink {
 
 HTMLMenuListElement::HTMLMenuListElement(Document& document)
-    : HTMLElement(html_names::kMenulistTag, document) {
-  // menulist is always a popover and should have popover data with type auto.
+    : HTMLMenuOwnerElement(html_names::kMenulistTag, document) {
+  // <menulist> is always a popover and should have popover data with type auto.
   DCHECK(RuntimeEnabledFeatures::MenuElementsEnabled());
   EnsurePopoverData().setType(PopoverValueType::kAuto);
-}
-
-bool HTMLMenuListElement::IsValidBuiltinCommand(HTMLElement& invoker,
-                                                CommandEventType command) {
-  return HTMLElement::IsValidBuiltinCommand(invoker, command) ||
-         command == CommandEventType::kToggleMenu ||
-         command == CommandEventType::kShowMenu ||
-         command == CommandEventType::kHideMenu;
 }
 
 bool HTMLMenuListElement::HandleCommandInternal(HTMLElement& invoker,

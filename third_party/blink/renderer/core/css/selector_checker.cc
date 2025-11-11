@@ -72,6 +72,7 @@
 #include "third_party/blink/renderer/core/html/html_dialog_element.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/html/html_frame_element_base.h"
+#include "third_party/blink/renderer/core/html/html_menu_bar_element.h"
 #include "third_party/blink/renderer/core/html/html_menu_item_element.h"
 #include "third_party/blink/renderer/core/html/html_menu_list_element.h"
 #include "third_party/blink/renderer/core/html/html_permission_element.h"
@@ -2726,7 +2727,7 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       if (auto* menulist = DynamicTo<HTMLMenuListElement>(element)) {
         if (auto* menuitem_anchor = DynamicTo<HTMLMenuItemElement>(
                 menulist->GetPopoverData()->invoker())) {
-          return menuitem_anchor->OwnerMenuBarElement();
+          return IsA<HTMLMenuBarElement>(menuitem_anchor->OwningMenuElement());
         }
       }
       return false;
@@ -2734,7 +2735,7 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       if (auto* menulist = DynamicTo<HTMLMenuListElement>(element)) {
         if (auto* menuitem_anchor = DynamicTo<HTMLMenuItemElement>(
                 menulist->GetPopoverData()->invoker())) {
-          return menuitem_anchor->OwnerMenuListElement();
+          return IsA<HTMLMenuListElement>(menuitem_anchor->OwningMenuElement());
         }
       }
       return false;
