@@ -102,6 +102,12 @@ bool RecursiveBuildStructureTree(const ui::AXNode* ax_node,
       tag->fTypeString = chrome_pdf::kPDFStructureTypeParagraph;
       break;
     case ax::mojom::Role::kGenericContainer:
+      tag->fTypeString = chrome_pdf::kPDFStructureTypeNonStruct;
+      break;
+    case ax::mojom::Role::kGroup:
+      // A Div is not the same as an HTML div, it can be semantically
+      // meaningful. In the current draft of PDF-AAM, Div will be mapped
+      // to role group.
       tag->fTypeString = chrome_pdf::kPDFStructureTypeDiv;
       break;
     case ax::mojom::Role::kArticle:

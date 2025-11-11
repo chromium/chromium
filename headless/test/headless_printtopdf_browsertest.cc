@@ -594,6 +594,10 @@ IN_PROC_BROWSER_TEST_F(HeadlessTaggedPDFBrowserTest, Code) {
   RunTaggedPDFTest("/structured_doc_code.html");
 }
 
+IN_PROC_BROWSER_TEST_F(HeadlessTaggedPDFBrowserTest, Div) {
+  RunTaggedPDFTest("/structured_doc_div.html");
+}
+
 IN_PROC_BROWSER_TEST_F(HeadlessTaggedPDFBrowserTest, Doc) {
   RunTaggedPDFTest("/structured_doc.html");
 }

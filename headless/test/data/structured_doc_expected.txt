@@ -25,7 +25,7 @@
          } ]
       } ]
    }, {
-      "type": "Div",
+      "type": "NonStruct",
       "~children": [ {
          "type": "Link",
          "~children": [ {
@@ -107,7 +107,7 @@
          "type": "NonStruct"
       } ]
    }, {
-      "type": "Div",
+      "type": "NonStruct",
       "~children": [ {
          "alt": "Car at the beach",
          "type": "Figure"

@@ -2,10 +2,14 @@
    "lang": "en",
    "type": "Document",
    "~children": [ {
+      "type": "Div",
+      "~children": [ {
+         "type": "NonStruct"
+      } ]
+   }, {
       "type": "NonStruct",
       "~children": [ {
-         "alt": "Sample SVG image",
-         "type": "Figure"
+         "type": "NonStruct"
       } ]
    } ]
 }
