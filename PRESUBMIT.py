@@ -174,6 +174,13 @@ _BANNED_JAVA_IMPORTS: Sequence[BanRule] = (
          '//styleguide/java/java.md', ),
         False,
     ),
+    BanRule(
+        'import static org.junit.Assert.assertThat',
+        ('Use com.google.common.truth.Truth.assertThat() instead of '
+         'org.junit.Assert.assertThat().', ),
+        True,
+        excluded_paths=(r'third_party/', ),
+    ),
 )
 
 _BANNED_JAVA_FUNCTIONS: Sequence[BanRule] = (
@@ -283,6 +290,13 @@ _BANNED_JAVA_FUNCTIONS: Sequence[BanRule] = (
          'WebView.', ),
         treat_as_error=False,
         surface_as_gerrit_lint=True,
+    ),
+    BanRule(
+        r'/(?:org\.junit\.)?(?<!\w)Assert\.assertThat\(',
+        ('Use com.google.common.truth.Truth.assertThat() instead of '
+         'org.junit.Assert.assertThat().', ),
+        True,
+        excluded_paths=(r'third_party/', ),
     ),
 )
 
