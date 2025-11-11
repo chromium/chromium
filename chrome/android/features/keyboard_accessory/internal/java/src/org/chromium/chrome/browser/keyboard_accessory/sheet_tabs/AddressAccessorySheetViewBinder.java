@@ -58,7 +58,8 @@ class AddressAccessorySheetViewBinder {
             ChipView chip = view.getPlusAddress();
             chip.getPrimaryTextView().setText(plusAddressField.getDisplayText());
             chip.getPrimaryTextView().setContentDescription(plusAddressField.getA11yDescription());
-            chip.setIcon(R.drawable.ic_plus_addresses_logo_24dp, /* tintWithTextColor= */ true);
+            chip.setIconWithTint(
+                    R.drawable.ic_plus_addresses_logo_24dp, /* tintWithTextColor= */ true);
             chip.setOnClickListener(src -> plusAddressField.triggerSelection());
 
             // Set the default icon, then try to get a better one.
