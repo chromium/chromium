@@ -48,10 +48,6 @@ AppSessionService::AppSessionService(Profile* profile)
                          SessionServiceBase::SessionServiceType::kAppRestore) {}
 
 AppSessionService::~AppSessionService() {
-  // The BrowserList should outlive the SessionService since it's static and
-  // the SessionService is a KeyedService.
-  // BrowserList is subscribed to by SessionServiceBase's constructor.
-  BrowserList::RemoveObserver(this);
   command_storage_manager()->Save();
 
   DestroyCommandStorageManager();

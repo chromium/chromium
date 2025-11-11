@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
@@ -163,14 +164,13 @@ SessionServiceBase::SessionServiceBase(Profile* profile,
 
   // We should never be created when incognito.
   DCHECK(!profile->IsOffTheRecord());
-  BrowserList::AddObserver(this);
+  if (profile->AllowsBrowserWindows()) {
+    browser_collection_observer_.Observe(
+        ProfileBrowserCollection::GetForProfile(profile));
+  }
 }
 
 SessionServiceBase::~SessionServiceBase() {
-  // The BrowserList should outlive the SessionService since it's static and
-  // the SessionService is a KeyedService.
-  BrowserList::RemoveObserver(this);
-
   // command_storage_manager_->Save() should be called by child classes which
   // should have destructed the command_storage_manager.
   DCHECK(command_storage_manager_ == nullptr);
@@ -547,10 +547,10 @@ void SessionServiceBase::RemoveUnusedRestoreWindows(
   }
 }
 
-void SessionServiceBase::OnBrowserSetLastActive(Browser* browser) {
+void SessionServiceBase::OnBrowserActivated(BrowserWindowInterface* browser) {
   if (ShouldTrackBrowser(browser)) {
     ScheduleCommand(
-        sessions::CreateSetActiveWindowCommand(browser->session_id()));
+        sessions::CreateSetActiveWindowCommand(browser->GetSessionID()));
   }
 }
 
@@ -760,7 +760,7 @@ void SessionServiceBase::BuildCommandsFromBrowsers(
         // possible for us to get a handle to a browser that is about to be
         // removed. If the tab count is 0 or the window is NULL, the browser is
         // about to be deleted, so we ignore it.
-        if (ShouldTrackBrowser(browser->GetBrowserForMigrationOnly()) &&
+        if (ShouldTrackBrowser(browser) &&
             browser->GetTabStripModel()->count() && browser->GetWindow()) {
           BuildCommandsForBrowser(browser->GetBrowserForMigrationOnly(),
                                   tab_to_available_range, windows_to_track);
@@ -796,20 +796,22 @@ bool SessionServiceBase::ShouldTrackChangesToWindow(SessionID window_id) const {
   return windows_tracking_.find(window_id) != windows_tracking_.end();
 }
 
-bool SessionServiceBase::ShouldTrackBrowser(Browser* browser) const {
-  if (browser->profile() != profile()) {
+bool SessionServiceBase::ShouldTrackBrowser(
+    BrowserWindowInterface* browser) const {
+  if (browser->GetProfile() != profile()) {
     return false;
   }
 
-  if (browser->omit_from_session_restore()) {
+  if (browser->GetBrowserForMigrationOnly()->omit_from_session_restore()) {
     return false;
   }
 
   // Never track app popup windows that do not have a trusted source (i.e.
   // popup windows spawned by an app). If this logic changes, be sure to also
   // change SessionRestoreImpl::CreateRestoredBrowser().
-  if ((browser->is_type_app() || browser->is_type_app_popup()) &&
-      !browser->is_trusted_source()) {
+  if ((browser->GetType() == BrowserWindowInterface::TYPE_APP ||
+       browser->GetType() == BrowserWindowInterface::TYPE_APP_POPUP) &&
+      !browser->GetBrowserForMigrationOnly()->is_trusted_source()) {
     return false;
   }
 
@@ -817,7 +819,8 @@ bool SessionServiceBase::ShouldTrackBrowser(Browser* browser) const {
   // Windows that are auto-started and prevented from closing are exempted from
   // tracking for session restore to prevent multiple unclosable open instances
   // of the same app.
-  web_app::AppBrowserController* app_controller = browser->app_controller();
+  web_app::AppBrowserController* app_controller =
+      web_app::AppBrowserController::From(browser);
   web_app::WebAppProvider* provider =
       web_app::WebAppProvider::GetForWebApps(profile());
   // Checking for close prevention does not require an `AppLock` and
@@ -829,7 +832,8 @@ bool SessionServiceBase::ShouldTrackBrowser(Browser* browser) const {
   }
 #endif  // #if BUILDFLAG(IS_CHROMEOS)
 
-  return ShouldRestoreWindowOfType(WindowTypeForBrowserType(browser->type()));
+  return ShouldRestoreWindowOfType(
+      WindowTypeForBrowserType(browser->GetType()));
 }
 
 sessions::CommandStorageManager*
