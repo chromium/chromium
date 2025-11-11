@@ -32,44 +32,21 @@ import java.io.InputStream;
  * Handle cases where we cannot access the content.
  */
 @NullMarked
-class FuseboxAttachmentDetailsFetcher
-        extends AsyncTask<FuseboxAttachmentDetailsFetcher.@Nullable AttachmentDetails> {
-
-    /** A container for the fetched attachment details. */
-    public static final class AttachmentDetails {
-        public final @FuseboxAttachmentType int itemType;
-        public final @Nullable Drawable thumbnail;
-        public final String title;
-        public final String mimeType;
-        public final byte[] data;
-
-        AttachmentDetails(
-                @FuseboxAttachmentType int itemType,
-                @Nullable Drawable thumbnail,
-                String title,
-                String mimeType,
-                byte[] data) {
-            this.itemType = itemType;
-            this.thumbnail = thumbnail;
-            this.title = title;
-            this.mimeType = mimeType;
-            this.data = data;
-        }
-    }
+class FuseboxAttachmentDetailsFetcher extends AsyncTask<@Nullable FuseboxAttachment> {
 
     private static final int THUMBNAIL_BITMAP_EDGE_SIZE = 256;
     private final Context mContext;
     private final ContentResolver mContentResolver;
     private final Uri mUri;
     private final @FuseboxAttachmentType int mType;
-    private final Callback<AttachmentDetails> mCallback;
+    private final Callback<FuseboxAttachment> mCallback;
 
     FuseboxAttachmentDetailsFetcher(
             Context context,
             ContentResolver contentResolver,
             Uri uri,
             @FuseboxAttachmentType int type,
-            Callback<AttachmentDetails> callback) {
+            Callback<FuseboxAttachment> callback) {
         mContext = context;
         mContentResolver = contentResolver;
         mUri = uri;
@@ -78,7 +55,7 @@ class FuseboxAttachmentDetailsFetcher
     }
 
     @Override
-    protected @Nullable AttachmentDetails doInBackground() {
+    protected @Nullable FuseboxAttachment doInBackground() {
         Drawable thumbnail = null;
         try {
             thumbnail =
@@ -130,11 +107,11 @@ class FuseboxAttachmentDetailsFetcher
             return null;
         }
 
-        return new AttachmentDetails(mType, thumbnail, title, mimeType, data);
+        return new FuseboxAttachment(mType, thumbnail, title, mimeType, data);
     }
 
     @Override
-    protected void onPostExecute(@Nullable AttachmentDetails result) {
+    protected void onPostExecute(@Nullable FuseboxAttachment result) {
         if (result == null) return;
         mCallback.onResult(result);
     }

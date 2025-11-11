@@ -33,7 +33,6 @@ import org.chromium.base.task.AsyncTask;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.R;
-import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentDetailsFetcher.AttachmentDetails;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentRecyclerViewAdapter.FuseboxAttachmentType;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.tab.Tab;
@@ -289,8 +288,8 @@ class NavigationAttachmentsMediator {
 
     private void addTabAttachment(Tab tab, @Nullable String token) {
         if (TextUtils.isEmpty(token)) return;
-        AttachmentDetails attachmentDetails =
-                new AttachmentDetails(
+        FuseboxAttachment attachment =
+                new FuseboxAttachment(
                         FuseboxAttachmentType.ATTACHMENT_TAB,
                         new BitmapDrawable(
                                 mContext.getResources(),
@@ -298,7 +297,7 @@ class NavigationAttachmentsMediator {
                         tab.getTitle(),
                         /* mimeType= */ "",
                         /* data= */ new byte[] {});
-        addAttachment(attachmentDetails, token);
+        addAttachment(attachment, token);
     }
 
     @VisibleForTesting
@@ -370,14 +369,14 @@ class NavigationAttachmentsMediator {
                     ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                     bitmap.compress(CompressFormat.PNG, 100, byteArrayOutputStream);
                     byte[] dataBytes = byteArrayOutputStream.toByteArray();
-                    AttachmentDetails attachmentDetails =
-                            new AttachmentDetails(
+                    FuseboxAttachment attachment =
+                            new FuseboxAttachment(
                                     FuseboxAttachmentType.ATTACHMENT_IMAGE,
                                     new BitmapDrawable(mContext.getResources(), bitmap),
                                     "",
                                     "image/png",
                                     dataBytes);
-                    uploadAndAddAttachment(attachmentDetails);
+                    uploadAndAddAttachment(attachment);
                 },
                 R.string.low_memory_error);
     }
@@ -464,23 +463,21 @@ class NavigationAttachmentsMediator {
                 Bitmap bitmap = BitmapFactory.decodeByteArray(pngBytes, 0, pngBytes.length);
                 if (bitmap == null) return;
 
-                AttachmentDetails attachmentDetails =
-                        new AttachmentDetails(
+                FuseboxAttachment attachment =
+                        new FuseboxAttachment(
                                 FuseboxAttachmentType.ATTACHMENT_IMAGE,
                                 new BitmapDrawable(mContext.getResources(), bitmap),
                                 "",
                                 "image/png",
                                 pngBytes);
-                uploadAndAddAttachment(attachmentDetails);
+                uploadAndAddAttachment(attachment);
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     @VisibleForTesting
     void fetchAttachmentDetails(
-            Uri uri,
-            @FuseboxAttachmentType int type,
-            Callback<FuseboxAttachmentDetailsFetcher.AttachmentDetails> callback) {
+            Uri uri, @FuseboxAttachmentType int type, Callback<FuseboxAttachment> callback) {
         new FuseboxAttachmentDetailsFetcher(
                         mContext, mContext.getContentResolver(), uri, type, callback)
                 .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
@@ -489,30 +486,28 @@ class NavigationAttachmentsMediator {
     /**
      * Add an attachment to the navigation attachments toolbar.
      *
-     * @param attachmentDetails The details of the attachment to add.
+     * @param attachment The attachment to add.
      */
-    /* package */ void uploadAndAddAttachment(
-            FuseboxAttachmentDetailsFetcher.AttachmentDetails attachmentDetails) {
-        String token = uploadAttachment(attachmentDetails);
+    /* package */ void uploadAndAddAttachment(FuseboxAttachment attachment) {
+        String token = uploadAttachment(attachment);
         if (TextUtils.isEmpty(token)) return;
-        addAttachment(attachmentDetails, token);
+        addAttachment(attachment, token);
     }
 
-    private void addAttachment(
-            FuseboxAttachmentDetailsFetcher.AttachmentDetails attachmentDetails, String token) {
+    private void addAttachment(FuseboxAttachment attachment, String token) {
         activateAiMode();
 
         PropertyModel model =
                 new PropertyModel.Builder(FuseboxAttachmentProperties.ALL_KEYS)
                         .with(
                                 FuseboxAttachmentProperties.THUMBNAIL,
-                                attachmentDetails.thumbnail != null
-                                        ? attachmentDetails.thumbnail
+                                attachment.thumbnail != null
+                                        ? attachment.thumbnail
                                         : mFallbackDrawable)
-                        .with(FuseboxAttachmentProperties.TITLE, attachmentDetails.title)
+                        .with(FuseboxAttachmentProperties.TITLE, attachment.title)
                         .build();
 
-        var listItem = new MVCListAdapter.ListItem(attachmentDetails.itemType, model);
+        var listItem = new MVCListAdapter.ListItem(attachment.itemType, model);
         model.set(FuseboxAttachmentProperties.ON_REMOVE, () -> removeAttachment(listItem, token));
         mModelList.add(listItem);
     }
@@ -527,9 +522,9 @@ class NavigationAttachmentsMediator {
         mComposeBoxQueryControllerBridge.removeAttachment(token);
     }
 
-    private @Nullable String uploadAttachment(AttachmentDetails attachmentDetails) {
+    private @Nullable String uploadAttachment(FuseboxAttachment attachment) {
         return mComposeBoxQueryControllerBridge.addFile(
-                attachmentDetails.title, attachmentDetails.mimeType, attachmentDetails.data);
+                attachment.title, attachment.mimeType, attachment.data);
     }
 
     // Parse GET_CONTENT response, extracting single- or multiple image selections.

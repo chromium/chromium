@@ -37,7 +37,6 @@ import org.robolectric.RuntimeEnvironment;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.R;
-import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentDetailsFetcher.AttachmentDetails;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentRecyclerViewAdapter.FuseboxAttachmentType;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.tab.Tab;
@@ -209,10 +208,10 @@ public class NavigationAttachmentsMediatorUnitTest {
         // Success is captured with a valid unique token.
         doReturn("123").when(mComposeBoxQueryControllerBridge).addFile(any(), any(), any());
         byte[] byteArray = new byte[] {1, 2, 3};
-        AttachmentDetails attachmentDetails =
-                new AttachmentDetails(
+        FuseboxAttachment attachment =
+                new FuseboxAttachment(
                         FuseboxAttachmentType.ATTACHMENT_FILE, null, "title", "image", byteArray);
-        mMediator.uploadAndAddAttachment(attachmentDetails);
+        mMediator.uploadAndAddAttachment(attachment);
         assertTrue(mModel.get(NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE));
         verify(mComposeBoxQueryControllerBridge).addFile("title", "image", byteArray);
     }
@@ -222,10 +221,10 @@ public class NavigationAttachmentsMediatorUnitTest {
         // Failure: no token.
         doReturn(null).when(mComposeBoxQueryControllerBridge).addFile(any(), any(), any());
         byte[] byteArray = new byte[] {1, 2, 3};
-        AttachmentDetails attachmentDetails =
-                new AttachmentDetails(
+        FuseboxAttachment attachment =
+                new FuseboxAttachment(
                         FuseboxAttachmentType.ATTACHMENT_FILE, null, "title", "image", byteArray);
-        mMediator.uploadAndAddAttachment(attachmentDetails);
+        mMediator.uploadAndAddAttachment(attachment);
         assertFalse(mModel.get(NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE));
     }
 
