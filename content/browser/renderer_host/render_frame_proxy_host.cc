@@ -74,11 +74,6 @@ TokenFrameMap& GetTokenFrameProxyMap() {
   return *token_frame_proxy_map;
 }
 
-// TODO(https://crbug.com/339512240): Remove this killswitch once the
-// optimization for postMessage proxy creation finishes rolling out.
-BASE_FEATURE(kSkipPostMessageProxyCreationWithinFrameTree,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 }  // namespace
 
 // static
@@ -503,7 +498,6 @@ void RenderFrameProxyHost::RouteMessageEvent(
     const url::Origin& source_origin,
     const std::optional<url::Origin>& target_origin,
     blink::TransferableMessage message) {
-  base::ElapsedTimer timer;
   RenderFrameHostImpl* target_rfh = frame_tree_node()->current_frame_host();
   if (!target_rfh->IsRenderFrameLive()) {
     // Check if there is an inner delegate involved; if so target its main
@@ -602,8 +596,6 @@ void RenderFrameProxyHost::RouteMessageEvent(
     return;
   }
 
-  bool did_call_create_opener_proxies = false;
-
   // If there is a |source_frame_token|, translate it to the frame token of the
   // equivalent RenderFrameProxyHost in the target process.
   std::optional<blink::RemoteFrameToken> translated_source_token;
@@ -663,9 +655,7 @@ void RenderFrameProxyHost::RouteMessageEvent(
         // frame trees, guests are already handled above, and fenced frames
         // disallow postMessage to/from their embedder.
         if (&source_rfh->frame_tree_node()->frame_tree() !=
-                &target_rfh->frame_tree_node()->frame_tree() ||
-            !base::FeatureList::IsEnabled(
-                kSkipPostMessageProxyCreationWithinFrameTree)) {
+            &target_rfh->frame_tree_node()->frame_tree()) {
           // Subtle: postMessages may be sent between frames after their page
           // has entered the back-forward cache (e.g., when dispatched from
           // pagehide events) - see
@@ -697,7 +687,6 @@ void RenderFrameProxyHost::RouteMessageEvent(
                     target_rfh->GetSiteInstance()->group(), nullptr,
                     source_rfh->browsing_context_state(),
                     /*navigation_metrics_token=*/std::nullopt);
-            did_call_create_opener_proxies = true;
           }
         }
       }
@@ -723,12 +712,6 @@ void RenderFrameProxyHost::RouteMessageEvent(
       translated_source_token, &source_origin,
       target_origin.has_value() ? &(*target_origin) : nullptr,
       std::move(message));
-
-  base::UmaHistogramMicrosecondsTimes(
-      "SiteIsolation.CrossProcessPostMessageTime", timer.Elapsed());
-  base::UmaHistogramBoolean(
-      "SiteIsolation.CrossProcessPostMessage.CreateOpenerProxiesCalled",
-      did_call_create_opener_proxies);
 }
 
 void RenderFrameProxyHost::PrintCrossProcessSubframe(const gfx::Rect& rect,
