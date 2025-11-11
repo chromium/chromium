@@ -103,11 +103,14 @@ class BwgTabHelper : public web::WebStateObserver,
   void WebStateDestroyed(web::WebState* web_state) override;
 
  private:
-  struct ZeroStateSuggestionsService;
+  struct ZeroStateSuggestions;
 
   explicit BwgTabHelper(web::WebState* web_state);
 
   friend class web::WebStateUserData<BwgTabHelper>;
+
+  // Clears the zero-state suggestions and resets the service.
+  void ClearZeroStateSuggestions();
 
   // Callback for the OptimizationGuide with the result of whether the
   // zero-state suggestions should be shown for the current URL.
@@ -190,17 +193,11 @@ class BwgTabHelper : public web::WebStateObserver,
   // Whether to prevent contextual panel entry point.
   bool prevent_contextual_panel_entry_point_ = false;
 
-  // The zero-state suggestions service.
-  std::unique_ptr<ZeroStateSuggestionsService> zero_state_suggestions_service_;
-
-  // The zero-state suggestions for the current page.
-  std::optional<std::vector<std::string>> zero_state_suggestions_;
+  // The zero-state suggestions data and service for the current page.
+  std::unique_ptr<ZeroStateSuggestions> zero_state_suggestions_;
 
   // Callback to be run when the page has finished loading.
   base::OnceClosure page_loaded_callback_;
-
-  // Whether zero-state suggestions can be applied for the current page.
-  bool can_apply_zero_state_suggestions_ = false;
 
   base::WeakPtrFactory<BwgTabHelper> weak_ptr_factory_{this};
 };
