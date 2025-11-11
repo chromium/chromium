@@ -5,7 +5,7 @@
 //! This module contains helpers for zero-copy deserialization of slices other than `&[u8]`.
 
 use potential_utf::PotentialUtf16;
-use serde::de::*;
+use serde_core::de::*;
 
 /// TODO
 pub fn option_utf_16<'de, D: Deserializer<'de>>(
@@ -98,7 +98,7 @@ pub fn option_i32_tuple<'de, D: Deserializer<'de>>(
 ///
 /// # Safety
 /// Alignment and length are checked, however the caller has to guarantee that the byte representation is valid for type T.
-pub unsafe fn cast_bytes_to_slice<T, E: serde::de::Error>(bytes: &[u8]) -> Result<&[T], E> {
+pub unsafe fn cast_bytes_to_slice<T, E: serde_core::de::Error>(bytes: &[u8]) -> Result<&[T], E> {
     if bytes.as_ptr().align_offset(core::mem::align_of::<T>()) != 0
         && bytes.len() % core::mem::size_of::<T>() != 0
     {

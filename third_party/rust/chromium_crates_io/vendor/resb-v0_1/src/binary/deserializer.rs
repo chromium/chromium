@@ -14,7 +14,7 @@ use super::{
 extern crate alloc;
 use alloc::string::String;
 
-use serde::{de, forward_to_deserialize_any, Deserialize};
+use serde_core::{de, forward_to_deserialize_any, Deserialize};
 
 /// The character set family of the current system.
 ///
