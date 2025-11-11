@@ -264,6 +264,7 @@ class TabCollection : public SupportsHandles<TabCollectionHandleFactory> {
                              TabCollection* stop_notification_root);
 
   void NotifyOnChildrenRemoved(base::PassKey<TabCollection> pass_key,
+                               const Position& position,
                                const NodeHandles& handles,
                                TabCollection* stop_notification_root);
 

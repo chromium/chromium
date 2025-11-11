@@ -91,8 +91,9 @@ void StorageRestoreOrchestrator::OnChildrenAdded(
 }
 
 void StorageRestoreOrchestrator::OnChildrenRemoved(
+    const TabCollection::Position& position,
     const TabCollectionNodes& handles) {
-  default_observer_.OnChildrenRemoved(handles);
+  default_observer_.OnChildrenRemoved(position, handles);
 }
 
 void StorageRestoreOrchestrator::OnChildMoved(

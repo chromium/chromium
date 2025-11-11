@@ -69,6 +69,7 @@ void TabStripEventRecorder::OnChildrenAdded(
 }
 
 void TabStripEventRecorder::OnChildrenRemoved(
+    const tabs::TabCollection::Position& position,
     const tabs::TabCollectionNodes& handles) {
   Handle(ToEvent(handles));
 }

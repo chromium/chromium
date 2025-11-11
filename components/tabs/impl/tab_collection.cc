@@ -344,6 +344,7 @@ void TabCollection::NotifyOnChildrenAdded(
 
 void TabCollection::NotifyOnChildrenRemoved(
     base::PassKey<TabCollection> pass_key,
+    const Position& position,
     const TabCollectionNodes& handles,
     TabCollection* stop_notification_root) {
   if (stop_notification_root != nullptr && stop_notification_root == this) {
@@ -351,18 +352,22 @@ void TabCollection::NotifyOnChildrenRemoved(
   }
 
   if (notify_immediately_) {
-    observers_.Notify(&TabCollectionObserver::OnChildrenRemoved, handles);
+    observers_.Notify(&TabCollectionObserver::OnChildrenRemoved, position,
+                      handles);
   } else if (!observers_.empty()) {
     pending_notifications_.push_back(base::BindOnce(
-        [](base::ObserverList<TabCollectionObserver>& observers,
+        [](const Position& position,
+           base::ObserverList<TabCollectionObserver>& observers,
            const TabCollectionNodes& handles) {
-          observers.Notify(&TabCollectionObserver::OnChildrenRemoved, handles);
+          observers.Notify(&TabCollectionObserver::OnChildrenRemoved, position,
+                           handles);
         },
-        std::ref(observers_), handles));
+        std::ref(position), std::ref(observers_), handles));
   }
 
   if (parent_) {
-    parent_->NotifyOnChildrenRemoved(pass_key, handles, stop_notification_root);
+    parent_->NotifyOnChildrenRemoved(pass_key, position, handles,
+                                     stop_notification_root);
   }
 }
 

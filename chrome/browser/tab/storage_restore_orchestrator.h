@@ -32,7 +32,8 @@ class StorageRestoreOrchestrator : public TabCollectionObserver {
   // TabCollectionObserver:
   void OnChildrenAdded(const TabCollection::Position& position,
                        const TabCollectionNodes& handles) override;
-  void OnChildrenRemoved(const TabCollectionNodes& handles) override;
+  void OnChildrenRemoved(const TabCollection::Position& position,
+                         const TabCollectionNodes& handles) override;
   void OnChildMoved(const TabCollection::Position& to_position,
                     const NodeData& node_data) override;
 

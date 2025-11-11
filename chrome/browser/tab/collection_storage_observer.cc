@@ -30,6 +30,7 @@ void CollectionStorageObserver::OnChildrenAdded(
 }
 
 void CollectionStorageObserver::OnChildrenRemoved(
+    const TabCollection::Position& position,
     const tabs::TabCollectionNodes& handles) {
   for (const auto& handle : handles) {
     if (std::holds_alternative<TabCollection::Handle>(handle)) {

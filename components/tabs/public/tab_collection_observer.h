@@ -18,12 +18,14 @@ class TabCollectionObserver : public base::CheckedObserver {
     const TabCollection::NodeHandle handle;
   };
 
-  // Notifies that tabs and collections are added starting at position.
+  // Notifies that tabs and collections are added starting at `position`.
   virtual void OnChildrenAdded(const TabCollection::Position& position,
                                const TabCollectionNodes& handles) {}
 
-  // Notifies that tabs and collections are removed.
-  virtual void OnChildrenRemoved(const TabCollectionNodes& handles) {}
+  // Notifies that tabs and collections are removed. `position` represents
+  // the start of the block after which all children are removed.
+  virtual void OnChildrenRemoved(const TabCollection::Position& position,
+                                 const TabCollectionNodes& handles) {}
 
   // Notifies that a tab or collection is moved to a position. node_data
   // contains the src information.
