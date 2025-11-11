@@ -32,19 +32,16 @@ class COMPONENT_EXPORT(LINUX_UI) LinuxUiDelegate {
 
   virtual LinuxUiBackend GetBackend() const = 0;
 
-  // Only implemented on Wayland.
-  virtual bool ExportWindowHandle(
-      uint32_t parent_widget,
-      base::OnceCallback<void(const std::string&)> callback);
-
   // Only implemented on X11.
   virtual void SetTransientWindowForParent(gfx::AcceleratedWidget parent,
                                            gfx::AcceleratedWidget transient);
 
   // Exports a prefixed, platform-dependent (X11 or Wayland) window handle for
-  // an Aura window id, then calls the given callback with the handle. Returns
-  // true on success.  |callback| may be run synchronously or asynchronously.
-  virtual bool ExportWindowHandle(
+  // an Aura window id, then calls the given callback with the handle. Runs
+  // `callback` with an empty string on failure or if window exporting is not
+  // supported by the platform. `callback` may be run synchronously or
+  // asynchronously.
+  virtual void ExportWindowHandle(
       gfx::AcceleratedWidget window_id,
       base::OnceCallback<void(std::string)> callback) = 0;
 

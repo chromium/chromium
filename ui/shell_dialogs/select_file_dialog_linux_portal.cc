@@ -227,24 +227,18 @@ void SelectFileDialogLinuxPortal::SelectFileImpl(
   // and returned to listeners later.
   filters_ = filter_set.filters;
 
-  if (host_) {
-    auto* delegate = ui::LinuxUiDelegate::GetInstance();
-    if (delegate &&
-        delegate->ExportWindowHandle(
-            host_->GetAcceleratedWidget(),
-            base::BindOnce(
-                &SelectFileDialogLinuxPortal::SelectFileImplWithParentHandle,
-                this, title, default_path, filter_set, default_extension))) {
-      // Return early to skip the fallback below.
-      return;
-    } else {
-      LOG(WARNING) << "Failed to export window handle for portal select dialog";
-    }
+  auto* delegate = ui::LinuxUiDelegate::GetInstance();
+  if (host_ && delegate) {
+    delegate->ExportWindowHandle(
+        host_->GetAcceleratedWidget(),
+        base::BindOnce(
+            &SelectFileDialogLinuxPortal::SelectFileImplWithParentHandle, this,
+            title, default_path, filter_set, default_extension));
+  } else {
+    // No parent or no delegate, so just use a blank parent handle.
+    SelectFileImplWithParentHandle(title, default_path, filter_set,
+                                   default_extension, "");
   }
-
-  // No parent, so just use a blank parent handle.
-  SelectFileImplWithParentHandle(title, default_path, filter_set,
-                                 default_extension, "");
 }
 
 bool SelectFileDialogLinuxPortal::HasMultipleFileTypeChoicesImpl() {

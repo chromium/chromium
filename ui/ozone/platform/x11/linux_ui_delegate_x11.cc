@@ -24,15 +24,15 @@ void LinuxUiDelegateX11::SetTransientWindowForParent(
     gfx::AcceleratedWidget transient) {
   X11Window* parent_window = X11WindowManager::GetInstance()->GetWindow(parent);
   // parent_window might be dead if there was a top-down window close
-  if (parent_window)
+  if (parent_window) {
     parent_window->SetTransientWindow(static_cast<x11::Window>(transient));
+  }
 }
 
-bool LinuxUiDelegateX11::ExportWindowHandle(
+void LinuxUiDelegateX11::ExportWindowHandle(
     gfx::AcceleratedWidget window_id,
     base::OnceCallback<void(std::string)> callback) {
   std::move(callback).Run(base::StringPrintf("x11:%#x", window_id));
-  return true;
 }
 
 }  // namespace ui

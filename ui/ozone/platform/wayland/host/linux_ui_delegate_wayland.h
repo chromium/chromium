@@ -21,10 +21,7 @@ class LinuxUiDelegateWayland : public LinuxUiDelegate {
 
   // LinuxUiDelegate:
   LinuxUiBackend GetBackend() const override;
-  bool ExportWindowHandle(
-      gfx::AcceleratedWidget parent,
-      base::OnceCallback<void(const std::string&)> callback) override;
-  bool ExportWindowHandle(
+  void ExportWindowHandle(
       gfx::AcceleratedWidget window_id,
       base::OnceCallback<void(std::string)> callback) override;
 

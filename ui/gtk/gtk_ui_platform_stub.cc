@@ -19,11 +19,9 @@ GdkWindow* GtkUiPlatformStub::GetGdkWindow(gfx::AcceleratedWidget window_id) {
   return nullptr;
 }
 
-bool GtkUiPlatformStub::SetGtkWidgetTransientFor(
+void GtkUiPlatformStub::SetGtkWidgetTransientFor(
     GtkWidget* widget,
-    gfx::AcceleratedWidget parent) {
-  return false;
-}
+    gfx::AcceleratedWidget parent) {}
 
 void GtkUiPlatformStub::ClearTransientFor(gfx::AcceleratedWidget parent) {}
 

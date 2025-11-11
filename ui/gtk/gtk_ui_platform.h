@@ -37,7 +37,7 @@ class GtkUiPlatform {
 
   // Gtk dialog windows must be set transient for the browser window. This
   // function abstracts away such functionality.
-  virtual bool SetGtkWidgetTransientFor(GtkWidget* widget,
+  virtual void SetGtkWidgetTransientFor(GtkWidget* widget,
                                         gfx::AcceleratedWidget parent) = 0;
   virtual void ClearTransientFor(gfx::AcceleratedWidget parent) = 0;
 

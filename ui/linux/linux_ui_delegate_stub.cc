@@ -16,10 +16,10 @@ LinuxUiBackend LinuxUiDelegateStub::GetBackend() const {
   return LinuxUiBackend::kStub;
 }
 
-bool LinuxUiDelegateStub::ExportWindowHandle(
+void LinuxUiDelegateStub::ExportWindowHandle(
     gfx::AcceleratedWidget window_id,
     base::OnceCallback<void(std::string)> callback) {
-  return false;
+  std::move(callback).Run("");
 }
 
 }  // namespace ui

@@ -65,7 +65,7 @@ GdkWindow* GtkUiPlatformX11::GetGdkWindow(gfx::AcceleratedWidget window_id) {
   return gdk_window;
 }
 
-bool GtkUiPlatformX11::SetGtkWidgetTransientFor(GtkWidget* widget,
+void GtkUiPlatformX11::SetGtkWidgetTransientFor(GtkWidget* widget,
                                                 gfx::AcceleratedWidget parent) {
   auto x11_window = static_cast<x11::Window>(
       gtk::GtkCheckVersion(4)
@@ -80,7 +80,6 @@ bool GtkUiPlatformX11::SetGtkWidgetTransientFor(GtkWidget* widget,
 
   ui::LinuxUiDelegate::GetInstance()->SetTransientWindowForParent(
       parent, static_cast<gfx::AcceleratedWidget>(x11_window));
-  return true;
 }
 
 void GtkUiPlatformX11::ClearTransientFor(gfx::AcceleratedWidget parent) {
