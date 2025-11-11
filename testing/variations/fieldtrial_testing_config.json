@@ -1133,6 +1133,42 @@
             ]
         }
     ],
+    "AndroidTipsNotifications": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_TrustAndSafety",
+                    "params": {
+                        "trust_and_safety": "true"
+                    },
+                    "enable_features": [
+                        "AndroidTipsNotifications"
+                    ]
+                },
+                {
+                    "name": "Enabled_Essential",
+                    "params": {
+                        "essential": "true"
+                    },
+                    "enable_features": [
+                        "AndroidTipsNotifications"
+                    ]
+                },
+                {
+                    "name": "Enabled_NewFeatures",
+                    "params": {
+                        "new_features": "true"
+                    },
+                    "enable_features": [
+                        "AndroidTipsNotifications"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidUseCorrectDisplayWorkArea": [
         {
             "platforms": [
