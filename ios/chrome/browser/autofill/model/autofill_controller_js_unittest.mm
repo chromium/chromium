@@ -1210,17 +1210,20 @@ TEST_F(AutofillControllerJsTest, InferLabelForElement) {
     GetTestInputCheckbox()
   ];
   for (NSArray* testingElement in testingElements) {
-    TestInputElementDataEvaluation(@"__gCrWeb.fill.inferLabelForElement",
+    TestInputElementDataEvaluation(@"__gCrWeb.getRegisteredApi('fill_test_api')."
+                                   @"getFunction('inferLabelForElement')",
                                    @"label", testingElement, @"input");
   }
 
-  TestInputElementDataEvaluation(@"__gCrWeb.fill.inferLabelForElement",
+  TestInputElementDataEvaluation(@"__gCrWeb.getRegisteredApi('fill_test_api')."
+                                 @"getFunction('inferLabelForElement')",
                                  @"label", GetTestFormSelectElement(),
                                  @"select");
 
   TestInputElementDataEvaluation(
-      @"__gCrWeb.fill.inferLabelForElement", @"label",
-      GetTestFormSelectElementWithOptgroup(), @"select");
+      @"__gCrWeb.getRegisteredApi('fill_test_api')."
+      @"getFunction('inferLabelForElement')",
+      @"label", GetTestFormSelectElementWithOptgroup(), @"select");
 }
 
 TEST_F(AutofillControllerJsTest, IsAutofillableElement) {

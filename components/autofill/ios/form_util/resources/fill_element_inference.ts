@@ -6,7 +6,6 @@ import type {FormControlElement} from '//components/autofill/ios/form_util/resou
 import * as inferenceUtil from '//components/autofill/ios/form_util/resources/fill_element_inference_util.js';
 import {ancestorTagNames, buildInferredLabelIfValid, findChildText, findChildTextWithIgnoreList, isTraversableContainerElement} from '//components/autofill/ios/form_util/resources/fill_element_inference_util.js';
 import * as fillUtil from '//components/autofill/ios/form_util/resources/fill_util.js';
-import {gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 
 /**
  * Shared function for InferLabelFromPrevious() and InferLabelFromNext().
@@ -570,8 +569,8 @@ export function inferLabelFromDefinitionList(element: FormControlElement):
  * @param element An element to examine.
  * @return The inferred label of element, or '' if none could be found.
  */
-gCrWebLegacy.fill.inferLabelForElement =
-    function(element: FormControlElement): inferenceUtil.InferredLabel|null {
+export function inferLabelForElement(element: FormControlElement):
+    inferenceUtil.InferredLabel|null {
   let r: inferenceUtil.InferredLabel|null = null;
   if (inferenceUtil.isCheckableElement(element)) {
     r = inferLabelFromNext(element);
@@ -632,4 +631,4 @@ gCrWebLegacy.fill.inferLabelForElement =
   }
   // If we didn't find a label, check for the value attribute case.
   return inferLabelFromValueAttr(element);
-};
+}

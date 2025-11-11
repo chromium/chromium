@@ -5,7 +5,7 @@
 import '//components/autofill/ios/form_util/resources/fill_util.js';
 
 import * as fillConstants from '//components/autofill/ios/form_util/resources/fill_constants.js';
-import {inferLabelFromNext} from '//components/autofill/ios/form_util/resources/fill_element_inference.js';
+import {inferLabelForElement, inferLabelFromNext} from '//components/autofill/ios/form_util/resources/fill_element_inference.js';
 import * as inferenceUtil from '//components/autofill/ios/form_util/resources/fill_element_inference_util.js';
 import * as fillUtil from '//components/autofill/ios/form_util/resources/fill_util.js';
 import {isFormControlElement} from '//components/autofill/ios/form_util/resources/form_utils.js';
@@ -307,8 +307,12 @@ function formOrFieldsetsToFormData(
     const controlElement = controlElements[ctlElemIdx];
     const currentField = formFields[fieldIdx]!;
     if (!currentField.label) {
+      // TODO(crbug.com/454044167): Cleanup autofill TS type casting.
       currentField.label =
-      gCrWebLegacy.fill.inferLabelForElement(controlElement)?.label || '';
+          inferLabelForElement(
+              controlElement as fillConstants.FormControlElement)
+              ?.label ||
+          '';
     }
     if (currentField.label!.length > fillConstants.MAX_DATA_LENGTH) {
       currentField.label =
