@@ -4,12 +4,17 @@
 
 #include "chrome/browser/ui/browser_navigator.h"
 
+#include "base/base_switches.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/flags/android/chrome_feature_list.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/tabs/tab_list_interface.h"
 #include "chrome/test/base/android/android_browser_test.h"
+#include "components/feed/feed_feature_list.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -18,6 +23,21 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
 class NavigateAndroidBrowserTest : public AndroidBrowserTest {
+ public:
+  NavigateAndroidBrowserTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {// Disable ChromeTabbedActivity instance limit so that the total number
+         // of windows created by the entire test suite won't be limited.
+         //
+         // See MultiWindowUtils#getMaxInstances() for the reason:
+         // https://source.chromium.org/chromium/chromium/src/+/main:chrome/android/java/src/org/chromium/chrome/browser/multiwindow/MultiWindowUtils.java;l=209;drc=0bcba72c5246a910240b311def40233f7d3f15af
+
+         // Enable incognito windows on Android.
+         feed::kAndroidOpenIncognitoAsWindow},
+        /*disabled_features=*/{});
+  }
+
   void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
     AndroidBrowserTest::SetUpDefaultCommandLine(command_line);
 
@@ -25,9 +45,16 @@ class NavigateAndroidBrowserTest : public AndroidBrowserTest {
     // test launches an Intent for ChromeTabbedActivity, ChromeTabbedActivity
     // will be shown instead of FirstRunActivity.
     command_line->AppendSwitch("disable-fre");
+
+    // Force DeviceInfo#isDesktop() to be true so that the kDisableInstanceLimit
+    // flag in the constructor can be effective when running tests on an
+    // emulator without "--force-desktop-android".
+    //
+    // See MultiWindowUtils#getMaxInstances() for the reason:
+    // https://source.chromium.org/chromium/chromium/src/+/main:chrome/android/java/src/org/chromium/chrome/browser/multiwindow/MultiWindowUtils.java;l=213;drc=0bcba72c5246a910240b311def40233f7d3f15af
+    command_line->AppendSwitch(switches::kForceDesktopAndroid);
   }
 
- public:
   void SetUpOnMainThread() override {
     AndroidBrowserTest::SetUpOnMainThread();
     ASSERT_TRUE(embedded_test_server()->Start());
@@ -55,6 +82,9 @@ class NavigateAndroidBrowserTest : public AndroidBrowserTest {
   raw_ptr<BrowserWindowInterface> browser_window_;
   raw_ptr<TabListInterface> tab_list_;
   raw_ptr<content::WebContents> web_contents_;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest, Disposition_CurrentTab) {
@@ -310,4 +340,60 @@ IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest,
   // Verify the original window is unchanged.
   EXPECT_EQ(1, tab_list_->GetTabCount());
   EXPECT_EQ(url1, web_contents_->GetLastCommittedURL());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    NavigateAndroidBrowserTest,
+    Disposition_OffTheRecord_FromRegularProfile_ReturnsNull) {
+  ASSERT_FALSE(browser_window_->GetProfile()->IsOffTheRecord());
+
+  // Prepare and execute an OFF_THE_RECORD navigation.
+  const GURL url = embedded_test_server()->GetURL("/title1.html");
+  NavigateParams params(browser_window_, url, ui::PAGE_TRANSITION_LINK);
+  params.disposition = WindowOpenDisposition::OFF_THE_RECORD;
+
+  // Synchronous Navigate() from a regular profile should return null.
+  base::WeakPtr<content::NavigationHandle> handle = Navigate(&params);
+  EXPECT_FALSE(handle);
+}
+
+IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest,
+                       Disposition_OffTheRecord_FromIncognitoProfile) {
+  // Create a new incognito window.
+  Profile* incognito_profile =
+      GetProfile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  BrowserWindowCreateParams create_params(BrowserWindowInterface::TYPE_NORMAL,
+                                          *incognito_profile, false);
+  base::test::TestFuture<BrowserWindowInterface*> future;
+  CreateBrowserWindow(std::move(create_params), future.GetCallback());
+  BrowserWindowInterface* incognito_window = future.Get();
+  ASSERT_TRUE(incognito_window);
+  ASSERT_TRUE(incognito_window->GetProfile()->IsOffTheRecord());
+  TabListInterface* incognito_tab_list =
+      TabListInterface::From(incognito_window);
+  ASSERT_EQ(1, incognito_tab_list->GetTabCount());
+
+  // Prepare and execute an OFF_THE_RECORD navigation from the incognito window.
+  const GURL url = embedded_test_server()->GetURL("/title1.html");
+  NavigateParams params(incognito_window, url, ui::PAGE_TRANSITION_LINK);
+  params.disposition = WindowOpenDisposition::OFF_THE_RECORD;
+
+  base::WeakPtr<content::NavigationHandle> handle = Navigate(&params);
+  ASSERT_TRUE(handle);
+  ASSERT_TRUE(handle->GetWebContents());
+
+  // Observe the navigation in the new tab's WebContents.
+  content::TestNavigationObserver navigation_observer(handle->GetWebContents());
+  navigation_observer.Wait();
+
+  // Verify a new tab was created in the incognito window and the navigation
+  // occurred in it.
+  EXPECT_EQ(2, incognito_tab_list->GetTabCount());
+  tabs::TabInterface* new_tab = incognito_tab_list->GetTab(1);
+  ASSERT_TRUE(new_tab);
+  EXPECT_EQ(url, new_tab->GetContents()->GetLastCommittedURL());
+
+  // Verify the new tab is now the active one.
+  EXPECT_EQ(1, incognito_tab_list->GetActiveIndex());
+  EXPECT_EQ(new_tab, incognito_tab_list->GetActiveTab());
 }

@@ -2071,9 +2071,14 @@ if (is_android) {
       sources +=
           [ "../browser/ui/android/browser_navigator_android_browsertest.cc" ]
       deps += [
+        "//base",
+        "//chrome/browser/flags:flags_android",
+        "//chrome/browser/profiles",
         "//chrome/browser/ui:browser_navigator_params_headers",
         "//chrome/browser/ui/browser_window",
+        "//chrome/browser/ui/browser_window:create_browser_window",
         "//chrome/browser/ui/browser_window/internal:android_browsertests",
+        "//components/feed:feature_list",
       ]
     }
 

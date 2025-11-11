@@ -36,6 +36,14 @@ bool ValidNavigateParams(NavigateParams* params) {
     // Don't navigate when the profile is shutting down.
     return false;
   }
+
+  // If OFF_THE_RECORD disposition does not require a new window,
+  // convert it into NEW_FOREGROUND_TAB.
+  if (params->disposition == WindowOpenDisposition::OFF_THE_RECORD &&
+      params->initiating_profile->IsOffTheRecord()) {
+    params->disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  }
+
   return true;
 }
 
@@ -115,6 +123,9 @@ raw_ptr<tabs::TabInterface> GetOrCreateTabForDisposition(
       }
       // Otherwise use the active tab.
       [[fallthrough]];
+    case WindowOpenDisposition::OFF_THE_RECORD:
+      // A new incognito window has already been created with a new tab.
+      [[fallthrough]];
     case WindowOpenDisposition::NEW_WINDOW: {
       // A new tab is already created when the new window is created on Android.
       // Just get the active tab.
@@ -167,10 +178,10 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
   if (!ValidNavigateParams(params)) {
     return nullptr;
   }
-  // Only handles dispositions that do not create new tabs.
-  if (params->disposition != WindowOpenDisposition::NEW_BACKGROUND_TAB &&
-      params->disposition != WindowOpenDisposition::NEW_FOREGROUND_TAB &&
-      params->disposition != WindowOpenDisposition::CURRENT_TAB) {
+  // Only handles dispositions that do not create new windows.
+  if (params->disposition != WindowOpenDisposition::CURRENT_TAB &&
+      params->disposition != WindowOpenDisposition::NEW_BACKGROUND_TAB &&
+      params->disposition != WindowOpenDisposition::NEW_FOREGROUND_TAB) {
     return nullptr;
   }
   auto tab = GetOrCreateTabForDisposition(params->browser, params);
