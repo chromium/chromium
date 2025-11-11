@@ -25,12 +25,14 @@ class AsyncMemoryConsumerRegistration::MainThread : public MemoryConsumer {
   void Init(std::string consumer_id,
             MemoryConsumerTraits traits,
             CheckUnregister check_unregister,
+            CheckRegistryExists check_registry_exists,
             WeakPtr<AsyncMemoryConsumerRegistration> parent,
             scoped_refptr<SequencedTaskRunner> consumer_task_runner) {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
     consumer_task_runner_ = std::move(consumer_task_runner);
     parent_ = std::move(parent);
-    registration_.emplace(consumer_id, traits, this, check_unregister);
+    registration_.emplace(consumer_id, traits, this, check_unregister,
+                          check_registry_exists);
   }
 
  private:
@@ -71,14 +73,15 @@ AsyncMemoryConsumerRegistration::AsyncMemoryConsumerRegistration(
     std::string_view consumer_id,
     MemoryConsumerTraits traits,
     MemoryConsumer* consumer,
-    CheckUnregister check_unregister)
+    CheckUnregister check_unregister,
+    CheckRegistryExists check_registry_exists)
     : consumer_(consumer) {
   main_thread_task_runner_ = SingleThreadTaskRunner::GetMainThreadDefault();
   main_thread_ = std::make_unique<MainThread>();
   main_thread_task_runner_->PostTask(
       FROM_HERE, BindOnce(&MainThread::Init, Unretained(main_thread_.get()),
                           std::string(consumer_id), traits, check_unregister,
-                          weak_ptr_factory_.GetWeakPtr(),
+                          check_registry_exists, weak_ptr_factory_.GetWeakPtr(),
                           SequencedTaskRunner::GetCurrentDefault()));
 }
 

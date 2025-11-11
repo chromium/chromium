@@ -10,12 +10,14 @@ MemoryConsumerRegistration::MemoryConsumerRegistration(
     std::string_view consumer_id,
     base::MemoryConsumerTraits traits,
     base::MemoryConsumer* consumer,
-    CheckUnregister check_unregister)
+    CheckUnregister check_unregister,
+    CheckRegistryExists check_registry_exists)
     : registration_(std::in_place,
                     consumer_id,
                     traits,
                     consumer,
-                    check_unregister) {}
+                    check_unregister,
+                    check_registry_exists) {}
 
 MemoryConsumerRegistration::~MemoryConsumerRegistration() {
   CHECK(!registration_);

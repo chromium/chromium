@@ -45,6 +45,7 @@ class BASE_EXPORT MemoryConsumerRegistry {
  public:
   static bool Exists();
   static MemoryConsumerRegistry& Get();
+  static MemoryConsumerRegistry* MaybeGet();
   static void Set(MemoryConsumerRegistry* instance);
 
   MemoryConsumerRegistry();

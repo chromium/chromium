@@ -22,12 +22,16 @@ namespace blink {
 class PLATFORM_EXPORT MemoryConsumerRegistration {
  public:
   using CheckUnregister = base::MemoryConsumerRegistration::CheckUnregister;
+  using CheckRegistryExists =
+      base::MemoryConsumerRegistration::CheckRegistryExists;
 
   MemoryConsumerRegistration(
       std::string_view consumer_id,
       base::MemoryConsumerTraits traits,
       base::MemoryConsumer* consumer,
-      CheckUnregister check_unregister = CheckUnregister::kEnabled);
+      CheckUnregister check_unregister = CheckUnregister::kEnabled,
+      CheckRegistryExists check_registry_exists =
+          CheckRegistryExists::kEnabled);
   ~MemoryConsumerRegistration();
 
   // Cancels the registration. This must be invoked manually whenever the

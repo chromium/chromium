@@ -39,6 +39,11 @@ MemoryConsumerRegistry& MemoryConsumerRegistry::Get() {
 }
 
 // static
+MemoryConsumerRegistry* MemoryConsumerRegistry::MaybeGet() {
+  return g_memory_consumer_registry;
+}
+
+// static
 void MemoryConsumerRegistry::Set(MemoryConsumerRegistry* instance) {
   CHECK_NE(bool(g_memory_consumer_registry), bool(instance));
   g_memory_consumer_registry = instance;

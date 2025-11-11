@@ -34,11 +34,19 @@ MemoryConsumerRegistration::MemoryConsumerRegistration(
     std::string_view consumer_id,
     MemoryConsumerTraits traits,
     MemoryConsumer* consumer,
-    CheckUnregister check_unregister)
+    CheckUnregister check_unregister,
+    CheckRegistryExists check_registry_exists)
     : consumer_id_(consumer_id),
       consumer_(consumer),
       check_unregister_(check_unregister),
-      registry_(&MemoryConsumerRegistry::Get()) {
+      registry_(MemoryConsumerRegistry::MaybeGet()) {
+  if (!registry_) {
+    CHECK_EQ(check_registry_exists, CheckRegistryExists::kDisabled)
+        << ". The MemoryConsumerRegistry did not exist at the time this "
+           "MemoryConsumerRegistration was created.";
+    return;
+  }
+
   registry_->AddDestructionObserver(PassKey(), this);
   registry_->AddMemoryConsumer(consumer_id, traits, consumer_);
 }
