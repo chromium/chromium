@@ -16,12 +16,14 @@ import android.hardware.display.VirtualDisplay;
 import android.media.Image.Plane;
 import android.media.projection.MediaProjection;
 import android.media.projection.MediaProjectionManager;
+import android.os.Build;
 import android.os.ConditionVariable;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.WindowManager;
 
 import androidx.activity.result.ActivityResult;
+import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
@@ -183,6 +185,7 @@ public class ScreenCapture implements ImageHandler.Delegate {
         return new ScreenCapture(nativeDesktopCapturerAndroid);
     }
 
+    @RequiresApi(Build.VERSION_CODES.R)
     @CalledByNative
     boolean startCapture() {
         final PickState pickState = sNextPickState.getAndSet(null);

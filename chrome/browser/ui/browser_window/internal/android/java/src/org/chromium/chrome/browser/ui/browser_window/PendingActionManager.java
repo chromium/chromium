@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.ui.browser_window;
 
+import android.annotation.SuppressLint;
 import android.graphics.Rect;
 
 import androidx.annotation.GuardedBy;
@@ -231,6 +232,7 @@ final class PendingActionManager {
         }
     }
 
+    @SuppressLint("WrongConstant")
     @PendingAction
     int[] getAndClearPendingActions() {
         synchronized (mPendingActionsLock) {
@@ -244,6 +246,7 @@ final class PendingActionManager {
         }
     }
 
+    @SuppressLint("WrongConstant")
     @PendingAction
     int[] getAndClearTargetPendingActions(int... targets) {
         synchronized (mPendingActionsLock) {

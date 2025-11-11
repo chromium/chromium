@@ -55,6 +55,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
@@ -285,6 +286,7 @@ public class SearchEngineAdapter extends BaseAdapter
                 var report =
                         new IllegalStateException(
                                 String.format(
+                                        Locale.ROOT,
                                         "Default search engine is not found in available search"
                                                 + " engines: DSE is valid=%b (%s), is managed=%b,"
                                                 + " known=%d [%s]",

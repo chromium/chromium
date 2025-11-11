@@ -5,10 +5,10 @@
 package org.chromium.chrome.browser.notifications;
 
 import android.app.Notification;
+import android.app.NotificationManager;
 import android.text.format.DateUtils;
 
 import androidx.annotation.IntDef;
-import androidx.core.app.NotificationManagerCompat;
 
 import org.chromium.base.Callback;
 import org.chromium.base.MathUtils;
@@ -746,7 +746,7 @@ public class NotificationUmaTracker {
                     callback.onResult(
                             channel != null
                                     && channel.getImportance()
-                                            == NotificationManagerCompat.IMPORTANCE_NONE);
+                                            == NotificationManager.IMPORTANCE_NONE);
                 });
     }
 
