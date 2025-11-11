@@ -1,6 +1,6 @@
 [package]
 name = "font-types"
-version = "0.10.0"
+version = "0.10.1"
 description = "Scalar types used in fonts."
 readme = "README.md"
 categories = ["text-processing"]

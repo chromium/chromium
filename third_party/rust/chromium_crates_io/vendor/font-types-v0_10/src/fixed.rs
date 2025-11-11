@@ -168,7 +168,7 @@ macro_rules! fixed_mul_div {
                     0x7FFFFFFF
                 };
                 Self(if sign < 0 {
-                    -(result as i32)
+                    (result as i32).wrapping_neg()
                 } else {
                     result as i32
                 })
@@ -211,7 +211,11 @@ macro_rules! fixed_mul_div {
                 } else {
                     ((((a as u64) << 16) + ((b as u64) >> 1)) / (b as u64)) as u32
                 };
-                Self(if sign < 0 { -(q as i32) } else { q as i32 })
+                Self(if sign < 0 {
+                    (q as i32).wrapping_neg()
+                } else {
+                    q as i32
+                })
             }
         }
 
@@ -484,5 +488,24 @@ mod tests {
             Fixed::from_f64(0.5) / Fixed::from_f64(2.0),
             Fixed::from_f64(0.25)
         );
+    }
+
+    // OSS Fuzz caught panic with overflow in fixed point division.
+    // See <https://oss-fuzz.com/testcase-detail/5666843647082496> and
+    // <https://issues.oss-fuzz.com/issues/443104630>
+    #[test]
+    fn fixed_div_neg_overflow() {
+        let a = Fixed::from_f64(-92.5);
+        let b = Fixed::from_f64(0.0028228759765625);
+        // Just don't panic with overflow
+        let _ = a / b;
+    }
+
+    #[test]
+    fn fixed_mul_div_neg_overflow() {
+        let a = Fixed::from_f64(-92.5);
+        let b = Fixed::from_f64(0.0028228759765625);
+        // Just don't panic with overflow
+        let _ = a.mul_div(Fixed::ONE, b);
     }
 }
