@@ -49,9 +49,6 @@ BASE_DECLARE_FEATURE(kUserVisibleDebug);
 // Enables the history clusters internals page.
 BASE_DECLARE_FEATURE(kHistoryClustersInternalsPage);
 
-// Enables use of additional keyword filtering operations on clusters.
-BASE_DECLARE_FEATURE(kHistoryClustersKeywordFiltering);
-
 // Enables experimentation for how to dedupe visits in clusters.
 BASE_DECLARE_FEATURE(kHistoryClustersVisitDeduping);
 
