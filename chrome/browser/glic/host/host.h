@@ -112,7 +112,7 @@ class Host : public GlicSharingManagerProvider {
 
     virtual void CreateActorTab(
         actor::TaskId task_id,
-        bool foreground,
+        bool open_in_background,
         const std::optional<int32_t>& initiator_tab_id,
         const std::optional<int32_t>& initiator_window_id,
         glic::mojom::WebClientHandler::CreateActorTabCallback callback) = 0;

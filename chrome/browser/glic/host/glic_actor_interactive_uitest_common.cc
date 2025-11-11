@@ -183,6 +183,17 @@ MultiStep GlicActorUiTest::ExecuteAction(ActionProtoProvider proto_provider,
           expected_result_string, "ExecuteAction"));
 }
 
+MultiStep GlicActorUiTest::ExecuteInGlic(
+    base::OnceCallback<void(content::WebContents*)> callback) {
+  return InAnyContext(WithElement(
+      kGlicContentsElementId,
+      [callback = std::move(callback)](ui::TrackedElement* el) mutable {
+        content::WebContents* glic_contents =
+            AsInstrumentedWebContents(el)->web_contents();
+        std::move(callback).Run(glic_contents);
+      }));
+}
+
 MultiStep GlicActorUiTest::CreateTask(actor::TaskId& out_task,
                                       std::string_view title) {
   return InAnyContext(WithElement(

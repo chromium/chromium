@@ -149,7 +149,7 @@ class ActorKeyedService : public KeyedService {
 
   using CreateActorTabCallback = base::OnceCallback<void(tabs::TabInterface*)>;
   void CreateActorTab(TaskId task_id,
-                      bool foreground,
+                      bool open_in_background,
                       tabs::TabHandle initiator_tab_handle,
                       SessionID initiator_window_id,
                       CreateActorTabCallback callback);
