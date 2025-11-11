@@ -1327,7 +1327,7 @@ dependencies = [
 
 [[package]]
 name = "zoneinfo64"
-version = "0.2.0"
+version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "calendrical_calculations",

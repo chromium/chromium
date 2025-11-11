@@ -29,7 +29,7 @@ cargo_crate("lib") {
   cargo_pkg_description =
       "Working with ICU zoneinfo64.res timezone data bundles"
   cargo_pkg_repository = "https://github.com/unicode-org/icu4x"
-  cargo_pkg_version = "0.2.0"
+  cargo_pkg_version = "0.2.1"
 
   allow_unsafe = true
 
