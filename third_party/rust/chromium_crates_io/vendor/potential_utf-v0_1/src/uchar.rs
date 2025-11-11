@@ -70,7 +70,7 @@ impl PotentialCodePoint {
     /// assert_eq!(a.try_to_char(), Ok('a'));
     ///
     /// let b = PotentialCodePoint::from_unaligned([0xFF, 0xFF, 0xFF].into());
-    /// assert!(matches!(b.try_to_char(), Err(_)));
+    /// assert!(b.try_to_char().is_err());
     /// ```
     #[inline]
     pub fn try_to_char(self) -> Result<char, core::char::CharTryFromError> {
@@ -231,12 +231,12 @@ impl TryFrom<PotentialCodePoint> for char {
 
 /// This impl requires enabling the optional `serde` Cargo feature
 #[cfg(feature = "serde")]
-impl serde::Serialize for PotentialCodePoint {
+impl serde_core::Serialize for PotentialCodePoint {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
-        S: serde::Serializer,
+        S: serde_core::Serializer,
     {
-        use serde::ser::Error;
+        use serde_core::ser::Error;
         let c = self
             .try_to_char()
             .map_err(|_| S::Error::custom("invalid Unicode scalar value in PotentialCodePoint"))?;
@@ -250,10 +250,10 @@ impl serde::Serialize for PotentialCodePoint {
 
 /// This impl requires enabling the optional `serde` Cargo feature
 #[cfg(feature = "serde")]
-impl<'de> serde::Deserialize<'de> for PotentialCodePoint {
+impl<'de> serde_core::Deserialize<'de> for PotentialCodePoint {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
-        D: serde::Deserializer<'de>,
+        D: serde_core::Deserializer<'de>,
     {
         if deserializer.is_human_readable() {
             let c = <char>::deserialize(deserializer)?;

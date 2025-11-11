@@ -1,4 +1,4 @@
-# unvalidated_utf [![crates.io](https://img.shields.io/crates/v/unvalidated_utf)](https://crates.io/crates/unvalidated_utf)
+# potential_utf [![crates.io](https://img.shields.io/crates/v/potential_utf)](https://crates.io/crates/potential_utf)
 
 <!-- cargo-rdme start -->
 
