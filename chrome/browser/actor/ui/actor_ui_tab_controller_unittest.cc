@@ -72,11 +72,13 @@ class ActorUiTabControllerTest : public testing::Test {
   // testing::Test:
   void SetUp() override {
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{features::kGlicHandoffButtonHiddenClientControl, {}},
-         {features::kGlicActorUi,
-          {{features::kGlicActorUiHandoffButtonName, "true"},
-           {features::kGlicActorUiOverlayName, "true"}}}},
-        {});
+        /*enabled_features=*/{{features::kGlicHandoffButtonHiddenClientControl,
+                               {}},
+                              {features::kGlicActorUi,
+                               {{features::kGlicActorUiHandoffButtonName,
+                                 "true"},
+                                {features::kGlicActorUiOverlayName, "true"}}}},
+        /*disabled_features=*/{features::kGlicActorInternalPopups});
     profile_ = TestingProfile::Builder().Build();
 
     ON_CALL(mock_tab_, GetBrowserWindowInterface())
