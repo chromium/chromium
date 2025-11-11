@@ -97,7 +97,7 @@ export class AdapterBroker extends EventTarget {
   /**
    * Creates a GATT connection to the device with |address|.
    * @param {string} address
-   * @return {!Promise<!Device>}
+   * @return {!Promise<!DeviceRemote>}
    */
   connectToDevice(address) {
     return this.adapter_.connectToDevice(address).then(function(response) {

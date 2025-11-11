@@ -11,18 +11,17 @@ import {getTemplate} from './expandable_list_item.html.js';
  * clicked.
  */
 export class ExpandableListItemElement extends CustomElement {
-  static get template() {
+  static override get template() {
     return getTemplate();
   }
 
   connectedCallback() {
-    const briefContent = this.shadowRoot.querySelector('.brief-content');
+    const briefContent = this.shadowRoot!.querySelector('.brief-content')!;
     briefContent.addEventListener('click', () => this.onExpand_());
     this.classList.add('expandable-list-item');
   }
 
-  /** @private */
-  onExpand_() {
+  private onExpand_() {
     const expanded = !this.hasAttribute('expanded');
     this.toggleAttribute('expanded', expanded);
     this.dispatchEvent(new CustomEvent(

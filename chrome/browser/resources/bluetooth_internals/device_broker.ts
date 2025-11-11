@@ -10,47 +10,40 @@
  */
 
 import {getAdapterBroker} from './adapter_broker.js';
-import {DeviceRemote} from './device.mojom-webui.js';
-
+import type {DeviceRemote} from './device.mojom-webui.js';
 
 // Expose for testing.
-/**
- * @type {Map<string,
- *     !DeviceRemote|!Promise<!DeviceRemote>>}
- */
-export const connectedDevices = new Map();
+export const connectedDevices: Map<string, DeviceRemote|Promise<DeviceRemote>> =
+    new Map();
 
 /**
  * Creates a GATT connection to the device with |address|. If a connection to
  * the device already exists, the promise is resolved with the existing
  * DeviceRemote. If a connection is in progress, the promise resolves when
  * the existing connection request promise is fulfilled.
- * @param {string} address
- * @return {!Promise<!DeviceRemote>}
  */
-export function connectToDevice(address) {
+export function connectToDevice(address: string): Promise<DeviceRemote> {
   const deviceOrPromise = connectedDevices.get(address) || null;
   if (deviceOrPromise !== null) {
     return Promise.resolve(deviceOrPromise);
   }
 
-  const promise = /** @type {!Promise<!DeviceRemote>} */ (
-      getAdapterBroker()
-          .then(function(adapterBroker) {
-            return adapterBroker.connectToDevice(address);
-          })
-          .then(function(device) {
-            connectedDevices.set(address, device);
+  const promise = getAdapterBroker()
+                      .then(function(adapterBroker) {
+                        return adapterBroker.connectToDevice(address);
+                      })
+                      .then(function(device) {
+                        connectedDevices.set(address, device);
 
-            device.onConnectionError.addListener(
-                () => connectedDevices.delete(address));
+                        device.onConnectionError.addListener(
+                            () => connectedDevices.delete(address));
 
-            return device;
-          })
-          .catch(function(error) {
-            connectedDevices.delete(address);
-            throw error;
-          }));
+                        return device;
+                      })
+                      .catch(function(error) {
+                        connectedDevices.delete(address);
+                        throw error;
+                      });
 
   connectedDevices.set(address, promise);
   return promise;
