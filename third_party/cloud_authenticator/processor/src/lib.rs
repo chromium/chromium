@@ -65,6 +65,7 @@ pub use spki::parse as spki_parse;
 use alloc::collections::{btree_map, BTreeMap};
 use alloc::string::String;
 use alloc::vec::Vec;
+use alloc::{format, vec};
 use bytes::Bytes;
 use cbor::{cbor, MapKey, MapKeyRef, MapLookupKey, Value};
 
@@ -79,6 +80,7 @@ pub enum ClientState {
 }
 
 /// A `StateUpdate` is produced by successfully processing a client message.
+#[derive(Debug)]
 pub enum StateUpdate {
     /// This update contains important changes. The response should not be sent
     /// to the client until it has been accepted by the storage system.
@@ -95,7 +97,7 @@ pub enum StateUpdate {
 /// The `transparent` data must be at least integrity protected. The
 /// `confidential` data must have confidentiality and integrity. These
 /// properties must be provided within the enclave, but outside of this module.
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct StateData {
     pub transparent: Vec<u8>,
     pub confidential: Vec<u8>,
@@ -172,6 +174,13 @@ pub struct MetricsUpdate {
     pub recovery_key_store_wrap_as_member: u32,
     pub recovery_key_store_wrap_pin_and_secret: u32,
     pub recovery_key_store_rewrap: u32,
+    pub device_auth_keys_wrap: u32,
+}
+
+#[derive(Clone)]
+pub struct DeviceAuthorizationKey {
+    pub version: i64,
+    pub key: Vec<u8>,
 }
 
 /// ExternalContext contains context about a client request that comes from
@@ -187,6 +196,11 @@ pub struct ExternalContext {
     /// A signal that this client performed reauthentication very recently. This
     /// can authorize some actions.
     pub is_reauthenticated: bool,
+    /// Device authorization keys fetched by the enclave host for wrapping by
+    /// the enclave. Each entry consists of a version and key. The client
+    /// must pass an authentication check in order for the host to fetch and
+    /// pass these values. Otherwise they are unset.
+    pub device_authorization_keys: Vec<DeviceAuthorizationKey>,
 }
 
 // These constants are map keys used within the CBOR. For each map key constant
@@ -201,6 +215,11 @@ const ERR: &str = "err";
 // presents a wrapped secret that will be used as such.
 pub(crate) const KEY_PURPOSE_SECURITY_DOMAIN_SECRET: &str = "security domain secret";
 
+// The "purpose" value for wrapping device authorization keys. This is to be
+// concatenated with the stringified version number of the key (e.g "device
+// authorization key v_0").
+pub(crate) const KEY_PURPOSE_DEVICE_AUTHORIZATION_KEY_PREFIX: &str = "device authorization key v_";
+
 map_keys! {
     AUTH_LEVEL, AUTH_LEVEL_KEY = "auth_level",
     CMD, CMD_KEY = "cmd",
@@ -210,6 +229,7 @@ map_keys! {
     CREATE_NEW_VAULT, CREATE_NEW_VAULT_KEY = "create_new_vault",
     DEVICE_ID, DEVICE_ID_KEY = "device_id",
     DEVICES, DEVICES_KEY = "devices",
+    DEVICE_AUTH_KEYS, DEVICE_AUTH_KEYS_KEY = "wrapped_device_auth_keys",
     ENCODED_REQUESTS, ENCODED_REQUESTS_KEY = "encoded_requests",
     EXTERNAL_DEVICE_IDENTIFIER, EXTERNAL_DEVICE_IDENTIFIER_KEY = "ext_device_id",
     KEY, KEY_KEY = "key",
@@ -888,6 +908,12 @@ fn do_request(
             ext_ctx.current_time_epoch_millis,
             request,
         ),
+        "device_auth_keys/wrap" => do_wrap_device_auth_keys(
+            metrics,
+            auth,
+            state,
+            ext_ctx.device_authorization_keys.as_slice(),
+        ),
         _ => debug("unknown command"),
     }
 }
@@ -1122,6 +1148,43 @@ fn do_device_forget(
     Ok(Value::Boolean(true))
 }
 
+// Wraps device authorization keys fetched by the host, and returns them.
+//
+// The only input to this method comes from the host, so there is no request for this method.
+// The resulting CBOR value has the following CDDL schema:
+//
+// wrapped_device_auth_key = [ int, bstr ]  ; version and wrapped key
+// response = {
+//   wrapped_device_auth_keys: [ * wrapped_device_auth_key ]
+// }
+fn do_wrap_device_auth_keys(
+    metrics: &mut MetricsUpdate,
+    auth: &Authentication,
+    state: &mut DirtyFlag<ParsedState>,
+    device_authorization_keys: &[DeviceAuthorizationKey],
+) -> Result<cbor::Value, RequestError> {
+    let device_id: &Vec<u8> = match auth {
+        Authentication::Device(device_id, _, _, _) => device_id,
+        Authentication::NewlyRegistered(device_id) => device_id,
+        Authentication::None => {
+            return debug("device identity required");
+        }
+    };
+    let mut wrapped_device_auth_keys = Vec::with_capacity(device_authorization_keys.len());
+    for key in device_authorization_keys.iter() {
+        let purpose = format!(
+            "{}{}",
+            KEY_PURPOSE_DEVICE_AUTHORIZATION_KEY_PREFIX, key.version
+        );
+        let wrapped_key = state.wrap(device_id, key.key.as_slice(), purpose.as_str())?;
+        wrapped_device_auth_keys.push(cbor!([(key.version), wrapped_key]));
+    }
+    metrics.device_auth_keys_wrap += 1;
+    Ok(cbor!({
+        DEVICE_AUTH_KEYS: wrapped_device_auth_keys
+    }))
+}
+
 fn do_keys_genpair(
     metrics: &mut MetricsUpdate,
     auth: &Authentication,
@@ -1232,6 +1295,7 @@ mod tests {
         current_time_epoch_millis: TIMESTAMP,
         client_device_identifier: Vec::new(),
         is_reauthenticated: false,
+        device_authorization_keys: Vec::new(),
     };
 
     pub const TEST_PIN_HASH: [u8; 32] = [1u8; 32];
@@ -1423,6 +1487,20 @@ mod tests {
         };
         static ref RSA_KEYPAIR: crypto::RsaKeyPair =
             crypto::RsaKeyPair::from_pkcs8(RSA_PKCS8).unwrap();
+        static ref DEVICE_AUTHORIZATION_KEYS_UNWRAPPED: Vec<DeviceAuthorizationKey> = vec![
+            DeviceAuthorizationKey {
+                version: 1,
+                key: vec![0u8; 32]
+            },
+            DeviceAuthorizationKey {
+                version: 2,
+                key: vec![32u8; 32]
+            },
+            DeviceAuthorizationKey {
+                version: 3,
+                key: vec![255u8; 32]
+            }
+        ];
     }
 
     fn unauthenticated_request(cmd: BTreeMap<MapKey, Value>) -> Vec<u8> {
@@ -2547,6 +2625,85 @@ mod tests {
         );
     }
 
+    #[test]
+    fn test_wrap_device_auth_keys() {
+        let msg: Vec<u8> = sign_request(cbor!({
+            CMD: "device_auth_keys/wrap",
+        }));
+        let mut metrics = MetricsUpdate::default();
+
+        // Wrapping device auth keys with no keys provided should yield an empty
+        // response.
+        let (output, state_update) = process_client_msg(
+            REGISTERED_STATE.clone(),
+            &mut metrics,
+            ExternalContext {
+                is_reauthenticated: true,
+                ..EXTERNAL_CONTEXT.clone()
+            },
+            TEST_HANDSHAKE_HASH.as_slice(),
+            msg.clone(),
+        )
+        .unwrap();
+
+        let Value::Map(response) = ok_value(&output).unwrap() else {
+            panic!("{:?}", output);
+        };
+        let Some(Value::Array(x)) = response.get(DEVICE_AUTH_KEYS_KEY) else {
+            panic!("{:?}", response);
+        };
+        assert_eq!(x.len(), 0);
+        let StateUpdate::Minor(_) = state_update else {
+            panic!("{:?}", state_update);
+        };
+
+        // Keys passed by the host from external context should be wrapped and returned.
+        let (output, state_update) = process_client_msg(
+            REGISTERED_STATE.clone(),
+            &mut metrics,
+            ExternalContext {
+                is_reauthenticated: false,
+                device_authorization_keys: DEVICE_AUTHORIZATION_KEYS_UNWRAPPED.to_vec(),
+                ..EXTERNAL_CONTEXT.clone()
+            },
+            TEST_HANDSHAKE_HASH.as_slice(),
+            msg.clone(),
+        )
+        .unwrap();
+
+        let Value::Map(response) = ok_value(&output).unwrap() else {
+            panic!("{:?}", output);
+        };
+        let Some(Value::Array(ref keys)) = response.get(DEVICE_AUTH_KEYS_KEY) else {
+            panic!("missing device auth keys: {:?}", response);
+        };
+        assert_eq!(keys.len(), DEVICE_AUTHORIZATION_KEYS_UNWRAPPED.len());
+        // Ensure the returned wrapped keys match their unwrapped inputs.
+        let ClientState::Explicit(state_data) = REGISTERED_STATE.clone() else {
+            panic!("");
+        };
+        let parsed_state: ParsedState = ClientState::Explicit(state_data.clone()).parse().unwrap();
+        for (i, unwrapped) in DEVICE_AUTHORIZATION_KEYS_UNWRAPPED.iter().enumerate() {
+            let Some(Value::Array(ref version_and_key)) = keys.get(i) else {
+                panic!("invalid key format: {:?}", keys);
+            };
+            let [Value::Int(version), Value::Bytestring(ref key)] = version_and_key.to_vec()[..]
+            else {
+                panic!("invalid key format: {:?}", version_and_key);
+            };
+            assert_eq!(version, unwrapped.version);
+            let aad = format!("{}{}", "device authorization key v_", version);
+            let unwrapped_key = parsed_state
+                .unwrap(&TEST_DEVICE_ID.clone(), key, aad.as_str())
+                .unwrap();
+            assert_eq!(unwrapped_key, unwrapped.key);
+        }
+
+        let StateUpdate::Minor(_) = state_update else {
+            panic!("{:?}", state_update);
+        };
+    }
+
     fn is_single_error_response(value: &Value) -> bool {
         let Value::Array(array) = value else {
             return false;
@@ -3434,6 +3591,22 @@ mod tests {
         assert_eq!(
             vault_cohort_details.cohort_public_key.to_vec(),
             cohort_public_key.to_vec()
+        );
+    }
+
+    #[test]
+    fn test_invalid_wrap_device_auth_keys() {
+        let request = cbor!({
+            CMD: "device_auth_keys/wrap",
+        });
+
+        let configs = BTreeMap::from([]);
+
+        test_invalid_requests(
+            &request,
+            REGISTERED_STATE.clone(),
+            RequestAuthentication::Required,
+            &configs,
         );
     }
 }

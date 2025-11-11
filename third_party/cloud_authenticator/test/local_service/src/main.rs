@@ -320,6 +320,7 @@ impl EnclaveServer {
                 current_time_epoch_millis: 1707344402000,
                 client_device_identifier: Vec::new(),
                 is_reauthenticated: has_reauthentication_header,
+                device_authorization_keys: Vec::new(),
             },
             &handshake_response.handshake_hash,
             commands,
