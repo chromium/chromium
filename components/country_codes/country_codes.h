@@ -93,6 +93,7 @@ class CountryId {
 };
 
 // Returns the identifier for the user current country.
+// This is the value reported by the Operating System.
 COMPONENT_EXPORT(COMPONENTS_COUNTRY_CODES)
 CountryId GetCurrentCountryID();
 
