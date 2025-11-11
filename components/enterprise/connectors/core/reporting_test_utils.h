@@ -164,9 +164,6 @@ class EventReportValidatorBase {
           expected_identities);
   void ValidateMimeType(const base::Value::Dict* value,
                         const std::set<std::string>* expected_mimetypes);
-  void ValidateDataControlsTriggerdRules(
-      const base::Value::Dict* value,
-      const data_controls::Verdict::TriggeredRules& expected_triggered_rules);
 
   raw_ptr<policy::MockCloudPolicyClient> client_;
   base::RepeatingClosure done_closure_;

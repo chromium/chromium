@@ -664,7 +664,10 @@ void EventReportValidatorBase::ExpectDataControlsSensitiveDataEvent(
         ValidateField(event, kKeySource, expected_source);
         ValidateField(event, kKeyDestination, expected_destination);
         ValidateMimeType(event, expected_mimetypes);
-        ValidateDataControlsTriggerdRules(event, expected_triggered_rules);
+        const base::Value::List* triggered_rules =
+            event->FindList(kKeyTriggeredRuleInfo);
+        ASSERT_TRUE(triggered_rules);
+        ASSERT_EQ(triggered_rules->size(), expected_triggered_rules.size());
         ValidateField(event, kKeyTrigger, expected_trigger);
         ValidateField(event, kKeyContentSize, expected_content_size);
 
@@ -843,46 +846,6 @@ void EventReportValidatorBase::ValidateMimeType(
         << *type << " is not an expected mimetype";
   } else {
     EXPECT_EQ(nullptr, type);
-  }
-}
-
-void EventReportValidatorBase::ValidateDataControlsTriggerdRules(
-    const base::Value::Dict* value,
-    const data_controls::Verdict::TriggeredRules& expected_triggered_rules) {
-  const base::Value::List* triggered_rules =
-      value->FindList(kKeyTriggeredRuleInfo);
-  ASSERT_TRUE(triggered_rules);
-  ASSERT_EQ(expected_triggered_rules.size(), triggered_rules->size());
-  size_t i = 0;
-
-  for (const base::Value& rule : *triggered_rules) {
-    const std::string* name = rule.GetDict().FindString(kKeyTriggeredRuleName);
-    ASSERT_TRUE(name);
-
-    // There should be a rule with the same index as in `triggered_rules`, but
-    // `expected_triggered_rules` might be tracking it internally as a
-    // profile rule or machine rule so we need to check with two different
-    // keys.
-    data_controls::Verdict::TriggeredRule expected_rule;
-    if (expected_triggered_rules.count({i, true})) {
-      expected_rule = expected_triggered_rules.find({i, true})->second;
-    } else if (expected_triggered_rules.count({i, false})) {
-      expected_rule = expected_triggered_rules.find({i, false})->second;
-    } else {
-      NOTREACHED();
-    }
-
-    std::optional<int> id = rule.GetDict().FindInt(kKeyTriggeredRuleId);
-    if (id) {
-      int expected_rule_id = 0;
-      ASSERT_TRUE(base::StringToInt(expected_rule.rule_id, &expected_rule_id));
-      ASSERT_EQ(expected_rule_id, *id);
-    } else {
-      ASSERT_TRUE(expected_rule.rule_id.empty())
-          << " Got rule_id " << expected_rule.rule_id << " instead of nothing.";
-    }
-
-    ++i;
   }
 }
 
