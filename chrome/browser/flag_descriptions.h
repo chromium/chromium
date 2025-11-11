@@ -357,6 +357,10 @@ inline constexpr char kStylusHandwritingWinDescription[] =
     "(patch 5126 and newer), 22631 (patch 5126 and newer) and all builds equal "
     "to or newer than 26100.3624";
 
+inline constexpr char kPermissionsAndroidClapperLoudName[] = "Clapper Loud";
+inline constexpr char kPermissionsAndroidClapperLoudDescription[] =
+    "Enables the loud version of the Clapper permission prompt.";
+
 inline constexpr char kCryptographyComplianceCnsaName[] =
     "Cryptography Compliance (CNSA)";
 inline constexpr char kCryptographyComplianceCnsaDescription[] =

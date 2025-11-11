@@ -24,6 +24,7 @@ namespace {
 // components/permissions/features.h).
 const base::Feature* const kFeaturesExposedToJava[] = {
     &kAndroidCancelPermissionPromptOnTouchOutside,
+    &kPermissionsAndroidClapperLoud,
     &features::kOsAdditionalSecurityPermissionKillSwitch,
     &features::kPermissionHeuristicAutoGrant,
     &content_settings::features::kApproximateGeolocationPermission,
@@ -46,6 +47,9 @@ base::android::FeatureMap* GetFeatureMap() {
 // prompt. Do not remove flag (killswitch).
 BASE_FEATURE(kAndroidCancelPermissionPromptOnTouchOutside,
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables the loud version of the Clapper permission prompt.
+BASE_FEATURE(kPermissionsAndroidClapperLoud, base::FEATURE_DISABLED_BY_DEFAULT);
 
 static jlong JNI_PermissionsAndroidFeatureMap_GetNativeMap(JNIEnv* env) {
   return reinterpret_cast<jlong>(GetFeatureMap());

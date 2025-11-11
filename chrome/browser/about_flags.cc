@@ -275,6 +275,7 @@
 #include "components/facilitated_payments/core/features/features.h"
 #include "components/messages/android/messages_feature.h"
 #include "components/payments/content/android/payment_feature_map.h"
+#include "components/permissions/android/permissions_android_feature_map.h"
 #include "components/push_messaging/push_messaging_features.h"
 #include "components/translate/content/android/translate_message.h"
 #include "ui/android/ui_android_features.h"
@@ -11359,6 +11360,13 @@ const FeatureEntry kFeatureEntries[] = {
     {"permissions-ai-p92", flag_descriptions::kPermissionsAIP92Name,
      flag_descriptions::kPermissionsAIP92Description, kOsAll,
      FEATURE_VALUE_TYPE(permissions::features::kPermissionsAIP92)},
+
+#if BUILDFLAG(IS_ANDROID)
+    {"permissions-android-clapper-loud",
+     flag_descriptions::kPermissionsAndroidClapperLoudName,
+     flag_descriptions::kPermissionsAndroidClapperLoudDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(permissions::kPermissionsAndroidClapperLoud)},
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)
     {"exclude-display-in-mirror-mode",

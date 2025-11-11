@@ -15455,6 +15455,7 @@ from previous Chrome versions.
   <int value="461330165" label="ContainerAppPreinstallDebug:disabled"/>
   <int value="461641589" label="WebAppWindowControlsOverlay:disabled"/>
   <int value="462453078" label="cast-streaming-force-enable-hardware-h264"/>
+  <int value="463224552" label="PermissionsAndroidClapperLoud:enabled"/>
   <int value="463521162"
       label="SecurePaymentConfirmationBrowserBoundKeys:enabled"/>
   <int value="463582989" label="CompositorThreadedScrollbarScrolling:disabled"/>
@@ -16298,6 +16299,7 @@ from previous Chrome versions.
   <int value="757912345" label="SnapGroup:disabled"/>
   <int value="758299873" label="OmniboxSuggestionHoverFillShape:enabled"/>
   <int value="758462353" label="CrossDeviceTabPaneAndroid:disabled"/>
+  <int value="758836002" label="PermissionsAndroidClapperLoud:disabled"/>
   <int value="758845666" label="WebXrInternals:enabled"/>
   <int value="759296601" label="DiscountConsentV2:disabled"/>
   <int value="760542355" label="ServiceWorkerScriptFullCodeCache:enabled"/>
