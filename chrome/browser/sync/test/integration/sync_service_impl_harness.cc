@@ -621,10 +621,7 @@ bool SyncServiceImplHarness::DisableSyncForAllDatatypes() {
 
 SyncCycleSnapshot SyncServiceImplHarness::GetLastCycleSnapshot() const {
   DCHECK(service() != nullptr) << "Sync service has not yet been set up.";
-  if (service()->IsSyncFeatureActive()) {
-    return service()->GetLastCycleSnapshotForDebugging();
-  }
-  return SyncCycleSnapshot();
+  return service()->GetLastCycleSnapshotForDebugging();
 }
 
 absl::flat_hash_map<syncer::DataType, size_t>
