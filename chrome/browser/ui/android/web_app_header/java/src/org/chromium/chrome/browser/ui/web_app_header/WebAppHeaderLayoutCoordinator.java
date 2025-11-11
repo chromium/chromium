@@ -83,7 +83,7 @@ public class WebAppHeaderLayoutCoordinator
     private final IncognitoStateProvider mIncognitoStateProvider;
     private final @DisplayMode.EnumType int mDisplayMode;
     private final NavigationPopup.HistoryDelegate mHistoryDelegate;
-    private int mMinUIControlsMinWidthPx;
+    private int mUIControlsMinWidthPx;
     private int mAppHeaderUnoccludedWidthPx;
     private final Callback<Integer> mOnUnoccludedWidthCallback;
     private final ObservableSupplierImpl<Boolean> mControlsEnabledSupplier;
@@ -169,7 +169,7 @@ public class WebAppHeaderLayoutCoordinator
         mIncognitoStateProvider = new IncognitoStateProvider();
 
         mOnUnoccludedWidthCallback = this::onUnoccludedWidthChanged;
-        mMinUIControlsMinWidthPx = 0;
+        mUIControlsMinWidthPx = 0;
         mAppHeaderUnoccludedWidthPx = 0;
         mLastButtonVisibilityChangeTime = 0;
 
@@ -226,6 +226,9 @@ public class WebAppHeaderLayoutCoordinator
         if (mDisplayMode == DisplayMode.WINDOW_CONTROLS_OVERLAY) {
             initWCOControls();
         }
+
+        // Determine width of initialized UI controls.
+        mUIControlsMinWidthPx = calculateUIControlsMinWidth();
     }
 
     private void initWCOControls() {
@@ -325,15 +328,13 @@ public class WebAppHeaderLayoutCoordinator
                             R.id.menu_button_wrapper,
                             /* visibilityDelegate= */ null);
         }
-        // Determine width of initialized minUI controls.
-        mMinUIControlsMinWidthPx = getControlButtonsWidthPx();
         mMediator.setOnButtonBottomInsetChanged(this::onButtonBottomInsetChanged);
     }
 
     private void onUnoccludedWidthChanged(int newUnoccludedWidthPx) {
         boolean wasShowingButtons = mShowButtons;
         mAppHeaderUnoccludedWidthPx = newUnoccludedWidthPx;
-        mShowButtons = mAppHeaderUnoccludedWidthPx >= mMinUIControlsMinWidthPx;
+        mShowButtons = mAppHeaderUnoccludedWidthPx >= mUIControlsMinWidthPx;
 
         if (wasShowingButtons == mShowButtons) return;
 
@@ -348,6 +349,11 @@ public class WebAppHeaderLayoutCoordinator
             if (mMenuButtonContainer != null) {
                 mMenuButtonContainer.setVisibility(mShowButtons ? View.VISIBLE : View.GONE);
             }
+        }
+        if (mToggleButtonView != null) {
+            mToggleButtonView.setVisibility(mShowButtons ? View.VISIBLE : View.GONE);
+            assert mMediator != null;
+            mMediator.didChangeToggleButtonVisiblity(mShowButtons);
         }
         logControlsVisibilityChange(wasShowingButtons);
     }
@@ -400,10 +406,12 @@ public class WebAppHeaderLayoutCoordinator
     }
 
     /**
-     * @return The total width of the initialized controls in px.
+     * @return The total minimum width of the initialized controls in px. This includes display mode
+     *     buttons, as well as a space allotment for the header content when in
+     *     WINDOW_CONTROLS_OVERLAY mode.
      */
     @VisibleForTesting
-    int getControlButtonsWidthPx() {
+    int calculateUIControlsMinWidth() {
         if (mView == null) return 0;
 
         int totalWidthDp = 0;
@@ -421,6 +429,13 @@ public class WebAppHeaderLayoutCoordinator
 
         // Add button padding.
         totalWidthDp += mHeaderButtonPaddingDp;
+
+        if (mToggleButtonView != null) {
+            // If mToggleButtonView is non-null, we're in WINDOW_CONTROLS_OVERLAY mode. In addition
+            // to allowing space for the toggle button, allow a minimal space for the web content
+            // in the header.
+            totalWidthDp += (mHeaderControlButtonWidthDp * 3);
+        }
 
         int totalWidthPx =
                 DisplayUtil.dpToPx(
@@ -486,7 +501,7 @@ public class WebAppHeaderLayoutCoordinator
      * called.
      */
     public void destroy() {
-        logControlsVisibilityChange(mAppHeaderUnoccludedWidthPx >= mMinUIControlsMinWidthPx);
+        logControlsVisibilityChange(mAppHeaderUnoccludedWidthPx >= mUIControlsMinWidthPx);
 
         mDesktopWindowStateManager.removeObserver(this);
         mBrowserControlsStateProvider.removeObserver(this);

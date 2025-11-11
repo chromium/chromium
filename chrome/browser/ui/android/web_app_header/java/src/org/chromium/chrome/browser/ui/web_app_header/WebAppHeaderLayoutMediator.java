@@ -65,6 +65,7 @@ class WebAppHeaderLayoutMediator
     private final Callback<Boolean> mSetHeaderAsOverlayCallback;
     private boolean mHeaderAsOverlay;
     private boolean mUserToggleHeaderAsOverlay;
+    private boolean mToggleButtonVisible;
     private int mButtonBottomInset;
     private final @DisplayMode.EnumType int mDisplayMode;
     private final Callback<@Nullable Tab> mOnTabUpdate;
@@ -154,6 +155,7 @@ class WebAppHeaderLayoutMediator
                                         ChromePreferenceKeys
                                                 .WINDOW_CONTROLS_OVERLAY_ENABLED_PACKAGES)
                                 .contains(mClientPackageName);
+        mToggleButtonVisible = true;
     }
 
     public void setUserToggleHeaderAsOverlay(boolean userToggleHeaderAsOverlay) {
@@ -178,13 +180,19 @@ class WebAppHeaderLayoutMediator
         return mUserToggleHeaderAsOverlay;
     }
 
+    public void didChangeToggleButtonVisiblity(boolean visible) {
+        mToggleButtonVisible = visible;
+        updateHeaderAsOverlay();
+    }
+
     private void updateHeaderAsOverlay() {
         mHeaderAsOverlay =
                 mCurrentHeaderState != null
                         && mCurrentHeaderState.isInDesktopWindow()
                         && mDisplayMode == DisplayMode.WINDOW_CONTROLS_OVERLAY
                         && !mBrowserControlsVisible
-                        && mUserToggleHeaderAsOverlay;
+                        && mUserToggleHeaderAsOverlay
+                        && mToggleButtonVisible;
 
         final Tab tab = mTabSupplier.get();
         if (tab == null) return;
