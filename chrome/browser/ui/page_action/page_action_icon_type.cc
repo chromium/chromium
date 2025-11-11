@@ -61,8 +61,6 @@ const base::FeatureParam<bool>* GetPageActionsMigrationParam(
     case PageActionIconType::kSaveIban:
     case PageActionIconType::kSaveCard:
       return &features::kPageActionsMigrationSavePayments;
-    case PageActionIconType::kContextualSidePanel:
-      return &features::kPageActionsContextualSidePanel;
     default:
       return nullptr;
   }

@@ -408,7 +408,6 @@ BASE_DECLARE_FEATURE_PARAM(bool, kPageActionsMigrationVirtualCard);
 BASE_DECLARE_FEATURE_PARAM(bool, kPageActionsMigrationFilledCardInformation);
 BASE_DECLARE_FEATURE_PARAM(bool, kPageActionsMigrationReadingMode);
 BASE_DECLARE_FEATURE_PARAM(bool, kPageActionsMigrationSavePayments);
-BASE_DECLARE_FEATURE_PARAM(bool, kPageActionsContextualSidePanel);
 
 // Determines whether the "save password" page action displays different UI if
 // the user has said to never save passwords for that site.

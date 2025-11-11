@@ -620,12 +620,6 @@ BASE_FEATURE_PARAM(bool,
                    "save_payments",
                    false);
 
-BASE_FEATURE_PARAM(bool,
-                   kPageActionsContextualSidePanel,
-                   &kPageActionsMigration,
-                   "contextual_side_panel",
-                   true);
-
 BASE_FEATURE(kSavePasswordsContextualUi, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kByDateHistoryInSidePanel, base::FEATURE_DISABLED_BY_DEFAULT);
