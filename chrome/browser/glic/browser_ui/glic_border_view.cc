@@ -32,6 +32,8 @@ constexpr static base::TimeDelta kEmphasisRampDownDuration =
 // The amount of time for the border to stay emphasized.
 constexpr static base::TimeDelta kEmphasisDuration = base::Milliseconds(1500);
 
+constexpr static float kCornerRadius = 12.0f;
+
 float ClampAndInterpolate(gfx::Tween::Type type,
                           float t,
                           float low,
@@ -581,9 +583,17 @@ gfx::RoundedCornersF GlicBorderView::GetContentBorderRadius() const {
     return corner_radius_;
   }
 
+  // If GlicMultiInstance is enabled, have all corners be rounded.
+  // TODO(https://crbug.com/457452232): Update rounded corner radiuses for
+  // different OS's.
+  if (glic::GlicEnabling::IsMultiInstanceEnabledByFlags()) {
+    return gfx::RoundedCornersF(kCornerRadius, kCornerRadius, kCornerRadius,
+                                kCornerRadius);
+  }
+
 #if BUILDFLAG(IS_MAC)
   if (!browser_->GetBrowserView().IsFullscreen()) {
-    return gfx::RoundedCornersF(0.0f, 0.0f, 12.0f, 12.0f);
+    return gfx::RoundedCornersF(0.0f, 0.0f, kCornerRadius, kCornerRadius);
   }
 #endif
 
