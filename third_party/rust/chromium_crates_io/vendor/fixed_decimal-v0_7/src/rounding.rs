@@ -141,12 +141,14 @@ pub enum RoundingIncrement {
     MultiplesOf25,
 }
 
-/// Specifies the precision of a floating point value when constructing a FixedDecimal.
+/// Specifies the precision of a floating point value when constructing a Decimal.
 ///
-/// IEEE 754 is a representation of a point on the number line. On the other hand, FixedDecimal
+/// **The primary definition of this type is in the [`fixed_decimal`](https://docs.rs/fixed_decimal) crate. Other ICU4X crates re-export it for convenience.**
+///
+/// IEEE 754 is a representation of a point on the number line. On the other hand, Decimal
 /// specifies not only the point on the number line but also the precision of the number to a
 /// specific power of 10. This enum augments a floating-point value with the additional
-/// information required by FixedDecimal.
+/// information required by Decimal.
 #[non_exhaustive]
 #[cfg(feature = "ryu")]
 #[derive(Debug, Clone, Copy)]
@@ -168,7 +170,7 @@ pub enum FloatPrecision {
 
     /// Specify that the floating point number is precise to the maximum representable by IEEE.
     ///
-    /// This results in a FixedDecimal having enough digits to recover the original floating point
+    /// This results in a Decimal having enough digits to recover the original floating point
     /// value, with no trailing zeros.
     RoundTrip,
 }

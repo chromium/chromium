@@ -11,9 +11,9 @@
 
 [package]
 edition = "2021"
-rust-version = "1.81"
+rust-version = "1.82"
 name = "fixed_decimal"
-version = "0.7.0"
+version = "0.7.1"
 authors = ["The ICU4X Project Developers"]
 build = false
 include = [
@@ -25,6 +25,7 @@ include = [
     "Cargo.toml",
     "LICENSE",
     "README.md",
+    "build.rs",
 ]
 autolib = false
 autobins = false
@@ -37,11 +38,11 @@ categories = ["internationalization"]
 license = "Unicode-3.0"
 repository = "https://github.com/unicode-org/icu4x"
 
-[package.metadata.docs.rs]
-all-features = true
-
 [package.metadata.workspaces]
 independent = true
+
+[package.metadata.docs.rs]
+all-features = true
 
 [features]
 experimental = []
@@ -85,20 +86,21 @@ default-features = false
 
 [dependencies.writeable]
 version = "0.6.0"
+features = ["alloc"]
 default-features = false
 
 [dev-dependencies.getrandom]
-version = "0.2"
-features = ["js"]
+version = "0.3"
+features = ["wasm_js"]
 
 [dev-dependencies.rand]
-version = "0.8"
+version = "0.9"
 
 [dev-dependencies.rand_distr]
-version = "0.4"
+version = "0.5"
 
 [dev-dependencies.rand_pcg]
-version = "0.3"
+version = "0.9"
 
 [target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies.criterion]
 version = "0.5.0"

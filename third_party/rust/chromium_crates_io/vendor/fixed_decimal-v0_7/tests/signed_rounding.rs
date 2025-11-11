@@ -329,7 +329,6 @@ pub fn extra_rounding_mode_cases() {
             ],
         },
     ];
-    #[allow(clippy::type_complexity)] // most compact representation in code
     let rounding_modes: [(&'static str, SRM); 9] = [
         ("ceil", SRM::Ceil),
         ("floor", SRM::Floor),
@@ -366,7 +365,6 @@ pub fn test_ecma402_table_with_increments() {
     use fixed_decimal::RoundingIncrement;
 
     #[rustfmt::skip] // Don't split everything on its own line. Makes it look a lot nicer.
-    #[allow(clippy::type_complexity)]
     let cases: [(_, _, [(_, _, _, _, _, _, _); 9]); 3] = [
         ("two", RoundingIncrement::MultiplesOf2, [
             ("ceil", SRM::Ceil, "-1.4", "0.4", "0.6", "0.6", "1.6"),
