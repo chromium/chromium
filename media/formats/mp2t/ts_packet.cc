@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/formats/mp2t/ts_packet.h"
 
 #include <memory>
@@ -19,21 +14,22 @@
 namespace media {
 namespace mp2t {
 
-static const uint8_t kTsHeaderSyncword = 0x47;
+static constexpr uint8_t kTsHeaderSyncword = 0x47;
 
 // static
-int TsPacket::Sync(const uint8_t* buf, int size) {
-  int k = 0;
-  for (; k < size; k++) {
+size_t TsPacket::Sync(base::span<const uint8_t> buf) {
+  size_t k = 0;
+  for (; k < buf.size(); k++) {
     // Verify that we have 4 syncwords in a row when possible,
     // this should improve synchronization robustness.
     // TODO(damienv): Consider the case where there is garbage
     // between TS packets.
     bool is_header = true;
-    for (int i = 0; i < 4; i++) {
-      int idx = k + i * kPacketSize;
-      if (idx >= size)
+    for (size_t i = 0; i < 4; i++) {
+      size_t idx = k + i * kPacketSize;
+      if (idx >= buf.size()) {
         break;
+      }
       if (buf[idx] != kTsHeaderSyncword) {
         DVLOG(LOG_LEVEL_TS)
             << "ByteSync" << idx << ": "
@@ -51,10 +47,10 @@ int TsPacket::Sync(const uint8_t* buf, int size) {
 }
 
 // static
-TsPacket* TsPacket::Parse(const uint8_t* buf, size_t size) {
-  if (size < kPacketSize) {
+std::unique_ptr<TsPacket> TsPacket::Parse(base::span<const uint8_t> buf) {
+  if (buf.size() < kPacketSize) {
     DVLOG(1) << "Buffer does not hold one full TS packet:"
-             << " buffer_size=" << size;
+             << " buffer_size=" << buf.size();
     return nullptr;
   }
 
@@ -72,18 +68,16 @@ TsPacket* TsPacket::Parse(const uint8_t* buf, size_t size) {
     DVLOG(1) << "Parsing header failed";
     return nullptr;
   }
-  return ts_packet.release();
+  return ts_packet;
 }
 
-TsPacket::TsPacket() {
-}
+TsPacket::TsPacket() = default;
 
-TsPacket::~TsPacket() {
-}
+TsPacket::~TsPacket() = default;
 
-bool TsPacket::ParseHeader(const uint8_t* buf) {
-  BitReader bit_reader(buf, kPacketSize);
-  payload_ = {buf, kPacketSize};
+bool TsPacket::ParseHeader(base::span<const uint8_t> buf) {
+  payload_ = buf.first(kPacketSize);
+  BitReader bit_reader(payload_);
 
   // Read the TS header: 4 bytes.
   uint8_t syncword;

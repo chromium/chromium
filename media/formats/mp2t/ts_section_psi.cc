@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/formats/mp2t/ts_section_psi.h"
 
 #include <algorithm>
@@ -16,13 +11,11 @@
 #include "media/base/byte_queue.h"
 #include "media/formats/mp2t/mp2t_common.h"
 
-static bool IsCrcValid(const uint8_t* buf, int size) {
+static bool IsCrcValid(base::span<const uint8_t> buf) {
   uint32_t crc = 0xffffffffu;
-  const uint32_t kCrcPoly = 0x4c11db7;
-
-  for (int k = 0; k < size; k++) {
+  constexpr uint32_t kCrcPoly = 0x4c11db7;
+  std::ranges::for_each(buf, [&crc](uint32_t data_msb_aligned) {
     int nbits = 8;
-    uint32_t data_msb_aligned = buf[k];
     data_msb_aligned <<= (32 - nbits);
 
     while (nbits > 0) {
@@ -36,7 +29,7 @@ static bool IsCrcValid(const uint8_t* buf, int size) {
       data_msb_aligned <<= 1;
       nbits--;
     }
-  }
+  });
 
   return (crc == 0);
 }
@@ -82,19 +75,20 @@ bool TsSectionPsi::Parse(bool payload_unit_start_indicator,
 
   // Add the data to the parser state.
   RCHECK(psi_byte_queue_.Push(buf));
-  int raw_psi_size = psi_byte_queue_.Data().size();
-  const uint8_t* raw_psi = psi_byte_queue_.Data().data();
+  base::span<const uint8_t> psi = psi_byte_queue_.Data();
 
   // Check whether we have enough data to start parsing.
-  if (raw_psi_size < 3)
+  if (psi.size() < 3) {
     return true;
-  int section_length =
-      ((static_cast<int>(raw_psi[1]) << 8) |
-       (static_cast<int>(raw_psi[2]))) & 0xfff;
-  if (section_length >= 1021)
+  }
+  size_t section_length =
+      ((static_cast<size_t>(psi[1]) << 8) | (static_cast<size_t>(psi[2]))) &
+      0xfff;
+  if (section_length >= 1021) {
     return false;
-  int psi_length = section_length + 3;
-  if (raw_psi_size < psi_length) {
+  }
+  size_t psi_length = section_length + 3;
+  if (psi.size() < psi_length) {
     // Don't throw an error when there is not enough data,
     // just wait for more data to come.
     return true;
@@ -102,16 +96,16 @@ bool TsSectionPsi::Parse(bool payload_unit_start_indicator,
 
   // There should not be any trailing bytes after a PMT.
   // Instead, the pointer field should be used to stuff bytes.
-  DVLOG_IF(1, raw_psi_size > psi_length)
-      << "Trailing bytes after a PSI section: "
-      << psi_length << " vs " << raw_psi_size;
+  DVLOG_IF(1, psi.size() > psi_length)
+      << "Trailing bytes after a PSI section: " << psi_length << " vs "
+      << psi.size();
 
-  if (!IsCrcValid(raw_psi, psi_length)) {
+  if (!IsCrcValid(psi.first(psi_length))) {
     DVLOG(1) << "Invalid PSI section crc checksum.";
   }
 
   // Parse the PSI section.
-  BitReader bit_reader(raw_psi, raw_psi_size);
+  BitReader bit_reader(psi);
   bool status = ParsePsiSection(&bit_reader);
   if (status)
     ResetPsiState();
