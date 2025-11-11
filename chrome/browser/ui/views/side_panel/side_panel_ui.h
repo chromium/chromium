@@ -62,6 +62,11 @@ class SidePanelUI {
   virtual bool IsSidePanelEntryShowing(
       const SidePanelEntryKey& entry_key) const = 0;
 
+  // Similar to IsSidePanelEntryShowing, but restricts to either the tab-scoped
+  // or window-scoped registry.
+  virtual bool IsSidePanelEntryShowing(const SidePanelEntry::Key& entry_key,
+                                       bool for_tab) const = 0;
+
   // Register for this callback to detect when the side panel opens or changes.
   // If the open is animated, this will be called at the beginning of the
   // animation.

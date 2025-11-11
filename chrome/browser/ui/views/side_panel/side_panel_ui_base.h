@@ -62,14 +62,11 @@ class SidePanelUIBase : public SidePanelUI, public TabStripModelObserver {
   bool IsSidePanelShowing(SidePanelEntry::PanelType type) const override;
   bool IsSidePanelEntryShowing(
       const SidePanelEntry::Key& entry_key) const override;
+  bool IsSidePanelEntryShowing(const SidePanelEntry::Key& entry_key,
+                               bool for_tab) const override;
   base::CallbackListSubscription RegisterSidePanelShown(
       SidePanelEntry::PanelType type,
       SidePanelUI::ShownCallback callback) override;
-
-  // Similar to IsSidePanelEntryShowing, but restricts to either the tab-scoped
-  // or window-scoped registry.
-  bool IsSidePanelEntryShowing(const SidePanelEntry::Key& entry_key,
-                               bool for_tab) const;
 
   Browser* browser() const { return browser_; }
 

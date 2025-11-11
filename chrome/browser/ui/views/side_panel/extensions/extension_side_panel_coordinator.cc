@@ -15,9 +15,9 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
 #include "chrome/common/extensions/api/side_panel.h"
 #include "content/public/browser/browser_context.h"
@@ -354,15 +354,15 @@ void ExtensionSidePanelCoordinator::HandleCloseExtensionSidePanel(
   BrowserWindowInterface* browser = GetBrowser();
   DCHECK(browser);
 
-  auto* coordinator = browser->GetFeatures().side_panel_coordinator();
+  auto* const side_panel_ui = browser->GetFeatures().side_panel_ui();
 
   // If the SidePanelEntry for this extension is showing when window.close() is
   // called, close the side panel. Otherwise, clear the entry's cached view.
   SidePanelEntry* entry = GetEntry();
   DCHECK(entry);
 
-  if (coordinator->IsSidePanelEntryShowing(entry->key(), for_tab_)) {
-    coordinator->Close(entry->type());
+  if (side_panel_ui->IsSidePanelEntryShowing(entry->key(), for_tab_)) {
+    side_panel_ui->Close(entry->type());
   } else {
     entry->ClearCachedView();
   }

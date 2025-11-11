@@ -96,22 +96,23 @@ bool SidePanelUIBase::IsSidePanelEntryShowing(
   return false;
 }
 
-base::CallbackListSubscription SidePanelUIBase::RegisterSidePanelShown(
-    SidePanelEntry::PanelType type,
-    ShownCallback callback) {
-  return panel_data_[type]->shown_callback_list.Add(std::move(callback));
-}
-
 bool SidePanelUIBase::IsSidePanelEntryShowing(
     const SidePanelEntry::Key& entry_key,
     bool for_tab) const {
   for (const auto& [_, panel_data] : panel_data_) {
-    if (panel_data->current_key && panel_data->current_key->key == entry_key &&
-        panel_data->current_key->tab_handle.has_value() == for_tab) {
+    std::optional<UniqueKey> current_key = panel_data->current_key;
+    if (current_key && current_key->key == entry_key &&
+        current_key->tab_handle.has_value() == for_tab) {
       return true;
     }
   }
   return false;
+}
+
+base::CallbackListSubscription SidePanelUIBase::RegisterSidePanelShown(
+    SidePanelEntry::PanelType type,
+    ShownCallback callback) {
+  return panel_data_[type]->shown_callback_list.Add(std::move(callback));
 }
 
 void SidePanelUIBase::SetOpenedTimestamp(SidePanelEntry::PanelType type,
