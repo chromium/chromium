@@ -22,6 +22,7 @@ import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.chrome_item_picker.TabItemPickerCoordinator.ItemPickerSelectionHandler;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -88,6 +89,7 @@ class TabListEditorMediator
     private @TabActionState int mTabActionState;
     private @Nullable LifecycleObserver mLifecycleObserver;
     private int mSnackbarOverrideToken;
+    private @Nullable ItemPickerSelectionHandler mSelectionHandler;
 
     private final View.OnClickListener mNavigationClickListener =
             new View.OnClickListener() {
@@ -95,6 +97,18 @@ class TabListEditorMediator
                 public void onClick(View v) {
                     assumeNonNull(mNavigationProvider);
                     mNavigationProvider.goBack();
+                }
+            };
+
+    private final View.OnClickListener mDoneButtonClickHandler =
+            new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    assumeNonNull(mSelectionHandler);
+
+                    List<TabListEditorItemSelectionId> selectedItems =
+                            new ArrayList<>(mSelectionDelegate.getSelectedItems());
+                    mSelectionHandler.finishSelection(selectedItems);
                 }
             };
 
@@ -245,6 +259,7 @@ class TabListEditorMediator
         mModel.set(TabListEditorProperties.CREATION_MODE, mCreationMode);
 
         mModel.set(TabListEditorProperties.TOOLBAR_NAVIGATION_LISTENER, mNavigationClickListener);
+        mModel.set(TabListEditorProperties.DONE_BUTTON_CLICK_HANDLER, mDoneButtonClickHandler);
         updateColors(
                 assumeNonNull(mCurrentTabGroupModelFilterSupplier.get())
                         .getTabModel()
@@ -482,6 +497,11 @@ class TabListEditorMediator
         if (mDesktopWindowStateManager != null) {
             mDesktopWindowStateManager.removeObserver(this);
         }
+    }
+
+    @Override
+    public void setSelectionHandler(ItemPickerSelectionHandler selectionHandler) {
+        mSelectionHandler = selectionHandler;
     }
 
     private void runListDestroyables() {

@@ -44,6 +44,9 @@ public class TabListEditorProperties {
     public static final PropertyModel.WritableBooleanPropertyKey DONE_BUTTON_VISIBILITY =
             new PropertyModel.WritableBooleanPropertyKey();
 
+    public static final PropertyModel.WritableObjectPropertyKey<View.OnClickListener>
+            DONE_BUTTON_CLICK_HANDLER = new PropertyModel.WritableObjectPropertyKey<>();
+
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
                 IS_VISIBLE,
@@ -56,5 +59,6 @@ public class TabListEditorProperties {
                 TOP_MARGIN,
                 CREATION_MODE,
                 DONE_BUTTON_VISIBILITY,
+                DONE_BUTTON_CLICK_HANDLER
             };
 }

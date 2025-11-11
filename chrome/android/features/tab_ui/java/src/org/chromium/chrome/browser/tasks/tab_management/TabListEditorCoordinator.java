@@ -24,6 +24,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.chrome_item_picker.TabItemPickerCoordinator.ItemPickerSelectionHandler;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
@@ -121,6 +122,9 @@ public class TabListEditorCoordinator {
         /** Hides the TabListEditor. */
         void hide();
 
+        /** Hides the TabListEditor, notifying that the exit was due to a specific action. */
+        void hideByAction();
+
         /**
          * @return Whether or not the TabListEditor consumed the event.
          */
@@ -145,6 +149,9 @@ public class TabListEditorCoordinator {
 
         /** Sets the toolbar title when no items are selected. */
         void setToolbarTitle(String title);
+
+        /** Sets a custom {@link ItemPickerSelectionHandler} to handle "done" actions. */
+        void setSelectionHandler(ItemPickerSelectionHandler selectionHandler);
 
         /** Sets a custom {@link NavigationProvider} to handle "back" actions. */
         void setNavigationProvider(NavigationProvider navigationProvider);
@@ -219,6 +226,12 @@ public class TabListEditorCoordinator {
                 }
 
                 @Override
+                public void hideByAction() {
+                    mTabListEditorMediator.hideByAction();
+                    mNeedsCleanUp = true;
+                }
+
+                @Override
                 public void configureToolbarWithMenuItems(List<TabListEditorAction> actions) {
                     assert mTabListCoordinator != null
                             : "Must call #show before #configureToolbarWithMenuItems";
@@ -243,6 +256,11 @@ public class TabListEditorCoordinator {
                 @Override
                 public void setNavigationProvider(NavigationProvider navigationProvider) {
                     mTabListEditorMediator.setNavigationProvider(navigationProvider);
+                }
+
+                @Override
+                public void setSelectionHandler(ItemPickerSelectionHandler selectionHandler) {
+                    mTabListEditorMediator.setSelectionHandler(selectionHandler);
                 }
 
                 @Override
@@ -403,7 +421,7 @@ public class TabListEditorCoordinator {
     /**
      * @return The {@link SelectionDelegate} that is used in this component.
      */
-    SelectionDelegate<TabListEditorItemSelectionId> getSelectionDelegate() {
+    public SelectionDelegate<TabListEditorItemSelectionId> getSelectionDelegate() {
         return mSelectionDelegate;
     }
 

@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.chrome_item_picker;
 import android.app.Activity;
 import android.view.ViewGroup;
 
+import androidx.activity.ComponentActivity;
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
@@ -34,9 +36,11 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabLi
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.CreationMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.TabListEditorController;
+import org.chromium.chrome.browser.tasks.tab_management.TabListEditorItemSelectionId;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
+import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 
@@ -56,8 +60,11 @@ public class TabItemPickerCoordinator {
     private final ViewGroup mRootView;
     private final ViewGroup mContainerView;
     private final SnackbarManager mSnackbarManager;
+    private final OnBackPressedCallback mBackPressCallback;
+    private final Callback<Boolean> mBackPressEnabledObserver;
     private @Nullable TabModelSelector mTabModelSelector;
     private @Nullable TabListEditorCoordinator mTabListEditorCoordinator;
+    private @Nullable ItemPickerNavigationProvider mNavigationProvider;
 
     public TabItemPickerCoordinator(
             OneshotSupplier<Profile> profileSupplier,
@@ -74,6 +81,16 @@ public class TabItemPickerCoordinator {
         mRootView = rootView;
         mContainerView = containerView;
 
+        mBackPressCallback =
+                new OnBackPressedCallback(/* enabled= */ false) {
+                    @Override
+                    public void handleOnBackPressed() {
+                        if (mTabListEditorCoordinator != null) {
+                            mTabListEditorCoordinator.getController().handleBackPress();
+                        }
+                    }
+                };
+        mBackPressEnabledObserver = mBackPressCallback::setEnabled;
         mCallbackController = new CallbackController();
     }
 
@@ -177,6 +194,15 @@ public class TabItemPickerCoordinator {
 
         TabListEditorController controller = mTabListEditorCoordinator.getController();
 
+        if (mActivity instanceof ComponentActivity componentActivity) {
+            // Add the callback to the Dispatcher
+            componentActivity
+                    .getOnBackPressedDispatcher()
+                    .addCallback(componentActivity, mBackPressCallback);
+        }
+
+        controller.getHandleBackPressChangedSupplier().addObserver(mBackPressEnabledObserver);
+
         int currentTabIndex = mTabModelSelector.getModel(/* incognito= */ false).index();
         RecyclerViewPosition position = new RecyclerViewPosition(currentTabIndex, 0);
 
@@ -186,40 +212,53 @@ public class TabItemPickerCoordinator {
                 /* recyclerViewPosition= */ position);
     }
 
-    /** Creates a TabListEditorCoordinator with set configurations for the Tab Picker UI. */
-    @VisibleForTesting
-    TabListEditorCoordinator createTabListEditorCoordinator(TabModelSelector selector) {
-        ObservableSupplier<@Nullable TabGroupModelFilter> tabGroupModelFilterSupplier =
-                createTabGroupModelFilterSupplier(selector);
-        BrowserControlsStateProvider browserControlStateProvider =
-                new HeadlessBrowserControlsStateProvider();
-        TabContentManager tabContentManager =
-                createTabContentManager(selector, browserControlStateProvider);
-        ModalDialogManager modalDialogManager =
-                new ModalDialogManager(new AppModalPresenter(mActivity), ModalDialogType.APP);
+    public interface ItemPickerSelectionHandler {
 
-        // TODO: Create a gridCardOnClickListenerProvider that overrides the default behavior to
-        // observe the tabs selected.
-        return new TabListEditorCoordinator(
-                mActivity,
-                mRootView,
-                mContainerView,
-                browserControlStateProvider,
-                tabGroupModelFilterSupplier,
-                tabContentManager,
-                CallbackUtils.emptyCallback(),
-                TabListMode.GRID,
-                /* displayGroups= */ false,
-                mSnackbarManager,
-                /* bottomSheetController= */ null,
-                TabProperties.TabActionState.SELECTABLE,
-                /* gridCardOnClickListenerProvider= */ null,
-                modalDialogManager,
-                /* desktopWindowStateManager= */ null,
-                /* edgeToEdgeSupplier= */ null,
-                CreationMode.ITEM_PICKER,
-                /* undoBarExplicitTrigger= */ null,
-                /* componentName= */ "TabItemPickerCoordinator");
+        /**
+         * Executes the successful selection logic, typically finishing the host activity. * @param
+         * selectedItems The list of items chosen by the user.
+         */
+        void finishSelection(List<TabListEditorItemSelectionId> selectedItems);
+    }
+
+    public static class ItemPickerNavigationProvider
+            implements TabListEditorCoordinator.NavigationProvider, ItemPickerSelectionHandler {
+        private final Activity mActivity;
+        private final TabListEditorController mController;
+
+        public ItemPickerNavigationProvider(
+                Activity activity,
+                TabListEditorController controller,
+                SelectionDelegate<TabListEditorItemSelectionId> selectionDelegate) {
+            mActivity = activity;
+            mController = controller;
+        }
+
+        @Override
+        public void goBack() {
+            if (mController.isVisible()) {
+                mController.hide();
+            }
+
+            // Route back press to the Activity's cancel handler.
+            if (mActivity instanceof ChromeItemPickerActivity cipa) {
+                cipa.finishWithCancel();
+            } else {
+                mActivity.finish();
+            }
+        }
+
+        @Override
+        public void finishSelection(List<TabListEditorItemSelectionId> selectedItems) {
+            mController.hideByAction();
+
+            // Route the result to the Activity's success handler.
+            if (mActivity instanceof ChromeItemPickerActivity cipa) {
+                cipa.finishWithSelectedItems(new HashSet<>(selectedItems));
+            } else {
+                mActivity.finish();
+            }
+        }
     }
 
     /** Creates a TabGroupModelFilter instance required by the TabListEditorCoordinator. */
@@ -245,8 +284,57 @@ public class TabItemPickerCoordinator {
     /** Cleans up the TabListEditorCoordinator and releases resources. */
     public void destroy() {
         if (mTabListEditorCoordinator != null) {
+            mTabListEditorCoordinator
+                    .getController()
+                    .getHandleBackPressChangedSupplier()
+                    .removeObserver(mBackPressEnabledObserver);
             mTabListEditorCoordinator.destroy();
         }
+        mBackPressCallback.remove();
         mCallbackController.destroy();
+    }
+
+    /** Creates a TabListEditorCoordinator with set configurations for the Tab Picker UI. */
+    @VisibleForTesting
+    TabListEditorCoordinator createTabListEditorCoordinator(TabModelSelector selector) {
+        ObservableSupplier<@Nullable TabGroupModelFilter> tabGroupModelFilterSupplier =
+                createTabGroupModelFilterSupplier(selector);
+        BrowserControlsStateProvider browserControlStateProvider =
+                new HeadlessBrowserControlsStateProvider();
+        TabContentManager tabContentManager =
+                createTabContentManager(selector, browserControlStateProvider);
+        ModalDialogManager modalDialogManager =
+                new ModalDialogManager(new AppModalPresenter(mActivity), ModalDialogType.APP);
+
+        TabListEditorCoordinator coordinator =
+                new TabListEditorCoordinator(
+                        mActivity,
+                        mRootView,
+                        mContainerView,
+                        browserControlStateProvider,
+                        tabGroupModelFilterSupplier,
+                        tabContentManager,
+                        CallbackUtils.emptyCallback(),
+                        TabListMode.GRID,
+                        /* displayGroups= */ false,
+                        mSnackbarManager,
+                        /* bottomSheetController= */ null,
+                        TabProperties.TabActionState.SELECTABLE,
+                        /* gridCardOnClickListenerProvider= */ null,
+                        modalDialogManager,
+                        /* desktopWindowStateManager= */ null,
+                        /* edgeToEdgeSupplier= */ null,
+                        CreationMode.ITEM_PICKER,
+                        /* undoBarExplicitTrigger= */ null,
+                        /* componentName= */ "TabItemPickerCoordinator");
+
+        mNavigationProvider =
+                new ItemPickerNavigationProvider(
+                        mActivity, coordinator.getController(), coordinator.getSelectionDelegate());
+
+        coordinator.getController().setNavigationProvider(mNavigationProvider);
+        coordinator.getController().setSelectionHandler(mNavigationProvider);
+
+        return coordinator;
     }
 }

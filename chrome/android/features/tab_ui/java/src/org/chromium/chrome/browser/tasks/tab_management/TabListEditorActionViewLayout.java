@@ -107,6 +107,10 @@ public class TabListEditorActionViewLayout extends LinearLayout {
         update();
     }
 
+    public void setDoneButtonOnClickListener(View.OnClickListener listener) {
+        mDoneButton.setOnClickListener(listener);
+    }
+
     /**
      * @param delegate the delegate to notify of action view changes.
      */

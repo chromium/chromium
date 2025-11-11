@@ -64,6 +64,11 @@ public class TabListEditorLayoutBinder {
                     .getActionViewLayout()
                     .setDoneButtonVisibility(
                             model.get(TabListEditorProperties.DONE_BUTTON_VISIBILITY));
+        } else if (propertyKey == TabListEditorProperties.DONE_BUTTON_CLICK_HANDLER) {
+            view.getToolbar()
+                    .getActionViewLayout()
+                    .setDoneButtonOnClickListener(
+                            model.get(TabListEditorProperties.DONE_BUTTON_CLICK_HANDLER));
         }
     }
 }

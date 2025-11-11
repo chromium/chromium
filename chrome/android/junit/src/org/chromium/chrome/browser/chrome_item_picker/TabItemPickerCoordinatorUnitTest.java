@@ -38,6 +38,7 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowDisplay;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
@@ -50,7 +51,9 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator;
+import org.chromium.chrome.browser.tasks.tab_management.TabListEditorItemSelectionId;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.content_public.browser.WebContents;
 
 import java.util.Arrays;
@@ -61,7 +64,6 @@ import java.util.List;
 @Config(manifest = Config.NONE)
 public class TabItemPickerCoordinatorUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-
     @Mock private TabWindowManager mTabWindowManager;
     @Mock private Profile mProfile;
     @Mock private TabModelSelectorImpl mTabModelSelector;
@@ -79,8 +81,9 @@ public class TabItemPickerCoordinatorUnitTest {
     @Mock private TabModel mRegularTabModel;
     @Mock private PageContentExtractionService mPageContentExtractionService;
 
+    @Mock private SelectionDelegate<TabListEditorItemSelectionId> mSelectionDelegateMock;
+    @Mock private ObservableSupplier<Boolean> mBackPressChangedSupplierMock;
     @Captor private ArgumentCaptor<List<Tab>> mTabListCaptor;
-
     private OneshotSupplierImpl<Profile> mProfileSupplierImpl;
     private TabItemPickerCoordinator mItemPickerCoordinator;
     private final int mWindowId = 5;
@@ -117,6 +120,10 @@ public class TabItemPickerCoordinatorUnitTest {
         doReturn(mTabListEditorCoordinator)
                 .when(mItemPickerCoordinator)
                 .createTabListEditorCoordinator(any(TabModelSelector.class));
+
+        when(mTabListEditorCoordinator.getSelectionDelegate()).thenReturn(mSelectionDelegateMock);
+        when(mTabListEditorController.getHandleBackPressChangedSupplier())
+                .thenReturn(mBackPressChangedSupplierMock);
 
         PageContentExtractionServiceFactory.setForTesting(mPageContentExtractionService);
     }

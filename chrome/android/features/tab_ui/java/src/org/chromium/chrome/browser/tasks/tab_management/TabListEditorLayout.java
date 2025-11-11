@@ -26,7 +26,7 @@ import java.util.Map;
 
 /** This class is used to show the {@link SelectableListLayout} in a {@link PopupWindow}. */
 @NullMarked
-class TabListEditorLayout extends SelectableListLayout<TabListEditorItemSelectionId> {
+public class TabListEditorLayout extends SelectableListLayout<TabListEditorItemSelectionId> {
     private TabListEditorToolbar mToolbar;
     private ViewGroup mRootView;
     private ViewGroup mParentView;
@@ -202,7 +202,7 @@ class TabListEditorLayout extends SelectableListLayout<TabListEditorItemSelectio
 
     private void clearFinalChildOnKeyListener() {
         if (mFinalRecyclerViewChild != null) {
-            mFinalRecyclerViewChild.setOnKeyListener(/* listener */ null);
+            mFinalRecyclerViewChild.setOnKeyListener(/* listener= */ null);
         }
     }
 
