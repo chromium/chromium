@@ -4,6 +4,8 @@
 
 #include "extensions/browser/api/networking_private/networking_private_event_router.h"
 
+#include <memory>
+
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/network/device_state.h"
 #include "chromeos/ash/components/network/network_certificate_handler.h"
@@ -229,9 +231,9 @@ void NetworkingPrivateEventRouterImpl::NetworkPropertiesUpdated(
                  << NetworkId(network);
   auto args(api::networking_private::OnNetworksChanged::Create(
       std::vector<std::string>(1, network->guid())));
-  std::unique_ptr<Event> extension_event(new Event(
+  auto extension_event = std::make_unique<Event>(
       events::NETWORKING_PRIVATE_ON_NETWORKS_CHANGED,
-      api::networking_private::OnNetworksChanged::kEventName, std::move(args)));
+      api::networking_private::OnNetworksChanged::kEventName, std::move(args));
   event_router->BroadcastEvent(std::move(extension_event));
 }
 

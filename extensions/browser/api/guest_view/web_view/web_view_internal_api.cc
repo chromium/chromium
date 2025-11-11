@@ -165,7 +165,7 @@ std::unique_ptr<extensions::UserScript> ParseContentScript(
   if (script_value.matches.empty())
     return nullptr;
 
-  std::unique_ptr<extensions::UserScript> script(new extensions::UserScript());
+  auto script = std::make_unique<extensions::UserScript>();
 
   // The default for WebUI is not having special access, but we can change that
   // if needed.

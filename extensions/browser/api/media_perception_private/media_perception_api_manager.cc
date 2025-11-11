@@ -595,11 +595,11 @@ void MediaPerceptionAPIManager::OnDetectionSignal(
   extensions::api::media_perception_private::MediaPerception media_perception =
       extensions::api::media_perception_private::MediaPerceptionProtoToIdl(
           media_perception_proto);
-  std::unique_ptr<Event> event(new Event(
+  auto event = std::make_unique<Event>(
       events::MEDIA_PERCEPTION_PRIVATE_ON_MEDIA_PERCEPTION,
       extensions::api::media_perception_private::OnMediaPerception::kEventName,
       extensions::api::media_perception_private::OnMediaPerception::Create(
-          media_perception)));
+          media_perception));
   router->BroadcastEvent(std::move(event));
 }
 

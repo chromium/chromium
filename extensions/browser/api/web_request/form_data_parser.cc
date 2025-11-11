@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <memory>
 #include <string_view>
 #include <vector>
 
@@ -343,7 +344,7 @@ std::unique_ptr<FormDataParser> FormDataParser::CreateFromContentTypeHeader(
 
   switch (choice) {
     case URL_ENCODED:
-      return std::unique_ptr<FormDataParser>(new FormDataParserUrlEncoded());
+      return std::make_unique<FormDataParserUrlEncoded>();
     case MULTIPART:
       return std::unique_ptr<FormDataParser>(
           new FormDataParserMultipart(boundary));

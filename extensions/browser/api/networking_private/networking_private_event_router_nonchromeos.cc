@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
-#include "extensions/browser/api/networking_private/networking_private_event_router.h"
+#include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/api/networking_private/networking_private_delegate_factory.h"
 #include "extensions/browser/api/networking_private/networking_private_delegate_observer.h"
+#include "extensions/browser/api/networking_private/networking_private_event_router.h"
 #include "extensions/common/api/networking_private.h"
 
 namespace extensions {
@@ -163,9 +164,9 @@ void NetworkingPrivateEventRouterImpl::OnNetworksChangedEvent(
     return;
   }
   auto args(api::networking_private::OnNetworksChanged::Create(network_guids));
-  std::unique_ptr<Event> netchanged_event(new Event(
+  auto netchanged_event = std::make_unique<Event>(
       events::NETWORKING_PRIVATE_ON_NETWORKS_CHANGED,
-      api::networking_private::OnNetworksChanged::kEventName, std::move(args)));
+      api::networking_private::OnNetworksChanged::kEventName, std::move(args));
   event_router->BroadcastEvent(std::move(netchanged_event));
 }
 

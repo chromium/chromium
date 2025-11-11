@@ -1403,7 +1403,7 @@ bool NetworkingPrivateLinux::SetConnectionStateAndPostEvent(
   // Set the status.
   network_iter->second.Set(kAccessPointInfoConnectionState, connection_state);
 
-  std::unique_ptr<GuidList> changed_networks(new GuidList());
+  auto changed_networks = std::make_unique<GuidList>();
   changed_networks->push_back(guid);
 
   // Only add a second network if it exists and it is not the same as the

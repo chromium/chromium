@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <iterator>
+#include <memory>
 #include <string_view>
 #include <vector>
 
@@ -1599,7 +1600,7 @@ bool WebRequestEventRouter::DispatchEvent(
   // pairs into a single message sent to a list of sub_event_names.
   int num_handlers_blocking = 0;
 
-  std::unique_ptr<ListenerIDs> listeners_to_dispatch(new ListenerIDs);
+  auto listeners_to_dispatch = std::make_unique<ListenerIDs>();
   listeners_to_dispatch->reserve(listeners.size());
   for (EventListener* listener : listeners) {
     listeners_to_dispatch->push_back(listener->id);

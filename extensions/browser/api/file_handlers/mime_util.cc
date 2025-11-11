@@ -86,7 +86,7 @@ void OnGetMimeTypeFromMetadataForNonNativeLocalPathCompleted(
 
   // MIME type not available with metadata, hence try to guess it from the
   // file's extension.
-  std::unique_ptr<std::string> mime_type_from_extension(new std::string);
+  auto mime_type_from_extension = std::make_unique<std::string>();
   std::string* const mime_type_from_extension_ptr =
       mime_type_from_extension.get();
   base::ThreadPool::PostTaskAndReply(
@@ -160,7 +160,7 @@ void GetMimeTypeForLocalPath(
 
   // For native local files, try to guess the mime from the extension. If
   // not available, then try to sniff if.
-  std::unique_ptr<std::string> mime_type_from_extension(new std::string);
+  auto mime_type_from_extension = std::make_unique<std::string>();
   std::string* const mime_type_from_extension_ptr =
       mime_type_from_extension.get();
   base::ThreadPool::PostTaskAndReply(

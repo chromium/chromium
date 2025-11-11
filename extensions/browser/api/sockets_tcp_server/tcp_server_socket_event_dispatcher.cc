@@ -4,6 +4,7 @@
 
 #include "extensions/browser/api/sockets_tcp_server/tcp_server_socket_event_dispatcher.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -166,9 +167,9 @@ void TCPServerSocketEventDispatcher::AcceptCallback(
     accept_error_info.socket_id = params.socket_id;
     accept_error_info.result_code = result_code;
     auto args = sockets_tcp_server::OnAcceptError::Create(accept_error_info);
-    std::unique_ptr<Event> event(new Event(
+    auto event = std::make_unique<Event>(
         events::SOCKETS_TCP_SERVER_ON_ACCEPT_ERROR,
-        sockets_tcp_server::OnAcceptError::kEventName, std::move(args)));
+        sockets_tcp_server::OnAcceptError::kEventName, std::move(args));
     PostEvent(params, std::move(event));
 
     // Since we got an error, the socket is now "paused" until the application
