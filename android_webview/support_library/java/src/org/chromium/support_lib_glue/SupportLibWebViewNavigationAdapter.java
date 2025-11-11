@@ -132,6 +132,9 @@ class SupportLibWebViewNavigationAdapter implements WebViewNavigationBoundaryInt
     public /* WebViewPage */ @Nullable InvocationHandler getPage() {
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.AndroidX.NAVIGATION_GET_PAGE")) {
             recordApiCall(ApiCall.NAVIGATION_GET_PAGE);
+            if (mNavigation.getPage() == null) {
+                return null;
+            }
             return BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
                     new SupportLibWebViewPageAdapter(mNavigation.getPage()));
         }
