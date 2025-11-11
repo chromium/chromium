@@ -3190,6 +3190,70 @@
       <message name="IDS_IOS_IDLE_TIMEOUT_SIGNOUT_TITLE" desc="Title of the idle timeout policy dialog when the user is about to be signed out.">
         You'll be signed out
       </message>
+      <message name="IDS_IOS_IMPORT_ITEM_BLOCKED_BY_POLICY" desc="The detailed text shown for a data type that cannot be imported because it is blocked by an enterprise policy. [iOS only]">
+        Disabled by your administrator
+      </message>
+      <message name="IDS_IOS_IMPORT_ITEM_TYPE_IMPORTED_DETAILED_TEXT_BOOKMARKS" desc="The detailed text of the 'Bookmarks' row displayed on an import screen displaying the number of bookmarks imported. [iOS only]">
+        {count, plural,
+          =1 {Imported {count} bookmark}
+          other {Imported {count} bookmarks}}
+      </message>
+      <message name="IDS_IOS_IMPORT_ITEM_TYPE_IMPORTED_DETAILED_TEXT_CREDIT_CARDS" desc="The detailed text of the 'Credit card' row displayed on an import screen displaying the number of credit cards imported. [iOS only]">
+        {count, plural,
+          =1 {Imported {count} card}
+          other {Imported {count} cards}}
+      </message>
+      <message name="IDS_IOS_IMPORT_ITEM_TYPE_IMPORTED_DETAILED_TEXT_HISTORY" desc="The detailed text of the 'History' row displayed on an import screen displaying the number of history items imported. [iOS only]">
+        {count, plural,
+          =1 {Imported {count} history item}
+          other {Imported {count} history items}}
+      </message>
+      <message name="IDS_IOS_IMPORT_ITEM_TYPE_IMPORTED_DETAILED_TEXT_INVALID_PASSWORDS" desc="The description of the 'Password' row displayed on an import screen displaying the number of passwords that has failed to be imported. Will not be displayed when all passwords are successfully imported. Do not include a period - it will be handled separately. [iOS only]">
+        {count, plural,
+          =1 {Couldn't import {count} password}
+          other {Couldn't import {count} passwords}}
+      </message>
+      <message name="IDS_IOS_IMPORT_ITEM_TYPE_IMPORTED_DETAILED_TEXT_PASSWORDS" desc="The description of the 'Password' row displayed on an import screen displaying the number of passwords imported. Do not include a period - it will be handled separately. [iOS only]">
+        {count, plural,
+          =0 {No password imported}
+          =1 {Imported {count} password}
+          other {Imported {count} passwords}}
+      </message>
+      <message name="IDS_IOS_IMPORT_ITEM_TYPE_PENDING_DETAILED_TEXT_BOOKMARKS" desc="The detailed text of the 'Bookmarks' row displayed on an import screen displaying the number of bookmarks that will be imported. [iOS only]">
+        {count, plural,
+          =1 {{count} bookmarks}
+          other {{count} bookmarks}}
+      </message>
+      <message name="IDS_IOS_IMPORT_ITEM_TYPE_PENDING_DETAILED_TEXT_CREDIT_CARDS" desc="The detailed text of the 'Credit card' row displayed on an import screen displaying the number of credit cards that will be imported. [iOS only]">
+        {count, plural,
+          =1 {{count} card}
+          other {{count} cards}}
+      </message>
+      <message name="IDS_IOS_IMPORT_ITEM_TYPE_PENDING_DETAILED_TEXT_HISTORY" desc="The detailed text of the 'History' row displayed on an import screen displaying the number of history items that will be imported. [iOS only]">
+        {count, plural,
+          =1 {{count} history item}
+          other {{count} history items}}
+      </message>
+      <message name="IDS_IOS_IMPORT_ITEM_TYPE_PENDING_DETAILED_TEXT_NO_DATA" desc="The detailed text of each row displayed on an import screen when there is no item of the type to be imported. [iOS only]">
+        Nothing to import
+      </message>
+      <message name="IDS_IOS_IMPORT_ITEM_TYPE_PENDING_DETAILED_TEXT_PASSWORDS" desc="The detailed text of the 'Password' row displayed on an import screen displaying the number of passwords that will be imported. Only used when no password has failed to be imported. [iOS only]">
+        {count, plural,
+          =1 {{count} password}
+          other {{count} passwords}}
+      </message>
+      <message name="IDS_IOS_IMPORT_ITEM_TYPE_TITLE_BOOKMARKS" desc="The title of the 'Bookmarks' row displayed on an import screen that handles the import process. [iOS only]">
+        Bookmarks
+      </message>
+      <message name="IDS_IOS_IMPORT_ITEM_TYPE_TITLE_CREDIT_CARDS" desc="The title of the 'Credit cards' row displayed on an import screen that handles the import process. [iOS only]">
+        Credit cards
+      </message>
+      <message name="IDS_IOS_IMPORT_ITEM_TYPE_TITLE_HISTORY" desc="The title of the 'History' row displayed on an import screen that handles the import process. [iOS only]">
+        History
+      </message>
+      <message name="IDS_IOS_IMPORT_ITEM_TYPE_TITLE_PASSWORDS" desc="The title of the 'Passwords' row displayed on an import screen that handles the import process. [iOS only]">
+        Passwords
+      </message>
       <message name="IDS_IOS_IMPORT_PASSWORDS" desc="Button that the user can press to import passwords. [Length: 22em] [iOS only]">
         Import passwords…
       </message>
@@ -5658,72 +5722,8 @@ Handoff must also be enabled in the General section of Settings, and your device
       <message name="IDS_IOS_SAFARI_IMPORT_IMPORT_INSTRUCTIONS_TWO" desc="Instructions view to teach users how to import data from Safari - step 2. [iOS only]">
         Select your Safari export <ph name="BEGIN_BOLD">BEGIN_BOLD</ph>.zip<ph name="END_BOLD">END_BOLD</ph> file
       </message>
-      <message name="IDS_IOS_SAFARI_IMPORT_IMPORT_ITEM_BLOCKED_BY_POLICY" desc="The detailed text shown for a data type that cannot be imported from Safari because it is blocked by an enterprise policy. [iOS only]">
-        Disabled by your administrator
-      </message>
-      <message name="IDS_IOS_SAFARI_IMPORT_IMPORT_ITEM_TYPE_IMPORTED_DETAILED_TEXT_BOOKMARKS" desc="The detailed text of the 'Bookmarks' row displayed on Safari import screen displaying the number of bookmarks imported. [iOS only]">
-        {count, plural,
-          =1 {Imported {count} bookmark}
-          other {Imported {count} bookmarks}}
-      </message>
-      <message name="IDS_IOS_SAFARI_IMPORT_IMPORT_ITEM_TYPE_IMPORTED_DETAILED_TEXT_CREDIT_CARDS" desc="The detailed text of the 'Credit card' row displayed on Safari import screen displaying the number of credit cards imported. [iOS only]">
-        {count, plural,
-          =1 {Imported {count} card}
-          other {Imported {count} cards}}
-      </message>
-      <message name="IDS_IOS_SAFARI_IMPORT_IMPORT_ITEM_TYPE_IMPORTED_DETAILED_TEXT_HISTORY" desc="The detailed text of the 'History' row displayed on Safari import screen displaying the number of history items imported. [iOS only]">
-        {count, plural,
-          =1 {Imported {count} history item}
-          other {Imported {count} history items}}
-      </message>
-      <message name="IDS_IOS_SAFARI_IMPORT_IMPORT_ITEM_TYPE_IMPORTED_DETAILED_TEXT_INVALID_PASSWORDS" desc="The description of the 'Password' row displayed on Safari import screen displaying the number of passwords that has failed to be imported. Will not be displayed when all passwords are successfully imported. Do not include a period - it will be handled separately. [iOS only]">
-        {count, plural,
-          =1 {Couldn't import {count} password}
-          other {Couldn't import {count} passwords}}
-      </message>
-      <message name="IDS_IOS_SAFARI_IMPORT_IMPORT_ITEM_TYPE_IMPORTED_DETAILED_TEXT_PASSWORDS" desc="The description of the 'Password' row displayed on Safari import screen displaying the number of passwords imported. Do not include a period - it will be handled separately. [iOS only]">
-        {count, plural,
-          =0 {No password imported}
-          =1 {Imported {count} password}
-          other {Imported {count} passwords}}
-      </message>
-      <message name="IDS_IOS_SAFARI_IMPORT_IMPORT_ITEM_TYPE_PENDING_DETAILED_TEXT_BOOKMARKS" desc="The detailed text of the 'Bookmarks' row displayed on Safari import screen displaying the number of bookmarks that will be imported. [iOS only]">
-        {count, plural,
-          =1 {{count} bookmarks}
-          other {{count} bookmarks}}
-      </message>
-      <message name="IDS_IOS_SAFARI_IMPORT_IMPORT_ITEM_TYPE_PENDING_DETAILED_TEXT_CREDIT_CARDS" desc="The detailed text of the 'Credit card' row displayed on Safari import screen displaying the number of credit cards that will be imported. [iOS only]">
-        {count, plural,
-          =1 {{count} card}
-          other {{count} cards}}
-      </message>
-      <message name="IDS_IOS_SAFARI_IMPORT_IMPORT_ITEM_TYPE_PENDING_DETAILED_TEXT_HISTORY" desc="The detailed text of the 'History' row displayed on Safari import screen displaying the number of history items that will be imported. [iOS only]">
-        {count, plural,
-          =1 {{count} history item}
-          other {{count} history items}}
-      </message>
-      <message name="IDS_IOS_SAFARI_IMPORT_IMPORT_ITEM_TYPE_PENDING_DETAILED_TEXT_NO_DATA" desc="The detailed text of each row displayed on Safari import screen when there is no item of the type to be imported. [iOS only]">
-        Nothing to import
-      </message>
-      <message name="IDS_IOS_SAFARI_IMPORT_IMPORT_ITEM_TYPE_PENDING_DETAILED_TEXT_PASSWORDS" desc="The detailed text of the 'Password' row displayed on Safari import screen displaying the number of passwords that will be imported. Only used when no password has failed to be imported. [iOS only]">
-        {count, plural,
-          =1 {{count} password}
-          other {{count} passwords}}
-      </message>
       <message name="IDS_IOS_SAFARI_IMPORT_IMPORT_ITEM_TYPE_PENDING_DISCLAIMER" desc="The bottom text displayed on Safari import screen to declare that the data will be saved to the user's Google account. [iOS only]">
         Your data will be saved to your Google Account, <ph name="USER_EMAIL">$1<ex>elisa.g.beckett@gmail.com</ex></ph>
-      </message>
-      <message name="IDS_IOS_SAFARI_IMPORT_IMPORT_ITEM_TYPE_TITLE_BOOKMARKS" desc="The title of the 'Bookmarks' row displayed on Safari import screen that handles the import process. [iOS only]">
-        Bookmarks
-      </message>
-      <message name="IDS_IOS_SAFARI_IMPORT_IMPORT_ITEM_TYPE_TITLE_CREDIT_CARDS" desc="The title of the 'Credit cards' row displayed on Safari import screen that handles the import process. [iOS only]">
-        Credit cards
-      </message>
-      <message name="IDS_IOS_SAFARI_IMPORT_IMPORT_ITEM_TYPE_TITLE_HISTORY" desc="The title of the 'History' row displayed on Safari import screen that handles the import process. [iOS only]">
-        History
-      </message>
-      <message name="IDS_IOS_SAFARI_IMPORT_IMPORT_ITEM_TYPE_TITLE_PASSWORDS" desc="The title of the 'Passwords' row displayed on Safari import screen that handles the import process. [iOS only]">
-        Passwords
       </message>
       <message name="IDS_IOS_SAFARI_IMPORT_IMPORT_TITLE" desc="Safari import screen that handles the import process - Title. [iOS only]">
         Import your data

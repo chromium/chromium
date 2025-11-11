@@ -46,16 +46,16 @@ NSString* GetTextForItemType(ImportDataItemType type) {
   int message_id;
   switch (type) {
     case ImportDataItemType::kPasswords:
-      message_id = IDS_IOS_SAFARI_IMPORT_IMPORT_ITEM_TYPE_TITLE_PASSWORDS;
+      message_id = IDS_IOS_IMPORT_ITEM_TYPE_TITLE_PASSWORDS;
       break;
     case ImportDataItemType::kBookmarks:
-      message_id = IDS_IOS_SAFARI_IMPORT_IMPORT_ITEM_TYPE_TITLE_BOOKMARKS;
+      message_id = IDS_IOS_IMPORT_ITEM_TYPE_TITLE_BOOKMARKS;
       break;
     case ImportDataItemType::kHistory:
-      message_id = IDS_IOS_SAFARI_IMPORT_IMPORT_ITEM_TYPE_TITLE_HISTORY;
+      message_id = IDS_IOS_IMPORT_ITEM_TYPE_TITLE_HISTORY;
       break;
     case ImportDataItemType::kPayment:
-      message_id = IDS_IOS_SAFARI_IMPORT_IMPORT_ITEM_TYPE_TITLE_CREDIT_CARDS;
+      message_id = IDS_IOS_IMPORT_ITEM_TYPE_TITLE_CREDIT_CARDS;
       break;
   }
   return l10n_util::GetNSString(message_id);
@@ -88,25 +88,21 @@ NSString* GetDescriptionForUnimportedItemTypeWithCount(ImportDataItemType type,
                                                        int count) {
   if (count == 0) {
     return l10n_util::GetNSString(
-        IDS_IOS_SAFARI_IMPORT_IMPORT_ITEM_TYPE_PENDING_DETAILED_TEXT_NO_DATA);
+        IDS_IOS_IMPORT_ITEM_TYPE_PENDING_DETAILED_TEXT_NO_DATA);
   }
   int message_id;
   switch (type) {
     case ImportDataItemType::kPasswords:
-      message_id =
-          IDS_IOS_SAFARI_IMPORT_IMPORT_ITEM_TYPE_PENDING_DETAILED_TEXT_PASSWORDS;
+      message_id = IDS_IOS_IMPORT_ITEM_TYPE_PENDING_DETAILED_TEXT_PASSWORDS;
       break;
     case ImportDataItemType::kBookmarks:
-      message_id =
-          IDS_IOS_SAFARI_IMPORT_IMPORT_ITEM_TYPE_PENDING_DETAILED_TEXT_BOOKMARKS;
+      message_id = IDS_IOS_IMPORT_ITEM_TYPE_PENDING_DETAILED_TEXT_BOOKMARKS;
       break;
     case ImportDataItemType::kHistory:
-      message_id =
-          IDS_IOS_SAFARI_IMPORT_IMPORT_ITEM_TYPE_PENDING_DETAILED_TEXT_HISTORY;
+      message_id = IDS_IOS_IMPORT_ITEM_TYPE_PENDING_DETAILED_TEXT_HISTORY;
       break;
     case ImportDataItemType::kPayment:
-      message_id =
-          IDS_IOS_SAFARI_IMPORT_IMPORT_ITEM_TYPE_PENDING_DETAILED_TEXT_CREDIT_CARDS;
+      message_id = IDS_IOS_IMPORT_ITEM_TYPE_PENDING_DETAILED_TEXT_CREDIT_CARDS;
       break;
   }
   return l10n_util::GetPluralNSStringF(message_id, count);
@@ -119,20 +115,16 @@ NSString* GetDescriptionForImportedItemTypeWithCount(ImportDataItemType type,
   int message_id;
   switch (type) {
     case ImportDataItemType::kPasswords:
-      message_id =
-          IDS_IOS_SAFARI_IMPORT_IMPORT_ITEM_TYPE_IMPORTED_DETAILED_TEXT_PASSWORDS;
+      message_id = IDS_IOS_IMPORT_ITEM_TYPE_IMPORTED_DETAILED_TEXT_PASSWORDS;
       break;
     case ImportDataItemType::kBookmarks:
-      message_id =
-          IDS_IOS_SAFARI_IMPORT_IMPORT_ITEM_TYPE_IMPORTED_DETAILED_TEXT_BOOKMARKS;
+      message_id = IDS_IOS_IMPORT_ITEM_TYPE_IMPORTED_DETAILED_TEXT_BOOKMARKS;
       break;
     case ImportDataItemType::kHistory:
-      message_id =
-          IDS_IOS_SAFARI_IMPORT_IMPORT_ITEM_TYPE_IMPORTED_DETAILED_TEXT_HISTORY;
+      message_id = IDS_IOS_IMPORT_ITEM_TYPE_IMPORTED_DETAILED_TEXT_HISTORY;
       break;
     case ImportDataItemType::kPayment:
-      message_id =
-          IDS_IOS_SAFARI_IMPORT_IMPORT_ITEM_TYPE_IMPORTED_DETAILED_TEXT_CREDIT_CARDS;
+      message_id = IDS_IOS_IMPORT_ITEM_TYPE_IMPORTED_DETAILED_TEXT_CREDIT_CARDS;
       break;
   }
   return l10n_util::GetPluralNSStringF(message_id, count);
@@ -346,8 +338,8 @@ UIView* GetCheckmark() {
           GetDescriptionForImportedItemTypeWithCount(item.type, item.count);
       break;
     case ImportDataItemImportStatus::kBlockedByPolicy:
-      description = l10n_util::GetNSString(
-          IDS_IOS_SAFARI_IMPORT_IMPORT_ITEM_BLOCKED_BY_POLICY);
+      description =
+          l10n_util::GetNSString(IDS_IOS_IMPORT_ITEM_BLOCKED_BY_POLICY);
       break;
   }
   if (item.invalidCount > 0) {
@@ -355,7 +347,7 @@ UIView* GetCheckmark() {
     CHECK_EQ(item.type, ImportDataItemType::kPasswords);
     CHECK_EQ(item.status, ImportDataItemImportStatus::kImported);
     std::u16string invalidCountString = l10n_util::GetPluralStringFUTF16(
-        IDS_IOS_SAFARI_IMPORT_IMPORT_ITEM_TYPE_IMPORTED_DETAILED_TEXT_INVALID_PASSWORDS,
+        IDS_IOS_IMPORT_ITEM_TYPE_IMPORTED_DETAILED_TEXT_INVALID_PASSWORDS,
         item.invalidCount);
     description = l10n_util::GetNSStringF(IDS_CONCAT_TWO_STRINGS_WITH_PERIODS,
                                           base::SysNSStringToUTF16(description),

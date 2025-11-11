@@ -157,15 +157,14 @@ void ExpectPasswordConflictCellAtIndexSelected(int idx, bool selected) {
 }
 
 void TapInfoButtonForInvalidPasswords(int imported, int failed) {
-  NSString* title = l10n_util::GetNSString(
-      IDS_IOS_SAFARI_IMPORT_IMPORT_ITEM_TYPE_TITLE_PASSWORDS);
+  NSString* title =
+      l10n_util::GetNSString(IDS_IOS_IMPORT_ITEM_TYPE_TITLE_PASSWORDS);
   NSString* subtitle = l10n_util::GetNSStringF(
       IDS_CONCAT_TWO_STRINGS_WITH_PERIODS,
       l10n_util::GetPluralStringFUTF16(
-          IDS_IOS_SAFARI_IMPORT_IMPORT_ITEM_TYPE_IMPORTED_DETAILED_TEXT_PASSWORDS,
-          imported),
+          IDS_IOS_IMPORT_ITEM_TYPE_IMPORTED_DETAILED_TEXT_PASSWORDS, imported),
       l10n_util::GetPluralStringFUTF16(
-          IDS_IOS_SAFARI_IMPORT_IMPORT_ITEM_TYPE_IMPORTED_DETAILED_TEXT_INVALID_PASSWORDS,
+          IDS_IOS_IMPORT_ITEM_TYPE_IMPORTED_DETAILED_TEXT_INVALID_PASSWORDS,
           failed));
   id<GREYMatcher> password_cell = ButtonWithAccessibilityLabel(
       [NSString stringWithFormat:@"%@, %@", title, subtitle]);
