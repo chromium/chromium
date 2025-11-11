@@ -14,7 +14,6 @@
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/containers/contains.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/environment.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -1120,8 +1119,7 @@ void ProfileImpl::OnLocaleReady(CreateMode create_mode) {
   // Check that the IdentityManager was not created before the browser context
   // services were created. This ensures that browser tests can override the
   // IdentityManager with a fake.
-  CHECK(!IdentityManagerFactory::GetForProfileIfExists(this),
-        base::NotFatalUntil::M160);
+  CHECK(!IdentityManagerFactory::GetForProfileIfExists(this));
 
   BrowserContextDependencyManager::GetInstance()->CreateBrowserContextServices(
       this);
