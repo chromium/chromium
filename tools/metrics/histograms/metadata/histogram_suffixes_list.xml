@@ -901,18 +901,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="PasswordProtection.Verdict"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="PowerConsumptionTimes" separator=".">
-  <suffix name="All" label="Sampled once per minute."/>
-  <suffix name="DuringStartup"
-      label="Sampled once per second during the first 30 seconds after
-             launch."/>
-  <affected-histogram name="Power.Mac.CPU"/>
-  <affected-histogram name="Power.Mac.GPU0"/>
-  <affected-histogram name="Power.Mac.GPU1"/>
-  <affected-histogram name="Power.Mac.GPUi"/>
-  <affected-histogram name="Power.Mac.Total"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="PrerenderSource" separator="_" ordering="prefix">
   <suffix name="" label="All prerenders."/>
   <suffix name="gws" label="GWS triggered prerender."/>

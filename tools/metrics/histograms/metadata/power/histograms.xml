@@ -1598,8 +1598,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Power.Mac{PowerConsumptionSources}" units="mW"
-    expires_after="2025-09-14">
+<histogram name="Power.Mac.{PowerConsumptionSources}.{PowerConsumptionTimes}"
+    units="mW" expires_after="2025-09-14">
   <owner>olivierli@chromium.org</owner>
   <owner>markchang@chromium.org</owner>
   <summary>
@@ -1609,18 +1609,24 @@ chromium-metrics-reviews@google.com.
     like a regression in timeline view. {PowerConsumptionSources}
   </summary>
   <token key="PowerConsumptionSources">
-    <variant name=".CPU" summary="Instantaneous power used by the CPU."/>
-    <variant name=".GPU0"
+    <variant name="CPU" summary="Instantaneous power used by the CPU."/>
+    <variant name="GPU0"
         summary="Instantaneous power used by the first dedicated GPU, if any."/>
-    <variant name=".GPU1"
+    <variant name="GPU1"
         summary="Instantaneous power used by the second dedicated GPU, if
                  any."/>
-    <variant name=".GPUi"
+    <variant name="GPUi"
         summary="Instantaneous power used by the integrated GPU, if any."/>
-    <variant name=".Total"
+    <variant name="Total"
         summary="Instantaneous power used by the whole system. May be less
                  useful than other power metrics because it includes
                  peripherals like the display backlight."/>
+  </token>
+  <token key="PowerConsumptionTimes">
+    <variant name="All" summary="Sampled once per minute."/>
+    <variant name="DuringStartup"
+        summary="Sampled once per second during the first 30 seconds after
+                 launch."/>
   </token>
 </histogram>
 
