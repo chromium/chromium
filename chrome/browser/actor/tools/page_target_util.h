@@ -39,6 +39,11 @@ FindLastObservedNodeForActionTargetPoint(
     const optimization_guide::proto::AnnotatedPageContent* apc,
     const gfx::Point& target_pixels);
 
+std::optional<optimization_guide::TargetNodeInfo>
+FindLastObservedNodeForActionTarget(
+    const optimization_guide::proto::AnnotatedPageContent* apc,
+    const PageTarget& target);
+
 }  // namespace actor
 
 #endif  // CHROME_BROWSER_ACTOR_TOOLS_PAGE_TARGET_UTIL_H_

@@ -9,6 +9,7 @@
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/content/browser/page_content_proto_util.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "ui/gfx/geometry/point.h"
 
 namespace actor {
@@ -114,6 +115,22 @@ std::optional<TargetNodeInfo> FindLastObservedNodeForActionTargetPoint(
   // TODO(rodneyding): Refactor FindNode* API to include optional target frame
   // document identifier to reduce search space.
   return optimization_guide::FindNodeAtPoint(*apc, target_pixels);
+}
+
+std::optional<optimization_guide::TargetNodeInfo>
+FindLastObservedNodeForActionTarget(
+    const optimization_guide::proto::AnnotatedPageContent* apc,
+    const PageTarget& target) {
+  return std::visit(
+      absl::Overload{
+          [&](const DomNode& node) {
+            return FindLastObservedNodeForActionTargetId(apc, node);
+          },
+          [&](const gfx::Point& point) {
+            return FindLastObservedNodeForActionTargetPoint(apc, point);
+          },
+      },
+      target);
 }
 
 }  // namespace actor

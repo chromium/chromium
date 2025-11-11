@@ -24,7 +24,6 @@
 #include "components/optimization_guide/content/browser/page_content_proto_util.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace actor {
 
@@ -36,22 +35,6 @@ using optimization_guide::proto::AnnotatedPageContent;
 using optimization_guide::proto::FormFillingRequest;
 
 namespace {
-
-std::optional<optimization_guide::TargetNodeInfo>
-FindLastObservedNodeForActionTarget(
-    const optimization_guide::proto::AnnotatedPageContent* apc,
-    const PageTarget& target) {
-  return std::visit(
-      absl::Overload{
-          [&](const DomNode& node) {
-            return FindLastObservedNodeForActionTargetId(apc, node);
-          },
-          [&](const gfx::Point& point) {
-            return FindLastObservedNodeForActionTargetPoint(apc, point);
-          },
-      },
-      target);
-}
 
 FieldGlobalId GetFieldIdFromPageTarget(
     const optimization_guide::proto::AnnotatedPageContent* last_observation,
