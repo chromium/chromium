@@ -394,3 +394,87 @@ fn does_license_file_exist(path: &Path) -> Result<bool> {
     path.try_exists()
         .with_context(|| format!("Failed to check if a license file exists at {}", path.display()))
 }
+
+#[cfg(test)]
+mod test {
+    use crate::readme::LicenseKind;
+
+    use super::{license_kinds_to_string, parse_license_string, LICENSE_KIND_TO_LICENSE_FILES};
+
+    #[test]
+    fn test_convert_license_field_from_cargo_to_chromium_format() {
+        let testcases = [
+            ("Apache-2.0", "Apache-2.0"),
+            ("MIT OR Apache-2.0", "Apache-2.0"),
+            ("MIT/Apache-2.0", "Apache-2.0"),
+            ("MIT / Apache-2.0", "Apache-2.0"),
+            ("Apache-2.0 / MIT", "Apache-2.0"),
+            ("Apache-2.0 OR MIT", "Apache-2.0"),
+            ("Apache-2.0/MIT", "Apache-2.0"),
+            ("(Apache-2.0 OR MIT) AND BSD-3-Clause", "Apache-2.0, BSD-3-Clause"),
+            ("MIT OR Apache-2.0 OR Zlib", "Apache-2.0"),
+            ("(MIT OR Apache-2.0) AND NCSA", "Apache-2.0, NCSA"),
+            ("MIT", "MIT"),
+            ("MPL-2.0", "MPL-2.0"),
+            ("Unlicense OR MIT", "MIT"),
+            ("Unlicense/MIT", "MIT"),
+            ("Apache-2.0 OR BSL-1.0", "Apache-2.0"),
+            ("BSD-3-Clause", "BSD-3-Clause"),
+            ("ISC", "ISC"),
+            ("MIT OR Zlib OR Apache-2.0", "Apache-2.0"),
+            ("Zlib OR Apache-2.0 OR MIT", "Apache-2.0"),
+            ("0BSD OR MIT OR Apache-2.0", "Apache-2.0"),
+            ("(MIT OR Apache-2.0) AND Unicode-3.0", "Apache-2.0, Unicode-3.0"),
+            ("MIT AND (MIT OR Apache-2.0)", "Apache-2.0"),
+            ("Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT", "Apache-2.0"),
+            ("BSD-2-Clause OR Apache-2.0 OR MIT", "Apache-2.0"),
+            ("BSD-2-Clause OR Apache-2.0 OR MIT", "Apache-2.0"),
+            ("BSD-2-Clause OR MIT OR Apache-2.0", "Apache-2.0"),
+            ("BSD-3-Clause OR MIT OR Apache-2.0", "Apache-2.0"),
+            ("Unicode-3.0", "Unicode-3.0"),
+            ("Zlib", "Zlib"),
+            ("BSL-1.0", "BSL-1.0"),
+        ];
+
+        for (input, expected_output) in testcases {
+            eprintln!("Testing input = {input:?}");
+            let licenses = parse_license_string(input).unwrap();
+            let actual_output = license_kinds_to_string(&licenses);
+            assert_eq!(&actual_output, expected_output);
+        }
+    }
+
+    #[test]
+    fn test_license_kind_to_possible_license_files() {
+        let testcases: &[(LicenseKind, &[&'static str])] = &[
+            (
+                LicenseKind::Apache2,
+                &[
+                    "LICENSE-Apache",
+                    "license-apache-2.0",
+                    "LICENSE-APACHE",
+                    "LICENSE-APACHE.md",
+                    "LICENSE-APACHE.txt",
+                    "LICENSE",
+                    "LICENSE.md",
+                    "LICENSE.txt",
+                ],
+            ),
+            (
+                LicenseKind::MIT,
+                &[
+                    "LICENSE-MIT",
+                    "LICENSE-MIT.md",
+                    "LICENSE-MIT.txt",
+                    "LICENSE",
+                    "LICENSE.md",
+                    "LICENSE.txt",
+                ],
+            ),
+        ];
+        for (license, expected_filenames) in testcases {
+            let actual_filenames = &LICENSE_KIND_TO_LICENSE_FILES[license];
+            assert_eq!(actual_filenames, expected_filenames);
+        }
+    }
+}
