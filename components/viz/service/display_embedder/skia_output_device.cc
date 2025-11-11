@@ -125,8 +125,6 @@ SkiaOutputDevice::BeginScopedPaint() {
       std::move(end_semaphores), this, sk_surface);
 }
 
-void SkiaOutputDevice::SetViewportSize(const gfx::Size& viewport_size) {}
-
 void SkiaOutputDevice::Submit(
     scoped_refptr<gpu::SharedContextState> context_state,
     bool sync_cpu,

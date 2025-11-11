@@ -2442,8 +2442,6 @@ bool SkiaOutputSurfaceImplOnGpu::PresentFrame(OutputSurfaceFrame frame) {
         kHistogramMaxTime, kHistogramTimeBuckets);
   }
 
-  output_device_->SetViewportSize(frame.size);
-
   DCHECK(!frame.sub_buffer_rect || capabilities().supports_post_sub_buffer);
   output_device_->Present(frame.sub_buffer_rect, buffer_presented_callback_,
                           std::move(frame));

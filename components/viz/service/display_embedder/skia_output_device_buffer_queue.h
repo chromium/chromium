@@ -53,7 +53,6 @@ class VIZ_SERVICE_EXPORT SkiaOutputDeviceBufferQueue : public SkiaOutputDevice {
                BufferPresentedCallback feedback,
                OutputSurfaceFrame frame) override;
   bool Reshape(const ReshapeParams& params) override;
-  void SetViewportSize(const gfx::Size& viewport_size) override;
   SkSurface* BeginPaint(
       std::vector<GrBackendSemaphore>* end_semaphores) override;
   void EndPaint() override;
@@ -98,7 +97,6 @@ class VIZ_SERVICE_EXPORT SkiaOutputDeviceBufferQueue : public SkiaOutputDevice {
   // Format of images
   gfx::ColorSpace color_space_;
   gfx::Size image_size_;
-  gfx::Size viewport_size_;
   gfx::OverlayTransform overlay_transform_ = gfx::OVERLAY_TRANSFORM_NONE;
 
   // Mailboxes of scheduled overlays for the next SwapBuffers call.

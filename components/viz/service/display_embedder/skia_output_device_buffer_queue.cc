@@ -505,11 +505,6 @@ bool SkiaOutputDeviceBufferQueue::Reshape(const ReshapeParams& params) {
   return true;
 }
 
-void SkiaOutputDeviceBufferQueue::SetViewportSize(
-    const gfx::Size& viewport_size) {
-  viewport_size_ = viewport_size;
-}
-
 SkSurface* SkiaOutputDeviceBufferQueue::BeginPaint(
     std::vector<GrBackendSemaphore>* end_semaphores) {
   NOTREACHED();
