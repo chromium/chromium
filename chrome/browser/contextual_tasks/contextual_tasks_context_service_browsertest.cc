@@ -90,7 +90,7 @@ class FakeEmbedder : public passage_embeddings::TestEmbedder {
 class MockPageEmbeddingsService
     : public passage_embeddings::PageEmbeddingsService {
  public:
-  MockPageEmbeddingsService(
+  explicit MockPageEmbeddingsService(
       page_content_annotations::PageContentExtractionService*
           page_content_extraction_service)
       : PageEmbeddingsService(page_content_extraction_service) {}
@@ -204,9 +204,13 @@ class ContextualTasksContextServiceTest : public InProcessBrowserTest {
     // Navigate to a valid URL.
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
-    GURL url(embedded_test_server()->GetURL("a.test",
-                                            "/optimization_guide/hello.html"));
-    content::NavigateToURLBlockUntilNavigationsComplete(web_contents, url, 1);
+    content::NavigateToURLBlockUntilNavigationsComplete(web_contents,
+                                                        valid_url(), 1);
+  }
+
+  GURL valid_url() {
+    return GURL(embedded_test_server()->GetURL(
+        "a.test", "/optimization_guide/hello.html"));
   }
 
  protected:
@@ -225,7 +229,8 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest, NoEmbedder) {
 
   base::test::TestFuture<std::vector<content::WebContents*>> future;
   service()->GetRelevantTabsForQuery(
-      "some text", TabSelectionMode::kEmbeddingsMatch, future.GetCallback());
+      "some text", TabSelectionMode::kEmbeddingsMatch, /*explicit_urls=*/{},
+      future.GetCallback());
   EXPECT_TRUE(future.Get().empty());
 
   histogram_tester.ExpectTotalCount("ContextualTasks.Context.RelevantTabsCount",
@@ -248,7 +253,8 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest, EmbedderFailed) {
 
   base::test::TestFuture<std::vector<content::WebContents*>> future;
   service()->GetRelevantTabsForQuery(
-      "some text", TabSelectionMode::kEmbeddingsMatch, future.GetCallback());
+      "some text", TabSelectionMode::kEmbeddingsMatch, /*explicit_urls=*/{},
+      future.GetCallback());
   EXPECT_TRUE(future.Get().empty());
 
   histogram_tester.ExpectTotalCount("ContextualTasks.Context.RelevantTabsCount",
@@ -270,7 +276,8 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
 
   base::test::TestFuture<std::vector<content::WebContents*>> future;
   service()->GetRelevantTabsForQuery(
-      "some text", TabSelectionMode::kEmbeddingsMatch, future.GetCallback());
+      "some text", TabSelectionMode::kEmbeddingsMatch, /*explicit_urls=*/{},
+      future.GetCallback());
   EXPECT_TRUE(future.Get().empty());
 
   histogram_tester.ExpectUniqueSample(
@@ -307,7 +314,8 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest, Success) {
 
   base::test::TestFuture<std::vector<content::WebContents*>> future;
   service()->GetRelevantTabsForQuery(
-      "some text", TabSelectionMode::kEmbeddingsMatch, future.GetCallback());
+      "some text", TabSelectionMode::kEmbeddingsMatch,
+      /*explicit_urls=*/{valid_url()}, future.GetCallback());
   EXPECT_EQ(1u, future.Get().size());
 
   histogram_tester.ExpectUniqueSample(
@@ -317,6 +325,14 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest, Success) {
   histogram_tester.ExpectUniqueSample(
       "ContextualTasks.Context.ContextDeterminationStatus",
       ContextDeterminationStatus::kSuccess, 1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.Context.ExplicitTabsCount", 1, 1);
+  histogram_tester.ExpectUniqueSample("ContextualTasks.Context.TabOverlapCount",
+                                      1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.Context.TabOverlapPercentage", 100, 1);
+  histogram_tester.ExpectUniqueSample("ContextualTasks.Context.TabExcessCount",
+                                      0, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
@@ -342,7 +358,9 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
 
   base::test::TestFuture<std::vector<content::WebContents*>> future;
   service()->GetRelevantTabsForQuery(
-      "some text", TabSelectionMode::kMultiSignalScoring, future.GetCallback());
+      "some text", TabSelectionMode::kMultiSignalScoring,
+      /*explicit_urls=*/{GURL("https://notinrelevantset.com")},
+      future.GetCallback());
   EXPECT_EQ(1u, future.Get().size());
 
   histogram_tester.ExpectUniqueSample(
@@ -358,6 +376,14 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
       "ContextualTasks.Context.DurationSinceLastActive", 1);
   histogram_tester.ExpectUniqueSample("ContextualTasks.Context.TabScore", 100,
                                       1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.Context.ExplicitTabsCount", 1, 1);
+  histogram_tester.ExpectUniqueSample("ContextualTasks.Context.TabOverlapCount",
+                                      0, 1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.Context.TabOverlapPercentage", 0, 1);
+  histogram_tester.ExpectUniqueSample("ContextualTasks.Context.TabExcessCount",
+                                      1, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
@@ -385,11 +411,23 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
 
   base::test::TestFuture<std::vector<content::WebContents*>> future;
   service()->GetRelevantTabsForQuery(
-      "some text", TabSelectionMode::kMultiSignalScoring, future.GetCallback());
+      "some text", TabSelectionMode::kMultiSignalScoring, /*explicit_urls=*/{},
+      future.GetCallback());
   EXPECT_EQ(1u, future.Get().size());
 
   histogram_tester.ExpectUniqueSample(
       "ContextualTasks.Context.RelevantTabsCount", 1, 1);
+
+  // Metrics comparing with explicit tabs not recorded when there are no tabs
+  // chosen by the user.
+  histogram_tester.ExpectTotalCount("ContextualTasks.Context.ExplicitTabsCount",
+                                    0);
+  histogram_tester.ExpectTotalCount("ContextualTasks.Context.TabOverlapCount",
+                                    0);
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.Context.TabOverlapPercentage", 0);
+  histogram_tester.ExpectTotalCount("ContextualTasks.Context.TabExcessCount",
+                                    0);
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
@@ -417,7 +455,8 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
 
   base::test::TestFuture<std::vector<content::WebContents*>> future;
   service()->GetRelevantTabsForQuery(
-      "some text", TabSelectionMode::kMultiSignalScoring, future.GetCallback());
+      "some text", TabSelectionMode::kMultiSignalScoring, /*explicit_urls*/ {},
+      future.GetCallback());
   EXPECT_EQ(1u, future.Get().size());
 
   histogram_tester.ExpectUniqueSample(
@@ -448,7 +487,8 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest, NotRelevantTab) {
 
   base::test::TestFuture<std::vector<content::WebContents*>> future;
   service()->GetRelevantTabsForQuery(
-      "some text", TabSelectionMode::kMultiSignalScoring, future.GetCallback());
+      "some text", TabSelectionMode::kMultiSignalScoring, /*explicit_urls*/ {},
+      future.GetCallback());
   EXPECT_EQ(0u, future.Get().size());
 }
 
@@ -461,7 +501,8 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest, SkipsNonHttp) {
 
   base::test::TestFuture<std::vector<content::WebContents*>> future;
   service()->GetRelevantTabsForQuery(
-      "some text", TabSelectionMode::kEmbeddingsMatch, future.GetCallback());
+      "some text", TabSelectionMode::kEmbeddingsMatch, /*explicit_urls=*/{},
+      future.GetCallback());
   EXPECT_TRUE(future.Get().empty());
 
   histogram_tester.ExpectUniqueSample(
@@ -504,7 +545,8 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTitlesOnlyTest, Success) {
 
   base::test::TestFuture<std::vector<content::WebContents*>> future;
   service()->GetRelevantTabsForQuery(
-      "some text", TabSelectionMode::kEmbeddingsMatch, future.GetCallback());
+      "some text", TabSelectionMode::kEmbeddingsMatch, /*explicit_urls=*/{},
+      future.GetCallback());
   EXPECT_EQ(1u, future.Get().size());
 }
 

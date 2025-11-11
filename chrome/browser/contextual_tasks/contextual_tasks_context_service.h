@@ -16,6 +16,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/passage_embeddings/passage_embeddings_types.h"
 
+class GURL;
 class OptimizationGuideKeyedService;
 class Profile;
 
@@ -70,6 +71,7 @@ class ContextualTasksContextService
   void GetRelevantTabsForQuery(
       const std::string& query,
       TabSelectionMode tab_selection_mode,
+      const std::vector<GURL>& explicit_urls,
       base::OnceCallback<void(std::vector<content::WebContents*>)> callback);
 
   void SetClockForTesting(const base::TickClock* tick_clock);
@@ -84,6 +86,7 @@ class ContextualTasksContextService
       const std::string& query,
       base::TimeTicks start_time,
       TabSelectionMode tab_selection_mode,
+      const std::vector<GURL>& explicit_urls,
       base::OnceCallback<void(std::vector<content::WebContents*>)> callback,
       std::vector<std::string> passages,
       std::vector<passage_embeddings::Embedding> embeddings,

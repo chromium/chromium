@@ -90,6 +90,7 @@ class ComposeboxQueryController
   int num_files_in_request() override;
   const contextual_search::FileInfo* GetFileInfo(
       const base::UnguessableToken& file_token) override;
+  std::vector<const contextual_search::FileInfo*> GetFileInfoList() override;
   const lens::proto::LensOverlaySuggestInputs& suggest_inputs() const override;
 
   // Returns the next request ID for the given update mode and media type.

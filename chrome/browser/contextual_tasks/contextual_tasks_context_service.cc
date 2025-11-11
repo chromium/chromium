@@ -5,6 +5,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_service.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -18,6 +19,7 @@
 #include "components/contextual_tasks/public/features.h"
 #include "components/passage_embeddings/passage_embeddings_types.h"
 #include "content/public/browser/web_contents.h"
+#include "url/gurl.h"
 
 namespace contextual_tasks {
 
@@ -105,6 +107,37 @@ void RecordContextDeterminationStatus(ContextDeterminationStatus status) {
       "ContextualTasks.Context.ContextDeterminationStatus", status);
 }
 
+void RecordTabSelectionMetrics(std::set<GURL> relevant_tab_urls,
+                               std::set<GURL> explicit_urls) {
+  CHECK(!explicit_urls.empty());
+
+  std::set<GURL> explicit_url_set =
+      std::set<GURL>(explicit_urls.begin(), explicit_urls.end());
+  base::UmaHistogramCounts100("ContextualTasks.Context.ExplicitTabsCount",
+                              explicit_url_set.size());
+
+  // Calculate number/percentage of tabs that were predicted correctly based on
+  // explicitly chosen set.
+  base::flat_set<GURL> mutual_urls;
+  std::set_intersection(relevant_tab_urls.begin(), relevant_tab_urls.end(),
+                        explicit_url_set.begin(), explicit_url_set.end(),
+                        std::inserter(mutual_urls, mutual_urls.end()));
+  base::UmaHistogramCounts100("ContextualTasks.Context.TabOverlapCount",
+                              mutual_urls.size());
+  base::UmaHistogramPercentage(
+      "ContextualTasks.Context.TabOverlapPercentage",
+      explicit_urls.empty() ? 0
+                            : 100 * mutual_urls.size() / explicit_urls.size());
+
+  // Calculate number of tabs that were predicted incorrectly.
+  base::flat_set<GURL> excess_urls;
+  std::set_difference(relevant_tab_urls.begin(), relevant_tab_urls.end(),
+                      explicit_url_set.begin(), explicit_url_set.end(),
+                      std::inserter(excess_urls, excess_urls.end()));
+  base::UmaHistogramCounts100("ContextualTasks.Context.TabExcessCount",
+                              excess_urls.size());
+}
+
 }  // namespace
 
 ContextualTasksContextService::ContextualTasksContextService(
@@ -132,6 +165,7 @@ void ContextualTasksContextService::SetClockForTesting(
 void ContextualTasksContextService::GetRelevantTabsForQuery(
     const std::string& query,
     TabSelectionMode tab_selection_mode,
+    const std::vector<GURL>& explicit_urls,
     base::OnceCallback<void(std::vector<content::WebContents*>)> callback) {
   base::TimeTicks now = tick_clock_->NowTicks();
 
@@ -157,7 +191,7 @@ void ContextualTasksContextService::GetRelevantTabsForQuery(
       passage_embeddings::PassagePriority::kUrgent, {query},
       base::BindOnce(&ContextualTasksContextService::OnQueryEmbeddingReady,
                      weak_ptr_factory_.GetWeakPtr(), query, now,
-                     tab_selection_mode, std::move(callback)));
+                     tab_selection_mode, explicit_urls, std::move(callback)));
 }
 
 void ContextualTasksContextService::EmbedderMetadataUpdated(
@@ -169,6 +203,7 @@ void ContextualTasksContextService::OnQueryEmbeddingReady(
     const std::string& query,
     base::TimeTicks start_time,
     TabSelectionMode tab_selection_mode,
+    const std::vector<GURL>& explicit_urls,
     base::OnceCallback<void(std::vector<content::WebContents*>)> callback,
     std::vector<std::string> passages,
     std::vector<passage_embeddings::Embedding> embeddings,
@@ -212,6 +247,17 @@ void ContextualTasksContextService::OnQueryEmbeddingReady(
                           tick_clock_->NowTicks() - start_time);
   base::UmaHistogramCounts100("ContextualTasks.Context.RelevantTabsCount",
                               relevant_tabs.size());
+
+  if (!explicit_urls.empty()) {
+    std::set<GURL> relevant_tab_url_set;
+    for (auto* web_contents : relevant_tabs) {
+      relevant_tab_url_set.insert(web_contents->GetLastCommittedURL());
+    }
+    RecordTabSelectionMetrics(
+        relevant_tab_url_set,
+        std::set<GURL>(explicit_urls.begin(), explicit_urls.end()));
+  }
+
   std::move(callback).Run(std::move(relevant_tabs));
 }
 

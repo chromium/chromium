@@ -66,6 +66,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ContextualTasks.Context.ExplicitTabsCount" units="count"
+    expires_after="2026-03-22">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>abhayprakash@google.com</owner>
+  <summary>
+    Recorded every time a query is successfully made in the contextual tasks
+    framework and context was calculated successfully. Records the number of
+    tabs that were explicitly chosen to be uploaded by the user. Note that tabs
+    with the same URL are only counted once.
+  </summary>
+</histogram>
+
 <histogram name="ContextualTasks.Context.RelevantTabsCount" units="count"
     expires_after="2026-03-22">
   <owner>sophiechang@chromium.org</owner>
@@ -74,6 +86,44 @@ chromium-metrics-reviews@google.com.
     Recorded every time a query is successfully made in the contextual tasks
     framework and context was calculated successfully. Records the number of
     tabs that were determined to be relevant to the query.
+  </summary>
+</histogram>
+
+<histogram name="ContextualTasks.Context.TabExcessCount" units="count"
+    expires_after="2026-03-22">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>abhayprakash@google.com</owner>
+  <summary>
+    Recorded every time a query is successfully made in the contextual tasks
+    framework and context was calculated successfully. Records the number of
+    tabs with unique URLs that were predicted by the model but were not in the
+    explicitly chosen set.
+  </summary>
+</histogram>
+
+<histogram name="ContextualTasks.Context.TabOverlapCount" units="count"
+    expires_after="2026-03-22">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>abhayprakash@google.com</owner>
+  <summary>
+    Recorded every time a query is successfully made in the contextual tasks
+    framework and context was calculated successfully. Records the number of
+    tabs with unique URLsthat were in both the explicitly chosen set and the set
+    that was predicted by the model.
+  </summary>
+</histogram>
+
+<histogram name="ContextualTasks.Context.TabOverlapPercentage" units="%"
+    expires_after="2026-03-22">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>abhayprakash@google.com</owner>
+  <summary>
+    Recorded every time a query is successfully made in the contextual tasks
+    framework and context was calculated successfully. Records the percentage of
+    tabs with unique URLs that were in both the explicitly chosen set and the
+    set that was predicted by the model. This is calculated by dividing the
+    number of tabs that were in both sets by the number of tabs in the
+    explicitly chosen set.
   </summary>
 </histogram>
 

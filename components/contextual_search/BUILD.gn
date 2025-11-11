@@ -9,6 +9,7 @@ source_set("public") {
     "contextual_search_metrics_recorder.h",
     "contextual_search_service.h",
     "contextual_search_session_handle.h",
+    "contextual_search_types.cc",
     "contextual_search_types.h",
   ]
 

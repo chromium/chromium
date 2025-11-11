@@ -455,6 +455,7 @@ void ContextualSearchboxHandler::ComputeAndOpenQueryUrl(
     WindowOpenDisposition disposition,
     std::map<std::string, std::string> additional_params) {
   auto* contextual_session_handle = GetSessionHandle(web_contents_);
+  std::vector<const contextual_search::FileInfo*> file_info_list;
   if (contextual_session_handle) {
     auto search_url_request_info =
         std::make_unique<contextual_search::ContextualSearchContextController::
@@ -468,6 +469,9 @@ void ContextualSearchboxHandler::ComputeAndOpenQueryUrl(
     OpenUrl(contextual_session_handle->CreateSearchUrl(
                 std::move(search_url_request_info)),
             disposition);
+
+    file_info_list =
+        contextual_session_handle->GetController()->GetFileInfoList();
   }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -475,8 +479,15 @@ void ContextualSearchboxHandler::ComputeAndOpenQueryUrl(
   // this is an AIM search by default.
   // Do not provide a callback as this method is only used for dark experiment.
   if (contextual_tasks_context_service_) {
+    std::vector<GURL> explicit_urls;
+    for (const contextual_search::FileInfo* file_info : file_info_list) {
+      if (file_info->tab_url) {
+        explicit_urls.push_back(*(file_info->tab_url));
+      }
+    }
     contextual_tasks_context_service_->GetRelevantTabsForQuery(
-        query_text, TabSelectionMode::kEmbeddingsMatch, base::DoNothing());
+        query_text, TabSelectionMode::kEmbeddingsMatch, explicit_urls,
+        base::DoNothing());
   }
 #endif
 }

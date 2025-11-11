@@ -349,7 +349,7 @@ GURL ComposeboxQueryController::CreateSearchUrl(
     }
   }
 
-  // TODO(crbug.com/445996881):Determine how to support non-AIM search for
+  // TODO(crbug.com/445996881): Determine how to support non-AIM search for
   // text-only queries.
   DCHECK(search_url_request_info->search_url_type == SearchUrlType::kAim);
 
@@ -381,6 +381,7 @@ void ComposeboxQueryController::StartFileUploadFlow(
   file_info->file_token = file_token;
   file_info->mime_type = contextual_input_data->primary_content_type.value();
   file_info->upload_status = contextual_search::FileUploadStatus::kNotUploaded;
+  file_info->tab_url = contextual_input_data->page_url;
 
   auto [it, inserted] = active_files_.emplace(file_token, std::move(file_info));
   DCHECK(inserted);
@@ -1150,6 +1151,16 @@ int ComposeboxQueryController::num_files_in_request() {
 const contextual_search::FileInfo* ComposeboxQueryController::GetFileInfo(
     const base::UnguessableToken& file_token) {
   return GetMutableFileInfo(file_token);
+}
+
+std::vector<const contextual_search::FileInfo*>
+ComposeboxQueryController::GetFileInfoList() {
+  std::vector<const contextual_search::FileInfo*> file_infos;
+  file_infos.reserve(active_files_.size());
+  for (const auto& [file_token, file_info] : active_files_) {
+    file_infos.push_back(file_info.get());
+  }
+  return file_infos;
 }
 
 ComposeboxQueryController::FileInfo*

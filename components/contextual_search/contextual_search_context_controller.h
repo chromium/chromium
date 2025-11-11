@@ -132,6 +132,9 @@ class ContextualSearchContextController {
   virtual const FileInfo* GetFileInfo(
       const base::UnguessableToken& file_token) = 0;
 
+  // Return the file infos for all files in the request.
+  virtual std::vector<const FileInfo*> GetFileInfoList() = 0;
+
   virtual const lens::proto::LensOverlaySuggestInputs& suggest_inputs()
       const = 0;
 };
