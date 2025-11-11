@@ -23,18 +23,19 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/idle_bubble.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace enterprise_idle {
 
 #if !BUILDFLAG(IS_ANDROID)
-// Observes OnBrowserSetLastActive(). If the kIdleTimeoutShowBubbleOnStartup
+// Observes OnBrowserActivated(). If the kIdleTimeoutShowBubbleOnStartup
 // pref is true, it shows a bubble when a browser comes into focus. See
 // ShowBubbleAction.
-class IdleService::BrowserObserver : public BrowserListObserver {
+class IdleService::BrowserObserver : public BrowserCollectionObserver {
  public:
   explicit BrowserObserver(Profile* profile) : profile_(profile) {
     CHECK_EQ(profile_->GetOriginalProfile(), profile_);
@@ -42,23 +43,25 @@ class IdleService::BrowserObserver : public BrowserListObserver {
 
   void StartObserving() {
     if (!observation_.IsObserving()) {
-      observation_.Observe(BrowserList::GetInstance());
+      if (profile_->AllowsBrowserWindows()) {
+        observation_.Observe(ProfileBrowserCollection::GetForProfile(profile_));
+      }
       if (BrowserWindowInterface* const bwi =
               GetLastActiveBrowserWindowInterfaceWithAnyProfile()) {
-        OnBrowserSetLastActiveInternal(bwi);
+        OnBrowserActivatedInternal(bwi);
       }
     }
   }
 
   void StopObserving() { observation_.Reset(); }
 
-  // BrowserListObserver:
-  void OnBrowserSetLastActive(Browser* browser) override {
-    OnBrowserSetLastActiveInternal(browser);
+  // BrowserCollectionObserver:
+  void OnBrowserActivated(BrowserWindowInterface* browser) override {
+    OnBrowserActivatedInternal(browser);
   }
 
  private:
-  void OnBrowserSetLastActiveInternal(BrowserWindowInterface* bwi) {
+  void OnBrowserActivatedInternal(BrowserWindowInterface* bwi) {
     CHECK(bwi);
     Profile* const profile = bwi->GetProfile();
     auto* prefs = profile->GetPrefs();
@@ -92,7 +95,8 @@ class IdleService::BrowserObserver : public BrowserListObserver {
   }
 
   const raw_ptr<Profile> profile_;
-  base::ScopedObservation<BrowserList, BrowserListObserver> observation_{this};
+  base::ScopedObservation<ProfileBrowserCollection, BrowserCollectionObserver>
+      observation_{this};
 };
 #else
 // BrowserObserver for Android, to minimize #ifdef hell.
