@@ -48,6 +48,14 @@ class AttemptFormFillingTool : public Tool {
   void OnSuggestionsSelected(
       InvokeCallback invoke_callback,
       webui::mojom::SelectAutofillSuggestionsDialogResponsePtr);
+  // Called by OnSuggestionsRetrieved if
+  // actor::switches::kAttemptFormFillingToolSkipsUI is passed as a command line
+  // switch. In this case, the user does not get to select the data that should
+  // be filled. Instead of that the first suggestion is chosen. This is only
+  // useful for testing purposes.
+  void SimulateRequestToShowAutofillSuggestions(
+      InvokeCallback invoke_callback,
+      std::vector<autofill::ActorFormFillingRequest> requests);
   tabs::TabHandle tab_handle_;
   std::vector<AttemptFormFillingToolRequest::FormFillingRequest>
       tool_fill_requests_;

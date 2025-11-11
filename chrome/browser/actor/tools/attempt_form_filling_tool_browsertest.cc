@@ -5,11 +5,13 @@
 #include "chrome/browser/actor/tools/attempt_form_filling_tool.h"
 
 #include "base/test/gmock_callback_support.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/types/expected_macros.h"
 #include "chrome/browser/actor/actor_features.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_switches.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/tools/attempt_form_filling_tool_request.h"
@@ -465,6 +467,54 @@ IN_PROC_BROWSER_TEST_F(AttemptFormFillingToolTest,
       ToRequestList(std::unique_ptr<ToolRequest>(std::move(action))),
       result.GetCallback());
   ExpectErrorResult(result, mojom::ActionResultCode::kError);
+}
+
+// Test that when switches::kAttemptFormFillingToolSkipsUI is enabled, the
+// user is not asked to select a suggestion.
+IN_PROC_BROWSER_TEST_F(AttemptFormFillingToolTest, TestSkippingSelection) {
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+      switches::kAttemptFormFillingToolSkipsUI);
+
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/autofill/autofill_test_form.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+  WaitForTabObservation();
+  std::optional<DomNode> address_home_line1 =
+      GetDomNodeOnPage(*main_frame(), "#ADDRESS_HOME_LINE1");
+  ASSERT_TRUE(address_home_line1);
+
+  autofill::ActorFormFillingRequest request;
+  autofill::ActorSuggestion suggestion1;
+  suggestion1.id = autofill::ActorSuggestionId(123);
+  suggestion1.title = "My Address";
+  request.suggestions.push_back(suggestion1);
+  autofill::ActorSuggestion suggestion2;
+  suggestion2.id = autofill::ActorSuggestionId(456);
+  suggestion2.title = "Work Address";
+  request.suggestions.push_back(suggestion2);
+  std::vector<autofill::ActorFormFillingRequest> requests = {request};
+
+  EXPECT_CALL(mock_form_filling_service(), GetSuggestions(_, _, _))
+      .WillOnce(RunOnceCallback<2>(requests));
+
+  // RequestToShowAutofillSuggestions should not be shown but instead the
+  // first address is automatically selected.
+  EXPECT_CALL(mock_execution_engine(), RequestToShowAutofillSuggestions(_, _))
+      .Times(0);
+
+  autofill::ActorFormFillingSelection response;
+  response.selected_suggestion_id = request.suggestions[0].id;
+
+  EXPECT_CALL(mock_form_filling_service(),
+              FillSuggestions(_, ElementsAre(response), _))
+      .WillOnce(RunOnceCallback<2>(base::ok()));
+
+  std::unique_ptr<ToolRequest> action = MakeAttemptFormFillingRequest(
+      *active_tab(), {PageTarget(*address_home_line1)});
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+  ExpectOkResult(result);
 }
 
 }  // namespace
