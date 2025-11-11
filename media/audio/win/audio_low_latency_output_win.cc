@@ -869,8 +869,12 @@ bool WASAPIAudioOutputStream::RenderAudioFromSource(UINT64 device_frequency) {
 
 #if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
     if (params_.format() == AudioParameters::AUDIO_BITSTREAM_DTS) {
-      std::unique_ptr<AudioBus> audio_bus(
-          AudioBus::WrapMemory(params_, audio_data));
+      // SAFETY: `audio_data` points to a WASAPI-allocated buffer of
+      // `packet_size_bytes_` bytes. The Windows audio API guarantees this
+      // buffer is valid and will not overflow.
+      std::unique_ptr<AudioBus> audio_bus(AudioBus::WrapMemory(
+          params_,
+          UNSAFE_BUFFERS(base::span<uint8_t>(audio_data, packet_size_bytes_))));
       audio_bus_->set_is_bitstream_format(true);
       int frames_filled = source_->OnMoreData(
           BoundedDelay(delay), delay_timestamp,
@@ -878,8 +882,8 @@ bool WASAPIAudioOutputStream::RenderAudioFromSource(UINT64 device_frequency) {
 
       // During pause/seek, keep the pipeline filled with zero'ed frames.
       if (!frames_filled) {
-        // SAFETY: |audio_data| points to a WASAPI-allocated buffer of
-        // |packet_size_bytes_| bytes. The Windows audio API guarantees this
+        // SAFETY: `audio_data` points to a WASAPI-allocated buffer of
+        // `packet_size_bytes_` bytes. The Windows audio API guarantees this
         // buffer is valid and will not overflow.
         UNSAFE_BUFFERS(std::ranges::fill(
             base::span<uint8_t>(audio_data, packet_size_bytes_), 0));
