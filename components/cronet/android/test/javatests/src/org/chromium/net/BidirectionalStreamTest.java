@@ -1706,7 +1706,7 @@ public class BidirectionalStreamTest {
         BidirectionalStream stream = builder.setHttpMethod("GET").build();
         stream.start();
         callback.blockForDone();
-        assertThat(ResponseStep.ON_SUCCEEDED).isEqualTo(callback.mResponseStep);
+        assertThat(callback.mResponseStep).isEqualTo(ResponseStep.ON_SUCCEEDED);
         assertThat(stream.isDone()).isTrue();
         assertThat(callback.getResponseInfoWithChecks()).isNotNull();
         // Check that error thrown from 'onSucceeded' callback is not reported.
