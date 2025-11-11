@@ -21,6 +21,7 @@ cargo_crate("lib") {
     "//third_party/rust/chromium_crates_io/vendor/yoke-v0_8/src/kinda_sorta_dangling.rs",
     "//third_party/rust/chromium_crates_io/vendor/yoke-v0_8/src/lib.rs",
     "//third_party/rust/chromium_crates_io/vendor/yoke-v0_8/src/macro_impls.rs",
+    "//third_party/rust/chromium_crates_io/vendor/yoke-v0_8/src/utils.rs",
     "//third_party/rust/chromium_crates_io/vendor/yoke-v0_8/src/yoke.rs",
     "//third_party/rust/chromium_crates_io/vendor/yoke-v0_8/src/yokeable.rs",
     "//third_party/rust/chromium_crates_io/vendor/yoke-v0_8/src/zero_from.rs",
@@ -33,7 +34,7 @@ cargo_crate("lib") {
   cargo_pkg_name = "yoke"
   cargo_pkg_description = "Abstraction allowing borrowed data to be carried along with the backing data it borrows from"
   cargo_pkg_repository = "https://github.com/unicode-org/icu4x"
-  cargo_pkg_version = "0.8.0"
+  cargo_pkg_version = "0.8.1"
 
   allow_unsafe = true
 
