@@ -4,9 +4,7 @@
 
 package org.chromium.components.policy.test.annotations;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static com.google.common.truth.Truth.assertThat;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,37 +26,36 @@ public class PoliciesTest {
         Method method;
 
         // Simple element, one annotation, no parent
-        assertThat(Policies.getPolicies(SomeClass.class).keySet(), is(makeSet("Ni")));
+        assertThat(Policies.getPolicies(SomeClass.class).keySet()).isEqualTo(makeSet("Ni"));
 
         // Simple element, removing an annotation just has no effect
-        assertThat(Policies.getPolicies(SomeClassThatRemoves.class).isEmpty(), is(true));
+        assertThat(Policies.getPolicies(SomeClassThatRemoves.class).isEmpty()).isTrue();
 
         // Simple element, adds and removes the same element: We process additions, then removals.
-        assertThat(Policies.getPolicies(SomeConfusedClass.class).isEmpty(), is(true));
+        assertThat(Policies.getPolicies(SomeConfusedClass.class).isEmpty()).isTrue();
 
         // Annotations are inherited
         method = SomeClass.class.getDeclaredMethod("someMethodWithoutWord");
-        assertThat(Policies.getPolicies(method).keySet(), is(makeSet("Ni")));
+        assertThat(Policies.getPolicies(method).keySet()).isEqualTo(makeSet("Ni"));
 
         // Annotations add up
         method = SomeClass.class.getDeclaredMethod("someMethod");
-        assertThat(Policies.getPolicies(method).keySet(), is(makeSet("Ni", "Neee-wom")));
+        assertThat(Policies.getPolicies(method).keySet()).isEqualTo(makeSet("Ni", "Neee-wom"));
 
         // Annotations from methods are not inherited
         method = SomeDerivedClass.class.getDeclaredMethod("someMethod");
-        assertThat(Policies.getPolicies(method).keySet(), is(makeSet("Ni")));
+        assertThat(Policies.getPolicies(method).keySet()).isEqualTo(makeSet("Ni"));
 
         // Annotations are properly deduped, we get the one closest to the examined element
         method = SomeClass.class.getDeclaredMethod("someMethodThatDuplicates");
         Map<String, PolicyData> policies = Policies.getPolicies(method);
-        assertThat(policies.size(), is(1));
-        assertThat(policies.get("Ni"), is(instanceOf(PolicyData.Str.class)));
+        assertThat(policies.size()).isEqualTo(1);
+        assertThat(policies.get("Ni")).isInstanceOf(PolicyData.Str.class);
 
         // Annotations can be removed
         method = SomeClass.class.getDeclaredMethod("someMethodThatTilRecentlyHadNi");
-        assertThat(
-                Policies.getPolicies(method).keySet(),
-                is(makeSet("Ekke Ekke Ekke Ekke Ptangya Zoooooooom Boing Ni")));
+        assertThat(Policies.getPolicies(method).keySet())
+                .isEqualTo(makeSet("Ekke Ekke Ekke Ekke Ptangya Zoooooooom Boing Ni"));
     }
 
     private Set<String> makeSet(String... keys) {
