@@ -784,7 +784,7 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
 </histogram>
 
 <histogram name="ManagedUsers.TopLevelFilteringResult"
-    enum="SupervisedUserFilterTopLevelResult" expires_after="2026-03-08">
+    enum="SupervisedUserFilterTopLevelResult" expires_after="2026-05-10">
   <owner>fernandex@chromium.org</owner>
   <owner>chrome-kids-eng@google.com</owner>
   <summary>
@@ -1056,7 +1056,7 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
 </histogram>
 
 <histogram name="Supervision.ParentAccessCode.Action"
-    enum="ParentAccessCodeAction" expires_after="2026-03-08">
+    enum="ParentAccessCodeAction" expires_after="2026-05-10">
   <owner>zhangwenyu@google.com</owner>
   <owner>longbowei@google.com</owner>
   <owner>cros-families-eng@google.com</owner>

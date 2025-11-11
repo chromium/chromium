@@ -609,7 +609,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.CustomizeChromePromoEligibility"
-    enum="NTPCustomizeChromePromoEligibility" expires_after="2026-03-10">
+    enum="NTPCustomizeChromePromoEligibility" expires_after="2026-05-10">
   <owner>kbajkiewicz@google.com</owner>
   <owner>rsult@google.com</owner>
   <owner>chrome-signin-desktop-team@google.com</owner>
@@ -779,7 +779,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.Footer.NoticeItem" enum="FooterNoticeItem"
-    expires_after="2026-03-08">
+    expires_after="2026-05-10">
   <owner>pauladedeji@google.com</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>esalma@google.com</owner>

@@ -649,7 +649,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.AnnotatedPageContent.TotalNodeCount.{AIPageContentMode}"
-    units="nodes" expires_after="2026-03-08">
+    units="nodes" expires_after="2026-05-10">
   <owner>khushalsagar@chromium.org</owner>
   <owner>abigailbklein@google.com</owner>
   <owner>gklassen@chromium.org</owner>
@@ -663,7 +663,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.AnnotatedPageContent.TotalSize2.{AIPageContentMode}"
-    units="KB" expires_after="2026-03-08">
+    units="KB" expires_after="2026-05-10">
   <owner>khushalsagar@chromium.org</owner>
   <owner>abigailbklein@google.com</owner>
   <owner>gklassen@chromium.org</owner>
