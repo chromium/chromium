@@ -50,7 +50,9 @@ LensOverlayRequestIdGenerator::GetNextRequestId(
     uuid_ = base::RandUint64();
     image_sequence_id_ = 1;
     sequence_id_ = 1;
-    long_context_id_ = 0;
+    // All media types other than image-only should set long-context-id to 1.
+    long_context_id_ =
+        media_type == LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE ? 0 : 1;
   } else {
     bool increment_image_sequence =
         update_mode == RequestIdUpdateMode::kFullImageRequest ||
