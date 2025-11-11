@@ -130,12 +130,10 @@ constexpr float kRotationNinetyCW = (90 / 180.0) * M_PI;
                          constant:-HorizontalPadding()]
     ]];
 
-    if (@available(iOS 17, *)) {
-      NSArray<UITrait>* traits = TraitCollectionSetForTraits(
-          @[ UITraitPreferredContentSizeCategory.class ]);
-      [self registerForTraitChanges:traits
-                         withAction:@selector(updateFontOnTraitChange)];
-    }
+    NSArray<UITrait>* traits = TraitCollectionSetForTraits(
+        @[ UITraitPreferredContentSizeCategory.class ]);
+    [self registerForTraitChanges:traits
+                       withAction:@selector(updateFontOnTraitChange)];
   }
   return self;
 }
@@ -149,20 +147,6 @@ constexpr float kRotationNinetyCW = (90 / 180.0) * M_PI;
     [self.cellAnimator stopAnimation:YES];
   }
 }
-
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  if (@available(iOS 17, *)) {
-    return;
-  }
-
-  if (previousTraitCollection.preferredContentSizeCategory !=
-      self.traitCollection.preferredContentSizeCategory) {
-    [self updateFontOnTraitChange];
-  }
-}
-#endif
 
 #pragma mark - public methods
 
