@@ -16,7 +16,8 @@
 namespace blink {
 
 // static
-const char CredentialMetrics::kSupplementName[] = "CredentialMetrics";
+const unsigned CredentialMetrics::kSupplementIndex =
+    static_cast<unsigned>(Document::Supplements::kCredentialMetrics);
 
 // static
 CredentialMetrics& CredentialMetrics::From(ScriptState* script_state) {

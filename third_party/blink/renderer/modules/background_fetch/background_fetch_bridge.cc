@@ -32,9 +32,6 @@ BackgroundFetchBridge* BackgroundFetchBridge::From(
   return bridge;
 }
 
-// static
-const char BackgroundFetchBridge::kSupplementName[] = "BackgroundFetchBridge";
-
 BackgroundFetchBridge::BackgroundFetchBridge(
     ServiceWorkerRegistration& registration)
     : Supplement<ServiceWorkerRegistration>(registration),

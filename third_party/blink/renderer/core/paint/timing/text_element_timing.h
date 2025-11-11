@@ -31,7 +31,8 @@ class CORE_EXPORT TextElementTiming final
     : public GarbageCollected<TextElementTiming>,
       public Supplement<LocalDOMWindow> {
  public:
-  static const char kSupplementName[];
+  static constexpr auto kSupplementIndex =
+      LocalDOMWindow::Supplements::kTextElementTiming;
 
   explicit TextElementTiming(LocalDOMWindow&);
   TextElementTiming(const TextElementTiming&) = delete;

@@ -43,7 +43,8 @@ using mojom::blink::PermissionName;
 using mojom::blink::PermissionService;
 
 // static
-const char Permissions::kSupplementName[] = "Permissions";
+const unsigned Permissions::kSupplementIndex =
+    static_cast<unsigned>(NavigatorBase::Supplements::kPermissions);
 
 // static
 Permissions* Permissions::permissions(NavigatorBase& navigator) {

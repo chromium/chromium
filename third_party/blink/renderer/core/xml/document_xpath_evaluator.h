@@ -41,7 +41,8 @@ class CORE_EXPORT DocumentXPathEvaluator final
     : public GarbageCollected<DocumentXPathEvaluator>,
       public Supplement<Document> {
  public:
-  static const char kSupplementName[];
+  static constexpr auto kSupplementIndex =
+      Document::Supplements::kDocumentXPathEvaluator;
 
   static DocumentXPathEvaluator& From(Document&);
 

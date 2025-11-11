@@ -32,9 +32,6 @@
 
 namespace blink {
 
-// static
-const char DocumentXPathEvaluator::kSupplementName[] = "DocumentXPathEvaluator";
-
 DocumentXPathEvaluator::DocumentXPathEvaluator(Document& document)
     : Supplement<Document>(document) {}
 

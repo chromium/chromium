@@ -548,7 +548,8 @@ const char* GetErrorString(RequestFullscreenError error) {
 
 }  // anonymous namespace
 
-const char Fullscreen::kSupplementName[] = "Fullscreen";
+const unsigned Fullscreen::kSupplementIndex =
+    static_cast<unsigned>(LocalDOMWindow::Supplements::kFullscreen);
 
 Fullscreen& Fullscreen::From(LocalDOMWindow& window) {
   Fullscreen* fullscreen = Supplement<LocalDOMWindow>::From<Fullscreen>(window);

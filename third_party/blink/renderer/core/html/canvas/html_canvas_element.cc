@@ -172,7 +172,8 @@ class DisabledAccelerationCounterSupplement final
     : public GarbageCollected<DisabledAccelerationCounterSupplement>,
       public Supplement<Document> {
  public:
-  static const char kSupplementName[];
+  static constexpr auto kSupplementIndex =
+      Document::Supplements::kDisabledAccelerationCounterSupplement;
 
   static DisabledAccelerationCounterSupplement& From(Document& d) {
     DisabledAccelerationCounterSupplement* supplement =
@@ -220,18 +221,14 @@ class DisabledAccelerationCounterSupplement final
   bool acceleration_disabled_ = false;
 };
 
-// static
-const char DisabledAccelerationCounterSupplement::kSupplementName[] =
-    "DisabledAccelerationCounterSupplement";
-
 // Tracks whether `transferToGPUTexture()` has been invoked on any canvas
 // element created within the associated Document.
 class TransferToGPUTextureInvokedSupplement final
     : public GarbageCollected<TransferToGPUTextureInvokedSupplement>,
       public Supplement<Document> {
  public:
-  static constexpr char kSupplementName[] =
-      "TransferToGPUTextureInvokedSupplement";
+  static constexpr auto kSupplementIndex =
+      Document::Supplements::kTransferToGPUTextureInvokedSupplement;
 
   static TransferToGPUTextureInvokedSupplement& From(Document& d) {
     TransferToGPUTextureInvokedSupplement* supplement =

@@ -70,8 +70,8 @@ class ExecutionContextClipboardEventState
     : public GarbageCollected<ExecutionContextClipboardEventState>,
       public Supplement<ExecutionContext> {
  public:
-  static constexpr char kSupplementName[] =
-      "ExecutionContextClipboardEventState";
+  static constexpr auto kSupplementIndex =
+      ExecutionContext::Supplements::kExecutionContextClipboardEventState;
 
   static ExecutionContextClipboardEventState& From(
       ExecutionContext& execution_context) {

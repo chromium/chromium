@@ -65,7 +65,8 @@ class MODULES_EXPORT NavigatorContentUtils final
     : public GarbageCollected<NavigatorContentUtils>,
       public Supplement<Navigator> {
  public:
-  static const char kSupplementName[];
+  static constexpr auto kSupplementIndex =
+      Navigator::Supplements::kNavigatorContentUtils;
 
   NavigatorContentUtils(Navigator& navigator,
                         NavigatorContentUtilsClient* client)

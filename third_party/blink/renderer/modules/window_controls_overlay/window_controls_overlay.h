@@ -24,7 +24,7 @@ class WindowControlsOverlay final
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static const char kSupplementName[];
+  static const unsigned kSupplementIndex;
   // Web Exposed as navigator.windowControlsOverlay
   static WindowControlsOverlay* windowControlsOverlay(Navigator& navigator);
 

@@ -57,6 +57,4 @@ CSSAnimationWorklet::CSSAnimationWorklet(LocalDOMWindow& window)
   DCHECK(GetExecutionContext());
 }
 
-const char CSSAnimationWorklet::kSupplementName[] = "CSSAnimationWorklet";
-
 }  // namespace blink

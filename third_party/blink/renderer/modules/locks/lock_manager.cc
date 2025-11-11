@@ -234,7 +234,8 @@ class LockManager::LockRequestImpl final
   Member<AbortSignal::AlgorithmHandle> abort_handle_;
 };
 
-const char LockManager::kSupplementName[] = "LockManager";
+const unsigned LockManager::kSupplementIndex =
+    static_cast<unsigned>(NavigatorBase::Supplements::kLockManager);
 
 // static
 LockManager* LockManager::locks(NavigatorBase& navigator,

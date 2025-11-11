@@ -3595,8 +3595,6 @@ NavigatorAuction& NavigatorAuction::From(ExecutionContext* context,
   return *supplement;
 }
 
-const char NavigatorAuction::kSupplementName[] = "NavigatorAuction";
-
 ScriptPromise<IDLUndefined> NavigatorAuction::joinAdInterestGroup(
     ScriptState* script_state,
     AuctionAdInterestGroup* mutable_group,

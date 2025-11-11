@@ -24,7 +24,8 @@ class MODULES_EXPORT DeviceOrientationController
     : public DeviceSingleWindowEventController,
       public Supplement<LocalDOMWindow> {
  public:
-  static const char kSupplementName[];
+  static constexpr auto kSupplementIndex =
+      LocalDOMWindow::Supplements::kDeviceOrientationController;
 
   explicit DeviceOrientationController(LocalDOMWindow&);
   ~DeviceOrientationController() override;

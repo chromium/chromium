@@ -42,7 +42,7 @@ class LocalDOMWindow;
 class DOMWindowCrypto final : public GarbageCollected<DOMWindowCrypto>,
                               public Supplement<LocalDOMWindow> {
  public:
-  static const char kSupplementName[];
+  static const unsigned kSupplementIndex;
 
   static DOMWindowCrypto& From(LocalDOMWindow&);
   static Crypto* crypto(LocalDOMWindow&);

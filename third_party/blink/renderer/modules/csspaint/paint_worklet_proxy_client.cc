@@ -31,9 +31,6 @@
 
 namespace blink {
 
-const char PaintWorkletProxyClient::kSupplementName[] =
-    "PaintWorkletProxyClient";
-
 // static
 PaintWorkletProxyClient* PaintWorkletProxyClient::From(WorkerClients* clients) {
   return Supplement<WorkerClients>::From<PaintWorkletProxyClient>(clients);

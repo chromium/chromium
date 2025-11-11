@@ -17,7 +17,8 @@ class ServiceWorkerRegistrationBackgroundFetch final
     : public GarbageCollected<ServiceWorkerRegistrationBackgroundFetch>,
       public Supplement<ServiceWorkerRegistration> {
  public:
-  static const char kSupplementName[];
+  static constexpr auto kSupplementIndex = ServiceWorkerRegistration::
+      Supplements::kServiceWorkerRegistrationBackgroundFetch;
 
   explicit ServiceWorkerRegistrationBackgroundFetch(
       ServiceWorkerRegistration* registration);

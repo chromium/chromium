@@ -31,7 +31,8 @@ class RTCPeerConnectionController
     : public GarbageCollected<RTCPeerConnectionController>,
       public Supplement<Document> {
  public:
-  static const char kSupplementName[];
+  static constexpr auto kSupplementIndex =
+      Document::Supplements::kRTCPeerConnectionController;
   static RTCPeerConnectionController& From(Document&);
 
   void MaybeReportComplexSdp(ComplexSdpCategory);

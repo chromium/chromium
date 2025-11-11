@@ -21,7 +21,8 @@ class WorkerNavigator;
 class NavigatorBadge final : public GarbageCollected<NavigatorBadge>,
                              public Supplement<ExecutionContext> {
  public:
-  static const char kSupplementName[];
+  static constexpr auto kSupplementIndex =
+      ExecutionContext::Supplements::kNavigatorBadge;
 
   static NavigatorBadge& From(ScriptState*);
   explicit NavigatorBadge(ExecutionContext*);

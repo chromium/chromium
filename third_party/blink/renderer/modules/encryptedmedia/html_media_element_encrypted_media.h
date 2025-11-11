@@ -32,7 +32,7 @@ class MODULES_EXPORT HTMLMediaElementEncryptedMedia final
       public Supplement<HTMLMediaElement>,
       public WebMediaPlayerEncryptedMediaClient {
  public:
-  static const char kSupplementName[];
+  static const unsigned kSupplementIndex;
 
   static MediaKeys* mediaKeys(HTMLMediaElement&);
   static ScriptPromise<IDLUndefined> setMediaKeys(ScriptState*,

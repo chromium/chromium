@@ -141,7 +141,8 @@ mojom::blink::MediaSessionPlaybackState EnumToMediaSessionPlaybackState(
 
 }  // anonymous namespace
 
-const char MediaSession::kSupplementName[] = "MediaSession";
+const unsigned MediaSession::kSupplementIndex =
+    static_cast<unsigned>(Navigator::Supplements::kMediaSession);
 
 MediaSession* MediaSession::mediaSession(Navigator& navigator) {
   MediaSession* supplement =

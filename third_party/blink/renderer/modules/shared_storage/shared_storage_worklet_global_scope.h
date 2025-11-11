@@ -29,7 +29,6 @@
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_remote.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
@@ -51,7 +50,6 @@ class StorageInterestGroup;
 // handling worklet operations. This object lives on the worklet thread.
 class MODULES_EXPORT SharedStorageWorkletGlobalScope final
     : public WorkletGlobalScope,
-      public Supplementable<SharedStorageWorkletGlobalScope>,
       public mojom::blink::SharedStorageWorkletService {
   DEFINE_WRAPPERTYPEINFO();
 

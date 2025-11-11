@@ -40,7 +40,7 @@ class MODULES_EXPORT MediaSession final
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static const char kSupplementName[];
+  static const unsigned kSupplementIndex;
   static MediaSession* mediaSession(Navigator&);
   explicit MediaSession(Navigator&);
 

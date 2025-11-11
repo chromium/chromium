@@ -46,7 +46,8 @@ void OnCreateDigitalGoodsResponse(
 
 }  // namespace
 
-const char DOMWindowDigitalGoods::kSupplementName[] = "DOMWindowDigitalGoods";
+const unsigned DOMWindowDigitalGoods::kSupplementIndex =
+    static_cast<unsigned>(LocalDOMWindow::Supplements::kDOMWindowDigitalGoods);
 
 DOMWindowDigitalGoods::DOMWindowDigitalGoods(LocalDOMWindow& window)
     : Supplement(window), mojo_service_(&window) {}

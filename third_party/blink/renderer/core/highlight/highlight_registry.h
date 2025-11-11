@@ -37,7 +37,7 @@ class CORE_EXPORT HighlightRegistry : public ScriptWrappable,
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static const char kSupplementName[];
+  static const unsigned kSupplementIndex;
   static HighlightRegistry* From(LocalDOMWindow&);
 
   explicit HighlightRegistry(LocalDOMWindow&);

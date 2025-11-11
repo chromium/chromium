@@ -122,7 +122,7 @@ String Navigator::GetAcceptLanguages() {
 
 void Navigator::Trace(Visitor* visitor) const {
   NavigatorBase::Trace(visitor);
-  Supplementable<Navigator>::Trace(visitor);
+  Supplementable<Navigator, 33>::Trace(visitor);
 }
 
 }  // namespace blink

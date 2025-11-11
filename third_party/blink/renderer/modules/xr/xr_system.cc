@@ -775,7 +775,8 @@ device::mojom::blink::XRSessionOptionsPtr XRSystem::XRSessionOptionsFromQuery(
   return session_options;
 }
 
-const char XRSystem::kSupplementName[] = "XRSystem";
+const unsigned XRSystem::kSupplementIndex =
+    static_cast<unsigned>(Navigator::Supplements::kXRSystem);
 
 XRSystem* XRSystem::FromIfExists(Document& document) {
   if (!document.domWindow())

@@ -87,7 +87,6 @@ void HTMLIFrameElement::Trace(Visitor* visitor) const {
   visitor->Trace(sandbox_);
   visitor->Trace(policy_);
   HTMLFrameElementBase::Trace(visitor);
-  Supplementable<HTMLIFrameElement>::Trace(visitor);
 }
 
 HTMLIFrameElement::~HTMLIFrameElement() = default;

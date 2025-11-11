@@ -30,7 +30,7 @@ class NetworkInformation final
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static const char kSupplementName[];
+  static const unsigned kSupplementIndex;
 
   // Web-exposed as navigator.connection.
   static NetworkInformation* connection(NavigatorBase&);

@@ -22,7 +22,8 @@ class MODULES_EXPORT BrowsingTopicsDocumentSupplement
     : public GarbageCollected<BrowsingTopicsDocumentSupplement>,
       public Supplement<Document> {
  public:
-  static const char kSupplementName[];
+  static constexpr auto kSupplementIndex =
+      Document::Supplements::kBrowsingTopicsDocumentSupplement;
 
   // Supplement functionality.
   static BrowsingTopicsDocumentSupplement* From(Document&);

@@ -36,7 +36,7 @@ class CORE_EXPORT CachedPermissionStatus final
       public mojom::blink::PermissionObserver,
       public Supplement<LocalDOMWindow> {
  public:
-  static const char kSupplementName[];
+  static const unsigned kSupplementIndex;
 
   // Returns the supplement, creating one as needed.
   static CachedPermissionStatus* From(LocalDOMWindow* window);

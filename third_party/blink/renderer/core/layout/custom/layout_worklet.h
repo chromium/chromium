@@ -28,7 +28,7 @@ extern DocumentLayoutDefinition* const kInvalidDocumentLayoutDefinition;
 class CORE_EXPORT LayoutWorklet : public Worklet,
                                   public Supplement<LocalDOMWindow> {
  public:
-  static const char kSupplementName[];
+  static const unsigned kSupplementIndex;
 
   // At the moment, layout worklet allows at most two global scopes at any time.
   static const size_t kNumGlobalScopes;

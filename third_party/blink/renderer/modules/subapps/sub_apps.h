@@ -27,7 +27,7 @@ class SubApps : public ScriptWrappable, public Supplement<Navigator> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static const char kSupplementName[];
+  static const unsigned kSupplementIndex;
   static SubApps* subApps(Navigator&);
 
   explicit SubApps(Navigator&);

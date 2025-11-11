@@ -19,7 +19,8 @@ class KURL;
 class NavigatorBeacon final : public GarbageCollected<NavigatorBeacon>,
                               public Supplement<Navigator> {
  public:
-  static const char kSupplementName[];
+  static constexpr auto kSupplementIndex =
+      Navigator::Supplements::kNavigatorBeacon;
 
   static NavigatorBeacon& From(Navigator&);
 

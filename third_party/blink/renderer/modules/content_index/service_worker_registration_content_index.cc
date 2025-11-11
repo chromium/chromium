@@ -12,9 +12,6 @@ ServiceWorkerRegistrationContentIndex::ServiceWorkerRegistrationContentIndex(
     ServiceWorkerRegistration* registration)
     : Supplement(*registration) {}
 
-const char ServiceWorkerRegistrationContentIndex::kSupplementName[] =
-    "ServiceWorkerRegistrationContentIndex";
-
 ServiceWorkerRegistrationContentIndex&
 ServiceWorkerRegistrationContentIndex::From(
     ServiceWorkerRegistration& registration) {

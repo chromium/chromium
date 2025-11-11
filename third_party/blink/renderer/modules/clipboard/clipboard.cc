@@ -22,7 +22,8 @@
 namespace blink {
 
 // static
-const char Clipboard::kSupplementName[] = "Clipboard";
+const unsigned Clipboard::kSupplementIndex =
+    static_cast<unsigned>(Navigator::Supplements::kClipboard);
 
 Clipboard* Clipboard::clipboard(Navigator& navigator) {
   Clipboard* clipboard = Supplement<Navigator>::From<Clipboard>(navigator);

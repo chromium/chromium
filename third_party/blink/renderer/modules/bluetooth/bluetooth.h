@@ -35,7 +35,7 @@ class Bluetooth final : public EventTarget,
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static const char kSupplementName[];
+  static const unsigned kSupplementIndex;
 
   // IDL exposed as navigator.bluetooth
   static Bluetooth* bluetooth(Navigator&);

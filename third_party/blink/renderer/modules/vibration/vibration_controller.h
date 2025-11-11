@@ -43,7 +43,7 @@ class MODULES_EXPORT VibrationController final
  public:
   using VibrationPattern = Vector<unsigned>;
 
-  static const char kSupplementName[];
+  static const unsigned kSupplementIndex;
   static VibrationController& From(Navigator&);
 
   static bool vibrate(Navigator&, unsigned time);

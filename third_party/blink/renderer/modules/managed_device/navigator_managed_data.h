@@ -31,7 +31,7 @@ class MODULES_EXPORT NavigatorManagedData final
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static const char kSupplementName[];
+  static const unsigned kSupplementIndex;
 
   // Web-based getter for navigator.managed.
   static NavigatorManagedData* managed(Navigator&);

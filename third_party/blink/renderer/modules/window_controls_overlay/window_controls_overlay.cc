@@ -14,7 +14,8 @@
 namespace blink {
 
 // static
-const char WindowControlsOverlay::kSupplementName[] = "WindowControlsOverlay";
+const unsigned WindowControlsOverlay::kSupplementIndex =
+    static_cast<unsigned>(Navigator::Supplements::kWindowControlsOverlay);
 
 // static
 WindowControlsOverlay& WindowControlsOverlay::From(Navigator& navigator) {

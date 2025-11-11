@@ -9,8 +9,9 @@
 
 namespace blink {
 
-const char ResizeObserverController::kSupplementName[] =
-    "ResizeObserverController";
+const unsigned ResizeObserverController::kSupplementIndex =
+    static_cast<unsigned>(
+        LocalDOMWindow::Supplements::kResizeObserverController);
 
 ResizeObserverController* ResizeObserverController::From(
     LocalDOMWindow& window) {

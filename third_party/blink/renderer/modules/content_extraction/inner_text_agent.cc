@@ -11,7 +11,8 @@
 namespace blink {
 
 // static
-const char InnerTextAgent::kSupplementName[] = "InnerTextAgent";
+const unsigned InnerTextAgent::kSupplementIndex =
+    static_cast<unsigned>(Document::Supplements::kInnerTextAgent);
 
 // static
 InnerTextAgent* InnerTextAgent::From(Document& document) {

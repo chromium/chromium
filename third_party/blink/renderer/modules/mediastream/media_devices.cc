@@ -411,7 +411,8 @@ void RecordUma(EnumerateDevicesFirstStateOnContextDestroyed value) {
 
 }  // namespace
 
-const char MediaDevices::kSupplementName[] = "MediaDevices";
+const unsigned MediaDevices::kSupplementIndex =
+    static_cast<unsigned>(Navigator::Supplements::kMediaDevices);
 
 MediaDevices* MediaDevices::mediaDevices(Navigator& navigator) {
   MediaDevices* supplement =

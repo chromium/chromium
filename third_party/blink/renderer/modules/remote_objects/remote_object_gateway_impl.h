@@ -28,7 +28,7 @@ class MODULES_EXPORT RemoteObjectGatewayImpl
       public Supplement<LocalFrame>,
       public mojom::blink::RemoteObjectGateway {
  public:
-  static const char kSupplementName[];
+  static const unsigned kSupplementIndex;
 
   RemoteObjectGatewayImpl(
       base::PassKey<RemoteObjectGatewayImpl>,
@@ -87,7 +87,7 @@ class RemoteObjectGatewayFactoryImpl
       public mojom::blink::RemoteObjectGatewayFactory,
       public Supplement<LocalFrame> {
  public:
-  static const char kSupplementName[];
+  static const unsigned kSupplementIndex;
 
   explicit RemoteObjectGatewayFactoryImpl(
       base::PassKey<RemoteObjectGatewayFactoryImpl>,

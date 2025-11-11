@@ -19,7 +19,8 @@
 namespace blink {
 
 // static
-const char AppBannerController::kSupplementName[] = "AppBannerController";
+const unsigned AppBannerController::kSupplementIndex =
+    static_cast<unsigned>(LocalDOMWindow::Supplements::kAppBannerController);
 
 // static
 AppBannerController* AppBannerController::From(LocalDOMWindow& window) {

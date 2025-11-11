@@ -38,7 +38,7 @@ class MODULES_EXPORT WakeLock final : public ScriptWrappable,
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static const char kSupplementName[];
+  static const unsigned kSupplementIndex;
 
   // Getter for navigator.wakelock
   static WakeLock* wakeLock(NavigatorBase&);

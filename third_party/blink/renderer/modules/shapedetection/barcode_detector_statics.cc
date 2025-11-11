@@ -18,7 +18,8 @@
 namespace blink {
 
 // static
-const char BarcodeDetectorStatics::kSupplementName[] = "BarcodeDetectorStatics";
+const unsigned BarcodeDetectorStatics::kSupplementIndex = static_cast<unsigned>(
+    ExecutionContext::Supplements::kBarcodeDetectorStatics);
 
 // static
 BarcodeDetectorStatics* BarcodeDetectorStatics::From(

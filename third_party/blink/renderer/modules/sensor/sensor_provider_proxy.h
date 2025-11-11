@@ -23,7 +23,8 @@ class SensorProxy;
 class SensorProviderProxy final : public GarbageCollected<SensorProviderProxy>,
                                   public Supplement<LocalDOMWindow> {
  public:
-  static const char kSupplementName[];
+  static constexpr auto kSupplementIndex =
+      LocalDOMWindow::Supplements::kSensorProviderProxy;
 
   static SensorProviderProxy* From(LocalDOMWindow*);
 

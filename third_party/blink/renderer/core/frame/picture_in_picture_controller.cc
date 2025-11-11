@@ -15,8 +15,8 @@ PictureInPictureController::PictureInPictureController(Document& document)
     : Supplement<Document>(document) {}
 
 // static
-const char PictureInPictureController::kSupplementName[] =
-    "PictureInPictureController";
+const unsigned PictureInPictureController::kSupplementIndex =
+    static_cast<unsigned>(Document::Supplements::kPictureInPictureController);
 
 // static
 PictureInPictureController& PictureInPictureController::From(

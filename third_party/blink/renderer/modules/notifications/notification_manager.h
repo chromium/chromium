@@ -29,7 +29,8 @@ class V8NotificationPermission;
 class NotificationManager final : public GarbageCollected<NotificationManager>,
                                   public Supplement<ExecutionContext> {
  public:
-  static const char kSupplementName[];
+  static constexpr auto kSupplementIndex =
+      ExecutionContext::Supplements::kNotificationManager;
 
   static NotificationManager* From(ExecutionContext* context);
 

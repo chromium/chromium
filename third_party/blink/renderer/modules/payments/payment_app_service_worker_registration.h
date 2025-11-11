@@ -19,7 +19,7 @@ class PaymentAppServiceWorkerRegistration final
     : public GarbageCollected<PaymentAppServiceWorkerRegistration>,
       public Supplement<ServiceWorkerRegistration> {
  public:
-  static const char kSupplementName[];
+  static const unsigned kSupplementIndex;
 
   explicit PaymentAppServiceWorkerRegistration(ServiceWorkerRegistration*);
 

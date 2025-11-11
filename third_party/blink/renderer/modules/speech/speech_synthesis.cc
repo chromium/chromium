@@ -52,7 +52,8 @@
 
 namespace blink {
 
-const char SpeechSynthesis::kSupplementName[] = "SpeechSynthesis";
+const unsigned SpeechSynthesis::kSupplementIndex =
+    static_cast<unsigned>(LocalDOMWindow::Supplements::kSpeechSynthesis);
 
 SpeechSynthesisBase* SpeechSynthesis::Create(LocalDOMWindow& window) {
   return MakeGarbageCollected<SpeechSynthesis>(window);

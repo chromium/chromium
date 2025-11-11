@@ -14,9 +14,9 @@
 
 namespace blink {
 
-const char MediaInspectorContextImpl::kSupplementName[] =
-    "MediaInspectorContextImpl";
-
+const unsigned MediaInspectorContextImpl::kSupplementIndex =
+    static_cast<unsigned>(
+        ExecutionContext::Supplements::kMediaInspectorContextImpl);
 
 // static
 MediaInspectorContextImpl* MediaInspectorContextImpl::From(

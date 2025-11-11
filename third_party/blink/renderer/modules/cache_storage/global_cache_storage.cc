@@ -22,7 +22,8 @@ class GlobalCacheStorageImpl final
     : public GarbageCollected<GlobalCacheStorageImpl<T>>,
       public Supplement<T> {
  public:
-  static const char kSupplementName[];
+  static constexpr auto kSupplementIndex =
+      T::Supplements::kGlobalCacheStorageImpl;
 
   static GlobalCacheStorageImpl& From(T& supplementable) {
     GlobalCacheStorageImpl* supplement =
@@ -69,11 +70,6 @@ class GlobalCacheStorageImpl final
  private:
   Member<CacheStorage> caches_;
 };
-
-// static
-template <typename T>
-const char GlobalCacheStorageImpl<T>::kSupplementName[] =
-    "GlobalCacheStorageImpl";
 
 }  // namespace
 

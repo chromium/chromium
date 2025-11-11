@@ -24,7 +24,7 @@ class MODULES_EXPORT FileSystemAccessManager final
       public Supplement<ExecutionContext>,
       public ExecutionContextClient {
  public:
-  static const char kSupplementName[];
+  static const unsigned kSupplementIndex;
 
   static FileSystemAccessManager& From(ExecutionContext*);
 

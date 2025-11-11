@@ -20,7 +20,8 @@ class GlobalPerformanceImpl final
     : public GarbageCollected<GlobalPerformanceImpl<T, P>>,
       public Supplement<T> {
  public:
-  static const char kSupplementName[];
+  static constexpr auto kSupplementIndex =
+      T::Supplements::kGlobalPerformanceImpl;
 
   static GlobalPerformanceImpl& From(T& supplementable) {
     GlobalPerformanceImpl* supplement =
@@ -50,11 +51,6 @@ class GlobalPerformanceImpl final
  private:
   mutable Member<P> performance_;
 };
-
-// static
-template <typename T, typename P>
-const char GlobalPerformanceImpl<T, P>::kSupplementName[] =
-    "GlobalPerformanceImpl";
 
 }  // namespace
 

@@ -29,7 +29,8 @@ class V8PermissionState;
 class PushMessagingBridge final : public GarbageCollected<PushMessagingBridge>,
                                   public Supplement<ServiceWorkerRegistration> {
  public:
-  static const char kSupplementName[];
+  static constexpr auto kSupplementIndex =
+      ServiceWorkerRegistration::Supplements::kPushMessagingBridge;
 
   static PushMessagingBridge* From(ServiceWorkerRegistration* registration);
 

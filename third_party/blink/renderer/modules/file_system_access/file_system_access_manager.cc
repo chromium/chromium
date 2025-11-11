@@ -11,8 +11,9 @@
 namespace blink {
 
 // static
-const char FileSystemAccessManager::kSupplementName[] =
-    "FileSystemAccessManager";
+const unsigned FileSystemAccessManager::kSupplementIndex =
+    static_cast<unsigned>(
+        ExecutionContext::Supplements::kFileSystemAccessManager);
 
 // static
 FileSystemAccessManager& FileSystemAccessManager::From(

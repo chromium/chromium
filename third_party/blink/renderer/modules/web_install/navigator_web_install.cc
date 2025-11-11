@@ -23,7 +23,6 @@
 
 namespace blink {
 
-const char NavigatorWebInstall::kSupplementName[] = "NavigatorWebInstall";
 const char kInvalidInstallUrlErrorDetails[] = "Invalid install url";
 const char kInvalidManifestIdErrorDetails[] = "Invalid manifest id";
 

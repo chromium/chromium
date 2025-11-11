@@ -26,9 +26,6 @@ void SensorProviderProxy::InitializeIfNeeded() {
 }
 
 // static
-const char SensorProviderProxy::kSupplementName[] = "SensorProvider";
-
-// static
 SensorProviderProxy* SensorProviderProxy::From(LocalDOMWindow* window) {
   DCHECK(window);
   SensorProviderProxy* provider_proxy =

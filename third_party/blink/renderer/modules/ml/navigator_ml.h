@@ -15,7 +15,8 @@ namespace blink {
 class NavigatorML : public GarbageCollected<NavigatorML>,
                     public Supplement<NavigatorBase> {
  public:
-  static const char kSupplementName[];
+  static constexpr auto kSupplementIndex =
+      NavigatorBase::Supplements::kNavigatorML;
   static ML* ml(NavigatorBase& navigator);
   explicit NavigatorML(NavigatorBase& navigator);
 

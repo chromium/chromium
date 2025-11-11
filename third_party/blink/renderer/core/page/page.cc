@@ -1367,7 +1367,7 @@ void Page::Trace(Visitor* visitor) const {
   visitor->Trace(v8_compile_hints_consumer_);
   visitor->Trace(close_task_handler_);
   visitor->Trace(opener_);
-  Supplementable<Page>::Trace(visitor);
+  Supplementable::Trace(visitor);
 }
 
 void Page::DidInitializeCompositing(cc::AnimationHost& host) {
@@ -1601,9 +1601,6 @@ void Page::SetAttributionSupport(
 }
 
 template class CORE_TEMPLATE_EXPORT Supplement<Page>;
-
-const char InternalSettingsPageSupplementBase::kSupplementName[] =
-    "InternalSettings";
 
 // static
 void Page::PrepareForLeakDetection() {

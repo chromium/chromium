@@ -92,7 +92,8 @@ HeapVector<std::pair<String, Member<SubAppsListResult>>> ListResultsFromMojo(
 }  // namespace
 
 // static
-const char SubApps::kSupplementName[] = "SubApps";
+const unsigned SubApps::kSupplementIndex =
+    static_cast<unsigned>(Navigator::Supplements::kSubApps);
 
 SubApps::SubApps(Navigator& navigator)
     : Supplement<Navigator>(navigator),

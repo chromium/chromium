@@ -33,7 +33,7 @@ class Permissions final : public ScriptWrappable,
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static const char kSupplementName[];
+  static const unsigned kSupplementIndex;
 
   // Getter for navigator.permissions
   static Permissions* permissions(NavigatorBase&);

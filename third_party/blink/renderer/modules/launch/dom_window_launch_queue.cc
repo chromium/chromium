@@ -13,7 +13,8 @@
 
 namespace blink {
 
-const char DOMWindowLaunchQueue::kSupplementName[] = "DOMWindowLaunchQueue";
+const unsigned DOMWindowLaunchQueue::kSupplementIndex =
+    static_cast<unsigned>(LocalDOMWindow::Supplements::kDOMWindowLaunchQueue);
 
 DOMWindowLaunchQueue::DOMWindowLaunchQueue(LocalDOMWindow& window)
     : Supplement(window), launch_queue_(MakeGarbageCollected<LaunchQueue>()) {}

@@ -37,9 +37,6 @@
 namespace blink {
 
 // static
-const char NoStatePrefetchClient::kSupplementName[] = "NoStatePrefetchClient";
-
-// static
 NoStatePrefetchClient* NoStatePrefetchClient::From(Page* page) {
   return Supplement<Page>::From<NoStatePrefetchClient>(page);
 }

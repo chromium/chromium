@@ -192,7 +192,8 @@ void NavigatorShare::Trace(Visitor* visitor) const {
   Supplement<Navigator>::Trace(visitor);
 }
 
-const char NavigatorShare::kSupplementName[] = "NavigatorShare";
+const unsigned NavigatorShare::kSupplementIndex =
+    static_cast<unsigned>(Navigator::Supplements::kNavigatorShare);
 
 bool NavigatorShare::canShare(ScriptState* script_state,
                               const ShareData* data) {
@@ -247,8 +248,9 @@ ScriptPromise<IDLUndefined> NavigatorShare::share(
 // the Web Share spec. https://www.w3.org/TR/web-share/#share-method
 #if !BUILDFLAG(IS_ANDROID)
   if (!clients_.empty()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "An earlier share has not yet completed.");
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "An earlier share has not yet completed.");
     return EmptyPromise();
   }
 #endif

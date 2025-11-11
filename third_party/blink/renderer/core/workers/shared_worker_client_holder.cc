@@ -58,9 +58,6 @@
 
 namespace blink {
 
-const char SharedWorkerClientHolder::kSupplementName[] =
-    "SharedWorkerClientHolder";
-
 SharedWorkerClientHolder* SharedWorkerClientHolder::From(
     LocalDOMWindow& window) {
   DCHECK(IsMainThread());

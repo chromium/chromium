@@ -170,7 +170,8 @@ void LocalFileSystem::ResolveURLInternal(
 LocalFileSystem::LocalFileSystem(ExecutionContext& context)
     : Supplement<ExecutionContext>(context) {}
 
-const char LocalFileSystem::kSupplementName[] = "LocalFileSystem";
+const unsigned LocalFileSystem::kSupplementIndex =
+    static_cast<unsigned>(ExecutionContext::Supplements::kLocalFileSystem);
 
 LocalFileSystem* LocalFileSystem::From(ExecutionContext& context) {
   LocalFileSystem* file_system =

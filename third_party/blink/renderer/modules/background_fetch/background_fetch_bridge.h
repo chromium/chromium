@@ -25,7 +25,8 @@ class BackgroundFetchBridge final
     : public GarbageCollected<BackgroundFetchBridge>,
       public Supplement<ServiceWorkerRegistration> {
  public:
-  static const char kSupplementName[];
+  static constexpr auto kSupplementIndex =
+      ServiceWorkerRegistration::Supplements::kBackgroundFetchBridge;
 
   using GetDeveloperIdsCallback =
       base::OnceCallback<void(mojom::blink::BackgroundFetchError,

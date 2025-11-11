@@ -35,7 +35,7 @@ class WaitableEvent;
 namespace media {
 class GpuVideoAcceleratorFactories;
 class MojoVideoEncoderMetricsProviderFactory;
-}
+}  // namespace media
 
 namespace gfx {
 class ColorSpace;
@@ -84,7 +84,8 @@ class MODULES_EXPORT PeerConnectionDependencyFactory
                       CleanupPeerConnectionFactory);
 
  public:
-  static const char kSupplementName[];
+  static constexpr auto kSupplementIndex =
+      ExecutionContext::Supplements::kPeerConnectionDependencyFactory;
 
   static PeerConnectionDependencyFactory& From(ExecutionContext& context);
   PeerConnectionDependencyFactory(

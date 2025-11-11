@@ -10,8 +10,9 @@
 namespace blink {
 
 // static
-const char SourceBufferTrackBaseSupplement::kSupplementName[] =
-    "SourceBufferTrackBaseSupplement";
+const unsigned SourceBufferTrackBaseSupplement::kSupplementIndex =
+    static_cast<unsigned>(
+        TrackBase::Supplements::kSourceBufferTrackBaseSupplement);
 
 // static
 SourceBufferTrackBaseSupplement* SourceBufferTrackBaseSupplement::FromIfExists(

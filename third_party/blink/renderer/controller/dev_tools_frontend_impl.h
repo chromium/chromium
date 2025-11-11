@@ -56,7 +56,7 @@ class DevToolsFrontendImpl final
       public InspectorFrontendClient,
       public WidgetCreationObserver {
  public:
-  static const char kSupplementName[];
+  static const unsigned kSupplementIndex;
 
   static void BindMojoRequest(
       LocalFrame*,

@@ -16,7 +16,8 @@
 
 namespace blink {
 
-const char BatteryManager::kSupplementName[] = "BatteryManager";
+const unsigned BatteryManager::kSupplementIndex =
+    static_cast<unsigned>(Navigator::Supplements::kBatteryManager);
 
 // static
 ScriptPromise<BatteryManager> BatteryManager::getBattery(

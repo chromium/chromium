@@ -338,8 +338,9 @@ void SetMediaKeysHandler::Trace(Visitor* visitor) const {
 }
 
 // static
-const char HTMLMediaElementEncryptedMedia::kSupplementName[] =
-    "HTMLMediaElementEncryptedMedia";
+const unsigned HTMLMediaElementEncryptedMedia::kSupplementIndex =
+    static_cast<unsigned>(
+        HTMLMediaElement::Supplements::kHTMLMediaElementEncryptedMedia);
 
 HTMLMediaElementEncryptedMedia::HTMLMediaElementEncryptedMedia(
     HTMLMediaElement& element)

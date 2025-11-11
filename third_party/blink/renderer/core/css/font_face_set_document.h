@@ -45,7 +45,8 @@ class Font;
 class CORE_EXPORT FontFaceSetDocument final : public FontFaceSet,
                                               public Supplement<Document> {
  public:
-  static const char kSupplementName[];
+  static constexpr auto kSupplementIndex =
+      Document::Supplements::kFontFaceSetDocument;
 
   explicit FontFaceSetDocument(Document&);
   FontFaceSetDocument(const FontFaceSetDocument&) = delete;

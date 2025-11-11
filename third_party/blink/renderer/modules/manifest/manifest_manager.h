@@ -41,7 +41,7 @@ class MODULES_EXPORT ManifestManager
       public mojom::blink::ManifestManager,
       public ExecutionContextLifecycleObserver {
  public:
-  static const char kSupplementName[];
+  static const unsigned kSupplementIndex;
 
   static ManifestManager* From(LocalDOMWindow&);
 

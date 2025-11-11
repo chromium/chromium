@@ -24,7 +24,7 @@ class V8PermissionState;
 class MODULES_EXPORT IdleManager final : public GarbageCollected<IdleManager>,
                                          public Supplement<ExecutionContext> {
  public:
-  static const char kSupplementName[];
+  static const unsigned kSupplementIndex;
 
   static IdleManager* From(ExecutionContext*);
 

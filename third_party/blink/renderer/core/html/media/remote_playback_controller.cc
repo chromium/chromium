@@ -7,10 +7,6 @@
 namespace blink {
 
 // static
-const char RemotePlaybackController::kSupplementName[] =
-    "RemotePlaybackController";
-
-// static
 RemotePlaybackController* RemotePlaybackController::From(
     HTMLMediaElement& element) {
   return Supplement<HTMLMediaElement>::From<RemotePlaybackController>(element);

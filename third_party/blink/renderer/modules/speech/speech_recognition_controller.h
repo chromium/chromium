@@ -49,7 +49,7 @@ class MODULES_EXPORT SpeechRecognitionController final
     : public GarbageCollected<SpeechRecognitionController>,
       public Supplement<LocalDOMWindow> {
  public:
-  static const char kSupplementName[];
+  static const unsigned kSupplementIndex;
 
   explicit SpeechRecognitionController(LocalDOMWindow&);
   ~SpeechRecognitionController();

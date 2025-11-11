@@ -42,7 +42,7 @@ class CORE_EXPORT InteractiveDetector
       public ExecutionContextLifecycleObserver,
       public LongTaskObserver {
  public:
-  static const char kSupplementName[];
+  static const unsigned kSupplementIndex;
 
   // This class can be easily switched out to allow better testing of
   // InteractiveDetector.

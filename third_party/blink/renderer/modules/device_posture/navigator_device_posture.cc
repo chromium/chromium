@@ -12,9 +12,6 @@
 namespace blink {
 
 // static
-const char NavigatorDevicePosture::kSupplementName[] = "NavigatorDevicePosture";
-
-// static
 DevicePosture* NavigatorDevicePosture::devicePosture(Navigator& navigator) {
   DCHECK(RuntimeEnabledFeatures::DevicePostureEnabled(
       navigator.GetExecutionContext()));

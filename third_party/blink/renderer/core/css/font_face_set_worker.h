@@ -24,7 +24,8 @@ class CORE_EXPORT FontFaceSetWorker final
     : public FontFaceSet,
       public Supplement<WorkerGlobalScope> {
  public:
-  static const char kSupplementName[];
+  static constexpr auto kSupplementIndex =
+      WorkerGlobalScope::Supplements::kFontFaceSetWorker;
 
   explicit FontFaceSetWorker(WorkerGlobalScope&);
   FontFaceSetWorker(const FontFaceSetWorker&) = delete;

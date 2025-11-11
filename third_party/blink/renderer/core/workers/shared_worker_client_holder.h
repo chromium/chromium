@@ -64,7 +64,8 @@ class CORE_EXPORT SharedWorkerClientHolder final
     : public GarbageCollected<SharedWorkerClientHolder>,
       public Supplement<LocalDOMWindow> {
  public:
-  static const char kSupplementName[];
+  static constexpr auto kSupplementIndex =
+      LocalDOMWindow::Supplements::kSharedWorkerClientHolder;
   static SharedWorkerClientHolder* From(LocalDOMWindow&);
 
   explicit SharedWorkerClientHolder(LocalDOMWindow&);

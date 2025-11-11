@@ -37,7 +37,7 @@ class MODULES_EXPORT Serial final : public EventTarget,
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static const char kSupplementName[];
+  static const unsigned kSupplementIndex;
 
   // Web-exposed navigator.serial
   static Serial* serial(NavigatorBase&);

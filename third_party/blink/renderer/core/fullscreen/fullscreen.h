@@ -69,7 +69,7 @@ class CORE_EXPORT Fullscreen final : public GarbageCollected<Fullscreen>,
                                      public Supplement<LocalDOMWindow>,
                                      public ExecutionContextLifecycleObserver {
  public:
-  static const char kSupplementName[];
+  static const unsigned kSupplementIndex;
 
   explicit Fullscreen(LocalDOMWindow&);
   ~Fullscreen() override;

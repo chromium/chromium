@@ -16,7 +16,8 @@
 namespace blink {
 
 // static
-const char IdleManager::kSupplementName[] = "IdleManager";
+const unsigned IdleManager::kSupplementIndex =
+    static_cast<unsigned>(ExecutionContext::Supplements::kIdleManager);
 
 // static
 IdleManager* IdleManager::From(ExecutionContext* context) {

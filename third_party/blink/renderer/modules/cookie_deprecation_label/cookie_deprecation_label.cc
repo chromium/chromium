@@ -20,7 +20,8 @@
 namespace blink {
 
 // static
-const char CookieDeprecationLabel::kSupplementName[] = "CookieDeprecation";
+const unsigned CookieDeprecationLabel::kSupplementIndex =
+    static_cast<unsigned>(Navigator::Supplements::kCookieDeprecationLabel);
 
 // static
 CookieDeprecationLabel* CookieDeprecationLabel::cookieDeprecationLabel(

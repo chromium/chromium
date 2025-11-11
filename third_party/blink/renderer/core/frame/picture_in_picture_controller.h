@@ -27,7 +27,7 @@ class CORE_EXPORT PictureInPictureController
     : public GarbageCollected<PictureInPictureController>,
       public Supplement<Document> {
  public:
-  static const char kSupplementName[];
+  static const unsigned kSupplementIndex;
 
   PictureInPictureController(const PictureInPictureController&) = delete;
   PictureInPictureController& operator=(const PictureInPictureController&) =

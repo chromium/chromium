@@ -53,7 +53,7 @@ class PagePopupController : public ScriptWrappable, public Supplement<Page> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static const char kSupplementName[];
+  static const unsigned kSupplementIndex;
   PagePopupController(Page&, PagePopup&, PagePopupClient*);
 
   static PagePopupController* From(Page&);

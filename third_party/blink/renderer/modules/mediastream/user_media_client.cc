@@ -450,7 +450,8 @@ UserMediaClient::GetMediaDevicesDispatcher() {
   return media_devices_dispatcher_.get();
 }
 
-const char UserMediaClient::kSupplementName[] = "UserMediaClient";
+const unsigned UserMediaClient::kSupplementIndex =
+    static_cast<unsigned>(LocalDOMWindow::Supplements::kUserMediaClient);
 
 UserMediaClient* UserMediaClient::From(LocalDOMWindow* window) {
   if (!window) {

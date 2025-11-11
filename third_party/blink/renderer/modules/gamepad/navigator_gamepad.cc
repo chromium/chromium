@@ -62,7 +62,8 @@ bool HasConnectionEventListeners(LocalDOMWindow* window) {
 }  // namespace
 
 // static
-const char NavigatorGamepad::kSupplementName[] = "NavigatorGamepad";
+const unsigned NavigatorGamepad::kSupplementIndex =
+    static_cast<unsigned>(Navigator::Supplements::kNavigatorGamepad);
 const char kFeaturePolicyBlocked[] =
     "Access to the feature \"gamepad\" is disallowed by permissions policy.";
 

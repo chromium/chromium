@@ -18,9 +18,6 @@ DeviceOrientationAbsoluteController::DeviceOrientationAbsoluteController(
 DeviceOrientationAbsoluteController::~DeviceOrientationAbsoluteController() =
     default;
 
-const char DeviceOrientationAbsoluteController::kSupplementName[] =
-    "DeviceOrientationAbsoluteController";
-
 DeviceOrientationAbsoluteController& DeviceOrientationAbsoluteController::From(
     LocalDOMWindow& window) {
   DeviceOrientationAbsoluteController* controller =

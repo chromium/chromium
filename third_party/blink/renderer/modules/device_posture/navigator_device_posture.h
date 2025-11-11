@@ -17,7 +17,8 @@ class NavigatorDevicePosture final
     : public GarbageCollected<NavigatorDevicePosture>,
       public Supplement<Navigator> {
  public:
-  static const char kSupplementName[];
+  static constexpr auto kSupplementIndex =
+      Navigator::Supplements::kNavigatorDevicePosture;
   static DevicePosture* devicePosture(Navigator&);
 
   explicit NavigatorDevicePosture(Navigator&);

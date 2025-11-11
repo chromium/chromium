@@ -44,8 +44,6 @@
 
 namespace blink {
 
-const char StorageNamespace::kSupplementName[] = "SessionStorageNamespace";
-
 StorageNamespace::StorageNamespace(StorageController* controller)
     : Supplement(nullptr), controller_(controller) {}
 StorageNamespace::StorageNamespace(Page& page,

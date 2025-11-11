@@ -120,12 +120,21 @@ struct PartitionedPopinOpenerProperties {
 //
 // Note that frames can be local or remote to this process.
 class CORE_EXPORT Page final : public GarbageCollected<Page>,
-                               public Supplementable<Page>,
+                               public Supplementable<Page, 6>,
                                public SettingsDelegate,
                                public PageScheduler::Delegate {
   friend class Settings;
 
  public:
+  enum class Supplements {
+    kStorageNamespace = 0,
+    kInternalSettings = 1,
+    kNoStatePrefetchClient = 2,
+    kSuspendCaptureObserver = 3,
+    kPagePopupController = 4,
+    kAudioGraphTracer = 5
+  };
+
   // Any pages not owned by a web view should be created using this method.
   static Page* CreateNonOrdinary(
       ChromeClient& chrome_client,
@@ -763,7 +772,7 @@ extern template class CORE_EXTERN_TEMPLATE_EXPORT Supplement<Page>;
 class CORE_EXPORT InternalSettingsPageSupplementBase : public Supplement<Page> {
  public:
   using Supplement<Page>::Supplement;
-  static const char kSupplementName[];
+  static constexpr auto kSupplementIndex = Page::Supplements::kInternalSettings;
 };
 
 }  // namespace blink

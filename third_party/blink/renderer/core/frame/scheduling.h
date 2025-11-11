@@ -22,7 +22,7 @@ class CORE_EXPORT Scheduling : public ScriptWrappable,
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static const char kSupplementName[];
+  static const unsigned kSupplementIndex;
   static Scheduling* scheduling(Navigator&);
   explicit Scheduling(Navigator&);
 

@@ -39,8 +39,9 @@ WorkerGlobalScopeCrypto::WorkerGlobalScopeCrypto(
     WorkerGlobalScope& worker_scope)
     : Supplement(worker_scope) {}
 
-const char WorkerGlobalScopeCrypto::kSupplementName[] =
-    "WorkerGlobalScopeCrypto";
+const unsigned WorkerGlobalScopeCrypto::kSupplementIndex =
+    static_cast<unsigned>(
+        WorkerGlobalScope::Supplements::kWorkerGlobalScopeCrypto);
 
 WorkerGlobalScopeCrypto& WorkerGlobalScopeCrypto::From(
     WorkerGlobalScope& context) {

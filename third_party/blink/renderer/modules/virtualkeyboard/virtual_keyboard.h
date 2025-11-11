@@ -29,7 +29,7 @@ class VirtualKeyboard final : public EventTarget,
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static const char kSupplementName[];
+  static const unsigned kSupplementIndex;
   static VirtualKeyboard* virtualKeyboard(Navigator&);
 
   explicit VirtualKeyboard(Navigator& navigator);

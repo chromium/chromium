@@ -9583,7 +9583,7 @@ void Document::Trace(Visitor* visitor) const {
   visitor->Trace(payment_link_handler_);
 #endif  // BUILDFLAG(IS_ANDROID)
   visitor->Trace(view_transitions_);
-  Supplementable<Document>::Trace(visitor);
+  Supplementable::Trace(visitor);
   TreeScope::Trace(visitor);
   ContainerNode::Trace(visitor);
 }

@@ -19,7 +19,7 @@ class CookieDeprecationLabel : public ScriptWrappable,
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static const char kSupplementName[];
+  static const unsigned kSupplementIndex;
 
   // Web exposed as navigator.cookieDeprecationLabel
   static CookieDeprecationLabel* cookieDeprecationLabel(Navigator& navigator);

@@ -150,7 +150,8 @@ bool DocumentXSLT::SheetLoaded(Document& document, ProcessingInstruction* pi) {
 }
 
 // static
-const char DocumentXSLT::kSupplementName[] = "DocumentXSLT";
+const unsigned DocumentXSLT::kSupplementIndex =
+    static_cast<unsigned>(Document::Supplements::kDocumentXSLT);
 
 bool DocumentXSLT::HasTransformSourceDocument(Document& document) {
   return Supplement<Document>::From<DocumentXSLT>(document);

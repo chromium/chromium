@@ -58,7 +58,8 @@ class PLATFORM_EXPORT P2PSocketDispatcher
       public blink::NetworkListManager,
       public network::mojom::blink::P2PNetworkNotificationClient {
  public:
-  static const char kSupplementName[];
+  static constexpr auto kSupplementIndex =
+      MojoBindingContext::Supplements::kP2PSocketDispatcher;
 
   static P2PSocketDispatcher& From(MojoBindingContext& context);
 

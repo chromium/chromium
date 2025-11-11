@@ -76,7 +76,8 @@ base::TimeDelta GetMaxHighResolutionInterval() {
 class DOMTimerCoordinator : public GarbageCollected<DOMTimerCoordinator>,
                             public Supplement<ExecutionContext> {
  public:
-  constexpr static const char kSupplementName[] = "DOMTimerCoordinator";
+  static constexpr auto kSupplementIndex =
+      ExecutionContext::Supplements::kDOMTimerCoordinator;
 
   static DOMTimerCoordinator& From(ExecutionContext& context) {
     CHECK(!context.IsWorkletGlobalScope());

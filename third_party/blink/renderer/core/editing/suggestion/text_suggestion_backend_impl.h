@@ -24,7 +24,7 @@ class CORE_EXPORT TextSuggestionBackendImpl final
       public mojom::blink::TextSuggestionBackend,
       public Supplement<LocalFrame> {
  public:
-  static const char kSupplementName[];
+  static const unsigned kSupplementIndex;
   static TextSuggestionBackendImpl* From(LocalFrame&);
   static void Bind(LocalFrame*,
                    mojo::PendingReceiver<mojom::blink::TextSuggestionBackend>);

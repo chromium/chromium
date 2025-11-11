@@ -19,7 +19,7 @@ class CORE_EXPORT VideoFrameCallbackRequester
     : public GarbageCollected<VideoFrameCallbackRequester>,
       public Supplement<HTMLVideoElement> {
  public:
-  static const char kSupplementName[];
+  static const unsigned kSupplementIndex;
 
   static VideoFrameCallbackRequester* From(HTMLVideoElement&);
 

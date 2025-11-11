@@ -19,9 +19,6 @@
 namespace blink {
 
 // static
-const char TextElementTiming::kSupplementName[] = "TextElementTiming";
-
-// static
 TextElementTiming& TextElementTiming::From(LocalDOMWindow& window) {
   TextElementTiming* timing =
       Supplement<LocalDOMWindow>::From<TextElementTiming>(window);

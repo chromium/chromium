@@ -19,7 +19,7 @@ class MODULES_EXPORT LockedMode final : public ScriptWrappable,
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static const char kSupplementName[];
+  static const unsigned kSupplementIndex;
 
   // Web-exposed getter for `navigator.lockedMode`.
   static LockedMode* lockedMode(NavigatorBase&);

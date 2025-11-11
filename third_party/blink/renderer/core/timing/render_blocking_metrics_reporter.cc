@@ -10,8 +10,9 @@
 
 namespace blink {
 
-const char RenderBlockingMetricsReporter::kSupplementName[] =
-    "RenderBlockingMetricsReporter";
+const unsigned RenderBlockingMetricsReporter::kSupplementIndex =
+    static_cast<unsigned>(
+        Document::Supplements::kRenderBlockingMetricsReporter);
 
 RenderBlockingMetricsReporter::RenderBlockingMetricsReporter(Document& document)
     : Supplement<Document>(document) {}

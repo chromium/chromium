@@ -29,7 +29,7 @@ class CORE_EXPORT ReportingContext : public GarbageCollected<ReportingContext>,
                                      public mojom::blink::ReportingObserver,
                                      public Supplement<ExecutionContext> {
  public:
-  static const char kSupplementName[];
+  static const unsigned kSupplementIndex;
 
   explicit ReportingContext(ExecutionContext&);
 

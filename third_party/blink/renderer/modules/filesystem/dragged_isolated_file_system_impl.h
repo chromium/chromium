@@ -47,7 +47,8 @@ class DraggedIsolatedFileSystemImpl final
       public DraggedIsolatedFileSystem,
       public Supplement<DataObject> {
  public:
-  static const char kSupplementName[];
+  static constexpr auto kSupplementIndex =
+      DataObject::Supplements::kDraggedIsolatedFileSystemImpl;
 
   static DOMFileSystem* GetDOMFileSystem(DataObject* host,
                                          ExecutionContext*,

@@ -14,7 +14,8 @@
 namespace blink {
 
 // static
-const char DocumentFencedFrames::kSupplementName[] = "DocumentFencedFrame";
+const unsigned DocumentFencedFrames::kSupplementIndex =
+    static_cast<unsigned>(Document::Supplements::kDocumentFencedFrames);
 
 // static
 DocumentFencedFrames* DocumentFencedFrames::Get(Document& document) {

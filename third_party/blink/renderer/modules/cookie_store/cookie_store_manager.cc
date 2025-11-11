@@ -85,9 +85,6 @@ KURL DefaultCookieURL(ServiceWorkerRegistration* registration) {
 }  // namespace
 
 // static
-const char CookieStoreManager::kSupplementName[] = "CookieStoreManager";
-
-// static
 CookieStoreManager* CookieStoreManager::cookies(
     ServiceWorkerRegistration& registration) {
   auto* supplement =

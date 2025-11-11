@@ -17,7 +17,8 @@ class WindowSharedStorageImpl final
     : public GarbageCollected<WindowSharedStorageImpl>,
       public Supplement<LocalDOMWindow> {
  public:
-  static const char kSupplementName[];
+  static constexpr auto kSupplementIndex =
+      LocalDOMWindow::Supplements::kWindowSharedStorageImpl;
 
   static WindowSharedStorageImpl& From(LocalDOMWindow& window) {
     WindowSharedStorageImpl* supplement =
@@ -47,10 +48,6 @@ class WindowSharedStorageImpl final
  private:
   Member<SharedStorage> shared_storage_;
 };
-
-// static
-const char WindowSharedStorageImpl::kSupplementName[] =
-    "WindowSharedStorageImpl";
 
 }  // namespace
 

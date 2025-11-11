@@ -95,7 +95,8 @@ void RejectWithTypeError(const String& message,
 
 }  // namespace
 
-const char HID::kSupplementName[] = "HID";
+const unsigned HID::kSupplementIndex =
+    static_cast<unsigned>(NavigatorBase::Supplements::kHID);
 
 HID* HID::hid(NavigatorBase& navigator) {
   HID* hid = Supplement<NavigatorBase>::From<HID>(navigator);

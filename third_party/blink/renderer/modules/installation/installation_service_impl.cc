@@ -14,8 +14,9 @@
 namespace blink {
 
 // static
-const char InstallationServiceImpl::kSupplementName[] =
-    "InstallationServiceImpl";
+const unsigned InstallationServiceImpl::kSupplementIndex =
+    static_cast<unsigned>(
+        LocalDOMWindow::Supplements::kInstallationServiceImpl);
 
 // static
 InstallationServiceImpl* InstallationServiceImpl::From(LocalDOMWindow& window) {

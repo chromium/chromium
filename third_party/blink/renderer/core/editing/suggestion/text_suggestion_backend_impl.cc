@@ -11,8 +11,8 @@
 namespace blink {
 
 // static
-const char TextSuggestionBackendImpl::kSupplementName[] =
-    "TextSuggestionBackendImpl";
+const unsigned TextSuggestionBackendImpl::kSupplementIndex =
+    static_cast<unsigned>(LocalFrame::Supplements::kTextSuggestionBackendImpl);
 
 // static
 TextSuggestionBackendImpl* TextSuggestionBackendImpl::From(LocalFrame& frame) {

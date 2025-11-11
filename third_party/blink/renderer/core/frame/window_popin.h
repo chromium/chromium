@@ -19,7 +19,8 @@ namespace blink {
 class CORE_EXPORT WindowPopin final : public GarbageCollected<WindowPopin>,
                                       public Supplement<LocalDOMWindow> {
  public:
-  static const char kSupplementName[];
+  static constexpr auto kSupplementIndex =
+      LocalDOMWindow::Supplements::kWindowPopin;
 
   explicit WindowPopin(LocalDOMWindow&);
   ~WindowPopin() = default;

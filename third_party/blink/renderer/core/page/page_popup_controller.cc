@@ -41,7 +41,8 @@
 
 namespace blink {
 
-const char PagePopupController::kSupplementName[] = "PagePopupController";
+const unsigned PagePopupController::kSupplementIndex =
+    static_cast<unsigned>(Page::Supplements::kPagePopupController);
 
 PagePopupController* PagePopupController::From(Page& page) {
   return Supplement<Page>::From<PagePopupController>(page);

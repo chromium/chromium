@@ -123,8 +123,4 @@ bool UniversalGlobalScope::isSecureContextForBindings(
   return ExecutionContext::From(script_state)->IsSecureContext();
 }
 
-void UniversalGlobalScope::Trace(Visitor* visitor) const {
-  Supplementable<UniversalGlobalScope>::Trace(visitor);
-}
-
 }  // namespace blink

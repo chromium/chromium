@@ -22,7 +22,8 @@ class MODULES_EXPORT DeviceMotionController final
     : public DeviceSingleWindowEventController,
       public Supplement<LocalDOMWindow> {
  public:
-  static const char kSupplementName[];
+  static constexpr auto kSupplementIndex =
+      LocalDOMWindow::Supplements::kDeviceMotionController;
 
   explicit DeviceMotionController(LocalDOMWindow&);
   ~DeviceMotionController() override;

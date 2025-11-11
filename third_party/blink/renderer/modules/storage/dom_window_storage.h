@@ -19,7 +19,7 @@ class StorageArea;
 class DOMWindowStorage final : public GarbageCollected<DOMWindowStorage>,
                                public Supplement<LocalDOMWindow> {
  public:
-  static const char kSupplementName[];
+  static const unsigned kSupplementIndex;
 
   static DOMWindowStorage& From(LocalDOMWindow&);
   static StorageArea* sessionStorage(LocalDOMWindow&, ExceptionState&);

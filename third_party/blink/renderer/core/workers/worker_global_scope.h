@@ -83,11 +83,21 @@ class CORE_EXPORT WorkerGlobalScope
       public WindowOrWorkerGlobalScope,
       public UniversalGlobalScope,
       public ActiveScriptWrappable<WorkerGlobalScope>,
-      public Supplementable<WorkerGlobalScope>,
+      public Supplementable<WorkerGlobalScope, 7>,
       public DOMOriginUtils {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+  enum class Supplements {
+    kWorkerGlobalScopeCrypto = 0,
+    kFontFaceSetWorker = 1,
+    kGlobalIndexedDBImpl = 2,
+    kGlobalCacheStorageImpl = 3,
+    kGlobalPerformanceImpl = 4,
+    kGlobalCookieStoreImpl = 5,
+    kGlobalFetchImpl = 6
+  };
+
   ~WorkerGlobalScope() override;
 
   // DOMOriginUtils overrides:

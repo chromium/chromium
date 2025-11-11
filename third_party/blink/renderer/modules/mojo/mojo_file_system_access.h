@@ -19,7 +19,8 @@ class MojoFileSystemAccess final
     : public GarbageCollected<MojoFileSystemAccess>,
       public Supplement<Mojo> {
  public:
-  static const char kSupplementName[];
+  static constexpr auto kSupplementIndex =
+      Mojo::Supplements::kMojoFileSystemAccess;
   explicit MojoFileSystemAccess(Mojo&);
   static MojoFileSystemAccess& From(Mojo&);
 

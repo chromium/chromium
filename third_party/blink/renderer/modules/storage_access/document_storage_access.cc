@@ -74,7 +74,8 @@ const char DocumentStorageAccess::kNoAccessRequested[] =
     "You must request access for at least one storage/communication medium.";
 
 // static
-const char DocumentStorageAccess::kSupplementName[] = "DocumentStorageAccess";
+const unsigned DocumentStorageAccess::kSupplementIndex =
+    static_cast<unsigned>(Document::Supplements::kDocumentStorageAccess);
 
 // static
 DocumentStorageAccess& DocumentStorageAccess::From(Document& document) {

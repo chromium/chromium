@@ -31,7 +31,8 @@ void DOMWindowStorage::Trace(Visitor* visitor) const {
 }
 
 // static
-const char DOMWindowStorage::kSupplementName[] = "DOMWindowStorage";
+const unsigned DOMWindowStorage::kSupplementIndex =
+    static_cast<unsigned>(LocalDOMWindow::Supplements::kDOMWindowStorage);
 
 // static
 DOMWindowStorage& DOMWindowStorage::From(LocalDOMWindow& window) {

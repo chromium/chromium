@@ -58,16 +58,15 @@ enum class PermissionStatus;
 class LocalFrame;
 class Navigator;
 
-class CORE_EXPORT Geolocation final
-    : public ScriptWrappable,
-      public ActiveScriptWrappable<Geolocation>,
-      public Supplement<Navigator>,
-      public ExecutionContextLifecycleObserver,
-      public PageVisibilityObserver {
+class CORE_EXPORT Geolocation final : public ScriptWrappable,
+                                      public ActiveScriptWrappable<Geolocation>,
+                                      public Supplement<Navigator>,
+                                      public ExecutionContextLifecycleObserver,
+                                      public PageVisibilityObserver {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static const char kSupplementName[];
+  static const unsigned kSupplementIndex;
   static Geolocation* geolocation(Navigator&);
 
   explicit Geolocation(Navigator&);

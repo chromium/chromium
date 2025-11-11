@@ -38,7 +38,7 @@ class USB final : public EventTarget,
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static const char kSupplementName[];
+  static const unsigned kSupplementIndex;
 
   // Getter for navigator.usb
   static USB* usb(NavigatorBase&);

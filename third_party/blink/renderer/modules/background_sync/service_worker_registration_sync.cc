@@ -17,9 +17,6 @@ ServiceWorkerRegistrationSync::ServiceWorkerRegistrationSync(
 
 ServiceWorkerRegistrationSync::~ServiceWorkerRegistrationSync() = default;
 
-const char ServiceWorkerRegistrationSync::kSupplementName[] =
-    "ServiceWorkerRegistrationSync";
-
 ServiceWorkerRegistrationSync& ServiceWorkerRegistrationSync::From(
     ServiceWorkerRegistration& registration) {
   ServiceWorkerRegistrationSync* supplement =

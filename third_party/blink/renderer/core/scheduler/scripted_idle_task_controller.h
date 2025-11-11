@@ -89,7 +89,8 @@ class CORE_EXPORT ScriptedIdleTaskController
     RefCountedCounter counter_;
   };
 
-  static const char kSupplementName[];
+  static constexpr auto kSupplementIndex =
+      ExecutionContext::Supplements::kScriptedIdleTaskController;
 
   static ScriptedIdleTaskController& From(ExecutionContext& context);
 

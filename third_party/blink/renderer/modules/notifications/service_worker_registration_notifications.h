@@ -32,7 +32,7 @@ class ServiceWorkerRegistrationNotifications final
       public Supplement<ServiceWorkerRegistration>,
       public ExecutionContextLifecycleObserver {
  public:
-  static const char kSupplementName[];
+  static const unsigned kSupplementIndex;
 
   static ScriptPromise<IDLUndefined> showNotification(
       ScriptState* script_state,

@@ -59,7 +59,7 @@ class CORE_EXPORT AnchorElementViewportPositionTracker
         HeapVector<Member<AnchorPositionUpdate>>& position_updates) {}
   };
 
-  static const char kSupplementName[];
+  static const unsigned kSupplementIndex;
 
   explicit AnchorElementViewportPositionTracker(Document&);
   AnchorElementViewportPositionTracker(

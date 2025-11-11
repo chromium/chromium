@@ -83,7 +83,8 @@ FileSystemDispatcher::FileSystemDispatcher(ExecutionContext& context)
       op_listeners_(&context) {}
 
 // static
-const char FileSystemDispatcher::kSupplementName[] = "FileSystemDispatcher";
+const unsigned FileSystemDispatcher::kSupplementIndex =
+    static_cast<unsigned>(ExecutionContext::Supplements::kFileSystemDispatcher);
 
 // static
 FileSystemDispatcher& FileSystemDispatcher::From(ExecutionContext* context) {

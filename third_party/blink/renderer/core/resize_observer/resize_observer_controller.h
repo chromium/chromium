@@ -28,7 +28,7 @@ class CORE_EXPORT ResizeObserverController final
  public:
   static const size_t kDepthBottom = 4096;
 
-  static const char kSupplementName[];
+  static const unsigned kSupplementIndex;
   static ResizeObserverController* From(LocalDOMWindow&);
   static ResizeObserverController* FromIfExists(LocalDOMWindow&);
 

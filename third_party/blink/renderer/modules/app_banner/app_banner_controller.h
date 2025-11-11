@@ -23,7 +23,7 @@ class AppBannerController final : public GarbageCollected<AppBannerController>,
                                   public Supplement<LocalDOMWindow>,
                                   public mojom::blink::AppBannerController {
  public:
-  static const char kSupplementName[];
+  static const unsigned kSupplementIndex;
   static AppBannerController* From(LocalDOMWindow&);
   static void BindReceiver(
       LocalFrame*,

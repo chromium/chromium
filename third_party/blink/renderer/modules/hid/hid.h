@@ -37,7 +37,7 @@ class MODULES_EXPORT HID : public EventTarget,
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static const char kSupplementName[];
+  static const unsigned kSupplementIndex;
 
   // Web-exposed getter for navigator.hid
   static HID* hid(NavigatorBase&);

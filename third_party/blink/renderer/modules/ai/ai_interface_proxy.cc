@@ -10,8 +10,6 @@
 
 namespace blink {
 
-const char AIInterfaceProxy::kSupplementName[] = "AIInterfaceProxy";
-
 // TODO(crbug.com/406770758): Consider refactoring to have this class own the
 // execution context as a member.
 AIInterfaceProxy::AIInterfaceProxy(ExecutionContext* execution_context)

@@ -35,7 +35,8 @@ const char kFeaturePolicyBlocked[] =
 }
 
 // static
-const char FontAccess::kSupplementName[] = "FontAccess";
+const unsigned FontAccess::kSupplementIndex =
+    static_cast<unsigned>(LocalDOMWindow::Supplements::kFontAccess);
 
 FontAccess::FontAccess(LocalDOMWindow* window)
     : Supplement<LocalDOMWindow>(*window), remote_(window) {}

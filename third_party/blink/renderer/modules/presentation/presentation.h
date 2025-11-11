@@ -25,7 +25,7 @@ class Presentation final : public ScriptWrappable,
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static const char kSupplementName[];
+  static const unsigned kSupplementIndex;
   static Presentation* presentation(Navigator&);
   explicit Presentation(Navigator&);
 

@@ -22,7 +22,7 @@ class MODULES_EXPORT NavigatorLogin : public ScriptWrappable,
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static const char kSupplementName[];
+  static const unsigned kSupplementIndex;
   static NavigatorLogin* login(Navigator&);
   explicit NavigatorLogin(Navigator&);
 

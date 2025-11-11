@@ -33,7 +33,7 @@ class LockManager final : public ScriptWrappable,
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static const char kSupplementName[];
+  static const unsigned kSupplementIndex;
 
   // Web-exposed as navigator.locks
   static LockManager* locks(NavigatorBase&, ExceptionState&);

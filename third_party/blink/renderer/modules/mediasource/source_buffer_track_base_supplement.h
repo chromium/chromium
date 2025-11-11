@@ -17,7 +17,7 @@ class SourceBufferTrackBaseSupplement
     : public GarbageCollected<SourceBufferTrackBaseSupplement>,
       public Supplement<TrackBase> {
  public:
-  static const char kSupplementName[];
+  static const unsigned kSupplementIndex;
 
   static SourceBuffer* sourceBuffer(TrackBase&);
   static void SetSourceBuffer(TrackBase&, SourceBuffer*);

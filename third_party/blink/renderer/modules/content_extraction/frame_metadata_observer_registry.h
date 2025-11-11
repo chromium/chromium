@@ -37,7 +37,8 @@ class MODULES_EXPORT FrameMetadataObserverRegistry final
       public mojom::blink::FrameMetadataObserverRegistry,
       public Supplement<Document> {
  public:
-  static const char kSupplementName[];
+  static constexpr auto kSupplementIndex =
+      Document::Supplements::kFrameMetadataObserverRegistry;
   static FrameMetadataObserverRegistry* From(Document&);
   static void BindReceiver(
       LocalFrame* frame,

@@ -11,8 +11,6 @@
 
 namespace blink {
 
-const char WindowPopin::kSupplementName[] = "WindowPopin";
-
 WindowPopin::WindowPopin(LocalDOMWindow& window)
     : Supplement<LocalDOMWindow>(window) {}
 

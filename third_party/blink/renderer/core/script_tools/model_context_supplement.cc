@@ -9,7 +9,8 @@
 namespace blink {
 
 // static
-const char ModelContextSupplement::kSupplementName[] = "ModelContextSupplement";
+const unsigned ModelContextSupplement::kSupplementIndex =
+    static_cast<unsigned>(Navigator::Supplements::kModelContextSupplement);
 
 // static
 ModelContextSupplement& ModelContextSupplement::From(Navigator& navigator) {

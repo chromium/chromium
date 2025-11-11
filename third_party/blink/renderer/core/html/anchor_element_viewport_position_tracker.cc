@@ -92,8 +92,9 @@ void AnchorElementViewportPositionTracker::Observer::AnchorPositionUpdate::
 }
 
 // static
-const char AnchorElementViewportPositionTracker::kSupplementName[] =
-    "DocumentAnchorElementViewportPositionTracker";
+const unsigned AnchorElementViewportPositionTracker::kSupplementIndex =
+    static_cast<unsigned>(
+        Document::Supplements::kAnchorElementViewportPositionTracker);
 
 AnchorElementViewportPositionTracker::AnchorElementViewportPositionTracker(
     Document& document)

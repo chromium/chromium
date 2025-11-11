@@ -31,7 +31,8 @@ class CORE_EXPORT ImageElementTiming final
     : public GarbageCollected<ImageElementTiming>,
       public Supplement<LocalDOMWindow> {
  public:
-  static const char kSupplementName[];
+  static constexpr auto kSupplementIndex =
+      LocalDOMWindow::Supplements::kImageElementTiming;
 
   // The maximum amount of characters included in Element Timing and Largest
   // Contentful Paint for inline images.

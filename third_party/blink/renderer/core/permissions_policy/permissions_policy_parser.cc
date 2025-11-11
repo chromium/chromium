@@ -36,7 +36,8 @@ class ParsedFeaturePolicies final
     : public GarbageCollected<ParsedFeaturePolicies>,
       public Supplement<ExecutionContext> {
  public:
-  static const char kSupplementName[];
+  static constexpr auto kSupplementIndex =
+      ExecutionContext::Supplements::kParsedFeaturePolicies;
 
   static ParsedFeaturePolicies& From(ExecutionContext& context) {
     ParsedFeaturePolicies* policies =
@@ -68,8 +69,6 @@ class ParsedFeaturePolicies final
   // count them multiple times.
   Vector<bool> policies_;
 };
-
-const char ParsedFeaturePolicies::kSupplementName[] = "ParsedFeaturePolicies";
 
 class FeatureObserver {
  public:

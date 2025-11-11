@@ -55,7 +55,7 @@ class LocalFileSystem final : public GarbageCollected<LocalFileSystem>,
  public:
   enum SynchronousType { kAsynchronous, kSynchronous };
 
-  static const char kSupplementName[];
+  static const unsigned kSupplementIndex;
 
   explicit LocalFileSystem(ExecutionContext&);
 

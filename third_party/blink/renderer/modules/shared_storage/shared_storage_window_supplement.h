@@ -19,7 +19,8 @@ class MODULES_EXPORT SharedStorageWindowSupplement
  public:
   static SharedStorageWindowSupplement* From(LocalDOMWindow& window);
 
-  static const char kSupplementName[];
+  static constexpr auto kSupplementIndex =
+      LocalDOMWindow::Supplements::kSharedStorageWindowSupplement;
 
   void Trace(Visitor*) const override;
 

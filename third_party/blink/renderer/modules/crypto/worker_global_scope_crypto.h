@@ -44,7 +44,7 @@ class WorkerGlobalScopeCrypto final
     : public GarbageCollected<WorkerGlobalScopeCrypto>,
       public Supplement<WorkerGlobalScope> {
  public:
-  static const char kSupplementName[];
+  static const unsigned kSupplementIndex;
 
   static WorkerGlobalScopeCrypto& From(WorkerGlobalScope&);
   static Crypto* crypto(WorkerGlobalScope&);

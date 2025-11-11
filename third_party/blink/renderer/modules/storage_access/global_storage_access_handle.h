@@ -29,7 +29,8 @@ class GlobalStorageAccessHandle final
     : public GarbageCollected<GlobalStorageAccessHandle>,
       public Supplement<LocalDOMWindow> {
  public:
-  static const char kSupplementName[];
+  static constexpr auto kSupplementIndex =
+      LocalDOMWindow::Supplements::kGlobalStorageAccessHandle;
 
   static GlobalStorageAccessHandle& From(LocalDOMWindow& window);
 

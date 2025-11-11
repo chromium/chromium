@@ -46,7 +46,7 @@ Agent::Agent(v8::Isolate* isolate,
 Agent::~Agent() = default;
 
 void Agent::Trace(Visitor* visitor) const {
-  Supplementable<Agent>::Trace(visitor);
+  Supplementable::Trace(visitor);
 }
 
 void Agent::AttachContext(ExecutionContext* context) {

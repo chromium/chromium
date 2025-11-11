@@ -27,7 +27,7 @@ class ImageDownloaderImpl final : public GarbageCollected<ImageDownloaderImpl>,
                                   public ExecutionContextLifecycleObserver,
                                   public mojom::blink::ImageDownloader {
  public:
-  static const char kSupplementName[];
+  static const unsigned kSupplementIndex;
 
   explicit ImageDownloaderImpl(LocalFrame&);
 

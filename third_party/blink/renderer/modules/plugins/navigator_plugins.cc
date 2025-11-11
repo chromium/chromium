@@ -37,7 +37,8 @@ NavigatorPlugins* NavigatorPlugins::ToNavigatorPlugins(Navigator& navigator) {
 }
 
 // static
-const char NavigatorPlugins::kSupplementName[] = "NavigatorPlugins";
+const unsigned NavigatorPlugins::kSupplementIndex =
+    static_cast<unsigned>(Navigator::Supplements::kNavigatorPlugins);
 
 // static
 DOMPluginArray* NavigatorPlugins::plugins(Navigator& navigator) {

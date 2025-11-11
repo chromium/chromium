@@ -17,7 +17,7 @@ class RenderBlockingMetricsReporter final
     : public GarbageCollected<RenderBlockingMetricsReporter>,
       public Supplement<Document> {
  public:
-  static const char kSupplementName[];
+  static const unsigned kSupplementIndex;
   static RenderBlockingMetricsReporter& From(Document&);
 
   explicit RenderBlockingMetricsReporter(Document&);

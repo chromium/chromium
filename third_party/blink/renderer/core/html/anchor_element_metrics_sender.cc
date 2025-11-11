@@ -54,8 +54,8 @@ bool ShouldReportViewportPositions() {
 }  // namespace
 
 // static
-const char AnchorElementMetricsSender::kSupplementName[] =
-    "DocumentAnchorElementMetricsSender";
+const unsigned AnchorElementMetricsSender::kSupplementIndex =
+    static_cast<unsigned>(Document::Supplements::kAnchorElementMetricsSender);
 
 AnchorElementMetricsSender::~AnchorElementMetricsSender() = default;
 

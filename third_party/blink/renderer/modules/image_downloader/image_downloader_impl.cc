@@ -143,7 +143,8 @@ void FilterAndResizeImagesForMaximalSize(
 namespace blink {
 
 // static
-const char ImageDownloaderImpl::kSupplementName[] = "ImageDownloader";
+const unsigned ImageDownloaderImpl::kSupplementIndex =
+    static_cast<unsigned>(LocalFrame::Supplements::kImageDownloaderImpl);
 
 // static
 ImageDownloaderImpl* ImageDownloaderImpl::From(LocalFrame& frame) {

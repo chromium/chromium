@@ -24,7 +24,7 @@ class MODULES_EXPORT InstallationServiceImpl final
       public mojom::blink::InstallationService,
       public Supplement<LocalDOMWindow> {
  public:
-  static const char kSupplementName[];
+  static const unsigned kSupplementIndex;
   static InstallationServiceImpl* From(LocalDOMWindow&);
   static void BindReceiver(
       LocalFrame*,

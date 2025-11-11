@@ -122,8 +122,4 @@ FileBackedBlobFactoryDispatcher::GetFileBackedBlobFactory() {
   return blink::GetFileBackedBlobFactory(worker_remote_, execution_context);
 }
 
-// static
-const char FileBackedBlobFactoryDispatcher::kSupplementName[] =
-    "FileBackedBlobFactoryDispatcher";
-
 }  // namespace blink

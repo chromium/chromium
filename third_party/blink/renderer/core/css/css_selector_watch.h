@@ -46,7 +46,8 @@ class CORE_EXPORT CSSSelectorWatch final
     : public GarbageCollected<CSSSelectorWatch>,
       public Supplement<Document> {
  public:
-  static const char kSupplementName[];
+  static constexpr auto kSupplementIndex =
+      Document::Supplements::kCSSSelectorWatch;
 
   explicit CSSSelectorWatch(Document&);
   ~CSSSelectorWatch() = default;

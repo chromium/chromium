@@ -66,9 +66,6 @@ void OnQueryHandwritingRecognizer(
 
 }  // namespace
 
-const char HandwritingRecognitionService::kSupplementName[] =
-    "NavigatorHandwritingRecognitionService";
-
 HandwritingRecognitionService::HandwritingRecognitionService(
     Navigator& navigator)
     : Supplement<Navigator>(navigator),

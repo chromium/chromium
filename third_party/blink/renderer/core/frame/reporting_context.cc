@@ -54,7 +54,8 @@ bool ShouldReportBeVisibleToObservers(Report* report) {
 }  // namespace
 
 // static
-const char ReportingContext::kSupplementName[] = "ReportingContext";
+const unsigned ReportingContext::kSupplementIndex =
+    static_cast<unsigned>(ExecutionContext::Supplements::kReportingContext);
 
 ReportingContext::ReportingContext(ExecutionContext& context)
     : Supplement<ExecutionContext>(context),

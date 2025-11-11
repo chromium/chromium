@@ -30,7 +30,7 @@ class MODULES_EXPORT PressureObserverManager final
       public ExecutionContextLifecycleStateObserver,
       public Supplement<ExecutionContext> {
  public:
-  static const char kSupplementName[];
+  static const unsigned kSupplementIndex;
 
   static PressureObserverManager* From(ExecutionContext*);
 

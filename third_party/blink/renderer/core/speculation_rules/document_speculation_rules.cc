@@ -199,10 +199,6 @@ std::ostream& operator<<(
 }
 
 // static
-const char DocumentSpeculationRules::kSupplementName[] =
-    "DocumentSpeculationRules";
-
-// static
 DocumentSpeculationRules& DocumentSpeculationRules::From(Document& document) {
   if (DocumentSpeculationRules* self = FromIfExists(document))
     return *self;

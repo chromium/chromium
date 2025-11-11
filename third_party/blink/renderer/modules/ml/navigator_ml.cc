@@ -6,8 +6,6 @@
 
 namespace blink {
 
-const char NavigatorML::kSupplementName[] = "NavigatorML";
-
 NavigatorML::NavigatorML(NavigatorBase& navigator)
     : Supplement<NavigatorBase>(navigator),
       ml_(MakeGarbageCollected<ML>(navigator.GetExecutionContext())) {}

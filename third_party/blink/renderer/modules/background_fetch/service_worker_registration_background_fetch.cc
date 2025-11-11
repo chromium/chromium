@@ -17,9 +17,6 @@ ServiceWorkerRegistrationBackgroundFetch::
 ServiceWorkerRegistrationBackgroundFetch::
     ~ServiceWorkerRegistrationBackgroundFetch() = default;
 
-const char ServiceWorkerRegistrationBackgroundFetch::kSupplementName[] =
-    "ServiceWorkerRegistrationBackgroundFetch";
-
 ServiceWorkerRegistrationBackgroundFetch&
 ServiceWorkerRegistrationBackgroundFetch::From(
     ServiceWorkerRegistration& registration) {

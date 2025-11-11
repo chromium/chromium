@@ -18,7 +18,7 @@ class Navigator;
 class NavigatorPlugins final : public GarbageCollected<NavigatorPlugins>,
                                public Supplement<Navigator> {
  public:
-  static const char kSupplementName[];
+  static const unsigned kSupplementIndex;
 
   static NavigatorPlugins& From(Navigator&);
   static NavigatorPlugins* ToNavigatorPlugins(Navigator&);

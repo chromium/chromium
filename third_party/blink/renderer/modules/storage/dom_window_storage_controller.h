@@ -17,7 +17,8 @@ class MODULES_EXPORT DOMWindowStorageController final
       public Supplement<LocalDOMWindow>,
       public LocalDOMWindow::EventListenerObserver {
  public:
-  static const char kSupplementName[];
+  static constexpr auto kSupplementIndex =
+      LocalDOMWindow::Supplements::kDOMWindowStorageController;
 
   explicit DOMWindowStorageController(LocalDOMWindow&);
   static DOMWindowStorageController& From(LocalDOMWindow&);

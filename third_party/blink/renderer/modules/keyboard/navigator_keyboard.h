@@ -17,7 +17,8 @@ class Keyboard;
 class NavigatorKeyboard final : public GarbageCollected<NavigatorKeyboard>,
                                 public Supplement<Navigator> {
  public:
-  static const char kSupplementName[];
+  static constexpr auto kSupplementIndex =
+      Navigator::Supplements::kNavigatorKeyboard;
   static Keyboard* keyboard(Navigator&);
 
   explicit NavigatorKeyboard(Navigator&);

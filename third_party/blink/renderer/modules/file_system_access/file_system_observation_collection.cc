@@ -11,10 +11,6 @@
 namespace blink {
 
 // static
-const char FileSystemObservationCollection::kSupplementName[] =
-    "FileSystemObservationCollection";
-
-// static
 FileSystemObservationCollection* FileSystemObservationCollection::From(
     ExecutionContext* context) {
   DCHECK(context);

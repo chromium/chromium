@@ -21,7 +21,7 @@ class DOMWindowDigitalGoods final
     : public GarbageCollected<DOMWindowDigitalGoods>,
       public Supplement<LocalDOMWindow> {
  public:
-  static const char kSupplementName[];
+  static const unsigned kSupplementIndex;
 
   DOMWindowDigitalGoods(LocalDOMWindow& window);
 

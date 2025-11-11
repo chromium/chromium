@@ -54,10 +54,6 @@ String ToString(const mojom::blink::Selector& selector) {
 }
 }  // namespace
 
-// static
-const char AnnotationAgentContainerImpl::kSupplementName[] =
-    "AnnotationAgentContainerImpl";
-
 void AnnotationAgentContainerImpl::AddObserver(Observer* observer) {
   observers_.insert(observer);
 }
@@ -260,7 +256,7 @@ void AnnotationAgentContainerImpl::RemoveAgentsOfType(
   TRACE_EVENT("blink", "AnnotationAgentContainerImpl::RemoveAgentsOfType",
               "type", ToString(type));
   HeapVector<Member<AnnotationAgentImpl>> agents_to_reset;
-  EraseIf(agents_,[type, &agents_to_reset](AnnotationAgentImpl* agent) {
+  EraseIf(agents_, [type, &agents_to_reset](AnnotationAgentImpl* agent) {
     if (agent->GetType() == type) {
       agents_to_reset.push_back(agent);
       return true;
