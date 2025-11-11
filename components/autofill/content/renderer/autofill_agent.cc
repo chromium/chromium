@@ -1620,32 +1620,26 @@ void AutofillAgent::TriggerFormExtractionWithResponse(
                std::move(callback));
 }
 
-void AutofillAgent::ExtractForm(
-    FormRendererId form_id,
+void AutofillAgent::ExtractFormWithField(
+    FieldRendererId field_id,
     base::OnceCallback<void(const std::optional<FormData>&)> callback) {
   WebDocument document = GetDocument();
   if (!document) {
     std::move(callback).Run(std::nullopt);
     return;
   }
-  if (!form_id) {
+  if (WebFormControlElement form_control =
+          form_util::GetFormControlByRendererId(field_id)) {
     if (std::optional<FormData> form = form_util::ExtractFormData(
-            document, WebFormElement(), field_data_manager(),
-            GetCallTimerState(kExtractForm), button_titles_cache())) {
+            document, form_control.GetOwningFormForAutofill(),
+            field_data_manager(), GetCallTimerState(kExtractForm),
+            button_titles_cache())) {
       std::move(callback).Run(std::move(form));
       return;
     }
   }
-  if (WebFormElement form_element = form_util::GetFormByRendererId(form_id)) {
-    if (std::optional<FormData> form = form_util::ExtractFormData(
-            document, form_element, field_data_manager(),
-            GetCallTimerState(kExtractForm), button_titles_cache())) {
-      std::move(callback).Run(std::move(form));
-      return;
-    }
-  }
-  if (WebElement contenteditable = form_util::GetContentEditableByRendererId(
-          FieldRendererId(*form_id))) {
+  if (WebElement contenteditable =
+          form_util::GetContentEditableByRendererId(field_id)) {
     std::move(callback).Run(
         form_util::FindFormForContentEditable(contenteditable));
     return;

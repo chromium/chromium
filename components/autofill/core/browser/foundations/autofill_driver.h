@@ -240,10 +240,10 @@ class AutofillDriver {
       base::OnceCallback<void(AutofillDriver* host_frame_driver,
                               const std::optional<FormData>& form)>;
 
-  // Extracts the given form and calls `response_handler` for the browser form
-  // that includes `form`.
+  // Extracts the form that contains the given field and calls
+  // `response_handler` for the browser form that includes that form.
   //
-  // The semantics may be a little surprising. Consider the following example:
+  // Consider the following example:
   //   <form id=f>
   //     <input>
   //     <iframe>
@@ -252,7 +252,7 @@ class AutofillDriver {
   //       </form>
   //     </iframe>
   //   </form>
-  // Calling ExtractForm() for "g" re-extracts that form and may then flatten it
+  // Calling ExtractForm() for "i" re-extracts that form and may then flatten it
   // into "f". So the `response_handler` is called for that browser form that
   // includes "f" and the newly-extracted "g".
   //
@@ -260,17 +260,17 @@ class AutofillDriver {
   //
   // More precisely:
   //
-  // If the `form` is found, `response_handler` is called with the driver that
-  // manages the browser form that includes `form` and that browser form itself
-  // (i.e., their `FormData.host_frame` and `AutofillDriver::GetFrameToken()`
-  // are equal). The driver is distinct from `this` if the form is managed by
-  // another frame (e.g., when `this` is a subframe and the form is managed by
-  // an ancestor).
+  // If a field with `field_id` is found, `response_handler` is called with the
+  // driver that manages the browser form that includes that field and that
+  // browser form itself (i.e., their `FormData::host_frame()` and
+  // `AutofillDriver::GetFrameToken()` are equal). The driver is distinct from
+  // `this` if the form is managed by another frame (e.g., when `this` is a
+  // subframe and the form is managed by an ancestor).
   //
-  // If the form is not found, the `response_handler` is called with nullptr for
-  // the driver and std::nullopt for the form.
-  virtual void ExtractForm(FormGlobalId form,
-                           BrowserFormHandler response_handler) = 0;
+  // If the field is not found, the `response_handler` is called with nullptr
+  // for the driver and std::nullopt for the form.
+  virtual void ExtractFormWithField(FieldGlobalId field_id,
+                                    BrowserFormHandler response_handler) = 0;
 
   // Forwards `form` to the renderer.
   //

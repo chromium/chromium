@@ -4196,8 +4196,6 @@ void RenderViewContextMenu::ExecOpenCompose() {
     autofill::LocalFrameToken frame_token = driver->GetFrameToken();
     client->GetManager().OpenCompose(
         *driver,
-        autofill::FormGlobalId(
-            frame_token, autofill::FormRendererId(params_.form_renderer_id)),
         autofill::FieldGlobalId(
             frame_token, autofill::FieldRendererId(params_.field_renderer_id)),
         compose::ComposeManagerImpl::UiEntryPoint::kContextMenu);

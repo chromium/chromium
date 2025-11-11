@@ -41,9 +41,9 @@ interface AutofillAgent {
                    FieldRendererId field,
                    mojo_base.mojom.String16 value);
 
-  // Extracts the given form and responds with the FormData if that form can
-  // be found and extracted.
-  ExtractForm(FormRendererId form) => (FormData? form);
+  // Extracts the form that contains the given field and responds with the
+  // FormData, if that form can be found and extracted.
+  ExtractFormWithField(FieldRendererId field_id) => (FormData? form);
 
   // Tries to extract the node value from the DOM and returns the extracted
   // value back to the browser process. The response string contains the

@@ -664,7 +664,8 @@ TEST_F(AutofillAgentTestExtractLabeledTextNodeValue,
       "Autofill.RendererLabeledAmountExtractionLatency.Failure", 0);
 }
 
-class AutofillAgentTestExtractForms : public AutofillAgentTestWithFeatures {
+class AutofillAgentTestExtractFormWithField
+    : public AutofillAgentTestWithFeatures {
  public:
   using Callback = base::MockCallback<
       base::OnceCallback<void(const std::optional<FormData>&)>>;
@@ -678,34 +679,40 @@ class AutofillAgentTestExtractForms : public AutofillAgentTestWithFeatures {
   }
 };
 
-TEST_F(AutofillAgentTestExtractForms, CallbackIsCalledIfFormIsNotFound) {
+TEST_F(AutofillAgentTestExtractFormWithField,
+       CallbackIsCalledIfFormIsNotFound) {
   LoadHTML("<body>", /*wait_for_forms_seen=*/false);
   Callback callback;
   EXPECT_CALL(callback, Run(Eq(std::nullopt)));
-  autofill_agent().ExtractForm(GetFormRendererIdById("f"), callback.Get());
+  autofill_agent().ExtractFormWithField(GetFieldRendererIdById("i"),
+                                        callback.Get());
 }
 
-TEST_F(AutofillAgentTestExtractForms, CallbackIsCalledForForm) {
+TEST_F(AutofillAgentTestExtractFormWithField, CallbackIsCalledForForm) {
   const auto is_text_input = HasType(FormControlType::kInputText);
-  LoadHTML("<body><form id=f><input><input></form>");
+  LoadHTML("<body><form id=f><input><input id=i></form>");
   Callback callback;
   EXPECT_CALL(callback,
               Run(Optional(AllOf(
                   Property(&FormData::renderer_id, GetFormRendererIdById("f")),
                   Property(&FormData::name, u"f"),
                   FieldsAre(is_text_input, is_text_input)))));
-  autofill_agent().ExtractForm(GetFormRendererIdById("f"), callback.Get());
+  autofill_agent().ExtractFormWithField(GetFieldRendererIdById("i"),
+                                        callback.Get());
 }
 
-TEST_F(AutofillAgentTestExtractForms, CallbackIsCalledForFormlessFields) {
+TEST_F(AutofillAgentTestExtractFormWithField,
+       CallbackIsCalledForFormlessFields) {
   const auto is_text_area = HasType(FormControlType::kTextArea);
-  LoadHTML(R"(<body><input><input>)");
+  LoadHTML(R"(<body><input id=i><input>)");
   Callback callback;
   EXPECT_CALL(callback, Run(Optional(_)));
-  autofill_agent().ExtractForm(GetFormRendererIdById("f"), callback.Get());
+  autofill_agent().ExtractFormWithField(GetFieldRendererIdById("i"),
+                                        callback.Get());
 }
 
-TEST_F(AutofillAgentTestExtractForms, CallbackIsCalledForContentEditable) {
+TEST_F(AutofillAgentTestExtractFormWithField,
+       CallbackIsCalledForContentEditable) {
   const auto is_content_editable = HasType(FormControlType::kContentEditable);
   LoadHTML("<body><div id=ce contenteditable></div>",
            /*wait_for_forms_seen=*/false);
@@ -715,7 +722,8 @@ TEST_F(AutofillAgentTestExtractForms, CallbackIsCalledForContentEditable) {
               Run(Optional(AllOf(
                   Property(&FormData::renderer_id, GetFormRendererIdById("ce")),
                   FieldsAre(is_content_editable)))));
-  autofill_agent().ExtractForm(GetFormRendererIdById("ce"), callback.Get());
+  autofill_agent().ExtractFormWithField(GetFieldRendererIdById("ce"),
+                                        callback.Get());
 }
 
 TEST_F(AutofillAgentTestWithFeatures,

@@ -31,7 +31,6 @@ class ComposeManagerImpl : public ComposeManager {
 
   // AutofillComposeDelegate
   void OpenCompose(autofill::AutofillDriver& driver,
-                   autofill::FormGlobalId form_id,
                    autofill::FieldGlobalId field_id,
                    UiEntryPoint ui_entry_point) override;
 
