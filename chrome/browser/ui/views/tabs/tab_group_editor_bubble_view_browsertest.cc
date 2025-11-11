@@ -9,6 +9,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -24,7 +25,9 @@
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/data_sharing/public/features.h"
+#include "components/prefs/pref_service.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/tab_group.h"
@@ -387,4 +390,23 @@ IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTestWithSavedGroup,
                    "BookmarkTabGroupConversion_ConvertToBookmarkSelected"));
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "BookmarkTabGroupConversion_ConvertToBookmarkConfirmed"));
+}
+
+IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTestWithSavedGroup,
+                       ConvertTabGroupToBookmarkDisabledByPolicy) {
+  // Bookmark disabled by policy.
+  browser()->profile()->GetPrefs()->SetBoolean(
+      bookmarks::prefs::kEditBookmarksEnabled, false);
+
+  ShowUi("SetUp");
+
+  views::Widget* editor_bubble = WaitForAndGetEditorBubbleWidget();
+  ASSERT_NE(nullptr, editor_bubble);
+
+  // Make sure the convert to bookmark button is not shown.
+  views::Button* const convert_to_bookmark_button =
+      views::Button::AsButton(editor_bubble->GetContentsView()->GetViewByID(
+          TabGroupEditorBubbleView::
+              TAB_GROUP_HEADER_CXMENU_CONVERT_TO_BOOKMARK));
+  ASSERT_EQ(nullptr, convert_to_bookmark_button);
 }

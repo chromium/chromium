@@ -70,10 +70,12 @@
 #include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/collaboration/public/collaboration_service.h"
 #include "components/data_sharing/public/features.h"
 #include "components/data_sharing/public/group_data.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/prefs/pref_service.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
@@ -397,7 +399,9 @@ void TabGroupEditorBubbleView::RebuildMenuContents() {
 
     if (OwnsGroup()) {
       // Convert to bookmark is only avaialable to saved group, not shared.
-      if (features::IsBookmarkTabGroupConversionEnabled() && !IsGroupShared()) {
+      PrefService* pref_service = browser_->profile()->GetPrefs();
+      if (features::IsBookmarkTabGroupConversionEnabled() && !IsGroupShared() &&
+          pref_service->GetBoolean(bookmarks::prefs::kEditBookmarksEnabled)) {
         simple_menu_items_.push_back(
             AddChildView(BuildConvertToBookmarkButton()));
       }
