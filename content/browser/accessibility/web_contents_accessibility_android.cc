@@ -1330,7 +1330,7 @@ void WebContentsAccessibilityAndroid::
       node->IsFocusable(), node->IsFocused(), node->HasImage(),
       node->IsPasswordField(), node->IsScrollable(), node->IsSelected(),
       node->IsVisibleToUser(), node->HasCharacterLocations(),
-      node->IsRequired(), node->IsHeading());
+      node->IsRequired(), node->IsHeading() || node->IsTableHeader());
 }
 
 void WebContentsAccessibilityAndroid::
@@ -1586,8 +1586,7 @@ void WebContentsAccessibilityAndroid::
         /* rowIndex= */ node->RowIndex(),
         /* rowSpan= */ node->RowSpan(),
         /* columnIndex= */ node->ColumnIndex(),
-        /* columnSpan= */ node->ColumnSpan(),
-        /* isHeading= */ node->IsTableHeader());
+        /* columnSpan= */ node->ColumnSpan());
   }
 }
 

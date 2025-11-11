@@ -649,11 +649,13 @@ public class AccessibilityNodeInfoBuilder {
             int rowIndex,
             int rowSpan,
             int columnIndex,
-            int columnSpan,
-            boolean heading) {
+            int columnSpan) {
+        // TODO(crbug.com/443079218): convert to CollectionItemInfo.Builder to remove need for
+        // setting
+        // heading param.
         node.setCollectionItemInfo(
                 AccessibilityNodeInfoCompat.CollectionItemInfoCompat.obtain(
-                        rowIndex, rowSpan, columnIndex, columnSpan, heading));
+                        rowIndex, rowSpan, columnIndex, columnSpan, /* heading= */ false));
     }
 
     @CalledByNative
