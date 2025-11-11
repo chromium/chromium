@@ -1613,18 +1613,19 @@ bool ChromePasswordProtectionService::IsPingingEnabled(
       return false;
     }
     // If the account type is UNKNOWN (i.e. AccountInfo fields could not be
-    // retrieved from server) and it's not an OTP ping, pings should be gated by
-    // SBER.
+    // retrieved from server) and it's not an OTP ping, a phishy verdict will
+    // not be acted on. Therefore any ping sent would be a pure telemetry ping.
+    // Such pings should be gated by SBER.
     if (password_type.account_type() == ReusedPasswordAccountType::UNKNOWN &&
         trigger_type !=
             LoginReputationClientRequest::ONE_TIME_PASSWORD_FIELD_DETECTED) {
       return extended_reporting_enabled;
     }
 
-// Only saved password and GAIA password reuse warnings are shown to users on
-// Android, so other types of password reuse events should be gated by Safe
-// Browsing extended reporting. OTP pings are also not gated by Safe Browsing
-// extended reporting.
+// Only saved password reuse, GAIA password reuse, and OTP field detection can
+// result in enforcement for Android users. Therefore, other types of password
+// reuse events should be gated by Safe Browsing extended reporting because
+// phishy verdicts won't be enforced making the pings telemetry-only.
 #if BUILDFLAG(IS_ANDROID)
     if (password_type.account_type() ==
             ReusedPasswordAccountType::SAVED_PASSWORD ||
@@ -1639,7 +1640,9 @@ bool ChromePasswordProtectionService::IsPingingEnabled(
     return true;
 #endif
   }
-
+  // Since it's possible that on-focus pings could trigger for many visited
+  // pages, don't send the ping when a SBER user is in Incognito to reduce data
+  // sent to Google.
   return !IsIncognito() && extended_reporting_enabled;
 }
 
