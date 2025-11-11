@@ -7,6 +7,7 @@
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "content/browser/preloading/prefetch/prefetch_container.h"
+#include "content/browser/preloading/prefetch/prefetch_match_resolver.h"
 
 namespace content {
 
@@ -143,4 +144,12 @@ int GetCodeOfPrefetchServableStateAndPrefetchMatchResolverActionForDebug(
          action_prefetch_container_load_state_int * 10 + action_is_expired;
 }
 
+int GetCodeOfPotentialCandidateServingResultAndServableStateAndMatcherAction(
+    PrefetchPotentialCandidateServingResult serving_result,
+    PrefetchServableState servable_state,
+    const PrefetchMatchResolverAction& match_resolver_action) {
+  return static_cast<int>(serving_result) * 10000 +
+         GetCodeOfPrefetchServableStateAndPrefetchMatchResolverActionForDebug(
+             servable_state, match_resolver_action);
+}
 }  // namespace content

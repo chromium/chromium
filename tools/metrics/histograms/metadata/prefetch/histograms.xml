@@ -403,6 +403,33 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Prefetch.PrefetchMatchResolver.OnDeterminedHeadWithUnmatch.PotentialCandidateServingResultAndServableStateAndMatcherAction"
+    units="code" expires_after="2026-05-06">
+  <owner>kenoss@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    The combination of `PrefetchPotentialCandidateServingResult`,
+    `PrefetchServableState`, and `PrefetchMatchResolverAction`. See
+    `GetCodeOfPotentialCandidateServingResultAndServableStateAndMatcherAction()`
+    for the details of the value.
+
+    How to decode: prompt: &quot; Generate a python program that decodes
+    `GetCodeOfPotentialCandidateServingResultAndServableStateAndMatcherAction()`.
+
+    Example:
+
+    ``` $ decode.py 124181
+    ('PrefetchPotentialCandidateServingResult::kNotServedLoadFailed',
+    'PrefetchServableState::kNotServable',
+    'PrefetchMatchResolverAction::ActionKind::kDrop',
+    'PrefetchContainer::LoadState::kFailedDeterminedHead', None) ``` &quot;
+
+    Recorded when prefetch matching received unmatch in
+    `PrefetchMatchResolver::OnDeterminedHead()`.
+  </summary>
+</histogram>
+
+<histogram
     name="Prefetch.PrefetchPotentialCandidateServingResult.PerMatchingCandidate.{TriggerTypeAndEagerness}"
     enum="PrefetchPotentialCandidateServingResult" expires_after="2026-03-15">
   <owner>taiyo@chromium.org</owner>

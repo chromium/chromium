@@ -6,6 +6,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/timer/timer.h"
 #include "base/trace_event/trace_event.h"
@@ -506,6 +507,28 @@ void PrefetchMatchResolver::OnDeterminedHead(
             }
         }
       }();
+
+      // TODO(crbug.com/459617177): We observed
+      // `kNotServedOnDeterminedHeadWithNotServableUnknown` for prerender with
+      // prefetch ahead of prerender. To understand the behavior, we record an
+      // UMA.
+      //
+      // See also
+      // `.*PrefetchMatchMetrics.ExistsPaopThen.PotentialCandidateServingResultAndServableStateAndMatcherAction`.
+      //
+      // The difference is here we use `PrefetchContainer` of the target of
+      // `OnDeterminedHead()` and log per `OnDeterminedHead()` call that results
+      // unmatch. The other uses prefetch ahead of prerender and logs at the end
+      // of navigation with some conditions.
+      //
+      // Cardinality: `#PrefetchPotentialCandidateServingResult * 16 = 14 * 16 =
+      // 224.
+      base::UmaHistogramSparse(
+          "Prefetch.PrefetchMatchResolver.OnDeterminedHeadWithUnmatch."
+          "PotentialCandidateServingResultAndServableStateAndMatcherAction",
+          GetCodeOfPotentialCandidateServingResultAndServableStateAndMatcherAction(
+              potential_candidate_serving_result, servable_state,
+              match_resolver_action));
 
       MaybeUnblockForUnmatch(prefetch_container,
                              potential_candidate_serving_result);

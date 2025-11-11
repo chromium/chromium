@@ -7,6 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "content/browser/preloading/prefetch/prefetch_match_resolver.h"
+#include "content/browser/preloading/prefetch/prefetch_servable_state.h"
 #include "content/browser/preloading/preload_serving_metrics_holder.h"
 
 namespace content {
@@ -55,18 +56,17 @@ void RecordMetricsPrefetchMatchAheadOfPrerenderDebug(
       GetCodeOfPrefetchServableStateAndPrefetchMatchResolverActionForDebug(
           prefetch_ahead_of_prerender_debug_metrics.servable_state,
           prefetch_ahead_of_prerender_debug_metrics.match_resolver_action));
-  int potential_candidate_serving_result_last_int = static_cast<int>(
-      prefetch_match_metrics.GetPrefetchPotentialCandidateServingResultLast());
   // Cardinality: `#PrefetchPotentialCandidateServingResult * 16 = 14 * 16 =
   // 224.
   base::UmaHistogramSparse(
       WITH(prefix,
            "PrefetchMatchMetrics.ExistsPaopThen."
            "PotentialCandidateServingResultAndServableStateAndMatcherAction"),
-      potential_candidate_serving_result_last_int * 10000 +
-          GetCodeOfPrefetchServableStateAndPrefetchMatchResolverActionForDebug(
-              prefetch_ahead_of_prerender_debug_metrics.servable_state,
-              prefetch_ahead_of_prerender_debug_metrics.match_resolver_action));
+      GetCodeOfPotentialCandidateServingResultAndServableStateAndMatcherAction(
+          prefetch_match_metrics
+              .GetPrefetchPotentialCandidateServingResultLast(),
+          prefetch_ahead_of_prerender_debug_metrics.servable_state,
+          prefetch_ahead_of_prerender_debug_metrics.match_resolver_action));
   base::UmaHistogramCounts100(
       WITH(prefix, "PrefetchMatchMetrics.ExistsPaopThen.QueueSize"),
       prefetch_ahead_of_prerender_debug_metrics.queue_size);
