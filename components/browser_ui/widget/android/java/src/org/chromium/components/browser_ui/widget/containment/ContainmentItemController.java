@@ -250,7 +250,7 @@ public class ContainmentItemController {
      * @param isSingleLine Whether the item is single line.
      * @return The {@link ContainerStyle} for the item.
      */
-    private ContainerStyle createBuilderWithDefaultStyle(
+    public ContainerStyle createBuilderWithDefaultStyle(
             boolean isTop, boolean isBottom, boolean isSingleLine) {
         float topRadius = mDefaultRadius;
         float bottomRadius = mDefaultRadius;

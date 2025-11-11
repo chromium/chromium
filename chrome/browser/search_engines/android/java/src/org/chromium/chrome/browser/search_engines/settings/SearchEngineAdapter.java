@@ -32,11 +32,15 @@ import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.regional_capabilities.RegionalCapabilitiesServiceFactory;
 import org.chromium.chrome.browser.search_engines.R;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
+import org.chromium.components.browser_ui.widget.containment.ContainerStyle;
+import org.chromium.components.browser_ui.widget.containment.ContainmentItemController;
+import org.chromium.components.browser_ui.widget.containment.ContainmentViewStyler;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.favicon.LargeIconBridge.GoogleFaviconServerCallback;
 import org.chromium.components.favicon.LargeIconBridge.LargeIconCallback;
@@ -156,6 +160,7 @@ public class SearchEngineAdapter extends BaseAdapter
     private boolean mIsLocationPermissionChanged;
 
     private @MonotonicNonNull Runnable mDisableAutoSwitchRunnable;
+    private final ContainmentItemController mContainmentItemController;
 
     /**
      * Construct a SearchEngineAdapter.
@@ -168,6 +173,7 @@ public class SearchEngineAdapter extends BaseAdapter
         mProfile = profile;
         mLayoutInflater =
                 (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        mContainmentItemController = new ContainmentItemController(mContext);
     }
 
     /** Start the adapter to gather the available search engines and listen for updates. */
@@ -483,14 +489,29 @@ public class SearchEngineAdapter extends BaseAdapter
         int itemViewType = getItemViewType(position);
         if (itemViewType == VIEW_TYPE_DIVIDER) {
             if (convertView == null && mRecentSearchEngines.size() != 0) {
-                view = mLayoutInflater.inflate(R.layout.search_engine_recent_title, null);
+                view = mLayoutInflater.inflate(R.layout.search_engine_recent_title, parent, false);
             }
             return view;
         }
 
         if (convertView == null) {
             int layoutId = R.layout.search_engine_with_logo;
-            view = mLayoutInflater.inflate(layoutId, null);
+            view = mLayoutInflater.inflate(layoutId, parent, false);
+        }
+
+        if (ChromeFeatureList.sAndroidSettingsContainment.isEnabled()) {
+            boolean isTop = position == 0 || getItemViewType(position - 1) == VIEW_TYPE_DIVIDER;
+            boolean isBottom =
+                    position == getCount() - 1
+                            || getItemViewType(position + 1) == VIEW_TYPE_DIVIDER;
+
+            View containerView = view.findViewById(R.id.container);
+
+            ContainerStyle style =
+                    mContainmentItemController.createBuilderWithDefaultStyle(
+                            isTop, isBottom, /* isSingleLine= */ true);
+            ContainmentViewStyler.applyBackgroundStyle(containerView, style);
+            ContainmentViewStyler.applyMargins(containerView, style);
         }
 
         view.setOnClickListener(this);

@@ -16,7 +16,7 @@ import java.util.List;
 
 /** A utility class for applying styles to views in settings. */
 @NullMarked
-class ContainmentViewStyler {
+public class ContainmentViewStyler {
 
     /**
      * Applies the specified background style to the given view.
@@ -24,7 +24,7 @@ class ContainmentViewStyler {
      * @param view The view to apply the background to.
      * @param style The {@link ContainerStyle} to apply.
      */
-    static void applyBackgroundStyle(View view, ContainerStyle style) {
+    public static void applyBackgroundStyle(View view, ContainerStyle style) {
         if (style == ContainerStyle.EMPTY) {
             view.setBackground(null);
             return;
@@ -40,7 +40,7 @@ class ContainmentViewStyler {
      * @param view The view to apply the margins to.
      * @param style The {@link ContainerStyle} to apply.
      */
-    static void applyMargins(View view, ContainerStyle style) {
+    public static void applyMargins(View view, ContainerStyle style) {
         if (style == ContainerStyle.EMPTY) return;
 
         ViewGroup.MarginLayoutParams layoutParams =
