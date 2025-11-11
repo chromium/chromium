@@ -352,8 +352,6 @@ void AppShortcutShelfItemController::ItemSelected(
 
     ChromeShelfController* chrome_shelf_controller =
         ChromeShelfController::instance();
-    MaybeRecordAppLaunchForScalableIph(
-        shelf_id().app_id, chrome_shelf_controller->profile(), source);
     chrome_shelf_controller->LaunchApp(ash::ShelfID(shelf_id()), source,
                                        ui::EF_NONE, display_id);
     return;

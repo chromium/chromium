@@ -33,7 +33,6 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/file_manager/app_id.h"
-#include "chromeos/ash/components/scalable_iph/scalable_iph_constants.h"
 #include "chromeos/ash/experiences/arc/app/arc_app_constants.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/app_constants/constants.h"

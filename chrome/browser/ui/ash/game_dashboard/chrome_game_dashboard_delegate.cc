@@ -11,8 +11,6 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/ash/components/growth/campaigns_constants.h"
 #include "chromeos/ash/components/growth/campaigns_manager.h"
-#include "chromeos/ash/components/scalable_iph/scalable_iph.h"
-#include "chromeos/ash/components/scalable_iph/scalable_iph_factory.h"
 #include "chromeos/ash/experiences/arc/arc_util.h"
 #include "chromeos/ash/experiences/arc/compat_mode/arc_resize_lock_manager.h"
 #include "chromeos/ash/experiences/arc/compat_mode/compat_mode_button_controller.h"
@@ -95,16 +93,6 @@ void ChromeGameDashboardDelegate::RecordGameWindowOpenedEvent(
         user_manager->GetPrimaryUser()->GetAccountId() != account_id) {
       return;
     }
-  }
-
-  Profile* profile = ProfileManager::GetPrimaryUserProfile();
-  CHECK(profile);
-
-  scalable_iph::ScalableIph* scalable_iph =
-      ScalableIphFactory::GetForBrowserContext(profile);
-  if (scalable_iph) {
-    scalable_iph->RecordEvent(
-        scalable_iph::ScalableIph::Event::kGameWindowOpened);
   }
 }
 
