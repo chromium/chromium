@@ -5,10 +5,18 @@
 #ifndef CHROME_BROWSER_GLIC_SERVICE_GLIC_INSTANCE_METRICS_H_
 #define CHROME_BROWSER_GLIC_SERVICE_GLIC_INSTANCE_METRICS_H_
 
+#include <vector>
+
+#include "base/callback_list.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/service/glic_metrics_session_manager.h"
 #include "chrome/browser/glic/service/glic_ui_types.h"
+
+namespace content {
+class WebContents;
+}
 
 namespace tabs {
 class TabInterface;
@@ -21,6 +29,7 @@ class TimeDelta;
 
 namespace glic {
 
+class GlicSharingManager;
 struct ShowOptions;
 
 enum class DaisyChainSource {
@@ -99,6 +108,7 @@ class GlicInstanceMetrics {
   };
 
   GlicInstanceMetrics();
+  explicit GlicInstanceMetrics(GlicSharingManager* sharing_manager);
   ~GlicInstanceMetrics();
 
   GlicInstanceMetrics(const GlicInstanceMetrics&) = delete;
@@ -218,7 +228,11 @@ class GlicInstanceMetrics {
   // Records the number of tabs attached as context for a Glic response.
   void RecordAttachedContextTabCount(int tab_count);
 
+  int GetPinnedTabCount() const;
+
   bool is_active() const { return is_active_; }
+
+  GlicMetricsSessionManager& session_manager() { return session_manager_; }
 
  private:
   friend class GlicMetricsSessionManager;
@@ -246,6 +260,9 @@ class GlicInstanceMetrics {
   // Called by the session manager when it starts and ends.
   void OnSessionStarted();
   void OnSessionFinished();
+
+  void OnPinnedTabsChanged(
+      const std::vector<content::WebContents*>& pinned_contents);
 
   base::flat_map<GlicInstanceEvent, int> event_counts_;
   // An Instance is active when it is showing in an embedder of an active
@@ -289,8 +306,11 @@ class GlicInstanceMetrics {
   GlicMetricsSessionManager session_manager_;
   base::TimeTicks last_session_end_time_;
   int session_count_ = 0;
+  int pinned_tab_count_ = 0;
 
   std::map<tabs::TabHandle, int> tab_depths_;
+
+  base::CallbackListSubscription pinned_tabs_changed_subscription_;
 };
 
 }  // namespace glic

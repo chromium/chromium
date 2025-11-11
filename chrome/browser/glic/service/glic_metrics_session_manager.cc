@@ -24,8 +24,13 @@ class ActiveSession {
   friend class GlicMetricsSessionManager;
   explicit ActiveSession(GlicMetricsSessionManager* owner,
                          bool initial_is_active,
-                         base::TimeTicks start_time)
-      : owner_(owner), is_active_(initial_is_active), start_time_(start_time) {
+                         base::TimeTicks start_time,
+                         int initial_pinned_tab_count)
+      : owner_(owner),
+        is_active_(initial_is_active),
+        start_time_(start_time),
+        pinned_tab_count_(initial_pinned_tab_count),
+        session_max_pinned_tab_count_(initial_pinned_tab_count) {
     // base::Unretained is safe here because the timer is owned by this class,
     // so the callback will not be invoked after destruction.
     start_timer_.Start(
@@ -58,6 +63,15 @@ class ActiveSession {
 
   void OnUserInputSubmitted(mojom::WebClientMode mode) {
     inputs_modes_used_.Put(mode);
+    if (pinned_tab_count_ > 1) {
+      input_submitted_with_multiple_pinned_tabs_ = true;
+    }
+  }
+
+  void SetPinnedTabCount(int tab_count) {
+    pinned_tab_count_ = tab_count;
+    session_max_pinned_tab_count_ =
+        std::max(session_max_pinned_tab_count_, tab_count);
   }
 
   void Start() {
@@ -109,6 +123,14 @@ class ActiveSession {
                       mojom::WebClientMode::kMaxValue>&
   inputs_modes_used() const {
     return inputs_modes_used_;
+  }
+
+  int session_max_pinned_tab_count() const {
+    return session_max_pinned_tab_count_;
+  }
+
+  bool input_submitted_with_multiple_pinned_tabs() const {
+    return input_submitted_with_multiple_pinned_tabs_;
   }
 
  private:
@@ -198,6 +220,9 @@ class ActiveSession {
                 mojom::WebClientMode::kMaxValue>
       inputs_modes_used_;
   base::flat_map<GlicInstanceEvent, int> event_counts_;
+  int pinned_tab_count_ = 0;
+  int session_max_pinned_tab_count_ = 0;
+  bool input_submitted_with_multiple_pinned_tabs_ = false;
 };
 
 // GlicMetricsSessionManager implementation
@@ -252,6 +277,12 @@ void GlicMetricsSessionManager::OnEvent(GlicInstanceEvent event) {
   }
 }
 
+void GlicMetricsSessionManager::SetPinnedTabCount(int tab_count) {
+  if (active_session_) {
+    active_session_->SetPinnedTabCount(tab_count);
+  }
+}
+
 int GlicMetricsSessionManager::GetEventCount(GlicInstanceEvent event) {
   if (active_session_) {
     return active_session_->GetEventCount(event);
@@ -296,6 +327,13 @@ void GlicMetricsSessionManager::FinishSession(
     base::UmaHistogramEnumeration("Glic.Instance.Session.InputModesUsed",
                                   modes_used);
 
+    base::UmaHistogramBoolean(
+        "Glic.Instance.Session.MultipleTabsPinnedInAnyTurn",
+        active_session_->input_submitted_with_multiple_pinned_tabs());
+    base::UmaHistogramCounts100(
+        "Glic.Instance.Session.MaxPinnedTabs",
+        active_session_->session_max_pinned_tab_count());
+
     owner_->OnSessionFinished();
   }
 
@@ -305,8 +343,9 @@ void GlicMetricsSessionManager::FinishSession(
 
 void GlicMetricsSessionManager::CreatePendingSession() {
   CHECK(!active_session_);
-  active_session_ = std::make_unique<ActiveSession>(this, owner_->is_active(),
-                                                    base::TimeTicks::Now());
+  active_session_ = std::make_unique<ActiveSession>(
+      this, owner_->is_active(), base::TimeTicks::Now(),
+      owner_->GetPinnedTabCount());
 }
 
 }  // namespace glic
