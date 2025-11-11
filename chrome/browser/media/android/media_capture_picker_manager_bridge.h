@@ -13,10 +13,6 @@
 #include "chrome/browser/media/webrtc/desktop_media_picker.h"
 #include "content/public/browser/desktop_media_id.h"
 
-namespace content {
-class WebContents;
-}  // namespace content
-
 class MediaCapturePickerManagerBridge {
  public:
   MediaCapturePickerManagerBridge();
@@ -31,9 +27,7 @@ class MediaCapturePickerManagerBridge {
 
   // Shows a dialog to select a media source to capture. The initiator (not
   // necessarily target) of the capture request is `web_contents`.
-  void Show(content::WebContents* web_contents,
-            const std::u16string& app_name,
-            bool request_audio,
+  void Show(const DesktopMediaPicker::Params& params,
             DesktopMediaPicker::DoneCallback callback);
 
   // Called from Java via JNI when the dialog resolves.

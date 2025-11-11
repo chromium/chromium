@@ -8,6 +8,8 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.blink.mojom.PreferredDisplaySurface;
+import org.chromium.blink.mojom.WindowAudioPreference;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.content_public.browser.WebContents;
 
@@ -47,9 +49,27 @@ public class MediaCapturePickerManagerBridge implements MediaCapturePickerManage
     public void showDialog(
             WebContents webContents,
             @JniType("std::u16string") String appName,
-            boolean requestAudio) {
-        MediaCapturePickerManager.showDialog(
-                webContents, appName, requestAudio, /* delegate= */ this);
+            @JniType("std::u16string") String targetName,
+            boolean requestAudio,
+            boolean excludeSystemAudio,
+            @WindowAudioPreference.EnumType int windowAudioPreference,
+            @PreferredDisplaySurface.EnumType int preferredDisplaySurface,
+            boolean captureThisTab,
+            boolean excludeSelfBrowserSurface,
+            boolean excludeMonitorTypeSurfaces) {
+        MediaCapturePickerManager.Params params =
+                new MediaCapturePickerManager.Params(
+                        webContents,
+                        appName,
+                        targetName,
+                        requestAudio,
+                        excludeSystemAudio,
+                        windowAudioPreference,
+                        preferredDisplaySurface,
+                        captureThisTab,
+                        excludeSelfBrowserSurface,
+                        excludeMonitorTypeSurfaces);
+        MediaCapturePickerManager.showDialog(params, /* delegate= */ this);
     }
 
     @CalledByNative

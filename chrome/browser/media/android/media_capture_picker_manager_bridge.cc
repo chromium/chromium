@@ -31,17 +31,20 @@ MediaCapturePickerManagerBridge::~MediaCapturePickerManagerBridge() {
 }
 
 void MediaCapturePickerManagerBridge::Show(
-    content::WebContents* web_contents,
-    const std::u16string& app_name,
-    bool request_audio,
+    const DesktopMediaPicker::Params& params,
     DesktopMediaPicker::DoneCallback callback) {
-  CHECK(web_contents);
+  CHECK(params.web_contents);
   CHECK(callback_.is_null());
   callback_ = std::move(callback);
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_MediaCapturePickerManagerBridge_showDialog(
-      env, java_object_, web_contents->GetJavaWebContents(), app_name,
-      request_audio);
+      env, java_object_, params.web_contents->GetJavaWebContents(),
+      params.app_name, params.target_name, params.request_audio,
+      params.exclude_system_audio,
+      static_cast<int>(params.window_audio_preference),
+      static_cast<int>(params.preferred_display_surface),
+      params.capture_this_tab, params.exclude_self_browser_surface,
+      params.exclude_monitor_type_surfaces);
 }
 
 void MediaCapturePickerManagerBridge::OnPickTab(

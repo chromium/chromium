@@ -103,13 +103,12 @@ public class MediaCapturePickerDialog implements AllTabObserver.Observer {
 
     MediaCapturePickerDialog(
             Context context,
-            WebContents webContents,
-            String appName,
-            boolean requestAudio,
+            MediaCapturePickerManager.Params params,
             MediaCapturePickerManager.Delegate delegate) {
-        mWebContents = webContents;
+        // TODO(crbug.com/352187279): Support all parameters in `params`.
+        mWebContents = params.webContents;
         mModalDialogManager = ((ModalDialogManagerHolder) context).getModalDialogManager();
-        mAppName = appName;
+        mAppName = params.appName;
         mDelegate = delegate;
 
         mDialogView =
@@ -137,7 +136,7 @@ public class MediaCapturePickerDialog implements AllTabObserver.Observer {
         // Share audio should be on by default.
         mAudioSwitch = mButtonsView.findViewById(R.id.media_capture_picker_audio_share_switch);
 
-        if (requestAudio) {
+        if (params.requestAudio) {
             // Share audio should be on by default if audio sharing was requested.
             mAudioSwitch.setChecked(true);
         } else {

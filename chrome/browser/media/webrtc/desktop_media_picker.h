@@ -115,6 +115,15 @@ class DesktopMediaPicker {
     // picker.
     blink::mojom::PreferredDisplaySurface preferred_display_surface =
         blink::mojom::PreferredDisplaySurface::NO_PREFERENCE;
+#if BUILDFLAG(IS_ANDROID)
+    // On Android, this indicates that this is a request to share the current
+    // tab.
+    bool capture_this_tab = false;
+    // On Android, this indicates that the current tab should be excluded.
+    bool exclude_self_browser_surface = false;
+    // On Android, this indicates that screen sharing should be excluded.
+    bool exclude_monitor_type_surfaces = false;
+#endif
     // Indicates the source of the request. This is useful for UMA that
     // track the result of the picker, because the behavior with the
     // Extension API is different, and could therefore lead to mismeasurement.
