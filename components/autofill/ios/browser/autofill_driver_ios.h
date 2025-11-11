@@ -88,10 +88,11 @@ class AutofillDriverIOS final : public AutofillDriver,
   LocalFrameToken GetFrameToken() const override;
   std::optional<LocalFrameToken> Resolve(FrameToken query) override;
   AutofillDriverIOS* GetParent() override;
+  bool IsActive() const override;
+  bool IsEmbedded() const override;
   AutofillClient& GetAutofillClient() override;
   BrowserAutofillManager& GetAutofillManager() override;
   ukm::SourceId GetPageUkmSourceId() const override;
-  bool IsActive() const override;
   bool HasSharedAutofillPermission() const override;
   bool CanShowAutofillUi() const override;
   base::flat_set<FieldGlobalId> ApplyFormAction(

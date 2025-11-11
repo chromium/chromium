@@ -143,7 +143,28 @@ class AutofillDriver {
 
   // Returns the AutofillDriver of the parent frame, if such a frame and driver
   // exist, and nullptr otherwise.
+  //
+  // Two related properties are IsActive() and IsEmbedded().
   virtual AutofillDriver* GetParent() = 0;
+
+  // Returns true if the AutofillDriver is associated with a frame that is
+  // visible to the user, as opposed to being prerendered or bfcache.
+  //
+  // Two related properties are GetParent() and IsEmbedded().
+  //
+  // This terminology is borrowed from MPArch.
+  virtual bool IsActive() const = 0;
+
+  // Returns true if the AutofillDriver is associated with a frame from a frame
+  // tree that is embedded in another frame by a Guest View or <fencedframe>.
+  //
+  // Two related properties are GetParent() and IsActive().
+  //
+  // This terminology is borrowed from MPArch. (The MPArch documentation is not
+  // entirely consistent in its use of "embedded" and "outermost", so there may
+  // be references that are not equivalent to AutofillDriver's use of the term.
+  // See crbug.com/459210100.)
+  virtual bool IsEmbedded() const = 0;
 
   // The owning AutofillClient.
   virtual AutofillClient& GetAutofillClient() = 0;
@@ -161,10 +182,6 @@ class AutofillDriver {
   //   - ... the *same* AutofillDriver (i.e., the driver transitions into the
   //     LifecycleState::kPendingReset), the driver gets a new UKM source ID.
   virtual ukm::SourceId GetPageUkmSourceId() const = 0;
-
-  // Returns whether the AutofillDriver instance is associated with an active
-  // frame in the MPArch sense.
-  virtual bool IsActive() const = 0;
 
   // Returns whether the policy-controlled feature "shared-autofill" is enabled
   // in the document. In the main frame the permission is enabled by default.

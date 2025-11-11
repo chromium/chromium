@@ -164,10 +164,11 @@ class ContentAutofillDriver : public AutofillDriver,
   LocalFrameToken GetFrameToken() const override;
   std::optional<LocalFrameToken> Resolve(FrameToken query) override;
   ContentAutofillDriver* GetParent() override;
+  bool IsActive() const override;
+  bool IsEmbedded() const override;
   ContentAutofillClient& GetAutofillClient() override;
   AutofillManager& GetAutofillManager() override;
   ukm::SourceId GetPageUkmSourceId() const override;
-  bool IsActive() const override;
   bool HasSharedAutofillPermission() const override;
   bool CanShowAutofillUi() const override;
   std::optional<net::IsolationInfo> GetIsolationInfo() override;

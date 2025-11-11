@@ -198,6 +198,14 @@ AutofillDriverIOS* AutofillDriverIOS::GetParent() {
   return parent_.get();
 }
 
+bool AutofillDriverIOS::IsActive() const {
+  return true;  // iOS has no MPArch.
+}
+
+bool AutofillDriverIOS::IsEmbedded() const {
+  return false;  // iOS has no MPArch.
+}
+
 AutofillClient& AutofillDriverIOS::GetAutofillClient() {
   return *client_;
 }
@@ -208,11 +216,6 @@ BrowserAutofillManager& AutofillDriverIOS::GetAutofillManager() {
 
 ukm::SourceId AutofillDriverIOS::GetPageUkmSourceId() const {
   return ukm::GetSourceIdForWebStateDocument(web_state_);
-}
-
-// Return true as iOS has no MPArch.
-bool AutofillDriverIOS::IsActive() const {
-  return true;
 }
 
 bool AutofillDriverIOS::HasSharedAutofillPermission() const {

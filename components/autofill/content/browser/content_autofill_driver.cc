@@ -395,6 +395,15 @@ ContentAutofillDriver* ContentAutofillDriver::GetParent() {
   return GetForRenderFrameHost(parent_rfh);
 }
 
+bool ContentAutofillDriver::IsActive() const {
+  return render_frame_host_->IsActive();
+}
+
+bool ContentAutofillDriver::IsEmbedded() const {
+  return render_frame_host_->GetMainFrame() !=
+         render_frame_host_->GetOutermostMainFrameOrEmbedder();
+}
+
 ContentAutofillClient& ContentAutofillDriver::GetAutofillClient() {
   return owner_->client();
 }
@@ -425,10 +434,6 @@ ukm::SourceId ContentAutofillDriver::GetPageUkmSourceId() const {
   CHECK(!render_frame_host_->IsInLifecycleState(
           content::RenderFrameHost::LifecycleState::kPrerendering));
   return render_frame_host_->GetPageUkmSourceId();
-}
-
-bool ContentAutofillDriver::IsActive() const {
-  return render_frame_host_->IsActive();
 }
 
 bool ContentAutofillDriver::HasSharedAutofillPermission() const {

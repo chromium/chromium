@@ -51,7 +51,6 @@ class TestAutofillDriverTemplate : public T {
 
   // AutofillDriver:
   LocalFrameToken GetFrameToken() const override { return frame_token_; }
-  TestAutofillDriverTemplate* GetParent() override { return parent_; }
   std::optional<LocalFrameToken> Resolve(FrameToken query) override {
     if (auto* local_frame_token = std::get_if<LocalFrameToken>(&query)) {
       return *local_frame_token;
@@ -62,7 +61,9 @@ class TestAutofillDriverTemplate : public T {
     }
     return std::nullopt;
   }
+  TestAutofillDriverTemplate* GetParent() override { return parent_; }
   bool IsActive() const override { return is_active_; }
+  bool IsEmbedded() const override { return is_embedded_; }
   bool HasSharedAutofillPermission() const override { return shared_autofill_; }
   bool CanShowAutofillUi() const override { return true; }
   void ApplyFieldAction(mojom::FieldActionType action_type,
@@ -153,6 +154,8 @@ class TestAutofillDriverTemplate : public T {
 
   void SetIsActive(bool is_active) { is_active_ = is_active; }
 
+  void SetIsEmbedded(bool is_embedded) { is_embedded_ = is_embedded; }
+
   void SetSharedAutofill(bool shared_autofill) {
     shared_autofill_ = shared_autofill;
   }
@@ -182,6 +185,7 @@ class TestAutofillDriverTemplate : public T {
   std::map<RemoteFrameToken, LocalFrameToken> remote_frame_tokens_;
   raw_ptr<TestAutofillDriverTemplate> parent_ = nullptr;
   bool is_active_ = true;
+  bool is_embedded_ = false;
   bool shared_autofill_ = false;
   net::IsolationInfo isolation_info_;
   base::RepeatingCallback<bool(const url::Origin&, FieldGlobalId, FieldType)>
