@@ -460,6 +460,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kUseLibunwindstackNativeUnwinderAndroid,
     &kWebApkMinShellVersion,
     &kWebOtpCrossDeviceSimpleString,
+    &kXplatSyncedSetup,
     &language::kCctAutoTranslate,
     &language::kDetailedLanguageSettings,
     &media::kAutoPictureInPictureAndroid,
@@ -828,6 +829,7 @@ BASE_FEATURE(kUseLibunwindstackNativeUnwinderAndroid, base::FEATURE_ENABLED_BY_D
 // Shows only the remote device name on the Android notification instead of
 // a descriptive text.
 BASE_FEATURE(kWebOtpCrossDeviceSimpleString, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kXplatSyncedSetup, base::FEATURE_DISABLED_BY_DEFAULT);
 // go/keep-sorted end
 // BASE_FEATURE_END
 

@@ -13394,6 +13394,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kReadAnythingImmersiveReadingModeDescription,
      kOsDesktop, FEATURE_VALUE_TYPE(features::kImmersiveReadAnything)},
 #endif
+#if BUILDFLAG(IS_ANDROID)
+    {"xplat-synced-setup", flag_descriptions::kXplatSyncedSetupName,
+     flag_descriptions::kXplatSyncedSetupDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kXplatSyncedSetup)},
+#endif
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

@@ -10861,6 +10861,11 @@
     "expiry_milestone": 145
   },
   {
+    "name": "xplat-synced-setup",
+    "owners": ["jhimawan@google.com", "clank-app-team@google.com"],
+    "expiry_milestone": 160
+  },
+  {
     "name": "xslt",
     "owners": [ "masonf@chromium.org" ],
     "expiry_milestone": 162

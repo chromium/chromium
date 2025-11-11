@@ -5853,6 +5853,10 @@ inline constexpr char kWebSerialWiredDevicesAndroidName[] =
 inline constexpr char kWebSerialWiredDevicesAndroidDescription[] =
     "Provides a way for websites to interact with wired serial devices";
 
+inline constexpr char kXplatSyncedSetupName[] = "Cross-platform synced setup";
+inline constexpr char kXplatSyncedSetupDescription[] =
+    "Enables the Cross-platform synced setup feature.";
+
 inline constexpr char kXsurfaceMetricsReportingName[] =
     "Xsurface Metrics Reporting";
 inline constexpr char kXsurfaceMetricsReportingDescription[] =

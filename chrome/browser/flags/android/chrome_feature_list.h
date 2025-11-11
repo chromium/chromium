@@ -299,6 +299,7 @@ BASE_DECLARE_FEATURE(kUseActivityManagerForTabActivation);
 BASE_DECLARE_FEATURE(kUseInitialNetworkStateAtStartup);
 BASE_DECLARE_FEATURE(kUseLibunwindstackNativeUnwinderAndroid);
 BASE_DECLARE_FEATURE(kWebOtpCrossDeviceSimpleString);
+BASE_DECLARE_FEATURE(kXplatSyncedSetup);
 // go/keep-sorted end
 // BASE_DECLARE_FEATURE_END
 

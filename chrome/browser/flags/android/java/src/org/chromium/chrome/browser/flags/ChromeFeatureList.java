@@ -710,6 +710,7 @@ public abstract class ChromeFeatureList {
     public static final String WEB_FEED_ONBOARDING = "WebFeedOnboarding";
     public static final String WEB_FEED_SORT = "WebFeedSort";
     public static final String WEB_OTP_CROSS_DEVICE_SIMPLE_STRING = "WebOtpCrossDeviceSimpleString";
+    public static final String XPLAT_SYNCED_SETUP = "XplatSyncedSetup";
     public static final String XSURFACE_METRICS_REPORTING = "XsurfaceMetricsReporting";
     // keep-sorted end
     // LINT.ThenChange(//chrome/browser/flags/android/chrome_feature_list.cc:FeaturesExposedToJava)
