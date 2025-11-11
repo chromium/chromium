@@ -261,7 +261,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsSyncTest,
 
   // Wait for data types to be ready for sync and trigger a sync cycle.
   // Otherwise, TriggerRefresh() would be no-op.
-  ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
   GetSyncService(0)->TriggerRefresh(
       syncer::SyncService::TriggerRefreshSource::kUnknown, {syncer::PASSWORDS});
 
@@ -481,7 +481,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
   secondary_account_helper::GrantSyncConsent(GetProfile(0), "user@email.com");
   GetSyncService(0)->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
       kSetSourceFromTest);
-  ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
   ASSERT_TRUE(GetSyncService(0)->IsSyncFeatureEnabled());
 
   // Make sure the password is now in the profile store, but *not* in the
@@ -532,7 +532,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
   secondary_account_helper::GrantSyncConsent(GetProfile(0), "user@email.com");
   GetSyncService(0)->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
       kSetSourceFromTest);
-  ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
   ASSERT_TRUE(GetSyncService(0)->IsSyncFeatureEnabled());
 
   // Now password sync should be active.

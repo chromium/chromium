@@ -58,7 +58,7 @@ IN_PROC_BROWSER_TEST_F(SyncOSCryptAsyncMigrationTest, PRE_PRE_Migrate) {
 
 IN_PROC_BROWSER_TEST_F(SyncOSCryptAsyncMigrationTest, PRE_Migrate) {
   ASSERT_TRUE(SetupClients());
-  ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
   ASSERT_EQ(GetPasswordCount(0), 1);
 
   GetProfilePasswordStoreInterface(0)->AddLogin(CreateTestPasswordForm(1));
@@ -68,7 +68,7 @@ IN_PROC_BROWSER_TEST_F(SyncOSCryptAsyncMigrationTest, PRE_Migrate) {
 
 IN_PROC_BROWSER_TEST_F(SyncOSCryptAsyncMigrationTest, Migrate) {
   ASSERT_TRUE(SetupClients());
-  ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
   GetSyncService(0)->TriggerRefresh(
       syncer::SyncService::TriggerRefreshSource::kUnknown, {syncer::PASSWORDS});
   ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());

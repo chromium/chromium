@@ -125,7 +125,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientCommonSyncTest,
   GetUpdatesObserver get_updates_observer(GetFakeServer());
 
   ASSERT_TRUE(SetupClients());
-  ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
 
   // Some data types may use preconditions in the data type controller to
   // postpone their startup. Since such data types were paused (even for a short

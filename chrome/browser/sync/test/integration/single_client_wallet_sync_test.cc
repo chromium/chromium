@@ -944,7 +944,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSecondaryAccountSyncTest,
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
   // Wait for Sync to get reconfigured into feature mode.
-  ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
   ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,
             GetSyncService(0)->GetTransportState());
   ASSERT_TRUE(GetSyncService(0)->IsSyncFeatureEnabled());
@@ -1028,7 +1028,7 @@ IN_PROC_BROWSER_TEST_F(
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
   // Wait for Sync to get reconfigured into feature mode.
-  ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
   ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,
             GetSyncService(0)->GetTransportState());
   ASSERT_TRUE(GetSyncService(0)->IsSyncFeatureEnabled());

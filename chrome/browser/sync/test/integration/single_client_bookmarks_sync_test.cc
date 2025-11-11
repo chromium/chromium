@@ -1239,7 +1239,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest,
   ASSERT_TRUE(SetupClients());
   ASSERT_EQ(1u, GetBookmarkBarNode(kSingleProfileIndex)->children().size());
 
-  ASSERT_TRUE(GetClient(kSingleProfileIndex)->AwaitSyncSetupCompletion());
+  ASSERT_TRUE(GetClient(kSingleProfileIndex)->AwaitSyncTransportActive());
 
   // After restart, the last sync cycle snapshot should be empty.
   // Once a sync request happened (e.g. by a poll), that snapshot is populated.
@@ -1985,7 +1985,7 @@ IN_PROC_BROWSER_TEST_F(
 
   ASSERT_TRUE(SetupClients());
   ASSERT_TRUE(GetClient(kSingleProfileIndex)->AwaitEngineInitialization());
-  ASSERT_TRUE(GetClient(kSingleProfileIndex)->AwaitSyncSetupCompletion());
+  ASSERT_TRUE(GetClient(kSingleProfileIndex)->AwaitSyncTransportActive());
 
   // Run a sync cycle to trigger bookmarks reupload on browser startup. This is
   // required since bookmarks get reuploaded only after the latest changes are

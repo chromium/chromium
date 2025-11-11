@@ -432,7 +432,7 @@ IN_PROC_BROWSER_TEST_F(SyncAuthTest, SyncPausedState) {
   ASSERT_FALSE(GetSyncService(0)->GetAuthError().IsPersistentError());
 
   // Once the auth error is gone, wait for Sync to start up again.
-  ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
 
   // Now the active data types should be back.
   EXPECT_TRUE(GetSyncService(0)->IsSyncFeatureActive());
@@ -496,7 +496,7 @@ IN_PROC_BROWSER_TEST_F(SyncAuthTest, ShouldTrackDeletionsInSyncPausedState) {
   NoAuthErrorChecker(GetSyncService(0)).Wait();
   ASSERT_FALSE(GetSyncService(0)->GetAuthError().IsPersistentError());
   // Once the auth error is gone, wait for Sync to start up again.
-  ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
 
   // Resuming sync could issue a reconfiguration, so wait until it finishes.
   SyncTransportActiveChecker(GetSyncService(0)).Wait();

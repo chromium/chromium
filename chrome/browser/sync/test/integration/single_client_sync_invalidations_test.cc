@@ -487,7 +487,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSyncInvalidationsTest,
       ->GetDeviceInfoTracker()
       ->ForcePulseForTest();
   ASSERT_TRUE(GetClient(0)->AwaitEngineInitialization());
-  ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
 
   // Wait until DeviceInfo is updated.
   ASSERT_TRUE(ServerDeviceInfoMatchChecker(
@@ -557,7 +557,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSyncInvalidationsTest,
 IN_PROC_BROWSER_TEST_F(SingleClientSyncInvalidationsTest,
                        PersistBookmarkInvalidation) {
   ASSERT_TRUE(SetupClients());
-  ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
 
   // TODO(crbug.com/40239360): Persisted invaldiations are loaded in
   // DataTypeWorker::ctor(), but sync cycle is not scheduled. New sync cycle
@@ -595,7 +595,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSyncInvalidationsTest,
 IN_PROC_BROWSER_TEST_F(SingleClientSyncInvalidationsTest,
                        PersistDeviceInfoInvalidation) {
   ASSERT_TRUE(SetupClients());
-  ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
 
   // TODO(crbug.com/40239360): Persisted invaldiations are loaded in
   // DataTypeWorker::ctor(), but sync cycle is not scheduled. New sync cycle

@@ -120,8 +120,7 @@ class SyncServiceImplHarness {
 
   // Enables and configures sync.
   // Does not wait for sync to be ready to process changes -- callers need to
-  // ensure this by calling AwaitSyncSetupCompletion() or
-  // AwaitSyncTransportActive().
+  // ensure this by calling AwaitSyncTransportActive().
   [[nodiscard]] bool SetupSyncNoWaitForCompletion(
       SyncTestAccount account = SyncTestAccount::kDefaultAccount);
 
@@ -161,12 +160,6 @@ class SyncServiceImplHarness {
   // successfully. See SyncService::IsEngineInitialized() for the definition
   // of engine initialization.
   [[nodiscard]] bool AwaitEngineInitialization();
-
-  // Blocks the caller until sync setup is complete, and sync-the-feature is
-  // active. Returns true if and only if sync setup completed successfully. Make
-  // sure to actually start sync setup (usually by calling SetupSync() or one of
-  // its variants) before.
-  [[nodiscard]] bool AwaitSyncSetupCompletion();
 
   // Blocks the caller until the sync transport layer is active. Returns true if
   // successful.

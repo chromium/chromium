@@ -632,7 +632,7 @@ IN_PROC_BROWSER_TEST_F(EnableDisableSingleClientSelfNotifyTest,
       GetProfile(0)->GetPrefs(),
       GetClient(0)->GetGaiaIdHashForPrimaryAccount());
   ASSERT_NE("", prefs.GetBagOfChips());
-  ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
 
   sync_pb::ClientToServerMessage message = TriggerGetUpdatesCycleAndWait();
   EXPECT_TRUE(message.has_bag_of_chips());

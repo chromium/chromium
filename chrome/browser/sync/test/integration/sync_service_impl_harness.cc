@@ -94,37 +94,6 @@ class EngineInitializeChecker : public SingleClientStatusChangeChecker {
   }
 };
 
-class SyncSetupChecker : public SingleClientStatusChangeChecker {
- public:
-  enum class State { kTransportActive, kFeatureActive };
-
-  SyncSetupChecker(SyncServiceImpl* service, State wait_for_state)
-      : SingleClientStatusChangeChecker(service),
-        wait_for_state_(wait_for_state) {}
-
-  bool IsExitConditionSatisfied(std::ostream* os) override {
-    *os << "Waiting for sync setup to complete";
-
-    syncer::SyncService::TransportState transport_state =
-        service()->GetTransportState();
-    if (transport_state == syncer::SyncService::TransportState::ACTIVE &&
-        (wait_for_state_ != State::kFeatureActive ||
-         service()->IsSyncFeatureActive())) {
-      return true;
-    }
-    // Sync is blocked by an auth error.
-    if (HasAuthError(service())) {
-      return true;
-    }
-
-    // Still waiting on sync setup.
-    return false;
-  }
-
- private:
-  const State wait_for_state_;
-};
-
 class SyncTransportStateChecker : public SingleClientStatusChangeChecker {
  public:
   SyncTransportStateChecker(SyncServiceImpl* service,
@@ -306,7 +275,7 @@ bool SyncServiceImplHarness::ExitSyncPausedStateForPrimaryAccount() {
   signin::SetRefreshTokenForPrimaryAccount(
       IdentityManagerFactory::GetForProfile(profile_.get()));
   // The engine was off in the sync-paused state, so wait for it to start.
-  return AwaitSyncSetupCompletion();
+  return AwaitSyncTransportActive();
 }
 
 bool SyncServiceImplHarness::EnterSignInPendingStateForPrimaryAccount() {
@@ -330,7 +299,7 @@ bool SyncServiceImplHarness::ExitSignInPendingStateForPrimaryAccount() {
 
 bool SyncServiceImplHarness::SetupSync(SyncTestAccount account) {
   bool result =
-      SetupSyncNoWaitForCompletion(account) && AwaitSyncSetupCompletion();
+      SetupSyncNoWaitForCompletion(account) && AwaitSyncTransportActive();
   if (!result) {
     LOG(ERROR) << profile_debug_name_ << ": SetupSync failed. Syncer status:\n"
                << GetServiceStatus();
@@ -345,7 +314,7 @@ bool SyncServiceImplHarness::SetupSyncWithCustomSettings(
     SyncTestAccount account) {
   bool result = SetupSyncWithCustomSettingsNoWaitForCompletion(
                     std::move(user_settings_callback), account) &&
-                AwaitSyncSetupCompletion();
+                AwaitSyncTransportActive();
   if (!result) {
     LOG(ERROR) << profile_debug_name_ << ": SetupSync failed. Syncer status:\n"
                << GetServiceStatus();
@@ -474,28 +443,11 @@ bool SyncServiceImplHarness::AwaitEngineInitialization() {
   return true;
 }
 
-bool SyncServiceImplHarness::AwaitSyncSetupCompletion() {
-  CHECK(service()->GetUserSettings()->IsInitialSyncFeatureSetupComplete())
-      << "Waiting for setup completion can only succeed after the first setup "
-      << "got marked complete. Did you call SetupSync on this client?";
-  if (!SyncSetupChecker(service(), SyncSetupChecker::State::kFeatureActive)
-           .Wait()) {
-    LOG(ERROR) << "SyncSetupChecker timed out.";
-    return false;
-  }
-  // Signal an error if the initial sync wasn't successful.
-  if (HasAuthError(service())) {
-    LOG(ERROR) << "Credentials were rejected. Sync cannot proceed.";
-    return false;
-  }
-
-  return true;
-}
-
 bool SyncServiceImplHarness::AwaitSyncTransportActive() {
-  if (!SyncSetupChecker(service(), SyncSetupChecker::State::kTransportActive)
+  if (!SyncTransportStateChecker(service(),
+                                 syncer::SyncService::TransportState::ACTIVE)
            .Wait()) {
-    LOG(ERROR) << "SyncSetupChecker timed out.";
+    LOG(ERROR) << "SyncTransportStateChecker timed out.";
     return false;
   }
   // Signal an error if the initial sync wasn't successful.
@@ -577,7 +529,7 @@ bool SyncServiceImplHarness::EnableSyncForType(
 
   selected_types.Put(type);
   service()->GetUserSettings()->SetSelectedTypes(false, selected_types);
-  if (AwaitSyncSetupCompletion()) {
+  if (AwaitSyncTransportActive()) {
     DVLOG(1) << "EnableSyncForType(): Enabled sync for type "
              << syncer::GetUserSelectableTypeName(type) << " on "
              << profile_debug_name_ << ".";
@@ -610,7 +562,7 @@ bool SyncServiceImplHarness::DisableSyncForType(
 
   selected_types.Remove(type);
   service()->GetUserSettings()->SetSelectedTypes(false, selected_types);
-  if (AwaitSyncSetupCompletion()) {
+  if (AwaitSyncTransportActive()) {
     DVLOG(1) << "DisableSyncForType(): Disabled sync for type "
              << syncer::GetUserSelectableTypeName(type) << " on "
              << profile_debug_name_ << ".";
@@ -640,7 +592,7 @@ bool SyncServiceImplHarness::EnableSyncForRegisteredDatatypes() {
       /*sync_everything=*/true,
       service()->GetUserSettings()->GetRegisteredSelectableTypes());
 
-  if (AwaitSyncSetupCompletion()) {
+  if (AwaitSyncTransportActive()) {
     DVLOG(1)
         << "EnableSyncForRegisteredDatatypes(): Enabled sync for all datatypes "
         << "on " << profile_debug_name_ << ".";

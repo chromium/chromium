@@ -689,7 +689,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
 IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
                        DeletingPasskeysPersistsOverRestarts) {
   ASSERT_TRUE(SetupClients());
-  ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
   EXPECT_TRUE(GetModel().GetAllPasskeys().empty());
 }
 
@@ -924,7 +924,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
 IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
                        UpdatingPasskeysPersistsOverRestarts) {
   ASSERT_TRUE(SetupClients());
-  ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
   const std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys =
       GetModel().GetAllPasskeys();
   ASSERT_EQ(passkeys.size(), 1u);
@@ -1113,7 +1113,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
                        ClearingModelDataOnSyncStartup) {
   ASSERT_TRUE(SetupClients());
   ASSERT_TRUE(GetClient(0)->DisableSyncForAllDatatypes());
-  ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
 
   EXPECT_TRUE(GetModel().GetAllPasskeys().empty());
 }
@@ -1203,7 +1203,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
 IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
                        DeleteOldHiddenPasskeysOnLoad) {
   ASSERT_TRUE(SetupClients());
-  ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
 
   // After loading the browser, the old passkey should have been deleted.
   EXPECT_THAT(GetModel().GetAllPasskeys(),

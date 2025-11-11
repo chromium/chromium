@@ -688,16 +688,9 @@ bool SyncTest::SetupSyncInternal(SetupSyncMode setup_mode,
       case NO_WAITING:
         break;
       case WAIT_FOR_SYNC_SETUP_TO_COMPLETE:
-        if (setup_mode == SetupSyncMode::kSyncTransportOnly) {
-          if (!client->AwaitSyncTransportActive()) {
-            ADD_FAILURE() << "AwaitSyncTransportActive() failed";
-            return false;
-          }
-        } else {
-          if (!client->AwaitSyncSetupCompletion()) {
-            ADD_FAILURE() << "AwaitSyncSetupCompletion() failed";
-            return false;
-          }
+        if (!client->AwaitSyncTransportActive()) {
+          ADD_FAILURE() << "AwaitSyncTransportActive() failed";
+          return false;
         }
         if (!client->AwaitInvalidationsStatus(/*expected_status=*/true)) {
           ADD_FAILURE() << "AwaitInvalidationsStatus() failed";
@@ -705,16 +698,9 @@ bool SyncTest::SetupSyncInternal(SetupSyncMode setup_mode,
         }
         break;
       case WAIT_FOR_COMMITS_TO_COMPLETE:
-        if (setup_mode == SetupSyncMode::kSyncTransportOnly) {
-          if (!client->AwaitSyncTransportActive()) {
-            ADD_FAILURE() << "AwaitSyncTransportActive() failed";
-            return false;
-          }
-        } else {
-          if (!client->AwaitSyncSetupCompletion()) {
-            ADD_FAILURE() << "AwaitSyncSetupCompletion() failed";
-            return false;
-          }
+        if (!client->AwaitSyncTransportActive()) {
+          ADD_FAILURE() << "AwaitSyncTransportActive() failed";
+          return false;
         }
         if (!client->AwaitInvalidationsStatus(/*expected_status=*/true)) {
           ADD_FAILURE() << "AwaitInvalidationsStatus() failed";

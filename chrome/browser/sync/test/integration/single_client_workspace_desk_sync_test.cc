@@ -88,7 +88,7 @@ class SingleClientWorkspaceDeskSyncTest : public SyncTest {
     service->GetUserSettings()->SetSelectedTypes(
         /*sync_everything=*/false, types_to_enable);
 
-    ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
+    ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
   }
 
   base::Uuid kTestUuid1_;

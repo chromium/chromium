@@ -147,7 +147,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientArcPackageSyncTest, DisableAndReenable) {
 
   // Reenable ARC++.
   sync_arc_helper()->EnableArcService(GetProfile(0));
-  ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
 
   // The problematic scenario in the regression test involves the refresh
   // happening late, after sync has started.

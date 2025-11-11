@@ -61,7 +61,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordSharingPolicyTest,
                policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
                policy::POLICY_SOURCE_CLOUD, base::Value(true), nullptr);
   UpdateProviderPolicy(policies);
-  ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
 
   // Verify that both sharing data types are still enabled when the policy is
   // enabled.
@@ -75,7 +75,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordSharingPolicyTest,
                policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
                policy::POLICY_SOURCE_CLOUD, base::Value(false), nullptr);
   UpdateProviderPolicy(policies);
-  ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
 
   // With the policy is disabled, both data types should be deactivated.
   EXPECT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(

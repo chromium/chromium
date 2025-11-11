@@ -1136,7 +1136,7 @@ IN_PROC_BROWSER_TEST_F(
       GetPublicKeyFromServer().x25519_public_key();
   ASSERT_FALSE(old_public_key.empty());
   ASSERT_TRUE(SetupClients());
-  ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
 
   EXPECT_TRUE(
       ServerCrossUserSharingPublicKeyChangedChecker(old_public_key).Wait());

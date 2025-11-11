@@ -481,7 +481,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(HasSearchEngine(/*profile_index=*/0, "key1"));
   EXPECT_TRUE(HasSearchEngine(/*profile_index=*/0, "key2"));
 
-  ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
   EXPECT_FALSE(search_engines_helper::HasSearchEngineInFakeServer(
       "key1", GetFakeServer()));
   EXPECT_TRUE(search_engines_helper::HasSearchEngineInFakeServer(

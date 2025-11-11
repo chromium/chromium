@@ -610,7 +610,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
       fake_server_->GetSyncEntitiesByDataType(syncer::DEVICE_INFO);
   ASSERT_TRUE(SetupClients());
   ASSERT_TRUE(GetClient(0)->AwaitEngineInitialization());
-  ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
   ASSERT_TRUE(GetClient(0)->AwaitInvalidationsStatus(/*expected_status=*/true));
 
   bool has_local_changes = false;
