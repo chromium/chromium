@@ -4,9 +4,10 @@
 
 package org.chromium.ui.modelutil;
 
-import static org.hamcrest.CoreMatchers.is;
+import static com.google.common.truth.Truth.assertThat;
+import static com.google.common.truth.Truth.assertWithMessage;
+
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
@@ -45,17 +46,17 @@ public class SimpleListObservableTest {
     @Test
     public void testNotifiesSuccessfulInsertions() {
         // Replacing an empty list with a non-empty one is always an insertion.
-        assertThat(mIntegerList.size(), is(0));
+        assertThat(mIntegerList.size()).isEqualTo(0);
         mIntegerList.set(new Integer[] {333, 88888888, 22});
         verify(mObserver).onItemRangeInserted(mIntegerList, 0, 3);
-        assertThat(mIntegerList.size(), is(3));
-        assertThat(mIntegerList.get(1), is(88888888));
+        assertThat(mIntegerList.size()).isEqualTo(3);
+        assertThat(mIntegerList.get(1)).isEqualTo(88888888);
 
         // Adding Items is always an insertion.
         mIntegerList.add(55555);
         verify(mObserver).onItemRangeInserted(mIntegerList, 3, 1);
-        assertThat(mIntegerList.size(), is(4));
-        assertThat(mIntegerList.get(3), is(55555));
+        assertThat(mIntegerList.size()).isEqualTo(4);
+        assertThat(mIntegerList.get(3)).isEqualTo(55555);
 
         // Adding multiple items also triggers event.
         mIntegerList.addAll(Arrays.asList(333, 88888888, 22), 2);
@@ -66,7 +67,7 @@ public class SimpleListObservableTest {
     public void testModelNotifiesSuccessfulRemoval() {
         Integer eightEights = 88888888;
         mIntegerList.set(new Integer[] {333, eightEights, 22});
-        assertThat(mIntegerList.size(), is(3));
+        assertThat(mIntegerList.size()).isEqualTo(3);
 
         // Removing any item by instance is always a removal.
         mIntegerList.remove(eightEights);
@@ -81,22 +82,22 @@ public class SimpleListObservableTest {
     public void testModelNotifiesSuccessfulMove() {
         Integer eightEights = 88888888;
         mIntegerList.set(new Integer[] {333, eightEights, 22});
-        assertThat(mIntegerList.size(), is(3));
+        assertThat(mIntegerList.size()).isEqualTo(3);
 
         // Moving any item forward is a move.
         mIntegerList.move(1, 0);
         verify(mObserver).onItemMoved(mIntegerList, 1, 0);
-        assertThat(mIntegerList.get(0), is(eightEights));
-        assertThat(mIntegerList.get(1), is(333));
-        assertThat(mIntegerList.get(2), is(22));
+        assertThat(mIntegerList.get(0)).isEqualTo(eightEights);
+        assertThat(mIntegerList.get(1)).isEqualTo(333);
+        assertThat(mIntegerList.get(2)).isEqualTo(22);
         mIntegerList.set(new Integer[] {333, eightEights, 22});
 
         // Moving any item backward is a move.
         mIntegerList.move(1, 2);
         verify(mObserver).onItemMoved(mIntegerList, 1, 2);
-        assertThat(mIntegerList.get(0), is(333));
-        assertThat(mIntegerList.get(1), is(22));
-        assertThat(mIntegerList.get(2), is(eightEights));
+        assertThat(mIntegerList.get(0)).isEqualTo(333);
+        assertThat(mIntegerList.get(1)).isEqualTo(22);
+        assertThat(mIntegerList.get(2)).isEqualTo(eightEights);
     }
 
     @Test
@@ -142,16 +143,16 @@ public class SimpleListObservableTest {
         mIntegerList.addAll(list);
         verify(mObserver).onItemRangeInserted(mIntegerList, 3, 2);
         assertEquals("Wrong list size after insertion.", 5, mIntegerList.size());
-        assertThat("Wrong value found at index.", mIntegerList.get(3), is(4));
-        assertThat("Wrong value found at index.", mIntegerList.get(4), is(5));
+        assertWithMessage("Wrong value found at index.").that(mIntegerList.get(3)).isEqualTo(4);
+        assertWithMessage("Wrong value found at index.").that(mIntegerList.get(4)).isEqualTo(5);
 
         // Test adding to somewhere in the middle.
         list.set(new Integer[] {6, 7});
         mIntegerList.addAll(list, 2);
         verify(mObserver).onItemRangeInserted(mIntegerList, 2, 2);
         assertEquals("Wrong list size after insertion.", 7, mIntegerList.size());
-        assertThat("Wrong value found at index.", mIntegerList.get(2), is(6));
-        assertThat("Wrong value found at index.", mIntegerList.get(3), is(7));
-        assertThat("Wrong value found at index.", mIntegerList.get(4), is(3));
+        assertWithMessage("Wrong value found at index.").that(mIntegerList.get(2)).isEqualTo(6);
+        assertWithMessage("Wrong value found at index.").that(mIntegerList.get(3)).isEqualTo(7);
+        assertWithMessage("Wrong value found at index.").that(mIntegerList.get(4)).isEqualTo(3);
     }
 }
