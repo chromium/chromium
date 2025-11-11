@@ -4,17 +4,24 @@
 
 use super::{VarZeroSlice, VarZeroVec, VarZeroVecFormat};
 use crate::ule::*;
+#[cfg(feature = "alloc")]
 use alloc::boxed::Box;
+#[cfg(feature = "alloc")]
 use alloc::vec::Vec;
 use core::fmt;
 use core::marker::PhantomData;
-use serde::de::{self, Deserialize, Deserializer, SeqAccess, Visitor};
-#[cfg(feature = "serde")]
+#[cfg(feature = "alloc")]
+use serde::de::SeqAccess;
+use serde::de::{self, Deserialize, Deserializer, Visitor};
 use serde::ser::{Serialize, SerializeSeq, Serializer};
 
 struct VarZeroVecVisitor<T: ?Sized, F: VarZeroVecFormat> {
-    #[expect(clippy::type_complexity)] // this is a private marker type, who cares
-    marker: PhantomData<(fn() -> Box<T>, F)>,
+    marker: PhantomData<(fn() -> T, F)>,
+}
+
+#[cfg(feature = "alloc")]
+struct VarZeroVecHumanVisitor<T: ?Sized, F: VarZeroVecFormat> {
+    marker: PhantomData<(fn() -> T, F)>,
 }
 
 impl<T: ?Sized, F: VarZeroVecFormat> Default for VarZeroVecVisitor<T, F> {
@@ -25,10 +32,18 @@ impl<T: ?Sized, F: VarZeroVecFormat> Default for VarZeroVecVisitor<T, F> {
     }
 }
 
+#[cfg(feature = "alloc")]
+impl<T: ?Sized, F: VarZeroVecFormat> Default for VarZeroVecHumanVisitor<T, F> {
+    fn default() -> Self {
+        Self {
+            marker: PhantomData,
+        }
+    }
+}
+
 impl<'de, T, F> Visitor<'de> for VarZeroVecVisitor<T, F>
 where
     T: VarULE + ?Sized,
-    Box<T>: Deserialize<'de>,
     F: VarZeroVecFormat,
 {
     type Value = VarZeroVec<'de, T, F>;
@@ -42,6 +57,20 @@ where
         E: de::Error,
     {
         VarZeroVec::parse_bytes(bytes).map_err(de::Error::custom)
+    }
+}
+
+#[cfg(feature = "alloc")]
+impl<'de, T, F> Visitor<'de> for VarZeroVecHumanVisitor<T, F>
+where
+    T: VarULE + ?Sized,
+    Box<T>: Deserialize<'de>,
+    F: VarZeroVecFormat,
+{
+    type Value = VarZeroVec<'de, T, F>;
+
+    fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+        formatter.write_str("a sequence or borrowed buffer of bytes")
     }
 
     fn visit_seq<A>(self, mut seq: A) -> Result<Self::Value, A::Error>
@@ -61,6 +90,7 @@ where
 }
 
 /// This impl requires enabling the optional `serde` Cargo feature of the `zerovec` crate
+#[cfg(feature = "alloc")]
 impl<'de, 'a, T, F> Deserialize<'de> for VarZeroVec<'a, T, F>
 where
     T: VarULE + ?Sized,
@@ -72,12 +102,27 @@ where
     where
         D: Deserializer<'de>,
     {
-        let visitor = VarZeroVecVisitor::<T, F>::default();
         if deserializer.is_human_readable() {
-            deserializer.deserialize_seq(visitor)
+            deserializer.deserialize_seq(VarZeroVecHumanVisitor::<T, F>::default())
         } else {
-            deserializer.deserialize_bytes(visitor)
+            deserializer.deserialize_bytes(VarZeroVecVisitor::<T, F>::default())
         }
+    }
+}
+
+/// This impl requires enabling the optional `serde` Cargo feature of the `zerovec` crate
+#[cfg(not(feature = "alloc"))]
+impl<'de, 'a, T, F> Deserialize<'de> for VarZeroVec<'a, T, F>
+where
+    T: VarULE + ?Sized,
+    F: VarZeroVecFormat,
+    'de: 'a,
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        deserializer.deserialize_bytes(VarZeroVecVisitor::<T, F>::default())
     }
 }
 
@@ -104,6 +149,7 @@ where
 }
 
 /// This impl requires enabling the optional `serde` Cargo feature of the `zerovec` crate
+#[cfg(feature = "alloc")]
 impl<'de, T, F> Deserialize<'de> for Box<VarZeroSlice<T, F>>
 where
     T: VarULE + ?Sized,
@@ -163,18 +209,30 @@ mod test {
     use crate::{VarZeroSlice, VarZeroVec};
 
     #[derive(serde::Serialize, serde::Deserialize)]
+    #[allow(
+        dead_code,
+        reason = "Tests compatibility of custom impl with Serde derive."
+    )]
     struct DeriveTest_VarZeroVec<'data> {
         #[serde(borrow)]
         _data: VarZeroVec<'data, str>,
     }
 
     #[derive(serde::Serialize, serde::Deserialize)]
+    #[allow(
+        dead_code,
+        reason = "Tests compatibility of custom impl with Serde derive."
+    )]
     struct DeriveTest_VarZeroSlice<'data> {
         #[serde(borrow)]
         _data: &'data VarZeroSlice<str>,
     }
 
     #[derive(serde::Serialize, serde::Deserialize)]
+    #[allow(
+        dead_code,
+        reason = "Tests compatibility of custom impl with Serde derive."
+    )]
     struct DeriveTest_VarZeroVec_of_VarZeroSlice<'data> {
         #[serde(borrow)]
         _data: VarZeroVec<'data, VarZeroSlice<str>>,

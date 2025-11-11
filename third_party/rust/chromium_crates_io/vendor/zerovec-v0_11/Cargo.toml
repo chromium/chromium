@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.82"
 name = "zerovec"
-version = "0.11.4"
+version = "0.11.5"
 authors = ["The ICU4X Project Developers"]
 build = false
 include = [
@@ -50,27 +50,24 @@ categories = [
 license = "Unicode-3.0"
 repository = "https://github.com/unicode-org/icu4x"
 
-[package.metadata.cargo-all-features]
-max_combination_size = 3
+[package.metadata.workspaces]
+independent = true
 
 [package.metadata.docs.rs]
 all-features = true
 
-[package.metadata.workspaces]
-independent = true
+[package.metadata.cargo-all-features]
+max_combination_size = 3
 
 [features]
-alloc = []
+alloc = ["serde?/alloc"]
 databake = ["dep:databake"]
 derive = ["dep:zerovec-derive"]
 hashmap = [
     "dep:twox-hash",
     "alloc",
 ]
-serde = [
-    "dep:serde",
-    "alloc",
-]
+serde = ["dep:serde"]
 std = []
 yoke = ["dep:yoke"]
 
@@ -122,11 +119,8 @@ optional = true
 default-features = false
 
 [dependencies.serde]
-version = "1.0.110"
-features = [
-    "alloc",
-    "derive",
-]
+version = "1.0.220"
+features = ["derive"]
 optional = true
 default-features = false
 
@@ -149,46 +143,3 @@ default-features = false
 version = "0.11.1"
 optional = true
 default-features = false
-
-[dev-dependencies.bincode]
-version = "1.3.1"
-
-[dev-dependencies.getrandom]
-version = "0.3"
-features = ["wasm_js"]
-
-[dev-dependencies.iai]
-version = "0.1.1"
-
-[dev-dependencies.postcard]
-version = "1.0.3"
-features = ["use-std"]
-default-features = false
-
-[dev-dependencies.rand]
-version = "0.9"
-
-[dev-dependencies.rand_distr]
-version = "0.5"
-
-[dev-dependencies.rand_pcg]
-version = "0.9"
-
-[dev-dependencies.rmp-serde]
-version = "1.2.0"
-
-[dev-dependencies.serde]
-version = "1.0.110"
-features = ["derive"]
-default-features = false
-
-[dev-dependencies.serde_json]
-version = "1.0.45"
-
-[dev-dependencies.yoke]
-version = "0.8.0"
-features = ["derive"]
-default-features = false
-
-[target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies.criterion]
-version = "0.5.0"

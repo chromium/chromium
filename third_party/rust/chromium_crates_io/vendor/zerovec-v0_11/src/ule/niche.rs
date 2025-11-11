@@ -157,7 +157,7 @@ unsafe impl<U: NicheBytes<N> + ULE, const N: usize> ULE for NichedOptionULE<U, N
 /// Optional type which uses [`NichedOptionULE<U,N>`] as ULE type.
 ///
 /// The implementors guarantee that `N == core::mem::size_of::<Self>()`
-/// [`repr(transparent)`] guarantees that the layout is same as [`Option<U>`]
+/// `#[repr(transparent)]` guarantees that the layout is same as [`Option<U>`]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
 #[repr(transparent)]
 #[allow(clippy::exhaustive_structs)] // newtype

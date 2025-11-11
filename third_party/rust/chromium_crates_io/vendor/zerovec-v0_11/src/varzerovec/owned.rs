@@ -26,6 +26,8 @@ use super::components::IntegerULE;
 ///
 /// The `F` type parameter is a [`VarZeroVecFormat`] (see its docs for more details), which can be used to select the
 /// precise format of the backing buffer with various size and performance tradeoffs. It defaults to [`Index16`].
+///
+/// ✨ *Enabled with the `alloc` Cargo feature.*
 pub struct VarZeroVecOwned<T: ?Sized, F = Index16> {
     marker1: PhantomData<T>,
     marker2: PhantomData<F>,

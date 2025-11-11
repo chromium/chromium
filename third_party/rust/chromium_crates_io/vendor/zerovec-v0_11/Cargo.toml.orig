@@ -5,7 +5,7 @@
 [package]
 name = "zerovec"
 description = "Zero-copy vector backed by a byte array"
-version = "0.11.4"
+version = "0.11.5"
 categories = ["rust-patterns", "memory-management", "caching", "no-std", "data-structures"]
 keywords = ["zerocopy", "serialization", "zero-copy", "serde"]
 
@@ -14,7 +14,7 @@ edition.workspace = true
 include.workspace = true
 license.workspace = true
 repository.workspace = true
-rust-version.workspace = true
+rust-version = "1.82"
 
 [package.metadata.workspaces]
 independent = true
@@ -28,37 +28,18 @@ zerofrom = { workspace = true }
 zerovec-derive = { workspace = true, optional = true}
 
 databake = { workspace = true, features = ["derive"], optional = true }
-serde = { workspace = true, features = ["alloc", "derive"], optional = true }
+serde = { workspace = true, features = ["derive"], optional = true }
 
 yoke = { workspace = true, optional = true }
 twox-hash = { workspace = true, optional = true }
-
-[dev-dependencies]
-bincode = { workspace = true }
-getrandom = { workspace = true, features = ["wasm_js"] }
-iai = { workspace = true }
-icu_benchmark_macros = { path = "../../tools/benchmark/macros" }
-postcard = { workspace = true, features = ["use-std"] }
-rand = { workspace = true }
-rand_distr = { workspace = true }
-rand_pcg = { workspace = true }
-rmp-serde = { workspace = true }
-serde = { workspace = true, features = ["derive"] }
-serde_json = { workspace = true }
-potential_utf = { path = "../../utils/potential_utf", features = ["zerovec"] }
-yoke = { workspace = true, features = ["derive"] }
-zerofrom = { path = "../../utils/zerofrom", features = ["derive"] }
-
-[target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies]
-criterion = { workspace = true }
 
 [features]
 derive = ["dep:zerovec-derive"]
 hashmap = ["dep:twox-hash", "alloc"]
 yoke = ["dep:yoke"]
-serde = ["dep:serde", "alloc"]
+serde = ["dep:serde"]
 databake = ["dep:databake"]
-alloc = []
+alloc = ["serde?/alloc"]
 # No longer does anything
 std = []
 

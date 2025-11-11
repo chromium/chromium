@@ -73,7 +73,7 @@ cargo_crate("lib") {
   cargo_pkg_name = "zerovec"
   cargo_pkg_description = "Zero-copy vector backed by a byte array"
   cargo_pkg_repository = "https://github.com/unicode-org/icu4x"
-  cargo_pkg_version = "0.11.4"
+  cargo_pkg_version = "0.11.5"
 
   allow_unsafe = true
 

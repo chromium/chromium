@@ -71,6 +71,10 @@ mod test {
     ];
 
     #[derive(Serialize, Deserialize)]
+    #[allow(
+        dead_code,
+        reason = "Tests compatibility of custom impl with Serde derive."
+    )]
     struct DeriveTestZeroHashMap<'data> {
         #[serde(borrow)]
         _data: ZeroHashMap<'data, str, [u8]>,
