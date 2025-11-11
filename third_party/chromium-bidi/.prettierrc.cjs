@@ -14,12 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-const gtsPrettierrc = require('gts/.prettierrc.json');
 
 /**
  * @type {import('prettier').Config}
  */
 module.exports = {
-  ...gtsPrettierrc,
+  bracketSpacing: false,
+  singleQuote: true,
+  trailingComma: 'all',
   arrowParens: 'always', // https://google.github.io/styleguide/jsguide.html#features-functions-arrow-functions
 };

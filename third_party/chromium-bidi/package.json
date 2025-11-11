@@ -206,7 +206,6 @@
     "eslint-plugin-prettier": "5.5.4",
     "eslint-plugin-promise": "7.2.1",
     "globals": "16.5.0",
-    "gts": "6.0.2",
     "mocha": "11.7.5",
     "package-directory": "8.1.0",
     "prettier": "3.6.2",
