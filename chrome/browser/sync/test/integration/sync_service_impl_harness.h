@@ -186,6 +186,10 @@ class SyncServiceImplHarness {
   // Returns the debug name for this profile. Used for logging.
   const std::string& profile_debug_name() const { return profile_debug_name_; }
 
+  // Enables history sync. This includes UserSelectableType::kHistory, and
+  // UserSelectableType::kTabs. Returns true on success.
+  [[nodiscard]] bool EnableHistorySyncNoWaitForCompletion();
+
   // Enables sync for a particular selectable sync type (will enable sync for
   // all corresponding datatypes). Returns true on success.
   [[nodiscard]] bool EnableSyncForType(syncer::UserSelectableType type);

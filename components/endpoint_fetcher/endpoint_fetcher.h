@@ -344,7 +344,10 @@ class EndpointFetcher {
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   // `identity_manager_` can be null if it is not needed for authentication (in
   // this case, callers should invoke `PerformRequest` directly).
-  const raw_ptr<signin::IdentityManager> identity_manager_;
+  // Dangling when executing the following on Windows:
+  // SingleClientSharedTabGroupDataSyncTest.ShouldReloadDataOnBrowserRestart/kSyncTransportOnly
+  // SingleClientSharedTabGroupVersioningSyncTest.ShouldShowVersioningMessagesAfterRestart/kSyncTransportOnly
+  const raw_ptr<signin::IdentityManager, DanglingUntriaged> identity_manager_;
 
   // The complete definition of the specific network request to be performed.
   // Contains authentication details and response handling preferences.

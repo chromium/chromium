@@ -653,7 +653,8 @@ bool SyncTest::SetupSyncInternal(SetupSyncMode setup_mode,
 
     if (setup_mode == SetupSyncMode::kSyncTransportOnly) {
       if (!client->SignInPrimaryAccount(account) ||
-          !client->AwaitEngineInitialization()) {
+          !client->AwaitEngineInitialization() ||
+          !client->EnableHistorySyncNoWaitForCompletion()) {
         ADD_FAILURE() << "SetupSync() failed.";
         return false;
       }

@@ -521,6 +521,26 @@ bool SyncServiceImplHarness::AwaitInvalidationsStatus(bool expected_status) {
   return InvalidationsStatusChecker(service(), expected_status).Wait();
 }
 
+bool SyncServiceImplHarness::EnableHistorySyncNoWaitForCompletion() {
+  DVLOG(1) << GetClientInfoString("EnableHistorySync");
+  if (service() == nullptr) {
+    LOG(ERROR) << "EnableHistorySync(): service() is null.";
+    return false;
+  }
+  service()->GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kHistory, true);
+  // Tabs and history are bundled together in the same toggle.
+  service()->GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kTabs, true);
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  // On desktop platforms, kSavedTabGroups are not merged to kTabs yet, but
+  // they're enabled together.
+  service()->GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kSavedTabGroups, true);
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  return true;
+}
+
 bool SyncServiceImplHarness::EnableSyncForType(
     syncer::UserSelectableType type) {
   DVLOG(1) << GetClientInfoString(
