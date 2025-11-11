@@ -12,7 +12,7 @@ desc: |-
 
   For origins not covered by the patterns specified here, the user's personal configuration will apply.
 
-  For detailed information on valid URL patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
+  For detailed information on valid URL patterns, please see https://chromeenterprise.google/policies/url-patterns/.
 
   See https://wicg.github.io/local-network-access/ for <ph
   name="LOCAL_NETWORK_ACCESS">Local Network Access</ph> restrictions.
