@@ -208,12 +208,12 @@ TensorImplCoreml::Create(
         mojom::Error::Code::kUnknownError,
         "Invalid IOSurface: pixel format is not OneComponent16Half."));
   }
-  size_t height = 1ul;
+  size_t width = 1ul;
   const std::vector<uint32_t>& shape = tensor_info->descriptor.shape();
   if (!shape.empty()) {
-    height = shape.back();
+    width = shape.back();
   }
-  size_t width = tensor_info->descriptor.NumberOfElements() / height;
+  size_t height = tensor_info->descriptor.NumberOfElements() / width;
   if (height != IOSurfaceGetHeight(io_surface) ||
       width != IOSurfaceGetWidth(io_surface)) {
     return base::unexpected(mojom::Error::New(
