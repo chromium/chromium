@@ -25,6 +25,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_variant.h"
 #include "ui/events/event_observer.h"
+#include "ui/views/background.h"
 #include "ui/views/event_monitor.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/view_class_properties.h"
@@ -107,13 +108,23 @@ void GlicView::UpdateBackgroundColor() {
     background_color = GetClientBackgroundColor();
   }
 
-  SetBackground(views::CreateSolidBackground(
-      background_color.value_or(kColorGlicBackground)));
+  // TODO(b:458506119): Use a layer based background here.
+  SetBackground(views::CreateRoundedRectBackground(
+      background_color.value_or(kColorGlicBackground), background_radii_));
 
   if (views::Widget* widget = GetWidget(); explicit_background && widget) {
     // Set the native widget background color if needed.
     widget->SetBackgroundColor(kColorGlicBackground);
   }
+}
+
+void GlicView::SetBackgroundRoundedCorners(const gfx::RoundedCornersF& radii) {
+  if (radii == background_radii_) {
+    return;
+  }
+
+  background_radii_ = radii;
+  UpdateBackgroundColor();
 }
 
 bool GlicView::AcceleratorPressed(const ui::Accelerator& accelerator) {

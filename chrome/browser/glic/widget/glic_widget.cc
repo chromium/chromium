@@ -83,6 +83,15 @@ class GlicClientView : public views::ClientView {
       : views::ClientView(widget, contents_view) {}
   ~GlicClientView() override = default;
 
+#if BUILDFLAG(IS_CHROMEOS)
+  void UpdateWindowRoundedCorners(
+      const gfx::RoundedCornersF& window_radii) override {
+    // For ChromeOS, we have to manually round the contents of `ClientView`.
+    glic_view()->SetBackgroundRoundedCorners(window_radii);
+    glic_view()->holder()->SetCornerRadii(window_radii);
+  }
+#endif
+
  private:
   GlicView* glic_view() { return static_cast<GlicView*>(contents_view()); }
 };
@@ -248,7 +257,7 @@ std::unique_ptr<GlicWidget> GlicWidget::Create(views::WidgetDelegate* delegate,
   // Widget::InitParams::rounded_corners. DO NOT apply this radius using
   // views::Background or in the web client because it will mismatch with
   // the window's actual corner radius. e.g. on win10 resizable windows
-  // do have rounded corners.
+  // do have rounded corners. (Except for ChromeOS)
   params.rounded_corners = gfx::RoundedCornersF(kGlicWidgetCornerRadius);
   if (ShouldCreateNonClientView()) {
     params.remove_standard_frame = true;
