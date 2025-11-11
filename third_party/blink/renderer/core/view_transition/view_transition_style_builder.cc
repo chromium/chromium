@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/view_transition/view_transition_style_builder.h"
 
+#include "third_party/blink/renderer/core/css/dom_window_css.h"
 #include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
 #include "third_party/blink/renderer/platform/text/writing_mode.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -74,7 +75,7 @@ void ViewTransitionStyleBuilder::AddSelector(const String& name,
                                              const String& tag) {
   builder_.Append(name);
   builder_.Append("(");
-  builder_.Append(tag);
+  builder_.Append(DOMWindowCSS::escape(tag));
   builder_.Append(")");
 }
 
@@ -171,7 +172,7 @@ String ViewTransitionStyleBuilder::AddKeyframes(
   String keyframe_name = [&tag]() {
     StringBuilder builder;
     builder.Append(kKeyframeNamePrefix);
-    builder.Append(tag);
+    builder.Append(DOMWindowCSS::escape(tag));
     return builder.ReleaseString();
   }();
 
@@ -204,7 +205,7 @@ String ViewTransitionStyleBuilder::AddGroupChildrenKeyframes(
   String keyframe_name = [&tag]() {
     StringBuilder builder;
     builder.Append(kGroupChildrenKeyframeNamePrefix);
-    builder.Append(tag);
+    builder.Append(DOMWindowCSS::escape(tag));
     return builder.ReleaseString();
   }();
 
