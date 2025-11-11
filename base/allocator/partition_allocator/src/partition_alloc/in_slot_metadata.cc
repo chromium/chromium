@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "partition_alloc/slot_start.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
 #pragma allow_unsafe_buffers
@@ -27,7 +28,7 @@ namespace partition_alloc::internal {
 namespace {
 
 // If double-free, the freed `slot` will be a freelist entry.
-bool IsInFreelist(uintptr_t slot_start,
+bool IsInFreelist(UntaggedSlotStart slot_start,
                   SlotSpanMetadata* slot_span,
                   size_t& position) {
   size_t slot_size = slot_span->bucket->slot_size;
@@ -38,7 +39,7 @@ bool IsInFreelist(uintptr_t slot_start,
   size_t length = slot_span->GetFreelistLength();
   size_t index = 0;
   while (node != nullptr && index < length) {
-    if (UntagAddr(reinterpret_cast<uintptr_t>(node)) == slot_start) {
+    if (UntagAddr(reinterpret_cast<uintptr_t>(node)) == slot_start.value()) {
       // This means `double-free`.
       position = index;
       return true;
@@ -104,7 +105,7 @@ PA_NOINLINE PA_NOT_TAIL_CALLED void CorruptionDetected() {
 #endif  // !PA_BUILDFLAG(IS_IOS)
 PA_NOINLINE PA_NOT_TAIL_CALLED void
 InSlotMetadata::DoubleFreeOrCorruptionDetected(InSlotMetadata::CountType count,
-                                               uintptr_t slot_start,
+                                               UntaggedSlotStart slot_start,
                                                SlotSpanMetadata* slot_span) {
   // Lock the PartitionRoot here, because to travserse SlotSpanMetadata's
   // freelist, we need PartitionRootLock().
@@ -121,7 +122,7 @@ InSlotMetadata::DoubleFreeOrCorruptionDetected(InSlotMetadata::CountType count,
   void (*hook)(uintptr_t) =
       corruption_detected_fn.load(std::memory_order_relaxed);
   if (hook) {
-    (*hook)(slot_start);
+    (*hook)(slot_start.value());
   }
 
   auto* thread_cache = root->GetThreadCache();

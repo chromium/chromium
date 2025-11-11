@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "partition_alloc/slot_start.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
 #pragma allow_unsafe_buffers
@@ -86,15 +87,16 @@ class SchedulerLoopQuarantineTest : public testing::Test {
   QuarantineBranch* GetQuarantineBranch() { return branch_; }
 
   void Quarantine(void* object) {
-    auto* slot_span =
-        internal::SlotSpanMetadata::FromObject(object, GetPartitionRoot());
-    uintptr_t slot_start = GetPartitionRoot()->ObjectToSlotStart(object);
-    GetQuarantineBranch()->Quarantine(object, slot_span, slot_start);
+    internal::SlotStart slot_start = internal::SlotStart::Unchecked(object);
+    auto* slot_span = internal::SlotSpanMetadata::FromSlotStart(
+        slot_start.Untag(), GetPartitionRoot());
+    GetQuarantineBranch()->Quarantine(slot_start, slot_span);
   }
 
   size_t GetObjectSize(void* object) {
-    auto* entry_slot_span =
-        internal::SlotSpanMetadata::FromObject(object, GetPartitionRoot());
+    internal::SlotStart slot_start = internal::SlotStart::Unchecked(object);
+    auto* entry_slot_span = internal::SlotSpanMetadata::FromSlotStart(
+        slot_start.Untag(), GetPartitionRoot());
     return entry_slot_span->bucket->slot_size;
   }
 

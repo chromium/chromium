@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "partition_alloc/slot_start.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
 #pragma allow_unsafe_buffers
@@ -634,7 +635,7 @@ void ThreadCache::FillBucket(size_t bucket_index) {
     // only used for direct-mapped allocations and single-slot ones anyway,
     // which are not handled here.
     size_t ret_slot_size;
-    uintptr_t slot_start =
+    internal::UntaggedSlotStart slot_start =
         root_->AllocFromBucket<AllocFlags::kFastPathOrReturnNull |
                                AllocFlags::kReturnNull>(
             &root_->buckets[bucket_index],
@@ -717,7 +718,8 @@ void ThreadCache::FreeAfter(internal::FreelistEntry* head, size_t slot_size) {
   // acquisitions can be expensive.
   internal::ScopedGuard guard(internal::PartitionRootLock(root_));
   while (head) {
-    uintptr_t slot_start = internal::SlotStartPtr2Addr(head);
+    internal::UntaggedSlotStart slot_start =
+        internal::SlotStart::Unchecked(head).Untag();
 #if PA_BUILDFLAG(HAS_64_BIT_POINTERS)
     head = head->GetNextForThreadCache(slot_size, offset_lookup_);
 #else
@@ -825,7 +827,7 @@ PartitionRoot* ThreadCache::GetRoot() {
   return root_;
 }
 
-bool ThreadCache::IsInFreelist(uintptr_t address,
+bool ThreadCache::IsInFreelist(internal::UntaggedSlotStart address,
                                size_t bucket_index,
                                size_t& position) {
   PA_REENTRANCY_GUARD(is_in_thread_cache_);
@@ -846,7 +848,7 @@ bool ThreadCache::IsInFreelist(uintptr_t address,
   size_t index = 0;
   size_t length = bucket.count;
   while (entry != nullptr && index < length) {
-    if (address == internal::SlotStartPtr2Addr(entry)) {
+    if (address == internal::SlotStart::Unchecked(entry).Untag()) {
       position = index;
       return true;
     }

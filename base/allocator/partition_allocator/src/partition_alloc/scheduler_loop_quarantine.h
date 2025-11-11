@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "partition_alloc/slot_start.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
 #pragma allow_unsafe_buffers
@@ -157,9 +158,8 @@ class SchedulerLoopQuarantineBranch {
   // requirement.
   void SetCapacityInBytes(size_t capacity_in_bytes);
 
-  void Quarantine(void* object,
-                  SlotSpanMetadata* slot_span,
-                  uintptr_t slot_start) PA_LOCKS_EXCLUDED(lock_);
+  void Quarantine(SlotStart slot_start, SlotSpanMetadata* slot_span)
+      PA_LOCKS_EXCLUDED(lock_);
 
   void AllowScanlessPurge();
   void DisallowScanlessPurge();
@@ -227,7 +227,7 @@ class SchedulerLoopQuarantineBranch {
 
   // `slots_` hold quarantined entries.
   struct QuarantineSlot {
-    uintptr_t slot_start = 0;
+    SlotStart slot_start;
     // Record bucket index instead of slot size because look-up from bucket
     // index to slot size is more lightweight compared to its reverse look-up.
     size_t bucket_index = 0;
