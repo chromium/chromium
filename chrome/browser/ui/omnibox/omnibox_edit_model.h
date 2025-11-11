@@ -170,6 +170,13 @@ class OmniboxEditModel {
   // icon.
   ui::ImageModel GetSuperGIcon(int image_size, bool dark_mode) const;
 
+  // Whether the "Add Context" button should be shown in place of the location
+  // bar page info icon button.
+  bool ShouldShowAddContextButton() const;
+
+  // Returns the "mega plus" icon associated with the "Add Context" button.
+  ui::ImageModel GetAddContextIcon(int image_size) const;
+
   // Returns the Agentspace icon for chrome builds. Otherwise return an empty
   // Image. If `dark_mode` is enabled, return the monochrome version of the
   // icon.
