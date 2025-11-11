@@ -362,7 +362,7 @@ inline constexpr base::FeatureParam<int>
     kReadAloudAudioReadabilityDelayMsAfterPageLoad(
         &kReadAloud,
         "read_aloud_readability_delay_ms_after_page_load",
-        /* default_value=*/3000);
+        /* default_value=*/1500);
 
 inline constexpr base::FeatureParam<std::string>
     kQuickDeleteAndroidSurveyTriggerId(&kQuickDeleteAndroidSurvey,

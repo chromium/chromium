@@ -1685,7 +1685,7 @@ public abstract class ChromeFeatureList {
 
     public static final IntCachedFeatureParam sReadAloudReadabilityDelayMsAfterPageLoad =
             newIntCachedFeatureParam(
-                    READALOUD, "read_aloud_readability_delay_ms_after_page_load", 3000);
+                    READALOUD, "read_aloud_readability_delay_ms_after_page_load", 1500);
 
     public static final BooleanCachedFeatureParam sShouldConsiderLanguageInOverviewReadability =
             newBooleanCachedFeatureParam(

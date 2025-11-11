@@ -20591,24 +20591,6 @@
             ]
         }
     ],
-    "ReadAloudReadabilityDelay": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "read_aloud_readability_delay_ms_after_page_load": "1500"
-                    },
-                    "enable_features": [
-                        "ReadAloud"
-                    ]
-                }
-            ]
-        }
-    ],
     "ReadAloudTapToSeek": [
         {
             "platforms": [
