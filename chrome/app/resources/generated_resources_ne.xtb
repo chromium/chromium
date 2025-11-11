@@ -1118,7 +1118,6 @@
 <translation id="1751335846119670066">मलाई पढ्न मद्दत गर्नुहोस्</translation>
 <translation id="17513872634828108">खुला ट्याबहरू</translation>
 <translation id="175196451752279553">बन्द ट्याबलाई पुन: खो&amp;ल्नुहोस्</translation>
-<translation id="1752557850776261983">साइन इन गरिएको छ कि छैन जाँच गरिँदै छ...</translation>
 <translation id="1753067873202720523">खुला भएको समयमा तपाईंको क्रोमबुक चार्ज नहुन सक्छ।</translation>
 <translation id="1753557900380512635">आन्तरिक भाग</translation>
 <translation id="1753905327828125965">धेरै भ्रमण गरिएको</translation>
@@ -1746,7 +1745,6 @@
 <translation id="2178614541317717477">CA सम्झौता</translation>
 <translation id="2180620921879609685">कुनै पनि पेजमा भएका सामग्री ब्लक गर्न</translation>
 <translation id="2181821976797666341">नीतिहरू</translation>
-<translation id="2181930382663745869">तुलना गर्नुहोस्</translation>
 <translation id="2182058453334755893">तपाईंको क्लिपबोर्डमा कपी गरियो</translation>
 <translation id="2182419606502127232">मेरा सर्भरका लगहरू समावेश गरिऊन्।</translation>
 <translation id="2183570493397356669">"जारी राख्नुहोस्" बटन अफ गरिएको छ</translation>
@@ -6373,7 +6371,6 @@
 <translation id="5398497406011404839">लुकाइएका बुकमार्कहरू</translation>
 <translation id="5398572795982417028">सीमा बाहिरको पृष्ठ सन्दर्भ, सीमा <ph name="MAXIMUM_PAGE" /> हो</translation>
 <translation id="539882584649709174">तपाईंलाई समीक्षा जस्ता वेबमा भएका कुराहरूका बारेमा छोटो टेक्स्ट लेख्न मद्दत गर्छ</translation>
-<translation id="5400068721524309244">ट्याबहरू सेयर गर्दा ती ट्याबमा भएका पेजका कन्टेन्ट र URL हरू Google मा पठाइन्छन्</translation>
 <translation id="5400196580536813396">तपाईंको डिभाइसमा एक्सेस गर्न मिल्ने प्रिन्टरहरू खोज्ने वा प्रयोग गर्ने अनुमति नदिइएका साइटहरू</translation>
 <translation id="5400836586163650660">खरानी रङ्ग</translation>
 <translation id="5402367795255837559">ब्रेल</translation>
@@ -10859,6 +10856,7 @@
 <translation id="8505669004895429027">साना बचतहरू</translation>
 <translation id="8507227974644337342">स्क्रिन रिजोल्युसन</translation>
 <translation id="850763987657366362">प्रमाणपत्र इम्पोर्ट गर्न सकिएन</translation>
+<translation id="8508532351844333131"><ph name="WEBSITE_ORIGIN" /> ले तपाईंको Android डिभाइसमा जानकारी सेभ गर्न चाहन्छ</translation>
 <translation id="8509177919508253835">सुरक्षा साँचाहरू रिसेट गर्नुहोस् र PIN हरू सिर्जना गर्नुहोस्</translation>
 <translation id="8509646642152301857">हिज्जे जाँच शब्दकोशको डाउनलोड असफल भयो।</translation>
 <translation id="8509967119010808787">आफूले चाहेको ट्याब खोज्न यहाँ क्लिक गर्नुहोस्</translation>

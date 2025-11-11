@@ -1127,7 +1127,6 @@
 <translation id="1751335846119670066">पढ़ने में मेरी मदद करो</translation>
 <translation id="17513872634828108">टैब खोलें</translation>
 <translation id="175196451752279553">बंद किए गए टैब पु&amp;न: खोलें</translation>
-<translation id="1752557850776261983">साइन इन से जुड़ी जांच की जा रही है...</translation>
 <translation id="1753067873202720523">हो सकता है कि आपका Chrome बुक चालू होने पर चार्ज न हो.</translation>
 <translation id="1753557900380512635">इंटीरियर</translation>
 <translation id="1753905327828125965">सबसे ज़्यादा देखे गए</translation>
@@ -1756,7 +1755,6 @@
 <translation id="2178614541317717477">CA समझौता</translation>
 <translation id="2180620921879609685">यह एक्सटेंशन, किसी भी पेज पर कॉन्टेंट ब्लॉक कर सकता है</translation>
 <translation id="2181821976797666341">नीतियां</translation>
-<translation id="2181930382663745869">तुलना करें</translation>
 <translation id="2182058453334755893">आपके क्लिपबोर्ड पर कॉपी किया गया</translation>
 <translation id="2182419606502127232">मेरे सर्वर लॉग शामिल करें.</translation>
 <translation id="2183570493397356669">'जारी रखें' बटन को बंद किया गया</translation>
@@ -6385,7 +6383,6 @@
 <translation id="5398497406011404839">छिपे हुए बुकमार्क</translation>
 <translation id="5398572795982417028">सीमा से बाहर के पेज का संदर्भ, सीमा <ph name="MAXIMUM_PAGE" /> की है</translation>
 <translation id="539882584649709174">इस सुविधा की मदद से आपको वेब पर कम वर्णों वाला टेक्स्ट लिखने में मदद मिलती है. जैसे, समीक्षाएं</translation>
-<translation id="5400068721524309244">टैब शेयर करने पर, उनके पेज पर मौजूद कॉन्टेंट और यूआरएल Google को भेजे जाते हैं</translation>
 <translation id="5400196580536813396">आपके डिवाइस से ऐक्सेस किए जा सकने वाले प्रिंटर खोजने या उनका इस्तेमाल करने की अनुमति नहीं है</translation>
 <translation id="5400836586163650660">स्लेटी</translation>
 <translation id="5402367795255837559">ब्रेल</translation>
@@ -10875,6 +10872,7 @@
 <translation id="8505669004895429027">कम बचत</translation>
 <translation id="8507227974644337342">स्क्रीन रिज़ॉल्यूशन</translation>
 <translation id="850763987657366362">सर्टिफ़िकेट को इंपोर्ट नहीं किया जा सका</translation>
+<translation id="8508532351844333131"><ph name="WEBSITE_ORIGIN" /> को आपके Android डिवाइस पर जानकारी सेव करने की अनुमति चाहिए</translation>
 <translation id="8509177919508253835">सुरक्षा कुंजी रीसेट करें और पिन बनाएं</translation>
 <translation id="8509646642152301857">स्पेलिंग जाँच शब्दकोश डाउनलोड नहीं हो सका.</translation>
 <translation id="8509967119010808787">टैब खोजने के लिए, यहां क्लिक करें</translation>

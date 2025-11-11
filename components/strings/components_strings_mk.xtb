@@ -519,6 +519,7 @@
 <translation id="1823768272150895732">Фонт</translation>
 <translation id="1824402189105105503">Осма ролна</translation>
 <translation id="1826516787628120939">Се проверува</translation>
+<translation id="1829026591231985685">зачувувањето податоци во Google Wallet во поставките</translation>
 <translation id="1832730227369924598">Синхронизација на работната површина</translation>
 <translation id="1834452765064623979">Градежни работи и одржување</translation>
 <translation id="1838374766361614909">Исчисти го пребарувањето</translation>
@@ -1885,6 +1886,7 @@
 <translation id="4073797364926776829">Прикажи картичка</translation>
 <translation id="4075732493274867456">Клиентот и серверот не ја поддржуваат верзијата на заедничкиот SSL-протокол или пакетот за шифрирање.</translation>
 <translation id="4079302484614802869">Конфигурацијата на прокси е поставена да користи URL на скрипта .pac, а не фиксни прокси-сервери.</translation>
+<translation id="4080668349181235831">За да се нудат предлози и да се подобрува функцијава, со Google се споделуваат URL-адресата и целосните содржини на страниците на сајтот што го посетувате. Дознајте повеќе за <ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" />.</translation>
 <translation id="4080855220442581440">лизгање и зумирање на споделените картички</translation>
 <translation id="4082333119419111506">Хартија (однапред отпечатена)</translation>
 <translation id="4082393374666368382">Поставки - Управување</translation>
@@ -3461,6 +3463,7 @@
 <translation id="6654224358955673568">Формализирај</translation>
 <translation id="6654244995031366386">Стакло (со текстура)</translation>
 <translation id="6655085656059574817">Ако ви е поврзана сметката, може да плаќате побрзо со <ph name="BNPL_ISSUER_NAME" />, но може да ја прекинете врската преку <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /></translation>
+<translation id="6656935431494847393">Опфаќа податоци како резервации на летови и податоци за возила</translation>
 <translation id="6657585470893396449">Лозинка</translation>
 <translation id="6659246032834639189">Оваа цена е ниска</translation>
 <translation id="6660413144148052430">локација</translation>
@@ -3843,6 +3846,7 @@
 <translation id="7286908876112207905">Не е дозволено лепење на содржиниве на сајтов</translation>
 <translation id="7291578327729322058">Додајте возачка дозвола</translation>
 <translation id="7292031607255951991">Име на примач</translation>
+<translation id="7297228218361240128">Зачувувајте податоци во Google Wallet од страниците што ги прегледувате</translation>
 <translation id="7298195798382681320">Препорачано</translation>
 <translation id="7299471494012161875">Прикажи ги прикачените периферни уреди</translation>
 <translation id="7299721129597238157">Избриши го обележувачот</translation>
@@ -4240,6 +4244,7 @@
 <translation id="7916162853251942238">Флексибилна основа</translation>
 <translation id="791698251820376781">Вашата организација не ви дозволува да се најавите</translation>
 <translation id="7926503317156566022">Авијациска индустрија</translation>
+<translation id="7927046851848613453">Зачувувајте билети, настани и други податоци од страниците што ги прегледувате, а не само од формуларите што ги пополнувате. Потоа брзо пристапувајте до вашите пропусници, како билети за настани и картички за лојалност. Зачуваните податоци може да се појавуваат на вашите уреди и во производите на Google.</translation>
 <translation id="7930282586031445870">Екранот со условите за користење на „Купете сега, платете подоцна“ е затворен.</translation>
 <translation id="7932035970207573919">Адреса на работа, <ph name="ADDRESS" /></translation>
 <translation id="793209273132572360">Да се ажурира адресата?</translation>
@@ -4674,6 +4679,7 @@
 <translation id="865255447216708819">Фолија за печатење одзади</translation>
 <translation id="8654126188050905496">55 x 91 mm</translation>
 <translation id="8660780831677950176">Го отворате ова често во овој дел од денот</translation>
+<translation id="8661820486298572829">Автоматски пополнет код</translation>
 <translation id="8662463432865928030">Комерцијални имоти</translation>
 <translation id="8663226718884576429">Краток преглед на нарачка, <ph name="TOTAL_LABEL" />, повеќе детали</translation>
 <translation id="8663909737634214500">Оптички диск</translation>
@@ -4755,6 +4761,7 @@
 <translation id="8781278378794969337">Копче за преведување на страницата, активирајте го за да ја преведете страницава со „Преведи на Google“</translation>
 <translation id="8785658048882205566">Мотори</translation>
 <translation id="8790007591277257123">&amp;Повтори бришење</translation>
+<translation id="8790668801880409584">Зачувувај ги и пополнувај ги податоците за патување</translation>
 <translation id="8792272652220298572">Пластика (сјајна)</translation>
 <translation id="8792621596287649091">Може да го изгубите пристапот до вашата сметка на <ph name="ORG_NAME" /> или да ви го украдат идентитетот. Chromium препорачува да ја смените лозинката веднаш.</translation>
 <translation id="8792626944327216835">микрофон</translation>

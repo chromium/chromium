@@ -1126,7 +1126,6 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1751335846119670066">Help me read</translation>
 <translation id="17513872634828108">Open tabs</translation>
 <translation id="175196451752279553">R&amp;eopen closed tab</translation>
-<translation id="1752557850776261983">Checking sign in…</translation>
 <translation id="1753067873202720523">Your Chromebook may not charge while it is turned on.</translation>
 <translation id="1753557900380512635">Interiors</translation>
 <translation id="1753905327828125965">Most Visited</translation>
@@ -1755,7 +1754,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2178614541317717477">CA Compromise</translation>
 <translation id="2180620921879609685">Block content on any page</translation>
 <translation id="2181821976797666341">Policies</translation>
-<translation id="2181930382663745869">Make a comparison</translation>
 <translation id="2182058453334755893">Copied to your Clipboard</translation>
 <translation id="2182419606502127232">Include my server logs.</translation>
 <translation id="2183570493397356669">Continue button disabled</translation>
@@ -6387,7 +6385,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5398497406011404839">Hidden bookmarks</translation>
 <translation id="5398572795982417028">Out of bounds page reference, limit is <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="539882584649709174">Helps you write short-form text for things on the web, like reviews</translation>
-<translation id="5400068721524309244">When tabs are shared, their page contents and URLs are sent to Google</translation>
 <translation id="5400196580536813396">Not allowed to look for or use printers that are accessible to your device</translation>
 <translation id="5400836586163650660">Grey</translation>
 <translation id="5402367795255837559">Braille</translation>
@@ -10876,6 +10873,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8505669004895429027">Small savings</translation>
 <translation id="8507227974644337342">Screen resolution</translation>
 <translation id="850763987657366362">Unable to import certificate</translation>
+<translation id="8508532351844333131"><ph name="WEBSITE_ORIGIN" /> wants to save info on your Android device</translation>
 <translation id="8509177919508253835">Reset security keys and create PINs</translation>
 <translation id="8509646642152301857">Spell check dictionary download failed.</translation>
 <translation id="8509967119010808787">To search your tabs, click here</translation>

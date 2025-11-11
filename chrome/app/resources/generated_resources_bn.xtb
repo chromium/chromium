@@ -1127,7 +1127,6 @@
 <translation id="1751335846119670066">আমাকে পড়তে সাহায্য করো</translation>
 <translation id="17513872634828108">খোলা ট্যাব</translation>
 <translation id="175196451752279553">বন্ধ ট্যাবটি পু&amp;নঃরায় খুলুন</translation>
-<translation id="1752557850776261983">সাইন-ইন চেক করা হচ্ছে...</translation>
 <translation id="1753067873202720523">চালু থাকার সময় আপনার Chromebook চার্জ নাও হতে পারে৷</translation>
 <translation id="1753557900380512635">ইন্টিরিয়র</translation>
 <translation id="1753905327828125965">সর্বাধিক দেখা</translation>
@@ -1756,7 +1755,6 @@
 <translation id="2178614541317717477">CA আপোস</translation>
 <translation id="2180620921879609685">যেকোনও পৃষ্ঠার কন্টেন্ট ব্লক করতে পারে</translation>
 <translation id="2181821976797666341">নীতিসমূহ</translation>
-<translation id="2181930382663745869">তুলনা করুন</translation>
 <translation id="2182058453334755893">আপনার ক্লিপবোর্ডে কপি করা হয়েছে</translation>
 <translation id="2182419606502127232">আমার সার্ভার লগ অন্তর্ভুক্ত করুন।</translation>
 <translation id="2183570493397356669">'এগিয়ে যান' বোতাম বন্ধ করা হয়েছে</translation>
@@ -6388,7 +6386,6 @@
 <translation id="5398497406011404839">লুকানো বুকমার্ক</translation>
 <translation id="5398572795982417028">পৃষ্ঠা সীমার বাইরের উল্লেখ, সীমা হলো <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="539882584649709174">ওয়েবে বিভিন্ন বিষয়ে আপনাকে স্বল্প দৈর্ঘ্যের টেক্সট লিখতে সাহায্য করে, যেমন রিভিউ</translation>
-<translation id="5400068721524309244">ট্যাব শেয়ার করা হলে, সেগুলির পৃষ্ঠার কন্টেন্ট ও URL Google-কে পাঠানো হয়</translation>
 <translation id="5400196580536813396">আপনার ডিভাইসে অ্যাক্সেস করা যাবে এমন প্রিন্টার শনাক্ত বা ব্যবহার করার অনুমতি নেই</translation>
 <translation id="5400836586163650660">ধূসর</translation>
 <translation id="5402367795255837559">ব্রেইল</translation>
@@ -10880,6 +10877,7 @@
 <translation id="8505669004895429027">কম পরিমাণে সেভ করা</translation>
 <translation id="8507227974644337342">স্ক্রিনের রেজোলিউশন</translation>
 <translation id="850763987657366362">সার্টিফিকেট ইমপোর্ট করা যায়নি</translation>
+<translation id="8508532351844333131"><ph name="WEBSITE_ORIGIN" /> ওয়েবসাইটটি আপনার Android ডিভাইসে তথ্য সেভ করতে চাইছে</translation>
 <translation id="8509177919508253835">নিরাপত্তা কী ডিভাইস রিসেট করে পিন তৈরি করুন</translation>
 <translation id="8509646642152301857">বানান পরীক্ষক অভিধান ডাউনলোড করা যায়নি৷</translation>
 <translation id="8509967119010808787">আপনার ট্যাব সার্চ করতে, এখানে ক্লিক করুন</translation>

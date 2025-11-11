@@ -1114,7 +1114,6 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="1751335846119670066">Më ndihmo të lexoj</translation>
 <translation id="17513872634828108">Hap skedat</translation>
 <translation id="175196451752279553">&amp;Hap përsëri skedën e mbyllur</translation>
-<translation id="1752557850776261983">Po kontrollohen të dhënat e identifikimit...</translation>
 <translation id="1753067873202720523">Chromebook mund të mos ngarkohet kur është i ndezur.</translation>
 <translation id="1753557900380512635">Ambiente të brendshme</translation>
 <translation id="1753905327828125965">Më të vizituara</translation>
@@ -1742,7 +1741,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2178614541317717477">Komprometim i autoritetit të certifikimit</translation>
 <translation id="2180620921879609685">Blloko përmbajtjen në çdo faqe</translation>
 <translation id="2181821976797666341">Politikat</translation>
-<translation id="2181930382663745869">Bëj një krahasim</translation>
 <translation id="2182058453334755893">Kopjuar te kujtesa e fragmenteve</translation>
 <translation id="2182419606502127232">Përfshi evidencat e mia të serverit.</translation>
 <translation id="2183570493397356669">Butoni "Vazhdo" është çaktivizuar</translation>
@@ -6368,7 +6366,6 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5398497406011404839">Faqeshënuesit e fshehur</translation>
 <translation id="5398572795982417028">Referenca e faqes jashtë kufijve, kufiri është <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="539882584649709174">Të ndihmon të shkruash tekste të shkurtra për gjëra në ueb, si p.sh. komente</translation>
-<translation id="5400068721524309244">Kur ndahen skedat, përmbajtjet e faqeve dhe URL-të e tyre dërgohen te Google</translation>
 <translation id="5400196580536813396">Nuk lejohen të kërkojnë për printerët e qasshëm nga pajisja jote apo t'i përdorin ata</translation>
 <translation id="5400836586163650660">Gri</translation>
 <translation id="5402367795255837559">Braille</translation>
@@ -10855,6 +10852,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8505669004895429027">Kursime të vogla</translation>
 <translation id="8507227974644337342">Rezolucioni i ekranit</translation>
 <translation id="850763987657366362">Certifikata nuk mund të importohet</translation>
+<translation id="8508532351844333131"><ph name="WEBSITE_ORIGIN" /> dëshiron të ruajë informacione në pajisjen tënde Android</translation>
 <translation id="8509177919508253835">Rivendos çelësat e sigurisë dhe krijo kodet PIN</translation>
 <translation id="8509646642152301857">Dështoi shkarkimi i fjalorit të kontrollit të drejtshkrimit.</translation>
 <translation id="8509967119010808787">Për të kërkuar në skedat e tua, kliko këtu</translation>

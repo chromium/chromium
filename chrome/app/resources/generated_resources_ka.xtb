@@ -1117,7 +1117,6 @@
 <translation id="1751335846119670066">წაკითხვაში დახმარება</translation>
 <translation id="17513872634828108">გახსნილი ჩანართები</translation>
 <translation id="175196451752279553">დახურული ჩანართის &amp;ხელახლა გახსნა</translation>
-<translation id="1752557850776261983">მიმდინარეობს შესვლის შემოწმება...</translation>
 <translation id="1753067873202720523">Chromebook-ის დატენვა, შესაძლოა, ვერ მოხერხდეს, სანამ ის ჩართულია.</translation>
 <translation id="1753557900380512635">შიდა სივრცეები</translation>
 <translation id="1753905327828125965">ყველაზე ხშირად მონახულებადი</translation>
@@ -1745,7 +1744,6 @@
 <translation id="2178614541317717477">CA კომპრომისი</translation>
 <translation id="2180620921879609685">კონტენტის დაბლოკვა ნებისმიერ გვერდზე</translation>
 <translation id="2181821976797666341">წესები</translation>
-<translation id="2181930382663745869">შედარება</translation>
 <translation id="2182058453334755893">დაკოპირდა თქვენს გაცვლის ბუფერში</translation>
 <translation id="2182419606502127232">ჩემი სერვერების ჟურნალების დართვა.</translation>
 <translation id="2183570493397356669">გაგრძელების ღილაკი არ არის გააქტიურებული</translation>
@@ -6374,7 +6372,6 @@
 <translation id="5398497406011404839">დამალული სანიშნეები</translation>
 <translation id="5398572795982417028">გვერდზე მითითება საზღვრებს სცდება. ლიმიტი არის <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="539882584649709174">გეხმარებათ ვებისთვის მოკლე ტექსტის მაგალითად, მიმოხილვების, დაწერაში</translation>
-<translation id="5400068721524309244">ჩანართების გაზიარებისას მათი კონტენტი და URL-ები ეგზავნება Google-ს</translation>
 <translation id="5400196580536813396">არ აქვს დაშვებული თქვენი მოწყობილობისთვის ხელმისაწვდომი პრინტერების მოძიება თუ გამოყენება</translation>
 <translation id="5400836586163650660">ნაცრისფერი</translation>
 <translation id="5402367795255837559">ბრაილის შრიფტი</translation>
@@ -10860,6 +10857,7 @@
 <translation id="8505669004895429027">მცირე დანაზოგი</translation>
 <translation id="8507227974644337342">ეკრანის გარჩევადობა</translation>
 <translation id="850763987657366362">სერტიფიკატის დაიმპორტება შეუძლებელია</translation>
+<translation id="8508532351844333131"><ph name="WEBSITE_ORIGIN" />-ს სურს ინფორმაციის შენახვა თქვენს Android მოწყობილობაზე</translation>
 <translation id="8509177919508253835">უსაფრთხოების გასაღებების გადაყენება და PIN-კოდების შექმნა</translation>
 <translation id="8509646642152301857">მართლწერის შემოწმების ლექსიკონი ვერ ჩამოიტვირთა.</translation>
 <translation id="8509967119010808787">ჩანართებში ძიებისთვის დააწკაპუნეთ აქ</translation>

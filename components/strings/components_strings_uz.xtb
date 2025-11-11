@@ -518,6 +518,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="1823768272150895732">Shrift</translation>
 <translation id="1824402189105105503">Sakkizinchi oʻram</translation>
 <translation id="1826516787628120939">Tekshirilmoqda</translation>
+<translation id="1829026591231985685">sozlamalar orqali maʼlumotlarni Google Walletga saqlash haqida</translation>
 <translation id="1832730227369924598">Ish stolini sinxronlash</translation>
 <translation id="1834452765064623979">Qurilish va xizmat koʻrsatish</translation>
 <translation id="1838374766361614909">Qidiruv shartlarini tozalash</translation>
@@ -1880,6 +1881,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="4073797364926776829">Kartani ochish</translation>
 <translation id="4075732493274867456">Mijoz va server turli xil SSL protokoli versiyasi yoki shifrlar to‘plamidan foydalanmoqda.</translation>
 <translation id="4079302484614802869">Proksi-serverlar o‘zgarmas manzil orqali emas, PAC-fayli manzil orqali sozlangan.</translation>
+<translation id="4080668349181235831">Takliflar berish va ushbu funksiyani yaxshilash uchun siz tashrif buyurgan saytning URL manzili va butun sahifa kontenti Googlega ulashiladi. <ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" /> haqida batafsil.</translation>
 <translation id="4080855220442581440">umumiy varaqlarni zumlash va varaqlash</translation>
 <translation id="4082333119419111506">Qogʻoz (rasmli)</translation>
 <translation id="4082393374666368382">Sozlamalar – Boshqaruv</translation>
@@ -3838,6 +3840,7 @@ Batafsil axborot:
 <translation id="7286908876112207905">Bu saytga mazkur kontentni joylash mumkin emas</translation>
 <translation id="7291578327729322058">Haydovchilik guvohnomasini qoʻshish</translation>
 <translation id="7292031607255951991">Oluvchining ismi</translation>
+<translation id="7297228218361240128">Ochilgan sahifalardagi maʼlumotlarni Google Walletga saqlang</translation>
 <translation id="7298195798382681320">Tavsiya etiladi</translation>
 <translation id="7299471494012161875">Ulangan tashqi qurilmalarni chiqarish</translation>
 <translation id="7299721129597238157">Xatcho‘pni o‘chirish</translation>
@@ -4235,6 +4238,7 @@ Batafsil axborot:
 <translation id="7916162853251942238">Flekso bosib chiqarish uchun asos</translation>
 <translation id="791698251820376781">Tashkilotingiz Chrome hisobiga kirishni taqiqlagan</translation>
 <translation id="7926503317156566022">Aviatsiya sohasi</translation>
+<translation id="7927046851848613453">Chiptalar, tadbirlar haqidagi maʼlumotlar va boshqa maʼlumotlarni faqat siz toʻldirgan shakllardan emas, balki ochilgan sahifalardan saqlang. Tez orada tadbir chiptalari va sodiq mijoz kartalari kabi kartalarni tez ochish imkoni kiritiladi. Saqlangan maʼlumotlar qurilmalaringiz va Google xizmatlarida chiqishi mumkin.</translation>
 <translation id="7930282586031445870">Hozir olib, keyin toʻlash xizmat shartlari ekrani yopildi.</translation>
 <translation id="7932035970207573919">Ishxona manzili, <ph name="ADDRESS" /></translation>
 <translation id="793209273132572360">Manzil yangilansinmi?</translation>

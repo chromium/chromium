@@ -1124,7 +1124,6 @@
 <translation id="1751335846119670066">చదవడంలో సహాయం పొందండి</translation>
 <translation id="17513872634828108">తెరిచిన ట్యాబ్‍లు</translation>
 <translation id="175196451752279553">మూసివేయబడిన ట్యాబ్‌ను మళ్లీ తె&amp;రవండి</translation>
-<translation id="1752557850776261983">సైన్ ఇన్‌ను చెక్ చేస్తోంది...</translation>
 <translation id="1753067873202720523">మీ Chromebook ఆన్‌లో ఉన్నప్పుడు ఛార్జ్ కాకపోవచ్చు.</translation>
 <translation id="1753557900380512635">ఇంటీరియర్‌లు</translation>
 <translation id="1753905327828125965">అధికంగా సందర్శించేది</translation>
@@ -1753,7 +1752,6 @@
 <translation id="2178614541317717477">CA రాజీ</translation>
 <translation id="2180620921879609685">ఏ పేజీలోనైనా కంటెంట్‌ను బ్లాక్ చేయడం</translation>
 <translation id="2181821976797666341">విధానాలు</translation>
-<translation id="2181930382663745869">కంపారిజన్ చేయండి</translation>
 <translation id="2182058453334755893">మీ క్లిప్‌బోర్డ్‌కు కాపీ చేయబడింది</translation>
 <translation id="2182419606502127232">నా సర్వర్ లాగ్‌లతో సహా.</translation>
 <translation id="2183570493397356669">కొనసాగించండి బటన్ డిజేబుల్ చేయబడింది</translation>
@@ -6384,7 +6382,6 @@
 <translation id="5398497406011404839">దాచబడిన బుక్‌మార్క్‌లు</translation>
 <translation id="5398572795982417028">పేజీ సూచన పరిమితిని దాటిపోయారు, పరిమితి <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="539882584649709174">వెబ్‌లోని విషయాల కోసం రివ్యూల వంటి తక్కువ పదాలతో కంటెంట్‌ను రాయడంలో మీకు సహాయపడుతుంది</translation>
-<translation id="5400068721524309244">ట్యాబ్‌లను షేర్ చేసినప్పుడు, వాటి పేజీ కంటెంట్‌లు, URLలు Googleకు పంపడం జరుగుతుంది</translation>
 <translation id="5400196580536813396">మీ పరికరానికి యాక్సెస్ చేయగల ప్రింటర్‌ల కోసం వెతకడానికి లేదా వాటిని ఉపయోగించడానికి అనుమతి లేదు</translation>
 <translation id="5400836586163650660">బూడిద రంగు</translation>
 <translation id="5402367795255837559">బ్రెయిలీ</translation>
@@ -10870,6 +10867,7 @@
 <translation id="8505669004895429027">తక్కువ మెమరీ సేవింగ్స్</translation>
 <translation id="8507227974644337342">స్క్రీన్ రిజల్యూషన్</translation>
 <translation id="850763987657366362">సర్టిఫికెట్‌ను దిగుమతి చేయలేకపోయాము</translation>
+<translation id="8508532351844333131"><ph name="WEBSITE_ORIGIN" /> మీ Android డివైజ్‌లో సమాచారాన్ని సేవ్ చేయాలనుకుంటోంది</translation>
 <translation id="8509177919508253835">సెక్యూరిటీ కీలు రీసెట్ చేసి, పిన్‌లను క్రియేట్ చేయండి</translation>
 <translation id="8509646642152301857">స్పెల్ చెక్ తనిఖీ నిఘంటువును డౌన్‌లోడ్ చేయడం విఫలమైంది.</translation>
 <translation id="8509967119010808787">మీ ట్యాబ్‌లను సెర్చ్ చేయడానికి, ఇక్కడ క్లిక్ చేయండి</translation>

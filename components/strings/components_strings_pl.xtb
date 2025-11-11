@@ -519,6 +519,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1823768272150895732">Czcionka</translation>
 <translation id="1824402189105105503">Rolka 8</translation>
 <translation id="1826516787628120939">Sprawdzam</translation>
+<translation id="1829026591231985685">zapisywaniu informacji w Portfelu Google w ustawieniach</translation>
 <translation id="1832730227369924598">Synchronizacja biurka</translation>
 <translation id="1834452765064623979">Usługi budowlane i konserwacyjne</translation>
 <translation id="1838374766361614909">Wyczyść wyszukiwanie</translation>
@@ -1885,6 +1886,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4073797364926776829">Wyświetl kartę</translation>
 <translation id="4075732493274867456">Klient i serwer nie obsługują wspólnej wersji protokołu SSL lub mechanizmu szyfrowania.</translation>
 <translation id="4079302484614802869">Proxy skonfigurowano do używania URL-a skryptu PAC, a nie ustalonych serwerów proxy.</translation>
+<translation id="4080668349181235831">Firmie Google udostępniany jest adres URL i pełna zawartość odwiedzanej strony – pozwala to na wyświetlanie sugestii i ulepszanie tej funkcji. Dowiedz się więcej o <ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" />.</translation>
 <translation id="4080855220442581440">przewijanie i powiększanie udostępnionych kart</translation>
 <translation id="4082333119419111506">Papier (wstępnie zadrukowany)</translation>
 <translation id="4082393374666368382">Ustawienia – Zarządzanie</translation>
@@ -3461,6 +3463,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6654224358955673568">Zastosuj bardziej oficjalny ton</translation>
 <translation id="6654244995031366386">Szkło (teksturowane)</translation>
 <translation id="6655085656059574817">Dzięki połączeniu konta możesz płacić szybciej przez <ph name="BNPL_ISSUER_NAME" />, ale możesz je odłączyć na stronie <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /></translation>
+<translation id="6656935431494847393">Zawiera informacje takie jak rezerwacje lotów i dane pojazdu</translation>
 <translation id="6657585470893396449">Hasło</translation>
 <translation id="6659246032834639189">To niska cena</translation>
 <translation id="6660413144148052430">lokalizacja</translation>
@@ -3844,6 +3847,7 @@ Dodatkowe informacje:
 <translation id="7286908876112207905">Wklejanie tej treści w tej witrynie jest niedozwolone</translation>
 <translation id="7291578327729322058">Dodaj prawo jazdy</translation>
 <translation id="7292031607255951991">Nazwa odbiorcy</translation>
+<translation id="7297228218361240128">Zapisuj informacje ze stron, które przeglądasz, w Portfelu Google</translation>
 <translation id="7298195798382681320">Zalecana</translation>
 <translation id="7299471494012161875">Pokaż podłączone urządzenia peryferyjne</translation>
 <translation id="7299721129597238157">Usuń zakładkę</translation>
@@ -4241,6 +4245,7 @@ Dodatkowe informacje:
 <translation id="7916162853251942238">Podstawa fleksograficzna</translation>
 <translation id="791698251820376781">Twoja organizacja nie zezwala na logowanie się</translation>
 <translation id="7926503317156566022">Branża lotnicza</translation>
+<translation id="7927046851848613453">Zapisuj bilety, wydarzenia i inne informacje z wyświetlanych stron, a nie tylko z formularzy, które wypełniasz. Dzięki temu masz szybki dostęp do swoich dokumentów, takich jak bilety na wydarzenia i karty lojalnościowe. Z zapisanych informacji możesz korzystać na swoich urządzeniach i w usługach Google.</translation>
 <translation id="7930282586031445870">Ekran warunków korzystania z opcji „Kup teraz, zapłać później” został zamknięty.</translation>
 <translation id="7932035970207573919">Adres służbowy, <ph name="ADDRESS" /></translation>
 <translation id="793209273132572360">Zaktualizować adres?</translation>
@@ -4289,6 +4294,7 @@ Dodatkowe informacje:
 <translation id="7987087088851949178">Lista wydawców korzystających z opcji „Kup teraz, zapłać później” dostępnych w przypadku płatności ratalnych jest otwarta na całą wysokość.</translation>
 <translation id="799149739215780103">Wiązanie</translation>
 <translation id="7992044431894087211">Udostępnianie ekranu w aplikacji <ph name="APPLICATION_TITLE" /> zostało wznowione</translation>
+<translation id="799384093520583425">Twoja organizacja zablokowała używanie Narzędzi deweloperskich na tej stronie</translation>
 <translation id="7995512525968007366">Nie określono</translation>
 <translation id="7997855386298213183">udostępnione karty</translation>
 <translation id="8001912761979890298">Ten serwer nie może udowodnić, że należy do domeny <ph name="DOMAIN" />, ponieważ używa certyfikatu bezpieczeństwa, który nie jest zaufany przez Chromium ani konfigurację systemu do szyfrowania ruchu internetowego. Może to wynikać z błędnej konfiguracji lub przechwycenia połączenia. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Wyświetl certyfikat<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
@@ -4675,6 +4681,7 @@ Dodatkowe informacje:
 <translation id="865255447216708819">Folia Back Print</translation>
 <translation id="8654126188050905496">55 x 91 mm</translation>
 <translation id="8660780831677950176">Często odwiedzasz o tej porze</translation>
+<translation id="8661820486298572829">Automatycznie uzupełniony kod</translation>
 <translation id="8662463432865928030">Nieruchomości komercyjne</translation>
 <translation id="8663226718884576429">Podsumowanie zamówienia, <ph name="TOTAL_LABEL" />, Szczegółowe informacje</translation>
 <translation id="8663909737634214500">Dysk optyczny</translation>
@@ -4756,6 +4763,7 @@ Dodatkowe informacje:
 <translation id="8781278378794969337">Przycisk Przetłumacz stronę; aktywuj, aby przetłumaczyć tę stronę za pomocą Tłumacza Google</translation>
 <translation id="8785658048882205566">Motocykle</translation>
 <translation id="8790007591277257123">&amp;Ponów usunięcie</translation>
+<translation id="8790668801880409584">Zapisz i uzupełnij informacje o podróży</translation>
 <translation id="8792272652220298572">Plastik (błyszczący)</translation>
 <translation id="8792621596287649091">Możesz stracić dostęp do swojego konta <ph name="ORG_NAME" /> lub paść ofiarą kradzieży tożsamości. Chromium zaleca natychmiastową zmianę hasła.</translation>
 <translation id="8792626944327216835">mikrofon</translation>
@@ -4831,6 +4839,7 @@ Dodatkowe informacje:
 <translation id="8922013791253848639">Zawsze zezwalaj na wyświetlanie reklam na tej stronie</translation>
 <translation id="8922734931659847428">Ograniczona lista adresów URL odwiedzanych przez Ciebie stron, na których występują <ph name="BEGIN_LINK" />zdarzenia oparte na starszej technologii<ph name="END_LINK" /></translation>
 <translation id="892588693504540538">Otwór w prawym górnym rogu</translation>
+<translation id="8926082624786998759">Narzędzia deweloperskie są niedozwolone na tej stronie</translation>
 <translation id="8926389886865778422">Nie pytaj ponownie</translation>
 <translation id="8926400492587758246">Płać w niskich miesięcznych ratach</translation>
 <translation id="8932102934695377596">Twój zegar się spóźnia</translation>

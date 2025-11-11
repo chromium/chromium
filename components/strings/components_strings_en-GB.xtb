@@ -3461,6 +3461,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6654224358955673568">Formalise</translation>
 <translation id="6654244995031366386">Glass (textured)</translation>
 <translation id="6655085656059574817">Keeping your account linked helps you pay faster with <ph name="BNPL_ISSUER_NAME" />, but you can unlink it by going to <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /></translation>
+<translation id="6656935431494847393">Includes information such as flight bookings and vehicle info</translation>
 <translation id="6657585470893396449">Password</translation>
 <translation id="6659246032834639189">This price is low</translation>
 <translation id="6660413144148052430">location</translation>
@@ -4675,6 +4676,7 @@ Additional details:
 <translation id="865255447216708819">Back-print film</translation>
 <translation id="8654126188050905496">55 mm x 91 mm</translation>
 <translation id="8660780831677950176">You visit often at this time</translation>
+<translation id="8661820486298572829">Autofilled code</translation>
 <translation id="8662463432865928030">Commercial Properties</translation>
 <translation id="8663226718884576429">Order Summary, <ph name="TOTAL_LABEL" />, More Details</translation>
 <translation id="8663909737634214500">Optical disc</translation>
@@ -4756,6 +4758,7 @@ Additional details:
 <translation id="8781278378794969337">Translate page button, activate to translate this page with Google Translate</translation>
 <translation id="8785658048882205566">Motorcycles</translation>
 <translation id="8790007591277257123">&amp;Redo delete</translation>
+<translation id="8790668801880409584">Save and fill travel info</translation>
 <translation id="8792272652220298572">Plastic (glossy)</translation>
 <translation id="8792621596287649091">You could lose access to your <ph name="ORG_NAME" /> account or experience identity theft. Chromium recommends changing your password now.</translation>
 <translation id="8792626944327216835">microphone</translation>

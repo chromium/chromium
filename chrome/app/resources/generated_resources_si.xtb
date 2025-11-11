@@ -1115,7 +1115,6 @@
 <translation id="1751335846119670066">මට කියවීමට උදවු කරන්න</translation>
 <translation id="17513872634828108">පටිති විවෘත කරන්න</translation>
 <translation id="175196451752279553">වැසූ ටැබ නැවත විවෘත කරන්න (&amp;e)</translation>
-<translation id="1752557850776261983">පුරනය වීම පරීක්ෂා කරමින්...</translation>
 <translation id="1753067873202720523">ඔන් කර ඇති අතර Chromebook  චාජ් නොවීමට ඉඩ ඇත.</translation>
 <translation id="1753557900380512635">අභ්‍යන්තරයන්</translation>
 <translation id="1753905327828125965">වැඩියෙන්ම පිවිසි</translation>
@@ -1744,7 +1743,6 @@
 <translation id="2178614541317717477">CA සම්මුතිය</translation>
 <translation id="2180620921879609685">ඕනෑම පිටුවක අන්තර්ගතය අවහිර කරන්න</translation>
 <translation id="2181821976797666341">ප්‍රතිපත්ති</translation>
-<translation id="2181930382663745869">සංසන්දනයක් කරන්න</translation>
 <translation id="2182058453334755893">ඔබේ පසුරු පුවරුවට පිටපත් කළා</translation>
 <translation id="2182419606502127232">මගේ සේවාදායක ලොග ඇතුළත් කරන්න.</translation>
 <translation id="2183570493397356669">ඉදිරියට යාමේ බොත්තම අබල කර ඇත</translation>
@@ -6374,7 +6372,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5398497406011404839">සඟවන ලද පිටුසන්</translation>
 <translation id="5398572795982417028">පිටු සීමාවෙන් පිටත යොමුව, සීමාව වන්නේ <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="539882584649709174">ඔබට වෙබය මත සමාලෝචන වැනි දේවල් සඳහා කෙටි ආකාරයේ පෙළ ලිවීමට උදවු කරයි.</translation>
-<translation id="5400068721524309244">පටිති බෙදා ගත් විට, ඒවායේ පිටු අන්තර්ගතය සහ URL Google වෙත යවනු ලැබේ</translation>
 <translation id="5400196580536813396">ඔබේ උපාංගයට ප්‍රවේශ විය හැකි මුද්‍රක සෙවීමට හෝ භාවිතා කිරීමට ඉඩ නැත</translation>
 <translation id="5400836586163650660">අළු</translation>
 <translation id="5402367795255837559">බ්‍රේල්</translation>
@@ -10862,6 +10859,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8505669004895429027">කුඩා ඉතුරුම්</translation>
 <translation id="8507227974644337342">තිර විභේදනය</translation>
 <translation id="850763987657366362">සහතිකය ආයාත කළ නොහැක</translation>
+<translation id="8508532351844333131"><ph name="WEBSITE_ORIGIN" /> හට ඔබේ Android උපාංගයෙහි තතු සුරැකීමට අවශ්‍යයි</translation>
 <translation id="8509177919508253835">ආරක්‍ෂක යතුරු යළි සකසා රහස් අංක සාදන්න</translation>
 <translation id="8509646642152301857">අක්ෂර වින්‍යාස ශබ්දකෝෂය බාගත කිරීම අසාර්ථකයි.</translation>
 <translation id="8509967119010808787">ඔබගේ ටැබ සෙවීමට, මෙහි ක්ලික් කරන්න</translation>

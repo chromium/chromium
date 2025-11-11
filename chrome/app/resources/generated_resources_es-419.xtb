@@ -1114,7 +1114,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1751335846119670066">Help me read</translation>
 <translation id="17513872634828108">Pestañas abiertas</translation>
 <translation id="175196451752279553">Volver a abrir una pestaña cerrada</translation>
-<translation id="1752557850776261983">Verificando el acceso…</translation>
 <translation id="1753067873202720523">Es posible que tu Chromebook no se cargue mientras esté encendida.</translation>
 <translation id="1753557900380512635">Interiores</translation>
 <translation id="1753905327828125965">Más visitados</translation>
@@ -1742,7 +1741,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2178614541317717477">Compromiso de entidad de certificación</translation>
 <translation id="2180620921879609685">Bloquear contenido en cualquier página</translation>
 <translation id="2181821976797666341">Políticas</translation>
-<translation id="2181930382663745869">Haz una comparación</translation>
 <translation id="2182058453334755893">Se copió en tu portapapeles</translation>
 <translation id="2182419606502127232">Incluir mis registros de servidor</translation>
 <translation id="2183570493397356669">Se inhabilitó el botón Continuar</translation>
@@ -6371,7 +6369,6 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5398497406011404839">Favoritos ocultos</translation>
 <translation id="5398572795982417028">Referencia de página fuera de los límites; el valor máximo es <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="539882584649709174">Te ayuda a escribir texto breve para elementos de la Web, como opiniones</translation>
-<translation id="5400068721524309244">Cuando se comparten pestañas, se envían a Google las URLs y el contenido de las páginas</translation>
 <translation id="5400196580536813396">No puede buscar ni usar impresoras a las que pueda acceder tu dispositivo</translation>
 <translation id="5400836586163650660">Gris</translation>
 <translation id="5402367795255837559">Braille</translation>
@@ -10860,6 +10857,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8505669004895429027">Ahorro: bajo</translation>
 <translation id="8507227974644337342">Resolución de pantalla</translation>
 <translation id="850763987657366362">No se pudo importar el certificado</translation>
+<translation id="8508532351844333131"><ph name="WEBSITE_ORIGIN" /> quiere guardar información en tu dispositivo Android</translation>
 <translation id="8509177919508253835">Restablece las llaves de seguridad y crea PIN</translation>
 <translation id="8509646642152301857">Ocurrió un error en la descarga del diccionario del corrector ortográfico.</translation>
 <translation id="8509967119010808787">Para buscar tus pestañas, haz clic aquí.</translation>

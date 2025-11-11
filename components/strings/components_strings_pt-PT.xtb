@@ -519,6 +519,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1823768272150895732">Tipo de letra</translation>
 <translation id="1824402189105105503">Oitavo rolo</translation>
 <translation id="1826516787628120939">A verificar</translation>
+<translation id="1829026591231985685">guardar informações na Carteira do Google nas definições</translation>
 <translation id="1832730227369924598">Sincronização do espaço de trabalho</translation>
 <translation id="1834452765064623979">Construção e manutenção</translation>
 <translation id="1838374766361614909">Limpar pesquisa</translation>
@@ -1885,6 +1886,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4073797364926776829">Ver cartão</translation>
 <translation id="4075732493274867456">O cliente e o servidor não suportam uma versão do protocolo SSL ou um conjunto de cifras comum.</translation>
 <translation id="4079302484614802869">A configuração do proxy está definida para utilizar um URL de script .pac e não servidores proxy fixos.</translation>
+<translation id="4080668349181235831">Para oferecer sugestões e melhorar esta funcionalidade, o URL e o conteúdo da página completa do site que visita são partilhados com a Google. Saiba como <ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" />.</translation>
 <translation id="4080855220442581440">deslocar e aplicar zoom nos separadores partilhados</translation>
 <translation id="4082333119419111506">Papel (pré-impresso)</translation>
 <translation id="4082393374666368382">Definições – Gestão</translation>
@@ -3845,6 +3847,7 @@ Detalhes adicionais:
 <translation id="7286908876112207905">Não é permitido colar este conteúdo neste site</translation>
 <translation id="7291578327729322058">Adicione uma carta de condução</translation>
 <translation id="7292031607255951991">Nome do destinatário</translation>
+<translation id="7297228218361240128">Guarde informações das páginas que vê na Carteira do Google</translation>
 <translation id="7298195798382681320">Recomendado</translation>
 <translation id="7299471494012161875">Periféricos de ecrã ligados</translation>
 <translation id="7299721129597238157">Eliminar marcador</translation>
@@ -4241,6 +4244,7 @@ Detalhes adicionais:
 <translation id="7916162853251942238">Base flexo</translation>
 <translation id="791698251820376781">A sua organização não lhe permite iniciar sessão</translation>
 <translation id="7926503317156566022">Indústria da aviação</translation>
+<translation id="7927046851848613453">Guarde bilhetes, eventos e outras informações das páginas que vê, e não apenas formulários que preenche. Em seguida, aceda rapidamente aos seus passes, como bilhetes para eventos e cartões de fidelidade. As informações guardadas podem ser apresentadas nos seus dispositivos e nos produtos Google.</translation>
 <translation id="7930282586031445870">Ecrã dos Termos de Utilização do método Comprar agora e pagar depois fechado.</translation>
 <translation id="7932035970207573919">Morada do trabalho, <ph name="ADDRESS" /></translation>
 <translation id="793209273132572360">Quer atualizar o endereço?</translation>

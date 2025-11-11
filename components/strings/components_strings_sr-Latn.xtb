@@ -519,6 +519,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="1823768272150895732">Font</translation>
 <translation id="1824402189105105503">Osmi kotur</translation>
 <translation id="1826516787628120939">Provera</translation>
+<translation id="1829026591231985685">čuvanju informacija u Google novčaniku u podešavanjima</translation>
 <translation id="1832730227369924598">Sinhronizacija radnih površina</translation>
 <translation id="1834452765064623979">Izgradnja i održavanje</translation>
 <translation id="1838374766361614909">Obrišite pretragu</translation>
@@ -1885,6 +1886,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="4073797364926776829">Prikaži karticu</translation>
 <translation id="4075732493274867456">Klijent i server ne podržavaju istu verziju SSL protokola ili paket za šifrovanje.</translation>
 <translation id="4079302484614802869">Konfiguracija proksija je podešena da koristi URL adresu .pac skripte, a ne fiksne proksi servere.</translation>
+<translation id="4080668349181235831">Da bi vam se nudili predlozi i poboljšala ova funkcija, URL i sadržaj cele stranice sajta koji posećujete dele se sa Google-om. Saznajte više o: <ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" />.</translation>
 <translation id="4080855220442581440">skrolovanje i zumiranje deljenih kartica</translation>
 <translation id="4082333119419111506">Papir (štampan unapred)</translation>
 <translation id="4082393374666368382">Podešavanja – upravljanje</translation>
@@ -3844,6 +3846,7 @@ Dodatni detalji:
 <translation id="7286908876112207905">Nalepljivanje ovog sadržaja na ovaj sajt nije dozvoljeno</translation>
 <translation id="7291578327729322058">Dodajte vozačku dozvolu</translation>
 <translation id="7292031607255951991">Ime primaoca</translation>
+<translation id="7297228218361240128">Sačuvajte informacije u Google novčaniku sa stranica koje pregledate</translation>
 <translation id="7298195798382681320">Preporučeno</translation>
 <translation id="7299471494012161875">Priključeni periferni uređaji na ekranu</translation>
 <translation id="7299721129597238157">Brisanje obeleživača</translation>
@@ -4241,6 +4244,7 @@ Dodatni detalji:
 <translation id="7916162853251942238">Flexo baza</translation>
 <translation id="791698251820376781">Organizacija vam ne dozvoljava da se prijavite</translation>
 <translation id="7926503317156566022">Avioindustrija</translation>
+<translation id="7927046851848613453">Čuvajte karte, događaje i druge informacije sa stranica koje pregledate, a ne samo obrasce koje popunjavate. Zatim brzo pristupajte kartama, kao što su karte za događaje i kartice lojalnosti. Sačuvane informacije mogu da se prikazuju na uređajima i u svim Google proizvodima.</translation>
 <translation id="7930282586031445870">Ekran sa uslovima korišćenja usluge Kupite odmah, platite kasnije je zatvoren.</translation>
 <translation id="7932035970207573919">Adresa na poslu, <ph name="ADDRESS" /></translation>
 <translation id="793209273132572360">Želite da ažurirate adresu?</translation>

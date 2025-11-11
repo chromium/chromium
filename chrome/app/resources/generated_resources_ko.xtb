@@ -1126,7 +1126,6 @@
 <translation id="1751335846119670066">읽기 도우미</translation>
 <translation id="17513872634828108">열린 탭</translation>
 <translation id="175196451752279553">닫은 탭 다시 열기(&amp;E)</translation>
-<translation id="1752557850776261983">로그인 확인 중...</translation>
 <translation id="1753067873202720523">Chromebook이 켜져 있으면 충전되지 않을 수 있습니다.</translation>
 <translation id="1753557900380512635">인테리어</translation>
 <translation id="1753905327828125965">자주 방문한 페이지</translation>
@@ -1756,7 +1755,6 @@
 <translation id="2178614541317717477">CA 손상</translation>
 <translation id="2180620921879609685">모든 페이지에서 콘텐츠 차단</translation>
 <translation id="2181821976797666341">정책</translation>
-<translation id="2181930382663745869">비교하기</translation>
 <translation id="2182058453334755893">클립보드에 복사됨</translation>
 <translation id="2182419606502127232">내 서버 로그를 포함합니다.</translation>
 <translation id="2183570493397356669">계속 버튼 사용 중지됨</translation>
@@ -6388,7 +6386,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5398497406011404839">숨겨진 북마크</translation>
 <translation id="5398572795982417028">페이지가 범위를 벗어난 경우 참고하세요. 한도는 <ph name="MAXIMUM_PAGE" />페이지입니다.</translation>
 <translation id="539882584649709174">리뷰와 같이 웹상의 짧은 형식 텍스트를 작성하는 데 도움이 됩니다.</translation>
-<translation id="5400068721524309244">탭이 공유되면 탭의 페이지 콘텐츠 및 URL이 Google로 전송됩니다.</translation>
 <translation id="5400196580536813396">기기에 액세스할 수 있는 프린터를 찾거나 사용할 수 없음</translation>
 <translation id="5400836586163650660">그레이</translation>
 <translation id="5402367795255837559">점자</translation>
@@ -10877,6 +10874,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8505669004895429027">메모리 소폭 절약</translation>
 <translation id="8507227974644337342">화면 해상도</translation>
 <translation id="850763987657366362">인증서를 가져올 수 없습니다.</translation>
+<translation id="8508532351844333131"><ph name="WEBSITE_ORIGIN" />에서 내 Android 기기에 정보를 저장하려고 합니다.</translation>
 <translation id="8509177919508253835">보안 키를 재설정하고 PIN 생성</translation>
 <translation id="8509646642152301857">맞춤법 검사 사전을 다운로드하지 못했습니다.</translation>
 <translation id="8509967119010808787">탭을 검색하려면 여기를 클릭하세요.</translation>

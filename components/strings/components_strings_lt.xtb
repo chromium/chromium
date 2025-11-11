@@ -519,6 +519,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1823768272150895732">Šriftas</translation>
 <translation id="1824402189105105503">Aštuntas ritinėlis</translation>
 <translation id="1826516787628120939">Tikrinama</translation>
+<translation id="1829026591231985685">informacijos išsaugojimą „Google Wallet“ nustatymuose</translation>
 <translation id="1832730227369924598">Darbalaukio sinchronizavimas</translation>
 <translation id="1834452765064623979">Statyba ir techninė priežiūra</translation>
 <translation id="1838374766361614909">Išvalyti paiešką</translation>
@@ -1886,6 +1887,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="4073797364926776829">Peržiūrėti kortelę</translation>
 <translation id="4075732493274867456">Kliento programa ir serveris nepalaiko įprasto SSL protokolo versijos ar šifruotojo programų komplekto.</translation>
 <translation id="4079302484614802869">Įgaliotojo serverio konfigūracijoje nustatyta naudoti .pac scenarijaus URL, o ne fiksuotus įgaliotuosius serverius.</translation>
+<translation id="4080668349181235831">Kad būtų galima pateikti pasiūlymų ir patobulinti šią funkciją, svetainės, kurioje lankotės, URL ir visas puslapio turinys bendrinami su „Google“. Sužinokite daugiau apie <ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" />.</translation>
 <translation id="4080855220442581440">slinkimas bendrinamais skirtukais ir jų mastelio keitimas</translation>
 <translation id="4082333119419111506">Popierius (iš anksto atspausdintas)</translation>
 <translation id="4082393374666368382">Nustatymai – valdymas</translation>
@@ -3846,6 +3848,7 @@ Papildoma išsami informacija:
 <translation id="7286908876112207905">Neleidžiama įklijuoti šio turinio šioje svetainėje</translation>
 <translation id="7291578327729322058">Vairuotojo pažymėjimo pridėjimas</translation>
 <translation id="7292031607255951991">Gavėjo vardas</translation>
+<translation id="7297228218361240128">Informacijos išsaugojimas „Google Wallet“ iš peržiūrimų puslapių</translation>
 <translation id="7298195798382681320">Rekomenduojama</translation>
 <translation id="7299471494012161875">Pridėti vaizdo išoriniai įrenginiai</translation>
 <translation id="7299721129597238157">Ištrinti žymę</translation>
@@ -4243,6 +4246,7 @@ Papildoma išsami informacija:
 <translation id="7916162853251942238">Lankstusis pagrindas</translation>
 <translation id="791698251820376781">Jūsų organizacija neleidžia jums prisijungti</translation>
 <translation id="7926503317156566022">Aviacijos pramonė</translation>
+<translation id="7927046851848613453">Išsaugokite bilietus, įvykius ir kitą informaciją iš peržiūrimų puslapių, o ne tik iš užpildomų formų. Tada greitai pasiekite korteles, pvz., renginių bilietus ir lojalumo korteles. Išsaugota informacija gali būti rodoma jūsų įrenginiuose ir „Google“ produktuose.</translation>
 <translation id="7930282586031445870">Funkcijos „Pirkite dabar, mokėkite vėliau“ paslaugų teikimo sąlygų ekranas uždarytas.</translation>
 <translation id="7932035970207573919">Darbo adresas, <ph name="ADDRESS" /></translation>
 <translation id="793209273132572360">Atnaujinti adresą?</translation>
@@ -4291,6 +4295,7 @@ Papildoma išsami informacija:
 <translation id="7987087088851949178">Paslaugos „Pirkite dabar, mokėkite vėliau“ išdavėjai, leidžiantys mokėti per laiką, atidaryti per visą aukštį.</translation>
 <translation id="799149739215780103">Įrišimas</translation>
 <translation id="7992044431894087211">Ekrano bendrinimas su „<ph name="APPLICATION_TITLE" />“ tęsiamas</translation>
+<translation id="799384093520583425">Jūsų organizacija užblokavo kūrėjo įrankių naudojimą šiame puslapyje</translation>
 <translation id="7995512525968007366">Nenurodytas</translation>
 <translation id="7997855386298213183">bendrinami skirtukai</translation>
 <translation id="8001912761979890298">Šiam serveriui nepavyko patvirtinti, kad tai yra <ph name="DOMAIN" />, nes jis naudoja saugos sertifikatą, kuris nėra patikimas naršyklėje „Chromium“ arba jūsų žiniatinklio srauto šifruotės sistemos konfigūracijoje. Taip gali būti dėl netinkamos konfigūracijos ar dėl ryšį pertraukusio užpuolėjo. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Žr. sertifikatą<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
@@ -4836,6 +4841,7 @@ Papildoma išsami informacija:
 <translation id="8922013791253848639">Visada leisti skelbimus šioje svetainėje</translation>
 <translation id="8922734931659847428">Ribotas puslapių, kuriuose lankotės ir kuriuose vyksta <ph name="BEGIN_LINK" />įvykiai, susiję su pasenusiomis technologijomis<ph name="END_LINK" />, URL sąrašas</translation>
 <translation id="892588693504540538">Skylė viršuje dešinėje</translation>
+<translation id="8926082624786998759">Kūrėjo įrankiai neleidžiami šiame puslapyje</translation>
 <translation id="8926389886865778422">Neklauskite dar kartą</translation>
 <translation id="8926400492587758246">Mokėkite nedidelėmis mėnesio dalimis</translation>
 <translation id="8932102934695377596">Jūsų laikrodis atsilieka</translation>

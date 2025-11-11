@@ -1119,7 +1119,6 @@
 <translation id="1751335846119670066">Օգնիր ինձ կարդալ</translation>
 <translation id="17513872634828108">Բաց ներդիրներ</translation>
 <translation id="175196451752279553">Նո&amp;րից բացել փակված ներդիրը</translation>
-<translation id="1752557850776261983">Մուտքի ստուգում...</translation>
 <translation id="1753067873202720523">Chromebook-ը չի կարող լիցքավորվել միացված ժամանակ:</translation>
 <translation id="1753557900380512635">Ինտերիեր</translation>
 <translation id="1753905327828125965">Ամենահաճախ այցելվող</translation>
@@ -1747,7 +1746,6 @@
 <translation id="2178614541317717477">Բացահայտված հավաստագրման կենտրոն</translation>
 <translation id="2180620921879609685">Արգելափակել բոլոր էջերի բովանդակությունը</translation>
 <translation id="2181821976797666341">Կանոններ</translation>
-<translation id="2181930382663745869">Համեմատեք</translation>
 <translation id="2182058453334755893">Պատճենվեց սեղմատախտակին</translation>
 <translation id="2182419606502127232">Ներառել սերվերի իմ մատյանները։</translation>
 <translation id="2183570493397356669">«Շարունակել» կոճակն անջատված է</translation>
@@ -6371,7 +6369,6 @@
 <translation id="5398497406011404839">Թաքցված էջանիշներ</translation>
 <translation id="5398572795982417028">Դուրս է էջի համարակալման սահմաններից, թույլատրելի սահմանաչափն է <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="539882584649709174">Այս գործառույթն օգնում է ստեղծել կարճ տեքստեր համացանցում, օրինակ՝ գրել կարծիքներ</translation>
-<translation id="5400068721524309244">Երբ կիսվում եք ներդիրներով, դրանց բովանդակությունը և URL-ները ուղարկվում են Google-ին</translation>
 <translation id="5400196580536813396">Արգելված է փնտրել կամ օգտագործել ձեր սարքին հասանելի տպիչները</translation>
 <translation id="5400836586163650660">Մոխրագույն</translation>
 <translation id="5402367795255837559">Բրայլի գրատիպ</translation>
@@ -10857,6 +10854,7 @@
 <translation id="8505669004895429027">Փոքր տնտեսում</translation>
 <translation id="8507227974644337342">Էկրանի լուծաչափը</translation>
 <translation id="850763987657366362">Չհաջողվեց ներմուծել հավաստագիրը</translation>
+<translation id="8508532351844333131"><ph name="WEBSITE_ORIGIN" /> կայքն ուզում է տեղեկություններ պահել ձեր Android սարքում</translation>
 <translation id="8509177919508253835">Վերակայեք անվտանգության բանալիները և ստեղծեք PIN կոդեր</translation>
 <translation id="8509646642152301857">Ուղղագրության ստուգման բառացանկը չհաջողվեց ներբեռնել:</translation>
 <translation id="8509967119010808787">Սեղմեք այստեղ՝ ներդիրներում որոնելու համար</translation>

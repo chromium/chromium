@@ -519,6 +519,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1823768272150895732">Lettertype</translation>
 <translation id="1824402189105105503">8e rol</translation>
 <translation id="1826516787628120939">Controleren</translation>
+<translation id="1829026591231985685">informatie opslaan in Google Wallet in de instellingen</translation>
 <translation id="1832730227369924598">Bureausynchronisatie</translation>
 <translation id="1834452765064623979">Bouw en onderhoud</translation>
 <translation id="1838374766361614909">Zoekopdracht wissen</translation>
@@ -1879,6 +1880,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="4073797364926776829">Kaart bekijken</translation>
 <translation id="4075732493274867456">De client en server ondersteunen geen algemene SSL-protocolversie of coderingssuite.</translation>
 <translation id="4079302484614802869">Proxyconfiguratie is ingesteld op het gebruik van een pac-script-URL, niet op het gebruik van vaste proxyservers.</translation>
+<translation id="4080668349181235831">De URL en volledige paginacontent van de site die je bezoekt, worden gedeeld met Google om suggesties te bieden en deze functie te verbeteren. Meer informatie over <ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" />.</translation>
 <translation id="4080855220442581440">scrollen en zoomen op gedeelde tabbladen</translation>
 <translation id="4082333119419111506">Papier (voorbedrukt)</translation>
 <translation id="4082393374666368382">Instellingen: beheer</translation>
@@ -3838,6 +3840,7 @@ Aanvullende informatie:
 <translation id="7286908876112207905">Deze content plakken op deze site is niet toegestaan</translation>
 <translation id="7291578327729322058">Rijbewijs toevoegen</translation>
 <translation id="7292031607255951991">Naam van ontvanger</translation>
+<translation id="7297228218361240128">Informatie opslaan in Google Wallet vanaf pagina's die je bekijkt</translation>
 <translation id="7298195798382681320">Aanbevolen</translation>
 <translation id="7299471494012161875">Aangesloten randapparatuur</translation>
 <translation id="7299721129597238157">Bookmark verwijderen</translation>
@@ -4235,6 +4238,7 @@ Aanvullende informatie:
 <translation id="7916162853251942238">Flexo-basis</translation>
 <translation id="791698251820376781">Je organisatie staat niet toe dat je inlogt</translation>
 <translation id="7926503317156566022">Luchtvaartindustrie</translation>
+<translation id="7927046851848613453">Sla tickets, evenementen en andere informatie op van pagina's die je bekijkt, niet alleen van formulieren die je invult. Krijg daarna snel toegang tot je kaarten, zoals evenementtickets en klantenkaarten. Je opgeslagen informatie kan op je apparaten en in Google-producten worden getoond.</translation>
 <translation id="7930282586031445870">Scherm met servicevoorwaarden voor Koop nu, betaal later is gesloten.</translation>
 <translation id="7932035970207573919">Werkadres, <ph name="ADDRESS" /></translation>
 <translation id="793209273132572360">Adres updaten?</translation>

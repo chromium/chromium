@@ -33,6 +33,7 @@
 <translation id="1409338233051621926">Tryck på Appar och sedan på Standardappar</translation>
 <translation id="1415402041810619267">Webbadressen har trunkerats</translation>
 <translation id="1415855080660575082">Tillåt att Chrome delar dina senaste flikar med enheten så att du kan se dem i enhetens applista och sökresultat. Du kan aktivera eller inaktivera detta i Chrome-inställningarna.</translation>
+<translation id="1420688843103859429">Navigera framåt och bakåt genom att svepa med två fingrar på styrplattan</translation>
 <translation id="1432650420699700107">Webbplatser får begära tillstånd att ansluta till enheter i det lokala nätverket</translation>
 <translation id="1448064542941920355">Minska zoom</translation>
 <translation id="1464044141348608623">Tillåt inte att webbplatser vet om du använder din enhet aktivt</translation>
@@ -432,6 +433,7 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="5750869797196646528">Handspårning</translation>
 <translation id="5753570386948603678">Radera från historiken</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> blockeras</translation>
+<translation id="5792627621688759634">Svep mellan sidor med en styrplatta</translation>
 <translation id="5801457289562671820">Rekommenderas av din organisation</translation>
 <translation id="5804241973901381774">Behörigheter</translation>
 <translation id="5822675474983796325">Arket på nedre delen av skärmen för att anpassa sidan ny flik har öppnats över hela skärmen</translation>

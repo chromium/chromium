@@ -1126,7 +1126,6 @@ Az alkalmazások számára már megadott engedélyek erre a fiókra is érvénye
 <translation id="1751335846119670066">Segítség az olvasáshoz</translation>
 <translation id="17513872634828108">Megnyitott lapok</translation>
 <translation id="175196451752279553">Bezárt lap m&amp;egnyitása</translation>
-<translation id="1752557850776261983">Bejelentkezés ellenőrzése…</translation>
 <translation id="1753067873202720523">Előfordulhat, hogy a Chromebook nem töltődik, amíg be van kapcsolva.</translation>
 <translation id="1753557900380512635">Belső helyiségek</translation>
 <translation id="1753905327828125965">Leggyakrabban látogatott</translation>
@@ -1754,7 +1753,6 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2178614541317717477">A tanúsítványkibocsátó veszélyeztetve</translation>
 <translation id="2180620921879609685">Tartalmak letiltása bármely oldalon</translation>
 <translation id="2181821976797666341">Házirendek</translation>
-<translation id="2181930382663745869">Összehasonlítás készítése</translation>
 <translation id="2182058453334755893">Vágólapra másolva</translation>
 <translation id="2182419606502127232">Tartalmazza a szervernaplóimat.</translation>
 <translation id="2183570493397356669">Folytatás gomb letiltva</translation>
@@ -6385,7 +6383,6 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűpara
 <translation id="5398497406011404839">Rejtett könyvjelzők</translation>
 <translation id="5398572795982417028">Tartományon kívüli oldalra való hivatkozás; a maximális érték <ph name="MAXIMUM_PAGE" />.</translation>
 <translation id="539882584649709174">Segítségével rövid formátumú szövegeket, például véleményeket írhat az interneten.</translation>
-<translation id="5400068721524309244">A lapok megosztásakor a rendszer elküldi az oldalak tartalmát és URL-jét a Google-nak</translation>
 <translation id="5400196580536813396">Nem kereshetnek és nem használhatnak az eszköze számára hozzáférhető nyomtatókat</translation>
 <translation id="5400836586163650660">Szürke</translation>
 <translation id="5402367795255837559">Braille</translation>
@@ -10874,6 +10871,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8505669004895429027">Kis megtakarítás</translation>
 <translation id="8507227974644337342">Képernyőfelbontás</translation>
 <translation id="850763987657366362">Nem sikerült a tanúsítvány importálása</translation>
+<translation id="8508532351844333131">A(z) <ph name="WEBSITE_ORIGIN" /> információkat szeretne menteni az Ön Android-eszközére</translation>
 <translation id="8509177919508253835">Biztonsági hardverkulcsok visszaállítása és PIN-kódok létrehozása</translation>
 <translation id="8509646642152301857">A helyesírás-ellenőrző szótár letöltése sikertelen volt.</translation>
 <translation id="8509967119010808787">A lapok kereséséhez kattintson ide.</translation>

@@ -33,6 +33,7 @@
 <translation id="1409338233051621926">Puudutage valikut Rakendused ja seejärel valikut Vaikerakendused</translation>
 <translation id="1415402041810619267">Lühendatud URL</translation>
 <translation id="1415855080660575082">Lubage Chrome’il jagada teie hiljutisi vahelehti teie seadmega, et näha neid seadme rakenduste loendis ja otsingutulemustes. Saate selle Chrome’i seadetes sisse või välja lülitada.</translation>
+<translation id="1420688843103859429">Puuteplaadil kahe sõrmega pühkides edasi ja tagasi navigeerimine.</translation>
 <translation id="1432650420699700107">Saidid saavad küsida luba teie kohalikus võrgus mis tahes seadmega ühenduse loomiseks</translation>
 <translation id="1448064542941920355">Suumi vähendamine</translation>
 <translation id="1464044141348608623">Ära luba saitidel teada, millal seadet aktiivselt kasutan</translation>
@@ -432,6 +433,7 @@ Täiustatud kaitse reguleerib neid Chrome’i seadeid:
 <translation id="5750869797196646528">Käeliigutuste jälgimine</translation>
 <translation id="5753570386948603678">Kustuta ajaloost</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> on keelatud</translation>
+<translation id="5792627621688759634">Lehtede vahel pühkimine puuteplaadi abil.</translation>
 <translation id="5801457289562671820">Soovitab teie organisatsioon</translation>
 <translation id="5804241973901381774">Load</translation>
 <translation id="5822675474983796325">Uue vahelehe kohandamise alumine leht on avatud täispikkuses</translation>

@@ -1126,7 +1126,6 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="1751335846119670066">Help My Lees</translation>
 <translation id="17513872634828108">Oop oortjies</translation>
 <translation id="175196451752279553">Maak geslote oortjie weer oop</translation>
-<translation id="1752557850776261983">Gaan tans aanmelding na …</translation>
 <translation id="1753067873202720523">Jou Chromebook laai dalk nie terwyl dit aangeskakel is nie.</translation>
 <translation id="1753557900380512635">Binnekante</translation>
 <translation id="1753905327828125965">Meeste besoek</translation>
@@ -1755,7 +1754,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="2178614541317717477">CA-kompromie</translation>
 <translation id="2180620921879609685">Blokkeer inhoud op enige bladsy</translation>
 <translation id="2181821976797666341">Beleide</translation>
-<translation id="2181930382663745869">Maak ’n vergelyking</translation>
 <translation id="2182058453334755893">Gekopieer na jou knipbord</translation>
 <translation id="2182419606502127232">Sluit my bedienerloglêers in.</translation>
 <translation id="2183570493397356669">Gaan Voort-knoppie is gedeaktiveer</translation>
@@ -6387,7 +6385,6 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="5398497406011404839">Versteekte boekmerke</translation>
 <translation id="5398572795982417028">Bladsyverwysing is buite perke, limiet is <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="539882584649709174">Help jou om kortvormteks te skryf vir dinge op die web, soos resensies</translation>
-<translation id="5400068721524309244">Wanneer oortjies gedeel word, word hul bladsyinhoud en URL’e na Google gestuur</translation>
 <translation id="5400196580536813396">Word nie toegelaat om drukkers wat vir jou toestel toeganklik is, te soek of te gebruik nie</translation>
 <translation id="5400836586163650660">Grys</translation>
 <translation id="5402367795255837559">Braille</translation>
@@ -10875,6 +10872,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8505669004895429027">Klein besparing</translation>
 <translation id="8507227974644337342">Skermresolusie</translation>
 <translation id="850763987657366362">Kan nie sertifikaat invoer nie</translation>
+<translation id="8508532351844333131"><ph name="WEBSITE_ORIGIN" /> wil inligting op jou Android-toestel stoor</translation>
 <translation id="8509177919508253835">Stel sekuriteitsleutels terug en skep PIN'e</translation>
 <translation id="8509646642152301857">Kon nie speltoetserwoordeboek aflaai nie.</translation>
 <translation id="8509967119010808787">Klik hier om jou oortjies te deursoek</translation>

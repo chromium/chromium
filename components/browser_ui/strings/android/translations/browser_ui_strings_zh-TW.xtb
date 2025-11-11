@@ -33,6 +33,7 @@
 <translation id="1409338233051621926">依序輕觸「應用程式」和「預設應用程式」</translation>
 <translation id="1415402041810619267">已截斷網址</translation>
 <translation id="1415855080660575082">允許 Chrome 將最近開啟的分頁分享給裝置，讓這些資訊顯示在裝置的應用程式清單和搜尋結果。你可以前往 Chrome 設定頁面開啟或關閉這項功能。</translation>
+<translation id="1420688843103859429">用兩指在觸控板上滑動，即可瀏覽上一個或下一個頁面</translation>
 <translation id="1432650420699700107">網站可以要求連線到區域網路上的任何裝置</translation>
 <translation id="1448064542941920355">縮小</translation>
 <translation id="1464044141348608623">禁止網站偵測你使用裝置的時間</translation>
@@ -432,6 +433,7 @@
 <translation id="5750869797196646528">手勢追蹤</translation>
 <translation id="5753570386948603678">從記錄中刪除</translation>
 <translation id="5771720122942595109">已封鎖「<ph name="PERMISSION_1" />」</translation>
+<translation id="5792627621688759634">使用觸控板滑動瀏覽頁面</translation>
 <translation id="5801457289562671820">貴機構推薦的設定</translation>
 <translation id="5804241973901381774">權限</translation>
 <translation id="5822675474983796325">自訂新分頁底部功能表已開啟，並顯示在整個畫面</translation>

@@ -1116,7 +1116,6 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1751335846119670066">Axúdame a ler</translation>
 <translation id="17513872634828108">Pestanas abertas</translation>
 <translation id="175196451752279553">Volv&amp;er abrir pestana pechada</translation>
-<translation id="1752557850776261983">Comprobando inicio de sesión...</translation>
 <translation id="1753067873202720523">É posible que o teu Chromebook non se cargue mentres está acendido.</translation>
 <translation id="1753557900380512635">Interiores</translation>
 <translation id="1753905327828125965">Máis visitados</translation>
@@ -1744,7 +1743,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2178614541317717477">Compromiso de entidade emisora de certificados</translation>
 <translation id="2180620921879609685">Bloquear contido en calquera páxina</translation>
 <translation id="2181821976797666341">Políticas</translation>
-<translation id="2181930382663745869">Fai unha comparación</translation>
 <translation id="2182058453334755893">Copiouse o contido no teu portapapeis</translation>
 <translation id="2182419606502127232">Incluír os meus rexistros do servidor.</translation>
 <translation id="2183570493397356669">O botón Continuar está desactivado</translation>
@@ -6376,7 +6374,6 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5398497406011404839">Marcadores ocultos</translation>
 <translation id="5398572795982417028">A referencia da páxina supera o límite, que é <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="539882584649709174">Axúdache a escribir textos breves para usar na Web (como poden ser as recensións, por exemplo)</translation>
-<translation id="5400068721524309244">Cando se comparten as pestanas, envíanse a Google o contido das páxinas e os seus URL</translation>
 <translation id="5400196580536813396">Permiso denegado para buscar ou usar as impresoras ás que pode acceder o teu dispositivo</translation>
 <translation id="5400836586163650660">Gris</translation>
 <translation id="5402367795255837559">Braille</translation>
@@ -10860,6 +10857,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8505669004895429027">Aforro reducido</translation>
 <translation id="8507227974644337342">Resolución da pantalla</translation>
 <translation id="850763987657366362">Non se puido importar o certificado</translation>
+<translation id="8508532351844333131"><ph name="WEBSITE_ORIGIN" /> quere gardar información no teu dispositivo Android</translation>
 <translation id="8509177919508253835">Restablece as chaves de seguranza e crea os PIN</translation>
 <translation id="8509646642152301857">Non se puido descargar o dicionario da verificación ortográfica.</translation>
 <translation id="8509967119010808787">Para buscar unha pestana, fai clic aquí</translation>

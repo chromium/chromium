@@ -519,6 +519,7 @@
 <translation id="1823768272150895732">Police</translation>
 <translation id="1824402189105105503">Huitième rouleau</translation>
 <translation id="1826516787628120939">Vérification en cours…</translation>
+<translation id="1829026591231985685">l'enregistrement des renseignements dans Google Portefeuille dans les paramètres</translation>
 <translation id="1832730227369924598">Synchronisation du bureau</translation>
 <translation id="1834452765064623979">Construction et entretien</translation>
 <translation id="1838374766361614909">Effacer les termes de recherche</translation>
@@ -1885,6 +1886,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="4073797364926776829">Affichez la carte</translation>
 <translation id="4075732493274867456">Le client et le serveur ne prennent pas en charge une version habituelle du protocole SSL et de la suite de chiffrement.</translation>
 <translation id="4079302484614802869">La configuration du mandataire est réglée à l'utilisation d'une adresse URL de script .pac, et non des serveurs mandataires fixes.</translation>
+<translation id="4080668349181235831">Pour proposer des suggestions et améliorer cette fonctionnalité, l'URL et le contenu complet de la page du site que vous visitez sont partagés avec Google. Apprenez-en plus sur <ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" />.</translation>
 <translation id="4080855220442581440">zoomer et faire défiler les onglets partagés</translation>
 <translation id="4082333119419111506">Papier (préimprimé)</translation>
 <translation id="4082393374666368382">Paramètres - Gestion</translation>
@@ -3461,6 +3463,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="6654224358955673568">Rendre plus soutenu</translation>
 <translation id="6654244995031366386">Verre (texturé)</translation>
 <translation id="6655085656059574817">Si votre compte est associé, vous pouvez payer plus rapidement avec <ph name="BNPL_ISSUER_NAME" />, mais vous pouvez le dissocier en accédant à <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /></translation>
+<translation id="6656935431494847393">Comprend des informations telles que les réservations de vols et les informations sur les véhicules</translation>
 <translation id="6657585470893396449">Mot de passe</translation>
 <translation id="6659246032834639189">Ce prix est bas</translation>
 <translation id="6660413144148052430">Position</translation>
@@ -3843,6 +3846,7 @@ Détails supplémentaires :
 <translation id="7286908876112207905">Coller ce contenu sur ce site n'est pas autorisé</translation>
 <translation id="7291578327729322058">Ajouter un permis de conduire</translation>
 <translation id="7292031607255951991">Nom du destinataire</translation>
+<translation id="7297228218361240128">Enregistrer des renseignements dans Google Portefeuille à partir des pages que vous consultez</translation>
 <translation id="7298195798382681320">Recommandé</translation>
 <translation id="7299471494012161875">Périphériques d'affichage connectés</translation>
 <translation id="7299721129597238157">Supprimer le favori</translation>
@@ -4240,6 +4244,7 @@ Détails supplémentaires :
 <translation id="7916162853251942238">Flexo Base</translation>
 <translation id="791698251820376781">Votre organisation ne vous autorise pas à vous connecter</translation>
 <translation id="7926503317156566022">Industrie aéronautique</translation>
+<translation id="7927046851848613453">Enregistrez les billets, les événements et d'autres renseignements provenant des pages que vous consultez, et pas seulement des formulaires que vous remplissez. Ensuite, accédez rapidement à vos cartes, comme les billets d'événement et les cartes de fidélité. Vos renseignements enregistrés peuvent s'afficher sur vos appareils et dans les produits Google.</translation>
 <translation id="7930282586031445870">L'écran des conditions d'utilisation d'Acheter maintenant, payer plus tard est fermé.</translation>
 <translation id="7932035970207573919">Adresse professionnelle, <ph name="ADDRESS" /></translation>
 <translation id="793209273132572360">Mettre à jour l'adresse?</translation>
@@ -4674,6 +4679,7 @@ Détails supplémentaires :
 <translation id="865255447216708819">Film d'impression arrière</translation>
 <translation id="8654126188050905496">55 mm x 91 mm</translation>
 <translation id="8660780831677950176">Vous visitez souvent cette page à cette heure</translation>
+<translation id="8661820486298572829">Code rempli automatiquement</translation>
 <translation id="8662463432865928030">Propriétés commerciales</translation>
 <translation id="8663226718884576429">Résumé de la commande, <ph name="TOTAL_LABEL" />, plus de détails</translation>
 <translation id="8663909737634214500">Disque optique</translation>
@@ -4755,6 +4761,7 @@ Détails supplémentaires :
 <translation id="8781278378794969337">Bouton Traduire la page, activez-le pour traduire cette page avec Google Traduction</translation>
 <translation id="8785658048882205566">Motos</translation>
 <translation id="8790007591277257123">&amp;Rétablir la suppression</translation>
+<translation id="8790668801880409584">Enregistrer et remplir les informations de voyage</translation>
 <translation id="8792272652220298572">Plastique (brillant)</translation>
 <translation id="8792621596287649091">Vous risquez de perdre l'accès à votre compte <ph name="ORG_NAME" /> ou d'être victime d'un vol d'identité. Chromium recommande de modifier votre mot de passe maintenant.</translation>
 <translation id="8792626944327216835">Microphone</translation>

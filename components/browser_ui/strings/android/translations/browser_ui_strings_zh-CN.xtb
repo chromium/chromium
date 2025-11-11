@@ -33,6 +33,7 @@
 <translation id="1409338233051621926">点按“应用”，然后点按“默认应用”</translation>
 <translation id="1415402041810619267">网址被截断了</translation>
 <translation id="1415855080660575082">允许 Chrome 与您的设备分享您近期打开的标签页，以便在设备的应用列表和搜索结果中查看这些标签页。您可以在 Chrome 设置中开启或关闭此功能。</translation>
+<translation id="1420688843103859429">在触控板上用两根手指滑动，即可向后/向前导航</translation>
 <translation id="1432650420699700107">网站可以请求连接到本地网络上的任何设备</translation>
 <translation id="1448064542941920355">缩小</translation>
 <translation id="1464044141348608623">不允许网站了解您何时在主动使用自己的设备</translation>
@@ -432,6 +433,7 @@
 <translation id="5750869797196646528">手部跟踪</translation>
 <translation id="5753570386948603678">从下载记录中删除</translation>
 <translation id="5771720122942595109">已禁用“<ph name="PERMISSION_1" />”权限</translation>
+<translation id="5792627621688759634">使用触控板滑动浏览各个页面</translation>
 <translation id="5801457289562671820">由组织推荐</translation>
 <translation id="5804241973901381774">权限</translation>
 <translation id="5822675474983796325">自定义新标签页页面底部动作条已全屏打开</translation>

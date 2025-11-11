@@ -3461,6 +3461,7 @@
 <translation id="6654224358955673568">Официално</translation>
 <translation id="6654244995031366386">Стъкло (текстурирано)</translation>
 <translation id="6655085656059574817">Когато профилът ви е свързан, можете да плащате по-бързо чрез <ph name="BNPL_ISSUER_NAME" />. Имате възможност да прекратите връзката с услугата, като посетите <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /></translation>
+<translation id="6656935431494847393">Включва информация като резервации на полети и данни за превозното средство</translation>
 <translation id="6657585470893396449">Парола</translation>
 <translation id="6659246032834639189">Тази цена е ниска</translation>
 <translation id="6660413144148052430">местоположение</translation>
@@ -4675,6 +4676,7 @@
 <translation id="865255447216708819">Полупрозрачно фолио</translation>
 <translation id="8654126188050905496">55 x 91 мм</translation>
 <translation id="8660780831677950176">Посещавате често по това време</translation>
+<translation id="8661820486298572829">Кодът е попълнен автоматично</translation>
 <translation id="8662463432865928030">Търговски имоти</translation>
 <translation id="8663226718884576429">Обобщение на поръчката, <ph name="TOTAL_LABEL" />, още подробности</translation>
 <translation id="8663909737634214500">Оптичен диск</translation>
@@ -4756,6 +4758,7 @@
 <translation id="8781278378794969337">Бутон „Превод на страницата“. Активирайте, за да се преведе страницата с Google Преводач</translation>
 <translation id="8785658048882205566">Мотоциклети</translation>
 <translation id="8790007591277257123">&amp;Възстановяване на изтриването</translation>
+<translation id="8790668801880409584">Запазване и попълване на информация за пътувания</translation>
 <translation id="8792272652220298572">Пластмаса (гланцирана)</translation>
 <translation id="8792621596287649091">Възможно е да загубите достъп до профила си в/ъв <ph name="ORG_NAME" /> или самоличността ви да бъде открадната. Chromium препоръчва да промените паролата си сега.</translation>
 <translation id="8792626944327216835">микрофон</translation>

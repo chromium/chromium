@@ -656,6 +656,7 @@
 <translation id="3547933853190131743">Αναζήτηση με τη Λειτουργία AI</translation>
 <translation id="3557336313807607643">Προσθήκη στις επαφές</translation>
 <translation id="355765753469272474">Αναίρεση</translation>
+<translation id="3565012355885596568">Δεν ήταν δυνατή η φόρτωση των εικόνων</translation>
 <translation id="3565930036634619844">Καρτέλα. <ph name="TAB_INDEX" /> από <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3572607909481582402">Στον Λογαριασμό σας Google</translation>
 <translation id="3575234738189584619">Αναζήτηση με το Lens</translation>
@@ -1314,6 +1315,7 @@
 <translation id="6045460247888249350">Προσθήκη τίτλου</translation>
 <translation id="6052269326659653305">Εναλλαγή προφίλ</translation>
 <translation id="605721222689873409">ΕΕ</translation>
+<translation id="6058415747854995776">Εγγραφή βίντεο</translation>
 <translation id="6059830886158432458">Ελέγξτε τις ειδήσεις και τη δραστηριότητά σας εδώ</translation>
 <translation id="6066301408025741299">Πατήστε για ακύρωση.</translation>
 <translation id="6074656473835429958">Λήψη ειδοποιήσεων</translation>
@@ -1816,6 +1818,7 @@
 <translation id="7866872729285243843">Για να εμφανίζεται η Λίστα ανάγνωσης σε όλες τις συσκευές σας, ενεργοποιήστε τη Λίστα ανάγνωσης στις ρυθμίσεις.</translation>
 <translation id="7874107544081154809">Φόρμα αυτόματης συμπλήρωσης με <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="7879275349003161544">Εμφάνιση λήψεων</translation>
+<translation id="7882689957034389473">Λήψη φωτογραφίας</translation>
 <translation id="7883882164760409935">Έχετε επαναχρησιμοποιημένους κωδικούς πρόσβασης.</translation>
 <translation id="7887174313503389866">Δείτε μια ξενάγηση για σημαντικά στοιχεία ελέγχου για το απόρρητο και την ασφάλεια. Για περισσότερες επιλογές, μεταβείτε σε μεμονωμένες ρυθμίσεις.</translation>
 <translation id="7887198238286927132">Προκειμένου να προστατεύσει το απόρρητό σας, το Chrome δεν θα συμπληρώνει αυτόματα αυτό το πεδίο.</translation>

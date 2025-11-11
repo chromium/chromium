@@ -1117,7 +1117,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1751335846119670066">Aiutami a leggere</translation>
 <translation id="17513872634828108">Schede aperte</translation>
 <translation id="175196451752279553">R&amp;iapri scheda chiusa</translation>
-<translation id="1752557850776261983">Verifica dell'accesso in corso…</translation>
 <translation id="1753067873202720523">Il Chromebook potrebbe non ricaricarsi mentre è acceso.</translation>
 <translation id="1753557900380512635">Interni</translation>
 <translation id="1753905327828125965">Più visitati</translation>
@@ -1745,7 +1744,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2178614541317717477">Compromesso CA</translation>
 <translation id="2180620921879609685">Bloccare i contenuti in qualsiasi pagina</translation>
 <translation id="2181821976797666341">Policy</translation>
-<translation id="2181930382663745869">Fai un confronto</translation>
 <translation id="2182058453334755893">Copia negli appunti eseguita</translation>
 <translation id="2182419606502127232">Includi i miei log del server.</translation>
 <translation id="2183570493397356669">Pulsante Continua non attivo</translation>
@@ -6373,7 +6371,6 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5398497406011404839">Preferiti nascosti</translation>
 <translation id="5398572795982417028">Riferimento pagina oltre i limiti. Il limite è <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="539882584649709174">Ti aiuta a scrivere brevi testi per il web, come le recensioni</translation>
-<translation id="5400068721524309244">Quando le schede vengono condivise, i contenuti e gli URL delle pagine vengono inviati a Google</translation>
 <translation id="5400196580536813396">Non autorizzati a cercare o utilizzare stampanti accessibili al tuo dispositivo</translation>
 <translation id="5400836586163650660">Grigio</translation>
 <translation id="5402367795255837559">Braille</translation>
@@ -10859,6 +10856,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8505669004895429027">Piccoli risparmi</translation>
 <translation id="8507227974644337342">Risoluzione dello schermo</translation>
 <translation id="850763987657366362">Impossibile importare il certificato</translation>
+<translation id="8508532351844333131"><ph name="WEBSITE_ORIGIN" /> vuole salvare informazioni sul tuo dispositivo Android</translation>
 <translation id="8509177919508253835">Reimposta i token di sicurezza e crea PIN</translation>
 <translation id="8509646642152301857">Download del dizionario per il controllo ortografico non riuscito.</translation>
 <translation id="8509967119010808787">Fai clic qui per effettuare ricerche nelle schede</translation>

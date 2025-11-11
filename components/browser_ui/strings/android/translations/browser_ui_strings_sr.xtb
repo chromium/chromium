@@ -243,6 +243,7 @@
 <translation id="3611658447322220736">Недавно затворени сајтови могу да заврше слање и пријем података</translation>
 <translation id="3619294456800709762">Сајтови могу аутоматски да уђу у слику у слици</translation>
 <translation id="3628308229821498208">Предложене претраге</translation>
+<translation id="363748948745453283">Користи се приближна локација</translation>
 <translation id="3641456520301071208">Сајтови могу да вам траже локацију</translation>
 <translation id="3658847490588580244">Доња табела подразумеваног прегледача</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> сајт у групи сајтова власника <ph name="RWS_OWNER" /> који могу да виде ваше активности у групи}one{<ph name="RWS_MEMBERS_COUNT" /> сајт у групи сајтова власника <ph name="RWS_OWNER" /> који могу да виде ваше активности у групи}few{<ph name="RWS_MEMBERS_COUNT" /> сајта у групи сајтова власника <ph name="RWS_OWNER" /> који могу да виде ваше активности у групи}other{<ph name="RWS_MEMBERS_COUNT" /> сајтова у групи сајтова власника <ph name="RWS_OWNER" /> који могу да виде ваше активности у групи}}</translation>
@@ -436,6 +437,7 @@
 <translation id="5792627621688759634">Превлачите између страница помоћу тачпеда</translation>
 <translation id="5801457289562671820">Препоручује ваша организација</translation>
 <translation id="5804241973901381774">Дозволе</translation>
+<translation id="5817042798620209981">Информације о сајту, дијалог</translation>
 <translation id="5822675474983796325">Прилагодите доњу табелу странице нове картице отворену на целом екрану</translation>
 <translation id="5833899990800318936">Не дозвољавај сајтовима да користе JavaScript</translation>
 <translation id="583673505367439042">Сајтови могу да траже да мењају фајлове и фолдере на уређају</translation>

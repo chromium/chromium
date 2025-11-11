@@ -1119,7 +1119,6 @@ Dopuštenja koja ste već dali aplikacijama mogu se primijeniti na ovaj račun. 
 <translation id="1751335846119670066">Pomoć pri čitanju</translation>
 <translation id="17513872634828108">Otvorene kartice</translation>
 <translation id="175196451752279553">P&amp;onovo otvori zatvorenu karticu</translation>
-<translation id="1752557850776261983">Provjerava se prijava...</translation>
 <translation id="1753067873202720523">Chromebook se možda neće puniti dok je uključen.</translation>
 <translation id="1753557900380512635">Interijeri</translation>
 <translation id="1753905327828125965">Najposjećenije</translation>
@@ -1747,7 +1746,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2178614541317717477">CA kompromis</translation>
 <translation id="2180620921879609685">Blokiraj sadržaj na bilo kojoj stranici</translation>
 <translation id="2181821976797666341">Pravila</translation>
-<translation id="2181930382663745869">Izradite usporedbu</translation>
 <translation id="2182058453334755893">Kopirano u međuspremnik</translation>
 <translation id="2182419606502127232">Uključi moje zapisnike poslužitelja.</translation>
 <translation id="2183570493397356669">Onemogućen je gumb Nastavi</translation>
@@ -6374,7 +6372,6 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="5398497406011404839">Skrivene oznake</translation>
 <translation id="5398572795982417028">Referenca na stranicu izvan je granica, a granica je <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="539882584649709174">Pomaže vam napisati kratki tekst za objavljivanje na webu, primjerice recenzije</translation>
-<translation id="5400068721524309244">Kad se kartice dijele, njihov sadržaj i URL-ovi šalju se Googleu</translation>
 <translation id="5400196580536813396">Nije dopušteno tražiti ili upotrebljavati pisače dostupne vašem uređaju</translation>
 <translation id="5400836586163650660">Siva</translation>
 <translation id="5402367795255837559">Brajica</translation>
@@ -10864,6 +10861,7 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="8505669004895429027">Male uštede</translation>
 <translation id="8507227974644337342">Razlučivost zaslona</translation>
 <translation id="850763987657366362">Uvoz certifikata nije uspio</translation>
+<translation id="8508532351844333131">Web-lokacija <ph name="WEBSITE_ORIGIN" /> želi spremiti podatke na vaš Android uređaj</translation>
 <translation id="8509177919508253835">Vraćanje sigurnosnih ključeva na zadano i izrada PIN-ova</translation>
 <translation id="8509646642152301857">Preuzimanje rječnika za provjeru pravopisa nije uspjelo.</translation>
 <translation id="8509967119010808787">Da biste pretražili kartice, kliknite ovdje</translation>

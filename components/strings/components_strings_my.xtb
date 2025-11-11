@@ -3461,6 +3461,7 @@
 <translation id="6654224358955673568">ရုံးသုံးဆန်ဆန်</translation>
 <translation id="6654244995031366386">မှန် (ပုံဖော်ထား)</translation>
 <translation id="6655085656059574817">သင့်အကောင့်ကို လင့်ခ်ချိတ်ထားခြင်းဖြင့် <ph name="BNPL_ISSUER_NAME" /> သုံးပြီး အမြန်ပေးချေနိုင်သည်။ <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /> သို့ သွားခြင်းဖြင့်လည်း လင့်ခ်ဖြုတ်နိုင်သည်</translation>
+<translation id="6656935431494847393">လေယာဉ်ခရီးစဉ် ကြိုတင်စာရင်းသွင်းမှုနှင့် ယာဉ်အချက်အလက်ကဲ့သို့သော အချက်အလက်များ ပါဝင်သည်</translation>
 <translation id="6657585470893396449">စကားဝှက်</translation>
 <translation id="6659246032834639189">ဤဈေးက နည်းသည်</translation>
 <translation id="6660413144148052430">တည်နေရာ</translation>
@@ -4676,6 +4677,7 @@
 <translation id="865255447216708819">ရှေ့နောက်ပုံနှိပ်နိုင်သည့် ဖလင်</translation>
 <translation id="8654126188050905496">၅၅ x ၉၁ မီလီမီတာ</translation>
 <translation id="8660780831677950176">ဤအချိန်တွင် မကြာခဏ သင်ဝင်ကြည့်တတ်သည်</translation>
+<translation id="8661820486298572829">ကုဒ်ကို အော်တိုဖြည့်လိုက်သည်</translation>
 <translation id="8662463432865928030">လုပ်ငန်းသုံးအဆောက်အအုံ</translation>
 <translation id="8663226718884576429">မှာယူမှု အနှစ်ချုပ်၊ <ph name="TOTAL_LABEL" />၊ နောက်ထပ် အသေးစိတ်အချက်အလက်များ</translation>
 <translation id="8663909737634214500">ဒစ်ခွေ</translation>
@@ -4757,6 +4759,7 @@
 <translation id="8781278378794969337">ဤစာမျက်နှာကို Google Translate ဖြင့် ဘာသာပြန်ရန် ‘စာမျက်နှာ ဘာသာပြန်ရန်’ ခလုတ်ကို နှိပ်နိုင်သည်</translation>
 <translation id="8785658048882205566">မော်တော်ဆိုင်ကယ်များ</translation>
 <translation id="8790007591277257123">&amp;ဖျက်ရန်ကို ပြန်လုပ်ရန်</translation>
+<translation id="8790668801880409584">ခရီးသွားအချက်အလက်ကို သိမ်းပြီး ဖြည့်ရန်</translation>
 <translation id="8792272652220298572">ပလတ်စတစ် (တောက်ပြောင်)</translation>
 <translation id="8792621596287649091">သင်သည် သင့် <ph name="ORG_NAME" /> အကောင့်ကို အသုံးပြုခွင့် ဆုံးရှုံးနိုင်သည် သို့မဟုတ် အထောက်အထား အခိုးခံရနိုင်သည်။ သင့်စကားဝှက်ကို ယခုပင်ပြောင်းလဲရန် Chromium က အကြံပြုပါသည်။</translation>
 <translation id="8792626944327216835">မိုက်ခရိုဖုန်း</translation>

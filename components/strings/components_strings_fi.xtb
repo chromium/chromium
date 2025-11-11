@@ -519,6 +519,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="1823768272150895732">Fontti</translation>
 <translation id="1824402189105105503">Kahdeksas rulla</translation>
 <translation id="1826516787628120939">Tarkistetaan</translation>
+<translation id="1829026591231985685">tallennetaan tietoja Google Walletiin asetuksissa</translation>
 <translation id="1832730227369924598">Työpöydän synkronointi</translation>
 <translation id="1834452765064623979">Rakennustyöt ja huolto</translation>
 <translation id="1838374766361614909">Tyhjennä haku</translation>
@@ -1886,6 +1887,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4073797364926776829">Katso kortti</translation>
 <translation id="4075732493274867456">Asiakassovellus ja palvelin eivät tue samaa SSL-protokollaversiota tai salaustekniikkaa.</translation>
 <translation id="4079302484614802869">Välityspalvelinmääritykset on asetettu käyttämään .pac-URL-osoitteita, ei kiinteitä välityspalvelimia.</translation>
+<translation id="4080668349181235831">Sivuston URL-osoite ja koko sivun sisältö jaetaan Googlelle ehdotusten tarjoamiseksi ja ominaisuuden parantamiseksi. Lue lisää: <ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" />.</translation>
 <translation id="4080855220442581440">jaettujen välilehtien vierittäminen ja zoomaus</translation>
 <translation id="4082333119419111506">Paperi (esipainettu)</translation>
 <translation id="4082393374666368382">Asetukset – Ylläpito</translation>
@@ -3846,6 +3848,7 @@ Lisätietoja:
 <translation id="7286908876112207905">Tätä sisältöä ei saa liittää tälle sivustolle</translation>
 <translation id="7291578327729322058">Lisää ajokortti</translation>
 <translation id="7292031607255951991">Vastaanottajan nimi</translation>
+<translation id="7297228218361240128">Tallenna tietoja Google Walletiin katselemiltasi sivuilta</translation>
 <translation id="7298195798382681320">Suositus</translation>
 <translation id="7299471494012161875">Display-lisälaitteet liitetty</translation>
 <translation id="7299721129597238157">Poista kirjanmerkki</translation>
@@ -4243,6 +4246,7 @@ Lisätietoja:
 <translation id="7916162853251942238">Flexo-pohja</translation>
 <translation id="791698251820376781">Organisaatio ei salli sisäänkirjautumista</translation>
 <translation id="7926503317156566022">Lentokoneteollisuus</translation>
+<translation id="7927046851848613453">Tallenna lippuja, tapahtumia ja muita tietoja avaamiltasi sivuilta, ei vain täyttämistäsi lomakkeista. Sen jälkeen voit käyttää nopeasti kortteja, kuten tapahtumalippuja ja kanta-asiakaskortteja. Tallennetut tiedot voivat näkyä laitteillasi ja Googlen tuotteissa.</translation>
 <translation id="7930282586031445870">Osta nyt, maksa myöhemmin ‐käyttöehtojen näyttö on suljettu.</translation>
 <translation id="7932035970207573919">Työosoite, <ph name="ADDRESS" /></translation>
 <translation id="793209273132572360">Päivitetäänkö osoite?</translation>

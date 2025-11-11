@@ -1117,7 +1117,6 @@
 <translation id="1751335846119670066">پڑھنے میں میری مدد کریں</translation>
 <translation id="17513872634828108">کھلے ٹیبز</translation>
 <translation id="175196451752279553">بند ٹیب کو &amp;دوبارہ کھولیں</translation>
-<translation id="1752557850776261983">سائن ان چیک ہو رہی ہے…</translation>
 <translation id="1753067873202720523">‏آن ہونے پر ممکن ہے آپ کی Chromebook چارج نہ ہو۔</translation>
 <translation id="1753557900380512635">اندرونی</translation>
 <translation id="1753905327828125965">سب سے زیادہ ملاحظہ کردہ</translation>
@@ -1746,7 +1745,6 @@
 <translation id="2178614541317717477">‏CA سمجھوتہ</translation>
 <translation id="2180620921879609685">کسی بھی صفحے پر مواد کو مسدود کریں</translation>
 <translation id="2181821976797666341">پالیسیاں</translation>
-<translation id="2181930382663745869">موازنہ کریں</translation>
 <translation id="2182058453334755893">آپ کے کلپ بورڈ پر کاپی کر دیا گیا</translation>
 <translation id="2182419606502127232">میرے سرور لاگز شامل کریں۔</translation>
 <translation id="2183570493397356669">جاری رکھیں بٹن کو غیر فعال کیا گیا</translation>
@@ -6372,7 +6370,6 @@
 <translation id="5398497406011404839">چھپے ہوئے بُک مارکس</translation>
 <translation id="5398572795982417028">صفحہ کے حوالہ کی حدوں سے باہر، حد <ph name="MAXIMUM_PAGE" /> ہے</translation>
 <translation id="539882584649709174">ویب پر چیزوں کے لیے مختصر ٹیکسٹ لکھنے میں آپ کی مدد کرتی ہے، جیسے کہ جائزے</translation>
-<translation id="5400068721524309244">‏ٹیبز کا اشتراک کرنے پر، ان کے صفحہ کے مواد اور URLs کو Google کو بھیجا جاتا ہے</translation>
 <translation id="5400196580536813396">آپ کے آلہ تک قابل رسائی پرنٹرز کو تلاش کرنے یا انہیں استعمال کرنے کی اجازت نہیں ہے</translation>
 <translation id="5400836586163650660">خاکستری</translation>
 <translation id="5402367795255837559">بریل</translation>
@@ -10858,6 +10855,7 @@
 <translation id="8505669004895429027">چھوٹی بچتیں</translation>
 <translation id="8507227974644337342">اسکرین ریزولیوشن</translation>
 <translation id="850763987657366362">سرٹیفکیٹ درآمد کرنے سے قاصر</translation>
+<translation id="8508532351844333131">‏‫<ph name="WEBSITE_ORIGIN" /> آپ کے Android آلے پر معلومات کو محفوظ کرنا چاہتا ہے</translation>
 <translation id="8509177919508253835">‏سیکیورٹی کلیدوں کو دوبارہ ترتیب دیں اور PINs تخلیق کریں</translation>
 <translation id="8509646642152301857">املا کی جانچ کی لغت کو ڈاؤن لوڈ کرنا ناکام ہوگیا۔</translation>
 <translation id="8509967119010808787">اپنے ٹیبز کو تلاش کرنے کیلئے یہاں کلک کریں</translation>

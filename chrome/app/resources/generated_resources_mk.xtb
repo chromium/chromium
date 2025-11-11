@@ -1127,7 +1127,6 @@
 <translation id="1751335846119670066">Помош при читање</translation>
 <translation id="17513872634828108">Отворени јазичиња</translation>
 <translation id="175196451752279553">П&amp;овторно отвори затворена картичка</translation>
-<translation id="1752557850776261983">Се проверува најавувањето…</translation>
 <translation id="1753067873202720523">Chromebook може да не се полни додека е вклучен.</translation>
 <translation id="1753557900380512635">Ентериери</translation>
 <translation id="1753905327828125965">Најпосетени</translation>
@@ -1756,7 +1755,6 @@
 <translation id="2178614541317717477">ЦА е изложен на ризик</translation>
 <translation id="2180620921879609685">Блокирајте содржини на која било страница</translation>
 <translation id="2181821976797666341">Политики</translation>
-<translation id="2181930382663745869">Направете споредба</translation>
 <translation id="2182058453334755893">Копирано во привремената меморија</translation>
 <translation id="2182419606502127232">Опфати ја мојата евиденција на сервер.</translation>
 <translation id="2183570493397356669">Копчето „Продолжи“ е оневозможено</translation>
@@ -6388,7 +6386,6 @@
 <translation id="5398497406011404839">Сокриени обележувачи</translation>
 <translation id="5398572795982417028">Претпочитани вредности за надворешни граници на страницата, ограничувањето е <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="539882584649709174">Ви помага да пишувате кратки текстови за нешта на интернет, како рецензии</translation>
-<translation id="5400068721524309244">Кога се споделуваат картички, содржините и URL-адресите на нивните страници се испраќаат до Google</translation>
 <translation id="5400196580536813396">Не е дозволено да се бараат или да се користат печатачи до коишто може да пристапи вашиот уред</translation>
 <translation id="5400836586163650660">Сива</translation>
 <translation id="5402367795255837559">Браилово писмо</translation>
@@ -10880,6 +10877,7 @@
 <translation id="8505669004895429027">Мали заштеди</translation>
 <translation id="8507227974644337342">Резолуција на екранот</translation>
 <translation id="850763987657366362">Не може да се увезе сертификат</translation>
+<translation id="8508532351844333131"><ph name="WEBSITE_ORIGIN" /> сака да зачувува податоци на вашиот мобилен уред со Android</translation>
 <translation id="8509177919508253835">Ресетирајте ги безбедносните клучеви и создајте PIN-кодови</translation>
 <translation id="8509646642152301857">Преземањето речник за проверување правопис не успеа.</translation>
 <translation id="8509967119010808787">За да ги пребарувате картичките, кликнете тука</translation>

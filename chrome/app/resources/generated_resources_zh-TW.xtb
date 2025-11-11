@@ -1117,7 +1117,6 @@
 <translation id="1751335846119670066">幫我讀</translation>
 <translation id="17513872634828108">開啟的分頁</translation>
 <translation id="175196451752279553">重新開啟已關閉分頁(&amp;E)</translation>
-<translation id="1752557850776261983">正在檢查登入狀態...</translation>
 <translation id="1753067873202720523">你的 Chromebook 可能無法在開啟時充電。</translation>
 <translation id="1753557900380512635">室內內裝</translation>
 <translation id="1753905327828125965">最常造訪</translation>
@@ -1745,7 +1744,6 @@
 <translation id="2178614541317717477">CA 洩露</translation>
 <translation id="2180620921879609685">封鎖任何網頁所含內容</translation>
 <translation id="2181821976797666341">政策</translation>
-<translation id="2181930382663745869">進行比較</translation>
 <translation id="2182058453334755893">已複製到剪貼簿</translation>
 <translation id="2182419606502127232">包含我的伺服器記錄。</translation>
 <translation id="2183570493397356669">已停用「繼續」按鈕</translation>
@@ -6365,7 +6363,6 @@
 <translation id="5398497406011404839">隱藏的書籤</translation>
 <translation id="5398572795982417028">參照的網頁超出範圍限制 (<ph name="MAXIMUM_PAGE" />)</translation>
 <translation id="539882584649709174">協助在網路上撰寫評論等簡短內容</translation>
-<translation id="5400068721524309244">分享分頁時，系統會將網頁內容和網址傳送給 Google</translation>
 <translation id="5400196580536813396">不得尋找或使用能存取你裝置的印表機</translation>
 <translation id="5400836586163650660">灰</translation>
 <translation id="5402367795255837559">點字</translation>
@@ -10849,6 +10846,7 @@
 <translation id="8505669004895429027">節省量：小</translation>
 <translation id="8507227974644337342">螢幕解析度</translation>
 <translation id="850763987657366362">無法匯入憑證</translation>
+<translation id="8508532351844333131">「<ph name="WEBSITE_ORIGIN" />」想在你的 Android 裝置儲存資訊</translation>
 <translation id="8509177919508253835">重設安全金鑰並建立 PIN 碼</translation>
 <translation id="8509646642152301857">拼字檢查字典下載失敗。</translation>
 <translation id="8509967119010808787">如要搜尋分頁，請按這裡</translation>

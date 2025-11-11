@@ -33,6 +33,7 @@
 <translation id="1409338233051621926">Tap Apps, then tap Default apps</translation>
 <translation id="1415402041810619267">URL truncated</translation>
 <translation id="1415855080660575082">Let Chrome share your recent tabs with your device to see them in your device's app list and search results. You can turn this on or off in Chrome settings.</translation>
+<translation id="1420688843103859429">Navigate back and forth by swiping with two fingers on the touchpad</translation>
 <translation id="1432650420699700107">Sites can ask to connect to any device on your local network</translation>
 <translation id="1448064542941920355">Decrease zoom</translation>
 <translation id="1464044141348608623">Don't allow sites to know when you're actively using your device</translation>
@@ -432,6 +433,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="5750869797196646528">Hand tracking</translation>
 <translation id="5753570386948603678">Delete from history</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> blocked</translation>
+<translation id="5792627621688759634">Swipe between pages using a touchpad</translation>
 <translation id="5801457289562671820">Recommended by your organisation</translation>
 <translation id="5804241973901381774">Permissions</translation>
 <translation id="5822675474983796325">Customise your new tab page bottom sheet opened at full height</translation>

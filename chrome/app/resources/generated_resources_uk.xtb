@@ -1129,7 +1129,6 @@
 <translation id="1751335846119670066">Допомога із читанням</translation>
 <translation id="17513872634828108">Відкриті вкладки</translation>
 <translation id="175196451752279553">В&amp;ідкрити закриту вкладку знову</translation>
-<translation id="1752557850776261983">Перевіряємо, чи виконано вхід…</translation>
 <translation id="1753067873202720523">Ваш Chromebook може не заряджатися, поки він увімкнений.</translation>
 <translation id="1753557900380512635">Інтер’єри</translation>
 <translation id="1753905327828125965">Часто відвідувані</translation>
@@ -1758,7 +1757,6 @@
 <translation id="2178614541317717477">Дискредитація ЦС</translation>
 <translation id="2180620921879609685">Блокувати контент на всіх сторінках</translation>
 <translation id="2181821976797666341">Правила</translation>
-<translation id="2181930382663745869">Порівняй варіанти</translation>
 <translation id="2182058453334755893">Скопійовано в буфер обміну</translation>
 <translation id="2182419606502127232">Включати журнали сервера.</translation>
 <translation id="2183570493397356669">Кнопку "Продовжити" вимкнено</translation>
@@ -6388,7 +6386,6 @@
 <translation id="5398497406011404839">Сховані закладки</translation>
 <translation id="5398572795982417028">Сторінка поза діапазоном, максимальна кількість сторінок: <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="539882584649709174">Допомагає писати короткі тексти в Інтернеті, наприклад відгуки</translation>
-<translation id="5400068721524309244">Коли ви надаєте доступ до вкладок, у Google надсилаються їх URL-адреси й увесь контент</translation>
 <translation id="5400196580536813396">Заборонено шукати чи використовувати принтери, доступні на вашому пристрої</translation>
 <translation id="5400836586163650660">Сірий</translation>
 <translation id="5402367795255837559">Команди Брайля</translation>
@@ -10879,6 +10876,7 @@
 <translation id="8505669004895429027">Незначне заощадження</translation>
 <translation id="8507227974644337342">Роздільна здатність екрана</translation>
 <translation id="850763987657366362">Не вдалось імпортувати сертифікат</translation>
+<translation id="8508532351844333131">Сайт <ph name="WEBSITE_ORIGIN" /> хоче зберегти дані на вашому пристрої Android</translation>
 <translation id="8509177919508253835">Скинути ключі безпеки та створити PIN-коди</translation>
 <translation id="8509646642152301857">Помилка завантаження словника перевірки орфографії.</translation>
 <translation id="8509967119010808787">Щоб шукати вкладки, натисніть тут</translation>

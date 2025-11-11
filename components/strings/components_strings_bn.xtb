@@ -3461,6 +3461,7 @@
 <translation id="6654224358955673568">ফর্মাল স্টাইলে লেখো</translation>
 <translation id="6654244995031366386">গ্লাস (টেক্সচার্জড)</translation>
 <translation id="6655085656059574817">অ্যাকাউন্ট লিঙ্ক করা থাকলে <ph name="BNPL_ISSUER_NAME" />-এর সাহায্যে দ্রুত পেমেন্ট করা যাবে, তবে <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /> থেকে আপনি এটি আনলিঙ্ক করতে পারবেন</translation>
+<translation id="6656935431494847393">ফ্লাইট বুকিং ও গাড়ির তথ্যের মতো বিভিন্ন তথ্য অন্তর্ভুক্ত</translation>
 <translation id="6657585470893396449">পাসওয়ার্ড</translation>
 <translation id="6659246032834639189">দাম কম আছে</translation>
 <translation id="6660413144148052430">লোকেশন</translation>
@@ -4675,6 +4676,7 @@
 <translation id="865255447216708819">ব্যাক প্রিন্ট ফিল্ম</translation>
 <translation id="8654126188050905496">৫৫ x ৯১ মিমি</translation>
 <translation id="8660780831677950176">আপনি প্রায়শই এই সময়ে ভিজিট করেন</translation>
+<translation id="8661820486298572829">অটোফিল করা কোড</translation>
 <translation id="8662463432865928030">ব্যবসায়িক প্রপার্টি</translation>
 <translation id="8663226718884576429">অর্ডারের সারসংক্ষেপ, <ph name="TOTAL_LABEL" />, আরও বিবরণ</translation>
 <translation id="8663909737634214500">অপটিকাল ডিস্ক</translation>
@@ -4756,6 +4758,7 @@
 <translation id="8781278378794969337">'পৃষ্ঠা অনুবাদ করুন' বোতাম, Google Translate দিয়ে এই পৃষ্ঠা অনুবাদ করতে এটি চালু করুন</translation>
 <translation id="8785658048882205566">মোটর সাইকেল</translation>
 <translation id="8790007591277257123">&amp;মুছে ফেলাকে আবার করুন</translation>
+<translation id="8790668801880409584">ভ্রমণের তথ্য সেভ ও পূরণ করুন</translation>
 <translation id="8792272652220298572">প্লাস্টিক (গ্লসি)</translation>
 <translation id="8792621596287649091">আপনি নিজের <ph name="ORG_NAME" /> অ্যাকাউন্টের অ্যাক্সেস হারাতে পারেন অথবা আপনার পরিচয় চুরি হয়ে যেতে পারে। Chromium এখনই আপনার পাসওয়ার্ড পরিবর্তন করার আর্জি জানাচ্ছে।</translation>
 <translation id="8792626944327216835">মাইক্রোফোন</translation>

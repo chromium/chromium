@@ -1127,7 +1127,6 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1751335846119670066">Quero ajuda para ler</translation>
 <translation id="17513872634828108">Guias abertas</translation>
 <translation id="175196451752279553">R&amp;eabrir guia fechada</translation>
-<translation id="1752557850776261983">Verificando login…</translation>
 <translation id="1753067873202720523">Seu Chromebook não pode ser carregado enquanto está ligado.</translation>
 <translation id="1753557900380512635">Interiores</translation>
 <translation id="1753905327828125965">Mais visitados</translation>
@@ -1756,7 +1755,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2178614541317717477">Compromisso da autoridade de certificação</translation>
 <translation id="2180620921879609685">Bloquear conteúdo em qualquer página</translation>
 <translation id="2181821976797666341">Políticas</translation>
-<translation id="2181930382663745869">Faça uma comparação</translation>
 <translation id="2182058453334755893">Copiado para a área de transferência</translation>
 <translation id="2182419606502127232">Incluir meus registros do servidor.</translation>
 <translation id="2183570493397356669">Botão "Continuar" desativado</translation>
@@ -6388,7 +6386,6 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="5398497406011404839">Favoritos ocultos</translation>
 <translation id="5398572795982417028">Referência de página fora do limite, que é <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="539882584649709174">Ajuda você a escrever textos curtos para itens na Web, como avaliações</translation>
-<translation id="5400068721524309244">Quando as guias são compartilhadas, o conteúdo e os URLs das páginas são enviados ao Google</translation>
 <translation id="5400196580536813396">Sem permissão para procurar ou usar impressoras acessíveis ao dispositivo</translation>
 <translation id="5400836586163650660">Cinza</translation>
 <translation id="5402367795255837559">Braille</translation>
@@ -10880,6 +10877,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8505669004895429027">Pequena economia</translation>
 <translation id="8507227974644337342">Resolução da tela</translation>
 <translation id="850763987657366362">Não foi possível importar o certificado</translation>
+<translation id="8508532351844333131"><ph name="WEBSITE_ORIGIN" /> quer salvar informações no seu dispositivo Android</translation>
 <translation id="8509177919508253835">Redefinir chaves de segurança e criar PINs</translation>
 <translation id="8509646642152301857">Falha no download do dicionário de correção ortográfica.</translation>
 <translation id="8509967119010808787">Para pesquisar suas guias, clique aqui</translation>

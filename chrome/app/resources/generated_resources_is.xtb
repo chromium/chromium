@@ -1127,7 +1127,6 @@ Heimildir sem þú hefur þegar veitt forritum kunna að gilda á þessum reikni
 <translation id="1751335846119670066">Hjálpaðu mér að lesa</translation>
 <translation id="17513872634828108">Opnir flipar</translation>
 <translation id="175196451752279553">&amp;Enduropna lokaðan flipa</translation>
-<translation id="1752557850776261983">Athugar innskráningu...</translation>
 <translation id="1753067873202720523">Ekki er víst að Chromebook tölvan hlaðist á meðan kveikt er á henni.</translation>
 <translation id="1753557900380512635">Innanrými</translation>
 <translation id="1753905327828125965">Oftast heimsótt</translation>
@@ -1756,7 +1755,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2178614541317717477">CA-öryggisbrestur</translation>
 <translation id="2180620921879609685">Útiloka efni á öllum síðum</translation>
 <translation id="2181821976797666341">Reglur</translation>
-<translation id="2181930382663745869">Gerðu samanburð</translation>
 <translation id="2182058453334755893">Afritað á klippiborðið</translation>
 <translation id="2182419606502127232">Hafa annála þjóns með.</translation>
 <translation id="2183570493397356669">Slökkt á hnappi til að halda áfram</translation>
@@ -6388,7 +6386,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5398497406011404839">Falin bókamerki</translation>
 <translation id="5398572795982417028">Síðutilvísun er ekki innan réttra marka, hámarkið er <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="539882584649709174">Hjálpar þér að skrifa stutta texta á vefnum, t.d. umsagnir</translation>
-<translation id="5400068721524309244">Þegar flipum er deilt er efni þeirra og vefslóðir sendar til Google</translation>
 <translation id="5400196580536813396">Ekki heimilt að leita að eða nota prentara sem tækið þitt hefur aðgang að</translation>
 <translation id="5400836586163650660">Grár</translation>
 <translation id="5402367795255837559">Blindraletur</translation>
@@ -10877,6 +10874,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8505669004895429027">Lítill sparnaður</translation>
 <translation id="8507227974644337342">Skjáupplausn</translation>
 <translation id="850763987657366362">Ekki tókst að flytja inn vottorð</translation>
+<translation id="8508532351844333131"><ph name="WEBSITE_ORIGIN" /> vill vista upplýsingar í Android-tækinu þínu</translation>
 <translation id="8509177919508253835">Endurstilla öryggislykla og búa til PIN-númer</translation>
 <translation id="8509646642152301857">Mistókst að sækja orðabók fyrir ritvilluleit.</translation>
 <translation id="8509967119010808787">Smelltu hér til að leita í flipum.</translation>

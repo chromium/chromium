@@ -1114,7 +1114,6 @@
 <translation id="1751335846119670066">ମୋତେ ପଢ଼ିବାରେ ସାହାଯ୍ୟ କରନ୍ତୁ</translation>
 <translation id="17513872634828108">ଟାବ୍‌ଗୁଡ଼ିକ ଖୋଲନ୍ତୁ</translation>
 <translation id="175196451752279553">ବନ୍ଦ ଟ୍ୟାବ୍ ପୁନଃ ଖୋଲନ୍ତୁ</translation>
-<translation id="1752557850776261983">ସାଇନ ଇନ କରିବା ଯାଞ୍ଚ କରାଯାଉଛି...</translation>
 <translation id="1753067873202720523">ଆପଣଙ୍କ Chromebook ଚାଲୁ ଥିବା ସମୟରେ ଏହା ଚାର୍ଜ ନହୋଇପାରେ।</translation>
 <translation id="1753557900380512635">ଇଣ୍ଟେରିଅର</translation>
 <translation id="1753905327828125965">ସବୁଠାରୁ ଅଧିକ ଯାଇଥିବା</translation>
@@ -1742,7 +1741,6 @@
 <translation id="2178614541317717477">CA କମ୍ପ୍ରୋମାଇଜ୍</translation>
 <translation id="2180620921879609685">ଯେ କୌଣସି ପୃଷ୍ଠାରେ ବିଷୟବସ୍ତୁକୁ ବ୍ଲକ୍ କରନ୍ତୁ</translation>
 <translation id="2181821976797666341">ନୀତି</translation>
-<translation id="2181930382663745869">ଏକ ତୁଳନା କରନ୍ତୁ</translation>
 <translation id="2182058453334755893">ଆପଣଙ୍କର କ୍ଲିପ୍‌ବୋର୍ଡକୁ କପି କରାଯାଇଛି</translation>
 <translation id="2182419606502127232">ମୋ ସର୍ଭର ଲଗଗୁଡ଼ିକୁ ଅନ୍ତର୍ଭୁକ୍ତ କରନ୍ତୁ।</translation>
 <translation id="2183570493397356669">"ଜାରି ରଖନ୍ତୁ" ବଟନକୁ ଅକ୍ଷମ କରାଯାଇଛି</translation>
@@ -6370,7 +6368,6 @@
 <translation id="5398497406011404839">ଲୁକ୍କାୟିତ ବୁକମାର୍କଗୁଡ଼ିକ</translation>
 <translation id="5398572795982417028">ସୀମା ବାହାର ପୃଷ୍ଠାର ସନ୍ଦର୍ଭ, ସୀମା <ph name="MAXIMUM_PAGE" /> ଅଟେ</translation>
 <translation id="539882584649709174">ୱେବରେ ସମୀକ୍ଷା ପରି ଜିନିଷଗୁଡ଼ିକ ପାଇଁ ସର୍ଟ-ଫର୍ମ ଟେକ୍ସଟ ଲେଖିବାରେ ଆପଣଙ୍କୁ ସାହାଯ୍ୟ କରେ</translation>
-<translation id="5400068721524309244">ଟାବଗୁଡ଼ିକୁ ସେୟାର କରାଗଲେ, ସେଗୁଡ଼ିକର ପୃଷ୍ଠାର ବିଷୟବସ୍ତୁ ଏବଂ URLଗୁଡ଼ିକ Googleକୁ ପଠାଯାଏ</translation>
 <translation id="5400196580536813396">ଆପଣଙ୍କ ଡିଭାଇସ ପାଇଁ ଆକ୍ସେସ ଯୋଗ୍ୟ ଥିବା ପ୍ରିଣ୍ଟରଗୁଡ଼ିକୁ ଖୋଜିବା କିମ୍ବା ବ୍ୟବହାର କରିବା ପାଇଁ ଅନୁମତି ଦିଆଯାଇନାହିଁ</translation>
 <translation id="5400836586163650660">ଧୂସର</translation>
 <translation id="5402367795255837559">ବ୍ରେଲ୍ଲୀ</translation>
@@ -10855,6 +10852,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="8505669004895429027">ଛୋଟ ସେଭିଂସ</translation>
 <translation id="8507227974644337342">ସ୍କ୍ରିନ୍ ରିଜୋଲ୍ୟୁସନ୍</translation>
 <translation id="850763987657366362">ସାର୍ଟିଫିକେଟ ଇମ୍ପୋର୍ଟ କରିବାରେ ଅସମର୍ଥ</translation>
+<translation id="8508532351844333131"><ph name="WEBSITE_ORIGIN" /> ଆପଣଙ୍କ Android ଡିଭାଇସରେ ସୂଚନା ସେଭ କରିବାକୁ ଚାହେଁ</translation>
 <translation id="8509177919508253835">ସୁରକ୍ଷା କୀଗୁଡ଼ିକ ରିସେଟ୍ କରନ୍ତୁ ଏବଂ ପିନ୍‌ଗୁଡ଼ିକ ତିଆରି କରନ୍ତୁ</translation>
 <translation id="8509646642152301857">ବନାନ ଯାଞ୍ଚ ଅଭିଧାନ ଡାଉନ୍‌ଲୋଡ୍ ବିଫଳ ହୋଇଛି।</translation>
 <translation id="8509967119010808787">ଆପଣଙ୍କ ଟାବଗୁଡ଼ିକୁ ସନ୍ଧାନ କରିବାକୁ, ଏଠାରେ କ୍ଲିକ୍ କରନ୍ତୁ</translation>
