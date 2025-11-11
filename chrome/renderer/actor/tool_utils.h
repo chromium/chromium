@@ -103,7 +103,7 @@ void CreateAndDispatchClick(
     base::OnceCallback<void(mojom::ActionResultPtr)> on_complete);
 
 // Converts Node to a debug string of tag name, id and class.
-std::string NodeToDebugSring(const blink::WebNode& node);
+std::string NodeToDebugString(const blink::WebNode& node);
 
 }  // namespace actor
 

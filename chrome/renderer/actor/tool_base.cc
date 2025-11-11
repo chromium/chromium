@@ -271,7 +271,7 @@ mojom::ActionResultPtr ToolBase::ValidateTimeOfUse(
               .Add("target_id", target_node.GetDomNodeId())
               .Add("observed_target_id",
                    *observed_target_->node_attribute->dom_node_id)
-              .Add("target", NodeToDebugSring(target_node))
+              .Add("target", NodeToDebugString(target_node))
               .AddError(
                   "Observed target at coordinate is not present in live DOM")
               .Build());
@@ -293,8 +293,8 @@ mojom::ActionResultPtr ToolBase::ValidateTimeOfUse(
                    base::ToString(target_->get_coordinate_dip()))
               .Add("target_id", target_node.GetDomNodeId())
               .Add("observed_target_id", observed_target_node.GetDomNodeId())
-              .Add("target", NodeToDebugSring(target_node))
-              .Add("observed_target", NodeToDebugSring(observed_target_node))
+              .Add("target", NodeToDebugString(target_node))
+              .Add("observed_target", NodeToDebugString(observed_target_node))
               .AddError("Wrong Node At Location")
               .Build());
       UmaHistogramEnumeration(kTimeOfUseValidationHistogram,
@@ -327,8 +327,8 @@ mojom::ActionResultPtr ToolBase::ValidateTimeOfUse(
                     JournalDetailsBuilder()
                         .Add("target_id", target_node.GetDomNodeId())
                         .Add("hit_node_id", hit_element.GetDomNodeId())
-                        .Add("target", NodeToDebugSring(target_node))
-                        .Add("hit_node", NodeToDebugSring(hit_element))
+                        .Add("target", NodeToDebugString(target_node))
+                        .Add("hit_node", NodeToDebugString(hit_element))
                         .AddError("Node covered by another node")
                         .Build());
       UmaHistogramEnumeration(
