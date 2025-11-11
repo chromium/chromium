@@ -20,6 +20,7 @@
 #include "base/thread_annotations.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "components/persistent_cache/persistent_cache.h"
+#include "gpu/command_buffer/common/shm_count.h"
 #include "gpu/command_buffer/service/memory_cache.h"
 #include "gpu/gpu_gles2_export.h"
 #include "gpu/ipc/common/gpu_disk_cache_type.h"
@@ -45,7 +46,8 @@ class GPU_GLES2_EXPORT DawnCachingInterface
   ~DawnCachingInterface() override;
 
   void InitializePersistentCache(
-      persistent_cache::BackendParams backend_params);
+      persistent_cache::BackendParams backend_params,
+      scoped_refptr<RefCountedGpuProcessShmCount> use_shader_cache_shm_count);
 
   size_t LoadData(const void* key,
                   size_t key_size,

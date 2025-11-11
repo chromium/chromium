@@ -9,6 +9,7 @@
 #include "base/containers/span.h"
 #include "base/dcheck_is_on.h"
 #include "base/functional/bind.h"
+#include "base/immediate_crash.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
@@ -18,6 +19,7 @@
 #include "base/types/expected_macros.h"
 #include "components/persistent_cache/entry.h"
 #include "components/persistent_cache/persistent_cache.h"
+#include "components/persistent_cache/transaction_error.h"
 #include "ui/gl/gl_bindings.h"
 
 namespace gpu {
@@ -98,6 +100,22 @@ std::string GetHistogramName(std::string_view prefix, std::string_view metric) {
          std::string(metric);
 }
 
+NOINLINE NOOPT void HandlePersistentCacheError(
+    GpuProcessShmCount* use_shader_cache_shm_count,
+    persistent_cache::TransactionError error) {
+  switch (error) {
+    case persistent_cache::TransactionError::kPermanent:
+      if (use_shader_cache_shm_count) {
+        GpuProcessShmCount::ScopedIncrement scoped_increment(
+            use_shader_cache_shm_count);
+        base::ImmediateCrash();
+      }
+      break;
+    default:
+      break;
+  }
+}
+
 }  // namespace
 
 // AsyncDiskWriteOpts
@@ -121,7 +139,8 @@ struct GpuPersistentCache::DiskCache
   explicit DiskCache(
       std::string_view cache_prefix,
       std::unique_ptr<persistent_cache::PersistentCache> cache,
-      const GpuPersistentCache::AsyncDiskWriteOpts& async_write_options);
+      const GpuPersistentCache::AsyncDiskWriteOpts& async_write_options,
+      scoped_refptr<RefCountedGpuProcessShmCount> use_shader_cache_shm_count);
 
   std::unique_ptr<persistent_cache::Entry> Load(std::string_view key);
   void Store(std::string_view key, base::span<const uint8_t> value);
@@ -148,17 +167,22 @@ struct GpuPersistentCache::DiskCache
   std::atomic<size_t> pending_bytes_to_write_{0};
   const scoped_refptr<base::SequencedTaskRunner> disk_write_task_runner_;
   const size_t max_pending_bytes_to_write_;
+
+  const scoped_refptr<RefCountedGpuProcessShmCount> use_shader_cache_shm_count_;
 };
 
 GpuPersistentCache::DiskCache::DiskCache(
     std::string_view cache_prefix,
     std::unique_ptr<persistent_cache::PersistentCache> cache,
-    const GpuPersistentCache::AsyncDiskWriteOpts& async_write_options)
+    const GpuPersistentCache::AsyncDiskWriteOpts& async_write_options,
+    scoped_refptr<RefCountedGpuProcessShmCount> use_shader_cache_shm_count)
     : cache_prefix_(cache_prefix),
       cache_(std::move(cache)),
       disk_write_task_runner_(async_write_options.task_runner),
       max_pending_bytes_to_write_(
-          async_write_options.max_pending_bytes_to_write) {}
+          async_write_options.max_pending_bytes_to_write),
+      use_shader_cache_shm_count_(std::move(use_shader_cache_shm_count)) {}
+
 GpuPersistentCache::DiskCache::~DiskCache() = default;
 
 std::unique_ptr<persistent_cache::Entry> GpuPersistentCache::DiskCache::Load(
@@ -171,10 +195,10 @@ std::unique_ptr<persistent_cache::Entry> GpuPersistentCache::DiskCache::Load(
   trace_scope.SetIdleId(idle_id);
 
   ASSIGN_OR_RETURN(auto entry, cache_->Find(key),
-                   [](persistent_cache::TransactionError error)
+                   [&](persistent_cache::TransactionError error)
                        -> std::unique_ptr<persistent_cache::Entry> {
-                     // TODO(crbug.com/377475540): Handle or at least address
-                     // permanent errors.
+                     HandlePersistentCacheError(
+                         &use_shader_cache_shm_count_->data, error);
                      return nullptr;
                    });
 
@@ -215,10 +239,9 @@ void GpuPersistentCache::DiskCache::DoStoreToDisk(
   ScopedHistogramTimer timer(GetHistogramName(cache_prefix_, "Store"));
   TRACE_EVENT0("gpu", "GpuPersistentCache::DiskCache::DoStoreToDisk");
   RETURN_IF_ERROR(cache_->Insert(key, value),
-                  [](persistent_cache::TransactionError error) {
-                    // TODO(crbug.com/377475540): Handle or at least address
-                    // permanent errors.
-                    return;
+                  [&](persistent_cache::TransactionError error) {
+                    HandlePersistentCacheError(
+                        &use_shader_cache_shm_count_->data, error);
                   });
 }
 
@@ -272,13 +295,15 @@ GpuPersistentCache::GpuPersistentCache(std::string_view cache_prefix,
 GpuPersistentCache::~GpuPersistentCache() = default;
 
 void GpuPersistentCache::InitializeCache(
-    persistent_cache::BackendParams backend_params) {
+    persistent_cache::BackendParams backend_params,
+    scoped_refptr<RefCountedGpuProcessShmCount> use_shader_cache_shm_count) {
   CHECK(!initialized_.IsSet());
   auto cache =
       persistent_cache::PersistentCache::Open(std::move(backend_params));
   if (cache) {
     disk_cache_ = base::MakeRefCounted<DiskCache>(
-        cache_prefix_, std::move(cache), async_write_options_);
+        cache_prefix_, std::move(cache), async_write_options_,
+        std::move(use_shader_cache_shm_count));
     initialized_.Set();
   }
 }
