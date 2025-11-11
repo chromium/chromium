@@ -18,6 +18,8 @@
 
 namespace spellcheck {
 
+namespace {
+
 struct LanguageRegion {
   const char* language;         // The language.
   const char* language_region;  // language & region, used by dictionaries.
@@ -92,14 +94,6 @@ static constexpr LanguageRegion kSupportedSpellCheckerLanguages[] = {
     // clang-format on
 };
 
-bool IsValidRegion(const std::string& region) {
-  for (const auto& lang_region : kSupportedSpellCheckerLanguages) {
-    if (lang_region.language_region == region)
-      return true;
-  }
-  return false;
-}
-
 // This function returns the language-region version of language name.
 // e.g. returns hi-IN for hi.
 std::string GetSpellCheckLanguageRegion(std::string_view input_language) {
@@ -110,6 +104,8 @@ std::string GetSpellCheckLanguageRegion(std::string_view input_language) {
 
   return std::string(input_language);
 }
+
+}  // namespace
 
 base::FilePath GetVersionedFileName(std::string_view input_language,
                                     const base::FilePath& dict_dir) {
