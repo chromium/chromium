@@ -139,7 +139,7 @@ class PasswordAccessorySheetViewBinder {
             chip.getPrimaryTextView().setText(field.getDisplayText());
             chip.getPrimaryTextView().setContentDescription(field.getA11yDescription());
             if (field.getIconId() != 0) {
-                chip.setIcon(field.getIconId(), /* tintWithTextColor= */ true);
+                chip.setIconWithTint(field.getIconId(), /* tintWithTextColor= */ true);
             }
             View.OnClickListener listener = null;
             if (field.isSelectable()) {
