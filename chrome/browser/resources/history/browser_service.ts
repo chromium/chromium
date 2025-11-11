@@ -30,6 +30,7 @@ export interface BrowserService {
   recordAction(action: string): void;
   recordTime(histogram: string, time: number): void;
   recordLongTime(histogram: string, time: number): void;
+  recordSigninPendingOffered(): void;
   navigateToUrl(url: string, target: string, e: MouseEvent): void;
   otherDevicesInitialized(): void;
   startTurnOnSyncFlow(): void;
@@ -111,6 +112,10 @@ export class BrowserServiceImpl implements BrowserService {
     // but that's because the other code predates chrome.metricsPrivate.
     // In any case, the MetricsHandler doesn't support long time histograms.
     chrome.metricsPrivate.recordLongTime(histogram, time);
+  }
+
+  recordSigninPendingOffered() {
+    chrome.send('recordSigninPendingOffered');
   }
 
   navigateToUrl(url: string, target: string, e: MouseEvent) {

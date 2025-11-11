@@ -28,7 +28,9 @@ import {SignedInState, StatusAction, SyncBrowserProxyImpl} from '/shared/setting
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 
 import {loadTimeData} from '../i18n_setup.js';
-import {Router} from '../router.js';
+import {routes} from '../route.js';
+import type {Route} from '../router.js';
+import {RouteObserverMixin, Router} from '../router.js';
 
 import {getTemplate} from './sync_account_control.html.js';
 
@@ -47,7 +49,7 @@ enum PromoType {
 }
 
 const SettingsSyncAccountControlElementBase =
-    WebUiListenerMixin(PrefsMixin(PolymerElement));
+    WebUiListenerMixin(PrefsMixin(RouteObserverMixin(PolymerElement)));
 
 export class SettingsSyncAccountControlElement extends
     SettingsSyncAccountControlElementBase {
@@ -129,6 +131,14 @@ export class SettingsSyncAccountControlElement extends
         observer: 'onShouldShowAvatarRowChange_',
       },
 
+      shouldShowSigninPausedButtons_: {
+        type: Boolean,
+        value: false,
+        computed: 'computeShouldShowSigninPausedButtons_(syncStatus,' +
+            'syncStatus.signedInState)',
+        observer: 'maybeRecordSigninPendingOffered_',
+      },
+
       subLabel_: {
         type: String,
         computed: 'computeSubLabel_(promoSecondaryLabelWithAccount,' +
@@ -171,6 +181,8 @@ export class SettingsSyncAccountControlElement extends
   declare private shouldShowAvatarRow_: boolean;
   declare private subLabel_: string;
   declare private showSetupButtons_: boolean;
+  declare private shouldShowSigninPausedButtons_: boolean;
+  private signinPausedImpressionRecorded_: boolean = false;
   private syncBrowserProxy_: SyncBrowserProxy =
       SyncBrowserProxyImpl.getInstance();
   declare private promoType_: PromoType;
@@ -193,6 +205,10 @@ export class SettingsSyncAccountControlElement extends
         loadTimeData.getBoolean('replaceSyncPromosWithSignInPromos') ?
         PromoType.SIGNIN :
         PromoType.SYNC;
+  }
+
+  override currentRouteChanged(_newRoute: Route, _oldRoute?: Route): void {
+    this.maybeRecordSigninPendingOffered_();
   }
 
   /**
@@ -509,8 +525,8 @@ export class SettingsSyncAccountControlElement extends
 
     if (this.embeddedInSubpage &&
         this.syncStatus.statusAction === StatusAction.ENTER_PASSPHRASE) {
-      // In a subpage the passphrase button is not required.
-      return false;
+      // In the sync subpage the passphrase button is not required.
+      return !this.isSyncing_();
     }
 
     if (this.syncStatus.statusAction !== StatusAction.NO_ACTION) {
@@ -712,9 +728,36 @@ export class SettingsSyncAccountControlElement extends
         'sync-setup-done', {bubbles: true, composed: true, detail: true}));
   }
 
-  private shouldShowSigninPausedButtons_() {
+  private computeShouldShowSigninPausedButtons_() {
     return !this.hideButtons && !!this.syncStatus &&
         this.syncStatus.signedInState === SignedInState.SIGNED_IN_PAUSED;
+  }
+
+  private maybeRecordSigninPendingOffered_() {
+    if (!this.shouldShowSigninPausedButtons_) {
+      return;
+    }
+
+    // Only record if we are currently on a page that could have an account
+    // control in pending state.
+    const currentRoute = Router.getInstance().getCurrentRoute();
+    if (![routes.BASIC, routes.PEOPLE, routes.YOUR_SAVED_INFO].includes(
+            currentRoute)) {
+      return;
+    }
+
+    // Only record for account controls that are visible in pending state.
+    if (this.embeddedInSubpage) {
+      return;
+    }
+
+    // Don't record twice.
+    if (this.signinPausedImpressionRecorded_) {
+      return;
+    }
+
+    this.syncBrowserProxy_.recordSigninPendingOffered();
+    this.signinPausedImpressionRecorded_ = true;
   }
 
   private isSyncing_(): boolean {

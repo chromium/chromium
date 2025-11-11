@@ -216,14 +216,14 @@
         </div>
         <cr-icon-button class="icon-arrow-dropdown cr-button-gap"
             hidden="[[!shouldAllowAccountSwitch_(syncStatus.signedInState,
-                syncStatus.domain, syncStatus.signinPaused)]]"
+                syncStatus.domain)]]"
             on-click="onMenuButtonClick_" id="dropdown-arrow"
             aria-label="$i18n{changeAccount}"
             aria-expanded="false">
         </cr-icon-button>
         <div class="separator"
             hidden="[[!shouldAllowAccountSwitch_(syncStatus.signedInState,
-                syncStatus.domain, syncStatus.signinPaused)]]">
+                syncStatus.domain)]]">
         </div>
         <cr-button id="signout-button" class="cr-button-gap"
             hidden="[[shouldHideSignoutButton_(syncStatus.signedInState)]]"
@@ -231,8 +231,7 @@
           $i18n{signOutOfChrome}
         </cr-button>
         <cr-button id="sync-button" class="action-button cr-button-gap"
-            hidden="[[shouldHideSyncButton_(syncStatus.signedInState,
-                syncStatus.signinPaused)]]"
+            hidden="[[shouldHideSyncButton_(syncStatus.signedInState)]]"
             on-click="onSyncButtonClick_"
             disabled="[[shouldDisableSyncButton_(showSetupButtons_,
                 syncStatus.firstSetupInProgress,
@@ -276,8 +275,7 @@
           </cr-button>
         </div>
         <div id="signin-paused-buttons"
-            hidden="[[!shouldShowSigninPausedButtons_(
-                syncStatus.signinPaused)]]">
+            hidden="[[!shouldShowSigninPausedButtons_]]">
           <cr-button class="cr-button-gap" id="remove-account-button"
               hidden="[[shouldHideRemoveAccountButton_(
                   syncStatus.signedInState)]]"
@@ -293,7 +291,7 @@
       </div>
       <template is="dom-if"
           if="[[shouldAllowAccountSwitch_(syncStatus.signedInState,
-              syncStatus.domain, syncStatus.signinPaused)]]" restamp>
+              syncStatus.domain)]]" restamp>
         <cr-action-menu id="menu" auto-reposition
             role-description="$i18n{menu}" on-close="onDropdownClose_">
           <template is="dom-repeat" items="[[storedAccounts_]]">

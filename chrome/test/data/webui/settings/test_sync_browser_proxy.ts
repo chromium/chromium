@@ -54,6 +54,7 @@ export class TestSyncBrowserProxy extends TestBrowserProxy implements
       'startSignIn',
       'didNavigateToAccountSettingsPage',
       'setSyncDatatype',
+      'recordSigninPendingOffered',
       // </if>
 
       // <if expr="is_chromeos">
@@ -119,6 +120,10 @@ export class TestSyncBrowserProxy extends TestBrowserProxy implements
   setSyncDatatype(pref: UserSelectableType, value: boolean) {
     this.methodCalled('setSyncDatatype', pref, value);
     return Promise.resolve(PageStatus.CONFIGURE);
+  }
+
+  recordSigninPendingOffered(): void {
+    this.methodCalled('recordSigninPendingOffered');
   }
   // </if>
 
