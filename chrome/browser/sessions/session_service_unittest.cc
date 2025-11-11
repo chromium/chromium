@@ -30,6 +30,7 @@
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/sessions/session_service_base_observer.h"
 #include "chrome/browser/sessions/session_service_base_test_helper.h"
 #include "chrome/browser/sessions/session_service_log.h"
 #include "chrome/browser/sessions/session_service_test_helper.h"
@@ -56,6 +57,7 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/web_contents_tester.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/page_state/page_state.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
@@ -221,6 +223,14 @@ class SessionServiceTest : public BrowserWithTestWindowTest {
   std::unique_ptr<SessionService> session_service_;
   SessionServiceTestHelper helper_;
   base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+class MockSessionServiceBaseObserver : public SessionServiceBaseObserver {
+ public:
+  MockSessionServiceBaseObserver() = default;
+  ~MockSessionServiceBaseObserver() override = default;
+
+  MOCK_METHOD(void, OnDestroying, (SessionServiceBase*), (override));
 };
 
 TEST_F(SessionServiceTest, Basic) {
@@ -1575,6 +1585,15 @@ TEST_F(SessionServiceTest, DisableSaving) {
   helper_.SetSavingEnabled(true);
   EXPECT_TRUE(helper_.command_storage_manager()->HasPendingSave());
   EXPECT_TRUE(helper_.command_storage_manager()->pending_reset());
+}
+
+TEST_F(SessionServiceTest, ObserverNotifiedOnDestruction) {
+  MockSessionServiceBaseObserver observer;
+  service()->AddObserver(&observer);
+
+  EXPECT_CALL(observer, OnDestroying(service()));
+
+  DestroySessionService();
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

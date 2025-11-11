@@ -21,6 +21,7 @@
 #include "chrome/browser/apps/app_service/web_contents_app_id_utils.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sessions/session_service_base_observer.h"
 #include "chrome/browser/sessions/session_service_log.h"
 #include "chrome/browser/sessions/session_service_utils.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
@@ -171,9 +172,20 @@ SessionServiceBase::SessionServiceBase(Profile* profile,
 }
 
 SessionServiceBase::~SessionServiceBase() {
+  for (auto& observer : session_service_base_observers_) {
+    observer.OnDestroying(this);
+  }
+  session_service_base_observers_.Clear();
   // command_storage_manager_->Save() should be called by child classes which
   // should have destructed the command_storage_manager.
   DCHECK(command_storage_manager_ == nullptr);
+}
+
+void SessionServiceBase::AddObserver(SessionServiceBaseObserver* observer) {
+  session_service_base_observers_.AddObserver(observer);
+}
+void SessionServiceBase::RemoveObserver(SessionServiceBaseObserver* observer) {
+  session_service_base_observers_.RemoveObserver(observer);
 }
 
 // static

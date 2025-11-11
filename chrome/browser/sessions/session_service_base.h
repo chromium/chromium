@@ -32,6 +32,7 @@
 
 class Profile;
 class ProfileBrowserCollection;
+class SessionServiceBaseObserver;
 
 namespace base {
 class Value;
@@ -192,6 +193,9 @@ class SessionServiceBase : public sessions::CommandStorageManagerDelegate,
   std::optional<std::string> GetPlatformSessionId();
   void SetPlatformSessionIdForTesting(const std::string& id);
 
+  void AddObserver(SessionServiceBaseObserver* observer);
+  void RemoveObserver(SessionServiceBaseObserver* observer);
+
  protected:
   // Creates a SessionService for the specified profile.
   SessionServiceBase(Profile* profile, SessionServiceType type);
@@ -339,6 +343,9 @@ class SessionServiceBase : public sessions::CommandStorageManagerDelegate,
   // The platform session identifier, if supported and successfully initialized.
   // See GetPlatformSessionId() for more details.
   std::optional<std::string> platform_session_id_;
+
+  base::ObserverList<SessionServiceBaseObserver>
+      session_service_base_observers_;
 
   base::ScopedObservation<ProfileBrowserCollection, BrowserCollectionObserver>
       browser_collection_observer_{this};

@@ -6,6 +6,7 @@ source_set("sessions") {
   sources = [
     "session_restore.h",
     "session_restore_observer.h",
+    "session_service_base_observer.h",
   ]
   public_deps = [
     "//base",
