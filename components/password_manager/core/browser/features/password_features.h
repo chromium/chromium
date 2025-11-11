@@ -25,6 +25,8 @@ BASE_DECLARE_FEATURE(kActorLoginFieldVisibilityCheck);
 BASE_DECLARE_FEATURE(kActorLoginFillingHeuristics);
 BASE_DECLARE_FEATURE(kActorLoginLocalClassificationModel);
 BASE_DECLARE_FEATURE(kActorLoginReauthTaskRefocus);
+// Enables logging quality for actor login.
+BASE_DECLARE_FEATURE(kActorLoginQualityLogs);
 // Enables finding and filling forms in same-site iframes for actor login.
 BASE_DECLARE_FEATURE(kActorLoginSameSiteIframeSupport);
 // Enables Actor Login permissions UI in Password Manager settings
