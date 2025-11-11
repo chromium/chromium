@@ -21,4 +21,8 @@ message CsrrCoarseSystemProfile {
   optional ChannelType channel = 2;
   optional int32 milestone = 3;
   optional bool is_extended_stable_channel = 4;
+
+  // Country code as reported by the Operating System. This field is derived
+  // from country_codes::GetCurrentCountryID().
+  optional int32 os_country_code = 5;
 }
