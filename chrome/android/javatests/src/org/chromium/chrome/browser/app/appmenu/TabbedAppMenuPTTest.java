@@ -14,6 +14,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
@@ -58,7 +59,7 @@ public class TabbedAppMenuPTTest {
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(2)
+                    .setRevision(3)
                     .setDescription("App menu")
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_MOBILE_APP_MENU)
                     .build();
@@ -73,18 +74,20 @@ public class TabbedAppMenuPTTest {
         assertEquals(0, mCtaTestRule.tabsCount(/* incognito= */ true));
     }
 
-    /** Tests that "New Incognito tab" opens a new incognito tab with the incognito NTP. */
+    /**
+     * Tests that "New Incognito tab/window" opens a new incognito tab/window with the incognito
+     * NTP.
+     */
     @Test
     @LargeTest
-    public void testOpenNewIncognitoTab() {
-        mCtaTestRule.startOnBlankPage().openRegularTabAppMenu().openNewIncognitoTab();
+    public void testOpenNewIncognitoTabOrWindow() {
+        // openNewIncognitoTab() opens either an incognito tab or an incognito window.
+        var incognitoNewTabPageStation =
+                mCtaTestRule.startOnBlankPage().openRegularTabAppMenu().openNewIncognitoTab();
 
-        assertEquals(1, mCtaTestRule.tabsCount(/* incognito= */ false));
-        if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
-            assertEquals(0, mCtaTestRule.tabsCount(/* incognito= */ true));
-        } else {
-            assertEquals(1, mCtaTestRule.tabsCount(/* incognito= */ true));
-        }
+        // TabModel#getCount() requires the UI thread.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> assertEquals(1, incognitoNewTabPageStation.getTabModel().getCount()));
     }
 
     /** Tests that "Bookmarks" opens the Bookmarks page. */
@@ -165,7 +168,11 @@ public class TabbedAppMenuPTTest {
         RegularNewTabPageStation newTabPage = blankPage.openRegularTabAppMenu().openNewTab();
         RegularNewTabPageAppMenuFacility menu = newTabPage.openAppMenu();
 
-        mRenderTestRule.render(menu.menuListElement.value(), "regular_ntp_app_menu_v3");
+        String appMenuGoldenId =
+                IncognitoUtils.shouldOpenIncognitoAsWindow()
+                        ? "regular_ntp_app_menu_with_open_incognito_window"
+                        : "regular_ntp_app_menu_with_open_incognito_tab";
+        mRenderTestRule.render(menu.menuListElement.value(), appMenuGoldenId);
         menu.verifyPresentItems();
 
         // Clean up for next tests in batch
@@ -184,7 +191,11 @@ public class TabbedAppMenuPTTest {
                 mCtaTestRule.startOnBlankPage().openRegularTabAppMenu().openNewIncognitoTab();
         IncognitoNewTabPageAppMenuFacility menu = incognitoNewTabPage.openAppMenu();
 
-        mRenderTestRule.render(menu.menuListElement.value(), "incognito_ntp_app_menu");
+        String appMenuGoldenId =
+                IncognitoUtils.shouldOpenIncognitoAsWindow()
+                        ? "incognito_ntp_app_menu_with_open_incognito_window"
+                        : "incognito_ntp_app_menu_with_open_incognito_tab";
+        mRenderTestRule.render(menu.menuListElement.value(), appMenuGoldenId);
         menu.verifyPresentItems();
 
         // Clean up for next tests in batch
@@ -202,7 +213,11 @@ public class TabbedAppMenuPTTest {
         WebPageStation blankPage = mCtaTestRule.startOnBlankPage();
         RegularWebPageAppMenuFacility menu = blankPage.openRegularTabAppMenu();
 
-        mRenderTestRule.render(menu.menuListElement.value(), "regular_webpage_app_menu_v3");
+        String appMenuGoldenId =
+                IncognitoUtils.shouldOpenIncognitoAsWindow()
+                        ? "regular_webpage_app_menu_with_open_incognito_window"
+                        : "regular_webpage_app_menu_with_open_incognito_tab";
+        mRenderTestRule.render(menu.menuListElement.value(), appMenuGoldenId);
         menu.verifyPresentItems();
 
         // Clean up for next tests in batch
@@ -226,7 +241,11 @@ public class TabbedAppMenuPTTest {
                         NavigatePageStations.newNavigateOnePageBuilder());
         IncognitoWebPageAppMenuFacility menu = pageOne.openIncognitoTabAppMenu();
 
-        mRenderTestRule.render(menu.menuListElement.value(), "incognito_webpage_app_menu");
+        String appMenuGoldenId =
+                IncognitoUtils.shouldOpenIncognitoAsWindow()
+                        ? "incognito_webpage_app_menu_with_open_incognito_window"
+                        : "incognito_webpage_app_menu_with_open_incognito_tab";
+        mRenderTestRule.render(menu.menuListElement.value(), appMenuGoldenId);
         menu.verifyPresentItems();
 
         // Clean up for next tests in batch
