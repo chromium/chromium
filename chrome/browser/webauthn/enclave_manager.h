@@ -106,23 +106,48 @@ class EnclaveManager : public EnclaveManagerInterface {
                                  ".webauthn-uvk";
 #endif  // BUILDFLAG(IS_MAC)
   struct StoreKeysArgs;
+
+  // An enum that expresses the outcome of the operation of storing the
+  // opportunistically retrieved keys.
+  enum class OutOfContextRecoveryOutcome {
+    // The key has been successfully stored and the device has been added to
+    // account.
+    kStoreKeysFromOpportunisticFlowSucceeded,
+    // There was a failure while adding the device to account.
+    kStoreKeysFromOpportunisticFlowFailed,
+    // The key has been ignored because the device has been already registered
+    // with the enclave.
+    kStoreKeysFromOpportunisticFlowIgnoredRedundant,
+    // The key has been ignored because neither system UV nor GPM PIN is
+    // available.
+    kStoreKeysFromOpportunisticFlowIgnoredNoUV,
+  };
+
   class Observer : public base::CheckedObserver {
    public:
     // OnKeyStores is called when MagicArch provides keys to the EnclaveManager
     // by calling `StoreKeys`.
-    virtual void OnKeysStored() = 0;
+    virtual void OnKeysStored() {}
 
     // `OnStateUpdated` is called from `EnclaveManager::Stopped()` - indicating
     // that the state machine reached its final state (so the state of the
     // enclave manager might be updated now, e.g. it might become ready).
-    virtual void OnStateUpdated() = 0;
+    virtual void OnStateUpdated() {}
+
+    // `OnOutOfContextRecoveryCompletion` informs observers about the outcome of
+    // the operation of storing the opportunistically retrieved keys.
+    virtual void OnOutOfContextRecoveryCompletion(
+        OutOfContextRecoveryOutcome outcome) {}
   };
 
   // An enum that expresses whether a GPM PIN is set on an account.
   enum class GpmPinAvailability {
-    // The PIN is set. It doesn't mean it's usable because it could have been
-    // entered incorrectly too many times.
-    kGpmPinSet,
+    // The PIN is set but not usable (there are 0 remaining attempts for
+    // entering the pin).
+    kGpmPinSetButNotUsable,
+    // The PIN is set and usable (there are > 0 remaining attempts for entering
+    // the pin).
+    kGpmPinSetAndUsable,
     // The PIN is unset.
     kGpmPinUnset,
   };
@@ -532,17 +557,36 @@ class EnclaveManager : public EnclaveManagerInterface {
                         std::vector<std::vector<uint8_t>> keys,
                         int last_key_version);
 
-  // Stores keys and performs `AddDeviceToAccount` if the system UV is
-  // available.
+  // Stores keys and performs `AddDeviceToAccount` if the system UV or the GPM
+  // PIN is available.
   void StoreKeysFromOutOfContextRetrieval(
       const GaiaId& gaia_id,
       std::vector<std::vector<uint8_t>> keys,
       int last_key_version);
-
+  // Used by `StoreKeysFromOutOfContextRetrieval`. Executed upon verification of
+  // the system UV availability. If a system UV is available - stores the
+  // opportunistically retrieved keys. If a system UV is not available -
+  // starts verification of the presence of a GPM PIN (because the GPM PIN can
+  // be used for user verification as well). If the GPM PIN is present - the
+  // opportunistically retrieved keys will be stored as well.
   void OpportunisticStoreKeysUVCheckComplete(
       std::unique_ptr<StoreKeysArgs> pending_keys,
       bool can_make_uv_keys);
-  void OpportunisticStoreKeysAddComplete(bool can_make_uv_keys);
+  // Indirectly used by `StoreKeysFromOutOfContextRetrieval`
+  // (`StoreKeysFromOutOfContextRetrieval` performs the check of the presence of
+  // the system UV, and if the system UV is not available - we check the
+  // presence of the GPM PIN). This method is being executed upon verification
+  // of the GPM PIN availability. If the GPM PIN is present - the
+  // opportunistically retrieved keys will be stored.
+  void OpportunisticStoreKeysGpmPinCheckComplete(
+      std::unique_ptr<StoreKeysArgs> pending_keys,
+      GpmPinAvailability gpm_pin_availability);
+  // Indirectly used by `StoreKeysFromOutOfContextRetrieval`: if either the
+  // system UV is present or the GPM PIN is present - stores keys.
+  void OpportunisticStoreKeys(std::unique_ptr<StoreKeysArgs> pending_keys);
+  void OpportunisticStoreKeysAddComplete(bool success);
+  void NotifyObserversAboutOutOfContextRecoveryOutcome(
+      OutOfContextRecoveryOutcome outcome);
 
   const base::FilePath file_path_;
   const raw_ptr<signin::IdentityManager> identity_manager_;

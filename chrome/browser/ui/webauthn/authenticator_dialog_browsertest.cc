@@ -1021,9 +1021,6 @@ class QuitBrowserWhenKeysStored : public EnclaveManager::Observer {
         FROM_HERE, base::BindOnce(&chrome::AttemptExit));
   }
 
-  // EnclaveManager::Observer
-  void OnStateUpdated() override {}
-
  private:
   raw_ptr<Browser> browser_;
   std::unique_ptr<EnclaveManager::StoreKeysLock> store_keys_lock_;

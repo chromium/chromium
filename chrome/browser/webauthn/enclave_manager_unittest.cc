@@ -235,6 +235,36 @@ std::vector<uint8_t> DecryptWrappedPin(
   return *pin;
 }
 
+// A utility class for waiting for completion of the operation of storing the
+// passkey secret retrieved from an out-of-context flow (e.g., an opportunistic
+// retrieval). This class observes enclave manager, starts a RunLoop, and allows
+// to wait for the completion of the out-of-context recovery.
+class EnclaveKeysWaiter : public EnclaveManager::Observer {
+ public:
+  explicit EnclaveKeysWaiter(EnclaveManager* enclave_manager)
+      : enclave_manager_(enclave_manager) {
+    enclave_manager->AddObserver(this);
+  }
+  ~EnclaveKeysWaiter() override { enclave_manager_->RemoveObserver(this); }
+
+  EnclaveManager::OutOfContextRecoveryOutcome Wait() {
+    run_loop_->Run();
+    return outcome_;
+  }
+
+ private:
+  // EnclaveManager::Observer:
+  void OnOutOfContextRecoveryCompletion(
+      EnclaveManager::OutOfContextRecoveryOutcome outcome) override {
+    run_loop_->Quit();
+    outcome_ = outcome;
+  }
+
+  raw_ptr<EnclaveManager> enclave_manager_;
+  std::unique_ptr<base::RunLoop> run_loop_ = std::make_unique<base::RunLoop>();
+  EnclaveManager::OutOfContextRecoveryOutcome outcome_;
+};
+
 }  // namespace
 
 class EnclaveManagerTest : public testing::Test, EnclaveManager::Observer {
@@ -315,6 +345,8 @@ class EnclaveManagerTest : public testing::Test, EnclaveManager::Observer {
 
   void OnKeysStored() override { stored_count_++; }
   void OnStateUpdated() override { notified_about_state_update_count_++; }
+  void OnOutOfContextRecoveryCompletion(
+      EnclaveManager::OutOfContextRecoveryOutcome outcome) override {}
 
   void DoCreate(
       std::unique_ptr<enclave::ClaimedPIN> claimed_pin,
@@ -2166,7 +2198,8 @@ TEST_F(EnclaveManagerTest, CheckGpmPinAvailabilityWhenPinIsAvailable) {
   base::test::TestFuture<EnclaveManager::GpmPinAvailability> future;
   manager_.CheckGpmPinAvailability(future.GetCallback());
   EXPECT_TRUE(future.Wait());
-  EXPECT_EQ(future.Get(), EnclaveManager::GpmPinAvailability::kGpmPinSet);
+  EXPECT_EQ(future.Get(),
+            EnclaveManager::GpmPinAvailability::kGpmPinSetAndUsable);
 }
 
 TEST_F(EnclaveManagerTest, CheckGpmPinAvailabilityWhenPinIsNotAvailable) {
@@ -2469,18 +2502,19 @@ TEST_F(EnclaveUVTest, OpportunisticStoreKeys) {
 
   std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
   base::HistogramTester histogram_tester;
+  EnclaveKeysWaiter enclave_keys_waiter(&manager_);
   manager_.StoreKeys(gaia_id_, {std::move(key)},
                      /*last_key_version=*/kSecretVersion);
+  EXPECT_EQ(enclave_keys_waiter.Wait(),
+            EnclaveManager::OutOfContextRecoveryOutcome::
+                kStoreKeysFromOpportunisticFlowSucceeded);
+
   histogram_tester.ExpectBucketCount(
       "WebAuthentication.GPM.RecoveryEvent",
       webauthn::metrics::WebAuthenticationGPMRecoveryEvent::
           kStoreKeysFromOpportunisticFlowStarted,
       1);
   EXPECT_EQ(manager_.store_keys_count(), 1u);
-
-  while (!manager_.is_ready()) {
-    task_env_.RunUntilIdle();
-  }
   histogram_tester.ExpectBucketCount(
       "WebAuthentication.GPM.RecoveryEvent",
       webauthn::metrics::WebAuthenticationGPMRecoveryEvent::
@@ -2524,8 +2558,13 @@ TEST_F(EnclaveUVTest, OpportunisticStoreKeysRedundant) {
 
   std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
   base::HistogramTester histogram_tester;
+  EnclaveKeysWaiter enclave_keys_waiter(&manager_);
   manager_.StoreKeys(gaia_id_, {std::move(key)},
                      /*last_key_version=*/kSecretVersion);
+  EXPECT_EQ(enclave_keys_waiter.Wait(),
+            EnclaveManager::OutOfContextRecoveryOutcome::
+                kStoreKeysFromOpportunisticFlowIgnoredRedundant);
+
   histogram_tester.ExpectBucketCount(
       "WebAuthentication.GPM.RecoveryEvent",
       webauthn::metrics::WebAuthenticationGPMRecoveryEvent::
@@ -2548,15 +2587,58 @@ TEST_F(EnclaveUVTest, OpportunisticStoreKeysRedundant) {
 // On Chrome OS, `AreUserVerifyingKeysSupported` always returns true, thus this
 // test cannot establish its preconditions.
 
-TEST_F(EnclaveUVTest, OpportunisticStoreKeysNoUV) {
+TEST_F(EnclaveUVTest, OpportunisticStoreKeysNoUVButHasUsableGpmPin) {
+  const std::string pin = "123456";
+  BoolFuture setup_future;
+  manager_.SetupWithPIN(pin, setup_future.GetCallback());
+  EXPECT_TRUE(setup_future.Wait());
+  ASSERT_TRUE(manager_.is_ready());
+  ASSERT_TRUE(manager_.has_wrapped_pin());
+  EXPECT_EQ(manager_.store_keys_count(), 0u);
+
+  // Clear the local registration so that we can test the opportunistic flow.
+  // The fake security domain service will still have the PIN available.
+  manager_.ClearRegistrationForTesting();
+  ASSERT_FALSE(manager_.is_registered());
+
+  DisableUVKeySupport();
+
+  std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
+  base::HistogramTester histogram_tester;
+  EnclaveKeysWaiter enclave_keys_waiter(&manager_);
+  manager_.StoreKeys(gaia_id_, {std::move(key)},
+                     /*last_key_version=*/kSecretVersion);
+  EXPECT_EQ(enclave_keys_waiter.Wait(),
+            EnclaveManager::OutOfContextRecoveryOutcome::
+                kStoreKeysFromOpportunisticFlowSucceeded);
+
+  histogram_tester.ExpectBucketCount(
+      "WebAuthentication.GPM.RecoveryEvent",
+      webauthn::metrics::WebAuthenticationGPMRecoveryEvent::
+          kStoreKeysFromOpportunisticFlowStarted,
+      1);
+  EXPECT_EQ(manager_.store_keys_count(), 1u);
+  histogram_tester.ExpectBucketCount(
+      "WebAuthentication.GPM.RecoveryEvent",
+      webauthn::metrics::WebAuthenticationGPMRecoveryEvent::
+          kStoreKeysFromOpportunisticFlowSucceeded,
+      1);
+}
+
+TEST_F(EnclaveUVTest, OpportunisticStoreKeysNoUVNoGpmPin) {
   ASSERT_FALSE(manager_.is_registered());
   EXPECT_EQ(manager_.store_keys_count(), 0u);
   DisableUVKeySupport();
 
   std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
   base::HistogramTester histogram_tester;
+  EnclaveKeysWaiter enclave_keys_waiter(&manager_);
   manager_.StoreKeys(gaia_id_, {std::move(key)},
                      /*last_key_version=*/kSecretVersion);
+  EXPECT_EQ(enclave_keys_waiter.Wait(),
+            EnclaveManager::OutOfContextRecoveryOutcome::
+                kStoreKeysFromOpportunisticFlowIgnoredNoUV);
+
   histogram_tester.ExpectBucketCount(
       "WebAuthentication.GPM.RecoveryEvent",
       webauthn::metrics::WebAuthenticationGPMRecoveryEvent::

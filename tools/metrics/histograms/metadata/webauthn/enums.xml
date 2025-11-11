@@ -354,6 +354,9 @@ chromium-metrics-reviews@google.com.
   <int value="5"
       label="Storing key from opportunistic key retrieval flow (key ignored
              because no UV available)"/>
+  <int value="6"
+      label="Storing key from opportunistic key retrieval flow (failed when
+             adding device to account)"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/webauthn/webauthn_metrics_util.h:WebAuthenticationGPMRecoveryEvent) -->

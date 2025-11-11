@@ -237,7 +237,6 @@ class GPMEnclaveController : public AuthenticatorRequestDialogModel::Observer,
 
   // EnclaveManager::Observer:
   void OnKeysStored() override;
-  void OnStateUpdated() override;
 
   // Called when the local device has been added to the security domain.
   void OnDeviceAdded(bool success);

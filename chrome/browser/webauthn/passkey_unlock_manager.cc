@@ -170,8 +170,6 @@ void PasskeyUnlockManager::Shutdown() {
   sync_service_observation_.Reset();
 }
 
-void PasskeyUnlockManager::OnKeysStored() {}
-
 void PasskeyUnlockManager::OnStateUpdated() {
   enclave_ready_ = enclave_manager()->is_ready();
   NotifyObservers();

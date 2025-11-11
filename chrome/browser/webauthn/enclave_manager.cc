@@ -1182,6 +1182,29 @@ class UvKeyCreationLockImpl : public EnclaveManager::UvKeyCreationLock {
   base::OnceClosure on_release_;
 };
 
+webauthn::metrics::WebAuthenticationGPMRecoveryEvent
+ToWebAuthenticationGPMRecoveryEvent(
+    EnclaveManager::OutOfContextRecoveryOutcome outcome) {
+  switch (outcome) {
+    case EnclaveManager::OutOfContextRecoveryOutcome::
+        kStoreKeysFromOpportunisticFlowSucceeded:
+      return webauthn::metrics::WebAuthenticationGPMRecoveryEvent::
+          kStoreKeysFromOpportunisticFlowSucceeded;
+    case EnclaveManager::OutOfContextRecoveryOutcome::
+        kStoreKeysFromOpportunisticFlowIgnoredNoUV:
+      return webauthn::metrics::WebAuthenticationGPMRecoveryEvent::
+          kStoreKeysFromOpportunisticFlowIgnoredNoUV;
+    case EnclaveManager::OutOfContextRecoveryOutcome::
+        kStoreKeysFromOpportunisticFlowIgnoredRedundant:
+      return webauthn::metrics::WebAuthenticationGPMRecoveryEvent::
+          kStoreKeysFromOpportunisticFlowIgnoredRedundant;
+    case EnclaveManager::OutOfContextRecoveryOutcome::
+        kStoreKeysFromOpportunisticFlowFailed:
+      return webauthn::metrics::WebAuthenticationGPMRecoveryEvent::
+          kStoreKeysFromOpportunisticFlowFailed;
+  }
+}
+
 }  // namespace
 
 // StateMachine performs a sequence of actions, as specified by the public
@@ -3826,8 +3849,8 @@ void EnclaveManager::StoreKeysFromOutOfContextRetrieval(
   if (is_registered()) {
     FIDO_LOG(EVENT) << "Redundant opportunistic keys provided for version "
                     << last_key_version;
-    webauthn::metrics::RecordGPMRecoveryEvent(
-        webauthn::metrics::WebAuthenticationGPMRecoveryEvent::
+    NotifyObserversAboutOutOfContextRecoveryOutcome(
+        OutOfContextRecoveryOutcome::
             kStoreKeysFromOpportunisticFlowIgnoredRedundant);
     return;
   }
@@ -3836,12 +3859,7 @@ void EnclaveManager::StoreKeysFromOutOfContextRetrieval(
   // These keys were provided opportunistically so that a MagicArch flow can
   // be avoided in the future. However, as an invariant, we only register with
   // the enclave if we can serve requests, which means having a form of local
-  // user verification.
-  // We should store keys even if system UV isn't available as long as the
-  // security domain has a GPM PIN.
-  // TODO(crbug.com/442804402): additionally to checking the availability of the
-  // system UV we also need to check a presence of the GPM PIN (which could be
-  // used for user verification).
+  // user verification (either system UV or GPM PIN).
   AreUserVerifyingKeysSupported(
       base::BindOnce(&EnclaveManager::OpportunisticStoreKeysUVCheckComplete,
                      weak_ptr_factory_.GetWeakPtr(), std::move(pending_keys)));
@@ -4408,9 +4426,12 @@ void EnclaveManager::OnCheckGpmPinAvailabilityResult(
         result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   download_account_state_request_.reset();
-  GpmPinAvailability pin_availability = result.gpm_pin_metadata.has_value()
-                                            ? GpmPinAvailability::kGpmPinSet
-                                            : GpmPinAvailability::kGpmPinUnset;
+  auto pin_availability = GpmPinAvailability::kGpmPinUnset;
+  if (result.gpm_pin_metadata) {
+    pin_availability = result.gpm_pin_metadata->usable_pin_metadata
+                           ? GpmPinAvailability::kGpmPinSetAndUsable
+                           : GpmPinAvailability::kGpmPinSetButNotUsable;
+  }
   // Calling the callback after fetching the GPM PIN info:
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), pin_availability));
@@ -4420,15 +4441,31 @@ void EnclaveManager::OpportunisticStoreKeysUVCheckComplete(
     std::unique_ptr<StoreKeysArgs> pending_keys,
     bool can_make_uv_keys) {
   FIDO_LOG(EVENT) << "Opportunistic keys UV key result: " << can_make_uv_keys;
-
   if (!can_make_uv_keys) {
-    // Without local UV we can't make use of opportunistic keys.
-    webauthn::metrics::RecordGPMRecoveryEvent(
-        webauthn::metrics::WebAuthenticationGPMRecoveryEvent::
+    // Without local UV we can store keys only if the GPM pin is available and
+    // usable.
+    CheckGpmPinAvailability(base::BindOnce(
+        &EnclaveManager::OpportunisticStoreKeysGpmPinCheckComplete,
+        weak_ptr_factory_.GetWeakPtr(), std::move(pending_keys)));
+    return;
+  }
+  OpportunisticStoreKeys(std::move(pending_keys));
+}
+
+void EnclaveManager::OpportunisticStoreKeysGpmPinCheckComplete(
+    std::unique_ptr<StoreKeysArgs> pending_keys,
+    GpmPinAvailability gpm_pin_availability) {
+  if (gpm_pin_availability != GpmPinAvailability::kGpmPinSetAndUsable) {
+    NotifyObserversAboutOutOfContextRecoveryOutcome(
+        OutOfContextRecoveryOutcome::
             kStoreKeysFromOpportunisticFlowIgnoredNoUV);
     return;
   }
+  OpportunisticStoreKeys(std::move(pending_keys));
+}
 
+void EnclaveManager::OpportunisticStoreKeys(
+    std::unique_ptr<StoreKeysArgs> pending_keys) {
   pending_keys_ = std::move(pending_keys);
   store_keys_count_++;
   AddDeviceToAccount(
@@ -4439,10 +4476,20 @@ void EnclaveManager::OpportunisticStoreKeysUVCheckComplete(
 
 void EnclaveManager::OpportunisticStoreKeysAddComplete(bool success) {
   FIDO_LOG(EVENT) << "Opportunistic keys device add result: " << success;
-  if (success) {
-    webauthn::metrics::RecordGPMRecoveryEvent(
-        webauthn::metrics::WebAuthenticationGPMRecoveryEvent::
-            kStoreKeysFromOpportunisticFlowSucceeded);
+  auto outcome =
+      success
+          ? OutOfContextRecoveryOutcome::
+                kStoreKeysFromOpportunisticFlowSucceeded
+          : OutOfContextRecoveryOutcome::kStoreKeysFromOpportunisticFlowFailed;
+  NotifyObserversAboutOutOfContextRecoveryOutcome(outcome);
+}
+
+void EnclaveManager::NotifyObserversAboutOutOfContextRecoveryOutcome(
+    OutOfContextRecoveryOutcome outcome) {
+  webauthn::metrics::RecordGPMRecoveryEvent(
+      ToWebAuthenticationGPMRecoveryEvent(outcome));
+  for (Observer& observer : observer_list_) {
+    observer.OnOutOfContextRecoveryCompletion(outcome);
   }
 }
 

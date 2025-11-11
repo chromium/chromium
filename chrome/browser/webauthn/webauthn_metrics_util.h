@@ -51,7 +51,8 @@ enum class WebAuthenticationGPMRecoveryEvent {
   kStoreKeysFromOpportunisticFlowSucceeded = 3,
   kStoreKeysFromOpportunisticFlowIgnoredRedundant = 4,
   kStoreKeysFromOpportunisticFlowIgnoredNoUV = 5,
-  kMaxValue = kStoreKeysFromOpportunisticFlowIgnoredNoUV,
+  kStoreKeysFromOpportunisticFlowFailed = 6,
+  kMaxValue = kStoreKeysFromOpportunisticFlowFailed,
   // LINT.ThenChange(//tools/metrics/histograms/metadata/webauthn/enums.xml:WebAuthenticationGPMRecoveryEvent)
 };
 

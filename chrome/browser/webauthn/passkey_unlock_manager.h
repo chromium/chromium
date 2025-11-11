@@ -106,7 +106,6 @@ class PasskeyUnlockManager : public KeyedService,
   void OnEnclaveManagerLoaded();
 
   // EnclaveManager::Observer
-  void OnKeysStored() override;
   void OnStateUpdated() override;
 
   // webauthn::PasskeyModel::Observer
