@@ -41,6 +41,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ash/util/ash_test_util.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "ui/display/manager/display_manager.h"
@@ -331,13 +332,20 @@ IN_PROC_BROWSER_TEST_F(SnapGroupBrowserTest, DoNotBreakGroupOnTabDetaching) {
       tab_strip_view->GetTabAnchorViewAt(1)->GetBoundsInScreen().CenterPoint();
   const gfx::Point end_point = window2->GetBoundsInScreen().CenterPoint();
   event_generator.MoveMouseTo(start_point);
+
+  // The tab drag and drop operation will result in creation and destruction of
+  // a new browser as the tab is dragged between existing browser windows.
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
+  ui_test_utils::BrowserDestroyedObserver browser_destroyed_observer;
   event_generator.PressLeftButton();
   TabRemoveObserver observer(browser(), &event_generator);
   event_generator.MoveMouseTo(end_point);
+  browser_created_observer.Wait();
+  browser_destroyed_observer.Wait();
 
-  // Verify that detaching a tab results in a new window being created and that
-  // `window1` and `window2` still belong to the Snap Group.
-  EXPECT_EQ(3u, chrome::GetTotalBrowserCount());
+  // Verify that dragging a tab between `window1` and `window2` results in
+  // `window1` and `window2` still belonging to the Snap Group.
+  EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
   EXPECT_TRUE(
       ash::SnapGroupController::Get()->AreWindowsInSnapGroup(window1, window2));
 }
