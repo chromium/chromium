@@ -1264,5 +1264,6 @@ if (enable_screen_capture) {
     "java/src/org/chromium/chrome/browser/media/MediaCapturePickerItemViewBinder.java",
     "java/src/org/chromium/chrome/browser/media/MediaCapturePickerManager.java",
     "java/src/org/chromium/chrome/browser/media/MediaCapturePickerManagerBridge.java",
+    "java/src/org/chromium/chrome/browser/media/MediaCapturePickerTabObserver.java",
   ]
 }

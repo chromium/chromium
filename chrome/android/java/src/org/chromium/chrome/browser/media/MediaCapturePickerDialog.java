@@ -151,16 +151,11 @@ public class MediaCapturePickerDialog implements AllTabObserver.Observer {
 
     @Override
     public void onTabAdded(Tab tab) {
-        // We do not support capture of native pages, so don't show them as options.
-        if (tab.isNativePage()) return;
-
         mTabItemStateMap.put(tab, new TabItemState(tab));
     }
 
     @Override
     public void onTabRemoved(Tab tab) {
-        if (tab.isNativePage()) return;
-
         var removed = mTabItemStateMap.remove(tab);
         assert removed != null;
         removed.destroy();
@@ -197,7 +192,7 @@ public class MediaCapturePickerDialog implements AllTabObserver.Observer {
     }
 
     void show() {
-        var allTabObserver = new AllTabObserver(this);
+        var allTabObserver = new AllTabObserver(new MediaCapturePickerTabObserver(this));
 
         var controller =
                 new ModalDialogProperties.Controller() {
