@@ -27,6 +27,11 @@ class BASE_EXPORT MemoryPressureListenerRegistry {
   // Intended for use by the platform specific implementation.
   static void NotifyMemoryPressure(MemoryPressureLevel memory_pressure_level);
 
+  // Same as NotifyMemoryPressure, but can be invoked from any thread. If not
+  // called from the process's main thread, this will post a task to it.
+  static void NotifyMemoryPressureFromAnyThread(
+      MemoryPressureLevel memory_pressure_level);
+
   void AddObserver(SyncMemoryPressureListenerRegistration* listener);
 
   void RemoveObserver(SyncMemoryPressureListenerRegistration* listener);

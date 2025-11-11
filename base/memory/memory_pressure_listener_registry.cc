@@ -41,6 +41,9 @@ MemoryPressureListenerRegistry& MemoryPressureListenerRegistry::Get() {
 // static
 void MemoryPressureListenerRegistry::NotifyMemoryPressure(
     MemoryPressureLevel memory_pressure_level) {
+  CHECK(
+      !SingleThreadTaskRunner::HasMainThreadDefault() ||
+      SingleThreadTaskRunner::GetMainThreadDefault()->BelongsToCurrentThread());
   DCHECK_NE(memory_pressure_level, MEMORY_PRESSURE_LEVEL_NONE);
   TRACE_EVENT_INSTANT(
       trace_event::MemoryDumpManager::kTraceCategory,
@@ -55,6 +58,24 @@ void MemoryPressureListenerRegistry::NotifyMemoryPressure(
     return;
   }
   Get().DoNotifyMemoryPressure(memory_pressure_level);
+}
+
+// static
+void MemoryPressureListenerRegistry::NotifyMemoryPressureFromAnyThread(
+    MemoryPressureLevel memory_pressure_level) {
+  auto* main_thread_task_runner =
+      SingleThreadTaskRunner::HasMainThreadDefault()
+          ? SingleThreadTaskRunner::GetMainThreadDefault().get()
+          : nullptr;
+  if (!main_thread_task_runner ||
+      main_thread_task_runner->BelongsToCurrentThread()) {
+    NotifyMemoryPressure(memory_pressure_level);
+  } else {
+    main_thread_task_runner->PostTask(
+        FROM_HERE,
+        base::BindOnce(&MemoryPressureListenerRegistry::NotifyMemoryPressure,
+                       memory_pressure_level));
+  }
 }
 
 void MemoryPressureListenerRegistry::AddObserver(
@@ -72,6 +93,9 @@ void MemoryPressureListenerRegistry::RemoveObserver(
 
 void MemoryPressureListenerRegistry::DoNotifyMemoryPressure(
     MemoryPressureLevel memory_pressure_level) {
+  CHECK(
+      !SingleThreadTaskRunner::HasMainThreadDefault() ||
+      SingleThreadTaskRunner::GetMainThreadDefault()->BelongsToCurrentThread());
   if (base::FeatureList::IsEnabled(kSuppressMemoryListeners)) {
     auto mask = kSuppressMemoryListenersMask.Get();
     for (auto& listener : listeners_) {

@@ -11,6 +11,7 @@
 #endif
 #include "base/feature_list.h"
 #include "base/memory/memory_pressure_listener.h"
+#include "base/memory/memory_pressure_listener_registry.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
@@ -187,7 +188,9 @@ void MemoryPurgeManager::PerformMemoryPurge() {
 
   if (!purge_inhibited_because_purge_on_freeze_disabled &&
       !purge_inhibited_because_already_purged_with_frozen_page) {
-    base::MemoryPressureListener::NotifyMemoryPressure(
+    // In --single-process mode, `PerformMemoryPurge()` does not run on the main
+    // thread.
+    base::MemoryPressureListenerRegistry::NotifyMemoryPressureFromAnyThread(
         base::MEMORY_PRESSURE_LEVEL_CRITICAL);
   }
 

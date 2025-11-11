@@ -5,7 +5,9 @@
 #include "third_party/blink/renderer/controller/user_level_memory_pressure_signal_generator.h"
 
 #include <limits>
+
 #include "base/memory/memory_pressure_listener.h"
+#include "base/memory/memory_pressure_listener_registry.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/system/sys_info.h"
@@ -152,7 +154,7 @@ void UserLevelMemoryPressureSignalGenerator::Generate(base::TimeTicks now) {
   // does not generate any signals to avoid too many signals.
   if (!last_generated_.has_value() ||
       (now - last_generated_.value()) >= minimum_interval_) {
-    base::MemoryPressureListener::NotifyMemoryPressure(
+    base::MemoryPressureListenerRegistry::NotifyMemoryPressureFromAnyThread(
         base::MEMORY_PRESSURE_LEVEL_CRITICAL);
     last_generated_ = now;
   }

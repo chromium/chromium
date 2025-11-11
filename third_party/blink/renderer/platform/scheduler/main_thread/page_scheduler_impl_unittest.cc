@@ -258,6 +258,8 @@ class PageSchedulerImplTest : public testing::Test {
     EXPECT_EQ(5, counter);
   }
 
+  base::test::TaskEnvironment task_environment_;
+
   scoped_refptr<base::TestMockTimeTaskRunner> test_task_runner_;
   std::unique_ptr<MainThreadSchedulerImpl> scheduler_;
   Persistent<AgentGroupScheduler> agent_group_scheduler_;
@@ -573,7 +575,6 @@ TEST_F(PageSchedulerImplTest, PageBackgrounded_EnableVirtualTime) {
 // Check that enabling virtual time while a backgrounded page is frozen
 // unfreezes it.
 TEST_F(PageSchedulerImplTest, PageFrozen_EnableVirtualTime) {
-  base::test::TaskEnvironment task_env;
   page_scheduler_->SetPageVisible(false);
   test_task_runner_->FastForwardUntilNoTasksRemain();
   EXPECT_TRUE(page_scheduler_->IsFrozen());
@@ -1163,7 +1164,6 @@ void InitializeTrialParams() {
 }  // namespace
 
 TEST_F(PageSchedulerImplTest, BackgroundTimerThrottling) {
-  base::test::TaskEnvironment test_env;
   InitializeTrialParams();
   page_scheduler_ =
       CreatePageScheduler(nullptr, scheduler_.get(), *agent_group_scheduler_);
@@ -1336,14 +1336,12 @@ TEST_F(PageSchedulerImplTest, OpenWebSocketExemptsFromBudgetThrottling) {
 // Then, verify that making the page visible unfreezes it and allows tasks in
 // its task queues to run.
 TEST_F(PageSchedulerImplTest, PageFreezeAndSetVisible) {
-  base::test::TaskEnvironment task_env;
   TestFreeze(true);
 }
 
 // Same as before, but unfreeze the page explicitly instead of making it
 // visible.
 TEST_F(PageSchedulerImplTest, PageFreezeAndUnfreeze) {
-  base::test::TaskEnvironment task_env;
   TestFreeze(false);
 }
 
@@ -1379,7 +1377,6 @@ TEST_F(PageSchedulerImplTest, PageSchedulerDestroyedWhileAudioChangePending) {
 }
 
 TEST_F(PageSchedulerImplTest, AudiblePagesAreNotThrottled) {
-  base::test::TaskEnvironment task_env;
   page_scheduler_->SetPageVisible(false);
   EXPECT_TRUE(ThrottleableTaskQueue()->IsThrottled());
 
@@ -1399,7 +1396,6 @@ TEST_F(PageSchedulerImplTest, AudiblePagesAreNotThrottled) {
 // Regression test for crbug.com/1431695. Test freezing and state changes work
 // correctly if the OnAudioSilent timer fires after the page is frozen.
 TEST_F(PageSchedulerImplTest, FreezingRecentlyAudiblePage) {
-  base::test::TaskEnvironment task_env;
   page_scheduler_->AudioStateChanged(true);
   EXPECT_TRUE(page_scheduler_->IsAudioPlaying());
 
@@ -1425,7 +1421,6 @@ TEST_F(PageSchedulerImplTest, FreezingRecentlyAudiblePage) {
 // correctly if the AudioStateChanged notification occurs after the page is
 // frozen.
 TEST_F(PageSchedulerImplTest, FreezingAudiblePage) {
-  base::test::TaskEnvironment task_env;
   page_scheduler_->AudioStateChanged(true);
   EXPECT_TRUE(page_scheduler_->IsAudioPlaying());
 
@@ -1452,7 +1447,6 @@ TEST_F(PageSchedulerImplTest, BudgetBasedThrottlingForPageScheduler) {
 }
 
 TEST_F(PageSchedulerImplTest, TestPageBackgroundedTimerSuspension) {
-  base::test::TaskEnvironment task_env;
   int counter = 0;
   ThrottleableTaskQueue()->GetTaskRunnerWithDefaultTaskType()->PostTask(
       FROM_HERE, base::BindOnce(&IncrementCounter, base::Unretained(&counter)));
