@@ -5,12 +5,14 @@
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 
 #include <algorithm>
+#include <optional>
 
 #include "base/callback_list.h"
 #include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
+#include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -609,17 +611,14 @@ void AutofillManager::ParseFormAsync(
     return;
   }
 
-  const FormStructure* const cached_form_structure =
-      FindCachedFormById(form.global_id());
-  if (cached_form_structure && !NeedsReparse(form, *cached_form_structure)) {
-    auto form_structure = std::make_unique<FormStructure>(form);
-    // Update the cache to the latest FormData from the renderer (in particular,
-    // update the field values) while preserving all other information (in
-    // particular, the field types).
-    form_structure->RetrieveFromCache(
-        *cached_form_structure,
-        FormStructure::RetrieveFromCacheReason::kFormCacheUpdateWithoutParsing);
-    form_structures_[form.global_id()] = std::move(form_structure);
+  if (const FormStructure* const cached_form_structure =
+          FindCachedFormById(form.global_id());
+      cached_form_structure && !NeedsReparse(form, *cached_form_structure)) {
+    UpdateFormCache(
+        base::span_from_ref(form),
+        /*context=*/std::nullopt,
+        FormStructure::RetrieveFromCacheReason::kFormCacheUpdateWithoutParsing,
+        /*preserve_signatures=*/true);
     std::move(callback).Run(*this, std::move(form));
     return;
   }
@@ -662,78 +661,23 @@ void AutofillManager::ParseFormsAsyncCommon(
          base::OnceCallback<void(AutofillManager&,
                                  const std::vector<FormData>&)> callback,
          AsyncContext context) {
-        SCOPED_UMA_HISTOGRAM_TIMER(
-            "Autofill.Timing.ParseFormsAsync.UpdateCache");
         if (!self) {
           return;
         }
-
         CHECK_EQ(context.regex_predictions.size(), context.forms.size());
-        for (size_t i = 0; i < context.forms.size(); ++i) {
-          auto form_structure =
-              std::make_unique<FormStructure>(context.forms[i]);
-          const FormStructure* const cached_form_structure =
-              self->FindCachedFormById(form_structure->global_id());
-
-          const bool is_new_form = !cached_form_structure;
-          if (self->form_structures_.size() + is_new_form >
-              kAutofillManagerMaxFormCacheSize) {
-            LOG_AF(context.log_manager.get())
-                << LoggingScope::kAbortParsing
-                << LogMessage::kAbortParsingTooManyForms << context.forms[i];
-            continue;
+        self->UpdateFormCache(context.forms, context,
+                              FormStructure::RetrieveFromCacheReason::
+                                  kFormCacheUpdateAfterParsing,
+                              preserve_signatures);
+        for (const FormData& form : context.forms) {
+          if (const FormStructure* const form_structure =
+                  self->FindCachedFormById(form.global_id())) {
+            self->LogCurrentFieldTypes(form_structure);
+            self->NotifyObservers(
+                &Observer::OnFieldTypesDetermined, form_structure->global_id(),
+                Observer::FieldTypeSource::kHeuristicsOrAutocomplete);
           }
-
-          if (cached_form_structure) {
-            // Preserves already cached information (in particular, the server
-            // field types). This must happen before rationalization.
-            form_structure->RetrieveFromCache(
-                *cached_form_structure, FormStructure::RetrieveFromCacheReason::
-                                            kFormCacheUpdateAfterParsing);
-
-            // Not updating signatures of credit card forms is legacy behaviour.
-            // We believe that the signatures are kept stable for voting
-            // purposes. Credit card forms are those which contain only credit
-            // card fields.
-            // TODO(crbug.com/431754194): Investigate making the behavior
-            // consistent across all form types.
-            if (!preserve_signatures &&
-                !IsCreditCardFormForSignaturePurposes(*cached_form_structure)) {
-              form_structure->set_form_signature(
-                  CalculateFormSignature(context.forms[i]));
-              form_structure->set_alternative_form_signature(
-                  CalculateAlternativeFormSignature(context.forms[i]));
-              form_structure->set_structural_form_signature(
-                  CalculateStructuralFormSignature(context.forms[i]));
-            }
-          }
-
-          if (!context.autofill_predictions.empty()) {
-            context.autofill_predictions[i].ApplyTo(form_structure->fields());
-          }
-          if (!context.password_manager_predictions.empty()) {
-            context.password_manager_predictions[i].ApplyTo(
-                form_structure->fields());
-          }
-          if (!context.regex_predictions.empty()) {
-            context.regex_predictions[i].ApplyTo(form_structure->fields());
-          }
-          form_structure->RationalizeAndAssignSections(
-              context.country_code, context.current_page_language,
-              context.log_manager.get());
-
-          const FormStructure& raw_form_structure = *form_structure;
-          self->form_structures_[raw_form_structure.global_id()] =
-              std::move(form_structure);
-          DCHECK_LE(self->form_structures_.size(),
-                    kAutofillManagerMaxFormCacheSize);
-
-          self->LogCurrentFieldTypes(&raw_form_structure);
-          self->NotifyObservers(
-              &Observer::OnFieldTypesDetermined, raw_form_structure.global_id(),
-              Observer::FieldTypeSource::kHeuristicsOrAutocomplete);
         }
-
         if (context.log_manager && self->log_manager()) {
           context.log_manager->Flush(*self->log_manager());
         }
@@ -938,6 +882,75 @@ void AutofillManager::OnLoadedServerPredictions(
 
     NotifyObservers(&Observer::OnFieldTypesDetermined, form->global_id(),
                     Observer::FieldTypeSource::kAutofillServer);
+  }
+}
+
+void AutofillManager::UpdateFormCache(
+    base::span<const FormData> forms,
+    base::optional_ref<const AsyncContext> context,
+    FormStructure::RetrieveFromCacheReason reason,
+    bool preserve_signatures) {
+  SCOPED_UMA_HISTOGRAM_TIMER("Autofill.Timing.ParseFormsAsync.UpdateCache");
+
+  auto apply_predictions = [](FormStructure& form_structure,
+                              const AsyncContext& context, size_t i) {
+    if (!context.autofill_predictions.empty()) {
+      context.autofill_predictions[i].ApplyTo(form_structure.fields());
+    }
+    if (!context.password_manager_predictions.empty()) {
+      context.password_manager_predictions[i].ApplyTo(form_structure.fields());
+    }
+    if (!context.regex_predictions.empty()) {
+      context.regex_predictions[i].ApplyTo(form_structure.fields());
+    }
+    form_structure.RationalizeAndAssignSections(context.country_code,
+                                                context.current_page_language,
+                                                context.log_manager.get());
+  };
+
+  for (size_t i = 0; i < forms.size(); ++i) {
+    const FormStructure* const cached_form_structure =
+        FindCachedFormById(forms[i].global_id());
+    const bool is_new_form = !cached_form_structure;
+    if (form_structures_.size() + is_new_form >
+        kAutofillManagerMaxFormCacheSize) {
+      LOG_AF(log_manager())
+          << LoggingScope::kAbortParsing
+          << LogMessage::kAbortParsingTooManyForms << forms[i];
+      continue;
+    }
+
+    if (is_new_form) {
+      DCHECK(context);
+      auto form_structure = std::make_unique<FormStructure>(forms[i]);
+      if (context) {
+        apply_predictions(*form_structure, *context, i);
+      }
+      form_structures_[forms[i].global_id()] = std::move(form_structure);
+      DCHECK_LE(form_structures_.size(), kAutofillManagerMaxFormCacheSize);
+      continue;
+    }
+
+    auto form_structure = std::make_unique<FormStructure>(forms[i]);
+    form_structure->RetrieveFromCache(*cached_form_structure, reason);
+    if (context) {
+      apply_predictions(*form_structure, *context, i);
+    }
+
+    if (!preserve_signatures &&
+        !IsCreditCardFormForSignaturePurposes(*cached_form_structure)) {
+      // Not updating signatures of credit card forms is legacy behaviour. We
+      // believe that the signatures are kept stable for voting purposes.
+      // Credit card forms are those which contain only credit card fields.
+      // TODO(crbug.com/431754194): Investigate making the behavior consistent
+      // across all form types.
+      form_structure->set_form_signature(CalculateFormSignature(forms[i]));
+      form_structure->set_alternative_form_signature(
+          CalculateAlternativeFormSignature(forms[i]));
+      form_structure->set_structural_form_signature(
+          CalculateStructuralFormSignature(forms[i]));
+    }
+    form_structures_[forms[i].global_id()] = std::move(form_structure);
   }
 }
 

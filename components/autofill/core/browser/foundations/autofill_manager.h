@@ -497,6 +497,19 @@ class AutofillManager
   // |form_structures|.
   void OnFormsParsed(const std::vector<FormData>& forms);
 
+  // Updates `form_structures_` with the information in `forms` and `context`,
+  // if available. `context` is available when this function is called as a
+  // result of a parsing operation, `reason` is an indicator of that.
+  // If `preserve_signatures` is true, credit card forms have their
+  // `FormSignature`s preserved. `forms` might contain forms that are not in the
+  // cache (on pageload for example). In that case, the function creates and
+  // adds a `FormStructure` to the cache (`context` should not be `std::nullopt`
+  // in that case).
+  void UpdateFormCache(base::span<const FormData> forms,
+                       base::optional_ref<const AsyncContext> context,
+                       FormStructure::RetrieveFromCacheReason reason,
+                       bool preserve_signatures);
+
   std::unique_ptr<autofill_metrics::FormInteractionsUkmLogger>
   CreateFormInteractionsUkmLogger();
 
