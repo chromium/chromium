@@ -39,8 +39,6 @@ extern const char kAccessControlAllowMethods[];
 COMPONENT_EXPORT(NETWORK_CPP)
 extern const char kAccessControlAllowOrigin[];
 COMPONENT_EXPORT(NETWORK_CPP)
-extern const char kAccessControlAllowPrivateNetwork[];
-COMPONENT_EXPORT(NETWORK_CPP)
 extern const char kAccessControlMaxAge[];
 // TODO(crbug.com/40202951): Remove this.
 COMPONENT_EXPORT(NETWORK_CPP)
@@ -49,12 +47,6 @@ COMPONENT_EXPORT(NETWORK_CPP)
 extern const char kAccessControlRequestHeaders[];
 COMPONENT_EXPORT(NETWORK_CPP)
 extern const char kAccessControlRequestMethod[];
-COMPONENT_EXPORT(NETWORK_CPP)
-extern const char kAccessControlRequestPrivateNetwork[];
-COMPONENT_EXPORT(NETWORK_CPP)
-extern const char kPrivateNetworkDeviceId[];
-COMPONENT_EXPORT(NETWORK_CPP)
-extern const char kPrivateNetworkDeviceName[];
 
 }  // namespace header_names
 
