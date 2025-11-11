@@ -220,6 +220,10 @@ const char kUseFakeMjpegDecodeAccelerator[] =
 // Must also be used with kDisableAudioInput or kUseFakeDeviceForMediaStream.
 const char kUseFileForFakeAudioCapture[] = "use-file-for-fake-audio-capture";
 
+// Use a local TF Lite model for residual echo estimation in audio processing.
+const char kUseFileForNeuralResidualEchoEstimatorModel[] =
+    "use-file-for-neural-residual-echo-estimator-model";
+
 // Use an .y4m file to play as the webcam. See the comments in
 // media/capture/video/file_video_capture_device.h for more details.
 const char kUseFileForFakeVideoCapture[] = "use-file-for-fake-video-capture";

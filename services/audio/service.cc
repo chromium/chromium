@@ -174,6 +174,14 @@ void Service::BindTestingApi(
     binder.Run(std::move(receiver));
 }
 
+void Service::BindMlModelManager(
+    mojo::PendingReceiver<mojom::MlModelManager> receiver) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+  ml_model_manager_.BindReceiver(std::move(receiver));
+#endif
+}
+
 void Service::InitializeDeviceMonitor() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 #if BUILDFLAG(IS_MAC)

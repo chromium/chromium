@@ -105,6 +105,8 @@ source_set("audio") {
       "mixing_graph.h",
       "mixing_graph_impl.cc",
       "mixing_graph_impl.h",
+      "ml_model_manager.h",
+      "ml_model_manager_impl.cc",
       "output_device_mixer.cc",
       "output_device_mixer.h",
       "output_device_mixer_impl.cc",
@@ -119,7 +121,10 @@ source_set("audio") {
       "sync_mixing_graph_input.h",
     ]
 
-    public_deps += [ "//media/webrtc" ]
+    public_deps += [
+      "//media/webrtc",
+      "//third_party/tflite",
+    ]
   }
 
   configs += [
@@ -204,10 +209,13 @@ source_set("tests") {
       "loopback_reference_manager_unittest.cc",
       "mixing_graph_impl_unittest.cc",
       "mixing_graph_input_unittest.cc",
+      "ml_model_manager_impl_unittest.cc",
       "output_device_mixer_impl_unittest.cc",
       "output_device_mixer_manager_unittest.cc",
       "processing_audio_fifo_unittest.cc",
     ]
+    data = [ "test/data/noop.tflite" ]
+    deps += [ "//third_party/tflite" ]
   }
 
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
