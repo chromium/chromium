@@ -72,6 +72,14 @@ void RecordMetricsInternal(const PreloadServingMetrics& metrics,
     base::UmaHistogramBoolean(
         WITH(prefix, "PrefetchMatchMetrics.PotentialMatchThen.IsActualMatch"),
         is_actual_match);
+    CHECK(prefetch_match_metrics
+              .prefetch_potential_candidate_serving_result_last.has_value());
+    base::UmaHistogramEnumeration(
+        WITH(prefix,
+             "PrefetchMatchMetrics.PotentialMatchThen."
+             "PotentialCandidateServingResult.Last"),
+        prefetch_match_metrics.prefetch_potential_candidate_serving_result_last
+            .value());
 
     base::TimeDelta prefetch_match_duration =
         prefetch_match_metrics.time_match_end -

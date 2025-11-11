@@ -376,6 +376,15 @@ void PrefetchMatchResolver::UnregisterCandidate(
           std::make_unique<PrefetchContainerMetrics>(
               prefetch_container.GetPrefetchContainerMetrics());
     }
+
+    // While `PrefetchMatchResolver` works well with multiple candidates, we
+    // have at most one candidate in almost all cases. So, we record the last
+    // `PrefetchPotentialCandidateServingResult`.
+    //
+    // For more details, see
+    // https://docs.google.com/document/d/1ITMr_qyysUPIMZpLkmpQABwtVseMBduRqxHGZxIJ1R0/edit?resourcekey=0-ccZ-G6JV4WO-1bP4TiNvjQ&tab=t.x99jls7s2xug
+    prefetch_match_metrics_->prefetch_potential_candidate_serving_result_last =
+        serving_result;
   }
 
   prefetch_container.OnUnregisterCandidate(navigated_key_.url(), is_served,
