@@ -357,13 +357,6 @@ BASE_DECLARE_FEATURE(kAutofillThirdPartyModeContentProvider);
 
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_APPLE)
-// Returns true if whether the views autofill popup feature is enabled or the
-// we're using the views browser.
-COMPONENT_EXPORT(AUTOFILL)
-bool IsMacViewsAutofillPopupExperimentEnabled();
-#endif  // BUILDFLAG(IS_APPLE)
-
 COMPONENT_EXPORT(AUTOFILL) BASE_DECLARE_FEATURE(kYourSavedInfoSettingsPage);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kYourSavedInfoBrandingInSettings);
