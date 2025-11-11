@@ -21,6 +21,7 @@
 #include "chrome/common/actor/task_id.h"
 #include "chrome/common/buildflags.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/sessions/core/session_id.h"
 #include "components/tabs/public/tab_interface.h"
 
 class Profile;
@@ -143,6 +144,13 @@ class ActorKeyedService : public KeyedService {
   // does not exist.
   const ActorTask* GetActingActorTaskForWebContents(
       content::WebContents* web_contents);
+
+  using CreateActorTabCallback = base::OnceCallback<void(tabs::TabInterface*)>;
+  void CreateActorTab(TaskId task_id,
+                      bool foreground,
+                      tabs::TabHandle initiator_tab_handle,
+                      SessionID initiator_window_id,
+                      CreateActorTabCallback callback);
 
   base::WeakPtr<ActorKeyedService> GetWeakPtr();
 

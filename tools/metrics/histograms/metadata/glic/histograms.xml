@@ -131,6 +131,7 @@ chromium-metrics-reviews@google.com.
     <variant name="CaptureScreenshot"/>
     <variant name="ClosePanel"/>
     <variant name="ClosePanelAndShutdown"/>
+    <variant name="CreateActorTab"/>
     <variant name="CreateTab"/>
     <variant name="CreateTask"/>
     <variant name="DetachPanel"/>

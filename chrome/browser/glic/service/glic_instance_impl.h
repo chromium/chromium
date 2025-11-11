@@ -176,6 +176,12 @@ class GlicInstanceImpl : public GlicInstance,
       glic::mojom::WebClientHandler::ResumeActorTaskCallback callback) override;
   void InterruptActorTask(actor::TaskId task_id) override;
   void UninterruptActorTask(actor::TaskId task_id) override;
+  void CreateActorTab(
+      actor::TaskId task_id,
+      bool foreground,
+      const std::optional<int32_t>& initiator_tab_id,
+      const std::optional<int32_t>& initiator_window_id,
+      glic::mojom::WebClientHandler::CreateActorTabCallback callback) override;
   void FetchZeroStateSuggestions(
       bool is_first_run,
       std::optional<std::vector<std::string>> supported_tools,

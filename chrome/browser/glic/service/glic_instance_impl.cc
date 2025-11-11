@@ -439,6 +439,16 @@ void GlicInstanceImpl::UninterruptActorTask(actor::TaskId task_id) {
   actor_task_manager_->UninterruptActorTask(task_id);
 }
 
+void GlicInstanceImpl::CreateActorTab(
+    actor::TaskId task_id,
+    bool foreground,
+    const std::optional<int32_t>& initiator_tab_id,
+    const std::optional<int32_t>& initiator_window_id,
+    glic::mojom::WebClientHandler::CreateActorTabCallback callback) {
+  actor_task_manager_->CreateActorTab(task_id, foreground, initiator_tab_id,
+                                      initiator_window_id, std::move(callback));
+}
+
 void GlicInstanceImpl::GetZeroStateSuggestionsAndSubscribe(
     bool has_active_subscription,
     const mojom::ZeroStateSuggestionsOptions& options,

@@ -1076,6 +1076,21 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     host().instance_delegate().UninterruptActorTask(actor::TaskId(task_id));
   }
 
+  void CreateActorTab(int32_t task_id,
+                      bool foreground,
+                      std::optional<int32_t> initiator_tab_id,
+                      std::optional<int32_t> initiator_window_id,
+                      CreateActorTabCallback callback) override {
+    if (!base::FeatureList::IsEnabled(features::kGlicActor)) {
+      receiver_.ReportBadMessage(
+          "StopActorTask cannot be called without GlicActor enabled.");
+      return;
+    }
+    host().instance_delegate().CreateActorTab(
+        actor::TaskId(task_id), foreground, initiator_tab_id,
+        initiator_window_id, std::move(callback));
+  }
+
   void ActivateTab(int32_t tab_id) override {
     if (!base::FeatureList::IsEnabled(features::kGlicActivateTabApi)) {
       return;

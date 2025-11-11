@@ -870,6 +870,32 @@ class HostMessageHandler implements HostMessageHandlerInterface {
     this.handler.uninterruptActorTask(request.taskId);
   }
 
+  async glicBrowserCreateActorTab(request: {
+    taskId: number,
+    options: {
+      initiatorTabId?: string,
+      initiatorWindowId?: string,
+      openInBackground?: boolean,
+    },
+  }) {
+    const response = await this.handler.createActorTab(
+        request.taskId, request.options.openInBackground === true,
+        tabIdFromClient(request.options.initiatorTabId),
+        optionalWindowIdFromClient(request.options.initiatorWindowId));
+    const tabData = response.tabData;
+    if (tabData) {
+      return {
+        tabData: {
+          tabId: tabIdToClient(tabData.tabId),
+          windowId: windowIdToClient(tabData.windowId),
+          url: urlToClient(tabData.url),
+          title: optionalToClient(tabData.title),
+        },
+      };
+    }
+    return {};
+  }
+
   glicBrowserActivateTab(request: {tabId: string}): void {
     this.handler.activateTab(tabIdFromClient(request.tabId));
   }
@@ -1877,7 +1903,13 @@ function tabIdToClient(tabId: number|null): string|undefined {
   return `${tabId}`;
 }
 
-function tabIdFromClient(tabId: string): number {
+function tabIdFromClient(tabId: string): number;
+function tabIdFromClient(tabId: string|undefined): number|null;
+function tabIdFromClient(tabId: string|undefined): number|null {
+  if (tabId === undefined) {
+    return null;
+  }
+
   const parsed = parseInt(tabId);
   if (Number.isNaN(parsed)) {
     return 0;
