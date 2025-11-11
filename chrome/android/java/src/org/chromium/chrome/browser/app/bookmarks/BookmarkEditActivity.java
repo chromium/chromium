@@ -281,12 +281,8 @@ public class BookmarkEditActivity extends SnackbarActivity {
         mFolderSelectRowModel =
                 mFolderSelectRowCoordinator.createBasePropertyModel(bookmarkItem.getParentId());
 
-        int endImageRes =
-                ChromeFeatureList.sAndroidBookmarkBarFastFollow.isEnabled()
-                        ? R.drawable.material_ic_drive_file_move_24dp
-                        : R.drawable.outline_chevron_right_24dp;
-        mFolderSelectRowModel.set(ImprovedBookmarkRowProperties.END_IMAGE_RES, endImageRes);
-
+        mFolderSelectRowModel.set(
+                ImprovedBookmarkRowProperties.END_IMAGE_RES, R.drawable.outline_chevron_right_24dp);
         mFolderSelectRowModel.set(
                 ImprovedBookmarkRowProperties.END_IMAGE_VISIBILITY, ImageVisibility.DRAWABLE);
         mFolderSelectRowModel.set(
