@@ -204,7 +204,7 @@ enum Setting {
   kUninstallCrostini = 801,
   kBackupLinuxAppsAndFiles = 802,
   kRestoreLinuxAppsAndFiles = 803,
-  kCrostiniAdbDebugging = 804,
+  // Note: Value 804 was for deprecated kCrostiniAdbDebugging. Do not reuse.
   kCrostiniDiskResize = 805,
   kCrostiniMicAccess = 806,
   kCrostiniContainerUpgrade = 807,

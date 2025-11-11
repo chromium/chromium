@@ -120,7 +120,6 @@ suite('<settings-crostini-export-import>', () => {
       showCrostiniContainerUpgrade: true,
       showCrostiniPortForwarding: true,
       showCrostiniDiskResize: true,
-      arcAdbSideloadingSupported: true,
       showCrostiniExtraContainers: true,
     });
     crostiniBrowserProxy = new TestCrostiniBrowserProxy();
