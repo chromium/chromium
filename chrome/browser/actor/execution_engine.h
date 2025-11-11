@@ -227,9 +227,11 @@ class ExecutionEngine : public ToolDelegate {
       bool not_on_blocklist);
 
   // Called when the browser detects the actor needs to confirm a
-  // client-side-initiated navigation to a novel origin. The web client should
-  // check that the origin is relevant for the task and respond with whether the
-  // actor is permitted to visit the page.
+  // client-side-initiated navigation to a novel origin.
+  void HandleNavigationToNewOrigin(
+      const url::Origin& navigation_origin,
+      ExecutionEngine::NavigationDecisionCallback callback);
+
   void SendNavigationConfirmationRequest(const url::Origin& navigation_origin,
                                          NavigationDecisionCallback callback);
   void OnNavigationConfirmationDecision(
@@ -240,6 +242,8 @@ class ExecutionEngine : public ToolDelegate {
   // Called when the browser detects the actor navigating to an origin in the
   // blocklist. The web client should confirm with the user that the actor is
   // allowed to navigate to this origin.
+  // This may also be called when the browser detects the actor navigating to
+  // a novel origin when `kGlicPromptUserForNavigationToNewOrigins` is enabled.
   void SendUserConfirmationDialogRequest(const url::Origin& navigation_origin,
                                          NavigationDecisionCallback callback);
   void OnPromptUserToConfirmNavigationDecision(
