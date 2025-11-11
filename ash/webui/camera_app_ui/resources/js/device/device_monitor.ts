@@ -77,7 +77,6 @@ export class DeviceMonitor {
     } catch (e) {
       if (loadTimeData.isCCADisallowed()) {
         // The failure is expected due to the policy so don't throw any error.
-        // TODO(b/297317408): Show messages on the UI.
         // eslint-disable-next-line no-console
         console.log('Failed to load camera since it is blocked by policy');
       } else {
