@@ -41,6 +41,7 @@ class InspectorDOMAgent;
 class InspectorDOMDebuggerAgent;
 class InspectorDOMSnapshotAgent;
 class InspectorEmulationAgent;
+class InspectorInspectorAgent;
 class InspectorIOAgent;
 class InspectorLogAgent;
 class InspectorNetworkAgent;
@@ -151,6 +152,7 @@ class CORE_EXPORT DevToolsSession : public GarbageCollected<DevToolsSession>,
                               std::is_same<T, InspectorDOMDebuggerAgent>,
                               std::is_same<T, InspectorDOMSnapshotAgent>,
                               std::is_same<T, InspectorEmulationAgent>,
+                              std::is_same<T, InspectorInspectorAgent>,
                               std::is_same<T, InspectorIOAgent>,
                               std::is_same<T, InspectorLogAgent>,
                               std::is_same<T, InspectorNetworkAgent>,
