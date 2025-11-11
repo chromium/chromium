@@ -9,7 +9,6 @@
 #include "third_party/blink/renderer/core/layout/gap/cross_gap.h"
 #include "third_party/blink/renderer/core/layout/gap/gap_utils.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
-#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
@@ -41,25 +40,10 @@ class CORE_EXPORT MainGap {
     return range_of_cross_gaps_after_.IsValid();
   }
 
-  wtf_size_t GetCrossGapBeforeStart() const {
-    CHECK(HasCrossGapsBefore());
-    return range_of_cross_gaps_before_.Start();
-  }
-
-  wtf_size_t GetCrossGapBeforeEnd() const {
-    CHECK(HasCrossGapsBefore());
-    return range_of_cross_gaps_before_.End();
-  }
-
-  wtf_size_t GetCrossGapAfterStart() const {
-    CHECK(HasCrossGapsAfter());
-    return range_of_cross_gaps_after_.Start();
-  }
-
-  wtf_size_t GetCrossGapAfterEnd() const {
-    CHECK(HasCrossGapsAfter());
-    return range_of_cross_gaps_after_.End();
-  }
+  wtf_size_t GetCrossGapBeforeStart() const;
+  wtf_size_t GetCrossGapBeforeEnd() const;
+  wtf_size_t GetCrossGapAfterStart() const;
+  wtf_size_t GetCrossGapAfterEnd() const;
 
   void IncrementRangeOfCrossGapsBefore(wtf_size_t cross_gap_index) {
     range_of_cross_gaps_before_.Increment(cross_gap_index);
@@ -80,17 +64,7 @@ class CORE_EXPORT MainGap {
     range_of_cross_gaps_after_ = range;
   }
 
-  blink::String ToString(bool verbose = false) const {
-    blink::String str =
-        blink::String("MainOffset(") + gap_offset_.ToString() + "); ";
-
-    if (verbose) {
-      str = str + "Before: " + range_of_cross_gaps_before_.ToString() + ";";
-      str = str + "After: " + range_of_cross_gaps_after_.ToString() + ";";
-    }
-
-    return str;
-  }
+  blink::String ToString(bool verbose = false) const;
 
   bool IsStartSpannerMainGap() const {
     return spanner_main_gap_type_ == SpannerMainGapType::kStart;
@@ -106,18 +80,10 @@ class CORE_EXPORT MainGap {
     return gap_segment_state_ranges_.has_value();
   }
 
-  const GapSegmentStateRanges& GetGapSegmentStateRanges() const {
-    CHECK(gap_segment_state_ranges_.has_value());
-    return gap_segment_state_ranges_.value();
-  }
+  const GapSegmentStateRanges& GetGapSegmentStateRanges() const;
 
   void AddGapSegmentStateRange(
-      const GapSegmentStateRange& gap_segment_state_range) {
-    if (!HasGapSegmentStateRanges()) {
-      gap_segment_state_ranges_ = GapSegmentStateRanges();
-    }
-    gap_segment_state_ranges_->emplace_back(gap_segment_state_range);
-  }
+      const GapSegmentStateRange& gap_segment_state_range);
 
  private:
   // This represents the midpoint offset (block or inline) of the gap. If the main

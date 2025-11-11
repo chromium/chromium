@@ -16,7 +16,7 @@ namespace blink {
 // and "after" the `MainGap` associated with this `CrossGap`. Where `start` and
 // `end` describe the index range within the `cross_gaps_` vector of the
 // `GapGeometry` where a given `CrossGap` is stored.
-class CrossGapRange {
+class CORE_EXPORT CrossGapRange {
  public:
   CrossGapRange(wtf_size_t start, wtf_size_t end)
       : start_index_(start), end_index_(end) {}
@@ -39,29 +39,9 @@ class CrossGapRange {
 
   // Increments the range. `cross_gap_index` is the index of the cross gap being
   // processed.
-  void Increment(wtf_size_t cross_gap_index) {
-    if (!start_index_.has_value()) {
-      start_index_ = cross_gap_index;
+  void Increment(wtf_size_t cross_gap_index);
 
-      // Both start at the same index, but subsequent calls will increment the
-      // end index.
-      end_index_ = cross_gap_index;
-    } else {
-      CHECK(end_index_.has_value());
-      CHECK_GT(cross_gap_index, *end_index_);
-      CHECK_GT(cross_gap_index, *start_index_);
-      end_index_ = cross_gap_index;
-    }
-  }
-
-  String ToString() const {
-    String str;
-    str = "(" +
-          (start_index_.has_value() ? String::Number(*start_index_) : "null") +
-          " --> " +
-          (end_index_.has_value() ? String::Number(*end_index_) : "null") + ")";
-    return str;
-  }
+  String ToString() const;
 
   bool operator==(const CrossGapRange& other) const {
     return start_index_ == other.start_index_ && end_index_ == other.end_index_;
@@ -98,28 +78,7 @@ class CORE_EXPORT CrossGap {
 
   LogicalOffset GetGapOffset() const { return gap_logical_offset_; }
 
-  String ToString(bool verbose = false) const {
-    if (verbose) {
-      String edge_state;
-      if (edge_state_ == EdgeIntersectionState::kStart) {
-        edge_state = "kStart";
-      } else if (edge_state_ == EdgeIntersectionState::kEnd) {
-        edge_state = "kEnd";
-      } else if (edge_state_ == EdgeIntersectionState::kBoth) {
-        edge_state = "kBoth";
-      } else {
-        edge_state = "kNone";
-      }
-      return String("CrossStartOffset(") +
-             gap_logical_offset_.inline_offset.ToString() + ", " +
-             gap_logical_offset_.block_offset.ToString() + "); " +
-             "EdgeState: " + edge_state + ";";
-    }
-
-    return String("CrossStartOffset(") +
-           gap_logical_offset_.inline_offset.ToString() + ", " +
-           gap_logical_offset_.block_offset.ToString() + ")";
-  }
+  String ToString(bool verbose = false) const;
 
   void SetEdgeIntersectionState(EdgeIntersectionState state) {
     edge_state_ = state;
@@ -144,12 +103,7 @@ class CORE_EXPORT CrossGap {
   }
 
   void AddGapSegmentStateRange(
-      const GapSegmentStateRange& gap_segment_state_range) {
-    if (!HasGapSegmentStateRanges()) {
-      gap_segment_state_ranges_ = GapSegmentStateRanges();
-    }
-    gap_segment_state_ranges_->emplace_back(gap_segment_state_range);
-  }
+      const GapSegmentStateRange& gap_segment_state_range);
 
   static void UpdateCrossGapRangeEdgeState(
       Vector<CrossGap>& cross_gaps,
