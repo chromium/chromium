@@ -377,6 +377,10 @@ void BwgTabHelper::DidFinishNavigation(
 void BwgTabHelper::PageLoaded(
     web::WebState* web_state,
     web::PageLoadCompletionStatus load_completion_status) {
+  if (page_loaded_callback_) {
+    std::move(page_loaded_callback_).Run();
+  }
+
   if (IsWebPageReportedImagesSheetEnabled()) {
     PrepareWebPageReportedImagesSnackbar();
   }
