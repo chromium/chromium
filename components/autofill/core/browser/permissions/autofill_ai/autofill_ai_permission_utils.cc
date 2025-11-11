@@ -413,9 +413,7 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
       case AutofillAiAction::kServerClassificationModel:
       case AutofillAiAction::kUseCachedServerClassificationModelResults:
         return base::FeatureList::IsEnabled(
-                   features::kAutofillAiIgnoreCapabilityCheck) &&
-               !features::kAutofillAiIgnoreCapabilityCheckOnlyForNonModelActions
-                    .Get();
+            features::kAutofillAiIgnoreCapabilityCheck);
     }
     NOTREACHED();
   }();

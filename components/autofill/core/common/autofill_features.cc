@@ -147,15 +147,6 @@ const base::FeatureParam<std::string>
         &kAutofillAiSavePromptSurvey,
         "autofill_ai_walletable_entity_save_prompt_survey_declined_trigger_id",
         ""};
-// Allows us to control which actions `kAutofillAiIgnoreCapabilityCheck` applies
-// to. If `kAutofillAiIgnoreCapabilityCheckOnlyForNonModelActions` is true, then
-// MES and MQLS interactions are still constrained by an account-level
-// capability check.
-const base::FeatureParam<bool>
-    kAutofillAiIgnoreCapabilityCheckOnlyForNonModelActions{
-        &kAutofillAiIgnoreCapabilityCheck,
-        "autofill_ai_ignore_capability_check_only_for_non_model_actions",
-        false};
 
 // If enabled, no GeoIp requirements are imposed for AutofillAi.
 // Note that this feature can be modified as follows (all assuming that
