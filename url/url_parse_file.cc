@@ -80,7 +80,7 @@ void DoParseUnc(std::basic_string_view<CharT> url,
     parsed->host.reset();
   }
   if (next_slash < url_len) {
-    ParsePathInternal(url.data(), MakeRange(next_slash, url_len), &parsed->path,
+    ParsePathInternal(url, MakeRange(next_slash, url_len), &parsed->path,
                       &parsed->query, &parsed->ref);
   } else {
     parsed->path.reset();
@@ -96,8 +96,8 @@ void DoParseLocalFile(std::basic_string_view<CharT> url,
                       size_t path_begin,
                       Parsed* parsed) {
   parsed->host.reset();
-  ParsePathInternal(url.data(), MakeRange(path_begin, url.size()),
-                    &parsed->path, &parsed->query, &parsed->ref);
+  ParsePathInternal(url, MakeRange(path_begin, url.size()), &parsed->path,
+                    &parsed->query, &parsed->ref);
 }
 
 // Backend for the external functions that operates on either char type.

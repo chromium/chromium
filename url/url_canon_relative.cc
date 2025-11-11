@@ -332,8 +332,7 @@ bool DoResolveRelativePath(std::string_view base_url,
   // We know the authority section didn't change, copy it to the output. We
   // also know we have a path so can copy up to there.
   Component path, query, ref;
-  ParsePathInternal(relative_url.data(), Component(0, relative_url.size()),
-                    &path, &query, &ref);
+  ParsePathInternal(relative_url, Component(relative_url), &path, &query, &ref);
 
   // Canonical URLs always have a path, so we can use that offset. Reserve
   // enough room for the base URL, the new path, and some extra bytes for

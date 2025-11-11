@@ -123,12 +123,12 @@ inline int CountConsecutiveSlashesButNotCountBackslashes(const CHAR* str,
 // This is designed for the file URL parser or other consumers who may do
 // special stuff at the beginning, but want regular path parsing, it just
 // maps to the internal parsing function for paths.
-void ParsePathInternal(const char* spec,
+void ParsePathInternal(std::string_view spec,
                        const Component& path,
                        Component* filepath,
                        Component* query,
                        Component* ref);
-void ParsePathInternal(const char16_t* spec,
+void ParsePathInternal(std::u16string_view spec,
                        const Component& path,
                        Component* filepath,
                        Component* query,

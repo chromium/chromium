@@ -249,7 +249,7 @@ inline void FindQueryAndRefParts(const CHAR* spec,
 }
 
 template <typename CHAR>
-void ParsePath(const CHAR* spec,
+void ParsePath(std::basic_string_view<CHAR> spec,
                const Component& path,
                Component* filepath,
                Component* query,
@@ -260,7 +260,7 @@ void ParsePath(const CHAR* spec,
   // Search for first occurrence of either ? or #.
   int query_separator = -1;  // Index of the '?'
   int ref_separator = -1;    // Index of the '#'
-  FindQueryAndRefParts(spec, path, &query_separator, &ref_separator);
+  FindQueryAndRefParts(spec.data(), path, &query_separator, &ref_separator);
 
   // Markers pointing to the character after each of these corresponding
   // components. The code below words from the end back to the beginning,
@@ -362,8 +362,7 @@ void DoParseAfterSpecialScheme(std::basic_string_view<CHAR> spec,
   // Now parse those two sub-parts.
   DoParseAuthority(spec, authority, ParserMode::kSpecialURL, &parsed->username,
                    &parsed->password, &parsed->host, &parsed->port);
-  ParsePath(spec.data(), full_path, &parsed->path, &parsed->query,
-            &parsed->ref);
+  ParsePath(spec, full_path, &parsed->path, &parsed->query, &parsed->ref);
 }
 
 // The main parsing function for standard URLs. Standard URLs have a scheme,
@@ -435,8 +434,7 @@ void DoParseAfterNonSpecialScheme(std::basic_string_view<CHAR> spec,
 
     // Everything starting from the slash to the end is the path.
     Component full_path(end_auth, spec_len - end_auth);
-    ParsePath(spec.data(), full_path, &parsed->path, &parsed->query,
-              &parsed->ref);
+    ParsePath(spec, full_path, &parsed->path, &parsed->query, &parsed->ref);
     return;
   }
 
@@ -474,8 +472,7 @@ void DoParseAfterNonSpecialScheme(std::basic_string_view<CHAR> spec,
 
   // Everything starting after scheme to the end is the path.
   Component full_path(after_scheme, spec_len - after_scheme);
-  ParsePath(spec.data(), full_path, &parsed->path, &parsed->query,
-            &parsed->ref);
+  ParsePath(spec, full_path, &parsed->path, &parsed->query, &parsed->ref);
 }
 
 // The main parsing function for non-special scheme URLs.
@@ -637,8 +634,8 @@ Parsed DoParsePathUrl(std::basic_string_view<CharT> url, bool trim_path_end) {
   }
   DCHECK_LT(path_begin, url_len);
 
-  ParsePath(url.data(), MakeRange(path_begin, url_len), &parsed.path,
-            &parsed.query, &parsed.ref);
+  ParsePath(url, MakeRange(path_begin, url_len), &parsed.path, &parsed.query,
+            &parsed.ref);
   return parsed;
 }
 
@@ -1096,7 +1093,7 @@ Parsed ParseMailtoUrl(std::u16string_view url) {
   return DoParseMailtoUrl(url);
 }
 
-void ParsePathInternal(const char* spec,
+void ParsePathInternal(std::string_view spec,
                        const Component& path,
                        Component* filepath,
                        Component* query,
@@ -1104,7 +1101,7 @@ void ParsePathInternal(const char* spec,
   ParsePath(spec, path, filepath, query, ref);
 }
 
-void ParsePathInternal(const char16_t* spec,
+void ParsePathInternal(std::u16string_view spec,
                        const Component& path,
                        Component* filepath,
                        Component* query,
