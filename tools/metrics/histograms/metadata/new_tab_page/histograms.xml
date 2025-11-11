@@ -758,7 +758,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.Footer.ContextMenuClicked"
-    enum="FooterContextMenuItem" expires_after="2025-11-23">
+    enum="FooterContextMenuItem" expires_after="2026-01-23">
   <owner>temao@chromium.org</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
