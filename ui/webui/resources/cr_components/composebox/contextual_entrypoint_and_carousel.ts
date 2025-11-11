@@ -16,7 +16,7 @@ import type {TabInfo} from '//resources/mojo/components/omnibox/browser/searchbo
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
-import type {ComposeboxFile} from './common.js';
+import type {ComposeboxFile, ContextualUpload} from './common.js';
 import {FileUploadErrorType, FileUploadStatus} from './composebox_query.mojom-webui.js';
 import type {ContextMenuEntrypointElement} from './context_menu_entrypoint.js';
 import {getCss} from './contextual_entrypoint_and_carousel.css.js';
@@ -244,19 +244,18 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
     this.processFiles_(files);
   }
 
-  setContextFiles(files: ComposeboxFile[]) {
+  setContextFiles(files: ContextualUpload[]) {
     for (const file of files) {
-      if (file.type === 'tab') {
+      if ('tabId' in file) {
         this.addTabContext_(new CustomEvent('addTabContext', {
           detail: {
-            id: file.tabId!,
-            title: file.name,
-            url: file.url!,
+            id: file.tabId,
+            title: file.title,
+            url: file.url,
           },
         }));
       } else {
-        this.addFileContext_(
-            [file.file!]);
+        this.addFileContext_([file.file]);
       }
     }
   }
