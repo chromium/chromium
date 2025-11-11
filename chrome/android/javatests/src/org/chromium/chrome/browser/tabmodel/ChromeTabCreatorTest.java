@@ -37,6 +37,7 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
@@ -525,7 +526,10 @@ public class ChromeTabCreatorTest {
 
         if (MultiWindowUtils.isMultiInstanceApi31Enabled()) {
             CriteriaHelper.pollUiThread(
-                    () -> MultiWindowUtils.getInstanceCount() == 2,
+                    () ->
+                            MultiWindowUtils.getInstanceCountWithFallback(
+                                            PersistedInstanceType.ANY)
+                                    == 2,
                     "Expected a new window to be created");
         } else {
             assertEquals(

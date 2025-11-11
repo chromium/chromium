@@ -83,6 +83,7 @@ import org.chromium.chrome.browser.incognito.IncognitoUtilsJni;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthController;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
@@ -2628,7 +2629,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                 .canEnterMultiWindowMode();
         doReturn(mIsMultiInstance).when(mMultiWindowModeStateDispatcher).isMultiInstanceRunning();
         doReturn(mIsTabletScreen).when(mTabbedAppMenuPropertiesDelegate).isTabletSizeScreen();
-        doReturn(MultiWindowUtils.getInstanceCount())
+        doReturn(MultiWindowUtils.getInstanceCountWithFallback(PersistedInstanceType.ACTIVE))
                 .when(mMultiWindowModeStateDispatcher)
                 .getInstanceCount();
         doReturn(mIsMoveToOtherWindowSupported)

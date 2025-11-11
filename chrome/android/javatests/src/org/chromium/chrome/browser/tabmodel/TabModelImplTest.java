@@ -53,6 +53,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.media.MediaCaptureDevicesDispatcherAndroid;
 import org.chromium.chrome.browser.media.MediaCaptureDevicesDispatcherAndroidJni;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
@@ -1664,7 +1665,9 @@ public class TabModelImplTest {
                 });
         if (MultiWindowUtils.isMultiInstanceApi31Enabled()) {
             CriteriaHelper.pollUiThread(
-                    () -> MultiWindowUtils.getInstanceCount() == 2,
+                    () ->
+                            MultiWindowUtils.getInstanceCountWithFallback(PersistedInstanceType.ANY)
+                                    == 2,
                     "Expected new window to be created");
         } else {
             assertEquals(

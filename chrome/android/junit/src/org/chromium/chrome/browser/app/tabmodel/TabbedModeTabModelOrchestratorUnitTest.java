@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.multiwindow.MultiWindowTestUtils;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.ntp.RecentlyClosedBridge;
@@ -128,7 +129,7 @@ public class TabbedModeTabModelOrchestratorUnitTest {
         // If there is no instance, this is the first startup since upgrading to multi-instance-
         // supported version. Any tab state file left in the previous version should be
         // taken into account so as not to lose tabs in it.
-        assertEquals(0, MultiWindowUtils.getInstanceCount());
+        assertEquals(0, MultiWindowUtils.getInstanceCountWithFallback(PersistedInstanceType.ANY));
         TabbedModeTabModelOrchestrator orchestrator = new TabbedModeTabModelOrchestratorApi31();
         orchestrator.createTabModels(
                 mChromeActivity,
@@ -146,7 +147,7 @@ public class TabbedModeTabModelOrchestratorUnitTest {
         assertFalse("Should have a tab state file to merge", tabStatesToMerge.isEmpty());
 
         MultiWindowTestUtils.createInstance(/* instanceId= */ 0, "https://url.com", 1, 57);
-        assertEquals(1, MultiWindowUtils.getInstanceCount());
+        assertEquals(1, MultiWindowUtils.getInstanceCountWithFallback(PersistedInstanceType.ANY));
 
         // Once an instance is created, no more merging is allowed.
         orchestrator = new TabbedModeTabModelOrchestratorApi31();
