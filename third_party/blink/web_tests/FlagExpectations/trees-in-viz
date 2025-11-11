@@ -55,5 +55,3 @@
 
 crbug.com/401453196 fast/mediarecorder/MediaRecorder-error-on-oversize-frame-h264.html [ Failure ]
 crbug.com/401453196 fast/mediarecorder/MediaRecorder-isTypeSupported-avc1.html [ Failure ]
-
-crbug.com/401453196 virtual/fluent-overlay-scrollbar/virtual/overlay-scrollbar/overlay-scrollbar-smoke-test.html [ Failure ]

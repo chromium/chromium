@@ -277,6 +277,11 @@ void ScrollbarLayerImplBase::SetOverlayScrollbarLayerOpacityAnimated(
   if (!layer_tree_impl())
     return;
 
+  if (layer_tree_impl()->settings().trees_in_viz_in_viz_process &&
+      !layer_tree_impl()->settings().TreeAnimationsInVizInVizProcess()) {
+    return;
+  }
+
   PropertyTrees* property_trees = layer_tree_impl()->property_trees();
 
   EffectNode* node =
