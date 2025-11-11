@@ -910,49 +910,6 @@ chromium-metrics-reviews@google.com.
       name="Net.QuicSession.ConnectRandomPortRequiringConfirmation"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="ServiceWorker_EventType" separator="_">
-<!-- TODO(crbug.com/40858621): rewrite with the new way. -->
-
-  <suffix name="ACTIVATE" label="ACTIVATE"/>
-  <suffix name="BACKGROUND_FETCH_ABORT" label=""/>
-  <suffix name="BACKGROUND_FETCH_CLICK" label=""/>
-  <suffix name="BACKGROUND_FETCH_FAIL" label=""/>
-  <suffix name="BACKGROUND_FETCH_SUCCESS" label=""/>
-  <suffix name="COOKIE_CHANGE" label="COOKIE_CHANGE"/>
-  <suffix name="FETCH_FENCED_FRAME" label="FETCH_FENCED_FRAME"/>
-  <suffix name="FETCH_MAIN_FRAME" label="FETCH_MAIN_FRAME"/>
-  <suffix name="FETCH_SHARED_WORKER" label="FETCH_SHARED_WORKER"/>
-  <suffix name="FETCH_SUB_FRAME" label="FETCH_SUB_FRAME"/>
-  <suffix name="FETCH_SUB_RESOURCE" label="FETCH_SUB_RESOURCE"/>
-  <suffix name="INSTALL" label="INSTALL"/>
-  <suffix name="LONG_RUNNING_MESSAGE" label="LONG_RUNNING_MESSAGE"/>
-  <suffix name="MESSAGE" label="MESSAGE"/>
-  <suffix name="NAVIGATION_HINT" label="NAVIGATION_HINT"/>
-  <suffix name="NOTIFICATION_CLICK" label="NOTIFICATION_CLICK"/>
-  <suffix name="NOTIFICATION_CLOSE" label="NOTIFICATION_CLOSE"/>
-  <suffix name="PUSH" label="PUSH"/>
-  <suffix name="SYNC" label="SYNC"/>
-  <suffix name="UNKNOWN" label="UNKNOWN"/>
-  <affected-histogram name="ServiceWorker.StartWorker.Time_Any"/>
-  <affected-histogram name="ServiceWorker.StartWorker.Time_DuringStartup"/>
-  <affected-histogram
-      name="ServiceWorker.StartWorker.Time_ExistingReadyProcess"/>
-  <affected-histogram
-      name="ServiceWorker.StartWorker.Time_ExistingUnreadyProcess"/>
-  <affected-histogram name="ServiceWorker.StartWorker.Time_NewProcess"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="ServiceWorker_ResponseSource" separator=".">
-  <suffix name="CacheStorage" label="The response came from CacheStorage."/>
-  <suffix name="HttpCache" label="The response came from HttpCache."/>
-  <suffix name="Network" label="The response directly came from network."/>
-  <suffix name="Unspecified" label="The source of a response was unspecified."/>
-  <affected-histogram
-      name="ServiceWorker.LoadTiming.MainFrame.MainResource.ResponseReceivedToCompleted2"/>
-  <affected-histogram
-      name="ServiceWorker.LoadTiming.Subresource.ResponseReceivedToCompleted2"/>
-</histogram_suffixes>
-
 </histogram_suffixes_list>
 
 </histogram-configuration>

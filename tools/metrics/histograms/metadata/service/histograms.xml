@@ -68,6 +68,18 @@ chromium-metrics-reviews@google.com.
       summary="A new process was created for the worker."/>
 </variants>
 
+<variants name="ServiceWorker_StartSituationDoNotUse">
+  <variant name="_Any" summary="Includes any start situations."/>
+  <variant name="_DuringStartup"
+      summary="The worker started up during browser startup."/>
+  <variant name="_ExistingReadyProcess"
+      summary="An existing ready process was used for the worker."/>
+  <variant name="_ExistingUnreadyProcess"
+      summary="An existing unready process was used for the worker."/>
+  <variant name="_NewProcess"
+      summary="A new process was created for the worker."/>
+</variants>
+
 <variants name="ServiceWorkerCacheClientType">
   <variant name="Cache" summary="Collected from a CacheStorageCache instance"/>
   <variant name="CacheStorage"
@@ -755,8 +767,6 @@ chromium-metrics-reviews@google.com.
 
     {EmbeddedWorkerInitialStatus}
   </summary>
-  <token key="EmbeddedWorkerInitialStatus"
-      variants="EmbeddedWorkerInitialStatus"/>
 </histogram>
 
 <histogram
@@ -777,8 +787,6 @@ chromium-metrics-reviews@google.com.
 
     {EmbeddedWorkerInitialStatus}
   </summary>
-  <token key="EmbeddedWorkerInitialStatus"
-      variants="EmbeddedWorkerInitialStatus"/>
 </histogram>
 
 <histogram
@@ -798,8 +806,6 @@ chromium-metrics-reviews@google.com.
 
     The records are breakdown by FetchEventResult.
   </summary>
-  <token key="ServiceWorkerFetchEventResult"
-      variants="ServiceWorkerFetchEventResult"/>
 </histogram>
 
 <histogram
@@ -819,8 +825,6 @@ chromium-metrics-reviews@google.com.
 
     {EmbeddedWorkerInitialStatus}
   </summary>
-  <token key="EmbeddedWorkerInitialStatus"
-      variants="EmbeddedWorkerInitialStatus"/>
 </histogram>
 
 <histogram
@@ -861,8 +865,6 @@ chromium-metrics-reviews@google.com.
 
     {EmbeddedWorkerInitialStatus}
   </summary>
-  <token key="EmbeddedWorkerInitialStatus"
-      variants="EmbeddedWorkerInitialStatus"/>
 </histogram>
 
 <histogram
@@ -881,8 +883,6 @@ chromium-metrics-reviews@google.com.
 
     {EmbeddedWorkerInitialStatus}
   </summary>
-  <token key="EmbeddedWorkerInitialStatus"
-      variants="EmbeddedWorkerInitialStatus"/>
 </histogram>
 
 <histogram
@@ -908,9 +908,6 @@ chromium-metrics-reviews@google.com.
 
     {EmbeddedWorkerInitialStatus}{NavigationType}
   </summary>
-  <token key="EmbeddedWorkerInitialStatus"
-      variants="EmbeddedWorkerInitialStatus"/>
-  <token key="NavigationType" variants="NavigationType"/>
 </histogram>
 
 <histogram
@@ -970,10 +967,6 @@ chromium-metrics-reviews@google.com.
 
     {ServiceWorkerResponseSource} {EmbeddedWorkerInitialStatus}
   </summary>
-  <token key="ServiceWorkerResponseSource"
-      variants="ServiceWorkerResponseSource"/>
-  <token key="EmbeddedWorkerInitialStatus"
-      variants="EmbeddedWorkerInitialStatus"/>
 </histogram>
 
 <histogram
@@ -1007,8 +1000,6 @@ chromium-metrics-reviews@google.com.
 
     {EmbeddedWorkerInitialStatus}
   </summary>
-  <token key="EmbeddedWorkerInitialStatus"
-      variants="EmbeddedWorkerInitialStatus"/>
 </histogram>
 
 <histogram
@@ -1028,8 +1019,6 @@ chromium-metrics-reviews@google.com.
 
     {EmbeddedWorkerInitialStatus}
   </summary>
-  <token key="EmbeddedWorkerInitialStatus"
-      variants="EmbeddedWorkerInitialStatus"/>
 </histogram>
 
 <histogram
@@ -1049,8 +1038,6 @@ chromium-metrics-reviews@google.com.
 
     {EmbeddedWorkerInitialStatus}
   </summary>
-  <token key="EmbeddedWorkerInitialStatus"
-      variants="EmbeddedWorkerInitialStatus"/>
 </histogram>
 
 <histogram
@@ -1071,8 +1058,6 @@ chromium-metrics-reviews@google.com.
 
     {EmbeddedWorkerInitialStatus}
   </summary>
-  <token key="EmbeddedWorkerInitialStatus"
-      variants="EmbeddedWorkerInitialStatus"/>
 </histogram>
 
 <histogram
@@ -1094,8 +1079,6 @@ chromium-metrics-reviews@google.com.
 
     The response is from {ServiceWorkerFetchResponseFromName}
   </summary>
-  <token key="ServiceWorkerFetchResponseFromName"
-      variants="ServiceWorkerFetchResponseFromName"/>
 </histogram>
 
 <histogram
@@ -1154,7 +1137,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="ServiceWorker.LoadTiming.Subresource.ResponseReceivedToCompleted2"
+    name="ServiceWorker.LoadTiming.Subresource.ResponseReceivedToCompleted2{ServiceWorkerResponseSource}"
     units="ms" expires_after="2026-05-01">
   <owner>yyanagisawa@chromium.org</owner>
   <owner>chikamune@chromium.org</owner>
@@ -1798,18 +1781,26 @@ chromium-metrics-reviews@google.com.
     ServiceWorker.StartNewWorker.Time for new workers.
     {ServiceWorker_StartSituationDoNotUse}
   </summary>
-  <token key="ServiceWorker_StartSituationDoNotUse">
+  <token key="ServiceWorker_StartSituationDoNotUse"
+      variants="ServiceWorker_StartSituationDoNotUse">
     <variant name=""/>
-    <variant name="_Any" summary="Includes any start situations."/>
-    <variant name="_DuringStartup"
-        summary="The worker started up during browser startup."/>
-    <variant name="_ExistingReadyProcess"
-        summary="An existing ready process was used for the worker."/>
-    <variant name="_ExistingUnreadyProcess"
-        summary="An existing unready process was used for the worker."/>
-    <variant name="_NewProcess"
-        summary="A new process was created for the worker."/>
   </token>
+</histogram>
+
+<histogram
+    name="ServiceWorker.StartWorker.Time{ServiceWorker_StartSituationDoNotUse}_{ServiceWorkerEventType}"
+    units="ms" expires_after="2026-04-19">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>chikamune@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    The time taken to start a Service Worker that is already installed, from
+    process allocation to ACK of started from the renderer (which occurs after
+    script execution). The metric is not recorded if DevTools was ever attached
+    to the Service Worker during startup. See also
+    ServiceWorker.StartNewWorker.Time for new workers.
+    {ServiceWorker_StartSituationDoNotUse} {ServiceWorkerEventType}
+  </summary>
 </histogram>
 
 <histogram name="ServiceWorker.StaticRouter.{Resource}.CacheLookupDuration"
