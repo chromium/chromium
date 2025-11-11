@@ -196,14 +196,6 @@ class NavigationAttachmentsMediator {
     }
 
     /**
-     * @return An {@link ObservableSupplier} that notifies observers when the autocomplete request
-     *     type changes.
-     */
-    ObservableSupplier<@AutocompleteRequestType Integer> getAutocompleteRequestTypeSupplier() {
-        return mAutocompleteRequestTypeSupplier;
-    }
-
-    /**
      * @param queryText The query text to be used for the AIM URL.
      * @return The URL for the AIM service.
      */
@@ -316,9 +308,7 @@ class NavigationAttachmentsMediator {
         }
 
         mWindowAndroid.showCancelableIntent(
-                intent,
-                (resultCode, data) -> onTabPickerResult(resultCode, data),
-                R.string.low_memory_error);
+                intent, this::onTabPickerResult, R.string.low_memory_error);
     }
 
     void onTabPickerResult(int resultCode, @Nullable Intent data) {
