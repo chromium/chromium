@@ -137,7 +137,8 @@ void StorageLoadedDataAndroid::Destroy(JNIEnv* env) {
 
 base::android::ScopedJavaLocalRef<jobject>
 StorageLoadedDataAndroid::GetJavaObject() const {
-  return j_object_;
+  JNIEnv* env = jni_zero::AttachCurrentThread();
+  return j_object_.AsLocalRef(env);
 }
 
 StorageLoadedData* StorageLoadedDataAndroid::GetData() const {

@@ -39,7 +39,7 @@ class StorageLoadedDataAndroid {
 
  private:
   std::unique_ptr<StorageLoadedData> data_;
-  base::android::ScopedJavaLocalRef<jobject> j_object_;
+  base::android::ScopedJavaGlobalRef<jobject> j_object_;
 };
 
 }  // namespace tabs
