@@ -467,8 +467,6 @@ if (is_clang_or_gcc) {
       "scheduler_loop_quarantine.h",
       "scheduler_loop_quarantine_support.cc",
       "scheduler_loop_quarantine_support.h",
-      "slot_start.cc",
-      "slot_start.h",
       "spinning_mutex.cc",
       "spinning_mutex.h",
       "stack/stack.cc",

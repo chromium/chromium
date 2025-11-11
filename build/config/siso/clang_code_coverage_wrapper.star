@@ -171,7 +171,6 @@ _DEFAULT_COVERAGE_EXCLUSION_LIST = [
     "../../base/allocator/partition_allocator/src/partition_alloc/shim/malloc_zone_functions_apple_unittest.cc",
     "../../base/allocator/partition_allocator/src/partition_alloc/shim/winheap_stubs_win.cc",
     "../../base/allocator/partition_allocator/src/partition_alloc/shim/winheap_stubs_win_unittest.cc",
-    "../../base/allocator/partition_allocator/src/partition_alloc/slot_start.cc",
     "../../base/allocator/partition_allocator/src/partition_alloc/slot_start_unittest.cc",
     "../../base/allocator/partition_allocator/src/partition_alloc/spinning_mutex.cc",
     "../../base/allocator/partition_allocator/src/partition_alloc/stack/asm/arm64/push_registers_asm.cc",

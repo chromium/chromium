@@ -81,6 +81,18 @@ PA_ALWAYS_INLINE void DebugMemset(void* ptr, int value, size_t size) {
 PA_ALWAYS_INLINE uintptr_t ObjectInnerPtr2Addr(const void* ptr) {
   return UntagPtr(ptr);
 }
+PA_ALWAYS_INLINE uintptr_t ObjectPtr2Addr(const void* object) {
+  // TODO(bartekn): Check that |object| is indeed an object start.
+  return ObjectInnerPtr2Addr(object);
+}
+PA_ALWAYS_INLINE void* SlotStartAddr2Ptr(uintptr_t slot_start) {
+  // TODO(bartekn): Check that |slot_start| is indeed a slot start.
+  return TagAddr(slot_start);
+}
+PA_ALWAYS_INLINE uintptr_t SlotStartPtr2Addr(const void* slot_start) {
+  // TODO(bartekn): Check that |slot_start| is indeed a slot start.
+  return UntagPtr(slot_start);
+}
 
 // In order to resolve circular dependencies, define template method:
 // GetMetadataOffset() here and SlotSpanMetadata::FromAddr(),

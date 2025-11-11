@@ -97,7 +97,7 @@ class EncodedPoolOffset {
     if (!ptr) {
       return kEncodeedNullptr;
     }
-    uintptr_t address = SlotStart::Unchecked(ptr).Untag().value();
+    uintptr_t address = SlotStartPtr2Addr(ptr);
     PoolInfo pool_info = PartitionAddressSpace::GetPoolInfo(address);
     // Save a MTE tag as well as an offset.
     uintptr_t tagged_offset =
@@ -118,8 +118,7 @@ class EncodedPoolOffset {
 
   // Given `pool_info`, decodes a `tagged_offset` into a tagged pointer.
   PA_ALWAYS_INLINE FreelistEntry* Decode(size_t slot_size) const {
-    PoolInfo pool_info =
-        GetPoolInfo(SlotStart::Unchecked(this).Untag().value());
+    PoolInfo pool_info = GetPoolInfo(SlotStartPtr2Addr(this));
     uintptr_t tagged_offset = Transform(encoded_);
 
     // `tagged_offset` must not have bits set in the pool base mask, except MTE

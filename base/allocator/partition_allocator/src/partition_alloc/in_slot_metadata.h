@@ -26,7 +26,6 @@
 #include "partition_alloc/partition_alloc_config.h"
 #include "partition_alloc/partition_alloc_constants.h"
 #include "partition_alloc/partition_alloc_forward.h"
-#include "partition_alloc/slot_start.h"
 #include "partition_alloc/tagging.h"
 
 namespace partition_alloc::internal {
@@ -249,7 +248,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) InSlotMetadata {
 
   // Returns true if the allocation should be reclaimed.
   // This function should be called by the allocator during Free().
-  PA_ALWAYS_INLINE bool ReleaseFromAllocator(UntaggedSlotStart slot_start,
+  PA_ALWAYS_INLINE bool ReleaseFromAllocator(uintptr_t slot_start,
                                              SlotSpanMetadata* slot_span) {
     CheckCookieIfSupported();
 
@@ -301,7 +300,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) InSlotMetadata {
   }
 
   // Assertion to allocation which ought to be alive.
-  PA_ALWAYS_INLINE void EnsureAlive(UntaggedSlotStart slot_start,
+  PA_ALWAYS_INLINE void EnsureAlive(uintptr_t slot_start,
                                     SlotSpanMetadata* slot_span) {
     CountType count = count_.load(std::memory_order_relaxed);
     if (!(count & kMemoryHeldByAllocatorBit)) {
@@ -451,7 +450,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) InSlotMetadata {
 #endif  // !PA_BUILDFLAG(IS_IOS)
   PA_NOINLINE PA_NOT_TAIL_CALLED static void DoubleFreeOrCorruptionDetected(
       CountType count,
-      UntaggedSlotStart slot_start,
+      uintptr_t slot_start,
       SlotSpanMetadata*);
 
   // Note that in free slots, this is overwritten by encoded freelist

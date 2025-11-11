@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "partition_alloc/slot_start.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
 #pragma allow_unsafe_buffers
@@ -33,11 +32,11 @@ void RawPtrBackupRefImpl<AllowDangling, DisableBRP>::AcquireInternal(
       partition_alloc::PartitionAllocGetSlotStartAndSizeInBRPPool(address);
   if constexpr (AllowDangling) {
     partition_alloc::PartitionRoot::InSlotMetadataPointerFromSlotStartAndSize(
-        partition_alloc::internal::UntaggedSlotStart(slot_start), slot_size)
+        slot_start, slot_size)
         ->AcquireFromUnprotectedPtr();
   } else {
     partition_alloc::PartitionRoot::InSlotMetadataPointerFromSlotStartAndSize(
-        partition_alloc::internal::UntaggedSlotStart(slot_start), slot_size)
+        slot_start, slot_size)
         ->Acquire();
   }
 }
@@ -53,21 +52,17 @@ void RawPtrBackupRefImpl<AllowDangling, DisableBRP>::ReleaseInternal(
       partition_alloc::PartitionAllocGetSlotStartAndSizeInBRPPool(address);
   if constexpr (AllowDangling) {
     if (partition_alloc::PartitionRoot::
-            InSlotMetadataPointerFromSlotStartAndSize(
-                partition_alloc::internal::UntaggedSlotStart(slot_start),
-                slot_size)
+            InSlotMetadataPointerFromSlotStartAndSize(slot_start, slot_size)
                 ->ReleaseFromUnprotectedPtr()) {
-      partition_alloc::PartitionRoot::FreeAfterBRPQuarantine(
-          partition_alloc::internal::UntaggedSlotStart(slot_start), slot_size);
+      partition_alloc::PartitionRoot::FreeAfterBRPQuarantine(slot_start,
+                                                             slot_size);
     }
   } else {
     if (partition_alloc::PartitionRoot::
-            InSlotMetadataPointerFromSlotStartAndSize(
-                partition_alloc::internal::UntaggedSlotStart(slot_start),
-                slot_size)
+            InSlotMetadataPointerFromSlotStartAndSize(slot_start, slot_size)
                 ->Release()) {
-      partition_alloc::PartitionRoot::FreeAfterBRPQuarantine(
-          partition_alloc::internal::UntaggedSlotStart(slot_start), slot_size);
+      partition_alloc::PartitionRoot::FreeAfterBRPQuarantine(slot_start,
+                                                             slot_size);
     }
   }
 }
@@ -80,7 +75,7 @@ void RawPtrBackupRefImpl<AllowDangling, DisableBRP>::ReportIfDanglingInternal(
       auto [slot_start, slot_size] =
           partition_alloc::PartitionAllocGetSlotStartAndSizeInBRPPool(address);
       partition_alloc::PartitionRoot::InSlotMetadataPointerFromSlotStartAndSize(
-          partition_alloc::internal::UntaggedSlotStart(slot_start), slot_size)
+          slot_start, slot_size)
           ->ReportIfDangling();
     }
   }
@@ -119,9 +114,7 @@ bool RawPtrBackupRefImpl<AllowDangling, DisableBRP>::IsPointeeAlive(
   auto [slot_start, slot_size] =
       partition_alloc::PartitionAllocGetSlotStartAndSizeInBRPPool(address);
   return partition_alloc::PartitionRoot::
-      InSlotMetadataPointerFromSlotStartAndSize(
-             partition_alloc::internal::UntaggedSlotStart(slot_start),
-             slot_size)
+      InSlotMetadataPointerFromSlotStartAndSize(slot_start, slot_size)
           ->IsAlive();
 }
 

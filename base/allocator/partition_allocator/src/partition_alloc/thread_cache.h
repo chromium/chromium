@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "partition_alloc/slot_start.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
 #pragma allow_unsafe_buffers
@@ -281,17 +280,16 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
   // Returns the slot size if the insertion succeeds, `nullopt` otherwise.
   // Insertion can fail either because the cache is full or the
   // allocation was too large.
-  PA_ALWAYS_INLINE std::optional<size_t> MaybePutInCache(
-      internal::UntaggedSlotStart slot_start,
-      size_t bucket_index);
+  PA_ALWAYS_INLINE std::optional<size_t> MaybePutInCache(uintptr_t slot_start,
+                                                         size_t bucket_index);
 
   // Tries to allocate a memory slot from the cache.
   // Returns 0 on failure.
   //
   // Has the same behavior as RawAlloc(), that is: no cookie nor ref-count
   // handling. Sets |slot_size| to the allocated size upon success.
-  PA_ALWAYS_INLINE internal::UntaggedSlotStart GetFromCache(size_t bucket_index,
-                                                            size_t* slot_size);
+  PA_ALWAYS_INLINE uintptr_t GetFromCache(size_t bucket_index,
+                                          size_t* slot_size);
 
   // Asks this cache to trigger |Purge()| at a later point. Can be called from
   // any thread.
@@ -376,9 +374,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
 
   // Returns true if the given address is in the thread cache's freelist.
   // Otherwise, returns false.
-  bool IsInFreelist(internal::UntaggedSlotStart address,
-                    size_t bucket_index,
-                    size_t& position);
+  bool IsInFreelist(uintptr_t address, size_t bucket_index, size_t& position);
 
  private:
   friend class tools::HeapDumper;
@@ -398,8 +394,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
   void FillBucket(size_t bucket_index);
   // Empties the |bucket| until there are at most |limit| objects in it.
   void ClearBucket(Bucket& bucket, size_t limit);
-  PA_ALWAYS_INLINE void PutInBucket(Bucket& bucket,
-                                    internal::UntaggedSlotStart slot_start);
+  PA_ALWAYS_INLINE void PutInBucket(Bucket& bucket, uintptr_t slot_start);
   void ResetForTesting();
   // Releases the entire freelist starting at |head| to the root.
   void FreeAfter(internal::FreelistEntry* head, size_t slot_size);
@@ -461,7 +456,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
 };
 
 PA_ALWAYS_INLINE std::optional<size_t> ThreadCache::MaybePutInCache(
-    internal::UntaggedSlotStart slot_start,
+    uintptr_t slot_start,
     size_t bucket_index) {
   PA_REENTRANCY_GUARD(is_in_thread_cache_);
   PA_INCREMENT_COUNTER(stats_.cache_fill_count);
@@ -496,9 +491,8 @@ PA_ALWAYS_INLINE std::optional<size_t> ThreadCache::MaybePutInCache(
   return bucket.slot_size;
 }
 
-PA_ALWAYS_INLINE internal::UntaggedSlotStart ThreadCache::GetFromCache(
-    size_t bucket_index,
-    size_t* slot_size) {
+PA_ALWAYS_INLINE uintptr_t ThreadCache::GetFromCache(size_t bucket_index,
+                                                     size_t* slot_size) {
 #if PA_CONFIG(THREAD_CACHE_ALLOC_STATS)
   stats_.allocs_per_bucket_[bucket_index]++;
 #endif
@@ -509,7 +503,7 @@ PA_ALWAYS_INLINE internal::UntaggedSlotStart ThreadCache::GetFromCache(
   if (bucket_index > largest_active_bucket_index_) [[unlikely]] {
     PA_INCREMENT_COUNTER(stats_.alloc_miss_too_large);
     PA_INCREMENT_COUNTER(stats_.alloc_misses);
-    return internal::UntaggedSlotStart();
+    return 0;
   }
 
   auto& bucket = buckets_[bucket_index];
@@ -525,7 +519,7 @@ PA_ALWAYS_INLINE internal::UntaggedSlotStart ThreadCache::GetFromCache(
     // Very unlikely, means that the central allocator is out of memory. Let it
     // deal with it (may return 0, may crash).
     if (!bucket.freelist_head) [[unlikely]] {
-      return internal::UntaggedSlotStart();
+      return 0;
     }
   }
 
@@ -565,12 +559,11 @@ PA_ALWAYS_INLINE internal::UntaggedSlotStart ThreadCache::GetFromCache(
   PA_DCHECK(cached_memory_ >= bucket.slot_size);
   cached_memory_ -= bucket.slot_size;
 
-  return internal::SlotStart::Unchecked(entry).Untag();
+  return internal::SlotStartPtr2Addr(entry);
 }
 
-PA_ALWAYS_INLINE void ThreadCache::PutInBucket(
-    Bucket& bucket,
-    internal::UntaggedSlotStart slot_start) {
+PA_ALWAYS_INLINE void ThreadCache::PutInBucket(Bucket& bucket,
+                                               uintptr_t slot_start) {
 #if PA_CONFIG(HAS_FREELIST_SHADOW_ENTRY) && \
     PA_BUILDFLAG(PA_ARCH_CPU_X86_64) && PA_BUILDFLAG(HAS_64_BIT_POINTERS)
   // We see freelist corruption crashes happening in the wild.  These are likely
@@ -594,8 +587,7 @@ PA_ALWAYS_INLINE void ThreadCache::PutInBucket(
   static_assert(
       internal::kPartitionCachelineSize == 64,
       "The computation below assumes that cache lines are 64 bytes long.");
-  int distance_to_next_cacheline_in_16_bytes =
-      4 - ((slot_start.value() >> 4) & 3);
+  int distance_to_next_cacheline_in_16_bytes = 4 - ((slot_start >> 4) & 3);
   int slot_size_remaining_in_16_bytes = bucket.slot_size / 16;
   slot_size_remaining_in_16_bytes = std::min(
       slot_size_remaining_in_16_bytes, distance_to_next_cacheline_in_16_bytes);
@@ -606,12 +598,12 @@ PA_ALWAYS_INLINE void ThreadCache::PutInBucket(
 #if !(PA_BUILDFLAG(IS_WIN) && defined(COMPONENT_BUILD)) && \
     PA_HAS_BUILTIN(__builtin_assume_aligned)
   void* slot_start_tagged = __builtin_assume_aligned(
-      slot_start.Tag().ToObject(), internal::kAlignment);
+      internal::SlotStartAddr2Ptr(slot_start), internal::kAlignment);
 #else
   // TODO(crbug.com/40262684): std::assume_aligned introduce an additional
   // dependency: _libcpp_verbose_abort(const char*, ...).  It will cause
   // "undefined symbol" error when linking allocator_shim.dll.
-  void* slot_start_tagged = slot_start.Tag().ToObject();
+  void* slot_start_tagged = internal::SlotStartAddr2Ptr(slot_start);
 #endif
 
   uint32_t* address_aligned = static_cast<uint32_t*>(slot_start_tagged);

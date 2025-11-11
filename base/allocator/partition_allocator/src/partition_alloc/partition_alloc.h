@@ -26,12 +26,12 @@
 // arithmetic operations on it aren't uncommon, and for that reason it isn't
 // MTE-tagged either. "Object" is the allocated memory that the app is given via
 // interfaces like Alloc(), Free(), etc. An object is fully contained within a
-// slot, and may be followed by internal PartitionAlloc structures or empty
+// slot, and may be surrounded by internal PartitionAlloc structures or empty
 // space. Is is generally represented as a pointer to its beginning (most
 // commonly void*), and is MTE-tagged so it's safe to access.
 //
 // The best way to transition between these to worlds is via
-// SlotStart::Checked() and SlotStart::ToObject(). These take care
+// PartitionRoot::ObjectToSlotStart() and ::SlotStartToObject(). These take care
 // of shifting between slot/object start, MTE-tagging/untagging and the cast for
 // you. There are cases where these functions are insufficient. Internal
 // PartitionAlloc structures, like free-list pointers, BRP ref-count, cookie,

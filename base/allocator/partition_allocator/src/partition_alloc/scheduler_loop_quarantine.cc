@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "partition_alloc/slot_start.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
 #pragma allow_unsafe_buffers
@@ -101,9 +100,9 @@ template <bool thread_bound>
 bool SchedulerLoopQuarantineBranch<thread_bound>::IsQuarantinedForTesting(
     void* object) {
   ScopedGuardIfNeeded<kThreadBound> guard(lock_);
-  UntaggedSlotStart slot_start = SlotStart::Unchecked(object).Untag();
+  uintptr_t slot_start = allocator_root_->ObjectToSlotStartUnchecked(object);
   for (const auto& slot : slots_) {
-    if (slot.slot_start.Untag() == slot_start) {
+    if (slot.slot_start == slot_start) {
       return true;
     }
   }
@@ -136,20 +135,23 @@ void SchedulerLoopQuarantineBranch<thread_bound>::Destroy() {
 
 template <bool thread_bound>
 void SchedulerLoopQuarantineBranch<thread_bound>::Quarantine(
-    SlotStart slot_start,
-    SlotSpanMetadata* slot_span) {
+    void* object,
+    SlotSpanMetadata* slot_span,
+    uintptr_t slot_start) {
 #if PA_BUILDFLAG(DCHECKS_ARE_ON)
   PA_DCHECK(!being_destructed_);
 #endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)
   if (!enable_quarantine_ || pause_quarantine_) [[unlikely]] {
-    return allocator_root_->RawFreeWithThreadCache(slot_start, slot_span);
+    return allocator_root_->RawFreeWithThreadCache(slot_start, object,
+                                                   slot_span);
   }
 
   if (slot_span->bucket < &allocator_root_->buckets[0] ||
       &allocator_root_->buckets[largest_bucket_index_] < slot_span->bucket)
       [[unlikely]] {
     // The allocation is direct-mapped or larger than `largest_bucket_index_`.
-    return allocator_root_->RawFreeWithThreadCache(slot_start, slot_span);
+    return allocator_root_->RawFreeWithThreadCache(slot_start, object,
+                                                   slot_span);
   }
   PA_DCHECK(!allocator_root_->IsDirectMapped(slot_span));
 
@@ -159,7 +161,7 @@ void SchedulerLoopQuarantineBranch<thread_bound>::Quarantine(
   if (capacity_in_bytes < slot_size) [[unlikely]] {
     // Even if this branch dequarantines all entries held by it, this entry
     // cannot fit within the capacity.
-    allocator_root_->RawFreeWithThreadCache(slot_start, slot_span);
+    allocator_root_->RawFreeWithThreadCache(slot_start, object, slot_span);
     root_->quarantine_miss_count_.fetch_add(1u, std::memory_order_relaxed);
     return;
   }
@@ -190,8 +192,7 @@ void SchedulerLoopQuarantineBranch<thread_bound>::Quarantine(
                                              std::memory_order_relaxed);
 
   if (enable_zapping_) {
-    internal::SecureMemset(slot_start.ToObject(), internal::kFreedByte,
-                           slot_size);
+    internal::SecureMemset(object, internal::kFreedByte, slot_size);
   }
 }
 
@@ -213,21 +214,21 @@ SchedulerLoopQuarantineBranch<thread_bound>::PurgeInternal(
 
     // As quarantined entries are shuffled, picking last entry is equivalent
     // to picking random entry.
-    SlotStart slot_start = slots_.back().slot_start;
-    const size_t bucket_index = slots_.back().bucket_index;
+    const auto& to_free = slots_.back();
+    const size_t bucket_index = to_free.bucket_index;
     size_t slot_size = 0;
 
 #if PA_BUILDFLAG(HAS_MEMORY_TAGGING)
-    allocator_root_->RetagSlotIfNeeded(slot_start.Untag(), slot_size);
-    slot_start = slot_start.Untag().Tag();
+    allocator_root_->RetagSlotIfNeeded(SlotStartAddr2Ptr(to_free.slot_start),
+                                       slot_size);
 #endif
     if constexpr (!kThreadBound) {
       // Assuming that ThreadCache is not available as this is not thread-bound.
       // Going to `RawFree()` directly.
       slot_size = BucketIndexLookup::GetBucketSize(bucket_index);
       auto* slot_span =
-          SlotSpanMetadata::FromSlotStart(slot_start.Untag(), allocator_root_);
-      allocator_root_->RawFree(slot_start, slot_span);
+          SlotSpanMetadata::FromSlotStart(to_free.slot_start, allocator_root_);
+      allocator_root_->RawFree(to_free.slot_start, slot_span);
     } else {
       // Unless during its destruction, we can assume ThreadCache is valid
       // because this branch is embedded inside ThreadCache.
@@ -237,7 +238,7 @@ SchedulerLoopQuarantineBranch<thread_bound>::PurgeInternal(
 #endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)
 
       std::optional<size_t> slot_size_opt =
-          tcache_->MaybePutInCache(slot_start.Untag(), bucket_index);
+          tcache_->MaybePutInCache(to_free.slot_start, bucket_index);
 
       if (slot_size_opt.has_value()) [[likely]] {
         slot_size = slot_size_opt.value();
@@ -247,7 +248,7 @@ SchedulerLoopQuarantineBranch<thread_bound>::PurgeInternal(
             allocator_root_->AdjustSizeForExtrasSubtract(slot_size);
 
 #if PA_BUILDFLAG(DCHECKS_ARE_ON)
-        auto* slot_span = SlotSpanMetadata::FromSlotStart(slot_start.Untag(),
+        auto* slot_span = SlotSpanMetadata::FromSlotStart(to_free.slot_start,
                                                           allocator_root_);
         PA_DCHECK(!slot_span->CanStoreRawSize());
         PA_DCHECK(usable_size == allocator_root_->GetSlotUsableSize(slot_span));
@@ -258,11 +259,11 @@ SchedulerLoopQuarantineBranch<thread_bound>::PurgeInternal(
         // ThreadCache refused to take ownership of the allocation, hence we
         // free it.
         slot_size = BucketIndexLookup::GetBucketSize(bucket_index);
-        auto* slot_span = SlotSpanMetadata::FromSlotStart(slot_start.Untag(),
+        auto* slot_span = SlotSpanMetadata::FromSlotStart(to_free.slot_start,
                                                           allocator_root_);
         size_t usable_size = allocator_root_->GetSlotUsableSize(slot_span);
         tcache_->RecordDeallocation(usable_size);
-        allocator_root_->RawFree(slot_start, slot_span);
+        allocator_root_->RawFree(to_free.slot_start, slot_span);
       }
     }
 

@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "partition_alloc/slot_start.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
 #pragma allow_unsafe_buffers
@@ -64,7 +63,7 @@ PA_ALWAYS_INLINE void PartitionDirectUnmap(SlotSpanMetadata* slot_span) {
   root->total_size_of_direct_mapped_pages -= reservation_size;
 
   uintptr_t reservation_start =
-      SlotSpanMetadata::ToSlotSpanStart(slot_span, root).value();
+      SlotSpanMetadata::ToSlotSpanStart(slot_span, root);
   // The mapping may start at an unspecified location within a super page, but
   // we always reserve memory aligned to super page size.
   reservation_start = base::bits::AlignDown(reservation_start, kSuperPageSize);
@@ -231,7 +230,7 @@ void SlotSpanMetadata::Decommit(PartitionRoot* root) {
   PartitionRootLock(root).AssertAcquired();
   PA_DCHECK(is_empty());
   PA_DCHECK(!bucket->is_direct_mapped());
-  SlotSpanStart slot_span_start = SlotSpanMetadata::ToSlotSpanStart(this, root);
+  uintptr_t slot_span_start = SlotSpanMetadata::ToSlotSpanStart(this, root);
   // If lazy commit is enabled, only provisioned slots are committed.
   size_t dirty_size =
       base::bits::AlignUp(GetProvisionedSize(), SystemPageSize());
@@ -244,7 +243,7 @@ void SlotSpanMetadata::Decommit(PartitionRoot* root) {
   // Not decommitted slot span must've had at least 1 allocation.
   PA_DCHECK(size_to_decommit > 0);
   root->DecommitSystemPagesForData(
-      slot_span_start.value(), size_to_decommit,
+      slot_span_start, size_to_decommit,
       PageAccessibilityDisposition::kAllowKeepForPerf);
 
   // We actually leave the decommitted slot span in the active list. We'll sweep
@@ -273,7 +272,7 @@ void SlotSpanMetadata::DecommitIfPossible(PartitionRoot* root) {
 void SlotSpanMetadata::SortFreelist(
     [[maybe_unused]] const PartitionRoot* root) {
   std::bitset<kMaxSlotsPerSlotSpan> free_slots;
-  SlotSpanStart slot_span_start = ToSlotSpanStart(this, root);
+  uintptr_t slot_span_start = ToSlotSpanStart(this, root);
 
   size_t num_provisioned_slots =
       bucket->get_slots_per_span() - num_unprovisioned_slots;
@@ -285,8 +284,7 @@ void SlotSpanMetadata::SortFreelist(
   for (FreelistEntry* head = freelist_head; head;
        head = head->GetNext(slot_size)) {
     ++num_free_slots;
-    size_t offset_in_slot_span =
-        slot_span_start.offset(SlotStart::Unchecked(head).Untag().value());
+    size_t offset_in_slot_span = SlotStartPtr2Addr(head) - slot_span_start;
     size_t slot_number = bucket->GetSlotNumber(offset_in_slot_span);
     PA_DCHECK(slot_number < num_provisioned_slots);
     free_slots[slot_number] = true;
@@ -301,8 +299,7 @@ void SlotSpanMetadata::SortFreelist(
     for (size_t slot_number = 0; slot_number < num_provisioned_slots;
          slot_number++) {
       if (free_slots[slot_number]) {
-        UntaggedSlotStart slot_start =
-            slot_span_start.GetNthSlotStart(slot_number, slot_size);
+        uintptr_t slot_start = slot_span_start + (slot_size * slot_number);
         auto* entry = FreelistEntry::EmplaceAndInitNull(slot_start);
         if (!head) {
           head = entry;

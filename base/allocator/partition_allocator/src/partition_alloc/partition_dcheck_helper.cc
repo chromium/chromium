@@ -31,8 +31,7 @@ void DCheckIsValidObjectAddress(const SlotSpanMetadata* slot_span,
                                 uintptr_t object_addr) {
   PartitionRoot* root = PartitionRoot::FromSlotSpanMetadata(slot_span);
   uintptr_t slot_span_start =
-      SlotSpanMetadata::ToSlotSpanStart(slot_span, root->MetadataOffset())
-          .value();
+      SlotSpanMetadata::ToSlotSpanStart(slot_span, root->MetadataOffset());
   PA_DCHECK((object_addr - slot_span_start) % slot_span->bucket->slot_size ==
             0);
 }

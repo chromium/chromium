@@ -6,7 +6,6 @@
 #include "partition_alloc/internal_allocator.h"
 #include "partition_alloc/partition_page.h"
 #include "partition_alloc/partition_root.h"
-#include "partition_alloc/slot_start.h"
 
 namespace gwp_asan::internal {
 
@@ -67,7 +66,7 @@ bool ExtremeLightweightDetectorQuarantineBranch::IsQuarantinedForTesting(
     void* object) {
   partition_alloc::internal::ScopedGuard guard(lock_);
   uintptr_t slot_start =
-      partition_alloc::internal::SlotStart::Unchecked(object).Untag().value();
+      root_->allocator_root_->ObjectToSlotStartUnchecked(object);
   for (const auto& slot : slots_) {
     if (slot.slot_start == slot_start) {
       return true;
@@ -101,9 +100,7 @@ bool ExtremeLightweightDetectorQuarantineBranch::Quarantine(
     // cannot fit within the capacity.
     root_->allocator_root_
         ->FreeNoHooksImmediate<partition_alloc::FreeFlags::kNone>(
-            partition_alloc::internal::UntaggedSlotStart::Unchecked(slot_start)
-                .Tag(),
-            slot_span);
+            object, slot_span, slot_start);
     root_->quarantine_miss_count_.fetch_add(1u, std::memory_order_relaxed);
     return false;
   }
@@ -178,20 +175,18 @@ ALWAYS_INLINE void ExtremeLightweightDetectorQuarantineBranch::PurgeInternal(
     const auto& to_free = slots_.back();
     size_t to_free_size = to_free.usable_size;
 
-    const auto slot_start =
-        partition_alloc::internal::UntaggedSlotStart::Checked(
-            to_free.slot_start, &root_->allocator_root_.get());
     auto* slot_span =
         partition_alloc::internal::SlotSpanMetadata::FromSlotStart(
-            slot_start, &root_->allocator_root_.get());
-    DCHECK(slot_span ==
-           partition_alloc::internal::SlotSpanMetadata::FromSlotStart(
-               slot_start, &root_->allocator_root_.get()));
+            to_free.slot_start, &root_->allocator_root_.get());
+    void* object =
+        root_->allocator_root_->SlotStartToObject(to_free.slot_start);
+    DCHECK(slot_span == partition_alloc::internal::SlotSpanMetadata::FromObject(
+                            object, &root_->allocator_root_.get()));
 
     DCHECK(to_free.slot_start);
     root_->allocator_root_
         ->FreeNoHooksImmediate<partition_alloc::FreeFlags::kNone>(
-            slot_start.Tag(), slot_span);
+            object, slot_span, to_free.slot_start);
 
     freed_count++;
     freed_size_in_bytes += to_free_size;
@@ -244,19 +239,17 @@ ALWAYS_INLINE void ExtremeLightweightDetectorQuarantineBranch::BatchFree(
     size_t num_of_slots) {
   CHECK(num_of_slots <= kMaxFreeTimesPerPurge);
   for (size_t i = 0; i < num_of_slots; ++i) {
-    const auto slot_start =
-        partition_alloc::internal::UntaggedSlotStart::Checked(
-            to_be_freed[i], &root_->allocator_root_.get());
+    const uintptr_t slot_start = to_be_freed[i];
     DCHECK(slot_start);
     auto* slot_span =
         partition_alloc::internal::SlotSpanMetadata::FromSlotStart(
             slot_start, &root_->allocator_root_.get());
-    DCHECK(slot_span ==
-           partition_alloc::internal::SlotSpanMetadata::FromSlotStart(
-               slot_start, &root_->allocator_root_.get()));
+    void* object = root_->allocator_root_->SlotStartToObject(slot_start);
+    DCHECK(slot_span == partition_alloc::internal::SlotSpanMetadata::FromObject(
+                            object, &root_->allocator_root_.get()));
     root_->allocator_root_
         ->FreeNoHooksImmediate<partition_alloc::FreeFlags::kNone>(
-            slot_start.Tag(), slot_span);
+            object, slot_span, slot_start);
   }
 }
 
