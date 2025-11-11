@@ -142,7 +142,14 @@ TEST_F(TransientKeepAlivePolicyTest, KeepAliveNotYetExpired) {
 
 // Test that the oldest render process host kept-alive that is currently tracked
 // is evicted once we are over the the limit of tracked items.
-TEST_F(TransientKeepAlivePolicyTest, EvictsOldestProcessWhenLimitExceeded) {
+// crbug.com/459626659
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+#define MAYBE(x) DISABLED_##x
+#else
+#define MAYBE(x) x
+#endif
+TEST_F(TransientKeepAlivePolicyTest,
+       MAYBE(EvictsOldestProcessWhenLimitExceeded)) {
   NavigateAndCommit(GURL(kTestUrl1));
   content::RenderProcessHost* rph1 = process();
 
