@@ -823,6 +823,9 @@ int64 File::FileLength()
 
 bool File::IsDevice()
 {
+#if defined(CHROMIUM_UNRAR)
+  return false;
+#else
   if (hFile==FILE_BAD_HANDLE)
     return false;
 #ifdef _WIN_ALL
@@ -831,6 +834,7 @@ bool File::IsDevice()
 #else
   return isatty(GetFD());
 #endif
+#endif  // defined(CHROMIUM_UNRAR)
 }
 
 

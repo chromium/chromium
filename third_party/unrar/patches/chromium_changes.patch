@@ -216,7 +216,7 @@ index 18d8f8c9cb776..570475ec6560c 100644
  
  #endif
 diff --git a/third_party/unrar/src/file.cpp b/third_party/unrar/src/file.cpp
-index c6fab17328262..cbaf48a4826b3 100644
+index c6fab17328262..929de3fcf98bd 100644
 --- a/third_party/unrar/src/file.cpp
 +++ b/third_party/unrar/src/file.cpp
 @@ -19,6 +19,10 @@ File::File()
@@ -247,9 +247,9 @@ index c6fab17328262..cbaf48a4826b3 100644
      SetFileTime(hNewFile,NULL,&ft,NULL);
    }
 +#endif  // defined(CHROMIUM_UNRAR)
-+
-+#else
  
++#else
++
 +#if defined(CHROMIUM_UNRAR)
 +  // Do not open a file handle since the sandbox doesn't allow it. Use the
 +  // handle provided by the caller.
@@ -303,7 +303,25 @@ index c6fab17328262..cbaf48a4826b3 100644
      }
      hFile=FILE_BAD_HANDLE;
    }
-@@ -853,3 +880,9 @@ int64 File::Copy(File &Dest,int64 Length)
+@@ -796,6 +823,9 @@ int64 File::FileLength()
+ 
+ bool File::IsDevice()
+ {
++#if defined(CHROMIUM_UNRAR)
++  return false;
++#else
+   if (hFile==FILE_BAD_HANDLE)
+     return false;
+ #ifdef _WIN_ALL
+@@ -804,6 +834,7 @@ bool File::IsDevice()
+ #else
+   return isatty(GetFD());
+ #endif
++#endif  // defined(CHROMIUM_UNRAR)
+ }
+ 
+ 
+@@ -853,3 +884,9 @@ int64 File::Copy(File &Dest,int64 Length)
    return CopySize;
  }
  #endif
