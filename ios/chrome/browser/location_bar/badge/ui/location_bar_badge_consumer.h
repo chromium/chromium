@@ -5,7 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_LOCATION_BAR_BADGE_UI_LOCATION_BAR_BADGE_CONSUMER_H_
 #define IOS_CHROME_BROWSER_LOCATION_BAR_BADGE_UI_LOCATION_BAR_BADGE_CONSUMER_H_
 
-enum class LocationBarBadgeType;
 @class LocationBarBadgeConfiguration;
 
 // TODO(crbug.com/454351425): Refactor function names to not use "entrypoint".
@@ -36,6 +35,9 @@ enum class LocationBarBadgeType;
 
 // Checks if the badge is visible.
 - (BOOL)isBadgeVisible;
+
+// Shows a blue dot on the badge to indicate being unread.
+- (void)showUnreadBadge:(BOOL)unread;
 
 @end
 

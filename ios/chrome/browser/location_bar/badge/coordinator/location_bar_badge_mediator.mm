@@ -147,6 +147,10 @@ const int kTransitionTimeInSeconds = 2;
   [self.consumer highlightBadge:YES];
 }
 
+- (void)markDisplayedBadgeAsUnread:(BOOL)unread {
+  [self.consumer showUnreadBadge:unread];
+}
+
 #pragma mark - LocationBarBadgeMutator
 
 - (void)dismissIPHAnimated:(BOOL)animated {
@@ -157,11 +161,15 @@ const int kTransitionTimeInSeconds = 2;
   // Cancel any pending transition timers since user interacted with the badge.
   [self resetTimersAndUIStateAnimated:YES];
 
-  if (badgeType == LocationBarBadgeType::kGeminiContextualCueChip) {
-    [self.BWGCommandHandler
-        startBWGFlowWithEntryPoint:bwg::EntryPoint::OmniboxChip];
-    _tracker->NotifyEvent(
-        feature_engagement::events::kIOSGeminiContextualCueChipUsed);
+  switch (badgeType) {
+    case LocationBarBadgeType::kGeminiContextualCueChip:
+      [self.BWGCommandHandler
+          startBWGFlowWithEntryPoint:bwg::EntryPoint::OmniboxChip];
+      _tracker->NotifyEvent(
+          feature_engagement::events::kIOSGeminiContextualCueChipUsed);
+      break;
+    default:
+      break;
   }
 }
 

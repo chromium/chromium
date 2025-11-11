@@ -18,6 +18,9 @@
 // Updates badge with IPH related colors.
 - (void)updateColorForIPH;
 
+// Whether to display a blue dot indicating an unread badge.
+- (void)markDisplayedBadgeAsUnread:(BOOL)read;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_LOCATION_BAR_BADGE_COMMANDS_H_

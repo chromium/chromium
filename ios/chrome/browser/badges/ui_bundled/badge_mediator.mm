@@ -11,6 +11,7 @@
 #import "base/metrics/user_metrics.h"
 #import "ios/chrome/browser/badges/model/features.h"
 #import "ios/chrome/browser/badges/ui_bundled/badge_button.h"
+#import "ios/chrome/browser/badges/ui_bundled/badge_button_factory.h"
 #import "ios/chrome/browser/badges/ui_bundled/badge_consumer.h"
 #import "ios/chrome/browser/badges/ui_bundled/badge_item.h"
 #import "ios/chrome/browser/badges/ui_bundled/badge_tappable_item.h"
@@ -27,12 +28,16 @@
 #import "ios/chrome/browser/infobars/model/overlays/infobar_overlay_request_inserter.h"
 #import "ios/chrome/browser/infobars/model/overlays/infobar_overlay_util.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
+#import "ios/chrome/browser/location_bar/badge/model/badge_type.h"
+#import "ios/chrome/browser/location_bar/badge/model/location_bar_badge_configuration.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presenter.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presenter_observer_bridge.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request_queue.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/shared/public/commands/location_bar_badge_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/web/public/permissions/permissions.h"
@@ -45,6 +50,34 @@ const char kInfobarOverflowBadgeTappedUserAction[] =
 // Histogram name for when the overflow badge is shown
 const char kInfobarOverflowBadgeShownUserAction[] =
     "MobileMessagesOverflowBadgeShown";
+
+// TODO(crbug.com/458142962): Migrate to LocationBarBadgeType.
+// Helper method to convert a `BadgeType` to a `LocationBarBadgeType. Serves as
+// a strict switch case to ensure that there's parity between both types.
+LocationBarBadgeType LocationBarBadgeTypeFromBadgeType(BadgeType badgeType) {
+  switch (badgeType) {
+    case BadgeType::kBadgeTypePasswordSave:
+      return LocationBarBadgeType::kPasswordSave;
+    case BadgeType::kBadgeTypePasswordUpdate:
+      return LocationBarBadgeType::kPasswordUpdate;
+    case BadgeType::kBadgeTypeTranslate:
+      return LocationBarBadgeType::kTranslate;
+    case BadgeType::kBadgeTypeSaveCard:
+      return LocationBarBadgeType::kSaveCard;
+    case BadgeType::kBadgeTypePermissionsCamera:
+      return LocationBarBadgeType::kPermissionsCamera;
+    case BadgeType::kBadgeTypePermissionsMicrophone:
+      return LocationBarBadgeType::kPermissionsMicrophone;
+    case BadgeType::kBadgeTypeSaveAddressProfile:
+      return LocationBarBadgeType::kSaveAddressProfile;
+    case BadgeType::kBadgeTypeOverflow:
+      return LocationBarBadgeType::kOverflow;
+    // Incognito badge is handled separately.
+    case BadgeType::kBadgeTypeIncognito:
+    case BadgeType::kBadgeTypeNone:
+      return LocationBarBadgeType::kNone;
+  }
+}
 
 }  // namespace
 
@@ -78,7 +111,11 @@ const char kInfobarOverflowBadgeShownUserAction[] =
 
 @end
 
-@implementation BadgeMediator
+@implementation BadgeMediator {
+  // Factory for badge buttons. Used to send badge updates to Location Bar
+  // Badge.
+  BadgeButtonFactory* _badgeButtonFactory;
+}
 
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
                     overlayPresenter:(OverlayPresenter*)overlayPresenter {
@@ -102,6 +139,7 @@ const char kInfobarOverflowBadgeShownUserAction[] =
           self);
       _webState->AddObserver(_webStateObserver.get());
     }
+    _badgeButtonFactory = [[BadgeButtonFactory alloc] init];
   }
   return self;
 }
@@ -252,8 +290,17 @@ const char kInfobarOverflowBadgeShownUserAction[] =
   } else {
     displayedBadge = [badges firstObject];
   }
-  // Update the consumer with the new badge items.
-  [self.consumer setupWithDisplayedBadge:displayedBadge];
+
+  if (IsLocationBarBadgeMigrationEnabled()) {
+    // Update Location Bar Badge with a new badge update.
+    LocationBarBadgeConfiguration* badgeConfig =
+        [self configureLocationBarBadgeConfigurationFromBadgeItem:displayedBadge
+                                                          infoBar:nil];
+    [self.dispatcher updateBadgeConfig:badgeConfig];
+  } else {
+    // Update the consumer with the new badge items.
+    [self.consumer setupWithDisplayedBadge:displayedBadge];
+  }
 }
 
 #pragma mark - BadgeDelegate
@@ -404,7 +451,15 @@ const char kInfobarOverflowBadgeShownUserAction[] =
         infobarWithType:InfobarTypeForBadgeType(displayedBadge.badgeType)];
   }
 
-  [self.consumer updateDisplayedBadge:displayedBadge infoBar:infoBar];
+  if (IsLocationBarBadgeMigrationEnabled()) {
+    // Update Location Bar Badge with a new badge update.
+    LocationBarBadgeConfiguration* badgeConfig =
+        [self configureLocationBarBadgeConfigurationFromBadgeItem:displayedBadge
+                                                          infoBar:infoBar];
+    [self.dispatcher updateBadgeConfig:badgeConfig];
+  } else {
+    [self.consumer updateDisplayedBadge:displayedBadge infoBar:infoBar];
+  }
   [self updateConsumerReadStatus];
 }
 
@@ -475,11 +530,20 @@ const char kInfobarOverflowBadgeShownUserAction[] =
 - (void)updateConsumerReadStatus {
   for (id<BadgeItem> item in self.badges) {
     if (!(item.badgeState & BadgeStateRead)) {
-      [self.consumer markDisplayedBadgeAsRead:NO];
+      if (IsLocationBarBadgeMigrationEnabled()) {
+        [self.dispatcher markDisplayedBadgeAsUnread:YES];
+      } else {
+        [self.consumer markDisplayedBadgeAsRead:NO];
+      }
       return;
     }
   }
-  [self.consumer markDisplayedBadgeAsRead:YES];
+
+  if (IsLocationBarBadgeMigrationEnabled()) {
+    [self.dispatcher markDisplayedBadgeAsUnread:NO];
+  } else {
+    [self.consumer markDisplayedBadgeAsRead:YES];
+  }
 }
 
 // Shows the modal UI when `button` is tapped.
@@ -541,6 +605,29 @@ const char kInfobarOverflowBadgeShownUserAction[] =
           base::UserMetricsAction("MobileMessagesBadgeNonAcceptedTapped"));
       break;
   }
+}
+
+// Helper method to configure a LocationBarBadgeConfiguration from a BadgeItem.
+- (LocationBarBadgeConfiguration*)
+    configureLocationBarBadgeConfigurationFromBadgeItem:
+        (id<BadgeItem>)displayedBadge
+                                                infoBar:(InfoBarIOS*)infoBar {
+  BadgeButton* button =
+      [_badgeButtonFactory badgeButtonForBadgeType:displayedBadge.badgeType
+                                      usingInfoBar:infoBar];
+  [button setAccepted:displayedBadge.badgeState & BadgeStateAccepted
+             animated:NO];
+
+  LocationBarBadgeType badgeType =
+      LocationBarBadgeTypeFromBadgeType(button.badgeType);
+
+  LocationBarBadgeConfiguration* buttonConfig =
+      [[LocationBarBadgeConfiguration alloc]
+           initWithBadgeType:badgeType
+          accessibilityLabel:button.accessibilityLabel
+                  badgeImage:button.image];
+  buttonConfig.active = button.accepted;
+  return buttonConfig;
 }
 
 @end

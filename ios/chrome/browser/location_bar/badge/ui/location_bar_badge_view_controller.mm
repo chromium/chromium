@@ -8,10 +8,12 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/badges/ui_bundled/badge_constants.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_util.h"
 #import "ios/chrome/browser/contextual_panel/entrypoint/ui/contextual_panel_entrypoint_consumer.h"
 #import "ios/chrome/browser/contextual_panel/entrypoint/ui/contextual_panel_entrypoint_mutator.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_configuration.h"
+#import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_type.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/location_bar/badge/model/badge_type.h"
 #import "ios/chrome/browser/location_bar/badge/model/location_bar_badge_configuration.h"
@@ -29,6 +31,13 @@
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/dynamic_type_util.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
+
+namespace {
+
+// Height of `unreadIndicatorView`.
+const CGFloat kUnreadIndicatorViewHeight = 6.0;
+
+}  // anonymous namespace
 
 @implementation LocationBarBadgeViewController {
   /// Whether the contextual panel badge should be visible. The placeholder
@@ -76,6 +85,11 @@
 
   // Configuration for updating the badge.
   LocationBarBadgeConfiguration* _badgeConfig;
+
+  // View that displays a blue dot on the top-right corner of the displayed
+  // badge
+  // if there are unread badges to be shown in the overflow menu.
+  UIView* _unreadIndicatorView;
 }
 
 #pragma mark - Public
@@ -214,7 +228,7 @@
       // TODO(crbug.com/454072799): Adapt to record hiding badges for any badge
       // that goes through LocationBarBadge.
       RecordLensEntrypointHidden(IOSLocationBarLeadingIconType::kPriceTracking);
-    } else if (_badgeConfig.badgeType == LocationBarBadgeType::kBadgeView) {
+    } else if ([_badgeConfig fromBadgeFactory]) {
       RecordLensEntrypointHidden(IOSLocationBarLeadingIconType::kMessage);
     } else if (_badgeConfig.badgeType == LocationBarBadgeType::kReaderMode) {
       RecordLensEntrypointHidden(IOSLocationBarLeadingIconType::kReaderMode);
@@ -418,7 +432,7 @@
 }
 
 - (void)dismissIPHWithoutAnimation {
-  if (_badgeConfig.badgeType == LocationBarBadgeType::kContextualPanel) {
+  if ([_badgeConfig isContextualPanelEntrypointBadge]) {
     [self.contextualPanelEntryPointMutator dismissIPHAnimated:NO];
   } else {
     [self.mutator dismissIPHAnimated:NO];
@@ -437,7 +451,7 @@
 // animation to collapse the badge container is complete.
 - (void)didCollapseBadgeContainer {
   [self refreshVoiceOverBoundingBoxIfFocused];
-  if (_badgeConfig.badgeType == LocationBarBadgeType::kContextualPanel) {
+  if ([_badgeConfig isContextualPanelEntrypointBadge]) {
     [self.contextualPanelEntryPointMutator
             didCompleteTransitionToSmallEntrypoint];
   } else {
@@ -540,7 +554,7 @@
   _badgeTapped = YES;
   [self refreshEntrypointVisualElements];
   [self collapseBadgeContainer];
-  if (_badgeConfig.badgeType == LocationBarBadgeType::kContextualPanel) {
+  if ([_badgeConfig isContextualPanelEntrypointBadge]) {
     [self.contextualPanelEntryPointMutator entrypointTapped];
   } else {
     [self.mutator badgeTapped:_badgeConfig.badgeType];
@@ -559,7 +573,7 @@
 
 // Sets center positioning for location bar label.
 - (void)setLocationBarLabelCenteredBetweenContent:(BOOL)centered {
-  if (_badgeConfig.badgeType == LocationBarBadgeType::kContextualPanel) {
+  if ([_badgeConfig isContextualPanelEntrypointBadge]) {
     [self.contextualPanelEntryPointMutator
         setLocationBarLabelCenteredBetweenContent:centered];
   } else {
@@ -597,9 +611,22 @@
         break;
     }
 
+    LocationBarBadgeType badgeType;
+    switch (config->item_type) {
+      case ContextualPanelItemType::SamplePanelItem:
+        badgeType = LocationBarBadgeType::kContextualPanelEntryPointSample;
+        break;
+      case ContextualPanelItemType::PriceInsightsItem:
+        badgeType = LocationBarBadgeType::kPriceInsights;
+        break;
+      case ContextualPanelItemType::ReaderModeItem:
+        badgeType = LocationBarBadgeType::kReaderMode;
+        break;
+    }
+
     LocationBarBadgeConfiguration* badgeConfig =
         [[LocationBarBadgeConfiguration alloc]
-             initWithBadgeType:LocationBarBadgeType::kContextualPanel
+             initWithBadgeType:badgeType
             accessibilityLabel:accessibilityLabel
                     badgeImage:image];
     badgeConfig.badgeText = base::SysUTF8ToNSString(config->entrypoint_message);
@@ -656,7 +683,7 @@
 }
 
 - (void)hideEntrypoint {
-  if (_badgeConfig.badgeType == LocationBarBadgeType::kContextualPanel) {
+  if ([_badgeConfig isContextualPanelEntrypointBadge]) {
     [self hideBadge];
   }
 }
@@ -830,6 +857,22 @@
 
 - (BOOL)isBadgeVisible {
   return _locationBarBadgeShouldBeVisible;
+}
+
+- (void)showUnreadBadge:(BOOL)unread {
+  if (!_unreadIndicatorView && unread) {
+    // Add unread indicator to the displayed badge.
+    _unreadIndicatorView = [[UIView alloc] init];
+    _unreadIndicatorView.layer.cornerRadius = kUnreadIndicatorViewHeight / 2;
+    _unreadIndicatorView.backgroundColor = [UIColor colorNamed:kBlueColor];
+    _unreadIndicatorView.translatesAutoresizingMaskIntoConstraints = NO;
+    _unreadIndicatorView.accessibilityIdentifier =
+        kBadgeUnreadIndicatorAccessibilityIdentifier;
+
+    // TODO(crbug.com/457567241): Add _unreadIndicatorView as a subview and
+    // related constraints.
+    _unreadIndicatorView.hidden = !unread;
+  }
 }
 
 #pragma mark FullscreenUIElement

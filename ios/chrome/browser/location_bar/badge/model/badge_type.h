@@ -8,10 +8,31 @@
 // Features that can be displayed as a badge in the location bar.
 enum class LocationBarBadgeType {
   kNone = 0,
-  kBadgeView,
+  // Badge type for the Save Passwords Infobar.
+  kPasswordSave,
+  // Badge type for the Update Passwords Infobar.
+  kPasswordUpdate,
+  // Badge type for the Incognito Badge.
   kIncognito,
-  kContextualPanel,
+  // Badge type for when there are more than one badge to be displayed.
+  kOverflow,
+  // Badge type for Save Credit Card Infobar.
+  kSaveCard,
+  // Badge type for the Translate Infobar.
+  kTranslate,
+  // Badge type for the Save Address Profile Infobar.
+  kSaveAddressProfile,
+  // Badge type for the Permissions Infobar with camera icon.
+  kPermissionsCamera,
+  // Badge type for the Permissions Infobar with microphone icon.
+  kPermissionsMicrophone,
+  // Badge type for the Contextual Panel entrypoint.
+  kContextualPanelEntryPointSample,
+  // Badge type for Price insight from Contextual Panel entrypoint.
+  kPriceInsights,
+  // Badge type for Reader mode from Contextual Panel entrypoint.
   kReaderMode,
+  // Chip type for Gemini contextual cue chip.
   kGeminiContextualCueChip,
 };
 

@@ -26,4 +26,32 @@
   return self;
 }
 
+- (BOOL)isContextualPanelEntrypointBadge {
+  switch (self.badgeType) {
+    case LocationBarBadgeType::kContextualPanelEntryPointSample:
+    case LocationBarBadgeType::kPriceInsights:
+    case LocationBarBadgeType::kReaderMode:
+      return YES;
+    default:
+      return NO;
+  }
+}
+
+- (BOOL)fromBadgeFactory {
+  switch (self.badgeType) {
+    case LocationBarBadgeType::kPasswordSave:
+    case LocationBarBadgeType::kPasswordUpdate:
+    case LocationBarBadgeType::kIncognito:
+    case LocationBarBadgeType::kOverflow:
+    case LocationBarBadgeType::kSaveCard:
+    case LocationBarBadgeType::kTranslate:
+    case LocationBarBadgeType::kSaveAddressProfile:
+    case LocationBarBadgeType::kPermissionsCamera:
+    case LocationBarBadgeType::kPermissionsMicrophone:
+      return YES;
+    default:
+      return NO;
+  }
+}
+
 @end

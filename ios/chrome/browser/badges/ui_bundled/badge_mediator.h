@@ -11,6 +11,7 @@
 
 @protocol BadgeConsumer;
 @protocol BrowserCoordinatorCommands;
+@protocol LocationBarBadgeCommands;
 class OverlayPresenter;
 class WebStateList;
 
@@ -19,6 +20,7 @@ class WebStateList;
 
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
                     overlayPresenter:(OverlayPresenter*)overlayPresenter
+
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
@@ -27,7 +29,9 @@ class WebStateList;
 - (void)disconnect;
 
 // The dispatcher for badge related actions.
-@property(nonatomic, weak) id<BrowserCoordinatorCommands> dispatcher;
+@property(nonatomic, weak)
+    id<BrowserCoordinatorCommands, LocationBarBadgeCommands>
+        dispatcher;
 
 // The consumer being set up by this mediator.  Setting to a new value updates
 // the new consumer.

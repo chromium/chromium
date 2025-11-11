@@ -347,8 +347,9 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   self.badgeMediator.consumer = self.badgeViewController;
   // TODO(crbug.com/40670043): Use HandlerForProtocol after commands protocol
   // clean up.
-  self.badgeMediator.dispatcher = static_cast<id<BrowserCoordinatorCommands>>(
-      self.browser->GetCommandDispatcher());
+  self.badgeMediator.dispatcher =
+      static_cast<id<BrowserCoordinatorCommands, LocationBarBadgeCommands>>(
+          self.browser->GetCommandDispatcher());
   buttonFactory.delegate = self.badgeMediator;
   FullscreenController* fullscreenController =
       FullscreenController::FromBrowser(self.browser);
