@@ -57,11 +57,11 @@ public class DirectionalScrollListenerUnitTest {
     @Test
     @SmallTest
     public void testScrollThresholdNotMet() {
-        mListener.onScrolled(mRecyclerView, 0, 5);
+        mListener.onScrolled(mRecyclerView, 0, 1);
         verify(mOnScrollUp, never()).run();
         verify(mOnScrollDown, never()).run();
 
-        mListener.onScrolled(mRecyclerView, 0, -5);
+        mListener.onScrolled(mRecyclerView, 0, -1);
         verify(mOnScrollUp, never()).run();
         verify(mOnScrollDown, never()).run();
     }
