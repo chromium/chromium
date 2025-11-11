@@ -1064,12 +1064,14 @@ std::unique_ptr<Connection> Database::CreateConnection(
     mojo::Remote<storage::mojom::IndexedDBClientStateChecker>
         client_state_checker,
     base::UnguessableToken client_token,
-    int scheduling_priority) {
+    int scheduling_priority,
+    base::OnceClosure on_connection_closed) {
   auto connection = std::make_unique<Connection>(
       *bucket_context_, weak_factory_.GetWeakPtr(),
       base::BindRepeating(&Database::VersionChangeIgnored,
                           weak_factory_.GetWeakPtr()),
-      base::BindOnce(&Database::ConnectionClosed, weak_factory_.GetWeakPtr()),
+      base::BindOnce(&Database::ConnectionClosed, weak_factory_.GetWeakPtr(),
+                     std::move(on_connection_closed)),
       std::move(database_callbacks), std::move(client_state_checker),
       client_token, scheduling_priority);
   connections_.insert(connection.get());
@@ -1125,14 +1127,17 @@ void Database::SendVersionChangeToAllConnections(int64_t old_version,
   }
 }
 
-void Database::ConnectionClosed(Connection* connection) {
+void Database::ConnectionClosed(base::OnceClosure forward_on_close,
+                                Connection& connection) {
   TRACE_EVENT0("IndexedDB", "Database::ConnectionClosed");
   // Ignore connection closes during force close to prevent re-entry.
   if (force_closing_) {
     return;
   }
-  connections_.erase(connection);
-  connection_coordinator_.OnConnectionClosed(connection);
+  connections_.erase(&connection);
+  if (forward_on_close) {
+    std::move(forward_on_close).Run();
+  }
   if (connections_.empty()) {
     connection_coordinator_.OnNoConnections();
   }

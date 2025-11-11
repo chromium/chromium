@@ -100,11 +100,6 @@ class ConnectionCoordinator::ConnectionRequest {
     }
   }
 
-  // Called when a connection is closed; if it corresponds to this connection,
-  // need to do cleanup.
-  // Not called during a force close.
-  virtual void OnConnectionClosed(Connection* connection) = 0;
-
   // Called when there are no connections to the database.
   virtual void OnNoConnections() = 0;
 
@@ -324,19 +319,15 @@ class ConnectionCoordinator::OpenRequest
     // When all connections have closed the upgrade can proceed.
   }
 
-  void OnConnectionClosed(Connection* connection) override {
+  void OnConnectionClosedDuringUpgrade() {
     // This connection closed prematurely; signal an error and complete.
-    if (connection == connection_ptr_for_close_comparision_) {
-      connection_ptr_for_close_comparision_ = nullptr;
-      if (factory_client_) {
-        std::move(factory_client_)
-            ->Error(blink::mojom::IDBException::kAbortError,
-                    u"The connection was closed.");
-      }
-      state_ = RequestState::kDone;
-      tasks_available_callback_.Run();
-      return;
+    if (factory_client_) {
+      std::move(factory_client_)
+          ->Error(blink::mojom::IDBException::kAbortError,
+                  u"The connection was closed.");
     }
+    state_ = RequestState::kDone;
+    tasks_available_callback_.Run();
   }
 
   void OnNoConnections() override {
@@ -374,24 +365,25 @@ class ConnectionCoordinator::OpenRequest
     DCHECK(state_ == RequestState::kPendingLocks);
 
     DCHECK(!lock_receiver_.locks.empty());
-    connection_ = db_->CreateConnection(
+    upgrade_connection_ = db_->CreateConnection(
         std::move(pending_->database_callbacks),
         std::move(pending_->client_state_checker), pending_->client_token,
-        pending_->scheduling_priority);
+        pending_->scheduling_priority,
+        base::BindOnce(&OpenRequest::OnConnectionClosedDuringUpgrade,
+                       weak_factory_.GetWeakPtr()));
     bucket_context_handle_.Release();
-    DCHECK(!connection_ptr_for_close_comparision_);
-    connection_ptr_for_close_comparision_ = connection_.get();
-    DCHECK_EQ(db_->connections().count(connection_.get()), 1UL);
+    DCHECK_EQ(db_->connections().count(upgrade_connection_.get()), 1UL);
 
     std::vector<int64_t> object_store_ids;
 
     state_ = RequestState::kPendingTransactionComplete;
-    Transaction* transaction = connection_->CreateVersionChangeTransaction(
-        pending_->transaction_id,
-        std::set<int64_t>(object_store_ids.begin(), object_store_ids.end()),
-        db_->backing_store_db()->CreateTransaction(
-            blink::mojom::IDBTransactionDurability::Strict,
-            blink::mojom::IDBTransactionMode::VersionChange));
+    Transaction* transaction =
+        upgrade_connection_->CreateVersionChangeTransaction(
+            pending_->transaction_id,
+            std::set<int64_t>(object_store_ids.begin(), object_store_ids.end()),
+            db_->backing_store_db()->CreateTransaction(
+                blink::mojom::IDBTransactionDurability::Strict,
+                blink::mojom::IDBTransactionMode::VersionChange));
 
     // Save a WeakPtr<Transaction> for the BindTransactionReceiver
     // function to use later.
@@ -415,18 +407,19 @@ class ConnectionCoordinator::OpenRequest
   // Called when the upgrade transaction has started executing.
   void UpgradeTransactionStarted(int64_t old_version) override {
     DCHECK(state_ == RequestState::kPendingTransactionComplete);
-    DCHECK(connection_);
+    DCHECK(upgrade_connection_);
 
     if (!factory_client_.is_connected()) {
       // Don't destroy the connection while the current transaction task queue
       // is being processed.
       base::SequencedTaskRunner::GetCurrentDefault()->DeleteSoon(
-          FROM_HERE, std::move(connection_));
+          FROM_HERE, std::move(upgrade_connection_));
       return;
     }
 
     factory_client_->UpgradeNeeded(
-        Connection::MakeSelfOwnedReceiverAndBindRemote(std::move(connection_)),
+        Connection::MakeSelfOwnedReceiverAndBindRemote(
+            std::move(upgrade_connection_)),
         old_version, pending_->data_loss_info.status,
         pending_->data_loss_info.message, GenerateDbMetadata());
   }
@@ -459,16 +452,15 @@ class ConnectionCoordinator::OpenRequest
       state_ = RequestState::kDone;
     }
 
-    if (connection_) {
+    if (upgrade_connection_) {
       // CloseAndReportForceClose calls OnForcedClose on the database callbacks,
       // so we don't need to.
-      connection_->CloseAndReportForceClose(message);
-      connection_.reset();
+      std::move(upgrade_connection_)->CloseAndReportForceClose(message);
     } else if (pending_->database_callbacks) {
       pending_->database_callbacks->OnForcedClose();
     }
-    // else: `database_callbacks` has been passed to `connection_`, in which
-    // case the Database will have called `CloseAndReportForceClose()`.
+    // else: `database_callbacks` has been passed to `upgrade_connection_`, in
+    // which case the Database will have called `CloseAndReportForceClose()`.
 
     pending_.reset();
     // The tasks_available_callback_ is NOT run here, because we are assuming
@@ -488,13 +480,9 @@ class ConnectionCoordinator::OpenRequest
   bool was_cold_open_;
   bool uses_sqlite_;
 
-  // If an upgrade is needed, holds the pending connection until ownership is
-  // transferred to the IndexedDBDispatcherHost via `UpgradeNeeded`.
-  std::unique_ptr<Connection> connection_;
-
-  // This raw pointer is stored solely for comparison to the connection in
-  // OnConnectionClosed. It is not guaranteed to be pointing to a live object.
-  raw_ptr<Connection> connection_ptr_for_close_comparision_ = nullptr;
+  // If an upgrade is needed, holds the pending connection until transferred to
+  // self-ownership via SelfOwnedAssociatedReceiver.
+  std::unique_ptr<Connection> upgrade_connection_;
 
   base::WeakPtrFactory<OpenRequest> weak_factory_{this};
 };
@@ -560,8 +548,6 @@ class ConnectionCoordinator::DeleteRequest
     state_ = RequestState::kPendingNoConnections;
     db_->SendVersionChangeToAllConnections(old_version, new_version);
   }
-
-  void OnConnectionClosed(Connection* connection) override {}
 
   void OnNoConnections() override {
     ContinueAfterAcquiringLocks(
@@ -657,14 +643,6 @@ Status ConnectionCoordinator::PruneTasksForForceClose(
   return last_error;
 }
 
-void ConnectionCoordinator::OnConnectionClosed(Connection* connection) {
-  DCHECK(connection->database().get() == db_);
-
-  if (!request_queue_.empty()) {
-    request_queue_.front()->OnConnectionClosed(connection);
-  }
-}
-
 void ConnectionCoordinator::OnNoConnections() {
   if (request_queue_.empty() ||
       request_queue_.front()->state() != RequestState::kPendingNoConnections) {
@@ -729,8 +707,8 @@ ConnectionCoordinator::ExecuteTask(bool has_connections) {
     case RequestState::kDone: {
       // Move `request_to_discard` out of `request_queue_` then
       // `request_queue_.pop()`. We do this because `request_to_discard`'s dtor
-      // calls OnConnectionClosed and OnNoConnections, which interact with
-      // `request_queue_` assuming the queue no longer holds
+      // calls OnConnectionClosedDuringUpgrade and OnNoConnections, which
+      // interact with `request_queue_` assuming the queue no longer holds
       // `request_to_discard`.
       auto request_to_discard = std::move(request_queue_.front());
       request_queue_.pop();
@@ -743,8 +721,8 @@ ConnectionCoordinator::ExecuteTask(bool has_connections) {
       Status status = request->status();
       // Move `request_to_discard` out of `request_queue_` then
       // `request_queue_.pop()`. We do this because `request_to_discard`'s dtor
-      // calls OnConnectionClosed and OnNoConnections, which interact with
-      // `request_queue_` assuming the queue no longer holds
+      // calls OnConnectionClosedDuringUpgrade and OnNoConnections, which
+      // interact with `request_queue_` assuming the queue no longer holds
       // `request_to_discard`.
       auto request_to_discard = std::move(request_queue_.front());
       request_queue_.pop();

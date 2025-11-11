@@ -60,7 +60,7 @@ class CONTENT_EXPORT Connection : public blink::mojom::IDBDatabase {
   Connection(BucketContext& bucket_context,
              base::WeakPtr<Database> database,
              base::RepeatingClosure on_version_change_ignored,
-             base::OnceCallback<void(Connection*)> on_close,
+             base::OnceCallback<void(Connection&)> on_close,
              std::unique_ptr<DatabaseCallbacks> callbacks,
              mojo::Remote<storage::mojom::IndexedDBClientStateChecker>
                  client_state_checker,
@@ -247,7 +247,7 @@ class CONTENT_EXPORT Connection : public blink::mojom::IDBDatabase {
 
   base::WeakPtr<Database> database_;
   base::RepeatingClosure on_version_change_ignored_;
-  base::OnceCallback<void(Connection*)> on_close_;
+  base::OnceCallback<void(Connection&)> on_close_;
 
   // The connection owns transactions created on this connection. It's important
   // to preserve ordering.

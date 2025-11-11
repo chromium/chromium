@@ -19,7 +19,6 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 
 namespace content::indexed_db {
-class Connection;
 class Database;
 struct PendingConnection;
 
@@ -41,8 +40,6 @@ class CONTENT_EXPORT ConnectionCoordinator {
   // Call this method to prune any tasks that don't want to be run during
   // force close. Returns any error caused by rolling back changes.
   Status PruneTasksForForceClose(const std::string& message);
-
-  void OnConnectionClosed(Connection* connection);
 
   void OnNoConnections();
 

@@ -121,7 +121,7 @@ Connection::MakeSelfOwnedReceiverAndBindRemote(
 Connection::Connection(BucketContext& bucket_context,
                        base::WeakPtr<Database> database,
                        base::RepeatingClosure on_version_change_ignored,
-                       base::OnceCallback<void(Connection*)> on_close,
+                       base::OnceCallback<void(Connection&)> on_close,
                        std::unique_ptr<DatabaseCallbacks> callbacks,
                        mojo::Remote<storage::mojom::IndexedDBClientStateChecker>
                            client_state_checker,
@@ -803,7 +803,7 @@ std::unique_ptr<DatabaseCallbacks> Connection::AbortTransactionsAndClose(
   }
 
   std::unique_ptr<DatabaseCallbacks> callbacks = std::move(callbacks_);
-  std::move(on_close_).Run(this);
+  std::move(on_close_).Run(*this);
   for (auto& remotes : client_keep_active_remotes_) {
     remotes.reset();
   }

@@ -278,7 +278,9 @@ class CONTENT_EXPORT Database {
       mojo::Remote<storage::mojom::IndexedDBClientStateChecker>
           client_state_checker,
       base::UnguessableToken client_token,
-      int scheduling_priority);
+      int scheduling_priority,
+      // Not called during a force close.
+      base::OnceClosure on_connection_close = {});
 
   // Ack that one of the connections notified with a "versionchange" event did
   // not promptly close. Therefore a "blocked" event should be fired at the
@@ -292,7 +294,8 @@ class CONTENT_EXPORT Database {
 
   // This can only be called when the given connection is closed and no longer
   // has any transaction objects.
-  void ConnectionClosed(Connection* connection);
+  void ConnectionClosed(base::OnceClosure forward_on_close,
+                        Connection& connection);
 
   // In rare cases there are a very large number of queued
   // requests/transactions, so calculations related to blocking or blocked
