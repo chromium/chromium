@@ -41,9 +41,6 @@ public abstract class PermissionsAndroidFeatureList {
     public static final String BYPASS_PEPC_SECURITY_FOR_TESTING = "BypassPepcSecurityForTesting";
     public static final String PERMISSION_HEURISTIC_AUTO_GRANT = "PermissionHeuristicAutoGrant";
 
-    public static final String OS_ADDITIONAL_SECURITY_PERMISSION_KILL_SWITCH =
-            "OsAdditionalSecurityPermissionKillSwitch";
-
     public static final String APPROXIMATE_GEOLOCATION_PERMISSION =
             "ApproximateGeolocationPermission";
 
