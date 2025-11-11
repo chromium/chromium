@@ -432,7 +432,7 @@ const CGFloat kBackgroundHorizontalInset = 5.0;
 // Returns YES if any badges are currently visible.
 - (BOOL)hasVisibleBadges {
   for (UIView* subview in _containerStackView.arrangedSubviews) {
-    if (!subview.hidden) {
+    if (!subview.hidden && subview != _placeholderView) {
       return YES;
     }
   }
