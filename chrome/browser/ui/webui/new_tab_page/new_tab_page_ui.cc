@@ -573,11 +573,27 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
       "searchboxShowComposeEntrypoint",
       (ntp_composebox::IsNtpSearchboxComposeEntrypointEnabled(profile) ||
        ntp_composebox::IsNtpComposeboxEnabled(profile)));
-  source->AddLocalizedString(
-      "searchBoxPlaceholder",
-      ntp_realbox::IsNtpRealboxNextEnabled(profile)
-          ? IDS_NTP_SEARCH_BOX_DYNAMIC_PLACEHOLDER_ASK_GOOGLE
-          : IDS_GOOGLE_SEARCH_BOX_EMPTY_HINT_MD);
+
+  if (ntp_realbox::IsNtpRealboxNextEnabled(profile)) {
+    switch (ntp_realbox::kSteadyPlaceholder.Get()) {
+      case ntp_realbox::PlaceholderText::ASK_OR_TYPE:
+        source->AddString("searchBoxPlaceholder",
+                          l10n_util::GetStringFUTF16(
+                              IDS_WEBUI_OMNIBOX_PLACEHOLDER_TEXT, u"Google"));
+        break;
+      case ntp_realbox::PlaceholderText::ASK:
+        source->AddLocalizedString(
+            "searchBoxPlaceholder",
+            IDS_NTP_SEARCH_BOX_DYNAMIC_PLACEHOLDER_ASK_GOOGLE);
+        break;
+      default:
+        NOTREACHED();
+    }
+  } else {
+    source->AddLocalizedString("searchBoxPlaceholder",
+                               IDS_GOOGLE_SEARCH_BOX_EMPTY_HINT_MD);
+  }
+
   source->AddBoolean("composeboxShowContextMenu",
                      ntp_composebox::kShowContextMenu.Get());
   source->AddBoolean("composeboxShowRecentTabChip",
