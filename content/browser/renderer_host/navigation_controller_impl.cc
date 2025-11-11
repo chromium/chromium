@@ -2291,11 +2291,21 @@ void NavigationControllerImpl::RendererDidNavigateToNewEntry(
         nullptr,  // blob_url_loader_factory
         false);   // is_initial_entry
 
+    GURL url = params.url;
+    // If the navigation committed in view-source mode, the corresponding
+    // NavigationEntry's virtual URL needs to be set to the committed URL with a
+    // view-source: prefix. Typically, this is done when the pending
+    // NavigationEntry is created at navigation start time (see
+    // WebContentsImpl::ViewSource). However, if the pending entry was discarded
+    // or couldn't be used, update the new NavigationEntry's virtual URL here.
+    if (request->commit_params().is_view_source) {
+      url = GURL(kViewSourceScheme + std::string(":") + url.spec());
+      new_entry->SetVirtualURL(url);
+    }
+    bool needs_update = false;
     // Find out whether the new entry needs to update its virtual URL on URL
     // change and set up the entry accordingly. This is needed to correctly
     // update the virtual URL when replaceState is called after a pushState.
-    GURL url = params.url;
-    bool needs_update = false;
     // When navigating to a new entry, give the browser URL handler a chance to
     // update the virtual URL based on the new URL. For example, this is needed
     // to show chrome://bookmarks/#1 when the bookmarks webui extension changes

@@ -24504,4 +24504,49 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Combine(testing::ValuesIn(RenderDocumentFeatureLevelValues()),
                      testing::Bool()),
     NavigationControllerBrowserTest::DescribeParams);
+
+using ViewSourceNavigation = NavigationControllerBrowserTestBase;
+
+IN_PROC_BROWSER_TEST_F(ViewSourceNavigation, WithErrorInChain) {
+  GURL first_visited(embedded_test_server()->GetURL("/title1.html"));
+  ASSERT_TRUE(NavigateToURL(shell(), first_visited));
+
+  GURL view_source_url(content::kViewSourceScheme + std::string(":") +
+                       embedded_test_server()->GetURL("/title2.html").spec());
+
+  NavigationControllerImpl& controller =
+      static_cast<NavigationControllerImpl&>(contents()->GetController());
+
+  {
+    // Intercept all requests and fail them.
+    auto url_loader_interceptor = std::make_unique<URLLoaderInterceptor>(
+        base::BindRepeating([](URLLoaderInterceptor::RequestParams* params) {
+          network::URLLoaderCompletionStatus status;
+          status.error_code = net::ERR_NOT_IMPLEMENTED;
+          params->client->OnComplete(status);
+          return true;
+        }));
+
+    // Navigate to a view-source URL that will fail to load.
+    EXPECT_FALSE(NavigateToURL(shell(), view_source_url));
+
+    // Check that the virtual URL in the committed entry still has the
+    // view-source prefix.
+    NavigationEntryImpl* entry = controller.GetLastCommittedEntry();
+    EXPECT_TRUE(entry->IsViewSourceMode());
+    EXPECT_EQ(view_source_url, entry->GetVirtualURL());
+  }
+
+  // Remove the error condition and then reload the page.
+  TestNavigationObserver reload_observer(shell()->web_contents());
+  controller.Reload(ReloadType::NORMAL, false);
+  reload_observer.Wait();
+  EXPECT_TRUE(reload_observer.last_navigation_succeeded());
+
+  // Make sure the reload kept the navigation in view-source mode.
+  EXPECT_EQ(view_source_url, shell()->web_contents()->GetLastCommittedURL());
+  NavigationEntryImpl* entry = controller.GetLastCommittedEntry();
+  EXPECT_TRUE(entry->IsViewSourceMode());
+}
+
 }  // namespace content
