@@ -27,9 +27,6 @@
 #include "third_party/blink/renderer/core/html/html_html_element.h"
 #include "third_party/blink/renderer/core/html/html_plugin_element.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
-#include "third_party/blink/renderer/core/layout/layout_view.h"
-#include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
-#include "third_party/blink/renderer/core/layout/physical_fragment.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
@@ -1514,8 +1511,13 @@ TEST_F(ElementTest, GenerateOverscrollPseudoElements) {
                                           AtomicString("--baz")));
 
   // Parentage of children and pseudos within content:
+  EXPECT_TRUE(scroller->GetPseudoElement(kPseudoIdBefore)
+                  ->GetLayoutObject()
+                  ->Parent()
+                  ->IsAnonymousBlockFlow());
   EXPECT_EQ(scroller->GetPseudoElement(kPseudoIdBefore)
                 ->GetLayoutObject()
+                ->Parent()
                 ->Parent(),
             overscroll_client_area->GetLayoutObject());
   EXPECT_EQ(GetElementById("child")->GetLayoutObject()->PreviousSibling(),
@@ -1591,62 +1593,6 @@ TEST_F(ElementTest, ReorderOverscrollPseudoElements) {
             overscroll_parent_bar->GetLayoutObject());
   EXPECT_EQ(overscroll_parent_bar->GetLayoutObject()->Parent(),
             scroller->GetLayoutObject());
-}
-
-TEST_F(ElementTest, OverscrollPseudosFragmentTree) {
-  ScopedCSSOverscrollGesturesForTest enabled(true);
-  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
-      <style>
-        #scroller {
-          overscroll-area: --foo;
-        }
-        .position {
-          top: 0;
-          left: 0;
-        }
-        #abspos_child {
-          position: absolute;
-        }
-        #overscroll_child {
-          overscroll-position: --foo;
-        }
-        #fixed_child {
-          position: fixed;
-        }
-      </style>
-      <div id="scroller">
-        <div id="child"></div>
-        <div id="abspos_child" class="position"></div>
-        <div id="overscroll_child" class="position"></div>
-        <div id="fixed_child" class="position"></div>
-      </div>
-  )HTML");
-
-  UpdateAllLifecyclePhasesForTest();
-
-  const LayoutView* layout_view = GetDocument().GetLayoutView();
-  ASSERT_EQ(layout_view->PhysicalFragmentCount(), 1u);
-  const PhysicalBoxFragment* layout_view_fragment =
-      layout_view->GetPhysicalFragment(0);
-
-  PhysicalFragment::DumpFlags flags =
-      PhysicalFragment::DumpHeaderText | PhysicalFragment::DumpSubtree |
-      PhysicalFragment::DumpIndentation | PhysicalFragment::DumpNodeName;
-
-  String actual = layout_view_fragment->DumpFragmentTree(flags);
-  EXPECT_EQ(R"fragment(.:: LayoutNG Physical Fragment Tree ::.
-  LayoutView #document
-    LayoutBlockFlow HTML
-      LayoutBlockFlow BODY
-        LayoutBlockFlow DIV id='scroller'
-          LayoutBlockFlow ::internal-overscroll-area-parent(--foo)
-            LayoutBlockFlow ::internal-overscroll-client-area
-              LayoutBlockFlow DIV id='child'
-            LayoutBlockFlow (positioned) DIV id='overscroll_child' class='position'
-    LayoutBlockFlow (positioned) DIV id='abspos_child' class='position'
-    LayoutBlockFlow (positioned) DIV id='fixed_child' class='position'
-)fragment",
-            actual);
 }
 
 TEST_F(ElementTest, GenerateScrollMarkerGroup) {

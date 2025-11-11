@@ -132,7 +132,6 @@ struct SameSizeAsPaintLayer : GarbageCollected<PaintLayer>, DisplayItemClient {
 #if DCHECK_IS_ON()
   bool is_destroyed;
 #endif
-  HashSet<int> hash_set;
   Member<void*> members[9];
   LayoutUnit layout_units[2];
   std::unique_ptr<void*> pointer;
@@ -389,7 +388,6 @@ void PaintLayer::UpdateDescendantDependentFlags() {
     has_self_painting_layer_descendant_ = false;
     descendant_needs_check_position_visibility_ = false;
     has_backdrop_filter_descendant_ = false;
-    uncontained_overscroll_position_descendants_.clear();
 
     bool can_contain_abs =
         GetLayoutObject().CanContainAbsolutePositionObjects();
@@ -425,24 +423,8 @@ void PaintLayer::UpdateDescendantDependentFlags() {
 
       if (!can_contain_abs) {
         has_non_contained_absolute_position_descendant_ |=
-            (child->has_non_contained_absolute_position_descendant_ ||
+            (child->HasNonContainedAbsolutePositionDescendant() ||
              child_style.GetPosition() == EPosition::kAbsolute);
-
-        // Merge the uncontained overscroll position descendant into ours, we
-        // will filter it later.
-        for (auto& uncontained_descendant :
-             child->uncontained_overscroll_position_descendants_) {
-          uncontained_overscroll_position_descendants_.insert(
-              uncontained_descendant);
-        }
-
-        // Add the child into uncontained overscroll descendant list if it's
-        // actually an overscroll position child.
-        if (child_style.OverscrollPosition()) {
-          CHECK(child_style.GetPosition() == EPosition::kAbsolute);
-          uncontained_overscroll_position_descendants_.insert(
-              child_style.OverscrollPosition()->GetName());
-        }
       }
 
       if (!has_stacked_descendant_in_current_stacking_context_) {
@@ -463,12 +445,6 @@ void PaintLayer::UpdateDescendantDependentFlags() {
           has_backdrop_filter_descendant_ ||
           child->HasBackdropFilterDescendant() ||
           child->GetLayoutObject().StyleRef().HasNonInitialBackdropFilter();
-    }
-
-    if (const AtomicString& overscroll_area_name =
-            GetLayoutObject().GetOverscrollAreaName();
-        !overscroll_area_name.IsNull()) {
-      uncontained_overscroll_position_descendants_.erase(overscroll_area_name);
     }
 
     // See SetInvisibleForPositionVisibility() for explanation for

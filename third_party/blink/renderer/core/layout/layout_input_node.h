@@ -81,9 +81,6 @@ class CORE_EXPORT LayoutInputNode {
   bool IsFixedContainer() const {
     return box_->CanContainFixedPositionObjects();
   }
-  bool IsOverscrollPositionContainer() const {
-    return box_->CanContainOverscrollPositionObjects();
-  }
   bool IsBody() const { return IsBlock() && box_->IsBody(); }
   bool IsView() const { return IsBlock() && box_->IsLayoutView(); }
   bool IsDocumentElement() const { return box_->IsDocumentElement(); }

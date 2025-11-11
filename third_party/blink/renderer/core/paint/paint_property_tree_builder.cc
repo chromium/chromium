@@ -186,9 +186,6 @@ void PaintPropertyTreeBuilder::SetupContextForFrame(
   context.absolute_position = context.current;
   full_context.container_for_absolute_position = nullptr;
   full_context.container_for_fixed_position = nullptr;
-#if DCHECK_IS_ON()
-  full_context.overscroll_position_containers.clear();
-#endif
   context.fixed_position = context.current;
   context.fixed_position.fixed_position_children_fixed_to_root = true;
 }
@@ -1753,14 +1750,6 @@ bool FragmentPaintPropertyTreeBuilder::EffectCanUseCurrentClipAsOutputClip()
   const auto* layer = To<LayoutBoxModelObject>(object_).Layer();
   // Out-of-flow descendants not contained by this object may escape clips.
   if (layer->HasNonContainedAbsolutePositionDescendant()) {
-    // TODO(crbug.com/458732579): This is overly pessimistic for the case when
-    // we can contain an overscroll-position descendant since the real container
-    // would be a descendant of us, which may in fact have the same clip as the
-    // current clip.
-    if (layer->HasNonContainedOverscrollPositionDescendant()) {
-      return false;
-    }
-
     const auto* container = full_context_.container_for_absolute_position;
     // Check HasLocalBorderBoxProperties() because |container| may not have
     // updated paint properties if it appears in a later box fragment than
@@ -3358,21 +3347,8 @@ void FragmentPaintPropertyTreeBuilder::UpdatePaintOffset() {
       case EPosition::kRelative:
         break;
       case EPosition::kAbsolute: {
-#if DCHECK_IS_ON()
-        if (const auto& overscroll_position =
-                box_model_object.StyleRef().OverscrollPosition()) {
-          const LayoutObject* container = box_model_object.Container();
-          auto container_it = full_context_.overscroll_position_containers.find(
-              overscroll_position->GetName());
-          DCHECK(container == full_context_.container_for_absolute_position ||
-                 (container_it !=
-                      full_context_.overscroll_position_containers.end() &&
-                  container_it->value == container));
-        } else {
-          DCHECK_EQ(full_context_.container_for_absolute_position,
-                    box_model_object.Container());
-        }
-#endif
+        DCHECK_EQ(full_context_.container_for_absolute_position,
+                  box_model_object.Container());
         SwitchToOOFContext(context_.absolute_position);
         break;
       }
@@ -4032,22 +4008,10 @@ void PaintPropertyTreeBuilder::UpdateForChildren() {
 
   properties_changed_.Merge(builder.PropertiesChanged());
 
-  if (object_.CanContainAbsolutePositionObjects()) {
+  if (object_.CanContainAbsolutePositionObjects())
     context_.container_for_absolute_position = &object_;
-#if DCHECK_IS_ON()
-    context_.overscroll_position_containers.clear();
-#endif
-  } else if (object_.CanContainOverscrollPositionObjects()) {
-    CHECK(!object_.GetOverscrollAreaName().IsNull());
-#if DCHECK_IS_ON()
-    context_.overscroll_position_containers.Set(object_.GetOverscrollAreaName(),
-                                                &object_);
-#endif
-  }
-
-  if (object_.CanContainFixedPositionObjects()) {
+  if (object_.CanContainFixedPositionObjects())
     context_.container_for_fixed_position = &object_;
-  }
 
   if (properties_changed_.Max() >=
           PaintPropertyChangeType::kNodeAddedOrRemoved ||

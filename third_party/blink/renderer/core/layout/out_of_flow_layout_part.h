@@ -472,10 +472,6 @@ class CORE_EXPORT OutOfFlowLayoutPart {
   LayoutUnit fragmentainer_consumed_block_size_;
   bool is_absolute_container_ = false;
   bool is_fixed_container_ = false;
-  // Indicates whether this node is an ::overscroll-area-parent which can
-  // contain some overscroll-position elements.
-  bool is_overscroll_position_container_ = false;
-
   bool has_block_fragmentation_ = false;
   // A fixedpos containing block was found in an outer fragmentation context.
   bool outer_context_has_fixedpos_container_ = false;

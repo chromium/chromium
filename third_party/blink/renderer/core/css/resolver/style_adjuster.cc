@@ -783,11 +783,6 @@ void StyleAdjuster::AdjustStyleForDisplay(
     builder.SetDisplay(EquivalentBlockDisplay(builder.Display()));
   }
 
-  if (builder.StyleType() == kPseudoIdOverscrollClientArea ||
-      builder.StyleType() == kPseudoIdOverscrollAreaParent) {
-    builder.SetDisplay(EquivalentBlockDisplay(builder.Display()));
-  }
-
   if (builder.Display() == EDisplay::kBlock) {
     return;
   }
@@ -1090,8 +1085,12 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
     // Elements in the top layer must be out-of-flow positioned.
     // Root elements that are in the top layer should just be left alone
     // because the fullscreen.css doesn't apply any style to them.
+    //
+    // Similarly, overscroll-position elements must be out of flow positioned
+    // with a box.
     if ((builder.Overlay() == EOverlay::kAuto && !is_document_element) ||
-        builder.StyleType() == kPseudoIdBackdrop) {
+        builder.StyleType() == kPseudoIdBackdrop ||
+        builder.OverscrollPosition()) {
       if (!builder.HasOutOfFlowPosition()) {
         builder.SetPosition(EPosition::kAbsolute);
       }
@@ -1099,15 +1098,6 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
         // See crbug.com/1240701 for more details.
         // https://fullscreen.spec.whatwg.org/#new-stacking-layer
         // If its specified display property is contents, it computes to block.
-        builder.SetDisplay(EDisplay::kBlock);
-      }
-    }
-
-    // overscroll-position elements have to be absolutely positioned and have a
-    // box.
-    if (builder.OverscrollPosition()) {
-      builder.SetPosition(EPosition::kAbsolute);
-      if (builder.Display() == EDisplay::kContents) {
         builder.SetDisplay(EDisplay::kBlock);
       }
     }
