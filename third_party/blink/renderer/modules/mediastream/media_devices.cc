@@ -18,9 +18,6 @@
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/mediastream/media_devices.h"
-#include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
-#include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
-#include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
 #include "third_party/blink/public/mojom/media/capture_handle_config.mojom-blink.h"
 #include "third_party/blink/public/mojom/mediastream/media_devices.mojom-blink.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
@@ -53,7 +50,6 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/modules/mediastream/crop_target.h"
-#include "third_party/blink/renderer/modules/mediastream/identifiability_metrics.h"
 #include "third_party/blink/renderer/modules/mediastream/input_device_info.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream.h"
 #include "third_party/blink/renderer/modules/mediastream/navigator_media_stream.h"
@@ -66,7 +62,6 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mediastream/webrtc_uma_histograms.h"
-#include "third_party/blink/renderer/platform/privacy_budget/identifiability_digest_helpers.h"
 #include "third_party/blink/renderer/platform/region_capture_crop_id.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
@@ -573,17 +568,10 @@ ScriptPromise<IDLResolvedType> MediaDevices::SendUserMediaRequest(
 
   LocalDOMWindow* window = LocalDOMWindow::From(script_state);
   UserMediaClient* user_media_client = UserMediaClient::From(window);
-  constexpr IdentifiableSurface::Type surface_type =
-      IdentifiableSurface::Type::kMediaDevices_GetUserMedia;
-  IdentifiableSurface surface;
-  if (IdentifiabilityStudySettings::Get()->ShouldSampleType(surface_type)) {
-    surface = IdentifiableSurface::FromTypeAndToken(
-        surface_type, TokenFromConstraints(options));
-  }
 
   UserMediaRequest* request =
       UserMediaRequest::Create(window, user_media_client, media_type, options,
-                               callbacks, exception_state, surface);
+                               callbacks, exception_state);
   if (!request) {
     DCHECK(exception_state.HadException());
     resolver->RecordAndDetach(UserMediaRequestResult::kInvalidConstraints);
@@ -1277,32 +1265,6 @@ void MediaDevices::StopObserving() {
   receiver_.reset();
 }
 
-namespace {
-
-void RecordEnumeratedDevices(ScriptState* script_state,
-                             const MediaDeviceInfoVector& media_devices) {
-  if (!IdentifiabilityStudySettings::Get()->ShouldSampleWebFeature(
-          WebFeature::kIdentifiabilityMediaDevicesEnumerateDevices)) {
-    return;
-  }
-  Document* document =
-      LocalDOMWindow::From(script_state)->GetFrame()->GetDocument();
-  IdentifiableTokenBuilder builder;
-  for (const auto& device_info : media_devices) {
-    // Ignore device_id since that varies per-site.
-    builder.AddToken(
-        IdentifiabilityBenignStringToken(device_info->kind().AsString()));
-    builder.AddToken(IdentifiabilityBenignStringToken(device_info->label()));
-    // Ignore group_id since that is varies per-site.
-  }
-  IdentifiabilityMetricBuilder(document->UkmSourceID())
-      .AddWebFeature(WebFeature::kIdentifiabilityMediaDevicesEnumerateDevices,
-                     builder.GetToken())
-      .Record(document->UkmRecorder());
-}
-
-}  // namespace
-
 void MediaDevices::DevicesEnumerated(
     ScriptPromiseResolverWithTracker<EnumerateDevicesResult,
                                      IDLSequence<MediaDeviceInfo>>*
@@ -1382,7 +1344,6 @@ void MediaDevices::DevicesEnumerated(
     }
   }
 
-  RecordEnumeratedDevices(result_tracker->GetScriptState(), media_devices);
   ReportCompletedEnumerateDevices(result_contains_nonempty_input_device_ids);
   result_tracker->Resolve(media_devices);
   tracer->End();

@@ -23,9 +23,6 @@
 
 #include "third_party/blink/renderer/modules/mediastream/navigator_media_stream.h"
 
-#include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
-#include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
-#include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
 #include "third_party/blink/renderer/bindings/core/v8/dictionary.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_stream_constraints.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_navigator_user_media_error_callback.h"
@@ -34,11 +31,9 @@
 #include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/page/page.h"
-#include "third_party/blink/renderer/modules/mediastream/identifiability_metrics.h"
 #include "third_party/blink/renderer/modules/mediastream/user_media_client.h"
 #include "third_party/blink/renderer/modules/mediastream/user_media_request.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/privacy_budget/identifiability_digest_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
@@ -97,19 +92,11 @@ void NavigatorMediaStream::getUserMedia(
   // should also successfully get a UserMediaClient from it.
   DCHECK(user_media) << "Missing UserMediaClient on a non-null DomWindow";
 
-  IdentifiableSurface surface;
-  constexpr IdentifiableSurface::Type surface_type =
-      IdentifiableSurface::Type::kNavigator_GetUserMedia;
-  if (IdentifiabilityStudySettings::Get()->ShouldSampleType(surface_type)) {
-    surface = IdentifiableSurface::FromTypeAndToken(
-        surface_type, TokenFromConstraints(options));
-  }
-
   UserMediaRequest* request = UserMediaRequest::Create(
       navigator.DomWindow(), user_media, UserMediaRequestType::kUserMedia,
       options,
       MakeGarbageCollected<V8Callbacks>(success_callback, error_callback),
-      exception_state, surface);
+      exception_state);
   if (!request) {
     DCHECK(exception_state.HadException());
     return;
@@ -120,9 +107,6 @@ void NavigatorMediaStream::getUserMedia(
     request->Fail(
         mojom::blink::MediaStreamRequestResult::INVALID_SECURITY_ORIGIN,
         error_message);
-    RecordIdentifiabilityMetric(
-        surface, navigator.GetExecutionContext(),
-        IdentifiabilityBenignStringToken(error_message));
     return;
   }
 
