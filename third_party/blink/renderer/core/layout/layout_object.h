@@ -2061,6 +2061,10 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     return bitfields_.NeedsDevtoolsInfo();
   }
 
+  bool CanContainOverscrollPositionObjects() const;
+
+  const AtomicString& GetOverscrollAreaName() const;
+
   virtual void Paint(const PaintInfo&) const;
 
   virtual RecalcScrollableOverflowResult RecalcScrollableOverflow();

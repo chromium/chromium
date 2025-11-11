@@ -416,7 +416,12 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   }
   bool HasNonContainedAbsolutePositionDescendant() const {
     DCHECK(!needs_descendant_dependent_flags_update_);
-    return has_non_contained_absolute_position_descendant_;
+    return has_non_contained_absolute_position_descendant_ ||
+           !uncontained_overscroll_position_descendants_.empty();
+  }
+  bool HasNonContainedOverscrollPositionDescendant() const {
+    DCHECK(!needs_descendant_dependent_flags_update_);
+    return !uncontained_overscroll_position_descendants_.empty();
   }
   bool HasSelfPaintingLayerDescendant() const {
     DCHECK(!needs_descendant_dependent_flags_update_);
@@ -784,6 +789,8 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
 #endif
 
   const Member<LayoutBoxModelObject> layout_object_;
+
+  HashSet<AtomicString> uncontained_overscroll_position_descendants_;
 
   Member<PaintLayer> parent_;
   Member<PaintLayer> previous_;

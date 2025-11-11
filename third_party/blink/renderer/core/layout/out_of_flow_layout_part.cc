@@ -560,6 +560,8 @@ OutOfFlowLayoutPart::OutOfFlowLayoutPart(BoxFragmentBuilder* container_builder)
     : container_builder_(container_builder),
       is_absolute_container_(container_builder->Node().IsAbsoluteContainer()),
       is_fixed_container_(container_builder->Node().IsFixedContainer()),
+      is_overscroll_position_container_(
+          container_builder->Node().IsOverscrollPositionContainer()),
       has_block_fragmentation_(
           InvolvedInBlockFragmentation(*container_builder)) {
   // If there are no OOFs inside, we can return early, except if this is the
@@ -2744,7 +2746,8 @@ bool OutOfFlowLayoutPart::IsContainingBlockForCandidate(
   if (container_builder_->IsFragmentainerBoxType())
     return false;
 
-  EPosition position = candidate.Node().Style().GetPosition();
+  const auto& style = candidate.Node().Style();
+  EPosition position = style.GetPosition();
 
   // Candidates whose containing block is inline are always positioned inside
   // closest parent block flow.
@@ -2754,8 +2757,17 @@ bool OutOfFlowLayoutPart::IsContainingBlockForCandidate(
     return container_builder_->GetLayoutObject() ==
            candidate.box->ContainingBlock();
   }
+
+  // TODO(crbug.com/455892921): We need to check the document scope as well.
+  bool matches_overscroll_area =
+      is_overscroll_position_container_ && position == EPosition::kAbsolute &&
+      style.OverscrollPosition() &&
+      style.OverscrollPosition()->GetName() ==
+          container_builder_->Node().GetOverscrollAreaName();
+
   return (is_absolute_container_ && position == EPosition::kAbsolute) ||
-         (is_fixed_container_ && position == EPosition::kFixed);
+         (is_fixed_container_ && position == EPosition::kFixed) ||
+         matches_overscroll_area;
 }
 
 // The fragment is generated in one of these two scenarios:

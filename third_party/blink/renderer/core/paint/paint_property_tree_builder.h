@@ -7,6 +7,7 @@
 
 #include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
+#include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/platform/graphics/paint/clip_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint/effect_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scroll_paint_property_node.h"
@@ -180,6 +181,8 @@ struct PaintPropertyTreeBuilderContext final {
   // PaintPropertyTreeBuilderContext even if not needed.
   // See PrePaintTreeWalkContext constructor.
   bool is_actually_needed = true;
+  HeapHashMap<AtomicString, Member<const LayoutObject>>
+      overscroll_position_containers;
 #endif
 
   PaintLayer* painting_layer = nullptr;

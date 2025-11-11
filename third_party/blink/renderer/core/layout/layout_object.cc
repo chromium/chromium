@@ -1736,6 +1736,16 @@ inline void LayoutObject::InvalidateContainerIntrinsicLogicalWidths() {
 LayoutObject* LayoutObject::ContainerForAbsolutePosition(
     AncestorSkipInfo* skip_info) const {
   NOT_DESTROYED();
+  if (const auto& overscroll_position = style_->OverscrollPosition()) {
+    CHECK(!overscroll_position->GetName().IsNull());
+    return FindAncestorByPredicate(
+        this, skip_info, [&overscroll_position](LayoutObject* candidate) {
+          return candidate->CanContainAbsolutePositionObjects() ||
+                 candidate->GetOverscrollAreaName() ==
+                     overscroll_position->GetName();
+        });
+  }
+
   return FindAncestorByPredicate(this, skip_info, [](LayoutObject* candidate) {
     return candidate->CanContainAbsolutePositionObjects();
   });
@@ -1881,6 +1891,20 @@ bool LayoutObject::ComputeIsAbsoluteContainer(const ComputedStyle& style,
          // anonymous content box should be an absolute container.
          (IsAnonymous() && Parent() && Parent()->IsFieldset() &&
           Parent()->CanContainAbsolutePositionObjects());
+}
+
+bool LayoutObject::CanContainOverscrollPositionObjects() const {
+  NOT_DESTROYED();
+  return GetNode() && GetNode()->GetPseudoId() == kPseudoIdOverscrollAreaParent;
+}
+
+const AtomicString& LayoutObject::GetOverscrollAreaName() const {
+  NOT_DESTROYED();
+  if (auto* node = GetNode();
+      node && GetNode()->GetPseudoId() == kPseudoIdOverscrollAreaParent) {
+    return To<PseudoElement>(node)->GetPseudoArgument();
+  }
+  return g_null_atom;
 }
 
 const LayoutBoxModelObject* LayoutObject::FindFirstStickyContainer(

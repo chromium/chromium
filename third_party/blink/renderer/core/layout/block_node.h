@@ -152,6 +152,10 @@ class CORE_EXPORT BlockNode : public LayoutInputNode {
     return box_->GetOverflowClipAxes();
   }
 
+  const AtomicString& GetOverscrollAreaName() const {
+    return box_->GetOverscrollAreaName();
+  }
+
   // Returns true if this node should fill the viewport.
   // This occurs when we are in quirks-mode and we are *not* OOF-positioned,
   // floating, or inline-level.
