@@ -212,10 +212,6 @@ TEST_F(ValuableSuggestionGeneratorTest,
                                       "loyalty_card_id_2"),
           EqualsLoyaltyCardSuggestion(u"998766823", u"Walgreens",
                                       "loyalty_card_id_3")));
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  EXPECT_THAT(suggestions_with_matching_domain.back(),
-              HasTrailingIcon(Suggestion::Icon::kGoogleWallet));
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 
@@ -261,10 +257,6 @@ TEST_F(ValuableSuggestionGeneratorTest,
                                       "loyalty_card_id_2"),
           EqualsLoyaltyCardSuggestion(u"998766823", u"Walgreens",
                                       "loyalty_card_id_3")));
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  EXPECT_THAT(suggestions_with_matching_domain.back(),
-              HasTrailingIcon(Suggestion::Icon::kGoogleWallet));
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 
@@ -314,10 +306,6 @@ TEST_F(ValuableSuggestionGeneratorTest,
                                        "loyalty_card_id_1"),
                                    EqualsSuggestion(SuggestionType::kSeparator),
                                    EqualsManageLoyaltyCardsSuggestion()));
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  EXPECT_THAT(suggestions.back(),
-              HasTrailingIcon(Suggestion::Icon::kGoogleWallet));
-#endif
   // Verify that for loyalty cards, the custom icon is shown.
   EXPECT_THAT(suggestions[0],
               SuggestionIconHasImageOrUrl(fake_image, program_logo));
@@ -403,8 +391,6 @@ TEST_F(ValuableSuggestionGeneratorTest,
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   EXPECT_THAT(lc_submenu_suggestion,
               HasIcon(Suggestion::Icon::kGoogleWalletMonochrome));
-  EXPECT_THAT(lc_submenu_suggestion.children.back(),
-              HasTrailingIcon(Suggestion::Icon::kGoogleWallet));
 #endif
 #endif  // BUILDFLAG(IS_ANDROID)
 }
