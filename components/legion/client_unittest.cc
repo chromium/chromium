@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
@@ -25,6 +26,7 @@ using ::testing::Eq;
 using ::testing::Pointee;
 using ::testing::Property;
 using ::testing::SizeIs;
+using ::testing::WithArgs;
 
 namespace {
 
@@ -38,11 +40,47 @@ class MockSecureChannelClient : public SecureChannel {
       void,
       Write,
       (Client::BinaryEncodedProtoRequest request,
-       base::OnceCallback<void(
-           base::expected<Client::BinaryEncodedProtoResponse, ErrorCode>)>
+       base::OnceCallback<
+           void(base::expected<Client::BinaryEncodedProtoResponse, ErrorCode>)>
            callback),
       (override));
 };
+
+struct ResponseErrorTestParam {
+  Client::BinaryEncodedProtoResponse response_data;
+  ErrorCode expected_error;
+  bool mismatch_request_id = false;
+};
+
+void SetUpMockWrite(MockSecureChannelClient* mock_secure_channel,
+                    const Client::BinaryEncodedProtoResponse& response_template,
+                    bool mismatch_request_id = false) {
+  EXPECT_CALL(*mock_secure_channel, Write(_, _))
+      .WillOnce(WithArgs<0, 1>([=](const auto& request_payload, auto callback) {
+        proto::LegionRequest request;
+        ASSERT_TRUE(request.ParseFromArray(request_payload.data(),
+                                           request_payload.size()));
+
+        proto::LegionResponse response;
+        Client::BinaryEncodedProtoResponse response_data;
+        if (response.ParseFromArray(response_template.data(),
+                                    response_template.size())) {
+          if (mismatch_request_id) {
+            response.set_request_id(request.request_id() + 1);
+          } else {
+            response.set_request_id(request.request_id());
+          }
+          std::string serialized;
+          response.SerializeToString(&serialized);
+          response_data.assign(serialized.begin(), serialized.end());
+        } else {
+          // If template is not a valid proto, send it as is.
+          response_data = response_template;
+        }
+
+        std::move(callback).Run(base::ok(response_data));
+      }));
+}
 
 }  // namespace
 
@@ -55,13 +93,14 @@ class ClientTest : public ::testing::Test {
     auto mock_secure_channel =
         std::make_unique<testing::StrictMock<MockSecureChannelClient>>();
     mock_secure_channel_ = mock_secure_channel.get();
-    client_ = Client(std::move(mock_secure_channel),
-                     proto::FeatureName::FEATURE_NAME_UNSPECIFIED);
+    client_ = base::WrapUnique(
+        new Client(std::move(mock_secure_channel),
+                   proto::FeatureName::FEATURE_NAME_UNSPECIFIED));
   }
 
  protected:
   base::test::TaskEnvironment task_environment_;
-  std::optional<Client> client_;
+  std::unique_ptr<Client> client_;
   raw_ptr<MockSecureChannelClient> mock_secure_channel_;  // Owned by client_
 };
 
@@ -83,8 +122,7 @@ TEST_F(ClientTest, SendTextRequestSuccess) {
   Client::BinaryEncodedProtoResponse response_data(serialized_response.begin(),
                                                    serialized_response.end());
 
-  EXPECT_CALL(*mock_secure_channel_, Write(_, _))
-      .WillOnce(RunOnceCallback<1>(base::ok(response_data)));
+  SetUpMockWrite(mock_secure_channel_, response_data);
 
   base::test::TestFuture<base::expected<std::string, ErrorCode>> future;
   client_->SendTextRequest("some text", future.GetCallback());
@@ -120,61 +158,82 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 // Test fixture for error conditions in SendTextRequest where the server
 // response is malformed.
-class ClientSendTextRequestErrorTest
+class ClientSendTextRequestResponseErrorTest
     : public ClientTest,
-      public ::testing::WithParamInterface<proto::LegionResponse> {};
+      public ::testing::WithParamInterface<ResponseErrorTestParam> {};
 
-TEST_P(ClientSendTextRequestErrorTest, SendTextRequestMalformedResponse) {
-  proto::LegionResponse legion_response = GetParam();
+TEST_P(ClientSendTextRequestResponseErrorTest, SendTextRequestError) {
+  const auto& param = GetParam();
 
-  std::string serialized_response;
-  legion_response.SerializeToString(&serialized_response);
-  Client::BinaryEncodedProtoResponse response_data(serialized_response.begin(),
-                                                   serialized_response.end());
-
-  EXPECT_CALL(*mock_secure_channel_, Write(_, _))
-      .WillOnce(RunOnceCallback<1>(base::ok(response_data)));
+  SetUpMockWrite(mock_secure_channel_, param.response_data,
+                 param.mismatch_request_id);
 
   base::test::TestFuture<base::expected<std::string, ErrorCode>> future;
   client_->SendTextRequest("some text", future.GetCallback());
 
   const auto& result = future.Get();
   ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(result.error(), ErrorCode::kNoContent);
+  EXPECT_EQ(result.error(), param.expected_error);
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         ClientSendTextRequestErrorTest,
-                         ::testing::Values(
-                             // Empty response.
-                             [] {
-                               proto::LegionResponse response;
-                               response.mutable_generate_content_response();
-                               return response;
-                             }(),
-                             // Response with no content parts.
-                             [] {
-                               proto::LegionResponse response;
-                               auto* generate_content_response =
-                                   response.mutable_generate_content_response();
-                               generate_content_response->add_candidates();
-                               return response;
-                             }()));
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ClientSendTextRequestResponseErrorTest,
+    ::testing::Values(
+        // Request ID mismatch.
+        ResponseErrorTestParam{
+            .response_data =
+                [] {
+                  proto::LegionResponse response;
+                  response.set_request_id(999);
+                  auto* gcr = response.mutable_generate_content_response();
+                  auto* candidate = gcr->add_candidates();
+                  candidate->mutable_content()->add_parts()->set_text("text");
+                  std::string serialized;
+                  response.SerializeToString(&serialized);
+                  return Client::BinaryEncodedProtoResponse(serialized.begin(),
+                                                            serialized.end());
+                }(),
+            .expected_error = ErrorCode::kError,
+            .mismatch_request_id = true},
+        // Empty response.
+        ResponseErrorTestParam{
+            .response_data =
+                [] {
+                  proto::LegionResponse response;
+                  response.mutable_generate_content_response();
+                  std::string serialized;
+                  response.SerializeToString(&serialized);
+                  return Client::BinaryEncodedProtoResponse(serialized.begin(),
+                                                            serialized.end());
+                }(),
+            .expected_error = ErrorCode::kNoContent},
+        // Response with no content parts.
+        ResponseErrorTestParam{
+            .response_data =
+                [] {
+                  proto::LegionResponse response;
+                  auto* gcr = response.mutable_generate_content_response();
+                  gcr->add_candidates();
+                  std::string serialized;
+                  response.SerializeToString(&serialized);
+                  return Client::BinaryEncodedProtoResponse(serialized.begin(),
+                                                            serialized.end());
+                }(),
+            .expected_error = ErrorCode::kNoContent}));
 
 // Test fixture for error conditions in SendGenerateContentRequest where the
 // server response is malformed.
 class ClientSendGenerateContentRequestErrorTest
     : public ClientTest,
-      public ::testing::WithParamInterface<
-          std::pair<Client::BinaryEncodedProtoResponse, ErrorCode>> {};
+      public ::testing::WithParamInterface<ResponseErrorTestParam> {};
 
 TEST_P(ClientSendGenerateContentRequestErrorTest,
        SendGenerateContentRequestMalformedResponse) {
   const auto& param = GetParam();
-  Client::BinaryEncodedProtoResponse response_data = param.first;
 
-  EXPECT_CALL(*mock_secure_channel_, Write(_, _))
-      .WillOnce(RunOnceCallback<1>(base::ok(response_data)));
+  SetUpMockWrite(mock_secure_channel_, param.response_data,
+                 param.mismatch_request_id);
 
   base::test::TestFuture<
       base::expected<proto::GenerateContentResponse, ErrorCode>>
@@ -184,25 +243,41 @@ TEST_P(ClientSendGenerateContentRequestErrorTest,
 
   const auto& result = future.Get();
   ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(result.error(), param.second);
+  EXPECT_EQ(result.error(), param.expected_error);
 }
 
 INSTANTIATE_TEST_SUITE_P(
     All,
     ClientSendGenerateContentRequestErrorTest,
     ::testing::Values(
+        // Request ID mismatch.
+        ResponseErrorTestParam{
+            .response_data =
+                [] {
+                  proto::LegionResponse response;
+                  response.set_request_id(999);
+                  response.mutable_generate_content_response();
+                  std::string serialized;
+                  response.SerializeToString(&serialized);
+                  return Client::BinaryEncodedProtoResponse(serialized.begin(),
+                                                            serialized.end());
+                }(),
+            .expected_error = ErrorCode::kError,
+            .mismatch_request_id = true},
         // Invalid response that cannot be parsed.
-        std::make_pair(Client::BinaryEncodedProtoResponse{0x01, 0x02, 0x03},
-                       ErrorCode::kResponseParseError),
+        ResponseErrorTestParam{
+            .response_data = {0x01, 0x02, 0x03},
+            .expected_error = ErrorCode::kResponseParseError},
         // Response missing GenerateContentResponse.
-        std::make_pair(
-            [] {
-              proto::LegionResponse legion_response;
-              std::string serialized_response;
-              legion_response.SerializeToString(&serialized_response);
-              return Client::BinaryEncodedProtoResponse(
-                  serialized_response.begin(), serialized_response.end());
-            }(),
-            ErrorCode::kNoResponse)));
+        ResponseErrorTestParam{
+            .response_data =
+                [] {
+                  proto::LegionResponse legion_response;
+                  std::string serialized_response;
+                  legion_response.SerializeToString(&serialized_response);
+                  return Client::BinaryEncodedProtoResponse(
+                      serialized_response.begin(), serialized_response.end());
+                }(),
+            .expected_error = ErrorCode::kNoResponse}));
 
 }  // namespace legion

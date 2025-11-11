@@ -43,6 +43,7 @@ void OnGenerateContentRequestCompleted(
 }
 
 void OnRequestSent(
+    int32_t request_id,
     Client::OnGenerateContentRequestCompletedCallback cb,
     base::expected<Client::BinaryEncodedProtoResponse, ErrorCode> result) {
   if (!result.has_value()) {
@@ -54,6 +55,13 @@ void OnRequestSent(
   if (!legion_response.ParseFromArray(result->data(), result->size())) {
     LOG(ERROR) << "Failed to parse LegionResponse";
     std::move(cb).Run(base::unexpected(ErrorCode::kResponseParseError));
+    return;
+  }
+
+  if (legion_response.request_id() != request_id) {
+    LOG(ERROR) << "Response request_id (" << legion_response.request_id()
+               << ") does not match request's id (" << request_id << ")";
+    std::move(cb).Run(base::unexpected(ErrorCode::kError));
     return;
   }
 
@@ -105,20 +113,16 @@ GURL Client::FormatUrl(const std::string& url, const std::string& api_key) {
 
 Client::Client(std::unique_ptr<SecureChannel> secure_channel,
                proto::FeatureName feature_name)
-    : secure_channel_(std::move(secure_channel)),
-      feature_name_(feature_name) {
+    : secure_channel_(std::move(secure_channel)), feature_name_(feature_name) {
   CHECK(secure_channel_);
 }
 
 Client::~Client() = default;
 
-Client::Client(Client&&) = default;
-Client& Client::operator=(Client&&) = default;
-
 void Client::SendRequest(
     BinaryEncodedProtoRequest request,
-    base::OnceCallback<void(base::expected<BinaryEncodedProtoResponse, ErrorCode>)>
-        callback) {
+    base::OnceCallback<
+        void(base::expected<BinaryEncodedProtoResponse, ErrorCode>)> callback) {
   DVLOG(1) << "SendRequest started.";
 
   DVLOG(1) << "Calling SecureChannelClient to execute the request.";
@@ -144,8 +148,12 @@ void Client::SendTextRequest(const std::string& text,
 void Client::SendGenerateContentRequest(
     const proto::GenerateContentRequest& request,
     OnGenerateContentRequestCompletedCallback callback) {
+  int32_t request_id = next_request_id_;
+  next_request_id_++;
+
   proto::LegionRequest request_proto;
   request_proto.set_feature_name(feature_name_);
+  request_proto.set_request_id(request_id);
   *request_proto.mutable_generate_content_request() = request;
 
   std::string serialized_request;
@@ -154,7 +162,7 @@ void Client::SendGenerateContentRequest(
       serialized_request.begin(), serialized_request.end());
 
   auto response_parsing_callback =
-      base::BindOnce(&OnRequestSent, std::move(callback));
+      base::BindOnce(&OnRequestSent, request_id, std::move(callback));
 
   SendRequest(std::move(binary_encoded_proto_request),
               std::move(response_parsing_callback));

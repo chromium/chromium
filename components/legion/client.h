@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_LEGION_CLIENT_H_
 #define COMPONENTS_LEGION_CLIENT_H_
 
+#include <cstdint>
 #include <memory>
 #include <string>
 
@@ -57,8 +58,6 @@ class Client {
 
   Client(const Client&) = delete;
   Client& operator=(const Client&) = delete;
-  Client(Client&&);
-  Client& operator=(Client&&);
 
   // Sends a request with a single text content.
   void SendTextRequest(const std::string& text,
@@ -83,6 +82,7 @@ class Client {
 
   std::unique_ptr<SecureChannel> secure_channel_;
   proto::FeatureName feature_name_;
+  int32_t next_request_id_{1};
 };
 
 }  // namespace legion
