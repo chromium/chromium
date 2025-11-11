@@ -218,6 +218,10 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
     return this.addedTabsIds_.has(recentTab.tabId);
   }
 
+  addDroppedFiles(files: FileList|null) {
+    this.processFiles_(files);
+  }
+
   setContextFiles(files: ComposeboxFile[]) {
     for (const file of files) {
       if (file.type === 'tab') {
@@ -353,10 +357,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
     this.fire('delete-context', {uuid: e.detail.uuid});
   }
 
-  protected onFileChange_(e: Event) {
-    const input = e.target as HTMLInputElement;
-    const files = input.files;
-
+  protected processFiles_(files: FileList|null, isImage: boolean = false) {
     // Multiple is set to false in the input so only one file is expected.
     if (!files || files.length === 0 ||
         this.files_.size >= this.maxFileCount_) {
@@ -369,7 +370,6 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
     for (const file of files) {
       if (file.size === 0 || file.size > this.maxFileSize_) {
         const fileIsEmpty = file.size === 0;
-        input.value = '';
         fileIsEmpty ? this.recordFileValidationMetric_(
                           ComposeboxFileValidationError.FILE_EMPTY) :
                       this.recordFileValidationMetric_(
@@ -383,11 +383,23 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
       }
 
       if (!file.type.includes('pdf') && !file.type.includes('image')) {
+        this.fire('on-file-validation-error', {
+            errorMessage:
+      // TODO(crbug.com/454730356): replace with translatable string that includes
+      // pdf and not just image.
+                this.i18n('composeboxFileUploadImageProcessingError'),
+        });
         return;
       }
       filesToUpload.push(file);
     }
-    this.addFileContext_(filesToUpload, input === this.$.imageInput);
+    this.addFileContext_(filesToUpload, isImage);
+  }
+
+  protected onFileChange_(e: Event) {
+    const input = e.target as HTMLInputElement;
+    const files = input.files;
+    this.processFiles_(files, input === this.$.imageInput);
     input.value = '';
   }
 

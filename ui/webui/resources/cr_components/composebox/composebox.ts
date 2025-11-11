@@ -118,6 +118,10 @@ export class ComposeboxElement extends I18nMixinLit
         reflect: true,
         type: Boolean,
       },
+      isDraggingFile_: {
+        reflect: true,
+        type: Boolean,
+      },
       inCreateImageMode_: {
         reflect: true,
         type: Boolean,
@@ -174,6 +178,7 @@ export class ComposeboxElement extends I18nMixinLit
   protected accessor showFileCarousel_: boolean = false;
   protected accessor inCreateImageMode_: boolean = false;
   protected accessor inDeepSearchMode_: boolean = false;
+  protected accessor isDraggingFile_: boolean = false;
   protected accessor showContextMenuDescription_: boolean = true;
   protected accessor lensButtonDisabled_: boolean = false;
   protected accessor tabSuggestions_: TabInfo[] = [];
@@ -191,6 +196,8 @@ export class ComposeboxElement extends I18nMixinLit
   private searchboxListenerIds: number[] = [];
   private composeboxCloseByEscape_: boolean =
       loadTimeData.getBoolean('composeboxCloseByEscape');
+  private dragAndDropEnabled_: boolean =
+      loadTimeData.getBoolean('dragAndDropEnabled');
 
   private selectedMatch_: AutocompleteMatch|null = null;
 
@@ -257,6 +264,7 @@ export class ComposeboxElement extends I18nMixinLit
     this.searchboxListenerIds = [];
 
     this.eventTracker_.removeAll();
+
   }
 
   override willUpdate(changedProperties: PropertyValues<this>) {
@@ -544,6 +552,51 @@ export class ComposeboxElement extends I18nMixinLit
     }
   }
 
+  protected handleDragEnter_(e: DragEvent) {
+    if (!this.dragAndDropEnabled_) {
+      return;
+    }
+    e.preventDefault();
+    if (this.isDraggingFile_) {
+      return;
+    }
+    this.isDraggingFile_ = true;
+  }
+
+  protected handleDragOver_(e: DragEvent) {
+    if (!this.dragAndDropEnabled_) {
+      return;
+    }
+    e.preventDefault();
+  }
+
+  protected handleDrop_(e: DragEvent) {
+    if (!this.dragAndDropEnabled_) {
+      return;
+    }
+    e.preventDefault();
+    const files = e.dataTransfer?.files;
+    if (files && files.length > 0) {
+      this.$.context.addDroppedFiles(files);
+    }
+    this.isDraggingFile_ = false;
+  }
+
+  protected handleDragLeave_(e: DragEvent) {
+    if (!this.dragAndDropEnabled_) {
+      return;
+    }
+    e.preventDefault();
+
+    // Avoid false leave events from composebox to its children.
+    // Only consider leave events from composebox to external components.
+    const currentTarget = e.currentTarget as Node;
+    if (e.relatedTarget && currentTarget.contains(e.relatedTarget as Node)) {
+      return;
+    }
+    this.isDraggingFile_ = false;
+  }
+
   protected onLensClick_() {
     this.pageHandler_.handleLensButtonClick();
   }
@@ -557,7 +610,10 @@ export class ComposeboxElement extends I18nMixinLit
   }
 
   private updateInputPlaceholder_() {
-    if (this.inDeepSearchMode_) {
+    if (this.isDraggingFile_) {
+      this.inputPlaceholder_ = 'Drop your file here';
+      // TODO(crbug.com/454730356): replace with translatable string
+    } else if (this.inDeepSearchMode_) {
       this.inputPlaceholder_ =
           loadTimeData.getString('composeDeepSearchPlaceholder');
     } else if (this.inCreateImageMode_) {
