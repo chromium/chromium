@@ -1820,7 +1820,7 @@ class JniGeneratorSanitizer(BaseActionSanitizer):
       # from those genrule can simply call into the original class as it exists outside
       # of cronet's jar.
       # Only jarjar platform code
-      self._append_arg('--package-prefix', 'android.net.connectivity')
+      self._append_arg('--package-prefix', 'android.net.http.internal')
     super()._sanitize_args()
 
   def get_outputs(self):
@@ -1923,7 +1923,7 @@ class JniRegistrationGeneratorSanitizer(BaseActionSanitizer):
     self._delete_value_arg('--package-prefix-filter', throw_if_absent=False)
     if not self.is_test_target:
       # Only jarjar platform code
-      self._append_arg('--package-prefix', 'android.net.connectivity')
+      self._append_arg('--package-prefix', 'android.net.http.internal')
     super()._sanitize_args()
 
   def get_cmd(self):
