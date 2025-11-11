@@ -15,8 +15,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -24,6 +24,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
+import org.robolectric.android.controller.ActivityController;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.R;
@@ -35,35 +37,29 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 /** Unit tests for {@link FuseboxAttachmentViewBinder}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class FuseboxAttachmentViewBinderUnitTest {
-    public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Rule
-    public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
-            new ActivityScenarioRule<>(TestActivity.class);
+    @Mock private Drawable mDrawable;
 
-    private @Mock Drawable mDrawable;
-
-    private Activity mActivity;
+    private ActivityController<TestActivity> mActivityController;
     private PropertyModel mModel;
     private ConstraintLayout mView;
 
     @Before
     public void setUp() {
-        mActivityScenarioRule
-                .getScenario()
-                .onActivity(
-                        activity -> {
-                            mActivity = activity;
-                            mModel = new PropertyModel(FuseboxAttachmentProperties.ALL_KEYS);
-                            mView =
-                                    (ConstraintLayout)
-                                            LayoutInflater.from(activity)
-                                                    .inflate(
-                                                            R.layout.fusebox_attachment_layout,
-                                                            null);
-                            PropertyModelChangeProcessor.create(
-                                    mModel, mView, FuseboxAttachmentViewBinder::bind);
-                        });
+        mActivityController = Robolectric.buildActivity(TestActivity.class).setup();
+        Activity activity = mActivityController.get();
+        mModel = new PropertyModel(FuseboxAttachmentProperties.ALL_KEYS);
+        mView =
+                (ConstraintLayout)
+                        LayoutInflater.from(activity)
+                                .inflate(R.layout.fusebox_attachment_layout, /* root= */ null);
+        PropertyModelChangeProcessor.create(mModel, mView, FuseboxAttachmentViewBinder::bind);
+    }
+
+    @After
+    public void tearDown() {
+        mActivityController.close();
     }
 
     @Test

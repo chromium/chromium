@@ -10,9 +10,11 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
@@ -23,16 +25,17 @@ import android.view.LayoutInflater;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.RuntimeEnvironment;
+import org.robolectric.android.controller.ActivityController;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -56,20 +59,20 @@ import java.util.List;
 /** Unit tests for {@link NavigationAttachmentsMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class NavigationAttachmentsMediatorUnitTest {
-    public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
-    private @Mock NavigationAttachmentsViewHolder mViewHolder;
-    private @Mock NavigationAttachmentsPopup mPopup;
-    private @Mock WindowAndroid mWindowAndroid;
-    private @Mock ComposeBoxQueryControllerBridge mComposeBoxQueryControllerBridge;
-    private @Mock Clipboard mClipboard;
-    private @Mock TabModelSelector mTabModelSelector;
-    private @Mock Tab mTab1;
-    private @Mock Tab mTab2;
-    private @Mock WebContents mWebContents;
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    private Activity mActivity;
+    @Mock private NavigationAttachmentsViewHolder mViewHolder;
+    @Mock private NavigationAttachmentsPopup mPopup;
+    @Mock private WindowAndroid mWindowAndroid;
+    @Mock private ComposeBoxQueryControllerBridge mComposeBoxQueryControllerBridge;
+    @Mock private Clipboard mClipboard;
+    @Mock private TabModelSelector mTabModelSelector;
+    @Mock private Tab mTab1;
+    @Mock private Tab mTab2;
+    @Mock private WebContents mWebContents;
+
+    private ActivityController<TestActivity> mActivityController;
     private Context mContext;
-    private ConstraintLayout mViewGroup;
     private PropertyModel mModel;
     private NavigationAttachmentsMediator mMediator;
     private ModelList mAttachments;
@@ -81,20 +84,21 @@ public class NavigationAttachmentsMediatorUnitTest {
     @Before
     public void setUp() {
         mTabModelSelectorSupplier = new ObservableSupplierImpl<>(mTabModelSelector);
-        mAutocompleteRequestTypeSupplier = new ObservableSupplierImpl<>();
-        mAutocompleteRequestTypeSupplier.set(AutocompleteRequestType.SEARCH);
-        mActivity = Robolectric.buildActivity(TestActivity.class).setup().get();
-        mViewGroup = new ConstraintLayout(mActivity);
-        mActivity.setContentView(mViewGroup);
-        LayoutInflater.from(mActivity).inflate(R.layout.fusebox_layout, mViewGroup, true);
+        mAutocompleteRequestTypeSupplier =
+                new ObservableSupplierImpl<>(AutocompleteRequestType.SEARCH);
+        mActivityController = Robolectric.buildActivity(TestActivity.class).setup();
+        Activity activity = mActivityController.get();
+        ConstraintLayout viewGroup = new ConstraintLayout(activity);
+        activity.setContentView(viewGroup);
+        LayoutInflater.from(activity).inflate(R.layout.fusebox_layout, viewGroup, true);
 
         mContext = RuntimeEnvironment.application;
         mModel = new PropertyModel(NavigationAttachmentsProperties.ALL_KEYS);
 
-        mViewHolder = new NavigationAttachmentsViewHolder(mViewGroup, mPopup);
+        mViewHolder = new NavigationAttachmentsViewHolder(viewGroup, mPopup);
         mAttachments = new ModelList();
         mMediator =
-                Mockito.spy(
+                spy(
                         new NavigationAttachmentsMediator(
                                 mContext,
                                 mWindowAndroid,
@@ -106,6 +110,11 @@ public class NavigationAttachmentsMediatorUnitTest {
                                 mComposeBoxQueryControllerBridge));
         Clipboard.setInstanceForTesting(mClipboard);
         OmniboxResourceProvider.setTabFaviconFactory((any) -> mBitmap);
+    }
+
+    @After
+    public void tearDown() {
+        mActivityController.close();
     }
 
     /* Useful for testing logic in the mediator's constructor. */
@@ -310,7 +319,7 @@ public class NavigationAttachmentsMediatorUnitTest {
         // Manually start a session to test the hiding part.
         mMediator.activateAiMode();
         verify(mComposeBoxQueryControllerBridge).notifySessionStarted();
-        Mockito.clearInvocations(mComposeBoxQueryControllerBridge);
+        clearInvocations(mComposeBoxQueryControllerBridge);
 
         // Calling with true again. Should do nothing.
         mMediator.setAutocompleteRequestTypeChangeable(true);
@@ -321,7 +330,7 @@ public class NavigationAttachmentsMediatorUnitTest {
         mMediator.setAutocompleteRequestTypeChangeable(false);
         verify(mComposeBoxQueryControllerBridge, never()).notifySessionStarted();
         verify(mComposeBoxQueryControllerBridge).notifySessionAbandoned();
-        Mockito.clearInvocations(mComposeBoxQueryControllerBridge);
+        clearInvocations(mComposeBoxQueryControllerBridge);
 
         // Calling with false again. Should do nothing.
         mMediator.setAutocompleteRequestTypeChangeable(false);

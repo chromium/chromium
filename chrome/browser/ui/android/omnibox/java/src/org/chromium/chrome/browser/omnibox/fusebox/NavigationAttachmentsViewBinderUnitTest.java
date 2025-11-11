@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.omnibox.fusebox;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
@@ -26,12 +27,11 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
+import org.robolectric.android.controller.ActivityController;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.R;
@@ -63,35 +63,34 @@ public class NavigationAttachmentsViewBinderUnitTest {
         int COMPACT = 3;
     }
 
-    public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    private @Mock AnchoredPopupWindow mPopupWindow;
+    @Mock private AnchoredPopupWindow mPopupWindow;
+
     private final PropertyModel mModel =
             new PropertyModel(NavigationAttachmentsProperties.ALL_KEYS);
 
-    private Activity mActivity;
-    private ConstraintLayout mParent;
+    private ActivityController<TestActivity> mActivityController;
     private NavigationAttachmentsViewHolder mViewHolder;
     private NavigationAttachmentsPopup mPopup;
-    private ViewGroup mPopupView;
 
     @Before
     public void setUp() {
-        // Replace .create().resume() with .setup() once we have a content view.
-        mActivity = Robolectric.buildActivity(TestActivity.class).create().resume().get();
+        mActivityController = Robolectric.buildActivity(TestActivity.class).setup();
+        Activity activity = mActivityController.get();
 
-        // Initialize location bar layout
-        mParent = new ConstraintLayout(mActivity);
-        LayoutInflater.from(mActivity).inflate(R.layout.location_bar, mParent);
+        // Initialize location bar layout.
+        ConstraintLayout parent = new ConstraintLayout(activity);
+        LayoutInflater.from(activity).inflate(R.layout.location_bar, parent);
 
-        mPopupView =
+        ViewGroup popupView =
                 (ViewGroup)
-                        LayoutInflater.from(mActivity)
-                                .inflate(R.layout.fusebox_context_popup, null);
-        doReturn(mPopupView).when(mPopupWindow).getContentView();
+                        LayoutInflater.from(activity)
+                                .inflate(R.layout.fusebox_context_popup, /* root= */ null);
+        doReturn(popupView).when(mPopupWindow).getContentView();
 
-        mPopup = new NavigationAttachmentsPopup(mActivity, mPopupWindow, mPopupView);
-        mViewHolder = new NavigationAttachmentsViewHolder(mParent, mPopup);
+        mPopup = new NavigationAttachmentsPopup(activity, mPopupWindow, popupView);
+        mViewHolder = new NavigationAttachmentsViewHolder(parent, mPopup);
 
         // Initialize workable defaults.
         mModel.set(NavigationAttachmentsProperties.ATTACHMENTS_TOOLBAR_VISIBLE, true);
@@ -102,6 +101,11 @@ public class NavigationAttachmentsViewBinderUnitTest {
 
         PropertyModelChangeProcessor.create(
                 mModel, mViewHolder, NavigationAttachmentsViewBinder::bind);
+    }
+
+    @After
+    public void tearDown() {
+        mActivityController.close();
     }
 
     private void configureFusebox(@Variant int testCase, @AutocompleteRequestType int requestType) {
@@ -117,11 +121,6 @@ public class NavigationAttachmentsViewBinderUnitTest {
         mModel.set(
                 NavigationAttachmentsProperties.SHOW_DEDICATED_MODE_BUTTON,
                 OmniboxFeatures.sShowDedicatedModeButton.getValue());
-    }
-
-    @After
-    public void tearDown() {
-        mActivity.finish();
     }
 
     @Test
@@ -157,10 +156,7 @@ public class NavigationAttachmentsViewBinderUnitTest {
         Runnable runnable = mock(Runnable.class);
         mModel.set(NavigationAttachmentsProperties.BUTTON_ADD_CLICKED, runnable);
 
-        ArgumentCaptor<View.OnClickListener> listenerCaptor =
-                ArgumentCaptor.forClass(View.OnClickListener.class);
         mViewHolder.addButton.performClick();
-
         verify(runnable).run();
     }
 
@@ -169,8 +165,6 @@ public class NavigationAttachmentsViewBinderUnitTest {
         Runnable runnable = mock(Runnable.class);
         mModel.set(NavigationAttachmentsProperties.POPUP_CAMERA_CLICKED, runnable);
 
-        ArgumentCaptor<View.OnClickListener> listenerCaptor =
-                ArgumentCaptor.forClass(View.OnClickListener.class);
         mPopup.mCameraButton.performClick();
         verify(runnable).run();
     }
@@ -180,8 +174,6 @@ public class NavigationAttachmentsViewBinderUnitTest {
         Runnable runnable = mock(Runnable.class);
         mModel.set(NavigationAttachmentsProperties.POPUP_GALLERY_CLICKED, runnable);
 
-        ArgumentCaptor<View.OnClickListener> listenerCaptor =
-                ArgumentCaptor.forClass(View.OnClickListener.class);
         mPopup.mGalleryButton.performClick();
         verify(runnable).run();
     }
@@ -191,8 +183,6 @@ public class NavigationAttachmentsViewBinderUnitTest {
         Runnable runnable = mock(Runnable.class);
         mModel.set(NavigationAttachmentsProperties.POPUP_FILE_CLICKED, runnable);
 
-        ArgumentCaptor<View.OnClickListener> listenerCaptor =
-                ArgumentCaptor.forClass(View.OnClickListener.class);
         mPopup.mFileButton.performClick();
         verify(runnable).run();
     }
@@ -202,8 +192,6 @@ public class NavigationAttachmentsViewBinderUnitTest {
         Runnable runnable = mock(Runnable.class);
         mModel.set(NavigationAttachmentsProperties.POPUP_TAB_PICKER_CLICKED, runnable);
 
-        ArgumentCaptor<View.OnClickListener> listenerCaptor =
-                ArgumentCaptor.forClass(View.OnClickListener.class);
         mPopup.mTabButton.performClick();
         verify(runnable).run();
     }
@@ -301,7 +289,7 @@ public class NavigationAttachmentsViewBinderUnitTest {
         mModel.set(NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_VISIBLE, true);
         assertEquals(View.VISIBLE, mPopup.mAddCurrentTab.getVisibility());
 
-        Drawable drawable = Mockito.spy(new ColorDrawable(Color.RED));
+        Drawable drawable = spy(new ColorDrawable(Color.RED));
         mModel.set(NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_THUMBNAIL, drawable);
         // Verifying via getCompoundDrawables is hard because it requires manipulating the view to
         // resolve its visibility, layout direction, and drawables. This lets us check indirectly.
