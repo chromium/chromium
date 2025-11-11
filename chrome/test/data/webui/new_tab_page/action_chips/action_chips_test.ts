@@ -30,4 +30,16 @@ suite('NewTabPageActionChipsTest', () => {
     // Assert.
     await whenActionChipClicked;
   });
+  test('deep search chip triggers chip click event', async () => {
+    // Setup.
+    const deepSearchChip =
+        chips.shadowRoot.querySelector<CrButtonElement>('#deep-search');
+    assertTrue(!!deepSearchChip);
+    const whenActionChipClicked =
+        eventToPromise('action-chip-click', document.body);
+    deepSearchChip.click();
+
+    // Assert.
+    await whenActionChipClicked;
+  });
 });
