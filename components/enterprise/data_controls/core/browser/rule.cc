@@ -163,12 +163,13 @@ Rule::Level Rule::GetLevel(Restriction restriction,
                            const ActionContext& context) const {
   // Evaluating the condition of a rule could be expensive, so check
   // preemptively if there are any restrictions first.
-  if (!restrictions_.contains(restriction)) {
+  auto it = restrictions_.find(restriction);
+  if (it == restrictions_.end()) {
     return Level::kNotSet;
   }
 
   if (condition_->CanBeEvaluated(context) && condition_->IsTriggered(context)) {
-    return restrictions_.at(restriction);
+    return it->second;
   }
 
   return Level::kNotSet;
@@ -301,8 +302,8 @@ base::flat_map<Rule::Restriction, Rule::Level> Rule::GetRestrictions(
 
     // If there is already an entry for `restriction`, only override it if our
     // current `level` has precedence.
-    if (!restrictions.contains(restriction) ||
-        restrictions.at(restriction) < level) {
+    if (auto it = restrictions.find(restriction);
+        it == restrictions.end() || it->second < level) {
       restrictions[restriction] = level;
     }
   }
@@ -327,11 +328,12 @@ Rule::Restriction Rule::StringToRestriction(const std::string& restriction) {
       static_cast<int>(Restriction::kMaxValue) == kMap.size(),
       "The Restriction enum needs to have an equivalent string for each value");
 
-  if (!kMap.contains(restriction)) {
+  auto it = kMap.find(restriction);
+  if (it == kMap.end()) {
     return Restriction::kUnknownRestriction;
   }
 
-  return kMap.at(restriction);
+  return it->second;
 }
 
 // static
@@ -347,11 +349,12 @@ Rule::Level Rule::StringToLevel(const std::string& level) {
       static_cast<int>(Level::kMaxValue) == kMap.size(),
       "The Level enum needs to have an equivalent string for each value");
 
-  if (!kMap.contains(level)) {
+  auto it = kMap.find(level);
+  if (it == kMap.end()) {
     return Level::kNotSet;
   }
 
-  return kMap.at(level);
+  return it->second;
 }
 
 // static
@@ -549,14 +552,18 @@ bool Rule::AddUnsupportedAttributeErrors(
 
   bool valid = true;
   for (const auto& restriction : restrictions) {
-    if (!kSupportedAttributes->contains(restriction.first)) {
+    auto supported_attributes_it =
+        kSupportedAttributes->find(restriction.first);
+    if (supported_attributes_it == kSupportedAttributes->end()) {
       // This shouldn't be reached as `AddUnsupportedRestrictionErrors` should
       // catch these unsupported restrictions.
       NOTREACHED();
     }
 
+    const std::set<std::string_view>& supported_attributes =
+        supported_attributes_it->second;
     for (const auto& attribute : anyof_conditions) {
-      if (!kSupportedAttributes->at(restriction.first).contains(attribute)) {
+      if (!supported_attributes.contains(attribute)) {
         if (errors) {
           errors->AddError(policy_name,
                            IDS_POLICY_DATA_CONTROLS_UNSUPPORTED_CONDITION,
@@ -567,7 +574,7 @@ bool Rule::AddUnsupportedAttributeErrors(
       }
     }
     for (const auto& attribute : oneof_conditions) {
-      if (!kSupportedAttributes->at(restriction.first).contains(attribute)) {
+      if (!supported_attributes.contains(attribute)) {
         if (errors) {
           errors->AddError(policy_name,
                            IDS_POLICY_DATA_CONTROLS_UNSUPPORTED_CONDITION,
@@ -626,7 +633,8 @@ bool Rule::AddUnsupportedRestrictionErrors(
 
   bool valid = true;
   for (const auto& restriction : restrictions) {
-    if (!kSupportedRestrictions->contains(restriction.first)) {
+    auto supported_levels_it = kSupportedRestrictions->find(restriction.first);
+    if (supported_levels_it == kSupportedRestrictions->end()) {
       if (errors) {
         errors->AddError(policy_name,
                          IDS_POLICY_DATA_CONTROLS_UNSUPPORTED_RESTRICTION,
@@ -635,8 +643,8 @@ bool Rule::AddUnsupportedRestrictionErrors(
       valid = false;
       continue;
     }
-    if (!kSupportedRestrictions->at(restriction.first)
-             .contains(restriction.second)) {
+    const std::set<Rule::Level>& supported_levels = supported_levels_it->second;
+    if (!supported_levels.contains(restriction.second)) {
       if (errors) {
         errors->AddError(policy_name,
                          IDS_POLICY_DATA_CONTROLS_UNSUPPORTED_LEVEL,
