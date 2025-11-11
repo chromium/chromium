@@ -10,12 +10,15 @@ import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.base.test.transit.Triggers.noopTo;
 import static org.chromium.chrome.test.util.ChromeTabUtils.getTabCountOnUiThread;
 
+import android.util.Pair;
+
 import org.chromium.base.Log;
 import org.chromium.base.Token;
 import org.chromium.base.test.transit.TravelException;
 import org.chromium.base.test.transit.TripBuilder;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -43,7 +46,7 @@ public class Journeys {
 
     /**
      * Make Chrome have {@code numRegularTabs} of regular Tabs and {@code numIncognitoTabs} of
-     * incognito tabs with {@code url} loaded.
+     * incognito tabs with {@code url} loaded. Incognito tabs are opened in the same window.
      *
      * @param <T> specific type of {@link CtaPageStation} for all opened tabs.
      * @param startingStation The current active station.
@@ -59,6 +62,40 @@ public class Journeys {
             int numIncognitoTabs,
             String url,
             Supplier<BasePageStation.Builder<T>> pageStationFactory) {
+        List<String> regularTabs = getListOfIdenticalUrls(numRegularTabs, url);
+        List<String> incognitoTabs = getListOfIdenticalUrls(numIncognitoTabs, url);
+
+        Pair<T, T> stations =
+                doPrepareTabs(
+                        startingStation,
+                        regularTabs,
+                        incognitoTabs,
+                        pageStationFactory,
+                        /* captureThumbnails= */ false);
+        return stations.second != null ? stations.second : stations.first;
+    }
+
+    /**
+     * Make Chrome have {@code numRegularTabs} of regular Tabs and {@code numIncognitoTabs} of
+     * incognito tabs with {@code url} loaded. Incognito tabs are opened in a separate window.
+     *
+     * @param <T> specific type of {@link CtaPageStation} for all opened tabs.
+     * @param startingStation The current active station.
+     * @param numRegularTabs The number of regular tabs.
+     * @param numIncognitoTabs The number of incognito tabs.
+     * @param url The URL to load.
+     * @param pageStationFactory A factory method to create the PageStations for each tab.
+     * @return A pair of the last opened regular and incognito tabs' PageStations.
+     */
+    public static <T extends CtaPageStation> Pair<T, T> prepareTabsSeparateWindows(
+            CtaPageStation startingStation,
+            int numRegularTabs,
+            int numIncognitoTabs,
+            String url,
+            Supplier<BasePageStation.Builder<T>> pageStationFactory) {
+        assertTrue(
+                "This method should only be used when incognito tabs are opened in separate window",
+                IncognitoUtils.shouldOpenIncognitoAsWindow());
         List<String> regularTabs = getListOfIdenticalUrls(numRegularTabs, url);
         List<String> incognitoTabs = getListOfIdenticalUrls(numIncognitoTabs, url);
 
@@ -83,6 +120,32 @@ public class Journeys {
         List<String> regularTabs = getListOfIdenticalUrls(numRegularTabs, url);
         List<String> incognitoTabs = getListOfIdenticalUrls(numIncognitoTabs, url);
 
+        Pair<T, T> stations =
+                doPrepareTabs(
+                        startingStation,
+                        regularTabs,
+                        incognitoTabs,
+                        pageStationFactory,
+                        /* captureThumbnails= */ true);
+        return stations.second != null ? stations.second : stations.first;
+    }
+
+    /**
+     * Same as {@link #prepareTabsSeparateWindows(CtaPageStation, int, int, String, Supplier)}, but
+     * ensures tab thumbnails are captured to disk.
+     */
+    public static <T extends CtaPageStation> Pair<T, T> prepareTabsWithThumbnailsSeparateWindows(
+            CtaPageStation startingStation,
+            int numRegularTabs,
+            int numIncognitoTabs,
+            String url,
+            Supplier<BasePageStation.Builder<T>> pageStationFactory) {
+        assertTrue(
+                "This method should only be used when incognito tabs are opened in separate window",
+                IncognitoUtils.shouldOpenIncognitoAsWindow());
+        List<String> regularTabs = getListOfIdenticalUrls(numRegularTabs, url);
+        List<String> incognitoTabs = getListOfIdenticalUrls(numIncognitoTabs, url);
+
         return doPrepareTabs(
                 startingStation,
                 regularTabs,
@@ -100,11 +163,12 @@ public class Journeys {
     public static WebPageStation prepareRegularTabsWithWebPages(
             WebPageStation webPageStation, List<String> urlsToOpen) {
         return doPrepareTabs(
-                webPageStation,
-                urlsToOpen,
-                List.of(),
-                WebPageStation::newBuilder,
-                /* captureThumbnails= */ false);
+                        webPageStation,
+                        urlsToOpen,
+                        List.of(),
+                        WebPageStation::newBuilder,
+                        /* captureThumbnails= */ false)
+                .first;
     }
 
     /**
@@ -166,7 +230,7 @@ public class Journeys {
     }
 
     // TODO(crbug.com/411430975): Open all tabs at once instead of one by one.
-    private static <T extends CtaPageStation> T doPrepareTabs(
+    private static <T extends CtaPageStation> Pair<T, T> doPrepareTabs(
             CtaPageStation startingStation,
             List<String> urlsForRegularTabs,
             List<String> urlsForIncognitoTabs,
@@ -183,6 +247,7 @@ public class Journeys {
         T station =
                 startingStation.loadPageProgrammatically(
                         urlsForRegularTabs.get(0), pageStationFactory.get());
+        T stationIncognito = null;
         // One tab already exists.
         if (urlsForRegularTabs.size() > 1) {
             var urlsForRegularTabsMinusFirst = new ArrayList<>(urlsForRegularTabs);
@@ -196,7 +261,7 @@ public class Journeys {
                             captureThumbnails);
         }
         if (urlsForIncognitoTabs.size() > 0) {
-            station =
+            stationIncognito =
                     doCreateTabs(
                             station,
                             urlsForIncognitoTabs,
@@ -204,7 +269,7 @@ public class Journeys {
                             pageStationFactory,
                             captureThumbnails);
         }
-        return station;
+        return new Pair<>(station, stationIncognito);
     }
 
     private static <T extends CtaPageStation> T doCreateTabs(
@@ -230,7 +295,7 @@ public class Journeys {
             } else if (i == 0 && !startingPage.isIncognito() && isIncognito) {
                 currentPage =
                         currentPage
-                                .openNewIncognitoTabFast()
+                                .openNewIncognitoTabOrWindowFast()
                                 .loadPageProgrammatically(url, pageStationFactory.get());
             } else {
                 currentPage = currentPage.openFakeLink(url, pageStationFactory.get());
