@@ -16,7 +16,7 @@ use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 use std::sync::LazyLock;
 use strum::IntoEnumIterator;
-use strum_macros::{Display, EnumIter};
+use strum_macros::{AsRefStr, Display, EnumIter, EnumString};
 
 #[derive(Clone, Debug, Serialize)]
 pub struct ReadmeFile {
@@ -205,8 +205,11 @@ fn readme_file_from_package<'a>(
 
 /// REVIEW REQUIREMENT: When adding a new `LicenseKind`, please consult
 /// `readme.rs-third-party-license-review.md`.
+///
+/// Note that the order of variants is significant - `Apache2` appears first
+/// and so is preferred in license expressions like `Apache-2.0 OR MIT`.
 #[allow(clippy::upper_case_acronyms)]
-#[derive(Debug, Eq, Hash, PartialEq, Clone, Copy, Display, EnumIter)]
+#[derive(Debug, Eq, Hash, PartialEq, Clone, Copy, AsRefStr, Display, EnumIter, EnumString)]
 enum LicenseKind {
     /// https://spdx.org/licenses/Apache-2.0.html
     #[strum(serialize = "Apache-2.0")]
@@ -245,52 +248,20 @@ enum LicenseKind {
     BSL,
 }
 
-/// LICENSE_STRING_TO_LICENSE_KIND, converts licenses from the format they are
-/// specified in Cargo.toml files from crates.io, to the LicenseKind that will
-/// be written to README.chromium.
-/// Each entry looks like the following:
-/// h.insert(
-///   "Cargo.toml string",
-///   vec![LicenseKind::<License for README.chromium>]
-/// );
-static LICENSE_STRING_TO_LICENSE_KIND: LazyLock<HashMap<&'static str, Vec<LicenseKind>>> =
-    LazyLock::new(|| {
-        HashMap::from([
-            ("Apache-2.0", vec![LicenseKind::Apache2]),
-            ("MIT OR Apache-2.0", vec![LicenseKind::Apache2]),
-            ("MIT/Apache-2.0", vec![LicenseKind::Apache2]),
-            ("MIT / Apache-2.0", vec![LicenseKind::Apache2]),
-            ("Apache-2.0 / MIT", vec![LicenseKind::Apache2]),
-            ("Apache-2.0 OR MIT", vec![LicenseKind::Apache2]),
-            ("Apache-2.0/MIT", vec![LicenseKind::Apache2]),
-            ("(Apache-2.0 OR MIT) AND BSD-3-Clause", vec![LicenseKind::Apache2, LicenseKind::BSD3]),
-            ("MIT OR Apache-2.0 OR Zlib", vec![LicenseKind::Apache2]),
-            ("(MIT OR Apache-2.0) AND NCSA", vec![LicenseKind::Apache2, LicenseKind::NCSA]),
-            ("MIT", vec![LicenseKind::MIT]),
-            ("MPL-2.0", vec![LicenseKind::MPL2]),
-            ("Unlicense OR MIT", vec![LicenseKind::MIT]),
-            ("Unlicense/MIT", vec![LicenseKind::MIT]),
-            ("Apache-2.0 OR BSL-1.0", vec![LicenseKind::Apache2]),
-            ("BSD-3-Clause", vec![LicenseKind::BSD3]),
-            ("ISC", vec![LicenseKind::ISC]),
-            ("MIT OR Zlib OR Apache-2.0", vec![LicenseKind::Apache2]),
-            ("Zlib OR Apache-2.0 OR MIT", vec![LicenseKind::Apache2]),
-            ("0BSD OR MIT OR Apache-2.0", vec![LicenseKind::Apache2]),
-            (
-                "(MIT OR Apache-2.0) AND Unicode-3.0",
-                vec![LicenseKind::Apache2, LicenseKind::Unicode3],
-            ),
-            ("MIT AND (MIT OR Apache-2.0)", vec![LicenseKind::Apache2]),
-            ("Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT", vec![LicenseKind::Apache2]),
-            ("BSD-2-Clause OR Apache-2.0 OR MIT", vec![LicenseKind::Apache2]),
-            ("BSD-2-Clause OR Apache-2.0 OR MIT", vec![LicenseKind::Apache2]),
-            ("BSD-2-Clause OR MIT OR Apache-2.0", vec![LicenseKind::Apache2]),
-            ("BSD-3-Clause OR MIT OR Apache-2.0", vec![LicenseKind::Apache2]),
-            ("Unicode-3.0", vec![LicenseKind::Unicode3]),
-            ("Zlib", vec![LicenseKind::Zlib]),
-            ("BSL-1.0", vec![LicenseKind::BSL]),
-        ])
-    });
+impl<'a> TryFrom<&'a spdx::LicenseReq> for LicenseKind {
+    type Error = anyhow::Error;
+
+    fn try_from(req: &'a spdx::LicenseReq) -> Result<LicenseKind> {
+        ensure!(
+            req.addition.is_none(),
+            "`gnrt` cannot yet handle SPDX additions (e.g. WITH clauses)",
+        );
+        Ok(match req.license {
+            spdx::LicenseItem::Spdx { id, or_later: _ } => id.name.parse()?,
+            spdx::LicenseItem::Other { .. } => bail!("`gnrt` cannot handle SPDX references"),
+        })
+    }
+}
 
 static LICENSE_KIND_TO_LICENSE_FILES: LazyLock<HashMap<LicenseKind, Vec<String>>> =
     LazyLock::new(|| {
@@ -303,7 +274,7 @@ static LICENSE_KIND_TO_LICENSE_FILES: LazyLock<HashMap<LicenseKind, Vec<String>>
         for kind in LicenseKind::iter() {
             // The suffix for the license file name is taken from the Display
             // implementation. E.g. "Apache-2.0" becomes "APACHE"
-            let license_suffix = kind.to_string().split("-").next().unwrap().to_uppercase();
+            let license_suffix = kind.as_ref().split("-").next().unwrap().to_uppercase();
 
             let mut license_files = vec![];
             // License types with the license-specific suffix are higher priority.
@@ -327,13 +298,42 @@ static LICENSE_KIND_TO_LICENSE_FILES: LazyLock<HashMap<LicenseKind, Vec<String>>
 
 /// Converts a license string from Cargo.toml into a Vec of LicenseKinds.
 fn parse_license_string(pkg_license: &str) -> Result<Vec<LicenseKind>> {
-    LICENSE_STRING_TO_LICENSE_KIND.get(pkg_license).cloned().ok_or_else(|| {
-        format_err!(
-            "License '{pkg_license}' not found in the `LICENSE_STRING_TO_LICENSE_KIND` \
-             map.  Please consider teaching `gnrt` about this license kind \
-             by editing //tools/crates/gnrt/lib/readme.rs` and adding the \
-             license to `enum LicenseKinds`, `LICENSE_STRING_TO_LICENSE_KIND`, \
-             and `LICENSE_KIND_TO_LICENSE_FILES`.  Note that this will require \
+    fn parse(pkg_license: &str) -> Result<Vec<LicenseKind>> {
+        let expr = spdx::expression::Expression::parse_mode(
+            pkg_license,
+            spdx::lexer::ParseMode {
+                allow_imprecise_license_names: false,
+                allow_postfix_plus_on_gpl: false,
+                allow_deprecated: false,
+
+                // https://spdx.dev/wp-content/uploads/sites/31/2024/12/SPDX-3.0.1-1.pdf
+                // technically requires that `License1 / License2` should be spelled as
+                // `License1 OR License2`, but in practice many `Cargo.toml` files use
+                // the former syntax.  See also
+                // https://github.com/rust-lang/cargo/issues/2039
+                allow_slash_as_or_operator: true,
+            },
+        )?;
+
+        static ALLOWED_LICENSES_IN_PRIORITY_ORDER: LazyLock<Vec<spdx::Licensee>> =
+            LazyLock::new(|| {
+                LicenseKind::iter()
+                    .map(|license_kind| spdx::Licensee::parse(license_kind.as_ref()).unwrap())
+                    .collect_vec()
+            });
+
+        expr.minimized_requirements(ALLOWED_LICENSES_IN_PRIORITY_ORDER.iter())?
+            .iter()
+            .map(LicenseKind::try_from)
+            .collect::<Result<Vec<_>>>()
+    }
+
+    parse(pkg_license).with_context(|| {
+        format!(
+            "License '{pkg_license}' could not be parsed by `gnrt`. \
+             To teach `gnrt` about a new licence kind, please consider \
+             adding a new variant to the `LicenseKind` enum in \
+             //tools/crates/gnrt/lib/readme.rs`.  Note that this will require \
              an additional review whether the new license kind can be used in \
              Chromium - for more details see \
              `//tools/crates/gnrt/lib/readme.rs-third-party-license-review.md`."
@@ -414,7 +414,7 @@ mod test {
             ("Zlib OR Apache-2.0 OR MIT", "Apache-2.0"),
             ("0BSD OR MIT OR Apache-2.0", "Apache-2.0"),
             ("(MIT OR Apache-2.0) AND Unicode-3.0", "Apache-2.0, Unicode-3.0"),
-            ("MIT AND (MIT OR Apache-2.0)", "Apache-2.0"),
+            ("MIT AND (MIT OR Apache-2.0)", "MIT"),
             ("Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT", "Apache-2.0"),
             ("BSD-2-Clause OR Apache-2.0 OR MIT", "Apache-2.0"),
             ("BSD-2-Clause OR Apache-2.0 OR MIT", "Apache-2.0"),

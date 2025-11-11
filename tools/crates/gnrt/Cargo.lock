@@ -622,6 +622,7 @@ dependencies = [
  "semver",
  "serde",
  "serde_json",
+ "spdx",
  "strum",
  "strum_macros",
  "syn",
@@ -1577,6 +1578,15 @@ checksum = "4f5fd57c80058a56cf5c777ab8a126398ece8e442983605d280a44ce79d0edef"
 dependencies = [
  "libc",
  "windows-sys 0.52.0",
+]
+
+[[package]]
+name = "spdx"
+version = "0.12.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "41cf87c0efffc158b9dde4d6e0567a43e4383adc4c949e687a2039732db2f23a"
+dependencies = [
+ "smallvec",
 ]
 
 [[package]]
