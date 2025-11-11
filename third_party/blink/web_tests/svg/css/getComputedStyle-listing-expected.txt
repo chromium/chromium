@@ -141,8 +141,8 @@ column-rule-break: spanning-item
 column-rule-color: rgb(0, 0, 0)
 column-rule-edge-end-inset: 0px
 column-rule-edge-start-inset: 0px
-column-rule-interior-end-inset: 50%
-column-rule-interior-start-inset: 50%
+column-rule-interior-end-inset: -50%
+column-rule-interior-start-inset: -50%
 column-rule-style: none
 column-rule-visibility-items: all
 column-rule-width: 3px
@@ -341,8 +341,8 @@ row-rule-break: spanning-item
 row-rule-color: rgb(0, 0, 0)
 row-rule-edge-end-inset: 0px
 row-rule-edge-start-inset: 0px
-row-rule-interior-end-inset: 50%
-row-rule-interior-start-inset: 50%
+row-rule-interior-end-inset: -50%
+row-rule-interior-start-inset: -50%
 row-rule-style: none
 row-rule-visibility-items: all
 row-rule-width: 3px
