@@ -964,7 +964,8 @@ BrowserView::BrowserView(Browser* browser)
   // This frames some/all of the top container plus infobars, contents, and
   // contents-height side panel when the toolbar-height side panel is visible.
   // It must render after those elements.
-  main_shadow_overlay_ = AddChildView(std::make_unique<ShadowOverlayView>());
+  main_shadow_overlay_ =
+      AddChildView(std::make_unique<ShadowOverlayView>(*this));
 
   // TODO(crbug.com/454362874): Support dynamic horizontal alignment.
   toolbar_height_side_panel_ = AddChildView(std::make_unique<SidePanel>(
