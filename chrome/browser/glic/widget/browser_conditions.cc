@@ -11,10 +11,11 @@
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -138,42 +139,43 @@ BrowserWindowInterface* GetActiveGlicEligibleBrowser(Profile* profile) {
 }
 
 class BrowserAttachObservationImpl : public BrowserAttachObservation,
-                                     public BrowserListObserver,
+                                     public BrowserCollectionObserver,
                                      public views::WidgetObserver {
  public:
   BrowserAttachObservationImpl(Profile* profile,
                                BrowserAttachObserver* observer)
       : profile_(profile),
         observer_(observer),
-        browser_list_observation_(this),
+        browser_collection_observation_(this),
         browser_widget_observations_(this) {
     ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
         [this](BrowserWindowInterface* browser_window_interface) {
-          OnBrowserAdded(
-              browser_window_interface->GetBrowserForMigrationOnly());
+          OnBrowserCreated(browser_window_interface);
           return true;
         });
-    browser_list_observation_.Observe(BrowserList::GetInstance());
+    if (profile_->AllowsBrowserWindows()) {
+      browser_collection_observation_.Observe(
+          ProfileBrowserCollection::GetForProfile(profile_));
+    }
     current_value_ = FindBrowserForAttachment(profile_);
   }
 
   bool CanAttachToBrowser() const override { return current_value_ != nullptr; }
 
-  // BrowserListObserver implementation.
-  void OnBrowserSetLastActive(Browser* browser) override {
+  // BrowserCollectionObserver implementation.
+  void OnBrowserActivated(BrowserWindowInterface* browser) override {
     // BrowserList updates the active browser list before this call, so
     // `CheckForChange` will find the correct browser.
     CheckForChange();
   }
-  void OnBrowserAdded(Browser* browser) override {
+  void OnBrowserCreated(BrowserWindowInterface* browser) override {
     if (IsBrowserGlicCompatible(profile_, browser)) {
       browser_widget_observations_.AddObservation(
-          browser->GetBrowserView().GetWidget());
+          browser->GetBrowserForMigrationOnly()->GetBrowserView().GetWidget());
     }
   }
-  void OnBrowserRemoved(Browser* browser) override {
-    if (current_value_ != nullptr &&
-        current_value_->GetBrowserForMigrationOnly() == browser) {
+  void OnBrowserClosed(BrowserWindowInterface* browser) override {
+    if (current_value_ != nullptr && current_value_ == browser) {
       // BrowserList updates the active browser list before this call, so
       // `CheckForChange` will find the correct browser.
       CheckForChange();
@@ -223,8 +225,8 @@ class BrowserAttachObservationImpl : public BrowserAttachObservation,
   raw_ptr<BrowserWindowInterface> current_value_;
   raw_ptr<BrowserAttachObserver> observer_;
   base::OneShotTimer check_for_change_timer_;
-  base::ScopedObservation<BrowserList, BrowserListObserver>
-      browser_list_observation_;
+  base::ScopedObservation<ProfileBrowserCollection, BrowserCollectionObserver>
+      browser_collection_observation_;
   base::ScopedMultiSourceObservation<views::Widget, views::WidgetObserver>
       browser_widget_observations_;
 };
