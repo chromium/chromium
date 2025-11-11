@@ -185,8 +185,8 @@ rust_static_library("font_format_check") {
   cxx_bindings = [ crate_root ]
   deps = [
     "//third_party/rust/font_types/v0_10:lib",
-    "//third_party/rust/read_fonts/v0_35:lib",
-    "//third_party/rust/skrifa/v0_37:lib",
+    "//third_party/rust/read_fonts/v0_36:lib",
+    "//third_party/rust/skrifa/v0_39:lib",
   ]
 }
 
