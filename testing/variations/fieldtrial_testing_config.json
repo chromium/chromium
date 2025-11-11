@@ -8994,29 +8994,6 @@
             ]
         }
     ],
-    "DiscountConsentV2": [
-        {
-            "platforms": [
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "enabled_ntp_native_dialog_with_approved_strings_M104_20220809",
-                    "params": {
-                        "discount-consent-ntp-variation": "4",
-                        "step-one-static-content": "Let Google help you find discounts for your carts",
-                        "step-one-use-static-content": "true"
-                    },
-                    "enable_features": [
-                        "DiscountConsentV2"
-                    ]
-                }
-            ]
-        }
-    ],
     "DiskCacheBackendExperiment": [
         {
             "platforms": [

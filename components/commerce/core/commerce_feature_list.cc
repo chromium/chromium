@@ -242,9 +242,6 @@ BASE_FEATURE(kCommerceDeveloper, base::FEATURE_DISABLED_BY_DEFAULT);
 
 const char kRetailCouponsWithCodeParam[] = "RetailCouponsWithCodeParam";
 
-// Params use for Discount Consent v2.
-BASE_FEATURE(kDiscountConsentV2, base::FEATURE_ENABLED_BY_DEFAULT);
-
 extern const char kShopCardArm1[] = "arm_1";
 extern const char kShopCardArm2[] = "arm_2";
 extern const char kShopCardArm3[] = "arm_3";
