@@ -207,6 +207,26 @@ TEST_F(SQLTransactionTest, NestedRollback) {
   EXPECT_EQ(0, CountFoo());
 }
 
+TEST_F(SQLTransactionTest, TransactionCommitWithPendingWriter) {
+  ASSERT_TRUE(db_.Execute("CREATE TABLE rows (id)"));
+  ASSERT_TRUE(db_.Execute("INSERT INTO rows (id) VALUES (12)"));
+
+  Transaction transaction(&db_);
+  EXPECT_TRUE(transaction.Begin());
+
+  // The'RETURNING' clause changes the behavior of the statement to return a
+  // row. A pending write statement is kept alive in the sqlite connection.
+  Statement update(
+      db_.GetUniqueStatement("UPDATE rows SET id = 2 * id RETURNING id"));
+  EXPECT_TRUE(update.Step());
+
+  // The commit will fail due to the pending writer.
+  EXPECT_FALSE(transaction.Commit());
+
+  EXPECT_FALSE(update.Step());
+  EXPECT_TRUE(update.Succeeded());
+}
+
 TEST_F(SQLTransactionTest, TransactionCommitWithActiveReader) {
   Database other_db(sql::DatabaseOptions().set_exclusive_locking(false),
                     test::kTestTag);
