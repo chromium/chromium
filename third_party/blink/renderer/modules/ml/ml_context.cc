@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "base/numerics/checked_math.h"
 #include "base/types/cxx23_to_underlying.h"
+#include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "base/types/pass_key.h"
 #include "components/viz/common/resources/shared_image_format.h"
@@ -62,6 +63,10 @@
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
+
+#if BUILDFLAG(IS_MAC)
+#include "gpu/command_buffer/common/capabilities.h"
+#endif  // BUILDFLAG(IS_MAC)
 
 namespace blink {
 
@@ -199,6 +204,29 @@ gpu::SharedImageUsageSet OperandUsageToSharedImageUsageSet(
   }
   return shared_image_usage_set;
 }
+
+#if BUILDFLAG(IS_MAC)
+// CoreML uses OneComponent16Half pixel buffer for webgpu interop, with last
+// dimension being the width and the product of the rest of the dimensions being
+// the height, both of them need to be within webgpu texture size limit.
+base::expected<void, std::string> IsValidTensorSize(
+    const webnn::OperandDescriptor descriptor,
+    int max_texture_size) {
+  if (descriptor.Rank() > 0) {
+    int width = descriptor.shape()[descriptor.Rank() - 1];
+    if (width > max_texture_size) {
+      return base::unexpected("Tensor size is too large.");
+    }
+    if (descriptor.Rank() > 1) {
+      int height = descriptor.NumberOfElements() / width;
+      if (height > max_texture_size) {
+        return base::unexpected("Tensor size is too large.");
+      }
+    }
+  }
+  return base::ok();
+}
+#endif  // BUILDFLAG(IS_MAC)
 
 }  // namespace
 
@@ -1274,6 +1302,17 @@ ScriptPromise<MLTensor> MLContext::createExportableTensor(
                                       "Context is lost.");
     return EmptyPromise();
   }
+
+#if BUILDFLAG(IS_MAC)
+  RETURN_IF_ERROR(IsValidTensorSize(validated_descriptor,
+                                    context_provider_wrapper->ContextProvider()
+                                        .GetCapabilities()
+                                        .max_texture_size),
+                  [&exception_state](std::string error) {
+                    exception_state.ThrowTypeError(String(error));
+                    return ScriptPromise<MLTensor>();
+                  });
+#endif  // BUILDFLAG(IS_MAC)
 
   gpu::SharedImageInterface* sii =
       context_provider_wrapper->ContextProvider().SharedImageInterface();
