@@ -37,6 +37,7 @@
 
 namespace blink {
 
+class VideoFrameCallbackRequester;
 class ImageBitmapOptions;
 class IntersectionObserverEntry;
 class MediaCustomControlsFullscreenDetector;
@@ -46,11 +47,9 @@ class PictureInPictureInterstitial;
 class StaticBitmapImage;
 class VideoWakeLock;
 
-class CORE_EXPORT HTMLVideoElement final
-    : public HTMLMediaElement,
-      public CanvasImageSource,
-      public ImageBitmapSource,
-      public Supplementable<HTMLVideoElement, 1> {
+class CORE_EXPORT HTMLVideoElement final : public HTMLMediaElement,
+                                           public CanvasImageSource,
+                                           public ImageBitmapSource {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -175,6 +174,13 @@ class CORE_EXPORT HTMLVideoElement final
     return visibility_tracker_.Get();
   }
 
+  VideoFrameCallbackRequester* GetVideoFrameCallbackRequester() const {
+    return video_frame_callback_requester_;
+  }
+  void SetVideoFrameCallbackRequester(VideoFrameCallbackRequester* requester) {
+    video_frame_callback_requester_ = requester;
+  }
+
  protected:
   // EventTarget overrides.
   void AddedEventListener(const AtomicString& event_type,
@@ -287,6 +293,8 @@ class CORE_EXPORT HTMLVideoElement final
   cc::PaintFlags::FilterQuality filter_quality_ =
       cc::PaintFlags::FilterQuality::kLow;
   cc::PaintFlags::DynamicRangeLimitMixture dynamic_range_limit_;
+
+  Member<VideoFrameCallbackRequester> video_frame_callback_requester_;
 };
 
 }  // namespace blink
