@@ -6,7 +6,9 @@
 
 #import <objc/runtime.h>
 
+#import "base/functional/bind.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/task/sequenced_task_runner.h"
 #import "ios/chrome/browser/autofill/model/credit_card/autofill_save_card_infobar_delegate_ios.h"
 #import "ios/chrome/browser/infobars/model/overlays/infobar_overlay_util.h"
 #import "ios/chrome/browser/infobars/ui_bundled/banners/infobar_banner_consumer.h"
@@ -23,6 +25,20 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
+namespace {
+
+// Delay to use when posting snackbar messages when VoiceOver is running.
+constexpr base::TimeDelta kShowSnackbarDelay = base::Milliseconds(300);
+
+// Enum to control the VoiceOver status for testing.
+enum class VoiceOverOverrideForTesting {
+  kNotOverridden,
+  kForceEnabledForTesting,
+  kForceDisabledForTesting,
+};
+
+}  // namespace
+
 @interface SaveCardInfobarBannerOverlayMediator ()
 
 // The save card banner config from the request.
@@ -32,7 +48,9 @@
 
 @end
 
-@implementation SaveCardInfobarBannerOverlayMediator
+@implementation SaveCardInfobarBannerOverlayMediator {
+  VoiceOverOverrideForTesting _overrideVoiceOverForTesting;
+}
 
 - (instancetype)initWithRequest:(OverlayRequest*)request {
   self = [super initWithRequest:request];
@@ -41,6 +59,7 @@
         ^(UIAccessibilityNotifications notification, id argument) {
           UIAccessibilityPostNotification(notification, argument);
         };
+    _overrideVoiceOverForTesting = VoiceOverOverrideForTesting::kNotOverridden;
   }
   return self;
 }
@@ -65,6 +84,35 @@
   return DefaultInfobarOverlayRequestConfig::RequestSupport();
 }
 
+#pragma mark - Private
+
+- (void)showSnackbarAndDismissBanner {
+  SnackbarMessage* message = [self createCardSavedSnackbarMessage];
+  if (message) {
+    DCHECK(self.accessibilityNotificationPoster);
+    self.accessibilityNotificationPoster(
+        UIAccessibilityScreenChangedNotification, nil);
+    // Show the snackbar.
+    DCHECK(self.snackbarCommandsHandler);
+    [self.snackbarCommandsHandler showSnackbarMessage:message];
+  }
+  // Dismiss the infobar banner after showing the snackbar.
+  [self dismissOverlay];
+}
+
+- (BOOL)isVoiceOverRunning {
+  switch (_overrideVoiceOverForTesting) {
+    case VoiceOverOverrideForTesting::kNotOverridden:
+      return UIAccessibilityIsVoiceOverRunning();
+
+    case VoiceOverOverrideForTesting::kForceEnabledForTesting:
+      return YES;
+
+    case VoiceOverOverrideForTesting::kForceDisabledForTesting:
+      return NO;
+  }
+}
+
 #pragma mark - InfobarOverlayRequestMediator
 
 - (void)bannerInfobarButtonWasPressed:(UIButton*)sender {
@@ -87,15 +135,16 @@
         delegate->cardholder_name(), delegate->expiration_date_month(),
         delegate->expiration_date_year(), delegate->card_cvc()));
 
-    // Create and show the snackbar message.
-    SnackbarMessage* message = [self createCardSavedSnackbarMessage];
-    if (message) {
-      self.accessibilityNotificationPoster(
-          UIAccessibilityScreenChangedNotification, nil);
-      [self.snackbarCommandsHandler showSnackbarMessage:message];
+    if (self.isVoiceOverRunning) {
+      __weak __typeof(self) weakSelf = self;
+      base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+          FROM_HERE, base::BindOnce(^{
+            [weakSelf showSnackbarAndDismissBanner];
+          }),
+          kShowSnackbarDelay);
+    } else {
+      [self showSnackbarAndDismissBanner];
     }
-
-    [self dismissOverlay];
   }
 }
 
@@ -192,5 +241,19 @@
 - (void (^)(UIAccessibilityNotifications, id))accessibilityNotificationPoster {
   return objc_getAssociatedObject(self,
                                   @selector(accessibilityNotificationPoster));
+}
+
+- (void)setOverrideVoiceOverForTesting:(bool)value {
+  if (value) {
+    _overrideVoiceOverForTesting =
+        VoiceOverOverrideForTesting::kForceEnabledForTesting;
+  } else {
+    _overrideVoiceOverForTesting =
+        VoiceOverOverrideForTesting::kForceDisabledForTesting;
+  }
+}
+
+- (void)clearOverrideVoiceOverForTesting {
+  _overrideVoiceOverForTesting = VoiceOverOverrideForTesting::kNotOverridden;
 }
 @end

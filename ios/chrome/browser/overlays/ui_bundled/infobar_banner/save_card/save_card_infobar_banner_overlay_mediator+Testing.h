@@ -16,6 +16,12 @@
 @property(nonatomic, copy) void (^accessibilityNotificationPoster)
     (UIAccessibilityNotifications, id);
 
+// Sets an override for the VoiceOver status for testing purposes.
+- (void)setOverrideVoiceOverForTesting:(bool)value;
+
+// Clears any VoiceOver status override.
+- (void)clearOverrideVoiceOverForTesting;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_OVERLAYS_UI_BUNDLED_INFOBAR_BANNER_SAVE_CARD_SAVE_CARD_INFOBAR_BANNER_OVERLAY_MEDIATOR_TESTING_H_

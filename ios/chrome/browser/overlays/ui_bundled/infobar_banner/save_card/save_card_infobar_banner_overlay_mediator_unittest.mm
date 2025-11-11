@@ -9,6 +9,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
+#import "base/test/task_environment.h"
 #import "base/uuid.h"
 #import "components/autofill/core/browser/data_model/payments/credit_card.h"
 #import "components/autofill/core/browser/foundations/autofill_client.h"
@@ -93,6 +94,16 @@ class SaveCardInfobarBannerOverlayMediatorTest : public PlatformTest {
   }
 
  protected:
+  void SetUp() override {
+    PlatformTest::SetUp();
+    task_environment_ = std::make_unique<base::test::TaskEnvironment>(
+        base::test::TaskEnvironment::TimeSource::MOCK_TIME);
+  }
+
+  void TearDown() override {
+    [mediator_ clearOverrideVoiceOverForTesting];
+    PlatformTest::TearDown();
+  }
   std::unique_ptr<InfoBarIOS> infobar_;
   std::unique_ptr<OverlayRequest> request_;
   raw_ptr<MockAutofillSaveCardInfoBarDelegateMobile> delegate_ = nil;
@@ -100,6 +111,7 @@ class SaveCardInfobarBannerOverlayMediatorTest : public PlatformTest {
   SaveCardInfobarBannerOverlayMediator* mediator_ = nil;
   id mock_snackbar_commands_handler_ = nil;
   base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<base::test::TaskEnvironment> task_environment_;
 };
 
 TEST_F(SaveCardInfobarBannerOverlayMediatorTest, SetUpConsumer) {
@@ -307,8 +319,7 @@ TEST_F(SaveCardInfobarBannerOverlayMediatorTest,
 TEST_F(SaveCardInfobarBannerOverlayMediatorTest, ShowSnackbarForLocalSave) {
   InitInfobar(/*for_upload=*/false);
 
-  EXPECT_CALL(*delegate_, UpdateAndAccept(_, _, _, _))
-      .WillOnce(testing::Return(true));
+  EXPECT_CALL(*delegate_, UpdateAndAccept).WillOnce(testing::Return(true));
 
   // Expected snackbar message content.
   NSString* expectedTitleText = base::SysUTF16ToNSString(
@@ -344,8 +355,7 @@ TEST_F(SaveCardInfobarBannerOverlayMediatorTest, ShowSnackbarForLocalSave) {
 TEST_F(SaveCardInfobarBannerOverlayMediatorTest,
        PostAccessibilityNotificationForLocalSave) {
   InitInfobar(/*for_upload=*/false);
-  EXPECT_CALL(*delegate_, UpdateAndAccept(_, _, _, _))
-      .WillOnce(testing::Return(true));
+  EXPECT_CALL(*delegate_, UpdateAndAccept).WillOnce(testing::Return(true));
 
   __block BOOL notificationWasPosted = NO;
   __block UIAccessibilityNotifications postedNotification =
@@ -356,11 +366,38 @@ TEST_F(SaveCardInfobarBannerOverlayMediatorTest,
         postedNotification = notification;
         notificationWasPosted = YES;
       };
+  [mediator_ setOverrideVoiceOverForTesting:false];
 
   [mediator_ bannerInfobarButtonWasPressed:nil];
 
   EXPECT_TRUE(notificationWasPosted);
   EXPECT_EQ(postedNotification, UIAccessibilityScreenChangedNotification);
+}
+
+// Tests that the snackbar presentation is delayed when VoiceOver is running.
+TEST_F(SaveCardInfobarBannerOverlayMediatorTest,
+       SnackbarIsDelayedWithVoiceOver) {
+  InitInfobar(/*for_upload=*/false);
+  EXPECT_CALL(*delegate_, UpdateAndAccept).WillOnce(testing::Return(true));
+
+  __block BOOL notificationWasPosted = NO;
+  mediator_.accessibilityNotificationPoster =
+      ^(UIAccessibilityNotifications notification, id argument) {
+        notificationWasPosted = YES;
+      };
+  [mediator_ setOverrideVoiceOverForTesting:true];
+
+  OCMExpect([mock_snackbar_commands_handler_ showSnackbarMessage:OCMOCK_ANY]);
+
+  [mediator_ bannerInfobarButtonWasPressed:nil];
+
+  EXPECT_FALSE(notificationWasPosted);
+  // Define the delay locally for the test. This should match the value in
+  // the implementation file.
+  constexpr base::TimeDelta kShowSnackbarDelay = base::Milliseconds(300);
+  task_environment_->FastForwardBy(kShowSnackbarDelay);
+
+  EXPECT_TRUE(notificationWasPosted);
 }
 
 // Tests that no snackbar is shown when the save is for upload.
