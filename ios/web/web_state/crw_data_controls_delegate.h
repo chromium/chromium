@@ -19,9 +19,6 @@
 // Checks if cut is allowed.
 - (void)shouldAllowCutWithDecisionHandler:(void (^)(BOOL))decisionHandler;
 
-// Checks if share is allowed.
-- (void)shouldAllowShareWithDecisionHandler:(void (^)(BOOL))decisionHandler;
-
 @end
 
 #endif  // IOS_WEB_WEB_STATE_CRW_DATA_CONTROLS_DELEGATE_H_

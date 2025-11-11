@@ -243,20 +243,6 @@ TEST_F(WebStateDelegateBridgeTest, ShouldAllowCut) {
   EXPECT_TRUE(callback_called);
 }
 
-// Tests `ShouldAllowShare` forwarding.
-TEST_F(WebStateDelegateBridgeTest, ShouldAllowShare) {
-  ASSERT_FALSE([delegate_ shareAllowedRequested]);
-  ASSERT_FALSE([delegate_ webState]);
-  __block bool callback_called = false;
-  bridge_->ShouldAllowShare(&fake_web_state_, base::BindOnce(^(bool allowed) {
-    EXPECT_TRUE(allowed);
-    callback_called = true;
-  }));
-  EXPECT_TRUE([delegate_ shareAllowedRequested]);
-  EXPECT_EQ(&fake_web_state_, [delegate_ webState]);
-  EXPECT_TRUE(callback_called);
-}
-
 // Tests `ShouldAllowCut` forwarding to delegate which does not
 // implement `webState:shouldAllowCutWithDecisionHandler:` method.
 TEST_F(WebStateDelegateBridgeTest, ShouldAllowCutWithNoDelegateMethod) {
@@ -266,18 +252,6 @@ TEST_F(WebStateDelegateBridgeTest, ShouldAllowCutWithNoDelegateMethod) {
                                            EXPECT_TRUE(allowed);
                                            callback_called = true;
                                          }));
-  EXPECT_TRUE(callback_called);
-}
-
-// Tests `ShouldAllowShare` forwarding to delegate which does not
-// implement `webState:shouldAllowShareWithDecisionHandler:` method.
-TEST_F(WebStateDelegateBridgeTest, ShouldAllowShareWithNoDelegateMethod) {
-  __block bool callback_called = false;
-  empty_delegate_bridge_->ShouldAllowShare(nullptr,
-                                           base::BindOnce(^(bool allowed) {
-                                             EXPECT_TRUE(allowed);
-                                             callback_called = true;
-                                           }));
   EXPECT_TRUE(callback_called);
 }
 
