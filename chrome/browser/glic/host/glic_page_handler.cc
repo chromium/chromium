@@ -1134,6 +1134,8 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
 
   void ActivateTab(int32_t tab_id) override {
     if (!base::FeatureList::IsEnabled(features::kGlicActivateTabApi)) {
+      receiver_.ReportBadMessage(
+          "ActivateTab cannot be called without GlicActivateTabApi enabled.");
       return;
     }
 
@@ -1146,6 +1148,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
       return;
     }
 
+    glic_service_->metrics()->OnActivateTabFromInstance(tab);
     contents->GetDelegate()->ActivateContents(contents);
   }
 

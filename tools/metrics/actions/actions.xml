@@ -14188,6 +14188,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Glic.Instance.TaskTabForegrounded">
+  <owner>kenok@google.com</owner>
+  <owner>chrstne@google.com</owner>
+  <description>
+    Logged if the user activates a task controlled tab from a glic instance.
+  </description>
+</action>
+
 <action name="Glic.Instance.Toggle">
   <owner>birnie@google.com</owner>
   <owner>perrier@google.com</owner>
