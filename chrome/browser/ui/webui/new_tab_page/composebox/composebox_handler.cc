@@ -22,8 +22,6 @@
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "ui/base/window_open_disposition.h"
 
-using composebox::SessionState;
-
 namespace {
 
 class ComposeboxOmniboxClient final : public ContextualOmniboxClient {

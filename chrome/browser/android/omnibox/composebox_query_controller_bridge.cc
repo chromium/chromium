@@ -46,7 +46,7 @@ ComposeboxQueryControllerBridge::ComposeboxQueryControllerBridge(
     Profile* profile)
     : profile_{profile} {
   auto query_controller_config_params = std::make_unique<
-      ComposeboxQueryController::QueryControllerConfigParams>();
+      contextual_search::ContextualSearchContextController::ConfigParams>();
   query_controller_config_params->send_lns_surface = false;
   query_controller_config_params->enable_multi_context_input_flow = false;
   query_controller_config_params->enable_viewport_images = true;
@@ -173,8 +173,8 @@ void ComposeboxQueryControllerBridge::RemoveAttachment(
 void ComposeboxQueryControllerBridge::OnFileUploadStatusChanged(
     const base::UnguessableToken& file_token,
     lens::MimeType mime_type,
-    composebox_query::mojom::FileUploadStatus file_upload_status,
-    const std::optional<FileUploadErrorType>& error_type) {}
+    contextual_search::FileUploadStatus file_upload_status,
+    const std::optional<contextual_search::FileUploadErrorType>& error_type) {}
 
 void ComposeboxQueryControllerBridge::OnGetTabPageContext(
     JNIEnv* env,

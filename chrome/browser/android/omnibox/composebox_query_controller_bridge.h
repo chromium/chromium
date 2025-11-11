@@ -12,7 +12,7 @@
 #include "base/android/jni_string.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/omnibox/composebox/composebox_query_controller.h"
+#include "components/contextual_search/internal/composebox_query_controller.h"
 #include "third_party/jni_zero/jni_zero.h"
 
 namespace content {
@@ -45,8 +45,9 @@ class ComposeboxQueryControllerBridge
   void OnFileUploadStatusChanged(
       const base::UnguessableToken& file_token,
       lens::MimeType mime_type,
-      composebox_query::mojom::FileUploadStatus file_upload_status,
-      const std::optional<FileUploadErrorType>& error_type) override;
+      contextual_search::FileUploadStatus file_upload_status,
+      const std::optional<contextual_search::FileUploadErrorType>& error_type)
+      override;
 
  private:
   void OnGetTabPageContext(

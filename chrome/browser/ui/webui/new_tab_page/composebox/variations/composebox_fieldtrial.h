@@ -8,8 +8,8 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/contextual_search/contextual_search_context_controller.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
-#include "components/omnibox/composebox/composebox_query_controller.h"
 #include "third_party/omnibox_proto/ntp_composebox_config.pb.h"
 
 class Profile;
@@ -81,7 +81,8 @@ bool IsCreateImagesEnabled(Profile* profile);
 
 // Helper to create a QueryControllerConfigParams object from the feature
 // params.
-std::unique_ptr<ComposeboxQueryController::QueryControllerConfigParams>
+std::unique_ptr<
+    contextual_search::ContextualSearchContextController::ConfigParams>
 CreateQueryControllerConfigParams();
 
 class FeatureConfig : public omnibox_feature_configs::Config<FeatureConfig> {

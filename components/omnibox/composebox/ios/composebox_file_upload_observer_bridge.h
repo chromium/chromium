@@ -8,15 +8,17 @@
 #import <Foundation/Foundation.h>
 
 #include "base/scoped_observation.h"
-#include "components/omnibox/composebox/composebox_query_controller.h"
+#include "components/contextual_search/internal/composebox_query_controller.h"
 
 // Objective-C protocol for observing file upload status changes from
 // ComposeboxQueryController.
 @protocol ComposeboxFileUploadObserver <NSObject>
 - (void)onFileUploadStatusChanged:(const base::UnguessableToken&)fileToken
                          mimeType:(lens::MimeType)mimeType
-                 fileUploadStatus:(FileUploadStatus)fileUploadStatus
-                        errorType:(const std::optional<FileUploadErrorType>&)
+                 fileUploadStatus:
+                     (contextual_search::FileUploadStatus)fileUploadStatus
+                        errorType:(const std::optional<
+                                      contextual_search::FileUploadErrorType>&)
                                       errorType;
 @end
 
@@ -33,8 +35,9 @@ class ComposeboxFileUploadObserverBridge
   void OnFileUploadStatusChanged(
       const base::UnguessableToken& file_token,
       lens::MimeType mime_type,
-      FileUploadStatus file_upload_status,
-      const std::optional<FileUploadErrorType>& error_type) override;
+      contextual_search::FileUploadStatus file_upload_status,
+      const std::optional<contextual_search::FileUploadErrorType>& error_type)
+      override;
 
  private:
   __weak id<ComposeboxFileUploadObserver> observer_;

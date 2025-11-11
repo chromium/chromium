@@ -534,6 +534,10 @@ include_rules = [
   "+third_party/blink/public/common",
   "+third_party/blink/public/mojom",
   "+third_party/blink/public/public_buildflags.h",
+
+  # Ensure that only the public interface of contextual search gets used.
+  "-components/contextual_search/internal",
+  "+components/contextual_search",
 ]
 
 specific_include_rules = {
@@ -619,5 +623,8 @@ specific_include_rules = {
   ],
   "fake_server_helper_android\.cc": [
     "+components/saved_tab_groups",
+  ],
+  r"android/omnibox/composebox_query_controller_bridge\.cc": [
+    "+components/contextual_search/internal",
   ],
 }

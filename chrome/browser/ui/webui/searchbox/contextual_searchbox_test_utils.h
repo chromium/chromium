@@ -13,8 +13,9 @@
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/omnibox/composebox/composebox_metrics_recorder.h"
-#include "components/omnibox/composebox/test_composebox_query_controller.h"
+#include "components/contextual_search/contextual_search_metrics_recorder.h"
+#include "components/contextual_search/internal/test_composebox_query_controller.h"
+#include "components/lens/contextual_input.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -32,7 +33,8 @@ class IdentityManager;
 class FakeVariationsClient;
 class TemplateURLService;
 
-class MockQueryController : public TestComposeboxQueryController {
+class MockQueryController
+    : public contextual_search::TestComposeboxQueryController {
  public:
   MockQueryController(
       signin::IdentityManager* identity_manager,
@@ -41,7 +43,8 @@ class MockQueryController : public TestComposeboxQueryController {
       std::string locale,
       TemplateURLService* template_url_service,
       variations::VariationsClient* variations_client,
-      std::unique_ptr<QueryControllerConfigParams>
+      std::unique_ptr<
+          contextual_search::ContextualSearchContextController::ConfigParams>
           query_controller_config_params);
   ~MockQueryController() override;
 
@@ -55,7 +58,7 @@ class MockQueryController : public TestComposeboxQueryController {
               (override));
   MOCK_METHOD(bool, DeleteFile, (const base::UnguessableToken&), (override));
   MOCK_METHOD(void, ClearFiles, (), (override));
-  MOCK_METHOD(FileInfo*,
+  MOCK_METHOD(const contextual_search::FileInfo*,
               GetFileInfo,
               (const base::UnguessableToken& file_token),
               (override));
@@ -78,14 +81,15 @@ class TestWebContentsDelegate : public content::WebContentsDelegate {
           navigation_handle_callback) override;
 };
 
-class MockComposeboxMetricsRecorder : public ComposeboxMetricsRecorder {
+class MockContextualSearchMetricsRecorder
+    : public contextual_search::ContextualSearchMetricsRecorder {
  public:
-  MockComposeboxMetricsRecorder();
-  ~MockComposeboxMetricsRecorder() override;
+  MockContextualSearchMetricsRecorder();
+  ~MockContextualSearchMetricsRecorder() override;
 
   MOCK_METHOD(void,
               NotifySessionStateChanged,
-              (composebox::SessionState session_state),
+              (contextual_search::SessionState session_state),
               (override));
 };
 

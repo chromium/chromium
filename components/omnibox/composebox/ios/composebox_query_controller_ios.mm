@@ -28,8 +28,9 @@ void ComposeboxQueryControllerIOS::CreateImageUploadRequest(
   UIImage* image = [UIImage imageWithData:image_ns_data];
 
   if (!image) {
-    std::move(callback).Run(lens::LensOverlayServerRequest(),
-                            FileUploadErrorType::kImageProcessingError);
+    std::move(callback).Run(
+        lens::LensOverlayServerRequest(),
+        contextual_search::FileUploadErrorType::kImageProcessingError);
     return;
   }
 

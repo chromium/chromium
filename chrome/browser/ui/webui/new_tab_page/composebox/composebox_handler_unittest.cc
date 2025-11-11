@@ -17,11 +17,11 @@
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "base/version_info/channel.h"
-#include "chrome/browser/omnibox/contextual_session_web_contents_helper.h"
+#include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/ui/webui/searchbox/contextual_searchbox_test_utils.h"
 #include "chrome/browser/ui/webui/searchbox/searchbox_test_utils.h"
+#include "components/contextual_search/contextual_search_service.h"
 #include "components/omnibox/browser/searchbox.mojom.h"
-#include "components/omnibox/composebox/contextual_session_service.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -32,8 +32,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/webui/resources/cr_components/composebox/composebox.mojom.h"
-
-using composebox::SessionState;
 
 namespace {
 constexpr char kClientUploadDurationQueryParameter[] = "cud";
@@ -67,7 +65,7 @@ class ComposeboxHandlerTest : public ContextualSearchboxHandlerTestHarness {
     ContextualSearchboxHandlerTestHarness::SetUp();
 
     auto query_controller_config_params = std::make_unique<
-        ComposeboxQueryController::QueryControllerConfigParams>();
+        contextual_search::ContextualSearchContextController::ConfigParams>();
     query_controller_config_params->send_lns_surface = false;
     query_controller_config_params->enable_multi_context_input_flow = false;
     query_controller_config_params->enable_viewport_images = true;
@@ -78,17 +76,16 @@ class ComposeboxHandlerTest : public ContextualSearchboxHandlerTestHarness {
     query_controller_ = query_controller_ptr.get();
 
     auto metrics_recorder_ptr =
-        std::make_unique<MockComposeboxMetricsRecorder>();
+        std::make_unique<MockContextualSearchMetricsRecorder>();
     metrics_recorder_ = metrics_recorder_ptr.get();
 
-    service_ = std::make_unique<ContextualSessionService>(
+    service_ = std::make_unique<contextual_search::ContextualSearchService>(
         /*identity_manager=*/nullptr, url_loader_factory(),
         template_url_service(), fake_variations_client(),
         version_info::Channel::UNKNOWN, "en-US");
     auto contextual_session_handle = service_->CreateSessionForTesting(
         std::move(query_controller_ptr), std::move(metrics_recorder_ptr));
-    ContextualSessionWebContentsHelper::GetOrCreateForWebContents(
-        web_contents())
+    ContextualSearchWebContentsHelper::GetOrCreateForWebContents(web_contents())
         ->set_session_handle(std::move(contextual_session_handle));
 
     web_contents()->SetDelegate(&delegate_);
@@ -103,7 +100,7 @@ class ComposeboxHandlerTest : public ContextualSearchboxHandlerTestHarness {
 
   ComposeboxHandler& handler() { return *handler_; }
   MockQueryController& query_controller() { return *query_controller_; }
-  MockComposeboxMetricsRecorder& metrics_recorder() {
+  MockContextualSearchMetricsRecorder& metrics_recorder() {
     return *metrics_recorder_;
   }
 
@@ -149,8 +146,8 @@ class ComposeboxHandlerTest : public ContextualSearchboxHandlerTestHarness {
  private:
   TestWebContentsDelegate delegate_;
   raw_ptr<MockQueryController> query_controller_;
-  std::unique_ptr<ContextualSessionService> service_;
-  raw_ptr<MockComposeboxMetricsRecorder> metrics_recorder_;
+  std::unique_ptr<contextual_search::ContextualSearchService> service_;
+  raw_ptr<MockContextualSearchMetricsRecorder> metrics_recorder_;
   std::unique_ptr<ComposeboxHandler> handler_;
 };
 
@@ -158,11 +155,13 @@ TEST_F(ComposeboxHandlerTest, SetDeepSearchMode) {
   // Wait until the state changes to kClusterInfoReceived.
   base::RunLoop run_loop;
   query_controller().set_on_query_controller_state_changed_callback(
-      base::BindLambdaForTesting([&](QueryControllerState state) {
-        if (state == QueryControllerState::kClusterInfoReceived) {
-          run_loop.Quit();
-        }
-      }));
+      base::BindLambdaForTesting(
+          [&](ComposeboxQueryController::QueryControllerState state) {
+            if (state == ComposeboxQueryController::QueryControllerState::
+                             kClusterInfoReceived) {
+              run_loop.Quit();
+            }
+          }));
 
   // Start the session.
   EXPECT_CALL(query_controller(), NotifySessionStarted)
@@ -211,11 +210,13 @@ TEST_F(ComposeboxHandlerTest, SetCreateImageMode) {
   // Wait until the state changes to kClusterInfoReceived.
   base::RunLoop run_loop;
   query_controller().set_on_query_controller_state_changed_callback(
-      base::BindLambdaForTesting([&](QueryControllerState state) {
-        if (state == QueryControllerState::kClusterInfoReceived) {
-          run_loop.Quit();
-        }
-      }));
+      base::BindLambdaForTesting(
+          [&](ComposeboxQueryController::QueryControllerState state) {
+            if (state == ComposeboxQueryController::QueryControllerState::
+                             kClusterInfoReceived) {
+              run_loop.Quit();
+            }
+          }));
 
   // Start the session.
   EXPECT_CALL(query_controller(), NotifySessionStarted)
@@ -258,10 +259,10 @@ TEST_F(ComposeboxHandlerTest, SetCreateImageMode) {
 TEST_F(ComposeboxHandlerTest, DeleteFileAndSubmitQuery) {
   std::string file_type = ".Image";
   std::string file_status = ".NotUploaded";
-  std::unique_ptr<ComposeboxQueryController::FileInfo> file_info =
-      std::make_unique<ComposeboxQueryController::FileInfo>();
+  std::unique_ptr<contextual_search::FileInfo> file_info =
+      std::make_unique<contextual_search::FileInfo>();
   file_info->file_name = "test.png";
-  file_info->mime_type_ = lens::MimeType::kImage;
+  file_info->mime_type = lens::MimeType::kImage;
   base::UnguessableToken delete_file_token = base::UnguessableToken::Create();
   base::UnguessableToken token_arg;
   EXPECT_CALL(query_controller(), DeleteFile)
@@ -271,9 +272,7 @@ TEST_F(ComposeboxHandlerTest, DeleteFileAndSubmitQuery) {
       });
 
   EXPECT_CALL(query_controller(), GetFileInfo)
-      .WillOnce([&file_info](const base::UnguessableToken& token) {
-        return file_info.get();
-      });
+      .WillOnce(testing::Return(file_info.get()));
 
   handler().DeleteContext(delete_file_token);
 

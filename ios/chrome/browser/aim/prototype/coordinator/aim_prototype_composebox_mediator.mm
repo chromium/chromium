@@ -585,8 +585,10 @@ CreateInputDataFromAnnotatedPageContent(
 
 - (void)onFileUploadStatusChanged:(const base::UnguessableToken&)fileToken
                          mimeType:(lens::MimeType)mimeType
-                 fileUploadStatus:(FileUploadStatus)fileUploadStatus
-                        errorType:(const std::optional<FileUploadErrorType>&)
+                 fileUploadStatus:
+                     (contextual_search::FileUploadStatus)fileUploadStatus
+                        errorType:(const std::optional<
+                                      contextual_search::FileUploadErrorType>&)
                                       errorType {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   AIMInputItem* item = [self itemForToken:fileToken];
@@ -595,18 +597,18 @@ CreateInputDataFromAnnotatedPageContent(
   }
 
   switch (fileUploadStatus) {
-    case FileUploadStatus::kUploadSuccessful:
+    case contextual_search::FileUploadStatus::kUploadSuccessful:
       item.state = AIMInputItemState::kLoaded;
       break;
-    case FileUploadStatus::kUploadFailed:
-    case FileUploadStatus::kValidationFailed:
-    case FileUploadStatus::kUploadExpired:
+    case contextual_search::FileUploadStatus::kUploadFailed:
+    case contextual_search::FileUploadStatus::kValidationFailed:
+    case contextual_search::FileUploadStatus::kUploadExpired:
       item.state = AIMInputItemState::kError;
       break;
-    case FileUploadStatus::kNotUploaded:
-    case FileUploadStatus::kProcessing:
-    case FileUploadStatus::kProcessingSuggestSignalsReady:
-    case FileUploadStatus::kUploadStarted:
+    case contextual_search::FileUploadStatus::kNotUploaded:
+    case contextual_search::FileUploadStatus::kProcessing:
+    case contextual_search::FileUploadStatus::kProcessingSuggestSignalsReady:
+    case contextual_search::FileUploadStatus::kUploadStarted:
       // No-op, as the state is already `Uploading`.
       return;
   }
@@ -702,7 +704,8 @@ CreateInputDataFromAnnotatedPageContent(
     task = base::BindOnce(^{
       [weakSelf onFileUploadStatusChanged:token
                                  mimeType:lens::MimeType::kImage
-                         fileUploadStatus:FileUploadStatus::kUploadFailed
+                         fileUploadStatus:contextual_search::FileUploadStatus::
+                                              kUploadFailed
                                 errorType:std::nullopt];
     });
   } else {

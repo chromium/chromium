@@ -7,8 +7,8 @@
 
 #include <vector>
 
+#include "components/contextual_search/internal/composebox_query_controller.h"
 #include "components/lens/lens_bitmap_processing.h"
-#include "components/omnibox/composebox/composebox_query_controller.h"
 
 // iOS-specific subclass of ComposeboxQueryController.
 class ComposeboxQueryControllerIOS : public ComposeboxQueryController {

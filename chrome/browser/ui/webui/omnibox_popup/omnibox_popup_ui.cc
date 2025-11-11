@@ -27,7 +27,6 @@
 #include "chrome/grit/omnibox_popup_resources_map.h"
 #include "components/favicon_base/favicon_url_parser.h"
 #include "components/omnibox/common/omnibox_features.h"
-#include "components/omnibox/composebox/composebox_metrics_recorder.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/webui_util.h"
