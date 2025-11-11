@@ -118,50 +118,6 @@ bool AreSubtreeUpdateReasonsIsolationPiercing(unsigned reasons) {
              SubtreePaintPropertyUpdateReason::kContainerChainMayChange));
 }
 
-template <typename Func>
-void UpdateOutOfFlowProperty(PaintPropertyTreeBuilderFragmentContext& context,
-                             Func func) {
-  func(context.absolute_position);
-  func(context.fixed_position);
-  for (auto& overscroll : context.overscroll_positions) {
-    func(*overscroll.value);
-  }
-}
-
-void UpdateOutOfFlowScroll(PaintPropertyTreeBuilderFragmentContext& context,
-                           const ScrollPaintPropertyNode* scroll) {
-  UpdateOutOfFlowProperty(
-      context,
-      [&](PaintPropertyTreeBuilderFragmentContext::ContainingBlockContext&
-              containing_block) { containing_block.scroll = scroll; });
-}
-
-void UpdateOutOfFlowTransform(
-    PaintPropertyTreeBuilderFragmentContext& context,
-    const TransformPaintPropertyNodeOrAlias* transform) {
-  UpdateOutOfFlowProperty(
-      context,
-      [&](PaintPropertyTreeBuilderFragmentContext::ContainingBlockContext&
-              containing_block) { containing_block.transform = transform; });
-}
-
-void UpdateOutOfFlowClip(PaintPropertyTreeBuilderFragmentContext& context,
-                         const ClipPaintPropertyNodeOrAlias* clip) {
-  UpdateOutOfFlowProperty(
-      context,
-      [&](PaintPropertyTreeBuilderFragmentContext::ContainingBlockContext&
-              containing_block) { containing_block.clip = clip; });
-}
-
-void UpdateOutOfFlowPaintOffsetRoot(
-    PaintPropertyTreeBuilderFragmentContext& context,
-    const LayoutObject* root) {
-  UpdateOutOfFlowProperty(
-      context,
-      [&](PaintPropertyTreeBuilderFragmentContext::ContainingBlockContext&
-              containing_block) { containing_block.paint_offset_root = root; });
-}
-
 }  // namespace
 
 PaintPropertyTreeBuilderFragmentContext::
@@ -173,7 +129,6 @@ PaintPropertyTreeBuilderFragmentContext::
       &TransformPaintPropertyNode::Root();
   current.scroll = absolute_position.scroll = fixed_position.scroll =
       &ScrollPaintPropertyNode::Root();
-  overscroll_positions.clear();
 }
 
 void VisualViewportPaintPropertyTreeBuilder::Update(
@@ -187,10 +142,13 @@ void VisualViewportPaintPropertyTreeBuilder::Update(
       visual_viewport.UpdatePaintPropertyNodesIfNeeded(context);
 
   context.current.transform = visual_viewport.GetScrollTranslationNode();
-  context.current.scroll = visual_viewport.GetScrollNode();
+  context.absolute_position.transform =
+      visual_viewport.GetScrollTranslationNode();
+  context.fixed_position.transform = visual_viewport.GetScrollTranslationNode();
 
-  UpdateOutOfFlowScroll(context, visual_viewport.GetScrollNode());
-  UpdateOutOfFlowTransform(context, visual_viewport.GetScrollTranslationNode());
+  context.current.scroll = visual_viewport.GetScrollNode();
+  context.absolute_position.scroll = visual_viewport.GetScrollNode();
+  context.fixed_position.scroll = visual_viewport.GetScrollNode();
 
   if (property_changed >= PaintPropertyChangeType::kNodeAddedOrRemoved) {
     // Force piercing subtree update for the worst case (scroll node added/
@@ -226,7 +184,6 @@ void PaintPropertyTreeBuilder::SetupContextForFrame(
   context.rendering_context_id = 0;
   context.should_flatten_inherited_transform = true;
   context.absolute_position = context.current;
-  context.overscroll_positions.clear();
   full_context.container_for_absolute_position = nullptr;
   full_context.container_for_fixed_position = nullptr;
 #if DCHECK_IS_ON()
@@ -394,7 +351,7 @@ class FragmentPaintPropertyTreeBuilder {
   bool IsInNGFragmentTraversal() const { return pre_paint_info_; }
 
   void SwitchToOOFContext(
-      const PaintPropertyTreeBuilderFragmentContext::ContainingBlockContext&
+      PaintPropertyTreeBuilderFragmentContext::ContainingBlockContext&
           oof_context) const {
     context_.current = oof_context;
 
@@ -836,7 +793,9 @@ void FragmentPaintPropertyTreeBuilder::UpdatePaintOffsetTranslation(
         *context_.current.transform, std::move(state)));
     context_.current.transform = properties_->PaintOffsetTranslation();
     if (IsA<LayoutView>(object_)) {
-      UpdateOutOfFlowTransform(context_, properties_->PaintOffsetTranslation());
+      context_.absolute_position.transform =
+          properties_->PaintOffsetTranslation();
+      context_.fixed_position.transform = properties_->PaintOffsetTranslation();
     }
 
     if (!object_.ShouldAssumePaintOffsetTranslationForLayoutShiftTracking()) {
@@ -2025,8 +1984,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
     context_.current_effect = effect;
     context_.this_or_ancestor_opacity_is_zero |= effect->Opacity() == 0;
     if (properties_->MaskClip()) {
-      context_.current.clip = properties_->MaskClip();
-      UpdateOutOfFlowClip(context_, context_.current.clip);
+      context_.current.clip = context_.absolute_position.clip =
+          context_.fixed_position.clip = properties_->MaskClip();
     }
   }
 }
@@ -2501,8 +2460,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateClipPathClip() {
   }
 
   if (properties_->ClipPathClip()) {
-    context_.current.clip = properties_->ClipPathClip();
-    UpdateOutOfFlowClip(context_, context_.current.clip);
+    context_.current.clip = context_.absolute_position.clip =
+        context_.fixed_position.clip = properties_->ClipPathClip();
   }
 }
 
@@ -3296,17 +3255,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateOutOfFlowContext() {
   if (!object_.IsBoxModelObject() && !properties_)
     return;
 
-  if (object_.CanContainAbsolutePositionObjects()) {
+  if (object_.CanContainAbsolutePositionObjects())
     context_.absolute_position = context_.current;
-    context_.overscroll_positions.clear();
-  }
-
-  if (object_.CanContainOverscrollPositionObjects()) {
-    CHECK(context_.potential_overscroll_position);
-    *context_.potential_overscroll_position = context_.current;
-    context_.overscroll_positions.Set(object_.GetOverscrollAreaName(),
-                                      context_.potential_overscroll_position);
-  }
 
   if (IsA<LayoutView>(object_)) {
     const auto* initial_fixed_transform = context_.fixed_position.transform;
@@ -3423,19 +3373,7 @@ void FragmentPaintPropertyTreeBuilder::UpdatePaintOffset() {
                     box_model_object.Container());
         }
 #endif
-        const PaintPropertyTreeBuilderFragmentContext::ContainingBlockContext&
-            oof_context = [&]() {
-              if (const auto& overscroll_position =
-                      box_model_object.StyleRef().OverscrollPosition()) {
-                auto context_it = context_.overscroll_positions.find(
-                    overscroll_position->GetName());
-                if (context_it != context_.overscroll_positions.end()) {
-                  return *context_it->value;
-                }
-              }
-              return context_.absolute_position;
-            }();
-        SwitchToOOFContext(oof_context);
+        SwitchToOOFContext(context_.absolute_position);
         break;
       }
       case EPosition::kSticky:
@@ -3893,8 +3831,9 @@ void PaintPropertyTreeBuilder::InitPaintProperties() {
 
     PaintPropertyTreeBuilderFragmentContext& fragment_context =
         context_.fragment_context;
-    fragment_context.current.paint_offset_root = &object_;
-    UpdateOutOfFlowPaintOffsetRoot(fragment_context, &object_);
+    fragment_context.current.paint_offset_root =
+        fragment_context.absolute_position.paint_offset_root =
+            fragment_context.fixed_position.paint_offset_root = &object_;
 
     object_.GetMutableForPainting().FragmentList().Shrink(1);
   }

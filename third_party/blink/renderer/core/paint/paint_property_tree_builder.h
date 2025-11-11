@@ -123,10 +123,6 @@ struct PaintPropertyTreeBuilderFragmentContext {
 
   ContainingBlockContext fixed_position;
 
-  ContainingBlockContext* potential_overscroll_position;
-
-  HashMap<AtomicString, ContainingBlockContext*> overscroll_positions;
-
   // The effect hierarchy is applied by the stacking context tree. It is
   // guaranteed that every DOM descendant is also a stacking context descendant.
   // Therefore, we don't need extra bookkeeping for effect nodes and can

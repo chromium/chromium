@@ -123,8 +123,6 @@ class CORE_EXPORT PrePaintTreeWalk final {
       ) {
         DCHECK(parent_context.tree_builder_context);
         tree_builder_context.emplace(*parent_context.tree_builder_context);
-        tree_builder_context->fragment_context.potential_overscroll_position =
-            &potential_overscroll_context;
 #if DCHECK_IS_ON()
         DCHECK(!needs_tree_builder_context ||
                parent_context.tree_builder_context->is_actually_needed);
@@ -145,8 +143,6 @@ class CORE_EXPORT PrePaintTreeWalk final {
     }
 
     std::optional<PaintPropertyTreeBuilderContext> tree_builder_context;
-    PaintPropertyTreeBuilderFragmentContext::ContainingBlockContext
-        potential_overscroll_context;
   };
 
   static bool ContextRequiresChildPrePaint(const PrePaintTreeWalkContext&);
