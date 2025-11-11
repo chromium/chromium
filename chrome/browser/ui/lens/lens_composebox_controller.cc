@@ -125,6 +125,10 @@ void LensComposeboxController::IssueComposeboxQuery(
 
   // Record that a query was issued.
   GetSessionMetricsLogger()->OnAimQueryIssued();
+
+  // When issuing a composebox query, the overlay should always be dismissed.
+  // This is a no-op if the overlay is already closed.
+  lens_search_controller_->HideOverlay();
 }
 
 void LensComposeboxController::OnFocusChanged(bool focused) {
