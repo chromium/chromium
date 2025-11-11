@@ -31,7 +31,6 @@
 #include "components/lookalikes/core/lookalike_url_util.h"
 #include "components/lookalikes/core/safety_tip_test_utils.h"
 #include "components/lookalikes/core/safety_tips_config.h"
-#include "components/network_session_configurator/common/network_switches.h"
 #include "components/omnibox/browser/location_bar_model.h"
 #include "components/security_interstitials/content/security_interstitial_page.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
@@ -1644,9 +1643,6 @@ class LookalikeUrlNavigationThrottleSignedExchangeBrowserTest
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    // HTTPS server only serves a valid cert for localhost, so this is needed
-    // to load pages from other hosts without an error.
-    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
     mock_cert_verifier_.SetUpCommandLine(command_line);
   }
 
@@ -1671,6 +1667,8 @@ class LookalikeUrlNavigationThrottleSignedExchangeBrowserTest
         &LookalikeUrlNavigationThrottleSignedExchangeBrowserTest::
             MonitorRequest,
         base::Unretained(this)));
+    https_server_.SetCertHostnames(
+        {"example.org", "*.example.org", "*.test.com", "*.site.test"});
     ASSERT_TRUE(https_server_.Start());
 
     LookalikeUrlNavigationThrottleBrowserTest::SetUpOnMainThread();
