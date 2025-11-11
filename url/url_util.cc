@@ -209,13 +209,14 @@ bool DoIsStandard(std::optional<std::basic_string_view<CHAR>> input,
 }
 
 template <typename CHAR>
-bool DoIsOpaqueNonSpecial(const CHAR* spec, const Component& scheme) {
+bool DoIsOpaqueNonSpecial(std::basic_string_view<CHAR> spec,
+                          const Component& scheme) {
   if (scheme.is_empty()) {
     return false;
   }
+  auto scheme_view = scheme.AsViewOn(spec);
   for (const std::string& s : GetSchemeRegistry().opaque_non_special_schemes) {
-    if (base::EqualsCaseInsensitiveASCII(
-            std::basic_string_view(&spec[scheme.begin], scheme.len), s)) {
+    if (base::EqualsCaseInsensitiveASCII(scheme_view, s)) {
       return true;
     }
   }
@@ -309,7 +310,7 @@ bool DoCanonicalize(std::basic_string_view<CHAR> spec,
 
   } else {
     // Non-special scheme URLs like data:, mailto: and javascript:.
-    if (!DoIsOpaqueNonSpecial(spec.data(), scheme)) {
+    if (!DoIsOpaqueNonSpecial(spec, scheme)) {
       success = CanonicalizeNonSpecialUrl(
           spec, ParseNonSpecialUrlInternal(spec, trim_path_end),
           charset_converter, *output, *output_parsed);
@@ -487,9 +488,7 @@ bool DoReplaceComponents(std::string_view spec,
                               charset_converter, output, out_parsed);
   }
 
-  // TODO(crbug.com/350788890): We should not use spec.data().
-  const char* spec_ptr = spec.data();
-  if (!DoIsOpaqueNonSpecial(spec_ptr, parsed.scheme)) {
+  if (!DoIsOpaqueNonSpecial(spec, parsed.scheme)) {
     return ReplaceNonSpecialUrl(spec, parsed, replacements, charset_converter,
                                 *output, *out_parsed);
   }
