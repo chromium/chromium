@@ -5,6 +5,8 @@
 #include "chrome/browser/ash/login/marketing_backend_connector.h"
 
 #include <cstddef>
+#include <optional>
+#include <string>
 
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
@@ -89,8 +91,9 @@ void MarketingBackendConnector::UpdateEmailPreferences(
   }
 
   // No requests without a Gaia account
-  if (profile->IsOffTheRecord())
+  if (profile->IsOffTheRecord()) {
     return;
+  }
 
   scoped_refptr<MarketingBackendConnector> ref =
       new MarketingBackendConnector(profile);
@@ -185,7 +188,7 @@ void MarketingBackendConnector::SetTokenAndStartRequest() {
 }
 
 void MarketingBackendConnector::OnSimpleLoaderComplete(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   int response_code = -1;
   std::string raw_header;
   if (simple_url_loader_->ResponseInfo() &&
@@ -195,8 +198,9 @@ void MarketingBackendConnector::OnSimpleLoaderComplete(
   }
 
   std::string data;
-  if (response_body)
+  if (response_body) {
     data = std::move(*response_body);
+  }
 
   OnSimpleLoaderCompleteInternal(response_code, data);
 }

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_PRINTING_OAUTH2_HTTP_EXCHANGE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -113,7 +114,7 @@ class HttpExchange {
   void OnURLLoaderCompleted(int success_http_status,
                             int error_http_status,
                             OnExchangeCompletedCallback callback,
-                            std::unique_ptr<std::string> response_body);
+                            std::optional<std::string> response_body);
 
   // Returns the status code from the HTTP response or 0 when the status code
   // cannot be obtained.

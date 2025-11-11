@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_ASH_FILE_SUGGEST_ITEM_SUGGEST_CACHE_H_
 #define CHROME_BROWSER_ASH_FILE_SUGGEST_ITEM_SUGGEST_CACHE_H_
 
+#include <optional>
+#include <string>
+
 #include "base/callback_list.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
@@ -148,7 +151,7 @@ class ItemSuggestCache {
 
   void OnTokenReceived(GoogleServiceAuthError error,
                        signin::AccessTokenInfo token_info);
-  void OnSuggestionsReceived(std::unique_ptr<std::string> json_response);
+  void OnSuggestionsReceived(std::optional<std::string> json_response);
   void OnJsonParsed(data_decoder::DataDecoder::ValueOrError result);
   std::unique_ptr<network::SimpleURLLoader> MakeRequestLoader(
       const std::string& token);

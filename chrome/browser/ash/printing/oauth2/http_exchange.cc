@@ -160,7 +160,7 @@ void HttpExchange::OnURLLoaderCompleted(
     int success_http_status,
     int error_http_status,
     OnExchangeCompletedCallback callback,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   // Checks for connection errors.
   const int net_error = url_loader_->NetError();
   if (!(net_error == net::OK && url_loader_->ResponseInfo() &&

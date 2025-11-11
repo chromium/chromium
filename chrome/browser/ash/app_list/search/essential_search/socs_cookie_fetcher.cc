@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ash/app_list/search/essential_search/socs_cookie_fetcher.h"
 
+#include <optional>
+#include <string>
+
 #include "base/json/json_string_value_serializer.h"
 #include "base/json/json_writer.h"
 #include "components/version_info/version_info.h"
@@ -115,7 +118,7 @@ void SocsCookieFetcher::StartFetching() {
 }
 
 void SocsCookieFetcher::OnSimpleLoaderComplete(
-    std::unique_ptr<std::string> json_response) {
+    std::optional<std::string> json_response) {
   const int net_error = simple_url_loader_->NetError();
   if (net_error != net::OK) {
     consumer_->OnApiCallFailed(Status::kServerError);

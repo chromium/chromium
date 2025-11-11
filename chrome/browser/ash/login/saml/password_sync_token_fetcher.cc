@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/login/saml/password_sync_token_fetcher.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -272,7 +273,7 @@ void PasswordSyncTokenFetcher::FetchSyncToken(const std::string& access_token) {
 }
 
 void PasswordSyncTokenFetcher::OnSimpleLoaderComplete(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   int response_code = -1;
   if (simple_url_loader_->ResponseInfo() &&
       simple_url_loader_->ResponseInfo()->headers) {

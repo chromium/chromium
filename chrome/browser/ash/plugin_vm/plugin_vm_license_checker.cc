@@ -5,6 +5,8 @@
 #include "chrome/browser/ash/plugin_vm/plugin_vm_license_checker.h"
 
 #include <cstddef>
+#include <optional>
+#include <string>
 #include <string_view>
 
 #include "base/functional/callback_helpers.h"
@@ -193,7 +195,7 @@ PluginVmLicenseChecker::CreateResourceRequest(std::string_view access_token) {
 }
 
 void PluginVmLicenseChecker::HandleStringResponse(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   if (!simple_url_loader_->ResponseInfo() ||
       !simple_url_loader_->ResponseInfo()->headers) {
     LOG(ERROR) << "Did not recieve a response from server while attempting to"
@@ -206,7 +208,7 @@ void PluginVmLicenseChecker::HandleStringResponse(
       simple_url_loader_->ResponseInfo()->headers->response_code();
 
   std::move(callback_).Run(
-      ResponseIndicatesValidLicense(response_code, *response_body));
+      ResponseIndicatesValidLicense(response_code, *std::move(response_body)));
 }
 
 }  // namespace plugin_vm

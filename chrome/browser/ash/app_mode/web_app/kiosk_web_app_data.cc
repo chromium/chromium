@@ -130,7 +130,7 @@ class KioskWebAppData::IconFetcher {
 
  private:
   void OnDownloadCompleted(ResultCallback callback,
-                           std::unique_ptr<std::string> response_body) {
+                           std::optional<std::string> response_body) {
     // Now simple_loader_ can be released safely.
     simple_loader_.reset();
 
