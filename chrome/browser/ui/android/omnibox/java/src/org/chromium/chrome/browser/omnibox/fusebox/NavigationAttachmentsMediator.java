@@ -61,7 +61,6 @@ class NavigationAttachmentsMediator {
     // TODO(crbug.com/457825183): Supply this class name externally.
     private static final String CHROME_ITEM_PICKER_ACTIVITY_CLASS =
             "org.chromium.chrome.browser.chrome_item_picker.ChromeItemPickerActivity";
-    private static final String MIMETYPE_IMAGE_ANY = "image/*";
     private final Context mContext;
     private final WindowAndroid mWindowAndroid;
     private final AndroidPermissionDelegate mPermissionDelegate;
@@ -385,14 +384,14 @@ class NavigationAttachmentsMediator {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             i =
                     new Intent(MediaStore.ACTION_PICK_IMAGES)
-                            .setType(MIMETYPE_IMAGE_ANY)
+                            .setType(MimeTypeUtils.IMAGE_ANY_MIME_TYPE)
                             .putExtra(MediaStore.EXTRA_PICK_IMAGES_MAX, 10);
         } else {
             i =
                     new Intent(Intent.ACTION_PICK)
                             .setDataAndType(
                                     MediaStore.Images.Media.INTERNAL_CONTENT_URI,
-                                    MIMETYPE_IMAGE_ANY)
+                                    MimeTypeUtils.IMAGE_ANY_MIME_TYPE)
                             .putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
         }
 

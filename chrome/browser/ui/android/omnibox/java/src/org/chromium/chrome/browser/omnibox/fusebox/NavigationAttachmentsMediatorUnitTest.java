@@ -387,6 +387,13 @@ public class NavigationAttachmentsMediatorUnitTest {
     }
 
     @Test
+    public void onImagePickerClicked_setsMimeType() {
+        mModel.get(NavigationAttachmentsProperties.POPUP_GALLERY_CLICKED).run();
+        verify(mWindowAndroid).showCancelableIntent(mIntentCaptor.capture(), any(), any());
+        assertEquals(MimeTypeUtils.IMAGE_ANY_MIME_TYPE, mIntentCaptor.getValue().getType());
+    }
+
+    @Test
     public void onFilePickerClicked_setsMimeType() {
         mModel.get(NavigationAttachmentsProperties.POPUP_FILE_CLICKED).run();
         verify(mWindowAndroid).showCancelableIntent(mIntentCaptor.capture(), any(), any());

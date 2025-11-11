@@ -35,6 +35,9 @@ public class MimeTypeUtils {
     /** The MIME type for a tab group object dragged from Chrome. */
     public static final String CHROME_MIMETYPE_TAB_GROUP = "chrome/tab-group";
 
+    /** The MIME type for any image. */
+    public static final String IMAGE_ANY_MIME_TYPE = "image/*";
+
     /** The MIME type for pdf. */
     public static final String PDF_MIME_TYPE = "application/pdf";
 
