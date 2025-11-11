@@ -1460,26 +1460,6 @@ constexpr base::FeatureParam<int>
         /*name=*/"waiting_for_metrics_days", /*default_value=*/1};
 
 #if BUILDFLAG(IS_ANDROID)
-// Enables Safety Hub organic HaTS survey on Android.
-BASE_FEATURE(kSafetyHubAndroidOrganicSurvey, base::FEATURE_DISABLED_BY_DEFAULT);
-
-constexpr base::FeatureParam<std::string> kSafetyHubAndroidOrganicTriggerId(
-    &kSafetyHubAndroidOrganicSurvey,
-    "trigger_id",
-    /*default_value=*/
-    "");
-
-// Enables Safety Hub HaTS survey on Android.
-BASE_FEATURE(kSafetyHubAndroidSurvey, base::FEATURE_DISABLED_BY_DEFAULT);
-
-constexpr base::FeatureParam<std::string> kSafetyHubAndroidTriggerId(
-    &kSafetyHubAndroidSurvey,
-    "trigger_id",
-    /*default_value=*/"");
-
-// Enables new triggers for the Safety Hub HaTS survey on Android.
-BASE_FEATURE(kSafetyHubAndroidSurveyV2, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables Weak and Reused passwords in Safety Hub.
 BASE_FEATURE(kSafetyHubWeakAndReusedPasswords,
              base::FEATURE_DISABLED_BY_DEFAULT);

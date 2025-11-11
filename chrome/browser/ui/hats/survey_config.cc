@@ -157,10 +157,6 @@ constexpr char kHatsSurveyTriggerAndroidStartupSurvey[] = "startup_survey";
 constexpr char kHatsSurveyTriggerQuickDelete[] = "quick_delete_survey";
 constexpr char kHatsSurveyTriggerClearBrowsingData[] =
     "clear_browsing_data_survey";
-constexpr char kHatsSurveyTriggerSafetyHubAndroid[] =
-    "safety_hub_android_survey";
-constexpr char kHatsSurveyOrganicTriggerSafetyHubAndroid[] =
-    "safety_hub_android_organic_survey";
 constexpr char kHatsSurveyTriggerSigninFirstRun[] = "signin-first-run";
 constexpr char kHatsSurveyTriggerSigninWeb[] = "signin-web";
 constexpr char kHatsSurveyTriggerSigninNtpAvatar[] = "signin-ntp-avatar";
@@ -781,20 +777,6 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
 
   survey_configs.emplace_back(&chrome::android::kClearBrowsingDataAndroidSurvey,
                               kHatsSurveyTriggerClearBrowsingData);
-
-  std::vector<std::string> product_specific_bits_data_fields =
-      std::vector<std::string>{"Tapped card", "Has visited"};
-  std::vector<std::string> product_specific_string_data =
-      std::vector<std::string>{"Notification module type", "Global state"};
-  survey_configs.emplace_back(
-      &features::kSafetyHubAndroidSurvey, kHatsSurveyTriggerSafetyHubAndroid,
-      features::kSafetyHubAndroidTriggerId.Get(),
-      product_specific_bits_data_fields, product_specific_string_data);
-  survey_configs.emplace_back(&features::kSafetyHubAndroidOrganicSurvey,
-                              kHatsSurveyOrganicTriggerSafetyHubAndroid,
-                              features::kSafetyHubAndroidOrganicTriggerId.Get(),
-                              product_specific_bits_data_fields,
-                              product_specific_string_data);
 
   std::vector<std::string> signin_string_psd_fields{"Channel", "Chrome Version",
                                                     "Number of Google Accounts",

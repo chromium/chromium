@@ -587,9 +587,6 @@ public abstract class ChromeFeatureList {
             "RobustWindowManagementExperimental";
     public static final String ROLL_BACK_MODE_B = "RollBackModeB";
     public static final String SAFETY_HUB = "SafetyHub";
-    public static final String SAFETY_HUB_ANDROID_ORGANIC_SURVEY = "SafetyHubAndroidOrganicSurvey";
-    public static final String SAFETY_HUB_ANDROID_SURVEY = "SafetyHubAndroidSurvey";
-    public static final String SAFETY_HUB_ANDROID_SURVEY_V2 = "SafetyHubAndroidSurveyV2";
     public static final String SAFETY_HUB_DISRUPTIVE_NOTIFICATION_REVOCATION =
             "SafetyHubDisruptiveNotificationRevocation";
     public static final String SAFETY_HUB_LOCAL_PASSWORDS_MODULE = "SafetyHubLocalPasswordsModule";
@@ -1361,12 +1358,6 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(RECORD_SUPPRESSION_METRICS, true);
     public static final MutableFlagWithSafeDefault sRobustWindowManagement =
             newMutableFlagWithSafeDefault(ROBUST_WINDOW_MANAGEMENT, false);
-    public static final MutableFlagWithSafeDefault sSafetyHubAndroidOrganicSurvey =
-            newMutableFlagWithSafeDefault(SAFETY_HUB_ANDROID_ORGANIC_SURVEY, false);
-    public static final MutableFlagWithSafeDefault sSafetyHubAndroidSurvey =
-            newMutableFlagWithSafeDefault(SAFETY_HUB_ANDROID_SURVEY, false);
-    public static final MutableFlagWithSafeDefault sSafetyHubAndroidSurveyV2 =
-            newMutableFlagWithSafeDefault(SAFETY_HUB_ANDROID_SURVEY_V2, false);
     public static final MutableFlagWithSafeDefault sShowNewTabAnimations =
             newMutableFlagWithSafeDefault(SHOW_NEW_TAB_ANIMATIONS, false);
     public static final MutableFlagWithSafeDefault sShowTabListAnimations =

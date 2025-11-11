@@ -3797,16 +3797,6 @@ inline constexpr char kSafetyHubUnifiedPasswordsModuleDescription[] =
     "Enables the unified passwords module in Safety Hub, which includes "
     "account and local passwords.";
 
-inline constexpr char kSafetyHubAndroidSurveyName[] =
-    "HaTS for Safety Check v2 on Android";
-inline constexpr char kSafetyHubAndroidSurveyDescription[] =
-    "Enables control & proactive HaTS surveys for Safety Check v2 on Android.";
-
-inline constexpr char kSafetyHubAndroidSurveyV2Name[] =
-    "New triggers for HaTS for Safety Check v2 on Android";
-inline constexpr char kSafetyHubAndroidSurveyV2Description[] =
-    "Enables new triggers for the HaTS surveys for Safety Check v2 on Android.";
-
 inline constexpr char kSafetyHubWeakAndReusedPasswordsName[] =
     "Enables Weak and Reused passwords in Safety Hub";
 inline constexpr char kSafetyHubWeakAndReusedPasswordsDescription[] =

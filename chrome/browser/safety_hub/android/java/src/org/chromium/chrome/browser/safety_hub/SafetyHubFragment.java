@@ -9,12 +9,10 @@ import static org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.getDas
 import static org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.recordDashboardInteractions;
 import static org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.recordModuleState;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.ViewStub;
 
 import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
@@ -22,8 +20,6 @@ import androidx.fragment.app.Fragment;
 import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.task.PostTask;
-import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -75,8 +71,6 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
     @VisibleForTesting
     static final String HELP_CENTER_URL = "https://support.google.com/chrome?p=safety_check";
 
-    private static final int ORGANIC_HATS_SURVEY_DELAY_MS = 10000;
-
     private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
     private SafetyHubModuleDelegate mDelegate;
@@ -86,14 +80,6 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
 
     @Override
     public void onCreatePreferences(@Nullable Bundle bundle, @Nullable String s) {
-        if (ChromeFeatureList.sSafetyHubAndroidOrganicSurvey.isEnabled()) {
-            mCallbackController = new CallbackController();
-            PostTask.postDelayedTask(
-                    TaskTraits.UI_DEFAULT,
-                    mCallbackController.makeCancelable(this::triggerOrganicHatsSurvey),
-                    ORGANIC_HATS_SURVEY_DELAY_MS);
-        }
-
         SettingsUtils.addPreferencesFromResource(this, R.xml.safety_hub_preferences);
         mPageTitle.set(getString(R.string.prefs_safety_check));
         setHasOptionsMenu(true);
@@ -377,17 +363,6 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
                         ? ModuleState.SAFE
                         : ModuleState.WARNING;
         recordModuleState(browserState, DashboardModuleType.BROWSER_STATE, event);
-    }
-
-    private void triggerOrganicHatsSurvey() {
-        Activity activity = getActivity();
-        ViewStub hatsSurveyViewStub = activity.findViewById(R.id.hats_survey_container_stub);
-        if (hatsSurveyViewStub != null && hatsSurveyViewStub.getParent() != null) {
-            hatsSurveyViewStub.inflate();
-        }
-        SafetyHubHatsHelper safetyHubHatsHelper = SafetyHubHatsHelper.getForProfile(getProfile());
-        assert safetyHubHatsHelper != null && activity != null;
-        safetyHubHatsHelper.triggerOrganicHatsSurvey(activity);
     }
 
     @Override

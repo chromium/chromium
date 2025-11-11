@@ -38,7 +38,6 @@ class SafetyHubMagicStackMediator implements TabModelSelectorObserver, MagicStac
     private final ModuleDelegate mModuleDelegate;
     private final PrefChangeRegistrar mPrefChangeRegistrar;
     private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
-    private final SafetyHubHatsHelper mHatsHelper;
 
     private boolean mHasBeenDismissed;
 
@@ -51,8 +50,7 @@ class SafetyHubMagicStackMediator implements TabModelSelectorObserver, MagicStac
             TabModelSelector tabModelSelector,
             ModuleDelegate moduleDelegate,
             PrefChangeRegistrar prefChangeRegistrar,
-            Supplier<ModalDialogManager> modalDialogManagerSupplier,
-            SafetyHubHatsHelper hatsHelper) {
+            Supplier<ModalDialogManager> modalDialogManagerSupplier) {
         mContext = context;
         mProfile = profile;
         mPrefService = prefService;
@@ -62,7 +60,6 @@ class SafetyHubMagicStackMediator implements TabModelSelectorObserver, MagicStac
         mModuleDelegate = moduleDelegate;
         mPrefChangeRegistrar = prefChangeRegistrar;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
-        mHatsHelper = hatsHelper;
     }
 
     void showModule() {
@@ -96,9 +93,6 @@ class SafetyHubMagicStackMediator implements TabModelSelectorObserver, MagicStac
                 bindCompromisedPasswordsView(magicStackEntry.getDescription());
                 break;
         }
-
-        mHatsHelper.triggerProactiveHatsSurveyWhenCardShown(
-                mTabModelSelector, magicStackEntry.getModuleType());
 
         mModuleDelegate.onDataReady(ModuleType.SAFETY_HUB, mModel);
 
@@ -182,8 +176,6 @@ class SafetyHubMagicStackMediator implements TabModelSelectorObserver, MagicStac
         mModel.set(
                 SafetyHubMagicStackViewProperties.BUTTON_ON_CLICK_LISTENER,
                 (view) -> {
-                    mHatsHelper.triggerProactiveHatsSurveyWhenCardTapped(
-                            mTabModelSelector, MagicStackEntry.ModuleType.REVOKED_PERMISSIONS);
                     SettingsNavigationFactory.createSettingsNavigation()
                             .startSettings(mContext, SafetyHubFragment.class);
                     recordExternalInteractions(ExternalInteractions.OPEN_FROM_MAGIC_STACK);
@@ -214,8 +206,6 @@ class SafetyHubMagicStackMediator implements TabModelSelectorObserver, MagicStac
         mModel.set(
                 SafetyHubMagicStackViewProperties.BUTTON_ON_CLICK_LISTENER,
                 (view) -> {
-                    mHatsHelper.triggerProactiveHatsSurveyWhenCardTapped(
-                            mTabModelSelector, MagicStackEntry.ModuleType.NOTIFICATION_PERMISSIONS);
                     SettingsNavigationFactory.createSettingsNavigation()
                             .startSettings(mContext, SafetyHubFragment.class);
                     recordExternalInteractions(ExternalInteractions.OPEN_FROM_MAGIC_STACK);
@@ -245,8 +235,6 @@ class SafetyHubMagicStackMediator implements TabModelSelectorObserver, MagicStac
         mModel.set(
                 SafetyHubMagicStackViewProperties.BUTTON_ON_CLICK_LISTENER,
                 (view) -> {
-                    mHatsHelper.triggerProactiveHatsSurveyWhenCardTapped(
-                            mTabModelSelector, MagicStackEntry.ModuleType.SAFE_BROWSING);
                     SettingsNavigationFactory.createSettingsNavigation()
                             .startSettings(mContext, SafeBrowsingSettingsFragment.class);
                     recordExternalInteractions(
@@ -279,8 +267,6 @@ class SafetyHubMagicStackMediator implements TabModelSelectorObserver, MagicStac
         mModel.set(
                 SafetyHubMagicStackViewProperties.BUTTON_ON_CLICK_LISTENER,
                 (view) -> {
-                    mHatsHelper.triggerProactiveHatsSurveyWhenCardTapped(
-                            mTabModelSelector, MagicStackEntry.ModuleType.PASSWORDS);
                     // The settingsCustomTabLauncher is only needed by dialogs shown when
                     // password manager is not available. Since the SafetyHub magic stack
                     // card is only shown if the password manager is accessible, it's fine

@@ -40,8 +40,7 @@ class SafetyHubMagicStackCoordinator implements ModuleProvider {
                         tabModelSelector,
                         moduleDelegate,
                         PrefServiceUtil.createFor(profile),
-                        modalDialogManagerSupplier,
-                        SafetyHubHatsHelper.getForProfile(profile));
+                        modalDialogManagerSupplier);
     }
 
     @Override
