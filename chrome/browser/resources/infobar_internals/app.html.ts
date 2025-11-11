@@ -24,7 +24,7 @@ export function getHtml(this: InfobarInternalsAppElement) {
               <td>${infobar.name}</td>
               <td class="description">${infobar.description}</td>
               <td>
-                <button data-type=${infobar.type} @click=${this.onTrigger}>
+                <button data-type="${infobar.type}" @click="${this.onTrigger}">
                   Trigger
                 </button>
               </td>

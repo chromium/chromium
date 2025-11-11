@@ -55,10 +55,10 @@ function getBufferConfigurationCardHtml(this: TraceRecorderElement) {
             <h3>Recording mode</h3>
             <select class="md-select" value="${this.bufferFillPolicy}"
                 @change="${this.onBufferFillPolicyChanged_}">
-              <option value=${this.fillPolicyEnum.RING_BUFFER}>
+              <option value="${this.fillPolicyEnum.RING_BUFFER}">
                 RING BUFFER
               </option>
-              <option value=${this.fillPolicyEnum.DISCARD}>
+              <option value="${this.fillPolicyEnum.DISCARD}">
                 DISCARD
               </option>
             </select>

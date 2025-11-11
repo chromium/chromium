@@ -51,7 +51,7 @@ ${html`
       ` : ''}
       ${this.showError_ ? html`
         <managed-user-profile-notice-state id="error" icon="cr:domain"
-            title=${this.errorTitle_} subtitle=${this.errorSubtitle_}>
+            title="${this.errorTitle_}" subtitle="${this.errorSubtitle_}">
           <img class="error-icon" alt="">
         </managed-user-profile-notice-state>
       ` : ''}

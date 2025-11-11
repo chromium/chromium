@@ -137,7 +137,7 @@ export function getHtml(this: UserEducationInternalsElement) {
         <h2>What's New</h2>
         <if expr="is_chromeos == False">
           <div class="whats-new-section">
-            <cr-button @click=${this.launchWhatsNewStaging_}>
+            <cr-button @click="${this.launchWhatsNewStaging_}">
               Launch staging
             </cr-button>
           </div>

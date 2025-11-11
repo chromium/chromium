@@ -95,6 +95,10 @@ export class IndividualPromosElement extends CrLitElement {
     assert(promoId, 'Button should not be able to display if no promoId.');
     this.handler_.onPromoClicked(promoId);
   }
+
+  protected getBodyTextCssClass_(): string {
+    return this.eligiblePromos_.length > 1 ? 'multiplePromos' : 'singlePromo';
+  }
 }
 
 customElements.define(IndividualPromosElement.is, IndividualPromosElement);

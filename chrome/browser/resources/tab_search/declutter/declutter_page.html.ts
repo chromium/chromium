@@ -114,7 +114,7 @@ function getTabSearchItem(
                                                    this.onDuplicateTabExclude_}"
         @focus="${this.onTabFocus_}"
         @blur="${this.onTabBlur_}"
-        size=${this.dedupeEnabled ? 'compact' : 'medium'}
+        size="${this.dedupeEnabled ? 'compact' : 'medium'}"
         hide-url>
     </tab-search-item>
   `;

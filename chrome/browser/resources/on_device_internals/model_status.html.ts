@@ -118,12 +118,12 @@ export function getHtml(this: OnDeviceInternalsModelStatusElement) {
             <td>${adaptation.version}</td>
             <td>${adaptation.isRecentlyUsed}</td>
             <td>
-              <button @click=${() =>
+              <button @click="${() =>
                 this.onFeatureUsageSetterClick_(adaptation.featureKey, true)
-              }>set to true</button>
-              <button @click=${() =>
+              }">set to true</button>
+              <button @click="${() =>
                 this.onFeatureUsageSetterClick_(adaptation.featureKey, false)
-              }>set to false</button>
+              }">set to false</button>
             </td>
           </tr>`)}
       </tbody>
