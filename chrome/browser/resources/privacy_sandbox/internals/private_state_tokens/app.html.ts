@@ -17,7 +17,7 @@ export function getHtml(this: PrivateStateTokensAppElement) {
     <private-state-tokens-sidebar id="sidebar" ?hidden="${this.narrow_}">
     </private-state-tokens-sidebar>
     <div id="content">
-      <private-state-tokens-navigation .metadata_="${this.metadata_}"
+      <private-state-tokens-navigation .metadata="${this.metadata_}"
           .itemToRender="${this.itemToRender}" .data="${this.data}">
       </private-state-tokens-navigation>
     </div>

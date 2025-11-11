@@ -26,14 +26,14 @@
           <div class="url-visit-domain">${this.computeDomain_(item)}</div>
           <span class="dot"
               ?hidden="${!this.computeShouldShowDeviceName_(item)}">
-            &nbsp&#8226&nbsp
+            &nbsp;&#8226;&nbsp;
           </span>
           <div class="url-visit-device"
               ?hidden="${!this.computeShouldShowDeviceName_(item)}">
             ${this.computeDeviceName_(item)}
           </div>
           <span class="dot">
-            &nbsp&#8226&nbsp
+            &nbsp;&#8226;&nbsp;
           </span>
           <span class="url-visit-reason">
             ${item.decoration.displayString}

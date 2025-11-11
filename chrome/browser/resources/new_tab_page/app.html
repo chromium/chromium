@@ -27,7 +27,7 @@ import {nothing} from '//resources/lit/v3_0/lit.rollup.js';
         </ntp-iframe>
         `
     ) : ''}
-  <!-- TODO(crbug.com/40743294): Instead of ?hidden="${!this.logoEnabled_}" it would
+  <!-- TODO(crbug.com/40743294): Instead of ?hidden="\${!this.logoEnabled_}" it would
        be nicer to use Lit's conditional rendering. However, that breaks
        StartupBrowserCreatorPickerNoParamsTest.ShowPickerWhenAlreadyLaunched on
        the msan builder. See crbug.com/1169070. -->

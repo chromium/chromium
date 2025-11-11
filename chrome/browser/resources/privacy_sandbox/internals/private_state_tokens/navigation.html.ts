@@ -12,9 +12,9 @@ export function getHtml(this: PrivateStateTokensNavigationElement) {
   return html`
 ${this.itemToRender === ItemsToRender.ISSUER_METADATA ? html`
   <private-state-tokens-metadata
-      .issuerOrigin="${this.metadata_.issuerOrigin}"
-      .expiration="${this.metadata_.expiration}"
-      .purposes="${this.metadata_.purposes}">
+      .issuerOrigin="${this.metadata.issuerOrigin}"
+      .expiration="${this.metadata.expiration}"
+      .purposes="${this.metadata.purposes}">
   </private-state-tokens-metadata>
 `: ''}
 
