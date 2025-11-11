@@ -794,13 +794,6 @@ IN_PROC_BROWSER_TEST_P(OpenerHeuristicPastInteractionGrantBrowserTest,
 // this test in //content or move it back to //chrome.
 //
 // TODO(crbug.com/40947612) Flaky on mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_AdTaggedPopupPastInteractionIsReported_WithStorageAccessGrant \
-  DISABLED_AdTaggedPopupPastInteractionIsReported_WithStorageAccessGrant
-#else
-#define MAYBE_AdTaggedPopupPastInteractionIsReported_WithStorageAccessGrant \
-  AdTaggedPopupPastInteractionIsReported_WithStorageAccessGrant
-#endif
 IN_PROC_BROWSER_TEST_P(
     OpenerHeuristicPastInteractionGrantBrowserTest,
     DISABLED_AdTaggedPopupPastInteractionIsReported_WithStorageAccessGrant) {
@@ -1308,13 +1301,6 @@ IN_PROC_BROWSER_TEST_P(
 // TODO: crbug.com/376625002 - disabled for the move to //content since the
 // DevTools integration is still only in //chrome. Either find a way to
 // implement this test in //content or move it back to //chrome.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_PopupInteraction_CookieAccessEmitsDevtoolsWarning \
-  DISABLED_PopupInteraction_CookieAccessEmitsDevtoolsWarning
-#else
-#define MAYBE_PopupInteraction_CookieAccessEmitsDevtoolsWarning \
-  PopupInteraction_CookieAccessEmitsDevtoolsWarning
-#endif
 IN_PROC_BROWSER_TEST_F(
     OpenerHeuristicBrowserTest,
     DISABLED_PopupInteraction_CookieAccessEmitsDevtoolsWarning) {
@@ -1533,13 +1519,6 @@ IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest, TopLevel_PopupId) {
 // this test in //content or move it back to //chrome.
 //
 // TODO(crbug.com/41484288): Flaky on mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_TopLevel_PastInteraction_AdTagged \
-  DISABLED_TopLevel_PastInteraction_AdTagged
-#else
-#define MAYBE_TopLevel_PastInteraction_AdTagged \
-  TopLevel_PastInteraction_AdTagged
-#endif
 IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
                        DISABLED_TopLevel_PastInteraction_AdTagged) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
