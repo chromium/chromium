@@ -33,9 +33,39 @@
 #include "components/sync/protocol/web_app_specifics.pb.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/common/web_app_id.h"
+#include "third_party/protobuf/src/google/protobuf/repeated_ptr_field.h"
 #include "url/gurl.h"
 
 namespace web_app {
+
+namespace {
+
+// Check if the icon metadata stored for pending updates is corrupt.
+bool CorruptIconMetadataForIcons(
+    const ::google::protobuf::RepeatedPtrField<::sync_pb::WebAppIconInfo>&
+        icons) {
+  for (const auto& icon : icons) {
+    if (!icon.has_url() || !icon.has_purpose()) {
+      return true;
+    }
+  }
+  return false;
+}
+
+// Check if the downloaded icon sizes stored for pending updates is corrupt.
+bool CorruptDownloadedSizeMetadata(
+    const ::google::protobuf::RepeatedPtrField<proto::DownloadedIconSizeInfo>&
+        downloaded_icon_sizes) {
+  for (const auto& downloaded_icon : downloaded_icon_sizes) {
+    if (downloaded_icon.icon_sizes().empty() ||
+        !downloaded_icon.has_purpose()) {
+      return true;
+    }
+  }
+  return false;
+}
+
+}  // namespace
 
 WebAppDatabase::WebAppDatabase(AbstractWebAppDatabaseFactory* database_factory,
                                ReportErrorCallback error_callback)
@@ -97,7 +127,7 @@ void WebAppDatabase::Write(
 
 // static
 int WebAppDatabase::GetCurrentDatabaseVersion() {
-  return 4;
+  return 5;
 }
 
 WebAppDatabase::ProtobufState::ProtobufState() = default;
@@ -175,6 +205,14 @@ void WebAppDatabase::MigrateDatabase(ProtobufState& state) {
     MigratePendingUpdateInfoWasIgnored(state, changed_apps);
     base::UmaHistogramSparse("WebApp.Database.VersionUpgradedTo", 4);
     state.metadata.set_version(4);
+    did_change_metadata = true;
+  }
+
+  // Upgrade from version 4 to version 5.
+  if (state.metadata.version() < 5 && GetCurrentDatabaseVersion() >= 5) {
+    MigratePendingUpdateInfoClearIconMetadataIfCorrupted(state, changed_apps);
+    base::UmaHistogramSparse("WebApp.Database.VersionUpgradedTo", 5);
+    state.metadata.set_version(5);
     did_change_metadata = true;
   }
 
@@ -518,6 +556,62 @@ void WebAppDatabase::MigratePendingUpdateInfoWasIgnored(
   // Record histograms correctly.
   base::UmaHistogramCounts1000(
       "WebApp.Migrations.PendingInfoWasIgnoredMigrated", apps_migrated_count);
+}
+
+void WebAppDatabase::MigratePendingUpdateInfoClearIconMetadataIfCorrupted(
+    ProtobufState& state,
+    std::set<webapps::AppId>& changed_apps) {
+  // Migrating from version 4 to version 5.
+  CHECK_LT(state.metadata.version(), 5);
+  int corrupted_apps_count = 0;
+
+  for (auto& [app_id, app_proto] : state.apps) {
+    // Bypass apps that don't have a pending update info.
+    if (!app_proto.has_pending_update_info()) {
+      continue;
+    }
+
+    bool manifest_icons_corrupted =
+        (app_proto.pending_update_info().manifest_icons().empty() !=
+             app_proto.pending_update_info()
+                 .downloaded_manifest_icons()
+                 .empty() ||
+         CorruptIconMetadataForIcons(
+             app_proto.pending_update_info().manifest_icons()) ||
+         CorruptDownloadedSizeMetadata(
+             app_proto.pending_update_info().downloaded_manifest_icons()));
+    bool trusted_icons_corrupted =
+        (app_proto.pending_update_info().trusted_icons().empty() !=
+             app_proto.pending_update_info()
+                 .downloaded_trusted_icons()
+                 .empty() ||
+         CorruptIconMetadataForIcons(
+             app_proto.pending_update_info().trusted_icons()) ||
+         CorruptDownloadedSizeMetadata(
+             app_proto.pending_update_info().downloaded_trusted_icons()));
+    if (!manifest_icons_corrupted && !trusted_icons_corrupted) {
+      continue;
+    }
+
+    // At this point, icon metadata is corrupted. Clear them to prevent the
+    // proto web app serialization logic from dropping them.
+    corrupted_apps_count++;
+    app_proto.mutable_pending_update_info()->clear_manifest_icons();
+    app_proto.mutable_pending_update_info()->clear_trusted_icons();
+    app_proto.mutable_pending_update_info()->clear_downloaded_manifest_icons();
+    app_proto.mutable_pending_update_info()->clear_downloaded_trusted_icons();
+
+    // If this was just an icon update, then having an empty PendingUpdateInfo
+    // with no pending update metadata does not make sense. Clear the whole
+    // field in that case.
+    if (!app_proto.pending_update_info().has_name()) {
+      app_proto.clear_pending_update_info();
+    }
+    changed_apps.insert(app_id);
+  }
+  base::UmaHistogramCounts1000(
+      "WebApp.Migrations.PendingUpdateInfoIconDataCorrupted",
+      corrupted_apps_count);
 }
 
 void WebAppDatabase::OnDatabaseOpened(
