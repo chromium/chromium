@@ -668,7 +668,7 @@ interface WebClientHandler {
   // associated with the task in any way until acted on. Returns the TabData
   // for the newly created tab or undefined if tab creation failed.
   CreateActorTab(int32 task_id,
-                 bool foreground,
+                 bool open_in_background,
                  int32? initiator_tab_id,
                  int32? initiator_window_id) => (TabData? tab_data);
 

@@ -371,7 +371,7 @@ void GlicActorTaskManager::UninterruptActorTask(actor::TaskId task_id) {
 
 void GlicActorTaskManager::CreateActorTab(
     actor::TaskId task_id,
-    bool foreground,
+    bool open_in_background,
     const std::optional<int32_t>& initiator_tab_id,
     const std::optional<int32_t>& initiator_window_id,
     glic::mojom::WebClientHandler::CreateActorTabCallback callback) {
@@ -384,7 +384,8 @@ void GlicActorTaskManager::CreateActorTab(
           : SessionID::InvalidValue();
 
   actor_keyed_service_->CreateActorTab(
-      task_id, foreground, initiator_tab_handle, initiator_window_session_id,
+      task_id, open_in_background, initiator_tab_handle,
+      initiator_window_session_id,
       base::BindOnce(&GlicActorTaskManager::CreateActorTabFinished,
                      GetWeakPtr(), std::move(callback)));
 }

@@ -100,21 +100,21 @@ const ActorTask* ActorKeyedService::GetActingActorTaskForWebContents(
 }
 
 void ActorKeyedService::CreateActorTab(TaskId task_id,
-                                       bool foreground,
+                                       bool open_in_background,
                                        tabs::TabHandle initiator_tab_handle,
                                        SessionID initiator_window_id,
                                        CreateActorTabCallback callback) {
   GetJournal().Log(
-      GURL(), task_id, "CreateActorTask",
+      GURL(), task_id, "CreateActorTab",
       JournalDetailsBuilder()
           .Add("task_id", task_id)
-          .Add("foreground", foreground)
+          .Add("open_in_background", open_in_background)
           .Add("initiator_tab_id", initiator_tab_handle.raw_value())
           .Add("initiator_window_id", initiator_window_id.id())
           .Build());
   ActorTask* task = GetTask(task_id);
   if (!task) {
-    GetJournal().Log(GURL(), task_id, "CreateActorTask",
+    GetJournal().Log(GURL(), task_id, "CreateActorTab",
                      JournalDetailsBuilder().AddError("Invalid Task").Build());
   }
 
@@ -125,7 +125,7 @@ void ActorKeyedService::CreateActorTab(TaskId task_id,
   if (initiator_tab) {
     if (initiator_tab->IsInNormalWindow()) {
       window_for_new_tab = initiator_tab->GetBrowserWindowInterface();
-      GetJournal().Log(GURL(), task_id, "CreateActorTask",
+      GetJournal().Log(GURL(), task_id, "CreateActorTab",
                        JournalDetailsBuilder()
                            .Add("Using initiator_tab's window",
                                 window_for_new_tab->GetSessionID().id())
@@ -137,7 +137,7 @@ void ActorKeyedService::CreateActorTab(TaskId task_id,
     window_for_new_tab =
         BrowserWindowInterface::FromSessionID(initiator_window_id);
     GetJournal().Log(
-        GURL(), task_id, "CreateActorTask",
+        GURL(), task_id, "CreateActorTab",
         JournalDetailsBuilder()
             .Add("Using initiator_window", initiator_window_id.id())
             .Build());
@@ -147,24 +147,25 @@ void ActorKeyedService::CreateActorTab(TaskId task_id,
                         ::ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
 
   if (window_for_new_tab) {
-    params.disposition = foreground ? WindowOpenDisposition::NEW_FOREGROUND_TAB
-                                    : WindowOpenDisposition::NEW_BACKGROUND_TAB;
+    params.disposition = open_in_background
+                             ? WindowOpenDisposition::NEW_BACKGROUND_TAB
+                             : WindowOpenDisposition::NEW_FOREGROUND_TAB;
     params.browser = window_for_new_tab;
   } else {
     GetJournal().Log(
-        GURL(), task_id, "CreateActorTask",
+        GURL(), task_id, "CreateActorTab",
         JournalDetailsBuilder().Add("Creating New Window", "").Build());
     // If window_for_new_tab is still null (e.g. the initiating window was
     // closed) the tab will be created in a new window.
     // TODO(b/454046200): Reconsider what should happen in this case.
     params.disposition = WindowOpenDisposition::NEW_WINDOW;
-    params.window_action = NavigateParams::WindowAction::kShowWindow;
+    params.window_action = NavigateParams::WindowAction::SHOW_WINDOW;
   }
 
   base::WeakPtr<content::NavigationHandle> handle = Navigate(&params);
   if (!handle) {
     GetJournal().Log(
-        GURL(), task_id, "CreateActorTask",
+        GURL(), task_id, "CreateActorTab",
         JournalDetailsBuilder().AddError("Failed creating navigation").Build());
     std::move(callback).Run(nullptr);
     return;

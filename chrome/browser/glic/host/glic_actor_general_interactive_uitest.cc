@@ -14,6 +14,7 @@
 #include "chrome/browser/glic/host/glic_actor_interactive_uitest_common.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "ui/gfx/geometry/point.h"
@@ -41,6 +42,10 @@ class GlicActorGeneralUiTest : public GlicActorUiTest {
 
  protected:
   static constexpr base::TimeDelta kWaitTime = base::Milliseconds(1);
+
+  tabs::TabHandle GetActiveTabHandle() {
+    return browser()->GetTabStripModel()->GetActiveTab()->GetHandle();
+  }
 
   tabs::TabHandle null_tab_handle_;
 };
@@ -78,8 +83,6 @@ MultiStep GlicActorGeneralUiTest::WaitAction(
       base::BindLambdaForTesting([&task_id, &observe_tab_handle, duration]() {
         apc::Actions action = actor::MakeWait(duration, observe_tab_handle);
         action.set_task_id(task_id.value());
-        if (duration.has_value()) {
-        }
         return EncodeActionProto(action);
       });
   return ExecuteAction(std::move(wait_provider), std::move(expected_result));
@@ -392,6 +395,94 @@ IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTest, WaitObserveTabFirstAction) {
         return last_execution_result()->tabs().at(0).id() == tab1.raw_value();
       })
   );
+  // clang-format on
+}
+
+IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTest, CreateActorTabForeground) {
+  const GURL task_url =
+      embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
+  int created_tab_id = -1;
+
+  RunTestSequence(
+      // clang-format off
+      InitializeWithOpenGlicWindow(),
+      CreateTask(task_id_, ""),
+      ExecuteInGlic(base::BindLambdaForTesting(
+          [&](content::WebContents* glic_contents) {
+            int initiator_tab = GetActiveTabHandle().raw_value();
+            int initiator_window = browser()->session_id().id();
+            bool open_in_background = false;
+            std::string script = content::JsReplace(
+                R"JS(
+                  (async () => {
+                    const result = await client.browser.createActorTab($1, {
+                      openInBackground: $2,
+                      initiatorTabId: ($3).toString(),
+                      initiatorWindowId: ($4).toString()
+                    });
+                    return Number.parseInt(result.tabId, 10);
+                  })()
+                )JS", task_id_.value(), open_in_background, initiator_tab,
+                initiator_window);
+            created_tab_id =
+                content::EvalJs(glic_contents, script).ExtractInt();
+      })),
+      Do([&]() {
+        // Ensure the new tab is the active tab
+        EXPECT_EQ(created_tab_id, GetActiveTabHandle().raw_value());
+
+        // Ensure the new tab was created but is in the background..
+        tabs::TabInterface* tab = tabs::TabHandle(created_tab_id).Get();
+        EXPECT_TRUE(tab);
+        EXPECT_TRUE(tab->IsActivated());
+      })
+    );
+  // clang-format on
+}
+
+IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTest, CreateActorTabBackground) {
+  const GURL task_url =
+      embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
+  int existing_tab_id = -1;
+  int created_tab_id = -1;
+
+  RunTestSequence(
+      // clang-format off
+      InitializeWithOpenGlicWindow(),
+      CreateTask(task_id_, ""),
+      Do([&]() {
+        existing_tab_id = GetActiveTabHandle().raw_value();
+      }),
+      ExecuteInGlic(base::BindLambdaForTesting(
+          [&](content::WebContents* glic_contents) {
+            int initiator_tab = GetActiveTabHandle().raw_value();
+            int initiator_window = browser()->session_id().id();
+            bool open_in_background = true;
+            std::string script = content::JsReplace(
+                R"JS(
+                  (async () => {
+                    const result = await client.browser.createActorTab($1, {
+                      openInBackground: $2,
+                      initiatorTabId: ($3).toString(),
+                      initiatorWindowId: ($4).toString()
+                    });
+                    return Number.parseInt(result.tabId, 10);
+                  })()
+                )JS", task_id_.value(), open_in_background, initiator_tab,
+                initiator_window);
+            created_tab_id =
+                content::EvalJs(glic_contents, script).ExtractInt();
+      })),
+      Do([&]() {
+        // Ensure the previous tab remains in foreground.
+        EXPECT_EQ(existing_tab_id, GetActiveTabHandle().raw_value());
+
+        // Ensure the new tab was created but is in the background..
+        tabs::TabInterface* tab = tabs::TabHandle(created_tab_id).Get();
+        EXPECT_TRUE(tab);
+        EXPECT_FALSE(tab->IsActivated());
+      })
+    );
   // clang-format on
 }
 

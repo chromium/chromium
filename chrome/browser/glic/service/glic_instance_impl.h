@@ -178,7 +178,7 @@ class GlicInstanceImpl : public GlicInstance,
   void UninterruptActorTask(actor::TaskId task_id) override;
   void CreateActorTab(
       actor::TaskId task_id,
-      bool foreground,
+      bool open_in_background,
       const std::optional<int32_t>& initiator_tab_id,
       const std::optional<int32_t>& initiator_window_id,
       glic::mojom::WebClientHandler::CreateActorTabCallback callback) override;

@@ -69,6 +69,9 @@ class GlicActorUiTest : public test::InteractiveGlicTest {
   MultiStep ExecuteAction(ActionProtoProvider proto_provider,
                           ExpectedErrorResult expected_result = {});
 
+  MultiStep ExecuteInGlic(
+      base::OnceCallback<void(content::WebContents*)> callback);
+
   MultiStep CreateTask(actor::TaskId& out_task, std::string_view title);
 
   // Note: In all the Create*Action functions below, parameters that are

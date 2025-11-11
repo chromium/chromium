@@ -1077,7 +1077,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   }
 
   void CreateActorTab(int32_t task_id,
-                      bool foreground,
+                      bool open_in_background,
                       std::optional<int32_t> initiator_tab_id,
                       std::optional<int32_t> initiator_window_id,
                       CreateActorTabCallback callback) override {
@@ -1087,7 +1087,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
       return;
     }
     host().instance_delegate().CreateActorTab(
-        actor::TaskId(task_id), foreground, initiator_tab_id,
+        actor::TaskId(task_id), open_in_background, initiator_tab_id,
         initiator_window_id, std::move(callback));
   }
 
