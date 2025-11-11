@@ -304,7 +304,10 @@ template("build_webui") {
 
   if (defined(html_files)) {
     html_to_wrapper("html_wrapper_files") {
-      visibility = [ ":build_ts" ]
+      visibility = [
+        ":build_ts",
+        ":lint",
+      ]
       deps = [ ":preprocess_html_css_files" ]
       in_folder = preprocess_dir
       out_folder = preprocess_dir
@@ -496,6 +499,10 @@ template("build_webui") {
       in_files = filter_exclude(all_ts_files, [ "*.js" ])
       tsconfig = "$target_gen_dir/tsconfig_build_ts.json"
       deps = [ ":build_ts" ]
+      if (defined(html_wrapper_files)) {
+        deps += [ ":html_wrapper_files" ]
+        in_files += html_wrapper_files
+      }
       if (enable_source_maps) {
         deps += [ ":create_source_maps" ]
       } else {
