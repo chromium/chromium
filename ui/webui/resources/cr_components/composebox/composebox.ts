@@ -722,6 +722,13 @@ export class ComposeboxElement extends I18nMixinLit
     if (this.$.composebox.contains(e.relatedTarget as Node)) {
       return;
     }
+
+    // If the composebox was focused out, collapsed and now focused in,
+    // requery autocomplete to get fresh contextual suggestions.
+    if (this.isCollapsible) {
+      this.queryAutocomplete(/* clearMatches= */ true);
+    }
+
     this.expanded_ = true;
     this.submitting_ = false;
     this.pageHandler_.focusChanged(true);

@@ -546,19 +546,18 @@ constexpr base::FeatureParam<bool>
 constexpr base::FeatureParam<std::string> kZeroStateCsbQuery{
     &kLensSearchZeroStateCsb, "zero-state-csb-query", ""};
 
-const base::FeatureParam<LensAimSuggestionsType>::Option
-    kLensAimSuggestionsTypeOptions[] = {
-        {LensAimSuggestionsType::kNone,
-         kLensAimSuggestionsTypeNone},
-        {LensAimSuggestionsType::kContextual,
-         kLensAimSuggestionsTypeContextual}};
+const base::FeatureParam<
+    LensAimSuggestionsType>::Option kLensAimSuggestionsTypeOptions[] = {
+    {LensAimSuggestionsType::kNone, kLensAimSuggestionsTypeNone},
+    {LensAimSuggestionsType::kContextual, kLensAimSuggestionsTypeContextual},
+    {LensAimSuggestionsType::kMultimodal, kLensAimSuggestionsTypeMultimodal},
+};
 
-const base::FeatureParam<LensAimSuggestionsType>
-    kLensAimSuggestionsType(
-        &kLensAimSuggestions,            // Parent Feature
-        "lens-aim-suggestions-type",         // Parameter Name in Field Trial
-        LensAimSuggestionsType::kNone,  // Default Value
-        &kLensAimSuggestionsTypeOptions);
+const base::FeatureParam<LensAimSuggestionsType> kLensAimSuggestionsType(
+    &kLensAimSuggestions,           // Parent Feature
+    "lens-aim-suggestions-type",    // Parameter Name in Field Trial
+    LensAimSuggestionsType::kNone,  // Default Value
+    &kLensAimSuggestionsTypeOptions);
 
 std::string_view LensAimSuggestionModeToString(
     LensAimSuggestionsType type) {
@@ -567,6 +566,8 @@ std::string_view LensAimSuggestionModeToString(
       return kLensAimSuggestionsTypeNone;
     case LensAimSuggestionsType::kContextual:
       return kLensAimSuggestionsTypeContextual;
+    case LensAimSuggestionsType::kMultimodal:
+      return kLensAimSuggestionsTypeMultimodal;
     default:
       NOTREACHED();
   }
@@ -1057,6 +1058,13 @@ bool GetAimSuggestionsEnabled() {
   return base::FeatureList::IsEnabled(kLensAimSuggestions) &&
          kLensAimSuggestionsType.Get() !=
              LensAimSuggestionsType::kNone;
+}
+
+LensAimSuggestionsType GetLensAimSuggestionsType() {
+  if (!GetAimSuggestionsEnabled()) {
+    return LensAimSuggestionsType::kNone;
+  }
+  return kLensAimSuggestionsType.Get();
 }
 
 bool ShouldCloseOverlayOnAimTransition() {

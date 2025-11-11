@@ -29,6 +29,7 @@
 #include "base/trace_event/memory_usage_estimator.h"
 #include "base/trace_event/typed_macros.h"
 #include "build/build_config.h"
+#include "components/lens/lens_features.h"
 #include "components/omnibox/browser/actions/contextual_search_action.h"
 #include "components/omnibox/browser/actions/omnibox_action_concepts.h"
 #include "components/omnibox/browser/actions/omnibox_action_in_suggest.h"
@@ -479,9 +480,17 @@ void AutocompleteResult::SortAndCull(
                     suggestion_groups_map_));
             break;
           case OmniboxEventProto::LENS_SIDE_PANEL_SEARCHBOX:
-            sections.push_back(
-                std::make_unique<DesktopLensMultimodalZpsSection>(
-                    suggestion_groups_map_));
+            if (lens::features::GetLensAimSuggestionsType() ==
+                lens::features::LensAimSuggestionsType::kMultimodal) {
+              // Limit to 5 side panel suggestions for multimodal.
+              sections.push_back(
+                  std::make_unique<DesktopLensMultimodalZpsSection>(
+                      suggestion_groups_map_, 5u));
+            } else {
+              sections.push_back(
+                  std::make_unique<DesktopLensMultimodalZpsSection>(
+                      suggestion_groups_map_));
+            }
             break;
           default:
             NOTREACHED();

@@ -1260,9 +1260,14 @@ const FeatureEntry::FeatureVariation kJourneysVariations[] = {
 const FeatureEntry::FeatureParam kLensAimSuggestionsTypeContextual[] = {
     {"lens-aim-suggestions-type", "Contextual"}};
 
+const FeatureEntry::FeatureParam kLensAimSuggestionsTypeMultimodal[] = {
+    {"lens-aim-suggestions-type", "Multimodal"}};
+
 const FeatureEntry::FeatureVariation kLensAimSuggestionsVariations[] = {
     {"with Contextual", kLensAimSuggestionsTypeContextual,
-     std::size(kLensAimSuggestionsTypeContextual), nullptr}};
+     std::size(kLensAimSuggestionsTypeContextual), nullptr},
+    {"with Multimodal", kLensAimSuggestionsTypeMultimodal,
+     std::size(kLensAimSuggestionsTypeMultimodal), nullptr}};
 
 const FeatureEntry::FeatureVariation kRemotePageMetadataVariations[] = {
     {"High Performance Canonicalization", nullptr, 0, "3362133"},

@@ -273,12 +273,15 @@ class DesktopLensContextualZpsSection : public ZpsSection {
 
 // Section expressing the Desktop ZPS limits and grouping for the Lens
 // multimodal searchbox.
-// - up to 8 suggestions total.
-//  - up to 8 multimodal suggestions.
+// - default to 8 multimodal suggestions.
 class DesktopLensMultimodalZpsSection : public ZpsSection {
  public:
   explicit DesktopLensMultimodalZpsSection(
       omnibox::GroupConfigMap& group_configs);
+
+  explicit DesktopLensMultimodalZpsSection(
+      omnibox::GroupConfigMap& group_configs,
+      size_t max_suggestions);
 };
 
 class AndroidComposeboxZpsSection : public ZpsSection {

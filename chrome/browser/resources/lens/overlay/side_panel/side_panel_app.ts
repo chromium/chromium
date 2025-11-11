@@ -523,6 +523,8 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
     this.shadowRoot!.querySelector<HTMLElement>('cr-searchbox')
         ?.shadowRoot!.querySelector<HTMLElement>('input')
         ?.blur();
+
+    this.$.composebox.blur();
   }
 
   private handleEscapeSearchbox(e: CustomEvent) {
