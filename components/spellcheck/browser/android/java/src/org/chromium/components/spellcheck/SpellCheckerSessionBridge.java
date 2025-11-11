@@ -172,17 +172,17 @@ public class SpellCheckerSessionBridge implements SpellCheckerSessionListener {
                                     ? SpellCheckResultDecoration.GRAMMAR
                                     : SpellCheckResultDecoration.SPELLING;
                     spellcheckResultDecorations.add(decoration);
-                    ArrayList<String> suggestions_for_word = new ArrayList<String>();
+                    ArrayList<String> suggestionsForWord = new ArrayList<String>();
                     for (int j = 0; j < info.getSuggestionsCount(); ++j) {
                         String suggestion = info.getSuggestionAt(j);
                         // Remove zero-length space from end of suggestion, if any
                         if (suggestion.charAt(suggestion.length() - 1) == 0x200b) {
                             suggestion = suggestion.substring(0, suggestion.length() - 1);
                         }
-                        suggestions_for_word.add(suggestion);
+                        suggestionsForWord.add(suggestion);
                     }
                     suggestions.add(
-                            suggestions_for_word.toArray(new String[suggestions_for_word.size()]));
+                            suggestionsForWord.toArray(new String[suggestionsForWord.size()]));
                     hideSuggestionMenuBooleans.add((attributes & dontShowUiBitMask) != 0);
                 }
             }
