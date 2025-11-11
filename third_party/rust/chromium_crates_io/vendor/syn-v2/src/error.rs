@@ -223,10 +223,11 @@ impl Error {
     /// [`compile_error!`]: std::compile_error!
     /// [`parse_macro_input!`]: crate::parse_macro_input!
     pub fn to_compile_error(&self) -> TokenStream {
-        self.messages
-            .iter()
-            .map(ErrorMessage::to_compile_error)
-            .collect()
+        let mut tokens = TokenStream::new();
+        for msg in &self.messages {
+            tokens.extend(ErrorMessage::to_compile_error(msg));
+        }
+        tokens
     }
 
     /// Render the error as an invocation of [`compile_error!`].

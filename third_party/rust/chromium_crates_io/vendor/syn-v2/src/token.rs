@@ -143,7 +143,7 @@ pub(crate) mod private {
     /// Support writing `token.span` rather than `token.spans[0]` on tokens that
     /// hold a single span.
     #[repr(transparent)]
-    #[allow(unknown_lints, repr_transparent_external_private_fields)] // False positive: https://github.com/rust-lang/rust/issues/78586#issuecomment-1722680482
+    #[allow(unknown_lints, repr_transparent_non_zst_fields)] // False positive: https://github.com/rust-lang/rust/issues/115922
     pub struct WithSpan {
         pub span: Span,
     }
@@ -324,7 +324,7 @@ macro_rules! define_punctuation_structs {
     ($($token:literal pub struct $name:ident/$len:tt #[doc = $usage:literal])*) => {
         $(
             #[cfg_attr(not(doc), repr(transparent))]
-            #[allow(unknown_lints, repr_transparent_external_private_fields)] // False positive: https://github.com/rust-lang/rust/issues/78586#issuecomment-1722680482
+            #[allow(unknown_lints, repr_transparent_non_zst_fields)] // False positive: https://github.com/rust-lang/rust/issues/115922
             #[doc = concat!('`', $token, '`')]
             ///
             /// Usage:
