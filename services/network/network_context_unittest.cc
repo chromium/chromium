@@ -8294,27 +8294,10 @@ static ResourceRequest CreateResourceRequest(const char* method,
   return request;
 }
 
-enum class SplitCacheTestCase {
-  kEnabledTripleKeyed,
-  kEnabledTriplePlusCrossSiteMainFrameNavBool,
-};
-
-const struct {
-  const SplitCacheTestCase test_case;
-  base::test::FeatureRef feature;
-} kTestCaseToFeatureMapping[] = {
-    {SplitCacheTestCase::kEnabledTriplePlusCrossSiteMainFrameNavBool,
-     net::features::kSplitCacheByCrossSiteMainFrameNavigationBoolean}};
-
-class NetworkContextSplitCacheTest
-    : public NetworkContextTest,
-      public testing::WithParamInterface<SplitCacheTestCase> {
+class NetworkContextSplitCacheEnabledTest : public NetworkContextTest {
  protected:
-  NetworkContextSplitCacheTest()
-      : split_cache_test_case_(GetParam()),
-        split_cache_experiment_feature_list_(GetParam(),
-                                             kTestCaseToFeatureMapping) {
-    split_cache_always_enabled_feature_list_.InitAndEnableFeature(
+  NetworkContextSplitCacheEnabledTest() {
+    split_cache_enabled_feature_list_.InitAndEnableFeature(
         net::features::kSplitCacheByNetworkIsolationKey);
 
     test_server_.AddDefaultHandlers(
@@ -8403,31 +8386,13 @@ class NetworkContextSplitCacheTest
   }
 
  private:
-  const SplitCacheTestCase split_cache_test_case_;
-  net::test::ScopedMutuallyExclusiveFeatureList
-      split_cache_experiment_feature_list_;
-  base::test::ScopedFeatureList split_cache_always_enabled_feature_list_;
+  base::test::ScopedFeatureList split_cache_enabled_feature_list_;
   net::EmbeddedTestServer test_server_;
   std::unique_ptr<net::ScopedDefaultHostResolverProc> mock_host_resolver_;
   std::unique_ptr<NetworkContext> network_context_;
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    NetworkContextSplitCacheTest,
-    testing::ValuesIn(
-        {SplitCacheTestCase::kEnabledTripleKeyed,
-         SplitCacheTestCase::kEnabledTriplePlusCrossSiteMainFrameNavBool}),
-    [](const testing::TestParamInfo<SplitCacheTestCase>& info) {
-      switch (info.param) {
-        case SplitCacheTestCase::kEnabledTripleKeyed:
-          return "SplitCacheEnabledTripleKeyed";
-        case SplitCacheTestCase::kEnabledTriplePlusCrossSiteMainFrameNavBool:
-          return "SplitCacheEnabledTriplePlusCrossSiteMainFrameNavigationBool";
-      }
-    });
-
-TEST_P(NetworkContextSplitCacheTest, CachedUsingNetworkIsolationKey) {
+TEST_F(NetworkContextSplitCacheEnabledTest, CachedUsingNetworkIsolationKey) {
   GURL url = test_server()->GetURL("/resource");
   url::Origin origin_a = url::Origin::Create(GURL("http://a.test/"));
   net::IsolationInfo info_a =
@@ -8445,7 +8410,7 @@ TEST_P(NetworkContextSplitCacheTest, CachedUsingNetworkIsolationKey) {
   LoadAndVerifyCached(url, info_b, /*was_cached=*/true);
 }
 
-TEST_P(NetworkContextSplitCacheTest,
+TEST_F(NetworkContextSplitCacheEnabledTest,
        NavigationResourceCachedUsingNetworkIsolationKey) {
   GURL url = test_server()->GetURL("othersite.test", "/main.html");
   url::Origin origin_a = url::Origin::Create(url);
@@ -8467,7 +8432,7 @@ TEST_P(NetworkContextSplitCacheTest,
   LoadAndVerifyCached(url_b, info_b, /*was_cached=*/true);
 }
 
-TEST_P(NetworkContextSplitCacheTest,
+TEST_F(NetworkContextSplitCacheEnabledTest,
        CachedUsingNetworkIsolationKeyWithFrameOrigin) {
   GURL url = test_server()->GetURL("/resource");
   url::Origin origin_a = url::Origin::Create(GURL("http://a.test/"));
@@ -8485,7 +8450,7 @@ TEST_P(NetworkContextSplitCacheTest,
   LoadAndVerifyCached(url, info_b, /*was_cached=*/false);
 }
 
-TEST_P(NetworkContextSplitCacheTest,
+TEST_F(NetworkContextSplitCacheEnabledTest,
        NavigationResourceRedirectNetworkIsolationKey) {
   // Create a request that redirects.
   GURL url = test_server()->GetURL(
@@ -8507,50 +8472,30 @@ TEST_P(NetworkContextSplitCacheTest,
           redirected_origin,
           net::SiteForCookies::FromOrigin(redirected_origin));
 
-  switch (GetParam()) {
-    case SplitCacheTestCase::kEnabledTripleKeyed:
-      // Now directly load with the key using the redirected URL. This should be
-      // a cache hit.
-      LoadAndVerifyCached(redirected_url,
-                          info.CreateForRedirect(redirected_origin),
-                          /*was_cached=*/true);
+  // Since the initiator is incorporated into the HTTP cache key, the redirect
+  // means that it will share a different partition than if we tried to load the
+  // redirected URL directly.
+  LoadAndVerifyCached(redirected_url, info.CreateForRedirect(redirected_origin),
+                      /*was_cached=*/false);
 
-      // A non-navigation resource with the same key and url should also be
-      // cached.
-      LoadAndVerifyCached(redirected_url, non_navigation_redirected_info,
-                          /*was_cached=*/true);
-      break;
-    case SplitCacheTestCase::kEnabledTriplePlusCrossSiteMainFrameNavBool:
-      // When the initiator is incorporated into the HTTP cache key, the
-      // redirect means that it will share a different partition than if we
-      // tried to load the redirected URL directly.
-      LoadAndVerifyCached(redirected_url,
-                          info.CreateForRedirect(redirected_origin),
-                          /*was_cached=*/false);
+  // A non-navigation resource with the same key and url should be cached now.
+  LoadAndVerifyCached(redirected_url, non_navigation_redirected_info,
+                      /*was_cached=*/true);
 
-      // A non-navigation resource with the same key and url should be cached
-      // now.
-      LoadAndVerifyCached(redirected_url, non_navigation_redirected_info,
-                          /*was_cached=*/true);
+  net::IsolationInfo navigation_redirected_info = net::IsolationInfo::Create(
+      net::IsolationInfo::RequestType::kMainFrame, redirected_origin,
+      redirected_origin, net::SiteForCookies::FromOrigin(redirected_origin));
 
-      net::IsolationInfo navigation_redirected_info =
-          net::IsolationInfo::Create(
-              net::IsolationInfo::RequestType::kMainFrame, redirected_origin,
-              redirected_origin,
-              net::SiteForCookies::FromOrigin(redirected_origin));
-
-      // A cache hit should result if we simulate another navigation from the
-      // corresponding initiator (for instance, a client-side redirect).
-      LoadAndVerifyCached(redirected_url, navigation_redirected_info,
-                          /*was_cached=*/true, /*expect_redirect=*/false,
-                          /*new_url=*/std::nullopt,
-                          /*automatically_assign_isolation_info=*/false,
-                          /*initiator=*/origin);
-      break;
-  }
+  // A cache hit should result if we simulate another navigation from the
+  // corresponding initiator (for instance, a client-side redirect).
+  LoadAndVerifyCached(redirected_url, navigation_redirected_info,
+                      /*was_cached=*/true, /*expect_redirect=*/false,
+                      /*new_url=*/std::nullopt,
+                      /*automatically_assign_isolation_info=*/false,
+                      /*initiator=*/origin);
 }
 
-TEST_P(NetworkContextSplitCacheTest, AutomaticallyAssignIsolationInfo) {
+TEST_F(NetworkContextSplitCacheEnabledTest, AutomaticallyAssignIsolationInfo) {
   GURL url = test_server()->GetURL("/resource");
   // Load with an automatically assigned IsolationInfo, which should populate
   // the cache using the IsolationInfo for |url|'s origin.
@@ -8593,7 +8538,7 @@ TEST_F(NetworkContextTest, EnableTrustTokens) {
 // NotifyExternalCacheHit currently assumes that the cache hits are for
 // resources, so ensure that entries corresponding to subframe navigations don't
 // get updated unexpectedly.
-TEST_P(NetworkContextSplitCacheTest,
+TEST_F(NetworkContextSplitCacheEnabledTest,
        NotifyExternalCacheHitIsSubframeDocumentResource) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(

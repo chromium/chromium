@@ -47,10 +47,6 @@ enum class SplitCacheTestCase {
   kDisabled,
   kEnabledTripleKeyed,
   kEnabledTriplePlusCredsBool,
-  kEnabledTriplePlusCrossSiteMainFrameNavBool,
-  // TODO(crbug.com/40186884): If we decide to launch SplitCacheByCredentials,
-  // we should add a test case for the SplitCacheByCredentials feature and the
-  // SplitCacheByCrossSiteMainFrameNavigationBoolean feature both enabled.
 };
 
 const struct {
@@ -58,9 +54,7 @@ const struct {
   base::test::FeatureRef feature;
 } kTestCaseToFeatureMapping[] = {
     {SplitCacheTestCase::kEnabledTriplePlusCredsBool,
-     net::features::kSplitCacheByIncludeCredentials},
-    {SplitCacheTestCase::kEnabledTriplePlusCrossSiteMainFrameNavBool,
-     net::features::kSplitCacheByCrossSiteMainFrameNavigationBoolean}};
+     net::features::kSplitCacheByIncludeCredentials}};
 
 }  // namespace
 
@@ -1562,10 +1556,10 @@ IN_PROC_BROWSER_TEST_F(FencedFramePrefetchTest,
 INSTANTIATE_TEST_SUITE_P(
     All,
     PrefetchBrowserTest,
-    testing::ValuesIn(
-        {SplitCacheTestCase::kDisabled, SplitCacheTestCase::kEnabledTripleKeyed,
-         SplitCacheTestCase::kEnabledTriplePlusCredsBool,
-         SplitCacheTestCase::kEnabledTriplePlusCrossSiteMainFrameNavBool}),
+    testing::ValuesIn({SplitCacheTestCase::kDisabled,
+                       SplitCacheTestCase::kEnabledTripleKeyed,
+                       SplitCacheTestCase::kEnabledTriplePlusCredsBool}),
+
     [](const testing::TestParamInfo<SplitCacheTestCase>& info) {
       switch (info.param) {
         case SplitCacheTestCase::kDisabled:
@@ -1574,8 +1568,6 @@ INSTANTIATE_TEST_SUITE_P(
           return "SplitCacheEnabledTripleKeyed";
         case SplitCacheTestCase::kEnabledTriplePlusCredsBool:
           return "SplitCacheEnabledTriplePlusCredsBool";
-        case SplitCacheTestCase::kEnabledTriplePlusCrossSiteMainFrameNavBool:
-          return "SplitCacheEnabledTriplePlusCrossSiteMainFrameNavigationBool";
       }
     });
 

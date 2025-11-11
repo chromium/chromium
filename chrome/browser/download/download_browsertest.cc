@@ -2243,70 +2243,24 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, NullInitiator) {
   EXPECT_EQ(0u, observer->NumDownloadsSeenInState(DownloadItem::COMPLETE));
 }
 
-class DownloadTestSplitCacheEnabledBase : public DownloadTest {
+class DownloadTestSplitCacheEnabled : public DownloadTest {
  public:
-  DownloadTestSplitCacheEnabledBase() {
-    feature_list_.InitAndEnableFeature(
+  DownloadTestSplitCacheEnabled() {
+    split_cache_enabled_feature_list_.InitAndEnableFeature(
+
         net::features::kSplitCacheByNetworkIsolationKey);
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedFeatureList split_cache_enabled_feature_list_;
 };
-
-enum class SplitCacheTestCase {
-  kEnabledTripleKeyed,
-  kEnabledTriplePlusCrossSiteMainFrameNavBool,
-};
-
-const struct {
-  const SplitCacheTestCase test_case;
-  base::test::FeatureRef feature;
-} kTestCaseToFeatureMapping[] = {
-    {SplitCacheTestCase::kEnabledTriplePlusCrossSiteMainFrameNavBool,
-     net::features::kSplitCacheByCrossSiteMainFrameNavigationBoolean},
-};
-
-std::string GetSplitCacheTestName(SplitCacheTestCase test_case) {
-  switch (test_case) {
-    case (SplitCacheTestCase::kEnabledTripleKeyed):
-      return "TripleKeyed";
-    case (SplitCacheTestCase::kEnabledTriplePlusCrossSiteMainFrameNavBool):
-      return "TriplePlusCrossSiteMainFrameNavigationBool";
-  }
-}
-
-class DownloadTestSplitCacheEnabled
-    : public DownloadTestSplitCacheEnabledBase,
-      public testing::WithParamInterface<SplitCacheTestCase> {
- public:
-  DownloadTestSplitCacheEnabled()
-      : split_cache_experiment_feature_list_(GetParam(),
-                                             kTestCaseToFeatureMapping) {}
-
- private:
-  net::test::ScopedMutuallyExclusiveFeatureList
-      split_cache_experiment_feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    DownloadTestSplitCacheEnabled,
-    testing::ValuesIn(
-        {SplitCacheTestCase::kEnabledTripleKeyed,
-         SplitCacheTestCase::kEnabledTriplePlusCrossSiteMainFrameNavBool}),
-    [](const testing::TestParamInfo<SplitCacheTestCase>& info) {
-      return GetSplitCacheTestName(info.param);
-    });
 
 #if BUILDFLAG(ENABLE_PDF)
 class PdfDownloadTestSplitCacheEnabled
-    : public DownloadTestSplitCacheEnabledBase,
-      public testing::WithParamInterface<std::tuple<bool, SplitCacheTestCase>> {
+    : public DownloadTestSplitCacheEnabled,
+      public testing::WithParamInterface<bool> {
  public:
-  PdfDownloadTestSplitCacheEnabled()
-      : split_cache_experiment_feature_list_(GetSplitCacheTestCase(),
-                                             kTestCaseToFeatureMapping) {
+  PdfDownloadTestSplitCacheEnabled() {
     // When `kPdfGetSaveDataInBlocks` is enabled, PDFs are saved to disk from
     // memory and are not downloaded. Therefore these tests are only valid when
     // the feature is disabled.
@@ -2323,11 +2277,7 @@ class PdfDownloadTestSplitCacheEnabled
     pdf_feature_list_.InitWithFeatures(enabled, disabled);
   }
 
-  bool UseOopif() const { return std::get<0>(GetParam()); }
-
-  SplitCacheTestCase GetSplitCacheTestCase() const {
-    return std::get<1>(GetParam());
-  }
+  bool UseOopif() const { return GetParam(); }
 
   pdf::TestPdfViewerStreamManager* GetTestPdfViewerStreamManager() {
     return factory_.GetTestPdfViewerStreamManager(
@@ -2399,8 +2349,6 @@ class PdfDownloadTestSplitCacheEnabled
   }
 
  private:
-  net::test::ScopedMutuallyExclusiveFeatureList
-      split_cache_experiment_feature_list_;
   base::test::ScopedFeatureList pdf_feature_list_;
   pdf::TestPdfViewerStreamManagerFactory factory_;
 };
@@ -2662,7 +2610,7 @@ IN_PROC_BROWSER_TEST_P(PdfDownloadTestSplitCacheEnabled,
 }
 #endif  // BUILDFLAG(ENABLE_PDF)
 
-IN_PROC_BROWSER_TEST_P(DownloadTestSplitCacheEnabled,
+IN_PROC_BROWSER_TEST_F(DownloadTestSplitCacheEnabled,
                        SaveSubframeImageFromContextMenuIsolationInfo) {
   https_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
   ASSERT_TRUE(https_test_server()->Start());
@@ -2916,21 +2864,13 @@ IN_PROC_BROWSER_TEST_P(PdfDownloadTestSplitCacheEnabled,
 
 // TODO(crbug.com/40268279): Stop testing both modes after OOPIF PDF viewer
 // launches.
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    PdfDownloadTestSplitCacheEnabled,
-    testing::Combine(
-        testing::Bool(),
-        testing::ValuesIn(
-            {SplitCacheTestCase::kEnabledTripleKeyed,
-             SplitCacheTestCase::kEnabledTriplePlusCrossSiteMainFrameNavBool})),
-    [](const testing::TestParamInfo<std::tuple<bool, SplitCacheTestCase>>&
-           info) {
-      std::string test_prefix =
-          std::get<0>(info.param) ? "PdfOopifEnabled" : "PdfOopifDisabled";
-      return base::StrCat(
-          {test_prefix, "_", GetSplitCacheTestName(std::get<1>(info.param))});
-    });
+INSTANTIATE_TEST_SUITE_P(All,
+                         PdfDownloadTestSplitCacheEnabled,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "PdfOopifEnabled"
+                                             : "PdfOopifDisabled";
+                         });
 #endif  // BUILDFLAG(ENABLE_PDF)
 
 class DownloadTestWithHistogramTester : public DownloadTest {

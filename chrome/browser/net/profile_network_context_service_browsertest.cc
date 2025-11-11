@@ -261,18 +261,15 @@ class ProfileNetworkContextServiceCacheSameBrowsertest
  public:
   ProfileNetworkContextServiceCacheSameBrowsertest() {
     // Override features that are enabled via the fieldtrial testing config.
-    split_cache_features_disabled_feature_list_.InitWithFeatures(
-        {}, {
-                net::features::kSplitCacheByNetworkIsolationKey,
-                net::features::kSplitCacheByCrossSiteMainFrameNavigationBoolean,
-            });
+    split_cache_disabled_feature_list_.InitAndDisableFeature(
+        net::features::kSplitCacheByNetworkIsolationKey);
   }
   ~ProfileNetworkContextServiceCacheSameBrowsertest() override = default;
 
   base::HistogramTester histograms_;
 
  private:
-  base::test::ScopedFeatureList split_cache_features_disabled_feature_list_;
+  base::test::ScopedFeatureList split_cache_disabled_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(ProfileNetworkContextServiceCacheSameBrowsertest,

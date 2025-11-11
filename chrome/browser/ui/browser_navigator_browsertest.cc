@@ -1930,52 +1930,20 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, ViewSourceUrlMatching) {
             browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
 }
 
-enum class SplitCacheTestCase {
-  kEnabledTripleKeyed,
-  kEnabledTriplePlusCrossSiteMainFrameNavBool,
-};
-const struct {
-  const SplitCacheTestCase test_case;
-  base::test::FeatureRef feature;
-} kTestCaseToFeatureMapping[] = {
-    {SplitCacheTestCase::kEnabledTriplePlusCrossSiteMainFrameNavBool,
-     net::features::kSplitCacheByCrossSiteMainFrameNavigationBoolean}};
-
-class BrowserNavigatorSplitHttpCacheTest
-    : public BrowserNavigatorTest,
-      public testing::WithParamInterface<SplitCacheTestCase> {
+class BrowserNavigatorSplitHttpCacheEnabledTest : public BrowserNavigatorTest {
  protected:
-  BrowserNavigatorSplitHttpCacheTest()
-      : split_cache_experiment_feature_list_(GetParam(),
-                                             kTestCaseToFeatureMapping) {
-    split_cache_always_enabled_feature_list_.InitAndEnableFeature(
+  BrowserNavigatorSplitHttpCacheEnabledTest() {
+    split_cache_enabled_feature_list_.InitAndEnableFeature(
         net::features::kSplitCacheByNetworkIsolationKey);
   }
 
  private:
-  net::test::ScopedMutuallyExclusiveFeatureList
-      split_cache_experiment_feature_list_;
-  base::test::ScopedFeatureList split_cache_always_enabled_feature_list_;
+  base::test::ScopedFeatureList split_cache_enabled_feature_list_;
 };
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    BrowserNavigatorSplitHttpCacheTest,
-    testing::ValuesIn(
-        {SplitCacheTestCase::kEnabledTripleKeyed,
-         SplitCacheTestCase::kEnabledTriplePlusCrossSiteMainFrameNavBool}),
-    [](const testing::TestParamInfo<SplitCacheTestCase>& info) {
-      switch (info.param) {
-        case (SplitCacheTestCase::kEnabledTripleKeyed):
-          return "TripleKeyed";
-        case (SplitCacheTestCase::kEnabledTriplePlusCrossSiteMainFrameNavBool):
-          return "TriplePlusCrossSiteMainFrameNavigationBool";
-      }
-    });
 
 // This test verifies that browser initiated navigations can send requests
 // using POST.
-IN_PROC_BROWSER_TEST_P(BrowserNavigatorSplitHttpCacheTest,
+IN_PROC_BROWSER_TEST_F(BrowserNavigatorSplitHttpCacheEnabledTest,
                        SendBrowserInitiatedRequestUsingPOST) {
   // Uses a test sever to verify POST request.
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -1992,7 +1960,7 @@ IN_PROC_BROWSER_TEST_P(BrowserNavigatorSplitHttpCacheTest,
 
 // This test verifies that renderer initiated navigations can also send requests
 // using POST.
-IN_PROC_BROWSER_TEST_P(BrowserNavigatorSplitHttpCacheTest,
+IN_PROC_BROWSER_TEST_F(BrowserNavigatorSplitHttpCacheEnabledTest,
                        SendRendererInitiatedRequestUsingPOST) {
   // Uses a test sever to verify POST request.
   ASSERT_TRUE(embedded_test_server()->Start());

@@ -116,12 +116,6 @@ BASE_FEATURE(kSplitCacheByIncludeCredentials,
 BASE_FEATURE(kSplitCacheByNetworkIsolationKey,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Note: Use of this feature is gated on the HTTP cache itself being
-// partitioned, which is controlled by the kSplitCacheByNetworkIsolationKey
-// feature.
-BASE_FEATURE(kSplitCacheByCrossSiteMainFrameNavigationBoolean,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kSplitCodeCacheByNetworkIsolationKey,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
