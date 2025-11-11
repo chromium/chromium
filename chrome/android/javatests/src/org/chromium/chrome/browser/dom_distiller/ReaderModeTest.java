@@ -170,7 +170,6 @@ public class ReaderModeTest implements CustomMainActivityStart {
     @Test
     @MediumTest
     @EnableFeatures(DomDistillerFeatures.READER_MODE_DISTILL_IN_APP)
-    @DisabledTest(message = "https://crbug.com/436904664")
     public void testReaderModeInRegularTab() throws TimeoutException {
         mPage = mPage.loadWebPageProgrammatically(mURL).openRegularTabAppMenu().enterReaderMode();
 
@@ -181,7 +180,6 @@ public class ReaderModeTest implements CustomMainActivityStart {
     @Test
     @MediumTest
     @DisableFeatures(DomDistillerFeatures.READER_MODE_DISTILL_IN_APP)
-    @DisabledTest(message = "https://crbug.com/423646543")
     public void testReaderModeInCct_Downloaded() throws TimeoutException {
         mPage = mPage.loadWebPageProgrammatically(mURL);
         Tab originalTab = mDownloadTestRule.getActivityTab();
@@ -300,7 +298,6 @@ public class ReaderModeTest implements CustomMainActivityStart {
     @Test
     @MediumTest
     @DisableFeatures(DomDistillerFeatures.READER_MODE_DISTILL_IN_APP)
-    @DisabledTest(message = "https://crbug.com/423967273")
     public void testPreferenceInCct() throws TimeoutException {
         mPage = mPage.loadWebPageProgrammatically(mURL);
         Tab originalTab = mPage.getTab();
@@ -323,7 +320,6 @@ public class ReaderModeTest implements CustomMainActivityStart {
     @Test
     @MediumTest
     @EnableFeatures(DomDistillerFeatures.READER_MODE_DISTILL_IN_APP)
-    @DisabledTest(message = "https://crbug.com/423967273")
     public void testPreferenceInTab() throws TimeoutException {
         mPage = mPage.loadWebPageProgrammatically(mURL).openRegularTabAppMenu().enterReaderMode();
 
