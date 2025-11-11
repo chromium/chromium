@@ -88,6 +88,7 @@ public class PinnedTabStripMediator {
     private final ModalDialogManager mModalDialogManager;
     private final @Nullable Runnable mOnTabGroupCreation;
     private final @Px int mPinnedTabListItemHeight;
+    private final @Px int mPinnedTabsStripRowCoverageHeightPx;
 
     private final Callback<@Nullable TabGroupModelFilter> mOnTabGroupModelFilterChanged =
             new ValueChangedCallback<>(this::onTabGroupModelFilterChanged);
@@ -147,10 +148,10 @@ public class PinnedTabStripMediator {
         mTabLisCoordinator.addTabListItemSizeChangedObserver(mTabListItemSizeChangedObserver);
         mTabGroupModelFilterSupplier = tabGroupModelFilterSupplier;
         mTabBookmarkerSupplier = tabBookmarkerSupplier;
-        mPinnedTabListItemHeight =
-                mActivity
-                        .getResources()
-                        .getDimensionPixelSize(R.dimen.pinned_tab_strip_item_height);
+        Resources res = mActivity.getResources();
+        mPinnedTabListItemHeight = res.getDimensionPixelSize(R.dimen.pinned_tab_strip_item_height);
+        mPinnedTabsStripRowCoverageHeightPx =
+                res.getDimensionPixelSize(R.dimen.pinned_tabs_strip_row_coverage_height);
         mTabModelObserver =
                 new TabModelObserver() {
                     @Override
@@ -240,16 +241,22 @@ public class PinnedTabStripMediator {
         if (mTabGridListLayoutManager == null) return new ArrayList<>();
 
         int firstVisiblePosition = mTabGridListLayoutManager.findFirstVisibleItemPosition();
+        if (firstVisiblePosition < 0) return new ArrayList<>();
+
+        int lastItemToConsiderForPinning =
+                maybeIncludePartiallyVisibleRow(
+                        firstVisiblePosition, mTabGridListLayoutManager.getSpanCount());
+
         List<ListItem> newPinnedTabs = new ArrayList<>();
 
-        // Find pinned tabs that are scrolled off-screen (above the current viewport).
-        for (int i = 0; i < mTabGridListModel.size() && i < firstVisiblePosition; i++) {
+        // Find pinned tabs that are scrolled off-screen (above the current viewport) or are in a
+        // partially visible row covered by the pinned tabs strip.
+        for (int i = 0; i < lastItemToConsiderForPinning; i++) {
             ListItem item = mTabGridListModel.get(i);
             if (item == null) continue;
 
             PropertyModel model = item.model;
-            if (model.get(TabListModel.CardProperties.CARD_TYPE)
-                    != TabListModel.CardProperties.ModelType.TAB) {
+            if (!isTabItem(model)) {
                 continue;
             }
 
@@ -258,6 +265,50 @@ public class PinnedTabStripMediator {
             }
         }
         return newPinnedTabs;
+    }
+
+    /**
+     * Checks if the first visible row in the tab grid is partially covered by the pinned tab strip.
+     * If so, it returns an updated index to include the items in that row for pinning
+     * consideration.
+     *
+     * @param firstVisiblePosition The position of the first visible item in the grid.
+     * @param spanCount The span count of the grid layout.
+     * @return The index of the last item to consider for pinning. This will be an updated index if
+     *     the row is covered, otherwise it will be {@code firstVisiblePosition}.
+     */
+    private int maybeIncludePartiallyVisibleRow(int firstVisiblePosition, int spanCount) {
+        int lastItemToConsiderForPinning = firstVisiblePosition;
+
+        // Check if the row exists and is partially covered by the pinned tab strip.
+        if (firstVisiblePosition < mTabGridListModel.size()
+                && isTabItem(mTabGridListModel.get(firstVisiblePosition).model)) {
+            View nextRowFirstItemView =
+                    mTabGridListLayoutManager.findViewByPosition(firstVisiblePosition);
+
+            // Visual representation of what is happening when a row is hidden by the pinned tab
+            // bar. The condition below checks if the bottom of the first visible tab row (Tab 3
+            // and 4 in this diagram) is behind the pinned tab bar, meaning it is covered enough
+            // to be pinned.
+            // +-----------------------------------+---------------------+
+            // | Pinned Tab Bar [---] [---] [---]  |                     |
+            // |                                   |                     |
+            // |         Tab 3                     |        Tab 4        |
+            // + - - - - - - - - - - - - - - - - - + - - - - - - - - - - + <--- nextRowBottom
+            // +===================================+=====================+ <--- PinnedBarCoverage
+            // | ...                               | ...                 |
+            if (nextRowFirstItemView != null
+                    && nextRowFirstItemView.getBottom() <= mPinnedTabsStripRowCoverageHeightPx) {
+                lastItemToConsiderForPinning = firstVisiblePosition + spanCount;
+            }
+        }
+        return Math.min(lastItemToConsiderForPinning, mTabGridListModel.size());
+    }
+
+    /** Returns whether the given model is for a tab item. */
+    private boolean isTabItem(PropertyModel model) {
+        return model.get(TabListModel.CardProperties.CARD_TYPE)
+                == TabListModel.CardProperties.ModelType.TAB;
     }
 
     /**

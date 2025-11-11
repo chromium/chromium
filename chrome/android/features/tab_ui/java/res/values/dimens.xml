@@ -185,4 +185,6 @@ found in the LICENSE file.
     <dimen name="pinned_tab_strip_item_width_delta">16dp</dimen>
     <dimen name="pinned_tab_strip_item_min_width">140dp</dimen>
     <dimen name="pinned_tab_strip_out_of_bounds_scroll_amount">5dp</dimen>
+    <!-- Derived from potential height of the bar and some extra buffer. -->
+    <dimen name="pinned_tabs_strip_row_coverage_height">85dp</dimen>
 </resources>

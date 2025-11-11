@@ -93,6 +93,7 @@ public class PinnedTabStripMediatorTest {
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private Runnable mOnTabGroupCreation;
+    @Mock private View mMockView;
 
     @Captor private ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
 
@@ -209,6 +210,37 @@ public class PinnedTabStripMediatorTest {
         mMediator.onScrolled();
         assertThat(mPinnedTabsModelList.size()).isEqualTo(1);
         assertThat(mPinnedTabsModelList.get(0).model.get(TabProperties.TAB_ID)).isEqualTo(1);
+    }
+
+    @Test
+    public void testGetVisiblePinnedTabs_PartiallyObscuredRowIsPinned() {
+        // Create a scenario where the first visible row is partially obscured.
+        // Tab 1 (pinned, scrolled off)
+        mTabListModel.add(createTabListItem(1, true));
+        // Tab 2 (pinned, scrolled off)
+        mTabListModel.add(createTabListItem(2, true));
+        // Tab 3 (pinned, first in the partially obscured row)
+        mTabListModel.add(createTabListItem(3, true));
+        // Tab 4 (pinned, second in the partially obscured row)
+        mTabListModel.add(createTabListItem(4, true));
+        // Tab 4 (not pinned)
+        mTabListModel.add(createTabListItem(5, false));
+
+        // Simulate the layout manager returning a view for the first visible item (Tab 3).
+        when(mMockView.getBottom())
+                .thenReturn(50); // Partially obscured (less than rowCoverage: 85).
+        when(mLayoutManager.findViewByPosition(2)).thenReturn(mMockView);
+        when(mLayoutManager.findFirstVisibleItemPosition()).thenReturn(2); // Tab 3 is first visible
+        when(mLayoutManager.getSpanCount()).thenReturn(2); // Two tabs per row
+
+        mMediator.onScrolled();
+
+        // Expect Tab 1, Tab 2, Tab 3 and Tab 4 to be in pinned bar.
+        assertThat(mPinnedTabsModelList.size()).isEqualTo(4);
+        assertThat(mPinnedTabsModelList.get(0).model.get(TabProperties.TAB_ID)).isEqualTo(1);
+        assertThat(mPinnedTabsModelList.get(1).model.get(TabProperties.TAB_ID)).isEqualTo(2);
+        assertThat(mPinnedTabsModelList.get(2).model.get(TabProperties.TAB_ID)).isEqualTo(3);
+        assertThat(mPinnedTabsModelList.get(3).model.get(TabProperties.TAB_ID)).isEqualTo(4);
     }
 
     @Test
