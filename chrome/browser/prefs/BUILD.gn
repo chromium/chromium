@@ -155,6 +155,7 @@ source_set("impl") {
     "//components/update_client",
     "//components/variations/service",
     "//components/visited_url_ranking/internal:internal_url_grouping",
+    "//components/wallet/core/common:prefs",
     "//components/webui/chrome_urls",
     "//components/webui/flags",
     "//services/preferences/public/cpp/tracked",

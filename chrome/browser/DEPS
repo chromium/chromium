@@ -386,6 +386,7 @@ include_rules = [
   "+components/visited_url_ranking",
   "+components/viz/common",
   "+components/viz/host",
+  "+components/wallet/core/common",
   "+components/web_cache/browser",
   "+components/web_modal",
   "+components/web_resource",
