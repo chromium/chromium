@@ -134,7 +134,7 @@ _DEVICE_GOLD_DIR = 'skia_gold'
 # shell getprop ro.product.model`.
 RENDER_TEST_MODEL_SDK_CONFIGS = {
     # Android x64 emulator.
-    'sdk_gphone64_x86_64': [32, 35],
+    'sdk_gphone64_x86_64': [35],
 }
 
 _BATCH_SUFFIX = '_batch'

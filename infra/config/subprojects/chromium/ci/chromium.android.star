@@ -855,13 +855,11 @@ ci.builder(
             "chrome_public_test_apk": targets.mixin(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12l.chrome_public_test_apk.filter",
-                    "--skia-gold-consider-unsupported",
                 ],
             ),
             "chrome_public_unit_test_apk": targets.mixin(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12l.chrome_public_unit_test_apk.filter",
-                    "--skia-gold-consider-unsupported",
                 ],
             ),
             "content_browsertests": targets.remove(
@@ -882,7 +880,6 @@ ci.builder(
             "content_shell_test_apk": targets.mixin(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12l.content_shell_test_apk.filter",
-                    "--skia-gold-consider-unsupported",
                 ],
             ),
             "crashpad_tests": targets.mixin(
@@ -907,9 +904,6 @@ ci.builder(
                 ],
             ),
             "webview_instrumentation_test_apk_multiple_process_mode": targets.mixin(
-                args = [
-                    "--skia-gold-consider-unsupported",
-                ],
                 swarming = targets.swarming(
                     shards = 9,
                 ),
@@ -969,12 +963,6 @@ ci.builder(
             "chrome_public_test_apk": targets.mixin(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12l_landscape.chrome_public_test_apk.filter",
-                    "--skia-gold-consider-unsupported",
-                ],
-            ),
-            "chrome_public_unit_test_apk": targets.mixin(
-                args = [
-                    "--skia-gold-consider-unsupported",
                 ],
             ),
         },
