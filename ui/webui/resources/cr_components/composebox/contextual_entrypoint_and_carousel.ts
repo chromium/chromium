@@ -241,10 +241,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
   }
 
   addFiles(files: FileList|null) {
-    // TODO(crbug.com/457182498):update isImage logic to handle mixed file types.
-    const isImage =
-        !!files && Array.from(files).some(f => f.type.startsWith('image/'));
-    this.processFiles_(files, isImage);
+    this.processFiles_(files);
   }
 
   setContextFiles(files: ComposeboxFile[]) {
@@ -259,7 +256,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
         }));
       } else {
         this.addFileContext_(
-            [file.file!], file.objectUrl !== null || file.dataUrl !== null);
+            [file.file!]);
       }
     }
   }
@@ -383,7 +380,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
     this.fire('delete-context', {uuid: e.detail.uuid});
   }
 
-  protected processFiles_(files: FileList|null, isImage: boolean = false) {
+  protected processFiles_(files: FileList|null) {
     // Multiple is set to false in the input so only one file is expected.
     if (!files || files.length === 0) {
       return;
@@ -423,20 +420,19 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
       }
       filesToUpload.push(file);
     }
-    this.addFileContext_(filesToUpload, isImage);
+    this.addFileContext_(filesToUpload);
   }
 
   protected onFileChange_(e: Event) {
     const input = e.target as HTMLInputElement;
     const files = input.files;
-    this.processFiles_(files, input === this.$.imageInput);
+    this.processFiles_(files);
     input.value = '';
   }
 
-  protected addFileContext_(filesToUpload: File[], isImage: boolean) {
+  protected addFileContext_(filesToUpload: File[]) {
     this.fire('add-file-context', {
       files: filesToUpload,
-      isImage: isImage,
       onContextAdded: (files: Map<UnguessableToken, ComposeboxFile>) => {
         this.files_ = new Map([...this.files_.entries(), ...files.entries()]);
         this.recordFileValidationMetric_(ComposeboxFileValidationError.NONE);

@@ -1035,7 +1035,7 @@ export class SearchboxElement extends SearchboxElementBase {
   }
 
   protected addFileContext_(e: CustomEvent<{
-      files: File[], isImage: boolean,
+      files: File[],
       onContextAdded: (files: Map<UnguessableToken, ComposeboxFile>) => void,
   }>) {
     const composeboxFiles: ComposeboxFile[] = [];
@@ -1044,7 +1044,7 @@ export class SearchboxElement extends SearchboxElementBase {
         uuid: 'fake-uuid',
         name: file.name,
         dataUrl: null,
-        objectUrl: e.detail.isImage ? URL.createObjectURL(file) : null,
+        objectUrl: file.type.includes('image') ? URL.createObjectURL(file) : null,
         type: file.type,
         status: FileUploadStatus.kNotUploaded,
         url: null,
