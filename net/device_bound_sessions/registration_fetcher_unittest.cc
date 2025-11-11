@@ -497,7 +497,9 @@ TEST_P(RegistrationTest, BasicSuccess) {
       }));
   ASSERT_TRUE(server_.Start());
 
+  RecordingNetLogObserver net_log_observer;
   TestRegistrationCallback callback;
+
   auto param = GetBasicParam();
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
@@ -541,7 +543,9 @@ TEST_P(RegistrationTest, NoScopeJson) {
       base::BindRepeating(&ReturnResponse, HTTP_OK, kTestingJson));
   ASSERT_TRUE(server_.Start());
 
+  RecordingNetLogObserver net_log_observer;
   TestRegistrationCallback callback;
+
   auto param = GetBasicParam();
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
@@ -574,7 +578,9 @@ TEST_P(RegistrationTest, NoSessionIdJson) {
       base::BindRepeating(&ReturnResponse, HTTP_OK, kTestingJson));
   ASSERT_TRUE(server_.Start());
 
+  RecordingNetLogObserver net_log_observer;
   TestRegistrationCallback callback;
+
   auto param = GetBasicParam();
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
@@ -608,7 +614,9 @@ TEST_P(RegistrationTest, EmptySessionIdJson) {
       base::BindRepeating(&ReturnResponse, HTTP_OK, kTestingJson));
   ASSERT_TRUE(server_.Start());
 
+  RecordingNetLogObserver net_log_observer;
   TestRegistrationCallback callback;
+
   auto param = GetBasicParam();
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
@@ -646,7 +654,9 @@ TEST_P(RegistrationTest, SpecificationNotDictJson) {
       base::BindRepeating(&ReturnResponse, HTTP_OK, kTestingJson));
   ASSERT_TRUE(server_.Start());
 
+  RecordingNetLogObserver net_log_observer;
   TestRegistrationCallback callback;
+
   auto param = GetBasicParam();
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
@@ -694,7 +704,9 @@ TEST_P(RegistrationTest, MissingPathDefaults) {
       base::BindRepeating(&ReturnResponse, HTTP_OK, kTestingJson));
   ASSERT_TRUE(server_.Start());
 
+  RecordingNetLogObserver net_log_observer;
   TestRegistrationCallback callback;
+
   auto param = GetBasicParam();
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
@@ -748,7 +760,9 @@ TEST_P(RegistrationTest, MissingDomainDefaults) {
       base::BindRepeating(&ReturnResponse, HTTP_OK, kTestingJson));
   ASSERT_TRUE(server_.Start());
 
+  RecordingNetLogObserver net_log_observer;
   TestRegistrationCallback callback;
+
   auto param = GetBasicParam();
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
@@ -801,7 +815,9 @@ TEST_P(RegistrationTest, MissingRefreshUrlDefault) {
       base::BindRepeating(&ReturnResponse, HTTP_OK, kTestingJson));
   ASSERT_TRUE(server_.Start());
 
+  RecordingNetLogObserver net_log_observer;
   TestRegistrationCallback callback;
+
   auto param = GetBasicParam();
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
@@ -848,7 +864,9 @@ TEST_P(RegistrationTest, OneSpecTypeInvalid) {
       base::BindRepeating(&ReturnResponse, HTTP_OK, kTestingJson));
   ASSERT_TRUE(server_.Start());
 
+  RecordingNetLogObserver net_log_observer;
   TestRegistrationCallback callback;
+
   auto param = GetBasicParam();
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
@@ -886,7 +904,9 @@ TEST_P(RegistrationTest, InvalidTypeSpecList) {
       base::BindRepeating(&ReturnResponse, HTTP_OK, kTestingJson));
   ASSERT_TRUE(server_.Start());
 
+  RecordingNetLogObserver net_log_observer;
   TestRegistrationCallback callback;
+
   auto param = GetBasicParam();
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
@@ -925,7 +945,9 @@ TEST_P(RegistrationTest, TypeIsNotCookie) {
       base::BindRepeating(&ReturnResponse, HTTP_OK, kTestingJson));
   ASSERT_TRUE(server_.Start());
 
+  RecordingNetLogObserver net_log_observer;
   TestRegistrationCallback callback;
+
   auto param = GetBasicParam();
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
@@ -967,7 +989,9 @@ TEST_P(RegistrationTest, TwoTypesCookie_NotCookie) {
       base::BindRepeating(&ReturnResponse, HTTP_OK, kTestingJson));
   ASSERT_TRUE(server_.Start());
 
+  RecordingNetLogObserver net_log_observer;
   TestRegistrationCallback callback;
+
   auto param = GetBasicParam();
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
@@ -1009,7 +1033,9 @@ TEST_P(RegistrationTest, TwoTypesNotCookie_Cookie) {
       base::BindRepeating(&ReturnResponse, HTTP_OK, kTestingJson));
   ASSERT_TRUE(server_.Start());
 
+  RecordingNetLogObserver net_log_observer;
   TestRegistrationCallback callback;
+
   auto param = GetBasicParam();
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
@@ -1045,7 +1071,9 @@ TEST_P(RegistrationTest, CredEntryWithoutDict) {
       base::BindRepeating(&ReturnResponse, HTTP_OK, kTestingJson));
   ASSERT_TRUE(server_.Start());
 
+  RecordingNetLogObserver net_log_observer;
   TestRegistrationCallback callback;
+
   auto param = GetBasicParam();
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
@@ -1086,7 +1114,9 @@ TEST_P(RegistrationTest, CredEntryWithoutAttributes) {
       net::IsolationInfo::RequestType::kOther, origin, origin,
       net::SiteForCookies::FromOrigin(origin));
 
+  RecordingNetLogObserver net_log_observer;
   TestRegistrationCallback callback;
+
   auto param = GetBasicParam();
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(param, session_service(),
@@ -1120,7 +1150,9 @@ TEST_P(RegistrationTest, CredEntryWithEmptyName) {
       base::BindRepeating(&ReturnResponse, HTTP_OK, kTestingJson));
   ASSERT_TRUE(server_.Start());
 
+  RecordingNetLogObserver net_log_observer;
   TestRegistrationCallback callback;
+
   auto param = GetBasicParam();
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
@@ -1142,7 +1174,9 @@ TEST_P(RegistrationTest, ReturnTextFile) {
   server_.RegisterRequestHandler(base::BindRepeating(&ReturnTextResponse));
   ASSERT_TRUE(server_.Start());
 
+  RecordingNetLogObserver net_log_observer;
   TestRegistrationCallback callback;
+
   RegistrationRequestParam params = GetBasicParam();
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
@@ -1164,7 +1198,9 @@ TEST_P(RegistrationTest, ReturnInvalidJson) {
       base::BindRepeating(&ReturnResponse, HTTP_OK, invalid_json));
   ASSERT_TRUE(server_.Start());
 
+  RecordingNetLogObserver net_log_observer;
   TestRegistrationCallback callback;
+
   RegistrationRequestParam param = GetBasicParam();
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
@@ -1186,7 +1222,9 @@ TEST_P(RegistrationTest, ReturnEmptyJson) {
       base::BindRepeating(&ReturnResponse, HTTP_OK, empty_json));
   ASSERT_TRUE(server_.Start());
 
+  RecordingNetLogObserver net_log_observer;
   TestRegistrationCallback callback;
+
   RegistrationRequestParam param = GetBasicParam();
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
@@ -1208,7 +1246,9 @@ TEST_P(RegistrationTest, NetworkErrorServerShutdown) {
   GURL url = server_.GetURL("/");
   ASSERT_TRUE(server_.ShutdownAndWaitUntilComplete());
 
+  RecordingNetLogObserver net_log_observer;
   TestRegistrationCallback callback;
+
   RegistrationRequestParam param = GetBasicParam(url);
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
@@ -1232,7 +1272,9 @@ TEST_P(RegistrationTest, NetworkErrorInvalidResponse) {
   server_.RegisterRequestHandler(base::BindRepeating(&ReturnInvalidResponse));
   ASSERT_TRUE(server_.Start());
 
+  RecordingNetLogObserver net_log_observer;
   TestRegistrationCallback callback;
+
   RegistrationRequestParam param = GetBasicParam();
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
@@ -1254,7 +1296,9 @@ TEST_P(RegistrationTest, ServerError407) {
       &ReturnResponse, HTTP_PROXY_AUTHENTICATION_REQUIRED, kBasicValidJson));
   ASSERT_TRUE(server_.Start());
 
+  RecordingNetLogObserver net_log_observer;
   TestRegistrationCallback callback;
+
   RegistrationRequestParam param = GetBasicParam();
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
@@ -1276,7 +1320,9 @@ TEST_P(RegistrationTest, ServerError400) {
       base::BindRepeating(&ReturnResponse, HTTP_BAD_REQUEST, kBasicValidJson));
   ASSERT_TRUE(server_.Start());
 
+  RecordingNetLogObserver net_log_observer;
   TestRegistrationCallback callback;
+
   RegistrationRequestParam param = GetBasicParam();
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
@@ -1299,7 +1345,9 @@ TEST_P(RegistrationTest, ServerError500) {
       &ReturnResponse, HTTP_INTERNAL_SERVER_ERROR, kBasicValidJson));
   ASSERT_TRUE(server_.Start());
 
+  RecordingNetLogObserver net_log_observer;
   TestRegistrationCallback callback;
+
   RegistrationRequestParam param = GetBasicParam();
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
@@ -1325,7 +1373,9 @@ TEST_F(RegistrationTestWithoutOriginTrialFeedback,
                           base::Owned(container)));
   ASSERT_TRUE(server_.Start());
 
+  RecordingNetLogObserver net_log_observer;
   TestRegistrationCallback callback;
+
   RegistrationRequestParam param = GetBasicParam();
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
@@ -1368,7 +1418,9 @@ TEST_F(RegistrationTestWithOriginTrialFeedback,
       GetSession(SessionKey{SchemefulSite(GetBaseURL()), session->id()}))
       .WillRepeatedly(Return(session.get()));
 
+  RecordingNetLogObserver net_log_observer;
   TestRegistrationCallback callback;
+
   auto param = RegistrationRequestParam::CreateForTesting(
       GetBaseURL(), kSessionIdentifier, std::string(kChallenge));
   std::unique_ptr<RegistrationFetcher> fetcher =
@@ -1435,7 +1487,9 @@ TEST_P(RegistrationTest, FollowHttpsToHttpsRedirect) {
   server_.SetSSLConfig(EmbeddedTestServer::CERT_TEST_NAMES);
   ASSERT_TRUE(server_.Start());
 
+  RecordingNetLogObserver net_log_observer;
   TestRegistrationCallback callback;
+
   RegistrationRequestParam param = GetBasicParam(server_.GetURL("a.test", "/"));
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
@@ -1458,7 +1512,9 @@ TEST_P(RegistrationTest, FailOnSslErrorExpired) {
   server_.SetSSLConfig(net::EmbeddedTestServer::CERT_EXPIRED);
   ASSERT_TRUE(server_.Start());
 
+  RecordingNetLogObserver net_log_observer;
   TestRegistrationCallback callback;
+
   RegistrationRequestParam param = GetBasicParam();
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
@@ -1521,7 +1577,9 @@ TEST_P(RegistrationTest, BasicSuccessForExistingKey) {
       base::BindRepeating(&ReturnResponse, HTTP_OK, kBasicValidJson));
   ASSERT_TRUE(server_.Start());
 
+  RecordingNetLogObserver net_log_observer;
   TestRegistrationCallback callback;
+
   auto isolation_info = IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
   auto request_param = RegistrationRequestParam::CreateForTesting(
       GetBaseURL(), kSessionIdentifier, kChallenge);
@@ -1561,7 +1619,9 @@ TEST_P(RegistrationTest, FetchRegistrationWithCachedChallenge) {
       base::BindRepeating(&ReturnResponseForRefreshRequest));
   ASSERT_TRUE(server_.Start());
 
+  RecordingNetLogObserver net_log_observer;
   TestRegistrationCallback callback;
+
   auto request_param = RegistrationRequestParam::CreateForTesting(
       GetBaseURL(), kSessionIdentifier, kChallenge);
   auto isolation_info = IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
@@ -1599,7 +1659,9 @@ TEST_F(RegistrationTestWithoutOriginTrialFeedback,
       base::BindRepeating(&ReturnResponseForRefreshRequest));
   ASSERT_TRUE(server_.Start());
 
+  RecordingNetLogObserver net_log_observer;
   TestRegistrationCallback callback;
+
   auto request_param = RegistrationRequestParam::CreateForTesting(
       GetBaseURL(), kSessionIdentifier, std::nullopt);
   auto isolation_info = IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
@@ -1637,7 +1699,9 @@ TEST_F(RegistrationTestWithoutOriginTrialFeedback,
       base::BindRepeating(&Return401ResponseWithInvalidChallenge));
   ASSERT_TRUE(server_.Start());
 
+  RecordingNetLogObserver net_log_observer;
   TestRegistrationCallback callback;
+
   auto request_param = RegistrationRequestParam::CreateForTesting(
       GetBaseURL(), /*session_identifier=*/std::nullopt, kChallenge);
   auto isolation_info = IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
@@ -1663,7 +1727,9 @@ TEST_F(RegistrationTestWithOriginTrialFeedback,
   server_.RegisterRequestHandler(base::BindRepeating(&ReturnForbidden));
   ASSERT_TRUE(server_.Start());
 
+  RecordingNetLogObserver net_log_observer;
   TestRegistrationCallback callback;
+
   auto request_param = RegistrationRequestParam::CreateForTesting(
       GetBaseURL(), /*session_identifier=*/std::nullopt, kChallenge);
   auto isolation_info = IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
@@ -1696,7 +1762,9 @@ TEST_F(RegistrationTestWithOriginTrialFeedback,
       GetSession(SessionKey{SchemefulSite(GetBaseURL()), session->id()}))
       .WillRepeatedly(Return(session.get()));
 
+  RecordingNetLogObserver net_log_observer;
   TestRegistrationCallback callback;
+
   auto request_param = RegistrationRequestParam::CreateForTesting(
       GetBaseURL(), "session_identifier", kChallenge);
   auto isolation_info = IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
@@ -1750,7 +1818,9 @@ TEST_F(RegistrationTestWithOriginTrialFeedback,
       session.get()));
   server_.StartAcceptingConnections();
 
+  RecordingNetLogObserver net_log_observer;
   TestRegistrationCallback callback;
+
   auto request_param = RegistrationRequestParam::CreateForRefresh(*session);
   auto isolation_info = IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
   unexportable_keys::UnexportableKeyId key = CreateKey();
@@ -1804,7 +1874,9 @@ TEST_F(RegistrationTestWithOriginTrialFeedback,
 
   session->set_cached_challenge(kChallenge);
 
+  RecordingNetLogObserver net_log_observer;
   TestRegistrationCallback callback;
+
   auto request_param = RegistrationRequestParam::CreateForRefresh(*session);
   auto isolation_info = IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
   unexportable_keys::UnexportableKeyId key = CreateKey();
@@ -1833,7 +1905,9 @@ TEST_P(RegistrationTest, ContinueFalse) {
       base::BindRepeating(&ReturnResponse, HTTP_OK, kTestingJson));
   ASSERT_TRUE(server_.Start());
 
+  RecordingNetLogObserver net_log_observer;
   TestRegistrationCallback callback;
+
   auto param = GetBasicParam();
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
@@ -1870,7 +1944,9 @@ TEST_P(RegistrationTest, TerminateSessionOnRepeatedFailure_Refresh) {
       .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<3>(
           base::unexpected(unexportable_keys::ServiceError::kCryptoApiFailed)));
 
+  RecordingNetLogObserver net_log_observer;
   TestRegistrationCallback callback;
+
   auto isolation_info = IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
   auto request_param = RegistrationRequestParam::CreateForTesting(
       GetBaseURL(), kSessionIdentifier, kChallenge);
@@ -1910,7 +1986,9 @@ TEST_P(RegistrationTest, TerminateSessionOnRepeatedFailure_Registration) {
       .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<3>(
           base::unexpected(unexportable_keys::ServiceError::kCryptoApiFailed)));
 
+  RecordingNetLogObserver net_log_observer;
   TestRegistrationCallback callback;
+
   auto isolation_info = IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
   auto request_param = RegistrationRequestParam::CreateForTesting(
       GetBaseURL(), /*session_identifier=*/std::nullopt, kChallenge);
@@ -1994,7 +2072,9 @@ TEST_F(RegistrationTestWithoutOriginTrialFeedback,
                           base::Owned(container)));
   ASSERT_TRUE(server_.Start());
 
+  RecordingNetLogObserver net_log_observer;
   TestRegistrationCallback callback;
+
   auto isolation_info = IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
   auto request_param = RegistrationRequestParam::CreateForTesting(
       GetBaseURL(), kSessionIdentifier, kChallenge);
@@ -2032,7 +2112,9 @@ TEST_F(RegistrationTestWithOriginTrialFeedback,
       GetSession(SessionKey{SchemefulSite(GetBaseURL()), session->id()}))
       .WillRepeatedly(Return(session.get()));
 
+  RecordingNetLogObserver net_log_observer;
   TestRegistrationCallback callback;
+
   auto isolation_info = IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
   auto request_param = RegistrationRequestParam::CreateForTesting(
       GetBaseURL(), kSessionIdentifier, kChallenge);
@@ -2086,7 +2168,9 @@ TEST_F(RegistrationTestWithOriginTrialFeedback, RefreshCachesSignedChallenge) {
   EXPECT_CALL(session_service(), SigningQuotaExceeded(_))
       .WillOnce(Return(false));
 
+  RecordingNetLogObserver net_log_observer;
   TestRegistrationCallback callback;
+
   auto isolation_info = IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
   auto request_param = RegistrationRequestParam::CreateForTesting(
       GetBaseURL(), kSessionIdentifier, kChallenge);
@@ -2134,7 +2218,9 @@ TEST_F(RegistrationTestWithoutOriginTrialFeedback,
       .Times(0);
   EXPECT_CALL(session_service(), SigningQuotaExceeded(_)).Times(0);
 
+  RecordingNetLogObserver net_log_observer;
   TestRegistrationCallback callback;
+
   auto isolation_info = IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
   auto request_param = RegistrationRequestParam::CreateForTesting(
       GetBaseURL(), kSessionIdentifier, kChallenge);
@@ -2181,7 +2267,9 @@ TEST_F(RegistrationTestWithOriginTrialFeedback,
   EXPECT_CALL(session_service(), AddSigningOccurrence(_)).Times(0);
   EXPECT_CALL(session_service(), SigningQuotaExceeded(_)).Times(0);
 
+  RecordingNetLogObserver net_log_observer;
   TestRegistrationCallback callback;
+
   auto isolation_info = IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
   auto request_param = RegistrationRequestParam::CreateForTesting(
       GetBaseURL(), kSessionIdentifier, kChallenge);
@@ -2229,7 +2317,9 @@ TEST_F(RegistrationTestWithoutOriginTrialFeedback,
       .Times(0);
   EXPECT_CALL(session_service(), SigningQuotaExceeded(_)).Times(0);
 
+  RecordingNetLogObserver net_log_observer;
   TestRegistrationCallback callback;
+
   auto isolation_info = IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
   auto request_param = RegistrationRequestParam::CreateForTesting(
       GetBaseURL(), kSessionIdentifier, kChallenge);
@@ -2284,7 +2374,9 @@ TEST_F(RegistrationTestWithOriginTrialFeedback,
   EXPECT_CALL(session_service(), SigningQuotaExceeded(_))
       .WillOnce(Return(false));
 
+  RecordingNetLogObserver net_log_observer;
   TestRegistrationCallback callback;
+
   auto isolation_info = IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
   auto request_param = RegistrationRequestParam::CreateForTesting(
       GetBaseURL(), kSessionIdentifier, kChallenge);
@@ -2349,7 +2441,9 @@ TEST_P(RegistrationTest, RefreshWithNewSessionIdFails) {
       base::BindRepeating(&ReturnResponse, HTTP_OK, kBasicValidJson));
   ASSERT_TRUE(server_.Start());
 
+  RecordingNetLogObserver net_log_observer;
   TestRegistrationCallback callback;
+
   auto isolation_info = IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
   auto request_param = RegistrationRequestParam::CreateForTesting(
       GetBaseURL(), "old_session_id", kChallenge);
@@ -2398,7 +2492,9 @@ TEST_P(RegistrationTest, RegistrationWithNonStringRefreshInitiatorsFails) {
       base::BindRepeating(&ReturnResponse, HTTP_OK, kNonStringInitiator));
   ASSERT_TRUE(server_.Start());
 
+  RecordingNetLogObserver net_log_observer;
   TestRegistrationCallback callback;
+
   auto isolation_info = IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
   auto request_param = RegistrationRequestParam::CreateForTesting(
       GetBaseURL(), kSessionIdentifier, kChallenge);
@@ -2439,7 +2535,9 @@ TEST_F(RegistrationTestWithoutOriginTrialFeedback, IncludeSiteDefaultFalse) {
       base::BindRepeating(&ReturnResponse, HTTP_OK, kIncludeSiteUnspecified));
   ASSERT_TRUE(server_.Start());
 
+  RecordingNetLogObserver net_log_observer;
   TestRegistrationCallback callback;
+
   auto isolation_info = IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
   auto request_param = RegistrationRequestParam::CreateForTesting(
       GetBaseURL(), kSessionIdentifier, kChallenge);
@@ -2491,7 +2589,9 @@ TEST_F(RegistrationTestWithOriginTrialFeedback, MissingIncludeSiteFails) {
       base::BindRepeating(&ReturnResponse, HTTP_OK, kTestingJson));
   ASSERT_TRUE(server_.Start());
 
+  RecordingNetLogObserver net_log_observer;
   TestRegistrationCallback callback;
+
   auto param = GetBasicParam();
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
@@ -2519,7 +2619,9 @@ TEST_P(RegistrationTest, ShutdownDuringRequest) {
       &run_loop));
   ASSERT_TRUE(server_.Start());
 
+  RecordingNetLogObserver net_log_observer;
   TestRegistrationCallback callback;
+
   auto param = GetBasicParam();
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
@@ -2552,7 +2654,9 @@ TEST_F(RegistrationTestWithoutOriginTrialFeedback,
 
   GURL registration_url = server_.GetURL("subdomain.a.test", "/");
 
+  RecordingNetLogObserver net_log_observer;
   TestRegistrationCallback callback;
+
   auto param = GetBasicParam(registration_url);
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
@@ -2567,13 +2671,15 @@ TEST_F(RegistrationTestWithoutOriginTrialFeedback,
   ASSERT_TRUE(out_session.is_session());
 }
 
-TEST_P(RegistrationTest, EmptyResponse) {
+TEST_P(RegistrationTest, EmptyResponseOnRegistration) {
   crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
   server_.RegisterRequestHandler(
       base::BindRepeating(&ReturnResponse, HTTP_OK, ""));
   ASSERT_TRUE(server_.Start());
 
+  RecordingNetLogObserver net_log_observer;
   TestRegistrationCallback callback;
+
   auto param = GetBasicParam();
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
@@ -2583,6 +2689,33 @@ TEST_P(RegistrationTest, EmptyResponse) {
           /*original_request_initiator=*/std::nullopt);
   fetcher->StartCreateTokenAndFetch(param, CreateAlgArray(),
                                     callback.callback());
+  callback.WaitForCall();
+  const RegistrationResult& out_session = callback.outcome();
+  ASSERT_TRUE(out_session.is_error());
+  EXPECT_EQ(out_session.error().type, SessionError::kEmptySessionConfig);
+}
+
+TEST_P(RegistrationTest, EmptyResponseOnRefresh) {
+  crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
+  server_.RegisterRequestHandler(
+      base::BindRepeating(&ReturnResponse, HTTP_OK, ""));
+  ASSERT_TRUE(server_.Start());
+
+  RecordingNetLogObserver net_log_observer;
+  TestRegistrationCallback callback;
+
+  auto request_param = RegistrationRequestParam::CreateForTesting(
+      GetBaseURL(), kSessionIdentifier, kChallenge);
+  unexportable_keys::UnexportableKeyId key = CreateKey();
+  std::unique_ptr<RegistrationFetcher> fetcher =
+      RegistrationFetcher::CreateFetcher(
+          request_param, session_service(), unexportable_key_service(),
+          context_.get(),
+          IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+          /*net_log_source=*/std::nullopt,
+          /*original_request_initiator=*/std::nullopt);
+  fetcher->StartFetchWithExistingKey(request_param, std::move(key),
+                                     callback.callback());
   callback.WaitForCall();
   const RegistrationResult& out_session = callback.outcome();
   EXPECT_TRUE(out_session.is_no_session_config_change());
@@ -2603,7 +2736,9 @@ TEST_P(RegistrationTest, SetChallengeOnRegistration) {
       }));
   ASSERT_TRUE(server_.Start());
 
+  RecordingNetLogObserver net_log_observer;
   TestRegistrationCallback callback;
+
   auto param = GetBasicParam();
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
@@ -2635,7 +2770,9 @@ TEST_F(RegistrationTestWithOriginTrialFeedback,
 
   GURL registration_url = server_.GetURL("subdomain.a.test", "/");
 
+  RecordingNetLogObserver net_log_observer;
   TestRegistrationCallback callback;
+
   auto param = GetBasicParam(registration_url);
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
@@ -2663,7 +2800,9 @@ TEST_F(RegistrationTestWithOriginTrialFeedback,
 
   GURL registration_url = server_.GetURL("subdomain.a.test", "/");
 
+  RecordingNetLogObserver net_log_observer;
   TestRegistrationCallback callback;
+
   auto param = GetBasicParam(registration_url);
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
@@ -2693,7 +2832,9 @@ TEST_F(RegistrationTestWithOriginTrialFeedback,
 
   GURL registration_url = server_.GetURL("subdomain.a.test", "/");
 
+  RecordingNetLogObserver net_log_observer;
   TestRegistrationCallback callback;
+
   auto param = GetBasicParam(registration_url);
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
@@ -2724,7 +2865,9 @@ TEST_F(RegistrationTestWithOriginTrialFeedback,
 
   GURL registration_url = server_.GetURL("subdomain.a.test", "/");
 
+  RecordingNetLogObserver net_log_observer;
   TestRegistrationCallback callback;
+
   auto param = GetBasicParam(registration_url);
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
@@ -2757,7 +2900,9 @@ TEST_F(RegistrationTestWithOriginTrialFeedback,
 
   GURL registration_url = server_.GetURL("not-allowed-subdomain.a.test", "/");
 
+  RecordingNetLogObserver net_log_observer;
   TestRegistrationCallback callback;
+
   auto param = GetBasicParam(registration_url);
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
@@ -3164,7 +3309,9 @@ TEST_F(RegistrationTestWithoutOriginTrialFeedback,
 
   GURL registration_url = server_.GetURL("a.test", "/");
 
+  RecordingNetLogObserver net_log_observer;
   TestRegistrationCallback callback;
+
   auto param = GetBasicParam(registration_url);
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
@@ -3192,7 +3339,9 @@ TEST_F(RegistrationTestWithOriginTrialFeedback,
 
   GURL registration_url = server_.GetURL("a.test", "/");
 
+  RecordingNetLogObserver net_log_observer;
   TestRegistrationCallback callback;
+
   auto param = GetBasicParam(registration_url);
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(

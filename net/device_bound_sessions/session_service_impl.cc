@@ -849,15 +849,13 @@ SessionError::ErrorType SessionServiceImpl::OnRegistrationCompleteInternal(
     OnAccessCallback on_access_callback,
     RegistrationFetcher* fetcher,
     RegistrationResult registration_result) {
+  CHECK(!registration_result.is_no_session_config_change());
   RemoveFetcher(fetcher);
 
   if (registration_result.is_error()) {
     // We failed to create a new session, so there's nothing to clean
     // up.
     return registration_result.error().type;
-  } else if (registration_result.is_no_session_config_change()) {
-    // No config changes is not allowed at registration.
-    return SessionError::kEmptySessionConfig;
   }
 
   std::unique_ptr<Session> session = registration_result.TakeSession();

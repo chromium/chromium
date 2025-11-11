@@ -1472,9 +1472,8 @@ TEST_F(SessionServiceImplTest, EmptyResponseOnRegistration) {
   ScopedTestRegistrationFetcher scoped_test_fetcher(base::BindRepeating(
       [](RegistrationFetcher::RegistrationCompleteCallback callback) {
         std::move(callback).Run(
-            nullptr,
-            RegistrationResult(RegistrationResult::NoSessionConfigChange(),
-                               CookieAndLineAccessResultList()));
+            nullptr, RegistrationResult(
+                         SessionError{SessionError::kEmptySessionConfig}));
       }));
   auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
       kTestUrl, {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
