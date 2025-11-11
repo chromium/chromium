@@ -27,7 +27,7 @@ build_webui("build") {
     "aim_app.css",
     "app.css",
     "full_app.css",
-    "shared_vars.css",
+    "omnibox_popup_shared_style.css",
   ]
   ts_composite = true
   ts_deps = [
