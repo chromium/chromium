@@ -218,6 +218,352 @@ TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
 }
 
 TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
+       UpdateTransformNodeToParent) {
+  auto update1 = CreateDefaultUpdate();
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+
+  auto update2 = CreateDefaultUpdate();
+  auto node_update = CreateDefaultSecondaryRootTransformNode();
+  gfx::Transform to_parent;
+  to_parent.Scale(2.f, 3.f);
+  to_parent.Translate(10.f, 20.f);
+  node_update->to_parent = to_parent;
+  update2->transform_nodes.push_back(std::move(node_update));
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update2));
+  ASSERT_TRUE(result.has_value());
+
+  cc::TransformNode* node_impl =
+      GetTransformNodeFromActiveTree(cc::kSecondaryRootPropertyNodeId);
+  ASSERT_TRUE(node_impl);
+  EXPECT_EQ(node_impl->to_parent, to_parent);
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
+       UpdateTransformNodeSnapAmount) {
+  auto update1 = CreateDefaultUpdate();
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+
+  auto update2 = CreateDefaultUpdate();
+  auto node_update = CreateDefaultSecondaryRootTransformNode();
+  const gfx::Vector2dF kSnapAmount(1.25f, 2.5f);
+  node_update->snap_amount = kSnapAmount;
+  update2->transform_nodes.push_back(std::move(node_update));
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update2));
+  ASSERT_TRUE(result.has_value());
+
+  cc::TransformNode* node_impl =
+      GetTransformNodeFromActiveTree(cc::kSecondaryRootPropertyNodeId);
+  ASSERT_TRUE(node_impl);
+  EXPECT_EQ(node_impl->snap_amount, kSnapAmount);
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
+       UpdateTransformNodeHasPotentialAnimation) {
+  auto update1 = CreateDefaultUpdate();
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+
+  auto update2 = CreateDefaultUpdate();
+  auto node_update = CreateDefaultSecondaryRootTransformNode();
+  node_update->has_potential_animation = true;
+  update2->transform_nodes.push_back(std::move(node_update));
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update2));
+  ASSERT_TRUE(result.has_value());
+
+  cc::TransformNode* node_impl =
+      GetTransformNodeFromActiveTree(cc::kSecondaryRootPropertyNodeId);
+  ASSERT_TRUE(node_impl);
+  EXPECT_TRUE(node_impl->has_potential_animation);
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
+       UpdateTransformNodeIsCurrentlyAnimating) {
+  auto update1 = CreateDefaultUpdate();
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+
+  auto update2 = CreateDefaultUpdate();
+  auto node_update = CreateDefaultSecondaryRootTransformNode();
+  node_update->is_currently_animating = true;
+  update2->transform_nodes.push_back(std::move(node_update));
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update2));
+  ASSERT_TRUE(result.has_value());
+
+  cc::TransformNode* node_impl =
+      GetTransformNodeFromActiveTree(cc::kSecondaryRootPropertyNodeId);
+  ASSERT_TRUE(node_impl);
+  EXPECT_TRUE(node_impl->is_currently_animating);
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
+       UpdateTransformNodeScrolls) {
+  auto update1 = CreateDefaultUpdate();
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+
+  auto update2 = CreateDefaultUpdate();
+  auto node_update = CreateDefaultSecondaryRootTransformNode();
+  node_update->scrolls = true;
+  update2->transform_nodes.push_back(std::move(node_update));
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update2));
+  ASSERT_TRUE(result.has_value());
+
+  cc::TransformNode* node_impl =
+      GetTransformNodeFromActiveTree(cc::kSecondaryRootPropertyNodeId);
+  ASSERT_TRUE(node_impl);
+  EXPECT_TRUE(node_impl->scrolls);
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
+       UpdateTransformNodeShouldUndoOverscroll) {
+  auto update1 = CreateDefaultUpdate();
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+
+  auto update2 = CreateDefaultUpdate();
+  auto node_update = CreateDefaultSecondaryRootTransformNode();
+  node_update->should_undo_overscroll = true;
+  update2->transform_nodes.push_back(std::move(node_update));
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update2));
+  ASSERT_TRUE(result.has_value());
+
+  cc::TransformNode* node_impl =
+      GetTransformNodeFromActiveTree(cc::kSecondaryRootPropertyNodeId);
+  ASSERT_TRUE(node_impl);
+  EXPECT_TRUE(node_impl->should_undo_overscroll);
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
+       UpdateTransformNodeShouldBeSnapped) {
+  auto update1 = CreateDefaultUpdate();
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+
+  auto update2 = CreateDefaultUpdate();
+  auto node_update = CreateDefaultSecondaryRootTransformNode();
+  node_update->should_be_snapped = true;
+  update2->transform_nodes.push_back(std::move(node_update));
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update2));
+  ASSERT_TRUE(result.has_value());
+
+  cc::TransformNode* node_impl =
+      GetTransformNodeFromActiveTree(cc::kSecondaryRootPropertyNodeId);
+  ASSERT_TRUE(node_impl);
+  EXPECT_TRUE(node_impl->should_be_snapped);
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
+       UpdateTransformNodeMovedByOuterViewportBoundsDeltaY) {
+  auto update1 = CreateDefaultUpdate();
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+
+  auto update2 = CreateDefaultUpdate();
+  auto node_update = CreateDefaultSecondaryRootTransformNode();
+  node_update->moved_by_outer_viewport_bounds_delta_y = true;
+  update2->transform_nodes.push_back(std::move(node_update));
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update2));
+  ASSERT_TRUE(result.has_value());
+
+  cc::TransformNode* node_impl =
+      GetTransformNodeFromActiveTree(cc::kSecondaryRootPropertyNodeId);
+  ASSERT_TRUE(node_impl);
+  EXPECT_TRUE(node_impl->moved_by_outer_viewport_bounds_delta_y);
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
+       UpdateTransformNodeTransformChanged) {
+  auto update1 = CreateDefaultUpdate();
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+
+  auto update2 = CreateDefaultUpdate();
+  auto node_update = CreateDefaultSecondaryRootTransformNode();
+  node_update->transform_changed = true;
+  update2->transform_nodes.push_back(std::move(node_update));
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update2));
+  ASSERT_TRUE(result.has_value());
+
+  cc::TransformNode* node_impl =
+      GetTransformNodeFromActiveTree(cc::kSecondaryRootPropertyNodeId);
+  ASSERT_TRUE(node_impl);
+  EXPECT_TRUE(node_impl->transform_changed());
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
+       UpdateTransformNodeDelegatesToParentForBackface) {
+  auto update1 = CreateDefaultUpdate();
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+
+  auto update2 = CreateDefaultUpdate();
+  auto node_update = CreateDefaultSecondaryRootTransformNode();
+  node_update->delegates_to_parent_for_backface = true;
+  update2->transform_nodes.push_back(std::move(node_update));
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update2));
+  ASSERT_TRUE(result.has_value());
+
+  cc::TransformNode* node_impl =
+      GetTransformNodeFromActiveTree(cc::kSecondaryRootPropertyNodeId);
+  ASSERT_TRUE(node_impl);
+  EXPECT_TRUE(node_impl->delegates_to_parent_for_backface);
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
+       UpdateTransformNodeMaximumAnimationScale) {
+  auto update1 = CreateDefaultUpdate();
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+
+  auto update2 = CreateDefaultUpdate();
+  auto node_update = CreateDefaultSecondaryRootTransformNode();
+  const float kMaximumAnimationScale = 5.0f;
+  node_update->maximum_animation_scale = kMaximumAnimationScale;
+  update2->transform_nodes.push_back(std::move(node_update));
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update2));
+  ASSERT_TRUE(result.has_value());
+
+  cc::TransformNode* node_impl =
+      GetTransformNodeFromActiveTree(cc::kSecondaryRootPropertyNodeId);
+  ASSERT_TRUE(node_impl);
+  EXPECT_EQ(node_impl->maximum_animation_scale, kMaximumAnimationScale);
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
+       UpdateTransformNodeNodeAndAncestorsAreAnimatedOrInvertible) {
+  auto update1 = CreateDefaultUpdate();
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+
+  auto update2 = CreateDefaultUpdate();
+  auto node_update = CreateDefaultSecondaryRootTransformNode();
+  node_update->node_and_ancestors_are_animated_or_invertible = true;
+  update2->transform_nodes.push_back(std::move(node_update));
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update2));
+  ASSERT_TRUE(result.has_value());
+
+  cc::TransformNode* node_impl =
+      GetTransformNodeFromActiveTree(cc::kSecondaryRootPropertyNodeId);
+  ASSERT_TRUE(node_impl);
+  EXPECT_TRUE(node_impl->node_and_ancestors_are_animated_or_invertible);
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
+       UpdateTransformNodeIsInvertible) {
+  auto update1 = CreateDefaultUpdate();
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+
+  auto update2 = CreateDefaultUpdate();
+  auto node_update = CreateDefaultSecondaryRootTransformNode();
+  node_update->is_invertible = true;
+  update2->transform_nodes.push_back(std::move(node_update));
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update2));
+  ASSERT_TRUE(result.has_value());
+
+  cc::TransformNode* node_impl =
+      GetTransformNodeFromActiveTree(cc::kSecondaryRootPropertyNodeId);
+  ASSERT_TRUE(node_impl);
+  EXPECT_TRUE(node_impl->is_invertible);
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
+       UpdateTransformNodeAncestorsAreInvertible) {
+  auto update1 = CreateDefaultUpdate();
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+
+  auto update2 = CreateDefaultUpdate();
+  auto node_update = CreateDefaultSecondaryRootTransformNode();
+  node_update->ancestors_are_invertible = true;
+  update2->transform_nodes.push_back(std::move(node_update));
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update2));
+  ASSERT_TRUE(result.has_value());
+
+  cc::TransformNode* node_impl =
+      GetTransformNodeFromActiveTree(cc::kSecondaryRootPropertyNodeId);
+  ASSERT_TRUE(node_impl);
+  EXPECT_TRUE(node_impl->ancestors_are_invertible);
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
+       UpdateTransformNodeNodeAndAncestorsAreFlat) {
+  auto update1 = CreateDefaultUpdate();
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+
+  auto update2 = CreateDefaultUpdate();
+  auto node_update = CreateDefaultSecondaryRootTransformNode();
+  node_update->node_and_ancestors_are_flat = true;
+  update2->transform_nodes.push_back(std::move(node_update));
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update2));
+  ASSERT_TRUE(result.has_value());
+
+  cc::TransformNode* node_impl =
+      GetTransformNodeFromActiveTree(cc::kSecondaryRootPropertyNodeId);
+  ASSERT_TRUE(node_impl);
+  EXPECT_TRUE(node_impl->node_and_ancestors_are_flat);
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
+       UpdateTransformNodeNodeOrAncestorsWillChangeTransform) {
+  auto update1 = CreateDefaultUpdate();
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+
+  auto update2 = CreateDefaultUpdate();
+  auto node_update = CreateDefaultSecondaryRootTransformNode();
+  node_update->node_or_ancestors_will_change_transform = true;
+  update2->transform_nodes.push_back(std::move(node_update));
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update2));
+  ASSERT_TRUE(result.has_value());
+
+  cc::TransformNode* node_impl =
+      GetTransformNodeFromActiveTree(cc::kSecondaryRootPropertyNodeId);
+  ASSERT_TRUE(node_impl);
+  EXPECT_TRUE(node_impl->node_or_ancestors_will_change_transform);
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
+       UpdateTransformNodeVisibleFrameElementId) {
+  auto update1 = CreateDefaultUpdate();
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+
+  auto update2 = CreateDefaultUpdate();
+  auto node_update = CreateDefaultSecondaryRootTransformNode();
+  const cc::ElementId kElementId(0x13579BDF02468ACE);
+  node_update->visible_frame_element_id = kElementId;
+  update2->transform_nodes.push_back(std::move(node_update));
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update2));
+  ASSERT_TRUE(result.has_value());
+
+  cc::TransformNode* node_impl =
+      GetTransformNodeFromActiveTree(cc::kSecondaryRootPropertyNodeId);
+  ASSERT_TRUE(node_impl);
+  EXPECT_EQ(node_impl->visible_frame_element_id, kElementId);
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
        AddRemoveTransformNodes) {
   // Apply a default valid update first.
   auto update1 = CreateDefaultUpdate();
