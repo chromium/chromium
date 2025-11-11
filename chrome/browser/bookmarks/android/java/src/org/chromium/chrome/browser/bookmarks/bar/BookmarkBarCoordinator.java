@@ -307,7 +307,6 @@ public class BookmarkBarCoordinator
 
         mTopControlsStacker = topControlsStacker;
         mTopControlsStacker.addControl(this);
-        mTopControlsStacker.requestLayerUpdate(false);
 
         mMediator.setTopMargin(
                 mTopControlsStacker.getHeightFromLayerToTop(TopControlType.BOOKMARK_BAR));

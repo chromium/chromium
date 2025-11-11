@@ -1833,15 +1833,19 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mBookmarkBarHeightSupplier = mBookmarkBarCoordinator::getTopControlHeight;
             mLayoutManager.addSceneOverlay(mBookmarkBarCoordinator.getSceneLayer());
             mLayoutManager.requestUpdate();
+
+            // Requesting a layer update must come after the heightSupplier has been set.
+            if (mToolbarManager != null) {
+                mToolbarManager.setBookmarkBarHeightSupplier(mBookmarkBarHeightSupplier);
+            }
+            mTopControlsStacker.requestLayerUpdate(false);
         } else {
             mBookmarkBarCoordinator.setVisibility(true);
             // When toggling the visibility of the existing view, the LayoutChangeListener will not
             // be triggered as it is on instantiation, so we update the top controls height here.
+            // The height supplier should already be set since the coordinator was not destroyed,
+            // and the following method will also request a layer update.
             updateTopControlsHeight(false);
-        }
-
-        if (mToolbarManager != null) {
-            mToolbarManager.setBookmarkBarHeightSupplier(mBookmarkBarHeightSupplier);
         }
     }
 
