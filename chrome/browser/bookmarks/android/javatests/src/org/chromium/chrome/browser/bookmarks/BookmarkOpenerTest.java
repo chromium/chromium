@@ -34,6 +34,8 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
+import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.BookmarkTestUtil;
@@ -85,20 +87,22 @@ public class BookmarkOpenerTest {
         if (mActionTester != null) mActionTester.tearDown();
     }
 
-    private void openBookmarkManager() {
+    /**
+     * Opens the bookmark manager and waits for it to be ready. Passing pageStation since some tests
+     * could open bookmark in another window.
+     */
+    private void openBookmarkManager(CtaPageStation pageStation) {
         SigninPromoCoordinator.disablePromoForTesting();
         BookmarkPromoHeader.forcePromoVisibilityForTesting(false);
 
-        if (mActivityTestRule.getActivity().isTablet()) {
-            mActivityTestRule.loadUrl(UrlConstants.BOOKMARKS_NATIVE_URL);
+        if (pageStation.getActivity().isTablet()) {
+            pageStation =
+                    pageStation.loadWebPageProgrammatically(UrlConstants.BOOKMARKS_NATIVE_URL);
             mItemsContainer =
-                    mActivityTestRule
-                            .getActivity()
-                            .findViewById(R.id.selectable_list_recycler_view);
+                    pageStation.getActivity().findViewById(R.id.selectable_list_recycler_view);
             mItemsContainer.setItemAnimator(null); // Disable animation to reduce flakiness.
             mBookmarkManagerCoordinator =
-                    ((BookmarkPage) mActivityTestRule.getActivityTab().getNativePage())
-                            .getManagerForTesting();
+                    ((BookmarkPage) pageStation.getTab().getNativePage()).getManagerForTesting();
         } else {
             // Phone
             mBookmarkActivity =
@@ -151,7 +155,7 @@ public class BookmarkOpenerTest {
     public void testOpenBookmarkInCurrentTab() {
         GURL url = new GURL(UrlConstants.NTP_URL);
         BookmarkId id = addMobileBookmark("test", url);
-        openBookmarkManager();
+        openBookmarkManager(mPage);
         openMobileBookmarks();
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -174,7 +178,7 @@ public class BookmarkOpenerTest {
     public void testOpenBookmarkInCurrentTab_ReadingList() {
         GURL url = new GURL("https://google.com"); // Chrome URLs not allowed for reading list
         BookmarkId id = addReadingListBookmark("test", url);
-        openBookmarkManager();
+        openBookmarkManager(mPage);
         openReadingList();
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -201,9 +205,8 @@ public class BookmarkOpenerTest {
         GURL url = new GURL(UrlConstants.NTP_URL);
         BookmarkId id = addMobileBookmark("test", url);
 
-        mPage.openNewIncognitoTabOrWindowFast();
-
-        openBookmarkManager();
+        IncognitoNewTabPageStation incognitoPageStation = mPage.openNewIncognitoTabOrWindowFast();
+        openBookmarkManager(incognitoPageStation);
         openMobileBookmarks();
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -222,7 +225,7 @@ public class BookmarkOpenerTest {
         ids.add(addMobileBookmark("test", url));
         ids.add(addMobileBookmark("test1", new GURL(UrlConstants.NTP_NON_NATIVE_URL)));
         ids.add(addMobileBookmark("test2", new GURL(UrlConstants.NTP_NON_NATIVE_URL)));
-        openBookmarkManager();
+        openBookmarkManager(mPage);
         openMobileBookmarks();
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -253,9 +256,8 @@ public class BookmarkOpenerTest {
         ids.add(addMobileBookmark("test1", new GURL(UrlConstants.NTP_NON_NATIVE_URL)));
         ids.add(addMobileBookmark("test2", new GURL(UrlConstants.NTP_NON_NATIVE_URL)));
 
-        mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_NON_NATIVE_URL, /* incognito= */ true);
-
-        openBookmarkManager();
+        IncognitoNewTabPageStation incognitoPageStation = mPage.openNewIncognitoTabOrWindowFast();
+        openBookmarkManager(incognitoPageStation);
         openMobileBookmarks();
 
         ThreadUtils.runOnUiThreadBlocking(
