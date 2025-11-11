@@ -6852,6 +6852,19 @@ const LayoutObject* AXObjectCacheImpl::CachedPreviousOnLine(
   return nullptr;
 }
 
+void AXObjectCacheImpl::UpdateAccessibilityFocus(AXID id) {
+  accessibility_focus_ = id;
+
+  if (id == ui::AXNodeData::kInvalidAXID) {
+    return;
+  }
+
+  AXObject* obj = ObjectFromAXID(accessibility_focus_);
+  if (obj && obj->GetNode()) {
+    UpdateActiveAriaModalDialog(obj->GetNode());
+  }
+}
+
 void AXObjectCacheImpl::ClearCachedNodesOnLine() {
   next_on_line_map_.clear();
   previous_on_line_map_.clear();

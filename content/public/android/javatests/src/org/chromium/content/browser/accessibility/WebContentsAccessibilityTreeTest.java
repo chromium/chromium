@@ -753,6 +753,12 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    public void test_ariaModal() {
+        performAriaTest("aria-modal.html");
+    }
+
+    @Test
+    @SmallTest
     public void test_ariaMultiline() {
         performAriaTest("aria-multiline.html");
     }

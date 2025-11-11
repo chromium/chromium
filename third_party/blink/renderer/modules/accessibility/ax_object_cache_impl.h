@@ -776,7 +776,7 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   const LayoutObject* CachedPreviousOnLine(const LayoutObject* layout_object);
 
   // Updates the node on which the browser last requested accessibility focus.
-  void UpdateAccessibilityFocus(AXID id) { accessibility_focus_ = id; }
+  void UpdateAccessibilityFocus(AXID id);
 
 #if AX_FAIL_FAST_BUILD()
   void AddNodeRequiringCacheUpdate(AXID ax_id, TreeUpdateReason reason);
