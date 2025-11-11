@@ -30,6 +30,8 @@ class WebContents;
 class BrowserWindowInterface;
 namespace actor::ui {
 
+class ActorUiTabControllerInterface;
+
 // Manages the actor ui components for a single contents container (e.g., a
 // single tab's content area). In split-view mode, there will be multiple
 // instances of this class, one for each content area.
@@ -62,9 +64,14 @@ class ActorUiContentsContainerController : public content::WebContentsObserver,
   void OnViewBoundsChanged(views::View* observed_view) override;
 
  private:
+  // Gets the ActorUiTabController associated with the contentsContainer's
+  // webcontents.
+  ActorUiTabControllerInterface* GetActorUiTabController();
   // Notifies the respective tab controller that a new web contents has been
   // attached.
   void NotifyTabControllerOnWebContentsAttached();
+  // Notifies the respective tab controller that viewBounds changed.
+  void NotifyTabControllerOnViewBoundsChanged();
   // Notified whenever the overlay background status changes.
   void OnActorOverlayBackgroundChange(bool is_visible);
 

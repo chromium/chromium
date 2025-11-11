@@ -43,23 +43,14 @@ ActorUiContentsContainerController::~ActorUiContentsContainerController() =
 void ActorUiContentsContainerController::OnViewBoundsChanged(
     views::View* observed_view) {
   CHECK(observed_view == contents_container_view_);
-  content::WebContents* contents = contents_container_view_->web_contents();
-  if (!contents) {
+  if (!contents_container_view_->web_contents()) {
     return;
   }
 
-  tabs::TabInterface* tab = tabs::TabInterface::MaybeGetFromContents(
-      contents_container_view_->web_contents());
-
-  // There are some cases where a webcontents may no longer be associated with
-  // a tab.
-  if (!tab) {
-    return;
-  }
-
-  if (auto* tab_controller = ActorUiTabControllerInterface::From(tab)) {
-    tab_controller->OnViewBoundsChanged();
-  }
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&ActorUiContentsContainerController::
+                                    NotifyTabControllerOnViewBoundsChanged,
+                                weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ActorUiContentsContainerController::OnWebContentsAttached(
@@ -111,23 +102,30 @@ void ActorUiContentsContainerController::OnWebContentsAttached(
   }
 }
 
-void ActorUiContentsContainerController::
-    NotifyTabControllerOnWebContentsAttached() {
+ActorUiTabControllerInterface*
+ActorUiContentsContainerController::GetActorUiTabController() {
   if (!web_contents()) {
-    return;
+    return nullptr;
   }
-
   auto* tab = tabs::TabInterface::GetFromContents(web_contents());
   if (!tab) {
-    return;
+    return nullptr;
   }
+  return ActorUiTabControllerInterface::From(tab);
+}
 
-  auto* tab_controller = ActorUiTabControllerInterface::From(tab);
-  if (!tab_controller) {
-    return;
+void ActorUiContentsContainerController::
+    NotifyTabControllerOnWebContentsAttached() {
+  if (auto* tab_controller = GetActorUiTabController()) {
+    tab_controller->OnWebContentsAttached();
   }
+}
 
-  tab_controller->OnWebContentsAttached();
+void ActorUiContentsContainerController::
+    NotifyTabControllerOnViewBoundsChanged() {
+  if (auto* tab_controller = GetActorUiTabController()) {
+    tab_controller->OnViewBoundsChanged();
+  }
 }
 
 void ActorUiContentsContainerController::OnWebContentsDetached(
