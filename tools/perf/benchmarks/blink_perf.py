@@ -734,7 +734,6 @@ class BlinkPerfWebCodecs(_BlinkPerfBenchmark):
                 documentation_url='https://bit.ly/blink-perf-benchmarks')
 class BlinkPerfWebGL(_BlinkPerfBenchmark):
   SUBDIR = 'webgl'
-  SUPPORTED_PLATFORMS = [story.expectations.ALL]
 
   @classmethod
   def Name(cls):
@@ -775,6 +774,38 @@ class BlinkPerfWebGPU(_BlinkPerfBenchmark):
           '--use-angle=vulkan',
           '--ozone-platform=x11',
       ])
+
+
+@benchmark.Info(emails=[
+    'kainino@chromium.org',
+    'cwallez@chromium.org',
+    'webgpu-dev-team@google.com',
+],
+                component='Blink>WebGPU',
+                documentation_url='https://bit.ly/blink-perf-benchmarks')
+class BlinkPerfWebGPUCompat(_BlinkPerfBenchmark):
+  SUBDIR = 'webgpu'
+  # Currently, Android is the only production target platform for WebGPU
+  # Compat's OpenGL ES backend. Enable other Compat platforms as needed.
+  SUPPORTED_PLATFORMS = [story.expectations.ALL_ANDROID]
+  # TODO(crbug.com/443111618): Schedule this benchmark.
+  SCHEDULED = False
+
+  @classmethod
+  def Name(cls):
+    return 'blink_perf.webgpu_compat'
+
+  def CreateStorySet(self, options):
+    path = os.path.join(BLINK_PERF_BASE_DIR, self.SUBDIR)
+    return CreateStorySetFromPath(path,
+                                  SKIPPED_FILE,
+                                  extra_tags=self.TAGS,
+                                  append_query='compatonly')
+
+  def SetExtraBrowserOptionsWithBrowser(self, options, possible_browser):
+    options.AppendExtraBrowserArgs([
+        '--use-webgpu-adapter=opengles',
+    ])
 
 
 @benchmark.Info(emails=[

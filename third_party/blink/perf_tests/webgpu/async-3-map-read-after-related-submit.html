@@ -12,11 +12,7 @@
 <body>
   <script>
     (async () => {
-      const adapter = navigator.gpu && await navigator.gpu.requestAdapter();
-      if (!adapter) {
-        return skipTest('WebGPU not supported');
-      }
-
+      const adapter = await getAdapter();
       const device = await adapter.requestDevice();
       const mappableBuffer = device.createBuffer({
         size: 4,
