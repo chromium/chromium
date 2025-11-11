@@ -28,8 +28,9 @@ import time
 import urllib.error
 import urllib.request
 
+from blob_generator import POLICY_TEST_TOOL_PATH
 # Add the new consolidated directory to sys.path.
-sys.path.insert(0, "/usr/share/policy-test-tool")
+sys.path.insert(0, POLICY_TEST_TOOL_PATH)
 
 logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
 
@@ -46,16 +47,17 @@ except ImportError as e:
 
 FAKE_DMSERVER_PATH = "/usr/local/libexec/chrome-binary-tests/fake_dmserver"
 PERSISTENT_DATA_DIR = "/var/tmp/dmserver_data"
-MANUAL_MAP_PATH = ("/usr/share/policy-test-tool/"
-                   "manual_device_policy_proto_map.yaml")
+MANUAL_MAP_PATH = (
+    f"{POLICY_TEST_TOOL_PATH}/manual_device_policy_proto_map.yaml")
 CHROME_DEV_CONFIG_PATH = "/etc/chrome_dev.conf"
 
 
 class Orchestrator:
   """Orchestrates the fake_dmserver and Chrome configuration."""
 
-  def __init__(self, policy_file):
+  def __init__(self, policy_file, chrome_flags=None):
     self.policy_file = policy_file
+    self.chrome_flags = chrome_flags or []
     self.dmserver_process = None
 
   def generate_policy_blob(self, input_path, output_dir):
@@ -148,7 +150,9 @@ class Orchestrator:
         "--enterprise-enable-state-determination=never",
         "--enterprise-enrollment-skip-robot-auth",
         "--policy-fetch-timeout=1",
+        "--disable-policy-key-verification",
     ]
+    chrome_flags.extend(self.chrome_flags)
 
     content = "\n".join(chrome_flags)
 
@@ -331,9 +335,15 @@ this directory.""",
       help="Path to a simple JSON file defining user and/or device "
       "policies.",
   )
+  parser.add_argument(
+      "--chrome-flags",
+      action="append",
+      help="Additional flags to pass to Chrome. Can be specified multiple "
+      "times.",
+  )
   args = parser.parse_args()
 
-  orchestrator = Orchestrator(args.policy_file)
+  orchestrator = Orchestrator(args.policy_file, args.chrome_flags)
   atexit.register(orchestrator.cleanup)
   signal.signal(signal.SIGINT, lambda sig, frame: sys.exit(0))
   signal.signal(signal.SIGTERM, lambda sig, frame: sys.exit(0))

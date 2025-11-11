@@ -15,8 +15,9 @@ import json
 import logging
 import sys
 
-# The ebuild installs these to /usr/share/policy-test-tool
-sys.path.insert(0, "/usr/share/policy-test-tool")
+# The ebuild installs these to /usr/local/share/policy-test-tool
+POLICY_TEST_TOOL_PATH = "/usr/local/share/policy-test-tool"
+sys.path.insert(0, POLICY_TEST_TOOL_PATH)
 
 logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
 
