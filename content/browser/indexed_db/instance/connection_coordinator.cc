@@ -42,7 +42,6 @@
 #include "content/browser/indexed_db/instance/lock_request_data.h"
 #include "content/browser/indexed_db/instance/pending_connection.h"
 #include "content/browser/indexed_db/instance/transaction.h"
-#include "content/browser/indexed_db/list_set.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_metadata.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-shared.h"
@@ -372,7 +371,6 @@ class ConnectionCoordinator::OpenRequest
         base::BindOnce(&OpenRequest::OnConnectionClosedDuringUpgrade,
                        weak_factory_.GetWeakPtr()));
     bucket_context_handle_.Release();
-    DCHECK_EQ(db_->connections().count(upgrade_connection_.get()), 1UL);
 
     std::vector<int64_t> object_store_ids;
 

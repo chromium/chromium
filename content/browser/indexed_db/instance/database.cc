@@ -1074,7 +1074,7 @@ std::unique_ptr<Connection> Database::CreateConnection(
                      std::move(on_connection_closed)),
       std::move(database_callbacks), std::move(client_state_checker),
       client_token, scheduling_priority);
-  connections_.insert(connection.get());
+  connections_.push_back(connection.get());
   return connection;
 }
 
@@ -1134,7 +1134,7 @@ void Database::ConnectionClosed(base::OnceClosure forward_on_close,
   if (force_closing_) {
     return;
   }
-  connections_.erase(&connection);
+  CHECK(connections_.remove(&connection));
   if (forward_on_close) {
     std::move(forward_on_close).Run();
   }
