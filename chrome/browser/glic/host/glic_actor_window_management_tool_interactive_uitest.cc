@@ -101,7 +101,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorWindowManagementUiTest, WindowManagementTools) {
       InitializeWithOpenGlicWindow(),
       StartActorTaskInNewTab(task_url, kNewActorTabId),
       WaitForWebContentsReady(kNewActorTabId, task_url),
-      GetPageContextFromFocusedTab(),
+      GetPageContextForActorTab(),
       SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
                               kActivateSurfaceIncompatibilityNotice),
 

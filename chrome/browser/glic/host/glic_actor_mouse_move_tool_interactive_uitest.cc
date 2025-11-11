@@ -58,7 +58,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorMouseMoveToolUiTest, NonExistentNode) {
   RunTestSequence(
       InitializeWithOpenGlicWindow(),
       StartActorTaskInNewTab(task_url, kNewActorTabId),
-      GetPageContextFromFocusedTab(),
+      GetPageContextForActorTab(),
       WaitForJsResult(kNewActorTabId, "()=>{ return event_log.join(',') }", ""),
       ExecuteAction(
           base::BindLambdaForTesting([this]() {
@@ -79,7 +79,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorMouseMoveToolUiTest, Events) {
   RunTestSequence(
       InitializeWithOpenGlicWindow(),
       StartActorTaskInNewTab(task_url, kNewActorTabId),
-      GetPageContextFromFocusedTab(),
+      GetPageContextForActorTab(),
       WaitForJsResult(kNewActorTabId, "()=>{ return event_log.join(',')}", ""),
       MouseMoveAction("first"),
       WaitForJsResult(kNewActorTabId, "()=>{ return event_log.join(',')}",
@@ -98,7 +98,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorMouseMoveToolUiTest, TargetOutsideViewport) {
   RunTestSequence(
       InitializeWithOpenGlicWindow(),
       StartActorTaskInNewTab(task_url, kNewActorTabId),
-      GetPageContextFromFocusedTab(),
+      GetPageContextForActorTab(),
       WaitForJsResult(kNewActorTabId, "()=>{ return event_log.join(',')}", ""),
       WaitForJsResult(kNewActorTabId, "()=>{ return window.scrollY == 0 }"),
       MouseMoveAction("offscreen"),
@@ -120,7 +120,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorMouseMoveToolUiTest, MoveToCoordinate) {
   RunTestSequence(
       InitializeWithOpenGlicWindow(),
       StartActorTaskInNewTab(task_url, kNewActorTabId),
-      GetPageContextFromFocusedTab(),
+      GetPageContextForActorTab(),
       WaitForJsResult(kNewActorTabId, "()=>{ return event_log.join(',') }", ""),
       GetClientRect(kNewActorTabId, "first", first_bounds),
       ExecuteAction(std::move(move_provider)),
@@ -142,7 +142,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorMouseMoveToolUiTest,
   RunTestSequence(
       InitializeWithOpenGlicWindow(),
       StartActorTaskInNewTab(task_url, kNewActorTabId),
-      GetPageContextFromFocusedTab(),
+      GetPageContextForActorTab(),
       GetClientRect(kNewActorTabId, "offscreen", offscreen_bounds),
       ExecuteAction(std::move(move_provider),
                     actor::mojom::ActionResultCode::kCoordinatesOutOfBounds));

@@ -95,7 +95,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorScrollToolUiTest, ScrollPageVertical) {
   RunTestSequence(
       InitializeWithOpenGlicWindow(),
       StartActorTaskInNewTab(task_url, kNewActorTabId),
-      GetPageContextFromFocusedTab(),
+      GetPageContextForActorTab(),
       ScrollAction(/*label=*/std::nullopt, /*offset_x=*/0, kScrollOffsetY),
       CheckJsResult(kNewActorTabId, "() => window.scrollY", kScrollOffsetY));
 }
@@ -110,7 +110,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorScrollToolUiTest, ScrollPageHorizontal) {
   RunTestSequence(
       InitializeWithOpenGlicWindow(),
       StartActorTaskInNewTab(task_url, kNewActorTabId),
-      GetPageContextFromFocusedTab(),
+      GetPageContextForActorTab(),
       ScrollAction(/*label=*/std::nullopt, kScrollOffsetX, /*offset_y=*/0),
       CheckJsResult(kNewActorTabId, "() => window.scrollX", kScrollOffsetX));
 }
@@ -124,7 +124,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorScrollToolUiTest, FailOnInvalidNodeId) {
   RunTestSequence(
       InitializeWithOpenGlicWindow(),
       StartActorTaskInNewTab(task_url, kNewActorTabId),
-      GetPageContextFromFocusedTab(),
+      GetPageContextForActorTab(),
       ExecuteAction(
           base::BindLambdaForTesting([this]() {
             content::RenderFrameHost* frame =
@@ -151,7 +151,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorScrollToolUiTest, ScrollElementWithNodeId) {
   RunTestSequence(
       InitializeWithOpenGlicWindow(),
       StartActorTaskInNewTab(task_url, kNewActorTabId),
-      GetPageContextFromFocusedTab(),
+      GetPageContextForActorTab(),
       ScrollAction(kElementLabel, /*offset_x=*/0, kScrollOffsetY),
       CheckJsResult(kNewActorTabId,
                     "() => document.getElementById('scroller').scrollTop",
@@ -173,7 +173,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorScrollToolUiTest, ScrollNonScrollable) {
   RunTestSequence(
       InitializeWithOpenGlicWindow(),
       StartActorTaskInNewTab(task_url, kNewActorTabId),
-      GetPageContextFromFocusedTab(),
+      GetPageContextForActorTab(),
       ScrollAction(
           kElementLabel, /*offset_x=*/0, kScrollOffsetY,
           actor::mojom::ActionResultCode::kScrollTargetNotUserScrollable),
@@ -195,7 +195,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorScrollToolUiTest, OffscreenScrollable) {
   RunTestSequence(
       InitializeWithOpenGlicWindow(),
       StartActorTaskInNewTab(task_url, kNewActorTabId),
-      GetPageContextFromFocusedTab(),
+      GetPageContextForActorTab(),
       CheckJsResult(kNewActorTabId, "()=>{ return window.scrollY == 0 }"),
       ScrollAction(kElementLabel, /*offset_x=*/0, kScrollOffsetY),
       CheckJsResult(
@@ -217,7 +217,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorScrollToolUiTest, OneAxisScroller) {
   RunTestSequence(
       InitializeWithOpenGlicWindow(),
       StartActorTaskInNewTab(task_url, kNewActorTabId),
-      GetPageContextFromFocusedTab(),
+      GetPageContextForActorTab(),
       ScrollAction(
           kElementLabel, /*offset_x=*/0, kScrollOffset,
           actor::mojom::ActionResultCode::kScrollTargetNotUserScrollable),
@@ -251,7 +251,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorScrollToolUiTest, BrowserZoomWithNodeId) {
   RunTestSequence(
       InitializeWithOpenGlicWindow(),
       StartActorTaskInNewTab(task_url, kNewActorTabId),
-      GetPageContextFromFocusedTab(),
+      GetPageContextForActorTab(),
       ScrollAction(kElementLabel, /*offset_x=*/0, kScrollOffsetPhysical),
       CheckJsResult(kNewActorTabId,
                     "() => document.getElementById('scroller').scrollTop",
@@ -274,7 +274,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorScrollToolUiTest, CssZoomWithNodeId) {
   RunTestSequence(
       InitializeWithOpenGlicWindow(),
       StartActorTaskInNewTab(task_url, kNewActorTabId),
-      GetPageContextFromFocusedTab(),
+      GetPageContextForActorTab(),
       ScrollAction(kElementLabel, /*offset_x=*/0, kScrollOffsetPhysical),
       CheckJsResult(kNewActorTabId,
                     "() => document.getElementById('zoomedscroller').scrollTop",
@@ -293,7 +293,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorScrollToolUiTest, SmoothScrollSucceeds) {
   RunTestSequence(
       InitializeWithOpenGlicWindow(),
       StartActorTaskInNewTab(task_url, kNewActorTabId),
-      GetPageContextFromFocusedTab(),
+      GetPageContextForActorTab(),
       ScrollAction(kElementLabel, /*offset_x=*/0, kScrollOffsetY),
       CheckJsResult(kNewActorTabId,
                     "() => document.getElementById('smoothscroller').scrollTop",
@@ -312,7 +312,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorScrollToolUiTest, SmoothScrollAtExtent) {
   RunTestSequence(
       InitializeWithOpenGlicWindow(),
       StartActorTaskInNewTab(task_url, kNewActorTabId),
-      GetPageContextFromFocusedTab(),
+      GetPageContextForActorTab(),
       ExecuteJs(kNewActorTabId,
                 "() => { "
                 "document.querySelector('#smoothscroller').scrollTo({top:"
@@ -333,7 +333,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorScrollToolUiTest, ZeroIdTargetsViewport) {
   RunTestSequence(
       InitializeWithOpenGlicWindow(),
       StartActorTaskInNewTab(task_url, kNewActorTabId),
-      GetPageContextFromFocusedTab(),
+      GetPageContextForActorTab(),
       ExecuteAction(base::BindLambdaForTesting([this, kTargetViewport]() {
         content::RenderFrameHost* frame =
             tab_handle_.Get()->GetContents()->GetPrimaryMainFrame();
@@ -398,7 +398,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorCoordinateScrollToolUiTest,
   RunTestSequence(
       InitializeWithOpenGlicWindow(),
       StartActorTaskInNewTab(task_url, kNewActorTabId),
-      GetPageContextFromFocusedTab(),
+      GetPageContextForActorTab(),
       GetClientRect(kNewActorTabId, kScrollerId, scroller_bound),
       ExecuteAction(std::move(scroller_y_provider)),
       CheckJsResult(kNewActorTabId,
@@ -436,7 +436,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorCoordinateScrollToolUiTest,
   RunTestSequence(
       InitializeWithOpenGlicWindow(),
       StartActorTaskInNewTab(task_url, kNewActorTabId),
-      GetPageContextFromFocusedTab(),
+      GetPageContextForActorTab(),
       GetClientRect(kNewActorTabId, kNonScrollerId, non_scroller_bound),
       ExecuteAction(std::move(non_scroller_provider)),
       CheckJsResult(kNewActorTabId, "() => window.scrollY", kScrollOffsetY));
@@ -453,7 +453,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorCoordinateScrollToolUiTest,
 
   RunTestSequence(InitializeWithOpenGlicWindow(),
                   StartActorTaskInNewTab(task_url, kNewActorTabId),
-                  GetPageContextFromFocusedTab(),
+                  GetPageContextForActorTab(),
                   ScrollActionAtPoint(
                       kPoint, /*offset_x=*/0, kScrollOffsetY,
                       actor::mojom::ActionResultCode::kCoordinatesOutOfBounds));
@@ -486,7 +486,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorCoordinateScrollToolUiTest,
   RunTestSequence(
       InitializeWithOpenGlicWindow(),
       StartActorTaskInNewTab(task_url, kNewActorTabId),
-      GetPageContextFromFocusedTab(),
+      GetPageContextForActorTab(),
       GetClientRect(kNewActorTabId, kOffScreenScrollerId,
                     off_screen_scrolle_bound),
       ExecuteAction(std::move(off_screen_scroller_provider),
@@ -518,7 +518,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorCoordinateScrollToolUiTest,
   RunTestSequence(
       InitializeWithOpenGlicWindow(),
       StartActorTaskInNewTab(task_url, kNewActorTabId),
-      GetPageContextFromFocusedTab(),
+      GetPageContextForActorTab(),
       GetClientRect(kNewActorTabId, kNonScrollerId, non_scroller_bound),
       ExecuteAction(
           std::move(non_scroller_provider),
@@ -570,7 +570,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorCoordinateScrollToolUiTest,
   RunTestSequence(
       InitializeWithOpenGlicWindow(),
       StartActorTaskInNewTab(task_url, kNewActorTabId),
-      GetPageContextFromFocusedTab(),
+      GetPageContextForActorTab(),
       GetClientRect(kNewActorTabId, kButtonId, button_bound),
       ExecuteAction(std::move(scroller_y_provider)),
       CheckJsResult(kNewActorTabId,
@@ -621,7 +621,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorCoordinateDisabledScrollToolUiTest,
 
   RunTestSequence(InitializeWithOpenGlicWindow(),
                   StartActorTaskInNewTab(task_url, kNewActorTabId),
-                  GetPageContextFromFocusedTab(),
+                  GetPageContextForActorTab(),
                   GetClientRect(kNewActorTabId, kScrollerId, scroller_bound),
                   ExecuteAction(std::move(scroller_y_provider),
                                 actor::mojom::ActionResultCode::kError));

@@ -63,7 +63,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorTaskManagementUiTest, StopActorTask) {
       // clang-format off
     InitializeWithOpenGlicWindow(),
     StartActorTaskInNewTab(task_url, kNewActorTabId),
-    GetPageContextFromFocusedTab(),
+    GetPageContextForActorTab(),
     ClickAction(kClickableButtonLabel, ClickAction::LEFT, ClickAction::SINGLE),
     WaitForJsResult(kNewActorTabId, "() => button_clicked"),
     CheckIsActingOnTab(kNewActorTabId, true),
@@ -111,14 +111,14 @@ IN_PROC_BROWSER_TEST_F(GlicActorTaskManagementUiTest, StopThenStartActTask) {
 
     // Start, click, stop.
     StartActorTaskInNewTab(task_url, kSecondTabId),
-    GetPageContextFromFocusedTab(),
+    GetPageContextForActorTab(),
     ClickAction(kClickableButtonLabel, ClickAction::LEFT, ClickAction::SINGLE),
     WaitForJsResult(kSecondTabId, "() => button_clicked"),
     StopActorTask(),
 
     // Start, click, stop.
     StartActorTaskInNewTab(task_url, kThirdTabId),
-    GetPageContextFromFocusedTab(),
+    GetPageContextForActorTab(),
     ClickAction(kClickableButtonLabel, ClickAction::LEFT, ClickAction::SINGLE),
     WaitForJsResult(kThirdTabId, "() => button_clicked"),
     StopActorTask()
@@ -139,7 +139,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorTaskManagementUiTest, PauseActorTask) {
     InitializeWithOpenGlicWindow(),
     StartActorTaskInNewTab(task_url, kNewActorTabId),
 
-    GetPageContextFromFocusedTab(),
+    GetPageContextForActorTab(),
     ClickAction(kClickableButtonLabel, ClickAction::LEFT, ClickAction::SINGLE),
     WaitForJsResult(kNewActorTabId, "() => button_clicked"),
     CheckIsActingOnTab(kNewActorTabId, true),
@@ -167,7 +167,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorTaskManagementUiTest, PauseThenStopActorTask) {
     InitializeWithOpenGlicWindow(),
     StartActorTaskInNewTab(task_url, kNewActorTabId),
 
-    GetPageContextFromFocusedTab(),
+    GetPageContextForActorTab(),
     ClickAction(kClickableButtonLabel, ClickAction::LEFT, ClickAction::SINGLE),
     WaitForJsResult(kNewActorTabId, "() => button_clicked"),
     WaitForActorTaskState(mojom::ActorTaskState::kIdle),
@@ -197,7 +197,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorTaskManagementUiTest,
     InitializeWithOpenGlicWindow(),
     StartActorTaskInNewTab(task_url, kNewActorTabId),
 
-    GetPageContextFromFocusedTab(),
+    GetPageContextForActorTab(),
     ClickAction(kClickableButtonLabel, ClickAction::LEFT, ClickAction::SINGLE),
     WaitForJsResult(kNewActorTabId, "() => button_clicked"),
 
@@ -223,7 +223,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorTaskManagementUiTest,
     InitializeWithOpenGlicWindow(),
     StartActorTaskInNewTab(task_url, kNewActorTabId),
 
-    GetPageContextFromFocusedTab(),
+    GetPageContextForActorTab(),
     ClickAction(kClickableButtonLabel, ClickAction::LEFT, ClickAction::SINGLE),
     WaitForJsResult(kNewActorTabId, "() => button_clicked"),
 
@@ -264,7 +264,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorTaskManagementUiTest,
     ResumeActorTask(UpdatedContextOptions(), actor::mojom::ActionResultCode::kOk),
     CheckIsActingOnTab(kNewActorTabId, true),
     // Ensure actions work after pause and resume.
-    GetPageContextFromFocusedTab(),
+    GetPageContextForActorTab(),
     ClickAction(kClickableButtonLabel, ClickAction::LEFT, ClickAction::SINGLE),
     WaitForJsResult(kNewActorTabId, "() => button_clicked")
       // clang-format on
@@ -322,7 +322,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorTaskManagementUiTest,
       // clang-format off
       InitializeWithOpenGlicWindow(),
       StartActorTaskInNewTab(task_url, kNewActorTabId),
-      GetPageContextFromFocusedTab(),
+      GetPageContextForActorTab(),
       SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
                               kActivateSurfaceIncompatibilityNotice),
       AddInstrumentedTab(kOtherTabId, GURL(chrome::kChromeUISettingsURL)),
@@ -451,7 +451,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorTaskManagementDownloadUiTest,
       InitializeWithOpenGlicWindow(),
       StartActorTaskInNewTab(task_url, kNewActorTabId),
 
-      GetPageContextFromFocusedTab(),
+      GetPageContextForActorTab(),
       ClickAction(kDownloadLabel, ClickAction::LEFT, ClickAction::SINGLE,
                   actor::mojom::ActionResultCode::kFilePickerTriggered),
       WaitForJsResult(kNewActorTabId, "() => download_clicked"),
@@ -495,7 +495,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorTaskManagementDownloadUiTest,
       InitializeWithOpenGlicWindow(),
       StartActorTaskInNewTab(task_url, kNewActorTabId),
 
-      GetPageContextFromFocusedTab(),
+      GetPageContextForActorTab(),
       ClickAction(kDownloadLabel, ClickAction::LEFT, ClickAction::SINGLE,
                   actor::mojom::ActionResultCode::kFilePickerTriggered),
       WaitForJsResult(kNewActorTabId, "() => download_clicked"),
@@ -542,7 +542,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorTaskManagementDownloadUiTest,
       InitializeWithOpenGlicWindow(),
       StartActorTaskInNewTab(task_url, kNewActorTabId),
 
-      GetPageContextFromFocusedTab(),
+      GetPageContextForActorTab(),
       ClickAction(kDownloadLabel, ClickAction::LEFT, ClickAction::SINGLE,
                   actor::mojom::ActionResultCode::kFilePickerTriggered),
       WaitForJsResult(kNewActorTabId, "() => download_clicked"),

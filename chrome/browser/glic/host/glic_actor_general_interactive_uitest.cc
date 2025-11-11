@@ -117,7 +117,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTest,
 
   RunTestSequence(InitializeWithOpenGlicWindow(),
                   StartActorTaskInNewTab(task_url, kNewActorTabId),
-                  GetPageContextFromFocusedTab(),
+                  GetPageContextForActorTab(),
                   CheckActorTabDataHasAnnotatedPageContentCache());
 }
 
@@ -231,7 +231,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTest,
       // clang-format off
       InitializeWithOpenGlicWindow(),
       StartActorTaskInNewTab(task_url, kNewActorTabId),
-      GetPageContextFromFocusedTab(),
+      GetPageContextForActorTab(),
       SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
                               kActivateSurfaceIncompatibilityNotice),
       AddInstrumentedTab(kOtherTabId, GURL(chrome::kChromeUISettingsURL)),
@@ -267,7 +267,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTest,
       InitializeWithOpenGlicWindow(),
       StartActorTaskInNewTab(task_url, kNewActorTabId),
 
-      GetPageContextFromFocusedTab(),
+      GetPageContextForActorTab(),
       ClickAction(kClickableButtonLabel,
                   ClickAction::LEFT, ClickAction::SINGLE),
 
@@ -435,7 +435,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTestHighDPI,
       ExecuteJs(kNewActorTabId,
         content::JsReplace("() => document.getElementById($1).scrollIntoView()",
           kOffscreenButton)),
-      GetPageContextFromFocusedTab(),
+      GetPageContextForActorTab(),
       GetClientRect(kNewActorTabId, kOffscreenButton, button_bounds),
       CheckJsResult(kNewActorTabId, "() => offscreen_button_clicked", false),
       ExecuteAction(std::move(click_provider)),

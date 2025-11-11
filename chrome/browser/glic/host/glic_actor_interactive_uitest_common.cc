@@ -18,6 +18,7 @@
 #include "base/types/cxx23_to_underlying.h"
 #include "build/build_config.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_tab_data.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/browser_action_util.h"
@@ -553,7 +554,7 @@ MultiStep GlicActorUiTest::InitializeWithOpenGlicWindow() {
                OpenGlicWindow(GlicWindowMode::kAttached));
 }
 
-MultiStep GlicActorUiTest::GetPageContextFromFocusedTab() {
+MultiStep GlicActorUiTest::GetPageContextForActorTab() {
   return Steps(Do([&]() {
     GlicKeyedService* glic_service =
         GlicKeyedServiceFactory::GetGlicKeyedService(browser()->GetProfile());
@@ -563,27 +564,31 @@ MultiStep GlicActorUiTest::GetPageContextFromFocusedTab() {
 
     auto options = mojom::GetTabContextOptions::New();
     options->include_annotated_page_content = true;
-    FocusedTabData data = glic_service->sharing_manager().GetFocusedTabData();
-    if (data.focus()) {
-      FetchPageContext(
-          data.focus(), *options,
-          base::BindLambdaForTesting(
-              [&](base::expected<
-                  glic::mojom::GetContextResultPtr,
-                  page_content_annotations::FetchPageContextErrorDetails>
-                      result) {
-                mojo_base::ProtoWrapper& serialized_apc =
-                    *result.value()
-                         ->get_tab_context()
-                         ->annotated_page_data->annotated_page_content;
-                annotated_page_content_ =
-                    std::make_unique<AnnotatedPageContent>(
-                        serialized_apc.As<AnnotatedPageContent>().value());
-                run_loop.Quit();
-              }));
+    // TODO (crbug.com/458415347): Look into replacing GetContextFromActorForTab
+    // with an AKS::RequestTabObservation
+    EXPECT_NE(tab_handle_, TabHandle::Null())
+        << "GetPageContextForActorTab must be called after starting a task in "
+           "a tab, e.g. using StartActorTaskInNewTab";
+    glic_service->sharing_manager().GetContextForActorFromTab(
+        tab_handle_, *options.get(),
+        base::BindLambdaForTesting([&](GlicGetContextResult result) {
+          if (result.has_value()) {
+            mojo_base::ProtoWrapper& serialized_apc =
+                *result.value()
+                     ->get_tab_context()
+                     ->annotated_page_data->annotated_page_content;
+            annotated_page_content_ = std::make_unique<AnnotatedPageContent>(
+                serialized_apc.As<AnnotatedPageContent>().value());
+            actor::ActorTabData* tab_data =
+                actor::ActorTabData::From(tab_handle_.Get());
+            if (tab_data) {
+              tab_data->DidObserveContent(*annotated_page_content_);
+            }
+          }
+          run_loop.Quit();
+        }));
 
-      run_loop.Run();
-    }
+    run_loop.Run();
   }));
 }
 
@@ -637,7 +642,7 @@ const std::optional<ActionsResult>& GlicActorUiTest::last_execution_result()
 }
 int32_t GlicActorUiTest::SearchAnnotatedPageContent(std::string_view label) {
   CHECK(annotated_page_content_)
-      << "An observation must be made with GetPageContextFromFocusedTab "
+      << "An observation must be made with GetPageContextForActorTab "
          "before searching annotated page content.";
 
   // Traverse the APC in depth-first preorder, returning the first node that

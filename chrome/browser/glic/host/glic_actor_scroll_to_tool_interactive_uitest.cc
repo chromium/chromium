@@ -77,7 +77,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorScrollToToolUiTest, FailsOnInvalidNodeID) {
 
   RunTestSequence(InitializeWithOpenGlicWindow(),
                   StartActorTaskInNewTab(task_url, kNewActorTabId),
-                  GetPageContextFromFocusedTab(),
+                  GetPageContextForActorTab(),
                   ExecuteScrollToActionWithNodeId(
                       /*query_selector=*/"",
                       actor::mojom::ActionResultCode::kInvalidDomNodeId),
@@ -94,7 +94,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorScrollToToolUiTest, ScrollsToValidNodeID) {
   RunTestSequence(
       InitializeWithOpenGlicWindow(),
       StartActorTaskInNewTab(task_url, kNewActorTabId),
-      GetPageContextFromFocusedTab(),
+      GetPageContextForActorTab(),
 
       // Scroll to an element already in the viewport.
       ScrollToAction(kInViewportLabel),
@@ -126,7 +126,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorScrollToToolUiTest,
 
   RunTestSequence(InitializeWithOpenGlicWindow(),
                   StartActorTaskInNewTab(task_url, kNewActorTabId),
-                  GetPageContextFromFocusedTab(),
+                  GetPageContextForActorTab(),
                   ScrollToAction(kFixedElementLabel),
                   WaitForJsResult(kNewActorTabId, "() => window.scrollX", 0),
                   WaitForJsResult(kNewActorTabId, "() => window.scrollY", 0));
@@ -139,7 +139,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorScrollToToolUiTest, DisplayNoneDoesNotScroll) {
   RunTestSequence(
       InitializeWithOpenGlicWindow(),
       StartActorTaskInNewTab(task_url, kNewActorTabId),
-      GetPageContextFromFocusedTab(),
+      GetPageContextForActorTab(),
       ExecuteScrollToActionWithNodeId(
           "#display-none", actor::mojom::ActionResultCode::kElementOffscreen),
       WaitForJsResult(kNewActorTabId, "() => window.scrollX", 0),
@@ -153,7 +153,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorScrollToToolUiTest,
 
   RunTestSequence(InitializeWithOpenGlicWindow(),
                   StartActorTaskInNewTab(task_url, kNewActorTabId),
-                  GetPageContextFromFocusedTab(),
+                  GetPageContextForActorTab(),
                   ExecuteScrollToActionWithNodeId(
                       "#offscreen-fixed",
                       actor::mojom::ActionResultCode::kElementOffscreen),
