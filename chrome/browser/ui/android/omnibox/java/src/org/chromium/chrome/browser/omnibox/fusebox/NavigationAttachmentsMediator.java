@@ -40,6 +40,7 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.base.Clipboard;
+import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.ListObservable;
 import org.chromium.ui.modelutil.MVCListAdapter;
@@ -419,7 +420,7 @@ class NavigationAttachmentsMediator {
         var i =
                 new Intent(Intent.ACTION_OPEN_DOCUMENT)
                         .addCategory(Intent.CATEGORY_OPENABLE)
-                        .setType("*/*")
+                        .setType(MimeTypeUtils.PDF_MIME_TYPE)
                         .putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
                         .addFlags(
                                 Intent.FLAG_GRANT_READ_URI_PERMISSION

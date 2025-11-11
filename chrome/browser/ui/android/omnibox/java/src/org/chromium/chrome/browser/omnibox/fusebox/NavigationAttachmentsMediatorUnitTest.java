@@ -19,6 +19,7 @@ import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.view.LayoutInflater;
@@ -30,6 +31,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -47,6 +50,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.Clipboard;
+import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.MVCListAdapter;
@@ -70,6 +74,8 @@ public class NavigationAttachmentsMediatorUnitTest {
     @Mock private Tab mTab1;
     @Mock private Tab mTab2;
     @Mock private WebContents mWebContents;
+
+    @Captor private ArgumentCaptor<Intent> mIntentCaptor;
 
     private ActivityController<TestActivity> mActivityController;
     private Context mContext;
@@ -378,6 +384,13 @@ public class NavigationAttachmentsMediatorUnitTest {
         doReturn(false).when(mComposeBoxQueryControllerBridge).isCreateImagesEligible();
         recreateMediator();
         assertFalse(mModel.get(NavigationAttachmentsProperties.POPUP_CREATE_IMAGE_BUTTON_VISIBLE));
+    }
+
+    @Test
+    public void onFilePickerClicked_setsMimeType() {
+        mModel.get(NavigationAttachmentsProperties.POPUP_FILE_CLICKED).run();
+        verify(mWindowAndroid).showCancelableIntent(mIntentCaptor.capture(), any(), any());
+        assertEquals(MimeTypeUtils.PDF_MIME_TYPE, mIntentCaptor.getValue().getType());
     }
 
     @Test
