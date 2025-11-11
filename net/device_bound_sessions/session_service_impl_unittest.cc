@@ -1500,7 +1500,7 @@ TEST_F(SessionServiceImplTest, EmptyResponseOnRegistration) {
   EXPECT_FALSE(maybe_deferral);
 
   histograms.ExpectUniqueSample("Net.DeviceBoundSessions.RegistrationResult",
-                                SessionError::kInvalidConfigJson, 1);
+                                SessionError::kEmptySessionConfig, 1);
 }
 
 TEST_F(SessionServiceImplTest, EmptyResponseOnRefresh) {

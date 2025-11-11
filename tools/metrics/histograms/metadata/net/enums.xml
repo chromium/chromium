@@ -272,7 +272,7 @@ chromium-metrics-reviews@google.com.
       label="Registration in a context that cannot set bound cookies"/>
   <int value="38" label="Network error"/>
   <int value="39" label="Proxy error"/>
-  <int value="40" label="Invalid configuration JSON"/>
+  <int value="40" label="Invalid configuration JSON (DEPRECATED 2)"/>
   <int value="41" label="Empty session config for registration"/>
   <int value="42" label="Invalid credentials configuration"/>
   <int value="43" label="Invalid credentials - empty or non-cookie type"/>
@@ -319,6 +319,7 @@ chromium-metrics-reviews@google.com.
   <int value="76"
       label="Site-scoped session has mismatch between host pattern and site"/>
   <int value="77" label="Signing quota exceeded"/>
+  <int value="78" label="Invalid configuration JSON"/>
 </enum>
 
 <!-- LINT.ThenChange(//net/device_bound_sessions/session_error.h:DeviceBoundSessionError) -->

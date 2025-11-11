@@ -857,7 +857,7 @@ SessionError::ErrorType SessionServiceImpl::OnRegistrationCompleteInternal(
     return registration_result.error().type;
   } else if (registration_result.is_no_session_config_change()) {
     // No config changes is not allowed at registration.
-    return SessionError::kInvalidConfigJson;
+    return SessionError::kEmptySessionConfig;
   }
 
   std::unique_ptr<Session> session = registration_result.TakeSession();
