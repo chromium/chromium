@@ -1852,7 +1852,7 @@
     {
         "name": "kotlinx-coroutines-core-jvm",
         "group": "org.jetbrains.kotlinx",
-        "version": "1.10.2"
+        "version": "1.8.1"
     },
     {
         "name": "kotlinx-coroutines-guava",

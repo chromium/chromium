@@ -349,6 +349,8 @@ class ChromiumDepGraph {
         String[] configNames = [
                 'compile',
                 'compileLatest',
+                'supportsAndroidCompile',
+                'supportsAndroidCompileLatest',
                 'buildCompile',
                 'buildCompileLatest',
                 'testCompile',
@@ -399,6 +401,7 @@ class ChromiumDepGraph {
         Set<String> androidTestIds = [] as Set
         Set<String> buildIds = [] as Set
         Set<String> autorolledIds = [] as Set
+        Set<String> supportsIds = [] as Set
         resolvedDeps.each { key, values ->
             if (key.startsWith('compile')) {
                 compileIds.addAll(values);
@@ -408,6 +411,8 @@ class ChromiumDepGraph {
                 androidTestIds.addAll(values);
             } else if (key.startsWith('build')) {
                 buildIds.addAll(values);
+            } else if (key.startsWith('supportsAndroid')) {
+                supportsIds.addAll(values);
             } else {
                 assert false : 'Unknown config ' + key
             }
@@ -418,12 +423,12 @@ class ChromiumDepGraph {
 
         dependencies.each { id, dep ->
             dep.visible = topLevelIds.contains(id)
-            dep.isRobolectric = !anyContains(id, compileIds, androidTestIds, buildIds)
-            dep.testOnly = !anyContains(id, compileIds, buildIds)
-            dep.supportsAndroid = anyContains(id, compileIds, androidTestIds)
-            dep.requiresAndroid = dep.supportsAndroid && !anyContains(id, buildIds)
+            dep.isRobolectric = anyContains(id, testIds)
+            dep.testOnly = anyContains(id, androidTestIds, testIds)
+            dep.supportsAndroid = anyContains(id, compileIds, androidTestIds, supportsIds)
+            dep.requiresAndroid = dep.supportsAndroid && !anyContains(id, buildIds, supportsIds)
             dep.usedInBuild = anyContains(id, buildIds)
-            dep.isShipped = anyContains(id, compileIds)
+            dep.isShipped = dep.supportsAndroid && !dep.testOnly
             dep.isAutorolled = anyContains(id, autorolledIds)
         }
 

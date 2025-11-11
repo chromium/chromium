@@ -25,8 +25,7 @@ dependencies {
     // Use testCompile to have requires_robolectric = true set on targets.
     testCompileLatest 'org.robolectric:robolectric:+'
 
-    compileLatest 'com.google.guava:guava:+'
-    buildCompileLatest 'com.google.guava:guava:+'
+    supportsAndroidCompileLatest 'com.google.guava:guava:+'
 
     // Libraries from Google:
     compileLatest 'com.google.protobuf:protobuf-javalite:+'
@@ -82,17 +81,17 @@ dependencies {
     buildCompileLatest 'com.android.extensions.xr:extensions-xr:+'
 
     // Needed by internal targets
-    compileLatest 'com.google.auto.service:auto-service-annotations:+'
-    compileLatest 'com.google.code.findbugs:jsr305:+'
-    compileLatest 'com.google.j2objc:j2objc-annotations:+'
-    compileLatest 'com.squareup.okio:okio-jvm:+'
-    compileLatest 'io.reactivex.rxjava2:rxandroid:+'
-    compileLatest 'org.checkerframework:checker-qual:+'
-    compileLatest 'org.checkerframework:checker-util:+'
-    compileLatest 'org.codehaus.mojo:animal-sniffer-annotations:+'
+    supportsAndroidCompileLatest 'com.google.auto.service:auto-service-annotations:+'
+    supportsAndroidCompileLatest 'com.google.code.findbugs:jsr305:+'
+    supportsAndroidCompileLatest 'com.google.j2objc:j2objc-annotations:+'
+    supportsAndroidCompileLatest 'com.squareup.okio:okio-jvm:+'
+    supportsAndroidCompileLatest 'io.reactivex.rxjava2:rxandroid:+'
+    supportsAndroidCompileLatest 'org.checkerframework:checker-qual:+'
+    supportsAndroidCompileLatest 'org.checkerframework:checker-util:+'
+    supportsAndroidCompileLatest 'org.codehaus.mojo:animal-sniffer-annotations:+'
+    supportsAndroidCompileLatest 'org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:+'
+    supportsAndroidCompileLatest 'org.reactivestreams:reactive-streams:+'
     compileLatest 'org.jetbrains.kotlinx:kotlinx-coroutines-android:+'
-    compileLatest 'org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:+'
-    compileLatest 'org.reactivestreams:reactive-streams:+'
 }
 
 task setUpRepository(type: BuildConfigGenerator) {

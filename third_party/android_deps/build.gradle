@@ -12,10 +12,6 @@ repositories {
 dependencies {
     // Note about the configuration names: they are defined in buildSrc/ChromiumPlugin
 
-    // buildCompile needed because we add a custom dep of onto this from guava
-    // to fix "unknown enum constant ReflectionSupport$Level.FULL".
-    buildCompile 'com.google.j2objc:j2objc-annotations:2.8'
-
     // Needed by androidx.room, but by default it selects a lower version that
     // does not exist in CIPD.
     compile 'org.jetbrains.kotlinx:atomicfu-jvm:0.23.2'
