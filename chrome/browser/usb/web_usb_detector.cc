@@ -22,10 +22,12 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/browser/ui/tab_contents/tab_contents_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/url_formatter/elide_url.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/device_service.h"
@@ -140,23 +142,27 @@ class WebUsbNotificationDelegate : public TabStripModelObserver,
     disposition_ = WEBUSB_NOTIFICATION_CLOSED_CLICKED;
 
     // If the URL is already open, activate that tab.
-    content::WebContents* tab_to_activate = nullptr;
-    Browser* browser = nullptr;
-    auto& all_tabs = AllTabContentses();
-    for (auto it = all_tabs.begin(), end = all_tabs.end(); it != end; ++it) {
-      if (base::StartsWith(it->GetVisibleURL().spec(), landing_page_.spec(),
+    tabs::TabInterface* tab_to_activate = nullptr;
+    BrowserWindowInterface* browser = nullptr;
+    tabs::ForEachTabInterface([&](tabs::TabInterface* tab) {
+      content::WebContents* const tab_contents = tab->GetContents();
+      if (base::StartsWith(tab_contents->GetVisibleURL().spec(),
+                           landing_page_.spec(),
                            base::CompareCase::INSENSITIVE_ASCII) &&
-          (!tab_to_activate || it->GetLastActiveTimeTicks() >
-                                   tab_to_activate->GetLastActiveTimeTicks())) {
-        tab_to_activate = *it;
-        browser = it.browser();
+          (!tab_to_activate ||
+           tab_contents->GetLastActiveTimeTicks() >
+               tab_to_activate->GetContents()->GetLastActiveTimeTicks())) {
+        tab_to_activate = tab;
+        browser = tab->GetBrowserWindowInterface();
+        return false;
       }
-    }
+      return true;
+    });
     if (tab_to_activate) {
-      TabStripModel* tab_strip_model = browser->tab_strip_model();
+      TabStripModel* tab_strip_model = browser->GetTabStripModel();
       tab_strip_model->ActivateTabAt(
-          tab_strip_model->GetIndexOfWebContents(tab_to_activate));
-      browser->window()->Activate();
+          tab_strip_model->GetIndexOfTab(tab_to_activate));
+      browser->GetWindow()->Activate();
       return;
     }
 

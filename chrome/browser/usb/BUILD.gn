@@ -119,6 +119,7 @@ source_set("impl") {
       "//chrome/app/vector_icons",
       "//chrome/browser:browser_process",
       "//chrome/browser/ui:browser_tab_strip",
+      "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/tab_contents",
       "//chrome/browser/ui/tabs:tab_strip",
       "//components/url_formatter",

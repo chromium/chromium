@@ -54,6 +54,7 @@
 #include "chrome/browser/serial/serial_chooser_context_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/page_info/page_info_infobar_delegate.h"
 #include "chrome/browser/ui/safety_hub/notification_permission_review_service_factory.h"
 #include "chrome/browser/ui/tab_contents/tab_contents_iterator.h"
@@ -98,6 +99,7 @@
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/browsing_data_remover.h"
@@ -1776,9 +1778,8 @@ void SiteSettingsHandler::HandleSetOriginPermissions(
   // Info bar should only be shown on pages with the same origin and
   // on the same profile, or on any pages where changes to a double-keyed
   // setting occurred.
-  auto& all_tabs = AllTabContentses();
-  for (auto it = all_tabs.begin(); it != all_tabs.end(); ++it) {
-    content::WebContents* const web_contents = *it;
+  tabs::ForEachTabInterface([&](tabs::TabInterface* tab) {
+    content::WebContents* const web_contents = tab->GetContents();
     const GURL tab_url = web_contents->GetLastCommittedURL();
     const bool tab_is_same_origin = url::IsSameOriginWith(origin, tab_url);
     const bool tab_might_embed_origin = std::ranges::any_of(
@@ -1787,13 +1788,14 @@ void SiteSettingsHandler::HandleSetOriginPermissions(
         });
 
     if ((tab_is_same_origin || tab_might_embed_origin) &&
-        it.browser()->profile()->GetOriginalProfile() ==
+        tab->GetBrowserWindowInterface()->GetProfile()->GetOriginalProfile() ==
             profile_->GetOriginalProfile()) {
       infobars::ContentInfoBarManager* const infobar_manager =
           infobars::ContentInfoBarManager::FromWebContents(web_contents);
       PageInfoInfoBarDelegate::Create(infobar_manager);
     }
-  }
+    return true;
+  });
 }
 
 void SiteSettingsHandler::HandleResetCategoryPermissionForPattern(

@@ -55,6 +55,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/user_education/views/help_bubble_view.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
@@ -612,29 +613,10 @@ void SimulateClickOnElement(content::WebContents* contents,
 
 void RunForAllTabs(
     base::RepeatingCallback<void(content::WebContents&)> action) {
-  // Iterating this can cause use-after-frees if the action causes changes to
-  // the web contents (or use a RunLoop to wait for something like
-  // `CompletePageLoadForAllWebContents`). So instead, loop through to the next
-  // one we 'haven't seen yet' each time.
-  absl::flat_hash_set<content::WebContents*> processed_tabs;
-  auto get_next_unvisited_web_contents = [&]() -> content::WebContents* {
-    for (content::WebContents* web_contents : AllTabContentses()) {
-      if (web_contents->IsBeingDestroyed()) {
-        continue;
-      }
-      if (processed_tabs.contains(web_contents)) {
-        continue;
-      }
-      processed_tabs.insert(web_contents);
-      return web_contents;
-    }
-    return nullptr;
-  };
-  content::WebContents* web_contents = get_next_unvisited_web_contents();
-  for (; web_contents != nullptr;
-       web_contents = get_next_unvisited_web_contents()) {
-    action.Run(*web_contents);
-  }
+  tabs::ForEachTabInterface([&action](tabs::TabInterface* tab) {
+    action.Run(*tab->GetContents());
+    return true;
+  });
 }
 
 void CompletePageLoadForAllWebContents() {
