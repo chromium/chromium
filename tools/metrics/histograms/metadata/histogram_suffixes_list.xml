@@ -901,23 +901,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="PasswordProtection.Verdict"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="PrerenderSource" separator="_" ordering="prefix">
-  <suffix name="" label="All prerenders."/>
-  <suffix name="gws" label="GWS triggered prerender."/>
-  <suffix name="navigationpredictor"
-      label="Triggered by the NavigationPredictor."/>
-  <suffix name="none"
-      label="No origin; in the case of prefetch TTFCP this is when no
-             prefetch was involved."/>
-  <suffix name="web" label="Link triggered prerender."/>
-  <suffix name="webcross"
-      label="Link triggered prerender, rel=prerender, cross domain."/>
-  <suffix name="webnext" label="Link triggered prerender, rel=next."/>
-  <suffix name="websame"
-      label="Link triggered prerender, rel=prerender, same domain."/>
-  <affected-histogram name="Prerender.FinalStatus"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="QuicConnectionType" separator="">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>

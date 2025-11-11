@@ -3903,15 +3903,6 @@ chromium-metrics-reviews@google.com.
   <token key="PreloadingTriggerType" variants="PreloadingTriggerType"/>
 </histogram>
 
-<histogram name="Prerender.FinalStatus" enum="PrerenderFinalStatus"
-    expires_after="2026-04-12">
-  <owner>ryansturm@chromium.org</owner>
-  <owner>tbansal@chromium.org</owner>
-  <summary>
-    Final status for prerender pages - either success, or why it was canceled.
-  </summary>
-</histogram>
-
 <histogram name="Prerender.IsPrerenderingSRPUrl.{PreloadingEmbedderType}"
     enum="Boolean" expires_after="2026-03-22">
   <owner>robertlin@chromium.org</owner>
@@ -3950,6 +3941,32 @@ chromium-metrics-reviews@google.com.
     swapped in as the main page load or to when the pre-loaded page is fully
     loaded, whichever came first. Recorded when the swap occurs, only on iOS.
   </summary>
+</histogram>
+
+<histogram name="Prerender.{PrerenderSource}FinalStatus"
+    enum="PrerenderFinalStatus" expires_after="2026-04-12">
+  <owner>ryansturm@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <summary>
+    Final status for prerender pages - either success, or why it was canceled.
+
+    {PrerenderSource}
+  </summary>
+  <token key="PrerenderSource">
+    <variant name="" summary="All prerenders."/>
+    <variant name="gws_" summary="GWS triggered prerender."/>
+    <variant name="navigationpredictor_"
+        summary="Triggered by the NavigationPredictor."/>
+    <variant name="none_"
+        summary="No origin; in the case of prefetch TTFCP this is when no
+                 prefetch was involved."/>
+    <variant name="web_" summary="Link triggered prerender."/>
+    <variant name="webcross_"
+        summary="Link triggered prerender, rel=prerender, cross domain."/>
+    <variant name="webnext_" summary="Link triggered prerender, rel=next."/>
+    <variant name="websame_"
+        summary="Link triggered prerender, rel=prerender, same domain."/>
+  </token>
 </histogram>
 
 </histograms>
