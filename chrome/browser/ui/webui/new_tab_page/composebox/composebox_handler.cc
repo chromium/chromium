@@ -14,12 +14,14 @@
 #include "base/time/time.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/webui/searchbox/contextual_searchbox_handler.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
 #include "components/lens/lens_url_utils.h"
 #include "components/metrics/metrics_provider.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "content/public/browser/page_navigator.h"
 #include "net/base/url_util.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
+#include "ui/base/models/menu_model.h"
 #include "ui/base/window_open_disposition.h"
 
 namespace {
@@ -185,6 +187,13 @@ void ComposeboxHandler::ClearFiles() {
   if (aim_tool_mode_ ==
       omnibox::ChromeAimToolsAndModels::TOOL_MODE_IMAGE_GEN_UPLOAD) {
     aim_tool_mode_ = omnibox::ChromeAimToolsAndModels::TOOL_MODE_IMAGE_GEN;
+  }
+}
+
+void ComposeboxHandler::ShowContextMenu(const gfx::Point& point) {
+  auto embedder = web_ui_controller_->embedder();
+  if (embedder) {
+    embedder->ShowContextMenu(point, nullptr);
   }
 }
 

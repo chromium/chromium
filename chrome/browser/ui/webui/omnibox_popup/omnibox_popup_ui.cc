@@ -211,8 +211,9 @@ void OmniboxPopupUI::CreatePageHandler(
         std::move(pending_page_handler), std::move(pending_page),
         std::move(pending_searchbox_handler), profile_,
         web_ui()->GetWebContents());
-  }
 
-  // TODO(crbug.com/435288212): Move searchbox mojom to use factory pattern.
-  composebox_handler_->SetPage(std::move(pending_searchbox_page));
+    // TODO(crbug.com/435288212): Move searchbox mojom to use factory pattern.
+    composebox_handler_->SetPage(std::move(pending_searchbox_page));
+    composebox_handler_->SetWebUIController(this);
+  }
 }

@@ -19,6 +19,7 @@ source_set("composebox") {
     "//chrome/browser/ui/omnibox",
     "//chrome/browser/ui/webui/new_tab_page/composebox/variations",
     "//chrome/browser/ui/webui/searchbox",
+    "//chrome/browser/ui/webui/top_chrome:top_chrome",
     "//components/application_locale_storage",
     "//components/contextual_search:public",
     "//components/lens",

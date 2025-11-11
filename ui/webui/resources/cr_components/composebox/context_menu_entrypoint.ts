@@ -154,7 +154,13 @@ export class ContextMenuEntrypointElement extends
 
   protected onEntrypointClick_() {
     if (this.entrypointName === 'Omnibox') {
-      this.fire('context-menu-entrypoint-click');
+      const entrypoint =
+          this.shadowRoot.querySelector<HTMLElement>('#entrypoint');
+      assert(entrypoint);
+      this.fire('context-menu-entrypoint-click', {
+        x: entrypoint.getBoundingClientRect().left,
+        y: entrypoint.getBoundingClientRect().bottom,
+      });
       return;
     }
 

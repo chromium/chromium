@@ -197,17 +197,12 @@ export class OmniboxPopupAppElement extends I18nMixinLit
     this.hasSecondarySide = e.detail.value;
   }
 
-  protected onContextualEntryPointClicked_(e: Event) {
+  protected onContextualEntryPointClicked_(
+      e: CustomEvent<{x: number, y: number}>) {
     e.preventDefault();
-    const carousel =
-        this.shadowRoot.querySelector('contextual-entrypoint-and-carousel');
-    assert(!!carousel);
-    const contextEntrypoint =
-        carousel.shadowRoot.querySelector('#contextEntrypoint');
-    assert(!!contextEntrypoint);
     const point = {
-      x: contextEntrypoint.getBoundingClientRect().left,
-      y: contextEntrypoint.getBoundingClientRect().bottom,
+      x: e.detail.x,
+      y: e.detail.y,
     };
     this.pageHandler_.showContextMenu(point);
   }
