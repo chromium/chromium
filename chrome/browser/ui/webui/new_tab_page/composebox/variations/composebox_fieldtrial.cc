@@ -259,6 +259,10 @@ const base::FeatureParam<bool> kShowCreateImageTool(&kNtpComposebox,
 
 const base::FeatureParam<bool> kShowSubmit(&kNtpComposebox, "ShowSubmit", true);
 
+const base::FeatureParam<bool> kShowSmartCompose(&kNtpComposebox,
+                                                 "ShowSmartCompose",
+                                                 true);
+
 const base::FeatureParam<bool> kForceToolsAndModels(&kNtpComposebox,
                                                     "ForceToolsAndModels",
                                                     false);
