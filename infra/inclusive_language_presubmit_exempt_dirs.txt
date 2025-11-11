@@ -6,6 +6,7 @@ ash/webui/camera_app_ui/resources/js/lib
 base
 base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base
 base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/containers
+base/allocator/partition_allocator/src/partition_alloc/shim
 base/android
 base/android/java/src/org/chromium/base
 base/containers
@@ -120,7 +121,6 @@ components/autofill/core/browser/form_parsing
 components/cast/named_message_port_connector
 components/cbor
 components/certificate_transparency
-components/component_updater/installer_policies
 components/domain_reliability
 components/enterprise/obfuscation/core
 components/gcm_driver
