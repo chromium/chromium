@@ -28,7 +28,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/tabs/public/mock_tab_interface.h"
-#include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_renderer_host.h"
 #include "content/test/test_web_contents.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -49,6 +49,16 @@ class MockWebContents : public content::TestWebContents {
   explicit MockWebContents(content::BrowserContext* browser_context);
   ~MockWebContents() override;
 
+  static std::unique_ptr<MockWebContents> Create(
+      content::BrowserContext* browser_context) {
+    auto mock_web_contents = std::make_unique<MockWebContents>(browser_context);
+    mock_web_contents->Init(
+        CreateParams(browser_context,
+                     content::SiteInstance::Create(browser_context)),
+        blink::FramePolicy());
+    return mock_web_contents;
+  }
+
   MOCK_METHOD(base::ScopedClosureRunner,
               IncrementCapturerCount,
               (const gfx::Size&, bool, bool, bool),
@@ -64,13 +74,18 @@ ACTION(ReturnNewScopedClosureRunner) {
   return base::ScopedClosureRunner(base::DoNothing());
 }
 
-class ActorUiTabControllerTest : public testing::Test {
+class ActorUiTabControllerTest : public content::RenderViewHostTestHarness {
  public:
-  ActorUiTabControllerTest() : tab_strip_model_(&delegate_, profile()) {}
+  ActorUiTabControllerTest()
+      : content::RenderViewHostTestHarness(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   ~ActorUiTabControllerTest() override = default;
 
   // testing::Test:
   void SetUp() override {
+    content::RenderViewHostTestHarness::SetUp();
+    tab_strip_model_ = std::make_unique<TabStripModel>(
+        &delegate_, static_cast<TestingProfile*>(browser_context()));
     scoped_feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/{{features::kGlicHandoffButtonHiddenClientControl,
                                {}},
@@ -78,17 +93,16 @@ class ActorUiTabControllerTest : public testing::Test {
                                {{features::kGlicActorUiHandoffButtonName,
                                  "true"},
                                 {features::kGlicActorUiOverlayName, "true"}}}},
-        /*disabled_features=*/{features::kGlicActorInternalPopups});
-    profile_ = TestingProfile::Builder().Build();
+        /*disabled_features=*/{});
 
     ON_CALL(mock_tab_, GetBrowserWindowInterface())
         .WillByDefault(Return(&mock_browser_window_interface_));
     ON_CALL(mock_tab_, GetUnownedUserDataHost())
         .WillByDefault(::testing::ReturnRef(user_data_host_));
     ON_CALL(mock_browser_window_interface_, GetProfile())
-        .WillByDefault(Return(profile()));
+        .WillByDefault(Return(static_cast<TestingProfile*>(browser_context())));
     ON_CALL(mock_browser_window_interface_, GetTabStripModel())
-        .WillByDefault(Return(&tab_strip_model_));
+        .WillByDefault(Return(tab_strip_model_.get()));
     ON_CALL(mock_browser_window_interface_, GetUnownedUserDataHost)
         .WillByDefault(ReturnRef(user_data_host_));
 
@@ -97,7 +111,8 @@ class ActorUiTabControllerTest : public testing::Test {
     ON_CALL(*immersive_mode_controller(), IsEnabled())
         .WillByDefault(Return(false));
 
-    actor_keyed_service_ = std::make_unique<ActorKeyedServiceFake>(profile());
+    actor_keyed_service_ = std::make_unique<ActorKeyedServiceFake>(
+        static_cast<TestingProfile*>(browser_context()));
     std::unique_ptr<MockActorUiStateManager> ausm =
         std::make_unique<MockActorUiStateManager>();
     actor_keyed_service_->SetActorUiStateManagerForTesting(std::move(ausm));
@@ -112,9 +127,11 @@ class ActorUiTabControllerTest : public testing::Test {
     border_view_controller_ = std::make_unique<ActorBorderViewController>(
         &mock_browser_window_interface_);
 
-    mock_web_contents_ = std::make_unique<MockWebContents>(profile_.get());
-    ON_CALL(mock_tab_, GetContents)
-        .WillByDefault(Return(mock_web_contents_.get()));
+    auto mock_web_contents = MockWebContents::Create(browser_context());
+    mock_web_contents_ = mock_web_contents.get();
+    SetContents(std::move(mock_web_contents));
+
+    ON_CALL(mock_tab_, GetContents).WillByDefault(Return(mock_web_contents_));
     ON_CALL(mock_tab_, IsSelected).WillByDefault(Return(true));
     ON_CALL(*mock_web_contents_, IncrementCapturerCount(_, _, _, _))
         .WillByDefault(ReturnNewScopedClosureRunner());
@@ -125,7 +142,7 @@ class ActorUiTabControllerTest : public testing::Test {
     // Creates task for testing.
     task_id_ = actor_keyed_service()->CreateTaskForTesting();
     base::RunLoop loop;
-    actor_keyed_service()->GetTask(task_id_)->AddTab(
+    actor_keyed_service_->GetTask(task_id_)->AddTab(
         mock_tab_.GetHandle(),
         base::BindLambdaForTesting([&](::actor::mojom::ActionResultPtr result) {
           EXPECT_TRUE(IsOk(*result));
@@ -165,18 +182,24 @@ class ActorUiTabControllerTest : public testing::Test {
     immersive_mode_controller_.reset();
     actor_keyed_service_->Shutdown();
     actor_keyed_service_.reset();
-    testing::Test::TearDown();
+    tab_strip_model_.reset();
+
+    testing::Mock::VerifyAndClear(&mock_tab_);
+    mock_web_contents_ = nullptr;
+    content::RenderViewHostTestHarness::TearDown();
+  }
+
+  std::unique_ptr<content::BrowserContext> CreateBrowserContext() override {
+    return TestingProfile::Builder().Build();
   }
 
   TaskId task_id() { return task_id_; }
 
-  TestingProfile* profile() { return profile_.get(); }
-
   MockTabInterface& mock_tab() { return mock_tab_; }
 
   void Debounce() {
-    task_environment_.FastForwardBy(features::kGlicActorUiDebounceTimer.Get() +
-                                    base::Milliseconds(1));
+    task_environment()->FastForwardBy(
+        features::kGlicActorUiDebounceTimer.Get() + base::Milliseconds(1));
   }
 
  protected:
@@ -213,13 +236,11 @@ class ActorUiTabControllerTest : public testing::Test {
           std::move(callback).Run();
         });
   }
-  content::BrowserTaskEnvironment task_environment_{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
   MockFunction<void(bool, ActorOverlayState, base::OnceClosure)>
       mock_overlay_callback_;
 
  private:
-  std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<ActorKeyedServiceFake> actor_keyed_service_;
   ::ui::UnownedUserDataHost user_data_host_;
   MockTabInterface mock_tab_;
@@ -227,9 +248,9 @@ class ActorUiTabControllerTest : public testing::Test {
   std::unique_ptr<MockImmersiveModeController> immersive_mode_controller_;
   std::unique_ptr<ActorUiWindowController> window_controller_;
   TestTabStripModelDelegate delegate_;
-  TabStripModel tab_strip_model_;
+  std::unique_ptr<TabStripModel> tab_strip_model_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  std::unique_ptr<MockWebContents> mock_web_contents_;
+  raw_ptr<MockWebContents> mock_web_contents_ = nullptr;
   TaskId task_id_;
   std::unique_ptr<ActorUiTabController> actor_ui_tab_controller_;
   raw_ptr<MockActorUiTabControllerFactory> actor_ui_tab_controller_factory_ =
