@@ -423,9 +423,11 @@ void LocationBarView::Init() {
           page_action_items, page_actions::PageActionPropertiesProvider(),
           page_action_params));
 
+  const auto* aim_eligibility_service =
+      AimEligibilityServiceFactory::GetForProfile(profile_);
   const bool aim_omnibox_entrypoint_enabled =
       browser_ &&
-      base::FeatureList::IsEnabled(omnibox::kAiModeOmniboxEntryPoint);
+      OmniboxFieldTrial::IsAimOmniboxEntrypointEnabled(aim_eligibility_service);
   if (!page_action_container_->children().empty() &&
       aim_omnibox_entrypoint_enabled &&
       IsPageActionMigrated(PageActionIconType::kAiMode)) {
