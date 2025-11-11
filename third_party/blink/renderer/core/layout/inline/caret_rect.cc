@@ -5,7 +5,9 @@
 #include "third_party/blink/renderer/core/layout/inline/caret_rect.h"
 
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
+#include "third_party/blink/renderer/core/editing/ime/input_method_controller.h"
 #include "third_party/blink/renderer/core/editing/local_caret_rect.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
@@ -421,6 +423,13 @@ LocalCaretRect ComputeLocalCaretRect(const InlineCaretPosition& caret_position,
   if (!node || !IsEditable(*node)) {
     caret_shape = CaretShape::kBar;
   }
+
+  // Keep the caret-shape as bar during IME compositing.
+  const LocalFrame* local_frame = layout_object->GetFrame();
+  if (local_frame && local_frame->GetInputMethodController().HasComposition()) {
+    caret_shape = CaretShape::kBar;
+  }
+
   const PhysicalBoxFragment& container_fragment =
       caret_position.cursor.ContainerFragment();
   switch (caret_position.position_type) {
