@@ -128,6 +128,8 @@ void ResourceLoadInfoNotifierWrapper::NotifyResourceResponseReceived(
       response_head->remote_endpoint;
   // TODO: crbug.com/398226457 - Investigate request failure scenarios.
   resource_load_info_->proxy_chain = response_head->proxy_chain;
+  resource_load_info_->did_use_server_http_auth =
+      response_head->did_use_server_http_auth;
   if (response_head->headers) {
     resource_load_info_->http_status_code =
         response_head->headers->response_code();

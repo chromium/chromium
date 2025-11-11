@@ -131,4 +131,9 @@ struct ResourceLoadInfo {
 
   // The HTTP Status Code
   int32 http_status_code;
+
+  // True if HTTP authentication was used to fetch this response. This will not
+  // be set for proxy auth.
+  // This is part of an investigation so will be short lived. crbug.com/40269642
+  bool did_use_server_http_auth;
 };

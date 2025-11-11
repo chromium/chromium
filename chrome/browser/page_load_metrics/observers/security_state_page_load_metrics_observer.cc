@@ -148,6 +148,9 @@ void SecurityStatePageLoadMetricsObserver::OnComplete(
       page_load_metrics::PrerenderingState::kInPrerendering) {
     return;
   }
+  if (!security_state_tab_helper_) {
+    return;
+  }
 
   security_state::SafetyTipStatus safety_tip_status =
       security_state_tab_helper_->GetVisibleSecurityState()

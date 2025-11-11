@@ -750,6 +750,8 @@ static_library("browser") {
     "net/dns_probe_service_factory.h",
     "net/explicitly_allowed_network_ports_policy_handler.cc",
     "net/explicitly_allowed_network_ports_policy_handler.h",
+    "net/http_auth_cache_status.cc",
+    "net/http_auth_cache_status.h",
     "net/net_error_diagnostics_dialog.h",
     "net/net_error_tab_helper.cc",
     "net/net_error_tab_helper.h",
