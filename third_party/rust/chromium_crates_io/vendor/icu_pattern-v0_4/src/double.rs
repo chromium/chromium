@@ -454,7 +454,7 @@ impl ExactSizeIterator for DoublePlaceholderPatternIterator<'_> {
         ph_second.offset += initial_offset - 1;
         let store_len = self.store.len();
 
-        #[allow(clippy::comparison_chain)]
+        #[expect(clippy::comparison_chain)]
         if ph_first.offset < initial_offset {
             // No placeholders
             if initial_offset < store_len {

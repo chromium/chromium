@@ -36,13 +36,9 @@ use crate::Error;
 ///     pattern.iter().cmp(
 ///         [
 ///             PatternItem::Literal("Hello, "),
-///             PatternItem::Placeholder(MultiNamedPlaceholderKey(
-///                 "person0".into()
-///             )),
+///             PatternItem::Placeholder(MultiNamedPlaceholderKey("person0")),
 ///             PatternItem::Literal(" and "),
-///             PatternItem::Placeholder(MultiNamedPlaceholderKey(
-///                 "person1".into()
-///             )),
+///             PatternItem::Placeholder(MultiNamedPlaceholderKey("person1")),
 ///             PatternItem::Literal("!")
 ///         ]
 ///         .into_iter()
@@ -246,7 +242,7 @@ where
 /// use litemap::LiteMap;
 /// use writeable::TryWriteable;
 ///
-/// static placeholder_value_map: LiteMap<&str, usize, &[(&str, usize)]> =
+/// static PLACEHOLDER_VALUE_MAP: LiteMap<&str, usize, &[(&str, usize)]> =
 ///     LiteMap::from_sorted_store_unchecked(&[("seven", 11)]);
 ///
 /// // Note: String allocates, but this could be a non-allocating sink
@@ -254,7 +250,7 @@ where
 ///
 /// MultiNamedPlaceholderPattern::try_from_str("{seven}", Default::default())
 ///     .unwrap()
-///     .try_interpolate(&placeholder_value_map)
+///     .try_interpolate(&PLACEHOLDER_VALUE_MAP)
 ///     .try_write_to(&mut sink)
 ///     .unwrap()
 ///     .unwrap();

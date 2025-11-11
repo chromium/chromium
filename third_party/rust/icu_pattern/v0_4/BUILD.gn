@@ -22,7 +22,7 @@ cargo_crate("lib") {
     "//third_party/rust/chromium_crates_io/vendor/icu_pattern-v0_4/src/frontend/databake.rs",
     "//third_party/rust/chromium_crates_io/vendor/icu_pattern-v0_4/src/frontend/mod.rs",
     "//third_party/rust/chromium_crates_io/vendor/icu_pattern-v0_4/src/frontend/serde.rs",
-    "//third_party/rust/chromium_crates_io/vendor/icu_pattern-v0_4/src/implementations.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_pattern-v0_4/src/frontend/zerovec.rs",
     "//third_party/rust/chromium_crates_io/vendor/icu_pattern-v0_4/src/lib.rs",
     "//third_party/rust/chromium_crates_io/vendor/icu_pattern-v0_4/src/multi_named.rs",
     "//third_party/rust/chromium_crates_io/vendor/icu_pattern-v0_4/src/parser/error.rs",
@@ -38,7 +38,7 @@ cargo_crate("lib") {
   cargo_pkg_name = "icu_pattern"
   cargo_pkg_description = "ICU pattern utilities"
   cargo_pkg_repository = "https://github.com/unicode-org/icu4x"
-  cargo_pkg_version = "0.4.0"
+  cargo_pkg_version = "0.4.1"
 
   allow_unsafe = true
 

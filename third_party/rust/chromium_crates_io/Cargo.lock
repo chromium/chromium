@@ -576,11 +576,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "icu_pattern"
-version = "0.4.0"
+version = "0.4.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "displaydoc",
  "either",
+ "serde",
  "writeable",
  "yoke",
  "zerovec",
