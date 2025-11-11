@@ -49,6 +49,24 @@ source_set("proto_wrappers") {
   ]
 }
 
+source_set("ios_smart_tab_grouping_proto_wrapper") {
+  sources = [
+    "ios_smart_tab_grouping_request_wrapper.h",
+    "ios_smart_tab_grouping_request_wrapper.mm",
+  ]
+
+  deps = [
+    ":proto_wrappers",
+    "//base",
+    "//components/optimization_guide/proto:optimization_guide_proto_gen",
+    "//ios/chrome/browser/intelligence/features",
+    "//ios/chrome/browser/intelligence/persist_tab_context/model",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/web/public",
+  ]
+}
+
 source_set("page_context_metrics") {
   sources = [
     "page_context_wrapper_metrics.h",
