@@ -33,6 +33,7 @@
 #import "components/prefs/pref_service.h"
 #import "components/search_engines/template_url_service.h"
 #import "components/sessions/core/tab_restore_service.h"
+#import "components/sharing_message/features.h"
 #import "components/signin/ios/browser/account_consistency_service.h"
 #import "components/signin/public/base/signin_pref_names.h"
 #import "components/strike_database/strike_database.h"
@@ -43,6 +44,8 @@
 #import "ios/chrome/browser/browsing_data/model/browsing_data_remove_mask.h"
 #import "ios/chrome/browser/browsing_data/model/system_snapshots_cleaner.h"
 #import "ios/chrome/browser/crash_report/model/crash_helper.h"
+#import "ios/chrome/browser/cross_platform_promos/model/cross_platform_promos_service.h"
+#import "ios/chrome/browser/cross_platform_promos/model/cross_platform_promos_service_factory.h"
 #import "ios/chrome/browser/external_files/model/external_file_remover.h"
 #import "ios/chrome/browser/external_files/model/external_file_remover_factory.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
@@ -461,6 +464,15 @@ void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
     HttpsUpgradeService* https_upgrade_service =
         HttpsUpgradeServiceFactory::GetForProfile(profile_);
     https_upgrade_service->ClearAllowlist(delete_begin, delete_end);
+
+    // Clear cross-platform promos data.
+    if (IsMobilePromoOnDesktopNotificationsEnabled()) {
+      CrossPlatformPromosService* cross_platform_promos_service =
+          CrossPlatformPromosServiceFactory::GetForProfile(profile_);
+      if (cross_platform_promos_service) {
+        cross_platform_promos_service->ClearData();
+      }
+    }
   }
 
   auto io_thread_task_runner = web::GetIOThreadTaskRunner({});

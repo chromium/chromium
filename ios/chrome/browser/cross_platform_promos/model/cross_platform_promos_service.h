@@ -29,6 +29,9 @@ class CrossPlatformPromosService : public KeyedService {
   // Called when the application enters the foreground.
   void OnApplicationWillEnterForeground();
 
+  // Clears the prefs used by this service.
+  void ClearData();
+
  private:
   // Records the current day as active, and updates the pref that stores the
   // 16th most recent day that the user was active.

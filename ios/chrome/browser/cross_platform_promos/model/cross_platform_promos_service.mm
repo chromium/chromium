@@ -43,6 +43,11 @@ void CrossPlatformPromosService::OnApplicationWillEnterForeground() {
   Update16thActiveDay();
 }
 
+void CrossPlatformPromosService::ClearData() {
+  profile_prefs_->ClearPref(prefs::kCrossPlatformPromosActiveDays);
+  profile_prefs_->ClearPref(prefs::kCrossPlatformPromosIOS16thActiveDay);
+}
+
 void CrossPlatformPromosService::Update16thActiveDay() {
   if (RecordActiveDay()) {
     base::Time day = FindActiveDay(16);
