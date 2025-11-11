@@ -18,6 +18,7 @@
 #include "media/base/audio_bus.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/audio_discard_helper.h"
+#include "media/base/channel_layout.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/limits.h"
 #include "media/base/media_switches.h"
@@ -289,6 +290,14 @@ bool FFmpegAudioDecoder::OnNewFrame(const DecoderBuffer& buffer,
                        frame->sample_rate, config_.extra_data(),
                        config_.encryption_scheme(), config_.seek_preroll(),
                        config_.codec_delay());
+
+    // If the channel layout is discrete, then the decoder config is not
+    // capable of deriving the channel count from the layout and the channel
+    // count must be set manually.
+    if (channel_layout == CHANNEL_LAYOUT_DISCRETE) {
+      config_.SetChannelsForDiscrete(channels);
+    }
+
     if (is_sample_rate_change)
       ResetTimestampState(config_);
   }
