@@ -17,6 +17,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/segmentation_platform/public/constants.h"
+#include "components/segmentation_platform/public/features.h"
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -62,11 +63,19 @@ void RunGetClassificationResultCallback(
   notifications::NotificationScheduleService* service =
       NotificationScheduleServiceFactory::GetForKey(profile->GetProfileKey());
 
+  // Setup the schedule params to either be for testing with instant and delayed
+  // 2 minutes notifications, or the base use case of 2-4 hours.
   notifications::ScheduleParams schedule_params;
-  schedule_params.priority = notifications::ScheduleParams::Priority::kLow;
-  schedule_params.deliver_time_start = base::Time::Now() + base::Hours(4);
+  schedule_params.priority =
+      notifications::ScheduleParams::Priority::kNoThrottle;
+  schedule_params.deliver_time_start =
+      base::Time::Now() +
+      base::Minutes(segmentation_platform::features::kStartTimeMinutes.Get());
   schedule_params.deliver_time_end =
-      base::Time::Now() + base::Hours(4) + base::Minutes(1);
+      base::Time::Now() +
+      base::Minutes(segmentation_platform::features::kStartTimeMinutes.Get()) +
+      base::Minutes(segmentation_platform::features::kWindowTimeMinutes.Get());
+
   notifications::NotificationData data =
       notifications::GetTipsNotificationData(feature_type);
   service->Schedule(std::make_unique<notifications::NotificationParams>(

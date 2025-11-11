@@ -4834,6 +4834,20 @@ const FeatureEntry::FeatureParam kAndroidTipsNotificationsEssential[] = {
     {"essential", "true"}};
 const FeatureEntry::FeatureParam kAndroidTipsNotificationsNewFeatures[] = {
     {"new_features", "true"}};
+const FeatureEntry::FeatureParam
+    kAndroidTipsNotificationsAlwaysShowOptInPromo[] = {
+        {"always_show_opt_in_promo", "true"},
+        {"trust_and_safety", "true"}};
+const FeatureEntry::FeatureParam
+    kAndroidTipsNotificationsScheduleInstantNotification[] = {
+        {"start_time_minutes", "0"},
+        {"window_time_minutes", "1"},
+        {"trust_and_safety", "true"}};
+const FeatureEntry::FeatureParam
+    kAndroidTipsNotificationsScheduleDelayedNotification[] = {
+        {"start_time_minutes", "2"},
+        {"window_time_minutes", "4"},
+        {"trust_and_safety", "true"}};
 
 const FeatureEntry::FeatureVariation kAndroidTipsNotificationsVariations[] = {
     {" - Trust and Safety", kAndroidTipsNotificationsTrustAndSafety,
@@ -4841,7 +4855,16 @@ const FeatureEntry::FeatureVariation kAndroidTipsNotificationsVariations[] = {
     {" - Essential", kAndroidTipsNotificationsEssential,
      std::size(kAndroidTipsNotificationsEssential), nullptr},
     {" - New Features", kAndroidTipsNotificationsNewFeatures,
-     std::size(kAndroidTipsNotificationsNewFeatures), nullptr}};
+     std::size(kAndroidTipsNotificationsNewFeatures), nullptr},
+    {" - Always Show Opt In", kAndroidTipsNotificationsAlwaysShowOptInPromo,
+     std::size(kAndroidTipsNotificationsAlwaysShowOptInPromo), nullptr},
+    {" - Schedule Instant Notification",
+     kAndroidTipsNotificationsScheduleInstantNotification,
+     std::size(kAndroidTipsNotificationsScheduleInstantNotification), nullptr},
+    {" - Schedule Delayed Notification",
+     kAndroidTipsNotificationsScheduleDelayedNotification,
+     std::size(kAndroidTipsNotificationsScheduleDelayedNotification), nullptr}};
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)

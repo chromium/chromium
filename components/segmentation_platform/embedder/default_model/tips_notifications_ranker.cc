@@ -201,8 +201,10 @@ void TipsNotificationsRanker::ExecuteModelWithInput(
   float lens_tip_shown = inputs[kGoogleLensTipShownIdx];
   float bottom_omnibox_tip_shown = inputs[kBottomOmniboxTipShownIdx];
 
-  // Only choose an eligible tip if none have been shown for the last 7 days.
-  if (all_feature_tips_shown_count == 0) {
+  // Only choose an eligible tip if none have been shown for the last 7 days or
+  // if the testing flags to instantly schedule a notification are active.
+  if (all_feature_tips_shown_count == 0 ||
+      features::kStartTimeMinutes.Get() < 5) {
     // Cycle through the priority list and mark the highest ranked eligible tip
     // to show if it exists and then early exit.
     std::vector<int> tips_priority_list = GetTipsPriorityRankingList();

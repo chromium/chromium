@@ -1328,15 +1328,19 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     }
 
     private void maybeShowTipsOptInPromo(long timeSinceLastBackgroundedMs) {
-        // Only trigger the promo if the user has been 3 hours inactive and has not seen it before.
-        if (ChromeFeatureList.sAndroidTipsNotifications.isEnabled()
-                && !ChromeSharedPreferences.getInstance()
-                        .readBoolean(
-                                ChromePreferenceKeys.TIPS_NOTIFICATIONS_OPT_IN_PROMO_SHOWN, false)
-                && timeSinceLastBackgroundedMs > TimeUnit.HOURS.toMillis(3)) {
+        // Only trigger the promo if the user has been 3 hours inactive and has not seen it before
+        // and the notifications toggle is not enabled, or a testing param is enabled.
+        if (ChromeFeatureList.sAndroidTipsNotifications.isEnabled()) {
             TipsUtils.areTipsNotificationsEnabled(
                     (enabled) -> {
-                        if (!enabled) {
+                        if ((!enabled
+                                        && !ChromeSharedPreferences.getInstance()
+                                                .readBoolean(
+                                                        ChromePreferenceKeys
+                                                                .TIPS_NOTIFICATIONS_OPT_IN_PROMO_SHOWN,
+                                                        false)
+                                        && timeSinceLastBackgroundedMs > TimeUnit.HOURS.toMillis(3))
+                                || TipsUtils.shouldAlwaysShowOptInPromo()) {
                             mTipsOptInCoordinator =
                                     new TipsOptInCoordinator(mActivity, getBottomSheetController());
                             mTipsOptInCoordinator.showBottomSheet();

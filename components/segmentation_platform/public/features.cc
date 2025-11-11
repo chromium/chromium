@@ -264,4 +264,12 @@ constexpr base::FeatureParam<bool> kNewFeatures{&kAndroidTipsNotifications,
                                                 "new_features",
                                                 /*default_value=*/false};
 
+constexpr base::FeatureParam<int> kStartTimeMinutes{&kAndroidTipsNotifications,
+                                                    "start_time_minutes",
+                                                    /*default_value=*/120};
+
+constexpr base::FeatureParam<int> kWindowTimeMinutes{&kAndroidTipsNotifications,
+                                                     "window_time_minutes",
+                                                     /*default_value=*/120};
+
 }  // namespace segmentation_platform::features

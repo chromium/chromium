@@ -195,6 +195,10 @@ extern const base::FeatureParam<bool> kTrustAndSafety;
 extern const base::FeatureParam<bool> kEssential;
 // The prioritization of tips notifications based on new features.
 extern const base::FeatureParam<bool> kNewFeatures;
+// The start time in minutes for scheduling the notification.
+extern const base::FeatureParam<int> kStartTimeMinutes;
+// The window time in minutes for the elapsed time since the start time.
+extern const base::FeatureParam<int> kWindowTimeMinutes;
 
 }  // namespace segmentation_platform::features
 
