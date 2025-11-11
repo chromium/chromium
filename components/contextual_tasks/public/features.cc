@@ -40,6 +40,18 @@ const base::FeatureParam<bool> kOnlyUseTitlesForSimilarity(
     "ContextualTasksContextOnlyUseTitles",
     false);
 
+constexpr base::FeatureParam<EntryPointOption>::Option kEntryPointOptions[] = {
+    {EntryPointOption::kNoEntryPoint, "no-entry-point"},
+    {EntryPointOption::kPageActionRevisit, "page-action-revisit"},
+    {EntryPointOption::kToolbarRevisit, "toolbar-revisit"},
+    {EntryPointOption::kToolbarPermanent, "toolbar-permanent"}};
+
+const base::FeatureParam<EntryPointOption> kShowEntryPoint(
+    &kContextualTasks,
+    "ContextualTasksEntryPoint",
+    EntryPointOption::kNoEntryPoint,
+    &kEntryPointOptions);
+
 std::string GetContextualTasksAiPageUrl() {
   return kContextualTasksAiPageUrl.Get();
 }

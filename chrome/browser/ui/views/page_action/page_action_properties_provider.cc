@@ -191,6 +191,14 @@ constexpr auto kPageActionProperties =
                 .type = PageActionIconType::kSaveCard,
             },
         },
+        {
+            kActionContextualPanelPageActionChip,
+            {
+                .histogram_name = "ContextualSidePanel",
+                .type = PageActionIconType::kContextualSidePanel,
+                .element_identifier = kContextualTasksPageActionElementId,
+            },
+        },
     });
 
 constexpr bool CheckIgnoreFlagUsage() {

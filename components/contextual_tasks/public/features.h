@@ -16,10 +16,20 @@ namespace contextual_tasks {
 BASE_DECLARE_FEATURE(kContextualTasks);
 BASE_DECLARE_FEATURE(kContextualTasksContext);
 
+// Enum denoting which entry point can show when enabled.
+enum class EntryPointOption {
+  kNoEntryPoint,
+  kPageActionRevisit,
+  kToolbarRevisit,
+  kToolbarPermanent
+};
+
 // The minimum score required for two embeddings to be considered similar.
 extern const base::FeatureParam<double> kMinEmbeddingSimilarityScore;
 // Whether to only consider titles for similarity.
 extern const base::FeatureParam<bool> kOnlyUseTitlesForSimilarity;
+// Controls whether the contextual task page action should show
+extern const base::FeatureParam<EntryPointOption, true> kShowEntryPoint;
 
 // Minimum score, computed using multiple signals, to consider a tab relevant.
 extern const base::FeatureParam<double> kMinMultiSignalScore;

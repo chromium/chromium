@@ -290,6 +290,9 @@ void PageActionIconController::Init(const PageActionIconParams& params,
       case PageActionIconType::kReadingMode:
         // Do nothing as this action was added after the migration.
         break;
+      case PageActionIconType::kContextualSidePanel:
+        // Do nothing as this action was added after the migration.
+        break;
     }
   }
 
