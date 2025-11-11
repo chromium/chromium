@@ -18,8 +18,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/enterprise/signin/managed_profile_creation_controller.h"
 #include "chrome/browser/enterprise/signin/managed_profile_creator.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/browser/ui/webui/signin/turn_sync_on_helper_policy_fetch_tracker.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -29,6 +28,7 @@
 
 class Profile;
 class ProfileAttributesEntry;
+class ProfileBrowserCollection;
 
 namespace signin {
 class IdentityManager;
@@ -40,7 +40,7 @@ class IdentityManager;
 class ProfileManagementDisclaimerService
     : public KeyedService,
       public signin::IdentityManager::Observer,
-      public BrowserListObserver {
+      public BrowserCollectionObserver {
  public:
   explicit ProfileManagementDisclaimerService(Profile* profile);
   ~ProfileManagementDisclaimerService() override;
@@ -149,8 +149,8 @@ class ProfileManagementDisclaimerService
   void OnRefreshTokenUpdatedForAccount(
       const CoreAccountInfo& account_info) override;
 
-  // BrowserListObserver:
-  void OnBrowserSetLastActive(Browser* browser) override;
+  // BrowserCollectionObserver:
+  void OnBrowserActivated(BrowserWindowInterface* browser) override;
 
   const raw_ref<Profile> profile_;
   std::unique_ptr<ResetableState> state_;
@@ -168,8 +168,8 @@ class ProfileManagementDisclaimerService
                           signin::IdentityManager::Observer>
       scoped_identity_manager_observation_{this};
 
-  base::ScopedObservation<BrowserList, BrowserListObserver>
-      scoped_browser_list_observation_{this};
+  base::ScopedObservation<ProfileBrowserCollection, BrowserCollectionObserver>
+      scoped_browser_collection_observation_{this};
 
   base::WeakPtrFactory<ProfileManagementDisclaimerService> weak_ptr_factory_{
       this};

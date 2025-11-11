@@ -31,6 +31,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/profiles/profile_colors_util.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
@@ -84,7 +85,8 @@ ProfileManagementDisclaimerService::ProfileManagementDisclaimerService(
       state_(std::make_unique<ResetableState>()),
       signin_prefs_(*profile->GetPrefs()) {
   scoped_identity_manager_observation_.Observe(GetIdentityManager());
-  scoped_browser_list_observation_.Observe(BrowserList::GetInstance());
+  scoped_browser_collection_observation_.Observe(
+      ProfileBrowserCollection::GetForProfile(profile));
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&ProfileManagementDisclaimerService::
@@ -423,11 +425,8 @@ void ProfileManagementDisclaimerService::OnRefreshTokenUpdatedForAccount(
   state_->refresh_token_wait_timeout.Stop();
 }
 
-void ProfileManagementDisclaimerService::OnBrowserSetLastActive(
-    Browser* browser) {
-  if (browser->profile() != &profile_.get()) {
-    return;
-  }
+void ProfileManagementDisclaimerService::OnBrowserActivated(
+    BrowserWindowInterface* browser) {
   CoreAccountId account_id = state_->account_id.empty()
                                  ? GetPrimaryAccountInfo().account_id
                                  : state_->account_id;
