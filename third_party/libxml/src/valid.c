@@ -1139,8 +1139,6 @@ xmlFreeElement(xmlElementPtr elem) {
  * @type:  the element type
  * @content:  the element content tree or NULL
  *
- * DEPRECATED: Internal function, don't use.
- *
  * Register a new element declaration
  *
  * Returns NULL if not, otherwise the entity
@@ -1651,8 +1649,6 @@ xmlFreeAttribute(xmlAttributePtr attr) {
  * @defaultValue:  the attribute default value
  * @tree:  if it's an enumeration, the associated list
  *
- * DEPRECATED: Internal function, don't use.
- *
  * Register a new attribute declaration
  * Note that @tree becomes the ownership of the DTD
  *
@@ -2063,8 +2059,6 @@ xmlFreeNotation(xmlNotationPtr nota) {
  * @name:  the entity name
  * @PublicID:  the public identifier or NULL
  * @SystemID:  the system identifier or NULL
- *
- * DEPRECATED: Internal function, don't use.
  *
  * Register a new notation declaration
  *
@@ -4296,7 +4290,7 @@ xmlValidateOneAttribute(xmlValidCtxtPtr ctxt, xmlDocPtr doc,
 	       attr->name, elem->name, NULL);
 	return(0);
     }
-    if (attr->atype == XML_ATTRIBUTE_ID)
+    if (attr->id != NULL)
         xmlRemoveID(doc, attr);
     attr->atype = attrDecl->atype;
 
@@ -4319,7 +4313,8 @@ xmlValidateOneAttribute(xmlValidCtxtPtr ctxt, xmlDocPtr doc,
     }
 
     /* Validity Constraint: ID uniqueness */
-    if (attrDecl->atype == XML_ATTRIBUTE_ID) {
+    if (attrDecl->atype == XML_ATTRIBUTE_ID &&
+        (ctxt == NULL || (ctxt->flags & XML_VCTXT_IN_ENTITY) == 0)) {
         if (xmlAddID(ctxt, doc, value, attr) == NULL)
 	    ret = 0;
     }
@@ -5554,6 +5549,12 @@ xmlValidGetElemDecl(xmlValidCtxtPtr ctxt, xmlDocPtr doc,
 		*extsubset = 1;
 	}
     }
+    if (elemDecl == NULL) {
+	xmlErrValidNode(ctxt, elem,
+			XML_DTD_UNKNOWN_ELEM,
+	       "No declaration for element %s\n",
+	       elem->name, NULL, NULL);
+    }
     return(elemDecl);
 }
 
@@ -5596,6 +5597,10 @@ xmlValidatePushElement(xmlValidCtxtPtr ctxt, xmlDocPtr doc,
 		    ret = 0;
 		    break;
 		case XML_ELEMENT_TYPE_EMPTY:
+		    xmlErrValidNode(ctxt, state->node,
+				    XML_DTD_NOT_EMPTY,
+	       "Element %s was declared EMPTY this one has content\n",
+			   state->node->name, NULL, NULL);
 		    ret = 0;
 		    break;
 		case XML_ELEMENT_TYPE_ANY:
@@ -5606,10 +5611,20 @@ xmlValidatePushElement(xmlValidCtxtPtr ctxt, xmlDocPtr doc,
 		    if ((elemDecl->content != NULL) &&
 			(elemDecl->content->type ==
 			 XML_ELEMENT_CONTENT_PCDATA)) {
+			xmlErrValidNode(ctxt, state->node,
+					XML_DTD_NOT_PCDATA,
+	       "Element %s was declared #PCDATA but contains non text nodes\n",
+				state->node->name, NULL, NULL);
 			ret = 0;
 		    } else {
 			ret = xmlValidateCheckMixed(ctxt, elemDecl->content,
 				                    qname);
+			if (ret != 1) {
+			    xmlErrValidNode(ctxt, state->node,
+					    XML_DTD_INVALID_CHILD,
+	       "Element %s is not declared in %s list of possible children\n",
+				    qname, state->node->name, NULL);
+			}
 		    }
 		    break;
 		case XML_ELEMENT_TYPE_ELEMENT:
@@ -5626,6 +5641,10 @@ xmlValidatePushElement(xmlValidCtxtPtr ctxt, xmlDocPtr doc,
                             return(0);
                         }
 			if (ret < 0) {
+			    xmlErrValidNode(ctxt, state->node,
+					    XML_DTD_CONTENT_MODEL,
+	       "Element %s content does not follow the DTD, Misplaced %s\n",
+				   state->node->name, qname, NULL);
 			    ret = 0;
 			} else {
 			    ret = 1;
@@ -5675,6 +5694,10 @@ xmlValidatePushCData(xmlValidCtxtPtr ctxt, const xmlChar *data, int len) {
 		    ret = 0;
 		    break;
 		case XML_ELEMENT_TYPE_EMPTY:
+		    xmlErrValidNode(ctxt, state->node,
+				    XML_DTD_NOT_EMPTY,
+	       "Element %s was declared EMPTY this one has content\n",
+			   state->node->name, NULL, NULL);
 		    ret = 0;
 		    break;
 		case XML_ELEMENT_TYPE_ANY:
@@ -5747,6 +5770,11 @@ xmlValidatePopElement(xmlValidCtxtPtr ctxt, xmlDocPtr doc ATTRIBUTE_UNUSED,
 		    if (ret <= 0) {
                         if (ret == XML_REGEXP_OUT_OF_MEMORY)
                             xmlVErrMemory(ctxt);
+                        else
+			    xmlErrValidNode(ctxt, state->node,
+			                    XML_DTD_CONTENT_MODEL,
+	   "Element %s content does not follow the DTD, Expecting more children\n",
+			       state->node->name, NULL,NULL);
 			ret = 0;
 		    } else {
 			/*
@@ -5819,13 +5847,8 @@ xmlValidateOneElement(xmlValidCtxtPtr ctxt, xmlDocPtr doc,
      * Fetch the declaration
      */
     elemDecl = xmlValidGetElemDecl(ctxt, doc, elem, &extsubset);
-    if (elemDecl == NULL) {
-	xmlErrValidNode(ctxt, elem,
-			XML_DTD_UNKNOWN_ELEM,
-	       "No declaration for element %s\n",
-	       elem->name, NULL, NULL);
+    if (elemDecl == NULL)
 	return(0);
-    }
 
     /*
      * If vstateNr is not zero that means continuous validation is

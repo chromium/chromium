@@ -1184,8 +1184,19 @@ xmlSAX1Attribute(xmlParserCtxtPtr ctxt, const xmlChar *fullname,
                 xmlFree(val);
 	    }
 	} else {
+            /*
+             * When replacing entities, make sure that IDs in
+             * entities aren't registered. This also shouldn't be
+             * done when entities aren't replaced, but this would
+             * require to rework IDREF checks.
+             */
+            if (ctxt->input->entity != NULL)
+                ctxt->vctxt.flags |= XML_VCTXT_IN_ENTITY;
+
 	    ctxt->valid &= xmlValidateOneAttribute(&ctxt->vctxt, ctxt->myDoc,
 					       ctxt->node, ret, value);
+
+            ctxt->vctxt.flags &= ~XML_VCTXT_IN_ENTITY;
 	}
     } else
 #endif /* LIBXML_VALID_ENABLED */
@@ -2052,8 +2063,19 @@ xmlSAX2AttributeNs(xmlParserCtxtPtr ctxt,
             if (dup == NULL)
                 xmlSAX2ErrMemory(ctxt);
 
+            /*
+             * When replacing entities, make sure that IDs in
+             * entities aren't registered. This also shouldn't be
+             * done when entities aren't replaced, but this would
+             * require to rework IDREF checks.
+             */
+            if (ctxt->input->entity != NULL)
+                ctxt->vctxt.flags |= XML_VCTXT_IN_ENTITY;
+
 	    ctxt->valid &= xmlValidateOneAttribute(&ctxt->vctxt,
 	                             ctxt->myDoc, ctxt->node, ret, dup);
+
+            ctxt->vctxt.flags &= ~XML_VCTXT_IN_ENTITY;
 	}
     } else
 #endif /* LIBXML_VALID_ENABLED */

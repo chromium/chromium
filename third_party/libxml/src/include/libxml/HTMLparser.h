@@ -197,7 +197,6 @@ XMLPUBFUN void
  */
 typedef enum {
     HTML_PARSE_RECOVER  = 1<<0, /* No effect */
-    HTML_PARSE_HTML5    = 1<<1, /* HTML5 support */
     HTML_PARSE_NODEFDTD = 1<<2, /* do not default a doctype if not found */
     HTML_PARSE_NOERROR	= 1<<5,	/* suppress error reports */
     HTML_PARSE_NOWARNING= 1<<6,	/* suppress warning reports */
@@ -208,7 +207,8 @@ typedef enum {
     HTML_PARSE_COMPACT  = 1<<16,/* compact small text nodes */
     HTML_PARSE_HUGE     = 1<<19,/* relax any hardcoded limit from the parser */
     HTML_PARSE_IGNORE_ENC=1<<21,/* ignore internal document encoding hint */
-    HTML_PARSE_BIG_LINES= 1<<22 /* Store big lines numbers in text PSVI field */
+    HTML_PARSE_BIG_LINES= 1<<22,/* Store big lines numbers in text PSVI field */
+    HTML_PARSE_HTML5    = 1<<26 /* HTML5 support */
 } htmlParserOption;
 
 XMLPUBFUN void

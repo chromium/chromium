@@ -438,7 +438,7 @@ invalid:
     /* Only report the first error */
     if ((ctxt->input->flags & XML_INPUT_ENCODING_ERROR) == 0) {
         htmlParseErr(ctxt, XML_ERR_INVALID_ENCODING,
-                     "Invalid bytes in character encoding", NULL, NULL);
+                     "Invalid bytes in character encoding\n", NULL, NULL);
         ctxt->input->flags |= XML_INPUT_ENCODING_ERROR;
     }
 
@@ -5739,6 +5739,11 @@ htmlCtxtSetOptionsInternal(xmlParserCtxtPtr ctxt, int options, int keepMask)
     ctxt->keepBlanks = (options & HTML_PARSE_NOBLANKS) ? 0 : 1;
 
     /*
+     * Recover from character encoding errors
+     */
+    ctxt->recovery = 1;
+
+    /*
      * Changing SAX callbacks is a bad idea. This should be fixed.
      */
     if (options & HTML_PARSE_NOBLANKS) {
@@ -5756,7 +5761,10 @@ htmlCtxtSetOptionsInternal(xmlParserCtxtPtr ctxt, int options, int keepMask)
 
     ctxt->linenumbers = 1;
 
-    return(options & ~allMask);
+    /*
+     * Allow XML_PARSE_NOENT which many users set on the HTML parser.
+     */
+    return(options & ~allMask & ~XML_PARSE_NOENT);
 }
 
 /**

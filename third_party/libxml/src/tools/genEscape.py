@@ -34,7 +34,7 @@ for rec in entities:
         r += "'%s'," % c
         pos += 1
 
-print('static const char xmlEscapeContent[] = {%s\n};\n' % r)
+print('static const signed char xmlEscapeContent[] = {%s\n};\n' % r)
 
 ### xmlEscapeTab
 
@@ -45,7 +45,7 @@ for i in range(0x80):
 
     if chr(i) in escape:
         v = offset[i]
-    elif i != 9 and i != 10 and i < 20:
+    elif i != 9 and i != 10 and i < 32:
         v = 0
     else:
         v = -1
@@ -54,7 +54,7 @@ for i in range(0x80):
     else: r += ' '
     r += '%2d,' % v
 
-print('static const char xmlEscapeTab[128] = {%s\n};\n' % r)
+print('static const signed char xmlEscapeTab[128] = {%s\n};\n' % r)
 
 ### xmlEscapeTabAttr
 
@@ -65,7 +65,7 @@ for i in range(0x80):
 
     if chr(i) in escape:
         v = offset[i]
-    elif i != 9 and i != 10 and i < 20:
+    elif i != 9 and i != 10 and i < 32:
         v = 0
     else:
         v = -1

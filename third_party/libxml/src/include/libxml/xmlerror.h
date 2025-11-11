@@ -19,7 +19,8 @@ extern "C" {
 /*
  * Backward compatibility
  */
-#define initGenericErrorDefaultFunc(h) xmlSetGenericErrorFunc(NULL, *(h))
+#define initGenericErrorDefaultFunc(h) \
+    xmlSetGenericErrorFunc(NULL, (h) ? *((xmlGenericErrorFunc *) (h)) : NULL)
 
 /**
  * xmlErrorLevel:

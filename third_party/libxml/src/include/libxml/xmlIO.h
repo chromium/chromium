@@ -250,7 +250,7 @@ XMLPUBFUN int
 						 xmlInputReadCallback readFunc,
 						 xmlInputCloseCallback closeFunc);
 
-xmlParserInputBufferPtr
+XMLPUBFUN xmlParserInputBufferPtr
 	__xmlParserInputBufferCreateFilename(const char *URI,
 						xmlCharEncoding enc);
 
@@ -319,7 +319,7 @@ XMLPUBFUN int
 					 xmlOutputWriteCallback writeFunc,
 					 xmlOutputCloseCallback closeFunc);
 
-xmlOutputBufferPtr
+XMLPUBFUN xmlOutputBufferPtr
 	__xmlOutputBufferCreateFilename(const char *URI,
                               xmlCharEncodingHandlerPtr encoder,
                               int compression);

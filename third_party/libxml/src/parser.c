@@ -413,7 +413,7 @@ xmlSaturatedAdd(unsigned long *dst, unsigned long val) {
 }
 
 static void
-xmlSaturatedAddSizeT(unsigned long *dst, unsigned long val) {
+xmlSaturatedAddSizeT(unsigned long *dst, size_t val) {
     if (val > ULONG_MAX - *dst)
         *dst = ULONG_MAX;
     else
@@ -2675,14 +2675,13 @@ xmlParseCharRef(xmlParserCtxtPtr ctxt) {
         xmlFatalErrMsgInt(ctxt, XML_ERR_INVALID_CHAR,
                 "xmlParseCharRef: character reference out of bounds\n",
 	        val);
-    } else if (IS_CHAR(val)) {
-        return(val);
-    } else {
+        val = 0xFFFD;
+    } else if (!IS_CHAR(val)) {
         xmlFatalErrMsgInt(ctxt, XML_ERR_INVALID_CHAR,
                           "xmlParseCharRef: invalid xmlChar value %d\n",
 	                  val);
     }
-    return(0);
+    return(val);
 }
 
 /**
@@ -4710,12 +4709,12 @@ xmlParsePubidLiteral(xmlParserCtxtPtr ctxt) {
             int newSize;
 
 	    newSize = xmlGrowCapacity(size, 1, 1, maxLength);
-            if (newSize) {
+            if (newSize < 0) {
                 xmlFatalErr(ctxt, XML_ERR_NAME_TOO_LONG, "Public ID");
                 xmlFree(buf);
                 return(NULL);
             }
-	    tmp = xmlRealloc(buf, size);
+	    tmp = xmlRealloc(buf, newSize);
 	    if (tmp == NULL) {
 		xmlErrMemory(ctxt);
 		xmlFree(buf);
@@ -6005,18 +6004,23 @@ xmlParseNotationType(xmlParserCtxtPtr ctxt) {
             xmlFreeEnumeration(ret);
 	    return(NULL);
 	}
-	tmp = ret;
-	while (tmp != NULL) {
-	    if (xmlStrEqual(name, tmp->name)) {
-		xmlValidityError(ctxt, XML_DTD_DUP_TOKEN,
-	  "standalone: attribute notation value token %s duplicated\n",
-				 name, NULL);
-		if (!xmlDictOwns(ctxt->dict, name))
-		    xmlFree((xmlChar *) name);
-		break;
-	    }
-	    tmp = tmp->next;
-	}
+        tmp = NULL;
+#ifdef LIBXML_VALID_ENABLED
+        if (ctxt->validate) {
+            tmp = ret;
+            while (tmp != NULL) {
+                if (xmlStrEqual(name, tmp->name)) {
+                    xmlValidityError(ctxt, XML_DTD_DUP_TOKEN,
+              "standalone: attribute notation value token %s duplicated\n",
+                                     name, NULL);
+                    if (!xmlDictOwns(ctxt->dict, name))
+                        xmlFree((xmlChar *) name);
+                    break;
+                }
+                tmp = tmp->next;
+            }
+        }
+#endif /* LIBXML_VALID_ENABLED */
 	if (tmp == NULL) {
 	    cur = xmlCreateEnumeration(name);
 	    if (cur == NULL) {
@@ -6075,18 +6079,23 @@ xmlParseEnumerationType(xmlParserCtxtPtr ctxt) {
 	    xmlFatalErr(ctxt, XML_ERR_NMTOKEN_REQUIRED, NULL);
 	    return(ret);
 	}
-	tmp = ret;
-	while (tmp != NULL) {
-	    if (xmlStrEqual(name, tmp->name)) {
-		xmlValidityError(ctxt, XML_DTD_DUP_TOKEN,
-	  "standalone: attribute enumeration value token %s duplicated\n",
-				 name, NULL);
-		if (!xmlDictOwns(ctxt->dict, name))
-		    xmlFree(name);
-		break;
-	    }
-	    tmp = tmp->next;
-	}
+        tmp = NULL;
+#ifdef LIBXML_VALID_ENABLED
+        if (ctxt->validate) {
+            tmp = ret;
+            while (tmp != NULL) {
+                if (xmlStrEqual(name, tmp->name)) {
+                    xmlValidityError(ctxt, XML_DTD_DUP_TOKEN,
+              "standalone: attribute enumeration value token %s duplicated\n",
+                                     name, NULL);
+                    if (!xmlDictOwns(ctxt->dict, name))
+                        xmlFree(name);
+                    break;
+                }
+                tmp = tmp->next;
+            }
+        }
+#endif /* LIBXML_VALID_ENABLED */
 	if (tmp == NULL) {
 	    cur = xmlCreateEnumeration(name);
 	    if (!xmlDictOwns(ctxt->dict, name))
@@ -9739,12 +9748,11 @@ xmlParseCDSect(xmlParserCtxtPtr ctxt) {
      * OK the buffer is to be consumed as cdata.
      */
     if ((ctxt->sax != NULL) && (!ctxt->disableSAX)) {
-        if (ctxt->options & XML_PARSE_NOCDATA) {
-            if (ctxt->sax->characters != NULL)
-                ctxt->sax->characters(ctxt->userData, buf, len);
-        } else {
-            if (ctxt->sax->cdataBlock != NULL)
-                ctxt->sax->cdataBlock(ctxt->userData, buf, len);
+        if ((ctxt->sax->cdataBlock != NULL) &&
+            ((ctxt->options & XML_PARSE_NOCDATA) == 0)) {
+            ctxt->sax->cdataBlock(ctxt->userData, buf, len);
+        } else if (ctxt->sax->characters != NULL) {
+            ctxt->sax->characters(ctxt->userData, buf, len);
         }
     }
 
@@ -10132,7 +10140,7 @@ xmlParseVersionNum(xmlParserCtxtPtr ctxt) {
             int newSize;
 
             newSize = xmlGrowCapacity(size, 1, 1, maxLength);
-            if (newSize) {
+            if (newSize < 0) {
                 xmlFatalErr(ctxt, XML_ERR_NAME_TOO_LONG, "VersionNum");
                 xmlFree(buf);
                 return(NULL);
@@ -12367,13 +12375,6 @@ xmlCtxtParseContent(xmlParserCtxtPtr ctxt, xmlParserInputPtr input,
 #endif
     {
         xmlCtxtInitializeLate(ctxt);
-
-        /*
-         * This hack lowers the error level of undeclared entities
-         * from XML_ERR_FATAL (well-formedness error) to XML_ERR_ERROR
-         * or XML_ERR_WARNING.
-         */
-        ctxt->hasExternalSubset = 1;
 
         /*
          * initialize the SAX2 namespaces stack

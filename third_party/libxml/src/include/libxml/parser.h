@@ -275,7 +275,7 @@ struct _xmlParserCtxt {
     /* Node analysis stack only used for DOM building */
 
     /* Current parsed Node */
-    xmlNodePtr node XML_DEPRECATED_MEMBER;
+    xmlNodePtr node;
     /* Depth of the parsing stack */
     int nodeNr XML_DEPRECATED_MEMBER;
     /* Max depth of the parsing stack */
@@ -331,7 +331,7 @@ struct _xmlParserCtxt {
     /* ugly but ... */
     int keepBlanks XML_DEPRECATED_MEMBER;
     /* SAX callbacks are disabled */
-    int disableSAX XML_DEPRECATED_MEMBER;
+    int disableSAX;
     /* Parsing is in int 1/ext 2 subset */
     int inSubset;
     /* name of subset */
@@ -1177,9 +1177,7 @@ XMLPUBFUN xmlDocPtr
 		xmlSAXParseDoc		(xmlSAXHandlerPtr sax,
 					 const xmlChar *cur,
 					 int recovery);
-// TODO(https://github.com/google/maldoca/issues/87): Re-Deprecate this when
-//   maldoca stops using xmlSAXParseMemory.
-//XML_DEPRECATED
+XML_DEPRECATED
 XMLPUBFUN xmlDocPtr
 		xmlSAXParseMemory	(xmlSAXHandlerPtr sax,
 					 const char *buffer,
@@ -1460,8 +1458,10 @@ XMLPUBFUN int
 		xmlCtxtIsHtml		(xmlParserCtxtPtr ctxt);
 XMLPUBFUN int
 		xmlCtxtIsStopped	(xmlParserCtxtPtr ctxt);
+#ifdef LIBXML_VALID_ENABLED
 XMLPUBFUN xmlValidCtxtPtr
 		xmlCtxtGetValidCtxt	(xmlParserCtxtPtr ctxt);
+#endif
 XMLPUBFUN const xmlChar *
 		xmlCtxtGetVersion	(xmlParserCtxtPtr ctxt);
 XMLPUBFUN const xmlChar *

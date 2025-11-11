@@ -132,7 +132,7 @@ static const char xmlEscapeContent[] = {
 
 static const signed char xmlEscapeTab[128] = {
      0,  0,  0,  0,  0,  0,  0,  0,  0, -1, -1,  0,  0, 20,  0,  0,
-     0,  0,  0,  0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+     0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
     -1, -1, -1, -1, -1, -1, 33, -1, -1, -1, -1, -1, -1, -1, -1, -1,
     -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 39, -1, 44, -1,
     -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
@@ -143,7 +143,7 @@ static const signed char xmlEscapeTab[128] = {
 
 static const signed char xmlEscapeTabAttr[128] = {
      0,  0,  0,  0,  0,  0,  0,  0,  0,  9, 14,  0,  0, 20,  0,  0,
-     0,  0,  0,  0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+     0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
     -1, -1, 26, -1, -1, -1, 33, -1, -1, -1, -1, -1, -1, -1, -1, -1,
     -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 39, -1, 44, -1,
     -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
@@ -596,7 +596,9 @@ xmlBufDumpEnumeration(xmlOutputBufferPtr buf, xmlEnumerationPtr cur) {
  * DTD definition
  */
 static void
-xmlBufDumpAttributeDecl(xmlOutputBufferPtr buf, xmlAttributePtr attr) {
+xmlSaveWriteAttributeDecl(xmlSaveCtxtPtr ctxt, xmlAttributePtr attr) {
+    xmlOutputBufferPtr buf = ctxt->buf;
+
     xmlOutputBufferWrite(buf, 10, "<!ATTLIST ");
     xmlOutputBufferWriteString(buf, (const char *) attr->elem);
     xmlOutputBufferWrite(buf, 1, " ");
@@ -662,8 +664,9 @@ xmlBufDumpAttributeDecl(xmlOutputBufferPtr buf, xmlAttributePtr attr) {
     }
 
     if (attr->defaultValue != NULL) {
-	xmlOutputBufferWrite(buf, 1, " ");
-	xmlOutputBufferWriteQuotedString(buf, attr->defaultValue);
+        xmlOutputBufferWrite(buf, 2, " \"");
+        xmlSaveWriteText(ctxt, attr->defaultValue, XML_ESCAPE_ATTR);
+        xmlOutputBufferWrite(buf, 1, "\"");
     }
 
     xmlOutputBufferWrite(buf, 2, ">\n");
@@ -778,13 +781,19 @@ static int xmlSaveSwitchEncoding(xmlSaveCtxtPtr ctxt, const char *encoding) {
             xmlSaveErr(buf, res, NULL, encoding);
             return(-1);
         }
-	buf->conv = xmlBufCreate(4000 /* MINLEN */);
-	if (buf->conv == NULL) {
-	    xmlCharEncCloseFunc(handler);
-            xmlSaveErrMemory(buf);
-	    return(-1);
-	}
-        buf->encoder = handler;
+
+        if (handler != NULL) {
+            buf->conv = xmlBufCreate(4000 /* MINLEN */);
+            if (buf->conv == NULL) {
+                xmlCharEncCloseFunc(handler);
+                xmlSaveErrMemory(buf);
+                return(-1);
+            }
+            buf->encoder = handler;
+        }
+
+        ctxt->encoding = (const xmlChar *) encoding;
+
 	/*
 	 * initialize the state, e.g. if outputting a BOM
 	 */
@@ -795,11 +804,15 @@ static int xmlSaveSwitchEncoding(xmlSaveCtxtPtr ctxt, const char *encoding) {
 
 static int xmlSaveClearEncoding(xmlSaveCtxtPtr ctxt) {
     xmlOutputBufferPtr buf = ctxt->buf;
+
     xmlOutputBufferFlush(buf);
     xmlCharEncCloseFunc(buf->encoder);
     xmlBufFree(buf->conv);
     buf->encoder = NULL;
     buf->conv = NULL;
+
+    ctxt->encoding = NULL;
+
     return(0);
 }
 
@@ -1108,7 +1121,7 @@ xmlNodeDumpOutputInternal(xmlSaveCtxtPtr ctxt, xmlNodePtr cur) {
             break;
 
         case XML_ATTRIBUTE_DECL:
-            xmlBufDumpAttributeDecl(buf, (xmlAttributePtr) cur);
+            xmlSaveWriteAttributeDecl(ctxt, (xmlAttributePtr) cur);
             break;
 
         case XML_ENTITY_DECL:
@@ -1342,7 +1355,6 @@ xmlDocContentDumpOutput(xmlSaveCtxtPtr ctxt, xmlDocPtr cur) {
     const xmlChar *oldctxtenc = ctxt->encoding;
     const xmlChar *encoding = ctxt->encoding;
     xmlOutputBufferPtr buf = ctxt->buf;
-    xmlCharEncoding enc;
     int switched_encoding = 0;
 
     xmlInitParser();
@@ -1370,6 +1382,7 @@ xmlDocContentDumpOutput(xmlSaveCtxtPtr ctxt, xmlDocPtr cur) {
 	    if (xmlSaveSwitchEncoding(ctxt, (const char*) encoding) < 0) {
 		return(-1);
 	    }
+            switched_encoding = 1;
 	}
         if (ctxt->options & XML_SAVE_FORMAT)
 	    htmlDocContentDumpFormatOutput(buf, cur,
@@ -1377,29 +1390,23 @@ xmlDocContentDumpOutput(xmlSaveCtxtPtr ctxt, xmlDocPtr cur) {
 	else
 	    htmlDocContentDumpFormatOutput(buf, cur,
 	                                   (const char *)encoding, 0);
-	return(0);
 #else
         return(-1);
 #endif
     } else if ((cur->type == XML_DOCUMENT_NODE) ||
                (ctxt->options & XML_SAVE_AS_XML) ||
                (ctxt->options & XML_SAVE_XHTML)) {
-	enc = xmlParseCharEncoding((const char*) encoding);
 	if ((encoding != NULL) && (oldctxtenc == NULL) &&
 	    (buf->encoder == NULL) && (buf->conv == NULL) &&
 	    ((ctxt->options & XML_SAVE_NO_DECL) == 0)) {
-	    if ((enc != XML_CHAR_ENCODING_UTF8) &&
-		(enc != XML_CHAR_ENCODING_NONE) &&
-		(enc != XML_CHAR_ENCODING_ASCII)) {
-		/*
-		 * we need to switch to this encoding but just for this
-		 * document since we output the XMLDecl the conversion
-		 * must be done to not generate not well formed documents.
-		 */
-		if (xmlSaveSwitchEncoding(ctxt, (const char*) encoding) < 0)
-		    return(-1);
-		switched_encoding = 1;
-	    }
+            /*
+             * we need to switch to this encoding but just for this
+             * document since we output the XMLDecl the conversion
+             * must be done to not generate not well formed documents.
+             */
+            if (xmlSaveSwitchEncoding(ctxt, (const char *) encoding) < 0)
+                return(-1);
+            switched_encoding = 1;
 	}
 
 
@@ -1662,7 +1669,7 @@ xhtmlNodeDumpOutput(xmlSaveCtxtPtr ctxt, xmlNodePtr cur) {
 	    break;
 
         case XML_ATTRIBUTE_DECL:
-            xmlBufDumpAttributeDecl(buf, (xmlAttributePtr) cur);
+            xmlSaveWriteAttributeDecl(ctxt, (xmlAttributePtr) cur);
 	    break;
 
         case XML_ENTITY_DECL:
@@ -1966,6 +1973,7 @@ xmlSaveToFd(int fd, const char *encoding, int options)
     if (ret == NULL) return(NULL);
     ret->buf = xmlOutputBufferCreateFd(fd, ret->handler);
     if (ret->buf == NULL) {
+        xmlCharEncCloseFunc(ret->handler);
 	xmlFreeSaveCtxt(ret);
 	return(NULL);
     }
@@ -1995,6 +2003,7 @@ xmlSaveToFilename(const char *filename, const char *encoding, int options)
     ret->buf = xmlOutputBufferCreateFilename(filename, ret->handler,
                                              compression);
     if (ret->buf == NULL) {
+        xmlCharEncCloseFunc(ret->handler);
 	xmlFreeSaveCtxt(ret);
 	return(NULL);
     }
@@ -2022,6 +2031,7 @@ xmlSaveToBuffer(xmlBufferPtr buffer, const char *encoding, int options)
     if (ret == NULL) return(NULL);
     ret->buf = xmlOutputBufferCreateBuffer(buffer, ret->handler);
     if (ret->buf == NULL) {
+        xmlCharEncCloseFunc(ret->handler);
 	xmlFreeSaveCtxt(ret);
 	return(NULL);
     }
@@ -2052,6 +2062,7 @@ xmlSaveToIO(xmlOutputWriteCallback iowrite,
     if (ret == NULL) return(NULL);
     ret->buf = xmlOutputBufferCreateIO(iowrite, ioclose, ioctx, ret->handler);
     if (ret->buf == NULL) {
+        xmlCharEncCloseFunc(ret->handler);
 	xmlFreeSaveCtxt(ret);
 	return(NULL);
     }

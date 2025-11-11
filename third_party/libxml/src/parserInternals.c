@@ -2672,6 +2672,8 @@ xmlGetExternalEntityLoader(void) {
  * Installs a custom callback to load documents, DTDs or external
  * entities.
  *
+ * If @vctxt is NULL, the parser context will be passed.
+ *
  * Available since 2.14.0.
  */
 void
@@ -2704,6 +2706,7 @@ xmlLoadResource(xmlParserCtxtPtr ctxt, const char *url, const char *publicId,
 
     if ((ctxt != NULL) && (ctxt->resourceLoader != NULL)) {
         char *resource = NULL;
+        void *userData;
         xmlParserInputFlags flags = 0;
         int code;
 
@@ -2718,7 +2721,11 @@ xmlLoadResource(xmlParserCtxtPtr ctxt, const char *url, const char *publicId,
         if ((ctxt->options & XML_PARSE_NONET) == 0)
             flags |= XML_INPUT_NETWORK;
 
-        code = ctxt->resourceLoader(ctxt->resourceCtxt, url, publicId, type,
+        userData = ctxt->resourceCtxt;
+        if (userData == NULL)
+            userData = ctxt;
+
+        code = ctxt->resourceLoader(userData, url, publicId, type,
                                     flags, &ret);
         if (code != XML_ERR_OK) {
             xmlCtxtErrIO(ctxt, code, url);
@@ -3320,9 +3327,10 @@ xmlCtxtIsStopped(xmlParserCtxtPtr ctxt) {
     if (ctxt == NULL)
         return(0);
 
-    return(PARSER_STOPPED(ctxt));
+    return(ctxt->disableSAX != 0);
 }
 
+#ifdef LIBXML_VALID_ENABLED
 /**
  * xmlCtxtGetValidCtxt:
  * @ctxt:  parser context
@@ -3338,6 +3346,7 @@ xmlCtxtGetValidCtxt(xmlParserCtxtPtr ctxt) {
 
     return(&ctxt->vctxt);
 }
+#endif
 
 /************************************************************************
  *									*

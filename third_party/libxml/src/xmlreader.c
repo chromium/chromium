@@ -43,6 +43,7 @@
 
 #include "private/buf.h"
 #include "private/error.h"
+#include "private/io.h"
 #include "private/memory.h"
 #include "private/parser.h"
 #include "private/tree.h"
@@ -189,11 +190,32 @@ static void xmlTextReaderFreeNode(xmlTextReaderPtr reader, xmlNodePtr cur);
 static void xmlTextReaderFreeNodeList(xmlTextReaderPtr reader, xmlNodePtr cur);
 
 static void
+xmlTextReaderErr(xmlParserErrors code, const char *msg, ...) {
+    va_list ap;
+    int res;
+
+    va_start(ap, msg);
+    res = xmlVRaiseError(NULL, NULL, NULL, NULL, NULL,
+                         XML_FROM_PARSER, code, XML_ERR_FATAL,
+                         NULL, 0, NULL, NULL, NULL, 0, 0,
+                         msg, ap);
+    va_end(ap);
+    if (res < 0)
+        xmlRaiseMemoryError(NULL, NULL, NULL, XML_FROM_PARSER, NULL);
+}
+
+static void
 xmlTextReaderErrMemory(xmlTextReaderPtr reader) {
+    if (reader == NULL) {
+        xmlRaiseMemoryError(NULL, NULL, NULL, XML_FROM_PARSER, NULL);
+        return;
+    }
+
     if (reader->ctxt != NULL)
         xmlCtxtErrMemory(reader->ctxt);
     else
         xmlRaiseMemoryError(NULL, NULL, NULL, XML_FROM_PARSER, NULL);
+
     reader->mode = XML_TEXTREADER_MODE_ERROR;
     reader->state = XML_TEXTREADER_ERROR;
 }
@@ -2114,11 +2136,30 @@ xmlNewTextReaderFilename(const char *URI) {
     xmlParserInputBufferPtr input;
     xmlTextReaderPtr ret;
 
-    input = xmlParserInputBufferCreateFilename(URI, XML_CHAR_ENCODING_NONE);
-    if (input == NULL)
-	return(NULL);
+    if (xmlParserInputBufferCreateFilenameValue != NULL) {
+        input = xmlParserInputBufferCreateFilenameValue(URI,
+                XML_CHAR_ENCODING_NONE);
+        if (input == NULL) {
+            xmlTextReaderErr(XML_IO_ENOENT, "filaed to open %s", URI);
+            return(NULL);
+        }
+    } else {
+        xmlParserErrors code;
+
+        /*
+         * TODO: Remove XML_INPUT_UNZIP
+         */
+        code = xmlParserInputBufferCreateUrl(URI, XML_CHAR_ENCODING_NONE,
+                                             XML_INPUT_UNZIP, &input);
+        if (code != XML_ERR_OK) {
+            xmlTextReaderErr(code, "failed to open %s", URI);
+            return(NULL);
+        }
+    }
+
     ret = xmlNewTextReader(input, URI);
     if (ret == NULL) {
+        xmlTextReaderErrMemory(NULL);
 	xmlFreeParserInputBuffer(input);
 	return(NULL);
     }
@@ -5226,23 +5267,39 @@ xmlReaderForFd(int fd, const char *URL, const char *encoding, int options)
 {
     xmlTextReaderPtr reader;
     xmlParserInputBufferPtr input;
+    xmlParserErrors code;
 
-    if (fd < 0)
-        return (NULL);
+    if (fd < 0) {
+        xmlTextReaderErr(XML_ERR_ARGUMENT, "invalid argument");
+        return(NULL);
+    }
 
-    input = xmlParserInputBufferCreateFd(fd, XML_CHAR_ENCODING_NONE);
-    if (input == NULL)
-        return (NULL);
+    input = xmlAllocParserInputBuffer(XML_CHAR_ENCODING_NONE);
+    if (input == NULL) {
+        xmlTextReaderErrMemory(NULL);
+        return(NULL);
+    }
+    /*
+     * TODO: Remove XML_INPUT_UNZIP
+     */
+    code = xmlInputFromFd(input, fd, XML_INPUT_UNZIP);
+    if (code != XML_ERR_OK) {
+        xmlTextReaderErr(code, "failed to open fd");
+        return(NULL);
+    }
     input->closecallback = NULL;
+
     reader = xmlNewTextReader(input, URL);
     if (reader == NULL) {
+        xmlTextReaderErrMemory(NULL);
         xmlFreeParserInputBuffer(input);
-        return (NULL);
+        return(NULL);
     }
     reader->allocs |= XML_TEXTREADER_INPUT;
     if (xmlTextReaderSetup(reader, NULL, URL, encoding, options) < 0) {
+        xmlTextReaderErrMemory(NULL);
         xmlFreeTextReader(reader);
-        return (NULL);
+        return(NULL);
     }
     return (reader);
 }
@@ -5386,17 +5443,42 @@ xmlReaderNewFile(xmlTextReaderPtr reader, const char *filename,
 {
     xmlParserInputBufferPtr input;
 
-    if (filename == NULL)
-        return (-1);
-    if (reader == NULL)
-        return (-1);
+    if ((filename == NULL) || (reader == NULL)) {
+        xmlTextReaderErr(XML_ERR_ARGUMENT, "invalid argument");
+        return(-1);
+    }
 
-    input =
-        xmlParserInputBufferCreateFilename(filename,
-                                           XML_CHAR_ENCODING_NONE);
-    if (input == NULL)
-        return (-1);
-    return (xmlTextReaderSetup(reader, input, filename, encoding, options));
+    if (xmlParserInputBufferCreateFilenameValue != NULL) {
+        input = xmlParserInputBufferCreateFilenameValue(filename,
+                XML_CHAR_ENCODING_NONE);
+        if (input == NULL) {
+            xmlTextReaderErr(XML_IO_ENOENT, "failed to open %s", filename);
+            return(-1);
+        }
+    } else {
+        /*
+         * TODO: Remove XML_INPUT_UNZIP
+         */
+        xmlParserInputFlags flags = XML_INPUT_UNZIP;
+        xmlParserErrors code;
+
+        if ((options & XML_PARSE_NONET) == 0)
+            flags |= XML_INPUT_NETWORK;
+
+        code = xmlParserInputBufferCreateUrl(filename, XML_CHAR_ENCODING_NONE,
+                                             flags, &input);
+        if (code != XML_ERR_OK) {
+            xmlTextReaderErr(code, "failed to open %s", filename);
+            return(-1);
+        }
+    }
+
+    if (xmlTextReaderSetup(reader, input, filename, encoding, options) < 0) {
+        xmlTextReaderErrMemory(NULL);
+        return(-1);
+    }
+
+    return(0);
 }
 
 /**
@@ -5454,17 +5536,34 @@ xmlReaderNewFd(xmlTextReaderPtr reader, int fd,
                const char *URL, const char *encoding, int options)
 {
     xmlParserInputBufferPtr input;
+    xmlParserErrors code;
 
-    if (fd < 0)
-        return (-1);
-    if (reader == NULL)
-        return (-1);
+    if ((fd < 0) || (reader == NULL)) {
+        xmlTextReaderErr(XML_ERR_ARGUMENT, "invalid argument");
+        return(-1);
+    }
 
-    input = xmlParserInputBufferCreateFd(fd, XML_CHAR_ENCODING_NONE);
-    if (input == NULL)
-        return (-1);
+    input = xmlAllocParserInputBuffer(XML_CHAR_ENCODING_NONE);
+    if (input == NULL) {
+        xmlTextReaderErrMemory(NULL);
+        return(-1);
+    }
+    /*
+     * TODO: Remove XML_INPUT_UNZIP
+     */
+    code = xmlInputFromFd(input, fd, XML_INPUT_UNZIP);
+    if (code != XML_ERR_OK) {
+        xmlTextReaderErr(code, "failed to open fd");
+        return(-1);
+    }
     input->closecallback = NULL;
-    return (xmlTextReaderSetup(reader, input, URL, encoding, options));
+
+    if (xmlTextReaderSetup(reader, input, URL, encoding, options) < 0) {
+        xmlTextReaderErrMemory(NULL);
+        return(-1);
+    }
+
+    return(0);
 }
 
 /**

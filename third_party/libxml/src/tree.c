@@ -45,6 +45,10 @@
 #include "private/memory.h"
 #include "private/tree.h"
 
+#ifndef SIZE_MAX
+  #define SIZE_MAX ((size_t) -1)
+#endif
+
 /*
  * Internal variable indicating whether a callback has been registered
  * for node creation/destruction. This avoids looking up thread-local
@@ -168,10 +172,10 @@ xmlGetParameterEntityFromDtd(const xmlDtd *dtd, const xmlChar *name) {
 xmlChar *
 xmlBuildQName(const xmlChar *ncname, const xmlChar *prefix,
 	      xmlChar *memory, int len) {
-    int lenn, lenp;
+    size_t lenn, lenp;
     xmlChar *ret;
 
-    if (ncname == NULL) return(NULL);
+    if ((ncname == NULL) || (len < 0)) return(NULL);
     if (prefix == NULL) return((xmlChar *) ncname);
 
 #ifdef FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION
@@ -182,8 +186,10 @@ xmlBuildQName(const xmlChar *ncname, const xmlChar *prefix,
 
     lenn = strlen((char *) ncname);
     lenp = strlen((char *) prefix);
+    if (lenn >= SIZE_MAX - lenp - 1)
+        return(NULL);
 
-    if ((memory == NULL) || (len < lenn + lenp + 2)) {
+    if ((memory == NULL) || ((size_t) len < lenn + lenp + 2)) {
 	ret = xmlMalloc(lenn + lenp + 2);
 	if (ret == NULL)
 	    return(NULL);
@@ -1886,8 +1892,8 @@ xmlFreeProp(xmlAttrPtr cur) {
 	xmlDeregisterNodeDefaultValue((xmlNodePtr)cur);
 
     /* Check for ID removal -> leading to invalid references ! */
-    if ((cur->doc != NULL) && (cur->atype == XML_ATTRIBUTE_ID)) {
-	    xmlRemoveID(cur->doc, cur);
+    if (cur->doc != NULL && cur->id != NULL) {
+        xmlRemoveID(cur->doc, cur);
     }
     if (cur->children != NULL) xmlFreeNodeList(cur->children);
     DICT_FREE(cur->name)
@@ -2730,7 +2736,7 @@ xmlNodeSetDoc(xmlNodePtr node, xmlDocPtr doc) {
              * TODO: ID attributes should also be added to the new
              * document, but it's not clear how to handle clashes.
              */
-            if (attr->atype == XML_ATTRIBUTE_ID)
+            if (attr->id != NULL)
                 xmlRemoveID(oldDoc, attr);
 
             break;
@@ -6913,7 +6919,7 @@ xmlSetNsProp(xmlNodePtr node, xmlNsPtr ns, const xmlChar *name,
                 return(NULL);
         }
 
-	if (prop->atype == XML_ATTRIBUTE_ID) {
+	if (prop->id != NULL) {
 	    xmlRemoveID(node->doc, prop);
 	    prop->atype = XML_ATTRIBUTE_ID;
 	}

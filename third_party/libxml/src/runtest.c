@@ -2355,6 +2355,14 @@ testParseContent(xmlParserCtxtPtr ctxt, xmlDocPtr doc, const char *filename) {
     char *content, *roundTrip;
     int ret = 0;
 
+    /*
+     * Undeclared entities aren't a fatal error if there's an
+     * external DTD. When parsing content, we assume there's no
+     * DTD, so the undeclared entity test would fail.
+     */
+    if (strcmp(filename, "./test/undeclared-entity.xml") == 0)
+        return 0;
+
     if (ctxt->html) {
         xmlNodePtr cur;
 
@@ -3991,6 +3999,9 @@ schematronTest(const char *filename,
     size_t i;
     char count = 0;
 
+    /* Redirect XPath errors */
+    xmlSetStructuredErrorFunc(NULL, testStructuredErrorHandler);
+
     pctxt = xmlSchematronNewParserCtxt(filename);
     schematron = xmlSchematronParse(pctxt);
     xmlSchematronFreeParserCtxt(pctxt);
@@ -4004,8 +4015,8 @@ schematronTest(const char *filename,
      */
     len = strlen(base);
     if ((len > 499) || (len < 5)) {
-        xmlSchematronFree(schematron);
-	return(-1);
+        ret = -1;
+        goto done;
     }
     len -= 4; /* remove trailing .sct */
     memcpy(prefix, base, len);
@@ -4045,8 +4056,10 @@ schematronTest(const char *filename,
         }
     }
     globfree(&globbuf);
-    xmlSchematronFree(schematron);
 
+done:
+    xmlSchematronFree(schematron);
+    xmlSetStructuredErrorFunc(NULL, NULL);
     return(ret);
 }
 #endif /* LIBXML_SCHEMATRON_ENABLED */

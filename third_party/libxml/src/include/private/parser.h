@@ -20,6 +20,10 @@
  * Set if the validation context is part of a parser context.
  */
 #define XML_VCTXT_USE_PCTXT (1u << 1)
+/**
+ * Set when parsing entities.
+ */
+#define XML_VCTXT_IN_ENTITY (1u << 3)
 
 /*
  * TODO: Rename to avoid confusion with xmlParserInputFlags
