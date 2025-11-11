@@ -481,7 +481,13 @@ std::unique_ptr<net::test_server::HttpResponse> TestPageResponse(
 }
 
 // Tests that tapping the camera action logs the correct metric.
-- (void)testContextMenuActionCamera {
+// TODO(crbug.com/459838957): Test is flaky on devices.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testContextMenuActionCamera testContextMenuActionCamera
+#else
+#define MAYBE_testContextMenuActionCamera FLAKY_testContextMenuActionCamera
+#endif
+- (void)MAYBE_testContextMenuActionCamera {
   // The file upload panel is only available on iOS 18.4+.
   if (!base::ios::IsRunningOnOrLater(18, 4, 0)) {
     EARL_GREY_TEST_SKIPPED(@"Test is only available for iOS 18.4+, skipping.");
