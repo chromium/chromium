@@ -473,6 +473,9 @@ BASE_FEATURE(kGlicActorUseDragModifiers, base::FEATURE_ENABLED_BY_DEFAULT);
 // to pixel coordinates when performing browser-side TOCTOU checks.
 BASE_FEATURE(kGlicActorTransformCoordinates, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Call CancelPagePopup to dismiss the page popup instead of calling blur.
+BASE_FEATURE(kGlicActorSelectCancelsPopup, base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Controls whether the Glic's act-on-web capability is checked for managed
 // trial clients.
 BASE_FEATURE(kGlicActOnWebCapabilityForManagedTrials,

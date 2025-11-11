@@ -11,6 +11,7 @@
 #include "base/notimplemented.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/actor/actor_logging.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/renderer/actor/tool_utils.h"
 #include "content/public/renderer/render_frame.h"
@@ -20,6 +21,7 @@
 #include "third_party/blink/public/web/web_node.h"
 #include "third_party/blink/public/web/web_option_element.h"
 #include "third_party/blink/public/web/web_select_element.h"
+#include "third_party/blink/public/web/web_view.h"
 
 namespace actor {
 
@@ -55,10 +57,14 @@ void SelectTool::Execute(ToolFinishedCallback callback) {
   WebString value = validated_result.value().option_value;
   select.SetValue(value, /*send_events=*/true);
 
-  // If the select tool makes the selection in a popup widget (e.g., a dropdown
-  // menu), de-focus so the popup is hidden. An visible popup could occlude
-  // the contents underneath it.
-  select.Blur();
+  if (base::FeatureList::IsEnabled(features::kGlicActorSelectCancelsPopup)) {
+    frame_->GetWebFrame()->View()->CancelPagePopup();
+  } else {
+    // If the select tool makes the selection in a popup widget (e.g., a
+    // dropdown menu), de-focus so the popup is hidden. An visible popup could
+    // occlude the contents underneath it.
+    select.Blur();
+  }
 
   std::move(callback).Run(MakeOkResult());
 }
