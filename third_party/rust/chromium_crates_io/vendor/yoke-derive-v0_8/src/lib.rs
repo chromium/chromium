@@ -198,7 +198,9 @@ fn yokeable_derive_impl(input: &DeriveInput) -> TokenStream2 {
                         // are the same
                         debug_assert!(mem::size_of::<Self::Output>() == mem::size_of::<Self>());
                         let ptr: *const Self = (&this as *const Self::Output).cast();
-                        #[allow(forgetting_copy_types, clippy::forget_copy, clippy::forget_non_drop)] // This is a noop if the struct is copy, which Clippy doesn't like
+                        // This is a noop if the struct is copy, which Clippy doesn't like
+                        // Furthermore, restriction lints like mem_forget are usually for first-party code, not custom derives
+                        #[allow(forgetting_copy_types, clippy::forget_copy, clippy::forget_non_drop, clippy::mem_forget)]
                         mem::forget(this);
                         ptr::read(ptr)
                     }
@@ -237,7 +239,9 @@ fn yokeable_derive_impl(input: &DeriveInput) -> TokenStream2 {
                     // are the same
                     debug_assert!(mem::size_of::<Self::Output>() == mem::size_of::<Self>());
                     let ptr: *const Self = (&this as *const Self::Output).cast();
-                    #[allow(forgetting_copy_types, clippy::forget_copy, clippy::forget_non_drop)] // This is a noop if the struct is copy, which Clippy doesn't like
+                    // This is a noop if the struct is copy, which Clippy doesn't like
+                    // Furthermore, restriction lints like mem_forget are usually for first-party code, not custom derives
+                    #[allow(forgetting_copy_types, clippy::forget_copy, clippy::forget_non_drop, clippy::mem_forget)]
                     mem::forget(this);
                     ptr::read(ptr)
                 }

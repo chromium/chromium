@@ -12,7 +12,7 @@
 [package]
 edition = "2021"
 name = "yoke-derive"
-version = "0.8.0"
+version = "0.8.1"
 authors = ["Manish Goregaokar <manishsmail@gmail.com>"]
 build = false
 autolib = false
