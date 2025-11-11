@@ -1,6 +1,6 @@
 [package]
 name = "quote"
-version = "1.0.41"
+version = "1.0.42"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 autobenches = false
 categories = ["development-tools::procedural-macro-helpers"]
@@ -10,7 +10,7 @@ edition = "2018"
 keywords = ["macros", "syn"]
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/dtolnay/quote"
-rust-version = "1.60"
+rust-version = "1.68"
 
 [dependencies]
 proc-macro2 = { version = "1.0.80", default-features = false }

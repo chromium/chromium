@@ -31,7 +31,7 @@ cargo_crate("lib") {
   cargo_pkg_name = "quote"
   cargo_pkg_description = "Quasi-quoting macro quote!(...)"
   cargo_pkg_repository = "https://github.com/dtolnay/quote"
-  cargo_pkg_version = "1.0.41"
+  cargo_pkg_version = "1.0.42"
 
   allow_unsafe = false
 

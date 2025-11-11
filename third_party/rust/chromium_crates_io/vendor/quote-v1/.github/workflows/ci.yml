@@ -24,7 +24,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        rust: [nightly, stable, beta, 1.76.0, 1.60.0]
+        rust: [nightly, stable, beta, 1.76.0, 1.68.0]
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v5
@@ -37,7 +37,7 @@ jobs:
         if: matrix.rust == 'nightly'
       - run: cargo check
       - run: cargo test
-        if: matrix.rust != '1.60.0'
+        if: matrix.rust != '1.68.0'
       - run: cargo run --manifest-path benches/Cargo.toml
       - uses: actions/upload-artifact@v4
         if: matrix.rust == 'nightly' && always()
