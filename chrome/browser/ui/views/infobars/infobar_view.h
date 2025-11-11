@@ -37,6 +37,8 @@ class InfoBarView : public infobars::InfoBar,
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kInfoBarElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kDismissButtonElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kLeftBalancerElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kRightSpacerElementId);
 
   explicit InfoBarView(std::unique_ptr<infobars::InfoBarDelegate> delegate);
   InfoBarView(const InfoBarView&) = delete;
@@ -115,6 +117,10 @@ class InfoBarView : public infobars::InfoBar,
  private:
   FRIEND_TEST_ALL_PREFIXES(InfoBarViewTest, GetDrawSeparator);
 
+  // Recalculates the layout of the infobar's contents, ensuring that views are
+  // balanced to fit within the available space inside the infobar container.
+  void RecalculateLayoutBalancing();
+
   // Make all AddChildView* overloads private so downstream subclasses
   // cannot call them directly.
   using View::AddChildView;
@@ -148,6 +154,13 @@ class InfoBarView : public infobars::InfoBar,
 
   // Used to run the menu.
   std::unique_ptr<views::MenuRunner> menu_runner_;
+
+  // The left balancer view for flex layout.
+  raw_ptr<views::View> left_balancer_ = nullptr;
+  // The right spacer view for flex layout.
+  raw_ptr<views::View> right_spacer_ = nullptr;
+  // The right side container view for flex layout.
+  raw_ptr<views::View> right_side_container_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_INFOBARS_INFOBAR_VIEW_H_

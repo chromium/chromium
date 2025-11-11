@@ -122,21 +122,22 @@ TEST_F(InfoBarViewUnitTest, CenteredLayout) {
   ASSERT_NE(nullptr, layout);
   EXPECT_EQ(views::LayoutAlignment::kCenter, layout->cross_axis_alignment());
 
-  // Check for the presence of the primary and secondary spacer views.
-  const auto& children = infobar_view->children();
-  ASSERT_GE(children.size(), 2u);
-  views::View* primary_spacer = children[0];
-  views::View* secondary_spacer = children.back();
-  if (infobar_view->close_button() &&
-      infobar_view->close_button() == secondary_spacer) {
-    secondary_spacer = children[children.size() - 2];
+  // Find the spacer views used for centering.
+  std::vector<views::View*> spacers;
+  for (views::View* child : infobar_view->children()) {
+    const views::FlexSpecification* flex_spec =
+        child->GetProperty(views::kFlexBehaviorKey);
+    if (flex_spec && flex_spec->weight() == 1) {
+      spacers.push_back(child);
+    }
   }
 
-  // Verify the flex properties of the spacers.
+  // Verify there are two spacers with the correct flex properties.
+  ASSERT_EQ(2u, spacers.size());
   const views::FlexSpecification* primary_spec =
-      primary_spacer->GetProperty(views::kFlexBehaviorKey);
+      spacers[0]->GetProperty(views::kFlexBehaviorKey);
   const views::FlexSpecification* secondary_spec =
-      secondary_spacer->GetProperty(views::kFlexBehaviorKey);
+      spacers[1]->GetProperty(views::kFlexBehaviorKey);
   ASSERT_NE(nullptr, primary_spec);
   ASSERT_NE(nullptr, secondary_spec);
   EXPECT_EQ(1, primary_spec->weight());

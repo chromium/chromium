@@ -61,7 +61,6 @@
 
 namespace {
 const int kInfobarIconSize = 24;
-
 int GetElementSpacing() {
   if (base::FeatureList::IsEnabled(features::kInfobarRefresh)) {
     return ChromeLayoutProvider::Get()->GetDistanceMetric(
@@ -87,6 +86,8 @@ gfx::Insets GetCloseButtonSpacing() {
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(InfoBarView, kInfoBarElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(InfoBarView, kDismissButtonElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(InfoBarView, kLeftBalancerElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(InfoBarView, kRightSpacerElementId);
 
 InfoBarView::InfoBarView(std::unique_ptr<infobars::InfoBarDelegate> delegate)
     : infobars::InfoBar(std::move(delegate)),
@@ -104,24 +105,35 @@ InfoBarView::InfoBarView(std::unique_ptr<infobars::InfoBarDelegate> delegate)
   SetPaintToLayer();
   layer()->SetMasksToBounds(true);
 
-  // Flex specification used for both the primary and secondary space.
-  const views::FlexSpecification kSpacerFlexSpec =
+  const int kRefreshMargin = ChromeLayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_UNRELATED_CONTROL_HORIZONTAL);
+
+  const views::FlexSpecification kSpacerFlex =
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
                                views::MaximumFlexSizeRule::kUnbounded)
           .WithWeight(1);
 
-  // For flex layout, set the InfoBarView to be a horizontal flex container.
+  const views::FlexSpecification kRigidFlex =
+      views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
+                               views::MaximumFlexSizeRule::kPreferred)
+          .WithWeight(0);
+
   if (base::FeatureList::IsEnabled(features::kInfobarRefresh)) {
     auto* layout = SetLayoutManager(std::make_unique<views::FlexLayout>());
     layout->SetOrientation(views::LayoutOrientation::kHorizontal)
         .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
-        .SetInteriorMargin(gfx::Insets::VH(
-            0, ChromeLayoutProvider::Get()->GetDistanceMetric(
-                   views::DISTANCE_UNRELATED_CONTROL_HORIZONTAL)));
+        .SetInteriorMargin(gfx::Insets::VH(0, kRefreshMargin));
+
+    // Add a balancer for elements for centered layout.
+    left_balancer_ = AddChildView(std::make_unique<views::View>());
+    left_balancer_->SetProperty(views::kElementIdentifierKey,
+                                kLeftBalancerElementId);
+    left_balancer_->SetProperty(views::kFlexBehaviorKey, kRigidFlex);
+    left_balancer_->SetPreferredSize(gfx::Size(0, 1));
 
     // Add a spacer for centered layout.
     auto* primary_space = AddChildView(std::make_unique<views::View>());
-    primary_space->SetProperty(views::kFlexBehaviorKey, kSpacerFlexSpec);
+    primary_space->SetProperty(views::kFlexBehaviorKey, kSpacerFlex);
   }
 
   const ui::ImageModel& image = this->delegate()->GetIcon();
@@ -155,12 +167,23 @@ InfoBarView::InfoBarView(std::unique_ptr<infobars::InfoBarDelegate> delegate)
   content_container_ = AddChildView(std::make_unique<views::View>());
   if (base::FeatureList::IsEnabled(features::kInfobarRefresh)) {
     content_container_->SetLayoutManager(std::make_unique<views::FlexLayout>());
+    content_container_->SetProperty(views::kFlexBehaviorKey, kRigidFlex);
   }
 
-  // Add the second spacer for the infobar flex layout.
+  // Add the second spacer and the right-side container.
   if (base::FeatureList::IsEnabled(features::kInfobarRefresh)) {
-    auto* secondary_space = AddChildView(std::make_unique<views::View>());
-    secondary_space->SetProperty(views::kFlexBehaviorKey, kSpacerFlexSpec);
+    right_spacer_ = AddChildView(std::make_unique<views::View>());
+    right_spacer_->SetProperty(views::kElementIdentifierKey,
+                               kRightSpacerElementId);
+    right_spacer_->SetProperty(views::kFlexBehaviorKey, kSpacerFlex);
+
+    // Create the container for right-aligned elements.
+    right_side_container_ = AddChildView(std::make_unique<views::View>());
+    auto* right_layout = right_side_container_->SetLayoutManager(
+        std::make_unique<views::FlexLayout>());
+    right_layout->SetOrientation(views::LayoutOrientation::kHorizontal)
+        .SetCrossAxisAlignment(views::LayoutAlignment::kEnd);
+    right_side_container_->SetProperty(views::kFlexBehaviorKey, kRigidFlex);
   }
 
   if (this->delegate()->IsCloseable()) {
@@ -172,29 +195,27 @@ InfoBarView::InfoBarView(std::unique_ptr<infobars::InfoBarDelegate> delegate)
         close_button.get(), vector_icons::kCloseChromeRefreshIcon,
         gfx::kPlaceholderColor, gfx::kPlaceholderColor);
     close_button->SetTooltipText(l10n_util::GetStringUTF16(IDS_ACCNAME_CLOSE));
+    close_button->SetProperty(views::kElementIdentifierKey,
+                              kDismissButtonElementId);
 
-    close_button_ = AddChildView(std::move(close_button));
-    close_button_->SetProperty(views::kElementIdentifierKey,
-                               kDismissButtonElementId);
-    InstallCircleHighlightPathGenerator(close_button_);
-
-    // Set the flex property for the close button.
-    if (base::FeatureList::IsEnabled(features::kInfobarRefresh)) {
-      // Add margins to the left of the close button.
+    // Add to container if Refresh is enabled.
+    if (base::FeatureList::IsEnabled(features::kInfobarRefresh) &&
+        right_side_container_) {
+      close_button_ =
+          right_side_container_->AddChildView(std::move(close_button));
+      close_button_->SetProperty(views::kFlexBehaviorKey, kRigidFlex);
       close_button_->SetProperty(
-          views::kMarginsKey,
-          std::make_unique<gfx::Insets>(gfx::Insets::TLBR(
-              0,
-              ChromeLayoutProvider::Get()->GetDistanceMetric(
-                  views::DISTANCE_UNRELATED_CONTROL_HORIZONTAL),
-              0, 0)));
+          views::kMarginsKey, std::make_unique<gfx::Insets>(
+                                  gfx::Insets::TLBR(0, kRefreshMargin, 0, 0)));
     } else {
+      close_button_ = AddChildView(std::move(close_button));
       gfx::Insets close_button_spacing = GetCloseButtonSpacing();
       close_button_->SetProperty(
           views::kMarginsKey,
           gfx::Insets::TLBR(close_button_spacing.top(), 0,
                             close_button_spacing.bottom(), 0));
     }
+    InstallCircleHighlightPathGenerator(close_button_);
   }
   SetTargetHeight(
       ChromeLayoutProvider::Get()->GetDistanceMetric(DISTANCE_INFOBAR_HEIGHT));
@@ -202,6 +223,9 @@ InfoBarView::InfoBarView(std::unique_ptr<infobars::InfoBarDelegate> delegate)
   GetViewAccessibility().SetRole(ax::mojom::Role::kAlertDialog);
   GetViewAccessibility().SetName(l10n_util::GetStringUTF8(IDS_ACCNAME_INFOBAR));
   GetViewAccessibility().SetKeyShortcuts("Alt+Shift+A");
+
+  // Initial balancing.
+  RecalculateLayoutBalancing();
 }
 
 InfoBarView::~InfoBarView() {
@@ -209,6 +233,28 @@ InfoBarView::~InfoBarView() {
   // subclasses' RunMenu() functions should have prevented opening any new ones
   // once we became unowned.
   DCHECK(!menu_runner_.get());
+}
+
+void InfoBarView::RecalculateLayoutBalancing() {
+  if (!base::FeatureList::IsEnabled(features::kInfobarRefresh)) {
+    return;
+  }
+  // We need both the balancer and the container to exist.
+  if (!left_balancer_ || !right_side_container_) {
+    return;
+  }
+  // Get the width of the container (this includes the close button + margins).
+  const int right_side_width =
+      right_side_container_->GetPreferredSize().width();
+
+  // Make sure the left balancer matces the right side width, otherwise set the
+  // size.
+  if (left_balancer_->GetPreferredSize().width() != right_side_width) {
+    left_balancer_->SetPreferredSize(gfx::Size(right_side_width, 1));
+
+    // Trigger a re-layout so the spacers can adjust to the new balance.
+    InvalidateLayout();
+  }
 }
 
 void InfoBarView::Layout(PassKey) {
@@ -371,9 +417,25 @@ std::unique_ptr<views::Link> InfoBarView::CreateLink(
 void InfoBarView::AddViewBeforeCloseButton(std::unique_ptr<views::View> view) {
   // We can call AddChildView and ReorderChildView here
   // because we are inside the InfoBarView class.
-  views::View* view_ptr = AddChildView(std::move(view));
-  if (close_button()) {
-    ReorderChildView(view_ptr, GetIndexOf(close_button()).value());
+  if (close_button_) {
+    if (base::FeatureList::IsEnabled(features::kInfobarRefresh)) {
+      if (!right_side_container_) {
+        return;
+      }
+      std::optional<size_t> index =
+          right_side_container_->GetIndexOf(close_button_);
+      if (index.has_value()) {
+        right_side_container_->AddChildViewAt(std::move(view), index.value());
+        // Re-balance the layout to account for new view on the right side.
+        RecalculateLayoutBalancing();
+      }
+    } else {
+      views::View* view_ptr = AddChildView(std::move(view));
+      std::optional<size_t> index = GetIndexOf(close_button_);
+      if (index.has_value()) {
+        ReorderChildView(view_ptr, index.value());
+      }
+    }
   }
 }
 
