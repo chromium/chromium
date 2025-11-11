@@ -97,6 +97,7 @@ void DefaultBrowserHandler::SetAsDefaultBrowser(const base::Value::List& args) {
   if (!args.empty() && args[0].GetBool()) {
     browser_util::PinAppToTaskbar(
         ShellUtil::GetBrowserModelId(InstallUtil::IsPerUserInstall()),
+        browser_util::PinAppToTaskbarChannel::kSettingsPage,
         base::BindOnce(&PinToTaskbarResult));
   }
 #endif  // BUILDFLAG(IS_WIN)
@@ -144,6 +145,7 @@ void DefaultBrowserHandler::OnDefaultBrowserWorkerFinished(
     if (base::FeatureList::IsEnabled(features::kOfferPinToTaskbarInSettings)) {
       browser_util::ShouldOfferToPin(
           ShellUtil::GetBrowserModelId(InstallUtil::IsPerUserInstall()),
+          browser_util::PinAppToTaskbarChannel::kSettingsPage,
           base::BindOnce(&DefaultBrowserHandler::OnCanPinToTaskbarResult,
                          weak_ptr_factory_.GetWeakPtr(), js_callback_id,
                          state));

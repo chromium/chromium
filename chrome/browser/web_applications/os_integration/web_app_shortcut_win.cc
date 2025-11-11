@@ -633,13 +633,17 @@ bool CreatePlatformShortcuts(const base::FilePath& web_app_path,
   browser_util::PinResultCallback can_pin_result_callback(base::BindOnce(
       [](const std::wstring& app_user_model_id, bool result) {
         if (result) {
-          browser_util::PinAppToTaskbar(app_user_model_id,
-                                        base::BindOnce(&PinAppResult));
+          browser_util::PinAppToTaskbar(
+              app_user_model_id,
+              browser_util::PinAppToTaskbarChannel::kPinWebApp,
+              base::BindOnce(&PinAppResult));
         }
       },
       app_id));
 
-  browser_util::ShouldOfferToPin(app_id, std::move(can_pin_result_callback));
+  browser_util::ShouldOfferToPin(
+      app_id, browser_util::PinAppToTaskbarChannel::kPinWebApp,
+      std::move(can_pin_result_callback));
   return true;
 }
 

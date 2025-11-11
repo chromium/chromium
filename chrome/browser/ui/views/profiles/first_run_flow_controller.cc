@@ -278,6 +278,7 @@ class DefaultBrowserStepController : public ProfileManagementStepController {
       if (can_pin_) {
         browser_util::PinAppToTaskbar(
             ShellUtil::GetBrowserModelId(InstallUtil::IsPerUserInstall()),
+            browser_util::PinAppToTaskbarChannel::kFirstRunExperience,
             base::BindOnce(&PinToTaskbarResult));
       }
 #endif  // BUILDFLAG(IS_WIN)
@@ -310,6 +311,7 @@ class DefaultBrowserStepController : public ProfileManagementStepController {
               features::kOfferPinToTaskbarInFirstRunExperience)) {
         browser_util::ShouldOfferToPin(
             ShellUtil::GetBrowserModelId(InstallUtil::IsPerUserInstall()),
+            browser_util::PinAppToTaskbarChannel::kFirstRunExperience,
             base::BindOnce(
                 &DefaultBrowserStepController::OnCanPinToTaskbarResult,
                 weak_ptr_factory_.GetWeakPtr()));

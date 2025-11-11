@@ -90,6 +90,7 @@ bool PinInfoBarDelegate::Accept() {
 #if BUILDFLAG(IS_WIN)
   browser_util::PinAppToTaskbar(
       ShellUtil::GetBrowserModelId(InstallUtil::IsPerUserInstall()),
+      browser_util::PinAppToTaskbarChannel::kPinToTaskbarInfoBar,
       base::DoNothing());
 #elif BUILDFLAG(IS_MAC)
   PinChromeToDock();
