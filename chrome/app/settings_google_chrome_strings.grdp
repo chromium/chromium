@@ -107,8 +107,14 @@ Chrome understands forms better and can autofill them faster for you. This setti
     <message name="IDS_SETTINGS_DEFAULT_BROWSER_DEFAULT" desc="The text displayed when Chrome is not the default browser">
       Google Chrome is your default browser
     </message>
+    <message name="IDS_SETTINGS_DEFAULT_BROWSER_DEFAULT_THANK_YOU" desc="The text displayed when Chrome is the default browser">
+      Thanks for choosing Chrome as your default browser!
+    </message>
     <message name="IDS_SETTINGS_DEFAULT_BROWSER_MAKE_DEFAULT" desc="Default browser checkbox label">
       Make Google Chrome the default browser
+    </message>
+    <message name="IDS_SETTINGS_DEFAULT_BROWSER_MAKE_DEFAULT_USER_VALUE" desc="The text displayed when Chrome is not the default browser. This string describes the effect (user benefit) of setting a browser as the default.">
+      You can use Chrome anytime you click links in messages, documents, and other apps
     </message>
     <message name="IDS_SETTINGS_DEFAULT_BROWSER_MAKE_DEFAULT_AND_PIN" desc="The text of the button to make Chrome the default browser and pin it to the taskbar.">
       Make Google Chrome the default browser and pin to the taskbar
