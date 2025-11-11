@@ -96,6 +96,8 @@ class FakeFormFetcher : public FormFetcher {
 
   void SetBlocklisted(bool is_blocklisted);
 
+  bool HasConsumers();
+
   void NotifyFetchCompleted();
 
   void SetProfileStoreBackendError(

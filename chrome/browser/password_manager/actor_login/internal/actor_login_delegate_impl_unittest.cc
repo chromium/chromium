@@ -55,11 +55,18 @@ using password_manager::PasswordSaveManagerImpl;
 using testing::NiceMock;
 using testing::Return;
 using testing::ReturnRef;
+using testing::WithArg;
 
 namespace {
 
 constexpr char kTestUrl[] = "https://example.com/login";
 constexpr char16_t kTestUsername[] = u"username";
+
+template <bool success>
+void PostResponse(base::OnceCallback<void(bool)> callback) {
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), success));
+}
 
 class FakePasswordManagerClient
     : public password_manager::StubPasswordManagerClient {
@@ -117,6 +124,10 @@ class MockPasswordManagerDriver
   MOCK_METHOD(password_manager::PasswordManagerInterface*,
               GetPasswordManager,
               (),
+              (override));
+  MOCK_METHOD(void,
+              CheckViewAreaVisible,
+              (autofill::FieldRendererId, base::OnceCallback<void(bool)>),
               (override));
 };
 
@@ -455,6 +466,8 @@ TEST_F(ActorLoginDelegateImplTest, FillingReauthRequiredWindowNotActive) {
       .WillByDefault(ReturnRef(origin));
   ON_CALL(mock_driver_, IsInPrimaryMainFrame).WillByDefault(Return(true));
   ON_CALL(mock_driver_, IsNestedWithinFencedFrame).WillByDefault(Return(false));
+  ON_CALL(mock_driver_, CheckViewAreaVisible)
+      .WillByDefault(WithArg<1>(&PostResponse<true>));
 
   std::vector<std::unique_ptr<PasswordFormManager>> form_managers;
   form_managers.push_back(

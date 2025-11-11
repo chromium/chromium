@@ -133,6 +133,10 @@ void FakeFormFetcher::SetBlocklisted(bool is_blocklisted) {
   is_blocklisted_ = is_blocklisted;
 }
 
+bool FakeFormFetcher::HasConsumers() {
+  return !consumers_.empty();
+}
+
 void FakeFormFetcher::NotifyFetchCompleted() {
   state_ = State::NOT_WAITING;
   for (Consumer& consumer : consumers_) {
