@@ -37,7 +37,7 @@ use databake::*;
 /// let mut ctx = Default::default();
 /// println!(
 ///     "const FOO: LiteMap<usize, &str, &[(usize, &str)]> = {};",
-///     litemap_slice.bake(&mut ctx)
+///     litemap_slice.bake(&ctx)
 /// );
 /// ```
 impl<K, V, S> Bake for LiteMap<K, V, S>

@@ -6,14 +6,14 @@
 // THIS FILE IS SHARED BETWEEN LITEMAP AND ZEROVEC. PLEASE KEEP IT IN SYNC FOR ALL EDITS
 // @@@@@@@@@@@@@@@@
 
-use serde::ser::{Impossible, Serialize, Serializer};
+use serde_core::ser::{Impossible, Serialize, Serializer};
 
 pub fn is_num_or_string<T: Serialize + ?Sized>(k: &T) -> bool {
     // Serializer that errors in the same cases as serde_json::ser::MapKeySerializer
     struct MapKeySerializerDryRun;
     impl Serializer for MapKeySerializerDryRun {
         type Ok = ();
-        // Singleton error type that implements serde::ser::Error
+        // Singleton error type that implements serde_core::ser::Error
         type Error = core::fmt::Error;
 
         type SerializeSeq = Impossible<(), Self::Error>;
@@ -58,10 +58,8 @@ pub fn is_num_or_string<T: Serialize + ?Sized>(k: &T) -> bool {
         fn serialize_i64(self, _value: i64) -> Result<Self::Ok, Self::Error> {
             Ok(())
         }
-        serde::serde_if_integer128! {
-            fn serialize_i128(self, _value: i128) -> Result<Self::Ok, Self::Error> {
-                Ok(())
-            }
+        fn serialize_i128(self, _value: i128) -> Result<Self::Ok, Self::Error> {
+            Ok(())
         }
         fn serialize_u8(self, _value: u8) -> Result<Self::Ok, Self::Error> {
             Ok(())
@@ -75,10 +73,8 @@ pub fn is_num_or_string<T: Serialize + ?Sized>(k: &T) -> bool {
         fn serialize_u64(self, _value: u64) -> Result<Self::Ok, Self::Error> {
             Ok(())
         }
-        serde::serde_if_integer128! {
-            fn serialize_u128(self, _value: u128) -> Result<Self::Ok, Self::Error> {
-                Ok(())
-            }
+        fn serialize_u128(self, _value: u128) -> Result<Self::Ok, Self::Error> {
+            Ok(())
         }
         fn serialize_f32(self, _value: f32) -> Result<Self::Ok, Self::Error> {
             Err(core::fmt::Error)
