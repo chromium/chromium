@@ -146,7 +146,7 @@ public class InputOnVizTest {
         HistogramWatcher histograms =
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(
-                                "Android.InputOnViz.Browser.TransferInputToVizResult",
+                                "Android.InputOnViz.Browser.TransferInputToVizResult2",
                                 TransferInputToVizResult.SUCCESSFULLY_TRANSFERRED)
                         .build();
 

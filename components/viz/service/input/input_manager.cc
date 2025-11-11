@@ -129,7 +129,7 @@ InputManager::~InputManager() {
 InputManager::InputManager(FrameSinkManagerImpl* frame_sink_manager)
     :
 #if BUILDFLAG(IS_ANDROID)
-      android_state_transfer_handler_(*this),
+      android_state_transfer_handler_(*this, &viz_touch_state_handler_),
 #endif
       frame_sink_manager_(frame_sink_manager) {
   TRACE_EVENT("viz", "InputManager::InputManager");

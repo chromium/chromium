@@ -2647,7 +2647,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.InputOnViz.Browser.TransferInputToVizResult"
+<histogram name="Android.InputOnViz.Browser.TransferInputToVizResult2"
     enum="TransferInputToVizResult" expires_after="2026-03-22">
   <owner>kartarsingh@google.com</owner>
   <owner>amanvr@google.com</owner>
@@ -2658,7 +2658,8 @@ chromium-metrics-reviews@google.com.
 
     It records the result of transferring input sequence from Browser. The
     sequence can be handled by Browser/Viz based on various factors like if Ime
-    is active, or touch selection is active, etc.
+    is active, or touch selection is active, etc. V2 adds the
+    kSharedMemoryUnavailable and kPositiveEventAndDownTimeDelta bucket.
   </summary>
 </histogram>
 
