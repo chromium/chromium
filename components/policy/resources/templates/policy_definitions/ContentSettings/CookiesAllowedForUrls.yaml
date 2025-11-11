@@ -12,7 +12,7 @@ desc: |-
 
             See also policies <ph name="COOKIES_BLOCKED_FOR_URLS_POLICY_NAME">CookiesBlockedForUrls</ph> and <ph name="COOKIES_SESSIONS_ONLY_FOR_URLS">CookiesSessionOnlyForUrls</ph>. Note that there must be no conflicting URL patterns between these three policies - it is unspecified which policy takes precedence.
 
-            For detailed information on valid url patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE">*</ph> is not an accepted value for this policy.
+            For detailed information on valid url patterns, please see https://chromeenterprise.google/policies/url-patterns. <ph name="WILDCARD_VALUE">*</ph> is not an accepted value for this policy.
 example_value:
 - https://www.example.com
 - '[*.]example.edu'

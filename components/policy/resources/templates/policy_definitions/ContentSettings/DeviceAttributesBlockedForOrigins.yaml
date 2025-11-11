@@ -4,7 +4,7 @@ desc: |-
 
   Origins must correspond to web applications that are force-installed Isolated Web Apps (using <ph name="ISOLATED_WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME">IsolatedWebAppInstallForceList</ph> policy) or set up as a kiosk app. For Device Attributes API specification please see https://wicg.github.io/WebApiDevice/device_attributes.
 
-  For detailed information on valid <ph name="URL_LABEL">url</ph> patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE">*</ph> is not an accepted value for this policy.
+  For detailed information on valid <ph name="URL_LABEL">url</ph> patterns, please see https://chromeenterprise.google/policies/url-patterns. <ph name="WILDCARD_VALUE">*</ph> is not an accepted value for this policy.
 example_value:
 - https://www.google.com
 - '[*.]example.com'

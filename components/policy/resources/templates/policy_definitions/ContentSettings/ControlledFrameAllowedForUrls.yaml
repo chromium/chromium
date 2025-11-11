@@ -10,7 +10,7 @@ desc: |-
 
   URL patterns must not conflict with <ph name="CONTROLLED_FRAME_BLOCKED_FOR_URLS_POLICY_NAME">ControlledFrameBlockedForUrls</ph>. Neither policy takes precedence if a URL matches with both.
 
-  For detailed information on valid url patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE">*</ph> is not an accepted value for this policy.
+  For detailed information on valid url patterns, please see https://chromeenterprise.google/policies/url-patterns. <ph name="WILDCARD_VALUE">*</ph> is not an accepted value for this policy.
 example_value:
 - isolated-app://aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic
 features:

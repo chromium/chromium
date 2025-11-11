@@ -4,7 +4,7 @@ desc: |-
 
   If this policy is left unset or if a top-level origin doesn't match one of the URL patterns, <ph name="DEFAULT_THIRD_PARTY_STORAGE_PARTITIONING_SETTING_POLICY_NAME">DefaultThirdPartyStoragePartitioningSetting</ph> will apply.
 
-  For detailed information on valid patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Note that patterns you list here are treated as origins, not URLs, so you should not specify a path.
+  For detailed information on valid patterns, please see https://chromeenterprise.google/policies/url-patterns. Note that patterns you list here are treated as origins, not URLs, so you should not specify a path.
 
   For detailed information on third-party storage partitioning, please see https://developers.google.com/privacy-sandbox/cookies/storage-partitioning.
 

@@ -11,7 +11,7 @@ desc: |-
   call the API without a prior user gesture.
 
   For detailed information on valid url patterns, please see
-  https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
+  https://chromeenterprise.google/policies/url-patterns.
   Wildcards, <ph name="WILDCARD_VALUE">*</ph>, are allowed.
 
   Origins matching both blocked and allowed policy patterns will be blocked.
