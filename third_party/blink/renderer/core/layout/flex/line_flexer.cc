@@ -15,47 +15,33 @@ LineFlexer::LineFlexer(base::span<FlexItem> line_items,
       gap_between_items_(gap_between_items),
       mode_(sum_hypothetical_main_size < main_axis_inner_size ? kGrow
                                                               : kShrink) {
-  double total_weighted_flex_shrink = 0.0;
-  free_space_ = main_axis_inner_size_;
-
+#if DCHECK_IS_ON()
+  // All items should be set to their hypothetical size initially.
   for (auto& item : line_items_) {
-    // Set all items to their hypothetical size initially.
-    item.flexed_content_size = item.hypothetical_content_size;
-
-    // Per https://drafts.csswg.org/css-flexbox/#resolve-flexible-lengths
-    // step 3, freeze any item with:
-    //  - A flex-factor of 0.
-    //  - Any with a min/max size violation.
-    const double flex_factor =
-        (mode_ == kGrow) ? item.flex_grow : item.flex_shrink;
-    if (flex_factor == 0.0 ||
-        (mode_ == kGrow &&
-         item.base_content_size > item.hypothetical_content_size) ||
-        (mode_ == kShrink &&
-         item.base_content_size < item.hypothetical_content_size)) {
-      item.state = FlexerState::kFrozen;
-      free_space_ -= item.FlexedMarginBoxSize() + gap_between_items_;
-      continue;
-    }
-
-    total_flex_factor_ += flex_factor;
-    if (mode_ == kGrow) {
-      item.free_space_fraction = flex_factor / total_flex_factor_;
-    } else {
-      const double weighted_flex_shrink = flex_factor * item.base_content_size;
-      total_weighted_flex_shrink += weighted_flex_shrink;
-      item.free_space_fraction =
-          weighted_flex_shrink / total_weighted_flex_shrink;
-    }
-
-    free_space_ -= item.FlexBaseMarginBoxSize() + gap_between_items_;
+    DCHECK_EQ(item.flexed_content_size, item.hypothetical_content_size);
   }
-  free_space_ += gap_between_items_;
+#endif
+  // Per https://drafts.csswg.org/css-flexbox/#resolve-flexible-lengths
+  // step 3, freeze any item with:
+  //  - A flex-factor of 0.
+  //  - Any with a min/max size violation.
+  FreezeItems([mode = mode_](const FlexItem& item) {
+    const float flex_factor =
+        (mode == kGrow) ? item.flex_grow : item.flex_shrink;
+    if (flex_factor == 0.f) {
+      return true;
+    }
+
+    return mode == kGrow
+               ? item.base_content_size > item.hypothetical_content_size
+               : item.base_content_size < item.hypothetical_content_size;
+  });
 
   initial_free_space_ = free_space_;
 }
 
-void LineFlexer::FreezeViolations(FlexerState should_freeze) {
+template <typename ShouldFreezeFunc>
+void LineFlexer::FreezeItems(ShouldFreezeFunc should_freeze) {
   // Re-calculate the flex-factor sum, and free-space.
   //
   // NOTE: Because floating-point isn't associative we don't subtract the
@@ -67,10 +53,9 @@ void LineFlexer::FreezeViolations(FlexerState should_freeze) {
   free_space_ = main_axis_inner_size_;
   for (auto& item : line_items_) {
     // Determine if we should freeze this item.
-    item.state =
-        (item.state == FlexerState::kFrozen || item.state == should_freeze)
-            ? FlexerState::kFrozen
-            : FlexerState::kNone;
+    item.state = (item.state == FlexerState::kFrozen || should_freeze(item))
+                     ? FlexerState::kFrozen
+                     : FlexerState::kNone;
 
     // If this item is frozen don't add to the flex-factor sums.
     if (item.state == FlexerState::kFrozen) {
@@ -176,18 +161,18 @@ bool LineFlexer::ResolveFlexibleLengths() {
     item.flexed_content_size = adjusted_item_size;
 
     const LayoutUnit violation = adjusted_item_size - item_size;
-    if (violation > LayoutUnit()) {
-      item.state = FlexerState::kMinViolation;
-    } else if (violation < LayoutUnit()) {
-      item.state = FlexerState::kMaxViolation;
+    if (violation) {
+      item.state = violation < LayoutUnit() ? FlexerState::kMaxViolation
+                                            : FlexerState::kMinViolation;
     }
     total_violation += violation;
   }
 
   if (total_violation) {
-    FreezeViolations(total_violation < LayoutUnit()
-                         ? FlexerState::kMaxViolation
-                         : FlexerState::kMinViolation);
+    const FlexerState state = total_violation < LayoutUnit()
+                                  ? FlexerState::kMaxViolation
+                                  : FlexerState::kMinViolation;
+    FreezeItems([state](const FlexItem& item) { return item.state == state; });
     return true;
   }
 

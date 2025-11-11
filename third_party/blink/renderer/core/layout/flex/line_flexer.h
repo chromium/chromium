@@ -34,7 +34,9 @@ class LineFlexer {
     kShrink,
   };
 
-  void FreezeViolations(FlexerState should_freeze);
+  template <typename ShouldFreezeFunc>
+  void FreezeItems(ShouldFreezeFunc should_freeze);
+
   bool ResolveFlexibleLengths();
 
   base::span<FlexItem> line_items_;

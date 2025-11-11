@@ -59,7 +59,9 @@ struct FlexItem {
         is_initial_block_size_indefinite(is_initial_block_size_indefinite),
         is_used_flex_basis_indefinite(is_used_flex_basis_indefinite),
         depends_on_min_max_sizes(depends_on_min_max_sizes),
-        is_horizontal_flow(is_horizontal_flow) {}
+        is_horizontal_flow(is_horizontal_flow),
+        // Set all items to their hypothetical size initially.
+        flexed_content_size(hypothetical_content_size) {}
 
   LayoutUnit HypotheticalMainAxisMarginBoxSize() const {
     return hypothetical_content_size + main_axis_border_padding +
