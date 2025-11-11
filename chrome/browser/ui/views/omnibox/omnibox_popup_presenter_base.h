@@ -36,8 +36,8 @@ class OmniboxPopupPresenterBase {
   virtual ~OmniboxPopupPresenterBase();
 
   // Show or hide the popup widget with web view.
-  void Show();
-  void Hide();
+  virtual void Show();
+  virtual void Hide();
 
   // Tells whether the popup widget exists.
   bool IsShown() const;
@@ -70,6 +70,8 @@ class OmniboxPopupPresenterBase {
   LocationBarView* location_bar_view() const {
     return location_bar_view_.get();
   }
+
+  views::Widget* GetWidget() const { return widget_.get(); }
 
  private:
   friend class OmniboxPopupViewWebUITest;
