@@ -133,8 +133,15 @@ void BwgTabHelper::ExecuteZeroStateSuggestions(
   }
 
   if (zero_state_suggestions_->suggestions.has_value()) {
-    std::move(callback).Run(ZeroStateSuggestionsAsNSArray(
-        zero_state_suggestions_->suggestions.value()));
+    // Ensure the cached suggestions are for the current URL.
+    if (web_state_->GetVisibleURL().GetWithoutRef() ==
+        zero_state_suggestions_->url) {
+      std::move(callback).Run(ZeroStateSuggestionsAsNSArray(
+          zero_state_suggestions_->suggestions.value()));
+    } else {
+      // The cached suggestions are stale and thus obsolete.
+      std::move(callback).Run(nil);
+    }
     return;
   }
 
@@ -310,13 +317,25 @@ void BwgTabHelper::DidStartNavigation(
   // Cancel the callback that runs on page load, since we're now going to a new
   // page.
   page_loaded_callback_.Reset();
-  weak_ptr_factory_.InvalidateWeakPtrs();
+
+  if (IsZeroStateSuggestionsEnabled()) {
+    const GURL& current_url = navigation_context->GetUrl().GetWithoutRef();
+    if (current_url != zero_state_suggestions_->url) {
+      weak_ptr_factory_.InvalidateWeakPtrs();
+      ClearZeroStateSuggestions();
+      zero_state_suggestions_->url = current_url;
+      optimization_guide_decider_->CanApplyOptimization(
+          current_url, optimization_guide::proto::GLIC_ZERO_STATE_SUGGESTIONS,
+          base::BindOnce(&BwgTabHelper::OnCanApplyZeroStateSuggestionsDecision,
+                         weak_ptr_factory_.GetWeakPtr()));
+    }
+  }
 }
 
 void BwgTabHelper::DidFinishNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {
-  if (!IsAskGeminiChipEnabled() && !IsZeroStateSuggestionsEnabled()) {
+  if (!IsAskGeminiChipEnabled()) {
     return;
   }
 
@@ -338,16 +357,6 @@ void BwgTabHelper::DidFinishNavigation(
         current_url, optimization_guide::proto::GLIC_CONTEXTUAL_CUEING,
         base::BindOnce(&BwgTabHelper::OnOptimizationGuideDecision,
                        weak_ptr_factory_.GetWeakPtr(), current_url));
-  }
-
-  if (IsZeroStateSuggestionsEnabled() &&
-      current_url != zero_state_suggestions_->url) {
-    ClearZeroStateSuggestions();
-    zero_state_suggestions_->url = current_url;
-    optimization_guide_decider_->CanApplyOptimization(
-        current_url, optimization_guide::proto::GLIC_ZERO_STATE_SUGGESTIONS,
-        base::BindOnce(&BwgTabHelper::OnCanApplyZeroStateSuggestionsDecision,
-                       weak_ptr_factory_.GetWeakPtr()));
   }
 }
 
@@ -509,6 +518,12 @@ void BwgTabHelper::OnOptimizationGuideDecision(
 void BwgTabHelper::OnCanApplyZeroStateSuggestionsDecision(
     optimization_guide::OptimizationGuideDecision decision,
     const optimization_guide::OptimizationMetadata& metadata) {
+  // The URL has changed so the metadata is obsolete.
+  if (web_state_->GetVisibleURL().GetWithoutRef() !=
+      zero_state_suggestions_->url) {
+    return;
+  }
+
   zero_state_suggestions_->can_apply =
       decision == optimization_guide::OptimizationGuideDecision::kTrue;
 }
