@@ -355,19 +355,23 @@ bool BubbleManagerImpl::HasPendingBubbleOfSameType(
 
   auto it = std::ranges::find_if(
       pending_bubbles_queue_, [bubble_type](const PendingRequest& request) {
-        // Check if the controller is still valid and if its type
-        // matches.
         return request.controller &&
                request.controller->GetBubbleType() == bubble_type;
       });
 
-  // If no bubble of the specified type is found in the queue.
-  if (it == pending_bubbles_queue_.end()) {
+  return it != pending_bubbles_queue_.end() &&
+         (now - it->time_added) < kPendingRequestTimeout;
+}
+
+bool BubbleManagerImpl::HasConflictingPendingBubble(
+    const BubbleType bubble_type) const {
+  // If this type always preempts itself (like Passwords), it never blocks
+  // a new request of the same type.
+  if (ShouldAlwaysPreemptSameType(bubble_type)) {
     return false;
   }
 
-  return !ShouldAlwaysPreemptSameType(bubble_type) &&
-         (now - it->time_added) < kPendingRequestTimeout;
+  return HasPendingBubbleOfSameType(bubble_type);
 }
 
 bool BubbleManagerImpl::ShouldReplaceExistingBubble(

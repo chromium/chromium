@@ -332,8 +332,9 @@ void ManagePasswordsUIController::OnHideManualFallbackForSaving() {
           password_manager::ui::SAVE_CONFIRMATION_STATE) {
     return;
   }
-  // Don't hide the fallback if the bubble is open.
-  if (IsShowingBubble()) {
+  // Don't hide the fallback if the bubble is open or in the bubble manager
+  // queue.
+  if (IsShowingBubble() || BubbleManagerHasPasswordBubbleInQueue()) {
     return;
   }
 
@@ -1351,7 +1352,8 @@ void ManagePasswordsUIController::PrimaryPageChanged(content::Page& page) {
 
   // Keep the state if the bubble is currently open or the fallback for saving
   // should be still available.
-  if (IsShowingBubble() || save_fallback_timer_.IsRunning()) {
+  if (IsShowingBubble() || save_fallback_timer_.IsRunning() ||
+      BubbleManagerHasPasswordBubbleInQueue()) {
     return;
   }
 
@@ -1496,6 +1498,21 @@ bool ManagePasswordsUIController::IsPasswordChangeOngoing() const {
   return GetPasswordChangeDelegate();
 }
 
+bool ManagePasswordsUIController::BubbleManagerHasPasswordBubbleInQueue()
+    const {
+  if (!base::FeatureList::IsEnabled(
+          autofill::features::kAutofillShowBubblesBasedOnPriorities)) {
+    return false;
+  }
+
+  if (auto* manager =
+          autofill::BubbleManager::GetForWebContents(web_contents())) {
+    return manager->HasPendingBubbleOfSameType(GetBubbleType());
+  }
+
+  return false;
+}
+
 void ManagePasswordsUIController::ShowBubble() {
   if (TabDialogs* tab_dialogs = TabDialogs::FromWebContents(web_contents())) {
     tab_dialogs->ShowManagePasswordsBubble(user_action_);
@@ -1550,7 +1567,7 @@ void ManagePasswordsUIController::QueueOrShowBubble(bool user_action) {
           autofill::features::kAutofillShowBubblesBasedOnPriorities)) {
     if (auto* manager =
             autofill::BubbleManager::GetForWebContents(web_contents())) {
-      CHECK(!manager->HasPendingBubbleOfSameType(GetBubbleType()));
+      CHECK(!manager->HasConflictingPendingBubble(GetBubbleType()));
       manager->RequestShowController(*this, user_action);
     }
     return;

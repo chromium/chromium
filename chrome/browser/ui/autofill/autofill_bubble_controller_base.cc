@@ -176,7 +176,7 @@ bool AutofillBubbleControllerBase::MaySetUpBubble() {
   }
 
   auto* manager = BubbleManager::GetForWebContents(web_contents());
-  return manager && !manager->HasPendingBubbleOfSameType(GetBubbleType());
+  return manager && !manager->HasConflictingPendingBubble(GetBubbleType());
 #endif
 }
 

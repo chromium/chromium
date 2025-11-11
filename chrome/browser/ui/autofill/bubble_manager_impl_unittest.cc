@@ -517,7 +517,7 @@ TEST_F(BubbleManagerImplTest,
 TEST_F(BubbleManagerImplTest, HasPendingBubble_NoBubble_ReturnsFalse) {
   std::unique_ptr<MockBubbleController> address_controller =
       CreateController(BubbleType::kSaveUpdateAddress);
-  EXPECT_FALSE(bubble_manager().HasPendingBubbleOfSameType(
+  EXPECT_FALSE(bubble_manager().HasConflictingPendingBubble(
       address_controller->GetBubbleType()));
 }
 
@@ -541,10 +541,10 @@ TEST_F(BubbleManagerImplTest, HasPendingBubble_BubblePending_ReturnsTrue) {
                                          /*force_show=*/false);
 
   // Check that the address bubble is correctly reported as pending.
-  EXPECT_TRUE(bubble_manager().HasPendingBubbleOfSameType(
+  EXPECT_TRUE(bubble_manager().HasConflictingPendingBubble(
       address_controller->GetBubbleType()));
   // Check that a bubble type not in the queue returns false.
-  EXPECT_FALSE(bubble_manager().HasPendingBubbleOfSameType(
+  EXPECT_FALSE(bubble_manager().HasConflictingPendingBubble(
       card_controller->GetBubbleType()));
 }
 
@@ -564,14 +564,14 @@ TEST_F(BubbleManagerImplTest,
   // Queue the address bubble and confirm it's pending.
   bubble_manager().RequestShowController(*address_controller,
                                          /*force_show=*/false);
-  ASSERT_TRUE(bubble_manager().HasPendingBubbleOfSameType(
+  ASSERT_TRUE(bubble_manager().HasConflictingPendingBubble(
       address_controller->GetBubbleType()));
 
   // Fast forward time past the timeout.
   FastForwardBy(base::Seconds(3601));
 
   // Now, checking for the bubble should return false because it has timed out.
-  EXPECT_FALSE(bubble_manager().HasPendingBubbleOfSameType(
+  EXPECT_FALSE(bubble_manager().HasConflictingPendingBubble(
       address_controller->GetBubbleType()));
 }
 
@@ -590,7 +590,7 @@ TEST_F(BubbleManagerImplTest, ProcessPendingBubbles_TimedOut) {
   // Queue the address bubble and confirm it's pending.
   bubble_manager().RequestShowController(*address_controller,
                                          /*force_show=*/false);
-  ASSERT_TRUE(bubble_manager().HasPendingBubbleOfSameType(
+  ASSERT_TRUE(bubble_manager().HasConflictingPendingBubble(
       address_controller->GetBubbleType()));
 
   // Fast forward time past the timeout.
@@ -845,7 +845,7 @@ TEST_F(BubbleManagerImplTest,
   bubble_manager().RequestShowController(*address_controller,
                                          /*force_show=*/false);
   ASSERT_FALSE(address_controller->IsShowingBubble());
-  ASSERT_TRUE(bubble_manager().HasPendingBubbleOfSameType(
+  ASSERT_TRUE(bubble_manager().HasConflictingPendingBubble(
       BubbleType::kSaveUpdateAddress));
 
   EXPECT_CALL(*address_controller, OnBubbleDiscarded());
@@ -880,7 +880,7 @@ TEST_F(BubbleManagerImplTest,
   // should not be showing or pending.
   EXPECT_TRUE(card_controller->IsShowingBubble());
   EXPECT_FALSE(confirmation_controller->IsShowingBubble());
-  EXPECT_FALSE(bubble_manager().HasPendingBubbleOfSameType(
+  EXPECT_FALSE(bubble_manager().HasConflictingPendingBubble(
       BubbleType::kVirtualCardEnrollConfirmation));
 }
 
@@ -917,7 +917,7 @@ TEST_F(BubbleManagerImplTest,
   EXPECT_FALSE(confirmation_controller->IsShowingBubble());
 
   // Verify the confirmation bubble was NOT added back to the queue.
-  EXPECT_FALSE(bubble_manager().HasPendingBubbleOfSameType(
+  EXPECT_FALSE(bubble_manager().HasConflictingPendingBubble(
       BubbleType::kVirtualCardEnrollConfirmation));
 }
 
@@ -940,7 +940,7 @@ TEST_F(BubbleManagerImplTest,
                                          /*force_show=*/false);
 
   // Verify it wasn't queued.
-  EXPECT_FALSE(bubble_manager().HasPendingBubbleOfSameType(
+  EXPECT_FALSE(bubble_manager().HasConflictingPendingBubble(
       BubbleType::kVirtualCardEnrollConfirmation));
 
   // Reactivating the tab should not trigger the bubble to show.
@@ -971,6 +971,57 @@ TEST_F(BubbleManagerImplTest, TabDeactivated_ShowAddsToQueue) {
   histogram_tester_.ExpectUniqueSample(
       "Autofill.Bubble.Queue.ShownFromQueueOnTabVisible",
       BubbleType::kSaveUpdateAddress, 1);
+}
+
+// Test that HasPendingBubbleOfSameType returns true for a preempting bubble
+// type (like Passwords), while HasConflictingPendingBubble returns false.
+TEST_F(BubbleManagerImplTest, PreemptingType_IsPending_ButDoesNotBlock) {
+  std::unique_ptr<MockBubbleController> filled_card_controller =
+      CreateController(BubbleType::kFilledCardInformation);
+  std::unique_ptr<MockBubbleController> password_controller =
+      CreateController(BubbleType::kPassword);
+
+  // Show a high-priority bubble to ensure the next one is queued.
+  EXPECT_CALL(*filled_card_controller, ShowBubble());
+  bubble_manager().RequestShowController(*filled_card_controller,
+                                         /*force_show=*/false);
+
+  // Queue the password bubble.
+  bubble_manager().RequestShowController(*password_controller,
+                                         /*force_show=*/false);
+
+  EXPECT_TRUE(bubble_manager().HasPendingBubbleOfSameType(
+      password_controller->GetBubbleType()));
+  EXPECT_FALSE(bubble_manager().HasConflictingPendingBubble(
+      password_controller->GetBubbleType()));
+}
+
+// Test that both HasPendingBubbleOfSameType and HasConflictingPendingBubble
+// return false if the bubble has timed out.
+TEST_F(BubbleManagerImplTest,
+       PreemptingType_TimedOut_NeitherPendingNorBlocking) {
+  std::unique_ptr<MockBubbleController> filled_card_controller =
+      CreateController(BubbleType::kFilledCardInformation);
+  std::unique_ptr<MockBubbleController> password_controller =
+      CreateController(BubbleType::kPassword);
+
+  // Show a high-priority bubble.
+  EXPECT_CALL(*filled_card_controller, ShowBubble());
+  bubble_manager().RequestShowController(*filled_card_controller,
+                                         /*force_show=*/false);
+
+  // Queue the password bubble.
+  bubble_manager().RequestShowController(*password_controller,
+                                         /*force_show=*/false);
+
+  // Fast forward time past the timeout.
+  FastForwardBy(base::Seconds(3601));
+
+  // Both should now return false.
+  EXPECT_FALSE(bubble_manager().HasPendingBubbleOfSameType(
+      password_controller->GetBubbleType()));
+  EXPECT_FALSE(bubble_manager().HasConflictingPendingBubble(
+      password_controller->GetBubbleType()));
 }
 
 }  // namespace autofill

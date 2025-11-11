@@ -91,12 +91,17 @@ class BubbleManager {
       BubbleControllerBase& controller_to_hide,
       bool show_next_bubble) = 0;
 
+  // Returns true if ANY bubble of the specified `bubble_type` is currently
+  // in the queue and has not timed out, regardless of preemption policy.
+  [[nodiscard]] virtual bool HasPendingBubbleOfSameType(
+      const BubbleType bubble_type) const = 0;
+
   // Returns true if a bubble of the specified `bubble_type` is already
   // pending in the queue and has not timed out.
   // Note: This will always return false for bubble types that preempt
   // themselves (e.g., password bubbles), as they replace existing requests
   // instead of waiting in the queue.
-  [[nodiscard]] virtual bool HasPendingBubbleOfSameType(
+  [[nodiscard]] virtual bool HasConflictingPendingBubble(
       const BubbleType bubble_type) const = 0;
 };
 
