@@ -279,7 +279,7 @@ pub fn make_varule_impl(ule_name: Ident, mut input: DeriveInput) -> TokenStream2
 
     let maybe_hash = if attrs.hash {
         quote!(
-            #[allow(clippy::derive_hash_xor_eq)]
+            #[expect(clippy::derive_hash_xor_eq)]
             impl core::hash::Hash for #ule_name {
                 fn hash<H>(&self, state: &mut H) where H: core::hash::Hasher {
                     state.write(<#ule_name as zerovec::ule::VarULE>::as_bytes(&self));
@@ -331,7 +331,7 @@ pub fn make_varule_impl(ule_name: Ident, mut input: DeriveInput) -> TokenStream2
     )
 }
 
-#[allow(clippy::too_many_arguments)] // Internal function. Could refactor later to use some kind of context type.
+#[expect(clippy::too_many_arguments)] // Internal function. Could refactor later to use some kind of context type.
 fn make_zf_and_from_impl(
     sized_fields: &[FieldInfo],
     unsized_field_info: &UnsizedFields,
@@ -416,7 +416,7 @@ fn make_encode_impl(
             quote!(
                 // generate_per_field_offsets produces valid indices,
                 // and we don't care about panics in Encode impls
-                #[allow(clippy::indexing_slicing)]
+                #[expect(clippy::indexing_slicing)]
                 let out = &mut dst[#prev_offset_ident .. #prev_offset_ident + #size_ident];
                 let unaligned = zerovec::ule::AsULE::to_unaligned(self.#accessor);
                 let unaligned_slice = &[unaligned];
@@ -448,7 +448,7 @@ fn make_encode_impl(
 
                 // generate_per_field_offsets produces valid remainders,
                 // and we don't care about panics in Encode impls
-                #[allow(clippy::indexing_slicing)]
+                #[expect(clippy::indexing_slicing)]
                 let out = &mut dst[#remaining_offset..];
                 #last_encode_write
             }

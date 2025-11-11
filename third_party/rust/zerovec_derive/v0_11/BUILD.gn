@@ -29,7 +29,7 @@ cargo_crate("lib") {
   cargo_pkg_name = "zerovec-derive"
   cargo_pkg_description = "Custom derive for the zerovec crate"
   cargo_pkg_repository = "https://github.com/unicode-org/icu4x"
-  cargo_pkg_version = "0.11.1"
+  cargo_pkg_version = "0.11.2"
 
   allow_unsafe = false
 

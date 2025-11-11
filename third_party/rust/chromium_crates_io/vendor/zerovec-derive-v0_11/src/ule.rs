@@ -60,12 +60,12 @@ pub fn derive_impl(input: &DeriveInput) -> TokenStream2 {
             #[inline]
             fn validate_bytes(bytes: &[u8]) -> Result<(), zerovec::ule::UleError> {
                 const SIZE: usize = ::core::mem::size_of::<#name>();
-                #[allow(clippy::modulo_one)]
+                #[expect(clippy::modulo_one)]
                 if bytes.len() % SIZE != 0 {
                     return Err(zerovec::ule::UleError::length::<Self>(bytes.len()));
                 }
                 // Validate the bytes
-                #[allow(clippy::indexing_slicing)] // We're slicing a chunk of known size
+                #[expect(clippy::indexing_slicing)] // We're slicing a chunk of known size
                 for chunk in bytes.chunks_exact(SIZE) {
                     #validators
                     debug_assert_eq!(#remaining_offset, SIZE);

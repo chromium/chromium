@@ -8,7 +8,7 @@ use zerovec::*;
 
 #[make_ule(StructULE)]
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
-struct Struct {
+pub struct Struct {
     a: u8,
     b: u32,
     c: Option<char>,
@@ -17,7 +17,7 @@ struct Struct {
 #[make_ule(HashedStructULE)]
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
 #[zerovec::derive(Debug, Hash)]
-struct HashedStruct {
+pub struct HashedStruct {
     a: u64,
     b: i16,
     c: Option<char>,
@@ -25,13 +25,13 @@ struct HashedStruct {
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
 #[make_ule(TupleStructULE)]
-struct TupleStruct(u8, char);
+pub struct TupleStruct(u8, char);
 
 #[make_ule(EnumULE)]
 #[repr(u8)]
 #[derive(Copy, Clone, PartialEq, Eq, Ord, PartialOrd, Debug)]
 #[zerovec::derive(Debug, Hash)]
-enum Enum {
+pub enum Enum {
     A = 0,
     B = 1,
     D = 2,
@@ -44,7 +44,7 @@ enum Enum {
 #[repr(u8)]
 #[derive(Copy, Clone, PartialEq, Eq, Ord, PartialOrd, Debug)]
 #[allow(unused)]
-enum OutOfOrderMissingZeroEnum {
+pub enum OutOfOrderMissingZeroEnum {
     E = 3,
     B = 1,
     FooBar = 4,
@@ -55,12 +55,12 @@ enum OutOfOrderMissingZeroEnum {
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Ord, PartialOrd)]
 #[make_ule(NoKVULE)]
 #[zerovec::skip_derive(ZeroMapKV)]
-struct NoKV(u8, char);
+pub struct NoKV(u8, char);
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 #[make_ule(NoOrdULE)]
 #[zerovec::skip_derive(ZeroMapKV, Ord)]
-struct NoOrd(u8, char);
+pub struct NoOrd(u8, char);
 
 fn test_zerovec<T: ule::AsULE + Debug + PartialEq>(slice: &[T]) {
     let zerovec: ZeroVec<T> = slice.iter().copied().collect();

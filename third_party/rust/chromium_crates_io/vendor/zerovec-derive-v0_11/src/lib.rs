@@ -12,21 +12,21 @@ pub(crate) mod ule;
 mod utils;
 mod varule;
 
-/// Full docs for this proc macro can be found on the [`zerovec`](docs.rs/zerovec) crate.
+/// Full docs for this proc macro can be found on the [`zerovec`](https://docs.rs/zerovec) crate.
 #[proc_macro_derive(ULE)]
 pub fn ule_derive(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as DeriveInput);
     TokenStream::from(ule::derive_impl(&input))
 }
 
-/// Full docs for this proc macro can be found on the [`zerovec`](docs.rs/zerovec) crate.
+/// Full docs for this proc macro can be found on the [`zerovec`](https://docs.rs/zerovec) crate.
 #[proc_macro_derive(VarULE)]
 pub fn varule_derive(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as DeriveInput);
     TokenStream::from(varule::derive_impl(&input, None))
 }
 
-/// Full docs for this proc macro can be found on the [`zerovec`](docs.rs/zerovec) crate.
+/// Full docs for this proc macro can be found on the [`zerovec`](https://docs.rs/zerovec) crate.
 #[proc_macro_attribute]
 pub fn make_ule(attr: TokenStream, item: TokenStream) -> TokenStream {
     let input = parse_macro_input!(item as DeriveInput);
@@ -34,7 +34,7 @@ pub fn make_ule(attr: TokenStream, item: TokenStream) -> TokenStream {
     TokenStream::from(make_ule::make_ule_impl(attr, input))
 }
 
-/// Full docs for this proc macro can be found on the [`zerovec`](docs.rs/zerovec) crate.
+/// Full docs for this proc macro can be found on the [`zerovec`](https://docs.rs/zerovec) crate.
 #[proc_macro_attribute]
 pub fn make_varule(attr: TokenStream, item: TokenStream) -> TokenStream {
     let input = parse_macro_input!(item as DeriveInput);
