@@ -566,7 +566,10 @@ void AnchorElementInteractionTracker::ViewportIntersectionUpdate(
   }
   Vector<KURL> to_be_removed;
   for (const auto& anchor : left_viewport) {
-    to_be_removed.push_back(anchor->Href());
+    KURL url = GetHrefEligibleForPreloading(*anchor);
+    if (!url.IsEmpty()) {
+      to_be_removed.push_back(std::move(url));
+    }
   }
   eager_viewport_heuristics_candidates_.RemoveAll(to_be_removed);
 
