@@ -782,6 +782,8 @@ class DragAndDropBrowserTest : public InProcessBrowserTest,
     // targets have not been determined yet, and may interfere with the tests
     // below by shifting the contents around.
     // These overrides should be removed once the parameters are finalized.
+    //
+    // Ensure PreserveDropEffect is enabled for DragAndDropBrowserTest.
     feature_list_.InitWithFeaturesAndParameters(
         {{features::kSideBySide,
           {{features::kSideBySideDropTargetMinWidth.name, "0"},
@@ -790,7 +792,8 @@ class DragAndDropBrowserTest : public InProcessBrowserTest,
           {{features::kSideBySideDropTargetNudgeMinWidth.name, "0"},
            {features::kSideBySideDropTargetNudgeMaxWidth.name, "0"},
            {features::kSideBySideDropTargetNudgeToFullMinWidth.name, "0"},
-           {features::kSideBySideDropTargetNudgeToFullMaxWidth.name, "0"}}}},
+           {features::kSideBySideDropTargetNudgeToFullMaxWidth.name, "0"}}},
+         {blink::features::kPreserveDropEffect, {}}},
         {blink::features::kSupportOpeningDraggedLinksInSameTab});
     InProcessBrowserTest::SetUp();
   }
@@ -1209,6 +1212,9 @@ class DragAndDropDragLinksInSameTabBrowserTest : public DragAndDropBrowserTest {
     // targets have not been determined yet, and may interfere with the tests
     // below by shifting the contents around.
     // These overrides should be removed once the parameters are finalized.
+    //
+    // Ensure PreserveDropEffect is enabled based on the setting of parent class
+    // DragAndDropBrowserTest.
     feature_list_.InitWithFeaturesAndParameters(
         {{features::kSideBySide,
           {{features::kSideBySideDropTargetMinWidth.name, "0"},
@@ -1218,6 +1224,7 @@ class DragAndDropDragLinksInSameTabBrowserTest : public DragAndDropBrowserTest {
            {features::kSideBySideDropTargetNudgeMaxWidth.name, "0"},
            {features::kSideBySideDropTargetNudgeToFullMinWidth.name, "0"},
            {features::kSideBySideDropTargetNudgeToFullMaxWidth.name, "0"}}},
+         {blink::features::kPreserveDropEffect, {}},
          {blink::features::kSupportOpeningDraggedLinksInSameTab, {}}},
         {});
     InProcessBrowserTest::SetUp();
