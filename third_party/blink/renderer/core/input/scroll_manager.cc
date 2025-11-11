@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "ui/gfx/geometry/point_conversions.h"
 
 namespace blink {
@@ -91,13 +92,12 @@ bool ScrollManager::CanPropagate(const LayoutBox* layout_box,
   }
 }
 
-void ScrollManager::RecomputeScrollChain(const Node& start_node,
-                                         Deque<DOMNodeId>& scroll_chain) {
-  DCHECK(scroll_chain.empty());
-  scroll_chain.clear();
-
+ScrollManager::ScrollChainResult ScrollManager::RecomputeScrollChain(
+    const Node& start_node,
+    mojom::blink::ScrollDirection direction) {
   DCHECK(start_node.GetLayoutObject());
   LayoutBox* cur_box = start_node.GetLayoutObject()->EnclosingBox();
+  ScrollChainResult result;
   // Scrolling propagates along the containing block chain and ends at the
   // RootScroller node. The RootScroller node will have a custom applyScroll
   // callback that performs scrolling as well as associated "root" actions
@@ -107,7 +107,25 @@ void ScrollManager::RecomputeScrollChain(const Node& start_node,
 
     if (cur_node) {
       if (CanScroll(*cur_node, /* for_autoscroll */ false)) {
-        scroll_chain.push_front(cur_node->GetDomNodeId());
+        result.chain.push_front(cur_node->GetDomNodeId());
+        // If `cur_node` is scrollable, respect its overscroll-behavior to
+        // determine whether the scroll should bubble to parent elements.
+        if (RuntimeEnabledFeatures::
+                RespectOverscrollBehaviorForScrollBubblingEnabled()) {
+          ScrollDirectionPhysical physical_direction = ToPhysicalDirection(
+              direction, cur_box->IsHorizontalWritingMode(),
+              cur_box->Style()->IsFlippedBlocksWritingMode());
+          bool is_vertical =
+              physical_direction == ScrollDirectionPhysical::kScrollUp ||
+              physical_direction == ScrollDirectionPhysical::kScrollDown;
+          EOverscrollBehavior behavior =
+              is_vertical ? cur_box->StyleRef().OverscrollBehaviorY()
+                          : cur_box->StyleRef().OverscrollBehaviorX();
+          if (behavior != EOverscrollBehavior::kAuto) {
+            result.can_bubble = false;
+            break;
+          }
+        }
       }
 
       if (cur_node->IsEffectiveRootScroller()) {
@@ -117,6 +135,8 @@ void ScrollManager::RecomputeScrollChain(const Node& start_node,
 
     cur_box = cur_box->ContainingBlock();
   }
+
+  return result;
 }
 
 bool ScrollManager::CanScroll(const Node& current_node, bool for_autoscroll) {
@@ -151,11 +171,12 @@ bool ScrollManager::CanScroll(const Node& current_node, bool for_autoscroll) {
   return scrolling_box->GetScrollableArea() != nullptr;
 }
 
-bool ScrollManager::LogicalScroll(mojom::blink::ScrollDirection direction,
-                                  ui::ScrollGranularity granularity,
-                                  Node* start_node,
-                                  Node* mouse_press_node,
-                                  bool scrolling_via_key) {
+LogicalScrollResult ScrollManager::LogicalScroll(
+    mojom::blink::ScrollDirection direction,
+    ui::ScrollGranularity granularity,
+    Node* start_node,
+    Node* mouse_press_node,
+    bool scrolling_via_key) {
   Node* node = start_node;
 
   if (!node)
@@ -168,18 +189,19 @@ bool ScrollManager::LogicalScroll(mojom::blink::ScrollDirection direction,
       frame_->View()->GetLayoutView())
     node = frame_->View()->GetLayoutView()->GetNode();
 
-  if (!node)
-    return false;
+  if (!node) {
+    return LogicalScrollResult::kBubbled;
+  }
 
   Document& document = node->GetDocument();
 
   document.UpdateStyleAndLayout(DocumentUpdateReason::kScroll);
 
-  Deque<DOMNodeId> scroll_chain;
-  RecomputeScrollChain(*node, scroll_chain);
-
-  while (!scroll_chain.empty()) {
-    Node* scroll_chain_node = DOMNodeIds::NodeForId(scroll_chain.TakeLast());
+  ScrollChainResult scroll_chain_result =
+      RecomputeScrollChain(*node, direction);
+  while (!scroll_chain_result.chain.empty()) {
+    Node* scroll_chain_node =
+        DOMNodeIds::NodeForId(scroll_chain_result.chain.TakeLast());
     DCHECK(scroll_chain_node);
 
     auto* box = To<LayoutBox>(scroll_chain_node->GetLayoutObject());
@@ -200,21 +222,21 @@ bool ScrollManager::LogicalScroll(mojom::blink::ScrollDirection direction,
     switch (granularity) {
       case ui::ScrollGranularity::kScrollByLine: {
         if (scrollable_area->SnapForDirection(physical_direction)) {
-          return true;
+          return LogicalScrollResult::kScrolled;
         }
         source_type = cc::ScrollSourceType::kRelativeScroll;
         break;
       }
       case ui::ScrollGranularity::kScrollByPage: {
         if (scrollable_area->SnapForPageScroll(physical_direction)) {
-          return true;
+          return LogicalScrollResult::kScrolled;
         }
         source_type = cc::ScrollSourceType::kRelativeScroll;
         break;
       }
       case ui::ScrollGranularity::kScrollByDocument: {
         if (scrollable_area->SnapForDocumentScroll(physical_direction)) {
-          return true;
+          return LogicalScrollResult::kScrolled;
         }
         source_type = cc::ScrollSourceType::kAbsoluteScroll;
         break;
@@ -264,11 +286,13 @@ bool ScrollManager::LogicalScroll(mojom::blink::ScrollDirection direction,
         granularity, ToScrollDelta(physical_direction, 1), source_type,
         std::move(callback));
 
-    if (result.DidScroll())
-      return true;
+    if (result.DidScroll()) {
+      return LogicalScrollResult::kScrolled;
+    }
   }
 
-  return false;
+  return scroll_chain_result.can_bubble ? LogicalScrollResult::kBubbled
+                                        : LogicalScrollResult::kContained;
 }
 
 bool ScrollManager::BubblingScroll(mojom::blink::ScrollDirection direction,
@@ -280,8 +304,10 @@ bool ScrollManager::BubblingScroll(mojom::blink::ScrollDirection direction,
   // here because of an onLoad event, in which case the final layout hasn't been
   // performed yet.
   frame_->GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kScroll);
-  if (LogicalScroll(direction, granularity, starting_node, mouse_press_node,
-                    scrolling_via_key)) {
+  LogicalScrollResult result =
+      LogicalScroll(direction, granularity, starting_node, mouse_press_node,
+                    scrolling_via_key);
+  if (result != LogicalScrollResult::kBubbled) {
     return true;
   }
 
