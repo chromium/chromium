@@ -64,9 +64,6 @@ bool IsValidVelocity(float velocity) {
 }
 
 // Solves `positions`=`slope`*`timestamps`+ displacement(not calculated).
-//
-// TODO(crbug.com/40945408): The native least square might not give us
-// the desired velocity.
 void SolveLeastSquare(const std::vector<float>& timestamps,
                       const std::vector<float>& positions,
                       float* slope) {
@@ -74,7 +71,7 @@ void SolveLeastSquare(const std::vector<float>& timestamps,
 
   const size_t num_pts = timestamps.size();
   if (num_pts <= 1) {
-    LOG(ERROR) << "Interpolating velocity with " << num_pts << " points";
+    DLOG(WARNING) << "Interpolating velocity with " << num_pts << " points";
     if (slope) {
       *slope = kInvalidVelocity;
     }
