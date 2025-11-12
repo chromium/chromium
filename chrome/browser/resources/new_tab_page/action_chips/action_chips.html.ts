@@ -18,7 +18,13 @@ export function getHtml(this: ActionChipsElement) {
         class="action-chip"
         @click="${() => this.handleClick_(chip)}">
         <div class="action-chip-icon-container ${
-              this.getAdditionalIconClasses_(chip)}"></div>
+              this.getAdditionalIconClasses_(chip)}">
+          ${
+              this.getId(chip) === 'tab-context' ?
+                  html`<img class='action-chip-recent-tab-favicon'
+                src="${this.getMostRecentTabFaviconUrl_(chip)}">` :
+                  ''}
+        </div>
         <div class="action-chip-text-container">
           <span class="chip-title">${chip.title}</span>
           <span class="chip-body">${chip.suggestion}</span>

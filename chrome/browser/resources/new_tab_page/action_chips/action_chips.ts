@@ -148,6 +148,19 @@ export class ActionChipsElement extends CrLitElement {
     }
   }
 
+  protected getFaviconUrl_(url: string): string {
+    const faviconUrl = new URL('chrome://favicon2/');
+    faviconUrl.searchParams.set('size', '24');
+    faviconUrl.searchParams.set('scaleFactor', '1x');
+    faviconUrl.searchParams.set('showFallbackMonogram', '');
+    faviconUrl.searchParams.set('pageUrl', url);
+    return faviconUrl.href;
+  }
+
+  protected getMostRecentTabFaviconUrl_(chip: ActionChip) {
+    return chip.tab ? this.getFaviconUrl_(chip.tab.url.url) : '';
+  }
+
   private onActionChipClick_(
       query: string, contextFiles: ContextualUpload[], mode: ComposeboxMode) {
     this.fire('action-chip-click', {searchboxText: query, contextFiles, mode});

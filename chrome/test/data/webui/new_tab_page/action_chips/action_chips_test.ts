@@ -88,6 +88,25 @@ suite('NewTabPageActionChipsTest', () => {
     await whenActionChipClicked;
   });
 
+  test('recent tab chip renders favicon', async () => {
+    await initializeChips({
+      actionChips: [{
+        type: ChipType.kRecentTab,
+        title: 'Example Tab',
+        suggestion: 'Ask about this tab',
+        tab: {
+          url: {url: 'https://example.com'},
+          tabId: 0,
+          title: 'Example Tab',
+          lastActiveTime: {internalValue: BigInt(0)},
+        },
+      }],
+    });
+    const recentTabChipIcon = chips.shadowRoot.querySelector<HTMLImageElement>(
+        '.action-chip-recent-tab-favicon');
+    assertTrue(!!recentTabChipIcon);
+  });
+
   suite('metrics collection', () => {
     let metrics: MetricsTracker;
     setup(async () => {
