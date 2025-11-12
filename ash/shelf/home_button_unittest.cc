@@ -172,10 +172,7 @@ class HomeButtonAnimationTest : public HomeButtonTestBase {
 
 class HomeButtonWithQuickAppAccess : public HomeButtonTestBase {
  public:
-  HomeButtonWithQuickAppAccess() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kHomeButtonQuickAppAccess);
-  }
+  HomeButtonWithQuickAppAccess() = default;
   ~HomeButtonWithQuickAppAccess() override = default;
 
   bool IsQuickAppVisible() const {

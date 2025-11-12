@@ -1927,9 +1927,6 @@ int AppListControllerImpl::GetPreferredBubbleWidth(
 }
 
 bool AppListControllerImpl::SetHomeButtonQuickApp(const std::string& app_id) {
-  if (!features::IsHomeButtonQuickAppAccessEnabled()) {
-    return false;
-  }
   return model_provider_->quick_app_access_model()->SetQuickApp(app_id);
 }
 

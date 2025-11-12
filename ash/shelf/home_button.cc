@@ -344,12 +344,10 @@ HomeButton::HomeButton(Shelf* shelf)
   button_image_view_ =
       AddChildViewAt(std::make_unique<ButtonImageView>(&controller_), 0);
 
-  if (features::IsHomeButtonQuickAppAccessEnabled()) {
-    shell_observation_.Observe(Shell::Get());
-    app_list_model_observation_.Observe(AppListModelProvider::Get());
-    quick_app_model_observation_.Observe(
-        AppListModelProvider::Get()->quick_app_access_model());
-  }
+  shell_observation_.Observe(Shell::Get());
+  app_list_model_observation_.Observe(AppListModelProvider::Get());
+  quick_app_model_observation_.Observe(
+      AppListModelProvider::Get()->quick_app_access_model());
 
   if (features::IsUserEducationEnabled()) {
     // NOTE: Set `kHelpBubbleContextKey` before `views::kElementIdentifierKey`

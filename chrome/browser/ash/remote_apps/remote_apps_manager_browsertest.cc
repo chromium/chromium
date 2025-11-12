@@ -135,11 +135,7 @@ class MockRemoteAppLaunchObserver
 class RemoteAppsManagerBrowsertest
     : public policy::DevicePolicyCrosBrowserTest {
  public:
-  RemoteAppsManagerBrowsertest() {
-    // Quick App is used for the current implementation of app pinning.
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kHomeButtonQuickAppAccess);
-  }
+  RemoteAppsManagerBrowsertest() = default;
 
   // DevicePolicyCrosBrowserTest:
   void SetUp() override {
