@@ -24,9 +24,8 @@ namespace {
 class CmpAdapter {
  public:
   explicit CmpAdapter(const scoped_refptr<const Cert>& cert)
-      : UNSAFE_TODO(
-            data_(CRYPTO_BUFFER_data(cert->GetX509Cert()->cert_buffer()),
-                  CRYPTO_BUFFER_len(cert->GetX509Cert()->cert_buffer()))) {}
+      : data_(net::x509_util::CryptoBufferAsSpan(
+            cert->GetX509Cert()->cert_buffer())) {}
   explicit CmpAdapter(const base::span<const uint8_t>& cert) : data_(cert) {}
 
   bool operator<(const CmpAdapter& other) {
