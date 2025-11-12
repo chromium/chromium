@@ -238,6 +238,10 @@ message ContentAnalysisRequest {
   // Indicates whether the request is for content that is encrypted.
   optional bool is_content_encrypted = 23;
 
+  // If true, the content hash is given during the finalize call rather than
+  // the initial upload, only for larger files.
+  optional bool content_hash_in_final_call = 24;
+
   // Reserved to make sure there is no overlap with DeepScanningClientRequest.
   reserved 3, 4, 6 to 8;
 }
