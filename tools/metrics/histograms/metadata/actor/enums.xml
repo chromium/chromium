@@ -119,6 +119,17 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/actor/ui/event_dispatcher.h:ComputedTargetResult) -->
 
+<!-- LINT.IfChange(GatingDecision) -->
+
+<enum name="GatingDecision">
+  <int value="0" label="kAllowSameOrigin"/>
+  <int value="1" label="kAllowByStaticList"/>
+  <int value="2" label="kBlockByStaticList"/>
+  <int value="3" label="kNeedsAsyncCheck"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/actor/execution_engine.h:GatingDecision) -->
+
 <!-- LINT.IfChange(GetDomNodeResult) -->
 
 <enum name="GetDomNodeResult">
