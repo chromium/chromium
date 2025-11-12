@@ -236,9 +236,13 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
           initWithEntryPoint:LensEntrypoint::Keyboard
            presentationStyle:LensInputSelectionPresentationStyle::SlideFromRight
       presentationCompletion:nil];
-  id<LensCommands> handler =
+  __weak id<LensCommands> handler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(), LensCommands);
-  [handler openLensInputSelection:command];
+  [self.baseViewController
+      dismissViewControllerAnimated:YES
+                         completion:^{
+                           [handler openLensInputSelection:command];
+                         }];
 }
 
 - (void)composeboxViewControllerDidTapGalleryButton:
