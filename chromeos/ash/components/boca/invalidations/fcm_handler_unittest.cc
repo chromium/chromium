@@ -140,9 +140,24 @@ TEST_F(FCMHandlerTest, ShouldPropagatePayloadToListener) {
   fcm_handler_.AddListener(&mock_listener);
 
   gcm::IncomingMessage gcm_message;
-  gcm_message.raw_data = kPayloadValue;
+  gcm_message.data.emplace("random_key", "random_value");
+  gcm_message.data.emplace("method", kPayloadValue);
 
   EXPECT_CALL(mock_listener, OnInvalidationReceived(kPayloadValue));
+  fcm_handler_.OnMessage(fcm_handler_.GetAppIdForTesting(), gcm_message);
+  fcm_handler_.RemoveListener(&mock_listener);
+  histogram_tester.ExpectTotalCount(boca::kBocaTokenRetrievalIsValidation, 0);
+}
+
+TEST_F(FCMHandlerTest, MethodKeyDoesNotExistShouldPropagateEmptyString) {
+  base::HistogramTester histogram_tester;
+  NiceMock<MockListener> mock_listener;
+  fcm_handler_.AddListener(&mock_listener);
+
+  gcm::IncomingMessage gcm_message;
+  gcm_message.data.emplace("random_key", "random_value");
+
+  EXPECT_CALL(mock_listener, OnInvalidationReceived(""));
   fcm_handler_.OnMessage(fcm_handler_.GetAppIdForTesting(), gcm_message);
   fcm_handler_.RemoveListener(&mock_listener);
   histogram_tester.ExpectTotalCount(boca::kBocaTokenRetrievalIsValidation, 0);

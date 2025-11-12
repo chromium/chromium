@@ -8,6 +8,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -144,9 +145,13 @@ void FCMHandlerImpl::OnMessage(const std::string& app_id,
                                const gcm::IncomingMessage& message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(app_id, kApplicationId);
-
+  const std::string kMethodKey = "method";
+  const bool method_exists = base::Contains(message.data, kMethodKey);
+  LOG_IF(ERROR, !method_exists)
+      << "[Boca] Method does not exist in FCM message.";
   for (InvalidationsListener& listener : listeners_) {
-    listener.OnInvalidationReceived(message.raw_data);
+    listener.OnInvalidationReceived(method_exists ? message.data.at(kMethodKey)
+                                                  : std::string());
   }
 }
 

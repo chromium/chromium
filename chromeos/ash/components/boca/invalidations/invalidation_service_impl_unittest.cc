@@ -143,7 +143,7 @@ TEST_F(InvalidationServiceImplTest, HandleInvalidation) {
   const std::string kPayloadValue = "payload_1";
   EXPECT_CALL(mock_delegate_, OnInvalidationReceived(kPayloadValue)).Times(1);
   gcm::IncomingMessage gcm_message;
-  gcm_message.raw_data = kPayloadValue;
+  gcm_message.data.emplace("method", kPayloadValue);
   invalidation_service_impl_->fcm_handler()->OnMessage(
       invalidation_service_impl_->fcm_handler()->GetAppIdForTesting(),
       gcm_message);
