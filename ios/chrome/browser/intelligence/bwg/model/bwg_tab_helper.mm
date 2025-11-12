@@ -479,6 +479,10 @@ std::optional<std::string> BwgTabHelper::GetURLOnLastInteraction() {
 }
 
 void BwgTabHelper::UpdateWebStateSnapshotInStorage() {
+  if (!cached_snapshot_) {
+    return;
+  }
+
   SnapshotTabHelper* snapshot_tab_helper =
       SnapshotTabHelper::FromWebState(web_state_);
 
@@ -486,9 +490,7 @@ void BwgTabHelper::UpdateWebStateSnapshotInStorage() {
     return;
   }
 
-  if (cached_snapshot_) {
-    snapshot_tab_helper->UpdateSnapshotStorageWithImage(cached_snapshot_);
-  }
+  snapshot_tab_helper->UpdateSnapshotStorageWithImage(cached_snapshot_);
 }
 
 void BwgTabHelper::OnOptimizationGuideDecision(
