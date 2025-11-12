@@ -40,6 +40,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.Token;
 import org.chromium.base.test.util.Batch;
@@ -49,8 +50,10 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -58,6 +61,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -74,7 +78,6 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
     ChromeFeatureList.GRID_TAB_SWITCHER_SURFACE_COLOR_UPDATE,
     ChromeFeatureList.GRID_TAB_SWITCHER_UPDATE,
     ChromeFeatureList.ANDROID_THEME_MODULE,
-    ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW
 })
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
@@ -86,9 +89,12 @@ public class TabStripGroupContextMenuTest {
     private StripLayoutHelper mStripLayoutHelper;
     private Token mTabGroupId;
     private ModalDialogManager mModalDialogManager;
+    private ChromeTabbedActivity mInitialRegularActivity;
 
     @Before
     public void setUp() throws Exception {
+        mInitialRegularActivity =
+                (ChromeTabbedActivity) mActivityTestRule.getActivityTestRule().getActivity();
         mStripLayoutHelper =
                 TabStripTestUtils.getActiveStripLayoutHelper(mActivityTestRule.getActivity());
         mModalDialogManager = mActivityTestRule.getActivity().getModalDialogManager();
@@ -109,6 +115,7 @@ public class TabStripGroupContextMenuTest {
                 () -> {
                     mModalDialogManager.dismissAllDialogs(DialogDismissalCause.UNKNOWN);
                 });
+        mActivityTestRule.getActivityTestRule().setActivity(mInitialRegularActivity);
     }
 
     @Test
@@ -453,8 +460,20 @@ public class TabStripGroupContextMenuTest {
     }
 
     private void prepareIncognitoState() {
-        TabStripTestUtils.createTabs(
-                mActivityTestRule.getActivity(), /* isIncognito= */ true, /* numOfTabs= */ 3);
+        if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
+            IncognitoNewTabPageStation incognitoNtp =
+                    mActivityTestRule.startOnBlankPage().openNewIncognitoTabOrWindowFast();
+            incognitoNtp = incognitoNtp.openNewIncognitoTabFast();
+            incognitoNtp.openNewIncognitoTabFast();
+            mActivityTestRule
+                    .getActivityTestRule()
+                    .setActivity(
+                            (ChromeTabbedActivity)
+                                    ApplicationStatus.getLastTrackedFocusedActivity());
+        } else {
+            TabStripTestUtils.createTabs(
+                    mActivityTestRule.getActivity(), /* isIncognito= */ true, /* numOfTabs= */ 3);
+        }
         TabStripTestUtils.createTabGroup(
                 mActivityTestRule.getActivity(),
                 /* isIncognito= */ true,
