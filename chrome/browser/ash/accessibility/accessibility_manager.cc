@@ -446,8 +446,14 @@ AccessibilityManager* AccessibilityManager::Get() {
 
 // static
 void AccessibilityManager::ShowAccessibilityHelp() {
-  ShowSingletonTab(ProfileManager::GetActiveUserProfile(),
-                   GURL(chrome::kChromeAccessibilityHelpURL));
+  auto* user = user_manager::UserManager::Get()->GetActiveUser();
+  if (!user) {
+    return;
+  }
+  ShowSingletonTab(
+      Profile::FromBrowserContext(
+          BrowserContextHelper::Get()->GetBrowserContextByUser(user)),
+      GURL(chrome::kChromeAccessibilityHelpURL));
 }
 
 AccessibilityManager::AccessibilityManager(
@@ -2063,9 +2069,10 @@ void AccessibilityManager::OnSessionStateChanged() {
 }
 
 void AccessibilityManager::SetActiveProfile() {
-  Profile* profile = ProfileManager::GetActiveUserProfile();
-  if (IsSigninBrowserContext(profile)) {
-    SetProfile(profile);
+  // Update `profile_` when entering the login screen.
+  if (!session_manager::SessionManager::Get()->GetActiveSession()) {
+    SetProfile(Profile::FromBrowserContext(
+        BrowserContextHelper::Get()->GetSigninBrowserContext()));
   }
 }
 
