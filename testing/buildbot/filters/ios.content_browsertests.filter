@@ -388,12 +388,6 @@
 -All/SitePerProcessWithMainFrameThresholdWithTotalLimitTest.ExcessiveAllocation/1
 -All/SitePerProcessWithMainFrameThresholdWithTotalLimitTest.ExcessiveAllocation/1
 
-# TODO(crbug.com/372062085): These tests have been failing since
-# https://crrev.com/c/5854463.
--RenderFrameHostImplPartitionedPopinBrowserTest.CreateNewWindow_FailsWithAboutBlankTargetUrl
--RenderFrameHostImplPartitionedPopinBrowserTest.CreateNewWindow_FailsWithEmptyTargetUrl
--RenderFrameHostImplPartitionedPopinBrowserTest.CreateNewWindow_FailsWithHttpTargetUrl
-
 # TODO(crbug.com/373461927): This test has been failing since
 # https://crrev.com/c/5716290.
 -PrerenderBrowserTest.BackgroundedPage_ActivateOnLinkClick_TargetBlank_WithTargetHintBlank
