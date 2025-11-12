@@ -2645,6 +2645,10 @@ static_library("browser") {
     "//chrome/browser/ui/webauthn:impl",
   ]
 
+  if (!is_android) {
+    deps += [ "//chrome/browser/ui/webui/omnibox_popup/mojom" ]
+  }
+
   # Platforms that have a network diagnostics dialog. All others fall through
   # to the stub which is not implemented.
   if (is_chromeos) {

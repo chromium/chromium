@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter_service.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/composebox_handler.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
+#include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_aim_handler.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_web_contents_helper.h"
 #include "chrome/browser/ui/webui/sanitized_image_source.h"
 #include "chrome/browser/ui/webui/searchbox/webui_omnibox_handler.h"
@@ -186,6 +187,13 @@ void OmniboxPopupUI::BindInterface(
   composebox_page_factory_receiver_.Bind(std::move(receiver));
 }
 
+void OmniboxPopupUI::BindInterface(
+    mojo::PendingReceiver<omnibox_popup_aim::mojom::PageHandlerFactory>
+        receiver) {
+  aim_page_factory_receiver_.reset();
+  aim_page_factory_receiver_.Bind(std::move(receiver));
+}
+
 void OmniboxPopupUI::CreatePageHandler(
     mojo::PendingRemote<composebox::mojom::Page> pending_page,
     mojo::PendingReceiver<composebox::mojom::PageHandler> pending_page_handler,
@@ -216,4 +224,11 @@ void OmniboxPopupUI::CreatePageHandler(
     composebox_handler_->SetPage(std::move(pending_searchbox_page));
     composebox_handler_->SetWebUIController(this);
   }
+}
+
+void OmniboxPopupUI::CreatePageHandler(
+    mojo::PendingRemote<omnibox_popup_aim::mojom::Page> page,
+    mojo::PendingReceiver<omnibox_popup_aim::mojom::PageHandler> receiver) {
+  popup_aim_handler_ = std::make_unique<OmniboxPopupAimHandler>(
+      std::move(receiver), std::move(page), this);
 }

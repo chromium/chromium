@@ -29,6 +29,7 @@ class OmniboxAimPopupWebUIContent : public OmniboxPopupWebUIBaseContent {
 
   // WebUIContentsWrapper::Host:
   void CloseUI() override;
+  void ShowUI() override;
 };
 
 BEGIN_VIEW_BUILDER(/* no export */,
