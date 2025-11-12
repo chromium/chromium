@@ -793,7 +793,7 @@ class AttributionInteropParser {
     // uint32 and [0, INT64_MAX] encompasses the same values.
     if (ParseInteger(dict, key, result_64, &base::StringToInt64, required,
                      allow_zero)) {
-      if (base::internal::IsValueInRangeForNumericType<uint32_t>(result_64)) {
+      if (base::IsValueInRangeForNumericType<uint32_t>(result_64)) {
         result = static_cast<uint32_t>(result_64);
         return true;
       } else {
