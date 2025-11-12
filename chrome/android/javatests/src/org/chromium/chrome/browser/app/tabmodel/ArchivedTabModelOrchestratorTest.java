@@ -561,7 +561,9 @@ public class ArchivedTabModelOrchestratorTest {
         assertEquals(1, getTabCountOnUiThread(mArchivedTabModel));
 
         TabSwitcherSearchStation tabSwitcherSearchStation =
-                mPage.openNewIncognitoTabFast().openIncognitoTabSwitcher().openTabSwitcherSearch();
+                mPage.openNewIncognitoTabOrWindowFast()
+                        .openIncognitoTabSwitcher()
+                        .openTabSwitcherSearch();
         tabSwitcherSearchStation.typeInOmnibox("About");
         tabSwitcherSearchStation.checkSuggestionsShown();
 
