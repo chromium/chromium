@@ -368,6 +368,7 @@ source_set("browser_tests") {
     "//chrome/common:non_code_constants",
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
+    "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/dbus/session_manager",
     "//chromeos/ash/components/install_attributes:test_support",
     "//chromeos/ash/components/login/auth/public:authpublic",

@@ -17,6 +17,7 @@
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_state_keys_broker.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_manager.h"
+#include "components/policy/core/common/schema_registry.h"
 #include "components/user_manager/user_manager.h"
 
 namespace reporting {
@@ -116,9 +117,7 @@ class DeviceCloudPolicyManagerAsh : public CloudPolicyManager,
 
   bool IsConnected() const { return core()->IsConnected(); }
 
-  bool HasSchemaRegistry() const {
-    return signin_profile_forwarding_schema_registry_ != nullptr;
-  }
+  bool HasSchemaRegistry() const;
 
   DeviceCloudPolicyStoreAsh* device_store() { return device_store_.get(); }
   ReportingUserTracker* reporting_user_tracker() {
@@ -135,12 +134,13 @@ class DeviceCloudPolicyManagerAsh : public CloudPolicyManager,
     return syslog_uploader_.get();
   }
 
-  // Passes the pointer to the schema registry that corresponds to the signin
-  // profile.
-  //
-  // After this method is called, the component cloud policy manager becomes
-  // associated with this schema registry.
+  // Sets the SchemaRegistry that corresponds to the [sign-in screen / lock
+  // screen] profile. The device-wide ComponentCloudPolicyService will be
+  // associated with a schema registry that combines the sign-in screen profile
+  // and lock screen profile schema registries. It will only be initialized when
+  // at least one of these has been invoked.
   void SetSigninProfileSchemaRegistry(SchemaRegistry* schema_registry);
+  void SetLockProfileSchemaRegistry(SchemaRegistry* schema_registry);
 
   // Sets whether the component cloud policy should be disabled (by skipping
   // the component cloud policy service creation).
@@ -273,6 +273,10 @@ class DeviceCloudPolicyManagerAsh : public CloudPolicyManager,
   // once it is passed to this class.
   std::unique_ptr<ForwardingSchemaRegistry>
       signin_profile_forwarding_schema_registry_;
+
+  // Combined schema registry that tracks both the signin and lock profile
+  // schema registries, if they exist.
+  std::unique_ptr<CombinedSchemaRegistry> auth_screens_schema_registry_;
 
   // Whether the component cloud policy should be disabled (by skipping the
   // component cloud policy service creation).

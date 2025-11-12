@@ -40,6 +40,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chromeos/constants/chromeos_features.h"
 #endif
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
@@ -354,9 +355,14 @@ void ManagedValueStoreCache::OnPolicyUpdated(const policy::PolicyNamespace& ns,
 policy::PolicyDomain ManagedValueStoreCache::GetPolicyDomain(
     const Profile& profile) {
 #if BUILDFLAG(IS_CHROMEOS)
-  return ash::ProfileHelper::IsSigninProfile(&profile)
-             ? policy::POLICY_DOMAIN_SIGNIN_EXTENSIONS
-             : policy::POLICY_DOMAIN_EXTENSIONS;
+  bool use_signin_extensions_domain =
+      ash::ProfileHelper::IsSigninProfile(&profile);
+  if (chromeos::features::IsLockScreenBadgeAuthEnabled()) {
+    use_signin_extensions_domain |=
+        ash::ProfileHelper::IsLockScreenProfile(&profile);
+  }
+  return use_signin_extensions_domain ? policy::POLICY_DOMAIN_SIGNIN_EXTENSIONS
+                                      : policy::POLICY_DOMAIN_EXTENSIONS;
 #else
   return policy::POLICY_DOMAIN_EXTENSIONS;
 #endif
