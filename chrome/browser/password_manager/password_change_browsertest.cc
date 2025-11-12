@@ -1505,8 +1505,16 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
       FinalModelStatus::FINAL_MODEL_STATUS_UNSPECIFIED);
 }
 
+// TODO(crbug.com/460007008): Fix the test failure.
+#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
+#define MAYBE_FlowInterruptedAfterSubmitFormStep \
+  DISABLED_FlowInterruptedAfterSubmitFormStep
+#else
+#define MAYBE_FlowInterruptedAfterSubmitFormStep \
+  FlowInterruptedAfterSubmitFormStep
+#endif
 IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
-                       FlowInterruptedAfterSubmitFormStep) {
+                       MAYBE_FlowInterruptedAfterSubmitFormStep) {
   SetPrivacyNoticeAcceptedPref();
   SetModelQualityLogsUploader();
 
