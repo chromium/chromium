@@ -21,7 +21,7 @@
 #endif
 
 namespace base {
-namespace internal {
+namespace numerics_internal {
 
 // These are the non-functioning boilerplate implementations of the optimized
 // safe math routines.
@@ -193,7 +193,7 @@ struct MathWrapper {
   /* Variadic arithmetic functions that return CLASS##Numeric. */              \
   BASE_NUMERIC_ARITHMETIC_VARIADIC(CLASS, CL_ABBR, OP_NAME)
 
-}  // namespace internal
+}  // namespace numerics_internal
 }  // namespace base
 
 #endif  // BASE_NUMERICS_SAFE_MATH_SHARED_IMPL_H_

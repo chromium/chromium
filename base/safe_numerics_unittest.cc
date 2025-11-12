@@ -43,7 +43,7 @@
 #include <mmintrin.h>
 #endif
 
-namespace base::internal {
+namespace base::numerics_internal {
 
 using std::numeric_limits;
 
@@ -1948,4 +1948,4 @@ TEST(SafeNumerics, StrictNumeric_SupportsAssignment) {
 #pragma clang diagnostic pop  // -Winteger-overflow
 #endif
 
-}  // namespace base::internal
+}  // namespace base::numerics_internal

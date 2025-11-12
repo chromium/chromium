@@ -22,7 +22,7 @@
 #endif
 
 namespace base {
-namespace internal {
+namespace numerics_internal {
 
 // These are the non-functioning boilerplate implementations of the optimized
 // safe math routines.
@@ -154,7 +154,7 @@ struct ClampedNegFastOp {
   }
 };
 
-}  // namespace internal
+}  // namespace numerics_internal
 }  // namespace base
 
 #endif  // BASE_NUMERICS_SAFE_MATH_CLANG_GCC_IMPL_H_

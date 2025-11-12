@@ -13,7 +13,7 @@
 
 #include "base/numerics/safe_conversions.h"
 
-namespace base::internal {
+namespace base::numerics_internal {
 
 template <typename T, typename U>
 struct CheckedMulFastAsmOp {
@@ -120,6 +120,6 @@ struct ClampedMulFastAsmOp {
   }
 };
 
-}  // namespace base::internal
+}  // namespace base::numerics_internal
 
 #endif  // BASE_NUMERICS_SAFE_MATH_ARM_IMPL_H_

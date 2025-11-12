@@ -16,7 +16,7 @@
 #include "base/numerics/safe_math_shared_impl.h"  // IWYU pragma: export
 
 namespace base {
-namespace internal {
+namespace numerics_internal {
 
 template <typename T>
   requires(std::signed_integral<T>)
@@ -295,7 +295,7 @@ BASE_FLOAT_ARITHMETIC_OPS(Div, /)
 
 #undef BASE_FLOAT_ARITHMETIC_OPS
 
-}  // namespace internal
+}  // namespace numerics_internal
 }  // namespace base
 
 #endif  // BASE_NUMERICS_CLAMPED_MATH_IMPL_H_
