@@ -4,6 +4,7 @@
 
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 
+#import "base/notreached.h"
 #import "ios/web/public/navigation/navigation_item.h"
 
 namespace web {

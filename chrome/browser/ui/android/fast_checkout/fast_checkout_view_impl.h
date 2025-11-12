@@ -9,6 +9,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/fast_checkout/fast_checkout_view.h"
 
 class FastCheckoutController;

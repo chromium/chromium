@@ -4,6 +4,7 @@
 
 #include "cc/resources/ui_resource_request.h"
 
+#include "base/check_op.h"
 #include "base/memory/ptr_util.h"
 
 namespace cc {

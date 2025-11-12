@@ -4,6 +4,8 @@
 
 #include "components/visited_url_ranking/internal/url_grouping/group_suggestions_manager.h"
 
+#include <optional>
+
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"

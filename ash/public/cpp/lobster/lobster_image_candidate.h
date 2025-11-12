@@ -5,6 +5,8 @@
 #ifndef ASH_PUBLIC_CPP_LOBSTER_LOBSTER_IMAGE_CANDIDATE_H_
 #define ASH_PUBLIC_CPP_LOBSTER_LOBSTER_IMAGE_CANDIDATE_H_
 
+#include <stdint.h>
+
 #include <optional>
 #include <string>
 #include <vector>

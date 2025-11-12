@@ -9,6 +9,7 @@
 #include <string_view>
 
 #include "base/functional/callback.h"
+#include "base/memory/scoped_refptr.h"
 #include "chrome/browser/nearby_sharing/instantmessaging/proto/instantmessaging.pb.h"
 
 namespace google {

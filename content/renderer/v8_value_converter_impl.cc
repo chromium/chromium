@@ -20,6 +20,7 @@
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/notreached.h"
 #include "base/values.h"
 #include "v8/include/v8-array-buffer.h"
 #include "v8/include/v8-container.h"

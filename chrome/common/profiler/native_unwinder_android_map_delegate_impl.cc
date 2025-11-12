@@ -4,6 +4,7 @@
 
 #include "chrome/common/profiler/native_unwinder_android_map_delegate_impl.h"
 
+#include "base/check_op.h"
 #include "base/profiler/native_unwinder_android.h"
 
 NativeUnwinderAndroidMapDelegateImpl::NativeUnwinderAndroidMapDelegateImpl() =

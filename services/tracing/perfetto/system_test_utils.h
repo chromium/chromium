@@ -5,6 +5,8 @@
 #ifndef SERVICES_TRACING_PERFETTO_SYSTEM_TEST_UTILS_H_
 #define SERVICES_TRACING_PERFETTO_SYSTEM_TEST_UTILS_H_
 
+#include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"

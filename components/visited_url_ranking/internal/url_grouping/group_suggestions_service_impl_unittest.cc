@@ -4,6 +4,8 @@
 
 #include "components/visited_url_ranking/internal/url_grouping/group_suggestions_service_impl.h"
 
+#include <optional>
+
 #include "base/run_loop.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/scoped_feature_list.h"
