@@ -178,6 +178,8 @@ class BocaSessionManager
         const std::map<std::string, ::boca::StudentStatus>& activities);
 
     virtual void OnReceiverInvalidation();
+
+    virtual void OnPresentStudentScreenDisconnected();
   };
   // CrosNetworkConfigObserver
   void OnActiveNetworksChanged(
@@ -226,6 +228,8 @@ class BocaSessionManager
 
   // Triggered by SWA delegate to notify app reload events.
   virtual void NotifyAppReload();
+
+  void NotifyPresentStudentScreenDisconnected();
 
   virtual bool disabled_on_non_managed_network();
 

@@ -148,6 +148,7 @@ class BocaAppHandler : public mojom::PageHandler,
   void OnFrameDataReceived(const SkBitmap& frame_data) override;
   void OnSpotlightCrdSessionStatusUpdated(
       mojom::CrdConnectionState state) override;
+  void OnPresentStudentScreenEnded() override;
 
   // BocaSessionManager::Observer
   void OnConsumerActivityUpdated(
@@ -167,6 +168,7 @@ class BocaAppHandler : public mojom::PageHandler,
   void OnSodaStatusUpdate(BocaSessionManager::SodaStatus status) override;
   void OnSessionCaptionClosed(bool is_error) override;
   void OnReceiverInvalidation() override;
+  void OnPresentStudentScreenDisconnected() override;
 
   // Receives a `webrtc::Desktopframe` and an `SkBitmap` containing the 2D-array
   // representation of the frame. `SkBitmap` requires the caller to keep the
@@ -271,7 +273,6 @@ class BocaAppHandler : public mojom::PageHandler,
 
   // TODO(crbug.com/399923859): remove only the override keyword when the
   // inheritance from `mojom::Page` is removed.
-  void OnPresentStudentScreenEnded() override;
   void OnPresentOwnScreenEnded() override;
 
   void EndViewScreenSessionInternal(const std::string& id,

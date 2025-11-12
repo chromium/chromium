@@ -908,6 +908,8 @@ void BocaAppHandler::OnSpotlightCrdSessionStatusUpdated(
   remote_->OnSpotlightCrdSessionStatusUpdated(std::move(state));
 }
 
+void BocaAppHandler::OnPresentStudentScreenEnded() {}
+
 void BocaAppHandler::OnSessionStarted(const std::string& session_id,
                                       const ::boca::UserIdentity& producer) {
   ResetProducerSessionCaptionConfig();
@@ -980,6 +982,10 @@ void BocaAppHandler::OnReceiverInvalidation() {
     return;
   }
   student_screen_presenter()->CheckConnection();
+}
+
+void BocaAppHandler::OnPresentStudentScreenDisconnected() {
+  remote_->OnPresentStudentScreenEnded();
 }
 
 void BocaAppHandler::NotifyLocalCaptionConfigUpdate(
@@ -1368,10 +1374,6 @@ void BocaAppHandler::SetAccountImage(user_manager::User* user) {
   }
 }
 
-void BocaAppHandler::OnPresentStudentScreenEnded() {
-  remote_->OnPresentStudentScreenEnded();
-}
-
 void BocaAppHandler::OnPresentOwnScreenEnded() {
   remote_->OnPresentOwnScreenEnded();
 }
@@ -1445,8 +1447,11 @@ void BocaAppHandler::PresentStudentScreenInternal(
   student_screen_presenter()->Start(
       receiver_id, student_identity, student_device_id.value(),
       std::move(callback),
-      base::BindOnce(&BocaAppHandler::OnPresentStudentScreenEnded,
-                     weak_ptr_factory_.GetWeakPtr()));
+      base::BindOnce(
+          &BocaSessionManager::NotifyPresentStudentScreenDisconnected,
+          // Unretained is safe since `BocaSessionManager` owns
+          // `StudentScreenPresenter`.
+          base::Unretained(GetSessionManager())));
 }
 
 void BocaAppHandler::OnEndViewScreenResponseForPresentStudentScreen(

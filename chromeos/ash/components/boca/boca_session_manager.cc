@@ -165,6 +165,8 @@ void BocaSessionManager::Observer::OnConsumerActivityUpdated(
 
 void BocaSessionManager::Observer::OnReceiverInvalidation() {}
 
+void BocaSessionManager::Observer::OnPresentStudentScreenDisconnected() {}
+
 void BocaSessionManager::NotifyError(BocaError error) {}
 
 void BocaSessionManager::AddObserver(Observer* observer) {
@@ -357,6 +359,12 @@ void BocaSessionManager::NotifySessionCaptionProducerEvents(
 void BocaSessionManager::NotifyAppReload() {
   for (auto& observer : observers_) {
     observer.OnAppReloaded();
+  }
+}
+
+void BocaSessionManager::NotifyPresentStudentScreenDisconnected() {
+  for (auto& observer : observers_) {
+    observer.OnPresentStudentScreenDisconnected();
   }
 }
 

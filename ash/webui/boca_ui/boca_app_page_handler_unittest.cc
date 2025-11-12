@@ -290,6 +290,7 @@ class MockBocaAppClient : public BocaAppClient {
               (override));
   MOCK_METHOD(std::string, GetSchoolToolsServerBaseUrl, (), (override));
   MOCK_METHOD(void, OpenFeedbackDialog, (), (override));
+  MOCK_METHOD(int, GetAppInstanceCount, (), (override));
 };
 
 class MockSessionManager : public BocaSessionManager {
@@ -584,14 +585,22 @@ class BocaAppPageHandlerTest : public testing::Test {
  protected:
   void CreateBocaAppHandler(bool is_producer) {
     is_producer_ = is_producer;
+    boca_app_handler_ =
+        CreateNewBocaAppHandler(is_producer, &remote_, &fake_page_);
+  }
+
+  std::unique_ptr<BocaAppHandler> CreateNewBocaAppHandler(
+      bool is_producer,
+      mojo::Remote<mojom::PageHandler>* remote,
+      std::unique_ptr<FakePage>* fake_page) {
     mojo::PendingReceiver<mojom::Page> page_pending_receiver;
-    remote_.reset();
+    remote->reset();
     // `BocaAppClient::GetSessionManager` should be called exactly once on
     // construction.
     EXPECT_CALL(*boca_app_client(), GetSessionManager)
         .WillOnce(Return(session_manager()));
-    boca_app_handler_ = std::make_unique<BocaAppHandler>(
-        remote_.BindNewPipeAndPassReceiver(),
+    auto boca_app_handler = std::make_unique<BocaAppHandler>(
+        remote->BindNewPipeAndPassReceiver(),
         // TODO(crbug.com/359929870): Setting nullptr for other dependencies for
         // now. Adding test case for classroom and tab info.
         page_pending_receiver.InitWithNewPipeAndPassRemote(), web_ui_.get(),
@@ -600,10 +609,11 @@ class BocaAppPageHandlerTest : public testing::Test {
         /*classroom_client_impl=*/nullptr,
         /*content_settings_handler=*/nullptr,
         /*system_web_app_manager=*/nullptr, &session_client_impl_, is_producer);
-    fake_page_ = std::make_unique<FakePage>(std::move(page_pending_receiver));
-    boca_app_handler_->SetSpotlightService(&spotlight_service_);
+    *fake_page = std::make_unique<FakePage>(std::move(page_pending_receiver));
+    boca_app_handler->SetSpotlightService(&spotlight_service_);
     // Explicitly set pref
-    boca_app_handler_->SetPrefForTesting(&local_state_);
+    boca_app_handler->SetPrefForTesting(&local_state_);
+    return boca_app_handler;
   }
 
   void PrepareGetSession(::boca::Session* current_session,
@@ -644,6 +654,7 @@ class BocaAppPageHandlerTest : public testing::Test {
     if (!is_producer_) {
       return;
     }
+    EXPECT_CALL(*boca_app_client(), GetAppInstanceCount).WillOnce(Return(1));
     EXPECT_CALL(*session_manager(), GetCurrentSession())
         .WillOnce(Return(&session));
     EXPECT_CALL(*session_manager(),
@@ -3133,6 +3144,16 @@ TEST_F(BocaAppPageHandlerProducerTest, PresentStudentScreenSuccess) {
       kActiveStudentId, "student name", "student@email.com", std::nullopt);
   ::boca::UserIdentity student_identity;
 
+  // Simulate existence of another `BocaAppHandler` instance to verify that it
+  // will receive the disconnected event.
+  EXPECT_CALL(*boca_app_client(), GetAppInstanceCount).WillOnce(Return(2));
+  base::test::TestFuture<void> second_disconnected_future;
+  mojo::Remote<mojom::PageHandler> second_remote;
+  std::unique_ptr<FakePage> second_fake_page;
+  std::unique_ptr<BocaAppHandler> second_boca_app_handler =
+      CreateNewBocaAppHandler(/*is_producer=*/true, &second_remote,
+                              &second_fake_page);
+
   ::boca::Session session = GetCommonActiveSessionProto();
   EXPECT_CALL(*session_manager(), GetCurrentSession())
       .WillRepeatedly(Return(&session));
@@ -3166,8 +3187,11 @@ TEST_F(BocaAppPageHandlerProducerTest, PresentStudentScreenSuccess) {
 
   fake_page()->SetPresentStudentScreenEndedInterceptorCallback(
       disconnected_future.GetCallback());
+  second_fake_page->SetPresentStudentScreenEndedInterceptorCallback(
+      second_disconnected_future.GetCallback());
   std::move(disconnected_callback).Run();
   EXPECT_TRUE(disconnected_future.Wait());
+  EXPECT_TRUE(second_disconnected_future.Wait());
 }
 
 TEST_F(BocaAppPageHandlerProducerTest, PresentStudentScreenFailure) {
