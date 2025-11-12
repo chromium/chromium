@@ -11,6 +11,7 @@
 
 @protocol CredentialExportViewControllerPresentationDelegate;
 
+API_AVAILABLE(ios(26.0))
 @interface CredentialExportViewController
     : UITableViewController <CredentialExportConsumer>
 

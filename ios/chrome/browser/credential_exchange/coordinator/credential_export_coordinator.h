@@ -15,6 +15,7 @@ namespace webauthn {
 class PasskeyModel;
 }  // namespace webauthn
 
+API_AVAILABLE(ios(26.0))
 // Coordinator for the credential exchange export flow.
 @interface CredentialExportCoordinator : ChromeCoordinator
 

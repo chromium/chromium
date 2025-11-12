@@ -13,6 +13,7 @@ source_set("ui") {
     "credential_import_view_controller.mm",
   ]
   deps = [
+    ":constants",
     "//components/password_manager/core/browser/ui",
     "//components/strings",
     "//ios/chrome/app/strings",
@@ -25,4 +26,12 @@ source_set("ui") {
     "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
+}
+
+source_set("constants") {
+  sources = [
+    "credential_export_constants.h",
+    "credential_export_constants.mm",
+  ]
+  frameworks = [ "Foundation.framework" ]
 }

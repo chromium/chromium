@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/credential_exchange/ui/credential_export_view_controller.h"
 
 #import "components/password_manager/core/browser/ui/affiliated_group.h"
+#import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/credential_exchange/ui/credential_export_constants.h"
 #import "ios/chrome/browser/credential_exchange/ui/credential_export_view_controller_presentation_delegate.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_manager_view_controller_items.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
@@ -40,10 +42,14 @@ const NSInteger kCredentialExportItemType = 0;
   [super viewDidLoad];
 
   self.title = l10n_util::GetNSString(IDS_IOS_EXPORT_PASSWORDS_AND_PASSKEYS);
+
   self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]
-      initWithBarButtonSystemItem:UIBarButtonSystemItemDone
-                           target:self
-                           action:@selector(didTapDone)];
+      initWithTitle:l10n_util::GetNSString(IDS_CONTINUE)
+              style:UIBarButtonItemStyleProminent
+             target:self
+             action:@selector(didTapDone)];
+  self.navigationItem.rightBarButtonItem.accessibilityIdentifier =
+      kCredentialExportContinueButtonAccessibilityIdentifier;
   self.navigationItem.rightBarButtonItem.enabled = NO;
 
   self.tableView.allowsMultipleSelectionDuringEditing = YES;

@@ -183,7 +183,8 @@ const NSInteger kErrorUserDismissedUpdateGPMPinFlow = -105;
   AlertCoordinator* _updateGPMPinErrorCoordinator;
 
   // Coordinator for handling the credential export flow.
-  CredentialExportCoordinator* _credentialExportCoordinator;
+  CredentialExportCoordinator* _credentialExportCoordinator
+      API_AVAILABLE(ios(26.0));
 }
 
 #pragma mark - ChromeCoordinator
