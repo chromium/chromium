@@ -106,8 +106,8 @@ class AutofillDriverIOS final : public AutofillDriver,
                         mojom::ActionPersistence action_persistence,
                         const FieldGlobalId& field_id,
                         const std::u16string& value) override;
-  void ExtractForm(
-      FormGlobalId form,
+  void ExtractFormWithField(
+      FieldGlobalId field_id,
       base::OnceCallback<void(AutofillDriver*, const std::optional<FormData>&)>
           response_callback) override;
   void ExposeDomNodeIdsInAllFrames() override;

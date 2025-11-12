@@ -277,9 +277,10 @@ class AutofillDriverRouter {
   //
   // If routing the request fails, ExtractForm() calls `browser_form_handler`
   // right away with nullptr and std::nullopt.
-  void ExtractForm(RoutedCallback<FormRendererId, RendererFormHandler> callback,
-                   FormGlobalId form_id,
-                   BrowserFormHandler browser_form_handler);
+  void ExtractFormWithField(
+      RoutedCallback<FieldRendererId, RendererFormHandler> callback,
+      FieldGlobalId field_id,
+      BrowserFormHandler browser_form_handler);
   void RendererShouldAcceptDataListSuggestion(
       RoutedCallback<FieldRendererId, const std::u16string&> callback,
       const FieldGlobalId& field_id,

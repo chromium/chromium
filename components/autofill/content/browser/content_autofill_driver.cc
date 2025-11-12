@@ -487,21 +487,22 @@ void ContentAutofillDriver::ApplyFieldAction(
                action_persistence, field_id, value);
 }
 
-void ContentAutofillDriver::ExtractForm(FormGlobalId form_id,
-                                        BrowserFormHandler final_handler) {
+void ContentAutofillDriver::ExtractFormWithField(
+    FieldGlobalId field_id,
+    BrowserFormHandler final_handler) {
   if (!IsActive()) {
     LOG(WARNING) << "Skipped Autofill message for inactive frame";
     std::move(final_handler).Run(nullptr, std::nullopt);
     return;
   }
-  router().ExtractForm(
-      [](autofill::AutofillDriver& request_target, FormRendererId form_id,
+  router().ExtractFormWithField(
+      [](autofill::AutofillDriver& request_target, FieldRendererId field_id,
          AutofillDriverRouter::RendererFormHandler route_response) {
         auto& source = static_cast<ContentAutofillDriver&>(request_target);
-        source.GetAutofillAgent()->ExtractForm(
-            form_id, Lift(source, std::move(route_response)));
+        source.GetAutofillAgent()->ExtractFormWithField(
+            field_id, Lift(source, std::move(route_response)));
       },
-      form_id, WithNewVersion(std::move(final_handler)));
+      field_id, WithNewVersion(std::move(final_handler)));
 }
 
 void ContentAutofillDriver::ExposeDomNodeIdsInAllFrames() {

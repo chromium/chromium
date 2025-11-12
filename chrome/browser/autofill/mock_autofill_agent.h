@@ -33,8 +33,8 @@ class MockAutofillAgent : public mojom::AutofillAgent {
               (override));
   MOCK_METHOD(
       void,
-      ExtractForm,
-      (FormRendererId form,
+      ExtractFormWithField,
+      (FieldRendererId field_id,
        base::OnceCallback<void(const std::optional<FormData>&)> callback),
       (override));
   MOCK_METHOD(void,

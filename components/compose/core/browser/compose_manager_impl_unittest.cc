@@ -8,6 +8,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -79,8 +80,8 @@ class MockAutofillDriver : public autofill::TestAutofillDriver {
  public:
   using autofill::TestAutofillDriver::TestAutofillDriver;
   MOCK_METHOD(void,
-              ExtractForm,
-              (autofill::FormGlobalId form,
+              ExtractFormWithField,
+              (autofill::FieldGlobalId field_id,
                AutofillDriver::BrowserFormHandler response_handler),
               (override));
 };
@@ -293,11 +294,8 @@ TEST_F(ComposeManagerImplTest, TestOpenCompose_Success) {
   const autofill::FormFieldData selected_form_field = form_data.fields()[1];
 
   // Emulates the expected Autofill driver response.
-  EXPECT_CALL(autofill_driver(), ExtractForm)
-      .WillOnce(testing::WithArg<1>(
-          [&](autofill::AutofillDriver::BrowserFormHandler callback) {
-            std::move(callback).Run(&autofill_driver(), form_data);
-          }));
+  EXPECT_CALL(autofill_driver(), ExtractFormWithField)
+      .WillOnce(base::test::RunOnceCallback<1>(&autofill_driver(), form_data));
 
   const UiEntryPoint ui_entry_point = UiEntryPoint::kContextMenu;
   EXPECT_CALL(
@@ -306,9 +304,8 @@ TEST_F(ComposeManagerImplTest, TestOpenCompose_Success) {
                         /*popup_screen_location=*/_, /*callback=*/_));
 
   base::RunLoop run_loop;
-  compose_manager_impl().OpenCompose(autofill_driver(), form_data.global_id(),
-                                     selected_form_field.global_id(),
-                                     ui_entry_point);
+  compose_manager_impl().OpenCompose(
+      autofill_driver(), selected_form_field.global_id(), ui_entry_point);
   run_loop.RunUntilIdle();
   SimulateComposeSessionEnd();
 
@@ -342,11 +339,8 @@ TEST_F(ComposeManagerImplTest, TestOpenCompose_FormDataMissing) {
   const autofill::FormFieldData selected_form_field = form_data.fields()[1];
 
   // Autofill driver returns no FormData.
-  EXPECT_CALL(autofill_driver(), ExtractForm(_, _))
-      .WillOnce(testing::WithArg<1>(
-          [&](autofill::AutofillDriver::BrowserFormHandler callback) {
-            std::move(callback).Run(&autofill_driver(), std::nullopt);
-          }));
+  EXPECT_CALL(autofill_driver(), ExtractFormWithField)
+      .WillOnce(base::test::RunOnceCallback<1>(nullptr, std::nullopt));
   // There should be no attempt to open the dialog.
   EXPECT_CALL(mock_compose_client(),
               ShowComposeDialog(/*ui_entry_point=*/_, /*trigger_field=*/_,
@@ -354,7 +348,7 @@ TEST_F(ComposeManagerImplTest, TestOpenCompose_FormDataMissing) {
       .Times(0);
 
   base::RunLoop run_loop;
-  compose_manager_impl().OpenCompose(autofill_driver(), form_data.global_id(),
+  compose_manager_impl().OpenCompose(autofill_driver(),
                                      selected_form_field.global_id(),
                                      UiEntryPoint::kContextMenu);
   run_loop.RunUntilIdle();
@@ -388,11 +382,8 @@ TEST_F(ComposeManagerImplTest, TestOpenCompose_FormFieldDataMissing) {
   test_api(form_data).Remove(-1);
 
   // Emulates the expected Autofill driver response.
-  EXPECT_CALL(autofill_driver(), ExtractForm)
-      .WillOnce(testing::WithArg<1>(
-          [&](autofill::AutofillDriver::BrowserFormHandler callback) {
-            std::move(callback).Run(&autofill_driver(), form_data);
-          }));
+  EXPECT_CALL(autofill_driver(), ExtractFormWithField)
+      .WillOnce(base::test::RunOnceCallback<1>(&autofill_driver(), form_data));
   // There should be no attempt to open the dialog.
   EXPECT_CALL(mock_compose_client(),
               ShowComposeDialog(/*ui_entry_point=*/_, /*trigger_field=*/_,
@@ -400,7 +391,7 @@ TEST_F(ComposeManagerImplTest, TestOpenCompose_FormFieldDataMissing) {
       .Times(0);
 
   base::RunLoop run_loop;
-  compose_manager_impl().OpenCompose(autofill_driver(), form_data.global_id(),
+  compose_manager_impl().OpenCompose(autofill_driver(),
                                      selected_form_field.global_id(),
                                      UiEntryPoint::kContextMenu);
   run_loop.RunUntilIdle();
