@@ -286,7 +286,7 @@
   }
 
   /* Hide the gradient fog when the dropdown is visible. */
-  #composeboxContainer:has(#composebox[show-dropdown_][expanded_])::before {
+  #composeboxContainer:has(#composebox[show-dropdown_][expanding_])::before {
     display: none;
   }
 
@@ -345,7 +345,7 @@
   }
 
   :host([enable-lens-aim-suggestions])
-    #composeboxContainer:has(cr-composebox[show-dropdown_][expanded_]) {
+    #composeboxContainer:has(cr-composebox[show-dropdown_][expanding_]) {
     background-color: var(--search-background-color);
     pointer-events: auto;
     inset-block-start: var(--aim-header-height);
@@ -373,7 +373,7 @@
     transition-duration: var(--collapse-duration);
   }
 
-  #composebox[expanded_]::part(input-container) {
+  #composebox[expanding_]::part(input-container) {
     transition-duration: var(--expand-duration);
   }
 
@@ -381,7 +381,7 @@
     display: none;
   }
 
-  #composebox:not([expanded_])[show-file-carousel_]::part(cr-composebox-file-carousel) {
+  #composebox:not([expanding_])[show-file-carousel_]::part(cr-composebox-file-carousel) {
     pointer-events: none;
   }
 
@@ -390,11 +390,11 @@
     transition-duration: var(--collapse-duration);
   }
 
-  #composeboxContainer:has(#composebox[expanded_]) #composeboxFooter {
+  #composeboxContainer:has(#composebox[expanding_]) #composeboxFooter {
     transition-duration: var(--expand-duration);
   }
 
-  #composeboxContainer:has(#composebox[expanded_]) #composeboxFooter {
+  #composeboxContainer:has(#composebox[expanding_]) #composeboxFooter {
     height: 64px;
     width: 100%;
   }
@@ -433,8 +433,8 @@
     display: block;
   }
 
-  #composebox:not([expanded_])::part(cancel),
-  #composebox:not([expanded_])::part(submit) {
+  #composebox:not([expanding_])::part(cancel),
+  #composebox:not([expanding_])::part(submit) {
     pointer-events: none;
   }
 
