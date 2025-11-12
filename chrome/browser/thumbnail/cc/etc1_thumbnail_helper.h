@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_THUMBNAIL_CC_ETC1_THUMBNAIL_HELPER_H_
 
 #include "base/files/file_path.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/thumbnail/cc/thumbnail.h"
 

@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_FEATURE_ENGAGEMENT_INTERNAL_MULTIPLE_EVENT_MODEL_PROVIDER_H_
 #define COMPONENTS_FEATURE_ENGAGEMENT_INTERNAL_MULTIPLE_EVENT_MODEL_PROVIDER_H_
 
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "components/feature_engagement/internal/event_model_provider.h"
 #include "components/feature_engagement/public/configuration.h"

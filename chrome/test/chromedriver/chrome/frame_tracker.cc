@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/functional/callback.h"
 #include "base/json/json_writer.h"
 #include "chrome/test/chromedriver/chrome/devtools_client.h"
 #include "chrome/test/chromedriver/chrome/status.h"

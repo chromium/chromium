@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_VISITED_URL_RANKING_PUBLIC_TESTING_MOCK_VISITED_URL_RANKING_SERVICE_H_
 #define COMPONENTS_VISITED_URL_RANKING_PUBLIC_TESTING_MOCK_VISITED_URL_RANKING_SERVICE_H_
 
+#include "base/functional/callback.h"
 #include "components/visited_url_ranking/public/visited_url_ranking_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 

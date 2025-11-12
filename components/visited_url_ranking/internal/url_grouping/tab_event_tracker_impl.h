@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_VISITED_URL_RANKING_INTERNAL_URL_GROUPING_TAB_EVENT_TRACKER_IMPL_H_
 #define COMPONENTS_VISITED_URL_RANKING_INTERNAL_URL_GROUPING_TAB_EVENT_TRACKER_IMPL_H_
 
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "components/visited_url_ranking/public/url_grouping/tab_event_tracker.h"
 #include "ui/base/page_transition_types.h"

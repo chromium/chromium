@@ -5,6 +5,7 @@
 #include "components/feature_engagement/internal/single_event_model_provider.h"
 
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "components/feature_engagement/internal/event_model.h"
 
 namespace feature_engagement {

@@ -15,6 +15,7 @@
 #include <unordered_set>
 
 #include "base/containers/span.h"
+#include "base/functional/callback.h"
 #include "base/hash/sha1.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/stack_allocated.h"
