@@ -176,7 +176,7 @@ class FormFiller {
       const FormStructure& form_structure,
       RefillTriggerReason refill_trigger_reason,
       AutofillTriggerSource trigger_source,
-      base::optional_ref<const FormFieldData> field = std::nullopt,
+      base::optional_ref<const AutofillField> field = std::nullopt,
       base::optional_ref<const std::u16string> old_value = std::nullopt);
 
   base::WeakPtr<FormFiller> GetWeakPtr() {

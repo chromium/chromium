@@ -1001,7 +1001,7 @@ void FormFiller::MaybeTriggerRefill(
     const FormStructure& form_structure,
     RefillTriggerReason refill_trigger_reason,
     AutofillTriggerSource trigger_source,
-    base::optional_ref<const FormFieldData> field,
+    base::optional_ref<const AutofillField> field,
     base::optional_ref<const std::u16string> old_value) {
   // Should not refill if a form with the same FormGlobalId has not been filled
   // before or if it has been refilled before.

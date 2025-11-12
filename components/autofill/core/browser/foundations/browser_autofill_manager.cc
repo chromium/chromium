@@ -2398,7 +2398,7 @@ void BrowserAutofillManager::OnJavaScriptChangedAutofilledValueImpl(
   AnalyzeJavaScriptChangedAutofilledValue(*form_structure, *autofill_field);
   form_filler_->MaybeTriggerRefill(
       form, *form_structure, RefillTriggerReason::kExpirationDateFormatted,
-      AutofillTriggerSource::kJavaScriptChangedAutofilledValue, field,
+      AutofillTriggerSource::kJavaScriptChangedAutofilledValue, *autofill_field,
       old_value);
 }
 
