@@ -7,8 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-@class SessionWindowIOS;
-
 namespace base {
 class FilePath;
 }  // namespace base
@@ -67,20 +65,6 @@ namespace ios::sessions {
 // was a success.
 [[nodiscard]] bool ParseProto(const base::FilePath& filename,
                               google::protobuf::MessageLite& proto);
-
-// Encodes `object` into binary data. On error, returns nil.
-[[nodiscard]] NSData* ArchiveRootObject(NSObject<NSCoding>* object);
-
-// Decodes root object from `data`. On error, returns nil.
-[[nodiscard]] NSObject<NSCoding>* DecodeRootObject(NSData* data);
-
-// Loads session from `filename`. On error, returns nil.
-[[nodiscard]] SessionWindowIOS* ReadSessionWindow(
-    const base::FilePath& filename);
-
-// Writes `session` to `filename`. On error, returns false.
-[[nodiscard]] bool WriteSessionWindow(const base::FilePath& filename,
-                                      SessionWindowIOS* session);
 
 }  // namespace ios::sessions
 

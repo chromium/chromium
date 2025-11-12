@@ -7,9 +7,6 @@
 #import "base/apple/foundation_util.h"
 #import "base/files/file_path.h"
 #import "base/logging.h"
-#import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/sessions/model/session_ios.h"
-#import "ios/chrome/browser/sessions/model/session_window_ios.h"
 #import "third_party/protobuf/src/google/protobuf/message_lite.h"
 
 namespace ios::sessions {
@@ -241,64 +238,6 @@ bool ParseProto(const base::FilePath& filename,
   }
 
   return true;
-}
-
-NSData* ArchiveRootObject(NSObject<NSCoding>* object) {
-  return [NSKeyedArchiver archivedDataWithRootObject:object
-                               requiringSecureCoding:NO
-                                               error:nil];
-}
-
-NSObject<NSCoding>* DecodeRootObject(NSData* data) {
-  NSError* error = nil;
-  NSKeyedUnarchiver* unarchiver =
-      [[NSKeyedUnarchiver alloc] initForReadingFromData:data error:&error];
-  if (error) {
-    return nil;
-  }
-
-  unarchiver.requiresSecureCoding = NO;
-
-  // -decodeObjectForKey: propagates exception, so wrap the call in
-  // @try/@catch block to prevent them from terminating the app.
-  @try {
-    return [unarchiver decodeObjectForKey:@"root"];
-  } @catch (NSException* exception) {
-    return nil;
-  }
-}
-
-SessionWindowIOS* ReadSessionWindow(const base::FilePath& filename) {
-  NSData* data = ReadFile(filename);
-  if (!data) {
-    return nil;
-  }
-
-  NSObject* root = DecodeRootObject(data);
-  if (!root) {
-    return nil;
-  }
-
-  if ([root isKindOfClass:[SessionIOS class]]) {
-    SessionIOS* session = base::apple::ObjCCastStrict<SessionIOS>(root);
-    if (session.sessionWindows.count != 1) {
-      return nil;
-    }
-
-    return session.sessionWindows[0];
-  }
-
-  return base::apple::ObjCCast<SessionWindowIOS>(root);
-}
-
-bool WriteSessionWindow(const base::FilePath& filename,
-                        SessionWindowIOS* session) {
-  NSData* data = ArchiveRootObject(session);
-  if (!data) {
-    return false;
-  }
-
-  return WriteFile(filename, data);
 }
 
 }  // namespace ios::sessions
