@@ -6,7 +6,9 @@
 
 #import "base/no_destructor.h"
 #import "base/values.h"
+#import "components/webauthn/ios/features.h"
 #import "components/webauthn/ios/passkey_tab_helper.h"
+#import "ios/web/public/js_messaging/java_script_feature.h"
 #import "ios/web/public/js_messaging/java_script_feature_util.h"
 #import "ios/web/public/js_messaging/script_message.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
@@ -15,6 +17,25 @@ namespace {
 
 constexpr char kScriptName[] = "passkey_controller";
 constexpr char kHandlerName[] = "PasskeyInteractionHandler";
+
+// Message event.
+constexpr char kEvent[] = "event";
+
+// Message event types.
+constexpr char kHandleGetRequest[] = "handleGetRequest";
+constexpr char kHandleCreateRequest[] = "handleCreateRequest";
+constexpr char kGetRequested[] = "getRequested";
+constexpr char kCreateRequested[] = "createRequested";
+constexpr char kCreateResolvedGpm[] = "createResolvedGpm";
+constexpr char kCreateResolvedNonGpm[] = "createResolvedNonGpm";
+constexpr char kGetResolved[] = "getResolved";
+
+// Frame ID for handle* events.
+constexpr char kFrameId[] = "frameId";
+
+// Parameters of the "getResolved" event.
+constexpr char kCredentialId[] = "credential_id";
+constexpr char kRpId[] = "rp_id";
 
 }  // namespace
 
@@ -59,6 +80,10 @@ void PasskeyJavaScriptFeature::SetAllowModalLogin(web::WebState* web_state,
   }
 }
 
+void PasskeyJavaScriptFeature::DeferToRenderer(web::WebFrame* web_frame) {
+  CallJavaScriptFunction(web_frame, "passkey.deferToRenderer", {});
+}
+
 std::optional<std::string>
 PasskeyJavaScriptFeature::GetScriptMessageHandlerName() const {
   return kHandlerName;
@@ -90,14 +115,38 @@ void PasskeyJavaScriptFeature::ScriptMessageReceived(
   }
 
   const base::Value::Dict& dict = body->GetDict();
-  const std::string* event = dict.FindString("event");
+  const std::string* event = dict.FindString(kEvent);
   if (!event || event->empty()) {
     return;
   }
 
-  // For those events there are no more expected arguments.
-  if (*event == "getRequested" || *event == "createRequested" ||
-      *event == "createResolvedGpm" || *event == "createResolvedNonGpm") {
+  const std::string* frameId = dict.FindString(kFrameId);
+
+  if (*event == kHandleGetRequest) {
+    if (!base::FeatureList::IsEnabled(kIOSPasskeyModalLoginWithShim)) {
+      // TODO(crbug.com/369629469): Log metrics for unexpected events.
+      return;
+    }
+
+    passkey_tab_helper->LogEventFromString(kGetRequested);
+    if (frameId && !frameId->empty()) {
+      passkey_tab_helper->HandleGetRequestedEvent(*frameId);
+    }
+    return;
+  } else if (*event == kHandleCreateRequest) {
+    if (!base::FeatureList::IsEnabled(kIOSPasskeyModalLoginWithShim)) {
+      // TODO(crbug.com/369629469): Log metrics for unexpected events.
+      return;
+    }
+
+    passkey_tab_helper->LogEventFromString(kCreateRequested);
+    if (frameId && !frameId->empty()) {
+      passkey_tab_helper->HandleCreateRequestedEvent(*frameId);
+    }
+    return;
+  } else if (*event == kGetRequested || *event == kCreateRequested ||
+             *event == kCreateResolvedGpm || *event == kCreateResolvedNonGpm) {
+    // For those events there are no more expected arguments.
     passkey_tab_helper->LogEventFromString(*event);
     return;
   }
@@ -105,9 +154,9 @@ void PasskeyJavaScriptFeature::ScriptMessageReceived(
   // Expected arguments for "getResolved" event:
   // credential_id: (string) base64url encoded identifer of the credential.
   // rp_id: (string) The relying party's identifier.
-  if (*event == "getResolved") {
-    const std::string* credential_id = dict.FindString("credential_id");
-    const std::string* rp_id = dict.FindString("rp_id");
+  if (*event == kGetResolved) {
+    const std::string* credential_id = dict.FindString(kCredentialId);
+    const std::string* rp_id = dict.FindString(kRpId);
     if (credential_id && !credential_id->empty() && rp_id && !rp_id->empty()) {
       passkey_tab_helper->HandleGetResolvedEvent(*credential_id, *rp_id);
     }

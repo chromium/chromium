@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_WEBAUTHN_IOS_PASSKEY_TAB_HELPER_H_
 #define COMPONENTS_WEBAUTHN_IOS_PASSKEY_TAB_HELPER_H_
 
+#import "base/memory/weak_ptr.h"
 #import "components/webauthn/ios/ios_passkey_client.h"
 #import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
@@ -16,6 +17,10 @@ class WebauthnCredentialSpecifics;
 namespace webauthn {
 class PasskeyModel;
 }  // namespace webauthn
+
+namespace web {
+class WebFrame;
+}  // namespace web
 
 // Handles script messages received from PasskeyJavaScriptFeature related to
 // interactions with WebAuthn credentials and for now logs appropriate metrics.
@@ -38,6 +43,12 @@ class PasskeyTabHelper : public web::WebStateObserver,
       const std::string& credential_id_base64url_encoded,
       const std::string& rp_id);
 
+  // Handles passkey assertion requests. Yields if any parameter is missing.
+  void HandleGetRequestedEvent(const std::string& frame_id);
+
+  // Handles passkey registration requests. Yields if any parameter is missing.
+  void HandleCreateRequestedEvent(const std::string& frame_id);
+
   // Adds a passkey to the passkey model while enabling the passkey creation
   // infobar to be displayed if possible.
   void AddNewPasskey(sync_pb::WebauthnCredentialSpecifics& passkey);
@@ -49,6 +60,9 @@ class PasskeyTabHelper : public web::WebStateObserver,
                             webauthn::PasskeyModel* passkey_model,
                             std::unique_ptr<IOSPasskeyClient> client);
 
+  // Returns a web frame from a web frame id. May return null.
+  web::WebFrame* GetWebFrame(const std::string& frame_id) const;
+
   // WebStateObserver:
   void DidFinishNavigation(web::WebState* web_state,
                            web::NavigationContext* navigation_context) override;
@@ -56,6 +70,9 @@ class PasskeyTabHelper : public web::WebStateObserver,
 
   // Provides access to stored WebAuthn credentials.
   const raw_ref<webauthn::PasskeyModel> passkey_model_;
+
+  // The WebState with which this object is associated.
+  base::WeakPtr<web::WebState> web_state_;
 
   // The client used to perform user facing tasks for the PasskeyTabHelper.
   std::unique_ptr<IOSPasskeyClient> client_;

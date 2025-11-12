@@ -6,6 +6,7 @@ import("//ios/web/public/js_messaging/optimize_ts.gni")
 
 source_set("ios") {
   deps = [
+    ":features",
     ":passkey_controller_js",
     ":passkey_types",
     "//base",

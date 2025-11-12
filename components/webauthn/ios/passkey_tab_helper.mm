@@ -12,6 +12,7 @@
 #import "components/webauthn/core/browser/passkey_model.h"
 #import "components/webauthn/ios/passkey_java_script_feature.h"
 #import "ios/web/public/js_messaging/script_message.h"
+#import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state.h"
 
 namespace {
@@ -87,16 +88,51 @@ void PasskeyTabHelper::HandleGetResolvedEvent(
   }
 }
 
+void PasskeyTabHelper::HandleGetRequestedEvent(const std::string& frame_id) {
+  web::WebFrame* web_frame = GetWebFrame(frame_id);
+  if (!web_frame) {
+    return;
+  }
+
+  // TODO(crbug.com/385174410): Handle this event.
+  PasskeyJavaScriptFeature::GetInstance()->DeferToRenderer(web_frame);
+}
+
+void PasskeyTabHelper::HandleCreateRequestedEvent(const std::string& frame_id) {
+  web::WebFrame* web_frame = GetWebFrame(frame_id);
+  if (!web_frame) {
+    return;
+  }
+
+  // TODO(crbug.com/385174410): Handle this event.
+  PasskeyJavaScriptFeature::GetInstance()->DeferToRenderer(web_frame);
+}
+
 PasskeyTabHelper::PasskeyTabHelper(web::WebState* web_state,
                                    webauthn::PasskeyModel* passkey_model,
                                    std::unique_ptr<IOSPasskeyClient> client)
-    : passkey_model_(CHECK_DEREF(passkey_model)), client_(std::move(client)) {
+    : passkey_model_(CHECK_DEREF(passkey_model)),
+      web_state_(web_state->GetWeakPtr()),
+      client_(std::move(client)) {
   CHECK(client_);
-  CHECK(web_state);
   web_state->AddObserver(this);
 
   PasskeyJavaScriptFeature::GetInstance()->SetAllowModalLogin(
       web_state, client_->IsModalLoginWithShimAllowed());
+}
+
+web::WebFrame* PasskeyTabHelper::GetWebFrame(
+    const std::string& frame_id) const {
+  web::WebState* web_state = web_state_.get();
+  if (!web_state) {
+    return nullptr;
+  }
+
+  web::WebFramesManager* web_frames_manager =
+      PasskeyJavaScriptFeature::GetInstance()->GetWebFramesManager(web_state);
+
+  return web_frames_manager ? web_frames_manager->GetFrameWithId(frame_id)
+                            : nullptr;
 }
 
 void PasskeyTabHelper::AddNewPasskey(
