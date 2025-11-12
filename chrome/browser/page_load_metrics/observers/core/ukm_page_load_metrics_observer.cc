@@ -75,19 +75,6 @@
 
 using page_load_metrics::PageVisitFinalStatus;
 
-namespace internal {
-
-const char
-    kHistogramLayoutInstabilityMaxCumulativeShiftScoreSessionWindowGap1000msMax5000ms2
-        [] = "PageLoad.LayoutInstability.MaxCumulativeShiftScore.SessionWindow."
-             "Gap1000ms.Max5000ms2";
-const char
-    kHistogramLayoutInstabilityMaxCumulativeShiftScoreSessionWindowGap1000msMax5000ms2Incognito
-        [] = "PageLoad.LayoutInstability.MaxCumulativeShiftScore.SessionWindow."
-             "Gap1000ms.Max5000ms2.Incognito";
-
-}  // namespace internal
-
 namespace {
 
 const char kOfflinePreviewsMimeType[] = "multipart/related";
@@ -206,19 +193,17 @@ int64_t CalculateLCPEntropyBucket(double bpp) {
 
 // static
 std::unique_ptr<page_load_metrics::PageLoadMetricsObserver>
-UkmPageLoadMetricsObserver::CreateIfNeeded(bool is_incognito) {
+UkmPageLoadMetricsObserver::CreateIfNeeded() {
   if (!ukm::UkmRecorder::Get()) {
     return nullptr;
   }
   return std::make_unique<UkmPageLoadMetricsObserver>(
-      g_browser_process->network_quality_tracker(), is_incognito);
+      g_browser_process->network_quality_tracker());
 }
 
 UkmPageLoadMetricsObserver::UkmPageLoadMetricsObserver(
-    network::NetworkQualityTracker* network_quality_tracker,
-    bool is_incognito)
-    : network_quality_tracker_(network_quality_tracker),
-      is_incognito_(is_incognito) {
+    network::NetworkQualityTracker* network_quality_tracker)
+    : network_quality_tracker_(network_quality_tracker) {
   DCHECK(network_quality_tracker_);
 }
 
@@ -1340,19 +1325,11 @@ void UkmPageLoadMetricsObserver::ReportLayoutStability() {
     builder
         .SetLayoutInstability_MaxCumulativeShiftScore_SessionWindow_Gap1000ms_Max5000ms(
             page_load_metrics::LayoutShiftUkmValue(*cwv_cls_value));
-    auto sample = page_load_metrics::LayoutShiftUmaValue10000(*cwv_cls_value);
     base::UmaHistogramCustomCounts(
-        internal::
-            kHistogramLayoutInstabilityMaxCumulativeShiftScoreSessionWindowGap1000msMax5000ms2,
-        sample, 1, 24000, 50);
-
-    if (is_incognito_) {
-      base::UmaHistogramCustomCounts(
-          internal::
-              kHistogramLayoutInstabilityMaxCumulativeShiftScoreSessionWindowGap1000msMax5000ms2Incognito,
-          sample, 1, 24000, 50);
-    }
-
+        "PageLoad.LayoutInstability.MaxCumulativeShiftScore.SessionWindow."
+        "Gap1000ms.Max5000ms2",
+        page_load_metrics::LayoutShiftUmaValue10000(*cwv_cls_value), 1, 24000,
+        50);
     // The pseudo metric of PageLoad.LayoutInstability.MaxCumulativeShiftScore.
     // SessionWindow.Gap1000ms.Max5000ms2.
     // Only used to assess field trial data quality.

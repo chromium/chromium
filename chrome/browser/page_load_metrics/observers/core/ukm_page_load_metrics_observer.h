@@ -23,17 +23,6 @@
 #include "third_party/perfetto/include/perfetto/tracing/event_context.h"
 #include "ui/base/page_transition_types.h"
 
-namespace internal {
-
-extern const char
-    kHistogramLayoutInstabilityMaxCumulativeShiftScoreSessionWindowGap1000msMax5000ms2
-        [];
-extern const char
-    kHistogramLayoutInstabilityMaxCumulativeShiftScoreSessionWindowGap1000msMax5000ms2Incognito
-        [];
-
-}  // namespace internal
-
 namespace content {
 class BrowserContext;
 }
@@ -55,11 +44,10 @@ class UkmPageLoadMetricsObserver
  public:
   // Returns a UkmPageLoadMetricsObserver, or nullptr if it is not needed.
   static std::unique_ptr<page_load_metrics::PageLoadMetricsObserver>
-  CreateIfNeeded(bool is_incognito);
+  CreateIfNeeded();
 
   explicit UkmPageLoadMetricsObserver(
-      network::NetworkQualityTracker* network_quality_tracker,
-      bool is_incognito);
+      network::NetworkQualityTracker* network_quality_tracker);
 
   UkmPageLoadMetricsObserver(const UkmPageLoadMetricsObserver&) = delete;
   UkmPageLoadMetricsObserver& operator=(const UkmPageLoadMetricsObserver&) =
@@ -388,9 +376,6 @@ class UkmPageLoadMetricsObserver
   page_load_metrics::NavigationHandleUserData::InitiatorLocation
       navigation_trigger_type_ = page_load_metrics::NavigationHandleUserData::
           InitiatorLocation::kOther;
-
-  // Whether the WebContents being observed is for an Incognito profile.
-  bool is_incognito_;
 
   base::WeakPtrFactory<UkmPageLoadMetricsObserver> weak_factory_{this};
 };

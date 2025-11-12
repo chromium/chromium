@@ -113,7 +113,7 @@ class UkmPageLoadMetricsObserverTest
   void RegisterObservers(page_load_metrics::PageLoadTracker* tracker) override {
     std::unique_ptr<UkmPageLoadMetricsObserver> observer =
         std::make_unique<UkmPageLoadMetricsObserver>(
-            &mock_network_quality_provider_, IsIncognito());
+            &mock_network_quality_provider_);
     observer_ = observer.get();
     tracker->AddObserver(std::move(observer));
   }
@@ -148,8 +148,6 @@ class UkmPageLoadMetricsObserverTest
 
     HistoryClustersTabHelper::CreateForWebContents(web_contents());
   }
-
-  virtual bool IsIncognito() { return false; }
 
   TestingProfile::TestingFactories GetTestingFactories() const override {
     return {
@@ -1842,15 +1840,10 @@ TEST_F(UkmPageLoadMetricsObserverTest, LayoutInstability) {
   EXPECT_THAT(tester()->histogram_tester().GetAllSamples(
                   "PageLoad.LayoutInstability.CumulativeShiftScore"),
               testing::ElementsAre(base::Bucket(25, 1)));
-  EXPECT_THAT(
-      tester()->histogram_tester().GetAllSamples(
-          internal::
-              kHistogramLayoutInstabilityMaxCumulativeShiftScoreSessionWindowGap1000msMax5000ms2),
-      testing::ElementsAre(base::Bucket(24000, 1)));
-  tester()->histogram_tester().ExpectTotalCount(
-      internal::
-          kHistogramLayoutInstabilityMaxCumulativeShiftScoreSessionWindowGap1000msMax5000ms2Incognito,
-      0);
+  EXPECT_THAT(tester()->histogram_tester().GetAllSamples(
+                  "PageLoad.LayoutInstability.MaxCumulativeShiftScore."
+                  "SessionWindow.Gap1000ms.Max5000ms2"),
+              testing::ElementsAre(base::Bucket(24000, 1)));
 }
 
 TEST_F(UkmPageLoadMetricsObserverTest, SoftNavigationCount) {
@@ -1976,15 +1969,10 @@ TEST_F(UkmPageLoadMetricsObserverTest,
   EXPECT_THAT(tester()->histogram_tester().GetAllSamples(
                   "PageLoad.LayoutInstability.CumulativeShiftScore"),
               testing::ElementsAre(base::Bucket(25, 1)));
-  EXPECT_THAT(
-      tester()->histogram_tester().GetAllSamples(
-          internal::
-              kHistogramLayoutInstabilityMaxCumulativeShiftScoreSessionWindowGap1000msMax5000ms2),
-      testing::ElementsAre(base::Bucket(24000, 1)));
-  tester()->histogram_tester().ExpectTotalCount(
-      internal::
-          kHistogramLayoutInstabilityMaxCumulativeShiftScoreSessionWindowGap1000msMax5000ms2Incognito,
-      0);
+  EXPECT_THAT(tester()->histogram_tester().GetAllSamples(
+                  "PageLoad.LayoutInstability.MaxCumulativeShiftScore."
+                  "SessionWindow.Gap1000ms.Max5000ms2"),
+              testing::ElementsAre(base::Bucket(24000, 1)));
   EXPECT_THAT(tester()->histogram_tester().GetAllSamples(
                   "PageLoad.LayoutInstability."
                   "CumulativeShiftScoreAtFirstOnHidden"),
@@ -2685,9 +2673,8 @@ class TestOfflinePreviewsUkmPageLoadMetricsObserver
     : public UkmPageLoadMetricsObserver {
  public:
   explicit TestOfflinePreviewsUkmPageLoadMetricsObserver(
-      MockNetworkQualityProvider* network_quality_provider,
-      bool is_incognito)
-      : UkmPageLoadMetricsObserver(network_quality_provider, is_incognito) {}
+      MockNetworkQualityProvider* network_quality_provider)
+      : UkmPageLoadMetricsObserver(network_quality_provider) {}
 
   ~TestOfflinePreviewsUkmPageLoadMetricsObserver() override = default;
 
@@ -2705,7 +2692,7 @@ class OfflinePreviewsUKMPageLoadMetricsObserverTest
   void RegisterObservers(page_load_metrics::PageLoadTracker* tracker) override {
     tracker->AddObserver(
         std::make_unique<TestOfflinePreviewsUkmPageLoadMetricsObserver>(
-            &mock_network_quality_provider(), false));
+            &mock_network_quality_provider()));
   }
 };
 
@@ -3101,46 +3088,4 @@ TEST_F(UkmPageLoadMetricsObserverTest, TestTracingUserTimingMetrics) {
               ::testing::ElementsAre(std::vector<std::string>{"navigation_id"},
                                      std::vector<std::string>{
                                          base::NumberToString(navigation_id)}));
-}
-
-class UkmPageLoadMetricsObserverIncognitoTest
-    : public UkmPageLoadMetricsObserverTest {
-  bool IsIncognito() override { return true; }
-};
-
-TEST_F(UkmPageLoadMetricsObserverIncognitoTest, LayoutInstabilityIncognito) {
-  NavigateAndCommit(GURL(kTestUrl1));
-  base::TimeTicks current_time = base::TimeTicks::Now();
-  page_load_metrics::mojom::FrameRenderDataUpdate render_data(1.0, 1.0, {});
-  render_data.new_layout_shifts.emplace_back(
-      page_load_metrics::mojom::LayoutShift::New(
-          current_time - base::Milliseconds(4000), 0.5));
-  render_data.new_layout_shifts.emplace_back(
-      page_load_metrics::mojom::LayoutShift::New(
-          current_time - base::Milliseconds(3500), 0.5));
-
-  tester()->SimulateRenderDataUpdate(render_data);
-
-  // Simulate hiding the tab (the report should include shifts after hide).
-  web_contents()->WasHidden();
-
-  page_load_metrics::mojom::FrameRenderDataUpdate render_data_2(1.5, 0.0, {});
-  render_data_2.new_layout_shifts.emplace_back(
-      page_load_metrics::mojom::LayoutShift::New(
-          current_time - base::Milliseconds(2500), 1.5));
-  tester()->SimulateRenderDataUpdate(render_data_2);
-
-  // Simulate closing the tab.
-  DeleteContents();
-
-  EXPECT_THAT(
-      tester()->histogram_tester().GetAllSamples(
-          internal::
-              kHistogramLayoutInstabilityMaxCumulativeShiftScoreSessionWindowGap1000msMax5000ms2),
-      testing::ElementsAre(base::Bucket(24000, 1)));
-  EXPECT_THAT(
-      tester()->histogram_tester().GetAllSamples(
-          internal::
-              kHistogramLayoutInstabilityMaxCumulativeShiftScoreSessionWindowGap1000msMax5000ms2Incognito),
-      testing::ElementsAre(base::Bucket(24000, 1)));
 }

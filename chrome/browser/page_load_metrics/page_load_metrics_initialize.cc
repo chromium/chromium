@@ -228,7 +228,6 @@ void PageLoadMetricsEmbedder::RegisterObservers(
 
     bool is_in_foreground =
         tracker->GetVisibilityTracker().currently_in_foreground();
-    bool is_incognito = IsIncognito(tracker->GetWebContents());
     std::unique_ptr<page_load_metrics::AdsPageLoadMetricsObserver>
         ads_observer =
             page_load_metrics::AdsPageLoadMetricsObserver::CreateIfNeeded(
@@ -240,7 +239,7 @@ void PageLoadMetricsEmbedder::RegisterObservers(
                         web_contents()->GetBrowserContext()),
                     ServiceAccessType::EXPLICIT_ACCESS),
                 base::BindRepeating(&GetApplicationLocale), is_in_foreground,
-                is_incognito);
+                IsIncognito(tracker->GetWebContents()));
     if (ads_observer) {
       tracker->AddObserver(std::move(ads_observer));
     }
@@ -250,7 +249,7 @@ void PageLoadMetricsEmbedder::RegisterObservers(
         std::make_unique<PaidContentPageLoadMetricsObserver>());
 
     std::unique_ptr<page_load_metrics::PageLoadMetricsObserver> ukm_observer =
-        UkmPageLoadMetricsObserver::CreateIfNeeded(is_incognito);
+        UkmPageLoadMetricsObserver::CreateIfNeeded();
     if (ukm_observer) {
       tracker->AddObserver(std::move(ukm_observer));
     }
