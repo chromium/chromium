@@ -26,6 +26,15 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<!-- LINT.IfChange(ActionChipsType) -->
+
+<enum name="ActionChipsType">
+  <int value="0" label="Create Image Chip"/>
+  <int value="1" label="Deep Search Chip"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/resources/new_tab_page/action_chips/action_chips.ts:ActionChipsType) -->
+
 <enum name="AimToolState">
   <int value="0" label="AIM Tool Disabled"/>
   <int value="1" label="AIM Tool Enabled"/>
@@ -464,6 +473,7 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="Customize Chrome Button"/>
   <int value="10" label="Customize Chrome Dialog"/>
   <int value="11" label="Wallpaper Search Button"/>
+  <int value="12" label="Action Chips"/>
 </enum>
 
 <enum name="NTPImageType">
