@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/350788890): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 // Canonicalizer functions for working with and resolving relative URLs.
 
 #include <algorithm>
@@ -47,9 +42,10 @@ bool AreSchemesEqual(const char* base,
   for (int i = 0; i < base_scheme.len; i++) {
     // We assume the base is already canonical, so we don't have to
     // canonicalize it.
-    if (CanonicalSchemeChar(cmp[cmp_scheme.begin + i]) !=
-        base[base_scheme.begin + i])
+    if (UNSAFE_TODO(CanonicalSchemeChar(cmp[cmp_scheme.begin + i]) !=
+                    base[base_scheme.begin + i])) {
       return false;
+    }
   }
   return true;
 }
@@ -65,7 +61,7 @@ bool DoesBeginSlashWindowsDriveSpec(const CHAR* spec, int start_offset,
                                     int spec_len) {
   if (start_offset >= spec_len)
     return false;
-  return IsSlashOrBackslash(spec[start_offset]) &&
+  return IsSlashOrBackslash(UNSAFE_TODO(spec[start_offset])) &&
          DoesBeginWindowsDriveSpec(spec, start_offset + 1, spec_len);
 }
 
@@ -84,8 +80,9 @@ bool IsValidScheme(const CHAR* url, const Component& scheme) {
   //        state, and decrease pointer by one.
   //     3. Otherwise, validation error, return failure.
   // Note that both step 2 and step 3 mean that the scheme was not valid.
-  if (!base::IsAsciiAlpha(url[scheme.begin]))
+  if (!base::IsAsciiAlpha(UNSAFE_TODO(url[scheme.begin]))) {
     return false;
+  }
 
   // From https://url.spec.whatwg.org/#scheme-state:
   //   scheme state:
@@ -97,8 +94,9 @@ bool IsValidScheme(const CHAR* url, const Component& scheme) {
   // already been checked by base::IsAsciiAlpha above.
   int scheme_end = scheme.end();
   for (int i = scheme.begin + 1; i < scheme_end; i++) {
-    if (!CanonicalSchemeChar(url[i]))
+    if (!CanonicalSchemeChar(UNSAFE_TODO(url[i]))) {
       return false;
+    }
   }
 
   return true;

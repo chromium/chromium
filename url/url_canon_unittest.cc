@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/350788890): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "url/url_canon.h"
 
 #include <errno.h>
@@ -2415,7 +2410,7 @@ TEST_F(URLCanonTest, CanonicalizePathUrl) {
     EXPECT_EQ(-1, out_parsed.host.len);
 
     // When we end with a colon at the end, there should be no path.
-    if (path_case.input[url_len - 1] == ':') {
+    if (UNSAFE_TODO(path_case.input[url_len - 1]) == ':') {
       EXPECT_EQ(0, out_parsed.GetContent().begin);
       EXPECT_EQ(-1, out_parsed.GetContent().len);
     }
@@ -2551,35 +2546,35 @@ TEST_F(URLCanonTest, _itoa_s) {
   // null-terminated. We also allocate one byte more than what we tell
   // _itoa_s about, and ensure that the extra byte is untouched.
   char buf[6];
-  memset(buf, 0xff, sizeof(buf));
+  UNSAFE_TODO(memset(buf, 0xff, sizeof(buf)));
   EXPECT_EQ(0, _itoa_s(12, buf, sizeof(buf) - 1, 10));
   EXPECT_STREQ("12", buf);
   EXPECT_EQ('\xFF', buf[3]);
 
   // Test the edge cases - exactly the buffer size and one over
-  memset(buf, 0xff, sizeof(buf));
+  UNSAFE_TODO(memset(buf, 0xff, sizeof(buf)));
   EXPECT_EQ(0, _itoa_s(1234, buf, sizeof(buf) - 1, 10));
   EXPECT_STREQ("1234", buf);
   EXPECT_EQ('\xFF', buf[5]);
 
-  memset(buf, 0xff, sizeof(buf));
+  UNSAFE_TODO(memset(buf, 0xff, sizeof(buf)));
   EXPECT_EQ(EINVAL, _itoa_s(12345, buf, sizeof(buf) - 1, 10));
   EXPECT_EQ('\xFF', buf[5]);  // should never write to this location
 
   // Test the template overload (note that this will see the full buffer)
-  memset(buf, 0xff, sizeof(buf));
+  UNSAFE_TODO(memset(buf, 0xff, sizeof(buf)));
   EXPECT_EQ(0, _itoa_s(12, buf, 10));
   EXPECT_STREQ("12", buf);
   EXPECT_EQ('\xFF', buf[3]);
 
-  memset(buf, 0xff, sizeof(buf));
+  UNSAFE_TODO(memset(buf, 0xff, sizeof(buf)));
   EXPECT_EQ(0, _itoa_s(12345, buf, 10));
   EXPECT_STREQ("12345", buf);
 
   EXPECT_EQ(EINVAL, _itoa_s(123456, buf, 10));
 
   // Test that radix 16 is supported.
-  memset(buf, 0xff, sizeof(buf));
+  UNSAFE_TODO(memset(buf, 0xff, sizeof(buf)));
   EXPECT_EQ(0, _itoa_s(1234, buf, sizeof(buf) - 1, 16));
   EXPECT_STREQ("4d2", buf);
   EXPECT_EQ('\xFF', buf[5]);

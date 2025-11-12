@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/350788890): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef URL_URL_CANON_H_
 #define URL_URL_CANON_H_
 
@@ -68,11 +63,11 @@ class CanonOutputT {
 
   // Accessor for returning a character at a given position. The input offset
   // must be in the valid range.
-  inline T at(size_t offset) const { return buffer_[offset]; }
+  inline T at(size_t offset) const { return UNSAFE_TODO(buffer_[offset]); }
 
   // Sets the character at the given position. The given position MUST be less
   // than the length().
-  inline void set(size_t offset, T ch) { buffer_[offset] = ch; }
+  inline void set(size_t offset, T ch) { UNSAFE_TODO(buffer_[offset]) = ch; }
 
   // Returns the number of characters currently in the buffer.
   inline size_t length() const { return cur_len_; }
@@ -109,7 +104,7 @@ class CanonOutputT {
     // In VC2005, putting this common case first speeds up execution
     // dramatically because this branch is predicted as taken.
     if (cur_len_ < buffer_len_) {
-      buffer_[cur_len_] = ch;
+      UNSAFE_TODO(buffer_[cur_len_]) = ch;
       cur_len_++;
       return;
     }
@@ -120,7 +115,7 @@ class CanonOutputT {
       return;
 
     // Actually do the insertion.
-    buffer_[cur_len_] = ch;
+    UNSAFE_TODO(buffer_[cur_len_]) = ch;
     cur_len_++;
   }
 
@@ -130,7 +125,7 @@ class CanonOutputT {
       if (!Grow(str_len - (buffer_len_ - cur_len_)))
         return;
     }
-    memcpy(buffer_ + cur_len_, str, str_len * sizeof(T));
+    UNSAFE_TODO(memcpy(buffer_ + cur_len_, str, str_len * sizeof(T)));
     cur_len_ += str_len;
   }
 
@@ -193,8 +188,9 @@ class RawCanonOutputT : public CanonOutputT<T> {
 
   void Resize(size_t sz) override {
     T* new_buf = new T[sz];
-    memcpy(new_buf, this->buffer_,
-           sizeof(T) * (this->cur_len_ < sz ? this->cur_len_ : sz));
+    UNSAFE_TODO(
+        memcpy(new_buf, this->buffer_,
+               sizeof(T) * (this->cur_len_ < sz ? this->cur_len_ : sz)));
     if (this->buffer_ != fixed_buffer_)
       delete[] this->buffer_;
     this->buffer_ = new_buf;

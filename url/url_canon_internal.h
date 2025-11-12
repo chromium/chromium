@@ -10,11 +10,6 @@
 // template bloat because everything is inlined when anybody calls any of our
 // functions.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/350788890): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 
 #include <array>
@@ -213,7 +208,7 @@ extern const char kCharToHexLookup[8];
 
 // Assumes the input is a valid hex digit! Call IsHexChar before using this.
 inline int HexCharToValue(unsigned char c) {
-  return c - kCharToHexLookup[c / 0x20];
+  return c - UNSAFE_TODO(kCharToHexLookup[c / 0x20]);
 }
 
 // Indicates if the given character is a dot or dot equivalent, returning the
@@ -221,11 +216,12 @@ inline int HexCharToValue(unsigned char c) {
 // an escaped dot. If the character is not a dot, this will return 0.
 template <typename CHAR>
 inline size_t IsDot(const CHAR* spec, size_t offset, size_t end) {
-  if (spec[offset] == '.') {
+  if (UNSAFE_TODO(spec[offset]) == '.') {
     return 1;
-  } else if (spec[offset] == '%' && offset + 3 <= end &&
-             spec[offset + 1] == '2' &&
-             (spec[offset + 2] == 'e' || spec[offset + 2] == 'E')) {
+  } else if (UNSAFE_TODO(spec[offset]) == '%' && offset + 3 <= end &&
+             UNSAFE_TODO(spec[offset + 1]) == '2' &&
+             (UNSAFE_TODO(spec[offset + 2]) == 'e' ||
+              UNSAFE_TODO(spec[offset + 2]) == 'E')) {
     // Found "%2e"
     return 3;
   }
@@ -429,15 +425,17 @@ inline bool DecodeEscaped(const CHAR* spec,
                           size_t* begin,
                           size_t end,
                           unsigned char* unescaped_value) {
-  if (*begin + 3 > end || !Is8BitChar(spec[*begin + 1]) ||
-      !Is8BitChar(spec[*begin + 2])) {
+  if (*begin + 3 > end || !Is8BitChar(UNSAFE_TODO(spec[*begin + 1])) ||
+      !Is8BitChar(UNSAFE_TODO(spec[*begin + 2]))) {
     // Invalid escape sequence because there's not enough room, or the
     // digits are not ASCII.
     return false;
   }
 
-  unsigned char first = static_cast<unsigned char>(spec[*begin + 1]);
-  unsigned char second = static_cast<unsigned char>(spec[*begin + 2]);
+  unsigned char first =
+      static_cast<unsigned char>(UNSAFE_TODO(spec[*begin + 1]));
+  unsigned char second =
+      static_cast<unsigned char>(UNSAFE_TODO(spec[*begin + 2]));
   if (!IsHexChar(first) || !IsHexChar(second)) {
     // Invalid hex digits, fail.
     return false;

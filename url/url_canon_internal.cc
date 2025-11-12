@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/350788890): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "url/url_canon_internal.h"
 
 #include <errno.h>
@@ -46,7 +41,7 @@ size_t FindInitialQuerySafeString(std::string_view source) {
   for (i = 0; i < base::bits::AlignDown(source.length(), kChunkSize);
        i += kChunkSize) {
     char b __attribute__((vector_size(16)));
-    memcpy(&b, source.data() + i, sizeof(b));
+    UNSAFE_TODO(memcpy(&b, source.data() + i, sizeof(b)));
 
     // Compare each element with the ranges for CHAR_QUERY
     // (see kSharedCharTypeTable), vectorized so that it creates
@@ -358,7 +353,7 @@ int _itoa_s(int value, char* buffer, size_t size_in_chars, int radix) {
   else
     return EINVAL;
 
-  int written = snprintf(buffer, size_in_chars, format_str, value);
+  int written = UNSAFE_TODO(snprintf(buffer, size_in_chars, format_str, value));
   if (static_cast<size_t>(written) >= size_in_chars) {
     // Output was truncated, or written was negative.
     return EINVAL;
