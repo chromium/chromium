@@ -16,6 +16,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.hasSibling;
 import static androidx.test.espresso.matcher.ViewMatchers.isChecked;
 import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
 import static androidx.test.espresso.matcher.ViewMatchers.withChild;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
@@ -2838,6 +2839,42 @@ public class SiteSettingsTest {
         assertEquals(
                 new GeolocationSetting(ContentSetting.BLOCK, ContentSetting.BLOCK),
                 getGeolocationSetting(url));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    @EnableFeatures({
+        ChromeFeatureList.PERMISSION_SITE_SETTING_RADIO_BUTTON,
+        PermissionsAndroidFeatureList.APPROXIMATE_GEOLOCATION_PERMISSION
+    })
+    public void testChangeGeolocationWithOptionsRadioButtonsEnabledState() {
+        String url = "https://example.com";
+        LocationSettingsTestUtil.setSystemLocationSettingEnabled(true);
+        var blockSetting = new GeolocationSetting(ContentSetting.BLOCK, ContentSetting.BLOCK);
+        setGeolocationSetting(url, blockSetting);
+        SiteSettingsTestUtils.startSiteSettingsCategory(SiteSettingsCategory.Type.DEVICE_LOCATION);
+        assertEquals(blockSetting, getGeolocationSetting(url));
+
+        onView(withId(R.id.recycler_view)).perform(RecyclerViewActions.scrollToLastPosition());
+        onView(withText(url)).check(matches(isDisplayed())).perform(click());
+        onView(withText("Edit")).perform(click());
+
+        // Verify that the radio buttons for location precision are disabled when 'Block' is
+        // selected.
+        onView(withText("Precise")).check(matches(not(isEnabled())));
+        onView(withText("Approximate")).check(matches(not(isEnabled())));
+
+        // Click 'Allow' and verify that the radio buttons for location precision are enabled.
+        onView(withText("Allow")).perform(click());
+        onView(withText("Precise")).check(matches(isEnabled()));
+        onView(withText("Approximate")).check(matches(isEnabled()));
+
+        // Click 'Block' again and verify that the radio buttons for location precision are
+        // disabled.
+        onView(withText("Block")).perform(click());
+        onView(withText("Precise")).check(matches(not(isEnabled())));
+        onView(withText("Approximate")).check(matches(not(isEnabled())));
     }
 
     @Test
