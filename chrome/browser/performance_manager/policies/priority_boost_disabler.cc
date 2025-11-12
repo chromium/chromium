@@ -16,7 +16,7 @@
 #include "base/sequence_checker.h"
 #include "components/performance_manager/public/graph/process_node.h"
 #include "components/performance_manager/public/performance_manager.h"
-#include "components/performance_manager/public/scenarios/process_performance_scenarios.h"
+#include "components/performance_manager/public/scenarios/process_performance_scenario_observer.h"
 #include "components/performance_manager/scenario_api/performance_scenario_observer.h"
 #include "components/performance_manager/scenario_api/performance_scenarios.h"
 #include "content/public/common/process_type.h"
@@ -44,7 +44,8 @@ class PriorityBoostDisabler::ProcessLoadingScenarioObserver
  public:
   explicit ProcessLoadingScenarioObserver(const ProcessNode* process_node)
       : process_node_(process_node) {
-    scoped_observation_.Observe(&GetScenarioObserversForProcess(process_node));
+    scoped_observation_.Observe(
+        &ProcessPerformanceScenarioObserverList::GetForProcess(process_node));
   }
 
   void OnLoadingScenarioChanged(

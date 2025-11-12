@@ -13,6 +13,7 @@
 #include "components/performance_manager/embedder/scoped_global_scenario_memory.h"
 #include "components/performance_manager/graph/process_node_impl.h"
 #include "components/performance_manager/public/graph/graph.h"
+#include "components/performance_manager/public/scenarios/process_performance_scenario_observer.h"
 #include "components/performance_manager/scenario_api/performance_scenario_observer.h"
 #include "components/performance_manager/scenario_api/performance_scenarios.h"
 #include "components/performance_manager/scenarios/browser_performance_scenarios.h"
@@ -105,16 +106,17 @@ TEST_F(ProcessPerformanceScenariosTest, LoadingScenario) {
   base::ScopedObservation<ProcessPerformanceScenarioObserverList,
                           PerformanceScenarioObserver>
       observation(&mock_observer);
-  observation.Observe(
-      &GetScenarioObserversForProcess(mock_graph.process.get()));
+  observation.Observe(&ProcessPerformanceScenarioObserverList::GetForProcess(
+      mock_graph.process.get()));
 
   MockMatchingScenarioObserver mock_matching_observer(
       performance_scenarios::kDefaultIdleScenarios);
-  base::ScopedObservation<ProcessMatchingScenarioObserverList,
+  base::ScopedObservation<ProcessPerformanceScenarioObserverList,
                           MatchingScenarioObserver>
       matching_observation(&mock_matching_observer);
   matching_observation.Observe(
-      &GetMatchingScenarioObserversForProcess(mock_graph.process.get()));
+      &ProcessPerformanceScenarioObserverList::GetForProcess(
+          mock_graph.process.get()));
 
   // Changing to kBackgroundPageLoading should invoke the
   // PerformanceScenarioObserver but not the MatchingScenarioObserver, since it
@@ -178,16 +180,17 @@ TEST_F(ProcessPerformanceScenariosTest, InputScenario) {
   base::ScopedObservation<ProcessPerformanceScenarioObserverList,
                           PerformanceScenarioObserver>
       observation(&mock_observer);
-  observation.Observe(
-      &GetScenarioObserversForProcess(mock_graph.process.get()));
+  observation.Observe(&ProcessPerformanceScenarioObserverList::GetForProcess(
+      mock_graph.process.get()));
 
   MockMatchingScenarioObserver mock_matching_observer(
       performance_scenarios::kDefaultIdleScenarios);
-  base::ScopedObservation<ProcessMatchingScenarioObserverList,
+  base::ScopedObservation<ProcessPerformanceScenarioObserverList,
                           MatchingScenarioObserver>
       matching_observation(&mock_matching_observer);
   matching_observation.Observe(
-      &GetMatchingScenarioObserversForProcess(mock_graph.process.get()));
+      &ProcessPerformanceScenarioObserverList::GetForProcess(
+          mock_graph.process.get()));
 
   // Changing to kTyping should notify both observers since the scenario no
   // longer matches kDefaultIdleScenarios.
@@ -260,16 +263,17 @@ TEST_F(ProcessPerformanceScenariosTest, NoMemory) {
   base::ScopedObservation<ProcessPerformanceScenarioObserverList,
                           PerformanceScenarioObserver>
       observation(&mock_observer);
-  observation.Observe(
-      &GetScenarioObserversForProcess(mock_graph.process.get()));
+  observation.Observe(&ProcessPerformanceScenarioObserverList::GetForProcess(
+      mock_graph.process.get()));
 
   MockMatchingScenarioObserver mock_matching_observer(
       performance_scenarios::kDefaultIdleScenarios);
-  base::ScopedObservation<ProcessMatchingScenarioObserverList,
+  base::ScopedObservation<ProcessPerformanceScenarioObserverList,
                           MatchingScenarioObserver>
       matching_observation(&mock_matching_observer);
   matching_observation.Observe(
-      &GetMatchingScenarioObserversForProcess(mock_graph.process.get()));
+      &ProcessPerformanceScenarioObserverList::GetForProcess(
+          mock_graph.process.get()));
 
   SetLoadingScenarioForProcessNode(LoadingScenario::kVisiblePageLoading,
                                    mock_graph.process.get());

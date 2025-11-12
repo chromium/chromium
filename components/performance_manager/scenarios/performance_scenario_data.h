@@ -9,8 +9,9 @@
 #include <optional>
 
 #include "base/memory/structured_shared_memory.h"
-#include "base/observer_list.h"
+#include "base/types/pass_key.h"
 #include "components/performance_manager/graph/node_inline_data.h"
+#include "components/performance_manager/public/scenarios/process_performance_scenario_observer.h"
 #include "components/performance_manager/scenario_api/performance_scenario_memory_forward.h"
 #include "components/performance_manager/scenario_api/performance_scenario_observer.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
@@ -32,10 +33,6 @@ class PerformanceScenarioData final
  public:
   using SharedScenarioState =
       base::StructuredSharedMemory<performance_scenarios::ScenarioState>;
-  using MatchingScenarioObserver =
-      performance_scenarios::MatchingScenarioObserver;
-  using PerformanceScenarioObserver =
-      performance_scenarios::PerformanceScenarioObserver;
 
   // Returns the data for `process_node`, creating it if it doesn't already
   // exist. If the data is newly created and `mapper` is non-null, it will be
@@ -66,20 +63,10 @@ class PerformanceScenarioData final
     return shared_state_.value();
   }
 
-  // Returns observer lists for changes to the scenario state of the
+  // Returns an accessor for observers of changes to the scenario state of the
   // ProcessNode.
-  base::ObserverList<PerformanceScenarioObserver>& observers() {
-    return *observers_;
-  }
-  const base::ObserverList<PerformanceScenarioObserver>& observers() const {
-    return *observers_;
-  }
-  base::ObserverList<MatchingScenarioObserver>& matching_observers() {
-    return *matching_observers_;
-  }
-  const base::ObserverList<MatchingScenarioObserver>& matching_observers()
-      const {
-    return *matching_observers_;
+  ProcessPerformanceScenarioObserverList& process_observer_list() {
+    return *process_observer_list_;
   }
 
   // Returns tracing tracks to log trace events when updating scenarios in the
@@ -110,12 +97,11 @@ class PerformanceScenarioData final
       std::make_unique<TracingTracks>();
 
   // Observers for changes to the scenario state of a specific ProcessNode. Held
-  // in unique_ptr because ObserverList isn't movable.
-  std::unique_ptr<base::ObserverList<PerformanceScenarioObserver>> observers_ =
-      std::make_unique<base::ObserverList<PerformanceScenarioObserver>>();
-  std::unique_ptr<base::ObserverList<MatchingScenarioObserver>>
-      matching_observers_ =
-          std::make_unique<base::ObserverList<MatchingScenarioObserver>>();
+  // in unique_ptr because it contains ObserverLists that aren't movable.
+  std::unique_ptr<ProcessPerformanceScenarioObserverList>
+      process_observer_list_ =
+          std::make_unique<ProcessPerformanceScenarioObserverList>(
+              base::PassKey<PerformanceScenarioData>());
 };
 
 }  // namespace performance_manager
