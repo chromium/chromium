@@ -39,8 +39,7 @@ class WebUIBrowserSidePanelUI : public SidePanelUIBase {
  private:
   // SidePanelUIBase:
   void Close(bool suppress_animations,
-             SidePanelEntry::PanelType panel_type,
-             SidePanelEntryHideReason reason) override;
+             SidePanelEntry::PanelType panel_type) override;
   void Show(const UniqueKey& entry,
             std::optional<SidePanelUtil::SidePanelOpenTrigger> open_trigger,
             bool suppress_animations) override;

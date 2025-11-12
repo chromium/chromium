@@ -58,8 +58,7 @@ void SidePanelCoordinator::TearDownPreBrowserWindowDestruction() {
 }
 
 void SidePanelCoordinator::Close(SidePanelEntry::PanelType panel_type) {
-  Close(/*suppress_animations=*/false, panel_type,
-        SidePanelEntryHideReason::kSidePanelClosed);
+  Close(/*suppress_animations=*/false, panel_type);
 }
 
 void SidePanelCoordinator::Toggle(
@@ -141,8 +140,7 @@ void SidePanelCoordinator::Show(
     // side panel is closed.
     if (entry->type() == SidePanelEntry::PanelType::kToolbar &&
         IsSidePanelShowing(SidePanelEntry::PanelType::kContent)) {
-      Close(/*suppress_animations=*/true, SidePanelEntry::PanelType::kContent,
-            SidePanelEntryHideReason::kSidePanelClosed);
+      Close(/*suppress_animations=*/true, SidePanelEntry::PanelType::kContent);
     }
 
     if (entry->type() == SidePanelEntry::PanelType::kContent) {
@@ -214,8 +212,7 @@ void SidePanelCoordinator::Show(
 //   a window-scoped side-panel entry, and the window is closed via any
 //   mechanism, this method is not called.
 void SidePanelCoordinator::Close(bool suppress_animations,
-                                 SidePanelEntry::PanelType panel_type,
-                                 SidePanelEntryHideReason reason) {
+                                 SidePanelEntry::PanelType panel_type) {
   SidePanel* const side_panel = GetSidePanelFor(panel_type);
   if (!IsSidePanelShowing(panel_type) ||
       (!suppress_animations && side_panel->IsClosing())) {
@@ -228,7 +225,7 @@ void SidePanelCoordinator::Close(bool suppress_animations,
   }
   SidePanelEntry* entry = GetEntryForUniqueKey(*current_key(panel_type));
   if (entry) {
-    entry->OnEntryWillHide(reason);
+    entry->OnEntryWillHide(SidePanelEntryHideReason::kSidePanelClosed);
   }
 
   side_panel->Close(!suppress_animations);
@@ -279,14 +276,7 @@ void SidePanelCoordinator::PopulateSidePanel(
 
   if (content_wrapper->children().size()) {
     if (previous_entry) {
-      if (open_trigger.has_value() &&
-          open_trigger.value() ==
-              SidePanelUtil::SidePanelOpenTrigger::kTabChanged) {
-        previous_entry->OnEntryWillHide(
-            SidePanelEntryHideReason::kBackgrounded);
-      } else {
-        previous_entry->OnEntryWillHide(SidePanelEntryHideReason::kReplaced);
-      }
+      previous_entry->OnEntryWillHide(SidePanelEntryHideReason::kReplaced);
       auto previous_entry_view = content_wrapper->RemoveChildViewT(
           content_wrapper->children().front());
       previous_entry->CacheView(std::move(previous_entry_view));
@@ -371,8 +361,7 @@ void SidePanelCoordinator::MaybeShowEntryOnTabStripModelChanged(
               content_wrapper->children().front());
           (*active_entry)->CacheView(std::move(current_entry_view));
         }
-        Close(/*suppress_animations=*/true, type,
-              SidePanelEntryHideReason::kBackgrounded);
+        Close(/*suppress_animations=*/true, type);
       }
     } else if (auto active_entry =
                    new_contextual_registry

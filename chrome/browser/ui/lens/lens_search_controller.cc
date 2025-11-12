@@ -822,8 +822,6 @@ void LensSearchController::OnSidePanelWillHide(
       state_ = State::kClosingSidePanel;
       last_dismissal_source_ =
           lens::LensOverlayDismissalSource::kSidePanelEntryReplaced;
-    } else if (reason == SidePanelEntryHideReason::kBackgrounded) {
-      TabWillEnterBackground(tab_);
     } else {
       // Trigger the close animation and notify the overlay that the side
       // panel is closing so that it can fade out the UI.
@@ -983,8 +981,7 @@ void LensSearchController::OnPageContextUpdatedForZeroStateRequest(
           ->GetCurrentPageContextEligibility()) {
     // Create a region that consists of the entire viewport.
     auto full_viewport_region = lens::mojom::CenterRotatedBox::New();
-    full_viewport_region->box =
-        gfx::RectF(/*x=*/0.5, /*y=*/0.5, /*width=*/1.0, /*height=*/1.0);
+    full_viewport_region->box = gfx::RectF(/*x=*/0.5, /*y=*/0.5, /*width=*/1.0, /*height=*/1.0);
     full_viewport_region->coordinate_type =
         lens::mojom::CenterRotatedBox_CoordinateType::kNormalized;
 

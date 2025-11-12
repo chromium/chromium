@@ -55,9 +55,7 @@ class SidePanelCoordinator final : public SidePanelUIBase,
   // SidePanelUIBase:
   using SidePanelUIBase::Show;
   void Close(bool suppress_animations,
-             SidePanelEntry::PanelType panel_entry,
-             SidePanelEntryHideReason reason =
-                 SidePanelEntryHideReason::kSidePanelClosed) override;
+             SidePanelEntry::PanelType panel_entry) override;
   void Show(const UniqueKey& entry,
             std::optional<SidePanelUtil::SidePanelOpenTrigger> open_trigger,
             bool suppress_animations) override;
