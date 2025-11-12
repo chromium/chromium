@@ -151,8 +151,11 @@ class CONTENT_EXPORT Transaction : public blink::mojom::IDBTransaction {
   // appropriate helper functions.
   blink::mojom::IDBValuePtr BuildMojoValue(IndexedDBValue value);
 
-  enum class RunTasksResult { kNotFinished, kCommitted, kAborted };
-  StatusOr<RunTasksResult> RunTasks();
+  // Should not be called if `state()` is `FINISHED`. After calling, consult
+  // updated `state()` for what to do next. If `FINISHED`, the transaction can
+  // be deleted. Will return an error if something went wrong when interacting
+  // with backing store.
+  Status RunTasks();
 
   // Returns metadata relevant to idb-internals.
   storage::mojom::IdbTransactionMetadataPtr GetIdbInternalsMetadata() const;

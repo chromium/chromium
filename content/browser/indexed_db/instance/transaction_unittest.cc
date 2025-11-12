@@ -332,7 +332,7 @@ TEST_P(TransactionTest, TimeoutPreemptive) {
   // Finish the preemptive task, which unblocks regular tasks.
   transaction->DidCompletePreemptiveEvent();
   // TODO(dmurph): Should this explicit call be necessary?
-  EXPECT_TRUE(transaction->RunTasks().has_value());
+  EXPECT_TRUE(transaction->RunTasks().ok());
 
   // The task's completion should start the timer.
   EXPECT_FALSE(transaction->HasPendingTasks());

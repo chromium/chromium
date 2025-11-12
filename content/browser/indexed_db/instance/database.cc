@@ -301,8 +301,8 @@ void Database::RegisterAndScheduleTransaction(Transaction* transaction) {
   TRACE_EVENT1("IndexedDB", "Database::RegisterAndScheduleTransaction",
                "txn.id", transaction->id());
   // Locks for version change transactions are covered by `ConnectionRequest`.
-  DCHECK_NE(transaction->mode(),
-            blink::mojom::IDBTransactionMode::VersionChange);
+  CHECK_NE(transaction->mode(),
+           blink::mojom::IDBTransactionMode::VersionChange);
   std::vector<PartitionedLockManager::PartitionedLockRequest> lock_requests =
       BuildLockRequestsForTransaction(transaction->mode(),
                                       transaction->scope());
@@ -336,49 +336,31 @@ Status Database::RunTasks() {
   // complete.
   while (transactions_removed) {
     transactions_removed = false;
-    Transaction* finished_upgrade_transaction = nullptr;
-    bool upgrade_transaction_commmitted = false;
+    base::RepeatingClosure on_upgrade_transaction_finished;
     for (Connection* connection : connections_) {
       std::vector<int64_t> txns_to_remove;
-      for (const auto& id_txn_pair : connection->transactions()) {
-        Transaction* txn = id_txn_pair.second.get();
-        // Determine if the transaction's task queue should be processed.
+      for (auto const& [_, txn] : connection->transactions()) {
+        // Process the queue for transactions that are STARTED or COMMITTING.
         switch (txn->state()) {
-          case Transaction::FINISHED:
-            if (txn->mode() ==
-                blink::mojom::IDBTransactionMode::VersionChange) {
-              finished_upgrade_transaction = txn;
-              upgrade_transaction_commmitted = !txn->aborted();
-            }
-            txns_to_remove.push_back(id_txn_pair.first);
-            continue;
           case Transaction::CREATED:
             continue;
           case Transaction::STARTED:
           case Transaction::COMMITTING:
+            IDB_RETURN_IF_ERROR(txn->RunTasks());
+            break;
+          case Transaction::FINISHED:
             break;
         }
 
-        // Process the queue for transactions that are STARTED or COMMITTING.
-        // Add transactions that can be removed to a queue.
-        StatusOr<Transaction::RunTasksResult> task_result = txn->RunTasks();
-        if (!task_result.has_value()) {
-          return task_result.error();
-        }
-
-        switch (task_result.value()) {
-          case Transaction::RunTasksResult::kCommitted:
-          case Transaction::RunTasksResult::kAborted:
-            if (txn->mode() ==
-                blink::mojom::IDBTransactionMode::VersionChange) {
-              DCHECK(!finished_upgrade_transaction);
-              finished_upgrade_transaction = txn;
-              upgrade_transaction_commmitted = !txn->aborted();
-            }
-            txns_to_remove.push_back(txn->id());
-            break;
-          case Transaction::RunTasksResult::kNotFinished:
-            continue;
+        if (txn->state() == Transaction::FINISHED) {
+          if (txn->mode() == blink::mojom::IDBTransactionMode::VersionChange) {
+            CHECK(!on_upgrade_transaction_finished);
+            on_upgrade_transaction_finished = base::BindRepeating(
+                &ConnectionCoordinator::OnUpgradeTransactionFinished,
+                base::Unretained(&connection_coordinator_),
+                /*committed=*/!txn->aborted());
+          }
+          txns_to_remove.push_back(txn->id());
         }
       }
       // Do the removals.
@@ -386,9 +368,8 @@ Status Database::RunTasks() {
         connection->RemoveTransaction(id);
         transactions_removed = true;
       }
-      if (finished_upgrade_transaction) {
-        connection_coordinator_.OnUpgradeTransactionFinished(
-            upgrade_transaction_commmitted);
+      if (on_upgrade_transaction_finished) {
+        on_upgrade_transaction_finished.Run();
       }
     }
   }

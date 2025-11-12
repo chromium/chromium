@@ -14,6 +14,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
@@ -1034,50 +1035,44 @@ Status Transaction::CommitPhaseTwo() {
   return s;
 }
 
-StatusOr<Transaction::RunTasksResult> Transaction::RunTasks() {
+Status Transaction::RunTasks() {
   TRACE_EVENT1("IndexedDB", "Transaction::RunTasks", "txn.id", id());
 
-  DCHECK(!processing_event_queue_);
+  // No re-entrancy allowed.
+  CHECK(!processing_event_queue_);
+  // Should not be called after completion.
+  CHECK(!aborted_);
+  CHECK_NE(state_, FINISHED);
 
-  // May have been aborted.
-  if (aborted_) {
-    return RunTasksResult::kAborted;
-  }
   if (IsTaskQueueEmpty() && !is_commit_pending_) {
-    return RunTasksResult::kNotFinished;
+    return Status::OK();
   }
 
   if (!backing_store_transaction_begun_) {
-    Status s =
-        backing_store_transaction_->Begin(std::move(locks_receiver_.locks));
-    if (!s.ok()) {
-      return base::unexpected(s);
-    }
+    IDB_RETURN_IF_ERROR(
+        backing_store_transaction_->Begin(std::move(locks_receiver_.locks)));
     backing_store_transaction_begun_ = true;
   }
 
-  processing_event_queue_ = true;
+  base::AutoReset<bool> reset(&processing_event_queue_, true);
 
   bool run_preemptive_queue =
       !preemptive_task_queue_.empty() || pending_preemptive_events_ != 0;
   TaskQueue* task_queue =
       run_preemptive_queue ? &preemptive_task_queue_ : &task_queue_;
   while (!task_queue->empty() && state_ != FINISHED) {
-    DCHECK(state_ == STARTED || state_ == COMMITTING) << state_;
+    CHECK(state_ == STARTED || state_ == COMMITTING) << state_;
     auto [operation, verify] = task_queue->pop();
     Status result = verify ? std::move(verify).Run(*this) : Status::OK();
     if (result.ok()) {
       result = std::move(operation).Run(this);
     }
     if (!run_preemptive_queue) {
-      DCHECK(diagnostics_.tasks_completed < diagnostics_.tasks_scheduled);
+      CHECK(diagnostics_.tasks_completed < diagnostics_.tasks_scheduled);
       ++diagnostics_.tasks_completed;
       NotifyOfIdbInternalsRelevantChange();
     }
-    if (!result.ok()) {
-      processing_event_queue_ = false;
-      return base::unexpected(result);
-    }
+    IDB_RETURN_IF_ERROR(result);
 
     run_preemptive_queue =
         !preemptive_task_queue_.empty() || pending_preemptive_events_ != 0;
@@ -1085,34 +1080,21 @@ StatusOr<Transaction::RunTasksResult> Transaction::RunTasks() {
     task_queue = run_preemptive_queue ? &preemptive_task_queue_ : &task_queue_;
   }
 
-  // If there are no pending tasks, we haven't already committed/aborted,
-  // and the front-end requested a commit, it is now safe to do so.
-  if (!HasPendingTasks() && state_ == STARTED && is_commit_pending_) {
-    processing_event_queue_ = false;
-    Status result = DoPendingCommit();
-    if (!result.ok()) {
-      // This can delete |this|.
-      return base::unexpected(result);
-    };
+  if (!HasPendingTasks() && state_ == STARTED) {
+    if (is_commit_pending_) {
+      // If there are no pending tasks, we haven't already committed/aborted,
+      // and the front-end requested a commit, it is now safe to do so.
+      IDB_RETURN_IF_ERROR(DoPendingCommit());
+    } else if (g_inactivity_timeout_enabled) {
+      // Otherwise, start a timer in case the front-end gets wedged and never
+      // requests further activity.
+      timeout_timer_.Start(FROM_HERE, kInactivityTimeoutPollPeriod,
+                           base::BindRepeating(&Transaction::TimeoutFired,
+                                               ptr_factory_.GetWeakPtr()));
+    }
   }
 
-  // The transaction may have been aborted while processing tasks.
-  if (state_ == FINISHED) {
-    processing_event_queue_ = false;
-    return aborted_ ? RunTasksResult::kAborted : RunTasksResult::kCommitted;
-  }
-
-  DCHECK(state_ == STARTED || state_ == COMMITTING) << state_;
-
-  // Otherwise, start a timer in case the front-end gets wedged and never
-  // requests further activity.
-  if (!HasPendingTasks() && state_ == STARTED && g_inactivity_timeout_enabled) {
-    timeout_timer_.Start(FROM_HERE, kInactivityTimeoutPollPeriod,
-                         base::BindRepeating(&Transaction::TimeoutFired,
-                                             ptr_factory_.GetWeakPtr()));
-  }
-  processing_event_queue_ = false;
-  return RunTasksResult::kNotFinished;
+  return Status::OK();
 }
 
 storage::mojom::IdbTransactionMetadataPtr Transaction::GetIdbInternalsMetadata()
