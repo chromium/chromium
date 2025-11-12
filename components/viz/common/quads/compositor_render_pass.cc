@@ -86,9 +86,9 @@ void CompositorRenderPass::SetAll(
     const gfx::Rect& output_rect,
     const gfx::Rect& damage_rect,
     const gfx::Transform& transform_to_root_target,
-    const cc::FilterOperations& filters,
-    const cc::FilterOperations& backdrop_filters,
-    const std::optional<SkPath>& backdrop_filter_bounds,
+    const cc::FilterOperations& pass_filters,
+    const cc::FilterOperations& pass_backdrop_filters,
+    const std::optional<SkPath>& pass_backdrop_filter_bounds,
     SubtreeCaptureId capture_id,
     gfx::Size subtree_capture_size,
     ViewTransitionElementResourceId resource_id,
@@ -103,9 +103,9 @@ void CompositorRenderPass::SetAll(
   this->output_rect = output_rect;
   this->damage_rect = damage_rect;
   this->transform_to_root_target = transform_to_root_target;
-  this->filters = filters;
-  this->backdrop_filters = backdrop_filters;
-  this->backdrop_filter_bounds = backdrop_filter_bounds;
+  this->filters = pass_filters;
+  this->backdrop_filters = pass_backdrop_filters;
+  this->backdrop_filter_bounds = pass_backdrop_filter_bounds;
   this->subtree_capture_id = capture_id;
   this->subtree_size = subtree_capture_size;
   this->view_transition_element_resource_id = resource_id;

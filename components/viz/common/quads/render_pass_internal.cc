@@ -115,19 +115,6 @@ void RenderPassInternal::AsValueInto(
   value->SetInteger("copy_requests",
                     base::saturated_cast<int>(copy_requests.size()));
 
-  value->BeginArray("filters");
-  filters.AsValueInto(value);
-  value->EndArray();
-
-  value->BeginArray("backdrop_filters");
-  backdrop_filters.AsValueInto(value);
-  value->EndArray();
-
-  if (backdrop_filter_bounds.has_value()) {
-    cc::MathUtil::AddToTracedValue("backdrop_filter_bounds",
-                                   *backdrop_filter_bounds, value);
-  }
-
   value->SetInteger("shared_quad_state_list_size",
                     shared_quad_state_list.size());
   std::unordered_map<const SharedQuadState*, size_t> sqs_pointer_to_index_map;
