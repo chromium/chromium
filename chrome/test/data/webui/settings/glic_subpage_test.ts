@@ -757,6 +757,93 @@ suite('GlicSubpage', function() {
     });
   });
 
+  suite('WebActuationEnterprisePolicy', () => {
+    function waitOneTick() {
+      return new Promise(resolve => setTimeout(resolve, 0));
+    }
+
+    async function setWebActuationCapability(canActOnWeb: boolean) {
+      webUIListenerCallback(
+          'glic-web-actuation-capability-changed', canActOnWeb);
+      await flushTasks();
+      await waitOneTick();
+      await flushTasks();
+    }
+
+    test('ToggleDisabledByEnterprisePolicy', async () => {
+      page.setPrefValue(PrefName.WEB_ACTUATION_ENABLED, true);
+      await flushTasks();
+
+      // Verify initial state (enabled).
+      let webActuationToggle =
+          $<SettingsToggleButtonElement>('webActuationToggle')!;
+      assertTrue(isVisible(webActuationToggle));
+      assertFalse(webActuationToggle.disabled);
+
+      // Simulate enterprise DISABLING the feature.
+      await setWebActuationCapability(false);
+
+      // Re-query, as dom-if restamped.
+      webActuationToggle =
+          $<SettingsToggleButtonElement>('webActuationToggle')!;
+      assertTrue(isVisible(webActuationToggle));
+      assertTrue(webActuationToggle.disabled);
+      assertFalse(webActuationToggle.checked);
+    });
+
+    test('MenuCollapsesWhenDisabledByPolicy', async () => {
+      const webActuationToggle =
+          $<SettingsToggleButtonElement>('webActuationToggle')!;
+      let infoCard = $<CrCollapseElement>('webActuationInfoCollapse')!;
+      page.setPrefValue(PrefName.WEB_ACTUATION_ENABLED, false);
+      assertFalse(infoCard.opened);
+      webActuationToggle.click();
+      await flushTasks();
+      assertTrue(infoCard.opened);
+      assertFalse(page.getPref(PrefName.WEB_ACTUATION_ENABLED).value);
+
+      // Simulate enterprise DISABLING the feature.
+      await setWebActuationCapability(false);
+
+      // Re-query, as dom-if restamped.
+      infoCard = $<CrCollapseElement>('webActuationInfoCollapse')!;
+      assertTrue(!!infoCard);
+      assertFalse(infoCard.opened);
+    });
+
+    test('PrefDoesNotExpandMenuWhenDisabledByPolicy', async () => {
+      // Start disabled by enterprise.
+      await setWebActuationCapability(false);
+
+      const infoCard = $<CrCollapseElement>('webActuationInfoCollapse')!;
+      assertTrue(!!infoCard);        // It exists.
+      assertFalse(infoCard.opened);  // Starts closed.
+
+      // Try to enable it via pref (e.g. from sync).
+      page.setPrefValue(PrefName.WEB_ACTUATION_ENABLED, true);
+      await flushTasks();
+
+      // Should still be closed because webActuationEnabledExpanded_
+      // remains false in the enterprise disabled state.
+      assertFalse(infoCard.opened);
+    });
+
+    test('ToggleReEnablesWhenPolicyAllows', async () => {
+      // Start disabled.
+      await setWebActuationCapability(false);
+      let webActuationToggle =
+          $<SettingsToggleButtonElement>('webActuationToggle')!;
+      assertTrue(webActuationToggle.disabled);
+
+      // Simulate enterprise ENABLING it back.
+      await setWebActuationCapability(true);
+
+      webActuationToggle =
+          $<SettingsToggleButtonElement>('webActuationToggle')!;
+      assertFalse(webActuationToggle.disabled);
+    });
+  });
+
   suite('DataProtection_UserStatusCheckEnabled', () => {
     test('DataProtectionStringsShownForEligibleUser', () => {
       page.setPrefValue(

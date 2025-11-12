@@ -11,6 +11,8 @@
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_keyed_service_factory.h"
 #include "chrome/browser/background/glic/glic_launcher_configuration.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/glic_pref_names.h"
@@ -74,10 +76,19 @@ void GlicHandler::OnJavascriptAllowed() {
                 &GlicHandler::FireOnGlicDisallowedByAdminChanged,
                 base::Unretained(this))));
   }
+
+  if (auto* actor_service =
+          actor::ActorKeyedServiceFactory::GetActorKeyedService(profile)) {
+    web_actuation_subscription_ =
+        actor_service->AddActOnWebCapabilityChangedCallback(
+            base::BindRepeating(&GlicHandler::OnWebActuationCapabilityChanged,
+                                base::Unretained(this)));
+  }
 }
 
 void GlicHandler::OnJavascriptDisallowed() {
   glic_enabling_subscription_.reset();
+  web_actuation_subscription_ = {};
 }
 
 void GlicHandler::SetWebUIForTesting(content::WebUI* web_ui) {
@@ -172,6 +183,11 @@ void GlicHandler::FireOnGlicDisallowedByAdminChanged() {
       glic::GlicEnabling::EnablementForProfile(profile).DisallowedByAdmin();
   FireWebUIListener("glic-disallowed-by-admin-changed",
                     base::Value(disallowed));
+}
+
+void GlicHandler::OnWebActuationCapabilityChanged(bool can_act_on_web) {
+  FireWebUIListener("glic-web-actuation-capability-changed",
+                    base::Value(can_act_on_web));
 }
 
 }  // namespace settings

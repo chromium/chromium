@@ -202,6 +202,26 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
         },
       },
 
+      isWebActuationDisabledForEnterprise_: {
+        type: Boolean,
+        value: () => {
+          return loadTimeData.getBoolean('isWebActuationDisabledForEnterprise');
+        },
+      },
+
+      // Mock pref to show disabled toggle with enterprise policy indicator.
+      webActuationDisabledForEnterprisePref_: {
+        type: Object,
+        value() {
+          return {
+            type: chrome.settingsPrivate.PrefType.BOOLEAN,
+            value: false,
+            enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
+            controlledBy: chrome.settingsPrivate.ControlledBy.DEVICE_POLICY,
+          };
+        },
+      },
+
       webActuationEnabledExpanded_: {
         type: Boolean,
         value: false,
@@ -266,6 +286,9 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
   declare private webActuationSubLabel_: string;
   declare private webActuationLearnMoreUrl_: string;
   declare private webActuationFeatureEnabled_: boolean;
+  declare private isWebActuationDisabledForEnterprise_: boolean;
+  declare private webActuationDisabledForEnterprisePref_:
+      chrome.settingsPrivate.PrefObject<boolean>;
   declare private webActuationEnabledExpanded_: boolean;
 
   override async connectedCallback() {
@@ -275,6 +298,10 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
     this.addWebUiListener(
         'glic-disallowed-by-admin-changed',
         this.disallowedByAdminChanged_.bind(this));
+    this.addWebUiListener(
+        'glic-web-actuation-capability-changed',
+        (canActOnWeb: boolean) =>
+            this.onWebActuationCapabilityChanged_(canActOnWeb));
     this.registeredShortcut_ = await this.browserProxy_.getGlicShortcut();
     this.registeredFocusToggleShortcut_ =
         await this.browserProxy_.getGlicFocusToggleShortcut();
@@ -410,6 +437,10 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
   }
 
   private onWebActuationEnabledChanged_(enabled: boolean) {
+    if (this.isWebActuationDisabledForEnterprise_) {
+      this.webActuationEnabledExpanded_ = false;
+      return;
+    }
     this.webActuationEnabledExpanded_ = enabled;
   }
 
@@ -566,6 +597,13 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
 
   private computeWebActuationLearnMoreUrl_(): string {
     return loadTimeData.getString('glicWebActuationToggleLearnMoreUrl');
+  }
+
+  private onWebActuationCapabilityChanged_(canActOnWeb: boolean) {
+    this.isWebActuationDisabledForEnterprise_ = !canActOnWeb;
+    if (this.isWebActuationDisabledForEnterprise_) {
+      this.webActuationEnabledExpanded_ = false;
+    }
   }
 }
 
