@@ -42,7 +42,6 @@ source_set("model") {
     ":constants",
     ":features",
     ":reader_mode_js",
-    ":reader_mode_prefs",
     ":reader_mode_scroll_anchor_js",
     "//components/dom_distiller/core",
     "//components/dom_distiller/core/proto",
@@ -106,18 +105,6 @@ source_set("features") {
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/public/features:system_flags",
-  ]
-}
-
-source_set("reader_mode_prefs") {
-  sources = [
-    "reader_mode_prefs.h",
-    "reader_mode_prefs.mm",
-  ]
-  deps = [
-    ":features",
-    "//components/prefs",
-    "//ios/chrome/browser/shared/model/application_context",
   ]
 }
 

@@ -124,7 +124,7 @@
 #import "ios/chrome/browser/prerender/model/prerender_pref.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_prefs.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
-#import "ios/chrome/browser/reader_mode/model/reader_mode_prefs.h"
+#import "ios/chrome/browser/reader_mode/model/constants.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_constants.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -751,7 +751,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   variations::VariationsService::RegisterProfilePrefs(registry);
   ZeroSuggestProvider::RegisterProfilePrefs(registry);
   tab_resumption_prefs::RegisterProfilePrefs(registry);
-  reader_mode_prefs::RegisterProfilePrefs(registry);
 
   [BookmarkMediator registerProfilePrefs:registry];
   [BookmarkPathCache registerProfilePrefs:registry];
@@ -1170,6 +1169,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   // Deprecated 10/2025.
   registry->RegisterStringPref(kLegacySyncSessionsGUID, std::string());
   registry->RegisterBooleanPref(prefs::kFingerprintingProtectionEnabled, true);
+
+  // Deprecated 11/2025.
+  registry->RegisterListPref(kReaderModeRecentlyUsedTimestampsPref);
 }
 
 // This method should be periodically pruned of year+ old migrations.
@@ -1369,6 +1371,9 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
   prefs->ClearPref(kLastUsedFeedForGoodVisitsKey);
   prefs->ClearPref(kLegacySyncSessionsGUID);
   prefs->ClearPref(prefs::kFingerprintingProtectionEnabled);
+
+  // Added 11/2025.
+  prefs->ClearPref(kReaderModeRecentlyUsedTimestampsPref);
 }
 
 void MigrateObsoleteUserDefault() {

@@ -15,13 +15,6 @@
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 
 namespace {
-// The default number of days to span for determining Reading Mode default
-// browser eligibility.
-constexpr int kReaderModeDefaultBrowserPromoNumDaysCriteria = 14;
-
-// The default number of days a user should be active to display the default
-// browser promo.
-constexpr int kReaderModeDefaultBrowserPromoActiveDaysCriteria = 2;
 
 // Returns whether the user's current country code is US.
 bool IsUSCountryCode() {
@@ -88,14 +81,6 @@ bool IsReaderModeOmniboxEntryPointEnabled() {
 
 bool IsReaderModeSnackbarEnabled() {
   return base::FeatureList::IsEnabled(kEnableReaderModeDebugInfo);
-}
-
-int ReaderModeDefaultBrowserActiveDaysCriteria() {
-  return kReaderModeDefaultBrowserPromoActiveDaysCriteria;
-}
-
-int ReaderModeDefaultBrowserNumDaysCriteria() {
-  return kReaderModeDefaultBrowserPromoNumDaysCriteria;
 }
 
 bool IsReaderModeTranslationAvailable() {

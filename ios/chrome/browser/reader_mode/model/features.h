@@ -57,14 +57,6 @@ bool IsReaderModeOmniboxEntryPointEnabled();
 // Returns whether the Reader Mode snackbar is enabled.
 bool IsReaderModeSnackbarEnabled();
 
-// Returns the number of days a user must be active to display the default
-// browser promo.
-int ReaderModeDefaultBrowserActiveDaysCriteria();
-
-// Returns the number of days to span to determine the Reading Mode default
-// browser eligibility criteria.
-int ReaderModeDefaultBrowserNumDaysCriteria();
-
 // Returns whether translation is enabled while in Reading Mode.
 bool IsReaderModeTranslationAvailable();
 

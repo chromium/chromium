@@ -20,8 +20,6 @@
 #import "ios/chrome/browser/default_promo/ui_bundled/post_default_abandonment/features.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/promos_manager/model/constants.h"
-#import "ios/chrome/browser/reader_mode/model/features.h"
-#import "ios/chrome/browser/reader_mode/model/reader_mode_prefs.h"
 #import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/utils/first_run_util.h"
@@ -310,15 +308,6 @@
       IdentityManagerFactory::GetForProfile(profile);
   DCHECK(identityManager);
   return identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
-}
-
-- (BOOL)isEligibleForReaderModeDefaultBrowserPromo {
-  ProfileIOS* profile = self.sceneState.profileState.profile;
-  if (!profile) {
-    return NO;
-  }
-  return reader_mode_prefs::IsReaderModeRecentlyUsed(*profile->GetPrefs()) &&
-         !IsChromeLikelyDefaultBrowser();
 }
 
 - (feature_engagement::Tracker*)featureEngagementTracker {

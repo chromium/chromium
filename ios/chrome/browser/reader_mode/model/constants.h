@@ -199,6 +199,10 @@ extern const char kReaderModeAccessPointHistogram[];
 // Histogram name for Reader Mode access point with application mode.
 extern const char kReaderModeAccessPointWithModeHistogram[];
 
+// Deprecated. Pref holding the latest timestamps of when the user has
+// interacted with Reading Mode.
+extern const char kReaderModeRecentlyUsedTimestampsPref[];
+
 // Returns the Reader mode symbol name.
 NSString* GetReaderModeSymbolName();
 
