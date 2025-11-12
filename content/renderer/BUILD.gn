@@ -52,6 +52,8 @@ target(link_target_type, "renderer") {
     "agent_scheduling_group.h",
     "background_resource_fetch_assets.cc",
     "background_resource_fetch_assets.h",
+    "blink_isolates_pressure_listener.cc",
+    "blink_isolates_pressure_listener.h",
     "browser_exposed_renderer_interfaces.cc",
     "browser_exposed_renderer_interfaces.h",
     "client_navigation_throttler.cc",

@@ -83,6 +83,7 @@ enum class MemoryPressureListenerTag {
   kClientDiscardableSharedMemoryManager = 50,
   kMemoryReclaimerPressureListener = 51,
   kSkiaGraphicsPressureListener = 52,
+  kBlinkIsolatesPressureListener = 53,
 };
 
 // To start listening, derive from MemoryPressureListener, and use

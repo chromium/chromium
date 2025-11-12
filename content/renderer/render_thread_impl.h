@@ -41,6 +41,7 @@
 #include "content/common/renderer.mojom.h"
 #include "content/common/renderer_host.mojom.h"
 #include "content/public/renderer/render_thread.h"
+#include "content/renderer/blink_isolates_pressure_listener.h"
 #include "content/renderer/discardable_memory_utils.h"
 #include "content/renderer/memory_reclaimer_pressure_listener.h"
 #include "content/renderer/skia_graphics_pressure_listener.h"
@@ -536,6 +537,8 @@ class CONTENT_EXPORT RenderThreadImpl
   MemoryReclaimerPressureListener memory_reclaimer_pressure_listener_;
 
   SkiaGraphicsPressureListener skia_graphics_pressure_listener_;
+
+  BlinkIsolatesPressureListener blink_isolates_pressure_listener_;
 
   std::unique_ptr<viz::Gpu> gpu_;
 

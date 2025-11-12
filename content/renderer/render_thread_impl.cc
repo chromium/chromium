@@ -1639,6 +1639,8 @@ void RenderThreadImpl::OnRendererHidden() {
         base::Process::Priority::kBestEffort);
   }
 
+  blink_isolates_pressure_listener_.OnRendererHidden();
+
   // TODO(rmcilroy): Remove IdleHandler and replace it with an IdleTask
   // scheduled by the RendererScheduler - http://crbug.com/469210.
   if (!GetContentClient()->renderer()->RunIdleHandlerWhenWidgetsHidden())
@@ -1652,6 +1654,8 @@ void RenderThreadImpl::OnRendererVisible() {
     blink::WebV8Features::SetIsolatePriority(
         base::Process::Priority::kUserBlocking);
   }
+
+  blink_isolates_pressure_listener_.OnRendererVisible();
 
   if (!GetContentClient()->renderer()->RunIdleHandlerWhenWidgetsHidden())
     return;
@@ -1690,22 +1694,6 @@ void RenderThreadImpl::OnMemoryPressure(
         data->set_level(base::trace_event::MemoryPressureLevelToTraceEnum(
             memory_pressure_level));
       });
-
-  v8::MemoryPressureLevel v8_memory_pressure_level =
-      static_cast<v8::MemoryPressureLevel>(memory_pressure_level);
-
-#if !BUILDFLAG(ALLOW_CRITICAL_MEMORY_PRESSURE_HANDLING_IN_FOREGROUND)
-  // In order to reduce performance impact, translate critical level to
-  // moderate level for foreground renderer.
-  if (!RendererIsHidden() &&
-      v8_memory_pressure_level == v8::MemoryPressureLevel::kCritical)
-    v8_memory_pressure_level = v8::MemoryPressureLevel::kModerate;
-#endif  // !BUILDFLAG(ALLOW_CRITICAL_MEMORY_PRESSURE_HANDLING_IN_FOREGROUND)
-
-  if (base::FeatureList::IsEnabled(
-          features::kForwardMemoryPressureToBlinkIsolates)) {
-    blink::MemoryPressureNotificationToAllIsolates(v8_memory_pressure_level);
-  }
 
   if (blink_platform_impl_) {
     blink::WebMemoryPressureListener::OnMemoryPressure(memory_pressure_level);
