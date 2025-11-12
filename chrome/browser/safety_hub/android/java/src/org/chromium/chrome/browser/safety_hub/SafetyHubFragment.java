@@ -369,4 +369,9 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
     public @AnimationType int getAnimationType() {
         return AnimationType.PROPERTY;
     }
+
+    @Override
+    public @Nullable String getMainMenuKey() {
+        return "safety_hub";
+    }
 }

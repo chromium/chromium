@@ -1250,6 +1250,11 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
         return AnimationType.PROPERTY;
     }
 
+    @Override
+    public @Nullable String getMainMenuKey() {
+        return "manage_sync";
+    }
+
     /** Returns whether the extensions sync item should be shown. */
     private boolean shouldShowExtensionsItem() {
         return ExtensionUi.isEnabled(getProfile());

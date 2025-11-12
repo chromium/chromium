@@ -98,6 +98,7 @@ import java.util.Map;
 @NullMarked
 public class MainSettings extends ChromeBaseSettingsFragment
         implements TemplateUrlService.LoadListener,
+                MultiColumnSettings.Observer,
                 TemplateUrlService.TemplateUrlServiceObserver,
                 SharedPreferences.OnSharedPreferenceChangeListener,
                 SyncService.SyncStateChangedListener,
@@ -143,6 +144,9 @@ public class MainSettings extends ChromeBaseSettingsFragment
     private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
     private SettingsCustomTabLauncher mSettingsCustomTabLauncher;
 
+    private @Nullable MultiColumnSettings mMultiColumnSettings;
+    private @Nullable SelectionDecoration mSelectionDecoration;
+
     public MainSettings() {
         setHasOptionsMenu(true);
     }
@@ -174,11 +178,15 @@ public class MainSettings extends ChromeBaseSettingsFragment
 
         // Disable animations of preference changes.
         getListView().setItemAnimator(null);
+        if (mSelectionDecoration != null) {
+            getListView().addItemDecoration(mSelectionDecoration);
+        }
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
+        setMultiColumnSettings(null, null);
         SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(getProfile());
         assumeNonNull(signinManager);
         if (signinManager.isSigninSupported(/* requireUpdatedPlayServices= */ false)) {
@@ -365,6 +373,51 @@ public class MainSettings extends ChromeBaseSettingsFragment
             mAllPreferences.put(preference.getKey(), preference);
         }
         mManageSync = (ChromeBasePreference) findPreference(PREF_MANAGE_SYNC);
+    }
+
+    @Override
+    public void onTitleUpdated() {
+        assert mMultiColumnSettings != null;
+        assert mSelectionDecoration != null;
+
+        var titles = mMultiColumnSettings.getTitles();
+        String key = titles.isEmpty() ? null : titles.get(0).mainMenuKey;
+        mSelectionDecoration.setKey(key);
+
+        // Reflect to the UI.
+        var view = getListView();
+        if (view != null) {
+            view.invalidateItemDecorations();
+        }
+    }
+
+    void setMultiColumnSettings(
+            @Nullable MultiColumnSettings multiColumnSettings,
+            @Nullable SelectionDecoration selectionDecoration) {
+        assert (multiColumnSettings == null) == (selectionDecoration == null);
+        var view = getListView();
+
+        if (mMultiColumnSettings != null) {
+            mMultiColumnSettings.removeObserver(this);
+        }
+        if (mSelectionDecoration != null && view != null) {
+            view.removeItemDecoration(mSelectionDecoration);
+        }
+
+        mMultiColumnSettings = multiColumnSettings;
+        mSelectionDecoration = selectionDecoration;
+
+        if (mMultiColumnSettings != null) {
+            mMultiColumnSettings.addObserver(this);
+        }
+        if (mSelectionDecoration != null && view != null) {
+            view.addItemDecoration(mSelectionDecoration);
+        }
+
+        // Reflect the title update immediately.
+        if (mMultiColumnSettings != null) {
+            onTitleUpdated();
+        }
     }
 
     private void setManagedPreferenceDelegateForPreference(String key) {

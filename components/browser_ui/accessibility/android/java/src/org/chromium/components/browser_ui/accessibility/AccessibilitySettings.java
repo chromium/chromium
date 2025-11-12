@@ -238,4 +238,9 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
     public @SettingsFragment.AnimationType int getAnimationType() {
         return SettingsFragment.AnimationType.PROPERTY;
     }
+
+    @Override
+    public @Nullable String getMainMenuKey() {
+        return "accessibility";
+    }
 }

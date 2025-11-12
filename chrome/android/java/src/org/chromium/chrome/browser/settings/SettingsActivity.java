@@ -429,6 +429,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
             // Force a re-inflation of all views to ensure they pick up the new theme.
             reInflateViews(fragment);
         }
+        applyMainSettingsFragmentDecoration((MainSettings) fragment);
     }
 
     /**
@@ -463,6 +464,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
             fragment.requireContext()
                     .getTheme()
                     .applyStyle(R.style.ThemeOverlay_Chromium_Settings_MainPanel, true);
+            applyMainSettingsFragmentDecoration((MainSettings) fragment);
             return;
         }
 
@@ -504,6 +506,23 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                                 reInflateViews(fragment);
                             }
                         });
+    }
+
+    private void applyMainSettingsFragmentDecoration(MainSettings mainSettings) {
+        int verticalMargin =
+                getResources()
+                        .getDimensionPixelSize(R.dimen.settings_item_container_vertical_margin);
+        int leftMargin = getResources().getDimensionPixelSize(R.dimen.settings_item_margin);
+        float radius =
+                getResources()
+                        .getDimensionPixelSize(R.dimen.settings_item_rounded_corner_radius_default);
+        int selectedBackgroundColor =
+                SemanticColorUtils.getSettingsMainMenuSelectedBackgroundColor(
+                        mainSettings.requireContext());
+        mainSettings.setMultiColumnSettings(
+                mMultiColumnSettings,
+                new SelectionDecoration(
+                        verticalMargin, leftMargin, radius, selectedBackgroundColor));
     }
 
     private void reInflateViews(PreferenceFragmentCompat fragment) {

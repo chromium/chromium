@@ -143,4 +143,9 @@ public class AdaptiveToolbarSettingsFragment extends ChromeBaseSettingsFragment 
     public @AnimationType int getAnimationType() {
         return AnimationType.PROPERTY;
     }
+
+    @Override
+    public @Nullable String getMainMenuKey() {
+        return "toolbar_shortcut";
+    }
 }

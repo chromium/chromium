@@ -273,6 +273,11 @@ public class AppearanceSettingsFragment extends ChromeBaseSettingsFragment
         return AnimationType.PROPERTY;
     }
 
+    @Override
+    public @Nullable String getMainMenuKey() {
+        return "appearance";
+    }
+
     @Nullable PrefObserver getPrefObserverForTesting() {
         return mPrefObserver;
     }

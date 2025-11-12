@@ -292,6 +292,11 @@ public class SemanticColorUtils {
         return resolve(R.attr.colorSurfaceContainerHigh, context);
     }
 
+    /** Returns teh semantic color values for selected items in the settings main menu. */
+    public static @ColorInt int getSettingsMainMenuSelectedBackgroundColor(Context context) {
+        return resolve(R.attr.colorSecondaryContainer, context);
+    }
+
     public static void setBottomSystemNavDividerColorForTesting(@ColorInt int value) {
         sBottomSystemNavDividerColorForTesting = value;
         ResettersForTesting.register(() -> sBottomSystemNavDividerColorForTesting = null);

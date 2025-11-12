@@ -154,6 +154,11 @@ public class AboutChromeSettings extends ChromeBaseSettingsFragment
         return SettingsFragment.AnimationType.PROPERTY;
     }
 
+    @Override
+    public @Nullable String getMainMenuKey() {
+        return "about_chrome";
+    }
+
     public static final BaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
             new BaseSearchIndexProvider(
                     AboutChromeSettings.class.getName(), R.xml.about_chrome_preferences) {

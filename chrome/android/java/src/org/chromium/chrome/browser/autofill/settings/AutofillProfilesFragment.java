@@ -441,6 +441,11 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
         return SettingsFragment.AnimationType.PROPERTY;
     }
 
+    @Override
+    public @Nullable String getMainMenuKey() {
+        return "autofill_addresses";
+    }
+
     private boolean disabledSettingsInThirdPartyMode() {
         return AutofillClientProviderUtils.getAndroidAutofillFrameworkAvailability(
                                 UserPrefs.get(getProfile()))

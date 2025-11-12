@@ -76,4 +76,9 @@ public class HomeModulesConfigSettings extends ChromeBaseSettingsFragment {
     public @SettingsFragment.AnimationType int getAnimationType() {
         return SettingsFragment.AnimationType.PROPERTY;
     }
+
+    @Override
+    public @Nullable String getMainMenuKey() {
+        return "home_modules_config";
+    }
 }

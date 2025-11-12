@@ -97,7 +97,7 @@ public class ContainmentViewStyler {
      * @param color The background color of the drawable.
      * @return A new {@link Drawable} with the specified properties.
      */
-    private static Drawable createRoundedDrawable(float topRadius, float bottomRadius, int color) {
+    public static Drawable createRoundedDrawable(float topRadius, float bottomRadius, int color) {
         GradientDrawable drawable = new GradientDrawable();
         drawable.setShape(GradientDrawable.RECTANGLE);
         drawable.setColor(color);

@@ -407,10 +407,15 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
     }
 
     static class Title {
-        Title(String uuid, ObservableSupplier<String> titleSupplier, int backStackCount) {
+        Title(
+                String uuid,
+                ObservableSupplier<String> titleSupplier,
+                int backStackCount,
+                @Nullable String mainMenuKey) {
             this.uuid = uuid;
             this.titleSupplier = titleSupplier;
             this.backStackCount = backStackCount;
+            this.mainMenuKey = mainMenuKey;
         }
 
         public final String uuid;
@@ -419,6 +424,12 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
 
         /** the number of back stack entries when the fragment started */
         public final int backStackCount;
+
+        /**
+         * the "key" tag specified in main_preference, if it should be highlighted when this item is
+         * at the bottom of the back stack.
+         */
+        public final @Nullable String mainMenuKey;
     }
 
     static class FragmentUuidMapCreator extends FragmentManager.FragmentLifecycleCallbacks {
@@ -499,7 +510,8 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
 
                 if (index < 0) {
                     // Enter into more detailed page.
-                    mTitles.add(new Title(uuid, titleSupplier, backStackCount));
+                    mTitles.add(
+                            new Title(uuid, titleSupplier, backStackCount, page.getMainMenuKey()));
                 } else {
                     // Move back from the detailed page.
                     for (int i = mTitles.size() - 1; i > index; --i) {
@@ -543,7 +555,9 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
                 int backStackCount = backStackCounts[i];
                 var page = uuidMap.get(uuid);
                 assert page != null;
-                mTitles.add(new Title(uuid, page.getPageTitle(), backStackCount));
+                mTitles.add(
+                        new Title(
+                                uuid, page.getPageTitle(), backStackCount, page.getMainMenuKey()));
             }
         }
     }
