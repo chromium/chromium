@@ -34,8 +34,14 @@ class DataSharingSDKDelegateDesktopBrowserTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
+// TODO(460041655): Remove this once the underlying issue is fixed.
+#if BUILDFLAG(IS_CHROMEOS) && defined(ADDRESS_SANITIZER)
+#define MAYBE_ReadGroupLoadsWebContents DISABLED_ReadGroupLoadsWebContents
+#else
+#define MAYBE_ReadGroupLoadsWebContents ReadGroupLoadsWebContents
+#endif
 IN_PROC_BROWSER_TEST_F(DataSharingSDKDelegateDesktopBrowserTest,
-                       ReadGroupLoadsWebContents) {
+                       MAYBE_ReadGroupLoadsWebContents) {
   DataSharingService* service =
       DataSharingServiceFactory::GetForProfile(browser()->profile());
   ASSERT_FALSE(service->IsEmptyService());
