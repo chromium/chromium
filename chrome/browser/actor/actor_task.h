@@ -108,7 +108,10 @@ class ActorTask {
     kModelError = 2,
     kChromeFailure = 3,
     kTabDetached = 4,
-    kMaxValue = kTabDetached,
+    kShutdown = 5,
+    kUserStartedNewChat = 6,
+    kUserLoadedPreviousChat = 7,
+    kMaxValue = kUserLoadedPreviousChat,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/actor/histograms.xml:StoppedReason)
 

@@ -300,8 +300,11 @@ void ActorTask::Stop(StoppedReason stop_reason) {
   }
   State final_state;
   switch (stop_reason) {
+    case StoppedReason::kUserStartedNewChat:
+    case StoppedReason::kUserLoadedPreviousChat:
     case StoppedReason::kStoppedByUser:
     case StoppedReason::kTabDetached:
+    case StoppedReason::kShutdown:
       final_state = State::kCancelled;
       break;
     case StoppedReason::kTaskComplete:

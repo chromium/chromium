@@ -2240,6 +2240,10 @@ export enum ActorTaskStopReason {
   STOPPED_BY_USER = 1,
   // Actor task was stopped because the model reported a failure.
   MODEL_ERROR = 2,
+  // Actor task was stopped by choosing a new conversation.
+  USER_STARTED_NEW_CHAT = 3,
+  // Actor task was stopped by choosing a previous conversation.
+  USER_LOADED_PREVIOUS_CHAT = 4,
 }
 
 ///////////////////////////////////////////////
