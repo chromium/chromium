@@ -9,3 +9,8 @@ source_set("features") {
   ]
   deps = [ "//base" ]
 }
+
+source_set("input_plate_position") {
+  sources = [ "composebox_input_plate_position.h" ]
+  deps = [ "//base" ]
+}

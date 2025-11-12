@@ -27,6 +27,9 @@ base::TimeDelta GetUploadDelay();
 // Returns whether to force the upload to fail.
 bool ShouldForceUploadFailure();
 
+// Whether to force the composebox on top.
+bool IsComposeboxForceTopEnabled();
+
 // Used to enable the compact "one line" mode in the composebox.
 BASE_DECLARE_FEATURE(kComposeboxCompactMode);
 

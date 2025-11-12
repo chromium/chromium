@@ -292,6 +292,10 @@ UIButton* CreateClearButton() {
       CGAffineTransformMakeScale(scaleValue, scaleValue);
 }
 
+- (CGSize)intrinsicContentSize {
+  return _textInputView.intrinsicContentSize;
+}
+
 - (UIButton*)thumbnailButton {
   return _thumbnailButton;
 }

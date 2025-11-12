@@ -74,12 +74,45 @@ const CGFloat kGlowEffectWidth = 40.0f;
 const CGFloat kFadeViewWidth = 30.0f;
 /// The duration for the AIM button animation.
 const CGFloat kAIMButtonAnimationDuration = 0.25f;
+/// The ammount of padding to add to the input plate.
+const CGFloat kInstrinsicHeightExtraPadding = 16.0f;
 }  // namespace
+
+// Delegate respoonsible for computing the intrinsic content size.
+@protocol IntrinsicContentSizeViewDelegate <NSObject>
+
+// Called by the associated view to compute the intrinsic content size.
+- (CGSize)intrinsicContentSizeForView:(UIView*)view;
+
+@end
+
+// View that delegates the computation of its intrinsic content size.
+@interface IntrinsicContentSizeView : UIView
+
+// The delegate of this instance.
+@property(nonatomic, weak) id<IntrinsicContentSizeViewDelegate> delegate;
+
+@end
+
+@implementation IntrinsicContentSizeView : UIView
+
+- (CGSize)intrinsicContentSize {
+  if (self.delegate) {
+    return [self.delegate intrinsicContentSizeForView:self];
+  }
+
+  // Explicitly call the super implementation as it uses
+  // (UIViewNoIntrinsicMetric, UIViewNoIntrinsicMetric) for the default case.
+  return [super intrinsicContentSize];
+}
+
+@end
 
 @interface ComposeboxInputPlateViewController () <
     UITextViewDelegate,
     ComposeboxInputItemCellDelegate,
     UICollectionViewDelegate,
+    IntrinsicContentSizeViewDelegate,
     UICollectionViewDelegateFlowLayout>
 
 /// Whether the AI mode is enabled.
@@ -141,6 +174,12 @@ const CGFloat kAIMButtonAnimationDuration = 0.25f;
     _omniboxContainer = [[UIView alloc] init];
   }
   return self;
+}
+
+- (void)loadView {
+  IntrinsicContentSizeView* view = [[IntrinsicContentSizeView alloc] init];
+  view.delegate = self;
+  self.view = view;
 }
 
 - (void)viewDidLoad {
@@ -323,6 +362,30 @@ const CGFloat kAIMButtonAnimationDuration = 0.25f;
   AddSameConstraints(_editView, _omniboxContainer);
 }
 
+#pragma mark - IntrinsicContentSizeViewDelegate
+
+- (CGSize)intrinsicContentSizeForView:(UIView*)view {
+  // The total intrinsic height of the view is determined by the cumulative
+  // intrinsic height of all constituent layers of the input plate.
+  CGFloat omniboxContainerIntrinsicHeight =
+      _editView.intrinsicContentSize.height;
+  CGFloat carouselHeight = _carouselContainer.hidden ? 0 : kCarouselHeight;
+  CGFloat buttonRowHeight = kAIMButtonHeight;
+
+  CGFloat visibleItemsCount = 0;
+  for (UIView* arrangedSubview in _inputPlateStackView.arrangedSubviews) {
+    if (arrangedSubview.hidden == NO) {
+      visibleItemsCount++;
+    }
+  }
+  CGFloat spacing = kInputPlateStackViewSpacing * (visibleItemsCount + 1);
+
+  CGFloat intrinsicHeight = omniboxContainerIntrinsicHeight + carouselHeight +
+                            buttonRowHeight + spacing +
+                            kInstrinsicHeightExtraPadding;
+  return CGSizeMake(UIViewNoIntrinsicMetric, intrinsicHeight);
+}
+
 #pragma mark - ComposeboxInputItemCellDelegate
 
 - (void)composeboxInputItemCellDidTapCloseButton:
@@ -349,6 +412,10 @@ const CGFloat kAIMButtonAnimationDuration = 0.25f;
                   completion:^{
                     [weakSelf updateInputPlateLayout];
                   }];
+
+  [self.view invalidateIntrinsicContentSize];
+  [self.view.superview setNeedsLayout];
+  [self.view.superview layoutIfNeeded];
 }
 
 - (void)setCanAttachTabAction:(BOOL)canAttachTabAction {

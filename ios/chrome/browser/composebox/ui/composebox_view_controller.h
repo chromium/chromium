@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/composebox/public/composebox_input_plate_position.h"
 #import "ios/chrome/browser/composebox/ui/composebox_navigation_consumer.h"
 #import "ios/chrome/browser/omnibox/ui/popup/omnibox_popup_presenter.h"
 
@@ -23,6 +24,10 @@
 @interface ComposeboxViewController
     : UIViewController <ComposeboxNavigationConsumer,
                         OmniboxPopupPresenterDelegate>
+
+// Creates an instance with the preferred position of the input plate.
+- (instancetype)initWithPreferredInputPlatePosition:
+    (ComposeboxInputPlatePosition)preferredInputPlatePosition;
 
 // The delegate.
 @property(nonatomic, weak) id<ComposeboxViewControllerDelegate> delegate;
