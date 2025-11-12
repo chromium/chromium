@@ -134,7 +134,6 @@ TEST_F(UnifiedBrightnessViewTest, SliderButtonComponents) {
   EXPECT_EQ(unified_brightness_view()->children()[0]->GetClassName(),
             "QuickSettingsSlider");
 
-  // TODO(b/257151067): Updates the a11y name id and tooltip text.
   auto* night_light_button =
       static_cast<IconButton*>(unified_brightness_view()->children()[1]);
   EXPECT_EQ(night_light_button->GetClassName(), "IconButton");
