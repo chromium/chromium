@@ -18,6 +18,10 @@ static constexpr size_t kSha1Size = 20;
 class Sha1;
 }  // namespace crypto::obsolete
 
+namespace arc {
+std::string GetSha1HashForArcPlayTermsOfService(std::string_view tos_content);
+}
+
 namespace ash::ambient {
 std::string GetCachedImageHash(std::string_view image);
 std::string Sha1UrlAsHexEncodeForFilename(std::string_view url);
@@ -83,6 +87,11 @@ class CRYPTO_EXPORT Sha1 {
   friend std::string ash::quick_start::GetHashedAuthToken(
       std::string_view authentication_token);
   friend std::string net::ComputeSecWebSocketAccept(std::string_view key);
+
+  // TODO(crbug.com/457771366): Remove once play_terms_of_service_hash is
+  // migrated to use SHA-256.
+  friend std::string arc::GetSha1HashForArcPlayTermsOfService(
+      std::string_view tos_content);
 
   // TODO(crbug.com/458084930): get rid of this.
   friend std::string wallpaper::GetHexForWallpaperFilesId(

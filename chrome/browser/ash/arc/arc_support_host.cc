@@ -10,12 +10,12 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/functional/bind.h"
-#include "base/hash/sha1.h"
 #include "base/i18n/timezone.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/values.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -37,6 +37,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user_manager.h"
+#include "crypto/obsolete/sha1.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/browser/extension_registry.h"
@@ -50,6 +51,13 @@
 #include "ui/gfx/native_ui_types.h"
 
 using sync_pb::UserConsentTypes;
+
+namespace arc {
+std::string GetSha1HashForArcPlayTermsOfService(std::string_view tos_content) {
+  return std::string(
+      base::as_string_view(crypto::obsolete::Sha1::Hash(tos_content)));
+}
+}  // namespace arc
 
 namespace {
 constexpr char kAction[] = "action";
@@ -744,7 +752,7 @@ void ArcSupportHost::OnMessage(const base::Value::Dict& message) {
     if (tos_shown.value()) {
       play_consent.set_play_terms_of_service_text_length(tos_content->length());
       play_consent.set_play_terms_of_service_hash(
-          base::SHA1HashString(*tos_content));
+          arc::GetSha1HashForArcPlayTermsOfService(*tos_content));
     }
     ConsentAuditorFactory::GetForProfile(profile_)->RecordArcPlayConsent(
         gaia_id, play_consent);
