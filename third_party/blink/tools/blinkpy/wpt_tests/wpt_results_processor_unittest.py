@@ -1426,6 +1426,18 @@ class WPTResultsProcessorTest(LoggingTestCase):
         self.assertEqual(report['run_info'], self.wpt_report['run_info'])
         self.assertEqual(report['results'], self.wpt_report['results'])
 
+    def test_upload_wpt_screenshots(self):
+        path = self.fs.join('/mock-checkout', 'out', 'Default',
+                            'layout-test-results', 'wpt_screenshots.txt')
+        self.fs.write_text_file(path, 'data:image/png;base64,iVBORw\n')
+        self.processor.upload_wpt_screenshots(path)
+        self.processor.sink.report_invocation_level_artifacts.assert_called_once_with(
+            {
+                'wpt_screenshots.txt': {
+                    'filePath': path,
+                },
+            })
+
     def test_report_expected_skipped_test(self):
         self.fs.write_text_file(
             self.path_finder.path_from_web_tests('TestExpectations'),
