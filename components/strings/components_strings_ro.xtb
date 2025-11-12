@@ -519,6 +519,7 @@
 <translation id="1823768272150895732">Font</translation>
 <translation id="1824402189105105503">A opta rolă</translation>
 <translation id="1826516787628120939">Se verifică</translation>
+<translation id="1829026591231985685">salvarea informațiilor în Portofel Google în setări</translation>
 <translation id="1832730227369924598">Sincronizarea desktopului</translation>
 <translation id="1834452765064623979">Construcție și întreținere</translation>
 <translation id="1838374766361614909">Șterge căutarea</translation>
@@ -1885,6 +1886,7 @@
 <translation id="4073797364926776829">Afișează cardul</translation>
 <translation id="4075732493274867456">Clientul și serverul nu acceptă o versiune a protocolului SSL sau o suită de codificare obișnuită.</translation>
 <translation id="4079302484614802869">Configurația pentru proxy este setată să utilizeze o adresă URL pentru scripturi .pac, și nu servere proxy fixe.</translation>
+<translation id="4080668349181235831">Pentru a oferi sugestii și a îmbunătăți această funcție, adresa URL și conținutul complet al paginii site-ului pe care îl accesezi sunt trimise la Google. Află mai multe despre <ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" />.</translation>
 <translation id="4080855220442581440">derularea și zoomul în filele comune</translation>
 <translation id="4082333119419111506">Hârtie (preprintată)</translation>
 <translation id="4082393374666368382">Setări – Administrator</translation>
@@ -3845,6 +3847,7 @@ Detalii suplimentare:
 <translation id="7286908876112207905">Inserarea acestui conținut pe acest site nu este permisă</translation>
 <translation id="7291578327729322058">Adaugă permisul de conducere</translation>
 <translation id="7292031607255951991">Numele destinatarului</translation>
+<translation id="7297228218361240128">Salvează informații în Portofel Google de pe paginile pe care le vezi</translation>
 <translation id="7298195798382681320">Recomandat</translation>
 <translation id="7299471494012161875">dispozitivele periferice de afișare conectate;</translation>
 <translation id="7299721129597238157">Ștergeți marcajul</translation>
@@ -4242,6 +4245,7 @@ Detalii suplimentare:
 <translation id="7916162853251942238">Bază Flexo</translation>
 <translation id="791698251820376781">Organizația nu îți permite să te conectezi</translation>
 <translation id="7926503317156566022">Domeniul aviației</translation>
+<translation id="7927046851848613453">Salvează bilete, evenimente și alte informații din paginile pe care le vezi, nu doar formularele pe care le completezi. Apoi accesează rapid permisele, cum ar fi biletele la evenimente și cardurile de fidelitate. Informațiile salvate pot apărea pe dispozitivele tale și în produsele Google.</translation>
 <translation id="7930282586031445870">Ecranul cu termenii și condițiile opțiunii Cumpără acum, plătește mai târziu este închis.</translation>
 <translation id="7932035970207573919">Adresa de serviciu, <ph name="ADDRESS" /></translation>
 <translation id="793209273132572360">Actualizezi adresa?</translation>

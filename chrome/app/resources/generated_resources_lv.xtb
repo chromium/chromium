@@ -615,6 +615,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="1414648216875402825">Jūs atjaunināt uz nestabilu <ph name="PRODUCT_NAME" /> versiju, kurā ietvertas funkcijas, kas vēl tiek izstrādātas. Radīsies avārijas un neparedzētas kļūdas. Rīkojieties apdomīgi!</translation>
 <translation id="1415708812149920388">Liegta piekļuve starpliktuves satura lasīšanai</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> (paplašinājuma ID “<ph name="EXTENSION_ID" />”) nav atļauts šāda veida sesijā.</translation>
+<translation id="141720836055413739">Nevar augšupielādēt.  Izmēģiniet citu faila formātu.</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{Noņemt lietotni}zero{Noņemt lietotnes}one{Noņemt lietotnes}other{Noņemt lietotnes}}</translation>
 <translation id="1417497355604638350">Sūtīt diagnostikas un lietojuma datus</translation>
 <translation id="1418552618736477642">Paziņojumi un lietotnes</translation>
@@ -2870,6 +2871,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="2946640296642327832">Iespējot Bluetooth</translation>
 <translation id="2947281105969315778">Lai kopīgotu vai pievienotos ciļņu grupām, ir svarīgi, lai jūs varētu pierakstīties pārlūkā Chrome.</translation>
 <translation id="2947605845283690091">Tīmekļa pārlūkošanai ir jābūt ātrai. Atvēliet mirkli, <ph name="BEGIN_LINK" />lai pārbaudītu paplašinājumus<ph name="END_LINK" /> tūlīt.</translation>
+<translation id="2948287943780377675">{FILE_COUNT,plural, =1{Nometiet failu šeit}zero{Nometiet failus šeit}one{Nometiet failus šeit}other{Nometiet failus šeit}}</translation>
 <translation id="2948300991547862301">Doties uz lapu <ph name="PAGE_TITLE" /></translation>
 <translation id="29488703364906173">Ātrs, vienkāršs un drošs tīmekļa pārlūks, kas izstrādāts modernam tīmeklim.</translation>
 <translation id="2950666755714083615">Reģistrēties</translation>
@@ -5257,6 +5259,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="4606551464649945562">Neļaut vietnēm izveidot jūsu apkārtnes 3D karti vai izsekot kameras pozīciju</translation>
 <translation id="4606933160360542263">Pielāgota taustiņu kombinācija: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Vai dzēst ciļņu grupu?}zero{Vai dzēst ciļņu grupas?}one{Vai dzēst ciļņu grupas?}other{Vai dzēst ciļņu grupas?}}</translation>
+<translation id="4607763915939540711">{FILE_LIMIT,plural, =1{Augšupielādējiet 1 failu, ko izmantot kopā ar jautājumu.}zero{Augšupielādējiet ne vairāk kā # failus, ko izmantot kopā ar jautājumu.}one{Augšupielādējiet ne vairāk kā # failu, ko izmantot kopā ar jautājumu.}other{Augšupielādējiet ne vairāk kā # failus, ko izmantot kopā ar jautājumu.}}</translation>
 <translation id="4608500690299898628">&amp;Atrast...</translation>
 <translation id="4609164937357979319">Konta atlase</translation>
 <translation id="4610493438923139095">Neuzticams</translation>

@@ -2981,6 +2981,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3019023222666709803">Strelka vositasi</translation>
 <translation id="3019285239893817657">Quyi sahifa tugmasi</translation>
 <translation id="3019595674945299805">VPN xizmati</translation>
+<translation id="3020101754533552167">Hisobga kirish tekshirilmoqda...</translation>
 <translation id="3020183492814296499">Yorliqlar</translation>
 <translation id="3020990233660977256">Seriya raqami: <ph name="SERIAL_NUMBER" /></translation>
 <translation id="3021065318976393105">Batareya quvvatida ishlayotganda</translation>
@@ -8110,6 +8111,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="6619990499523117484">PIN kodni kiriting</translation>
 <translation id="6620000730890558421">AI yordamida varaqlarni saranjom saqlang</translation>
 <translation id="6620254580880484313">Konteyner nomi</translation>
+<translation id="6621282332208609777">Google orqali soʻrang yoki URL manzilini kiriting</translation>
 <translation id="6621391692573306628">Bu varaqni boshqa qurilmaga yuborish uchun har ikki qurilmada Chrome hisobiga kiring</translation>
 <translation id="6622980291894852883">Tasvirlar doim bloklansin</translation>
 <translation id="6624036901798307345">Planshet rejimida har bir varaq eskizi aks etadigan yangi varaqlar qatorini ochish uchun asboblar panelida varaqlar soni tugmasiga bosing.</translation>
@@ -9532,6 +9534,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7620616707541471029">Davom etish uchun hisobni tanlang</translation>
 <translation id="7621382409404463535">Tizim qurilma parametrlarini saqlay olmadi.</translation>
 <translation id="7621595347123595643">Parol yoki PIN kodni unutsangiz, qurilmadagi maʼlumotlarni tiklay olmaysiz.</translation>
+<translation id="7621863462266622331">Varaqlar ulashilganda ularning sahifa kontenti, mediafayli va URL manzillari Googlega yuboriladi</translation>
 <translation id="7622114377921274169">Quvvat olmoqda.</translation>
 <translation id="7622768823216805500">Saytlar odatda xaridlar vaqtida hisob-kitobni osonlashtirish uchun toʻlov vositalarini oʻrnatadi</translation>
 <translation id="7622966771025050155">Yozib olingan varaq</translation>
@@ -11747,6 +11750,7 @@ Bu axborotga oʻrnatilgan dasturlar, fayllar, brauzer, qurilmadagi operatsion ti
 <translation id="909554839118732438">Inkognitoni yopish</translation>
 <translation id="9095819602391364796">Saytlarga MIDI qurilmalarni boshqarish va qayta dasturlash taqiqlansin.</translation>
 <translation id="9096053102600371572">Boshqariladigan aylantirish haqida <ph name="LINK_BEGIN" />batafsil<ph name="LINK_END" /></translation>
+<translation id="9096221857560878399">Variantlarni taqqoslash</translation>
 <translation id="9096776523567481218">qurilmaga oʻrnatilmagan</translation>
 <translation id="9098860402274800697">Google Play va Android ilovalarini olib tashlash</translation>
 <translation id="9099220545925418560">Brauzeringiz tarixi asosida. Bu sozlama oʻchiq.</translation>

@@ -1886,7 +1886,7 @@
 <translation id="4073797364926776829">الاطّلاع على البطاقة</translation>
 <translation id="4075732493274867456">لا يدعم كل من العميل والخادم مجموعة ترميز أو إصدار بروتوكول طبقة المقابس الآمنة الشائع.</translation>
 <translation id="4079302484614802869">‏تم ضبط إعداد الخادم الوكيل لاستخدام عنوان URL نص برمجي ‎.pac وليس الخوادم الوكيلة الثابتة.</translation>
-<translation id="4080668349181235831">‏لتقديم اقتراحات وتحسين هذه الميزة، تتم مشاركة عنوان URL وكل محتوى صفحة الموقع الإلكتروني التي تتم زيارتها مع Google. يمكنك معرفة المزيد حول <ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" />.</translation>
+<translation id="4080668349181235831">‏لتقديم اقتراحات وتحسين هذه الميزة، يشارَك عنوان URL وكل محتوى صفحة الموقع الإلكتروني التي تتم زيارتها مع Google. يمكنك معرفة المزيد حول <ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" />.</translation>
 <translation id="4080855220442581440">الانتقال للأعلى أو للأسفل في محتوى علامات التبويب المشترَكة وتكبيره أو تصغيره</translation>
 <translation id="4082333119419111506">ورق (مطبوع مسبقًا)</translation>
 <translation id="4082393374666368382">الإعدادات - الإدارة</translation>
@@ -4294,6 +4294,7 @@
 <translation id="7987087088851949178">‏تم فتح قائمة مقدّمي خدمة "الدفع الآجل" (BNPL) المتاح لديهم إمكانية الدفع على أقساط بطول الشاشة.</translation>
 <translation id="799149739215780103">التجليد</translation>
 <translation id="7992044431894087211">تم استئناف "مشاركة الشاشة" مع <ph name="APPLICATION_TITLE" />.</translation>
+<translation id="799384093520583425">حظرت مؤسستك استخدام "أدوات مطوري البرامج" على هذه الصفحة</translation>
 <translation id="7995512525968007366">غير محدد</translation>
 <translation id="7997855386298213183">علامات التبويب المشترَكة</translation>
 <translation id="8001912761979890298">‏لا يستطيع هذا الخادم إثبات أنّه <ph name="DOMAIN" /> لأنّه يستخدم شهادة أمان غير موثوقة من قِبل Chromium أو إعدادات النظام لتشفير بيانات الزيارات على الويب. وقد يعود ذلك إلى خطأ في الضبط أو مهاجم يحاول اعتراض اتصالك. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />عرض الشهادة<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
@@ -4841,6 +4842,7 @@
 <translation id="8922013791253848639">السماح دائمًا بالإعلانات على هذا الموقع</translation>
 <translation id="8922734931659847428">‏قائمة تضم فقط عناوين URL للصفحات التي <ph name="BEGIN_LINK" />استخدمت تكنولوجيا قديمة<ph name="END_LINK" /> عند زيارتك لها</translation>
 <translation id="892588693504540538">عمل ثقب أعلى اليمين</translation>
+<translation id="8926082624786998759">"أدوات مطوري البرامج" غير مسموح بها على هذه الصفحة</translation>
 <translation id="8926389886865778422">عدم السؤال مرة أخرى</translation>
 <translation id="8926400492587758246">يمكنك الدفع على أقساط شهرية منخفضة</translation>
 <translation id="8932102934695377596">توقيت ساعتك متأخر عن الوقت الحالي</translation>

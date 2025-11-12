@@ -614,6 +614,7 @@
 <translation id="1414648216875402825">شما نسخه ناپایداری از <ph name="PRODUCT_NAME" /> را به‌روزرسانی می‌کنید که حاوی قابلیت‌های در حال توسعه است. خرابی‌ها و اشکال‌های غیرمنتظره‌ای رخ خواهد داد. لطفاُ با احتیاط ادامه دهید.</translation>
 <translation id="1415708812149920388">دسترسی برای خواندن محتوای بریده‌دان امکان‌پذیر نیست</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> (شناسه برنامه افزودنی «<ph name="EXTENSION_ID" />») در این نوع جلسه مجاز نیست.</translation>
+<translation id="141720836055413739">بارگذاری نشد.  قالب فایل دیگری را امتحان کنید.</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{برداشتن برنامه}one{برداشتن برنامه}other{برداشتن برنامه‌ها}}</translation>
 <translation id="1417497355604638350">ارسال عیب‌یابی و داده‌های استفاده.</translation>
 <translation id="1418552618736477642">اعلان‌ها و برنامه‌ها</translation>
@@ -2878,6 +2879,7 @@
 <translation id="2946640296642327832">فعال کردن بلوتوث</translation>
 <translation id="2947281105969315778">‏برای هم‌رسانی کردن گروه‌های زبانه یا پیوستن به آن‌ها، باید بتوانید به سیستم Chrome وارد شوید</translation>
 <translation id="2947605845283690091">مرور وب باید سریع باشد اکنون چندلحظه برای<ph name="BEGIN_LINK" />بررسی افزونه‌هایتان<ph name="END_LINK" /> وقت بگذارید.</translation>
+<translation id="2948287943780377675">{FILE_COUNT,plural, =1{فایل را اینجا رها کنید}one{فایل‌ها را اینجا رها کنید}other{فایل‌ها را اینجا رها کنید}}</translation>
 <translation id="2948300991547862301">رفتن به <ph name="PAGE_TITLE" /></translation>
 <translation id="29488703364906173">مرورگر وب سریع، ساده و ایمن که برای وب مدرن طراحی شده است.</translation>
 <translation id="2950666755714083615">ثبت‌نام شوم</translation>
@@ -5218,7 +5220,7 @@
 <translation id="4567772783389002344">افزودن واژه</translation>
 <translation id="4568025708905928793">کلید امنیتی درخواست شده است</translation>
 <translation id="4568213207643490790">‏متأسفیم، حساب‌های Google در این دستگاه مجاز نیستند.</translation>
-<translation id="4569747168316751899">وقتی دستگاه فعالیتی ندارد</translation>
+<translation id="4569747168316751899">زمان بی‌کاری</translation>
 <translation id="4570201855944865395">هم‌ترازی دوطرفه برای درخواست این افزونه:</translation>
 <translation id="4572779512957829735">پین را برای کلید امنیتی وارد کنید</translation>
 <translation id="4573098337225168831">حتماً درخواست پخش را در <ph name="DEVICE_NAME" /> بپذیرید</translation>
@@ -5267,6 +5269,7 @@
 <translation id="4606551464649945562">به سایت‌ها اجازه داده نشود نقشه سه‌بعدی از محیط ایجاد کنند یا موقعیت دوربین را ردیابی کنند</translation>
 <translation id="4606933160360542263">ترکیب سفارشی کلید: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{گروه زبانه حذف شود؟}one{گروه زبانه حذف شود؟}other{گروه‌های زبانه حذف شود؟}}</translation>
+<translation id="4607763915939540711">{FILE_LIMIT,plural, =1{‏۱ فایل برای استفاده همراه با سؤالتان بارگذاری کنید}one{حداکثر # فایل برای استفاده همراه با سؤالتان بارگذاری کنید}other{حداکثر # فایل برای استفاده همراه با سؤالتان بارگذاری کنید}}</translation>
 <translation id="4608500690299898628">&amp;یافتن...</translation>
 <translation id="4609164937357979319">انتخاب حساب</translation>
 <translation id="4610493438923139095">غیرقابل‌اعتماد</translation>

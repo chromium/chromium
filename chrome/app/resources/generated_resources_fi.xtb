@@ -613,6 +613,7 @@
 <translation id="1414648216875402825">Olet päivittämässä tuotteen <ph name="PRODUCT_NAME" /> epävakaaseen versioon, jossa on vasta kehitysvaiheessa olevia ominaisuuksia. Ohjelman kaatumisia ja odottamattomia virheitä on odotettavissa. Jatka omalla vastuullasi.</translation>
 <translation id="1415708812149920388">Leikepöydän lukuoikeus evätty</translation>
 <translation id="1415990189994829608">Laajennusta <ph name="EXTENSION_NAME" /> (laajennustunnus <ph name="EXTENSION_ID" />) ei sallita tämäntyyppisessä ístunnossa.</translation>
+<translation id="141720836055413739">Ei voi ladata.  Kokeile toista tiedostomuotoa.</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{Poista sovellus}other{Poista sovellukset}}</translation>
 <translation id="1417497355604638350">Lähetä diagnostiikka- ja käyttödataa.</translation>
 <translation id="1418552618736477642">Ilmoitukset ja sovellukset</translation>
@@ -2880,6 +2881,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2946640296642327832">Ota Bluetooth käyttöön</translation>
 <translation id="2947281105969315778">Sinun on voitava kirjautua Chromeen, jotta voit jakaa välilehtiryhmiä tai liittyä niihin</translation>
 <translation id="2947605845283690091">Verkon selaamisen pitäisi käydä nopeasti. Käytä nyt hetki <ph name="BEGIN_LINK" />laajennusten tarkistamiseen<ph name="END_LINK" />.</translation>
+<translation id="2948287943780377675">{FILE_COUNT,plural, =1{Pudota tiedosto tähän}other{Pudota tiedostot tähän}}</translation>
 <translation id="2948300991547862301">Siirry kohtaan <ph name="PAGE_TITLE" /></translation>
 <translation id="29488703364906173">Nopea, yksinkertainen ja turvallinen verkkoselain, joka on suunniteltu nykypäivän verkon tarpeisiin.</translation>
 <translation id="2950666755714083615">Kyllä kiitos</translation>
@@ -2989,6 +2991,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3019023222666709803">Nuolityökalu</translation>
 <translation id="3019285239893817657">Alasivun painike</translation>
 <translation id="3019595674945299805">VPN-palvelu</translation>
+<translation id="3020101754533552167">Tarkistetaan sisäänkirjautumista…</translation>
 <translation id="3020183492814296499">Pikanäppäimet</translation>
 <translation id="3020990233660977256">Sarjanumero: <ph name="SERIAL_NUMBER" /></translation>
 <translation id="3021065318976393105">Akkuvirralla</translation>
@@ -5266,6 +5269,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="4606551464649945562">Älä salli sivustojen luoda 3D-karttaa ympäristöstäsi tai seurata kameran asentoa</translation>
 <translation id="4606933160360542263">Oma näppäinyhdistelmä: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Poistetaanko välilehtiryhmä?}other{Poistetaanko välilehtiryhmät?}}</translation>
+<translation id="4607763915939540711">{FILE_LIMIT,plural, =1{Lataa yksi tiedosto, jota haluat käyttää kysymyksessä}other{Lataa enintään # tiedostoa, joita haluat käyttää kysymyksessä}}</translation>
 <translation id="4608500690299898628">&amp;Haku...</translation>
 <translation id="4609164937357979319">Tilin valinta</translation>
 <translation id="4610493438923139095">Ei luotettu</translation>

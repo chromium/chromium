@@ -613,6 +613,7 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="1414648216875402825">Jy dateer tans na 'n onstabiele weergawe van <ph name="PRODUCT_NAME" /> op wat kenmerke bevat wat tans besig is. Omvalle en onverwagte lêerfoute sal opduik. Gaan met omsigtigheid voort.</translation>
 <translation id="1415708812149920388">Knipbord-leestoegang is geweier</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> (uitbreiding-ID "<ph name="EXTENSION_ID" />") word nie in hierdie tipe sessie toegelaat nie.</translation>
+<translation id="141720836055413739">Kan nie oplaai nie.  Probeer ’n ander lêerformaat.</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{Verwyder app}other{Verwyder apps}}</translation>
 <translation id="1417497355604638350">Stuur diagnostiese en gebruiksdata.</translation>
 <translation id="1418552618736477642">Kennisgewings en programme</translation>
@@ -2881,6 +2882,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="2946640296642327832">Aktiveer Bluetooth</translation>
 <translation id="2947281105969315778">Jy moet by Chrome kan aanmeld om oortjiegroepe te deel of by hulle aan te sluit</translation>
 <translation id="2947605845283690091">Webblaai moet vinnig wees. Neem 'n rukkie om nou <ph name="BEGIN_LINK" />jou uitbreidings na te gaan<ph name="END_LINK" />.</translation>
+<translation id="2948287943780377675">{FILE_COUNT,plural, =1{Laat los lêer hier}other{Laat los lêers hier}}</translation>
 <translation id="2948300991547862301">Gaan na <ph name="PAGE_TITLE" /></translation>
 <translation id="29488703364906173">'n Vinnige, eenvoudige en veilige webblaaier wat vir die moderne web gebou is.</translation>
 <translation id="2950666755714083615">Ek wil aansluit</translation>
@@ -5270,6 +5272,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="4606551464649945562">Moenie werwe toelaat om 'n 3D-kaart van jou omgewing te skep of kameraposisie na te spoor nie</translation>
 <translation id="4606933160360542263">Gepasmaakte sleutelkombinasie: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Vee oortjiegroep uit?}other{Vee oortjiegroepe uit?}}</translation>
+<translation id="4607763915939540711">{FILE_LIMIT,plural, =1{Laai 1 lêer op om saam met jou vraag te gebruik}other{Laai tot # lêers op om saam met jou vraag te gebruik}}</translation>
 <translation id="4608500690299898628">Vind …</translation>
 <translation id="4609164937357979319">Rekeningkeuse</translation>
 <translation id="4610493438923139095">Gewantrou</translation>

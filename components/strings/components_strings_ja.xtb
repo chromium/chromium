@@ -519,6 +519,7 @@
 <translation id="1823768272150895732">フォント</translation>
 <translation id="1824402189105105503">ロール 8</translation>
 <translation id="1826516787628120939">確認中</translation>
+<translation id="1829026591231985685">設定で Google ウォレットに情報を保存する</translation>
 <translation id="1832730227369924598">デスク同期</translation>
 <translation id="1834452765064623979">建設、メンテナンス</translation>
 <translation id="1838374766361614909">検索をクリア</translation>
@@ -1885,6 +1886,7 @@
 <translation id="4073797364926776829">カードを表示</translation>
 <translation id="4075732493274867456">クライアントとサーバーで、共通の SSL プロトコル バージョンまたは暗号スイートがサポートされていません。</translation>
 <translation id="4079302484614802869">プロキシは固定プロキシ サーバーではなく .pac スクリプト URL を使用するように設定されています。</translation>
+<translation id="4080668349181235831">候補を表示して、この機能を改善するため、アクセスしたサイトの URL とページ全体のコンテンツが Google と共有されます。詳しくは、<ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" /> をご覧ください。</translation>
 <translation id="4080855220442581440">共有タブのスクロールとズーム</translation>
 <translation id="4082333119419111506">紙（プレプリント）</translation>
 <translation id="4082393374666368382">設定 - 管理</translation>
@@ -3845,6 +3847,7 @@
 <translation id="7286908876112207905">このコンテンツをこのサイトに貼り付けることは許可されていません</translation>
 <translation id="7291578327729322058">運転免許証の追加</translation>
 <translation id="7292031607255951991">受取人の氏名</translation>
+<translation id="7297228218361240128">表示したページ上の情報を Google ウォレットに保存</translation>
 <translation id="7298195798382681320">推奨</translation>
 <translation id="7299471494012161875">接続されたディスプレイ周辺機器</translation>
 <translation id="7299721129597238157">ブックマークを削除</translation>
@@ -4243,6 +4246,7 @@
 <translation id="7916162853251942238">フレキソベース</translation>
 <translation id="791698251820376781">組織がログインを許可していません</translation>
 <translation id="7926503317156566022">航空産業</translation>
+<translation id="7927046851848613453">ページ上で入力したフォームだけでなく、チケット、イベント、その他の情報を保存して、イベント チケットやポイントカードなどのパスにすばやくアクセスできます。保存した情報は、お使いのデバイスや Google サービスに表示されます。</translation>
 <translation id="7930282586031445870">後払い決済の利用規約画面が閉じられました。</translation>
 <translation id="7932035970207573919">職場の住所、<ph name="ADDRESS" /></translation>
 <translation id="793209273132572360">住所を更新しますか？</translation>

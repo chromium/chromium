@@ -2855,6 +2855,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="2946640296642327832">Włącz Bluetooth</translation>
 <translation id="2947281105969315778">Aby udostępniać grupy kart lub do nich dołączać, musisz mieć możliwość logowania się w Chrome</translation>
 <translation id="2947605845283690091">Przeglądanie stron internetowych powinno przebiegać bez problemu. Poświęć chwilę na <ph name="BEGIN_LINK" />sprawdzenie swoich rozszerzeń<ph name="END_LINK" />.</translation>
+<translation id="2948287943780377675">{FILE_COUNT,plural, =1{Upuść plik tutaj}few{Upuść pliki tutaj}many{Upuść pliki tutaj}other{Upuść pliki tutaj}}</translation>
 <translation id="2948300991547862301">Wejdź na <ph name="PAGE_TITLE" /></translation>
 <translation id="29488703364906173">Szybka, prosta i bezpieczna przeglądarka na miarę współczesnego internetu.</translation>
 <translation id="2950666755714083615">Chcę się zarejestrować</translation>
@@ -5238,6 +5239,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="4606551464649945562">Nie zezwalaj stronom na tworzenie mapy 3D Twojego otoczenia ani na śledzenie pozycji kamery</translation>
 <translation id="4606933160360542263">Niestandardowa kombinacja klawiszy: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Usunąć grupę kart?}few{Usunąć grupy kart?}many{Usunąć grupy kart?}other{Usunąć grupy kart?}}</translation>
+<translation id="4607763915939540711">{FILE_LIMIT,plural, =1{Prześlij 1 plik, który chcesz wykorzystać w pytaniu}few{Prześlij maksymalnie # pliki, które chcesz wykorzystać w pytaniu}many{Prześlij maksymalnie # plików, które chcesz wykorzystać w pytaniu}other{Prześlij maksymalnie # pliku, które chcesz wykorzystać w pytaniu}}</translation>
 <translation id="4608500690299898628">&amp;Znajdź</translation>
 <translation id="4609164937357979319">Wybór konta</translation>
 <translation id="4610493438923139095">Niezaufany</translation>

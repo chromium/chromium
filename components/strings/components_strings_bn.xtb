@@ -519,6 +519,7 @@
 <translation id="1823768272150895732">হরফ</translation>
 <translation id="1824402189105105503">Eighth Roll</translation>
 <translation id="1826516787628120939">চেক করা হচ্ছে</translation>
+<translation id="1829026591231985685">সেটিংস থেকে Google Wallet-এ তথ্য সেভ করা হচ্ছে</translation>
 <translation id="1832730227369924598">ডেস্ক সিঙ্ক</translation>
 <translation id="1834452765064623979">নির্মাণ ও রক্ষণাবেক্ষণ</translation>
 <translation id="1838374766361614909">সার্চ সাফ করুন</translation>
@@ -1886,6 +1887,7 @@
 <translation id="4073797364926776829">কার্ড দেখুন</translation>
 <translation id="4075732493274867456">ক্লায়েন্ট ও সার্ভারটি কোনো অভিন্ন SSL প্রোটোকল সংস্করণ বা সাইফার স্যুট সমর্থন করে না।</translation>
 <translation id="4079302484614802869">প্রক্সি কনফিগারেশনটি .pac স্ক্রিপ্ট URL-এ ব্যবহার করাতে সেট থাকে স্থির প্রক্সি সার্ভারগুলিতে নয়৷</translation>
+<translation id="4080668349181235831">সাজেশন দিতে ও এই ফিচার উন্নত করতে, আপনার দেখা সাইটের URL ও সম্পূর্ণ পৃষ্ঠার কন্টেন্ট Google-এর সাথে শেয়ার করা হয়। <ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" /> সম্পর্কে আরও জানুন।</translation>
 <translation id="4080855220442581440">শেয়ার করা ট্যাব স্ক্রল ও জুম করা</translation>
 <translation id="4082333119419111506">পেপার (প্রিপ্রিন্টেড)</translation>
 <translation id="4082393374666368382">সেটিংস - ম্যানেজমেন্ট</translation>
@@ -3845,6 +3847,7 @@
 <translation id="7286908876112207905">এই সাইট এই কন্টেন্টটি পেস্ট করার অনুমতি দেয় না</translation>
 <translation id="7291578327729322058">ড্রাইভিং লাইসেন্স যোগ করুন</translation>
 <translation id="7292031607255951991">প্রাপকের নাম</translation>
+<translation id="7297228218361240128">আপনার দেখা পৃষ্ঠা থেকে Google Wallet-এ তথ্য সেভ করুন</translation>
 <translation id="7298195798382681320">প্রস্তাবিত</translation>
 <translation id="7299471494012161875">ডিসপ্লে সংক্রান্ত আনুষঙ্গিক বিষয় অ্যাটাচ করা হয়েছে</translation>
 <translation id="7299721129597238157">বুকমার্ক মুছুন</translation>
@@ -4242,6 +4245,7 @@
 <translation id="7916162853251942238">ফ্লেক্সো বেস</translation>
 <translation id="791698251820376781">আপনার সংস্থা আপনাকে সাইন-ইন করার অনুমতি দেয়নি</translation>
 <translation id="7926503317156566022">বিমান শিল্প</translation>
+<translation id="7927046851848613453">শুধু আপনার পূরণ করা ফর্মই নয় — আপনার দেখা পৃষ্ঠা থেকে টিকিট, ইভেন্ট ও অন্যান্য তথ্য সেভ করুন। তারপর ইভেন্টের টিকিট ও লয়ালটি কার্ডের মতো আপনার পাস দ্রুত অ্যাক্সেস করুন। আপনার সেভ করা তথ্য আপনার ডিভাইস ও Google প্রোডাক্ট জুড়ে দেখানো হতে পারে।</translation>
 <translation id="7930282586031445870">'এখন কিনুন, পরে পেমেন্ট করুন' পরিষেবার শর্তাবলী সংক্রান্ত স্ক্রিন বন্ধ রয়েছে।</translation>
 <translation id="7932035970207573919">কর্মস্থলের ঠিকানা, <ph name="ADDRESS" /></translation>
 <translation id="793209273132572360">ঠিকানা আপডেট করবেন?</translation>
@@ -4290,6 +4294,7 @@
 <translation id="7987087088851949178">কিস্তিতে পেমেন্ট করার সুবিধার ক্ষেত্রে 'এখন কিনুন, পরে পেমেন্ট করুন' ইস্যুকারীর তালিকা সম্পূর্ণ স্ক্রিন জুড়ে খোলা আছে।</translation>
 <translation id="799149739215780103">বাঁধাই</translation>
 <translation id="7992044431894087211"><ph name="APPLICATION_TITLE" />-এর সাথে আবার স্ক্রিন শেয়ার করা চালু করা হয়েছে</translation>
+<translation id="799384093520583425">আপনার সংস্থা এই পৃষ্ঠায় DevTools-এর ব্যবহার ব্লক করেছে</translation>
 <translation id="7995512525968007366">নির্দিষ্ট করে উল্লেখ করা নেই</translation>
 <translation id="7997855386298213183">শেয়ার করা ট্যাব</translation>
 <translation id="8001912761979890298">এই সার্ভারটি প্রমাণ দিতে পারেনি যে এটি <ph name="DOMAIN" />, কারণ এটি এমন একটি নিরাপত্তা সার্টিফিকেট ব্যবহার করছে যা Chromium বা আপনার ওয়েব ট্রাফিক এনক্রিপশনের জন্য সেট করা সিস্টেম কনফিগারেশনের বিশ্বস্ত নয়। ভুল কনফিগারেশনের কারণে বা কোনও আক্রমণকারী আপনার কানেকশন ইন্টারসেপ্ট করার চেষ্টা করলে এটি হতে পারে। <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />সার্টিফিকেট দেখুন<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
@@ -4834,6 +4839,7 @@
 <translation id="8922013791253848639">এই সাইটে সবসময় বিজ্ঞাপন দেখানোর অনুমতি দিন</translation>
 <translation id="8922734931659847428"><ph name="BEGIN_LINK" />পুরনো টেকনোলজি ইভেন্ট হচ্ছে<ph name="END_LINK" /> এমন যে পৃষ্ঠা আপনি দেখেন, তার URL-এর সীমিত তালিকা</translation>
 <translation id="892588693504540538">উপরের ডানদিকে পাঞ্চ</translation>
+<translation id="8926082624786998759">এই পৃষ্ঠায় DevTools ব্যবহার করার অনুমতি নেই</translation>
 <translation id="8926389886865778422">আর জিজ্ঞাসা করবেন না</translation>
 <translation id="8926400492587758246">মাসিক কম ইনস্টলমেন্টে পেমেন্ট করুন</translation>
 <translation id="8932102934695377596">আপনার ঘড়ির সময় পিছিয়ে রয়েছে</translation>

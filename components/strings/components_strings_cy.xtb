@@ -519,6 +519,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="1823768272150895732">Ffont</translation>
 <translation id="1824402189105105503">Wythfed Rôl</translation>
 <translation id="1826516787628120939">Wrthi'n gwirio</translation>
+<translation id="1829026591231985685">gadw gwybodaeth i Google Wallet yn y gosodiadau</translation>
 <translation id="1832730227369924598">Cysoni desg</translation>
 <translation id="1834452765064623979">Adeiladu a Chynnal a Chadw</translation>
 <translation id="1838374766361614909">Clirio'r blwch chwilio</translation>
@@ -1885,6 +1886,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="4073797364926776829">Gweld y cerdyn</translation>
 <translation id="4075732493274867456">Nid yw'r cleient na'r gweinydd yn cefnogi fersiwn protocol SSL cyffredin na chyfres seiffr.</translation>
 <translation id="4079302484614802869">Mae'r ffurfweddiad dirprwy weinyddion wedi'i osod i ddefnyddio URL sgript .pac, nid dirprwy weinyddion sefydlog.</translation>
+<translation id="4080668349181235831">Er mwyn cynnig awgrymiadau a gwella'r nodwedd hon, mae URL a chynnwys tudalen lawn y wefan rydych yn ymweld â hi yn cael eu rhannu â Google. Dysgu rhagor am <ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" />.</translation>
 <translation id="4080855220442581440">sgrolio a chwyddo tabiau a rennir</translation>
 <translation id="4082333119419111506">Papur (Rhagargraffwyd)</translation>
 <translation id="4082393374666368382">Gosodiadau - Rheoli</translation>
@@ -3844,6 +3846,7 @@ Manylion ychwanegol:
 <translation id="7286908876112207905">Ni chaniateir gludo'r cynnwys hwn i'r wefan hon</translation>
 <translation id="7291578327729322058">Ychwanegu trwydded yrru</translation>
 <translation id="7292031607255951991">Enw'r derbynnydd</translation>
+<translation id="7297228218361240128">Cadw gwybodaeth i Google Wallet o dudalennau rydych chi'n edrych arnyn nhw</translation>
 <translation id="7298195798382681320">Argymhellir</translation>
 <translation id="7299471494012161875">Perifferolion arddangos ynghlwm</translation>
 <translation id="7299721129597238157">Dileu nod tudalen</translation>
@@ -4241,6 +4244,7 @@ Manylion ychwanegol:
 <translation id="7916162853251942238">Sylfaen Flexo</translation>
 <translation id="791698251820376781">Nid yw eich sefydliad yn caniatáu i chi fewngofnodi</translation>
 <translation id="7926503317156566022">Diwydiant Hedfan</translation>
+<translation id="7927046851848613453">Cadwch docynnau, digwyddiadau a gwybodaeth arall o dudalennau rydych yn eu gweld - nid yn unig ffurflenni rydych yn eu llenwi. Yna cyrchwch eich tocynnau yn gyflym, megis tocynnau digwyddiad a chardiau teyrngarwch. Gall eich gwybodaeth sydd wedi'i chadw ymddangos ar eich dyfeisiau ac ar draws cynhyrchion Google.</translation>
 <translation id="7930282586031445870">Mae sgrîn telerau gwasanaeth Prynu-Nawr-Talu-Yn-Ddiweddarach wedi'i chau.</translation>
 <translation id="7932035970207573919">Cyfeiriad gwaith, <ph name="ADDRESS" /></translation>
 <translation id="793209273132572360">Diweddaru'r cyfeiriad?</translation>

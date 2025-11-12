@@ -519,6 +519,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1823768272150895732">Police</translation>
 <translation id="1824402189105105503">8e rouleau</translation>
 <translation id="1826516787628120939">Vérification en cours…</translation>
+<translation id="1829026591231985685">enregistrement des informations dans Google Wallet dans les paramètres</translation>
 <translation id="1832730227369924598">Synchronisation du bureau</translation>
 <translation id="1834452765064623979">Construction et maintenance</translation>
 <translation id="1838374766361614909">Effacer la recherche</translation>
@@ -1221,7 +1222,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="299990983510665749">Voitures à hayon</translation>
 <translation id="3002501248619246229">Vérifier le support du bac d'alimentation</translation>
 <translation id="3005723025932146533">Afficher la copie enregistrée</translation>
-<translation id="300580149047131921">Utilisée récemment</translation>
+<translation id="300580149047131921">Récemment utilisés</translation>
 <translation id="3006864083554020786">adresse du domicile</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur Tabulation pour parcourir les actions disponibles, puis sur Entrée pour exécuter l'action sélectionnée.</translation>
 <translation id="3010991137650052245">Pour lui permettre d'utiliser votre <ph name="PERMISSION" /> sur ce site, autorisez <ph name="SHORT_PRODUCT_NAME" /> à y accéder</translation>
@@ -1885,6 +1886,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4073797364926776829">Afficher la carte</translation>
 <translation id="4075732493274867456">Le client et le serveur ne sont pas compatibles avec une version de protocole ou une méthode de chiffrement SSL commune.</translation>
 <translation id="4079302484614802869">La configuration du proxy est définie pour utiliser une URL de script .pac, et non pas des serveurs proxy déterminés.</translation>
+<translation id="4080668349181235831">Pour proposer des suggestions et améliorer cette fonctionnalité, l'URL et le contenu complet de la page du site que vous consultez sont partagés avec Google. En savoir plus sur l’<ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" /></translation>
 <translation id="4080855220442581440">faire défiler les onglets partagés et zoomer dessus</translation>
 <translation id="4082333119419111506">Papier (préimprimé)</translation>
 <translation id="4082393374666368382">Paramètres - Gestion</translation>
@@ -3846,6 +3848,7 @@ Informations supplémentaires :
 <translation id="7286908876112207905">Vous n'êtes pas autorisé à coller ce contenu sur ce site</translation>
 <translation id="7291578327729322058">Ajouter un permis de conduire</translation>
 <translation id="7292031607255951991">Nom du destinataire</translation>
+<translation id="7297228218361240128">Enregistrez des informations dans Google Wallet à partir des pages que vous consultez</translation>
 <translation id="7298195798382681320">Recommandé</translation>
 <translation id="7299471494012161875">Périphériques d'affichage connectés</translation>
 <translation id="7299721129597238157">Supprimer le favori</translation>
@@ -4243,6 +4246,7 @@ Informations supplémentaires :
 <translation id="7916162853251942238">Base pour flexographie</translation>
 <translation id="791698251820376781">Votre organisation ne vous autorise pas à vous connecter</translation>
 <translation id="7926503317156566022">Secteur aéronautique</translation>
+<translation id="7927046851848613453">Enregistrez des billets, des événements et d'autres informations à partir des pages que vous consultez, et pas seulement des formulaires que vous remplissez. Accédez ensuite rapidement à vos pass, comme des billets pour des événements et des cartes de fidélité. Vos informations enregistrées peuvent apparaître sur vos appareils et dans les produits Google.</translation>
 <translation id="7930282586031445870">L'écran des Conditions d'utilisation Acheter maintenant, payer plus tard est fermé.</translation>
 <translation id="7932035970207573919">Adresse professionnelle, <ph name="ADDRESS" /></translation>
 <translation id="793209273132572360">Mettre à jour l'adresse ?</translation>

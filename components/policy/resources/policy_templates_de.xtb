@@ -27,11 +27,6 @@ Diese Richtlinie wird entfernt, nachdem die Funktion „OOPIF-PDF-Viewer“ voll
 <translation id="1011266755572744012">Gibt die maximal zulässige Anzahl an Blättern an, die der Nutzer während eines einzelnen Druckauftrags drucken kann.
 
       Wenn diese Richtlinie nicht konfiguriert ist, gelten keine Einschränkungen und der Nutzer kann eine beliebige Anzahl an Dokumenten drucken.</translation>
-<translation id="1013949464926722411">Wenn diese Richtlinie konfiguriert ist, dürfen die aufgeführten Ursprünge Geräteattribute wie die Seriennummer und den Hostnamen nicht über die Device Attributes API abrufen.
-
-Die Ursprünge müssen Web-Apps entsprechen, die isolierte Web-Apps mit erzwungener Installation sind (über die Richtlinie „<ph name="ISOLATED_WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />“) oder die als Kiosk-App eingerichtet sind. Technische Daten und Informationen zur Device Attributes API findest du unter https://wicg.github.io/WebApiDevice/device_attributes.
-
-Ausführliche Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> ist kein akzeptierter Wert für diese Richtlinie.</translation>
 <translation id="101438888985615157">Bildschirm um 180 Grad drehen</translation>
 <translation id="1016249716881514655">Bei diesen Funktionen in den <ph name="CHROME_DEVTOOLS_NAME" /> werden generative KI-Modelle eingesetzt, um zusätzliche Debugging-Informationen bereitzustellen. Zur Verwendung dieser Funktionen muss <ph name="PRODUCT_NAME" /> Daten wie Fehlermeldungen, Stacktraces, Code-Snippets und Netzwerkanfragen erheben und an einen Google-Server senden, auf dem ein generatives KI-Modell ausgeführt wird. Antworttext oder Authentifizierungs- und Cookie-Header in Netzwerkanfragen sind nicht in den Daten enthalten, die an den Server gesendet werden.
 
@@ -67,19 +62,6 @@ Weitere Informationen zur Datenverarbeitung bei auf generativer KI basierenden 
 <translation id="1021462144002396313"><ph name="PRIVACY_SANDBOX_NAME" />-Richtlinien</translation>
 <translation id="1022361784792428773">Erweiterungs-IDs, die der Nutzer nicht installieren darf ("*" für alle)</translation>
 <translation id="102492767056134033">Standardstatus für die Bildschirmtastatur auf der Anmeldeseite festlegen</translation>
-<translation id="1026335125982730097">Mit dieser Richtlinie kannst du eine Liste mit URL-Mustern festlegen, durch die angegeben wird, welche Websites Cookies setzen dürfen.
-
-          URL-Muster können eine einzelne URL sein. Diese gibt dann an, dass die Website Cookies auf allen Websites der obersten Ebene verwenden darf.
-
-          Muster können auch zwei durch ein Komma getrennte URLs sein. Die erste gibt die Website an, die Cookies verwenden darf. Die zweite gibt die Website der obersten Ebene an, auf die der erste Wert angewendet werden soll.
-
-          Wenn du ein URL-Paar verwendest, wird für den ersten Wert das Sternchen (*) unterstützt, für den zweiten jedoch nicht. Die Verwendung des Sternchens als ersten Wert bedeutet, dass alle Websites Cookies verwenden dürfen, wenn die zweite URL die Website der obersten Ebene ist.
-
-          Ist diese Richtlinie nicht konfiguriert, wird für alle Websites der globale Standardwert verwendet, entweder aus der Richtlinie <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> oder aus der Richtlinie <ph name="BLOCK_THIRD_PARTY_COOKIES_POLICY_NAME" />, sofern diese konfiguriert sind, oder aus der persönlichen Konfiguration des Nutzers.
-
-          Siehe auch die Richtlinien <ph name="COOKIES_BLOCKED_FOR_URLS_POLICY_NAME" /> und <ph name="COOKIES_SESSIONS_ONLY_FOR_URLS" />. In diesen drei Richtlinien darf es keine URL-Muster geben, die miteinander im Konflikt stehen – welche Richtlinie Vorrang hat, ist nicht festgelegt.
-
-          Ausführliche Informationen zu gültigen URL-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> ist kein akzeptierter Wert für diese Richtlinie.</translation>
 <translation id="102658870205613876">Einstellungen für Pop-ups</translation>
 <translation id="1027000705181149370">Legt fest, ob Authentifizierungs-Cookies, die von einem SAML IdP während der Anmeldung gesetzt wurden, an das Nutzerprofil übertragen werden sollen.
 
@@ -390,11 +372,6 @@ Die Muster für diese Richtlinie dürfen allerdings keine „/path“- oder „@
 <translation id="1272798957154751008">Migration von Chromad-Geräten zur Cloud-Verwaltung aktivieren</translation>
 <translation id="1274997165432133392">Cookies und andere Websitedaten</translation>
 <translation id="1277411517984768103">Ausführung von <ph name="BOREALIS_NAME" /> für einen Nutzer zulassen</translation>
-<translation id="1277489612460516394">Wenn diese Richtlinie konfiguriert ist, kannst du eine Liste mit URL-Mustern erstellen, durch die angegeben wird, welche Websites Pop-ups öffnen dürfen.
-
-      Wenn die Richtlinie nicht konfiguriert ist, gilt „<ph name="DEFAULT_POPUPS_SETTING_POLICY_NAME" />“ für alle Websites, sofern konfiguriert. Falls nicht, wird die persönliche Einstellung des Nutzers verwendet.
-
-      Ausführliche Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Platzhalter wie <ph name="WILDCARD_VALUE" /> sind zulässig.</translation>
 <translation id="1285819498003746288">Die Event.path API ist nicht verfügbar.</translation>
 <translation id="1290722184971934486">Wenn die Richtlinie auf <ph name="BLOCK_WINDOW_MANAGEMENT_POLICY_NAME" /> (Wert 2) gesetzt ist, wird die Berechtigung für die Fensterverwaltung automatisch auf allen Websites verweigert. Dadurch wird die Fähigkeit von Websites eingeschränkt, Informationen zum Bildschirm des Geräts abzurufen und zu nutzen, um Fenster zu öffnen und zu platzieren oder auf bestimmten Bildschirmen den Vollbildmodus anzufordern.
 
@@ -503,18 +480,6 @@ Die Richtlinie sollte nur deaktiviert werden, wenn Kompatibilitätsprobleme mit 
 <translation id="1371851989348083665">Verwendung von <ph name="ASSISTANT_PRODUCT_NAME" /> im Web zulassen</translation>
 <translation id="1372618949173323717">JavaScript deaktivieren</translation>
 <translation id="1376119291123231789">Intelligenten Akkulademodus aktivieren</translation>
-<translation id="1376299650477150211">Mit dieser Richtlinie kannst du eine Liste mit URL‑Mustern festlegen, die angeben, für welche Websites erweiterte JavaScript-Optimierungen deaktiviert werden.
-
-Wenn JavaScript-Optimierungen deaktiviert sind, rendert <ph name="PRODUCT_NAME" /> Webinhalte möglicherweise langsamer.
-
-Ausführliche Informationen zu gültigen URL-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
-Platzhalter wie <ph name="WILDCARD_VALUE" /> sind zulässig.
-
-Richtlinienausnahmen für JavaScript-Optimierungen werden nur für die jeweilige Website (eTLD+1) erzwungen. Eine nur für subdomain.beispiel.de konfigurierte Richtlinie wird nicht korrekt auf beispiel.de oder subdomain.beispiel.de angewendet, weil beide in beispiel.de (eTLD+1) aufgelöst werden, wofür es keine Richtlinie gibt. In diesem Fall muss die Richtlinie für beispiel.de konfiguriert sein, damit sie sowohl für beispiel.de als auch subdomain.beispiel.de korrekt angewendet wird.
-
-Diese Richtlinie wird auf Basis einzelner Frames angewendet und nicht nur auf Basis der Ursprungs‑URL auf oberster Ebene. Wenn z. B. beispiel‑eins.de in der Richtlinie „<ph name="JAVA_SCRIPT_OPTIMIZER_BLOCKED_FOR_SITES_POLICY_NAME" />“ aufgelistet ist, aber beispiel‑eins.de einen Frame mit beispiel‑zwei.de lädt, sind für beispiel‑eins.de JavaScript-Optimierungen deaktiviert. Für beispiel‑zwei.de wird jedoch die Richtlinie aus „<ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" />“ verwendet, falls konfiguriert, oder JavaScript-Optimierungen sind standardmäßig aktiviert. Einträge in der Sperrliste haben eine höhere Priorität als Einträge in der Zulassungsliste, die wiederum eine höhere Priorität als der konfigurierte Standardwert haben.
-
-Wenn diese Richtlinie für eine Website nicht konfiguriert ist, gilt die Richtlinie aus „<ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" />“ für die Website, falls konfiguriert. Andernfalls ist die JavaScript-Optimierung für die Website aktiviert.</translation>
 <translation id="1376765488559847650">Cloud Upload</translation>
 <translation id="1379689277107868399">Ist die Richtlinie auf „DoNotPrompt“ gesetzt oder nicht konfiguriert, fordert <ph name="PRODUCT_NAME" /> den Nutzer nicht automatisch auf, sich noch einmal im Browser zu authentifizieren.
 
@@ -854,11 +819,6 @@ Unter <ph name="MAC_OS_NAME" /> steht diese Richtlinie nur bei Instanzen zur Ver
 Die Richtlinie kann für bestimmte URL-Muster überschrieben werden. Hierfür stehen die Richtlinien „InsecureContentAllowedForUrls“ und „InsecureContentBlockedForUrls“ zur Verfügung.
 
 Ist diese Richtlinie nicht konfiguriert, dürfen Nutzer Ausnahmen hinzufügen, um blockierbare gemischte Inhalte zuzulassen und das automatische Upgrade auf HTTPS von optional blockierbaren gemischten Inhalten zu deaktivieren.</translation>
-<translation id="1573444493980402757">Mit dieser Richtlinie kannst du eine Liste mit URL-Mustern festlegen, die angeben, auf welchen Websites die Berechtigung für die Fensterpositionierung automatisch verweigert wird. Dadurch wird die Fähigkeit von Websites eingeschränkt, Informationen zum Bildschirm des Geräts abzurufen und zu nutzen, um Fenster zu öffnen und zu platzieren oder auf bestimmten Bildschirmen den Vollbildmodus anzufordern.
-
-      Genaue Informationen zu gültigen URL-Mustern für Websites findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Platzhalter wie „<ph name="WILDCARD_VALUE" />“ sind zulässig. Diese Richtlinie gleicht nur anhand der Quelle ab, daher werden alle Pfade des URL-Musters ignoriert.
-
-      Wenn die Richtlinie für eine Website nicht konfiguriert ist, gilt die Richtlinie aus <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_POLICY_NAME" /> für die Website, falls konfiguriert. Andernfalls werden die Standardeinstellungen des Browsers verwendet und Nutzer können auswählen, für welche Websites sie die Berechtigung gewähren möchten.</translation>
 <translation id="1574258262373444557"><ph name="AES_KL_NAME" /> nicht als Algorithmus für die Verschlüsselung des Nutzerdatenspeichers verwenden</translation>
 <translation id="1575015449587326319">Konfigurationsrichtlinie für den Chrome Enterprise-Connector "OnFileDownloaded"</translation>
 <translation id="1575714464739424740">Eine Richtlinie, mit der festgelegt wird, ob die <ph name="PRIVACY_SANDBOX_NAME" />-Einstellung „Fingerprinting-Schutz“ für deine Nutzer im Inkognitomodus aktiviert oder deaktiviert werden soll.
@@ -867,17 +827,6 @@ Ist die Richtlinie deaktiviert, wird die Einstellung „Fingerprinting-Schutz“
 Wenn diese Richtlinie aktiviert ist, wird die Einstellung „Fingerprinting-Schutz“ für deine Nutzer im Inkognitomodus aktiviert.
 Ist die Richtlinie nicht konfiguriert, können Nutzer die Einstellung „Fingerprinting-Schutz“ in ihren Einstellungen der Benutzeroberfläche für den Inkognitomodus aktivieren oder deaktivieren. Die Standardeinstellung ist „false“ oder „disabled“, wodurch die Einstellung „Fingerprinting-Schutz“ deaktiviert ist.</translation>
 <translation id="1576797364335927541">„<ph name="ALR_FEATURE_NAME" />“ deaktivieren</translation>
-<translation id="1577162851453388235">Die Direct Sockets API ermöglicht die Kommunikation mit beliebigen Endpunkten über TCP und UDP.
-Weitere Informationen findest du unter https://github.com/WICG/direct-sockets.
-
-Wenn diese Richtlinie konfiguriert ist, kannst du eine Liste mit URL-Mustern erstellen, durch die angegeben wird, welche Websites die Direct Sockets API verwenden dürfen.
-Gültige Muster sind auf isolierte Web-Apps beschränkt.
-
-Wenn die Richtlinie nicht konfiguriert ist, gilt „<ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_NAME" />“ für alle Websites, sofern konfiguriert.
-
-URL-Muster dürfen nicht im Konflikt mit „<ph name="DIRECT_SOCKETS_BLOCKED_FOR_URLS_POLICY_NAME" />“ stehen. Keine Richtlinie hat Vorrang, falls eine URL mit beiden übereinstimmt.
-
-Ausführliche Informationen zu gültigen URL-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> ist kein akzeptierter Wert für diese Richtlinie.</translation>
 <translation id="1578495851351913403">Wenn du diese Richtlinie konfigurierst, wird in den Displayeinstellungen unter jedem Display ein neuer Ein/Aus-Button angezeigt. Im normalen Spiegelmodus werden alle Displays auf ein Display gespiegelt, aber mit dem neuen Ein/Aus-Button können Nutzer ein Display von der Spiegelung ausschließen und als erweitertes Display anzeigen lassen.
 
 Wenn die Richtlinie aktiviert ist, wird für jedes Display die Option angezeigt, es vom Spiegelmodus auszuschließen. Der Nutzer kann dann auswählen, welches Display aktiviert werden soll.
@@ -1010,15 +959,6 @@ Ist die Richtlinie auf "False" gesetzt, können Nutzer keine eigenen Drucker hin
 <translation id="1639673466479276550">Bildschirmschoner auf dem Anmeldebildschirm aktivieren.</translation>
 <translation id="1640824698339859203">Floating-SSO aktivieren und die Webdienstauthentifizierungen des Nutzers auf ein neues Gerät verschieben</translation>
 <translation id="1643642938972654829">Zugriff auf die Richtlinientestseite erlauben</translation>
-<translation id="1644373745741524038">Aus Sicherheitsgründen erfordert die Web-API „<ph name="REQUEST_FULLSCREEN_API_NAME" />“ eine vorherige Nutzergeste („vorübergehende Aktivierung“); andernfalls tritt ein Fehler auf. Durch die persönlichen Einstellungen von Nutzern kann es bestimmten Ursprüngen erlaubt sein, diese API ohne vorherige Nutzergeste aufzurufen, wie unter <ph name="AUTOMATIC_FULLSCREEN_HELP_URL" /> beschrieben.
-
-Diese Richtlinie ersetzt die persönlichen Einstellungen der Nutzer und lässt zu, dass übereinstimmende Ursprünge die API ohne vorherige Nutzergeste aufrufen.
-
-Weitere Informationen zu gültigen URL-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
-Platzhalter wie <ph name="WILDCARD_VALUE" /> sind zulässig.
-
-Ursprünge, die sowohl mit blockierten als auch mit zulässigen Richtlinienmustern übereinstimmen, werden blockiert.
-Für Ursprünge, die nicht durch eine Richtlinie oder Nutzereinstellungen angegeben sind, ist zum Aufrufen dieser API eine vorherige Nutzergeste erforderlich.</translation>
 <translation id="1645793986494086629">Schema:</translation>
 <translation id="1647558381546345298">Wenn du diese Richtlinie festlegst, wird die Cache-Größe konfiguriert, die <ph name="PRODUCT_NAME" /> zum Speichern von Mediendateien im Cache auf dem Datenträger verwendet, und zwar unabhängig davon, ob der Nutzer den Parameter "--media-cache-size" angegeben hat oder nicht. Der in dieser Richtlinie angegebene Wert ist keine feste Grenze, sondern ein Richtwert für das Caching-System. Werte, die kleiner als einige Megabyte sind, werden aufgerundet.
 
@@ -1141,13 +1081,6 @@ Diese Richtlinie ist eine vorübergehende Problemumgehung für den Fall, dass di
       Informationen zum spezifischen Typ der Low-Level-Debug-Daten findest du in der Beschreibung der einzelnen Gerätetypen.</translation>
 <translation id="1744340218280697033">Eltern dürfen keine gemeinsam verwalteten Konten hinzufügen</translation>
 <translation id="1745981653910662565">Controlled Frame API auf diesen Websites erlauben</translation>
-<translation id="1751429117283165017">Wenn diese Richtlinie konfiguriert ist, kannst du eine Liste mit URL-Mustern erstellen, die angeben, welche Websites Nutzer nicht um Schreibzugriff auf Dateien oder Verzeichnisse im Dateisystem des Host-Betriebssystems bitten dürfen.
-
-      Wenn die Richtlinie nicht konfiguriert ist, gilt <ph name="DEFAULT_FILE_SYSTEM_WRITE_GUARD_SETTING_POLICY_NAME" /> für alle Websites, sofern konfiguriert. Falls nicht, werden die persönlichen Einstellungen des Nutzers verwendet.
-
-      URL-Muster dürfen nicht im Konflikt mit <ph name="FILE_SYSTEM_WRITE_ASK_FOR_URLS_POLICY_NAME" /> stehen. Keine Richtlinie hat Vorrang, falls eine URL mit beiden übereinstimmt.
-
-      Genaue Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> ist kein akzeptierter Wert für diese Richtlinie.</translation>
 <translation id="1755310913456007816">Vorhandene Einstellungen zur Onlinewiderrufsprüfung verwenden</translation>
 <translation id="1760951637494635692">Serial API auf diesen Seiten erlauben</translation>
 <translation id="1764415246330773476">Mit dieser Richtlinie wird die Sichtbarkeit des Verwaltungshinweises in der Fußzeile der Seite „Neuer Tab“ festgelegt. Standardmäßig werden in dieser Fußzeile Informationen angezeigt, wenn der Browser von einer Organisation verwaltet wird (angegeben durch ein Gebäudesymbol und „Verwaltet von [Domainname]“). Dies kann mithilfe der Richtlinien „<ph name="ENTERPRISE_CUSTOM_LABEL_FOR_BROWSER" />“ und „<ph name="ENTERPRISE_LOGO_URL_FOR_BROWSER" />“ angepasst werden.
@@ -1530,13 +1463,6 @@ Diese Richtlinie ist normalerweise zum Schutz vor Phishing deaktiviert.</transla
       Ist sie nicht konfiguriert, wird dieses Verhalten für verwaltete Nutzer standardmäßig deaktiviert und für andere Nutzer hingegen aktiviert.</translation>
 <translation id="2039801473506609891">HTTP/0.9-Unterstützung für nicht standardmäßige Ports deaktivieren</translation>
 <translation id="2040479044912658454">Rasterdruckmodus</translation>
-<translation id="2042513383871755994">Wenn diese Richtlinie konfiguriert ist, kannst du eine Liste mit URL-Mustern erstellen, die angeben, welche Websites Nutzer nicht um Lesezugriff auf Dateien oder Verzeichnisse im Dateisystem des Host-Betriebssystems über die File System API bitten dürfen.
-
-      Wenn die Richtlinie nicht konfiguriert ist, gilt <ph name="DEFAULT_FILE_SYSTEM_READ_GUARD_SETTING_POLICY_NAME" /> für alle Websites, sofern konfiguriert. Falls nicht, werden die persönlichen Einstellungen des Nutzers verwendet.
-
-      URL-Muster dürfen nicht im Konflikt mit <ph name="FILE_SYSTEM_READ_ASK_FOR_URLS_POLICY_NAME" /> stehen. Keine Richtlinie hat Vorrang, falls eine URL mit beiden übereinstimmt.
-
-      Genaue Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> ist kein akzeptierter Wert für diese Richtlinie.</translation>
 <translation id="2043749682619281558">Hiermit wird die Funktion "Mauscursor hervorheben" auf dem Anmeldebildschirm aktiviert</translation>
 <translation id="2043770014371753404">Deaktivierte Unternehmensdrucker</translation>
 <translation id="2054093043033461396">Der Bildschirmschoner für den Anmeldebildschirm des Geräts ist aktiviert.</translation>
@@ -1666,13 +1592,6 @@ Wird diese Richtlinie nicht konfiguriert, entspricht dies für normale Nutzer ei
       Wenn diese Richtlinie nicht konfiguriert ist, wird der Browser versuchen, Arbeitsspeicher zu leeren, wenn der verfügbare Arbeitsspeicher auf dem jeweiligen Gerät gering ist.</translation>
 <translation id="2161348910646846717">Nutzern erlauben, die Release-Version zu ändern</translation>
 <translation id="2162703823039992020">Kontextbezogene Integrationen von Google-Diensten in <ph name="PRODUCT_OS_NAME" /></translation>
-<translation id="2165567959657265531">Für Cookies, die in Domains festgelegt sind, die diesen Mustern entsprechen, wird das alte Verhalten von „<ph name="ATTRIBUTE_SAMESITE_NAME" />“ wiederhergestellt. Wird es wiederhergestellt, werden Cookies, für die kein „<ph name="ATTRIBUTE_SAMESITE_NAME" />“-Attribut angegeben ist, so behandelt, als würden sie „<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />“ enthalten. Außerdem wird nicht mehr vorausgesetzt, dass Cookies mit dem Attribut „<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />“ auch das Attribut „<ph name="ATTRIBUTE_SECURE_NAME" />“ enthalten müssen, und bei der Auswertung, ob zwei Websites identisch sind, werden die Schemata nicht verglichen. Eine vollständige Beschreibung steht unter https://www.chromium.org/administrators/policy-list-3/cookie-legacy-samesite-policies zur Verfügung.
-
-          Für Cookies, die in Domains festgelegt sind, die diesen Mustern nicht entsprechen, oder für alle Cookies, falls diese Richtlinie nicht konfiguriert ist, wird die persönliche Konfiguration des Nutzers als globaler Standardwert verwendet.
-
-          Genaue Informationen zu gültigen Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
-
-          Beachte, dass die Muster, die du hier einträgst, als Domains und nicht als URLs behandelt werden. Gib deshalb kein Schema und keinen Port an.</translation>
 <translation id="2166155400701622446">Es gibt eine in <ph name="PRODUCT_NAME" /> integrierte Liste beschränkter Ports. Verbindungen zu diesen Ports schlagen fehl. Mit dieser Einstellung wird das Umgehen dieser Liste erlaubt. Der Wert ist eine durch Kommas getrennte Liste von null oder mehr Ports, an denen ausgehende Verbindungen erlaubt werden.
 
       Ports sind beschränkt, um zu verhindern, dass <ph name="PRODUCT_NAME" /> als Vektor für die Ausnutzung verschiedener Netzwerk-Sicherheitslücken verwendet wird. Wird diese Richtlinie konfiguriert, kann dein Netzwerk dadurch dem Risiko von Angriffen ausgesetzt sein. Diese Richtlinie dient der vorübergehenden Problemumgehung bei Fehlern mit dem Code „ERR_UNSAFE_PORT“, die während der Migration eines Dienstes auftreten, wenn der Dienst an einem gesperrten Port läuft und an einen Standardport migriert wird (z. B. Port 80 oder 443).
@@ -1900,12 +1819,6 @@ Ist diese Richtlinie nicht konfiguriert, können Nutzer die im Launcher angepinn
 
       Ist sie auf "False" gesetzt oder nicht konfiguriert, wird keine Schaltfläche angezeigt.</translation>
 <translation id="2294382669900758280">Das Abspielen von Videos in Android-Apps wird nicht berücksichtigt, auch wenn diese Richtlinie auf <ph name="TRUE" /> gesetzt ist.</translation>
-<translation id="2296600623052658741">Wenn diese Richtlinie konfiguriert ist, kannst du eine Liste mit URL-Mustern erstellen, durch die angegeben wird, welchen Websites die Berechtigung zur Verwendung der Zwischenablage gewährt wird. Das umfasst nicht alle Aktionen in der Zwischenablage, die in Ursprüngen erfolgen, deren URL-Muster mit den angegebenen übereinstimmen. Nutzer können z. B. trotzdem Inhalte über Tastenkombinationen einfügen, weil sich die Berechtigung zur Verwendung der Zwischenablage nicht auf diesen Vorgang bezieht.
-
-
-      Wenn die Richtlinie nicht konfiguriert ist, gilt „<ph name="DEFAULT_CLIPBOARD_SETTING" />“ für alle Websites, sofern konfiguriert. Falls nicht, wird die persönliche Einstellung des Nutzers verwendet.
-
-      Ausführliche Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Platzhalter wie <ph name="WILDCARD_VALUE" /> sind zulässig.</translation>
 <translation id="2299220924812062390">Liste der aktivierten Plug-ins angeben</translation>
 <translation id="2299815818824242485">Keine weitergeleiteten Suchen mit erhöhter Sicherheit zulassen</translation>
 <translation id="2303795211377219696">Autofill für Kreditkartendaten zulassen</translation>
@@ -1952,11 +1865,6 @@ Unter <ph name="MAC_OS_NAME" /> steht diese Richtlinie nur bei Instanzen zur Ver
 
       Der Standardwert für diese Richtlinie wurde in <ph name="PRODUCT_NAME" /> 81 von "false" auf "true" geändert. Bei diesen Proxys sollte ein Verbindungsfehler mit dem Fehlercode ERR_TLS13_DOWNGRADE_DETECTED auftreten. Administratoren, die mehr Zeit zur Aktualisierung betroffener Proxys benötigen, können diese Richtlinie nutzen, um die Sicherheitsfunktion vorübergehend zu deaktivieren. Diese Richtlinie wurde in Version 86 entfernt.
       </translation>
-<translation id="2334744362022255283">Mit dieser Richtlinie kannst du eine Liste mit URL-Mustern festlegen, durch die angegeben wird, welche Websites blockierbare (aktive) gemischte Inhalte (HTTP-Inhalte auf HTTPS-Websites) anzeigen dürfen und auf denen HTTPS-Upgrades für optional blockierbare gemischte Inhalte deaktiviert werden.
-
-          Ist diese Richtlinie nicht konfiguriert, werden blockierbare gemischte Inhalte gesperrt und optional blockierbare gemischte Inhalte auf HTTPS umgestellt. Nutzer können Ausnahmen für bestimmte Websites festlegen.
-
-          Ausführliche Informationen zu gültigen URL-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Platzhalter wie <ph name="WILDCARD_VALUE" /> sind zulässig.</translation>
 <translation id="2336822410658374491">Zugriff auf das Kontextmenüs des Standardsuchanbieters deaktivieren</translation>
 <translation id="233726003666026610">Einstellungen für vorgeschlagene Gruppen</translation>
 <translation id="2337859888277013371">Verwendung des Back-Forward-Cache nicht zulassen</translation>
@@ -1998,11 +1906,6 @@ Ist die Richtlinie deaktiviert, können Nutzer von <ph name="PRODUCT_NAME" />-Va
 <translation id="2373014700224092497">Zulassen, dass Nutzer Kerberos-Konten hinzufügen</translation>
 <translation id="2376134474855349829">Bildschirmtastatur auf dem Anmeldebildschirm deaktivieren und dem Nutzer erlauben, sie vorübergehend zu aktivieren</translation>
 <translation id="2376151922689284770">Name, der auf der Benutzeroberfläche des Installationsprogramms angezeigt werden soll, z. B. „Happy VM“. Falls nicht konfiguriert, wird ein Fallback-Name angezeigt. Dies ist entweder der (nach Anzeigereihenfolge) erste Eintrag der BruschettaVMConfiguration-Richtlinie oder, falls dieser nicht gefunden wird, ein generischer Name.</translation>
-<translation id="2376278121995306084">Wenn diese Richtlinie konfiguriert ist, kannst du eine Liste mit URL-Mustern erstellen, durch die angegeben wird, welche Websites Benachrichtigungen anzeigen dürfen.
-
-      Wenn die Richtlinie nicht konfiguriert ist, gilt „<ph name="DEFAULT_NOTIFICATIONS_SETTING_POLICY_NAME" />“ für alle Websites, sofern konfiguriert. Falls nicht, wird die persönliche Einstellung des Nutzers verwendet.
-
-      Ausführliche Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Platzhalter wie <ph name="WILDCARD_VALUE" /> sind zulässig.</translation>
 <translation id="2377059627106831967">Fenstergruppierung für „Generative AI – Übersicht“ ohne die Verbesserung von KI-Modellen zulassen.</translation>
 <translation id="2377109572344699022">Verwendung der Direct Sockets API festlegen</translation>
 <translation id="2382672620906337383">Die JavaScript-Funktion „setTimeout()“ wird nach Überschreiten eines höheren Verschachtelungsgrenzwerts verzögert.</translation>
@@ -2066,11 +1969,6 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 <translation id="2415715982424988916">Entdecken (seit Version 91 unterstützt)</translation>
 <translation id="2420958105721932612">Gibt an, wie eine App installiert wird. AVAILABLE: Die App wird nicht automatisch installiert, Nutzer können sie jedoch installieren. Wenn die Richtlinie nicht festgelegt wird, ist diese Option standardmäßig ausgewählt. FORCE_INSTALLED: Die App wird automatisch installiert und Nutzer können sie nicht deinstallieren. BLOCKED: Die App ist gesperrt und kann nicht installiert werden. Falls die App unter einer früheren Richtlinie installiert wurde, wird sie deinstalliert.</translation>
 <translation id="2421400544595297401">Nicht zugehörige Nutzer dürfen keine Android-Apps verwenden</translation>
-<translation id="2421677964966613267">Diese Richtlinie wurde in M88 eingestellt. Flash wird von Chrome nicht mehr unterstützt. Wenn diese Richtlinie konfiguriert ist, kannst du eine Liste mit URL-Mustern erstellen, die die Websites angeben, die das <ph name="FLASH_PLUGIN_NAME" />-Plug-in nicht ausführen dürfen.
-
-      Wenn die Richtlinie nicht konfiguriert ist, gilt <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> für alle Websites, sofern konfiguriert. Falls nicht, wird die persönliche Einstellung des Nutzers verwendet.
-
-      Genaue Informationen zu gültigen URL-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Allerdings werden ab M85 Muster mit den Platzhaltern „*“ und „[*.]“ auf dem Host für diese Richtlinie nicht mehr unterstützt.</translation>
 <translation id="2421779938235645781">Hintergrundbeleuchtung der Tastatur auf aktuellen Hintergrund abgestimmt</translation>
 <translation id="2423255396068675416">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, können Nutzer <ph name="PRODUCT_CROSTINI_NAME" /> ausführen, solange <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" /> und <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> aktiviert sind. Ist die Richtlinie deaktiviert, ist auch <ph name="PRODUCT_CROSTINI_NAME" /> für Nutzer deaktiviert. Wenn sie deaktiviert wird, wird die Richtlinie beim Starten neuer <ph name="PRODUCT_CROSTINI_NAME" />-Container angewandt. Die bereits ausgeführten sind nicht betroffen.</translation>
 <translation id="2423654977291507457">Integrationen deaktivieren</translation>
@@ -2488,11 +2386,6 @@ Wenn die Richtlinie auf „2“ (Deaktiviert) festgelegt wird, ist die Einbindun
 <translation id="2716623398185506073">Wenn die Richtlinie aktiviert ist, werden über registrierte Geräte Hardwarestatistiken und Kennzeichnungen im Zusammenhang mit der Stromversorgung gemeldet.
 
       Ist sie deaktiviert oder nicht konfiguriert, melden registrierte Geräte keine Statistiken zur Stromversorgung.</translation>
-<translation id="2716930334159519261">Wenn diese Richtlinie konfiguriert ist, kannst du eine Liste mit URL-Mustern erstellen, durch die angegeben wird, welchen Websites die Berechtigung zur Verwendung der Zwischenablage nicht gewährt wird. Das umfasst nicht alle Aktionen in der Zwischenablage, die in Ursprüngen erfolgen, deren URL-Muster mit den angegebenen übereinstimmen. Nutzer können z. B. trotzdem Inhalte über Tastenkombinationen einfügen, weil sich die Berechtigung zur Verwendung der Zwischenablage nicht auf diesen Vorgang bezieht.
-
-      Wenn die Richtlinie nicht konfiguriert ist, gilt „<ph name="DEFAULT_CLIPBOARD_SETTING" />“ für alle Websites, sofern konfiguriert. Falls nicht, wird die persönliche Einstellung des Nutzers verwendet.
-
-      Ausführliche Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Platzhalter wie <ph name="WILDCARD_VALUE" /> sind zulässig.</translation>
 <translation id="2717628606602248727">Diese Richtlinie ist standardmäßig aktiviert. Sie steuert, wie angemeldete Geräte Informationen zum Arbeitsspeicher melden.
 
       Ist die Richtlinie deaktiviert, melden angemeldete Geräte keine Informationen zum Arbeitsspeicher.
@@ -2507,11 +2400,6 @@ Wenn die Richtlinie auf „2“ (Deaktiviert) festgelegt wird, ist die Einbindun
       Wenn diese Richtlinie aktiviert ist, wird die Erweiterung „Insights“ installiert und sie sendet Messwerte.
 
       Ist diese Richtlinie nicht konfiguriert oder deaktiviert, wird die Erweiterung „Insights“ nicht installiert und sie sendet keine Messwerte.</translation>
-<translation id="2724868837491558133">Legt eine Liste mit Website-URL-Mustern fest, die Websites angeben, denen automatisch die Berechtigung für lokale Schriftarten gewährt wird. Dadurch wird die Fähigkeit von Websites erweitert, Informationen zu lokalen Schriftarten zu sehen.
-
-      Genaue Informationen zu gültigen URL-Mustern für Websites findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Platzhalter wie „<ph name="WILDCARD_VALUE" />“ sind zulässig. Diese Richtlinie gleicht nur anhand des Ursprungs ab, daher werden alle Pfade des URL-Musters ignoriert.
-
-      Wenn die Richtlinie für eine Website nicht konfiguriert ist, gilt die Richtlinie aus <ph name="DEFAULT_LOCAL_FONTS_SETTING_POLICY_NAME" /> für die Website, falls konfiguriert. Andernfalls werden die Standardeinstellungen des Browsers verwendet und Nutzer können auswählen, für welche Websites sie die Berechtigung gewähren möchten.</translation>
 <translation id="272712253546233296">Lehrkräften erlauben, sich die Bildschirme von Schülern/Studenten per Fernzugriff anzusehen.</translation>
 <translation id="2727844239611930002"><ph name="PRODUCT_NAME" /> darf prüfen, ob die <ph name="PRIVACY_SANDBOX_NAME" />-Aufforderung angezeigt werden kann.</translation>
 <translation id="2730200383593984228">Nicht zugehörige Nutzer dürfen Android-Apps verwenden</translation>
@@ -3138,13 +3026,6 @@ Wenn du die Richtlinie verwenden musst, damit entsprechenden Seitenaufrufe von �
 <translation id="3165808775394012744">Diese Richtlinien sind hier verfügbar, damit sie einfach entfernt werden können.</translation>
 <translation id="3166210414652928099">Zulassen, dass Nutzer Android-Apps aus nicht vertrauenswürdigen Quellen verwenden</translation>
 <translation id="316778957754360075">Diese Einstellung wird ab <ph name="PRODUCT_NAME" />-Version 29 nicht mehr verwendet. Zur Einrichtung einer Sammlung mit Erweiterungen oder Apps, die von der Organisation gehostet wird, empfehlen wir, die Host-Website der CRX-Pakete in "ExtensionInstallSources" einzufügen und auf einer Webseite direkte Downloadlinks zu den Paketen bereitzustellen. Ein Launcher für diese Webseite kann mithilfe der Richtlinie "ExtensionInstallForcelist" erstellt werden.</translation>
-<translation id="3168303368727724798">Wenn diese Richtlinie konfiguriert ist, kannst du eine Liste mit URL-Mustern erstellen, die angeben, welche Websites Nutzer auffordern dürfen, ihnen Zugriff auf ein USB-Gerät zu gewähren.
-
-      Wenn die Richtlinie nicht konfiguriert ist, gilt <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" /> für alle Websites, sofern konfiguriert. Falls nicht, werden die persönlichen Einstellungen des Nutzers verwendet.
-
-      URL-Muster dürfen nicht im Konflikt mit <ph name="WEB_USB_ASK_FOR_URLS_POLICY_NAME" /> stehen. Keine Richtlinie hat Vorrang, falls eine URL mit beiden übereinstimmt.
-
-      Genaue Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> ist kein akzeptierter Wert für diese Richtlinie.</translation>
 <translation id="3168968618972302728">Richtlinien in Verbindung mit der Kerberos-Authentifizierung.</translation>
 <translation id="3169872426103732947">Standard-URL anzeigen und Nutzern erlauben, zur vollständigen URL zu wechseln</translation>
 <translation id="3171369832001535378">Vorlage für Hostname im Gerätenetzwerk</translation>
@@ -3152,13 +3033,6 @@ Wenn du die Richtlinie verwenden musst, damit entsprechenden Seitenaufrufe von �
 <translation id="3177537290334203187">Standardverhalten anwenden, wenn festgelegt wird, ob Websites Anfragen an Netzwerkendpunkte senden können.</translation>
 <translation id="3177802893484440532">OCSP/CRL-Online-Prüfungen für lokale Vertrauensanker als erforderlich festlegen</translation>
 <translation id="3179533009079100620">Profilauswahl anzeigen</translation>
-<translation id="3180633260411794645">Wenn diese Richtlinie konfiguriert ist, kannst du eine Liste mit URL-Mustern erstellen, durch die angegeben wird, welche Websites kein JavaScript ausführen dürfen.
-
-      Wenn die Richtlinie nicht konfiguriert ist, gilt „<ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME" />“ für alle Websites, sofern konfiguriert. Falls nicht, wird die persönliche Einstellung des Nutzers verwendet.
-
-      Ausführliche Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Platzhalter wie <ph name="WILDCARD_VALUE" /> sind zulässig.
-
-      Beachte, dass diese Richtlinie JavaScript blockiert, wenn der Ursprung des obersten Dokuments (normalerweise die URL der Seite, die auch in der Adressleiste angezeigt wird) mit einem der Muster übereinstimmt. Daher ist diese Richtlinie nicht geeignet, um Web‑Lieferkettenangriffe zu verhindern. Wenn du beispielsweise das Muster „https://[*.]foo.de/“ angibst, wird nicht verhindert, dass eine Seite, die unter https://beispiel.de gehostet wird, ein Script ausführt, das von https://www.foo.de/beispiel.js geladen wird. Außerdem verhindert das Muster „https://beispiel.de/“ nicht, dass ein Dokument von https://beispiel.de Scripts ausführt, wenn es nicht das übergeordnete Dokument ist, sondern als Subframe in eine Seite eingebettet ist, die auf einem anderen Ursprung gehostet wird, z. B. https://www.bar.de.</translation>
 <translation id="3181114468897395940">In den Einstellungen von „Bild-auf“ und „Bild-ab“ wird die Tastenkombination verwendet, die den Alt-Modifikator enthält</translation>
 <translation id="3182503302060513467">Die Seite „Neuer Tab“ zeigt die Information im mittleren Slot an, sofern verfügbar</translation>
 <translation id="3184161739683646075">Steuert den DoH-Modus (DNS over HTTPS)</translation>
@@ -3313,18 +3187,8 @@ Wenn die Richtlinie <ph name="NTPCARDSVISIBLE" /> deaktiviert ist, wird die Outl
 <translation id="3265952988644972779">Produktinterne Umfragen deaktivieren</translation>
 <translation id="3268090369868832496">Nutzer bei der Anmeldung auf einem neuen Gerät nur dann von der vorherigen Sitzung abmelden, wenn Fenster oder Cookies synchronisiert werden</translation>
 <translation id="3269198556438453775">Verbindungen zu diesem Computer per Remote-Unterstützung von Unternehmensadministratoren verhindern</translation>
-<translation id="3271741247922321334">Mit dieser Richtlinie kannst du eine Liste mit URL-Mustern erstellen, durch die angegeben wird, auf welchen Websites blockierbare (aktive) gemischte Inhalte (HTTP-Inhalte auf HTTPS-Websites) nicht angezeigt werden dürfen und auf welchen Websites optional blockierbare (passive) gemischte Inhalte auf HTTPS geändert werden.
-
-          Wenn du diese Richtlinie nicht konfigurierst, werden blockierbare gemischte Inhalte gesperrt und optional blockierbare gemischte Inhalte auf HTTPS geändert. Nutzer können jedoch Ausnahmen für bestimmte Websites festlegen.
-
-          Ausführliche Informationen zu gültigen URL-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Platzhalter wie <ph name="WILDCARD_VALUE" /> sind zulässig.</translation>
 <translation id="3273221114520206906">JavaScript-Standardeinstellung</translation>
 <translation id="3278042410658310805">Gesprochenes Feedback auf dem Anmeldebildschirm deaktivieren und dem Nutzer erlauben, es vorübergehend zu aktivieren</translation>
-<translation id="3279532732818711062">Wenn diese Richtlinie konfiguriert ist, dürfen die aufgeführten Ursprünge Geräteattribute wie die Seriennummer und den Hostnamen über die Device Attributes API abrufen.
-
-Die Ursprünge müssen Web-Apps entsprechen, die isolierte Web-Apps sind, deren Installation über die Richtlinie „<ph name="ISOLATED_WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />“ (ab Version 125) erzwungen wurde, die als Kiosk-App eingerichtet wurden oder die Web-Apps sind, deren Installation über die Richtlinie „<ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />“ (vor Version 140) erzwungen wurde. Technische Daten und Informationen zur Device Attributes API findest du unter https://wicg.github.io/WebApiDevice/device_attributes.
-
-Ausführliche Informationen zu gültigen <ph name="URL_LABEL" />-Mustern (ab Version 127) findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> ist kein akzeptierter Wert für diese Richtlinie.</translation>
 <translation id="328347261792478720">Der Browser zeigt standardmäßig für den Nutzer personalisierte Empfehlungen zu Medien an. Wenn diese Richtlinie deaktiviert ist, sind diese Empfehlungen für den Nutzer nicht sichtbar. Wenn sie aktiviert oder nicht konfiguriert ist, werden dem Nutzer die Empfehlungen zu Medien angezeigt.</translation>
 <translation id="3284094172359247914">Verwendung der WebUSB API steuern</translation>
 <translation id="3285231260918855067">Konturdeckkraft des Texts auf dem Wasserzeichen von 0 (durchsichtig) bis 100 (undurchsichtig).</translation>
@@ -3548,17 +3412,6 @@ Wenn die Richtlinie „<ph name="NTP_SHORTCUTS_ALLOW_USER_DELETE_NAME" />“ auf
       Hinweis: Wenn die Richtlinie <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" /> deaktiviert, <ph name="HISTORY_CLUSTERS_VISIBLE_POLICY_NAME" /> jedoch aktiviert oder nicht konfiguriert ist, ist die in Gruppen eingeteilte Chrome-Verlaufsseite trotzdem unter chrome://history/grouped verfügbar, auch wenn sie möglicherweise weniger relevant für den Nutzer ist.
 </translation>
 <translation id="3469713571374938745">„Designs mit KI erstellen“ zulassen, ohne KI‑Modelle zu verbessern.</translation>
-<translation id="3471245568493482863">Die Direct Sockets API ermöglicht die Kommunikation mit beliebigen Endpunkten über TCP und UDP.
-Weitere Informationen findest du unter https://github.com/WICG/direct-sockets.
-
-Wenn diese Richtlinie konfiguriert ist, kannst du eine Liste mit URL-Mustern erstellen, durch die angegeben wird, welche Websites nicht über die Direct Sockets API kommunizieren dürfen.
-Gültige Muster sind auf isolierte Web-Apps beschränkt.
-
-Wenn die Richtlinie nicht konfiguriert ist, gilt „<ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_NAME" />“ für alle Websites, sofern konfiguriert.
-
-URL-Muster dürfen nicht im Konflikt mit „<ph name="DIRECT_SOCKETS_ALLOWED_FOR_URLS_POLICY_NAME" />“ stehen. Keine Richtlinie hat Vorrang, falls eine URL mit beiden übereinstimmt.
-
-Ausführliche Informationen zu gültigen URL-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> ist kein akzeptierter Wert für diese Richtlinie.</translation>
 <translation id="3478024346823118645">Nutzerdaten bei Abmeldung löschen</translation>
 <translation id="3478406829037689272">Detailliertere Scans von heruntergeladenen Dateien im Rahmen von Safe Browsing aktivieren</translation>
 <translation id="3480403794500220210">Lehrkräften erlauben, die Teilnehmerliste von Google Classroom zu verwenden.</translation>
@@ -3858,15 +3711,6 @@ Verbindungen, die diese Prüfung nicht bestehen, schlagen mit dem Fehler ERR_SSL
       Ist die Richtlinie deaktiviert, darf die Translator API nicht verwendet werden.</translation>
 <translation id="366494444808132420">Gemini-Integrationen zulassen.</translation>
 <translation id="3665437376055221832">Nutzer nur dann auffordern, wenn kein Zertifikat zur automatischen Auswahl passt.</translation>
-<translation id="3667089394451236198">Liste der URL-Muster. Anfragen, die von Websites initiiert werden, welche durch übereinstimmende Ursprünge bereitgestellt werden, unterliegen keinen <ph name="LOCAL_NETWORK_ACCESS" />-Prüfungen.
-
-Wenn ein Ursprung sowohl von dieser Richtlinie als auch von „LocalNetworkAccessBlockedForUrls“ abgedeckt wird, hat „LocalNetworkAccessBlockedForUrls“ Vorrang.
-
-Bei Ursprüngen, die durch die hier angegebenen Muster nicht abgedeckt sind, kommt die persönliche Konfiguration des Nutzers zum Einsatz.
-
-Weitere Informationen zu gültigen URL-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
-
-Informationen zu Einschränkungen für <ph name="LOCAL_NETWORK_ACCESS" /> findest du unter https://wicg.github.io/local-network-access/.</translation>
 <translation id="3671773704245936868">„Objekt mit Tastaturfokus hervorheben“ deaktivieren</translation>
 <translation id="3674010627788940405">CORS-Anfrageheader ohne Platzhalter nicht unterstützen.</translation>
 <translation id="3675303748198647471">„setTimeout(…, 0)“ wird häufig verwendet, um lange JavaScript-Aufgaben aufzuteilen.
@@ -4421,17 +4265,6 @@ Weitere Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du un
       Wenn "<ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />" nicht konfiguriert ist, lässt sich der Suchanbieter nicht durch einen Suchbegriff aktivieren.</translation>
 <translation id="4090088362777472639">SHA-256-Hash des Ansible-Playbooks.</translation>
 <translation id="4091040199847925434">Berichte zu Systeminformationen und Seiteninhalten, mit denen Safe Browsing verbessert wird, deaktivieren</translation>
-<translation id="4092882308219320847">Liste der URL-Muster. Anfragen, die von Websites initiiert werden, welche durch übereinstimmende Ursprünge bereitgestellt werden, können keine <ph name="LOCAL_NETWORK_ACCESS" />-Anfragen senden.
-
-Wenn ein Ursprung sowohl von dieser Richtlinie als auch von „LocalNetworkAccessAllowedForUrls“ abgedeckt wird, hat diese Richtlinie Vorrang.
-
-Je nach Stadium des Roll-outs von <ph name="LOCAL_NETWORK_ACCESS" /> muss möglicherweise auch „LocalNetworkAccessRestrictionsEnabled“ aktiviert sein, damit diese Richtlinie <ph name="LOCAL_NETWORK_ACCESS" />-Anfragen blockieren kann.
-
-Bei Ursprüngen, die durch die hier angegebenen Muster nicht abgedeckt sind, kommt die persönliche Konfiguration des Nutzers zum Einsatz.
-
-Weitere Informationen zu gültigen URL-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
-
-Informationen zu Einschränkungen für <ph name="LOCAL_NETWORK_ACCESS" /> findest du unter https://wicg.github.io/local-network-access/.</translation>
 <translation id="4093058072421210667">„Inline Image“ nicht zulassen.</translation>
 <translation id="4098920079809952737">Drucken mit und ohne Hintergrundgrafiken zulassen</translation>
 <translation id="410061592404122032">Jedes Mal nachfragen, wenn eine Website um die Berechtigung für die Fensterverwaltung bittet</translation>
@@ -4483,17 +4316,6 @@ Wird die Richtlinie auf „False“ gesetzt, verwendet <ph name="PRODUCT_NAME" /
 <translation id="4146319954420095470">(Warnung: Diese Abhängigkeit wird bald aufgehoben. Verwende stattdessen bitte „<ph name="GLS_POLICY_NAME" />“. Wenn diese Richtlinie auf „<ph name="BLOCK_GEOLOCATION_SETTING" />“ gesetzt ist, haben <ph name="PRODUCT_OS_NAME" />-Systemdienste und Android-Apps keinen Zugriff auf Standortinformationen. Wenn du diese Richtlinie auf einen anderen Wert setzt oder sie nicht konfigurierst, wird der Nutzer um seine Zustimmung gebeten, wenn eine Android-App auf Standortinformationen zugreifen möchte.</translation>
 <translation id="4147818922357566987">Nur Variationen für wichtige Fehlerbehebungen aktivieren</translation>
 <translation id="4150201353443180367">Display</translation>
-<translation id="4150646872548223241">Die Controlled Frame API, die für bestimmte isolierte Kontexte wie isolierte Web‑Apps (IWAs) verfügbar ist, ermöglicht es einer App, beliebige Inhalte einzubetten und zu manipulieren.
-Weitere Informationen findest du unter https://github.com/WICG/controlled-frame.
-
-Wenn diese Richtlinie konfiguriert ist, kannst du eine Liste mit URL‑Mustern erstellen, durch die angegeben wird, welche Websites die Controlled Frame API verwenden dürfen.
-Gültige Muster sind auf isolierte Web‑Apps beschränkt.
-
-Wenn die Richtlinie nicht konfiguriert ist, gilt „<ph name="DEFAULT_CONTROLLED_FRAME_SETTING_POLICY_NAME" />“ für alle Websites, sofern konfiguriert.
-
-URL‑Muster dürfen nicht im Konflikt mit „<ph name="CONTROLLED_FRAME_BLOCKED_FOR_URLS_POLICY_NAME" />“ stehen. Keine der Richtlinien hat Vorrang, falls eine URL mit beiden übereinstimmt.
-
-Ausführliche Informationen zu gültigen URL‑Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> ist kein akzeptierter Wert für diese Richtlinie.</translation>
 <translation id="4154221011709068799">Externe Speichergeräte nicht zulassen</translation>
 <translation id="415445772247959702">Web Store (wird seit Version 89 unterstützt)</translation>
 <translation id="4157003184375321727">Betriebssystem- und Firmware-Version melden</translation>
@@ -4791,11 +4613,6 @@ Hinweis: Diese Richtlinie ersetzt die Richtlinie „<ph name="ARC_GLS_POLICY_NAM
 <translation id="4363057787588706121">Zusammenführen von Listenrichtlinien aus unterschiedlichen Quellen erlauben</translation>
 <translation id="4363101430102811068">Datenleck-Erkennung für eingegebene Anmeldedaten aktivieren</translation>
 <translation id="436581050240847513">Gerätenetzwerk-Schnittstellen melden</translation>
-<translation id="4368848648036709662">Diese Richtlinie wurde in M88 eingestellt. Flash wird von Chrome nicht mehr unterstützt. Wenn diese Richtlinie konfiguriert ist, kannst du eine Liste mit URL-Mustern erstellen, die die Websites angeben, die das <ph name="FLASH_PLUGIN_NAME" />-Plug-in ausführen dürfen.
-
-      Wenn die Richtlinie nicht konfiguriert ist, gilt <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> für alle Websites, sofern konfiguriert. Falls nicht, wird die persönliche Einstellung des Nutzers verwendet.
-
-      Genaue Informationen zu gültigen URL-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Allerdings werden ab M85 Muster mit den Platzhaltern „*“ und „[*.]“ auf dem Host für diese Richtlinie nicht mehr unterstützt.</translation>
 <translation id="4369307906396795087">Skripts für Worker (Web Worker, Service Worker usw.) verwenden die laxe MIME-Typprüfung. Das heißt, auch Worker-Skripts mit älteren MIME-Typen wie <ph name="MIMETYPE_TEXT_ASCII" /> funktionieren.</translation>
 <translation id="4370908590951861085">Berichterstellung zu Endpunkten</translation>
 <translation id="4370937370030117032">Senden von Nutzer- und Dateinamen an native Drucker deaktivieren</translation>
@@ -4951,13 +4768,6 @@ Wenn die Richtlinie auf „3“ gesetzt ist, wird dem Nutzer eine Benachrichtigu
 Wenn sie nicht konfiguriert ist, können Ursprünge der isolierten Web-App den Zugriff auf lokale Drucker anfordern − diese Einstellung kann aber vom Nutzer geändert werden.</translation>
 <translation id="447692108909279121">WebRTC-IP-Handling</translation>
 <translation id="4478248026668918517">Blockiert die Erkennung des Anwendungsbereichs von Richtlinien.</translation>
-<translation id="4479671363221255277">Wenn diese Richtlinie konfiguriert ist, kannst du eine Liste mit URL-Mustern erstellen, die angeben, welche Websites Nutzer um Lesezugriff auf Dateien oder Verzeichnisse im Dateisystem des Host-Betriebssystems über die File System API bitten dürfen.
-
-      Wenn die Richtlinie nicht konfiguriert ist, gilt <ph name="DEFAULT_FILE_SYSTEM_READ_GUARD_SETTING_POLICY_NAME" /> für alle Websites, sofern konfiguriert. Falls nicht, werden die persönlichen Einstellungen des Nutzers verwendet.
-
-      URL-Muster dürfen nicht im Konflikt mit <ph name="FILE_SYSTEM_READ_BLOCKED_FOR_URLS_POLICY_NAME" /> stehen. Keine Richtlinie hat Vorrang, falls eine URL mit beiden übereinstimmt.
-
-      Genaue Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> ist kein akzeptierter Wert für diese Richtlinie.</translation>
 <translation id="4480694116501920047">SafeSearch erzwingen</translation>
 <translation id="4481202456143946404">Gültige Version der Nutzungsbedingungen, basierend auf den mit Google3 CL eingeführten Bedingungen.</translation>
 <translation id="4481952213163895432">Google Assistant-Hotword deaktivieren</translation>
@@ -5181,15 +4991,6 @@ Altes Verhalten: Wenn in „beforeunload“ ein Aufruf von „event.preventDefau
 <translation id="4624417808625504735">Verwendung von JIT durch JavaScript auf diesen Websites blockieren</translation>
 <translation id="46321462262887935">Tasten der obersten Reihe als Funktionstasten nutzen (Nutzer kann dies ändern)</translation>
 <translation id="4632343302005518762">Verarbeitung der gelisteten Inhaltstypen durch <ph name="PRODUCT_FRAME_NAME" /> zulassen</translation>
-<translation id="4633746046264469461">Mit dieser Richtlinie kannst du eine Liste mit URL-Mustern für Websites erstellen, durch die angegeben wird, welche Websites JavaScript mit aktiviertem JIT-Compiler (Just In Time) ausführen dürfen.
-
-          Ausführliche Informationen zu gültigen Website-URL-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Platzhalter wie <ph name="WILDCARD_VALUE" /> sind zulässig.
-
-          JavaScript JIT-Richtlinienausnahmen werden nur für die jeweilige Website (eTLD+1) erzwungen. Eine nur für subdomain.beispiel.de konfigurierte Richtlinie wird nicht korrekt auf beispiel.de oder subdomain.beispiel.de angewendet, weil beide in beispiel.de (eTLD+1) aufgelöst werden, wofür es keine Richtlinie gibt. In diesem Fall muss die Richtlinie für beispiel.de konfiguriert sein, damit sie sowohl für beispiel.de als auch subdomain.beispiel.de korrekt angewendet wird.
-
-          Diese Richtlinie wird auf Basis einzelner Frames angewendet und nicht nur auf Basis der Ursprungs-URL auf oberster Ebene. Wenn z. B. beispiel-eins.de in der Richtlinie „<ph name="JAVA_SCRIPT_JIT_ALLOWED_FOR_SITES_POLICY_NAME" />“ aufgelistet ist, aber beispiel-eins.de einen Frame mit beispiel-zwei.de lädt, ist für beispiel-eins.de JavaScript JIT aktiviert. Für beispiel-zwei.de wird jedoch die Richtlinie aus „<ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" />“ verwendet, falls konfiguriert, oder JavaScript JIT ist standardmäßig aktiviert.
-
-          Wenn die Richtlinie für eine Website nicht konfiguriert ist, gilt die Richtlinie aus „<ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" />“ für die Website, falls konfiguriert. Andernfalls ist JavaScript JIT für die Website aktiviert.</translation>
 <translation id="4636354638176939375">Erstellung von betreuten Nutzern deaktivieren</translation>
 <translation id="46383668315040154">Gibt die Release-Version an, an die dieses Gerät gebunden werden soll.
 
@@ -5296,14 +5097,6 @@ Nach der Ersteinrichtung können Nutzer die Standortdienste von Google flexibel 
 <translation id="4674542060943819878">Schließen von Warnungen zu gehackten Passwörtern aktivieren</translation>
 <translation id="4674871290487541952">Unsichere Algorithmen in Integritätsprüfungen bei Erweiterungsupdates und -installationen erlauben</translation>
 <translation id="4680961954980851756">Autofill zulassen</translation>
-<translation id="4681603713834987752">Wenn diese Richtlinie konfiguriert ist, kannst du eine Liste mit URL-Mustern erstellen, die die Websites angeben, denen automatisch Zugriff auf lokale Drucker über die WebPrinting API gewährt wird.
-Gültige Muster sind auf isolierte Web-Apps beschränkt.
-
-Wenn die Richtlinie nicht konfiguriert ist, gilt „<ph name="DEFAULT_WEB_PRINTING_SETTING_POLICY_NAME" />“ für alle Websites, sofern konfiguriert. Falls dies nicht der Fall ist, werden die persönlichen Einstellungen des Nutzers verwendet.
-
-URL-Muster dürfen nicht im Konflikt mit „<ph name="WEB_PRINTING_BLOCKED_FOR_URLS_POLICY_NAME" />“ stehen. Keine Richtlinie hat Vorrang, falls eine URL mit beiden übereinstimmt.
-
-Ausführliche Informationen zu gültigen URL-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. „<ph name="WILDCARD_VALUE" />“ ist kein akzeptierter Wert für diese Richtlinie.</translation>
 <translation id="46845898956959634">„Formuliere für mich“ zulassen und KI‑Modelle verbessern.</translation>
 <translation id="4685721728282448265">CECPQ2-Post-Quanten-Algorithmus für Schlüsselvereinbarungen in TLS aktiviert</translation>
 <translation id="468822697351680932">SiteList-Richtlinie in Internet Explorer als Quelle für Regeln verwenden</translation>
@@ -5536,13 +5329,6 @@ Wenn sie auf „true“ festgelegt ist, ist die Funktion „<ph name="DBSC_FEATU
 
 Ist die Richtlinie nicht konfiguriert, folgt <ph name="PRODUCT_NAME" /> dem standardmäßigen Einführungsprozess für die Funktion „<ph name="DBSC_FEATURE_NAME" />“. In diesem Fall wird sie nach und nach für immer mehr Nutzer eingeführt.</translation>
 <translation id="488996881569316769">Netzwerktelemetrie</translation>
-<translation id="4890453377345554695">Wenn diese Richtlinie konfiguriert ist, kannst du eine Liste mit URL-Mustern erstellen, die angeben, welche Websites Nutzer um Schreibzugriff auf Dateien oder Verzeichnisse im Dateisystem des Host-Betriebssystems bitten dürfen.
-
-      Wenn die Richtlinie nicht konfiguriert ist, gilt <ph name="DEFAULT_FILE_SYSTEM_WRITE_GUARD_SETTING_POLICY_NAME" /> für alle Websites, sofern konfiguriert. Falls nicht, werden die persönlichen Einstellungen des Nutzers verwendet.
-
-      URL-Muster dürfen nicht im Konflikt mit <ph name="FILE_SYSTEM_WRITE_BLOCKED_FOR_URLS_POLICY_NAME" /> stehen. Keine Richtlinie hat Vorrang, falls eine URL mit beiden übereinstimmt.
-
-      Genaue Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> ist kein akzeptierter Wert für diese Richtlinie.</translation>
 <translation id="4891286600098289814">Optimiertes Laden des Akkus</translation>
 <translation id="4892647988357350237">Standardmäßig werden die Nutzungsbedingungen bei der ersten Ausführung von CCT angezeigt. Wenn diese Richtlinie auf <ph name="SKIP_TOS_DIALOG" /> gesetzt ist, wird das Dialogfeld mit den Nutzungsbedingungen weder bei der ersten noch bei weiteren Ausführungen angezeigt. Wenn die Richtlinie auf <ph name="STANDARD_TOS_DIALOG" /> gesetzt oder nicht konfiguriert ist, wird das Dialogfeld mit den Nutzungsbedingungen bei der ersten Ausführung angezeigt. Beachte Folgendes:
 
@@ -5722,16 +5508,6 @@ Diese Einstellung steuert die Darstellung von Werbeinhalten, einschließlich Beg
           Wenn diese Richtlinie konfiguriert ist, wird rechts im Feld „Kerberos-Nutzername“ die vorausgefüllte Domain angezeigt. Gibt der Nutzer seinen Nutzernamen ein, wird er mit der vorausgefüllten Domain verkettet. Falls die Eingabe des Nutzers „@“ enthält, wird die vorausgefüllte Domain nicht angezeigt und hat keine Auswirkungen auf die Eingabe.
 
           Ist diese Richtlinie nicht konfiguriert, werden keine zusätzlichen Informationen angezeigt und das Ticket lässt sich wie gewohnt erstellen.</translation>
-<translation id="4958911425563967203">Mit dieser Richtlinie kannst du eine Liste mit URL‑Mustern festlegen, die angeben, für welche Websites erweiterte JavaScript-Optimierungen aktiviert werden.
-
-Ausführliche Informationen zu gültigen Website-URL‑Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
-Platzhalter wie <ph name="WILDCARD_VALUE" /> sind zulässig.
-
-Richtlinienausnahmen für JavaScript-Optimierungen werden nur für die jeweilige Website (eTLD+1) erzwungen. Eine nur für subdomain.beispiel.de konfigurierte Richtlinie wird nicht korrekt auf beispiel.de oder subdomain.beispiel.de angewendet, weil beide in beispiel.de (eTLD+1) aufgelöst werden, wofür es keine Richtlinie gibt. In diesem Fall muss die Richtlinie für beispiel.de konfiguriert sein, damit sie sowohl für beispiel.de als auch subdomain.beispiel.de korrekt angewendet wird.
-
-Diese Richtlinie wird auf Basis einzelner Frames angewendet und nicht nur auf Basis der Ursprungs‑URL auf oberster Ebene. Wenn z. B. beispiel‑eins.de in der Richtlinie „<ph name="JAVA_SCRIPT_OPTIMIZER_ALLOWED_FOR_SITES_POLICY_NAME" />“ aufgelistet ist, aber beispiel‑eins.de einen Frame mit beispiel‑zwei.de lädt, sind für beispiel‑eins.de JavaScript-Optimierungen aktiviert. Für beispiel‑zwei.de wird jedoch die Richtlinie aus „<ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" />“ verwendet, falls konfiguriert, oder die JavaScript-Optimierung ist standardmäßig aktiviert. Einträge in der Sperrliste haben eine höhere Priorität als Einträge in der Zulassungsliste, die wiederum eine höhere Priorität als der konfigurierte Standardwert haben.
-
-Wenn diese Richtlinie für eine Website nicht konfiguriert ist, gilt die Richtlinie aus „<ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" />“ für die Website, falls konfiguriert. Andernfalls ist die JavaScript-Optimierung für die Website aktiviert.</translation>
 <translation id="4960597185231686653">Boolescher Parameter, der angibt, ob für die Bildschirmtastatur die Spracheingabe aktiviert ist.</translation>
 <translation id="49677896192199414">Funktion „Automatische Untertitel“ aktivieren.
 
@@ -6026,13 +5802,6 @@ Bei Konflikten mit einem zuvor vom Nutzer erstellten Kürzel hat die Nutzereinst
 Unter <ph name="MS_WIN_NAME" /> steht diese Richtlinie nur bei Instanzen zur Verfügung, die Teil einer <ph name="MS_AD_NAME" />-Domain oder von <ph name="MS_AAD_NAME" /> sind oder die in <ph name="CHROME_ENTERPRISE_CORE_NAME" /> angemeldet sind.
 
 Unter <ph name="MAC_OS_NAME" /> steht diese Richtlinie nur bei Instanzen zur Verfügung, die über die Mobilgeräteverwaltung verwaltet werden, die über MCX Teil einer Domain sind oder die in <ph name="CHROME_ENTERPRISE_CORE_NAME" /> angemeldet sind.</translation>
-<translation id="5172841243186654432">Wenn die Richtlinie <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> nicht so konfiguriert ist, dass URLs aus vorherigen Sitzungen dauerhaft wiederhergestellt werden, lässt sich durch die Konfiguration von <ph name="COOKIES_SESSION_ONLY_FOR_URLS_POLICY_NAME" /> eine Liste von URL-Mustern erstellen, die angeben, welche Websites Cookies für eine Sitzung setzen dürfen oder nicht.
-
-      Wenn die Richtlinie nicht konfiguriert ist, wird für alle Websites <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> verwendet, sofern diese Einstellung konfiguriert ist. Falls nicht, wird die persönliche Einstellung des Nutzers verwendet. Bei URLs, die nicht zu den angegebenen Mustern gehören, werden ebenfalls die Standardeinstellungen verwendet.
-
-      Weder die Richtlinie mit Standardwerten noch eine der beiden folgenden Richtlinien, d. h. <ph name="COOKIES_BLOCKED_FOR_URLS_POLICY_NAME" /> oder <ph name="COOKIES_ALLOWED_FOR_URLS_POLICY_NAME" />,  hat automatisch Vorrang. Es darf nur hinsichtlich der URL-Muster keine Konflikte zwischen diesen drei Richtlinien geben.
-
-      Genaue Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> ist kein akzeptierter Wert für diese Richtlinie.</translation>
 <translation id="5174547204575752627">Mit dieser Richtlinie wird die aktuelle Refaktorierung für VideoDecoder-APIs im PPAPI-Plug‑in gesteuert.
 
 Die Migration wirkt sich nur auf Details der internen Implementierung aus und sollte das Verhalten nicht ändern. Diese Richtlinie kann jedoch verwendet werden, wenn PPAPI-Anwendungen nicht wie erwartet funktionieren.
@@ -6388,15 +6157,6 @@ Ist er auf „false“ gesetzt, können sie nicht auf die Funktion zugreifen.</t
 <translation id="5389708774452952523">Ausführen des Audioprozesses unter Windows mit einer Priorität ermöglichen, die über der normalen liegt</translation>
 <translation id="5390083518957894426">Aktiviert für SAML-Nutzer die erneute Online-Authentifizierung auf dem Sperrbildschirm.</translation>
 <translation id="5391388690191341203">Lokales Gerätekonto für die Anmeldung</translation>
-<translation id="5391867362692016532">Wenn diese Richtlinie konfiguriert ist, kannst du eine Liste mit URL-Mustern erstellen, die angeben, welche Webanwendungen Nutzer nicht um Zugriff auf Dateitypen bitten dürfen.
-
-      Wenn die Richtlinie nicht konfiguriert ist, gilt <ph name="DEFAULT_FILE_HANDLING_GUARD_SETTING_POLICY_NAME" /> für alle Webanwendungen, sofern konfiguriert. Falls nicht, wird die persönliche Einstellung des Nutzers verwendet.
-
-      Bei URL-Mustern, die weder <ph name="FILE_HANDLING_ALLOWED_FOR_URLS_POLICY_NAME" /> noch <ph name="FILE_HANDLING_BLOCKED_FOR_URLS_POLICY_NAME" /> entsprechen, werden <ph name="DEFAULT_FILE_HANDLING_GUARD_SETTING_POLICY_NAME" /> oder die persönlichen Einstellungen des Nutzers verwendet – in dieser Reihenfolge.
-
-      URL-Muster dürfen nicht im Konflikt mit <ph name="FILE_HANDLING_ALLOWED_FOR_URLS_POLICY_NAME" /> stehen. Keine Richtlinie hat Vorrang, falls eine URL mit beiden übereinstimmt.
-
-      Genaue Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> ist kein akzeptierter Wert für diese Richtlinie.</translation>
 <translation id="5393009997533871906">Nur Drucker in der Zulassungsliste werden Nutzern angezeigt</translation>
 <translation id="5395778184390568113">Tastenkombination zum Auslösen der Tasten „Position 1“ und „Ende“ im Sechserblock verwalten</translation>
 <translation id="5396322417222266779">Nutzern erlauben, Tastenkombinationen auf Systemebene anzupassen</translation>
@@ -6621,11 +6381,6 @@ Wenn die Richtlinie <ph name="NTPCARDSVISIBLE" /> deaktiviert ist, wird die Shar
 <translation id="5519619299971727565">Nutzungsberichte für Linux-Apps deaktivieren</translation>
 <translation id="5521035900165046997">Melden der Bluetooth-Informationen auf Geräten aktivieren</translation>
 <translation id="5521875416764302911">Verhindern, dass sich Nutzer in <ph name="PRODUCT_NAME" /> anmelden</translation>
-<translation id="5524944713447898270">Wenn diese Richtlinie konfiguriert ist, kannst du eine Liste mit URL-Mustern erstellen, durch die angegeben wird, welche Websites keine Pop-ups öffnen dürfen.
-
-      Wenn die Richtlinie nicht konfiguriert ist, gilt „<ph name="DEFAULT_POPUPS_SETTING_POLICY_NAME" />“ für alle Websites, sofern konfiguriert. Falls nicht, wird die persönliche Einstellung des Nutzers verwendet.
-
-      Ausführliche Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Platzhalter wie <ph name="WILDCARD_VALUE" /> sind zulässig.</translation>
 <translation id="552607466422196365">„<ph name="DBSC_FEATURE_NAME" />“ deaktivieren.</translation>
 <translation id="5526184558582921522">Anfragen an den Quirks Server und potenzielle Downloads von Hardware-spezifischen Konfigurationsdateien zulassen</translation>
 <translation id="5526701598901867718">Alle (nicht sicher)</translation>
@@ -6790,13 +6545,6 @@ Wenn diese Richtlinie für <ph name="PRODUCT_OS_NAME" /> Kiosk festgelegt ist, w
           Wenn du diese Einstellung deaktivierst, können sich Nutzer gespeicherte Passwörter im Passwortmanager nicht als Klartext anzeigen lassen.
 
           Ist sie aktiviert oder nicht konfiguriert, können Nutzer ihre Passwörter im Passwortmanager als Klartext sehen.</translation>
-<translation id="5619498195290770056">Mit dieser Richtlinie kannst du eine Liste von URL-Mustern erstellen, die angeben, welche Websites keine Cookies setzen dürfen.
-
-      Wenn die Richtlinie nicht konfiguriert ist, wird für alle Websites <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> verwendet, sofern diese Einstellung konfiguriert ist. Falls nicht, wird die persönliche Einstellung des Nutzers verwendet.
-
-      Selbst wenn keine Richtlinie Vorrang hat, sieh dir <ph name="COOKIES_ALLOWED_FOR_URLS_POLICY_NAME" /> und <ph name="COOKIES_SESSION_ONLY_FOR_URLS_POLICY_NAME" /> an. Es darf hinsichtlich der URL-Muster keine Konflikte zwischen diesen drei Richtlinien geben.
-
-      Genaue Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> ist kein akzeptierter Wert für diese Richtlinie.</translation>
 <translation id="5620392548325769024">Einblendung der Begrüßungsseite beim ersten Start des Browsers nach einer Aktualisierung des Betriebssystems aktivieren</translation>
 <translation id="5621503441067774084">„Mauszeiger hervorheben“ auf dem Anmeldebildschirm aktivieren</translation>
 <translation id="5622590774455244290">Diese Liste kann auf freiwilliger Basis für Android-Apps übernommen werden. Es ist nicht möglich, die Verwendung zu erzwingen.</translation>
@@ -6897,22 +6645,6 @@ Diese Richtlinie ist eine vorübergehende Behelfslösung. Sie wird ab Version M
       Wenn diese Richtlinie auf "false" oder gesetzt oder nicht konfiguriert wird, werden die Warnungen zu veralteten Funktionen angezeigt.</translation>
 <translation id="5659776687676755342">Ton bei niedrigem Akkustand aktivieren</translation>
 <translation id="5660950553460381588">Wenn möglich, Passkeys standardmäßig im iCloud-Schlüsselbund erstellen.</translation>
-<translation id="5664848079661901346">Die Direct Sockets API ermöglicht die Kommunikation mit beliebigen Endpunkten über TCP und UDP.
-Weitere Informationen findest du unter https://github.com/WICG/direct-sockets.
-
-Private Netzwerkendpunkte sind solche, die IP‑Adressen aus dem privaten IP-Adressbereich verwenden, der unter https://wicg.github.io/private-network-access/#ip-address-space-private definiert ist.
-
-Wenn diese Richtlinie konfiguriert ist, kannst du eine Liste mit URL-Mustern erstellen, durch die angegeben wird, welche Websites in der Direct Sockets API mit privaten Netzwerkendpunkten kommunizieren dürfen.
-Gültige Muster sind auf isolierte Web-Apps beschränkt.
-
-Wenn die Richtlinie nicht konfiguriert ist, gilt „<ph name="DEFAULT_DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_SETTING_POLICY_NAME" />“ für alle Websites, sofern konfiguriert.
-
-URL-Muster dürfen nicht im Konflikt mit „<ph name="DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_BLOCKED_FOR_URLS_POLICY_NAME" />“ stehen. Keine Richtlinie hat Vorrang, falls eine URL mit beiden übereinstimmt.
-
-Ausführliche Informationen zu gültigen URL-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> ist kein akzeptierter Wert für diese Richtlinie.
-
-Diese Richtlinie gilt nur, wenn der Ursprung die Direct Sockets API verwenden darf.
-Weitere Informationen findest du unter „<ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_NAME" />“, „<ph name="DIRECT_SOCKETS_ALLOWED_FOR_URLS_POLICY_NAME" />“ und „<ph name="DIRECT_SOCKETS_BLOCKED_FOR_URLS_POLICY_NAME" />“.</translation>
 <translation id="566569751231933416">Standardverhalten verwenden.</translation>
 <translation id="5666457529647159548">Nutzern erlauben, installierte Clientzertifikate zu verwalten.</translation>
 <translation id="5670249935663090320">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, wird <ph name="PRODUCT_NAME" /> aktiviert und kann von Nutzern über das App-Menü, Kontextmenüs von Seiten, Mediensteuerelemente auf für Google Cast optimierten Websites und das Symbol von Cast in der Symbolleiste (falls angezeigt) gestartet werden.
@@ -7341,35 +7073,9 @@ Wenn du den Zugriff auf die Entwicklertools anhand der Seiten-URL einschränken 
       Ist die Richtlinie deaktiviert, können Nutzer kein Feedback an Google senden.</translation>
 <translation id="5976636832661103220">In den Einstellungen von F11 wird die Tastenkombination verwendet, die den Umschalttaste-Modifikator enthält</translation>
 <translation id="5979376378555121803">Gehostete App</translation>
-<translation id="5981308440856672205">Die Direct Sockets API ermöglicht die Kommunikation mit beliebigen Endpunkten über TCP und UDP.
-Weitere Informationen findest du unter https://github.com/WICG/direct-sockets.
-
-Private Netzwerkendpunkte sind solche, die IP-Adressen aus dem privaten IP-Adressbereich verwenden, der unter https://wicg.github.io/private-network-access/#ip-address-space-private definiert ist.
-
-Wenn diese Richtlinie konfiguriert ist, kannst du eine Liste mit URL-Mustern erstellen, durch die angegeben wird, welchen Websites der Zugriff auf das private Netzwerk in der Direct Sockets API nicht gewährt wird.
-Gültige Muster sind auf isolierte Web-Apps beschränkt.
-
-Wenn die Richtlinie nicht konfiguriert ist, gilt „<ph name="DEFAULT_DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_SETTING_POLICY_NAME" />“ für alle Websites, sofern konfiguriert.
-
-URL-Muster dürfen nicht im Konflikt mit „<ph name="DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_ALLOWED_FOR_URLS_POLICY_NAME" />“ stehen. Keine Richtlinie hat Vorrang, falls eine URL mit beiden übereinstimmt.
-
-Ausführliche Informationen zu gültigen URL-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> ist kein akzeptierter Wert für diese Richtlinie.
-
-Diese Richtlinie gilt nur, wenn der Ursprung die Direct Sockets API verwenden darf.
-Weitere Informationen findest du unter „<ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_NAME" />“, „<ph name="DIRECT_SOCKETS_ALLOWED_FOR_URLS_POLICY_NAME" />“ und „<ph name="DIRECT_SOCKETS_BLOCKED_FOR_URLS_POLICY_NAME" />“.
-
-Diese Richtlinie gilt nur für neue Verbindungsversuche und macht vorhandene Verbindungen nicht ungültig.</translation>
 <translation id="5983274643567559194">Festlegen einer Tastenkombination für die Aktion „Löschen“ ist deaktiviert.</translation>
 <translation id="5984099692320899605">Keine NTLM-Authentifizierung verwenden</translation>
 <translation id="5984237109586500246">Webinhalte akzeptieren, die als Signed HTTP Exchanges implementiert sind</translation>
-<translation id="5985770641601021372">Wenn diese Richtlinie konfiguriert ist, kannst du eine Liste mit URL-Mustern erstellen, die die Websites angeben, denen automatisch der Zugriff auf lokale Drucker über die WebPrinting API verweigert wird.
-Gültige Muster sind auf isolierte Web-Apps beschränkt.
-
-Wenn die Richtlinie nicht konfiguriert ist, gilt „<ph name="DEFAULT_WEB_PRINTING_SETTING_POLICY_NAME" />“ für alle Websites, sofern konfiguriert. Falls dies nicht der Fall ist, werden die persönlichen Einstellungen des Nutzers verwendet.
-
-URL-Muster dürfen nicht im Konflikt mit „<ph name="WEB_PRINTING_ALLOWED_FOR_URLS_POLICY_NAME" />“ stehen. Keine Richtlinie hat Vorrang, falls eine URL mit beiden übereinstimmt.
-
-Ausführliche Informationen zu gültigen URL-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. „<ph name="WILDCARD_VALUE" />“ ist kein akzeptierter Wert für diese Richtlinie.</translation>
 <translation id="5987654816293745077">Gerätelaufzeitzähler melden</translation>
 <translation id="5991707691018985057">Dialogfeld zum Abbrechen anzeigen, wenn „event.preventDefault()“ für ein „beforeunload“-Ereignis aufgerufen wird. Dialogfeld zum Abbrechen nicht anzeigen, wenn „event.returnValue“ der leere String für ein „beforeunload“-Ereignis ist.</translation>
 <translation id="5992485316563377005">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, wird die Renderer-Codeintegrität aktiviert.
@@ -7914,21 +7620,6 @@ Wenn die Richtlinie nicht konfiguriert oder auf „<ph name="ALLOW" />“ festge
 ACHTUNG: Du musst vorsichtig sein, wenn du diese Einstellung änderst, da dadurch möglicherweise andere Richtlinien nicht mehr funktionieren, die die Standortbestimmung betreffen (z. B. „<ph name="SYSTEM_TIMEZONE_AUTOMATIC_DETECTION_POLICY" />“). Speziell die Optionen „<ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONSENDWIFIACCESSPOINTS" />“ und „<ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONSENDALLLOCATIONINFO" />“ der Richtlinie „<ph name="SYSTEM_TIMEZONE_AUTOMATIC_DETECTION_POLICY" />“ funktionieren nicht mehr, wenn diese Richtlinie auf „<ph name="DISALLOW" />“ gesetzt ist. Sie verwenden dann nur die <ph name="IP" />-basierte Standortauflösung auf dem Anmeldebildschirm (<ph name="LOG_IN" />).</translation>
 <translation id="6338982178236723271">Systeminformationen melden</translation>
 <translation id="6339355882150329269">Nutzer wird während der Videowiedergabe nicht als inaktiv angesehen</translation>
-<translation id="6352714113109004581">Wenn diese Richtlinie konfiguriert ist, kannst du eine Liste mit URL-Mustern erstellen, die angeben, welche Websites Nutzer bitten dürfen, ihnen Zugriff auf ein HID-Gerät zu gewähren.
-
-      Wenn die Richtlinie nicht konfiguriert ist, gilt <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" /> für alle Websites, sofern konfiguriert. Falls nicht, werden die persönlichen Einstellungen des Nutzers verwendet.
-
-      Bei URL-Mustern, die nicht der Richtlinie entsprechen, hat Folgendes Vorrang (in dieser Reihenfolge):
-
-        * <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" /> (falls eine Übereinstimmung besteht)
-
-        * <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" /> (falls konfiguriert)
-
-        * Die persönlichen Einstellungen des Nutzers
-
-      URL-Muster dürfen nicht im Konflikt mit <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" /> stehen. Keine Richtlinie hat Vorrang, falls eine URL mit beiden übereinstimmt.
-
-      Genaue Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> ist kein akzeptierter Wert für diese Richtlinie.</translation>
 <translation id="6353890097388312479">Wenn die Richtlinie auf „Alle“ (0) gesetzt oder nicht konfiguriert ist, können Nutzer Vertrauenseinstellungen für alle CA-Zertifikate bearbeiten, von Nutzern importierte Zertifikate entfernen und Zertifikate mit dem Zertifikat-Manager importieren. Wenn die Richtlinie auf „Nur Nutzer“ (1) gesetzt ist, können Nutzer zwar von Nutzern importierte Zertifikate verwalten, aber die Vertrauenseinstellungen integrierter Zertifikate nicht ändern. Ist sie auf „Keine“ (2) gesetzt, können Nutzer CA-Zertifikate ansehen, aber nicht verwalten.</translation>
 <translation id="6358320368815225772">Remote-Attestierung für das Gerät deaktivieren</translation>
 <translation id="6362589180545896213">Videodecodierung durch GPU-Hardware deaktivieren</translation>
@@ -7978,11 +7669,6 @@ Wenn die Richtlinie nicht konfiguriert ist, verwendet <ph name="PRODUCT_OS_NAME"
       Wenn diese Richtlinie deaktiviert oder nicht konfiguriert ist, können Nutzer keine Firmware-Updates anwenden.
 
       Diese Richtlinie gilt für Firmware-Updates von Peripheriegeräten und internen Komponenten von <ph name="PRODUCT_OS_FLEX_NAME" />-Geräten. Firmware-Updates interner Komponenten von <ph name="PRODUCT_OS_NAME" />-Geräten sind von dieser Richtlinie nicht betroffen.</translation>
-<translation id="6382351416269252693">Legt eine Liste mit Website-URL-Mustern fest, die Websites angeben, denen nicht die Berechtigung für lokale Schriftarten gewährt wird. Dadurch wird die Fähigkeit von Websites eingeschränkt, Informationen zu lokalen Schriftarten zu sehen.
-
-      Genaue Informationen zu gültigen URL-Mustern für Websites findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Platzhalter wie „<ph name="WILDCARD_VALUE" />“ sind zulässig. Diese Richtlinie gleicht nur anhand des Ursprungs ab, daher werden alle Pfade des URL-Musters ignoriert.
-
-      Wenn die Richtlinie für eine Website nicht konfiguriert ist, gilt die Richtlinie aus <ph name="DEFAULT_LOCAL_FONTS_SETTING_POLICY_NAME" /> für die Website, falls konfiguriert. Andernfalls werden die Standardeinstellungen des Browsers verwendet und Nutzer können auswählen, für welche Websites sie die Berechtigung gewähren möchten.</translation>
 <translation id="6383774771168138899">Konfiguration des <ph name="CLOUD_UPLOAD_NAME" />-Ablaufs für <ph name="MICROSOFT_ONE_DRIVE_NAME" /> und <ph name="MICROSOFT_365_NAME" /></translation>
 <translation id="6384542789059421431">Dadurch werden die Suchergebnisseiten der Standardsuchmaschine in der Seitenleiste des Browsers angezeigt.</translation>
 <translation id="6389240462871677239">Ursprüngen isolierter Web-Apps erlauben, Controlled Frame zu verwenden</translation>
@@ -8023,13 +7709,6 @@ Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, bestimmt die CNAME-
 <translation id="6424485010103067949"><ph name="OMA_URI" />:</translation>
 <translation id="6424486395812679373">Safe Browsing-Überprüfung für alle Dateidownloads ausführen</translation>
 <translation id="6426899507714989471">Grafikbeschleunigung deaktivieren</translation>
-<translation id="6430793593318487825">Wenn diese Richtlinie konfiguriert ist, kannst du eine Liste mit URL-Mustern erstellen, durch die angegeben wird, welche Websites nicht auf Sensoren wie Bewegungs- und Lichtsensoren zugreifen dürfen.
-
-      Wenn die Richtlinie nicht konfiguriert ist, gilt „<ph name="DEFAULT_SENSORS_SETTING_POLICY_NAME" />“ für alle Websites, sofern konfiguriert. Falls nicht, wird die persönliche Einstellung des Nutzers verwendet.
-
-      Sollte das URL-Muster sowohl in dieser Richtlinie als auch in der Richtlinie „<ph name="SENSORS_ALLOWED_FOR_URLS_POLICY_NAME" />“ enthalten sein, hat diese Richtlinie Vorrang und der Zugriff auf Bewegungs- und Lichtsensoren wird blockiert.
-
-      Ausführliche Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Platzhalter wie <ph name="WILDCARD_VALUE" /> sind zulässig.</translation>
 <translation id="6431446111529802555">Europa.</translation>
 <translation id="6433697627431665375"><ph name="PRODUCT_NAME" />-Daten nicht in Sicherungen einschließen</translation>
 <translation id="6436052172226685535">Standardverhalten für die Unterstützung älterer Browser.</translation>
@@ -8089,11 +7768,6 @@ Diese Richtlinie wirkt sich nur auf TLS 1.3 und QUIC aus, nicht auf frühere Ve
 
       Ist die Richtlinie deaktiviert oder nicht konfiguriert, kann das SAML-Passwort auf chrome://password-change nicht geändert werden und du erhältst keine Benachrichtigung, wenn SAML-Passwörter bald ablaufen.</translation>
 <translation id="6457477291648119596">Type 42</translation>
-<translation id="6457901822929629835">Wenn diese Richtlinie konfiguriert ist, kannst du eine Liste mit URL-Mustern erstellen, durch die angegeben wird, welche Websites JavaScript ausführen dürfen.
-
-      Wenn die Richtlinie nicht konfiguriert ist, gilt „<ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME" />“ für alle Websites, sofern konfiguriert. Falls nicht, wird die persönliche Einstellung des Nutzers verwendet.
-
-      Ausführliche Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Platzhalter wie <ph name="WILDCARD_VALUE" /> sind zulässig.</translation>
 <translation id="6458361632497500815">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, können alle Nutzer <ph name="PRODUCT_CROSTINI_NAME" /> verwenden, solange alle 3 Richtlinien, <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" />, <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> und <ph name="DEVICE_UNAFFILIATED_CROSTINI_ALLOWED_POLICY_NAME" />, aktiviert sind. Ist die Richtlinie deaktiviert, können nicht verknüpfte Nutzer <ph name="PRODUCT_CROSTINI_NAME" /> nicht verwenden. Wenn sie deaktiviert wird, wird die Richtlinie beim Starten neuer <ph name="PRODUCT_CROSTINI_NAME" />-Container angewandt. Die bereits ausgeführten sind nicht betroffen.</translation>
 <translation id="6462604655173570082">Wenn die Richtlinie nicht konfiguriert oder aktiviert ist, können Nutzer die Schaltfläche „<ph name="GOOGLE_LENS_PRODUCT_NAME" />“ im Suchfeld auf der Seite „Neuer Tab“ sehen und verwenden. Ist sie deaktiviert, sehen Nutzer die Schaltfläche „<ph name="GOOGLE_LENS_PRODUCT_NAME" />“ im Suchfeld auf der Seite „Neuer Tab“ nicht.</translation>
 <translation id="6464074037294098618">Autofill für Adressdaten zulassen</translation>
@@ -8152,15 +7826,6 @@ HINWEIS: Das Standardverhalten hängt davon ab, ob es sich um ein Verbraucherger
       2) Der Systemsprache.
       3) Der Ersatzsprache (en-US).</translation>
 <translation id="6493089139124468815">Websites erlauben, den Nutzer zu bitten, die Zwischenablage verwenden zu dürfen</translation>
-<translation id="6493557163786346587">Wenn diese Richtlinie konfiguriert ist, kannst du eine Liste mit URL-Mustern erstellen, die angeben, welche Websites Nutzer nicht um Zugriff auf einen seriellen Port bitten dürfen.
-
-Wenn die Richtlinie nicht konfiguriert ist, gilt „<ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" />“ für alle Websites, sofern konfiguriert. Falls nicht, wird die persönliche Einstellung des Nutzers verwendet.
-
-Bei URL-Mustern, die nicht der Richtlinie entsprechen, haben „<ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" />“ (falls eine Übereinstimmung besteht), „<ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" />“ (falls konfiguriert) oder die persönlichen Einstellungen des Nutzers Vorrang – in dieser Reihenfolge.
-
-Wenn URL-Muster im Konflikt mit „<ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" />“ stehen, hat diese Richtlinie Vorrang.
-
-Genaue Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. „<ph name="WILDCARD_VALUE" />“ ist kein akzeptierter Wert für diese Richtlinie.</translation>
 <translation id="6493918190032622602">Mindestversion von <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="6495337487202227251">Diese Richtlinie ist veraltet und wird in Version 85 von <ph name="PRODUCT_OS_NAME" /> entfernt. Bitte verwende stattdessen die Richtlinie "<ph name="SCREEN_LOCK_DELAYS_POLICY_NAME" />".
 
@@ -8477,15 +8142,6 @@ Wenn diese Richtlinie auf „True“ gesetzt oder nicht konfiguriert ist, könne
 
 Wenn sie auf „False“ gesetzt ist, ist die Portweiterleitung zu Crostini-Containern deaktiviert.</translation>
 <translation id="6677291257287862684">„Einfingerbedienung“ auf dem Anmeldebildschirm aktivieren</translation>
-<translation id="6677886356657067286">Mit dieser Richtlinie kannst du eine Liste von URL-Mustern festlegen, durch die Ursprünge der obersten Ebene angegeben werden, für die die Drittanbieter-Speicherpartitionierung (Partitionierung des ursprungsübergreifenden iFrame-Speichers) deaktiviert werden soll.
-
-Wenn diese Richtlinie nicht konfiguriert ist oder der Ursprung der obersten Ebene nicht mit einem der URL-Muster übereinstimmt, wird „<ph name="DEFAULT_THIRD_PARTY_STORAGE_PARTITIONING_SETTING_POLICY_NAME" />“ angewendet.
-
-Ausführliche Informationen zu gültigen Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Beachte, dass die Muster, die du hier aufführst, als Ursprünge und nicht als URLs behandelt werden. Gib deshalb keinen Pfad an.
-
-Ausführliche Informationen zur Drittanbieter-Speicherpartitionierung findest du unter https://developers.google.com/privacy-sandbox/cookies/storage-partitioning.
-
-Diese Richtlinie wird in Chrome-Version 145 entfernt. Es wird empfohlen, stattdessen die Methode „requestStorageAccess“ zu verwenden: https://developer.mozilla.org/de/docs/Web/API/Document/requestStorageAccess. Unter https://crbug.com/425248669 kannst du Feedback geben.</translation>
 <translation id="668153983584136017">Diese Richtlinie wurde eingestellt, da der aktualisierte GREASE-Algorithmus seit M103 standardmäßig aktiviert ist.
 Wenn die Richtlinie aktiviert ist, aktualisiert die Funktion zur Aktualisierung des GREASE‑Algorithmus für User-Agent-Client-Hints (UA‑CH) den GREASE‑Algorithmus für User-Agents auf die neueste Spezifikation.
      Ein solches Spezifikationsupdate kann Probleme verursachen, wenn eine Website einschränkt, welche Zeichen in Anfragen zulässig sind. Weitere Informationen findest du in der Spezifikation unter https://wicg.github.io/ua-client-hints/#grease.
@@ -8758,13 +8414,6 @@ Ist sie auf „false“ gesetzt oder nicht festgelegt, ist das Layout nicht verf
 <translation id="6882028194958060206">Einstellung für Flash-Inhalt auf alle Inhalte anwenden (wird nicht länger unterstützt)</translation>
 <translation id="6883050310557769428">Steuert die Floating-SSO-Aktivierung sowie die Cookie-Domain-Sperrliste und ihre Ausnahmen.</translation>
 <translation id="6889123056995503704">Nutzer entscheiden über das Verhalten zum Versionsdowngrade</translation>
-<translation id="6889617338886728275">Mit dieser Richtlinie kannst du eine Liste mit URL-Mustern festlegen, die angeben, auf welchen Websites die Berechtigung für die Fensterverwaltung automatisch gewährt wird. Dadurch können Websites Informationen zum Bildschirm des Geräts abrufen und nutzen, um Fenster zu öffnen und zu platzieren oder auf bestimmten Bildschirmen den Vollbildmodus anzufordern.
-
-Genaue Informationen zu gültigen URL-Mustern für Websites findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Platzhalter wie „<ph name="WILDCARD_VALUE" />“ sind zulässig. Diese Richtlinie gleicht nur anhand des Ursprungs ab, daher werden alle Pfade des URL-Musters ignoriert.
-
-Wenn die Richtlinie für eine Website nicht konfiguriert ist, gilt die Richtlinie aus <ph name="DEFAULT_WINDOW_MANAGEMENT_SETTING_POLICY_NAME" /> für die Website, falls konfiguriert. Andernfalls werden die Standardeinstellungen des Browsers verwendet und Nutzer können auswählen, für welche Websites sie die Berechtigung gewähren möchten.
-
-Dies ersetzt die eingestellte Richtlinie <ph name="WINDOW_PLACEMENT_ALLOWED_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="6894178810167845842">URL für "Neuer Tab"-Seite</translation>
 <translation id="6895437634974956885">Der Akkuzustand kann durch Faktoren wie häufiges vollständiges Aufladen und längere Ladezeiten beeinträchtigt werden. Diese Richtlinie bietet drei Optionen, das Ladeverhalten zu optimieren sowie diese Beeinträchtigungen zu minimieren und so letztendlich die Lebensdauer des Akkus zu verlängern.
 
@@ -8816,17 +8465,6 @@ Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, gilt das Standardve
 <translation id="692096803256767290">Rollback des Betriebssystems auf die Zielversion durchführen</translation>
 <translation id="6921241119085515674"><ph name="CLOUD_UPLOAD_NAME" />-Ablauf für <ph name="MICROSOFT_ONE_DRIVE_NAME" /> und <ph name="MICROSOFT_365_NAME" /> zulassen</translation>
 <translation id="6921544339867564740">Geräten die Ausführung von virtuellen Maschinen unter Chrome OS erlauben</translation>
-<translation id="692161853658983957">Die Controlled Frame API, die für bestimmte isolierte Kontexte wie isolierte Web‑Apps (IWAs) verfügbar ist, ermöglicht es einer App, beliebige Inhalte einzubetten und zu manipulieren.
-Weitere Informationen findest du unter https://github.com/WICG/controlled-frame.
-
-Wenn diese Richtlinie konfiguriert ist, kannst du eine Liste mit URL‑Mustern erstellen, durch die angegeben wird, welche Websites die Controlled Frame API nicht verwenden dürfen.
-Gültige Muster sind auf isolierte Web‑Apps beschränkt.
-
-Wenn die Richtlinie nicht konfiguriert ist, gilt „<ph name="DEFAULT_CONTROLLED_FRAME_SETTING_POLICY_NAME" />“ für alle Websites, sofern konfiguriert.
-
-URL-Muster dürfen nicht im Konflikt mit „<ph name="CONTROLLED_FRAME_ALLOWED_FOR_URLS_POLICY_NAME" />“ stehen. Keine der Richtlinien hat Vorrang, falls eine URL mit beiden übereinstimmt.
-
-Ausführliche Informationen zu gültigen URL‑Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> ist kein akzeptierter Wert für diese Richtlinie.</translation>
 <translation id="6922265559343919728">Legt fest, ob Blob-URLs beim Abrufen und Navigieren partitioniert werden</translation>
 <translation id="6922884955650325312">Das Plug-in "<ph name="FLASH_PLUGIN_NAME" />" blockieren</translation>
 <translation id="6924223708804692571">Damit wird die Deaktivierung von Sprachen für die Rechtschreibprüfung erzwungen. Sprachen in dieser Liste, die nicht erkannt werden, werden ignoriert.
@@ -9077,13 +8715,6 @@ Wenn die Richtlinie nicht konfiguriert ist, werden die Standardwerte verwendet. 
 Wenn diese Richtlinie festgelegt ist, wird die Liste der Standardwerte um die neu konfigurierten Werte erweitert. Sowohl von den Standardeinstellungen als auch den von der Richtlinie vorgegebenen Einträgen wird die Ausnahme für die verbundenen Erweiterungen gewährt, solange der Port verbunden ist.</translation>
 <translation id="7086720321892395256">Mit dieser Richtlinie werden Nutzer- und Geräterichtlinien für den Datenschutzbildschirm festgelegt.</translation>
 <translation id="7090500018761495290">Die Event.path API bis M115 wieder aktivieren.</translation>
-<translation id="7090668780328470271">Wenn diese Richtlinie konfiguriert ist, kannst du eine Liste mit URL-Mustern erstellen, die angeben, welche Websites Nutzer nicht um Zugriff auf ein USB-Gerät bitten dürfen.
-
-      Wenn die Richtlinie nicht konfiguriert ist, gilt <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" /> für alle Websites, sofern konfiguriert. Falls nicht, wird die persönliche Einstellung des Nutzers verwendet.
-
-      URL-Muster dürfen nicht im Konflikt mit <ph name="WEB_USB_ASK_FOR_URLS_POLICY_NAME" /> stehen. Keine Richtlinie hat Vorrang, falls eine URL mit beiden übereinstimmt.
-
-      Genaue Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> ist kein akzeptierter Wert für diese Richtlinie.</translation>
 <translation id="7091220433954923921">Wenn diese Richtlinie konfiguriert ist, wird der vom Host für den Remote-Zugriff verwendete UDP-Portbereich auf diesem Computer eingeschränkt.
 
       Wenn diese Richtlinie nicht konfiguriert oder auf einen leeren String festgelegt wird, kann der Host für den Remote-Zugriff alle verfügbaren Ports nutzen.
@@ -9440,13 +9071,6 @@ Ist die Richtlinie deaktiviert oder nicht konfiguriert, sind die Kontoeinstellun
           Wenn du diese Richtlinie konfigurierst, kann sie vom Nutzer nicht geändert oder überschrieben werden.
 
           Ist die Richtlinie nicht konfiguriert, ist die Farbkorrektur erst einmal deaktiviert, kann jedoch jederzeit vom Nutzer aktiviert werden.</translation>
-<translation id="7323855063560306712">Mit dieser Richtlinie kannst du eine Liste mit URL-Mustern festlegen, die angeben, auf welchen Websites die Berechtigung für die Fensterverwaltung automatisch verweigert wird. Dadurch wird die Fähigkeit von Websites eingeschränkt, Informationen zum Bildschirm des Geräts abzurufen und zu nutzen, um Fenster zu öffnen und zu platzieren oder auf bestimmten Bildschirmen den Vollbildmodus anzufordern.
-
-Genaue Informationen zu gültigen URL-Mustern für Websites findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Platzhalter wie „<ph name="WILDCARD_VALUE" />“ sind zulässig. Diese Richtlinie gleicht nur anhand des Ursprungs ab, daher werden alle Pfade des URL-Musters ignoriert.
-
-Wenn die Richtlinie für eine Website nicht konfiguriert ist, gilt die Richtlinie aus <ph name="DEFAULT_WINDOW_MANAGEMENT_SETTING_POLICY_NAME" /> für die Website, falls konfiguriert. Andernfalls werden die Standardeinstellungen des Browsers verwendet und Nutzer können auswählen, für welche Websites sie die Berechtigung gewähren möchten.
-
-Dies ersetzt die eingestellte Richtlinie <ph name="WINDOW_PLACEMENT_BLOCKED_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="7323896582714668701">Zusätzliche Befehlszeilenparameter für <ph name="PRODUCT_NAME" /></translation>
 <translation id="7325801934761922681">Chrome daran hindern, das Aufrufen externer Protokolle in einem Sandbox-iFrame zu blockieren</translation>
 <translation id="7326394567531622570">Ähnlich wie bei den Werkseinstellungen (Wert 2); hier wird jedoch versucht, die Log-in-Tokens zu übernehmen, sodass der Nutzer sich nicht noch einmal anmelden muss.</translation>
@@ -9477,11 +9101,6 @@ Dies ersetzt die eingestellte Richtlinie <ph name="WINDOW_PLACEMENT_BLOCKED_FOR_
 <translation id="7343004974628511824">DNS-Abfangprüfungen ausführen</translation>
 <translation id="7343497214039883642">Unternehmensdrucker-Konfigurationsdatei für Geräte</translation>
 <translation id="7357148531287978404">Audioeingabe deaktivieren</translation>
-<translation id="7358012133037776875">Mit dieser Richtlinie kannst du eine Liste mit URL-Mustern festlegen, die angeben, auf welchen Websites die Berechtigung für die Fensterpositionierung automatisch gewährt wird. Dadurch können Websites Informationen zum Bildschirm des Geräts abrufen und nutzen, um Fenster zu öffnen und zu platzieren oder auf bestimmten Bildschirmen den Vollbildmodus anzufordern.
-
-      Genaue Informationen zu gültigen URL-Mustern für Websites findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Platzhalter wie „<ph name="WILDCARD_VALUE" />“ sind zulässig. Diese Richtlinie gleicht nur anhand der Quelle ab, daher werden alle Pfade des URL-Musters ignoriert.
-
-      Wenn die Richtlinie für eine Website nicht konfiguriert ist, gilt die Richtlinie aus <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_POLICY_NAME" /> für die Website, falls konfiguriert. Andernfalls werden die Standardeinstellungen des Browsers verwendet und Nutzer können auswählen, für welche Websites sie die Berechtigung gewähren möchten.</translation>
 <translation id="7358299261566939984">„ServiceWorkerAutoPreload“ aktivieren</translation>
 <translation id="7358359585412734876"><ph name="LACROS_NAME" /> aktivieren</translation>
 <translation id="7362566456990049303">Nur Nutzer</translation>
@@ -9511,11 +9130,6 @@ Wenn diese Richtlinie auf „false“ gesetzt ist, ist das alte Verhalten aktivi
 <translation id="7389872682701720082">Wenn du diese Einstellung aktivierst, werden nicht veraltete Plug-ins immer ausgeführt.
 
       Ist diese Einstellung deaktiviert oder nicht konfiguriert, müssen die Nutzer der Ausführung von Plug-ins zustimmen, die eine Autorisierung erfordern. Diese Plug-ins können ein Sicherheitsrisiko darstellen.</translation>
-<translation id="7390361032458549775">Mit dieser Richtlinie kannst du eine Liste mit URL-Mustern festlegen, die angeben, welche Websites die Schlüsselgenerierung nicht verwenden dürfen. Wenn ein URL-Muster in „KeygenAllowedForUrls“ enthalten ist, werden diese Ausnahmen dadurch überschrieben.
-
-          Ist diese Richtlinie nicht konfiguriert, wird für alle Websites der globale Standardwert verwendet, entweder aus der Richtlinie „DefaultKeygenSetting“, sofern diese konfiguriert ist, oder aus der persönlichen Konfiguration des Nutzers.
-
-          Genaue Informationen zu gültigen URL-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> ist kein akzeptierter Wert für diese Richtlinie.</translation>
 <translation id="7394023172636522064">Wenn die Richtlinie aktiviert ist, melden Geräte den TPM-Sicherheitsstatus.
 
       Ist die Richtlinie deaktiviert oder nicht konfiguriert, zeichnen angemeldete Geräte den TPM-Sicherheitsstatus nicht auf und melden ihn auch nicht.
@@ -9576,13 +9190,6 @@ Ist die Richtlinie nicht konfiguriert, entspricht dies der Einstellung „<ph na
 <translation id="7443356543619955157">Wenn die Richtlinie konfiguriert ist, ermöglicht sie, Netzwerkkonfigurationen für alle Nutzer eines <ph name="PRODUCT_OS_NAME" />-Geräts zu übernehmen. Die Netzwerkkonfiguration ist ein String im JSON-Format, der der Definition des ONC-Formats (Open Network Configuration) entspricht.</translation>
 <translation id="7446978687387327623">Weitergeleitete Safe Browsing-Echtzeitprüfungen zulassen</translation>
 <translation id="7448430478749155471">Hiermit wird die Funktion "Vorlesen" auf dem Anmeldebildschirm aktiviert</translation>
-<translation id="7453470801190369311">Wenn diese Richtlinie konfiguriert ist, kannst du eine Liste mit URL-Mustern erstellen, durch die angegeben wird, welche Websites keine Bilder anzeigen dürfen.
-
-      Wenn die Richtlinie nicht konfiguriert ist, gilt „<ph name="DEFAULT_IMAGE_SETTING_ENABLED_POLICY_NAME" />“ für alle Websites, sofern konfiguriert. Falls nicht, wird die persönliche Einstellung des Nutzers verwendet.
-
-       Ausführliche Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Platzhalter wie <ph name="WILDCARD_VALUE" /> sind zulässig.
-
-       Beachte, dass diese Richtlinie unter Android zuvor fälschlicherweise aktiviert war, sie von Android aber nie vollständig unterstützt wurde.</translation>
 <translation id="7455912144588577399">Wenn die Richtlinie auf „true“ gesetzt ist, können Nutzer sich kompatible Webseiten per Sprachausgabe vorlesen lassen. Dies ist durch serverseitige Inhaltsanalyse und Audiosynthese möglich. Ist sie auf „false“ gesetzt, so ist diese Funktion deaktiviert. Wenn die Richtlinie auf die Standardeinstellung gesetzt oder nicht konfiguriert ist, ist die Funktion „Vorlesen“ aktiviert.</translation>
 <translation id="7456922722153109956">Diese Richtlinie legt die Sichtbarkeit der Information im mittleren Slot auf der Seite „Neuer Tab“ fest.
 
@@ -9752,13 +9359,6 @@ Wenn die Richtlinie leer bleibt, sind keine Ausnahmen zu „<ph name="FLOATING_S
 <translation id="7587921466180902617">Screencast-Dogfood für Family Link-Nutzer aktivieren</translation>
 <translation id="7588140323025689972">Protokolle für Kiosk-Apps aktivieren</translation>
 <translation id="7593286371155131669">Standardmäßig unterstützte Gruppen von <ph name="PRODUCT_NAME" /> verwenden</translation>
-<translation id="7595074040612182185">Wenn diese Richtlinie konfiguriert ist, kannst du eine Liste mit URL-Mustern erstellen, durch die angegeben wird, welche Websites Bilder anzeigen dürfen.
-
-      Wenn die Richtlinie nicht konfiguriert ist, gilt „<ph name="DEFAULT_IMAGES_SETTING_ENABLED_POLICY_NAME" />“ für alle Websites, sofern konfiguriert. Falls nicht, wird die persönliche Einstellung des Nutzers verwendet.
-
-      Ausführliche Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Platzhalter wie <ph name="WILDCARD_VALUE" /> sind zulässig.
-
-      Beachte, dass diese Richtlinie unter Android zuvor fälschlicherweise aktiviert war, sie von Android aber nie vollständig unterstützt wurde.</translation>
 <translation id="759957074386651883">Safe Browsing-Einstellungen</translation>
 <translation id="7602621823177962064">Melden der Informationen zum Arbeitsspeicher auf Geräten deaktivieren</translation>
 <translation id="7604169113182304895">Diese Liste kann auf freiwilliger Basis für Android-Apps übernommen werden. Es ist nicht möglich, die Verwendung zu erzwingen.</translation>
@@ -9911,11 +9511,6 @@ Wenn diese Richtlinie nicht konfiguriert ist, wird der PDF-Renderer vom Browser 
        Konfiguriere diese Richtlinie nicht, wenn du dich für eine andere Methode zur Festlegung der Proxyrichtlinien entschieden hast.
 
       Hinweis: Ausführliche Beispiele findest du in den Chromium-Projekten ( https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett ).</translation>
-<translation id="7716587310609820801">Wenn diese Richtlinie konfiguriert ist, kannst du eine Liste mit URL-Mustern erstellen, durch die angegeben wird, welche Websites keine Benachrichtigungen anzeigen dürfen.
-
-      Wenn die Richtlinie nicht konfiguriert ist, gilt „<ph name="DEFAULT_NOTIFICATIONS_SETTING_POLICY_NAME" />“ für alle Websites, sofern konfiguriert. Falls nicht, wird die persönliche Einstellung des Nutzers verwendet.
-
-      Ausführliche Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Platzhalter wie <ph name="WILDCARD_VALUE" /> sind zulässig.</translation>
 <translation id="7717938661004793600">Hiermit konfigurierst du die Zugänglichkeitsfunktionen für <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="7718127720248642697">Diese Richtlinie ist standardmäßig aktiviert. Sie steuert, wie angemeldete Geräte Hardwarestatistiken und -IDs für Speichergeräte melden.
 
@@ -10339,15 +9934,6 @@ Wenn man <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" /> oder <ph name="LACROS_
 <translation id="8059352177830050556">Melden der Informationen zur Hintergrundbeleuchtung auf Geräten aktivieren</translation>
 <translation id="8062485064082966327">Einen anonymen Google-Dienst verwenden, um automatische Beschreibungen für unbeschriftete Bilder zu erhalten</translation>
 <translation id="8066428282805800713">Zusätzliche Hardwaredaten unter ChromeOS Flex senden</translation>
-<translation id="8066532561081127944">Aus Sicherheitsgründen erfordert die Web-API „<ph name="REQUEST_FULLSCREEN_API_NAME" />“ eine vorherige Nutzergeste („vorübergehende Aktivierung“); andernfalls tritt ein Fehler auf. Durch die persönlichen Einstellungen von Nutzern kann es bestimmten Ursprüngen erlaubt sein, diese API ohne vorherige Nutzergeste aufzurufen, wie unter <ph name="AUTOMATIC_FULLSCREEN_HELP_URL" /> beschrieben.
-
-Diese Richtlinie ersetzt die persönlichen Einstellungen der Nutzer und verhindert, dass übereinstimmende Ursprünge die API ohne vorherige Nutzergeste aufrufen.
-
-Weitere Informationen zu gültigen URL-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
-Platzhalter wie <ph name="WILDCARD_VALUE" /> sind zulässig.
-
-Ursprünge, die sowohl mit blockierten als auch mit zulässigen Richtlinienmustern übereinstimmen, werden blockiert.
-Für Ursprünge, die nicht durch eine Richtlinie oder Nutzereinstellungen angegeben sind, ist zum Aufrufen dieser API eine vorherige Nutzergeste erforderlich.</translation>
 <translation id="8071371098891664137">Wenn <ph name="PRINTERS_BLOCKLIST" /> für <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" /> ausgewählt ist, wird durch Festlegen von <ph name="PRINTERS_BULK_BLOCKLIST_POLICY_NAME" /> angegeben, welche Drucker die Nutzer nicht verwenden können. Mit Ausnahme der in dieser Richtlinie aufgeführten IDs können die Nutzer auf alle Drucker zugreifen. Die IDs müssen dem Feld <ph name="ID_FIELD" /> oder dem Feld <ph name="GUID_FIELD" /> in der Datei entsprechen, die in <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> angegeben ist.</translation>
 <translation id="8078297389450285582">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, wird das intelligente Dimm-Modell verwendet und der Zeitraum bis zum Dimmen des Bildschirms kann verlängert werden. Wenn das Dimmen des Bildschirms durch das Modell verzögert wird, werden die Verzögerungen für das Ausschalten des Bildschirms, die Bildschirmsperre und die Inaktivität entsprechend angepasst, um die ursprünglich konfigurierten Abstände beizubehalten.
 
@@ -10680,11 +10266,6 @@ Weitere Informationen zu Legacy-Technologien findest du unter https://chromestat
       Hinweis: Der Skalierungsfaktor muss bei mindestens 100 % liegen.</translation>
 <translation id="8284621384813278750">Du kannst festlegen, ob die <ph name="PRIVACY_SANDBOX_NAME" />-Einstellung für Anzeigenthemen deaktiviert werden kann</translation>
 <translation id="8285435910062771358">Vollbildlupe aktiviert</translation>
-<translation id="828566872219880247">Mit dieser Richtlinie kannst du eine Liste mit URL-Mustern festlegen, die angeben, welche Websites die Schlüsselgenerierung verwenden dürfen. Wenn ein URL-Muster in „KeygenBlockedForUrls“ angegeben ist, werden diese Ausnahmen dadurch überschrieben.
-
-          Ist diese Richtlinie nicht konfiguriert, wird für alle Websites der globale Standardwert verwendet, entweder aus der Richtlinie „DefaultKeygenSetting“, sofern diese konfiguriert ist, oder aus der persönlichen Konfiguration des Nutzers.
-
-          Genaue Informationen zu gültigen URL-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> ist kein akzeptierter Wert für diese Richtlinie.</translation>
 <translation id="8288199156259560552">Google-Standortdienst für Android-Geräte aktivieren</translation>
 <translation id="8289824033213234651">Der Energiesparmodus wird aktiviert, wenn das Gerät über den Akku betrieben wird und der Akkustand niedrig ist.</translation>
 <translation id="8290875622178450531">Mit dieser Richtlinie kannst du die Bedienungshilfe "Spracheingabe" aktivieren.
@@ -10821,15 +10402,6 @@ Hinweis: Diese Richtlinie ist eine vorübergehende Lösung, um die Umstellung vo
 <translation id="8371178326720637170">Ermöglicht verwalteten Erweiterungen, die Enterprise Hardware Platform API zu verwenden</translation>
 <translation id="8373176843640227330">Melden der Bluetooth-Informationen auf Geräten deaktivieren</translation>
 <translation id="8375817202037102567">Schreibzugriff auf Dateien und Verzeichnisse auf diesen Websites blockieren</translation>
-<translation id="837805585374308454">Wenn die Richtlinie konfiguriert ist, kannst du eine Liste mit URL-Mustern erstellen, die angeben, welche Websites Nutzer um Zugriff auf einen seriellen Port bitten dürfen.
-
-Wenn die Richtlinie nicht konfiguriert ist, gilt „<ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" />“ für alle Websites, sofern konfiguriert. Falls nicht, werden die persönlichen Einstellungen des Nutzers verwendet.
-
-Bei URL-Mustern, die nicht der Richtlinie entsprechen, haben „<ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" />“ (falls eine Übereinstimmung besteht), „<ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" />“ (falls konfiguriert) oder die persönlichen Einstellungen des Nutzers Vorrang – in dieser Reihenfolge.
-
-Wenn URL-Muster im Konflikt mit „<ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" />“ stehen, werden sie ignoriert.
-
-Genaue Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. „<ph name="WILDCARD_VALUE" />“ ist kein akzeptierter Wert für diese Richtlinie.</translation>
 <translation id="8378266419596669629">Berechtigung für lokale Schriftarten auf diesen Websites blockieren</translation>
 <translation id="8379281645427937253">Eine Liste von TLS-Zertifikaten, die von <ph name="PRODUCT_NAME" /> für die Serverauthentifizierung als vertrauenswürdig eingestuft werden sollen.
 Zertifikate müssen mit Base64 codiert sein.</translation>
@@ -11060,21 +10632,6 @@ Weitere Informationen zur Datenverarbeitung bei auf generativer KI basierenden 
 <translation id="8549906780629620346">Kontowiederherstellung aktivieren</translation>
 <translation id="855182606166519378">Nutzer dürfen keine Firmware-Updates starten</translation>
 <translation id="8553491595730354263">Ermöglicht dem Host für den Remote-Zugriff, eine PIN- und Kopplungsauthentifizierung beim Akzeptieren von Clientverbindungen zu verwenden</translation>
-<translation id="8553955290407912156">Wenn diese Richtlinie konfiguriert ist, kannst du eine Liste mit URL-Mustern erstellen, die angeben, welche Websites Nutzer nicht bitten dürfen, ihnen Zugriff auf ein HID-Gerät zu gewähren.
-
-      Wenn die Richtlinie nicht konfiguriert ist, gilt <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" /> für alle Websites, sofern konfiguriert. Falls nicht, werden die persönlichen Einstellungen des Nutzers verwendet.
-
-      Bei URL-Mustern, die nicht der Richtlinie entsprechen, hat Folgendes Vorrang (in dieser Reihenfolge):
-
-        * <ph name="WEB_HID_ASK_FOR_URLS_POLICY_NAME" /> (falls eine Übereinstimmung besteht)
-
-        * <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" /> (falls konfiguriert)
-
-        * Die persönlichen Einstellungen des Nutzers
-
-      URL-Muster dürfen nicht im Konflikt mit <ph name="WEB_HID_ASK_FOR_URLS_POLICY_NAME" /> stehen. Keine Richtlinie hat Vorrang, falls eine URL mit beiden übereinstimmt.
-
-      Genaue Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> ist kein akzeptierter Wert für diese Richtlinie.</translation>
 <translation id="8554750769356971993">Durch diese Richtlinie wird festgelegt, ob die <ph name="PRIVACY_SANDBOX_NAME" />-Einstellung für von Websites vorgeschlagene Werbung für Nutzer deaktiviert werden kann.
 
 Wenn die Richtlinie deaktiviert ist, wird die Einstellung für von Websites vorgeschlagene Werbung für Nutzer deaktiviert.
@@ -11300,15 +10857,6 @@ Wenn die Richtlinie nicht konfiguriert ist, werden bei der ersten Ausführung ke
       Wenn die Richtlinie auf "false" gesetzt oder nicht konfiguriert ist, werden keine Informationen ausgegeben.
       Ist sie auf "true" gesetzt, werden Informationen zum Bluetooth-Status des Geräts ausgegeben.</translation>
 <translation id="8700633400000170881">Linke Taste als primäre Maustaste festlegen</translation>
-<translation id="8703378568562190813">Wenn diese Richtlinie konfiguriert ist, kannst du eine Liste mit URL-Mustern erstellen, die angeben, welche Webanwendungen Zugriff auf Dateitypen erhalten.
-
-      Wenn die Richtlinie nicht konfiguriert ist, gilt <ph name="DEFAULT_FILE_HANDLING_GUARD_SETTING_POLICY_NAME" /> für alle Webanwendungen, sofern konfiguriert. Falls nicht, werden die persönlichen Einstellungen des Nutzers verwendet.
-
-      Bei URL-Mustern, die weder <ph name="FILE_HANDLING_ALLOWED_FOR_URLS_POLICY_NAME" /> noch <ph name="FILE_HANDLING_BLOCKED_FOR_URLS_POLICY_NAME" /> entsprechen, werden <ph name="DEFAULT_FILE_HANDLING_GUARD_SETTING_POLICY_NAME" /> oder die persönlichen Einstellungen des Nutzers verwendet – in dieser Reihenfolge.
-
-      URL-Muster dürfen nicht im Konflikt mit <ph name="FILE_HANDLING_BLOCKED_FOR_URLS_POLICY_NAME" /> stehen. Keine Richtlinie hat Vorrang, falls eine URL mit beiden übereinstimmt.
-
-      Genaue Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> ist kein akzeptierter Wert für diese Richtlinie.</translation>
 <translation id="8703488928438047864">Boardstatus melden</translation>
 <translation id="8704831857353097849">Liste der deaktivierten Plug-ins</translation>
 <translation id="8705317513271779649">Mit dieser Richtlinie wird die ausgewählte Tastenkombination für die Neuzuordnung von Ereignissen zu F12 auf der Unterseite für die Tastenneuzuordnung festgelegt. Diese Einstellungen gelten nur für <ph name="PRODUCT_OS_NAME" />-Tastaturen und sind standardmäßig deaktiviert, wenn die Richtlinie nicht konfiguriert ist. Wenn diese Richtlinie konfiguriert ist, kann sie vom Nutzer nicht geändert oder überschrieben werden.</translation>
@@ -11696,13 +11244,6 @@ Ist die Richtlinie deaktiviert, sind alle Integrationen deaktiviert.</translatio
       Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, wird kein Remote-Powerwash auf dem Gerät durchgeführt, unabhängig vom Status der Registrierungs-ID.
 
       Diese Überprüfung wird durchgeführt, wenn der Anmeldebildschirm geladen wird. Wenn der Anmeldebildschirm geöffnet bleibt, wird sie stündlich wiederholt. Dies verhindert, dass die Migration während einer Nutzersitzung startet und zu Problemen für Endnutzer führt.</translation>
-<translation id="8995019632040507706">Wenn diese Richtlinie konfiguriert ist, kannst du eine Liste mit URL-Mustern erstellen, durch die angegeben wird, welche Websites auf Sensoren wie Bewegungs- und Lichtsensoren zugreifen dürfen.
-
-      Wenn die Richtlinie nicht konfiguriert ist, gilt „<ph name="DEFAULT_SENSORS_SETTING_POLICY_NAME" />“ für alle Websites, sofern konfiguriert. Falls nicht, wird die persönliche Einstellung des Nutzers verwendet.
-
-      Sollte das URL-Muster sowohl in dieser Richtlinie als auch in der Richtlinie „<ph name="SENSORS_BLOCKED_FOR_URLS_POLICY_NAME" />“ enthalten sein, hat letztere Vorrang und der Zugriff auf Bewegungs- und Lichtsensoren wird blockiert.
-
-      Ausführliche Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Platzhalter wie <ph name="WILDCARD_VALUE" /> sind zulässig.</translation>
 <translation id="9003823644527627017">Bruschetta-VMs unter <ph name="PRODUCT_OS_NAME" /> konfigurieren</translation>
 <translation id="9004469022085379212">Wenn die Richtlinie aktiviert ist, kann das Gerät unter <ph name="PRODUCT_OS_NAME" /> virtuelle Maschinen ausführen. <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" /> und <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> müssen aktiviert sein, um <ph name="PRODUCT_CROSTINI_NAME" /> zu verwenden. Ist die Richtlinie deaktiviert, kann das Gerät keine virtuellen Maschinen ausführen. Wenn sie deaktiviert wird, wird die Richtlinie beim Starten neuer virtueller Maschinen angewandt. Die bereits ausgeführten sind nicht betroffen.
 
@@ -11912,17 +11453,6 @@ Diese Richtlinie wird nur angewendet, wenn die Richtlinie „<ph name="FULL_REST
 <translation id="9124770007620653639">Daten zur Domainzuverlässigkeit nie an Google senden</translation>
 <translation id="9126331659955304300">Auswahl des Nutzeravatars aus lokalem Dateisystem, Kamera und Google-Profil zulassen</translation>
 <translation id="9126694586349976283">Verwendung der integrierten KI-APIs zulassen.</translation>
-<translation id="9128095645860384292">Mit dieser Richtlinie kannst du eine Liste mit URL-Mustern für Websites erstellen, durch die angegeben wird, welche Websites JavaScript mit aktiviertem JIT-Compiler (Just In Time) nicht ausführen dürfen.
-
-          Wenn JavaScript JIT deaktiviert ist, rendert <ph name="PRODUCT_NAME" /> Webinhalte möglicherweise langsamer und Teile von JavaScript, einschließlich WebAssembly, werden eventuell deaktiviert. Außerdem darf <ph name="PRODUCT_NAME" /> Webinhalte möglicherweise in einer sichereren Konfiguration rendern, sollte JavaScript JIT deaktiviert sein.
-
-          Ausführliche Informationen zu gültigen URL-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Platzhalter wie <ph name="WILDCARD_VALUE" /> sind zulässig.
-
-          JavaScript JIT-Richtlinienausnahmen werden nur für die jeweilige Website (eTLD+1) erzwungen. Eine nur für subdomain.beispiel.de konfigurierte Richtlinie wird nicht korrekt auf beispiel.de oder subdomain.beispiel.de angewendet, weil beide in beispiel.de (eTLD+1) aufgelöst werden, wofür es keine Richtlinie gibt. In diesem Fall muss die Richtlinie für beispiel.de konfiguriert sein, damit sie sowohl für beispiel.de als auch subdomain.beispiel.de korrekt angewendet wird.
-
-          Diese Richtlinie wird auf Basis einzelner Frames angewendet und nicht nur auf Basis der Ursprungs-URL auf oberster Ebene. Wenn z. B. beispiel-eins.de in der Richtlinie „<ph name="JAVA_SCRIPT_JIT_BLOCKED_FOR_SITES_POLICY_NAME" />“ aufgelistet ist, aber beispiel-eins.de einen Frame mit beispiel-zwei.de lädt, ist für beispiel-eins.de JavaScript JIT deaktiviert. Für beispiel-zwei.de wird jedoch die Richtlinie aus „<ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" />“ verwendet, falls konfiguriert, oder JavaScript JIT ist standardmäßig aktiviert.
-
-          Wenn die Richtlinie für eine Website nicht konfiguriert ist, gilt die Richtlinie aus „<ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" />“ für die Website, falls konfiguriert. Andernfalls ist JavaScript JIT für die Website aktiviert.</translation>
 <translation id="9129169595075460149">Bei aktivierter Richtlinie ist SafeSearch in der Google Suche immer aktiv und Nutzer können diese Einstellung nicht ändern.
 
       Ist die Richtlinie deaktiviert oder nicht konfiguriert, wird SafeSearch in der Google Suche nicht erzwungen.</translation>

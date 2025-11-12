@@ -243,6 +243,7 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:
 <translation id="3611658447322220736">Nyligt lukkede websites kan gennemføre afsendelse og modtagelse af data</translation>
 <translation id="3619294456800709762">Websites kan automatisk åbne integreret billede</translation>
 <translation id="3628308229821498208">Foreslåede søgninger</translation>
+<translation id="363748948745453283">Bruger omtrentlig lokation</translation>
 <translation id="3641456520301071208">Websites kan anmode om adgang til din lokation</translation>
 <translation id="3658847490588580244">Felt i bunden med standardbrowser</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{Der er <ph name="RWS_MEMBERS_COUNT" /> website i gruppen af websites, der tilhører <ph name="RWS_OWNER" />, som kan se din aktivitet i gruppen}one{Der er <ph name="RWS_MEMBERS_COUNT" /> website i gruppen af websites, der tilhører <ph name="RWS_OWNER" />, som kan se din aktivitet i gruppen}other{Der er <ph name="RWS_MEMBERS_COUNT" /> websites i gruppen af websites, der tilhører <ph name="RWS_OWNER" />, som kan se din aktivitet i gruppen}}</translation>

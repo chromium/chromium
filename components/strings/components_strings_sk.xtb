@@ -519,6 +519,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="1823768272150895732">Písmo</translation>
 <translation id="1824402189105105503">Ôsmy kotúč</translation>
 <translation id="1826516787628120939">Kontroluje sa</translation>
+<translation id="1829026591231985685">ukladaní informácií do Peňaženky Google v nastaveniach</translation>
 <translation id="1832730227369924598">Synchronizácia v počítači</translation>
 <translation id="1834452765064623979">Výstavba a údržba</translation>
 <translation id="1838374766361614909">Vymazať vyhľadávanie</translation>
@@ -1881,6 +1882,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="4073797364926776829">Zobraziť kartu</translation>
 <translation id="4075732493274867456">Klient a server nepodporujú spoločnú verziu protokolu SSL ani šifrovaciu súpravu.</translation>
 <translation id="4079302484614802869">Konfigurácia proxy je nastavená na použitie skriptu PAC webovej adresy, nie pevne daných serverov proxy.</translation>
+<translation id="4080668349181235831">Webová adresa a celý obsah stránky webu, ktorý navštívite, sa zdieľajú s Googlom, aby vám mohol ponúkať návrhy a zlepšovať túto funkciu. Prečítajte si viac o <ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" />.</translation>
 <translation id="4080855220442581440">posúvanie a približovanie či odďaľovanie zdieľaných kariet</translation>
 <translation id="4082333119419111506">Papier (s predtlačou)</translation>
 <translation id="4082393374666368382">Nastavenia – správa</translation>
@@ -3840,6 +3842,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="7286908876112207905">Prilepenie tohto obsahu na tento web nie je povolené</translation>
 <translation id="7291578327729322058">Pridanie vodičského preukazu</translation>
 <translation id="7292031607255951991">Meno príjemcu</translation>
+<translation id="7297228218361240128">Ukladajte informácie z prezeraných stránok do Peňaženky Google</translation>
 <translation id="7298195798382681320">Odporúčané</translation>
 <translation id="7299471494012161875">Pripojené periférie obrazovky</translation>
 <translation id="7299721129597238157">Odstrániť záložku</translation>
@@ -4237,6 +4240,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="7916162853251942238">Základňa na gumotlač</translation>
 <translation id="791698251820376781">Vaša organizácia vám neumožňuje prihlásiť sa</translation>
 <translation id="7926503317156566022">Letecký priemysel</translation>
+<translation id="7927046851848613453">Ukladajte okrem svojich vyplnených formulárov aj vstupenky, udalosti a ďalšie informácie z prezeraných stránok. Potom budete mať rýchly prístup ku kartám, ako sú vstupenky na podujatia a vernostné karty. Uložené informácie sa môžu zobrazovať vo vašich zariadeniach a službách Googlu.</translation>
 <translation id="7930282586031445870">Obrazovka so zmluvnými podmienkami platby Kúpte hneď, plaťte neskôr je zavretá.</translation>
 <translation id="7932035970207573919">Adresa práce: <ph name="ADDRESS" /></translation>
 <translation id="793209273132572360">Chcete aktualizovať adresu?</translation>

@@ -616,6 +616,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="1414648216875402825">Posodabljate na nestabilno različico <ph name="PRODUCT_NAME" />, ki še niso v celoti razvite. Prišlo bo do zrušitev in nepričakovanih napak. Nadaljujte previdno.</translation>
 <translation id="1415708812149920388">Dostop za branje odložišča je zavrnjen</translation>
 <translation id="1415990189994829608">Razširitev <ph name="EXTENSION_NAME" /> (ID razširitve »<ph name="EXTENSION_ID" />«) ni dovoljena v seji te vrste.</translation>
+<translation id="141720836055413739">Nalaganje ni mogoče.  Uporabite drugo obliko datoteke.</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{Odstrani aplikacijo}one{Odstrani aplikacije}two{Odstrani aplikacije}few{Odstrani aplikacije}other{Odstrani aplikacije}}</translation>
 <translation id="1417497355604638350">Pošiljanje diagnostičnih podatkov in podatkov o uporabi</translation>
 <translation id="1418552618736477642">Obvestila in aplikacije</translation>
@@ -2884,6 +2885,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="2946640296642327832">Omogoči Bluetooth</translation>
 <translation id="2947281105969315778">Če želite deliti ali se pridružiti skupinam zavihkov, se morate biti zmožni prijaviti v Chrome</translation>
 <translation id="2947605845283690091">Brskanje po spletu bi moralo biti hitro. Vzemite si trenutek in <ph name="BEGIN_LINK" />preverite razširitve<ph name="END_LINK" />.</translation>
+<translation id="2948287943780377675">{FILE_COUNT,plural, =1{Datoteko spustite tukaj}one{Datoteke spustite tukaj}two{Datoteke spustite tukaj}few{Datoteke spustite tukaj}other{Datoteke spustite tukaj}}</translation>
 <translation id="2948300991547862301">Pojdi na <ph name="PAGE_TITLE" /></translation>
 <translation id="29488703364906173">Hiter, preprost in varen brskalnik, razvit za sodobni splet.</translation>
 <translation id="2950666755714083615">Prijavi me</translation>
@@ -5273,6 +5275,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="4606551464649945562">Spletnim mestom ne dovoli ustvarjanja 3D-zemljevida vaše okolice ali spremljanja položaja kamere</translation>
 <translation id="4606933160360542263">Kombinacija tipk po meri: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Želite izbrisati skupino zavihkov?}one{Želite izbrisati skupine zavihkov?}two{Želite izbrisati skupine zavihkov?}few{Želite izbrisati skupine zavihkov?}other{Želite izbrisati skupine zavihkov?}}</translation>
+<translation id="4607763915939540711">{FILE_LIMIT,plural, =1{Naložite 1 datoteko, ki jo želite uporabiti pri vprašanju}one{Naložite do # datoteko, ki jih želite uporabiti pri vprašanju}two{Naložite do # datoteki, ki jih želite uporabiti pri vprašanju}few{Naložite do # datoteke, ki jih želite uporabiti pri vprašanju}other{Naložite do # datotek, ki jih želite uporabiti pri vprašanju}}</translation>
 <translation id="4608500690299898628">&amp;Iskanje ...</translation>
 <translation id="4609164937357979319">Izbira računa</translation>
 <translation id="4610493438923139095">Ni zaupanja vredno</translation>

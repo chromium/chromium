@@ -613,6 +613,7 @@
 <translation id="1414648216875402825">你即將更新為不穩定的 <ph name="PRODUCT_NAME" />版本，其中含有仍在開發中的功能。系統可能會發生當機情況和無法預期的錯誤，執行時請特別注意。</translation>
 <translation id="1415708812149920388">已禁止讀取剪貼簿</translation>
 <translation id="1415990189994829608">這個工作階段類型不允許使用 <ph name="EXTENSION_NAME" /> (擴充功能 ID 為「<ph name="EXTENSION_ID" />」)。</translation>
+<translation id="141720836055413739">無法上傳，請試試其他檔案格式。</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{移除應用程式}other{移除應用程式}}</translation>
 <translation id="1417497355604638350">傳送診斷和使用資料。</translation>
 <translation id="1418552618736477642">通知和應用程式</translation>
@@ -2868,6 +2869,7 @@
 <translation id="2946640296642327832">啟用藍牙</translation>
 <translation id="2947281105969315778">你必須能夠登入 Chrome，才能分享或加入分頁群組</translation>
 <translation id="2947605845283690091">網路瀏覽速度應該要快速流暢。現在就花點時間<ph name="BEGIN_LINK" />檢查擴充功能<ph name="END_LINK" />吧。</translation>
+<translation id="2948287943780377675">{FILE_COUNT,plural, =1{將檔案拖曳到這裡}other{將檔案拖曳到這裡}}</translation>
 <translation id="2948300991547862301">前往<ph name="PAGE_TITLE" /></translation>
 <translation id="29488703364906173">一款快速、簡單又安全的新世代網路瀏覽器。</translation>
 <translation id="2950666755714083615">我要訂閱</translation>
@@ -5250,6 +5252,7 @@
 <translation id="4606551464649945562">不允許網站根據你的周遭環境建立 3D 地圖或追蹤攝影機位置</translation>
 <translation id="4606933160360542263">自訂按鍵組合：<ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{要刪除分頁群組嗎？}other{要刪除分頁群組嗎？}}</translation>
+<translation id="4607763915939540711">{FILE_LIMIT,plural, =1{提問時最多只能上傳 1 個檔案}other{提問時最多只能上傳 # 個檔案}}</translation>
 <translation id="4608500690299898628">尋找(&amp;F)...</translation>
 <translation id="4609164937357979319">選取帳戶</translation>
 <translation id="4610493438923139095">不信任</translation>

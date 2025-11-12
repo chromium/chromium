@@ -656,6 +656,7 @@
 <translation id="3547933853190131743">‏البحث باستخدام "وضع AI"</translation>
 <translation id="3557336313807607643">إضافة إلى جهات الاتصال</translation>
 <translation id="355765753469272474">تراجع</translation>
+<translation id="3565012355885596568">تعذَّر تحميل الصور</translation>
 <translation id="3565930036634619844">علامة التبويب رقم <ph name="TAB_INDEX" /> من <ph name="NUMBER_OF_TABS" /></translation>
 <translation id="3572607909481582402">‏في حسابك على Google</translation>
 <translation id="3575234738189584619">‏البحث باستخدام "عدسة Google"</translation>
@@ -1721,7 +1722,7 @@
 <translation id="754655535278952384">تم التحقّق من كلمات المرور <ph name="TIME" /></translation>
 <translation id="7554645225856321710">إغلاق الكل</translation>
 <translation id="7554791636758816595">علامة تبويب جديدة</translation>
-<translation id="7557508262441527045">تمّ تسجيل الخروج.</translation>
+<translation id="7557508262441527045">تمّ تسجيل الخروج</translation>
 <translation id="7561196759112975576">دائمًا</translation>
 <translation id="7561982940498449837">إغلاق القائمة</translation>
 <translation id="7566349809380613217">يمكن فتح "<ph name="GROUP_TITLE" />"، وهي مجموعة مشتركة تضم علامات تبويب يبلغ عددها <ph name="NUMBER_OF_TABS" />، <ph name="CREATION_TEXT" /></translation>

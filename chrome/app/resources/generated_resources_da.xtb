@@ -614,6 +614,7 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1414648216875402825">Du er ved at opdatere til en ustabil version af <ph name="PRODUCT_NAME" />, der indeholder ufærdige funktioner. Nedbrud og uventede fejl kan forekomme. Vær forsigtig, hvis du fortsætter.</translation>
 <translation id="1415708812149920388">Læseadgang til udklipsholderen blev afvist</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> (udvidelses-id'et "<ph name="EXTENSION_ID" />") er ikke tilladt i denne sessionstype.</translation>
+<translation id="141720836055413739">Det er ikke muligt at uploade.  Prøv et andet filformat.</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{Fjern app}one{Fjern app}other{Fjern apps}}</translation>
 <translation id="1417497355604638350">Send diagnostik- og brugsdata.</translation>
 <translation id="1418552618736477642">Notifikationer og apps</translation>
@@ -2883,6 +2884,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2946640296642327832">Aktivér Bluetooth</translation>
 <translation id="2947281105969315778">Du skal kunne logge ind i Chrome for at dele eller deltage i fanegrupper</translation>
 <translation id="2947605845283690091">Webbrowsing bør være hurtigt. Brug et øjeblik på at <ph name="BEGIN_LINK" />tjekke dine udvidelser<ph name="END_LINK" /> nu.</translation>
+<translation id="2948287943780377675">{FILE_COUNT,plural, =1{Slip filen her}one{Slip filen her}other{Slip filerne her}}</translation>
 <translation id="2948300991547862301">Gå til <ph name="PAGE_TITLE" /></translation>
 <translation id="29488703364906173">En hurtig, enkel og sikker webbrowser, der er udviklet til det moderne internet.</translation>
 <translation id="2950666755714083615">Tilmeld mig</translation>
@@ -5272,6 +5274,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4606551464649945562">Tillad ikke, at websites opretter et 3D-kort over dine omgivelser eller registrerer kamerapositionen</translation>
 <translation id="4606933160360542263">Tilpasset tastekombination: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Vil du slette fanegruppen?}one{Vil du slette fanegruppen?}other{Vil du slette fanegrupperne?}}</translation>
+<translation id="4607763915939540711">{FILE_LIMIT,plural, =1{Upload 1 fil, der skal bruges sammen med dit spørgsmål}one{Upload op til # fil, der skal bruges sammen med dit spørgsmål}other{Upload op til # filer, der skal bruges sammen med dit spørgsmål}}</translation>
 <translation id="4608500690299898628">&amp;Find...</translation>
 <translation id="4609164937357979319">Valg af konto</translation>
 <translation id="4610493438923139095">Upålidelig</translation>

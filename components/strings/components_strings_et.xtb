@@ -519,6 +519,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="1823768272150895732">Font</translation>
 <translation id="1824402189105105503">Kaheksas rull</translation>
 <translation id="1826516787628120939">Kontrollimine</translation>
+<translation id="1829026591231985685">seadetes teabe salvestamine Google Walletisse</translation>
 <translation id="1832730227369924598">Töölaua sünkroonimine</translation>
 <translation id="1834452765064623979">Ehitus ja hooldus</translation>
 <translation id="1838374766361614909">Otsingu kustutamine</translation>
@@ -1885,6 +1886,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="4073797364926776829">Kuva kaart</translation>
 <translation id="4075732493274867456">Klient ja server ei toeta tavapärast SSL-protokolli versiooni ega šifreerimiskomplekti.</translation>
 <translation id="4079302484614802869">Puhverserveri konfigureerimine on määratud kasutama pac-skripti URL-i, mitte fikseeritud puhverservereid.</translation>
+<translation id="4080668349181235831">Soovituste pakkumiseks ja selle funktsiooni täiustamiseks jagatakse Google'iga teie külastatud saidi URL-i ja kogu lehe sisu. Vaadake lisateavet: <ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" />.</translation>
 <translation id="4080855220442581440">jagatud vahelehtede kerimine ja suumimine</translation>
 <translation id="4082333119419111506">Paber (eeltrükitud)</translation>
 <translation id="4082393374666368382">Seaded – haldus</translation>
@@ -3845,6 +3847,7 @@ Lisateave:
 <translation id="7286908876112207905">Selle sisu kleepimine sellele saidile ei ole lubatud</translation>
 <translation id="7291578327729322058">Juhiloa lisamine</translation>
 <translation id="7292031607255951991">Adressaadi nimi</translation>
+<translation id="7297228218361240128">Vaadatavatelt lehtedelt teabe salvestamine Google Walletisse</translation>
 <translation id="7298195798382681320">Soovitatud</translation>
 <translation id="7299471494012161875">Välised ühendatud ekraanid</translation>
 <translation id="7299721129597238157">Kustuta järjehoidja</translation>
@@ -4242,6 +4245,7 @@ Lisateave:
 <translation id="7916162853251942238">Fleksotrükk</translation>
 <translation id="791698251820376781">Teie organisatsioon ei luba teil sisse logida</translation>
 <translation id="7926503317156566022">Lennutööstus</translation>
+<translation id="7927046851848613453">Salvestage vaadatavatelt lehtedelt pileteid, sündmusi ja muud teavet – mitte ainult täidetud vorme. Seejärel pääsete kiiresti juurde oma pääsmetele, nagu sündmuste piletid ja kliendikaardid. Teie salvestatud teave võib ilmuda teie seadmetes ja Google'i teenustes.</translation>
 <translation id="7930282586031445870">Järelmaksu teenusetingimuste kuva on suletud.</translation>
 <translation id="7932035970207573919">Töökoha aadress, <ph name="ADDRESS" /></translation>
 <translation id="793209273132572360">Kas värskendada aadressi?</translation>

@@ -4287,6 +4287,7 @@ Aanvullende informatie:
 <translation id="7987087088851949178">Uitgevers van Koop nu, betaal later die beschikbaar zijn voor betalen in termijnen, zijn op volledige hoogte geopend.</translation>
 <translation id="799149739215780103">Inbinden</translation>
 <translation id="7992044431894087211">Scherm delen met <ph name="APPLICATION_TITLE" /> is hervat</translation>
+<translation id="799384093520583425">Je organisatie heeft het gebruik van DevTools op deze pagina geblokkeerd</translation>
 <translation id="7995512525968007366">Niet opgegeven</translation>
 <translation id="7997855386298213183">gedeelde tabbladen</translation>
 <translation id="8001912761979890298">Deze server kan niet bewijzen dat dit <ph name="DOMAIN" /> is, omdat de server een beveiligingscertificaat gebruikt dat niet wordt vertrouwd door Chromium of je systeemconfiguratie voor versleuteling van webverkeer. Dit kan worden veroorzaakt door een verkeerde configuratie of een aanvaller die je verbinding onderschept. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Certificaat bekijken<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
@@ -4831,6 +4832,7 @@ Aanvullende informatie:
 <translation id="8922013791253848639">Altijd advertenties op deze site toestaan</translation>
 <translation id="8922734931659847428">Een beperkte lijst met URL's van pagina's die je bezoekt waarop <ph name="BEGIN_LINK" />verouderde technologiegebeurtenissen<ph name="END_LINK" /> plaatsvinden</translation>
 <translation id="892588693504540538">Perforatie rechtsboven</translation>
+<translation id="8926082624786998759">DevTools niet toegestaan op deze pagina</translation>
 <translation id="8926389886865778422">Niet meer vragen</translation>
 <translation id="8926400492587758246">Betaal in lage maandelijkse termijnen</translation>
 <translation id="8932102934695377596">Je klok loopt achter</translation>

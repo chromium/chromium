@@ -4293,6 +4293,7 @@
 <translation id="7987087088851949178">ເປີດຜູ້ອອກບໍລິການຊື້ກ່ອນຈ່າຍນຳຫຼັງທີ່ພ້ອມໃຫ້ຈ່າຍຜ່ອນຢູ່ລະດັບຄວາມສູງເຕັມໜ້າຈໍ.</translation>
 <translation id="799149739215780103">ຫບິບເຫຼັ້ມ</translation>
 <translation id="7992044431894087211">ສືບຕໍ່ການແບ່ງປັນໜ້າຈໍກັບ <ph name="APPLICATION_TITLE" /> ແລ້ວ</translation>
+<translation id="799384093520583425">ອົງກອນຂອງທ່ານໄດ້ບລັອກການໃຊ້ DevTools ໃນໜ້ານີ້</translation>
 <translation id="7995512525968007366">ບໍ່​ໄດ້ລະ​ບຸ</translation>
 <translation id="7997855386298213183">ແຖບທີ່ແບ່ງປັນ</translation>
 <translation id="8001912761979890298">ເຊີບເວີນີ້ບໍ່ສາມາດຢືນຢັນໄດ້ວ່າມັນແມ່ນ <ph name="DOMAIN" /> ເນື່ອງຈາກມັນກຳລັງໃຊ້ໃບຮັບຮອງຄວາມປອດໄພທີ່ Chromium ຫຼື ການຕັ້ງຄ່າລະບົບຂອງທ່ານສຳລັບການເຂົ້າລະຫັດທຣາບຟິກເວັບບໍ່ເຊື່ອຖື. ນີ້ອາດເກີດຈາກການຕັ້ງຄ່າຜິດ ຫຼື ມີຜູ້ໂຈມຕີສະກັດກັ້ນການເຊື່ອມຕໍ່ຂອງທ່ານ. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />ເບິ່ງໃບຮັບຮອງ<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
@@ -4837,6 +4838,7 @@
 <translation id="8922013791253848639">ອະນຸຍາດໂຄສະນາໃນເວັບໄຊນີ້ທຸກເທື່ອ</translation>
 <translation id="8922734931659847428">ລາຍຊື່ URL ທີ່ຈຳກັດໄວ້ຂອງໜ້າເວັບທີ່ທ່ານເຂົ້າເບິ່ງເຊິ່ງໃຊ້ <ph name="BEGIN_LINK" />ເຫດການເທັກໂນໂລຢີແບບເກົ່າ<ph name="END_LINK" /></translation>
 <translation id="892588693504540538">ເຈາະຮູເທິງສຸດເບື້ອງຊ້າຍ</translation>
+<translation id="8926082624786998759">ບໍ່ອະນຸຍາດໃຫ້ໃຊ້ DevTools ໃນໜ້ານີ້</translation>
 <translation id="8926389886865778422">ຢ່າຖາມອີກ</translation>
 <translation id="8926400492587758246">ຜ່ອນຈ່າຍຕ່ຳເປັນເດືອນ</translation>
 <translation id="8932102934695377596">ໂມງ​ຂອງ​ທ່ານ​ຊ້າ</translation>

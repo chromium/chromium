@@ -519,6 +519,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1823768272150895732">Carattere</translation>
 <translation id="1824402189105105503">Ottavo rullo</translation>
 <translation id="1826516787628120939">Verifica in corso...</translation>
+<translation id="1829026591231985685">salvataggio di informazioni in Google Wallet nelle impostazioni</translation>
 <translation id="1832730227369924598">Sincronizzazione scrivania</translation>
 <translation id="1834452765064623979">Edilizia e manutenzione</translation>
 <translation id="1838374766361614909">Cancella ricerca</translation>
@@ -1882,6 +1883,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4073797364926776829">Visualizza carta</translation>
 <translation id="4075732493274867456">Il client e il server non supportano una suite di crittografia o una versione del protocollo SSL comuni.</translation>
 <translation id="4079302484614802869">L'impostazione della configurazione proxy prevede l'utilizzo di un URL script .pac, non di server proxy fissi.</translation>
+<translation id="4080668349181235831">Per poterti offrire suggerimenti e migliorare questa funzionalità, l'URL e i contenuti completi della pagina del sito che visiti vengono condivisi con Google. Scopri di più su <ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" />.</translation>
 <translation id="4080855220442581440">scorrimento e zoom delle schede condivise</translation>
 <translation id="4082333119419111506">Carta (prestampata)</translation>
 <translation id="4082393374666368382">Impostazioni - Gestione</translation>
@@ -3841,6 +3843,7 @@ Ulteriori dettagli:
 <translation id="7286908876112207905">Incollare questi contenuti nel sito non è consentito</translation>
 <translation id="7291578327729322058">Aggiungi patente di guida</translation>
 <translation id="7292031607255951991">Nome destinatario</translation>
+<translation id="7297228218361240128">Salva informazioni su Google Wallet dalle pagine che visualizzi</translation>
 <translation id="7298195798382681320">Consigliate</translation>
 <translation id="7299471494012161875">Periferiche display collegate</translation>
 <translation id="7299721129597238157">Elimina preferito</translation>
@@ -4238,6 +4241,7 @@ Ulteriori dettagli:
 <translation id="7916162853251942238">Base flexo</translation>
 <translation id="791698251820376781">La tua organizzazione non ti consente di accedere</translation>
 <translation id="7926503317156566022">Settore aerospaziale</translation>
+<translation id="7927046851848613453">Salva biglietti, eventi e altre informazioni dalle pagine che visualizzi, non solo dai moduli che compili. Accedi rapidamente alle tue tessere, come biglietti per un evento e carte fedeltà. Le informazioni salvate possono essere visualizzate sui tuoi dispositivi e nei prodotti Google.</translation>
 <translation id="7930282586031445870">La schermata dei Termini di servizio di Buy now, pay later è chiusa.</translation>
 <translation id="7932035970207573919">Indirizzo di lavoro, <ph name="ADDRESS" /></translation>
 <translation id="793209273132572360">Vuoi aggiornare l'indirizzo?</translation>

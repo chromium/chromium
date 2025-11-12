@@ -613,6 +613,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1414648216875402825">Bạn đang cập nhật lên phiên bản không chính thức <ph name="PRODUCT_NAME" /> chứa các tính năng hiện trong quá trình thử nghiệm. Các sự cố và lỗi không mong muốn sẽ xảy ra. Hãy thận trọng khi tiếp tục.</translation>
 <translation id="1415708812149920388">Đã từ chối quyền truy cập đọc bảng nhớ tạm</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> (ID tiện ích "<ph name="EXTENSION_ID" />") không được cho phép trong loại phiên này.</translation>
+<translation id="141720836055413739">Không tải lên được.  Hãy thử định dạng tệp khác.</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{Xóa Ứng dụng}other{Xóa các Ứng dụng}}</translation>
 <translation id="1417497355604638350">Gửi dữ liệu chẩn đoán và dữ liệu sử dụng.</translation>
 <translation id="1418552618736477642">Thông báo và ứng dụng</translation>

@@ -519,6 +519,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="1823768272150895732">Font</translation>
 <translation id="1824402189105105503">Osma rolna</translation>
 <translation id="1826516787628120939">Provjera</translation>
+<translation id="1829026591231985685">pohranjivanju informacija u Google Novčaniku u postavkama</translation>
 <translation id="1832730227369924598">Sinhronizacija radne površine</translation>
 <translation id="1834452765064623979">Izgradnja i održavanje</translation>
 <translation id="1838374766361614909">Obriši pretraživanje</translation>
@@ -1885,6 +1886,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="4073797364926776829">Prikaži karticu</translation>
 <translation id="4075732493274867456">Klijent i server ne podržavaju verziju zajedničkog SSL protokola ili paket za šifriranje.</translation>
 <translation id="4079302484614802869">Konfiguracija proksi servera je postavljena za korištenje URL-a .pac skripte, a ne fiksnih proksi servera.</translation>
+<translation id="4080668349181235831">Da vam nudimo prijedloge i poboljšamo ovu funkciju, URL i cijeli sadržaj stranice web lokacije koju posjećujete se dijele s Googleom. Saznajte više o <ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" />.</translation>
 <translation id="4080855220442581440">klizanje na dijeljenim karticama i njihovo zumiranje</translation>
 <translation id="4082333119419111506">Papir (unaprijed odštampan)</translation>
 <translation id="4082393374666368382">Postavke – Upravljanje</translation>
@@ -3845,6 +3847,7 @@ Dodatni detalji:
 <translation id="7286908876112207905">Lijepljenje sadržaja na ovu web lokaciju nije dozvoljeno</translation>
 <translation id="7291578327729322058">Dodajte vozačku dozvolu</translation>
 <translation id="7292031607255951991">Ime primaoca</translation>
+<translation id="7297228218361240128">Sačuvajte informacije u Google Novčaniku sa stranica koje pregledate</translation>
 <translation id="7298195798382681320">Preporučeno</translation>
 <translation id="7299471494012161875">Priključeni periferni uređaji za prikaz</translation>
 <translation id="7299721129597238157">Izbriši oznaku</translation>
@@ -4242,6 +4245,7 @@ Dodatni detalji:
 <translation id="7916162853251942238">Fleksografska podloga</translation>
 <translation id="791698251820376781">Vaša organizacija vam ne dozvoljava da se prijavite</translation>
 <translation id="7926503317156566022">Avioindustrija</translation>
+<translation id="7927046851848613453">Pohranjujte karte, događaje i druge informacije sa stranica koje pregledate, a ne samo obrasce koje popunjavate. Zatim brzo pristupajte kartama, kao što su karte za događaje i kartice lojalnosti. Sačuvane informacije se mogu prikazivati na vašim uređajima i Googleovim proizvodima.</translation>
 <translation id="7930282586031445870">Ekran uslova korištenja usluge za naknadno plaćanje je zatvoren.</translation>
 <translation id="7932035970207573919">Poslovna adresa, <ph name="ADDRESS" /></translation>
 <translation id="793209273132572360">Ažurirati adresu?</translation>
@@ -4290,6 +4294,7 @@ Dodatni detalji:
 <translation id="7987087088851949178">Donja tabela izdavača koji podržavaju naknadno plaćanje i koji su dostupni za plaćanje u ratama otvorena je u punoj visini.</translation>
 <translation id="799149739215780103">Povezivanje</translation>
 <translation id="7992044431894087211">Dijeljenje ekrana s aplikacijom <ph name="APPLICATION_TITLE" /> je nastavljeno</translation>
+<translation id="799384093520583425">Vaša je organizacija blokirala upotrebu razvojnih alata na ovoj stranici</translation>
 <translation id="7995512525968007366">Nije navedeno</translation>
 <translation id="7997855386298213183">dijeljene kartice</translation>
 <translation id="8001912761979890298">Server nije mogao dokazati da je <ph name="DOMAIN" /> jer koristi sigurnosni certifikat koji Chromium ili konfiguracija sistema za šifriranje web saobraćaja ne smatraju pouzdanim. Uzrok tome može biti pogrešna konfiguracija ili napadač koji je prekinuo vašu vezu. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Pregledajte certifikat<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
@@ -4834,6 +4839,7 @@ Dodatni detalji:
 <translation id="8922013791253848639">Uvijek omogući oglase na ovoj web lokaciji</translation>
 <translation id="8922734931659847428">Ograničena lista URL-ova stranica koje posjećujete na kojima se odvijaju <ph name="BEGIN_LINK" />događaji starije tehnologije<ph name="END_LINK" /></translation>
 <translation id="892588693504540538">Bušenje u gornjem desnom uglu</translation>
+<translation id="8926082624786998759">Razvojni alati nisu dopušteni na ovoj stranici</translation>
 <translation id="8926389886865778422">Ne pitaj ponovo</translation>
 <translation id="8926400492587758246">Plaćajte u malim mjesečnim ratama</translation>
 <translation id="8932102934695377596">Vaš sat kasni</translation>

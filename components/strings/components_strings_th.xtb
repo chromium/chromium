@@ -519,6 +519,7 @@
 <translation id="1823768272150895732">แบบอักษร</translation>
 <translation id="1824402189105105503">ม้วนกระดาษ 8</translation>
 <translation id="1826516787628120939">กำลังตรวจสอบ</translation>
+<translation id="1829026591231985685">กำลังบันทึกข้อมูลไปยัง Google Wallet ในการตั้งค่า</translation>
 <translation id="1832730227369924598">การซิงค์เดสก์</translation>
 <translation id="1834452765064623979">การก่อสร้างและบำรุงรักษา</translation>
 <translation id="1838374766361614909">ล้างการค้นหา</translation>
@@ -1884,6 +1885,7 @@
 <translation id="4073797364926776829">ดูบัตร</translation>
 <translation id="4075732493274867456">ไคลเอ็นต์และเซิร์ฟเวอร์ไม่รองรับโปรโตคอล SSL เวอร์ชันทั่วไปหรือชุดการเข้ารหัส</translation>
 <translation id="4079302484614802869">การกำหนดค่าพร็อกซีมีการตั้งค่าให้ใช้ URL สคริปต์ .pac ไม่ใช่พร็อกซีเซิร์ฟเวอร์แบบคงที่</translation>
+<translation id="4080668349181235831">ระบบจะแชร์ URL และเนื้อหาทั้งหน้าของเว็บไซต์ที่คุณเข้าชมกับ Google เพื่อแสดงคำแนะนำและปรับปรุงฟีเจอร์นี้ ดูข้อมูลเพิ่มเติมเกี่ยวกับ<ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" /></translation>
 <translation id="4080855220442581440">เลื่อนและซูมแท็บที่แชร์</translation>
 <translation id="4082333119419111506">กระดาษ (พิมพ์ล่วงหน้า)</translation>
 <translation id="4082393374666368382">การตั้งค่า - การจัดการ</translation>
@@ -3844,6 +3846,7 @@
 <translation id="7286908876112207905">ไม่อนุญาตให้วางเนื้อหานี้ในเว็บไซต์นี้</translation>
 <translation id="7291578327729322058">เพิ่มใบขับขี่</translation>
 <translation id="7292031607255951991">ชื่อผู้รับ</translation>
+<translation id="7297228218361240128">บันทึกข้อมูลไปยัง Google Wallet จากหน้าเว็บที่คุณดู</translation>
 <translation id="7298195798382681320">แนะนำ</translation>
 <translation id="7299471494012161875">อุปกรณ์ต่อพ่วงจอแสดงผลที่ต่อเชื่อมอยู่</translation>
 <translation id="7299721129597238157">นำออกบุ๊กมาร์ก</translation>
@@ -4241,6 +4244,7 @@
 <translation id="7916162853251942238">เฟล็กโซเบส</translation>
 <translation id="791698251820376781">องค์กรของคุณไม่อนุญาตให้ลงชื่อเข้าใช้</translation>
 <translation id="7926503317156566022">อุตสาหกรรมการบิน</translation>
+<translation id="7927046851848613453">บันทึกตั๋ว กิจกรรม และข้อมูลอื่นๆ จากหน้าเว็บที่คุณดู ไม่ใช่แค่แบบฟอร์มที่คุณกรอก แล้วเข้าถึงบัตรผ่านต่างๆ ได้อย่างรวดเร็ว เช่น ตั๋วเข้างานและบัตรสะสมคะแนน ข้อมูลที่บันทึกไว้จะปรากฏในอุปกรณ์ของคุณและในผลิตภัณฑ์ต่างๆ ของ Google</translation>
 <translation id="7930282586031445870">หน้าจอข้อกำหนดในการให้บริการของ "ซื้อก่อน จ่ายทีหลัง" ปิดอยู่</translation>
 <translation id="7932035970207573919">ที่อยู่ที่ทำงาน <ph name="ADDRESS" /></translation>
 <translation id="793209273132572360">อัปเดตที่อยู่ไหม</translation>
@@ -4289,6 +4293,7 @@
 <translation id="7987087088851949178">ผู้ให้บริการ "ซื้อก่อน จ่ายทีหลัง" ที่พร้อมให้ผ่อนชำระเป็นงวดเปิดอยู่ที่ระดับความสูงเต็มหน้าจอ</translation>
 <translation id="799149739215780103">เย็บเล่ม</translation>
 <translation id="7992044431894087211">กลับมาแชร์หน้าจอกับ <ph name="APPLICATION_TITLE" /> อีกครั้ง</translation>
+<translation id="799384093520583425">องค์กรของคุณบล็อกการใช้เครื่องมือสำหรับนักพัฒนาเว็บในหน้านี้</translation>
 <translation id="7995512525968007366">ไม่ได้ระบุ</translation>
 <translation id="7997855386298213183">แท็บที่แชร์</translation>
 <translation id="8001912761979890298">เซิร์ฟเวอร์นี้พิสูจน์ไม่ได้ว่าเป็น <ph name="DOMAIN" /> เนื่องจากใช้ใบรับรองความปลอดภัยที่ Chromium หรือการกำหนดค่าระบบของคุณไม่เชื่อถือสำหรับการเข้ารหัสการเข้าชมเว็บ สาเหตุอาจเกิดจากการกำหนดค่าผิดหรือผู้โจมตีขัดขวางการเชื่อมต่อของคุณ <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />ดูใบรับรอง<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
@@ -4834,6 +4839,7 @@
 <translation id="8922013791253848639">อนุญาตโฆษณาในไซต์นี้เสมอ</translation>
 <translation id="8922734931659847428">รายการ URL ที่จำกัดไว้ของหน้าเว็บที่คุณเข้าชมซึ่งใช้<ph name="BEGIN_LINK" />เหตุการณ์เทคโนโลยีเดิม<ph name="END_LINK" /></translation>
 <translation id="892588693504540538">เจาะรูด้านขวาบน</translation>
+<translation id="8926082624786998759">ไม่อนุญาตให้ใช้เครื่องมือสำหรับนักพัฒนาเว็บในหน้านี้</translation>
 <translation id="8926389886865778422">ไม่ต้องถามอีก</translation>
 <translation id="8926400492587758246">ผ่อนชำระรายเดือนในราคาถูก</translation>
 <translation id="8932102934695377596">นาฬิกาช้าเกินไป</translation>

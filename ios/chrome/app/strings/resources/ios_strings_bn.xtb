@@ -656,6 +656,7 @@
 <translation id="3547933853190131743">AI মোডের মাধ্যমে সার্চ করুন</translation>
 <translation id="3557336313807607643">পরিচিতিতে যোগ করুন</translation>
 <translation id="355765753469272474">আগের অবস্থায় ফিরুন</translation>
+<translation id="3565012355885596568">ছবি লোড করা যায়নি</translation>
 <translation id="3565930036634619844">ট্যাব। <ph name="NUMBER_OF_TABS" />টির মধ্যে <ph name="TAB_INDEX" /> নম্বর।</translation>
 <translation id="3572607909481582402">আপনার Google অ্যাকাউন্টে</translation>
 <translation id="3575234738189584619">Lens-এর মাধ্যমে সার্চ করুন</translation>
@@ -1315,6 +1316,7 @@
 <translation id="6045460247888249350">শিরোনাম যোগ করুন</translation>
 <translation id="6052269326659653305">প্রোফাইল পাল্টান</translation>
 <translation id="605721222689873409">YY</translation>
+<translation id="6058415747854995776">ভিডিও রেকর্ড করুন</translation>
 <translation id="6059830886158432458">আপনার খবর ও গতিবিধি এখানে নিয়ন্ত্রণ করুন</translation>
 <translation id="6066301408025741299">বাতিল করতে আলতো চাপুন৷</translation>
 <translation id="6074656473835429958">বিজ্ঞপ্তি পান</translation>
@@ -1816,6 +1818,7 @@
 <translation id="7866872729285243843">আপনার সব ডিভাইসে নিজের পড়ার তালিকা পেতে সেটিংসে গিয়ে “পড়ার তালিকা” চালু করুন।</translation>
 <translation id="7874107544081154809"><ph name="CELL_ACCESSIBILITY_LABEL" />-এর সাহায্যে ফর্ম অটোফিল করুন</translation>
 <translation id="7879275349003161544">ডাউনলোড দেখুন</translation>
+<translation id="7882689957034389473">ফটো তুলুন</translation>
 <translation id="7883882164760409935">আপনার কাছে একই পাসওয়ার্ড আছে যা আবার ব্যবহার করা হয়েছে।</translation>
 <translation id="7887174313503389866">মূল গোপনীয়তা এবং নিরাপত্তা নিয়ন্ত্রণ সম্পর্কিত প্রোডাক্টটি ঘুরে দেখা বিকল্পে যান আরও বিকল্পের জন্য, আলাদা আলাদা সেটিংসে যান।</translation>
 <translation id="7887198238286927132">আপনার গোপনীয়তা রক্ষার জন্য, Chrome এই ক্ষেত্রটি নিজে থেকে পূরণ করবে না।</translation>

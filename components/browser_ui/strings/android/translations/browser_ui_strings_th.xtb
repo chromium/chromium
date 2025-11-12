@@ -243,6 +243,7 @@
 <translation id="3611658447322220736">เว็บไซต์ที่เพิ่งปิดไปจะส่งและรับข้อมูลจนเสร็จสิ้นได้</translation>
 <translation id="3619294456800709762">เว็บไซต์สามารถเข้าสู่การแสดงภาพซ้อนภาพโดยอัตโนมัติได้</translation>
 <translation id="3628308229821498208">การค้นหาที่แนะนำ</translation>
+<translation id="363748948745453283">กำลังใช้ตำแหน่งโดยประมาณ</translation>
 <translation id="3641456520301071208">เว็บไซต์ขอตำแหน่งของคุณได้</translation>
 <translation id="3658847490588580244">Bottom Sheet ของเบราว์เซอร์เริ่มต้น</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{เว็บไซต์ <ph name="RWS_MEMBERS_COUNT" /> รายการในกลุ่มเว็บไซต์ของ <ph name="RWS_OWNER" /> ที่ดูกิจกรรมของคุณในกลุ่มได้}other{เว็บไซต์ <ph name="RWS_MEMBERS_COUNT" /> รายการในกลุ่มเว็บไซต์ของ <ph name="RWS_OWNER" /> ที่ดูกิจกรรมของคุณในกลุ่มได้}}</translation>

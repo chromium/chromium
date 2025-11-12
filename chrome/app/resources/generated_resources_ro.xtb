@@ -614,6 +614,7 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="1414648216875402825">Faceți actualizarea la o versiune <ph name="PRODUCT_NAME" /> instabilă. Aceasta conține funcții nefinalizate. Vor apărea blocări și erori neașteptate. Continuați cu atenție.</translation>
 <translation id="1415708812149920388">Accesul de citire la clipboard este interzis</translation>
 <translation id="1415990189994829608">Extensia <ph name="EXTENSION_NAME" /> (cu ID-ul „<ph name="EXTENSION_ID" />”) nu este permisă în acest tip de sesiune.</translation>
+<translation id="141720836055413739">Încărcarea nu a reușit.  Încearcă alt format de fișier.</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{Elimină aplicația}few{Elimină aplicații}other{Elimină aplicații}}</translation>
 <translation id="1417497355604638350">Trimite date de diagnosticare și de utilizare.</translation>
 <translation id="1418552618736477642">Notificările și aplicațiile</translation>
@@ -2869,6 +2870,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="2946640296642327832">Activați Bluetooth</translation>
 <translation id="2947281105969315778">Pentru a permite accesul la grupuri de file sau a te alătura lor, trebuie să te poți conecta la Chrome</translation>
 <translation id="2947605845283690091">Navigarea pe web trebuie să fie rapidă. <ph name="BEGIN_LINK" />Verifică-ți extensiile<ph name="END_LINK" /> acum.</translation>
+<translation id="2948287943780377675">{FILE_COUNT,plural, =1{Plasează fișierul aici}few{Plasează fișierele aici}other{Plasează fișierele aici}}</translation>
 <translation id="2948300991547862301">Accesați <ph name="PAGE_TITLE" /></translation>
 <translation id="29488703364906173">Un browser web rapid, simplu și sigur, creat pentru internetul modern.</translation>
 <translation id="2950666755714083615">Doresc să mă înscriu</translation>
@@ -5257,6 +5259,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4606551464649945562">Nu permite site-urilor să creeze o hartă 3D a lucrurilor din jur sau să urmărească poziția camerei video</translation>
 <translation id="4606933160360542263">Combinație de taste personalizată: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Ștergi grupul de file?}few{Ștergi grupurile de file?}other{Ștergi grupurile de file?}}</translation>
+<translation id="4607763915939540711">{FILE_LIMIT,plural, =1{Încarcă un fișier pe care să-l folosești cu întrebarea ta}few{Încarcă până la # fișiere pe care să le folosești cu întrebarea ta}other{Încarcă până la # de fișiere pe care să le folosești cu întrebarea ta}}</translation>
 <translation id="4608500690299898628">&amp;Caută...</translation>
 <translation id="4609164937357979319">Selectarea contului</translation>
 <translation id="4610493438923139095">Nu este de încredere</translation>

@@ -1561,7 +1561,7 @@
 <translation id="7525248386620136756">Закрыты и сохранены: <ph name="TAB_GROUPS_AND_TABS_PART" />.</translation>
 <translation id="7545347190366646170">Пользователи, у которых есть доступ</translation>
 <translation id="7554643625247105821">Не удалось проверить версию Chrome</translation>
-<translation id="7557508262441527045">Выполнен выход.</translation>
+<translation id="7557508262441527045">Выполнен выход</translation>
 <translation id="7573665567024262965">Выберите приложения по умолчанию</translation>
 <translation id="7577900504646297215">Управление интересами</translation>
 <translation id="757855969265046257">{FILES,plural, =1{Скачан <ph name="FILES_DOWNLOADED_ONE" /> файл}one{Скачан <ph name="FILES_DOWNLOADED_MANY" /> файл}few{Скачано <ph name="FILES_DOWNLOADED_MANY" /> файла}many{Скачано <ph name="FILES_DOWNLOADED_MANY" /> файлов}other{Скачано <ph name="FILES_DOWNLOADED_MANY" /> файла}}</translation>

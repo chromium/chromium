@@ -614,6 +614,7 @@
 <translation id="1414648216875402825">તમે <ph name="PRODUCT_NAME" />ના કામચલાઉ વર્ઝનમાં અપડેટ કરી રહ્યા છો, જે હજી વિકસી રહેલી સુવિધાઓ ધરાવે છે. ક્રેશ અને અનપેક્ષિત બગ આવશે. કૃપા કરીને સાવધાનીથી આગળ વધો.</translation>
 <translation id="1415708812149920388">ક્લિપબોર્ડ વાંચવાનો ઍક્સેસ નકારેલ છે</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> (એક્સ્ટેન્શન ID "<ph name="EXTENSION_ID" />") ને આ પ્રકારના સત્રમાં મંજૂરી નથી.</translation>
+<translation id="141720836055413739">અપલોડ કરી શકતા નથી.  ફાઇલનું કોઈ અલગ ફૉર્મેટ અજમાવી જુઓ.</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{ઍપ કાઢી નાખો}one{ઍપ કાઢી નાખો}other{ઍપ કાઢી નાખો}}</translation>
 <translation id="1417497355604638350">ડાયગ્નોસ્ટિક અને વપરાશનો ડેટા મોકલો.</translation>
 <translation id="1418552618736477642">નોટિફિકેશન અને ઍપ</translation>
@@ -2867,6 +2868,7 @@
 <translation id="2946640296642327832">Bluetooth સક્ષમ કરો</translation>
 <translation id="2947281105969315778">ટૅબના ગ્રૂપ શેર કરવા અથવા તેમાં જોડાવા માટે, તમારે Chromeમાં સાઇન ઇન કરવું આવશ્યક છે</translation>
 <translation id="2947605845283690091">વેબ બ્રાઉઝિંગ ઝડપી હોવું જોઈએ. હમણાં જ <ph name="BEGIN_LINK" />તમારા એક્સ્ટેંશનને ચેક કરવા<ph name="END_LINK" /> માટે થોડી ક્ષણ ફાળવો.</translation>
+<translation id="2948287943780377675">{FILE_COUNT,plural, =1{ફાઇલ અહીં છોડો}one{ફાઇલ અહીં છોડો}other{ફાઇલો અહીં છોડો}}</translation>
 <translation id="2948300991547862301"><ph name="PAGE_TITLE" /> પર જાઓ</translation>
 <translation id="29488703364906173">આધુનિક વેબ માટે બનાવવામાં આવેલું, એક ઝડપી, સરળ અને સુરક્ષિત વેબ બ્રાઉઝર.</translation>
 <translation id="2950666755714083615">મને સાઇન અપ કરો</translation>
@@ -5256,6 +5258,7 @@
 <translation id="4606551464649945562">કોઈ સાઇટને તમારી આજુબાજુનો 3D નકશો બનાવવાની અથવા કૅમેરાનું સ્ટેટસ ટ્રૅક કરવાની મંજૂરી આપશો નહીં</translation>
 <translation id="4606933160360542263">કસ્ટમ કીનું સંયોજન: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{શું ટૅબનું ગ્રૂપ ડિલીટ કરીએ?}one{શું ટૅબનું ગ્રૂપ ડિલીટ કરીએ?}other{શું ટૅબના ગ્રૂપ ડિલીટ કરીએ?}}</translation>
+<translation id="4607763915939540711">{FILE_LIMIT,plural, =1{તમારા પ્રશ્ન માટે ઉપયોગમાં લેવા માટે 1 ફાઇલ અપલોડ કરો}one{તમારા પ્રશ્ન માટે ઉપયોગમાં લેવા માટે વધુમાં વધુ # ફાઇલ અપલોડ કરો}other{તમારા પ્રશ્ન માટે ઉપયોગમાં લેવા માટે વધુમાં વધુ # ફાઇલ અપલોડ કરો}}</translation>
 <translation id="4608500690299898628">&amp;શોધો...</translation>
 <translation id="4609164937357979319">એકાઉન્ટની પસંદગી</translation>
 <translation id="4610493438923139095">અવિશ્વસનીય</translation>

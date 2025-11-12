@@ -613,6 +613,7 @@
 <translation id="1414648216875402825">თქვენ ანახლებთ <ph name="PRODUCT_NAME" />-ის არასტაბილურ ვერსიას, რომელიც შეიცავს პროგრესში მყოფ ფუნქციებს. ავარიები და მოულოდნელი შეცდომები მოხდება. გთხოვთ იმოქმედოთ სიფრთხილით.</translation>
 <translation id="1415708812149920388">გაცვლის ბუფერზე წვდომა უარყოფილია</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> (გაფართოების ID „<ph name="EXTENSION_ID" />“) არ არის ნებადართული ამ ტიპის სესიაში.</translation>
+<translation id="141720836055413739">ატვირთვა ვერ ხერხდება.  ცადეთ სხვა ფაილის ფორმატი.</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{აპის ამოშლა}other{აპების ამოშლა}}</translation>
 <translation id="1417497355604638350">დიაგნოსტიკური და გამოყენების მონაცემების გაგზავნა.</translation>
 <translation id="1418552618736477642">შეტყობინებები და აპები</translation>
@@ -2868,6 +2869,7 @@
 <translation id="2946640296642327832">Bluetooth-ის ჩართვა</translation>
 <translation id="2947281105969315778">ჩანართების ჯგუფების გასაზიარებლად ან მათში გასაწევრიანებლად უნდა შეხვიდეთ Chrome-ში</translation>
 <translation id="2947605845283690091">ვების დათვალიერება სწრაფი უნდა იყოს. დაუთმეთ დრო <ph name="BEGIN_LINK" />გამოყენებული გაფართოებების<ph name="END_LINK" /> შემოწმებას.</translation>
+<translation id="2948287943780377675">{FILE_COUNT,plural, =1{ჩააგდეთ ფაილი აქ}other{ჩააგდეთ ფაილები აქ}}</translation>
 <translation id="2948300991547862301"><ph name="PAGE_TITLE" />-ზე გადასვლა</translation>
 <translation id="29488703364906173">სწრაფი, მარტივი და უსაფრთხო ვებ-ბრაუზერი, შექმნილი სპეციალურად თანამედროვე ინტერნეტისთვის.</translation>
 <translation id="2950666755714083615">დამარეგისტრირე</translation>
@@ -5257,6 +5259,7 @@
 <translation id="4606551464649945562">საიტებისთვის თქვენი გარემოს 3-განზომილებიანი რუკის შექმნის ან კამერის პოზიციისთვის თვალის მიდევნების აკრძალვა</translation>
 <translation id="4606933160360542263">კლავიშების მორგებული კომბინაცია: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{წაიშალოს ჩანართების ჯგუფი?}other{წაიშალოს ჩანართების ჯგუფები?}}</translation>
+<translation id="4607763915939540711">{FILE_LIMIT,plural, =1{ატვირთეთ 1 ფაილი თქვენს შეკითხვასთან ერთად გამოსაყენებლად}other{ატვირთეთ მაქსიმუმ # ფაილი თქვენს შეკითხვასთან ერთად გამოსაყენებლად}}</translation>
 <translation id="4608500690299898628">ძ&amp;ებნა…</translation>
 <translation id="4609164937357979319">ანგარიშის არჩევა</translation>
 <translation id="4610493438923139095">არასანდო</translation>

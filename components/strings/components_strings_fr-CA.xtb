@@ -4293,6 +4293,7 @@ Détails supplémentaires :
 <translation id="7987087088851949178">Émetteurs Acheter maintenant, payer plus tard offrant le paiement au fil du temps ouverts à pleine hauteur.</translation>
 <translation id="799149739215780103">Reliure</translation>
 <translation id="7992044431894087211">Le partage d'écran avec <ph name="APPLICATION_TITLE" /> a repris</translation>
+<translation id="799384093520583425">Votre organisation a bloqué l'utilisation des outils pour les développeurs sur cette page</translation>
 <translation id="7995512525968007366">Non spécifié</translation>
 <translation id="7997855386298213183">onglets partagés</translation>
 <translation id="8001912761979890298">Ce serveur n'a pas pu prouver qu'il s'agit bien de <ph name="DOMAIN" /> parce qu'il utilise un certificat de sécurité qui n'est pas approuvé par Chromium ni par la configuration de votre système pour le chiffrement du trafic Web. Cela peut être dû à une mauvaise configuration ou à l'interception de votre connexion par un pirate informatique. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Afficher le certificat<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
@@ -4837,6 +4838,7 @@ Détails supplémentaires :
 <translation id="8922013791253848639">Toujours autoriser les annonces sur ce site</translation>
 <translation id="8922734931659847428">Une liste limitée d'URL de pages que vous visitez où se produisent des <ph name="BEGIN_LINK" />événements relatifs aux technologies patrimoniales<ph name="END_LINK" /></translation>
 <translation id="892588693504540538">Perforation en haut à droite</translation>
+<translation id="8926082624786998759">Outils pour les développeurs non autorisés sur cette page</translation>
 <translation id="8926389886865778422">Ne plus afficher ce message</translation>
 <translation id="8926400492587758246">Payez en petites mensualités</translation>
 <translation id="8932102934695377596">Votre horloge retarde</translation>

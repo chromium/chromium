@@ -519,6 +519,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="1823768272150895732">Font</translation>
 <translation id="1824402189105105503">Osmi kolut</translation>
 <translation id="1826516787628120939">Provjera</translation>
+<translation id="1829026591231985685">spremanju podataka u Google Wallet u postavkama</translation>
 <translation id="1832730227369924598">Sinkronizacija s radnom površinom</translation>
 <translation id="1834452765064623979">Izgradnja i održavanje</translation>
 <translation id="1838374766361614909">Brisanje pretraživanja</translation>
@@ -1884,6 +1885,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="4073797364926776829">Prikaz kartice</translation>
 <translation id="4075732493274867456">Klijent i poslužitelj ne podržavaju uobičajenu verziju SSL protokola ili paket šifri.</translation>
 <translation id="4079302484614802869">Konfiguracija proxy poslužitelja postavljena je za upotrebu URL-a .pac skripte, a ne fiksnih proxy poslužitelja.</translation>
+<translation id="4080668349181235831">Da bi se ponudili prijedlozi i poboljšala ta značajka, URL i cjelokupni sadržaj stranice web-lokacije koju posjetite dijele se s Googleom. Saznajte više o <ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" />.</translation>
 <translation id="4080855220442581440">pomicanje i zumiranje dijeljenih kartica</translation>
 <translation id="4082333119419111506">Papir (ispisano)</translation>
 <translation id="4082393374666368382">Postavke – upravljanje</translation>
@@ -3844,6 +3846,7 @@ Dodatne pojedinosti:
 <translation id="7286908876112207905">Lijepljenje ovog sadržaja na ovu web-lokaciju nije dopušteno</translation>
 <translation id="7291578327729322058">Dodajte vozačku dozvolu</translation>
 <translation id="7292031607255951991">Ime primatelja</translation>
+<translation id="7297228218361240128">Spremajte podatke sa stranica koje pregledavate u Google Wallet</translation>
 <translation id="7298195798382681320">Preporučeno</translation>
 <translation id="7299471494012161875">Priključeni periferni uređaji za zaslon</translation>
 <translation id="7299721129597238157">Izbriši oznaku</translation>
@@ -4241,6 +4244,7 @@ Dodatne pojedinosti:
 <translation id="7916162853251942238">Flexo baza</translation>
 <translation id="791698251820376781">Vaša organizacija ne dopušta vam prijavu</translation>
 <translation id="7926503317156566022">Zrakoplovna industrija</translation>
+<translation id="7927046851848613453">Spremite ulaznice, događaje i druge podatke sa stranica koje pregledavate, ne samo iz obrazaca koje ispunjavate. Zatim brzo pristupite svojim propusnicama, kao što su ulaznice i kartice vjernosti. Vaši spremljeni podaci mogu se prikazivati na vašim uređajima i u Googleovim proizvodima.</translation>
 <translation id="7930282586031445870">Zaslon s uvjetima pružanja usluge kupnje s odgodom plaćanja je zatvoren.</translation>
 <translation id="7932035970207573919">Poslovna adresa, <ph name="ADDRESS" /></translation>
 <translation id="793209273132572360">Želite li ažurirati adresu?</translation>
@@ -4289,6 +4293,7 @@ Dodatne pojedinosti:
 <translation id="7987087088851949178">Donja tablica koja prikazuje izdavatelje koji podržavaju metodu kupite sada, platite kasnije i koji su dostupni za obročno plaćanje otvorena je u punoj visini.</translation>
 <translation id="799149739215780103">Uvez</translation>
 <translation id="7992044431894087211">Dijeljenje zaslona s aplikacijom <ph name="APPLICATION_TITLE" /> je nastavljeno</translation>
+<translation id="799384093520583425">Vaša je organizacija blokirala upotrebu razvojnih alata na ovoj stranici</translation>
 <translation id="7995512525968007366">Nije navedeno</translation>
 <translation id="7997855386298213183">za dijeljene kartice</translation>
 <translation id="8001912761979890298">Poslužitelj nije mogao dokazati da je riječ o domeni <ph name="DOMAIN" /> jer upotrebljava sigurnosni certifikat koji Chromium ili konfiguracija vašeg sustava za šifriranje web-prometa ne smatraju pouzdanim. Razlog može biti pogrešna konfiguracija ili napad na vašu vezu. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Prikaži certifikat<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
@@ -4834,6 +4839,7 @@ Dodatne pojedinosti:
 <translation id="8922013791253848639">Uvijek dopusti oglase na ovoj web-lokaciji</translation>
 <translation id="8922734931659847428">Ograničeni popis URL-ova stranica koje posjećujete na kojima se odvijaju <ph name="BEGIN_LINK" />događaji naslijeđene tehnologije<ph name="END_LINK" />.</translation>
 <translation id="892588693504540538">Bušenje pri vrhu desno</translation>
+<translation id="8926082624786998759">Razvojni alati nisu dopušteni na ovoj stranici</translation>
 <translation id="8926389886865778422">Više me ne pitaj</translation>
 <translation id="8926400492587758246">Platite u malim mjesečnim obrocima</translation>
 <translation id="8932102934695377596">Sat kasni</translation>

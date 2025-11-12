@@ -613,6 +613,7 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="1414648216875402825"><ph name="PRODUCT_NAME" /> məhsulunun inkişafda olan qeyri-stabil versiyasını güncəlləşdirirsiniz. Gözlənilməyən xətalar ola bilər. Diqqətli olun.</translation>
 <translation id="1415708812149920388">Buferdəki kontenti oxumaq üçün giriş rədd edildi</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> ("<ph name="EXTENSION_ID" />") identifikasiyalı artırmaya bu tip sessiyada icazə verilmir.</translation>
+<translation id="141720836055413739">Yükləmək olmur.  Fərqli fayl formatı sınayın.</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{Tətbiqi silin}other{Tətbiqləri silin}}</translation>
 <translation id="1417497355604638350">Diaqnostika və istifadə datasını göndərin.</translation>
 <translation id="1418552618736477642">Bildirişlər və tətbiqlər</translation>
@@ -2871,6 +2872,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2946640296642327832">Bluetooth'u aktiv edin</translation>
 <translation id="2947281105969315778">Tab qruplarını paylaşmaq və ya onlara qoşulmaq üçün Chrome-a daxil ola bilməlisiniz</translation>
 <translation id="2947605845283690091">Vebdə axtarış sürətli olmalıdır. İndi <ph name="BEGIN_LINK" />artırmaları yoxlayın<ph name="END_LINK" />.</translation>
+<translation id="2948287943780377675">{FILE_COUNT,plural, =1{Faylı bura buraxın}other{Faylları bura buraxın}}</translation>
 <translation id="2948300991547862301"><ph name="PAGE_TITLE" /> səhifəsinə gedin</translation>
 <translation id="29488703364906173">Sürətli, sadə, güvənli brauzer. Çağdaş veb üçün hazırlanıb.</translation>
 <translation id="2950666755714083615">Məni qeydiyyatdan keçirin</translation>
@@ -5258,6 +5260,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4606551464649945562">Saytların ətrafınızdakı sahələrin 3D xəritəsini yaratmasına və ya kamera mövqeyini izləməsinə icazə verməyin</translation>
 <translation id="4606933160360542263">Fərdi düymə kombinasiyası: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Tab qrupu silinsin?}other{Tab qrupları silinsin?}}</translation>
+<translation id="4607763915939540711">{FILE_LIMIT,plural, =1{Sualınızda istifadə etmək üçün 1 fayl yükləyin}other{Sualınızda istifadə etmək üçün maksimum # fayl yükləyin}}</translation>
 <translation id="4608500690299898628">Tapın...</translation>
 <translation id="4609164937357979319">Hesab seçimi</translation>
 <translation id="4610493438923139095">Etibarsız</translation>

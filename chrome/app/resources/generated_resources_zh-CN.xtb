@@ -613,6 +613,7 @@
 <translation id="1414648216875402825">您即将更新到 <ph name="PRODUCT_NAME" />的不稳定版本，其中含有尚处于开发阶段的功能。系统可能会出现崩溃和意外错误。继续操作前，请三思。</translation>
 <translation id="1415708812149920388">已被禁止读取剪贴板</translation>
 <translation id="1415990189994829608">这类会话不允许使用“<ph name="EXTENSION_NAME" />”（扩展程序 ID 为“<ph name="EXTENSION_ID" />”）。</translation>
+<translation id="141720836055413739">无法上传，请尝试其他文件格式。</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{移除应用}other{移除应用}}</translation>
 <translation id="1417497355604638350">发送诊断数据和使用情况数据。</translation>
 <translation id="1418552618736477642">通知和应用</translation>
@@ -2860,6 +2861,7 @@
 <translation id="2946640296642327832">启用蓝牙</translation>
 <translation id="2947281105969315778">如需分享或加入标签页分组，您必须能够登录 Chrome</translation>
 <translation id="2947605845283690091">浏览网站，快才是王道。请花点时间立即<ph name="BEGIN_LINK" />检查一下您的扩展程序<ph name="END_LINK" />吧。</translation>
+<translation id="2948287943780377675">{FILE_COUNT,plural, =1{将文件拖放到此处}other{将文件拖放到此处}}</translation>
 <translation id="2948300991547862301">转到“<ph name="PAGE_TITLE" />”</translation>
 <translation id="29488703364906173">一款快速、简单且安全的网络浏览器，能很好满足现代网络对浏览器的要求。</translation>
 <translation id="2950666755714083615">立即注册</translation>
@@ -5246,6 +5248,7 @@
 <translation id="4606551464649945562">不允许网站为您的周边环境创建 3D 地图或跟踪摄像头位置</translation>
 <translation id="4606933160360542263">自定义组合键：<ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{要删除标签页分组吗？}other{要删除标签页分组吗？}}</translation>
+<translation id="4607763915939540711">{FILE_LIMIT,plural, =1{提问时最多可上传 1 个文件}other{提问时最多可上传 # 个文件}}</translation>
 <translation id="4608500690299898628">查找(&amp;F)...</translation>
 <translation id="4609164937357979319">账号选择</translation>
 <translation id="4610493438923139095">不可信</translation>

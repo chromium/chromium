@@ -519,6 +519,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1823768272150895732">Skrifttype</translation>
 <translation id="1824402189105105503">Ottende papirrulle</translation>
 <translation id="1826516787628120939">Kontrollerer</translation>
+<translation id="1829026591231985685">at gemme oplysninger i Google Wallet i indstillingerne</translation>
 <translation id="1832730227369924598">Skrivebordssynkronisering</translation>
 <translation id="1834452765064623979">Konstruktion og vedligeholdelse</translation>
 <translation id="1838374766361614909">Ryd søgning</translation>
@@ -1885,6 +1886,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4073797364926776829">Vis kort</translation>
 <translation id="4075732493274867456">Klienten og serveren understøtter ikke en fælles SSL-protokolversion eller et fælles krypteringsprogram.</translation>
 <translation id="4079302484614802869">Proxykonfiguration er angivet til at anvende en webadresse for .pac-script, ikke faste proxyservere.</translation>
+<translation id="4080668349181235831">For at kunne give dig forslag og forbedre denne funktion deles webadressen og alt sideindholdet på det website, du besøger, med Google. Få flere oplysninger om <ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" />.</translation>
 <translation id="4080855220442581440">rulning og zoom på delte faner</translation>
 <translation id="4082333119419111506">Papir (fortrykt)</translation>
 <translation id="4082393374666368382">Indstillinger – administration</translation>
@@ -3845,6 +3847,7 @@ Yderligere oplysninger:
 <translation id="7286908876112207905">Det er ikke tilladt at indsætte dette indhold på dette website</translation>
 <translation id="7291578327729322058">Tilføj kørekort</translation>
 <translation id="7292031607255951991">Modtagernavn</translation>
+<translation id="7297228218361240128">Gem oplysninger i Google Wallet fra de sider, du besøger</translation>
 <translation id="7298195798382681320">Anbefalet</translation>
 <translation id="7299471494012161875">Tilknyttet skærmtilbehør</translation>
 <translation id="7299721129597238157">Slet bogmærke</translation>
@@ -4242,6 +4245,7 @@ Yderligere oplysninger:
 <translation id="7916162853251942238">Flexo-base</translation>
 <translation id="791698251820376781">Din organisation tillader ikke, at du logger ind</translation>
 <translation id="7926503317156566022">Flybranchen</translation>
+<translation id="7927046851848613453">Gem billetter, begivenheder og andre oplysninger fra de sider, du besøger – ikke kun de formularer, du udfylder. Derefter kan du hurtigt tilgå dine kort, f.eks. billetter og loyalitetskort. Dine gemte oplysninger kan vises på dine enheder og i Google-produkter.</translation>
 <translation id="7930282586031445870">Skærmen med servicevilkår for Køb nu, betal senere er lukket.</translation>
 <translation id="7932035970207573919">Arbejdsadresse: <ph name="ADDRESS" /></translation>
 <translation id="793209273132572360">Vil du opdater adressen?</translation>

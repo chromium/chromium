@@ -613,6 +613,7 @@
 <translation id="1414648216875402825">ທ່ານກໍາລັງອັບເດດເປັນ <ph name="PRODUCT_NAME" /> ລຸ້ນບໍ່ໝັ້ນທ່ຽງ ເຊິ່ງມີຄຸນສົມບັດທີ່ດໍາເນີນການຢູ່. ການຂັດຂ້ອງ ແລະບັນຫາທີ່ບໍ່ຄາດຄິດໄວ້ຈະເກີດຂຶ້ນ. ກະລຸນາດໍາເນີນການຕໍ່ດ້ວຍຄວາມລະມັດລະວັງ.</translation>
 <translation id="1415708812149920388">ການເຂົ້າອ່ານຄລິບບອດຖືກປະຕິເສດ</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> (ID ສ່ວນຂະຫຍາຍ "<ph name="EXTENSION_ID" />") ບໍ່ໄດ້ຮັບອະນຸຍາດໃຫ້ຢູ່ໃນຊ່ວງ​ເວລາ​​ເຂົ້າ​ໃຊ້ປະເພດນີ້.</translation>
+<translation id="141720836055413739">ບໍ່ສາມາດອັບໂຫຼດໄດ້.  ລອງໃຊ້ນາມສະກຸນໄຟລ໌ອື່ນ.</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{ລຶບແອັບອອກ}other{ລຶບແອັບອອກ}}</translation>
 <translation id="1417497355604638350">ສົ່ງຂໍ້ມູນການວິນິໄສ ແລະ ການນຳໃຊ້.</translation>
 <translation id="1418552618736477642">ການແຈ້ງເຕືອນ ແລະ ແອັບ</translation>
@@ -2880,6 +2881,7 @@
 <translation id="2946640296642327832">ເປີດໃຊ້ງານ Bluetooth</translation>
 <translation id="2947281105969315778">ເພື່ອແບ່ງປັນ ຫຼື ເຂົ້າຮ່ວມກຸ່ມແຖບ, ທ່ານຈະຕ້ອງເຂົ້າສູ່ລະບົບ Chrome ໄດ້</translation>
 <translation id="2947605845283690091">ການທ່ອງເວັບຄວນຈະໄວ. ໃຊ້ເວລາຄາວໜຶ່ງເພື່ອ <ph name="BEGIN_LINK" />ກວດເບິ່ງສ່ວນຂະຫຍາຍຂອງທ່ານ<ph name="END_LINK" /> ຕອນນີ້ເລີຍ.</translation>
+<translation id="2948287943780377675">{FILE_COUNT,plural, =1{ວາງໄຟລ໌ທີ່ນີ້}other{ວາງໄຟລ໌ທີ່ນີ້}}</translation>
 <translation id="2948300991547862301">ໄປທີ່ <ph name="PAGE_TITLE" /></translation>
 <translation id="29488703364906173">ເວັບ​ບຣາວ​ເຊີ​ທີ່ໄວ​, ງ່າຍ​ດາຍ​, ແລະປອດໄພ​, ສ້າງຂຶ້ນມາສໍາລັບເວັບສະໄໝໃໝ່.</translation>
 <translation id="2950666755714083615">ໃຫ້ຂ້ອຍລົງທະບຽນ</translation>
@@ -2989,6 +2991,7 @@
 <translation id="3019023222666709803">ເຄື່ອງມືລູກສອນ</translation>
 <translation id="3019285239893817657">ປຸ່ມໜ້າຍ່ອຍ</translation>
 <translation id="3019595674945299805">ບໍລິການ VPN</translation>
+<translation id="3020101754533552167">ກຳລັງກວດສອບການເຂົ້າສູ່ລະບົບ...</translation>
 <translation id="3020183492814296499">ທາງລັດ</translation>
 <translation id="3020990233660977256">ເລກລໍາດັບ: <ph name="SERIAL_NUMBER" /></translation>
 <translation id="3021065318976393105">ໃນເວລາໃຊ້ແບັດເຕີຣີ</translation>
@@ -5269,6 +5272,7 @@
 <translation id="4606551464649945562">ບໍ່ອະນຸຍາດໃຫ້ເວັບໄຊສ້າງແຜນທີ່ 3 ມິຕິຂອງສິ່ງທີ່ຢູ່ອ້ອມຂ້າງຕົວທ່ານ ຫຼື ຕິດຕາມຕຳແໜ່ງກ້ອງ</translation>
 <translation id="4606933160360542263">ຊຸດແປ້ນພິມທີ່ກຳນົດເອງ: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{ລຶບກຸ່ມແຖບບໍ?}other{ລຶບກຸ່ມແຖບບໍ?}}</translation>
+<translation id="4607763915939540711">{FILE_LIMIT,plural, =1{ອັບໂຫຼດ 1 ໄຟລ໌ເພື່ອໃຊ້ກັບຄຳຖາມຂອງທ່ານ}other{ອັບໂຫຼດສູງສຸດ # ໄຟລ໌ເພື່ອໃຊ້ກັບຄຳຖາມຂອງທ່ານ}}</translation>
 <translation id="4608500690299898628">ຊອກຫາ...</translation>
 <translation id="4609164937357979319">ການເລືອກບັນຊີ</translation>
 <translation id="4610493438923139095">ບໍ່ເຊື່ອຖື</translation>

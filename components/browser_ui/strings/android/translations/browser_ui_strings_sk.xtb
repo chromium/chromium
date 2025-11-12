@@ -243,6 +243,7 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:
 <translation id="3611658447322220736">Nedávno zatvorené weby môžu dokončiť odosielanie a prijímanie údajov</translation>
 <translation id="3619294456800709762">Weby môžu automaticky spúšťať obraz v obraze</translation>
 <translation id="3628308229821498208">Navrhované vyhľadávania</translation>
+<translation id="363748948745453283">Používa sa približná poloha</translation>
 <translation id="3641456520301071208">Weby môžu žiadať o vašu polohu</translation>
 <translation id="3658847490588580244">Dolný hárok predvoleného prehliadača</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> web v skupine webov vlastníka <ph name="RWS_OWNER" />, ktorým sa zobrazuje vaša aktivita v nej}few{<ph name="RWS_MEMBERS_COUNT" /> weby v skupine webov vlastníka <ph name="RWS_OWNER" />, ktorým sa zobrazuje vaša aktivita v nej}many{<ph name="RWS_MEMBERS_COUNT" /> sites in <ph name="RWS_OWNER" />'s group of sites that can see your activity in the group}other{<ph name="RWS_MEMBERS_COUNT" /> webov v skupine webov vlastníka <ph name="RWS_OWNER" />, ktorým sa zobrazuje vaša aktivita v nej}}</translation>

@@ -2881,6 +2881,7 @@
 <translation id="2946640296642327832">‏הפעלת Bluetooth</translation>
 <translation id="2947281105969315778">‏כדי לשתף קבוצות של כרטיסיות או להצטרף אליהן, צריכה להיות לך אפשרות להיכנס ל-Chrome</translation>
 <translation id="2947605845283690091">הגלישה באינטרנט צריכה להיות מהירה. כדאי להקדיש כמה רגעים כדי <ph name="BEGIN_LINK" />לבדוק עכשיו את התוספים<ph name="END_LINK" />.</translation>
+<translation id="2948287943780377675">{FILE_COUNT,plural, =1{אפשר לשחרר את הקובץ כאן}one{אפשר לשחרר את הקבצים כאן}two{אפשר לשחרר את הקבצים כאן}other{אפשר לשחרר את הקבצים כאן}}</translation>
 <translation id="2948300991547862301">מעבר אל <ph name="PAGE_TITLE" /></translation>
 <translation id="29488703364906173">דפדפן אינטרנט מהיר, פשוט ובטוח, המותאם לאינטרנט המודרני.</translation>
 <translation id="2950666755714083615">אני רוצה להירשם</translation>
@@ -2990,6 +2991,7 @@
 <translation id="3019023222666709803">כלי החץ</translation>
 <translation id="3019285239893817657">כפתור למעבר אל דף משנה</translation>
 <translation id="3019595674945299805">‏שירות VPN</translation>
+<translation id="3020101754533552167">פרטי הכניסה נבדקים…</translation>
 <translation id="3020183492814296499">קיצורי דרך</translation>
 <translation id="3020990233660977256">מספר סידורי: <ph name="SERIAL_NUMBER" /></translation>
 <translation id="3021065318976393105">בזמן שימוש בסוללה</translation>
@@ -5271,6 +5273,7 @@
 <translation id="4606551464649945562">אתרים לא יוכלו ליצור מפה בתלת ממד של הסביבה שלך או לעקוב אחר מיקום המצלמה</translation>
 <translation id="4606933160360542263">שילוב מקשים מותאם אישית: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{למחוק את קבוצת הכרטיסיות?}one{למחוק את קבוצות הכרטיסיות?}two{למחוק את קבוצות הכרטיסיות?}other{למחוק את קבוצות הכרטיסיות?}}</translation>
+<translation id="4607763915939540711">{FILE_LIMIT,plural, =1{למענה על השאלה, אפשר להעלות קובץ אחד}one{למענה על השאלה, אפשר להעלות עד # קבצים}two{למענה על השאלה, אפשר להעלות עד # קבצים}other{למענה על השאלה, אפשר להעלות עד # קבצים}}</translation>
 <translation id="4608500690299898628">&amp;חיפוש...</translation>
 <translation id="4609164937357979319">בחירת חשבון</translation>
 <translation id="4610493438923139095">לא מהימן</translation>
@@ -8126,6 +8129,7 @@
 <translation id="6619990499523117484">אישור קוד האימות</translation>
 <translation id="6620000730890558421">‏מסדרים את הכרטיסיות בעזרת AI</translation>
 <translation id="6620254580880484313">שם הקונטיינר</translation>
+<translation id="6621282332208609777">‏אפשר לשאול את Google או להקליד כתובת URL</translation>
 <translation id="6621391692573306628">‏כדי לשלוח את הכרטיסייה הזו למכשיר אחר, צריך להיכנס ל-Chrome בשני המכשירים</translation>
 <translation id="6622980291894852883">המשך לחסום תמונות</translation>
 <translation id="6624036901798307345">במצב טאבלט, לוחצים על הכפתור בסרגל הכלים של מונה הכרטיסיות כדי לפתוח שורת כרטיסיות חדשה עם תצוגה המכילה תמונות ממוזערות של כל כרטיסייה.</translation>
@@ -9549,6 +9553,7 @@
 <translation id="7620616707541471029">בחירת חשבון להמשך</translation>
 <translation id="7621382409404463535">המערכת לא הצליחה לשמור את תצורת המכשיר.</translation>
 <translation id="7621595347123595643">לא תהיה אפשרות לשחזר נתונים מקומיים אם שוכחים את הסיסמה או קוד האימות.</translation>
+<translation id="7621863462266622331">‏בשיתוף כרטיסיות, התוכן של הדפים, המדיה וכתובות ה-URL שלהם נשלחים אל Google</translation>
 <translation id="7622114377921274169">בטעינה.</translation>
 <translation id="7622768823216805500">‏אתרים מתקינים בדרך כלל רכיבי handler של תשלומים כדי להציע תכונות קנייה, כמו תשלום קל יותר בקופה</translation>
 <translation id="7622966771025050155">לכרטיסייה המוקלטת</translation>
@@ -11769,6 +11774,7 @@
 <translation id="909554839118732438">סגירת חלונות אנונימיים</translation>
 <translation id="9095819602391364796">‏אתרים לא יוכלו לשלוט במכשירי ה-MIDI ולתכנת אותם מחדש</translation>
 <translation id="9096053102600371572">גלילה מבוקרת <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
+<translation id="9096221857560878399">השוואת אפשרויות</translation>
 <translation id="9096776523567481218">לא הותקנה באופן מקומי</translation>
 <translation id="9098860402274800697">‏הסרת Google Play והאפליקציות ל-Android</translation>
 <translation id="9099220545925418560">על סמך היסטוריית הגלישה שלך. ההגדרה הזו מושבתת.</translation>

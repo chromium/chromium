@@ -613,6 +613,7 @@
 <translation id="1414648216875402825">개발 중인 기능을 포함하는 <ph name="PRODUCT_NAME" />의 불안정한 버전으로 업데이트합니다. 기기가 비정상 종료되거나 예기치 않은 버그가 발생할 수 있습니다. 주의해서 진행하시기 바랍니다.</translation>
 <translation id="1415708812149920388">클립 보드 읽기 액세스 거부됨</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" />(확장 프로그램 ID '<ph name="EXTENSION_ID" />')은(는) 이 세션 유형에서 허용되지 않습니다.</translation>
+<translation id="141720836055413739">업로드할 수 없습니다.  다른 파일 형식을 사용해 보세요.</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{앱 삭제}other{앱 삭제}}</translation>
 <translation id="1417497355604638350">진단 및 사용 데이터 전송.</translation>
 <translation id="1418552618736477642">알림 및 앱</translation>
@@ -2883,6 +2884,7 @@
 <translation id="2946640296642327832">블루투스 사용</translation>
 <translation id="2947281105969315778">탭 그룹을 공유하거나 탭 그룹에 참여하려면 Chrome에 로그인할 수 있어야 합니다.</translation>
 <translation id="2947605845283690091">웹 탐색은 빨라야 합니다. 잠시 시간을 내어 <ph name="BEGIN_LINK" />확장 프로그램을 검토<ph name="END_LINK" />해 보세요.</translation>
+<translation id="2948287943780377675">{FILE_COUNT,plural, =1{여기에 파일을 드롭하세요}other{여기에 파일을 드롭하세요}}</translation>
 <translation id="2948300991547862301"><ph name="PAGE_TITLE" />(으)로 이동</translation>
 <translation id="29488703364906173">최신 웹에 맞게 구축된 빠르고 단순하며 안전한 웹 브라우저입니다.</translation>
 <translation id="2950666755714083615">신청</translation>
@@ -5271,6 +5273,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4606551464649945562">사이트에서 주변 환경의 3D 지도를 생성하거나 카메라 위치를 추적하도록 허용하지 않음</translation>
 <translation id="4606933160360542263">맞춤 키 조합: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{탭 그룹을 삭제하시겠습니까?}other{탭 그룹을 삭제하시겠습니까?}}</translation>
+<translation id="4607763915939540711">{FILE_LIMIT,plural, =1{질문과 함께 사용할 1개의 파일을 업로드하세요.}other{질문과 함께 사용할 최대 #개의 파일을 업로드하세요.}}</translation>
 <translation id="4608500690299898628">찾기(&amp;F)...</translation>
 <translation id="4609164937357979319">계정 선택</translation>
 <translation id="4610493438923139095">신뢰할 수 없음</translation>

@@ -519,6 +519,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1823768272150895732">Font</translation>
 <translation id="1824402189105105503">Eighth roll</translation>
 <translation id="1826516787628120939">Checking</translation>
+<translation id="1829026591231985685">saving info to Google Wallet in settings</translation>
 <translation id="1832730227369924598">Desk sync</translation>
 <translation id="1834452765064623979">Construction and maintenance</translation>
 <translation id="1838374766361614909">Clear search</translation>
@@ -1885,6 +1886,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4073797364926776829">View card</translation>
 <translation id="4075732493274867456">The client and server don't support a common SSL protocol version or cipher suite.</translation>
 <translation id="4079302484614802869">Proxy configuration is set to use a .pac script URL, not fixed proxy servers.</translation>
+<translation id="4080668349181235831">To offer suggestions and improve this feature, the URL and full page content of the site that you visit are shared with Google. Learn more about <ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" />.</translation>
 <translation id="4080855220442581440">scrolling and zooming shared tabs</translation>
 <translation id="4082333119419111506">Paper (preprinted)</translation>
 <translation id="4082393374666368382">Settings – Management</translation>
@@ -3845,6 +3847,7 @@ Additional details:
 <translation id="7286908876112207905">Pasting this content to this site is not allowed</translation>
 <translation id="7291578327729322058">Add driving licence</translation>
 <translation id="7292031607255951991">Recipient name</translation>
+<translation id="7297228218361240128">Save info to Google Wallet from pages that you view</translation>
 <translation id="7298195798382681320">Recommended</translation>
 <translation id="7299471494012161875">Display peripherals attached</translation>
 <translation id="7299721129597238157">Delete bookmark</translation>
@@ -4242,6 +4245,7 @@ Additional details:
 <translation id="7916162853251942238">Flexo base</translation>
 <translation id="791698251820376781">Your organisation doesn't allow you to sign in</translation>
 <translation id="7926503317156566022">Aviation industry</translation>
+<translation id="7927046851848613453">Save tickets, events and other info from pages that you view – not just forms that you fill. Then quickly access your passes, like event tickets and loyalty cards. Your saved info can appear on your devices and across Google products.</translation>
 <translation id="7930282586031445870">Buy now, pay later Terms of Service screen is closed.</translation>
 <translation id="7932035970207573919">Work address, <ph name="ADDRESS" /></translation>
 <translation id="793209273132572360">Update address?</translation>

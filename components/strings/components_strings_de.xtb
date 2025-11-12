@@ -519,6 +519,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1823768272150895732">Schriftart</translation>
 <translation id="1824402189105105503">Achte Rolle</translation>
 <translation id="1826516787628120939">Überprüfung läuft</translation>
+<translation id="1829026591231985685">Speichern von Informationen in Google Wallet</translation>
 <translation id="1832730227369924598">Desktop-Synchronisierung</translation>
 <translation id="1834452765064623979">Baugewerbe und Hausverwaltung</translation>
 <translation id="1838374766361614909">Suche löschen</translation>
@@ -1883,6 +1884,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4073797364926776829">Karte ansehen</translation>
 <translation id="4075732493274867456">Client und Server unterstützen keine gemeinsame SSL-Protokollversion oder Verschlüsselungssammlung.</translation>
 <translation id="4079302484614802869">Die Proxy-Konfiguration ist auf die Verwendung einer PAC-Script-URL und nicht die von festen Proxyservern eingestellt.</translation>
+<translation id="4080668349181235831">Damit du Vorschläge erhalten kannst und um diese Funktion zu verbessern, werden die URL und der gesamte Seiteninhalt der von dir besuchten Website an Google gesendet. Weitere Informationen zum <ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" />.</translation>
 <translation id="4080855220442581440">Scrollen und Zoomen auf geteilten Tabs</translation>
 <translation id="4082333119419111506">Papier (vorbedruckt)</translation>
 <translation id="4082393374666368382">Einstellungen – Verwaltung</translation>
@@ -3843,6 +3845,7 @@ Weitere Details:
 <translation id="7286908876112207905">Das Einfügen dieser Inhalte auf dieser Website ist nicht zulässig</translation>
 <translation id="7291578327729322058">Führerschein hinzufügen</translation>
 <translation id="7292031607255951991">Name des Empfängers</translation>
+<translation id="7297228218361240128">Informationen von besuchten Seiten in Google Wallet speichern</translation>
 <translation id="7298195798382681320">Empfohlen</translation>
 <translation id="7299471494012161875">Angeschlossene Anzeigegeräte</translation>
 <translation id="7299721129597238157">Lesezeichen löschen</translation>
@@ -4240,6 +4243,7 @@ Weitere Details:
 <translation id="7916162853251942238">Flexobasis</translation>
 <translation id="791698251820376781">Deine Organisation lässt deine Anmeldung nicht zu</translation>
 <translation id="7926503317156566022">Luftfahrtindustrie</translation>
+<translation id="7927046851848613453">Du kannst Tickets, Veranstaltungen und andere Informationen von Seiten speichern, die du aufrufst – nicht nur von Formularen, die du ausfüllst. Anschließend kannst du schnell auf deine Karten/Tickets zugreifen, z. B. auf Veranstaltungstickets und Kundenkarten. Deine gespeicherten Informationen können auf deinen Geräten und in Google-Produkten angezeigt werden.</translation>
 <translation id="7930282586031445870">Der Bildschirm mit den Nutzungsbedingungen für „Jetzt kaufen, später bezahlen“ ist geschlossen.</translation>
 <translation id="7932035970207573919">Arbeitsadresse, <ph name="ADDRESS" /></translation>
 <translation id="793209273132572360">Adresse aktualisieren?</translation>

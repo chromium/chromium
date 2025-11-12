@@ -613,6 +613,7 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="1414648216875402825">Anda memperbarui ke versi tidak stabil dari <ph name="PRODUCT_NAME" /> yang berisi fitur yang sedang dalam proses. Akan terjadi mogok dan bug tidak terduga. Lanjutkan dengan hati-hati.</translation>
 <translation id="1415708812149920388">Akses baca papan klip ditolak</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> (ID ekstensi "<ph name="EXTENSION_ID" />") tidak diizinkan dalam jenis sesi ini.</translation>
+<translation id="141720836055413739">Tidak dapat mengupload.  Coba format file lain.</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{Hapus aplikasi}other{Hapus aplikasi}}</translation>
 <translation id="1417497355604638350">Kirim data penggunaan dan diagnostik.</translation>
 <translation id="1418552618736477642">Notifikasi dan aplikasi</translation>
@@ -2881,6 +2882,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2946640296642327832">Aktifkan Bluetooth</translation>
 <translation id="2947281105969315778">Untuk berbagi atau bergabung ke grup tab, Anda harus dapat login ke Chrome</translation>
 <translation id="2947605845283690091">Penjelajahan web seharusnya cepat. Sempatkan untuk <ph name="BEGIN_LINK" />memeriksa ekstensi Anda<ph name="END_LINK" /> sekarang.</translation>
+<translation id="2948287943780377675">{FILE_COUNT,plural, =1{Lepaskan file di sini}other{Lepaskan file di sini}}</translation>
 <translation id="2948300991547862301">Buka <ph name="PAGE_TITLE" /></translation>
 <translation id="29488703364906173">Browser web yang cepat, sederhana, dan aman, yang diciptakan untuk web modern.</translation>
 <translation id="2950666755714083615">Daftar</translation>
@@ -5270,6 +5272,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="4606551464649945562">Jangan izinkan situs membuat peta 3D untuk area di sekeliling Anda atau melacak posisi kamera</translation>
 <translation id="4606933160360542263">Kombinasi tombol kustom: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Hapus grup tab?}other{Hapus grup tab?}}</translation>
+<translation id="4607763915939540711">{FILE_LIMIT,plural, =1{Upload 1 file untuk digunakan dengan pertanyaan Anda}other{Upload hingga # file untuk digunakan dengan pertanyaan Anda}}</translation>
 <translation id="4608500690299898628">&amp;Temukan...</translation>
 <translation id="4609164937357979319">Pemilihan akun</translation>
 <translation id="4610493438923139095">Tidak tepercaya</translation>

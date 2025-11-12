@@ -519,6 +519,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1823768272150895732">Fonts</translation>
 <translation id="1824402189105105503">Astotais rullis</translation>
 <translation id="1826516787628120939">Pārbaude</translation>
+<translation id="1829026591231985685">informācijas saglabāšanu lietotnes Google maks iestatījumos</translation>
 <translation id="1832730227369924598">Darbvietas sinhronizācija</translation>
 <translation id="1834452765064623979">Būvniecība un apsaimniekošana</translation>
 <translation id="1838374766361614909">Notīrīt meklēšanas vaicājumu</translation>
@@ -1883,6 +1884,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="4073797364926776829">Skatīt karti</translation>
 <translation id="4075732493274867456">Klients un serveris neatbalsta bieži lietoto SSL protokola versiju vai šifra komplektu.</translation>
 <translation id="4079302484614802869">Starpniekserveris ir iestatīts, lai tas lietotu .pac skripta URL, nevis fiksētus starpniekserverus.</translation>
+<translation id="4080668349181235831">Lai sniegtu ieteikumus un uzlabotu šo funkciju, ar uzņēmumu Google tiek kopīgots jūsu apmeklētās vietnes URL un viss lapas saturs. Uzziniet vairāk par <ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" />.</translation>
 <translation id="4080855220442581440">ritināšana un tālummaiņa kopīgotajās cilnēs</translation>
 <translation id="4082333119419111506">Papīrs (apdrukāts)</translation>
 <translation id="4082393374666368382">Iestatījumi — pārvaldība</translation>
@@ -3843,6 +3845,7 @@ Papildu informācija:
 <translation id="7286908876112207905">Šī satura ielīmēšana šajā vietnē nav atļauta</translation>
 <translation id="7291578327729322058">Autovadītāja apliecības pievienošana</translation>
 <translation id="7292031607255951991">Saņēmēja vārds</translation>
+<translation id="7297228218361240128">Informācijas saglabāšana lietotnē Google maks no skatītajām lapām</translation>
 <translation id="7298195798382681320">Ieteicams</translation>
 <translation id="7299471494012161875">Pievienotās perifērās attēlojuma ierīces</translation>
 <translation id="7299721129597238157">Dzēst grāmatzīmi</translation>
@@ -4240,6 +4243,7 @@ Papildu informācija:
 <translation id="7916162853251942238">Fleksogrāfijas pamatne</translation>
 <translation id="791698251820376781">Jūsu organizācija neatļauj jums pierakstīties</translation>
 <translation id="7926503317156566022">Aviācijas nozare</translation>
+<translation id="7927046851848613453">Saglabājiet biļetes, pasākumus un citu informāciju no lapām, kuras skatāt, ne tikai no veidlapām, kuras aizpildāt. Pēc tam ātri piekļūstiet savām kartēm, piemēram, pasākumu biļetēm un lojalitātes kartēm. Jūsu saglabātā informācija var tikt rādīta jūsu ierīcēs un izmantotajos Google produktos.</translation>
 <translation id="7930282586031445870">Funkcijas “Pērciet tūlīt, maksājiet vēlāk” pakalpojumu sniegšanas noteikumu ekrāns ir aizvērts.</translation>
 <translation id="7932035970207573919">Darbavietas adrese, <ph name="ADDRESS" /></translation>
 <translation id="793209273132572360">Vai atjaunināt adresi?</translation>

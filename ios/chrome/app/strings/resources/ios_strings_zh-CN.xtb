@@ -656,6 +656,7 @@
 <translation id="3547933853190131743">使用 AI 模式搜索</translation>
 <translation id="3557336313807607643">添加到通讯录</translation>
 <translation id="355765753469272474">撤消</translation>
+<translation id="3565012355885596568">无法加载图片</translation>
 <translation id="3565930036634619844">标签页。第 <ph name="NUMBER_OF_TABS" /> 个，共 <ph name="TAB_INDEX" /> 个。</translation>
 <translation id="3572607909481582402">在您的 Google 账号中</translation>
 <translation id="3575234738189584619">使用智能镜头搜索</translation>
@@ -1314,6 +1315,7 @@
 <translation id="6045460247888249350">添加标题</translation>
 <translation id="6052269326659653305">切换个人资料</translation>
 <translation id="605721222689873409">YY</translation>
+<translation id="6058415747854995776">拍摄视频</translation>
 <translation id="6059830886158432458">在此处控制您的报道和活动</translation>
 <translation id="6066301408025741299">点按可取消。</translation>
 <translation id="6074656473835429958">接收通知</translation>
@@ -1815,6 +1817,7 @@
 <translation id="7866872729285243843">若要将阅读清单同步到您的所有设备上，请在设置中开启“阅读清单”。</translation>
 <translation id="7874107544081154809">使用<ph name="CELL_ACCESSIBILITY_LABEL" />自动填充表单</translation>
 <translation id="7879275349003161544">显示下载内容</translation>
+<translation id="7882689957034389473">拍照</translation>
 <translation id="7883882164760409935">您有重复使用的密码。</translation>
 <translation id="7887174313503389866">观看导览，了解重要的隐私控制设置和安全控件。如需查看更多选项，请转到各项设置。</translation>
 <translation id="7887198238286927132">为保护您的隐私，Chrome 不会自动填充此字段。</translation>

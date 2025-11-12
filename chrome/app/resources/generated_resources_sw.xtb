@@ -2879,6 +2879,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2946640296642327832">Wezesha Bluetooth</translation>
 <translation id="2947281105969315778">Ni lazima uweze kuingia katika akaunti yako ya Chrome ili uruhusu ufikiaji au ujiunge kwenye vikundi vya vichupo</translation>
 <translation id="2947605845283690091">Shughuli ya kuvinjari kwenye wavuti itafanyika haraka. Chukua muda mfupi <ph name="BEGIN_LINK" />uangalie viendelezi vyako<ph name="END_LINK" /> hivi sasa.</translation>
+<translation id="2948287943780377675">{FILE_COUNT,plural, =1{Dondosha faili hapa}other{Dondosha faili hapa}}</translation>
 <translation id="2948300991547862301">Nenda kwenye <ph name="PAGE_TITLE" /></translation>
 <translation id="29488703364906173">Kivinjari kilicho na kasi, rahisi kutumia, na salama, kilichoundwa kwa ajili ya wavuti wa kisasa.</translation>
 <translation id="2950666755714083615">Nisajili</translation>
@@ -2988,6 +2989,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3019023222666709803">Zana ya mshale ya kuhariri picha</translation>
 <translation id="3019285239893817657">Kitufe cha ukurasa mdogo</translation>
 <translation id="3019595674945299805">Huduma ya VPN</translation>
+<translation id="3020101754533552167">Inakagua maelezo ya kuingia katika akaunti...</translation>
 <translation id="3020183492814296499">Njia za mkato</translation>
 <translation id="3020990233660977256">Nambari ya Kufuatilia: <ph name="SERIAL_NUMBER" /></translation>
 <translation id="3021065318976393105">Inapotumia betri</translation>
@@ -5266,6 +5268,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4606551464649945562">Usiruhusu tovuti zibuni ramani ya 3D ya mazingira yako wala kufuatilia mkao wa kamera</translation>
 <translation id="4606933160360542263">Mseto maalum wa vitufe: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Ungependa kufuta kikundi cha vichupo?}other{Ungependa kufuta vikundi vya vichupo?}}</translation>
+<translation id="4607763915939540711">{FILE_LIMIT,plural, =1{Pakia faili 1 ili uitumie kwenye swali lako}other{Pakia hadi faili # ili uzitumie kwenye swali lako}}</translation>
 <translation id="4608500690299898628">Ta&amp;futa</translation>
 <translation id="4609164937357979319">Kuchagua akaunti</translation>
 <translation id="4610493438923139095">Hakiaminiwi</translation>

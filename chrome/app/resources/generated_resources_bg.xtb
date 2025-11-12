@@ -613,6 +613,7 @@
 <translation id="1414648216875402825">Актуализирате до нестабилна версия на <ph name="PRODUCT_NAME" />, съдържаща функции, по които се работи. Ще има сривове и неочаквани програмни дефекти. Моля, действайте внимателно.</translation>
 <translation id="1415708812149920388">Отказан е достъп за четене на съдържанието на буферната памет</translation>
 <translation id="1415990189994829608">Разширението <ph name="EXTENSION_NAME" /> (с идентификационен номер „<ph name="EXTENSION_ID" />“) не е разрешено в този тип сесия.</translation>
+<translation id="141720836055413739">Качването не е възможно.  Опитайте с друг файлов формат.</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{Премахване на приложението}other{Премахване на приложенията}}</translation>
 <translation id="1417497355604638350">Изпращане на диагностична информация и данни за употребата.</translation>
 <translation id="1418552618736477642">Известия и приложения</translation>
@@ -2877,6 +2878,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2946640296642327832">Активиране на Bluetooth</translation>
 <translation id="2947281105969315778">За да споделяте или да се присъединявате към групи раздели, трябва да имате разрешение да влизате в профила си в Chrome</translation>
 <translation id="2947605845283690091">Сърфирането в мрежата трябва да е бързо. Отделете малко време, за <ph name="BEGIN_LINK" />да проверите разширенията си<ph name="END_LINK" /> сега.</translation>
+<translation id="2948287943780377675">{FILE_COUNT,plural, =1{Преместете файла тук}other{Преместете файловете тук}}</translation>
 <translation id="2948300991547862301">Към „<ph name="PAGE_TITLE" />“</translation>
 <translation id="29488703364906173">Бърз, опростен и сигурен уеб браузър, създаден за модерната мрежа.</translation>
 <translation id="2950666755714083615">Регистрирайте ме</translation>
@@ -2986,6 +2988,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3019023222666709803">Инструмент за стрелка</translation>
 <translation id="3019285239893817657">Бутон за подстраница</translation>
 <translation id="3019595674945299805">VPN услуга</translation>
+<translation id="3020101754533552167">Данните за вход в профила се проверяват...</translation>
 <translation id="3020183492814296499">Клавишни комбинации</translation>
 <translation id="3020990233660977256">Сериен номер: <ph name="SERIAL_NUMBER" /></translation>
 <translation id="3021065318976393105">На батерия</translation>
@@ -5267,6 +5270,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4606551464649945562">Да не се разрешава на сайтовете да създават триизмерна карта на заобикалящата ви среда или да следят позицията на камерата</translation>
 <translation id="4606933160360542263">Персонализирана клавишна комбинация: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Искате ли да изтриете групата раздели?}other{Искате ли да изтриете групите раздели?}}</translation>
+<translation id="4607763915939540711">{FILE_LIMIT,plural, =1{Качете 1 файл, който да използвате с въпроса си}other{Качете до # файла, които да използвате с въпроса си}}</translation>
 <translation id="4608500690299898628">&amp;Търсене...</translation>
 <translation id="4609164937357979319">Избиране на профил</translation>
 <translation id="4610493438923139095">Ненадеждно</translation>

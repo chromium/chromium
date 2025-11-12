@@ -243,6 +243,7 @@
 <translation id="3611658447322220736">最近关闭的网站可以完成数据收发操作</translation>
 <translation id="3619294456800709762">网站可以自动进入画中画模式</translation>
 <translation id="3628308229821498208">建议的搜索</translation>
+<translation id="363748948745453283">正在使用大致位置信息</translation>
 <translation id="3641456520301071208">网站可以请求获取您的位置信息</translation>
 <translation id="3658847490588580244">默认浏览器底部动作条</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_OWNER" /> 的网站群组中有 <ph name="RWS_MEMBERS_COUNT" /> 个网站能查看您在该群组中的活动记录}other{<ph name="RWS_OWNER" /> 的网站群组中有 <ph name="RWS_MEMBERS_COUNT" /> 个网站能查看您在该群组中的活动记录}}</translation>

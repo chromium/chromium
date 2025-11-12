@@ -614,6 +614,7 @@
 <translation id="1414648216875402825">በሂደት ላይ ያሉ ባህሪያትን የያዘ ያልተረጋጋ ወደሆነ የ<ph name="PRODUCT_NAME" /> ስሪት እያዘመኑ ነው። ብልሽቶች እና ያልተጠበቁ ሳንካዎች ያጋጥማሉ። እባክዎ በጥንቃቄ ይቀጥሉ።</translation>
 <translation id="1415708812149920388">የቅንጥብ ሰሌዳ መዳረሻ ተከልክሏል</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> (የቅጥያ መታወቂያ «<ph name="EXTENSION_ID" />») በዚህ የክፍለ-ጊዜ ዓይነት ላይ አይፈቀድም።</translation>
+<translation id="141720836055413739">መስቀል አልተቻለም።  የተለየ የፋይል ቅርጸት ይሞክሩ።</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{መተግበሪያ አስወግድ}one{መተግበሪያዎችን አስወግድ}other{መተግበሪያዎችን አስወግድ}}</translation>
 <translation id="1417497355604638350">የምርመራ እና የአጠቃቀም ውሂብ ይላኩ።</translation>
 <translation id="1418552618736477642">ማሳወቂያዎች እና መተግበሪያዎች</translation>
@@ -2877,6 +2878,7 @@
 <translation id="2946640296642327832">ብሉቱዝን ያንቁ</translation>
 <translation id="2947281105969315778">የትር ቡድኖችን ለማጋራት ወይም ለመቀላቀል ወደ Chrome በመለያ መግባት መቻል አለብዎት</translation>
 <translation id="2947605845283690091">ድርን ማሰስ ፈጣን መሆን አለበት። አሁን ጊዜ ወስደው <ph name="BEGIN_LINK" />ቅጥያዎችዎን ይፈትሹ<ph name="END_LINK" />።</translation>
+<translation id="2948287943780377675">{FILE_COUNT,plural, =1{ፋይል እዚህ ጣል ያድርጉ}one{ፋይል እዚህ ጣል ያድርጉ}other{ፋይሎችን እዚህ ጣል ያድርጉ}}</translation>
 <translation id="2948300991547862301">ወደ <ph name="PAGE_TITLE" /> ይሂዱ</translation>
 <translation id="29488703364906173">ለዘመናዊ ድር የተሰራ ፈጣን፣ ቀላል እና ደህንነቱ አስተማማኝ የሆነ የድር አሳሽ።</translation>
 <translation id="2950666755714083615">መዝግበኝ</translation>
@@ -5264,6 +5266,7 @@
 <translation id="4606551464649945562">ጣቢያዎች የዙሪያዎ የ3ል ካርታ እንዳይፈጥሩ ወይም የካሜራ ቦታን እንዳይከታተሉ ይከልክሉ</translation>
 <translation id="4606933160360542263">ብጁ የቁልፍ ጥምረት፦ <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{የትር ቡድን ይሰረዝ?}one{የትር ቡድን ይሰረዝ?}other{የትር ቡድኖች ይሰረዙ?}}</translation>
+<translation id="4607763915939540711">{FILE_LIMIT,plural, =1{ከጥያቄዎ ጋር ለመጠቀም 1 ፋይል ይስቀሉ}one{ከጥያቄዎ ጋር ለመጠቀም እስከ # ፋይል ድረስ ይስቀሉ}other{ከጥያቄዎ ጋር ለመጠቀም እስከ # ፋይሎ ድረስ ይስቀሉ}}</translation>
 <translation id="4608500690299898628">&amp;አግኝ…</translation>
 <translation id="4609164937357979319">የመለያ ምርጫ</translation>
 <translation id="4610493438923139095">ያልታመነ</translation>

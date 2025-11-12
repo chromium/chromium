@@ -27,11 +27,6 @@ Essa política será removida após o lançamento do recurso de visualizador de 
 <translation id="1011266755572744012">Especifica o número máximo de páginas que o usuário pode imprimir para um único trabalho de impressão.
 
       Se a política não for definida, nenhuma limitação será aplicada e o usuário poderá imprimir qualquer documento.</translation>
-<translation id="1013949464926722411">Se a política for definida, as origens listadas não poderão acessar atributos do dispositivo, como o número de série ou o nome do host, usando a API Device Attributes.
-
-As origens precisam corresponder a aplicativos da Web de instalação forçada que são Apps Isolados da Web (usando a política <ph name="ISOLATED_WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />) ou configurados como um aplicativo de quiosque. Para conferir a especificação da API Device Attributes, consulte https://wicg.github.io/WebApiDevice/device_attributes (em inglês).
-
-Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. O valor <ph name="WILDCARD_VALUE" /> não é aceito para esta política.</translation>
 <translation id="101438888985615157">Girar a tela em 180 graus</translation>
 <translation id="1016249716881514655">Esses recursos no <ph name="CHROME_DEVTOOLS_NAME" /> usam modelos de IA generativa para dar mais informações de depuração. Para usá-los, o <ph name="PRODUCT_NAME" /> precisa coletar dados, como mensagens de erro, stack traces, snippets de código e solicitações de rede, e enviar essas informações a um servidor do Google, que executa um modelo de IA generativa. O corpo da resposta ou a autenticação e os cabeçalhos de cookie em solicitações de rede não são incluídos nos dados enviados ao servidor.
 
@@ -67,19 +62,6 @@ Para mais informações sobre como tratar dados de recursos de IA generativa, co
 <translation id="1021462144002396313">Políticas do <ph name="PRIVACY_SANDBOX_NAME" /></translation>
 <translation id="1022361784792428773">IDs de extensão que devem ser impedidos de serem instalados pelo usuário (ou * para todos)</translation>
 <translation id="102492767056134033">Definir o estado padrão do teclado na tela, na tela de login</translation>
-<translation id="1026335125982730097">Permite definir uma lista com padrões de URL que especificam quais sites podem definir cookies.
-
-          Os padrões de URL podem ser um único URL indicando que o site pode usar cookies em todos os sites de nível superior.
-
-          Os padrões também podem ser dois URLs separados por vírgula. O primeiro caso especifica o site que precisa de permissão para usar cookies. O segundo especifica o site de nível superior em que o primeiro valor tem que ser aplicado.
-
-          Se você usar um par de URLs, o primeiro valor terá suporte a *, mas o segundo não. O uso de * no primeiro valor indica que todos os sites podem usar cookies quando o segundo URL é o site de nível superior.
-
-          Se esta política não for definida, o valor padrão global será usado para todos os sites. Esse valor será o mesmo das políticas <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> ou <ph name="BLOCK_THIRD_PARTY_COOKIES_POLICY_NAME" />, caso estejam definidas, ou da configuração pessoal do usuário.
-
-          Consulte também as políticas <ph name="COOKIES_BLOCKED_FOR_URLS_POLICY_NAME" /> e <ph name="COOKIES_SESSIONS_ONLY_FOR_URLS" />. Observe que não pode haver padrões de URL conflitantes entre essas três políticas, já que não foi especificado qual delas tem prioridade.
-
-          Para informações detalhadas sobre padrões de URL válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> não é um valor aceitável para esta política.</translation>
 <translation id="102658870205613876">Configurações de pop-ups</translation>
 <translation id="1027000705181149370">Especifica se os cookies de autenticação definidos por um IdP de SAML durante o login devem ser transferidos para o perfil do usuário.
 
@@ -389,11 +371,6 @@ instalação.</translation>
 <translation id="1272798957154751008">Ativar a migração de dispositivos Chromad no gerenciamento de nuvem.</translation>
 <translation id="1274997165432133392">Cookies e outros dados do site</translation>
 <translation id="1277411517984768103">Permitir que a <ph name="BOREALIS_NAME" /> seja executada para um usuário</translation>
-<translation id="1277489612460516394">Se a política for definida, será possível configurar uma lista de padrões de URL que especifica os sites que podem abrir pop-ups.
-
-      Se a política não tiver definição, <ph name="DEFAULT_POPUPS_SETTING_POLICY_NAME" /> será aplicada a todos os sites, se estiver definida. Caso contrário, a configuração pessoal do usuário será aplicada.
-
-      Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Caracteres curinga (<ph name="WILDCARD_VALUE" />) são permitidos.</translation>
 <translation id="1285819498003746288">A API Event.path não vai estar disponível.</translation>
 <translation id="1290722184971934486">Se a política for definida como <ph name="BLOCK_WINDOW_MANAGEMENT_POLICY_NAME" /> (valor 2), por padrão, a permissão a sites para gerenciamento de janelas será automaticamente negada. Isso vai limitar a capacidade dos sites de acessar informações sobre as telas do dispositivo e de usar essas informações para abrir e posicionar janelas ou solicitar a tela cheia em casos específicos.
 
@@ -504,31 +481,6 @@ Só desative a política se houver problemas de compatibilidade com softwares de
 <translation id="1371851989348083665">Permitir o uso do <ph name="ASSISTANT_PRODUCT_NAME" /> na Web</translation>
 <translation id="1372618949173323717">Desativar JavaScript</translation>
 <translation id="1376119291123231789">Ativar o modo avançado de carregamento da bateria</translation>
-<translation id="1376299650477150211">Permite definir uma lista de padrões de URL que especifica os sites em que as otimizações avançadas
-do JavaScript são desativadas.
-
-Se você desativar as otimizações do JavaScript, o <ph name="PRODUCT_NAME" /> poderá renderizar conteúdo da Web mais lentamente.
-
-Para saber mais sobre padrões de URL válidos, consulte
-https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
-Caracteres curinga (<ph name="WILDCARD_VALUE" />) são permitidos.
-
-As exceções da política de otimização do JavaScript serão aplicadas apenas na granularidade de um
-site (eTLD+1). Uma política definida apenas para subdomain.site.com não será
-corretamente aplicada a site.com ou subdomain.site.com, já que ambos são direcionados para
-o mesmo eTLD+1 (site.com), que não possui política. Nesse caso, a política
-precisa ser definida em site.com para que seja corretamente aplicada a site.com e
-subdomain.site.com.
-
-Esta política é aplicada frame a frame e não tem base exclusiva no URL de
-origem de nível superior. Por exemplo, se site-one.com estiver listado na política <ph name="JAVA_SCRIPT_OPTIMIZER_BLOCKED_FOR_SITES_POLICY_NAME" />, mas carregar um frame
-com site-two.com, site-one.com terá as otimizações do JavaScript
-desativadas, mas site-two.com vai usar a política de <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" />, se definida, ou terá como padrão as otimizações do
-JavaScript ativadas. As entradas da lista de bloqueio têm prioridade maior do que as entradas da
-lista de permissões, que têm prioridade maior do que o valor padrão configurado.
-
-Se esta política for deixada sem definição para um site, a política de <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> será aplicada, se definida. Do contrário,
-a otimização do JavaScript será ativada.</translation>
 <translation id="1376765488559847650">CloudUpload</translation>
 <translation id="1379689277107868399">Quando a política for definida como DoNotPrompt ou deixada sem definição, o <ph name="PRODUCT_NAME" /> não vai pedir automaticamente que o usuário faça a autenticação de novo no navegador.
 
@@ -894,11 +846,6 @@ No <ph name="MAC_OS_NAME" />, essa política só está disponível em instância
 Esta política pode ser modificada para padrões de URL específicos usando as políticas "InsecureContentAllowedForUrls" e "InsecureContentBlockedForUrls".
 
 Se esta política não for definida, o usuário poderá adicionar exceções para permitir conteúdo misto ativo e desativar atualizações automáticas para conteúdo misto passivo.</translation>
-<translation id="1573444493980402757">Permite definir uma lista de padrões de URL que especificam os sites que vão negar automaticamente a permissão para posicionamento de janelas. Isso vai limitar a capacidade dos sites de ver informações sobre as telas do dispositivo e de usar essas informações para abrir e posicionar janelas ou solicitar a tela cheia em locais específicos.
-
-      Para acessar informações detalhadas sobre padrões de URL válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Os caracteres curinga (<ph name="WILDCARD_VALUE" />) são permitidos. A política só faz a correspondência com base na origem, então os caminhos no padrão do URL são ignorados.
-
-      Se esta política for deixada sem definição para um site, a política de <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_POLICY_NAME" /> será aplicada, se configurada. Caso contrário, a permissão vai seguir os padrões do navegador e autorizar a escolha dos usuários para cada site.</translation>
 <translation id="1574258262373444557">Não usar <ph name="AES_KL_NAME" /> como o algoritmo para a criptografia de armazenamento do usuário</translation>
 <translation id="1575015449587326319">Política de configuração para o conector OnFileDownloaded do Chrome Enterprise</translation>
 <translation id="1575714464739424740">É uma política para controlar se a configuração de proteção contra técnicas de impressão digital do <ph name="PRIVACY_SANDBOX_NAME" /> será ativada no modo de navegação anônima ou desativada para os usuários.
@@ -907,17 +854,6 @@ Em caso de desativação, o recurso não vai ficar disponível para os usuários
 Caso contrário, ele será ativado para os usuários no modo de navegação anônima.
 Se a política for deixada sem definição, os usuários poderão ativar ou desativar a proteção contra técnicas de impressão digital no modo de navegação anônima nas configurações da interface. O estado padrão será "falso" ou "desativado", o que significa que a proteção contra técnicas de impressão digital será desativada.</translation>
 <translation id="1576797364335927541">Desativar <ph name="ALR_FEATURE_NAME" /></translation>
-<translation id="1577162851453388235">A API Direct Sockets permite a comunicação com endpoints arbitrários usando TCP e UDP.
-Consulte https://github.com/WICG/direct-sockets (link em inglês) para saber mais.
-
-Se a política for definida, você poderá listar os padrões de URL que especificam quais sites têm permissão para usar a API Direct Sockets.
-Os padrões válidos são limitados a Apps Isolados da Web.
-
-Se ela não tiver definição, <ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_NAME" /> será aplicada a todos os sites, se estiver definida.
-
-Os padrões de URL não podem entrar em conflito com <ph name="DIRECT_SOCKETS_BLOCKED_FOR_URLS_POLICY_NAME" />. Nenhuma política terá precedência se um URL tiver correspondência com ambas.
-
-Para informações detalhadas sobre padrões de URL válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. O valor <ph name="WILDCARD_VALUE" /> não é aceito para esta política.</translation>
 <translation id="1578495851351913403">Se a política for definida, uma nova opção de interface vai aparecer em cada tela nas configurações de tela. O modo espelho normal transforma todas as telas em uma, mas o novo botão permite que os usuários excluam uma tela do espelhamento e que ela apareça como uma tela estendida.
 
 Se a política for ativada, o botão vai aparecer em cada tela para que elas sejam excluídas do modo espelho. Os usuários poderão escolher uma para ativar.
@@ -1050,23 +986,6 @@ A "entrada do usuário" é definida pelas APIs do sistema operacional e inclui a
 <translation id="1639673466479276550">Ativar o protetor na tela de bloqueio.</translation>
 <translation id="1640824698339859203">Ativar o SSO flutuante e mover as autenticações do serviço da Web do usuário para um novo dispositivo</translation>
 <translation id="1643642938972654829">Permitir acesso à página de teste da política</translation>
-<translation id="1644373745741524038">Por motivos de segurança, a
-API <ph name="REQUEST_FULLSCREEN_API_NAME" /> da Web
-exige que uma interação anterior do usuário ("ativação temporária") seja chamada. Caso contrário,
-ela vai falhar. As configurações pessoais dos usuários podem permitir que determinadas origens chamem
-essa API sem uma interação anterior do usuário, conforme descrito em
-<ph name="AUTOMATIC_FULLSCREEN_HELP_URL" />.
-
-Esta política substitui as configurações pessoais dos usuários e permite que origens correspondentes
-chamem a API sem uma interação anterior do usuário.
-
-Para saber mais sobre padrões de URL válidos, consulte
-https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
-Caracteres curinga (<ph name="WILDCARD_VALUE" />) são permitidos.
-
-As origens que corresponderem aos padrões de política bloqueados e permitidos ao mesmo tempo serão bloqueadas.
-Origens não especificadas por políticas ou configurações dos usuários exigem uma interação anterior
-do usuário para chamar a API.</translation>
 <translation id="1645793986494086629">Esquema:</translation>
 <translation id="1647558381546345298">Definir a política configura o tamanho do cache usado pelo <ph name="PRODUCT_NAME" /> para armazenar arquivos de mídia em cache no disco, independentemente de o usuário ter especificado ou não a sinalização "--media-cache-size". O valor especificado na política não é um limite rígido, mas sim uma sugestão para o sistema de armazenamento em cache. Valores abaixo de alguns megabytes serão arredondados para cima.
 
@@ -1209,13 +1128,6 @@ política foi a 121. O suporte foi removido na versão 122.</translation>
       Consulte a descrição de cada tipo de dispositivo para saber o tipo específico dos dados de depuração de baixo nível.</translation>
 <translation id="1744340218280697033">Não permitir que os pais adicionem contas supervisionadas</translation>
 <translation id="1745981653910662565">Permitir a API Controlled Frame nesses sites</translation>
-<translation id="1751429117283165017">Se a política for definida, será possível configurar uma lista de padrões de URL que especifica quais sites não podem pedir que os usuários concedam permissão de gravação de arquivos ou diretórios no sistema de arquivos do sistema operacional do host.
-
-      Se a política não tiver definição, <ph name="DEFAULT_FILE_SYSTEM_WRITE_GUARD_SETTING_POLICY_NAME" /> será aplicada a todos os sites, se estiver definida. Caso contrário, as configurações pessoais dos usuários serão aplicadas.
-
-      Os padrões de URL não podem entrar em conflito com <ph name="FILE_SYSTEM_WRITE_ASK_FOR_URLS_POLICY_NAME" />. Nenhuma política terá precedência se um URL tiver correspondência com ambas.
-
-      Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns (link em inglês). <ph name="WILDCARD_VALUE" /> não é um valor aceitável para esta política.</translation>
 <translation id="1755310913456007816">Usar as configurações on-line existentes de verificação da revogação</translation>
 <translation id="1760951637494635692">Permitir a API Serial nesses sites</translation>
 <translation id="1764415246330773476">Esta política controla a visibilidade do aviso de gerenciamento no rodapé da página "Nova guia" (NTP, na sigla em inglês). Por padrão, o rodapé da NTP exibe informações quando o navegador é gerenciado por uma organização (indicado por um ícone de edifício e "Gerenciado por [nome de domínio]"). Isso pode ser personalizado usando as políticas <ph name="ENTERPRISE_CUSTOM_LABEL_FOR_BROWSER" /> e <ph name="ENTERPRISE_LOGO_URL_FOR_BROWSER" />.
@@ -1611,13 +1523,6 @@ Normalmente, essa política fica desativada como defesa contra phishing.</transl
       Se a política não for definida, o comportamento ficará desativado por padrão para usuários gerenciados e ativado para outros usuários.</translation>
 <translation id="2039801473506609891">Desativar suporte a HTTP/0.9 em portas não padrão</translation>
 <translation id="2040479044912658454">Modo de varredura de impressão</translation>
-<translation id="2042513383871755994">Se a política for definida, será possível configurar uma lista de padrões de URL que especifica quais sites não podem pedir que os usuários concedam permissão de leitura de arquivos ou diretórios no sistema de arquivos do sistema operacional do host com a API File System.
-
-      Se a política não tiver definição, <ph name="DEFAULT_FILE_SYSTEM_READ_GUARD_SETTING_POLICY_NAME" /> será aplicada a todos os sites, se estiver definida. Caso contrário, as configurações pessoais dos usuários serão aplicadas.
-
-      Os padrões de URL não podem entrar em conflito com <ph name="FILE_SYSTEM_READ_ASK_FOR_URLS_POLICY_NAME" />. Nenhuma política terá precedência se um URL tiver correspondência com ambas.
-
-      Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns (link em inglês). <ph name="WILDCARD_VALUE" /> não é um valor aceitável para esta política.</translation>
 <translation id="2043749682619281558">Ativa o destaque de cursor na tela de login</translation>
 <translation id="2043770014371753404">Impressoras empresariais desativadas</translation>
 <translation id="2054093043033461396">A tela de login do protetor de tela do dispositivo está ativada.</translation>
@@ -1757,13 +1662,6 @@ Para usuários comuns, deixar de definir a política tem a mesma função que at
       Se esta política não for definida, o navegador só começará a economizar memória quando detectar que a quantidade de memória física da máquina está baixa.</translation>
 <translation id="2161348910646846717">Permitir que os usuários mudem o canal de lançamento</translation>
 <translation id="2162703823039992020">Integrações contextuais dos Serviços do Google no <ph name="PRODUCT_OS_NAME" /></translation>
-<translation id="2165567959657265531">Cookies configurados para domínios correspondentes a esses padrões serão revertidos para o comportamento <ph name="ATTRIBUTE_SAMESITE_NAME" /> legado. A reversão para o comportamento legado faz com que os cookies que não especificam um atributo <ph name="ATTRIBUTE_SAMESITE_NAME" /> sejam tratados como <ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />, remove o requisito para cookies <ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" /> executarem o atributo <ph name="ATTRIBUTE_SECURE_NAME" /> e ignora a comparação do esquema ao avaliar se dois sites são o mesmo. Para acessar uma descrição completa, consulte https://www.chromium.org/administrators/policy-list-3/cookie-legacy-samesite-policies (em inglês).
-
-          No caso de cookies em domínios não cobertos pelos padrões especificados neste documento ou no caso de todos os cookies, se a política não for definida, o valor padrão geral será a configuração pessoal do usuário.
-
-          Para acessar informações detalhadas sobre padrões válidos, consulte https://chromeenterprise.google/intl/pt_br/policies/url-patterns/.
-
-          Observe que os padrões que você lista aqui são tratados como domínios, não URLs. Assim, recomendamos que você não especifique um esquema ou uma porta.</translation>
 <translation id="2166155400701622446">Há uma lista de portas restritas integrada ao <ph name="PRODUCT_NAME" />. Qualquer tentativa de conexão com essas portas falhará. Esta configuração permite ignorar a lista. O valor é uma lista separada por vírgulas de zero ou mais portas em que conexões de saída serão permitidas.
 
       As portas são restritas para evitar que o <ph name="PRODUCT_NAME" /> seja usado como vetor para explorar diversas vulnerabilidades de rede. Se a política for definida, sua rede poderá ficar exposta a ataques. Esta política visa ser uma solução temporária para erros com o código "ERR_UNSAFE_PORT" ao mesmo tempo em que migra um serviço executado em uma porta bloqueada para uma porta padrão (por exemplo, a porta 80 ou 443).
@@ -1993,12 +1891,6 @@ Se a política for deixada sem definição, os usuários poderão mudar a lista 
 
       Se ela for definida como falsa ou não for definida, nenhum botão será exibido.</translation>
 <translation id="2294382669900758280">A reprodução de vídeos em apps Android não é levada em consideração, mesmo se esta política estiver definida como <ph name="TRUE" />.</translation>
-<translation id="2296600623052658741">Se a política for definida, será possível configurar uma lista de padrões de URL que especifica os sites que podem usar a permissão do site para a área de transferência. Essa ação não inclui todas as operações da área de transferência ou origens que correspondem aos padrões. Por exemplo, os usuários ainda poderão colar usando atalhos do teclado, porque essa opção não é controlada pela permissão do site para a área de transferência.
-
-
-      Se a política não tiver definição, <ph name="DEFAULT_CLIPBOARD_SETTING" /> será aplicada a todos os sites, se estiver definida. Caso contrário, a configuração pessoal do usuário será aplicada.
-
-      Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Caracteres curinga (<ph name="WILDCARD_VALUE" />) são permitidos.</translation>
 <translation id="2299220924812062390">Especifica uma lista de plug-ins ativados</translation>
 <translation id="2299815818824242485">Não permitir pesquisas por proxy com maior proteção</translation>
 <translation id="2303795211377219696">Ativar o preenchimento automático para cartões de crédito</translation>
@@ -2045,11 +1937,6 @@ No <ph name="MAC_OS_NAME" />, essa política só está disponível em instância
 
       O valor padrão dessa política foi mudado no <ph name="PRODUCT_NAME" /> 81 de "falsa" a "verdadeira". Os proxies afetados causarão uma falha nas conexões, apresentando o código do erro ERR_TLS13_DOWNGRADE_DETECTED. Os administradores que precisarem de mais tempo para fazer upgrade dos proxies afetados poderão usar esta política para desativar temporariamente esse recurso de segurança. Esta política foi removida na versão 86.
       </translation>
-<translation id="2334744362022255283">Permite definir uma lista de padrões de URL que especifica sites que podem mostrar conteúdo misto ativo (bloqueável), ou seja, conteúdo HTTP em sites HTTPS, e em que o conteúdo misto passivo (opcionalmente bloqueável) será desativado.
-
-          Se esta política não for definida, o conteúdo misto ativo será bloqueado e o conteúdo misto passivo ganhará um upgrade. Além disso, o usuário poderá definir exceções para dar permissão a sites específicos.
-
-          Para informações detalhadas sobre padrões de URL válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Caracteres curinga (<ph name="WILDCARD_VALUE" />) são permitidos.</translation>
 <translation id="2336822410658374491">Desativar o acesso ao menu de contexto do provedor de pesquisa padrão</translation>
 <translation id="233726003666026610">Configurações dos grupos sugeridos</translation>
 <translation id="2337859888277013371">Não permitir o uso do cache de avanço e retorno</translation>
@@ -2101,11 +1988,6 @@ Quando a política é desativada, ela impede que usuários ou variações do <ph
 <translation id="2373014700224092497">Permitir que os usuários adicionem contas do Kerberos</translation>
 <translation id="2376134474855349829">Desativar o teclado na tela de login e permitir que o usuário o ative temporariamente</translation>
 <translation id="2376151922689284770">Nome a ser exibido na interface do instalador, por exemplo, "VM divertida". Se esta propriedade não for definida, um nome substituto será derivado da primeira entrada (por ordem de exibição) na política BruschettaVMConfiguration ou, caso contrário, um nome genérico.</translation>
-<translation id="2376278121995306084">Se a política for definida, será possível configurar uma lista de padrões de URL que especifica os sites que podem mostrar notificações.
-
-      Se a política não tiver definição, <ph name="DEFAULT_NOTIFICATIONS_SETTING_POLICY_NAME" /> será aplicada a todos os sites, se estiver definida. Caso contrário, a configuração pessoal do usuário será aplicada.
-
-      Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Caracteres curinga (<ph name="WILDCARD_VALUE" />) são permitidos.</translation>
 <translation id="2377059627106831967">Permitir o agrupamento de janelas de visão geral com IA generativa sem melhorar os modelos de IA.</translation>
 <translation id="2377109572344699022">Controlar o uso da API Direct Sockets</translation>
 <translation id="2382672620906337383">A função setTimeout() do JavaScript não será ajustada até um limite de aninhamento maior.</translation>
@@ -2169,11 +2051,6 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 <translation id="2415715982424988916">Explorar (compatível desde a versão 91)</translation>
 <translation id="2420958105721932612">Especifica como um app é instalado. AVAILABLE: o app não será instalado automaticamente, mas o usuário poderá fazer isso de forma manual. Se a política não for especificada, esse será o valor padrão. FORCE_INSTALLED: o app será instalado automaticamente, e o usuário não poderá desinstalá-lo. BLOCKED: o app fica bloqueado e não pode ser instalado. Se tiver sido instalado em uma política anterior, ele será desinstalado.</translation>
 <translation id="2421400544595297401">Não permitir o acesso de usuários não afiliados aos apps Android</translation>
-<translation id="2421677964966613267">Esta política foi suspensa na versão M88. O Flash não é mais compatível com o Chrome. Se a política for definida, será possível configurar uma lista de padrões de URL que especifica os sites que não podem executar o plug-in <ph name="FLASH_PLUGIN_NAME" />.
-
-      Se a política não tiver definição, <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> será aplicada a todos os sites, se estiver definida. Caso contrário, a configuração pessoal do usuário será aplicada.
-
-      Para informações detalhadas sobre padrões de URL válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. A partir da versão M85, padrões com caracteres curinga "*" e "[*.]" no host não serão mais compatíveis com esta política.</translation>
 <translation id="2421779938235645781">A cor da luz de fundo do teclado é igual ao plano de fundo atual</translation>
 <translation id="2423255396068675416">Se a política for definida como "Ativada" ou não for definida, os usuários poderão executar o <ph name="PRODUCT_CROSTINI_NAME" />, contanto que <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" /> e <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> sejam definidas como "Ativada". Se a política for definida como "Desativada", o <ph name="PRODUCT_CROSTINI_NAME" /> será desativado. Se a definição for mudada para "Desativada", a política será aplicada para iniciar novos contêineres <ph name="PRODUCT_CROSTINI_NAME" />, e não para os já existentes.</translation>
 <translation id="2423654977291507457">Desativar integrações</translation>
@@ -2630,11 +2507,6 @@ Se a política for definida como 2 ("Desativada"), a integração do Google Deve
 <translation id="2716623398185506073">Se a política for definida como "Ativada", as estatísticas de hardware e os identificadores relacionados ao uso de energia dos dispositivos registrados serão informados.
 
       Se a política for definida como "Desativada" ou não for definida, as estatísticas de energia dos dispositivos registrados não serão informadas.</translation>
-<translation id="2716930334159519261">Se a política for definida, será possível configurar uma lista de padrões de URL que especifica os sites que não podem usar a permissão do site para a área de transferência. Essa ação não inclui todas as operações da área de transferência ou origens que correspondem aos padrões. Por exemplo, os usuários ainda poderão colar usando atalhos do teclado, porque essa opção não é controlada pela permissão do site para a área de transferência.
-
-      Se a política não tiver definição, <ph name="DEFAULT_CLIPBOARD_SETTING" /> será aplicada a todos os sites, se estiver definida. Caso contrário, a configuração pessoal do usuário será aplicada.
-
-      Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Caracteres curinga (<ph name="WILDCARD_VALUE" />) são permitidos.</translation>
 <translation id="2717628606602248727">Esta política fica ativada por padrão. Ela controla quais dispositivos registrados enviam as informações sobre memória.
 
       Se a política for desativada, os dispositivos registrados não vão enviar informações sobre a memória.
@@ -2649,11 +2521,6 @@ Se a política for definida como 2 ("Desativada"), a integração do Google Deve
       Se a política for ativada, a extensão de insights será instalada e vai relatar métricas.
 
       Se ela for desativada ou deixada sem definição, a extensão de insights não será instalada e não vai relatar métricas.</translation>
-<translation id="2724868837491558133">Define uma lista de padrões de URL especificando sites que permitem fontes locais automaticamente. Isso vai ampliar a capacidade dos sites de ver informações sobre fontes locais.
-
-      Para acessar informações detalhadas sobre padrões de URL válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Os caracteres curinga (<ph name="WILDCARD_VALUE" />) são permitidos. A política só faz a correspondência de origens, então os caminhos no padrão do URL serão ignorados.
-
-      Se esta política for deixada sem definição para um site, a política de <ph name="DEFAULT_LOCAL_FONTS_SETTING_POLICY_NAME" /> será aplicada, se configurada. Caso contrário, a permissão vai seguir os padrões do navegador e autorizar a escolha dos usuários para cada site.</translation>
 <translation id="272712253546233296">Permita que docentes acessem telas de estudantes remotamente.</translation>
 <translation id="2727844239611930002">Permitir que o <ph name="PRODUCT_NAME" /> determine se a solicitação do <ph name="PRIVACY_SANDBOX_NAME" /> vai ser mostrada.</translation>
 <translation id="2730200383593984228">Permitir o acesso de usuários não afiliados aos apps Android</translation>
@@ -3308,13 +3175,6 @@ do <ph name="PRODUCT_NAME" />.</translation>
 <translation id="3165808775394012744">Essas políticas estão incluídas aqui para facilitar a remoção delas.</translation>
 <translation id="3166210414652928099">Permite o uso de apps Android de fontes não confiáveis</translation>
 <translation id="316778957754360075">Esta configuração foi descontinuada a partir da versão 29 do <ph name="PRODUCT_NAME" />. O modo recomendado de configurar as coleções de extensões/aplicativos hospedados pela organização é incluir na hospedagem do site os pacotes CRX em ExtensionInstallSources e colocar links de download direto para os pacotes em uma página da Web. É possível criar um iniciador da página da Web usando a política ExtensionInstallForcelist.</translation>
-<translation id="3168303368727724798">Se a política for definida, será possível configurar uma lista de padrões de URL que especifica quais sites podem pedir que o usuário conceda permissão de acesso ao dispositivo USB.
-
-      Se a política não tiver definição, <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" /> será aplicada a todos os sites, se estiver definida. Caso contrário, as configurações pessoais dos usuários serão aplicadas.
-
-      Os padrões de URL não podem entrar em conflito com <ph name="WEB_USB_ASK_FOR_URLS_POLICY_NAME" />. Nenhuma política terá precedência se um URL tiver correspondência com ambas.
-
-      Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns (link em inglês). <ph name="WILDCARD_VALUE" /> não é um valor aceitável para esta política.</translation>
 <translation id="3168968618972302728">Políticas relacionadas à autenticação do Kerberos.</translation>
 <translation id="3169872426103732947">Mostrar o URL padrão e permitir que os usuários mudem para o URL completo</translation>
 <translation id="3171369832001535378">Modelo de nome do host da rede do dispositivo</translation>
@@ -3322,13 +3182,6 @@ do <ph name="PRODUCT_NAME" />.</translation>
 <translation id="3177537290334203187">Usar o comportamento padrão ao determinar se os sites podem fazer solicitações para endpoints de rede.</translation>
 <translation id="3177802893484440532">Exigir verificações on-line de OCSP/CRL para âncoras de confiança locais</translation>
 <translation id="3179533009079100620">Mostrar seletor de perfil</translation>
-<translation id="3180633260411794645">Se a política for definida, será possível configurar uma lista de padrões de URL que especifica sites que não podem executar JavaScript.
-
-      Se a política não tiver definição, <ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME" /> será aplicada a todos os sites, se estiver definida. Caso contrário, a configuração pessoal do usuário será aplicada.
-
-      Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Caracteres curinga (<ph name="WILDCARD_VALUE" />) são permitidos.
-
-      Esta política bloqueia o JavaScript com base na correspondência entre a origem do documento de nível superior (geralmente o URL da página que também é mostrado na barra de endereços) e um dos padrões. Ela não é adequada para mitigar ataques de cadeia de suprimentos da Web. Por exemplo, fornecer o padrão "https://[*.]foo.com/" não vai impedir que uma página hospedada em https://example.com execute um script carregado de https://www.foo.com/example.js. Além disso, fornecer o padrão "https://example.com/" não vai impedir que um documento de https://example.com execute scripts se ele não for o documento de nível superior, mas incorporado como um subframe em uma página hospedada em outra origem, como https://www.bar.com.</translation>
 <translation id="3181114468897395940">As configurações Page Up/Page Down usam o atalho que contém a tecla modificadora Alt</translation>
 <translation id="3182503302060513467">A página "Nova guia" vai mostrar o anúncio do slot do meio, se ele estiver disponível</translation>
 <translation id="3184161739683646075">Controla o modo de DNS sobre HTTPS</translation>
@@ -3484,18 +3337,8 @@ Se a política <ph name="NTPCARDSVISIBLE" /> for desativada, o card do Outlook n
 <translation id="3265952988644972779">Desativar pesquisas no produto</translation>
 <translation id="3268090369868832496">Desconecta o usuário da sessão anterior ao fazer login em um novo dispositivo apenas se as janelas ou os cookies estiverem sincronizados</translation>
 <translation id="3269198556438453775">Impedir conexões de suporte remoto de administradores corporativos a esta máquina</translation>
-<translation id="3271741247922321334">Permite definir uma lista de padrões de URL que especificam sites sem permissão para mostrar conteúdo misto ativo (bloqueável), ou seja, conteúdo HTTP em sites HTTPS, e em que será feito o upgrade de conteúdo misto passivo (opcionalmente bloqueável).
-
-          Se esta política não for definida, o conteúdo misto ativo será bloqueado e o conteúdo misto passivo ganhará um upgrade, mas o usuário poderá definir exceções para dar permissão a sites específicos.
-
-          Para informações detalhadas sobre padrões de URL válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Caracteres curinga (<ph name="WILDCARD_VALUE" />) são permitidos.</translation>
 <translation id="3273221114520206906">Configuração padrão do JavaScript</translation>
 <translation id="3278042410658310805">Desativar a resposta falada na tela de login e permitir que o usuário a ative temporariamente</translation>
-<translation id="3279532732818711062">Se a política for definida, as origens listadas poderão acessar atributos do dispositivo, como o número de série ou o nome do host, usando a API Device Attributes.
-
-As origens precisam corresponder a Apps Isolados da Web de instalação forçada (usando a política <ph name="ISOLATED_WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />) (da versão 125 em diante), configurados como um aplicativo de quiosque, ou aplicativos da Web de instalação forçada (usando a política <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />) (antes da versão 140). Para conferir a especificação da API Device Attributes, consulte https://wicg.github.io/WebApiDevice/device_attributes (link em inglês).
-
-Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos (da versão 127 em diante), consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> não é um valor aceitável para esta política.</translation>
 <translation id="328347261792478720">Por padrão, o navegador mostrará recomendações de mídia personalizadas para o usuário. Se esta política for definida como "Desativada", essas recomendações ficarão ocultas para o usuário. Se esta política for definida como "Ativada" ou não for definida, as recomendações de mídia serão mostradas para o usuário.</translation>
 <translation id="3284094172359247914">Controla o uso da API WebUSB</translation>
 <translation id="3285231260918855067">É a opacidade do contorno do texto da marca-d'água, de 0 (transparente) a 100 (opaco).</translation>
@@ -3714,17 +3557,6 @@ Se a opção <ph name="NTP_SHORTCUTS_ALLOW_USER_DELETE_NAME" /> for definida com
       Se a política <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" /> for desativada, mas a <ph name="HISTORY_CLUSTERS_VISIBLE_POLICY_NAME" /> for ativada ou deixada sem definição, uma página do histórico do Chrome organizada em grupos vai continuar disponível em chrome://history/grouped, mas poderá ser menos relevante para o usuário.
 </translation>
 <translation id="3469713571374938745">Permitir a criação de temas sem melhorar os modelos de IA.</translation>
-<translation id="3471245568493482863">A API Direct Sockets permite a comunicação com endpoints arbitrários usando TCP e UDP.
-Consulte https://github.com/WICG/direct-sockets (link em inglês) para saber mais.
-
-Se a política for definida, será possível listar os padrões de URL que especificam quais sites não têm permissão para se comunicar usando a API Direct Sockets.
-Os padrões válidos são limitados a Apps Isolados da Web.
-
-Se ela não tiver definição, <ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_NAME" /> será aplicada a todos os sites, se estiver definida.
-
-Os padrões de URL não podem entrar em conflito com <ph name="DIRECT_SOCKETS_ALLOWED_FOR_URLS_POLICY_NAME" />. Nenhuma política terá precedência se um URL tiver correspondência com ambas.
-
-Para informações detalhadas sobre padrões de URL válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. O valor <ph name="WILDCARD_VALUE" /> não é aceito para esta política.</translation>
 <translation id="3478024346823118645">Limpa os dados do usuário ao sair</translation>
 <translation id="3478406829037689272">Ativar verificações detalhadas de downloads com a Navegação segura</translation>
 <translation id="3480403794500220210">Permita que docentes usem a lista de estudantes da turma do Google Sala de Aula.</translation>
@@ -4044,15 +3876,6 @@ incluir as duas opções em certificados RSA destinados a HTTPS.</translation>
       Se a política for definida como "Desativada", o uso da API Translator não será permitida.</translation>
 <translation id="366494444808132420">Permitir integrações com o Gemini.</translation>
 <translation id="3665437376055221832">Consultar o usuário apenas quando nenhum certificado corresponder à seleção automática.</translation>
-<translation id="3667089394451236198">Lista de padrões de URL. As solicitações iniciadas em sites veiculados por origens correspondentes não estão sujeitas a verificações de <ph name="LOCAL_NETWORK_ACCESS" />.
-
-Se uma origem também for coberta pela política LocalNetworkAccessBlockedForUrls, ela terá precedência.
-
-No caso de origens não cobertas pelos padrões especificados aqui, será aplicada a configuração pessoal do usuário.
-
-Para ver informações detalhadas sobre padrões de URL válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
-
-Consulte as restrições de <ph name="LOCAL_NETWORK_ACCESS" /> em https://wicg.github.io/local-network-access/ (em inglês).</translation>
 <translation id="3671773704245936868">Desativar destaque de foco do teclado</translation>
 <translation id="3674010627788940405">Não oferecer suporte a cabeçalhos de solicitação de CORS sem caractere curinga.</translation>
 <translation id="3675303748198647471">A função setTimeout(…, 0) normalmente é usada para dividir tarefas longas de JavaScript.
@@ -4612,17 +4435,6 @@ Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos
       Se a <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> não for definida, nenhuma palavra-chave ativará o provedor de pesquisa.</translation>
 <translation id="4090088362777472639">Hash SHA-256 do playbook Ansible.</translation>
 <translation id="4091040199847925434">Desativar relatórios de informações do sistema e conteúdo da página que são usados para ajudar a melhorar a Navegação segura</translation>
-<translation id="4092882308219320847">Lista de padrões de URL. As solicitações iniciadas em sites veiculados por origens correspondentes são impedidas de emitir solicitações de <ph name="LOCAL_NETWORK_ACCESS" />.
-
-Esta política terá precedência se uma origem também for coberta por LocalNetworkAccessAllowedForUrls.
-
-Dependendo do estágio de lançamento de <ph name="LOCAL_NETWORK_ACCESS" />, é preciso ativar LocalNetworkAccessRestrictionsEnabled para que essa política bloqueie solicitações de <ph name="LOCAL_NETWORK_ACCESS" />.
-
-No caso de origens não cobertas pelos padrões especificados aqui, será aplicada a configuração pessoal do usuário.
-
-Para ver informações detalhadas sobre padrões de URL válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
-
-Consulte as restrições de <ph name="LOCAL_NETWORK_ACCESS" /> em https://wicg.github.io/local-network-access/ (em inglês).</translation>
 <translation id="4093058072421210667">Não permitir imagem inline.</translation>
 <translation id="4098920079809952737">Permitir a impressão com e sem gráficos em segundo plano</translation>
 <translation id="410061592404122032">Perguntar sempre que um site quiser uma permissão para posicionamento de janelas</translation>
@@ -4683,17 +4495,6 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
 <translation id="4146319954420095470">Aviso! Essa dependência será descartada em breve. Comece a usar a <ph name="GLS_POLICY_NAME" />. Se esta política for definida como <ph name="BLOCK_GEOLOCATION_SETTING" />, os serviços do sistema <ph name="PRODUCT_OS_NAME" /> e os apps Android não poderão acessar as informações de localização. Se esta política for definida com qualquer outro valor ou deixada sem definição, o consentimento do usuário será solicitado quando um app Android quiser acessar as informações de localização.</translation>
 <translation id="4147818922357566987">Ativar variações relativas apenas a correções críticas</translation>
 <translation id="4150201353443180367">Exibição</translation>
-<translation id="4150646872548223241">A API Controlled Frame, disponível para determinados contextos isolados, como Apps Isolados da Web (AIWs), permite que um app incorpore e manipule conteúdo arbitrário.
-Consulte https://github.com/WICG/controlled-frame (link em inglês) para saber mais.
-
-Se a política for definida, será possível listar os padrões de URL que especificam quais sites têm permissão para usar a API Controlled Frame.
-Os padrões válidos são limitados a Apps Isolados da Web.
-
-Se a política for deixada sem definição, a <ph name="DEFAULT_CONTROLLED_FRAME_SETTING_POLICY_NAME" /> será aplicada a todos os sites, se estiver definida.
-
-Os padrões de URL não podem entrar em conflito com a <ph name="CONTROLLED_FRAME_BLOCKED_FOR_URLS_POLICY_NAME" />. Nenhuma política terá precedência se um URL tiver correspondência com ambas.
-
-Para informações detalhadas sobre padrões de URL válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. O valor <ph name="WILDCARD_VALUE" /> não é aceito para esta política.</translation>
 <translation id="4154221011709068799">Não permitir dispositivos de armazenamento externo</translation>
 <translation id="415445772247959702">Web Store (compatível desde a versão 89)</translation>
 <translation id="4157003184375321727">Informar a versão do sistema operacional e do firmware</translation>
@@ -5006,11 +4807,6 @@ Observação: esta política substituiu a política <ph name="ARC_GLS_POLICY_NAM
 <translation id="4363057787588706121">Permitir a mescla de políticas de lista de diferentes fontes</translation>
 <translation id="4363101430102811068">Ativa a detecção de vazamento para credenciais digitadas</translation>
 <translation id="436581050240847513">Relatar interfaces de redes de dispositivos</translation>
-<translation id="4368848648036709662">Esta política foi suspensa na versão M88. O Flash não é mais compatível com o Chrome. Se a política for definida, será possível configurar uma lista de padrões de URL que especifica os sites que podem executar o plug-in <ph name="FLASH_PLUGIN_NAME" />.
-
-      Se a política não tiver definição, <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> será aplicada a todos os sites, se estiver definida. Caso contrário, a configuração pessoal do usuário será aplicada.
-
-      Para informações detalhadas sobre padrões de URL válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. A partir da versão M85, padrões com caracteres curinga "*" e "[*.]" no host não serão mais compatíveis com esta política.</translation>
 <translation id="4369307906396795087">Os scripts para workers (como Web workers, service workers etc.) usam a verificação não rigorosa de tipo MIME. Os scripts de worker com tipos MIME legados, como <ph name="MIMETYPE_TEXT_ASCII" />, vão funcionar.</translation>
 <translation id="4370908590951861085">Endpoints de relatórios</translation>
 <translation id="4370937370030117032">Desativar o envio do nome de usuário e do nome de arquivo para impressoras nativas</translation>
@@ -5169,13 +4965,6 @@ Se a política for definida como 3, o usuário vai receber uma solicitação qua
 Se a política não for definida, as origens de Apps Isolados da Web poderão pedir acesso à impressora local, mas os usuários poderão mudar essa configuração.</translation>
 <translation id="447692108909279121">Processamento de IPs do WebRTC</translation>
 <translation id="4478248026668918517">Detecção do escopo da política de bloqueio.</translation>
-<translation id="4479671363221255277">Se a política for definida, será possível configurar uma lista de padrões de URL que especifica quais sites podem pedir que os usuários concedam permissão de leitura de arquivos ou diretórios no sistema de arquivos do sistema operacional do host com a API File System.
-
-      Se a política não tiver definição, <ph name="DEFAULT_FILE_SYSTEM_READ_GUARD_SETTING_POLICY_NAME" /> será aplicada a todos os sites, se estiver definida. Caso contrário, as configurações pessoais dos usuários serão aplicadas.
-
-      Os padrões de URL não podem entrar em conflito com <ph name="FILE_SYSTEM_READ_BLOCKED_FOR_URLS_POLICY_NAME" />. Nenhuma política terá precedência se um URL tiver correspondência com ambas.
-
-      Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns (link em inglês). <ph name="WILDCARD_VALUE" /> não é um valor aceitável para esta política.</translation>
 <translation id="4480694116501920047">Forçar SafeSearch</translation>
 <translation id="4481202456143946404">A versão válida dos Termos de Serviço derivados do Google3 CL que introduziu uma nova versão dos Termos.</translation>
 <translation id="4481952213163895432">Desativar a hotword do Google Assistente</translation>
@@ -5417,15 +5206,6 @@ Comportamento antigo e legado: em "beforeunload", chamar "event.preventDefault()
 <translation id="4624417808625504735">Bloquear o uso de JIT pelo JavaScript nestes sites</translation>
 <translation id="46321462262887935">Tratar teclas da linha superior como teclas de função, mas permitir que os usuários façam mudanças</translation>
 <translation id="4632343302005518762">Permitir que o <ph name="PRODUCT_FRAME_NAME" /> trabalhe com os tipos de conteúdo listados</translation>
-<translation id="4633746046264469461">Permite definir uma lista de padrões de URL que especificam sites com permissão para executar o JavaScript com o compilador JIT (Just In Time) ativado.
-
-          Para conferir informações detalhadas sobre padrões de URL válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Caracteres curinga (<ph name="WILDCARD_VALUE" />) são permitidos.
-
-          As exceções da política de JIT do JavaScript serão aplicadas apenas na granularidade de um site (eTLD+1). Uma política definida apenas para subdomain.site.com não será corretamente aplicada a site.com ou subdomain.site.com, já que ambos são direcionados para o mesmo eTLD+1 (site.com), que não possui política. Nesse caso, a política precisa ser definida em site.com para que seja corretamente aplicada a site.com e subdomain.site.com.
-
-          Esta política é aplicada frame a frame e não tem base exclusiva no URL de origem de nível superior. Por exemplo, se site-one.com estiver listado na política <ph name="JAVA_SCRIPT_JIT_ALLOWED_FOR_SITES_POLICY_NAME" />, mas carregar um frame com site-two.com, site-one.com terá um JIT do JavaScript ativado, mas site-two.com usará a política de <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" />, se definida, ou terá como padrão um JIT do JavaScript ativado.
-
-          Se esta política não for definida para um site, a política de <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> será aplicada, se definida. Do contrário, um JIT do JavaScript será ativado.</translation>
 <translation id="4636354638176939375">Desativar a criação de usuários supervisionados</translation>
 <translation id="46383668315040154">Especifica o canal de liberação ao qual este dispositivo precisa ser vinculado.
 
@@ -5538,14 +5318,6 @@ Após a configuração inicial, os usuários poderão ativar ou desativar os Ser
 <translation id="4674542060943819878">Ativar a opção de dispensar alertas de senha comprometida</translation>
 <translation id="4674871290487541952">Permite algoritmos inseguros em verificações de integridade nas atualizações e instalações de extensão</translation>
 <translation id="4680961954980851756">Ativar Preenchimento automático</translation>
-<translation id="4681603713834987752">Se a política for definida, você poderá listar os padrões de URL que especificam quais sites recebem acesso automático às impressoras locais pela API WebPrinting.
-Os padrões válidos são limitados a Apps Isolados da Web.
-
-Se a política não tiver definição, <ph name="DEFAULT_WEB_PRINTING_SETTING_POLICY_NAME" /> será aplicada a todos os sites, se estiver definida. Caso contrário, as configurações pessoais dos usuários serão aplicadas.
-
-Os padrões de URL não podem entrar em conflito com <ph name="WEB_PRINTING_BLOCKED_FOR_URLS_POLICY_NAME" />. Nenhuma política terá precedência se um URL tiver correspondência com ambas.
-
-Para informações detalhadas sobre padrões de URL válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. O valor <ph name="WILDCARD_VALUE" /> não é aceito para esta política.</translation>
 <translation id="46845898956959634">Permitir o recurso Quero ajuda para escrever e melhorar os modelos de IA.</translation>
 <translation id="4685721728282448265">CECPQ2 de acordo de chave pós-quântico ativado para TLS</translation>
 <translation id="468822697351680932">Usar a política de lista de sites do Internet Explorer como fonte de regras</translation>
@@ -5784,13 +5556,6 @@ Se for definida como verdadeira, o recurso <ph name="DBSC_FEATURE_NAME" /> será
 
 Se for deixada sem definição, o <ph name="PRODUCT_NAME" /> vai seguir o processo de lançamento padrão do <ph name="DBSC_FEATURE_NAME" />, o que significa que o recurso será lançado gradualmente para um número cada vez maior de usuários.</translation>
 <translation id="488996881569316769">Telemetria de rede</translation>
-<translation id="4890453377345554695">Se a política for definida, será possível configurar uma lista de padrões de URL que especifica quais sites podem pedir que os usuários concedam permissão de gravação de arquivos ou diretórios no sistema de arquivos do sistema operacional do host.
-
-      Se a política não tiver definição, <ph name="DEFAULT_FILE_SYSTEM_WRITE_GUARD_SETTING_POLICY_NAME" /> será aplicada a todos os sites, se estiver definida. Caso contrário, as configurações pessoais dos usuários serão aplicadas.
-
-      Os padrões de URL não podem entrar em conflito com <ph name="FILE_SYSTEM_WRITE_BLOCKED_FOR_URLS_POLICY_NAME" />. Nenhuma política terá precedência se um URL tiver correspondência com ambas.
-
-      Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns (link em inglês). <ph name="WILDCARD_VALUE" /> não é um valor aceitável para esta política.</translation>
 <translation id="4891286600098289814">Otimização de carregamento da bateria</translation>
 <translation id="4892647988357350237">Por padrão, os Termos de Serviço são mostrados quando o CCT é executado pela primeira vez. Se esta política for definida como "<ph name="SKIP_TOS_DIALOG" />", a caixa de diálogo de Termos de Serviço não aparecerá na primeira execução e nas execuções subsequentes. Se ela for definida como "<ph name="STANDARD_TOS_DIALOG" />" ou não for definida, a caixa de diálogo de Termos de Serviço aparecerá na primeira execução. As outras ressalvas são as seguintes:
 
@@ -5971,28 +5736,6 @@ da versão do ChromeOS ou do dispositivo) serão sempre exibidas ou ocultas na t
           Se a política for definida, o campo "Nome de usuário do Kerberos" vai mostrar o domínio preenchido à direita. Se o usuário inserir o nome de usuário, ele vai ser concatenado com o domínio preenchido. Se a entrada do usuário tiver "@", o domínio preenchido não vai ser mostrado nem afetar a entrada.
 
           Se a política for deixada sem definição, nenhuma informação complementar vai ser mostrada e a criação do tíquete vai funcionar normalmente.</translation>
-<translation id="4958911425563967203">Permite definir uma lista de padrões de URL que especifica os sites em que
-as otimizações avançadas do JavaScript são ativadas.
-
-Para conferir informações detalhadas sobre padrões de URL válidos, consulte
-https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
-Caracteres curinga (<ph name="WILDCARD_VALUE" />) são permitidos.
-
-As exceções da política de otimização do JavaScript serão aplicadas apenas na granularidade de um
-site (eTLD+1). Uma política definida apenas para subdomain.site.com não será
-corretamente aplicada a site.com ou subdomain.site.com, já que ambos são direcionados para
-o mesmo eTLD+1 (site.com), que não possui política. Nesse caso, a política
-precisa ser definida em site.com para que seja corretamente aplicada a site.com e
-subdomain.site.com.
-
-Esta política é aplicada frame a frame e não tem base exclusiva no
-URL de origem de nível superior. Por exemplo, se site-one.com estiver listado na política <ph name="JAVA_SCRIPT_OPTIMIZER_ALLOWED_FOR_SITES_POLICY_NAME" />, mas carregar um frame com site-two.com, site-one.com terá otimizações do JavaScript
-ativadas, mas site-two.com vai usar a política de <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" />, se definida, ou terá como padrão as otimizações do
-JavaScript ativadas. As entradas da lista de bloqueio têm prioridade maior do que as entradas da
-lista de permissões, que têm prioridade maior do que o valor padrão configurado.
-
-Se esta política for deixada sem definição para um site, a política de <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> será aplicada, se definida. Do contrário,
-a otimização do JavaScript será ativada.</translation>
 <translation id="4960597185231686653">Uma sinalização booleana indicando se o teclado na tela pode oferecer entrada de texto por voz.</translation>
 <translation id="49677896192199414">Ative a Legenda instantânea.
 
@@ -6287,13 +6030,6 @@ Em caso de conflito com um atalho criado anteriormente pelo usuário, a configur
 No <ph name="MS_WIN_NAME" />, essa política só está disponível em instâncias associadas a um domínio do <ph name="MS_AD_NAME" />, associadas ao <ph name="MS_AAD_NAME" /> ou registradas em <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
 
 No <ph name="MAC_OS_NAME" />, essa política só está disponível em instâncias gerenciadas por MDM, associadas a um domínio via MCX ou registradas em <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
-<translation id="5172841243186654432">A menos que a política <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> seja definida para restaurar permanentemente URLs de sessões anteriores, a definição de <ph name="COOKIES_SESSION_ONLY_FOR_URLS_POLICY_NAME" /> permitirá que você faça uma lista de padrões de URL que especificam sites que podem e sites que não podem configurar cookies para uma sessão.
-
-      Se a política ficar sem definição, a <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> será usada para todos os sites, se ela estiver definida. Caso contrário, a configuração pessoal do usuário será aplicada. URLs não incluídos nos padrões especificados também resultam no uso de padrões.
-
-      Embora nenhuma política específica tenha precedência, consulte <ph name="COOKIES_BLOCKED_FOR_URLS_POLICY_NAME" /> e <ph name="COOKIES_ALLOWED_FOR_URLS_POLICY_NAME" />. Os padrões de URL dentre essas três políticas não podem ser conflitantes.
-
-      Para acessar informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> não é um valor aceitável para esta política.</translation>
 <translation id="5174547204575752627">Esta política controla a refatoração recente das APIs VideoDecoder no plug-in PPAPI.
 
 A migração afeta apenas os detalhes de implementação internos e não pode
@@ -6661,15 +6397,6 @@ Se o valor for "false", os usuários não poderão acessar o recurso.</translati
 <translation id="5389708774452952523">Permitir que o processo de áudio seja executado com prioridade acima do normal no Windows</translation>
 <translation id="5390083518957894426">Permite a reautenticação on-line na tela de bloqueio para usuários do SAML</translation>
 <translation id="5391388690191341203">Conta local do dispositivo para login automático</translation>
-<translation id="5391867362692016532">Se a política for definida, será possível configurar uma lista de padrões de URL especificando quais apps da Web não podem pedir para os usuários concederem acesso a tipos de arquivos.
-
-      Se a política for deixada sem definição, a <ph name="DEFAULT_FILE_HANDLING_GUARD_SETTING_POLICY_NAME" /> será aplicada a todos os apps da Web, caso esteja definida. Se não estiver, a configuração pessoal do usuário será aplicada.
-
-      No caso de padrões de URL que não correspondem às políticas <ph name="FILE_HANDLING_ALLOWED_FOR_URLS_POLICY_NAME" /> e <ph name="FILE_HANDLING_BLOCKED_FOR_URLS_POLICY_NAME" />, a <ph name="DEFAULT_FILE_HANDLING_GUARD_SETTING_POLICY_NAME" /> ou as configurações pessoais dos usuários terão precedência, nessa ordem.
-
-      Os padrões de URL não podem entrar em conflito com a <ph name="FILE_HANDLING_ALLOWED_FOR_URLS_POLICY_NAME" />. Nenhuma política terá precedência se um URL tiver correspondência com ambas.
-
-      Para acessar informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> não é um valor aceitável para esta política.</translation>
 <translation id="5393009997533871906">Somente impressoras da lista de permissões são mostradas para os usuários</translation>
 <translation id="5395778184390568113">Controla o atalho usado para acionar as teclas Home/End</translation>
 <translation id="5396322417222266779">Permitir que o usuário personalize os atalhos do sistema</translation>
@@ -6898,11 +6625,6 @@ Se a política <ph name="NTPCARDSVISIBLE" /> for desativada, o card do SharePoin
 <translation id="5519619299971727565">Desativar os relatórios de uso de apps Linux</translation>
 <translation id="5521035900165046997">Ativar relatórios de informações de Bluetooth do dispositivo</translation>
 <translation id="5521875416764302911">Impedir que os usuários façam login no <ph name="PRODUCT_NAME" /></translation>
-<translation id="5524944713447898270">Se a política for definida, será possível configurar uma lista de padrões de URL que especifica os sites que não podem abrir pop-ups.
-
-      Se a política não tiver definição, <ph name="DEFAULT_POPUPS_SETTING_POLICY_NAME" /> será aplicada a todos os sites, se estiver definida. Caso contrário, a configuração pessoal do usuário será aplicada.
-
-      Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Caracteres curinga (<ph name="WILDCARD_VALUE" />) são permitidos.</translation>
 <translation id="552607466422196365">Desativar <ph name="DBSC_FEATURE_NAME" />.</translation>
 <translation id="5526184558582921522">Permitir consultas ao Quirks Server e possíveis downloads de arquivos de configuração específicos de hardware</translation>
 <translation id="5526701598901867718">Todos (não seguro)</translation>
@@ -7067,13 +6789,6 @@ Quando definida para o quiosque do <ph name="PRODUCT_OS_NAME" />, esta política
           Se você desativar esta configuração, o gerenciador de senhas não permitirá a exibição de senhas armazenadas em texto não criptografado na janela do gerenciador.
 
           Se você ativar ou não configurar esta política, os usuários poderão ver as senhas deles em texto não criptografado no gerenciador de senhas.</translation>
-<translation id="5619498195290770056">Se a política for definida, você poderá fazer uma lista de padrões de URL que especificam sites que não podem configurar cookies.
-
-      Se a política ficar sem definição, <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> será usada para todos os sites, se ela estiver definida. Caso contrário, a configuração pessoal do usuário será aplicada.
-
-      Embora nenhuma política específica tenha precedência, consulte <ph name="COOKIES_ALLOWED_FOR_URLS_POLICY_NAME" /> e <ph name="COOKIES_SESSION_ONLY_FOR_URLS_POLICY_NAME" />. Os padrões de URL dentre essas três políticas não podem ser conflitantes.
-
-      Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns (link em inglês). <ph name="WILDCARD_VALUE" /> não é um valor aceitável para esta política.</translation>
 <translation id="5620392548325769024">Ativar a exibição da página de recepção na primeira inicialização do navegador após o upgrade do sistema operacional</translation>
 <translation id="5621503441067774084">Ativar o destaque de cursor na tela de login</translation>
 <translation id="5622590774455244290">Os apps Android podem escolher respeitar essa lista voluntariamente. Eles não podem ser obrigados a fazer isso.</translation>
@@ -7176,22 +6891,6 @@ Esta política é uma solução temporária. A partir da versão M139, ela está
       Definir esta política como "Falsa" ou deixá-la sem definição fará com que os avisos de suspensão de uso sejam exibidos.</translation>
 <translation id="5659776687676755342">Ativar som de bateria fraca</translation>
 <translation id="5660950553460381588">Criar chaves de acesso com as Chaves do iCloud por padrão, quando possível.</translation>
-<translation id="5664848079661901346">A API Direct Sockets permite a comunicação com endpoints arbitrários usando TCP e UDP.
-Consulte https://github.com/WICG/direct-sockets (link em inglês) para saber mais.
-
-Os endpoints de rede particulares são aqueles que usam endereços IP do espaço de endereços IP particulares, definido em https://wicg.github.io/private-network-access/#ip-address-space-private (link em inglês).
-
-Se a política for definida, será possível listar os padrões de URL que especificam quais sites têm permissão para se comunicar com endpoints de rede privados na API Direct Sockets.
-Os padrões válidos são limitados a Apps Isolados da Web.
-
-Se ela não tiver definição, <ph name="DEFAULT_DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_SETTING_POLICY_NAME" /> será aplicada a todos os sites, se estiver definida.
-
-Os padrões de URL não podem entrar em conflito com <ph name="DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_BLOCKED_FOR_URLS_POLICY_NAME" />. Nenhuma política terá precedência se um URL tiver correspondência com ambas.
-
-Para informações detalhadas sobre padrões de URL válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. O valor <ph name="WILDCARD_VALUE" /> não é aceito para esta política.
-
-Ela só é válida se a origem tiver permissão para usar a API Direct Sockets.
-Consulte <ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_NAME" />, <ph name="DIRECT_SOCKETS_ALLOWED_FOR_URLS_POLICY_NAME" /> e <ph name="DIRECT_SOCKETS_BLOCKED_FOR_URLS_POLICY_NAME" /> para mais detalhes.</translation>
 <translation id="566569751231933416">Usar o comportamento padrão.</translation>
 <translation id="5666457529647159548">Permite que o usuário gerencie certificados do cliente instalados.</translation>
 <translation id="5670249935663090320">Se a política for definida como ativada ou não for definida, o <ph name="PRODUCT_NAME" /> será ativado e poderá ser iniciado pelos usuários no menu de apps, nos menus de contexto da página, nos controles de mídia em sites compatíveis com o Cast e no ícone da barra de ferramentas do Google Cast (se for exibido).
@@ -7634,35 +7333,9 @@ Se você quiser restringir o acesso às ferramentas para desenvolvedores com bas
       Se a política for definida como "Desativada", os usuários não poderão enviar feedback ao Google.</translation>
 <translation id="5976636832661103220">As configurações F11 usam o atalho que contém a tecla modificadora Shift</translation>
 <translation id="5979376378555121803">App hospedado</translation>
-<translation id="5981308440856672205">A API Direct Sockets permite a comunicação com endpoints arbitrários usando TCP e UDP.
-Consulte https://github.com/WICG/direct-sockets (link em inglês) para saber mais.
-
-Os endpoints de rede particulares são aqueles que usam endereços IP do espaço de endereços IP particulares, definido em https://wicg.github.io/private-network-access/#ip-address-space-private (link em inglês).
-
-Se a política for definida, você poderá listar os padrões de URL que especificam quais sites são impedidos de acessar a rede particular na API Direct Sockets.
-Os padrões válidos são limitados a Apps Isolados da Web.
-
-Se ela não tiver definição, <ph name="DEFAULT_DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_SETTING_POLICY_NAME" /> será aplicada a todos os sites, se estiver definida.
-
-Os padrões de URL não podem entrar em conflito com <ph name="DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_ALLOWED_FOR_URLS_POLICY_NAME" />. Nenhuma política terá precedência se um URL tiver correspondência com ambas.
-
-Para informações detalhadas sobre padrões de URL válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. O valor <ph name="WILDCARD_VALUE" /> não é aceito para esta política.
-
-Ela só é válida se a origem tiver permissão para usar a API Direct Sockets.
-Consulte <ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_NAME" />, <ph name="DIRECT_SOCKETS_ALLOWED_FOR_URLS_POLICY_NAME" /> e <ph name="DIRECT_SOCKETS_BLOCKED_FOR_URLS_POLICY_NAME" /> para mais detalhes.
-
-Esta política se aplica apenas a novas tentativas de conexão e não invalida as conexões atuais.</translation>
 <translation id="5983274643567559194">Não é possível definir um atalho para a ação "Delete".</translation>
 <translation id="5984099692320899605">Não usar a autenticação do NTLM</translation>
 <translation id="5984237109586500246">Aceitar conteúdos da Web exibidos como Signed HTTP Exchanges</translation>
-<translation id="5985770641601021372">Se a política for definida, você poderá listar os padrões de URL que especificam quais sites têm acesso negado automaticamente a impressoras locais pela API WebPrinting.
-Os padrões válidos são limitados a Apps Isolados da Web.
-
-Se a política não tiver definição, <ph name="DEFAULT_WEB_PRINTING_SETTING_POLICY_NAME" /> será aplicada a todos os sites, se estiver definida. Caso contrário, as configurações pessoais dos usuários serão aplicadas.
-
-Os padrões de URL não podem entrar em conflito com <ph name="WEB_PRINTING_ALLOWED_FOR_URLS_POLICY_NAME" />. Nenhuma política terá precedência se um URL tiver correspondência com ambas.
-
-Para informações detalhadas sobre padrões de URL válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. O valor <ph name="WILDCARD_VALUE" /> não é aceito para esta política.</translation>
 <translation id="5987654816293745077">Informar contadores de tempo de execução do dispositivo</translation>
 <translation id="5991707691018985057">Mostrar caixa de diálogo de cancelamento quando event.preventDefault() for chamado para o evento beforeunload. Não mostrar a caixa de diálogo de cancelamento quando event.returnValue for a string vazia para o evento beforeunload.</translation>
 <translation id="5992485316563377005">Se a política for definida como "Ativada" ou for deixada sem definição, a integridade do código renderizador será ativada.
@@ -7736,7 +7409,7 @@ Esta política foi descontinuada na versão M124.</translation>
 <translation id="603768430528561926">Se a política for definida como "Ativada" ou não for definida, dispositivos de empresas poderão resgatar ofertas com o registro do <ph name="PRODUCT_OS_NAME" />.
 
       Se a política for definida como "Desativada", os usuários não poderão resgatar essas ofertas.</translation>
-<translation id="603779881955332593">Planilhas Google (compatível desde a versão 135)</translation>
+<translation id="603779881955332593">Google Planilhas (compatível desde a versão 135)</translation>
 <translation id="6042407236638640864">Permitir que as páginas com o cabeçalho <ph name="CACHE_CONTROL_NO_STORE_NAME" /> sejam inseridas no cache de avanço e retorno</translation>
 <translation id="604243460476563291">Desativar a transferência de arquivos em conexões de suporte remoto de administradores corporativos</translation>
 <translation id="6042629184389251062">A coleta de métricas inseridas no URL não é permitida</translation>
@@ -8275,21 +7948,6 @@ vão falhar e usar, na tela de <ph name="LOG_IN" />, apenas a
 resolução de localização baseada no <ph name="IP" />.</translation>
 <translation id="6338982178236723271">Enviar informações do sistema</translation>
 <translation id="6339355882150329269">Não considerar o usuário como inativo durante a reprodução de vídeos</translation>
-<translation id="6352714113109004581">Se a política for definida, é possível configurar uma lista de padrões de URL que especifica quais sites podem pedir que o usuário conceda permissão de acesso ao dispositivo HID.
-
-      Se esta política for deixada sem definição, a <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" /> vai ser aplicada a todos os sites, se estiver definida. Caso contrário, as configurações pessoais dos usuários vão ser aplicadas.
-
-      No caso de padrões de URL que não correspondem à política, os padrões abaixo têm precedência, nesta ordem:
-
-        * <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" /> (se houver correspondência),
-
-        * <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" /> (se definida), ou
-
-        * configurações pessoais do usuário.
-
-      Os padrões de URL não podem entrar em conflito com <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" />. Nenhuma política vai ter precedência se um URL tiver correspondência com ambas.
-
-      Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> não é um valor aceitável para esta política.</translation>
 <translation id="6353890097388312479">Se a política for definida como "Todos (0)" ou não for definida, os usuários poderão editar as configurações de confiança para todos os certificados de CA, remover certificados importados e importar outros usando o Gerenciador de certificados. Se a política for definida como "Somente usuário (1)", os usuários poderão gerenciar os certificados importados, mas não poderão mudar as configurações de confiança dos certificados integrados. Se ela for definida como "Nenhum (2)", os usuários poderão ver os certificados de CA, mas não gerenciá-los.</translation>
 <translation id="6358320368815225772">Desativar atestado remoto para o dispositivo</translation>
 <translation id="6362589180545896213">Desativar decodificação de vídeo por hardware da GPU</translation>
@@ -8339,11 +7997,6 @@ Se a política for deixada sem definição, o <ph name="PRODUCT_OS_NAME" /> usar
       Se for desativada ou deixada sem definição, os usuários não poderão fazer atualizações de firmware.
 
       Esta política é válida para atualizações de firmware de periféricos externos e componentes internos de dispositivos <ph name="PRODUCT_OS_FLEX_NAME" />. As atualizações de firmware de componentes internos de dispositivos <ph name="PRODUCT_OS_NAME" /> não são afetadas por esta política.</translation>
-<translation id="6382351416269252693">Define uma lista de padrões de URL especificando sites que negam permissão a fontes locais automaticamente. Isso limita a capacidade dos sites de ver informações sobre fontes locais.
-
-      Para acessar informações detalhadas sobre padrões de URL válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Os caracteres curinga (<ph name="WILDCARD_VALUE" />) são permitidos. A política só faz a correspondência de origens, então os caminhos no padrão do URL serão ignorados.
-
-      Se esta política for deixada sem definição para um site, a política de <ph name="DEFAULT_LOCAL_FONTS_SETTING_POLICY_NAME" /> será aplicada, se configurada. Caso contrário, a permissão vai seguir os padrões do navegador e autorizar a escolha dos usuários para cada site.</translation>
 <translation id="6383774771168138899">Configura o fluxo de <ph name="CLOUD_UPLOAD_NAME" /> para <ph name="MICROSOFT_ONE_DRIVE_NAME" /> e <ph name="MICROSOFT_365_NAME" /></translation>
 <translation id="6384542789059421431">Ativar a exibição de páginas de resultados do mecanismo de pesquisa padrão em um painel lateral do navegador.</translation>
 <translation id="6389240462871677239">Permitir que origens de Apps Isolados da Web usem a API Controlled Frame</translation>
@@ -8385,13 +8038,6 @@ Desativar a política ou deixá-la sem definição faz com que a pesquisa CNAME 
 <translation id="6424485010103067949"><ph name="OMA_URI" />:</translation>
 <translation id="6424486395812679373">Realizar as verificações do "Navegação segura" em todos os arquivos baixados</translation>
 <translation id="6426899507714989471">Desativar aceleração gráfica</translation>
-<translation id="6430793593318487825">Se a política for definida, será possível configurar uma lista de padrões de URL que especifica os sites que não podem acessar sensores de luz e movimento.
-
-      Se a política não tiver definição, <ph name="DEFAULT_SENSORS_SETTING_POLICY_NAME" /> será aplicada a todos os sites, se estiver definida. Caso contrário, a configuração pessoal do usuário será aplicada.
-
-      Se o mesmo padrão de URL existir nesta política e na <ph name="SENSORS_ALLOWED_FOR_URLS_POLICY_NAME" />, esta política terá prioridade e o acesso a sensores de luz e movimento será bloqueado.
-
-      Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Caracteres curinga (<ph name="WILDCARD_VALUE" />) são permitidos.</translation>
 <translation id="6431446111529802555">Europa.</translation>
 <translation id="6433697627431665375">Evitar que os dados do <ph name="PRODUCT_NAME" /> sejam incluídos em backups</translation>
 <translation id="6436052172226685535">Comportamento padrão para LBS.</translation>
@@ -8456,11 +8102,6 @@ Esta política afeta apenas o TLS 1.3 e o QUIC, e não as versões anteriores do
 
       Se a política for desativada ou deixada sem definição, a senha do SAML não poderá ser mudada em chrome://password-change e notificações não serão exibidas quando as senhas do SAML estiverem prestes a expirar.</translation>
 <translation id="6457477291648119596">Type42</translation>
-<translation id="6457901822929629835">Se a política for definida, será possível configurar uma lista de padrões de URL que especifica sites que podem executar JavaScript.
-
-      Se a política não tiver definição, <ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME" /> será aplicada a todos os sites, se estiver definida. Caso contrário, a configuração pessoal do usuário será aplicada.
-
-      Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Caracteres curinga (<ph name="WILDCARD_VALUE" />) são permitidos.</translation>
 <translation id="6458361632497500815">Se a política for definida como "Ativada" ou não for definida e <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" />, <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> e <ph name="DEVICE_UNAFFILIATED_CROSTINI_ALLOWED_POLICY_NAME" /> estiverem ativadas, todos os usuários poderão usar o <ph name="PRODUCT_CROSTINI_NAME" />. Se a política for definida como "Desativada", os usuários sem filiação não poderão usar o <ph name="PRODUCT_CROSTINI_NAME" />. Se a definição for mudada para "Desativada", a política será aplicada para iniciar novos contêineres <ph name="PRODUCT_CROSTINI_NAME" />, e não para os já existentes.</translation>
 <translation id="6462604655173570082">Se a política for ativada ou deixada sem definição, os usuários poderão ver e usar o botão do <ph name="GOOGLE_LENS_PRODUCT_NAME" /> na caixa de pesquisa da página "Nova guia". Se a política for desativada, o botão do <ph name="GOOGLE_LENS_PRODUCT_NAME" /> não vai aparecer na caixa de pesquisa na página "Nova guia".</translation>
 <translation id="6464074037294098618">Ativa o Preenchimento automático de endereços</translation>
@@ -8519,15 +8160,6 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
       2) a localidade do sistema;
       3) a localidade substituta (en-US).</translation>
 <translation id="6493089139124468815">Permitir que sites peçam ao usuário para dar a permissão do site para a área de transferência</translation>
-<translation id="6493557163786346587">Se a política for definida, será possível configurar uma lista de padrões de URL que especifica quais sites não podem pedir que o usuário permita o acesso a uma porta serial.
-
-Se a política não tiver definição, <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" /> será aplicada a todos os sites, se estiver definida. Caso contrário, a configuração pessoal do usuário será válida.
-
-No caso de padrões de URL que não correspondem à política <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" /> (se houver uma correspondência), <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" /> (se definida) ou as preferências pessoais dos usuários têm precedência, nessa ordem.
-
-Se os padrões de URL entrarem em conflito com a política<ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" />, esta política terá precedência.
-
-Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> não é um valor aceitável para essa política.</translation>
 <translation id="6493918190032622602">Versão mínima permitida do <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="6495337487202227251">Esta política está obsoleta e será removida na versão 85 do <ph name="PRODUCT_OS_NAME" />. Por isso, passe a usar <ph name="SCREEN_LOCK_DELAYS_POLICY_NAME" />.
 
@@ -8857,15 +8489,6 @@ Se esta política não for definida ou for definida como verdadeira, os usuário
 
 Se esta política for definida como falsa, o encaminhamento de portas em contêineres Crostini será desativado.</translation>
 <translation id="6677291257287862684">Ativar as teclas de aderência na tela de login</translation>
-<translation id="6677886356657067286">Esta política permite definir uma lista de padrões de URL que especificam as origens de nível superior em que o particionamento de armazenamento de terceiros (do iframe de origem cruzada) precisa ser desativado.
-
-Se ela for deixada sem definição ou se uma origem de nível superior não corresponder a um dos padrões de URL, <ph name="DEFAULT_THIRD_PARTY_STORAGE_PARTITIONING_SETTING_POLICY_NAME" /> será aplicado.
-
-Para informações detalhadas sobre padrões válidos, consulte https://chromeenterprise.google/intl/pt_br/policies/url-patterns/. Os padrões listados aqui são tratados como origens, não URLs. Assim, recomendamos que você não especifique um caminho.
-
-Para conferir informações detalhadas sobre o particionamento de armazenamento de terceiros, consulte https://developers.google.com/privacy-sandbox/cookies/storage-partitioning.
-
-Isso será removido no Chrome 145, e é recomendável usar o método requestStorageAccess: https://developer.mozilla.org/en-US/docs/Web/API/Document/requestStorageAccess (em inglês). Você pode enviar feedback em https://crbug.com/425248669 (em inglês).</translation>
 <translation id="668153983584136017">Esta política foi descontinuada porque o algoritmo GREASE atualizado está ativado por padrão desde a versão M103.
 Quando ativada, a atualização do recurso de dicas de cliente HTTP do user agent do GREASE vai alinhar o algoritmo User-Agent GREASE com a especificação mais recente.
      É possível que a especificação atualizada corrompa alguns sites que restringem os caracteres que as solicitações podem conter. Consulte a especificação para mais informações: https://wicg.github.io/ua-client-hints/#grease (link em inglês)
@@ -9151,13 +8774,6 @@ Se ela for definida como "false" ou deixada sem definição, o layout não ficar
 <translation id="6882028194958060206">Estender a configuração de conteúdo em Flash a todos os conteúdos (suspenso)</translation>
 <translation id="6883050310557769428">Controla se o SSO flutuante está ativado e a lista de bloqueio de domínios de cookies e as exceções dela.</translation>
 <translation id="6889123056995503704">O usuário decide o comportamento de downgrade de canal</translation>
-<translation id="6889617338886728275">Permite definir uma lista de padrões de URL que especificam os sites que vão conceder automaticamente a permissão para gerenciamento de janelas. Isso vai ampliar a capacidade dos sites de acessar informações sobre as telas do dispositivo e de usar essas informações para abrir e posicionar janelas ou solicitar a tela cheia em casos específicos.
-
-Para informações detalhadas sobre padrões de URL válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Os caracteres curinga (<ph name="WILDCARD_VALUE" />) são permitidos. A política só faz a correspondência de origens, então os caminhos no padrão do URL vão ser ignorados.
-
-Se esta política for deixada sem definição para um site, a política de <ph name="DEFAULT_WINDOW_MANAGEMENT_SETTING_POLICY_NAME" /> será aplicada, quando configurada. Caso contrário, a permissão vai seguir os padrões do navegador e autorizar a escolha dos usuários para cada site.
-
-Isso substitui a política <ph name="WINDOW_PLACEMENT_ALLOWED_FOR_URLS_POLICY_NAME" /> descontinuada.</translation>
 <translation id="6894178810167845842">URL da página "Nova guia"</translation>
 <translation id="6895437634974956885">A integridade da bateria pode ser afetada por fatores como cargas completas frequentes e carregamentos com duração prolongada. Esta política oferece três opções para otimizar o comportamento de carregamento e reduzir esses fatores, prolongando a vida útil da bateria.
 
@@ -9210,17 +8826,6 @@ bloqueio dessas solicitações será aplicado.</translation>
 <translation id="692096803256767290">Reverter o SO para a versão de destino</translation>
 <translation id="6921241119085515674">Permitir o fluxo de <ph name="CLOUD_UPLOAD_NAME" /> para <ph name="MICROSOFT_ONE_DRIVE_NAME" /> e <ph name="MICROSOFT_365_NAME" /></translation>
 <translation id="6921544339867564740">Permite que os dispositivos executem máquinas virtuais no ChromeOS</translation>
-<translation id="692161853658983957">A API Controlled Frame, disponível para determinados contextos isolados, como Apps Isolados da Web (AIWs), permite que um app incorpore e manipule conteúdo arbitrário.
-Consulte https://github.com/WICG/controlled-frame (link em inglês) para saber mais.
-
-Se a política for definida, será possível listar os padrões de URL que especificam quais sites não têm permissão para usar a API Controlled Frame.
-Os padrões válidos são limitados a Apps Isolados da Web.
-
-Se a política for deixada sem definição, a <ph name="DEFAULT_CONTROLLED_FRAME_SETTING_POLICY_NAME" /> será aplicada a todos os sites, se estiver definida.
-
-Os padrões de URL não podem entrar em conflito com a <ph name="CONTROLLED_FRAME_ALLOWED_FOR_URLS_POLICY_NAME" />. Nenhuma política terá precedência se um URL tiver correspondência com ambas.
-
-Para informações detalhadas sobre padrões de URL válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. O valor <ph name="WILDCARD_VALUE" /> não é aceito para esta política.</translation>
 <translation id="6922265559343919728">Escolher se os URLs de blobs são particionados durante a busca e navegação.</translation>
 <translation id="6922884955650325312">Bloquear o plug-in <ph name="FLASH_PLUGIN_NAME" /></translation>
 <translation id="6924223708804692571">Força a desativação da verificação ortográfica de idiomas. Os idiomas não reconhecidos incluídos na lista serão ignorados.
@@ -9483,13 +9088,6 @@ Se a política for deixada sem definição, os valores padrão dela serão usado
 Se definida, a lista de valores padrão será estendida com os valores recém-configurados. As entradas padrão e as fornecidas pela política vão conceder a exceção às extensões de conexão, desde que a porta esteja conectada.</translation>
 <translation id="7086720321892395256">Controla as políticas do usuário e do dispositivo para o recurso de tela de privacidade.</translation>
 <translation id="7090500018761495290">Reativar a API Event.path até a versão M115.</translation>
-<translation id="7090668780328470271">Se a política for definida, será possível configurar uma lista de padrões de URL que especifica quais sites não podem pedir que o usuário conceda permissão de acesso ao dispositivo USB.
-
-      Se a política não tiver definição, <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" /> será aplicada a todos os sites, se estiver definida. Caso contrário, a configuração pessoal do usuário será aplicada.
-
-      Os padrões de URL não podem entrar em conflito com <ph name="WEB_USB_ASK_FOR_URLS_POLICY_NAME" />. Nenhuma política terá precedência se um URL tiver correspondência com ambas.
-
-      Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns (link em inglês). <ph name="WILDCARD_VALUE" /> não é um valor aceitável para esta política.</translation>
 <translation id="7091220433954923921">Se a política for definida, o intervalo de portas UDP usado pelo host de acesso remoto nesta máquina será restrito.
 
       Se a política for definida como uma string vazia ou deixada sem definição, o host de acesso remoto poderá usar qualquer porta disponível.
@@ -9874,13 +9472,6 @@ Se esta política for desativada ou não for definida, as configurações de con
           Se você definir esta política, os usuários não poderão mudá-la ou substituí-la.
 
           Se esta política não for definida, o recurso de correção de cor ficará desativado inicialmente, mas poderá ser ativado pelo usuário a qualquer momento.</translation>
-<translation id="7323855063560306712">Permite definir uma lista de padrões de URL que especificam os sites que vão negar automaticamente a permissão para gerenciamento de janelas. Isso vai limitar a capacidade dos sites de acessar informações sobre as telas do dispositivo e de usar essas informações para abrir e posicionar janelas ou solicitar a tela cheia em casos específicos.
-
-Para informações detalhadas sobre padrões de URL válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Os caracteres curinga (<ph name="WILDCARD_VALUE" />) são permitidos. A política só faz a correspondência de origens, então os caminhos no padrão do URL vão ser ignorados.
-
-Se esta política for deixada sem definição para um site, a política de <ph name="DEFAULT_WINDOW_MANAGEMENT_SETTING_POLICY_NAME" /> será aplicada, quando configurada. Caso contrário, a permissão vai seguir os padrões do navegador e autorizar a escolha dos usuários para cada site.
-
-Isso substitui a política <ph name="WINDOW_PLACEMENT_BLOCKED_FOR_URLS_POLICY_NAME" /> descontinuada.</translation>
 <translation id="7323896582714668701">Parâmetros de linha de comando adicionais para o <ph name="PRODUCT_NAME" /></translation>
 <translation id="7325801934761922681">Impedir que o Chrome bloqueie a navegação para protocolos externos no iframe dentro do sandbox</translation>
 <translation id="7326394567531622570">Semelhante a Wipe (valor 2), mas tenta preservar os tokens de login para que o usuário não precise fazer login novamente.</translation>
@@ -9911,11 +9502,6 @@ Isso substitui a política <ph name="WINDOW_PLACEMENT_BLOCKED_FOR_URLS_POLICY_NA
 <translation id="7343004974628511824">Realizar verificações de interceptação de DNS</translation>
 <translation id="7343497214039883642">Arquivo de configuração de impressora empresarial para dispositivos</translation>
 <translation id="7357148531287978404">Desativar a entrada de áudio</translation>
-<translation id="7358012133037776875">Permite definir uma lista de padrões de URL que especificam os sites que vão conceder automaticamente a permissão para posicionamento de janelas. Isso vai ampliar a capacidade dos sites de ver informações sobre as telas do dispositivo e de usar essas informações para abrir e posicionar janelas ou solicitar a tela cheia em locais específicos.
-
-      Para acessar informações detalhadas sobre padrões de URL válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Os caracteres curinga (<ph name="WILDCARD_VALUE" />) são permitidos. A política só faz a correspondência com base na origem, então os caminhos no padrão do URL são ignorados.
-
-      Se esta política for deixada sem definição para um site, a política de <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_POLICY_NAME" /> será aplicada, se configurada. Caso contrário, a permissão vai seguir os padrões do navegador e autorizar a escolha dos usuários para cada site.</translation>
 <translation id="7358299261566939984">Ativar ServiceWorkerAutoPreload</translation>
 <translation id="7358359585412734876">Ativar o <ph name="LACROS_NAME" /></translation>
 <translation id="7362566456990049303">Somente o usuário</translation>
@@ -9945,11 +9531,6 @@ Se ela for definida como falsa, o comportamento antigo será ativado.</translati
 <translation id="7389872682701720082">Se você ativar esta configuração, plug-ins que não estiverem obsoletos sempre serão executados.
 
       Se esta configuração estiver desativada ou não for definida, os usuários precisarão dar permissão para executar plug-ins que exigem autorização. Esses são plug-ins que podem comprometer a segurança.</translation>
-<translation id="7390361032458549775">Permite definir uma lista de padrões de URL que especificam quais sites não têm permissão para usar a geração de chaves. Se um padrão de URL estiver em KeygenAllowedForUrls, essas exceções serão modificadas por esta política.
-
-          Se esta política não for definida, o valor padrão global será usado para todos os sites. Esse valor será o mesmo da política DefaultKeygenSetting, caso ela esteja definida, ou da configuração pessoal do usuário.
-
-          Para informações detalhadas sobre padrões de URL válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> não é um valor aceitável para esta política.</translation>
 <translation id="7394023172636522064">Se a política for ativada, os dispositivos registrados vão informar o status de segurança TPM.
 
       Se ela for desativada ou for deixada sem definição, os dispositivos registrados não vão gravar ou informar o status de segurança TPM.
@@ -10010,13 +9591,6 @@ Se a política não for definida, ela será funcionalmente equivalente a ser def
 <translation id="7443356543619955157">Se a política for definida, será possível aplicar a configuração de rede para todos os usuários de um dispositivo <ph name="PRODUCT_OS_NAME" />. A configuração de rede é uma string formatada em JSON, conforme definido pelo formato Open Network Configuration.</translation>
 <translation id="7446978687387327623">Permitir verificações em tempo real com o proxy da Navegação segura</translation>
 <translation id="7448430478749155471">Ativa o recurso Selecionar para Ouvir na tela de login</translation>
-<translation id="7453470801190369311">Se a política for definida, será possível configurar uma lista de padrões de URL que especifica os sites que não podem mostrar imagens.
-
-      Se a política não tiver definição, <ph name="DEFAULT_IMAGE_SETTING_ENABLED_POLICY_NAME" /> será aplicada a todos os sites, se estiver definida. Caso contrário, a configuração pessoal do usuário será aplicada.
-
-       Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Caracteres curinga (<ph name="WILDCARD_VALUE" />) são permitidos.
-
-       Esta política já foi ativada no Android por engano, mas a funcionalidade nunca teve suporte completo nele.</translation>
 <translation id="7455912144588577399">Se a política for definida como verdadeira, os usuários poderão ler páginas da
 Web qualificadas em voz alta usando a conversão de texto em voz. Isso é possível graças à síntese de áudio e
 à destilação de conteúdo do lado do servidor. Se for definida como falsa,
@@ -10191,13 +9765,6 @@ Se a política não for definida, nenhuma exceção a <ph name="FLOATING_SSO_DOM
 <translation id="7587921466180902617">Ativar o dogfood do Screencast para usuários do Family Link</translation>
 <translation id="7588140323025689972">Ativar registros do aplicativo de quiosque</translation>
 <translation id="7593286371155131669">Usar os grupos padrão compatíveis do <ph name="PRODUCT_NAME" /></translation>
-<translation id="7595074040612182185">Se a política for definida, será possível criar uma lista de padrões de URL que especificam sites que podem mostrar imagens.
-
-      Se a política não tiver definição, <ph name="DEFAULT_IMAGES_SETTING_ENABLED_POLICY_NAME" /> será aplicada a todos os sites, se estiver definida. Caso contrário, a configuração pessoal do usuário será aplicada.
-
-      Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Caracteres curinga (<ph name="WILDCARD_VALUE" />) são permitidos.
-
-      Esta política já foi ativada no Android por engano, mas a funcionalidade nunca teve suporte completo nele.</translation>
 <translation id="759957074386651883">Configurações da política Safe Browsing</translation>
 <translation id="7602621823177962064">Desativar relatórios de informações da memória do dispositivo</translation>
 <translation id="7604169113182304895">Os apps Android podem optar voluntariamente por respeitar essa lista. Não é possível forçá-los a respeitá-la.</translation>
@@ -10354,11 +9921,6 @@ Quando ela for deixada sem definição, o renderizador de PDF será escolhido pe
        Não defina esta política se você tiver selecionado qualquer outro modo para políticas de configuração de proxy.
 
       Observação: para ver exemplos detalhados, acesse The Chromium Projects (https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett, link em inglês).</translation>
-<translation id="7716587310609820801">Se a política for definida, será possível configurar uma lista de padrões de URL que especifica os sites que não podem mostrar notificações.
-
-      Se a política não tiver definição, <ph name="DEFAULT_NOTIFICATIONS_SETTING_POLICY_NAME" /> será aplicada a todos os sites, se estiver definida. Caso contrário, a configuração pessoal do usuário será aplicada.
-
-      Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Caracteres curinga (<ph name="WILDCARD_VALUE" />) são permitidos.</translation>
 <translation id="7717938661004793600">Configurar recursos de acessibilidade do <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="7718127720248642697">Esta política fica ativada por padrão. Ela controla quais dispositivos registrados enviam estatísticas e identificadores de hardware para dispositivos de armazenamento.
 
@@ -10806,23 +10368,6 @@ também é seguro.</translation>
 <translation id="8059352177830050556">Ativar relatórios de informações da luz de fundo do dispositivo</translation>
 <translation id="8062485064082966327">Usar um Serviço do Google anônimo para oferecer descrições automáticas para imagens sem um texto alternativo</translation>
 <translation id="8066428282805800713">Enviar mais dados de hardware no ChromeOS Flex</translation>
-<translation id="8066532561081127944">Por motivos de segurança, a
-API <ph name="REQUEST_FULLSCREEN_API_NAME" /> da Web
-exige que uma interação anterior do usuário ("ativação temporária") seja chamada. Caso contrário,
-ela vai falhar. As configurações pessoais dos usuários podem permitir que determinadas origens chamem
-essa API sem uma interação anterior do usuário, conforme descrito em
-<ph name="AUTOMATIC_FULLSCREEN_HELP_URL" />.
-
-Esta política substitui as configurações pessoais dos usuários e impede que origens correspondentes
-chamem a API sem uma interação anterior do usuário.
-
-Para saber mais sobre padrões de URL válidos, consulte
-https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
-Caracteres curinga (<ph name="WILDCARD_VALUE" />) são permitidos.
-
-As origens que corresponderem aos padrões de política bloqueados e permitidos ao mesmo tempo serão bloqueadas.
-Origens não especificadas por políticas ou configurações dos usuários exigem uma interação anterior
-do usuário para chamar a API.</translation>
 <translation id="8071371098891664137">Se <ph name="PRINTERS_BLOCKLIST" /> for escolhida para <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" />, a definição de <ph name="PRINTERS_BULK_BLOCKLIST_POLICY_NAME" /> especificará quais impressoras os usuários não podem usar. Todas as impressoras estão disponíveis para o usuário, com exceção dos IDs listados nesta política. Os IDs precisam corresponder aos campos <ph name="ID_FIELD" /> ou <ph name="GUID_FIELD" /> no arquivo especificado na <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />.</translation>
 <translation id="8078297389450285582">Se a política for definida como "Ativada" ou não for definida, o modelo de escurecimento inteligente será ativado e poderá aumentar o tempo de tela ativa. Se ocorrer esse aumento, os intervalos de desligamento, bloqueio e descanso da tela serão ajustados para manter as mesmas distâncias do intervalo de escurecimento da tela de acordo com a configuração original.
 
@@ -11165,11 +10710,6 @@ Mais informações sobre tecnologias legadas podem ser encontradas em https://ch
       Observação: o fator de cálculo precisa ser de 100% ou mais.</translation>
 <translation id="8284621384813278750">Definir se a configuração do <ph name="PRIVACY_SANDBOX_NAME" /> para temas de anúncios pode ser desativada</translation>
 <translation id="8285435910062771358">Lupa de tela inteira ativada</translation>
-<translation id="828566872219880247">Permite definir uma lista de padrões de URL que especificam sites com permissão para usar a geração de chaves. Se um padrão de URL estiver em KeygenBlockedForUrls, isso modificará essas exceções.
-
-          Se esta política não for definida, o valor padrão global será usado para todos os sites. Esse valor será o mesmo da política DefaultKeygenSetting, caso ela esteja definida, ou da configuração pessoal do usuário.
-
-          Para informações detalhadas sobre padrões de URL válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> não é um valor aceitável para esta política.</translation>
 <translation id="8288199156259560552">Ativar o Serviço de Localização do Google para Android</translation>
 <translation id="8289824033213234651">O modo Economia de bateria vai ser ativado quando o dispositivo estiver usando a energia da bateria e o nível dela estiver baixo.</translation>
 <translation id="8290875622178450531">Ativar o recurso de acessibilidade de ditado.
@@ -11305,15 +10845,6 @@ vai ser definida como padrão durante o login do usuário.</translation>
 <translation id="8371178326720637170">Permitir que extensões gerenciadas usem a API Enterprise Hardware Platform</translation>
 <translation id="8373176843640227330">Desativar relatórios de informações de Bluetooth do dispositivo</translation>
 <translation id="8375817202037102567">Bloquear acesso de gravação de arquivos e diretórios nestes sites</translation>
-<translation id="837805585374308454">Se a política for definida, será possível configurar uma lista de padrões de URL que especifica quais sites podem pedir que o usuário permita o acesso a uma porta serial.
-
-Se a política não tiver definição, <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" /> será aplicada a todos os sites, se estiver definida. Caso contrário, as configurações pessoais dos usuários serão válidas.
-
-No caso de padrões de URL que não correspondem à política <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" /> (se houver uma correspondência), <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" /> (se definida) ou as preferências pessoais dos usuários têm precedência, nessa ordem.
-
-Se os padrões de URL entrarem em conflito com a política <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" />, eles serão ignorados.
-
-Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> não é um valor aceitável para essa política.</translation>
 <translation id="8378266419596669629">Bloquear a permissão para fontes locais nesses sites</translation>
 <translation id="8379281645427937253">Uma lista de certificados TLS em que o <ph name="PRODUCT_NAME" /> confia para autenticação do servidor.
 Os certificados precisam ser codificados em Base64.</translation>
@@ -11557,21 +11088,6 @@ Para mais informações sobre como tratar dados de recursos de IA generativa, co
 <translation id="8549906780629620346">Ativar a recuperação de conta</translation>
 <translation id="855182606166519378">Os usuários não podem iniciar atualizações de firmware</translation>
 <translation id="8553491595730354263">Permite que o host de acesso remoto use autenticações com PIN e pareamento ao aceitar conexões de clientes</translation>
-<translation id="8553955290407912156">Se a política for definida, é possível configurar uma lista de padrões de URL que especifica quais sites não podem pedir que o usuário conceda permissão de acesso ao dispositivo HID.
-
-      Se esta política for deixada sem definição, a <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" /> vai ser aplicada a todos os sites, se estiver definida. Caso contrário, as configurações pessoais dos usuários vão ser aplicadas.
-
-      No caso de padrões de URL que não correspondem à política, os padrões abaixo têm precedência, nesta ordem:
-
-        * <ph name="WEB_HID_ASK_FOR_URLS_POLICY_NAME" /> (se houver correspondência),
-
-        * <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" /> (se definida), ou
-
-        * configurações pessoais do usuário.
-
-      Os padrões de URL não podem entrar em conflito com <ph name="WEB_HID_ASK_FOR_URLS_POLICY_NAME" />. Nenhuma política vai ter precedência se um URL tiver correspondência com ambas.
-
-      Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> não é um valor aceitável para esta política.</translation>
 <translation id="8554750769356971993">Uma política para controlar se a configuração do <ph name="PRIVACY_SANDBOX_NAME" /> de anúncios sugeridos pelo site pode ser desativada para os usuários.
 
 Se ela for desativada, a configuração de anúncios sugeridos pelo site também vai ser desativada para os usuários.
@@ -11810,15 +11326,6 @@ Se a política for deixada sem definição, nenhuma senha salva será importada 
       Se a política for definida como falsa ou se não for definida, as informações não serão enviadas.
       Se ela for definida como verdadeira, as informações sobre o Bluetooth do dispositivo serão enviadas.</translation>
 <translation id="8700633400000170881">Botão esquerdo como principal</translation>
-<translation id="8703378568562190813">Se a política for definida, será possível configurar uma lista de padrões de URL que especifica quais apps da Web têm acesso aos tipos de arquivos.
-
-      Se a política for deixada sem definição, a <ph name="DEFAULT_FILE_HANDLING_GUARD_SETTING_POLICY_NAME" /> será aplicada a todos os apps da Web, caso esteja definida. Se não estiver, as configurações pessoais dos usuários serão aplicadas.
-
-      No caso de padrões de URL que não correspondem às políticas <ph name="FILE_HANDLING_ALLOWED_FOR_URLS_POLICY_NAME" /> e <ph name="FILE_HANDLING_BLOCKED_FOR_URLS_POLICY_NAME" />, a <ph name="DEFAULT_FILE_HANDLING_GUARD_SETTING_POLICY_NAME" /> ou as configurações pessoais dos usuários terão precedência, nessa ordem.
-
-      Os padrões de URL não podem entrar em conflito com a <ph name="FILE_HANDLING_BLOCKED_FOR_URLS_POLICY_NAME" />. Nenhuma política terá precedência se um URL tiver correspondência com ambas.
-
-      Para acessar informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> não é um valor aceitável para esta política.</translation>
 <translation id="8703488928438047864">Informa o status da placa</translation>
 <translation id="8704831857353097849">Lista de plug-ins desativados</translation>
 <translation id="8705317513271779649">Esta política controla a opção de atalho selecionada para remapear eventos para
@@ -12219,13 +11726,6 @@ Se a política for desativada, todas as integrações também serão.</translati
       Se a política for desativada ou não for definida, o Powerwash do dispositivo remoto não vai ser acionado, independente do status de upload do ID de registro.
 
       Essa verificação ocorre sempre que a tela de login é carregada e é repetida de hora em hora quando o dispositivo permanece na tela de login. Isso evita que a migração seja iniciada no meio de uma sessão do usuário, o que pode causar problemas para usuários finais.</translation>
-<translation id="8995019632040507706">Se a política for definida, será possível configurar uma lista de padrões de URL que especifica os sites que podem acessar sensores de luz e movimento.
-
-      Se a política não tiver definição, <ph name="DEFAULT_SENSORS_SETTING_POLICY_NAME" /> será aplicada a todos os sites, se estiver definida. Caso contrário, a configuração pessoal do usuário será aplicada.
-
-      Se o mesmo padrão de URL existir nesta política e na política <ph name="SENSORS_BLOCKED_FOR_URLS_POLICY_NAME" />, a segunda terá prioridade e o acesso a sensores de luz e movimento será bloqueado.
-
-      Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Caracteres curinga (<ph name="WILDCARD_VALUE" />) são permitidos.</translation>
 <translation id="9003823644527627017">Configurar VMs da Bruschetta no <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="9004469022085379212">Se a política for definida como ativada, o dispositivo poderá executar máquinas virtuais no <ph name="PRODUCT_OS_NAME" />. <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" /> e <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> precisam estar ativadas para usar o <ph name="PRODUCT_CROSTINI_NAME" />. Se a política for definida como desativada, o dispositivo não poderá executar máquinas virtuais. Se a definição for alterada para desativada, a política será aplicada para executar novas máquinas virtuais em vez das já existentes.
 
@@ -12436,17 +11936,6 @@ Esta política só tem efeito quando a <ph name="FULL_RESTORE_ENABLED_NAME" /> e
 <translation id="9124770007620653639">Nunca enviar dados de confiabilidade do domínio para o Google</translation>
 <translation id="9126331659955304300">Permitir que o avatar do usuário seja selecionado de imagens no sistema de arquivos local, na câmera e no perfil do Google</translation>
 <translation id="9126694586349976283">Permita o uso de APIs de IA integradas.</translation>
-<translation id="9128095645860384292">Permite definir uma lista de padrões de URL que especificam sites sem permissão para executar o JavaScript com o compilador JIT (Just In Time) ativado.
-
-          Se você desativar o JIT do JavaScript, o <ph name="PRODUCT_NAME" /> poderá renderizar conteúdo da Web mais lentamente, e partes do próprio JavaScript poderão ser desativadas, incluindo o WebAssembly. Se você desativar o JIT do JavaScript, o <ph name="PRODUCT_NAME" /> poderá renderizar conteúdo da Web com uma configuração mais segura.
-
-          Para informações detalhadas sobre padrões de URL válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Caracteres curinga (<ph name="WILDCARD_VALUE" />) são permitidos.
-
-          As exceções da política de JIT do JavaScript serão aplicadas apenas na granularidade de um site (eTLD+1). Uma política definida apenas para subdomain.site.com não será corretamente aplicada a site.com ou subdomain.site.com, já que ambos são direcionados para o mesmo eTLD+1 (site.com), que não possui política. Nesse caso, a política precisa ser definida em site.com para que seja corretamente aplicada a site.com e subdomain.site.com.
-
-          Esta política é aplicada frame a frame e não tem base exclusiva no URL de origem de nível superior. Por exemplo, se site-one.com estiver listado na política <ph name="JAVA_SCRIPT_JIT_BLOCKED_FOR_SITES_POLICY_NAME" />, mas carregar um frame com site-two.com, site-one.com terá um JIT do JavaScript desativado, mas site-two.com usará a política de <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" />, se definida, ou terá como padrão um JIT do JavaScript ativado.
-
-          Se esta política não for definida para um site, a política de <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> será aplicada, se definida. Do contrário, um JIT do JavaScript será ativado.</translation>
 <translation id="9129169595075460149">Se a política for definida como "Ativada", o SafeSearch estará sempre ativo na Pesquisa Google e os usuários não poderão mudar essa configuração.
 
       Se a política for definida como "Desativada" ou não for definida, o SafeSearch não será obrigatório na Pesquisa Google.</translation>

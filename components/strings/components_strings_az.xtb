@@ -519,6 +519,7 @@
 <translation id="1823768272150895732">Şrift</translation>
 <translation id="1824402189105105503">Səkkizinci Rulon</translation>
 <translation id="1826516787628120939">Yoxlanılır...</translation>
+<translation id="1829026591231985685">məlumatlar ayarlarda Google Pulqabıda yadda saxlanılır</translation>
 <translation id="1832730227369924598">Masa sinxronizasiyası</translation>
 <translation id="1834452765064623979">İnşaat və Bərpa</translation>
 <translation id="1838374766361614909">Axtarışı təmizləyin</translation>
@@ -1881,6 +1882,7 @@
 <translation id="4073797364926776829">Karta baxın</translation>
 <translation id="4075732493274867456">Klient və server ümumi SSL protokol versiyasını və ya şifrə dəstini dəstəkləmir.</translation>
 <translation id="4079302484614802869">Proksi konfiqurasiyası sabit proksi serverlər deyil, .pac skript URL istifadə etmək üçün ayarlanıb.</translation>
+<translation id="4080668349181235831">Təkliflər vermək və bu funksiyanı təkmilləşdirmək üçün daxil olduğunuz saytın URL-i və səhifənin bütün kontenti Google ilə paylaşılır. <ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" /> haqqında ətraflı məlumat əldə edin.</translation>
 <translation id="4080855220442581440">paylaşılan tabların sürüşdürülməsi və miqyasının dəyişdirilməsi</translation>
 <translation id="4082333119419111506">Kağız (ön çaplı)</translation>
 <translation id="4082393374666368382">Ayarlar - İdarəetmə</translation>
@@ -3840,6 +3842,7 @@
 <translation id="7286908876112207905">Bu kontenti bu sayta əlavə etməyə icazə verilmir</translation>
 <translation id="7291578327729322058">Sürücülük vəsiqəsi əlavə edin</translation>
 <translation id="7292031607255951991">Alıcının adı</translation>
+<translation id="7297228218361240128">Baxdığınız səhifələrdəki məlumatları Google Pulqabıda yadda saxlayın</translation>
 <translation id="7298195798382681320">Tövsiyə olunur</translation>
 <translation id="7299471494012161875">Displeyin yan elementləri əlavə olunub</translation>
 <translation id="7299721129597238157">Əlfəcini silin</translation>
@@ -4237,6 +4240,7 @@
 <translation id="7916162853251942238">Fleksoqrafiya bazası</translation>
 <translation id="791698251820376781">Təşkilatınız daxil olmağınıza icazə vermir</translation>
 <translation id="7926503317156566022">Aviasiya Sənayesi</translation>
+<translation id="7927046851848613453">Yalnız doldurduğunuz formaları deyil, baxdığınız səhifələrdən bilet, tədbir və digər məlumatları yadda saxlayın. Sonra tədbir bileti və loyallıq kartları kimi giriş talonlarına sürətlə daxil olun. Yadda saxladığınız məlumatlar cihazlarınızda və Google məhsullarında görünə bilər.</translation>
 <translation id="7930282586031445870">"İndi al, sonra ödə" xidmət şərtləri ekranı bağlanıb.</translation>
 <translation id="7932035970207573919">İş ünvanı, <ph name="ADDRESS" /></translation>
 <translation id="793209273132572360">Ünvan yenilənsin?</translation>

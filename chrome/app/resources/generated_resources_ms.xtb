@@ -2882,6 +2882,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2946640296642327832">Dayakan Bluetooth</translation>
 <translation id="2947281105969315778">Untuk berkongsi atau menyertai kumpulan tab, anda mestilah dapat log masuk ke Chrome</translation>
 <translation id="2947605845283690091">Penyemakan imbas web mestilah pantas. Luangkan masa untuk <ph name="BEGIN_LINK" />menyemak sambungan anda<ph name="END_LINK" /> sekarang.</translation>
+<translation id="2948287943780377675">{FILE_COUNT,plural, =1{Lepaskan fail di sini}other{Lepaskan fail di sini}}</translation>
 <translation id="2948300991547862301">Pergi ke <ph name="PAGE_TITLE" /></translation>
 <translation id="29488703364906173">Penyemak imbas web yang pantas, mudah dan selamat, yang dibina untuk web moden.</translation>
 <translation id="2950666755714083615">Daftarkan saya</translation>
@@ -2991,6 +2992,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3019023222666709803">Alat Anak Panah</translation>
 <translation id="3019285239893817657">Butang subhalaman</translation>
 <translation id="3019595674945299805">Perkhidmatan VPN</translation>
+<translation id="3020101754533552167">Menyemak log masuk...</translation>
 <translation id="3020183492814296499">Pintasan</translation>
 <translation id="3020990233660977256">Nombor Siri: <ph name="SERIAL_NUMBER" /></translation>
 <translation id="3021065318976393105">Semasa menggunakan bateri</translation>
@@ -5271,6 +5273,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="4606551464649945562">Jangan benarkan tapak membuat peta 3D bagi persekitaran anda dan menjejaki kedudukan kamera</translation>
 <translation id="4606933160360542263">Gabungan kekunci tersuai: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Padamkan kumpulan tab?}other{Padamkan kumpulan tab?}}</translation>
+<translation id="4607763915939540711">{FILE_LIMIT,plural, =1{Muat naik 1 fail untuk digunakan dengan pertanyaan anda}other{Muat naik hingga # fail untuk digunakan dengan pertanyaan anda}}</translation>
 <translation id="4608500690299898628">&amp;Cari...</translation>
 <translation id="4609164937357979319">Pemilihan akaun</translation>
 <translation id="4610493438923139095">Tidak Dipercayai</translation>

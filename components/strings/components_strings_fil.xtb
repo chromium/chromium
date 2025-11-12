@@ -519,6 +519,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1823768272150895732">Font</translation>
 <translation id="1824402189105105503">Ikawalong Rolyo</translation>
 <translation id="1826516787628120939">Sinusuri</translation>
+<translation id="1829026591231985685">pag-save ng impormasyon sa Google Wallet sa mga setting</translation>
 <translation id="1832730227369924598">Pag-sync sa desk</translation>
 <translation id="1834452765064623979">Konstruksyon at Pagmementina</translation>
 <translation id="1838374766361614909">I-clear ang paghahanap</translation>
@@ -1885,6 +1886,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4073797364926776829">Tingnan ang card</translation>
 <translation id="4075732493274867456">Hindi sinusuportahan ng client at server ang isang karaniwang bersyon o cipher suite ng SSL protocol.</translation>
 <translation id="4079302484614802869">Nakatakda ang configuration ng proxy upang gumamit ng isang .pac script URL, hindi ng mga hindi nababagong proxy server.</translation>
+<translation id="4080668349181235831">Para makapag-alok ng mga suhestyon at mapahusay ang feature na ito, shine-share sa Google ang URL at content ng buong page ng site na binibisita mo. Matuto pa tungkol sa <ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" />.</translation>
 <translation id="4080855220442581440">pag-scroll at pag-zoom ng mga naka-share na tab</translation>
 <translation id="4082333119419111506">Papel (Naka-preprint)</translation>
 <translation id="4082393374666368382">Mga Setting - Pamamahala</translation>
@@ -3845,6 +3847,7 @@ Mga karagdagang detalye:
 <translation id="7286908876112207905">Hindi pinapayagan ang pag-paste ng content na ito sa site na ito</translation>
 <translation id="7291578327729322058">Magdagdag ng lisensya sa pagmamaneho</translation>
 <translation id="7292031607255951991">Pangalan ng tatanggap</translation>
+<translation id="7297228218361240128">I-save ang impormasyon sa Google Wallet mula sa mga page na tinitingnan mo</translation>
 <translation id="7298195798382681320">Inirerekomenda</translation>
 <translation id="7299471494012161875">Ipakita ang mga naka-attach na peripheral</translation>
 <translation id="7299721129597238157">Tanggalin ang bookmark</translation>
@@ -4242,6 +4245,7 @@ Mga karagdagang detalye:
 <translation id="7916162853251942238">Flexo Base</translation>
 <translation id="791698251820376781">Hindi ka pinapayagan ng iyong organisasyon na mag-sign in</translation>
 <translation id="7926503317156566022">Industriya ng Aviation</translation>
+<translation id="7927046851848613453">Mag-save ng mga ticket, event, at iba pang impormasyon mula sa mga page na tinitingnan mo — hindi lang mga form na pinupunan mo. Pagkatapos ay mabilis na i-access ang iyong mga pass, tulad ng mga ticket ng event at loyalty card. Puwedeng lumabas ang iyong naka-save na impormasyon sa mga device mo at sa mga produkto ng Google.</translation>
 <translation id="7930282586031445870">Nakasara ang screen ng mga tuntunin ng serbisyo ng Buy-Now-Pay-Later.</translation>
 <translation id="7932035970207573919">Address ng trabaho, <ph name="ADDRESS" /></translation>
 <translation id="793209273132572360">I-update ang address?</translation>
@@ -4290,6 +4294,7 @@ Mga karagdagang detalye:
 <translation id="7987087088851949178">Binuksan nang buo ang bottom sheet ng mga available na Buy-Now-Pay-Later na issuer para magbayad sa paglipas ng panahon.</translation>
 <translation id="799149739215780103">Bind</translation>
 <translation id="7992044431894087211">Ipinagpatuloy ang pagbabahagi ng screen sa <ph name="APPLICATION_TITLE" /></translation>
+<translation id="799384093520583425">Na-block ng iyong organisasyon ang paggamit ng DevTools sa page na ito</translation>
 <translation id="7995512525968007366">Hindi Tinukoy</translation>
 <translation id="7997855386298213183">mga naka-share na tab</translation>
 <translation id="8001912761979890298">Hindi mapatunayan ng server na ito na <ph name="DOMAIN" /> ito dahil gumagamit ito ng certificate na panseguridad na hindi pinagkakatiwalaan ng Chromium o ng iyong configuration ng system para sa pag-encrypt ng trapiko sa web. Posibleng sanhi ito ng maling pag-configure, o ng pag-intercept ng isang attacker sa koneksyon mo. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Tingnan ang Certificate<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
@@ -4834,6 +4839,7 @@ Mga karagdagang detalye:
 <translation id="8922013791253848639">Palaging payagan ang mga ad sa site na ito</translation>
 <translation id="8922734931659847428">Limitadong listahan ng mga URL ng mga page na binisita mo kung saan may <ph name="BEGIN_LINK" />mga event ng legacy na teknolohiya<ph name="END_LINK" /></translation>
 <translation id="892588693504540538">Punch top right</translation>
+<translation id="8926082624786998759">Hindi pinapayagan ang DevTools sa page na ito</translation>
 <translation id="8926389886865778422">Huwag nang itanong ulit</translation>
 <translation id="8926400492587758246">Magbayad sa pamamagitan ng mabababang buwanang installment</translation>
 <translation id="8932102934695377596">Nahuhuli ang iyong orasan</translation>

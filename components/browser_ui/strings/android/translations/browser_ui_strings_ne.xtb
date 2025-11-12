@@ -243,6 +243,7 @@
 <translation id="3611658447322220736">हालसालै बन्द गरिएका साइटहरूले जानकारी पठाउने तथा प्राप्त गर्ने कार्य पूरा गर्न सक्छन्</translation>
 <translation id="3619294456800709762">साइटहरू picture-in-picture मोडमा स्वतः प्रवेश गर्न सक्छन्</translation>
 <translation id="3628308229821498208">सिफारिस गरिएका खोजहरू</translation>
+<translation id="363748948745453283">अनुमानित लोकेसन प्रयोग गरिँदै छ</translation>
 <translation id="3641456520301071208">साइटहरूले तपाईंको स्थानसम्बन्धी जानकारी माग्न सक्छन्</translation>
 <translation id="3658847490588580244">डिफल्ट ब्राउजरको पुछारको पाना</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_OWNER" /> का साइटहरूको समूहमा सामेल <ph name="RWS_MEMBERS_COUNT" /> साइटले तपाईंले यो समूहमा गर्ने गतिविधि हेर्न सक्छ}other{<ph name="RWS_OWNER" /> का साइटहरूको समूहमा सामेल <ph name="RWS_MEMBERS_COUNT" /> वटा साइटले तपाईंले यो समूहमा गर्ने गतिविधि हेर्न सक्छन्}}</translation>

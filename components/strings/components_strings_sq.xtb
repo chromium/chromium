@@ -519,6 +519,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1823768272150895732">Fonti</translation>
 <translation id="1824402189105105503">Ruli i tetë</translation>
 <translation id="1826516787628120939">Po kontrollon</translation>
+<translation id="1829026591231985685">ruajtjes së informacioneve te "Portofoli i Google" te cilësimet</translation>
 <translation id="1832730227369924598">Sinkronizimi i tavolinës së punës</translation>
 <translation id="1834452765064623979">Ndërtimi dhe mirëmbajtja</translation>
 <translation id="1838374766361614909">Fshi kërkimin</translation>
@@ -1885,6 +1886,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4073797364926776829">Shiko kartën</translation>
 <translation id="4075732493274867456">Klienti dhe serveri nuk mbështesin një version të zakonshëm të protokollit SSL ose një paketë të shifrimit.</translation>
 <translation id="4079302484614802869">Konfigurimi i përfaqësuesit është caktuar të përdorë një shkrim URL-je .pac, jo serverë të fiksuar përfaqësues.</translation>
+<translation id="4080668349181235831">Për të ofruar sugjerime dhe për të përmirësuar këtë veçori, URL-ja dhe përmbajtja e plotë e faqes së sajtit që viziton ndahen me Google. Mëso më shumë rreth <ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" />.</translation>
 <translation id="4080855220442581440">lëvizja dhe zmadhimi në skedat e ndara</translation>
 <translation id="4082333119419111506">Letër (e printuar paraprakisht)</translation>
 <translation id="4082393374666368382">Cilësimet - Menaxhimi</translation>
@@ -3843,6 +3845,7 @@ Detaje shtesë:
 <translation id="7286908876112207905">Ngjitja e kësaj përmbajtjeje në këtë sajt nuk lejohet</translation>
 <translation id="7291578327729322058">Shto lejen e drejtimit</translation>
 <translation id="7292031607255951991">Emri i marrësit</translation>
+<translation id="7297228218361240128">Ruaj informacionet te "Portofoli i Google" nga faqet që shikon</translation>
 <translation id="7298195798382681320">I rekomanduar</translation>
 <translation id="7299471494012161875">Shfaq pajisjet periferike të lidhura</translation>
 <translation id="7299721129597238157">Fshi faqeshënuesin</translation>
@@ -4240,6 +4243,7 @@ Detaje shtesë:
 <translation id="7916162853251942238">Baza fleksografike</translation>
 <translation id="791698251820376781">Organizata jote nuk lejon që të identifikohesh</translation>
 <translation id="7926503317156566022">Industria e aviacionit</translation>
+<translation id="7927046851848613453">Ruaj biletat, ngjarjet dhe informacione të tjera nga faqet që shikon - jo vetëm formularët që plotëson. Më pas qasu me shpejtësi te dokumentet e tua dixhitale, si p.sh. biletat e ngjarjeve dhe kartat e besnikërisë. Informacionet e tua të ruajtura mund të shfaqen në pajisjet e tua dhe nëpër produktet e Google.</translation>
 <translation id="7930282586031445870">Ekrani i kushteve të shërbimit për metodën "Bli tani, paguaj më vonë" u mbyll.</translation>
 <translation id="7932035970207573919">Adresa e punës, <ph name="ADDRESS" /></translation>
 <translation id="793209273132572360">Të përditësohet adresa?</translation>

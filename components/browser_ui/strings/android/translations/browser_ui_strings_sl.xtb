@@ -243,6 +243,7 @@ Dodatna zaščita upravlja te nastavitve za Chrome:
 <translation id="3611658447322220736">Nedavno zaprta spletna mesta lahko dokončajo pošiljanje in prejemanje podatkov.</translation>
 <translation id="3619294456800709762">Spletna mesta lahko samodejno preklopijo v način slike v sliki</translation>
 <translation id="3628308229821498208">Predlagane iskalne poizvedbe</translation>
+<translation id="363748948745453283">Uporaba približne lokacije</translation>
 <translation id="3641456520301071208">Spletna mesta lahko zahtevajo lokacijo.</translation>
 <translation id="3658847490588580244">Razdelek na dnu zaslona za privzeti brskalnik</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> spletno mesto v skupini spletnih mest <ph name="RWS_OWNER" />, ki si lahko ogledajo vašo dejavnost v skupini}one{<ph name="RWS_MEMBERS_COUNT" /> spletno mesto v skupini spletnih mest <ph name="RWS_OWNER" />, ki si lahko ogledajo vašo dejavnost v skupini}two{<ph name="RWS_MEMBERS_COUNT" /> spletni mesti v skupini spletnih mest <ph name="RWS_OWNER" />, ki si lahko ogledajo vašo dejavnost v skupini}few{<ph name="RWS_MEMBERS_COUNT" /> spletna mesta v skupini spletnih mest <ph name="RWS_OWNER" />, ki si lahko ogledajo vašo dejavnost v skupini}other{<ph name="RWS_MEMBERS_COUNT" /> spletnih mest v skupini spletnih mest <ph name="RWS_OWNER" />, ki si lahko ogledajo vašo dejavnost v skupini}}</translation>
@@ -436,6 +437,7 @@ Dodatna zaščita upravlja te nastavitve za Chrome:
 <translation id="5792627621688759634">Pomikanje med stranmi z vlečenjem po sledilni ploščici</translation>
 <translation id="5801457289562671820">Priporoča vaša organizacija</translation>
 <translation id="5804241973901381774">Dovoljenja</translation>
+<translation id="5817042798620209981">Podatki o spletnem mestu, pogovorno okno</translation>
 <translation id="5822675474983796325">Razdelek na dnu zaslona za prilagajanje strani »Nov zavihek« je odprt pri polni višini</translation>
 <translation id="5833899990800318936">Spletnim mestom ni dovoljena uporaba JavaScripta</translation>
 <translation id="583673505367439042">Spletna mesta lahko zahtevajo urejanje datotek in map v napravi.</translation>

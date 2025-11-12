@@ -615,6 +615,7 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="1414648216875402825">Chystáte sa vykonať aktualizáciu na nestabilnú verziu prehliadača <ph name="PRODUCT_NAME" />, ktorá obsahuje funkcie vo vývoji. Bude dochádzať ku zlyhaniam a neočakávaným chybám. Postupujte opatrne.</translation>
 <translation id="1415708812149920388">Bol zakázaný prístup k čítaniu obsahu schránky</translation>
 <translation id="1415990189994829608">Rozšírenie <ph name="EXTENSION_NAME" /> (ID rozšírenia <ph name="EXTENSION_ID" />) nie je v tomto type relácie povolené.</translation>
+<translation id="141720836055413739">Nedá sa nahrať.  Skúste iný formát súboru.</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{Odstrániť aplikáciu}few{Odstrániť aplikácie}many{Odstrániť aplikácie}other{Odstrániť aplikácie}}</translation>
 <translation id="1417497355604638350">Odosielajte diagnostiky a údaje o využití.</translation>
 <translation id="1418552618736477642">Upozornenia a aplikácie</translation>
@@ -2870,6 +2871,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2946640296642327832">Povoliť rozhranie Bluetooth</translation>
 <translation id="2947281105969315778">Ak chcete zdieľať skupiny kariet alebo sa k nejakej z nich pripojiť, musíte mať možnosť prihlásiť sa do Chromu</translation>
 <translation id="2947605845283690091">Prehliadanie webu by malo byť rýchle. Strávte chvíľu <ph name="BEGIN_LINK" />kontrolou rozšírení<ph name="END_LINK" />.</translation>
+<translation id="2948287943780377675">{FILE_COUNT,plural, =1{Tu presuňte súbor}few{Tu presuňte súbory}many{Drop files here}other{Tu presuňte súbory}}</translation>
 <translation id="2948300991547862301">Prejsť na stránku <ph name="PAGE_TITLE" /></translation>
 <translation id="29488703364906173">Rýchly, jednoduchý a bezpečný webový prehliadač vytvorený pre moderný web.</translation>
 <translation id="2950666755714083615">Chcem sa zaregistrovať</translation>
@@ -5259,6 +5261,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="4606551464649945562">Nepovoliť webom vytvoriť 3D mapu vášho okolia ani sledovať umiestnenie kamier</translation>
 <translation id="4606933160360542263">Vlastná kombinácia klávesov: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Chcete odstrániť skupinu kariet?}few{Chcete odstrániť skupiny kariet?}many{Delete tab groups?}other{Chcete odstrániť skupiny kariet?}}</translation>
+<translation id="4607763915939540711">{FILE_LIMIT,plural, =1{Nahrajte 1 súbor, ktorý chcete použiť s otázkou}few{Nahrajte maximálne # súbory, ktoré chcete použiť s otázkou}many{Upload up to # files to use with your question}other{Nahrajte maximálne # súborov, ktoré chcete použiť s otázkou}}</translation>
 <translation id="4608500690299898628">&amp;Nájsť...</translation>
 <translation id="4609164937357979319">Výber účtu</translation>
 <translation id="4610493438923139095">Nedôveryhodný</translation>

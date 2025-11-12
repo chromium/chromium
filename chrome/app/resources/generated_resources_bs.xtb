@@ -615,6 +615,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="1414648216875402825">Upravo ažurirate <ph name="PRODUCT_NAME" /> na nestabilnu verziju koja sadrži funkcije trenutno u upotrebi. Doći će do padova softvera i neočekivanih grešaka. Budite pažljivi.</translation>
 <translation id="1415708812149920388">Pristup čitanju međumemorije je odbijen</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> (ID ekstenzije "<ph name="EXTENSION_ID" />") nije dozvoljen u ovoj vrsti sesije.</translation>
+<translation id="141720836055413739">Nije moguće otpremiti.  Pokušajte s drugim formatom fajla.</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{Ukloni aplikaciju}one{Ukloni aplikacije}few{Ukloni aplikacije}other{Ukloni aplikacije}}</translation>
 <translation id="1417497355604638350">Pošaljite dijagnostiku i podatke o korištenju.</translation>
 <translation id="1418552618736477642">Obavještenja i aplikacije</translation>
@@ -2880,6 +2881,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="2946640296642327832">Omogući Bluetooth</translation>
 <translation id="2947281105969315778">Da dijelite grupe kartica ili im se pridružite, morate se moći prijaviti u Chrome</translation>
 <translation id="2947605845283690091">Pregledanje weba bi trebalo biti brzo. Odvojite malo vremena da sada <ph name="BEGIN_LINK" />provjerite ekstenzije<ph name="END_LINK" />.</translation>
+<translation id="2948287943780377675">{FILE_COUNT,plural, =1{Ispustite fajl ovdje}one{Ispustite fajlove ovdje}few{Ispustite fajlove ovdje}other{Ispustite fajlove ovdje}}</translation>
 <translation id="2948300991547862301">Idite do lokacije <ph name="PAGE_TITLE" /></translation>
 <translation id="29488703364906173">Brz, jednostavan i siguran preglednik, napravljen za moderni web.</translation>
 <translation id="2950666755714083615">Registriraj me</translation>
@@ -5269,6 +5271,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="4606551464649945562">Onemogući web lokacijama kreiranje 3D mape okruženja ili praćenje položaja kamere</translation>
 <translation id="4606933160360542263">Prilagođena kombinacija tipki: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Izbrisati grupu kartica?}one{Izbrisati grupe kartica?}few{Izbrisati grupe kartica?}other{Izbrisati grupe kartica?}}</translation>
+<translation id="4607763915939540711">{FILE_LIMIT,plural, =1{Otpremite 1 fajl koji ćete koristiti s pitanjem}one{Otpremite do # fajla koje ćete koristiti s pitanjem}few{Otpremite do # fajla koje ćete koristiti s pitanjem}other{Otpremite do # fajlova koje ćete koristiti s pitanjem}}</translation>
 <translation id="4608500690299898628">&amp;Traži...</translation>
 <translation id="4609164937357979319">Odabir računa</translation>
 <translation id="4610493438923139095">Nepouzdano</translation>

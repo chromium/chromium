@@ -519,6 +519,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1823768272150895732">Fuente</translation>
 <translation id="1824402189105105503">Octavo rollo</translation>
 <translation id="1826516787628120939">Comprobando</translation>
+<translation id="1829026591231985685">cómo guardar información en la Billetera de Google en la configuración</translation>
 <translation id="1832730227369924598">Sincronización de escritorio</translation>
 <translation id="1834452765064623979">Construcción y mantenimiento</translation>
 <translation id="1838374766361614909">Borrar la búsqueda</translation>
@@ -1886,6 +1887,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4073797364926776829">Ver tarjeta</translation>
 <translation id="4075732493274867456">El cliente y el servidor no admiten un conjunto de cifrado o una versión de protocolo SSL en común.</translation>
 <translation id="4079302484614802869">El proxy está configurado para usar una URL de script .pac, no servidores proxy fijos.</translation>
+<translation id="4080668349181235831">Para ofrecer sugerencias y mejorar esta función, la URL y el contenido completo de la página del sitio que visitas se comparten con Google. Obtén más información sobre <ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" />.</translation>
 <translation id="4080855220442581440">desplazamiento y zoom en pestañas compartidas</translation>
 <translation id="4082333119419111506">Papel (preimpreso)</translation>
 <translation id="4082393374666368382">Configuración - Administración</translation>
@@ -3846,6 +3848,7 @@ Detalles adicionales:
 <translation id="7286908876112207905">No se permite pegar este contenido en este sitio</translation>
 <translation id="7291578327729322058">Agregar una licencia de conducir</translation>
 <translation id="7292031607255951991">Nombre del destinatario</translation>
+<translation id="7297228218361240128">Guarda información de las páginas que ves en la Billetera de Google</translation>
 <translation id="7298195798382681320">Recomendado</translation>
 <translation id="7299471494012161875">Periféricos de pantallas conectados</translation>
 <translation id="7299721129597238157">Eliminar marcador</translation>
@@ -4243,6 +4246,7 @@ Detalles adicionales:
 <translation id="7916162853251942238">Base para flexografía</translation>
 <translation id="791698251820376781">Tu organización no te permite acceder</translation>
 <translation id="7926503317156566022">Industria aeronáutica</translation>
+<translation id="7927046851848613453">Guarda entradas, eventos y otra información de las páginas que ves, no solo de los formularios que completas. Luego, accede rápidamente a tus boletos, como entradas para eventos y tarjetas de lealtad. La información guardada puede aparecer en tus dispositivos y en los productos de Google.</translation>
 <translation id="7930282586031445870">Se cerró la pantalla de las condiciones del servicio de Compra ahora y paga después.</translation>
 <translation id="7932035970207573919">Dirección de trabajo: <ph name="ADDRESS" /></translation>
 <translation id="793209273132572360">¿Quieres actualizar la dirección?</translation>

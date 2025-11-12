@@ -614,6 +614,7 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1414648216875402825">Vous passez à une version instable de <ph name="PRODUCT_NAME" /> qui contient des fonctionnalités en cours de développement. Des plantages et des bogues inattendus peuvent se produire. Nous vous recommandons d'agir avec précaution.</translation>
 <translation id="1415708812149920388">Accès en lecture au presse-papiers refusé</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> (identifiant d'extension « <ph name="EXTENSION_ID" /> ») n'est pas autorisé dans ce type de session.</translation>
+<translation id="141720836055413739">Téléversement impossible.  Essayez un autre format de fichier.</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{Retirer l'application}one{Retirer l'application}other{Retirer les applications}}</translation>
 <translation id="1417497355604638350">Envoyer des données d'utilisation et de diagnostic.</translation>
 <translation id="1418552618736477642">Notifications et applications</translation>
@@ -2871,6 +2872,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="2946640296642327832">Activer Bluetooth</translation>
 <translation id="2947281105969315778">Pour partager ou rejoindre des groupes d'onglets, vous devez pouvoir vous connecter à Chrome</translation>
 <translation id="2947605845283690091">La navigation Web devrait être rapide. Prenez quelques instants pour <ph name="BEGIN_LINK" />vérifier vos extensions<ph name="END_LINK" /> maintenant.</translation>
+<translation id="2948287943780377675">{FILE_COUNT,plural, =1{Déposez le fichier ici}one{Déposez le fichier ici}other{Déposez les fichiers ici}}</translation>
 <translation id="2948300991547862301">Aller à <ph name="PAGE_TITLE" /></translation>
 <translation id="29488703364906173">Un navigateur Internet rapide, simple et sécurisé, conçu pour le Web d'aujourd'hui.</translation>
 <translation id="2950666755714083615">Je m'inscris</translation>
@@ -2980,6 +2982,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="3019023222666709803">Flèche</translation>
 <translation id="3019285239893817657">Bouton pour accéder à la sous-page</translation>
 <translation id="3019595674945299805">Service de RPV</translation>
+<translation id="3020101754533552167">Vérification de la connexion en cours…</translation>
 <translation id="3020183492814296499">Raccourcis</translation>
 <translation id="3020990233660977256">Numéro de série : <ph name="SERIAL_NUMBER" /></translation>
 <translation id="3021065318976393105">Sur la pile</translation>
@@ -5260,6 +5263,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou voir plus d'
 <translation id="4606551464649945562">Ne pas autoriser les sites à créer une carte 3D de votre environnement ni à faire le suivi de la position de l'appareil photo</translation>
 <translation id="4606933160360542263">Combinaison de touches personnalisée : <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Supprimer le groupe d'onglets?}one{Supprimer le groupe d'onglets?}other{Supprimer les groupes d'onglets?}}</translation>
+<translation id="4607763915939540711">{FILE_LIMIT,plural, =1{Téléversez 1 fichier à utiliser avec votre question}one{Téléversez jusqu'à # fichier à utiliser avec votre question}other{Téléversez jusqu'à # fichiers à utiliser avec votre question}}</translation>
 <translation id="4608500690299898628">Rec&amp;hercher...</translation>
 <translation id="4609164937357979319">Sélection du compte</translation>
 <translation id="4610493438923139095">Non fiable</translation>

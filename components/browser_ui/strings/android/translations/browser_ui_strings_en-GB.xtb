@@ -243,6 +243,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="3611658447322220736">Recently closed sites can finish sending and receiving data</translation>
 <translation id="3619294456800709762">Sites can enter picture-in-picture automatically</translation>
 <translation id="3628308229821498208">Suggested searches</translation>
+<translation id="363748948745453283">Using approximate location</translation>
 <translation id="3641456520301071208">Sites can ask for your location</translation>
 <translation id="3658847490588580244">Default browser bottom sheet</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> site in <ph name="RWS_OWNER" />’s group of sites that can see your activity in the group}other{<ph name="RWS_MEMBERS_COUNT" /> sites in <ph name="RWS_OWNER" />’s group of sites that can see your activity in the group}}</translation>

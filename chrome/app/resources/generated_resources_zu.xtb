@@ -614,6 +614,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.}}</t
 <translation id="1414648216875402825">Ubuyekezela kunguqulo engazinzile ye-<ph name="PRODUCT_NAME" /> equkethe izici eziqhubekayo. Ukuphahlazeka namaphutha angalindelekile kuzovela. Sicela uqhubeke ngokuqaphela.</translation>
 <translation id="1415708812149920388">Ukufinyelela ukufunda kubhodi lokunamathisela kunqatshelwe</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> (I-ID yesandiso se-"<ph name="EXTENSION_ID" />") ayivunyelwe kule nhlobo yeseshini.</translation>
+<translation id="141720836055413739">Awukwazi ukulayisha.  Zama ifomethi yefayela ehlukile.</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{Susa i-app}one{Susa ama-app}other{Susa ama-app}}</translation>
 <translation id="1417497355604638350">Thumela idatha yokuxilonga neyokusetshenziswa.</translation>
 <translation id="1418552618736477642">Izaziso nama-app</translation>
@@ -2882,6 +2883,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="2946640296642327832">Nika amandla i-Bluetooth</translation>
 <translation id="2947281105969315778">Ukuze wabelane noma ujoyine amaqembu wethebhu, kufanele ukwazi ukungena ngemvume kuChrome</translation>
 <translation id="2947605845283690091">Ukuphequlula kwewebhu kufanele kusheshe. Thatha isikhashana <ph name="BEGIN_LINK" />ukuhlola izandiso zakho<ph name="END_LINK" /> manje.</translation>
+<translation id="2948287943780377675">{FILE_COUNT,plural, =1{Beka ifayela lapha}one{Beka amafayela lapha}other{Beka amafayela lapha}}</translation>
 <translation id="2948300991547862301">Hamba ku-<ph name="PAGE_TITLE" /></translation>
 <translation id="29488703364906173">Isiphequluli sewebhu esisheshayo, esilula futhi esiphephile, esakhelwe iwebhu yamanje.</translation>
 <translation id="2950666755714083615">Ngibhalise</translation>
@@ -5270,6 +5272,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="4606551464649945562">Ungavumeli amasayithi ukudala imephu ye-3D yendawo ekuzungezile noma ukulandelela indawo yekhamera</translation>
 <translation id="4606933160360542263">Inhlanganisela yokhiye wangokwezifiso: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Sula iqembu lethebhu?}one{Sula amaqembu ethebhu?}other{Sula amaqembu ethebhu?}}</translation>
+<translation id="4607763915939540711">{FILE_LIMIT,plural, =1{Layisha ifayela eli-1 ukuze ulisebenzise nombuzo wakho}one{Layisha amafayela afika kwangu-# ukuze uwasebenzise nombuzo wakho}other{Layisha amafayela afika kwangu-# ukuze uwasebenzise nombuzo wakho}}</translation>
 <translation id="4608500690299898628">&amp;Thola...</translation>
 <translation id="4609164937357979319">Ukukhethwa kwe-akhawunti</translation>
 <translation id="4610493438923139095">Okungathenjiwe</translation>

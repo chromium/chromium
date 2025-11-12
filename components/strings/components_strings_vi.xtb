@@ -519,6 +519,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1823768272150895732">Phông chữ</translation>
 <translation id="1824402189105105503">Cuộn thứ tám</translation>
 <translation id="1826516787628120939">Đang kiểm tra</translation>
+<translation id="1829026591231985685">việc lưu thông tin vào Google Wallet trong phần cài đặt</translation>
 <translation id="1832730227369924598">Đồng bộ hoá không gian làm việc</translation>
 <translation id="1834452765064623979">Xây dựng và bảo trì</translation>
 <translation id="1838374766361614909">Xóa tìm kiếm</translation>
@@ -1885,6 +1886,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4073797364926776829">Xem thẻ</translation>
 <translation id="4075732493274867456">Ứng dụng và máy chủ không hỗ trợ bộ mã hóa hoặc phiên bản giao thức SSL thông thường.</translation>
 <translation id="4079302484614802869">Cấu hình proxy được đặt để sử dụng URL tập lệnh .pac chứ không phải máy chủ proxy cố định.</translation>
+<translation id="4080668349181235831">Để Google đưa đề xuất và cải thiện tính năng này, URL và toàn bộ nội dung trang của trang web bạn truy cập sẽ được chia sẻ với Google. Tìm hiểu thêm về <ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" />.</translation>
 <translation id="4080855220442581440">cuộn và thu phóng thẻ được chia sẻ</translation>
 <translation id="4082333119419111506">Giấy (In sẵn)</translation>
 <translation id="4082393374666368382">Cài đặt – Quản lý</translation>
@@ -3845,6 +3847,7 @@ Thông tin chi tiết bổ sung:
 <translation id="7286908876112207905">Không được phép dán nội dung này vào trang web này</translation>
 <translation id="7291578327729322058">Thêm thông tin giấy phép lái xe</translation>
 <translation id="7292031607255951991">Tên người nhận</translation>
+<translation id="7297228218361240128">Lưu thông tin vào Google Wallet từ các trang bạn xem</translation>
 <translation id="7298195798382681320">Được đề xuất</translation>
 <translation id="7299471494012161875">Màn hình ngoại vi được kết nối</translation>
 <translation id="7299721129597238157">Xóa dấu trang</translation>
@@ -4242,6 +4245,7 @@ Thông tin chi tiết bổ sung:
 <translation id="7916162853251942238">Gốc Flexo</translation>
 <translation id="791698251820376781">Tổ chức của bạn không cho phép bạn đăng nhập</translation>
 <translation id="7926503317156566022">Ngành hàng không</translation>
+<translation id="7927046851848613453">Lưu vé, sự kiện và thông tin khác từ các trang bạn xem, chứ không chỉ các biểu mẫu bạn điền. Sau đó, bạn có thể nhanh chóng truy cập vào các thẻ và vé của mình, chẳng hạn như vé xem sự kiện và thẻ khách hàng thân thiết. Thông tin đã lưu có thể xuất hiện trên các thiết bị của bạn và trên các sản phẩm của Google.</translation>
 <translation id="7930282586031445870">Màn hình điều khoản dịch vụ Mua trước trả sau đã đóng.</translation>
 <translation id="7932035970207573919">Địa chỉ nơi làm việc, <ph name="ADDRESS" /></translation>
 <translation id="793209273132572360">Cập nhật địa chỉ?</translation>
@@ -4290,6 +4294,7 @@ Thông tin chi tiết bổ sung:
 <translation id="7987087088851949178">Các tổ chức phát hành dịch vụ Mua trước trả sau hiện có cho tuỳ chọn thanh toán dần mở toàn bộ.</translation>
 <translation id="799149739215780103">Đóng gáy</translation>
 <translation id="7992044431894087211">Đã tiếp tục chia sẻ màn hình với <ph name="APPLICATION_TITLE" /></translation>
+<translation id="799384093520583425">Tổ chức của bạn đã chặn sử dụng Công cụ cho nhà phát triển trên trang này</translation>
 <translation id="7995512525968007366">Không chỉ định</translation>
 <translation id="7997855386298213183">các thẻ được chia sẻ</translation>
 <translation id="8001912761979890298">Máy chủ này không chứng minh được rằng đó là <ph name="DOMAIN" /> vì máy chủ này đang sử dụng một chứng chỉ bảo mật mà Chromium hoặc cấu hình hệ thống của bạn không tin cậy để mã hoá lưu lượng truy cập web. Nguyên nhân có thể là do định cấu hình sai hoặc có kẻ tấn công chặn kết nối của bạn. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Xem chứng chỉ<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
@@ -4835,6 +4840,7 @@ Thông tin chi tiết bổ sung:
 <translation id="8922013791253848639">Luôn cho phép quảng cáo trên trang web này</translation>
 <translation id="8922734931659847428">Một danh sách hạn chế chứa URL của những trang bạn truy cập có diễn ra <ph name="BEGIN_LINK" />sự kiện công nghệ cũ<ph name="END_LINK" /></translation>
 <translation id="892588693504540538">Đục lỗ trên cùng bên phải</translation>
+<translation id="8926082624786998759">Không được phép dùng Công cụ cho nhà phát triển trên trang này</translation>
 <translation id="8926389886865778422">Đừng hỏi lại</translation>
 <translation id="8926400492587758246">Thanh toán theo hình thức trả góp hằng tháng với mức phí thấp</translation>
 <translation id="8932102934695377596">Đồng hồ của bạn chạy chậm</translation>

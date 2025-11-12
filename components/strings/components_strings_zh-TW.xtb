@@ -518,6 +518,7 @@
 <translation id="1823768272150895732">字型</translation>
 <translation id="1824402189105105503">第八卷</translation>
 <translation id="1826516787628120939">檢查中</translation>
+<translation id="1829026591231985685">如何在設定中將資訊儲存至 Google 錢包</translation>
 <translation id="1832730227369924598">桌面同步處理</translation>
 <translation id="1834452765064623979">建築與裝修</translation>
 <translation id="1838374766361614909">清除搜尋</translation>
@@ -1883,6 +1884,7 @@
 <translation id="4073797364926776829">查看卡片</translation>
 <translation id="4075732493274867456">用戶端和伺服器不支援一般 SSL 通訊協定版本或加密套件。</translation>
 <translation id="4079302484614802869">Proxy 設定已設為使用 .pac 指令碼網址，而非固定的 Proxy 伺服器。</translation>
+<translation id="4080668349181235831">為提供建議及改善這項功能，系統會將你造訪的網站網址和完整網頁內容提供給 Google。進一步瞭解<ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" />。</translation>
 <translation id="4080855220442581440">捲動及縮放已分享的分頁</translation>
 <translation id="4082333119419111506">紙 (預先印刷)</translation>
 <translation id="4082393374666368382">設定 - 管理</translation>
@@ -3843,6 +3845,7 @@
 <translation id="7286908876112207905">不允許將這項內容貼到這個網站</translation>
 <translation id="7291578327729322058">新增駕照</translation>
 <translation id="7292031607255951991">收件者名稱</translation>
+<translation id="7297228218361240128">將瀏覽網頁中的資訊儲存至 Google 錢包</translation>
 <translation id="7298195798382681320">建議採用</translation>
 <translation id="7299471494012161875">顯示已連接的周邊裝置</translation>
 <translation id="7299721129597238157">刪除書籤</translation>
@@ -4240,6 +4243,7 @@
 <translation id="7916162853251942238">彈性凸版基底</translation>
 <translation id="791698251820376781">貴機構不允許你登入</translation>
 <translation id="7926503317156566022">航空產業</translation>
+<translation id="7927046851848613453">儲存瀏覽網頁中的票證、活動和其他資訊 (不限於填寫的表單)，之後就能快速存取活動票券和會員卡等票證。儲存的資訊可顯示在裝置和各項 Google 產品中。</translation>
 <translation id="7930282586031445870">「先買後付」服務條款畫面已關閉。</translation>
 <translation id="7932035970207573919">公司地址，<ph name="ADDRESS" /></translation>
 <translation id="793209273132572360">要更新地址嗎？</translation>

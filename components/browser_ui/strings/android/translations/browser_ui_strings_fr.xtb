@@ -243,6 +243,7 @@ La Protection Avancée contrôle les paramètres Chrome suivants :
 <translation id="3611658447322220736">Les sites fermés récemment peuvent terminer l'envoi et la réception de données</translation>
 <translation id="3619294456800709762">Les sites peuvent passer en Picture-in-picture automatiquement</translation>
 <translation id="3628308229821498208">Recherches suggérées</translation>
+<translation id="363748948745453283">Position approximative utilisée</translation>
 <translation id="3641456520301071208">Les sites peuvent demander votre position</translation>
 <translation id="3658847490588580244">Bottom sheet du navigateur par défaut</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> site du groupe de sites de <ph name="RWS_OWNER" /> qui peuvent voir votre activité dans le groupe}one{<ph name="RWS_MEMBERS_COUNT" /> site du groupe de sites de <ph name="RWS_OWNER" /> qui peuvent voir votre activité dans le groupe}other{<ph name="RWS_MEMBERS_COUNT" /> sites du groupe de sites de <ph name="RWS_OWNER" /> qui peuvent voir votre activité dans le groupe}}</translation>

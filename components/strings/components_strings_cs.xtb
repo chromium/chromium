@@ -519,6 +519,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="1823768272150895732">Písmo</translation>
 <translation id="1824402189105105503">Osmá role</translation>
 <translation id="1826516787628120939">Probíhá kontrola</translation>
+<translation id="1829026591231985685">ukládání informací do Peněženky Google v nastavení</translation>
 <translation id="1832730227369924598">Synchronizace plochy</translation>
 <translation id="1834452765064623979">Stavby a údržba</translation>
 <translation id="1838374766361614909">Vymazat vyhledávání</translation>
@@ -1881,6 +1882,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4073797364926776829">Zobrazit kartu</translation>
 <translation id="4075732493274867456">Klient a server nepodporují společnou verzi protokolu SSL nebo šifrovací sadu.</translation>
 <translation id="4079302484614802869">Proxy je nastaveno na používání adresy URL skriptu PAC, nikoliv pevně daných serverů proxy.</translation>
+<translation id="4080668349181235831">Za účelem nabízení návrhů a vylepšování této funkce se adresa URL a obsah celé stránky navštíveného webu sdílí se společností Google. <ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" /></translation>
 <translation id="4080855220442581440">posouvání a přibližování sdílených karet</translation>
 <translation id="4082333119419111506">Papír (předtištěný)</translation>
 <translation id="4082393374666368382">Nastavení – správa</translation>
@@ -3839,6 +3841,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7286908876112207905">Vložení tohoto obsahu na tento web není povoleno</translation>
 <translation id="7291578327729322058">Přidání řidičského průkazu</translation>
 <translation id="7292031607255951991">Jméno příjemce</translation>
+<translation id="7297228218361240128">Ukládat informace z prohlížených stránek do Peněženky Google</translation>
 <translation id="7298195798382681320">Doporučeno</translation>
 <translation id="7299471494012161875">Připojená zobrazovací periferní zařízení</translation>
 <translation id="7299721129597238157">Smazat záložku</translation>
@@ -4236,6 +4239,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7916162853251942238">Flexotisková báze</translation>
 <translation id="791698251820376781">Vaše organizace přihlášení nepovoluje</translation>
 <translation id="7926503317156566022">Letecký průmysl</translation>
+<translation id="7927046851848613453">Ukládejte si lístky, události a další informace ze zobrazených stránek – nejen z vyplněných formulářů. Pak rychle získejte přístup ke svým kartám, jako jsou vstupenky na akce a věrnostní karty. Uložené informace se můžou zobrazovat na vašich zařízeních a ve službách Google.</translation>
 <translation id="7930282586031445870">Obrazovka se smluvními podmínkami platební metody Koupit teď, zaplatit později je zavřená.</translation>
 <translation id="7932035970207573919">Adresa do práce, <ph name="ADDRESS" /></translation>
 <translation id="793209273132572360">Aktualizovat adresu?</translation>

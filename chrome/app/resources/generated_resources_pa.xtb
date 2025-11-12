@@ -614,6 +614,7 @@
 <translation id="1414648216875402825">ਤੁਸੀਂ <ph name="PRODUCT_NAME" /> ਦਾ ਇੱਕ ਅਸਥਿਰ ਰੂਪ ਅੱਪਡੇਟ ਕਰ ਰਹੇ ਹੋ ਜਿਸ ਵਿੱਚ ਉਹ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਸ਼ਾਮਲ ਹਨ ਜੋ ਚਾਲੂ ਹਨ। ਕ੍ਰੈਸ਼ਿਜ ਅਤੇ ਅਚਨਚੇਤ ਬਗਸ ਹੋਣਗੇ। ਕਿਰਪਾ ਕਰਰਕੇ ਸਾਵਧਾਨੀ ਨਾਲ ਅੱਗੇ ਵਧੋ।</translation>
 <translation id="1415708812149920388">ਕਲਿੱਪਬੋਰਡ ਪੜ੍ਹਨ ਦੀ ਪਹੁੰਚ ਅਸਵੀਕਾਰ ਕੀਤੀ ਗਈ</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> (ਐਕਸਟੈਸ਼ਨ ID "<ph name="EXTENSION_ID" />") ਦੀ ਇਸ ਤਰਾਂ ਦੇ ਸੈਸ਼ਨ ਲਈ ਅਨੁਮਤੀ ਨਹੀਂ ਹੈ।</translation>
+<translation id="141720836055413739">ਅੱਪਲੋਡ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ।  ਕੋਈ ਵੱਖਰਾ ਫ਼ਾਈਲ ਫਾਰਮੈਟ ਵਰਤ ਕੇ ਦੇਖੋ।</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{ਐਪ ਨੂੰ ਹਟਾਓ}one{ਐਪ ਨੂੰ ਹਟਾਓ}other{ਐਪਾਂ ਨੂੰ ਹਟਾਓ}}</translation>
 <translation id="1417497355604638350">ਤਸ਼ਖੀਸੀ ਅਤੇ ਵਰਤੋਂ ਡਾਟਾ ਭੇਜੋ।</translation>
 <translation id="1418552618736477642">ਸੂਚਨਾਵਾਂ ਅਤੇ ਐਪਾਂ</translation>
@@ -2883,6 +2884,7 @@
 <translation id="2946640296642327832">Bluetooth ਨੂੰ ਸਮਰੱਥ ਬਣਾਓ</translation>
 <translation id="2947281105969315778">ਟੈਬ ਗਰੁੱਪਾਂ ਨੂੰ ਸਾਂਝਾ ਕਰਨ ਜਾਂ ਉਨ੍ਹਾਂ ਵਿੱਚ ਸ਼ਾਮਲ ਹੋਣ ਲਈ, ਤੁਹਾਡਾ Chrome ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰਨਯੋਗ ਹੋਣਾ ਲਾਜ਼ਮੀ ਹੈ</translation>
 <translation id="2947605845283690091">ਵੈੱਬ ਬ੍ਰਾਊਜ਼ਿੰਗ ਤੇਜ਼ ਹੋਣੀ ਚਾਹੀਦੀ ਹੈ। ਹੁਣੇ <ph name="BEGIN_LINK" />ਆਪਣੀਆਂ ਐਕਸਟੈਂਸ਼ਨਾਂ ਦੀ ਜਾਂਚ ਕਰਨ ਲਈ<ph name="END_LINK" /> ਕੁਝ ਸਮਾਂ ਕੱਢੋ।</translation>
+<translation id="2948287943780377675">{FILE_COUNT,plural, =1{ਫ਼ਾਈਲ ਨੂੰ ਇੱਥੇ ਛੱਡੋ}one{ਫ਼ਾਈਲ ਨੂੰ ਇੱਥੇ ਛੱਡੋ}other{ਫ਼ਾਈਲਾਂ ਨੂੰ ਇੱਥੇ ਛੱਡੋ}}</translation>
 <translation id="2948300991547862301"><ph name="PAGE_TITLE" /> ਤੇ ਜਾਓ</translation>
 <translation id="29488703364906173">ਆਧੁਨਿਕ ਵੈਬ ਲਈ ਇੱਕ ਤੇਜ਼, ਸਧਾਰਨ, ਸੁਰੱਖਿਅਤ ਵੈਬ ਬ੍ਰਾਊਜ਼ਰ, ਬਿਲਟ।</translation>
 <translation id="2950666755714083615">ਮੈਨੂੰ ਸਾਈਨ-ਅੱਪ ਕਰੋ</translation>
@@ -5272,6 +5274,7 @@
 <translation id="4606551464649945562">ਸਾਈਟਾਂ ਨੂੰ ਤੁਹਾਡੇ ਆਲੇ-ਦੁਆਲੇ ਦਾ 3D ਨਕਸ਼ਾ ਬਣਾਉਣ ਜਾਂ ਕੈਮਰਾ ਸਥਿਤੀ ਨੂੰ ਟਰੈਕ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਨਾ ਦਿਓ</translation>
 <translation id="4606933160360542263">ਵਿਉਂਤਿਆ ਕੁੰਜੀ ਸੁਮੇਲ: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{ਕੀ ਟੈਬ ਗਰੁੱਪ ਨੂੰ ਮਿਟਾਉਣਾ ਹੈ?}one{ਕੀ ਟੈਬ ਗਰੁੱਪ ਨੂੰ ਮਿਟਾਉਣਾ ਹੈ?}other{ਕੀ ਟੈਬ ਗਰੁੱਪਾਂ ਨੂੰ ਮਿਟਾਉਣਾ ਹੈ?}}</translation>
+<translation id="4607763915939540711">{FILE_LIMIT,plural, =1{ਆਪਣੇ ਸਵਾਲ ਨਾਲ ਵਰਤਣ ਲਈ 1 ਫ਼ਾਈਲ ਅੱਪਲੋਡ ਕਰੋ}one{ਆਪਣੇ ਸਵਾਲ ਨਾਲ ਵਰਤਣ ਲਈ ਵੱਧੋ-ਵੱਧ # ਫ਼ਾਈਲ ਅੱਪਲੋਡ ਕਰੋ}other{ਆਪਣੇ ਸਵਾਲ ਨਾਲ ਵਰਤਣ ਲਈ ਵੱਧੋ-ਵੱਧ # ਫ਼ਾਈਲਾਂ ਅੱਪਲੋਡ ਕਰੋ}}</translation>
 <translation id="4608500690299898628">&amp;ਲੱਭੋ...</translation>
 <translation id="4609164937357979319">ਖਾਤਾ ਚੋਣ</translation>
 <translation id="4610493438923139095">ਗੈਰ-ਭਰੋਸੇਯੋਗ</translation>

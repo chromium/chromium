@@ -243,6 +243,7 @@
 <translation id="3611658447322220736">最近關閉的網站可完成傳送和接受資料</translation>
 <translation id="3619294456800709762">網站可自動進入畫中畫</translation>
 <translation id="3628308229821498208">建議搜尋</translation>
+<translation id="363748948745453283">使用概略位置</translation>
 <translation id="3641456520301071208">網站可要求取得您的位置</translation>
 <translation id="3658847490588580244">預設瀏覽器頁底面板</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_OWNER" /> 網站群組的 <ph name="RWS_MEMBERS_COUNT" /> 個網站可查看你在群組中的活動}other{<ph name="RWS_OWNER" /> 網站群組的 <ph name="RWS_MEMBERS_COUNT" /> 個網站可查看你在群組中的活動}}</translation>

@@ -243,6 +243,7 @@ Täiustatud kaitse reguleerib neid Chrome’i seadeid:
 <translation id="3611658447322220736">Hiljuti suletud saidid saavad lõpetada andmete saatmise ja vastuvõtmise</translation>
 <translation id="3619294456800709762">Saidid saavad automaatselt pilt pildis režiimi siseneda</translation>
 <translation id="3628308229821498208">Soovitatud otsingud</translation>
+<translation id="363748948745453283">Kasutatakse ligikaudset asukohta</translation>
 <translation id="3641456520301071208">Saidid saavad küsida teie asukohta</translation>
 <translation id="3658847490588580244">Vaikebrauseri alumine leht</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> sait domeeni <ph name="RWS_OWNER" /> saidigrupis, mis näeb teie tegevusi grupis}other{<ph name="RWS_MEMBERS_COUNT" /> saiti domeeni <ph name="RWS_OWNER" /> saidigrupis, mis näevad teie tegevusi grupis}}</translation>

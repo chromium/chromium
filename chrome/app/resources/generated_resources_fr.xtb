@@ -614,6 +614,7 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="1414648216875402825">Vous passez à une version instable de <ph name="PRODUCT_NAME" /> qui contient des fonctionnalités en cours de développement. Des plantages et des bugs inattendus peuvent se produire. Procédez avec prudence.</translation>
 <translation id="1415708812149920388">Accès en lecture au presse-papiers refusé</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> (ID d'extension "<ph name="EXTENSION_ID" />") n'est pas autorisé à se joindre à ce type de session.</translation>
+<translation id="141720836055413739">Impossible d'importer.  Essayez avec un autre format de fichier.</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{Supprimer l'appli}one{Supprimer l'appli}other{Supprimer les applis}}</translation>
 <translation id="1417497355604638350">Envoyer des données de diagnostic et d'utilisation.</translation>
 <translation id="1418552618736477642">Notifications et applis</translation>
@@ -2869,6 +2870,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2946640296642327832">Activer le Bluetooth</translation>
 <translation id="2947281105969315778">Pour rejoindre ou partager des groupes d'onglets, vous devez pouvoir vous connecter à Chrome</translation>
 <translation id="2947605845283690091">La navigation Web devrait être rapide. Prenez quelques instants pour <ph name="BEGIN_LINK" />vérifier vos extensions<ph name="END_LINK" /> dès maintenant.</translation>
+<translation id="2948287943780377675">{FILE_COUNT,plural, =1{Déposez le fichier ici}one{Déposez le fichier ici}other{Déposez les fichiers ici}}</translation>
 <translation id="2948300991547862301">Accéder à la page <ph name="PAGE_TITLE" /></translation>
 <translation id="29488703364906173">Un navigateur Internet rapide, simple et sécurisé, conçu pour le Web d'aujourd'hui</translation>
 <translation id="2950666755714083615">S'inscrire</translation>
@@ -2950,7 +2952,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3003623123441819449">Cache CSS</translation>
 <translation id="3003967365858406397">Une connexion Wi-Fi privée sera créée sur votre <ph name="PHONE_NAME" />.</translation>
 <translation id="3004385386820284928">Personnaliser les touches du clavier</translation>
-<translation id="300580149047131921">Utilisée récemment</translation>
+<translation id="300580149047131921">Récemment utilisés</translation>
 <translation id="3006881078666935414">Aucune donnée sur l'utilisation</translation>
 <translation id="3007555010975143508">Ces applis seront utilisées pour enregistrer votre écran :</translation>
 <translation id="3007771295016901659">Dupliquer l'onglet</translation>
@@ -5256,6 +5258,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4606551464649945562">Interdire aux sites de créer un plan 3D de votre environnement ou de suivre la position de la caméra</translation>
 <translation id="4606933160360542263">Combinaison de touches personnalisée : <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Supprimer le groupe d'onglets ?}one{Supprimer le groupe d'onglets ?}other{Supprimer les groupes d'onglets ?}}</translation>
+<translation id="4607763915939540711">{FILE_LIMIT,plural, =1{Importez 1 fichier à utiliser avec votre question}one{Importez # seul fichier à utiliser avec votre question}other{Importez jusqu'à # fichiers à utiliser avec votre question}}</translation>
 <translation id="4608500690299898628">&amp;Rechercher...</translation>
 <translation id="4609164937357979319">Sélection du compte</translation>
 <translation id="4610493438923139095">Non approuvé</translation>

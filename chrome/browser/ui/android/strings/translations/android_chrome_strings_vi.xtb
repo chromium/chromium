@@ -49,7 +49,7 @@
 <translation id="1181037720776840403">Xoá</translation>
 <translation id="1183189057400844278">Xác minh danh tính của bạn để đảm bảo bạn luôn dùng được mật khẩu trong Tài khoản Google</translation>
 <translation id="1187810343066461819">Xoá cả dấu trang, nhật ký và các dữ liệu khác khỏi ô tô này</translation>
-<translation id="1193589902336218259">Bật thông báo về mẹo</translation>
+<translation id="1193589902336218259">Bật thông báo mẹo hay</translation>
 <translation id="1193729455103054076">Dùng mật khẩu mạnh?</translation>
 <translation id="11947597112837849">địa chỉ email</translation>
 <translation id="1197267115302279827">Di chuyển dấu trang</translation>
@@ -237,7 +237,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="200114059308480249">Bao gồm văn bản xung quanh trong các lượt tìm kiếm của Google?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, Thẻ ẩn danh đã tắt tiếng và được ghim</translation>
 <translation id="2021896219286479412">Kiểm soát trang toàn màn hình</translation>
-<translation id="2029669011553795746">Đã mở chế độ chọn nhận thông báo về mẹo trên một nửa màn hình</translation>
+<translation id="2029669011553795746">Đã mở chế độ chọn nhận thông báo mẹo hay trên một nửa màn hình</translation>
 <translation id="2038563949887743358">Bật Yêu cầu trang web dành cho máy tính</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> cũng có dữ liệu trong Chrome</translation>
 <translation id="2047378580182589770">Chạm và giữ để thoát chế độ Ẩn danh</translation>
@@ -408,7 +408,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="2781151931089541271">Còn 1 giây</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chrome đã phát hiện một mật khẩu trùng lặp mà bạn có thể cải thiện}other{Chrome đã phát hiện # mật khẩu trùng lặp mà bạn có thể cải thiện}}</translation>
-<translation id="2794551654724114396">Hãy bật thông báo để nhận các mẹo hữu ích giúp bạn khai thác tối đa Chrome</translation>
+<translation id="2794551654724114396">Bật thông báo để nhận các mẹo hữu ích giúp bạn tận dụng Chrome</translation>
 <translation id="2800066122460699237">Thẻ <ph name="TAB_TITLE" /> sẽ đóng</translation>
 <translation id="2805210243313393104">Sử dụng dấu trang và các dữ liệu khác trên mọi thiết bị của bạn</translation>
 <translation id="2805756323405976993">Ứng dụng</translation>
@@ -644,7 +644,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="3824259034819781947">Đính kèm tệp</translation>
 <translation id="38243391581572867">Không dùng được tính năng Ống kính trên tài khoản này.</translation>
 <translation id="38258275871320156">Chỉ dành cho cửa sổ nhỏ</translation>
-<translation id="3826529618131025925">Bảng trợ giúp và hướng dẫn chọn nhận thông báo về mẹo ở dưới cùng</translation>
+<translation id="3826529618131025925">Bảng trợ giúp và hướng dẫn chọn nhận thông báo mẹo hay ở dưới cùng</translation>
 <translation id="3845098929839618392">Mở trong thẻ Ẩn danh</translation>
 <translation id="3847319713229060696">Giúp tăng cường bảo mật cho mọi người trên web</translation>
 <translation id="385051799172605136">Quay lại</translation>
@@ -807,7 +807,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="452750746583162491">Xem lại các dữ liệu đã đồng bộ hóa của bạn</translation>
 <translation id="4532845899244822526">Chọn thư mục</translation>
 <translation id="4535755320005483982">Nhóm thẻ <ph name="GROUP_TITLE" /> được chia sẻ</translation>
-<translation id="4537137366307982887">Đã mở chế độ chọn nhận thông báo về mẹo trên toàn màn hình</translation>
+<translation id="4537137366307982887">Đã mở chế độ chọn nhận thông báo mẹo hay trên toàn màn hình</translation>
 <translation id="4543131175509360848">Trang thông báo "Không có khoá truy cập nào"</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> thẻ}other{<ph name="TAB_COUNT_MANY" /> thẻ, <ph name="TAB_COUNT_INCOGNITO" /> ẩn danh}}</translation>
 <translation id="4558311620361989323">Phím tắt cho trang web</translation>
@@ -959,7 +959,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="5123685120097942451">Thẻ ẩn danh</translation>
 <translation id="5142281402488957685">Để xem thêm những câu chuyện mới, hãy kéo xuống để làm mới trang</translation>
 <translation id="5144385790872094440">Một số trang bạn truy cập đã được tải trước. Những trang này có thể được tải trước thông qua các máy chủ của Google khi được liên kết từ ứng dụng Google hoặc trang web tạo bằng Google Sites.</translation>
-<translation id="5145887002054615868">Các thẻ trùng lặp hoặc không được dùng đến trong <ph name="DAYS_INACTIVE" /> ngày sẽ được chuyển đến đây<ph name="AUTODELETE_SECTION" />. Bạn có thể thay đổi chế độ này bất cứ lúc nào trong phần <ph name="DECLUTTER_SETTINGS_TITLE" />.</translation>
+<translation id="5145887002054615868">Các thẻ trùng lặp hoặc không dùng đến trong <ph name="DAYS_INACTIVE" /> ngày sẽ được chuyển đến đây<ph name="AUTODELETE_SECTION" />. Bạn có thể thay đổi chế độ này bất cứ lúc nào trong phần <ph name="DECLUTTER_SETTINGS_TITLE" />.</translation>
 <translation id="5152843274749979095">Chưa cài đặt ứng dụng được hỗ trợ nào</translation>
 <translation id="5161254044473106830">Cần có tiêu đề</translation>
 <translation id="5161262286013276579">Đã mở trang xác nhận khoá truy cập</translation>
@@ -1124,7 +1124,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="5864419784173784555">Đang chờ đến lần tải xuống tiếp theo…</translation>
 <translation id="5865733239029070421">Tự động gửi số liệu thống kê sử dụng và báo cáo sự cố cho Google</translation>
 <translation id="5869522115854928033">Mật khẩu đã lưu</translation>
-<translation id="5870416898561279542">Các thẻ và nhóm thẻ trùng lặp hoặc không được dùng đến trong <ph name="DAYS_INACTIVE" /> ngày sẽ được chuyển đến đây<ph name="AUTODELETE_SECTION" />. Bạn có thể thay đổi chế độ này bất cứ lúc nào trong phần <ph name="DECLUTTER_SETTINGS_TITLE" />.</translation>
+<translation id="5870416898561279542">Các thẻ và nhóm thẻ trùng lặp hoặc không dùng đến trong <ph name="DAYS_INACTIVE" /> ngày sẽ được chuyển đến đây<ph name="AUTODELETE_SECTION" />. Bạn có thể thay đổi chế độ này bất cứ lúc nào trong phần <ph name="DECLUTTER_SETTINGS_TITLE" />.</translation>
 <translation id="587735546353481577">Để theo dõi một trang web, hãy truy cập vào trang web đó, mở trình đơn Chrome rồi nhấn vào Theo dõi.</translation>
 <translation id="5883855034004058011">Hệ thống nhận dạng sinh trắc học xác minh không thành công quá nhiều lần. Hãy khoá rồi mở khoá thiết bị của bạn để thử lại.</translation>
 <translation id="5885378508678660271">Thông báo <ph name="SEPARATOR" /> Chrome đã loại bỏ các quyền này vì trang web này nguy hiểm</translation>
@@ -1886,7 +1886,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8942627711005830162">Mở trong cửa sổ khác</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> – Không thể tải ngôn ngữ này xuống. Hãy thử lại sau.</translation>
 <translation id="8946759102391960088">Sử dụng mật khẩu ở mọi nơi</translation>
-<translation id="895442993047180128">Đã đóng lựa chọn nhận thông báo về mẹo</translation>
+<translation id="895442993047180128">Đã đóng lựa chọn nhận thông báo mẹo hay</translation>
 <translation id="8957528460562961174">Để tiếp tục sử dụng mật khẩu của bạn, hãy xuất mật khẩu ngay bây giờ rồi nhập vào trình quản lý mật khẩu mà bạn chọn. Trình quản lý mật khẩu của Google đã ngừng hoạt động do thiết bị chưa cài đặt Dịch vụ Google Play.</translation>
 <translation id="8963117664422609631">Chuyển đến phần cài đặt trang web</translation>
 <translation id="8965591936373831584">đang chờ xử lý</translation>

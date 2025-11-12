@@ -613,6 +613,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1414648216875402825">Du uppdaterar till en instabil version av <ph name="PRODUCT_NAME" /> som innehåller funktioner som inte är klara. Du kommer att råka ut för kraschar och oväntade buggar. Var försiktig.</translation>
 <translation id="1415708812149920388">Läsbehörighet till Urklipp nekades</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> (tilläggs-id <ph name="EXTENSION_ID" />) får inte användas i den här typen av session.</translation>
+<translation id="141720836055413739">Det gick inte att ladda upp.  Testa med ett annat filformat.</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{Ta bort appen}other{Ta bort appar}}</translation>
 <translation id="1417497355604638350">Skicka diagnostik- och användningsdata.</translation>
 <translation id="1418552618736477642">Aviseringar och appar</translation>
@@ -2881,6 +2882,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2946640296642327832">Aktivera Bluetooth</translation>
 <translation id="2947281105969315778">Om du vill dela eller gå med i flikgrupper måste du kunna logga in i Chrome</translation>
 <translation id="2947605845283690091">Det ska gå snabbt att surfa på webben. Ta dig tid att <ph name="BEGIN_LINK" />kolla igenom dina tillägg<ph name="END_LINK" /> nu.</translation>
+<translation id="2948287943780377675">{FILE_COUNT,plural, =1{Släpp filen här}other{Släpp filerna här}}</translation>
 <translation id="2948300991547862301">Öppna <ph name="PAGE_TITLE" /></translation>
 <translation id="29488703364906173">En snabb, enkel och säker webbläsare som är anpassad för den moderna webben.</translation>
 <translation id="2950666755714083615">Jag vill registrera mig</translation>
@@ -5270,6 +5272,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4606551464649945562">Tillåt inte att webbplatser skapar en 3D-karta över dina omgivningar eller registrera kamerans position</translation>
 <translation id="4606933160360542263">Anpassad tangentkombination: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Vill du radera flikgruppen?}other{Vill du radera flikgrupperna?}}</translation>
+<translation id="4607763915939540711">{FILE_LIMIT,plural, =1{Ladda upp en fil som du vill använda med din fråga}other{Ladda upp upp till # filer som du vill använda med din fråga}}</translation>
 <translation id="4608500690299898628">&amp;Sök...</translation>
 <translation id="4609164937357979319">Kontoval</translation>
 <translation id="4610493438923139095">Inte betrodd</translation>

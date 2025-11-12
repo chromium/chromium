@@ -656,6 +656,7 @@
 <translation id="3547933853190131743">Søk med AI-modus</translation>
 <translation id="3557336313807607643">Legg til i kontakter</translation>
 <translation id="355765753469272474">Angre</translation>
+<translation id="3565012355885596568">Kunne ikke laste inn bilder</translation>
 <translation id="3565930036634619844">Fane. <ph name="TAB_INDEX" /> av <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3572607909481582402">I Google-kontoen din</translation>
 <translation id="3575234738189584619">Søk med Lens</translation>
@@ -1314,6 +1315,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6045460247888249350">Legg til en tittel</translation>
 <translation id="6052269326659653305">Bytt profil</translation>
 <translation id="605721222689873409">ÅÅ</translation>
+<translation id="6058415747854995776">Ta opp video</translation>
 <translation id="6059830886158432458">Styr nyhetssakene dine og aktiviteten din her</translation>
 <translation id="6066301408025741299">Trykk for å avbryte.</translation>
 <translation id="6074656473835429958">Få varsler</translation>
@@ -1815,6 +1817,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="7866872729285243843">For å få leselisten din på alle enhetene dine, slå på «Leseliste» i innstillingene.</translation>
 <translation id="7874107544081154809">Fyll ut skjemaet automatisk med <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="7879275349003161544">Vis Nedlastinger</translation>
+<translation id="7882689957034389473">Ta bilde</translation>
 <translation id="7883882164760409935">Du har gjenbrukte passord.</translation>
 <translation id="7887174313503389866">Få en innføring i viktige personvern- og sikkerhetskontroller. For å finne flere alternativer, gå til individuelle innstillinger.</translation>
 <translation id="7887198238286927132">For å beskytte personvernet ditt fyller ikke Chrome automatisk ut dette feltet.</translation>

@@ -243,6 +243,7 @@ Gelişmiş Koruma, şu Chrome ayarlarını kontrol eder:
 <translation id="3611658447322220736">Yeni kapatılan siteler veri gönderip alma işlemini tamamlayabilir</translation>
 <translation id="3619294456800709762">Siteler otomatik olarak pencere içinde pencere moduna girebilir</translation>
 <translation id="3628308229821498208">Önerilen aramalar</translation>
+<translation id="363748948745453283">Yaklaşık konum kullanılıyor</translation>
 <translation id="3641456520301071208">Siteler konum bilgimi isteyebilir</translation>
 <translation id="3658847490588580244">Varsayılan tarayıcı alt sayfası</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_OWNER" /> site grubunda yer alan ve gruptaki etkinliğinizi görebilen <ph name="RWS_MEMBERS_COUNT" /> site var}other{<ph name="RWS_OWNER" /> site grubunda yer alan ve gruptaki etkinliğinizi görebilen <ph name="RWS_MEMBERS_COUNT" /> site var}}</translation>

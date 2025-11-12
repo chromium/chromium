@@ -243,6 +243,7 @@
 <translation id="3611658447322220736">最近關閉的網站可以完成資料收發作業</translation>
 <translation id="3619294456800709762">網站可以自動進入子母畫面</translation>
 <translation id="3628308229821498208">建議搜尋</translation>
+<translation id="363748948745453283">使用大概位置</translation>
 <translation id="3641456520301071208">網站可以要求取得你的位置資訊</translation>
 <translation id="3658847490588580244">預設瀏覽器底部功能表</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{在 <ph name="RWS_OWNER" /> 的網站群組中，有 <ph name="RWS_MEMBERS_COUNT" /> 個網站可以查看你在群組中的活動}other{在 <ph name="RWS_OWNER" /> 的網站群組中，有 <ph name="RWS_MEMBERS_COUNT" /> 個網站可以查看你在群組中的活動}}</translation>

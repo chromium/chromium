@@ -519,6 +519,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="1823768272150895732">Letra</translation>
 <translation id="1824402189105105503">Zortzigarren arrabola</translation>
 <translation id="1826516787628120939">Egiaztatzen</translation>
+<translation id="1829026591231985685">Ezarpenak atalean informazioa Google Diru-zorroa zerbitzuan gordetzeari</translation>
 <translation id="1832730227369924598">Lan-eremuaren sinkronizazioa</translation>
 <translation id="1834452765064623979">Eraikuntza eta mantentze-lanak</translation>
 <translation id="1838374766361614909">Garbitu bilaketa</translation>
@@ -1881,6 +1882,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="4073797364926776829">Ikusi txartela</translation>
 <translation id="4075732493274867456">Bezeroak eta zerbitzariak ez dute onartzen SSL protokoloaren bertsio edo enkriptatze multzo arrunta.</translation>
 <translation id="4079302484614802869">Proxy-konfigurazioa .pac scripteko URLa erabiltzeko dago ezarrita, ez proxy-zerbitzari finkoak.</translation>
+<translation id="4080668349181235831">Iradokizunak eskaintzeko eta eginbidea hobetzeko, bisitatzen duzun webgunearen URLa eta orriaren eduki osoa Google-rekin partekatzen dira. Lortu <ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" /> buruzko informazio gehiago.</translation>
 <translation id="4080855220442581440">fitxa partekatuetan gora/behera egiteko eta zooma</translation>
 <translation id="4082333119419111506">Papera (aurreinprimatua)</translation>
 <translation id="4082393374666368382">Ezarpenak - Kudeaketa</translation>
@@ -3839,6 +3841,7 @@ Xehetasun gehiago:
 <translation id="7286908876112207905">Ez daukazu baimenik webgune honetan edukirik itsasteko</translation>
 <translation id="7291578327729322058">Gehitu gidabaimena</translation>
 <translation id="7292031607255951991">Hartzailearen izena</translation>
+<translation id="7297228218361240128">Gorde ikusten dituzun orrietako informazioa Google Diru-zorroa zerbitzuan</translation>
 <translation id="7298195798382681320">Gomendatua</translation>
 <translation id="7299471494012161875">erantsitako bistaratze-gailu periferikoak</translation>
 <translation id="7299721129597238157">Ezabatu laster-marka</translation>
@@ -4236,6 +4239,7 @@ Xehetasun gehiago:
 <translation id="7916162853251942238">Flexo oinarria</translation>
 <translation id="791698251820376781">Erakundeak ez dizu uzten saioa hasten</translation>
 <translation id="7926503317156566022">Abiazioaren sektorea</translation>
+<translation id="7927046851848613453">Gorde ikusten dituzun orrietako sarrerak, gertaerak eta bestelako informazioa; ez bete dituzun inprimakiak soilik. Ondoren, atzitu txartelak bizkor, hala nola sarrerak eta fideltasun-txartelak. Gordetako informazioa zure gailuetan eta Google-ren produktuetan ager daiteke.</translation>
 <translation id="7930282586031445870">Epekako ordainketaren zerbitzu-baldintzen pantaila itxita dago.</translation>
 <translation id="7932035970207573919">Laneko helbidea, <ph name="ADDRESS" /></translation>
 <translation id="793209273132572360">Helbidea eguneratu nahi duzu?</translation>

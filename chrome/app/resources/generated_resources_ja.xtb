@@ -613,6 +613,7 @@
 <translation id="1414648216875402825">アップデートしようとしているバージョンの <ph name="PRODUCT_NAME" /> には開発中の機能が含まれており、不安定です。クラッシュや予期しないバグが発生します。続行する場合は十分にご注意ください。</translation>
 <translation id="1415708812149920388">クリップボードの読み取りアクセスが拒否されました</translation>
 <translation id="1415990189994829608">このタイプのセッションでは、<ph name="EXTENSION_NAME" />（拡張機能 ID「<ph name="EXTENSION_ID" />」）は使用できません。</translation>
+<translation id="141720836055413739">アップロードできません。別のファイル形式をお試しください。</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{アプリを削除}other{アプリを削除}}</translation>
 <translation id="1417497355604638350">診断データと使用状況データを送信します。</translation>
 <translation id="1418552618736477642">通知とアプリ</translation>
@@ -2863,6 +2864,7 @@
 <translation id="2946640296642327832">Bluetooth を有効にする</translation>
 <translation id="2947281105969315778">タブグループを共有するか、タブグループに参加するには、Chrome にログインする必要があります</translation>
 <translation id="2947605845283690091">高速なウェブ ブラウジングの妨げとなっていないか、<ph name="BEGIN_LINK" />拡張機能を確認<ph name="END_LINK" />しましょう。</translation>
+<translation id="2948287943780377675">{FILE_COUNT,plural, =1{ここにファイルをドロップ}other{ここにファイルをドロップ}}</translation>
 <translation id="2948300991547862301"><ph name="PAGE_TITLE" /> へ移動</translation>
 <translation id="29488703364906173">最新のウェブ環境に対応した高速、シンプル、安全なウェブブラウザです。</translation>
 <translation id="2950666755714083615">登録</translation>
@@ -5247,6 +5249,7 @@
 <translation id="4606551464649945562">サイトに周囲の 3D マップの作成またはカメラ位置の追跡を許可しない</translation>
 <translation id="4606933160360542263">カスタムキーの組み合わせ: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{タブグループを削除しますか？}other{タブグループを削除しますか？}}</translation>
+<translation id="4607763915939540711">{FILE_LIMIT,plural, =1{質問で使用するファイルを 1 個アップロードできます}other{質問で使用するファイルを # 個までアップロードできます}}</translation>
 <translation id="4608500690299898628">検索(&amp;F)...</translation>
 <translation id="4609164937357979319">アカウントを選択</translation>
 <translation id="4610493438923139095">信頼不可</translation>

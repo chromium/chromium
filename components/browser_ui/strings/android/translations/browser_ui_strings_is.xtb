@@ -243,6 +243,7 @@
 <translation id="3611658447322220736">Vefsvæði sem nýlega var lokað geta lokið við að senda og taka á móti gögnum</translation>
 <translation id="3619294456800709762">Vefsvæði geta farið sjálfkrafa í mynd í mynd</translation>
 <translation id="3628308229821498208">Leitartillögur</translation>
+<translation id="363748948745453283">Notar áætlaða staðsetningu</translation>
 <translation id="3641456520301071208">Vefsvæði geta beðið um staðsetningarupplýsingar</translation>
 <translation id="3658847490588580244">Blað neðst í sjálfgefnum vafra</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> vefsvæði í hópi vefsvæða í eigu <ph name="RWS_OWNER" /> sem geta séð virkni þína í hópnum}one{<ph name="RWS_MEMBERS_COUNT" /> vefsvæði í hópi vefsvæða í eigu <ph name="RWS_OWNER" /> sem geta séð virkni þína í hópnum}other{<ph name="RWS_MEMBERS_COUNT" /> vefsvæði í hópi vefsvæða í eigu <ph name="RWS_OWNER" /> sem geta séð virkni þína í hópnum}}</translation>

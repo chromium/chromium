@@ -519,6 +519,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1823768272150895732">Pisava</translation>
 <translation id="1824402189105105503">Kolut 8</translation>
 <translation id="1826516787628120939">Preverjanje</translation>
+<translation id="1829026591231985685">shranjevanje podatkov v Google Denarnico v nastavitvah</translation>
 <translation id="1832730227369924598">Sinhronizacija namizja</translation>
 <translation id="1834452765064623979">Gradnja in vzdrževanje</translation>
 <translation id="1838374766361614909">Čiščenje iskanja</translation>
@@ -1885,6 +1886,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4073797364926776829">Ogled kartice</translation>
 <translation id="4075732493274867456">Odjemalec in strežnik ne podpirata skupne različice protokola SSL ali šifrirne zbirke.</translation>
 <translation id="4079302484614802869">Konfiguracija strežnika proxy je nastavljena na uporabo URL-ja skripta .pac, ne na stalne strežnike proxy.</translation>
+<translation id="4080668349181235831">Zaradi zagotavljanja predlogov in izboljšanja te funkcije se URL in celotna vsebina strani spletnega mesta, ki ga obiščete, delita z Googlom. Preberite več o tem: <ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" />.</translation>
 <translation id="4080855220442581440">pomikanje in povečava/pomanjšava deljenih zavihkov</translation>
 <translation id="4082333119419111506">Paper (Preprinted)</translation>
 <translation id="4082393374666368382">Nastavitve – upravljanje</translation>
@@ -3845,6 +3847,7 @@ Dodatne podrobnosti:
 <translation id="7286908876112207905">Lepljenje te vsebine na to spletno mesto ni dovoljeno</translation>
 <translation id="7291578327729322058">Dodajanje vozniškega dovoljenja</translation>
 <translation id="7292031607255951991">Ime prejemnika</translation>
+<translation id="7297228218361240128">Shranjevanje podatkov v Google Denarnico s strani, ki si jih ogledujete</translation>
 <translation id="7298195798382681320">Priporočeni</translation>
 <translation id="7299471494012161875">Priključene prikazovalne naprave</translation>
 <translation id="7299721129597238157">Izbriši zaznamek</translation>
@@ -4242,6 +4245,7 @@ Dodatne podrobnosti:
 <translation id="7916162853251942238">Flexo Base</translation>
 <translation id="791698251820376781">Vaša organizacija vam ne dovoli prijave</translation>
 <translation id="7926503317156566022">Letalska industrija</translation>
+<translation id="7927046851848613453">Shranjujte vstopnice, dogodke in druge podatke s strani, ki jih prikažete, ne samo obrazcev, ki jih izpolnite. Nato hitro dostopajte do kartic, kot so vstopnice za dogodke in kartice zvestobe. Shranjeni podatki so lahko prikazani v vaših napravah in Googlovih izdelkih.</translation>
 <translation id="7930282586031445870">Zaslon s pogoji storitve za »Kupi zdaj, plačaj pozneje« je zaprt.</translation>
 <translation id="7932035970207573919">Službeni naslov, <ph name="ADDRESS" /></translation>
 <translation id="793209273132572360">Želite posodobiti naslov?</translation>
@@ -4290,6 +4294,7 @@ Dodatne podrobnosti:
 <translation id="7987087088851949178">Izdajatelji za »Kupi zdaj, plačaj pozneje«, ki so na voljo za plačilo v določenem časovnem obdobju, odprti pri polni višini.</translation>
 <translation id="799149739215780103">Vezava</translation>
 <translation id="7992044431894087211">Deljenje zaslona z aplikacijo <ph name="APPLICATION_TITLE" /> se nadaljuje.</translation>
+<translation id="799384093520583425">Vaša organizacija je blokirala uporabo orodij za razvijalce na tej strani</translation>
 <translation id="7995512525968007366">Ni navedeno</translation>
 <translation id="7997855386298213183">deljene zavihke</translation>
 <translation id="8001912761979890298">Strežniku ni uspelo dokazati, da je <ph name="DOMAIN" />, ker uporablja varnostno potrdilo, ki mu Chromium ali konfiguracija sistema za šifriranje spletnega prometa ne zaupa. Razlog za to je lahko napačna konfiguracija ali napadalčevo prestrezanje povezave. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Prikaži potrdilo<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
@@ -4834,6 +4839,7 @@ Dodatne podrobnosti:
 <translation id="8922013791253848639">Vedno dovoli oglase na tem spletnem mestu</translation>
 <translation id="8922734931659847428">Omejen seznam URL-jev strani, ki jih obiščete, na katerih prihaja do <ph name="BEGIN_LINK" />starejših tehnoloških dogodkov<ph name="END_LINK" /></translation>
 <translation id="892588693504540538">Luknjanje zgoraj desno</translation>
+<translation id="8926082624786998759">Orodja za razvijalce na tej strani niso dovoljena</translation>
 <translation id="8926389886865778422">Ne sprašuj več</translation>
 <translation id="8926400492587758246">Plačujte v nizkih mesečnih obrokih</translation>
 <translation id="8932102934695377596">Ura zaostaja</translation>

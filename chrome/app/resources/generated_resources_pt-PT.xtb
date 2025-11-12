@@ -2869,6 +2869,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2946640296642327832">Ativar Bluetooth</translation>
 <translation id="2947281105969315778">Para partilhar ou aderir a grupos de separadores, tem de poder iniciar sessão no Chrome</translation>
 <translation id="2947605845283690091">A navegação na Web deve ser rápida. Dedique algum tempo a <ph name="BEGIN_LINK" />verificar as extensões<ph name="END_LINK" /> agora.</translation>
+<translation id="2948287943780377675">{FILE_COUNT,plural, =1{Largue o ficheiro aqui}other{Largue os ficheiros aqui}}</translation>
 <translation id="2948300991547862301">Aceder a <ph name="PAGE_TITLE" /></translation>
 <translation id="29488703364906173">Navegador de Internet rápido, simples e seguro, concebido para a Web moderna.</translation>
 <translation id="2950666755714083615">Inscrever-me</translation>
@@ -2979,6 +2980,7 @@ Quer pará-lo?</translation>
 <translation id="3019023222666709803">Ferramenta de seta</translation>
 <translation id="3019285239893817657">Botão da subpágina</translation>
 <translation id="3019595674945299805">Serviço VPN</translation>
+<translation id="3020101754533552167">A verificar o início de sessão…</translation>
 <translation id="3020183492814296499">Atalhos</translation>
 <translation id="3020990233660977256">Número de série: <ph name="SERIAL_NUMBER" /></translation>
 <translation id="3021065318976393105">Estando a usar a bateria</translation>
@@ -5259,6 +5261,7 @@ Quer pará-lo?</translation>
 <translation id="4606551464649945562">Não permitir que os sites criem um mapa 3D do ambiente à sua volta nem monitorizem a posição da câmara</translation>
 <translation id="4606933160360542263">Combinação de teclas personalizada: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Eliminar o grupo de separadores?}other{Eliminar os grupos de separadores?}}</translation>
+<translation id="4607763915939540711">{FILE_LIMIT,plural, =1{Carregue 1 ficheiro para usar com a sua pergunta}other{Carregue até # ficheiros para usar com a sua pergunta}}</translation>
 <translation id="4608500690299898628">&amp;Localizar...</translation>
 <translation id="4609164937357979319">Seleção de conta</translation>
 <translation id="4610493438923139095">Não fidedigno</translation>

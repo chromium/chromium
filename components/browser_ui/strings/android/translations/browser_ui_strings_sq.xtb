@@ -243,6 +243,7 @@
 <translation id="3611658447322220736">Sajtet e mbyllura së fundi mund të përfundojnë dërgimin dhe marrjen e të dhënave</translation>
 <translation id="3619294456800709762">Sajtet mund të kalojnë automatikisht në modalitetin "figurë brenda figurës"</translation>
 <translation id="3628308229821498208">Kërkimet e sugjeruara</translation>
+<translation id="363748948745453283">Po përdoret vendndodhja e përafërt</translation>
 <translation id="3641456520301071208">Sajtet mund të pyesin për vendndodhjen tënde</translation>
 <translation id="3658847490588580244">Fleta e poshtme e shfletuesit të parazgjedhur</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> sajt në grupin e sajteve të <ph name="RWS_OWNER" /> që mund ta shikojnë aktivitetin tënd në grup}other{<ph name="RWS_MEMBERS_COUNT" /> sajte në grupin e sajteve të <ph name="RWS_OWNER" /> që mund ta shikojnë aktivitetin tënd në këtë grup}}</translation>

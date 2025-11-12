@@ -963,7 +963,7 @@
 <translation id="4769198578611055647">Te ayuda a acceder a las llaves de acceso guardadas en cualquier dispositivo</translation>
 <translation id="4782952780741793211">Código de confirmación:</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
-<translation id="478808905805139173">¿Quieres abrirlo en Incógnito?</translation>
+<translation id="478808905805139173">¿Abrir en modo Incógnito?</translation>
 <translation id="479208892659046780">Tus sitios principales</translation>
 <translation id="4792385443586519711">Nombre de la editorial</translation>
 <translation id="479628432297359449">¿Quieres detener la descarga?</translation>
@@ -1314,6 +1314,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="6045460247888249350">Agrega un título</translation>
 <translation id="6052269326659653305">Cambiar de perfil</translation>
 <translation id="605721222689873409">AA</translation>
+<translation id="6058415747854995776">Grabar video</translation>
 <translation id="6059830886158432458">Controla tus noticias y actividad aquí</translation>
 <translation id="6066301408025741299">Presiona para cancelar.</translation>
 <translation id="6074656473835429958">Recibe notificaciones</translation>
@@ -1815,6 +1816,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="7866872729285243843">Para obtener tu Lista de lectura en todos tus dispositivos, activa "Lista de lectura" en la configuración.</translation>
 <translation id="7874107544081154809">Autocompletar formulario con <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="7879275349003161544">Mostrar descargas</translation>
+<translation id="7882689957034389473">Tomar foto</translation>
 <translation id="7883882164760409935">Tienes contraseñas reutilizadas.</translation>
 <translation id="7887174313503389866">Realiza una visita guiada de los controles de seguridad y privacidad más importantes. Para ver más opciones, ve a la configuración individual.</translation>
 <translation id="7887198238286927132">Para proteger tu privacidad, Chrome no completará este campo de forma automática.</translation>

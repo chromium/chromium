@@ -243,6 +243,7 @@ Avansert beskyttelse styrer disse Chrome-innstillingene:
 <translation id="3611658447322220736">Nylig lukkede nettsteder kan fullføre sending og mottak av data</translation>
 <translation id="3619294456800709762">Nettsteder kan bruke bilde-i-bilde automatisk</translation>
 <translation id="3628308229821498208">Foreslåtte søk</translation>
+<translation id="363748948745453283">Bruker omtrentlig posisjon</translation>
 <translation id="3641456520301071208">Nettsteder kan be om posisjonen din</translation>
 <translation id="3658847490588580244">Felt nederst for standardnettleser</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> nettsted i gruppen til <ph name="RWS_OWNER" /> som kan se aktiviteten din i gruppen}other{<ph name="RWS_MEMBERS_COUNT" /> nettsteder i gruppen til <ph name="RWS_OWNER" /> som kan se aktiviteten din i gruppen}}</translation>
@@ -436,6 +437,7 @@ Avansert beskyttelse styrer disse Chrome-innstillingene:
 <translation id="5792627621688759634">Sveip mellom sider med en styreflate</translation>
 <translation id="5801457289562671820">Anbefalt av organisasjonen din</translation>
 <translation id="5804241973901381774">Tillatelser</translation>
+<translation id="5817042798620209981">Nettstedsinformasjon, dialogboks</translation>
 <translation id="5822675474983796325">Feltet nederst for tilpasning av Ny fane-siden er åpnet i full høyde</translation>
 <translation id="5833899990800318936">Ikke la nettsteder bruke JavaScript</translation>
 <translation id="583673505367439042">Nettsteder kan be om å få redigere filer og mapper på enheten</translation>

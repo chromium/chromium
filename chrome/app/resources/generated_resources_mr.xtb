@@ -613,6 +613,7 @@
 <translation id="1414648216875402825">तुम्ही <ph name="PRODUCT_NAME" /> च्या अस्थिर आवृत्तीवर अपडेट करत आहात ज्यात प्रगतीपथावर असलेली वैशिष्ट्ये आहेत. क्रॅश आणि अनपेक्षित दोष आढळतील. कृपया सावधगिरीसह पुढे जा.</translation>
 <translation id="1415708812149920388">क्लिपबोर्डचा रीड अ‍ॅक्सेस नाकारला</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> ("<ph name="EXTENSION_ID" />" एक्स्टेंशन ID) या प्रकारच्या सेशनमध्ये अनुमती नाही.</translation>
+<translation id="141720836055413739">अपलोड करू शकत नाही.  वेगळा फाइल फॉरमॅट वापरून पहा.</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{ॲप काढून टाका}other{ॲप्‍स काढून टाका}}</translation>
 <translation id="1417497355604638350">निदान आणि वापर डेटा पाठवा.</translation>
 <translation id="1418552618736477642">सूचना आणि अ‍ॅप्स</translation>
@@ -2881,6 +2882,7 @@
 <translation id="2946640296642327832">Bluetooth सक्षम करा</translation>
 <translation id="2947281105969315778">टॅब गट शेअर करण्यासाठी किंवा त्यामधे सामील होण्यासाठी, तुम्हाला Chrome मध्ये साइन इन करता येणे आवश्यक आहे</translation>
 <translation id="2947605845283690091">वेब ब्राउझिंग वेगवान असले पाहिजे. थोडा वेळ काढा आणि आता <ph name="BEGIN_LINK" />तुमची एक्स्टेंशन तपासा<ph name="END_LINK" />.</translation>
+<translation id="2948287943780377675">{FILE_COUNT,plural, =1{इथे फाइल ड्रॉप करा}other{इथे फाइल ड्रॉप करा}}</translation>
 <translation id="2948300991547862301"><ph name="PAGE_TITLE" /> वर जा</translation>
 <translation id="29488703364906173">हे आधुनिक वेबसाठी बनविलेले जलद, सोपे आणि सुरक्षित वेब ब्राउझर आहे.</translation>
 <translation id="2950666755714083615">मला साइन अप करा</translation>
@@ -2990,6 +2992,7 @@
 <translation id="3019023222666709803">ॲरो टूल</translation>
 <translation id="3019285239893817657">सबपेज बटण</translation>
 <translation id="3019595674945299805">VPN सेवा</translation>
+<translation id="3020101754533552167">साइन-इन तपासत आहे...</translation>
 <translation id="3020183492814296499">शॉर्टकट</translation>
 <translation id="3020990233660977256">सिरिअल नंबर: <ph name="SERIAL_NUMBER" /></translation>
 <translation id="3021065318976393105">बॅटरीवर असताना</translation>
@@ -5268,6 +5271,7 @@
 <translation id="4606551464649945562">साइटना तुमच्या आसपासच्या परिसराचा 3D नकाशा तयार करू किंवा कॅमेर्‍याचे स्थान ट्रॅक करू देऊ नका</translation>
 <translation id="4606933160360542263">कस्टम की कॉंबिनेशन: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{टॅब गट हटवायचा आहे का?}other{टॅब गट हटवायचे आहेत का?}}</translation>
+<translation id="4607763915939540711">{FILE_LIMIT,plural, =1{तुमच्या प्रश्नासोबत वापरण्यासाठी १ फाइल अपलोड करा}other{तुमच्या प्रश्नासोबत वापरण्यासाठी कमाल # फाइल अपलोड करा}}</translation>
 <translation id="4608500690299898628">&amp;शोधा...</translation>
 <translation id="4609164937357979319">खाते निवड</translation>
 <translation id="4610493438923139095">विश्वसनीय नसलेले</translation>

@@ -519,6 +519,7 @@
 <translation id="1823768272150895732">字体</translation>
 <translation id="1824402189105105503">第 8 卷</translation>
 <translation id="1826516787628120939">正在检查</translation>
+<translation id="1829026591231985685">在设置中将信息保存到 Google 钱包</translation>
 <translation id="1832730227369924598">桌面同步</translation>
 <translation id="1834452765064623979">施工与维护</translation>
 <translation id="1838374766361614909">清除搜索字词</translation>
@@ -1881,6 +1882,7 @@
 <translation id="4073797364926776829">查看卡</translation>
 <translation id="4075732493274867456">客户端和服务器不支持一般 SSL 协议版本或加密套件。</translation>
 <translation id="4079302484614802869">代理配置已设置为使用 .pac 脚本网址，而不是固定的代理服务器。</translation>
+<translation id="4080668349181235831">为了提供建议和改进此功能，系统会将您访问的网站的网址和完整网页内容分享给 Google。详细了解<ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" />。</translation>
 <translation id="4080855220442581440">滚动和缩放分享的标签页</translation>
 <translation id="4082333119419111506">纸（预打印）</translation>
 <translation id="4082393374666368382">设置 - 管理</translation>
@@ -3840,6 +3842,7 @@
 <translation id="7286908876112207905">不允许将此内容粘贴到该网站</translation>
 <translation id="7291578327729322058">添加驾照</translation>
 <translation id="7292031607255951991">接收方名称</translation>
+<translation id="7297228218361240128">从您查看的网页将信息保存到 Google 钱包</translation>
 <translation id="7298195798382681320">推荐</translation>
 <translation id="7299471494012161875">已连接显示器外围设备</translation>
 <translation id="7299721129597238157">删除书签</translation>
@@ -4237,6 +4240,7 @@
 <translation id="7916162853251942238">柔印底基</translation>
 <translation id="791698251820376781">您所在的组织不允许您登录</translation>
 <translation id="7926503317156566022">航空业</translation>
+<translation id="7927046851848613453">不只可以保存您填写的表单信息，您浏览的网页中的票券、活动及其他信息也能一并保存。随后，您就能轻松使用各类卡券，例如活动门票和会员卡。您保存的信息可能会显示在您的设备上以及各项 Google 产品中。</translation>
 <translation id="7930282586031445870">“先买后付”服务条款界面已关闭。</translation>
 <translation id="7932035970207573919">工作地址：<ph name="ADDRESS" /></translation>
 <translation id="793209273132572360">更新地址？</translation>
@@ -4285,6 +4289,7 @@
 <translation id="7987087088851949178">提供分期付款服务的“先买后付”发卡机构列表已显示在整个屏幕。</translation>
 <translation id="799149739215780103">装订</translation>
 <translation id="7992044431894087211">已继续与<ph name="APPLICATION_TITLE" />共享屏幕</translation>
+<translation id="799384093520583425">您的组织已禁止在此页面上使用开发者工具</translation>
 <translation id="7995512525968007366">未指定</translation>
 <translation id="7997855386298213183">分享的标签页</translation>
 <translation id="8001912761979890298">此服务器无法证明其所在网域是 <ph name="DOMAIN" />，因为它使用的安全证书不受 Chromium 或您系统的网站流量加密配置所信任。出现此问题的原因可能是配置有误，或是有攻击者拦截您的连接。<ph name="BEGIN_VIEW_CERTIFICATE_LINK" />查看证书<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
@@ -4830,6 +4835,7 @@
 <translation id="8922013791253848639">在此网站上始终允许显示广告</translation>
 <translation id="8922734931659847428">被您访问过且发生了<ph name="BEGIN_LINK" />旧版技术事件<ph name="END_LINK" />的部分网页网址的列表</translation>
 <translation id="892588693504540538">打孔（右上角）</translation>
+<translation id="8926082624786998759">不允许在此页面上使用开发者工具</translation>
 <translation id="8926389886865778422">不再询问</translation>
 <translation id="8926400492587758246">按月小额分期付款</translation>
 <translation id="8932102934695377596">您的时钟慢了</translation>

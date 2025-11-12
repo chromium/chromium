@@ -243,6 +243,7 @@ A Speciális védelem a következő Chrome-beállításokat vezérli:
 <translation id="3611658447322220736">A nemrégiben bezárt webhelyek befejezhetik az adatok küldését és fogadását</translation>
 <translation id="3619294456800709762">A webhelyek automatikusan bekapcsolhatják a kép a képben módot</translation>
 <translation id="3628308229821498208">Javasolt keresések</translation>
+<translation id="363748948745453283">Jelenleg a hozzávetőleges hely van használatban</translation>
 <translation id="3641456520301071208">A webhelyek lekérhetik az Ön helyadatait</translation>
 <translation id="3658847490588580244">Alapértelmezett böngésző alsó lapja</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{A(z) <ph name="RWS_OWNER" /> webhelycsoportjában <ph name="RWS_MEMBERS_COUNT" /> webhely található, amely láthatja az Ön által a csoportban végzett tevékenységeket}other{A(z) <ph name="RWS_OWNER" /> webhelycsoportjában <ph name="RWS_MEMBERS_COUNT" /> webhely található, amelyek láthatják az Ön által a csoportban végzett tevékenységeket}}</translation>

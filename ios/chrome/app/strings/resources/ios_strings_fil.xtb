@@ -656,6 +656,7 @@
 <translation id="3547933853190131743">Maghanap gamit ang AI Mode</translation>
 <translation id="3557336313807607643">Idagdag sa mga contact</translation>
 <translation id="355765753469272474">I-undo</translation>
+<translation id="3565012355885596568">Hindi ma-load ang mga larawan</translation>
 <translation id="3565930036634619844">Tab. <ph name="TAB_INDEX" /> sa <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3572607909481582402">Sa iyong Google Account</translation>
 <translation id="3575234738189584619">Maghanap gamit ang Lens</translation>
@@ -1314,6 +1315,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="6045460247888249350">Magdagdag ng pamagat</translation>
 <translation id="6052269326659653305">Lumipat ng profile</translation>
 <translation id="605721222689873409">YY</translation>
+<translation id="6058415747854995776">Kumuha ng Video</translation>
 <translation id="6059830886158432458">Kontrolin ang iyong mga kuwento at aktibidad dito</translation>
 <translation id="6066301408025741299">Pindutin upang kanselahin.</translation>
 <translation id="6074656473835429958">Makatanggap ng mga notification</translation>
@@ -1815,6 +1817,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="7866872729285243843">Para makuha ang iyong listahan ng babasahin sa lahat ng device mo, i-on ang “Listahan ng Babasahin” sa mga setting.</translation>
 <translation id="7874107544081154809">I-autofill ang form gamit ang <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="7879275349003161544">Ipakita ang Mga Download</translation>
+<translation id="7882689957034389473">Kumuha ng Larawan</translation>
 <translation id="7883882164760409935">Mayroon kang mga password na ginamit ulit.</translation>
 <translation id="7887174313503389866">Magsagawa ng guided tour tungkol sa mga pangunahing kontrol sa privacy at seguridad. Para sa higit pang opsyon, pumunta sa mga indibidwal na setting.</translation>
 <translation id="7887198238286927132">Para protektahan ang iyong privacy, hindi io-autofill ng Chrome ang field na ito.</translation>

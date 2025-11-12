@@ -4294,6 +4294,7 @@ Detalls addicionals:
 <translation id="7987087088851949178">La llista d'emissors de Compra ara, paga després disponibles per pagar a terminis està oberta a alçada completa.</translation>
 <translation id="799149739215780103">Enquadernació</translation>
 <translation id="7992044431894087211">S'ha reprès la compartició de la pantalla amb <ph name="APPLICATION_TITLE" /></translation>
+<translation id="799384093520583425">La teva organització ha bloquejat l'ús de DevTools en aquesta pàgina</translation>
 <translation id="7995512525968007366">No especificat</translation>
 <translation id="7997855386298213183">pestanyes compartides</translation>
 <translation id="8001912761979890298">Aquest servidor no ha pogut comprovar que sigui <ph name="DOMAIN" /> perquè utilitza un certificat de seguretat que Chromium o la configuració del sistema per a l'encriptació del trànsit web no consideren de confiança. Això pot ser a causa d'una configuració incorrecta o d'un atacant que ha interceptat la teva connexió. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Mostra el certificat<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
@@ -4838,6 +4839,7 @@ Detalls addicionals:
 <translation id="8922013791253848639">Permet sempre els anuncis en aquest lloc web</translation>
 <translation id="8922734931659847428">Una llista limitada d'URL de les pàgines que visites en què es produeixen <ph name="BEGIN_LINK" />esdeveniments tecnològics heretats<ph name="END_LINK" /></translation>
 <translation id="892588693504540538">Encunyació a la part superior dreta</translation>
+<translation id="8926082624786998759">DevTools no es permet en aquesta pàgina</translation>
 <translation id="8926389886865778422">No m'ho tornis a preguntar</translation>
 <translation id="8926400492587758246">Paga en mòdics terminis mensuals</translation>
 <translation id="8932102934695377596">El rellotge està endarrerit</translation>

@@ -519,6 +519,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1823768272150895732">Skrift</translation>
 <translation id="1824402189105105503">Åttende rull</translation>
 <translation id="1826516787628120939">Kontrollerer</translation>
+<translation id="1829026591231985685">lagrer informasjon i Google Wallet i innstillingene</translation>
 <translation id="1832730227369924598">Synkronisering av skrivebord</translation>
 <translation id="1834452765064623979">Bygging og vedlikehold</translation>
 <translation id="1838374766361614909">Fjern søket</translation>
@@ -1885,6 +1886,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4073797364926776829">Se kortet</translation>
 <translation id="4075732493274867456">Klienten og tjeneren støtter ingen felles SSL-protokollversjon eller -chifferserie.</translation>
 <translation id="4079302484614802869">Konfigurasjonen av proxytjeneren er angitt til å bruke en nettadresse med .pac-skript, ikke statiske proxytjenere.</translation>
+<translation id="4080668349181235831">For å kunne gi deg forslag og forbedre denne funksjonen deler nettleseren nettadressen og hele sideinnholdet på nettstedet du besøker, med Google. Finn ut mer om <ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" />.</translation>
 <translation id="4080855220442581440">rulling og zooming på delte faner</translation>
 <translation id="4082333119419111506">Papir (fortrykt)</translation>
 <translation id="4082393374666368382">Innstillinger – Administrasjon</translation>
@@ -3844,6 +3846,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7286908876112207905">Det er ikke tillatt å lime inn dette innholdet på dette nettstedet</translation>
 <translation id="7291578327729322058">Legg til førerkort</translation>
 <translation id="7292031607255951991">Mottakerens navn</translation>
+<translation id="7297228218361240128">Lagre informasjon i Google Wallet fra sider du ser på</translation>
 <translation id="7298195798382681320">Anbefalt</translation>
 <translation id="7299471494012161875">Eksterne skjermer er tilkoblet</translation>
 <translation id="7299721129597238157">Slett bokmerket</translation>
@@ -4241,6 +4244,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7916162853251942238">Flexo-base</translation>
 <translation id="791698251820376781">Organisasjonen din tillater ikke at du logger på</translation>
 <translation id="7926503317156566022">Flybransjen</translation>
+<translation id="7927046851848613453">Lagre billetter, arrangementer og annen informasjon fra sider du ser på – ikke bare skjemaer du fyller ut. Deretter kan du raskt få tilgang til kortene og billettene dine, for eksempel arrangementsbilletter og stamkundekort. Den lagrede informasjonen din kan vises på enhetene dine og i Google-produkter.</translation>
 <translation id="7930282586031445870">Skjermen med vilkår for bruk av Kjøp nå, betal senere er lukket.</translation>
 <translation id="7932035970207573919">Jobbadresse, <ph name="ADDRESS" /></translation>
 <translation id="793209273132572360">Vil du oppdatere adressen?</translation>
@@ -4289,6 +4293,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7987087088851949178">Utstedere av «Kjøp nå, betal senere» som er tilgjengelige for betaling over tid, er åpnet i full høyde.</translation>
 <translation id="799149739215780103">Innbinding</translation>
 <translation id="7992044431894087211">Skjermdeling med <ph name="APPLICATION_TITLE" /> er gjenopptatt</translation>
+<translation id="799384093520583425">Organisasjonen din har blokkert bruken av utviklerverktøy på denne siden</translation>
 <translation id="7995512525968007366">Ikke spesifisert</translation>
 <translation id="7997855386298213183">delte faner</translation>
 <translation id="8001912761979890298">Denne tjeneren kunne ikke bevise at den er <ph name="DOMAIN" />, fordi den bruker et sikkerhetssertifikat som ikke er klarert av Chromium eller systemkonfigurasjonen din for kryptering av nettrafikk. Dette kan skyldes en feilkonfigurering eller at en angriper avskjærer tilkoblingen din. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Vis sertifikatet<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
@@ -4833,6 +4838,7 @@ Mer informasjon:
 <translation id="8922013791253848639">Tillat alltid annonser på dette nettstedet</translation>
 <translation id="8922734931659847428">En begrenset liste over nettadressene til sider du besøker som bruker <ph name="BEGIN_LINK" />hendelser fra eldre teknologi<ph name="END_LINK" /></translation>
 <translation id="892588693504540538">Hull oppe til høyre</translation>
+<translation id="8926082624786998759">Utviklerverktøy er ikke tillatt på denne siden</translation>
 <translation id="8926389886865778422">Ikke spør igjen</translation>
 <translation id="8926400492587758246">Betal i lave månedlige avdrag</translation>
 <translation id="8932102934695377596">Klokken går for sent</translation>

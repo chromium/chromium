@@ -243,6 +243,7 @@ Diese Chrome-Einstellungen werden durch das erweiterte Sicherheitsprogramm geste
 <translation id="3611658447322220736">Kürzlich geschlossene Websites dürfen den Datenversand und -empfang abschließen</translation>
 <translation id="3619294456800709762">Websites können den Bild-im-Bild-Modus automatisch aktivieren</translation>
 <translation id="3628308229821498208">Vorgeschlagene Suchanfragen</translation>
+<translation id="363748948745453283">Ungefährer Standort wird verwendet</translation>
 <translation id="3641456520301071208">Websites dürfen nach meinem Standort fragen</translation>
 <translation id="3658847490588580244">Ansicht am unteren Rand des Standardbrowsers</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> Website in der Gruppe von <ph name="RWS_OWNER" />, die deine Aktivitäten in der Gruppe sehen kann}other{<ph name="RWS_MEMBERS_COUNT" /> Websites in der Gruppe von <ph name="RWS_OWNER" />, die deine Aktivitäten in der Gruppe sehen können}}</translation>

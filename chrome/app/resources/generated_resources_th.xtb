@@ -613,6 +613,7 @@
 <translation id="1414648216875402825">คุณกำลังอัปเดตไปเป็น <ph name="PRODUCT_NAME" /> ในเวอร์ชันที่ไม่เสถียร ซึ่งมีฟีเจอร์ที่ยังอยู่ระหว่างดำเนินการ จะมีข้อขัดข้องและข้อบกพร่องที่ไม่คาดคิดเกิดขึ้น โปรดดำเนินการต่อด้วยความระมัดระวัง</translation>
 <translation id="1415708812149920388">การเข้าถึงการอ่านคลิปบอร์ดถูกปฏิเสธ</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> (รหัสส่วนขยาย "<ph name="EXTENSION_ID" />") ไม่ได้รับอนุญาตในเซสชันประเภทนี้</translation>
+<translation id="141720836055413739">อัปโหลดไม่ได้  ลองใช้รูปแบบไฟล์อื่น</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{นำแอปออก}other{นำแอปออก}}</translation>
 <translation id="1417497355604638350">ส่งข้อมูลการวินิจฉัยและการใช้งาน</translation>
 <translation id="1418552618736477642">การแจ้งเตือนและแอป</translation>
@@ -2868,6 +2869,7 @@
 <translation id="2946640296642327832">เปิดใช้งานบลูทูธ</translation>
 <translation id="2947281105969315778">คุณต้องลงชื่อเข้าใช้ Chrome ได้เพื่อแชร์หรือเข้าร่วมกลุ่มแท็บ</translation>
 <translation id="2947605845283690091">การท่องเว็บควรจะเร็ว โปรดใช้เวลาสักครู่เพื่อ<ph name="BEGIN_LINK" />ตรวจสอบส่วนขยาย<ph name="END_LINK" />ตอนนี้เลย</translation>
+<translation id="2948287943780377675">{FILE_COUNT,plural, =1{วางไฟล์ที่นี่}other{วางไฟล์ที่นี่}}</translation>
 <translation id="2948300991547862301">ไปที่ <ph name="PAGE_TITLE" /></translation>
 <translation id="29488703364906173">เว็บเบราว์เซอร์ที่รวดเร็ว ใช้งานง่าย และปลอดภัย สร้างขึ้นมาเพื่อเว็บสมัยใหม่</translation>
 <translation id="2950666755714083615">ให้ฉันลงชื่อสมัครใช้</translation>
@@ -5255,6 +5257,7 @@
 <translation id="4606551464649945562">ไม่อนุญาตให้เว็บไซต์สร้างแผนที่ 3 มิติของสิ่งที่อยู่รอบตัวคุณหรือติดตามตำแหน่งของกล้อง</translation>
 <translation id="4606933160360542263">ชุดแป้นที่กำหนดเอง: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{ลบกลุ่มแท็บใช่ไหม}other{ลบกลุ่มแท็บใช่ไหม}}</translation>
+<translation id="4607763915939540711">{FILE_LIMIT,plural, =1{อัปโหลดไฟล์ 1 ไฟล์เพื่อใช้กับคำถาม}other{อัปโหลดไฟล์สูงสุด # ไฟล์เพื่อใช้กับคำถาม}}</translation>
 <translation id="4608500690299898628">&amp;ค้นหา...</translation>
 <translation id="4609164937357979319">การเลือกบัญชี</translation>
 <translation id="4610493438923139095">ไม่น่าเชื่อถือ</translation>

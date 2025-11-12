@@ -243,6 +243,7 @@ Papildu aizsardzība pārvalda tālāk norādītos Chrome iestatījumus
 <translation id="3611658447322220736">Atļaut nesen aizvērtām vietnēm pabeigt datu nosūtīšanu un saņemšanu</translation>
 <translation id="3619294456800709762">Vietnēs drīkst automātiski aktivizēt režīmu “Attēls attēlā”</translation>
 <translation id="3628308229821498208">Ieteiktie meklēšanas vaicājumi</translation>
+<translation id="363748948745453283">Tiek izmantota aptuvena atrašanās vieta.</translation>
 <translation id="3641456520301071208">Atļaut vietnēm pieprasīt atļauju piekļūt jūsu atrašanās vietas datiem</translation>
 <translation id="3658847490588580244">Noklusējuma pārlūka ekrāna apakšdaļas lapa</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> vietne domēna <ph name="RWS_OWNER" /> vietņu grupā, kurai piederīgo vietņu īpašniekiem ir redzamas jebkurā grupas vietnē veiktās darbības}zero{<ph name="RWS_MEMBERS_COUNT" /> vietņu domēna <ph name="RWS_OWNER" /> vietņu grupā, kurai piederīgo vietņu īpašniekiem ir redzamas jebkurā grupas vietnē veiktās darbības}one{<ph name="RWS_MEMBERS_COUNT" /> vietne domēna <ph name="RWS_OWNER" /> vietņu grupā, kurai piederīgo vietņu īpašniekiem ir redzamas jebkurā grupas vietnē veiktās darbības}other{<ph name="RWS_MEMBERS_COUNT" /> vietnes domēna <ph name="RWS_OWNER" /> vietņu grupā, kurai piederīgo vietņu īpašniekiem ir redzamas jebkurā grupas vietnē veiktās darbības}}</translation>

@@ -2885,6 +2885,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2946640296642327832">Įgalinti „Bluetooth“</translation>
 <translation id="2947281105969315778">Kad galėtumėte bendrinti skirtukų grupes arba prisijungti prie jų, privalote galėti prisijungti prie „Chrome“</translation>
 <translation id="2947605845283690091">Žiniatinklio naršymas turėtų būti spartus. Skirkite šiek tiek laiko ir <ph name="BEGIN_LINK" />patikrinkite plėtinius<ph name="END_LINK" />.</translation>
+<translation id="2948287943780377675">{FILE_COUNT,plural, =1{Nuvilkite failą čia}one{Nuvilkite failus čia}few{Nuvilkite failus čia}many{Nuvilkite failus čia}other{Nuvilkite failus čia}}</translation>
 <translation id="2948300991547862301">Eiti į <ph name="PAGE_TITLE" /></translation>
 <translation id="29488703364906173">Sparti, paprasta ir saugi žiniatinklio naršyklė, sukurta moderniam žiniatinkliui.</translation>
 <translation id="2950666755714083615">Užsiregistruoti</translation>
@@ -2994,6 +2995,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3019023222666709803">Rodyklės įrankis</translation>
 <translation id="3019285239893817657">Papildomo puslapio mygtukas</translation>
 <translation id="3019595674945299805">VPN paslauga</translation>
+<translation id="3020101754533552167">Tikrinama prisijungimo informacija...</translation>
 <translation id="3020183492814296499">Spartieji klavišai</translation>
 <translation id="3020990233660977256">Serijos numeris: <ph name="SERIAL_NUMBER" /></translation>
 <translation id="3021065318976393105">Naudojant su akumuliatoriumi</translation>
@@ -5274,6 +5276,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4606551464649945562">Neleisti svetainėms kurti jūsų aplinkos 3D žemėlapio ir stebėti kameros padėties</translation>
 <translation id="4606933160360542263">Tinkintas klavišų derinys: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Ištrinti skirtukų grupę?}one{Ištrinti skirtukų grupes?}few{Ištrinti skirtukų grupes?}many{Ištrinti skirtukų grupes?}other{Ištrinti skirtukų grupes?}}</translation>
+<translation id="4607763915939540711">{FILE_LIMIT,plural, =1{Įkelkite vieną failą, kurį norite naudoti su klausimu}one{Įkelkite daugiausia # failą, kurį norite naudoti su klausimu}few{Įkelkite daugiausia # failus, kuriuos norite naudoti su klausimu}many{Įkelkite daugiausia # failo, kuriuos norite naudoti su klausimu}other{Įkelkite daugiausia # failų, kuriuos norite naudoti su klausimu}}</translation>
 <translation id="4608500690299898628">Rasti...</translation>
 <translation id="4609164937357979319">Paskyros pasirinkimas</translation>
 <translation id="4610493438923139095">Nepatikimas</translation>

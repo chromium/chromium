@@ -519,6 +519,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1823768272150895732">Betűtípus</translation>
 <translation id="1824402189105105503">8. tekercs</translation>
 <translation id="1826516787628120939">Ellenőrzés</translation>
+<translation id="1829026591231985685">információk mentése a Google Walletbe a beállításokban</translation>
 <translation id="1832730227369924598">Asztali szinkronizálás</translation>
 <translation id="1834452765064623979">Építkezés és karbantartás</translation>
 <translation id="1838374766361614909">Keresett kifejezés törlése</translation>
@@ -1882,6 +1883,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4073797364926776829">Kártya megtekintése</translation>
 <translation id="4075732493274867456">Az ügyfél és a szerver nem támogat ugyanolyan SSL-protokollverziót vagy rejtjelezési csomagot.</translation>
 <translation id="4079302484614802869">A proxykonfiguráció a .pac típusú szkript URL-cím, nem pedig a fix proxyszerverek használatára van beállítva.</translation>
+<translation id="4080668349181235831">Javaslatok biztosítása és a funkció továbbfejlesztése érdekében az Ön által felkeresett webhely URL-je és teljes oldaltartalma meg lesz osztva a Google-lal. További információ a következőről: <ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" />.</translation>
 <translation id="4080855220442581440">megosztott lapok görgetése és nagyítása</translation>
 <translation id="4082333119419111506">Papír (előnyomott)</translation>
 <translation id="4082393374666368382">Beállítások – kezelés</translation>
@@ -3842,6 +3844,7 @@ További részletek:
 <translation id="7286908876112207905">Nem lehet beilleszteni ezt a tartalmat erre a webhelyre</translation>
 <translation id="7291578327729322058">Vezetői engedély hozzáadása</translation>
 <translation id="7292031607255951991">Címzett neve</translation>
+<translation id="7297228218361240128">Információk mentése a Google Walletbe a megtekintett oldalakról</translation>
 <translation id="7298195798382681320">Ajánlott</translation>
 <translation id="7299471494012161875">Csatlakoztatott vizuális perifériák</translation>
 <translation id="7299721129597238157">Könyvjelző törlése</translation>
@@ -4239,6 +4242,7 @@ További részletek:
 <translation id="7916162853251942238">Flexo alap</translation>
 <translation id="791698251820376781">Szervezete nem engedélyezi a bejelentkezést</translation>
 <translation id="7926503317156566022">Légiközlekedési szektor</translation>
+<translation id="7927046851848613453">A megtekintett oldalakról is menthet jegyeket, eseményeket és egyéb információkat – nem csak a kitöltött űrlapokról. A mentést követően gyorsan hozzáférhet a kártyáihoz, például a belépőjegyekhez és a hűségkártyákhoz. A mentett adatai megjelenhetnek az eszközein és a Google-termékekben.</translation>
 <translation id="7930282586031445870">A Késleltetett fizetés Általános Szerződési Feltételek képernyője be van zárva.</translation>
 <translation id="7932035970207573919">Munkahelyi cím, <ph name="ADDRESS" /></translation>
 <translation id="793209273132572360">Frissíti a címet?</translation>
@@ -4287,6 +4291,7 @@ További részletek:
 <translation id="7987087088851949178">A következő ablak teljes magasságban meg van nyitva: A Késleltetett fizetés fizetési módot biztosító azon szolgáltatók, amelyeknél rendelkezésre áll a részletfizetés.</translation>
 <translation id="799149739215780103">Kötés</translation>
 <translation id="7992044431894087211">Képernyőmegosztás folytatva a(z) <ph name="APPLICATION_TITLE" /> alkalmazással</translation>
+<translation id="799384093520583425">Szervezete letiltotta a DevTools használatát ezen az oldalon</translation>
 <translation id="7995512525968007366">Nincs megadva</translation>
 <translation id="7997855386298213183">megosztott lapok</translation>
 <translation id="8001912761979890298">A szerver nem tudta bizonyítani, hogy valóban a(z) <ph name="DOMAIN" /> domain, mert olyan biztonsági tanúsítványt használ, amelyet a Chromium vagy a rendszerkonfiguráció nem tart megbízhatónak a webes forgalom titkosításához. Ezt okozhatja konfigurációs hiba, vagy az, hogy egy támadó eltérítette az Ön kapcsolatát. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Tanúsítvány megtekintése<ph name="END_VIEW_CERTIFICATE_LINK" />.</translation>
@@ -4833,6 +4838,7 @@ További részletek:
 <translation id="8922013791253848639">Mindig engedélyezi a hirdetéseket ezen a webhelyen</translation>
 <translation id="8922734931659847428">A felkeresett oldalak URL-jeinek korlátozott listája, ahol <ph name="BEGIN_LINK" />régi technológiai események<ph name="END_LINK" /> történnek</translation>
 <translation id="892588693504540538">Lyuk jobbra fent</translation>
+<translation id="8926082624786998759">A DevTools nem engedélyezett ezen az oldalon</translation>
 <translation id="8926389886865778422">Többször ne figyelmeztessen</translation>
 <translation id="8926400492587758246">Fizetés kis összegű havi részletekben</translation>
 <translation id="8932102934695377596">Késik az órája</translation>

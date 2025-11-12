@@ -656,6 +656,7 @@
 <translation id="3547933853190131743">‏‫AI وضع کے ساتھ تلاش کریں</translation>
 <translation id="3557336313807607643">رابطوں میں شامل کریں</translation>
 <translation id="355765753469272474">کالعدم کریں</translation>
+<translation id="3565012355885596568">تصاویر لوڈ نہیں ہو سکیں</translation>
 <translation id="3565930036634619844">ٹیب۔ <ph name="NUMBER_OF_TABS" /> میں سے <ph name="TAB_INDEX" />۔</translation>
 <translation id="3572607909481582402">‏آپ کے Google اکاؤنٹ میں</translation>
 <translation id="3575234738189584619">لینز کا استعمال کرتے ہوئے تلاش کریں</translation>
@@ -1314,6 +1315,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6045460247888249350">عنوان شامل کریں</translation>
 <translation id="6052269326659653305">پروفائل سوئچ کریں</translation>
 <translation id="605721222689873409">YY</translation>
+<translation id="6058415747854995776">ویڈیو بنائیں</translation>
 <translation id="6059830886158432458">اپنی کہانیوں اور سرگرمی کو یہاں کنٹرول کریں</translation>
 <translation id="6066301408025741299">منسوخ کرنے کیلئے تھپتھپائیں۔</translation>
 <translation id="6074656473835429958">اطلاعات حاصل کریں</translation>
@@ -1815,6 +1817,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="7866872729285243843">اپنے تمام آلات پر اپنی پڑھنے کی فہرست حاصل کرنے کے لیے، ترتیبات میں "پڑھنے کی فہرست" کو آن کریں۔</translation>
 <translation id="7874107544081154809"><ph name="CELL_ACCESSIBILITY_LABEL" /> کے ساتھ فارم آٹو فل کریں</translation>
 <translation id="7879275349003161544">ڈاؤن لوڈز دکھائیں</translation>
+<translation id="7882689957034389473">تصویر لیں</translation>
 <translation id="7883882164760409935">آپ کے پاس دوبارہ استعمال کردہ پاس ورڈز ہیں۔</translation>
 <translation id="7887174313503389866">کلیدی رازداری اور سیکیورٹی کنٹرولز کا ایک زیر رہنمائی ٹور کریں۔ مزید اختیارات کے لیے، انفرادی ترتیبات پر جائیں۔</translation>
 <translation id="7887198238286927132">‏آپ کی رازداری کے تحفظ کے لیے، Chrome اس فیلڈ کو آٹو فل نہیں کرے گا۔</translation>

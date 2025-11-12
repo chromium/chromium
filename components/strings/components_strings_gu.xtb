@@ -519,6 +519,7 @@
 <translation id="1823768272150895732">ફોન્ટ</translation>
 <translation id="1824402189105105503">આઠમો રોલ</translation>
 <translation id="1826516787628120939">તપાસી રહ્યાં છે</translation>
+<translation id="1829026591231985685">સેટિંગમાં Google Walletમાં માહિતી સાચવી રહ્યાં છીએ</translation>
 <translation id="1832730227369924598">ડેસ્ક સિંક કરો</translation>
 <translation id="1834452765064623979">બાંધકામ અને જાળવણી</translation>
 <translation id="1838374766361614909">શોધ સાફ કરો</translation>
@@ -1885,6 +1886,7 @@
 <translation id="4073797364926776829">કાર્ડ જુઓ</translation>
 <translation id="4075732493274867456">ક્લાઇન્ટ અને સર્વર સામાન્ય SSL પ્રોટોકોલ વર્ઝન અથવા સાઇફર સ્યૂટની સહાય કરતા નથી.</translation>
 <translation id="4079302484614802869">પ્રૉક્સી ગોઠવણી .pac સ્ક્રિપ્ટ URLનો ઉપયોગ કરવા માટે સેટ છે, ફિક્સ્ડ પ્રૉક્સી સર્વર માટે નહીંં.</translation>
+<translation id="4080668349181235831">સૂચનો ઑફર કરવા અને આ સુવિધાને બહેતર બનાવવા માટે, તમે મુલાકાત લો તે સાઇટનું URL અને સંપૂર્ણ પેજનું કન્ટેન્ટ Google સાથે શેર કરવામાં આવે છે. <ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" /> વિશે વધુ જાણો.</translation>
 <translation id="4080855220442581440">શેર કરેલા ટૅબમાં સ્ક્રોલ અને નાનું-મોટું કરવાની સુવિધા</translation>
 <translation id="4082333119419111506">પેપર (પહેલેથી પ્રિન્ટ કરેલું)</translation>
 <translation id="4082393374666368382">સેટિંગ - મેનેજમેન્ટ</translation>
@@ -3845,6 +3847,7 @@
 <translation id="7286908876112207905">આ કન્ટેન્ટને આ સાઇટ પર પેસ્ટ કરવાની મંજૂરી નથી</translation>
 <translation id="7291578327729322058">ડ્રાઇવિંગ લાઇસન્સ ઉમેરો</translation>
 <translation id="7292031607255951991">પ્રાપ્તકર્તાનું નામ</translation>
+<translation id="7297228218361240128">તમે જુઓ છો તે પેજ પરથી Google Walletમાં માહિતી સાચવો</translation>
 <translation id="7298195798382681320">ભલામણ કરેલ</translation>
 <translation id="7299471494012161875">ડિસ્પ્લે પેરિફેરલ જોડેલા છે</translation>
 <translation id="7299721129597238157">બુકમાર્ક કાઢી નાખો</translation>
@@ -4242,6 +4245,7 @@
 <translation id="7916162853251942238">ફ્લેક્સો બેઝ</translation>
 <translation id="791698251820376781">તમારી સંસ્થા તમને સાઇન ઇન કરવાની મંજૂરી આપતી નથી</translation>
 <translation id="7926503317156566022">ઉડ્ડયન ઉદ્યોગ</translation>
+<translation id="7927046851848613453">તમે જુઓ છો તે પેજ પરથી ટિકિટ, ઇવેન્ટ અને અન્ય માહિતી સાચવો — માત્ર તમે ભરો છો તે ફોર્મ નહીં. પછી ઇવેન્ટની ટિકિટ અને લૉયલ્ટિ કાર્ડ જેવા તમારા પાસને ઝડપથી ઍક્સેસ કરો. તમારી સાચવેલી માહિતી તમારા ડિવાઇસ પર અને Googleની સમગ્ર પ્રોડક્ટ પર દેખાઈ શકે છે.</translation>
 <translation id="7930282586031445870">"હમણાં ખરીદો, પછીથી ચુકવો" સેવાની શરતોની સ્ક્રીન બંધ છે.</translation>
 <translation id="7932035970207573919">ઑફિસનું સરનામું, <ph name="ADDRESS" /></translation>
 <translation id="793209273132572360">સરનામું અપડેટ કરીએ?</translation>

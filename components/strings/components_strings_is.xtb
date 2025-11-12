@@ -519,6 +519,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1823768272150895732">Leturgerð</translation>
 <translation id="1824402189105105503">Áttunda rúlla</translation>
 <translation id="1826516787628120939">Kannar</translation>
+<translation id="1829026591231985685">að vista upplýsingar í Google-veski í stillingum</translation>
 <translation id="1832730227369924598">Skrifborðssamstilling</translation>
 <translation id="1834452765064623979">Byggingaframkvæmdir og -viðhald</translation>
 <translation id="1838374766361614909">Hreinsa leit</translation>
@@ -1885,6 +1886,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="4073797364926776829">Skoða kort</translation>
 <translation id="4075732493274867456">Biðlarinn og þjónninn styðja ekki sameiginlega útgáfu SSL-samskiptareglna eða dulkóðunarsafns.</translation>
 <translation id="4079302484614802869">Proxy-stillingar nota vefslóð á .pac-skriftu en ekki fasta proxy-þjóna.</translation>
+<translation id="4080668349181235831">Vefslóð og öllu efni vefsvæðisins sem þú heimsækir er deilt með Google í því skyni að birta þér tillögur og bæta eiginleikann. Nánar um <ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" />.</translation>
 <translation id="4080855220442581440">skoða og stækka/minnka samnýtta flipa</translation>
 <translation id="4082333119419111506">Pappír (forprentaður)</translation>
 <translation id="4082393374666368382">Stillingar – Stjórnun</translation>
@@ -3844,6 +3846,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="7286908876112207905">Ekki er heimilt að líma þetta efni á þetta vefsvæði</translation>
 <translation id="7291578327729322058">Bættu ökuskírteini við</translation>
 <translation id="7292031607255951991">Nafn viðtakanda</translation>
+<translation id="7297228218361240128">Vistaðu upplýsingar í Google-veski af síðum sem þú skoðar</translation>
 <translation id="7298195798382681320">Ráðlagt</translation>
 <translation id="7299471494012161875">Jaðartæki sem eru tengd við skjá</translation>
 <translation id="7299721129597238157">Eyða bókamerki</translation>
@@ -4241,6 +4244,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="7916162853251942238">Flexo Base</translation>
 <translation id="791698251820376781">Fyrirtækið þitt leyfir þér ekki að skrá þig inn</translation>
 <translation id="7926503317156566022">Flugiðnaður</translation>
+<translation id="7927046851848613453">Vistaðu miða, viðburði og aðrar upplýsingar af síðum sem þú skoðar – ekki bara eyðublöðum sem þú fyllir út. Fáðu síðan skjótan aðgang að pössunum þínum, eins og miðum á viðburði og tryggðarkortum. Vistuðu upplýsingarnar þínar geta birst í tækjunum þínum og í Google-vörum.</translation>
 <translation id="7930282586031445870">Skjár með þjónustuskilmálum „Kauptu núna, borgaðu síðar“ er lokaður.</translation>
 <translation id="7932035970207573919">Heimilisfang vinnustaðar: <ph name="ADDRESS" /></translation>
 <translation id="793209273132572360">Uppfæra heimilisfang?</translation>

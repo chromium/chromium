@@ -615,6 +615,7 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1414648216875402825">Ažurirate na nestabilnu verziju usluge <ph name="PRODUCT_NAME" /> koja sadrži značajke na kojima se još radi. Dolazit će do rušenja i neočekivanih programskih pogrešaka. Budite oprezni.</translation>
 <translation id="1415708812149920388">Odbijen pristup za čitanje međuspreminka</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> (ID proširenja "<ph name="EXTENSION_ID" />") nije dopušten u ovoj vrsti sesije.</translation>
+<translation id="141720836055413739">Prijenos nije moguć.  Pokušajte s drugim formatom datoteke.</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{Ukloni aplikaciju}one{Ukloni aplikacije}few{Ukloni aplikacije}other{Ukloni aplikacije}}</translation>
 <translation id="1417497355604638350">Pošaljite dijagnostičke podatke i podatke o upotrebi.</translation>
 <translation id="1418552618736477642">Obavijesti i aplikacije</translation>
@@ -2871,6 +2872,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2946640296642327832">Omogući Bluetooth</translation>
 <translation id="2947281105969315778">Da biste dijelili grupe kartica ili im se pridružili, morate se moći prijaviti u Chrome</translation>
 <translation id="2947605845283690091">Pregledavanje weba treba biti brzo. Odvojite trenutak i <ph name="BEGIN_LINK" />pregledajte svoja proširenja<ph name="END_LINK" /> odmah.</translation>
+<translation id="2948287943780377675">{FILE_COUNT,plural, =1{Ispustite datoteku ovdje}one{Ispustite datoteke ovdje}few{Ispustite datoteke ovdje}other{Ispustite datoteke ovdje}}</translation>
 <translation id="2948300991547862301">Idi na stranicu <ph name="PAGE_TITLE" /></translation>
 <translation id="29488703364906173">Brz, jednostavan i siguran web-preglednik izrađen za moderni web.</translation>
 <translation id="2950666755714083615">Želim se registrirati</translation>
@@ -5259,6 +5261,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="4606551464649945562">Onemogućite web-lokacijama da izrađuju 3D karte vašeg okruženja ili prate položaj kamere</translation>
 <translation id="4606933160360542263">Prilagođena kombinacija tipki: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Želite li izbrisati grupu kartica?}one{Želite li izbrisati grupe kartica?}few{Želite li izbrisati grupe kartica?}other{Želite li izbrisati grupe kartica?}}</translation>
+<translation id="4607763915939540711">{FILE_LIMIT,plural, =1{Prenesite 1 datoteku za upotrebu s pitanjem}one{Prenesite do # datoteku za upotrebu s pitanjem}few{Prenesite do # datoteke za upotrebu s pitanjem}other{Prenesite do # datoteka za upotrebu s pitanjem}}</translation>
 <translation id="4608500690299898628">&amp;Traži...</translation>
 <translation id="4609164937357979319">Odabir računa</translation>
 <translation id="4610493438923139095">Nepouzdano</translation>

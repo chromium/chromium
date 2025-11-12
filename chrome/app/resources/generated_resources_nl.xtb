@@ -613,6 +613,7 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1414648216875402825">Je voert een upgrade uit naar een instabiele versie van <ph name="PRODUCT_NAME" />, die opties bevat die nog in ontwikkeling zijn. Crashes en onverwachte fouten zullen optreden. Ga voorzichtig te werk.</translation>
 <translation id="1415708812149920388">Leestoegang voor klembord geweigerd</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> (extensie-ID '<ph name="EXTENSION_ID" />') is niet toegestaan in dit type sessie.</translation>
+<translation id="141720836055413739">Kan niet uploaden.  Probeer een andere bestandsindeling.</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{App verwijderen}other{Apps verwijderen}}</translation>
 <translation id="1417497355604638350">Diagnostische en gebruiksgegevens sturen</translation>
 <translation id="1418552618736477642">Meldingen en apps</translation>
@@ -2868,6 +2869,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2946640296642327832">Bluetooth aanzetten</translation>
 <translation id="2947281105969315778">Als je tabbladgroepen wilt delen of eraan wilt deelnemen, moet je kunnen inloggen bij Chrome</translation>
 <translation id="2947605845283690091">Browsen op internet zou snel moeten gaan. Neem nu even de tijd om <ph name="BEGIN_LINK" />je extensies te controleren<ph name="END_LINK" />.</translation>
+<translation id="2948287943780377675">{FILE_COUNT,plural, =1{Bestand hier neerzetten}other{Bestanden hier neerzetten}}</translation>
 <translation id="2948300991547862301">Ga naar <ph name="PAGE_TITLE" /></translation>
 <translation id="29488703364906173">Een snelle, eenvoudige en beveiligde webbrowser voor het moderne internet.</translation>
 <translation id="2950666755714083615">Ik wil me aanmelden</translation>
@@ -5254,6 +5256,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4606551464649945562">Niet toestaan dat sites een 3D-kaart van je omgeving maken of de camerapositie volgen</translation>
 <translation id="4606933160360542263">Aangepaste toetsencombinatie: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Tabbladgroep verwijderen?}other{Tabbladgroepen verwijderen?}}</translation>
+<translation id="4607763915939540711">{FILE_LIMIT,plural, =1{Upload 1 bestand om te gebruiken bij je vraag}other{Upload maximaal # bestanden om te gebruiken bij je vraag}}</translation>
 <translation id="4608500690299898628">&amp;Zoeken...</translation>
 <translation id="4609164937357979319">Accountselectie</translation>
 <translation id="4610493438923139095">Niet vertrouwd</translation>

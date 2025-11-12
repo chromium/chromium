@@ -613,6 +613,7 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1414648216875402825">Estás actualizando unha versión inestable de <ph name="PRODUCT_NAME" /> que contén funcións que están en desenvolvemento. Produciranse fallos e erros inesperados. Utiliza esta versión con precaución.</translation>
 <translation id="1415708812149920388">Rexeitouse o acceso de lectura ao portapapeis</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> (o ID da extensión "<ph name="EXTENSION_ID" />") non se permite neste tipo de sesión.</translation>
+<translation id="141720836055413739">Non se puido cargar o ficheiro.  Proba cun formato diferente.</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{Quitar aplicación}other{Quitar aplicacións}}</translation>
 <translation id="1417497355604638350">Enviar datos de uso e de diagnóstico.</translation>
 <translation id="1418552618736477642">Notificacións e aplicacións</translation>
@@ -2867,6 +2868,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2946640296642327832">Activar Bluetooth</translation>
 <translation id="2947281105969315778">Para compartir grupos de pestanas ou unirte a eles, tes que poder iniciar sesión en Chrome</translation>
 <translation id="2947605845283690091">A navegación pola Web debería ser rápida. Dedica un momento a <ph name="BEGIN_LINK" />comprobar as túas extensións<ph name="END_LINK" /> agora.</translation>
+<translation id="2948287943780377675">{FILE_COUNT,plural, =1{Solta o ficheiro aquí}other{Solta os ficheiros aquí}}</translation>
 <translation id="2948300991547862301">Ir a <ph name="PAGE_TITLE" /></translation>
 <translation id="29488703364906173">Un navegador rápido, sinxelo e seguro deseñado para a web moderna.</translation>
 <translation id="2950666755714083615">Rexistrarse</translation>
@@ -5259,6 +5261,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4606551464649945562">Non permitir que os sitios creen un mapa 3D do que te rodea e fagan un seguimento da posición da cámara</translation>
 <translation id="4606933160360542263">Combinación de teclas personalizada: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Queres eliminar o grupo de pestanas?}other{Queres eliminar os grupos de pestanas?}}</translation>
+<translation id="4607763915939540711">{FILE_LIMIT,plural, =1{Carga 1 ficheiro para usalo coa túa pregunta}other{Carga ata # ficheiros para usalos coa túa pregunta}}</translation>
 <translation id="4608500690299898628">&amp;Buscar...</translation>
 <translation id="4609164937357979319">Selección de conta</translation>
 <translation id="4610493438923139095">Non fiable</translation>

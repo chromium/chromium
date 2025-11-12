@@ -519,6 +519,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1823768272150895732">Yazı tipi</translation>
 <translation id="1824402189105105503">Sekizinci Rulo</translation>
 <translation id="1826516787628120939">Kontrol ediliyor</translation>
+<translation id="1829026591231985685">Ayarlarda Google Cüzdan'a bilgi kaydetme</translation>
 <translation id="1832730227369924598">Masaüstü senkronizasyonu</translation>
 <translation id="1834452765064623979">İnşaat ve Bakım</translation>
 <translation id="1838374766361614909">Aramayı temizle</translation>
@@ -1885,6 +1886,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4073797364926776829">Kartı göster</translation>
 <translation id="4075732493274867456">İstemci ve sunucu, ortak bir SSL protokolü sürümünü veya şifre setini desteklemiyor.</translation>
 <translation id="4079302484614802869">Proxy yapılandırması sabit proxy sunucuları değil, bir .pac komut dosyası URL'sini kullanmak üzere ayarlandı.</translation>
+<translation id="4080668349181235831">Size özel öneriler sunulabilmesi ve bu özelliğin iyileştirilmesi için ziyaret ettiğiniz sitenin URL'si ve sayfanın tüm içeriği Google ile paylaşılır. <ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" /> hakkında daha fazla bilgi edinin.</translation>
 <translation id="4080855220442581440">paylaşılan sekmeleri kaydırma ve yakınlaştırma</translation>
 <translation id="4082333119419111506">Kağıt (Önceden Basılmış)</translation>
 <translation id="4082393374666368382">Ayarlar - Yönetim</translation>
@@ -3845,6 +3847,7 @@ Ek ayrıntılar:
 <translation id="7286908876112207905">Bu içeriğin bu siteye yapıştırılmasına izin verilmiyor</translation>
 <translation id="7291578327729322058">Sürücü belgesi ekleyin</translation>
 <translation id="7292031607255951991">Alıcı adı</translation>
+<translation id="7297228218361240128">Görüntülediğiniz sayfalardaki bilgileri Google Cüzdan'a kaydedin</translation>
 <translation id="7298195798382681320">Önerilenler</translation>
 <translation id="7299471494012161875">Bağlı ekran çevre birimleri</translation>
 <translation id="7299721129597238157">Yer işaretini sil</translation>
@@ -4242,6 +4245,7 @@ Ek ayrıntılar:
 <translation id="7916162853251942238">Flekso Taban</translation>
 <translation id="791698251820376781">Kuruluşunuz oturum açmanıza izin vermiyor</translation>
 <translation id="7926503317156566022">Havacılık Sektörü</translation>
+<translation id="7927046851848613453">Yalnızca doldurduğunuz formlardaki bilgileri değil, görüntülediğiniz sayfalardaki biletleri, etkinlikleri ve diğer bilgileri de kaydedin. Ardından, etkinlik biletleri ve bağlılık kartları gibi geçiş kartlarınıza hızlıca erişin. Kaydedilen bilgileriniz cihazlarınızda ve tüm Google ürünlerinde gösterilebilir.</translation>
 <translation id="7930282586031445870">"Şimdi al sonra öde" Hizmet Şartları ekranı kapatıldı.</translation>
 <translation id="7932035970207573919">İş adresi, <ph name="ADDRESS" /></translation>
 <translation id="793209273132572360">Adres güncellensin mi?</translation>

@@ -519,6 +519,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="1823768272150895732">Ifonti</translation>
 <translation id="1824402189105105503">Umqulu Wesishiyagalombili</translation>
 <translation id="1826516787628120939">Iyahlola</translation>
+<translation id="1829026591231985685">ukulondoloza ulwazi kuGoogle Wallet kumasethingi</translation>
 <translation id="1832730227369924598">Ukuvumelanisa kwedeski</translation>
 <translation id="1834452765064623979">Ukwakha kanye Nokunakekela</translation>
 <translation id="1838374766361614909">Sula usesho</translation>
@@ -1882,6 +1883,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="4073797364926776829">Buka ikhadi</translation>
 <translation id="4075732493274867456">Iklayenti neseva azisekeli inguqulo yephrothokholi ejwayelekile ye-SSL noma i-cipher suite.</translation>
 <translation id="4079302484614802869">Ukulungiselelwa kommeleli kusethelwe ukuze kusebenzise i-URL yesikripthi se-.pac, hhayi amaseva alibamba agxilisiwe.</translation>
+<translation id="4080668349181235831">Ukuze unikeze iziphakamiso futhi uthuthukise lesi sakhi, i-URL kanye nekhontenti yekhasi eligcwele yesayithi oyivakashelayo kwabelwana ngayo neGoogle. Funda kabanzi mayelana ne-<ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" />.</translation>
 <translation id="4080855220442581440">ukuskrola nokusondeza amathebhu abiwe</translation>
 <translation id="4082333119419111506">Iphepha (Iphrintiwe ngaphambili)</translation>
 <translation id="4082393374666368382">Izilungiselelo - Ukuphathwa</translation>
@@ -3841,6 +3843,7 @@ Imininingwane engeziwe:
 <translation id="7286908876112207905">Ukunamathisela lokhu okuqukethwe kule sayithi akuvunyelwe</translation>
 <translation id="7291578327729322058">Engeza ilayisense yokushayela</translation>
 <translation id="7292031607255951991">Igama lomamukeli</translation>
+<translation id="7297228218361240128">Londoloza ulwazi kuGoogle Wallet kusukela emakhasini owabukayo</translation>
 <translation id="7298195798382681320">Kunconyiwe</translation>
 <translation id="7299471494012161875">Ama-peripheral okubonisa anamathiselwe</translation>
 <translation id="7299721129597238157">Susa ibhukhimakhi</translation>
@@ -4238,6 +4241,7 @@ Imininingwane engeziwe:
 <translation id="7916162853251942238">Isisekelo se-Flexo</translation>
 <translation id="791698251820376781">Inhlangano yakho ayikuvumeli ukuthi ungene ngemvume</translation>
 <translation id="7926503317156566022">Imboni Yezokundiza</translation>
+<translation id="7927046851848613453">Londoloza amathikithi, imicimbi, nolunye ulwazi oluvela emakhasini owabukayo — hhayi amafomu owagcwalisayo kuphela. Bese ufinyelela ngokushesha izimvume zakho, njengamathikithi omcimbi namakhadi obuqotho. Ulwazi lwakho olulondoloziwe lungavela kumadivayisi akho nakuyo yonke imikhiqizo yeGoogle.</translation>
 <translation id="7930282586031445870">Isikrini semigomo yesevisi Yokuthenga Manje, Ubuye Ukhokhe sivaliwe.</translation>
 <translation id="7932035970207573919">Ikheli lasemsebenzini, <ph name="ADDRESS" /></translation>
 <translation id="793209273132572360">Buyekeza ikheli?</translation>

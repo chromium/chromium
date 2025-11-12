@@ -519,6 +519,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1823768272150895732">Teckensnitt</translation>
 <translation id="1824402189105105503">Åttonde rullen</translation>
 <translation id="1826516787628120939">Kontrollerar</translation>
+<translation id="1829026591231985685">sparar information i Google Wallet i inställningarna</translation>
 <translation id="1832730227369924598">Synkronisering av skrivbord</translation>
 <translation id="1834452765064623979">Byggnad och underhåll</translation>
 <translation id="1838374766361614909">Rensa sökning</translation>
@@ -1885,6 +1886,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4073797364926776829">Visa kort</translation>
 <translation id="4075732493274867456">Klienten och servern har inte stöd för en gemensam SSL-protokollversion eller chiffersvit.</translation>
 <translation id="4079302484614802869">Proxykonfigurationen är inställd på att använda en webbadress med PAC-skript, inte fasta proxyservrar.</translation>
+<translation id="4080668349181235831">För att kunna ge förslag och förbättra den här funktionen delas webbadressen och hela sidinnehållet på webbplatsen du besöker med Google. Läs mer om <ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" />.</translation>
 <translation id="4080855220442581440">scrolla och zooma på delade flikar</translation>
 <translation id="4082333119419111506">Papper (förtryckt)</translation>
 <translation id="4082393374666368382">Inställningar – hantering</translation>
@@ -3845,6 +3847,7 @@ Mer information.
 <translation id="7286908876112207905">Det är inte tillåtet att klistra in innehållet på den här webbplatsen</translation>
 <translation id="7291578327729322058">Lägg till körkort</translation>
 <translation id="7292031607255951991">Mottagarens namn</translation>
+<translation id="7297228218361240128">Spara information i Google Wallet från sidor du besöker</translation>
 <translation id="7298195798382681320">Rekommenderas</translation>
 <translation id="7299471494012161875">Visa bifogad kringutrustning</translation>
 <translation id="7299721129597238157">Ta bort bokmärke</translation>
@@ -4242,6 +4245,7 @@ Mer information.
 <translation id="7916162853251942238">Flexo-base</translation>
 <translation id="791698251820376781">Organisationen tillåter inte att du loggar in</translation>
 <translation id="7926503317156566022">Luftfartsindustri</translation>
+<translation id="7927046851848613453">Spara biljetter, händelser och annan information från sidor du besöker – inte bara formulär du fyller i. Kom sedan snabbt åt dina värdehandlingar, till exempel evenemangsbiljetter och stamkundskort. Din sparade information kan visas på dina enheter och i Googles produkter.</translation>
 <translation id="7930282586031445870">Användarvillkorsskärmen för Köp nu, betala senare har stängts.</translation>
 <translation id="7932035970207573919">Jobbadress, <ph name="ADDRESS" /></translation>
 <translation id="793209273132572360">Vill du uppdatera adressen?</translation>

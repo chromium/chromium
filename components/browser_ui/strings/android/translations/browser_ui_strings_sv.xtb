@@ -243,6 +243,7 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="3611658447322220736">Webbplatser som stängts nyligen får fortsätta att skicka och ta emot data</translation>
 <translation id="3619294456800709762">Webbplatser kan öppna bild-i-bild automatiskt</translation>
 <translation id="3628308229821498208">Föreslagna sökningar</translation>
+<translation id="363748948745453283">Använder ungefärlig plats</translation>
 <translation id="3641456520301071208">Webbplatser får fråga efter din plats</translation>
 <translation id="3658847490588580244">Ark på nedre delen av standardwebbläsaren</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> webbplats i gruppen med webbplatser som tillhör <ph name="RWS_OWNER" />, som kan se din aktivitet i gruppen}other{<ph name="RWS_MEMBERS_COUNT" /> webbplatser i gruppen med webbplatser som tillhör <ph name="RWS_OWNER" />, som kan se din aktivitet i gruppen}}</translation>

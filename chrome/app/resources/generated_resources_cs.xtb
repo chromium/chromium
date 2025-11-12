@@ -615,6 +615,7 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1414648216875402825">Provádíte upgrade na nestabilní verzi systému <ph name="PRODUCT_NAME" />, která obsahuje funkce ve fázi vývoje. Bude docházet k selháním a neočekávaným chybám. Pokračujte s nejvyšší opatrností.</translation>
 <translation id="1415708812149920388">Byl odmítnut přístup ke čtení obsahu schránky</translation>
 <translation id="1415990189994829608">Rozšíření <ph name="EXTENSION_NAME" /> (ID <ph name="EXTENSION_ID" />) není pro tento typ návštěvy povoleno.</translation>
+<translation id="141720836055413739">Soubor nelze nahrát.  Zkuste jiný formát souboru.</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{Odstranit aplikaci}few{Odstranit aplikace}many{Odstranit aplikace}other{Odstranit aplikace}}</translation>
 <translation id="1417497355604638350">Odesílat diagnostické údaje a údaje o využití.</translation>
 <translation id="1418552618736477642">Oznámení a aplikace</translation>
@@ -2870,6 +2871,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="2946640296642327832">Zapnout Bluetooth</translation>
 <translation id="2947281105969315778">Pokud chcete sdílet skupiny karet nebo se k nim připojit, musíte mít možnost přihlásit se do Chromu</translation>
 <translation id="2947605845283690091">Procházení webu by mělo být rychlé. Věnujte chvíli <ph name="BEGIN_LINK" />kontrole svých rozšíření<ph name="END_LINK" />.</translation>
+<translation id="2948287943780377675">{FILE_COUNT,plural, =1{Sem přetáhněte soubor}few{Sem přetáhněte soubory}many{Sem přetáhněte soubory}other{Sem přetáhněte soubory}}</translation>
 <translation id="2948300991547862301">Přejít na stránku <ph name="PAGE_TITLE" /></translation>
 <translation id="29488703364906173">Rychlý, jednoduchý a bezpečný webový prohlížeč vytvořený pro moderní web</translation>
 <translation id="2950666755714083615">Zaregistrovat se</translation>
@@ -5256,6 +5258,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4606551464649945562">Nepovolovat webům vytvořit 3D mapu okolí ani sledovat polohu kamery</translation>
 <translation id="4606933160360542263">Vlastní kombinace kláves: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Smazat skupinu karet?}few{Smazat skupiny karet?}many{Smazat skupiny karet?}other{Smazat skupiny karet?}}</translation>
+<translation id="4607763915939540711">{FILE_LIMIT,plural, =1{Nahrajte 1 soubor, který chcete s otázkou použít}few{Nahrajte až # soubory, které chcete s otázkou použít}many{Nahrajte až # souboru, které chcete s otázkou použít}other{Nahrajte až # souborů, které chcete s otázkou použít}}</translation>
 <translation id="4608500690299898628">&amp;Najít...</translation>
 <translation id="4609164937357979319">Výběr účtu</translation>
 <translation id="4610493438923139095">Nedůvěryhodný</translation>

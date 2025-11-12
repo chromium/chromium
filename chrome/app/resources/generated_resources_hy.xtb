@@ -615,6 +615,7 @@
 <translation id="1414648216875402825">Դուք անցնում եք <ph name="PRODUCT_NAME" />-ի անկայուն տարբերակի, որը պարունակում է տվյալ պահին մշակվող գործառույթներ: Զգույշ եղեք: Կարող են առաջնալ խափանումներ և անսպասելի վրիպակներ:</translation>
 <translation id="1415708812149920388">Սեղմատախտակի ընթերցումը մերժվեց</translation>
 <translation id="1415990189994829608">Այս տեսակի աշխատաշրջանում <ph name="EXTENSION_NAME" />-ը (ընդլայնման ID «<ph name="EXTENSION_ID" />») չի թույլատրվում:</translation>
+<translation id="141720836055413739">Չհաջողվեց վերբեռնել։  Փորձեք ֆայլի այլ ձևաչափ։</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{Հեռացնել հավելվածը}one{Հեռացնել հավելվածը}other{Հեռացնել հավելվածները}}</translation>
 <translation id="1417497355604638350">Դիագնոստիկ և օգտագործման տվյալների ուղարկում</translation>
 <translation id="1418552618736477642">Ծանուցումներ և հավելվածներ</translation>
@@ -2868,6 +2869,7 @@
 <translation id="2946640296642327832">Միացնել Bluetooth-ը</translation>
 <translation id="2947281105969315778">Ներդիրների խմբերով կիսվելու կամ դրանց միանալու համար դուք պետք է մուտք գործեք Chrome</translation>
 <translation id="2947605845283690091">Վեբ դիտարկումը պետք է արագ լինի: <ph name="BEGIN_LINK" />Ստուգեք ձեր ընդլայնումները<ph name="END_LINK" />:</translation>
+<translation id="2948287943780377675">{FILE_COUNT,plural, =1{Քաշեք ֆայլն այստեղ}one{Քաշեք ֆայլն այստեղ}other{Քաշեք ֆայլերն այստեղ}}</translation>
 <translation id="2948300991547862301">Անցնել <ph name="PAGE_TITLE" /></translation>
 <translation id="29488703364906173">Արագ և ապահով դիտարկիչ՝ ստեղծված ժամանակակից համացանցի համար:</translation>
 <translation id="2950666755714083615">Գրանցել ինձ</translation>
@@ -5255,6 +5257,7 @@
 <translation id="4606551464649945562">Թույլ չտալ կայքերին ստեղծել շրջակայքի եռաչափ քարտեզը և հետագծել տեսախցիկի դիրքը</translation>
 <translation id="4606933160360542263">Ստեղների հատուկ համադրություն՝ <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Ջնջե՞լ ներդիրների խումբը}one{Ջնջե՞լ ներդիրների խումբը}other{Ջնջե՞լ ներդիրների խմբերը}}</translation>
+<translation id="4607763915939540711">{FILE_LIMIT,plural, =1{Վերբեռնեք 1 ֆայլ՝ ձեր հարցի հետ օգտագործելու համար}one{Վերբեռնեք մինչև # ֆայլ՝ ձեր հարցի հետ օգտագործելու համար}other{Վերբեռնեք մինչև # ֆայլ՝ ձեր հարցի հետ օգտագործելու համար}}</translation>
 <translation id="4608500690299898628">&amp;Գտնել…</translation>
 <translation id="4609164937357979319">Հաշվի ընտրություն</translation>
 <translation id="4610493438923139095">Ոչ վստահելի</translation>

@@ -519,6 +519,7 @@
 <translation id="1823768272150895732">فونٹ</translation>
 <translation id="1824402189105105503">آٹھواں رول</translation>
 <translation id="1826516787628120939">چیک کیا جا رہا ہے</translation>
+<translation id="1829026591231985685">‏ترتیبات میں Google والٹ میں معلومات محفوظ کرنا</translation>
 <translation id="1832730227369924598">ڈیسک مطابقت پذیری</translation>
 <translation id="1834452765064623979">تعمیر اور دیکھ بھال</translation>
 <translation id="1838374766361614909">تلاش صاف کریں</translation>
@@ -1886,6 +1887,7 @@
 <translation id="4073797364926776829">کارڈ دیکھیں</translation>
 <translation id="4075732493274867456">‏کلائنٹ اور سرور عام SSL پروٹوکول ورژن یا سائفر سوئٹ کا تعاون نہیں کرتے ہیں۔</translation>
 <translation id="4079302484614802869">‏پراکسی کنفیگریشن مقررہ پراکسی سرورز نہیں بلکہ ایک ‎.pac اسکرپٹ URL استعمال کرنے کیلئے سیٹ ہے۔</translation>
+<translation id="4080668349181235831">‏تجاویز کی پیشکش کرنے اور اس خصوصیت کو بہتر بنانے کیلئے، آپ کی ملاحظہ کردہ سائٹ کے URL اور صفحہ کے مکمل مواد کا Google کے ساتھ اشتراک کیا جاتا ہے۔ ‫<ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" /> کے بارے میں مزید جانیں۔</translation>
 <translation id="4080855220442581440">اشتراک کردہ ٹیبز کو اسکرول اور زوم کرنا</translation>
 <translation id="4082333119419111506">کاغذ (پری پرنٹڈ)</translation>
 <translation id="4082393374666368382">ترتیبات، نظم و نسق</translation>
@@ -3846,6 +3848,7 @@
 <translation id="7286908876112207905">اس مواد کو اس سائٹ پر پیسٹ کرنے کی اجازت نہیں ہے</translation>
 <translation id="7291578327729322058">ڈرائیونگ لائسنس کی معلومات شامل کریں</translation>
 <translation id="7292031607255951991">وصول کنندہ کا نام</translation>
+<translation id="7297228218361240128">‏دیکھے گئے صفحات سے Google والٹ میں معلومات محفوظ کریں</translation>
 <translation id="7298195798382681320">تجویز کردہ</translation>
 <translation id="7299471494012161875">ڈسپلے پیریفیرلز منسلک ہیں</translation>
 <translation id="7299721129597238157">بُک مارک حذف کریں</translation>
@@ -4243,6 +4246,7 @@
 <translation id="7916162853251942238">فلیکسو بیس</translation>
 <translation id="791698251820376781">آپ کی تنظیم آپ کو سائن ان کرنے کی اجازت نہیں دیتی ہے</translation>
 <translation id="7926503317156566022">ہوا بازی کی انڈسٹری</translation>
+<translation id="7927046851848613453">‏آپ جو صفحات دیکھتے ہیں ان سے ٹکٹس، ایونٹس اور دیگر معلومات محفوظ کریں — نہ صرف وہ فارمز جو آپ پُر کرتے ہیں۔ پھر اپنے پاسز تک فوری رسائی حاصل کریں، جیسے ایونٹ کے ٹکٹس اور لائلٹی کارڈز۔ آپ کی محفوظ کردہ معلومات آپ کے آلات اور Google پروڈکٹس پر ظاہر ہو سکتی ہے۔</translation>
 <translation id="7930282586031445870">ابھی خریدیں، ادائیگی بعد میں کریں کی سروس کی شرائط کی اسکرین بند ہے۔</translation>
 <translation id="7932035970207573919">دفتر کا پتہ، <ph name="ADDRESS" /></translation>
 <translation id="793209273132572360">پتہ اپ ڈیٹ کریں؟</translation>
@@ -4291,6 +4295,7 @@
 <translation id="7987087088851949178">'ابھی خریدیں، ادائیگی بعد میں کریں جاری کنندگان وقت کے ساتھ ادائیگی کے لیے دستیاب ہیں' پوری اسکرین پر کھلی ہے۔</translation>
 <translation id="799149739215780103">باندھیں</translation>
 <translation id="7992044431894087211"><ph name="APPLICATION_TITLE" /> کے ساتھ اسکرین کے اشتراک کو دوبارہ شروع کر دیا گیا</translation>
+<translation id="799384093520583425">‏آپ کی تنظیم نے اس صفحہ پر DevTools کے استعمال کو بلاک کر دیا ہے</translation>
 <translation id="7995512525968007366">متعین نہیں ہے</translation>
 <translation id="7997855386298213183">اشتراک کردہ ٹیبز</translation>
 <translation id="8001912761979890298">‏یہ سرور ثابت نہیں کر سکا کہ یہ <ph name="DOMAIN" /> ہے کیونکہ یہ ایک سیکیورٹی سرٹیفکیٹ استعمال کر رہا ہے جس پر Chromium یا آپ کے سسٹم کے کنفیگریشن کو ویب ٹریفک کی مرموز کاری کے لیے بھروسہ نہیں ہے۔ یہ غلط کنفیگریشن یا آپ کے کنکشن کو قطع کرنے والے کسی حملہ آور کی وجہ سے ہو سکتا ہے۔ <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />سرٹیفکیٹ دیکھیں<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
@@ -4835,6 +4840,7 @@
 <translation id="8922013791253848639">ہمیشہ اس سائٹ پر اشتہارات کی اجازت دیں</translation>
 <translation id="8922734931659847428">‏آپ کے ملاحظہ کردہ صفحات کے URLs کی ایک محدود کردہ فہرست جہاں <ph name="BEGIN_LINK" />ٹیکنالوجی کے پرانے ایونٹس<ph name="END_LINK" /> رونما ہو رہے ہیں</translation>
 <translation id="892588693504540538">اوپر دائیں طرف سوراخ</translation>
+<translation id="8926082624786998759">‏اس صفحہ پر DevTools کی اجازت نہیں ہے</translation>
 <translation id="8926389886865778422">دوبارہ سوال نہ کریں</translation>
 <translation id="8926400492587758246">کم ماہانہ قسطوں میں ادائیگی کریں</translation>
 <translation id="8932102934695377596">آپ کی گھڑی پیچھے ہے</translation>

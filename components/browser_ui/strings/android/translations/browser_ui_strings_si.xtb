@@ -243,6 +243,7 @@
 <translation id="3611658447322220736">මෑතදී වැසූ අඩවිවලට දත්ත යැවීම සහ ලැබීම අවසන් කළ හැකිය</translation>
 <translation id="3619294456800709762">අඩවිවලට පින්තූරය තුළ පින්තූරයට ස්වයංක්‍රීයව ඇතුළු විය හැක</translation>
 <translation id="3628308229821498208">යෝජිත සෙවීම්</translation>
+<translation id="363748948745453283">දළ ස්ථානය භාවිතා කිරීම</translation>
 <translation id="3641456520301071208">අඩවි ඔබගේ ස්ථානය ඉල්ලිය හැකිය</translation>
 <translation id="3658847490588580244">පෙරනිමි බ්‍රව්සර පහළ පත්‍රය</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{සමූහය තුළ ඔබේ ක්‍රියාකාරකම් දැකිය හැකි <ph name="RWS_OWNER" />ගේ අඩවි සමූහයේ <ph name="RWS_MEMBERS_COUNT" /> අඩවියක්}one{සමූහය තුළ ඔබේ ක්‍රියාකාරකම් දැකිය හැකි <ph name="RWS_OWNER" />ගේ අඩවි සමූහයේ වෙබ් අඩවි <ph name="RWS_MEMBERS_COUNT" />ක්}other{සමූහය තුළ ඔබේ ක්‍රියාකාරකම් දැකිය හැකි <ph name="RWS_OWNER" />ගේ අඩවි සමූහයේ වෙබ් අඩවි <ph name="RWS_MEMBERS_COUNT" />ක්}}</translation>

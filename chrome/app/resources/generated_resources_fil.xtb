@@ -614,6 +614,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="1414648216875402825">Iyong ina-update ang isang hindi matatag na bersyon ng <ph name="PRODUCT_NAME" /> na naglalaman ng mga tampok na kasalukuyang isinasagawa. Magkakaroon ng mga pag-crash at hindi inaasahang mga bug. Mangyaring magpatuloy nang may pag-iingat.</translation>
 <translation id="1415708812149920388">Tinanggihan ang read access sa clipboard</translation>
 <translation id="1415990189994829608">Ang <ph name="EXTENSION_NAME" /> (extension ID "<ph name="EXTENSION_ID" />") ay hindi pinapayagan sa ganitong uri ng session.</translation>
+<translation id="141720836055413739">Hindi ma-upload.  Sumubok ng ibang format ng file.</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{Alisin ang app}one{Mag-alis ng mga app}other{Mag-alis ng mga app}}</translation>
 <translation id="1417497355604638350">Ipadala ang data ng diagnostics at paggamit</translation>
 <translation id="1418552618736477642">Mga notification at app</translation>
@@ -2882,6 +2883,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="2946640296642327832">Paganahin ang Bluetooth</translation>
 <translation id="2947281105969315778">Para mag-share ng o sumali sa mga grupo ng tab, dapat ay makapag-sign in ka sa Chrome</translation>
 <translation id="2947605845283690091">Mabilis dapat ang pag-browse sa web. Maglaan ng ilang sandali para <ph name="BEGIN_LINK" />tingnan ang iyong mga extension<ph name="END_LINK" /> ngayon.</translation>
+<translation id="2948287943780377675">{FILE_COUNT,plural, =1{I-drop ang file dito}one{I-drop ang mga file dito}other{I-drop ang mga file dito}}</translation>
 <translation id="2948300991547862301">Pumunta sa <ph name="PAGE_TITLE" /></translation>
 <translation id="29488703364906173">Isang mabilis, simple at secure na web browser na ginawa para sa modernong web.</translation>
 <translation id="2950666755714083615">I-sign up ako</translation>
@@ -5271,6 +5273,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4606551464649945562">Huwag payagan ang mga site na gumawa ng 3D na mapa ng iyong kapaligiran o subaybayan ang posisyon ng camera</translation>
 <translation id="4606933160360542263">Custom na kumbinasyon ng key: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{I-delete ang grupo ng tab?}one{I-delete ang mga grupo ng tab?}other{I-delete ang mga grupo ng tab?}}</translation>
+<translation id="4607763915939540711">{FILE_LIMIT,plural, =1{Mag-upload ng 1 file na gagamitin sa iyong tanong}one{Mag-upload ng hanggang # file na gagamitin sa iyong tanong}other{Mag-upload ng hanggang # na file na gagamitin sa iyong tanong}}</translation>
 <translation id="4608500690299898628">&amp;Hanapin...</translation>
 <translation id="4609164937357979319">Pagpili ng account</translation>
 <translation id="4610493438923139095">Hindi Pinagkakatiwalaan</translation>

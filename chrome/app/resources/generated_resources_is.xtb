@@ -614,6 +614,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1414648216875402825">Þú ert að uppfæra í óstöðuga útgáfu af <ph name="PRODUCT_NAME" /> sem inniheldur eiginleika sem eru í vinnslu. Hrun og óvæntar villur munu koma upp. Farðu að öllu með gát.</translation>
 <translation id="1415708812149920388">Lesaðgangi að klippiborði var hafnað</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> (auðkenni viðbótar „<ph name="EXTENSION_ID" />“) er ekki leyfð í þessari gerð lotu.</translation>
+<translation id="141720836055413739">Ekki tókst að hlaða upp.  Prófaðu annað skráarsnið.</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{Fjarlægja forrit}one{Fjarlægja forrit}other{Fjarlægja forrit}}</translation>
 <translation id="1417497355604638350">Senda notkunar- og greiningargögn.</translation>
 <translation id="1418552618736477642">Tilkynningar og forrit</translation>
@@ -2882,6 +2883,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2946640296642327832">Kveikja á Bluetooth</translation>
 <translation id="2947281105969315778">Til að deila eða tengjast flipahópum verður þú að geta skráð þig inn á Chrome</translation>
 <translation id="2947605845283690091">Vefskoðun ætti að vera hraðvirk. Gefðu þér tíma til að <ph name="BEGIN_LINK" />athuga með viðbæturnar þínar<ph name="END_LINK" /> núna.</translation>
+<translation id="2948287943780377675">{FILE_COUNT,plural, =1{Slepptu skrá hér}one{Slepptu skrám hér}other{Slepptu skrám hér}}</translation>
 <translation id="2948300991547862301">Fara á <ph name="PAGE_TITLE" /></translation>
 <translation id="29488703364906173">Fljótvirkur, einfaldur og öruggur vafri fyrir nútíma vefnotkun.</translation>
 <translation id="2950666755714083615">Skrá mig</translation>
@@ -5271,6 +5273,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4606551464649945562">Ekki leyfa vefsvæðum að búa til þrívíddarkort af umhverfinu eða rekja staðsetningu myndavélarinnar</translation>
 <translation id="4606933160360542263">Sérsniðin lyklasamsetning: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Viltu eyða flipahópi?}one{Viltu eyða flipahópum?}other{Viltu eyða flipahópum?}}</translation>
+<translation id="4607763915939540711">{FILE_LIMIT,plural, =1{Hladdu upp einni skrá til að senda með spurningunni þinni}one{Hladdu upp allt að # skrá til að senda með spurningunni þinni}other{Hladdu upp allt að # skrám til að senda með spurningunni þinni}}</translation>
 <translation id="4608500690299898628">&amp;Finna...</translation>
 <translation id="4609164937357979319">Val á reikningi</translation>
 <translation id="4610493438923139095">Ótraust</translation>

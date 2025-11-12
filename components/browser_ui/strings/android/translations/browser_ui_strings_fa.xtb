@@ -243,6 +243,7 @@
 <translation id="3611658447322220736">سایت‌هایی که اخیراً بسته شده‌اند می‌توانند ارسال و دریافت داده را تکمیل کنند</translation>
 <translation id="3619294456800709762">سایت‌ها می‌توانند به‌طور خودکار به حالت تصویر در تصویر بروند</translation>
 <translation id="3628308229821498208">جستجوهای پیشنهادی</translation>
+<translation id="363748948745453283">درحال استفاده از مکان تقریبی</translation>
 <translation id="3641456520301071208">اجازه داشتن سایت‌ها برای خواستن مکان شما</translation>
 <translation id="3658847490588580244">برگ زیرین مرورگر پیش‌فرض</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{‫<ph name="RWS_MEMBERS_COUNT" /> سایت در گروه سایت‌های <ph name="RWS_OWNER" /> قرار دارد که می‌توانند فعالیت شما را در گروه ببینند}one{‫<ph name="RWS_MEMBERS_COUNT" /> سایت در گروه سایت‌های <ph name="RWS_OWNER" /> قرار دارد که می‌توانند فعالیت شما را در گروه ببینند}other{‫<ph name="RWS_MEMBERS_COUNT" /> سایت در گروه سایت‌های <ph name="RWS_OWNER" /> قرار دارد که می‌توانند فعالیت شما را در گروه ببینند}}</translation>

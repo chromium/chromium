@@ -613,6 +613,7 @@
 <translation id="1414648216875402825">آپ <ph name="PRODUCT_NAME" /> کے ایک ناپائیدار ورژن میں اپ ڈیٹ کر رہے ہیں جس میں ایسی خصوصیات شامل ہیں جو جاری ہیں۔ کریشز اور غیر متوقع بگز پیش آئیں گے۔ براہ کرم احتیاط سے آگے بڑھیں۔</translation>
 <translation id="1415708812149920388">کلپ بورڈ پڑھنے کی رسائی مسترد کر دی گئی</translation>
 <translation id="1415990189994829608">‏اس قسم کے سیشن میں <ph name="EXTENSION_NAME" /> (ایکسٹینشن ‎ID "<ph name="EXTENSION_ID" />‎") کی اجازت نہیں ہے۔</translation>
+<translation id="141720836055413739">اپ لوڈ نہیں کر سکتے۔  فائل کا مختلف فارمیٹ آزمائیں۔</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{ایپ ہٹائیں}other{ایپس ہٹائیں}}</translation>
 <translation id="1417497355604638350">ڈائیگناسٹک اور استعمال کا ڈیٹا بھیجیں</translation>
 <translation id="1418552618736477642">اطلاعات اور ایپس</translation>
@@ -2870,6 +2871,7 @@
 <translation id="2946640296642327832">بلوٹوتھ فعال کریں</translation>
 <translation id="2947281105969315778">‏ٹیب گروپس کا اشتراک کرنے یا اس میں شامل ہونے کے لیے آپ کو Chrome میں سائن ان کرنا ضروری ہے</translation>
 <translation id="2947605845283690091">ویب براؤزنگ تیز ہونی چاہیے۔ ابھی <ph name="BEGIN_LINK" />اپنی ایکسٹینشنز کو چیک کرنے<ph name="END_LINK" /> کے لیے وقت نکالیں۔</translation>
+<translation id="2948287943780377675">{FILE_COUNT,plural, =1{فائل یہاں ڈراپ کریں}other{فائلوں کو یہاں ڈراپ کریں}}</translation>
 <translation id="2948300991547862301"><ph name="PAGE_TITLE" /> پر جائیں</translation>
 <translation id="29488703364906173">جدید ویب کیلئے بنایا گیا ایک تیز، آسان اور محفوظ ویب براؤزر۔</translation>
 <translation id="2950666755714083615">مجھے سائن اپ کریں</translation>
@@ -5257,6 +5259,7 @@
 <translation id="4606551464649945562">‏سائٹس کو اپنے اطراف کا 3D نقشہ تخلیق یا کمرے کی پوزیشن ٹریک کرنے کی اجازت نہ دیں</translation>
 <translation id="4606933160360542263">حسب ضرورت کلید کا مجموعہ: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{ٹیب گروپ کو حذف کریں؟}other{ٹیب گروپس کو حذف کریں؟}}</translation>
+<translation id="4607763915939540711">{FILE_LIMIT,plural, =1{اپنے سوال کے ساتھ استعمال کرنے کے لیے 1 فائل اپ لوڈ کریں}other{اپنے سوال کے ساتھ استعمال کرنے کے لیے # فائلز تک اپ لوڈ کریں}}</translation>
 <translation id="4608500690299898628">&amp;تلاش کریں…</translation>
 <translation id="4609164937357979319">اکاؤنٹ کا انتخاب</translation>
 <translation id="4610493438923139095">غیر ٹرسٹ شدہ</translation>
