@@ -12,6 +12,7 @@
 #import "base/time/time.h"
 #import "components/omnibox/browser/omnibox_popup_selection.h"
 #import "ios/chrome/browser/omnibox/model/suggestions/autocomplete_result_wrapper_delegate.h"
+#import "ios/chrome/browser/omnibox/public/omnibox_presentation_context.h"
 #import "ui/base/window_open_disposition.h"
 
 @protocol AutocompleteSuggestion;
@@ -64,6 +65,8 @@ struct OmniboxTextModel;
 
 - (instancetype)initWithOmniboxClient:(OmniboxClient*)omniboxClient
                      omniboxTextModel:(OmniboxTextModel*)omniboxTextModel
+                  presentationContext:
+                      (OmniboxPresentationContext)presentationContext
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

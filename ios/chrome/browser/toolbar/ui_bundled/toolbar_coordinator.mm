@@ -701,8 +701,12 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
   [self.primaryToolbarCoordinator setLocationBarHeight:height];
   [self.secondaryToolbarCoordinator setLocationBarHeight:height];
 
-  [self.toolbarHeightDelegate toolbarsHeightChanged];
-  [self.toolbarHeightDelegate layoutToolbarHeightChangeWithAnimation:animated];
+  BOOL layoutChange = [self inEditState] || focusStateDidChange;
+  if (layoutChange) {
+    [self.toolbarHeightDelegate toolbarsHeightChanged];
+    [self.toolbarHeightDelegate
+        layoutToolbarHeightChangeWithAnimation:animated];
+  }
 }
 
 #pragma mark - ToolbarCommands

@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/omnibox/ui/omnibox_focus_delegate.h"
 #import "ios/chrome/browser/omnibox/ui/omnibox_text_input.h"
 #import "ios/chrome/browser/omnibox/ui/omnibox_text_input_delegate.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/pasteboard_util.h"
 #import "ios/chrome/common/NSString+Chromium.h"
 #import "net/base/apple/url_conversions.h"
@@ -144,7 +145,15 @@ const char kOmniboxFocusResultedInNavigation[] =
     _omniboxTextModel->KillFocus();
   }
 
-  [self.textInput exitPreEditState];
+  // Skip exit pre edit here to avoid resizing the multiline omnibox on exit.
+  // Exiting pre edit also shows the selections handle when animating the
+  // defocus (crbug.com/458055336).
+  BOOL skipExitPreEdit =
+      IsMultilineBrowserOmniboxEnabled() &&
+      _presentationContext == OmniboxPresentationContext::kLocationBar;
+  if (!skipExitPreEdit) {
+    [self.textInput exitPreEditState];
+  }
 
   // The controller looks at the current pre-edit state, so the call to
   // OnKillFocus() must come after exiting pre-edit.
