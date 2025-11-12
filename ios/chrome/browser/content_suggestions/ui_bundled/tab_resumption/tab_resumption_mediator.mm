@@ -958,6 +958,13 @@ class TabResumptionMediatorProxy {
   if (commerce::kShopCardVariation.Get() != commerce::kShopCardArm6) {
     return;
   }
+  __weak TabResumptionMediator* weakSelf = self;
+  web::GetUIThreadTaskRunner({})->PostTask(FROM_HERE, base::BindOnce(^{
+                                             [weakSelf fetchPriceDrop:item];
+                                           }));
+}
+
+- (void)fetchPriceDrop:(TabResumptionItem*)item {
   __weak __typeof(self) weakSelf = self;
   TabResumptionMediatorProxy::CanApplyOptimizationOnDemand(
       _optimizationGuideService, item.tabURL,
