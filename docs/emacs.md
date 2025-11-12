@@ -297,10 +297,6 @@ ad-do-it)
 )
 ```
 
-## ERC for IRC
-
-See [ErcIrc](erc_irc.md).
-
 ## Compilation with M-x compile
 
 It's usually useful to first find the top directory with locate-dominating-file,
