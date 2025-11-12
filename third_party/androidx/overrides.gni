@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/config/android/rules.gni")
-import("common.gni")
 
 template("define_override_androidx_targets") {
   not_needed([
@@ -58,7 +57,7 @@ template("define_override_androidx_targets") {
     ]
     sources = [ "local_modifications/core/java/androidx/core/content/res/TypedArrayUtils.java" ]
 
-    if (clank_accessibility_custom_overrides) {
+    if (enable_chrome_android_internal) {
       sources += [ "local_modifications/core/java/androidx/core/view/accessibility/AccessibilityNodeInfoCompat.java" ]
     }
 

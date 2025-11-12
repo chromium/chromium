@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/config/android/rules.gni")
-import("common.gni")
 
 template("_androidx_prebuilt") {
   target(invoker.target_type, target_name) {
@@ -47,7 +46,7 @@ template("_androidx_prebuilt") {
         "androidx/core/content/res/TypedArrayUtils*",
       ]
 
-      if (clank_accessibility_custom_overrides) {
+      if (enable_chrome_android_internal) {
         jar_excluded_patterns +=
             [ "androidx/core/view/accessibility/AccessibilityNodeInfoCompat*" ]
       }
