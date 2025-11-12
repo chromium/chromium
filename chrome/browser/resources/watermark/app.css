@@ -14,6 +14,10 @@
 :host {
   display: block;
   padding: 24px;
+  box-sizing: border-box;
+  overflow: auto;
+  height: 100vh;
+  width: 100vw;
 }
 
 .controls-card {
