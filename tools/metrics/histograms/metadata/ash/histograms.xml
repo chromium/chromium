@@ -1435,7 +1435,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.BrowserContext.UnexpectedGet{UserType}UserProfile.{Timing}.Location"
-    units="int" expires_after="2026-12-31">
+    enum="ProfileManagerCallersCodeLocation" expires_after="2026-12-31">
   <owner>hidehiko@chromium.org</owner>
   <owner>junis@chromium.org</owner>
   <owner>oshima@chromium.org</owner>

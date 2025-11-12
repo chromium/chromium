@@ -2028,6 +2028,84 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="14" label="Screen Sharing, Microphone, and Camera are in use"/>
 </enum>
 
+<enum name="ProfileManagerCallersCodeLocation">
+  <summary>List of known callers of ProfileManager methods.</summary>
+  <int value="-2110459035"
+      label="CalculateRequiredSpace@chrome/browser/ash/login/screens/drive_pinning_screen.cc"/>
+  <int value="-2092499396"
+      label="GetNightLightTemperaturePercent@chrome/browser/ash/power/ml/adaptive_screen_brightness_manager.cc"/>
+  <int value="-1890949485"
+      label="GetProfile@chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.cc"/>
+  <int value="-1693908690"
+      label="TriggerAccessibilityAlertWithMessage@chrome/browser/ui/ash/accessibility/accessibility_controller_client.cc"/>
+  <int value="-1619333235"
+      label="profile@chrome/browser/ash/usb/cros_usb_detector.cc"/>
+  <int value="-1566119484"
+      label="SetActiveProfile@chrome/browser/ash/accessibility/accessibility_manager.cc"/>
+  <int value="-1555475204"
+      label="ShowImpl@chrome/browser/ash/login/screens/consolidated_consent_screen.cc"/>
+  <int value="-1480802574"
+      label="SetApplicationLocale@chrome/browser/ash/login/screens/welcome_screen.cc"/>
+  <int value="-940486992"
+      label="GetPrimaryUserProfile@chrome/browser/extensions/profile_util.cc"/>
+  <int value="-870974028"
+      label="GetForPrimaryProfile@chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.cc"/>
+  <int value="-731617597"
+      label="ProvideSuggestedContentMetrics@chrome/browser/metrics/chromeos_metrics_provider.cc"/>
+  <int value="-675029606"
+      label="TriggerShowLoginWizardFinish@chrome/browser/ui/ash/login/login_display_host_webui.cc"/>
+  <int value="-626911301"
+      label="CreateKeyboardUI@chrome/browser/ui/ash/keyboard/chrome_keyboard_ui_factory.cc"/>
+  <int value="-536788605"
+      label="OnSessionStateChanged@chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.cc"/>
+  <int value="-209803414"
+      label="MaybeLogTotalUniqueSettingsChanged@chrome/browser/ui/webui/ash/settings/services/metrics/os_settings_metrics_provider.cc"/>
+  <int value="-194737180"
+      label="Report@chrome/browser/net/network_annotation_monitor.cc"/>
+  <int value="-68731622"
+      label="GetAccessibilityExtensionHost@chrome/browser/ash/accessibility/event_handler_common.cc"/>
+  <int value="56661016"
+      label="ShowSystemDialog@chrome/browser/ui/webui/ash/system_web_dialog/system_web_dialog_delegate.cc"/>
+  <int value="481917096"
+      label="GetQuickStartBootstrapController@chrome/browser/ui/ash/login/login_display_host_common.cc"/>
+  <int value="722232762"
+      label="CheckIfSanitizeCompleted@chrome/browser/ui/ash/main_extra_parts/chrome_browser_main_extra_parts_ash.cc"/>
+  <int value="732366350"
+      label="FinalizeSavedFile@chrome/browser/ui/ash/capture_mode/chrome_capture_mode_delegate.cc"/>
+  <int value="750794365"
+      label="GetActiveDriveIntegrationService@chrome/browser/ui/ash/projector/projector_drivefs_provider.cc"/>
+  <int value="780067749"
+      label="GetPinningManager@chrome/browser/ash/login/screens/drive_pinning_screen.cc"/>
+  <int value="858037437"
+      label="OnLoginOrLockScreenVisible@chrome/browser/ash/accessibility/magnification_manager.cc"/>
+  <int value="874944526"
+      label="HandleMediaAction@chrome/browser/ui/ash/media_client/media_client_impl.cc"/>
+  <int value="1242947673"
+      label="ReportUsageOptIn@chrome/browser/ash/login/screens/consolidated_consent_screen.cc"/>
+  <int value="1243596510"
+      label="IsAudioCaptureDisabledByPolicy@chrome/browser/ui/ash/capture_mode/chrome_capture_mode_delegate.cc"/>
+  <int value="1256621409"
+      label="MaybeEnablePreConsentMetrics@chrome/browser/ash/login/wizard_controller.cc"/>
+  <int value="1380993788"
+      label="TriggerAccessibilityAlert@chrome/browser/ui/ash/accessibility/accessibility_controller_client.cc"/>
+  <int value="1429178683"
+      label="GetPolicyAsJSON@chrome/browser/ash/policy/uploading/system_log_uploader.cc"/>
+  <int value="1599361431"
+      label="ShowConsolidatedConsentScreen@chrome/browser/ash/login/wizard_controller.cc"/>
+  <int value="1678260800"
+      label="IsOobeDrivePinningAvailable@chrome/browser/ash/drive/file_system_util.cc"/>
+  <int value="1748098054"
+      label="GetActiveUserProfile@chrome/browser/extensions/profile_util.cc"/>
+  <int value="1795207622"
+      label="IsExtensionCommandRegistered@chrome/browser/ash/events/event_rewriter_delegate_impl.cc"/>
+  <int value="1818454360"
+      label="GetNetworkContext@chrome/browser/ash/dbus/proxy_resolution_service_provider.cc"/>
+  <int value="1962236236"
+      label="UpdateAndGetSmartDimDecision@chrome/browser/ash/power/ml/user_activity_manager.cc"/>
+  <int value="2000962309"
+      label="Uses24HourFormat@chrome/browser/ui/ash/capture_mode/chrome_capture_mode_delegate.cc"/>
+</enum>
+
 <enum name="ProjectorCreationFlow">
   <int value="0" label="Started new screencast session"/>
   <int value="1" label="Started recording new screencast"/>
