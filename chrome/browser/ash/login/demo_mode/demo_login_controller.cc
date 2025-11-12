@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/login/demo_mode/demo_login_controller.h"
 
 #include <optional>
+#include <string>
 #include <utility>
 
 #include "ash/constants/ash_features.h"
@@ -248,7 +249,7 @@ std::unique_ptr<network::SimpleURLLoader> CreateDemoAccountURLLoader(
 void SendDemoAccountRequest(
     const base::Value::Dict& post_data,
     network::SimpleURLLoader* url_loader,
-    base::OnceCallback<void(std::unique_ptr<std::string> response_body)>
+    base::OnceCallback<void(std::optional<std::string> response_body)>
         callback) {
   url_loader->SetAllowHttpErrorResults(true);
   url_loader->SetRetryOptions(
@@ -286,7 +287,7 @@ void LogServerResponseError(const std::string& error_response, bool is_setup) {
 
 DemoLoginController::ResultCode GetDemoAccountRequestResult(
     network::SimpleURLLoader* url_loader,
-    const std::string& response_body) {
+    std::optional<std::string> response_body) {
   if (url_loader->NetError() != net::OK) {
     // TODO(crbug.com/364214790):  Handle any errors (maybe earlier for net
     // connection error) and fallback to MGS.
@@ -299,7 +300,7 @@ DemoLoginController::ResultCode GetDemoAccountRequestResult(
     response_code = url_loader->ResponseInfo()->headers->response_code();
   }
 
-  if (response_body.empty()) {
+  if (!response_body || response_body->empty()) {
     return DemoLoginController::ResultCode::kEmptyResponse;
   }
 
@@ -482,13 +483,13 @@ void DemoLoginController::SendSetupDemoAccountRequest() {
 
 void DemoLoginController::OnSetupDemoAccountComplete(
     const std::string& sign_in_scoped_device_id,
-    std::unique_ptr<std::string> response_body) {
-  auto result = GetDemoAccountRequestResult(url_loader_.get(), *response_body);
+    std::optional<std::string> response_body) {
+  auto result = GetDemoAccountRequestResult(url_loader_.get(), response_body);
   url_loader_.reset();
 
   if (result == ResultCode::kSuccess) {
-    HandleSetupDemoAcountResponse(sign_in_scoped_device_id,
-                                  std::move(response_body));
+    CHECK(response_body);
+    HandleSetupDemoAcountResponse(sign_in_scoped_device_id, *response_body);
   } else {
     OnSetupDemoAccountError(result);
     // `response_body` could be nullptr when network is not connected.
@@ -500,9 +501,9 @@ void DemoLoginController::OnSetupDemoAccountComplete(
 
 void DemoLoginController::HandleSetupDemoAcountResponse(
     const std::string& sign_in_scoped_device_id,
-    const std::unique_ptr<std::string> response_body) {
+    const std::string& response_body) {
   std::optional<base::DictValue> response_json(base::JSONReader::ReadDict(
-      *response_body, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
+      response_body, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
   if (!response_json) {
     OnSetupDemoAccountError(ResultCode::kResponseParsingError);
     return;
@@ -663,8 +664,8 @@ void DemoLoginController::MaybeCleanupPreviousDemoAccount() {
 }
 
 void DemoLoginController::OnCleanUpDemoAccountComplete(
-    std::unique_ptr<std::string> response_body) {
-  auto result = GetDemoAccountRequestResult(url_loader_.get(), *response_body);
+    std::optional<std::string> response_body) {
+  auto result = GetDemoAccountRequestResult(url_loader_.get(), response_body);
 
   if (result == ResultCode::kSuccess) {
     // Report success to the metrics.

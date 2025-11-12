@@ -82,16 +82,15 @@ class DemoLoginController
   void SendSetupDemoAccountRequest();
   // Called on setup demo account complete.
   void OnSetupDemoAccountComplete(const std::string& device_id,
-                                  std::unique_ptr<std::string> response_body);
+                                  std::optional<std::string> response_body);
   // Parses the setup demo account response body and maybe login demo account.
-  void HandleSetupDemoAcountResponse(
-      const std::string& device_id,
-      const std::unique_ptr<std::string> response_body);
+  void HandleSetupDemoAcountResponse(const std::string& device_id,
+                                     const std::string& response_body);
 
   void OnSetupDemoAccountError(const ResultCode result_code);
 
   // Called on clean up demo account complete.
-  void OnCleanUpDemoAccountComplete(std::unique_ptr<std::string> response_body);
+  void OnCleanUpDemoAccountComplete(std::optional<std::string> response_body);
 
   void OnCleanUpDemoAccountError(const ResultCode result_code);
 
