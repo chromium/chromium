@@ -230,8 +230,8 @@ void RecordStorageChangedSlow(HashtablezInfo* info, size_t size,
   }
 }
 
-void RecordInsertSlow(HashtablezInfo* info, size_t hash,
-                      size_t distance_from_desired) {
+void RecordInsertMissSlow(HashtablezInfo* info, size_t hash,
+                          size_t distance_from_desired) {
   // SwissTables probe in groups of 16, so scale this to count items probes and
   // not offset from desired.
   size_t probe_length = distance_from_desired;

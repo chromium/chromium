@@ -1000,7 +1000,7 @@ EXPORTS
     ?Rebuild@CordRepBtree@cord_internal@absl@@SAPAV123@PAV123@@Z
     ?RecordClearedReservationSlow@container_internal@absl@@YAXPAUHashtablezInfo@12@@Z
     ?RecordEraseSlow@container_internal@absl@@YAXPAUHashtablezInfo@12@@Z
-    ?RecordInsertSlow@container_internal@absl@@YAXPAUHashtablezInfo@12@II@Z
+    ?RecordInsertMissSlow@container_internal@absl@@YAXPAUHashtablezInfo@12@II@Z
     ?RecordRehashSlow@container_internal@absl@@YAXPAUHashtablezInfo@12@I@Z
     ?RecordReservationSlow@container_internal@absl@@YAXPAUHashtablezInfo@12@I@Z
     ?RecordStorageChangedSlow@container_internal@absl@@YAXPAUHashtablezInfo@12@II@Z

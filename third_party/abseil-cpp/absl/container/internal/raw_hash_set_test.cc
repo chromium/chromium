@@ -302,7 +302,7 @@ TEST(Util, CapacityToGrowthSmallValues) {
   }
   EXPECT_EQ(CapacityToGrowth(15), 14);
   EXPECT_EQ(CapacityToGrowth(31), 28);
-  EXPECT_EQ(CapacityToGrowth(63), 55);
+  EXPECT_EQ(CapacityToGrowth(63), 56);
 }
 
 TEST(Util, GrowthAndCapacity) {

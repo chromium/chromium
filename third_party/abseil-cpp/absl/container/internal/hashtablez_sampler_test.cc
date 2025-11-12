@@ -166,7 +166,7 @@ TEST(HashtablezInfoTest, RecordStorageChanged) {
   EXPECT_EQ(info.capacity.load(), 20);
 }
 
-TEST(HashtablezInfoTest, RecordInsert) {
+TEST(HashtablezInfoTest, RecordInsertMiss) {
   HashtablezInfo info;
   absl::MutexLock l(info.init_mu);
   const int64_t test_stride = 25;
@@ -179,17 +179,17 @@ TEST(HashtablezInfoTest, RecordInsert) {
                           /*value_size=*/test_value_size,
                           /*soo_capacity_value=*/0);
   EXPECT_EQ(info.max_probe_length.load(), 0);
-  RecordInsertSlow(&info, 0x0000FF00, 6 * kProbeLength);
+  RecordInsertMissSlow(&info, 0x0000FF00, 6 * kProbeLength);
   EXPECT_EQ(info.max_probe_length.load(), 6);
   EXPECT_EQ(info.hashes_bitwise_and.load(), 0x0000FF00);
   EXPECT_EQ(info.hashes_bitwise_or.load(), 0x0000FF00);
   EXPECT_EQ(info.hashes_bitwise_xor.load(), 0x0000FF00);
-  RecordInsertSlow(&info, 0x000FF000, 4 * kProbeLength);
+  RecordInsertMissSlow(&info, 0x000FF000, 4 * kProbeLength);
   EXPECT_EQ(info.max_probe_length.load(), 6);
   EXPECT_EQ(info.hashes_bitwise_and.load(), 0x0000F000);
   EXPECT_EQ(info.hashes_bitwise_or.load(), 0x000FFF00);
   EXPECT_EQ(info.hashes_bitwise_xor.load(), 0x000F0F00);
-  RecordInsertSlow(&info, 0x00FF0000, 12 * kProbeLength);
+  RecordInsertMissSlow(&info, 0x00FF0000, 12 * kProbeLength);
   EXPECT_EQ(info.max_probe_length.load(), 12);
   EXPECT_EQ(info.hashes_bitwise_and.load(), 0x00000000);
   EXPECT_EQ(info.hashes_bitwise_or.load(), 0x00FFFF00);
@@ -210,7 +210,7 @@ TEST(HashtablezInfoTest, RecordErase) {
                           /*soo_capacity_value=*/1);
   EXPECT_EQ(info.num_erases.load(), 0);
   EXPECT_EQ(info.size.load(), 0);
-  RecordInsertSlow(&info, 0x0000FF00, 6 * kProbeLength);
+  RecordInsertMissSlow(&info, 0x0000FF00, 6 * kProbeLength);
   EXPECT_EQ(info.size.load(), 1);
   RecordEraseSlow(&info);
   EXPECT_EQ(info.size.load(), 0);
@@ -233,10 +233,10 @@ TEST(HashtablezInfoTest, RecordRehash) {
                           /*value_size=*/test_value_size,
 
                           /*soo_capacity_value=*/0);
-  RecordInsertSlow(&info, 0x1, 0);
-  RecordInsertSlow(&info, 0x2, kProbeLength);
-  RecordInsertSlow(&info, 0x4, kProbeLength);
-  RecordInsertSlow(&info, 0x8, 2 * kProbeLength);
+  RecordInsertMissSlow(&info, 0x1, 0);
+  RecordInsertMissSlow(&info, 0x2, kProbeLength);
+  RecordInsertMissSlow(&info, 0x4, kProbeLength);
+  RecordInsertMissSlow(&info, 0x8, 2 * kProbeLength);
   EXPECT_EQ(info.size.load(), 4);
   EXPECT_EQ(info.total_probe_length.load(), 4);
 

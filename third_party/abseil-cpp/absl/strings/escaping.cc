@@ -78,30 +78,31 @@ inline bool IsSurrogate(char32_t c, absl::string_view src,
 //
 //    Unescapes C escape sequences and is the reverse of CEscape().
 //
-//    If `src` is valid, stores the unescaped string `dst`, and returns
-//    true. Otherwise returns false and optionally stores the error
-//    description in `error`. Set `error` to nullptr to disable error
-//    reporting.
+//    If `src` is valid, stores the unescaped string in `dst` and the length of
+//    unescaped string in `dst_size`, and returns true. Otherwise returns false
+//    and optionally stores the error description in `error`. Set `error` to
+//    nullptr to disable error reporting.
 //
-//    `src` and `dst` may use the same underlying buffer.
+//    `src` and `dst` may use the same underlying buffer (but keep in mind
+//    that if this returns an error, it will leave both `src` and `dst` in
+//    an unspecified state because they are using the same underlying buffer.)
+//    `dst` must have at least as much space as `src`.
 // ----------------------------------------------------------------------
 
 bool CUnescapeInternal(absl::string_view src, bool leave_nulls_escaped,
-                       std::string* absl_nonnull dst,
+                       char* absl_nonnull dst, size_t* absl_nonnull dst_size,
                        std::string* absl_nullable error) {
-  strings_internal::STLStringResizeUninitialized(dst, src.size());
-
   absl::string_view::size_type p = 0;  // Current src position.
-  std::string::size_type d = 0;        // Current dst position.
+  size_t d = 0;                        // Current dst position.
 
   // When unescaping in-place, skip any prefix that does not have escaping.
-  if (src.data() == dst->data()) {
+  if (src.data() == dst) {
     while (p < src.size() && src[p] != '\\') p++, d++;
   }
 
   while (p < src.size()) {
     if (src[p] != '\\') {
-      (*dst)[d++] = src[p++];
+      dst[d++] = src[p++];
     } else {
       if (++p >= src.size()) {  // skip past the '\\'
         if (error != nullptr) {
@@ -110,17 +111,19 @@ bool CUnescapeInternal(absl::string_view src, bool leave_nulls_escaped,
         return false;
       }
       switch (src[p]) {
-        case 'a':  (*dst)[d++] = '\a';  break;
-        case 'b':  (*dst)[d++] = '\b';  break;
-        case 'f':  (*dst)[d++] = '\f';  break;
-        case 'n':  (*dst)[d++] = '\n';  break;
-        case 'r':  (*dst)[d++] = '\r';  break;
-        case 't':  (*dst)[d++] = '\t';  break;
-        case 'v':  (*dst)[d++] = '\v';  break;
-        case '\\': (*dst)[d++] = '\\';  break;
-        case '?':  (*dst)[d++] = '\?';  break;
-        case '\'': (*dst)[d++] = '\'';  break;
-        case '"':  (*dst)[d++] = '\"';  break;
+          // clang-format off
+        case 'a':  dst[d++] = '\a';  break;
+        case 'b':  dst[d++] = '\b';  break;
+        case 'f':  dst[d++] = '\f';  break;
+        case 'n':  dst[d++] = '\n';  break;
+        case 'r':  dst[d++] = '\r';  break;
+        case 't':  dst[d++] = '\t';  break;
+        case 'v':  dst[d++] = '\v';  break;
+        case '\\': dst[d++] = '\\';  break;
+        case '?':  dst[d++] = '\?';  break;
+        case '\'': dst[d++] = '\'';  break;
+        case '"':  dst[d++] = '\"';  break;
+        // clang-format on
         case '0':
         case '1':
         case '2':
@@ -147,13 +150,13 @@ bool CUnescapeInternal(absl::string_view src, bool leave_nulls_escaped,
           }
           if ((ch == 0) && leave_nulls_escaped) {
             // Copy the escape sequence for the null character
-            (*dst)[d++] = '\\';
+            dst[d++] = '\\';
             while (octal_start <= p) {
-              (*dst)[d++] = src[octal_start++];
+              dst[d++] = src[octal_start++];
             }
             break;
           }
-          (*dst)[d++] = static_cast<char>(ch);
+          dst[d++] = static_cast<char>(ch);
           break;
         }
         case 'x':
@@ -187,13 +190,13 @@ bool CUnescapeInternal(absl::string_view src, bool leave_nulls_escaped,
           }
           if ((ch == 0) && leave_nulls_escaped) {
             // Copy the escape sequence for the null character
-            (*dst)[d++] = '\\';
+            dst[d++] = '\\';
             while (hex_start <= p) {
-              (*dst)[d++] = src[hex_start++];
+              dst[d++] = src[hex_start++];
             }
             break;
           }
-          (*dst)[d++] = static_cast<char>(ch);
+          dst[d++] = static_cast<char>(ch);
           break;
         }
         case 'u': {
@@ -220,16 +223,16 @@ bool CUnescapeInternal(absl::string_view src, bool leave_nulls_escaped,
           }
           if ((rune == 0) && leave_nulls_escaped) {
             // Copy the escape sequence for the null character
-            (*dst)[d++] = '\\';
+            dst[d++] = '\\';
             while (hex_start <= p) {
-              (*dst)[d++] = src[hex_start++];
+              dst[d++] = src[hex_start++];
             }
             break;
           }
           if (IsSurrogate(rune, src.substr(hex_start, 5), error)) {
             return false;
           }
-          d += strings_internal::EncodeUTF8Char(dst->data() + d, rune);
+          d += strings_internal::EncodeUTF8Char(dst + d, rune);
           break;
         }
         case 'U': {
@@ -269,17 +272,17 @@ bool CUnescapeInternal(absl::string_view src, bool leave_nulls_escaped,
           }
           if ((rune == 0) && leave_nulls_escaped) {
             // Copy the escape sequence for the null character
-            (*dst)[d++] = '\\';
+            dst[d++] = '\\';
             // U00000000
             while (hex_start <= p) {
-              (*dst)[d++] = src[hex_start++];
+              dst[d++] = src[hex_start++];
             }
             break;
           }
           if (IsSurrogate(rune, src.substr(hex_start, 9), error)) {
             return false;
           }
-          d += strings_internal::EncodeUTF8Char(dst->data() + d, rune);
+          d += strings_internal::EncodeUTF8Char(dst + d, rune);
           break;
         }
         default: {
@@ -293,7 +296,7 @@ bool CUnescapeInternal(absl::string_view src, bool leave_nulls_escaped,
     }
   }
 
-  dst->erase(d);
+  *dst_size = d;
   return true;
 }
 
@@ -890,9 +893,35 @@ void BytesToHexStringInternal(const unsigned char* absl_nullable src,
 //
 // See CUnescapeInternal() for implementation details.
 // ----------------------------------------------------------------------
+
 bool CUnescape(absl::string_view source, std::string* absl_nonnull dest,
                std::string* absl_nullable error) {
-  return CUnescapeInternal(source, kUnescapeNulls, dest, error);
+  bool success;
+
+  // `CUnescape()` allows for in-place unescaping, which means `source` may
+  // alias `*dest`.  However, absl::StringResizeAndOverwrite() invalidates all
+  // iterators, pointers, and references into the string, regardless whether
+  // reallocation occurs. Therefore we need to avoid calling
+  // absl::StringResizeAndOverwrite() when `source.data() ==
+  // dest->data()`. Comparing the sizes is sufficient to cover this case.
+  if (dest->size() >= source.size()) {
+    size_t dest_size = 0;
+    success = CUnescapeInternal(source, kUnescapeNulls, dest->data(),
+                                &dest_size, error);
+    ABSL_ASSERT(dest_size <= dest->size());
+    dest->erase(dest_size);
+  } else {
+    StringResizeAndOverwrite(
+        *dest, source.size(),
+        [source, error, &success](char* buf, size_t buf_size) {
+          size_t dest_size = 0;
+          success =
+              CUnescapeInternal(source, kUnescapeNulls, buf, &dest_size, error);
+          ABSL_ASSERT(dest_size <= buf_size);
+          return dest_size;
+        });
+  }
+  return success;
 }
 
 std::string CEscape(absl::string_view src) {
