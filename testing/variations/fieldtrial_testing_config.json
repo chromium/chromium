@@ -28677,25 +28677,6 @@
             ]
         }
     ],
-    "WinPlatformLocationProvider": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "LocationProviderManagerMode": "PlatformOnly"
-                    },
-                    "enable_features": [
-                        "LocationProviderManager",
-                        "WinSystemLocationPermission"
-                    ]
-                }
-            ]
-        }
-    ],
     "WinSboxCsrssLockdown": [
         {
             "platforms": [
