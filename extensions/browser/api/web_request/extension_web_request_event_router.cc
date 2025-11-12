@@ -104,6 +104,10 @@ constexpr char kRequestFilterTypesKey[] = "types";
 constexpr char kRequestFilterTabIdKey[] = "tabId";
 constexpr char kRequestFilterWindowIdKey[] = "windowId";
 
+const char kListenerSubEventNameKey[] = "sub_event_name";
+const char kListenerFilterKey[] = "filter";
+const char kListenerExtraInfoSpecKey[] = "extra_info_spec";
+
 // List of all the webRequest events. Note: this doesn't include
 // "onActionIgnored" which is not related to a request's lifecycle and is
 // handled as a normal event (as opposed to a WebRequestEvent at the bindings
@@ -551,6 +555,70 @@ std::vector<std::string> WebRequestEventRouter::GetEventNames() {
 WebRequestEventRouter::EventListener::EventListener(ID id)
     : id(std::move(id)) {}
 WebRequestEventRouter::EventListener::~EventListener() = default;
+
+// static
+std::unique_ptr<WebRequestEventRouter::EventListener>
+WebRequestEventRouter::EventListener::InitFromLazyValue(
+    const base::Value::Dict& value,
+    const ExtensionId& extension_id,
+    content::BrowserContext* context,
+    std::string* error) {
+  const std::string* sub_event_name =
+      value.FindString(kListenerSubEventNameKey);
+  const base::Value::Dict* filter_dict = value.FindDict(kListenerFilterKey);
+  std::optional<int> extra_info = value.FindInt(kListenerExtraInfoSpecKey);
+
+  if (!sub_event_name || !filter_dict || !extra_info) {
+    *error = "Missing required fields in serialized listener.";
+    return nullptr;
+  }
+
+  RequestFilter request_filter;
+  if (!request_filter.InitFromValue(*filter_dict, error)) {
+    if (error->empty()) {
+      *error = "Invalid filter format.";
+    }
+    return nullptr;
+  }
+
+  const Extension* extension =
+      ExtensionRegistry::Get(context)->enabled_extensions().GetByID(
+          extension_id);
+  if (!extension) {
+    *error = "Extension not enabled for serialized listener.";
+    return nullptr;
+  }
+
+  std::string event_name = EventRouter::GetBaseEventName(*sub_event_name);
+  if (!IsWebRequestEvent(event_name)) {
+    *error = "Invalid event name for serialized listener.";
+    return nullptr;
+  }
+
+  // Initialize as an inactive lazy listener.
+  EventListener::ID listener_id(context, extension_id, *sub_event_name,
+                                /*render_process_id=*/-1,
+                                /*web_view_instance_id=*/0,
+                                /*worker_thread_id=*/kMainThreadId,
+                                /*service_worker_version_id=*/
+                                blink::mojom::kInvalidServiceWorkerVersionId);
+
+  std::unique_ptr<EventListener> listener =
+      std::make_unique<EventListener>(std::move(listener_id));
+  listener->extension_name = extension->name();
+  listener->histogram_value = GetEventHistogramValue(event_name);
+  listener->filter = std::move(request_filter);
+  listener->extra_info_spec = *extra_info;
+  return listener;
+}
+
+base::Value::Dict WebRequestEventRouter::EventListener::ToLazyValue() const {
+  base::Value::Dict dict;
+  dict.Set(kListenerSubEventNameKey, id.sub_event_name);
+  dict.Set(kListenerExtraInfoSpecKey, extra_info_spec);
+  dict.Set(kListenerFilterKey, filter.ToValue());
+  return dict;
+}
 
 // Contains info about requests that are blocked waiting for a response from
 // an extension.
