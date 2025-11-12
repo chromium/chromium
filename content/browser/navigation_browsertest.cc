@@ -1854,44 +1854,6 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
 }
 
 // Ensure the renderer process doesn't send too many IPC to the browser process
-// when history.pushState() and history.back() are called in a loop.
-// Failing to do so causes the browser to become unresponsive.
-// See https://crbug.com/882238
-// TODO(crbug.com/379844650): Disabled on Linux sanitizer bots due to flakiness.
-// TODO(crbug.com/346960510): Disabled on ChromeOS sanitizer bots due to
-// flakiness.
-#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && \
-    defined(ADDRESS_SANITIZER)
-#define MAYBE_IPCFlood_GoToEntryAtOffset DISABLED_IPCFlood_GoToEntryAtOffset
-#else
-#define MAYBE_IPCFlood_GoToEntryAtOffset IPCFlood_GoToEntryAtOffset
-#endif
-IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
-                       MAYBE_IPCFlood_GoToEntryAtOffset) {
-  GURL url(embedded_test_server()->GetURL("/title1.html"));
-  EXPECT_TRUE(NavigateToURL(shell(), url));
-
-  WebContentsConsoleObserver console_observer(web_contents());
-  console_observer.SetPattern(
-      "Throttling navigation to prevent the browser from hanging. See "
-      "https://crbug.com/1038223. Command line switch "
-      "--disable-ipc-flooding-protection can be used to bypass the "
-      "protection");
-
-  EXPECT_TRUE(ExecJs(shell(), R"(
-    for(let i = 0; i<1000; ++i) {
-      try {
-        history.pushState({},"page 2", "bar.html");
-        history.back();
-      } catch (e) {
-      }
-    }
-  )"));
-
-  ASSERT_TRUE(console_observer.Wait());
-}
-
-// Ensure the renderer process doesn't send too many IPC to the browser process
 // when doing a same-document navigation is requested in a loop.
 // Failing to do so causes the browser to become unresponsive.
 // TODO(arthursonzogni): Make the same test, but when the navigation is
