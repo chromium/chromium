@@ -833,7 +833,6 @@ void EventReportValidator::ValidateReport(const base::Value::Dict* report) {
   ValidateFederatedOrigin(event);
   ValidateIdentities(event);
   ValidateMimeType(event);
-  ValidateDataControlsAttributes(event);
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   ValidateDataMaskingAttributes(event);
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
@@ -963,52 +962,6 @@ void EventReportValidator::ValidateFilenameMappedAttributes(
     }
     if (dlp_verdicts_.count(filename)) {
       ValidateDlpVerdict(value, dlp_verdicts_[filename]);
-    }
-  }
-}
-
-void EventReportValidator::ValidateDataControlsAttributes(
-    const base::Value::Dict* event) {
-  if (data_controls_result_) {
-    ValidateField(event, kKeyEventResult, data_controls_result_);
-
-    ASSERT_FALSE(data_controls_triggered_rules_.empty());
-    const base::Value::List* triggered_rules =
-        event->FindList(kKeyTriggeredRuleInfo);
-    ASSERT_TRUE(triggered_rules);
-    ASSERT_EQ(data_controls_triggered_rules_.size(), triggered_rules->size());
-    size_t i = 0;
-    for (const base::Value& rule : *triggered_rules) {
-      const std::string* name =
-          rule.GetDict().FindString(kKeyTriggeredRuleName);
-      ASSERT_TRUE(name);
-
-      // There should be a rule with the same index as in `triggered_rules`, but
-      // `data_controls_triggered_rules_` might be tracking it internally as a
-      // profile rule or machine rule so we need to check with two different
-      // keys.
-      data_controls::Verdict::TriggeredRule expected_rule;
-      if (data_controls_triggered_rules_.count({i, true})) {
-        expected_rule = data_controls_triggered_rules_[{i, true}];
-      } else if (data_controls_triggered_rules_.count({i, false})) {
-        expected_rule = data_controls_triggered_rules_[{i, false}];
-      } else {
-        NOTREACHED();
-      }
-
-      std::optional<int> id = rule.GetDict().FindInt(kKeyTriggeredRuleId);
-      if (id) {
-        int expected_rule_id = 0;
-        ASSERT_TRUE(
-            base::StringToInt(expected_rule.rule_id, &expected_rule_id));
-        ASSERT_EQ(expected_rule_id, *id);
-      } else {
-        ASSERT_TRUE(expected_rule.rule_id.empty())
-            << " Got rule_id " << expected_rule.rule_id
-            << " instead of nothing.";
-      }
-
-      ++i;
     }
   }
 }

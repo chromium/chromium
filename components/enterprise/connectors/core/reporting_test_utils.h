@@ -14,9 +14,13 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/common/proto/synced/browser_events.pb.h"
-#include "components/enterprise/data_controls/core/browser/verdict.h"
 #include "components/policy/test_support/embedded_policy_test_server.h"
+
+#if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
+#include "components/enterprise/data_controls/core/browser/verdict.h"
+#endif  // BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
 
 class PrefService;
 
@@ -114,6 +118,7 @@ class EventReportValidatorBase {
       int expected_net_error_code,
       const ::chrome::cros::reporting::proto::UrlInfo& expected_referrers);
 
+#if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
   void ExpectDataControlsSensitiveDataEvent(
       const std::string& expected_url,
       const std::string& expected_tab_url,
@@ -126,6 +131,7 @@ class EventReportValidatorBase {
       const std::string& expected_profile_username,
       const std::string& expected_profile_identifier,
       int64_t expected_content_size);
+#endif  // BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
 
   // Closure to run once all expected events are validated.
   void SetDoneClosure(base::RepeatingClosure closure);
@@ -164,6 +170,12 @@ class EventReportValidatorBase {
           expected_identities);
   void ValidateMimeType(const base::Value::Dict* value,
                         const std::set<std::string>* expected_mimetypes);
+
+#if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
+  void ValidateDataControlsTriggerdRules(
+      const base::Value::Dict* value,
+      const data_controls::Verdict::TriggeredRules& expected_triggered_rules);
+#endif  // BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
 
   raw_ptr<policy::MockCloudPolicyClient> client_;
   base::RepeatingClosure done_closure_;

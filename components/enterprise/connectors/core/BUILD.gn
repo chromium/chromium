@@ -136,6 +136,7 @@ source_set("test_support") {
     ":core",
     "//base/test:test_support",
     "//components/enterprise",
+    "//components/enterprise/buildflags",
     "//components/enterprise/common/proto:browser_events_proto",
     "//components/enterprise/common/proto:chrome_reporting_entity",
     "//components/enterprise/common/proto:upload_request_response",
