@@ -4,7 +4,7 @@ desc: |-
 
   It accepts a list of URL patterns and handling type pairs. The URL patterns are checked in order and the first match will configure which handling is used by WebRTC for the domain. When the URL of the current document is not matched against any entry, it uses the configuration set by the policy <ph name="WEB_RTC_IP_HANDLING_POLICY_NAME">WebRtcIPHandling</ph>.
 
-  For detailed information on valid input patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Wildcards, <ph name="WILDCARD_VALUE">*</ph>, are allowed. This policy only matches based on origin, so any path in the URL pattern is ignored.
+  For detailed information on valid input patterns, please see https://chromeenterprise.google/policies/url-patterns/. Wildcards, <ph name="WILDCARD_VALUE">*</ph>, are allowed. This policy only matches based on origin, so any path in the URL pattern is ignored.
 
   Valid handling values:
 

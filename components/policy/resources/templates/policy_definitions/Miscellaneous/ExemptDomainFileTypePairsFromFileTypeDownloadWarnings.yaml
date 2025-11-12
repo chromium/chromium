@@ -9,7 +9,7 @@ desc: |-
 
   If you enable this policy:
 
-  * The URL pattern should be formatted according to https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
+  * The URL pattern should be formatted according to https://chromeenterprise.google/policies/url-patterns/.
 
   * The file type extension entered must be in lower-cased ASCII. The leading separator should not be included when listing the file type extension, so list "jnlp" should be used instead of ".jnlp".
 

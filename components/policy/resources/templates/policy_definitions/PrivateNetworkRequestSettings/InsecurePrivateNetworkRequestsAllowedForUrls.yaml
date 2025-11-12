@@ -8,7 +8,7 @@ desc: |-
 
             For origins not covered by the patterns specified here, the global default value will be used either from the <ph name="INSECURE_PRIVATE_NETWORK_REQUESTS_ALLOWED_POLICY_NAME">InsecurePrivateNetworkRequestsAllowed</ph> policy, if it is set, or the user's personal configuration otherwise.
 
-            For detailed information on valid URL patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
+            For detailed information on valid URL patterns, please see https://chromeenterprise.google/policies/url-patterns/.
 example_value:
 - http://www.example.com:8080
 - '[*.]example.edu'
