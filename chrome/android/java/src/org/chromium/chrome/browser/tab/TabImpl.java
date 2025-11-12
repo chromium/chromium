@@ -715,6 +715,12 @@ class TabImpl implements Tab {
         return this == mCurrentTabSupplier.get();
     }
 
+    @Override
+    public boolean hasParentCollection() {
+        if (mNativeTabAndroid == 0 || mIsDestroyed) return false;
+        return TabImplJni.get().hasParentCollection(mNativeTabAndroid);
+    }
+
     /**
      * The parent tab for the current tab is set and the DelegateFactory is updated if it is not set
      * already. This happens only if the tab has been detached and the parent has not been set yet,
@@ -2898,6 +2904,8 @@ class TabImpl implements Tab {
         void init(TabImpl caller, @JniType("Profile*") Profile profile, int id);
 
         void destroy(long nativeTabAndroid);
+
+        boolean hasParentCollection(long nativeTabAndroid);
 
         void initWebContents(
                 long nativeTabAndroid,

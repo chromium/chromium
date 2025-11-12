@@ -368,6 +368,10 @@ void TabAndroid::Destroy(JNIEnv* env) {
   delete this;
 }
 
+bool TabAndroid::HasParentCollection(JNIEnv* env) {
+  return parent_collection_ != nullptr;
+}
+
 void TabAndroid::InitWebContents(
     JNIEnv* env,
     jboolean incognito,

@@ -175,6 +175,7 @@ class TabAndroid : public tabs::TabInterface,
   // Methods called from Java via JNI -----------------------------------------
 
   void Destroy(JNIEnv* env);
+  bool HasParentCollection(JNIEnv* env);
   void InitWebContents(
       JNIEnv* env,
       jboolean incognito,

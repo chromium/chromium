@@ -294,6 +294,10 @@ public class TabStateStore implements TabPersistentStore {
     }
 
     private void saveTab(Tab tab) {
+        // If a tab is not in a closing or destroyed state we shouldn't save it. Tabs that are
+        // not attached to a parent collection will not be restored at startup and shouldn't be
+        // saved. If the tab becomes attached to a collection later it will be saved then.
+        if (tab.isDestroyed() || tab.isClosing() || !tab.hasParentCollection()) return;
         mTabStateStorageService.saveTabData(tab);
     }
 

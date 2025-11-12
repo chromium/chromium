@@ -289,6 +289,9 @@ public interface Tab extends TabLifecycle {
     /** Returns whether this is the activated tab; AKA selected tab, or current tab. */
     boolean isActivated();
 
+    /** Returns whether the tab has a parent collection. */
+    boolean hasParentCollection();
+
     /** Sets Parent for the current Tab and other tab related parent properties. */
     void reparentTab(Tab parent);
 
