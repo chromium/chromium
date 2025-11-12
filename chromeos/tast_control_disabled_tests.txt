@@ -100,4 +100,7 @@ tast.bruschetta.CopyFilesToGuest@betty
 # https://crbug.com/432304431
 tast.featured.FieldTrialEarlyBoot.active_trial
 
+# https://crbug.com/459929970
+tast.crostini.SyncTime.baguette_stable
+
 # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
