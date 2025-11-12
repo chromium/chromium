@@ -999,7 +999,7 @@ void CompositorFrameReporter::StartStage(
           trees_in_viz_timestamps_.value_or(TreesInVizTimestamps{});
       DCHECK(timestamps.trees_in_viz_viz_start_time_.is_null());
       DCHECK(!timestamps.trees_in_viz_branch_time_.is_null());
-      DCHECK(timestamps.trees_in_viz_branch_time_ <
+      DCHECK(timestamps.trees_in_viz_branch_time_ <=
              start_time);  // branch time expected to happen before we sent
                            // the update to Viz.
       timestamps.trees_in_viz_viz_start_time_ = start_time;
