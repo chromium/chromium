@@ -209,10 +209,6 @@ public class ViewElement<ViewT extends View> extends Element<ViewT> {
             assert activity != null;
         }
 
-        Facility<?> viewSettledFacility = new Facility<>("ViewSettled");
-        viewSettledFacility.declareView(
-                getViewSpec(), copyOptions().initialSettleTime(1000).unscoped().build());
-
         Triggers.runTo(
                         () -> {
                             ActivityManager activityManager =
@@ -225,7 +221,7 @@ public class ViewElement<ViewT extends View> extends Element<ViewT> {
                         instrumentationThreadCondition(
                                 "Root has window focus",
                                 () -> whether(rootMatched.getDecorView().hasWindowFocus())))
-                .enterFacility(viewSettledFacility);
+                .pickUpCarryOn(new ViewSettledCarryOn(activityElement, this));
     }
 
     /** Trigger an Espresso ViewAssertion on this View. */

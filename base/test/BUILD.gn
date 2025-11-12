@@ -725,6 +725,7 @@ if (is_android) {
       "android/javatests/src/org/chromium/base/test/transit/ViewElement.java",
       "android/javatests/src/org/chromium/base/test/transit/ViewElementMatchesCondition.java",
       "android/javatests/src/org/chromium/base/test/transit/ViewFinder.java",
+      "android/javatests/src/org/chromium/base/test/transit/ViewSettledCarryOn.java",
       "android/javatests/src/org/chromium/base/test/transit/ViewSpec.java",
     ]
   }
