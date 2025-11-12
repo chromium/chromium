@@ -557,7 +557,9 @@ void GlicInstanceCoordinatorImpl::OnTabCreated(tabs::TabInterface& old_tab,
   }
 
   auto* instance = CreateGlicInstance();
-  instance->Show(ShowOptions::ForSidePanel(new_tab));
+  SidePanelShowOptions side_panel_options{new_tab};
+  side_panel_options.suppress_opening_animation = true;
+  instance->Show(ShowOptions{side_panel_options});
 }
 
 void GlicInstanceCoordinatorImpl::OnMemoryPressure(
