@@ -261,11 +261,7 @@ def CheckFeatureFilesOrdering(input_api, output_api):
     features = pattern.findall(text)
 
     # Check for violations by comparing adjacent elements.
-    violations = []
-    for i in range(len(features) - 1):
-      if features[i] > features[i+1]:
-        violations.append((features[i], features[i+1]))
-    return violations
+    return [x for x in zip(features[:-1], features[1:]) if x[0] > x[1]]
 
   errors = []
   for file in input_api.AffectedSourceFiles(input_api.FilterSourceFile):
