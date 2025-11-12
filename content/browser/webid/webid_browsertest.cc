@@ -25,7 +25,6 @@
 #include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "components/network_session_configurator/common/network_switches.h"
 #include "content/browser/in_memory_federated_permission_context.h"
 #include "content/browser/webid/delegation/jwt_signer.h"
 #include "content/browser/webid/delegation/sd_jwt.h"
@@ -89,6 +88,8 @@ constexpr char kRpHostName[] = "rp.example";
 // test server's custom port. IdpNetworkRequestManager::ComputeWellKnownUrl()
 // does not enforce a specific port if the IDP is localhost.
 constexpr char kIdpOrigin[] = "https://127.0.0.1";
+
+constexpr char kOtherIdpHostname[] = "idp2.example";
 
 constexpr char kExpectedConfigPath[] = "/fedcm.json";
 constexpr char kExpectedWellKnownPath[] = "/.well-known/web-identity";
@@ -295,7 +296,7 @@ class WebIdBrowserTest : public ContentBrowserTest {
     host_resolver()->AddRule("*", "127.0.0.1");
 
     idp_server_ = std::make_unique<IdpTestServer>();
-    https_server().SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+    https_server().SetCertHostnames({kRpHostName, kOtherIdpHostname});
     https_server().ServeFilesFromSourceDirectory(GetTestDataFilePath());
     https_server().RegisterRequestHandler(base::BindRepeating(
         &IdpTestServer::HandleRequest, base::Unretained(idp_server_.get())));
@@ -320,8 +321,6 @@ class WebIdBrowserTest : public ContentBrowserTest {
     features.push_back(net::features::kSplitCacheByNetworkIsolationKey);
     features.push_back(features::kFedCm);
     scoped_feature_list_.InitWithFeatures(features, {});
-
-    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
   }
 
   net::EmbeddedTestServer& https_server() { return https_server_; }
@@ -432,10 +431,6 @@ class WebIdBrowserTest : public ContentBrowserTest {
 
 class WebIdIdpSigninStatusBrowserTest : public WebIdBrowserTest {
  public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
-  }
-
   InMemoryFederatedPermissionContext* sharing_context() {
     BrowserContext* context = shell()->web_contents()->GetBrowserContext();
     return static_cast<InMemoryFederatedPermissionContext*>(
@@ -449,7 +444,6 @@ class WebIdLightweightFedcmBrowserTest : public WebIdBrowserTest {
     std::vector<base::test::FeatureRef> features;
     features.push_back(features::kFedCmLightweightMode);
     scoped_feature_list_.InitWithFeatures(features, {});
-    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
   }
 
   InMemoryFederatedPermissionContext* sharing_context() {
@@ -465,7 +459,6 @@ class WebIdIdpSigninStatusForFetchKeepAliveBrowserTest
   void SetUpCommandLine(base::CommandLine* command_line) override {
     scoped_feature_list_.InitWithFeatures(
         {blink::features::kKeepAliveInBrowserMigration}, {});
-    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
   }
 
   InMemoryFederatedPermissionContext* sharing_context() {
@@ -485,8 +478,6 @@ class WebIdIdPRegistryBrowserTest : public WebIdBrowserTest {
     features.push_back(features::kFedCmLightweightMode);
 
     scoped_feature_list_.InitWithFeatures(features, {});
-
-    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
   }
 
   InMemoryFederatedPermissionContext* sharing_context() {
@@ -532,12 +523,7 @@ class WebIdIdPRegistryBrowserTest : public WebIdBrowserTest {
   base::HistogramTester histogram_tester_;
 };
 
-class WebIdAuthzBrowserTest : public WebIdBrowserTest {
- public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
-  }
-};
+using WebIdAuthzBrowserTest = WebIdBrowserTest;
 
 // Verify a standard login flow with IdP sign-in page.
 IN_PROC_BROWSER_TEST_F(WebIdBrowserTest, FullLoginFlow) {
@@ -949,7 +935,7 @@ IN_PROC_BROWSER_TEST_F(WebIdIdPRegistryBrowserTest, MultipleRegisteredIdps) {
             std::move(callback).Run(true);
           }));
 
-  GURL otherConfigURL = https_server().GetURL("idp2.example", "/fedcm.json");
+  GURL otherConfigURL = https_server().GetURL(kOtherIdpHostname, "/fedcm.json");
   NavigateToIdpToRegisterAndSetLoginStatus(otherConfigURL);
 
   // Navigate to the RP.
@@ -1350,8 +1336,6 @@ class WebIdDigitalCredentialsBrowserTest : public WebIdBrowserTest {
     features.push_back(net::features::kSplitCacheByNetworkIsolationKey);
     features.push_back(features::kWebIdentityDigitalCredentials);
     scoped_feature_list_.InitWithFeatures(features, {});
-
-    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
   }
 
   InMemoryFederatedPermissionContext* sharing_context() {
@@ -1996,12 +1980,7 @@ IN_PROC_BROWSER_TEST_F(WebIdBrowserTest,
   // EXPECT_TRUE(console_observer.messages().empty());
 }
 
-class WebIdModeBrowserTest : public WebIdBrowserTest {
- public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
-  }
-};
+using WebIdModeBrowserTest = WebIdBrowserTest;
 
 std::vector<uint8_t> TestSha256(std::string_view data) {
   std::string str = crypto::SHA256HashString(data);
@@ -2016,7 +1995,6 @@ class WebIdDelegationBrowserTest : public WebIdBrowserTest {
     features.push_back(features::kFedCm);
     features.push_back(features::kFedCmDelegation);
     scoped_feature_list_.InitWithFeatures(features, {});
-    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
   }
 
  protected:
@@ -2329,7 +2307,6 @@ class WebIdMetricsBrowserTest : public WebIdBrowserTest {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     scoped_feature_list_.InitAndEnableFeature(features::kFedCmMetricsEndpoint);
-    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
   }
 
  protected:
