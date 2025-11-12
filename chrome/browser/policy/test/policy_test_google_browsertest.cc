@@ -17,7 +17,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/google/core/common/google_switches.h"
-#include "components/network_session_configurator/common/network_switches.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
 #include "components/safe_search_api/safe_search_util.h"
@@ -92,20 +91,13 @@ class PolicyTestGoogle : public SafeSearchPolicyTest,
           urls_requested_[request.relative_url] = headers;
         }));
 
+    https_server_.SetCertHostnames(
+        {"google.com", "www.google.com", "youtube.com"});
     ASSERT_TRUE(https_server_.Start());
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     SafeSearchPolicyTest::SetUpCommandLine(command_line);
-
-    // Note for the google and youtube tests below, the throttles expect that
-    // the URLs are to google.com or youtube.com. Networking code also
-    // automatically upgrades http requests to these domains to https (see the
-    // preload list in https://www.chromium.org/hsts). So as a result we need
-    // to make the requests to an https server. Since the HTTPS server only
-    // serves a valid cert for localhost, so this is needed to load pages from
-    // "www.google.com" without an interstitial.
-    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
 
     // The production code only allows known ports (80 for http and 443 for
     // https), but the test server runs on a random port.
@@ -118,6 +110,11 @@ class PolicyTestGoogle : public SafeSearchPolicyTest,
   // existing tests run with the prewarm feature enabled.
   test::ScopedPrewarmFeatureList scoped_prewarm_feature_list_{
       test::ScopedPrewarmFeatureList::PrewarmState::kDisabled};
+  // Note for the google and youtube tests below, the throttles expect that
+  // the URLs are to google.com or youtube.com. Networking code also
+  // automatically upgrades http requests to these domains to https (see the
+  // preload list in https://www.chromium.org/hsts). So as a result we need
+  // to make the requests to an https server.
   net::EmbeddedTestServer https_server_;
   base::Lock lock_;
   std::map<std::string, net::HttpRequestHeaders> urls_requested_;
