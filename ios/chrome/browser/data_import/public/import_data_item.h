@@ -14,6 +14,7 @@ enum class ImportDataItemType : NSUInteger {
   kPayment = 1,
   kHistory = 2,
   kBookmarks = 3,
+  kPasskeys = 4,
 };
 
 /// Current import progress for each ImportDataItem.

@@ -78,8 +78,7 @@
                                    count:passwordCount]];
   [_consumer
       setImportDataItem:[[ImportDataItem alloc]
-                            // TODO(crbug.com/450982128): Add passkey type.
-                            initWithType:ImportDataItemType::kBookmarks
+                            initWithType:ImportDataItemType::kPasskeys
                                   status:ImportDataItemImportStatus::kReady
                                    count:passkeyCount]];
 

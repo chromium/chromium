@@ -57,6 +57,9 @@ NSString* GetTextForItemType(ImportDataItemType type) {
     case ImportDataItemType::kPayment:
       message_id = IDS_IOS_IMPORT_ITEM_TYPE_TITLE_CREDIT_CARDS;
       break;
+    case ImportDataItemType::kPasskeys:
+      message_id = IDS_IOS_IMPORT_ITEM_TYPE_TITLE_PASSKEYS;
+      break;
   }
   return l10n_util::GetNSString(message_id);
 }
@@ -76,6 +79,9 @@ UIImage* GetImageForItemType(ImportDataItemType type) {
       break;
     case ImportDataItemType::kPayment:
       symbol_name = kCreditCardSymbol;
+      break;
+    case ImportDataItemType::kPasskeys:
+      symbol_name = kPersonBadgeKeyFillSymbol;
       break;
   }
   return DefaultSymbolTemplateWithPointSize(symbol_name,
@@ -104,6 +110,9 @@ NSString* GetDescriptionForUnimportedItemTypeWithCount(ImportDataItemType type,
     case ImportDataItemType::kPayment:
       message_id = IDS_IOS_IMPORT_ITEM_TYPE_PENDING_DETAILED_TEXT_CREDIT_CARDS;
       break;
+    case ImportDataItemType::kPasskeys:
+      message_id = IDS_IOS_IMPORT_ITEM_TYPE_PENDING_DETAILED_TEXT_PASSKEYS;
+      break;
   }
   return l10n_util::GetPluralNSStringF(message_id, count);
 }
@@ -125,6 +134,9 @@ NSString* GetDescriptionForImportedItemTypeWithCount(ImportDataItemType type,
       break;
     case ImportDataItemType::kPayment:
       message_id = IDS_IOS_IMPORT_ITEM_TYPE_IMPORTED_DETAILED_TEXT_CREDIT_CARDS;
+      break;
+    case ImportDataItemType::kPasskeys:
+      message_id = IDS_IOS_IMPORT_ITEM_TYPE_IMPORTED_DETAILED_TEXT_PASSKEYS;
       break;
   }
   return l10n_util::GetPluralNSStringF(message_id, count);

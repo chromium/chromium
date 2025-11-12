@@ -3213,6 +3213,11 @@
           =1 {Couldn't import {count} password}
           other {Couldn't import {count} passwords}}
       </message>
+      <message name="IDS_IOS_IMPORT_ITEM_TYPE_IMPORTED_DETAILED_TEXT_PASSKEYS" desc="The detailed text of the 'Passkey' row displayed on an import screen displaying the number of passkeys imported. [iOS only]">
+        {count, plural,
+          =1 {Imported {count} passkey}
+          other {Imported {count} passkeys}}
+      </message>
       <message name="IDS_IOS_IMPORT_ITEM_TYPE_IMPORTED_DETAILED_TEXT_PASSWORDS" desc="The description of the 'Password' row displayed on an import screen displaying the number of passwords imported. Do not include a period - it will be handled separately. [iOS only]">
         {count, plural,
           =0 {No password imported}
@@ -3237,6 +3242,11 @@
       <message name="IDS_IOS_IMPORT_ITEM_TYPE_PENDING_DETAILED_TEXT_NO_DATA" desc="The detailed text of each row displayed on an import screen when there is no item of the type to be imported. [iOS only]">
         Nothing to import
       </message>
+      <message name="IDS_IOS_IMPORT_ITEM_TYPE_PENDING_DETAILED_TEXT_PASSKEYS" desc="The detailed text of the 'Passkeys' row displayed on an import screen displaying the number of passkeys that will be imported. Refer to Glossary when translating 'passkeys'. [iOS only]">
+        {count, plural,
+          =1 {{count} passkey}
+          other {{count} passkeys}}
+      </message>
       <message name="IDS_IOS_IMPORT_ITEM_TYPE_PENDING_DETAILED_TEXT_PASSWORDS" desc="The detailed text of the 'Password' row displayed on an import screen displaying the number of passwords that will be imported. Only used when no password has failed to be imported. [iOS only]">
         {count, plural,
           =1 {{count} password}
@@ -3250,6 +3260,9 @@
       </message>
       <message name="IDS_IOS_IMPORT_ITEM_TYPE_TITLE_HISTORY" desc="The title of the 'History' row displayed on an import screen that handles the import process. [iOS only]">
         History
+      </message>
+      <message name="IDS_IOS_IMPORT_ITEM_TYPE_TITLE_PASSKEYS" desc="The title of the 'Passkeys' row displayed on an import screen that handles the import process. Refer to Glossary when translating 'passkeys'. [iOS only]">
+        Passkeys
       </message>
       <message name="IDS_IOS_IMPORT_ITEM_TYPE_TITLE_PASSWORDS" desc="The title of the 'Passwords' row displayed on an import screen that handles the import process. [iOS only]">
         Passwords
