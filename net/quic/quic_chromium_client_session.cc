@@ -1148,21 +1148,6 @@ QuicChromiumClientSession::~QuicChromiumClientSession() {
     return;
   }
 
-  // Sending one client_hello means we had zero handshake-round-trips.
-  int round_trip_handshakes = crypto_stream_->num_sent_client_hellos() - 1;
-
-  SSLInfo ssl_info;
-  // QUIC supports only secure urls.
-  if (GetSSLInfo(&ssl_info) && ssl_info.cert.get()) {
-    UMA_HISTOGRAM_CUSTOM_COUNTS("Net.QuicSession.ConnectRandomPortForHTTPS",
-                                round_trip_handshakes, 1, 3, 4);
-    if (require_confirmation_) {
-      UMA_HISTOGRAM_CUSTOM_COUNTS(
-          "Net.QuicSession.ConnectRandomPortRequiringConfirmationForHTTPS",
-          round_trip_handshakes, 1, 3, 4);
-    }
-  }
-
   const quic::QuicConnectionStats stats = connection()->GetStats();
 
   // The MTU used by QUIC is limited to a fairly small set of predefined values

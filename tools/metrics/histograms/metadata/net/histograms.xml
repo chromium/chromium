@@ -5300,25 +5300,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.QuicSession.ConnectionTypeFromSelf" enum="AddressFamily"
-    expires_after="2023-09-17">
-  <owner>dschinazi@chromium.org</owner>
-  <owner>src/net/quic/OWNERS</owner>
-  <summary>The IP Address family of this connection, as seen locally.</summary>
-</histogram>
-
-<histogram name="Net.QuicSession.ConnectRandomPortRequiringConfirmation"
-    units="RTTs" expires_after="2024-02-11">
-  <owner>dschinazi@chromium.org</owner>
-  <owner>src/net/quic/OWNERS</owner>
-  <summary>
-    Samples of the number of round-trips needed by a QUIC connection before a
-    request could be sent by the client, when handshake confirmation was
-    required. (The operating system randomly selected a source port for the
-    connection.)
-  </summary>
-</histogram>
-
 <histogram name="Net.QuicSession.Connect{QuicPortSelection}" units="RTTs"
     expires_after="2026-06-21">
   <owner>dschinazi@chromium.org</owner>
