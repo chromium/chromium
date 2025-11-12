@@ -405,7 +405,7 @@ size_t Database::GetNumTransactionsAcrossAllConnections() const {
 
 Status Database::ForceCloseAndRunTasks(const std::string& message) {
   if (!bucket_context_->ShouldUseSqlite()) {
-    DCHECK(!force_closing_);
+    CHECK(!force_closing_);
   } else if (force_closing_) {
     // Re-entrancy can validly occur if there's an error in the code below,
     // e.g. in `CloseAndReportForceClose`.
@@ -425,13 +425,13 @@ Status Database::ForceCloseAndRunTasks(const std::string& message) {
   Status status;
   do {
     std::tie(task_state, status) = connection_coordinator_.ExecuteTask(false);
-    DCHECK(task_state !=
-           ConnectionCoordinator::ExecuteTaskResult::kPendingAsyncWork)
+    CHECK(task_state !=
+          ConnectionCoordinator::ExecuteTaskResult::kPendingAsyncWork)
         << "There are no more connections, so all tasks should be able to "
            "complete synchronously.";
   } while (task_state != ConnectionCoordinator::ExecuteTaskResult::kDone &&
            task_state != ConnectionCoordinator::ExecuteTaskResult::kError);
-  DCHECK(connections_.empty());
+  CHECK(connections_.empty());
   bucket_context_->QueueRunTasks();
   return status;
 }
@@ -455,7 +455,7 @@ Status Database::VersionChangeOperation(int64_t version,
   TRACE_EVENT1("IndexedDB", "Database::VersionChangeOperation", "txn.id",
                transaction->id());
   int64_t old_version = metadata().version;
-  DCHECK_GT(version, old_version);
+  CHECK_GT(version, old_version);
 
   IDB_RETURN_IF_ERROR(
       transaction->BackingStoreTransaction()->SetDatabaseVersion(version));
@@ -854,7 +854,7 @@ Status Database::OpenCursorOperation(
   StatusOr<std::unique_ptr<BackingStore::Cursor>> backing_store_cursor;
   if (params->index_id == IndexedDBIndexMetadata::kInvalidId) {
     if (params->cursor_type == CursorType::kKeyOnly) {
-      DCHECK_EQ(params->task_type, blink::mojom::IDBTaskType::Normal);
+      CHECK_EQ(params->task_type, blink::mojom::IDBTaskType::Normal);
       backing_store_cursor =
           transaction->BackingStoreTransaction()->OpenObjectStoreKeyCursor(
               params->object_store_id, params->key_range, params->direction);
@@ -864,7 +864,7 @@ Status Database::OpenCursorOperation(
               params->object_store_id, params->key_range, params->direction);
     }
   } else {
-    DCHECK_EQ(params->task_type, blink::mojom::IDBTaskType::Normal);
+    CHECK_EQ(params->task_type, blink::mojom::IDBTaskType::Normal);
     if (params->cursor_type == CursorType::kKeyOnly) {
       backing_store_cursor =
           transaction->BackingStoreTransaction()->OpenIndexKeyCursor(

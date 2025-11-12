@@ -298,7 +298,7 @@ class ConnectionCoordinator::OpenRequest
     }
 
     // Requested version is higher than current version - upgrade needed.
-    DCHECK_GT(new_version, old_version);
+    CHECK_GT(new_version, old_version);
 
     if (!has_connections) {
       OnNoConnections();
@@ -426,10 +426,10 @@ class ConnectionCoordinator::OpenRequest
     DCHECK(state_ == RequestState::kPendingTransactionComplete);
     // Ownership of connection was already passed along in `UpgradeNeeded`.
     if (committed) {
-      DCHECK_EQ(pending_->version, db_->version());
+      CHECK_EQ(pending_->version, db_->version());
       OnOpenSuccess(nullptr);
     } else {
-      DCHECK_NE(pending_->version, db_->version());
+      CHECK_NE(pending_->version, db_->version());
       std::move(factory_client_)
           ->Error(blink::mojom::IDBException::kAbortError,
                   u"Version change transaction was aborted in upgradeneeded "
