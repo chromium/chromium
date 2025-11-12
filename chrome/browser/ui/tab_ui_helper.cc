@@ -39,10 +39,8 @@ TabUIHelper::TabUIHelper(tabs::TabInterface& tab_interface)
 TabUIHelper::~TabUIHelper() = default;
 
 std::u16string TabUIHelper::GetTitle() const {
-  tabs::TabInterface* const tab_interface =
-      tabs::TabInterface::GetFromContents(web_contents());
   const tab_groups::SavedTabGroupWebContentsListener* wc_listener =
-      tab_interface->GetTabFeatures()->saved_tab_group_web_contents_listener();
+      tab().GetTabFeatures()->saved_tab_group_web_contents_listener();
   if (wc_listener) {
     if (const std::optional<tab_groups::DeferredTabState>& deferred_tab_state =
             wc_listener->deferred_tab_state()) {
@@ -63,10 +61,8 @@ std::u16string TabUIHelper::GetTitle() const {
 }
 
 ui::ImageModel TabUIHelper::GetFavicon() const {
-  tabs::TabInterface* const tab_interface =
-      tabs::TabInterface::GetFromContents(web_contents());
   const tab_groups::SavedTabGroupWebContentsListener* wc_listener =
-      tab_interface->GetTabFeatures()->saved_tab_group_web_contents_listener();
+      tab().GetTabFeatures()->saved_tab_group_web_contents_listener();
   if (wc_listener) {
     if (const std::optional<tab_groups::DeferredTabState>& deferred_tab_state =
             wc_listener->deferred_tab_state()) {
