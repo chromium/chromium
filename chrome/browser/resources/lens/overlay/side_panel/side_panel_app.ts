@@ -234,6 +234,11 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
         value: true,
         reflectToAttribute: true,
       },
+      isComposeboxFocused: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
     };
   }
 
@@ -245,6 +250,8 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
   declare isBackArrowVisible: boolean;
   // Whether the user is currently focused into the searchbox.
   declare isSearchboxFocused: boolean;
+  // Whether the composebox is currently focused.
+  declare isComposeboxFocused: boolean;
   declare private showGhostLoader: boolean;
   // Whether to purposely suppress the ghost loader. Done when escaping from
   // the searchbox when there's text or when page bytes aren't successfully
@@ -293,8 +300,6 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
   private postMessageReceiver?: PostMessageReceiver;
   // Whether the feedback toast has been explicitly dismissed by the user.
   private feedbackToastDismissed = false;
-  // Whether the composebox is currently focused.
-  private composeboxFocused = false;
   // Whether the feedback toast has been shown for the current results.
   private feedbackToastShown = false;
   // The timeout ID for reshowing the feedback toast.
@@ -388,10 +393,10 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
         () => this.feedbackToastDismissed = true);
     this.eventTracker_.add(this.$.composebox, 'composebox-focus-in', () => {
       this.$.feedbackToast.hide();
-      this.composeboxFocused = true;
+      this.isComposeboxFocused = true;
     });
     this.eventTracker_.add(this.$.composebox, 'composebox-focus-out', () => {
-      this.composeboxFocused = false;
+      this.isComposeboxFocused = false;
     });
 
     // Start listening to postMessages on the window.
@@ -654,7 +659,7 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
 
     if (loadTimeData.getBoolean('updatedFeedbackEnabled')) {
       this.feedbackToastShowAfterDelayTimeoutId = setTimeout(() => {
-        if (this.composeboxFocused) {
+        if (this.isComposeboxFocused) {
           return;
         }
         this.feedbackToastShown = true;
