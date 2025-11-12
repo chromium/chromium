@@ -5,14 +5,18 @@
 #ifndef CHROME_BROWSER_GLIC_TEST_SUPPORT_GLIC_TEST_ENVIRONMENT_H_
 #define CHROME_BROWSER_GLIC_TEST_SUPPORT_GLIC_TEST_ENVIRONMENT_H_
 
+#include <memory>
 #include <optional>
+#include <vector>
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_features.h"
@@ -45,8 +49,8 @@ struct GlicTestEnvironmentConfig {
 // cannot use InteractiveGlicTest.
 //
 // Ensures a GlicTestEnvironmentService is created for each browser context, and
-// sets the default configuration.
-class GlicTestEnvironment {
+// sets the default configuration at its completion timing.
+class GlicTestEnvironment : public ProfileObserver {
  public:
   explicit GlicTestEnvironment(
       const GlicTestEnvironmentConfig& config = {},
@@ -56,7 +60,7 @@ class GlicTestEnvironment {
       std::vector<base::test::FeatureRef> disabled_features = {
           features::kGlicWarming, features::kGlicFreWarming});
 
-  ~GlicTestEnvironment();
+  ~GlicTestEnvironment() override;
 
   // Functions to override configuration after creation. These affect only
   // subsequently created profiles.
@@ -68,6 +72,10 @@ class GlicTestEnvironment {
   // default pref state (`FreStatus::kNotStarted`).
   void SetFreStatusForNewProfiles(std::optional<prefs::FreStatus> fre_status);
 
+  // ProfileObserver:
+  void OnProfileWillBeDestroyed(Profile* profile) override;
+  void OnProfileInitializationComplete(Profile* profile) override;
+
   static GlicTestEnvironmentService* GetService(Profile* profile,
                                                 bool create = true);
 
@@ -77,6 +85,9 @@ class GlicTestEnvironment {
   base::CallbackListSubscription create_services_subscription_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
+  std::vector<
+      std::unique_ptr<base::ScopedObservation<Profile, ProfileObserver>>>
+      profile_observations_;
 };
 
 // Note: This constructs the GlicKeyedService, if it's not already created,

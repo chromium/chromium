@@ -152,6 +152,20 @@ void GlicTestEnvironment::OnWillCreateBrowserContextKeyedServices(
     IdentityTestEnvironmentProfileAdaptor::
         SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
   }
+
+  auto observation =
+      std::make_unique<base::ScopedObservation<Profile, ProfileObserver>>(this);
+  observation->Observe(profile);
+  profile_observations_.push_back(std::move(observation));
+}
+
+void GlicTestEnvironment::OnProfileWillBeDestroyed(Profile* profile) {
+  std::erase_if(profile_observations_, [&profile](const auto& observation) {
+    return observation->GetSource() == profile;
+  });
+}
+
+void GlicTestEnvironment::OnProfileInitializationComplete(Profile* profile) {
   GetService(profile, true);
 }
 
