@@ -248,8 +248,7 @@ void DevToolsSession::DispatchProtocolCommandImpl(
     int call_id,
     const String& method,
     base::span<const uint8_t> data) {
-  DCHECK(crdtp::cbor::IsCBORMessage(
-      crdtp::span<uint8_t>(data.data(), data.size())));
+  DCHECK(crdtp::cbor::IsCBORMessage(data));
   TRACE_EVENT_WITH_FLOW1(
       "devtools", "DevToolsSession::DispatchProtocolCommandImpl", call_id,
       TRACE_EVENT_FLAG_FLOW_OUT | TRACE_EVENT_FLAG_FLOW_IN, "call_id", call_id);

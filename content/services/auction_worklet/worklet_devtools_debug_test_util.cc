@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/json/json_reader.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -21,17 +22,12 @@ namespace auction_worklet {
 namespace {
 
 crdtp::span<uint8_t> ToSpan(const mojo_base::BigBuffer& buffer) {
-  return crdtp::span<uint8_t>(buffer.data(), buffer.size());
+  return crdtp::span<uint8_t>(buffer);
 }
 
 crdtp::span<uint8_t> ToSpan(const std::string& string) {
-  return crdtp::span<uint8_t>(reinterpret_cast<const uint8_t*>(string.data()),
-                              string.size());
-}
-
-std::string ToString(const std::vector<uint8_t>& vector) {
-  return std::string(reinterpret_cast<const char*>(vector.data()),
-                     vector.size());
+  return UNSAFE_TODO(crdtp::span<uint8_t>(
+      reinterpret_cast<const uint8_t*>(string.data()), string.size()));
 }
 
 std::string ToString(crdtp::span<uint8_t> span) {

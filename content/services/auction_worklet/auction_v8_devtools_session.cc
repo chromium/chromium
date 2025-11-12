@@ -230,7 +230,7 @@ void AuctionV8DevToolsSession::DispatchProtocolCommand(
   DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
   // We always talk binary to V8 so it talks it back to us, making it easier
   // to append session ID. That's also useful for crdtp::Dispatchable.
-  crdtp::span<uint8_t> message_span(message.data(), message.size());
+  crdtp::span<uint8_t> message_span(message);
   v8_inspector::StringView cbor_message;
   std::vector<uint8_t> converted_cbor_out;
   if (crdtp::cbor::IsCBORMessage(message_span)) {
@@ -252,8 +252,9 @@ void AuctionV8DevToolsSession::DispatchProtocolCommand(
 
     v8_session_->dispatchProtocolMessage(cbor_message);
   } else {
-    crdtp::Dispatchable dispatchable(crdtp::span<uint8_t>(
-        cbor_message.characters8(), cbor_message.length()));
+    // SAFETY: `characters8()` is valid for `length()`.
+    crdtp::Dispatchable dispatchable(UNSAFE_BUFFERS(crdtp::span<uint8_t>(
+        cbor_message.characters8(), cbor_message.length())));
     fallback_dispatcher_.Dispatch(dispatchable).Run();
   }
 }

@@ -108,14 +108,9 @@ bool InspectorAgentState::Deserialize(span<uint8_t> in, double* v) {
 void InspectorAgentState::Serialize(const blink::String& v,
                                     std::vector<uint8_t>* out) {
   if (v.Is8Bit()) {
-    auto span8 = v.Span8();
-    EncodeFromLatin1(span<uint8_t>(span8.data(), span8.size()), out);
+    EncodeFromLatin1(v.Span8(), out);
   } else {
-    auto span16 = v.Span16();
-    EncodeFromUTF16(
-        span<uint16_t>(reinterpret_cast<const uint16_t*>(span16.data()),
-                       span16.size()),
-        out);
+    EncodeFromUTF16(v.SpanUint16(), out);
   }
 }
 
