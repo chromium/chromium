@@ -19,6 +19,7 @@ class Canvas;
 
 namespace glic {
 
+class BorderViewUpdater;
 class GlicKeyedService;
 
 class GlicBorderView : public GlicAnimatedEffectView {
@@ -54,6 +55,7 @@ class GlicBorderView : public GlicAnimatedEffectView {
 
  protected:
   friend class Factory;
+  friend class BorderViewUpdater;
   explicit GlicBorderView(Browser* browser,
                           ContentsWebView* contents_web_view,
                           std::unique_ptr<Tester> tester);
@@ -79,7 +81,6 @@ class GlicBorderView : public GlicAnimatedEffectView {
 
   // A utility class that subscribe to `GlicKeyedService` for various browser UI
   // status change.
-  class BorderViewUpdater;
   const std::unique_ptr<BorderViewUpdater> updater_;
 };
 
