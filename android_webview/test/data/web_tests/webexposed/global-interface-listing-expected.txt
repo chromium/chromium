@@ -12378,8 +12378,6 @@ namespace console
     method moveBy
     method moveTo
     method open
-    method popinContextType
-    method popinContextTypesSupported
     method postMessage
     method print
     method prompt

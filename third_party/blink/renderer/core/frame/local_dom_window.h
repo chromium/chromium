@@ -122,7 +122,6 @@ class CORE_EXPORT LocalDOMWindow final
  public:
   enum class Supplements {
     kCachedPermissionStatus = 0,
-    kWindowPopin = 1,
     kFullscreen = 2,
     kHighlightRegistry = 3,
     kLayoutWorklet = 4,

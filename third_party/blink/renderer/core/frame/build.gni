@@ -253,8 +253,6 @@ blink_core_sources_frame = [
   "window_controls_overlay_changed_delegate.cc",
   "window_controls_overlay_changed_delegate.h",
   "window_event_handlers.h",
-  "window_popin.h",
-  "window_popin.cc",
   "window_properties.cc",
   "window_properties.h",
   "window_or_worker_global_scope.cc",
