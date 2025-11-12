@@ -28,6 +28,7 @@ found in the LICENSE file.
         android:id="@+id/location_bar_attachments_add"
         android:layout_width="@dimen/fusebox_button_size"
         android:layout_height="@dimen/fusebox_button_size"
+        android:visibility="gone"
         android:padding="@dimen/fusebox_button_padding"
         android:contentDescription="@string/accessibility_omnibox_open_or_close_context_popup"
         android:src="@drawable/ic_add_round_24dp"
