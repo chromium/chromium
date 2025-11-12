@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.settings.search;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
+import android.os.Bundle;
 import android.text.TextUtils;
 
 import org.chromium.build.annotations.NullMarked;
@@ -79,6 +80,9 @@ public class SettingsIndexData {
         /** Package path name of the immediate parent Fragment of this entry. */
         public final String parentFragment;
 
+        /** Extra arguments needed to launch a pref. */
+        public final @Nullable Bundle extras;
+
         private final @Nullable String mTitleNormalized;
         private final @Nullable String mSummaryNormalized;
 
@@ -88,6 +92,7 @@ public class SettingsIndexData {
                 @Nullable String header,
                 @Nullable String summary,
                 @Nullable String fragment,
+                @Nullable Bundle extras,
                 String parentFragment,
                 @Nullable String titleNormalized,
                 @Nullable String summaryNormalized) {
@@ -96,6 +101,7 @@ public class SettingsIndexData {
             this.header = header;
             this.summary = summary;
             this.fragment = fragment;
+            this.extras = extras;
             this.parentFragment = parentFragment;
             mTitleNormalized = titleNormalized;
             mSummaryNormalized = summaryNormalized;
@@ -111,6 +117,7 @@ public class SettingsIndexData {
             private @Nullable String mHeader;
             private @Nullable String mSummary;
             private @Nullable String mFragment;
+            private @Nullable Bundle mExtras;
             private final String mParentFragment;
 
             /**
@@ -138,6 +145,7 @@ public class SettingsIndexData {
                 mHeader = original.header;
                 mSummary = original.summary;
                 mFragment = original.fragment;
+                mExtras = original.extras;
                 mParentFragment = original.parentFragment;
             }
 
@@ -156,6 +164,11 @@ public class SettingsIndexData {
                 return this;
             }
 
+            public Builder setArguments(@Nullable Bundle extras) {
+                mExtras = extras;
+                return this;
+            }
+
             /**
              * Creates an {@link Entry} object.
              *
@@ -171,6 +184,7 @@ public class SettingsIndexData {
                         mHeader,
                         mSummary,
                         mFragment,
+                        mExtras,
                         mParentFragment,
                         titleNormalized,
                         summaryNormalized);
