@@ -42,6 +42,7 @@ void OmniboxPopupPresenterBase::Show() {
   widget_->ShowInactive();
 
   if (auto* content = GetWebUIContent()) {
+    SetWidgetContentHeight(content->GetPreferredSize().height());
     content->GetWebContents()->WasShown();
     if (ShouldReceiveFocus()) {
       widget_->Activate();
