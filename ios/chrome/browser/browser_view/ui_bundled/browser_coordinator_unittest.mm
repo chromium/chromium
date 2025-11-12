@@ -454,8 +454,8 @@ TEST_F(BrowserCoordinatorTest,
 // Tests that a double tap on the trusted vault reauth errors button don’t
 // trigger two openings of the trusted vault reauth coordinator.
 TEST_F(BrowserCoordinatorTest, TestDoubleTapTrustedVaultReauth) {
-  syncer::TrustedVaultUserActionTriggerForUMA trigger =
-      syncer::TrustedVaultUserActionTriggerForUMA::kSettings;
+  trusted_vault::TrustedVaultUserActionTriggerForUMA trigger =
+      trusted_vault::TrustedVaultUserActionTriggerForUMA::kSettings;
   BrowserCoordinator<SyncPresenter>* browser_coordinator =
       GetBrowserCoordinator();
   TrustedVaultReauthenticationCoordinator* trusted_vault_mock =
@@ -490,8 +490,8 @@ TEST_F(BrowserCoordinatorTest, TestDoubleTapTrustedVaultReauth) {
 // trigger two openings of the trusted vault reauth coordinator.
 TEST_F(BrowserCoordinatorTest,
        TestDoubleTapTrustedVaultReauthForDegradedRecoverability) {
-  syncer::TrustedVaultUserActionTriggerForUMA trigger =
-      syncer::TrustedVaultUserActionTriggerForUMA::kSettings;
+  trusted_vault::TrustedVaultUserActionTriggerForUMA trigger =
+      trusted_vault::TrustedVaultUserActionTriggerForUMA::kSettings;
   BrowserCoordinator<SyncPresenter>* browser_coordinator =
       GetBrowserCoordinator();
   TrustedVaultReauthenticationCoordinator* trusted_vault_mock =

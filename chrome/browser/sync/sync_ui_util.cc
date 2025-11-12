@@ -296,8 +296,8 @@ void ShowSyncPassphraseDialogAndDecryptData(Browser& browser) {
 #if !BUILDFLAG(IS_ANDROID)
 void OpenTabForSyncKeyRetrieval(
     Browser* browser,
-    syncer::TrustedVaultUserActionTriggerForUMA trigger) {
-  RecordKeyRetrievalTrigger(trigger);
+    trusted_vault::TrustedVaultUserActionTriggerForUMA trigger) {
+  syncer::RecordKeyRetrievalTrigger(trigger);
   const GURL continue_url =
       GURL(UIThreadSearchTermsData().GoogleBaseURLValue());
   GURL retrieval_url =
@@ -311,8 +311,8 @@ void OpenTabForSyncKeyRetrieval(
 
 void OpenTabForSyncKeyRecoverabilityDegraded(
     Browser* browser,
-    syncer::TrustedVaultUserActionTriggerForUMA trigger) {
-  RecordRecoverabilityDegradedFixTrigger(trigger);
+    trusted_vault::TrustedVaultUserActionTriggerForUMA trigger) {
+  syncer::RecordRecoverabilityDegradedFixTrigger(trigger);
   const GURL continue_url =
       GURL(UIThreadSearchTermsData().GoogleBaseURLValue());
   GURL url = GaiaUrls::GetInstance()

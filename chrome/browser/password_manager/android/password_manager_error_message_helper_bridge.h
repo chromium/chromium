@@ -26,7 +26,8 @@ class PasswordManagerErrorMessageHelperBridge {
   // will only work for users that are currently syncing.
   virtual void StartTrustedVaultKeyRetrievalFlow(
       content::WebContents* web_contents,
-      syncer::TrustedVaultUserActionTriggerForUMA user_action_trigger) = 0;
+      trusted_vault::TrustedVaultUserActionTriggerForUMA
+          user_action_trigger) = 0;
 
   // Checks if enough time has passed since the last error UI was shown.
   virtual bool ShouldShowSignInErrorUI(content::WebContents* web_contents) = 0;

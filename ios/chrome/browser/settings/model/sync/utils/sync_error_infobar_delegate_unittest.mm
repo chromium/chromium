@@ -116,9 +116,10 @@ TEST_F(SyncErrorInfobarDelegateTest, SyncServiceNeedsTrustedVaultKey) {
       .WillByDefault(Return(syncer::SyncService::UserActionableError::
                                 kNeedsTrustedVaultKeyForEverything));
 
-  OCMExpect([presenter_
-      showTrustedVaultReauthForFetchKeysWithTrigger:
-          syncer::TrustedVaultUserActionTriggerForUMA::kNewTabPageInfobar]);
+  OCMExpect(
+      [presenter_ showTrustedVaultReauthForFetchKeysWithTrigger:
+                      trusted_vault ::TrustedVaultUserActionTriggerForUMA::
+                          kNewTabPageInfobar]);
   std::unique_ptr<SyncErrorInfoBarDelegate> delegate(
       new SyncErrorInfoBarDelegate(profile_.get(), presenter_,
                                    kSyncErrorInfoBarTrigger));
@@ -133,9 +134,10 @@ TEST_F(SyncErrorInfobarDelegateTest,
           Return(syncer::SyncService::UserActionableError::
                      kTrustedVaultRecoverabilityDegradedForEverything));
 
-  OCMExpect([presenter_
-      showTrustedVaultReauthForDegradedRecoverabilityWithTrigger:
-          syncer::TrustedVaultUserActionTriggerForUMA::kNewTabPageInfobar]);
+  OCMExpect(
+      [presenter_ showTrustedVaultReauthForDegradedRecoverabilityWithTrigger:
+                      trusted_vault ::TrustedVaultUserActionTriggerForUMA::
+                          kNewTabPageInfobar]);
   std::unique_ptr<SyncErrorInfoBarDelegate> delegate(
       new SyncErrorInfoBarDelegate(profile_.get(), presenter_,
                                    kSyncErrorInfoBarTrigger));

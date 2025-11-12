@@ -47,13 +47,14 @@ bool SyncErrorNotificationsPaused(ProfileIOS* profile) {
   return now < last_dismissal + kSyncErrorInfobarTimeout;
 }
 
-syncer::TrustedVaultUserActionTriggerForUMA
+trusted_vault::TrustedVaultUserActionTriggerForUMA
 TrustedVaultTriggerFromInfoBarTrigger(SyncErrorInfoBarTrigger trigger) {
   switch (trigger) {
     case SyncErrorInfoBarTrigger::kNewTabOpened:
-      return syncer::TrustedVaultUserActionTriggerForUMA::kNewTabPageInfobar;
+      return trusted_vault ::TrustedVaultUserActionTriggerForUMA::
+          kNewTabPageInfobar;
     case SyncErrorInfoBarTrigger::kPasswordFormParsed:
-      return syncer::TrustedVaultUserActionTriggerForUMA::
+      return trusted_vault ::TrustedVaultUserActionTriggerForUMA::
           kPasswordManagerErrorMessage;
   }
   NOTREACHED();

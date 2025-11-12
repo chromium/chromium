@@ -49,8 +49,9 @@ using l10n_util::GetNSStringF;
                        browser:(Browser*)browser
                         intent:(SigninTrustedVaultDialogIntent)intent
               securityDomainID:(trusted_vault::SecurityDomainId)securityDomainID
-                       trigger:(syncer::TrustedVaultUserActionTriggerForUMA)
-                                   trigger {
+                       trigger:
+                           (trusted_vault::TrustedVaultUserActionTriggerForUMA)
+                               trigger {
   DCHECK_EQ(browser->type(), Browser::Type::kRegular);
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {

@@ -510,8 +510,9 @@ void PasswordAccessoryControllerImpl::OnOptionSelected(
     case autofill::AccessoryAction::RETRIEVE_TRUSTED_VAULT_KEY:
       password_manager_error_message_helper_bridge_
           ->StartTrustedVaultKeyRetrievalFlow(
-              &GetWebContents(), syncer::TrustedVaultUserActionTriggerForUMA::
-                                     kPasswordManagerKeyboardAccessory);
+              &GetWebContents(),
+              trusted_vault::TrustedVaultUserActionTriggerForUMA::
+                  kPasswordManagerKeyboardAccessory);
       return;
     default:
       NOTREACHED() << "Unhandled selected action: "

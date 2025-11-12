@@ -1605,7 +1605,7 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="Password Manager keyboard accessory"/>
 </enum>
 
-<!-- LINT.ThenChange(/components/sync/service/sync_service_utils.h:TrustedVaultUserActionTrigger) -->
+<!-- LINT.ThenChange(/components/trusted_vault/trusted_vault_client.h:TrustedVaultUserActionTrigger) -->
 
 <!-- LINT.IfChange(UserActionableError) -->
 

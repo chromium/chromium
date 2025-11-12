@@ -13,11 +13,9 @@ enum class TrustedVaultUserActionTriggerForUMA;
 }  // namespace syncer
 namespace trusted_vault {
 enum class SecurityDomainId;
+enum class TrustedVaultUserActionTriggerForUMA;
 }  // namespace trusted_vault
 typedef NS_ENUM(NSUInteger, SigninTrustedVaultDialogIntent);
-namespace syncer {
-enum class TrustedVaultUserActionTriggerForUMA;
-}  // namespace syncer
 @protocol TrustedVaultReauthenticationCoordinatorDelegate;
 
 // Intent for TrustedVaultReauthenticationCoordinator to display either
@@ -51,8 +49,8 @@ typedef NS_ENUM(NSUInteger, SigninTrustedVaultDialogIntent) {
                         intent:(SigninTrustedVaultDialogIntent)intent
               securityDomainID:(trusted_vault::SecurityDomainId)securityDomainID
                        trigger:
-                           (syncer::TrustedVaultUserActionTriggerForUMA)trigger
-    NS_DESIGNATED_INITIALIZER;
+                           (trusted_vault::TrustedVaultUserActionTriggerForUMA)
+                               trigger NS_DESIGNATED_INITIALIZER;
 
 @end
 

@@ -270,12 +270,12 @@ TrustedVaultClientAndroid::GetAndUnregisterOngoingRequest(RequestId id) {
 static void JNI_TrustedVaultClient_RecordKeyRetrievalTrigger(JNIEnv* env,
                                                              int trigger) {
   syncer::RecordKeyRetrievalTrigger(
-      static_cast<syncer::TrustedVaultUserActionTriggerForUMA>(trigger));
+      static_cast<trusted_vault::TrustedVaultUserActionTriggerForUMA>(trigger));
 }
 
 static void JNI_TrustedVaultClient_RecordRecoverabilityDegradedFixTrigger(
     JNIEnv* env,
     int trigger) {
   syncer::RecordRecoverabilityDegradedFixTrigger(
-      static_cast<syncer::TrustedVaultUserActionTriggerForUMA>(trigger));
+      static_cast<trusted_vault::TrustedVaultUserActionTriggerForUMA>(trigger));
 }

@@ -19,7 +19,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.sync.TrustedVaultUserActionTriggerForUMA;
+import org.chromium.components.trusted_vault.TrustedVaultUserActionTriggerForUMA;
 
 import java.util.ArrayList;
 import java.util.Collections;

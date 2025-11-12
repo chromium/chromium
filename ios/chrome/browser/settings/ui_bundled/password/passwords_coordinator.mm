@@ -389,8 +389,8 @@
 - (void)performReauthenticationForRetrievingTrustedVaultKey {
   trusted_vault::SecurityDomainId securityDomainID =
       trusted_vault::SecurityDomainId::kChromeSync;
-  syncer::TrustedVaultUserActionTriggerForUMA trigger =
-      syncer::TrustedVaultUserActionTriggerForUMA::kPasswordManagerSettings;
+  trusted_vault::TrustedVaultUserActionTriggerForUMA trigger = trusted_vault ::
+      TrustedVaultUserActionTriggerForUMA::kPasswordManagerSettings;
   if (_trustedVaultReauthenticationCoordinator) {
     // This method can be called while the previous trusted vault reauth is
     // being dismissed. This is probably a mistap. If not, the user can tap

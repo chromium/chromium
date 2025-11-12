@@ -186,7 +186,7 @@ TEST_F(TipsNotificationPresenterTest, TestStartTrustedVaultKeyRetrievalFlow) {
   id mock_handler = MockHandler(@protocol(BrowserCoordinatorCommands));
   OCMExpect([mock_handler
       performReauthToRetrieveTrustedVaultKey:
-          syncer::TrustedVaultUserActionTriggerForUMA::kNotification]);
+          trusted_vault::TrustedVaultUserActionTriggerForUMA::kNotification]);
   TipsNotificationPresenter::Present(
       browser_->AsWeakPtr(), TipsNotificationType::kTrustedVaultKeyRetrieval);
   EXPECT_OCMOCK_VERIFY(mock_handler);

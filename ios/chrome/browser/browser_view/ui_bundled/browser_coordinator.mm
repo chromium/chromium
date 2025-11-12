@@ -2652,7 +2652,7 @@ const char kChromeAppStoreUrl[] =
 }
 
 - (void)performReauthToRetrieveTrustedVaultKey:
-    (syncer::TrustedVaultUserActionTriggerForUMA)trigger {
+    (trusted_vault::TrustedVaultUserActionTriggerForUMA)trigger {
   [self showTrustedVaultReauthForFetchKeysWithTrigger:trigger];
 }
 
@@ -3998,14 +3998,14 @@ const char kChromeAppStoreUrl[] =
 }
 
 - (void)showTrustedVaultReauthForFetchKeysWithTrigger:
-    (syncer::TrustedVaultUserActionTriggerForUMA)trigger {
+    (trusted_vault::TrustedVaultUserActionTriggerForUMA)trigger {
   [self showTrustedVaultReauthWithTrigger:trigger
                                    intent:
                                        SigninTrustedVaultDialogIntentFetchKeys];
 }
 
 - (void)showTrustedVaultReauthForDegradedRecoverabilityWithTrigger:
-    (syncer::TrustedVaultUserActionTriggerForUMA)trigger {
+    (trusted_vault::TrustedVaultUserActionTriggerForUMA)trigger {
   SigninTrustedVaultDialogIntent intent =
       SigninTrustedVaultDialogIntentDegradedRecoverability;
   [self showTrustedVaultReauthWithTrigger:trigger intent:intent];
@@ -4014,7 +4014,7 @@ const char kChromeAppStoreUrl[] =
 #pragma mark - SyncPresenter helper
 
 - (void)showTrustedVaultReauthWithTrigger:
-            (syncer::TrustedVaultUserActionTriggerForUMA)trigger
+            (trusted_vault::TrustedVaultUserActionTriggerForUMA)trigger
                                    intent:
                                        (SigninTrustedVaultDialogIntent)intent {
   if (_trustedVaultReauthenticationCoordinator) {

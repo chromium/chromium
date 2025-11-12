@@ -359,7 +359,7 @@ void ProfileMenuView::OnSyncErrorButtonClicked(
         kNeedsTrustedVaultKeyForPasswords:
       OpenTabForSyncKeyRetrieval(
           &browser(),
-          syncer::TrustedVaultUserActionTriggerForUMA::kProfileMenu);
+          trusted_vault::TrustedVaultUserActionTriggerForUMA::kProfileMenu);
       break;
     case syncer::SyncService::UserActionableError::
         kTrustedVaultRecoverabilityDegradedForEverything:
@@ -367,7 +367,7 @@ void ProfileMenuView::OnSyncErrorButtonClicked(
         kTrustedVaultRecoverabilityDegradedForPasswords:
       OpenTabForSyncKeyRecoverabilityDegraded(
           &browser(),
-          syncer::TrustedVaultUserActionTriggerForUMA::kProfileMenu);
+          trusted_vault::TrustedVaultUserActionTriggerForUMA::kProfileMenu);
       break;
     case syncer::SyncService::UserActionableError::kNeedsPassphrase:
       ShowSyncPassphraseDialogAndDecryptData(browser());

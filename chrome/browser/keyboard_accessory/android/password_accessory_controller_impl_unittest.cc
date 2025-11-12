@@ -2092,7 +2092,7 @@ TEST_F(PasswordAccessoryControllerTest, ShowTrustedVaultError) {
 
   EXPECT_CALL(*mock_error_message_helper_bridge_,
               StartTrustedVaultKeyRetrievalFlow(
-                  _, syncer::TrustedVaultUserActionTriggerForUMA::
+                  _, trusted_vault::TrustedVaultUserActionTriggerForUMA::
                          kPasswordManagerKeyboardAccessory));
 
   controller()->OnOptionSelected(

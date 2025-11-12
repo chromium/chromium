@@ -921,7 +921,7 @@ void PeopleHandler::HandleStartKeyRetrieval(const base::Value::List& args) {
   }
 
   OpenTabForSyncKeyRetrieval(
-      browser, syncer::TrustedVaultUserActionTriggerForUMA::kSettings);
+      browser, trusted_vault::TrustedVaultUserActionTriggerForUMA::kSettings);
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)

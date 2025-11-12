@@ -18,7 +18,7 @@ enum class NotificationOptInAccessPoint;
 namespace signin_metrics {
 enum class AccessPoint;
 }  // namespace signin_metrics
-namespace syncer {
+namespace trusted_vault {
 enum class TrustedVaultUserActionTriggerForUMA;
 }
 
@@ -143,7 +143,7 @@ enum class TrustedVaultUserActionTriggerForUMA;
 // Presents the Trusted Vault reauthentication dialog. `trigger` indicates an
 // entry point from which the trusted vault reauth has been triggered.
 - (void)performReauthToRetrieveTrustedVaultKey:
-    (syncer::TrustedVaultUserActionTriggerForUMA)trigger;
+    (trusted_vault::TrustedVaultUserActionTriggerForUMA)trigger;
 
 // Forces fullscreen mode which means that toolbars are collapsed.
 - (void)forceFullscreenMode;

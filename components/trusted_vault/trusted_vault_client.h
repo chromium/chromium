@@ -17,6 +17,37 @@ class GaiaId;
 
 namespace trusted_vault {
 
+// Represents the UI elements which contain trusted vault error button. These
+// values are persisted to logs. Entries should not be renumbered and numeric
+// values should never be reused. Keep in sync w/ TrustedVaultUserActionTrigger
+// in tools/metrics/histograms/metadata/sync/enums.xml.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.trusted_vault
+// LINT.IfChange(TrustedVaultUserActionTrigger)
+enum class TrustedVaultUserActionTriggerForUMA {
+  // Settings pages, used on all platforms except ChromeOS.
+  kSettings = 0,
+  // Used on desktop platform only.
+  kProfileMenu = 1,
+  // Used on Android, ChromeOS, and iOS. Represents OS-level notification.
+  kNotification = 2,
+  // Used on iOS only. Represents Infobar on the New Tab Page.
+  // TODO(crbug.com/40131571): record this bucket bucket on Android once
+  // corresponding UI added.
+  kNewTabPageInfobar = 3,
+  // This dialog is shown on Android and iOS during sign-in or sign-up flows
+  // when there is an error preventing passwords from being fetched from
+  // an account (e.g. need to retrieve trusted vault key for passwords).
+  kPasswordManagerErrorMessage = 4,
+  // Used on iOS only, from the account menu.
+  kAccountMenu = 5,
+  // From the Password Manager Settings (currently used only on iOS).
+  kPasswordManagerSettings = 6,
+  // From the passwords keyboard accessory (only used on Android).
+  kPasswordManagerKeyboardAccessory = 7,
+  kMaxValue = kPasswordManagerKeyboardAccessory
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:TrustedVaultUserActionTrigger)
+
 // Interface that allows platform-specific logic related to accessing locally
 // available trusted vault encryption keys.
 class TrustedVaultClient {

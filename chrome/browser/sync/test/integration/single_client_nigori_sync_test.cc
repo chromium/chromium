@@ -1292,7 +1292,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,
   // Mimic opening a web page where the user can interact with the retrieval
   // flow.
   OpenTabForSyncKeyRetrieval(
-      GetBrowser(0), syncer::TrustedVaultUserActionTriggerForUMA::kProfileMenu);
+      GetBrowser(0),
+      trusted_vault::TrustedVaultUserActionTriggerForUMA::kProfileMenu);
   ASSERT_THAT(GetBrowser(0)->tab_strip_model()->GetActiveWebContents(),
               NotNull());
 
@@ -1340,7 +1341,8 @@ IN_PROC_BROWSER_TEST_F(
   // Mimic opening a web page where the user can interact with the retrieval
   // flow.
   OpenTabForSyncKeyRetrieval(
-      GetBrowser(0), syncer::TrustedVaultUserActionTriggerForUMA::kProfileMenu);
+      GetBrowser(0),
+      trusted_vault::TrustedVaultUserActionTriggerForUMA::kProfileMenu);
   ASSERT_THAT(GetBrowser(0)->tab_strip_model()->GetActiveWebContents(),
               NotNull());
 
@@ -1365,7 +1367,8 @@ IN_PROC_BROWSER_TEST_F(
   // API to work as intended and verifies that client state is sufficient to
   // add recovery method.
   OpenTabForSyncKeyRecoverabilityDegraded(
-      GetBrowser(0), syncer::TrustedVaultUserActionTriggerForUMA::kProfileMenu);
+      GetBrowser(0),
+      trusted_vault::TrustedVaultUserActionTriggerForUMA::kProfileMenu);
   // Expect two members: one corresponds to the client and another to
   // kTestRecoveryMethodPublicKey.
   EXPECT_TRUE(FakeSecurityDomainsServerMemberStatusChecker(
@@ -1557,7 +1560,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,
   // Mimic opening a web page where the user can interact with the retrieval
   // flow, while the user is signed out.
   OpenTabForSyncKeyRetrieval(
-      GetBrowser(0), syncer::TrustedVaultUserActionTriggerForUMA::kProfileMenu);
+      GetBrowser(0),
+      trusted_vault::TrustedVaultUserActionTriggerForUMA::kProfileMenu);
   ASSERT_THAT(GetBrowser(0)->tab_strip_model()->GetActiveWebContents(),
               NotNull());
 
@@ -1619,7 +1623,8 @@ IN_PROC_BROWSER_TEST_F(
   // Mimic opening a web page where the user can interact with the retrieval
   // flow, while the user is signed out.
   OpenTabForSyncKeyRetrieval(
-      GetBrowser(0), syncer::TrustedVaultUserActionTriggerForUMA::kProfileMenu);
+      GetBrowser(0),
+      trusted_vault::TrustedVaultUserActionTriggerForUMA::kProfileMenu);
   ASSERT_THAT(GetBrowser(0)->tab_strip_model()->GetActiveWebContents(),
               NotNull());
 
@@ -1680,7 +1685,8 @@ IN_PROC_BROWSER_TEST_F(
   // Mimic opening a web page where the user can interact with the retrieval
   // flow.
   OpenTabForSyncKeyRetrieval(
-      GetBrowser(0), syncer::TrustedVaultUserActionTriggerForUMA::kProfileMenu);
+      GetBrowser(0),
+      trusted_vault::TrustedVaultUserActionTriggerForUMA::kProfileMenu);
   ASSERT_THAT(GetBrowser(0)->tab_strip_model()->GetActiveWebContents(),
               NotNull());
 
@@ -1742,7 +1748,8 @@ IN_PROC_BROWSER_TEST_F(
   // Mimic opening a web page where the user can interact with the retrieval
   // flow.
   OpenTabForSyncKeyRetrieval(
-      GetBrowser(0), syncer::TrustedVaultUserActionTriggerForUMA::kProfileMenu);
+      GetBrowser(0),
+      trusted_vault::TrustedVaultUserActionTriggerForUMA::kProfileMenu);
   ASSERT_THAT(GetBrowser(0)->tab_strip_model()->GetActiveWebContents(),
               NotNull());
 
@@ -1853,7 +1860,8 @@ IN_PROC_BROWSER_TEST_F(
   // Mimic opening a web page where the user can interact with the retrieval
   // flow, while the user is signed out.
   OpenTabForSyncKeyRetrieval(
-      GetBrowser(0), syncer::TrustedVaultUserActionTriggerForUMA::kProfileMenu);
+      GetBrowser(0),
+      trusted_vault::TrustedVaultUserActionTriggerForUMA::kProfileMenu);
   ASSERT_THAT(GetBrowser(0)->tab_strip_model()->GetActiveWebContents(),
               NotNull());
 
@@ -1940,7 +1948,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,
   chrome::AddTabAt(GetBrowser(0), GURL(url::kAboutBlankURL), /*index=*/0,
                    /*foreground=*/true);
   OpenTabForSyncKeyRecoverabilityDegraded(
-      GetBrowser(0), syncer::TrustedVaultUserActionTriggerForUMA::kProfileMenu);
+      GetBrowser(0),
+      trusted_vault::TrustedVaultUserActionTriggerForUMA::kProfileMenu);
   ASSERT_THAT(GetBrowser(0)->tab_strip_model()->GetActiveWebContents(),
               NotNull());
 
@@ -2346,7 +2355,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,
   chrome::AddTabAt(GetBrowser(0), GURL(url::kAboutBlankURL), /*index=*/0,
                    /*foreground=*/true);
   OpenTabForSyncKeyRetrieval(
-      GetBrowser(0), syncer::TrustedVaultUserActionTriggerForUMA::kProfileMenu);
+      GetBrowser(0),
+      trusted_vault::TrustedVaultUserActionTriggerForUMA::kProfileMenu);
 
   // Wait until the page closes, which indicates successful completion.
   ASSERT_THAT(GetBrowser(0)->tab_strip_model()->GetActiveWebContents(),
@@ -2400,7 +2410,8 @@ IN_PROC_BROWSER_TEST_F(
   chrome::AddTabAt(GetBrowser(0), GURL(url::kAboutBlankURL), /*index=*/0,
                    /*foreground=*/true);
   OpenTabForSyncKeyRecoverabilityDegraded(
-      GetBrowser(0), syncer::TrustedVaultUserActionTriggerForUMA::kProfileMenu);
+      GetBrowser(0),
+      trusted_vault::TrustedVaultUserActionTriggerForUMA::kProfileMenu);
   EXPECT_TRUE(TrustedVaultRecoverabilityDegradedStateChecker(GetSyncService(0),
                                                              /*degraded=*/false)
                   .Wait());

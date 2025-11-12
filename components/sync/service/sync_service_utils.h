@@ -6,6 +6,7 @@
 #define COMPONENTS_SYNC_SERVICE_SYNC_SERVICE_UTILS_H_
 
 #include "components/sync/base/data_type.h"
+#include "components/trusted_vault/trusted_vault_client.h"
 
 namespace syncer {
 
@@ -35,47 +36,17 @@ enum class UploadState {
   kMaxValue = ACTIVE
 };
 
-// Represents the UI elements which contain trusted vault error button. These
-// values are persisted to logs. Entries should not be renumbered and numeric
-// values should never be reused. Keep in sync w/ TrustedVaultUserActionTrigger
-// in tools/metrics/histograms/metadata/sync/enums.xml.
-// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.sync
-// LINT.IfChange(TrustedVaultUserActionTrigger)
-enum class TrustedVaultUserActionTriggerForUMA {
-  // Settings pages, used on all platforms except ChromeOS.
-  kSettings = 0,
-  // Used on desktop platform only.
-  kProfileMenu = 1,
-  // Used on Android, ChromeOS, and iOS. Represents OS-level notification.
-  kNotification = 2,
-  // Used on iOS only. Represents Infobar on the New Tab Page.
-  // TODO(crbug.com/40131571): record this bucket bucket on Android once
-  // corresponding UI added.
-  kNewTabPageInfobar = 3,
-  // This dialog is shown on Android and iOS during sign-in or sign-up flows
-  // when there is an error preventing passwords from being fetched from
-  // an account (e.g. need to retrieve trusted vault key for passwords).
-  kPasswordManagerErrorMessage = 4,
-  // Used on iOS only, from the account menu.
-  kAccountMenu = 5,
-  // From the Password Manager Settings (currently used only on iOS).
-  kPasswordManagerSettings = 6,
-  // From the passwords keyboard accessory (only used on Android).
-  kPasswordManagerKeyboardAccessory = 7,
-  kMaxValue = kPasswordManagerKeyboardAccessory
-};
-// LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:TrustedVaultUserActionTrigger)
-
 // Returns whether `type` is being uploaded to Google. This is useful for
 // features that depend on user consent for uploading data (e.g. history) to
 // Google.
 UploadState GetUploadToGoogleState(const SyncService* sync_service,
                                    DataType type);
 
-void RecordKeyRetrievalTrigger(TrustedVaultUserActionTriggerForUMA trigger);
+void RecordKeyRetrievalTrigger(
+    trusted_vault::TrustedVaultUserActionTriggerForUMA trigger);
 
 void RecordRecoverabilityDegradedFixTrigger(
-    TrustedVaultUserActionTriggerForUMA trigger);
+    trusted_vault::TrustedVaultUserActionTriggerForUMA trigger);
 
 // Whether the user should be offered to opt in to trusted vault encryption.
 bool ShouldOfferTrustedVaultOptIn(const SyncService* service);

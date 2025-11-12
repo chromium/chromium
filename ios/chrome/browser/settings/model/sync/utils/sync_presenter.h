@@ -7,9 +7,9 @@
 
 #import <Foundation/Foundation.h>
 
-namespace syncer {
+namespace trusted_vault {
 enum class TrustedVaultUserActionTriggerForUMA;
-}  // namespace syncer
+}  // namespace trusted_vault
 
 // Protocol used to display sync-related UI.
 @protocol SyncPresenter
@@ -30,13 +30,13 @@ enum class TrustedVaultUserActionTriggerForUMA;
 // Presents the Trusted Vault reauthentication dialog, for sync security domain
 // id. `trigger` UI elements where the trusted vault reauth has been triggered.
 - (void)showTrustedVaultReauthForFetchKeysWithTrigger:
-    (syncer::TrustedVaultUserActionTriggerForUMA)trigger;
+    (trusted_vault::TrustedVaultUserActionTriggerForUMA)trigger;
 
 // Presents the Trusted Vault degraded recoverability dialog (to enroll
 // additional recovery factors), for sync security domain id.
 // `trigger` UI elements where the trusted vault reauth has been triggered.
 - (void)showTrustedVaultReauthForDegradedRecoverabilityWithTrigger:
-    (syncer::TrustedVaultUserActionTriggerForUMA)trigger;
+    (trusted_vault::TrustedVaultUserActionTriggerForUMA)trigger;
 
 @end
 

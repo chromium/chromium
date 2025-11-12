@@ -76,8 +76,8 @@ TEST_F(TrustedVaultReauthenticationCoordinatorTest, TestCancel) {
   // Create sign-in coordinator.
   trusted_vault::SecurityDomainId securityDomainID =
       trusted_vault::SecurityDomainId::kChromeSync;
-  syncer::TrustedVaultUserActionTriggerForUMA trigger =
-      syncer::TrustedVaultUserActionTriggerForUMA::kSettings;
+  trusted_vault::TrustedVaultUserActionTriggerForUMA trigger =
+      trusted_vault::TrustedVaultUserActionTriggerForUMA::kSettings;
   TrustedVaultReauthenticationCoordinator*
       trustedVaultReauthenticationCoordinator =
           [[TrustedVaultReauthenticationCoordinator alloc]
@@ -132,8 +132,8 @@ TEST_F(TrustedVaultReauthenticationCoordinatorTest, TestInterruptWithDismiss) {
   // Create sign-in coordinator.
   trusted_vault::SecurityDomainId securityDomainID =
       trusted_vault::SecurityDomainId::kChromeSync;
-  syncer::TrustedVaultUserActionTriggerForUMA trigger =
-      syncer::TrustedVaultUserActionTriggerForUMA::kSettings;
+  trusted_vault::TrustedVaultUserActionTriggerForUMA trigger =
+      trusted_vault::TrustedVaultUserActionTriggerForUMA::kSettings;
   TrustedVaultReauthenticationCoordinator*
       trustedVaultReauthenticationCoordinator =
           [[TrustedVaultReauthenticationCoordinator alloc]

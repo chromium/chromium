@@ -283,10 +283,11 @@ TEST_F(PasswordManagerErrorMessageDelegateTest,
       password_manager::PasswordStoreBackendErrorType::kKeyRetrievalRequired);
   EXPECT_NE(nullptr, GetMessageWrapper());
 
-  EXPECT_CALL(*helper_bridge(),
-              StartTrustedVaultKeyRetrievalFlow(
-                  web_contents(), syncer::TrustedVaultUserActionTriggerForUMA::
-                                      kPasswordManagerErrorMessage));
+  EXPECT_CALL(
+      *helper_bridge(),
+      StartTrustedVaultKeyRetrievalFlow(
+          web_contents(), trusted_vault::TrustedVaultUserActionTriggerForUMA::
+                              kPasswordManagerErrorMessage));
   GetMessageWrapper()->HandleActionClick(base::android::AttachCurrentThread());
 
   // The message needs to be dismissed manually in tests. In production code
@@ -309,10 +310,11 @@ TEST_F(PasswordManagerErrorMessageDelegateTest,
       password_manager::PasswordStoreBackendErrorType::kEmptySecurityDomain);
   EXPECT_NE(nullptr, GetMessageWrapper());
 
-  EXPECT_CALL(*helper_bridge(),
-              StartTrustedVaultKeyRetrievalFlow(
-                  web_contents(), syncer::TrustedVaultUserActionTriggerForUMA::
-                                      kPasswordManagerErrorMessage));
+  EXPECT_CALL(
+      *helper_bridge(),
+      StartTrustedVaultKeyRetrievalFlow(
+          web_contents(), trusted_vault::TrustedVaultUserActionTriggerForUMA::
+                              kPasswordManagerErrorMessage));
   GetMessageWrapper()->HandleActionClick(base::android::AttachCurrentThread());
 
   // The message needs to be dismissed manually in tests. In production code
@@ -336,10 +338,11 @@ TEST_F(PasswordManagerErrorMessageDelegateTest,
           kIrretrievableSecurityDomain);
   EXPECT_NE(nullptr, GetMessageWrapper());
 
-  EXPECT_CALL(*helper_bridge(),
-              StartTrustedVaultKeyRetrievalFlow(
-                  web_contents(), syncer::TrustedVaultUserActionTriggerForUMA::
-                                      kPasswordManagerErrorMessage));
+  EXPECT_CALL(
+      *helper_bridge(),
+      StartTrustedVaultKeyRetrievalFlow(
+          web_contents(), trusted_vault::TrustedVaultUserActionTriggerForUMA::
+                              kPasswordManagerErrorMessage));
   GetMessageWrapper()->HandleActionClick(base::android::AttachCurrentThread());
 
   // The message needs to be dismissed manually in tests. In production code

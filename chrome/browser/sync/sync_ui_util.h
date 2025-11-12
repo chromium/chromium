@@ -102,13 +102,13 @@ void ShowSyncPassphraseDialogAndDecryptData(Browser& browser);
 // usually requires a reauth.
 void OpenTabForSyncKeyRetrieval(
     Browser* browser,
-    syncer::TrustedVaultUserActionTriggerForUMA trigger);
+    trusted_vault::TrustedVaultUserActionTriggerForUMA trigger);
 
 // Opens a tab for the purpose of improving the recoverability of the trusted
 // vault keys, which usually requires a reauth.
 void OpenTabForSyncKeyRecoverabilityDegraded(
     Browser* browser,
-    syncer::TrustedVaultUserActionTriggerForUMA trigger);
+    trusted_vault::TrustedVaultUserActionTriggerForUMA trigger);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #endif  // CHROME_BROWSER_SYNC_SYNC_UI_UTIL_H_
