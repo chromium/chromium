@@ -42,6 +42,7 @@ struct Credential {
   int32 id;
   string username;
   string source_site_or_app;
+  url.mojom.Origin request_origin;
 };
 
 struct SelectCredentialDialogRequest {
