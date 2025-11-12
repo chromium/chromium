@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ash/file_system_provider/fileapi/file_stream_reader.h"
 
 #include <stddef.h>
@@ -16,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
@@ -118,8 +114,8 @@ class FileSystemProviderFileStreamReader : public testing::Test {
     const std::string mount_point_name =
         file_system_info.mount_path().BaseName().AsUTF8Unsafe();
 
-    file_url_ = CreateFileSystemURL(mount_point_name,
-                                    base::FilePath(kFakeFilePath + 1));
+    file_url_ = CreateFileSystemURL(
+        mount_point_name, base::FilePath(UNSAFE_TODO(kFakeFilePath + 1)));
     ASSERT_TRUE(file_url_.is_valid());
     wrong_file_url_ = CreateFileSystemURL(
         mount_point_name, base::FilePath(FILE_PATH_LITERAL("im-not-here.txt")));
@@ -220,8 +216,8 @@ TEST_F(FileSystemProviderFileStreamReader, Read_Slice) {
   EXPECT_EQ(length, logger.results()[0]);
 
   std::string buffer_as_string(io_buffer->data(), length);
-  std::string expected_buffer(fake_file_->contents.data() + initial_offset,
-                              length);
+  std::string expected_buffer(
+      UNSAFE_TODO(fake_file_->contents.data() + initial_offset), length);
   EXPECT_EQ(expected_buffer, buffer_as_string);
 }
 

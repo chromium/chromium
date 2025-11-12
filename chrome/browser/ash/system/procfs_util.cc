@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ash/system/procfs_util.h"
 
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -157,7 +153,7 @@ bool ProcStatFile::IsPidAlive() {
   // Reading procfs is not blocking.
   base::ScopedAllowBlocking allow_blocking;
   // If the process/thread dies, read(2)ing stat file fails as ESRCH.
-  return file_.IsValid() && file_.Read(0, &buf, 1) == 1;
+  return file_.IsValid() && UNSAFE_TODO(file_.Read(0, &buf, 1)) == 1;
 }
 
 }  // namespace system

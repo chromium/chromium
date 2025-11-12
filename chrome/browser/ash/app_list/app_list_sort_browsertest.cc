@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/views/app_list_item_view.h"
@@ -20,6 +15,7 @@
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/shell.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
+#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback.h"
@@ -1467,7 +1463,8 @@ class AppListSortColorOrderBrowserTest : public AppListSortBrowserTest {
     const sk_sp<SkImage> image = SkImages::RasterFromBitmap(*icon.bitmap());
     const sk_sp<SkData> png_data =
         skia::EncodePngAsSkData(nullptr, image.get());
-    icon_file.Write(0, (const char*)png_data->data(), png_data->size());
+    UNSAFE_TODO(
+        icon_file.Write(0, (const char*)png_data->data(), png_data->size()));
     icon_file.Close();
 
     // Prepare the app manifest file.
@@ -1484,7 +1481,8 @@ class AppListSortColorOrderBrowserTest : public AppListSortBrowserTest {
     char manifest_buffer[300];
     int count = base::strings::SafeSPrintf(manifest_buffer, kManifestData,
                                            app_name.c_str(), json_buffer);
-    EXPECT_EQ(count, manifest_file.Write(0, manifest_buffer, count));
+    UNSAFE_TODO(
+        EXPECT_EQ(count, manifest_file.Write(0, manifest_buffer, count)));
     manifest_file.Close();
 
     return extension_path;

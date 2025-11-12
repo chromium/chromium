@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ash/input_method/input_method_manager_impl.h"
 
 #include <stdint.h>
@@ -20,6 +15,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/check.h"
 #include "base/check_deref.h"
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -1084,7 +1080,7 @@ InputMethodManagerImpl::InputMethodManagerImpl(
     // Create a set of layouts that do not use positional shortcuts.
     non_positional_layouts_.reserve(kNonPositionalLayoutsLength);
     for (size_t i = 0; i < kNonPositionalLayoutsLength; i++) {
-      non_positional_layouts_.emplace(kNonPositionalLayouts[i]);
+      non_positional_layouts_.emplace(UNSAFE_TODO(kNonPositionalLayouts[i]));
     }
   }
 

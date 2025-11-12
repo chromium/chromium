@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef CHROME_BROWSER_ASH_POLICY_REPORTING_SINGLE_INSTALL_EVENT_LOG_H_
 #define CHROME_BROWSER_ASH_POLICY_REPORTING_SINGLE_INSTALL_EVENT_LOG_H_
 
@@ -17,6 +12,7 @@
 #include <memory>
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/files/file.h"
@@ -179,14 +175,15 @@ bool SingleInstallEventLog<T>::ParseIdFromFile(
     base::HeapArray<char>* package_buffer) {
   if (!file->IsValid())
     return false;
-  if (file->ReadAtCurrentPos(reinterpret_cast<char*>(size), sizeof(*size)) !=
-          sizeof(*size) ||
+  if (UNSAFE_TODO(file->ReadAtCurrentPos(reinterpret_cast<char*>(size),
+                                         sizeof(*size))) != sizeof(*size) ||
       *size < 0 || *size > kMaxBufferSize) {
     return false;
   }
   *package_buffer = base::HeapArray<char>::Uninit(*size);
 
-  if (file->ReadAtCurrentPos((*package_buffer).data(), *size) != *size) {
+  if (UNSAFE_TODO(file->ReadAtCurrentPos((*package_buffer).data(), *size)) !=
+      *size) {
     return false;
   }
   return true;
@@ -197,20 +194,21 @@ bool SingleInstallEventLog<T>::LoadEventLogFromFile(
     base::File* file,
     SingleInstallEventLog<T>* log) {
   int64_t incomplete;
-  if (file->ReadAtCurrentPos(reinterpret_cast<char*>(&incomplete),
-                             sizeof(incomplete)) != sizeof(incomplete)) {
+  if (UNSAFE_TODO(file->ReadAtCurrentPos(reinterpret_cast<char*>(&incomplete),
+                                         sizeof(incomplete))) !=
+      sizeof(incomplete)) {
     return false;
   }
   log->incomplete_ = incomplete;
   ssize_t entries;
-  if (file->ReadAtCurrentPos(reinterpret_cast<char*>(&entries),
-                             sizeof(entries)) != sizeof(entries)) {
+  if (UNSAFE_TODO(file->ReadAtCurrentPos(reinterpret_cast<char*>(&entries),
+                                         sizeof(entries))) != sizeof(entries)) {
     return false;
   }
   for (ssize_t i = 0; i < entries; ++i) {
     ssize_t size;
-    if (file->ReadAtCurrentPos(reinterpret_cast<char*>(&size), sizeof(size)) !=
-            sizeof(size) ||
+    if (UNSAFE_TODO(file->ReadAtCurrentPos(reinterpret_cast<char*>(&size),
+                                           sizeof(size))) != sizeof(size) ||
         size < 0 || size > kMaxBufferSize) {
       log->incomplete_ = true;
       return false;
@@ -224,7 +222,7 @@ bool SingleInstallEventLog<T>::LoadEventLogFromFile(
     }
 
     auto buffer = base::HeapArray<char>::Uninit(size);
-    if (file->ReadAtCurrentPos(buffer.data(), size) != size) {
+    if (UNSAFE_TODO(file->ReadAtCurrentPos(buffer.data(), size)) != size) {
       log->incomplete_ = true;
       return false;
     }

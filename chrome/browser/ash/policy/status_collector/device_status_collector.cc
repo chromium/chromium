@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ash/policy/status_collector/device_status_collector.h"
 
 #include <inttypes.h>
@@ -31,6 +26,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
@@ -281,7 +277,8 @@ bool ReadTemperatureSensorInfo(const base::FilePath& sensor_dir,
     std::string temperature_string;
     int32_t temperature = 0;
     if (base::ReadFileToString(temperature_path, &temperature_string) &&
-        sscanf(temperature_string.c_str(), "%d", &temperature) == 1) {
+        UNSAFE_TODO(sscanf(temperature_string.c_str(), "%d", &temperature)) ==
+            1) {
       has_data = true;
       // CPU temp in millidegree Celsius to Celsius
       temperature /= 1000;
@@ -2062,9 +2059,9 @@ void DeviceStatusCollector::ReceiveCPUStatistics(const std::string& stats) {
     // We only care about the first four numbers: user_time, nice_time,
     // sys_time, and idle_time.
     uint64_t user = 0, nice = 0, system = 0, idle = 0;
-    int vals = sscanf(stats.c_str(),
-                      "cpu %" SCNu64 " %" SCNu64 " %" SCNu64 " %" SCNu64, &user,
-                      &nice, &system, &idle);
+    int vals = UNSAFE_TODO(sscanf(
+        stats.c_str(), "cpu %" SCNu64 " %" SCNu64 " %" SCNu64 " %" SCNu64,
+        &user, &nice, &system, &idle));
     DCHECK_EQ(4, vals);
 
     // The values returned from /proc/stat are cumulative totals, so calculate
@@ -2418,7 +2415,8 @@ bool DeviceStatusCollector::GetNetworkConfiguration(
     // Determine the type enum constant for |device|.
     size_t type_idx = 0;
     for (; type_idx < std::size(kDeviceTypeMap); ++type_idx) {
-      if ((*device)->type() == kDeviceTypeMap[type_idx].type_string) {
+      if ((*device)->type() ==
+          UNSAFE_TODO(kDeviceTypeMap[type_idx]).type_string) {
         break;
       }
     }
@@ -2430,7 +2428,7 @@ bool DeviceStatusCollector::GetNetworkConfiguration(
     }
 
     em::NetworkInterface* interface = status->add_network_interfaces();
-    interface->set_type(kDeviceTypeMap[type_idx].type_constant);
+    interface->set_type(UNSAFE_TODO(kDeviceTypeMap[type_idx]).type_constant);
     if (!(*device)->mac_address().empty()) {
       interface->set_mac_address((*device)->mac_address());
     }
@@ -2513,8 +2511,10 @@ bool DeviceStatusCollector::GetNetworkStatus(
         em::NetworkState::UNKNOWN;
     const std::string connection_state_string(state->connection_state());
     for (size_t i = 0; i < std::size(kConnectionStateMap); ++i) {
-      if (connection_state_string == kConnectionStateMap[i].state_string) {
-        connection_state_enum = kConnectionStateMap[i].state_constant;
+      if (connection_state_string ==
+          UNSAFE_TODO(kConnectionStateMap[i]).state_string) {
+        connection_state_enum =
+            UNSAFE_TODO(kConnectionStateMap[i]).state_constant;
         break;
       }
     }

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ash/arc/enterprise/cert_store/cert_store_service.h"
 
 #include <algorithm>
@@ -17,6 +12,7 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -267,7 +263,8 @@ std::optional<CertDescription> BuildCertDescritionOnWorkerThread(
   if (!id_item)
     return std::nullopt;
   crypto::ScopedSECItem sec_item_destroyer(id_item);
-  std::string pkcs11_id(id_item->data, id_item->data + id_item->len);
+  std::string pkcs11_id(id_item->data,
+                        UNSAFE_TODO(id_item->data + id_item)->len);
 
   // TODO(b/193784305) Try to avoid (some) key generation if possible.
   // Generate the placeholder RSA key that will be installed in ARC.

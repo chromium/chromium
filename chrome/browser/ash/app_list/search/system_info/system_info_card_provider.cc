@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ash/app_list/search/system_info/system_info_card_provider.h"
 
 #include <iomanip>
@@ -18,6 +13,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/webui/settings/public/constants/routes.mojom-forward.h"
 #include "base/byte_count.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -502,7 +498,7 @@ void SystemInfoCardProvider::OnSizeCalculated(
 
   // Store calculated item's size.
   const int item_index = static_cast<int>(calculation_type);
-  storage_items_total_bytes_[item_index] = total_bytes;
+  UNSAFE_TODO(storage_items_total_bytes_[item_index]) = total_bytes;
 
   // Mark item as calculated.
   calculation_state_.set(item_index);

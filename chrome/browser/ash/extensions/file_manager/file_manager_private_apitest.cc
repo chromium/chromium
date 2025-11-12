@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 #include <stdint.h>
 
@@ -15,6 +10,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/base64.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -295,29 +291,41 @@ class FileManagerPrivateApiTest : public extensions::ExtensionApiTest {
                 .SetDevicePath(mp.source_path)
                 .SetMountPath(mp.mount_path)
                 .SetWriteDisabledByPolicy(
-                    kTestDisks[disk_info_index].write_disabled_by_policy)
-                .SetFilePath(kTestDisks[disk_info_index].file_path)
-                .SetDeviceLabel(kTestDisks[disk_info_index].device_label)
-                .SetDriveLabel(kTestDisks[disk_info_index].drive_label)
-                .SetVendorId(kTestDisks[disk_info_index].vendor_id)
-                .SetVendorName(kTestDisks[disk_info_index].vendor_name)
-                .SetProductId(kTestDisks[disk_info_index].product_id)
-                .SetProductName(kTestDisks[disk_info_index].product_name)
-                .SetFileSystemUUID(kTestDisks[disk_info_index].fs_uuid)
-                .SetStorageDevicePath(
-                    kTestDisks[disk_info_index].storage_device_path)
-                .SetDeviceType(kTestDisks[disk_info_index].device_type)
-                .SetSizeInBytes(kTestDisks[disk_info_index].size_in_bytes)
-                .SetIsParent(kTestDisks[disk_info_index].is_parent)
-                .SetIsReadOnlyHardware(
-                    kTestDisks[disk_info_index].is_read_only_hardware)
-                .SetHasMedia(kTestDisks[disk_info_index].has_media)
-                .SetOnBootDevice(kTestDisks[disk_info_index].on_boot_device)
-                .SetOnRemovableDevice(
-                    kTestDisks[disk_info_index].on_removable_device)
-                .SetIsHidden(kTestDisks[disk_info_index].is_hidden)
-                .SetFileSystemType(kTestDisks[disk_info_index].file_system_type)
-                .SetBaseMountPath(kTestDisks[disk_info_index].base_mount_path)
+                    UNSAFE_TODO(kTestDisks[disk_info_index])
+                        .write_disabled_by_policy)
+                .SetFilePath(UNSAFE_TODO(kTestDisks[disk_info_index]).file_path)
+                .SetDeviceLabel(
+                    UNSAFE_TODO(kTestDisks[disk_info_index]).device_label)
+                .SetDriveLabel(
+                    UNSAFE_TODO(kTestDisks[disk_info_index]).drive_label)
+                .SetVendorId(UNSAFE_TODO(kTestDisks[disk_info_index]).vendor_id)
+                .SetVendorName(
+                    UNSAFE_TODO(kTestDisks[disk_info_index]).vendor_name)
+                .SetProductId(
+                    UNSAFE_TODO(kTestDisks[disk_info_index]).product_id)
+                .SetProductName(
+                    UNSAFE_TODO(kTestDisks[disk_info_index]).product_name)
+                .SetFileSystemUUID(
+                    UNSAFE_TODO(kTestDisks[disk_info_index]).fs_uuid)
+                .SetStorageDevicePath(UNSAFE_TODO(kTestDisks[disk_info_index])
+                                          .storage_device_path)
+                .SetDeviceType(
+                    UNSAFE_TODO(kTestDisks[disk_info_index]).device_type)
+                .SetSizeInBytes(
+                    UNSAFE_TODO(kTestDisks[disk_info_index]).size_in_bytes)
+                .SetIsParent(UNSAFE_TODO(kTestDisks[disk_info_index]).is_parent)
+                .SetIsReadOnlyHardware(UNSAFE_TODO(kTestDisks[disk_info_index])
+                                           .is_read_only_hardware)
+                .SetHasMedia(UNSAFE_TODO(kTestDisks[disk_info_index]).has_media)
+                .SetOnBootDevice(
+                    UNSAFE_TODO(kTestDisks[disk_info_index]).on_boot_device)
+                .SetOnRemovableDevice(UNSAFE_TODO(kTestDisks[disk_info_index])
+                                          .on_removable_device)
+                .SetIsHidden(UNSAFE_TODO(kTestDisks[disk_info_index]).is_hidden)
+                .SetFileSystemType(
+                    UNSAFE_TODO(kTestDisks[disk_info_index]).file_system_type)
+                .SetBaseMountPath(
+                    UNSAFE_TODO(kTestDisks[disk_info_index]).base_mount_path)
                 .Build();
 
         volumes_.insert(std::move(disk));

@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ash/plugin_vm/plugin_vm_diagnostics.h"
 
 #include <string>
 #include <string_view>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -47,7 +43,7 @@ std::string CapitalizedBoardName() {
 
   CHECK_GE(uppercase.size(), 1u);
   std::string_view uppercase_first_char(uppercase.c_str(), 1);
-  std::string_view uppercase_remaining(uppercase.c_str() + 1,
+  std::string_view uppercase_remaining(UNSAFE_TODO(uppercase.c_str() + 1),
                                        uppercase.length() - 1);
 
   return base::StrCat(

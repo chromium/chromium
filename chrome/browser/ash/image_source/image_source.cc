@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ash/image_source/image_source.h"
 
 #include <stddef.h>
 
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -106,8 +102,9 @@ bool ImageSource::IsAllowlisted(const std::string& path) const {
     return false;
 
   for (size_t i = 0; i < std::size(kAllowlistedDirectories); i++) {
-    if (components[0] == kAllowlistedDirectories[i])
+    if (components[0] == UNSAFE_TODO(kAllowlistedDirectories[i])) {
       return true;
+    }
   }
   return false;
 }

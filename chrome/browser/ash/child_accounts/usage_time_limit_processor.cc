@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ash/child_accounts/usage_time_limit_processor.h"
 
 #include <algorithm>
@@ -15,6 +10,7 @@
 #include <utility>
 
 #include "base/check_deref.h"
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
@@ -1080,7 +1076,7 @@ base::TimeDelta DictToTimeDelta(const base::Value::Dict& policy_time) {
 Weekday GetWeekday(std::string weekday) {
   std::ranges::transform(weekday, weekday.begin(), ::tolower);
   for (int i = 0; i < static_cast<int>(Weekday::kCount); i++) {
-    if (weekday == kTimeLimitWeekdays[i]) {
+    if (weekday == UNSAFE_TODO(kTimeLimitWeekdays[i])) {
       return static_cast<Weekday>(i);
     }
   }

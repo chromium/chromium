@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ash/policy/status_collector/child_status_collector.h"
 
 #include <stddef.h>
@@ -17,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/environment.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -251,7 +247,7 @@ class ChildStatusCollectorTest : public testing::Test {
 
   void SimulateStateChanges(DeviceStateTransitions* states, int len) {
     for (int i = 0; i < len; i++) {
-      switch (states[i]) {
+      switch (UNSAFE_TODO(states[i])) {
         case DeviceStateTransitions::kEnterIdleState: {
           power_manager::ScreenIdleState state;
           state.set_off(true);

@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ash/android_sms/android_sms_app_manager_impl.h"
 
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -172,7 +168,8 @@ std::optional<PwaDomain> AndroidSmsAppManagerImpl::GetInstalledPwaDomain() {
 
 std::optional<PwaDomain>
 AndroidSmsAppManagerImpl::GetInstalledPwaDomainForMigration() {
-  for (auto* it = std::begin(kDomains); it != std::end(kDomains); ++it) {
+  for (auto* it = std::begin(kDomains); it != std::end(kDomains);
+       UNSAFE_TODO(++it)) {
     if (setup_controller_->GetPwa(
             GetAndroidMessagesURL(true /* use_install_url */, *it))) {
       return *it;
