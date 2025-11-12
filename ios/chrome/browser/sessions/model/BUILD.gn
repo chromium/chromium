@@ -47,23 +47,6 @@ source_set("restoration_observer") {
   public_deps = [ "//base" ]
 }
 
-source_set("session_service") {
-  visibility = [ ":*" ]
-  sources = [
-    "session_window_ios_factory.h",
-    "session_window_ios_factory.mm",
-  ]
-  deps = [
-    ":serialisation",
-    ":session_constants",
-    ":session_internal_util",
-    "//base",
-    "//ios/chrome/browser/shared/model/web_state_list",
-    "//ios/web/public",
-    "//ios/web/public/session",
-  ]
-}
-
 source_set("serialisation") {
   visibility = [ ":*" ]
   sources = [
@@ -250,7 +233,6 @@ source_set("test_support") {
   deps = [
     ":restoration_observer",
     ":session_restoration_service",
-    ":session_service",
     "//base",
     "//components/keyed_service/core",
     "//ios/chrome/browser/sessions/model/proto",
@@ -304,7 +286,6 @@ source_set("unit_tests") {
     ":session_restoration_service",
     ":session_restoration_service_factory",
     ":session_restoration_service_impl",
-    ":session_service",
     ":test_support",
     "//base",
     "//base/test:test_support",
