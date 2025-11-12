@@ -454,7 +454,7 @@ export class SearchboxElement extends SearchboxElementBase implements
 
   private pageHandler_: PageHandlerInterface;
   private callbackRouter_: PageCallbackRouter;
-  protected dragAndDropHandler: DragAndDropHandler;
+  protected dragAndDropHandler: DragAndDropHandler|null = null;
   private dragAndDropEnabled_: boolean =
       loadTimeData.getBoolean('dragAndDropEnabled');
   private autocompleteResultChangedListenerId_: number|null = null;
@@ -469,8 +469,6 @@ export class SearchboxElement extends SearchboxElementBase implements
 
     this.pageHandler_ = SearchboxBrowserProxy.getInstance().handler;
     this.callbackRouter_ = SearchboxBrowserProxy.getInstance().callbackRouter;
-    this.dragAndDropHandler =
-        new DragAndDropHandler(this, this.dragAndDropEnabled_);
   }
 
   override async connectedCallback() {
@@ -501,6 +499,8 @@ export class SearchboxElement extends SearchboxElementBase implements
     }
 
     if (this.ntpRealboxNextEnabled) {
+      this.dragAndDropHandler =
+          new DragAndDropHandler(this, this.dragAndDropEnabled_);
       this.refreshTabSuggestions_();
     }
   }
@@ -793,7 +793,7 @@ export class SearchboxElement extends SearchboxElementBase implements
   }
 
   protected onInputPaste_(e: ClipboardEvent) {
-    if (e.clipboardData?.files && e.clipboardData.files.length > 0) {
+    if (this.ntpRealboxNextEnabled && e.clipboardData?.files && e.clipboardData.files.length > 0) {
       const files = Array.from(e.clipboardData.files);
       if (files.length > 0) {
         e.preventDefault();
