@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/check.h"
-#include "base/command_line.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -75,46 +74,15 @@ ConnectorsManager::~ConnectorsManager() {
 ConnectorsManager::~ConnectorsManager() = default;
 #endif  // BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 
-bool ConnectorsManager::IsAnalysisConnectorEnabled(
-    AnalysisConnector connector) const {
-  if (analysis_connector_settings_.count(connector) == 0 &&
-      prefs()->HasPrefPath(AnalysisConnectorPref(connector))) {
-    CacheAnalysisConnectorPolicy(connector);
-  }
-
-  return analysis_connector_settings_.count(connector);
-}
-
 #if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 bool ConnectorsManager::IsConnectorEnabledForLocalAgent(
     AnalysisConnector connector) const {
   if (!IsAnalysisConnectorEnabled(connector)) {
     return false;
   }
-  return analysis_connector_settings_.at(connector)[0].is_local_analysis();
+  return analysis_connector_settings_.at(connector)[0]->is_local_analysis();
 }
 #endif  // BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
-
-std::optional<AnalysisSettings> ConnectorsManager::GetAnalysisSettings(
-    const GURL& url,
-    AnalysisConnector connector) {
-  if (!IsAnalysisConnectorEnabled(connector)) {
-    return std::nullopt;
-  }
-
-  if (analysis_connector_settings_.count(connector) == 0)
-    CacheAnalysisConnectorPolicy(connector);
-
-  // If the connector is still not in memory, it means the pref is set to an
-  // empty list or that it is not a list.
-  if (analysis_connector_settings_.count(connector) == 0)
-    return std::nullopt;
-
-  // While multiple services can be set by the connector policies, only the
-  // first one is considered for now.
-  return analysis_connector_settings_[connector][0].GetAnalysisSettings(
-      url, GetDataRegion(connector));
-}
 
 #if BUILDFLAG(IS_CHROMEOS)
 std::optional<AnalysisSettings> ConnectorsManager::GetAnalysisSettings(
@@ -136,7 +104,10 @@ std::optional<AnalysisSettings> ConnectorsManager::GetAnalysisSettings(
 
   // While multiple services can be set by the connector policies, only the
   // first one is considered for now.
-  return analysis_connector_settings_[connector][0].GetAnalysisSettings(
+  auto* analysis_connector_settings = static_cast<AnalysisServiceSettings*>(
+      analysis_connector_settings_[connector][0].get());
+
+  return analysis_connector_settings->GetAnalysisSettings(
       context, source_url, destination_url, GetDataRegion(connector));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -182,9 +153,11 @@ void ConnectorsManager::CacheAnalysisConnectorPolicy(
   DCHECK(pref);
 
   const base::Value::List& policy_value = prefs()->GetList(pref);
-  for (const base::Value& service_settings : policy_value)
-    analysis_connector_settings_[connector].emplace_back(
-        service_settings, *service_provider_config_);
+  for (const base::Value& service_settings : policy_value) {
+    analysis_connector_settings_[connector].push_back(
+        std::make_unique<AnalysisServiceSettings>(service_settings,
+                                                  *service_provider_config_));
+  }
 }
 
 #if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
@@ -211,109 +184,6 @@ void ConnectorsManager::OnPrefChanged(AnalysisConnector connector) {
 #if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
   MaybeCloseLocalContentAnalysisAgentConnection();
 #endif
-}
-
-bool ConnectorsManager::DelayUntilVerdict(AnalysisConnector connector) {
-  if (IsAnalysisConnectorEnabled(connector)) {
-    if (analysis_connector_settings_.count(connector) == 0)
-      CacheAnalysisConnectorPolicy(connector);
-
-    if (analysis_connector_settings_.count(connector) &&
-        !analysis_connector_settings_.at(connector).empty()) {
-      return analysis_connector_settings_.at(connector)
-          .at(0)
-          .ShouldBlockUntilVerdict();
-    }
-  }
-  return false;
-}
-
-std::optional<std::u16string> ConnectorsManager::GetCustomMessage(
-    AnalysisConnector connector,
-    const std::string& tag) {
-  if (IsAnalysisConnectorEnabled(connector)) {
-    if (analysis_connector_settings_.count(connector) == 0)
-      CacheAnalysisConnectorPolicy(connector);
-
-    if (analysis_connector_settings_.count(connector) &&
-        !analysis_connector_settings_.at(connector).empty()) {
-      return analysis_connector_settings_.at(connector).at(0).GetCustomMessage(
-          tag);
-    }
-  }
-  return std::nullopt;
-}
-
-std::optional<GURL> ConnectorsManager::GetLearnMoreUrl(
-    AnalysisConnector connector,
-    const std::string& tag) {
-  if (IsAnalysisConnectorEnabled(connector)) {
-    if (analysis_connector_settings_.count(connector) == 0)
-      CacheAnalysisConnectorPolicy(connector);
-
-    if (analysis_connector_settings_.count(connector) &&
-        !analysis_connector_settings_.at(connector).empty()) {
-      return analysis_connector_settings_.at(connector).at(0).GetLearnMoreUrl(
-          tag);
-    }
-  }
-  return std::nullopt;
-}
-
-bool ConnectorsManager::GetBypassJustificationRequired(
-    AnalysisConnector connector,
-    const std::string& tag) {
-  if (IsAnalysisConnectorEnabled(connector)) {
-    if (analysis_connector_settings_.count(connector) == 0)
-      CacheAnalysisConnectorPolicy(connector);
-
-    if (analysis_connector_settings_.count(connector) &&
-        !analysis_connector_settings_.at(connector).empty()) {
-      return analysis_connector_settings_.at(connector)
-          .at(0)
-          .GetBypassJustificationRequired(tag);
-    }
-  }
-  return false;
-}
-
-std::vector<std::string> ConnectorsManager::GetAnalysisServiceProviderNames(
-    AnalysisConnector connector) {
-  if (IsAnalysisConnectorEnabled(connector)) {
-    if (analysis_connector_settings_.count(connector) == 0) {
-      CacheAnalysisConnectorPolicy(connector);
-    }
-
-    if (analysis_connector_settings_.count(connector) &&
-        !analysis_connector_settings_.at(connector).empty()) {
-      // There can only be one provider right now, but the system is designed to
-      // support multiples, so return a vector.
-      return {analysis_connector_settings_.at(connector)
-                  .at(0)
-                  .service_provider_name()};
-    }
-  }
-
-  return {};
-}
-
-std::vector<const AnalysisConfig*> ConnectorsManager::GetAnalysisServiceConfigs(
-    AnalysisConnector connector) {
-  if (IsAnalysisConnectorEnabled(connector)) {
-    if (analysis_connector_settings_.count(connector) == 0) {
-      CacheAnalysisConnectorPolicy(connector);
-    }
-
-    if (analysis_connector_settings_.count(connector) &&
-        !analysis_connector_settings_.at(connector).empty()) {
-      // There can only be one provider right now, but the system is designed to
-      // support multiples, so return a vector.
-      return {
-          analysis_connector_settings_.at(connector).at(0).GetAnalysisConfig()};
-    }
-  }
-
-  return {};
 }
 
 DataRegion ConnectorsManager::GetDataRegion(AnalysisConnector connector) const {
@@ -361,12 +231,6 @@ void ConnectorsManager::StartObservingPref(AnalysisConnector connector) {
                       &ConnectorsManager::OnPrefChanged),
                   base::Unretained(this), connector));
   }
-}
-
-
-const ConnectorsManager::AnalysisConnectorsSettings&
-ConnectorsManager::GetAnalysisConnectorsSettingsForTesting() const {
-  return analysis_connector_settings_;
 }
 
 const base::RepeatingCallback<void()>

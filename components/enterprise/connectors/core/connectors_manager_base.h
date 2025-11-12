@@ -5,9 +5,12 @@
 #ifndef COMPONENTS_ENTERPRISE_CONNECTORS_CORE_CONNECTORS_MANAGER_BASE_H_
 #define COMPONENTS_ENTERPRISE_CONNECTORS_CORE_CONNECTORS_MANAGER_BASE_H_
 
+#include <map>
+#include <memory>
 #include <optional>
 #include <vector>
 
+#include "components/enterprise/connectors/core/analysis_service_settings_base.h"
 #include "components/enterprise/connectors/core/reporting_service_settings.h"
 #include "components/enterprise/connectors/core/service_provider_config.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -15,17 +18,30 @@
 
 namespace enterprise_connectors {
 
+class AnalysisServiceSettingsBase;
+
 // Base class that manages access to Reporting Connector policies for the given
 // preferences. The class is responsible for caching the Connector policies,
 // validates them against approved service providers and provides a simple
 // interface to them.
 class ConnectorsManagerBase {
  public:
+  using AnalysisConnectorsSettings =
+      std::map<AnalysisConnector,
+               std::vector<std::unique_ptr<AnalysisServiceSettingsBase>>>;
+
   ConnectorsManagerBase(PrefService* pref_service,
                         const ServiceProviderConfig* config,
                         bool observe_prefs = true);
 
   virtual ~ConnectorsManagerBase();
+
+  // Validates which settings should be applied to an analysis connector event
+  // against cached policies. This function will prioritize new connector
+  // policies over legacy ones if they are set.
+  std::optional<AnalysisSettings> GetAnalysisSettings(
+      const GURL& url,
+      AnalysisConnector connector);
 
   // Validates which settings should be applied to a reporting event
   // against cached policies. Cache the policy value the first time this is
@@ -41,11 +57,41 @@ class ConnectorsManagerBase {
   const std::vector<ReportingServiceSettings>&
   GetReportingConnectorsSettingsForTesting() const;
 
+  // Checks if the corresponding connector is enabled.
+  bool IsAnalysisConnectorEnabled(AnalysisConnector connector) const;
+
+  bool DelayUntilVerdict(AnalysisConnector connector);
+
+  std::optional<std::u16string> GetCustomMessage(AnalysisConnector connector,
+                                                 const std::string& tag);
+
+  std::optional<GURL> GetLearnMoreUrl(AnalysisConnector connector,
+                                      const std::string& tag);
+
+  bool GetBypassJustificationRequired(AnalysisConnector connector,
+                                      const std::string& tag);
+
+  std::vector<std::string> GetAnalysisServiceProviderNames(
+      AnalysisConnector connector);
+
+  std::vector<const AnalysisConfig*> GetAnalysisServiceConfigs(
+      AnalysisConnector connector);
+
+  // Public testing functions.
+  const AnalysisConnectorsSettings& GetAnalysisConnectorsSettingsForTesting()
+      const;
+
  protected:
+  // Read and cache the policy corresponding to |connector|.
+  virtual void CacheAnalysisConnectorPolicy(
+      AnalysisConnector connector) const = 0;
+
   // Sets up |pref_change_registrar_|. Used by the constructor and
   // SetUpForTesting.
   virtual void StartObservingPrefs(PrefService* pref_service);
   void StartObservingPref();
+
+  virtual DataRegion GetDataRegion(AnalysisConnector connector) const = 0;
 
   const PrefService* prefs() const { return pref_change_registrar_.prefs(); }
 
@@ -61,6 +107,12 @@ class ConnectorsManagerBase {
 
   // Used to report changes of reporting connector policy.
   base::RepeatingCallback<void()> telemetry_observer_callback_;
+
+  // Cached values of the connector policies. Updated when a connector is first
+  // used or when a policy is updated.  Analysis connectors settings are
+  // mutable because they maybe updated by a call to IsConnectorEnabled(),
+  // which is a const method.
+  mutable AnalysisConnectorsSettings analysis_connector_settings_;
 
  private:
   // Read and cache the policy corresponding to the reporting connector.

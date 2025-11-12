@@ -24,6 +24,20 @@ constexpr char kNormalReportingSettingsPref[] = R"([
   }
 ])";
 
+class ConnectorsManager : public ConnectorsManagerBase {
+ public:
+  using ConnectorsManagerBase::ConnectorsManagerBase;
+
+  void CacheAnalysisConnectorPolicy(
+      AnalysisConnector connector) const override {
+    // do nothing
+  }
+
+  DataRegion GetDataRegion(AnalysisConnector connector) const override {
+    return DataRegion::NO_PREFERENCE;
+  }
+};
+
 class TestConnectorsService : public ConnectorsServiceBase {
  public:
   TestConnectorsService() { RegisterProfilePrefs(prefs_.registry()); }
@@ -41,7 +55,7 @@ class TestConnectorsService : public ConnectorsServiceBase {
   void set_connectors_enabled(bool enabled) { connectors_enabled_ = enabled; }
 
   void set_connectors_manager_base() {
-    connectors_manager_base_ = std::make_unique<ConnectorsManagerBase>(
+    connectors_manager_ = std::make_unique<ConnectorsManager>(
         &prefs_, GetServiceProviderConfig());
   }
 
@@ -71,10 +85,10 @@ class TestConnectorsService : public ConnectorsServiceBase {
   }
 
   ConnectorsManagerBase* GetConnectorsManagerBase() override {
-    return connectors_manager_base_.get();
+    return connectors_manager_.get();
   }
   const ConnectorsManagerBase* GetConnectorsManagerBase() const override {
-    return connectors_manager_base_.get();
+    return connectors_manager_.get();
   }
 
   PrefService* GetPrefs() override { return &prefs_; }
@@ -91,7 +105,7 @@ class TestConnectorsService : public ConnectorsServiceBase {
   std::optional<DmToken> machine_dm_token_;
   std::optional<DmToken> profile_dm_token_;
   TestingPrefServiceSimple prefs_;
-  std::unique_ptr<ConnectorsManagerBase> connectors_manager_base_;
+  std::unique_ptr<ConnectorsManager> connectors_manager_;
 };
 
 }  // namespace

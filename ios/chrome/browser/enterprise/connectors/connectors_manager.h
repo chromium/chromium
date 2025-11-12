@@ -17,6 +17,11 @@ class ConnectorsManager : public ConnectorsManagerBase {
   ConnectorsManager(PrefService* pref_service,
                     const ServiceProviderConfig* config);
   ~ConnectorsManager() override;
+
+ private:
+  void CacheAnalysisConnectorPolicy(AnalysisConnector connector) const override;
+
+  DataRegion GetDataRegion(AnalysisConnector connector) const override;
 };
 
 }  // namespace enterprise_connectors
