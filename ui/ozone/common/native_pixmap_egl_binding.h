@@ -20,7 +20,7 @@ namespace ui {
 class NativePixmapEGLBinding : public NativePixmapGLBinding {
  public:
   NativePixmapEGLBinding(const gfx::Size& size,
-                         gfx::BufferFormat format,
+                         viz::SharedImageFormat format,
                          gfx::BufferPlane plane);
   ~NativePixmapEGLBinding() override;
 
@@ -52,7 +52,7 @@ class NativePixmapEGLBinding : public NativePixmapGLBinding {
   gl::ScopedEGLImage egl_image_;
   const gfx::Size size_;
   THREAD_CHECKER(thread_checker_);
-  gfx::BufferFormat format_;
+  viz::SharedImageFormat format_;
   scoped_refptr<gfx::NativePixmap> pixmap_;
   gfx::BufferPlane plane_;
 };

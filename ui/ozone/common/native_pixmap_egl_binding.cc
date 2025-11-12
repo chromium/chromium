@@ -44,7 +44,7 @@ namespace {
 }  // namespace
 
 NativePixmapEGLBinding::NativePixmapEGLBinding(const gfx::Size& size,
-                                               gfx::BufferFormat format,
+                                               viz::SharedImageFormat format,
                                                gfx::BufferPlane plane)
     : size_(size), format_(format), plane_(plane) {}
 
@@ -68,8 +68,8 @@ std::unique_ptr<NativePixmapGLBinding> NativePixmapEGLBinding::Create(
     GLuint texture_id) {
   DCHECK_GT(texture_id, 0u);
 
-  auto binding = std::make_unique<NativePixmapEGLBinding>(
-      plane_size, viz::SharedImageFormatToBufferFormat(plane_format), plane);
+  auto binding =
+      std::make_unique<NativePixmapEGLBinding>(plane_size, plane_format, plane);
 
   if (!binding->InitializeFromNativePixmap(std::move(pixmap), color_space,
                                            target, texture_id)) {
@@ -85,8 +85,8 @@ bool NativePixmapEGLBinding::InitializeFromNativePixmap(
     GLenum target,
     GLuint texture_id) {
   DCHECK(!pixmap_);
-  if (GetFourCCFormatFromBufferFormat(format_) == DRM_FORMAT_INVALID) {
-    LOG(ERROR) << "Unsupported format: " << gfx::BufferFormatToString(format_);
+  if (GetFourCCFormatFromSharedImageFormat(format_) == DRM_FORMAT_INVALID) {
+    LOG(ERROR) << "Unsupported format: " << format_.ToString();
     return false;
   }
 
@@ -103,11 +103,11 @@ bool NativePixmapEGLBinding::InitializeFromNativePixmap(
   attrs.push_back(EGL_HEIGHT);
   attrs.push_back(size_.height());
   attrs.push_back(EGL_LINUX_DRM_FOURCC_EXT);
-  attrs.push_back(GetFourCCFormatFromBufferFormat(format_));
+  attrs.push_back(GetFourCCFormatFromSharedImageFormat(format_));
 
-  if (format_ == gfx::BufferFormat::YUV_420_BIPLANAR ||
-      format_ == gfx::BufferFormat::YVU_420 ||
-      format_ == gfx::BufferFormat::P010) {
+  if (format_ == viz::MultiPlaneFormat::kNV12 ||
+      format_ == viz::MultiPlaneFormat::kYV12 ||
+      format_ == viz::MultiPlaneFormat::kP010) {
     // TODO(b/233667677): Since https://crrev.com/c/3855381, the only NV12
     // quads that we allow to be promoted to overlays are those that don't use
     // the BT.2020 primaries and that don't use full range. Furthermore, since
