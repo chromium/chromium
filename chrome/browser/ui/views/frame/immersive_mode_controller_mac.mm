@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/views/frame/tab_strip_view_interface.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/views/infobars/infobar_container_view.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
 #include "chrome/common/chrome_features.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/remote_cocoa/app_shim/features.h"
@@ -432,6 +433,12 @@ bool ImmersiveModeControllerMac::ShouldMoveChild(views::Widget* child) {
       || widget_identifier == glic::kGlicWidgetIdentifier
 #endif
   ) {
+    return true;
+  }
+
+  // Reparent the Omnibox popup. Popup is not a BubbleDialogDelegate, so it
+  // fails the check below.
+  if (widget_identifier == omnibox::kOmniboxWebUIPopupWidgetId) {
     return true;
   }
 

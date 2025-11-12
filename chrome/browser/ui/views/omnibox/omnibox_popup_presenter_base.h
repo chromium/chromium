@@ -20,6 +20,10 @@ class LocationBarView;
 class OmniboxPopupWebUIBaseContent;
 class RoundedOmniboxResultsFrame;
 
+namespace omnibox {
+extern const void* kOmniboxWebUIPopupWidgetId;
+}  // namespace omnibox
+
 // A base assistant class for OmniboxPopupViewWebUI, this manages "n" WebViews
 // and a Widget to present the WebUI. This class is an implementation detail and
 // is not expected to grow or change much with omnibox changes.  The concern of
