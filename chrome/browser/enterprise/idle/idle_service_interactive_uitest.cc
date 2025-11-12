@@ -136,8 +136,13 @@ class IdleServiceTest : public InProcessBrowserTest {
       policy::PushProfilePolicyConnectorProviderForTesting(&provider);
     }
 
+    // TODO(crbug.com/431671320): This test uses keep-alive to prevent the
+    // Browser process from being unpinned before the ProfilePicker is destroyed
+    // during test cleanup, to work around its use of the mock time task runner.
+    // This keep-alive should be removed and tear-down issues resulting from
+    // use of the custom task runner resolved.
     keep_alive_ = std::make_unique<ScopedKeepAlive>(
-        KeepAliveOrigin::BROWSER, KeepAliveRestartOption::DISABLED);
+        KeepAliveOrigin::CHROME_APP_DELEGATE, KeepAliveRestartOption::DISABLED);
 
     InProcessBrowserTest::SetUpInProcessBrowserTestFixture();
   }
