@@ -676,7 +676,6 @@ crbug.com/angleproject/5038 [ linux intel display-server-wayland ] conformance/e
 # Roll WebGL d1b65aa..b934957.
 crbug.com/1448573 [ android angle-disabled no-passthrough qualcomm renderer-skia-gl ] conformance/extensions/oes-texture-float.html [ Failure ]
 
-crbug.com/332743717 conformance/uniforms/uniform-location.html [ Failure ]
 
 
 
