@@ -249,14 +249,8 @@ IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest,
   EXPECT_FALSE(item.hidden);
   EXPECT_TRUE(item.enabled);
 }
-// TODO(https://crbug.com/410751413): Deleting temporary directories using
-// test_file_util is flaky on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_CopiesLinkToText DISABLED_CopiesLinkToText
-#else
-#define MAYBE_CopiesLinkToText CopiesLinkToText
-#endif
-IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest, MAYBE_CopiesLinkToText) {
+
+IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest, CopiesLinkToText) {
   content::BrowserTestClipboardScope test_clipboard_scope;
   content::ContextMenuParams params;
   params.page_url = GURL("http://foo.com/");
@@ -317,15 +311,7 @@ IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest, MAYBE_ReplacesRefInURL) {
   EXPECT_EQ(u"http://foo.com/#:~:text=hello", text);
 }
 
-// TODO(https://crbug.com/410751413): Deleting temporary directories using
-// test_file_util is flaky on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_InvalidSelectorForIframe DISABLED_InvalidSelectorForIframe
-#else
-#define MAYBE_InvalidSelectorForIframe InvalidSelectorForIframe
-#endif
-IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest,
-                       MAYBE_InvalidSelectorForIframe) {
+IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest, InvalidSelectorForIframe) {
   GURL main_url(
       embedded_test_server()->GetURL("a.com", "/page_with_iframe.html"));
 
@@ -411,17 +397,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(u"http://foo.com/#:~:text=hello%20world", text);
 }
 
-// TODO(https://crbug.com/410751413): Deleting temporary directories using
-// test_file_util is flaky on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_LinkGenerationCopiedLinkTypeMetric_NewGeneration \
-  DISABLED_LinkGenerationCopiedLinkTypeMetric_NewGeneration
-#else
-#define MAYBE_LinkGenerationCopiedLinkTypeMetric_NewGeneration \
-  LinkGenerationCopiedLinkTypeMetric_NewGeneration
-#endif
 IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest,
-                       MAYBE_LinkGenerationCopiedLinkTypeMetric_NewGeneration) {
+                       LinkGenerationCopiedLinkTypeMetric_NewGeneration) {
   base::HistogramTester histogram_tester;
 
   content::BrowserTestClipboardScope test_clipboard_scope;
@@ -542,17 +519,8 @@ IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest,
       "SharedHighlights.LinkGenerated.RequestedAfterReady", 0);
 }
 
-// TODO(https://crbug.com/410751413): Deleting temporary directories using
-// test_file_util is flaky on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_LinkGenerationRequestedMetric_Failure_NoDelay \
-  DISABLED_LinkGenerationRequestedMetric_Failure_NoDelay
-#else
-#define MAYBE_LinkGenerationRequestedMetric_Failure_NoDelay \
-  LinkGenerationRequestedMetric_Failure_NoDelay
-#endif
 IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest,
-                       MAYBE_LinkGenerationRequestedMetric_Failure_NoDelay) {
+                       LinkGenerationRequestedMetric_Failure_NoDelay) {
   base::HistogramTester histogram_tester;
 
   content::BrowserTestClipboardScope test_clipboard_scope;
@@ -637,15 +605,6 @@ IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest,
   EXPECT_EQ(u"http://foo.com/#bar:~:text=hello%20world", text);
 }
 
-// TODO(https://crbug.com/410751413): Deleting temporary directories using
-// test_file_util is flaky on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_CopiesLinkToTextWithExistingFragmentsWithTextSelection \
-  DISABLED_CopiesLinkToTextWithExistingFragmentsWithTextSelection
-#else
-#define MAYBE_CopiesLinkToTextWithExistingFragmentsWithTextSelection \
-  CopiesLinkToTextWithExistingFragmentsWithTextSelection
-#endif
 IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest,
                        CopiesLinkToTextWithExistingFragmentsWithTextSelection) {
   content::BrowserTestClipboardScope test_clipboard_scope;
@@ -691,18 +650,9 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(u"http://foo.com/#bar:~:text=hello%20world", text);
 }
 
-// TODO(https://crbug.com/410751413): Deleting temporary directories using
-// test_file_util is flaky on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_CopiesLinkToTextWithExistingFragmentsWithExistingRefAndTextSelections \
-  DISABLED_CopiesLinkToTextWithExistingFragmentsWithExistingRefAndTextSelections
-#else
-#define MAYBE_CopiesLinkToTextWithExistingFragmentsWithExistingRefAndTextSelections \
-  CopiesLinkToTextWithExistingFragmentsWithExistingRefAndTextSelections
-#endif
 IN_PROC_BROWSER_TEST_F(
     LinkToTextMenuObserverTest,
-    MAYBE_CopiesLinkToTextWithExistingFragmentsWithExistingRefAndTextSelections) {
+    CopiesLinkToTextWithExistingFragmentsWithExistingRefAndTextSelections) {
   content::BrowserTestClipboardScope test_clipboard_scope;
   content::ContextMenuParams params;
   params.page_url =
