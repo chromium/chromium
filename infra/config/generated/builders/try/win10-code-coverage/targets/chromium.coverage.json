@@ -386,6 +386,7 @@
           "dimensions": {
             "os": "Windows-10-19045"
           },
+          "hard_timeout": 5400,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 6
         },
@@ -441,6 +442,7 @@
           "dimensions": {
             "os": "Windows-10-19045"
           },
+          "hard_timeout": 5400,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },

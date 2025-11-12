@@ -1614,6 +1614,7 @@ coverage_builder(
             ),
             "components_unittests": targets.mixin(
                 swarming = targets.swarming(
+                    hard_timeout_sec = 5400,
                     shards = 6,
                 ),
             ),
@@ -1628,6 +1629,7 @@ coverage_builder(
             ),
             "content_unittests": targets.mixin(
                 swarming = targets.swarming(
+                    hard_timeout_sec = 5400,
                     shards = 2,
                 ),
             ),
