@@ -15,8 +15,8 @@ namespace partition_alloc {
 namespace {
 
 enum ExternalMetadataTrialGroupPercentage {
-  kEnabled = 10,   // 10% enabled
-  kDisabled = 10,  // 10% control
+  kEnabled = 25,   // 25% enabled
+  kDisabled = 25,  // 25% control
   // Otherwise, disabled (default behavior)
 };
 // Rather than doing percentage group based assignment, set all clients to
