@@ -8,7 +8,6 @@
 #include "components/guest_contents/browser/guest_contents_handle.h"
 #include "components/guest_contents/browser/guest_contents_host_impl.h"
 #include "components/guest_contents/common/guest_contents.mojom.h"
-#include "components/network_session_configurator/common/network_switches.h"
 #include "content/public/browser/unowned_inner_web_contents_client.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
@@ -33,17 +32,12 @@ class GuestContentsSecurityBrowsertest : public content::ContentBrowserTest {
 
     host_resolver()->AddRule("*", "127.0.0.1");
 
-    embedded_https_test_server().SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
+    embedded_https_test_server().SetCertHostnames(
+        {"outer.com", "inner.com", "attacker.com", "a.com", "b.com"});
     embedded_https_test_server().ServeFilesFromSourceDirectory(
         "components/test/data/guest_contents");
 
     ASSERT_TRUE(embedded_https_test_server().Start());
-  }
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    // HTTPS server only serves a valid cert for localhost, so this is needed
-    // to load pages from other hosts without an error.
-    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
   }
 
   void TearDownOnMainThread() override { inner_webcontents_.reset(); }

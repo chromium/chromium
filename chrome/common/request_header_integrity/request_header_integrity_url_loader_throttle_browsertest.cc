@@ -15,7 +15,6 @@
 #include "build/branding_buildflags.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/network_session_configurator/common/network_switches.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -67,12 +66,8 @@ class RequestHeaderIntegrityURLLoaderThrottleBrowserTest
         &RequestHeaderIntegrityURLLoaderThrottleBrowserTest::RequestHandler,
         base::Unretained(this)));
 
+    server().SetCertHostnames({"www.google.com", "www.chromium.org"});
     server().StartAcceptingConnections();
-  }
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    // Required since the test server has no real certs to present.
-    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
   }
 
  protected:
