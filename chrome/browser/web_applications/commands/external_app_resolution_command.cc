@@ -563,7 +563,7 @@ void ExternalAppResolutionCommand::
 
   if (is_placeholder_running) {
     provider().ui_manager().NotifyAppRelaunchState(
-        *installed_placeholder_app_id_, app_id_, web_app_info_->title,
+        *installed_placeholder_app_id_, app_id_, web_app_info_->title.value(),
         profile_->GetWeakPtr(), AppRelaunchState::kAppClosingForRelaunch);
   }
 
@@ -618,7 +618,7 @@ void ExternalAppResolutionCommand::OnPlaceholderUninstalledMaybeRelaunch(
   }
 
   provider().ui_manager().NotifyAppRelaunchState(
-      *installed_placeholder_app_id_, app_id_, web_app_info_->title,
+      *installed_placeholder_app_id_, app_id_, web_app_info_->title.value(),
       profile_->GetWeakPtr(), AppRelaunchState::kAppAboutToRelaunch);
   provider().ui_manager().LaunchWebApp(
       WebAppUiManager::CreateAppLaunchParamsWithoutWindowConfig(
@@ -638,7 +638,7 @@ void ExternalAppResolutionCommand::OnLaunch(base::WeakPtr<Browser>,
                                             base::Value debug_value) {
   GetMutableDebugValue().Set("launch", std::move(debug_value));
   provider().ui_manager().NotifyAppRelaunchState(
-      *installed_placeholder_app_id_, app_id_, web_app_info_->title,
+      *installed_placeholder_app_id_, app_id_, web_app_info_->title.value(),
       profile_->GetWeakPtr(), AppRelaunchState::kAppRelaunched);
   CompleteAndSelfDestruct(
       CommandResult::kSuccess,

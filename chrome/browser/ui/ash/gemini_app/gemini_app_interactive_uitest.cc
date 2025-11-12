@@ -245,7 +245,7 @@ class GeminiAppInteractiveUiTestBase
 
   // Returns the expected title for the Gemini app.
   const std::u16string& GetGeminiAppTitle() const {
-    return gemini_app_install_info_->title;
+    return gemini_app_install_info_->title.value();
   }
 
   // Returns a builder for a step which presses and releases the given `key`.

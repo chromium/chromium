@@ -1138,9 +1138,9 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerInstallAllAppsBrowserTest,
         ->AppRegistryCache()
         .ForOneApp(*app_id, [&](const apps::AppUpdate& app) {
           app_found = true;
-          EXPECT_EQ(
-              app.Name(),
-              base::UTF16ToUTF8(type_and_info.second->GetWebAppInfo()->title));
+          EXPECT_EQ(app.Name(),
+                    base::UTF16ToUTF8(
+                        type_and_info.second->GetWebAppInfo()->title.value()));
         });
     EXPECT_TRUE(app_found) << "System Web App "
                            << type_and_info.second->GetInternalName()

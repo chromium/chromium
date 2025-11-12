@@ -480,7 +480,7 @@ void PopulateProductIcons(WebAppInstallInfo* web_app_info,
   std::u16string icon_letter =
       web_app_info->title.empty()
           ? shortcuts::GenerateIconLetterFromUrl(web_app_info->start_url())
-          : shortcuts::GenerateIconLetterFromName(web_app_info->title);
+          : shortcuts::GenerateIconLetterFromName(web_app_info->title.value());
 
   // Ensure that all top-level icons that are in web_app_info with  Purpose::ANY
   // are present, by generating icons for any sizes that have failed to
@@ -723,7 +723,7 @@ void SetWebAppManifestFields(const WebAppInstallInfo& web_app_info,
   web_app.SetManifestId(web_app_info.manifest_id());
 
   DCHECK(!web_app_info.title.empty());
-  web_app.SetName(base::UTF16ToUTF8(web_app_info.title));
+  web_app.SetName(base::UTF16ToUTF8(web_app_info.title.value()));
 
   web_app.SetStartUrl(web_app_info.start_url());
 
@@ -763,7 +763,7 @@ void SetWebAppManifestFields(const WebAppInstallInfo& web_app_info,
   // manifest_id above.
   CHECK(sync_proto.has_start_url());
   CHECK(sync_proto.has_relative_manifest_id());
-  sync_proto.set_name(base::UTF16ToUTF8(web_app_info.title));
+  sync_proto.set_name(base::UTF16ToUTF8(web_app_info.title.value()));
   sync_proto.clear_theme_color();
   if (web_app_info.theme_color.has_value()) {
     sync_proto.set_theme_color(web_app_info.theme_color.value());

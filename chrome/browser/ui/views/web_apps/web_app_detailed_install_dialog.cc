@@ -454,7 +454,7 @@ void ShowWebAppDetailedInstallDialog(
           .AddCustomField(
               std::make_unique<views::BubbleDialogModelHost::CustomView>(
                   WebAppIconNameAndOriginView::Create(
-                      icon_image, title, start_url,
+                      icon_image, title.value(), start_url,
                       dialog_image_info.is_maskable),
                   views::BubbleDialogModelHost::FieldType::kControl))
           .AddParagraph(
