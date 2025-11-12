@@ -15,10 +15,10 @@ bool IsConnectionTrusted(
     const named_mojo_ipc_server::ConnectionInfo& connector) {
   // IPC callers on Windows are authenticated via the DACL applied to the stub's
   // named pipe (see `CreateServerEndpointOptions` below).
-  // TODO(crbug.com/456542123): Set to `true` after the client proxy allows
-  // impersonation and the server stub gates method calls based on the client's
-  // integrity levels.
-  return false;
+  // TODO(crbug.com/456542123): Set to `true` for system after the client proxy
+  // allows impersonation and the server stub gates method calls based on the
+  // client's integrity levels.
+  return !IsSystemInstall();
 }
 
 named_mojo_ipc_server::EndpointOptions CreateServerEndpointOptions(

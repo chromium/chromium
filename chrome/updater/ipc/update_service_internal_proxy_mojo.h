@@ -13,6 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "chrome/updater/ipc/update_service_internal_proxy_impl.h"
 #include "chrome/updater/mojom/updater_service_internal.mojom.h"
 #include "chrome/updater/update_service_internal.h"
 #include "chrome/updater/updater_scope.h"
@@ -25,21 +26,19 @@ class IsolatedConnection;
 
 namespace updater {
 
-using RpcError = int;
-
-class UpdateServiceInternalProxyImpl
-    : public base::RefCountedThreadSafe<UpdateServiceInternalProxyImpl> {
+class UpdateServiceInternalProxyMojoImpl
+    : public UpdateServiceInternalProxyImpl {
  public:
-  // Creates an UpdateServiceInternalProxyImpl which is not bound to a remote.
-  // It establishes a connection lazily and can be used immediately.
-  explicit UpdateServiceInternalProxyImpl(UpdaterScope scope);
+  // Creates an UpdateServiceInternalProxyMojoImpl which is not bound to a
+  // remote. It establishes a connection lazily and can be used immediately.
+  explicit UpdateServiceInternalProxyMojoImpl(UpdaterScope scope);
 
-  void Run(base::OnceCallback<void(std::optional<RpcError>)> callback);
-  void Hello(base::OnceCallback<void(std::optional<RpcError>)> callback);
+  void Run(base::OnceCallback<void(std::optional<RpcError>)> callback) override;
+  void Hello(
+      base::OnceCallback<void(std::optional<RpcError>)> callback) override;
 
  private:
-  friend class base::RefCountedThreadSafe<UpdateServiceInternalProxyImpl>;
-  ~UpdateServiceInternalProxyImpl();
+  ~UpdateServiceInternalProxyMojoImpl() override;
 
   void EnsureConnecting();
   void OnDisconnected();
@@ -53,7 +52,7 @@ class UpdateServiceInternalProxyImpl
       GUARDED_BY_CONTEXT(sequence_checker_);
   mojo::Remote<mojom::UpdateServiceInternal> remote_
       GUARDED_BY_CONTEXT(sequence_checker_);
-  base::WeakPtrFactory<UpdateServiceInternalProxyImpl> weak_factory_{this};
+  base::WeakPtrFactory<UpdateServiceInternalProxyMojoImpl> weak_factory_{this};
 };
 
 }  // namespace updater

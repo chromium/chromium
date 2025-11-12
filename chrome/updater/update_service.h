@@ -24,6 +24,8 @@ enum class PolicyFetchReason;
 
 namespace updater {
 
+using RpcError = int;
+
 enum class UpdaterScope;
 
 // The UpdateService is the cross-platform core of the updater.

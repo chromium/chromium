@@ -1043,16 +1043,16 @@ class UpdateServiceProxyImplImpl
   }
 };
 
-UpdateServiceProxyImpl::UpdateServiceProxyImpl(UpdaterScope updater_scope)
+UpdateServiceProxyWinImpl::UpdateServiceProxyWinImpl(UpdaterScope updater_scope)
     : impl_(base::MakeRefCounted<UpdateServiceProxyImplImpl>(updater_scope)) {}
 
-UpdateServiceProxyImpl::~UpdateServiceProxyImpl() {
+UpdateServiceProxyWinImpl::~UpdateServiceProxyWinImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << __func__;
   UpdateServiceProxyImplImpl::Destroy(std::move(impl_));
 }
 
-void UpdateServiceProxyImpl::GetVersion(
+void UpdateServiceProxyWinImpl::GetVersion(
     base::OnceCallback<void(base::expected<base::Version, RpcError>)>
         callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -1060,7 +1060,7 @@ void UpdateServiceProxyImpl::GetVersion(
   impl_->GetVersion(base::BindPostTaskToCurrentDefault(std::move(callback)));
 }
 
-void UpdateServiceProxyImpl::FetchPolicies(
+void UpdateServiceProxyWinImpl::FetchPolicies(
     policy::PolicyFetchReason /*reason*/,
     base::OnceCallback<void(base::expected<int, RpcError>)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -1070,7 +1070,7 @@ void UpdateServiceProxyImpl::FetchPolicies(
   impl_->FetchPolicies(base::BindPostTaskToCurrentDefault(std::move(callback)));
 }
 
-void UpdateServiceProxyImpl::RegisterApp(
+void UpdateServiceProxyWinImpl::RegisterApp(
     const RegistrationRequest& request,
     base::OnceCallback<void(base::expected<int, RpcError>)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -1079,7 +1079,7 @@ void UpdateServiceProxyImpl::RegisterApp(
                      base::BindPostTaskToCurrentDefault(std::move(callback)));
 }
 
-void UpdateServiceProxyImpl::GetAppStates(
+void UpdateServiceProxyWinImpl::GetAppStates(
     base::OnceCallback<void(base::expected<std::vector<UpdateService::AppState>,
                                            RpcError>)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -1087,7 +1087,7 @@ void UpdateServiceProxyImpl::GetAppStates(
   impl_->GetAppStates(base::BindPostTaskToCurrentDefault(std::move(callback)));
 }
 
-void UpdateServiceProxyImpl::RunPeriodicTasks(
+void UpdateServiceProxyWinImpl::RunPeriodicTasks(
     base::OnceCallback<void(base::expected<int, RpcError>)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << __func__;
@@ -1095,7 +1095,7 @@ void UpdateServiceProxyImpl::RunPeriodicTasks(
       base::BindPostTaskToCurrentDefault(std::move(callback)));
 }
 
-void UpdateServiceProxyImpl::CheckForUpdate(
+void UpdateServiceProxyWinImpl::CheckForUpdate(
     const std::string& app_id,
     UpdateService::Priority priority,
     UpdateService::PolicySameVersionUpdate policy_same_version_update,
@@ -1112,7 +1112,7 @@ void UpdateServiceProxyImpl::CheckForUpdate(
       base::BindPostTaskToCurrentDefault(std::move(callback)));
 }
 
-void UpdateServiceProxyImpl::Update(
+void UpdateServiceProxyWinImpl::Update(
     const std::string& app_id,
     const std::string& install_data_index,
     UpdateService::Priority priority,
@@ -1130,7 +1130,7 @@ void UpdateServiceProxyImpl::Update(
                 base::BindPostTaskToCurrentDefault(std::move(callback)));
 }
 
-void UpdateServiceProxyImpl::UpdateAll(
+void UpdateServiceProxyWinImpl::UpdateAll(
     base::RepeatingCallback<void(const UpdateService::UpdateState&)>
         state_update,
     base::OnceCallback<void(base::expected<UpdateService::Result, RpcError>)>
@@ -1141,7 +1141,7 @@ void UpdateServiceProxyImpl::UpdateAll(
                    base::BindPostTaskToCurrentDefault(std::move(callback)));
 }
 
-void UpdateServiceProxyImpl::Install(
+void UpdateServiceProxyWinImpl::Install(
     const RegistrationRequest& registration,
     const std::string& client_install_data,
     const std::string& install_data_index,
@@ -1159,13 +1159,13 @@ void UpdateServiceProxyImpl::Install(
                  base::BindPostTaskToCurrentDefault(std::move(callback)));
 }
 
-void UpdateServiceProxyImpl::CancelInstalls(const std::string& app_id) {
+void UpdateServiceProxyWinImpl::CancelInstalls(const std::string& app_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << __func__;
   impl_->CancelInstalls(app_id);
 }
 
-void UpdateServiceProxyImpl::RunInstaller(
+void UpdateServiceProxyWinImpl::RunInstaller(
     const std::string& app_id,
     const base::FilePath& installer_path,
     const std::string& install_args,
@@ -1188,7 +1188,7 @@ scoped_refptr<UpdateService> CreateUpdateServiceProxy(
     UpdaterScope updater_scope,
     base::TimeDelta /*get_version_timeout*/) {
   return base::MakeRefCounted<UpdateServiceProxy>(
-      base::MakeRefCounted<UpdateServiceProxyImpl>(updater_scope));
+      base::MakeRefCounted<UpdateServiceProxyWinImpl>(updater_scope));
 }
 
 }  // namespace updater

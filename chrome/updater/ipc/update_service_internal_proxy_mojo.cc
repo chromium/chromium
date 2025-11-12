@@ -96,11 +96,11 @@ void Connect(
 
 }  // namespace
 
-UpdateServiceInternalProxyImpl::UpdateServiceInternalProxyImpl(
+UpdateServiceInternalProxyMojoImpl::UpdateServiceInternalProxyMojoImpl(
     UpdaterScope scope)
     : scope_(scope) {}
 
-void UpdateServiceInternalProxyImpl::Run(
+void UpdateServiceInternalProxyMojoImpl::Run(
     base::OnceCallback<void(std::optional<RpcError>)> callback) {
   VLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -112,7 +112,7 @@ void UpdateServiceInternalProxyImpl::Run(
       std::nullopt));
 }
 
-void UpdateServiceInternalProxyImpl::Hello(
+void UpdateServiceInternalProxyMojoImpl::Hello(
     base::OnceCallback<void(std::optional<RpcError>)> callback) {
   VLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -124,9 +124,10 @@ void UpdateServiceInternalProxyImpl::Hello(
       std::nullopt));
 }
 
-UpdateServiceInternalProxyImpl::~UpdateServiceInternalProxyImpl() = default;
+UpdateServiceInternalProxyMojoImpl::~UpdateServiceInternalProxyMojoImpl() =
+    default;
 
-void UpdateServiceInternalProxyImpl::EnsureConnecting() {
+void UpdateServiceInternalProxyMojoImpl::EnsureConnecting() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (remote_) {
     return;
@@ -136,18 +137,18 @@ void UpdateServiceInternalProxyImpl::EnsureConnecting() {
       base::BindOnce(&Connect, scope_, 0,
                      base::Time::Now() + kConnectionTimeout,
                      base::BindPostTaskToCurrentDefault(base::BindOnce(
-                         &UpdateServiceInternalProxyImpl::OnConnected, this,
+                         &UpdateServiceInternalProxyMojoImpl::OnConnected, this,
                          remote_.BindNewPipeAndPassReceiver()))));
 }
 
-void UpdateServiceInternalProxyImpl::OnDisconnected() {
+void UpdateServiceInternalProxyMojoImpl::OnDisconnected() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << __func__;
   connection_.reset();
   remote_.reset();
 }
 
-void UpdateServiceInternalProxyImpl::OnConnected(
+void UpdateServiceInternalProxyMojoImpl::OnConnected(
     mojo::PendingReceiver<mojom::UpdateServiceInternal> pending_receiver,
     std::optional<mojo::PlatformChannelEndpoint> endpoint) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -174,14 +175,19 @@ void UpdateServiceInternalProxyImpl::OnConnected(
   // A weak pointer is used here to prevent remote_ from forming a reference
   // cycle with this object.
   remote_.set_disconnect_handler(
-      base::BindOnce(&UpdateServiceInternalProxyImpl::OnDisconnected,
+      base::BindOnce(&UpdateServiceInternalProxyMojoImpl::OnDisconnected,
                      weak_factory_.GetWeakPtr()));
 }
 
+#if BUILDFLAG(IS_WIN)
+scoped_refptr<UpdateServiceInternal> CreateUpdateServiceInternalProxyMojo(
+    UpdaterScope scope) {
+#else   // BUILDFLAG(IS_WIN)
 scoped_refptr<UpdateServiceInternal> CreateUpdateServiceInternalProxy(
     UpdaterScope scope) {
+#endif  // BUILDFLAG(IS_WIN)
   return base::MakeRefCounted<UpdateServiceInternalProxy>(
-      base::MakeRefCounted<UpdateServiceInternalProxyImpl>(scope));
+      base::MakeRefCounted<UpdateServiceInternalProxyMojoImpl>(scope));
 }
 
 }  // namespace updater

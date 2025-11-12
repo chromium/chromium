@@ -140,24 +140,24 @@ class UpdateServiceInternalProxyImplImpl
   }
 };
 
-UpdateServiceInternalProxyImpl::UpdateServiceInternalProxyImpl(
+UpdateServiceInternalProxyWinImpl::UpdateServiceInternalProxyWinImpl(
     UpdaterScope scope)
     : impl_(base::MakeRefCounted<UpdateServiceInternalProxyImplImpl>(scope)) {}
 
-UpdateServiceInternalProxyImpl::~UpdateServiceInternalProxyImpl() {
+UpdateServiceInternalProxyWinImpl::~UpdateServiceInternalProxyWinImpl() {
   VLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   UpdateServiceInternalProxyImplImpl::Destroy(std::move(impl_));
 }
 
-void UpdateServiceInternalProxyImpl::Run(
+void UpdateServiceInternalProxyWinImpl::Run(
     base::OnceCallback<void(std::optional<RpcError>)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << __func__;
   impl_->Run(base::BindPostTaskToCurrentDefault(std::move(callback)));
 }
 
-void UpdateServiceInternalProxyImpl::Hello(
+void UpdateServiceInternalProxyWinImpl::Hello(
     base::OnceCallback<void(std::optional<RpcError>)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << __func__;
@@ -167,7 +167,7 @@ void UpdateServiceInternalProxyImpl::Hello(
 scoped_refptr<UpdateServiceInternal> CreateUpdateServiceInternalProxy(
     UpdaterScope updater_scope) {
   return base::MakeRefCounted<UpdateServiceInternalProxy>(
-      base::MakeRefCounted<UpdateServiceInternalProxyImpl>(updater_scope));
+      base::MakeRefCounted<UpdateServiceInternalProxyWinImpl>(updater_scope));
 }
 
 }  // namespace updater

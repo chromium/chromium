@@ -11,14 +11,9 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/types/expected.h"
+#include "chrome/updater/ipc/update_service_proxy_impl.h"
 #include "chrome/updater/registration_data.h"
 #include "chrome/updater/update_service.h"
-
-#if BUILDFLAG(IS_POSIX)
-#include "chrome/updater/ipc/update_service_proxy_mojo.h"
-#elif BUILDFLAG(IS_WIN)
-#include "chrome/updater/ipc/update_service_proxy_win.h"
-#endif
 
 namespace base {
 class FilePath;

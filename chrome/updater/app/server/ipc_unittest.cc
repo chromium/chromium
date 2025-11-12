@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,6 +23,7 @@
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
 #include "base/version.h"
+#include "build/build_config.h"
 #include "chrome/updater/app/server/update_service_internal_stub.h"
 #include "chrome/updater/app/server/update_service_stub.h"
 #include "chrome/updater/ipc/ipc_support.h"
@@ -53,16 +54,16 @@ class UpdaterIPCTestCase : public testing::Test {
     ex1.version = "9.19.20";
     ex1.ap = "foo";
     ex1.brand_code = "FooBarInc";
-    ex1.brand_path = base::FilePath("/path/to/foo_bar");
-    ex1.ecp = base::FilePath("path/to/foo_ecp");
+    ex1.brand_path = base::FilePath(FILE_PATH_LITERAL("/path/to/foo_bar"));
+    ex1.ecp = base::FilePath(FILE_PATH_LITERAL("path/to/foo_ecp"));
 
     UpdateService::AppState ex2;
     ex2.app_id = "ex2";
     ex2.version = "98.4.5";
     ex2.ap = "zaz";
     ex2.brand_code = "BazInc";
-    ex2.brand_path = base::FilePath("/path/to/baz");
-    ex2.ecp = base::FilePath("path/to/baz_ecp");
+    ex2.brand_path = base::FilePath(FILE_PATH_LITERAL("/path/to/baz"));
+    ex2.ecp = base::FilePath(FILE_PATH_LITERAL("path/to/baz_ecp"));
 
     return {ex1, ex2};
   }
@@ -138,14 +139,14 @@ class UpdaterIPCTestCase : public testing::Test {
     RegistrationRequest r;
     r.app_id = "app_id";
     r.brand_code = "BRND";
-    r.brand_path = base::FilePath("brand_path");
+    r.brand_path = base::FilePath(FILE_PATH_LITERAL("brand_path"));
     r.ap = "ap";
-    r.ap_path = base::FilePath("ap_path");
+    r.ap_path = base::FilePath(FILE_PATH_LITERAL("ap_path"));
     r.ap_key = "ap_key";
     r.version = "1.2.3.4";
-    r.version_path = base::FilePath("version_path");
+    r.version_path = base::FilePath(FILE_PATH_LITERAL("version_path"));
     r.version_key = "version_key";
-    r.existence_checker_path = base::FilePath("ecp");
+    r.existence_checker_path = base::FilePath(FILE_PATH_LITERAL("ecp"));
     return r;
   }
 
@@ -364,7 +365,8 @@ TEST_F(UpdaterIPCTestCase, AllRpcsComplete) {
                  state_change_callback,
              base::OnceCallback<void(UpdateService::Result)> callback) {
             EXPECT_EQ(app_id, "ex1");
-            EXPECT_EQ(installer_path, base::FilePath("/path/to/installer"));
+            EXPECT_EQ(installer_path,
+                      base::FilePath(FILE_PATH_LITERAL("/path/to/installer")));
             EXPECT_EQ(install_args, "install_args");
             EXPECT_EQ(install_data, "install_data");
             EXPECT_EQ(install_settings, "install_settings");
@@ -396,7 +398,11 @@ MULTIPROCESS_TEST_MAIN(UpdateServiceClient) {
       base::test::TaskEnvironment::MainThreadType::IO};
   ScopedIPCSupportWrapper ipc_support;
   scoped_refptr<UpdateService> client_proxy =
+#if BUILDFLAG(IS_WIN)
+      CreateUpdateServiceProxyMojo(UpdaterScope::kUser);
+#else   // BUILDFLAG(IS_WIN)
       CreateUpdateServiceProxy(UpdaterScope::kUser);
+#endif  // BUILDFLAG(IS_WIN)
   {
     base::RunLoop run_loop;
     client_proxy->GetVersion(base::BindOnce([](const base::Version& version) {
@@ -433,15 +439,18 @@ MULTIPROCESS_TEST_MAIN(UpdateServiceClient) {
           EXPECT_EQ(app_states[0].ap, "foo");
           EXPECT_EQ(app_states[0].brand_code, "FooBarInc");
           EXPECT_EQ(app_states[0].brand_path,
-                    base::FilePath("/path/to/foo_bar"));
-          EXPECT_EQ(app_states[0].ecp, base::FilePath("path/to/foo_ecp"));
+                    base::FilePath(FILE_PATH_LITERAL("/path/to/foo_bar")));
+          EXPECT_EQ(app_states[0].ecp,
+                    base::FilePath(FILE_PATH_LITERAL("path/to/foo_ecp")));
 
           EXPECT_EQ(app_states[1].app_id, "ex2");
           EXPECT_EQ(app_states[1].version, "98.4.5");
           EXPECT_EQ(app_states[1].ap, "zaz");
           EXPECT_EQ(app_states[1].brand_code, "BazInc");
-          EXPECT_EQ(app_states[1].brand_path, base::FilePath("/path/to/baz"));
-          EXPECT_EQ(app_states[1].ecp, base::FilePath("path/to/baz_ecp"));
+          EXPECT_EQ(app_states[1].brand_path,
+                    base::FilePath(FILE_PATH_LITERAL("/path/to/baz")));
+          EXPECT_EQ(app_states[1].ecp,
+                    base::FilePath(FILE_PATH_LITERAL("path/to/baz_ecp")));
         }).Then(run_loop.QuitClosure()));
     run_loop.Run();
   }
@@ -481,8 +490,8 @@ MULTIPROCESS_TEST_MAIN(UpdateServiceClient) {
     RegistrationRequest request;
     base::RunLoop run_loop;
     client_proxy->RunInstaller(
-        "ex1", base::FilePath("/path/to/installer"), "install_args",
-        "install_data", "install_settings", "en-us",
+        "ex1", base::FilePath(FILE_PATH_LITERAL("/path/to/installer")),
+        "install_args", "install_data", "install_settings", "en-us",
         UpdaterIPCTestCase::ExpectUpdateStatesCallback(),
         UpdaterIPCTestCase::ExpectResultCallback(run_loop));
     run_loop.Run();
@@ -543,7 +552,11 @@ MULTIPROCESS_TEST_MAIN(UpdateServiceInternalClient) {
       base::test::TaskEnvironment::MainThreadType::IO};
   ScopedIPCSupportWrapper ipc_support;
   scoped_refptr<UpdateServiceInternal> client_proxy =
+#if BUILDFLAG(IS_WIN)
+      CreateUpdateServiceInternalProxyMojo(UpdaterScope::kUser);
+#else   // BUILDFLAG(IS_WIN)
       CreateUpdateServiceInternalProxy(UpdaterScope::kUser);
+#endif  // BUILDFLAG(IS_WIN)
   {
     base::RunLoop wait_for_response_run_loop;
     client_proxy->Run(wait_for_response_run_loop.QuitClosure());
