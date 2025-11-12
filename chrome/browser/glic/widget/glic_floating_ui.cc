@@ -119,7 +119,6 @@ void GlicFloatingUi::CreateAndSetupWidget(gfx::Rect initial_bounds) {
                                     initial_bounds, user_resizable_);
 
   // TODO: Setup AccessibilityText.
-  GetGlicWidget()->SetZOrderLevel(ui::ZOrderLevel::kFloatingWindow);
 #if BUILDFLAG(IS_MAC)
   GetGlicWidget()->SetActivationIndependence(true);
   GetGlicWidget()->SetVisibleOnAllWorkspaces(true);

@@ -52,6 +52,10 @@
 #include "chrome/browser/shell_integration_linux.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ash/wm/window_util.h"
+#endif
+
 namespace glic {
 namespace {
 
@@ -234,6 +238,18 @@ std::unique_ptr<views::WidgetDelegate> GlicWidget::CreateWidgetDelegate(
         return std::make_unique<GlicClientView>(widget, contents_view);
       }));
 
+#if BUILDFLAG(IS_CHROMEOS)
+  // TODO(b:458115863): Move ChromeOS specific code to platform specific
+  // implementation. (Like GlicWidgetChromeOS?)
+  delegate->RegisterWidgetInitializedCallback(base::BindOnce(
+      [](views::WidgetDelegate* delegate) {
+        auto* frame_window = delegate->GetWidget()->GetNativeWindow();
+        ash::window_util::SetChildrenUseExtendedHitRegionForWindow(
+            frame_window->parent());
+      },
+      base::Unretained(delegate.get())));
+#endif
+
   return delegate;
 }
 
@@ -264,6 +280,7 @@ std::unique_ptr<GlicWidget> GlicWidget::Create(views::WidgetDelegate* delegate,
   }
 
   params.delegate = delegate;
+  params.z_order = ui::ZOrderLevel::kFloatingWindow;
 
   // -------------- Platform-Specific Pre-Init Parameters.
 #if BUILDFLAG(IS_OZONE)
