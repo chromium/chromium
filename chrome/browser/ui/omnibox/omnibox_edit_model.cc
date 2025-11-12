@@ -755,17 +755,22 @@ void OmniboxEditModel::EnterKeywordModeForDefaultSearchProvider(
 }
 
 void OmniboxEditModel::OpenAiMode(bool via_keyboard) {
+  // If the omnibox hasn't been modified (changed selection or text), then AIM
+  // button should open AIM popup. Otherwise, it should navigate to Google AI
+  // page.
+  if ((popup_selection_.line == 0 ||
+       popup_selection_.line == OmniboxPopupSelection::kNoMatch) &&
+      !user_input_in_progress_ &&
+      base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxAimPopup)) {
+    controller_->popup_state_manager()->SetPopupState(OmniboxPopupState::kAim);
+    return;
+  }
+
   std::u16string query_text =
       AutocompleteMatch::IsSearchType(current_match_.type)
           ? current_match_.contents
           : u"";
   RecordAiModeMetrics(query_text, /*activated=*/true, via_keyboard);
-
-  if (query_text.empty() &&
-      base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxAimPopup)) {
-    controller_->popup_state_manager()->SetPopupState(OmniboxPopupState::kAim);
-    return;
-  }
 
   GURL ai_mode_url =
       GetUrlForAim(controller_->client()->GetTemplateURLService(),
