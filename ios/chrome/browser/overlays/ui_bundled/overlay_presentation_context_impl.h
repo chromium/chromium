@@ -8,11 +8,12 @@
 #import <UIKit/UIKit.h>
 
 #import "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
-#include "base/observer_list.h"
-#include "base/scoped_observation.h"
-#include "ios/chrome/browser/overlays/model/public/overlay_modality.h"
+#import "base/memory/weak_ptr.h"
+#import "base/observer_list.h"
+#import "base/scoped_observation.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_modality.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presentation_context.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_user_data.h"
 #import "ios/chrome/browser/overlays/ui_bundled/overlay_presentation_context_fullscreen_disabler.h"
 #import "ios/chrome/browser/overlays/ui_bundled/overlay_request_coordinator.h"
@@ -121,7 +122,7 @@ class OverlayPresentationContextImpl : public OverlayPresentationContext {
   UIViewController* GetBaseViewController(OverlayRequest* request) const;
 
   // Returns the UI state for `request`.
-  OverlayRequestUIState* GetRequestUIState(OverlayRequest* request) const;
+  OverlayRequestUIState* GetRequestUIState(OverlayRequestId request_id) const;
 
   // Returns the presentation capabilities required to show `request`.
   UIPresentationCapabilities GetRequiredPresentationCapabilities(
@@ -134,8 +135,8 @@ class OverlayPresentationContextImpl : public OverlayPresentationContext {
   // Creates the current UIPresentationCapabilities based on the current state.
   UIPresentationCapabilities ConstructPresentationCapabilities();
 
-  // Shows the UI for the presented request using the container coordinator.
-  void ShowUIForPresentedRequest();
+  // Shows the UI for the request using the container coordinator.
+  void ShowUIForPresentedRequest(OverlayRequest* request);
 
   // Called when the UI for `request_` has finished being presented.
   void OverlayUIWasPresented();
@@ -213,12 +214,14 @@ class OverlayPresentationContextImpl : public OverlayPresentationContext {
   // The presentation capabilities of `coordinator_`'s view controller.
   UIPresentationCapabilities presentation_capabilities_ =
       UIPresentationCapabilities::kNone;
-  // The request that is currently presented by `presenter_`.  When a new
-  // request is presented, the UI state for the request will be added to
-  // `states_`.
-  raw_ptr<OverlayRequest, DanglingUntriaged> request_ = nullptr;
-  // Map storing the UI state for each OverlayRequest.
-  std::map<OverlayRequest*, std::unique_ptr<OverlayRequestUIState>> states_;
+  // Identifier of the request that is currently presented by `presenter_`.
+  // When a new request is presented, the UI state for the request will be
+  // added to `states_`.
+  OverlayRequestId request_id_;
+  // Map storing the UI state for each OverlayRequest (identified by their
+  // OverlayRequestId).
+  std::map<OverlayRequestId, std::unique_ptr<OverlayRequestUIState>> states_;
+  // List of registered OverlayPresentationContextObservers.
   base::ObserverList<OverlayPresentationContextObserver,
                      /* check_empty= */ true>
       observers_;
