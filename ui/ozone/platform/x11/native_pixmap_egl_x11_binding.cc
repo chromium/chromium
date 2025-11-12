@@ -197,14 +197,13 @@ bool NativePixmapEGLX11Binding::Initialize(x11::Pixmap pixmap) {
 // static
 std::unique_ptr<NativePixmapGLBinding> NativePixmapEGLX11Binding::Create(
     scoped_refptr<gfx::NativePixmap> native_pixmap,
-    gfx::BufferFormat plane_format,
+    viz::SharedImageFormat plane_format,
     gfx::Size plane_size,
     GLenum target,
     GLuint texture_id) {
-  auto plane_si_format = viz::GetSharedImageFormat(plane_format);
-  if (native_pixmap->GetSharedImageFormat() != plane_si_format ||
-      !gl::IsFormatSupported(plane_si_format)) {
-    VLOG(1) << "Format " << plane_si_format.ToString()
+  if (native_pixmap->GetSharedImageFormat() != plane_format ||
+      !gl::IsFormatSupported(plane_format)) {
+    VLOG(1) << "Format " << plane_format.ToString()
             << " is unsupported or does not match the NativePixmap's format ("
             << native_pixmap->GetSharedImageFormat().ToString() << ")";
     return nullptr;
@@ -223,9 +222,10 @@ std::unique_ptr<NativePixmapGLBinding> NativePixmapEGLX11Binding::Create(
     return nullptr;
   }
 
-  auto binding = std::make_unique<NativePixmapEGLX11Binding>(plane_format);
+  auto buffer_format = viz::SharedImageFormatToBufferFormat(plane_format);
+  auto binding = std::make_unique<NativePixmapEGLX11Binding>(buffer_format);
   x11::Pixmap pixmap =
-      gl::XPixmapFromNativePixmap(*native_pixmap, plane_format);
+      gl::XPixmapFromNativePixmap(*native_pixmap, buffer_format);
   if (pixmap == x11::Pixmap::None) {
     return nullptr;
   }

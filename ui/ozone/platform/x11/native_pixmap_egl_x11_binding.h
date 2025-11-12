@@ -29,7 +29,7 @@ class NativePixmapEGLX11Binding : public NativePixmapGLBinding {
 
   static std::unique_ptr<NativePixmapGLBinding> Create(
       scoped_refptr<gfx::NativePixmap> pixmap,
-      gfx::BufferFormat plane_format,
+      viz::SharedImageFormat plane_format,
       gfx::Size plane_size,
       GLenum target,
       GLuint texture_id);

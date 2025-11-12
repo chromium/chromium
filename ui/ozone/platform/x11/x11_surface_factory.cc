@@ -145,7 +145,6 @@ class GLOzoneEGLX11 : public GLOzoneEGL {
       const gfx::ColorSpace& color_space,
       GLenum target,
       GLuint texture_id) override {
-    auto buffer_format = viz::SharedImageFormatToBufferFormat(plane_format);
     switch (GetNativePixmapSupportType()) {
       case NativePixmapSupportType::kDMABuf: {
         return NativePixmapEGLBinding::Create(pixmap, plane_format, plane,
@@ -154,7 +153,7 @@ class GLOzoneEGLX11 : public GLOzoneEGL {
       }
       case NativePixmapSupportType::kX11Pixmap: {
         return NativePixmapEGLX11Binding::Create(
-            pixmap, buffer_format, plane_size, target, texture_id);
+            pixmap, plane_format, plane_size, target, texture_id);
       }
       default:
         return nullptr;
