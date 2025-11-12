@@ -146,6 +146,7 @@ void FakeSamlIdpMixin::SetUpCommandLine(base::CommandLine* command_line) {
         fake_saml_continue_response);
   }
 
+  saml_server_.SetCertHostnames({kIdPHost});
   ASSERT_TRUE(saml_server_.Start());
   ASSERT_TRUE(saml_http_server_.Start());
 }

@@ -102,7 +102,6 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
-#include "components/network_session_configurator/common/network_switches.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
@@ -274,9 +273,6 @@ class SamlTestBase : public OobeBaseTest {
 
     command_line->AppendSwitch(switches::kOobeSkipPostLogin);
     command_line->AppendSwitch(switches::kAllowFailedPolicyFetchForTest);
-
-    // TODO(crbug.com/1177416) - Fix this with a proper SSL solution.
-    command_line->AppendSwitch(::switches::kIgnoreCertificateErrors);
 
     // This will change the verification key to be used by the
     // CloudPolicyValidator. It will allow for the policy provided by the

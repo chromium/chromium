@@ -58,7 +58,6 @@
 #include "chromeos/ash/components/network/proxy/proxy_config_handler.h"
 #include "chromeos/ash/components/policy/device_policy/device_policy_builder.h"
 #include "components/account_id/account_id.h"
-#include "components/network_session_configurator/common/network_switches.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
@@ -150,8 +149,6 @@ class LockscreenWebUiTest : public MixinBasedInProcessBrowserTest {
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(switches::kAllowFailedPolicyFetchForTest);
-    // TODO(crbug.com/1177416) - Fix this with a proper SSL solution.
-    command_line->AppendSwitch(::switches::kIgnoreCertificateErrors);
 
     MixinBasedInProcessBrowserTest::SetUpCommandLine(command_line);
   }
