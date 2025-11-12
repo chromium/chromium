@@ -14,8 +14,6 @@
 #include "components/password_manager/core/browser/password_manager_interface.h"
 #include "url/gurl.h"
 
-class ActorLoginFormFinder;
-
 namespace password_manager {
 class PasswordManagerInterface;
 }  // namespace password_manager
@@ -25,6 +23,8 @@ class TabInterface;
 }
 
 namespace actor_login {
+
+class ActorLoginFormFinder;
 
 // Fills a given credential into the matching signin form if one exists.
 class ActorLoginCredentialFiller {
@@ -52,6 +52,39 @@ class ActorLoginCredentialFiller {
  private:
   enum class FieldType { kUsername, kPassword };
 
+  void FetchEligibleForms(
+      base::OnceCallback<
+          void(std::vector<password_manager::PasswordFormManager*>)>
+          on_forms_retrieved_cb);
+
+  // Should always be called synchronously.
+  void ProcessRetrievedForms(
+      std::vector<password_manager::PasswordFormManager*> eligible_managers);
+
+  // Checks if device reauthentication is required before filling.
+  // If required, triggers reauthentication and, upon success, re-fetches
+  // eligible forms to ensure freshness before filling all of them.
+  // If not required, proceeds directly to filling all eligible fields in
+  // `eligible_managers`.
+  void MaybeReauthAndFillAllEligibleFields(
+      std::vector<password_manager::PasswordFormManager*> eligible_managers,
+      const password_manager::PasswordForm& stored_credential);
+
+  // Checks if device reauthentication is required before filling.
+  // If required, triggers reauthentication and restarts the form fetching
+  // process to avoid using potentially stale pointers.
+  // If not required, proceeds directly to filling the form managed by
+  // `signin_form_manager`.
+  void MaybeReauthAndFillForm(
+      password_manager::PasswordFormManager* signin_form_manager,
+      const password_manager::PasswordForm& stored_credential);
+
+  // Triggers the device reauthentication flow.
+  // `on_reauth_cb` is executed only if reauthentication is successful.
+  // If reauthentication fails, the filling process is aborted and an error
+  // is reported via `callback_`.
+  void AttemptReauth(base::OnceClosure on_reauth_cb);
+
   // Retrieves the full data of a saved credential for the form managed
   // by `signin_form_manager` corresponding to `credential_`.
   const password_manager::PasswordForm* GetMatchingStoredCredential(
@@ -78,7 +111,8 @@ class ActorLoginCredentialFiller {
   // `stored_credential.username_value`.
   void FillAllEligibleFields(
       const password_manager::PasswordForm& stored_credential,
-      bool should_fill_iframes);
+      bool should_skip_iframes,
+      std::vector<password_manager::PasswordFormManager*> eligible_managers);
 
   // Fills the field of `type` identified by `field_renderer_id` within the
   // `driver`'s frame with `value`. `closure` will be called to signal
@@ -114,6 +148,11 @@ class ActorLoginCredentialFiller {
 
   // Safe to access from everywhere apart from the destructor.
   raw_ptr<password_manager::PasswordManagerClient> client_ = nullptr;
+
+  // Tab where the filling should be done. This tab is guaranteed to be non-null
+  // for the lifetime of `ActorLoginCredentialFiller` because the filler is
+  // owned by the tab.
+  raw_ptr<const tabs::TabInterface> tab_ = nullptr;
 
   // Helper object for finding login forms.
   std::unique_ptr<ActorLoginFormFinder> login_form_finder_;

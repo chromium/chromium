@@ -12,6 +12,7 @@
 #include "components/password_manager/core/browser/actor_login/actor_login_types.h"
 #include "components/password_manager/core/browser/actor_login/internal/actor_login_form_finder.h"
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/form_fetcher_impl.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_cache.h"
@@ -86,7 +87,7 @@ Credential PasswordFormToCredential(
   Credential credential;
   credential.username = form.username_value;
   credential.source_site_or_app =
-      ActorLoginFormFinder::GetSourceSiteOrAppFromUrl(form.url);
+      actor_login::ActorLoginFormFinder::GetSourceSiteOrAppFromUrl(form.url);
   credential.request_origin = request_origin;
   credential.immediatelyAvailableToLogin = immediately_available_to_login;
   credential.has_persistent_permission = form.actor_login_approved;
@@ -122,25 +123,43 @@ ActorLoginGetCredentialsHelper::ActorLoginGetCredentialsHelper(
     CredentialsOrErrorReply callback)
     : request_origin_(origin),
       callback_(std::move(callback)),
-      password_manager_(password_manager) {
-  std::unique_ptr<BrowserSavePasswordProgressLogger> logger = GetLogger(client);
+      password_manager_(password_manager),
+      client_(client),
+      login_form_finder_(std::make_unique<ActorLoginFormFinder>(client)) {
+  std::unique_ptr<BrowserSavePasswordProgressLogger> logger =
+      GetLogger(client_);
   LogStatus(logger.get(),
             Logger::STRING_ACTOR_LOGIN_GET_CREDENTIALS_FETCHING_STARTED);
 
   // The check is added separately in order to differentiate between having
   // no signin form on the page and filling being disallowed.
-  if (!client->IsFillingEnabled(origin.GetURL())) {
+  if (!client_->IsFillingEnabled(origin.GetURL())) {
     LogStatus(logger.get(), Logger::STRING_ACTOR_LOGIN_FILLING_NOT_ALLOWED);
     std::move(callback_).Run(
         base::unexpected(ActorLoginError::kFillingNotAllowed));
     return;
   }
-  password_manager::PasswordFormCache* form_cache =
-      password_manager_->GetPasswordFormCache();
-  ActorLoginFormFinder login_form_finder(client);
+
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kActorLoginFieldVisibilityCheck)) {
+    login_form_finder_->GetEligibleLoginFormManagersAsync(
+        request_origin_,
+        base::BindOnce(&ActorLoginGetCredentialsHelper::
+                           OnEligibleLoginFormManagersRetrieved,
+                       weak_ptr_factory_.GetWeakPtr()));
+  } else {
+    OnEligibleLoginFormManagersRetrieved(
+        login_form_finder_->GetEligibleLoginFormManagers(request_origin_));
+  }
+}
+
+void ActorLoginGetCredentialsHelper::OnEligibleLoginFormManagersRetrieved(
+    std::vector<password_manager::PasswordFormManager*> eligible_managers) {
+  std::unique_ptr<BrowserSavePasswordProgressLogger> logger =
+      GetLogger(client_);
+
   password_manager::PasswordFormManager* signin_form_manager =
-      form_cache ? login_form_finder.GetSigninFormManager(request_origin_)
-                 : nullptr;
+      ActorLoginFormFinder::GetSigninFormManager(eligible_managers);
 
   if (signin_form_manager) {
     immediately_available_to_login_ = true;
@@ -149,10 +168,10 @@ ActorLoginGetCredentialsHelper::ActorLoginGetCredentialsHelper(
     immediately_available_to_login_ = false;
     password_manager::PasswordFormDigest form_digest(
         password_manager::PasswordForm::Scheme::kHtml,
-        password_manager_util::GetSignonRealm(origin.GetURL()),
-        origin.GetURL());
+        password_manager_util::GetSignonRealm(request_origin_.GetURL()),
+        request_origin_.GetURL());
     owned_form_fetcher_ = std::make_unique<password_manager::FormFetcherImpl>(
-        std::move(form_digest), client,
+        std::move(form_digest), client_,
         /*should_migrate_http_passwords=*/false);
     form_fetcher_ = owned_form_fetcher_.get();
     form_fetcher_->Fetch();

@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 
+#include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
@@ -91,6 +92,10 @@ class MockPasswordManagerDriver
   MOCK_METHOD(password_manager::PasswordManagerInterface*,
               GetPasswordManager,
               (),
+              (override));
+  MOCK_METHOD(void,
+              CheckViewAreaVisible,
+              (autofill::FieldRendererId, base::OnceCallback<void(bool)>),
               (override));
 };
 }  // namespace
@@ -251,7 +256,10 @@ TEST_F(ActorLoginGetCredentialsHelperTest, GetCredentialsFromAllStores) {
               UnorderedElementsAre(u"foo_username", u"bar_username"));
 }
 
-TEST_F(ActorLoginGetCredentialsHelperTest, ImmediatelyAvailableToLogin) {
+TEST_F(ActorLoginGetCredentialsHelperTest, UsernameAndPasswordFieldsVisible) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(
+      password_manager::features::kActorLoginFieldVisibilityCheck);
   PasswordForm saved_form =
       CreatePasswordForm(kUrl.spec(), u"foo_username", u"foo_password");
   client()->profile_store()->AddLogin(saved_form);
@@ -260,6 +268,45 @@ TEST_F(ActorLoginGetCredentialsHelperTest, ImmediatelyAvailableToLogin) {
   // a sign-in form.
   AddFormManager(CreateFormManager());
   SetBestMatches({saved_form});
+
+  EXPECT_CALL(driver(), CheckViewAreaVisible)
+      .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<1>(true));
+
+  base::test::TestFuture<CredentialsOrError> future;
+  ActorLoginGetCredentialsHelper helper(kOrigin, client(), password_manager(),
+                                        future.GetCallback());
+
+  base::RunLoop().RunUntilIdle();
+  // `FakeFormFetcher::AddConsumer` implementation differs from production,
+  // therefore additional manual call to NotifyFetchCompleted is needed
+  // after helper above gets registered as observer of `FakeFormFetcher`.
+  // Otherwise helper will never know that `FakeFormFetcher` already fetched
+  // credentials and this test will crash.
+  form_fetcher()->NotifyFetchCompleted();
+
+  ASSERT_TRUE(future.Get().has_value());
+  const auto& credentials = future.Get().value();
+  ASSERT_EQ(credentials.size(), 1u);
+  EXPECT_EQ(credentials[0].username, u"foo_username");
+  EXPECT_TRUE(credentials[0].immediatelyAvailableToLogin);
+  EXPECT_FALSE(credentials[0].has_persistent_permission);
+}
+
+TEST_F(ActorLoginGetCredentialsHelperTest, FieldsAreNotVisible) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(
+      password_manager::features::kActorLoginFieldVisibilityCheck);
+  PasswordForm saved_form =
+      CreatePasswordForm(kUrl.spec(), u"foo_username", u"foo_password");
+  client()->profile_store()->AddLogin(saved_form);
+  // To make GetSigninFormManager return a non-nullptr value, we need to
+  // populate the PasswordFormCache with a PasswordFormManager that represents
+  // a sign-in form.
+  AddFormManager(CreateFormManager());
+  SetBestMatches({saved_form});
+
+  EXPECT_CALL(driver(), CheckViewAreaVisible)
+      .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<1>(false));
 
   base::test::TestFuture<CredentialsOrError> future;
   ActorLoginGetCredentialsHelper helper(kOrigin, client(), password_manager(),
@@ -275,7 +322,7 @@ TEST_F(ActorLoginGetCredentialsHelperTest, ImmediatelyAvailableToLogin) {
   const auto& credentials = future.Get().value();
   ASSERT_EQ(credentials.size(), 1u);
   EXPECT_EQ(credentials[0].username, u"foo_username");
-  EXPECT_TRUE(credentials[0].immediatelyAvailableToLogin);
+  EXPECT_FALSE(credentials[0].immediatelyAvailableToLogin);
   EXPECT_FALSE(credentials[0].has_persistent_permission);
 }
 
@@ -312,8 +359,8 @@ TEST_F(ActorLoginGetCredentialsHelperTest, IgnoresFormInFencedFrame) {
 TEST_F(ActorLoginGetCredentialsHelperTest,
        SameSiteDirectChildOfFrameFormAvailable) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {password_manager::features::kActorLoginSameSiteIframeSupport}, {});
+  feature_list.InitAndEnableFeature(
+      password_manager::features::kActorLoginSameSiteIframeSupport);
   const GURL same_site_url = GURL("https://login.foo.com");
   const url::Origin same_site_origin = url::Origin::Create(same_site_url);
   PasswordForm saved_form =
@@ -328,6 +375,8 @@ TEST_F(ActorLoginGetCredentialsHelperTest,
 
   ON_CALL(driver(), IsDirectChildOfPrimaryMainFrame)
       .WillByDefault(Return(true));
+  EXPECT_CALL(driver(), CheckViewAreaVisible)
+      .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<1>(true));
 
   base::test::TestFuture<CredentialsOrError> future;
   ActorLoginGetCredentialsHelper helper(kOrigin, client(), password_manager(),
@@ -372,6 +421,9 @@ TEST_F(ActorLoginGetCredentialsHelperTest,
 }
 
 TEST_F(ActorLoginGetCredentialsHelperTest, NestedFrameWithSameOrigin) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      password_manager::features::kActorLoginFieldVisibilityCheck);
   const GURL same_origin_url = GURL("https://foo.com/login");
   const url::Origin same_origin = url::Origin::Create(same_origin_url);
   PasswordForm saved_form =
@@ -399,6 +451,9 @@ TEST_F(ActorLoginGetCredentialsHelperTest, NestedFrameWithSameOrigin) {
 }
 
 TEST_F(ActorLoginGetCredentialsHelperTest, IgnoresSameSiteNestedFrame) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      password_manager::features::kActorLoginFieldVisibilityCheck);
   const GURL same_site_url = GURL("https://login.foo.com");
   const url::Origin same_site_origin = url::Origin::Create(same_site_url);
   PasswordForm saved_form =
@@ -429,7 +484,8 @@ TEST_F(ActorLoginGetCredentialsHelperTest,
        IgnoresSameSiteNestedFrame_FeatureOff) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      {}, {password_manager::features::kActorLoginSameSiteIframeSupport});
+      {}, {password_manager::features::kActorLoginSameSiteIframeSupport,
+           password_manager::features::kActorLoginFieldVisibilityCheck});
   const GURL same_site_url = GURL("https://login.foo.com");
   const url::Origin same_site_origin = url::Origin::Create(same_site_url);
   PasswordForm saved_form =

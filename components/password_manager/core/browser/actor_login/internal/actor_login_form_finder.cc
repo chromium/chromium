@@ -4,11 +4,21 @@
 
 #include "components/password_manager/core/browser/actor_login/internal/actor_login_form_finder.h"
 
+#include <map>
+#include <memory>
 #include <ranges>
+#include <utility>
+#include <vector>
 
+#include "base/barrier_callback.h"
+#include "base/barrier_closure.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/functional/concurrent_callbacks.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_cache.h"
@@ -20,6 +30,8 @@
 #include "url/origin.h"
 
 namespace {
+
+using DriverFormKey = actor_login::ActorLoginFormFinder::DriverFormKey;
 
 bool IsElementFocusable(autofill::FieldRendererId renderer_id,
                         const autofill::FormData& form_data) {
@@ -42,6 +54,89 @@ bool IsLoginForm(const password_manager::PasswordForm& form) {
 
   return (has_focusable_username || has_focusable_password) &&
          !has_focusable_new_password;
+}
+
+enum class LoginFieldType {
+  kUsername,
+  kPassword,
+  kNewPassword,
+};
+
+bool OnLoginFormChecksDone(
+    std::vector<std::pair<LoginFieldType, bool>> results) {
+  bool is_username_visible = false;
+  bool is_password_visible = false;
+  bool is_new_password_visible = false;
+
+  for (const auto& [type, is_visible] : results) {
+    switch (type) {
+      case LoginFieldType::kUsername:
+        is_username_visible = is_visible;
+        break;
+      case LoginFieldType::kPassword:
+        is_password_visible = is_visible;
+        break;
+      case LoginFieldType::kNewPassword:
+        is_new_password_visible = is_visible;
+        break;
+    }
+  }
+
+  return (is_username_visible || is_password_visible) &&
+         !is_new_password_visible;
+}
+
+void OnCheckViewAreaVisibleFinished(
+    LoginFieldType type,
+    base::RepeatingCallback<void(std::pair<LoginFieldType, bool>)> barrier,
+    bool visible) {
+  barrier.Run(std::make_pair(type, visible));
+}
+
+void IsLoginFormAsync(
+    const password_manager::PasswordForm& form,
+    base::WeakPtr<password_manager::PasswordManagerDriver> driver,
+    base::OnceCallback<void(bool)> callback) {
+  if (!driver) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), false));
+    return;
+  }
+
+  // Add the fields to be checked.
+  std::vector<std::pair<LoginFieldType, autofill::FieldRendererId>>
+      fields_to_check;
+  if (form.HasUsernameElement()) {
+    fields_to_check.emplace_back(LoginFieldType::kUsername,
+                                 form.username_element_renderer_id);
+  }
+  if (form.HasPasswordElement()) {
+    fields_to_check.emplace_back(LoginFieldType::kPassword,
+                                 form.password_element_renderer_id);
+  }
+  if (form.HasNewPasswordElement()) {
+    fields_to_check.emplace_back(LoginFieldType::kNewPassword,
+                                 form.new_password_element_renderer_id);
+  }
+
+  if (fields_to_check.empty()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), false));
+    return;
+  }
+
+  // The final callback processes the aggregated results from the barrier.
+  auto on_all_checks_done =
+      base::BindOnce(&OnLoginFormChecksDone).Then(std::move(callback));
+
+  auto barrier = base::BarrierCallback<std::pair<LoginFieldType, bool>>(
+      fields_to_check.size(), std::move(on_all_checks_done));
+
+  for (const auto& [type, renderer_id] : fields_to_check) {
+    driver->CheckViewAreaVisible(
+        renderer_id,
+        base::BindOnce(&OnCheckViewAreaVisibleFinished, type, barrier));
+  }
 }
 
 bool IsFormOriginSupported(const url::Origin& form_origin,
@@ -77,7 +172,18 @@ bool IsValidFrameAndOriginToFill(
          driver->IsDirectChildOfPrimaryMainFrame();
 }
 
+void OnIsLoginFormAsyncFinished(
+    DriverFormKey key,
+    base::OnceCallback<void(std::pair<DriverFormKey, bool>)>
+        notify_concurrent_callback,
+    bool is_login_form) {
+  std::move(notify_concurrent_callback)
+      .Run(std::make_pair(std::move(key), is_login_form));
+}
+
 }  // namespace
+
+namespace actor_login {
 
 ActorLoginFormFinder::ActorLoginFormFinder(
     password_manager::PasswordManagerClient* client)
@@ -90,24 +196,18 @@ std::u16string ActorLoginFormFinder::GetSourceSiteOrAppFromUrl(
   return base::UTF8ToUTF16(url.GetWithEmptyPath().spec());
 }
 
+// static
 password_manager::PasswordFormManager*
-ActorLoginFormFinder::GetSigninFormManager(const url::Origin& origin) {
-  password_manager::PasswordFormCache* form_cache =
-      client_->GetPasswordManager()->GetPasswordFormCache();
-  if (!form_cache) {
-    return nullptr;
-  }
-
-  std::vector<password_manager::PasswordFormManager*>
-      eligible_login_form_managers = GetEligibleLoginFormManagers(origin);
+ActorLoginFormFinder::GetSigninFormManager(
+    const std::vector<password_manager::PasswordFormManager*>&
+        eligible_managers) {
   password_manager::PasswordFormManager* signin_form_manager = nullptr;
-  for (const auto& manager : eligible_login_form_managers) {
+  for (auto* manager : eligible_managers) {
     // Prefer filling the primary main frame form if one exists, but
     // also prefer more recently-parsed forms.
     if (manager->GetDriver()->IsInPrimaryMainFrame()) {
       signin_form_manager = manager;
     }
-
     // Otherwise, store this form manager and look to see if there is a primary
     // main frame form later.
     if (!signin_form_manager) {
@@ -143,3 +243,82 @@ ActorLoginFormFinder::GetEligibleLoginFormManagers(const url::Origin& origin) {
   }
   return eligible_form_managers;
 }
+
+void ActorLoginFormFinder::GetEligibleLoginFormManagersAsync(
+    const url::Origin& origin,
+    EligibleManagersCallback callback) {
+  password_manager::PasswordFormCache* form_cache =
+      client_->GetPasswordManager()->GetPasswordFormCache();
+  CHECK(form_cache);
+
+  std::vector<password_manager::PasswordFormManager*> candidate_managers;
+  for (const auto& manager : form_cache->GetFormManagers()) {
+    if (!manager->GetDriver()) {
+      continue;
+    }
+
+    if (!IsValidFrameAndOriginToFill(manager->GetDriver(), origin)) {
+      continue;
+    }
+
+    if (!manager->GetParsedObservedForm()) {
+      continue;
+    }
+    candidate_managers.emplace_back(manager.get());
+  }
+
+  if (candidate_managers.empty()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback),
+                       std::vector<password_manager::PasswordFormManager*>()));
+    return;
+  }
+
+  base::ConcurrentCallbacks<std::pair<DriverFormKey, bool>> concurrent;
+  for (password_manager::PasswordFormManager* manager : candidate_managers) {
+    DriverFormKey key = std::make_pair(
+        manager->GetParsedObservedForm()->form_data.renderer_id(),
+        manager->GetDriver()->AsWeakPtr());
+
+    base::OnceCallback<void(bool)> on_single_check_done =
+        base::BindOnce(&OnIsLoginFormAsyncFinished, std::move(key),
+                       concurrent.CreateCallback());
+
+    IsLoginFormAsync(*manager->GetParsedObservedForm(), manager->GetDriver(),
+                     std::move(on_single_check_done));
+  }
+
+  std::move(concurrent)
+      .Done(base::BindOnce(&ActorLoginFormFinder::OnAllEligibleChecksCompleted,
+                           weak_ptr_factory_.GetWeakPtr(),
+                           std::move(callback)));
+}
+
+void ActorLoginFormFinder::OnAllEligibleChecksCompleted(
+    EligibleManagersCallback callback,
+    std::vector<std::pair<DriverFormKey, bool>> results) {
+  std::vector<password_manager::PasswordFormManager*> eligible_managers;
+
+  password_manager::PasswordFormCache* form_cache =
+      client_->GetPasswordManager()->GetPasswordFormCache();
+  CHECK(form_cache);
+  for (const auto& manager : form_cache->GetFormManagers()) {
+    const password_manager::PasswordForm* parsed_form =
+        manager->GetParsedObservedForm();
+    if (!manager->GetDriver() || !parsed_form) {
+      continue;
+    }
+
+    for (const auto& [key, is_login_form] : results) {
+      if (is_login_form && manager->DoesManage(key.first, key.second.get())) {
+        eligible_managers.emplace_back(manager.get());
+        break;
+      }
+    }
+  }
+
+  std::move(callback).Run(eligible_managers);
+}
+
+}  // namespace actor_login
