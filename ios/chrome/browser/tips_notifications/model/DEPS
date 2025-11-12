@@ -11,5 +11,4 @@ include_rules = [
   "+ios/chrome/browser/signin/model",
   "+ios/chrome/browser/sync/model",
   "+ios/chrome/browser/settings/model",
-  "+ios/chrome/browser/safety_check_notifications/utils",
 ]
