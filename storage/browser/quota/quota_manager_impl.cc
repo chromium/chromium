@@ -966,9 +966,6 @@ QuotaManagerImpl::QuotaManagerImpl(
                                                      io_thread,
                                                      profile_path)),
       io_thread_(std::move(io_thread)),
-      db_runner_(base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
-           base::TaskShutdownBehavior::BLOCK_SHUTDOWN})),
       get_settings_function_(get_settings_function),
       special_storage_policy_(std::move(special_storage_policy)),
       get_volume_info_fn_(&QuotaManagerImpl::GetVolumeInfo) {
@@ -981,6 +978,17 @@ QuotaManagerImpl::QuotaManagerImpl(
         base::SingleThreadTaskRunner::GetCurrentDefault();
   }
   DETACH_FROM_SEQUENCE(sequence_checker_);
+
+  base::TaskTraits traits{base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+                          base::TaskShutdownBehavior::BLOCK_SHUTDOWN};
+  if (profile_path_.empty()) {
+    db_runner_ = base::ThreadPool::CreateSequencedTaskRunner(traits);
+  } else {
+    // Note that this path is not quite what's actually used by the database,
+    // but all it needs is to be unique relative to all other Chromium features.
+    db_runner_ = base::ThreadPool::CreateSequencedTaskRunnerForResource(
+        traits, profile_path_.AppendASCII(QuotaDatabase::kDatabaseName));
+  }
 }
 
 void QuotaManagerImpl::SetQuotaSettings(const QuotaSettings& settings) {
