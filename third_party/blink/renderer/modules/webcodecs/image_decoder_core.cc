@@ -25,10 +25,6 @@ namespace blink {
 
 namespace {
 
-// TODO(crbug.com/40215121): Remove this after M144.
-BASE_FEATURE(kWebCodecsImageDecoderHighBitDepthYUV,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 media::VideoPixelFormat YUVSubsamplingToMediaPixelFormat(
     cc::YUVSubsampling sampling,
     int depth) {
@@ -493,10 +489,6 @@ void ImageDecoderCore::MaybeDecodeToYuv() {
   DCHECK(!have_completed_yuv_decode_);
 
   const uint8_t bit_depth = decoder_->GetYUVBitDepth();
-  if (bit_depth > 8 &&
-      !base::FeatureList::IsEnabled(kWebCodecsImageDecoderHighBitDepthYUV)) {
-    return;
-  }
 
   const auto format = YUVSubsamplingToMediaPixelFormat(
       decoder_->GetYUVSubsampling(), bit_depth);
