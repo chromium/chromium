@@ -46,7 +46,7 @@ import * as Console from 'devtools/panels/console/console.js';
   function onTreeElement(treeElement) {
     treeElement.startEditing();
     Console.ConsoleView.ConsoleView.instance().viewport.refresh();
-    TestRunner.addResult('After viewport refresh tree element remains in editing mode: ' + !!treeElement.prompt);
+    TestRunner.addResult('After viewport refresh tree element remains in editing mode: ' + !!treeElement.editing);
     TestRunner.completeTest();
   }
 })();
