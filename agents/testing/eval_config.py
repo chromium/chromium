@@ -21,6 +21,7 @@ class TestConfig:
     in `test_file` unless this object is constructed with `from_file`.
     """
     test_file: pathlib.Path
+    owner: str = None
     runs_per_test: int = 1
     pass_k_threshold: int = 1
     precompile_targets: list = dataclasses.field(default_factory=list)
@@ -89,11 +90,13 @@ class TestConfig:
             pass_k_threshold = metadata.get('pass_k_threshold', runs_per_test)
             precompile_targets = metadata.get('precompile_targets', [])
             tags = metadata.get('tags', [])
+        owner = config.get('owner')
 
         instance = cls(test_file=test_file,
                        runs_per_test=runs_per_test,
                        pass_k_threshold=pass_k_threshold,
                        precompile_targets=precompile_targets,
+                       owner=owner,
                        tags=tags)
         instance.validate()
         return instance

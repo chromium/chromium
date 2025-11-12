@@ -1,9 +1,9 @@
-description: |
-  Owner: aleventhal@
-  Description: Verify the correct file path is provided for searching a target
+description: >
+  Verify the correct file path is provided for searching a target
   class name in the Chromium code base.
+owner: aleventhal@
 prompts:
-  - |
+  - >
     What C++ file implements the mojo class "ax::mojom::AccessibilityService"
     from the Chromium code base?
 providers:

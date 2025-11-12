@@ -61,6 +61,36 @@ class ResultDBReporterTest(unittest.TestCase):
             tags=[('foo_bar', '3.21')],
         )
 
+    def test_report_result_with_owner(self):
+        reporter = resultdb.ResultDBReporter()
+        config = eval_config.TestConfig(test_file=CHROMIUM_SRC /
+                                        'some_test.yaml',
+                                        owner='foo')
+        test_result = results.TestResult(config=config,
+                                         success=True,
+                                         iteration_results=[
+                                             results.IterationResult(
+                                                 success=True,
+                                                 duration=1.23,
+                                                 test_log='log',
+                                                 metrics={},
+                                             )
+                                         ])
+        reporter.report_result(test_result)
+        self.mock_client.Post.assert_called_once_with(
+            test_id='some_test.yaml',
+            status=result_types.PASS,
+            duration=1230,
+            test_log='log',
+            test_file='//some_test.yaml',
+            test_id_structured={
+                'coarseName': '',
+                'fineName': '',
+                'caseNameComponents': ['some_test.yaml']
+            },
+            tags=[('owner', 'foo')],
+        )
+
     def test_report_result_failure(self):
         reporter = resultdb.ResultDBReporter()
         config = eval_config.TestConfig(test_file=CHROMIUM_SRC /

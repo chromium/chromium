@@ -88,6 +88,17 @@ tests:
         config = eval_config.TestConfig.from_file(pathlib.Path('test.yaml'))
         self.assertEqual(config.tags, ['tag1', 'tag2'])
 
+    def test_with_owner(self):
+        """Tests that owner is read correctly."""
+        yaml_with_tags = """
+owner: foobar
+tests:
+  - description: fake
+"""
+        self.fs.create_file('test.yaml', contents=yaml_with_tags)
+        config = eval_config.TestConfig.from_file(pathlib.Path('test.yaml'))
+        self.assertEqual(config.owner, 'foobar')
+
     def test_empty_tags_list(self):
         """Tests that an empty tags list is handled correctly."""
         yaml_empty_tags = """

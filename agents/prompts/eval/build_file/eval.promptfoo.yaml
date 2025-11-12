@@ -1,7 +1,7 @@
-description: |
-  Owner: dmurph@
-  Description: Verify that the correct target is found and built for
+description: >
+  Verify that the correct target is found and built for
   the given file.
+owner: dmurph@
 prompts:
   - Can you build the file base/strings/strcat_unittest.cc locally?
 providers:

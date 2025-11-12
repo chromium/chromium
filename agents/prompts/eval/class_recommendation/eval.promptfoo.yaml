@@ -1,6 +1,5 @@
-description: |
-  Owner: erikchen@
-  Description: Recommendation for class names from a user prompt.
+description: Recommendation for class names from a user prompt.
+owner: erikchen@
 prompts:
   - >
     I want to add a dialog that shows over the contents of the tab on macOS.

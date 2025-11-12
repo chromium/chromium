@@ -1,6 +1,5 @@
-description: |
-  Owner: dmurph@
-  Description: Find the implementation of a header file.
+description: Find the implementation of a header file.
+owner: dmurph@
 prompts:
   - Can you find the implementation of chrome/browser/ui/views/tabs/tab.h?
     Output the implementation file's path, relative to the same root as the

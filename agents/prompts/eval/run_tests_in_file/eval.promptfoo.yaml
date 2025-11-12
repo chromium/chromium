@@ -1,6 +1,5 @@
-description: |
-  Owner: dmurph@
-  Description: Verify that only tests in the given file are triggered.
+description: Verify that only tests in the given file are triggered.
+owner: dmurph@
 prompts:
   - >
     Run all tests in file base/strings/strcat_unittest.cc only from the

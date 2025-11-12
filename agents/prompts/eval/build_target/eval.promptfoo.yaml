@@ -1,6 +1,5 @@
-description: |
-  Owner: sshrimp@
-  Description: Verify the correct build target is provided for a source file
+description: Verify the correct build target is provided for a source file
+owner: sshrimp@
 prompts:
   - Which build target do I need to run in order to execute
     chromium/src/components/viz/common/frame_sinks/begin_frame_args_unittest.cc

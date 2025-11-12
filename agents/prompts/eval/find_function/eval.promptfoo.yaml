@@ -1,6 +1,5 @@
-description: |
-  Owner: erikchen@
-  Description: Find which function call to use based on a user prompt.
+description: Find which function call to use based on a user prompt.
+owner: erikchen@
 prompts:
   - If I have a WebUI, which function call can I use to get the embedding tab's
     TabInterface?
