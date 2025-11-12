@@ -1028,20 +1028,13 @@ void MediaSource::DurationChangeAlgorithm(
   }
 
   if (new_duration < highest_buffered_presentation_timestamp) {
-    if (RuntimeEnabledFeatures::MediaSourceNewAbortAndDurationEnabled()) {
-      LogAndThrowDOMException(
-          *exception_state, DOMExceptionCode::kInvalidStateError,
-          "Setting duration below highest presentation timestamp of any "
-          "buffered coded frames is disallowed. Instead, first do asynchronous "
-          "remove(newDuration, oldDuration) on all sourceBuffers, where "
-          "newDuration < oldDuration.");
-      return;
-    }
-
-    Deprecation::CountDeprecation(
-        GetExecutionContext(),
-        WebFeature::kMediaSourceDurationTruncatingBuffered);
-    // See also deprecated remove(new duration, old duration) behavior below.
+    LogAndThrowDOMException(
+        *exception_state, DOMExceptionCode::kInvalidStateError,
+        "Setting duration below highest presentation timestamp of any "
+        "buffered coded frames is disallowed. Instead, first do asynchronous "
+        "remove(newDuration, oldDuration) on all sourceBuffers, where "
+        "newDuration < oldDuration.");
+    return;
   }
 
   DCHECK_LE(highest_buffered_presentation_timestamp,
@@ -1051,17 +1044,6 @@ void MediaSource::DurationChangeAlgorithm(
   // Done for step 1 above, already.
   // 4. Update duration to new duration.
   web_media_source_->SetDuration(new_duration);
-
-  if (!RuntimeEnabledFeatures::MediaSourceNewAbortAndDurationEnabled() &&
-      new_duration < old_duration) {
-    // Deprecated behavior: if the new duration is less than old duration,
-    // then call remove(new duration, old duration) on all all objects in
-    // sourceBuffers.
-    for (unsigned i = 0; i < source_buffers_->length(); ++i) {
-      source_buffers_->item(i)->Remove_Locked(new_duration, old_duration,
-                                              &ASSERT_NO_EXCEPTION, pass_key);
-    }
-  }
 
   // 5. If a user agent is unable to partially render audio frames or text cues
   //    that start before and end after the duration, then run the following

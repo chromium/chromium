@@ -3283,10 +3283,6 @@
       origin_trial_feature_name: "MediaSourceExtensionsForWebCodecs",
     },
     {
-      name: "MediaSourceNewAbortAndDuration",
-      status: "stable",
-    },
-    {
       name: "MediaStreamTrackTransfer",
       status: "test",
       base_feature: "none",

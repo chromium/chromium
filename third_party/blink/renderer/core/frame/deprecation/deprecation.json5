@@ -289,6 +289,7 @@
         "kMediaSourceAbortRemove",
       ],
       chrome_status_feature: 6107495151960064,
+      obsolete_to_be_removed_after_milestone: 140,
     },
     {
       name: "MediaSourceDurationTruncatingBuffered",
@@ -298,6 +299,7 @@
         "kMediaSourceDurationTruncatingBuffered",
       ],
       chrome_status_feature: 6107495151960064,
+      obsolete_to_be_removed_after_milestone: 140,
     },
     {
       name: "NonStandardDeclarativeShadowDOM",

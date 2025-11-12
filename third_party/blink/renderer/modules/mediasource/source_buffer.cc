@@ -786,19 +786,10 @@ void SourceBuffer::abort(ExceptionState& exception_state) {
   //    InvalidStateError exception and abort these steps.
   if (pending_remove_start_ != -1) {
     DCHECK(updating_);
-    // Throwing the exception and aborting these steps is new behavior that
-    // is implemented behind the MediaSourceNewAbortAndDuration
-    // RuntimeEnabledFeature.
-    if (RuntimeEnabledFeatures::MediaSourceNewAbortAndDurationEnabled()) {
-      MediaSource::LogAndThrowDOMException(
-          exception_state, DOMExceptionCode::kInvalidStateError,
-          "Aborting asynchronous remove() operation is disallowed.");
-      return;
-    }
-
-    Deprecation::CountDeprecation(GetExecutionContext(),
-                                  WebFeature::kMediaSourceAbortRemove);
-    CancelRemove();
+    MediaSource::LogAndThrowDOMException(
+        exception_state, DOMExceptionCode::kInvalidStateError,
+        "Aborting asynchronous remove() operation is disallowed.");
+    return;
   }
 
   // 4. If the sourceBuffer.updating attribute equals true, then run the
@@ -1097,11 +1088,6 @@ void SourceBuffer::CancelRemove() {
   pending_remove_start_ = -1;
   pending_remove_end_ = -1;
   updating_ = false;
-
-  if (!RuntimeEnabledFeatures::MediaSourceNewAbortAndDurationEnabled()) {
-    ScheduleEvent(event_type_names::kAbort);
-    ScheduleEvent(event_type_names::kUpdateend);
-  }
 
   TRACE_EVENT_END("media", /*SourceBuffer::remove*/
                   perfetto::Track::FromPointer(this));
