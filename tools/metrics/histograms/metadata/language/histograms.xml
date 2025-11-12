@@ -394,7 +394,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageUsage.UI.Android.Availability"
-    enum="LanguageUsage.UI.Android.Availability" expires_after="2025-12-10">
+    enum="LanguageUsage.UI.Android.Availability" expires_after="2026-12-10">
   <owner>perrier@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -410,7 +410,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageUsage.UI.Android.Correctness"
-    enum="LanguageUsage.UI.Android.Correctness" expires_after="2025-12-10">
+    enum="LanguageUsage.UI.Android.Correctness" expires_after="2026-12-10">
   <owner>perrier@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -422,7 +422,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageUsage.UI.Android.Correctness.NoOverride"
-    enum="LanguageUsage.UI.Android.Correctness" expires_after="2025-12-10">
+    enum="LanguageUsage.UI.Android.Correctness" expires_after="2026-12-10">
   <owner>perrier@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -436,7 +436,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageUsage.UI.Android.Correctness.Override"
-    enum="LanguageUsage.UI.Android.Correctness" expires_after="2025-12-10">
+    enum="LanguageUsage.UI.Android.Correctness" expires_after="2026-12-10">
   <owner>perrier@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
