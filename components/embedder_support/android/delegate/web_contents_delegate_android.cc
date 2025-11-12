@@ -10,12 +10,16 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_callback.h"
 #include "base/android/jni_string.h"
+#include "base/android/scoped_hardware_buffer_handle.h"
+#include "base/android/scoped_java_ref.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
 #include "base/trace_event/trace_event.h"
 #include "components/embedder_support/android/delegate/color_picker_bridge.h"
+#include "components/embedder_support/android/delegate/screenshot_result.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "content/public/browser/color_chooser.h"
 #include "content/public/browser/global_request_id.h"
@@ -36,7 +40,6 @@
 #include "ui/android/view_android.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/android/java_bitmap.h"
-#include "ui/gfx/geometry/rect.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
 
@@ -46,7 +49,10 @@
 using base::android::AttachCurrentThread;
 using base::android::ConvertUTF16ToJavaString;
 using base::android::ConvertUTF8ToJavaString;
+using base::android::JavaParamRef;
 using base::android::JavaRef;
+using base::android::ScopedHardwareBufferHandle;
+using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
 using content::ColorChooser;
 using content::RenderWidgetHostView;
@@ -578,18 +584,16 @@ bool WebContentsDelegateAndroid::MaybeCopyContentAreaAsBitmap(
   // Convert the C++ callback to a JNI callback using ToJniCallback.
   auto wrapped_callback = base::BindOnce(
       [](base::OnceCallback<void(const SkBitmap&)> callback,
-         const base::android::JavaParamRef<jobject>& bitmap) {
+         const ScreenshotResult& result) {
         TRACE_EVENT("content",
                     "WebContentsDelegateAndroid::MaybeCopyContentAreaAsBitmap::"
                     "Callback");
-        if (bitmap.is_null()) {
+        if (!result) {
           // Failed because of Out of Memory Error.
           // Pass in an empty bitmap, rather than null in this case.
           std::move(callback).Run(SkBitmap());
         } else {
-          gfx::JavaBitmap java_bitmap_lock(bitmap);
-          SkBitmap skbitmap =
-              gfx::CreateSkBitmapFromJavaBitmap(java_bitmap_lock);
+          SkBitmap skbitmap = result.GetBitmap();
           skbitmap.setImmutable();
           CHECK(!skbitmap.drawsNothing());
           std::move(callback).Run(skbitmap);
@@ -601,6 +605,39 @@ bool WebContentsDelegateAndroid::MaybeCopyContentAreaAsBitmap(
           base::android::ToJniCallback(env, std::move(wrapped_callback)))) {
     base::UmaHistogramTimes("Android.MaybeCopyContentAreaAsBitmap.Time",
                             base::TimeTicks::Now() - start_time);
+    return true;
+  }
+  return false;
+}
+
+bool WebContentsDelegateAndroid::MaybeCopyContentAreaAsHardwareBuffer(
+    content::HardwareBufferResultCallback output_callback) {
+  TRACE_EVENT(
+      "content",
+      "WebContentsDelegateAndroid::MaybeCopyContentAreaAsHardwareBuffer");
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> java_delegate = GetJavaDelegate(env);
+  if (java_delegate.is_null()) {
+    return false;
+  }
+  // Wrap the result C++ callback as a JNI callback and convert the types.
+  auto wrapped_output_callback = base::BindOnce(
+      [](content::HardwareBufferResultCallback output_callback,
+         const ScreenshotResult& result) {
+        if (!result) {
+          std::move(output_callback)
+              .Run(base::android::ScopedHardwareBufferHandle(),
+                   base::ScopedClosureRunner());
+          return;
+        }
+        std::move(output_callback)
+            .Run(result.GetHardwareBuffer(), result.GetReleaseCallback());
+      },
+      std::move(output_callback));
+  if (Java_WebContentsDelegateAndroid_maybeCopyContentAreaAsHardwareBuffer(
+          env, java_delegate,
+          base::android::ToJniCallback(env,
+                                       std::move(wrapped_output_callback)))) {
     return true;
   }
   return false;

@@ -200,6 +200,8 @@ static_library("web_contents_delegate") {
   sources = [
     "delegate/color_picker_bridge.cc",
     "delegate/color_picker_bridge.h",
+    "delegate/screenshot_result.cc",
+    "delegate/screenshot_result.h",
     "delegate/web_contents_delegate_android.cc",
     "delegate/web_contents_delegate_android.h",
   ]
@@ -270,6 +272,7 @@ android_library("web_contents_delegate_java") {
     "java/src/org/chromium/components/embedder_support/delegate/ColorPickerViewBinder.java",
     "java/src/org/chromium/components/embedder_support/delegate/ColorSuggestion.java",
     "java/src/org/chromium/components/embedder_support/delegate/OnColorChangedListener.java",
+    "java/src/org/chromium/components/embedder_support/delegate/ScreenshotResult.java",
     "java/src/org/chromium/components/embedder_support/delegate/WebContentsDelegateAndroid.java",
   ]
 }
@@ -277,6 +280,7 @@ android_library("web_contents_delegate_java") {
 generate_jni("web_contents_delegate_jni_headers") {
   sources = [
     "java/src/org/chromium/components/embedder_support/delegate/ColorPickerBridge.java",
+    "java/src/org/chromium/components/embedder_support/delegate/ScreenshotResult.java",
     "java/src/org/chromium/components/embedder_support/delegate/WebContentsDelegateAndroid.java",
   ]
 }

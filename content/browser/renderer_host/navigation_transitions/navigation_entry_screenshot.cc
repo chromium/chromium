@@ -158,7 +158,7 @@ NavigationEntryScreenshot::HardwareBufferHolder::Create(
     scoped_refptr<viz::RasterContextProvider> context_provider,
     gfx::ColorSpace color_space,
     ScopedHardwareBufferHandle hardware_buffer,
-    base::OnceClosure release_callback) {
+    base::ScopedClosureRunner release_callback) {
   return new HardwareBufferHolder(std::move(context_provider), color_space,
                                   std::move(hardware_buffer),
                                   std::move(release_callback));
@@ -192,17 +192,14 @@ gfx::Size NavigationEntryScreenshot::HardwareBufferHolder::Size() const {
   return size_;
 }
 
-NavigationEntryScreenshot::HardwareBufferHolder::~HardwareBufferHolder() {
-  if (release_callback_) {
-    std::move(release_callback_).Run();
-  }
-}
+NavigationEntryScreenshot::HardwareBufferHolder::~HardwareBufferHolder() =
+    default;
 
 NavigationEntryScreenshot::HardwareBufferHolder::HardwareBufferHolder(
     scoped_refptr<viz::RasterContextProvider> context_provider,
     gfx::ColorSpace color_space,
     ScopedHardwareBufferHandle hardware_buffer,
-    base::OnceClosure release_callback)
+    base::ScopedClosureRunner release_callback)
     : context_provider_(context_provider),
       color_space_(color_space),
       hardware_buffer_(std::move(hardware_buffer)),

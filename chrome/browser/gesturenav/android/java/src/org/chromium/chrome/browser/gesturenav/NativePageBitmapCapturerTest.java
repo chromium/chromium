@@ -17,12 +17,14 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
+import org.chromium.components.embedder_support.delegate.ScreenshotResult;
 
 import java.util.concurrent.TimeoutException;
 
@@ -51,10 +53,37 @@ public class NativePageBitmapCapturerTest {
                     Assert.assertTrue(
                             NativePageBitmapCapturer.maybeCaptureNativeView(
                                     ntp.getTab(),
-                                    (bitmap) -> {
-                                        Assert.assertNotNull(bitmap);
+                                    (result) -> {
+                                        Assert.assertNotNull(result);
+                                        Assert.assertNotNull(result.getBitmap());
                                         callbackHelper.notifyCalled();
-                                    }));
+                                    },
+                                    ScreenshotResult.Destination.BITMAP));
+                });
+
+        callbackHelper.waitForOnly();
+    }
+
+    @Test
+    @SmallTest
+    @DisableIf.Build(sdk_is_less_than = 31)
+    public void testWithNativePageHardwareBuffer() throws TimeoutException {
+        RegularNewTabPageStation ntp = mTabbedActivityTestRule.startOnNtp();
+
+        CallbackHelper callbackHelper = new CallbackHelper();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Assert.assertTrue(
+                            NativePageBitmapCapturer.maybeCaptureNativeView(
+                                    ntp.getTab(),
+                                    (ScreenshotResult result) -> {
+                                        Assert.assertNotNull(result);
+                                        Assert.assertNotNull(result.getHardwareBuffer());
+                                        Runnable releaseCallback = result.getReleaseCallback();
+                                        callbackHelper.notifyCalled();
+                                        releaseCallback.run();
+                                    },
+                                    ScreenshotResult.Destination.HARDWARE_BUFFER));
                 });
 
         callbackHelper.waitForOnly();
@@ -71,9 +100,10 @@ public class NativePageBitmapCapturerTest {
                     Assert.assertFalse(
                             NativePageBitmapCapturer.maybeCaptureNativeView(
                                     blankPage.getTab(),
-                                    (bitmap) -> {
+                                    (result) -> {
                                         callbackHelper.notifyCalled();
-                                    }));
+                                    },
+                                    ScreenshotResult.Destination.BITMAP));
                 });
 
         // Capture will be finished before the following task.

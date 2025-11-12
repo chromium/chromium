@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/types/expected.h"
@@ -48,13 +49,18 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_java_ref.h"
 #include "content/public/browser/back_forward_transition_animation_manager.h"
+
+namespace base::android {
+class ScopedHardwareBufferHandle;
+}  // namespace base::android
+
 #endif
 
 class GURL;
 
 namespace base {
 class FilePath;
-}
+}  // namespace base
 
 namespace blink {
 namespace mojom {
@@ -121,6 +127,12 @@ enum class PictureInPictureResult {
   // Picture-in-Picture is not supported by the embedder.
   kNotSupported,
 };
+
+#if BUILDFLAG(IS_ANDROID)
+using HardwareBufferResultCallback =
+    base::OnceCallback<void(base::android::ScopedHardwareBufferHandle,
+                            base::ScopedClosureRunner)>;
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // Objects implement this interface to get notified about changes in the
 // WebContents and to provide necessary functionality. If a method doesn't
@@ -850,6 +862,21 @@ class CONTENT_EXPORT WebContentsDelegate {
       base::OnceCallback<void(const SkBitmap&)> callback);
 
 #if BUILDFLAG(IS_ANDROID)
+  // Allow delegate to override how to take a snapshot of this WebContents into
+  // a HardwareBuffer. Return true if the delegate will execute callback with a
+  // captured buffer of the committed navigation entry. The callback also
+  // receives a clean up callback that the invoker can call when it's done using
+  // the buffer. The callback will ensure the HardwareBuffer is associated with
+  // the correct NavigationEntry and it must be dispatched asynchronously (with
+  // an empty buffer if the capture fails) if and only if this returns true. And
+  // If the embedder returns false, the caller within content/ will associate
+  // the currently committed entry with a buffer of the rendered web page. Note
+  // that it's the embedder's responsibility for capturing the visible content
+  // at the time of this call, though it can invoke the callback with the buffer
+  // asynchronously, at a later time.
+  virtual bool MaybeCopyContentAreaAsHardwareBuffer(
+      HardwareBufferResultCallback callback);
+
   // Synchronous version of |MaybeCopyContentAreaAsBitmap|. Return an
   // empty bitmap if embedder is not showing any custom view.
   virtual SkBitmap MaybeCopyContentAreaAsBitmapSync();

@@ -7,6 +7,7 @@
 
 #include "base/android/scoped_hardware_buffer_handle.h"
 #include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/supports_user_data.h"
 #include "cc/layers/texture_layer_client.h"
@@ -128,7 +129,7 @@ class CONTENT_EXPORT NavigationEntryScreenshot
         scoped_refptr<viz::RasterContextProvider> context_provider,
         gfx::ColorSpace color_space,
         base::android::ScopedHardwareBufferHandle hardware_buffer,
-        base::OnceClosure release_callback);
+        base::ScopedClosureRunner release_callback);
 
     HardwareBufferHolder(const HardwareBufferHolder&) = delete;
     HardwareBufferHolder& operator=(const HardwareBufferHolder&) = delete;
@@ -148,7 +149,7 @@ class CONTENT_EXPORT NavigationEntryScreenshot
         scoped_refptr<viz::RasterContextProvider> context_provider,
         gfx::ColorSpace color_space,
         base::android::ScopedHardwareBufferHandle hardware_buffer,
-        base::OnceClosure release_callback);
+        base::ScopedClosureRunner release_callback);
 
     // A raw ptr is enough as the owner of the holder manages them together.
     scoped_refptr<viz::RasterContextProvider> context_provider_;
@@ -156,7 +157,7 @@ class CONTENT_EXPORT NavigationEntryScreenshot
     gfx::ColorSpace color_space_;
     base::android::ScopedHardwareBufferHandle hardware_buffer_;
     const gfx::Size size_;
-    base::OnceClosure release_callback_;
+    base::ScopedClosureRunner release_callback_;
   };
 
   using ScreenshotCallback = base::RepeatingCallback<

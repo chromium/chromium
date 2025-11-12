@@ -478,10 +478,9 @@ class CONTENT_EXPORT WebContentsImpl
   Visibility GetVisibility() override;
   bool NeedToFireBeforeUnloadOrUnloadEvents() override;
   void DispatchBeforeUnload(bool auto_cancel) override;
-  void AttachInnerWebContents(
-      std::unique_ptr<WebContents> inner_web_contents,
-      RenderFrameHost* render_frame_host,
-      bool is_full_page) override;
+  void AttachInnerWebContents(std::unique_ptr<WebContents> inner_web_contents,
+                              RenderFrameHost* render_frame_host,
+                              bool is_full_page) override;
   void AttachUnownedInnerWebContents(
       base::PassKey<UnownedInnerWebContentsClient>,
       WebContents* inner_web_contents,
@@ -1094,6 +1093,10 @@ class CONTENT_EXPORT WebContentsImpl
       NavigationRequest* navigation_request_to_exclude) override;
   bool MaybeCopyContentAreaAsBitmap(
       base::OnceCallback<void(const SkBitmap&)> callback) override;
+#if BUILDFLAG(IS_ANDROID)
+  bool MaybeCopyContentAreaAsHardwareBuffer(
+      HardwareBufferResultCallback callback) override;
+#endif
   bool SupportsForwardTransitionAnimation() override;
 
 #if BUILDFLAG(IS_ANDROID)
@@ -1723,8 +1726,8 @@ class CONTENT_EXPORT WebContentsImpl
     // WebContents. If `should_take_ownership` is true, this WebContents will
     // take ownership of `inner_web_contents`.
     void AttachInnerWebContents(WebContents* inner_web_contents,
-      RenderFrameHostImpl* render_frame_host,
-      bool should_take_ownership);
+                                RenderFrameHostImpl* render_frame_host,
+                                bool should_take_ownership);
 
     // Detaches `inner_web_contents` from the outer WebContents.
     void DetachInnerWebContents(WebContents* inner_web_contents);
@@ -1937,9 +1940,9 @@ class CONTENT_EXPORT WebContentsImpl
   // Internal implementation of AttachInnerWebContents() and
   // AttachUnownedInnerWebContents().
   void AttachInnerWebContentsImpl(WebContents* inner_web_contents,
-    RenderFrameHost* render_frame_host,
-    bool is_full_page,
-    bool should_take_ownership);
+                                  RenderFrameHost* render_frame_host,
+                                  bool is_full_page,
+                                  bool should_take_ownership);
 
   // Internal implementation of DetachUnownedInnerWebContents() that does not
   // require a pass key. Called by ~WebContentsImpl.

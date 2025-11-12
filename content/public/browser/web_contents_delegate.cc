@@ -460,6 +460,11 @@ bool WebContentsDelegate::IsWaitingForPointerLockPrompt(
 }
 
 #if BUILDFLAG(IS_ANDROID)
+
+bool WebContentsDelegate::MaybeCopyContentAreaAsHardwareBuffer(
+    HardwareBufferResultCallback callback) {
+  return false;
+}
 SkBitmap WebContentsDelegate::MaybeCopyContentAreaAsBitmapSync() {
   return SkBitmap();
 }

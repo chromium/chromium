@@ -4,7 +4,9 @@
 
 #include "content/browser/renderer_host/navigation_transitions/navigation_transition_utils.h"
 
+#include "base/android/scoped_hardware_buffer_handle.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
@@ -114,6 +116,21 @@ NavigationEntryImpl* GetEntryForToken(
       return entry;
     }
   }
+  return nullptr;
+}
+
+scoped_refptr<viz::RasterContextProvider>
+GetRasterContextProviderOrSetMissReason(RenderWidgetHostView* rwhv,
+                                        const NavigationRequest& nav_request,
+                                        NavigationEntryImpl* nav_entry) {
+  auto* rwhva = static_cast<RenderWidgetHostViewAndroid*>(rwhv);
+  auto context_provider = rwhva->GetRasterContextProvider();
+  if (context_provider) {
+    return context_provider;
+  }
+  InvokeTestCallbackForNoScreenshot(nav_request);
+  nav_entry->navigation_transition_data().set_cache_hit_or_miss_reason(
+      CacheHitOrMissReason::kNoRootWindowOrCompositor);
   return nullptr;
 }
 
@@ -246,6 +263,44 @@ void CacheScreenshotSharedImageImpl(
       supports_etc_non_power_of_two,
       NavigationEntryScreenshot::SharedImageHolder::Create(
           std::move(shared_image), std::move(release_callback)));
+}
+
+void CacheScreenshotHardwareBufferImpl(
+    base::WeakPtr<NavigationControllerImpl> controller,
+    base::WeakPtr<NavigationRequest> navigation_request,
+    scoped_refptr<viz::RasterContextProvider> raster_context_provider,
+    gfx::ColorSpace color_space,
+    NavigationTransitionData::UniqueId screenshot_id,
+    int copy_output_request_sequence,
+    bool supports_etc_non_power_of_two,
+    base::android::ScopedHardwareBufferHandle hardware_buffer,
+    base::ScopedClosureRunner release_callback) {
+  if (!controller) {
+    // The tab was destroyed by the time we receive the shared image from the
+    // GPU.
+    return;
+  }
+  TRACE_EVENT("content", "CacheScreenshotHardwareBufferImpl");
+
+  if (!hardware_buffer.is_valid()) {
+    int entry_index =
+        NavigationTransitionUtils::FindEntryIndexForNavigationTransitionID(
+            controller.get(), screenshot_id);
+    NavigationEntryImpl* entry = controller->GetEntryAtIndex(entry_index);
+    if (entry) {
+      entry->navigation_transition_data().set_cache_hit_or_miss_reason(
+          CacheHitOrMissReason::kCapturedEmptyBitmapFromEmbedder);
+    }
+    return;
+  }
+
+  CacheScreenshotFromSharedImageProvider(
+      controller, navigation_request, raster_context_provider, screenshot_id,
+      /*is_copied_from_embedder=*/true, copy_output_request_sequence,
+      supports_etc_non_power_of_two,
+      NavigationEntryScreenshot::HardwareBufferHolder::Create(
+          raster_context_provider, color_space, std::move(hardware_buffer),
+          std::move(release_callback)));
 }
 
 // We only want to capture screenshots for navigation entries reachable via
@@ -512,14 +567,40 @@ bool NavigationTransitionUtils::
       .increment_copy_output_request_sequence();
   int request_sequence = last_committed_entry->navigation_transition_data()
                              .copy_output_request_sequence();
-  bool copied_via_delegate =
-      navigation_request.GetDelegate()->MaybeCopyContentAreaAsBitmap(
-          base::BindOnce(
-              &CacheScreenshotImpl, navigation_controller.GetWeakPtr(),
-              navigation_request.GetWeakPtr(),
-              last_committed_entry->navigation_transition_data().unique_id(),
-              /*is_copied_from_embedder=*/true, request_sequence,
-              SupportsETC1NonPowerOfTwo(navigation_request)));
+  bool copied_via_delegate;
+  if (base::FeatureList::IsEnabled(
+          features::kBackForwardTransitionsNativePageSharedImage)) {
+    auto context_provider = GetRasterContextProviderOrSetMissReason(
+        rwhv, navigation_request, last_committed_entry);
+    if (!context_provider) {
+      return false;
+    }
+    auto display = rwhv->GetNativeView()
+                       ->GetWindowAndroid()
+                       ->GetDisplayWithWindowColorSpace();
+    auto color_space = display.GetColorSpaces().GetOutputColorSpace(
+        gfx::ContentColorUsage::kSRGB, /*needs_alpha=*/false);
+
+    copied_via_delegate =
+        navigation_request.GetDelegate()->MaybeCopyContentAreaAsHardwareBuffer(
+            base::BindOnce(
+                &CacheScreenshotHardwareBufferImpl,
+                navigation_controller.GetWeakPtr(),
+                navigation_request.GetWeakPtr(), std::move(context_provider),
+                color_space,
+                last_committed_entry->navigation_transition_data().unique_id(),
+                request_sequence,
+                SupportsETC1NonPowerOfTwo(navigation_request)));
+  } else {
+    copied_via_delegate =
+        navigation_request.GetDelegate()->MaybeCopyContentAreaAsBitmap(
+            base::BindOnce(
+                &CacheScreenshotImpl, navigation_controller.GetWeakPtr(),
+                navigation_request.GetWeakPtr(),
+                last_committed_entry->navigation_transition_data().unique_id(),
+                /*is_copied_from_embedder=*/true, request_sequence,
+                SupportsETC1NonPowerOfTwo(navigation_request)));
+  }
 
   if (!copied_via_delegate && only_use_embedder_screenshot) {
     InvokeTestCallbackForNoScreenshot(navigation_request);
@@ -540,23 +621,21 @@ bool NavigationTransitionUtils::
 #if BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(
           features::kBackForwardTransitionsCrossDocSharedImage)) {
-    auto* rwhva = static_cast<RenderWidgetHostViewAndroid*>(rwhv);
-    auto context_provider = rwhva->GetRasterContextProvider();
+    auto context_provider = GetRasterContextProviderOrSetMissReason(
+        rwhv, navigation_request, last_committed_entry);
     if (!context_provider) {
-      InvokeTestCallbackForNoScreenshot(navigation_request);
-      last_committed_entry->navigation_transition_data()
-          .set_cache_hit_or_miss_reason(
-              CacheHitOrMissReason::kNoRootWindowOrCompositor);
       return false;
     }
-    rwhva->CopySharedImageFromExactSurface(
-        /*src_rect=*/gfx::Rect(), output_size,
-        base::BindOnce(
-            &CacheScreenshotSharedImageImpl, navigation_controller.GetWeakPtr(),
-            navigation_request.GetWeakPtr(), std::move(context_provider),
-            last_committed_entry->navigation_transition_data().unique_id(),
-            /*is_copied_from_embedder=*/false, request_sequence,
-            SupportsETC1NonPowerOfTwo(navigation_request)));
+    static_cast<RenderWidgetHostViewAndroid*>(rwhv)
+        ->CopySharedImageFromExactSurface(
+            /*src_rect=*/gfx::Rect(), output_size,
+            base::BindOnce(
+                &CacheScreenshotSharedImageImpl,
+                navigation_controller.GetWeakPtr(),
+                navigation_request.GetWeakPtr(), std::move(context_provider),
+                last_committed_entry->navigation_transition_data().unique_id(),
+                /*is_copied_from_embedder=*/false, request_sequence,
+                SupportsETC1NonPowerOfTwo(navigation_request)));
   } else {
     static_cast<RenderWidgetHostViewBase*>(rwhv)
         ->CopyFromExactSurfaceWithIpcDelay(
