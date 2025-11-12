@@ -317,7 +317,8 @@ bool SafetyCheckNotificationClient::IsPermitted() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   return IsSafetyCheckNotificationPermitted(
-      GetApplicationContext()->GetLocalState(), GetActiveForegroundProfile());
+      GetApplicationContext()->GetLocalState(),
+      GetActiveForegroundBrowser()->GetProfile());
 }
 
 bool SafetyCheckNotificationClient::IsSceneLevelForegroundActive() {
@@ -739,12 +740,4 @@ bool SafetyCheckNotificationClient::CheckAndResetIfSchedulingIsAllowed() {
       prefs::kIosSafetyCheckNotificationFirstPresentTimestamp);
 
   return true;
-}
-
-ProfileIOS* SafetyCheckNotificationClient::GetActiveForegroundProfile() const {
-  Browser* browser = GetActiveForegroundBrowser();
-  if (!browser) {
-    return nullptr;
-  }
-  return browser->GetProfile();
 }
