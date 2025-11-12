@@ -142,6 +142,8 @@ target(link_target_type, "renderer") {
     "service_worker/web_service_worker_provider_impl.h",
     "skia_benchmarking_extension.cc",
     "skia_benchmarking_extension.h",
+    "skia_graphics_pressure_listener.cc",
+    "skia_graphics_pressure_listener.h",
     "stats_collection_controller.cc",
     "stats_collection_controller.h",
     "v8_value_converter_impl.cc",

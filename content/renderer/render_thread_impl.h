@@ -43,6 +43,7 @@
 #include "content/public/renderer/render_thread.h"
 #include "content/renderer/discardable_memory_utils.h"
 #include "content/renderer/memory_reclaimer_pressure_listener.h"
+#include "content/renderer/skia_graphics_pressure_listener.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
 #include "ipc/ipc_sync_channel.h"
 #include "media/media_buildflags.h"
@@ -533,6 +534,8 @@ class CONTENT_EXPORT RenderThreadImpl
       memory_pressure_listener_registration_;
 
   MemoryReclaimerPressureListener memory_reclaimer_pressure_listener_;
+
+  SkiaGraphicsPressureListener skia_graphics_pressure_listener_;
 
   std::unique_ptr<viz::Gpu> gpu_;
 

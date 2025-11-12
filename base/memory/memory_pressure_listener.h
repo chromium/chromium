@@ -82,6 +82,7 @@ enum class MemoryPressureListenerTag {
   kFontGlobalContext = 49,
   kClientDiscardableSharedMemoryManager = 50,
   kMemoryReclaimerPressureListener = 51,
+  kSkiaGraphicsPressureListener = 52,
 };
 
 // To start listening, derive from MemoryPressureListener, and use
