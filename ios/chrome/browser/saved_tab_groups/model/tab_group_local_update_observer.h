@@ -28,8 +28,10 @@ class TabGroupLocalUpdateObserver : public BrowserListObserver,
                                     public web::WebStateObserver,
                                     public SessionRestorationObserver {
  public:
-  TabGroupLocalUpdateObserver(BrowserList* browser_list,
-                              TabGroupSyncService* sync_service);
+  TabGroupLocalUpdateObserver(
+      BrowserList* browser_list,
+      TabGroupSyncService* sync_service,
+      SessionRestorationService* session_restoration_service);
   ~TabGroupLocalUpdateObserver() override;
 
   TabGroupLocalUpdateObserver(const TabGroupLocalUpdateObserver&) = delete;

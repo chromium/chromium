@@ -128,6 +128,8 @@ source_set("unit_tests") {
     "//ios/chrome/browser/history/model",
     "//ios/chrome/browser/saved_tab_groups/model",
     "//ios/chrome/browser/saved_tab_groups/ui:utils",
+    "//ios/chrome/browser/sessions/model:session_restoration_service_factory",
+    "//ios/chrome/browser/sessions/model:test_support",
     "//ios/chrome/browser/share_kit/model",
     "//ios/chrome/browser/share_kit/model:factory",
     "//ios/chrome/browser/shared/model/browser",

@@ -81,7 +81,8 @@ std::unique_ptr<KeyedService> CreateFakeTabGroupSyncService(
   std::unique_ptr<tab_groups::TabGroupLocalUpdateObserver>
       local_update_observer =
           std::make_unique<tab_groups::TabGroupLocalUpdateObserver>(
-              browser_list, tab_group_sync_service.get());
+              browser_list, tab_group_sync_service.get(),
+              SessionRestorationServiceFactory::GetForProfile(profile));
 
   std::unique_ptr<tab_groups::IOSTabGroupSyncDelegate> delegate =
       std::make_unique<tab_groups::IOSTabGroupSyncDelegate>(

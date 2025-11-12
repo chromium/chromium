@@ -74,7 +74,8 @@ std::unique_ptr<KeyedService> BuildService(
   BrowserList* browser_list = BrowserListFactory::GetForProfile(profile);
   std::unique_ptr<TabGroupLocalUpdateObserver> local_update_observer =
       std::make_unique<TabGroupLocalUpdateObserver>(
-          browser_list, tab_group_sync_service.get());
+          browser_list, tab_group_sync_service.get(),
+          SessionRestorationServiceFactory::GetForProfile(profile));
 
   std::unique_ptr<IOSTabGroupSyncDelegate> delegate =
       std::make_unique<IOSTabGroupSyncDelegate>(

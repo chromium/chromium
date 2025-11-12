@@ -12,6 +12,8 @@
 #import "ios/chrome/browser/data_sharing/model/data_sharing_service_factory.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_local_update_observer.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
+#import "ios/chrome/browser/sessions/model/session_restoration_service_factory.h"
+#import "ios/chrome/browser/sessions/model/test_session_restoration_service.h"
 #import "ios/chrome/browser/share_kit/model/test_share_kit_service.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
@@ -60,6 +62,9 @@ class TabGroupSyncUtilTest : public PlatformTest {
     test_profile_builder.AddTestingFactory(
         TabGroupSyncServiceFactory::GetInstance(),
         base::BindRepeating(&CreateMockSyncService));
+    test_profile_builder.AddTestingFactory(
+        SessionRestorationServiceFactory::GetInstance(),
+        TestSessionRestorationService::GetTestingFactory());
     profile_ = std::move(test_profile_builder).Build();
 
     mock_service_ = static_cast<MockTabGroupSyncService*>(
@@ -70,7 +75,8 @@ class TabGroupSyncUtilTest : public PlatformTest {
 
     browser_list_ = BrowserListFactory::GetForProfile(profile_.get());
     local_observer_ = std::make_unique<TabGroupLocalUpdateObserver>(
-        browser_list_.get(), mock_service_);
+        browser_list_.get(), mock_service_,
+        SessionRestorationServiceFactory::GetForProfile(profile_.get()));
 
     browser_list_->AddBrowser(browser_.get());
     browser_list_->AddBrowser(other_browser_.get());

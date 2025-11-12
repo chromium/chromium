@@ -47,6 +47,7 @@
 #import "ios/chrome/browser/policy/model/test_platform_policy_provider.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_delegate.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_local_update_observer.h"
+#import "ios/chrome/browser/sessions/model/session_restoration_service_factory.h"
 #import "ios/chrome/browser/share_kit/model/test_share_kit_service.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
@@ -226,7 +227,8 @@ std::unique_ptr<tab_groups::TabGroupSyncService> CreateTabGroupSyncService(
   std::unique_ptr<tab_groups::TabGroupLocalUpdateObserver>
       local_update_observer =
           std::make_unique<tab_groups::TabGroupLocalUpdateObserver>(
-              browser_list, sync_service.get());
+              browser_list, sync_service.get(),
+              SessionRestorationServiceFactory::GetForProfile(profile));
 
   std::unique_ptr<tab_groups::IOSTabGroupSyncDelegate> delegate =
       std::make_unique<tab_groups::IOSTabGroupSyncDelegate>(

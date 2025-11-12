@@ -109,7 +109,8 @@ class TabGroupLocalUpdateObserverTest : public PlatformTest {
 
     browser_list_ = BrowserListFactory::GetForProfile(profile_.get());
     local_observer_ = std::make_unique<TabGroupLocalUpdateObserver>(
-        browser_list_.get(), mock_service_);
+        browser_list_.get(), mock_service_,
+        SessionRestorationServiceFactory::GetForProfile(profile_.get()));
     browser_list_->AddBrowser(browser_.get());
 
     BrowserList* other_browser_list =
