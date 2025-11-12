@@ -35,6 +35,20 @@ android_library("java") {
   ]
 }
 
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "security_state_model_android_unittest.cc" ]
+  deps = [
+    ":android",
+    ":jni_headers",
+    "//base/test:test_support",
+    "//components/security_state/core",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
 generate_jni("jni_headers") {
   sources = [
     "java/src/org/chromium/components/security_state/SecurityStateModel.java",

@@ -415,7 +415,10 @@ test("components_unittests") {
     ]
   }
   if (is_android) {
-    deps += [ "//components/supervised_user/core/browser/android:unit_tests" ]
+    deps += [
+      "//components/security_state/content/android:unit_tests",
+      "//components/supervised_user/core/browser/android:unit_tests",
+    ]
   }
 
   if (build_allocation_stack_trace_recorder) {

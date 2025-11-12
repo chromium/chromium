@@ -39,6 +39,9 @@ IN_PROC_BROWSER_TEST_F(ChromeSecurityStateClientTest,
     EXPECT_EQ(helper->GetSecurityLevel(),
               security_state_client->MaybeCreateSecurityStateModelDelegate()
                   ->GetSecurityLevel(contents));
+    EXPECT_EQ(helper->GetMaliciousContentStatus(),
+              security_state_client->MaybeCreateSecurityStateModelDelegate()
+                  ->GetMaliciousContentStatus(contents));
 
     // The test won't finish until SecurityStateTabHelper::GetSecurityLevel()
     // is called.

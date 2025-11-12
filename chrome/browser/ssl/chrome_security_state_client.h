@@ -11,7 +11,7 @@
 class ChromeSecurityStateClient : public security_state::SecurityStateClient {
  public:
   constexpr ChromeSecurityStateClient() = default;
-  ~ChromeSecurityStateClient() = default;
+  ~ChromeSecurityStateClient() override = default;
 
   std::unique_ptr<SecurityStateModelDelegate>
   MaybeCreateSecurityStateModelDelegate() override;

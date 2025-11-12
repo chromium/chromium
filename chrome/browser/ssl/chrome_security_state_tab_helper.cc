@@ -154,7 +154,7 @@ void ChromeSecurityStateTabHelper::PrimaryPageChanged(content::Page& page) {
 }
 
 security_state::MaliciousContentStatus
-ChromeSecurityStateTabHelper::GetMaliciousContentStatus() const {
+ChromeSecurityStateTabHelper::GetMaliciousContentStatus() {
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   using enum safe_browsing::SBThreatType;
 

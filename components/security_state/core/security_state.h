@@ -91,6 +91,10 @@ enum ContentStatus {
 
 // Describes whether the page contains malicious resources such as
 // malware or phishing attacks.
+//
+// A Java counterpart will be generated for this enum.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.security_state
+// GENERATED_JAVA_CLASS_NAME_OVERRIDE: ConnectionMaliciousContentStatus
 enum MaliciousContentStatus {
   MALICIOUS_CONTENT_STATUS_NONE,
   MALICIOUS_CONTENT_STATUS_MALWARE,
