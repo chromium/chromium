@@ -11,6 +11,7 @@
 #include "base/hash/hash.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -42,6 +43,8 @@ using ::action_chips::mojom::ActionChipPtr;
 using ::action_chips::mojom::ChipType;
 using ::action_chips::mojom::TabInfo;
 using ::action_chips::mojom::TabInfoPtr;
+using ::base::Bucket;
+using ::base::BucketsAreArray;
 using ::testing::ElementsAreArray;
 using ::testing::Eq;
 using ::testing::Matcher;
@@ -189,6 +192,8 @@ class ActionChipsHandlerTest : public testing::Test {
  protected:
   content::WebContents* web_contents() { return web_contents_.get(); }
 
+  base::HistogramTester histogram_tester_;
+
  private:
   void CreateProfileAndWebContents() {
     TestingProfile::Builder profile_builder;
@@ -321,6 +326,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST_P(ActionChipsHandlerStaticChipsTest,
        GetActionChipsReturnsStaticChipsBasedOnMostRecentTab) {
+  // Arrange
   for (const auto& [url, title] : GetParam().tabs) {
     AddTab(GURL(url), base::UTF8ToUTF16(title));
   }
@@ -332,10 +338,19 @@ TEST_P(ActionChipsHandlerStaticChipsTest,
   std::vector<Matcher<ActionChipPtr>> matchers;
   std::transform(expected.begin(), expected.end(), std::back_inserter(matchers),
                  [](const ActionChipPtr& chip) { return Eq(std::cref(chip)); });
+  // Metrics mapping from expected chips to buckets.
+  std::vector<Bucket> expected_buckets;
+  std::transform(
+      expected.begin(), expected.end(), std::back_inserter(expected_buckets),
+      [](const ActionChipPtr& chip) { return Bucket(chip->type, 1); });
 
+  // Act
   base::test::TestFuture<std::vector<ActionChipPtr>> future;
   handler().GetActionChips(future.GetCallback());
   auto action_chips = future.Take();
 
+  // Assert
   EXPECT_THAT(action_chips, ElementsAreArray(matchers));
+  EXPECT_THAT(histogram_tester_.GetAllSamples("NewTabPage.ActionChips.Shown"),
+              BucketsAreArray(expected_buckets));
 }

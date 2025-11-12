@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -101,6 +102,13 @@ content::WebContents* FindMostRecentTab(content::WebUI& web_ui) {
 
   return most_recent_contents;
 }
+
+// Helper method to record impression metrics for the generated chips.
+void RecordImpressionMetrics(const std::vector<ActionChipPtr>& chips) {
+  for (const auto& chip : chips) {
+    base::UmaHistogramEnumeration("NewTabPage.ActionChips.Shown", chip->type);
+  }
+}
 }  // namespace
 
 ActionChipsHandler::ActionChipsHandler(
@@ -126,5 +134,8 @@ void ActionChipsHandler::GetActionChips(
   }
   chips.push_back(CreateDeepSearchChip());
   chips.push_back(CreateImageCreationChip());
+
+  RecordImpressionMetrics(chips);
+
   std::move(callback).Run(std::move(chips));
 }
