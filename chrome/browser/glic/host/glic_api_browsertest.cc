@@ -1374,7 +1374,8 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTabAndPreloading,
 }
 
 // TODO(crbug.com/457010934): Flaky on Linux.
-#if BUILDFLAG(IS_LINUX)
+// Also flaky on linux-win-cross-rel.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 #define MAYBE_testNoExtractionWhileHidden DISABLED_testNoExtractionWhileHidden
 #else
 #define MAYBE_testNoExtractionWhileHidden testNoExtractionWhileHidden
