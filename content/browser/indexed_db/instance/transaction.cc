@@ -500,8 +500,11 @@ void Transaction::Put(int64_t object_store_id,
 
   std::vector<IndexedDBExternalObject> external_objects;
   uint64_t total_blob_size = 0;
-  if (!input_value->external_objects.empty()) {
-    total_blob_size = CreateExternalObjects(input_value, &external_objects);
+  if (!input_value->external_objects.empty() &&
+      !CreateExternalObjects(input_value, &external_objects,
+                             &total_blob_size)) {
+    mojo::ReportBadMessage("Couldn't deserialize external objects.");
+    return;
   }
 
   // Increment the total transaction size by the size of this put.
@@ -770,9 +773,10 @@ void Transaction::OnQuotaCheckDone(bool allowed) {
   }
 }
 
-uint64_t Transaction::CreateExternalObjects(
+bool Transaction::CreateExternalObjects(
     blink::mojom::IDBValuePtr& value,
-    std::vector<IndexedDBExternalObject>* external_objects) {
+    std::vector<IndexedDBExternalObject>* external_objects,
+    uint64_t* total_size) {
   // Should only be called if there are external objects to process.
   CHECK(!value->external_objects.empty());
 
@@ -783,11 +787,13 @@ uint64_t Transaction::CreateExternalObjects(
     switch (object->which()) {
       case blink::mojom::IDBExternalObject::Tag::kBlobOrFile: {
         blink::mojom::IDBBlobInfoPtr& info = object->get_blob_or_file();
-        uint64_t size = info->size;
-        total_blob_size += size;
+        if (info->size < 0) {
+          return false;
+        }
+
+        total_blob_size += info->size;
 
         if (info->file) {
-          DCHECK_NE(info->size, IndexedDBExternalObject::kUnknownSize);
           (*external_objects)[i] = IndexedDBExternalObject(
               std::move(info->blob), info->file->name, info->mime_type,
               info->file->last_modified, info->size);
@@ -803,7 +809,8 @@ uint64_t Transaction::CreateExternalObjects(
         break;
     }
   }
-  return total_blob_size.ValueOrDie();
+  *total_size = total_blob_size.ValueOrDie();
+  return true;
 }
 
 Status Transaction::BlobWriteComplete(

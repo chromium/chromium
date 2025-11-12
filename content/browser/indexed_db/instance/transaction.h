@@ -232,10 +232,13 @@ class CONTENT_EXPORT Transaction : public blink::mojom::IDBTransaction {
   void OnQuotaCheckDone(bool allowed);
 
   // Turns an IDBValue into a set of IndexedDBExternalObjects in
-  // |external_objects|.
-  uint64_t CreateExternalObjects(
+  // |external_objects|. Note that `value` is untrusted input from the renderer,
+  // and deserialization can fail: in this case, false is returned and the
+  // renderer should be killed.
+  bool CreateExternalObjects(
       blink::mojom::IDBValuePtr& value,
-      std::vector<IndexedDBExternalObject>* external_objects);
+      std::vector<IndexedDBExternalObject>* external_objects,
+      uint64_t* total_size);
 
   Status DoPendingCommit();
 
