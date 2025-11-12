@@ -7,6 +7,8 @@
 
 #include "chrome/browser/profiles/profile.h"
 
+class PrefService;
+
 // Utility functions for checking if Lens Search features are enabled. Separated
 // from lens_features.h to allow dependencies on chrome/browser.
 namespace lens {
@@ -23,6 +25,17 @@ bool ShouldShowLensOverlayEduActionChip(Profile* profile);
 // Increments the counter for the number of times the Lens Overlay EDU action
 // chip has been shown.
 void IncrementLensOverlayEduActionChipShownCount(Profile* profile);
+
+// Whether the user has granted the permissions needed for the overlay to appear
+// or, if the non-blocking privacy notice is being used, for contextualization.
+// The needed permissions vary depending on if the contextual searchbox is
+// enabled.
+bool DidUserGrantLensOverlayNeededPermissions(PrefService* pref_service);
+
+// Grants the permissions needed for the overlay to appear or, if the
+// non-blocking privacy notice is being used, for contextualization. The granted
+// permissions vary depending on if the contextual searchbox is enabled.
+void GrantLensOverlayNeededPermissions(PrefService* pref_service);
 
 }  // namespace lens
 

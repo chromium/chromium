@@ -324,6 +324,35 @@
     pointer-events: none;
   }
 
+  #privacyNotice {
+    display: flex;
+    padding: 16px 20px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    border-radius: 24px;
+    background: #FFF;
+    /* Elevation Light/2 */
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.30), 0 2px 6px 2px rgba(0, 0, 0, 0.15);
+    width: 266px;
+  }
+
+  #privacyNoticeHeader {
+    color: #1f1f1f;
+    font-family: Roboto, Arial, sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 24px;
+  }
+
+  #privacyNoticeBody {
+    color: #1f1f1f;
+    font-family: Roboto, Arial, sans-serif;
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 20px;
+  }
+
   #searchboxContainer {
     --color-searchbox-background: #FFFFFF;
     --color-searchbox-background-hovered: #FFFFFF;
@@ -342,6 +371,8 @@
     position: absolute;
     inset-block-start: 40px;
     inset-inline-end: 140px;
+    flex-direction: column;
+    gap: 18px;
   }
 
   #searchboxContainer > * {
@@ -500,6 +531,13 @@
       page-content-type="[[pageContentType]]"
       suggestion-count="[[searchboxSuggestionCount]]">
     </cr-searchbox-ghost-loader>
+    <template is="dom-if" if="[[isPrivacyNoticeVisible]]">
+      <div id="privacyNotice">
+        <div id="privacyNoticeHeader">$i18n{privacyNoticeHeader}
+        </div>
+        <div id="privacyNoticeBody">$i18nRaw{privacyNoticeBody}</div>
+      </div>
+    </template>
   </div>
   <div id="translateButtonContainer" class="button-container">
     <translate-button id="translateButton"

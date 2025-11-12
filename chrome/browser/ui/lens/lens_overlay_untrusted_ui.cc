@@ -28,6 +28,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/webui_util.h"
 
@@ -153,6 +154,16 @@ LensOverlayUntrustedUI::LensOverlayUntrustedUI(content::WebUI* web_ui)
   html_source->AddLocalizedString(
       "bottomLeftSliderAriaLabel",
       IDS_LENS_OVERLAY_BOTTOM_LEFT_CORNER_SLIDER_ACCESSIBILITY_LABEL);
+  html_source->AddLocalizedString("privacyNoticeHeader",
+                                  IDS_LENS_PERMISSION_BUBBLE_DIALOG_TITLE);
+  html_source->AddString(
+      "privacyNoticeBody",
+      l10n_util::GetStringFUTF16(
+          IDS_LENS_PERMISSION_BUBBLE_DIALOG_CSB_DESCRIPTION,
+          base::StrCat({u"<a href=\"#\" on-click=\"onLearnMoreClick\" "
+                        u"on-keydown=\"onLearnMoreClick\">",
+                        l10n_util::GetStringUTF16(IDS_LENS_OVERLAY_LEARN_MORE),
+                        u"</a>"})));
 
   // Add default theme colors.
   const auto& palette = lens::kPaletteColors.at(lens::PaletteId::kFallback);
@@ -339,6 +350,11 @@ LensOverlayUntrustedUI::LensOverlayUntrustedUI(content::WebUI* web_ui)
   html_source->AddBoolean(
       "canShowTooltipFromPrefs",
       lens_overlay_start_count <= kNumTimesToShowCursorTooltips);
+
+  html_source->AddBoolean(
+      "enablePrivacyNotice",
+      lens::features::IsLensOverlayNonBlockingPrivacyNoticeEnabled() &&
+          !DidUserGrantLensOverlayNeededPermissions(profile->GetPrefs()));
 }
 
 void LensOverlayUntrustedUI::BindInterface(

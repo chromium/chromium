@@ -37,12 +37,14 @@
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_overlay_mime_type.h"
+#include "components/lens/lens_overlay_permission_utils.h"
 #include "components/lens/lens_payload_construction.h"
 #include "components/lens/lens_request_construction.h"
 #include "components/lens/lens_url_utils.h"
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
 #include "components/lens/ref_counted_lens_overlay_client_logs.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
+#include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -453,7 +455,8 @@ void LensOverlayQueryController::EndQuery() {
 }
 
 void LensOverlayQueryController::MaybeRestartQueryFlow() {
-  if (query_controller_state_ == QueryControllerState::kClusterInfoExpired) {
+  if (query_controller_state_ == QueryControllerState::kClusterInfoExpired ||
+      query_controller_state_ == QueryControllerState::kWaitingForPermissions) {
     PrepareAndFetchFullImageRequest();
   }
 }
@@ -575,6 +578,12 @@ void LensOverlayQueryController::SendContextualTextQuery(
         &LensOverlayQueryController::SendContextualTextQuery,
         weak_ptr_factory_.GetWeakPtr(), query_start_time, query_text,
         lens_selection_type, additional_search_query_params);
+    if (lens::features::IsLensOverlayNonBlockingPrivacyNoticeEnabled() &&
+        !cluster_info_.has_value()) {
+      // If the cluster info is expired, restart a new query flow so the pending
+      // interaction request will be sent once the cluster info is available.
+      MaybeRestartQueryFlow();
+    }
     return;
   }
 
@@ -900,6 +909,14 @@ void LensOverlayQueryController::ClusterInfoFetchResponseHandler(
 }
 
 void LensOverlayQueryController::PrepareAndFetchFullImageRequest() {
+  // If permissions have not yet been granted, exit early. Once permissions are
+  // granted and the cluster info response is received,
+  // PrepareAndFetchFullImageRequest will be called again.
+  if (!DidUserGrantLensOverlayNeededPermissions(profile_->GetPrefs())) {
+    query_controller_state_ = QueryControllerState::kWaitingForPermissions;
+    return;
+  }
+
   if (query_controller_state_ ==
       QueryControllerState::kAwaitingClusterInfoResponse) {
     // If we are still waiting for the cluster info response, we can't send the
@@ -1202,7 +1219,15 @@ void LensOverlayQueryController::RunFullImageCallbackForError() {
 }
 
 void LensOverlayQueryController::PrepareAndFetchPageContentRequest() {
-  if (query_controller_state_ == QueryControllerState::kClusterInfoExpired) {
+  // If permissions have not yet been granted, exit early. The full image
+  // request will recall this method once permissions are granted and the
+  // cluster info is fetched.
+  if (!DidUserGrantLensOverlayNeededPermissions(profile_->GetPrefs())) {
+    return;
+  }
+
+  if (query_controller_state_ == QueryControllerState::kClusterInfoExpired ||
+      query_controller_state_ == QueryControllerState::kWaitingForPermissions) {
     // If the cluster info has expired, we need to refetch the cluster info. The
     // full image request will recall this method once the cluster info is
     // fetched.
@@ -1554,6 +1579,13 @@ void LensOverlayQueryController::PageContentUploadFinished() {
 }
 
 void LensOverlayQueryController::PrepareAndFetchPartialPageContentRequest() {
+  // If permissions have not yet been granted, exit early. The full image
+  // request will recall this method once permissions are granted and the
+  // cluster info is fetched.
+  if (!DidUserGrantLensOverlayNeededPermissions(profile_->GetPrefs())) {
+    return;
+  }
+
   if (!cluster_info_ || !IsPartialPageContentSubstantial()) {
     // Cannot send this request without cluster info. Do not send the request
     // if the partial page content is not substantial enough to yield deatialed

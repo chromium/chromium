@@ -40,6 +40,7 @@
 #include "components/lens/lens_url_utils.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/optimization_guide/content/browser/page_context_eligibility.h"
+#include "components/prefs/pref_service.h"
 #include "components/sharing_message/features.h"
 #include "skia/ext/codec_utils.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -71,6 +72,24 @@ std::string ScaleBitmapAndEncodeToDataUri(SkBitmap bitmap) {
   }
 
   return skia::EncodePngAsDataUri(scaled_bitmap.pixmap());
+}
+
+bool UseNonBlockingPrivacyNotice(
+    lens::LensOverlayInvocationSource invocation_source) {
+  if (!lens::features::IsLensOverlayNonBlockingPrivacyNoticeEnabled()) {
+    return false;
+  }
+  // Invocation sources that simply open the overlay without submitting a query
+  // are permitted to use the non-blocking privacy notice.
+  return (invocation_source == lens::LensOverlayInvocationSource::kAppMenu ||
+          invocation_source ==
+              lens::LensOverlayInvocationSource::kContentAreaContextMenuPage ||
+          invocation_source == lens::LensOverlayInvocationSource::kToolbar ||
+          invocation_source == lens::LensOverlayInvocationSource::kOmnibox ||
+          invocation_source ==
+              lens::LensOverlayInvocationSource::kOmniboxPageAction ||
+          invocation_source ==
+              lens::LensOverlayInvocationSource::kHomeworkActionChip);
 }
 
 }  // namespace
@@ -687,6 +706,13 @@ bool LensSearchController::RunLensEligibilityChecks(
   // contents is not in a crash state.
   if (!tab_->IsActivated() || tab_->GetContents()->IsCrashed()) {
     return false;
+  }
+
+  // The non-blocking privacy notice permits the overlay to open without
+  // requesting user permission via the bubble.
+  if (lens::features::IsLensOverlayNonBlockingPrivacyNoticeEnabled() &&
+      UseNonBlockingPrivacyNotice(invocation_source)) {
+    return true;
   }
 
   // If the user hasn't granted permission, request user permission before

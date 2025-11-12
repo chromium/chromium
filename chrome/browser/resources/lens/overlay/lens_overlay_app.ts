@@ -232,6 +232,11 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
         value: false,
         reflectToAttribute: true,
       },
+      isPrivacyNoticeVisible: {
+        type: Boolean,
+        reflectToAttribute: true,
+        value: () => loadTimeData.getBoolean('enablePrivacyNotice'),
+      },
     };
   }
 
@@ -284,7 +289,8 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
   // Whether the contextual searchbox should be auto-focused when the overlay is
   // first opened.
   private autoFocusSearchbox: boolean =
-      loadTimeData.getValue('autoFocusSearchbox');
+      loadTimeData.getValue('autoFocusSearchbox') &&
+      !loadTimeData.getValue('enablePrivacyNotice');
   declare private toastMessage: string;
   declare private enableCloseButtonTweaks: boolean;
   declare private enableVisualSelectionUpdates: boolean;
@@ -307,6 +313,8 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
   declare private areLanguagePickersOpen: boolean;
   // Whether the overlay is currently being reshown.
   declare private overlayReshowInProgress: boolean;
+  // Whether to show the privacy notice.
+  declare private isPrivacyNoticeVisible: boolean;
 
   // The performance tracker used to log performance metrics for the overlay.
   private performanceTracker: PerformanceTracker = new PerformanceTracker();
@@ -315,7 +323,8 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
   // backend has completed. The handshake is required to send suggest requests.
   private isBackendHandshakeComplete = false;
   // Whether to trigger the autocomplete request when suggest inputs are ready.
-  private triggerSuggestOnInputReady = false;
+  private triggerSuggestOnInputReady =
+      loadTimeData.getBoolean('enablePrivacyNotice');
 
   private eventTracker_: EventTracker = new EventTracker();
 
@@ -456,6 +465,7 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
   }
 
   private handleSearchboxFocused() {
+    this.isPrivacyNoticeVisible = false;
     this.suppressGhostLoader = false;
     this.isSearchboxFocused = true;
     this.$.translateButtonContainer.classList.remove('searchbox-unfocused');

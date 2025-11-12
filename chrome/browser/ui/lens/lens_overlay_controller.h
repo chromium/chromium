@@ -966,6 +966,11 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
   // exist.
   void SetOverlayWebViewOpacity(float opacity);
 
+  // Grants the permissions needed for contextualization if the non-blocking
+  // privacy notice is being used and the permissions have not already been
+  // granted.
+  void MaybeGrantLensOverlayPermissions();
+
   // Shorthand to grab the LensSearchboxController for this instance of Lens.
   lens::LensSearchboxController* GetLensSearchboxController();
 

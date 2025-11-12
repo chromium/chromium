@@ -382,6 +382,7 @@ source_set("unit_tests") {
     "//chrome/test:test_support",
     "//components/base32",
     "//components/endpoint_fetcher",
+    "//components/lens:enterprise_policy",
     "//components/lens:features",
     "//components/optimization_guide/content/browser:page_context_eligibility",
     "//content/public/browser",
