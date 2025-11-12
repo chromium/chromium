@@ -19,12 +19,15 @@ class PinnedTabStripProperties {
     public static final WritableIntPropertyKey BACKGROUND_COLOR = new WritableIntPropertyKey();
     public static final WritableObjectPropertyKey<ObservableSupplierImpl<Boolean>>
             IS_VISIBILITY_ANIMATION_RUNNING_SUPPLIER = new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<PinnedTabStripAnimationManager>
+            ANIMATION_MANAGER = new WritableObjectPropertyKey<>();
 
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
                 IS_VISIBLE,
                 SCROLL_TO_POSITION,
                 BACKGROUND_COLOR,
-                IS_VISIBILITY_ANIMATION_RUNNING_SUPPLIER
+                IS_VISIBILITY_ANIMATION_RUNNING_SUPPLIER,
+                ANIMATION_MANAGER
             };
 }

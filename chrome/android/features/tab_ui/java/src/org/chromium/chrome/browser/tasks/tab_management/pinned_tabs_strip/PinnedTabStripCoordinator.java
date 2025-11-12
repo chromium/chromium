@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tasks.tab_management.pinned_tabs_strip;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.chrome.browser.tasks.tab_management.pinned_tabs_strip.PinnedTabStripProperties.ANIMATION_MANAGER;
 import static org.chromium.chrome.browser.tasks.tab_management.pinned_tabs_strip.PinnedTabStripProperties.IS_VISIBILITY_ANIMATION_RUNNING_SUPPLIER;
 import static org.chromium.chrome.browser.tasks.tab_management.pinned_tabs_strip.PinnedTabStripProperties.IS_VISIBLE;
 import static org.chromium.chrome.browser.tasks.tab_management.pinned_tabs_strip.PinnedTabStripProperties.SCROLL_TO_POSITION;
@@ -45,6 +46,7 @@ public class PinnedTabStripCoordinator {
     private final PinnedTabStripMediator mMediator;
     private final TabListRecyclerView mPinnedTabsRecyclerView;
     private final ObservableSupplierImpl<Boolean> mIsVisibilityAnimationRunningSupplier;
+    private final PinnedTabStripAnimationManager mAnimationManager;
 
     /**
      * Constructor for PinnedTabStripCoordinator.
@@ -72,10 +74,12 @@ public class PinnedTabStripCoordinator {
                                         /* attachToParent= */ false);
         TabListModel pinnedTabsModelList = new TabListModel();
         mIsVisibilityAnimationRunningSupplier = new ObservableSupplierImpl<>(false);
+        mAnimationManager = new PinnedTabStripAnimationManager(mPinnedTabsRecyclerView);
         PropertyModel pinnedTabStripPropertyModel =
                 new PropertyModel.Builder(PinnedTabStripProperties.ALL_KEYS)
                         .with(IS_VISIBLE, false)
                         .with(SCROLL_TO_POSITION, -1)
+                        .with(ANIMATION_MANAGER, mAnimationManager)
                         .with(
                                 IS_VISIBILITY_ANIMATION_RUNNING_SUPPLIER,
                                 mIsVisibilityAnimationRunningSupplier)
