@@ -578,7 +578,6 @@ crbug.com/446861923 [ android android-pixel-10 android-chromium ] Pixel_Video_VP
 
 
 # ViewTransitions capturing incorrect image
-crbug.com/446157733 [ android-pixel-4 angle-opengles graphite-disabled ] Pixel_ViewTransitionsCapture [ Failure ]
 crbug.com/446157733 [ android-pixel-6 angle-vulkan ] Pixel_ViewTransitionsCapture [ Failure ]
 
 #######################################################################
