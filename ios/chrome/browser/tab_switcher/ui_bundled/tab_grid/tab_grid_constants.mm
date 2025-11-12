@@ -53,6 +53,8 @@ NSString* const kTabGridEditShareButtonIdentifier =
 NSString* const kTabGridSearchBarIdentifier = @"kTabGridSearchBarIdentifier";
 NSString* const kTabGridSearchTextFieldIdentifierPrefix = @"kSearchTextId_";
 NSString* const kTabGridScrimIdentifier = @"kTabGridScrimIdentifier";
+NSString* const kTabGridOverflowMenuButtonIdentifier =
+    @"kTabGridOverflowMenuButtonIdentifier";
 
 NSString* const kTabCellActivityLabelIdentifier =
     @"TabCellActivityLabelIdentifier";

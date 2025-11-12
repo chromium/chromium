@@ -589,6 +589,9 @@
 // Returns the GREYMatcher for the button that closes the tab grid.
 + (id<GREYMatcher>)tabGridDoneButton;
 
+// Returns the GREYMatcher for the button to open the overflow menu.
++ (id<GREYMatcher>)tabGridOverflowMenuButton;
+
 // Returns the GREYMatcher for the button that reverts the close all tabs action
 // in the tab grid.
 + (id<GREYMatcher>)tabGridUndoCloseAllButton;

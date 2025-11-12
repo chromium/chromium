@@ -42,6 +42,7 @@ extern NSString* const kTabGridEditShareButtonIdentifier;
 extern NSString* const kTabGridSearchBarIdentifier;
 extern NSString* const kTabGridSearchTextFieldIdentifierPrefix;
 extern NSString* const kTabGridScrimIdentifier;
+extern NSString* const kTabGridOverflowMenuButtonIdentifier;
 
 // Accessibility identifier for the activity label on a tab cell.
 extern NSString* const kTabCellActivityLabelIdentifier;

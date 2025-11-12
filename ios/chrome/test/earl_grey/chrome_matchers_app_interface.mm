@@ -1375,6 +1375,11 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
                     grey_sufficientlyVisible(), nil);
 }
 
++ (id<GREYMatcher>)tabGridOverflowMenuButton {
+  return grey_allOf(grey_accessibilityID(kTabGridOverflowMenuButtonIdentifier),
+                    grey_sufficientlyVisible(), nil);
+}
+
 + (id<GREYMatcher>)tabGridUndoCloseAllButton {
   return grey_allOf(grey_accessibilityID(kTabGridUndoCloseAllButtonIdentifier),
                     grey_sufficientlyVisible(), nil);
