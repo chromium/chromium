@@ -1041,8 +1041,12 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
 
   void PerformActions(const std::vector<uint8_t>& actions_proto,
                       PerformActionsCallback callback) override {
-    host().instance_delegate().PerformActions(actions_proto,
-                                              std::move(callback));
+    host().instance_delegate().PerformActions(
+        actions_proto,
+        mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+            std::move(callback),
+            base::unexpected(
+                glic::mojom::PerformActionsErrorReason::kUnknown)));
   }
 
   void StopActorTask(int32_t task_id,
