@@ -108,9 +108,15 @@ void GlicView::UpdateBackgroundColor() {
     background_color = GetClientBackgroundColor();
   }
 
-  // TODO(b:458506119): Use a layer based background here.
+#if BUILDFLAG(IS_CHROMEOS)
+  SetBackground(views::CreateLayerBasedRoundedBackground(
+      background_color.value_or(kColorGlicBackground), background_radii_));
+  background()->SetInternalName("GlicView/background");
+#else
+  // TODO(b:458506119): Use layer based background for all platforms.
   SetBackground(views::CreateRoundedRectBackground(
       background_color.value_or(kColorGlicBackground), background_radii_));
+#endif
 
   if (views::Widget* widget = GetWidget(); explicit_background && widget) {
     // Set the native widget background color if needed.
