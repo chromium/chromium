@@ -390,9 +390,9 @@ int SSLConnectJob::DoSSLConnect() {
     if (!trust_anchor_ids_for_retry_.empty()) {
       ssl_config.trust_anchor_ids = trust_anchor_ids_for_retry_;
     } else if (endpoint_result_) {
-      ssl_config.trust_anchor_ids = SSLConfig::SelectTrustAnchorIDs(
-          endpoint_result_->metadata.trust_anchor_ids,
-          ssl_client_context()->config().trust_anchor_ids);
+      ssl_config.trust_anchor_ids =
+          ssl_client_context()->config().SelectTrustAnchorIDs(
+              endpoint_result_->metadata.trust_anchor_ids);
     } else {
       // Send an empty trust_anchors extension to signal we support the
       // extension and can trigger the retry flow if the server picked a
@@ -488,9 +488,9 @@ int SSLConnectJob::DoSSLConnectComplete(int result) {
     // If the EncryptedExtensions had no trust_anchor extension, or no match was
     // found, the client returns the error to the application.
     if (!server_trust_anchor_ids.empty()) {
-      trust_anchor_ids_for_retry_ = SSLConfig::SelectTrustAnchorIDs(
-          server_trust_anchor_ids,
-          ssl_client_context()->config().trust_anchor_ids);
+      trust_anchor_ids_for_retry_ =
+          ssl_client_context()->config().SelectTrustAnchorIDs(
+              server_trust_anchor_ids);
       if (!trust_anchor_ids_for_retry_.empty()) {
         ResetStateForRestart();
         next_state_ = GetInitialState(params_->GetConnectionType());

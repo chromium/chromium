@@ -7,6 +7,7 @@
 #include <tuple>
 
 #include "base/feature_list.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/observer_list.h"
 #include "net/base/features.h"
 #include "net/ssl/ssl_config_service_defaults.h"
@@ -58,6 +59,22 @@ std::vector<uint16_t> SSLContextConfig::GetSupportedGroups(
     }
   }
   return groups_out;
+}
+
+std::vector<uint8_t> SSLContextConfig::SelectTrustAnchorIDs(
+    const std::vector<std::vector<uint8_t>>& server_advertised_trust_anchor_ids)
+    const {
+  std::vector<uint8_t> selected_trust_anchor_ids;
+  for (const auto& server_advertised_tai : server_advertised_trust_anchor_ids) {
+    if (trust_anchor_ids.contains(server_advertised_tai)) {
+      selected_trust_anchor_ids.emplace_back(
+          base::checked_cast<uint8_t>(server_advertised_tai.size()));
+      selected_trust_anchor_ids.insert(selected_trust_anchor_ids.end(),
+                                       server_advertised_tai.begin(),
+                                       server_advertised_tai.end());
+    }
+  }
+  return selected_trust_anchor_ids;
 }
 
 SSLConfigService::SSLConfigService()

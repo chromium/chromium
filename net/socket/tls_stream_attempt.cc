@@ -203,9 +203,8 @@ int TlsStreamAttempt::DoTlsAttempt(int rv) {
     ssl_config_ = base_ssl_config_;
     if (!ssl_context_config.trust_anchor_ids.empty() &&
         base::FeatureList::IsEnabled(features::kTLSTrustAnchorIDs)) {
-      ssl_config_->trust_anchor_ids =
-          SSLConfig::SelectTrustAnchorIDs(endpoint->metadata.trust_anchor_ids,
-                                          ssl_context_config.trust_anchor_ids);
+      ssl_config_->trust_anchor_ids = ssl_context_config.SelectTrustAnchorIDs(
+          endpoint->metadata.trust_anchor_ids);
     }
     if (ssl_context_config.ech_enabled) {
       ssl_config_->ech_config_list = endpoint->metadata.ech_config_list;
@@ -281,9 +280,8 @@ int TlsStreamAttempt::DoTlsAttemptComplete(int rv) {
     // found, the client returns the error to the application.
     if (!server_trust_anchor_ids.empty()) {
       std::vector<uint8_t> trust_anchor_ids_for_retry =
-          SSLConfig::SelectTrustAnchorIDs(
-              server_trust_anchor_ids,
-              params().ssl_client_context->config().trust_anchor_ids);
+          params().ssl_client_context->config().SelectTrustAnchorIDs(
+              server_trust_anchor_ids);
       if (!trust_anchor_ids_for_retry.empty()) {
         retried_for_trust_anchor_ids_ = true;
         ssl_config_->trust_anchor_ids = trust_anchor_ids_for_retry;

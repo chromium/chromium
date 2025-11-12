@@ -50,6 +50,17 @@ struct NET_EXPORT SSLContextConfig {
   // key_share extension.
   std::vector<uint16_t> GetSupportedGroups(bool key_shares_only = false) const;
 
+  // Helper function to select TLS Trust Anchor IDs to advertise in the TLS
+  // handshake, so that the server can serve a certificate that the client
+  // trusts. `server_advertised_trust_anchor_ids` is a list of Trust Anchor IDs,
+  // in binary representation, that the server has provided out-of-band (e.g. in
+  // a DNS record). The intersection with `trust_anchor_ids` is returned in wire
+  // format (a series of 8-bit length prefixed non-empty strings) such that it
+  // can be passed into BoringSSL.
+  std::vector<uint8_t> SelectTrustAnchorIDs(
+      const std::vector<std::vector<uint8_t>>&
+          server_advertised_trust_anchor_ids) const;
+
   // The minimum and maximum protocol versions that are enabled.
   // (Use the SSL_PROTOCOL_VERSION_xxx enumerators defined in ssl_config.h.)
   // SSL 2.0/3.0 and TLS 1.0/1.1 are not supported. If version_max <
