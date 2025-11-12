@@ -15,6 +15,8 @@ namespace crypto::apple {
 namespace {
 
 constexpr char kTestKeychainAccessGroup[] = "test-keychain-access-group";
+constexpr char kTestApplicationTag[] = "test-application-tag";
+
 constexpr SignatureVerifier::SignatureAlgorithm kAcceptableAlgos[] = {
     SignatureVerifier::ECDSA_SHA256};
 
@@ -27,6 +29,7 @@ class UnexportableKeyMacTest : public testing::Test {
 
   const UnexportableKeyProvider::Config config_{
       .keychain_access_group = kTestKeychainAccessGroup,
+      .application_tag = kTestApplicationTag,
   };
 
   std::unique_ptr<UnexportableKeyProvider> provider_{
@@ -53,6 +56,35 @@ TEST_F(UnexportableKeyMacTest, DeleteSigningKey) {
 TEST_F(UnexportableKeyMacTest, DeleteUnknownSigningKey) {
   EXPECT_FALSE(
       provider_->DeleteSigningKeySlowly(std::vector<uint8_t>{1, 2, 3}));
+}
+
+TEST_F(UnexportableKeyMacTest, DeleteSigningKeyWithWrongApplicationTag) {
+  // Generate a key with the default provider.
+  std::unique_ptr<UnexportableSigningKey> key =
+      provider_->GenerateSigningKeySlowly(kAcceptableAlgos);
+  ASSERT_TRUE(key);
+  ASSERT_TRUE(provider_->FromWrappedSigningKeySlowly(key->GetWrappedKey()));
+
+  // Create a new provider with a different application tag.
+  const UnexportableKeyProvider::Config new_config{
+      .keychain_access_group = kTestKeychainAccessGroup,
+      .application_tag = "wrong-application-tag",
+  };
+  std::unique_ptr<UnexportableKeyProvider> new_provider =
+      GetUnexportableKeyProvider(new_config);
+  ASSERT_TRUE(new_provider);
+
+  // Deleting with the wrong provider should fail.
+  EXPECT_FALSE(new_provider->DeleteSigningKeySlowly(key->GetWrappedKey()));
+
+  // The key should still exist and be loadable by the original provider.
+  EXPECT_TRUE(provider_->FromWrappedSigningKeySlowly(key->GetWrappedKey()));
+  EXPECT_FALSE(scoped_fake_keychain_.keychain()->items().empty());
+
+  // Deleting with the correct provider should succeed.
+  EXPECT_TRUE(provider_->DeleteSigningKeySlowly(key->GetWrappedKey()));
+  EXPECT_FALSE(provider_->FromWrappedSigningKeySlowly(key->GetWrappedKey()));
+  EXPECT_TRUE(scoped_fake_keychain_.keychain()->items().empty());
 }
 
 TEST_F(UnexportableKeyMacTest, GetSecKeyRef) {

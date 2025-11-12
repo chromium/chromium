@@ -325,6 +325,7 @@ bool UnexportableKeyProviderMac::DeleteSigningKeySlowly(
     CFToNSPtrCast(kSecAttrKeyType) :
         CFToNSPtrCast(kSecAttrKeyTypeECSECPrimeRandom),
     CFToNSPtrCast(kSecAttrAccessGroup) : objc_storage_->keychain_access_group_,
+    CFToNSPtrCast(kSecAttrApplicationTag) : objc_storage_->application_tag_,
     CFToNSPtrCast(kSecAttrApplicationLabel) :
         [NSData dataWithBytes:wrapped_key.data() length:wrapped_key.size()],
   };

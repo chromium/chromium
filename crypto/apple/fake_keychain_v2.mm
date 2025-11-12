@@ -28,6 +28,16 @@
 
 namespace crypto::apple {
 
+namespace {
+
+// Returns true if the `item_value` matches the `query_value`.
+// A null `query_value` is a wildcard and is always considered a match.
+bool Matches(CFTypeRef query_value, CFTypeRef item_value) {
+  return !query_value || (item_value && CFEqual(query_value, item_value));
+}
+
+}  // namespace
+
 FakeKeychainV2::FakeKeychainV2(const std::string& keychain_access_group)
     : keychain_access_group_(
           base::SysUTF8ToCFStringRef(keychain_access_group)) {}
@@ -210,16 +220,10 @@ OSStatus FakeKeychainV2::ItemCopyMatching(CFDictionaryRef query,
     CFStringRef item_attr_service =
         base::apple::GetValueFromDictionary<CFStringRef>(item.get(),
                                                          kSecAttrService);
-    if ((query_label && (!item_label || !CFEqual(query_label, item_label))) ||
-        (query_application_label &&
-         (!item_application_label ||
-          !CFEqual(query_application_label, item_application_label))) ||
-        (query_application_tag &&
-         (!item_application_tag ||
-          !CFEqual(query_application_tag, item_application_tag))) ||
-        (query_attr_service &&
-         (!item_attr_service ||
-          !CFEqual(query_attr_service, item_attr_service)))) {
+    if (!Matches(query_label, item_label) ||
+        !Matches(query_application_label, item_application_label) ||
+        !Matches(query_application_tag, item_application_tag) ||
+        !Matches(query_attr_service, item_attr_service)) {
       continue;
     }
     if (match_all) {
@@ -242,27 +246,30 @@ OSStatus FakeKeychainV2::ItemDelete(CFDictionaryRef query) {
   // Validate certain fields that we always expect to be set.
   DCHECK_EQ(base::apple::GetValueFromDictionary<CFStringRef>(query, kSecClass),
             kSecClassKey);
-  DCHECK(CFEqual(base::apple::GetValueFromDictionary<CFStringRef>(
-                     query, kSecAttrAccessGroup),
-                 keychain_access_group_.get()));
-  // Only supporting deletion via `kSecAttrApplicationLabel` (credential ID) for
-  // now (see `TouchIdCredentialStore::DeleteCredentialById()`).
-  CFDataRef query_credential_id =
+  CHECK(CFEqual(base::apple::GetValueFromDictionary<CFStringRef>(
+                    query, kSecAttrAccessGroup),
+                keychain_access_group_.get()));
+  CFDataRef query_application_label =
       base::apple::GetValueFromDictionary<CFDataRef>(query,
                                                      kSecAttrApplicationLabel);
-  DCHECK(query_credential_id);
-  for (auto it = items_.begin(); it != items_.end(); ++it) {
-    const base::apple::ScopedCFTypeRef<CFDictionaryRef>& item = *it;
-    CFDataRef item_credential_id =
-        base::apple::GetValueFromDictionary<CFDataRef>(
-            item.get(), kSecAttrApplicationLabel);
-    DCHECK(item_credential_id);
-    if (CFEqual(query_credential_id, item_credential_id)) {
-      items_.erase(it);  // N.B. `it` becomes invalid
-      return errSecSuccess;
-    }
-  }
-  return errSecItemNotFound;
+  CHECK(query_application_label);
+  // kSecAttrApplicationTag can be CFStringRef for legacy credentials and
+  // CFDataRef for new ones, hence using CFTypeRef.
+  CFTypeRef query_application_tag =
+      CFDictionaryGetValue(query, kSecAttrApplicationTag);
+  const size_t n_erased = std::erase_if(
+      items_, [&](const base::apple::ScopedCFTypeRef<CFDictionaryRef>& item) {
+        CFDataRef item_application_label =
+            base::apple::GetValueFromDictionary<CFDataRef>(
+                item.get(), kSecAttrApplicationLabel);
+        CHECK(item_application_label);
+        CFTypeRef item_application_tag =
+            CFDictionaryGetValue(item.get(), kSecAttrApplicationTag);
+        return CFEqual(query_application_label, item_application_label) &&
+               Matches(query_application_tag, item_application_tag);
+      });
+
+  return n_erased != 0 ? errSecSuccess : errSecItemNotFound;
 }
 
 OSStatus FakeKeychainV2::ItemUpdate(CFDictionaryRef query,
