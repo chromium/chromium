@@ -15,7 +15,6 @@
 #include "content/public/common/referrer.h"
 #include "net/base/isolation_info.h"
 #include "net/filter/source_stream_type.h"
-#include "net/http/http_request_headers.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/client_security_state.mojom-forward.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -46,7 +45,6 @@ struct CONTENT_EXPORT NavigationRequestInfo {
           blob_url_loader_factory,
       const base::UnguessableToken& devtools_navigation_token,
       const base::UnguessableToken& devtools_frame_token,
-      net::HttpRequestHeaders cors_exempt_headers,
       network::mojom::ClientSecurityStatePtr client_security_state,
       const std::optional<std::vector<net::SourceStreamType>>&
           devtools_accepted_stream_types,
@@ -122,8 +120,6 @@ struct CONTENT_EXPORT NavigationRequestInfo {
   const base::UnguessableToken devtools_navigation_token;
 
   const base::UnguessableToken devtools_frame_token;
-
-  const net::HttpRequestHeaders cors_exempt_headers;
 
   // Specifies the security state applying to the navigation. For iframes, this
   // is the security state of their parent. Nullptr otherwise.

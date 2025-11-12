@@ -167,8 +167,6 @@ class MockNavigationHandle : public NavigationHandle {
   }
   MOCK_METHOD1(RemoveRequestHeader, void(const std::string&));
   MOCK_METHOD2(SetRequestHeader, void(const std::string&, const std::string&));
-  MOCK_METHOD2(SetCorsExemptRequestHeader,
-               void(const std::string&, const std::string&));
   const net::HttpResponseHeaders* GetResponseHeaders() override {
     return response_headers_.get();
   }
