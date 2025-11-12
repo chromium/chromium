@@ -251,8 +251,8 @@ void ProfileOAuth2TokenServiceDelegateAndroid::OnAccessTokenInvalidated(
   // CHECK added to investigate crbug.com/366403142.
   // Sometimes access_token is unexpectedly empty (for example,
   // when visiting corp sites), and a previous attempt to throw an exception
-  // caused crashes (see crbug.com/428081405).
-  CHECK(!access_token.empty(), base::NotFatalUntil::M143);
+  // still causing crashes (see crbug.com/443111285).
+  CHECK(!access_token.empty(), base::NotFatalUntil::M145);
   signin::Java_ProfileOAuth2TokenServiceDelegate_invalidateAccessToken(
       env, java_ref_, j_access_token);
 }
