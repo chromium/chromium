@@ -216,6 +216,7 @@ void HTMLViewSourceDocument::ProcessTagToken(
     const HTMLToken& token,
     const HTMLAttributesRanges& attributes_ranges,
     int token_start) {
+  processing_tag_token_ = true;
   current_ = AddSpanWithClassName(class_tag_);
 
   AtomicString tag_name = token.GetName().AsAtomicString();
@@ -267,6 +268,7 @@ void HTMLViewSourceDocument::ProcessTagToken(
     ++attribute_index;
   }
   current_ = td_;
+  processing_tag_token_ = false;
 }
 
 void HTMLViewSourceDocument::ProcessCommentToken(const String& source,
@@ -313,11 +315,14 @@ void HTMLViewSourceDocument::AddLine(const AtomicString& class_name) {
   trow->ParserAppendChild(td);
   current_ = td_ = td;
 
+  // If a newline occurs within a tag, re-apply the html-tag span to ensure
+  // the rest of the tag is highlighted correctly.
+  if (processing_tag_token_ && class_name != class_tag_) {
+    current_ = AddSpanWithClassName(class_tag_);
+  }
+
   // Open up the needed spans.
   if (!class_name.empty()) {
-    if (class_name == "html-attribute-name" ||
-        class_name == "html-attribute-value")
-      current_ = AddSpanWithClassName(class_tag_);
     current_ = AddSpanWithClassName(class_name);
   }
 }

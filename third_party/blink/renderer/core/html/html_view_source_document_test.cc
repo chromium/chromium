@@ -299,12 +299,14 @@ TEST_F(HTMLViewSourceDocumentTest, ViewSource5) {
       "class=\"line-content\"><br></td></tr><tr><td class=\"line-number\" "
       "value=\"6\"></td><td class=\"line-content\">      <span "
       "class=\"html-tag\">&lt;input</span></td></tr><tr><td "
-      "class=\"line-number\" value=\"7\"></td><td "
-      "class=\"line-content\"><br></td></tr><tr><td class=\"line-number\" "
-      "value=\"8\"></td><td class=\"line-content\"><br></td></tr><tr><td "
-      "class=\"line-number\" value=\"9\"></td><td class=\"line-content\">      "
-      "<span class=\"html-attribute-name\">type</span>=\"<span "
-      "class=\"html-attribute-value\">text</span>\"&gt;</td></tr><tr><td "
+      "class=\"line-number\" value=\"7\"></td><td class=\"line-content\"><span "
+      "class=\"html-tag\"><br></span></td></tr><tr><td class=\"line-number\" "
+      "value=\"8\"></td><td class=\"line-content\"><span "
+      "class=\"html-tag\"><br></span></td></tr><tr><td class=\"line-number\" "
+      "value=\"9\"></td><td class=\"line-content\"><span class=\"html-tag\">   "
+      "   <span class=\"html-attribute-name\">type</span>=\"<span "
+      "class=\"html-attribute-value\">text</span>\"&gt;</span></td></"
+      "tr><tr><td "
       "class=\"line-number\" value=\"10\"></td><td class=\"line-content\">     "
       " <span class=\"html-tag\">&lt;/p&gt;</span></td></tr><tr><td "
       "class=\"line-number\" value=\"11\"></td><td "
@@ -571,6 +573,143 @@ TEST_F(HTMLViewSourceDocumentTest, DOMParts) {
       "class=\"html-attribute-name\">{{}}</span>&gt;</span>bar<span "
       "class=\"html-tag\">&lt;/span&gt;</span><span "
       "class=\"html-tag\">&lt;/div&gt;</span><span "
+      "class=\"html-end-of-file\"></span></td></tr></tbody></table></body></"
+      "html>");
+}
+
+TEST_F(HTMLViewSourceDocumentTest, LinebreakInTag) {
+  LoadMainResource(R"HTML(
+    <a href="http://example.org/foo/">
+      Foo
+    </a>
+    <a href="http://example.org/bar/"
+      style="color: red;">
+      Bar
+    </a>
+    <a
+      href="http://example.org/baz/" style="color: red;">
+      Baz
+    </a>
+    <a
+      href="http://example.org/qux/" style="
+        color: red;">
+      Qux
+    </a>
+  )HTML");
+  EXPECT_EQ(
+      GetDocument().documentElement()->GetOuterHTMLString(),
+      "<html><head><meta name=\"color-scheme\" content=\"light "
+      "dark\"></head><body><div class=\"line-gutter-backdrop\"></div><form "
+      "autocomplete=\"off\"><label class=\"line-wrap-control\"><input "
+      "type=\"checkbox\"></label></form><table><tbody><tr><td "
+      "class=\"line-number\" value=\"1\"></td><td "
+      "class=\"line-content\"><br></td></tr><tr><td class=\"line-number\" "
+      "value=\"2\"></td><td class=\"line-content\">    <span "
+      "class=\"html-tag\">&lt;a <span "
+      "class=\"html-attribute-name\">href</span>=\"<a "
+      "class=\"html-attribute-value html-external-link\" target=\"_blank\" "
+      "href=\"http://example.org/foo/\" rel=\"noreferrer "
+      "noopener\">http://example.org/foo/</a>\"&gt;</span></td></tr><tr><td "
+      "class=\"line-number\" value=\"3\"></td><td class=\"line-content\">      "
+      "Foo</td></tr><tr><td class=\"line-number\" value=\"4\"></td><td "
+      "class=\"line-content\">    <span "
+      "class=\"html-tag\">&lt;/a&gt;</span></td></tr><tr><td "
+      "class=\"line-number\" value=\"5\"></td><td class=\"line-content\">    "
+      "<span class=\"html-tag\">&lt;a <span "
+      "class=\"html-attribute-name\">href</span>=\"<a "
+      "class=\"html-attribute-value html-external-link\" target=\"_blank\" "
+      "href=\"http://example.org/bar/\" rel=\"noreferrer "
+      "noopener\">http://example.org/bar/</a>\"</span></td></tr><tr><td "
+      "class=\"line-number\" value=\"6\"></td><td class=\"line-content\"><span "
+      "class=\"html-tag\">      <span "
+      "class=\"html-attribute-name\">style</span>=\"<span "
+      "class=\"html-attribute-value\">color: "
+      "red;</span>\"&gt;</span></td></tr><tr><td class=\"line-number\" "
+      "value=\"7\"></td><td class=\"line-content\">      Bar</td></tr><tr><td "
+      "class=\"line-number\" value=\"8\"></td><td class=\"line-content\">    "
+      "<span class=\"html-tag\">&lt;/a&gt;</span></td></tr><tr><td "
+      "class=\"line-number\" value=\"9\"></td><td class=\"line-content\">    "
+      "<span class=\"html-tag\">&lt;a</span></td></tr><tr><td "
+      "class=\"line-number\" value=\"10\"></td><td "
+      "class=\"line-content\"><span class=\"html-tag\">      <span "
+      "class=\"html-attribute-name\">href</span>=\"<a "
+      "class=\"html-attribute-value html-external-link\" target=\"_blank\" "
+      "href=\"http://example.org/baz/\" rel=\"noreferrer "
+      "noopener\">http://example.org/baz/</a>\" <span "
+      "class=\"html-attribute-name\">style</span>=\"<span "
+      "class=\"html-attribute-value\">color: "
+      "red;</span>\"&gt;</span></td></tr><tr><td class=\"line-number\" "
+      "value=\"11\"></td><td class=\"line-content\">      Baz</td></tr><tr><td "
+      "class=\"line-number\" value=\"12\"></td><td class=\"line-content\">    "
+      "<span class=\"html-tag\">&lt;/a&gt;</span></td></tr><tr><td "
+      "class=\"line-number\" value=\"13\"></td><td class=\"line-content\">    "
+      "<span class=\"html-tag\">&lt;a</span></td></tr><tr><td "
+      "class=\"line-number\" value=\"14\"></td><td "
+      "class=\"line-content\"><span class=\"html-tag\">      <span "
+      "class=\"html-attribute-name\">href</span>=\"<a "
+      "class=\"html-attribute-value html-external-link\" target=\"_blank\" "
+      "href=\"http://example.org/qux/\" rel=\"noreferrer "
+      "noopener\">http://example.org/qux/</a>\" <span "
+      "class=\"html-attribute-name\">style</span>=\"<span "
+      "class=\"html-attribute-value\"><br></span></span></td></tr><tr><td "
+      "class=\"line-number\" value=\"15\"></td><td "
+      "class=\"line-content\"><span class=\"html-tag\"><span "
+      "class=\"html-attribute-value\">        color: "
+      "red;</span>\"&gt;</span></td></tr><tr><td class=\"line-number\" "
+      "value=\"16\"></td><td class=\"line-content\">      Qux</td></tr><tr><td "
+      "class=\"line-number\" value=\"17\"></td><td class=\"line-content\">    "
+      "<span class=\"html-tag\">&lt;/a&gt;</span></td></tr><tr><td "
+      "class=\"line-number\" value=\"18\"></td><td class=\"line-content\">  "
+      "<span "
+      "class=\"html-end-of-file\"></span></td></tr></tbody></table></body></"
+      "html>");
+}
+
+TEST_F(HTMLViewSourceDocumentTest, AttributeNameAtLineStart) {
+  LoadMainResource("<input\n\r\ntype=\"text\">\n<input\ntype=\"text\" />");
+  EXPECT_EQ(
+      GetDocument().documentElement()->GetOuterHTMLString(),
+      "<html><head><meta name=\"color-scheme\" content=\"light "
+      "dark\"></head><body><div class=\"line-gutter-backdrop\"></div><form "
+      "autocomplete=\"off\"><label class=\"line-wrap-control\"><input "
+      "type=\"checkbox\"></label></form><table><tbody><tr><td "
+      "class=\"line-number\" value=\"1\"></td><td class=\"line-content\"><span "
+      "class=\"html-tag\">&lt;input</span></td></tr><tr><td "
+      "class=\"line-number\" value=\"2\"></td><td class=\"line-content\"><span "
+      "class=\"html-tag\"><br></span></td></tr><tr><td class=\"line-number\" "
+      "value=\"3\"></td><td class=\"line-content\"><span "
+      "class=\"html-tag\"><span "
+      "class=\"html-attribute-name\">type</span>=\"<span "
+      "class=\"html-attribute-value\">text</span>\"&gt;</span></td></"
+      "tr><tr><td class=\"line-number\" value=\"4\"></td><td "
+      "class=\"line-content\"><span "
+      "class=\"html-tag\">&lt;input</span></td></tr><tr><td "
+      "class=\"line-number\" value=\"5\"></td><td class=\"line-content\"><span "
+      "class=\"html-tag\"><span "
+      "class=\"html-attribute-name\">type</span>=\"<span "
+      "class=\"html-attribute-value\">text</span>\" /&gt;</span><span "
+      "class=\"html-end-of-file\"></span></td></tr></tbody></table></body></"
+      "html>");
+}
+
+TEST_F(HTMLViewSourceDocumentTest, MultiLineComment) {
+  LoadMainResource("<!--\n\r\nfoo\nbar\n-->");
+  EXPECT_EQ(
+      GetDocument().documentElement()->GetOuterHTMLString(),
+      "<html><head><meta name=\"color-scheme\" content=\"light "
+      "dark\"></head><body><div class=\"line-gutter-backdrop\"></div><form "
+      "autocomplete=\"off\"><label class=\"line-wrap-control\"><input "
+      "type=\"checkbox\"></label></form><table><tbody><tr><td "
+      "class=\"line-number\" value=\"1\"></td><td class=\"line-content\"><span "
+      "class=\"html-comment\">&lt;!--</span></td></tr><tr><td "
+      "class=\"line-number\" value=\"2\"></td><td class=\"line-content\"><span "
+      "class=\"html-comment\"><br></span></td></tr><tr><td "
+      "class=\"line-number\" value=\"3\"></td><td class=\"line-content\"><span "
+      "class=\"html-comment\">foo</span></td></tr><tr><td "
+      "class=\"line-number\" value=\"4\"></td><td class=\"line-content\"><span "
+      "class=\"html-comment\">bar</span></td></tr><tr><td "
+      "class=\"line-number\" value=\"5\"></td><td class=\"line-content\"><span "
+      "class=\"html-comment\">--&gt;</span><span "
       "class=\"html-end-of-file\"></span></td></tr></tbody></table></body></"
       "html>");
 }

@@ -81,6 +81,7 @@ class CORE_EXPORT HTMLViewSourceDocument final : public HTMLDocument {
   Member<HTMLTableSectionElement> tbody_;
   Member<HTMLTableCellElement> td_;
   int line_number_;
+  bool processing_tag_token_ = false;
 
   const AtomicString class_doctype_{"html-doctype"};
   const AtomicString class_end_of_file_{"html-end-of-file"};
