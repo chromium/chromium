@@ -271,7 +271,7 @@ ExternalSource GetExternalSourceFromExternalImage(
   // on GPU if possible.
   SourceImageStatus source_image_status = kInvalidSourceImageStatus;
   auto image_for_canvas = canvas_image_source->GetSourceImageForCanvas(
-      FlushReason::kWebGPUExternalImage, &source_image_status, image_size);
+      FlushReason::kOther, &source_image_status, image_size);
   if (source_image_status != kNormalSourceImageStatus) {
     // Canvas back resource is broken, zero size, incomplete or invalid.
     // but developer can do nothing. Return nullptr and issue an noop.

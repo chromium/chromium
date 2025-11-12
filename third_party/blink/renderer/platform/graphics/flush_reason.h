@@ -85,11 +85,7 @@ enum class FlushReason {
   // The canvas is being printed.
   kPrinting = 16,
 
-  // The canvas was loaded as a WebGPU external image.
-  // This inhibits vector printing.
-  kWebGPUExternalImage = 17,
-
-  kOther = 18,
+  kOther = 17,
 
   kMaxValue = kOther,
 };
