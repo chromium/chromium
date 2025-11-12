@@ -39,7 +39,6 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "components/content_settings/core/common/features.h"
-#include "components/network_session_configurator/common/network_switches.h"
 #include "components/ukm/content/source_url_recorder.h"
 #include "content/browser/btm/btm_browsertest_utils.h"
 #include "content/browser/btm/btm_service_impl.h"
@@ -2460,7 +2459,6 @@ class BtmWebAuthnBrowserTest : public ContentBrowserTest {
     mock_cert_verifier_.SetUpCommandLine(command_line);
     command_line->AppendSwitch(
         switches::kEnableExperimentalWebPlatformFeatures);
-    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
   }
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -2481,6 +2479,7 @@ class BtmWebAuthnBrowserTest : public ContentBrowserTest {
     https_server_.ServeFilesFromSourceDirectory(GetTestDataFilePath());
     https_server_.RegisterDefaultHandler(base::BindRepeating(
         &HandleCrossSiteSameSiteNoneCookieRedirect, &https_server_));
+    https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
     ASSERT_TRUE(https_server_.Start());
 
     auto virtual_device_factory =
