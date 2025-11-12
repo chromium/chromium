@@ -68,15 +68,10 @@ enum class FlushReason {
   // This inhibits vector printing.
   kDrawImage = 12,
 
-  // The canvas is observed by a `CanvasDrawListener`. This typically means
-  // that canvas contents are being streamed to a WebRTC video stream.
-  // This inhibits vector printing.
-  kDrawListener = 13,
-
   // The canvas is being printed.
-  kPrinting = 14,
+  kPrinting = 13,
 
-  kOther = 15,
+  kOther = 14,
 
   kMaxValue = kOther,
 };
