@@ -9,6 +9,7 @@
 #include "chrome/browser/extensions/api/settings_private/generated_pref.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 
 namespace safe_browsing {
 
@@ -33,6 +34,10 @@ enum class SafeBrowsingSetting {
 class GeneratedSafeBrowsingPref
     : public extensions::settings_private::GeneratedPref {
  public:
+  // Returns the default Safe Browsing setting for the given `bundle_setting`.
+  static SafeBrowsingSetting GetDefault(
+      SecuritySettingsBundleSetting bundle_setting);
+
   explicit GeneratedSafeBrowsingPref(Profile* profile);
 
   // Generated Preference Interface.

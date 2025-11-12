@@ -44,14 +44,6 @@ GeneratedSecuritySettingsBundlePref::SetPref(const base::Value* value) {
   // Update Security Settings Bundle preference to match selection.
   profile_->GetPrefs()->SetInteger(prefs::kSecuritySettingsBundle, selection);
 
-  if (selection == static_cast<int>(SecuritySettingsBundleSetting::ENHANCED)) {
-    SetSafeBrowsingState(profile_->GetPrefs(),
-                         SafeBrowsingState::ENHANCED_PROTECTION);
-  } else {
-    SetSafeBrowsingState(profile_->GetPrefs(),
-                         SafeBrowsingState::STANDARD_PROTECTION);
-  }
-
   return extensions::settings_private::SetPrefResult::SUCCESS;
 }
 

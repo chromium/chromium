@@ -10,6 +10,7 @@ import '../../settings_page/settings_subpage.js';
 import './security_page_feature_row.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
+import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {ControlledRadioButtonElement} from '../../controls/controlled_radio_button.js';
@@ -20,14 +21,13 @@ import {SettingsViewMixin} from '../../settings_page/settings_view_mixin.js';
 import type {SecurityPageFeatureRowElement} from './security_page_feature_row.js';
 import {getTemplate} from './security_page_v2.html.js';
 
-
 /** Enumeration of all security settings bundle modes.*/
 // LINT.IfChange(SecuritySettingsBundleSetting)
 export enum SecuritySettingsBundleSetting {
   STANDARD = 0,
   ENHANCED = 1,
 }
-// LINT.ThenChange(/chrome/browser/safe_browsing/generated_security_settings_bundle_pref.h:SecuritySettingsBundleSetting)
+// LINT.ThenChange(/components/safe_browsing/core/common/safe_browsing_prefs.h:SecuritySettingsBundleSetting)
 
 /**
  * Enumeration of all Safe Browsing modes. Must be kept in sync with the enum
@@ -45,6 +45,7 @@ export enum SafeBrowsingSetting {
 export interface SettingsSecurityPageV2Element {
   $: {
     bundlesRadioGroup: SettingsRadioGroupElement,
+    resetBundleToDefaultsButton: CrButtonElement,
     securitySettingsBundleEnhanced: ControlledRadioButtonElement,
     securitySettingsBundleStandard: ControlledRadioButtonElement,
     safeBrowsingRadioGroup: SettingsRadioGroupElement,
@@ -77,6 +78,20 @@ export class SettingsSecurityPageV2Element extends
         value: SafeBrowsingSetting,
       },
 
+      isResetToDefaultsButtonHidden_: {
+        type: Boolean,
+        computed: 'computeIsResetToDefaultsButtonHidden_(' +
+            'isResettingToDefaults_,' +
+            'prefs.generated.security_settings_bundle.value,' +
+            'prefs.generated.safe_browsing.*),',
+      },
+
+      // Whether the security-setting-bundle is being reset to default.
+      isResettingToDefaults_: {
+        type: Boolean,
+        value: false,
+      },
+
       safeBrowsingOff_: {
         type: Array,
         value: () => [SafeBrowsingSetting.DISABLED],
@@ -95,12 +110,66 @@ export class SettingsSecurityPageV2Element extends
       },
     };
   }
+
+  declare private isResettingToDefaults_: boolean;
+  declare private isResetToDefaultsButtonHidden_: boolean;
   declare private safeBrowsingOff_: SafeBrowsingSetting[];
   declare private safeBrowsingStateTextMap_: Object;
 
   // SettingsViewMixin implementation.
   override focusBackButton() {
     this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
+  }
+
+  private getBundleSetting_() {
+    return this.getPref('generated.security_settings_bundle').value;
+  }
+
+  private getDefaultSafeBrowsingValue_(
+      bundleSetting: SecuritySettingsBundleSetting) {
+    return loadTimeData.getInteger(
+        (bundleSetting === SecuritySettingsBundleSetting.ENHANCED) ?
+            'securityEnhancedBundleSafeBrowsingDefault' :
+            'securityStandardBundleSafeBrowsingDefault');
+  }
+
+  private computeIsResetToDefaultsButtonHidden_() {
+    if (this.isResettingToDefaults_) {
+      return true;
+    }
+
+    const bundleSetting = this.getBundleSetting_();
+
+    const prefsToCheck = [{
+      prefKey: 'generated.safe_browsing',
+      defaultValue: this.getDefaultSafeBrowsingValue_(bundleSetting),
+    }];
+    for (const prefToCheck of prefsToCheck) {
+      const pref = this.getPref(prefToCheck.prefKey);
+      if (pref.value !== prefToCheck.defaultValue &&
+          pref.controlledBy == null) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  private onSecurityBundleChanged_() {
+    this.resetBundleToDefaults_();
+  }
+
+  private onResetBundleToDefaultsButtonClick_() {
+    this.resetBundleToDefaults_();
+  }
+
+  private resetBundleToDefaults_() {
+    this.isResettingToDefaults_ = true;
+    const bundleSetting = this.getBundleSetting_();
+    this.setPrefValue(
+        'generated.safe_browsing',
+        this.getDefaultSafeBrowsingValue_(bundleSetting));
+    this.isResettingToDefaults_ = false;
   }
 }
 

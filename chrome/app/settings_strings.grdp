@@ -1957,6 +1957,9 @@
   </message>
 
   <!-- Bundled Security Settings (chrome://settings/security) -->
+  <message name="IDS_SETTINGS_SECURITY_BUNDLE_RESET_TO_DEFAULTS_BUTTON_LABEL" desc="Label of button which resets security-settings-bundle to default settings">
+    Reset to defaults
+  </message>
   <message name="IDS_SETTINGS_SECURITY_TITLE" desc="Name of security page header">
     Browsing protection
   </message>

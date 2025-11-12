@@ -14,22 +14,15 @@ namespace safe_browsing {
 
 extern const char kGeneratedSecuritySettingsBundlePref[];
 
-// Must be kept in sync with the SecuritySettingsBundle enum located in
-// chrome/browser/resources/settings/privacy_page/security_page_v2.js.
-// LINT.IfChange(SecuritySettingsBundleSetting)
-enum class SecuritySettingsBundleSetting {
-  // Standard bundle with default settings.
-  STANDARD = 0,
-  // Enhanced bundle with most secure settings selected.
-  ENHANCED = 1,
-};
-// LINT.ThenChange(/chrome/browser/resources/settings/privacy_page/security_page_v2.ts:SecuritySettingsBundleSetting)
-
 // A generated preference which represents the effective Security Settings
 // Bundled state based on the underlying Security Settings Bundle preference.
 // This preference allows the direct use of WebUI controls without exposing any
 // logic responsible for coalescing the underlying Security Setting Bundled pref
 // to front-end code.
+// To add a new setting controlled by the bundled pref, add a static
+// GetDefault() method which returns the setting's default value and pass the
+// default to WebUI in settings::AddSecurityData(). Update the WebUI
+// reset-to-default logic.
 class GeneratedSecuritySettingsBundlePref
     : public extensions::settings_private::GeneratedPref {
  public:

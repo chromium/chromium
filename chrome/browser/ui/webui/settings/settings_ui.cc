@@ -75,6 +75,7 @@
 #include "chrome/browser/ui/webui/settings/safety_hub_handler.h"
 #include "chrome/browser/ui/webui/settings/saved_info_handler.h"
 #include "chrome/browser/ui/webui/settings/search_engines_handler.h"
+#include "chrome/browser/ui/webui/settings/security_settings_provider.h"
 #include "chrome/browser/ui/webui/settings/settings_clear_browsing_data_handler.h"
 #include "chrome/browser/ui/webui/settings/settings_localized_strings_provider.h"
 #include "chrome/browser/ui/webui/settings/settings_media_devices_selection_handler.h"
@@ -348,9 +349,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
                           safe_browsing::hash_realtime_utils::
                               IsHashRealTimeLookupEligibleInSession());
 
-  html_source->AddBoolean("enableHttpsFirstModeNewSettings",
-                          IsBalancedModeAvailable());
-
   html_source->AddBoolean(
       "enableKeyboardLockPrompt",
       base::FeatureList::IsEnabled(permissions::features::kKeyboardLockPrompt));
@@ -362,9 +360,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   const bool compose_enabled = false;
   const bool compose_visible = false;
 #endif  // BUILDFLAG(ENABLE_COMPOSE)
-  html_source->AddBoolean(
-      "enableBundledSecuritySettings",
-      base::FeatureList::IsEnabled(safe_browsing::kBundledSecuritySettings));
 
   html_source->AddBoolean(
       "enableComposeProactiveNudge",
@@ -475,6 +470,7 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
 #endif
 
   AddLocalizedStrings(html_source, profile, web_ui->GetWebContents());
+  AddSecurityData(html_source);
 
   ManagedUIHandler::Initialize(web_ui, html_source);
 

@@ -70,9 +70,15 @@
   <h2 class="section-header cr-secondary-text first">
     $i18n{securityTitle}
   </h2>
+  <cr-button id="resetBundleToDefaultsButton"
+      on-click="onResetBundleToDefaultsButtonClick_"
+      hidden$="[[isResetToDefaultsButtonHidden_]]">
+    $i18n{securityBundleResetToDefaultsButtonLabel}
+  </cr-button>
   <settings-radio-group id="bundlesRadioGroup"
       class="card-container"
       pref="{{prefs.generated.security_settings_bundle}}"
+      on-change="onSecurityBundleChanged_"
       selectable-elements="controlled-radio-button">
     <controlled-radio-button
         id="securitySettingsBundleStandard"

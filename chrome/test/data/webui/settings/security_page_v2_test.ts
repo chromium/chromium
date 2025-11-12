@@ -5,11 +5,12 @@
 // clang-format off
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {CrExpandButtonElement, SettingsSecurityPageV2Element} from 'chrome://settings/lazy_load.js';
-import {SecuritySettingsBundleSetting} from 'chrome://settings/lazy_load.js';
+import {SafeBrowsingSetting, SecuritySettingsBundleSetting} from 'chrome://settings/lazy_load.js';
 import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
 import {CrSettingsPrefs} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {isChildVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {isChildVisible, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 // clang-format on
 
@@ -71,4 +72,35 @@ suite('Main', function() {
     await microtasksFinished();
     assertFalse(isChildVisible(page, '#safeBrowsingRadioGroup', true));
   });
+
+  test('ResetToDefaultsButtonVisibility', async function() {
+    page.setPrefValue(
+        'generated.security_settings_bundle',
+        SecuritySettingsBundleSetting.STANDARD);
+    page.setPrefValue('generated.safe_browsing', SafeBrowsingSetting.STANDARD);
+    await flushTasks();
+    assertFalse(isChildVisible(page, '#resetBundleToDefaultsButton'));
+
+    page.setPrefValue('generated.safe_browsing', SafeBrowsingSetting.ENHANCED);
+    await flushTasks();
+    assertTrue(isChildVisible(page, '#resetBundleToDefaultsButton'));
+  });
+
+  test('ResetToDefaultsClick', async function() {
+    page.setPrefValue(
+        'generated.security_settings_bundle',
+        SecuritySettingsBundleSetting.STANDARD);
+    page.setPrefValue('generated.safe_browsing', SafeBrowsingSetting.ENHANCED);
+    await flushTasks();
+    assertTrue(!!page.$.resetBundleToDefaultsButton);
+    assertTrue(isVisible(page.$.resetBundleToDefaultsButton));
+
+    page.$.resetBundleToDefaultsButton.click();
+    await flushTasks();
+    assertEquals(
+        SafeBrowsingSetting.STANDARD,
+        page.getPref('generated.safe_browsing').value);
+    assertFalse(isVisible(page.$.resetBundleToDefaultsButton));
+  });
+
 });
