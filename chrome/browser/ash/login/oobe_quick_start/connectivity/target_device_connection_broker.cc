@@ -61,6 +61,22 @@ void TargetDeviceConnectionBroker::OnConnectionClosed(
 
 std::string TargetDeviceConnectionBroker::DerivePin(
     const std::string& authentication_token) const {
+  // This algorithm is not as straightforward as it looks because of signed
+  // integer promotion rules. What it actually does is:
+  //
+  // Take an adjacent pair of bytes (b0, b1). Convert each to a *signed*
+  // integer (i0, i1) - remember this will sign-extend the high bits of (b0,
+  // b1) respectively. Then, compute: v = (i0 << 8) | i1. This value will be
+  // negative if either i0 or i1 was negative, so take its absolute value,
+  // then use the lowest digit of that absolute value as a digit of the PIN.
+  // Repeat, using subsequent pairs of bytes in the hash, for each digit of
+  // PIN we are generating.
+  //
+  // This is probably not what was intended, because if the high bit of b1
+  // happens to be set then the value of b0 is ignored, but it is not feasible
+  // to change - the current algorithm is baked into a lot of deployed devices
+  // that are not easy to update.
+  // See b/458497324.
   std::string hash_str = GetHashedAuthToken(authentication_token);
   std::vector<int8_t> hash_ints =
       std::vector<int8_t>(hash_str.begin(), hash_str.end());
