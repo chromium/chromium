@@ -46,7 +46,7 @@ Notable changes from upstream:
 - Disable SSE support.
 - Use CHROMIUM_UNRAR_FUZZER macro to guard Chromium-specific changes used in
   libfuzzer target:
-  - Limit the max dictionary size allowed for unpacking files to 3.5 GB rather
+  - Limit the max dictionary size allowed for unpacking files to 1 GB rather
     than 64 GB.
 
 All these changes are included in one patch file (chromium_changes.patch)
