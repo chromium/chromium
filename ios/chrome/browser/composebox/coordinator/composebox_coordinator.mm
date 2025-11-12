@@ -62,6 +62,9 @@
       initWithPreferredInputPlatePosition:[self inputPlatePositionPreference]];
   _viewController.modalPresentationStyle = UIModalPresentationCustom;
   _viewController.transitioningDelegate = self;
+  if (self.isOffTheRecord) {
+    _viewController.view.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
+  }
   _viewController.delegate = self;
 
   UrlLoadingBrowserAgent* urlLoadingBrowserAgent =
@@ -79,7 +82,8 @@
                          browser:self.browser
                       entrypoint:_entrypoint
                            query:_query
-                       URLLoader:_navigationMediator];
+                       URLLoader:_navigationMediator
+               preferredPosition:[self inputPlatePositionPreference]];
   _aimComposeboxCoordinator.omniboxPopupPresenterDelegate = _viewController;
   [_aimComposeboxCoordinator start];
 

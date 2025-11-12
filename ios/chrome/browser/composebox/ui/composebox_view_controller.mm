@@ -52,7 +52,7 @@ const CGFloat kCloseButtonAlpha = 0.6f;
 - (void)viewDidLoad {
   [super viewDidLoad];
 
-  self.view.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
+  self.view.backgroundColor = [UIColor colorNamed:kBackgroundColor];
 
   // Close button.
   _closeButton = [UIButton buttonWithType:UIButtonTypeSystem];
@@ -230,7 +230,7 @@ const CGFloat kCloseButtonAlpha = 0.6f;
 
 - (UIColor*)popupBackgroundColorForPresenter:(OmniboxPopupPresenter*)presenter {
   _presenter = presenter;
-  return [UIColor colorNamed:kPrimaryBackgroundColor];
+  return self.view.backgroundColor;
 }
 
 - (GuideName*)omniboxGuideNameForPresenter:(OmniboxPopupPresenter*)presenter {

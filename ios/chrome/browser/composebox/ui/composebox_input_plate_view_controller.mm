@@ -48,6 +48,8 @@ const CGFloat kAIMButtonHeight = 36.0f;
 const CGFloat kAIMButtonWidth = 94.0f;
 /// The spacing for the horizontal buttons stack view.
 const CGFloat kButtonsStackViewSpacing = 6.0f;
+/// The spacing between the Lens and Voice buttons.
+const CGFloat kShortcutsSpacing = 24.0f;
 /// The spacing for the main vertical input plate stack view.
 const CGFloat kInputPlateStackViewSpacing = 10.0f;
 /// The vertical padding for the input plate stack view.
@@ -163,15 +165,20 @@ const CGFloat kInstrinsicHeightExtraPadding = 16.0f;
 
   /// The cancellable callback for updating the glow effect.
   base::CancelableOnceClosure _updateGlowCallback;
+
+  // The preferred position of the input plate.
+  ComposeboxInputPlatePosition _preferredPosition;
 }
 
 /// ComposeboxAnimationContextProvider
 @synthesize inputPlateViewForAnimation = _inputPlateContainerView;
 
-- (instancetype)init {
+- (instancetype)initWithPosition:
+    (ComposeboxInputPlatePosition)preferredPosition {
   self = [super init];
   if (self) {
     _omniboxContainer = [[UIView alloc] init];
+    _preferredPosition = preferredPosition;
   }
   return self;
 }
@@ -190,14 +197,10 @@ const CGFloat kInstrinsicHeightExtraPadding = 16.0f;
   // Input plate container
   _inputPlateContainerView = [[UIView alloc] init];
   _inputPlateContainerView.translatesAutoresizingMaskIntoConstraints = NO;
-  _inputPlateContainerView.backgroundColor =
-      [UIColor colorNamed:kPrimaryBackgroundColor];
+  _inputPlateContainerView.backgroundColor = [self inputPlateBackgroundColor];
   _inputPlateContainerView.layer.cornerRadius = kInputPlateCornerRadius;
-  _inputPlateContainerView.layer.shadowColor =
-      [UIColor colorNamed:kTextPrimaryColor].CGColor;
-  _inputPlateContainerView.layer.shadowOpacity = kInputPlateShadowOpacity;
-  _inputPlateContainerView.layer.shadowRadius = kInputPlateShadowRadius;
-  _inputPlateContainerView.layer.shadowOffset = CGSizeZero;
+
+  [self updateDepthShadowAppearance];
   [self.view addSubview:_inputPlateContainerView];
 
   _glowEffectView = ios::provider::CreateGlowEffect(
@@ -306,6 +309,7 @@ const CGFloat kInstrinsicHeightExtraPadding = 16.0f;
         plusButton, _aimButton, spacerView, _sendButton, _micButton, _lensButton
       ]];
   buttonsStackView.translatesAutoresizingMaskIntoConstraints = NO;
+  [buttonsStackView setCustomSpacing:kShortcutsSpacing afterView:_micButton];
   buttonsStackView.axis = UILayoutConstraintAxisHorizontal;
   buttonsStackView.spacing = kButtonsStackViewSpacing;
   buttonsStackView.alignment = UIStackViewAlignmentBottom;
@@ -337,6 +341,9 @@ const CGFloat kInstrinsicHeightExtraPadding = 16.0f;
         constraintEqualToAnchor:_inputPlateContainerView.trailingAnchor
                        constant:-kInputPlateStackViewTrailingPadding],
   ]];
+
+  [self registerForTraitChanges:@[ UITraitUserInterfaceStyle.class ]
+                     withAction:@selector(userInterfaceStyleChanged)];
 }
 
 - (void)viewDidLayoutSubviews {
@@ -611,6 +618,19 @@ const CGFloat kInstrinsicHeightExtraPadding = 16.0f;
   }
 }
 
+- (void)userInterfaceStyleChanged {
+  [self updateAIMButtonAppearance];
+  [self updateDepthShadowAppearance];
+}
+
+- (UIColor*)inputPlateBackgroundColor {
+  if (_preferredPosition == ComposeboxInputPlatePosition::kTop) {
+    return [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
+  }
+
+  return [UIColor colorNamed:kPrimaryBackgroundColor];
+}
+
 #pragma mark - UICollectionViewDelegate
 
 - (void)scrollViewDidScroll:(UIScrollView*)scrollView {
@@ -656,6 +676,21 @@ const CGFloat kInstrinsicHeightExtraPadding = 16.0f;
 
 #pragma mark - Private helpers
 
+- (void)updateDepthShadowAppearance {
+  if (self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark ||
+      _preferredPosition == ComposeboxInputPlatePosition::kTop) {
+    _inputPlateContainerView.layer.shadowOpacity = 0;
+  } else {
+    _inputPlateContainerView.layer.shadowColor =
+        [UIColor colorNamed:kTextPrimaryColor].CGColor;
+    _inputPlateContainerView.layer.shadowRadius = kInputPlateShadowRadius;
+    _inputPlateContainerView.layer.shadowOffset = CGSizeZero;
+    _inputPlateContainerView.layer.shadowOpacity = kInputPlateShadowOpacity;
+  }
+
+  [_inputPlateContainerView.layer setNeedsDisplay];
+}
+
 /// Updates the AIM button taking into account if the button should be minimize
 /// or not or if the mode is enable or not.
 - (void)updateAIMButtonAppearance {
@@ -683,6 +718,7 @@ const CGFloat kInstrinsicHeightExtraPadding = 16.0f;
     self.aimButtonWidthConstraint.constant = kAIMButtonWidth;
   }
 
+  _aimButton.layer.borderWidth = 0;
   if (self.AIModeEnabled) {
     config.background.backgroundColor = [UIColor colorNamed:kBlueHaloColor];
     config.baseForegroundColor = [UIColor colorNamed:kBlue600Color];
@@ -690,6 +726,11 @@ const CGFloat kInstrinsicHeightExtraPadding = 16.0f;
     config.background.backgroundColor =
         [UIColor colorNamed:kSecondaryBackgroundColor];
     config.baseForegroundColor = [UIColor colorNamed:kTextPrimaryColor];
+
+    if (self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark) {
+      _aimButton.layer.borderWidth = 1;
+      _aimButton.layer.borderColor = [UIColor colorNamed:kGrey200Color].CGColor;
+    }
   }
   _aimButton.configuration = config;
 }
@@ -705,7 +746,7 @@ const CGFloat kInstrinsicHeightExtraPadding = 16.0f;
       YES;
   [button.heightAnchor constraintEqualToConstant:kGenericButtonHeight].active =
       YES;
-  button.tintColor = [UIColor colorNamed:kTextSecondaryColor];
+  button.tintColor = [UIColor colorNamed:kTextPrimaryColor];
   return button;
 }
 
@@ -717,14 +758,10 @@ const CGFloat kInstrinsicHeightExtraPadding = 16.0f;
       setImage:DefaultSymbolWithPointSize(kPlusSymbol, kSymbolActionPointSize)
       forState:UIControlStateNormal];
   plusButton.translatesAutoresizingMaskIntoConstraints = NO;
-  plusButton.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
-  plusButton.layer.cornerRadius = kAIMButtonHeight / 2.0;
-  plusButton.tintColor = [UIColor colorNamed:kTextSecondaryColor];
+  plusButton.tintColor = [UIColor colorNamed:kTextPrimaryColor];
 
-  [plusButton.widthAnchor constraintEqualToConstant:kAIMButtonHeight].active =
-      YES;
-  [plusButton.heightAnchor constraintEqualToConstant:kAIMButtonHeight].active =
-      YES;
+  AddSizeConstraints(plusButton,
+                     CGSizeMake(kAIMButtonHeight, kAIMButtonHeight));
 
   [plusButton addTarget:self
                  action:@selector(plusButtonTouchDown)
@@ -805,9 +842,12 @@ const CGFloat kInstrinsicHeightExtraPadding = 16.0f;
   UIImageSymbolConfiguration* config = [UIImageSymbolConfiguration
       configurationWithPointSize:24
                           weight:UIImageSymbolWeightSemibold];
+
   UIImage* image = SymbolWithPalette(
-      DefaultSymbolWithConfiguration(kRightArrowCircleFillSymbol, config),
-      @[ [UIColor whiteColor], [UIColor colorNamed:kBlue500Color] ]);
+      DefaultSymbolWithConfiguration(kRightArrowCircleFillSymbol, config), @[
+        [UIColor colorNamed:kSolidWhiteColor],
+        [UIColor colorNamed:kBlue500Color]
+      ]);
   [sendButton setImage:image forState:UIControlStateNormal];
 
   [sendButton addTarget:self
@@ -825,7 +865,6 @@ const CGFloat kInstrinsicHeightExtraPadding = 16.0f;
   [micButton addTarget:self
                 action:@selector(micButtonTapped)
       forControlEvents:UIControlEventTouchUpInside];
-  micButton.tintColor = [UIColor blackColor];
   AddSizeConstraints(micButton,
                      CGSizeMake(kGenericButtonWidth, kGenericButtonHeight));
   return micButton;
@@ -839,7 +878,6 @@ const CGFloat kInstrinsicHeightExtraPadding = 16.0f;
   [lensButton addTarget:self
                  action:@selector(lensButtonTapped)
        forControlEvents:UIControlEventTouchUpInside];
-  lensButton.tintColor = [UIColor blackColor];
 
   AddSizeConstraints(lensButton,
                      CGSizeMake(kGenericButtonWidth, kGenericButtonHeight));
