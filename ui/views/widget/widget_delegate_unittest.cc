@@ -67,9 +67,15 @@ TEST_F(WidgetDelegateTest, ClientViewFactoryCanReplaceClientView) {
   ViewTracker tracker;
 
   auto delegate = std::make_unique<WidgetDelegate>();
-  delegate->SetClientViewFactory(
-      base::BindLambdaForTesting([&tracker](Widget* widget) {
-        auto view = std::make_unique<ClientView>(widget, nullptr);
+  delegate->SetClientViewFactory(base::BindLambdaForTesting(
+      [&tracker](Widget* widget, View* contents_view) {
+        auto view = std::make_unique<ClientView>(widget, contents_view);
+
+        // Explicitly take ownership of contents_view since standard ClientView
+        // initialization didn't happens. (there is no widget)
+        if (!contents_view->parent()) {
+          view->AddChildView(contents_view);
+        }
         tracker.SetView(view.get());
         return view;
       }));

@@ -26,10 +26,10 @@ namespace views {
 
 namespace {
 
-std::unique_ptr<ClientView> CreateDefaultClientView(WidgetDelegate* delegate,
-                                                    Widget* widget) {
-  return std::make_unique<ClientView>(
-      widget, delegate->TransferOwnershipOfContentsView());
+std::unique_ptr<ClientView> CreateDefaultClientView(
+    Widget* widget,
+    views::View* contents_view) {
+  return std::make_unique<ClientView>(widget, contents_view);
 }
 
 std::unique_ptr<FrameView> CreateDefaultFrameView(Widget* widget) {
@@ -50,8 +50,7 @@ WidgetDelegate::Params::~Params() = default;
 
 WidgetDelegate::WidgetDelegate()
     : widget_initialized_callbacks_(std::make_unique<ClosureVector>()),
-      client_view_factory_(
-          base::BindOnce(&CreateDefaultClientView, base::Unretained(this))),
+      client_view_factory_(base::BindOnce(&CreateDefaultClientView)),
       frame_view_factory_(base::BindRepeating(&CreateDefaultFrameView)),
       overlay_view_factory_(base::BindOnce(&CreateDefaultOverlayView)) {}
 
@@ -368,7 +367,9 @@ View* WidgetDelegate::TransferOwnershipOfContentsView() {
 
 ClientView* WidgetDelegate::CreateClientView(Widget* widget) {
   DCHECK(client_view_factory_);
-  return std::move(client_view_factory_).Run(widget).release();
+  return std::move(client_view_factory_)
+      .Run(widget, TransferOwnershipOfContentsView())
+      .release();
 }
 
 std::unique_ptr<FrameView> WidgetDelegate::CreateFrameView(Widget* widget) {
