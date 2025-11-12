@@ -531,6 +531,9 @@ interface WebClientHandler {
   CreateTab(url.mojom.Url url, bool open_in_background, int32? window_id)
       => (TabData? tab_data);
 
+  // Creates a new popup window.
+  OpenLinkInPopup(url.mojom.Url url, int32 popup_width, int32 popup_height);
+
   // Opens the glic settings page.
   OpenGlicSettingsPage(OpenSettingsOptions options);
 

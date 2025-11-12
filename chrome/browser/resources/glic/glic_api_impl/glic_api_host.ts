@@ -1633,6 +1633,11 @@ export class GlicApiHost implements PostMessageRequestHandler {
     });
   }
 
+  openLinkInPopup(url: string, initialWidth: number, initialHeight: number) {
+    this.handler.openLinkInPopup(
+        urlFromClient(url), initialWidth, initialHeight);
+  }
+
   async openLinkInNewTab(url: string) {
     await this.handler.createTab(urlFromClient(url), false, null);
   }

@@ -203,6 +203,7 @@ class GlicApiTest : public NonInteractiveGlicApiTest, public WithTestParams {
             {features::kGlicMultitabUnderlines, {}},
             {features::kGlicWebActuationSetting, {}},
             {features::kGlicCaptureRegion, {}},
+            {features::kGlicPopupWindowsEnabled, {}},
             {features::kGlicUserStatusCheck,
              {{features::kGlicUserStatusRefreshApi.name, "true"},
               {features::kGlicUserStatusThrottleInterval.name, "2s"}}},
@@ -930,6 +931,15 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testCreateTabByClickingOnLink) {
     return audio_ducker->GetAudioDuckingState() ==
            AudioDucker::AudioDuckingState::kNoDucking;
   }));
+}
+
+IN_PROC_BROWSER_TEST_P(GlicApiTest, testPopupOpens) {
+  browser_activator().SetMode(BrowserActivator::Mode::kFirst);
+  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
+                                 GlicInstrumentMode::kHostAndContents),
+                  CheckPopupCount(0));
+  ExecuteJsTest();
+  RunTestSequence(CheckPopupCount(1));
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testCreateTabByClickingOnLinkDaisyChains) {
