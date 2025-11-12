@@ -47,7 +47,7 @@ bool IsAccessibilityPruneRedundantInlineConnectivityEnabled() {
       ::features::kAccessibilityPruneRedundantInlineConnectivity);
 }
 
-BASE_FEATURE(kAccessibilityTextFormatting, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAccessibilityTextFormatting, base::FEATURE_ENABLED_BY_DEFAULT);
 bool IsAccessibilityTextFormattingEnabled() {
   return base::FeatureList::IsEnabled(::features::kAccessibilityTextFormatting);
 }
