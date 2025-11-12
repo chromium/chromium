@@ -179,6 +179,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebSocket : public mojom::WebSocket {
       const std::optional<std::string>& headers,
       const std::optional<GURL>& preserve_fragment_on_redirect_url);
 
+  // Disconnect the WebSocket and mojo pipes and tell WebSocketFactory to delete
+  // `this`. Will not work correctly if called during construction.
   void Reset();
 
   enum class InterruptionReason {

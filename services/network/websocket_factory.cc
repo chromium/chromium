@@ -19,6 +19,51 @@
 
 namespace network {
 
+namespace {
+
+bool IsValidSubprotocolCharacter(char character) {
+  constexpr auto kMinimumProtocolCharacter = '!';  // U+0021.
+  constexpr auto kMaximumProtocolCharacter = '~';  // U+007E.
+  // Set to true if character does not matches "separators" ABNF defined in
+  // RFC2616. SP and HT are excluded since the range check excludes them.
+  const bool is_separator =
+      character == '"' || character == '(' || character == ')' ||
+      character == ',' || character == '/' ||
+      (character >= ':' &&
+       character <=
+           '@')  // U+003A - U+0040 (':', ';', '<', '=', '>', '?', '@').
+      || (character >= '[' &&
+          character <= ']')  // U+005B - U+005D ('[', '\\', ']').
+      || character == '{' || character == '}';
+  return character >= kMinimumProtocolCharacter &&
+         character <= kMaximumProtocolCharacter && !is_separator;
+}
+
+bool IsValidSubprotocolString(const std::string& protocol) {
+  if (protocol.empty()) {
+    return false;
+  }
+  return std::ranges::all_of(protocol, IsValidSubprotocolCharacter);
+}
+
+bool IsValidProtocols(const std::vector<std::string>& requested_protocols) {
+  // Fail if not all elements in |protocols| are valid.
+  if (!std::ranges::all_of(requested_protocols, IsValidSubprotocolString)) {
+    return false;
+  }
+
+  // Fail if there're duplicated elements in |protocols|.
+  std::vector<std::string> protocols = requested_protocols;
+  std::ranges::sort(protocols);
+  if (std::ranges::adjacent_find(protocols) != protocols.end()) {
+    return false;
+  }
+
+  return true;
+}
+
+}  // namespace
+
 WebSocketFactory::WebSocketFactory(NetworkContext* context)
     : context_(context) {}
 
@@ -50,6 +95,16 @@ void WebSocketFactory::CreateWebSocket(
       net::IsolationInfo::RequestType::kOther) {
     mojo::ReportBadMessage(
         "WebSocket's IsolationInfo::RequestType must be kOther");
+    return;
+  }
+
+  if (!url.SchemeIsWSOrWSS()) {
+    mojo::ReportBadMessage("Invalid scheme.");
+    return;
+  }
+
+  if (!IsValidProtocols(requested_protocols)) {
+    mojo::ReportBadMessage("Invalid protocols.");
     return;
   }
 

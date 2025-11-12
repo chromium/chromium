@@ -539,6 +539,7 @@ source_set("tests") {
       "test_mojo_proxy_resolver_factory.cc",
       "test_mojo_proxy_resolver_factory.h",
       "url_request_context_builder_mojo_unittest.cc",
+      "websocket_factory_unittest.cc",
       "websocket_interceptor_unittest.cc",
       "websocket_throttler_unittest.cc",
     ]

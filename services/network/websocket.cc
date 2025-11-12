@@ -57,7 +57,7 @@ namespace {
 
 // What is considered a "small message" for the purposes of small message
 // reassembly.
-constexpr uint64_t kSmallMessageThreshhold = 1 << 16;
+constexpr uint64_t kSmallMessageThreshold = 1 << 16;
 
 // The capacity of the data pipe to use for received messages, in bytes. Optimal
 // value depends on the platform. |2^n - delta| is better than 2^n on Linux. See
@@ -124,47 +124,6 @@ mojom::WebSocketHandshakeResponsePtr ToMojo(
   response_to_pass->headers_text = headers_text;
 
   return response_to_pass;
-}
-
-bool IsValidSubprotocolCharacter(char character) {
-  constexpr auto kMinimumProtocolCharacter = '!';  // U+0021.
-  constexpr auto kMaximumProtocolCharacter = '~';  // U+007E.
-  // Set to true if character does not matches "separators" ABNF defined in
-  // RFC2616. SP and HT are excluded since the range check excludes them.
-  const bool is_separator =
-      character == '"' || character == '(' || character == ')' ||
-      character == ',' || character == '/' ||
-      (character >= ':' &&
-       character <=
-           '@')  // U+003A - U+0040 (':', ';', '<', '=', '>', '?', '@').
-      || (character >= '[' &&
-          character <= ']')  // U+005B - U+005D ('[', '\\', ']').
-      || character == '{' || character == '}';
-  return character >= kMinimumProtocolCharacter &&
-         character <= kMaximumProtocolCharacter && !is_separator;
-}
-
-bool IsValidSubprotocolString(const std::string& protocol) {
-  if (protocol.empty()) {
-    return false;
-  }
-  return std::ranges::all_of(protocol, IsValidSubprotocolCharacter);
-}
-
-bool IsValidProtocols(const std::vector<std::string>& requested_protocols) {
-  // Fail if not all elements in |protocols| are valid.
-  if (!std::ranges::all_of(requested_protocols, IsValidSubprotocolString)) {
-    return false;
-  }
-
-  // Fail if there're duplicated elements in |protocols|.
-  std::vector<std::string> protocols = requested_protocols;
-  std::ranges::sort(protocols);
-  if (std::ranges::adjacent_find(protocols) != protocols.end()) {
-    return false;
-  }
-
-  return true;
 }
 
 }  // namespace
@@ -249,7 +208,7 @@ int WebSocket::WebSocketEventHandler::OnURLRequestConnected(
     net::URLRequest* request,
     const net::TransportInfo& info,
     net::CompletionOnceCallback callback) {
-  // Grab Metrics first, then do acutal LNA checks.
+  // Grab Metrics first, then do actual LNA checks.
   if (impl_->url_loader_network_observer_) {
     impl_->url_loader_network_observer_->OnWebSocketConnectedToPrivateNetwork(
         request->url(), TransportInfoToIPAddressSpace(info));
@@ -575,6 +534,7 @@ WebSocket::WebSocket(
   }
   handshake_client_.set_disconnect_handler(base::BindOnce(
       &WebSocket::OnConnectionError, base::Unretained(this), FROM_HERE));
+
   if (delay_.is_positive()) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
@@ -616,7 +576,7 @@ void WebSocket::SendMessage(mojom::WebSocketMessageType type,
   }
   DCHECK(IsKnownEnumValue(type));
 
-  const bool do_not_fragment = data_length <= kSmallMessageThreshhold;
+  const bool do_not_fragment = data_length <= kSmallMessageThreshold;
 
   pending_send_data_frames_.emplace(type, data_length, do_not_fragment);
 
@@ -752,18 +712,6 @@ void WebSocket::AddChannel(
       new WebSocketEventHandler(this));
   channel_ = std::make_unique<net::WebSocketChannel>(
       std::move(event_interface), factory_->GetURLRequestContext());
-
-  if (!socket_url.SchemeIsWSOrWSS()) {
-    mojo::ReportBadMessage("Invalid scheme.");
-    Reset();
-    return;
-  }
-
-  if (!IsValidProtocols(requested_protocols)) {
-    mojo::ReportBadMessage("Invalid protocols.");
-    Reset();
-    return;
-  }
 
   net::HttpRequestHeaders headers_to_pass;
   for (const auto& header : additional_headers) {
