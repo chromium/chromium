@@ -123,5 +123,5 @@ GeolocationSettings:
   caption: Geolocation settings
   policies:
   - DefaultGeolocationSetting
-  - GeolocationAllowedForUrls
+  - PreciseGeolocationAllowedForUrls
   - GeolocationBlockedForUrls

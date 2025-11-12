@@ -2330,7 +2330,7 @@ chromium-metrics-reviews@google.com.
   <int value="1407" label="DefaultIdleDetectionSetting"/>
   <int value="1408" label="IdleDetectionAllowedForUrls"/>
   <int value="1409" label="IdleDetectionBlockedForUrls"/>
-  <int value="1410" label="GeolocationAllowedForUrls"/>
+  <int value="1410" label="PreciseGeolocationAllowedForUrls"/>
   <int value="1411" label="GeolocationBlockedForUrls"/>
   <int value="1412" label="PdfXfaFormsEnabled"/>
   <int value="1413" label="CameraSaveLocation"/>

@@ -1408,7 +1408,7 @@ policies:
   1407: DefaultIdleDetectionSetting
   1408: IdleDetectionAllowedForUrls
   1409: IdleDetectionBlockedForUrls
-  1410: GeolocationAllowedForUrls
+  1410: PreciseGeolocationAllowedForUrls
   1411: GeolocationBlockedForUrls
   1412: PdfXfaFormsEnabled
   1413: CameraSaveLocation
