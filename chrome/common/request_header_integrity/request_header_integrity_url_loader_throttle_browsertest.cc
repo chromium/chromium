@@ -52,14 +52,8 @@ class RequestHeaderIntegrityURLLoaderThrottleBrowserTest
 
   ~RequestHeaderIntegrityURLLoaderThrottleBrowserTest() override = default;
 
-  void SetUp() override {
-    ASSERT_TRUE(server().InitializeAndListen());
-    InProcessBrowserTest::SetUp();
-  }
-
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
-
     host_resolver()->AddRule("*", "127.0.0.1");
 
     server().RegisterRequestHandler(base::BindRepeating(
@@ -67,6 +61,7 @@ class RequestHeaderIntegrityURLLoaderThrottleBrowserTest
         base::Unretained(this)));
 
     server().SetCertHostnames({"www.google.com", "www.chromium.org"});
+    ASSERT_TRUE(server().InitializeAndListen());
     server().StartAcceptingConnections();
   }
 
