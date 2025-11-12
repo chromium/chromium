@@ -274,7 +274,8 @@ interface PageHandler {
 
   // Attach a tab to the query context. If the tab is not found, no token will
   // be returned.
-  AddTabContext(int32 tab_id) => (mojo_base.mojom.UnguessableToken? token);
+  AddTabContext(int32 tab_id, bool delay_upload) =>
+                (mojo_base.mojom.UnguessableToken? token);
 
   // Notify handler of context deletion. This removes the context data (e.g.
   // File, or tab page content) from the browser-side cache.

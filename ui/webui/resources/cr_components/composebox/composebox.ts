@@ -512,7 +512,11 @@ export class ComposeboxElement extends I18nMixinLit
       id: number, title: string, url: Url,
       onContextAdded: (file: ComposeboxFile) => void,
   }>) {
-    const {token} = await this.searchboxHandler_.addTabContext(e.detail.id);
+    // TODO(crbug.com/455652084) make `delay_upload` have dynamic value
+    // depending on where the adding the tab context originated from (composebox
+    // or action chips).
+    const {token} = await this.searchboxHandler_.addTabContext(
+        e.detail.id, /*delay_upload=*/ false);
     if (!token) {
       return;
     }

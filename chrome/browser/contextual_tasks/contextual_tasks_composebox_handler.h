@@ -43,7 +43,9 @@ class ContextualTasksComposeboxHandler : public composebox::mojom::PageHandler,
   void AddFileContext(searchbox::mojom::SelectedFileInfoPtr file_info,
                       mojo_base::BigBuffer file_bytes,
                       AddFileContextCallback callback) override;
-  void AddTabContext(int32_t tab_id, AddTabContextCallback) override;
+  void AddTabContext(int32_t tab_id,
+                     bool delay_upload,
+                     AddTabContextCallback) override;
   void DeleteContext(const base::UnguessableToken& file_token) override;
   void ClearFiles() override;
 

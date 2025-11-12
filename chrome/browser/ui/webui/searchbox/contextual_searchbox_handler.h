@@ -80,7 +80,9 @@ class ContextualSearchboxHandler
   void AddFileContext(searchbox::mojom::SelectedFileInfoPtr file_info,
                       mojo_base::BigBuffer file_bytes,
                       AddFileContextCallback callback) override;
-  void AddTabContext(int32_t tab_id, AddTabContextCallback) override;
+  void AddTabContext(int32_t tab_id,
+                     bool delay_upload,
+                     AddTabContextCallback) override;
   void DeleteContext(const base::UnguessableToken& file_token) override;
   void ClearFiles() override;
   void SubmitQuery(const std::string& query_text,
@@ -126,6 +128,10 @@ class ContextualSearchboxHandler
   contextual_search::ContextualSearchContextController* GetQueryController();
 
   contextual_search::ContextualSearchMetricsRecorder* GetMetricsRecorder();
+
+  std::set<base::UnguessableToken> deleted_context_tokens() {
+    return deleted_context_tokens_;
+  }
 
  private:
   void OnGetTabPageContext(
