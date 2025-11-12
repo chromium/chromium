@@ -351,6 +351,9 @@ class GuestOsSharePathTest : public testing::Test {
   std::unique_ptr<arc::ArcSessionManager> arc_session_manager_;
 
  private:
+  // crbug.com/459884527: Needed because ChromeOS requires install attributes
+  // for the test environment.
+  ash::ScopedStubInstallAttributes stub_install_attributes_;
   scoped_refptr<component_updater::FakeComponentManagerAsh> component_manager_;
   BrowserProcessPlatformPartTestApi browser_part_;
 };
