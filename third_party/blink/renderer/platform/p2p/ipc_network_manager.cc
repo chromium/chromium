@@ -218,7 +218,7 @@ void IpcNetworkManager::OnNetworkListChanged(
   NetworkManager::Stats stats;
   MergeNetworkList(std::move(networks), &changed, &stats);
   if (changed)
-    NotifyNetworksChanged();
+    SignalNetworksChanged();
 
   // Send interface counts to UMA.
   UMA_HISTOGRAM_COUNTS_100("WebRTC.PeerConnection.IPv4Interfaces",
@@ -234,7 +234,7 @@ webrtc::MdnsResponderInterface* IpcNetworkManager::GetMdnsResponder() const {
 
 void IpcNetworkManager::SendNetworksChangedSignal() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  NotifyNetworksChanged();
+  SignalNetworksChanged();
 }
 
 }  // namespace blink

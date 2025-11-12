@@ -78,7 +78,7 @@ class MockNetworkManager : public webrtc::NetworkManagerBase {
   // StartUpdating() will trigger another one.
   void StartUpdating() override {
     if (sent_first_update_)
-      NotifyNetworksChanged();
+      SignalNetworksChanged();
   }
   void StopUpdating() override {}
 
@@ -88,7 +88,7 @@ class MockNetworkManager : public webrtc::NetworkManagerBase {
 
   void SendNetworksChanged() {
     sent_first_update_ = true;
-    NotifyNetworksChanged();
+    SignalNetworksChanged();
   }
 
   webrtc::MdnsResponderInterface* GetMdnsResponder() const override {
@@ -194,7 +194,8 @@ class FilteringNetworkManagerTest : public testing::Test,
       network_manager_.reset(new EmptyNetworkManager(
           base_network_manager_.get(), base_network_manager_->AsWeakPtr()));
     }
-    network_manager_->SubscribeNetworksChanged([this] { OnNetworksChanged(); });
+    network_manager_->SignalNetworksChanged.connect(
+        this, &FilteringNetworkManagerTest::OnNetworksChanged);
   }
 
   void RunTests(base::span<TestEntry> tests) {

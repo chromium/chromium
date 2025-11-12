@@ -67,12 +67,8 @@ void FilteringNetworkManager::StartUpdating() {
 
   if (!start_updating_called_) {
     start_updating_called_ = true;
-    network_manager_for_signaling_thread_->SubscribeNetworksChanged(
-        [weak_this = GetWeakPtr()] {
-          if (weak_this) {
-            weak_this->OnNetworksChanged();
-          }
-        });
+    network_manager_for_signaling_thread_->SignalNetworksChanged.connect(
+        this, &FilteringNetworkManager::OnNetworksChanged);
   }
 
   // Update |pending_network_update_| and |start_count_| before calling
@@ -168,9 +164,7 @@ void FilteringNetworkManager::OnPermissionStatus(bool granted) {
 
 void FilteringNetworkManager::OnNetworksChanged() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (!network_manager_for_signaling_thread_) {
-    return;
-  }
+  DCHECK(network_manager_for_signaling_thread_);
 
   pending_network_update_ = false;
 
@@ -235,7 +229,7 @@ void FilteringNetworkManager::FireEventIfStarted() {
 }
 
 void FilteringNetworkManager::SendNetworksChangedSignal() {
-  NotifyNetworksChanged();
+  SignalNetworksChanged();
 }
 
 }  // namespace blink
