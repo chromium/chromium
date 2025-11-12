@@ -109,6 +109,7 @@
 #include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
 #include "components/handoff/handoff_manager.h"
 #include "components/handoff/handoff_utility.h"
+#include "components/keep_alive_registry/keep_alive_registry.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/policy/core/common/policy_pref_names.h"
@@ -929,7 +930,9 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
     return NO;
   }
 
-  size_t num_browsers = chrome::GetTotalBrowserCount();
+  const BOOL should_terminate =
+      !KeepAliveRegistry::GetInstance()->IsOriginRegistered(
+          KeepAliveOrigin::BROWSER);
 
   // Initiate a shutdown (via chrome::CloseAllBrowsersAndQuit()) if we aren't
   // already shutting down.
@@ -938,7 +941,7 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
     chrome::CloseAllBrowsersAndQuit();
   }
 
-  return num_browsers == 0 ? YES : NO;
+  return should_terminate;
 }
 
 - (void)stopTryingToTerminateApplication:(NSApplication*)app {
@@ -982,7 +985,8 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
 // Called when the app is shutting down. Clean-up as appropriate.
 - (void)applicationWillTerminate:(NSNotification*)aNotification {
   // There better be no browser windows left at this point.
-  CHECK_EQ(0u, chrome::GetTotalBrowserCount());
+  CHECK(!KeepAliveRegistry::GetInstance()->IsOriginRegistered(
+      KeepAliveOrigin::BROWSER));
 
   // Tell BrowserList not to keep the browser process alive. Once all the
   // browsers get dealloc'd, it will stop the RunLoop and fall back into main().

@@ -5618,6 +5618,7 @@ if (!is_android) {
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui:browser_list",
       "//chrome/browser/ui/browser_window",
+      "//components/keep_alive_registry",
     ]
   }
 
