@@ -5,6 +5,7 @@
 #include "base/test/scoped_feature_list.h"
 
 #include <atomic>
+#include <memory>
 #include <string_view>
 #include <utility>
 #include <vector>
@@ -608,7 +609,7 @@ void ScopedFeatureList::InitWithMergedFeatures(
   std::string disabled = CreateCommandLineArgumentFromFeatureList(
       merged_features.disabled_feature_list, /*enable_features=*/false);
 
-  std::unique_ptr<FeatureList> new_feature_list(new FeatureList);
+  auto new_feature_list = std::make_unique<FeatureList>();
   new_feature_list->InitFromCommandLine(enabled, disabled);
   InitWithFeatureList(std::move(new_feature_list));
 }

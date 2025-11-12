@@ -263,7 +263,7 @@ namespace {
 
 std::unique_ptr<base::MessagePump> CreateMessagePumpForUIForTests() {
   // A basic MessagePump will do quite nicely in tests.
-  return std::unique_ptr<base::MessagePump>(new base::MessagePumpCFRunLoop());
+  return std::make_unique<base::MessagePumpCFRunLoop>();
 }
 
 }  // namespace

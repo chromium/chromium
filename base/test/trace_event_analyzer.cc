@@ -825,7 +825,7 @@ TraceAnalyzer::~TraceAnalyzer() = default;
 // static
 std::unique_ptr<TraceAnalyzer> TraceAnalyzer::Create(
     const std::string& json_events) {
-  std::unique_ptr<TraceAnalyzer> analyzer(new TraceAnalyzer());
+  auto analyzer = base::WrapUnique(new TraceAnalyzer());
   if (analyzer->SetEvents(json_events)) {
     return analyzer;
   }
