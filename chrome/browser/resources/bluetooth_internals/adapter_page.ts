@@ -8,8 +8,10 @@
 
 import './object_fieldset.js';
 
-import {$} from 'chrome://resources/js/util.js';
+import {getRequiredElement} from 'chrome://resources/js/util.js';
 
+import type {AdapterInfo} from './adapter.mojom-webui.js';
+import type {ObjectFieldSetElement} from './object_fieldset.js';
 import {Page} from './page.js';
 
 const PROPERTY_NAMES = {
@@ -28,22 +30,28 @@ const PROPERTY_NAMES = {
  * Page that contains an ObjectFieldSet that displays the latest AdapterInfo.
  */
 export class AdapterPage extends Page {
+  adapterFieldSet: ObjectFieldSetElement;
+  private refreshBtn_: HTMLButtonElement;
+
   constructor() {
     super('adapter', 'Adapter', 'adapter');
 
-    this.adapterFieldSet = document.createElement('object-field-set');
+    this.adapterFieldSet =
+        document.createElement('object-field-set') as ObjectFieldSetElement;
     this.adapterFieldSet.toggleAttribute('show-all', true);
-    this.adapterFieldSet.dataset.nameMap = JSON.stringify(PROPERTY_NAMES);
+    this.adapterFieldSet.dataset['nameMap'] = JSON.stringify(PROPERTY_NAMES);
     this.pageDiv.appendChild(this.adapterFieldSet);
 
-    this.refreshBtn_ = $('adapter-refresh-btn');
-    this.refreshBtn_.addEventListener('click', event => {
+    this.refreshBtn_ =
+        getRequiredElement<HTMLButtonElement>('adapter-refresh-btn');
+    this.refreshBtn_.addEventListener('click', _event => {
       this.refreshBtn_.disabled = true;
       this.pageDiv.dispatchEvent(new CustomEvent('refreshpressed'));
     });
 
     // <if expr="is_chromeos">
-    const restartBluetoothBtn = $('restart-bluetooth-btn');
+    const restartBluetoothBtn =
+        getRequiredElement<HTMLButtonElement>('restart-bluetooth-btn');
     restartBluetoothBtn.addEventListener('click', () => {
       restartBluetoothBtn.disabled = true;
       this.pageDiv.dispatchEvent(new CustomEvent('restart-bluetooth-click'));
@@ -53,27 +61,28 @@ export class AdapterPage extends Page {
 
   /**
    * Sets the information to display in fieldset.
-   * @param {!AdapterInfo} info
    */
-  setAdapterInfo(info) {
-    if (info.hasOwnProperty('systemName') && !info.systemName) {
+  setAdapterInfo(info: AdapterInfo) {
+    const infoCopy: Partial<AdapterInfo> = {...info};
+
+    if ('systemName' in infoCopy && !infoCopy.systemName) {
       // The adapter might not implement 'systemName'. In that case, delete
       // this property so that it's not displayed on adapterFieldSet.
-      delete info.systemName;
+      delete infoCopy.systemName;
     }
 
     // <if expr="not is_chromeos">
     // floss and extendedAdvertisementSupport is only set in ChromeOS anyway,
     // so it's irrelevant on other platforms. Delete them.
-    if (info.hasOwnProperty('floss')) {
-      delete info.floss;
+    if ('floss' in infoCopy) {
+      delete infoCopy.floss;
     }
-    if (info.hasOwnProperty('extendedAdvertisementSupport')) {
-      delete info.extendedAdvertisementSupport;
+    if ('extendedAdvertisementSupport' in infoCopy) {
+      delete infoCopy.extendedAdvertisementSupport;
     }
     // </if>
 
-    this.adapterFieldSet.dataset.value = JSON.stringify(info);
+    this.adapterFieldSet.dataset['value'] = JSON.stringify(infoCopy);
     this.refreshBtn_.disabled = false;
   }
 }

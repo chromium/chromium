@@ -21,16 +21,16 @@ build_webui("build") {
     "expandable_list.ts",
     "expandable_list_item.ts",
     "object_fieldset.js",
-    "service_list_item.js",
+    "service_list_item.ts",
     "snackbar.js",
     "value_control.js",
   ]
 
   ts_files = [
     "adapter_broker.js",
-    "adapter_page.js",
+    "adapter_page.ts",
     "bluetooth_internals.js",
-    "characteristic_list.js",
+    "characteristic_list.ts",
     "debug_log_page.js",
     "descriptor_list.js",
     "device_broker.ts",

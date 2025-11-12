@@ -6,8 +6,13 @@ import './characteristic_list.js';
 import './expandable_list_item.js';
 import './object_fieldset.js';
 
+import {assert} from 'chrome://resources/js/assert.js';
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 
+import type {CharacteristicListElement} from './characteristic_list.js';
+import type {ServiceInfo} from './device.mojom-webui.js';
+import type {ExpandableListItemElement} from './expandable_list_item.js';
+import type {ObjectFieldSetElement} from './object_fieldset.js';
 import {getTemplate} from './service_list_item.html.js';
 
 /**
@@ -28,41 +33,42 @@ const PROPERTY_NAMES = {
  * expanded for the first time.
  */
 export class ServiceListItemElement extends CustomElement {
-  static get template() {
+  static override get template() {
     return getTemplate();
   }
 
-  constructor() {
-    super();
-    /** @type {?ServiceInfo} */
-    this.info = null;
-    /** @private {string} */
-    this.deviceAddress_ = '';
-  }
+  info: ServiceInfo|null = null;
+  private deviceAddress_: string = '';
 
   connectedCallback() {
     this.classList.add('service-list-item');
-    this.shadowRoot.querySelector('expandable-list-item')
-        .addEventListener('list-item-expanded', () => {
-          const list = this.shadowRoot.querySelector('characteristic-list');
-          list.load(this.deviceAddress_, this.info.id);
-        });
+    const expandableItem =
+        this.shadowRoot!.querySelector<ExpandableListItemElement>(
+            'expandable-list-item');
+    assert(expandableItem);
+    expandableItem.addEventListener('list-item-expanded', () => {
+      const list = this.shadowRoot!.querySelector<CharacteristicListElement>(
+          'characteristic-list');
+      assert(list);
+      assert(this.info);
+      list.load(this.deviceAddress_, this.info.id);
+    });
   }
 
-  /**
-   * @param {!ServiceInfo} serviceInfo
-   * @param {string} deviceAddress
-   */
-  initialize(serviceInfo, deviceAddress) {
+  initialize(serviceInfo: ServiceInfo, deviceAddress: string) {
     this.info = serviceInfo;
     this.deviceAddress_ = deviceAddress;
 
-    this.shadowRoot.querySelector('.header-value').textContent =
-        this.info.uuid.uuid;
+    const headerValue = this.shadowRoot!.querySelector('.header-value');
+    assert(headerValue);
+    headerValue.textContent = this.info.uuid.uuid;
 
-    const serviceFieldSet = this.shadowRoot.querySelector('object-field-set');
-    serviceFieldSet.dataset.nameMap = JSON.stringify(PROPERTY_NAMES);
-    serviceFieldSet.dataset.value = JSON.stringify({
+    const serviceFieldSet =
+        this.shadowRoot!.querySelector<ObjectFieldSetElement>(
+            'object-field-set');
+    assert(serviceFieldSet);
+    serviceFieldSet.dataset['nameMap'] = JSON.stringify(PROPERTY_NAMES);
+    serviceFieldSet.dataset['value'] = JSON.stringify({
       id: this.info.id,
       'uuid.uuid': this.info.uuid.uuid,
       isPrimary: this.info.isPrimary ? 'Primary' : 'Secondary',
