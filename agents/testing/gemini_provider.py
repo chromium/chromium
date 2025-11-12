@@ -402,20 +402,22 @@ def _run_gemini_cli_with_output_streaming(
                 logging.warning('Output thread did not cleanly terminate.')
 
 
-def _extract_token_usage(telemetry_file: pathlib.Path) -> dict[str, int]:
-    """Extracts token usage data from gemini-cli telemetry.
+def _parse_telemetry_data(telemetry_file: pathlib.Path) -> list[dict[str, Any]]:
+    """Parses gemini-cli telemetry into a list of JSON objects.
 
     Args:
         telemetry_file: A path to the file that gemini-cli wrote telemetry
             information to.
 
     Returns:
-        A dict mapping token type to the total usage of that token type during
-        the test. Returns an empty dict if the telemetry file is empty or
-        invalid.
+        A list of telemetry data objects. Returns an empty list if the
+        telemetry file is empty or invalid.
     """
     with open(telemetry_file, encoding='utf-8') as infile:
         contents = infile.read()
+    if not contents:
+        return []
+
     # The file contents are mostly-valid JSON, except the multiple objects it
     # contains aren't within an actual list. So, modify the content to be a
     # valid list.
@@ -424,8 +426,26 @@ def _extract_token_usage(telemetry_file: pathlib.Path) -> dict[str, int]:
     contents_with_commas = re.sub(r'}\s*{', '},{', contents)
     corrected_content = f'[{contents_with_commas}]'
     try:
-        telemetry_data = json.loads(corrected_content)
+        return json.loads(corrected_content)
     except json.JSONDecodeError:
+        logging.warning('Failed to parse telemetry file: %s', telemetry_file)
+        return []
+
+
+def _extract_token_usage(
+        telemetry_data: list[dict[str, Any]]) -> dict[str, int]:
+    """Extracts token usage data from gemini-cli telemetry.
+
+    Args:
+        telemetry_data: A list of telemetry data objects parsed from the
+            telemetry file.
+
+    Returns:
+        A dict mapping token type to the total usage of that token type during
+        the test. Returns an empty dict if the telemetry data is empty or
+        invalid.
+    """
+    if not telemetry_data:
         return {}
 
     def _extract_from_last_report():
@@ -451,6 +471,47 @@ def _extract_token_usage(telemetry_file: pathlib.Path) -> dict[str, int]:
         return gemini_cli_tokens
 
     return _extract_from_last_report()
+
+
+def _extract_tool_calls(
+        telemetry_data: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Extracts tool call data from gemini-cli telemetry.
+
+    Args:
+        telemetry_data: A list of telemetry data objects parsed from the
+            telemetry file.
+
+    Returns:
+        A list of tool calls made during the test. Each tool call is a dict
+        containing details about the call. Returns an empty list if the
+        telemetry data is empty or invalid.
+    """
+    if not telemetry_data:
+        return []
+
+    tool_calls = []
+    for td in telemetry_data:
+        attributes = td.get('attributes', {})
+        if attributes.get('event.name') == 'gemini_cli.tool_call':
+            function_name = attributes.get('function_name')
+            if function_name:
+                tool_calls.append({
+                    'function_name':
+                    function_name,
+                    'function_args':
+                    attributes.get('function_args', ''),
+                    'success':
+                    attributes.get('success', False),
+                    'duration_ms':
+                    attributes.get('duration_ms', 0),
+                    'tool_type':
+                    attributes.get('tool_type', ''),
+                    'mcp_server_name':
+                    attributes.get('mcp_server_name', ''),
+                    'extension_name':
+                    attributes.get('extension_name', ''),
+                })
+    return tool_calls
 
 
 def call_api(prompt: str, options: dict[str, Any],
@@ -528,8 +589,10 @@ def _run_gemini_cli_with_telemetry_output(
         # We put this information in our own field instead of in promptfoo's
         # tokenUsage field since how tokens are grouped differs and there is not
         # a clear mapping from gemini-cli's data to what promptfoo wants.
+        telemetry_data = _parse_telemetry_data(telemetry_outfile)
         metrics[constants.GEMINI_CLI_TOKEN_USAGE] = _extract_token_usage(
-            telemetry_outfile)
+            telemetry_data)
+        metrics['tool_calls'] = _extract_tool_calls(telemetry_data)
         if process.returncode != 0:
             error_message = (
                 f"Command '{' '.join(gcli_arguments.command)}' failed with "

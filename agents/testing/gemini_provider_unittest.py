@@ -505,15 +505,55 @@ class RunGeminiCliWithOutputStreamingUnittest(unittest.TestCase):
         self.mock_popen.return_value.kill.assert_called_once()
 
 
-class ExtractTokenUsageUnittest(fake_filesystem_unittest.TestCase):
-    """Unit tests for the `_extract_token_usage` function."""
+class ParseTelemetryDataUnittest(fake_filesystem_unittest.TestCase):
+    """Unit tests for the `_parse_telemetry_data` function."""
 
     def setUp(self):
         self.setUpPyfakefs()
 
-    def test_valid_telemetry_file(self):
-        """Tests that token usage is extracted correctly from a valid file."""
-        telemetry_data = {
+    def test_valid_file(self):
+        """Tests that a valid telemetry file is parsed correctly."""
+        telemetry_data_1 = {'key1': 'value1'}
+        telemetry_data_2 = {'key2': 'value2'}
+        telemetry_content = (json.dumps(telemetry_data_1) + '\n' +
+                             json.dumps(telemetry_data_2))
+        with tempfile.NamedTemporaryFile(mode='w', delete=False) as temp_file:
+            temp_file.write(telemetry_content)
+            temp_file_path = pathlib.Path(temp_file.name)
+
+        parsed_data = gemini_provider._parse_telemetry_data(temp_file_path)
+
+        self.assertEqual(parsed_data, [telemetry_data_1, telemetry_data_2])
+        os.remove(temp_file_path)
+
+    def test_empty_file(self):
+        """Tests that an empty list is returned for an empty file."""
+        with tempfile.NamedTemporaryFile(mode='w', delete=False) as temp_file:
+            temp_file_path = pathlib.Path(temp_file.name)
+
+        parsed_data = gemini_provider._parse_telemetry_data(temp_file_path)
+
+        self.assertEqual(parsed_data, [])
+        os.remove(temp_file_path)
+
+    def test_invalid_json(self):
+        """Tests that an empty list is returned for an invalid JSON file."""
+        with tempfile.NamedTemporaryFile(mode='w', delete=False) as temp_file:
+            temp_file.write('invalid json')
+            temp_file_path = pathlib.Path(temp_file.name)
+
+        parsed_data = gemini_provider._parse_telemetry_data(temp_file_path)
+
+        self.assertEqual(parsed_data, [])
+        os.remove(temp_file_path)
+
+
+class ExtractTokenUsageUnittest(unittest.TestCase):
+    """Unit tests for the `_extract_token_usage` function."""
+
+    def test_valid_telemetry_data(self):
+        """Tests that token usage is extracted correctly."""
+        telemetry_data = [{
             'scopeMetrics': [{
                 'scope': {
                     'name': 'gemini-cli'
@@ -535,30 +575,20 @@ class ExtractTokenUsageUnittest(fake_filesystem_unittest.TestCase):
                     }]
                 }]
             }]
-        }
-        telemetry_content = json.dumps(telemetry_data)
-        with tempfile.NamedTemporaryFile(mode='w', delete=False) as temp_file:
-            temp_file.write(telemetry_content)
-            temp_file_path = pathlib.Path(temp_file.name)
+        }]
 
-        token_usage = gemini_provider._extract_token_usage(temp_file_path)
+        token_usage = gemini_provider._extract_token_usage(telemetry_data)
 
         self.assertEqual(token_usage, {'prompt': 10, 'completion': 20})
-        os.remove(temp_file_path)
 
-    def test_empty_file(self):
-        """Tests that an empty dict is returned for an empty file."""
-        with tempfile.NamedTemporaryFile(mode='w', delete=False) as temp_file:
-            temp_file_path = pathlib.Path(temp_file.name)
-
-        token_usage = gemini_provider._extract_token_usage(temp_file_path)
-
+    def test_empty_data(self):
+        """Tests that an empty dict is returned for empty data."""
+        token_usage = gemini_provider._extract_token_usage([])
         self.assertEqual(token_usage, {})
-        os.remove(temp_file_path)
 
     def test_no_token_usage(self):
         """Tests that an empty dict is returned when there's no token usage."""
-        telemetry_data = {
+        telemetry_data = [{
             'scopeMetrics': [{
                 'scope': {
                     'name': 'gemini-cli'
@@ -570,20 +600,13 @@ class ExtractTokenUsageUnittest(fake_filesystem_unittest.TestCase):
                     'dataPoints': []
                 }]
             }]
-        }
-        telemetry_content = json.dumps(telemetry_data)
-        with tempfile.NamedTemporaryFile(mode='w', delete=False) as temp_file:
-            temp_file.write(telemetry_content)
-            temp_file_path = pathlib.Path(temp_file.name)
-
-        token_usage = gemini_provider._extract_token_usage(temp_file_path)
-
+        }]
+        token_usage = gemini_provider._extract_token_usage(telemetry_data)
         self.assertEqual(token_usage, {})
-        os.remove(temp_file_path)
 
     def test_multiple_data_points(self):
         """Tests that the last data point is used when there are multiple."""
-        telemetry_data_1 = {
+        telemetry_data = [{
             'scopeMetrics': [{
                 'scope': {
                     'name': 'gemini-cli'
@@ -605,8 +628,7 @@ class ExtractTokenUsageUnittest(fake_filesystem_unittest.TestCase):
                     }]
                 }]
             }]
-        }
-        telemetry_data_2 = {
+        }, {
             'scopeMetrics': [{
                 'scope': {
                     'name': 'gemini-cli'
@@ -628,18 +650,107 @@ class ExtractTokenUsageUnittest(fake_filesystem_unittest.TestCase):
                     }]
                 }]
             }]
-        }
-        telemetry_content = (json.dumps(telemetry_data_1) + '\n' +
-                             json.dumps(telemetry_data_2))
-        with tempfile.NamedTemporaryFile(mode='w', delete=False) as temp_file:
-            temp_file.write(telemetry_content)
-            temp_file_path = pathlib.Path(temp_file.name)
-
-        token_usage = gemini_provider._extract_token_usage(temp_file_path)
-
+        }]
+        token_usage = gemini_provider._extract_token_usage(telemetry_data)
         self.assertEqual(token_usage, {'prompt': 30, 'completion': 40})
-        os.remove(temp_file_path)
 
+
+class ExtractToolCallsUnittest(unittest.TestCase):
+    """Unit tests for the `_extract_tool_calls` function."""
+
+    def test_valid_telemetry_data(self):
+        """Tests that tool calls are extracted correctly."""
+        telemetry_data = [{
+            'attributes': {
+                'event.name': 'gemini_cli.tool_call',
+                'function_name': 'test_tool',
+                'function_args': 'args',
+                'success': True,
+                'duration_ms': 123,
+                'tool_type': 'local',
+                'mcp_server_name': 'server',
+                'extension_name': 'ext'
+            }
+        }]
+        tool_calls = gemini_provider._extract_tool_calls(telemetry_data)
+        self.assertEqual(
+            tool_calls,
+            [{
+                'function_name': 'test_tool',
+                'function_args': 'args',
+                'success': True,
+                'duration_ms': 123,
+                'tool_type': 'local',
+                'mcp_server_name': 'server',
+                'extension_name': 'ext',
+            }])
+
+    def test_missing_attributes(self):
+        """Tests that default values are used for missing attributes."""
+        telemetry_data = [{
+            'attributes': {
+                'event.name': 'gemini_cli.tool_call',
+                'function_name': 'test_tool'
+            }
+        }]
+        tool_calls = gemini_provider._extract_tool_calls(telemetry_data)
+        self.assertEqual(
+            tool_calls,
+            [{
+                'function_name': 'test_tool',
+                'function_args': '',
+                'success': False,
+                'duration_ms': 0,
+                'tool_type': '',
+                'mcp_server_name': '',
+                'extension_name': '',
+            }])
+
+    def test_empty_data(self):
+        """Tests that an empty list is returned for an empty list."""
+        tool_calls = gemini_provider._extract_tool_calls([])
+        self.assertEqual(tool_calls, [])
+
+    def test_no_tool_calls(self):
+        """Tests that an empty list is returned when there are no tool calls."""
+        telemetry_data = [{'attributes': {'event.name': 'other_event'}}]
+        tool_calls = gemini_provider._extract_tool_calls(telemetry_data)
+        self.assertEqual(tool_calls, [])
+
+    def test_multiple_tool_calls(self):
+        """Tests that all tool calls are extracted."""
+        telemetry_data = [{
+            'attributes': {
+                'event.name': 'gemini_cli.tool_call',
+                'function_name': 'test_tool_1'
+            }
+        }, {
+            'attributes': {
+                'event.name': 'gemini_cli.tool_call',
+                'function_name': 'test_tool_2',
+                'success': True
+            }
+        }]
+        tool_calls = gemini_provider._extract_tool_calls(telemetry_data)
+        self.assertEqual(
+            tool_calls,
+            [{
+                'function_name': 'test_tool_1',
+                'function_args': '',
+                'success': False,
+                'duration_ms': 0,
+                'tool_type': '',
+                'mcp_server_name': '',
+                'extension_name': '',
+            }, {
+                'function_name': 'test_tool_2',
+                'function_args': '',
+                'success': True,
+                'duration_ms': 0,
+                'tool_type': '',
+                'mcp_server_name': '',
+                'extension_name': '',
+            }])
 
 
 class CallApiUnittest(fake_filesystem_unittest.TestCase):

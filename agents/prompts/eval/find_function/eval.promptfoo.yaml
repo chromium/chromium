@@ -11,3 +11,10 @@ tests:
   - assert:
     - type: contains
       value: GetTabInterface
+    - type: python
+      value: file://../../../testing/asserts/check_tool_calls.py:check_tool_used_with_args_match
+      config:
+        args_regexes: "webui_embedding_context\\.(h|cc)"
+        tool_names:
+          - read_file
+          - read_many_files
