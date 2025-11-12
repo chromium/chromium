@@ -78,14 +78,10 @@ enum class FlushReason {
   // This should never happen while printing.
   kPaint = 14,
 
-  // Canvas contents were transferred to an `ImageBitmap`. This does not
-  // inhibit vector printing since it effectively clears the canvas.
-  kTransfer = 15,
-
   // The canvas is being printed.
-  kPrinting = 16,
+  kPrinting = 15,
 
-  kOther = 17,
+  kOther = 16,
 
   kMaxValue = kOther,
 };

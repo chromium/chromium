@@ -349,7 +349,7 @@ ImageBitmap* OffscreenCanvasRenderingContext2D::TransferToImageBitmap(
   if (!GetOrCreateResourceProvider()) {
     return nullptr;
   }
-  scoped_refptr<StaticBitmapImage> image = GetImage(FlushReason::kTransfer);
+  scoped_refptr<StaticBitmapImage> image = GetImage(FlushReason::kOther);
   if (!image)
     return nullptr;
   image->SetOriginClean(OriginClean());
