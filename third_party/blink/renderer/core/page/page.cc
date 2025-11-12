@@ -512,22 +512,6 @@ void Page::TakePropertiesForLocalMainFrameSwap(Page* old_page) {
   // new page's opener should be the most up-to-date opener.
 }
 
-bool Page::IsPartitionedPopin() const {
-  // The feature must be enabled if a popin site for cookies was set.
-  CHECK(RuntimeEnabledFeatures::PartitionedPopinsEnabled() ||
-        !partitioned_popin_opener_properties_);
-
-  return !!partitioned_popin_opener_properties_;
-}
-
-const PartitionedPopinOpenerProperties&
-Page::GetPartitionedPopinOpenerProperties() const {
-  // This function is only usable if we are in a popin.
-  CHECK(IsPartitionedPopin());
-
-  return *partitioned_popin_opener_properties_;
-}
-
 LocalFrame* Page::DeprecatedLocalMainFrame() const {
   return To<LocalFrame>(main_frame_.Get());
 }

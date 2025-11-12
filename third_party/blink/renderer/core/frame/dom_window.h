@@ -175,14 +175,6 @@ class CORE_EXPORT DOMWindow : public WindowProperties, public DOMOriginUtils {
   void RecordWindowProxyAccessMetrics(
       mojom::blink::WindowProxyAccessType access_type) const;
 
-  // We need to check proxy access to see if it's blocked, and if so whether
-  // it's for COOP-RP issues or Partitioned Popin issues.
-  enum class ProxyAccessBlockedReason { kCoopRp, kPartitionedPopins };
-  std::optional<ProxyAccessBlockedReason> GetProxyAccessBlockedReason(
-      v8::Isolate* isolate) const;
-  static String GetProxyAccessBlockedExceptionMessage(
-      ProxyAccessBlockedReason reason);
-
  protected:
   explicit DOMWindow(Frame&);
 

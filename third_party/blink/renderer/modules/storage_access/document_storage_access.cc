@@ -285,11 +285,8 @@ ScriptPromise<T> DocumentStorageAccess::RequestStorageAccessImpl(
   }
 
   // If this is the outermost frame we no longer need to make a request and
-  // can resolve the promise unless we are in a partitioned popin. Partitioned
-  // popins can be partitioned even as a top-frame, so need to continue.
-  // See https://explainers-by-googlers.github.io/partitioned-popins/
-  if (GetSupplementable()->IsInOutermostMainFrame() &&
-      !GetSupplementable()->GetPage()->IsPartitionedPopin()) {
+  // can resolve the promise.
+  if (GetSupplementable()->IsInOutermostMainFrame()) {
     FireRequestStorageAccessHistogram(
         RequestStorageResult::APPROVED_PRIMARY_FRAME);
     resolver->Resolve();

@@ -1155,48 +1155,6 @@ void DOMWindow::RecordWindowProxyAccessMetrics(
   }
 }
 
-std::optional<DOMWindow::ProxyAccessBlockedReason>
-DOMWindow::GetProxyAccessBlockedReason(v8::Isolate* isolate) const {
-  if (!GetFrame()) {
-    // Proxy is disconnected so we cannot take any action anyway.
-    return std::nullopt;
-  }
-
-  LocalDOMWindow* accessing_window = CurrentDOMWindow(isolate);
-  CHECK(accessing_window);
-
-  LocalFrame* accessing_frame = accessing_window->GetFrame();
-  if (!accessing_frame) {
-    // Context is disconnected so we cannot take any action anyway.
-    return std::nullopt;
-  }
-
-  // Returns an exception message if this window proxy or the window accessing
-  // are not in the same page and one is in a partitioned popin. We check this
-  // case first as it overlaps with the COOP:RP case below.
-  // See https://explainers-by-googlers.github.io/partitioned-popins/
-  if (GetFrame()->GetPage() != accessing_frame->GetPage() &&
-      (accessing_frame->GetPage()->IsPartitionedPopin() ||
-       GetFrame()->GetPage()->IsPartitionedPopin())) {
-    return DOMWindow::ProxyAccessBlockedReason::kPartitionedPopins;
-  }
-
-  // Our fallback allows access.
-  return std::nullopt;
-}
-
-// static
-String DOMWindow::GetProxyAccessBlockedExceptionMessage(
-    DOMWindow::ProxyAccessBlockedReason reason) {
-  switch (reason) {
-    case ProxyAccessBlockedReason::kCoopRp:
-      return "Cross-Origin-Opener-Policy: 'restrict-properties' blocked the "
-             "access.";
-    case ProxyAccessBlockedReason::kPartitionedPopins:
-      return "Partitioned Popin blocked the access.";
-  }
-}
-
 void DOMWindow::PostedMessage::Trace(Visitor* visitor) const {
   visitor->Trace(source);
   visitor->Trace(user_activation);

@@ -3704,10 +3704,6 @@
       status: "stable",
     },
     {
-      name: "PartitionedPopins",
-      status: "experimental",
-    },
-    {
       name: "PartitionVisitedLinkDatabaseWithSelfLinks",
       status: {"iOS": "", "default": "stable"},
     },

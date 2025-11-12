@@ -918,54 +918,6 @@ def make_check_constructor_call(cg_context):
         ]))
     return node
 
-
-def make_check_proxy_access(cg_context):
-    assert isinstance(cg_context, CodeGenContext)
-
-    T = TextNode
-
-    if cg_context.class_like.identifier != "Window":
-        return None
-
-    ext_attrs = cg_context.member_like.extended_attributes
-    if "CrossOrigin" not in ext_attrs:
-        return None
-
-    # COOP: restrict-properties and Partitioned Popins never restrict
-    # postMessage() and closed accesses, which should still be possible across
-    # browsing context groups.
-    if cg_context.property_.identifier in ("postMessage", "closed"):
-        return None
-
-    values = ext_attrs.values_of("CrossOrigin")
-    if cg_context.attribute_get and not (not values or "Getter" in values):
-        return None
-    elif cg_context.attribute_set and not ("Setter" in values):
-        return None
-
-    if cg_context.is_interceptor_returning_v8intercepted:
-        error_exit_return_statement = "return v8::Intercepted::kYes;"
-    else:
-        error_exit_return_statement = "return;"
-
-    node = CxxUnlikelyIfNode(
-        cond=
-        ("auto reason = ${blink_receiver}->GetProxyAccessBlockedReason(${isolate})"
-         ),
-        attribute="[[unlikely]]",
-        body=[
-            T("V8ThrowDOMException::Throw(${isolate}, "
-              "DOMExceptionCode::kSecurityError, "
-              "DOMWindow::GetProxyAccessBlockedExceptionMessage(*reason));"),
-            T(error_exit_return_statement),
-        ])
-    node.accumulate(
-        CodeGenAccumulator.require_include_headers([
-            "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
-        ]))
-    return node
-
-
 def make_promise_return_context(cg_context):
     assert isinstance(cg_context, CodeGenContext)
 
@@ -1970,8 +1922,6 @@ def make_attribute_get_callback_def(cg_context, function_name):
         make_report_measure_as(cg_context),
         make_log_activity(cg_context),
         EmptyNode(),
-        make_check_proxy_access(cg_context),
-        EmptyNode(),
         make_return_value_cache_return_early(cg_context),
         EmptyNode(),
         make_check_security_of_return_value(cg_context),
@@ -2682,8 +2632,6 @@ def make_operation_function_def(cg_context, function_name):
         make_report_high_entropy(cg_context),
         make_report_measure_as(cg_context),
         make_log_activity(cg_context),
-        EmptyNode(),
-        make_check_proxy_access(cg_context),
         EmptyNode(),
         make_check_argument_length(cg_context),
         EmptyNode(),
@@ -3875,13 +3823,6 @@ def make_cross_origin_indexed_getter_callback(cg_context, function_name):
         return func_def
 
     bind_return_value(body, cg_context, overriding_args=["${index}"])
-
-    # Do this before the index verification below, because we do not want to
-    # reveal any information about the number of frames in this window.
-    body.extend([
-        make_check_proxy_access(cg_context),
-        EmptyNode(),
-    ])
 
     body.extend([
         CxxLikelyIfNode(cond="${index} >= ${blink_receiver}->length()",

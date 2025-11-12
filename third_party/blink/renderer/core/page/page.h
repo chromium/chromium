@@ -106,15 +106,6 @@ class VisualViewport;
 
 typedef uint64_t LinkHash;
 
-// When calculating storage access for a partitioned popin the
-// `top_frame_origin` is needed to calculate the storage key and the
-// `site_for_cookies` is needed to properly filter cookie access.
-// https://explainers-by-googlers.github.io/partitioned-popins/
-struct PartitionedPopinOpenerProperties {
-  scoped_refptr<SecurityOrigin> top_frame_origin;
-  net::SiteForCookies site_for_cookies;
-};
-
 // A Page roughly corresponds to a tab or popup window in a browser. It owns a
 // tree of frames (a blink::FrameTree). The root frame is called the main frame.
 //
@@ -556,16 +547,6 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   // related pages will include the new page instead of the old page, etc.
   void TakePropertiesForLocalMainFrameSwap(Page* old_page);
 
-  // This is true if this page is a partitioned popin.
-  // See https://explainers-by-googlers.github.io/partitioned-popins/
-  bool IsPartitionedPopin() const;
-
-  // If this Page is a partitioned popin then this returns the properties
-  // struct, otherwise this function CHECKs. See
-  // https://explainers-by-googlers.github.io/partitioned-popins/
-  const PartitionedPopinOpenerProperties& GetPartitionedPopinOpenerProperties()
-      const;
-
  private:
   friend class ScopedPagePauser;
   class CloseTaskHandler;
@@ -757,14 +738,6 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
       network::mojom::AttributionSupport::kUnset;
 
   Member<CloseTaskHandler> close_task_handler_;
-
-  // When the renderer opens a view representing a Partitioned Popin, the
-  // entire frame tree is partitioned as though it was an iframe in the opener.
-  // These properties are used in document.cc to calculate parameters critical
-  // for access to storage.
-  // See https://explainers-by-googlers.github.io/partitioned-popins/
-  std::optional<PartitionedPopinOpenerProperties>
-      partitioned_popin_opener_properties_;
 };
 
 extern template class CORE_EXTERN_TEMPLATE_EXPORT Supplement<Page>;

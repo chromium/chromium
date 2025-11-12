@@ -7027,13 +7027,6 @@ scoped_refptr<const SecurityOrigin> Document::TopFrameOrigin() const {
   if (!GetFrame())
     return scoped_refptr<const SecurityOrigin>();
 
-  // If this window was opened as a new partitioned popin we need to use the
-  // origin of the opener's top-frame as our top-frame.
-  // See https://explainers-by-googlers.github.io/partitioned-popins/
-  if (GetPage()->IsPartitionedPopin()) {
-    return GetPage()->GetPartitionedPopinOpenerProperties().top_frame_origin;
-  }
-
   return GetFrame()->Tree().Top().GetSecurityContext()->GetSecurityOrigin();
 }
 
@@ -7065,19 +7058,6 @@ net::SiteForCookies Document::SiteForCookies() const {
   // SecurityOrigin, then this is set to false so that
   // CompareWithFrameTreeOriginAndRevise() is called for all remaining frames.
   bool can_avoid_revise_if_security_origins_match = true;
-
-  // If this window was opened as a new partitioned popin we need to use the
-  // site for cookies of the opener as our initial candidate.
-  // See https://explainers-by-googlers.github.io/partitioned-popins/
-  if (GetPage()->IsPartitionedPopin()) {
-    candidate =
-        GetPage()->GetPartitionedPopinOpenerProperties().site_for_cookies;
-    // We can only skip comparisons when using the SiteForCookies from the
-    // top frame. Because we reset `candidate`, we need to call
-    // CompareWithFrameTreeOriginAndRevise() regardless of whether a frame
-    // has the same SecurityOrigin as the top frame.
-    can_avoid_revise_if_security_origins_match = false;
-  }
 
   if (SchemeRegistry::ShouldTreatURLSchemeAsFirstPartyWhenTopLevel(
           origin->Protocol())) {
