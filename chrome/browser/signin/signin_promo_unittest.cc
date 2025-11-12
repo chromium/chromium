@@ -85,7 +85,14 @@ TEST(SigninPromoTest, TestReauthURL) {
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
+// This test can be deleted once kReplaceSyncPromosWithSignInPromos is launched.
+// The behavior with the feature enabled is tested in
+// SigninURLForDiceWithHistorySyncOptin.
 TEST(SigninPromoTest, SigninURLForDice) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      syncer::kReplaceSyncPromosWithSignInPromos);
+
   EXPECT_EQ(
       "https://accounts.google.com/signin/chrome/sync?ssp=1&"
       "color_scheme=dark&flow=promo&theme=mn",
