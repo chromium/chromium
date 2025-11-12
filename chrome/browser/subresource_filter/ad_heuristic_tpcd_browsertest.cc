@@ -30,7 +30,6 @@
 #include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
-#include "components/network_session_configurator/common/network_switches.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/tpcd_pref_names.h"
 #include "components/privacy_sandbox/tpcd_utils.h"
@@ -94,14 +93,9 @@ class AdHeuristicTPCDBrowserTestBase
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
     https_server()->AddDefaultHandlers(GetChromeTestDataDir());
+    https_server()->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
     SetRulesetWithRules(
         {subresource_filter::testing::CreateSuffixRule("isad=1")});
-  }
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    // HTTPS server only serves a valid cert for 127.0.0.1 or localhost, so this
-    // is needed to load pages from other hosts (b.com, c.com) without an error.
-    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
   }
 
   PrefService* GetPrefs() {

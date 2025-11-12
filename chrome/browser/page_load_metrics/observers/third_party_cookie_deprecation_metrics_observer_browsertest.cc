@@ -29,7 +29,6 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
-#include "components/network_session_configurator/common/network_switches.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/tpcd_pref_names.h"
 #include "components/privacy_sandbox/tpcd_utils.h"
@@ -227,18 +226,12 @@ class ThirdPartyCookieDeprecationObserverBaseBrowserTest
     host_resolver()->AddRule("*", "127.0.0.1");
     https_server()->AddDefaultHandlers(GetChromeTestDataDir());
     https_server()->ServeFilesFromSourceDirectory("components/test/data");
+    https_server()->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
     ASSERT_TRUE(https_server()->Start());
     SetRulesetWithRules(
         {subresource_filter::testing::CreateSuffixRule("isad=1"),
          subresource_filter::testing::CreateSuffixRule("ad_script.js")});
     ukm::InitializeSourceUrlRecorderForWebContents(web_contents());
-  }
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    // HTTPS server only serves a valid cert for 127.0.0.1 or localhost, so this
-    // is needed to load pages from other hosts (b.test, c.test) without an
-    // error.
-    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
   }
 
   GURL GetURL(const std::string& host) {
