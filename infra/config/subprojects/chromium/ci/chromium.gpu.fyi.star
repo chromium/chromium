@@ -3152,12 +3152,25 @@ ci.thin_tester(
     ),
     targets = targets.bundle(
         targets = [
-            "gpu_noop_sleep_telemetry_test",
+            # When the experimental OS version is identical to the stable
+            # version, the gpu_noop_sleep_telemetry_test test should be used.
+            # Otherwise, this should have the same test suites as "Win11 FYI x64
+            # Release (Intel Arc B570)".
+            "gpu_fyi_win_gtests",
+            "gpu_fyi_win_release_telemetry_tests",
+            "gpu_fyi_win_optional_isolated_scripts",
         ],
         mixins = [
             "very_limited_capacity_bot",
             "gpu_win11_intel_arc_b570_experimental",
         ],
+        per_test_modifications = {
+            "gl_tests_passthrough": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/win.intel.arc_b570.gl_tests_passthrough.filter",
+                ],
+            ),
+        },
     ),
     targets_settings = targets.settings(
         browser_config = targets.browser_config.RELEASE_X64,
@@ -3165,10 +3178,10 @@ ci.thin_tester(
     ),
     gardener_rotations = args.ignore_default(None),
     # Uncomment this entry when this experimental tester is actually in use.
-    # console_view_entry = consoles.console_view_entry(
-    #     category = "Windows|11|x64|Intel",
-    #     short_name = "exp",
-    # ),
+    console_view_entry = consoles.console_view_entry(
+        category = "Windows|11|x64|Intel",
+        short_name = "exp",
+    ),
     list_view = "chromium.gpu.experimental",
     execution_timeout = 12 * time.hour,
 )
