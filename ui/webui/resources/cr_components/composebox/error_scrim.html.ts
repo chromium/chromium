@@ -13,7 +13,7 @@ export function getHtml(this: ErrorScrimElement) {
   return html`<!--_html_template_start_-->
   ${this.showErrorScrim_ ? html`
     <div id="errorScrim">
-      <p>${this.errorMessage_}</p>
+      <p id="errorMessage">${this.errorMessage_}</p>
       <cr-button id="dismissErrorButton"
           @click="${this.onDismissErrorButtonClick_}">
         <cr-icon icon="cr:close" slot="prefix-icon"></cr-icon>
