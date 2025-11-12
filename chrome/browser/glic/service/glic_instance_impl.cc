@@ -16,6 +16,7 @@
 #include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service_factory.h"
 #include "chrome/browser/glic/fre/glic_fre_controller.h"
+#include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_zero_state_suggestions_manager.h"
 #include "chrome/browser/glic/host/context/glic_active_pinned_focused_tab_manager.h"
 #include "chrome/browser/glic/host/context/glic_empty_focused_browser_manager.h"
@@ -39,6 +40,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/actor_webui.mojom.h"
 #include "chrome/common/chrome_features.h"
+#include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -813,6 +815,18 @@ void GlicInstanceImpl::MaybeDeactivateEmbedder(EmbedderKey key) {
   }
 }
 
+bool GlicInstanceImpl::ShouldPinOnBind() const {
+  PrefService* user_prefs = profile_->GetPrefs();
+  // Check both the setting exists, the pin-on-bind kill switch (*PinOnBind
+  // feature flag) is enabled, and then that actual value of the settings prefs
+  // to determine whether to pin on bind.
+  return base::FeatureList::IsEnabled(
+             features::kGlicDefaultTabContextSetting) &&
+         base::FeatureList::IsEnabled(features::kGlicDefaultContextPinOnBind) &&
+         user_prefs &&
+         user_prefs->GetBoolean(prefs::kGlicDefaultTabContextEnabled);
+}
+
 GlicInstanceImpl::EmbedderEntry& GlicInstanceImpl::BindTab(
     tabs::TabInterface* tab) {
   EmbedderKey key = CreateSidePanelEmbedderKey(tab);
@@ -840,8 +854,10 @@ GlicInstanceImpl::EmbedderEntry& GlicInstanceImpl::BindTab(
                           weak_ptr_factory_.GetWeakPtr()));
   new_entry.tab_web_contents_observer =
       std::make_unique<GlicTabContentsObserver>(tab->GetContents(), this);
-  // Auto-pin on bind.
-  sharing_manager().PinTabs({tab->GetHandle()});
+  if (ShouldPinOnBind()) {
+    // Auto-pin on bind.
+    sharing_manager().PinTabs({tab->GetHandle()});
+  }
 
   return new_entry;
 }

@@ -640,6 +640,21 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithDefaultTabContextEnabled,
   ContinueJsTest();
 }
 
+IN_PROC_BROWSER_TEST_P(GlicApiTestWithDefaultTabContextEnabled, testPinOnBind) {
+  if (!GetParam().multi_instance) {
+    GTEST_SKIP() << "Pin on bind is a multi-instance behavior";
+  }
+  ExecuteJsTest();
+}
+
+IN_PROC_BROWSER_TEST_P(GlicApiTestWithDefaultTabContextDisabled,
+                       testNoPinOnBind) {
+  if (!GetParam().multi_instance) {
+    GTEST_SKIP() << "Pin on bind is a multi-instance behavior";
+  }
+  ExecuteJsTest();
+}
+
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithWebActuationSettingDisabled,
                        testWebActuationSettingIsUndefinedWhenFeatureDisabled) {
   ExecuteJsTest();
