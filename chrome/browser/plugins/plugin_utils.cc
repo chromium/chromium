@@ -64,14 +64,14 @@ PluginUtils::GetMimeTypeToExtensionIdMap(
     return mime_type_to_extension_id_map;
   }
 
-  const std::vector<std::string>& allowlist =
+  const std::vector<extensions::ExtensionId>& allowlist =
       MimeTypesHandler::GetMIMETypeAllowlist();
   // Go through the allowed extensions and try to use them to intercept
   // the URL request.
   extensions::ExtensionRegistry* registry =
       extensions::ExtensionRegistry::Get(browser_context);
   DCHECK(registry);
-  for (const std::string& extension_id : allowlist) {
+  for (const extensions::ExtensionId& extension_id : allowlist) {
     const extensions::Extension* extension =
         registry->enabled_extensions().GetByID(extension_id);
     // The allowed extension may not be installed, so we have to nullptr
