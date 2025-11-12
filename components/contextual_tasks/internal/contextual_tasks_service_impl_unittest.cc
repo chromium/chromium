@@ -1365,6 +1365,34 @@ TEST_F(ContextualTasksServiceImplTest, GetTabsAssociatedWithTask) {
   EXPECT_TRUE(tabs_for_invalid_task.empty());
 }
 
+TEST_F(ContextualTasksServiceImplTest,
+       AssociateTabWithTask_DisassociatesOldTask) {
+  ContextualTask task1 = service_->CreateTask();
+  ContextualTask task2 = service_->CreateTask();
+  SessionID tab_id = SessionID::FromSerializedValue(1);
+
+  // Associate tab with task1.
+  service_->AssociateTabWithTask(task1.GetTaskId(), tab_id);
+  std::optional<ContextualTask> current_task =
+      service_->GetContextualTaskForTab(tab_id);
+  ASSERT_TRUE(current_task.has_value());
+  EXPECT_EQ(task1.GetTaskId(), current_task->GetTaskId());
+  EXPECT_TRUE(base::Contains(
+      service_->GetTabsAssociatedWithTask(task1.GetTaskId()), tab_id));
+  EXPECT_FALSE(base::Contains(
+      service_->GetTabsAssociatedWithTask(task2.GetTaskId()), tab_id));
+
+  // Associate same tab with task2.
+  service_->AssociateTabWithTask(task2.GetTaskId(), tab_id);
+  current_task = service_->GetContextualTaskForTab(tab_id);
+  ASSERT_TRUE(current_task.has_value());
+  EXPECT_EQ(task2.GetTaskId(), current_task->GetTaskId());
+  EXPECT_TRUE(base::Contains(
+      service_->GetTabsAssociatedWithTask(task2.GetTaskId()), tab_id));
+  EXPECT_FALSE(base::Contains(
+      service_->GetTabsAssociatedWithTask(task1.GetTaskId()), tab_id));
+}
+
 class ContextualTasksServiceImplEphemeralOnlyTest
     : public ContextualTasksServiceImplTest {
  public:
