@@ -5,9 +5,11 @@
 #ifndef CONTENT_BROWSER_MEDIA_CAPTURE_PIP_SCREEN_CAPTURE_COORDINATOR_IMPL_H_
 #define CONTENT_BROWSER_MEDIA_CAPTURE_PIP_SCREEN_CAPTURE_COORDINATOR_IMPL_H_
 
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "content/browser/media/capture/capture_util.h"
 #include "content/browser/media/capture/capture_util_mac.h"
+#include "content/browser/media/capture/pip_screen_capture_coordinator_proxy.h"
 
 namespace content {
 
@@ -38,12 +40,15 @@ class CONTENT_EXPORT PipScreenCaptureCoordinatorImpl {
 
   std::optional<NativeWindowId> PipWindowId() const;
 
+  std::unique_ptr<PipScreenCaptureCoordinatorProxy> CreateProxy();
+
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
  private:
   std::optional<NativeWindowId> pip_window_id_;
   base::ObserverList<Observer> observers_;
+  base::WeakPtrFactory<PipScreenCaptureCoordinatorImpl> weak_factory_{this};
 };
 
 }  // namespace content

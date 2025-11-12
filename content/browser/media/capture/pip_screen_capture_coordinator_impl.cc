@@ -5,6 +5,7 @@
 #include "content/browser/media/capture/pip_screen_capture_coordinator_impl.h"
 
 #include "build/build_config.h"
+#include "content/browser/media/capture/pip_screen_capture_coordinator_proxy_impl.h"
 #include "content/public/browser/web_contents.h"
 
 namespace content {
@@ -47,6 +48,12 @@ void PipScreenCaptureCoordinatorImpl::OnPipClosed() {
 std::optional<NativeWindowId> PipScreenCaptureCoordinatorImpl::PipWindowId()
     const {
   return pip_window_id_;
+}
+
+std::unique_ptr<PipScreenCaptureCoordinatorProxy>
+PipScreenCaptureCoordinatorImpl::CreateProxy() {
+  return std::make_unique<PipScreenCaptureCoordinatorProxyImpl>(
+      weak_factory_.GetWeakPtr(), PipWindowId());
 }
 
 void PipScreenCaptureCoordinatorImpl::AddObserver(Observer* observer) {

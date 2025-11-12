@@ -7,6 +7,7 @@
 
 #include <cstdint>
 
+#include "content/browser/media/capture/pip_screen_capture_coordinator_proxy.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -53,6 +54,8 @@ class CONTENT_EXPORT PipScreenCaptureCoordinator
   virtual void OnPipShown(WebContents& pip_web_contents);
   // Called when the PiP window is closed.
   virtual void OnPipClosed();
+
+  std::unique_ptr<PipScreenCaptureCoordinatorProxy> CreateProxy();
 
  private:
   explicit PipScreenCaptureCoordinator(WebContents* web_contents);

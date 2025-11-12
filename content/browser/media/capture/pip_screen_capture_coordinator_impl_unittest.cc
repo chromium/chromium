@@ -4,8 +4,10 @@
 
 #include "content/browser/media/capture/pip_screen_capture_coordinator_impl.h"
 
+#include "base/functional/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "content/public/test/browser_task_environment.h"
 #include "media/capture/capture_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -28,6 +30,67 @@ class MockObserver : public PipScreenCaptureCoordinatorImpl::Observer {
               (override));
 };
 
+class MockProxyObserver : public PipScreenCaptureCoordinatorProxy::Observer {
+ public:
+  MockProxyObserver() = default;
+  ~MockProxyObserver() override = default;
+
+  MOCK_METHOD(void,
+              OnPipWindowIdChanged,
+              (const std::optional<NativeWindowId>&),
+              (override));
+};
+
+void CallOnPipShownAndWaitUntilDone(
+    content::BrowserTaskEnvironment& task_environment,
+    PipScreenCaptureCoordinatorImpl* coordinator,
+    NativeWindowId window_id) {
+  base::RunLoop run_loop;
+  task_environment.GetMainThreadTaskRunner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](PipScreenCaptureCoordinatorImpl* coordinator,
+             NativeWindowId window_id, base::OnceClosure quit_closure) {
+            coordinator->OnPipShown(window_id);
+            std::move(quit_closure).Run();
+          },
+          base::Unretained(coordinator), window_id, run_loop.QuitClosure()));
+  run_loop.Run();
+}
+
+void CallOnPipClosedAndWaitForObserver(
+    content::BrowserTaskEnvironment& task_environment,
+    PipScreenCaptureCoordinatorImpl* coordinator,
+    MockProxyObserver& observer) {
+  base::RunLoop run_loop;
+  EXPECT_CALL(observer, OnPipWindowIdChanged(std::optional<NativeWindowId>()))
+      .WillOnce([&run_loop](const auto&) { run_loop.Quit(); });
+  task_environment.GetMainThreadTaskRunner()->PostTask(
+      FROM_HERE, base::BindOnce(
+                     [](PipScreenCaptureCoordinatorImpl* coordinator) {
+                       coordinator->OnPipClosed();
+                     },
+                     base::Unretained(coordinator)));
+  run_loop.Run();
+}
+
+void CallOnPipShownAndWaitForObserver(
+    content::BrowserTaskEnvironment& task_environment,
+    PipScreenCaptureCoordinatorImpl* coordinator,
+    MockProxyObserver& observer,
+    const std::optional<NativeWindowId>& new_pip_window_id) {
+  base::RunLoop run_loop;
+  EXPECT_CALL(observer, OnPipWindowIdChanged(new_pip_window_id))
+      .WillOnce([&run_loop](const auto&) { run_loop.Quit(); });
+  task_environment.GetMainThreadTaskRunner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](PipScreenCaptureCoordinatorImpl* coordinator,
+             NativeWindowId window_id) { coordinator->OnPipShown(window_id); },
+          base::Unretained(coordinator), *new_pip_window_id));
+  run_loop.Run();
+}
+
 }  // namespace
 
 class PipScreenCaptureCoordinatorImplTest : public testing::Test {
@@ -37,6 +100,7 @@ class PipScreenCaptureCoordinatorImplTest : public testing::Test {
   }
 
  protected:
+  content::BrowserTaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_list_;
   PipScreenCaptureCoordinatorImpl coordinator_;
 };
@@ -111,6 +175,32 @@ TEST_F(PipScreenCaptureCoordinatorImplTest, AddAndRemoveObserver) {
   coordinator_.OnPipShown(new_pip_window_id);
 
   coordinator_.RemoveObserver(&observer2);
+}
+
+TEST_F(PipScreenCaptureCoordinatorImplTest, CreateProxy) {
+  // The proxy should start with the current ID.
+  const NativeWindowId pip_window_id = 123;
+  CallOnPipShownAndWaitUntilDone(task_environment_, &coordinator_,
+                                 pip_window_id);
+  auto proxy = coordinator_.CreateProxy();
+  ASSERT_TRUE(proxy);
+
+  // The proxy's ID should be the initial pip_window_id.
+  MockProxyObserver observer;
+  proxy->AddObserver(&observer);
+  EXPECT_EQ(proxy->PipWindowId(), pip_window_id);
+
+  // The proxy should be updated when the ID changes.
+  const std::optional<NativeWindowId> new_pip_window_id = 456;
+  CallOnPipShownAndWaitForObserver(task_environment_, &coordinator_, observer,
+                                   new_pip_window_id);
+  EXPECT_EQ(proxy->PipWindowId(), new_pip_window_id);
+
+  // The proxy should be updated when the pip window is closed.
+  CallOnPipClosedAndWaitForObserver(task_environment_, &coordinator_, observer);
+  EXPECT_EQ(proxy->PipWindowId(), std::nullopt);
+
+  proxy->RemoveObserver(&observer);
 }
 
 }  // namespace content

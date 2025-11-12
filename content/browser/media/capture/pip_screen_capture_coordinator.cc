@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "build/build_config.h"
+#include "content/browser/media/capture/pip_screen_capture_coordinator_proxy_impl.h"
 #include "content/public/browser/web_contents.h"
 #include "media/capture/capture_switches.h"
 
@@ -58,6 +59,16 @@ void PipScreenCaptureCoordinator::OnPipClosed() {
     impl_->OnPipClosed();
   }
 #endif
+}
+
+std::unique_ptr<PipScreenCaptureCoordinatorProxy>
+PipScreenCaptureCoordinator::CreateProxy() {
+#if BUILDFLAG(IS_MAC)
+  if (impl_) {
+    return impl_->CreateProxy();
+  }
+#endif
+  return nullptr;
 }
 
 }  // namespace content
