@@ -142,6 +142,7 @@ dictionary RTCRemoteInboundRtpStreamStats : RTCReceivedRtpStreamStats {
   double               totalRoundTripTime;
   double               fractionLost;
   unsigned long long   roundTripTimeMeasurements;
+  unsigned long long   packetsWithBleachedEct1Marking;
 };
 
 // https://w3c.github.io/webrtc-stats/#sentrtpstats-dict*

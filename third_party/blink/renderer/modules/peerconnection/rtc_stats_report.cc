@@ -248,6 +248,8 @@ RTCRemoteInboundRtpStreamStats* ToV8Stat(
   SET_STAT(webrtc_stat.fraction_lost, v8_stat->setFractionLost);
   SET_STAT(webrtc_stat.round_trip_time_measurements,
            v8_stat->setRoundTripTimeMeasurements);
+  SET_STAT(webrtc_stat.packets_with_bleached_ect1_marking,
+           v8_stat->setPacketsWithBleachedEct1Marking);
   return v8_stat;
 }
 

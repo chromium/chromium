@@ -480,6 +480,21 @@ export class StatsRatesCalculator {
         totalRoundTripTime:
             new RateCalculator('totalRoundTripTime',
                                'roundTripTimeMeasurements'),
+        packetsReceivedWithEct1:
+            new RateCalculator('packetsReceivedWithEct1',
+                               'timestamp'),
+        packetsReceivedWithCe:
+            new RateCalculator('packetsReceivedWithCe',
+                               'timestamp'),
+        packetsReportedAsLost:
+            new RateCalculator('packetsReportedAsLost',
+                               'timestamp'),
+        packetsReportedAsLostButRecovered:
+            new RateCalculator('packetsReportedAsLostButRecovered',
+                               'timestamp'),
+        packetsWithBleachedEct1Marking:
+            new RateCalculator('packetsWithBleachedEct1Marking',
+                               'timestamp'),
       },
       'remote-outbound-rtp': {
         remoteTimestamp: new DateCalculator('remoteTimestamp'),
