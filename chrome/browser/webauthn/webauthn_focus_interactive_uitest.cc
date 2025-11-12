@@ -15,7 +15,6 @@
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
-#include "components/network_session_configurator/common/network_switches.h"
 #include "content/public/browser/scoped_authenticator_environment_for_testing.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -56,6 +55,7 @@ class WebAuthnFocusTest : public InteractiveBrowserTest,
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
     https_server_.ServeFilesFromSourceDirectory("content/test/data");
+    https_server_.SetCertHostnames({"www.example.com"});
     ASSERT_TRUE(https_server_.Start());
     InteractiveBrowserTest::SetUpOnMainThread();
     ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
@@ -78,10 +78,6 @@ class WebAuthnFocusTest : public InteractiveBrowserTest,
   }
 
  private:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
-  }
-
   void OnModelDestroyed(AuthenticatorRequestDialogModel* model) override {}
 
   std::unique_ptr<content::ScopedAuthenticatorEnvironmentForTesting> auth_env_;

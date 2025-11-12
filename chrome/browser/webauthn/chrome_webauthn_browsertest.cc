@@ -42,7 +42,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/network_session_configurator/common/network_switches.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/common/password_manager_ui.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
@@ -204,10 +203,10 @@ class WebAuthnBrowserTest : public CertVerifierBrowserTest {
     CertVerifierBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch(
         switches::kEnableExperimentalWebPlatformFeatures);
-    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
   }
 
   void SetUp() override {
+    https_server_.SetCertHostnames({"www.example.com"});
     ASSERT_TRUE(https_server_.InitializeAndListen());
     CertVerifierBrowserTest::SetUp();
   }

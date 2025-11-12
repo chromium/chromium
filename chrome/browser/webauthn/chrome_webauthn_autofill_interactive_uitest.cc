@@ -34,7 +34,6 @@
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/network_session_configurator/common/network_switches.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/base/features.h"
@@ -176,12 +175,8 @@ class WebAuthnAutofillIntegrationTest : public CertVerifierBrowserTest {
   WebAuthnAutofillIntegrationTest& operator=(
       const WebAuthnAutofillIntegrationTest&) = delete;
 
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    CertVerifierBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
-  }
-
   void SetUp() override {
+    https_server_.SetCertHostnames({kRpId});
     ASSERT_TRUE(https_server_.InitializeAndListen());
 
     create_services_subscription_ =
