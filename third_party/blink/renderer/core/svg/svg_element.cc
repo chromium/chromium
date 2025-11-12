@@ -887,17 +887,6 @@ void SVGElement::AddAnimatedPropertyToPresentationAttributeStyle(
 
 const ComputedStyle* SVGElement::CustomStyleForLayoutObject(
     const StyleRecalcContext& style_recalc_context) {
-  // If ResolveStyle() needs to create presentation attribute style for the
-  // SVG object, those values need to be parsed, and we want that to happen in
-  // SVG mode using the element sheet (which is a fake stylesheet used for
-  // things like inline style). We don't need to switch the parser mode here
-  // for correctness, but if we don't, CSSParser::ParseValue() will create a
-  // new parser context due to mismatch. So override it temporarily here
-  // to gain a tiny bit of performance.
-  CSSParserContext::ParserModeOverridingScope scope(
-      *GetDocument().ElementSheet().Contents()->ParserContext(),
-      kSVGAttributeMode);
-
   SVGElement* corresponding_element = CorrespondingElement();
   if (!corresponding_element || RuntimeEnabledFeatures::Svg2CascadeEnabled()) {
     return GetDocument().GetStyleResolver().ResolveStyle(this,
