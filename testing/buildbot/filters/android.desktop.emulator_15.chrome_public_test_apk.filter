@@ -170,7 +170,6 @@
 -org.chromium.chrome.browser.tabmodel.TabModelImplTest.testSetMuteSetting_Incognito
 -org.chromium.chrome.browser.tabmodel.TabModelImplTest.validIndexAfterRestored_FromPreviousActivity_WithIncognitoTabs
 -org.chromium.chrome.browser.tabmodel.TabModelMultiWindowTest.testMoveTabGroupToWindow
--org.chromium.chrome.browser.tasks.tab_management.TabGroupDialogPTTest.testIncognitoNewTabCreation
 -org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetTest.testNewGroup_IncognitoNewTabPageStation
 -org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetTest.testNewGroup_IncognitoWebPageStation
 -org.chromium.chrome.browser.tasks.tab_management.TabSwitcherLayoutPTTest.testRenderGrid_Incognito
