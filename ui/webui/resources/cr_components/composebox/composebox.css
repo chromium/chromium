@@ -784,6 +784,7 @@
 
 :host([ntp-realbox-next-enabled]) contextual-entrypoint-and-carousel::part(context-menu-entrypoint-icon) {
   --cr-icon-button-icon-size: 24px;
+  --cr-icon-button-margin-start: 2px;
 }
 
 :host([realbox-layout-mode='Compact']) contextual-entrypoint-and-carousel::part(cr-composebox-file-carousel) {
