@@ -1020,6 +1020,8 @@ void GWSPageLoadMetricsObserver::RecordGWSSessionStateHistograms() {
   auto* gws_session_state =
       page_load_metrics::GWSSessionState::GetOrCreateForBrowserContext(
           browser_context);
+  gws_session_state->IncreasePageLoadCount();
+
   if (!gws_session_state->IsSignedIn() && IsSignedIn(browser_context)) {
     gws_session_state->SetSignedIn();
   }

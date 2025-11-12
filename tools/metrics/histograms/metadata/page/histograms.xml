@@ -1561,6 +1561,23 @@ chromium-metrics-reviews@google.com.
   <token key="TabInitializationStatus" variants="TabInitializationStatus"/>
 </histogram>
 
+<histogram
+    name="PageLoad.Clients.GoogleSearch.GWSSessionState.PageLoadCount{SessionType}"
+    units="count" expires_after="2026-12-01">
+  <owner>toyoshim@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records the number of page loads that the user has done in the current
+    session. This is recorded once per session when the user closes the last tab
+    {SessionType}.
+  </summary>
+  <token key="SessionType">
+    <variant name="" summary="for any session"/>
+    <variant name=".OffTheRecord" summary="for incognito sessions"/>
+    <variant name=".Regular" summary="for regular sessions"/>
+  </token>
+</histogram>
+
 <histogram name="PageLoad.Clients.GoogleSearch.HttpNetworkSessionQuicEnabled"
     enum="Boolean" expires_after="2026-03-29">
   <owner>bashi@chromium.org</owner>
