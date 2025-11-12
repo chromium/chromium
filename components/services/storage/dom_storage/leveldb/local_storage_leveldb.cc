@@ -119,8 +119,12 @@ DbStatus LocalStorageLevelDB::Open(
     const std::string& name,
     const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&
         memory_dump_id) {
-  ASSIGN_OR_RETURN(leveldb_, DomStorageDatabaseLevelDB::Open(directory, name,
-                                                             memory_dump_id));
+  ASSIGN_OR_RETURN(
+      leveldb_,
+      DomStorageDatabaseLevelDB::Open(
+          directory, name, memory_dump_id, kLocalStorageLevelDBVersionKey,
+          /*min_supported_version=*/kLocalStorageLevelDBVersion,
+          /*max_supported_version=*/kLocalStorageLevelDBVersion));
   return DbStatus::OK();
 }
 

@@ -794,11 +794,6 @@ void SessionStorageImpl::OnDatabaseOpened(DbStatus status) {
 
   database_->RunDatabaseTask(
       base::BindOnce([](DomStorageDatabaseLevelDB& db) {
-        ValueAndStatus version;
-        version.status = db.Get(
-            base::span(SessionStorageMetadata::kLevelDbSchemaVersionKeyBytes),
-            &version.value);
-
         KeyValuePairsAndStatus namespaces;
         namespaces.status = db.GetPrefixed(
             base::span(SessionStorageMetadata::kNamespacePrefixBytes),
@@ -809,27 +804,17 @@ void SessionStorageImpl::OnDatabaseOpened(DbStatus status) {
             db.Get(base::span(SessionStorageMetadata::kNextMapIdKeyBytes),
                    &next_map_id.value);
 
-        return std::make_tuple(std::move(version), std::move(namespaces),
-                               std::move(next_map_id));
+        return std::make_tuple(std::move(namespaces), std::move(next_map_id));
       }),
       base::BindOnce(&SessionStorageImpl::OnGotDatabaseMetadata,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
 void SessionStorageImpl::OnGotDatabaseMetadata(
-    ValueAndStatus version_bytes,
     KeyValuePairsAndStatus namespaces,
     ValueAndStatus next_map_id) {
   if (connection_state_ == CONNECTION_SHUTDOWN)
     return;
-
-  DatabaseVersionParseResult version_parse =
-      ParseDatabaseVersion(std::move(version_bytes));
-  if (version_parse.open_result != OpenResult::kSuccess) {
-    LogDatabaseOpenResult(version_parse.open_result);
-    DeleteAndRecreateDatabase(version_parse.histogram_name);
-    return;
-  }
 
   MetadataParseResult namespaces_parse = ParseNamespaces(std::move(namespaces));
   if (namespaces_parse.open_result != OpenResult::kSuccess) {
@@ -845,51 +830,7 @@ void SessionStorageImpl::OnGotDatabaseMetadata(
     DeleteAndRecreateDatabase(next_map_id_parse.histogram_name);
     return;
   }
-
-  // Write the version number for brand new empty databases.
-  if (!version_parse.database_version) {
-    database_->RunDatabaseTask(
-        base::BindOnce([](DomStorageDatabaseLevelDB& db) {
-          return db.Put(
-              base::span(SessionStorageMetadata::kLevelDbSchemaVersionKeyBytes),
-              SessionStorageMetadata::LatestDatabaseVersionAsVector());
-        }),
-        base::BindOnce(&SessionStorageImpl::OnCommitResult,
-                       weak_ptr_factory_.GetWeakPtr()));
-  }
   OnConnectionFinished();
-}
-
-SessionStorageImpl::DatabaseVersionParseResult
-SessionStorageImpl::ParseDatabaseVersion(ValueAndStatus version_text_bytes) {
-  if (version_text_bytes.status.ok()) {
-    static constexpr const char kInvalidVersionHistogramName[] =
-        "SessionStorageContext.OpenResultAfterInvalidVersion";
-
-    int64_t parsed_version;
-    if (!metadata_.ParseDatabaseVersion(std::move(version_text_bytes.value),
-                                        &parsed_version)) {
-      // `version_text_bytes` is not a number!
-      return {{OpenResult::kInvalidVersion, kInvalidVersionHistogramName},
-              /*database_version=*/std::nullopt};
-    }
-
-    if (parsed_version != SessionStorageMetadata::kLevelDbSchemaVersion) {
-      return {{OpenResult::kInvalidVersion, kInvalidVersionHistogramName},
-              /*database_version=*/std::nullopt};
-    }
-    return {{OpenResult::kSuccess, ""}, parsed_version};
-  }
-
-  if (version_text_bytes.status.IsNotFound()) {
-    // Brand new database are empty without a version.
-    return {{OpenResult::kSuccess, ""}, /*database_version=*/std::nullopt};
-  }
-
-  // Other read error, possibly database corruption.
-  return {{OpenResult::kVersionReadError,
-           "SessionStorageContext.OpenResultAfterReadVersionError"},
-          /*database_version=*/std::nullopt};
 }
 
 SessionStorageImpl::MetadataParseResult SessionStorageImpl::ParseNamespaces(

@@ -23,13 +23,7 @@ namespace storage {
 // logic for parsing and saving database content.
 class SessionStorageMetadata {
  public:
-  // LevelDB supports one schema version for session storage without migration.
-  static constexpr const int64_t kLevelDbSchemaVersion = 1;
-
   static constexpr const int64_t kInvalidMapId = -1;
-
-  static constexpr const uint8_t kLevelDbSchemaVersionKeyBytes[] = {
-      'v', 'e', 'r', 's', 'i', 'o', 'n'};
 
   static constexpr const uint8_t kNamespacePrefixBytes[] = {
       'n', 'a', 'm', 'e', 's', 'p', 'a', 'c', 'e', '-'};
@@ -83,19 +77,10 @@ class SessionStorageMetadata {
   SessionStorageMetadata();
   ~SessionStorageMetadata();
 
-  // Initializes a new test database, which saves the database version, clears
-  // the metadata, and returns the operations needed to save to disk.
+  // Initializes a new test database, which clears the metadata and returns the
+  // operations needed to save to disk.
   std::vector<AsyncDomStorageDatabase::BatchDatabaseTask>
   SetupNewDatabaseForTesting();
-
-  // Parses the database version number from the bytes that were stored on
-  // disk. LevelDB session storage persists the version number as text
-  // characters. For example, `version_text_bytes` might be `{ '6', '4', '5' }
-  // for version number 645. Returns false when `version_text_bytes` are not a
-  // number.
-  [[nodiscard]] static bool ParseDatabaseVersion(
-      std::vector<uint8_t> version_text_bytes,
-      int64_t* parsed_version);
 
   // Parses all namespaces and maps, and stores all metadata locally. This
   // invalidates all NamespaceEntry and MapData objects. If there is a parsing
@@ -155,8 +140,6 @@ class SessionStorageMetadata {
   }
 
   int64_t NextMapId() const { return next_map_id_; }
-
-  static std::vector<uint8_t> LatestDatabaseVersionAsVector();
 
  private:
   static std::vector<uint8_t> GetNamespacePrefix(

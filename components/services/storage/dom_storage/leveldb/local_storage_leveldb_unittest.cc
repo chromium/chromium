@@ -51,6 +51,18 @@ constexpr base::ByteSize kMapTotalSize{312};
 constexpr base::ByteSize kSecondTotalSize{102454};
 constexpr base::ByteSize kThirdTotalSize{50121524};
 
+constexpr const uint8_t kExpectedVersion[] = {'1'};
+
+std::vector<uint8_t> ToBytes(base::span<const uint8_t> source) {
+  return std::vector<uint8_t>(source.begin(), source.end());
+}
+
+void VerifyDatabaseVersionEntry(
+    const DomStorageDatabase::KeyValuePair& version_entry) {
+  EXPECT_EQ(version_entry.key, ToBytes(kLocalStorageLevelDBVersionKey));
+  EXPECT_EQ(version_entry.value, ToBytes(kExpectedVersion));
+}
+
 }  // namespace
 
 class LocalStorageLevelDBTest : public testing::Test {
@@ -492,12 +504,14 @@ TEST_F(LocalStorageLevelDBTest, PutMetadataWithEmpty) {
   DbStatus status = local_storage_leveldb->PutMetadata({});
   EXPECT_TRUE(status.ok()) << status.ToString();
 
-  // Verify the contents in the database.
+  // Verify the contents in the database, which includes the "VERSION" entry.
   std::vector<DomStorageDatabase::KeyValuePair> all_entries;
   status = local_storage_leveldb->GetLevelDB().GetPrefixed({}, &all_entries);
 
   EXPECT_TRUE(status.ok()) << status.ToString();
-  EXPECT_EQ(all_entries.size(), 0u);
+  ASSERT_EQ(all_entries.size(), 1u);
+
+  VerifyDatabaseVersionEntry(all_entries[0]);
 }
 
 TEST_F(LocalStorageLevelDBTest, PutMetadataWithNoUsage) {
@@ -512,12 +526,14 @@ TEST_F(LocalStorageLevelDBTest, PutMetadataWithNoUsage) {
   DbStatus status = local_storage_leveldb->PutMetadata(std::move(metadata));
   EXPECT_TRUE(status.ok()) << status.ToString();
 
-  // Verify the contents in the database.
+  // Verify the contents in the database, which includes the "VERSION" entry.
   std::vector<DomStorageDatabase::KeyValuePair> all_entries;
   status = local_storage_leveldb->GetLevelDB().GetPrefixed({}, &all_entries);
 
   EXPECT_TRUE(status.ok()) << status.ToString();
-  EXPECT_EQ(all_entries.size(), 0u);
+  ASSERT_EQ(all_entries.size(), 1u);
+
+  VerifyDatabaseVersionEntry(all_entries[0]);
 }
 
 TEST_F(LocalStorageLevelDBTest, PutMetadataWithWriteMetadata) {
@@ -538,15 +554,17 @@ TEST_F(LocalStorageLevelDBTest, PutMetadataWithWriteMetadata) {
   std::vector<DomStorageDatabase::KeyValuePair> all_entries;
   status = local_storage_leveldb->GetLevelDB().GetPrefixed({}, &all_entries);
 
-  // Verify the contents in the database.
+  // Verify the contents in the database, which includes the "VERSION" entry.
   EXPECT_TRUE(status.ok()) << status.ToString();
-  ASSERT_EQ(all_entries.size(), 1u);
+  ASSERT_EQ(all_entries.size(), 2u);
 
   // Verify "META:" entry.
   EXPECT_EQ(all_entries[0].key,
             LocalStorageLevelDB::CreateWriteMetaDataKey(kFakeUrlStorageKey));
   EXPECT_EQ(all_entries[0].value, LocalStorageLevelDB::CreateWriteMetaDataValue(
                                       kMapLastModified, kMapTotalSize));
+
+  VerifyDatabaseVersionEntry(all_entries[1]);
 }
 
 TEST_F(LocalStorageLevelDBTest, PutMetadataWithAccessMetadata) {
@@ -563,18 +581,20 @@ TEST_F(LocalStorageLevelDBTest, PutMetadataWithAccessMetadata) {
   DbStatus status = local_storage_leveldb->PutMetadata(std::move(metadata));
   EXPECT_TRUE(status.ok()) << status.ToString();
 
-  // Verify the contents in the database.
+  // Verify the contents in the database, which includes the "VERSION" entry.
   std::vector<DomStorageDatabase::KeyValuePair> all_entries;
   status = local_storage_leveldb->GetLevelDB().GetPrefixed({}, &all_entries);
 
   EXPECT_TRUE(status.ok()) << status.ToString();
-  ASSERT_EQ(all_entries.size(), 1u);
+  ASSERT_EQ(all_entries.size(), 2u);
 
   // Verify "METAACCESS:" entry.
   EXPECT_EQ(all_entries[0].key,
             LocalStorageLevelDB::CreateAccessMetaDataKey(kFakeUrlStorageKey));
   EXPECT_EQ(all_entries[0].value,
             LocalStorageLevelDB::CreateAccessMetaDataValue(kMapLastAccessed));
+
+  VerifyDatabaseVersionEntry(all_entries[1]);
 }
 
 TEST_F(LocalStorageLevelDBTest, PutMetadataWithAccessAndWriteMetadata) {
@@ -593,12 +613,12 @@ TEST_F(LocalStorageLevelDBTest, PutMetadataWithAccessAndWriteMetadata) {
   DbStatus status = local_storage_leveldb->PutMetadata(std::move(metadata));
   EXPECT_TRUE(status.ok()) << status.ToString();
 
-  // Verify the contents in the database.
+  // Verify the contents in the database, which includes the "VERSION" entry.
   std::vector<DomStorageDatabase::KeyValuePair> all_entries;
   status = local_storage_leveldb->GetLevelDB().GetPrefixed({}, &all_entries);
 
   EXPECT_TRUE(status.ok()) << status.ToString();
-  ASSERT_EQ(all_entries.size(), 2u);
+  ASSERT_EQ(all_entries.size(), 3u);
 
   // Verify "META:" entry.
   EXPECT_EQ(all_entries[0].key,
@@ -611,6 +631,8 @@ TEST_F(LocalStorageLevelDBTest, PutMetadataWithAccessAndWriteMetadata) {
             LocalStorageLevelDB::CreateAccessMetaDataKey(kFakeUrlStorageKey));
   EXPECT_EQ(all_entries[1].value,
             LocalStorageLevelDB::CreateAccessMetaDataValue(kMapLastAccessed));
+
+  VerifyDatabaseVersionEntry(all_entries[2]);
 }
 
 TEST_F(LocalStorageLevelDBTest, PutMetadataWithMultipleMaps) {
@@ -642,12 +664,12 @@ TEST_F(LocalStorageLevelDBTest, PutMetadataWithMultipleMaps) {
   DbStatus status = local_storage_leveldb->PutMetadata(std::move(metadata));
   EXPECT_TRUE(status.ok()) << status.ToString();
 
-  // Verify the contents in the database.
+  // Verify the contents in the database, which includes the "VERSION" entry.
   std::vector<DomStorageDatabase::KeyValuePair> all_entries;
   status = local_storage_leveldb->GetLevelDB().GetPrefixed({}, &all_entries);
 
   EXPECT_TRUE(status.ok()) << status.ToString();
-  ASSERT_EQ(all_entries.size(), 4u);
+  ASSERT_EQ(all_entries.size(), 5u);
 
   // Verify "META:" entry for the first storage key.
   EXPECT_EQ(all_entries[0].key,
@@ -673,6 +695,8 @@ TEST_F(LocalStorageLevelDBTest, PutMetadataWithMultipleMaps) {
   EXPECT_EQ(
       all_entries[3].value,
       LocalStorageLevelDB::CreateAccessMetaDataValue(kSecondLastAccessed));
+
+  VerifyDatabaseVersionEntry(all_entries[4]);
 }
 
 }  // namespace storage

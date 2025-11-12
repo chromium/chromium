@@ -29,6 +29,13 @@ inline constexpr const uint8_t kWriteMetaPrefix[] = {'M', 'E', 'T', 'A', ':'};
 // The "META" prefix shared by both `kWriteMetaPrefix` and `kAccessMetaPrefix`.
 inline constexpr const uint8_t kMetaPrefix[] = {'M', 'E', 'T', 'A'};
 
+// The schema "VERSION" key.
+inline constexpr const uint8_t kLocalStorageLevelDBVersionKey[] = {
+    'V', 'E', 'R', 'S', 'I', 'O', 'N'};
+
+// LevelDB supports one schema version for local storage without migration.
+inline constexpr int64_t kLocalStorageLevelDBVersion = 1;
+
 // Reads and writes entries in the local storage LevelDB database with the
 // following schema:
 //

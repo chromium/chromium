@@ -15,6 +15,13 @@
 
 namespace storage {
 
+// The schema "version" key.
+inline constexpr const uint8_t kSessionStorageLevelDBVersionKey[] = {
+    'v', 'e', 'r', 's', 'i', 'o', 'n'};
+
+// LevelDB supports one schema version for session storage without migration.
+inline constexpr int64_t kSessionStorageLevelDBVersion = 1;
+
 // Reads and writes entries in the session storage LevelDB database with the
 // following schema:
 //

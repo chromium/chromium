@@ -48,6 +48,15 @@ std::ostream& operator<<(std::ostream& os,
 
 namespace {
 
+constexpr const char kTestDbName[] = "test_db";
+
+// Use "test-version" for the schema version key.
+constexpr const std::uint8_t kTestVersionKey[] = {'t', 'e', 's', 't', '-', 'v',
+                                                  'e', 'r', 's', 'i', 'o', 'n'};
+constexpr const int64_t kTestMinSupportedVersion = 2;
+constexpr const int64_t kTestMaxSupportedVersion = 4;
+constexpr const char kTestMaxSupportedVersionString[] = "4";
+
 DomStorageDatabase::KeyValuePair MakeKeyValuePair(std::string_view key,
                                                   std::string_view value) {
   return {DomStorageDatabase::Key(key.begin(), key.end()),
@@ -71,13 +80,15 @@ class DomStorageDatabaseLevelDBTest : public testing::Test {
       const DomStorageDatabaseLevelDBTest&) = delete;
 
  protected:
-  // To create an in-memory database, provide an empty `directory`.
+  // To create an in-memory database, provide an empty `directory`.  Asserts
+  // success.
   void Open(const base::FilePath& directory,
-            const std::string& db_name,
             std::unique_ptr<DomStorageDatabaseLevelDB>* result) {
     StatusOr<std::unique_ptr<DomStorageDatabaseLevelDB>> database =
-        DomStorageDatabaseLevelDB::Open(directory, db_name,
-                                        /*memory_dump_id=*/std::nullopt);
+        DomStorageDatabaseLevelDB::Open(
+            directory, kTestDbName, /*memory_dump_id=*/std::nullopt,
+            kTestVersionKey, kTestMinSupportedVersion,
+            kTestMaxSupportedVersion);
 
     ASSERT_TRUE(database.has_value()) << database.error().ToString();
     *result = *std::move(database);
@@ -98,6 +109,8 @@ class DomStorageDatabaseLevelDBTest : public testing::Test {
     return result;
   }
 
+  void TestInvalidVersion(DomStorageDatabase::ValueView invalid_version);
+
  private:
   base::test::TaskEnvironment task_environment_;
   scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_;
@@ -107,15 +120,14 @@ TEST_F(DomStorageDatabaseLevelDBTest, BasicOpenInMemory) {
   // Basic smoke test to verify that we can successfully create and destroy an
   // in-memory database with no problems.
   std::unique_ptr<DomStorageDatabaseLevelDB> database;
-  ASSERT_NO_FATAL_FAILURE(
-      Open(/*directory=*/base::FilePath(), "test_db", &database));
+  ASSERT_NO_FATAL_FAILURE(Open(/*directory=*/base::FilePath(), &database));
 }
 
 TEST_F(DomStorageDatabaseLevelDBTest, BasicOperations) {
   // Exercises basic Put, Get, Delete.
 
   std::unique_ptr<DomStorageDatabaseLevelDB> db;
-  ASSERT_NO_FATAL_FAILURE(Open(/*directory=*/base::FilePath(), "test_db", &db));
+  ASSERT_NO_FATAL_FAILURE(Open(/*directory=*/base::FilePath(), &db));
 
   // Write a key and read it back.
   const char kTestKey[] = "test_key";
@@ -135,18 +147,17 @@ TEST_F(DomStorageDatabaseLevelDBTest, Reopen) {
 
   base::ScopedTempDir temp_dir;
   CHECK(temp_dir.CreateUniqueTempDir());
-  const char kTestDbName[] = "test_db";
   const char kTestKey[] = "test_key";
   const char kTestValue[] = "test_value";
 
   std::unique_ptr<DomStorageDatabaseLevelDB> db;
-  ASSERT_NO_FATAL_FAILURE(Open(temp_dir.GetPath(), kTestDbName, &db));
+  ASSERT_NO_FATAL_FAILURE(Open(temp_dir.GetPath(), &db));
   EXPECT_STATUS_OK(db->Put(base::byte_span_from_cstring(kTestKey),
                            base::byte_span_from_cstring(kTestValue)));
   db.reset();
 
   // Re-open and verify that we can read what was written above.
-  ASSERT_NO_FATAL_FAILURE(Open(temp_dir.GetPath(), kTestDbName, &db));
+  ASSERT_NO_FATAL_FAILURE(Open(temp_dir.GetPath(), &db));
   DomStorageDatabaseLevelDB::Value value;
   EXPECT_STATUS_OK(db->Get(base::byte_span_from_cstring(kTestKey), &value));
   EXPECT_VALUE_EQ(kTestValue, value);
@@ -163,7 +174,7 @@ TEST_F(DomStorageDatabaseLevelDBTest, Reopen) {
 
   // Verify that the database was destroyed (open again and verify it's a blank
   // slate).
-  ASSERT_NO_FATAL_FAILURE(Open(temp_dir.GetPath(), kTestDbName, &db));
+  ASSERT_NO_FATAL_FAILURE(Open(temp_dir.GetPath(), &db));
   EXPECT_TRUE(
       db->Get(base::byte_span_from_cstring(kTestKey), &value).IsNotFound());
   db.reset();
@@ -173,7 +184,7 @@ TEST_F(DomStorageDatabaseLevelDBTest, GetPrefixed) {
   // Verifies basic prefixed reading behavior.
 
   std::unique_ptr<DomStorageDatabaseLevelDB> db;
-  ASSERT_NO_FATAL_FAILURE(Open(/*directory=*/base::FilePath(), "test_db", &db));
+  ASSERT_NO_FATAL_FAILURE(Open(/*directory=*/base::FilePath(), &db));
 
   static constexpr char kTestPrefix1[] = "prefix";
   static constexpr char kTestPrefix2[] = "something_completely_different";
@@ -252,7 +263,7 @@ TEST_F(DomStorageDatabaseLevelDBTest, DeletePrefixed) {
   // Verifies basic prefixed deletion behavior.
 
   std::unique_ptr<DomStorageDatabaseLevelDB> db;
-  ASSERT_NO_FATAL_FAILURE(Open(/*directory=*/base::FilePath(), "test_db", &db));
+  ASSERT_NO_FATAL_FAILURE(Open(/*directory=*/base::FilePath(), &db));
 
   static constexpr char kTestPrefix1[] = "prefix";
   static constexpr char kTestPrefix2[] = "something_completely_different";
@@ -314,7 +325,7 @@ TEST_F(DomStorageDatabaseLevelDBTest, CopyPrefixed) {
   // Verifies basic prefixed copying behavior.
 
   std::unique_ptr<DomStorageDatabaseLevelDB> db;
-  ASSERT_NO_FATAL_FAILURE(Open(/*directory=*/base::FilePath(), "test_db", &db));
+  ASSERT_NO_FATAL_FAILURE(Open(/*directory=*/base::FilePath(), &db));
 
   static constexpr char kTestUnprefixedKey[] = "moot!";
   static constexpr char kTestPrefix1[] = "prefix";
@@ -361,6 +372,68 @@ TEST_F(DomStorageDatabaseLevelDBTest, CopyPrefixed) {
   EXPECT_THAT(entries, UnorderedElementsAreArray(
                            {MakeKeyValuePair(kTestPrefix1Key1, kTestValue2),
                             MakeKeyValuePair(kTestPrefix1Key2, kTestValue3)}));
+}
+
+TEST_F(DomStorageDatabaseLevelDBTest, OpenWritesVersion) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  std::unique_ptr<DomStorageDatabaseLevelDB> db;
+  ASSERT_NO_FATAL_FAILURE(Open(temp_dir.GetPath(), &db));
+
+  DomStorageDatabase::Value version_string_bytes;
+  DbStatus status = db->Get(kTestVersionKey, &version_string_bytes);
+  EXPECT_TRUE(status.ok()) << status.ToString();
+  EXPECT_EQ(version_string_bytes,
+            base::as_byte_span(std::string(kTestMaxSupportedVersionString)));
+
+  // Re-open the database. `EnsureVersion()` must read the existing value.
+  db.reset();
+  ASSERT_NO_FATAL_FAILURE(Open(temp_dir.GetPath(), &db));
+
+  status = db->Get(kTestVersionKey, &version_string_bytes);
+  EXPECT_TRUE(status.ok()) << status.ToString();
+  EXPECT_EQ(version_string_bytes,
+            base::as_byte_span(std::string(kTestMaxSupportedVersionString)));
+}
+
+void DomStorageDatabaseLevelDBTest::TestInvalidVersion(
+    DomStorageDatabase::ValueView invalid_version) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  std::unique_ptr<DomStorageDatabaseLevelDB> db;
+  ASSERT_NO_FATAL_FAILURE(Open(temp_dir.GetPath(), &db));
+
+  // Write the invalid version in the database.
+  DomStorageDatabase::Value version_string_bytes;
+  DbStatus status = db->Put(kTestVersionKey, invalid_version);
+  EXPECT_TRUE(status.ok()) << status.ToString();
+
+  // Re-open the database, which must fail due to the invalid version number.
+  db.reset();
+  StatusOr<std::unique_ptr<DomStorageDatabaseLevelDB>> reopened_database =
+      DomStorageDatabaseLevelDB::Open(temp_dir.GetPath(), kTestDbName,
+                                      /*memory_dump_id=*/std::nullopt,
+                                      kTestVersionKey, kTestMinSupportedVersion,
+                                      kTestMaxSupportedVersion);
+  ASSERT_FALSE(reopened_database.has_value());
+  EXPECT_TRUE(reopened_database.error().IsCorruption());
+}
+
+TEST_F(DomStorageDatabaseLevelDBTest, OpenFailsWhenVersionNotANumber) {
+  // 'a' is not a valid version.
+  ASSERT_NO_FATAL_FAILURE(TestInvalidVersion({'a'}));
+}
+
+TEST_F(DomStorageDatabaseLevelDBTest, OpenFailsWithVersionBelowMin) {
+  // '1' is less than the minimum version.
+  ASSERT_NO_FATAL_FAILURE(TestInvalidVersion({'1'}));
+}
+
+TEST_F(DomStorageDatabaseLevelDBTest, OpenFailsWithVersionAboveMax) {
+  // '5' is less than the minimum version.
+  ASSERT_NO_FATAL_FAILURE(TestInvalidVersion({'5'}));
 }
 
 }  // namespace storage

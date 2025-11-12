@@ -161,7 +161,12 @@ TEST_F(SessionStorageDataMapTest, BasicEmptyCreation) {
 
   // Test data is not cleared on deletion.
   map = nullptr;
-  EXPECT_EQ(2u, GetDatabaseContents().size());
+
+  // The database must contain 3 entries:
+  // (1) This map's key/value pair.
+  // (2) The other map's key/value pair
+  // (3) The database schema version.
+  EXPECT_EQ(3u, GetDatabaseContents().size());
 }
 
 TEST_F(SessionStorageDataMapTest, ExplicitlyEmpty) {
@@ -188,7 +193,12 @@ TEST_F(SessionStorageDataMapTest, ExplicitlyEmpty) {
 
   // Test data is not cleared on deletion.
   map = nullptr;
-  EXPECT_EQ(2u, GetDatabaseContents().size());
+
+  // The database must contain 3 entries:
+  // (1) This map's key/value pair.
+  // (2) The other map's key/value pair
+  // (3) The database schema version.
+  EXPECT_EQ(3u, GetDatabaseContents().size());
 }
 
 TEST_F(SessionStorageDataMapTest, Clone) {
@@ -236,7 +246,13 @@ TEST_F(SessionStorageDataMapTest, Clone) {
   // Test data is not cleared on deletion.
   map1 = nullptr;
   map2 = nullptr;
-  EXPECT_EQ(3u, GetDatabaseContents().size());
+
+  // The database must contain 4 entries:
+  // (1) This map's key/value pair.
+  // (2) The cloned map's key/value pair.
+  // (3) The other map's key/value pair
+  // (4) The database schema version.
+  EXPECT_EQ(4u, GetDatabaseContents().size());
 }
 
 }  // namespace storage

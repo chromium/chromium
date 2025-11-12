@@ -130,7 +130,6 @@ class LocalStorageImpl : public base::trace_event::MemoryDumpProvider,
   // Part of our asynchronous directory opening called from RunWhenConnected().
   void InitiateConnection(bool in_memory_only = false);
   void OnDatabaseOpened(DbStatus status);
-  void OnGotDatabaseVersion(DbStatus status, DomStorageDatabase::Value value);
   void OnConnectionFinished();
   void DeleteAndRecreateDatabase();
   void OnDBDestroyed(bool recreate_in_memory, DbStatus status);
@@ -171,7 +170,6 @@ class LocalStorageImpl : public base::trace_event::MemoryDumpProvider,
     CONNECTION_FINISHED,
     CONNECTION_SHUTDOWN
   } connection_state_ = NO_CONNECTION;
-  bool database_initialized_ = false;
 
   bool force_keep_session_state_ = false;
 

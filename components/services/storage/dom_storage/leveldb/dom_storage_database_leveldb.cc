@@ -19,6 +19,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequence_bound.h"
@@ -26,6 +27,7 @@
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/memory_dump_request_args.h"
 #include "base/trace_event/process_memory_dump.h"
+#include "base/types/expected_macros.h"
 #include "base/types/pass_key.h"
 #include "components/services/storage/dom_storage/dom_storage_database.h"
 #include "components/services/storage/dom_storage/leveldb/dom_storage_batch_operation_leveldb.h"
@@ -128,10 +130,19 @@ DomStorageDatabaseLevelDB::Open(
     const base::FilePath& directory,
     const std::string& name,
     const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&
-        memory_dump_id) {
+        memory_dump_id,
+    KeyView version_key,
+    int64_t min_supported_version,
+    int64_t max_supported_version) {
   std::unique_ptr<DomStorageDatabaseLevelDB> instance = base::WrapUnique(
       new DomStorageDatabaseLevelDB(directory, name, memory_dump_id));
   DbStatus status = instance->InitializeLevelDB();
+  if (!status.ok()) {
+    return base::unexpected(std::move(status));
+  }
+
+  status = instance->EnsureVersion(version_key, min_supported_version,
+                                   max_supported_version);
   if (!status.ok()) {
     return base::unexpected(std::move(status));
   }
@@ -228,6 +239,38 @@ leveldb::DB* DomStorageDatabaseLevelDB::GetLevelDBDatabase(
     base::PassKey<DomStorageBatchOperationLevelDB> key) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return db_.get();
+}
+DbStatus DomStorageDatabaseLevelDB::EnsureVersion(
+    KeyView version_key,
+    int64_t min_supported_version,
+    int64_t max_supported_version) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  Value version_string_bytes;
+  DbStatus status = Get(version_key, &version_string_bytes);
+  if (status.IsNotFound()) {
+    // Write the version entry when it does not exist.
+    return Put(version_key,
+               base::as_byte_span(base::NumberToString(max_supported_version)));
+  }
+
+  if (!status.ok()) {
+    // The database failed to read the version key.
+    return status;
+  }
+
+  // Verify the contents of the version key.
+  int64_t actual_version;
+  if (!base::StringToInt64(base::as_string_view(version_string_bytes),
+                           &actual_version)) {
+    return DbStatus::Corruption("version is not a number");
+  }
+
+  if (actual_version < min_supported_version ||
+      actual_version > max_supported_version) {
+    return DbStatus::Corruption("version is unsupported");
+  }
+  return DbStatus::OK();
 }
 
 bool DomStorageDatabaseLevelDB::OnMemoryDump(

@@ -449,13 +449,13 @@ TEST_F(LocalStorageImplTest, InvalidVersion) {
   EXPECT_EQ(std::nullopt, DoTestGet(StdStringToUint8Vector("key")));
 }
 
-TEST_F(LocalStorageImplTest, VersionOnlyWrittenOnCommit) {
+TEST_F(LocalStorageImplTest, VersionWrittenOnOpen) {
   EXPECT_EQ(std::nullopt, DoTestGet(StdStringToUint8Vector("key")));
 
-  // Since we're waiting to make sure state *doesn't* change, `RunUntil` isn't
-  // helpful.
-  RunUntilIdle();
-  EXPECT_TRUE(GetDatabaseContents().empty());
+  std::map<std::string, std::string> database_contents = GetDatabaseContents();
+  auto it = database_contents.find("VERSION");
+  ASSERT_TRUE(it != database_contents.end());
+  EXPECT_EQ(it->second, "1");
 }
 
 TEST_F(LocalStorageImplTest, GetStorageUsage_NoData) {

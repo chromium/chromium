@@ -65,6 +65,7 @@ class DomStorageDatabaseLevelDB
   std::unique_ptr<DomStorageBatchOperationLevelDB> CreateBatchOperation();
 
   DbStatus RewriteDB();
+
   bool ShouldFailAllCommits();
   void SetDestructionCallbackForTesting(base::OnceClosure callback);
   void MakeAllCommitsFailForTesting();
@@ -73,12 +74,19 @@ class DomStorageDatabaseLevelDB
   leveldb::DB* GetLevelDBDatabase(
       base::PassKey<DomStorageBatchOperationLevelDB> key) const;
 
+  // Opens the database and verifies the schema version. Writes
+  // `max_supported_version` when no version exists in the database. `Open()`
+  // fails when the version in the database is not supported.
+  //
   // To create an in-memory database, provide an empty `directory`.
   static StatusOr<std::unique_ptr<DomStorageDatabaseLevelDB>> Open(
       const base::FilePath& directory,
       const std::string& name,
       const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&
-          memory_dump_id);
+          memory_dump_id,
+      KeyView version_key,
+      int64_t min_supported_version,
+      int64_t max_supported_version);
 
   using StatusCallback = base::OnceCallback<void(DbStatus)>;
 
@@ -97,6 +105,16 @@ class DomStorageDatabaseLevelDB
 
   // Opens `db_` using `options_` and `name_` then returns the result.
   DbStatus InitializeLevelDB();
+
+  // Verify that the value in the database for `version_key` is between
+  // `min_supported_version` and `max_supported_version`. Both session storage
+  // and local storage write the version integer value as a text string like
+  // "1". Writes `max_supported_version` as the initial version when the
+  // database does not contain `version_key`. Fails when the version is out of
+  // range, not a number or not readable.
+  DbStatus EnsureVersion(KeyView version_key,
+                         int64_t min_supported_version,
+                         int64_t max_supported_version);
 
   // base::trace_event::MemoryDumpProvider implementation:
   bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,

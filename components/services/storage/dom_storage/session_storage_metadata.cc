@@ -17,26 +17,10 @@
 
 namespace storage {
 
-namespace {
+// For a description of the session storage LevelDB schema, see comments in
+// `leveldb/session_storage_leveldb.h
 
-// Example layout of the database:
-// | key                                    | value              |
-// |----------------------------------------|--------------------|
-// | map-1-a                                | b (a = b in map 1) |
-// | ...                                    |                    |
-// | namespace-<36 char guid 1>-StorageKey1 | 1 (mapid)          |
-// | namespace-<36 char guid 1>-StorageKey2 | 2                  |
-// | namespace-<36 char guid 2>-StorageKey1 | 1 (shallow copy)   |
-// | namespace-<36 char guid 2>-StorageKey2 | 2 (shallow copy)   |
-// | namespace-<36 char guid 3>-StorageKey1 | 3 (deep copy)      |
-// | namespace-<36 char guid 3>-StorageKey2 | 2 (shallow copy)   |
-// | next-map-id                            | 4                  |
-// | version                                | 1                  |
-// Example area key:
-//   namespace-dabc53e1_8291_4de5_824f_dab8aa69c846-https://example.com/
-//
-// All number values (map numbers and the version) are string conversions of
-// numbers. Map keys are converted to UTF-8 and the values stay as UTF-16.
+namespace {
 
 // This is "map-" (without the quotes).
 constexpr const uint8_t kMapIdPrefixBytes[] = {'m', 'a', 'p', '-'};
@@ -65,9 +49,7 @@ std::vector<uint8_t> NumberToValue(int64_t map_number) {
 
 }  // namespace
 
-constexpr const int64_t SessionStorageMetadata::kLevelDbSchemaVersion;
 constexpr const int64_t SessionStorageMetadata::kInvalidMapId;
-constexpr const uint8_t SessionStorageMetadata::kLevelDbSchemaVersionKeyBytes[];
 constexpr const uint8_t SessionStorageMetadata::kNamespacePrefixBytes[];
 constexpr const uint8_t SessionStorageMetadata::kNextMapIdKeyBytes[];
 
@@ -92,18 +74,10 @@ SessionStorageMetadata::SetupNewDatabaseForTesting() {
   tasks.push_back(base::BindOnce(
       [](int64_t next_map_id, DomStorageBatchOperationLevelDB& batch,
          const DomStorageDatabaseLevelDB& db) {
-        batch.Put(base::span(kLevelDbSchemaVersionKeyBytes),
-                  LatestDatabaseVersionAsVector());
         batch.Put(base::span(kNextMapIdKeyBytes), NumberToValue(next_map_id));
       },
       next_map_id_));
   return tasks;
-}
-
-bool SessionStorageMetadata::ParseDatabaseVersion(
-    std::vector<uint8_t> version_bytes,
-    int64_t* parsed_version) {
-  return ValueToNumber(version_bytes, parsed_version);
 }
 
 bool SessionStorageMetadata::ParseNamespaces(
@@ -206,11 +180,6 @@ void SessionStorageMetadata::ParseNextMapId(
     next_map_id_ = next_map_id_from_namespaces_;
   if (next_map_id_ < next_map_id_from_namespaces_)
     next_map_id_ = next_map_id_from_namespaces_;
-}
-
-// static
-std::vector<uint8_t> SessionStorageMetadata::LatestDatabaseVersionAsVector() {
-  return NumberToValue(kLevelDbSchemaVersion);
 }
 
 scoped_refptr<SessionStorageMetadata::MapData>

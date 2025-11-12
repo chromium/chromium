@@ -214,20 +214,13 @@ class SessionStorageImpl : public base::trace_event::MemoryDumpProvider,
     std::vector<DomStorageDatabase::KeyValuePair> key_value_pairs;
   };
 
-  void OnGotDatabaseMetadata(ValueAndStatus version,
-                             KeyValuePairsAndStatus namespaces,
+  void OnGotDatabaseMetadata(KeyValuePairsAndStatus namespaces,
                              ValueAndStatus next_map_id);
 
   struct MetadataParseResult {
     OpenResult open_result;
     const char* histogram_name;
   };
-  struct DatabaseVersionParseResult : public MetadataParseResult {
-    // `nullopt` for new databases, read errors, and parsing errors.
-    std::optional<int64_t> database_version;
-  };
-  DatabaseVersionParseResult ParseDatabaseVersion(
-      ValueAndStatus version_texts_bytes);
   MetadataParseResult ParseNamespaces(KeyValuePairsAndStatus namespaces);
   MetadataParseResult ParseNextMapId(ValueAndStatus next_map_id);
 

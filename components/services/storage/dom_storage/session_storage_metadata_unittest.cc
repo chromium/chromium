@@ -21,6 +21,7 @@
 #include "base/uuid.h"
 #include "components/services/storage/dom_storage/async_dom_storage_database.h"
 #include "components/services/storage/dom_storage/dom_storage_database.h"
+#include "components/services/storage/dom_storage/leveldb/session_storage_leveldb.h"
 #include "storage/common/database/db_status.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -61,9 +62,6 @@ class SessionStorageMetadataTest : public testing::Test {
     next_map_id_key_ = std::vector<uint8_t>(
         std::begin(SessionStorageMetadata::kNextMapIdKeyBytes),
         std::end(SessionStorageMetadata::kNextMapIdKeyBytes));
-    database_version_key_ = std::vector<uint8_t>(
-        std::begin(SessionStorageMetadata::kLevelDbSchemaVersionKeyBytes),
-        std::end(SessionStorageMetadata::kLevelDbSchemaVersionKeyBytes));
     namespaces_prefix_key_ = std::vector<uint8_t>(
         std::begin(SessionStorageMetadata::kNamespacePrefixBytes),
         std::end(SessionStorageMetadata::kNamespacePrefixBytes));
@@ -79,7 +77,8 @@ class SessionStorageMetadataTest : public testing::Test {
     database_->database().PostTaskWithThisObject(base::BindLambdaForTesting(
         [&](DomStorageDatabase* dom_storage_database) {
           DomStorageDatabaseLevelDB& db = dom_storage_database->GetLevelDB();
-          EXPECT_TRUE(db.Get(database_version_key_, &version_value).ok());
+          EXPECT_TRUE(
+              db.Get(kSessionStorageLevelDBVersionKey, &version_value).ok());
           EXPECT_TRUE(db.Get(next_map_id_key_, &next_map_id_value).ok());
           EXPECT_TRUE(
               db.GetPrefixed(namespaces_prefix_key_, &namespace_entries).ok());
@@ -87,9 +86,7 @@ class SessionStorageMetadataTest : public testing::Test {
         }));
     loop.Run();
 
-    int64_t parsed_version;
-    EXPECT_TRUE(metadata->ParseDatabaseVersion(version_value, &parsed_version));
-    EXPECT_EQ(parsed_version, SessionStorageMetadata::kLevelDbSchemaVersion);
+    EXPECT_EQ(version_value, StdStringToUint8Vector("1"));
 
     metadata->ParseNextMapId(next_map_id_value);
     EXPECT_TRUE(metadata->ParseNamespaces(std::move(namespace_entries)));
@@ -136,8 +133,6 @@ class SessionStorageMetadataTest : public testing::Test {
                   StdStringToUint8Vector("data3"));
           db->Put(StdStringToUint8Vector("map-4-key1"),
                   StdStringToUint8Vector("data4"));
-
-          db->Put(database_version_key_, StdStringToUint8Vector("1"));
           loop.Quit();
         }));
     loop.Run();
@@ -184,7 +179,6 @@ class SessionStorageMetadataTest : public testing::Test {
       blink::StorageKey::CreateFromStringForTesting("http://host2:2/");
   std::unique_ptr<AsyncDomStorageDatabase> database_;
 
-  std::vector<uint8_t> database_version_key_;
   std::vector<uint8_t> next_map_id_key_;
   std::vector<uint8_t> namespaces_prefix_key_;
 };
@@ -199,7 +193,8 @@ TEST_F(SessionStorageMetadataTest, SaveNewMetadata) {
   EXPECT_TRUE(status.ok());
 
   auto contents = GetDatabaseContents();
-  EXPECT_EQ(StdStringToUint8Vector("1"), contents[database_version_key_]);
+  EXPECT_EQ(StdStringToUint8Vector("1"),
+            contents[StdStringToUint8Vector("version")]);
   EXPECT_EQ(StdStringToUint8Vector("0"), contents[next_map_id_key_]);
 }
 
@@ -397,27 +392,6 @@ TEST_F(SessionStorageMetadataTest, DeleteArea) {
   EXPECT_TRUE(base::Contains(contents, StdStringToUint8Vector("map-1-key1")));
   EXPECT_TRUE(base::Contains(contents, StdStringToUint8Vector("map-3-key1")));
   EXPECT_FALSE(base::Contains(contents, StdStringToUint8Vector("map-4-key1")));
-}
-
-TEST_F(SessionStorageMetadataTest, ParseDatabaseVersion) {
-  SessionStorageMetadata metadata;
-  int64_t parsed_version;
-
-  // Parsing empty bytes must fail.
-  EXPECT_FALSE(metadata.ParseDatabaseVersion({}, &parsed_version));
-
-  // Parsing non-numeric text must fail.
-  EXPECT_FALSE(metadata.ParseDatabaseVersion(
-      {'i', 'n', 'v', 'a', 'l', 'i', 'd'}, &parsed_version));
-
-  EXPECT_FALSE(metadata.ParseDatabaseVersion({'1', 'a'}, &parsed_version));
-
-  // Parsing numeric text must succeed.
-  EXPECT_TRUE(metadata.ParseDatabaseVersion({'6', '4', '4'}, &parsed_version));
-  EXPECT_EQ(parsed_version, 644);
-
-  EXPECT_TRUE(metadata.ParseDatabaseVersion({'1'}, &parsed_version));
-  EXPECT_EQ(parsed_version, 1);
 }
 
 TEST_F(SessionStorageMetadataTest, ParseNamespacesEmpty) {

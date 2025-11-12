@@ -59,10 +59,6 @@ namespace {
 
 static const int kStaleBucketCutoffInDays = 400;
 
-constexpr std::string_view kVersionKey = "VERSION";
-const int64_t kMinSchemaVersion = 1;
-const int64_t kCurrentLocalStorageSchemaVersion = 1;
-
 // After this many consecutive commit errors we'll throw away the entire
 // database.
 const int kCommitErrorThreshold = 8;
@@ -206,16 +202,6 @@ class LocalStorageImpl::StorageAreaHolder final
   void PrepareToCommit(
       std::vector<DomStorageDatabase::KeyValuePair>* extra_entries_to_add,
       std::vector<DomStorageDatabase::Key>* extra_keys_to_delete) override {
-    // Write schema version if not already done so before.
-    if (!context_->database_initialized_) {
-      const std::string version =
-          base::NumberToString(kCurrentLocalStorageSchemaVersion);
-      extra_entries_to_add->emplace_back(
-          DomStorageDatabase::Key(kVersionKey.begin(), kVersionKey.end()),
-          DomStorageDatabase::Value(version.begin(), version.end()));
-      context_->database_initialized_ = true;
-    }
-
     DomStorageDatabase::Key access_metadata_key =
         LocalStorageLevelDB::CreateAccessMetaDataKey(storage_key_);
     DomStorageDatabase::Key write_metadata_key =
@@ -601,48 +587,6 @@ void LocalStorageImpl::OnDatabaseOpened(DbStatus status) {
   if (!status.ok()) {
     // If we failed to open the database, try to delete and recreate the
     // database, or ultimately fallback to an in-memory database.
-    DeleteAndRecreateDatabase();
-    return;
-  }
-
-  // Verify DB schema version.
-  if (database_) {
-    database_->RunDatabaseTask(
-        base::BindOnce(
-            [](const std::vector<uint8_t>& key, DomStorageDatabaseLevelDB& db) {
-              DomStorageDatabase::Value value;
-              DbStatus status = db.Get(key, &value);
-              return std::make_tuple(status, std::move(value));
-            },
-            std::vector<uint8_t>(kVersionKey.begin(), kVersionKey.end())),
-        base::BindOnce(&LocalStorageImpl::OnGotDatabaseVersion,
-                       weak_ptr_factory_.GetWeakPtr()));
-    return;
-  }
-
-  OnConnectionFinished();
-}
-
-void LocalStorageImpl::OnGotDatabaseVersion(DbStatus status,
-                                            DomStorageDatabase::Value value) {
-  if (status.IsNotFound()) {
-    // New database, nothing more to do. Current version will get written
-    // when first data is committed.
-  } else if (status.ok()) {
-    // Existing database, check if version number matches current schema
-    // version.
-    int64_t db_version;
-    if (!base::StringToInt64(base::as_string_view(base::span(value)),
-                             &db_version) ||
-        db_version < kMinSchemaVersion ||
-        db_version > kCurrentLocalStorageSchemaVersion) {
-      DeleteAndRecreateDatabase();
-      return;
-    }
-
-    database_initialized_ = true;
-  } else {
-    // Other read error. Possibly database corruption.
     DeleteAndRecreateDatabase();
     return;
   }
