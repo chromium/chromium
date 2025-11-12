@@ -27,6 +27,7 @@ static_library("keyboard") {
     "//ash/public/cpp",
     "//chrome/browser/profiles:profile",
     "//chrome/common",
+    "//chromeos/ash/components/browser_context_helper",
     "//components/prefs",
     "//components/session_manager/core",
     "//content/public/browser",
