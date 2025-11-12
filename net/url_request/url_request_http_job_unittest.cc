@@ -1443,7 +1443,7 @@ TEST_F(URLRequestHttpJobTest, ShouldBypassHSTS) {
       }
       if (test.bypass_hsts) {
         r->SetLoadFlags(net::LOAD_SHOULD_BYPASS_HSTS);
-        r->set_allow_credentials(false);
+        r->set_disallow_credentials();
       }
 
       net_log_observer_.Clear();
@@ -1870,7 +1870,7 @@ TEST_F(URLRequestHttpJobTest, ShouldBypassHSTSResponseAndConnectionNotReused) {
         context->CreateRequest(insecure_url, DEFAULT_PRIORITY, &delegate,
                                TRAFFIC_ANNOTATION_FOR_TESTS));
     req->SetLoadFlags(net::LOAD_SHOULD_BYPASS_HSTS);
-    req->set_allow_credentials(false);
+    req->set_disallow_credentials();
     req->Start();
     delegate.RunUntilComplete();
     EXPECT_EQ(kInsecureContent, delegate.data_received());
@@ -1896,7 +1896,7 @@ TEST_F(URLRequestHttpJobTest, ShouldBypassHSTSResponseAndConnectionNotReused) {
     std::unique_ptr<URLRequest> req(
         context->CreateRequest(insecure_url, DEFAULT_PRIORITY, &delegate,
                                TRAFFIC_ANNOTATION_FOR_TESTS));
-    req->set_allow_credentials(false);
+    req->set_disallow_credentials();
     url::Origin insecure_origin = url::Origin::Create(insecure_url);
     req->set_isolation_info(IsolationInfo::Create(
         IsolationInfo::RequestType::kMainFrame, insecure_origin,
@@ -2607,7 +2607,7 @@ TEST_F(URLRequestHttpJobTest, GetFirstPartySetsCacheFilterMatchInfo) {
     std::unique_ptr<URLRequest> req(context->CreateRequest(
         kTestUrl, DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
     req->set_isolation_info(kTestIsolationInfo);
-    req->set_allow_credentials(false);
+    req->set_disallow_credentials();
     req->Start();
     delegate.RunUntilComplete();
     EXPECT_EQ("0", delegate.data_received());
@@ -2617,7 +2617,7 @@ TEST_F(URLRequestHttpJobTest, GetFirstPartySetsCacheFilterMatchInfo) {
     std::unique_ptr<URLRequest> req(context->CreateRequest(
         kTestUrl, DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
     req->SetLoadFlags(LOAD_SKIP_CACHE_VALIDATION);
-    req->set_allow_credentials(false);
+    req->set_disallow_credentials();
     req->set_isolation_info(kTestIsolationInfo);
     req->Start();
     delegate.RunUntilComplete();
@@ -2638,7 +2638,7 @@ TEST_F(URLRequestHttpJobTest, GetFirstPartySetsCacheFilterMatchInfo) {
     std::unique_ptr<URLRequest> req(context->CreateRequest(
         kTestUrl, DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
     req->SetLoadFlags(LOAD_SKIP_CACHE_VALIDATION);
-    req->set_allow_credentials(false);
+    req->set_disallow_credentials();
     req->set_isolation_info(kTestIsolationInfo);
     req->Start();
     delegate.RunUntilComplete();

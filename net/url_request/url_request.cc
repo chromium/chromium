@@ -467,6 +467,8 @@ void URLRequest::SetLoadFlags(int flags) {
     DCHECK(flags & LOAD_IGNORE_LIMITS);
     DCHECK_EQ(priority_, MAXIMUM_PRIORITY);
   }
+  CHECK(allow_credentials_ || (flags & LOAD_DO_NOT_SAVE_COOKIES));
+
   partial_load_flags_ = flags;
 
   // This should be a no-op given the above DCHECKs, but do this
@@ -571,13 +573,9 @@ void URLRequest::set_referrer_policy(ReferrerPolicy referrer_policy) {
   referrer_policy_ = referrer_policy;
 }
 
-void URLRequest::set_allow_credentials(bool allow_credentials) {
-  allow_credentials_ = allow_credentials;
-  if (allow_credentials) {
-    partial_load_flags_ &= ~LOAD_DO_NOT_SAVE_COOKIES;
-  } else {
-    partial_load_flags_ |= LOAD_DO_NOT_SAVE_COOKIES;
-  }
+void URLRequest::set_disallow_credentials() {
+  allow_credentials_ = false;
+  partial_load_flags_ |= LOAD_DO_NOT_SAVE_COOKIES;
 }
 
 void URLRequest::Start() {

@@ -440,13 +440,19 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   ReferrerPolicy referrer_policy() const { return referrer_policy_; }
   void set_referrer_policy(ReferrerPolicy referrer_policy);
 
-  // Sets whether credentials are allowed.
-  // If credentials are allowed, the request will send and save HTTP
-  // cookies, as well as authentication to the origin server. If not,
-  // they will not be sent, however proxy-level authentication will
-  // still occur. Setting this will force the LOAD_DO_NOT_SAVE_COOKIES field to
-  // be set in |load_flags_|. See https://crbug.com/799935.
-  void set_allow_credentials(bool allow_credentials);
+  // Prohibits sending credentials. By default, credentials, including HTTP
+  // cookies, client certs, and HTTP auth, are sent and, if appropriate, saved,
+  // though LOAD_DO_NOT_SAVE_COOKIES can block saving cookies. Once called on a
+  // URLRequest, credentials may not later be enabled on a request.
+  //
+  // If this is called, no credentials will be sent or saved, though proxy-level
+  // authentication will still occur. Calling this this will force the
+  // LOAD_DO_NOT_SAVE_COOKIES field to be set in `load_flags_`. See
+  // https://crbug.com/799935.
+  //
+  // Clearing the LOAD_DO_NOT_SAVE_COOKIES LoadFlag after calling this method is
+  // not allowed (It will CHECK).
+  void set_disallow_credentials();
   bool allow_credentials() const { return allow_credentials_; }
 
   // Sets the upload data.
@@ -650,6 +656,9 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // The new flags may change the IGNORE_LIMITS flag only when called
   // before Start() is called, it must only set the flag, and if set,
   // the priority of this request must already be MAXIMUM_PRIORITY.
+  //
+  // If set_disallow_credentials() has been invoked, `flags` must include
+  // LOAD_DO_NOT_SAVE_COOKIES.
   void SetLoadFlags(int flags);
 
   // Sets "temporary" load flags. They are cleared upon receiving a redirect.

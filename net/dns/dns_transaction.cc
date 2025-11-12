@@ -490,7 +490,7 @@ class DnsHTTPAttempt : public DnsAttempt, public URLRequest::Delegate {
     request_->SetSecureDnsPolicy(SecureDnsPolicy::kBootstrap);
     request_->SetLoadFlags(request_->load_flags() | LOAD_DISABLE_CACHE |
                            LOAD_BYPASS_PROXY);
-    request_->set_allow_credentials(false);
+    request_->set_disallow_credentials();
     request_->set_isolation_info(isolation_info);
   }
 

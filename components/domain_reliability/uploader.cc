@@ -130,7 +130,7 @@ class DomainReliabilityUploaderImpl : public DomainReliabilityUploader,
             upload_url, net::RequestPriority::IDLE, this /* delegate */,
             traffic_annotation);
     request->set_method("POST");
-    request->set_allow_credentials(false);
+    request->set_disallow_credentials();
     request->SetExtraRequestHeaderByName(net::HttpRequestHeaders::kContentType,
                                          kJsonMimeType, true /* overwrite */);
     CHECK_EQ(isolation_info.request_type(),

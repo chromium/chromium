@@ -304,7 +304,7 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
     url_fetcher_ =
         std::make_unique<URLFetcher>(context_, well_known_url, net_log_source_);
     url_fetcher_->request().set_method("GET");
-    url_fetcher_->request().set_allow_credentials(false);
+    url_fetcher_->request().set_disallow_credentials();
     url_fetcher_->request().set_site_for_cookies(
         isolation_info_.site_for_cookies());
     url_fetcher_->request().set_initiator(original_request_initiator_);
@@ -354,7 +354,7 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
     url_fetcher_ =
         std::make_unique<URLFetcher>(context_, well_known_url, net_log_source_);
     url_fetcher_->request().set_method("GET");
-    url_fetcher_->request().set_allow_credentials(false);
+    url_fetcher_->request().set_disallow_credentials();
     url_fetcher_->request().set_site_for_cookies(
         isolation_info_.site_for_cookies());
     url_fetcher_->request().set_initiator(original_request_initiator_);
@@ -547,7 +547,6 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
     CHECK(IsSecure(fetcher_endpoint_));
     request.set_method("POST");
     request.SetLoadFlags(LOAD_DISABLE_CACHE);
-    request.set_allow_credentials(true);
 
     request.set_site_for_cookies(isolation_info_.site_for_cookies());
     request.set_initiator(original_request_initiator_);
@@ -720,7 +719,7 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
       url_fetcher_ = std::make_unique<URLFetcher>(context_, well_known_url,
                                                   net_log_source_);
       url_fetcher_->request().set_method("GET");
-      url_fetcher_->request().set_allow_credentials(false);
+      url_fetcher_->request().set_disallow_credentials();
       url_fetcher_->request().set_site_for_cookies(
           isolation_info_.site_for_cookies());
       url_fetcher_->request().set_initiator(original_request_initiator_);

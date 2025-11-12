@@ -2071,7 +2071,7 @@ TEST_F(URLRequestTest, DoNotSendCookies) {
     TestDelegate d;
     std::unique_ptr<URLRequest> req = CreateFirstPartyRequest(
         default_context(), test_server.GetURL("/echoheader?Cookie"), &d);
-    req->set_allow_credentials(false);
+    req->set_disallow_credentials();
     req->Start();
     d.RunUntilComplete();
 
@@ -10155,7 +10155,9 @@ TEST_F(HTTPSRequestTest, NoSessionResumptionBetweenPrivacyModes) {
     TestDelegate d;
     std::unique_ptr<URLRequest> r(default_context().CreateRequest(
         url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
-    r->set_allow_credentials(allow_credentials);
+    if (!allow_credentials) {
+      r->set_disallow_credentials();
+    }
 
     // Start the request and check the SSL handshake type.
     r->Start();
@@ -12986,7 +12988,7 @@ TEST_F(URLRequestTest, SetIsolationInfoFromNak) {
   r->set_isolation_info_from_network_anonymization_key(
       populated_cross_site_nak);
   r->SetLoadFlags(LOAD_DISABLE_CACHE);
-  r->set_allow_credentials(false);
+  r->set_disallow_credentials();
   EXPECT_TRUE(r->is_created_from_network_anonymization_key());
   EXPECT_EQ(r->isolation_info().network_anonymization_key(),
             populated_cross_site_nak);
@@ -13197,7 +13199,7 @@ TEST_F(PartitionConnectionsByNetworkAnonymizationKey,
     r1->set_isolation_info_from_network_anonymization_key(
         network_anonymization_key1);
     r1->SetLoadFlags(LOAD_DISABLE_CACHE);
-    r1->set_allow_credentials(false);
+    r1->set_disallow_credentials();
 
     // Verify NetworkAnonymizationKey is set correctly
     EXPECT_TRUE(r1->is_created_from_network_anonymization_key());
@@ -13223,7 +13225,7 @@ TEST_F(PartitionConnectionsByNetworkAnonymizationKey,
     r2->set_isolation_info_from_network_anonymization_key(
         network_anonymization_key2);
     r2->SetLoadFlags(LOAD_DISABLE_CACHE);
-    r2->set_allow_credentials(false);
+    r2->set_disallow_credentials();
 
     // Verify NetworkAnonymizationKey is set correctly.
     EXPECT_TRUE(r2->is_created_from_network_anonymization_key());
@@ -13259,7 +13261,7 @@ TEST_F(PartitionConnectionsByNetworkAnonymizationKey,
     r1->set_isolation_info_from_network_anonymization_key(
         network_anonymization_key1);
     r1->SetLoadFlags(LOAD_DISABLE_CACHE);
-    r1->set_allow_credentials(false);
+    r1->set_disallow_credentials();
 
     // Verify NetworkAnonymizationKey is set correctly
     EXPECT_TRUE(r1->is_created_from_network_anonymization_key());
@@ -13284,7 +13286,7 @@ TEST_F(PartitionConnectionsByNetworkAnonymizationKey,
     r2->set_isolation_info_from_network_anonymization_key(
         network_anonymization_key2);
     r2->SetLoadFlags(LOAD_DISABLE_CACHE);
-    r2->set_allow_credentials(false);
+    r2->set_disallow_credentials();
 
     // Verify NetworkAnonymizationKey is set correctly.
     EXPECT_TRUE(r2->is_created_from_network_anonymization_key());
@@ -13321,7 +13323,7 @@ TEST_F(
     r1->set_isolation_info_from_network_anonymization_key(
         network_anonymization_key1);
     r1->SetLoadFlags(LOAD_DISABLE_CACHE);
-    r1->set_allow_credentials(false);
+    r1->set_disallow_credentials();
 
     // Verify NetworkAnonymizationKey is set correctly
     EXPECT_TRUE(r1->is_created_from_network_anonymization_key());
@@ -13348,7 +13350,7 @@ TEST_F(
     r2->set_isolation_info_from_network_anonymization_key(
         network_anonymization_key2);
     r2->SetLoadFlags(LOAD_DISABLE_CACHE);
-    r2->set_allow_credentials(false);
+    r2->set_disallow_credentials();
 
     // Verify NetworkAnonymizationKey is set correctly.
     EXPECT_TRUE(r2->is_created_from_network_anonymization_key());
@@ -13386,7 +13388,7 @@ TEST_F(PartitionConnectionsByNetworkAnonymizationKey,
     r1->set_isolation_info_from_network_anonymization_key(
         network_anonymization_key1);
     r1->SetLoadFlags(LOAD_DISABLE_CACHE);
-    r1->set_allow_credentials(false);
+    r1->set_disallow_credentials();
 
     // Verify NetworkAnonymizationKey is set correctly
     EXPECT_TRUE(r1->is_created_from_network_anonymization_key());
@@ -13413,7 +13415,7 @@ TEST_F(PartitionConnectionsByNetworkAnonymizationKey,
     r2->set_isolation_info_from_network_anonymization_key(
         network_anonymization_key2);
     r2->SetLoadFlags(LOAD_DISABLE_CACHE);
-    r2->set_allow_credentials(false);
+    r2->set_disallow_credentials();
 
     // Verify NetworkAnonymizationKey is set correctly.
     EXPECT_TRUE(r2->is_created_from_network_anonymization_key());

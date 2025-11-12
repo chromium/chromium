@@ -694,7 +694,7 @@ void SetRequestCredentials(
   // The decision not to include credentials is sticky. This is equivalent to
   // checking the tainted origin flag in the fetch specification.
   if (!allow_credentials) {
-    url_request.set_allow_credentials(false);
+    url_request.set_disallow_credentials();
   }
   if (!allow_client_certificates) {
     url_request.set_send_client_certs(false);

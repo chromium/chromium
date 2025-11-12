@@ -156,7 +156,7 @@ class ReportingUploaderImpl : public ReportingUploader, URLRequest::Delegate {
     upload->request->set_method("OPTIONS");
 
     upload->request->SetLoadFlags(LOAD_DISABLE_CACHE);
-    upload->request->set_allow_credentials(false);
+    upload->request->set_disallow_credentials();
     upload->request->set_isolation_info(upload->isolation_info);
 
     upload->request->set_initiator(upload->report_origin);
@@ -195,7 +195,9 @@ class ReportingUploaderImpl : public ReportingUploader, URLRequest::Delegate {
     // delivery agent determining that this is a V0 report, or by `StartUpload`
     // determining that this is a cross-origin case, and taking the CORS
     // preflight path).
-    upload->request->set_allow_credentials(eligible_for_credentials);
+    if (!eligible_for_credentials) {
+      upload->request->set_disallow_credentials();
+    }
     // The site for cookies is taken from the reporting source's IsolationInfo,
     // in the case of V1 reporting endpoints, and will be null for V0 reports.
     upload->request->set_site_for_cookies(
