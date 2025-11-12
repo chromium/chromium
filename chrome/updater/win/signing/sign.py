@@ -128,7 +128,8 @@ class Signer:
         subprocess.run(
             [self._tagging_exe, '--set-tag',
              '--out=%s' % out_file, in_file],
-            check=True)
+            check=True,
+            stdout=subprocess.DEVNULL)
         return out_file
 
     def _sign_item(self, in_file):
@@ -150,7 +151,9 @@ class Signer:
             delay = 1
             for attempt in range(1, attempts + 1):
                 try:
-                    subprocess.run(command, check=True)
+                    subprocess.run(command,
+                                   check=True,
+                                   stdout=subprocess.DEVNULL)
                 except subprocess.CalledProcessError:
                     if attempt == attempts:
                         raise
