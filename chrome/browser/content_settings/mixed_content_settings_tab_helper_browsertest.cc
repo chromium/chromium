@@ -11,7 +11,6 @@
 #include "chrome/browser/ui/content_settings/content_setting_bubble_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/network_session_configurator/common/network_switches.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -34,9 +33,8 @@ class MixedContentSettingsTabHelperBrowserTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
-    ssl_server_.AddDefaultHandlers(GetChromeTestDataDir());
-    ssl_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
-    ASSERT_TRUE(ssl_server_.Start());
+    test_server()->AddDefaultHandlers(GetChromeTestDataDir());
+    ASSERT_TRUE(test_server()->Start());
   }
 
   content::WebContents* web_contents() {
@@ -44,20 +42,13 @@ class MixedContentSettingsTabHelperBrowserTest : public InProcessBrowserTest {
   }
 
  protected:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    // For using an HTTPS server.
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kIgnoreCertificateErrors);
-  }
-
   content::RenderFrameHost* current_frame_host() {
     return web_contents()->GetPrimaryMainFrame();
   }
 
-  net::EmbeddedTestServer* test_server() { return &ssl_server_; }
-
- private:
-  net::EmbeddedTestServer ssl_server_{net::EmbeddedTestServer::TYPE_HTTPS};
+  net::EmbeddedTestServer* test_server() {
+    return &embedded_https_test_server();
+  }
 };
 
 // Tests that openers can share their settings with the WebContents they opened.
