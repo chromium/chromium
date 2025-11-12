@@ -17,18 +17,89 @@
 namespace blink {
 
 namespace {
+
+// Determines if the segment at `secondary_index` within the gap at `gap_index`
+// is visible based on `rule_visibility`.
+bool IsRuleSegmentVisible(const GridTrackSizingDirection track_direction,
+                          wtf_size_t gap_index,
+                          wtf_size_t secondary_index,
+                          const RuleVisibilityItems rule_visibility,
+                          const GapGeometry& gap_geometry) {
+  GapSegmentState gap_state = gap_geometry.GetIntersectionGapSegmentState(
+      track_direction, gap_index, secondary_index);
+
+  switch (rule_visibility) {
+    case RuleVisibilityItems::kAll:
+      return true;
+    case RuleVisibilityItems::kNone:
+      return false;
+    case RuleVisibilityItems::kAround:
+      // Paint if either side of the segment is occupied (i.e. not empty on both
+      // sides).
+      return !gap_state.IsEmpty();
+    case RuleVisibilityItems::kBetween:
+      // Paint only when both sides of the segment are occupied (i.e. gap
+      // segment state is none as it represents a segment occupied on both
+      // sides).
+      return gap_state.status_ == GapSegmentState::kNone;
+  }
+
+  NOTREACHED();
+}
+
+// Determines if the `start_index` should advance when determining pairs for gap
+// decorations.
+//
+// https://drafts.csswg.org/css-gaps-1/#determine-pairs-of-gap-decoration-endpoints
+bool ShouldMoveIntersectionStartForward(
+    const GridTrackSizingDirection track_direction,
+    wtf_size_t gap_index,
+    wtf_size_t start_index,
+    const RuleBreak rule_break,
+    const RuleVisibilityItems rule_visibility,
+    const GapGeometry& gap_geometry,
+    const Vector<LayoutUnit>& intersections) {
+  if (rule_break == RuleBreak::kNone) {
+    return false;
+  }
+
+  const BlockedStatus blocked_status =
+      gap_geometry.GetIntersectionBlockedStatus(track_direction, gap_index,
+                                                start_index, intersections);
+  // Advance start if the segment it's blocked after or not visible.
+  if (blocked_status.HasBlockedStatus(BlockedStatus::kBlockedAfter) ||
+      !IsRuleSegmentVisible(track_direction, gap_index, start_index,
+                            rule_visibility, gap_geometry)) {
+    return true;
+  }
+
+  return false;
+}
+
 // Determines if the `end_index` should advance when determining pairs for gap
 // decorations.
 //
 // https://drafts.csswg.org/css-gaps-1/#determine-pairs-of-gap-decoration-endpoints
-bool ShouldMoveIntersectionEndForward(GridTrackSizingDirection track_direction,
-                                      wtf_size_t gap_index,
-                                      wtf_size_t end_index,
-                                      RuleBreak rule_break,
-                                      const GapGeometry& gap_geometry,
-                                      const Vector<LayoutUnit>& intersections) {
-  BlockedStatus blocked_status = gap_geometry.GetIntersectionBlockedStatus(
-      track_direction, gap_index, end_index, intersections);
+bool ShouldMoveIntersectionEndForward(
+    const GridTrackSizingDirection track_direction,
+    wtf_size_t gap_index,
+    wtf_size_t end_index,
+    const RuleBreak rule_break,
+    const RuleVisibilityItems rule_visibility,
+    const GapGeometry& gap_geometry,
+    const Vector<LayoutUnit>& intersections) {
+  if (!IsRuleSegmentVisible(track_direction, gap_index, end_index,
+                            rule_visibility, gap_geometry)) {
+    return false;
+  }
+
+  if (rule_break == RuleBreak::kNone) {
+    return true;
+  }
+
+  const BlockedStatus blocked_status =
+      gap_geometry.GetIntersectionBlockedStatus(track_direction, gap_index,
+                                                end_index, intersections);
 
   // For `kSpanningItem` rule break, decorations break only at "T"
   // intersections, so we simply check that the intersection isn't blocked
@@ -84,46 +155,41 @@ bool ShouldMoveIntersectionEndForward(GridTrackSizingDirection track_direction,
 }
 
 // Adjusts the (start, end) intersection pair to ensure that the gap
-// decorations are painted correctly based on `rule_break`.
+// decorations are painted correctly based on `rule_break` and
+// `rule_visibility`.
 void AdjustIntersectionIndexPair(GridTrackSizingDirection track_direction,
                                  wtf_size_t& start,
                                  wtf_size_t& end,
                                  wtf_size_t intersection_count,
                                  wtf_size_t gap_index,
                                  RuleBreak rule_break,
+                                 RuleVisibilityItems rule_visibility,
                                  const GapGeometry& gap_geometry,
                                  const Vector<LayoutUnit>& intersections) {
-  // If rule_break is `kNone`, cover the entire intersection range.
   const wtf_size_t last_intersection_index = intersection_count - 1;
-  if (rule_break == RuleBreak::kNone) {
-    start = 0;
-    end = last_intersection_index;
-    return;
-  }
 
-  // `start` should be the first intersection point that is not blocked
-  // after.
+  CHECK_LE(start, last_intersection_index);
+  //  Advance `start` to the first intersection where painting can begin, based
+  //  on blocked status from spanners and visibility from empty cells.
   while (start < last_intersection_index &&
-         (gap_geometry
-              .GetIntersectionBlockedStatus(track_direction, gap_index, start,
-                                            intersections)
-              .HasBlockedStatus(BlockedStatus::kBlockedAfter))) {
+         ShouldMoveIntersectionStartForward(track_direction, gap_index, start,
+                                            rule_break, rule_visibility,
+                                            gap_geometry, intersections)) {
     ++start;
   }
 
-  // If `start` is the last intersection point, there are no gaps to
+  // If `start` is at the last intersection point, there are no gap segments to
   // paint.
   if (start == last_intersection_index) {
     return;
   }
 
+  // Advance `end` based on the `rule_break` and `rule_visibility`.
   end = start + 1;
-
-  // Advance `end` based on the rule_break type.
   while (end < last_intersection_index &&
          ShouldMoveIntersectionEndForward(track_direction, gap_index, end,
-                                          rule_break, gap_geometry,
-                                          intersections)) {
+                                          rule_break, rule_visibility,
+                                          gap_geometry, intersections)) {
     ++end;
   }
 }
@@ -147,6 +213,9 @@ void GapDecorationsPainter::Paint(GridTrackSizingDirection track_direction,
       is_column_gap ? style.ColumnRuleWidth() : style.RowRuleWidth();
   RuleBreak rule_break =
       is_column_gap ? style.ColumnRuleBreak() : style.RowRuleBreak();
+  RuleVisibilityItems rule_visibility = is_column_gap
+                                            ? style.ColumnRuleVisibilityItems()
+                                            : style.RowRuleVisibilityItems();
 
   WritingModeConverter converter(style.GetWritingDirection(),
                                  box_fragment_.Size());
@@ -196,7 +265,7 @@ void GapDecorationsPainter::Paint(GridTrackSizingDirection track_direction,
       wtf_size_t end = start;
       AdjustIntersectionIndexPair(track_direction, start, end,
                                   intersections.size(), gap_index, rule_break,
-                                  gap_geometry, intersections);
+                                  rule_visibility, gap_geometry, intersections);
       if (start >= end) {
         // Break because there's no gap segment to paint.
         break;
