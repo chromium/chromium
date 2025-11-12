@@ -1,13 +1,24 @@
-/** Copyright 2025 The Chromium Authors
+/* Copyright 2025 The Chromium Authors
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
-/** #css_wrapper_metadata_start
+/* #css_wrapper_metadata_start
  * #type=style-lit
  * #scheme=relative
  * #css_wrapper_metadata_end */
 
 :host {
+  --drag-placeholder-font-color: rgba(86, 89, 94, 1);
+  --drag-placeholder-font-family: inherit;
+  --drag-placeholder-line-height: 24px;
+  --drag-placeholder-font-size: 16px;
+
+  --end-angle-open_: 245deg;
+  --end-angle-submit_: 330deg;
+
+  --glow-stroke-width_: 2px;
+  --glif-rotation-duration_: 1000ms;
+
   --search-animated-glow-background: rgb(255, 255, 255);
   --search-animated-glow-background-z-index: 3;
   --search-animated-glow-drag-drop-placeholder-z-index: 4;
@@ -23,19 +34,12 @@
     rgba(49, 134, 255, 0) 308.88deg,
     rgba(52, 168, 82, 0) 360deg
   );
-
-  /* TODO(crbug.com/454730356) finalize font, as Sans from mocks is
-  not supported. This font family variable is not used currently. */
-
-  --end-angle-open_: 245deg;
-  --end-angle-submit_: 330deg;
-
-  --glow-stroke-width_: 2px;
-  --glif-rotation-duration_: 1000ms;
   --search-animated-glow-gradient-curve: cubic-bezier(0.2, 0, 0, 1);
 
-  /* Standard curve var is taken from parent, if any;
-  otherwise use default here. */
+  /*
+  * Standard curve var is taken from parent, if any;
+  * otherwise use default here.
+  */
   --search-animated-glow-standard-curve: cubic-bezier(0.4, 0, 0.2, 1);
 
   --start-angle-open_: 30deg;
@@ -46,9 +50,10 @@
 #dragDropPlaceholder {
   color: var(--drag-placeholder-font-color);
   display: none;
-  font-family: inherit;
+  font-family: var(--drag-placeholder-font-family);
   font-size: var(--drag-placeholder-font-size);
   left: 20px;
+  line-height: var(--drag-placeholder-line-height);
   opacity: 0;
   pointer-events: none;
   position: absolute;
@@ -84,10 +89,12 @@
 }
 
 .gradient::before, .double-gradient::before {
-  /* The actual gradient border and inner glow. In
-  its raw form without .background's effects, it's a
-  colored pinwheel box. 2 gradients so the effect is brighter,
-  but only for dragging animation (not needed for others). */
+  /*
+  * The actual gradient border and inner glow. In
+  * its raw form without .background's effects, it's a
+  * colored pinwheel box. 2 gradients so the effect is brighter,
+  * but only for dragging animation (not needed for others).
+  */
   aspect-ratio: 1 / 1;
   background: var(--search-animated-glow-brand-gradient);
   border-radius: 50%;
@@ -98,14 +105,17 @@
   opacity: 0;
   position: absolute;
   rotate: 0deg;
-  /* Scale squashes the gradient vertically so its middle is not shown,
-  making it a glow, not a pinwheel. Too much, and it will be too
-  tall of a glow. */
+  /*
+  * Scale squashes the gradient vertically so its middle is not shown,
+  * making it a glow, not a pinwheel. Too much, and it will be too
+  * tall of a glow. */
   scale: 1 0.6;
   top: 50%;
   translate: -50% -50%;
-  /* The gradient is 120% wide to ensure it fills
-  passed the entire container. */
+  /*
+  * The gradient is 120% wide to ensure it fills
+  * passed the entire container.
+  */
   width: 120%;
 }
 
@@ -140,8 +150,10 @@
 }
 
 .gradient::after {
-  /* Deepest backdrop, behind .gradient, to block input text
-  in dragging mode. */
+  /*
+  * Deepest backdrop, behind .gradient, to block input text
+  * in dragging mode.
+  */
   background-color: var(--search-animated-glow-background);
   border-radius: inherit;
   content: '';
@@ -203,7 +215,8 @@
 
 .background {
   /* The peephole whose border shrinks the background::before
-  element so the gradient shows up behind it as a border. */
+  * element so the gradient shows up behind it as a border.
+  */
   animation: gradient-border-width var(--glif-rotation-duration_)
     var(--standard-curve, --search-animated-glow-standard-curve);
   border: 0 solid transparent;
@@ -227,12 +240,14 @@
 }
 
 .background::before {
-  /* In expand/submit mode: is the deepest background covering
-  .gradient. The input is layered on top of this.
-  In dragging mode: the frosted glass middle background on top of the gradient.
-  .gradient::after is the deepest background in dragging mode.
-  Because .background and the gradient are blurred,
-  it makes the gradient glow instead of being fully solid. */
+  /*
+  * In expand/submit mode: is the deepest background covering
+  * .gradient. The input is layered on top of this.
+  * In dragging mode: the frosted glass middle background on top of the
+  * gradient. .gradient::after is the deepest background in dragging mode.
+  * Because .background and the gradient are blurred,
+  * it makes the gradient glow instead of being fully solid.
+  */
   background-color: var(--cr-composebox-background-color,
       --search-animated-glow-background);
   border-radius: inherit;
@@ -278,9 +293,11 @@
 }
 
 :host([animation-state='dragging']) .background {
-  /* Set transparent border to let gradient
-  pop out. Make it static compared to animated to make
-  border more slow/steady with stable thickness. */
+  /*
+  * Set transparent border to let gradient
+  * pop out. Make it static compared to animated to make
+  * border more slow/steady with stable thickness.
+  */
   animation: none;
   border-width: 2px;
   pointer-events: none;

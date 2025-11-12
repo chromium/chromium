@@ -1,13 +1,11 @@
-/**
- * Copyright 2025 The Chromium Authors
- * Use of this source code is governed by a BSD-style license that can be
- * found in the LICENSE file.
- */
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
 import {GlowAnimationState} from './constants.js';
 import type {DragAndDropHost} from './drag_drop_host.js';
 
-/**
+/*
  * To use, make parent class of interest implement DragDropHost.
  * Host needs a file entrypoint to submit file in its implementation of
  * 'addFiles()'. After, add handler as attribute of parent class. Utilize
@@ -16,8 +14,7 @@ import type {DragAndDropHost} from './drag_drop_host.js';
 export class DragAndDropHandler {
   private host_: DragAndDropHost;
   private dragAndDropEnabled_: boolean = false;
-
-  /**
+  /*
    * Since there are many dragEnter events, keep track of each and
    * once there are same number of dragLeaves as dragEnters, all dragEnter
    * events have ended, and thus drag state should end fully.

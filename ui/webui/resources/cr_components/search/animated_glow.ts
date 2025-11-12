@@ -1,9 +1,8 @@
-/**
- * Copyright 2025 The Chromium Authors
- * Use of this source code is governed by a BSD-style license that can be
- * found in the LICENSE file.
- */
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
+import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './animated_glow.css.js';
@@ -11,6 +10,10 @@ import {getHtml} from './animated_glow.html.js';
 import {GlowAnimationState} from './constants.js';
 
 export class SearchAnimatedGlowElement extends CrLitElement {
+  static get is() {
+    return 'search-animated-glow';
+  }
+
   static override get styles() {
     return getCss();
   }
@@ -29,6 +32,8 @@ export class SearchAnimatedGlowElement extends CrLitElement {
   }
 
   accessor animationState: GlowAnimationState = GlowAnimationState.NONE;
+  dragDropPlaceholder: string =
+      loadTimeData.getString('composeboxDragAndDropHint');
 }
 
 declare global {
@@ -37,4 +42,4 @@ declare global {
   }
 }
 
-customElements.define('search-animated-glow', SearchAnimatedGlowElement);
+customElements.define(SearchAnimatedGlowElement.is, SearchAnimatedGlowElement);
