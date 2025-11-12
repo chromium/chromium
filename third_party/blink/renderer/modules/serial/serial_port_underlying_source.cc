@@ -160,12 +160,13 @@ void SerialPortUnderlyingSource::ReadDataOrArmWatcher() {
         DOMArrayPiece view(request->view().Get());
         buffer = buffer.first(std::min(view.ByteLength(), buffer.size()));
         view.ByteSpan().copy_prefix_from(buffer);
+        result = data_pipe_->EndReadData(buffer.size());
         request->respond(script_state_, buffer.size(), exception_state);
       } else {
         auto chunk = NotShared(DOMUint8Array::Create(buffer));
+        result = data_pipe_->EndReadData(buffer.size());
         controller_->enqueue(script_state_, chunk, exception_state);
       }
-      result = data_pipe_->EndReadData(buffer.size());
       DCHECK_EQ(result, MOJO_RESULT_OK);
       break;
     }
@@ -175,8 +176,13 @@ void SerialPortUnderlyingSource::ReadDataOrArmWatcher() {
     case MOJO_RESULT_SHOULD_WAIT:
       watcher_.ArmOrNotify();
       break;
+    case MOJO_RESULT_BUSY:
+      DUMP_WILL_BE_NOTREACHED()
+          << "BeginReadData returned MOJO_RESULT_BUSY. This should not happen "
+             "because the data pipe is released before enqueuing data to the "
+             "stream.";
+      break;
     default:
-      invalid_data_pipe_read_result_ = result;
       DUMP_WILL_BE_NOTREACHED() << "Invalid data pipe read result: " << result;
       break;
   }
