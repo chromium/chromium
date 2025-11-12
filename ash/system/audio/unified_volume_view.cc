@@ -64,7 +64,6 @@ UnifiedVolumeView::UnifiedVolumeView(
   more_button_->SetProperty(views::kElementIdentifierKey,
                             kQuickSettingsAudioDetailedViewButtonElementId);
 
-  // TODO(b/257151067): Update the a11y name id.
   // Adds the live caption button before `more_button_`.
   Shell::Get()->accessibility_controller()->AddObserver(this);
   const bool enabled =
@@ -170,7 +169,6 @@ void UnifiedVolumeView::Update(bool by_user) {
   switch (slider_style) {
     case Style::kDefault:
     case Style::kDefaultMuted: {
-      // TODO(b/257151067): Adds tooltip.
       slider_button()->SetVectorIcon(is_muted ? kUnifiedMenuVolumeMuteIcon
                                               : GetVolumeIconForLevel(level));
       slider_button()->SetIconColor(
