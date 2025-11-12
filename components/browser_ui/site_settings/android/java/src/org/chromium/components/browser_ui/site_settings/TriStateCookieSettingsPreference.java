@@ -53,7 +53,7 @@ public class TriStateCookieSettingsPreference extends ContainedRadioButtonGroupP
     }
 
     // Keeps the params that are applied to the UI if the params are set before the UI is ready.
-    private @Nullable Params mInitializationParams;
+    private @Nullable Params mParams;
 
     // UI Elements.
     private RadioButtonWithDescriptionAndAuxButton mBlockThirdPartyIncognitoButton;
@@ -74,23 +74,25 @@ public class TriStateCookieSettingsPreference extends ContainedRadioButtonGroupP
 
     /** Sets the cookie settings state and updates the radio buttons. */
     public void setState(Params state) {
+        mParams = state;
         if (mRadioGroup != null) {
-            setBlockThirdPartyCookieDescription(state);
-            configureRadioButtons(state);
-        } else {
-            mInitializationParams = state;
+            setBlockThirdPartyCookieDescription(mParams);
+            configureRadioButtons(mParams);
         }
+        notifyChanged();
     }
 
-    /** @return The state that is currently selected. */
+    /**
+     * @return The state that is currently selected.
+     */
     public @CookieControlsMode @Nullable Integer getState() {
-        if (mRadioGroup == null && mInitializationParams == null) {
+        if (mRadioGroup == null && mParams == null) {
             return null;
         }
 
-        // Calculate the state from mInitializationParams if the UI is not initialized yet.
-        if (mInitializationParams != null) {
-            return getActiveState(mInitializationParams);
+        // Calculate the state from mParams if the UI is not initialized yet.
+        if (mParams != null) {
+            return getActiveState(mParams);
         }
 
         if (mBlockThirdPartyIncognitoButton.isChecked()) {
@@ -103,12 +105,21 @@ public class TriStateCookieSettingsPreference extends ContainedRadioButtonGroupP
 
     @Override
     public void onCheckedChanged(RadioGroup group, int checkedId) {
+        @CookieControlsMode int state;
         if (checkedId == mBlockThirdPartyButton.getId()) {
             RecordUserAction.record("Settings.ThirdPartyCookies.Block");
+            state = CookieControlsMode.BLOCK_THIRD_PARTY;
         } else if (checkedId == mBlockThirdPartyIncognitoButton.getId()) {
             RecordUserAction.record("Settings.ThirdPartyCookies.Allow");
+            state = CookieControlsMode.INCOGNITO_ONLY;
+        } else {
+            return;
         }
-        callChangeListener(getState());
+
+        if (mParams != null) {
+            setBlockThirdPartyCookieDescription(mParams);
+        }
+        callChangeListener(state);
     }
 
     @Override
@@ -133,9 +144,9 @@ public class TriStateCookieSettingsPreference extends ContainedRadioButtonGroupP
                 (TextViewWithCompoundDrawables)
                         assertNonNull(holder.findViewById(R.id.managed_disclaimer_text));
 
-        if (mInitializationParams != null) {
-            setBlockThirdPartyCookieDescription(mInitializationParams);
-            configureRadioButtons(mInitializationParams);
+        if (mParams != null) {
+            setBlockThirdPartyCookieDescription(mParams);
+            configureRadioButtons(mParams);
         }
     }
 
@@ -147,7 +158,7 @@ public class TriStateCookieSettingsPreference extends ContainedRadioButtonGroupP
         final int blockSublabelId =
                 params.isRelatedWebsiteSetsDataAccessEnabled
                         ? R.string
-                                .settings_cookies_block_third_party_settings_block_sublabel_rws_enabled
+                        .settings_cookies_block_third_party_settings_block_sublabel_rws_enabled
                         : R.string
                                 .website_settings_third_party_cookies_page_block_radio_sub_label_rws_disabled;
         mBlockThirdPartyButton.setDescriptionText(getResources().getString(blockSublabelId));
@@ -187,8 +198,6 @@ public class TriStateCookieSettingsPreference extends ContainedRadioButtonGroupP
         // Always want to enable the selected option.
         button.setEnabled(true);
         button.setChecked(true);
-
-        mInitializationParams = null;
     }
 
     /** A helper function to return a button array from a variable number of arguments. */
@@ -228,10 +237,5 @@ public class TriStateCookieSettingsPreference extends ContainedRadioButtonGroupP
     public boolean isButtonCheckedForTesting(@CookieControlsMode int state) {
         assert getButton(state) != null;
         return getButton(state).isChecked();
-    }
-
-    public boolean isButtonVisibleForTesting(@CookieControlsMode int state) {
-        assert getButton(state) != null;
-        return getButton(state).getVisibility() == View.VISIBLE;
     }
 }
