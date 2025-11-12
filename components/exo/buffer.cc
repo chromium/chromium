@@ -140,7 +140,8 @@ class Buffer::Texture : public viz::ContextLostObserver {
 
   // Allow texture to be reused after |sync_token| has passed and runs
   // |callback|.
-  void Release(base::OnceClosure callback, viz::ReturnedResource resource);
+  void Release(base::OnceCallback<void(gfx::GpuFenceHandle)> callback,
+               viz::ReturnedResource resource);
 
   // Updates the contents referenced by |gpu_memory_buffer_handle_| returned by
   // mailbox().
@@ -148,8 +149,9 @@ class Buffer::Texture : public viz::ContextLostObserver {
 
   // Releases the contents referenced by |mailbox_| after |sync_token| has
   // passed and runs |callback| when completed.
-  void ReleaseSharedImage(base::OnceClosure callback,
-                          viz::ReturnedResource resource);
+  void ReleaseSharedImage(
+      base::OnceCallback<void(gfx::GpuFenceHandle)> callback,
+      viz::ReturnedResource resource);
 
   // Copy the contents of texture to |destination| and runs |callback| when
   // completed.
@@ -284,18 +286,19 @@ bool Buffer::Texture::IsLost() {
   return true;
 }
 
-void Buffer::Texture::Release(base::OnceClosure callback,
-                              viz::ReturnedResource resource) {
+void Buffer::Texture::Release(
+    base::OnceCallback<void(gfx::GpuFenceHandle)> callback,
+    viz::ReturnedResource resource) {
   if (context_provider_) {
     // Only need to wait on the sync token if we don't have a release fence.
-    if (resource.sync_token.HasData()) {
+    if (resource.sync_token.HasData() && resource.release_fence.is_null()) {
       sync_token_ = resource.sync_token;
     }
   }
 
   // Run callback as texture can be reused immediately after waiting for sync
   // token.
-  std::move(callback).Run();
+  std::move(callback).Run(std::move(resource.release_fence));
 }
 
 void Buffer::Texture::UpdateSharedImage(
@@ -314,9 +317,12 @@ void Buffer::Texture::UpdateSharedImage(
   }
 }
 
-void Buffer::Texture::ReleaseSharedImage(base::OnceClosure callback,
-                                         viz::ReturnedResource resource) {
-  if (context_provider_) {
+void Buffer::Texture::ReleaseSharedImage(
+    base::OnceCallback<void(gfx::GpuFenceHandle)> callback,
+    viz::ReturnedResource resource) {
+  // Only need to wait on the sync token and query if we don't have a release
+  // fence.
+  if (context_provider_ && resource.release_fence.is_null()) {
     gpu::raster::RasterInterface* ri = context_provider_->RasterInterface();
     if (resource.sync_token.HasData()) {
       ri->WaitSyncTokenCHROMIUM(resource.sync_token.GetConstData());
@@ -329,11 +335,12 @@ void Buffer::Texture::ReleaseSharedImage(base::OnceClosure callback,
     // token has data and buffer has been used. If buffer was never used then
     // run the callback immediately.
     if (resource.sync_token.HasData()) {
-      ReleaseWhenQueryResultIsAvailable(std::move(callback));
+      ReleaseWhenQueryResultIsAvailable(base::BindOnce(
+          std::move(callback), /*release_fence=*/gfx::GpuFenceHandle()));
       return;
     }
   }
-  std::move(callback).Run();
+  std::move(callback).Run(std::move(resource.release_fence));
 }
 
 void Buffer::Texture::CopyTexImage(std::unique_ptr<gfx::GpuFence> acquire_fence,
@@ -448,6 +455,21 @@ void Buffer::Texture::WaitForRelease() {
 const void* Buffer::Texture::GetBufferId() const {
   return static_cast<const void*>(gpu_memory_buffer_handle_);
 }
+
+Buffer::BufferRelease::BufferRelease(
+    gfx::GpuFenceHandle release_fence,
+    std::unique_ptr<base::FileDescriptorWatcher::Controller> controller,
+    base::OnceClosure buffer_release_callback)
+    : release_fence(std::move(release_fence)),
+      controller(std::move(controller)),
+      buffer_release_callback(std::move(buffer_release_callback)) {}
+
+Buffer::BufferRelease::~BufferRelease() = default;
+
+Buffer::BufferRelease::BufferRelease(BufferRelease&&) = default;
+
+Buffer::BufferRelease& Buffer::BufferRelease::operator=(BufferRelease&&) =
+    default;
 
 ////////////////////////////////////////////////////////////////////////////////
 // Buffer, public:
@@ -566,6 +588,7 @@ std::optional<viz::TransferableResource> Buffer::ProduceTransferableResource(
   TRACE_EVENT1("exo", "Buffer::ProduceTransferableResource", "buffer_id",
                GetBufferId());
   DCHECK(attach_count_);
+  next_commit_id_++;
 
   // If textures are lost, destroy them to ensure that we create new ones
   // below.
@@ -658,7 +681,8 @@ std::optional<viz::TransferableResource> Buffer::ProduceTransferableResource(
                        base::Unretained(contents_texture),
                        base::BindOnce(&Buffer::ReleaseContentsTexture,
                                       AsWeakPtr(), std::move(contents_texture_),
-                                      release_contents_callback_.callback())));
+                                      release_contents_callback_.callback(),
+                                      next_commit_id_)));
     return resource;
   }
 
@@ -676,7 +700,8 @@ std::optional<viz::TransferableResource> Buffer::ProduceTransferableResource(
       std::move(acquire_fence), texture,
       base::BindOnce(&Buffer::ReleaseContentsTexture, AsWeakPtr(),
                      std::move(contents_texture_),
-                     release_contents_callback_.callback()));
+                     release_contents_callback_.callback(), next_commit_id_,
+                     /*release_fence=*/gfx::GpuFenceHandle()));
 
   auto resource = viz::TransferableResource::Make(
       texture->shared_image(),
@@ -759,16 +784,20 @@ void Buffer::Release() {
   }
 }
 
-void Buffer::ReleaseTexture(std::unique_ptr<Texture> texture) {
+void Buffer::ReleaseTexture(std::unique_ptr<Texture> texture,
+                            gfx::GpuFenceHandle release_fence) {
+  // Buffer was composited - we should not receive a release fence.
+  DCHECK(release_fence.is_null());
   texture_ = std::move(texture);
 }
 
 void Buffer::ReleaseContentsTexture(std::unique_ptr<Texture> texture,
-                                    base::OnceClosure callback) {
+                                    base::OnceClosure callback,
+                                    uint64_t commit_id,
+                                    gfx::GpuFenceHandle release_fence) {
   contents_texture_ = std::move(texture);
-  if (callback) {
-    std::move(callback).Run();
-  }
+  MaybeRunPerCommitRelease(commit_id, std::move(release_fence),
+                           std::move(callback));
 }
 
 void Buffer::ReleaseContents() {
@@ -783,6 +812,50 @@ void Buffer::ReleaseContents() {
     // Release buffer if not attached to surface.
     Release();
   }
+}
+
+void Buffer::MaybeRunPerCommitRelease(
+    uint64_t commit_id,
+    gfx::GpuFenceHandle release_fence,
+    base::OnceClosure buffer_release_callback) {
+
+  // We are still required to send these wl_buffer.release events even if
+  // the client supports explicit synchronization.
+  if (!buffer_release_callback) {
+    return;
+  }
+
+  if (release_fence.is_null() || legacy_release_skippable_) {
+    std::move(buffer_release_callback).Run();
+  } else {
+    // Watching the release fence's fd results in a context switch to the I/O
+    // thread. That may steal thread time from other applications, which can
+    // do something useful during that time. Moreover, most of the time the
+    // fence can have already been signalled. Thus, only watch the fence is
+    // readable iff it hasn't been signalled yet.
+    base::TimeTicks ticks;
+    auto status =
+        gfx::GpuFence::GetStatusChangeTime(release_fence.Peek(), &ticks);
+    if (status == gfx::GpuFence::kSignaled) {
+      std::move(buffer_release_callback).Run();
+      return;
+    }
+
+    auto controller = base::FileDescriptorWatcher::WatchReadable(
+        release_fence.Peek(),
+        base::BindRepeating(&Buffer::FenceSignalled, AsWeakPtr(), commit_id));
+    buffer_releases_.emplace(
+        commit_id,
+        BufferRelease(std::move(release_fence), std::move(controller),
+                      std::move(buffer_release_callback)));
+  }
+}
+
+void Buffer::FenceSignalled(uint64_t commit_id) {
+  auto iter = buffer_releases_.find(commit_id);
+  CHECK(iter != buffer_releases_.end());
+  std::move(iter->second.buffer_release_callback).Run();
+  buffer_releases_.erase(iter);
 }
 
 SkBitmap Buffer::CreateBitmap() {
