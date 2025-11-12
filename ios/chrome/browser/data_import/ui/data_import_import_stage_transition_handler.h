@@ -8,13 +8,23 @@
 /// Consumer that updates the UI to reflect import stage transition.
 @protocol DataImportImportStageTransitionHandler
 
+// Reasons for resetting the import flow to the initial stage.
+enum class DataImportResetReason {
+  // The flow was reset because the user manually cancelled it.
+  kUserInitiated,
+  // The flow was reset because no importable data was found in the selected
+  // file.
+  kNoImportableData,
+  // The flow was reset because all detected data types are blocked by
+  // enterprise policy.
+  kAllDataBlockedByPolicy,
+};
+
 /// Transition to the next import stage.
 - (void)transitionToNextImportStage;
 
-/// Reset the import stage to `kNotReady`. This should be invoked when file
-/// selection or processing is halted. If the user cancels the file selection,
-/// `userInitiated` should be YES.
-- (void)resetToInitialImportStage:(BOOL)userInitiated;
+/// Resets the import flow to the initial stage for the given `reason`.
+- (void)resetToInitialImportStage:(DataImportResetReason)reason;
 
 @end
 

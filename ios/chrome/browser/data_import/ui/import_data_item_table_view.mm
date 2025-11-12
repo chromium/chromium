@@ -396,16 +396,30 @@ UIView* GetCheckmark() {
 
 /// Handle import preparation complete.
 - (void)importPreparationDidComplete {
+  BOOL shouldInitiateImport = NO;
+  BOOL anyTypeBlockedByPolicy = NO;
+
   for (ImportDataItem* item in _itemDictionary.allValues) {
-    if (item.count + item.invalidCount > 0) {
-      /// Found an item to import!
-      [self initializeDataSource];
-      [self.importStageTransitionHandler transitionToNextImportStage];
-      return;
+    if (item.status == ImportDataItemImportStatus::kBlockedByPolicy) {
+      anyTypeBlockedByPolicy = YES;
+    } else if (item.status == ImportDataItemImportStatus::kReady &&
+               (item.count + item.invalidCount > 0)) {
+      shouldInitiateImport = YES;
+      break;
     }
   }
-  /// No item to import.
-  [self.importStageTransitionHandler resetToInitialImportStage:NO];
+
+  if (shouldInitiateImport) {
+    [self initializeDataSource];
+    [self.importStageTransitionHandler transitionToNextImportStage];
+  } else if (anyTypeBlockedByPolicy) {
+    [self.importStageTransitionHandler
+        resetToInitialImportStage:DataImportResetReason::
+                                      kAllDataBlockedByPolicy];
+  } else {
+    [self.importStageTransitionHandler
+        resetToInitialImportStage:DataImportResetReason::kNoImportableData];
+  }
 }
 
 /// Invoked when minimum importing time has passed.

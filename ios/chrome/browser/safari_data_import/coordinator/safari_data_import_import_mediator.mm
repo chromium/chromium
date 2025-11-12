@@ -183,7 +183,8 @@
   }
   NSURL* securityScopedURL = urls.firstObject;
   if (![securityScopedURL startAccessingSecurityScopedResource]) {
-    [self.importStageTransitionHandler resetToInitialImportStage:NO];
+    [self.importStageTransitionHandler
+        resetToInitialImportStage:DataImportResetReason::kNoImportableData];
     return;
   }
   _currentSecurityScopedURL = securityScopedURL;
@@ -193,7 +194,8 @@
 }
 
 - (void)documentPickerWasCancelled:(UIDocumentPickerViewController*)controller {
-  [self.importStageTransitionHandler resetToInitialImportStage:YES];
+  [self.importStageTransitionHandler
+      resetToInitialImportStage:DataImportResetReason::kUserInitiated];
 }
 
 #pragma mark - Private
@@ -209,7 +211,8 @@
   _importClient->RegisterCallbackOnImportFailure(base::BindOnce(^{
     __strong SafariDataImportImportMediator* strongSelf = weakSelf;
     [strongSelf reset];
-    [strongSelf.importStageTransitionHandler resetToInitialImportStage:NO];
+    [strongSelf.importStageTransitionHandler
+        resetToInitialImportStage:DataImportResetReason::kNoImportableData];
   }));
   _importClientReady = YES;
 }

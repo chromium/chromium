@@ -60,12 +60,8 @@ constexpr NSInteger kExpectedItemsCount = 4;
 /// `-mediator` method.
 @property(nonatomic, readonly) SafariDataImportImportMediator* mediator;
 
-/// Alert screen being displayed when the last selected file could not be
-/// processed or contains no valid items.
-@property(nonatomic, readonly) UIAlertController* errorAlert;
-
-/// Alert screen being displayed when the last selected file could not be
-/// processed or contains no valid items.
+/// Alert screen being displayed before dismissal, asking the user whether the
+/// imported file should be deleted.
 @property(nonatomic, readonly) UIAlertController* fileDeletionAlert;
 
 @end
@@ -81,7 +77,6 @@ constexpr NSInteger kExpectedItemsCount = 4;
 }
 
 @synthesize mediator = _mediator;
-@synthesize errorAlert = _errorAlert;
 @synthesize fileDeletionAlert = _fileDeletionAlert;
 @synthesize baseNavigationController = _baseNavigationController;
 
@@ -168,26 +163,6 @@ constexpr NSInteger kExpectedItemsCount = 4;
   return _mediator;
 }
 
-- (UIAlertController*)errorAlert {
-  if (!_errorAlert) {
-    NSString* title = l10n_util::GetNSString(
-        IDS_IOS_SAFARI_IMPORT_IMPORT_FAILURE_MESSAGE_TITLE);
-    NSString* description = l10n_util::GetNSString(
-        IDS_IOS_SAFARI_IMPORT_IMPORT_FAILURE_MESSAGE_DESCRIPTION);
-    NSString* buttonText = l10n_util::GetNSString(IDS_OK);
-    UIAlertAction* dismiss =
-        [UIAlertAction actionWithTitle:buttonText
-                                 style:UIAlertActionStyleDefault
-                               handler:nil];
-    _errorAlert = [UIAlertController
-        alertControllerWithTitle:title
-                         message:description
-                  preferredStyle:UIAlertControllerStyleAlert];
-    [_errorAlert addAction:dismiss];
-  }
-  return _errorAlert;
-}
-
 - (UIAlertController*)fileDeletionAlert {
   if (!_fileDeletionAlert) {
     NSString* title = l10n_util::GetNSStringF(
@@ -260,16 +235,41 @@ constexpr NSInteger kExpectedItemsCount = 4;
       static_cast<SafariDataImportStage>(nextImportStageInt);
 }
 
-- (void)resetToInitialImportStage:(BOOL)userInitiated {
+- (void)resetToInitialImportStage:(DataImportResetReason)reason {
   SafariDataImportStage currentStage = self.importStage;
   CHECK_EQ(currentStage, SafariDataImportStage::kFileLoading)
       << "Not supported for stage: " << static_cast<int>(currentStage);
-  /// If the user has not explicitly canceled the import, alert the user that
-  /// they selected the wrong file.
-  if (!userInitiated) {
-    BOOL success = [self presentViewController:self.errorAlert];
+
+  UIAlertController* alert = nil;
+
+  switch (reason) {
+    case DataImportResetReason::kUserInitiated:
+      break;
+    case DataImportResetReason::kNoImportableData: {
+      /// If the user has not explicitly canceled the import, alert the user
+      /// that they selected the wrong file.
+      NSString* title = l10n_util::GetNSString(
+          IDS_IOS_SAFARI_IMPORT_IMPORT_FAILURE_MESSAGE_TITLE);
+      NSString* message = l10n_util::GetNSString(
+          IDS_IOS_SAFARI_IMPORT_IMPORT_FAILURE_MESSAGE_DESCRIPTION);
+      alert = [self alertWithTitle:title message:message];
+      break;
+    }
+    case DataImportResetReason::kAllDataBlockedByPolicy: {
+      NSString* title = l10n_util::GetNSString(
+          IDS_IOS_SAFARI_IMPORT_IMPORT_NOT_ALLOWED_TITLE);
+      NSString* message = l10n_util::GetNSString(
+          IDS_IOS_SAFARI_IMPORT_IMPORT_NOT_ALLOWED_MESSAGE);
+      alert = [self alertWithTitle:title message:message];
+      break;
+    }
+  }
+
+  if (alert) {
+    BOOL success = [self presentViewController:alert];
     RecordSafariDataImportFailure(success);
   }
+
   [self.mediator reset];
   _containerViewController.importStage = SafariDataImportStage::kNotStarted;
 }
@@ -382,6 +382,22 @@ constexpr NSInteger kExpectedItemsCount = 4;
 - (void)dismissWorkflow {
   RecordSafariDataImportEndsAtImportStage(self.importStage);
   [self.delegate safariDataImportCoordinatorWillDismissWorkflow:self];
+}
+
+/// Creates and returns an alert controller.
+- (UIAlertController*)alertWithTitle:(NSString*)title
+                             message:(NSString*)message {
+  UIAlertController* alert =
+      [UIAlertController alertControllerWithTitle:title
+                                          message:message
+                                   preferredStyle:UIAlertControllerStyleAlert];
+  NSString* buttonText = l10n_util::GetNSString(IDS_OK);
+  UIAlertAction* dismiss =
+      [UIAlertAction actionWithTitle:buttonText
+                               style:UIAlertActionStyleDefault
+                             handler:nil];
+  [alert addAction:dismiss];
+  return alert;
 }
 
 @end
