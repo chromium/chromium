@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/files/file.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 
 class SnapshotFileDetails;

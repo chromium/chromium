@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "base/functional/callback.h"
+
 class GURL;
 
 namespace media_router {

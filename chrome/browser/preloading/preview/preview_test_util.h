@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_PRELOADING_PREVIEW_PREVIEW_TEST_UTIL_H_
 #define CHROME_BROWSER_PRELOADING_PREVIEW_PREVIEW_TEST_UTIL_H_
 
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/public/browser/web_contents.h"

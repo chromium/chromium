@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_SMART_LOCK_SMART_LOCK_AUTH_ATTEMPT_H_
 #define CHROME_BROWSER_ASH_LOGIN_SMART_LOCK_SMART_LOCK_AUTH_ATTEMPT_H_
 
+#include "base/functional/callback.h"
 #include "components/account_id/account_id.h"
 
 namespace ash {
