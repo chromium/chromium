@@ -8,8 +8,6 @@
 #include <utility>
 
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
-#include "cc/base/features.h"
 #include "cc/metrics/event_metrics.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -227,197 +225,7 @@ TEST_F(ScrollJankV4HistogramEmitterTest,
 }
 
 TEST_F(ScrollJankV4HistogramEmitterTest,
-       EmitsPerScrollHistogramsAtStartOfNextScrollWhenFeatureDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kEmitPerScrollJankV4MetricAtEndOfScroll);
-
-  // NO histograms for the first scroll should be emitted before the second
-  // scroll begins.
-  {
-    base::HistogramTester histogram_tester;
-
-    histogram_emitter_->OnScrollStarted();  // First scroll.
-
-    // 1 non-janky frame.
-    histogram_emitter_->OnFrameWithScrollUpdates(kNonJankyFrame);
-
-    // 5 janky frames.
-    histogram_emitter_->OnFrameWithScrollUpdates(MakeMissedVsyncCounts({
-        {JankReason::kMissedVsyncDueToDeceleratingInputFrameDelivery, 1},
-        {JankReason::kMissedVsyncDuringFastScroll, 2},
-        {JankReason::kMissedVsyncAtStartOfFling, 3},
-        {JankReason::kMissedVsyncDuringFling, 4},
-    }));
-    histogram_emitter_->OnFrameWithScrollUpdates(MakeMissedVsyncCounts({
-        {JankReason::kMissedVsyncDueToDeceleratingInputFrameDelivery, 1},
-    }));
-    histogram_emitter_->OnFrameWithScrollUpdates(MakeMissedVsyncCounts({
-        {JankReason::kMissedVsyncDuringFastScroll, 1},
-    }));
-    histogram_emitter_->OnFrameWithScrollUpdates(MakeMissedVsyncCounts({
-        {JankReason::kMissedVsyncAtStartOfFling, 1},
-    }));
-    histogram_emitter_->OnFrameWithScrollUpdates(MakeMissedVsyncCounts({
-        {JankReason::kMissedVsyncDuringFling, 1},
-    }));
-
-    // 1 non-janky frame.
-    histogram_emitter_->OnFrameWithScrollUpdates(kNonJankyFrame);
-
-    histogram_emitter_->OnScrollEnded();  // First scroll.
-
-    ExpectNoScrollJankHistograms(histogram_tester);
-  }
-
-  // UMA histograms for the first scroll SHOULD be emitted when the second
-  // scroll starts.
-  {
-    base::HistogramTester histogram_tester;
-
-    histogram_emitter_->OnScrollStarted();  // Second scroll.
-
-    histogram_tester.ExpectUniqueSample(
-        "Event.ScrollJank.DelayedFramesPercentage4.PerScroll", 5 * 100 / 7, 1);
-    histogram_tester.ExpectTotalCount(
-        "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow", 0);
-    histogram_tester.ExpectTotalCount(
-        "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow."
-        "MissedVsyncDueToDeceleratingInputFrameDelivery",
-        0);
-    histogram_tester.ExpectTotalCount(
-        "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow."
-        "MissedVsyncDuringFastScroll",
-        0);
-    histogram_tester.ExpectTotalCount(
-        "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow."
-        "MissedVsyncAtStartOfFling",
-        0);
-    histogram_tester.ExpectTotalCount(
-        "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow."
-        "MissedVsyncDuringFling",
-        0);
-    histogram_tester.ExpectTotalCount(
-        "Event.ScrollJank.MissedVsyncsSum4.FixedWindow", 0);
-    histogram_tester.ExpectTotalCount(
-        "Event.ScrollJank.MissedVsyncsMax4.FixedWindow", 0);
-  }
-
-  // NO histograms for the second scroll should be emitted before the third
-  // scroll starts.
-  {
-    base::HistogramTester histogram_tester;
-
-    for (int i = 1; i <= 10; i++) {
-      histogram_emitter_->OnFrameWithScrollUpdates(kNonJankyFrame);
-    }
-
-    // Robustness test: Under normal circumstances, the histogram emitter should
-    // have received a scroll end event for the second scroll, but it didn't for
-    // some unexpected reason. The histogram emitter should be able to handle
-    // this situation.
-
-    ExpectNoScrollJankHistograms(histogram_tester);
-  }
-
-  // UMA histograms for the second scroll SHOULD be emitted when the third
-  // scroll starts.
-  {
-    base::HistogramTester histogram_tester;
-
-    histogram_emitter_->OnScrollStarted();  // Third scroll.
-
-    histogram_tester.ExpectUniqueSample(
-        "Event.ScrollJank.DelayedFramesPercentage4.PerScroll", 0, 1);
-    histogram_tester.ExpectTotalCount(
-        "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow", 0);
-    histogram_tester.ExpectTotalCount(
-        "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow."
-        "MissedVsyncDueToDeceleratingInputFrameDelivery",
-        0);
-    histogram_tester.ExpectTotalCount(
-        "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow."
-        "MissedVsyncDuringFastScroll",
-        0);
-    histogram_tester.ExpectTotalCount(
-        "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow."
-        "MissedVsyncAtStartOfFling",
-        0);
-    histogram_tester.ExpectTotalCount(
-        "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow."
-        "MissedVsyncDuringFling",
-        0);
-    histogram_tester.ExpectTotalCount(
-        "Event.ScrollJank.MissedVsyncsSum4.FixedWindow", 0);
-    histogram_tester.ExpectTotalCount(
-        "Event.ScrollJank.MissedVsyncsMax4.FixedWindow", 0);
-  }
-
-  // NO histograms should be emitted for the third scroll, even after the fourth
-  // scroll begins, because it was empty. NO histograms should also be emitted
-  // for the fourth scroll before the histogram emitter is destroyed.
-  {
-    base::HistogramTester histogram_tester;
-
-    histogram_emitter_->OnScrollEnded();    // Third scroll.
-    histogram_emitter_->OnScrollStarted();  // Fourth scroll.
-
-    // 1 non-janky frame.
-    histogram_emitter_->OnFrameWithScrollUpdates(kNonJankyFrame);
-
-    // 1 janky frame.
-    histogram_emitter_->OnFrameWithScrollUpdates(MakeMissedVsyncCounts({
-        {JankReason::kMissedVsyncDuringFastScroll, 4},
-        {JankReason::kMissedVsyncDuringFling, 2},
-    }));
-
-    // 1 non-janky frame.
-    histogram_emitter_->OnFrameWithScrollUpdates(
-        kNonJankyFrame);  // Fourth scroll.
-
-    ExpectNoScrollJankHistograms(histogram_tester);
-  }
-
-  // UMA histograms for the fourth scroll SHOULD be emitted when the histogram
-  // emitter is destroyed.
-  {
-    base::HistogramTester histogram_tester;
-
-    delete histogram_emitter_.release();
-
-    histogram_tester.ExpectUniqueSample(
-        "Event.ScrollJank.DelayedFramesPercentage4.PerScroll", 1 * 100 / 3, 1);
-    histogram_tester.ExpectTotalCount(
-        "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow", 0);
-    histogram_tester.ExpectTotalCount(
-        "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow."
-        "MissedVsyncDueToDeceleratingInputFrameDelivery",
-        0);
-    histogram_tester.ExpectTotalCount(
-        "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow."
-        "MissedVsyncDuringFastScroll",
-        0);
-    histogram_tester.ExpectTotalCount(
-        "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow."
-        "MissedVsyncAtStartOfFling",
-        0);
-    histogram_tester.ExpectTotalCount(
-        "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow."
-        "MissedVsyncDuringFling",
-        0);
-    histogram_tester.ExpectTotalCount(
-        "Event.ScrollJank.MissedVsyncsSum4.FixedWindow", 0);
-    histogram_tester.ExpectTotalCount(
-        "Event.ScrollJank.MissedVsyncsMax4.FixedWindow", 0);
-  }
-}
-
-TEST_F(ScrollJankV4HistogramEmitterTest,
-       EmitsPerScrollHistogramsAtEndOfScrollWhenFeaturEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kEmitPerScrollJankV4MetricAtEndOfScroll);
-
+       EmitsPerScrollHistogramsAtEndOfScroll) {
   // NO histograms for the first scroll should be emitted before it ends.
   {
     base::HistogramTester histogram_tester;
@@ -613,10 +421,6 @@ Delayed frames:  :     1     :     2     :     4     :     8     :
 */
 TEST_F(ScrollJankV4HistogramEmitterTest,
        EmitsBothFixedWindowAndPerScrollHistogramsIndependently) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kEmitPerScrollJankV4MetricAtEndOfScroll);
-
   // Start of scroll 1, frames 1-32: NO histograms should be emitted.
   {
     base::HistogramTester histogram_tester;
@@ -892,10 +696,6 @@ TEST_F(ScrollJankV4HistogramEmitterTest,
 
 TEST_F(ScrollJankV4HistogramEmitterTest,
        FramesWhichDoNotCountTowardsHistogramFrameCount) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kEmitPerScrollJankV4MetricAtEndOfScroll);
-
   {
     base::HistogramTester histogram_tester;
 

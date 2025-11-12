@@ -15,6 +15,7 @@
 #include <string>
 #include <type_traits>
 #include <utility>
+#include <variant>
 
 #include "base/check.h"
 #include "base/debug/alias.h"
@@ -41,7 +42,6 @@
 #include "cc/metrics/latency_ukm_reporter.h"
 #include "cc/metrics/submit_info.h"
 #include "services/tracing/public/cpp/perfetto/macros.h"
-#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_frame_reporter.pbzero.h"
 #include "ui/events/types/event_type.h"
 
@@ -1922,64 +1922,52 @@ void CompositorFrameReporter::ReportScrollJankMetrics() {
   const auto end_timestamp = viz_breakdown_.presentation_feedback.timestamp;
   // TODO(crbug.com/452613902): Revert the logic to before
   // https://crrev.com/c/6931550 (i.e. get rid of
-  // `FrameJankReportingStage::CalculateStages()`) when the
-  // `features::kEmitPerScrollJankV1MetricAtEndOfScroll` is removed.
+  // `FrameJankReportingStage::CalculateStages()`).
   FrameJankReportingStage::List stages =
       FrameJankReportingStage::CalculateStages(events_metrics_);
   for (FrameJankReportingStage& stage : stages) {
-    std::visit(
-        absl::Overload{
-            [&](FrameJankReportingStage::ScrollUpdates& updates) {
-              if (updates.is_scroll_start) {
-                if (global_trackers_.predictor_jank_tracker) {
-                  global_trackers_.predictor_jank_tracker
-                      ->ResetCurrentScrollReporting();
-                }
-                if (global_trackers_.scroll_jank_dropped_frame_tracker) {
-                  global_trackers_.scroll_jank_dropped_frame_tracker
-                      ->OnScrollStarted();
-                }
-                if (global_trackers_.scroll_jank_ukm_reporter) {
-                  global_trackers_.scroll_jank_ukm_reporter
-                      ->EmitScrollJankUkm();
-                  global_trackers_.scroll_jank_ukm_reporter
-                      ->SetEarliestScrollEvent(*updates.latest_event);
-                }
-              }
+    auto* updates =
+        std::get_if<FrameJankReportingStage::ScrollUpdates>(&stage.stage);
+    if (updates == nullptr) {
+      continue;
+    }
+    if (updates->is_scroll_start) {
+      if (global_trackers_.predictor_jank_tracker) {
+        global_trackers_.predictor_jank_tracker->ResetCurrentScrollReporting();
+      }
+      if (global_trackers_.scroll_jank_dropped_frame_tracker) {
+        global_trackers_.scroll_jank_dropped_frame_tracker->OnScrollStarted();
+      }
+      if (global_trackers_.scroll_jank_ukm_reporter) {
+        global_trackers_.scroll_jank_ukm_reporter->EmitScrollJankUkm();
+        global_trackers_.scroll_jank_ukm_reporter->SetEarliestScrollEvent(
+            *updates->latest_event);
+      }
+    }
 
-              TRACE_EVENT("input,input.scrolling", "PresentedFrameInformation",
-                          [events_metrics = std::cref(events_metrics_),
-                           &updates](perfetto::EventContext& ctx) {
-                            TraceScrollJankMetrics(
-                                events_metrics, updates.fling_input_count,
-                                updates.normal_input_count, ctx);
-                          });
+    TRACE_EVENT("input,input.scrolling", "PresentedFrameInformation",
+                [events_metrics = std::cref(events_metrics_),
+                 &updates](perfetto::EventContext& ctx) {
+                  TraceScrollJankMetrics(events_metrics,
+                                         updates->fling_input_count,
+                                         updates->normal_input_count, ctx);
+                });
 
-              if (global_trackers_.predictor_jank_tracker) {
-                global_trackers_.predictor_jank_tracker
-                    ->ReportLatestScrollDelta(updates.total_predicted_delta,
-                                              end_timestamp, args_.interval,
-                                              updates.latest_event->trace_id());
-              }
-              if (global_trackers_.scroll_jank_dropped_frame_tracker) {
-                global_trackers_.scroll_jank_dropped_frame_tracker
-                    ->ReportLatestPresentationData(
-                        *updates.latest_event, updates.last_coalesced_ts,
-                        end_timestamp, args_.interval);
-              }
-              if (global_trackers_.scroll_jank_ukm_reporter) {
-                global_trackers_.scroll_jank_ukm_reporter
-                    ->UpdateLatestFrameAndEmitPredictorJank(end_timestamp);
-              }
-            },
-            [&](FrameJankReportingStage::ScrollEnd& end) {
-              if (global_trackers_.scroll_jank_dropped_frame_tracker) {
-                global_trackers_.scroll_jank_dropped_frame_tracker
-                    ->OnScrollEnded();
-              }
-            },
-        },
-        stage.stage);
+    if (global_trackers_.predictor_jank_tracker) {
+      global_trackers_.predictor_jank_tracker->ReportLatestScrollDelta(
+          updates->total_predicted_delta, end_timestamp, args_.interval,
+          updates->latest_event->trace_id());
+    }
+    if (global_trackers_.scroll_jank_dropped_frame_tracker) {
+      global_trackers_.scroll_jank_dropped_frame_tracker
+          ->ReportLatestPresentationData(*updates->latest_event,
+                                         updates->last_coalesced_ts,
+                                         end_timestamp, args_.interval);
+    }
+    if (global_trackers_.scroll_jank_ukm_reporter) {
+      global_trackers_.scroll_jank_ukm_reporter
+          ->UpdateLatestFrameAndEmitPredictorJank(end_timestamp);
+    }
   }
   if (global_trackers_.scroll_jank_v4_processor) {
     global_trackers_.scroll_jank_v4_processor

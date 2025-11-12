@@ -8,10 +8,8 @@
 #include <vector>
 
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
-#include "cc/base/features.h"
 #include "cc/metrics/event_metrics.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -243,8 +241,7 @@ TEST_F(ScrollJankDroppedFrameTrackerTest, MissedVsyncWhenInputWasPresent) {
 
 /*
 Tests that the scroll jank metric's histograms for a scroll are emitted at the
-beginning of the next scroll when the `EmitPerScrollJankV1MetricAtEndOfScroll`
-feature is disabled.
+beginning of the next scroll.
 vsync                   v0              v1        v2
                         |    |    |     |    |    |
 input   I0  I1  I2  I3  I4  I5
@@ -254,11 +251,7 @@ F2:             |-----------------------| {I2, I3}
 F3:                     |-------------------------| {I4, I5}
 */
 TEST_F(ScrollJankDroppedFrameTrackerTest,
-       ShouldEmitMetricsAtStartOfNextScrollWhenFeatureDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kEmitPerScrollJankV1MetricAtEndOfScroll);
-
+       ShouldEmitMetricsAtStartOfNextScroll) {
   const std::vector<base::TimeTicks> inputs = {
       MillisSinceEpoch(103), MillisSinceEpoch(111), MillisSinceEpoch(119),
       MillisSinceEpoch(127), MillisSinceEpoch(135), MillisSinceEpoch(143)};
@@ -274,9 +267,6 @@ TEST_F(ScrollJankDroppedFrameTrackerTest,
   ReportLatestPresentationDataToTracker(f3);
   const int total_frames = 10;
   ProduceAndReportMockFrames(f3, total_frames - 3);
-
-  // The tracker SHOULDN'T emit any metrics at the end of the scroll.
-  scroll_jank_dropped_frame_tracker_->OnScrollEnded();
 
   histogram_tester->ExpectTotalCount(kMissedVsyncsSumPerScrollHistogram, 0);
   histogram_tester->ExpectTotalCount(kMissedVsyncsMaxPerScrollHistogram, 0);
@@ -355,40 +345,6 @@ class ScrollJankDroppedFrameTrackerPerScrollTest
   static const int expected_missed_vsyncs_sum = 3;
   static const int expected_missed_vsyncs_max = 2;
 };
-
-/*
-Tests that the scroll jank metric's histograms for a scroll are emitted at
-the end of the scroll when the `EmitPerScrollJankV1MetricAtEndOfScroll` feature
-is enabled.
-*/
-TEST_F(ScrollJankDroppedFrameTrackerPerScrollTest,
-       ShouldEmitMetricsAtEndOfScrollWhenFeatureEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kEmitPerScrollJankV1MetricAtEndOfScroll);
-
-  ProduceAndReportScrollFrames();
-
-  // The tracker should emit all metrics at the end of the scroll.
-  scroll_jank_dropped_frame_tracker_->OnScrollEnded();
-
-  histogram_tester->ExpectUniqueSample(kMissedVsyncsSumPerScrollHistogram,
-                                       expected_missed_vsyncs_sum, 1);
-  histogram_tester->ExpectUniqueSample(kMissedVsyncsMaxPerScrollHistogram,
-                                       expected_missed_vsyncs_max, 1);
-  histogram_tester->ExpectUniqueSample(kDelayedFramesPerScrollHistogram,
-                                       expected_delayed_frames_percentage, 1);
-
-  // The tracker SHOULDN'T emit any more metrics at the beginning of the next
-  // scroll or when it's destroyed.
-  ResetHistogramTester();
-  scroll_jank_dropped_frame_tracker_->OnScrollStarted();
-  delete scroll_jank_dropped_frame_tracker_.release();
-
-  histogram_tester->ExpectTotalCount(kMissedVsyncsSumPerScrollHistogram, 0);
-  histogram_tester->ExpectTotalCount(kMissedVsyncsMaxPerScrollHistogram, 0);
-  histogram_tester->ExpectTotalCount(kDelayedFramesPerScrollHistogram, 0);
-}
 
 /*
 Tests that the scroll jank metric's histograms for a scroll are emitted when the

@@ -242,11 +242,6 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(
     double,
     kScrollJankV4MetricFlingContinuityThreshold);
 
-// When enabled, the V1/V4 per-scroll jank metric will be emitted at the end of
-// a scroll (as opposed to at the beginning of the next scroll).
-CC_BASE_EXPORT BASE_DECLARE_FEATURE(kEmitPerScrollJankV1MetricAtEndOfScroll);
-CC_BASE_EXPORT BASE_DECLARE_FEATURE(kEmitPerScrollJankV4MetricAtEndOfScroll);
-
 // Whether the scroll jank V4 metric should handle non-damaging inputs. See
 // `ScrollJankV4Frame::ScrollDamage` for the definition of non-damaging inputs
 // and frames.

@@ -8,11 +8,9 @@
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
-#include "cc/base/features.h"
 #include "cc/metrics/event_metrics.h"
 
 namespace cc {
@@ -197,17 +195,8 @@ void ScrollJankDroppedFrameTracker::ReportLatestPresentationData(
 }
 
 void ScrollJankDroppedFrameTracker::OnScrollStarted() {
-  // In case ScrollJankDroppedFrameTracker wasn't informed about the end of the
-  // previous scroll, emit histograms for the previous scroll now.
   EmitPerScrollHistogramsAndResetCounters();
   per_scroll_ = JankData();
-}
-
-void ScrollJankDroppedFrameTracker::OnScrollEnded() {
-  if (base::FeatureList::IsEnabled(
-          features::kEmitPerScrollJankV1MetricAtEndOfScroll)) {
-    EmitPerScrollHistogramsAndResetCounters();
-  }
 }
 
 }  // namespace cc

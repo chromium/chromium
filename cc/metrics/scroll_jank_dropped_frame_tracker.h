@@ -27,7 +27,6 @@ class CC_EXPORT ScrollJankDroppedFrameTracker {
                                     base::TimeTicks presentation_ts,
                                     base::TimeDelta vsync_interval);
   void OnScrollStarted();
-  void OnScrollEnded();
 
   void set_scroll_jank_ukm_reporter(
       ScrollJankUkmReporter* scroll_jank_ukm_reporter) {

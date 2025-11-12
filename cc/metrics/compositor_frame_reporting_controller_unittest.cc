@@ -3021,26 +3021,24 @@ TEST_F(CompositorFrameReportingControllerTest, JankyThrottledScrolledFrame) {
 }
 
 /*
-Test that the controller emits both the v1 and v4 per-scroll jank metrics when
-it encounters a scroll end event.
-vsync   |       |       |       |       |       |
-input  GSU1    GSU2    GSE
-        |       |       |
-F1:     |---------------|
-F2:             |---------------|
-F3:                     |---------------x (throttled)
-F4:                                      -------|
+Test that the controller emits both the v1 and v4 per-scroll jank metrics. It
+should emit v1 metrics when it encounters the next first gesture scroll update
+event. It should emit v4 metrics when it encounters a gestures scroll end event.
+
+vsync   |       |       |       |       |       |       |
+input  GSU1    GSU2    GSE    FGSU3                     |
+        |       |       |       |                       |
+F1:     |---------------|       |                       |
+F2:             |---------------|                       |
+F3:                     |---------------x (throttled)   |
+F4:                             |        -------|       |
+F5:                             |-----------------------|
+                                                ^       ^
+                                                |       |
+                                                |       v1 metrics emitted
+                                                v4 metrics emitted
 */
-TEST_F(CompositorFrameReportingControllerTest,
-       EmitsPerScrollJankMetricsAtEndOfScroll) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatureStates({
-      {features::kEmitPerScrollJankV1MetricAtEndOfScroll, true},
-      {features::kEmitPerScrollJankV4MetricAtEndOfScroll, true},
-  });
-
-  base::HistogramTester histogram_tester;
-
+TEST_F(CompositorFrameReportingControllerTest, EmitsPerScrollJankMetrics) {
   std::unique_ptr<EventMetrics> scroll_update1_metrics =
       CreateScrollUpdateEventMetrics(
           ui::ScrollInputType::kWheel, /*is_inertial=*/false,
@@ -3064,60 +3062,98 @@ TEST_F(CompositorFrameReportingControllerTest,
       scroll_end_metrics->GetDispatchStageTimestamp(
           EventMetrics::DispatchStage::kGenerated);
 
+  std::unique_ptr<EventMetrics> scroll_update3_metrics =
+      CreateScrollUpdateEventMetrics(
+          ui::ScrollInputType::kWheel, /*is_inertial=*/false,
+          ScrollUpdateEventMetrics::ScrollUpdateType::kStarted, std::nullopt);
+  base::TimeTicks scroll_update3_generation_ts =
+      scroll_update3_metrics->GetDispatchStageTimestamp(
+          EventMetrics::DispatchStage::kGenerated);
+
   base::TimeDelta vsync_interval =
       scroll_update2_generation_ts - scroll_update1_generation_ts;
   args_.interval = vsync_interval;
 
-  SimulateBeginImplFrame();  // BF1
-  reporting_controller_.OnFinishImplFrame(current_id_,
-                                          /*waiting_for_main=*/true);
-  EventMetrics::List metrics_list_1;
-  metrics_list_1.push_back(std::move(scroll_update1_metrics));
-  SimulateSubmitCompositorFrame({{}, std::move(metrics_list_1), {}});
+  {
+    base::HistogramTester histogram_tester;
 
-  viz::FrameTimingDetails details_1 = {};
-  details_1.presentation_feedback.timestamp =
-      scroll_update1_generation_ts + 2 * vsync_interval;
-  reporting_controller_.DidPresentCompositorFrame(*current_token_,
-                                                  details_1);  // PF1
+    SimulateBeginImplFrame();  // BF1
+    reporting_controller_.OnFinishImplFrame(current_id_,
+                                            /*waiting_for_main=*/true);
+    EventMetrics::List metrics_list_1;
+    metrics_list_1.push_back(std::move(scroll_update1_metrics));
+    SimulateSubmitCompositorFrame({{}, std::move(metrics_list_1), {}});
 
-  SimulateBeginImplFrame();  // BF2
-  reporting_controller_.OnFinishImplFrame(current_id_,
-                                          /*waiting_for_main=*/true);
-  EventMetrics::List metrics_list_2;
-  metrics_list_2.push_back(std::move(scroll_update2_metrics));
-  SimulateSubmitCompositorFrame({{}, std::move(metrics_list_2), {}});
+    viz::FrameTimingDetails details_1 = {};
+    details_1.presentation_feedback.timestamp =
+        scroll_update1_generation_ts + 2 * vsync_interval;
+    reporting_controller_.DidPresentCompositorFrame(*current_token_,
+                                                    details_1);  // PF1
 
-  viz::FrameTimingDetails details_2 = {};
-  details_2.presentation_feedback.timestamp =
-      scroll_update2_generation_ts + 2 * vsync_interval;
-  reporting_controller_.DidPresentCompositorFrame(*current_token_,
-                                                  details_2);  // PF2
+    SimulateBeginImplFrame();  // BF2
+    reporting_controller_.OnFinishImplFrame(current_id_,
+                                            /*waiting_for_main=*/true);
+    EventMetrics::List metrics_list_2;
+    metrics_list_2.push_back(std::move(scroll_update2_metrics));
+    SimulateSubmitCompositorFrame({{}, std::move(metrics_list_2), {}});
 
-  SimulateBeginImplFrame();  // BF3
-  reporting_controller_.OnFinishImplFrame(current_id_,
-                                          /*waiting_for_main=*/true);
-  AdvanceNowByMs(10);
-  reporting_controller_.DidNotProduceFrame(current_id_,
-                                           FrameSkippedReason::kDrawThrottled);
+    viz::FrameTimingDetails details_2 = {};
+    details_2.presentation_feedback.timestamp =
+        scroll_update2_generation_ts + 2 * vsync_interval;
+    reporting_controller_.DidPresentCompositorFrame(*current_token_,
+                                                    details_2);  // PF2
 
-  SimulateBeginImplFrame();  // BF4
-  reporting_controller_.OnFinishImplFrame(current_id_,
-                                          /*waiting_for_main=*/true);
-  EventMetrics::List metrics_list_4;
-  metrics_list_4.push_back(std::move(scroll_end_metrics));
-  SimulateSubmitCompositorFrame({{}, std::move(metrics_list_4), {}});
+    SimulateBeginImplFrame();  // BF3
+    reporting_controller_.OnFinishImplFrame(current_id_,
+                                            /*waiting_for_main=*/true);
+    AdvanceNowByMs(10);
+    reporting_controller_.DidNotProduceFrame(
+        current_id_, FrameSkippedReason::kDrawThrottled);
 
-  viz::FrameTimingDetails details_4 = {};
-  details_4.presentation_feedback.timestamp =
-      scroll_end_generation_ts + 3 * vsync_interval;
-  reporting_controller_.DidPresentCompositorFrame(*current_token_,
-                                                  details_4);  // PF4
+    SimulateBeginImplFrame();  // BF4
+    reporting_controller_.OnFinishImplFrame(current_id_,
+                                            /*waiting_for_main=*/true);
+    EventMetrics::List metrics_list_4;
+    metrics_list_4.push_back(std::move(scroll_end_metrics));
+    SimulateSubmitCompositorFrame({{}, std::move(metrics_list_4), {}});
 
-  histogram_tester.ExpectTotalCount(
-      "Event.ScrollJank.DelayedFramesPercentage.PerScroll", 1);
-  histogram_tester.ExpectTotalCount(
-      "Event.ScrollJank.DelayedFramesPercentage4.PerScroll", 1);
+    viz::FrameTimingDetails details_4 = {};
+    details_4.presentation_feedback.timestamp =
+        scroll_end_generation_ts + 3 * vsync_interval;
+    reporting_controller_.DidPresentCompositorFrame(*current_token_,
+                                                    details_4);  // PF4
+
+    // The controller should emit v4 per-scroll metrics when it processes the
+    // end of the scroll (`scroll_end_metrics`).
+    histogram_tester.ExpectTotalCount(
+        "Event.ScrollJank.DelayedFramesPercentage.PerScroll", 0);
+    histogram_tester.ExpectTotalCount(
+        "Event.ScrollJank.DelayedFramesPercentage4.PerScroll", 1);
+  }
+
+  {
+    base::HistogramTester histogram_tester;
+
+    SimulateBeginImplFrame();  // BF5
+    reporting_controller_.OnFinishImplFrame(current_id_,
+                                            /*waiting_for_main=*/true);
+    EventMetrics::List metrics_list_5;
+    metrics_list_5.push_back(std::move(scroll_update3_metrics));
+    SimulateSubmitCompositorFrame({{}, std::move(metrics_list_5), {}});
+
+    viz::FrameTimingDetails details_5 = {};
+    details_5.presentation_feedback.timestamp =
+        scroll_update3_generation_ts + 3 * vsync_interval;
+    reporting_controller_.DidPresentCompositorFrame(*current_token_,
+                                                    details_5);  // PF5
+
+    // The controller should emit v1 per-scroll metrics when it processes the
+    // first update of the next scroll (`scroll_update3_metrics`).
+    histogram_tester.ExpectTotalCount(
+        "Event.ScrollJank.DelayedFramesPercentage.PerScroll", 1);
+    histogram_tester.ExpectTotalCount(
+        "Event.ScrollJank.DelayedFramesPercentage4.PerScroll", 0);
+  }
 }
 
 // A simple test that ensures the vsync_interval is copied onto the
