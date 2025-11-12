@@ -135,12 +135,6 @@ bool FakePlusAddressService::IsPlusAddressFillingEnabled(
   return is_plus_address_filling_enabled_;
 }
 
-bool FakePlusAddressService::IsPlusAddressCreationEnabled(
-    const url::Origin& origin,
-    bool is_off_the_record) const {
-  return should_offer_creation_;
-}
-
 bool FakePlusAddressService::IsPlusAddress(
     const std::string& potential_plus_address) const {
   return potential_plus_address == plus_addresses::test::kFakePlusAddress;
@@ -322,7 +316,6 @@ void FakePlusAddressService::ClearState() {
   should_fail_to_reserve_ = false;
   should_fail_to_refresh_ = false;
   is_plus_address_filling_enabled_ = false;
-  should_offer_creation_ = false;
   should_return_no_affiliated_plus_profiles_ = false;
   should_return_affiliated_plus_profile_on_confirm_ = false;
   should_return_quota_error_ = false;

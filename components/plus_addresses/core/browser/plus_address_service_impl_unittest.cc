@@ -276,8 +276,6 @@ TEST_F(PlusAddressServiceTest, GetPlusProfileByFacet) {
 // Verifies the default state of ShouldShowManualFallback.
 TEST_F(PlusAddressServiceTest, DefaultShouldShowManualFallbackState) {
   EXPECT_FALSE(service().IsPlusAddressFillingEnabled(kNoSubdomainOrigin));
-  EXPECT_FALSE(service().IsPlusAddressCreationEnabled(
-      kNoSubdomainOrigin, /*is_off_the_record=*/false));
   // By default, the `ShouldShowManualFallback` function should return `false`.
   EXPECT_FALSE(service().ShouldShowManualFallback(kNoSubdomainOrigin,
                                                   /*is_off_the_record=*/false));
@@ -291,8 +289,6 @@ TEST_F(PlusAddressServiceTest, ShouldShowManualFallbackNoServer) {
       features::kPlusAddressesEnabled};
   InitService();
   EXPECT_FALSE(service().IsPlusAddressFillingEnabled(kNoSubdomainOrigin));
-  EXPECT_FALSE(service().IsPlusAddressCreationEnabled(
-      kNoSubdomainOrigin, /*is_off_the_record=*/false));
   EXPECT_FALSE(service().ShouldShowManualFallback(kNoSubdomainOrigin,
                                                   /*is_off_the_record=*/false));
 }
@@ -1127,8 +1123,6 @@ TEST_F(PlusAddressServiceDisabledTest, FeatureExplicitlyDisabled) {
   InitService();
   const url::Origin origin = url::Origin::Create(GURL("https://test.example"));
   EXPECT_FALSE(service().IsPlusAddressFillingEnabled(origin));
-  EXPECT_FALSE(service().IsPlusAddressCreationEnabled(
-      origin, /*is_off_the_record=*/false));
   EXPECT_FALSE(
       service().ShouldShowManualFallback(origin, /*is_off_the_record=*/false));
 }
@@ -1150,8 +1144,6 @@ class PlusAddressServiceEnabledTest : public PlusAddressServiceTest {
 // no signed-in user.
 TEST_F(PlusAddressServiceEnabledTest, NoSignedInUser) {
   EXPECT_FALSE(service().IsPlusAddressFillingEnabled(kNoSubdomainOrigin));
-  EXPECT_FALSE(service().IsPlusAddressCreationEnabled(
-      kNoSubdomainOrigin, /*is_off_the_record=*/false));
   // Without a signed in user, the `ShouldShowManualFallback` should return
   // `false`.
   EXPECT_FALSE(service().ShouldShowManualFallback(kNoSubdomainOrigin,
@@ -1167,8 +1159,6 @@ TEST_F(PlusAddressServiceEnabledTest, FullySupported) {
                                       {signin::ConsentLevel::kSignin});
   InitService();
   EXPECT_TRUE(service().IsPlusAddressFillingEnabled(kNoSubdomainOrigin));
-  EXPECT_TRUE(service().IsPlusAddressCreationEnabled(
-      kNoSubdomainOrigin, /*is_off_the_record=*/false));
   EXPECT_TRUE(service().ShouldShowManualFallback(kNoSubdomainOrigin,
                                                  /*is_off_the_record=*/false));
 }
@@ -1182,19 +1172,6 @@ TEST_F(PlusAddressServiceEnabledTest, FillingEnabledOnHttpAndHttps) {
       url::Origin::Create(GURL("https://test.example"))));
   EXPECT_TRUE(service().IsPlusAddressFillingEnabled(
       url::Origin::Create(GURL("http://test.example"))));
-}
-
-// Ensure creation is not offered on http domains but it is on https domains.
-TEST_F(PlusAddressServiceEnabledTest, CreationDisabledOnHttp) {
-  identity_env().MakeAccountAvailable("plus@plus.plus",
-                                      {signin::ConsentLevel::kSignin});
-  InitService();
-  EXPECT_TRUE(service().IsPlusAddressCreationEnabled(
-      url::Origin::Create(GURL("https://test.example")),
-      /*is_off_the_record=*/false));
-  EXPECT_FALSE(service().IsPlusAddressCreationEnabled(
-      url::Origin::Create(GURL("http://test.example")),
-      /*is_off_the_record=*/false));
 }
 
 // Tests that the blocklist data is available and used to check for domain
@@ -1241,8 +1218,6 @@ TEST_F(PlusAddressServiceEnabledTest, NonHTTPSchemesAreNotSupported) {
   const url::Origin different_scheme =
       url::Origin::Create(GURL("other://hello"));
   EXPECT_FALSE(service().IsPlusAddressFillingEnabled(different_scheme));
-  EXPECT_FALSE(service().IsPlusAddressCreationEnabled(
-      different_scheme, /*is_off_the_record=*/false));
   EXPECT_FALSE(service().ShouldShowManualFallback(different_scheme,
                                                   /*is_off_the_record=*/false));
 }
@@ -1253,28 +1228,11 @@ TEST_F(PlusAddressServiceEnabledTest, OpaqueOriginIsNotSupported) {
                                       {signin::ConsentLevel::kSignin});
   InitService();
   EXPECT_FALSE(service().IsPlusAddressFillingEnabled(url::Origin()));
-  EXPECT_FALSE(service().IsPlusAddressCreationEnabled(
-      url::Origin(), /*is_off_the_record=*/false));
   EXPECT_FALSE(service().ShouldShowManualFallback(url::Origin(), false));
 }
 
-// Tests that in an off-the-record session with no existing plus address for a
-// given facet, creation is disabled.
-TEST_F(PlusAddressServiceEnabledTest, OTRWithNoExistingAddress) {
-  // With a signed in user, an off-the-record session, and no existing address,
-  // the `ShouldShowManualFallback` function should return `false`.
-  identity_env().MakeAccountAvailable("plus@plus.plus",
-                                      {signin::ConsentLevel::kSignin});
-  InitService();
-  EXPECT_TRUE(service().IsPlusAddressFillingEnabled(kNoSubdomainOrigin));
-  EXPECT_FALSE(service().IsPlusAddressCreationEnabled(
-      kNoSubdomainOrigin, /*is_off_the_record=*/true));
-  EXPECT_FALSE(service().ShouldShowManualFallback(kNoSubdomainOrigin,
-                                                  /*is_off_the_record=*/true));
-}
-
 // Tests that in an off-the-record session with an existing plus address for a
-// given facet, filling is enabled but creation is not.
+// given facet, filling is enabled.
 TEST_F(PlusAddressServiceEnabledTest, OTRWithExistingAddress) {
   // With a signed in user, an off-the-record session, and an existing address,
   // the `ShouldShowManualFallback` function should return `true`.
@@ -1286,24 +1244,8 @@ TEST_F(PlusAddressServiceEnabledTest, OTRWithExistingAddress) {
   service().SavePlusProfile(profile);
   EXPECT_TRUE(
       service().IsPlusAddressFillingEnabled(OriginFromFacet(profile.facet)));
-  EXPECT_FALSE(service().IsPlusAddressCreationEnabled(
-      OriginFromFacet(profile.facet), /*is_off_the_record=*/true));
   EXPECT_TRUE(service().ShouldShowManualFallback(OriginFromFacet(profile.facet),
                                                  /*is_off_the_record=*/true));
-}
-
-// Tests that creation is disabled when the global plus address setting is
-// turned off.
-TEST_F(PlusAddressServiceEnabledTest, GlobalSettingsToggleOff) {
-  identity_env().MakeAccountAvailable("plus@plus.plus",
-                                      {signin::ConsentLevel::kSignin});
-  InitService();
-  setting_service().set_is_plus_addresses_enabled(false);
-  EXPECT_TRUE(service().IsPlusAddressFillingEnabled(kNoSubdomainOrigin));
-  EXPECT_FALSE(service().IsPlusAddressCreationEnabled(
-      kNoSubdomainOrigin, /*is_off_the_record=*/false));
-  EXPECT_FALSE(service().ShouldShowManualFallback(kNoSubdomainOrigin,
-                                                  /*is_off_the_record=*/false));
 }
 
 // Tests that filling is enabled when the global setting is off for a user who
@@ -1322,8 +1264,6 @@ TEST_F(PlusAddressServiceEnabledTest,
   setting_service().set_is_plus_addresses_enabled(false);
 
   EXPECT_TRUE(service().IsPlusAddressFillingEnabled(kNoSubdomainOrigin));
-  EXPECT_FALSE(service().IsPlusAddressCreationEnabled(
-      kNoSubdomainOrigin, /*is_off_the_record=*/false));
   EXPECT_TRUE(service().ShouldShowManualFallback(kNoSubdomainOrigin,
                                                  /*is_off_the_record=*/false));
 }

@@ -306,19 +306,6 @@ AddressAccessoryControllerImpl::CreateManageAddressesFooter() const {
   if (!autofill_client || !plus_address_service_) {
     return commands;
   }
-  // Offer plus address creation if it's supported for the current user session
-  // and if the user doesn't have any plus addresses created for the current
-  // domain.
-  if (plus_address_service_->IsPlusAddressCreationEnabled(
-          autofill_client->GetLastCommittedPrimaryMainFrameOrigin(),
-          autofill_client->IsOffTheRecord()) &&
-      plus_profiles_provider_ &&
-      plus_profiles_provider_->GetAffiliatedPlusProfiles().empty()) {
-    commands.emplace_back(FooterCommand(
-        l10n_util::GetStringUTF16(
-            IDS_PLUS_ADDRESS_CREATE_NEW_PLUS_ADDRESSES_LINK_ANDROID),
-        AccessoryAction::CREATE_PLUS_ADDRESS_FROM_ADDRESS_SHEET));
-  }
   // Offer the user to select the plus address manually if plus address filling
   // is supported for the last committed origin and the user has at least 1 plus
   // address.

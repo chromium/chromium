@@ -369,66 +369,6 @@ TEST_F(AddressAccessoryControllerTest,
                 .Build());
 }
 
-TEST_F(AddressAccessoryControllerTest,
-       NoAffiliatedPlusAddresses_AppendsCreatePlusAddressAction) {
-  MockAffiliatedPlusProfilesProvider provider;
-  EXPECT_CALL(provider, AddObserver);
-  controller()->RegisterPlusProfilesProvider(provider.GetWeakPtr());
-
-  EXPECT_CALL(provider, GetAffiliatedPlusProfiles)
-      .WillRepeatedly(Return(base::span<const PlusProfile, 0>()));
-  EXPECT_CALL(filling_source_observer_,
-              Run(controller(), IsFillingSourceAvailable(false)));
-  controller()->RefreshSuggestions();
-
-  // Plus address creation can't be supported while plus address filling is
-  // disabled.
-  plus_address_service().set_is_plus_address_filling_enabled(true);
-  plus_address_service().set_should_offer_plus_address_creation(true);
-
-  EXPECT_EQ(
-      controller()->GetSheetData(),
-      AddressAccessorySheetDataBuilder(addresses_empty_str(),
-                                       /*plusAddressTitle=*/std::u16string())
-          .AppendFooterCommand(
-              l10n_util::GetStringUTF16(
-                  IDS_PLUS_ADDRESS_CREATE_NEW_PLUS_ADDRESSES_LINK_ANDROID),
-              AccessoryAction::CREATE_PLUS_ADDRESS_FROM_ADDRESS_SHEET)
-          .Build());
-}
-
-TEST_F(AddressAccessoryControllerTest,
-       HasAffiliatedPlusAddresses_NoCreatePlusAddressAction) {
-  MockAffiliatedPlusProfilesProvider provider;
-  EXPECT_CALL(provider, AddObserver);
-  controller()->RegisterPlusProfilesProvider(provider.GetWeakPtr());
-
-  std::vector<PlusProfile> profiles{plus_addresses::test::CreatePlusProfile()};
-  EXPECT_CALL(filling_source_observer_,
-              Run(controller(), IsFillingSourceAvailable(true)));
-  EXPECT_CALL(provider, GetAffiliatedPlusProfiles)
-      .WillRepeatedly(Return(base::span(profiles)));
-  controller()->RefreshSuggestions();
-
-  // Plus address creation can't be supported while plus address filling is
-  // disabled.
-  plus_address_service().set_is_plus_address_filling_enabled(true);
-  plus_address_service().set_should_offer_plus_address_creation(true);
-
-  // Although the plus address creation is supported, the user has an affiliated
-  // plus address for the current domain. The "Create plus address" action
-  // should not be displayed.
-  EXPECT_EQ(controller()->GetSheetData(),
-            AddressAccessorySheetDataBuilder(/*userInfoTitle=*/std::u16string(),
-                                             plus_addresses_title())
-                .AddPlusAddressInfo("https://foo.com", u"plus+foo@plus.plus")
-                .AppendFooterCommand(
-                    l10n_util::GetStringUTF16(
-                        IDS_PLUS_ADDRESS_MANAGE_PLUS_ADDRESSES_LINK_ANDROID),
-                    AccessoryAction::MANAGE_PLUS_ADDRESS_FROM_ADDRESS_SHEET)
-                .Build());
-}
-
 TEST_F(AddressAccessoryControllerTest, AppendsPlusAddressesSection) {
   MockAffiliatedPlusProfilesProvider provider;
   EXPECT_CALL(provider, AddObserver);

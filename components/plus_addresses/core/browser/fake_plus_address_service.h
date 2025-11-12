@@ -75,8 +75,6 @@ class FakePlusAddressService : public PlusAddressService {
   // PlusAddressService:
   void AddObserver(PlusAddressService::Observer* o) override;
   void RemoveObserver(PlusAddressService::Observer* o) override;
-  bool IsPlusAddressCreationEnabled(const url::Origin& origin,
-                                    bool is_off_the_record) const override;
   void GetAffiliatedPlusProfiles(const url::Origin& origin,
                                  GetPlusProfilesCallback callback) override;
   base::span<const PlusProfile> GetPlusProfiles() const override;
@@ -134,10 +132,6 @@ class FakePlusAddressService : public PlusAddressService {
     is_plus_address_filling_enabled_ = enabled;
   }
 
-  void set_should_offer_plus_address_creation(bool should_offer_creation) {
-    should_offer_creation_ = should_offer_creation;
-  }
-
   void set_should_return_no_affiliated_plus_profiles(
       bool should_return_no_affiliated_plus_profiles) {
     should_return_no_affiliated_plus_profiles_ =
@@ -176,7 +170,6 @@ class FakePlusAddressService : public PlusAddressService {
   bool should_fail_to_reserve_ = false;
   bool should_fail_to_refresh_ = false;
   bool is_plus_address_filling_enabled_ = false;
-  bool should_offer_creation_ = false;
   bool should_return_no_affiliated_plus_profiles_ = false;
   bool should_return_affiliated_plus_profile_on_confirm_ = false;
   bool should_return_quota_error_ = false;

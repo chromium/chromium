@@ -33,11 +33,6 @@ plus_addresses::PlusAddressSettingService* GetPlusAddressSettingService() {
 
 @implementation PlusAddressAppInterface
 
-+ (void)setShouldOfferPlusAddressCreation:(BOOL)shouldOfferPlusAddressCreation {
-  GetFakePlusAddressService()->set_should_offer_plus_address_creation(
-      shouldOfferPlusAddressCreation);
-}
-
 + (void)setUserHasAcceptedNotice {
   GetPlusAddressSettingService()->SetHasAcceptedNotice();
 }

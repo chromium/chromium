@@ -51,15 +51,6 @@ class PlusAddressService : public KeyedService,
   virtual void AddObserver(Observer* o) = 0;
   virtual void RemoveObserver(Observer* o) = 0;
 
-  // Returns whether plus address creation is supported for the given `origin`.
-  // This is true iff:
-  // - the plus address filling is enabled,
-  // - the `origin` scheme is https,
-  // - `is_off_the_record` is `false`, and
-  // - plus address global toggle is on.
-  virtual bool IsPlusAddressCreationEnabled(const url::Origin& origin,
-                                            bool is_off_the_record) const = 0;
-
   // Returns a list of plus profiles for the `origin` and all affiliated
   // domains.
   virtual void GetAffiliatedPlusProfiles(const url::Origin& origin,

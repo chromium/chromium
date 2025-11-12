@@ -717,19 +717,6 @@ PasswordAccessoryControllerImpl::CreateManagePasswordsFooter() const {
       manage_passwords_title, autofill::AccessoryAction::MANAGE_PASSWORDS);
 
   if (plus_address_service_) {
-    // Offer plus address creation if it's supported for the current user
-    // session and if the user doesn't have any plus addresses created for the
-    // current domain.
-    if (plus_address_service_->IsPlusAddressCreationEnabled(
-            password_client_->GetLastCommittedOrigin(),
-            password_client_->IsOffTheRecord()) &&
-        plus_profiles_provider_ &&
-        plus_profiles_provider_->GetAffiliatedPlusProfiles().empty()) {
-      footer_commands_to_add.emplace_back(
-          l10n_util::GetStringUTF16(
-              IDS_PLUS_ADDRESS_CREATE_NEW_PLUS_ADDRESSES_LINK_ANDROID),
-          autofill::AccessoryAction::CREATE_PLUS_ADDRESS_FROM_PASSWORD_SHEET);
-    }
     // Offer the user to select the plus address manually if plus address
     // filling is supported for the last committed origin and the user has at
     // least 1 plus address.

@@ -122,8 +122,6 @@ class PlusAddressServiceImpl : public PlusAddressService,
   // PlusAddressService:
   void AddObserver(PlusAddressService::Observer* o) override;
   void RemoveObserver(PlusAddressService::Observer* o) override;
-  bool IsPlusAddressCreationEnabled(const url::Origin& origin,
-                                    bool is_off_the_record) const override;
   void GetAffiliatedPlusProfiles(const url::Origin& origin,
                                  GetPlusProfilesCallback callback) override;
   base::span<const PlusProfile> GetPlusProfiles() const override;

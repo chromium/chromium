@@ -171,30 +171,6 @@ void PlusAddressServiceImpl::RemoveObserver(PlusAddressService::Observer* o) {
   observers_.RemoveObserver(o);
 }
 
-bool PlusAddressServiceImpl::IsPlusAddressCreationEnabled(
-    const url::Origin& origin,
-    bool is_off_the_record) const {
-  // Disabled plus address filling implies that plus address creation is
-  // disabled.
-  if (!IsPlusAddressFillingEnabled(origin)) {
-    return false;
-  }
-
-  // Only offer plus address creation on https domains.
-  if (origin.scheme() != url::kHttpsScheme) {
-    return false;
-  }
-
-  // Don't offer plus address creation for off-the-record sessions.
-  if (is_off_the_record) {
-    return false;
-  }
-
-  // We've met the prerequisites. If this isn't an OTR session and the global
-  // settings toggle isn't off, plus address creation is supported.
-  return setting_service_->GetIsPlusAddressesEnabled();
-}
-
 bool PlusAddressServiceImpl::ShouldShowManualFallback(
     const url::Origin& origin,
     bool is_off_the_record) const {

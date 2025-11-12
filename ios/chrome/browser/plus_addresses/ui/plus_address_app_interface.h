@@ -12,9 +12,6 @@
 // app or test code.
 @interface PlusAddressAppInterface : NSObject
 
-// Setter to enable plus address creation in `FakePlusAddressService` in tests.
-+ (void)setShouldOfferPlusAddressCreation:(BOOL)shouldOfferPlusAddressCreation;
-
 // Setter to override the user consent acceptance.
 + (void)setUserHasAcceptedNotice;
 

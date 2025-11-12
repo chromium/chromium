@@ -43,9 +43,6 @@
   // The origin to which all operations should be scoped.
   url::Origin _mainFrameOrigin;
 
-  // If `YES`, create plus address action is shown.
-  BOOL _isPlusAddressCreationFallbackEnabled;
-
   // If `YES`, the manual fallback UI was triggered for addresses, otherwise it
   // was triggered for passwords.
   BOOL _isAddressManualFallbackUI;
@@ -66,9 +63,6 @@
     _faviconLoader = faviconLoader;
     _plusAddressService = plusAddressService;
     _mainFrameOrigin = url::Origin::Create(URL);
-    _isPlusAddressCreationFallbackEnabled =
-        _plusAddressService->IsPlusAddressCreationEnabled(_mainFrameOrigin,
-                                                          isOffTheRecord);
     _isAddressManualFallbackUI = isAddressManualFallback;
   }
 
@@ -320,34 +314,6 @@
     managePlusAddressItem.accessibilityIdentifier =
         manual_fill::kManagePlusAddressAccessibilityIdentifier;
     [actions addObject:managePlusAddressItem];
-  }
-
-  // Offer plus address creation if it's supported for the current user session
-  // and if the user doesn't have any plus addresses created for the current
-  // domain.
-  if (_isPlusAddressCreationFallbackEnabled && !hasPlusAddresses) {
-    NSString* createPlusAddressesTitle = l10n_util::GetNSString(
-        IDS_PLUS_ADDRESS_MANUAL_FALLBACK_CREATE_ACTION_TEXT_IOS);
-    ManualFillActionItem* createPlusAddressItem = [[ManualFillActionItem alloc]
-        initWithTitle:createPlusAddressesTitle
-               action:^{
-                 ManualFillPlusAddressMediator* strongSelf = weakSelf;
-                 if (!strongSelf) {
-                   return;
-                 }
-                 if (strongSelf->_isAddressManualFallbackUI) {
-                   base::RecordAction(base::UserMetricsAction(
-                       "PlusAddresses."
-                       "CreateSuggestionOnAddressManualFallbackSelected"));
-                 } else {
-                   base::RecordAction(base::UserMetricsAction(
-                       "CreateSuggestionOnPasswordManualFallbackSelected"));
-                 }
-                 [weakSelf.navigator openCreatePlusAddressSheet];
-               }];
-    createPlusAddressItem.accessibilityIdentifier =
-        manual_fill::kCreatePlusAddressAccessibilityIdentifier;
-    [actions addObject:createPlusAddressItem];
   }
 
   // Offer the user to select the plus address manually if plus address filling
