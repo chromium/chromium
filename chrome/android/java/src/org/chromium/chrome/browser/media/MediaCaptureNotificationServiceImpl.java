@@ -14,7 +14,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ServiceInfo;
 import android.os.IBinder;
-import android.util.SparseIntArray;
 
 import androidx.core.app.ActivityCompat;
 
@@ -51,6 +50,7 @@ import org.chromium.content_public.browser.media.capture.ScreenCapture;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -76,7 +76,7 @@ public class MediaCaptureNotificationServiceImpl extends SplitCompatService.Impl
 
     private BaseNotificationManagerProxy mNotificationManager;
     private SharedPreferencesManager mSharedPreferences;
-    private final SparseIntArray mNotificationsType = new SparseIntArray();
+    private final TreeMap<Integer, Set<@MediaType Integer>> mNotificationsType = new TreeMap<>();
     private final TreeMap<Integer, NotificationWrapper> mNotifications =
             new TreeMap<>(Comparator.reverseOrder());
 
@@ -92,12 +92,13 @@ public class MediaCaptureNotificationServiceImpl extends SplitCompatService.Impl
 
     /**
      * @param notificationId Unique id of the notification.
-     * @param mediaType Media type of the notification.
+     * @param mediaTypes Media types of the notification.
      * @return Whether the notification has already been created for provided notification id and
-     *     mediaType.
+     *     mediaTypes.
      */
-    private boolean doesNotificationNeedUpdate(int notificationId, @MediaType int mediaType) {
-        return mNotificationsType.get(notificationId) != mediaType;
+    private boolean doesNotificationNeedUpdate(
+            int notificationId, Set<@MediaType Integer> mediaTypes) {
+        return !mediaTypes.equals(mNotificationsType.get(notificationId));
     }
 
     /**
@@ -105,7 +106,7 @@ public class MediaCaptureNotificationServiceImpl extends SplitCompatService.Impl
      * @return Whether the notification has already been created for the provided notification id.
      */
     private boolean doesNotificationExist(int notificationId) {
-        return mNotificationsType.indexOfKey(notificationId) >= 0;
+        return mNotificationsType.containsKey(notificationId);
     }
 
     @Override
@@ -116,12 +117,15 @@ public class MediaCaptureNotificationServiceImpl extends SplitCompatService.Impl
         } else {
             String action = intent.getAction();
             int notificationId = intent.getIntExtra(NOTIFICATION_ID_EXTRA, Tab.INVALID_TAB_ID);
-            int mediaType = intent.getIntExtra(NOTIFICATION_MEDIA_TYPE_EXTRA, MediaType.NO_MEDIA);
+            ArrayList<Integer> mediaTypesList =
+                    intent.getIntegerArrayListExtra(NOTIFICATION_MEDIA_TYPE_EXTRA);
+            Set<@MediaType Integer> mediaTypes =
+                    mediaTypesList != null ? new HashSet<>(mediaTypesList) : new HashSet<>();
             String url = intent.getStringExtra(NOTIFICATION_MEDIA_URL_EXTRA);
             boolean isIncognito = intent.getBooleanExtra(NOTIFICATION_MEDIA_IS_INCOGNITO, false);
 
             if (ACTION_MEDIA_CAPTURE_UPDATE.equals(action)) {
-                updateNotification(notificationId, mediaType, url, isIncognito, startId);
+                updateNotification(notificationId, mediaTypes, url, isIncognito, startId);
             } else if (ACTION_SCREEN_CAPTURE_STOP.equals(action)) {
                 // Notify native to stop screen capture when the STOP button in notification
                 // is clicked.
@@ -152,29 +156,43 @@ public class MediaCaptureNotificationServiceImpl extends SplitCompatService.Impl
     }
 
     /**
-     * Updates the extisting notification or creates one if none exist for the provided
-     * notificationId and mediaType.
+     * Updates the existing notification or creates one if none exist for the provided
+     * notificationId and mediaTypes.
      *
      * @param notificationId Unique id of the notification.
-     * @param mediaType Media type of the notification.
+     * @param mediaTypes Media types of the notification.
      * @param url Url of the current webrtc call.
      * @param startId Id for the service start request
      */
     private void updateNotification(
             int notificationId,
-            @MediaType int mediaType,
+            Set<@MediaType Integer> mediaTypes,
             @Nullable String url,
             boolean isIncognito,
             int startId) {
         if (doesNotificationExist(notificationId)
-                && !doesNotificationNeedUpdate(notificationId, mediaType)) {
+                && !doesNotificationNeedUpdate(notificationId, mediaTypes)) {
             return;
         }
-        destroyNotification(notificationId, mediaType);
-        if (mediaType != MediaType.NO_MEDIA) {
-            createNotification(notificationId, mediaType, url, isIncognito);
+        destroyNotification(notificationId, mediaTypes);
+        if (!mediaTypes.isEmpty()) {
+            createNotification(notificationId, mediaTypes, url, isIncognito);
         }
-        if (mNotificationsType.size() == 0) getService().stopSelf(startId);
+        if (mNotificationsType.size() == 0) {
+            getService().stopSelf(startId);
+        }
+    }
+
+    private static boolean hasCapturingMediaType(@Nullable Set<@MediaType Integer> mediaTypes) {
+        if (mediaTypes == null) {
+            return false;
+        }
+        for (@MediaType int type : mediaTypes) {
+            if (MediaCaptureNotificationUtil.isCapture(type)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -182,9 +200,10 @@ public class MediaCaptureNotificationServiceImpl extends SplitCompatService.Impl
      *
      * @param notificationId Unique id of the notification.
      */
-    private void destroyNotification(int notificationId, @MediaType int mediaType) {
+    private void destroyNotification(int notificationId, Set<@MediaType Integer> mediaTypes) {
         if (doesNotificationExist(notificationId)) {
-            if (MediaCaptureNotificationUtil.isCapture(mNotificationsType.get(notificationId))) {
+            final var oldMediaTypes = mNotificationsType.get(notificationId);
+            if (hasCapturingMediaType(oldMediaTypes)) {
                 final int tabId = getTabIdFromNotificationId(notificationId);
                 final Tab tab = TabWindowManagerSingleton.getInstance().getTabById(tabId);
                 if (tab != null) {
@@ -207,11 +226,11 @@ public class MediaCaptureNotificationServiceImpl extends SplitCompatService.Impl
                     startOrUpdateForegroundService(
                             previousNotification.getKey(),
                             previousNotification.getValue(),
-                            mediaType);
+                            mediaTypes);
                 }
             }
             mNotificationManager.cancel(NOTIFICATION_NAMESPACE, notificationId);
-            mNotificationsType.delete(notificationId);
+            mNotificationsType.remove(notificationId);
             if (DeviceInfo.isDesktop()) {
                 mNotifications.remove(notificationId);
             }
@@ -219,13 +238,39 @@ public class MediaCaptureNotificationServiceImpl extends SplitCompatService.Impl
         }
     }
 
+    private @MediaType int getPrimaryMediaType(Set<@MediaType Integer> mediaTypes) {
+        // We preferentially put the tab/window/screen capture types first because they need a stop
+        // intent attached to the notification. We only support one notification for desktop for
+        // now, so we pick the broadest scope capture preferentially as the primary media type for
+        // e.g. setting the notification text.
+        if (mediaTypes.contains(MediaType.SCREEN_CAPTURE)) {
+            return MediaType.SCREEN_CAPTURE;
+        }
+        if (mediaTypes.contains(MediaType.WINDOW_CAPTURE)) {
+            return MediaType.WINDOW_CAPTURE;
+        }
+        if (mediaTypes.contains(MediaType.TAB_CAPTURE)) {
+            return MediaType.TAB_CAPTURE;
+        }
+        if (mediaTypes.contains(MediaType.AUDIO_AND_VIDEO)) {
+            return MediaType.AUDIO_AND_VIDEO;
+        }
+        if (mediaTypes.contains(MediaType.VIDEO_ONLY)) {
+            return MediaType.VIDEO_ONLY;
+        }
+        if (mediaTypes.contains(MediaType.AUDIO_ONLY)) {
+            return MediaType.AUDIO_ONLY;
+        }
+        return MediaType.NO_MEDIA;
+    }
+
     private void createNotification(
             int notificationId,
-            @MediaType int mediaType,
+            Set<@MediaType Integer> mediaTypes,
             @Nullable String url,
             boolean isIncognito) {
         final String channelId =
-                MediaCaptureNotificationUtil.isCapture(mediaType)
+                hasCapturingMediaType(mediaTypes)
                         ? ChromeChannelDefinitions.ChannelId.SCREEN_CAPTURE
                         : ChromeChannelDefinitions.ChannelId.WEBRTC_CAM_AND_MIC;
 
@@ -249,13 +294,13 @@ public class MediaCaptureNotificationServiceImpl extends SplitCompatService.Impl
         // Add a "Stop" button to the screen capture notification and turn the notification
         // into a high priority one.
         PendingIntent stopIntent =
-                MediaCaptureNotificationUtil.isCapture(mediaType)
+                hasCapturingMediaType(mediaTypes)
                         ? buildStopCapturePendingIntent(notificationId)
                         : null;
         NotificationWrapper notification =
                 MediaCaptureNotificationUtil.createNotification(
                         builder,
-                        mediaType,
+                        getPrimaryMediaType(mediaTypes),
                         isIncognito ? null : url,
                         appContext.getString(R.string.app_name),
                         contentIntent,
@@ -263,11 +308,11 @@ public class MediaCaptureNotificationServiceImpl extends SplitCompatService.Impl
         if (DeviceInfo.isDesktop()) {
             // For large screen device, we use the latest notification to start or update
             // the foreground service.
-            startOrUpdateForegroundService(notificationId, notification, mediaType);
+            startOrUpdateForegroundService(notificationId, notification, mediaTypes);
         } else {
             mNotificationManager.notify(notification);
         }
-        mNotificationsType.put(notificationId, mediaType);
+        mNotificationsType.put(notificationId, mediaTypes);
         if (DeviceInfo.isDesktop()) {
             mNotifications.put(notificationId, notification);
         }
@@ -277,7 +322,7 @@ public class MediaCaptureNotificationServiceImpl extends SplitCompatService.Impl
                         NotificationUmaTracker.SystemNotificationType.MEDIA_CAPTURE,
                         notification.getNotification());
 
-        if (MediaCaptureNotificationUtil.isCapture(mediaType)) {
+        if (hasCapturingMediaType(mediaTypes)) {
             final int tabId = getTabIdFromNotificationId(notificationId);
             final Tab tab = TabWindowManagerSingleton.getInstance().getTabById(tabId);
             if (tab != null) {
@@ -293,7 +338,9 @@ public class MediaCaptureNotificationServiceImpl extends SplitCompatService.Impl
     }
 
     private void startOrUpdateForegroundService(
-            int notificationId, NotificationWrapper notification, @MediaType int mediaType) {
+            int notificationId,
+            NotificationWrapper notification,
+            Set<@MediaType Integer> mediaTypes) {
         int foregroundServiceType = 0;
         if (ActivityCompat.checkSelfPermission(getService(), Manifest.permission.CAMERA)
                 == PackageManager.PERMISSION_GRANTED) {
@@ -303,11 +350,12 @@ public class MediaCaptureNotificationServiceImpl extends SplitCompatService.Impl
                 == PackageManager.PERMISSION_GRANTED) {
             foregroundServiceType |= ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE;
         }
-        if (MediaCaptureNotificationUtil.isCapture(mediaType)) {
-            foregroundServiceType |=
-                    mediaType == MediaType.TAB_CAPTURE
-                            ? ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK
-                            : ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION;
+        if (mediaTypes.contains(MediaType.TAB_CAPTURE)) {
+            foregroundServiceType |= ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK;
+        }
+        if (mediaTypes.contains(MediaType.SCREEN_CAPTURE)
+                || mediaTypes.contains(MediaType.WINDOW_CAPTURE)) {
+            foregroundServiceType |= ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION;
         }
         ForegroundServiceUtils.getInstance()
                 .startForeground(
@@ -370,40 +418,44 @@ public class MediaCaptureNotificationServiceImpl extends SplitCompatService.Impl
 
     /**
      * @param webContents the webContents for the tab. Used to query the media capture state.
-     * @return A constant identifying what media is being captured.
+     * @return A set of {@link MediaType} identifying what media is being captured.
      */
-    private static int getMediaType(@Nullable WebContents webContents) {
+    private static Set<@MediaType Integer> getMediaTypes(@Nullable WebContents webContents) {
+        Set<@MediaType Integer> mediaTypes = new HashSet<>();
         if (webContents == null) {
-            return MediaType.NO_MEDIA;
+            return mediaTypes;
         }
 
         if (MediaCaptureDevicesDispatcherAndroid.isCapturingTab(webContents)) {
-            return MediaType.TAB_CAPTURE;
+            mediaTypes.add(MediaType.TAB_CAPTURE);
         }
 
         if (MediaCaptureDevicesDispatcherAndroid.isCapturingWindow(webContents)) {
-            return MediaType.WINDOW_CAPTURE;
+            mediaTypes.add(MediaType.WINDOW_CAPTURE);
         }
 
         if (MediaCaptureDevicesDispatcherAndroid.isCapturingScreen(webContents)) {
-            return MediaType.SCREEN_CAPTURE;
+            mediaTypes.add(MediaType.SCREEN_CAPTURE);
         }
 
         boolean audio = MediaCaptureDevicesDispatcherAndroid.isCapturingAudio(webContents);
         boolean video = MediaCaptureDevicesDispatcherAndroid.isCapturingVideo(webContents);
         if (audio && video) {
-            return MediaType.AUDIO_AND_VIDEO;
+            mediaTypes.add(MediaType.AUDIO_AND_VIDEO);
         } else if (audio) {
-            return MediaType.AUDIO_ONLY;
+            mediaTypes.add(MediaType.AUDIO_ONLY);
         } else if (video) {
-            return MediaType.VIDEO_ONLY;
-        } else {
-            return MediaType.NO_MEDIA;
+            mediaTypes.add(MediaType.VIDEO_ONLY);
         }
+
+        return mediaTypes;
     }
 
-    private static boolean shouldStartService(@MediaType int mediaType, int notificationId) {
-        if (mediaType != MediaType.NO_MEDIA) return true;
+    private static boolean shouldStartService(
+            Set<@MediaType Integer> mediaTypes, int notificationId) {
+        if (!mediaTypes.isEmpty()) {
+            return true;
+        }
         SharedPreferencesManager sharedPreferences = ChromeSharedPreferences.getInstance();
         Set<String> notificationIds =
                 sharedPreferences.readStringSet(
@@ -426,14 +478,21 @@ public class MediaCaptureNotificationServiceImpl extends SplitCompatService.Impl
      */
     public static void updateMediaNotificationForTab(
             Context context, int tabId, @Nullable WebContents webContents, GURL url) {
-        @MediaType int mediaType = getMediaType(webContents);
+        // On desktop, we currently only use a single notification for all tabs and hang all
+        // foreground services off that notification.
+        // TODO(crbug.com/352187279): If we open a new tab and capture, it will overwrite the
+        // media types and set the wrong foreground service on desktop. Instead, for desktop we
+        // should keep a running histogram of media type usage over all tabs.
+        Set<@MediaType Integer> mediaTypes = getMediaTypes(webContents);
         final int nofticationId = getNotificationIdFromTabId(tabId);
-        if (!shouldStartService(mediaType, nofticationId)) return;
+        if (!shouldStartService(mediaTypes, nofticationId)) {
+            return;
+        }
         Intent intent = new Intent(context, MediaCaptureNotificationService.class);
         intent.setAction(ACTION_MEDIA_CAPTURE_UPDATE);
         intent.putExtra(NOTIFICATION_ID_EXTRA, nofticationId);
         intent.putExtra(NOTIFICATION_MEDIA_URL_EXTRA, url.getSpec());
-        intent.putExtra(NOTIFICATION_MEDIA_TYPE_EXTRA, mediaType);
+        intent.putIntegerArrayListExtra(NOTIFICATION_MEDIA_TYPE_EXTRA, new ArrayList<>(mediaTypes));
         Tab tab = TabWindowManagerSingleton.getInstance().getTabById(tabId);
         if (tab != null) {
             intent.putExtra(NOTIFICATION_MEDIA_IS_INCOGNITO, tab.isIncognito());

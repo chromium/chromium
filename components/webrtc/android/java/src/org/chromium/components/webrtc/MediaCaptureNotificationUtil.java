@@ -19,9 +19,16 @@ import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 /** Helper to build a notification for Media Capture and Streams. */
 @NullMarked
 public class MediaCaptureNotificationUtil {
+    @Retention(RetentionPolicy.SOURCE)
+    @Target(ElementType.TYPE_USE)
     @IntDef({
         MediaType.NO_MEDIA,
         MediaType.AUDIO_AND_VIDEO,
