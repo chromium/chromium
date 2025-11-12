@@ -47,11 +47,11 @@ namespace blink {
 
 namespace {
 
-class TestingPlatformSupportForGpuMemoryBuffer
+class TestingPlatformSupportWithGpuFactories
     : public IOTaskRunnerTestingPlatformSupport {
  public:
-  TestingPlatformSupportForGpuMemoryBuffer();
-  ~TestingPlatformSupportForGpuMemoryBuffer() override;
+  TestingPlatformSupportWithGpuFactories();
+  ~TestingPlatformSupportWithGpuFactories() override;
   media::GpuVideoAcceleratorFactories* GetGpuFactories() override;
 
   void SetGpuCapabilities(gpu::Capabilities* capabilities);
@@ -65,8 +65,7 @@ class TestingPlatformSupportForGpuMemoryBuffer
   raw_ptr<gpu::Capabilities> capabilities_ = nullptr;
 };
 
-TestingPlatformSupportForGpuMemoryBuffer::
-    TestingPlatformSupportForGpuMemoryBuffer()
+TestingPlatformSupportWithGpuFactories::TestingPlatformSupportWithGpuFactories()
     : sii_(base::MakeRefCounted<gpu::TestSharedImageInterface>()),
       gpu_factories_(new media::MockGpuVideoAcceleratorFactories(sii_.get())),
       media_thread_("TestingMediaThread") {
@@ -83,22 +82,22 @@ TestingPlatformSupportForGpuMemoryBuffer::
   });
 }
 
-TestingPlatformSupportForGpuMemoryBuffer::
-    ~TestingPlatformSupportForGpuMemoryBuffer() {
+TestingPlatformSupportWithGpuFactories::
+    ~TestingPlatformSupportWithGpuFactories() {
   media_thread_.Stop();
 }
 
 media::GpuVideoAcceleratorFactories*
-TestingPlatformSupportForGpuMemoryBuffer::GetGpuFactories() {
+TestingPlatformSupportWithGpuFactories::GetGpuFactories() {
   return gpu_factories_.get();
 }
 
-void TestingPlatformSupportForGpuMemoryBuffer::SetGpuCapabilities(
+void TestingPlatformSupportWithGpuFactories::SetGpuCapabilities(
     gpu::Capabilities* capabilities) {
   capabilities_ = capabilities;
 }
 
-void TestingPlatformSupportForGpuMemoryBuffer::SetSharedImageCapabilities(
+void TestingPlatformSupportWithGpuFactories::SetSharedImageCapabilities(
     const gpu::SharedImageCapabilities& shared_image_capabilities) {
   sii_->SetCapabilities(shared_image_capabilities);
 }
@@ -336,7 +335,7 @@ class VideoCaptureImplTest : public ::testing::Test {
   const base::UnguessableToken session_id_ = base::UnguessableToken::Create();
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  ScopedTestingPlatformSupport<TestingPlatformSupportForGpuMemoryBuffer>
+  ScopedTestingPlatformSupport<TestingPlatformSupportWithGpuFactories>
       platform_;
   std::unique_ptr<VideoCaptureImpl> video_capture_impl_;
   MockMojoVideoCaptureHost mock_video_capture_host_;
