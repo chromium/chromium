@@ -212,6 +212,10 @@ bool SetProxyOverrideRules(const PrefService* pref_service,
       pref_service->FindPreference(proxy_config::prefs::kProxyOverrideRules);
   DCHECK(pref);
 
+  if (!pref->GetValue() || !pref->GetValue()->is_list()) {
+    return false;
+  }
+
   const base::Value::List& rules_list =
       pref_service->GetList(proxy_config::prefs::kProxyOverrideRules);
   if (rules_list.empty() ||

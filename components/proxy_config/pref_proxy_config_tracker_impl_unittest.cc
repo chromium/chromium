@@ -492,37 +492,42 @@ TEST_F(PrefProxyConfigTrackerImplTest, DelegateConfigServiceGetsConfigLate) {
 }
 
 class PrefProxyConfigOverrideRulesTest : public PrefProxyConfigTrackerImplTest {
+ public:
+  void SetOverrideRules(const std::string& pref) {
+    pref_service_->SetManagedPref(
+        proxy_config::prefs::kProxyOverrideRules,
+        std::make_unique<base::Value>(
+            *base::JSONReader::Read(pref, base::JSON_ALLOW_TRAILING_COMMAS)));
+    base::RunLoop().RunUntilIdle();
+  }
+
  private:
   base::test::ScopedFeatureList scoped_features_{kEnableProxyOverrideRules};
 };
 
 TEST_F(PrefProxyConfigOverrideRulesTest, DynamicPolicy) {
   InitConfigService(net::ProxyConfigService::CONFIG_VALID);
-  pref_service_->SetManagedPref(
-      proxy_config::prefs::kProxyOverrideRules,
-      std::make_unique<base::Value>(
-          *base::JSONReader::Read(R"([
-                                         {
-                                             "DestinationMatchers": [
-                                                 "https://some.app.com",
-                                                 "https://other.app.com",
-                                             ],
-                                             "ProxyList": [
-                                                 "HTTPS proxy.app:443",
-                                                 "DIRECT",
-                                             ],
-                                             "Conditions": [
-                                                 {
-                                                     "DnsProbe": {
-                                                         "Host": "corp.ads",
-                                                         "Result": "resolves",
-                                                     },
-                                                 }
-                                             ]
-                                         }
-                                     ])",
-                                  base::JSON_ALLOW_TRAILING_COMMAS)));
-  base::RunLoop().RunUntilIdle();
+  SetOverrideRules(
+      R"([
+             {
+                 "DestinationMatchers": [
+                     "https://some.app.com",
+                     "https://other.app.com",
+                 ],
+                 "ProxyList": [
+                     "HTTPS proxy.app:443",
+                     "DIRECT",
+                 ],
+                 "Conditions": [
+                     {
+                         "DnsProbe": {
+                             "Host": "corp.ads",
+                             "Result": "resolves",
+                         },
+                     }
+                 ]
+             }
+         ])");
 
   net::ProxyConfigWithAnnotation actual_config;
   EXPECT_EQ(net::ProxyConfigService::CONFIG_VALID,
@@ -551,46 +556,42 @@ TEST_F(PrefProxyConfigOverrideRulesTest, DynamicPolicy) {
 
   // Setting the pref again in the same test scope validates the policy is
   // dynamic and that the retrieved config changes appropriately.
-  pref_service_->SetManagedPref(
-      proxy_config::prefs::kProxyOverrideRules,
-      std::make_unique<base::Value>(
-          *base::JSONReader::Read(R"([
-                                         {
-                                             "DestinationMatchers": [
-                                                 "https://some.other.app.com",
-                                             ],
-                                             "ProxyList": [
-                                                 "DIRECT",
-                                                 "PROXY some.host:123",
-                                                 "HTTPS proxy.app:443",
-                                                 "DIRECT",
-                                             ],
-                                             "Conditions": [
-                                                 {
-                                                     "DnsProbe": {
-                                                         "Host": "corp.ads",
-                                                         "Result": "resolves",
-                                                     },
-                                                 },
-                                                 {
-                                                     "DnsProbe": {
-                                                         "Host": "ads.corp",
-                                                         "Result": "not_found",
-                                                     },
-                                                 }
-                                             ]
-                                         },
-                                         {
-                                             "DestinationMatchers": [
-                                                 "https://some.special.app.com",
-                                             ],
-                                             "ProxyList": [
-                                                 "DIRECT",
-                                             ],
-                                         }
-                                    ])",
-                                  base::JSON_ALLOW_TRAILING_COMMAS)));
-  base::RunLoop().RunUntilIdle();
+  SetOverrideRules(
+      R"([
+             {
+                 "DestinationMatchers": [
+                     "https://some.other.app.com",
+                 ],
+                 "ProxyList": [
+                     "DIRECT",
+                     "PROXY some.host:123",
+                     "HTTPS proxy.app:443",
+                     "DIRECT",
+                 ],
+                 "Conditions": [
+                     {
+                         "DnsProbe": {
+                             "Host": "corp.ads",
+                             "Result": "resolves",
+                         },
+                     },
+                     {
+                         "DnsProbe": {
+                             "Host": "ads.corp",
+                             "Result": "not_found",
+                         },
+                     }
+                 ]
+             },
+             {
+                 "DestinationMatchers": [
+                     "https://some.special.app.com",
+                 ],
+                 "ProxyList": [
+                     "DIRECT",
+                 ],
+             }
+        ])");
 
   net::ProxyConfigWithAnnotation updated_config;
   EXPECT_EQ(net::ProxyConfigService::CONFIG_VALID,
@@ -656,6 +657,250 @@ TEST_F(PrefProxyConfigOverrideRulesTest, DynamicPolicy) {
   EXPECT_EQ(fixed_servers_config.value().proxy_rules().single_proxies.First(),
             net::ProxyUriToProxyChain("http://example.com:3128",
                                       net::ProxyServer::SCHEME_HTTP));
+}
+
+TEST_F(PrefProxyConfigOverrideRulesTest, NonListValues) {
+  InitConfigService(net::ProxyConfigService::CONFIG_VALID);
+  for (const char* value : {"1234", "false", "null", "\"abce\""}) {
+    SetOverrideRules(value);
+
+    net::ProxyConfigWithAnnotation actual_config;
+    EXPECT_EQ(net::ProxyConfigService::CONFIG_VALID,
+              proxy_config_service_->GetLatestProxyConfig(&actual_config));
+    EXPECT_TRUE(actual_config.value().proxy_override_rules().empty());
+  }
+}
+
+TEST_F(PrefProxyConfigOverrideRulesTest, InvalidTypesInList) {
+  InitConfigService(net::ProxyConfigService::CONFIG_VALID);
+  SetOverrideRules(
+      R"([
+             1234,
+             "abcd",
+             false,
+             null,
+         ])");
+
+  net::ProxyConfigWithAnnotation actual_config;
+  EXPECT_EQ(net::ProxyConfigService::CONFIG_VALID,
+            proxy_config_service_->GetLatestProxyConfig(&actual_config));
+  EXPECT_TRUE(actual_config.value().proxy_override_rules().empty());
+}
+
+TEST_F(PrefProxyConfigOverrideRulesTest, InvalidDictsInList) {
+  InitConfigService(net::ProxyConfigService::CONFIG_VALID);
+
+  // Only the first entry of the list should be kept in the resulting config.
+  SetOverrideRules(
+      R"([
+             {
+                 "DestinationMatchers": [
+                     "https://some.app.com",
+                     "https://other.app.com",
+                 ],
+                 "ProxyList": [
+                     "HTTPS proxy.app:443",
+                     "DIRECT",
+                 ],
+                 "Conditions": [
+                     {
+                         "DnsProbe": {
+                             "Host": "corp.ads",
+                             "Result": "resolves",
+                         },
+                     }
+                 ]
+             },
+             {
+                 "DestinationMatchers": [
+                     "https://some.app.com",
+                     "https://other.app.com",
+                 ],
+                 "Conditions": [
+                     {
+                         "DnsProbe": {
+                             "Host": "corp.ads",
+                             "Result": "resolves",
+                         },
+                     }
+                 ]
+             },
+             {
+                 "DestinationMatchers": [
+                     "https://some.app.com",
+                     "https://other.app.com",
+                 ],
+                 "ProxyList": [
+                     "HTTPS proxy.app:443",
+                     1234,
+                 ],
+                 "Conditions": [
+                     {
+                         "DnsProbe": {
+                             "Host": "corp.ads",
+                             "Result": "resolves",
+                         },
+                     }
+                 ]
+             },
+             {
+                 "ProxyList": [
+                     "HTTPS proxy.app:443",
+                     "DIRECT",
+                 ],
+                 "Conditions": [
+                     {
+                         "DnsProbe": {
+                             "Host": "corp.ads",
+                             "Result": "resolves",
+                         },
+                     }
+                 ]
+             },
+             {
+                 "DestinationMatchers": [
+                     "https://some.app.com",
+                     1234,
+                 ],
+                 "ProxyList": [
+                     "HTTPS proxy.app:443",
+                     "DIRECT",
+                 ],
+                 "Conditions": [
+                     {
+                         "DnsProbe": {
+                             "Host": "corp.ads",
+                             "Result": "resolves",
+                         },
+                     }
+                 ]
+             },
+             {
+                 "DestinationMatchers": [
+                     "https://some.app.com",
+                     "https://other.app.com",
+                 ],
+                 "ProxyList": [
+                     "HTTPS proxy.app:443",
+                     "DIRECT",
+                 ],
+                 "Conditions": [
+                     {}
+                 ]
+             },
+             {
+                 "DestinationMatchers": [
+                     "https://some.app.com",
+                     "https://other.app.com",
+                 ],
+                 "ProxyList": [
+                     "HTTPS proxy.app:443",
+                     "DIRECT",
+                 ],
+                 "Conditions": [
+                     {
+                         "DnsProbe": {
+                             "Result": "resolves",
+                         },
+                     }
+                 ]
+             },
+             {
+                 "DestinationMatchers": [
+                     "https://some.app.com",
+                     "https://other.app.com",
+                 ],
+                 "ProxyList": [
+                     "HTTPS proxy.app:443",
+                     "DIRECT",
+                 ],
+                 "Conditions": [
+                     {
+                         "DnsProbe": {
+                             "Host": "corp.ads",
+                         },
+                     }
+                 ]
+             },
+             {
+                 "DestinationMatchers": [
+                     "https://some.app.com",
+                     "https://other.app.com",
+                 ],
+                 "ProxyList": [
+                     "HTTPS proxy.app:443",
+                     "DIRECT",
+                 ],
+                 "Conditions": [
+                     {
+                         "DnsProbe": {
+                             "Host": "corp.ads",
+                             "Result": 1234,
+                         },
+                     }
+                 ]
+             },
+             {
+                 "DestinationMatchers": [
+                     "https://some.app.com",
+                     "https://other.app.com",
+                 ],
+                 "ProxyList": [
+                     "HTTPS proxy.app:443",
+                     "DIRECT",
+                 ],
+                 "Conditions": [
+                     {
+                         "DnsProbe": {
+                             "Host": 1234,
+                             "Result": "resolves",
+                         },
+                     }
+                 ]
+             },
+             {
+                 "DestinationMatchers": [
+                     "https://some.app.com",
+                     "https://other.app.com",
+                 ],
+                 "ProxyList": [
+                     "HTTPS proxy.app:443",
+                     "DIRECT",
+                 ],
+                 "Conditions": [
+                     {
+                         "DnsProbe": {
+                             "Host": "corp.ads",
+                             "Result": "invalid_value",
+                         },
+                     }
+                 ]
+             },
+         ])");
+
+  net::ProxyConfigWithAnnotation actual_config;
+  EXPECT_EQ(net::ProxyConfigService::CONFIG_VALID,
+            proxy_config_service_->GetLatestProxyConfig(&actual_config));
+  EXPECT_EQ(actual_config.value().proxy_override_rules().size(), 1u);
+
+  const auto& rule = actual_config.value().proxy_override_rules().at(0);
+  EXPECT_EQ(rule.destination_matchers.rules().size(), 2u);
+  EXPECT_EQ(rule.destination_matchers.rules().at(0)->ToString(),
+            "https://some.app.com");
+  EXPECT_EQ(rule.destination_matchers.rules().at(1)->ToString(),
+            "https://other.app.com");
+
+  EXPECT_EQ(rule.proxy_list.size(), 2u);
+  EXPECT_EQ(rule.proxy_list.AllChains().at(0),
+            net::PacResultElementToProxyChain("HTTPS proxy.app:443"));
+  EXPECT_EQ(rule.proxy_list.AllChains().at(1),
+            net::PacResultElementToProxyChain("DIRECT"));
+
+  EXPECT_EQ(rule.dns_conditions.size(), 1u);
+  EXPECT_EQ(rule.dns_conditions.at(0).host,
+            url::SchemeHostPort(GURL("corp.ads")));
+  EXPECT_EQ(rule.dns_conditions.at(0).result,
+            net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition::kResolves);
 }
 
 }  // namespace
