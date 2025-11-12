@@ -19,7 +19,6 @@
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/platform_browser_test.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
-#include "components/network_session_configurator/common/network_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/trusted_vault/features.h"
 #include "components/trusted_vault/trusted_vault_client.h"
@@ -323,6 +322,7 @@ class TrustedVaultEncryptionKeysTabHelperBrowserTest
   }
 
   void SetUp() override {
+    https_server()->SetCertHostnames({"accounts.google.com"});
     ASSERT_TRUE(https_server_.InitializeAndListen());
     PlatformBrowserTest::SetUp();
   }
@@ -333,11 +333,6 @@ class TrustedVaultEncryptionKeysTabHelperBrowserTest
     command_line->AppendSwitchASCII(
         ::switches::kGaiaUrl,
         https_server()->GetURL("accounts.google.com", "/").spec());
-
-    // Ignore cert errors so that the sign-in URL can be loaded from a site
-    // other than localhost (the EmbeddedTestServer serves a certificate that
-    // is valid for localhost).
-    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
     PlatformBrowserTest::SetUpCommandLine(command_line);
   }
 
