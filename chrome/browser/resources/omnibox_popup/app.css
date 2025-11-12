@@ -20,6 +20,12 @@
   --cr-searchbox-width: 100%;
   --cr-searchbox-match-font-weight: 700;
 
+  --text-input-inline-start-spacing: 16px;
+  --contextual-entrypoint-and-carousel-context-menu-container-padding-inline-start: 9px;
+  --contextual-entrypoint-and-carousel-carousel-divider-margin-top: 8px;
+  --contextual-entrypoint-and-carousel-carousel-divider-margin-bottom: 8px;
+  --contextual-entrypoint-and-carousel-context-menu-container-inline-start: 0px;
+
   /* Closely resembles the views Omnibox input font size.
   * TODO(crbug.com/450640041): Investigate webUI blink & views rendering difference */
   font-size: 14.3px;/* closely resembles the omnibox input font size. */
@@ -50,6 +56,10 @@
   --color-searchbox-results-url-selected: var(--color-omnibox-results-url-selected);
   --color-searchbox-results-url: var(--color-omnibox-results-url);
   --color-searchbox-search-icon-background: var(--color-omnibox-results-icon);
+}
+
+contextual-entrypoint-and-carousel[realbox-layout-mode="TallBottomContext"] {
+  --contextual-entrypoint-and-carousel-context-menu-container-margin-bottom: 9px;
 }
 
 /**

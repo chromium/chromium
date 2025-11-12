@@ -28,11 +28,13 @@
   align-items: center;
   display: flex;
   gap: 4px;
+  padding-inline-start: var(--contextual-entrypoint-and-carousel-context-menu-container-padding-inline-start, 4px);
+  margin-bottom: var(--contextual-entrypoint-and-carousel-context-menu-container-margin-bottom);
 }
 
 #contextEntrypoint {
   color: var(--color-searchbox-results-foreground);
-  padding-inline: 8px;
+  padding-inline: var(--contextual-entrypoint-and-carousel-context-menu-container-inline-start, 8px);
 }
 
 #toolChipsContainer {
@@ -69,8 +71,8 @@
     var(--color-composebox-file-carousel-divider);
   margin-inline-end: 16px;
   margin-inline-start: var(--text-input-inline-start-spacing);
-  margin-top: 20px;
-  margin-bottom: 10px;
+  margin-top: var(--contextual-entrypoint-and-carousel-carousel-divider-margin-top, 20px);
+  margin-bottom: var(--contextual-entrypoint-and-carousel-carousel-divider-margin-bottom, 10px);
 }
 
 #deepSearchButton {
