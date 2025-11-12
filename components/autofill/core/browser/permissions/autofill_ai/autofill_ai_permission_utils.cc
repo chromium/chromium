@@ -308,7 +308,9 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
   }
 
   // State of the Address-Autofill pref.
-  if (!prefs->GetBoolean(prefs::kAutofillProfileEnabled)) {
+  if (!prefs->GetBoolean(prefs::kAutofillProfileEnabled) &&
+      !base::FeatureList::IsEnabled(
+          features::kAutofillAiIgnoresWhetherAddressPrefIsEnabled)) {
     MaybeOutputReason(debug_message, "Address Autofill is not enabled.");
     return false;
   }

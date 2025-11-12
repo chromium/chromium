@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_utils.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/feature_list.h"
@@ -616,6 +617,26 @@ TEST_F(AutofillAiPermissionUtilsTest, SignInAfterOptIn) {
   EXPECT_TRUE(GetAutofillAiOptInStatus(client()));
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+
+TEST_F(AutofillAiPermissionUtilsTest,
+       UsersCannotOptInIfAutofillForAddressesIsDisabled) {
+  EXPECT_TRUE(MayPerformAutofillAiAction(client(), AutofillAiAction::kOptIn,
+                                         std::nullopt));
+  client().GetPrefs()->SetBoolean(prefs::kAutofillProfileEnabled, false);
+  EXPECT_FALSE(MayPerformAutofillAiAction(client(), AutofillAiAction::kOptIn,
+                                          std::nullopt));
+}
+
+TEST_F(AutofillAiPermissionUtilsTest,
+       UsersCanOptInIfAutofillForAddressesIsDisabledWhenFeatureIsEnabled) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAiIgnoresWhetherAddressPrefIsEnabled};
+  ASSERT_TRUE(MayPerformAutofillAiAction(client(), AutofillAiAction::kOptIn,
+                                         std::nullopt));
+  client().GetPrefs()->SetBoolean(prefs::kAutofillProfileEnabled, false);
+  EXPECT_TRUE(MayPerformAutofillAiAction(client(), AutofillAiAction::kOptIn,
+                                         std::nullopt));
+}
 
 // Tests that changes to the opt-in status are recorded in metrics.
 TEST_F(AutofillAiPermissionUtilsTest, OptInStatusMetrics) {

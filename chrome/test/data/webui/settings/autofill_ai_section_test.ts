@@ -18,7 +18,6 @@ import {TestEntityDataManagerProxy} from './test_entity_data_manager_proxy.js';
 const AttributeTypeDataType = chrome.autofillPrivate.AttributeTypeDataType;
 
 suite('AutofillAiSectionUiReflectsEligibilityStatus', function() {
-  let section: SettingsAutofillAiSectionElement;
   let entityDataManager: TestEntityDataManagerProxy;
   let settingsPrefs: SettingsPrefsElement;
 
@@ -71,17 +70,33 @@ suite('AutofillAiSectionUiReflectsEligibilityStatus', function() {
         testEntityInstancesWithLabels);
     // By default, the user is not opted in.
     entityDataManager.setGetOptInStatusResponse(false);
+  });
 
-    section = document.createElement('settings-autofill-ai-section');
+  async function createSection(
+      eligibleUser: boolean = true,
+      autofillAiIgnoresWhetherAddressFillingIsEnabled: boolean =
+          false): Promise<SettingsAutofillAiSectionElement> {
+    loadTimeData.overrideValues({
+      userEligibleForAutofillAi: eligibleUser,
+      AutofillAiIgnoresWhetherAddressFillingIsEnabled:
+          autofillAiIgnoresWhetherAddressFillingIsEnabled,
+    });
+    const section: SettingsAutofillAiSectionElement =
+        document.createElement('settings-autofill-ai-section');
     settingsPrefs.set(
         `prefs.${AiEnterpriseFeaturePrefName.AUTOFILL_AI}.value`,
         ModelExecutionEnterprisePolicyValue.ALLOW);
     section.prefs = settingsPrefs.prefs;
-  });
+    document.body.appendChild(section);
+
+    await flushTasks();
+    return section;
+  }
 
   teardown(function() {
     CrSettingsPrefs.resetForTesting();
   });
+
   interface EligibilityParamsInterface {
     // Whether the user is opted into Autofill with Ai.
     optedIn: boolean;
@@ -100,11 +115,8 @@ suite('AutofillAiSectionUiReflectsEligibilityStatus', function() {
 
   eligibilityParams.forEach(
       (params) => test(params.title, async function() {
-        section.ineligibleUser = params.ineligibleUser;
         entityDataManager.setGetOptInStatusResponse(params.optedIn);
-
-        document.body.appendChild(section);
-        await flushTasks();
+        const section = await createSection(!params.ineligibleUser);
 
         const toggle =
             section.shadowRoot!.querySelector<SettingsToggleButtonElement>(
@@ -115,11 +127,7 @@ suite('AutofillAiSectionUiReflectsEligibilityStatus', function() {
       }));
 
   test('SwitchingToggleUpdatesPref', async function() {
-    // The user is eligible so that the toggle is enabled.
-    section.ineligibleUser = false;
-    document.body.appendChild(section);
-    await flushTasks();
-
+    const section = await createSection();
     const toggle =
         section.shadowRoot!.querySelector<SettingsToggleButtonElement>(
             '#prefToggle');
@@ -133,6 +141,47 @@ suite('AutofillAiSectionUiReflectsEligibilityStatus', function() {
     toggle.click();
     assertFalse(await entityDataManager.whenCalled('setOptInStatus'));
   });
+
+  test('DisablingClassicAutofillPrefDisablesTheFeature', async function() {
+    entityDataManager.setGetOptInStatusResponse(true);
+    const section = await createSection();
+
+    const toggle =
+        section.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#prefToggle');
+    assertTrue(!!toggle);
+    assertTrue(toggle.checked);
+
+    section.set('prefs.autofill.profile_enabled.value', false);
+    await flushTasks();
+
+    // Check that when the autofill pref is off, the feature is disabled.
+    assertTrue(!!toggle);
+    assertFalse(toggle.checked);
+  });
+
+  test(
+      'DisablingClassicAutofillPrefDoesNotDisabledTheFeatureIfOverrideBehaviourIsEnabled',
+      async function() {
+        entityDataManager.setGetOptInStatusResponse(true);
+        const section = await createSection(
+            /*eligibleUser=*/ true,
+            /*autofillAiIgnoresWhetherAddressFillingIsEnable=*/ true);
+
+        const toggle =
+            section.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+                '#prefToggle');
+        assertTrue(!!toggle);
+        assertTrue(toggle.checked);
+
+        section.set('prefs.autofill.profile_enabled.value', false);
+        await flushTasks();
+
+        // Check that even when the address autofill pref is off, the feature is
+        // enabled.
+        assertTrue(!!toggle);
+        assertTrue(toggle.checked);
+      });
 });
 
 suite('AutofillAiSectionUiTest', function() {
@@ -243,13 +292,14 @@ suite('AutofillAiSectionUiTest', function() {
     settingsPrefs.set(
         `prefs.${AiEnterpriseFeaturePrefName.AUTOFILL_AI}.value`,
         ModelExecutionEnterprisePolicyValue.ALLOW);
+
   });
 
   teardown(function() {
     CrSettingsPrefs.resetForTesting();
   });
 
-  async function createPage() {
+  async function createSection() {
     loadTimeData.overrideValues({userEligibleForAutofillAi: true});
     section = document.createElement('settings-autofill-ai-section');
     section.prefs = settingsPrefs.prefs;
@@ -265,7 +315,7 @@ suite('AutofillAiSectionUiTest', function() {
         settingsPrefs.set(
             `prefs.${AiEnterpriseFeaturePrefName.AUTOFILL_AI}.value`,
             ModelExecutionEnterprisePolicyValue.ALLOW);
-        await createPage();
+        await createSection();
 
         const enterpriseLogginInfoBullet =
             section.shadowRoot!.querySelector<SettingsAiLoggingInfoBullet>(
@@ -279,7 +329,7 @@ suite('AutofillAiSectionUiTest', function() {
         settingsPrefs.set(
             `prefs.${AiEnterpriseFeaturePrefName.AUTOFILL_AI}.value`,
             ModelExecutionEnterprisePolicyValue.ALLOW_WITHOUT_LOGGING);
-        await createPage();
+        await createSection();
 
         const enterpriseLogginInfoBullet =
             section.shadowRoot!.querySelector<SettingsAiLoggingInfoBullet>(
@@ -296,7 +346,7 @@ suite('AutofillAiSectionUiTest', function() {
         settingsPrefs.set(
             `prefs.${AiEnterpriseFeaturePrefName.AUTOFILL_AI}.value`,
             ModelExecutionEnterprisePolicyValue.DISABLE);
-        await createPage();
+        await createSection();
 
         const enterpriseLogginInfoBullet =
             section.shadowRoot!.querySelector<SettingsAiLoggingInfoBullet>(
@@ -309,7 +359,7 @@ suite('AutofillAiSectionUiTest', function() {
       });
 
   test('ToggleIsDisabledWhenUserIsNotEligible', async function() {
-    await createPage();
+    await createSection();
     // The toggle is initially enabled (see the setup() method). Clicking it
     // sets the opt-in status to false.
     const toggle =

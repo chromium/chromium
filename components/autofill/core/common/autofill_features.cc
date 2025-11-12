@@ -192,6 +192,11 @@ BASE_FEATURE(kAutofillAiIgnoreSignInState, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAutofillAiIgnoreWhetherUserHasAddressOrPaymentsDataForIph,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// If enabled, Autofill AI does not depend on Autofill for addresses being
+// enabled.
+BASE_FEATURE(kAutofillAiIgnoresWhetherAddressPrefIsEnabled,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, AutofillAi supports known traveler numbers.
 BASE_FEATURE(kAutofillAiKnownTravelerNumber, base::FEATURE_ENABLED_BY_DEFAULT);
 

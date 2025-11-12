@@ -89,12 +89,24 @@ export class CollapsibleCardElement extends
           value: false,
         }),
       },
+
+      /**
+        If true, Autofill AI does not depend on whether Autofill for addresses
+        is enabled.
+      */
+      autofillAiIgnoresWhetherAddressFillingIsEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean(
+              'AutofillAiIgnoresWhetherAddressFillingIsEnabled');
+        },
+      },
     };
   }
 
   static get observers() {
     return [
-      'onAutofillAiPrefChanged_(prefs.autofill.profile_enabled.value)',
+      'onAutofillAddressPrefChanged_(prefs.autofill.profile_enabled.value)',
       `onEnterprisePolicyChanged_(prefs.${
           AiEnterpriseFeaturePrefName.AUTOFILL_AI}.value)`,
     ];
@@ -103,6 +115,7 @@ export class CollapsibleCardElement extends
   declare private expanded_: boolean;
   declare private enhancedAutofillEligibleUser_: boolean;
   declare private enhancedAutofillOptedIn_: chrome.settingsPrivate.PrefObject;
+  declare private autofillAiIgnoresWhetherAddressFillingIsEnabled_: boolean;
 
   private entityInstancesChangedListener_: EntityInstancesChangedListener|null =
       null;
@@ -155,7 +168,10 @@ export class CollapsibleCardElement extends
   // the AutofillAI opt-in status. In this case, we do not remove the AutofillAI
   // entry, but just set the opt-in to false. Note that other
   // preconditions (e.g., sync) are not covered.
-  private async onAutofillAiPrefChanged_(prefValue: boolean) {
+  private async onAutofillAddressPrefChanged_(prefValue: boolean) {
+    if (this.autofillAiIgnoresWhetherAddressFillingIsEnabled_) {
+      return;
+    }
     const enhancedAutofillOptedIn =
         await this.entityDataManager_.getOptInStatus();
     this.set(

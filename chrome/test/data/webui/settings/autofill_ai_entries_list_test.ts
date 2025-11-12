@@ -20,7 +20,6 @@ import {TestEntityDataManagerProxy} from './test_entity_data_manager_proxy.js';
 const AttributeTypeDataType = chrome.autofillPrivate.AttributeTypeDataType;
 
 suite('AutofillAiEntriesListUiReflectsEligibilityStatus', function() {
-  let entriesList: SettingsAutofillAiEntriesListElement;
   let entityDataManager: TestEntityDataManagerProxy;
   let settingsPrefs: SettingsPrefsElement;
 
@@ -73,11 +72,6 @@ suite('AutofillAiEntriesListUiReflectsEligibilityStatus', function() {
         testEntityInstancesWithLabels);
     // By default, the user is not opted in.
     entityDataManager.setGetOptInStatusResponse(false);
-
-    entriesList = document.createElement('settings-autofill-ai-entries-list');
-    entriesList.prefs = settingsPrefs.prefs;
-    document.body.appendChild(entriesList);
-    return flushTasks();
   });
 
   teardown(function() {
@@ -100,21 +94,39 @@ suite('AutofillAiEntriesListUiReflectsEligibilityStatus', function() {
     {optedIn: false, ineligibleUser: false, title: 'OptedOutEligibleUser'},
   ];
 
+  async function createEntriesList(
+      eligibleUser: boolean = true,
+      autofillAiIgnoresWhetherAddressFillingIsEnabled: boolean =
+          false): Promise<SettingsAutofillAiEntriesListElement> {
+    loadTimeData.overrideValues({
+      userEligibleForAutofillAi: eligibleUser,
+      AutofillAiIgnoresWhetherAddressFillingIsEnabled:
+          autofillAiIgnoresWhetherAddressFillingIsEnabled,
+    });
+    const entriesList: SettingsAutofillAiEntriesListElement =
+        document.createElement('settings-autofill-ai-entries-list');
+    entriesList.prefs = settingsPrefs.prefs;
+    document.body.appendChild(entriesList);
+    await flushTasks();
+    return entriesList;
+  }
+
   // The Opt-in status is updated when
   // `prefs.autofill.autofill_ai.opt_in_status.value changes`. However, the new
   // status's actual value is sourced from
   // `entityDataManager.getOptInStatusResponse`. To force an opt-in status
   // update, you must change the value returned by `entityDataManager` and then
   // trigger a refresh by modifying the aforementioned preference.
-  function updateOptInStatus(newValue: boolean) {
+  function updateOptInStatus(
+      newValue: boolean, entriesList: SettingsAutofillAiEntriesListElement) {
     entityDataManager.setGetOptInStatusResponse(newValue);
     entriesList.setPrefValue('autofill.autofill_ai.opt_in_status', {});
   }
 
   eligibilityParams.forEach(
       (params) => test(params.title, async function() {
-        entriesList.ineligibleUser = params.ineligibleUser;
-        updateOptInStatus(params.optedIn);
+        const entriesList = await createEntriesList(!params.ineligibleUser);
+        updateOptInStatus(params.optedIn, entriesList);
         await flushTasks();
 
         const addButton =
@@ -128,9 +140,9 @@ suite('AutofillAiEntriesListUiReflectsEligibilityStatus', function() {
             isVisible(entriesList.shadowRoot!.querySelector('#entries')));
       }));
 
-  test('DisablingClassicAutofillPrefDisabledTheFeature', async function() {
-    entriesList.ineligibleUser = false;
-    updateOptInStatus(true);
+  test('DisablingClassicAutofillPrefDisablesTheFeature', async function() {
+    const entriesList = await createEntriesList();
+    updateOptInStatus(true, entriesList);
     await flushTasks();
 
     const addButton = entriesList.shadowRoot!.querySelector<CrButtonElement>(
@@ -145,10 +157,30 @@ suite('AutofillAiEntriesListUiReflectsEligibilityStatus', function() {
     assertTrue(addButton.disabled);
   });
 
+  test(
+      'DisablingClassicAutofillPrefDoesNotDisabledTheFeatureIfOverrideBehaviourIsEnabled',
+      async function() {
+        const entriesList = await createEntriesList(
+            /*userEligible=*/ true,
+            /*autofillAiIgnoresWhetherAddressFillingIsEnabled=*/ true);
+        updateOptInStatus(true, entriesList);
+        await flushTasks();
+
+        const addButton =
+            entriesList.shadowRoot!.querySelector<CrButtonElement>(
+                '#addEntityInstance');
+        assertTrue(!!addButton);
+        assertFalse(addButton.disabled);
+
+        entriesList.setPrefValue('autofill.profile_enabled', false);
+        await flushTasks();
+        assertFalse(addButton.disabled);
+      });
+
   test('AddButtonEnabledByDefaultWhenAllowEditingPrefUnset', async function() {
-    entriesList.ineligibleUser = false;
+    const entriesList = await createEntriesList();
     entriesList.allowEditingPref = null; // Explicitly unset
-    updateOptInStatus(true);
+    updateOptInStatus(true, entriesList);
     await flushTasks();
 
     const addButton = entriesList.shadowRoot!.querySelector<CrButtonElement>(
@@ -158,13 +190,13 @@ suite('AutofillAiEntriesListUiReflectsEligibilityStatus', function() {
   });
 
   test('DisableAddButtotBasedOnAllowEditingPrefValue', async function() {
-    entriesList.ineligibleUser = false;
+    const entriesList = await createEntriesList();
     entriesList.allowEditingPref = {
       key: '',
       type: chrome.settingsPrivate.PrefType.BOOLEAN,
       value: true,
     };
-    updateOptInStatus(true);
+    updateOptInStatus(true, entriesList);
     await flushTasks();
 
     const addButton = entriesList.shadowRoot!.querySelector<CrButtonElement>(
@@ -307,7 +339,8 @@ suite('AutofillAiEntriesListUiTest', function() {
     CrSettingsPrefs.resetForTesting();
   });
 
-  async function createPage(allowedEntityTypes: Set<number>|null = null) {
+  async function createEntriesList(
+      allowedEntityTypes: Set<number>|null = null) {
     entriesList = document.createElement('settings-autofill-ai-entries-list');
     entriesList.prefs = settingsPrefs.prefs;
     entriesList.allowedEntityTypes = allowedEntityTypes;
@@ -327,7 +360,7 @@ suite('AutofillAiEntriesListUiTest', function() {
   // type in its title. Local entities have an actionable button which allows
   // users editing and deleting.
   test('AutofillAiWalletEntitiesHaveWalletPassesIconButton', async function() {
-    await createPage();
+    await createEntriesList();
 
     const listItems =
         entityInstancesListElement.querySelectorAll<HTMLElement>('.list-item');
@@ -359,7 +392,7 @@ suite('AutofillAiEntriesListUiTest', function() {
   });
 
   test('EntityInstancesLoadedAndSortedAlphabetically', async function() {
-    await createPage();
+    await createEntriesList();
     const listItems =
         entityInstancesListElement.querySelectorAll<HTMLElement>('.list-item');
 
@@ -377,7 +410,7 @@ suite('AutofillAiEntriesListUiTest', function() {
   });
 
   test('EntityInstancesFilteredWhenFilterProvided', async function() {
-    await createPage(new Set([
+    await createEntriesList(new Set([
       0,  // Passport
     ]));
 
@@ -405,7 +438,7 @@ suite('AutofillAiEntriesListUiTest', function() {
 
   removeEntityInstanceParams.forEach(
       (params) => test(params.title, async function() {
-        await createPage();
+        await createEntriesList();
         entityDataManager.setGetEntityInstanceByGuidResponse(
             testEntityInstance);
 
@@ -464,7 +497,7 @@ suite('AutofillAiEntriesListUiTest', function() {
 
   addOrEditEntityInstanceDialogParams.forEach(
       (params) => test(params.title, async function() {
-        await createPage();
+        await createEntriesList();
         if (params.add) {
           // Open the add entity instance dialog.
           const addButton = entriesList.shadowRoot!.querySelector<HTMLElement>(
@@ -534,7 +567,7 @@ suite('AutofillAiEntriesListUiTest', function() {
       }));
 
   test('AddButtonShowsEntityInstancesList', async function() {
-    await createPage();
+    await createEntriesList();
     const addButton = entriesList.shadowRoot!.querySelector<HTMLElement>(
         '#addEntityInstance');
     assertTrue(!!addButton);
@@ -558,7 +591,7 @@ suite('AutofillAiEntriesListUiTest', function() {
         testEntityTypes.filter((type) => type.typeNameAsString !== 'Passport');
     assertEquals(allowedEntityTypes.length, testEntityTypes.length - 1);
 
-    await createPage(
+    await createEntriesList(
         new Set<number>(allowedEntityTypes.map((type) => type.typeName)));
 
     const addButton = entriesList.shadowRoot!.querySelector<HTMLElement>(
@@ -580,7 +613,7 @@ suite('AutofillAiEntriesListUiTest', function() {
   });
 
   test('EntityTypesStorableInWalletHaveOpenInNewIcon', async function() {
-    await createPage();
+    await createEntriesList();
     const addButton = entriesList.shadowRoot!.querySelector<HTMLElement>(
         '#addEntityInstance');
     assertTrue(!!addButton);
@@ -601,7 +634,7 @@ suite('AutofillAiEntriesListUiTest', function() {
   test(
       'EntityInstancesChangedListenerUpdatesAndAlphabeticallySortsEntries',
       async function() {
-        await createPage();
+        await createEntriesList();
         const newTestEntityInstancesWithLabels:
             chrome.autofillPrivate.EntityInstanceWithLabels[] = [
           {
@@ -657,7 +690,7 @@ suite('AutofillAiEntriesListUiTest', function() {
             (type) => type.typeNameAsString === 'Passport');
         assertEquals(allowedEntityTypes.length, 1);
 
-        await createPage(
+        await createEntriesList(
             new Set<number>(allowedEntityTypes.map((type) => type.typeName)));
 
         const newTestEntityInstancesWithLabels:
@@ -702,7 +735,7 @@ suite('AutofillAiEntriesListUiTest', function() {
       });
 
   test('EntriesDoNotDisappearAfterOptInStatusChange', async function() {
-    await createPage();
+    await createEntriesList();
 
     const addButton = entriesList.shadowRoot!.querySelector<CrButtonElement>(
         '#addEntityInstance');
@@ -725,7 +758,7 @@ suite('AutofillAiEntriesListUiTest', function() {
   });
 
   test('EntityTypesAreRefreshedOnPersonalDataChangeCallback', async function() {
-    await createPage();
+    await createEntriesList();
     const addButton = entriesList.shadowRoot!.querySelector<HTMLElement>(
         '#addEntityInstance');
     assertTrue(!!addButton);
@@ -822,7 +855,7 @@ suite('AutofillAiEntriesListLongLabelsUiTest', function() {
     CrSettingsPrefs.resetForTesting();
   });
 
-  async function createPage() {
+  async function createEntriesList() {
     settingsPrefs.set(
         `prefs.${AiEnterpriseFeaturePrefName.AUTOFILL_AI}.value`,
         ModelExecutionEnterprisePolicyValue.ALLOW);
@@ -834,7 +867,7 @@ suite('AutofillAiEntriesListLongLabelsUiTest', function() {
   }
 
   test('LongLabelsHaveHiddenOverflow', async function() {
-    await createPage();
+    await createEntriesList();
     // Contains all labels and sublabels, in order.
     const labels =
         entriesList.shadowRoot!.querySelectorAll<HTMLElement>('.ellipses');
