@@ -8,11 +8,6 @@
 
 namespace autofill::features::debug {
 
-// If enabled, forces the deduplication pipeline to run on every startup,
-// bypassing the 'once per milestone' limit.
-BASE_FEATURE(kAutofillSkipDeduplicationRequirements,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Testing tool that collects metrics during a run of the captured site tests
 // and dumps the collected metrics into a specified output directory.
 // For each test, a file named {test-name}.txt is created. It contains all the
@@ -27,6 +22,7 @@ BASE_FEATURE(kAutofillSkipDeduplicationRequirements,
 // It is helpful in conjunction with `tools/captured_sites/metrics-scraper.py`.
 BASE_FEATURE(kAutofillCapturedSiteTestsMetricsScraper,
              base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Name of the directory to write the results into.
 BASE_FEATURE_PARAM(std::string,
                    kAutofillCapturedSiteTestsMetricsScraperOutputDir,
@@ -105,9 +101,6 @@ BASE_FEATURE_PARAM(std::string,
 // i.e., https://other.autofill.server:port/tbproxy/af/
 BASE_FEATURE(kAutofillServerCommunication, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables showing DOM Node ID of elements.
-BASE_FEATURE(kShowDomNodeIDs, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Controls attaching the autofill type predictions to their respective
 // element in the DOM.
 BASE_FEATURE(kAutofillShowTypePredictions, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -131,6 +124,11 @@ BASE_FEATURE_PARAM(bool,
                    "as-title",
                    false);
 
+// If enabled, forces the deduplication pipeline to run on every startup,
+// bypassing the 'once per milestone' limit.
+BASE_FEATURE(kAutofillSkipDeduplicationRequirements,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, ensures that the "autofill-information" attribute only contains a
 // single FieldType in "overall type: <FieldTypes>". For example,
 // "overall type: NAME_FULL, USERNAME" becomes "overall type: NAME_FULL" if the
@@ -145,5 +143,8 @@ BASE_FEATURE(kAutofillUnionTypesSingleTypeInAutofillInformation,
 // This feature is for testing purposes and is not supposed
 // to be launched.
 BASE_FEATURE(kAutofillUploadThrottling, base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables showing DOM Node ID of elements.
+BASE_FEATURE(kShowDomNodeIDs, base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace autofill::features::debug
