@@ -166,8 +166,7 @@ void GlicActorTaskIconManager::UpdateTaskNudge() {
 
   ActorTaskNudgeState old_state = current_actor_task_nudge_state_;
   if (base::FeatureList::IsEnabled(features::kGlicActorUiNudgeRedesign)) {
-    if (!paused_or_yielded_actor_tasks.empty() &&
-        !actor_task_list_bubble_rows_.empty()) {
+    if (!paused_or_yielded_actor_tasks.empty()) {
       current_actor_task_nudge_state_.text =
           ActorTaskNudgeState::Text::kNeedsAttention;
     } else {
@@ -197,19 +196,12 @@ void GlicActorTaskIconManager::UpdateTaskNudge() {
   }
 }
 
-void GlicActorTaskIconManager::RemoveRowFromTaskListBubble(
-    actor::TaskId task_id) {
-  actor_task_list_bubble_rows_.erase(task_id);
-  UpdateTaskNudge();
-}
-
 void GlicActorTaskIconManager::UpdateTaskListBubble(actor::TaskId task_id) {
   if (actor::ActorTask* task = actor_service_->GetTask(task_id)) {
     if (ShouldDisplayInTaskListBubble(task->GetState())) {
       ActorTaskListBubbleRowState task_state = {.task_id = task_id,
                                                 .title = task->title()};
       actor_task_list_bubble_rows_.insert({task_state.task_id, task_state});
-      task_list_bubble_change_callback_list_.Notify(task_id);
       return;
     }
   }
@@ -227,12 +219,6 @@ base::CallbackListSubscription
 GlicActorTaskIconManager::RegisterTaskNudgeStateChange(
     TaskNudgeChangeCallback callback) {
   return task_nudge_state_change_callback_list_.Add(std::move(callback));
-}
-
-base::CallbackListSubscription
-GlicActorTaskIconManager::RegisterTaskListBubbleStateChange(
-    TaskListBubbleChangeCallback callback) {
-  return task_list_bubble_change_callback_list_.Add(std::move(callback));
 }
 
 ActorTaskIconState GlicActorTaskIconManager::GetCurrentActorTaskIconState()

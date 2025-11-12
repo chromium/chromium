@@ -45,7 +45,6 @@ class ActorTaskListBubbleController : public views::WidgetObserver {
 
 #if BUILDFLAG(ENABLE_GLIC)
   void ShowBubble(views::View* anchor_view);
-  void OnStateUpdate(const actor::TaskId& task_id);
 #endif
 
   void OnWidgetDestroyed(views::Widget* widget) override;
@@ -61,9 +60,6 @@ class ActorTaskListBubbleController : public views::WidgetObserver {
 #if BUILDFLAG(ENABLE_GLIC)
   ActorTaskListBubbleRowButtonParams CreateRowButtonParamsForTaskState(
       tabs::ActorTaskListBubbleRowState task_state);
-
-  std::vector<base::CallbackListSubscription>
-      bubble_state_change_callback_subscription_;
 #endif
 
   base::ScopedObservation<views::Widget, views::WidgetObserver>

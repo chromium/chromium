@@ -6,7 +6,6 @@
 
 #include "base/functional/bind.h"
 #include "chrome/browser/actor/resources/grit/actor_browser_resources.h"
-#include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble_controller.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/glic_actor_task_icon_manager.h"
@@ -48,18 +47,13 @@ GlicActorNudgeController* GlicActorNudgeController::From(
 
 void GlicActorNudgeController::OnStateUpdate(
     const ActorTaskNudgeState& actor_task_nudge_state) {
-  ActorTaskListBubbleController* bubble_controller =
-      ActorTaskListBubbleController::From(browser_);
-
   switch (actor_task_nudge_state.text) {
     case tabs::ActorTaskNudgeState::Text::kDefault:
       tab_strip_action_container_->HideGlicActorTaskIcon();
       break;
     case tabs::ActorTaskNudgeState::Text::kNeedsAttention:
       tab_strip_action_container_->TriggerGlicActorNudge(
-          GetCheckTasksNudgeLabel());
-      bubble_controller->ShowBubble(
-          tab_strip_action_container_->glic_actor_task_icon());
+          l10n_util::GetStringUTF16(IDR_ACTOR_CHECK_TASK_NUDGE_LABEL));
       break;
       // TODO(crbug.com/458391262) revisit or cleanup implementation here for
       // m144.

@@ -26,7 +26,6 @@
 #include "chrome/browser/ui/tabs/organization/tab_organization_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/controls/rich_hover_button.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
@@ -46,13 +45,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/events/base_event_utils.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/animation/slide_animation.h"
 
 #if BUILDFLAG(ENABLE_GLIC)
 #include "chrome/browser/actor/resources/grit/actor_browser_resources.h"
-#include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble_controller.h"
 #include "chrome/browser/glic/fre/glic_fre.mojom.h"
 #include "chrome/browser/glic/fre/glic_fre_controller.h"
 #include "chrome/browser/glic/glic_pref_names.h"
@@ -64,7 +61,6 @@
 #include "chrome/browser/ui/tabs/glic_actor_nudge_controller.h"
 #include "chrome/browser/ui/tabs/glic_actor_task_icon_controller.h"
 #include "chrome/browser/ui/tabs/glic_actor_task_icon_manager.h"
-#include "chrome/browser/ui/tabs/glic_actor_task_icon_manager_factory.h"
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
 namespace {
@@ -236,15 +232,6 @@ class TabStripActionContainerBrowserTest : public InProcessBrowserTest {
             ->ResetExpansionAnimationForTesting(value);
       }
     }
-  }
-
-  void Click(views::View* clickable_view) {
-    clickable_view->OnMousePressed(
-        ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
-                       ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
-    clickable_view->OnMouseReleased(ui::MouseEvent(
-        ui::EventType::kMouseReleased, gfx::Point(), gfx::Point(),
-        ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
   }
 
  protected:
@@ -553,78 +540,6 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
                    ->width_factor_for_testing());
 }
 
-// TODO(crbug.com/458775033): Fix and enable browser/interactive UI tests.
-IN_PROC_BROWSER_TEST_F(
-    TabStripActionContainerBrowserTest,
-    DISABLED_ActivatesTabAndRemoveRowOnGlicActorTaskListBubbleRowClick) {
-  auto* actor_service = actor::ActorKeyedService::Get(browser()->GetProfile());
-  actor::TaskId task_id = actor_service->CreateTask();
-  actor::ActorTask* task = actor_service->GetTask(task_id);
-  actor::ui::StartTask start_task_event(task_id);
-  actor_service->GetActorUiStateManager()->OnUiEvent(start_task_event);
-  // Need to wait for the AUSM to notify the GlicActorTaskIconManager.
-  base::PlatformThread::Sleep(actor::ui::kProfileScopedUiUpdateDebounceDelay);
-
-  ASSERT_TRUE(AddTabAtIndexToBrowser(browser(), 0,
-                                     GURL(chrome::kChromeUINewTabURL),
-                                     ui::PAGE_TRANSITION_LINK));
-  auto* tab_one = browser()->GetTabStripModel()->GetTabAtIndex(0);
-  base::RunLoop loop;
-  task->AddTab(
-      tab_one->GetHandle(),
-      base::BindLambdaForTesting([&](actor::mojom::ActionResultPtr result) {
-        EXPECT_TRUE(actor::IsOk(*result));
-        loop.Quit();
-      }));
-  loop.Run();
-
-  // Add and activate the non-actuation tab.
-  ASSERT_TRUE(AddTabAtIndexToBrowser(browser(), 1,
-                                     GURL(chrome::kChromeUINewTabURL),
-                                     ui::PAGE_TRANSITION_LINK));
-  auto* tab_two = browser()->GetTabStripModel()->GetTabAtIndex(1);
-  browser()->GetTabStripModel()->ActivateTabAt(1);
-
-  EXPECT_TRUE(task->IsActingOnTab(tab_one->GetHandle()));
-  EXPECT_FALSE(task->IsActingOnTab(tab_two->GetHandle()));
-  EXPECT_FALSE(tab_one->IsActivated());
-  EXPECT_TRUE(tab_two->IsActivated());
-
-  actor_service->GetTask(task_id)->Pause(true);
-  auto* actor_nudge_controller =
-      tabs::GlicActorNudgeController::From(browser());
-  auto actor_task_nudge_state = tabs::ActorTaskNudgeState();
-  actor_task_nudge_state.text =
-      tabs::ActorTaskNudgeState::Text::kNeedsAttention;
-  actor_nudge_controller->OnStateUpdate(actor_task_nudge_state);
-
-  EXPECT_TRUE(GlicActorTaskIcon()->GetIsShowingNudge());
-
-  ResetAnimation(1);
-
-  auto* bubble_controller = ActorTaskListBubbleController::From(browser());
-  auto* content_view = bubble_controller->GetBubbleWidget()
-                           ->widget_delegate()
-                           ->AsBubbleDialogDelegate()
-                           ->GetContentsView();
-  EXPECT_EQ(1u, content_view->children().size());
-  auto* button = static_cast<RichHoverButton*>(
-      content_view->children().front()->children().front());
-  Click(button);
-
-  EXPECT_TRUE(tab_one->IsActivated());
-  EXPECT_FALSE(tab_two->IsActivated());
-
-  actor_task_nudge_state.text = tabs::ActorTaskNudgeState::Text::kDefault;
-  actor_nudge_controller->OnStateUpdate(actor_task_nudge_state);
-
-  // Nudge should hide and row list should be emptied.
-  EXPECT_FALSE(GlicActorTaskIcon()->GetIsShowingNudge());
-  auto* manager = tabs::GlicActorTaskIconManagerFactory::GetForProfile(
-      browser()->GetProfile());
-  EXPECT_EQ(0u, manager->GetActorTaskListBubbleRows().size());
-}
-
 IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
                        OnlyExpandGlicIfNotExpanded) {
   // Show the nudge and finish the expansion animation.
@@ -763,7 +678,7 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
   EXPECT_TRUE(GlicActorTaskIcon()->GetIsShowingNudge());
   // TODO(crbug.com/431015299): Replace with finalized strings when ready.
   EXPECT_EQ(GlicActorTaskIcon()->GetText(),
-            actor_nudge_controller->GetCheckTasksNudgeLabel());
+            l10n_util::GetStringUTF16(IDR_ACTOR_CHECK_TASK_NUDGE_LABEL));
 
   ResetAnimation(1);
 
@@ -794,7 +709,7 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
   EXPECT_TRUE(GlicActorTaskIcon()->GetIsShowingNudge());
   // TODO(crbug.com/431015299): Replace with finalized strings when ready.
   EXPECT_EQ(GlicActorTaskIcon()->GetText(),
-            actor_nudge_controller->GetCheckTasksNudgeLabel());
+            l10n_util::GetStringUTF16(IDR_ACTOR_CHECK_TASK_NUDGE_LABEL));
 
   ResetAnimation(1);
 
@@ -807,6 +722,75 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
   EXPECT_EQ(GlicActorTaskIcon(), GlicActorButtonContainer()->children()[0]);
   EXPECT_EQ(GlicActorTaskIcon()->GetText(), std::u16string());
   EXPECT_FALSE(GlicActorTaskIcon()->GetIsShowingNudge());
+}
+
+IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
+                       ActivatesTabOnGlicActorTaskNudgeClick) {
+  auto* actor_service = actor::ActorKeyedService::Get(browser()->GetProfile());
+  actor::TaskId task_id = actor_service->CreateTask();
+  actor::ActorTask* task = actor_service->GetTask(task_id);
+  actor::ui::StartTask start_task_event(task_id);
+  actor_service->GetActorUiStateManager()->OnUiEvent(start_task_event);
+  // Need to wait for the AUSM to notify the GlicActorTaskIconManager.
+  base::PlatformThread::Sleep(actor::ui::kProfileScopedUiUpdateDebounceDelay);
+
+  ASSERT_TRUE(AddTabAtIndexToBrowser(browser(), 0,
+                                     GURL(chrome::kChromeUINewTabURL),
+                                     ui::PAGE_TRANSITION_LINK));
+  auto* tab_one = browser()->GetTabStripModel()->GetTabAtIndex(0);
+  base::RunLoop loop;
+  task->AddTab(
+      tab_one->GetHandle(),
+      base::BindLambdaForTesting([&](actor::mojom::ActionResultPtr result) {
+        EXPECT_TRUE(actor::IsOk(*result));
+        loop.Quit();
+      }));
+  loop.Run();
+
+  // Add and activate the non-actuation tab.
+  ASSERT_TRUE(AddTabAtIndexToBrowser(browser(), 1,
+                                     GURL(chrome::kChromeUINewTabURL),
+                                     ui::PAGE_TRANSITION_LINK));
+  auto* tab_two = browser()->GetTabStripModel()->GetTabAtIndex(1);
+  browser()->GetTabStripModel()->ActivateTabAt(1);
+
+  EXPECT_TRUE(task->IsActingOnTab(tab_one->GetHandle()));
+  EXPECT_FALSE(task->IsActingOnTab(tab_two->GetHandle()));
+  EXPECT_FALSE(tab_one->IsActivated());
+  EXPECT_TRUE(tab_two->IsActivated());
+
+  actor_service->GetActorUiStateManager()->OnUiEvent(
+      actor::ui::TaskStateChanged(
+          task_id, actor::ActorTask::State::kPausedByActor, /*title=*/""));
+  // Need to wait for the AUSM to notify the GlicActorTaskIconManager.
+  base::PlatformThread::Sleep(actor::ui::kProfileScopedUiUpdateDebounceDelay);
+
+  auto* actor_nudge_controller =
+      tabs::GlicActorNudgeController::From(browser());
+  auto actor_task_nudge_state = tabs::ActorTaskNudgeState();
+  actor_task_nudge_state.text =
+      tabs::ActorTaskNudgeState::Text::kNeedsAttention;
+  actor_nudge_controller->OnStateUpdate(actor_task_nudge_state);
+
+  EXPECT_TRUE(GlicActorTaskIcon()->GetIsShowingNudge());
+  OnButtonClicked(GlicActorTaskIcon());
+
+  EXPECT_TRUE(tab_one->IsActivated());
+  EXPECT_FALSE(tab_two->IsActivated());
+
+  // Mark task as completed and remove the tab being actuated on.
+  actor_task_nudge_state.text = tabs::ActorTaskNudgeState::Text::kCompleteTasks;
+  actor_nudge_controller->OnStateUpdate(actor_task_nudge_state);
+  task->RemoveTab(tab_one->GetHandle());
+
+  EXPECT_TRUE(GlicActorTaskIcon()->GetIsShowingNudge());
+  EXPECT_FALSE(task->IsActingOnTab(tab_one->GetHandle()));
+  // User switches to another tab but the last actuated tab has been removed
+  // from the task. Expect no change in the active tab once it is removed.
+  browser()->GetTabStripModel()->ActivateTabAt(1);
+  OnButtonClicked(GlicActorTaskIcon());
+  EXPECT_TRUE(tab_two->IsActivated());
+  EXPECT_FALSE(tab_one->IsActivated());
 }
 
 class TabStripActionContainerPreRedesignBrowserTest

@@ -54,7 +54,6 @@ source_set("controller_impl") {
     "//chrome/browser/actor/resources:grit",
     "//chrome/browser/ui",
     "//chrome/browser/ui/tabs:tab_strip",
-    "//chrome/browser/ui/views/interaction",
     "//ui/base",
     "//ui/views",
   ]
@@ -69,25 +68,14 @@ source_set("controller_impl") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "actor_task_list_bubble_controller_unittest.cc",
-    "actor_task_list_bubble_unittest.cc",
-  ]
+  sources = [ "actor_task_list_bubble_unittest.cc" ]
   deps = [
     ":controller",
     ":ui",
     "//base",
-    "//chrome/browser/actor",
-    "//chrome/browser/actor:test_support",
     "//chrome/test:test_support",
     "//testing/gtest",
   ]
-  if (enable_glic) {
-    deps += [
-      "//chrome/browser/glic/test_support",
-      "//chrome/browser/ui/tabs:glic",
-    ]
-  }
 }
 
 source_set("interactive_ui_tests") {

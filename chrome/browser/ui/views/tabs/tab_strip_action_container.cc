@@ -45,7 +45,6 @@
 #include "ui/views/view_class_properties.h"
 
 #if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble_controller.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/host.h"
@@ -631,27 +630,23 @@ void TabStripActionContainer::OnGlicButtonAnimationEnded() {
 
 void TabStripActionContainer::OnGlicActorTaskIconClicked() {
   Profile* profile = tab_strip_controller_->GetProfile();
+  glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile)->ToggleUI(
+      tab_strip_controller_->GetBrowserWindowInterface(),
+      /*prevent_close=*/false, glic::mojom::InvocationSource::kActorTaskIcon);
 
-  if (base::FeatureList::IsEnabled(features::kGlicActorUiNudgeRedesign)) {
-    ActorTaskListBubbleController* controller =
-        ActorTaskListBubbleController::From(
-            tab_strip_controller_->GetBrowserWindowInterface());
-    controller->ShowBubble(glic_actor_task_icon_);
-  } else {
-    if (glic_actor_task_icon_->GetIsShowingNudge()) {
-      auto* icon_manager =
-          tabs::GlicActorTaskIconManagerFactory::GetForProfile(profile);
-      icon_manager->ClearStoppedTasks();
-      // If a nudge is showing, activate the last actuated tab on click of the
-      // Task Icon.
-      if (tabs::TabInterface* last_updated_tab =
-              icon_manager->GetLastUpdatedTab()) {
-        TabStripModel* tab_strip_model =
-            tab_strip_controller_->GetBrowserWindowInterface()
-                ->GetTabStripModel();
-        int tab_index = tab_strip_model->GetIndexOfTab(last_updated_tab);
-        tab_strip_model->ActivateTabAt(tab_index);
-      }
+  if (glic_actor_task_icon_->GetIsShowingNudge()) {
+    auto* icon_manager =
+        tabs::GlicActorTaskIconManagerFactory::GetForProfile(profile);
+    icon_manager->ClearStoppedTasks();
+    // If a nudge is showing, activate the last actuated tab on click of the
+    // Task Icon.
+    if (tabs::TabInterface* last_updated_tab =
+            icon_manager->GetLastUpdatedTab()) {
+      TabStripModel* tab_strip_model =
+          tab_strip_controller_->GetBrowserWindowInterface()
+              ->GetTabStripModel();
+      int tab_index = tab_strip_model->GetIndexOfTab(last_updated_tab);
+      tab_strip_model->ActivateTabAt(tab_index);
     }
   }
 
