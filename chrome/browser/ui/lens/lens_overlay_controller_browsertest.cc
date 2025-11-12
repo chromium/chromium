@@ -9498,9 +9498,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerReinvocationBrowserTest,
   EXPECT_EQ(fake_query_controller->num_page_content_update_requests_sent(), 1);
 }
 
-// TODO(crbug.com/458942668): The test is flaky.
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerReinvocationBrowserTest,
-                       DISABLED_FollowUpRegionSearchDoesNotLoadInSidePanel) {
+                       FollowUpRegionSearchDoesNotLoadInSidePanel) {
   WaitForPaint();
   auto* controller = GetLensOverlayController();
   ASSERT_EQ(controller->state(), State::kOff);
@@ -9542,6 +9541,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerReinvocationBrowserTest,
   GetLensSearchController()->OpenLensOverlayInCurrentSession();
   ASSERT_TRUE(
       base::test::RunUntil([&]() { return IsLensResultsSidePanelShowing(); }));
+  ASSERT_TRUE(base::test::RunUntil([&]() { return controller->state() == State::kOverlay; }));
 
   // We need to flush the mojo receiver calls to make sure the screenshot was
   // passed back to the WebUI or else the region selection UI will not render.
