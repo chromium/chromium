@@ -132,6 +132,12 @@ export interface PageElementTypes {
   credentialAlways: HTMLButtonElement;
   actionProtoEncodedText: HTMLInputElement;
   actionStatus: HTMLSpanElement;
+  autofillSuggestionsDialogSection: HTMLElement;
+  autofillSuggestionsDialogStatus: HTMLSpanElement;
+  autofillSuggestionsList: HTMLUListElement;
+  selectedAutofillSuggestionId: HTMLInputElement;
+  sendAutofillSuggestionsResponse: HTMLButtonElement;
+  cancelAutofillSuggestionsDialog: HTMLButtonElement;
   actionUpdatedContextResult: HTMLSpanElement;
   actionUpdatedScreenshotImg: HTMLImageElement;
   macOsPermissionsFieldset: HTMLFieldSetElement;

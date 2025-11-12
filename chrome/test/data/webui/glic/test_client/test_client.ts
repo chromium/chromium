@@ -11,6 +11,7 @@ import './sections/permissions.js';
 import './sections/file.js';
 import './sections/action.js';
 import './sections/apc.js';
+import './sections/autofill_dialog.js';
 import './sections/multi_tab.js';
 import './sections/page_metadata.js';
 import './sections/view.js';
