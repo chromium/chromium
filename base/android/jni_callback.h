@@ -49,7 +49,7 @@ BASE_EXPORT ScopedJavaLocalRef<jobject> ToJniCallback(
       env, base::BindOnce(
                [](base::OnceCallback<R(Arg)> captured_callback,
                   const jni_zero::JavaRef<jobject>& j_result) {
-                 Arg result = jni_zero::FromJniType<Arg>(
+                 auto result = jni_zero::FromJniType<std::decay_t<Arg>>(
                      jni_zero::AttachCurrentThread(), j_result);
                  std::move(captured_callback).Run(std::move(result));
                },
