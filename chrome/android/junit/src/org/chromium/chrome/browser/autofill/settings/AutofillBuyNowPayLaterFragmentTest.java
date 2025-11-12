@@ -32,6 +32,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
@@ -51,6 +52,7 @@ public class AutofillBuyNowPayLaterFragmentTest {
     private ChromeSwitchPreference mBnplToggle;
     private ChromeBasePreference mBnplIssuerPref;
     private PreferenceScreen mScreen;
+    private UserActionTester mActionTester;
 
     @Mock private PersonalDataManager mPersonalDataManager;
     @Mock private Profile mProfile;
@@ -61,6 +63,7 @@ public class AutofillBuyNowPayLaterFragmentTest {
     @Before
     public void setUp() {
         PersonalDataManagerFactory.setInstanceForTesting(mPersonalDataManager);
+        mActionTester = new UserActionTester();
         when(mPersonalDataManager.getBnplIssuersForSettings())
                 .thenReturn(new BnplIssuerForSettings[0]);
     }
@@ -70,6 +73,7 @@ public class AutofillBuyNowPayLaterFragmentTest {
         if (mScenario != null) {
             mScenario.close();
         }
+        mActionTester.tearDown();
     }
 
     private void launchAutofillBuyNowPayLaterFragment() {
@@ -256,5 +260,33 @@ public class AutofillBuyNowPayLaterFragmentTest {
                 "The screen should have only 1 preference (the toggle).",
                 1,
                 mScreen.getPreferenceCount());
+    }
+
+    // Test to verify that the user action is logged when the user clicks on the BNPL issuer terms.
+    @Test
+    public void testBnplIssuerPreference_IssuerTermsLinkClicked() {
+        BnplIssuerForSettings issuer =
+                new BnplIssuerForSettings(
+                        /* iconId= */ R.drawable.bnpl_icon_generic,
+                        /* instrumentId= */ INSTRUMENT_ID,
+                        /* displayName= */ AFFIRM_DISPLAY_NAME);
+        when(mPersonalDataManager.getBnplIssuersForSettings())
+                .thenReturn(new BnplIssuerForSettings[] {issuer});
+        when(mPersonalDataManager.isBuyNowPayLaterEnabled()).thenReturn(true);
+
+        launchAutofillBuyNowPayLaterFragment();
+
+        assertNotNull(mBnplToggle);
+        assertNotNull(mBnplIssuerPref);
+
+        mBnplIssuerPref.performClick();
+
+        assertTrue(
+                "User action should be logged when the user clicks on the BNPL issuer terms.",
+                mActionTester
+                        .getActions()
+                        .contains(
+                                AutofillBuyNowPayLaterFragment
+                                        .BNPL_ISSUER_TERMS_CLICKED_USER_ACTION));
     }
 }

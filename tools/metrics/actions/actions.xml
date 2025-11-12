@@ -6781,6 +6781,16 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="Bnpl_IssuerTermsClicked">
+  <owner>viplavkadam@google.com</owner>
+  <owner>vinnypersky@google.com</owner>
+  <owner>ferny@google.com</owner>
+  <description>
+    Recorded when the user clicks on the Buy Now, Pay Later (BNPL) issuer terms
+    preference on the BNPL setting page.
+  </description>
+</action>
+
 <action name="Bold">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
