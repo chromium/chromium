@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/feature_list.h"
-#include "base/functional/callback.h"
 #include "base/types/pass_key.h"
 #include "base/values.h"
 #include "components/component_updater/component_installer.h"

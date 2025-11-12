@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/functional/callback.h"
 #include "base/profiler/native_unwinder_android_map_delegate.h"
 #include "base/profiler/native_unwinder_android_memory_regions_map.h"
 

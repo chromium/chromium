@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_SAFE_BROWSING_TAILORED_SECURITY_UNCONSENTED_MODAL_H_
 #define CHROME_BROWSER_UI_VIEWS_SAFE_BROWSING_TAILORED_SECURITY_UNCONSENTED_MODAL_H_
 
-#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/window/dialog_delegate.h"

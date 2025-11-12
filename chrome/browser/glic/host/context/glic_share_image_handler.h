@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback_list.h"
-#include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/host/glic.mojom.h"

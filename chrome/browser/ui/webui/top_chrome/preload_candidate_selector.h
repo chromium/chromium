@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/functional/callback.h"
 #include "chrome/browser/ui/webui/top_chrome/preload_context.h"
 #include "url/gurl.h"
 

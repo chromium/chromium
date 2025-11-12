@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ASH_WALLPAPER_HANDLERS_MOCK_SEA_PEN_FETCHER_H_
 
 #include "ash/webui/common/mojom/sea_pen.mojom-forward.h"
-#include "base/functional/callback.h"
 #include "chrome/browser/ash/wallpaper_handlers/sea_pen_fetcher.h"
 #include "components/manta/proto/manta.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"

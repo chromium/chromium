@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/functional/callback.h"
 #include "components/security_state/content/security_state_tab_helper.h"
 #include "components/security_state/core/security_state.h"
 #include "content/public/browser/web_contents_observer.h"

@@ -8,7 +8,6 @@
 #include <optional>
 
 #include "base/callback_list.h"
-#include "base/functional/callback.h"
 #include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
