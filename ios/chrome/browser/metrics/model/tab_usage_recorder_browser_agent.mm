@@ -67,23 +67,6 @@ TabUsageRecorderBrowserAgent::~TabUsageRecorderBrowserAgent() {
 void TabUsageRecorderBrowserAgent::InitialRestoredTabs(
     web::WebState* active_web_state,
     const std::vector<web::WebState*>& web_states) {
-#if !defined(NDEBUG)
-  // Debugging check to ensure this is called at most once per run.
-  // Specifically, this function is called in either of two cases:
-  // 1. For a normal (not post-crash launch), during the tab model's creation.
-  // It assumes that the tab model will not be deleted and recreated during the
-  // application's lifecycle even if the app is backgrounded/foregrounded.
-  // 2. For a post-crash launch, when the session is restored.  In that case,
-  // the tab model will not have been created with existing tabs, so this
-  // function will not have been called during its creation.
-  static bool kColdStartTabsRecorded = false;
-  static dispatch_once_t once = 0;
-  dispatch_once(&once, ^{
-    DCHECK(kColdStartTabsRecorded == false);
-    kColdStartTabsRecorded = true;
-  });
-#endif
-
   // Do not set eviction reason on active tab since it will be reloaded without
   // being processed as a switch to the foreground tab.
   for (web::WebState* web_state : web_states) {
