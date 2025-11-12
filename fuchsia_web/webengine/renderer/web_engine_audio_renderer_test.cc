@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "fuchsia_web/webengine/renderer/web_engine_audio_renderer.h"
 
 #include <fuchsia/media/audio/cpp/fidl_test_base.h>
@@ -15,6 +10,7 @@
 
 #include <optional>
 
+#include "base/compiler_specific.h"
 #include "base/containers/queue.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/logging.h"
@@ -716,7 +712,7 @@ void WebEngineAudioRendererTestBase::TestPcmStream(
   buffer->set_timestamp(demuxer_stream_pos_);
   buffer->set_duration(kPacketDuration);
   for (size_t i = 0; i < input_buffer_size; ++i) {
-    buffer->writable_data()[i] = i;
+    UNSAFE_TODO(buffer->writable_data()[i]) = i;
   }
   demuxer_stream_->QueueReadResult(TestDemuxerStream::ReadResult(buffer));
 
