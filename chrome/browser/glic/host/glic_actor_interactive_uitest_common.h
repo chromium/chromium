@@ -55,6 +55,12 @@ class GlicActorUiTest : public test::InteractiveGlicTest {
 
   const actor::ActorTask* GetActorTask();
 
+  // Returns the WebContents of the Glic guest.
+  content::WebContents* GetGlicContents();
+
+  // Returns the WebContents of the Glic host (WebUI).
+  content::WebContents* GetGlicHost(actor::TaskId& task_id);
+
   // Executes a BrowserAction and verifies it succeeds. Optionally takes an
   // error reason which, when provided, causes failure if the action is
   // successful or fails with an unexpected reason.
@@ -144,7 +150,7 @@ class GlicActorUiTest : public test::InteractiveGlicTest {
 
   // After invoking APIs that don't return promises, we round trip to both the
   // client and host to make sure the call has made it to the browser.
-  MultiStep RoundTrip();
+  MultiStep RoundTrip(actor::TaskId& task_id);
 
   // Stops a running task by calling the glic StopActorTask API.
   // TODO(crbug.com/431760051): This needs to use the correct task_id but the
