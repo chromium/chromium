@@ -45,8 +45,11 @@ class FakeTrustedVaultClient : public TrustedVaultClient {
     // keys are fetched from the server and cached in |client|.
     // TODO(crbug.com/40264843): replace usages with GetKeysFromServer() +
     // client.StoreKeys()?
-    void MimicKeyRetrievalByUser(const GaiaId& gaia_id,
-                                 TrustedVaultClient* client);
+    void MimicKeyRetrievalByUser(
+        const GaiaId& gaia_id,
+        FakeTrustedVaultClient* client,
+        std::optional<trusted_vault::TrustedVaultUserActionTriggerForUMA>
+            trigger);
 
     // Mimics the server RPC endpoint that allows key rotation.
     std::vector<std::vector<uint8_t>> RequestRotatedKeysFromServer(
@@ -120,6 +123,13 @@ class FakeTrustedVaultClient : public TrustedVaultClient {
                                 int method_type_hint,
                                 base::OnceClosure callback) override;
   void ClearLocalDataForAccount(const CoreAccountInfo& account_info) override;
+
+  void StoreKeys(
+      const GaiaId& gaia_id,
+      const std::vector<std::vector<uint8_t>>& keys,
+      int last_key_version,
+      std::optional<trusted_vault::TrustedVaultUserActionTriggerForUMA>
+          trigger);
 
  private:
   struct CachedKeysPerUser {

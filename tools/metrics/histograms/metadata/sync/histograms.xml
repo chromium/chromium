@@ -2341,6 +2341,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Sync.TrustedVaultAddKeysSuccessfully"
+    enum="TrustedVaultUserActionTrigger" expires_after="2026-11-01">
+  <owner>thomasth@google.com</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    Emitted when a key retrieval flow, initiated by a user action, successfully
+    results in new keys being added to the sync engine. The histogram is
+    enumerated by the UI surface that triggered the retrieval attempt.
+  </summary>
+</histogram>
+
 <histogram name="Sync.TrustedVaultErrorShownOnFirstTimeSync2" enum="Boolean"
     expires_after="2026-05-03">
   <owner>mmoskvitin@google.com</owner>

@@ -146,7 +146,10 @@ class SyncServiceCrypto : public SyncEncryptionHandler::Observer,
   };
 
   // Reads trusted vault keys from the client and feeds them to the sync engine.
-  void FetchTrustedVaultKeys(bool is_second_fetch_attempt);
+  void FetchTrustedVaultKeys(
+      bool is_second_fetch_attempt,
+      std::optional<trusted_vault::TrustedVaultUserActionTriggerForUMA>
+          trigger);
 
   // Called at various stages of asynchronously fetching and processing trusted
   // vault encryption keys. `is_second_fetch_attempt` is useful for the case
@@ -154,10 +157,19 @@ class SyncServiceCrypto : public SyncEncryptionHandler::Observer,
   // client.
   void TrustedVaultKeysFetchedFromClient(
       bool is_second_fetch_attempt,
+      std::optional<trusted_vault::TrustedVaultUserActionTriggerForUMA> trigger,
       const std::vector<std::vector<uint8_t>>& keys);
-  void TrustedVaultKeysAdded(bool is_second_fetch_attempt);
-  void TrustedVaultKeysMarkedAsStale(bool is_second_fetch_attempt, bool result);
-  void FetchTrustedVaultKeysCompletedButInsufficient();
+  void TrustedVaultKeysAdded(
+      bool is_second_fetch_attempt,
+      std::optional<trusted_vault::TrustedVaultUserActionTriggerForUMA>
+          trigger);
+  void TrustedVaultKeysMarkedAsStale(
+      bool is_second_fetch_attempt,
+      std::optional<trusted_vault::TrustedVaultUserActionTriggerForUMA> trigger,
+      bool result);
+  void FetchTrustedVaultKeysCompletedButInsufficient(
+      std::optional<trusted_vault::TrustedVaultUserActionTriggerForUMA>
+          trigger);
 
   // Updates required user action and notifies observers via
   // `notify_required_user_action_changed_`.

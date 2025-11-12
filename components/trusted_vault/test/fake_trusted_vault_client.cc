@@ -43,14 +43,16 @@ void FakeTrustedVaultClient::FakeServer::StoreKeysOnServer(
 
 void FakeTrustedVaultClient::FakeServer::MimicKeyRetrievalByUser(
     const GaiaId& gaia_id,
-    TrustedVaultClient* client) {
+    FakeTrustedVaultClient* client,
+    std::optional<trusted_vault::TrustedVaultUserActionTriggerForUMA> trigger) {
   DCHECK(client);
   DCHECK_NE(0U, gaia_id_to_keys_.count(gaia_id))
       << "StoreKeysOnServer() should have been called for " << gaia_id;
 
   client->StoreKeys(gaia_id, gaia_id_to_keys_[gaia_id],
                     /*last_key_version=*/
-                    static_cast<int>(gaia_id_to_keys_[gaia_id].size()) - 1);
+                    static_cast<int>(gaia_id_to_keys_[gaia_id].size()) - 1,
+                    trigger);
 }
 
 std::vector<std::vector<uint8_t>>
@@ -182,12 +184,7 @@ void FakeTrustedVaultClient::StoreKeys(
     const GaiaId& gaia_id,
     const std::vector<std::vector<uint8_t>>& keys,
     int last_key_version) {
-  CachedKeysPerUser& cached_keys = gaia_id_to_cached_keys_[gaia_id];
-  cached_keys.keys = keys;
-  cached_keys.marked_as_stale = false;
-  for (Observer& observer : observer_list_) {
-    observer.OnTrustedVaultKeysChanged(std::nullopt);
-  }
+  StoreKeys(gaia_id, keys, last_key_version, std::nullopt);
 }
 
 void FakeTrustedVaultClient::MarkLocalKeysAsStale(
@@ -244,6 +241,19 @@ void FakeTrustedVaultClient::ClearLocalDataForAccount(
   auto it = gaia_id_to_cached_keys_.find(account_info.gaia);
   if (it != gaia_id_to_cached_keys_.end()) {
     gaia_id_to_cached_keys_.erase(it);
+  }
+}
+
+void FakeTrustedVaultClient::StoreKeys(
+    const GaiaId& gaia_id,
+    const std::vector<std::vector<uint8_t>>& keys,
+    int last_key_version,
+    std::optional<trusted_vault::TrustedVaultUserActionTriggerForUMA> trigger) {
+  CachedKeysPerUser& cached_keys = gaia_id_to_cached_keys_[gaia_id];
+  cached_keys.keys = keys;
+  cached_keys.marked_as_stale = false;
+  for (Observer& observer : observer_list_) {
+    observer.OnTrustedVaultKeysChanged(trigger);
   }
 }
 
