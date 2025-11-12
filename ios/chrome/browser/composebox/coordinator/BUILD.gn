@@ -23,6 +23,8 @@ source_set("coordinator") {
     "composebox_tab_picker_mediator.h",
     "composebox_tab_picker_mediator.mm",
     "composebox_url_loader.h",
+    "web_state_deferred_executor.h",
+    "web_state_deferred_executor.mm",
   ]
   deps = [
     "//components/application_locale_storage",
