@@ -10,6 +10,8 @@
 #include "components/user_education/common/menu/highlighting_menu_button_helper.h"
 #include "components/user_education/common/menu/highlighting_simple_menu_model_delegate.h"
 
+class Browser;
+
 // In order to have automatic toolbar button menu highlighting:
 //  - Derive your model from user_education::HighlightingSimpleMenuModelDelegate
 //    instead of ui::SimpleMenuModel::Delegate.
