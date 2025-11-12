@@ -39,6 +39,7 @@
 #include "components/autofill/core/browser/ui/autofill_external_delegate.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_constants.h"
+#include "components/autofill/core/common/autofill_debug_features.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_switches.h"
 #include "components/autofill/core/common/form_data_predictions.h"
@@ -729,7 +730,7 @@ TEST_F(ContentAutofillDriverTestWithAddressForm,
 
 TEST_F(ContentAutofillDriverTest, TypePredictionsSentToRendererWhenEnabled) {
   base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(features::test::kAutofillShowTypePredictions);
+  features.InitAndEnableFeature(features::debug::kAutofillShowTypePredictions);
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kShowAutofillTypePredictions);
 

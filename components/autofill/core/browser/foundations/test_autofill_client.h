@@ -61,6 +61,7 @@
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_test_helper.h"
 #include "components/autofill/core/browser/webdata/valuables/valuables_table.h"
+#include "components/autofill/core/common/autofill_debug_features.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/device_reauth/mock_device_authenticator.h"
@@ -794,7 +795,7 @@ class TestAutofillClientTemplate : public T {
   struct LogToTerminal {
     explicit LogToTerminal(LogRouter& log_router) {
       if (base::FeatureList::IsEnabled(
-              features::test::kAutofillLogToTerminal)) {
+              features::debug::kAutofillLogToTerminal)) {
         log_router.LogToTerminal();
       }
     }

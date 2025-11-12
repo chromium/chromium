@@ -440,7 +440,7 @@ class AutofillManager
 
   // Logs the field types of `form` to chrome://autofill-internals and the
   // autofill-information attribute (if
-  // `features::test::kAutofillShowTypePredictions` is enabled).
+  // `features::debug::kAutofillShowTypePredictions` is enabled).
   void LogCurrentFieldTypes(
       std::variant<const FormData*, const FormStructure*> form);
 

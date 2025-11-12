@@ -20,6 +20,7 @@
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/test_utils/test_profiles.h"
 #include "components/autofill/core/common/autofill_constants.h"
+#include "components/autofill/core/common/autofill_debug_features.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -837,7 +838,7 @@ TEST_P(AddressProfileSaveManagerTest,
        SilentlyUpdateProfile_DisabledByFeatureFlag) {
   base::test::ScopedFeatureList disabled_update_feature;
   disabled_update_feature.InitAndEnableFeature(
-      features::test::kAutofillDisableSilentProfileUpdates);
+      features::debug::kAutofillDisableSilentProfileUpdates);
 
   AutofillProfile observed_profile = test::StandardProfile();
   AutofillProfile updateable_profile = test::UpdateableStandardProfile();
@@ -930,7 +931,7 @@ TEST_P(AddressProfileSaveManagerTest,
        UserConfirmableMerge_DisabledByFeatureFlag) {
   base::test::ScopedFeatureList disabled_update_feature;
   disabled_update_feature.InitAndEnableFeature(
-      features::test::kAutofillDisableProfileUpdates);
+      features::debug::kAutofillDisableProfileUpdates);
 
   AutofillProfile observed_profile = test::StandardProfile();
   AutofillProfile mergeable_profile = test::SubsetOfStandardProfile();

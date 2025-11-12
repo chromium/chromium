@@ -10,6 +10,7 @@
 #import "base/threading/thread_restrictions.h"
 #import "base/values.h"
 #import "components/autofill/core/browser/field_types.h"
+#import "components/autofill/core/common/autofill_debug_features.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "ios/chrome/browser/autofill/model/automation/automation_action.h"
 #import "ios/chrome/browser/autofill/model/automation/automation_app_interface.h"
@@ -87,7 +88,7 @@ base::Value RecipeJsonToValue(const std::string& recipe_json) {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   config.features_enabled.push_back(
-      autofill::features::test::kAutofillShowTypePredictions);
+      autofill::features::debug::kAutofillShowTypePredictions);
   return config;
 }
 

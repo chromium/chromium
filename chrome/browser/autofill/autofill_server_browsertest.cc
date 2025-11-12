@@ -24,6 +24,7 @@
 #include "components/autofill/core/browser/data_manager/personal_data_manager_observer.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/autofill/core/common/autofill_debug_features.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/web_contents.h"
@@ -172,7 +173,7 @@ class AutofillServerTest : public InProcessBrowserTest {
  private:
   test::AutofillBrowserTestEnvironment autofill_test_environment_;
   base::test::ScopedFeatureList scoped_feature_list_{
-      features::test::kAutofillServerCommunication};
+      features::debug::kAutofillServerCommunication};
   content::ContentMockCertVerifier cert_verifier_;
   std::map<std::string, std::string> pages_;
 };

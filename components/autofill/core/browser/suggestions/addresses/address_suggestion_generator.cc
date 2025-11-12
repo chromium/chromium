@@ -50,6 +50,7 @@
 #include "components/autofill/core/browser/suggestions/suggestion_util.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
+#include "components/autofill/core/common/autofill_debug_features.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_internals/log_message.h"
 #include "components/autofill/core/common/autofill_internals/logging_scope.h"
@@ -1054,7 +1055,7 @@ AddressSuggestionGenerator::MaybeFetchRegularAddressSuggestionData(
                             should_suppress);
   if (should_suppress &&
       !base::FeatureList::IsEnabled(
-          features::test::kAutofillDisableSuggestionStrikeDatabase)) {
+          features::debug::kAutofillDisableSuggestionStrikeDatabase)) {
     if (log_manager_) {
       LOG_AF(log_manager_) << LoggingScope::kFilling
                            << LogMessage::kSuggestionSuppressed

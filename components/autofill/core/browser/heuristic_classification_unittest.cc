@@ -150,6 +150,7 @@
 #include "components/autofill/core/browser/logging/log_router.h"
 #include "components/autofill/core/browser/ml_model/field_classification_model_handler.h"
 #include "components/autofill/core/common/autocomplete_parsing_util.h"
+#include "components/autofill/core/common/autofill_debug_features.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data_test_api.h"
@@ -559,7 +560,7 @@ class HeuristicClassificationTests
 };
 
 void HeuristicClassificationTests::SetUp() {
-  if (base::FeatureList::IsEnabled(features::test::kAutofillLogToTerminal)) {
+  if (base::FeatureList::IsEnabled(features::debug::kAutofillLogToTerminal)) {
     log_router_.LogToTerminal();
   }
   log_manager_ = LogManager::Create(&log_router_, base::NullCallback());

@@ -46,6 +46,7 @@
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/test_utils/test_autofill_clock.h"
 #include "components/autofill/core/common/autofill_clock.h"
+#include "components/autofill/core/common/autofill_debug_features.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_switches.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
@@ -621,7 +622,7 @@ TEST_F(AutofillCrowdsourcingManagerTest, UploadToAPITest) {
       {},
       // Disabled
       // We don't want upload throttling for testing purpose.
-      {features::test::kAutofillUploadThrottling});
+      {features::debug::kAutofillUploadThrottling});
 
   // Build the form structures that we want to upload.
   FormStructure form_structure(test::GetFormData(
@@ -1055,7 +1056,7 @@ class AutofillServerCommunicationTest
 
     scoped_feature_list_1_.InitWithFeatures(
         // Enabled
-        {features::test::kAutofillUploadThrottling},
+        {features::debug::kAutofillUploadThrottling},
         // Disabled
         {});
 
@@ -1083,11 +1084,11 @@ class AutofillServerCommunicationTest
     switch (GetParam()) {
       case DISABLED:
         scoped_feature_list_2_.InitAndDisableFeature(
-            features::test::kAutofillServerCommunication);
+            features::debug::kAutofillServerCommunication);
         break;
       case FINCHED_URL:
         scoped_feature_list_2_.InitAndEnableFeatureWithParameters(
-            features::test::kAutofillServerCommunication,
+            features::debug::kAutofillServerCommunication,
             {{switches::kAutofillServerURL, autofill_server_url.spec()}});
         break;
       case COMMAND_LINE_URL:
@@ -1096,7 +1097,7 @@ class AutofillServerCommunicationTest
         [[fallthrough]];
       case DEFAULT_URL:
         scoped_feature_list_2_.InitAndEnableFeature(
-            features::test::kAutofillServerCommunication);
+            features::debug::kAutofillServerCommunication);
         break;
       default:
         ASSERT_TRUE(false);
@@ -1781,12 +1782,13 @@ TEST_P(AutofillUploadTest, ThrottlingStructuralFormSignatures) {
 }
 
 // Tests that votes are not throttled with
-// `features::test::kAutofillUploadThrottling` disabled, but metadata is
+// `features::debug::kAutofillUploadThrottling` disabled, but metadata is
 // throttled regardless of the feature state.
 TEST_P(AutofillUploadTest, SuccessfulSubmissionOnDisabledThrottling) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(/*enabled_features=*/{}, /*disabled_features=*/{
-                                    features::test::kAutofillUploadThrottling});
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{features::debug::kAutofillUploadThrottling});
 
   FormStructure form_structure(
       test::GetFormData({.fields = {{.role = NAME_FIRST},
@@ -1857,7 +1859,7 @@ TEST_P(AutofillUploadTest, PeriodicReset) {
 
   base::test::ScopedFeatureList local_feature;
   local_feature.InitAndEnableFeatureWithParameters(
-      features::test::kAutofillUploadThrottling,
+      features::debug::kAutofillUploadThrottling,
       {{switches::kAutofillUploadThrottlingPeriodInDays, "16"}});
 
   AutofillCrowdsourcingManager crowdsourcing_manager(

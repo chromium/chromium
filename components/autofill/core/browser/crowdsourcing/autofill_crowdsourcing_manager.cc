@@ -36,6 +36,7 @@
 #include "components/autofill/core/browser/proto/api_v1.pb.h"
 #include "components/autofill/core/browser/proto/server.pb.h"
 #include "components/autofill/core/common/autofill_clock.h"
+#include "components/autofill/core/common/autofill_debug_features.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_internals/log_message.h"
 #include "components/autofill/core/common/autofill_internals/logging_scope.h"
@@ -117,13 +118,13 @@ constexpr char kGoogEncodeResponseIfExecutable[] =
 // The default number of days after which to reset the registry of autofill
 // events for which an upload has been sent.
 const base::FeatureParam<int> kAutofillUploadThrottlingPeriodInDays(
-    &features::test::kAutofillUploadThrottling,
+    &features::debug::kAutofillUploadThrottling,
     switches::kAutofillUploadThrottlingPeriodInDays,
     28);
 
 // The maximum number of attempts for a given autofill request.
 const base::FeatureParam<int> kAutofillMaxServerAttempts(
-    &features::test::kAutofillServerCommunication,
+    &features::debug::kAutofillServerCommunication,
     "max-attempts",
     5);
 
@@ -157,7 +158,7 @@ GURL GetAutofillServerURL() {
   // use it, otherwise use the default.
   const std::string autofill_server_url_str =
       base::FeatureParam<std::string>(
-          &features::test::kAutofillServerCommunication,
+          &features::debug::kAutofillServerCommunication,
           switches::kAutofillServerURL, kDefaultAutofillServerURL)
           .Get();
 
@@ -165,7 +166,7 @@ GURL GetAutofillServerURL() {
 
   if (!autofill_server_url.is_valid()) {
     LOG(ERROR) << "Invalid URL param for "
-               << features::test::kAutofillServerCommunication.name << "/"
+               << features::debug::kAutofillServerCommunication.name << "/"
                << switches::kAutofillServerURL << ": "
                << autofill_server_url_str;
     return GURL();
@@ -710,7 +711,7 @@ AutofillCrowdsourcingManager::~AutofillCrowdsourcingManager() = default;
 bool AutofillCrowdsourcingManager::IsEnabled() const {
   return autofill_server_url_.is_valid() &&
          base::FeatureList::IsEnabled(
-             features::test::kAutofillServerCommunication);
+             features::debug::kAutofillServerCommunication);
 }
 
 bool AutofillCrowdsourcingManager::StartQueryRequest(
@@ -815,7 +816,7 @@ bool AutofillCrowdsourcingManager::StartUploadRequest(
       !ShouldThrottleUpload(form_signature, UploadType::kVote,
                             throttle_reset_period_, prefs,
                             form_submission_source) ||
-      !base::FeatureList::IsEnabled(features::test::kAutofillUploadThrottling);
+      !base::FeatureList::IsEnabled(features::debug::kAutofillUploadThrottling);
 
   AutofillMetrics::LogUploadEvent(form_submission_source, allow_upload);
 

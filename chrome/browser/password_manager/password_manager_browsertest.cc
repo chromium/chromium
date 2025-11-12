@@ -52,6 +52,7 @@
 #include "components/autofill/content/common/mojom/autofill_driver.mojom.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/proto/api_v1.pb.h"
+#include "components/autofill/core/common/autofill_debug_features.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_switches.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -184,7 +185,7 @@ class PasswordManagerVotingBrowserTest : public PasswordManagerBrowserTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
-      autofill::features::test::kAutofillServerCommunication};
+      autofill::features::debug::kAutofillServerCommunication};
   std::unique_ptr<content::URLLoaderInterceptor> url_loader_interceptor_;
 };
 

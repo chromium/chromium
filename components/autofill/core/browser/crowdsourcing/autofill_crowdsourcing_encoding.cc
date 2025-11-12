@@ -30,6 +30,7 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/log_event.h"
 #include "components/autofill/core/browser/proto/server.pb.h"
+#include "components/autofill/core/common/autofill_debug_features.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_internals/log_message.h"
 #include "components/autofill/core/common/autofill_internals/logging_scope.h"
@@ -756,16 +757,16 @@ GetSuggestionsMapFromResponse(
   }
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   if (base::FeatureList::IsEnabled(
-          features::test::kAutofillOverridePredictions)) {
+          features::debug::kAutofillOverridePredictions)) {
     if (std::string param =
-            features::test::kAutofillOverridePredictionsSpecification.Get();
+            features::debug::kAutofillOverridePredictionsSpecification.Get();
         !param.empty()) {
       InsertParsedOverrides(
           ParseServerPredictionOverrides(param, OverrideFormat::kSpec),
           fields_suggestions);
     }
     if (std::string param =
-            features::test::kAutofillOverridePredictionsJson.Get();
+            features::debug::kAutofillOverridePredictionsJson.Get();
         !param.empty()) {
       InsertParsedOverrides(
           ParseServerPredictionOverrides(param, OverrideFormat::kJson),

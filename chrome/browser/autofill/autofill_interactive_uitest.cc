@@ -64,6 +64,7 @@
 #include "components/autofill/core/browser/foundations/test_autofill_manager_waiter.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_constants.h"
+#include "components/autofill/core/common/autofill_debug_features.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
@@ -883,7 +884,7 @@ class AutofillInteractiveTestWithHistogramTester
  public:
   AutofillInteractiveTestWithHistogramTester() {
     feature_list_.InitWithFeatureState(
-        features::test::kAutofillServerCommunication, true);
+        features::debug::kAutofillServerCommunication, true);
   }
 
   void SetUp() override {

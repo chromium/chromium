@@ -49,6 +49,7 @@
 #include "components/autofill/core/browser/foundations/autofill_manager_test_api.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/foundations/test_autofill_manager_waiter.h"
+#include "components/autofill/core/common/autofill_debug_features.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -182,7 +183,7 @@ class PasswordChangeBrowserTest : public PasswordManagerBrowserTestBase {
     scoped_feature_list_.InitWithFeatures(
         // kShowDomNodeIDs is required in order to extract the dom_node_id for
         // the submission step.
-        {autofill::features::test::kShowDomNodeIDs},
+        {autofill::features::debug::kShowDomNodeIDs},
         {password_manager::features::kCheckLoginStateBeforePasswordChange});
   }
 

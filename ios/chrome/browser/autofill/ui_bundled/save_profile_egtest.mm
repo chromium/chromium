@@ -13,6 +13,7 @@
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
 #import "components/autofill/core/browser/field_types.h"
+#import "components/autofill/core/common/autofill_debug_features.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/ios/common/constants.h"
 #import "components/autofill/ios/common/features.h"
@@ -218,7 +219,7 @@ void TypeTextInXframeField(NSString* fieldID, NSString* text) {
   }
 
   config.features_disabled.push_back(
-      autofill::features::test::kAutofillServerCommunication);
+      autofill::features::debug::kAutofillServerCommunication);
 
   if ([self isRunningTest:@selector(testStickySavePromptJourney)]) {
     config.features_enabled.push_back(kAutofillStickyInfobarIos);

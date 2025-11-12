@@ -18,6 +18,7 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "chrome/browser/ui/tab_dialogs.h"
+#include "components/autofill/core/common/autofill_debug_features.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_switches.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -230,8 +231,8 @@ class CapturedSitesPasswordManagerBrowserTest
   void SetUpCommandLine(base::CommandLine* command_line) override {
     feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
-        {{autofill::features::test::kAutofillServerCommunication, {}},
-         {autofill::features::test::kAutofillShowTypePredictions, {}}},
+        {{autofill::features::debug::kAutofillServerCommunication, {}},
+         {autofill::features::debug::kAutofillShowTypePredictions, {}}},
         {});
     command_line->AppendSwitch(autofill::switches::kShowAutofillSignatures);
     captured_sites_test_utils::TestRecipeReplayer::SetUpHostResolverRules(

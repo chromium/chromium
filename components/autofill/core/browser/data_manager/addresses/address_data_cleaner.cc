@@ -19,6 +19,7 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
+#include "components/autofill/core/common/autofill_debug_features.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/prefs/pref_service.h"
@@ -265,7 +266,7 @@ void AddressDataCleaner::MaybeCleanupAddressData() {
   if (pref_service_->GetInteger(prefs::kAutofillLastVersionDeduped) <
           chrome_version_major ||
       base::FeatureList::IsEnabled(
-          features::test::kAutofillSkipDeduplicationRequirements)) {
+          features::debug::kAutofillSkipDeduplicationRequirements)) {
     pref_service_->SetInteger(prefs::kAutofillLastVersionDeduped,
                               chrome_version_major);
     // Since the milestone changed the extra deduplication can be run again.

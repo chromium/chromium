@@ -324,48 +324,6 @@ COMPONENT_EXPORT(AUTOFILL) BASE_DECLARE_FEATURE(kYourSavedInfoSettingsPage);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kYourSavedInfoBrandingInSettings);
 
-// The features in this namespace contains are not meant to be rolled out. They
-// are are only intended for manual testing purposes.
-namespace test {
-
-COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE(kAutofillSkipDeduplicationRequirements);
-COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE(kAutofillCapturedSiteTestsMetricsScraper);
-COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE_PARAM(std::string,
-                           kAutofillCapturedSiteTestsMetricsScraperOutputDir);
-COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE_PARAM(
-    std::string,
-    kAutofillCapturedSiteTestsMetricsScraperHistogramRegex);
-COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE(kAutofillCapturedSiteTestsUseAutofillFlow);
-COMPONENT_EXPORT(AUTOFILL) BASE_DECLARE_FEATURE(kAutofillDisableProfileUpdates);
-COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE(kAutofillDisableSilentProfileUpdates);
-COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE(kAutofillDisableSuggestionStrikeDatabase);
-COMPONENT_EXPORT(AUTOFILL) BASE_DECLARE_FEATURE(kAutofillLogToTerminal);
-COMPONENT_EXPORT(AUTOFILL) BASE_DECLARE_FEATURE(kAutofillOverridePredictions);
-COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE_PARAM(std::string,
-                           kAutofillOverridePredictionsSpecification);
-COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE_PARAM(std::string, kAutofillOverridePredictionsJson);
-COMPONENT_EXPORT(AUTOFILL) BASE_DECLARE_FEATURE(kAutofillServerCommunication);
-COMPONENT_EXPORT(AUTOFILL) BASE_DECLARE_FEATURE(kShowDomNodeIDs);
-COMPONENT_EXPORT(AUTOFILL) BASE_DECLARE_FEATURE(kAutofillShowTypePredictions);
-COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE_PARAM(bool, kAutofillShowTypePredictionsVerboseParam);
-COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE_PARAM(bool, kAutofillShowTypePredictionsAsTitleParam);
-COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE(kAutofillUnionTypesSingleTypeInAutofillInformation);
-COMPONENT_EXPORT(AUTOFILL) BASE_DECLARE_FEATURE(kAutofillUploadThrottling);
-
-}  // namespace test
-
 }  // namespace autofill::features
 
 #endif  // COMPONENTS_AUTOFILL_CORE_COMMON_AUTOFILL_FEATURES_H_

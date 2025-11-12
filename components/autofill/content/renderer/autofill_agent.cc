@@ -56,6 +56,7 @@
 #include "components/autofill/content/renderer/timing.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_constants.h"
+#include "components/autofill/core/common/autofill_debug_features.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/form_data.h"
@@ -184,7 +185,7 @@ void LogSubmittedFormMetric(mojom::SubmissionSource source,
 bool ShowPredictions(const WebDocument& document,
                      const FormDataPredictions& form) {
   CHECK(base::FeatureList::IsEnabled(
-      features::test::kAutofillShowTypePredictions));
+      features::debug::kAutofillShowTypePredictions));
   CHECK_EQ(form.data.fields().size(), form.fields.size());
 
   WebFormElement form_element =
@@ -282,7 +283,7 @@ bool ShowPredictions(const WebDocument& document,
         base::NumberToString(field.rank_in_host_form_signature_group),
     });
 
-    if (features::test::kAutofillShowTypePredictionsVerboseParam.Get()) {
+    if (features::debug::kAutofillShowTypePredictionsVerboseParam.Get()) {
       std::u16string truncated_aria_label =
           field_data.aria_label().substr(0, kMaxLabelSize);
       base::ReplaceChars(truncated_aria_label, u"\n", u"|",
@@ -346,7 +347,7 @@ bool ShowPredictions(const WebDocument& document,
     // If the flag is on with parameter :as-title, information will be found as
     // 'title' in the DOM of the element.
     bool title_parameter_on =
-        features::test::kAutofillShowTypePredictionsAsTitleParam.Get();
+        features::debug::kAutofillShowTypePredictionsAsTitleParam.Get();
     if (title_parameter_on) {
       element.SetAttribute("title", WebString::FromUTF8(autofill_info));
     }
@@ -1183,7 +1184,7 @@ void AutofillAgent::ApplyFieldsAction(
 void AutofillAgent::FieldTypePredictionsAvailable(
     const std::vector<FormDataPredictions>& forms) {
   CHECK(base::FeatureList::IsEnabled(
-      features::test::kAutofillShowTypePredictions));
+      features::debug::kAutofillShowTypePredictions));
   WebDocument document = GetDocument();
   if (!document) {
     return;
@@ -1196,7 +1197,7 @@ void AutofillAgent::FieldTypePredictionsAvailable(
 // For all elements the DOM Node ID will be exposed on the DOM
 // as attribute "dom-node-id". This is done for data collection purposes.
 void AutofillAgent::ExposeDomNodeIds() {
-  CHECK(base::FeatureList::IsEnabled(features::test::kShowDomNodeIDs));
+  CHECK(base::FeatureList::IsEnabled(features::debug::kShowDomNodeIDs));
   WebDocument document = GetDocument();
   if (!document) {
     return;

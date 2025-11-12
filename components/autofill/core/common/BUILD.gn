@@ -119,6 +119,8 @@ component("features") {
   output_name = "autofill_core_common_features"
   defines = [ "IS_AUTOFILL_IMPL" ]
   sources = [
+    "autofill_debug_features.cc",
+    "autofill_debug_features.h",
     "autofill_features.cc",
     "autofill_features.h",
     "autofill_payments_features.cc",

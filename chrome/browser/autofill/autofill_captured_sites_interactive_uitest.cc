@@ -50,6 +50,7 @@
 #include "components/autofill/core/browser/geo/state_names.h"
 #include "components/autofill/core/browser/proto/server.pb.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/autofill/core/common/autofill_debug_features.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_regexes.h"
 #include "components/autofill/core/common/autofill_util.h"
@@ -171,13 +172,14 @@ class MetricsScraper {
   // Creates a MetricsScraper if the Finch flag is enabled.
   static std::unique_ptr<MetricsScraper> MaybeCreate(const std::string& test) {
     if (!base::FeatureList::IsEnabled(
-            features::test::kAutofillCapturedSiteTestsMetricsScraper)) {
+            features::debug::kAutofillCapturedSiteTestsMetricsScraper)) {
       return nullptr;
     }
     const std::string& output_dir =
-        features::test::kAutofillCapturedSiteTestsMetricsScraperOutputDir.Get();
+        features::debug::kAutofillCapturedSiteTestsMetricsScraperOutputDir
+            .Get();
     const std::string& histogram_regex =
-        features::test::kAutofillCapturedSiteTestsMetricsScraperHistogramRegex
+        features::debug::kAutofillCapturedSiteTestsMetricsScraperHistogramRegex
             .Get();
     return base::WrapUnique(new MetricsScraper(
         base::FilePath::FromASCII(output_dir).AppendASCII(test + ".txt"),
@@ -246,7 +248,7 @@ class AutofillCapturedSitesInteractiveTest
     test_delegate()->Observe(autofill_manager);
 
     if (base::FeatureList::IsEnabled(
-            features::test::kAutofillCapturedSiteTestsUseAutofillFlow)) {
+            features::debug::kAutofillCapturedSiteTestsUseAutofillFlow)) {
       if (AutofillFormWithAutofillFlow(web_contents, focus_element_css_selector,
                                        attempts, frame, triggered_field_type)) {
         return true;
@@ -407,15 +409,15 @@ class AutofillCapturedSitesInteractiveTest
     // elements in a form to determine if the form is ready for interaction.
     feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
-        {{features::test::kAutofillServerCommunication, {}},
-         {features::test::kAutofillShowTypePredictions,
+        {{features::debug::kAutofillServerCommunication, {}},
+         {features::debug::kAutofillShowTypePredictions,
           {
               // TODO(crbug.com/410879924): Investigate why the test fails when
               // kAutofillShowTypePredictions is enabled without parameters.
-              {features::test::kAutofillShowTypePredictionsAsTitleParam.name,
+              {features::debug::kAutofillShowTypePredictionsAsTitleParam.name,
                "true"},
           }},
-         {features::test::kAutofillCapturedSiteTestsUseAutofillFlow, {}}},
+         {features::debug::kAutofillCapturedSiteTestsUseAutofillFlow, {}}},
         /*disabled_features=*/{features::kAutofillSkipPreFilledFields});
     command_line->AppendSwitchASCII(
         variations::switches::kVariationsOverrideCountry, "us");

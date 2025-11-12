@@ -22,6 +22,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/system/sys_info.h"
 #import "components/autofill/core/browser/manual_testing_import.h"
+#import "components/autofill/core/common/autofill_debug_features.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/autofill/core/common/autofill_switches.h"
@@ -1531,7 +1532,7 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kShowAutofillTypePredictionsDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
-         autofill::features::test::kAutofillShowTypePredictions)},
+         autofill::features::debug::kAutofillShowTypePredictions)},
     {"sign-in-button-no-avatar", flag_descriptions::kSignInButtonNoAvatarName,
      flag_descriptions::kSignInButtonNoAvatarDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kSignInButtonNoAvatar)},

@@ -17,6 +17,7 @@
 #include "base/types/zip.h"
 #include "base/unguessable_token.h"
 #include "components/autofill/core/common/autocomplete_parsing_util.h"
+#include "components/autofill/core/common/autofill_debug_features.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_data_test_api.h"
@@ -61,7 +62,7 @@ AutofillTestEnvironment::AutofillTestEnvironment(const Options& options) {
   current_instance_ = this;
   if (options.disable_server_communication) {
     scoped_feature_list_.InitAndDisableFeature(
-        features::test::kAutofillServerCommunication);
+        features::debug::kAutofillServerCommunication);
   }
 }
 

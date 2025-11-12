@@ -18,6 +18,7 @@
 #include "components/autofill/core/browser/data_quality/addresses/profile_requirement_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/metrics/profile_import_metrics.h"
+#include "components/autofill/core/common/autofill_debug_features.h"
 #include "components/autofill/core/common/autofill_features.h"
 
 namespace autofill {
@@ -301,7 +302,7 @@ bool ProfileImportProcess::QualifiesForSilentUpdate(
   return candidate.change ==
              ImportCandidate::Change::kNonSettingVisibleChange &&
          !base::FeatureList::IsEnabled(
-             features::test::kAutofillDisableSilentProfileUpdates);
+             features::debug::kAutofillDisableSilentProfileUpdates);
 }
 
 bool ProfileImportProcess::QualifiesForUpdateProfilePrompt(
@@ -311,7 +312,7 @@ bool ProfileImportProcess::QualifiesForUpdateProfilePrompt(
          !address_data_manager_->IsProfileUpdateBlocked(
              candidate.existing_profile.guid()) &&
          !base::FeatureList::IsEnabled(
-             features::test::kAutofillDisableProfileUpdates);
+             features::debug::kAutofillDisableProfileUpdates);
 }
 
 bool ProfileImportProcess::QualifiesForMigrateProfilePrompt(

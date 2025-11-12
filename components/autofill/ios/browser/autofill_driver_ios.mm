@@ -27,6 +27,7 @@
 #import "components/autofill/core/browser/filling/form_filler.h"
 #import "components/autofill/core/browser/form_structure.h"
 #import "components/autofill/core/browser/foundations/autofill_driver_router.h"
+#import "components/autofill/core/common/autofill_debug_features.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/core/common/field_data_manager.h"
 #import "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
@@ -364,7 +365,7 @@ void AutofillDriverIOS::ExposeDomNodeIdsInAllFrames() {}
 void AutofillDriverIOS::SendTypePredictionsToRenderer(
     const FormStructure& form) {
   CHECK(base::FeatureList::IsEnabled(
-      features::test::kAutofillShowTypePredictions));
+      features::debug::kAutofillShowTypePredictions));
   auto callback = [](AutofillDriver& driver,
                      const std::vector<FormDataPredictions>& preds) {
     web::WebFrame* frame = cast(&driver)->web_frame();

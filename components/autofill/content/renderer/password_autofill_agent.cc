@@ -45,6 +45,7 @@
 #include "components/autofill/content/renderer/synchronous_form_cache.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_constants.h"
+#include "components/autofill/core/common/autofill_debug_features.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_regexes.h"
 #include "components/autofill/core/common/autofill_util.h"
@@ -438,7 +439,7 @@ void AnnotateFieldWithParsingResult(
       WebString::FromASCII(password_managers_annotation));
 
   if (!base::FeatureList::IsEnabled(
-          features::test::kAutofillShowTypePredictions)) {
+          features::debug::kAutofillShowTypePredictions)) {
     return;
   }
 

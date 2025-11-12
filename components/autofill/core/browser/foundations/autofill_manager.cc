@@ -33,6 +33,7 @@
 #include "components/autofill/core/browser/metrics/quality_metrics.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_data_validation.h"
+#include "components/autofill/core/common/autofill_debug_features.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_internals/log_message.h"
 #include "components/autofill/core/common/autofill_internals/logging_scope.h"
@@ -294,7 +295,7 @@ void AutofillManager::OnFormsParsed(const std::vector<FormData>& forms) {
     OnFormProcessed(form, *form_structure);
   }
 
-  if (base::FeatureList::IsEnabled(features::test::kShowDomNodeIDs)) {
+  if (base::FeatureList::IsEnabled(features::debug::kShowDomNodeIDs)) {
     driver().ExposeDomNodeIdsInAllFrames();
   }
 
@@ -867,7 +868,7 @@ void AutofillManager::OnLoadedServerPredictions(
       response->queried_form_signatures, log_manager());
 
   OnLoadedServerPredictionsImpl(queried_forms);
-  if (base::FeatureList::IsEnabled(features::test::kShowDomNodeIDs)) {
+  if (base::FeatureList::IsEnabled(features::debug::kShowDomNodeIDs)) {
     driver().ExposeDomNodeIdsInAllFrames();
   }
 
@@ -985,7 +986,7 @@ void AutofillManager::LogCurrentFieldTypes(
   LOG_AF(log_manager()) << LoggingScope::kParsing << LogMessage::kParsedForms
                         << std::move(buffer);
   if (base::FeatureList::IsEnabled(
-          features::test::kAutofillShowTypePredictions)) {
+          features::debug::kAutofillShowTypePredictions)) {
     driver().SendTypePredictionsToRenderer(get_form_structure());
   }
 }
