@@ -4945,25 +4945,19 @@ void WebContentsImpl::UpdateVisibilityAndNotifyPageAndView(
 
   SetVisibilityForChildViews(view_is_visible);
 
-  // Make sure to call SetVisibilityAndNotifyObservers(VISIBLE) before notifying
-  // the CrossProcessFrameConnector.
-  if (new_visibility == Visibility::VISIBLE) {
-    if (is_activity) {
-      last_active_time_ticks_ = base::TimeTicks::Now();
-      last_active_time_ = base::Time::Now();
-    }
-    SetVisibilityAndNotifyObservers(new_visibility);
-  }
-
   if (page_visibility == PageVisibilityState::kHidden) {
     // Similar to when showing the page, we only hide the page after
     // hiding the individual RenderWidgets.
     ForEachRenderViewHost(view_mask, update_frame_tree_visibility);
   }
 
-  if (new_visibility != Visibility::VISIBLE) {
-    SetVisibilityAndNotifyObservers(new_visibility);
+  // Make sure to call SetVisibilityAndNotifyObservers(VISIBLE) before notifying
+  // the CrossProcessFrameConnector.
+  if (is_activity && new_visibility == Visibility::VISIBLE) {
+    last_active_time_ticks_ = base::TimeTicks::Now();
+    last_active_time_ = base::Time::Now();
   }
+  SetVisibilityAndNotifyObservers(new_visibility);
 
   if (base::FeatureList::IsEnabled(kUpdateInnerWebContentsVisibility)) {
     // Inner WebContents are skipped in ForEachRenderViewHost() above, which
