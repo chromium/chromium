@@ -113,6 +113,9 @@ class NavigationAttachmentsMediator {
                 this::onRequestTypeButtonClicked);
         mModel.set(NavigationAttachmentsProperties.POPUP_AI_MODE_CLICKED, this::activateAiMode);
         mModel.set(
+                NavigationAttachmentsProperties.POPUP_CREATE_IMAGE_CLICKED,
+                this::activateImageCreation);
+        mModel.set(
                 NavigationAttachmentsProperties.POPUP_TAB_PICKER_CLICKED, this::onTabPickerClicked);
 
         mModel.set(
@@ -143,6 +146,7 @@ class NavigationAttachmentsMediator {
     private void onRequestTypeButtonClicked() {
         switch (mAutocompleteRequestTypeSupplier.get()) {
             case AutocompleteRequestType.AI_MODE:
+            case AutocompleteRequestType.CREATE_IMAGE:
                 activateSearchMode();
                 break;
 
@@ -167,6 +171,15 @@ class NavigationAttachmentsMediator {
         mPopup.dismiss();
         if (mAutocompleteRequestTypeSupplier.get() == AutocompleteRequestType.AI_MODE) return;
         mAutocompleteRequestTypeSupplier.set(AutocompleteRequestType.AI_MODE);
+
+        mComposeBoxQueryControllerBridge.notifySessionStarted();
+    }
+
+    /** Activate Create Image as the Next Request fulfillment type. */
+    void activateImageCreation() {
+        mPopup.dismiss();
+        if (mAutocompleteRequestTypeSupplier.get() == AutocompleteRequestType.CREATE_IMAGE) return;
+        mAutocompleteRequestTypeSupplier.set(AutocompleteRequestType.CREATE_IMAGE);
 
         mComposeBoxQueryControllerBridge.notifySessionStarted();
     }

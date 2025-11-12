@@ -25,7 +25,8 @@ class NavigationAttachmentsPopup {
     /* package */ final Button mFileButton;
     /* package */ final Button mClipboardButton;
     /* package */ final Button mAiModeButton;
-    /* package */ final View mAutocompleteRequestTypeGroup;
+    /* package */ final Button mCreateImageButton;
+    /* package */ final View mRequestTypeDivider;
 
     NavigationAttachmentsPopup(Context context, AnchoredPopupWindow popupWindow, View contentView) {
         mPopupWindow = popupWindow;
@@ -46,9 +47,9 @@ class NavigationAttachmentsPopup {
         mFileButton = mContentView.findViewById(R.id.fusebox_pick_file_button);
         mClipboardButton = mContentView.findViewById(R.id.fusebox_paste_from_clipboard_button);
         mAiModeButton = mContentView.findViewById(R.id.fusebox_ai_mode_button);
-        mAutocompleteRequestTypeGroup =
-                mContentView.findViewById(R.id.autocomplete_request_type_group);
+        mCreateImageButton = mContentView.findViewById(R.id.fusebox_create_image_button);
         mAddCurrentTab = mContentView.findViewById(R.id.fusebox_add_current_tab);
+        mRequestTypeDivider = mContentView.findViewById(R.id.fusebox_request_type_divider);
     }
 
     void show() {

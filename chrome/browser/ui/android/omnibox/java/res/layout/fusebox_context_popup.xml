@@ -66,16 +66,9 @@ found in the LICENSE file.
         android:contentDescription="@string/accessibility_omnibox_add_files"
         app:layout_constraintTop_toBottomOf="@id/fusebox_pick_picture_button"/>
 
-    <androidx.constraintlayout.widget.Group
-        android:id="@+id/autocomplete_request_type_group"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        app:constraint_referenced_ids="fusebox_ai_mode_divider,fusebox_ai_mode_button"/>
-
     <View
         style="@style/Fusebox.PopupMenu.Divider"
-        android:id="@+id/fusebox_ai_mode_divider"
+        android:id="@+id/fusebox_request_type_divider"
         app:layout_constraintTop_toBottomOf="@id/fusebox_pick_file_button"/>
 
     <org.chromium.ui.widget.ButtonCompat
@@ -84,6 +77,15 @@ found in the LICENSE file.
         android:drawableStart="@drawable/search_spark_black_24dp"
         android:text="@string/ai_mode_entrypoint_label"
         android:contentDescription="@string/accessibility_omnibox_enable_ai_mode"
-        app:layout_constraintTop_toBottomOf="@id/fusebox_ai_mode_divider"/>
+        app:layout_constraintTop_toBottomOf="@id/fusebox_request_type_divider"/>
+
+    <org.chromium.ui.widget.ButtonCompat
+        style="@style/Fusebox.PopupMenu.Item"
+        android:id="@+id/fusebox_create_image_button"
+        android:drawableStart="@drawable/create_image_24dp"
+        android:text="@string/omnibox_create_image"
+        android:contentDescription="@string/accessibility_omnibox_create_image"
+        app:drawableTint="@null"
+        app:layout_constraintTop_toBottomOf="@id/fusebox_ai_mode_button"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

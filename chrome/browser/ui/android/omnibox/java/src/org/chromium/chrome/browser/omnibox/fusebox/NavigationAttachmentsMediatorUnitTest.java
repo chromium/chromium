@@ -289,6 +289,15 @@ public class NavigationAttachmentsMediatorUnitTest {
     }
 
     @Test
+    public void activateImageCreation_startsSession() {
+        mMediator.activateImageCreation();
+        verify(mComposeBoxQueryControllerBridge).notifySessionStarted();
+        assertEquals(
+                AutocompleteRequestType.CREATE_IMAGE,
+                (int) mModel.get(NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE));
+    }
+
+    @Test
     public void setToolbarVisible_noBridge_doesNothing() {
         // Create a mediator, but don't initialize the bridge.
         NavigationAttachmentsMediator mediator =

@@ -295,4 +295,83 @@ public class NavigationAttachmentsViewBinderUnitTest {
         // resolve its visibility, layout direction, and drawables. This lets us check indirectly.
         verify(drawable).setCallback(mPopup.mAddCurrentTab);
     }
+
+    @Test
+    public void aiModeButtonVisibility() {
+        mModel.set(NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE_CHANGEABLE, false);
+        mModel.set(NavigationAttachmentsProperties.SHOW_DEDICATED_MODE_BUTTON, true);
+        NavigationAttachmentsViewBinder.updateModeSelectorVisibility(mModel, mViewHolder);
+        assertEquals(View.GONE, mPopup.mAiModeButton.getVisibility());
+
+        mModel.set(NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE_CHANGEABLE, true);
+        NavigationAttachmentsViewBinder.updateModeSelectorVisibility(mModel, mViewHolder);
+        assertEquals(View.GONE, mPopup.mAiModeButton.getVisibility());
+
+        mModel.set(NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE_CHANGEABLE, false);
+        mModel.set(NavigationAttachmentsProperties.SHOW_DEDICATED_MODE_BUTTON, false);
+        NavigationAttachmentsViewBinder.updateModeSelectorVisibility(mModel, mViewHolder);
+        assertEquals(View.GONE, mPopup.mAiModeButton.getVisibility());
+
+        mModel.set(NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE_CHANGEABLE, true);
+        NavigationAttachmentsViewBinder.updateModeSelectorVisibility(mModel, mViewHolder);
+        assertEquals(View.VISIBLE, mPopup.mAiModeButton.getVisibility());
+    }
+
+    @Test
+    public void createImageButtonVisibility() {
+        mModel.set(NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE_CHANGEABLE, false);
+        mModel.set(NavigationAttachmentsProperties.POPUP_CREATE_IMAGE_BUTTON_VISIBLE, false);
+        NavigationAttachmentsViewBinder.updateModeSelectorVisibility(mModel, mViewHolder);
+        assertEquals(View.GONE, mPopup.mCreateImageButton.getVisibility());
+
+        mModel.set(NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE_CHANGEABLE, true);
+        NavigationAttachmentsViewBinder.updateModeSelectorVisibility(mModel, mViewHolder);
+        assertEquals(View.GONE, mPopup.mCreateImageButton.getVisibility());
+
+        mModel.set(NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE_CHANGEABLE, false);
+        mModel.set(NavigationAttachmentsProperties.POPUP_CREATE_IMAGE_BUTTON_VISIBLE, true);
+        NavigationAttachmentsViewBinder.updateModeSelectorVisibility(mModel, mViewHolder);
+        assertEquals(View.GONE, mPopup.mCreateImageButton.getVisibility());
+
+        mModel.set(NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE_CHANGEABLE, true);
+        NavigationAttachmentsViewBinder.updateModeSelectorVisibility(mModel, mViewHolder);
+        assertEquals(View.VISIBLE, mPopup.mCreateImageButton.getVisibility());
+    }
+
+    @Test
+    public void requestTypeDividerVisibility() {
+        mModel.set(NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE_CHANGEABLE, false);
+        NavigationAttachmentsViewBinder.updateModeSelectorVisibility(mModel, mViewHolder);
+        assertEquals(View.GONE, mPopup.mRequestTypeDivider.getVisibility());
+        assertEquals(View.GONE, mPopup.mAiModeButton.getVisibility());
+        assertEquals(View.GONE, mPopup.mCreateImageButton.getVisibility());
+
+        mModel.set(NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE_CHANGEABLE, true);
+        mModel.set(NavigationAttachmentsProperties.POPUP_CREATE_IMAGE_BUTTON_VISIBLE, false);
+        mModel.set(NavigationAttachmentsProperties.SHOW_DEDICATED_MODE_BUTTON, true);
+        NavigationAttachmentsViewBinder.updateModeSelectorVisibility(mModel, mViewHolder);
+        assertEquals(View.GONE, mPopup.mRequestTypeDivider.getVisibility());
+        assertEquals(View.GONE, mPopup.mAiModeButton.getVisibility());
+        assertEquals(View.GONE, mPopup.mCreateImageButton.getVisibility());
+
+        mModel.set(NavigationAttachmentsProperties.SHOW_DEDICATED_MODE_BUTTON, false);
+        NavigationAttachmentsViewBinder.updateModeSelectorVisibility(mModel, mViewHolder);
+        assertEquals(View.VISIBLE, mPopup.mRequestTypeDivider.getVisibility());
+        assertEquals(View.VISIBLE, mPopup.mAiModeButton.getVisibility());
+        assertEquals(View.GONE, mPopup.mCreateImageButton.getVisibility());
+
+        mModel.set(NavigationAttachmentsProperties.SHOW_DEDICATED_MODE_BUTTON, true);
+        mModel.set(NavigationAttachmentsProperties.POPUP_CREATE_IMAGE_BUTTON_VISIBLE, true);
+        NavigationAttachmentsViewBinder.updateModeSelectorVisibility(mModel, mViewHolder);
+        assertEquals(View.VISIBLE, mPopup.mRequestTypeDivider.getVisibility());
+        assertEquals(View.GONE, mPopup.mAiModeButton.getVisibility());
+        assertEquals(View.VISIBLE, mPopup.mCreateImageButton.getVisibility());
+
+        mModel.set(NavigationAttachmentsProperties.SHOW_DEDICATED_MODE_BUTTON, false);
+        mModel.set(NavigationAttachmentsProperties.POPUP_CREATE_IMAGE_BUTTON_VISIBLE, true);
+        NavigationAttachmentsViewBinder.updateModeSelectorVisibility(mModel, mViewHolder);
+        assertEquals(View.VISIBLE, mPopup.mRequestTypeDivider.getVisibility());
+        assertEquals(View.VISIBLE, mPopup.mAiModeButton.getVisibility());
+        assertEquals(View.VISIBLE, mPopup.mCreateImageButton.getVisibility());
+    }
 }

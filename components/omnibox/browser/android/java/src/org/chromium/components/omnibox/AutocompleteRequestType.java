@@ -31,5 +31,8 @@ public @interface AutocompleteRequestType {
 
     /** AI-powered fulfillment. */
     int AI_MODE = 2;
+
+    /** Creating image. */
+    int CREATE_IMAGE = 3;
     /* Note: account for new types in {@link NavigationAttachmentsCoordinator#doesRequestTypeOverrideUrlFulfillment}. */
 }

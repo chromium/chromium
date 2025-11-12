@@ -43,6 +43,11 @@ class NavigationAttachmentsViewBinder {
         } else if (propertyKey == NavigationAttachmentsProperties.POPUP_AI_MODE_CLICKED) {
             view.popup.mAiModeButton.setOnClickListener(
                     v -> model.get(NavigationAttachmentsProperties.POPUP_AI_MODE_CLICKED).run());
+        } else if (propertyKey == NavigationAttachmentsProperties.POPUP_CREATE_IMAGE_CLICKED) {
+            view.popup.mCreateImageButton.setOnClickListener(
+                    v ->
+                            model.get(NavigationAttachmentsProperties.POPUP_CREATE_IMAGE_CLICKED)
+                                    .run());
         } else if (propertyKey == NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE) {
             boolean visible = model.get(NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE);
             view.attachmentsView.setVisibility(visible ? View.VISIBLE : View.GONE);
@@ -57,11 +62,7 @@ class NavigationAttachmentsViewBinder {
                     v -> model.get(NavigationAttachmentsProperties.BUTTON_ADD_CLICKED).run());
         } else if (propertyKey
                 == NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE_CHANGEABLE) {
-            int visibility =
-                    model.get(NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE_CHANGEABLE)
-                            ? View.VISIBLE
-                            : View.GONE;
-            view.popup.mAutocompleteRequestTypeGroup.setVisibility(visibility);
+            updateModeSelectorVisibility(model, view);
         } else if (propertyKey == NavigationAttachmentsProperties.POPUP_CAMERA_CLICKED) {
             view.popup.mCameraButton.setOnClickListener(
                     v -> model.get(NavigationAttachmentsProperties.POPUP_CAMERA_CLICKED).run());
@@ -116,22 +117,33 @@ class NavigationAttachmentsViewBinder {
 
     static void updateModeSelectorVisibility(
             PropertyModel model, NavigationAttachmentsViewHolder views) {
+        boolean isRequestTypeChangeable =
+                model.get(NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE_CHANGEABLE);
         boolean showFuseboxToolbar =
                 model.get(NavigationAttachmentsProperties.ATTACHMENTS_TOOLBAR_VISIBLE);
         boolean showDedicatedModeButton =
                 model.get(NavigationAttachmentsProperties.SHOW_DEDICATED_MODE_BUTTON);
-        boolean isAiModeEnabled =
+        boolean isAiModeUsed =
                 model.get(NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE)
                         == AutocompleteRequestType.AI_MODE;
+        boolean isCreateImageUsed =
+                model.get(NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE)
+                        == AutocompleteRequestType.CREATE_IMAGE;
+        boolean isCustomModeUsed = isAiModeUsed || isCreateImageUsed;
         Resources res = views.parentView.getResources();
 
         views.addButton.setVisibility(showFuseboxToolbar ? View.VISIBLE : View.GONE);
 
-        if (showFuseboxToolbar && (isAiModeEnabled || showDedicatedModeButton)) {
+        if (showFuseboxToolbar && (isCustomModeUsed || showDedicatedModeButton)) {
             views.requestType.setVisibility(View.VISIBLE);
 
-            if (isAiModeEnabled) {
+            if (isAiModeUsed) {
                 String hint = res.getString(R.string.ai_mode_entrypoint_label);
+                views.requestType.setText(hint);
+                views.requestType.setContentDescription(
+                        res.getString(R.string.accessibility_omnibox_reset_mode, hint));
+            } else if (isCreateImageUsed) {
+                String hint = res.getString(R.string.omnibox_create_image);
                 views.requestType.setText(hint);
                 views.requestType.setContentDescription(
                         res.getString(R.string.accessibility_omnibox_reset_mode, hint));
@@ -148,26 +160,36 @@ class NavigationAttachmentsViewBinder {
             }
 
             views.requestType.setButtonColor(
-                    isAiModeEnabled
+                    isCustomModeUsed
                             ? res.getColorStateList(R.color.gm3_baseline_surface_container)
                             : res.getColorStateList(android.R.color.transparent));
 
             views.requestType.setBorderStyle(
-                    isAiModeEnabled
+                    isCustomModeUsed
                             ? RippleBackgroundHelper.BorderType.SOLID
                             : RippleBackgroundHelper.BorderType.DASHED);
 
             views.requestType.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                    res.getDrawable(R.drawable.search_spark_black_24dp),
+                    isCreateImageUsed
+                            ? res.getDrawable(R.drawable.create_image_24dp)
+                            : res.getDrawable(R.drawable.search_spark_black_24dp),
                     null,
-                    isAiModeEnabled ? res.getDrawable(R.drawable.btn_close) : null,
+                    isCustomModeUsed ? res.getDrawable(R.drawable.btn_close) : null,
                     null);
         } else {
             views.requestType.setVisibility(View.GONE);
         }
 
-        views.popup.mAutocompleteRequestTypeGroup.setVisibility(
-                showDedicatedModeButton ? View.GONE : View.VISIBLE);
+        boolean isAiModeButtonVisible = isRequestTypeChangeable && !showDedicatedModeButton;
+        boolean isCreateImageButtonVisible =
+                isRequestTypeChangeable
+                        && model.get(
+                                NavigationAttachmentsProperties.POPUP_CREATE_IMAGE_BUTTON_VISIBLE);
+        views.popup.mAiModeButton.setVisibility(isAiModeButtonVisible ? View.VISIBLE : View.GONE);
+        views.popup.mCreateImageButton.setVisibility(
+                isCreateImageButtonVisible ? View.VISIBLE : View.GONE);
+        views.popup.mRequestTypeDivider.setVisibility(
+                isAiModeButtonVisible || isCreateImageButtonVisible ? View.VISIBLE : View.GONE);
     }
 
     static void reanchorViewsForCompactFusebox(

@@ -170,6 +170,9 @@
       <message name="IDS_FUSEBOX_ADD_CURRENT_TAB" desc="The text displayed in the omnibox attachments popup. When clicked - adds the curernt tab as context." formatter_data="android_java">
         Add current tab
       </message>
+      <message name="IDS_OMNIBOX_CREATE_IMAGE" desc="The text displayed in the omnibox attachments popup. When clicked - enables image creation." formatter_data="android_java">
+        Create Image
+      </message>
     </if>
   </if>
   <if expr="is_android">
