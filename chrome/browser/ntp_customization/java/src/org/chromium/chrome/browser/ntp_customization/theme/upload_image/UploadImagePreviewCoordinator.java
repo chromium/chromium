@@ -53,14 +53,18 @@ public class UploadImagePreviewCoordinator {
     @IntDef({
         PreviewInteractionType.CANCEL,
         PreviewInteractionType.SAVE,
-        PreviewInteractionType.PINCH_TO_RESIZE
+        PreviewInteractionType.PINCH_TO_RESIZE,
+        PreviewInteractionType.ROTATE_SCREEN,
+        PreviewInteractionType.ROTATE_SCREEN_AND_PINCH_TO_RESIZE,
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface PreviewInteractionType {
         int CANCEL = 0;
         int SAVE = 1;
         int PINCH_TO_RESIZE = 2; // Scale and scroll
-        int NUM_ENTRIES = 3;
+        int ROTATE_SCREEN = 3;
+        int ROTATE_SCREEN_AND_PINCH_TO_RESIZE = 4;
+        int NUM_ENTRIES = 5;
     }
 
     /**
@@ -93,7 +97,7 @@ public class UploadImagePreviewCoordinator {
                     onSaveButtonClicked(bitmap, onBottomSheetClickedCallback, dialog);
                     NtpCustomizationMetricsUtils.recordThemeUploadImagePreviewInteractions(
                             PreviewInteractionType.SAVE);
-                    recordPinchToResizeMetric();
+                    recordPreviewInteractionsMetric();
                 });
 
         mPreviewPropertyModel.set(
@@ -103,7 +107,7 @@ public class UploadImagePreviewCoordinator {
                     dialog.dismiss();
                     NtpCustomizationMetricsUtils.recordThemeUploadImagePreviewInteractions(
                             PreviewInteractionType.CANCEL);
-                    recordPinchToResizeMetric();
+                    recordPreviewInteractionsMetric();
                 });
 
         int saveButtonMarginBottom =
@@ -125,10 +129,33 @@ public class UploadImagePreviewCoordinator {
         NtpCustomizationMetricsUtils.recordThemeUploadImagePreviewShow();
     }
 
-    private void recordPinchToResizeMetric() {
-        if (mCropImageView.getIsScaled() || mCropImageView.getIsScrolled()) {
+    /**
+     * Records the user interaction metrics for the image preview. When the user rotates the screen
+     * and pinches to resize together (the order doesn't matter), only {@link
+     * PreviewInteractionType#ROTATE_SCREEN_AND_PINCH_TO_RESIZE} is recorded once. Individual {@link
+     * PreviewInteractionType#ROTATE_SCREEN} and {@link PreviewInteractionType#PINCH_TO_RESIZE}
+     * metrics are not recorded to avoid double counting.
+     */
+    private void recordPreviewInteractionsMetric() {
+        boolean isScaled = mCropImageView.getIsScaled();
+        boolean isScrolled = mCropImageView.getIsScrolled();
+        boolean isScreenRotated = mCropImageView.getIsScreenRotated();
+
+        if ((isScaled || isScrolled) && isScreenRotated) {
+            NtpCustomizationMetricsUtils.recordThemeUploadImagePreviewInteractions(
+                    PreviewInteractionType.ROTATE_SCREEN_AND_PINCH_TO_RESIZE);
+            return;
+        }
+
+        if (isScaled || isScrolled) {
             NtpCustomizationMetricsUtils.recordThemeUploadImagePreviewInteractions(
                     PreviewInteractionType.PINCH_TO_RESIZE);
+            return;
+        }
+
+        if (isScreenRotated) {
+            NtpCustomizationMetricsUtils.recordThemeUploadImagePreviewInteractions(
+                    PreviewInteractionType.ROTATE_SCREEN);
         }
     }
 

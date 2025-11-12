@@ -362,6 +362,8 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Cancel"/>
   <int value="1" label="Save"/>
   <int value="2" label="Pinch to resize"/>
+  <int value="3" label="Rotate screen"/>
+  <int value="4" label="Rotate screen and pinch to resize"/>
 </enum>
 
 <enum name="NTPCustomizeChromeBackgroundAction">

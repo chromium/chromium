@@ -538,4 +538,17 @@ public class CropImageViewUnitTest {
         gestureListener.onScroll(mMotionEvent1, mMotionEvent2, 0, 0);
         assertTrue(mView.getIsScrolled());
     }
+
+    @Test
+    public void testConfigureMatrixForCurrentOrientation() {
+        setupViewInOrientation(
+                Bitmap.createBitmap(800, 800, Bitmap.Config.ARGB_8888),
+                Configuration.ORIENTATION_PORTRAIT,
+                PORTRAIT_VIEW_WIDTH,
+                PORTRAIT_VIEW_HEIGHT);
+        assertFalse(mView.getIsScreenRotated());
+        setOrientation(Configuration.ORIENTATION_LANDSCAPE);
+        mView.configureMatrixForCurrentOrientation(PORTRAIT_VIEW_WIDTH, PORTRAIT_VIEW_HEIGHT);
+        assertTrue(mView.getIsScreenRotated());
+    }
 }

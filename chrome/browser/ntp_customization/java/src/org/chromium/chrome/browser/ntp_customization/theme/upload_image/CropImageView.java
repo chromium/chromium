@@ -57,10 +57,12 @@ public class CropImageView extends AppCompatImageView {
     private final ScaleGestureDetector mScaleDetector;
     private final GestureDetector mGestureDetector;
     private final float[] mMatrixValues;
+    private final int mInitialOrientation;
     private boolean mIsPortraitInitialized;
     private boolean mIsLandscapeInitialized;
     private boolean mIsScaled;
     private boolean mIsScrolled;
+    private boolean mIsScreenRotated;
     private @Nullable Bitmap mBitmap;
 
     private static class Dimensions {
@@ -85,8 +87,10 @@ public class CropImageView extends AppCompatImageView {
         mIsLandscapeInitialized = false;
         mIsScaled = false;
         mIsScrolled = false;
+        mIsScreenRotated = false;
         mScaleDetector = new ScaleGestureDetector(context, new ScaleListener());
         mGestureDetector = new GestureDetector(context, new GestureListener());
+        mInitialOrientation = getResources().getConfiguration().orientation;
 
         setScaleType(ScaleType.MATRIX);
     }
@@ -149,7 +153,8 @@ public class CropImageView extends AppCompatImageView {
      * @param oldViewWidth The width of the view before the size change.
      * @param oldViewHeight The height of the view before the size change.
      */
-    private void configureMatrixForCurrentOrientation(int oldViewWidth, int oldViewHeight) {
+    @VisibleForTesting
+    void configureMatrixForCurrentOrientation(int oldViewWidth, int oldViewHeight) {
         assertNonNull(mBitmap);
 
         if (getWidth() == 0 || getHeight() == 0) {
@@ -157,6 +162,9 @@ public class CropImageView extends AppCompatImageView {
         }
 
         int orientation = getResources().getConfiguration().orientation;
+        if (!mIsScreenRotated && orientation != mInitialOrientation) {
+            mIsScreenRotated = true;
+        }
 
         // Ensure the correct matrix is initialized
         if (orientation == Configuration.ORIENTATION_PORTRAIT) {
@@ -404,5 +412,9 @@ public class CropImageView extends AppCompatImageView {
 
     boolean getIsScrolled() {
         return mIsScrolled;
+    }
+
+    boolean getIsScreenRotated() {
+        return mIsScreenRotated;
     }
 }

@@ -119,7 +119,7 @@ public class UploadImagePreviewCoordinatorUnitTest {
 
     @Test
     public void testMetricThemeUploadImagePreviewInteractions_pinchToResize_cancel() {
-        setupCropImageView();
+        setupCropImageView_pinchToResize();
         String histogramName = "NewTabPage.Customization.Theme.UploadImage.PreviewInteractions";
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
@@ -137,7 +137,7 @@ public class UploadImagePreviewCoordinatorUnitTest {
 
     @Test
     public void testMetricThemeUploadImagePreviewInteractions_pinchToResize_save() {
-        setupCropImageView();
+        setupCropImageView_pinchToResize();
         String histogramName = "NewTabPage.Customization.Theme.UploadImage.PreviewInteractions";
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
@@ -153,16 +153,97 @@ public class UploadImagePreviewCoordinatorUnitTest {
         histogramWatcher.assertExpected();
     }
 
-    /**
-     * Sets up the mock {@link CropImageView} to simulate a state where the user has already
-     * interacted with the image by scaling and scrolling it.
-     */
+    @Test
+    public void testMetricThemeUploadImagePreviewInteractions_rotateScreen_cancel() {
+        setupCropImageView_rotateScreen();
+        String histogramName = "NewTabPage.Customization.Theme.UploadImage.PreviewInteractions";
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                histogramName,
+                                UploadImagePreviewCoordinator.PreviewInteractionType.CANCEL)
+                        .expectIntRecord(
+                                histogramName,
+                                UploadImagePreviewCoordinator.PreviewInteractionType.ROTATE_SCREEN)
+                        .build();
+        mCancelButton.performClick();
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void testMetricThemeUploadImagePreviewInteractions_rotateScreen_save() {
+        setupCropImageView_rotateScreen();
+        String histogramName = "NewTabPage.Customization.Theme.UploadImage.PreviewInteractions";
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                histogramName,
+                                UploadImagePreviewCoordinator.PreviewInteractionType.SAVE)
+                        .expectIntRecord(
+                                histogramName,
+                                UploadImagePreviewCoordinator.PreviewInteractionType.ROTATE_SCREEN)
+                        .build();
+        mSaveButton.performClick();
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void
+            testMetricThemeUploadImagePreviewInteractions_rotateScreenAndPinchToResize_cancel() {
+        setupCropImageView_rotateScreenAndPinchToResize();
+        String histogramName = "NewTabPage.Customization.Theme.UploadImage.PreviewInteractions";
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                histogramName,
+                                UploadImagePreviewCoordinator.PreviewInteractionType.CANCEL)
+                        .expectIntRecord(
+                                histogramName,
+                                UploadImagePreviewCoordinator.PreviewInteractionType
+                                        .ROTATE_SCREEN_AND_PINCH_TO_RESIZE)
+                        .build();
+        mCancelButton.performClick();
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void testMetricThemeUploadImagePreviewInteractions_rotateScreenAndPinchToResize_save() {
+        setupCropImageView_rotateScreenAndPinchToResize();
+        String histogramName = "NewTabPage.Customization.Theme.UploadImage.PreviewInteractions";
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                histogramName,
+                                UploadImagePreviewCoordinator.PreviewInteractionType.SAVE)
+                        .expectIntRecord(
+                                histogramName,
+                                UploadImagePreviewCoordinator.PreviewInteractionType
+                                        .ROTATE_SCREEN_AND_PINCH_TO_RESIZE)
+                        .build();
+        mSaveButton.performClick();
+        histogramWatcher.assertExpected();
+    }
+
     private void setupCropImageView() {
         mUploadImagePreviewCoordinator.setCropImageViewForTesting(mCropImageView);
         when(mCropImageView.getPortraitMatrix()).thenReturn(new Matrix());
         when(mCropImageView.getLandscapeMatrix()).thenReturn(new Matrix());
+    }
+
+    private void setupCropImageView_pinchToResize() {
+        setupCropImageView();
         when(mCropImageView.getIsScaled()).thenReturn(true);
         when(mCropImageView.getIsScrolled()).thenReturn(true);
+    }
+
+    private void setupCropImageView_rotateScreen() {
+        setupCropImageView();
+        when(mCropImageView.getIsScreenRotated()).thenReturn(true);
+    }
+
+    private void setupCropImageView_rotateScreenAndPinchToResize() {
+        setupCropImageView_pinchToResize();
+        when(mCropImageView.getIsScreenRotated()).thenReturn(true);
     }
 
     @Test
