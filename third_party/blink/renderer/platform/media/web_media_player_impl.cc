@@ -911,13 +911,6 @@ void WebMediaPlayerImpl::DoLoad(LoadType load_type,
 
   ReportMetrics(load_type, url, media_log_.get());
 
-  // Set subresource URL for crash reporting; will be truncated to 256 bytes.
-  static base::debug::CrashKeyString* subresource_url =
-      base::debug::AllocateCrashKeyString("subresource_url",
-                                          base::debug::CrashKeySize::Size256);
-  base::debug::SetCrashKeyString(subresource_url,
-                                 demuxer_manager_->LoadedUrl().spec());
-
   SetNetworkState(WebMediaPlayer::kNetworkStateLoading);
   SetReadyState(WebMediaPlayer::kReadyStateHaveNothing);
 
