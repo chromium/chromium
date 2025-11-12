@@ -35,7 +35,7 @@ class FakeBaseModelAsset {
     uint32_t adapter_cache_weight = 0;
   };
   FakeBaseModelAsset();
-  explicit FakeBaseModelAsset(Content&& content);
+  explicit FakeBaseModelAsset(Content content);
   explicit FakeBaseModelAsset(
       const std::vector<proto::OnDeviceModelPerformanceHint>& hints);
   explicit FakeBaseModelAsset(
@@ -56,6 +56,9 @@ class FakeBaseModelAsset {
   // Pass this asset to manager->SetReady.
   void SetReadyIn(OnDeviceModelComponentStateManager& manager) const;
 
+  // Constructs metadata compatible with the default constructed asset.
+  static proto::OnDeviceBaseModelMetadata DefaultSpec();
+
  private:
   std::string version_ = "0.0.1";
   base::Value::List supported_performance_hints_;
@@ -68,7 +71,8 @@ class FakeAdaptationAsset {
   struct Content {
     proto::OnDeviceModelExecutionFeatureConfig config;
     std::optional<uint32_t> weight;
-    proto::OnDeviceBaseModelMetadata metadata;
+    proto::OnDeviceBaseModelMetadata metadata =
+        FakeBaseModelAsset::DefaultSpec();
   };
   explicit FakeAdaptationAsset(Content&& content);
   ~FakeAdaptationAsset();
@@ -77,7 +81,7 @@ class FakeAdaptationAsset {
   ModelBasedCapabilityKey feature() const { return feature_; }
   OnDeviceModelAdaptationMetadata metadata() const { return *metadata_; }
 
-  const ModelInfo& model_info() { return *model_info_; }
+  const ModelInfo& model_info() const { return *model_info_; }
 
   void SendTo(OnDeviceModelServiceController& controller) const;
 
@@ -97,7 +101,7 @@ class FakeLanguageModelAsset {
   FakeLanguageModelAsset();
   ~FakeLanguageModelAsset();
 
-  const ModelInfo& model_info() { return *model_info_; }
+  const ModelInfo& model_info() const { return *model_info_; }
   base::FilePath model_path() const;
 
  private:
@@ -120,9 +124,9 @@ class FakeSafetyModelAsset {
 
   ~FakeSafetyModelAsset();
 
-  const ModelInfo& model_info() { return *model_info_; }
+  const ModelInfo& model_info() const { return *model_info_; }
 
-  base::flat_set<base::FilePath> AdditionalFiles() {
+  base::flat_set<base::FilePath> AdditionalFiles() const {
     return model_info_->GetAdditionalFiles();
   }
 

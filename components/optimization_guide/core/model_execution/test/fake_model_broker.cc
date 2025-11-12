@@ -14,6 +14,7 @@
 #include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
 #include "components/optimization_guide/core/model_execution/performance_class.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/proto/models.pb.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
 namespace optimization_guide {
@@ -24,7 +25,7 @@ ScopedModelBrokerFeatureList::ScopedModelBrokerFeatureList() {
        {features::internal::kOnDeviceModelTestFeature, {}},
        {features::kOptimizationGuideOnDeviceModel, {}},
        {features::kOnDeviceModelPerformanceParams,
-        {{"compatible_on_device_performance_classes", "*"},
+        {{"compatible_on_device_performance_classes", "3,4,5,6"},
          {"compatible_low_tier_on_device_performance_classes", "3"}}},
        {features::kTextSafetyClassifier, {}},
        {features::kOnDeviceModelValidation,
@@ -38,33 +39,64 @@ ModelBrokerPrefService::ModelBrokerPrefService() {
 }
 ModelBrokerPrefService::~ModelBrokerPrefService() = default;
 
-FakeModelBroker::FakeModelBroker(const FakeAdaptationAsset& asset) {
-  UpdatePerformanceClassPref(&local_state_.local_state(),
-                             OnDeviceModelPerformanceClass::kHigh);
-  model_broker_state_.Init();
-  base_model_.SetReadyIn(model_broker_state_.component_state_manager());
-  controller().MaybeUpdateModelAdaptation(asset.feature(), asset.metadata());
+FakeModelBroker::FakeModelBroker(const Options& options) {
+  if (options.performance_class != OnDeviceModelPerformanceClass::kUnknown) {
+    UpdatePerformanceClassPref(&local_state_.local_state(),
+                               options.performance_class);
+  }
+  if (options.preinstall_base_model) {
+    InstallBaseModel(std::make_unique<FakeBaseModelAsset>());
+  }
 }
 FakeModelBroker::~FakeModelBroker() = default;
 
 mojo::PendingRemote<mojom::ModelBroker> FakeModelBroker::BindAndPassRemote() {
   mojo::PendingRemote<mojom::ModelBroker> remote;
-  controller().BindBroker(remote.InitWithNewPipeAndPassReceiver());
+  GetOrCreateBrokerState().service_controller().BindBroker(
+      remote.InitWithNewPipeAndPassReceiver());
   return remote;
 }
 
-void FakeModelBroker::UpdateModelAdaptation(const FakeAdaptationAsset& asset) {
-  // First clear the current adaptation, then add the new asset to force an
-  // update.
-  controller().MaybeUpdateModelAdaptation(
-      asset.feature(),
-      base::unexpected(AdaptationUnavailability::kUpdatePending));
-  controller().MaybeUpdateModelAdaptation(asset.feature(), asset.metadata());
+void FakeModelBroker::InstallBaseModel(FakeBaseModelAsset::Content content) {
+  InstallBaseModel(std::make_unique<FakeBaseModelAsset>(std::move(content)));
 }
 
-std::unique_ptr<OnDeviceAssetManager> FakeModelBroker::CreateAssetManager(
-    OptimizationGuideModelProvider* provider) {
-  return model_broker_state_.CreateAssetManager(provider);
+void FakeModelBroker::InstallBaseModel(
+    std::unique_ptr<FakeBaseModelAsset> asset) {
+  component_state_.Install(std::move(asset));
+}
+
+void FakeModelBroker::UpdateTarget(proto::OptimizationTarget target,
+                                   const ModelInfo& model_info) {
+  model_provider_.UpdateModelImmediatelyForTesting(
+      target, std::make_unique<ModelInfo>(model_info));
+}
+
+void FakeModelBroker::UpdateModelAdaptation(const FakeAdaptationAsset& asset) {
+  UpdateTarget(
+      *features::internal::GetOptimizationTargetForCapability(asset.feature()),
+      asset.model_info());
+}
+
+void FakeModelBroker::UpdateSafetyModel(const FakeSafetyModelAsset& asset) {
+  UpdateTarget(proto::OPTIMIZATION_TARGET_TEXT_SAFETY, asset.model_info());
+}
+
+void FakeModelBroker::UpdateLanguageDetectionModel(
+    const FakeLanguageModelAsset& asset) {
+  UpdateTarget(proto::OPTIMIZATION_TARGET_LANGUAGE_DETECTION,
+               asset.model_info());
+}
+
+ModelBrokerState& FakeModelBroker::GetOrCreateBrokerState() {
+  if (!model_broker_state_) {
+    model_broker_state_.emplace(&local_state_.local_state(),
+                                component_state_.CreateDelegate(),
+                                fake_launcher_.LaunchFn());
+    model_broker_state_->Init();
+    asset_manager_ = model_broker_state_->CreateAssetManager(&model_provider_);
+  }
+  return *model_broker_state_;
 }
 
 }  // namespace optimization_guide

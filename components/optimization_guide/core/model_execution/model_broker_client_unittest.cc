@@ -46,7 +46,9 @@ TEST(ModelBrokerClientTest, PendingClient) {
   base::test::TaskEnvironment task_environment_;
   OptimizationGuideLogger logger;
   FakeAdaptationAsset fake_asset({.config = SimpleComposeConfig()});
-  FakeModelBroker fake_broker(fake_asset);
+  FakeModelBroker fake_broker({});
+  fake_broker.UpdateModelAdaptation(fake_asset);
+
   ModelBrokerClient client(fake_broker.BindAndPassRemote(),
                            logger.GetWeakPtr());
   EXPECT_FALSE(client.HasSubscriber(mojom::ModelBasedCapabilityKey::kTest));
@@ -69,7 +71,7 @@ TEST(ModelBrokerClientTest, PendingClient) {
 TEST(ModelBrokerClientTest, ReadyWithSetupClient) {
   base::test::TaskEnvironment task_environment_;
   OptimizationGuideLogger logger;
-  FakeAdaptationAsset test_asset({
+  FakeAdaptationAsset fake_asset({
       .config =
           []() {
             auto config = SimpleComposeConfig();
@@ -78,7 +80,9 @@ TEST(ModelBrokerClientTest, ReadyWithSetupClient) {
             return config;
           }(),
   });
-  FakeModelBroker fake_broker(test_asset);
+  FakeModelBroker fake_broker({});
+  fake_broker.UpdateModelAdaptation(fake_asset);
+
   ModelBrokerClient client(fake_broker.BindAndPassRemote(),
                            logger.GetWeakPtr());
   base::test::TestFuture<ModelBrokerClient::CreateSessionResult> future;
@@ -95,18 +99,14 @@ TEST(ModelBrokerClientTest, ReadyWithSetupClient) {
 TEST(ModelBrokerClientTest, UnavailableAdaptationRejectsSession) {
   base::test::TaskEnvironment task_environment{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  OptimizationGuideLogger logger;
   // Note: We pass a compose asset here, so the kTest feature will still be in
   // kPendingAsset status.
-  FakeAdaptationAsset compose_asset{{
+  FakeAdaptationAsset fake_asset{{
       .config = SimpleComposeConfig(),
   }};
-  FakeModelBroker broker{compose_asset};
-  // Mark feature used to trigger download.
-  // broker.broker_state().usage_tracker().OnDeviceEligibleFeatureUsed(
-  //     ModelBasedCapabilityKey::kTest);
-  OptimizationGuideLogger logger;
-  ModelProviderRegistry model_provider_{&logger};
-  auto asset_manager = broker.CreateAssetManager(&model_provider_);
+  FakeModelBroker broker({});
+  broker.UpdateModelAdaptation(fake_asset);
 
   mojo::PendingReceiver<mojom::ModelBroker> pending_broker;
   ModelBrokerClient broker_client(broker.BindAndPassRemote(),
@@ -125,7 +125,7 @@ TEST(ModelBrokerClientTest, UnavailableAdaptationRejectsSession) {
   // Emulate receiving info that a adaptation is not available from server.
   // Provider removes the target when the server says no matching model is
   // available.
-  model_provider_.RemoveModel(
+  broker.model_provider().RemoveModel(
       *features::internal::GetOptimizationTargetForCapability(
           ModelBasedCapabilityKey::kTest));
 

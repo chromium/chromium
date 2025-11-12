@@ -25,6 +25,7 @@
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/model_execution/performance_class.h"
 #include "components/optimization_guide/core/model_execution/test/fake_model_assets.h"
+#include "components/optimization_guide/core/model_execution/test/fake_model_broker.h"
 #include "components/optimization_guide/core/model_execution/test/test_on_device_model_component_state_manager.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -78,77 +79,60 @@ class StubObserver : public OnDeviceModelComponentStateManager::Observer {
 class OnDeviceModelComponentTest : public testing::Test {
  public:
   void SetUp() override {
-    model_execution::prefs::RegisterLocalStatePrefs(local_state_.registry());
-    fake_settings_.performance_class = PerformanceClass::kLow;
+    broker_.service_settings().performance_class = PerformanceClass::kLow;
     model_execution::prefs::RecordFeatureUsage(
-        &local_state_, ModelBasedCapabilityKey::kCompose);
-
-    feature_list_.InitWithFeaturesAndParameters(
-        {{features::kOptimizationGuideModelExecution, {}},
-         {features::kOptimizationGuideOnDeviceModel, {}},
-         {features::kOnDeviceModelPerformanceParams,
-          {{"compatible_on_device_performance_classes", "3,4,5,6"},
-           {"compatible_low_tier_on_device_performance_classes", "3"}}}},
-        /*disabled_features=*/{});
+        &broker_.local_state(), ModelBasedCapabilityKey::kCompose);
   }
 
   void TearDown() override {
     // Try to detect mistakes in the tests. If any lingering tasks affect state,
     // the test may have not waited before asserting state.
-    bool uninstalled = test_component_state_.uninstall_called();
-    bool installer_registered = test_component_state_.installer_registered();
+    bool uninstalled = broker_.component_state().uninstall_called();
+    bool installer_registered =
+        broker_.component_state().installer_registered();
     task_environment_.FastForwardBy(base::Seconds(1));
-    ASSERT_EQ(uninstalled, test_component_state_.uninstall_called());
+    ASSERT_EQ(uninstalled, broker_.component_state().uninstall_called());
     ASSERT_EQ(installer_registered,
-              test_component_state_.installer_registered());
+              broker_.component_state().installer_registered());
   }
 
   void DoStartup() {
-    CHECK(!model_broker_state_);
-    model_broker_state_.emplace(&local_state_,
-                                test_component_state_.CreateDelegate(),
-                                fake_launcher_.LaunchFn());
-    model_broker_state_->Init();
+    broker_.GetOrCreateBrokerState();  // Force instantiation.
     task_environment_.FastForwardBy(base::Seconds(1));
   }
 
-  void SimulateShutdown() {
-    model_broker_state_.reset();
-    test_component_state_.SimulateShutdown();
-  }
+  void SimulateShutdown() { broker_.SimulateShutdown(); }
 
   PerformanceClassifier& classifier() {
-    return model_broker_state_->performance_classifier();
+    return broker_.GetOrCreateBrokerState().performance_classifier();
   }
 
   OnDeviceModelComponentStateManager& manager() {
-    return model_broker_state_->component_state_manager();
+    return broker_.GetOrCreateBrokerState().component_state_manager();
   }
 
   void EnsurePerformanceClassAvailable() {
-    model_broker_state_->performance_classifier()
+    broker_.GetOrCreateBrokerState()
+        .performance_classifier()
         .EnsurePerformanceClassAvailable(base::DoNothing());
   }
 
   bool WaitUntilInstallerRegistered() {
-    return test_component_state_.WaitForRegistration();
+    return broker_.component_state().WaitForRegistration();
   }
 
   bool WaitForUnexpectedInstallerRegistered() {
     task_environment_.FastForwardBy(base::Seconds(1));
-    return test_component_state_.installer_registered();
+    return broker_.component_state().installer_registered();
   }
 
  protected:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  TestingPrefServiceSimple local_state_;
-  base::test::ScopedFeatureList feature_list_;
-  FakeBaseModelAsset fake_asset_;
-  TestComponentState test_component_state_;
-  on_device_model::FakeOnDeviceServiceSettings fake_settings_;
-  on_device_model::FakeServiceLauncher fake_launcher_{&fake_settings_};
-  std::optional<ModelBrokerState> model_broker_state_;
+  FakeModelBroker broker_{{
+      .performance_class = OnDeviceModelPerformanceClass::kUnknown,
+      .preinstall_base_model = false,
+  }};
   base::HistogramTester histograms_;
 };
 
@@ -157,10 +141,12 @@ TEST_F(OnDeviceModelComponentTest, InstallsWhenEligible) {
   DoStartup();
   EnsurePerformanceClassAvailable();
   ASSERT_TRUE(WaitUntilInstallerRegistered());
-  EXPECT_GE(local_state_.GetTime(kLastTimeEligibleForOnDeviceModelDownload),
-            time_at_start);
-  EXPECT_LE(local_state_.GetTime(kLastTimeEligibleForOnDeviceModelDownload),
-            base::Time::Now());
+  EXPECT_GE(
+      broker_.local_state().GetTime(kLastTimeEligibleForOnDeviceModelDownload),
+      time_at_start);
+  EXPECT_LE(
+      broker_.local_state().GetTime(kLastTimeEligibleForOnDeviceModelDownload),
+      base::Time::Now());
   histograms_.ExpectUniqueSample(
       "OptimizationGuide.ModelExecution.OnDeviceModelInstallCriteria."
       "AtRegistration.DiskSpace",
@@ -189,7 +175,7 @@ TEST_F(OnDeviceModelComponentTest, InstallsWhenEligible) {
 }
 
 TEST_F(OnDeviceModelComponentTest, AlreadyInstalledFlow) {
-  test_component_state_.Install(
+  broker_.component_state().Install(
       std::make_unique<FakeBaseModelAsset>(AllHints()));
   DoStartup();
   EnsurePerformanceClassAvailable();
@@ -201,7 +187,7 @@ TEST_F(OnDeviceModelComponentTest, AlreadyInstalledFlow) {
 }
 
 TEST_F(OnDeviceModelComponentTest, NotYetInstalledFlow) {
-  // No test_component_state_.Install() call here.
+  // No broker_.component_state().Install() call here.
   DoStartup();
   EnsurePerformanceClassAvailable();
   ASSERT_TRUE(WaitUntilInstallerRegistered());
@@ -235,7 +221,7 @@ TEST_F(OnDeviceModelComponentTest, DoesNotInstallWhenFeatureNotEnabled) {
 TEST_F(OnDeviceModelComponentTest,
        DoesNotInstallWhenDisabledByEnterprisePolicy) {
   // It should not install when disabled by enterprise policy.
-  local_state_.SetInteger(
+  broker_.local_state().SetInteger(
       kGenAILocalFoundationalModelEnterprisePolicySettings,
       static_cast<int>(
           GenAILocalFoundationalModelEnterprisePolicySettings::kDisallowed));
@@ -260,15 +246,15 @@ TEST_F(OnDeviceModelComponentTest, DynamicEnterprisePolicyChange) {
       true, 1);
 
   // Disabling the policy should trigger uninstallation.
-  local_state_.SetInteger(
+  broker_.local_state().SetInteger(
       kGenAILocalFoundationalModelEnterprisePolicySettings,
       static_cast<int>(
           GenAILocalFoundationalModelEnterprisePolicySettings::kDisallowed));
   EXPECT_TRUE(base::test::RunUntil(
-      [&]() { return test_component_state_.uninstall_called(); }));
+      [&]() { return broker_.component_state().uninstall_called(); }));
 
   // Enabling the policy should trigger installation.
-  local_state_.SetInteger(
+  broker_.local_state().SetInteger(
       kGenAILocalFoundationalModelEnterprisePolicySettings,
       static_cast<int>(
           GenAILocalFoundationalModelEnterprisePolicySettings::kAllowed));
@@ -278,7 +264,8 @@ TEST_F(OnDeviceModelComponentTest, DynamicEnterprisePolicyChange) {
 
 TEST_F(OnDeviceModelComponentTest, NotEnoughDiskSpaceToInstall) {
   // 20gb is the default in `IsFreeDiskSpaceSufficientForOnDeviceModelInstall`.
-  test_component_state_.SetFreeDiskSpace(base::GiB(20) - base::ByteCount(1));
+  broker_.component_state().SetFreeDiskSpace(base::GiB(20) -
+                                             base::ByteCount(1));
   DoStartup();
   EnsurePerformanceClassAvailable();
   ASSERT_FALSE(WaitForUnexpectedInstallerRegistered());
@@ -297,7 +284,7 @@ TEST_F(OnDeviceModelComponentTest, NotEnoughDiskSpaceToInstall) {
 }
 
 TEST_F(OnDeviceModelComponentTest, NoEligibleFeatureUse) {
-  local_state_.ClearPref(kLastUsageByFeature);
+  broker_.local_state().ClearPref(kLastUsageByFeature);
   DoStartup();
   EnsurePerformanceClassAvailable();
   ASSERT_FALSE(WaitForUnexpectedInstallerRegistered());
@@ -313,7 +300,7 @@ TEST_F(OnDeviceModelComponentTest, EligibleFeatureUseTooOld) {
   EnsurePerformanceClassAvailable();
   ASSERT_FALSE(WaitForUnexpectedInstallerRegistered());
   // The usage should also get pruned from the pref.
-  ASSERT_TRUE(local_state_.GetDict(kLastUsageByFeature).empty());
+  ASSERT_TRUE(broker_.local_state().GetDict(kLastUsageByFeature).empty());
 }
 
 TEST_F(OnDeviceModelComponentTest, NoPerformanceClass) {
@@ -323,7 +310,7 @@ TEST_F(OnDeviceModelComponentTest, NoPerformanceClass) {
 }
 
 TEST_F(OnDeviceModelComponentTest, PerformanceClassTooLow) {
-  fake_settings_.performance_class = PerformanceClass::kVeryLow;
+  broker_.service_settings().performance_class = PerformanceClass::kVeryLow;
   DoStartup();
   EnsurePerformanceClassAvailable();
   // We may still install the model given a "very low" performance class if the
@@ -343,17 +330,17 @@ TEST_F(OnDeviceModelComponentTest, PerformanceClassTooLow) {
 TEST_F(OnDeviceModelComponentTest, UninstallNeeded) {
   // This pref records that the model was eligible for download previously,
   // and hasn't been cleaned up yet.
-  local_state_.SetTime(kLastTimeEligibleForOnDeviceModelDownload,
-                       base::Time::Now() - base::Minutes(1) -
-                           features::GetOnDeviceModelRetentionTime());
-  local_state_.ClearPref(kLastUsageByFeature);
+  broker_.local_state().SetTime(kLastTimeEligibleForOnDeviceModelDownload,
+                                base::Time::Now() - base::Minutes(1) -
+                                    features::GetOnDeviceModelRetentionTime());
+  broker_.local_state().ClearPref(kLastUsageByFeature);
 
   // Should uninstall the first time, and skip uninstallation the next time.
   DoStartup();
   EnsurePerformanceClassAvailable();
 
   EXPECT_TRUE(base::test::RunUntil(
-      [&]() { return test_component_state_.uninstall_called(); }));
+      [&]() { return broker_.component_state().uninstall_called(); }));
 
   manager().UninstallComplete();
 
@@ -364,18 +351,19 @@ TEST_F(OnDeviceModelComponentTest, UninstallNeeded) {
 }
 
 TEST_F(OnDeviceModelComponentTest, UninstallNeededDueToDiskSpace) {
-  local_state_.SetTime(kLastTimeEligibleForOnDeviceModelDownload,
-                       base::Time::Now());
+  broker_.local_state().SetTime(kLastTimeEligibleForOnDeviceModelDownload,
+                                base::Time::Now());
 
   // 10gb is the default in `IsFreeDiskSpaceTooLowForOnDeviceModelInstall`.
-  test_component_state_.SetFreeDiskSpace(base::GiB(10) - base::ByteCount(1));
+  broker_.component_state().SetFreeDiskSpace(base::GiB(10) -
+                                             base::ByteCount(1));
 
   // Should uninstall right away. Unlike most install requirements, the disk
   // space requirement is not subject to `GetOnDeviceModelRetentionTime()`.
   DoStartup();
   EnsurePerformanceClassAvailable();
   EXPECT_TRUE(base::test::RunUntil(
-      [&]() { return test_component_state_.uninstall_called(); }));
+      [&]() { return broker_.component_state().uninstall_called(); }));
 }
 
 TEST_F(OnDeviceModelComponentTest, KeepInstalledWhileNotEligible) {
@@ -385,12 +373,12 @@ TEST_F(OnDeviceModelComponentTest, KeepInstalledWhileNotEligible) {
   DoStartup();
   EnsurePerformanceClassAvailable();
   EXPECT_TRUE(WaitUntilInstallerRegistered());
-  test_component_state_.Install(
+  broker_.component_state().Install(
       std::make_unique<FakeBaseModelAsset>(AllHints()));
   SimulateShutdown();
 
   // Clear usage prefs so that the model is no longer eligible for download.
-  local_state_.ClearPref(kLastUsageByFeature);
+  broker_.local_state().ClearPref(kLastUsageByFeature);
   DoStartup();
   EnsurePerformanceClassAvailable();
 
@@ -411,12 +399,13 @@ TEST_F(OnDeviceModelComponentTest, KeepInstalledWhileNotAllowed) {
   std::vector<proto::OnDeviceModelPerformanceHint> hints{
       proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_FASTEST_INFERENCE,
       proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_HIGHEST_QUALITY};
-  test_component_state_.Install(std::make_unique<FakeBaseModelAsset>(hints));
+  broker_.component_state().Install(
+      std::make_unique<FakeBaseModelAsset>(hints));
   SimulateShutdown();
 
-  local_state_.SetString(kOnDevicePerformanceClassVersion, "0.0.0.1");
+  broker_.local_state().SetString(kOnDevicePerformanceClassVersion, "0.0.0.1");
   // This performance class is not supported with `hints`.
-  fake_settings_.performance_class = PerformanceClass::kVeryLow;
+  broker_.service_settings().performance_class = PerformanceClass::kVeryLow;
   DoStartup();
   EnsurePerformanceClassAvailable();
 
@@ -428,26 +417,26 @@ TEST_F(OnDeviceModelComponentTest, KeepInstalledWhileNotAllowed) {
 TEST_F(OnDeviceModelComponentTest, NeedsPerformanceClassUpdateEveryStartup) {
   base::test::ScopedFeatureList feature_list(
       features::kOnDeviceModelFetchPerformanceClassEveryStartup);
-  fake_settings_.performance_class = PerformanceClass::kVeryHigh;
+  broker_.service_settings().performance_class = PerformanceClass::kVeryHigh;
   DoStartup();
   EXPECT_FALSE(classifier().IsPerformanceClassAvailable());
   base::RunLoop run_loop;
   classifier().EnsurePerformanceClassAvailable(run_loop.QuitClosure());
   run_loop.Run();
-  EXPECT_TRUE(fake_launcher_.did_launch_service());
+  EXPECT_TRUE(broker_.launcher().did_launch_service());
   EXPECT_TRUE(classifier().IsPerformanceClassAvailable());
   EXPECT_EQ(classifier().GetPerformanceClass(),
             OnDeviceModelPerformanceClass::kVeryHigh);
   SimulateShutdown();
 
-  fake_launcher_.clear_did_launch_service();
-  fake_settings_.performance_class = PerformanceClass::kLow;
+  broker_.launcher().clear_did_launch_service();
+  broker_.service_settings().performance_class = PerformanceClass::kLow;
   DoStartup();
   EXPECT_FALSE(classifier().IsPerformanceClassAvailable());
   base::RunLoop run_loop2;
   classifier().EnsurePerformanceClassAvailable(run_loop2.QuitClosure());
   run_loop2.Run();
-  EXPECT_TRUE(fake_launcher_.did_launch_service());
+  EXPECT_TRUE(broker_.launcher().did_launch_service());
   EXPECT_TRUE(classifier().IsPerformanceClassAvailable());
   EXPECT_EQ(classifier().GetPerformanceClass(),
             OnDeviceModelPerformanceClass::kLow);
@@ -462,20 +451,20 @@ TEST_F(OnDeviceModelComponentTest, NeedsPerformanceClassUpdate) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(
       features::kOnDeviceModelFetchPerformanceClassEveryStartup);
-  fake_settings_.performance_class = PerformanceClass::kVeryHigh;
+  broker_.service_settings().performance_class = PerformanceClass::kVeryHigh;
   DoStartup();
   EXPECT_FALSE(classifier().IsPerformanceClassAvailable());
   base::RunLoop run_loop;
   classifier().EnsurePerformanceClassAvailable(run_loop.QuitClosure());
   run_loop.Run();
-  EXPECT_TRUE(fake_launcher_.did_launch_service());
+  EXPECT_TRUE(broker_.launcher().did_launch_service());
   EXPECT_TRUE(classifier().IsPerformanceClassAvailable());
   EXPECT_EQ(classifier().GetPerformanceClass(),
             OnDeviceModelPerformanceClass::kVeryHigh);
   SimulateShutdown();
 
-  fake_launcher_.clear_did_launch_service();
-  fake_settings_.performance_class = PerformanceClass::kVeryLow;
+  broker_.launcher().clear_did_launch_service();
+  broker_.service_settings().performance_class = PerformanceClass::kVeryLow;
   DoStartup();
   EXPECT_TRUE(classifier().IsPerformanceClassAvailable());
   EXPECT_EQ(classifier().GetPerformanceClass(),
@@ -483,7 +472,7 @@ TEST_F(OnDeviceModelComponentTest, NeedsPerformanceClassUpdate) {
   base::RunLoop run_loop2;
   classifier().EnsurePerformanceClassAvailable(run_loop2.QuitClosure());
   run_loop2.Run();
-  EXPECT_FALSE(fake_launcher_.did_launch_service());
+  EXPECT_FALSE(broker_.launcher().did_launch_service());
   EXPECT_EQ(classifier().GetPerformanceClass(),
             OnDeviceModelPerformanceClass::kVeryHigh);
 }
@@ -500,7 +489,7 @@ TEST_F(OnDeviceModelComponentTest, SetReady) {
 
   StubObserver observer;
   manager().AddObserver(&observer);
-  test_component_state_.Install(
+  broker_.component_state().Install(
       std::make_unique<FakeBaseModelAsset>(AllHints()));
 
   const OnDeviceModelComponentState* state = manager().GetState();
@@ -512,24 +501,24 @@ TEST_F(OnDeviceModelComponentTest, SetReady) {
 }
 
 TEST_F(OnDeviceModelComponentTest, InstallAfterEligibleFeatureWasUsed) {
-  local_state_.ClearPref(kLastUsageByFeature);
+  broker_.local_state().ClearPref(kLastUsageByFeature);
   DoStartup();
   EnsurePerformanceClassAvailable();
   ASSERT_FALSE(WaitForUnexpectedInstallerRegistered());
 
-  model_broker_state_->usage_tracker().OnDeviceEligibleFeatureUsed(
+  broker_.GetOrCreateBrokerState().usage_tracker().OnDeviceEligibleFeatureUsed(
       ModelBasedCapabilityKey::kCompose);
   EXPECT_TRUE(WaitUntilInstallerRegistered());
 }
 
 TEST_F(OnDeviceModelComponentTest, LogsStatusOnUse) {
-  test_component_state_.Install(
+  broker_.component_state().Install(
       std::make_unique<FakeBaseModelAsset>(AllHints()));
   DoStartup();
   EnsurePerformanceClassAvailable();
   EXPECT_TRUE(WaitUntilInstallerRegistered());
 
-  model_broker_state_->usage_tracker().OnDeviceEligibleFeatureUsed(
+  broker_.GetOrCreateBrokerState().usage_tracker().OnDeviceEligibleFeatureUsed(
       ModelBasedCapabilityKey::kCompose);
 
   histograms_.ExpectBucketCount(
@@ -570,8 +559,8 @@ TEST_F(OnDeviceModelComponentTest, SetStateWhenModelOverridden) {
 }
 
 TEST_F(OnDeviceModelComponentTest, EmptyPerformanceHintsRejected) {
-  fake_settings_.performance_class = PerformanceClass::kHigh;
-  test_component_state_.Install(std::make_unique<FakeBaseModelAsset>(
+  broker_.service_settings().performance_class = PerformanceClass::kHigh;
+  broker_.component_state().Install(std::make_unique<FakeBaseModelAsset>(
       std::vector<proto::OnDeviceModelPerformanceHint>{}));
   DoStartup();
   EnsurePerformanceClassAvailable();
@@ -580,8 +569,8 @@ TEST_F(OnDeviceModelComponentTest, EmptyPerformanceHintsRejected) {
 }
 
 TEST_F(OnDeviceModelComponentTest, HighTierDeviceSelectsHighestQualityHint) {
-  fake_settings_.performance_class = PerformanceClass::kHigh;
-  test_component_state_.Install(
+  broker_.service_settings().performance_class = PerformanceClass::kHigh;
+  broker_.component_state().Install(
       std::make_unique<FakeBaseModelAsset>(AllHints()));
   DoStartup();
   EnsurePerformanceClassAvailable();
@@ -594,8 +583,8 @@ TEST_F(OnDeviceModelComponentTest, HighTierDeviceSelectsHighestQualityHint) {
 }
 
 TEST_F(OnDeviceModelComponentTest, LowTierDeviceSelectsFastestInferenceHint) {
-  fake_settings_.performance_class = PerformanceClass::kLow;
-  test_component_state_.Install(
+  broker_.service_settings().performance_class = PerformanceClass::kLow;
+  broker_.component_state().Install(
       std::make_unique<FakeBaseModelAsset>(AllHints()));
   DoStartup();
   EnsurePerformanceClassAvailable();
@@ -614,12 +603,12 @@ TEST_F(OnDeviceModelComponentTest, CpuOnlyDeviceRejectsGpuOnlyModel) {
       {{"on_device_cpu_ram_threshold_mb", "0"},
        {"on_device_cpu_processor_count_threshold", "0"},
        {"on_device_cpu_require_64_bit_processor", "false"}});
-  fake_settings_.performance_class = PerformanceClass::kVeryLow;
+  broker_.service_settings().performance_class = PerformanceClass::kVeryLow;
   std::vector<proto::OnDeviceModelPerformanceHint> gpu_hints{
       proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_FASTEST_INFERENCE,
       proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_HIGHEST_QUALITY,
   };
-  test_component_state_.Install(
+  broker_.component_state().Install(
       std::make_unique<FakeBaseModelAsset>(gpu_hints));
   DoStartup();
   EnsurePerformanceClassAvailable();
@@ -634,8 +623,8 @@ TEST_F(OnDeviceModelComponentTest, CpuOnlyDeviceSelectsCpuHint) {
       {{"on_device_cpu_ram_threshold_mb", "0"},
        {"on_device_cpu_processor_count_threshold", "0"},
        {"on_device_cpu_require_64_bit_processor", "false"}});
-  fake_settings_.performance_class = PerformanceClass::kVeryLow;
-  test_component_state_.Install(
+  broker_.service_settings().performance_class = PerformanceClass::kVeryLow;
+  broker_.component_state().Install(
       std::make_unique<FakeBaseModelAsset>(AllHints()));
   DoStartup();
   EnsurePerformanceClassAvailable();
@@ -655,8 +644,8 @@ TEST_F(OnDeviceModelComponentTest, CpuOnlyRequire64BitProcessor) {
        {"on_device_cpu_processor_count_threshold", "0"},
        // Require 64-bit devices.
        {"on_device_cpu_require_64_bit_processor", "true"}});
-  fake_settings_.performance_class = PerformanceClass::kVeryLow;
-  test_component_state_.Install(
+  broker_.service_settings().performance_class = PerformanceClass::kVeryLow;
+  broker_.component_state().Install(
       std::make_unique<FakeBaseModelAsset>(AllHints()));
   DoStartup();
   EnsurePerformanceClassAvailable();
@@ -682,11 +671,12 @@ TEST_F(OnDeviceModelComponentTest, GpuCapableDeviceAndCpuOnlyManifest) {
       {{"on_device_cpu_ram_threshold_mb", "0"},
        {"on_device_cpu_processor_count_threshold", "0"},
        {"on_device_cpu_require_64_bit_processor", "false"}});
-  fake_settings_.performance_class = PerformanceClass::kHigh;
+  broker_.service_settings().performance_class = PerformanceClass::kHigh;
   std::vector<proto::OnDeviceModelPerformanceHint> hints{
       proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_CPU,
   };
-  test_component_state_.Install(std::make_unique<FakeBaseModelAsset>(hints));
+  broker_.component_state().Install(
+      std::make_unique<FakeBaseModelAsset>(hints));
   DoStartup();
   EnsurePerformanceClassAvailable();
   ASSERT_TRUE(WaitUntilInstallerRegistered());

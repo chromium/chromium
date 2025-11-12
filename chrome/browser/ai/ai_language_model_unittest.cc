@@ -257,6 +257,14 @@ optimization_guide::proto::OnDeviceModelExecutionFeatureConfig CreateConfig() {
   return config;
 }
 
+optimization_guide::proto::OnDeviceModelExecutionFeatureConfig
+CreateSafeConfig() {
+  optimization_guide::proto::OnDeviceModelExecutionFeatureConfig config =
+      CreateConfig();
+  config.set_can_skip_text_safety(false);
+  return config;
+}
+
 // Formats responses to match what the fake on device model service will return.
 // The fake service keeps track of all previous inputs to a session, and will
 // spit them all back out during a Generate() call. This gets a bit complicated
@@ -292,9 +300,7 @@ std::vector<std::string> FormatResponses(
 
 class AILanguageModelTest : public AITestUtils::AITestBase {
  public:
-  AILanguageModelTest()
-      : fake_broker_(optimization_guide::FakeAdaptationAsset(
-            {.config = CreateConfig()})) {
+  AILanguageModelTest() : fake_broker_({}) {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{blink::features::kAIPromptAPIMultimodalInput, {}},
          {features::kAILanguageModelOverrideConfiguration,
@@ -302,8 +308,7 @@ class AILanguageModelTest : public AITestUtils::AITestBase {
          {optimization_guide::features::kOptimizationGuideOnDeviceModel, {}}},
         {});
     // Reset the adaptation to make sure the feature params get picked up.
-    fake_broker_.UpdateModelAdaptation(
-        optimization_guide::FakeAdaptationAsset({.config = CreateConfig()}));
+    fake_broker_.UpdateModelAdaptation(fake_asset_);
   }
 
   void SetUp() override {
@@ -397,6 +402,8 @@ class AILanguageModelTest : public AITestUtils::AITestBase {
   }
 
  protected:
+  optimization_guide::FakeAdaptationAsset fake_asset_{
+      {.config = CreateConfig()}};
   optimization_guide::FakeModelBroker fake_broker_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -1097,17 +1104,17 @@ TEST_F(AILanguageModelTest, MeasureInputUsage) {
 }
 
 TEST_F(AILanguageModelTest, TextSafetyInitialPrompts) {
-  auto config = CreateConfig();
-  config.set_can_skip_text_safety(false);
-  fake_broker_.UpdateModelAdaptation(
-      optimization_guide::FakeAdaptationAsset({.config = config}));
-  auto safety_config = CreateSafetyConfig();
-  auto* check = safety_config.add_request_check();
-  check->mutable_input_template()->Add(
-      FieldSubstitution("%s", StringValueField()));
-  optimization_guide::FakeSafetyModelAsset safety_asset(
-      std::move(safety_config));
-  fake_broker_.UpdateSafetyModel(safety_asset.model_info());
+  optimization_guide::FakeAdaptationAsset fake_asset(
+      {.config = CreateSafeConfig()});
+  fake_broker_.UpdateModelAdaptation(fake_asset);
+  optimization_guide::FakeSafetyModelAsset safety_asset([] {
+    auto safety_config = CreateSafetyConfig();
+    auto* check = safety_config.add_request_check();
+    check->mutable_input_template()->Add(
+        FieldSubstitution("%s", StringValueField()));
+    return safety_config;
+  }());
+  fake_broker_.UpdateSafetyModel(safety_asset);
 
   base::test::TestFuture<blink::mojom::AIManagerCreateClientError> future;
   AITestUtils::MockCreateLanguageModelClient language_model_client;
@@ -1124,17 +1131,17 @@ TEST_F(AILanguageModelTest, TextSafetyInitialPrompts) {
 }
 
 TEST_F(AILanguageModelTest, TextSafetyInput) {
-  auto config = CreateConfig();
-  config.set_can_skip_text_safety(false);
-  fake_broker_.UpdateModelAdaptation(
-      optimization_guide::FakeAdaptationAsset({.config = config}));
-  auto safety_config = CreateSafetyConfig();
-  auto* check = safety_config.add_request_check();
-  check->mutable_input_template()->Add(
-      FieldSubstitution("%s", StringValueField()));
-  optimization_guide::FakeSafetyModelAsset safety_asset(
-      std::move(safety_config));
-  fake_broker_.UpdateSafetyModel(safety_asset.model_info());
+  optimization_guide::FakeAdaptationAsset fake_asset(
+      {.config = CreateSafeConfig()});
+  fake_broker_.UpdateModelAdaptation(fake_asset);
+  optimization_guide::FakeSafetyModelAsset safety_asset([] {
+    auto safety_config = CreateSafetyConfig();
+    auto* check = safety_config.add_request_check();
+    check->mutable_input_template()->Add(
+        FieldSubstitution("%s", StringValueField()));
+    return safety_config;
+  }());
+  fake_broker_.UpdateSafetyModel(safety_asset);
 
   fake_broker_.settings().set_execute_result({"hi"});
   auto session = CreateSession();
@@ -1149,18 +1156,18 @@ TEST_F(AILanguageModelTest, TextSafetyInput) {
 }
 
 TEST_F(AILanguageModelTest, TextSafetyOutput) {
-  auto config = CreateConfig();
-  config.set_can_skip_text_safety(false);
-  fake_broker_.UpdateModelAdaptation(
-      optimization_guide::FakeAdaptationAsset({.config = config}));
-  auto safety_config = CreateSafetyConfig();
-  auto* check = safety_config.mutable_raw_output_check();
-  check->mutable_input_template()->Add(
-      FieldSubstitution("%s", StringValueField()));
-  safety_config.mutable_partial_output_checks()->set_minimum_tokens(1000);
-  optimization_guide::FakeSafetyModelAsset safety_asset(
-      std::move(safety_config));
-  fake_broker_.UpdateSafetyModel(safety_asset.model_info());
+  optimization_guide::FakeAdaptationAsset fake_asset(
+      {.config = CreateSafeConfig()});
+  fake_broker_.UpdateModelAdaptation(fake_asset);
+  optimization_guide::FakeSafetyModelAsset safety_asset([] {
+    auto safety_config = CreateSafetyConfig();
+    auto* check = safety_config.add_request_check();
+    check->mutable_input_template()->Add(
+        FieldSubstitution("%s", StringValueField()));
+    safety_config.mutable_partial_output_checks()->set_minimum_tokens(1000);
+    return safety_config;
+  }());
+  fake_broker_.UpdateSafetyModel(safety_asset);
 
   // Fake text safety checker looks for the string "unsafe".
   fake_broker_.settings().set_execute_result(
@@ -1175,19 +1182,19 @@ TEST_F(AILanguageModelTest, TextSafetyOutput) {
 }
 
 TEST_F(AILanguageModelTest, TextSafetyOutputPartial) {
-  auto config = CreateConfig();
-  config.set_can_skip_text_safety(false);
-  fake_broker_.UpdateModelAdaptation(
-      optimization_guide::FakeAdaptationAsset({.config = config}));
-  auto safety_config = CreateSafetyConfig();
-  auto* check = safety_config.mutable_raw_output_check();
-  check->mutable_input_template()->Add(
-      FieldSubstitution("%s", StringValueField()));
-  safety_config.mutable_partial_output_checks()->set_minimum_tokens(3);
-  safety_config.mutable_partial_output_checks()->set_token_interval(2);
-  optimization_guide::FakeSafetyModelAsset safety_asset(
-      std::move(safety_config));
-  fake_broker_.UpdateSafetyModel(safety_asset.model_info());
+  optimization_guide::FakeAdaptationAsset fake_asset(
+      {.config = CreateSafeConfig()});
+  fake_broker_.UpdateModelAdaptation(fake_asset);
+  optimization_guide::FakeSafetyModelAsset safety_asset([] {
+    auto safety_config = CreateSafetyConfig();
+    auto* check = safety_config.add_request_check();
+    check->mutable_input_template()->Add(
+        FieldSubstitution("%s", StringValueField()));
+    safety_config.mutable_partial_output_checks()->set_minimum_tokens(3);
+    safety_config.mutable_partial_output_checks()->set_token_interval(2);
+    return safety_config;
+  }());
+  fake_broker_.UpdateSafetyModel(safety_asset);
 
   // Fake text safety checker looks for the string "unsafe".
   fake_broker_.settings().set_execute_result(

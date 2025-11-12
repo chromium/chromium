@@ -51,21 +51,10 @@ std::vector<blink::mojom::AILanguageCodePtr> MakeLanguageCodeVector(
 
 class AIManagerTest : public AITestUtils::AITestBase {
  protected:
-  AIManagerTest()
-      : fake_broker_(optimization_guide::FakeAdaptationAsset({
-            .config =
-                [] {
-                  optimization_guide::proto::OnDeviceModelExecutionFeatureConfig
-                      config;
-                  config.set_can_skip_text_safety(true);
-                  config.set_feature(
-                      optimization_guide::proto::ModelExecutionFeature::
-                          MODEL_EXECUTION_FEATURE_PROMPT_API);
-                  return config;
-                }(),
-        })) {}
+  AIManagerTest() : fake_broker_({}) {}
 
   void SetUp() override {
+    fake_broker_.UpdateModelAdaptation(fake_asset_);
     AITestUtils::AITestBase::SetUp();
     SetupMockOptimizationGuideKeyedService();
     ai_manager_ =
@@ -115,6 +104,18 @@ class AIManagerTest : public AITestUtils::AITestBase {
   }
 
  private:
+  optimization_guide::FakeAdaptationAsset fake_asset_{{
+      .config =
+          [] {
+            optimization_guide::proto::OnDeviceModelExecutionFeatureConfig
+                config;
+            config.set_can_skip_text_safety(true);
+            config.set_feature(
+                optimization_guide::proto::ModelExecutionFeature::
+                    MODEL_EXECUTION_FEATURE_PROMPT_API);
+            return config;
+          }(),
+  }};
   testing::NiceMock<MockSession> session_;
   optimization_guide::FakeModelBroker fake_broker_;
 };

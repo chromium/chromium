@@ -24,7 +24,7 @@ namespace optimization_guide {
 
 FakeBaseModelAsset::FakeBaseModelAsset()
     : FakeBaseModelAsset(FakeBaseModelAsset::Content{}) {}
-FakeBaseModelAsset::FakeBaseModelAsset(Content&& content) {
+FakeBaseModelAsset::FakeBaseModelAsset(Content content) {
   CHECK(temp_dir_.CreateUniqueTempDir());
   // Support all performance hints by default.
   supported_performance_hints_ =
@@ -81,6 +81,19 @@ base::Value::Dict FakeBaseModelAsset::Manifest() const {
 void FakeBaseModelAsset::SetReadyIn(
     OnDeviceModelComponentStateManager& manager) const {
   manager.SetReady(base::Version(version()), path(), Manifest());
+}
+
+proto::OnDeviceBaseModelMetadata FakeBaseModelAsset::DefaultSpec() {
+  proto::OnDeviceBaseModelMetadata result;
+  result.set_base_model_version("0.0.1");
+  result.set_base_model_name("Test");
+  result.add_supported_performance_hints(
+      proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_HIGHEST_QUALITY);
+  result.add_supported_performance_hints(
+      proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_FASTEST_INFERENCE);
+  result.add_supported_performance_hints(
+      proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_CPU);
+  return result;
 }
 
 FakeAdaptationAsset::FakeAdaptationAsset(FakeAdaptationAsset::Content&& content)
