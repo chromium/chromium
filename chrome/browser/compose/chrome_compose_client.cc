@@ -108,7 +108,7 @@ ChromeComposeClient::FieldChangeObserver::FieldChangeObserver(
   autofill_managers_observation_.Observe(
       autofill::ContentAutofillClient::FromWebContents(web_contents),
       autofill::ScopedAutofillManagersObservation::InitializationPolicy::
-          kObservePreexistingManagers);
+          kObservePreexistingObjects);
 }
 
 ChromeComposeClient::FieldChangeObserver::~FieldChangeObserver() = default;
@@ -187,7 +187,7 @@ ChromeComposeClient::ChromeComposeClient(content::WebContents* web_contents)
   autofill_managers_observation_.Observe(
       autofill::ContentAutofillDriverFactory::FromWebContents(web_contents),
       autofill::ScopedAutofillManagersObservation::InitializationPolicy::
-          kObservePreexistingManagers);
+          kObservePreexistingObjects);
   nudge_tracker_.StartObserving(web_contents);
 }
 

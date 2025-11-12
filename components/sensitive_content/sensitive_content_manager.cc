@@ -51,7 +51,7 @@ SensitiveContentManager::SensitiveContentManager(
   autofill_managers_observation_.Observe(
       autofill::ContentAutofillClient::FromWebContents(web_contents),
       autofill::ScopedAutofillManagersObservation::InitializationPolicy::
-          kObservePreexistingManagers);
+          kObservePreexistingObjects);
 }
 
 SensitiveContentManager::~SensitiveContentManager() = default;

@@ -61,7 +61,7 @@ TEST_F(ScopedAutofillManagersObservationTest,
   EXPECT_CHECK_DEATH(observation.Observe(
       &autofill_client(),
       ScopedAutofillManagersObservation::InitializationPolicy::
-          kExpectNoPreexistingManagers));
+          kExpectNoPreexistingObjects));
 }
 
 TEST_F(ScopedAutofillManagersObservationTest,
@@ -71,7 +71,7 @@ TEST_F(ScopedAutofillManagersObservationTest,
   ScopedAutofillManagersObservation observation(&observer);
   observation.Observe(&autofill_client(),
                       ScopedAutofillManagersObservation::InitializationPolicy::
-                          kObservePreexistingManagers);
+                          kObservePreexistingObjects);
 
   EXPECT_CALL(observer, OnBeforeLanguageDetermined(Ref(autofill_manager())));
   autofill_manager().NotifyObservers(
