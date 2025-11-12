@@ -1,5 +1,5 @@
 # Frequently Asked Questions
-Last updated: May 8, 2025
+Last updated: November 14, 2025
 
 [TOC]
 
@@ -273,6 +273,52 @@ Chrome Root Store is described [here](/net/cert/root_store.proto).
 To understand a constraint applied to a root included in the Chrome Root Store,
 view the certificate's entry in [root_store.textproto](/net/data/ssl/chrome_root_store/root_store.textproto).
 
+### Can I simulate a constraint before it takes effect?
+
+Yes.
+
+A command-line flag was added beginning in Chrome 128 that allows administrators
+and power users to simulate an SCTNotAfter distrust constraint before it takes
+effect.
+
+**How to: Simulate an SCTNotAfter distrust**
+
+1.  Close all open versions of Chrome
+
+2.  Start Chrome using the following command-line flag, substituting the
+    variables described below with actual values.
+
+     ```--test-crs-constraints=$[comma separated list of trust anchor certificate SHA256 hashes]:sctnotafter=$[epoch timestamp in seconds]```
+
+3.  Evaluate the effects of the flag with test websites
+
+**Example:** The following command will simulate an SCTNotAfter distrust with
+an effective date of April 30, 2024 11:59:59 PM GMT for a root whose
+SHA256 hash is
+```A441B15FE9A3CF56661190A0B93B9DEC7D04127288CC87250967CF3B52894D11```.
+The expected behavior is that any website whose certificate is issued
+before the enforcement date/timestamp will function in Chrome, and all
+issued after will display an interstitial.
+
+```--test-crs-constraints=A441B15FE9A3CF56661190A0B93B9DEC7D04127288CC87250967CF3B52894D11:sctnotafter=1714521599```
+
+**Illustrative Command (on Windows):**
+
+```"C:\Users\User123\AppData\Local\Google\Chrome SxS\Application\chrome.exe" --test-crs-constraints=A441B15FE9A3CF56661190A0B93B9DEC7D04127288CC87250967CF3B52894D11:sctnotafter=1714521599```
+
+**Illustrative Command (on macOS):**
+
+```"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --test-crs-constraints=A441B15FE9A3CF56661190A0B93B9DEC7D04127288CC87250967CF3B52894D11:sctnotafter=1714521599```
+
+**Notes:**
+- If copy and pasting the above commands, ensure no line-breaks are
+introduced.
+- SHA256 hashes of the CA certificates included in the Chrome Root Store
+are available [here](https://chromium.googlesource.com/chromium/src/+/main/net/data/ssl/chrome_root_store/root_store.md).
+
+Learn more about command-line flags
+[here](https://developer.chrome.com/docs/web-platform/chrome-flags#command-line_flags).
+
 ### What criteria does the Chrome Certificate Verifier use to evaluate certificates?
 The Chrome Certificate Verifier applies standard processing to include
 checking:
@@ -293,6 +339,74 @@ Baseline Requirements (i.e., 398 days or less).
 ### What criteria does the Chrome Certificate Verifier use to build certificate paths?
 The Chrome Certificate Verifier was designed to follow path-building
 guidance established in [RFC 4158](https://datatracker.ietf.org/doc/html/rfc4158).
+
+### What's the story with certificate revocation?
+Certificate revocation is the process by which a CA invalidates the use of
+a specific certificate. This is a security function that contains risk.
+
+There are many reasons why a certificate might be revoked, including, but
+not limited to:
+- Its private key was compromised or unintentionally leaked,
+allowing impersonation,
+- An error was made during the domain control validation
+process, meaning the certificate cannot be relied upon, and
+- The certificate was issued in a way that violates the CA Owner’s stated
+practices which ecosystem stakeholders may use to make risk-based
+decisions.
+
+Common approaches for generating or consuming revocation information
+include [Certificate Revocation Lists](https://datatracker.ietf.org/doc/html/rfc5280#section-3.3),
+[Online Certificate Status Protocol](https://datatracker.ietf.org/doc/html/rfc6960),
+and out-of-band solutions, like
+[CRLSet](https://www.chromium.org/Home/chromium-security/crlsets/).
+
+For over a [decade](https://www.imperialviolet.org/2011/03/18/revocation.html),
+[challenges](https://www.imperialviolet.org/2014/04/29/revocationagain.html)
+[related](https://www.fastly.com/blog/addressing-challenges-tls-revocation-and-ocsp)
+to [revocation](https://scotthelme.co.uk/revocation-is-broken/) at the
+[scale](https://letsencrypt.org/2022/09/07/new-life-for-crls) of the
+Internet have been discussed. The reality is that all existing revocation
+solutions come with inherent problems and gaps in intended protection.
+
+For example:
+- Timeouts (e.g., an OCSP responder is online but does not respond
+within an acceptable time limit).
+- Local-network attackers can block "online" lookups.
+- OCSP leaks browsing history to third-parties.
+- CRLs can be quite large (some "in the wild" have been observed being
+close to 100MB) leading to performance costs and usability issues.
+
+All of these problems are improved, if not outright solved, by a world
+with exclusively short-lived certificates. Chrome has long-advocated the
+use of short-lived certificates, including by leading ballots within the
+CA/Browser Forum (e.g., [SC-063](https://cabforum.org/2023/07/14/ballot-sc063v4-make-ocsp-optional-require-crls-and-incentivize-automation/)),
+and has used the [Chrome Root Program Policy](https://googlechrome.github.io/chromerootprogram/)
+to further promote agility across the ecosystem.
+
+Chrome has also focused on initiatives that reduce the likelihood of
+events that necessitate revocation (e.g.,
+[Multi-Perspective Issuance Corroboration](https://cabforum.org/2024/08/05/ballot-sc067v3-require-domain-validation-and-caa-checks-to-be-performed-from-multiple-network-perspectives-corroboration/))
+and the removal of insecure domain control validation methods (e.g.,
+[SC-080](https://cabforum.org/2024/11/14/ballot-sc080v3-sunset-the-use-of-whois-to-identify-domain-contacts-and-relying-dcv-methods/)).
+These changes systemically reduce the chance of certificate misissuance and
+shrink the window of risk, which are the very problems that make robust
+revocation so critical in the first place.
+
+Chrome will continue to champion these systemic improvements to the
+ecosystem to reduce the likelihood of a secure connection relying upon a
+certificate that’s been improperly issued or invalidated.
+
+### What is Chrome's current revocation checking behavior?
+Today, by default, CRLSet blocks the use of all...
+ - revoked CA certificates trusted in Chrome
+ - server authentication certificates issued by CAs trusted in Chrome
+whose revocation reason code is "keyCompromise" or "privilegeWithdrawn."
+Additional reason codes may be added in the future.
+
+The following enterprise policies can be used to change the default
+revocation checking behavior in Chrome:
+- [EnableOnlineRevocationChecks](https://chromeenterprise.google/policies/#EnableOnlineRevocationChecks)
+- [RequireOnlineRevocationChecksForLocalAnchors](https://chromeenterprise.google/policies/#RequireOnlineRevocationChecksForLocalAnchors)
 
 ### Where is the Chrome Root Store source code located?
 Source locations include
