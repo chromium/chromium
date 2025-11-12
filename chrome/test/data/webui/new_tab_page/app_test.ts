@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import type {TabInfo} from 'chrome://new-tab-page/action_chips.mojom-webui.js';
 import {ActionChipsHandlerRemote, ChipType} from 'chrome://new-tab-page/action_chips.mojom-webui.js';
 import type {CustomizeButtonsDocumentRemote} from 'chrome://new-tab-page/customize_buttons.mojom-webui.js';
 import {CustomizeButtonsDocumentCallbackRouter, CustomizeButtonsHandlerRemote, SidePanelOpenTrigger} from 'chrome://new-tab-page/customize_buttons.mojom-webui.js';
@@ -1942,13 +1943,19 @@ suite('NewTabPageAppTest', () => {
           ActionChipsHandlerRemote,
           mock => ActionChipsApiProxyImpl.setInstance({getHandler: () => mock}),
       );
+      const fakeTab: TabInfo = {
+        tabId: 1,
+        title: 'Test Title',
+        url: {url: 'https://example.com/test'},
+        lastActiveTime: {internalValue: BigInt(12345)},
+      };
       actionChipshandler.setResultFor('getActionChips', Promise.resolve({
         actionChips: [
           {
             title: 'TabContext',
             suggestion: 'tab-suggestion',
             type: ChipType.kRecentTab,
-            tab: null,
+            tab: fakeTab,
           },
           {
             title: 'Nano Banana',
@@ -2064,7 +2071,8 @@ suite('NewTabPageAppTest', () => {
       const composebox = app.shadowRoot.getElementById('composebox');
       assertTrue(!!composebox);
       assertEquals(1, searchboxHandler.getCallCount('addTabContext'));
-      const [_, delayUpload] = searchboxHandler.getArgs('addTabContext')[0];
+      const [tabId, delayUpload] = searchboxHandler.getArgs('addTabContext')[0];
+      assertEquals(1, tabId);
       assertEquals(true, delayUpload);
     });
   });
