@@ -399,6 +399,8 @@ void Preferences::RegisterProfilePrefs(
   registry->RegisterStringPref(prefs::kCaptureModePolicySavePath,
                                std::string());
 
+  registry->RegisterStringPref(prefs::kCameraSaveLocation, std::string());
+
   std::string current_timezone_id;
   if (CrosSettings::IsInitialized()) {
     // In unit tests CrosSettings is not always initialized.

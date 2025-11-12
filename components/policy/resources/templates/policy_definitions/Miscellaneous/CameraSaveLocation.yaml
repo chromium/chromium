@@ -1,0 +1,28 @@
+caption: Set location to save Camera app photos.
+desc: |-
+  Sets the directory where pictures and videos captured by the camera are being saved.
+  The user can't change it and the photos are always saved to the defined directory.
+
+  The policy uses same format as <ph name="DOWNLOAD_DIRECTORY_POLICY_NAME">DownloadDirectory</ph> policy.
+  The location could be set to either local filesystem or <ph name="GOOGLE_DRIVE_NAME">Google Drive</ph> (with '${google_drive}' prefix) or <ph name="MICROSOFT_ONE_DRIVE_NAME">Microsoft OneDrive</ph> (with '${microsoft_onedrive}' prefix).
+  If the policy is set to empty string, it'll save the photos in the default "My files/Camera" directory.
+  See a list of variables you can use ( https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables ).
+
+  Leaving the policy unset means <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> uses the default "My files/Camera" directory to save photos.
+example_value: ${google_drive}/Camera
+features:
+  can_be_recommended: false
+  dynamic_refresh: true
+  per_profile: false
+owners:
+- file://components/policy/OWNERS
+- poromov@chromium.org
+- aidazolic@google.com
+- orko@igalia.com
+schema:
+  type: string
+future_on:
+- chrome_os
+tags:
+- local-data-access
+type: string

@@ -14,6 +14,8 @@ static_library("handlers") {
     "app_launch_automation_policy_handler.h",
     "bluetooth_policy_handler.cc",
     "bluetooth_policy_handler.h",
+    "camera_save_location_policy_handler.cc",
+    "camera_save_location_policy_handler.h",
     "configuration_policy_handler_ash.cc",
     "configuration_policy_handler_ash.h",
     "contextual_google_integrations_policies_handler.cc",

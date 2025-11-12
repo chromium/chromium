@@ -2065,6 +2065,10 @@ inline constexpr char kAutozoomNudges[] = "ash.camera.autozoom_nudges";
 inline constexpr char kCameraAppDevToolsOpen[] =
     "ash.camera.cca_dev_tools_open";
 
+// A string pref that is set by enterprise policy when admin forces a custom
+// path to save camera photos.
+inline constexpr char kCameraSaveLocation[] = "ash.camera.save_location";
+
 // A boolean pref that specifies the recovery service activation for user.
 // When the pref is set to `true`, the user data recovery is activated. When the
 // pref is set to `false`, the user data recovery is not activated. The default
