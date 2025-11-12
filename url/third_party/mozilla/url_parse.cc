@@ -396,10 +396,9 @@ void DoParseAfterNonSpecialScheme(std::basic_string_view<CHAR> spec,
   // are many subtle differences. So we have a different function for parsing
   // non-special URLs.
 
-  int spec_len = base::checked_cast<int>(spec.length());
-  int num_slashes = CountConsecutiveSlashesButNotCountBackslashes(
-      spec.data(), after_scheme, spec_len);
+  size_t num_slashes = CountConsecutiveSlashes(spec, after_scheme);
 
+  int spec_len = base::checked_cast<int>(spec.length());
   if (num_slashes >= 2) {
     // Found "//<some data>", looks like an authority section.
     //

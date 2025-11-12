@@ -64,21 +64,6 @@ inline std::pair<size_t, size_t> TrimUrl(std::basic_string_view<CHAR> spec,
 // Counts the number of consecutive slashes or backslashes starting at the given
 // offset in the given string of the given length. A slash and backslash can be
 // mixed.
-//
-// TODO(crbug.com/40063064): Rename this function to
-// `CountConsecutiveSlashesOrBackslashes`.
-template <typename CHAR>
-inline int CountConsecutiveSlashes(const CHAR* str,
-                                   int begin_offset,
-                                   int str_len) {
-  int count = 0;
-  while (begin_offset + count < str_len &&
-         IsSlashOrBackslash(str[begin_offset + count])) {
-    ++count;
-  }
-  return count;
-}
-
 template <typename CHAR>
 inline size_t CountConsecutiveSlashesOrBackslashes(
     std::basic_string_view<CHAR> str,
@@ -101,16 +86,12 @@ inline bool IsSlash(char ch) {
 
 // Counts the number of consecutive slashes starting at the given offset
 // in the given string of the given length.
-//
-// TODO(crbug.com/40063064): Rename this function to
-// `CountConsecutiveSlashes` after the current `CountConsecutiveSlashes` is
-// renamed to CountConsecutiveSlashesOrBackslashes`.
 template <typename CHAR>
-inline int CountConsecutiveSlashesButNotCountBackslashes(const CHAR* str,
-                                                         int begin_offset,
-                                                         int str_len) {
-  int count = 0;
-  while (begin_offset + count < str_len && IsSlash(str[begin_offset + count])) {
+inline size_t CountConsecutiveSlashes(std::basic_string_view<CHAR> str,
+                                      size_t begin_offset) {
+  size_t count = 0;
+  while (begin_offset + count < str.length() &&
+         IsSlash(str[begin_offset + count])) {
     ++count;
   }
   return count;
