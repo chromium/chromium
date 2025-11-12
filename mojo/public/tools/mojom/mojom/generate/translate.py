@@ -278,9 +278,6 @@ _EXTENSIBLE_ENUMS_MISSING_DEFAULT_CHROMEOS = {
 
 ### DO NOT ADD ENTRIES TO THIS LIST. ###
 _EXTENSIBLE_ENUMS_MISSING_DEFAULT_TO_BE_FIXED = {
-    'x:device.mojom.HidBusType',
-    'x:device.mojom.WakeLockReason',
-    'x:device.mojom.WakeLockType',
     'x:fuzz.mojom.FuzzEnum',
     'x:media_session.mojom.MediaPlaybackState',
     'x:media_session.mojom.MediaSessionAction',
