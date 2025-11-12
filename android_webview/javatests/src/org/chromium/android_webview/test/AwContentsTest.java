@@ -50,7 +50,6 @@ import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwRenderProcess;
 import org.chromium.android_webview.AwSettings;
-import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.renderer_priority.RendererPriority;
 import org.chromium.android_webview.test.TestAwContentsClient.OnDownloadStartHelper;
 import org.chromium.android_webview.test.util.CommonResources;
@@ -66,7 +65,6 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.content_public.browser.test.util.RenderProcessHostUtils;
@@ -1904,11 +1902,6 @@ public class AwContentsTest extends AwParameterizedTest {
     @MediumTest
     @Feature({"AndroidWebView"})
     @MinAndroidSdkLevel(Build.VERSION_CODES.R)
-    @Features.EnableFeatures({
-        AwFeatures.WEBVIEW_REPORT_IME_INSETS,
-        AwFeatures.WEBVIEW_SAFE_AREA_INCLUDES_SYSTEM_BARS,
-        AwFeatures.WEBVIEW_USE_VIEW_POSITION_OBSERVER_FOR_INSETS
-    })
     public void testInsetsAreUpdatedInScrollView() throws Exception {
         mActivityTestRule.startBrowserProcess();
         AwTestContainerView containerView =

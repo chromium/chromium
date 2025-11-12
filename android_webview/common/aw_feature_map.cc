@@ -64,8 +64,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kWebViewReduceUAAndroidVersionDeviceModel,
     &features::kWebViewReducedSeedExpiration,
     &features::kWebViewReducedSeedRequestPeriod,
-    &features::kWebViewReportImeInsets,
-    &features::kWebViewSafeAreaIncludesSystemBars,
     &features::kWebViewShortCircuitShouldInterceptRequest,
     &features::kWebViewSkipInterceptsForPrefetch,
     &features::kWebViewStartupTasksYieldToNative,
@@ -75,7 +73,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kWebViewUseRenderingHeuristic,
     &features::kWebViewUseStartupTasksLogic,
     &features::kWebViewUseStartupTasksLogicP2,
-    &features::kWebViewUseViewPositionObserverForInsets,
     &features::kWebViewWebauthn,
     // keep-sorted end
 };

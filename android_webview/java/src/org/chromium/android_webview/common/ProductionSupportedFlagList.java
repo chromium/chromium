@@ -795,10 +795,6 @@ public final class ProductionSupportedFlagList {
                 "Makes writes to leveldb_proto databases asynchronous. This should reduce disk"
                     + " contention at the cost of potential lost writes on OS or power failure."),
         Flag.baseFeature(
-                AwFeatures.WEBVIEW_SAFE_AREA_INCLUDES_SYSTEM_BARS,
-                "Include system bars in safe-area-inset CSS environment values for WebViews"
-                        + " that take up the entire screen."),
-        Flag.baseFeature(
                 AwFeatures.WEBVIEW_SKIP_INTERCEPTS_FOR_PREFETCH,
                 "Skip shouldInterceptRequest and other checks for prefetch requests."),
         Flag.baseFeature(
