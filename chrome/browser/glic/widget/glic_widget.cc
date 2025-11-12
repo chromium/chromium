@@ -294,11 +294,6 @@ std::unique_ptr<GlicWidget> GlicWidget::Create(views::WidgetDelegate* delegate,
 #endif  // BUILDFLAG(IS_LINUX)
 #if BUILDFLAG(IS_CHROMEOS)
   params.shadow_type = views::Widget::InitParams::ShadowType::kDrop;
-
-  // crbug.com/452137970: Rounded Corners conflict with the shadow backdrop so
-  // disable them for now. Since they need some more investigation work/special
-  // handling on ChromeOS, we'll fix them in the RoundedCorners bug.
-  params.rounded_corners = gfx::RoundedCornersF(0);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   if (user_resizable) {
