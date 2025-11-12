@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_CONTENT_EXTRACTION_AI_PAGE_CONTENT_AGENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CONTENT_EXTRACTION_AI_PAGE_CONTENT_AGENT_H_
 
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback.h"
 #include "base/memory/stack_allocated.h"
 #include "base/types/pass_key.h"
 #include "mojo/public/cpp/bindings/lib/validation_context.h"
@@ -19,6 +19,8 @@
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver_set.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
+#include "third_party/blink/renderer/platform/wtf/hash_map.h"
+#include "third_party/blink/renderer/platform/wtf/hash_traits.h"
 
 namespace blink {
 class Document;
@@ -160,7 +162,8 @@ class MODULES_EXPORT AIPageContentAgent final
 
     const raw_ref<const mojom::blink::AIPageContentOptions> options_;
 
-    base::flat_map<DOMNodeId, int32_t> dom_node_to_z_order_;
+    HashMap<DOMNodeId, int32_t, IntWithZeroKeyHashTraits<DOMNodeId>>
+        dom_node_to_z_order_;
 
     // Whether the stack depth has exceeded the max tree depth.
     bool stack_depth_exceeded_ = false;

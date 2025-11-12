@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/content_extraction/ai_page_content_agent.h"
 
+#include "base/containers/adapters.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_id_helper.h"
@@ -1702,9 +1703,9 @@ void AIPageContentAgent::ContentBuilder::ComputeHitTestableNodesInViewport(
   }
 
   int32_t next_z_order = 1;
-  std::for_each(hit_nodes.rbegin(), hit_nodes.rend(), [&](auto node_id) {
-    if (dom_node_to_z_order_.contains(node_id)) {
-      return;
+  for (DOMNodeId node_id : base::Reversed(hit_nodes)) {
+    if (dom_node_to_z_order_.Contains(node_id)) {
+      continue;
     }
 
     auto* node = DOMNodeIds::NodeForId(node_id);
@@ -1713,10 +1714,10 @@ void AIPageContentAgent::ContentBuilder::ComputeHitTestableNodesInViewport(
     if (!node->IsDocumentNode() &&
         !document.ElementForHitTest(node,
                                     TreeScope::HitTestPointType::kInternal)) {
-      return;
+      continue;
     }
-    dom_node_to_z_order_[node_id] = next_z_order++;
-  });
+    dom_node_to_z_order_.insert(node_id, next_z_order++);
+  }
 }
 
 void AIPageContentAgent::ContentBuilder::AddPageInteractionInfo(
@@ -1887,9 +1888,14 @@ void AIPageContentAgent::ContentBuilder::AddInteractionInfoForHitTesting(
     return;
   }
 
-  auto it = dom_node_to_z_order_.find(DOMNodeIds::ExistingIdForNode(node));
+  DOMNodeId dom_node_id = DOMNodeIds::ExistingIdForNode(node);
+  if (dom_node_id <= kInvalidDOMNodeId) {
+    return;
+  }
+
+  auto it = dom_node_to_z_order_.find(dom_node_id);
   if (it != dom_node_to_z_order_.end()) {
-    interaction_info.document_scoped_z_order = it->second;
+    interaction_info.document_scoped_z_order = it->value;
   }
 }
 
