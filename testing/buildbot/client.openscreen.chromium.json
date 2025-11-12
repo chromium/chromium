@@ -17,7 +17,7 @@
       "components/openscreen_platform"
     ]
   },
-  "chromium_mac_x64": {
+  "chromium_mac_arm64": {
     "additional_compile_targets": [
       "chrome/browser/media/router",
       "chrome/browser/media/router:openscreen_unittests",

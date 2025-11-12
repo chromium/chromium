@@ -8,7 +8,7 @@
       "use_remoteexec": true
     }
   },
-  "chromium_mac_x64": {
+  "chromium_mac_arm64": {
     "gn_args": {
       "is_component_build": true,
       "is_debug": true,
