@@ -69,11 +69,12 @@ void WorkerDevToolsManager::WorkerDestroyed(const DedicatedWorkerHost* host) {
   // connection to the DedicatedWorkerDevToolsAgentHost we need to
   // explicitly run disconnect.
   // Generally, the host should be there except for unit tests.
-  if (!hosts_.contains(host)) {
+  auto it = hosts_.find(host);
+  if (it == hosts_.end()) {
     return;
   }
-  hosts_[host]->DisconnectIfNotCreated();
-  hosts_.erase(host);
+  it->second->DisconnectIfNotCreated();
+  hosts_.erase(it);
 }
 
 void WorkerDevToolsManager::AddAllAgentHosts(DevToolsAgentHost::List* result) {
