@@ -884,66 +884,6 @@ bool WebContentsImpl::IsPopup() const {
   return is_popup_;
 }
 
-bool WebContentsImpl::IsPartitionedPopin() const {
-  // The feature must be enabled if a popin was opened.
-  CHECK(base::FeatureList::IsEnabled(blink::features::kPartitionedPopins) ||
-        (!partitioned_popin_opener_ && !partitioned_popin_opener_properties_));
-
-  // We must check local data and not `partitioned_popin_opener_` as it could
-  // go away before this popin closes.
-  return !!partitioned_popin_opener_properties_;
-}
-
-const PartitionedPopinOpenerProperties&
-WebContentsImpl::GetPartitionedPopinOpenerProperties() const {
-  // This function is only usable if we are in a popin.
-  CHECK(IsPartitionedPopin());
-
-  return *partitioned_popin_opener_properties_;
-}
-
-void WebContentsImpl::ClearPartitionedPopinOpenerForTesting() {
-  partitioned_popin_opener_.reset();
-}
-
-WebContents* WebContentsImpl::GetOpenedPartitionedPopin() const {
-  // A popin cannot open a popin so at most one could be set at a time.
-  CHECK(!IsPartitionedPopin() || !opened_partitioned_popin_);
-
-  // The feature must be enabled if a popin was opened.
-  CHECK(base::FeatureList::IsEnabled(blink::features::kPartitionedPopins) ||
-        !opened_partitioned_popin_);
-
-  return opened_partitioned_popin_.get();
-}
-
-GURL WebContentsImpl::GetPartitionedPopinEmbedderOrigin(
-    base::PassKey<StorageAccessGrantPermissionContext>) const {
-  return GetPartitionedPopinEmbedderOriginImpl();
-}
-
-GURL WebContentsImpl::GetPartitionedPopinEmbedderOriginForTesting() const {
-  return GetPartitionedPopinEmbedderOriginImpl();
-}
-
-GURL WebContentsImpl::GetPartitionedPopinEmbedderOriginImpl() const {
-  // This should only be checked for popins.
-  CHECK(IsPartitionedPopin());
-
-  // If the opener is still around and has not navigated then we want to use the
-  // embedder origin it would have used for its own iframe.
-  if (partitioned_popin_opener_ &&
-      partitioned_popin_opener_->GetMainFrame()->GetLastCommittedOrigin() ==
-          partitioned_popin_opener_properties_->top_frame_origin) {
-    return PermissionUtil::GetLastCommittedOriginAsURL(
-        partitioned_popin_opener_->GetMainFrame());
-  }
-  // If we end up here there was a race condition between a permissions check
-  // and this popin being closed or navigated, so we should fallback to using
-  // the origin we partitioned by.
-  return partitioned_popin_opener_properties_->top_frame_origin.GetURL();
-}
-
 WindowOpenDisposition WebContentsImpl::GetOriginalWindowOpenDisposition()
     const {
   return original_window_open_disposition_;

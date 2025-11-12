@@ -1590,28 +1590,6 @@ class CONTENT_EXPORT WebContentsImpl
 
   bool IsPopup() const override;
 
-  bool IsPartitionedPopin() const override;
-
-  const struct PartitionedPopinOpenerProperties&
-  GetPartitionedPopinOpenerProperties() const override;
-
-  // Clears `partitioned_popin_opener_` to test what happens if the opener
-  // disappears after the popin is opened.
-  void ClearPartitionedPopinOpenerForTesting();
-
-  WebContents* GetOpenedPartitionedPopin() const override;
-
-  // Returns the origin of the popin's opener if this is a partitioned popin.
-  // CHECKS if this is not a partitioned popin, as it should never be called
-  // in that case. This is used in permissions checks.
-  // See https://explainers-by-googlers.github.io/partitioned-popins/
-  GURL GetPartitionedPopinEmbedderOrigin(
-      base::PassKey<StorageAccessGrantPermissionContext>) const override;
-
-  // Same as GetPartitionedPopinEmbedderOrigin but for testing to bypass
-  // PassKey requirements.
-  GURL GetPartitionedPopinEmbedderOriginForTesting() const;
-
  private:
   using FrameTreeIterationCallback = base::FunctionRef<void(FrameTree&)>;
   using RenderViewHostIterationCallback =
@@ -2200,9 +2178,6 @@ class CONTENT_EXPORT WebContentsImpl
   // JavascriptDialogManager.
   void CancelDialogManagerDialogs(bool reset_state);
 
-  // See GetPartitionedPopinEmbedderOrigin for details.
-  GURL GetPartitionedPopinEmbedderOriginImpl() const;
-
   // Recursively constructs a vector of AXNodeData objects for the children of
   // the given |node|.
   void RecursivelyConstructAXTree(ui::AXNode* node,
@@ -2748,26 +2723,6 @@ class CONTENT_EXPORT WebContentsImpl
   // when this WebContents was created.
   WindowOpenDisposition original_window_open_disposition_ =
       WindowOpenDisposition::UNKNOWN;
-
-  // If this window was opened as a new partitioned popin this will contain the
-  // properties needed to setup partitioning which aligns with the opener.
-  // See https://explainers-by-googlers.github.io/partitioned-popins/
-  std::optional<PartitionedPopinOpenerProperties>
-      partitioned_popin_opener_properties_;
-
-  // If this window was opened as a new partitioned popin this will be the
-  // frame of the opener. This will only have a value if `is_popup_` is true.
-  // If the opener frame is deleted the popin should be closed by
-  // `PartitionedPopinsController`. This is not a good indicator of whether this
-  // window is a popin as it may go away before the popin closes.
-  // See https://explainers-by-googlers.github.io/partitioned-popins/
-  base::WeakPtr<RenderFrameHostImpl> partitioned_popin_opener_;
-
-  // Each window can have at most one open partitioned popin, and this will be a
-  // pointer to it. If this is set `partitioned_popin_opener_` must be null as
-  // no popin can open a popin.
-  // See https://explainers-by-googlers.github.io/partitioned-popins/
-  base::WeakPtr<WebContents> opened_partitioned_popin_;
 
   // Tracks the number of same-site fenced frames in the viewport per top-level
   // page load and stores it in the primary main frame's PageUserData. Metrics

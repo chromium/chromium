@@ -123,17 +123,6 @@ namespace mojom {
 class CreateNewWindowParams;
 }
 
-// When calculating storage access for a partitioned popin the
-// `top_frame_origin` and `ancestor_chain_bit` are needed to calculate the
-// storage key and the `site_for_cookies` is needed to properly filter cookie
-// access.
-// https://explainers-by-googlers.github.io/partitioned-popins/
-struct PartitionedPopinOpenerProperties {
-  url::Origin top_frame_origin;
-  net::SiteForCookies site_for_cookies;
-  blink::mojom::AncestorChainBit ancestor_chain_bit;
-};
-
 // An interface implemented by an object interested in knowing about the state
 // of the RenderFrameHost.
 //
@@ -746,24 +735,6 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
 
   // Whether the containing window was initially opened as a new popup.
   virtual bool IsPopup() const;
-
-  // Returns true if `this` is a partitioned popin. If you are calling this to
-  // check if a `RenderFrameHost` should be partitioned due to being in a popin,
-  // check `ShouldPartitionAsPopin` on that host instead.
-  // See https://explainers-by-googlers.github.io/partitioned-popins/
-  virtual bool IsPartitionedPopin() const;
-
-  // If this window is a partitioned popin then this returns the properties
-  // struct, otherwise this function CHECKs.
-  // See https://explainers-by-googlers.github.io/partitioned-popins/
-  virtual const PartitionedPopinOpenerProperties&
-  GetPartitionedPopinOpenerProperties() const;
-
-  // Each window can have at most one open partitioned popin, and this will be a
-  // pointer to it. If this is set `IsPartitionedPopin` must return false as
-  // no popin can open a popin.
-  // See https://explainers-by-googlers.github.io/partitioned-popins/
-  virtual WebContents* GetOpenedPartitionedPopin() const;
 
   // Called when a first contentful paint happened in the primary main frame.
   virtual void OnFirstContentfulPaintInPrimaryMainFrame() {}

@@ -215,19 +215,6 @@ bool RenderFrameHostDelegate::IsPopup() const {
   return false;
 }
 
-bool RenderFrameHostDelegate::IsPartitionedPopin() const {
-  return false;
-}
-
-const PartitionedPopinOpenerProperties&
-RenderFrameHostDelegate::GetPartitionedPopinOpenerProperties() const {
-  NOTREACHED();
-}
-
-WebContents* RenderFrameHostDelegate::GetOpenedPartitionedPopin() const {
-  return nullptr;
-}
-
 gfx::NativeWindow RenderFrameHostDelegate::GetOwnerNativeWindow() {
   return gfx::NativeWindow();
 }

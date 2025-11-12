@@ -590,12 +590,8 @@ StorageAccessGrantPermissionContext::GetContentSettingStatusInternal(
     content::RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
     const GURL& embedding_origin) const {
-  // Permission query from top-level frame should be "granted" by default unless
-  // We are in a partitioned popin. Partitioned popins can be partitioned even
-  // as a top-frame, so need to continue. See
-  // https://explainers-by-googlers.github.io/partitioned-popins/
-  if (render_frame_host && render_frame_host->IsInPrimaryMainFrame() &&
-      !render_frame_host->ShouldPartitionAsPopin()) {
+  // Permission query from top-level frame should be "granted" by default.
+  if (render_frame_host && render_frame_host->IsInPrimaryMainFrame()) {
     return CONTENT_SETTING_ALLOW;
   }
 
@@ -757,14 +753,4 @@ void StorageAccessGrantPermissionContext::UpdateContentSetting(
   // run our callback. As a result we do our updates when we're notified of a
   // permission being set and should not be called here.
   NOTREACHED();
-}
-
-GURL StorageAccessGrantPermissionContext::GetEffectiveEmbedderOrigin(
-    content::RenderFrameHost* rfh) const {
-  if (!rfh->ShouldPartitionAsPopin()) {
-    return ContentSettingPermissionContextBase::GetEffectiveEmbedderOrigin(rfh);
-  }
-  content::WebContents* web_contents =
-      content::WebContents::FromRenderFrameHost(rfh);
-  return web_contents->GetPartitionedPopinEmbedderOrigin(PassKey());
 }

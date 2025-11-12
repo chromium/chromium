@@ -1176,12 +1176,6 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener {
   virtual const network::CrossOriginEmbedderPolicy&
   GetCrossOriginEmbedderPolicy() const = 0;
 
-  // Returns true if this RenderFrameHost is in a partitioned popin and is not
-  // within a fenced frame (as this prevents the popin from impacting
-  // partitioning).
-  // See https://explainers-by-googlers.github.io/partitioned-popins/
-  virtual bool ShouldPartitionAsPopin() const = 0;
-
   // Returns true if this RenderFrameHost has access to cookies.
   virtual bool IsFullCookieAccessAllowed() = 0;
 
