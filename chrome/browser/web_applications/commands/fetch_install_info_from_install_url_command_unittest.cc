@@ -8,6 +8,7 @@
 
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/web_applications/test/fake_data_retriever.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
@@ -74,35 +75,6 @@ class FetchInstallInfoFromInstallUrlCommandTest : public WebAppTest {
         provider().web_contents_manager());
   }
 
-  std::string GetCommandErrorFromLog() {
-    // Note: Accessing & using the debug value for tests is poor practice and
-    // should not be done, given how easily the format can be changed.
-    // TODO(b/318858671): Update logic to not read command errors from debug
-    // log.
-    auto command_manager_logs =
-        provider().command_manager().ToDebugValue().TakeDict();
-
-    base::Value::List* command_logs =
-        command_manager_logs.FindList("command_log");
-    EXPECT_NE(command_logs, nullptr);
-
-    auto command_log_info =
-        std::ranges::find_if(*command_logs, [](const base::Value& value) {
-          const base::Value::Dict* dict = value.GetIfDict();
-          return dict && dict->FindDict("!metadata") &&
-                 dict->FindDict("!metadata")->FindString("name") &&
-                 *dict->FindDict("!metadata")->FindString("name") ==
-                     "FetchInstallInfoFromInstallUrlCommand";
-        });
-    EXPECT_NE(command_log_info, command_logs->end());
-
-    std::string* command_error =
-        command_log_info->GetDict().FindString("command_result");
-    EXPECT_NE(command_error, nullptr);
-
-    return *command_error;
-  }
-
  private:
   const GURL app_url_{"http://www.foo.bar/web_apps/basic.html"};
   const GURL parent_app_url_{"http://www.foo.bar/basic.html"};
@@ -116,44 +88,59 @@ class FetchInstallInfoFromInstallUrlCommandTest : public WebAppTest {
 };
 
 TEST_F(FetchInstallInfoFromInstallUrlCommandTest, RetrievesCorrectly) {
+  base::HistogramTester histogram_tester;
   std::unique_ptr<WebAppInstallInfo> command_result =
       CreateAndRunCommand(app_url(), manifest_id(), parent_manifest_id());
   EXPECT_TRUE(command_result);
-  EXPECT_EQ(GetCommandErrorFromLog(), "kAppInfoObtained");
+  histogram_tester.ExpectUniqueSample(
+      "WebApp.Install.FetchInstallInfoFromInstallUrlResult",
+      FetchInstallInfoResult::kAppInfoObtained, 1);
 }
 
 TEST_F(FetchInstallInfoFromInstallUrlCommandTest,
        RetrievesCorrectlyWhenParentManifestIsNull) {
+  base::HistogramTester histogram_tester;
   std::unique_ptr<WebAppInstallInfo> command_result =
       CreateAndRunCommand(app_url(), manifest_id(), std::nullopt);
   EXPECT_TRUE(command_result);
-  EXPECT_EQ(GetCommandErrorFromLog(), "kAppInfoObtained");
+  histogram_tester.ExpectUniqueSample(
+      "WebApp.Install.FetchInstallInfoFromInstallUrlResult",
+      FetchInstallInfoResult::kAppInfoObtained, 1);
 }
 
 TEST_F(FetchInstallInfoFromInstallUrlCommandTest, UrlLoadingFailure) {
+  base::HistogramTester histogram_tester;
   std::unique_ptr<WebAppInstallInfo> command_result = CreateAndRunCommand(
       app_url(), manifest_id(), parent_manifest_id(),
       /*disable_web_app_info=*/false, /*valid_manifest=*/true,
       webapps::WebAppUrlLoaderResult::kRedirectedUrlLoaded);
   EXPECT_FALSE(command_result);
-  EXPECT_EQ(GetCommandErrorFromLog(), "kUrlLoadingFailure");
+  histogram_tester.ExpectUniqueSample(
+      "WebApp.Install.FetchInstallInfoFromInstallUrlResult",
+      FetchInstallInfoResult::kUrlLoadingFailure, 1);
 }
 
 TEST_F(FetchInstallInfoFromInstallUrlCommandTest, NoValidManifest) {
+  base::HistogramTester histogram_tester;
   std::unique_ptr<WebAppInstallInfo> command_result =
       CreateAndRunCommand(app_url(), manifest_id(), parent_manifest_id(),
                           /*disable_web_app_info=*/false,
                           /*valid_manifest=*/false);
   EXPECT_FALSE(command_result);
-  EXPECT_EQ(GetCommandErrorFromLog(), "kNoValidManifest");
+  histogram_tester.ExpectUniqueSample(
+      "WebApp.Install.FetchInstallInfoFromInstallUrlResult",
+      FetchInstallInfoResult::kNoValidManifest, 1);
 }
 
 TEST_F(FetchInstallInfoFromInstallUrlCommandTest, WebAppInfoNotFound) {
+  base::HistogramTester histogram_tester;
   std::unique_ptr<WebAppInstallInfo> command_result =
       CreateAndRunCommand(app_url(), manifest_id(), parent_manifest_id(),
                           /*disable_web_app_info=*/true);
   EXPECT_FALSE(command_result);
-  EXPECT_EQ(GetCommandErrorFromLog(), "kFailure");
+  histogram_tester.ExpectUniqueSample(
+      "WebApp.Install.FetchInstallInfoFromInstallUrlResult",
+      FetchInstallInfoResult::kFailure, 1);
 }
 
 }  // namespace

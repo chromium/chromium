@@ -134,6 +134,20 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Tab/App closed"/>
 </enum>
 
+<!-- LINT.IfChange(FetchInstallInfoResult) -->
+
+<enum name="FetchInstallInfoResult">
+  <int value="0" label="AppInfoObtained"/>
+  <int value="1" label="WebContentsDestroyed"/>
+  <int value="2" label="UrlLoadingFailure"/>
+  <int value="3" label="NoValidManifest"/>
+  <int value="4" label="WrongManifestId"/>
+  <int value="5" label="Failure"/>
+  <int value="6" label="Shutdown"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/web_applications/commands/fetch_install_info_from_install_url_command.h:FetchInstallInfoResult) -->
+
 <enum name="FetchManifestAndUpdateResult">
   <int value="0" label="Success, updated"/>
   <int value="1" label="Success, no update detected"/>

@@ -39,7 +39,7 @@ CommandBase::CommandBase(std::string name)
   // allow this construction to happen from any thread.
 
   base::Value::Dict* metadata = GetMutableDebugValue().EnsureDict("!metadata");
-  metadata->Set("name", name_);
+  metadata->Set("!name", name_);
   metadata->Set("id", id_);
   metadata->Set("started", false);
 }

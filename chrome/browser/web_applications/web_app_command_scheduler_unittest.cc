@@ -29,7 +29,7 @@ class WebAppCommandSchedulerTest : public WebAppTest {
     base::Value::Dict log =
         fake_provider().command_manager().ToDebugValue().TakeDict();
     for (const base::Value& command : *log.FindList("command_queue")) {
-      if (*command.GetDict().FindDict("!metadata")->FindString("name") ==
+      if (*command.GetDict().FindDict("!metadata")->FindString("!name") ==
           command_name) {
         return true;
       }

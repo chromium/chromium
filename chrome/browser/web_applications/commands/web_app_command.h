@@ -191,7 +191,7 @@ class WebAppCommand : public internal::CommandWithLock<LockType> {
     metadata->Set("command_result",
                   result == CommandResult::kSuccess ? "kSuccess" : "kFailure");
     metadata->Set(
-        "result",
+        "!result",
         base::ToString(std::tie<CallbackArgs&...>(args_for_callback...)));
     metadata->Set("completion_location", base::ToString(location));
     if (base::FeatureList::IsEnabled(features::kRecordWebAppDebugInfo)) {
