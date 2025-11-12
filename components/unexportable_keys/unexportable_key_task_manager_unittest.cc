@@ -26,9 +26,12 @@
 
 namespace unexportable_keys {
 
+using ::base::test::ErrorIs;
+using ::base::test::ValueIs;
 using ::testing::ElementsAre;
 using ::testing::ElementsAreArray;
 using ::testing::Invoke;
+using ::testing::NotNull;
 using ::testing::Return;
 
 namespace {
@@ -94,7 +97,7 @@ TEST_F(UnexportableKeyTaskManagerTest, GenerateKeyAsync) {
   RunBackgroundTasks();
 
   EXPECT_TRUE(future.IsReady());
-  EXPECT_THAT(future.Get(), base::test::ValueIs(::testing::NotNull()));
+  EXPECT_THAT(future.Get(), ValueIs(NotNull()));
   EXPECT_THAT(
       histogram_tester.GetAllSamples(kGenerateKeyTaskResultHistogramName),
       ElementsAre(base::Bucket(kNoServiceErrorForMetrics, 1)));
@@ -118,8 +121,7 @@ TEST_F(UnexportableKeyTaskManagerTest,
       BackgroundTaskPriority::kBestEffort, future.GetCallback());
   RunBackgroundTasks();
 
-  EXPECT_EQ(future.Get(),
-            base::unexpected(ServiceError::kAlgorithmNotSupported));
+  EXPECT_THAT(future.Get(), ErrorIs(ServiceError::kAlgorithmNotSupported));
   EXPECT_THAT(
       histogram_tester.GetAllSamples(kGenerateKeyTaskResultHistogramName),
       ElementsAre(base::Bucket(ServiceError::kAlgorithmNotSupported, 1)));
@@ -141,7 +143,7 @@ TEST_F(UnexportableKeyTaskManagerTest, GenerateKeyAsyncFailureNoKeyProvider) {
       BackgroundTaskPriority::kBestEffort, future.GetCallback());
   RunBackgroundTasks();
 
-  EXPECT_EQ(future.Get(), base::unexpected(ServiceError::kNoKeyProvider));
+  EXPECT_THAT(future.Get(), ErrorIs(ServiceError::kNoKeyProvider));
   EXPECT_THAT(
       histogram_tester.GetAllSamples(kGenerateKeyTaskResultHistogramName),
       ElementsAre(base::Bucket(ServiceError::kNoKeyProvider, 1)));
@@ -204,7 +206,7 @@ TEST_F(UnexportableKeyTaskManagerTest, FromWrappedKeyAsyncFailureEmptyKey) {
       BackgroundTaskPriority::kBestEffort, future.GetCallback());
   RunBackgroundTasks();
 
-  EXPECT_EQ(future.Get(), base::unexpected(ServiceError::kCryptoApiFailed));
+  EXPECT_THAT(future.Get(), ErrorIs(ServiceError::kCryptoApiFailed));
   EXPECT_THAT(
       histogram_tester.GetAllSamples(kFromWrappedKeyTaskResultHistogramName),
       ElementsAre(base::Bucket(ServiceError::kCryptoApiFailed, 1)));
@@ -241,7 +243,7 @@ TEST_F(UnexportableKeyTaskManagerTest,
       BackgroundTaskPriority::kBestEffort, future.GetCallback());
   RunBackgroundTasks();
 
-  EXPECT_EQ(future.Get(), base::unexpected(ServiceError::kNoKeyProvider));
+  EXPECT_THAT(future.Get(), ErrorIs(ServiceError::kNoKeyProvider));
   EXPECT_THAT(
       histogram_tester.GetAllSamples(kFromWrappedKeyTaskResultHistogramName),
       ElementsAre(base::Bucket(ServiceError::kNoKeyProvider, 1)));
@@ -296,7 +298,7 @@ TEST_F(UnexportableKeyTaskManagerTest, SignAsyncNullKey) {
                                  sign_future.GetCallback());
   RunBackgroundTasks();
 
-  EXPECT_EQ(sign_future.Get(), base::unexpected(ServiceError::kKeyNotFound));
+  EXPECT_THAT(sign_future.Get(), ErrorIs(ServiceError::kKeyNotFound));
   EXPECT_THAT(histogram_tester.GetAllSamples(kSignTaskResultHistogramName),
               ElementsAre(base::Bucket(ServiceError::kKeyNotFound, 1)));
   EXPECT_THAT(
@@ -341,7 +343,7 @@ TEST_F(UnexportableKeyTaskManagerTest, RetrySignAsyncWithSuccess) {
                                  BackgroundTaskPriority::kBestEffort,
                                  sign_future.GetCallback());
   RunBackgroundTasks();
-  EXPECT_THAT(sign_future.Get(), base::test::HasValue());
+  EXPECT_OK(sign_future.Get());
   EXPECT_THAT(histogram_tester.GetAllSamples(kSignTaskResultHistogramName),
               ElementsAre(base::Bucket(kNoServiceErrorForMetrics, 1)));
   EXPECT_THAT(
@@ -364,8 +366,7 @@ TEST_F(UnexportableKeyTaskManagerTest, RetrySignAsyncWithFailure) {
                                  BackgroundTaskPriority::kBestEffort,
                                  sign_future.GetCallback());
   RunBackgroundTasks();
-  EXPECT_EQ(sign_future.Get(),
-            base::unexpected(ServiceError::kCryptoApiFailed));
+  EXPECT_THAT(sign_future.Get(), ErrorIs(ServiceError::kCryptoApiFailed));
   EXPECT_THAT(histogram_tester.GetAllSamples(kSignTaskResultHistogramName),
               ElementsAre(base::Bucket(ServiceError::kCryptoApiFailed, 1)));
   EXPECT_THAT(
@@ -410,7 +411,7 @@ TEST_F(UnexportableKeyTaskManagerTest,
                                  sign_future.GetCallback());
   RunBackgroundTasks();
 
-  EXPECT_THAT(sign_future.Get(), base::test::HasValue());
+  EXPECT_OK(sign_future.Get());
   EXPECT_THAT(histogram_tester.GetAllSamples(kSignTaskResultHistogramName),
               ElementsAre(base::Bucket(kNoServiceErrorForMetrics, 1)));
   EXPECT_THAT(
@@ -440,8 +441,7 @@ TEST_F(UnexportableKeyTaskManagerTest,
                                  sign_future.GetCallback());
   RunBackgroundTasks();
 
-  EXPECT_EQ(sign_future.Get(),
-            base::unexpected(ServiceError::kVerifySignatureFailed));
+  EXPECT_THAT(sign_future.Get(), ErrorIs(ServiceError::kVerifySignatureFailed));
   EXPECT_THAT(
       histogram_tester.GetAllSamples(kSignTaskResultHistogramName),
       ElementsAre(base::Bucket(ServiceError::kVerifySignatureFailed, 1)));

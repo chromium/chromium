@@ -129,8 +129,8 @@ TEST_F(UnexportableKeyServiceImplTest, GenerateKey) {
   ASSERT_OK_AND_ASSIGN(UnexportableKeyId key_id, future.Get());
 
   // Verify that we can get info about the generated key.
-  EXPECT_TRUE(service().GetSubjectPublicKeyInfo(key_id).has_value());
-  EXPECT_TRUE(service().GetWrappedKey(key_id).has_value());
+  EXPECT_OK(service().GetSubjectPublicKeyInfo(key_id));
+  EXPECT_OK(service().GetWrappedKey(key_id));
   EXPECT_THAT(kAcceptableAlgorithms,
               testing::Contains(service().GetAlgorithm(key_id)));
 }
@@ -153,8 +153,8 @@ TEST_F(UnexportableKeyServiceImplTest, GenerateKeyMultiplePendingRequests) {
     EXPECT_TRUE(future.IsReady());
     ASSERT_OK_AND_ASSIGN(UnexportableKeyId key_id, future.Get());
     // Verify that we can get info about the generated key.
-    EXPECT_TRUE(service().GetSubjectPublicKeyInfo(key_id).has_value());
-    EXPECT_TRUE(service().GetWrappedKey(key_id).has_value());
+    EXPECT_OK(service().GetSubjectPublicKeyInfo(key_id));
+    EXPECT_OK(service().GetWrappedKey(key_id));
     key_ids.insert(key_id);
   }
 
@@ -191,7 +191,7 @@ TEST_F(UnexportableKeyServiceImplTest, FromWrappedKey) {
   EXPECT_FALSE(from_wrapped_future.IsReady());
   RunBackgroundTasks();
   EXPECT_TRUE(from_wrapped_future.IsReady());
-  EXPECT_TRUE(from_wrapped_future.Get().has_value());
+  EXPECT_OK(from_wrapped_future.Get());
 }
 
 TEST_F(UnexportableKeyServiceImplTest, FromWrappedKeyMultiplePendingRequests) {
@@ -221,7 +221,7 @@ TEST_F(UnexportableKeyServiceImplTest, FromWrappedKeyMultiplePendingRequests) {
   // All callbacks should return the same key ID.
   ServiceErrorOr<UnexportableKeyId> unwrapped_key_id =
       from_wrapped_key_futures[0].Get();
-  EXPECT_TRUE(unwrapped_key_id.has_value());
+  EXPECT_OK(unwrapped_key_id);
   for (auto& future : from_wrapped_key_futures) {
     EXPECT_TRUE(future.IsReady());
     EXPECT_EQ(future.Get(), unwrapped_key_id);
@@ -319,7 +319,7 @@ TEST_F(UnexportableKeyServiceImplTest, Sign) {
   EXPECT_FALSE(sign_future.IsReady());
   RunBackgroundTasks();
   EXPECT_TRUE(sign_future.IsReady());
-  EXPECT_TRUE(sign_future.Get().has_value());
+  EXPECT_OK(sign_future.Get());
 }
 
 TEST_F(UnexportableKeyServiceImplTest, NonExistingKeyId) {
@@ -397,7 +397,7 @@ TEST_F(UnexportableKeyServiceImplTest, SignWithRetry) {
   service().SignSlowlyAsync(key_id, data, kTaskPriority,
                             sign_future.GetCallback());
   RunBackgroundTasks();
-  EXPECT_TRUE(sign_future.Get().has_value());
+  EXPECT_OK(sign_future.Get());
 }
 
 TEST_F(UnexportableKeyServiceImplTest, DeleteKey) {
@@ -408,14 +408,14 @@ TEST_F(UnexportableKeyServiceImplTest, DeleteKey) {
   ASSERT_OK_AND_ASSIGN(UnexportableKeyId key_id, generate_future.Get());
 
   // The key should exist before deletion.
-  ASSERT_TRUE(service().GetWrappedKey(key_id).has_value());
+  ASSERT_OK(service().GetWrappedKey(key_id));
 
   base::test::TestFuture<ServiceErrorOr<void>> delete_future;
   service().DeleteKeySlowlyAsync(key_id, kTaskPriority,
                                  delete_future.GetCallback());
   RunBackgroundTasks();
   EXPECT_TRUE(delete_future.IsReady());
-  EXPECT_EQ(delete_future.Get(), base::ok());
+  EXPECT_OK(delete_future.Get());
 
   // The key should not exist after deletion.
   EXPECT_THAT(service().GetWrappedKey(key_id),
@@ -444,7 +444,7 @@ TEST_F(UnexportableKeyServiceImplTest, SignWithDeletedKey) {
   service().DeleteKeySlowlyAsync(key_id, kTaskPriority,
                                  delete_future.GetCallback());
   RunBackgroundTasks();
-  ASSERT_EQ(delete_future.Get(), base::ok());
+  ASSERT_OK(delete_future.Get());
 
   base::test::TestFuture<ServiceErrorOr<std::vector<uint8_t>>> sign_future;
   std::vector<uint8_t> data = {1, 2, 3};
@@ -467,7 +467,7 @@ TEST_F(UnexportableKeyServiceImplTest, FromWrappedKeyAfterDeletingOriginalKey) {
   service().DeleteKeySlowlyAsync(key_id, kTaskPriority,
                                  delete_future.GetCallback());
   RunBackgroundTasks();
-  ASSERT_EQ(delete_future.Get(), base::ok());
+  ASSERT_OK(delete_future.Get());
 
   // Do NOT reset the service. The key should be gone from the service's maps.
 
@@ -495,7 +495,7 @@ TEST_F(UnexportableKeyServiceImplTest, DeleteKeyTwice) {
   service().DeleteKeySlowlyAsync(key_id, kTaskPriority,
                                  delete_future.GetCallback());
   RunBackgroundTasks();
-  ASSERT_EQ(delete_future.Get(), base::ok());
+  ASSERT_OK(delete_future.Get());
 
   // The second deletion should fail.
   base::test::TestFuture<ServiceErrorOr<void>> delete_twice_future;
@@ -520,7 +520,7 @@ TEST_F(UnexportableKeyServiceImplTest, DeleteAllKeys) {
 
   // Verify all keys exist.
   for (const auto& key_id : key_ids) {
-    ASSERT_TRUE(service().GetWrappedKey(key_id).has_value());
+    ASSERT_OK(service().GetWrappedKey(key_id));
   }
 
   // Delete all keys.
@@ -528,7 +528,7 @@ TEST_F(UnexportableKeyServiceImplTest, DeleteAllKeys) {
   service().DeleteAllKeysSlowlyAsync(kTaskPriority,
                                      delete_all_future.GetCallback());
   RunBackgroundTasks();
-  EXPECT_EQ(delete_all_future.Get(), base::ok());
+  EXPECT_OK(delete_all_future.Get());
 
   // Verify all keys are deleted.
   for (const auto& key_id : key_ids) {
@@ -541,7 +541,7 @@ TEST_F(UnexportableKeyServiceImplTest, DeleteAllKeys) {
   service().GenerateSigningKeySlowlyAsync(kAcceptableAlgorithms, kTaskPriority,
                                           generate_future.GetCallback());
   RunBackgroundTasks();
-  EXPECT_TRUE(generate_future.Get().has_value());
+  EXPECT_OK(generate_future.Get());
 }
 
 TEST_F(UnexportableKeyServiceImplTest, DeleteAllKeysWithPendingFromWrappedKey) {
@@ -565,7 +565,7 @@ TEST_F(UnexportableKeyServiceImplTest, DeleteAllKeysWithPendingFromWrappedKey) {
 
   RunBackgroundTasks();
   EXPECT_THAT(from_wrapped_future.Get(), ErrorIs(ServiceError::kKeyNotFound));
-  EXPECT_EQ(delete_all_future.Get(), base::ok());
+  EXPECT_OK(delete_all_future.Get());
 }
 
 TEST_F(UnexportableKeyServiceImplTest, DeleteAllKeysWithPendingGenerateKey) {
@@ -580,14 +580,14 @@ TEST_F(UnexportableKeyServiceImplTest, DeleteAllKeysWithPendingGenerateKey) {
   RunBackgroundTasks();
 
   // The delete all request should complete successfully.
-  EXPECT_EQ(delete_all_future.Get(), base::ok());
+  EXPECT_OK(delete_all_future.Get());
 
   // The generate request should also complete successfully.
   ASSERT_OK_AND_ASSIGN(UnexportableKeyId key_id, generate_future.Get());
 
   // The newly generated key should NOT have been deleted from the service
   // cache.
-  EXPECT_TRUE(service().GetWrappedKey(key_id).has_value());
+  EXPECT_OK(service().GetWrappedKey(key_id));
 }
 
 TEST_F(UnexportableKeyServiceImplTest, CopyKeyFromOtherService) {
