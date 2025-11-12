@@ -1537,6 +1537,7 @@ protocol::Response InspectorCSSAgent::getMatchedStylesForNode(
   *pseudo_id_matches =
       std::make_unique<protocol::Array<protocol::CSS::PseudoElementMatches>>();
 
+  HeapVector<Member<Element>> elements_to_inspect = {element};
   for (InspectorCSSMatchedRules* match : resolver.PseudoElementRules()) {
     (*pseudo_id_matches)
         ->emplace_back(
@@ -1549,6 +1550,14 @@ protocol::Response InspectorCSSAgent::getMatchedStylesForNode(
                 .build());
     if (match->pseudo_argument) {
       (*pseudo_id_matches)->back()->setPseudoIdentifier(match->pseudo_argument);
+    }
+
+    Element* styled_pseudo_element = element->GetStyledPseudoElement(
+        match->pseudo_id, match->pseudo_argument);
+    if (styled_pseudo_element) {
+      elements_to_inspect.push_back(styled_pseudo_element);
+      LOG(ERROR) << "Count: " << elements_to_inspect.size() << " "
+                 << elements_to_inspect.back()->nodeName();
     }
   }
 
@@ -1600,7 +1609,7 @@ protocol::Response InspectorCSSAgent::getMatchedStylesForNode(
     *css_font_palette_values_rule = std::move(rule);
   }
 
-  if (auto rules = FontAtRulesForNode(*element)) {
+  if (auto rules = FontAtRulesForNodes(elements_to_inspect)) {
     *css_at_rules = std::move(rules);
   }
 
@@ -1957,97 +1966,123 @@ FontFeatureTypesFromFontVariantAlternates(
   return result;
 }
 
-// TODO(crbug.com/408969009): Include pseudo-elements
 std::unique_ptr<protocol::Array<protocol::CSS::CSSAtRule>>
-InspectorCSSAgent::FontAtRulesForNode(Element& element) {
-  Document& document = element.GetDocument();
+InspectorCSSAgent::FontAtRulesForNodes(HeapVector<Member<Element>>& elements) {
+  Document& document = elements[0]->GetDocument();
   auto style_sheets = document_to_css_style_sheets_.find(&document);
   if (style_sheets == document_to_css_style_sheets_.end()) {
     return {};
   }
 
-  const ComputedStyle* style = element.EnsureComputedStyle();
-  if (!style) {
-    return {};
-  }
+  HeapHashSet<Member<CSSFontPaletteValuesRule>> seen_font_palette_values_rules;
+  HeapHashMap<Member<CSSFontFeatureValuesRule>,
+              HashSet<StyleRuleFontFeature::FeatureType>>
+      seen_font_feature_values_rules;
+  HeapHashSet<Member<CSSFontFaceRule>> seen_font_face_rules;
 
   auto result = std::make_unique<protocol::Array<protocol::CSS::CSSAtRule>>();
-  const AtomicString& family_name =
-      style->GetFontDescription().Family().FamilyName();
-
-  const FontPalette* palette = style->GetFontPalette();
-  if (palette && palette->IsCustomPalette()) {
-    StyleRuleFontPaletteValues* rule =
-        document.GetStyleEngine().FontPaletteValuesForNameAndFamily(
-            palette->GetPaletteValuesName(), family_name);
-    if (rule) {
-      // Find CSSOM wrapper.
-      CSSFontPaletteValuesRule* values_rule =
-          FindFontPaletteValuesRule(*style_sheets->value, rule);
-
-      DCHECK(values_rule);
-      InspectorStyleSheet* inspector_style_sheet =
-          BindStyleSheet(values_rule->parentStyleSheet());
-      auto at_rule =
-          inspector_style_sheet->BuildAtRuleObjectForFontPaletteValuesRule(
-              values_rule);
-      result->push_back(std::move(at_rule));
+  for (Element* element : elements) {
+    const ComputedStyle* style = element->EnsureComputedStyle();
+    if (!style) {
+      continue;
     }
-  }
 
-  const FontVariantAlternates* font_variant_alternates =
-      style->GetFontDescription().GetFontVariantAlternates();
-  if (font_variant_alternates && !font_variant_alternates->IsNormal()) {
-    const HeapVector<Member<StyleRuleFontFeatureValues>>* feature_values_rules =
-        document.GetScopedStyleResolver()
-            ? document.GetScopedStyleResolver()
-                  ->FontFeatureValuesRulesForFamily(family_name)
-            : nullptr;
-    std::vector<StyleRuleFontFeature::FeatureType> feature_types =
-        FontFeatureTypesFromFontVariantAlternates(font_variant_alternates);
-    if (feature_values_rules && !feature_types.empty()) {
-      for (const auto& rule : *feature_values_rules) {
+    const AtomicString& family_name =
+        style->GetFontDescription().Family().FamilyName();
+
+    const FontPalette* palette = style->GetFontPalette();
+    if (palette && palette->IsCustomPalette()) {
+      StyleRuleFontPaletteValues* rule =
+          document.GetStyleEngine().FontPaletteValuesForNameAndFamily(
+              palette->GetPaletteValuesName(), family_name);
+      if (rule) {
         // Find CSSOM wrapper.
-        CSSFontFeatureValuesRule* values_rule =
-            FindCSSRuleInSet<CSSFontFeatureValuesRule>(
-                *style_sheets->value,
-                [&rule](CSSFontFeatureValuesRule& css_rule) {
-                  bool result = css_rule.FontFeatureValues() == rule;
-                  return result;
-                });
+        CSSFontPaletteValuesRule* values_rule =
+            FindFontPaletteValuesRule(*style_sheets->value, rule);
 
-        if (values_rule) {
+        if (values_rule &&
+            !seen_font_palette_values_rules.Contains(values_rule)) {
+          seen_font_palette_values_rules.insert(values_rule);
           InspectorStyleSheet* inspector_style_sheet =
               BindStyleSheet(values_rule->parentStyleSheet());
-          for (const auto& feature_type : feature_types) {
-            auto at_rule = inspector_style_sheet
-                               ->BuildAtRuleObjectForFontFeatureValuesRule(
-                                   values_rule, feature_type);
-            if (at_rule) {
-              result->push_back(std::move(at_rule));
+          auto at_rule =
+              inspector_style_sheet->BuildAtRuleObjectForFontPaletteValuesRule(
+                  values_rule);
+          result->push_back(std::move(at_rule));
+        }
+      }
+    }
+
+    const FontVariantAlternates* font_variant_alternates =
+        style->GetFontDescription().GetFontVariantAlternates();
+    if (font_variant_alternates && !font_variant_alternates->IsNormal()) {
+      const HeapVector<Member<StyleRuleFontFeatureValues>>*
+          feature_values_rules =
+              document.GetScopedStyleResolver()
+                  ? document.GetScopedStyleResolver()
+                        ->FontFeatureValuesRulesForFamily(family_name)
+                  : nullptr;
+      std::vector<StyleRuleFontFeature::FeatureType> feature_types =
+          FontFeatureTypesFromFontVariantAlternates(font_variant_alternates);
+      if (feature_values_rules && !feature_types.empty()) {
+        for (const auto& rule : *feature_values_rules) {
+          // Find CSSOM wrapper.
+          CSSFontFeatureValuesRule* values_rule =
+              FindCSSRuleInSet<CSSFontFeatureValuesRule>(
+                  *style_sheets->value,
+                  [&rule](CSSFontFeatureValuesRule& css_rule) {
+                    bool result = css_rule.FontFeatureValues() == rule;
+                    return result;
+                  });
+
+          if (values_rule) {
+            InspectorStyleSheet* inspector_style_sheet =
+                BindStyleSheet(values_rule->parentStyleSheet());
+            for (const auto& feature_type : feature_types) {
+              auto it = seen_font_feature_values_rules.find(values_rule);
+              if (it == seen_font_feature_values_rules.end() ||
+                  !it->value.Contains(feature_type)) {
+                auto at_rule = inspector_style_sheet
+                                   ->BuildAtRuleObjectForFontFeatureValuesRule(
+                                       values_rule, feature_type);
+                if (at_rule) {
+                  HashSet<StyleRuleFontFeature::FeatureType>& feature_type_set =
+                      it == seen_font_feature_values_rules.end()
+                          ? seen_font_feature_values_rules
+                                .insert(
+                                    values_rule,
+                                    HashSet<
+                                        StyleRuleFontFeature::FeatureType>())
+                                .stored_value->value
+                          : it->value;
+                  feature_type_set.insert(feature_type);
+                  result->push_back(std::move(at_rule));
+                }
+              }
             }
           }
         }
       }
     }
-  }
 
-  CSSFontFaceRule* font_face_rule = FindCSSRuleInSet<CSSFontFaceRule>(
-      *style_sheets->value, [&family_name](CSSFontFaceRule& css_rule) {
-        auto* family = DynamicTo<CSSFontFamilyValue>(
-            css_rule.StyleRule()->Properties().GetPropertyCSSValue(
-                AtRuleDescriptorID::FontFamily));
-        if (!family) {
-          return false;
-        }
-        return family->Value() == family_name;
-      });
-  if (font_face_rule) {
-    InspectorStyleSheet* inspector_style_sheet =
-        BindStyleSheet(font_face_rule->parentStyleSheet());
-    auto at_rule =
-        inspector_style_sheet->BuildAtRuleObjectForFontFaceRule(font_face_rule);
-    result->push_back(std::move(at_rule));
+    CSSFontFaceRule* font_face_rule = FindCSSRuleInSet<CSSFontFaceRule>(
+        *style_sheets->value, [&family_name](CSSFontFaceRule& css_rule) {
+          auto* family = DynamicTo<CSSFontFamilyValue>(
+              css_rule.StyleRule()->Properties().GetPropertyCSSValue(
+                  AtRuleDescriptorID::FontFamily));
+          if (!family) {
+            return false;
+          }
+          return family->Value() == family_name;
+        });
+    if (font_face_rule && !seen_font_face_rules.Contains(font_face_rule)) {
+      seen_font_face_rules.insert(font_face_rule);
+      InspectorStyleSheet* inspector_style_sheet =
+          BindStyleSheet(font_face_rule->parentStyleSheet());
+      auto at_rule = inspector_style_sheet->BuildAtRuleObjectForFontFaceRule(
+          font_face_rule);
+      result->push_back(std::move(at_rule));
+    }
   }
 
   return result;

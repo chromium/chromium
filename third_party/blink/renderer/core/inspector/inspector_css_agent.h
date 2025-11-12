@@ -405,8 +405,8 @@ class CORE_EXPORT InspectorCSSAgent final
   CustomPropertiesForNode(Element* element);
   std::unique_ptr<protocol::CSS::CSSFontPaletteValuesRule> FontPalettesForNode(
       Element& element);
-  std::unique_ptr<protocol::Array<protocol::CSS::CSSAtRule>> FontAtRulesForNode(
-      Element& element);
+  std::unique_ptr<protocol::Array<protocol::CSS::CSSAtRule>>
+  FontAtRulesForNodes(HeapVector<Member<Element>>& elements);
 
   // If the |animating_element| is a pseudo-element, then |element| is a
   // reference to its originating DOM element.
