@@ -17,6 +17,14 @@ running inside a Chrome tab.
 Current status can be checked
 at [WPT WebDriver BiDi status](https://wpt.fyi/results/webdriver/tests/bidi).
 
+## Performance
+
+Performance data, while not entirely stable (especially on macOS), is collected from GitHub Actions
+and offers insights into the project's performance. This data is gathered through e2e tests located
+in [this folder](https://github.com/GoogleChromeLabs/chromium-bidi/tree/main/tests/performance).
+
+- https://googlechromelabs.github.io/chromium-bidi/bench/
+
 ## BiDi+
 
 **"BiDi+"** is an extension of the WebDriver BiDi protocol. In addition to [WebDriver BiDi](https://w3c.github.io/webdriver-bidi/) it has:
