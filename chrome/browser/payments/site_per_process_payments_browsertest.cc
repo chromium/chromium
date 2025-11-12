@@ -10,7 +10,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/network_session_configurator/common/network_switches.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -38,10 +37,6 @@ class SitePerProcessPaymentsBrowserTest : public InProcessBrowserTest {
   ~SitePerProcessPaymentsBrowserTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    // HTTPS server only serves a valid cert for localhost, so this is needed
-    // to load pages from other hosts without an error.
-    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
-
     // Append --site-per-process flag.
     content::IsolateAllSitesForTesting(command_line);
   }
@@ -50,6 +45,7 @@ class SitePerProcessPaymentsBrowserTest : public InProcessBrowserTest {
     https_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::EmbeddedTestServer::TYPE_HTTPS);
     host_resolver()->AddRule("*", "127.0.0.1");
+    https_server_->SetCertHostnames({"a.com", "b.com"});
     ASSERT_TRUE(https_server_->InitializeAndListen());
     content::SetupCrossSiteRedirector(https_server_.get());
     https_server_->ServeFilesFromSourceDirectory(
