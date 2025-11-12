@@ -10,7 +10,6 @@
 
 #include <memory>
 
-#include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/stack_allocated.h"
 #include "base/synchronization/lock.h"

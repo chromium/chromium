@@ -8,8 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/functional/callback.h"
-
 namespace aura {
 class Window;
 }

@@ -9,7 +9,6 @@
 
 #include <utility>
 
-#include "base/functional/callback.h"
 #include "build/blink_buildflags.h"
 #include "build/build_config.h"
 #include "components/webdata/common/webdata_export.h"

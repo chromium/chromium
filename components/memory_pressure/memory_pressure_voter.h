@@ -8,7 +8,6 @@
 #include <array>
 #include <optional>
 
-#include "base/functional/callback.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"

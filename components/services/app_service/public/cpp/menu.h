@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/functional/callback.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace apps {

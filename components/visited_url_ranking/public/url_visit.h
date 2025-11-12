@@ -13,7 +13,6 @@
 #include <variant>
 #include <vector>
 
-#include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/url_row.h"

@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/byte_count.h"
-#include "base/functional/callback.h"
 #include "base/sequence_checker.h"
 #include "components/memory_pressure/reclaim_target.h"
 

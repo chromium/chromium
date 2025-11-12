@@ -9,7 +9,6 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "base/types/id_type.h"
 #include "components/segmentation_platform/public/proto/types.pb.h"

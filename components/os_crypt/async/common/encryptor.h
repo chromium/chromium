@@ -12,7 +12,6 @@
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
-#include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "mojo/public/cpp/bindings/default_construct_tag.h"
 

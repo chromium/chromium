@@ -8,7 +8,6 @@
 #include <map>
 #include <string>
 
-#include "base/functional/callback.h"
 #include "base/time/time.h"
 
 namespace feature_engagement {

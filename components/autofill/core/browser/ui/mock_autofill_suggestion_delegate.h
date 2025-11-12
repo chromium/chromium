@@ -7,7 +7,6 @@
 
 #include <variant>
 
-#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
 #include "components/autofill/core/browser/ui/suggestion_button_action.h"

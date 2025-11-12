@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
 #include "components/segmentation_platform/internal/database/cached_result_writer.h"
 #include "components/segmentation_platform/internal/scheduler/execution_service.h"
