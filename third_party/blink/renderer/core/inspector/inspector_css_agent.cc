@@ -1556,8 +1556,6 @@ protocol::Response InspectorCSSAgent::getMatchedStylesForNode(
         match->pseudo_id, match->pseudo_argument);
     if (styled_pseudo_element) {
       elements_to_inspect.push_back(styled_pseudo_element);
-      LOG(ERROR) << "Count: " << elements_to_inspect.size() << " "
-                 << elements_to_inspect.back()->nodeName();
     }
   }
 
