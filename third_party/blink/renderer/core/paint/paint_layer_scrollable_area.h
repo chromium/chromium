@@ -694,6 +694,15 @@ class CORE_EXPORT PaintLayerScrollableArea final
     return last_scrolled_vertical_;
   }
 
+  struct StyleBasedScrollbarData {
+    EOverflow overflow_x;
+    EOverflow overflow_y;
+    unsigned gutter;
+    EScrollbarWidth width;
+  };
+  gfx::Size ComputeScrollbarWidthsForViewportUnits(
+      StyleBasedScrollbarData) const;
+
  private:
   bool NeedsHypotheticalScrollbarThickness(ScrollbarOrientation) const;
   int ComputeHypotheticalScrollbarThickness(

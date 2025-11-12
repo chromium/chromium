@@ -72,6 +72,7 @@ ALIGNMENT_ORDER = [
     'GapDataList<StyleColor>',
     'GapDataList<int>',
     'GapDataList<EBorderStyle>',
+    'gfx::Size',
     # Compressed builds a Member can be 32 bits, vs. a pointer will be 64.
     'Member',
     # Aligns like float

@@ -604,6 +604,16 @@
       invalidate: ["mask", "paint"],
     },
     {
+      // Scrollbar sizes we subtract from the viewport for viewport units.
+      // Derived during the cascade and stored on ComputedStyle for later use.
+      name: "UnconditionalScrollbarSize",
+      field_template: "external",
+      type_name: "gfx::Size",
+      field_group: "*",
+      default_value: "gfx::Size()",
+      include_paths: ["ui/gfx/geometry/size.h"],
+    },
+    {
       name: "PageSize",
       field_template: "external",
       type_name: "gfx::SizeF",

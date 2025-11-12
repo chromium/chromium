@@ -221,6 +221,9 @@ class CORE_EXPORT StyleCascade {
   // of direction/writing-mode.
   void ApplyCascadeAffecting(CascadeResolver&);
 
+  // Some properties affect scrollbars which in turn affect viewport units.
+  void ApplyViewportUnitAffecting(CascadeResolver&);
+
   // Applies kHighPropertyPriority properties.
   //
   // In theory, it would be possible for each property/value that contains

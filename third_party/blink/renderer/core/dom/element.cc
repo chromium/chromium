@@ -5258,6 +5258,12 @@ StyleRecalcChange Element::RecalcOwnStyle(
   }
   SetComputedStyle(new_style);
 
+  if (new_style && (GetDocument().documentElement() == this) &&
+      GetDocument().GetLayoutView()->SetScrollbarSizesForViewportUnits(
+          new_style->UnconditionalScrollbarSize())) {
+    GetDocument().GetStyleEngine().UpdateViewportSize();
+  }
+
   if ((!old_style && new_style && new_style->GetCounterDirectives()) ||
       (old_style && new_style &&
        !old_style->CounterDirectivesEqual(*new_style)) ||

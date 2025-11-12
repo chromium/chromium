@@ -66,6 +66,7 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
+#include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style_property_shorthand.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -299,6 +300,7 @@ void StyleCascade::Apply(CascadeFilter filter) {
 
   ApplyCascadeAffecting(resolver);
 
+  ApplyViewportUnitAffecting(resolver);
   ApplyHighPriority(resolver);
   state_.UpdateFont();
 
@@ -632,6 +634,43 @@ void StyleCascade::ApplyCascadeAffecting(CascadeResolver& resolver) {
   if (reanalyze) {
     Reanalyze();
   }
+}
+
+// We have to resolve these early because they affect scrollbars, which are
+// sometimes subtracted from the viewport when deriving viewport units.
+void StyleCascade::ApplyViewportUnitAffecting(CascadeResolver& resolver) {
+  if (!IsRootElement() || state_.IsForPseudoElement() ||
+      match_result_.PseudoElementStyles().Has(kPseudoIdScrollbar)) {
+    return;
+  }
+  if (map_.NativeBitset().Has(CSSPropertyID::kOverflowX)) {
+    LookupAndApply(GetCSSPropertyOverflowX(), resolver);
+  }
+  if (map_.NativeBitset().Has(CSSPropertyID::kOverflowY)) {
+    LookupAndApply(GetCSSPropertyOverflowY(), resolver);
+  }
+  if (map_.NativeBitset().Has(CSSPropertyID::kScrollbarGutter)) {
+    LookupAndApply(GetCSSPropertyScrollbarGutter(), resolver);
+  }
+  if (map_.NativeBitset().Has(CSSPropertyID::kScrollbarWidth)) {
+    LookupAndApply(GetCSSPropertyScrollbarWidth(), resolver);
+  }
+  PaintLayerScrollableArea::StyleBasedScrollbarData some_scroll_properties{
+      state_.StyleBuilder().OverflowX(), state_.StyleBuilder().OverflowY(),
+      state_.StyleBuilder().ScrollbarGutter(),
+      state_.StyleBuilder().ScrollbarWidth()};
+
+  LayoutView* view = state_.GetDocument().GetLayoutView();
+  DCHECK(view);
+  const gfx::Size to_subtract =
+      view->GetScrollableArea()->ComputeScrollbarWidthsForViewportUnits(
+          some_scroll_properties);
+
+  // This should take care of any v* units on the root element for the remainder
+  // of this style resolution.
+  state_.SubtractScrollbarsFromViewportUnits(to_subtract);
+
+  state_.StyleBuilder().SetUnconditionalScrollbarSize(to_subtract);
 }
 
 void StyleCascade::ApplyHighPriority(CascadeResolver& resolver) {

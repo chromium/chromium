@@ -140,6 +140,9 @@ class CORE_EXPORT StyleResolverState {
   void SetConversionZoom(float zoom) {
     css_to_length_conversion_data_.SetZoom(zoom);
   }
+  void SubtractScrollbarsFromViewportUnits(const gfx::Size& scrollbars) {
+    css_to_length_conversion_data_.SubtractScrollbars(scrollbars);
+  }
 
   CSSAnimationUpdate& AnimationUpdate() { return animation_update_; }
   const CSSAnimationUpdate& AnimationUpdate() const {

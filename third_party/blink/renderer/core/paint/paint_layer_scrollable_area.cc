@@ -1723,6 +1723,41 @@ bool PaintLayerScrollableArea::NeedsScrollbarReconstruction() const {
   return false;
 }
 
+gfx::Size PaintLayerScrollableArea::ComputeScrollbarWidthsForViewportUnits(
+    StyleBasedScrollbarData scrollbar_properties) const {
+  DCHECK(GetLayoutBox()->GetFrame()->GetSettings());
+  // TODO(crbug.com/354751900): Check IsFieldset() || IsFrameSet(). They can't
+  // have scrollbars.
+  if (VisualViewportSuppliesScrollbars() ||
+      GetLayoutBox()->GetFrame()->GetSettings()->GetHideScrollbars() ||
+      GetPageScrollbarTheme().UsesOverlayScrollbars() ||
+      scrollbar_properties.width == EScrollbarWidth::kNone) {
+    return gfx::Size();
+  }
+
+  auto* layout_view = To<LayoutView>(GetLayoutBox());
+  mojom::blink::ScrollbarMode h_mode = mojom::blink::ScrollbarMode::kAuto;
+  mojom::blink::ScrollbarMode v_mode = mojom::blink::ScrollbarMode::kAuto;
+  layout_view->CalculateScrollbarModes(h_mode, v_mode,
+                                       scrollbar_properties.overflow_x,
+                                       scrollbar_properties.overflow_y);
+
+  const Page* page = GetDocument()->GetFrame()->GetPage();
+  const ScrollbarTheme& theme = page->GetScrollbarTheme();
+  const int scrollbar_thickness =
+      theme.ScrollbarThickness(1.f, scrollbar_properties.width);
+  gfx::Size scrollbar_thicknesses;
+  if (h_mode == mojom::blink::ScrollbarMode::kAlwaysOn) {
+    scrollbar_thicknesses.set_height(scrollbar_thickness);
+  }
+  if (v_mode == mojom::blink::ScrollbarMode::kAlwaysOn) {
+    scrollbar_thicknesses.set_width(scrollbar_thickness);
+  }
+  // TODO(crbug.com/354751900): Check scrollbar gutter.
+
+  return scrollbar_thicknesses;
+}
+
 void PaintLayerScrollableArea::ComputeScrollbarExistence(
     bool& needs_horizontal_scrollbar,
     bool& needs_vertical_scrollbar,

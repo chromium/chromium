@@ -178,8 +178,11 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
     return autosize_v_scrollbar_mode_;
   }
 
-  void CalculateScrollbarModes(mojom::blink::ScrollbarMode& h_mode,
-                               mojom::blink::ScrollbarMode& v_mode) const;
+  void CalculateScrollbarModes(
+      mojom::blink::ScrollbarMode& h_mode,
+      mojom::blink::ScrollbarMode& v_mode,
+      std::optional<EOverflow> overflow_x = std::nullopt,
+      std::optional<EOverflow> overflow_y = std::nullopt) const;
 
   bool CanHaveAdditionalCompositingReasons() const override {
     NOT_DESTROYED();
@@ -268,6 +271,8 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
   gfx::SizeF LargeViewportSizeForViewportUnits() const;
   // https://drafts.csswg.org/css-values-4/#dynamic-viewport-size
   gfx::SizeF DynamicViewportSizeForViewportUnits() const;
+  gfx::SizeF SubtractUnconditionalScrollbarsFromViewportUnits(
+      const gfx::SizeF& viewport_size) const;
 
   // Get the size to evaluate width and height media queries against when
   // paginating / printing.
@@ -338,6 +343,7 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
   LayoutViewTransitionRoot* GetViewTransitionRoot() const;
 
   void CacheScrollDimensions();
+  bool SetScrollbarSizesForViewportUnits(const gfx::Size& size);
 
  private:
   void StyleDidChange(StyleDifference,
@@ -419,6 +425,9 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
   std::optional<CachedScrollDimensions> cached_scroll_dimensions_;
 
   mutable PhysicalRect previous_background_rect_;
+
+  int vertical_scrollbar_width_for_viewport_units_ = 0;
+  int horizontal_scrollbar_height_for_viewport_units_ = 0;
 };
 
 template <>

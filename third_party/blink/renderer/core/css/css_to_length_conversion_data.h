@@ -172,6 +172,16 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
           dynamic_height_(height) {}
 
     explicit ViewportSize(const LayoutView*);
+
+    void SubtractScrollbars(const gfx::Size& scrollbars) {
+      large_width_ -= scrollbars.width();
+      large_height_ -= scrollbars.height();
+      small_width_ -= scrollbars.width();
+      small_height_ -= scrollbars.height();
+      dynamic_width_ -= scrollbars.width();
+      dynamic_height_ -= scrollbars.height();
+    }
+
     bool operator==(const ViewportSize&) const = default;
 
     // v*
@@ -390,6 +400,10 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
   }
   void SetAnchorData(const AnchorData& anchor_data) {
     anchor_data_ = anchor_data;
+  }
+
+  void SubtractScrollbars(const gfx::Size& scrollbars) {
+    viewport_size_.SubtractScrollbars(scrollbars);
   }
 
   void ReferenceAnchor() const override;
