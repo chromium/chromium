@@ -5,22 +5,18 @@
 #ifndef IOS_CHROME_BROWSER_FIRST_RUN_UI_BUNDLED_BEST_FEATURES_UI_FEATURE_HIGHLIGHT_SCREENSHOT_VIEW_CONTROLLER_H_
 #define IOS_CHROME_BROWSER_FIRST_RUN_UI_BUNDLED_BEST_FEATURES_UI_FEATURE_HIGHLIGHT_SCREENSHOT_VIEW_CONTROLLER_H_
 
-#import <UIKit/UIKit.h>
-
 #import "ios/chrome/browser/first_run/public/best_features_item.h"
+#import "ios/chrome/browser/shared/ui/animated_promo/animated_promo_view_controller.h"
 
 @protocol ConfirmationAlertActionHandler;
 
 // View for displaying a BestFeaturesItem.
-// TODO(crbug.com/433791509): Subclass from AnimatedPromoViewController.
 @interface FeatureHighlightScreenshotViewController
-    : UIViewController <UINavigationControllerDelegate>
+    : AnimatedPromoViewController <UINavigationControllerDelegate>
 
 // Creates the view with `BestFeaturesItem` and `actionHandler`.
-- (instancetype)initWithFeatureHighlightItem:(BestFeaturesItem*)bestFeaturesItem
-                               actionHandler:
-                                   (id<ConfirmationAlertActionHandler>)
-                                       actionHandler;
+- (instancetype)initWithFeatureHighlightItem:
+    (BestFeaturesItem*)bestFeaturesItem;
 
 @end
 #endif  // IOS_CHROME_BROWSER_FIRST_RUN_UI_BUNDLED_BEST_FEATURES_UI_FEATURE_HIGHLIGHT_SCREENSHOT_VIEW_CONTROLLER_H_

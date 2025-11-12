@@ -50,8 +50,8 @@
 - (void)start {
   [super start];
   _viewController = [[FeatureHighlightScreenshotViewController alloc]
-      initWithFeatureHighlightItem:_bestFeaturesItem
-                     actionHandler:self];
+      initWithFeatureHighlightItem:_bestFeaturesItem];
+  _viewController.actionHandler = self;
   _baseNavigationController.delegate = _viewController;
   [_baseNavigationController pushViewController:_viewController animated:YES];
 }

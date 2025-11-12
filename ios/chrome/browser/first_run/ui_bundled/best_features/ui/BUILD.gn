@@ -33,6 +33,7 @@ source_set("ui") {
     "//ios/chrome/browser/first_run/ui_bundled:constants",
     "//ios/chrome/browser/first_run/ui_bundled:features",
     "//ios/chrome/browser/first_run/ui_bundled/best_features/resources:animation_files",
+    "//ios/chrome/browser/shared/ui/animated_promo",
     "//ios/chrome/browser/shared/ui/list_model",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/table_view:utils",
@@ -45,7 +46,6 @@ source_set("ui") {
     "//ios/chrome/common/ui/promo_style",
     "//ios/chrome/common/ui/table_view:cells_constants",
     "//ios/chrome/common/ui/util",
-    "//ios/public/provider/chrome/browser/lottie:lottie_animation_api",
     "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]

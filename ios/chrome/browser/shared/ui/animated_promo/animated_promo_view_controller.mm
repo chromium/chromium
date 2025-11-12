@@ -162,6 +162,13 @@ constexpr CGFloat kCustomTopOffsetForRegularSizeClass = -24;
   }
 }
 
+// The offset from center Y to place the divider between the animation and the
+// confirmation alert screen.
+- (CGFloat)centerYOffset {
+  return CanShowTabStrip(_alertScreen) ? kCustomTopOffsetForRegularSizeClass
+                                       : 0;
+}
+
 // Creates and returns the LottieAnimation view for the `animationAssetName`.
 - (id<LottieAnimation>)createAnimation:(NSString*)animationAssetName {
   LottieAnimationConfiguration* config =
@@ -229,16 +236,10 @@ constexpr CGFloat kCustomTopOffsetForRegularSizeClass = -24;
 // Called when the screen rotates, or in the initial layout.
 - (void)updateAlertScreenTopAnchorConstraint {
   _alertScreenTopAnchorConstraint.active = NO;
-
-  CGFloat topOffset = 0;
-  if (CanShowTabStrip(_alertScreen)) {
-    topOffset = kCustomTopOffsetForRegularSizeClass;
-  }
-
   if ([self shouldShowAnimation]) {
     _alertScreenTopAnchorConstraint = [_alertScreen.view.topAnchor
         constraintEqualToAnchor:self.view.centerYAnchor
-                       constant:topOffset];
+                       constant:[self centerYOffset]];
   } else {
     _alertScreenTopAnchorConstraint = [_alertScreen.view.topAnchor
         constraintEqualToAnchor:self.view.topAnchor];
@@ -277,7 +278,8 @@ constexpr CGFloat kCustomTopOffsetForRegularSizeClass = -24;
     [wrapper.animationView.topAnchor
         constraintEqualToAnchor:self.view.topAnchor],
     [wrapper.animationView.bottomAnchor
-        constraintEqualToAnchor:self.view.centerYAnchor],
+        constraintEqualToAnchor:self.view.centerYAnchor
+                       constant:[self centerYOffset]],
   ]];
 
   [wrapper play];
