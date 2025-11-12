@@ -40,7 +40,6 @@
 
 # crbug.com/446934111
 -org.chromium.chrome.browser.incognito.IncognitoHistoryLeakageTest.*
--org.chromium.chrome.browser.incognito.IncognitoNotificationServiceTest.*
 -org.chromium.chrome.browser.incognito.IncognitoPermissionLeakageTest.*
 -org.chromium.chrome.browser.incognito.IncognitoProfileDestroyerIntegrationTest.*
 -org.chromium.chrome.browser.incognito.IncognitoStorageLeakageTest.*
