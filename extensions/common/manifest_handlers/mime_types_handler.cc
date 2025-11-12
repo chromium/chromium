@@ -36,24 +36,6 @@ constexpr const char* kMIMETypeHandlersAllowlist[] = {
     extension_misc::kQuickOfficeExtensionId,
     extension_misc::kMimeHandlerPrivateTestExtensionId};
 
-// Used for UMA stats. Entries should not be renumbered and numeric values
-// should never be reused. This corresponds to kMimeTypeHandlersAllowlist.
-// Don't forget to update enums.xml when updating these.
-enum class MimeHandlerType {
-  kPdfExtension = 0,
-  kQuickOfficeComponentExtension = 1,
-  kQuickOfficeInternalExtension = 2,
-  kQuickOfficeExtension = 3,
-  kTestExtension = 4,
-
-  kMaxValue = kTestExtension,
-};
-
-static_assert(
-    std::size(kMIMETypeHandlersAllowlist) ==
-        static_cast<size_t>(MimeHandlerType::kMaxValue) + 1,
-    "MimeHandlerType enum is not in sync with kMIMETypeHandlersAllowlist.");
-
 constexpr SkColor kQuickOfficeExtensionBackgroundColor =
     SkColorSetRGB(241, 241, 241);
 
