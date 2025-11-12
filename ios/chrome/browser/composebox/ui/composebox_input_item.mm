@@ -11,14 +11,20 @@
   base::UnguessableToken _token;
 }
 
-- (instancetype)initWithComposeboxInputItemType:(ComposeboxInputItemType)type {
+- (instancetype)initWithComposeboxInputItemType:(ComposeboxInputItemType)type
+                                        assetID:(NSString*)assetID {
   self = [super init];
   if (self) {
     _token = base::UnguessableToken::Create();
     _state = ComposeboxInputItemState::kLoading;
     _type = type;
+    _assetID = [assetID copy];
   }
   return self;
+}
+
+- (instancetype)initWithComposeboxInputItemType:(ComposeboxInputItemType)type {
+  return [self initWithComposeboxInputItemType:type assetID:nil];
 }
 
 - (const base::UnguessableToken&)token {

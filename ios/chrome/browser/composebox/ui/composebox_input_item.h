@@ -31,7 +31,9 @@ enum class ComposeboxInputItemType {
 
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithComposeboxInputItemType:(ComposeboxInputItemType)type
+                                        assetID:(NSString*)assetID
     NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithComposeboxInputItemType:(ComposeboxInputItemType)type;
 
 // The file token for this item, which also serves as its unique identifier.
 @property(nonatomic, assign, readonly) const base::UnguessableToken& token;
@@ -46,6 +48,8 @@ enum class ComposeboxInputItemType {
 @property(nonatomic, assign) ComposeboxInputItemState state;
 // The type of the input item.
 @property(nonatomic, assign) ComposeboxInputItemType type;
+// Optional, uniquely identifying the asset the item is associated with.
+@property(nonatomic, copy, readonly) NSString* assetID;
 
 @end
 

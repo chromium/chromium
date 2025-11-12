@@ -308,8 +308,9 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
     return;
   }
 
-  NSItemProvider* provider = results.firstObject.itemProvider;
-  [_mediator processImageItemProvider:provider];
+  PHPickerResult* result = results.firstObject;
+  [_mediator processImageItemProvider:result.itemProvider
+                              assetID:result.assetIdentifier];
 }
 
 #pragma mark - UIDocumentPickerDelegate
@@ -328,11 +329,12 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
     didFinishPickingMediaWithInfo:(NSDictionary<NSString*, id>*)info {
   [picker dismissViewControllerAnimated:YES completion:nil];
   UIImage* image = info[UIImagePickerControllerOriginalImage];
-  if (!image) {
+  NSURL* imageURL = info[UIImagePickerControllerImageURL];
+  if (!image || !imageURL) {
     return;
   }
   NSItemProvider* provider = [[NSItemProvider alloc] initWithObject:image];
-  [_mediator processImageItemProvider:provider];
+  [_mediator processImageItemProvider:provider assetID:imageURL.absoluteString];
 }
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController*)picker {

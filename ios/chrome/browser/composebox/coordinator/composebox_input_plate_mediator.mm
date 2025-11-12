@@ -298,15 +298,21 @@ CreateInputDataFromAnnotatedPageContent(
   _consumer = nil;
 }
 
-- (void)processImageItemProvider:(NSItemProvider*)itemProvider {
+- (void)processImageItemProvider:(NSItemProvider*)itemProvider
+                         assetID:(NSString*)assetID {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  if (![itemProvider canLoadObjectOfClass:[UIImage class]]) {
+
+  BOOL unableToLoadUIImage =
+      ![itemProvider canLoadObjectOfClass:[UIImage class]];
+  BOOL assetAlreadyLoaded = [self assetAlreadyLoaded:assetID];
+  if (unableToLoadUIImage || assetAlreadyLoaded) {
     return;
   }
 
   ComposeboxInputItem* item = [[ComposeboxInputItem alloc]
       initWithComposeboxInputItemType:ComposeboxInputItemType::
-                                          kComposeboxInputItemTypeImage];
+                                          kComposeboxInputItemTypeImage
+                              assetID:assetID];
   [_items addObject:item];
   [self updateConsumerItems];
   const base::UnguessableToken token = item.token;
@@ -351,9 +357,15 @@ CreateInputDataFromAnnotatedPageContent(
 
 - (void)processPDFFileURL:(GURL)PDFFileURL {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  NSString* assetID = base::SysUTF8ToNSString(PDFFileURL.spec());
+  if ([self assetAlreadyLoaded:assetID]) {
+    return;
+  }
+
   ComposeboxInputItem* item = [[ComposeboxInputItem alloc]
       initWithComposeboxInputItemType:ComposeboxInputItemType::
-                                          kComposeboxInputItemTypeFile];
+                                          kComposeboxInputItemTypeFile
+                              assetID:assetID];
   item.title = base::SysUTF8ToNSString(PDFFileURL.ExtractFileName());
   [_items addObject:item];
   [self updateConsumerItems];
@@ -860,6 +872,16 @@ CreateInputDataFromAnnotatedPageContent(
       base::BindOnce(^(UIImage* preview) {
         [weakSelf didLoadPreviewImage:preview forItemWithToken:token];
       }));
+}
+
+- (BOOL)assetAlreadyLoaded:(NSString*)assetID {
+  for (ComposeboxInputItem* item in _items) {
+    if ([item.assetID isEqualToString:assetID]) {
+      return YES;
+    }
+  }
+
+  return NO;
 }
 
 #pragma mark - ComposeboxOmniboxClientDelegate

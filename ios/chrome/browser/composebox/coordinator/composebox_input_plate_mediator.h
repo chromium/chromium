@@ -45,7 +45,8 @@ class WebStateList;
 - (void)disconnect;
 
 // Processes the given `itemProvider` for an image.
-- (void)processImageItemProvider:(NSItemProvider*)itemProvider;
+- (void)processImageItemProvider:(NSItemProvider*)itemProvider
+                         assetID:(NSString*)assetID;
 
 // Processes the given `PDFFileURL` for a file.
 - (void)processPDFFileURL:(GURL)PDFFileURL;
