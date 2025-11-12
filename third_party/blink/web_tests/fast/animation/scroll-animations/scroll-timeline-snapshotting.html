@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <title>ScrollTimeline snapshotting</title>
-<link rel="help" href="https://wicg.github.io/scroll-animations/#avoiding-cycles">
+<link rel="help" href="https://drafts.csswg.org/scroll-animations-1/#event-loop">
+<link rel="help" href="https://github.com/whatwg/html/pull/11613">
 <script src='../../../resources/testharness.js'></script>
 <script src='../../../resources/testharnessreport.js'></script>
 <script src='resources/testcommon.js'></script>
@@ -30,14 +31,17 @@ promise_test(async t => {
 
   eventSender.keyDown("ArrowDown");
   // Wait for the scroll to change.
-  const startScroll = scroller.scrollTop;
-  do {
-    await waitForNextFrame();
-  } while(scroller.scrollTop == startScroll);
+  await waitForEvent(document, "scroll");
+  // The next frame the scroll changes, the scroll-timelines should not be
+  // updated before the scroll events are dispatched. Store the scroll position
+  // from the previous frame to compare the timeline to.
+  let scroll_percentage = (scroller.scrollTop / maxScroll) * 100;
+
+  await waitForEvent(document, "scroll");
 
   assert_percents_approx_equal(
       timeline.currentTime,
-      (scroller.scrollTop / maxScroll) * 100,
+      scroll_percentage,
       maxScroll,
       'Scroll timeline current time corresponds to the scroll position.');
 }, 'Scroll timeline current time is updated after handling user-driven scroll.');
