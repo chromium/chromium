@@ -17,6 +17,65 @@ const UIControlState UIControlStateTunedDown = 1 << 16;
 // Alpha value for the disabled action button.
 const CGFloat kDisabledButtonAlpha = 0.5;
 
+// Returns whether `button` should have its background tinted or not.
+bool ShouldUseTintColor(UIButton* button) {
+  if (@available(iOS 26, *)) {
+    if (@available(iOS 26.1, *)) {
+      // On iOS 26.1 there is a bug on the text color of the buttons when
+      // tinting them. See b/458680641.
+      return false;
+    }
+    // On iOS 26 when the button is disabled, the tint is not used to color
+    // the glass. In that case, set the background color directly.
+    return button.enabled;
+  }
+  return false;
+}
+
+// Returns the color to be used by a primary `destructive` `button`.
+UIColor* PrimaryButtonBackgroundColor(UIButton* button, bool destructive) {
+  UIColor* background_color = destructive ? [UIColor colorNamed:kRedColor]
+                                          : [UIColor colorNamed:kBlueColor];
+  if (button.state & UIControlStateTunedDown) {
+    background_color = destructive ? [UIColor colorNamed:kRed100Color]
+                                   : [UIColor colorNamed:kBlue100Color];
+  } else if (!button.enabled) {
+    background_color = [UIColor colorNamed:kGrey400Color];
+  }
+
+  return background_color;
+}
+
+// Updates the background color of a primary `button` with a `destructive`
+// style, using the `configuration`.
+void UpdatePrimaryButtonBackgroundColor(UIButton* button,
+                                        bool destructive,
+                                        UIButtonConfiguration* configuration) {
+  bool background_as_tint = ShouldUseTintColor(button);
+
+  UIColor* background_color = PrimaryButtonBackgroundColor(button, destructive);
+  CGFloat alpha = (!(button.state & UIControlStateTunedDown) && !button.enabled)
+                      ? kDisabledButtonAlpha
+                      : 1;
+
+  if (background_as_tint) {
+    configuration.background.backgroundColor = UIColor.clearColor;
+    button.tintColor = background_color;
+  } else {
+    configuration.background.backgroundColor = background_color;
+    button.tintColor = UIColor.clearColor;
+  }
+  button.alpha = alpha;
+}
+
+// Updates the background color of a primary `button` with a `destructive`
+// style.
+void UpdatePrimaryButtonBackgroundColor(UIButton* button, bool destructive) {
+  UIButtonConfiguration* configuration = button.configuration;
+  UpdatePrimaryButtonBackgroundColor(button, destructive, configuration);
+  button.configuration = configuration;
+}
+
 // Updates `configuration` with the given `font` and `color`.
 void SetButtonTitleTextAttributes(UIButtonConfiguration* configuration,
                                   UIFont* font,
@@ -43,36 +102,7 @@ void SetButtonTitleTextAttributes(UIButtonConfiguration* configuration,
 UIButtonConfigurationUpdateHandler PrimaryActionConfigurationUpdateHandler(
     bool destructive) {
   return ^(UIButton* button) {
-    bool background_as_tint;
-    if (@available(iOS 26, *)) {
-      // On iOS 26 when the button is disabled, the tint is not used to color
-      // the glass. In that case, set the background color directly.
-      background_as_tint = button.enabled;
-    } else {
-      background_as_tint = false;
-    }
-
-    UIColor* background_color = destructive ? [UIColor colorNamed:kRedColor]
-                                            : [UIColor colorNamed:kBlueColor];
-    CGFloat alpha = 1;
-    if (button.state & UIControlStateTunedDown) {
-      background_color = destructive ? [UIColor colorNamed:kRed100Color]
-                                     : [UIColor colorNamed:kBlue100Color];
-    } else if (!button.enabled) {
-      background_color = [UIColor colorNamed:kGrey400Color];
-      alpha = kDisabledButtonAlpha;
-    }
-
-    UIButtonConfiguration* configuration = button.configuration;
-    if (background_as_tint) {
-      configuration.background.backgroundColor = UIColor.clearColor;
-      button.tintColor = background_color;
-    } else {
-      configuration.background.backgroundColor = background_color;
-      button.tintColor = UIColor.clearColor;
-    }
-    button.alpha = alpha;
-    button.configuration = configuration;
+    UpdatePrimaryButtonBackgroundColor(button, destructive);
   };
 }
 
@@ -237,12 +267,15 @@ UIImage* CheckmarkImage() {
 // Sets up the initial configuration for the button.
 - (void)setupInitialConfiguration {
   if (@available(iOS 26, *)) {
-    if ([UIButtonConfiguration
-            respondsToSelector:@selector(prominentGlassButtonConfiguration)]) {
+    if (@available(iOS 26.1, *)) {
+      // On iOS 26.1, there is an issue with the text color, which is not
+      // respecting its color, making it very low contrast. Use a glass button
+      // with a background color instead of prominent with tint. See
+      // b/458680641.
+      self.configuration = [UIButtonConfiguration glassButtonConfiguration];
+    } else {
       self.configuration =
           [UIButtonConfiguration prominentGlassButtonConfiguration];
-    } else {
-      self.configuration = [UIButtonConfiguration glassButtonConfiguration];
     }
   } else {
     self.configuration = [UIButtonConfiguration plainButtonConfiguration];
@@ -268,12 +301,8 @@ UIImage* CheckmarkImage() {
   SetButtonTitleTextAttributes(configuration, font, enabled_text_color, self,
                                disabled_text_color);
   configuration.baseForegroundColor = enabled_text_color;
-  if (@available(iOS 26, *)) {
-    configuration.background.backgroundColor = UIColor.clearColor;
-    self.tintColor = [UIColor colorNamed:kBlueColor];
-  } else {
-    configuration.background.backgroundColor = [UIColor colorNamed:kBlueColor];
-  }
+  UpdatePrimaryButtonBackgroundColor(self, /*destructive*/ false,
+                                     configuration);
   self.configuration = configuration;
   self.configurationUpdateHandler =
       PrimaryActionConfigurationUpdateHandler(/*destructive=*/false);
@@ -288,12 +317,7 @@ UIImage* CheckmarkImage() {
       configuration, [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline],
       enabled_text_color, self, disabled_text_color);
   configuration.baseForegroundColor = enabled_text_color;
-  if (@available(iOS 26, *)) {
-    configuration.background.backgroundColor = UIColor.clearColor;
-    self.tintColor = [UIColor colorNamed:kRedColor];
-  } else {
-    configuration.background.backgroundColor = [UIColor colorNamed:kRedColor];
-  }
+  UpdatePrimaryButtonBackgroundColor(self, /*destructive*/ true, configuration);
   self.configuration = configuration;
   self.configurationUpdateHandler =
       PrimaryActionConfigurationUpdateHandler(/*destructive=*/true);
@@ -308,6 +332,7 @@ UIImage* CheckmarkImage() {
     enabled_text_color = [UIColor colorNamed:kSolidBlackColor];
     font = [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
     self.tintColor = UIColor.clearColor;
+    configuration.background.backgroundColor = UIColor.clearColor;
   } else {
     enabled_text_color = [UIColor colorNamed:kBlueColor];
     font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
@@ -328,8 +353,13 @@ UIImage* CheckmarkImage() {
   SetButtonTitleTextAttributes(configuration, font, enabled_text_color);
   configuration.baseForegroundColor = enabled_text_color;
   if (@available(iOS 26, *)) {
-    configuration.background.backgroundColor = UIColor.clearColor;
-    self.tintColor = [UIColor colorNamed:kBlueHaloColor];
+    if (@available(iOS 26.1, *)) {
+      configuration.background.backgroundColor =
+          [UIColor colorNamed:kBlueHaloColor];
+    } else {
+      configuration.background.backgroundColor = UIColor.clearColor;
+      self.tintColor = [UIColor colorNamed:kBlueHaloColor];
+    }
   } else {
     configuration.background.backgroundColor =
         [UIColor colorNamed:kBlueHaloColor];
