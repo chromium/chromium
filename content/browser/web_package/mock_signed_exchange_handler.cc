@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/task/sequenced_task_runner.h"
@@ -158,9 +159,12 @@ class PrefixStrippingSourceStream : public net::SourceStream {
     // the `wrapped_stream_`.
     bool maybe_incorrect_eof = bytes_read.empty() && MayHaveMoreBytes();
     if (remaining_prefix_to_strip_.empty() && !maybe_incorrect_eof) {
-      // Source and destination may overlap - need to use `memmove`.
-      UNSAFE_TODO(memmove(pending_read->dest_buffer->data(), bytes_read.data(),
-                          bytes_read.size()));
+      // Source and destination may overlap - `base::span::copy_from()` handles
+      // that.
+      auto dest_buffer_span = pending_read->dest_buffer->span();
+      auto src_span = base::as_bytes(base::span(bytes_read));
+      auto dest_span = dest_buffer_span.first(src_span.size());
+      dest_span.copy_from(src_span);
       return bytes_read.size();
     }
 
