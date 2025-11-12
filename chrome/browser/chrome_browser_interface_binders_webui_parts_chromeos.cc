@@ -84,8 +84,6 @@
 #include "chrome/browser/ui/webui/ash/app_install/app_install.mojom.h"
 #include "chrome/browser/ui/webui/ash/app_install/app_install_dialog.h"
 #include "chrome/browser/ui/webui/ash/app_install/app_install_ui.h"
-#include "chrome/browser/ui/webui/ash/audio/audio.mojom.h"
-#include "chrome/browser/ui/webui/ash/audio/audio_ui.h"
 #include "chrome/browser/ui/webui/ash/bluetooth/bluetooth_pairing_dialog.h"
 #include "chrome/browser/ui/webui/ash/borealis_installer/borealis_installer.mojom.h"
 #include "chrome/browser/ui/webui/ash/borealis_installer/borealis_installer_ui.h"
@@ -493,9 +491,6 @@ void PopulateChromeWebUIFrameBindersPartsCros(
         ash::settings::magic_boost_handler::mojom::PageHandlerFactory,
         ash::settings::OSSettingsUI>(map);
   }
-
-  RegisterWebUIControllerInterfaceBinder<audio::mojom::PageHandlerFactory,
-                                         ash::AudioUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
       ash::extended_updates::mojom::PageHandlerFactory,

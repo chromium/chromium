@@ -16,7 +16,6 @@ group("resources") {
     "accessibility:build",
     "add_supervision:resources",
     "app_install:resources",
-    "audio:resources",
     "bluetooth_pairing_dialog:resources",
     "borealis_installer:resources",
     "cloud_upload:resources",

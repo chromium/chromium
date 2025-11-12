@@ -249,10 +249,6 @@
     "META": {"sizes": {"includes": [5]}},
     "includes": [3000],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/audio/resources.grd": {
-    "META": {"sizes": {"includes": [30]}},
-    "includes": [3060],
-  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/bluetooth_pairing_dialog/resources.grd": {
     "META": {"sizes": {"includes": [10],}},
     "includes": [3080],

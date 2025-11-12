@@ -443,8 +443,6 @@ inline constexpr char kChromeUIAppInstallDialogURL[] =
 inline constexpr char kChromeUIArcOverviewTracingHost[] =
     "arc-overview-tracing";
 inline constexpr char kChromeUIArcPowerControlHost[] = "arc-power-control";
-inline constexpr char kChromeUIAudioHost[] = "audio";
-inline constexpr char kChromeUIAudioURL[] = "chrome://audio/";
 inline constexpr char kChromeUIBluetoothPairingHost[] = "bluetooth-pairing";
 inline constexpr char kChromeUIBluetoothPairingURL[] =
     "chrome://bluetooth-pairing/";
