@@ -1582,7 +1582,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
                        testGetContextFromFocusedTabWithUnFocusablePage) {
-  TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
   // Navigate to an un-focusable internal page.
   RunTestSequence(NavigateWebContents(kFirstTab, chrome::GetSettingsUrl("")));
 
@@ -1604,7 +1603,8 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, DISABLED_testCaptureScreenshot) {
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testPermissionAccess) {
-  TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
+  // Obsolete in multi-instance.
+  SKIP_TEST_FOR_MULTI_INSTANCE();
   ExecuteJsTest();
   histogram_tester->ExpectUniqueSample(
       "Glic.Sharing.ActiveTabSharingState.OnTabContextPermissionGranted",
@@ -1750,7 +1750,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testCloseAndOpenWhileOpening) {
-  TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
   RunTestSequence(
       OpenGlicWindow(GlicWindowMode::kDetached, GlicInstrumentMode::kNone));
   ExecuteJsTest();
@@ -1761,11 +1760,13 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testCloseAndOpenWhileOpening) {
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
                        testNotifyPanelWillOpenIsCalledOnce) {
-  TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
   ExecuteJsTest();
-  histogram_tester->ExpectUniqueSample(
-      "Glic.Sharing.ActiveTabSharingState.OnPanelOpenAndReady",
-      ActiveTabSharingState::kTabContextPermissionNotGranted, 1);
+  if (!GetParam().multi_instance) {
+    // This part is obsolete.
+    histogram_tester->ExpectUniqueSample(
+        "Glic.Sharing.ActiveTabSharingState.OnPanelOpenAndReady",
+        ActiveTabSharingState::kTabContextPermissionNotGranted, 1);
+  }
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest,
@@ -1874,39 +1875,42 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
       CheckPointIsWithinDraggableArea(gfx::Point(x, y + height), false));
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testSetMinimumWidgetSize) {
-  TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
+IN_PROC_BROWSER_TEST_P(GlicApiTest, testSetMinimumWidgetSize) {
+  NavigateTabAndOpenGlicFloating();
   ExecuteJsTest();
   ASSERT_TRUE(step_data()->is_dict());
   const auto& min_size = step_data()->GetDict();
   const int width = min_size.FindInt("width").value();
   const int height = min_size.FindInt("height").value();
 
-  RunTestSequence(CheckWidgetMinimumSize(gfx::Size(width, height)));
+  auto expected_size = glic::GlicWidget::GetInitialSize();
+  expected_size.SetToMax(gfx::Size(width, height));
+  EXPECT_EQ(GetGlicWidget()->GetMinimumSize(), expected_size);
+
   ContinueJsTest();
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testManualResizeChanged) {
-  TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
-  window_controller().GetGlicWidget()->OnNativeWidgetUserResizeStarted();
+IN_PROC_BROWSER_TEST_P(GlicApiTest, testManualResizeChanged) {
+  NavigateTabAndOpenGlicFloating();
+  GetGlicWidget()->OnNativeWidgetUserResizeStarted();
 
   // Check that the web client is notified of the beginning of the user
   // initiated resizing event.
   ExecuteJsTest();
 
-  window_controller().GetGlicWidget()->OnNativeWidgetUserResizeEnded();
+  GetGlicWidget()->OnNativeWidgetUserResizeEnded();
 
   // Check that the web client is notified of the ending of the user
   // initiated resizing event.
   ContinueJsTest();
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testResizeWindowTooSmall) {
-  TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
+IN_PROC_BROWSER_TEST_P(GlicApiTest, testResizeWindowTooSmall) {
+  NavigateTabAndOpenGlicFloating();
   // Web client requests the window to be resized to 0x0, bellow the minimum
   // dimensions, so it gets discarded in favor of the initial size.
   gfx::Size expected_size = GlicWidget::GetInitialSize();
-  GlicWidget* glic_widget = window_controller().GetGlicWidget();
+  GlicWidget* glic_widget = static_cast<GlicWidget*>(GetGlicWidget());
   ASSERT_TRUE(glic_widget);
 
   ExecuteJsTest();
@@ -1916,8 +1920,8 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testResizeWindowTooSmall) {
             glic_widget->WidgetToVisibleBounds(final_widget_bounds).size());
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testResizeWindowTooLarge) {
-  TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
+IN_PROC_BROWSER_TEST_P(GlicApiTest, testResizeWindowTooLarge) {
+  NavigateTabAndOpenGlicFloating();
   // Web client requests the window to be resized to 20000x20000, above the
   // maximum dimensions, so it gets discarded in favor of the max size. This max
   // size is still larger than the display work area so we clamp the dimensions
@@ -1925,15 +1929,15 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testResizeWindowTooLarge) {
   ExecuteJsTest();
   gfx::Rect display_bounds =
       display::Screen::Get()->GetPrimaryDisplay().work_area();
-  GlicWidget* glic_widget = window_controller().GetGlicWidget();
+  GlicWidget* glic_widget = static_cast<GlicWidget*>(GetGlicWidget());
   ASSERT_TRUE(glic_widget);
   gfx::Rect final_widget_bounds = glic_widget->GetWindowBoundsInScreen();
 
   ASSERT_TRUE(display_bounds.Contains(final_widget_bounds));
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testResizeWindowWithinBounds) {
-  TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
+IN_PROC_BROWSER_TEST_P(GlicApiTest, testResizeWindowWithinBounds) {
+  NavigateTabAndOpenGlicFloating();
   // Web client requests the window to be resized to 800x700, which are valid
   // dimensions.
   gfx::Size expected_size = gfx::Size(800, 700);
@@ -1941,8 +1945,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testResizeWindowWithinBounds) {
       {.params = base::Value(base::Value::Dict()
                                  .Set("width", expected_size.width())
                                  .Set("height", expected_size.height()))});
-  GlicWidget* glic_widget = window_controller().GetGlicWidget();
-  ASSERT_TRUE(glic_widget);
+  GlicWidget* glic_widget = static_cast<GlicWidget*>(GetGlicWidget());
   gfx::Rect final_widget_bounds = glic_widget->GetWindowBoundsInScreen();
   ASSERT_EQ(expected_size,
             glic_widget->WidgetToVisibleBounds(final_widget_bounds).size());
@@ -2109,7 +2112,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest,
                        testPinTabsStatePersistWhenClosePanelAndReopen) {
-  TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
   NavigateTabAndOpenGlicFloating();
   const int tab_id =
       GetTabId(browser()->tab_strip_model()->GetActiveWebContents());
@@ -2123,7 +2125,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest,
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testPinTabsStatePersistWhenClientRestarts) {
-  TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
   NavigateTabAndOpenGlicFloating();
   const int tab_id =
       GetTabId(browser()->tab_strip_model()->GetActiveWebContents());
@@ -2143,7 +2144,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testPinTabsStatePersistWhenClientRestarts) {
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testPinTabsFailsWhenIncognitoWindow) {
-  TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
   browser_activator().SetMode(BrowserActivator::Mode::kFirst);
   NavigateTabAndOpenGlicFloating();
 
@@ -2195,6 +2195,10 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testUnpinTabsThatNavigateInBackground) {
+  // Note: Enabling this for multi-instance is tricky because pinned tabs
+  // automatically bind, so background pinned tabs take some work to set up.
+  // We should probably just make a new test. Also, the behavior being tested
+  // here likely needs changed, see b/457841601.
   TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
   // Use HTTPS test server for this test to test same-origin navigation.
   ASSERT_TRUE(embedded_https_test_server().Start());
@@ -2274,7 +2278,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest,
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
                        testGetContextFromTabIgnorePermissionWhenPinned) {
-  TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
   // Try to extract context from an arbitrary tab without permission, while it's
   // unpinned and then pinned.
   ExecuteJsTest();
@@ -2318,6 +2321,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
                        testGetContextFromTabFailsIfNotPinned) {
   TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
+  TrackGlicInstanceWithId(GetGlicInstance()->id());
   const int tab_id =
       GetTabId(browser()->tab_strip_model()->GetActiveWebContents());
   RunTestSequence(AddInstrumentedTab(kSecondTab, page_url()));
@@ -2380,7 +2384,7 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab,
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
                        MAYBE_testFetchInactiveTabScreenshotWhileMinimized) {
   TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
-  RunTestSequence(AddInstrumentedTab(kSecondTab, page_url()));
+  RunTestSequence(AddInstrumentedTabAndOpenSidePanel(kSecondTab, page_url()));
   bool can_fetch_screenshot = BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC);
 
   ExecuteJsTest({.params = base::Value(can_fetch_screenshot)});

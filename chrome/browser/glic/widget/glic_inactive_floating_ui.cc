@@ -74,4 +74,8 @@ bool GlicInactiveFloatingUi::HasFocus() {
   return false;
 }
 
+std::string GlicInactiveFloatingUi::DescribeForTesting() {
+  return "InactiveFloatingUi";
+}
+
 }  // namespace glic

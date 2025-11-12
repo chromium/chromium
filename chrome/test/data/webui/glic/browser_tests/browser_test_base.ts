@@ -44,7 +44,7 @@ export class SequencedSubscriber<T> {
   private subscriber: Subscriber;
 
   // The last value read from `next()`, or undefined if none was read.
-  current: T|undefined;
+  current: {some: T}|undefined;
 
   // A promise that resolves when the observable is completed.
   readonly completed: Promise<void>;
@@ -60,8 +60,10 @@ export class SequencedSubscriber<T> {
   async next(): Promise<T> {
     // Wrapping the returned value with `waitFor` improves failure logs
     // on timeout.
-    this.current = await waitFor(this.getSignal(this.readIndex++).promise);
-    return this.current;
+    this.current = {
+      some: await waitFor(this.getSignal(this.readIndex++).promise),
+    };
+    return this.current.some;
   }
 
   /** Returns true if all values have been read. */
@@ -75,11 +77,31 @@ export class SequencedSubscriber<T> {
     return this.waitFor(v => v === targetValue);
   }
   async waitFor(condition: (v: T) => boolean): Promise<T> {
+    let lastValueSaw: {some: T}|undefined = undefined;
+    if (this.current !== undefined) {
+      if (condition(this.current.some)) {
+        return this.current.some;
+      }
+      lastValueSaw = {some: this.current.some};
+    }
+
     while (true) {
-      const val = await this.next();
+      let val;
+      try {
+        val = await this.next();
+      } catch (e) {
+        if (lastValueSaw !== undefined) {
+          console.warn(`waitFor() failed, last value saw was ${
+              JSON.stringify(lastValueSaw)}`);
+        } else {
+          console.warn(`waitFor() failed, saw no values emitted`);
+        }
+        throw e;
+      }
       if (condition(val)) {
         return val;
       }
+      lastValueSaw = {some: val};
       console.info(`waitFor saw and ignored ${JSON.stringify(val)}`);
     }
   }

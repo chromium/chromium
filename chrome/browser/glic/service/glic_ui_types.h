@@ -26,6 +26,7 @@ struct FloatingEmbedderKey {
 
 // A key representing a unique embedder.
 using EmbedderKey = std::variant<tabs::TabInterface*, FloatingEmbedderKey>;
+std::string DescribeEmbedderKeyForTesting(const EmbedderKey& key);
 
 struct SidePanelShowOptions {
   explicit SidePanelShowOptions(tabs::TabInterface& bound_tab)

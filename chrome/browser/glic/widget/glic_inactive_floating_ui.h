@@ -31,6 +31,7 @@ class GlicInactiveFloatingUi : public GlicUiEmbedder {
   base::WeakPtr<views::View> GetView() override;
   mojom::PanelState GetPanelState() const override;
   gfx::Size GetPanelSize() override;
+  std::string DescribeForTesting() override;
 
  private:
   std::unique_ptr<views::View> CreateView();

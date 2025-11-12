@@ -79,6 +79,8 @@ class GlicUiEmbedder {
 
   // Called when the client is ready to show.
   virtual void OnClientReady() {}
+
+  virtual std::string DescribeForTesting() = 0;
 };
 
 }  // namespace glic

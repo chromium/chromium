@@ -724,15 +724,6 @@ class InteractiveGlicTestMixin : public T {
         "attached to the other browser");
   }
 
-  auto CheckWidgetMinimumSize(const gfx::Size& size) {
-    // Size can't be smaller than the initial size.
-    auto expected_size = glic::GlicWidget::GetInitialSize();
-    expected_size.SetToMax(size);
-    return Api::CheckResult(
-        [this]() { return GetGlicWidget()->GetMinimumSize(); }, expected_size,
-        "CheckWidgetMinimumSize");
-  }
-
   auto CheckTabCount(int expected_count) {
     return Api::CheckResult(
         [this] { return browser()->tab_strip_model()->GetTabCount(); },

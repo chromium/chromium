@@ -9,6 +9,18 @@
 
 namespace glic {
 
+std::string DescribeEmbedderKeyForTesting(const EmbedderKey& key) {
+  return std::visit(absl::Overload(
+                        [](const tabs::TabInterface* tab) {
+                          return base::StringPrintf(
+                              "Tab: %i", tab->GetHandle().raw_value());
+                        },
+                        [](const FloatingEmbedderKey& key) {
+                          return std::string("Floating");
+                        }),
+                    key);
+}
+
 ShowOptions::ShowOptions(EmbedderOptions embedder_options_in)
     : embedder_options(embedder_options_in) {}
 ShowOptions::ShowOptions(const ShowOptions&) = default;

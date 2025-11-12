@@ -442,4 +442,8 @@ void GlicFloatingUi::CaptureScreenshot(
                                           std::move(callback));
 }
 
+std::string GlicFloatingUi::DescribeForTesting() {
+  return "FloatingUi";
+}
+
 }  // namespace glic

@@ -230,6 +230,7 @@ class GlicInstanceImpl : public GlicInstance,
   // Test support.
   void CloseAllEmbeddersForTesting();
   views::View* GetActiveEmbedderGlicViewForTesting();
+  std::string DescribeForTesting();
 
   // ActorTaskDelegate:
   void OnTabAddedToTask(actor::TaskId task_id,

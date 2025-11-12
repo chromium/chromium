@@ -1484,10 +1484,12 @@ class ApiTests extends ApiTestFixtureBase {
     assertDefined(this.host.getContextFromTab);
     assertDefined(this.host.pinTabs);
     assertDefined(this.host.getPinnedTabs);
+    assertDefined(this.host.unpinTabs);
 
     // Fail getContextFromTab due to no tab context permission not granted.
     await this.host.setTabContextPermissionState(false);
     const tabId: string = this.getFocusedTabId();
+    await this.host.unpinTabs([tabId]);  // Unpin required for multi-instance.
     await assertRejects(this.host.getContextFromTab(tabId, {}), {
       withErrorMessage: 'tabContext failed: permission denied:' +
           ' context permission not enabled',
