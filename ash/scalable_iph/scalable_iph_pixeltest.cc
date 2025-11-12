@@ -72,7 +72,6 @@ INSTANTIATE_TEST_SUITE_P(
 // To show a notification with no body text, we set an empty string to message
 // field. Make sure that it shows our desired UI output.
 TEST_P(ScalableIphPixelTest, NotificationNoBodyText) {
-  // TODO(b/323426306): update this test to test logic in ash.
   std::unique_ptr<message_center::Notification> notification =
       ash::CreateSystemNotificationPtr(
           message_center::NOTIFICATION_TYPE_SIMPLE, kTestNotificationId,
