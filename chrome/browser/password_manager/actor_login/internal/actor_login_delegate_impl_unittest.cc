@@ -14,13 +14,17 @@
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/autofill/core/common/autofill_test_utils.h"
+#include "components/device_reauth/device_authenticator.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_types.h"
 #include "components/password_manager/core/browser/actor_login/test/actor_login_test_util.h"
+#include "components/password_manager/core/browser/fake_form_fetcher.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/mock_password_form_cache.h"
 #include "components/password_manager/core/browser/mock_password_manager.h"
 #include "components/password_manager/core/browser/password_form_cache.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
+#include "components/password_manager/core/browser/password_save_manager_impl.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/browser/stub_password_manager_driver.h"
@@ -39,17 +43,23 @@
 
 namespace actor_login {
 
+using autofill::FormData;
+using device_reauth::DeviceAuthenticator;
+using password_manager::FakeFormFetcher;
 using password_manager::MockPasswordFormCache;
 using password_manager::MockPasswordManager;
 using password_manager::PasswordFormManager;
 using password_manager::PasswordManagerDriver;
 using password_manager::PasswordManagerInterface;
+using password_manager::PasswordSaveManagerImpl;
 using testing::NiceMock;
 using testing::Return;
+using testing::ReturnRef;
 
 namespace {
 
 constexpr char kTestUrl[] = "https://example.com/login";
+constexpr char16_t kTestUsername[] = u"username";
 
 class FakePasswordManagerClient
     : public password_manager::StubPasswordManagerClient {
@@ -58,6 +68,10 @@ class FakePasswordManagerClient
               GetPasswordManager,
               (),
               (override, const));
+  MOCK_METHOD(bool,
+              IsReauthBeforeFillingRequired,
+              (DeviceAuthenticator*),
+              (override));
 
   FakePasswordManagerClient() {
     profile_store_ = base::MakeRefCounted<password_manager::TestPasswordStore>(
@@ -93,7 +107,13 @@ class MockPasswordManagerDriver
  public:
   MockPasswordManagerDriver() = default;
   ~MockPasswordManagerDriver() override = default;
+  MOCK_METHOD(const url::Origin&,
+              GetLastCommittedOrigin,
+              (),
+              (const, override));
 
+  MOCK_METHOD(bool, IsInPrimaryMainFrame, (), (const, override));
+  MOCK_METHOD(bool, IsNestedWithinFencedFrame, (), (const, override));
   MOCK_METHOD(password_manager::PasswordManagerInterface*,
               GetPasswordManager,
               (),
@@ -171,6 +191,20 @@ class ActorLoginDelegateImplTest : public ChromeRenderViewHostTestHarness {
         .WillByDefault(Return(&mock_password_manager_));
   }
 
+  std::unique_ptr<PasswordFormManager> CreateFormManagerWithParsedForm(
+      const url::Origin& origin,
+      const autofill::FormData& form_data,
+      MockPasswordManagerDriver& mock_driver) {
+    auto form_manager = std::make_unique<PasswordFormManager>(
+        &client_, mock_driver.AsWeakPtr(), form_data, &form_fetcher_,
+        std::make_unique<PasswordSaveManagerImpl>(&client_),
+        /*metrics_recorder=*/nullptr);
+    // Force form parsing, otherwise there will be no parsed observed form.
+    form_manager->DisableFillingServerPredictionsForTesting();
+    form_fetcher_.NotifyFetchCompleted();
+    return form_manager;
+  }
+
  protected:
   FakePasswordManagerClient client_;
   // `raw_ptr` because `WebContentsUserData` owns it
@@ -179,6 +213,9 @@ class ActorLoginDelegateImplTest : public ChromeRenderViewHostTestHarness {
   NiceMock<MockPasswordFormCache> mock_form_cache_;
   std::vector<std::unique_ptr<PasswordFormManager>> form_managers_;
   MockPasswordManagerDriver mock_driver_;
+  FakeFormFetcher form_fetcher_;
+  autofill::test::AutofillUnitTestEnvironment autofill_test_environment_{
+      {.disable_server_communication = true}};
 
   // Tab setup
   MockBrowserWindowInterface mock_browser_window_interface_;
@@ -393,6 +430,50 @@ TEST_F(ActorLoginDelegateImplTest, WebContentsDestroyedDuringAttemptLogin) {
   // The callback should never be invoked because the
   // delegate was destroyed.
   EXPECT_FALSE(future.IsReady());
+}
+
+// If the window is not active and reauth before filling is required,
+// `AttemptLogin` should return LoginStatusResult::kErrorDeviceReauthRequired.
+TEST_F(ActorLoginDelegateImplTest, FillingReauthRequiredWindowNotActive) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(/*enabled_features=*/
+                                {password_manager::features::kActorLogin,
+                                 password_manager::features::
+                                     kActorLoginReauthTaskRefocus},
+                                /*disabled_features=*/{});
+  const url::Origin origin = url::Origin::Create(GURL(kTestUrl));
+  const Credential credential =
+      CreateTestCredential(kTestUsername, origin.GetURL(), origin);
+  const FormData form_data = CreateSigninFormData(origin.GetURL());
+  std::vector<password_manager::PasswordForm> saved_forms;
+  saved_forms.push_back(
+      CreateSavedPasswordForm(origin.GetURL(), kTestUsername));
+  form_fetcher_.SetBestMatches(saved_forms);
+
+  // Make sure that all the conditions for filling are fulfilled.
+  ON_CALL(mock_driver_, GetLastCommittedOrigin())
+      .WillByDefault(ReturnRef(origin));
+  ON_CALL(mock_driver_, IsInPrimaryMainFrame).WillByDefault(Return(true));
+  ON_CALL(mock_driver_, IsNestedWithinFencedFrame).WillByDefault(Return(false));
+
+  std::vector<std::unique_ptr<PasswordFormManager>> form_managers;
+  form_managers.push_back(
+      CreateFormManagerWithParsedForm(origin, form_data, mock_driver_));
+
+  SetUpActorCredentialFillerDeps();
+
+  EXPECT_CALL(mock_form_cache_, GetFormManagers)
+      .WillRepeatedly(Return(base::span(form_managers)));
+  EXPECT_CALL(client_, IsReauthBeforeFillingRequired).WillOnce(Return(true));
+
+  EXPECT_CALL(mock_browser_window_interface_, IsActive).WillOnce(Return(false));
+
+  base::test::TestFuture<LoginStatusResultOrError> future;
+  delegate_->AttemptLogin(credential, false, future.GetCallback());
+
+  ASSERT_TRUE(future.Get().has_value());
+  EXPECT_EQ(future.Get().value(),
+            LoginStatusResult::kErrorDeviceReauthRequired);
 }
 
 }  // namespace actor_login

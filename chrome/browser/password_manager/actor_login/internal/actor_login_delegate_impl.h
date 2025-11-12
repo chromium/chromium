@@ -67,6 +67,10 @@ class ActorLoginDelegateImpl
   // content::WebContentsObserver:
   void WebContentsDestroyed() override;
 
+  // Checks whether the currently ongoing task is in focus, either in
+  // the tab or in its corresponding Glic UI instance.
+  bool IsTaskInFocus();
+
   // Private helper methods for handling task completion. They should be
   // invoked asynchronously.
   void OnGetCredentialsCompleted(CredentialsOrErrorReply callback,

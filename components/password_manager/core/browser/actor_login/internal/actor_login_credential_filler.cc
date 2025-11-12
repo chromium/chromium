@@ -30,7 +30,6 @@
 #include "components/password_manager/core/browser/password_manager_interface.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/tabs/public/tab_interface.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 
 namespace actor_login {
@@ -96,20 +95,20 @@ ActorLoginCredentialFiller::ActorLoginCredentialFiller(
     const Credential& credential,
     bool should_store_permission,
     PasswordManagerClient* client,
+    IsTaskInFocus is_task_in_focus,
     LoginStatusResultOrErrorReply callback)
     : origin_(main_frame_origin),
       credential_(credential),
       should_store_permission_(should_store_permission),
       client_(client),
       login_form_finder_(std::make_unique<ActorLoginFormFinder>(client_)),
+      is_task_in_focus_(std::move(is_task_in_focus)),
       callback_(std::move(callback)) {}
 
 ActorLoginCredentialFiller::~ActorLoginCredentialFiller() = default;
 
 void ActorLoginCredentialFiller::AttemptLogin(
-    password_manager::PasswordManagerInterface* password_manager,
-    const tabs::TabInterface& tab) {
-  tab_ = &tab;
+    password_manager::PasswordManagerInterface* password_manager) {
   CHECK(client_);
   CHECK(password_manager);
 
@@ -252,7 +251,7 @@ void ActorLoginCredentialFiller::AttemptReauth(base::OnceClosure on_reauth_cb) {
 
   if (base::FeatureList::IsEnabled(
           password_manager::features::kActorLoginReauthTaskRefocus) &&
-      !tab_->IsActivated()) {
+      !is_task_in_focus_.Run()) {
     std::move(callback_).Run(LoginStatusResult::kErrorDeviceReauthRequired);
     return;
   }

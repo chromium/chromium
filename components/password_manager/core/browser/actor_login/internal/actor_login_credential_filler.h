@@ -4,6 +4,7 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_ACTOR_LOGIN_INTERNAL_ACTOR_LOGIN_CREDENTIAL_FILLER_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_ACTOR_LOGIN_INTERNAL_ACTOR_LOGIN_CREDENTIAL_FILLER_H_
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -18,10 +19,6 @@ namespace password_manager {
 class PasswordManagerInterface;
 }  // namespace password_manager
 
-namespace tabs {
-class TabInterface;
-}
-
 namespace actor_login {
 
 class ActorLoginFormFinder;
@@ -29,10 +26,13 @@ class ActorLoginFormFinder;
 // Fills a given credential into the matching signin form if one exists.
 class ActorLoginCredentialFiller {
  public:
+  using IsTaskInFocus = base::RepeatingCallback<bool()>;
+
   ActorLoginCredentialFiller(const url::Origin& main_frame_origin,
                              const Credential& credential,
                              bool should_store_permission,
                              password_manager::PasswordManagerClient* client,
+                             IsTaskInFocus is_task_in_focus,
                              LoginStatusResultOrErrorReply callback);
   ~ActorLoginCredentialFiller();
 
@@ -42,12 +42,8 @@ class ActorLoginCredentialFiller {
 
   // Attempts to fill the credential provided in the constructor.
   // `password_manager` is used to find the signin form.
-  // `tab` is used if the user needs to re-authenticate. In this case the tab
-  // must be in foreground, otherwise this will result in
-  // `kErrorDeviceReauthRequired`.
   void AttemptLogin(
-      password_manager::PasswordManagerInterface* password_manager,
-      const tabs::TabInterface& tab);
+      password_manager::PasswordManagerInterface* password_manager);
 
  private:
   enum class FieldType { kUsername, kPassword };
@@ -149,13 +145,11 @@ class ActorLoginCredentialFiller {
   // Safe to access from everywhere apart from the destructor.
   raw_ptr<password_manager::PasswordManagerClient> client_ = nullptr;
 
-  // Tab where the filling should be done. This tab is guaranteed to be non-null
-  // for the lifetime of `ActorLoginCredentialFiller` because the filler is
-  // owned by the tab.
-  raw_ptr<const tabs::TabInterface> tab_ = nullptr;
-
   // Helper object for finding login forms.
   std::unique_ptr<ActorLoginFormFinder> login_form_finder_;
+
+  // Checks whether the UI relevant to the actor login task is in focus.
+  IsTaskInFocus is_task_in_focus_;
 
   // The callback to call with the result of the login attempt.
   LoginStatusResultOrErrorReply callback_;
