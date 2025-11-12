@@ -2362,8 +2362,6 @@ source_set("browser") {
     "web_contents/file_chooser_impl.h",
     "web_contents/java_script_dialog_commit_deferring_condition.cc",
     "web_contents/java_script_dialog_commit_deferring_condition.h",
-    "web_contents/partitioned_popins_controller.cc",
-    "web_contents/partitioned_popins_controller.h",
     "web_contents/slow_web_preference_cache.cc",
     "web_contents/slow_web_preference_cache.h",
     "web_contents/web_contents_impl.cc",

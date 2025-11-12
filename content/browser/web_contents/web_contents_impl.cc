@@ -133,7 +133,6 @@
 #include "content/browser/wake_lock/wake_lock_context_host.h"
 #include "content/browser/web_contents/file_chooser_impl.h"
 #include "content/browser/web_contents/java_script_dialog_commit_deferring_condition.h"
-#include "content/browser/web_contents/partitioned_popins_controller.h"
 #include "content/browser/web_contents/slow_web_preference_cache.h"
 #include "content/browser/web_contents/web_contents_view.h"
 #include "content/browser/web_contents/web_contents_view_child_frame.h"
@@ -901,18 +900,6 @@ WebContentsImpl::GetPartitionedPopinOpenerProperties() const {
   CHECK(IsPartitionedPopin());
 
   return *partitioned_popin_opener_properties_;
-}
-
-RenderFrameHostImpl* WebContentsImpl::GetPartitionedPopinOpener(
-    base::PassKey<PartitionedPopinsController>) const {
-  // A popin cannot open a popin so at most one could be set at a time.
-  CHECK(!partitioned_popin_opener_ || !opened_partitioned_popin_);
-
-  // The feature must be enabled if the popin opener is set.
-  CHECK(base::FeatureList::IsEnabled(blink::features::kPartitionedPopins) ||
-        !partitioned_popin_opener_);
-
-  return partitioned_popin_opener_.get();
 }
 
 void WebContentsImpl::ClearPartitionedPopinOpenerForTesting() {

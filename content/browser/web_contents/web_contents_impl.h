@@ -143,7 +143,6 @@ class JavaScriptDialogDismissNotifier;
 class MediaSession;
 class MediaWebContentsObserver;
 class NFCHost;
-class PartitionedPopinsController;
 class PreloadingAttempt;
 class RenderFrameHost;
 class RenderFrameHostImpl;
@@ -1595,13 +1594,6 @@ class CONTENT_EXPORT WebContentsImpl
 
   const struct PartitionedPopinOpenerProperties&
   GetPartitionedPopinOpenerProperties() const override;
-
-  // Returns the opener of this window if this window is a partitioned popin
-  // and the opener still exists. This may return null for if the opener was
-  // already deleted even if this window is a popin.
-  // See https://explainers-by-googlers.github.io/partitioned-popins/
-  RenderFrameHostImpl* GetPartitionedPopinOpener(
-      base::PassKey<PartitionedPopinsController>) const;
 
   // Clears `partitioned_popin_opener_` to test what happens if the opener
   // disappears after the popin is opened.
