@@ -87,6 +87,10 @@ base::File SandboxedFile::DuplicateFile(AccessRights access_rights) {
 #endif
 }
 
+base::File& SandboxedFile::GetFile() {
+  return underlying_file_.IsValid() ? underlying_file_ : opened_file_;
+}
+
 int SandboxedFile::Close() {
   CHECK(IsValid());
   underlying_file_ = std::move(opened_file_);

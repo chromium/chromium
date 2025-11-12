@@ -419,6 +419,30 @@ TEST_F(SandboxedFileTest, LockHotJournal) {
   EXPECT_EQ(file->LockModeForTesting(), SQLITE_LOCK_EXCLUSIVE);
 }
 
+TEST_F(SandboxedFileTest, GetFile) {
+  std::unique_ptr<SandboxedFile> file = CreateEmptyFile("get_file");
+  EXPECT_FALSE(file->IsValid());
+
+  // Before opening, GetFile() should return the underlying file.
+  EXPECT_EQ(file->GetFile().GetPlatformFile(),
+            file->UnderlyingFileForTesting().GetPlatformFile());
+
+  OpenFile(file.get());
+  EXPECT_TRUE(file->IsValid());
+
+  // After opening, GetFile() should return the opened file.
+  EXPECT_EQ(file->GetFile().GetPlatformFile(),
+            file->OpenedFileForTesting().GetPlatformFile());
+
+  file->Close();
+  EXPECT_FALSE(file->IsValid());
+
+  // After closing, GetFile() should return the new underlying file, which was
+  // the opened file.
+  EXPECT_EQ(file->GetFile().GetPlatformFile(),
+            file->UnderlyingFileForTesting().GetPlatformFile());
+}
+
 }  // namespace
 
 }  // namespace persistent_cache

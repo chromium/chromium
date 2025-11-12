@@ -101,7 +101,7 @@ TEST_F(SqliteSandboxedVfsTest, AccessAfterReRegistering) {
   }
 }
 
-TEST_F(SqliteSandboxedVfsTest, DeleteFileAlwaysImpossible) {
+TEST_F(SqliteSandboxedVfsTest, DeleteFile) {
   ASSERT_OK_AND_ASSIGN(SqliteVfsFileSet vfs_file_set,
                        CreateFilesAndBuildVfsFileSet());
 
@@ -116,12 +116,31 @@ TEST_F(SqliteSandboxedVfsTest, DeleteFileAlwaysImpossible) {
       SqliteSandboxedVfsDelegate::GetInstance()->RegisterSandboxedFiles(
           vfs_file_set);
 
-  // Impossible to delete registered files.
-  for (const auto& virtual_file_path_to_file : vfs_file_set.GetFiles()) {
-    EXPECT_EQ(SqliteSandboxedVfsDelegate::GetInstance()->DeleteFile(
-                  virtual_file_path_to_file.first, true),
-              SQLITE_IOERR_DELETE);
-  }
+  // Get a file to test with.
+  auto files = vfs_file_set.GetFiles();
+  auto it = files.begin();
+  const auto& file_path_to_delete = it->first;
+  auto& file_to_delete = it->second;
+
+  // Impossible to delete registered and opened files.
+  file_to_delete->OnFileOpened(file_to_delete->TakeUnderlyingFile());
+  EXPECT_TRUE(file_to_delete->IsValid());
+  EXPECT_EQ(SqliteSandboxedVfsDelegate::GetInstance()->DeleteFile(
+                file_path_to_delete, true),
+            SQLITE_IOERR_DELETE);
+
+  // Write to the file, then close it.
+  const std::string content = "hello";
+  EXPECT_EQ(file_to_delete->Write(content.data(), content.size(), 0),
+            SQLITE_OK);
+  file_to_delete->Close();
+  EXPECT_FALSE(file_to_delete->IsValid());
+
+  // Now it's possible to delete the registered and closed file.
+  EXPECT_EQ(SqliteSandboxedVfsDelegate::GetInstance()->DeleteFile(
+                file_path_to_delete, true),
+            SQLITE_OK);
+  EXPECT_EQ(file_to_delete->UnderlyingFileForTesting().GetLength(), 0);
 }
 
 TEST_F(SqliteSandboxedVfsTest, OpenFile) {

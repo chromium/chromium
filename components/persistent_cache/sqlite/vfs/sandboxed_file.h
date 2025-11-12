@@ -91,6 +91,11 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) SandboxedFile
   // file must have been provided at construction.
   base::File DuplicateFile(AccessRights access_rights);
 
+  // Returns a reference to the instance's file regardless of whether it is
+  // open (`IsValid()` returns true) or closed (otherwise). The reference is
+  // invalidated upon open/close.
+  base::File& GetFile();
+
   // sqlite3_file implementation.
   int Close() override;
   int Read(void* buffer, int size, sqlite3_int64 offset) override;
