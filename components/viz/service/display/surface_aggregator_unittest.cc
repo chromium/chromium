@@ -5854,21 +5854,26 @@ CompositorFrame BuildCompositorFrameWithResources(
   }
 
   for (ResourceId resource_id : resource_ids) {
-    auto shared_image =
-        shared_image_interface->CreateSharedImageForSoftwareCompositor(
-            {SinglePlaneFormat::kBGRA_8888, gfx::Size(1, 1), gfx::ColorSpace(),
-             gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY,
-             "SurfaceAggregatorWithResourcesTest"});
+    gpu::SharedImageInfo si_info{SinglePlaneFormat::kBGRA_8888, gfx::Size(1, 1),
+                                 gfx::ColorSpace(),
+                                 gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY,
+                                 "SurfaceAggregatorWithResourcesTest"};
+    scoped_refptr<gpu::ClientSharedImage> shared_image;
+    if (valid) {
+      shared_image =
+          shared_image_interface->CreateSharedImageForSoftwareCompositor(
+              si_info);
+    } else {
+      // ResourceProvider is software, so only software resources are valid. Do
+      // this to cause the resource to be rejected.
+      shared_image = shared_image_interface->CreateSharedImage(
+          si_info, gpu::SurfaceHandle());
+    }
     auto resource = TransferableResource::Make(
         shared_image, TransferableResource::ResourceSource::kTileRasterTask,
         shared_image->creation_sync_token());
 
     resource.id = resource_id;
-    if (!valid) {
-      // ResourceProvider is software, so only software resources are valid. Do
-      // this to cause the resource to be rejected.
-      resource.is_software = false;
-    }
     frame.resource_list.push_back(resource);
     auto* quad = pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
     const gfx::Rect rect;
@@ -5970,11 +5975,12 @@ TEST_F(SurfaceAggregatorWithResourcesTest, TakeInvalidResources) {
   LocalSurfaceId local_surface_id(7u, base::UnguessableToken::Create());
   SurfaceId surface_id(root_sink_->frame_sink_id(), local_surface_id);
 
-  TransferableResource resource;
-  resource.id = ResourceId(11);
   // ResourceProvider is software but resource is not, so it should be
   // ignored.
-  resource.is_software = false;
+  TransferableResource resource = TransferableResource::Make(
+      gpu::ClientSharedImage::CreateForTesting(),
+      TransferableResource::ResourceSource::kTest, gpu::SyncToken());
+  resource.id = ResourceId(11);
 
   CompositorFrame frame = CompositorFrameBuilder()
                               .AddDefaultRenderPass()
