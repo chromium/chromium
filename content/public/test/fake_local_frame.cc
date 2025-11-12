@@ -250,4 +250,8 @@ void FakeLocalFrame::GetScrollPosition(GetScrollPositionCallback callback) {
   std::move(callback).Run(gfx::Point(0, 0));
 }
 
+#if BUILDFLAG(IS_ANDROID)
+void FakeLocalFrame::PerformSpellCheck() {}
+#endif
+
 }  // namespace content

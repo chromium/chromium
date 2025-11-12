@@ -186,6 +186,9 @@ class FakeLocalFrame : public blink::mojom::LocalFrame {
   void UpdatePrerenderURL(const ::GURL& matched_url,
                           UpdatePrerenderURLCallback callback) override;
   void GetScrollPosition(GetScrollPositionCallback callback) override;
+#if BUILDFLAG(IS_ANDROID)
+  void PerformSpellCheck() override;
+#endif
 
  private:
   void BindFrameHostReceiver(mojo::ScopedInterfaceEndpointHandle handle);

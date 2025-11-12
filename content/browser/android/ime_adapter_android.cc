@@ -639,4 +639,14 @@ std::vector<ui::ImeTextSpan> ImeAdapterAndroid::GetImeTextSpansFromJava(
   return ime_text_spans;
 }
 
+void ImeAdapterAndroid::PerformSpellCheck(JNIEnv* env) {
+  RenderFrameHostImpl* rfh =
+      static_cast<RenderFrameHostImpl*>(GetFocusedFrame());
+  if (!rfh) {
+    return;
+  }
+
+  rfh->GetAssociatedLocalFrame()->PerformSpellCheck();
+}
+
 }  // namespace content

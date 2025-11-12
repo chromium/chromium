@@ -898,6 +898,17 @@ class ThreadedInputConnection extends BaseInputConnection implements ChromiumBas
     }
 
     /**
+     * @see InputConnection#performSpellCheck()
+     */
+    @Override
+    public boolean performSpellCheck() {
+        if (DEBUG_LOGS) Log.i(TAG, "performSpellCheck");
+
+        PostTask.postTask(TaskTraits.UI_DEFAULT, () -> mImeAdapter.performSpellCheck());
+        return true;
+    }
+
+    /**
      * @see InputConnection#closeConnection()
      */
     // TODO(crbug.com/40479664): Fix this properly.

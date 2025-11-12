@@ -274,6 +274,10 @@ class LocalFrameMojoHandler
   // DevicePostureClient implementation:
   void OnPostureChanged(mojom::blink::DevicePostureType posture) final;
 
+#if BUILDFLAG(IS_ANDROID)
+  void PerformSpellCheck() final;
+#endif
+
   Member<blink::LocalFrame> frame_;
 
   HeapMojoAssociatedRemote<mojom::blink::BackForwardCacheControllerHost>

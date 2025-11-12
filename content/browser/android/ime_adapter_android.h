@@ -133,6 +133,8 @@ class CONTENT_EXPORT ImeAdapterAndroid : public RenderWidgetHostConnector {
   base::android::ScopedJavaLocalRef<jobjectArray> GetSupportedMimeTypes(
       JNIEnv*);
 
+  void PerformSpellCheck(JNIEnv* env);
+
  private:
   RenderWidgetHostImpl* GetFocusedWidget();
   RenderFrameHost* GetFocusedFrame();

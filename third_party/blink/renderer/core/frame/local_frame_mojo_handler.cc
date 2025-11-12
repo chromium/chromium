@@ -1492,4 +1492,10 @@ void LocalFrameMojoHandler::UpdatePrerenderURL(
   std::move(callback).Run();
 }
 
+#if BUILDFLAG(IS_ANDROID)
+void LocalFrameMojoHandler::PerformSpellCheck() {
+  frame_->PerformSpellCheck();
+}
+#endif
+
 }  // namespace blink

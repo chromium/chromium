@@ -114,14 +114,17 @@
 #include "third_party/blink/renderer/core/dom/ignore_opens_during_unload_count_incrementer.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/editor.h"
+#include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/ime/input_method_controller.h"
 #include "third_party/blink/renderer/core/editing/serializers/create_markup_options.h"
 #include "third_party/blink/renderer/core/editing/serializers/serialization.h"
+#include "third_party/blink/renderer/core/editing/spellcheck/spell_check_requester.h"
 #include "third_party/blink/renderer/core/editing/spellcheck/spell_checker.h"
 #include "third_party/blink/renderer/core/editing/suggestion/text_suggestion_controller.h"
 #include "third_party/blink/renderer/core/editing/surrounding_text.h"
 #include "third_party/blink/renderer/core/editing/visible_position.h"
+#include "third_party/blink/renderer/core/editing/visible_selection.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/events/message_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -4249,6 +4252,19 @@ void LocalFrame::NotifyFrameVisibilityChanged(
   for (auto observer : frame_visibility_observers_as_vector) {
     observer->FrameVisibilityChanged(visibility);
   }
+}
+
+// TODO(crbug.com/447973489) - Add test coverage for this method
+void LocalFrame::PerformSpellCheck() {
+  ContainerNode* container_node = HighestEditableRoot(
+      Selection().ComputeVisibleSelectionInDOMTree().Start());
+  if (!container_node) {
+    return;
+  }
+
+  const EphemeralRange range(Position(container_node, 0),
+                             Position::LastPositionInNode(*container_node));
+  GetSpellChecker().GetSpellCheckRequester().RequestCheckingFor(range);
 }
 
 }  // namespace blink

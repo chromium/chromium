@@ -223,4 +223,14 @@ public class ImeAdapterImplUnitTest {
                         eq(event4.getUnicodeChar()));
         verify(mImeAdapterImplJni, never()).commitText(anyLong(), any(), any(), any(), anyInt());
     }
+
+    @Test
+    public void testPerformSpellCheck() {
+        ImeAdapterImpl adapter = new ImeAdapterImpl(mWebContentsImpl);
+        adapter.onConnectedToRenderProcess();
+
+        adapter.performSpellCheck();
+
+        verify(mImeAdapterImplJni).performSpellCheck(anyLong());
+    }
 }

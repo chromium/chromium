@@ -1816,6 +1816,11 @@ public class ImeAdapterImpl
         resetAndHideKeyboard();
     }
 
+    void performSpellCheck() {
+        if (!isValid()) return;
+        ImeAdapterImplJni.get().performSpellCheck(mNativeImeAdapterAndroid);
+    }
+
     @NativeMethods
     interface Natives {
         long init(ImeAdapterImpl caller, WebContents webContents);
@@ -1893,5 +1898,7 @@ public class ImeAdapterImpl
         // Stylus Writing
         void handleStylusWritingGestureAction(
                 long nativeImeAdapterAndroid, int id, ByteBuffer gestureData);
+
+        void performSpellCheck(long nativeImeAdapterAndroid);
     }
 }
