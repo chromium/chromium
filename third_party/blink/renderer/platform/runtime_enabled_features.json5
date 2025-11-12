@@ -1269,9 +1269,9 @@
       status: "stable",
     },
     {
-      // Need a feature entry
+      // https://chromestatus.com/feature/6106160780017664
       name: "CSSCaretShape",
-      status: "experimental",
+      status: "stable",
     },
     {
       // Support case-sensitive attribute selector modifier
