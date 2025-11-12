@@ -41,12 +41,19 @@ WebUIBrowserSidePanelUI::WebUIBrowserSidePanelUI(Browser* browser)
 WebUIBrowserSidePanelUI::~WebUIBrowserSidePanelUI() = default;
 
 void WebUIBrowserSidePanelUI::Close(SidePanelEntry::PanelType panel_type) {
+  Close(/*suppress_animations=*/true, panel_type,
+        SidePanelEntryHideReason::kSidePanelClosed);
+}
+
+void WebUIBrowserSidePanelUI::Close(bool suppress_animations,
+                                    SidePanelEntry::PanelType panel_type,
+                                    SidePanelEntryHideReason reason) {
   if (!IsSidePanelShowing(panel_type)) {
     return;
   }
 
   if (SidePanelEntry* entry = GetEntryForUniqueKey(*current_key(panel_type))) {
-    entry->OnEntryWillHide(SidePanelEntryHideReason::kSidePanelClosed);
+    entry->OnEntryWillHide(reason);
   }
   // Asynchronously close the side panel in webshell.
   // WebUI then notifies the browser when the side panel is actually closed
@@ -73,11 +80,6 @@ void WebUIBrowserSidePanelUI::DisableAnimationsForTesting() {}
 
 void WebUIBrowserSidePanelUI::SetNoDelaysForTesting(
     bool no_delays_for_testing) {}
-
-void WebUIBrowserSidePanelUI::Close(bool suppress_animations,
-                                    SidePanelEntry::PanelType panel_type) {
-  Close(panel_type);
-}
 
 content::WebContents* WebUIBrowserSidePanelUI::GetWebContentsForId(
     SidePanelEntryId entry_id) const {
@@ -198,7 +200,8 @@ void WebUIBrowserSidePanelUI::MaybeShowEntryOnTabStripModelChanged(
     current_side_panel_view_.reset();
   }
 
-  Close(/*suppress_animations=*/true, panel_type);
+  Close(/*suppress_animations=*/true, panel_type,
+        SidePanelEntryHideReason::kSidePanelClosed);
 }
 
 void WebUIBrowserSidePanelUI::OnSidePanelClosed(

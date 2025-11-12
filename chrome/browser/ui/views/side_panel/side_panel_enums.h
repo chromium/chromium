@@ -58,6 +58,9 @@ enum class SidePanelEntryHideReason {
   // Side panel entry was hidden because another entry was loaded into the
   // side panel.
   kReplaced = 1,
+  // Side panel entry was hidden because it is tab-scoped and the user switched
+  // tabs.
+  kBackgrounded = 2,
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_ENUMS_H_

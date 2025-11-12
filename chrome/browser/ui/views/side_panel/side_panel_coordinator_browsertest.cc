@@ -2619,3 +2619,86 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorLoadingContentTest,
   EXPECT_TRUE(
       coordinator()->IsSidePanelEntryShowing(loading_content_entry2_->key()));
 }
+
+namespace {
+class HidingReasonObserver : public SidePanelEntryObserver {
+ public:
+  HidingReasonObserver() = default;
+  ~HidingReasonObserver() override = default;
+
+  void OnEntryWillHide(SidePanelEntry* entry,
+                       SidePanelEntryHideReason reason) override {
+    last_entry_will_hide_reason_ = reason;
+  }
+
+  std::optional<SidePanelEntryHideReason> last_entry_will_hide_reason_;
+};
+}  // namespace
+
+IN_PROC_BROWSER_TEST_F(
+    SidePanelCoordinatorTest,
+    EntryWillHideOnTabSwitchWithBackgroundedReasonToTabWithActiveSidePanel) {
+  Init();
+  coordinator()->DisableAnimationsForTesting();
+
+  HidingReasonObserver observer;
+  SidePanelEntry* first_tab_entry = contextual_registries_[0]->GetEntryForKey(
+      SidePanelEntry::Key(SidePanelEntry::Id::kShoppingInsights));
+  ASSERT_TRUE(first_tab_entry);
+  base::ScopedObservation<SidePanelEntry, SidePanelEntryObserver>
+      first_tab_observation(&observer);
+  first_tab_observation.Observe(first_tab_entry);
+
+  // Show contextual panel in first tab.
+  browser()->tab_strip_model()->ActivateTabAt(0);
+  coordinator()->Show(SidePanelEntry::Id::kShoppingInsights);
+  EXPECT_TRUE(coordinator()->IsSidePanelEntryShowing(
+      SidePanelEntry::Key(SidePanelEntry::Id::kShoppingInsights)));
+
+  // Show contextual panel in second tab.
+  browser()->tab_strip_model()->ActivateTabAt(1);
+  coordinator()->Show(SidePanelEntry::Id::kLens);
+  EXPECT_TRUE(coordinator()->IsSidePanelEntryShowing(
+      SidePanelEntry::Key(SidePanelEntry::Id::kLens)));
+
+  // Switch back to the first tab.
+  browser()->tab_strip_model()->ActivateTabAt(0);
+  EXPECT_TRUE(coordinator()->IsSidePanelEntryShowing(
+      SidePanelEntry::Key(SidePanelEntry::Id::kShoppingInsights)));
+
+  // Switch to the second tab and verify the hide reason.
+  browser()->tab_strip_model()->ActivateTabAt(1);
+  EXPECT_TRUE(coordinator()->IsSidePanelEntryShowing(
+      SidePanelEntry::Key(SidePanelEntry::Id::kLens)));
+  EXPECT_THAT(observer.last_entry_will_hide_reason_,
+              testing::Optional(SidePanelEntryHideReason::kBackgrounded));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SidePanelCoordinatorTest,
+    EntryWillHideOnTabSwitchWithBackgroundedReasonToTabWithoutActiveSidePanel) {
+  Init();
+  coordinator()->DisableAnimationsForTesting();
+
+  HidingReasonObserver observer;
+  SidePanelEntry* first_tab_entry = contextual_registries_[0]->GetEntryForKey(
+      SidePanelEntry::Key(SidePanelEntry::Id::kShoppingInsights));
+  ASSERT_TRUE(first_tab_entry);
+  base::ScopedObservation<SidePanelEntry, SidePanelEntryObserver>
+      first_tab_observation(&observer);
+  first_tab_observation.Observe(first_tab_entry);
+
+  // Show contextual panel in first tab.
+  browser()->tab_strip_model()->ActivateTabAt(0);
+  coordinator()->Show(SidePanelEntry::Id::kShoppingInsights);
+  EXPECT_TRUE(coordinator()->IsSidePanelEntryShowing(
+      SidePanelEntry::Key(SidePanelEntry::Id::kShoppingInsights)));
+
+  // Switch to the second tab. The panel should hide as this tab does not have
+  // the contextual entry and no global entry has been shown.
+  browser()->tab_strip_model()->ActivateTabAt(1);
+  EXPECT_FALSE(
+      coordinator()->IsSidePanelShowing(SidePanelEntry::PanelType::kContent));
+  EXPECT_THAT(observer.last_entry_will_hide_reason_,
+              testing::Optional(SidePanelEntryHideReason::kBackgrounded));
+}
