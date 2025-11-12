@@ -125,8 +125,6 @@
 -org.chromium.chrome.browser.externalnav.UrlOverridingTest.testIntentURIWithEmptySchemeDoesNothing
 -org.chromium.chrome.browser.externalnav.UrlOverridingTest.testNavigationFromXHRCallback
 -org.chromium.chrome.browser.externalnav.UrlOverridingTest.testNavigationWithFallbackURL
--org.chromium.chrome.browser.findinpage.FindTest.testFindNextPreviousIncognitoTab
--org.chromium.chrome.browser.findinpage.FindTest.testFipTextNotRestoredIncognitoTab
 -org.chromium.chrome.browser.fullscreen.FullscreenManagerTest.*
 -org.chromium.chrome.browser.history.HistoryPaneTest.testOpenedHistoryItem_SingleClickOpensInSameTab
 -org.chromium.chrome.browser.hub.HubLayoutPublicTransitTest.testChangeTabSwitcherPanes
