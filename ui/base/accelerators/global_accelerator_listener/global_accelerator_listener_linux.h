@@ -14,6 +14,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "components/dbus/utils/connect_to_signal.h"
 #include "components/dbus/xdg/request.h"
 #include "dbus/bus.h"
 #include "dbus/object_proxy.h"
@@ -95,7 +96,7 @@ class GlobalAcceleratorListenerLinux : public GlobalAcceleratorListener {
       base::expected<dbus_xdg::Dictionary, dbus_xdg::ResponseError> results);
 
   // Callbacks for DBus signals.
-  void OnActivatedSignal(dbus::Signal* signal);
+  void OnActivatedSignal(dbus_utils::ConnectToSignalResultSig<"ost"> result);
 
   void OnSignalConnected(const std::string& interface_name,
                          const std::string& signal_name,
