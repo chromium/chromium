@@ -22,13 +22,6 @@ const base::FilePath::CharType kWebStateStorageFilename[] =
 const base::FilePath::CharType kWebStateSessionFilename[] =
     FILE_PATH_LITERAL("state.pb");
 
-NSString* const kLegacyWebStateListPinnedStateKey = @"PinnedState";
-
-NSString* const kLegacyWebStateListOpenerIndexKey = @"OpenerIndex";
-
-NSString* const kLegacyWebStateListOpenerNavigationIndexKey =
-    @"OpenerNavigationIndex";
-
 const char kSessionHistogramSavingTime[] =
     "Session.WebStates.SavingTimeOnMainThread";
 
