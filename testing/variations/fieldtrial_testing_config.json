@@ -18324,6 +18324,27 @@
             ]
         }
     ],
+    "PdfInkSignaturesTextHighlighter": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "enabled",
+                    "params": {
+                        "text-highlighting": "true"
+                    },
+                    "enable_features": [
+                        "PdfInk2"
+                    ]
+                }
+            ]
+        }
+    ],
     "PdfOutOfProcessIframe": [
         {
             "platforms": [
