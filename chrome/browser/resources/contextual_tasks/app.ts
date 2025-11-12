@@ -9,6 +9,7 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
+import type {Thread} from './contextual_tasks.mojom-webui.js';
 import type {BrowserProxy} from './contextual_tasks_browser_proxy.js';
 import {BrowserProxyImpl} from './contextual_tasks_browser_proxy.js';
 
@@ -24,11 +25,15 @@ export class ContextualTasksAppElement extends CrLitElement {
   static override get properties() {
     return {
       threadUrl_: {type: String},
+      threadTitle_: {type: String},
+      historyThreads_: {type: Array},
     };
   }
 
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
   protected accessor threadUrl_: string = '';
+  protected accessor threadTitle_: string = '';
+  protected accessor historyThreads_: Thread[] = [];
 
   // TODO(crbug.com/454388385): Remove this once the authentication flow is
   // implemented. Removing the gsc param renders the OGB header, which allows
@@ -39,8 +44,24 @@ export class ContextualTasksAppElement extends CrLitElement {
     this.threadUrl_ = url.toString();
   }
 
+  protected async onNewThreadClick_() {
+    const {url} = await this.browserProxy_.handler.getThreadUrl();
+    this.threadUrl_ = url.url;
+  }
+
+  protected async onThreadHistoryClick_() {
+    const {threads} = await this.browserProxy_.handler.showThreadHistory();
+    this.historyThreads_ = threads;
+    // TODO(crbug.com/445469925): Display the threads in a drawer.
+  }
+
   override async connectedCallback() {
     super.connectedCallback();
+
+    this.browserProxy_.callbackRouter.setThreadTitle.addListener(
+        (title: string) => {
+          this.threadTitle_ = title;
+        });
 
     // Check if the URL that loaded this page has a task attached to it. If it
     // does, we'll use the tasks URL to load the embedded page.

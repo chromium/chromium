@@ -30,7 +30,6 @@ class ContextualTasksUiService;
 class ContextualTasksPageHandler : public contextual_tasks::mojom::PageHandler {
  public:
   ContextualTasksPageHandler(
-      mojo::PendingRemote<contextual_tasks::mojom::Page> page,
       mojo::PendingReceiver<contextual_tasks::mojom::PageHandler> page_handler,
       content::WebUI* web_ui,
       ContextualTasksUI* web_ui_controller,
@@ -49,9 +48,9 @@ class ContextualTasksPageHandler : public contextual_tasks::mojom::PageHandler {
   void SetThreadTitle(const std::string& title) override;
 
   void CloseSidePanel() override;
+  void ShowThreadHistory(ShowThreadHistoryCallback callback) override;
 
  private:
-  mojo::Remote<contextual_tasks::mojom::Page> page_;
   mojo::Receiver<contextual_tasks::mojom::PageHandler> page_handler_;
   const raw_ref<content::WebUI> web_ui_;
   const raw_ref<ContextualTasksUI> web_ui_controller_;

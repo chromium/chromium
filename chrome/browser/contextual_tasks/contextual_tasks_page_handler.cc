@@ -13,13 +13,11 @@
 #include "url/gurl.h"
 
 ContextualTasksPageHandler::ContextualTasksPageHandler(
-    mojo::PendingRemote<contextual_tasks::mojom::Page> page,
     mojo::PendingReceiver<contextual_tasks::mojom::PageHandler> page_handler,
     content::WebUI* web_ui,
     ContextualTasksUI* web_ui_controller,
     contextual_tasks::ContextualTasksUiService* contextual_tasks_ui_service)
-    : page_(std::move(page)),
-      page_handler_(this, std::move(page_handler)),
+    : page_handler_(this, std::move(page_handler)),
       web_ui_(CHECK_DEREF(web_ui)),
       web_ui_controller_(CHECK_DEREF(web_ui_controller)),
       ui_service_(contextual_tasks_ui_service) {}
@@ -49,4 +47,12 @@ void ContextualTasksPageHandler::SetThreadTitle(const std::string& title) {
 
 void ContextualTasksPageHandler::CloseSidePanel() {
   web_ui_controller_->CloseSidePanel();
+}
+
+void ContextualTasksPageHandler::ShowThreadHistory(
+    ShowThreadHistoryCallback callback) {
+  std::vector<contextual_tasks::mojom::ThreadPtr> threads;
+  // TODO(crbug.com/445469925): Query backend asynchronously to get thread
+  // history.
+  std::move(callback).Run(std::move(threads));
 }

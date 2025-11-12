@@ -184,6 +184,8 @@ class ContextualTasksUI : public TaskInfoDelegate,
 
   std::optional<std::string> thread_title_;
 
+  mojo::Remote<contextual_tasks::mojom::Page> page_;
+
   base::WeakPtrFactory<ContextualTasksUI> weak_ptr_factory_{this};
 
   WEB_UI_CONTROLLER_TYPE_DECL();

@@ -18,6 +18,13 @@ export class TopToolbarElement extends CrLitElement {
     return getCss();
   }
 
+  static override get properties() {
+    return {
+      title: {type: String},
+    };
+  }
+
+  override accessor title: string = '';
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
 
   override render() {
@@ -30,6 +37,14 @@ export class TopToolbarElement extends CrLitElement {
 
   protected onCloseButtonClick_() {
     this.browserProxy_.handler.closeSidePanel();
+  }
+
+  protected onNewThreadClick_() {
+    this.fire('new-thread-click');
+  }
+
+  protected onThreadHistoryClick_() {
+    this.fire('thread-history-click');
   }
 }
 

@@ -136,7 +136,8 @@ void ContextualTasksUI::CreatePageHandler(
     mojo::PendingRemote<contextual_tasks::mojom::Page> page,
     mojo::PendingReceiver<contextual_tasks::mojom::PageHandler> page_handler) {
   page_handler_ = std::make_unique<ContextualTasksPageHandler>(
-      std::move(page), std::move(page_handler), web_ui(), this, ui_service_);
+      std::move(page_handler), web_ui(), this, ui_service_);
+  page_ = mojo::Remote(std::move(page));
 }
 
 const std::optional<base::Uuid>& ContextualTasksUI::GetTaskId() {
@@ -161,6 +162,9 @@ const std::optional<std::string>& ContextualTasksUI::GetThreadTitle() {
 
 void ContextualTasksUI::SetThreadTitle(std::optional<std::string> title) {
   thread_title_ = title;
+  if (page_) {
+    page_->SetThreadTitle(thread_title_.value_or(std::string()));
+  }
 }
 
 void ContextualTasksUI::CloseSidePanel() {

@@ -24,6 +24,7 @@ class TestContextualTasksPageHandler extends TestBrowserProxy implements
       'setTaskId',
       'setThreadTitle',
       'closeSidePanel',
+      'showThreadHistory',
     ]);
 
     this.url_ = {url};
@@ -49,6 +50,11 @@ class TestContextualTasksPageHandler extends TestBrowserProxy implements
 
   closeSidePanel() {
     this.methodCalled('closeSidePanel');
+  }
+
+  showThreadHistory() {
+    this.methodCalled('showThreadHistory');
+    return Promise.resolve({threads: []});
   }
 }
 

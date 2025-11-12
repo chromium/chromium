@@ -11,12 +11,19 @@ import type {TopToolbarElement} from './top_toolbar.js';
 // clang-format off
 export function getHtml(this: TopToolbarElement) {
   return html`<!--_html_template_start_-->
-  Contextual Tasks UI
+  ${this.title}
   <div id="rightButtonContainer">
     <!-- TODO(crbug.com/454388385): Remove this once the authentication flow
         is implemented. -->
     <button @click="${this.onSigninClick_}">Press for sign in</button>
-    <cr-icon-button @click="${this.onCloseButtonClick_}" iron-icon="cr:close">
+    <cr-icon-button @click="${this.onNewThreadClick_}" iron-icon="cr:add"
+        title="New Thread">
+    </cr-icon-button>
+    <cr-icon-button @click="${this.onThreadHistoryClick_}"
+        iron-icon="cr:history" title="Thread History">
+    </cr-icon-button>
+    <cr-icon-button @click="${this.onCloseButtonClick_}" iron-icon="cr:close"
+    title="Close">
     </cr-icon-button>
   </div>
   <!--_html_template_end_-->`;

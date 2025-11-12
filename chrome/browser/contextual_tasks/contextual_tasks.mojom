@@ -7,6 +7,16 @@ module contextual_tasks.mojom;
 import "mojo/public/mojom/base/uuid.mojom";
 import "url/mojom/url.mojom";
 
+// Represents the visual information needed to display a single thread in the
+// list of threads UI.
+struct Thread {
+  // The task ID associated with the thread.
+  mojo_base.mojom.Uuid task_id;
+
+  // The title of the thread as shown in the list item.
+  string title;
+};
+
 // The interface that defines the webui (typescript/renderer) to browser process
 // communication channel. This is primarily used to notify the browser of user
 // actions on the page (e.g. UI changes or requests for new data).
@@ -28,6 +38,12 @@ interface PageHandler {
 
   // Closes the side panel if it's open.
   CloseSidePanel();
+
+  // Invoked when the user clicks Thread History button to show the full list
+  // of threads from history. Initiates a query to the backend to retrieve the
+  // list asynchronously. On receiving the list, a drawer UI will be shown
+  // populated with the threads. Used for thread resumption.
+  ShowThreadHistory() => (array<Thread> threads);
 };
 
 // The interface that defines the browser process to webui (typescript/renderer)
@@ -35,7 +51,8 @@ interface PageHandler {
 // changes on the browser side (e.g. the data model) not directly caused by an
 // interation on the page.
 interface Page {
-  // TODO(445841345): Add browser-to-page functionality.
+  // Sets the title of the active thread in the UI.
+  SetThreadTitle(string title);
 };
 
 // Used to bootstrip bi-directional communication between the browser and webui.
