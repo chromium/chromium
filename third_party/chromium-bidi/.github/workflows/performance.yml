@@ -106,10 +106,23 @@ jobs:
           # Do not store these artifacts for long, as they will be present in the `all-performance-metrics`.
           retention-days: 1
   combine_metrics:
+    if: ${{ !cancelled() }}
     name: Combine performance metrics
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    permissions:
+      deployments: write
+      # Add perf metrics to PR's comment
+      pull-requests: write
+      contents: write
     runs-on: ubuntu-latest
     needs: performance_metric
     steps:
+      - name: Checkout
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      - name: Setup Pages
+        uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5.0.0
       - name: Download all performance metrics artifacts
         uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
         with:
@@ -118,10 +131,39 @@ jobs:
         run: |
           find artifacts -name "performance_metrics.txt" -exec cat {} + > all_performance_metrics.txt
           echo "Combined performance metrics:"
-          sort -o all_performance_metrics.txt all_performance_metrics.txt
           cat all_performance_metrics.txt
+
+          # Convert to JSON format suitable for github-action-benchmark
+          echo "[" > all_performance_metrics.json
+          first_metric=true
+          while IFS= read -r line; do
+            if [ "$first_metric" = false ]; then
+              echo "," >> all_performance_metrics.json
+            fi
+            key=${line%:*}
+            value=${line##*:}
+            echo "  {\"name\": \"$key\", \"value\": $value, \"unit\": \"ms\"}" >> all_performance_metrics.json
+            first_metric=false
+          done < all_performance_metrics.txt
+          echo "]" >> all_performance_metrics.json
+          echo "Combined performance metrics in JSON format:"
+          cat all_performance_metrics.json
       - name: Upload combined performance metrics
         uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
         with:
           name: all-performance-metrics
-          path: all_performance_metrics.txt
+          path: |
+            all_performance_metrics.txt
+            all_performance_metrics.json
+      - name: Store benchmark result
+        uses: benchmark-action/github-action-benchmark@v1
+        with:
+          tool: 'customSmallerIsBetter'
+          output-file-path: all_performance_metrics.json
+          gh-pages-branch: gh-pages
+          benchmark-data-dir-path: bench/
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          # Comment only when run in PR.
+          comment-always: ${{ github.ref != 'refs/heads/main' }}
+          # Push and deploy automatically on merge to main.
+          auto-push: ${{ github.ref == 'refs/heads/main' }}

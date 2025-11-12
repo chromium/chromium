@@ -285,14 +285,8 @@ jobs:
     needs: wpt
     if: ${{ github.ref == 'refs/heads/main' }}
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
     permissions:
-      contents: read
-      pages: write
-      id-token: write
+      contents: write
     steps:
       - name: Checkout
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
@@ -310,24 +304,17 @@ jobs:
           merge-multiple: true
       - name: Generate HTML test report
         run: >
+          mkdir -p wpt-report;
           node tools/wpt-report-builder/builder.mjs \
             --bidi $(ls out/wptreport.*.json) \
             --interop $(ls out/wptreport-interop.*.json) \
-            --out out/wptreport.html \
-            --out-label-2023 out/wptreport-2023.html
-      - name: Prepare Pages
-        # TODO: Support merged wpt report as before
-        # cp out/wptreport.json out/site/wptreport.json
-        run: |
-          mkdir -p out/site
-          cp out/wptreport.html out/site/index.html
-          cp out/wptreport-2023.html out/site/2023.html
+            --out wpt-report/index.html \
+            --out-label-2023 wpt-report/wptreport-2023.html
       - name: Setup Pages
         uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5.0.0
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v4.0.0
+      - name: Push to `gh-pages` branch
+        uses: JamesIves/github-pages-deploy-action@v4
         with:
-          path: out/site
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4.0.5
+          folder: wpt-report
+          branch: gh-pages
+          target-folder: wpt
