@@ -730,7 +730,7 @@ TEST_P(AutocorrectByDefaultDisabledByInputMethodMetadata,
   const InputMethodMetadataCase& test_case = GetParam();
   feature_list_.Reset();
   feature_list_.InitWithFeatures(
-      {features::kAutocorrectByDefault, features::kImeFstDecoderParamsUpdate},
+      {features::kAutocorrectByDefault},
       {features::kImeRuleConfig, features::kAssistMultiWord});
   TestingProfile testing_profile;
   SetPhysicalKeyboardAutocorrectAsEnabledByDefault(testing_profile.GetPrefs(),

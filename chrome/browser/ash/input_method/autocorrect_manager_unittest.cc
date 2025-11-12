@@ -514,7 +514,6 @@ DisabledFeaturesIncludingAutocorrectByDefault() {
 
 std::vector<base::test::FeatureRef> RequiredForAutocorrectByDefault() {
   return {ash::features::kAutocorrectByDefault,
-          ash::features::kImeFstDecoderParamsUpdate,
           ash::features::kImeUsEnglishModelUpdate};
 }
 
@@ -2951,21 +2950,6 @@ TEST_F(AutocorrectManagerTest,
 
   manager_.OnActivate(kUsEnglishEngineId);
   manager_.OnFocus(kContextId);
-
-  EXPECT_TRUE(manager_.DisabledByInvalidExperimentContext());
-}
-
-TEST_F(AutocorrectManagerTest,
-       IsDisabledWhenMissingNewModelParametersButEn840Enabled) {
-  feature_list_.Reset();
-  feature_list_.InitWithFeatures({ash::features::kAutocorrectByDefault},
-                                 {ash::features::kImeFstDecoderParamsUpdate,
-                                  ash::features::kImeRuleConfig});
-
-  manager_.OnActivate(kUsEnglishEngineId);
-  manager_.OnFocus(kContextId);
-  manager_.OnConnectedToSuggestionProvider(
-      AutocorrectSuggestionProvider::kUsEnglish840);
 
   EXPECT_TRUE(manager_.DisabledByInvalidExperimentContext());
 }

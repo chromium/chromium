@@ -1108,9 +1108,6 @@ BASE_FEATURE(kImeDownloaderExperiment, base::FEATURE_DISABLED_BY_DEFAULT);
 // If enabled, use the updated logic for downloading IME artifacts.
 BASE_FEATURE(kImeDownloaderUpdate, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// If enabled, use the updated parameters for the decoder.
-BASE_FEATURE(kImeFstDecoderParamsUpdate, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled use experimental US English IME language model.
 BASE_FEATURE(kImeUsEnglishExperimentalModel, base::FEATURE_DISABLED_BY_DEFAULT);
 

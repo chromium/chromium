@@ -7448,11 +7448,6 @@ inline constexpr char kImeAssistMultiWordName[] =
 inline constexpr char kImeAssistMultiWordDescription[] =
     "Enable assistive multi word suggestions for native IME";
 
-inline constexpr char kImeFstDecoderParamsUpdateName[] =
-    "Enable FST Decoder parameters update";
-inline constexpr char kImeFstDecoderParamsUpdateDescription[] =
-    "Enable updated parameters for the FST decoder.";
-
 inline constexpr char kImeSwitchCheckConnectionStatusName[] =
     "Enable IME switching using global boolean";
 inline constexpr char kImeSwitchCheckConnectionStatusDescription[] =
