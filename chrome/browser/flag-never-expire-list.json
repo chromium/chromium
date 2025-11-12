@@ -54,6 +54,7 @@
   "enable-gpu-rasterization",
   "enable-gpu-service-logging",
   "enable-hardware-secure-decryption",
+  "enable-hardware-secure-decryption-fallback",
   "enable-input-event-logging",
   "enable-isolated-web-app-dev-mode",
   "enable-javascript-harmony",

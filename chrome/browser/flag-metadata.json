@@ -3713,7 +3713,10 @@
     "owners": [
       "xhwang@chromium.org", "media-dev@chromium.org"
     ],
-    "expiry_milestone": 143
+    // A debugging flag intended for developers where there may not be any other
+    // way to turn off this fallback feature when testing hardware secure
+    // decryption playbacks.
+    "expiry_milestone": -1
   },
   {
     "name": "enable-headless-live-caption",
