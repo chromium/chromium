@@ -12,6 +12,8 @@
 // NOLINT(build/header_guard)
 // no-include-guard-because-multiply-included
 
+#include "build/branding_buildflags.h"
+
 // LINK_RESOURCE_ID is used for IDs that come from a .grd file.
 #ifndef LINK_RESOURCE_ID
 #error "LINK_RESOURCE_ID should be defined before including this file"
@@ -25,8 +27,13 @@
 // Autofill popup and keyboard accessory images.
 // We use Android's |VectorDrawableCompat| for the following images that are
 // displayed using |DropdownAdapter|.
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 LINK_RESOURCE_ID(IDR_AUTOFILL_AFFIRM_LINKED, R.drawable.affirm_linked)
 LINK_RESOURCE_ID(IDR_AUTOFILL_AFFIRM_UNLINKED, R.drawable.affirm_unlinked)
+#else
+LINK_RESOURCE_ID(IDR_AUTOFILL_AFFIRM_LINKED, R.drawable.bnpl_icon_generic)
+LINK_RESOURCE_ID(IDR_AUTOFILL_AFFIRM_LINKED, R.drawable.bnpl_icon_generic)
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 LINK_RESOURCE_ID(IDR_AUTOFILL_CC_AMEX_OLD, R.drawable.amex_card)
 LINK_RESOURCE_ID(IDR_AUTOFILL_CC_AMEX, R.drawable.amex_card)
 LINK_RESOURCE_ID(IDR_AUTOFILL_CC_DINERS_OLD, R.drawable.diners_card)
@@ -69,8 +76,13 @@ LINK_RESOURCE_ID(IDR_AUTOFILL_GOOGLE_PAY_KLARNA_DARK,
                  R.drawable.bnpl_icon_generic)
 LINK_RESOURCE_ID(IDR_AUTOFILL_GOOGLE_PAY_ZIP, R.drawable.bnpl_icon_generic)
 LINK_RESOURCE_ID(IDR_AUTOFILL_GOOGLE_PAY_ZIP_DARK, R.drawable.bnpl_icon_generic)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 LINK_RESOURCE_ID(IDR_AUTOFILL_KLARNA_LINKED, R.drawable.klarna_linked)
 LINK_RESOURCE_ID(IDR_AUTOFILL_KLARNA_UNLINKED, R.drawable.klarna_unlinked)
+#else
+LINK_RESOURCE_ID(IDR_AUTOFILL_KLARNA_LINKED, R.drawable.bnpl_icon_generic)
+LINK_RESOURCE_ID(IDR_AUTOFILL_KLARNA_UNLINKED, R.drawable.bnpl_icon_generic)
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 LINK_RESOURCE_ID(IDR_AUTOFILL_METADATA_BNPL_GENERIC,
                  R.drawable.bnpl_icon_generic)
 LINK_RESOURCE_ID(IDR_AUTOFILL_METADATA_BNPL_GENERIC_OLD,
@@ -117,8 +129,13 @@ LINK_RESOURCE_ID(IDR_AUTOFILL_METADATA_CC_VISA_OLD,
 LINK_RESOURCE_ID(IDR_AUTOFILL_METADATA_CC_VISA, R.drawable.visa_metadata_card)
 LINK_RESOURCE_ID(IDR_AUTOFILL_IBAN_OLD, R.drawable.iban_icon)
 LINK_RESOURCE_ID(IDR_AUTOFILL_IBAN, R.drawable.iban_icon)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 LINK_RESOURCE_ID(IDR_AUTOFILL_ZIP_LINKED, R.drawable.zip_linked)
 LINK_RESOURCE_ID(IDR_AUTOFILL_ZIP_UNLINKED, R.drawable.zip_unlinked)
+#else
+LINK_RESOURCE_ID(IDR_AUTOFILL_ZIP_LINKED, R.drawable.bnpl_icon_generic)
+LINK_RESOURCE_ID(IDR_AUTOFILL_ZIP_UNLINKED, R.drawable.bnpl_icon_generic)
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 // Use DECLARE_RESOURCE_ID here as these resources are used for android only.
 DECLARE_RESOURCE_ID(IDR_ANDROID_AUTOFILL_CC_SCAN_NEW,
