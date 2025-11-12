@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.app.bookmarks;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
-import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -38,7 +37,6 @@ import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRowProperties;
 import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRowProperties.ImageVisibility;
 import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRowViewBinder;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
@@ -122,20 +120,7 @@ public class BookmarkEditActivity extends SnackbarActivity {
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        // Check if the activity's theme is a dialog (Theme.Chromium.DialogWhenLarge).
-        TypedValue typedValue = new TypedValue();
-        getTheme().resolveAttribute(android.R.attr.windowIsFloating, typedValue, true);
-        boolean isDialog = (typedValue.data != 0);
-
-        // By default, show the back arrow (home button).
-        boolean showHomeButton = true;
-        if (ChromeFeatureList.sAndroidBookmarkBarFastFollow.isEnabled() && isDialog) {
-            // Disable the back arrow only when we are in the dialog UI.
-            showHomeButton = false;
-        }
-
-        assumeNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(showHomeButton);
+        assumeNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
 
         View shadow = findViewById(R.id.shadow);
         View scrollView = findViewById(R.id.scroll_view);
