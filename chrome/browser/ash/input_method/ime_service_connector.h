@@ -52,9 +52,6 @@ class ImeServiceConnector : public ime::mojom::PlatformAccessProvider,
   void BindInputMethodUserDataService(
       mojo::PendingReceiver<ime::mojom::InputMethodUserDataService> receiver);
 
-  void OnFileDownloadComplete(DownloadImeFileToCallback client_callback,
-                              base::FilePath path);
-
  private:
   void MaybeTriggerDownload(GURL url,
                             base::FilePath file_path,
