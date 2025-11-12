@@ -536,7 +536,6 @@ void AutofillField::set_server_predictions(
     std::vector<FieldPrediction> predictions) {
   overall_type_ = std::nullopt;
   server_predictions_.clear();
-  experimental_server_predictions_.clear();
 
   for (auto& prediction : predictions) {
     MaybeAddServerPrediction(std::move(prediction));
@@ -594,8 +593,6 @@ void AutofillField::MaybeAddServerPrediction(FieldPrediction prediction) {
     if (base::FeatureList::IsEnabled(features::kAutofillAiWithDataSchema)) {
       server_predictions_.push_back(std::move(prediction));
     }
-  } else {
-    experimental_server_predictions_.push_back(std::move(prediction));
   }
 }
 

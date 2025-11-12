@@ -198,9 +198,6 @@ class AutofillField : public FormFieldData {
     return server_predictions_;
   }
 
-  const std::vector<FieldPrediction>& experimental_server_predictions() const {
-    return experimental_server_predictions_;
-  }
   HtmlFieldType html_type() const { return html_type_; }
   HtmlFieldMode html_mode() const { return html_mode_; }
   const FieldTypeSet& possible_types() const { return possible_types_; }
@@ -500,9 +497,6 @@ class AutofillField : public FormFieldData {
 
   // The possible types of the field, as determined by the Autofill server.
   std::vector<FieldPrediction> server_predictions_;
-  // Predictions from the Autofill server which are not intended for general
-  // consumption. They are used for metrics and/or finch experiments.
-  std::vector<FieldPrediction> experimental_server_predictions_;
 
   // Requirements the site imposes to passwords (for password generation).
   // Corresponds to the requirements determined by the Autofill server.
