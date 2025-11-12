@@ -134,6 +134,7 @@ int GetLayoutConstant(LayoutConstant constant) {
       return 20;
     case DOWNLOAD_ICON_SIZE:
       return 20;
+    case MAIN_BACKGROUND_REGION_CORNER_RADIUS:
     case TOOLBAR_CORNER_RADIUS:
       return 8;
     case VERTICAL_TAB_STRIP_HORIZONTAL_PADDING:

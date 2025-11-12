@@ -95,6 +95,10 @@ enum LayoutConstant {
   // The size of the trailing icons used inside the LocationBar.
   LOCATION_BAR_TRAILING_ICON_SIZE,
 
+  // The corner radius of the MainBackgroundRegion when tool bar height side
+  // panel is visible
+  MAIN_BACKGROUND_REGION_CORNER_RADIUS,
+
   // Additional space beyond TAB_STRIP_PADDING between the tab strip and the
   // new tab button.
   NEW_TAB_BUTTON_LEADING_MARGIN,

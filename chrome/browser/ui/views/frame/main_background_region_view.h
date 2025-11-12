@@ -20,6 +20,7 @@ class MainBackgroundRegionView : public views::View {
   MainBackgroundRegionView& operator=(const MainBackgroundRegionView&) = delete;
   ~MainBackgroundRegionView() override;
 
+  void Layout(PassKey) override;
   void OnPaint(gfx::Canvas* canvas) override;
 
  private:
