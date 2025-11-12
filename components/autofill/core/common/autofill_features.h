@@ -186,12 +186,10 @@ BASE_DECLARE_FEATURE(kAutofillEnableImportWhenMultiplePhoneNumbers);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableKeyboardAccessoryChipRedesign);
 #endif  // BUILDFLAG(IS_ANDROID)
-
 #if BUILDFLAG(IS_ANDROID)
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableKeyboardAccessoryChipWidthAdjustment);
 #endif  // BUILDFLAG(IS_ANDROID)
-
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableLabelPrecedenceForTurkishAddresses);
 COMPONENT_EXPORT(AUTOFILL)
@@ -200,7 +198,6 @@ BASE_DECLARE_FEATURE(kAutofillEnableLoyaltyCardsFilling);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableSecurityTouchEventFilteringAndroid);
 #endif  // BUILDFLAG(IS_ANDROID)
-
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableSupportForHomeAndWork);
 COMPONENT_EXPORT(AUTOFILL)
