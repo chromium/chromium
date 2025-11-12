@@ -29,7 +29,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/google/core/common/google_switches.h"
-#include "components/network_session_configurator/common/network_switches.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/core/browser/dice_header_helper.h"
 #include "components/signin/core/browser/signin_header_helper.h"
@@ -111,10 +110,6 @@ class MirrorBrowserTest : public InProcessBrowserTest {
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    // HTTPS server only serves a valid cert for localhost, so this is needed to
-    // load pages from "www.google.com" without an interstitial.
-    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
-
     // The production code only allows known ports (80 for http and 443 for
     // https), but the test server runs on a random port.
     command_line->AppendSwitch(switches::kIgnoreGooglePortNumbers);
@@ -154,6 +149,7 @@ IN_PROC_BROWSER_TEST_F(MirrorBrowserTest, MirrorRequestHeader) {
         base::AutoLock auto_lock(lock);
         header_map[request.GetURL().GetPath()] = request.headers;
       }));
+  https_server.SetCertHostnames({"www.google.com", "www.redirected.com"});
   ASSERT_TRUE(https_server.Start());
 
   base::FilePath root_http;
