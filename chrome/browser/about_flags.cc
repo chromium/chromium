@@ -879,15 +879,25 @@ const FeatureEntry::FeatureVariation
 
 #if !BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam kWebUIOmniboxAimPopupAddContextButtonNone[] = {
-    {"AddContextButtonVariant", "none"}};
+    {"AddContextButtonVariant", "none"},
+    {"ForceToolsAndModels", "true"},
+};
 const FeatureEntry::FeatureParam
     kWebUIOmniboxAimPopupAddContextButtonBelowResults[] = {
-        {"AddContextButtonVariant", "below_results"}};
+        {"AddContextButtonVariant", "below_results"},
+        {"ForceToolsAndModels", "true"},
+};
 const FeatureEntry::FeatureParam
     kWebUIOmniboxAimPopupAddContextButtonAboveResults[] = {
-        {"AddContextButtonVariant", "above_results"}};
+        {"AddContextButtonVariant", "above_results"},
+        {"ForceToolsAndModels", "true"},
+};
 const FeatureEntry::FeatureParam kWebUIOmniboxAimPopupAddContextButtonInline[] =
-    {{"AddContextButtonVariant", "inline"}};
+    {
+        {"AddContextButtonVariant", "inline"},
+        {"ForceToolsAndModels", "true"},
+};
+
 const FeatureEntry::FeatureVariation kWebUIOmniboxAimPopupVariations[] = {
     {"- No \"Add Context\" Button", kWebUIOmniboxAimPopupAddContextButtonNone,
      std::size(kWebUIOmniboxAimPopupAddContextButtonNone), nullptr},

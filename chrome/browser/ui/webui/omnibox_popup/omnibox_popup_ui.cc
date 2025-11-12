@@ -9,6 +9,7 @@
 
 #include "base/feature_list.h"
 #include "base/strings/string_number_conversions.h"
+#include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/profiles/profile.h"
@@ -20,7 +21,6 @@
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter_service.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/composebox_handler.h"
-#include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_web_contents_helper.h"
 #include "chrome/browser/ui/webui/sanitized_image_source.h"
 #include "chrome/browser/ui/webui/searchbox/webui_omnibox_handler.h"
@@ -89,52 +89,58 @@ OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
       base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxAimPopup));
 
   // Add composebox data.
+  auto composebox_config = omnibox::FeatureConfig::Get().config.composebox();
+  const std::string attachment_mime_types =
+      composebox_config.attachment_upload().mime_types_allowed();
+  source->AddString("composeboxAttachmentFileTypes", attachment_mime_types);
+  source->AddInteger("composeboxFileMaxCount",
+                     composebox_config.max_num_files());
+  source->AddInteger("composeboxFileMaxSize",
+                     composebox_config.attachment_upload().max_size_bytes());
+  const std::string image_mime_types =
+      composebox_config.image_upload().mime_types_allowed();
+  source->AddString("composeboxImageFileTypes", image_mime_types);
+  const auto* aim_eligibility_service =
+      AimEligibilityServiceFactory::GetForProfile(profile_);
+  bool show_pdf_upload = aim_eligibility_service &&
+                         aim_eligibility_service->IsPdfUploadEligible() &&
+                         composebox_config.is_pdf_upload_enabled();
+  source->AddBoolean("composeboxShowPdfUpload", show_pdf_upload);
+
+  source->AddBoolean("composeboxCloseByClickOutside",
+                     omnibox::kCloseComposeboxByClickOutside.Get());
+  source->AddBoolean("composeboxCloseByEscape",
+                     omnibox::kCloseComposeboxByEscape.Get());
+  source->AddBoolean("composeboxContextMenuEnableMultiTabSelection",
+                     omnibox::kContextMenuEnableMultiTabSelection.Get());
+  source->AddBoolean("composeboxContextDragAndDropEnabled", false);
+  source->AddBoolean("composeboxShowContextMenu",
+                     omnibox::kShowContextMenu.Get());
+  source->AddBoolean("composeboxShowContextMenuDescription",
+                     omnibox::kShowContextMenuDescription.Get());
+  source->AddBoolean("composeboxShowContextMenuTabPreviews",
+                     omnibox::kShowContextMenuTabPreviews.Get());
+  source->AddBoolean("composeboxShowCreateImageButton",
+                     omnibox::IsCreateImagesEnabled(profile_));
+  source->AddBoolean("composeboxShowDeepSearchButton",
+                     omnibox::IsDeepSearchEnabled(profile_));
+  source->AddBoolean("composeboxShowImageSuggest",
+                     omnibox::kShowComposeboxImageSuggestions.Get());
+  source->AddBoolean("composeboxShowRecentTabChip", false);
+  source->AddBoolean("composeboxShowSubmit", omnibox::kShowSubmit.Get());
+  source->AddBoolean("composeboxShowTypedSuggestWithContext", false);
+  source->AddBoolean("composeboxShowTypedSuggest",
+                     omnibox::kShowComposeboxTypedSuggest.Get());
+  source->AddBoolean("composeboxShowZps", omnibox::kShowComposeboxZps.Get());
+  source->AddBoolean("composeboxSmartComposeEnabled",
+                     omnibox::kShowSmartCompose.Get());
+  source->AddBoolean("expandedComposeboxShowVoiceSearch", false);
+  source->AddBoolean("expandedSearchboxShowVoiceSearch", false);
   const std::string searchbox_layout_mode =
       AddContextButtonVariantToSearchboxLayoutMode(
           omnibox::kWebUIOmniboxAimPopupAddContextButtonVariantParam.Get());
   source->AddString("searchboxLayoutMode", searchbox_layout_mode);
-  source->AddBoolean("composeboxShowContextMenu",
-                     !searchbox_layout_mode.empty());
-  source->AddBoolean("composeboxShowContextMenuTabPreviews",
-                     ntp_composebox::kShowContextMenuTabPreviews.Get());
-  source->AddBoolean("composeboxContextMenuEnableMultiTabSelection",
-                     ntp_composebox::kContextMenuEnableMultiTabSelection.Get());
-  source->AddBoolean("composeboxShowZps",
-                     ntp_composebox::kShowComposeboxZps.Get());
-  source->AddBoolean("composeboxShowTypedSuggest",
-                     ntp_composebox::kShowComposeboxTypedSuggest.Get());
-  source->AddBoolean("composeboxShowTypedSuggestWithContext", false);
-  source->AddBoolean("composeboxShowImageSuggest",
-                     ntp_composebox::kShowComposeboxImageSuggestions.Get());
-  source->AddBoolean("composeboxShowContextMenuDescription",
-                     !searchbox_layout_mode.empty());
-  source->AddBoolean("composeboxShowSubmit", ntp_composebox::kShowSubmit.Get());
-  source->AddBoolean("composeboxShowCreateImageButton", false);
-  source->AddBoolean("composeboxShowDeepSearchButton", false);
-  source->AddBoolean("composeboxShowPdfUpload", false);
-  source->AddBoolean("composeboxShowRecentTabChip", false);
-  source->AddBoolean("composeboxSmartComposeEnabled", false);
-
-  auto composebox_config =
-      ntp_composebox::FeatureConfig::Get().config.composebox();
-  const std::string image_mime_types =
-      composebox_config.image_upload().mime_types_allowed();
-  source->AddString("composeboxImageFileTypes", image_mime_types);
-  const std::string attachment_mime_types =
-      composebox_config.attachment_upload().mime_types_allowed();
-  source->AddString("composeboxAttachmentFileTypes", attachment_mime_types);
-  source->AddInteger("composeboxFileMaxSize",
-                     composebox_config.attachment_upload().max_size_bytes());
-  source->AddInteger("composeboxFileMaxCount",
-                     composebox_config.max_num_files());
-  source->AddBoolean("composeboxCloseByEscape",
-                     composebox_config.close_by_escape());
-  source->AddBoolean("composeboxCloseByClickOutside",
-                     composebox_config.close_by_click_outside());
-  source->AddBoolean("composeboxContextDragAndDropEnabled", false);
   source->AddBoolean("steadyComposeboxShowVoiceSearch", false);
-  source->AddBoolean("expandedComposeboxShowVoiceSearch", false);
-  source->AddBoolean("expandedSearchboxShowVoiceSearch", false);
 
   webui::SetupWebUIDataSource(
       source, kOmniboxPopupResources,
@@ -202,7 +208,7 @@ void OmniboxPopupUI::CreatePageHandler(
     auto* contextual_search_service =
         ContextualSearchServiceFactory::GetForProfile(profile_);
     auto contextual_session_handle = contextual_search_service->CreateSession(
-        ntp_composebox::CreateQueryControllerConfigParams(),
+        omnibox::CreateQueryControllerConfigParams(),
         contextual_search::ContextualSearchSource::kOmnibox);
     contextual_search_web_contents_helper->set_session_handle(
         std::move(contextual_session_handle));
