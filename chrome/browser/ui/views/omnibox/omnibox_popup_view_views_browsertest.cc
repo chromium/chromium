@@ -831,7 +831,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
   CreatePopupForTestQuery();
   EXPECT_TRUE(popup_view()->IsOpen());
 
-  omnibox_view()->controller()->client()->GetPrefs()->SetBoolean(
+  location_bar()->GetOmniboxController()->client()->GetPrefs()->SetBoolean(
       omnibox::kKeywordSpaceTriggeringEnabled, true);
   omnibox_view()->SetUserText(u"@bookmarks");
   edit_model()->StartAutocomplete(false, false);

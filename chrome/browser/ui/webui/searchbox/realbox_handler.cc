@@ -81,7 +81,6 @@ RealboxHandler::RealboxHandler(
           profile,
           web_contents,
           std::make_unique<OmniboxController>(
-              /*view=*/nullptr,
               std::make_unique<RealboxOmniboxClient>(profile, web_contents))) {
   autocomplete_controller_observation_.Observe(autocomplete_controller());
 }

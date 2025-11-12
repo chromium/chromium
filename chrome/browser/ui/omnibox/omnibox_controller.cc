@@ -30,13 +30,11 @@
 #include "ui/gfx/geometry/rect.h"
 
 OmniboxController::OmniboxController(
-    OmniboxView* view,
     std::unique_ptr<OmniboxClient> client,
     std::optional<base::TimeDelta> autocomplete_stop_timer_duration)
     : client_(std::move(client)),
       edit_model_(std::make_unique<OmniboxEditModel>(
-          /*omnibox_controller=*/this,
-          view)) {
+          /*omnibox_controller=*/this)) {
   AutocompleteControllerConfig autocomplete_controller_config{
       .provider_types = AutocompleteClassifier::DefaultOmniboxProviders()};
   if (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxPopup)) {
@@ -50,17 +48,19 @@ OmniboxController::OmniboxController(
       client_->CreateAutocompleteProviderClient(),
       autocomplete_controller_config);
 
-  // Directly observe omnibox's `AutocompleteController` instance - i.e., when
-  // `view` is provided in the constructor. In the case of realbox - i.e., when
-  // `view` is not provided in the constructor - `RealboxHandler` directly
-  // observes the `AutocompleteController` instance itself.
-  if (view) {
-    autocomplete_controller_->AddObserver(this);
-  }
-
   // Register the `AutocompleteController` with `AutocompleteControllerEmitter`.
   if (auto* emitter = client_->GetAutocompleteControllerEmitter()) {
     autocomplete_controller_->AddObserver(emitter);
+  }
+}
+
+void OmniboxController::SetView(OmniboxView* view) {
+  edit_model_->set_view(view);
+  if (view) {
+    // Start observing the AutocompleteController when a View is associated with
+    // the OmniboxController. WebUI searchboxes observe the
+    // AutocompleteController directly in the WebUI page handler.
+    autocomplete_controller_->AddObserver(this);
   }
 }
 

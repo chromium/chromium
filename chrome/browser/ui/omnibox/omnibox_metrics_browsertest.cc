@@ -56,13 +56,16 @@ class OmniboxMetricsTest : public InProcessBrowserTest {
     return browser()
         ->window()
         ->GetLocationBar()
-        ->GetOmniboxView()
-        ->controller()
+        ->GetOmniboxController()
         ->autocomplete_controller();
   }
 
   OmniboxEditModel* model() {
-    return browser()->window()->GetLocationBar()->GetOmniboxView()->model();
+    return browser()
+        ->window()
+        ->GetLocationBar()
+        ->GetOmniboxController()
+        ->edit_model();
   }
 };
 

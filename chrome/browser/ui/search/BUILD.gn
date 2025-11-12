@@ -55,6 +55,7 @@ source_set("impl") {
     "//chrome/browser/search_engines",
     "//chrome/browser/signin",
     "//chrome/browser/ui/bookmarks",
+    "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/location_bar",
     "//chrome/browser/ui/omnibox",
     "//chrome/browser/ui/tab_contents",

@@ -94,13 +94,15 @@ void OpenUrlFromEditBox(OmniboxController* controller,
 class OmniboxEditModelTest : public testing::Test {
  public:
   OmniboxEditModelTest() {
-    view_ = std::make_unique<TestOmniboxView>(
-        std::make_unique<TestOmniboxClient>());
-    view_->controller()->SetEditModelForTesting(
-        std::make_unique<TestOmniboxEditModel>(view_->controller(), view_.get(),
-                                               pref_service()));
+    // Create the controller and the view and wire them together.
+    auto client = std::make_unique<TestOmniboxClient>();
+    auto* client_ptr = client.get();
+    controller_ = std::make_unique<OmniboxController>(std::move(client));
+    controller_->SetEditModelForTesting(std::make_unique<TestOmniboxEditModel>(
+        controller_.get(), pref_service()));
+    view_ = std::make_unique<TestOmniboxView>(controller_.get());
 
-    EXPECT_CALL(*client(), GetPrefs()).WillRepeatedly(Return(pref_service()));
+    EXPECT_CALL(*client_ptr, GetPrefs()).WillRepeatedly(Return(pref_service()));
   }
 
   void SetUp() override {
@@ -132,15 +134,16 @@ class OmniboxEditModelTest : public testing::Test {
     return client()->location_bar_model();
   }
   TestOmniboxEditModel* model() {
-    return static_cast<TestOmniboxEditModel*>(view_->model());
+    return static_cast<TestOmniboxEditModel*>(controller_->edit_model());
   }
-  OmniboxController* controller() { return view_->controller(); }
+  OmniboxController* controller() { return controller_.get(); }
   TestOmniboxClient* client() {
     return static_cast<TestOmniboxClient*>(controller()->client());
   }
 
  protected:
   base::test::TaskEnvironment task_environment_;
+  std::unique_ptr<OmniboxController> controller_;
   std::unique_ptr<TestOmniboxView> view_;
 };
 
@@ -519,13 +522,15 @@ class OmniboxEditModelPopupTest : public ::testing::Test {
         extensions_features::kExperimentalOmniboxLabs);
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-    view_ = std::make_unique<TestOmniboxView>(
-        std::make_unique<TestOmniboxClient>());
-    view_->controller()->SetEditModelForTesting(
-        std::make_unique<TestOmniboxEditModel>(view_->controller(), view_.get(),
-                                               pref_service()));
+    // Create the controller and the view and wire them together.
+    auto client = std::make_unique<TestOmniboxClient>();
+    auto* client_ptr = client.get();
+    controller_ = std::make_unique<OmniboxController>(std::move(client));
+    controller_->SetEditModelForTesting(std::make_unique<TestOmniboxEditModel>(
+        controller_.get(), pref_service()));
+    view_ = std::make_unique<TestOmniboxView>(controller_.get());
 
-    EXPECT_CALL(*client(), GetPrefs()).WillRepeatedly(Return(pref_service()));
+    EXPECT_CALL(*client_ptr, GetPrefs()).WillRepeatedly(Return(pref_service()));
 
     model()->set_popup_view(&popup_view_);
     model()->SetPopupIsOpen(true);
@@ -559,9 +564,9 @@ class OmniboxEditModelPopupTest : public ::testing::Test {
     return &triggered_feature_service_;
   }
   TestOmniboxEditModel* model() {
-    return static_cast<TestOmniboxEditModel*>(view_->model());
+    return static_cast<TestOmniboxEditModel*>(controller_->edit_model());
   }
-  OmniboxController* controller() { return view_->controller(); }
+  OmniboxController* controller() { return controller_.get(); }
   TestOmniboxClient* client() {
     return static_cast<TestOmniboxClient*>(controller()->client());
   }
@@ -569,6 +574,7 @@ class OmniboxEditModelPopupTest : public ::testing::Test {
  protected:
   base::test::ScopedFeatureList feature_list_;
   base::test::TaskEnvironment task_environment_;
+  std::unique_ptr<OmniboxController> controller_;
   std::unique_ptr<TestOmniboxView> view_;
   TestOmniboxPopupView popup_view_;
   OmniboxTriggeredFeatureService triggered_feature_service_;

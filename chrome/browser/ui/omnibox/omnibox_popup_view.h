@@ -21,7 +21,8 @@
 #include "components/omnibox/browser/omnibox_popup_selection.h"
 
 class OmniboxController;
-class OmniboxEditModel;
+class OmniboxResultView;
+class OmniboxSuggestionButtonRowView;
 namespace ui {
 struct AXNodeData;
 }
@@ -30,12 +31,6 @@ class OmniboxPopupView {
  public:
   explicit OmniboxPopupView(OmniboxController* controller);
   virtual ~OmniboxPopupView();
-
-  virtual OmniboxEditModel* model();
-  virtual const OmniboxEditModel* model() const;
-
-  virtual OmniboxController* controller();
-  virtual const OmniboxController* controller() const;
 
   // Returns true if the popup is currently open.
   virtual bool IsOpen() const = 0;
@@ -75,13 +70,19 @@ class OmniboxPopupView {
       base::RepeatingClosure callback);
 
  protected:
+  friend class OmniboxResultView;
+  friend class OmniboxSuggestionButtonRowView;
+
   // Call when the popup will appear to notify listeners.
   void NotifyOpenListeners();
+
+  virtual OmniboxController* controller();
+  virtual const OmniboxController* controller() const;
 
  private:
   base::RepeatingClosureList on_popup_callbacks_;
 
-  // Owned by OmniboxView which owns this.
+  // Owned by the LocationBarView that owns this. Outlives this.
   const raw_ptr<OmniboxController> controller_;
 };
 

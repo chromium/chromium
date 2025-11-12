@@ -26,13 +26,16 @@ class OmniboxController : public AutocompleteController::Observer {
   ADVANCED_MEMORY_SAFETY_CHECKS();
 
  public:
-  OmniboxController(OmniboxView* view,
-                    std::unique_ptr<OmniboxClient> client,
-                    std::optional<base::TimeDelta>
-                        autocomplete_stop_timer_duration = std::nullopt);
+  explicit OmniboxController(
+      std::unique_ptr<OmniboxClient> client,
+      std::optional<base::TimeDelta> autocomplete_stop_timer_duration =
+          std::nullopt);
   ~OmniboxController() override;
   OmniboxController(const OmniboxController&) = delete;
   OmniboxController& operator=(const OmniboxController&) = delete;
+
+  // Sets the view and enables autocomplete controller observation.
+  void SetView(OmniboxView* view);
 
   // The |current_url| field of input is only set for mobile ports.
   void StartAutocomplete(const AutocompleteInput& input) const;
@@ -51,8 +54,10 @@ class OmniboxController : public AutocompleteController::Observer {
                        bool default_match_changed) override;
 
   OmniboxClient* client() { return client_.get(); }
+  const OmniboxClient* client() const { return client_.get(); }
 
   OmniboxEditModel* edit_model() { return edit_model_.get(); }
+  const OmniboxEditModel* edit_model() const { return edit_model_.get(); }
 
   void SetEditModelForTesting(std::unique_ptr<OmniboxEditModel> edit_model) {
     edit_model_ = std::move(edit_model);

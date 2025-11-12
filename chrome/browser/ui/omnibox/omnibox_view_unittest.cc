@@ -55,22 +55,27 @@ class OmniboxViewTest : public testing::Test {
  public:
   OmniboxViewTest()
       : bookmark_model_(bookmarks::TestBookmarkClient::CreateModel()) {
+    // Create the controller and the view and wire them together.
     auto omnibox_client = std::make_unique<TestOmniboxClient>();
     omnibox_client_ = omnibox_client.get();
     EXPECT_CALL(*client(), GetBookmarkModel())
         .WillRepeatedly(Return(bookmark_model_.get()));
-
-    view_ = std::make_unique<TestOmniboxView>(std::move(omnibox_client));
-    view_->controller()->SetEditModelForTesting(
-        std::make_unique<TestOmniboxEditModel>(view_->controller(), view_.get(),
+    omnibox_controller_ =
+        std::make_unique<OmniboxController>(std::move(omnibox_client));
+    omnibox_controller_->SetEditModelForTesting(
+        std::make_unique<TestOmniboxEditModel>(omnibox_controller_.get(),
                                                /*pref_service=*/nullptr));
+    view_ = std::make_unique<TestOmniboxView>(omnibox_controller_.get());
   }
 
   TestOmniboxView* view() { return view_.get(); }
 
   TestOmniboxEditModel* model() {
-    return static_cast<TestOmniboxEditModel*>(view_->model());
+    return static_cast<TestOmniboxEditModel*>(
+        omnibox_controller_->edit_model());
   }
+
+  OmniboxController* controller() { return omnibox_controller_.get(); }
 
   TestOmniboxClient* client() { return omnibox_client_; }
 
@@ -78,6 +83,7 @@ class OmniboxViewTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
+  std::unique_ptr<OmniboxController> omnibox_controller_;
   std::unique_ptr<TestOmniboxView> view_;
   std::unique_ptr<bookmarks::BookmarkModel> bookmark_model_;
   raw_ptr<TestOmniboxClient> omnibox_client_;
@@ -86,27 +92,34 @@ class OmniboxViewTest : public testing::Test {
 class OmniboxViewPopupTest : public testing::Test {
  public:
   OmniboxViewPopupTest() {
+    // Create the controller and the view and wire them together.
     auto omnibox_client = std::make_unique<TestOmniboxClient>();
     omnibox_client_ = omnibox_client.get();
-
-    view_ = std::make_unique<TestOmniboxView>(std::move(omnibox_client));
-    view_->controller()->SetEditModelForTesting(
-        std::make_unique<TestOmniboxEditModel>(view_->controller(), view_.get(),
+    omnibox_controller_ =
+        std::make_unique<OmniboxController>(std::move(omnibox_client));
+    omnibox_controller_->SetEditModelForTesting(
+        std::make_unique<TestOmniboxEditModel>(omnibox_controller_.get(),
                                                /*pref_service=*/nullptr));
+    view_ = std::make_unique<TestOmniboxView>(omnibox_controller_.get());
+
     model()->set_popup_view(&popup_view_);
     model()->SetPopupIsOpen(true);
   }
 
   TestOmniboxView* view() { return view_.get(); }
 
+  OmniboxController* controller() { return omnibox_controller_.get(); }
+
   TestOmniboxEditModel* model() {
-    return static_cast<TestOmniboxEditModel*>(view_->model());
+    return static_cast<TestOmniboxEditModel*>(
+        omnibox_controller_->edit_model());
   }
 
   TestOmniboxClient* client() { return omnibox_client_; }
 
  private:
   base::test::TaskEnvironment task_environment_;
+  std::unique_ptr<OmniboxController> omnibox_controller_;
   std::unique_ptr<TestOmniboxView> view_;
   raw_ptr<TestOmniboxClient> omnibox_client_;
   TestOmniboxPopupView popup_view_;
@@ -165,9 +178,8 @@ TEST_F(OmniboxViewTest, GetIcon_NonGoogleKeywordSearch) {
   TemplateURLData data;
   data.SetKeyword(u"foo");
   data.SetURL("https://foo.com");
-  TemplateURL* turl =
-      view()->controller()->client()->GetTemplateURLService()->Add(
-          std::make_unique<TemplateURL>(data));
+  TemplateURL* turl = controller()->client()->GetTemplateURLService()->Add(
+      std::make_unique<TemplateURL>(data));
   ASSERT_TRUE(turl);
 
   AutocompleteMatch match;
@@ -218,9 +230,8 @@ TEST_F(OmniboxViewPopupTest, GetIcon_SearchAggregatorKeywordSearch) {
   data.SetURL("https://foo.com");
   data.favicon_url = GURL("https://foo.com/icon.png");
   data.policy_origin = TemplateURLData::PolicyOrigin::kSearchAggregator;
-  TemplateURL* turl =
-      view()->controller()->client()->GetTemplateURLService()->Add(
-          std::make_unique<TemplateURL>(data));
+  TemplateURL* turl = controller()->client()->GetTemplateURLService()->Add(
+      std::make_unique<TemplateURL>(data));
   ASSERT_TRUE(turl);
 
   // Sets the icon bitmap for search aggregator.
@@ -253,7 +264,7 @@ TEST_F(OmniboxViewPopupTest, GetIcon_IconUrl) {
   match.icon_url = GURL("https://example.com/icon.png");
   matches.push_back(match);
   AutocompleteResult* result =
-      &view()->controller()->autocomplete_controller()->published_result_;
+      &controller()->autocomplete_controller()->published_result_;
   result->AppendMatches(matches);
   model()->SetCurrentMatchForTest(match);
 

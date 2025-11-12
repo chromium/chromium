@@ -92,8 +92,7 @@ class MockAutocompleteController : public AutocompleteController {
 
 class MockOmniboxEditModel : public OmniboxEditModel {
  public:
-  MockOmniboxEditModel(OmniboxController* omnibox_controller,
-                       OmniboxView* view);
+  explicit MockOmniboxEditModel(OmniboxController* omnibox_controller);
   ~MockOmniboxEditModel() override;
   MockOmniboxEditModel(const MockOmniboxEditModel&) = delete;
   MockOmniboxEditModel& operator=(const MockOmniboxEditModel&) = delete;

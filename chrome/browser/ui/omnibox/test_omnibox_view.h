@@ -17,8 +17,8 @@ struct AutocompleteMatch;
 // Fake implementation of OmniboxView for use in tests.
 class TestOmniboxView : public OmniboxView {
  public:
-  explicit TestOmniboxView(std::unique_ptr<OmniboxClient> client)
-      : OmniboxView(std::move(client)) {}
+  explicit TestOmniboxView(OmniboxController* controller)
+      : OmniboxView(controller) {}
 
   TestOmniboxView(const TestOmniboxView&) = delete;
   TestOmniboxView& operator=(const TestOmniboxView&) = delete;

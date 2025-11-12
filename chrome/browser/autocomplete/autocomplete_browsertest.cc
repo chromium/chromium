@@ -71,16 +71,14 @@ class AutocompleteBrowserTest : public extensions::ExtensionBrowserTest {
   }
 
   AutocompleteController* GetAutocompleteController() const {
-    return GetLocationBar()
-        ->GetOmniboxView()
-        ->controller()
-        ->autocomplete_controller();
+    return GetLocationBar()->GetOmniboxController()->autocomplete_controller();
   }
 
   void FocusSearchCheckPreconditions() const {
     LocationBar* location_bar = GetLocationBar();
     OmniboxView* omnibox_view = location_bar->GetOmniboxView();
-    OmniboxEditModel* omnibox_model = omnibox_view->model();
+    OmniboxEditModel* omnibox_model =
+        location_bar->GetOmniboxController()->edit_model();
 
     EXPECT_FALSE(location_bar->navigation_params().destination_url.is_valid());
     EXPECT_EQ(url::kAboutBlankURL16, omnibox_view->GetText());
@@ -146,7 +144,8 @@ IN_PROC_BROWSER_TEST_F(AutocompleteBrowserTest, MAYBE_Autocomplete) {
   AutocompleteController* autocomplete_controller = GetAutocompleteController();
 
   {
-    omnibox_view->model()->SetInputInProgress(true);
+    location_bar->GetOmniboxController()->edit_model()->SetInputInProgress(
+        true);
     AutocompleteInput input(
         u"chrome", metrics::OmniboxEventProto::NTP,
         ChromeAutocompleteSchemeClassifier(browser()->profile()));
@@ -199,7 +198,8 @@ IN_PROC_BROWSER_TEST_F(AutocompleteBrowserTest, FocusSearch) {
   WaitForTemplateURLServiceToLoad();
   LocationBar* location_bar = GetLocationBar();
   OmniboxView* omnibox_view = location_bar->GetOmniboxView();
-  OmniboxEditModel* omnibox_model = omnibox_view->model();
+  OmniboxEditModel* omnibox_model =
+      location_bar->GetOmniboxController()->edit_model();
 
   TemplateURLService* template_url_service =
       TemplateURLServiceFactory::GetForProfile(browser()->profile());

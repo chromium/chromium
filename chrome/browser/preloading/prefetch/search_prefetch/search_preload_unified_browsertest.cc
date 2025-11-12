@@ -1375,9 +1375,8 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest, TriggerAndActivate) {
       base::ASCIIToUTF16(prerender_query), metrics::OmniboxEventProto::BLANK,
       ChromeAutocompleteSchemeClassifier(browser()->profile()));
   LocationBar* location_bar = browser()->window()->GetLocationBar();
-  OmniboxView* omnibox = location_bar->GetOmniboxView();
   AutocompleteController* autocomplete_controller =
-      omnibox->controller()->autocomplete_controller();
+      location_bar->GetOmniboxController()->autocomplete_controller();
 
   // Prevent the stop timer from killing the hints fetch early.
   autocomplete_controller->SetStartStopTimerDurationForTesting(
@@ -1406,7 +1405,7 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest, TriggerAndActivate) {
   // 4. Click and activate.
   content::test::PrerenderHostObserver prerender_observer(
       *GetActiveWebContents(), expected_prerender_url);
-  omnibox->model()->OpenSelectionForTesting();
+  location_bar->GetOmniboxController()->edit_model()->OpenSelectionForTesting();
   prerender_observer.WaitForActivation();
   histogram_tester.ExpectUniqueSample(
       "Omnibox.SearchPrefetch.PrefetchFinalStatus.SuggestionPrefetch",
@@ -1442,9 +1441,8 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
       base::ASCIIToUTF16(prerender_query), metrics::OmniboxEventProto::BLANK,
       ChromeAutocompleteSchemeClassifier(browser()->profile()));
   LocationBar* location_bar = browser()->window()->GetLocationBar();
-  OmniboxView* omnibox = location_bar->GetOmniboxView();
   AutocompleteController* autocomplete_controller =
-      omnibox->controller()->autocomplete_controller();
+      location_bar->GetOmniboxController()->autocomplete_controller();
 
   // Prevent the stop timer from killing the hints fetch early.
   autocomplete_controller->SetStartStopTimerDurationForTesting(
@@ -1484,7 +1482,7 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
   // 5. Click the result.
   content::TestNavigationObserver navigation_observer(GetActiveWebContents(),
                                                       1);
-  omnibox->model()->OpenSelectionForTesting();
+  location_bar->GetOmniboxController()->edit_model()->OpenSelectionForTesting();
   navigation_observer.Wait();
   histogram_tester.ExpectBucketCount(
       "Omnibox.SearchPrefetch.PrefetchServingReason2",

@@ -112,7 +112,6 @@ LensSearchboxHandler::LensSearchboxHandler(
           profile,
           web_contents,
           std::make_unique<OmniboxController>(
-              /*view=*/nullptr,
               std::make_unique<LensOmniboxClient>(profile,
                                                   web_contents,
                                                   lens_searchbox_client),

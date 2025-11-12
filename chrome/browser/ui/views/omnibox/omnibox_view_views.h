@@ -40,7 +40,6 @@
 #endif
 
 class LocationBarView;
-class OmniboxClient;
 class IconLabelBubbleView;
 
 namespace content {
@@ -82,8 +81,8 @@ class OmniboxViewViews
   // Max width of the gradient mask used to smooth ElideAnimation edges.
   static const int kSmoothingGradientMaxWidth = 15;
 
-  OmniboxViewViews(std::unique_ptr<OmniboxClient> client,
-                   bool popup_window_mode,
+  OmniboxViewViews(bool popup_window_mode,
+                   OmniboxController* controller,
                    LocationBarView* location_bar_view,
                    const gfx::FontList& font_list);
   OmniboxViewViews(const OmniboxViewViews&) = delete;

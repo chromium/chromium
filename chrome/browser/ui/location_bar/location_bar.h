@@ -18,6 +18,7 @@
 class CommandUpdater;
 class LocationBarModel;
 class LocationBarTesting;
+class OmniboxController;
 class OmniboxView;
 
 namespace bubble_anchor_util {
@@ -79,6 +80,9 @@ class LocationBar {
   virtual void Revert() = 0;
 
   virtual OmniboxView* GetOmniboxView() = 0;
+
+  // Returns the OmniboxController owned by this LocationBar.
+  virtual OmniboxController* GetOmniboxController() = 0;
 
   // Returns the WebContents of the currently active tab.
   virtual content::WebContents* GetWebContents() = 0;

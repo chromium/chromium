@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
@@ -642,17 +643,25 @@ IN_PROC_BROWSER_TEST_F(LocationBarViewAddContextButtonBrowserTest,
 
   // The "Add Context" button doesn't show up when the Omnibox popup is
   // closed.
-  EXPECT_FALSE(omnibox_view->model()->PopupIsOpen());
-  EXPECT_FALSE(omnibox_view->model()->ShouldShowAddContextButton());
+  EXPECT_FALSE(
+      location_bar_view->GetOmniboxController()->edit_model()->PopupIsOpen());
+  EXPECT_FALSE(location_bar_view->GetOmniboxController()
+                   ->edit_model()
+                   ->ShouldShowAddContextButton());
   const auto icon_when_closed =
       location_icon_view->GetImageModel(views::Button::STATE_NORMAL);
 
   // The "Add Context" button does show up when the Omnibox popup is open.
   location_bar_view->FocusLocation(true);
   omnibox_view->SetUserText(u"test");
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return omnibox_view->model()->PopupIsOpen(); }));
-  EXPECT_TRUE(omnibox_view->model()->ShouldShowAddContextButton());
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return location_bar_view->GetOmniboxController()
+        ->edit_model()
+        ->PopupIsOpen();
+  }));
+  EXPECT_TRUE(location_bar_view->GetOmniboxController()
+                  ->edit_model()
+                  ->ShouldShowAddContextButton());
   const auto icon_when_open =
       location_icon_view->GetImageModel(views::Button::STATE_NORMAL);
   EXPECT_NE(icon_when_closed->GetVectorIcon().vector_icon(),

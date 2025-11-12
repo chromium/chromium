@@ -608,7 +608,7 @@ void OmniboxResultView::SetRichSuggestionImage(const gfx::ImageSkia& image) {
 
 void OmniboxResultView::ButtonPressed(OmniboxPopupSelection::LineState state,
                                       const ui::Event& event) {
-  popup_view_->model()->OpenSelection(
+  popup_view_->controller()->edit_model()->OpenSelection(
       OmniboxPopupSelection(model_index_, state), event.time_stamp(),
       WindowOpenDisposition::CURRENT_TAB,
       /*via_keyboard=*/event.IsKeyEvent());
@@ -628,7 +628,7 @@ bool OmniboxResultView::OnMousePressed(const ui::MouseEvent& event) {
   if (event.IsOnlyLeftMouseButton()) {
     popup_view_->SetSelectedIndex(model_index_);
     // Inform the model that a new result is now selected via mouse press.
-    popup_view_->model()->OnNavigationLikely(
+    popup_view_->controller()->edit_model()->OnNavigationLikely(
         model_index_, omnibox::mojom::NavigationPredictor::kMouseDown);
   }
   return true;
@@ -659,7 +659,7 @@ void OmniboxResultView::OnMouseReleased(const ui::MouseEvent& event) {
   if (AutocompleteMatch::IsFeaturedSearchType(match_.type)) {
     // Featured search matches in the keyword mode refresh are a special case
     // that does not commit the omnibox by opening a selected match.
-    OmniboxEditModel* model = popup_view_->model();
+    OmniboxEditModel* model = popup_view_->controller()->edit_model();
     model->ClearKeyword();
     model->SetPopupSelection(OmniboxPopupSelection(
         model_index_, OmniboxPopupSelection::LineState::KEYWORD_MODE));
@@ -671,8 +671,8 @@ void OmniboxResultView::OnMouseReleased(const ui::MouseEvent& event) {
     const auto disposition = event.IsOnlyLeftMouseButton()
                                  ? WindowOpenDisposition::CURRENT_TAB
                                  : WindowOpenDisposition::NEW_BACKGROUND_TAB;
-    popup_view_->model()->OpenSelection(OmniboxPopupSelection(model_index_),
-                                        event.time_stamp(), disposition);
+    popup_view_->controller()->edit_model()->OpenSelection(
+        OmniboxPopupSelection(model_index_), event.time_stamp(), disposition);
   }
 }
 
@@ -744,8 +744,9 @@ void OmniboxResultView::UpdateDividerLineVisibility() {
 void OmniboxResultView::UpdateFeedbackButtonsVisibility() {
   const bool old_visibility = thumbs_up_button_->GetVisible();
   const bool new_visibility =
-      popup_view_->model()->IsPopupControlPresentOnMatch(OmniboxPopupSelection(
-          model_index_, OmniboxPopupSelection::FOCUSED_BUTTON_THUMBS_UP)) &&
+      popup_view_->controller()->edit_model()->IsPopupControlPresentOnMatch(
+          OmniboxPopupSelection(
+              model_index_, OmniboxPopupSelection::FOCUSED_BUTTON_THUMBS_UP)) &&
       (GetMatchSelected() || IsMouseHovered());
 
   // Same rules apply to both buttons.
@@ -762,9 +763,10 @@ void OmniboxResultView::UpdateFeedbackButtonsVisibility() {
 void OmniboxResultView::UpdateRemoveSuggestionVisibility() {
   const bool old_visibility = remove_suggestion_button_->GetVisible();
   const bool new_visibility =
-      popup_view_->model()->IsPopupControlPresentOnMatch(OmniboxPopupSelection(
-          model_index_,
-          OmniboxPopupSelection::FOCUSED_BUTTON_REMOVE_SUGGESTION)) &&
+      popup_view_->controller()->edit_model()->IsPopupControlPresentOnMatch(
+          OmniboxPopupSelection(
+              model_index_,
+              OmniboxPopupSelection::FOCUSED_BUTTON_REMOVE_SUGGESTION)) &&
       (GetMatchSelected() || IsMouseHovered());
 
   remove_suggestion_button_->SetVisible(new_visibility);
@@ -800,19 +802,21 @@ void OmniboxResultView::UpdateAccessibleName() {
     if (is_selected) {
       // The selected match can have a special name, e.g. when is one or more
       // buttons that can be tabbed to.
-      label =
-          popup_view_->model()->GetPopupAccessibilityLabelForCurrentSelection(
-              raw_match.contents, false);
+      label = popup_view_->controller()
+                  ->edit_model()
+                  ->GetPopupAccessibilityLabelForCurrentSelection(
+                      raw_match.contents, false);
 
       // If the line immediately after the current selection is the
       // informational IPH row, append its accessibility label at the end of
       // this selection's accessibility label.
-      label += popup_view_->model()
+      label += popup_view_->controller()
+                   ->edit_model()
                    ->MaybeGetPopupAccessibilityLabelForIPHSuggestion();
     } else {
       label = AutocompleteMatchType::ToAccessibilityLabel(
           raw_match,
-          popup_view_->model()->GetSuggestionGroupHeaderText(
+          popup_view_->controller()->edit_model()->GetSuggestionGroupHeaderText(
               raw_match.suggestion_group_id),
           raw_match.contents);
     }

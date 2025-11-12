@@ -97,8 +97,14 @@ class OmniboxClient {
   virtual PrefService* GetPrefs() = 0;
   virtual const PrefService* GetPrefs() const = 0;
   virtual bookmarks::BookmarkModel* GetBookmarkModel();
+  const bookmarks::BookmarkModel* GetBookmarkModel() const {
+    return const_cast<OmniboxClient*>(this)->GetBookmarkModel();
+  }
   virtual AutocompleteControllerEmitter* GetAutocompleteControllerEmitter() = 0;
   virtual TemplateURLService* GetTemplateURLService();
+  const TemplateURLService* GetTemplateURLService() const {
+    return const_cast<OmniboxClient*>(this)->GetTemplateURLService();
+  }
   virtual const AutocompleteSchemeClassifier& GetSchemeClassifier() const = 0;
   virtual AutocompleteClassifier* GetAutocompleteClassifier();
   virtual bool ShouldDefaultTypedNavigationsToHttps() const = 0;
@@ -220,11 +226,28 @@ class OmniboxClient {
   virtual gfx::Image GetFaviconForPageUrl(
       const GURL& page_url,
       FaviconFetchedCallback on_favicon_fetched);
+  gfx::Image GetFaviconForPageUrl(
+      const GURL& page_url,
+      FaviconFetchedCallback on_favicon_fetched) const {
+    return const_cast<OmniboxClient*>(this)->GetFaviconForPageUrl(
+        page_url, std::move(on_favicon_fetched));
+  }
   virtual gfx::Image GetFaviconForDefaultSearchProvider(
       FaviconFetchedCallback on_favicon_fetched);
+  gfx::Image GetFaviconForDefaultSearchProvider(
+      FaviconFetchedCallback on_favicon_fetched) const {
+    return const_cast<OmniboxClient*>(this)->GetFaviconForDefaultSearchProvider(
+        std::move(on_favicon_fetched));
+  }
   virtual gfx::Image GetFaviconForKeywordSearchProvider(
       const TemplateURL* template_url,
       FaviconFetchedCallback on_favicon_fetched);
+  gfx::Image GetFaviconForKeywordSearchProvider(
+      const TemplateURL* template_url,
+      FaviconFetchedCallback on_favicon_fetched) const {
+    return const_cast<OmniboxClient*>(this)->GetFaviconForKeywordSearchProvider(
+        template_url, std::move(on_favicon_fetched));
+  }
 
   // Called when the text may have changed in the edit.
   virtual void OnTextChanged(const AutocompleteMatch& current_match,

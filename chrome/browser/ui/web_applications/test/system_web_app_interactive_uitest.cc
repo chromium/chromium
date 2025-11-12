@@ -46,6 +46,7 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
+#include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
@@ -133,8 +134,11 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest, OmniboxPasteAndGo) {
   WaitForTestSystemAppInstall();
-  OmniboxEditModel* model =
-      browser()->window()->GetLocationBar()->GetOmniboxView()->model();
+  OmniboxEditModel* model = browser()
+                                ->window()
+                                ->GetLocationBar()
+                                ->GetOmniboxController()
+                                ->edit_model();
 
   content::TestNavigationObserver observer(GetStartUrl());
   observer.StartWatchingNewWebContents();

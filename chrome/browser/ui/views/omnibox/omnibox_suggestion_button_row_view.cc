@@ -610,8 +610,9 @@ const AutocompleteMatch& OmniboxSuggestionButtonRowView::match() const {
 void OmniboxSuggestionButtonRowView::SetPillButtonVisibility(
     OmniboxSuggestionRowButton* button,
     OmniboxPopupSelection::LineState state) {
-  button->SetVisible(popup_view_->model()->IsPopupControlPresentOnMatch(
-      OmniboxPopupSelection(model_index_, state)));
+  button->SetVisible(
+      popup_view_->controller()->edit_model()->IsPopupControlPresentOnMatch(
+          OmniboxPopupSelection(model_index_, state)));
 }
 
 void OmniboxSuggestionButtonRowView::ButtonPressed(
@@ -620,26 +621,26 @@ void OmniboxSuggestionButtonRowView::ButtonPressed(
   if (selection.state == OmniboxPopupSelection::KEYWORD_MODE) {
     // Note: Since keyword mode logic depends on state of the edit model, the
     // selection must first be set to prepare for keyword mode before accepting.
-    popup_view_->model()->SetPopupSelection(selection);
+    popup_view_->controller()->edit_model()->SetPopupSelection(selection);
     // Don't re-enter keyword mode if already in it. This occurs when the user
     // was in keyword mode and re-clicked the same or a different keyword chip.
-    if (popup_view_->model()->is_keyword_hint()) {
+    if (popup_view_->controller()->edit_model()->is_keyword_hint()) {
       const auto entry_method =
           event.IsMouseEvent() ? metrics::OmniboxEventProto::CLICK_HINT_VIEW
                                : metrics::OmniboxEventProto::TAP_HINT_VIEW;
-      popup_view_->model()->AcceptKeyword(entry_method);
+      popup_view_->controller()->edit_model()->AcceptKeyword(entry_method);
     }
   } else {
     if (omnibox_feature_configs::Toolbelt::Get()
             .select_toolbelt_before_opening &&
         match().IsToolbelt()) {
-      popup_view_->model()->SetPopupSelection(selection);
+      popup_view_->controller()->edit_model()->SetPopupSelection(selection);
     }
     WindowOpenDisposition disposition =
         ui::DispositionFromEventFlags(event.flags());
-    popup_view_->model()->OpenSelection(selection, event.time_stamp(),
-                                        disposition,
-                                        /*via_keyboard=*/event.IsKeyEvent());
+    popup_view_->controller()->edit_model()->OpenSelection(
+        selection, event.time_stamp(), disposition,
+        /*via_keyboard=*/event.IsKeyEvent());
   }
 }
 

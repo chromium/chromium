@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -83,7 +84,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestChipGestureSensitiveBrowserTest,
   // Type something in the omnibox.
   auto* omnibox_view = lbv->GetOmniboxView();
   omnibox_view->SetUserText(u"search query");
-  omnibox_view->model()->SetInputInProgress(true);
+  lbv->GetOmniboxController()->edit_model()->SetInputInProgress(true);
 
   base::RunLoop().RunUntilIdle();
 
@@ -109,7 +110,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestChipGestureSensitiveBrowserTest,
   // Type something in the omnibox.
   auto* omnibox_view = lbv->GetOmniboxView();
   omnibox_view->SetUserText(u"search query");
-  omnibox_view->model()->SetInputInProgress(true);
+  lbv->GetOmniboxController()->edit_model()->SetInputInProgress(true);
 
   RequestPermission(browser());
 
@@ -171,7 +172,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestChipGestureSensitiveBrowserTest,
   // Type something in the omnibox.
   OmniboxView* omnibox_view = location_bar->GetOmniboxView();
   omnibox_view->SetUserText(u"search query");
-  omnibox_view->model()->SetInputInProgress(true);
+  location_bar->GetOmniboxController()->edit_model()->SetInputInProgress(true);
 
   auto* manager =
       permissions::PermissionRequestManager::FromWebContents(embedder_contents);
@@ -319,7 +320,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestChipGestureInsensitiveBrowserTest,
   // Type something in the omnibox.
   auto* omnibox_view = lbv->GetOmniboxView();
   omnibox_view->SetUserText(u"search query");
-  omnibox_view->model()->SetInputInProgress(true);
+  lbv->GetOmniboxController()->edit_model()->SetInputInProgress(true);
 
   base::RunLoop().RunUntilIdle();
 

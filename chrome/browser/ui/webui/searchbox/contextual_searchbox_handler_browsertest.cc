@@ -26,7 +26,6 @@ class TestSearchboxHandler : public ContextualSearchboxHandler {
                                    profile,
                                    web_contents,
                                    std::make_unique<OmniboxController>(
-                                       /*view=*/nullptr,
                                        std::make_unique<TestOmniboxClient>())) {
   }
 

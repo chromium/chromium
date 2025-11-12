@@ -3513,8 +3513,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
   OmniboxClient* omnibox_client = GetBrowser()
                                       ->window()
                                       ->GetLocationBar()
-                                      ->GetOmniboxView()
-                                      ->controller()
+                                      ->GetOmniboxController()
                                       ->client();
 
   // Simulate the full URL was typed with an http scheme.
@@ -3548,8 +3547,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
   OmniboxClient* omnibox_client = GetBrowser()
                                       ->window()
                                       ->GetLocationBar()
-                                      ->GetOmniboxView()
-                                      ->controller()
+                                      ->GetOmniboxController()
                                       ->client();
 
   // Simulate the full URL was autocompleted with an http scheme.
@@ -3577,8 +3575,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
   OmniboxClient* omnibox_client = GetBrowser()
                                       ->window()
                                       ->GetLocationBar()
-                                      ->GetOmniboxView()
-                                      ->controller()
+                                      ->GetOmniboxController()
                                       ->client();
 
   Profile* profile = Profile::FromBrowserContext(contents->GetBrowserContext());

@@ -24,7 +24,7 @@ class OmniboxControllerTest : public testing::Test {
         std::make_unique<FakeClipboardRecentContent>());
 
     omnibox_controller_ = std::make_unique<OmniboxController>(
-        /*view=*/nullptr, std::make_unique<TestOmniboxClient>());
+        std::make_unique<TestOmniboxClient>());
   }
 
  protected:

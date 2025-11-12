@@ -74,8 +74,7 @@ class ChromeAutocompleteProviderClientTest : public InProcessBrowserTest {
         BrowserView::GetBrowserViewForBrowser(browser())
             ->toolbar()
             ->location_bar()
-            ->omnibox_view()
-            ->controller()
+            ->GetOmniboxController()
             ->autocomplete_controller()
             ->autocomplete_provider_client());
   }

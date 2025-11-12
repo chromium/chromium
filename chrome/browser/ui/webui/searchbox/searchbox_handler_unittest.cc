@@ -136,8 +136,7 @@ TEST_F(RealboxHandlerTest, AutocompleteController_Start) {
   // Set a mock OmniboxEditModel.
   auto omnibox_edit_model =
       std::make_unique<testing::NiceMock<MockOmniboxEditModel>>(
-          handler_->omnibox_controller(),
-          /*view=*/nullptr);
+          handler_->omnibox_controller());
   omnibox_edit_model_ = omnibox_edit_model.get();
   handler_->omnibox_controller()->SetEditModelForTesting(
       std::move(omnibox_edit_model));
@@ -279,8 +278,7 @@ TEST_F(LensSearchboxHandlerTest, Lens_AutocompleteController_Start) {
   // Set a mock OmniboxEditModel.
   auto omnibox_edit_model =
       std::make_unique<testing::NiceMock<MockOmniboxEditModel>>(
-          handler_->omnibox_controller(),
-          /*view=*/nullptr);
+          handler_->omnibox_controller());
   omnibox_edit_model_ = omnibox_edit_model.get();
   handler_->omnibox_controller()->SetEditModelForTesting(
       std::move(omnibox_edit_model));
@@ -414,7 +412,7 @@ class WebuiOmniboxHandlerTest : public SearchboxHandlerTest {
     SearchboxHandlerTest::SetUp();
 
     omnibox_controller_ = std::make_unique<OmniboxController>(
-        /*view=*/nullptr, std::make_unique<TestOmniboxClient>());
+        std::make_unique<TestOmniboxClient>());
 
     web_contents_ =
         content::WebContentsTester::CreateTestWebContents(profile(), nullptr);

@@ -11,9 +11,8 @@
 
 TestOmniboxEditModel::TestOmniboxEditModel(
     OmniboxController* omnibox_controller,
-    OmniboxView* view,
     PrefService* pref_service)
-    : OmniboxEditModel(omnibox_controller, view),
+    : OmniboxEditModel(omnibox_controller),
       popup_is_open_(false),
       pref_service_(pref_service) {}
 

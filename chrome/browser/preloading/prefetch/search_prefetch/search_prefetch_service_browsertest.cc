@@ -2016,9 +2016,8 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
       base::ASCIIToUTF16(search_terms), metrics::OmniboxEventProto::BLANK,
       ChromeAutocompleteSchemeClassifier(browser()->profile()));
   LocationBar* location_bar = browser()->window()->GetLocationBar();
-  OmniboxView* omnibox = location_bar->GetOmniboxView();
   AutocompleteController* autocomplete_controller =
-      omnibox->controller()->autocomplete_controller();
+      location_bar->GetOmniboxController()->autocomplete_controller();
 
   // Prevent the stop timer from killing the hints fetch early.
   autocomplete_controller->SetStartStopTimerDurationForTesting(
@@ -2056,9 +2055,8 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
       base::ASCIIToUTF16(search_terms), metrics::OmniboxEventProto::BLANK,
       ChromeAutocompleteSchemeClassifier(browser()->profile()));
   LocationBar* location_bar = browser()->window()->GetLocationBar();
-  OmniboxView* omnibox = location_bar->GetOmniboxView();
   AutocompleteController* autocomplete_controller =
-      omnibox->controller()->autocomplete_controller();
+      location_bar->GetOmniboxController()->autocomplete_controller();
 
   // Prevent the stop timer from killing the hints fetch early.
   autocomplete_controller->SetStartStopTimerDurationForTesting(
@@ -2088,9 +2086,8 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
       base::ASCIIToUTF16(search_terms), metrics::OmniboxEventProto::BLANK,
       ChromeAutocompleteSchemeClassifier(browser()->profile()));
   LocationBar* location_bar = browser()->window()->GetLocationBar();
-  OmniboxView* omnibox = location_bar->GetOmniboxView();
   AutocompleteController* autocomplete_controller =
-      omnibox->controller()->autocomplete_controller();
+      location_bar->GetOmniboxController()->autocomplete_controller();
 
   // Prevent the stop timer from killing the hints fetch early.
   autocomplete_controller->SetStartStopTimerDurationForTesting(
@@ -2130,9 +2127,8 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
       base::ASCIIToUTF16(search_terms), metrics::OmniboxEventProto::BLANK,
       ChromeAutocompleteSchemeClassifier(browser()->profile()));
   LocationBar* location_bar = browser()->window()->GetLocationBar();
-  OmniboxView* omnibox = location_bar->GetOmniboxView();
   AutocompleteController* autocomplete_controller =
-      omnibox->controller()->autocomplete_controller();
+      location_bar->GetOmniboxController()->autocomplete_controller();
 
   // Prevent the stop timer from killing the hints fetch early.
   autocomplete_controller->SetStartStopTimerDurationForTesting(
@@ -2152,7 +2148,7 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
   ASSERT_TRUE(prefetch_status.has_value());
   EXPECT_EQ(SearchPrefetchStatus::kCanBeServed, prefetch_status.value());
 
-  omnibox->model()->OpenSelectionForTesting();
+  location_bar->GetOmniboxController()->edit_model()->OpenSelectionForTesting();
 
   WaitUntilStatusChangesTo(canonical_search_url, std::nullopt);
 
@@ -2174,9 +2170,8 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
       base::ASCIIToUTF16(search_terms), metrics::OmniboxEventProto::BLANK,
       ChromeAutocompleteSchemeClassifier(browser()->profile()));
   LocationBar* location_bar = browser()->window()->GetLocationBar();
-  OmniboxView* omnibox = location_bar->GetOmniboxView();
   AutocompleteController* autocomplete_controller =
-      omnibox->controller()->autocomplete_controller();
+      location_bar->GetOmniboxController()->autocomplete_controller();
 
   // Prevent the stop timer from killing the hints fetch early.
   autocomplete_controller->SetStartStopTimerDurationForTesting(
@@ -2194,7 +2189,7 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
   ASSERT_TRUE(prefetch_status.has_value());
   EXPECT_EQ(SearchPrefetchStatus::kCanBeServed, prefetch_status.value());
 
-  omnibox->model()->OpenSelectionForTesting();
+  location_bar->GetOmniboxController()->edit_model()->OpenSelectionForTesting();
 
   WaitUntilStatusChangesTo(canonical_search_url, std::nullopt);
 
@@ -2214,9 +2209,8 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
       base::ASCIIToUTF16(search_terms), metrics::OmniboxEventProto::BLANK,
       ChromeAutocompleteSchemeClassifier(browser()->profile()));
   LocationBar* location_bar = browser()->window()->GetLocationBar();
-  OmniboxView* omnibox = location_bar->GetOmniboxView();
   AutocompleteController* autocomplete_controller =
-      omnibox->controller()->autocomplete_controller();
+      location_bar->GetOmniboxController()->autocomplete_controller();
 
   // Prevent the stop timer from killing the hints fetch early.
   autocomplete_controller->SetStartStopTimerDurationForTesting(
@@ -2228,7 +2222,7 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
   GURL canonical_search_url = GetCanonicalSearchURL(
       autocomplete_controller->result().match_at(0).destination_url);
 
-  omnibox->model()->OpenSelectionForTesting();
+  location_bar->GetOmniboxController()->edit_model()->OpenSelectionForTesting();
   WaitUntilStatusChangesTo(canonical_search_url, std::nullopt);
   DispatchDelayedResponseTask();
 
@@ -2257,9 +2251,8 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
       base::ASCIIToUTF16(search_terms), metrics::OmniboxEventProto::BLANK,
       ChromeAutocompleteSchemeClassifier(browser()->profile()));
   LocationBar* location_bar = browser()->window()->GetLocationBar();
-  OmniboxView* omnibox = location_bar->GetOmniboxView();
   AutocompleteController* autocomplete_controller =
-      omnibox->controller()->autocomplete_controller();
+      location_bar->GetOmniboxController()->autocomplete_controller();
 
   // Prevent the stop timer from killing the hints fetch early.
   autocomplete_controller->SetStartStopTimerDurationForTesting(
@@ -2273,7 +2266,7 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
   WaitUntilStatusChangesTo(canonical_search_url,
                            SearchPrefetchStatus::kCanBeServed);
 
-  omnibox->model()->OpenSelectionForTesting();
+  location_bar->GetOmniboxController()->edit_model()->OpenSelectionForTesting();
 
   // Wait until it is served to a real navigation.
   WaitUntilStatusChangesTo(canonical_search_url, std::nullopt);
@@ -2325,9 +2318,8 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
       base::ASCIIToUTF16(search_terms), metrics::OmniboxEventProto::BLANK,
       ChromeAutocompleteSchemeClassifier(browser()->profile()));
   LocationBar* location_bar = browser()->window()->GetLocationBar();
-  OmniboxView* omnibox = location_bar->GetOmniboxView();
   AutocompleteController* autocomplete_controller =
-      omnibox->controller()->autocomplete_controller();
+      location_bar->GetOmniboxController()->autocomplete_controller();
 
   // Prevent the stop timer from killing the hints fetch early.
   autocomplete_controller->SetStartStopTimerDurationForTesting(
@@ -2342,7 +2334,7 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
       SecurityStateTabHelper::FromWebContents(GetWebContents());
   WaitUntilStatusChangesTo(canonical_search_url,
                            SearchPrefetchStatus::kCanBeServed);
-  omnibox->model()->OpenSelectionForTesting();
+  location_bar->GetOmniboxController()->edit_model()->OpenSelectionForTesting();
 
   // Wait until it is served to a real navigation.
   WaitUntilStatusChangesTo(canonical_search_url, std::nullopt);
@@ -2370,9 +2362,8 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
       base::ASCIIToUTF16(search_terms), metrics::OmniboxEventProto::BLANK,
       ChromeAutocompleteSchemeClassifier(browser()->profile()));
   LocationBar* location_bar = browser()->window()->GetLocationBar();
-  OmniboxView* omnibox = location_bar->GetOmniboxView();
   AutocompleteController* autocomplete_controller =
-      omnibox->controller()->autocomplete_controller();
+      location_bar->GetOmniboxController()->autocomplete_controller();
 
   // Prevent the stop timer from killing the hints fetch early.
   autocomplete_controller->SetStartStopTimerDurationForTesting(
@@ -2388,7 +2379,7 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
   WaitUntilStatusChangesTo(canonical_search_url,
                            SearchPrefetchStatus::kCanBeServed);
 
-  omnibox->model()->OpenSelectionForTesting();
+  location_bar->GetOmniboxController()->edit_model()->OpenSelectionForTesting();
   // Wait until it is served to the navigation.
   WaitUntilStatusChangesTo(canonical_search_url, std::nullopt);
 
@@ -3910,9 +3901,8 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceNavigationPrefetchBrowserTest,
       base::ASCIIToUTF16(user_input), metrics::OmniboxEventProto::BLANK,
       ChromeAutocompleteSchemeClassifier(browser()->profile()));
   LocationBar* location_bar = browser()->window()->GetLocationBar();
-  OmniboxView* omnibox = location_bar->GetOmniboxView();
   AutocompleteController* autocomplete_controller =
-      omnibox->controller()->autocomplete_controller();
+      location_bar->GetOmniboxController()->autocomplete_controller();
 
   // Prevent the stop timer from killing the hints fetch early.
   autocomplete_controller->SetStartStopTimerDurationForTesting(
@@ -3935,7 +3925,8 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceNavigationPrefetchBrowserTest,
   ASSERT_TRUE(prefetch_status.has_value());
   EXPECT_EQ(SearchPrefetchStatus::kRequestFailed, prefetch_status.value());
 
-  omnibox->model()->SetPopupSelection(OmniboxPopupSelection(1));
+  location_bar->GetOmniboxController()->edit_model()->SetPopupSelection(
+      OmniboxPopupSelection(1));
 
   prefetch_status = search_prefetch_service->GetSearchPrefetchStatusForTesting(
       canonical_search_url);
@@ -3961,9 +3952,8 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceNavigationPrefetchBrowserTest,
       base::ASCIIToUTF16(user_input), metrics::OmniboxEventProto::BLANK,
       ChromeAutocompleteSchemeClassifier(browser()->profile()));
   LocationBar* location_bar = browser()->window()->GetLocationBar();
-  OmniboxView* omnibox = location_bar->GetOmniboxView();
   AutocompleteController* autocomplete_controller =
-      omnibox->controller()->autocomplete_controller();
+      location_bar->GetOmniboxController()->autocomplete_controller();
 
   // Prevent the stop timer from killing the hints fetch early.
   autocomplete_controller->SetStartStopTimerDurationForTesting(
@@ -3987,14 +3977,15 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceNavigationPrefetchBrowserTest,
   ASSERT_TRUE(prefetch_status.has_value());
   EXPECT_EQ(SearchPrefetchStatus::kComplete, prefetch_status.value());
 
-  omnibox->model()->SetPopupSelection(OmniboxPopupSelection(1));
+  location_bar->GetOmniboxController()->edit_model()->SetPopupSelection(
+      OmniboxPopupSelection(1));
 
   prefetch_status = search_prefetch_service->GetSearchPrefetchStatusForTesting(
       canonical_search_url);
   ASSERT_TRUE(prefetch_status.has_value());
   EXPECT_EQ(SearchPrefetchStatus::kComplete, prefetch_status.value());
 
-  omnibox->model()->OpenSelectionForTesting();
+  location_bar->GetOmniboxController()->edit_model()->OpenSelectionForTesting();
 
   // Wait until it is served to the navigation.
   WaitUntilStatusChangesTo(canonical_search_url, std::nullopt);
@@ -4018,9 +4009,8 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceNavigationPrefetchBrowserTest,
       base::ASCIIToUTF16(user_input), metrics::OmniboxEventProto::BLANK,
       ChromeAutocompleteSchemeClassifier(browser()->profile()));
   LocationBar* location_bar = browser()->window()->GetLocationBar();
-  OmniboxView* omnibox = location_bar->GetOmniboxView();
   AutocompleteController* autocomplete_controller =
-      omnibox->controller()->autocomplete_controller();
+      location_bar->GetOmniboxController()->autocomplete_controller();
 
   // Prevent the stop timer from killing the hints fetch early.
   autocomplete_controller->SetStartStopTimerDurationForTesting(
@@ -4032,14 +4022,15 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceNavigationPrefetchBrowserTest,
   GURL canonical_search_url = GetCanonicalSearchURL(
       autocomplete_controller->result().match_at(0).destination_url);
 
-  omnibox->model()->SetPopupSelection(OmniboxPopupSelection(1));
+  location_bar->GetOmniboxController()->edit_model()->SetPopupSelection(
+      OmniboxPopupSelection(1));
 
   auto prefetch_status =
       search_prefetch_service->GetSearchPrefetchStatusForTesting(
           canonical_search_url);
   EXPECT_FALSE(prefetch_status.has_value());
 
-  omnibox->model()->OpenSelectionForTesting();
+  location_bar->GetOmniboxController()->edit_model()->OpenSelectionForTesting();
 
   // Suggestion server does not suggest the user agent to prefetch the resource,
   // so there should be no prefetch attempt.
@@ -4243,9 +4234,8 @@ IN_PROC_BROWSER_TEST_P(SearchNavigationPrefetchDefaultMatchBrowserTest,
       base::ASCIIToUTF16(user_input), metrics::OmniboxEventProto::BLANK,
       ChromeAutocompleteSchemeClassifier(browser()->profile()));
   LocationBar* location_bar = browser()->window()->GetLocationBar();
-  OmniboxView* omnibox = location_bar->GetOmniboxView();
   AutocompleteController* autocomplete_controller =
-      omnibox->controller()->autocomplete_controller();
+      location_bar->GetOmniboxController()->autocomplete_controller();
 
   // Prevent the stop timer from killing the hints fetch early.
   autocomplete_controller->SetStartStopTimerDurationForTesting(

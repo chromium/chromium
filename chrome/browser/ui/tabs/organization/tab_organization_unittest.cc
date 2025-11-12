@@ -12,6 +12,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/tabs/organization/logging_util.h"
@@ -60,6 +61,10 @@ class TabOrganizationTest : public testing::Test {
         .WillByDefault(::testing::Return(&tab_strip_model_));
     ON_CALL(browser_window_interface_, GetUnownedUserDataHost)
         .WillByDefault(::testing::ReturnRef(user_data_host_));
+    ON_CALL(browser_window_interface_, GetFeatures())
+        .WillByDefault(::testing::ReturnRef(browser_window_features_));
+    ON_CALL(::testing::Const(browser_window_interface_), GetFeatures())
+        .WillByDefault(::testing::ReturnRef(browser_window_features_));
     delegate_.SetBrowserWindowInterface(&browser_window_interface_);
   }
 
@@ -162,7 +167,8 @@ class TabOrganizationTest : public testing::Test {
   TestTabStripModelDelegate delegate_;
   TabStripModel tab_strip_model_{&delegate_, &profile_};
   ui::UnownedUserDataHost user_data_host_;
-  MockBrowserWindowInterface browser_window_interface_;
+  BrowserWindowFeatures browser_window_features_;
+  ::testing::NiceMock<MockBrowserWindowInterface> browser_window_interface_;
   const tabs::TabModel::PreventFeatureInitializationForTesting prevent_;
 };
 

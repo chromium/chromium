@@ -52,7 +52,7 @@
 class CommandUpdater;
 class ContentSettingBubbleModelDelegate;
 class IntentChipButton;
-class LocationIconView;
+class OmniboxController;
 enum class OmniboxPart;
 class OmniboxPopupView;
 class OmniboxViewViews;
@@ -187,6 +187,8 @@ class LocationBarView
 
   OmniboxViewViews* omnibox_view() { return omnibox_view_; }
 
+  const OmniboxController* GetOmniboxController() const;
+
   // Returns true if the location bar's current security state does not match
   // the currently visible state.
   bool HasSecurityStateChanged();
@@ -212,6 +214,7 @@ class LocationBarView
   void FocusLocation(bool is_user_initiated) override;
   void Revert() override;
   OmniboxView* GetOmniboxView() override;
+  OmniboxController* GetOmniboxController() override;
   void UpdateWithoutTabRestore() override;
   LocationBarModel* GetLocationBarModel() override;
   content::WebContents* GetWebContents() override;
@@ -467,6 +470,9 @@ class LocationBarView
 
   // May be nullptr in tests.
   const raw_ptr<Profile> profile_;
+
+  // The omnibox controller.
+  std::unique_ptr<OmniboxController> omnibox_controller_;
 
   // The omnibox view where the user types and the current page URL is displayed
   // when user input is not in progress.
