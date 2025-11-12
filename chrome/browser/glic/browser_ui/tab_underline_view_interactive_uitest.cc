@@ -6,7 +6,7 @@
 
 #include "base/numerics/ranges.h"
 #include "cc/test/pixel_test_utils.h"
-#include "chrome/browser/glic/browser_ui/glic_tab_underline_view.h"
+#include "chrome/browser/glic/browser_ui/tab_underline_view.h"
 #include "chrome/browser/glic/host/glic_features.mojom.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
@@ -52,7 +52,7 @@ static constexpr char kClickFn[] = "el => el.click()";
 
 static constexpr float kFloatComparisonTolerance = 0.001f;
 
-class TesterImpl : public GlicTabUnderlineView::Tester {
+class TesterImpl : public TabUnderlineView::Tester {
  public:
   TesterImpl() = default;
   TesterImpl(const TesterImpl&) = delete;
@@ -75,9 +75,7 @@ class TesterImpl : public GlicTabUnderlineView::Tester {
     wait_for_ramp_down_started_.Quit();
   }
 
-  void set_underline(GlicTabUnderlineView* underline) {
-    underline_ = underline;
-  }
+  void set_underline(TabUnderlineView* underline) { underline_ = underline; }
 
   void ResetWaitForAnimationStart() { animation_started_ = false; }
   void WaitForAnimationStart() {
@@ -120,7 +118,7 @@ class TesterImpl : public GlicTabUnderlineView::Tester {
 
  private:
   const base::TimeTicks creation_time_ = base::TimeTicks::Now();
-  raw_ptr<GlicTabUnderlineView> underline_;
+  raw_ptr<TabUnderlineView> underline_;
   base::TimeTicks next_time_tick_ = creation_time_;
 
   bool animation_started_ = false;
@@ -133,24 +131,22 @@ class TesterImpl : public GlicTabUnderlineView::Tester {
   base::RunLoop wait_for_ramp_down_started_;
 };
 
-class TestUnderlineView : public GlicTabUnderlineView {
+class TestUnderlineView : public TabUnderlineView {
  public:
   TestUnderlineView(Browser* browser, Tab* tab, std::unique_ptr<Tester> tester)
-      : GlicTabUnderlineView(browser, tab, std::move(tester)) {}
+      : TabUnderlineView(browser, tab, std::move(tester)) {}
   ~TestUnderlineView() override = default;
 };
 
-class TestFactory : public GlicTabUnderlineView::Factory {
+class TestFactory : public TabUnderlineView::Factory {
  public:
-  TestFactory() { GlicTabUnderlineView::Factory::set_factory(this); }
-  ~TestFactory() override {
-    GlicTabUnderlineView::Factory::set_factory(nullptr);
-  }
+  TestFactory() { TabUnderlineView::Factory::set_factory(this); }
+  ~TestFactory() override { TabUnderlineView::Factory::set_factory(nullptr); }
 
  protected:
-  std::unique_ptr<GlicTabUnderlineView> CreateUnderlineView(Browser* browser,
-                                                            Tab* tab) override {
-    GlicTabUnderlineView* new_underline =
+  std::unique_ptr<TabUnderlineView> CreateUnderlineView(Browser* browser,
+                                                        Tab* tab) override {
+    TabUnderlineView* new_underline =
         new TestUnderlineView(browser, tab, std::make_unique<TesterImpl>());
     TesterImpl* tester = static_cast<TesterImpl*>(new_underline->tester());
     tester->set_underline(new_underline);
@@ -158,9 +154,9 @@ class TestFactory : public GlicTabUnderlineView::Factory {
   }
 };
 
-class GlicTabUnderlineViewUiTest : public test::InteractiveGlicTest {
+class TabUnderlineViewUiTest : public test::InteractiveGlicTest {
  public:
-  GlicTabUnderlineViewUiTest() {
+  TabUnderlineViewUiTest() {
     const std::string multitab_feature_name =
         mojom::features::kGlicMultiTab.name;
     const std::string underline_feature_name =
@@ -173,7 +169,7 @@ class GlicTabUnderlineViewUiTest : public test::InteractiveGlicTest {
         enabled_features, /*disable_features=*/
         "GlicForceSimplifiedBorder,GlicForceNonSkSLBorder");
   }
-  ~GlicTabUnderlineViewUiTest() override = default;
+  ~TabUnderlineViewUiTest() override = default;
 
   void SetUpOnMainThread() override {
     embedded_test_server()->ServeFilesFromSourceDirectory(
@@ -219,16 +215,15 @@ class GlicTabUnderlineViewUiTest : public test::InteractiveGlicTest {
 
   GURL Title2() const { return embedded_test_server()->GetURL("/title2.html"); }
 
-  GlicTabUnderlineView* GetUnderlineOfActiveTab() {
+  TabUnderlineView* GetUnderlineOfActiveTab() {
     TabStripViewInterface* tab_strip_view =
         browser()->window()->AsBrowserView()->tab_strip_view();
     views::View* underline =
         tab_strip_view
             ->GetTabAnchorViewAt(browser()->tab_strip_model()->active_index())
-            ->GetViewByElementId(
-                GlicTabUnderlineView::kGlicTabUnderlineElementId);
+            ->GetViewByElementId(TabUnderlineView::kGlicTabUnderlineElementId);
     CHECK(underline);
-    return views::AsViewClass<GlicTabUnderlineView>(underline);
+    return views::AsViewClass<TabUnderlineView>(underline);
   }
 
   content::WebContents* GetActiveWebContents() {
@@ -271,7 +266,7 @@ class GlicTabUnderlineViewUiTest : public test::InteractiveGlicTest {
 
 // Exercise the default user journey: toggles the underline animation and waits
 // for it to finish.
-IN_PROC_BROWSER_TEST_F(GlicTabUnderlineViewUiTest, SmokeTest) {
+IN_PROC_BROWSER_TEST_F(TabUnderlineViewUiTest, SmokeTest) {
   auto* underline = GetUnderlineOfActiveTab();
   ASSERT_TRUE(underline);
   TesterImpl* tester = static_cast<TesterImpl*>(underline->tester());
@@ -281,11 +276,11 @@ IN_PROC_BROWSER_TEST_F(GlicTabUnderlineViewUiTest, SmokeTest) {
   EXPECT_TRUE(underline->IsShowing());
 
   // Manually stepping the animation code to mimic the behavior of the
-  // compositor. These tests follow the same setup as GlicBorderViewUiTest. For
-  // those tests, crbug.com/384712084 and crbug.com/387386303 outline how
-  // testing via requesting screenshot from the browser window was explored but
-  // ultimately failed due to test flakiness. These tests follow the same
-  // workarounds, improvement is outlined in
+  // compositor. These tests follow the same setup as
+  // ContextSharingBorderViewUiTest. For those tests, crbug.com/384712084 and
+  // crbug.com/387386303 outline how testing via requesting screenshot from the
+  // browser window was explored but ultimately failed due to test flakiness.
+  // These tests follow the same workarounds, improvement is outlined in
   // TODO(crbug.com/crbug.com/387386303).
 
   // T=0s.
@@ -324,7 +319,7 @@ IN_PROC_BROWSER_TEST_F(GlicTabUnderlineViewUiTest, SmokeTest) {
   EXPECT_FALSE(underline->IsShowing());
 }
 
-IN_PROC_BROWSER_TEST_F(GlicTabUnderlineViewUiTest, ToggleSharingWithSingleTab) {
+IN_PROC_BROWSER_TEST_F(TabUnderlineViewUiTest, ToggleSharingWithSingleTab) {
   auto* underline = GetUnderlineOfActiveTab();
   TesterImpl* tester = static_cast<TesterImpl*>(underline->tester());
   EXPECT_FALSE(underline->IsShowing());
@@ -350,7 +345,7 @@ IN_PROC_BROWSER_TEST_F(GlicTabUnderlineViewUiTest, ToggleSharingWithSingleTab) {
   EXPECT_FALSE(underline->IsShowing());
 }
 
-IN_PROC_BROWSER_TEST_F(GlicTabUnderlineViewUiTest,
+IN_PROC_BROWSER_TEST_F(TabUnderlineViewUiTest,
                        SingleTabPinningWhileGlicWindowOpen) {
   RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached));
   EXPECT_TRUE(glic_service()->IsWindowShowing());
@@ -375,7 +370,7 @@ IN_PROC_BROWSER_TEST_F(GlicTabUnderlineViewUiTest,
   EXPECT_FALSE(underline->IsShowing());
 }
 
-IN_PROC_BROWSER_TEST_F(GlicTabUnderlineViewUiTest,
+IN_PROC_BROWSER_TEST_F(TabUnderlineViewUiTest,
                        SingleTabPinningWhileGlicWindowClosed) {
   EXPECT_FALSE(glic_service()->IsWindowShowing());
 
@@ -392,7 +387,7 @@ IN_PROC_BROWSER_TEST_F(GlicTabUnderlineViewUiTest,
   EXPECT_FALSE(underline->IsShowing());
 }
 
-IN_PROC_BROWSER_TEST_F(GlicTabUnderlineViewUiTest,
+IN_PROC_BROWSER_TEST_F(TabUnderlineViewUiTest,
                        ToggleGlicWindowVisibilityWithPinnedTab) {
   auto* underline = GetUnderlineOfActiveTab();
   TesterImpl* tester = static_cast<TesterImpl*>(underline->tester());
@@ -415,7 +410,7 @@ IN_PROC_BROWSER_TEST_F(GlicTabUnderlineViewUiTest,
   EXPECT_FALSE(underline->IsShowing());
 }
 
-IN_PROC_BROWSER_TEST_F(GlicTabUnderlineViewUiTest, FocusedTabChange) {
+IN_PROC_BROWSER_TEST_F(TabUnderlineViewUiTest, FocusedTabChange) {
   auto* underline1 = GetUnderlineOfActiveTab();
   TesterImpl* tester1 = static_cast<TesterImpl*>(underline1->tester());
 
@@ -445,7 +440,7 @@ IN_PROC_BROWSER_TEST_F(GlicTabUnderlineViewUiTest, FocusedTabChange) {
   EXPECT_FALSE(underline2->IsShowing());
 }
 
-IN_PROC_BROWSER_TEST_F(GlicTabUnderlineViewUiTest,
+IN_PROC_BROWSER_TEST_F(TabUnderlineViewUiTest,
                        FocusedTabChangeBetweenPinnedTabs) {
   auto* underline1 = GetUnderlineOfActiveTab();
   TesterImpl* tester1 = static_cast<TesterImpl*>(underline1->tester());
@@ -487,7 +482,7 @@ IN_PROC_BROWSER_TEST_F(GlicTabUnderlineViewUiTest,
   EXPECT_EQ(underline2->opacity_for_testing(), u2_opacity);
 }
 
-IN_PROC_BROWSER_TEST_F(GlicTabUnderlineViewUiTest, TabAlertIndicatorHidden) {
+IN_PROC_BROWSER_TEST_F(TabUnderlineViewUiTest, TabAlertIndicatorHidden) {
   auto* underline = GetUnderlineOfActiveTab();
   ASSERT_TRUE(underline);
   TesterImpl* tester = static_cast<TesterImpl*>(underline->tester());
@@ -500,7 +495,7 @@ IN_PROC_BROWSER_TEST_F(GlicTabUnderlineViewUiTest, TabAlertIndicatorHidden) {
   EXPECT_FALSE(GetAlertIndicatorButtonOfActiveTab()->GetVisible());
 }
 
-IN_PROC_BROWSER_TEST_F(GlicTabUnderlineViewUiTest,
+IN_PROC_BROWSER_TEST_F(TabUnderlineViewUiTest,
                        TabAlertIndicatorHidden_PinnedTab) {
   RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached));
   EXPECT_TRUE(glic_service()->IsWindowShowing());
@@ -520,7 +515,7 @@ IN_PROC_BROWSER_TEST_F(GlicTabUnderlineViewUiTest,
 
 // Ensure basic incognito window doesn't cause a crash. Simply opens an
 // incognito window and navigates, test passes if it doesn't crash.
-IN_PROC_BROWSER_TEST_F(GlicTabUnderlineViewUiTest, IncognitoModeCrash) {
+IN_PROC_BROWSER_TEST_F(TabUnderlineViewUiTest, IncognitoModeCrash) {
   Browser* incognito_browser = CreateIncognitoBrowser();
 
   ASSERT_TRUE(
@@ -528,20 +523,20 @@ IN_PROC_BROWSER_TEST_F(GlicTabUnderlineViewUiTest, IncognitoModeCrash) {
 }
 
 namespace {
-class GlicTabUnderlineViewFeatureDisabledBrowserTest
-    : public GlicTabUnderlineViewUiTest {
+class TabUnderlineViewFeatureDisabledBrowserTest
+    : public TabUnderlineViewUiTest {
  public:
-  GlicTabUnderlineViewFeatureDisabledBrowserTest() {
+  TabUnderlineViewFeatureDisabledBrowserTest() {
     features_.InitAndDisableFeature(features::kGlicMultitabUnderlines);
   }
-  ~GlicTabUnderlineViewFeatureDisabledBrowserTest() override = default;
+  ~TabUnderlineViewFeatureDisabledBrowserTest() override = default;
 
  private:
   base::test::ScopedFeatureList features_;
 };
 }  // namespace
 
-IN_PROC_BROWSER_TEST_F(GlicTabUnderlineViewFeatureDisabledBrowserTest,
+IN_PROC_BROWSER_TEST_F(TabUnderlineViewFeatureDisabledBrowserTest,
                        TabAlertIndicatorShown) {
   AlertIndicatorButton* alert_button = GetAlertIndicatorButtonOfActiveTab();
   EXPECT_FALSE(alert_button->GetVisible());
@@ -561,7 +556,7 @@ IN_PROC_BROWSER_TEST_F(GlicTabUnderlineViewFeatureDisabledBrowserTest,
   EXPECT_TRUE(alert_button->GetVisible());
 }
 
-IN_PROC_BROWSER_TEST_F(GlicTabUnderlineViewFeatureDisabledBrowserTest,
+IN_PROC_BROWSER_TEST_F(TabUnderlineViewFeatureDisabledBrowserTest,
                        TabAlertIndicatorShown_PinnedTab) {
   AlertIndicatorButton* alert_button = GetAlertIndicatorButtonOfActiveTab();
   EXPECT_FALSE(alert_button->GetVisible());

@@ -28,7 +28,7 @@ class Rect;
 }  // namespace gfx
 
 namespace glic {
-class GlicBorderView;
+class ContextSharingBorderView;
 }  // namespace glic
 
 namespace new_tab_footer {
@@ -84,7 +84,7 @@ class ContentsContainerView : public views::View,
   views::View* immersive_read_anything_overlay_view() {
     return immersive_read_anything_overlay_view_;
   }
-  glic::GlicBorderView* glic_border_view() { return glic_border_; }
+  glic::ContextSharingBorderView* glic_border_view() { return glic_border_; }
   new_tab_footer::NewTabFooterWebView* new_tab_footer_view() {
     return new_tab_footer_view_;
   }
@@ -185,7 +185,7 @@ class ContentsContainerView : public views::View,
   raw_ptr<ActorOverlayWebView> actor_overlay_web_view_ = nullptr;
 
   // The glic browser view that renders around the web contents area.
-  raw_ptr<glic::GlicBorderView> glic_border_ = nullptr;
+  raw_ptr<glic::ContextSharingBorderView> glic_border_ = nullptr;
 
   raw_ptr<MultiContentsViewMiniToolbar> mini_toolbar_ = nullptr;
 

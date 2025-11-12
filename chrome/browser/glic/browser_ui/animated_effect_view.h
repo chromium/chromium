@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_GLIC_BROWSER_UI_GLIC_ANIMATED_EFFECT_VIEW_H_
-#define CHROME_BROWSER_GLIC_BROWSER_UI_GLIC_ANIMATED_EFFECT_VIEW_H_
+#ifndef CHROME_BROWSER_GLIC_BROWSER_UI_ANIMATED_EFFECT_VIEW_H_
+#define CHROME_BROWSER_GLIC_BROWSER_UI_ANIMATED_EFFECT_VIEW_H_
 
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
@@ -26,16 +26,16 @@ class GpuDataManager;
 
 namespace glic {
 
-class GlicAnimatedEffectView : public views::View,
-                               public ui::CompositorAnimationObserver,
-                               public ui::CompositorObserver,
-                               public content::GpuDataManagerObserver {
-  METADATA_HEADER(GlicAnimatedEffectView, views::View)
+class AnimatedEffectView : public views::View,
+                           public ui::CompositorAnimationObserver,
+                           public ui::CompositorObserver,
+                           public content::GpuDataManagerObserver {
+  METADATA_HEADER(AnimatedEffectView, views::View)
 
  public:
-  GlicAnimatedEffectView(const GlicAnimatedEffectView&) = delete;
-  GlicAnimatedEffectView& operator=(const GlicAnimatedEffectView&) = delete;
-  ~GlicAnimatedEffectView() override;
+  AnimatedEffectView(const AnimatedEffectView&) = delete;
+  AnimatedEffectView& operator=(const AnimatedEffectView&) = delete;
+  ~AnimatedEffectView() override;
 
   // `views::View`:
   void OnPaint(gfx::Canvas* canvas) override;
@@ -70,7 +70,7 @@ class GlicAnimatedEffectView : public views::View,
   Tester* tester() const { return tester_.get(); }
 
  protected:
-  GlicAnimatedEffectView(Browser* browser, std::unique_ptr<Tester> tester);
+  AnimatedEffectView(Browser* browser, std::unique_ptr<Tester> tester);
 
   // Returns whether the current effect's animation has completed.
   virtual bool IsCycleDone(base::TimeTicks timestamp) = 0;
@@ -172,9 +172,9 @@ class GlicAnimatedEffectView : public views::View,
   raw_ptr<ThemeService> theme_service_ = nullptr;
 };
 
-BEGIN_VIEW_BUILDER(, GlicAnimatedEffectView, views::View)
+BEGIN_VIEW_BUILDER(, AnimatedEffectView, views::View)
 END_VIEW_BUILDER
 
 }  // namespace glic
 
-#endif  // CHROME_BROWSER_GLIC_BROWSER_UI_GLIC_ANIMATED_EFFECT_VIEW_H_
+#endif  // CHROME_BROWSER_GLIC_BROWSER_UI_ANIMATED_EFFECT_VIEW_H_

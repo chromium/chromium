@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_GLIC_BROWSER_UI_BORDER_VIEW_UPDATER_H_
-#define CHROME_BROWSER_GLIC_BROWSER_UI_BORDER_VIEW_UPDATER_H_
+#ifndef CHROME_BROWSER_GLIC_BROWSER_UI_CONTEXT_SHARING_BORDER_VIEW_CONTROLLER_H_
+#define CHROME_BROWSER_GLIC_BROWSER_UI_CONTEXT_SHARING_BORDER_VIEW_CONTROLLER_H_
 
 #include <list>
 #include <optional>
@@ -31,15 +31,18 @@ class WebContents;
 
 namespace glic {
 
-class GlicBorderView;
+class ContextSharingBorderView;
 
-class BorderViewUpdater : public views::ViewObserver {
+class ContextSharingBorderViewController : public views::ViewObserver {
  public:
-  explicit BorderViewUpdater(GlicBorderView* border_view,
-                             ContentsWebView* contents_web_view);
-  BorderViewUpdater(const BorderViewUpdater&) = delete;
-  BorderViewUpdater& operator=(const BorderViewUpdater&) = delete;
-  ~BorderViewUpdater() override;
+  explicit ContextSharingBorderViewController(
+      ContextSharingBorderView* border_view,
+      ContentsWebView* contents_web_view);
+  ContextSharingBorderViewController(
+      const ContextSharingBorderViewController&) = delete;
+  ContextSharingBorderViewController& operator=(
+      const ContextSharingBorderViewController&) = delete;
+  ~ContextSharingBorderViewController() override;
 
   ContentsWebView* contents_web_view() { return contents_web_view_; }
 
@@ -90,7 +93,7 @@ class BorderViewUpdater : public views::ViewObserver {
   std::string UpdateReasonsToString() const;
 
   // Back pointer to the owner. Guaranteed to outlive `this`.
-  raw_ptr<GlicBorderView> border_view_;
+  raw_ptr<ContextSharingBorderView> border_view_;
 
   // Pointer to the associated contents web view and associated view
   // observation for view deletion.
@@ -121,4 +124,4 @@ class BorderViewUpdater : public views::ViewObserver {
 
 }  // namespace glic
 
-#endif  // CHROME_BROWSER_GLIC_BROWSER_UI_BORDER_VIEW_UPDATER_H_
+#endif  // CHROME_BROWSER_GLIC_BROWSER_UI_CONTEXT_SHARING_BORDER_VIEW_CONTROLLER_H_

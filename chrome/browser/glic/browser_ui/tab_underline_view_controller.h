@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_GLIC_BROWSER_UI_UNDERLINE_VIEW_UPDATER_H_
-#define CHROME_BROWSER_GLIC_BROWSER_UI_UNDERLINE_VIEW_UPDATER_H_
+#ifndef CHROME_BROWSER_GLIC_BROWSER_UI_TAB_UNDERLINE_VIEW_CONTROLLER_H_
+#define CHROME_BROWSER_GLIC_BROWSER_UI_TAB_UNDERLINE_VIEW_CONTROLLER_H_
 
 #include <list>
 #include <optional>
@@ -28,14 +28,16 @@ class WebContents;
 
 namespace glic {
 
-class GlicTabUnderlineView;
+class TabUnderlineView;
 
-class UnderlineViewUpdater : public GlicWindowController::StateObserver {
+class TabUnderlineViewController : public GlicWindowController::StateObserver {
  public:
-  UnderlineViewUpdater(Browser* browser, GlicTabUnderlineView* underline_view);
-  UnderlineViewUpdater(const UnderlineViewUpdater&) = delete;
-  UnderlineViewUpdater& operator=(const UnderlineViewUpdater&) = delete;
-  ~UnderlineViewUpdater() override;
+  TabUnderlineViewController(Browser* browser,
+                             TabUnderlineView* underline_view);
+  TabUnderlineViewController(const TabUnderlineViewController&) = delete;
+  TabUnderlineViewController& operator=(const TabUnderlineViewController&) =
+      delete;
+  ~TabUnderlineViewController() override;
 
   // Called when the focused tab changes with the focused tab data object.
   void OnFocusedTabChanged(const FocusedTabData& focused_tab_data);
@@ -120,7 +122,7 @@ class UnderlineViewUpdater : public GlicWindowController::StateObserver {
   std::string UpdateReasonsToString() const;
 
   // Back pointer to the owner. Guaranteed to outlive `this`.
-  const raw_ptr<GlicTabUnderlineView> underline_view_;
+  const raw_ptr<TabUnderlineView> underline_view_;
 
   // Owned by `BrowserView`. Outlives all the children of the `BrowserView`.
   const raw_ptr<Browser> browser_;
@@ -139,4 +141,4 @@ class UnderlineViewUpdater : public GlicWindowController::StateObserver {
 
 }  // namespace glic
 
-#endif  // CHROME_BROWSER_GLIC_BROWSER_UI_UNDERLINE_VIEW_UPDATER_H_
+#endif  // CHROME_BROWSER_GLIC_BROWSER_UI_TAB_UNDERLINE_VIEW_CONTROLLER_H_
