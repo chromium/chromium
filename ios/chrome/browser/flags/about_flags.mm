@@ -2923,6 +2923,10 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      FEATURE_WITH_PARAMS_VALUE_TYPE(kFRESignInHeaderTextUpdate,
                                     kFRESignInHeaderTextUpdateVariations,
                                     "FRESignInHeaderTextUpdate")},
+    {"most-visited-tiles-customization-ios",
+     flag_descriptions::kMostVisitedTilesCustomizationName,
+     flag_descriptions::kMostVisitedTilesCustomizationDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kMostVisitedTilesCustomizationIOS)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

@@ -65,6 +65,10 @@ BASE_DECLARE_FEATURE(kFeedSwipeInProductHelp);
 // eligibility service instead of the new tab page mediator.
 BASE_DECLARE_FEATURE(kUseFeedEligibilityService);
 
+// iOS counterpart for `chrome::android::kMostVisitedTilesCustomization`;
+// enables customizable most visited tiles when enabled.
+BASE_DECLARE_FEATURE(kMostVisitedTilesCustomizationIOS);
+
 #pragma mark - Feature parameters
 
 // A parameter to indicate whether Reconstructed Templates is enabled for static
@@ -133,5 +137,8 @@ bool ShouldShowQuickActionsRow();
 
 // Whether a MIA variation should increase the size of the fakebox.
 bool ShouldEnlargeNTPFakeboxForMIA();
+
+// Whether customized most visited tiles is enabled on Chrome on iOS.
+bool IsContentSuggestionsCustomizable();
 
 #endif  // IOS_CHROME_BROWSER_NTP_UI_BUNDLED_NEW_TAB_PAGE_FEATURE_H_

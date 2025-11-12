@@ -7017,6 +7017,11 @@
     "expiry_milestone": 145
   },
   {
+    "name": "most-visited-tiles-customization-ios",
+    "owners": [ "ginnyhuang@chromium.org", "bling-pandamonium@google.com" ],
+    "expiry_milestone": 149
+  },
+  {
     "name": "most-visited-tiles-new-scoring",
     "owners": [ "ckitagawa@chromium.org", "fredmello@chromium.org", "huangs@chromium.org" ],
     "expiry_milestone": 140

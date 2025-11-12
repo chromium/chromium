@@ -30,6 +30,9 @@ BASE_FEATURE(kFeedSwipeInProductHelp, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kUseFeedEligibilityService, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kMostVisitedTilesCustomizationIOS,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #pragma mark - Feature parameters
 
 const char kDiscoverFeedSRSReconstructedTemplatesEnabled[] =
@@ -141,4 +144,8 @@ bool ShouldEnlargeNTPFakeboxForMIA() {
              NTPMIAEntrypointVariation::kOmniboxContainedEnlargedFakebox ||
          variation == NTPMIAEntrypointVariation::kEnlargedFakeboxNoIncognito ||
          variation == NTPMIAEntrypointVariation::kAIMInQuickAction;
+}
+
+bool IsContentSuggestionsCustomizable() {
+  return base::FeatureList::IsEnabled(kMostVisitedTilesCustomizationIOS);
 }

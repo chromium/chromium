@@ -1095,6 +1095,11 @@ const char kMobilePromoOnDesktopName[] = "Mobile Promo On Desktop";
 const char kMobilePromoOnDesktopDescription[] =
     "When enabled, shows a mobile promo on the desktop new tab page.";
 
+const char kMostVisitedTilesCustomizationName[] =
+    "Most Visited Tiles Customization on iOS";
+const char kMostVisitedTilesCustomizationDescription[] =
+    "Enables customization of Most Visited tiles on the New Tab Page.";
+
 const char kMostVisitedTilesHorizontalRenderGroupName[] =
     "MVTiles Horizontal Render Group";
 const char kMostVisitedTilesHorizontalRenderGroupDescription[] =
