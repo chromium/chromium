@@ -186,7 +186,7 @@ std::optional<SkBitmap> GetBitmapFromCanvasImageSource(
 
   SourceImageStatus source_image_status = kInvalidSourceImageStatus;
   scoped_refptr<Image> image = canvas_image_source.GetSourceImageForCanvas(
-      FlushReason::kCopyToSkBitmap, &source_image_status, size);
+      FlushReason::kOther, &source_image_status, size);
   if (!image || source_image_status != kNormalSourceImageStatus) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Invalid element or state.");

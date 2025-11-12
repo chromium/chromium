@@ -89,11 +89,7 @@ enum class FlushReason {
   // This inhibits vector printing.
   kWebGPUExternalImage = 17,
 
-  // The canvas contents were copied to an SkBitmap.
-  // This inhibits vector printing.
-  kCopyToSkBitmap = 18,
-
-  kOther = 19,
+  kOther = 18,
 
   kMaxValue = kOther,
 };
