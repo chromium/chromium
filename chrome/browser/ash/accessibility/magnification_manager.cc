@@ -13,11 +13,11 @@
 #include "ash/shell.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/focused_node_details.h"
 #include "ui/accessibility/accessibility_features.h"
@@ -169,9 +169,9 @@ MagnificationManager::~MagnificationManager() {
 
 void MagnificationManager::OnLoginOrLockScreenVisible() {
   // Update `profile_` when entering the login screen.
-  Profile* profile = ProfileManager::GetActiveUserProfile();
-  if (IsSigninBrowserContext(profile)) {
-    SetProfile(profile);
+  if (!session_manager::SessionManager::Get()->GetActiveSession()) {
+    SetProfile(Profile::FromBrowserContext(
+        BrowserContextHelper::Get()->GetSigninBrowserContext()));
   }
 }
 
