@@ -103,4 +103,10 @@ tast.featured.FieldTrialEarlyBoot.active_trial
 # https://crbug.com/459929970
 tast.crostini.SyncTime.baguette_stable
 
+# https://crbug.com/460052469
+tast.apps.LaunchHelpAppFromShortcut.stable_guest
+
+# https://crbug.com/460054243
+tast.inputs.VirtualKeyboardTypingUserMode.guest
+
 # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
