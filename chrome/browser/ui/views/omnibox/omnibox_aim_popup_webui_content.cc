@@ -13,8 +13,6 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_context_menu.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter.h"
 #include "chrome/browser/ui/views/omnibox/rounded_omnibox_results_frame.h"
-#include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_aim_handler.h"
-#include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -33,28 +31,10 @@ OmniboxAimPopupWebUIContent::OmniboxAimPopupWebUIContent(
 
 OmniboxAimPopupWebUIContent::~OmniboxAimPopupWebUIContent() = default;
 
-void OmniboxAimPopupWebUIContent::ShowUI() {
-  auto* webui_controller = contents_wrapper()->GetWebUIController();
-  if (webui_controller) {
-    auto* omnibox_popup_ui = webui_controller->GetAs<OmniboxPopupUI>();
-    if (omnibox_popup_ui && omnibox_popup_ui->popup_aim_handler()) {
-      omnibox_popup_ui->popup_aim_handler()->OnShow();
-    }
-  }
-}
-
 void OmniboxAimPopupWebUIContent::CloseUI() {
   // Update the popup state manager that the aim popup is closing.
   // LocationBarView is subscribed to state changes and will close the widget.
   controller()->popup_state_manager()->SetPopupState(OmniboxPopupState::kNone);
-
-  auto* webui_controller = contents_wrapper()->GetWebUIController();
-  if (webui_controller) {
-    auto* omnibox_popup_ui = webui_controller->GetAs<OmniboxPopupUI>();
-    if (omnibox_popup_ui && omnibox_popup_ui->popup_aim_handler()) {
-      omnibox_popup_ui->popup_aim_handler()->OnClose();
-    }
-  }
 }
 
 BEGIN_METADATA(OmniboxAimPopupWebUIContent)

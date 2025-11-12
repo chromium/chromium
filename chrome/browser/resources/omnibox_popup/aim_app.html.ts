@@ -12,7 +12,6 @@ export function getHtml(this: OmniboxAimAppElement) {
 <cr-composebox ntp-realbox-next-enabled
     searchbox-layout-mode="${this.searchboxLayoutMode_}"
     @context-menu-entrypoint-click="${this.onContextualEntryPointClicked_}"
-    @close-composebox="${this.onCloseComposebox_}"
     entrypoint-name="Omnibox">
 </cr-composebox>
 <!--_html_template_end_-->`;

@@ -1208,8 +1208,6 @@ static_library("ui") {
       "webui/ntp_microsoft_auth/ntp_microsoft_auth_response_capture_navigation_throttle.h",
       "webui/ntp_microsoft_auth/ntp_microsoft_auth_untrusted_ui.cc",
       "webui/ntp_microsoft_auth/ntp_microsoft_auth_untrusted_ui.h",
-      "webui/omnibox_popup/omnibox_popup_aim_handler.cc",
-      "webui/omnibox_popup/omnibox_popup_aim_handler.h",
       "webui/omnibox_popup/omnibox_popup_ui.cc",
       "webui/omnibox_popup/omnibox_popup_ui.h",
       "webui/omnibox_popup/omnibox_popup_web_contents_helper.cc",
@@ -1468,7 +1466,6 @@ static_library("ui") {
       "//chrome/browser/ui/web_applications:launch_utils",
       "//chrome/browser/ui/webui/access_code_cast",
       "//chrome/browser/ui/webui/access_code_cast:impl",
-      "//chrome/browser/ui/webui/omnibox_popup/mojom",
       "//chrome/browser/usb",
       "//chrome/browser/webauthn:local_credential_management",
 
