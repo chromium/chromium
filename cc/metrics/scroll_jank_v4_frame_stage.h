@@ -24,6 +24,51 @@ namespace cc {
 // and/or a scroll end in the frame (`ScrollJankV4FrameStage::ScrollEnd`) in
 // either order.
 struct CC_EXPORT ScrollJankV4FrameStage {
+  // The result or issues encountered by the `CalculateStages()` method when
+  // processing scroll events in a single frame.
+  // LINT.IfChange(FrameStageCalculationResult)
+  enum class FrameStageCalculationResult {
+    // Results without issues:
+
+    // The frame only contained one or more scroll updates.
+    kScrollUpdatesOnly = 0,
+
+    // The frame only contained one scroll end (and nothing else).
+    kScrollEndOnly = 1,
+
+    // The frame contained one or more scroll updates followed by one scroll
+    // end.
+    kScrollUpdatesThenEnd = 2,
+
+    // The frame contained one scroll end, one scroll start and then zero or
+    // more scroll updates (in this order).
+    kScrollEndThenStartThenUpdates = 3,
+
+    // Issues (unexpected scroll events in a single frame):
+
+    // The frame contained multiple scroll ends.
+    kMultipleScrollEnds = 4,
+
+    // The frame contained multiple scroll starts.
+    kMultipleScrollStarts = 5,
+
+    // The frame contained a scroll update followed by a scroll start.
+    kScrollStartAfterUpdate = 6,
+
+    // The frame contained a scroll end between two scroll updates.
+    kScrollEndBetweenUpdates = 7,
+
+    // The frame contained a scroll end and then one or more scroll updates
+    // without a scroll start in between.
+    kScrollEndThenUpdatesWithoutStart = 8,
+
+    // The frame suffered from more than one of the issues above.
+    kMultipleIssues = 9,
+
+    kMaxValue = kMultipleIssues,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/event/enums.xml:ScrollJankFrameStageCalculationResult)
+
   // A stage that corresponds to one or more scroll updates that were first
   // presented in the frame. If `is_scroll_start` is true, the first scroll
   // update in the frame was a `kFirstGestureScrollUpdate`. All other scroll

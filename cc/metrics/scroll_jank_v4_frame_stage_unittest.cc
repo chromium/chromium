@@ -8,6 +8,8 @@
 #include <optional>
 #include <sstream>
 
+#include "base/rand_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "cc/metrics/event_metrics.h"
 #include "cc/test/event_metrics_test_creator.h"
@@ -538,6 +540,238 @@ TEST_F(ScrollJankV4FrameStageTest, ScrollEndToOstream) {
   auto& result = out << stage;
   EXPECT_EQ(out.str(), "ScrollEnd{}");
   EXPECT_EQ(&result, &out);
+}
+
+TEST_F(ScrollJankV4FrameStageTest,
+       FrameStageCalculationResultScrollUpdatesOnly) {
+  base::HistogramTester histogram_tester;
+  base::MetricsSubSampler::ScopedAlwaysSampleForTesting always_sample;
+
+  EventMetrics::List events_metrics;
+  events_metrics.push_back(metrics_creator_.CreateGestureScrollUpdate(
+      {.timestamp = MillisecondsTicks(1),
+       .delta = 5,
+       .caused_frame_update = true,
+       .did_scroll = true}));
+  events_metrics.push_back(metrics_creator_.CreateInertialGestureScrollUpdate(
+      {.timestamp = MillisecondsTicks(2),
+       .delta = 5,
+       .caused_frame_update = true,
+       .did_scroll = true}));
+  ScrollJankV4FrameStage::CalculateStages(events_metrics);
+
+  histogram_tester.ExpectUniqueSample(
+      "Event.ScrollJank.FrameStageCalculationResult",
+      ScrollJankV4FrameStage::FrameStageCalculationResult::kScrollUpdatesOnly,
+      1);
+}
+
+TEST_F(ScrollJankV4FrameStageTest,
+       FrameStageCalculationResultScrollUpdatesThenEnd) {
+  base::HistogramTester histogram_tester;
+  base::MetricsSubSampler::ScopedAlwaysSampleForTesting always_sample;
+
+  EventMetrics::List events_metrics;
+  events_metrics.push_back(metrics_creator_.CreateGestureScrollUpdate(
+      {.timestamp = MillisecondsTicks(1),
+       .delta = 5,
+       .caused_frame_update = true,
+       .did_scroll = true}));
+  events_metrics.push_back(metrics_creator_.CreateGestureScrollEnd(
+      {.timestamp = MillisecondsTicks(2), .caused_frame_update = false}));
+  ScrollJankV4FrameStage::CalculateStages(events_metrics);
+
+  histogram_tester.ExpectUniqueSample(
+      "Event.ScrollJank.FrameStageCalculationResult",
+      ScrollJankV4FrameStage::FrameStageCalculationResult::
+          kScrollUpdatesThenEnd,
+      1);
+}
+
+TEST_F(ScrollJankV4FrameStageTest, FrameStageCalculationResultScrollEndOnly) {
+  base::HistogramTester histogram_tester;
+  base::MetricsSubSampler::ScopedAlwaysSampleForTesting always_sample;
+
+  EventMetrics::List events_metrics;
+  events_metrics.push_back(metrics_creator_.CreateGestureScrollEnd(
+      {.timestamp = MillisecondsTicks(1), .caused_frame_update = false}));
+  ScrollJankV4FrameStage::CalculateStages(events_metrics);
+
+  histogram_tester.ExpectUniqueSample(
+      "Event.ScrollJank.FrameStageCalculationResult",
+      ScrollJankV4FrameStage::FrameStageCalculationResult::kScrollEndOnly, 1);
+}
+
+TEST_F(ScrollJankV4FrameStageTest,
+       FrameStageCalculationResultScrollEndThenStartThenUpdates) {
+  base::HistogramTester histogram_tester;
+  base::MetricsSubSampler::ScopedAlwaysSampleForTesting always_sample;
+
+  EventMetrics::List events_metrics;
+  events_metrics.push_back(metrics_creator_.CreateGestureScrollEnd(
+      {.timestamp = MillisecondsTicks(1), .caused_frame_update = false}));
+  events_metrics.push_back(metrics_creator_.CreateFirstGestureScrollUpdate(
+      {.timestamp = MillisecondsTicks(2),
+       .delta = 5,
+       .caused_frame_update = true,
+       .did_scroll = true}));
+  events_metrics.push_back(metrics_creator_.CreateGestureScrollUpdate(
+      {.timestamp = MillisecondsTicks(3),
+       .delta = 5,
+       .caused_frame_update = true,
+       .did_scroll = true}));
+  ScrollJankV4FrameStage::CalculateStages(events_metrics);
+
+  histogram_tester.ExpectUniqueSample(
+      "Event.ScrollJank.FrameStageCalculationResult",
+      ScrollJankV4FrameStage::FrameStageCalculationResult::
+          kScrollEndThenStartThenUpdates,
+      1);
+}
+
+TEST_F(ScrollJankV4FrameStageTest,
+       FrameStageCalculationResultMultipleScrollEnds) {
+  base::HistogramTester histogram_tester;
+  base::MetricsSubSampler::ScopedAlwaysSampleForTesting always_sample;
+
+  EventMetrics::List events_metrics;
+  events_metrics.push_back(metrics_creator_.CreateGestureScrollEnd(
+      {.timestamp = MillisecondsTicks(1), .caused_frame_update = false}));
+  events_metrics.push_back(metrics_creator_.CreateGestureScrollEnd(
+      {.timestamp = MillisecondsTicks(2), .caused_frame_update = false}));
+  ScrollJankV4FrameStage::CalculateStages(events_metrics);
+
+  histogram_tester.ExpectUniqueSample(
+      "Event.ScrollJank.FrameStageCalculationResult",
+      ScrollJankV4FrameStage::FrameStageCalculationResult::kMultipleScrollEnds,
+      1);
+}
+
+TEST_F(ScrollJankV4FrameStageTest,
+       FrameStageCalculationResultMultipleScrollStarts) {
+  base::HistogramTester histogram_tester;
+  base::MetricsSubSampler::ScopedAlwaysSampleForTesting always_sample;
+
+  EventMetrics::List events_metrics;
+  events_metrics.push_back(metrics_creator_.CreateFirstGestureScrollUpdate(
+      {.timestamp = MillisecondsTicks(1),
+       .delta = 5,
+       .caused_frame_update = true,
+       .did_scroll = true}));
+  events_metrics.push_back(metrics_creator_.CreateFirstGestureScrollUpdate(
+      {.timestamp = MillisecondsTicks(2),
+       .delta = 5,
+       .caused_frame_update = true,
+       .did_scroll = true}));
+  ScrollJankV4FrameStage::CalculateStages(events_metrics);
+
+  histogram_tester.ExpectUniqueSample(
+      "Event.ScrollJank.FrameStageCalculationResult",
+      ScrollJankV4FrameStage::FrameStageCalculationResult::
+          kMultipleScrollStarts,
+      1);
+}
+
+TEST_F(ScrollJankV4FrameStageTest,
+       FrameStageCalculationResultScrollStartAfterUpdate) {
+  base::HistogramTester histogram_tester;
+  base::MetricsSubSampler::ScopedAlwaysSampleForTesting always_sample;
+
+  EventMetrics::List events_metrics;
+  events_metrics.push_back(metrics_creator_.CreateGestureScrollUpdate(
+      {.timestamp = MillisecondsTicks(1),
+       .delta = 5,
+       .caused_frame_update = true,
+       .did_scroll = true}));
+  events_metrics.push_back(metrics_creator_.CreateFirstGestureScrollUpdate(
+      {.timestamp = MillisecondsTicks(2),
+       .delta = 5,
+       .caused_frame_update = true,
+       .did_scroll = true}));
+  ScrollJankV4FrameStage::CalculateStages(events_metrics);
+
+  histogram_tester.ExpectUniqueSample(
+      "Event.ScrollJank.FrameStageCalculationResult",
+      ScrollJankV4FrameStage::FrameStageCalculationResult::
+          kScrollStartAfterUpdate,
+      1);
+}
+
+TEST_F(ScrollJankV4FrameStageTest,
+       FrameStageCalculationResultScrollEndBetweenUpdates) {
+  base::HistogramTester histogram_tester;
+  base::MetricsSubSampler::ScopedAlwaysSampleForTesting always_sample;
+
+  EventMetrics::List events_metrics;
+  events_metrics.push_back(metrics_creator_.CreateGestureScrollUpdate(
+      {.timestamp = MillisecondsTicks(1),
+       .delta = 5,
+       .caused_frame_update = true,
+       .did_scroll = true}));
+  events_metrics.push_back(metrics_creator_.CreateGestureScrollEnd(
+      {.timestamp = MillisecondsTicks(2), .caused_frame_update = false}));
+  events_metrics.push_back(metrics_creator_.CreateGestureScrollUpdate(
+      {.timestamp = MillisecondsTicks(3),
+       .delta = 5,
+       .caused_frame_update = true,
+       .did_scroll = true}));
+  ScrollJankV4FrameStage::CalculateStages(events_metrics);
+
+  histogram_tester.ExpectUniqueSample(
+      "Event.ScrollJank.FrameStageCalculationResult",
+      ScrollJankV4FrameStage::FrameStageCalculationResult::
+          kScrollEndBetweenUpdates,
+      1);
+}
+
+TEST_F(ScrollJankV4FrameStageTest,
+       FrameStageCalculationResultScrollEndThenUpdatesWithoutStart) {
+  base::HistogramTester histogram_tester;
+  base::MetricsSubSampler::ScopedAlwaysSampleForTesting always_sample;
+
+  EventMetrics::List events_metrics;
+  events_metrics.push_back(metrics_creator_.CreateGestureScrollEnd(
+      {.timestamp = MillisecondsTicks(1), .caused_frame_update = false}));
+  events_metrics.push_back(metrics_creator_.CreateGestureScrollUpdate(
+      {.timestamp = MillisecondsTicks(2),
+       .delta = 5,
+       .caused_frame_update = true,
+       .did_scroll = true}));
+  ScrollJankV4FrameStage::CalculateStages(events_metrics);
+
+  histogram_tester.ExpectUniqueSample(
+      "Event.ScrollJank.FrameStageCalculationResult",
+      ScrollJankV4FrameStage::FrameStageCalculationResult::
+          kScrollEndThenUpdatesWithoutStart,
+      1);
+}
+
+TEST_F(ScrollJankV4FrameStageTest, FrameStageCalculationResultMultipleIssues) {
+  base::HistogramTester histogram_tester;
+  base::MetricsSubSampler::ScopedAlwaysSampleForTesting always_sample;
+
+  EventMetrics::List events_metrics;
+  // Two scroll ends.
+  events_metrics.push_back(metrics_creator_.CreateGestureScrollEnd(
+      {.timestamp = MillisecondsTicks(1), .caused_frame_update = false}));
+  events_metrics.push_back(metrics_creator_.CreateGestureScrollEnd(
+      {.timestamp = MillisecondsTicks(2), .caused_frame_update = false}));
+  // Two scroll starts.
+  events_metrics.push_back(metrics_creator_.CreateFirstGestureScrollUpdate(
+      {.timestamp = MillisecondsTicks(3),
+       .delta = 5,
+       .caused_frame_update = true,
+       .did_scroll = true}));
+  events_metrics.push_back(metrics_creator_.CreateFirstGestureScrollUpdate(
+      {.timestamp = MillisecondsTicks(4),
+       .delta = 5,
+       .caused_frame_update = true,
+       .did_scroll = true}));
+  ScrollJankV4FrameStage::CalculateStages(events_metrics);
+
+  histogram_tester.ExpectUniqueSample(
+      "Event.ScrollJank.FrameStageCalculationResult",
+      ScrollJankV4FrameStage::FrameStageCalculationResult::kMultipleIssues, 1);
 }
 
 }  // namespace cc
