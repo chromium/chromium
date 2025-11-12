@@ -11,6 +11,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
 #include "chrome/browser/actor/tools/observation_delay_controller.h"
+#include "chrome/browser/actor/tools/tool_callbacks.h"
 #include "chrome/browser/actor/tools/tool_delegate.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/task_id.h"
@@ -31,10 +32,6 @@ class AggregatedJournal;
 // when the tool will be destroyed.
 class Tool {
  public:
-  // NOTE: Let's rename this to `ToolCallback`, move to a shared header, and
-  // eliminate the other redundant definitions.
-  using ValidateCallback = base::OnceCallback<void(mojom::ActionResultPtr)>;
-  using InvokeCallback = base::OnceCallback<void(mojom::ActionResultPtr)>;
   Tool(TaskId task_id, ToolDelegate& tool_delegate);
   virtual ~Tool();
 
@@ -46,7 +43,7 @@ class Tool {
   // invoked by the tool when validation is completed. If the result given to
   // the callback indicates success, the framework will call Invoke. Otherwise,
   // the tool will be destroyed.
-  virtual void Validate(ValidateCallback callback) = 0;
+  virtual void Validate(ToolCallback callback) = 0;
 
   // Perform any synchronous time-of-use checks just before invoking the tool.
   // These are typically TOCTOU (time-of-check/time-of-use) validations that the
@@ -59,7 +56,7 @@ class Tool {
 
   // Perform the action of the tool. The given callback must be invoked when the
   // tool has finished its actions.
-  virtual void Invoke(InvokeCallback callback) = 0;
+  virtual void Invoke(ToolCallback callback) = 0;
 
   // Provides a human readable description of the tool useful for log and
   // debugging purposes.
@@ -83,13 +80,13 @@ class Tool {
   // Gives the tool an opportunity to update the task's state before being
   // invoked.
   virtual void UpdateTaskBeforeInvoke(ActorTask& task,
-                                      InvokeCallback callback) const;
+                                      ToolCallback callback) const;
 
   // Gives the tool an opportunity to update the task's state after being
   // invoked.
   virtual void UpdateTaskAfterInvoke(ActorTask& task,
                                      mojom::ActionResultPtr result,
-                                     InvokeCallback callback) const;
+                                     ToolCallback callback) const;
 
   // Returns the tab handle for the tab that this tool targets, if any.
   virtual tabs::TabHandle GetTargetTab() const = 0;

@@ -454,7 +454,7 @@ TEST_F(ExecutionEngineTest, CancelOngoingAction) {
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL("http://localhost/"));
 
-  base::test::TestFuture<Tool::InvokeCallback> on_invoke_future;
+  base::test::TestFuture<ToolCallback> on_invoke_future;
   base::test::TestFuture<void> on_destroy_future;
   std::unique_ptr<ToolRequest> request = std::make_unique<FakeToolRequest>(
       on_invoke_future.GetCallback(), on_destroy_future.GetCallback());
@@ -653,7 +653,7 @@ TEST_F(ExecutionEngineTest, LatencyInfoAndActionDurationHistogram) {
   const base::TimeDelta simulated_duration = base::Milliseconds(150);
   const base::TimeTicks action_start_time = base::TimeTicks::Now();
 
-  base::test::TestFuture<Tool::InvokeCallback> on_invoke_future;
+  base::test::TestFuture<ToolCallback> on_invoke_future;
 
   std::unique_ptr<ToolRequest> action = std::make_unique<FakeToolRequest>(
       on_invoke_future.GetCallback(), base::OnceClosure());

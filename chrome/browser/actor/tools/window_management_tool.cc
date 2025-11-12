@@ -29,7 +29,7 @@ WindowManagementTool::WindowManagementTool(Action action,
 
 WindowManagementTool::~WindowManagementTool() = default;
 
-void WindowManagementTool::Validate(ValidateCallback callback) {
+void WindowManagementTool::Validate(ToolCallback callback) {
   switch (action_) {
     case Action::kCreate:
       break;
@@ -55,7 +55,7 @@ void WindowManagementTool::Validate(ValidateCallback callback) {
   std::move(callback).Run(MakeOkResult());
 }
 
-void WindowManagementTool::Invoke(InvokeCallback callback) {
+void WindowManagementTool::Invoke(ToolCallback callback) {
   // The callback is invoked from observing changes to the Browser instance.
   callback_ = std::move(callback);
 
@@ -139,9 +139,8 @@ WindowManagementTool::GetObservationDelayer(
   return nullptr;
 }
 
-void WindowManagementTool::UpdateTaskBeforeInvoke(
-    ActorTask& task,
-    InvokeCallback callback) const {
+void WindowManagementTool::UpdateTaskBeforeInvoke(ActorTask& task,
+                                                  ToolCallback callback) const {
   if (action_ == Action::kClose) {
     // If closing a window, ensure all acting tabs in this window are removed
     // from the acting set. In particular, this ensures the task isn't stopped
@@ -157,10 +156,9 @@ void WindowManagementTool::UpdateTaskBeforeInvoke(
   std::move(callback).Run(MakeOkResult());
 }
 
-void WindowManagementTool::UpdateTaskAfterInvoke(
-    ActorTask& task,
-    mojom::ActionResultPtr result,
-    InvokeCallback callback) const {
+void WindowManagementTool::UpdateTaskAfterInvoke(ActorTask& task,
+                                                 mojom::ActionResultPtr result,
+                                                 ToolCallback callback) const {
   // TODO(crbug.com/420669167): Avoid adding the tab if a tab is already acting.
   // This limitation can be removed once multi-tab is supported. In particular,
   // this is needed because GetTabForObservation assumes only a single tab is

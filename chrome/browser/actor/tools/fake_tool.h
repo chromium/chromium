@@ -15,14 +15,14 @@ class FakeTool : public Tool {
  public:
   FakeTool(TaskId task_id,
            ToolDelegate& tool_delegate,
-           base::OnceCallback<void(Tool::InvokeCallback)> on_invoke,
+           base::OnceCallback<void(ToolCallback)> on_invoke,
            base::OnceClosure on_destroy);
 
   ~FakeTool() override;
 
-  void Validate(ValidateCallback callback) override;
+  void Validate(ToolCallback callback) override;
 
-  void Invoke(InvokeCallback callback) override;
+  void Invoke(ToolCallback callback) override;
 
   std::string DebugString() const override;
   std::string JournalEvent() const override;
@@ -33,7 +33,7 @@ class FakeTool : public Tool {
   tabs::TabHandle GetTargetTab() const override;
 
  private:
-  base::OnceCallback<void(Tool::InvokeCallback)> on_invoke_;
+  base::OnceCallback<void(ToolCallback)> on_invoke_;
   base::OnceClosure on_destroy_;
 };
 

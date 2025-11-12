@@ -45,7 +45,7 @@ NavigateTool::NavigateTool(TaskId task_id,
 
 NavigateTool::~NavigateTool() = default;
 
-void NavigateTool::Validate(ValidateCallback callback) {
+void NavigateTool::Validate(ToolCallback callback) {
   if (!url_.is_valid()) {
     // URL is invalid.
     PostResponseTask(std::move(callback),
@@ -60,7 +60,7 @@ void NavigateTool::Validate(ValidateCallback callback) {
               base::BindOnce(&MayActOnUrlToResult).Then(std::move(callback)));
 }
 
-void NavigateTool::Invoke(InvokeCallback callback) {
+void NavigateTool::Invoke(ToolCallback callback) {
   content::OpenURLParams params(
       url_, content::Referrer(), WindowOpenDisposition::CURRENT_TAB,
       ::ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL,
@@ -93,7 +93,7 @@ std::unique_ptr<ObservationDelayController> NavigateTool::GetObservationDelayer(
 }
 
 void NavigateTool::UpdateTaskBeforeInvoke(ActorTask& task,
-                                          InvokeCallback callback) const {
+                                          ToolCallback callback) const {
   task.AddTab(tab_handle_, std::move(callback));
 }
 

@@ -105,7 +105,7 @@ AttemptLoginTool::~AttemptLoginTool() {
   }
 }
 
-void AttemptLoginTool::Validate(ValidateCallback callback) {
+void AttemptLoginTool::Validate(ToolCallback callback) {
   if (!base::FeatureList::IsEnabled(password_manager::features::kActorLogin)) {
     PostResponseTask(std::move(callback),
                      MakeResult(mojom::ActionResultCode::kToolUnknown));
@@ -115,7 +115,7 @@ void AttemptLoginTool::Validate(ValidateCallback callback) {
   PostResponseTask(std::move(callback), MakeOkResult());
 }
 
-void AttemptLoginTool::Invoke(InvokeCallback callback) {
+void AttemptLoginTool::Invoke(ToolCallback callback) {
   tabs::TabInterface* tab = tab_handle_.Get();
   if (!tab) {
     PostResponseTask(std::move(callback),
@@ -365,7 +365,7 @@ AttemptLoginTool::GetObservationDelayer(
 }
 
 void AttemptLoginTool::UpdateTaskBeforeInvoke(ActorTask& task,
-                                              InvokeCallback callback) const {
+                                              ToolCallback callback) const {
   task.AddTab(tab_handle_, std::move(callback));
 }
 

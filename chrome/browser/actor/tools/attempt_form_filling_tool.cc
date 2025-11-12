@@ -98,7 +98,7 @@ AttemptFormFillingTool::AttemptFormFillingTool(
 
 AttemptFormFillingTool::~AttemptFormFillingTool() = default;
 
-void AttemptFormFillingTool::Invoke(InvokeCallback callback) {
+void AttemptFormFillingTool::Invoke(ToolCallback callback) {
   // `service_fill_requests_` must have been set by TimeOfUseValidation() or
   // otherwise an error was returned by TimeOfUseValidation().
   CHECK(!service_fill_requests_.empty());
@@ -124,7 +124,7 @@ void AttemptFormFillingTool::Invoke(InvokeCallback callback) {
   }
 }
 
-void AttemptFormFillingTool::Validate(ValidateCallback callback) {
+void AttemptFormFillingTool::Validate(ToolCallback callback) {
   std::move(callback).Run(MakeOkResult());
 }
 
@@ -199,7 +199,7 @@ tabs::TabHandle AttemptFormFillingTool::GetTargetTab() const {
 }
 
 void AttemptFormFillingTool::OnSuggestionsRetrieved(
-    InvokeCallback invoke_callback,
+    ToolCallback invoke_callback,
     base::expected<std::vector<autofill::ActorFormFillingRequest>,
                    autofill::ActorFormFillingError> suggestions_result) {
   if (!suggestions_result.has_value()) {
@@ -227,7 +227,7 @@ void AttemptFormFillingTool::OnSuggestionsRetrieved(
 }
 
 void AttemptFormFillingTool::SimulateRequestToShowAutofillSuggestions(
-    InvokeCallback invoke_callback,
+    ToolCallback invoke_callback,
     std::vector<autofill::ActorFormFillingRequest> requests) {
   // In the simulation of asking the user to pick suggestions, we just choose
   // the first suggestion for each form section.
@@ -252,7 +252,7 @@ void AttemptFormFillingTool::SimulateRequestToShowAutofillSuggestions(
 }
 
 void AttemptFormFillingTool::OnSuggestionsSelected(
-    InvokeCallback invoke_callback,
+    ToolCallback invoke_callback,
     webui::mojom::SelectAutofillSuggestionsDialogResponsePtr dialog_response) {
   if (dialog_response->result->is_error_reason()) {
     // TODO(crbug.com/454017250): Use form filling specific ActionResultCode

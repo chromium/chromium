@@ -8,7 +8,6 @@
 #include "base/notimplemented.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/tools/observation_delay_controller.h"
-#include "chrome/browser/actor/tools/tool_callbacks.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
@@ -44,11 +43,11 @@ TabManagementTool::TabManagementTool(TaskId task_id,
 
 TabManagementTool::~TabManagementTool() = default;
 
-void TabManagementTool::Validate(ValidateCallback callback) {
+void TabManagementTool::Validate(ToolCallback callback) {
   PostResponseTask(std::move(callback), MakeOkResult());
 }
 
-void TabManagementTool::Invoke(InvokeCallback callback) {
+void TabManagementTool::Invoke(ToolCallback callback) {
   callback_ = std::move(callback);
 
   // TODO(crbug.com/445993857): Only the create action is hooked up and
@@ -116,7 +115,7 @@ TabManagementTool::GetObservationDelayer(
 
 void TabManagementTool::UpdateTaskAfterInvoke(ActorTask& task,
                                               mojom::ActionResultPtr result,
-                                              InvokeCallback callback) const {
+                                              ToolCallback callback) const {
   if (action_ == kCreate && target_tab_) {
     task.AddTab(*target_tab_, std::move(callback));
   } else {

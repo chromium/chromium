@@ -9,6 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/actor/tools/tool.h"
+#include "chrome/browser/actor/tools/tool_callbacks.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "ui/base/window_open_disposition.h"
@@ -38,8 +39,8 @@ class TabManagementTool : public Tool, public TabStripModelObserver {
   ~TabManagementTool() override;
 
   // actor::Tool:
-  void Validate(ValidateCallback callback) override;
-  void Invoke(InvokeCallback callback) override;
+  void Validate(ToolCallback callback) override;
+  void Invoke(ToolCallback callback) override;
   std::string DebugString() const override;
   std::string JournalEvent() const override;
   std::unique_ptr<ObservationDelayController> GetObservationDelayer(
@@ -47,7 +48,7 @@ class TabManagementTool : public Tool, public TabStripModelObserver {
       override;
   void UpdateTaskAfterInvoke(ActorTask& task,
                              mojom::ActionResultPtr result,
-                             InvokeCallback callback) const override;
+                             ToolCallback callback) const override;
   tabs::TabHandle GetTargetTab() const override;
 
   // TabStripModelObserver
@@ -61,7 +62,7 @@ class TabManagementTool : public Tool, public TabStripModelObserver {
 
   Action action_;
 
-  InvokeCallback callback_;
+  ToolCallback callback_;
 
   // Used for activate or close action. For the create action, this will be
   // updated to the newly created tab after `Invoke()` is called.

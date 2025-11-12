@@ -10,9 +10,10 @@
 #include "chrome/common/actor.mojom-forward.h"
 
 namespace actor {
+using ToolCallback = base::OnceCallback<void(mojom::ActionResultPtr)>;
 
 // Helper to post a callback on the current sequence with the given response.
-void PostResponseTask(base::OnceCallback<void(mojom::ActionResultPtr)> task,
+void PostResponseTask(ToolCallback task,
                       mojom::ActionResultPtr result,
                       base::TimeDelta delay = base::Seconds(0));
 

@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "chrome/browser/actor/tools/tool.h"
+#include "chrome/browser/actor/tools/tool_callbacks.h"
 #include "chrome/browser/password_manager/actor_login/actor_login_quality_logger.h"
 #include "chrome/browser/password_manager/actor_login/actor_login_service.h"
 #include "chrome/common/actor_webui.mojom-forward.h"
@@ -37,15 +38,15 @@ class AttemptLoginTool : public Tool {
   ~AttemptLoginTool() override;
 
   // actor::Tool
-  void Validate(ValidateCallback callback) override;
-  void Invoke(InvokeCallback callback) override;
+  void Validate(ToolCallback callback) override;
+  void Invoke(ToolCallback callback) override;
   std::string DebugString() const override;
   std::string JournalEvent() const override;
   std::unique_ptr<ObservationDelayController> GetObservationDelayer(
       ObservationDelayController::PageStabilityConfig page_stability_config)
       override;
   void UpdateTaskBeforeInvoke(ActorTask& task,
-                              InvokeCallback callback) const override;
+                              ToolCallback callback) const override;
   tabs::TabHandle GetTargetTab() const override;
 
  private:
@@ -80,7 +81,7 @@ class AttemptLoginTool : public Tool {
   // selection.
   content::GlobalRenderFrameHostToken main_rfh_token_;
 
-  InvokeCallback invoke_callback_;
+  ToolCallback invoke_callback_;
 
   base::WeakPtrFactory<AttemptLoginTool> weak_ptr_factory_{this};
 };

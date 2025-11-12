@@ -10,7 +10,7 @@ namespace actor {
 
 FakeTool::FakeTool(TaskId task_id,
                    ToolDelegate& tool_delegate,
-                   base::OnceCallback<void(Tool::InvokeCallback)> on_invoke,
+                   base::OnceCallback<void(ToolCallback)> on_invoke,
                    base::OnceClosure on_destroy)
     : Tool(task_id, tool_delegate),
       on_invoke_(std::move(on_invoke)),
@@ -22,11 +22,11 @@ FakeTool::~FakeTool() {
   }
 }
 
-void FakeTool::Validate(ValidateCallback callback) {
+void FakeTool::Validate(ToolCallback callback) {
   std::move(callback).Run(MakeOkResult());
 }
 
-void FakeTool::Invoke(InvokeCallback callback) {
+void FakeTool::Invoke(ToolCallback callback) {
   if (on_invoke_) {
     std::move(on_invoke_).Run(std::move(callback));
   }

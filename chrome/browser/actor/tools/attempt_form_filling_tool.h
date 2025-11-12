@@ -12,6 +12,7 @@
 #include "chrome/browser/actor/shared_types.h"
 #include "chrome/browser/actor/tools/attempt_form_filling_tool_request.h"
 #include "chrome/browser/actor/tools/tool.h"
+#include "chrome/browser/actor/tools/tool_callbacks.h"
 #include "components/autofill/core/browser/integrators/glic/actor_form_filling_types.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -28,8 +29,8 @@ class AttemptFormFillingTool : public Tool {
       std::vector<AttemptFormFillingToolRequest::FormFillingRequest> requests);
   ~AttemptFormFillingTool() override;
 
-  void Invoke(InvokeCallback callback) override;
-  void Validate(ValidateCallback callback) override;
+  void Invoke(ToolCallback callback) override;
+  void Validate(ToolCallback callback) override;
   mojom::ActionResultPtr TimeOfUseValidation(
       const optimization_guide::proto::AnnotatedPageContent* last_observation)
       override;
@@ -42,11 +43,11 @@ class AttemptFormFillingTool : public Tool {
 
  private:
   void OnSuggestionsRetrieved(
-      InvokeCallback invoke_callabck,
+      ToolCallback invoke_callabck,
       base::expected<std::vector<autofill::ActorFormFillingRequest>,
                      autofill::ActorFormFillingError> suggestions_result);
   void OnSuggestionsSelected(
-      InvokeCallback invoke_callback,
+      ToolCallback invoke_callback,
       webui::mojom::SelectAutofillSuggestionsDialogResponsePtr);
   // Called by OnSuggestionsRetrieved if
   // actor::switches::kAttemptFormFillingToolSkipsUI is passed as a command line
@@ -54,7 +55,7 @@ class AttemptFormFillingTool : public Tool {
   // be filled. Instead of that the first suggestion is chosen. This is only
   // useful for testing purposes.
   void SimulateRequestToShowAutofillSuggestions(
-      InvokeCallback invoke_callback,
+      ToolCallback invoke_callback,
       std::vector<autofill::ActorFormFillingRequest> requests);
   tabs::TabHandle tab_handle_;
   std::vector<AttemptFormFillingToolRequest::FormFillingRequest>

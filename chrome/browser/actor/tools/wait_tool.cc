@@ -28,11 +28,11 @@ WaitTool::WaitTool(TaskId task_id,
 
 WaitTool::~WaitTool() = default;
 
-void WaitTool::Validate(ValidateCallback callback) {
+void WaitTool::Validate(ToolCallback callback) {
   PostResponseTask(std::move(callback), MakeOkResult());
 }
 
-void WaitTool::Invoke(InvokeCallback callback) {
+void WaitTool::Invoke(ToolCallback callback) {
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&WaitTool::OnDelayFinished, weak_ptr_factory_.GetWeakPtr(),
@@ -55,7 +55,7 @@ std::unique_ptr<ObservationDelayController> WaitTool::GetObservationDelayer(
 }
 
 void WaitTool::UpdateTaskBeforeInvoke(ActorTask& task,
-                                      InvokeCallback callback) const {
+                                      ToolCallback callback) const {
   if (observe_tab_handle_ != tabs::TabHandle::Null()) {
     task.ObserveTabOnce(observe_tab_handle_);
   }
@@ -67,7 +67,7 @@ tabs::TabHandle WaitTool::GetTargetTab() const {
   return tabs::TabHandle::Null();
 }
 
-void WaitTool::OnDelayFinished(InvokeCallback callback) {
+void WaitTool::OnDelayFinished(ToolCallback callback) {
   // TODO(crbug.com/409566732): Add more robust methods for detecting that the
   // page has settled.
   std::move(callback).Run(MakeOkResult());

@@ -53,7 +53,7 @@ HistoryTool::HistoryTool(TaskId task_id,
 
 HistoryTool::~HistoryTool() = default;
 
-void HistoryTool::Validate(ValidateCallback callback) {
+void HistoryTool::Validate(ToolCallback callback) {
   // Get the navigation entry that would be navigated to.
   int offset = direction_ == HistoryToolRequest::Direction::kBack ? -1 : 1;
   content::NavigationEntry* entry =
@@ -104,7 +104,7 @@ mojom::ActionResultPtr HistoryTool::TimeOfUseValidation(
   return result;
 }
 
-void HistoryTool::Invoke(InvokeCallback callback) {
+void HistoryTool::Invoke(ToolCallback callback) {
   CHECK(web_contents());
   CHECK(!IsInvokeInProgress());
   CHECK(pending_navigations_.empty());
@@ -156,7 +156,7 @@ std::unique_ptr<ObservationDelayController> HistoryTool::GetObservationDelayer(
 }
 
 void HistoryTool::UpdateTaskBeforeInvoke(ActorTask& task,
-                                         InvokeCallback callback) const {
+                                         ToolCallback callback) const {
   task.AddTab(tab_handle_, std::move(callback));
 }
 

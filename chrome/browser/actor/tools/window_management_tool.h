@@ -9,6 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/actor/tools/tool.h"
+#include "chrome/browser/actor/tools/tool_callbacks.h"
 #include "chrome/common/actor/task_id.h"
 #include "components/tabs/public/tab_interface.h"
 
@@ -30,18 +31,18 @@ class WindowManagementTool : public Tool {
   ~WindowManagementTool() override;
 
   // actor::Tool:
-  void Validate(ValidateCallback callback) override;
-  void Invoke(InvokeCallback callback) override;
+  void Validate(ToolCallback callback) override;
+  void Invoke(ToolCallback callback) override;
   std::string DebugString() const override;
   std::string JournalEvent() const override;
   std::unique_ptr<ObservationDelayController> GetObservationDelayer(
       ObservationDelayController::PageStabilityConfig page_stability_config)
       override;
   void UpdateTaskBeforeInvoke(ActorTask& task,
-                              InvokeCallback callback) const override;
+                              ToolCallback callback) const override;
   void UpdateTaskAfterInvoke(ActorTask& task,
                              mojom::ActionResultPtr result,
-                             InvokeCallback callback) const override;
+                             ToolCallback callback) const override;
   tabs::TabHandle GetTargetTab() const override;
 
  private:
@@ -57,7 +58,7 @@ class WindowManagementTool : public Tool {
   // If creating a window, this will be set to the handle of the initial tab.
   std::optional<tabs::TabHandle> created_tab_handle_;
 
-  InvokeCallback callback_;
+  ToolCallback callback_;
 
   // Subscription to the close event for the Browser corresponding to
   // `window_id_`.

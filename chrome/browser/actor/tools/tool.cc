@@ -23,14 +23,14 @@ GURL Tool::JournalURL() const {
 }
 
 void Tool::UpdateTaskBeforeInvoke(ActorTask& task,
-                                  InvokeCallback callback) const {
+                                  ToolCallback callback) const {
   // Do nothing by default, just trigger the callback.
   std::move(callback).Run(MakeOkResult());
 }
 
 void Tool::UpdateTaskAfterInvoke(ActorTask& task,
                                  mojom::ActionResultPtr result,
-                                 InvokeCallback callback) const {
+                                 ToolCallback callback) const {
   // Do nothing by default, just trigger the callback.
   std::move(callback).Run(std::move(result));
 }

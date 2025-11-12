@@ -33,11 +33,11 @@ MediaControlTool::MediaControlTool(TaskId task_id,
 
 MediaControlTool::~MediaControlTool() = default;
 
-void MediaControlTool::Validate(ValidateCallback callback) {
+void MediaControlTool::Validate(ToolCallback callback) {
   PostResponseTask(std::move(callback), MakeOkResult());
 }
 
-void MediaControlTool::Invoke(InvokeCallback callback) {
+void MediaControlTool::Invoke(ToolCallback callback) {
   tabs::TabInterface* tab = tab_handle_.Get();
   if (!tab) {
     PostResponseTask(std::move(callback),
@@ -97,7 +97,7 @@ MediaControlTool::GetObservationDelayer(
 }
 
 void MediaControlTool::UpdateTaskBeforeInvoke(ActorTask& task,
-                                              InvokeCallback callback) const {
+                                              ToolCallback callback) const {
   task.AddTab(tab_handle_, std::move(callback));
 }
 

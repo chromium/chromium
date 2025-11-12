@@ -12,7 +12,7 @@
 namespace actor {
 
 FakeToolRequest::FakeToolRequest(
-    base::OnceCallback<void(Tool::InvokeCallback)> on_invoke,
+    base::OnceCallback<void(ToolCallback)> on_invoke,
     base::OnceClosure on_destroy)
     : on_invoke_(std::move(on_invoke)), on_destroy_(std::move(on_destroy)) {}
 

@@ -176,7 +176,7 @@ PageTool::PageTool(TaskId task_id,
 
 PageTool::~PageTool() = default;
 
-void PageTool::Validate(ValidateCallback callback) {
+void PageTool::Validate(ToolCallback callback) {
   // No browser-side validation yet.
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), MakeOkResult()));
@@ -264,7 +264,7 @@ mojom::ActionResultPtr PageTool::TimeOfUseValidation(
   return MakeOkResult();
 }
 
-void PageTool::Invoke(InvokeCallback callback) {
+void PageTool::Invoke(ToolCallback callback) {
   // Frame was validated in TimeOfUseValidation.
   CHECK(GetFrame());
   RenderFrameHost& frame = *GetFrame();
@@ -363,7 +363,7 @@ std::unique_ptr<ObservationDelayController> PageTool::GetObservationDelayer(
 }
 
 void PageTool::UpdateTaskBeforeInvoke(ActorTask& task,
-                                      InvokeCallback callback) const {
+                                      ToolCallback callback) const {
   task.AddTab(request_->GetTabHandle(), std::move(callback));
 }
 
