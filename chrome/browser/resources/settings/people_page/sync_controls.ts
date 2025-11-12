@@ -144,9 +144,17 @@ export class SettingsSyncControlsElement extends
         'sync-prefs-changed', this.handleSyncPrefsChanged_.bind(this));
 
     const router = Router.getInstance();
-    if (router.getCurrentRoute() === routes.SYNC_ADVANCED) {
+    const currentRoute = router.getCurrentRoute();
+    if (currentRoute === routes.SYNC_ADVANCED) {
       this.browserProxy_.didNavigateToSyncPage();
     }
+    // <if expr="not is_chromeos">
+    if (loadTimeData.getBoolean('replaceSyncPromosWithSignInPromos') &&
+        currentRoute === routes.ACCOUNT) {
+      this.isAccountSettingsPage_ = true;
+      this.browserProxy_.didNavigateToAccountSettingsPage();
+    }
+    // </if>
   }
   /**
    * Handler for when the sync preferences are updated.
