@@ -224,13 +224,19 @@ void TileDisplayLayerImpl::AppendQuadsSpecialization(
           color = DebugColors::SolidColorTileBorderColor();
           width = DebugColors::SolidColorTileBorderWidth(device_scale_factor);
         } else if (iter->resource()) {
+          // NOTE: This is not exactly the same computation as is used by
+          // PictureLayerImpl, as high resolution tiles within PictureLayerImpl
+          // use `raster_contents_scale_`, which is not necessarily the ideal
+          // scale. However, we don't have the former field here, so use the
+          // ideal scale as an approximation.
+          // TODO(crbug.com/450651370): Determine whether we want to fix this.
           if (MathUtil::IsFloatNearlyTheSame(
                   iter.CurrentTiling()->contents_scale_key(),
                   ideal_scale_key)) {
             color = DebugColors::HighResTileBorderColor();
             width = DebugColors::HighResTileBorderWidth(device_scale_factor);
           } else if (iter.CurrentTiling()->contents_scale_key() >
-                     max_contents_scale) {
+                     ideal_scale_key) {
             color = DebugColors::AboveHighResTileBorderColor();
             width =
                 DebugColors::AboveHighResTileBorderWidth(device_scale_factor);
